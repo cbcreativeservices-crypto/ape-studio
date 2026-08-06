@@ -12,7 +12,8 @@
  * Dashboard root) that MIRRORS the dial's rotation via a shared Animated.Value.
  */
 import { useMemo, useRef } from 'react';
-import { Animated, PanResponder, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { PanResponder, StyleSheet, useWindowDimensions, View } from 'react-native';
+import Reanimated, { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 import Svg, { Circle, Defs, Ellipse, RadialGradient, Stop } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../features/settings/store';
@@ -22,8 +23,6 @@ const DETENT_DEG = 360 / 7; // ~51.4° per click
  *  topic change behind the wheel, and no rapid-fire haptic "vibration". Faster
  *  spins just drop the excess steps; the wheel keeps turning smoothly. */
 const MIN_STEP_MS = 300;
-
-type Rotate = Animated.AnimatedInterpolation<string>;
 
 /** FIXED base of the wheel — rim + matte-black concave disc. */
 function JogBase({ size }: { size: number }) {
@@ -53,38 +52,32 @@ function JogBase({ size }: { size: number }) {
   );
 }
 
-/** Environmental LIGHTING — FIXED (owner 2026-08-05): the specular highlight,
- *  cast shadow, and rim glints are light landing on the wheel from a fixed
- *  direction. Light does not orbit with the object, so these stay put while the
- *  wheel turns — only the physical dimple below rotates. */
+/** FIXED depth shading — just soft cast shadows (owner 2026-08-05: the light
+ *  gray specular highlight was removed; it read wrong). These do not orbit; only
+ *  the physical dimple below rotates. */
 function JogLighting({ size }: { size: number }) {
   const c = size / 2;
   return (
     <Svg width={size} height={size}>
       <Defs>
-        <RadialGradient id="jogHi" cx="50%" cy="50%" r="50%">
-          <Stop offset="0" stopColor="#ffffff" stopOpacity="0.18" />
-          <Stop offset="1" stopColor="#ffffff" stopOpacity="0" />
-        </RadialGradient>
         <RadialGradient id="jogSh" cx="50%" cy="50%" r="50%">
           <Stop offset="0" stopColor="#000000" stopOpacity="0.5" />
           <Stop offset="1" stopColor="#000000" stopOpacity="0" />
         </RadialGradient>
       </Defs>
       <Ellipse cx={c} cy={size * 0.72} rx={size * 0.4} ry={size * 0.28} fill="url(#jogSh)" />
-      <Ellipse cx={c} cy={size * 0.3} rx={size * 0.36} ry={size * 0.24} fill="url(#jogHi)" />
-      {/* Rim glint (top) + rim shadow (bottom) — fixed lighting, NOT orbiting. */}
-      <Ellipse cx={c} cy={size * 0.11} rx={size * 0.17} ry={size * 0.045} fill="#ffffff" opacity={0.16} />
       <Ellipse cx={c} cy={size * 0.89} rx={size * 0.19} ry={size * 0.05} fill="#000000" opacity={0.34} />
     </Svg>
   );
 }
 
-/** The finger dimple — the one PHYSICAL feature that shows the wheel's turn, so
- *  it (and its own concave shading) rotates with the wheel. */
+/** The finger dimple — a CONCAVE dish the finger sits DOWN into (owner
+ *  2026-08-05). Lit from the top: the near (top) inner wall is in shadow, light
+ *  pools on the far (lower) wall, and a thin lip catches light at the top edge —
+ *  the inverse of a raised bump. Rotates with the wheel. */
 function JogDimple({ size }: { size: number }) {
   const c = size / 2;
-  const dR = size * 0.11;
+  const dR = size * 0.12;
   // Finger dimple at 2 o'clock at rest (owner 2026-08-01). Orbit radius ~0.24·s;
   // 60° clockwise from top → (c + r·sin60, c − r·cos60).
   const dCx = c + size * 0.24 * 0.866;
@@ -92,20 +85,46 @@ function JogDimple({ size }: { size: number }) {
   return (
     <Svg width={size} height={size}>
       <Defs>
-        <RadialGradient id="jogDimple" cx="40%" cy="32%" r="70%">
-          <Stop offset="0" stopColor="#4c4c56" />
-          <Stop offset="0.5" stopColor="#141418" />
-          <Stop offset="1" stopColor="#000000" />
+        {/* Concave bowl: light pooled toward the far/lower wall, deep at the rim. */}
+        <RadialGradient id="jogDish" cx="50%" cy="66%" r="72%">
+          <Stop offset="0" stopColor="#3c3c45" />
+          <Stop offset="0.5" stopColor="#171719" />
+          <Stop offset="1" stopColor="#040405" />
         </RadialGradient>
       </Defs>
-      <Circle cx={dCx} cy={dCy} r={dR} fill="url(#jogDimple)" />
-      <Circle cx={dCx} cy={dCy} r={dR} stroke="#5a5a64" strokeWidth={size * 0.008} fill="none" opacity={0.7} />
-      <Circle cx={dCx - dR * 0.35} cy={dCy - dR * 0.4} r={dR * 0.3} fill="#ffffff" opacity={0.22} />
+      {/* Recessed outer ring — a hair of raised lip framing the dish. */}
+      <Circle cx={dCx} cy={dCy} r={dR + size * 0.007} fill="#0a0a0d" />
+      <Circle cx={dCx} cy={dCy} r={dR} fill="url(#jogDish)" />
+      {/* Near-rim occlusion — the top inner wall shades the bowl (depth). */}
+      <Ellipse cx={dCx} cy={dCy - dR * 0.52} rx={dR * 0.9} ry={dR * 0.44} fill="#000000" opacity={0.5} />
+      {/* Faint light pooling on the far inner wall. */}
+      <Ellipse cx={dCx} cy={dCy + dR * 0.48} rx={dR * 0.55} ry={dR * 0.24} fill="#ffffff" opacity={0.05} />
+      {/* Thin lip glint on the top outer edge (rim catching the light). */}
+      <Ellipse cx={dCx} cy={dCy - dR * 0.98} rx={dR * 0.5} ry={dR * 0.11} fill="#6a6a76" opacity={0.5} />
     </Svg>
   );
 }
 
-function JogStack({ size, rotate }: { size: number; rotate?: Rotate }) {
+/** The rotating dimple layer. When `spin` is provided (the overlay) the rotation
+ *  runs on the UI thread via Reanimated — so the dimple tracks the thumb with no
+ *  bridge lag (owner 2026-08-05). The small dial passes no spin and stays put. */
+function JogDimpleLayer({ size, spin }: { size: number; spin?: SharedValue<number> }) {
+  const style = useAnimatedStyle(() => ({ transform: [{ rotate: `${spin ? spin.value : 0}deg` }] }));
+  if (!spin) {
+    return (
+      <View style={StyleSheet.absoluteFill}>
+        <JogDimple size={size} />
+      </View>
+    );
+  }
+  return (
+    <Reanimated.View style={[StyleSheet.absoluteFill, style]}>
+      <JogDimple size={size} />
+    </Reanimated.View>
+  );
+}
+
+function JogStack({ size, spin }: { size: number; spin?: SharedValue<number> }) {
   return (
     <View style={{ width: size, height: size }}>
       <View style={StyleSheet.absoluteFill}>
@@ -115,16 +134,8 @@ function JogStack({ size, rotate }: { size: number; rotate?: Rotate }) {
       <View style={StyleSheet.absoluteFill}>
         <JogLighting size={size} />
       </View>
-      {/* Only the dimple rotates. */}
-      {rotate ? (
-        <Animated.View style={[StyleSheet.absoluteFill, { transform: [{ rotate }] }]}>
-          <JogDimple size={size} />
-        </Animated.View>
-      ) : (
-        <View style={StyleSheet.absoluteFill}>
-          <JogDimple size={size} />
-        </View>
-      )}
+      {/* Only the dimple rotates (UI-thread when driven by the overlay). */}
+      <JogDimpleLayer size={size} spin={spin} />
     </View>
   );
 }
@@ -144,7 +155,7 @@ export function JogDial({
 }: {
   size?: number;
   disabled?: boolean;
-  spin: Animated.Value;
+  spin: SharedValue<number>;
   onGrant: () => void;
   onStep: (dir: -1 | 1) => void;
   /** wasTap = a quick press with no turn (owner 2026-08-05): the host uses it to
@@ -170,9 +181,14 @@ export function JogDial({
   const accum = useRef(0);
   const inDead = useRef(false);
   const lastStepAt = useRef(0);
-  // Tap detection (owner 2026-08-05): a quick press that never stepped the wheel.
+  // Tap detection (owner 2026-08-05): a quick, STILL press that never stepped the
+  // wheel. The movement guard stops brief turn-attempts / accidental brushes from
+  // being read as taps (which made the overlay open/close sporadically).
   const grantAt = useRef(0);
   const stepped = useRef(false);
+  const moved = useRef(false);
+  const TAP_SLOP = 10; // px of finger travel still counts as a tap
+  const TAP_MS = 240; // max press duration for a tap
   const disabledRef = useRef(disabled);
   disabledRef.current = disabled;
   const onGrantRef = useRef(onGrant);
@@ -194,8 +210,8 @@ export function JogDial({
     onStepRef.current(dir);
     if (hapticsEnabled()) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid).catch(() => {});
   };
-  /** A tap = released quickly with no detent stepped. */
-  const releaseKind = () => !stepped.current && Date.now() - grantAt.current < 260;
+  /** A tap = released quickly, with no detent stepped AND the finger barely moved. */
+  const releaseKind = () => !stepped.current && !moved.current && Date.now() - grantAt.current < TAP_MS;
 
   const pan = useMemo(
     () =>
@@ -209,16 +225,18 @@ export function JogDial({
         onPanResponderGrant: (_e, g) => {
           grantAt.current = Date.now();
           stepped.current = false;
+          moved.current = false;
           onGrantRef.current();
           const a0 = angleAt(g.x0, g.y0);
           lastAngle.current = a0;
           accum.current = 0;
           lastStepAt.current = 0; // first detent applies immediately
           inDead.current = false;
-          spin.setValue(a0 + DIMPLE_OFFSET); // dimple appears exactly under the thumb
+          spin.value = a0 + DIMPLE_OFFSET; // dimple appears exactly under the thumb
         },
         onPanResponderMove: (_e, g) => {
           if (disabledRef.current) return;
+          if (Math.hypot(g.dx, g.dy) > TAP_SLOP) moved.current = true; // any real travel → not a tap
           const { x, y } = centerRef.current;
           // Right at the centre the angle is meaningless — hold steady and
           // re-anchor on the way out so it never snaps/flies.
@@ -228,7 +246,7 @@ export function JogDial({
           }
           const a = angleAt(g.moveX, g.moveY);
           // ABSOLUTE: the dimple is placed exactly at the finger's angle.
-          spin.setValue(a + DIMPLE_OFFSET);
+          spin.value = a + DIMPLE_OFFSET;
           if (inDead.current) {
             inDead.current = false;
             lastAngle.current = a; // re-anchor detents without a jump
@@ -273,19 +291,14 @@ export function JogDial({
  *  it stays fully visible and changes as you turn. Pointer-transparent (the
  *  finger stays on the small dial). Mount it at the screen root so it isn't
  *  clipped. */
-export function JogOverlay({ active, spin }: { active: boolean; spin: Animated.Value }) {
+export function JogOverlay({ active, spin }: { active: boolean; spin: SharedValue<number> }) {
   const { width, height } = useWindowDimensions();
   // 23% larger than before (owner 2026-08-01), still capped to fit the screen.
   const size = Math.round(Math.min(width * 0.62, height * 0.4) * 1.23);
-  const rotate = spin.interpolate({
-    inputRange: [-360, 360],
-    outputRange: ['-360deg', '360deg'],
-    extrapolate: 'extend',
-  });
   if (!active) return null;
   return (
     <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.overlay]}>
-      <JogStack size={size} rotate={rotate} />
+      <JogStack size={size} spin={spin} />
     </View>
   );
 }

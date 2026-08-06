@@ -619,13 +619,16 @@ function LoadingCount() {
 
 /** Full-width "loading the corpus" panel (owner 2026-08-05) — shown in the term
  *  list area while the ~21k definitions page in, so it never just looks paused. */
-function GlossaryLoading() {
+function GlossaryLoading({ count }: { count: number | null }) {
   const dots = useDots();
+  // Owner 2026-08-05: replace "this" with the cached daily total-term count (the
+  // same figure shown top-right), so the reader sees how many are on the way.
+  const subject = count != null ? `${count.toLocaleString()} terms` : 'this';
   return (
     <View style={styles.loadingBox}>
       <Text style={styles.loadingTitle}>Loading glossary{dots}</Text>
       <Text style={styles.loadingSub}>
-        Fetching the full term list and definitions — this can take a few seconds. Terms will appear here as soon as they arrive.
+        Fetching the full term list and definitions — {subject} can take a few seconds. Terms will appear here as soon as they arrive.
       </Text>
     </View>
   );
@@ -1494,7 +1497,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
             )
           }
           ListEmptyComponent={
-            loading ? <GlossaryLoading /> : <Text style={styles.empty}>No results for {search.trim() || filterLabel}</Text>
+            loading ? <GlossaryLoading count={cachedCount} /> : <Text style={styles.empty}>No results for {search.trim() || filterLabel}</Text>
           }
           extraData={[expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search]}
           renderItem={({ item }) => {

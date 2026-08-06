@@ -4,6 +4,7 @@
  * Calculation Chain banner, and the post-launch tiers listed honestly as
  * IN DEVELOPMENT ("coming soon") — never presented as available.
  */
+import { useCallback, useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,11 +13,28 @@ import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { COMING_SOON, SECTION_META, WORKSPACES } from './registry';
 import { useChainValue } from './chainStore';
+import { workflowStore } from './workflowStore';
+import type { Workflow } from './workflowModel';
 
 export function CalcLabScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const chain = useChainValue();
+
+  // Most-recent saved workflow (owner spec 2026-08-06) — quick jump on the home.
+  const [recent, setRecent] = useState<Workflow | null>(null);
+  const loadRecent = useCallback(() => {
+    void (async () => {
+      const [ids, list] = await Promise.all([workflowStore.getRecents(), workflowStore.listWorkflows()]);
+      const hit = ids.map((id) => list.find((w) => w.id === id)).find((w) => w != null);
+      setRecent(hit ?? list[0] ?? null);
+    })();
+  }, []);
+  useEffect(() => {
+    const unsub = navigation.addListener('focus', loadRecent);
+    loadRecent();
+    return unsub;
+  }, [navigation, loadRecent]);
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -59,6 +77,45 @@ export function CalcLabScreen() {
             matching input and tap USE.
           </Text>
         ) : null}
+
+        {/* CALCULATOR WORKFLOWS (owner spec 2026-08-06): templates + my
+            workflows + new + recent, one section. */}
+        <View style={{ gap: 8 }}>
+          <Text style={styles.sectionTitle}>CALCULATOR WORKFLOWS</Text>
+          <Text style={styles.caption}>
+            Run several calculators as one guided sequence — build your own or start from a template.
+          </Text>
+          <View style={styles.wfRow}>
+            <Pressable
+              style={[styles.wfBtn, styles.wfBtnGreen]}
+              onPress={() => navigation.navigate('CalcWorkflowEdit', {})}
+              accessibilityRole="button"
+              accessibilityLabel="New workflow"
+            >
+              <Text style={[styles.wfBtnText, { color: colors.green }]}>＋ NEW WORKFLOW</Text>
+            </Pressable>
+            <Pressable
+              style={styles.wfBtn}
+              onPress={() => navigation.navigate('CalcWorkflows')}
+              accessibilityRole="button"
+              accessibilityLabel="My workflows and templates"
+            >
+              <Text style={styles.wfBtnText}>MY WORKFLOWS & TEMPLATES ›</Text>
+            </Pressable>
+          </View>
+          {recent ? (
+            <Pressable
+              style={styles.card}
+              onPress={() => navigation.navigate('CalcWorkflowRun', { id: recent.id })}
+              accessibilityRole="button"
+              accessibilityLabel={`Run recent workflow ${recent.name}`}
+            >
+              <Text style={styles.caption}>RECENT · TAP TO RUN</Text>
+              <Text style={styles.cardName}>{recent.name}</Text>
+            </Pressable>
+          ) : null}
+        </View>
+
         {SECTION_META.map((sec) => {
           const items = WORKSPACES.filter((w) => w.section === sec.id);
           if (items.length === 0) return null;
@@ -113,6 +170,21 @@ const styles = StyleSheet.create({
   soonWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 7 },
   soonChip: { borderRadius: 7, borderWidth: 1, borderColor: '#232329', paddingHorizontal: 9, paddingVertical: 5, backgroundColor: '#101014' },
   soonText: { fontFamily: fonts.barlowMedium, fontSize: 11.5, color: '#5c5d66' },
+  // Calculator Workflows section (owner spec 2026-08-06).
+  wfRow: { flexDirection: 'row', gap: 8 },
+  wfBtn: {
+    flex: 1,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#3a3a3a',
+    backgroundColor: '#161616',
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  wfBtnGreen: { borderColor: 'rgba(55,224,95,.6)', backgroundColor: '#0c2012' },
+  wfBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textSecondary, textAlign: 'center' },
   // Symbol-key button (top-right).
   keyBtn: {
     flexDirection: 'row',

@@ -6,90 +6,24 @@
  * practical example, common mistakes, standards honesty block, glossary
  * terms, OS share sheet, and the Calculation Chain (SEND → / USE).
  */
-import { memo, useMemo, useState } from 'react';
-import { Pressable, Share, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useMemo, useState } from 'react';
+import { Pressable, Share, StyleSheet, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from '../../../features/keyboard/keyboardControllerSafe';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { LabChip } from '../LabShell';
-import type { CalcTable, CalcValues, FieldDef, OutputVal, Workspace } from './calcTypes';
-import { fmt, parseList, unitsFor } from './calcUnits';
+import type { CalcValues, FieldDef, OutputVal, Workspace } from './calcTypes';
+import { fmt, unitsFor } from './calcUnits';
 import { getWorkspace } from './registry';
 import { setChainValue, useChainValue } from './chainStore';
 import { useCalcSectionOpen } from './calcPrefs';
+// Shared field row + compute path (Phase 3, owner 2026-08-06) — the SAME
+// implementation the workflow runner uses. One panel, no fork.
+import { FieldRow, buildValues, defaultUnitIdx, formatOutput, runCompute } from './calcPanel';
 
 const SIGS = [3, 4, 5] as const;
-
-const FieldRow = memo(function FieldRow({
-  field,
-  raw,
-  unitIdx,
-  onText,
-  onCycleUnit,
-  onUseChain,
-  chainLabel,
-}: {
-  field: FieldDef;
-  raw: string;
-  unitIdx: number;
-  onText: (t: string) => void;
-  onCycleUnit: () => void;
-  onUseChain: (() => void) | null;
-  chainLabel: string | null;
-}) {
-  const [showHelp, setShowHelp] = useState(false);
-  const units = unitsFor(field.quantity, field.unitIds);
-  const unit = units[unitIdx % units.length];
-  const isList = field.quantity === 'list';
-  const baseVal = isList ? NaN : unit.toBase(parseFloat(raw));
-  const warn = field.warn && Number.isFinite(baseVal) && field.warn.test(baseVal) ? field.warn.msg : null;
-  return (
-    <View style={styles.fieldRow}>
-      <View style={styles.fieldHead}>
-        <Text style={styles.fieldName}>{field.name}</Text>
-        {field.help ? (
-          <Pressable onPress={() => setShowHelp((s) => !s)} hitSlop={8}>
-            <Text style={styles.helpGlyph}>ⓘ</Text>
-          </Pressable>
-        ) : null}
-      </View>
-      {showHelp && field.help ? <Text style={styles.helpText}>{field.help}</Text> : null}
-      <View style={styles.inputLine}>
-        <TextInput
-          style={styles.input}
-          value={raw}
-          onChangeText={onText}
-          placeholder={field.placeholder ?? (isList ? 'e.g. 8, 8, 4' : '0')}
-          placeholderTextColor="#4c4d55"
-          keyboardType={isList ? 'default' : 'numbers-and-punctuation'}
-          autoCorrect={false}
-        />
-        {!isList && units.length > 0 && units[0].label !== '' ? (
-          <Pressable style={styles.unitChip} onPress={onCycleUnit} disabled={units.length < 2}>
-            <Text style={styles.unitText}>{unit.label}{units.length > 1 ? ' ⇄' : ''}</Text>
-          </Pressable>
-        ) : null}
-      </View>
-      {onUseChain && chainLabel ? (
-        <Pressable style={styles.chainUse} onPress={onUseChain}>
-          <Text style={styles.chainUseText}>⤵ USE {chainLabel}</Text>
-        </Pressable>
-      ) : null}
-      {warn ? <Text style={styles.warnText}>⚠ {warn}</Text> : null}
-    </View>
-  );
-},
-// Skip re-render unless THIS field's own inputs changed — typing in one field
-// no longer re-renders every other field (owner 2026-08-05 perf fix).
-(prev, next) =>
-  prev.field === next.field &&
-  prev.raw === next.raw &&
-  prev.unitIdx === next.unitIdx &&
-  prev.chainLabel === next.chainLabel &&
-  (prev.onUseChain == null) === (next.onUseChain == null),
-);
 
 export function CalcWorkspaceScreen() {
   const insets = useSafeAreaInsets();
@@ -116,13 +50,6 @@ export function CalcWorkspaceScreen() {
   // screen). The "not available" fallback renders below, after every hook.
   const fn = ws ? ws.functions[Math.min(fnIdx, ws.functions.length - 1)] : null;
 
-  function defaultUnitIdx(f: FieldDef): number {
-    if (!f.defaultUnit) return 0;
-    const units = unitsFor(f.quantity, f.unitIds);
-    const i = units.findIndex((u) => u.id === f.defaultUnit);
-    return i < 0 ? 0 : i;
-  }
-
   // Stable field list — recomputes only when the workspace/function changes, so
   // typing doesn't rebuild it (and the values memo below stays cheap).
   const fields = useMemo<FieldDef[]>(() => {
@@ -130,46 +57,11 @@ export function CalcWorkspaceScreen() {
     return fn.inputs.map((k) => ws.fields.find((f) => f.key === k)).filter((f): f is FieldDef => !!f);
   }, [ws, fn]);
 
-  // Assemble base-unit values; null until every input parses.
-  const values: CalcValues | null = useMemo(() => {
-    const out: CalcValues = {};
-    for (const f of fields) {
-      const text = raw[f.key] ?? '';
-      if (f.quantity === 'list') {
-        const arr = parseList(text);
-        if (arr.length === 0) return null;
-        out[f.key] = arr;
-      } else {
-        const units = unitsFor(f.quantity, f.unitIds);
-        const u = units[(unitIdx[f.key] ?? defaultUnitIdx(f)) % units.length];
-        const x = u.toBase(parseFloat(text));
-        if (!Number.isFinite(x)) return null;
-        out[f.key] = x;
-      }
-    }
-    return out;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fields, raw, unitIdx]);
+  // Assemble base-unit values (shared path); null until every input parses.
+  const values: CalcValues | null = useMemo(() => buildValues(fields, raw, unitIdx), [fields, raw, unitIdx]);
 
   // Compute once per (function, values) — NOT on every keystroke's re-render.
-  const { outputs, steps, table, computeError } = useMemo<{
-    outputs: OutputVal[];
-    steps: string[];
-    table: CalcTable | null;
-    computeError: boolean;
-  }>(() => {
-    if (!fn || !values) return { outputs: [], steps: [], table: null, computeError: false };
-    try {
-      return {
-        outputs: fn.compute(values),
-        steps: fn.steps ? fn.steps(values) : [],
-        table: fn.table ? fn.table(values) : null,
-        computeError: false,
-      };
-    } catch {
-      return { outputs: [], steps: [], table: null, computeError: true };
-    }
-  }, [fn, values]);
+  const { outputs, steps, table, computeError } = useMemo(() => runCompute(fn, values), [fn, values]);
 
   if (!ws || !fn) {
     return (
@@ -190,10 +82,7 @@ export function CalcWorkspaceScreen() {
   };
 
   function formatOut(o: Extract<OutputVal, { value: number }>, extraIdx: number): string {
-    const units = unitsFor(o.quantity);
-    const startIdx = o.unit ? Math.max(0, units.findIndex((u) => u.id === o.unit)) : 0;
-    const u = units[(startIdx + (outUnit[o.label] ?? 0) + extraIdx) % units.length];
-    return `${fmt(u.fromBase(o.value), sig)}${u.label ? ' ' + u.label : ''}`;
+    return formatOutput(o, sig, (outUnit[o.label] ?? 0) + extraIdx);
   }
 
   return (
@@ -229,6 +118,22 @@ export function CalcWorkspaceScreen() {
           {fields.map((f) => {
             const units = unitsFor(f.quantity, f.unitIds);
             const canChain = chain && chain.quantity === f.quantity && f.quantity !== 'list';
+            // Chain USE rides the shared FieldRow's footer slot. Only rendered
+            // while a chain value is armed (footer stays undefined otherwise so
+            // the row's memo keeps skipping re-renders).
+            const footer = canChain ? (
+              <Pressable
+                style={styles.chainUse}
+                onPress={() => {
+                  const u = units[(unitIdx[f.key] ?? defaultUnitIdx(f)) % units.length];
+                  setRaw((r) => ({ ...r, [f.key]: fmt(u.fromBase(chain.baseValue), 6) }));
+                }}
+                accessibilityRole="button"
+                accessibilityLabel={`Use ${chain.label} from the calculation chain`}
+              >
+                <Text style={styles.chainUseText}>⤵ USE {chain.label}</Text>
+              </Pressable>
+            ) : undefined;
             return (
               <FieldRow
                 key={f.key}
@@ -237,15 +142,7 @@ export function CalcWorkspaceScreen() {
                 unitIdx={unitIdx[f.key] ?? defaultUnitIdx(f)}
                 onText={(t) => setRaw((r) => ({ ...r, [f.key]: t }))}
                 onCycleUnit={() => setUnitIdx((u) => ({ ...u, [f.key]: ((u[f.key] ?? defaultUnitIdx(f)) + 1) % units.length }))}
-                onUseChain={
-                  canChain
-                    ? () => {
-                        const u = units[(unitIdx[f.key] ?? defaultUnitIdx(f)) % units.length];
-                        setRaw((r) => ({ ...r, [f.key]: fmt(u.fromBase(chain.baseValue), 6) }));
-                      }
-                    : null
-                }
-                chainLabel={canChain ? chain.label : null}
+                footer={footer}
               />
             );
           })}

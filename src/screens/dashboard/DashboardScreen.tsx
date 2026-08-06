@@ -29,6 +29,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import { useSharedValue } from 'react-native-reanimated';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -332,7 +333,9 @@ export function DashboardScreen() {
   // opens a big mirror wheel and the SAME gesture turns it instantly (no Modal,
   // no tap-then-grab). The wheel spins endlessly (the topic index WRAPS — no
   // end-stops). jogActiveRef tells the card's swipe to stand down while held.
-  const jogSpin = useRef(new Animated.Value(0)).current;
+  // UI-thread rotation value (owner 2026-08-05): a Reanimated shared value so the
+  // overlay dimple tracks the thumb without the JS-Animated bridge lag.
+  const jogSpin = useSharedValue(0);
   const jogActiveRef = useRef(false);
   const [jogActive, setJogActive] = useState(false);
   // PARKED (owner 2026-08-05): a TAP opens the mirror wheel and leaves it open
@@ -1736,7 +1739,9 @@ const styles = StyleSheet.create({
   // A hair SMALLER than the debossed letter (owner 2026-08-01) so the sides of
   // the incised groove show around the white trace — scaled from its centre so
   // it stays aligned in the channel.
-  engTrace: { color: 'rgba(235,235,235,0.55)', transform: [{ scale: 0.96 }] },
+  // Nudged the fine white trace a hair LEFT then UP (owner 2026-08-05) — the
+  // smallest increment that reads, to seat it better in the debossed channel.
+  engTrace: { color: 'rgba(235,235,235,0.55)', transform: [{ translateX: -0.5 }, { translateY: -0.5 }, { scale: 0.96 }] },
   // Base floor style shared by all fills (color set per variant).
   // The letter FLOOR only — NO white text-shadow (owner 2026-08-01): the lit lip
   // is drawn once by engLight; a shadow here duplicated it and read as an extra
