@@ -11,7 +11,6 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { BrandLogo } from '../components/BrandLogo';
 import { colors, fonts } from '../theme/tokens';
 import { supabase } from '../lib/supabase';
-import { useCommercialMode } from '../features/commercial/EntitlementProvider';
 import type { RootStackParamList } from '../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Splash'>;
@@ -19,9 +18,6 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Splash'>;
 export function SplashScreen({ navigation }: Props) {
   const logoOpacity = useRef(new Animated.Value(0)).current;
   const textOpacity = useRef(new Animated.Value(0)).current;
-  // CM2 (Booth 2026-07-11): with commercialMode ON, signed-out users land on
-  // the pre-auth Landing (browse-first) instead of login-first Auth.
-  const commercialMode = useCommercialMode();
 
   useEffect(() => {
     Animated.timing(logoOpacity, { toValue: 1, duration: 1200, useNativeDriver: true }).start();
@@ -31,9 +27,12 @@ export function SplashScreen({ navigation }: Props) {
     const timer = setTimeout(async () => {
       const { data } = await supabase.auth.getSession();
       if (cancelled) return;
+      // Boot: session → Main (Dashboard), else → the finished login screen.
+      // The pre-auth commercial Landing is still WIP, so startup does NOT route
+      // to it (owner 2026-08-06) — reinstate that branch when Landing is done.
       navigation.reset({
         index: 0,
-        routes: [{ name: data.session ? 'Main' : commercialMode ? 'Landing' : 'Auth' }],
+        routes: [{ name: data.session ? 'Main' : 'Auth' }],
       });
       // Hold the intro ~2.5s before advancing (Booth 2026-07-11).
     }, 2500);
@@ -42,7 +41,7 @@ export function SplashScreen({ navigation }: Props) {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [navigation, logoOpacity, textOpacity, commercialMode]);
+  }, [navigation, logoOpacity, textOpacity]);
 
   return (
     <View style={styles.root}>

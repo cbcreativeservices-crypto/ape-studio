@@ -104,14 +104,11 @@ type EntitlementContextValue = {
 const EntitlementContext = createContext<EntitlementContextValue | null>(null);
 
 export function EntitlementProvider({ children }: { children: ReactNode }) {
-  // Commercial-first (owner 2026-08-06): institutional mode is retired — the app
-  // being built IS the commercial app, so dev defaults to commercialMode ON. The
-  // compile-time release default (FLAG_DEFAULTS.commercialMode) stays FALSE until
-  // commercial mode is declared complete; flip it to true then. The long-press-
-  // logo toggle still flips it at runtime if a legacy peek is ever needed.
-  const [commercialMode, setCommercialModeState] = useState<boolean>(
-    __DEV__ ? true : FLAG_DEFAULTS.commercialMode,
-  );
+  // Boot default (owner 2026-08-06): commercialMode stays OFF at startup so the
+  // app boots to the finished login screen, NOT the still-in-progress commercial
+  // Landing. Commercial mode must be completed first; flip the default here (or
+  // long-press the logo at runtime) to work on it.
+  const [commercialMode, setCommercialModeState] = useState<boolean>(FLAG_DEFAULTS.commercialMode);
   const [entitlement, setEntitlementState] = useState<Entitlement>('anonymous');
   // Once the owner force-picks a tier via the dev toggle, stop auto-deriving
   // from the session for the rest of this app run (so the toggle isn't clobbered
