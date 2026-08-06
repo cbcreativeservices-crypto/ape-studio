@@ -141,8 +141,9 @@ function SpectrogramViz({ viz, width, pattern, running, mode }: { viz: VizSpectr
 }
 
 function WaterfallViz({ viz, width, opts, running }: { viz: VizSpectralModule; width: number; opts: WaterfallOpts; running: boolean }) {
-  // Build-then-collapse loop clock — the flagship animation.
-  const phase = viz.usePhaseClock(running, 0.1);
+  // Build-then-collapse loop clock — REAL-TIME (owner 2026-08-05): the ridge
+  // crosses each 1-second floor marker at one real second.
+  const phase = viz.usePhaseClock(running, viz.WATERFALL_REALTIME_HZ);
   return <viz.WaterfallView width={width} height={330} opts={opts} phase={phase} animate />;
 }
 

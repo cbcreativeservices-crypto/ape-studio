@@ -671,6 +671,12 @@ const WF_DB_SPAN = WF_DB_TOP - WF_DB_FLOOR; // 72 dB of mountain height
 const WF_GROW_END = 0.4; // Phase A: impulse flash + grow backward
 const WF_HOLD_END = 0.58; // Phase B: hold the full range
 
+/** REAL-TIME clock rate for the waterfall (owner 2026-08-05): the GROW phase
+ *  spans WF_T_MAX real seconds, so the ridge crosses each 1-second floor marker
+ *  at exactly one real second — the displayed time matches wall-clock time.
+ *  (grow duration = WF_GROW_END / hz = WF_T_MAX → hz = WF_GROW_END / WF_T_MAX.) */
+export const WATERFALL_REALTIME_HZ = WF_GROW_END / WF_T_MAX; // ≈ 0.133 Hz
+
 function mixRgb(
   a: [number, number, number],
   b: [number, number, number],

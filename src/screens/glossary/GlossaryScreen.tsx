@@ -1279,6 +1279,10 @@ export function GlossaryScreen({ route, navigation }: Props) {
             const next = !ttsBeg;
             setTtsBeg(next);
             void AsyncStorage.setItem(TTS_MODE_KEY, next ? '1' : '0');
+            // Swapping BEG/ADV changes the open definition's length, which used
+            // to shove it off-screen (owner 2026-08-05). Re-anchor the focused
+            // term to the top so the definition just swaps in place.
+            if (!cardView && focusedId) scrollTermToTop(focusedId);
           }}
           hitSlop={8}
           accessibilityRole="button"
@@ -1397,7 +1401,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
             // Icon only — count removed; the total is shown in the top-right
             // "# Terms" readout (user request 2026-07-24).
             <View style={styles.chipIconWrap}>
-              <BookmarkIcon color={c} filled={filter === 'favorites'} size={15} />
+              <BookmarkIcon color={c} filled={filter === 'favorites'} size={17} />
             </View>
           )}
           onPress={() => {
@@ -2192,8 +2196,11 @@ const styles = StyleSheet.create({
   // minHeight + centering so the icon-only Bookmarks chip is the SAME height
   // as the text chips beside it — top/bottom edges align (owner 2026-07-29).
   chip: {
-    minHeight: 38,
-    paddingVertical: 10,
+    // Fixed height (owner 2026-08-05): a minHeight let the text chips grow a
+    // touch taller than the icon-only Bookmarks chip, so it looked short. A fixed
+    // height gives every filter button identical top/bottom edges.
+    height: 40,
+    paddingVertical: 0,
     paddingHorizontal: 14,
     borderRadius: 4.5,
     borderWidth: 1,

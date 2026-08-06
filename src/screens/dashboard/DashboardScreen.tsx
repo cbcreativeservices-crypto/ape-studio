@@ -335,6 +335,11 @@ export function DashboardScreen() {
   const jogSpin = useRef(new Animated.Value(0)).current;
   const jogActiveRef = useRef(false);
   const [jogActive, setJogActive] = useState(false);
+  // PARKED (owner 2026-08-05): a TAP opens the mirror wheel and leaves it open
+  // (instead of closing on release); a second tap — or a turn-and-release —
+  // commits and closes it.
+  const jogParkedRef = useRef(false);
+  const [jogParked, setJogParked] = useState(false);
   // CM6 (Booth 2026-07-11): commercialMode renders a PUBLIC course (seq order
   // from the seed) through this same screen; institutional path unchanged.
   const { commercialMode, caps } = useEntitlement();
@@ -958,7 +963,7 @@ export function DashboardScreen() {
                   instantly and the same gesture scrolls the topics (owner
                   2026-08-01). Endless spin: the index wraps. Hidden (but still
                   driving the gesture) while the full-size wheel is open. */}
-              <View style={[styles.topicJog, jogActive && styles.hidden]}>
+              <View style={[styles.topicJog, jogActive && !jogParked && styles.hidden]}>
                 <JogDial
                   size={96}
                   disabled={topics.length <= 1}
@@ -978,7 +983,16 @@ export function DashboardScreen() {
                     scrollIdxRef.current = next;
                     setScrollIdx(next);
                   }}
-                  onRelease={() => {
+                  onRelease={(wasTap) => {
+                    // First TAP → park the wheel open (stays visible). A second
+                    // tap, or any turn-and-release, commits and closes it.
+                    if (wasTap && !jogParkedRef.current) {
+                      jogParkedRef.current = true;
+                      setJogParked(true);
+                      return; // keep jogActive/overlay open
+                    }
+                    jogParkedRef.current = false;
+                    setJogParked(false);
                     jogActiveRef.current = false;
                     setJogActive(false);
                     goTo(scrollIdxRef.current); // commit → lower rack updates now

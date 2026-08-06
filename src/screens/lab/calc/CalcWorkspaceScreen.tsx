@@ -18,6 +18,7 @@ import type { CalcTable, CalcValues, FieldDef, OutputVal, Workspace } from './ca
 import { fmt, parseList, unitsFor } from './calcUnits';
 import { getWorkspace } from './registry';
 import { setChainValue, useChainValue } from './chainStore';
+import { useCalcSectionOpen } from './calcPrefs';
 
 const SIGS = [3, 4, 5] as const;
 
@@ -103,6 +104,11 @@ export function CalcWorkspaceScreen() {
   const [outUnit, setOutUnit] = useState<Record<string, number>>({});
   const [sig, setSig] = useState<number>(4);
   const [stepsOpen, setStepsOpen] = useState(false);
+  // Persisted collapse state for the bottom explanation sections (owner 2026-08-05).
+  const { open: secOpen, toggle: toggleSec } = useCalcSectionOpen();
+  // Once the user starts entering values, hide the intro copy to free the upper
+  // screen for inputs (owner 2026-08-05).
+  const started = Object.values(raw).some((v) => (v ?? '').trim() !== '');
 
   // Derivations run UNCONDITIONALLY (hooks must never sit behind an early
   // return — owner 2026-08-05 stability fix; the previous order put a useMemo
@@ -201,15 +207,22 @@ export function CalcWorkspaceScreen() {
           <Text style={styles.subtitle}>{ws.tagline}</Text>
         </View>
       </View>
-      <KeyboardAwareScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" bottomOffset={24}>
-        <Text style={styles.body}>{ws.intro}</Text>
 
-        <Text style={styles.eyebrow}>WHAT ARE YOU TRYING TO DETERMINE?</Text>
+      {/* Function picker — PINNED below the header so the top button row stays
+          visible while the user works (owner 2026-08-05). */}
+      <View style={styles.pinnedFns}>
+        <Text style={styles.eyebrowTight}>WHAT ARE YOU TRYING TO DETERMINE?</Text>
         <View style={styles.chipRow}>
           {ws.functions.map((f, i) => (
             <LabChip key={f.key} label={f.name.toUpperCase()} selected={i === fnIdx} onPress={() => { setFnIdx(i); setStepsOpen(false); }} />
           ))}
         </View>
+      </View>
+
+      <KeyboardAwareScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" bottomOffset={24}>
+        {/* Intro copy — hidden once the user begins entering values (owner
+            2026-08-05: frees the upper screen for inputs). */}
+        {!started ? <Text style={styles.body}>{ws.intro}</Text> : null}
 
         <View style={styles.panel}>
           {/* Inputs FIRST (owner 2026-08-05). */}
@@ -327,14 +340,26 @@ export function CalcWorkspaceScreen() {
           </Text>
         ) : null}
 
-        <Text style={styles.eyebrow}>WHY THIS MATTERS</Text>
-        <Text style={styles.body}>{ws.whyItMatters}</Text>
-        <Text style={styles.eyebrow}>PRACTICAL EXAMPLE</Text>
-        <Text style={styles.body}>{ws.example}</Text>
-        <Text style={styles.eyebrow}>COMMON MISTAKES</Text>
-        {ws.mistakes.map((m, i) => (
-          <Text key={i} style={styles.mistake}>• {m}</Text>
-        ))}
+        {/* Explanation sections — collapsible, default open, remembered per user
+            (owner 2026-08-05). Tap a heading to collapse/expand. */}
+        <Pressable onPress={() => toggleSec('why')} accessibilityRole="button" accessibilityState={{ expanded: secOpen.why }} accessibilityLabel="Why this matters">
+          <Text style={styles.eyebrow}>{secOpen.why ? '▾' : '▸'} WHY THIS MATTERS</Text>
+        </Pressable>
+        {secOpen.why ? <Text style={styles.body}>{ws.whyItMatters}</Text> : null}
+
+        <Pressable onPress={() => toggleSec('example')} accessibilityRole="button" accessibilityState={{ expanded: secOpen.example }} accessibilityLabel="Practical example">
+          <Text style={styles.eyebrow}>{secOpen.example ? '▾' : '▸'} PRACTICAL EXAMPLE</Text>
+        </Pressable>
+        {secOpen.example ? <Text style={styles.body}>{ws.example}</Text> : null}
+
+        <Pressable onPress={() => toggleSec('mistakes')} accessibilityRole="button" accessibilityState={{ expanded: secOpen.mistakes }} accessibilityLabel="Common mistakes">
+          <Text style={styles.eyebrow}>{secOpen.mistakes ? '▾' : '▸'} COMMON MISTAKES</Text>
+        </Pressable>
+        {secOpen.mistakes
+          ? ws.mistakes.map((m, i) => (
+              <Text key={i} style={styles.mistake}>• {m}</Text>
+            ))
+          : null}
         {ws.warnings ? (
           <View style={styles.warnBlock}>
             <Text style={styles.warnBlockText}>{ws.warnings}</Text>
@@ -370,6 +395,17 @@ const styles = StyleSheet.create({
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
   scroll: { padding: 16, paddingBottom: 34, gap: 10 },
   eyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.amber, marginTop: 6 },
+  // Pinned function-picker bar below the header (owner 2026-08-05).
+  pinnedFns: {
+    paddingHorizontal: 16,
+    paddingTop: 4,
+    paddingBottom: 8,
+    gap: 6,
+    borderBottomWidth: 1,
+    borderBottomColor: '#1e1e22',
+    backgroundColor: colors.screenBg,
+  },
+  eyebrowTight: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.amber },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },

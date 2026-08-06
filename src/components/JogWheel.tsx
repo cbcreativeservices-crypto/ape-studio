@@ -53,15 +53,12 @@ function JogBase({ size }: { size: number }) {
   );
 }
 
-/** Light features that rotate with the wheel: specular highlight (top), cast
- *  shadow (bottom), and the finger dimple. */
-function JogFeatures({ size }: { size: number }) {
+/** Environmental LIGHTING — FIXED (owner 2026-08-05): the specular highlight,
+ *  cast shadow, and rim glints are light landing on the wheel from a fixed
+ *  direction. Light does not orbit with the object, so these stay put while the
+ *  wheel turns — only the physical dimple below rotates. */
+function JogLighting({ size }: { size: number }) {
   const c = size / 2;
-  const dR = size * 0.11;
-  // Finger dimple at 2 o'clock at rest (owner 2026-08-01). Orbit radius ~0.24·s;
-  // 60° clockwise from top → (c + r·sin60, c − r·cos60).
-  const dCx = c + size * 0.24 * 0.866;
-  const dCy = c - size * 0.24 * 0.5;
   return (
     <Svg width={size} height={size}>
       <Defs>
@@ -73,18 +70,34 @@ function JogFeatures({ size }: { size: number }) {
           <Stop offset="0" stopColor="#000000" stopOpacity="0.5" />
           <Stop offset="1" stopColor="#000000" stopOpacity="0" />
         </RadialGradient>
+      </Defs>
+      <Ellipse cx={c} cy={size * 0.72} rx={size * 0.4} ry={size * 0.28} fill="url(#jogSh)" />
+      <Ellipse cx={c} cy={size * 0.3} rx={size * 0.36} ry={size * 0.24} fill="url(#jogHi)" />
+      {/* Rim glint (top) + rim shadow (bottom) — fixed lighting, NOT orbiting. */}
+      <Ellipse cx={c} cy={size * 0.11} rx={size * 0.17} ry={size * 0.045} fill="#ffffff" opacity={0.16} />
+      <Ellipse cx={c} cy={size * 0.89} rx={size * 0.19} ry={size * 0.05} fill="#000000" opacity={0.34} />
+    </Svg>
+  );
+}
+
+/** The finger dimple — the one PHYSICAL feature that shows the wheel's turn, so
+ *  it (and its own concave shading) rotates with the wheel. */
+function JogDimple({ size }: { size: number }) {
+  const c = size / 2;
+  const dR = size * 0.11;
+  // Finger dimple at 2 o'clock at rest (owner 2026-08-01). Orbit radius ~0.24·s;
+  // 60° clockwise from top → (c + r·sin60, c − r·cos60).
+  const dCx = c + size * 0.24 * 0.866;
+  const dCy = c - size * 0.24 * 0.5;
+  return (
+    <Svg width={size} height={size}>
+      <Defs>
         <RadialGradient id="jogDimple" cx="40%" cy="32%" r="70%">
           <Stop offset="0" stopColor="#4c4c56" />
           <Stop offset="0.5" stopColor="#141418" />
           <Stop offset="1" stopColor="#000000" />
         </RadialGradient>
       </Defs>
-      <Ellipse cx={c} cy={size * 0.72} rx={size * 0.4} ry={size * 0.28} fill="url(#jogSh)" />
-      <Ellipse cx={c} cy={size * 0.3} rx={size * 0.36} ry={size * 0.24} fill="url(#jogHi)" />
-      {/* Rim glint + rim shadow near the edges — sharper than the broad
-          shading; they ORBIT as the wheel turns, giving depth as it rotates. */}
-      <Ellipse cx={c} cy={size * 0.11} rx={size * 0.17} ry={size * 0.045} fill="#ffffff" opacity={0.16} />
-      <Ellipse cx={c} cy={size * 0.89} rx={size * 0.19} ry={size * 0.05} fill="#000000" opacity={0.34} />
       <Circle cx={dCx} cy={dCy} r={dR} fill="url(#jogDimple)" />
       <Circle cx={dCx} cy={dCy} r={dR} stroke="#5a5a64" strokeWidth={size * 0.008} fill="none" opacity={0.7} />
       <Circle cx={dCx - dR * 0.35} cy={dCy - dR * 0.4} r={dR * 0.3} fill="#ffffff" opacity={0.22} />
@@ -98,13 +111,18 @@ function JogStack({ size, rotate }: { size: number; rotate?: Rotate }) {
       <View style={StyleSheet.absoluteFill}>
         <JogBase size={size} />
       </View>
+      {/* Fixed lighting sits above the disc but does NOT rotate. */}
+      <View style={StyleSheet.absoluteFill}>
+        <JogLighting size={size} />
+      </View>
+      {/* Only the dimple rotates. */}
       {rotate ? (
         <Animated.View style={[StyleSheet.absoluteFill, { transform: [{ rotate }] }]}>
-          <JogFeatures size={size} />
+          <JogDimple size={size} />
         </Animated.View>
       ) : (
         <View style={StyleSheet.absoluteFill}>
-          <JogFeatures size={size} />
+          <JogDimple size={size} />
         </View>
       )}
     </View>
@@ -129,7 +147,9 @@ export function JogDial({
   spin: Animated.Value;
   onGrant: () => void;
   onStep: (dir: -1 | 1) => void;
-  onRelease: () => void;
+  /** wasTap = a quick press with no turn (owner 2026-08-05): the host uses it to
+   *  PARK the overlay open on a tap instead of closing on release. */
+  onRelease: (wasTap: boolean) => void;
 }) {
   // Angle is measured around the BIG wheel's centre (screen centre — the overlay
   // centres it) using PAGE coordinates, so the finger can trace the circle
@@ -150,6 +170,9 @@ export function JogDial({
   const accum = useRef(0);
   const inDead = useRef(false);
   const lastStepAt = useRef(0);
+  // Tap detection (owner 2026-08-05): a quick press that never stepped the wheel.
+  const grantAt = useRef(0);
+  const stepped = useRef(false);
   const disabledRef = useRef(disabled);
   disabledRef.current = disabled;
   const onGrantRef = useRef(onGrant);
@@ -167,9 +190,12 @@ export function JogDial({
     const now = Date.now();
     if (now - lastStepAt.current < MIN_STEP_MS) return; // throttle — slow enough to watch
     lastStepAt.current = now;
+    stepped.current = true; // any detent means this was a TURN, not a tap
     onStepRef.current(dir);
     if (hapticsEnabled()) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid).catch(() => {});
   };
+  /** A tap = released quickly with no detent stepped. */
+  const releaseKind = () => !stepped.current && Date.now() - grantAt.current < 260;
 
   const pan = useMemo(
     () =>
@@ -181,6 +207,8 @@ export function JogDial({
         onMoveShouldSetPanResponder: () => !disabledRef.current,
         onPanResponderTerminationRequest: () => false,
         onPanResponderGrant: (_e, g) => {
+          grantAt.current = Date.now();
+          stepped.current = false;
           onGrantRef.current();
           const a0 = angleAt(g.x0, g.y0);
           lastAngle.current = a0;
@@ -221,8 +249,8 @@ export function JogDial({
             step(-1);
           }
         },
-        onPanResponderRelease: () => onReleaseRef.current(),
-        onPanResponderTerminate: () => onReleaseRef.current(),
+        onPanResponderRelease: () => onReleaseRef.current(releaseKind()),
+        onPanResponderTerminate: () => onReleaseRef.current(false),
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
@@ -233,7 +261,7 @@ export function JogDial({
       {...pan.panHandlers}
       style={[styles.wrap, { width: size, height: size }, disabled && styles.disabled]}
       accessibilityRole="adjustable"
-      accessibilityLabel="Jog dial — hold and turn to change the topic"
+      accessibilityLabel="Jog dial — tap to open, then turn to change the topic"
     >
       <JogStack size={size} />
     </View>

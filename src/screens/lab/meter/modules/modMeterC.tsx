@@ -732,7 +732,9 @@ const CASES: DetectiveCase[] = [
   },
   {
     kind: 'ring',
-    visHz: 0.22,
+    // Waterfall case — REAL-TIME clock so the decay crosses each 1-second floor
+    // marker at one real second (owner 2026-08-05; = WF_GROW_END / WF_T_MAX).
+    visHz: 0.1333,
     what: {
       question: 'WHAT METER IS THIS?',
       options: [
@@ -930,8 +932,16 @@ export function DetectiveModule(p: MeterModuleProps) {
   const vm = useState(() => requireVizMeters())[0];
   const vs = useState(() => requireVizSpectral())[0];
   const [idx, setIdx] = useState(0);
+  // One question at a time within the current case (owner 2026-08-05).
+  const [step, setStep] = useState(0);
   const n = CASES.length;
   const kase = CASES[idx];
+  const specs = [kase.what, kase.shows, kase.problem, kase.fix];
+  const qCount = specs.length;
+  const goCase = (next: number) => {
+    setIdx(((next % n) + n) % n);
+    setStep(0); // new case → back to its first question
+  };
 
   return (
     <View style={{ gap: 12 }}>
@@ -946,7 +956,7 @@ export function DetectiveModule(p: MeterModuleProps) {
 
       <PanelCard>
         <Text style={styles.caseCounter}>
-          CASE {idx + 1} OF {n}
+          CASE {idx + 1} OF {n} · QUESTION {step + 1} OF {qCount}
         </Text>
         {vm && vs ? (
           <CaseHero vm={vm} vs={vs} width={p.width} focused={p.focused} kase={kase} />
@@ -954,26 +964,26 @@ export function DetectiveModule(p: MeterModuleProps) {
           <VizUnavailableCard />
         )}
         <View style={dstyles.chipRow}>
-          <LabChip
-            label="‹ PREV"
-            selected={false}
-            onPress={() => setIdx((idx + n - 1) % n)}
-            onLongPress={() => p.help('detective')}
-          />
-          <LabChip
-            label="NEXT CASE ›"
-            selected={false}
-            onPress={() => setIdx((idx + 1) % n)}
-            onLongPress={() => p.help('detective')}
-          />
+          <LabChip label="‹ PREV CASE" selected={false} onPress={() => goCase(idx - 1)} onLongPress={() => p.help('detective')} />
+          <LabChip label="NEXT CASE ›" selected={false} onPress={() => goCase(idx + 1)} onLongPress={() => p.help('detective')} />
         </View>
       </PanelCard>
 
-      {/* Keyed per case so every question resets when the deck advances. */}
-      <CheckQuestion key={`${idx}-what`} spec={kase.what} />
-      <CheckQuestion key={`${idx}-shows`} spec={kase.shows} />
-      <CheckQuestion key={`${idx}-problem`} spec={kase.problem} />
-      <CheckQuestion key={`${idx}-fix`} spec={kase.fix} />
+      {/* ONE question at a time (owner 2026-08-05) — keyed per case+step so it
+          resets cleanly. Move between the case's four questions below. */}
+      <CheckQuestion key={`${idx}-${step}`} spec={specs[step]} />
+      <View style={dstyles.chipRow}>
+        <LabChip
+          label="‹ PREVIOUS"
+          selected={false}
+          onPress={() => (step > 0 ? setStep(step - 1) : goCase(idx - 1))}
+        />
+        {step < qCount - 1 ? (
+          <LabChip label="NEXT QUESTION ›" selected={false} onPress={() => setStep(step + 1)} />
+        ) : (
+          <LabChip label="NEXT CASE ›" selected={false} onPress={() => goCase(idx + 1)} />
+        )}
+      </View>
 
       <CollapsibleSection title="WHY IT WORKS">
         <Text style={dstyles.caption}>
