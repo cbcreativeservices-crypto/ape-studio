@@ -115,22 +115,41 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
   // by a token refresh while they inspect a tier).
   const devOverrode = useRef(false);
 
-  // Session-driven BASE entitlement (owner 2026-08-06): a signed-in account is at
-  // least 'free' (save + album + achievements), while a no-account guest is
-  // 'anonymous'. This is the first real wiring to auth state; academy/lapsed are
-  // still previewed via the dev tier toggle (and become server-driven once the
-  // entitlements table is read). Only genuine sign-in/out flips it — never a
-  // silent token refresh — and the dev override always wins.
+  // Server-driven entitlement (owner 2026-08-06): a no-account guest is
+  // 'anonymous'; a signed-in account reads its real tier from the `entitlements`
+  // table (RLS `ent_self_read` scopes it to the caller) — an ACTIVE academy
+  // product ⇒ 'academy', an academy product that's inactive/expired ⇒ 'lapsed',
+  // otherwise ⇒ 'free' (save + album + achievements). Only genuine sign-in/out
+  // triggers a re-read — never a silent token refresh — and the dev tier toggle
+  // always wins once used.
   useEffect(() => {
     let alive = true;
-    const applyFromSession = (hasSession: boolean) => {
+    const deriveAndApply = async (hasSession: boolean) => {
       if (!alive || devOverrode.current) return;
-      setEntitlementState(hasSession ? 'free' : 'anonymous');
+      if (!hasSession) {
+        setEntitlementState('anonymous');
+        return;
+      }
+      let tier: Entitlement = 'free';
+      try {
+        const { data } = await supabase
+          .from('entitlements')
+          .select('product, status, expires_at')
+          .eq('product', 'academy');
+        const acad = (data ?? [])[0] as { status?: string; expires_at?: string | null } | undefined;
+        if (acad) {
+          const notExpired = !acad.expires_at || new Date(acad.expires_at).getTime() > Date.now();
+          tier = acad.status === 'active' && notExpired ? 'academy' : 'lapsed';
+        }
+      } catch {
+        // Network/RLS failure — fall back to a safe signed-in default.
+      }
+      if (alive && !devOverrode.current) setEntitlementState(tier);
     };
-    void supabase.auth.getSession().then(({ data }) => applyFromSession(!!data.session));
+    void supabase.auth.getSession().then(({ data }) => deriveAndApply(!!data.session));
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'INITIAL_SESSION') {
-        applyFromSession(!!session);
+        void deriveAndApply(!!session);
       }
     });
     return () => {
