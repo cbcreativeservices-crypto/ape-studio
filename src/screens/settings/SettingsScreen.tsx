@@ -287,7 +287,7 @@ export function SettingsScreen({ navigation }: Props) {
             <Text style={[styles.mono, { color: colors.amber }]}>›</Text>
           </Pressable>
           {/* Log out → sign out then bounce to Splash, which re-checks the
-              session and routes to Landing/Auth for the next user (Booth 2026-07-11). */}
+              session and routes to the login screen for the next user. */}
           <Pressable style={styles.row} onPress={confirmLogout} accessibilityRole="button" accessibilityLabel="Log out">
             <Text style={styles.rowLabel}>Log out</Text>
             <Text style={[styles.mono, { color: colors.amber }]}>SIGN OUT ›</Text>

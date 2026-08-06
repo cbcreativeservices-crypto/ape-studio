@@ -54,10 +54,7 @@ export type MainTabParamList = {
 export type RootStackParamList = {
   Splash: undefined;
   Auth: undefined; // S1 two-step register + sign-in (Milestone 2)
-  /** CM2 (Booth 2026-07-11): pre-auth landing — signed-out/anonymous entry
-   *  ONLY (commercialMode). NOT the bottom-nav Home destination. */
-  Landing: undefined;
-  /** CM2: anonymous glossary route (full anonymous rendering lands in CM4). */
+  /** Anonymous glossary route (commercial browse path). */
   PublicGlossary: undefined;
   /** CM7: academy upgrade paywall (UI only; store wiring pending ruling). */
   Paywall: undefined;

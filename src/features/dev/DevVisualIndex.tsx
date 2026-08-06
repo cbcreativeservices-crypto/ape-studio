@@ -162,7 +162,6 @@ const SCREENS: { section: string; items: ScreenEntry[] }[] = [
   {
     section: 'PRE-AUTH',
     items: [
-      { label: 'Landing', go: (n) => n.navigate('Landing') },
       { label: 'Public Glossary', go: (n) => n.navigate('PublicGlossary') },
     ],
   },

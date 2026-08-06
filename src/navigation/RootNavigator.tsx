@@ -77,7 +77,6 @@ import { MeterLabHomeScreen } from '../screens/lab/meter/MeterLabHomeScreen';
 import { MeterModuleScreen } from '../screens/lab/meter/MeterModuleScreen';
 import { FoundationsCourseScreen } from '../screens/lab/foundations/FoundationsCourseScreen';
 import { FoundationsPlaygroundScreen } from '../screens/lab/foundations/FoundationsPlaygroundScreen';
-import { LandingScreen } from '../screens/landing/LandingScreen';
 import { PublicGlossaryScreen } from '../screens/landing/PublicGlossaryScreen';
 import { PaywallScreen } from '../screens/commercial/PaywallScreen';
 import { MainTabs } from './MainTabs';
@@ -177,10 +176,7 @@ export function RootNavigator() {
       {/* Foundations of Sound — the Ear Lab's first module (course + sandbox). */}
       <Stack.Screen name="FoundationsCourse" component={FoundationsCourseScreen} />
       <Stack.Screen name="FoundationsPlayground" component={FoundationsPlaygroundScreen} />
-      {/* CM2 (commercialMode): pre-auth Landing + anonymous glossary. Only
-          reached when the flag is ON (Splash routes there); registering them
-          unconditionally changes nothing with the flag OFF. */}
-      <Stack.Screen name="Landing" component={LandingScreen} />
+      {/* Anonymous public glossary (commercial browse path). */}
       <Stack.Screen name="PublicGlossary" component={PublicGlossaryScreen} />
       {/* CM7: academy paywall (modal; UI only). */}
       <Stack.Screen name="Paywall" component={PaywallScreen} options={{ presentation: 'modal' }} />
