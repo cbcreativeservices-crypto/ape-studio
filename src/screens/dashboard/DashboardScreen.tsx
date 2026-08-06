@@ -322,6 +322,9 @@ export function DashboardScreen() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<string | null>(null);
+  // A persisted session with no student record: self-healed to the guest view,
+  // with a non-blocking banner offering to finish registration or sign out.
+  const [strandedSession, setStrandedSession] = useState(false);
   const [loading, setLoading] = useState(true);
   const [topicIdx, setTopicIdx] = useState(0);
   // During a jog scroll, the TOP container previews this index while the lower
@@ -429,6 +432,7 @@ export function DashboardScreen() {
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
+    setStrandedSession(false);
     try {
       // Reconnect path (Code brief §6): flush any offline quiz submissions
       // first so the fetched progress reflects the finalized attempt.
@@ -450,13 +454,36 @@ export function DashboardScreen() {
       const { data: sessData } = await supabase.auth.getSession();
       const isGuest = !sessData.session;
       const guestFreeGs = enrolledGsRef.current.filter(isFreeEnrollGs);
-      const d = isGuest
-        ? await fetchEnrollmentDashboard(guestFreeGs.length > 0 ? guestFreeGs : [...FREE_ENROLL_GS])
-        : viewModeRef.current === 'enrollment' && enrolledGsRef.current.length > 0
-          ? await fetchEnrollmentDashboard(enrolledGsRef.current)
-          : commercialMode
-            ? await fetchCommercialDashboard((await getLastPublicCourse()) ?? 1, caps)
-            : await fetchDashboard();
+      const guestFetch = () =>
+        fetchEnrollmentDashboard(guestFreeGs.length > 0 ? guestFreeGs : [...FREE_ENROLL_GS]);
+      let d: DashboardData;
+      if (isGuest) {
+        d = await guestFetch();
+      } else {
+        try {
+          d =
+            viewModeRef.current === 'enrollment' && enrolledGsRef.current.length > 0
+              ? await fetchEnrollmentDashboard(enrolledGsRef.current)
+              : commercialMode
+                ? await fetchCommercialDashboard((await getLastPublicCourse()) ?? 1, caps)
+                : await fetchDashboard();
+        } catch (e: any) {
+          // SELF-HEAL (owner 2026-08-06): a session persisted on-device whose
+          // account has no student record throws user_not_found on EVERY cold
+          // boot — Splash sees the session, routes to Main, and the Study tab
+          // dead-ended on a retry loop that no restart could clear. Instead of
+          // stranding the user, fall back to the guest free-topics view so the
+          // app is immediately usable. The session is left intact so a genuine
+          // new signup can still finish via Complete Registration, and a stale
+          // orphan can sign out via Back to Login.
+          if (e?.message === 'user_not_found') {
+            setStrandedSession(true);
+            d = await guestFetch();
+          } else {
+            throw e;
+          }
+        }
+      }
 
       // Merge the device-local progress mirror OVER the server rows for DISPLAY
       // (LED + START→CONTINUE), so the dashboard reacts to work the user just
@@ -919,6 +946,37 @@ export function DashboardScreen() {
             </Pressable>
           }
         />
+
+        {/* Stranded-session banner (owner 2026-08-06): shown when a persisted
+            session had no student record and we self-healed to the free view.
+            Non-blocking — the free topics are usable above/below it. */}
+        {strandedSession ? (
+          <View style={styles.strandedBanner}>
+            <Text style={styles.strandedText}>
+              You’re signed in, but this account isn’t linked to a student record yet — showing the free
+              topics. Finish setting up to save progress, or sign out to switch accounts.
+            </Text>
+            <View style={styles.strandedRow}>
+              <StudioButton
+                label="Complete Registration"
+                variant="primary"
+                small
+                onPress={() => (navigation as any).navigate('Auth')}
+              />
+              <StudioButton
+                label="Sign Out"
+                variant="secondary"
+                small
+                onPress={() => {
+                  void supabase.auth
+                    .signOut()
+                    .catch(() => {})
+                    .then(() => (navigation as any).navigate('Auth'));
+                }}
+              />
+            </View>
+          </View>
+        ) : null}
 
         {/* The COURSE ⇄ MY ENROLLMENT toggle was removed (user request
             2026-07-23) — the dashboard follows the enrollment list, adjusted via
@@ -1478,6 +1536,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   scroll: { padding: 14, paddingBottom: 16, gap: 10 },
+  // Stranded-session self-heal banner.
+  strandedBanner: {
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255,180,0,.5)',
+    backgroundColor: 'rgba(255,180,0,.08)',
+    padding: 12,
+    gap: 10,
+  },
+  strandedText: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 19, color: colors.textSecondary },
+  strandedRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
 
   // Topic term-list sheet (Booth 2026-07-18).
   termsBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,.7)', justifyContent: 'flex-end' },
