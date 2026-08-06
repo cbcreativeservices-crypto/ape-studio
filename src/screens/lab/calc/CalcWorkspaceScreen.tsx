@@ -22,6 +22,7 @@ import { useCalcSectionOpen } from './calcPrefs';
 // Shared field row + compute path (Phase 3, owner 2026-08-06) — the SAME
 // implementation the workflow runner uses. One panel, no fork.
 import { FieldRow, buildValues, defaultUnitIdx, formatOutput, runCompute } from './calcPanel';
+import { buildReportFromCalc, reportToText } from './calcReport';
 
 const SIGS = [3, 4, 5] as const;
 
@@ -73,12 +74,29 @@ export function CalcWorkspaceScreen() {
 
   const shareResult = () => {
     if (!values) return;
-    const lines = outputs.map((o) =>
-      'value' in o ? `${o.label}: ${formatOut(o, 0)}` : `${o.label}: ${o.text}`,
+    const inputsForReport = fields.map((f) => {
+      const units = unitsFor(f.quantity, f.unitIds);
+      const u = units[(unitIdx[f.key] ?? defaultUnitIdx(f)) % Math.max(1, units.length)];
+      return { label: f.name, value: raw[f.key] ?? '', unit: u?.label || undefined };
+    });
+    const resultsForReport = outputs.map((o) =>
+      'value' in o
+        ? { label: o.label, formattedValue: formatOut(o, 0), isText: false }
+        : { label: o.label, formattedValue: o.text, isText: true },
     );
-    Share.share({
-      message: `${ws.name} — ${fn.name}\n${lines.join('\n')}\n(Pro Audio Training Academy · Calculator Lab)`,
-    }).catch(() => {});
+    const report = buildReportFromCalc({
+      workspaceName: ws.name,
+      functionName: fn.name,
+      reportPrefix: ws.reportPrefix,
+      primaryResultLabel: fn.primaryResultLabel,
+      inputs: inputsForReport,
+      results: resultsForReport,
+      // fn.note + the workspace standards/honesty block; buildReportFromCalc
+      // routes any safety/limitation wording into WARNINGS automatically.
+      notes: [fn.note, ws.warnings].filter((x): x is string => !!x),
+      createdAtISO: new Date().toISOString(),
+    });
+    Share.share({ message: reportToText(report) }).catch(() => {});
   };
 
   function formatOut(o: Extract<OutputVal, { value: number }>, extraIdx: number): string {

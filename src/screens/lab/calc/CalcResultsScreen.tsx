@@ -16,28 +16,15 @@ import type { RootStackParamList } from '../../../navigation/types';
 import type { SavedRunSummary } from './workflowModel';
 import { workflowStore } from './workflowStore';
 import * as shareImage from './shareImage';
+import { buildReportFromSummary, reportToText } from './calcReport';
+import { ReportCard } from './ReportCard';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
-/** The shared formatted-text layout (same shape the runner shares). */
+/** The shared formatted-text layout — now the professional report (owner spec
+ *  2026-08-06). Kept as `summaryToText` so the runner's call site is unchanged. */
 export function summaryToText(s: SavedRunSummary): string {
-  return [
-    'PRO AUDIO TRAINING ACADEMY',
-    'Calculator Workflow Results',
-    `Workflow: ${s.workflowName}`,
-    ...(s.projectName ? [`Project: ${s.projectName}`] : []),
-    `Date: ${new Date(s.completedAt).toLocaleString()}`,
-    '',
-    'INPUTS',
-    ...s.inputs.map((i) => `${i.label}: ${i.value}${i.unit ? ' ' + i.unit : ''}${i.source !== 'Entered manually' ? `  (${i.source})` : ''}`),
-    '',
-    'RESULTS',
-    ...s.results.map((r) => `${r.label}: ${r.value}  [${r.step}]`),
-    '',
-    'NOTES',
-    ...s.warnings.map((w) => `- ${w}`),
-    ...(s.notes ? ['', s.notes] : []),
-  ].join('\n');
+  return reportToText(buildReportFromSummary(s));
 }
 
 export function CalcResultsScreen() {
@@ -104,39 +91,9 @@ export function CalcResultsScreen() {
 
                 {open ? (
                   <>
-                    {/* Branded capture card — every interactive control stays
-                        outside it (share-as-image excludes buttons). */}
-                    <View ref={shareRef} collapsable={false} style={styles.shareCard}>
-                      <Text style={styles.brandHead}>PRO AUDIO TRAINING ACADEMY</Text>
-                      <Text style={styles.brandSub}>
-                        {r.workflowName}{r.projectName ? ` · ${r.projectName}` : ''} · {new Date(r.completedAt).toLocaleString()}
-                      </Text>
-                      <Text style={styles.sectionTitle}>INPUTS</Text>
-                      {r.inputs.map((i, k) => (
-                        <View key={k} style={styles.sumRow}>
-                          <Text style={styles.sumLabel}>{i.label}</Text>
-                          <View style={{ flex: 1 }}>
-                            <Text style={styles.sumValue}>{i.value}{i.unit ? ` ${i.unit}` : ''}</Text>
-                            {i.source !== 'Entered manually' ? <Text style={styles.srcLabel}>{i.source}</Text> : null}
-                          </View>
-                        </View>
-                      ))}
-                      <Text style={styles.sectionTitle}>RESULTS</Text>
-                      {r.results.map((x, k) => (
-                        <View key={k} style={styles.sumRow}>
-                          <Text style={styles.sumLabel}>{x.label}</Text>
-                          <View style={{ flex: 1 }}>
-                            <Text style={styles.sumResult}>{x.value}</Text>
-                            <Text style={styles.srcLabel}>{x.step}</Text>
-                          </View>
-                        </View>
-                      ))}
-                      <Text style={styles.sectionTitle}>NOTES & WARNINGS</Text>
-                      {r.warnings.map((w, k) => (
-                        <Text key={k} style={styles.sumWarn}>⚠ {w}</Text>
-                      ))}
-                      {r.notes ? <Text style={styles.caption}>{r.notes}</Text> : null}
-                    </View>
+                    {/* Shared professional report card — captured for SHARE AS
+                        IMAGE; every interactive control stays outside it. */}
+                    <ReportCard ref={shareRef} report={buildReportFromSummary(r)} />
                     <View style={styles.actionRow}>
                       <ActionBtn label="SHARE AS TEXT" onPress={() => Share.share({ message: summaryToText(r) }).catch(() => {})} />
                       {shareImage.isAvailable() ? <ActionBtn label="SHARE AS IMAGE" onPress={() => void shareAsImage()} /> : null}

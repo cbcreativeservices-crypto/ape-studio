@@ -38,6 +38,8 @@ import { WORKFLOW_LIMITS } from './workflowModel';
 import { workflowStore } from './workflowStore';
 import { WORKFLOW_TEMPLATES, resolveStep, validateWorkflow } from './workflowCatalog';
 import { summaryToText } from './CalcResultsScreen';
+import { buildReportFromSummary } from './calcReport';
+import { ReportCard } from './ReportCard';
 import * as shareImage from './shareImage';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
@@ -594,42 +596,9 @@ export function CalcWorkflowRunScreen() {
           )
         ) : summary ? (
           <>
-            {/* RESULTS — the branded share card (captured for SHARE AS IMAGE;
-                every interactive control lives OUTSIDE it). */}
-            <View ref={shareRef} collapsable={false} style={styles.shareCard}>
-              <Text style={styles.brandHead}>PRO AUDIO TRAINING ACADEMY</Text>
-              <Text style={styles.brandSub}>Calculator Workflow Results</Text>
-              <View style={styles.panel}>
-                <Text style={styles.resultEyebrow}>{summary.workflowName.toUpperCase()}</Text>
-                {summary.projectName ? <Text style={styles.projectLabel}>PROJECT · {summary.projectName.toUpperCase()}</Text> : null}
-                <Text style={styles.caption}>{new Date(summary.completedAt).toLocaleString()}</Text>
-              </View>
-              <Text style={styles.sectionTitle}>INPUTS</Text>
-              {summary.inputs.map((i, k) => (
-                <View key={k} style={styles.sumRow}>
-                  <Text style={styles.sumLabel}>{i.label}</Text>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.sumValue}>{i.value}{i.unit ? ` ${i.unit}` : ''}</Text>
-                    {i.source !== 'Entered manually' ? <Text style={styles.srcLabel}>{i.source}</Text> : null}
-                  </View>
-                </View>
-              ))}
-              <Text style={styles.sectionTitle}>RESULTS</Text>
-              {summary.results.map((r, k) => (
-                <View key={k} style={styles.sumRow}>
-                  <Text style={styles.sumLabel}>{r.label}</Text>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.sumResult}>{r.value}</Text>
-                    <Text style={styles.srcLabel}>{r.step}</Text>
-                  </View>
-                </View>
-              ))}
-              <Text style={styles.sectionTitle}>NOTES & WARNINGS</Text>
-              {summary.warnings.map((w, k) => (
-                <Text key={k} style={styles.sumWarn}>⚠ {w}</Text>
-              ))}
-              {summary.notes ? <Text style={styles.caption}>{summary.notes}</Text> : null}
-            </View>
+            {/* RESULTS — the shared professional report card (captured for
+                SHARE AS IMAGE; every interactive control lives OUTSIDE it). */}
+            <ReportCard ref={shareRef} report={buildReportFromSummary(summary)} />
 
             {/* User notes — typed here (outside the capture), rendered into the
                 card + shared text + saved result. */}

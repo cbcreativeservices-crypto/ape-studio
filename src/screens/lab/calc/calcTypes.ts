@@ -64,6 +64,10 @@ export type CalcFunction = {
   steps?: (v: CalcValues) => string[];
   /** Optional result table (room modes, tap plans, repeat schedules…). */
   table?: (v: CalcValues) => CalcTable;
+  /** Shared-report presentation only (owner 2026-08-06). The output LABEL to
+   *  headline as the PRIMARY RESULT; omit to default to the first numeric
+   *  output. Never affects computation. */
+  primaryResultLabel?: string;
 };
 
 export type CalcSectionId =
@@ -83,6 +87,9 @@ export type Workspace = {
   name: string;
   tagline: string;
   section: CalcSectionId;
+  /** Shared-report presentation only (owner 2026-08-06): short prefix for the
+   *  report id (e.g. 'SPL'); defaults to name initials when omitted. */
+  reportPrefix?: string;
   /** What this workspace is, plain language (top of screen). */
   intro: string;
   whyItMatters: string;

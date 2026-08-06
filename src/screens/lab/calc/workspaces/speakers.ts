@@ -18,6 +18,7 @@ const WS_SPEAKERPOWER: Workspace = {
   name: 'Loudspeaker SPL & Amplifier Power',
   tagline: 'Sensitivity · power · distance · headroom → will it be loud enough?',
   section: 'speakers',
+  reportPrefix: 'SPL',
   intro:
     'The feasibility math of loudness: a speaker’s sensitivity rating, the power you feed it, ' +
     'and the distance to the listener predict SPL — or, run backwards, tell you how much ' +
@@ -98,6 +99,7 @@ const WS_SPEAKERPOWER: Workspace = {
       inputs: ['sens', 'power', 'dist', 'headroom', 'nspk'],
       formula: 'SPL = sens + 10·log10(P) − 20·log10(d) − headroom',
       note: 'Free-field inverse-square model; rooms add reverberant support this does not count.',
+      primaryResultLabel: 'PREDICTED SPL (one speaker, after headroom)',
       compute: (v) => {
         const sens = n(v.sens);
         const p = n(v.power);
