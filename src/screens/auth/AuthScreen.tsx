@@ -29,6 +29,7 @@ import { StudioButton } from '../../components/StudioButton';
 import { TextField } from '../../components/TextField';
 import { colors, fonts, spacing } from '../../theme/tokens';
 import { EMAIL_RE, passwordIssue, resetPassword, signIn } from '../../features/auth/api';
+import { supabase } from '../../lib/supabase';
 import { COPY } from '../../lib/copy';
 import { registerCommercialUser } from '../../features/commercial/commercialAuth';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
@@ -58,8 +59,20 @@ export function AuthScreen({ navigation }: Props) {
 
   const toHome = () => navigation.reset({ index: 0, routes: [{ name: 'Main', params: { screen: 'Home' } }] });
 
-  /* GUEST MODE — free, no account, nothing saved. */
-  const enterGuest = () => {
+  /* GUEST MODE — free, no account, nothing saved. Signs out any lingering
+   * session FIRST (owner bug 2026-08-06): the Dashboard keys its guest-safe
+   * load path on the REAL session, so a stale broken session (e.g. an account
+   * with no student record) following the guest into Main recreated the
+   * load-error retry loop forever. */
+  const enterGuest = async () => {
+    setBusy(true);
+    try {
+      await supabase.auth.signOut();
+    } catch {
+      // Offline sign-out failure is fine — local session is still cleared.
+    } finally {
+      setBusy(false);
+    }
     setEntitlement('anonymous');
     toHome();
   };

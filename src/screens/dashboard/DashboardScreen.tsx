@@ -762,29 +762,29 @@ export function DashboardScreen() {
             />
           </View>
         )}
-        {/* Escape hatch (owner 2026-08-06): a guest / not-signed-in user lands
-            here because there's no enrolled course to load, and Retry only
-            re-runs the same failing fetch — a dead-end loop with no way back to
-            the login screen. Give them an explicit exit. Signed-in users
-            (free/academy/lapsed) keep Retry as the primary action for a
-            transient failure and reach other areas via the tab bar, so this is
-            shown only for the anonymous guest, and not when Complete
-            Registration already offers the same path. */}
-        {entitlement === 'anonymous' && errorCode !== 'user_not_found' && (
-          <View style={{ width: 220 }}>
-            <StudioButton
-              label="Back to Login"
-              variant="primary"
-              small
-              onPress={() => (navigation as any).navigate('Auth')}
-            />
-          </View>
-        )}
-        {viewMode === 'enrollment' && (
-          <View style={{ width: 220 }}>
-            <StudioButton label="View course instead" variant="secondary" small onPress={() => switchMode('course')} />
-          </View>
-        )}
+        {/* Universal escape hatch (owner 2026-08-06): every failure that lands
+            here used to offer only Retry — which re-runs the same failing
+            fetch. When the CAUSE is a stale/broken session (e.g. an account
+            with no student record persisted on-device), that loop can never
+            resolve, so this exit SIGNS OUT first (clearing the poison session)
+            and then returns to the login screen. Complete Registration above
+            keeps the session on purpose — registration links the student
+            record to that signed-in account.
+            ("View course instead" removed from the error state — it switched
+            mode but kept the same broken session, so it just bugged out.) */}
+        <View style={{ width: 220 }}>
+          <StudioButton
+            label="Back to Login"
+            variant={errorCode === 'user_not_found' ? 'secondary' : 'primary'}
+            small
+            onPress={() => {
+              void supabase.auth
+                .signOut()
+                .catch(() => {})
+                .then(() => (navigation as any).navigate('Auth'));
+            }}
+          />
+        </View>
         <View style={{ width: 180 }}>
           <StudioButton label="Retry" variant="secondary" small onPress={load} />
         </View>

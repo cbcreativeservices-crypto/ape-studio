@@ -23,8 +23,11 @@ export const DEV_BYPASS = {
   /** Entitlement caps forced to full academy: paywalls/veils/upsells hidden. */
   bypassAcademyLocks: true,
   /** Every screen intro/tutorial + coach mark shows on EVERY entry (first-time
-   *  experience each visit), ignoring the persisted seen/retire counters. */
-  alwaysShowIntros: true,
+   *  experience each visit), ignoring the persisted seen/retire counters.
+   *  OFF (owner 2026-08-06): the "Welcome to Pro Audio Training Academy" popup
+   *  kept reappearing on every visit to the login screen during device testing
+   *  — with this off, intros show once and honor the persisted seen flag. */
+  alwaysShowIntros: false,
   /** Intro/welcome READ-TIMERS forced to zero: every intro popup is instantly
    *  dismissable instead of holding the reader for its governed dwell time
    *  (owner 2026-07-29, "for now" — logging/screen-sweep aid).
