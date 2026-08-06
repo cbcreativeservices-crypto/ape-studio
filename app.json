@@ -44,9 +44,12 @@
         {
           "microphonePermission": "Used to measure sound levels in the measurement tools, and — only when you tap the mic — to dictate a glossary search. Audio is processed on this device and is not recorded or uploaded.",
           "speechRecognitionPermission": "Used only when you tap the mic to dictate a glossary search, to turn your speech into search text.",
-          "androidSpeechServicePackages": ["com.google.android.googlequicksearchbox"]
+          "androidSpeechServicePackages": [
+            "com.google.android.googlequicksearchbox"
+          ]
         }
-      ]
+      ],
+      "expo-sharing"
     ],
     "extra": {
       "eas": {

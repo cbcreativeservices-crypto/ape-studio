@@ -21,7 +21,7 @@
  * image arrives with the next native build (needs a view-capture module).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AccessibilityInfo, Alert, Pressable, Share, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, Alert, Pressable, Share, StyleSheet, Text, TextInput, View } from 'react-native';
 import { KeyboardAwareScrollView } from '../../../features/keyboard/keyboardControllerSafe';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -38,6 +38,7 @@ import { WORKFLOW_LIMITS } from './workflowModel';
 import { workflowStore } from './workflowStore';
 import { WORKFLOW_TEMPLATES, resolveStep, validateWorkflow } from './workflowCatalog';
 import { summaryToText } from './CalcResultsScreen';
+import * as shareImage from './shareImage';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -88,6 +89,8 @@ export function CalcWorkflowRunScreen() {
   }, []);
   const runRef = useRef<WorkflowRun | null>(null);
   runRef.current = run;
+  // The share-card view captured for SHARE AS IMAGE (buttons live outside it).
+  const shareRef = useRef<View | null>(null);
 
   // ---- Load workflow (saved or template) + resume/create the run -----------
   useEffect(() => {
@@ -151,6 +154,13 @@ export function CalcWorkflowRunScreen() {
     });
     return unsub;
   }, [navigation, persist]);
+  // Debounced auto-persist (spec: closing the app mid-run must not lose the
+  // draft) — a force-quit loses at most the last second of typing.
+  useEffect(() => {
+    if (!run || !limits.canResume) return;
+    const t = setTimeout(() => void persist(), 1000);
+    return () => clearTimeout(t);
+  }, [run, limits.canResume, persist]);
 
   // ---- The compute chain: every step, in order, imports resolved LIVE ------
   const computed: StepComputed[] = useMemo(() => {
@@ -346,6 +356,7 @@ export function CalcWorkflowRunScreen() {
       inputs,
       results,
       warnings: [...warnings],
+      notes: run.notes?.trim() || undefined,
     };
   }, [workflow, run, idx, n, computed, stepName]);
 
@@ -353,6 +364,19 @@ export function CalcWorkflowRunScreen() {
   const shareText = () => {
     if (!summary) return;
     Share.share({ message: summaryToText(summary) }).catch(() => {});
+  };
+
+  /** SHARE AS IMAGE (Phase 5): capture the branded summary card as a PNG and
+   *  open the native share sheet. Honest fallback when the native capture
+   *  modules aren't in this installed build yet. */
+  const shareAsImage = async () => {
+    const ok = await shareImage.captureAndShare(shareRef.current, 'Workflow results');
+    if (!ok) {
+      Alert.alert(
+        'Image sharing unavailable',
+        'Sharing as an image needs the next app build. SHARE AS TEXT works now.',
+      );
+    }
   };
 
   const saveResult = async () => {
@@ -570,39 +594,61 @@ export function CalcWorkflowRunScreen() {
           )
         ) : summary ? (
           <>
-            {/* RESULTS — header · inputs · results · notes/warnings · actions. */}
-            <View style={styles.panel}>
-              <Text style={styles.resultEyebrow}>{summary.workflowName.toUpperCase()}</Text>
-              {summary.projectName ? <Text style={styles.projectLabel}>PROJECT · {summary.projectName.toUpperCase()}</Text> : null}
-              <Text style={styles.caption}>{new Date(summary.completedAt).toLocaleString()}</Text>
+            {/* RESULTS — the branded share card (captured for SHARE AS IMAGE;
+                every interactive control lives OUTSIDE it). */}
+            <View ref={shareRef} collapsable={false} style={styles.shareCard}>
+              <Text style={styles.brandHead}>PRO AUDIO TRAINING ACADEMY</Text>
+              <Text style={styles.brandSub}>Calculator Workflow Results</Text>
+              <View style={styles.panel}>
+                <Text style={styles.resultEyebrow}>{summary.workflowName.toUpperCase()}</Text>
+                {summary.projectName ? <Text style={styles.projectLabel}>PROJECT · {summary.projectName.toUpperCase()}</Text> : null}
+                <Text style={styles.caption}>{new Date(summary.completedAt).toLocaleString()}</Text>
+              </View>
+              <Text style={styles.sectionTitle}>INPUTS</Text>
+              {summary.inputs.map((i, k) => (
+                <View key={k} style={styles.sumRow}>
+                  <Text style={styles.sumLabel}>{i.label}</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.sumValue}>{i.value}{i.unit ? ` ${i.unit}` : ''}</Text>
+                    {i.source !== 'Entered manually' ? <Text style={styles.srcLabel}>{i.source}</Text> : null}
+                  </View>
+                </View>
+              ))}
+              <Text style={styles.sectionTitle}>RESULTS</Text>
+              {summary.results.map((r, k) => (
+                <View key={k} style={styles.sumRow}>
+                  <Text style={styles.sumLabel}>{r.label}</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.sumResult}>{r.value}</Text>
+                    <Text style={styles.srcLabel}>{r.step}</Text>
+                  </View>
+                </View>
+              ))}
+              <Text style={styles.sectionTitle}>NOTES & WARNINGS</Text>
+              {summary.warnings.map((w, k) => (
+                <Text key={k} style={styles.sumWarn}>⚠ {w}</Text>
+              ))}
+              {summary.notes ? <Text style={styles.caption}>{summary.notes}</Text> : null}
             </View>
-            <Text style={styles.sectionTitle}>INPUTS</Text>
-            {summary.inputs.map((i, k) => (
-              <View key={k} style={styles.sumRow}>
-                <Text style={styles.sumLabel}>{i.label}</Text>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.sumValue}>{i.value}{i.unit ? ` ${i.unit}` : ''}</Text>
-                  {i.source !== 'Entered manually' ? <Text style={styles.srcLabel}>{i.source}</Text> : null}
-                </View>
-              </View>
-            ))}
-            <Text style={styles.sectionTitle}>RESULTS</Text>
-            {summary.results.map((r, k) => (
-              <View key={k} style={styles.sumRow}>
-                <Text style={styles.sumLabel}>{r.label}</Text>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.sumResult}>{r.value}</Text>
-                  <Text style={styles.srcLabel}>{r.step}</Text>
-                </View>
-              </View>
-            ))}
-            <Text style={styles.sectionTitle}>NOTES & WARNINGS</Text>
-            {summary.warnings.map((w, k) => (
-              <Text key={k} style={styles.sumWarn}>⚠ {w}</Text>
-            ))}
+
+            {/* User notes — typed here (outside the capture), rendered into the
+                card + shared text + saved result. */}
+            <Text style={styles.sectionTitle}>YOUR NOTES</Text>
+            <TextInput
+              style={styles.notesInput}
+              value={run.notes ?? ''}
+              onChangeText={(t) => setRun((r) => (r ? { ...r, notes: t } : r))}
+              placeholder="Optional notes saved and shared with this result"
+              placeholderTextColor="#4c4d55"
+              multiline
+              accessibilityLabel="Notes for this result"
+            />
+
             <View style={styles.actionRow}>
               <ActionBtn label={resultSaved ? 'SAVED ✓' : 'SAVE RESULT'} onPress={() => void saveResult()} />
               <ActionBtn label="SHARE AS TEXT" onPress={shareText} />
+              {/* Only rendered when the native capture modules are in this build. */}
+              {shareImage.isAvailable() ? <ActionBtn label="SHARE AS IMAGE" onPress={() => void shareAsImage()} /> : null}
               <ActionBtn
                 label="START AGAIN"
                 onPress={() => {
@@ -717,6 +763,23 @@ const styles = StyleSheet.create({
   formula: { fontFamily: fonts.mono, fontSize: 13, color: colors.textPrimary },
 
   sectionTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.4, color: colors.amber, marginTop: 6 },
+  // Branded share card — solid background so the captured PNG isn't transparent.
+  shareCard: { backgroundColor: colors.screenBg, gap: 10, paddingVertical: 4 },
+  brandHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 2, color: colors.amber, textAlign: 'center' },
+  brandSub: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, textAlign: 'center', marginTop: -4 },
+  notesInput: {
+    borderRadius: 8,
+    borderWidth: 1.5,
+    borderColor: '#45495a',
+    backgroundColor: '#22242e',
+    color: colors.textPrimary,
+    fontFamily: fonts.barlowRegular,
+    fontSize: 14,
+    paddingHorizontal: 10,
+    paddingVertical: 9,
+    minHeight: 60,
+    textAlignVertical: 'top',
+  },
   sumRow: { flexDirection: 'row', gap: 10, borderRadius: 8, borderWidth: 1, borderColor: '#1f1f24', backgroundColor: '#101014', padding: 10 },
   sumLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.8, color: colors.textSecondary, width: 120 },
   sumValue: { fontFamily: fonts.mono, fontSize: 14, color: colors.textPrimary },

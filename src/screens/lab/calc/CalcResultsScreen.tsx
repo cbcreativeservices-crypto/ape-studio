@@ -6,7 +6,7 @@
  * with the step that produced them, warnings, notes). Share re-uses the same
  * formatted-text layout the runner shares.
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -15,6 +15,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import type { SavedRunSummary } from './workflowModel';
 import { workflowStore } from './workflowStore';
+import * as shareImage from './shareImage';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -44,6 +45,15 @@ export function CalcResultsScreen() {
   const navigation = useNavigation<Nav>();
   const [results, setResults] = useState<SavedRunSummary[]>([]);
   const [openId, setOpenId] = useState<string | null>(null);
+  // Only one card expands at a time, so one capture ref serves them all.
+  const shareRef = useRef<View | null>(null);
+
+  const shareAsImage = async () => {
+    const ok = await shareImage.captureAndShare(shareRef.current, 'Workflow results');
+    if (!ok) {
+      Alert.alert('Image sharing unavailable', 'Sharing as an image needs the next app build. SHARE AS TEXT works now.');
+    }
+  };
 
   const reload = useCallback(() => {
     void workflowStore.listResults().then(setResults);
@@ -94,33 +104,42 @@ export function CalcResultsScreen() {
 
                 {open ? (
                   <>
-                    <Text style={styles.sectionTitle}>INPUTS</Text>
-                    {r.inputs.map((i, k) => (
-                      <View key={k} style={styles.sumRow}>
-                        <Text style={styles.sumLabel}>{i.label}</Text>
-                        <View style={{ flex: 1 }}>
-                          <Text style={styles.sumValue}>{i.value}{i.unit ? ` ${i.unit}` : ''}</Text>
-                          {i.source !== 'Entered manually' ? <Text style={styles.srcLabel}>{i.source}</Text> : null}
+                    {/* Branded capture card — every interactive control stays
+                        outside it (share-as-image excludes buttons). */}
+                    <View ref={shareRef} collapsable={false} style={styles.shareCard}>
+                      <Text style={styles.brandHead}>PRO AUDIO TRAINING ACADEMY</Text>
+                      <Text style={styles.brandSub}>
+                        {r.workflowName}{r.projectName ? ` · ${r.projectName}` : ''} · {new Date(r.completedAt).toLocaleString()}
+                      </Text>
+                      <Text style={styles.sectionTitle}>INPUTS</Text>
+                      {r.inputs.map((i, k) => (
+                        <View key={k} style={styles.sumRow}>
+                          <Text style={styles.sumLabel}>{i.label}</Text>
+                          <View style={{ flex: 1 }}>
+                            <Text style={styles.sumValue}>{i.value}{i.unit ? ` ${i.unit}` : ''}</Text>
+                            {i.source !== 'Entered manually' ? <Text style={styles.srcLabel}>{i.source}</Text> : null}
+                          </View>
                         </View>
-                      </View>
-                    ))}
-                    <Text style={styles.sectionTitle}>RESULTS</Text>
-                    {r.results.map((x, k) => (
-                      <View key={k} style={styles.sumRow}>
-                        <Text style={styles.sumLabel}>{x.label}</Text>
-                        <View style={{ flex: 1 }}>
-                          <Text style={styles.sumResult}>{x.value}</Text>
-                          <Text style={styles.srcLabel}>{x.step}</Text>
+                      ))}
+                      <Text style={styles.sectionTitle}>RESULTS</Text>
+                      {r.results.map((x, k) => (
+                        <View key={k} style={styles.sumRow}>
+                          <Text style={styles.sumLabel}>{x.label}</Text>
+                          <View style={{ flex: 1 }}>
+                            <Text style={styles.sumResult}>{x.value}</Text>
+                            <Text style={styles.srcLabel}>{x.step}</Text>
+                          </View>
                         </View>
-                      </View>
-                    ))}
-                    <Text style={styles.sectionTitle}>NOTES & WARNINGS</Text>
-                    {r.warnings.map((w, k) => (
-                      <Text key={k} style={styles.sumWarn}>⚠ {w}</Text>
-                    ))}
-                    {r.notes ? <Text style={styles.caption}>{r.notes}</Text> : null}
+                      ))}
+                      <Text style={styles.sectionTitle}>NOTES & WARNINGS</Text>
+                      {r.warnings.map((w, k) => (
+                        <Text key={k} style={styles.sumWarn}>⚠ {w}</Text>
+                      ))}
+                      {r.notes ? <Text style={styles.caption}>{r.notes}</Text> : null}
+                    </View>
                     <View style={styles.actionRow}>
                       <ActionBtn label="SHARE AS TEXT" onPress={() => Share.share({ message: summaryToText(r) }).catch(() => {})} />
+                      {shareImage.isAvailable() ? <ActionBtn label="SHARE AS IMAGE" onPress={() => void shareAsImage()} /> : null}
                       <ActionBtn label="DELETE" destructive onPress={() => remove(r)} />
                     </View>
                   </>
@@ -155,6 +174,10 @@ const styles = StyleSheet.create({
   cardName: { flex: 1, fontFamily: fonts.oswaldMedium, fontSize: 15, letterSpacing: 0.4, color: colors.textPrimary },
   cardDate: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub },
   sectionTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.amber, marginTop: 4 },
+  // Branded capture card — solid background so the PNG isn't transparent.
+  shareCard: { backgroundColor: '#131316', gap: 8, paddingVertical: 4 },
+  brandHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 2, color: colors.amber, textAlign: 'center' },
+  brandSub: { fontFamily: fonts.barlowRegular, fontSize: 12, color: colors.textSub, textAlign: 'center', marginTop: -2 },
   sumRow: { flexDirection: 'row', gap: 10, borderRadius: 8, borderWidth: 1, borderColor: '#1f1f24', backgroundColor: '#101014', padding: 10 },
   sumLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.8, color: colors.textSecondary, width: 120 },
   sumValue: { fontFamily: fonts.mono, fontSize: 14, color: colors.textPrimary },
