@@ -10,10 +10,11 @@
  * Also owns the `commercialMode` master flag (compile-time default OFF; dev
  * runtime override persisted). Flag OFF ⇒ consumers render today's app.
  */
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { devBypass } from '../../config/devMode';
 import { DEV_COMMERCIAL_FLAG_KEY, DEV_ENTITLEMENT_KEY, FLAG_DEFAULTS } from '../../config/flags';
+import { supabase } from '../../lib/supabase';
 
 export type Entitlement = 'anonymous' | 'free' | 'academy' | 'lapsed';
 
@@ -105,22 +106,45 @@ const EntitlementContext = createContext<EntitlementContextValue | null>(null);
 export function EntitlementProvider({ children }: { children: ReactNode }) {
   const [commercialMode, setCommercialModeState] = useState<boolean>(FLAG_DEFAULTS.commercialMode);
   const [entitlement, setEntitlementState] = useState<Entitlement>('anonymous');
+  // Once the owner force-picks a tier via the dev toggle, stop auto-deriving
+  // from the session for the rest of this app run (so the toggle isn't clobbered
+  // by a token refresh while they inspect a tier).
+  const devOverrode = useRef(false);
 
-  // Hydrate dev overrides once (dev only — release builds ignore them).
+  // Hydrate the dev commercialMode flag once (dev only — release ignores it).
   useEffect(() => {
     if (!__DEV__) return;
     let alive = true;
     (async () => {
-      const [flag, ent] = await Promise.all([
-        AsyncStorage.getItem(DEV_COMMERCIAL_FLAG_KEY),
-        AsyncStorage.getItem(DEV_ENTITLEMENT_KEY),
-      ]);
-      if (!alive) return;
-      if (flag != null) setCommercialModeState(flag === '1');
-      if (ent != null && (ENTITLEMENTS as string[]).includes(ent)) setEntitlementState(ent as Entitlement);
+      const flag = await AsyncStorage.getItem(DEV_COMMERCIAL_FLAG_KEY);
+      if (alive && flag != null) setCommercialModeState(flag === '1');
     })();
     return () => {
       alive = false;
+    };
+  }, []);
+
+  // Session-driven BASE entitlement (owner 2026-08-06): a signed-in account is at
+  // least 'free' (save + album + achievements), while a no-account guest is
+  // 'anonymous'. This is the first real wiring to auth state; academy/lapsed are
+  // still previewed via the dev tier toggle (and become server-driven once the
+  // entitlements table is read). Only genuine sign-in/out flips it — never a
+  // silent token refresh — and the dev override always wins.
+  useEffect(() => {
+    let alive = true;
+    const applyFromSession = (hasSession: boolean) => {
+      if (!alive || devOverrode.current) return;
+      setEntitlementState(hasSession ? 'free' : 'anonymous');
+    };
+    void supabase.auth.getSession().then(({ data }) => applyFromSession(!!data.session));
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'INITIAL_SESSION') {
+        applyFromSession(!!session);
+      }
+    });
+    return () => {
+      alive = false;
+      sub.subscription.unsubscribe();
     };
   }, []);
 
@@ -132,6 +156,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
 
   const setEntitlement = useCallback((state: Entitlement) => {
     if (!__DEV__) return;
+    devOverrode.current = true; // dev is now driving; don't let the session re-derive
     setEntitlementState(state);
     void AsyncStorage.setItem(DEV_ENTITLEMENT_KEY, state);
   }, []);
@@ -140,10 +165,16 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
     () => ({
       commercialMode,
       entitlement,
-      // DEV BYPASS (Booth 2026-07-18): force full academy caps so no
-      // academy-only lock/veil/upsell blocks screen testing. __DEV__-guarded
-      // inside devBypass(); restore = devMode.ts → bypassAcademyLocks:false.
-      caps: devBypass('bypassAcademyLocks') ? capsFor('academy') : capsFor(entitlement),
+      // Caps ladder (owner 2026-08-06): the INSTITUTIONAL app (commercialMode
+      // OFF) always renders full academy caps — its access was never gated by
+      // this ladder. The COMMERCIAL app (flag ON) renders the reported tier's
+      // caps, so anonymous/free/academy/lapsed each show their real
+      // gates/veils/upsells. The dev bypass, if on, still forces academy for
+      // lock-free screen testing.
+      caps:
+        !commercialMode || devBypass('bypassAcademyLocks')
+          ? capsFor('academy')
+          : capsFor(entitlement),
       setCommercialMode,
       setEntitlement,
     }),

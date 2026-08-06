@@ -20,8 +20,13 @@ export const DEV_BYPASS = {
   /** Topic frontier + method dead-switches ignored: every topic reachable,
    *  every method tappable (screens may be empty if a topic has no content). */
   bypassMethodLocks: true,
-  /** Entitlement caps forced to full academy: paywalls/veils/upsells hidden. */
-  bypassAcademyLocks: true,
+  /** Entitlement caps forced to full academy: paywalls/veils/upsells hidden.
+   *  OFF (owner 2026-08-06): the owner needs to SEE each tier's gates/veils/
+   *  upsells. With this off, commercialMode ON renders the real per-tier caps
+   *  (anonymous/free/academy/lapsed); the institutional app (commercialMode
+   *  OFF) still gets full academy caps via EntitlementProvider, so nothing
+   *  there is gated. Flip back to true only for lock-free screen testing. */
+  bypassAcademyLocks: false,
   /** Every screen intro/tutorial + coach mark shows on EVERY entry (first-time
    *  experience each visit), ignoring the persisted seen/retire counters.
    *  OFF (owner 2026-08-06): the "Welcome to Pro Audio Training Academy" popup

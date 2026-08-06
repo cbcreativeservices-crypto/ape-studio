@@ -37,15 +37,23 @@ const CURRICULUM_INTRO =
 const fmt = (n: number) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
 /** Spinning number placeholder shown in the GLOSSARY TERMS tile while the count
- *  loads (owner 2026-08-05, item 3): the digits roll in the same green until the
- *  official count arrives and replaces it. Deterministic (no Math.random). */
+ *  loads (owner 2026-08-05; ramp reworked 2026-08-06): instead of a fixed 5-digit
+ *  roll, the number GROWS from a single digit up through the magnitudes
+ *  (1→2→3→4→5 digits) and loops, so it reads as "counting up" rather than
+ *  starting at 10,000. Deterministic (no Math.random). */
 function SpinningCount({ color }: { color: string }) {
   const [tick, setTick] = useState(0);
   useEffect(() => {
-    const id = setInterval(() => setTick((t) => t + 1), 90);
+    const id = setInterval(() => setTick((t) => t + 1), 70);
     return () => clearInterval(id);
   }, []);
-  const rolling = 10000 + ((tick * 7349) % 89999); // rolling 5-digit value
+  // Geometric ramp so each order of magnitude gets an equal, visible slice of
+  // the cycle: p=0 → 1 (single digit), p→1 → ~5 digits, then it wraps and grows
+  // from a single digit again.
+  const CYCLE = 26; // ticks per ramp (~1.8s at 70ms) before it loops
+  const CAP = 99999; // grows up to 5 digits
+  const p = (tick % CYCLE) / CYCLE;
+  const rolling = Math.max(1, Math.round(Math.exp(Math.log(CAP) * p)));
   return (
     <Text style={[styles.statValue, { color }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
       {fmt(rolling)}

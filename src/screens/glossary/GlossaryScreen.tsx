@@ -1541,14 +1541,20 @@ export function GlossaryScreen({ route, navigation }: Props) {
           // 2026-07-17). Hidden while loading or when the list is empty (the
           // empty component covers that case).
           ListHeaderComponent={
-            loading || visible.length === 0 ? null : (
+            // While the corpus pages in, keep the "please wait" banner visible as
+            // the header even after the first rows arrive (owner 2026-08-06 — the
+            // message used to vanish the instant any term showed, because it only
+            // lived in the empty slot). Once loaded, show the result count.
+            loading ? (
+              <GlossaryLoading count={cachedCount} />
+            ) : visible.length === 0 ? null : (
               <Text style={styles.resultCount}>
                 {visible.length} result{visible.length === 1 ? '' : 's'} · {filterLabel}
               </Text>
             )
           }
           ListEmptyComponent={
-            loading ? <GlossaryLoading count={cachedCount} /> : <Text style={styles.empty}>No results for {search.trim() || filterLabel}</Text>
+            loading ? null : <Text style={styles.empty}>No results for {search.trim() || filterLabel}</Text>
           }
           extraData={[expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search]}
           renderItem={({ item }) => {
