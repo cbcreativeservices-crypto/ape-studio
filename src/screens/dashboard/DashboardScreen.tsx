@@ -345,7 +345,7 @@ export function DashboardScreen() {
   const [jogParked, setJogParked] = useState(false);
   // CM6 (Booth 2026-07-11): commercialMode renders a PUBLIC course (seq order
   // from the seed) through this same screen; institutional path unchanged.
-  const { commercialMode, caps } = useEntitlement();
+  const { commercialMode, caps, entitlement } = useEntitlement();
 
   // Enrollment-driven Dashboard (user request 2026-07-22): a COURSE ⇄ MY
   // ENROLLMENT toggle. In enrollment mode the top swiper iterates the user's
@@ -758,6 +758,24 @@ export function DashboardScreen() {
               small
               // Auth lives on the ROOT stack; unknown route names bubble up
               // from the nested Study stack, so the loose cast is safe here.
+              onPress={() => (navigation as any).navigate('Auth')}
+            />
+          </View>
+        )}
+        {/* Escape hatch (owner 2026-08-06): a guest / not-signed-in user lands
+            here because there's no enrolled course to load, and Retry only
+            re-runs the same failing fetch — a dead-end loop with no way back to
+            the login screen. Give them an explicit exit. Signed-in users
+            (free/academy/lapsed) keep Retry as the primary action for a
+            transient failure and reach other areas via the tab bar, so this is
+            shown only for the anonymous guest, and not when Complete
+            Registration already offers the same path. */}
+        {entitlement === 'anonymous' && errorCode !== 'user_not_found' && (
+          <View style={{ width: 220 }}>
+            <StudioButton
+              label="Back to Login"
+              variant="primary"
+              small
               onPress={() => (navigation as any).navigate('Auth')}
             />
           </View>
