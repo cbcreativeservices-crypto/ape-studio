@@ -13,7 +13,9 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
 import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
+import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import type { Workflow, WorkflowStep } from './workflowModel';
+import { WORKFLOW_LIMITS } from './workflowModel';
 import { workflowStore } from './workflowStore';
 import { listCalculators, resolveStep, type CatalogEntry } from './workflowCatalog';
 
@@ -24,6 +26,7 @@ export function CalcWorkflowEditScreen() {
   const navigation = useNavigation<Nav>();
   const route = useRoute<RouteProp<RootStackParamList, 'CalcWorkflowEdit'>>();
   const editingId = route.params?.id;
+  const { entitlement } = useEntitlement();
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -81,6 +84,16 @@ export function CalcWorkflowEditScreen() {
     mutate((s) => s.map((st, k) => (k === i ? { ...st, note: note || undefined } : st)));
 
   const onSave = useCallback(async () => {
+    // Defense in depth (owner 2026-08-06): creating a custom workflow is
+    // Academy-only — even if this screen is reached some other way, the save
+    // itself refuses. Editing an already-saved workflow is unaffected.
+    if (!editingId && WORKFLOW_LIMITS[entitlement].savedWorkflows === 0) {
+      Alert.alert(
+        'Build your own workflow?',
+        'Building your own calculator workflows is a feature of Academy membership. You can still run the built-in templates.',
+      );
+      return;
+    }
     const trimmed = name.trim();
     if (!trimmed) {
       Alert.alert('Name the workflow', 'Give the workflow a name before saving.');
@@ -105,7 +118,7 @@ export function CalcWorkflowEditScreen() {
       return;
     }
     navigation.goBack();
-  }, [name, description, steps, editingId, createdAt, navigation]);
+  }, [name, description, steps, editingId, createdAt, navigation, entitlement]);
 
   const onBack = () => {
     if (!dirty) {

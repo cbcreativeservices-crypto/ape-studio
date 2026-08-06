@@ -62,15 +62,24 @@ export function CalcWorkflowsScreen() {
 
   const atLimit = limits.savedWorkflows != null && mine.length >= limits.savedWorkflows;
 
-  const guardSave = (): boolean => {
+  /** Gate CREATING a custom workflow (new or duplicate-and-customize) — an
+   *  Academy feature (owner 2026-08-06). The copy names the ACTION the user
+   *  actually pressed, not a generic "saving" line. */
+  const guardSave = (action: 'create' | 'duplicate'): boolean => {
     if (!atLimit) return true;
     if (limits.savedWorkflows === 0) {
-      Alert.alert('Sign in to save workflows', 'Saving custom workflows needs an account.', [
-        { text: 'Not now', style: 'cancel' },
-        { text: 'Sign in', onPress: () => (navigation as any).navigate('Auth') },
-      ]);
+      Alert.alert(
+        action === 'duplicate' ? 'Customize this template?' : 'Build your own workflow?',
+        action === 'duplicate'
+          ? 'Duplicating a template creates your own custom calculator workflow — a feature of Academy membership. You can still run any template as-is.'
+          : 'Building your own calculator workflows is a feature of Academy membership. You can still run the built-in templates.',
+        [
+          { text: 'Not now', style: 'cancel' },
+          { text: 'See membership', onPress: () => (navigation as any).navigate('Paywall') },
+        ],
+      );
     } else {
-      Alert.alert('Workflow limit reached', `Free accounts keep up to ${limits.savedWorkflows} workflows. Academy membership removes the limit.`, [
+      Alert.alert('Workflow limit reached', `Your account keeps up to ${limits.savedWorkflows} workflows. Academy membership removes the limit.`, [
         { text: 'Not now', style: 'cancel' },
         { text: 'See membership', onPress: () => (navigation as any).navigate('Paywall') },
       ]);
@@ -79,12 +88,16 @@ export function CalcWorkflowsScreen() {
   };
 
   const onNew = () => {
-    if (!guardSave()) return;
+    if (!guardSave('create')) return;
     navigation.navigate('CalcWorkflowEdit', {});
   };
 
+  const moveMine = (id: string, dir: -1 | 1) => {
+    void workflowStore.moveWorkflow(id, dir).then(setMine);
+  };
+
   const duplicate = async (src: Workflow) => {
-    if (!guardSave()) return;
+    if (!guardSave('duplicate')) return;
     const now = new Date().toISOString();
     const copy: Workflow = {
       ...src,
@@ -116,10 +129,37 @@ export function CalcWorkflowsScreen() {
     void workflowStore.toggleFavorite(id).then(setFavorites);
   };
 
-  const Row = ({ w, template }: { w: Workflow; template: boolean }) => (
+  const Row = ({ w, template, index, count }: { w: Workflow; template: boolean; index?: number; count?: number }) => (
     <View style={styles.card}>
       <View style={styles.cardHead}>
         <Text style={styles.cardName}>{w.name}</Text>
+        {/* Reorder My Workflows (owner 2026-08-06) — accessible ▲▼, persisted. */}
+        {!template && index != null && count != null ? (
+          <View style={styles.orderBtns}>
+            <Pressable
+              style={[styles.orderBtn, index === 0 && styles.orderBtnDisabled]}
+              onPress={() => moveMine(w.id, -1)}
+              disabled={index === 0}
+              hitSlop={4}
+              accessibilityRole="button"
+              accessibilityState={{ disabled: index === 0 }}
+              accessibilityLabel={`Move ${w.name} up`}
+            >
+              <Text style={styles.orderBtnText}>▲</Text>
+            </Pressable>
+            <Pressable
+              style={[styles.orderBtn, index === count - 1 && styles.orderBtnDisabled]}
+              onPress={() => moveMine(w.id, 1)}
+              disabled={index === count - 1}
+              hitSlop={4}
+              accessibilityRole="button"
+              accessibilityState={{ disabled: index === count - 1 }}
+              accessibilityLabel={`Move ${w.name} down`}
+            >
+              <Text style={styles.orderBtnText}>▼</Text>
+            </Pressable>
+          </View>
+        ) : null}
         <Pressable
           onPress={() => toggleFav(w.id)}
           hitSlop={8}
@@ -167,13 +207,17 @@ export function CalcWorkflowsScreen() {
       <ScrollView contentContainerStyle={styles.scroll}>
         {dropNote ? <Text style={styles.warnText}>⚠ {dropNote}</Text> : null}
 
-        <Text style={styles.sectionTitle}>MY WORKFLOWS{limits.savedWorkflows != null ? ` · ${mine.length}/${limits.savedWorkflows}` : ''}</Text>
+        <Text style={styles.sectionTitle}>
+          MY WORKFLOWS{limits.savedWorkflows != null && limits.savedWorkflows > 0 ? ` · ${mine.length}/${limits.savedWorkflows}` : ''}
+        </Text>
         {mine.length === 0 ? (
           <Text style={styles.caption}>
-            Nothing saved yet — start from a template below, or build one with ＋ NEW.
+            {limits.savedWorkflows === 0
+              ? 'Building your own workflows is an Academy membership feature — the templates below are ready to run.'
+              : 'Nothing saved yet — start from a template below, or build one with ＋ NEW.'}
           </Text>
         ) : (
-          mine.map((w) => <Row key={w.id} w={w} template={false} />)
+          mine.map((w, i) => <Row key={w.id} w={w} template={false} index={i} count={mine.length} />)
         )}
 
         <Text style={styles.sectionTitle}>WORKFLOW TEMPLATES</Text>
@@ -228,6 +272,19 @@ const styles = StyleSheet.create({
   cardName: { flex: 1, fontFamily: fonts.oswaldMedium, fontSize: 15.5, letterSpacing: 0.5, color: colors.textPrimary },
   favStar: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, color: '#4a4a52' },
   favStarOn: { color: colors.gold },
+  orderBtns: { flexDirection: 'row', gap: 5 },
+  orderBtn: {
+    width: 30,
+    height: 30,
+    borderRadius: 7,
+    borderWidth: 1,
+    borderColor: '#3a3a3a',
+    backgroundColor: '#161616',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  orderBtnDisabled: { opacity: 0.35 },
+  orderBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: colors.textSecondary },
   stepsLine: { fontFamily: fonts.mono, fontSize: 12, lineHeight: 17, color: colors.textSub },
   actionRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 2 },
   actionBtn: { borderRadius: 7, borderWidth: 1, borderColor: '#3a3a3a', backgroundColor: '#161616', paddingHorizontal: 10, paddingVertical: 6 },

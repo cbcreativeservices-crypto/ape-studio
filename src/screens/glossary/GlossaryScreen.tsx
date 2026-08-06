@@ -617,6 +617,54 @@ function LoadingCount() {
   );
 }
 
+/** Header term-count that ramps UP from a single digit to the target while the
+ *  corpus loads (owner 2026-08-06). Uses equal time per digit-decade (geometric
+ *  easing) so the number visibly grows 1→2→3→4→5 digits instead of snapping to
+ *  the full total. Holds at the target once the ramp completes. */
+function CountUp({
+  target,
+  durationMs = 1500,
+  style,
+  suffix = ' Terms',
+}: {
+  target: number;
+  durationMs?: number;
+  style?: any;
+  suffix?: string;
+}) {
+  const [val, setVal] = useState(1);
+  const rafRef = useRef<number | null>(null);
+  const startRef = useRef<number | null>(null);
+  useEffect(() => {
+    // Nothing sensible to ramp toward yet — show the seed digit.
+    if (!target || target <= 1) {
+      setVal(Math.max(1, target || 1));
+      return;
+    }
+    startRef.current = null;
+    const lnTarget = Math.log(target);
+    const tick = (now: number) => {
+      if (startRef.current == null) startRef.current = now;
+      const p = Math.min(1, (now - startRef.current) / durationMs);
+      // Geometric: exp(ln(target)*p) spends equal wall-time in each order of
+      // magnitude, so single/double/triple digits each get a visible slice.
+      const v = p >= 1 ? target : Math.max(1, Math.round(Math.exp(lnTarget * p)));
+      setVal(v);
+      if (p < 1) rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
+    };
+  }, [target, durationMs]);
+  return (
+    <Text style={style}>
+      {val.toLocaleString()}
+      {suffix}
+    </Text>
+  );
+}
+
 /** Full-width "loading the corpus" panel (owner 2026-08-05) — shown in the term
  *  list area while the ~21k definitions page in, so it never just looks paused. */
 function GlossaryLoading({ count }: { count: number | null }) {
@@ -1320,10 +1368,13 @@ export function GlossaryScreen({ route, navigation }: Props) {
             filter/search narrows the set, show the exact live visible.length. */}
         {!loading ? (
           <Text style={styles.count}>{visible.length} Terms</Text>
-        ) : filter === 'all' && !search.trim() && cachedCount != null ? (
-          <Text style={styles.count}>{cachedCount} Terms</Text>
+        ) : filter === 'all' && !search.trim() && (cachedCount != null || visible.length > 0) ? (
+          // Still paging in: ramp the count UP from a single digit to the target
+          // (cached daily total, or the live loaded count) so it grows through
+          // 1→2→3→4→5 digits instead of snapping to the full number (owner 2026-08-06).
+          <CountUp style={styles.count} target={cachedCount ?? visible.length} />
         ) : (
-          // Still paging in with no cached total — animate so it isn't frozen.
+          // No cached total and nothing loaded yet — animate dots so it isn't frozen.
           <LoadingCount />
         )}
       </View>

@@ -5,7 +5,7 @@
  * IN DEVELOPMENT ("coming soon") — never presented as available.
  */
 import { useCallback, useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -15,11 +15,32 @@ import { COMING_SOON, SECTION_META, WORKSPACES } from './registry';
 import { useChainValue } from './chainStore';
 import { workflowStore } from './workflowStore';
 import type { Workflow } from './workflowModel';
+import { WORKFLOW_LIMITS } from './workflowModel';
+import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 
 export function CalcLabScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const chain = useChainValue();
+  const { entitlement } = useEntitlement();
+
+  // Custom workflows are ACADEMY-ONLY (owner 2026-08-06) — the home ＋NEW button
+  // must gate like the list screen does (this unguarded path was the hole that
+  // let an anonymous user build and save one).
+  const onNewWorkflow = () => {
+    if (WORKFLOW_LIMITS[entitlement].savedWorkflows === 0) {
+      Alert.alert(
+        'Build your own workflow?',
+        'Building your own calculator workflows is a feature of Academy membership. You can still run the built-in templates.',
+        [
+          { text: 'Not now', style: 'cancel' },
+          { text: 'See membership', onPress: () => (navigation as any).navigate('Paywall') },
+        ],
+      );
+      return;
+    }
+    navigation.navigate('CalcWorkflowEdit', {});
+  };
 
   // Most-recent saved workflow (owner spec 2026-08-06) — quick jump on the home.
   const [recent, setRecent] = useState<Workflow | null>(null);
@@ -88,7 +109,7 @@ export function CalcLabScreen() {
           <View style={styles.wfRow}>
             <Pressable
               style={[styles.wfBtn, styles.wfBtnGreen]}
-              onPress={() => navigation.navigate('CalcWorkflowEdit', {})}
+              onPress={onNewWorkflow}
               accessibilityRole="button"
               accessibilityLabel="New workflow"
             >
@@ -101,6 +122,25 @@ export function CalcLabScreen() {
               accessibilityLabel="My workflows and templates"
             >
               <Text style={styles.wfBtnText}>MY WORKFLOWS & TEMPLATES ›</Text>
+            </Pressable>
+          </View>
+          {/* Phase 4: saved projects + saved results. */}
+          <View style={styles.wfRow}>
+            <Pressable
+              style={styles.wfBtn}
+              onPress={() => navigation.navigate('CalcProjects')}
+              accessibilityRole="button"
+              accessibilityLabel="Saved projects"
+            >
+              <Text style={styles.wfBtnText}>SAVED PROJECTS ›</Text>
+            </Pressable>
+            <Pressable
+              style={styles.wfBtn}
+              onPress={() => navigation.navigate('CalcResults')}
+              accessibilityRole="button"
+              accessibilityLabel="Saved results"
+            >
+              <Text style={styles.wfBtnText}>SAVED RESULTS ›</Text>
             </Pressable>
           </View>
           {recent ? (

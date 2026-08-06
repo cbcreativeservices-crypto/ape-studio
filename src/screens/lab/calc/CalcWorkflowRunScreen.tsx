@@ -33,10 +33,11 @@ import { useEntitlement } from '../../../features/commercial/EntitlementProvider
 import type { CalcFunction, FieldDef, OutputVal, Workspace } from './calcTypes';
 import { fmt, unitsFor } from './calcUnits';
 import { FieldRow, buildValues, defaultUnitIdx, formatOutput, runCompute, type ComputeResult } from './calcPanel';
-import type { BoundInput, SavedRunSummary, ValueSource, Workflow, WorkflowRun } from './workflowModel';
+import type { BoundInput, Project, SavedRunSummary, ValueSource, Workflow, WorkflowRun } from './workflowModel';
 import { WORKFLOW_LIMITS } from './workflowModel';
 import { workflowStore } from './workflowStore';
 import { WORKFLOW_TEMPLATES, resolveStep, validateWorkflow } from './workflowCatalog';
+import { summaryToText } from './CalcResultsScreen';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -50,15 +51,15 @@ type StepComputed = {
 };
 
 /** Human line for a source label (spec: "Entered manually", "From Speed of
- *  Sound", "Manually overridden"…). */
-function sourceLabel(src: ValueSource, stepName: (i: number) => string): string | null {
+ *  Sound", "From Church Sanctuary project", "Manually overridden"…). */
+function sourceLabel(src: ValueSource, stepName: (i: number) => string, projectName?: string): string | null {
   switch (src.kind) {
     case 'manual':
       return null; // typing is the default — no badge noise
     case 'prior-step':
       return `From ${stepName(src.stepIndex)} (step ${src.stepIndex + 1})`;
     case 'project':
-      return `From ${src.valueLabel}`;
+      return `From ${projectName ?? 'saved'} project · ${src.valueLabel}`;
     case 'fixed':
       return 'Fixed workflow value';
     case 'override':
@@ -78,6 +79,13 @@ export function CalcWorkflowRunScreen() {
   const [outUnit, setOutUnit] = useState<Record<string, number>>({});
   const [recalcNote, setRecalcNote] = useState<string | null>(null);
   const [resultSaved, setResultSaved] = useState(false);
+  // Saved Projects (Phase 4): attach one to the run; its compatible values are
+  // offered to matching inputs. Runs never write back into a project.
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [projectPickerOpen, setProjectPickerOpen] = useState(false);
+  useEffect(() => {
+    void workflowStore.listProjects().then(setProjects);
+  }, []);
   const runRef = useRef<WorkflowRun | null>(null);
   runRef.current = run;
 
@@ -264,6 +272,31 @@ export function CalcWorkflowRunScreen() {
     }
   };
 
+  const attachedProject = projects.find((p) => p.id === run?.projectId) ?? null;
+  const attachProject = (p: Project | null) => {
+    setProjectPickerOpen(false);
+    setRun((r) => (r ? { ...r, projectId: p?.id, projectName: p?.name } : r));
+  };
+
+  /** Copy a project value into the field (static — a project is a snapshot of
+   *  the venue/rig; runs never write back into it). */
+  const importFromProject = (f: FieldDef, v: Project['values'][number]) => {
+    const units = unitsFor(f.quantity, f.unitIds);
+    const uIdx = run?.steps[idx]?.inputs[f.key]?.unitIdx ?? defaultUnitIdx(f);
+    const u = units[uIdx % units.length];
+    setBound(f.key, {
+      raw: fmt(u.fromBase(v.baseValue), 6),
+      unitIdx: uIdx,
+      source: { kind: 'project', projectId: run?.projectId ?? '', valueLabel: v.label },
+    });
+    const deps = dependentsOf(idx);
+    if (deps > 0) {
+      const msg = `${f.name} changed — ${deps} later result${deps === 1 ? '' : 's'} recalculated.`;
+      setRecalcNote(msg);
+      AccessibilityInfo.announceForAccessibility?.(msg);
+    }
+  };
+
   const goTo = (next: number) => {
     setRecalcNote(null);
     setRun((r) => (r ? { ...r, stepIndex: next } : r));
@@ -293,7 +326,7 @@ export function CalcWorkflowRunScreen() {
           warnings.add(`Step ${i + 1} (${c.resolved.fn.name}): missing value for ${f.name}.`);
           continue;
         }
-        const src = b ? sourceLabel(b.source, stepName) : null;
+        const src = b ? sourceLabel(b.source, stepName, run.projectName) : null;
         inputs.push({ label: f.name, value: raw, unit: u.label, source: src ?? 'Entered manually', step });
         if (b?.source.kind === 'override') warnings.add(`${f.name} in step ${i + 1} was manually overridden.`);
       }
@@ -308,6 +341,7 @@ export function CalcWorkflowRunScreen() {
     return {
       id: run.id,
       workflowName: workflow.name,
+      projectName: run.projectName,
       completedAt: run.completedAt ?? new Date().toISOString(),
       inputs,
       results,
@@ -315,24 +349,10 @@ export function CalcWorkflowRunScreen() {
     };
   }, [workflow, run, idx, n, computed, stepName]);
 
+  // ONE formatted-text layout for sharing — shared with the Saved Results screen.
   const shareText = () => {
     if (!summary) return;
-    const lines = [
-      'PRO AUDIO TRAINING ACADEMY',
-      'Calculator Workflow Results',
-      `Workflow: ${summary.workflowName}`,
-      `Date: ${new Date(summary.completedAt).toLocaleString()}`,
-      '',
-      'INPUTS',
-      ...summary.inputs.map((i) => `${i.label}: ${i.value}${i.unit ? ' ' + i.unit : ''}${i.source !== 'Entered manually' ? `  (${i.source})` : ''}`),
-      '',
-      'RESULTS',
-      ...summary.results.map((r) => `${r.label}: ${r.value}  [${r.step}]`),
-      '',
-      'NOTES',
-      ...summary.warnings.map((w) => `- ${w}`),
-    ];
-    Share.share({ message: lines.join('\n') }).catch(() => {});
+    Share.share({ message: summaryToText(summary) }).catch(() => {});
   };
 
   const saveResult = async () => {
@@ -405,13 +425,54 @@ export function CalcWorkflowRunScreen() {
         {idx < n && cur ? (
           cur.resolved ? (
             <>
+              {/* Saved Project attach row (Phase 4) — only when projects exist. */}
+              {projects.length > 0 || attachedProject ? (
+                <View style={styles.projectRow}>
+                  {attachedProject ? (
+                    <>
+                      <Text style={styles.projectLabel}>PROJECT · {attachedProject.name.toUpperCase()}</Text>
+                      <Pressable style={styles.projectBtn} onPress={() => setProjectPickerOpen((v) => !v)} accessibilityRole="button" accessibilityLabel="Change project">
+                        <Text style={styles.projectBtnText}>CHANGE</Text>
+                      </Pressable>
+                      <Pressable style={styles.projectBtn} onPress={() => attachProject(null)} accessibilityRole="button" accessibilityLabel="Detach project">
+                        <Text style={styles.projectBtnText}>✕</Text>
+                      </Pressable>
+                    </>
+                  ) : (
+                    <Pressable
+                      style={styles.projectBtn}
+                      onPress={() => setProjectPickerOpen((v) => !v)}
+                      accessibilityRole="button"
+                      accessibilityState={{ expanded: projectPickerOpen }}
+                      accessibilityLabel="Use a saved project"
+                    >
+                      <Text style={styles.projectBtnText}>⛭ USE A SAVED PROJECT</Text>
+                    </Pressable>
+                  )}
+                </View>
+              ) : null}
+              {projectPickerOpen
+                ? projects.map((p) => (
+                    <Pressable
+                      key={p.id}
+                      style={styles.projectPickRow}
+                      onPress={() => attachProject(p)}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Attach project ${p.name}`}
+                    >
+                      <Text style={styles.projectPickName}>{p.name}</Text>
+                      <Text style={styles.caption}>{p.values.map((v) => v.label).join(' · ') || 'no values'}</Text>
+                    </Pressable>
+                  ))
+                : null}
+
               {step?.note ? <Text style={styles.stepNote}>{step.note}</Text> : null}
               <Text style={styles.caption}>{cur.resolved.ws.name}</Text>
 
               <View style={styles.panel}>
                 {cur.fields.map((f) => {
                   const b = run.steps[idx]?.inputs[f.key];
-                  const src = b ? sourceLabel(b.source, stepName) : null;
+                  const src = b ? sourceLabel(b.source, stepName, run.projectName) : null;
                   // Compatible earlier results (matching quantity, numeric only).
                   const sources: { fromStep: number; label: string }[] = [];
                   if (f.quantity !== 'list') {
@@ -442,6 +503,23 @@ export function CalcWorkflowRunScreen() {
                               <Text style={styles.srcBtnText}>⤵ USE {s.label.toUpperCase()} (STEP {s.fromStep + 1})</Text>
                             </Pressable>
                           ))
+                        : null}
+                      {/* Compatible values from the attached project (Phase 4). */}
+                      {!isImport && attachedProject && f.quantity !== 'list'
+                        ? attachedProject.values
+                            .filter((v) => v.quantity === f.quantity)
+                            .slice(0, 4)
+                            .map((v) => (
+                              <Pressable
+                                key={`prj-${v.label}`}
+                                style={[styles.srcBtn, styles.srcBtnProject]}
+                                onPress={() => importFromProject(f, v)}
+                                accessibilityRole="button"
+                                accessibilityLabel={`Use ${v.label} from the ${attachedProject.name} project`}
+                              >
+                                <Text style={[styles.srcBtnText, styles.srcBtnTextProject]}>⤵ USE {v.label.toUpperCase()} (PROJECT)</Text>
+                              </Pressable>
+                            ))
                         : null}
                     </View>
                   );
@@ -495,6 +573,7 @@ export function CalcWorkflowRunScreen() {
             {/* RESULTS — header · inputs · results · notes/warnings · actions. */}
             <View style={styles.panel}>
               <Text style={styles.resultEyebrow}>{summary.workflowName.toUpperCase()}</Text>
+              {summary.projectName ? <Text style={styles.projectLabel}>PROJECT · {summary.projectName.toUpperCase()}</Text> : null}
               <Text style={styles.caption}>{new Date(summary.completedAt).toLocaleString()}</Text>
             </View>
             <Text style={styles.sectionTitle}>INPUTS</Text>
@@ -618,6 +697,15 @@ const styles = StyleSheet.create({
   srcLabelOverride: { color: colors.amber },
   srcBtn: { alignSelf: 'flex-start', borderRadius: 7, borderWidth: 1, borderColor: '#245a34', backgroundColor: '#10241a', paddingHorizontal: 9, paddingVertical: 5 },
   srcBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 0.8, color: '#5bff85' },
+  // Project sources — blue family so they read distinct from step imports.
+  srcBtnProject: { borderColor: '#2a3f66', backgroundColor: '#0f1626' },
+  srcBtnTextProject: { color: '#7fa8ff' },
+  projectRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
+  projectLabel: { flex: 1, fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, color: '#7fa8ff' },
+  projectBtn: { borderRadius: 7, borderWidth: 1, borderColor: '#2a3f66', backgroundColor: '#0f1626', paddingHorizontal: 10, paddingVertical: 6 },
+  projectBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.8, color: '#7fa8ff' },
+  projectPickRow: { borderRadius: 8, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#101014', padding: 10, gap: 2 },
+  projectPickName: { fontFamily: fonts.oswaldMedium, fontSize: 13.5, color: colors.textPrimary },
 
   resultPanel: { borderRadius: 8, borderWidth: 1, borderColor: 'rgba(255,198,77,.4)', backgroundColor: '#17140c', padding: 10, gap: 6 },
   resultEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: colors.amber },

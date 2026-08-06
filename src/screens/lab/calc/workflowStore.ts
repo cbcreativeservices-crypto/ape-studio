@@ -105,6 +105,18 @@ export const workflowStore = {
   listWorkflows: () => loadList(KEYS.workflows, isWorkflow),
   saveWorkflow: (w: Workflow) => upsert(KEYS.workflows, isWorkflow, w),
   deleteWorkflow: (id: string) => removeById(KEYS.workflows, isWorkflow, id),
+  /** Reorder My Workflows (owner 2026-08-06): swap the workflow with its
+   *  neighbour; the stored order IS the display order. */
+  async moveWorkflow(id: string, dir: -1 | 1): Promise<Workflow[]> {
+    const list = await loadList(KEYS.workflows, isWorkflow);
+    const i = list.findIndex((w) => w.id === id);
+    const j = i + dir;
+    if (i < 0 || j < 0 || j >= list.length) return list;
+    const next = [...list];
+    [next[i], next[j]] = [next[j], next[i]];
+    await saveList(KEYS.workflows, next);
+    return next;
+  },
 
   listRuns: () => loadList(KEYS.runs, isRun),
   saveRun: (r: WorkflowRun) => upsert(KEYS.runs, isRun, r),

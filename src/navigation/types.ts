@@ -190,6 +190,8 @@ export type RootStackParamList = {
   CalcWorkflows: undefined;
   CalcWorkflowEdit: { id?: string } | undefined;
   CalcWorkflowRun: { id: string };
+  CalcProjects: undefined;
+  CalcResults: undefined;
   /** Digital Audio Sampling & Conversion Lab (owner 2026-07-29) — standalone
    *  laboratory with its own home + 8 modules. */
   DigitalLab: undefined;
