@@ -1,16 +1,16 @@
 /**
  * Feature flags (CM1, Booth 2026-07-11).
  *
- * `commercialMode` gates the ENTIRE commercial-first rebuild. Compile-time
- * default = FALSE so a release build is byte-identical to today's app. In dev
- * it can be flipped at runtime and persisted (see EntitlementProvider); the
- * persisted override only applies in __DEV__.
- *
- * Definition of done for every commercial milestone: flag OFF ⇒ current app
- * behavior unchanged; flag ON ⇒ new behavior.
+ * `commercialMode` gates the commercial-first rebuild. Institutional mode is
+ * being RETIRED (owner 2026-08-06) — the app being built IS the commercial app,
+ * so DEV defaults commercialMode ON (see EntitlementProvider) and all
+ * development/testing happens there. This compile-time default stays FALSE only
+ * so a RELEASE build isn't shipped commercial-first before commercial mode is
+ * declared complete; flip it to true at that point.
  */
 export const FLAG_DEFAULTS = {
-  /** Master switch for the commercial-first structure + entitlement gating. */
+  /** Master switch for the commercial-first structure + entitlement gating.
+   *  Release default; dev forces ON in EntitlementProvider. */
   commercialMode: false,
 } as const;
 

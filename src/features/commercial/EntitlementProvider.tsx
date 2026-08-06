@@ -104,25 +104,19 @@ type EntitlementContextValue = {
 const EntitlementContext = createContext<EntitlementContextValue | null>(null);
 
 export function EntitlementProvider({ children }: { children: ReactNode }) {
-  const [commercialMode, setCommercialModeState] = useState<boolean>(FLAG_DEFAULTS.commercialMode);
+  // Commercial-first (owner 2026-08-06): institutional mode is retired — the app
+  // being built IS the commercial app, so dev defaults to commercialMode ON. The
+  // compile-time release default (FLAG_DEFAULTS.commercialMode) stays FALSE until
+  // commercial mode is declared complete; flip it to true then. The long-press-
+  // logo toggle still flips it at runtime if a legacy peek is ever needed.
+  const [commercialMode, setCommercialModeState] = useState<boolean>(
+    __DEV__ ? true : FLAG_DEFAULTS.commercialMode,
+  );
   const [entitlement, setEntitlementState] = useState<Entitlement>('anonymous');
   // Once the owner force-picks a tier via the dev toggle, stop auto-deriving
   // from the session for the rest of this app run (so the toggle isn't clobbered
   // by a token refresh while they inspect a tier).
   const devOverrode = useRef(false);
-
-  // Hydrate the dev commercialMode flag once (dev only — release ignores it).
-  useEffect(() => {
-    if (!__DEV__) return;
-    let alive = true;
-    (async () => {
-      const flag = await AsyncStorage.getItem(DEV_COMMERCIAL_FLAG_KEY);
-      if (alive && flag != null) setCommercialModeState(flag === '1');
-    })();
-    return () => {
-      alive = false;
-    };
-  }, []);
 
   // Session-driven BASE entitlement (owner 2026-08-06): a signed-in account is at
   // least 'free' (save + album + achievements), while a no-account guest is
