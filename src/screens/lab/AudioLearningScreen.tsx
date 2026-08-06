@@ -84,7 +84,7 @@ export function AudioLearningScreen({ navigation }: Props) {
           accessibilityRole="button"
           accessibilityLabel={
             isMember
-              ? 'Training Labs. Academy membership. Open training labs.'
+              ? 'Training Labs. Academy membership. Explore the training labs.'
               : 'Training Labs. Requires Academy membership. Preview training labs.'
           }
           style={({ pressed }) => [styles.card, styles.cardMember, pressed && styles.cardPressed]}
@@ -106,7 +106,7 @@ export function AudioLearningScreen({ navigation }: Props) {
           {/* Free users PREVIEW → green (they can look); Academy members OPEN → purple (matches the card). */}
           <View style={[styles.cta, isMember ? styles.ctaMember : styles.ctaFree]}>
             <Text style={[styles.ctaText, isMember ? styles.ctaTextMember : styles.ctaTextFree]}>
-              {isMember ? 'OPEN TRAINING LABS' : 'PREVIEW TRAINING LABS'}
+              {isMember ? 'EXPLORE THE TRAINING LABS' : 'PREVIEW TRAINING LABS'}
             </Text>
             <Text style={[styles.ctaChevron, isMember ? styles.ctaTextMember : styles.ctaTextFree]}>›</Text>
           </View>
