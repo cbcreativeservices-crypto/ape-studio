@@ -17,6 +17,7 @@
  */
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { supabase } from '../../lib/supabase';
 
 export type EnrollTopic = { gs: number; favorite: boolean; active: boolean };
 
@@ -49,6 +50,28 @@ function emit() {
 }
 function persist() {
   void AsyncStorage.setItem(KEY, JSON.stringify(list));
+}
+
+// Mirror the enrollment list to the SERVER (owner 2026-08-06): user_topic_enrollments
+// is the master list the backend gates v3 study/quiz on. Debounced; signed-in only
+// (guests stay device-local). Best-effort — the local list is the source and
+// re-syncs on the next change if a sync fails.
+let syncTimer: ReturnType<typeof setTimeout> | null = null;
+function scheduleServerSync() {
+  if (syncTimer) clearTimeout(syncTimer);
+  syncTimer = setTimeout(() => {
+    void (async () => {
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (!data.session) return;
+        await supabase.rpc('sync_my_enrollments', {
+          p_items: list.map((e, i) => ({ gs: e.gs, favorite: e.favorite, active: e.active, position: i })),
+        });
+      } catch {
+        /* best-effort */
+      }
+    })();
+  }, 800);
 }
 
 async function hydrate(): Promise<void> {
@@ -102,6 +125,7 @@ async function hydrate(): Promise<void> {
 function commit(next: EnrollTopic[]) {
   list = next; // new identity so React snapshots update
   persist();
+  scheduleServerSync();
   emit();
 }
 
