@@ -204,18 +204,41 @@ export function ShareTermSheet({
 
   const useSelected = () => {
     const ids = pickerRows.filter((r) => selected.has(r.id)).map((r) => r.id);
-    if (!ids.length || !payload.resolve) return;
+    if (!ids.length || !payload.resolve) {
+      setView('main');
+      return;
+    }
     setBusy(true);
     void payload
       .resolve(ids)
       .then((terms) => {
         if (terms.length) {
-          setStaged(terms);
-          setView('main');
+          // ADD to the share (dedupe by term), keeping the original term first —
+          // pulling extra terms in builds ONE multi-term share, it doesn't
+          // replace the staged term (owner 2026-08-06).
+          setStaged((prev) => {
+            const seen = new Set(prev.map((t) => t.term.trim().toLowerCase()));
+            const merged = [...prev];
+            for (const t of terms) {
+              const k = t.term.trim().toLowerCase();
+              if (!seen.has(k)) {
+                seen.add(k);
+                merged.push(t);
+              }
+            }
+            return merged;
+          });
         }
       })
-      .finally(() => setBusy(false));
+      .finally(() => {
+        setBusy(false);
+        setView('main');
+      });
   };
+
+  /** Remove one term from the staged share (never below the first/original). */
+  const removeStaged = (term: string) =>
+    setStaged((prev) => (prev.length <= 1 ? prev : prev.filter((t) => t.term !== term)));
 
   return (
     <Modal visible transparent animationType="fade" onRequestClose={onClose}>
@@ -237,14 +260,29 @@ export function ShareTermSheet({
           {view === 'main' ? (
             <>
               <ScrollView style={styles.scroll} keyboardShouldPersistTaps="handled">
-                {/* Preview — what the recipient reads. */}
+                {/* Preview — what the recipient reads. When several terms are
+                    staged (the user pulled extras from Recent/Related/etc.), the
+                    main page CONFIRMS every included term with a removable row. */}
                 <View style={styles.preview}>
                   {multi ? (
-                    staged.map((t, i) => (
-                      <Text key={i} style={styles.previewTerm} numberOfLines={1}>
-                        {termHeading(t.term)}
-                      </Text>
-                    ))
+                    <>
+                      <Text style={styles.includedHead}>TERMS INCLUDED ({staged.length})</Text>
+                      {staged.map((t, i) => (
+                        <View key={i} style={styles.includedRow}>
+                          <Text style={styles.includedTerm} numberOfLines={1}>
+                            {termHeading(t.term)}
+                          </Text>
+                          <Pressable
+                            onPress={() => removeStaged(t.term)}
+                            hitSlop={10}
+                            accessibilityRole="button"
+                            accessibilityLabel={`Remove ${t.term}`}
+                          >
+                            <Text style={styles.includedRemove}>✕</Text>
+                          </Pressable>
+                        </View>
+                      ))}
+                    </>
                   ) : (
                     <>
                       <Text style={styles.previewTerm}>{termHeading(staged[0]?.term ?? '')}</Text>
@@ -426,6 +464,11 @@ const styles = StyleSheet.create({
   },
   previewTerm: { fontFamily: fonts.oswaldMedium, fontSize: 18, letterSpacing: 0.4, color: colors.textPrimary },
   previewDef: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
+  // Confirmation list of every term that will be sent (multi-term share).
+  includedHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.amber, marginBottom: 4 },
+  includedRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 3, gap: 10 },
+  includedTerm: { flex: 1, fontFamily: fonts.oswaldMedium, fontSize: 15, letterSpacing: 0.3, color: colors.textPrimary },
+  includedRemove: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, color: colors.textMuted },
 
   sectionHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.textMuted, marginTop: 16, marginBottom: 6 },
   toggleRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 7 },
