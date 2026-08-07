@@ -2016,14 +2016,14 @@ const styles = StyleSheet.create({
     borderTopWidth: 2.5,
     borderLeftWidth: 1.5,
     borderBottomWidth: 1.5,
-    // Right edge opened a touch (owner 2026-08-06): the 1px/20% lip barely
-    // read — the other three sides implied the cutout, the right didn't. A
-    // hair wider + brighter, still the panel's subtlest edge.
-    // Rev 2 (owner 2026-08-06): a tiny bit more space again — 1.5 -> 2.
-    borderRightWidth: 2,
+    // Right edge is a BLACK opening/gap (owner 2026-08-06 rev 3): earlier revs
+    // made it a WHITE lit lip, which ate INTO the black gap — wrong direction.
+    // Now black like the top/left shadow edges, and a touch bigger, so the
+    // cutout reads as a dark opening on the right too.
+    borderRightWidth: 3,
     borderTopColor: '#000000',
     borderLeftColor: '#000000',
-    borderRightColor: 'rgba(255,255,255,0.3)',
+    borderRightColor: '#000000',
     borderBottomColor: 'rgba(255,255,255,0.38)',
     borderRadius: 2.5,
   },
