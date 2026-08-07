@@ -57,8 +57,10 @@ export const LARGE_SHARE_THRESHOLD = 25;
 
 // --- Brand strings (restrained; single source of truth) ---------------------
 const COMPANY = BRAND.name; // "Pro Audio Training Academy" — no ® in glossary shares (spec)
-const WEBSITE = BRAND.website;
-const GLOSSARY_TAGLINE = 'Free Professional Audio Glossary';
+// Tappable full URL (owner 2026-08-06): a bare domain isn't a live link in many
+// messaging apps — always emit the https:// form.
+export const WEBSITE = /^https?:\/\//i.test(BRAND.website) ? BRAND.website : `https://${BRAND.website}`;
+export const GLOSSARY_TAGLINE = 'Free Professional Audio Glossary';
 const SINGLE_SOURCE = `${COMPANY} Glossary`;
 const MULTI_HEADER_LINE2 = 'Professional Audio Glossary';
 
@@ -140,8 +142,11 @@ export function singleTermText(t: GlossaryShareTerm, s: ShareSections): string {
     if (related.length) L.push('', 'RELATED TERMS', ...bulletList(related));
   }
 
-  // Compact, restrained footer.
-  L.push('', COMPANY, GLOSSARY_TAGLINE, WEBSITE);
+  // Compact, restrained footer — NO company-name line (owner 2026-08-06): the
+  // source "Pro Audio Training Academy Glossary" already appears at the top, so
+  // repeating the company at the end is a redundant branding tag. Just the
+  // tagline + tappable website.
+  L.push('', GLOSSARY_TAGLINE, WEBSITE);
   return L.join('\n');
 }
 

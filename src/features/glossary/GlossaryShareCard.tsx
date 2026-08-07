@@ -16,11 +16,11 @@ import { BRAND } from '../commercial/brand';
 import {
   dedupeRelated,
   termHeading,
+  GLOSSARY_TAGLINE,
+  WEBSITE,
   type GlossaryShareTerm,
   type ShareSections,
 } from './glossaryShare';
-
-const GLOSSARY_TAGLINE = 'Free Professional Audio Glossary';
 
 function OptionalSections({ t, s }: { t: GlossaryShareTerm; s: ShareSections }) {
   return (
@@ -114,11 +114,11 @@ export const GlossaryShareCard = forwardRef<
         </>
       ) : null}
 
-      {/* Footer — restrained; content stays the focus. */}
+      {/* Footer — restrained; content stays the focus. No company-name line
+          (owner 2026-08-06): the source line already names the glossary. */}
       <View style={styles.rule} />
-      {!multi ? <Text style={styles.footBrand}>{BRAND.name}</Text> : null}
       <Text style={styles.footLine}>{GLOSSARY_TAGLINE}</Text>
-      <Text style={styles.footWebsite}>{BRAND.website}</Text>
+      <Text style={styles.footWebsite}>{WEBSITE}</Text>
     </View>
   );
 });
