@@ -10,7 +10,7 @@ import { ResponseCurveGraph, eqResponseDb, type ResponseCurve } from '../../../.
 import { DragSlider } from '../../foundations/bits';
 import { MiniBtn } from './eqBits';
 import { colors, fonts } from '../../../../theme/tokens';
-import { baseSpectrumDb, bwOctFromQ, fFromNorm, fmtHz, normFromF } from './eqMath';
+import { baseSpectrumDb, bwOctFromQ, fFromNorm, fmtHz, gainColor, normFromF } from './eqMath';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
 
@@ -121,6 +121,7 @@ export function FixSignalModule(_p: EqModuleComponentProps) {
         value={(band.g + 18) / 36}
         onChange={(t) => setBand((b) => ({ ...b, g: Math.round((t * 36 - 18) * 2) / 2 }))}
         readout={`${band.g >= 0 ? '+' : ''}${band.g.toFixed(1)} dB`}
+        tint={gainColor(band.g, 18)}
       />
       <DragSlider
         label="Q"

@@ -21,6 +21,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import {
   biquadMagDb,
   fmtHz,
+  gainColor,
   graphicActualDb,
   graphicPhaseDeg,
   OCT_CENTERS,
@@ -143,7 +144,13 @@ export function GraphicTruthModule(_p: EqModuleComponentProps) {
         ) : (
           <ResponseCurveGraph curves={phaseCurves} dbRange={180} height={150} />
         )}
-        <GraphicBoard centers={OCT_CENTERS} gains={gains} onGain={setGain} onActiveIndex={setActiveIdx} />
+        <GraphicBoard
+          centers={OCT_CENTERS}
+          gains={gains}
+          onGain={setGain}
+          onActiveIndex={setActiveIdx}
+          tintFor={(i) => gainColor(gains[i], 12)}
+        />
         <Text style={styles.honest}>
           {view === 'mag'
             ? 'Real overlapping 1-octave bells, energy-combined — not the line through the caps.'

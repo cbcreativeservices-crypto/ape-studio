@@ -10,7 +10,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ResponseCurveGraph, type ResponseCurve } from '../../../../features/lab/fxViz';
 import { CheckQuestion, type CheckSpec } from '../../foundations/bits';
 import { colors, fonts } from '../../../../theme/tokens';
-import { butterworthHpDb } from './eqMath';
+import { butterworthHpDb, gainColor } from './eqMath';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
 
@@ -78,7 +78,8 @@ export function FilterSlopesModule(_p: EqModuleComponentProps) {
           <Text style={styles.panelEyebrow}>HPF @ 80 Hz — THE SLOPE FAMILY</Text>
           <Text style={styles.readout}>{slope} dB/OCT</Text>
         </View>
-        <ResponseCurveGraph curves={curves} dbRange={48} height={160} />
+        {/* A slope is pure attenuation (all ≤0 dB) → MIDI blue (owner 2026-08-07). */}
+        <ResponseCurveGraph curves={curves} dbRange={48} height={160} mainColor={gainColor(0)} />
         {/* Geometry proof: the REAL computed attenuation at 40 and 20 Hz. */}
         <Text style={styles.proof}>
           AT 40 Hz (1 oct below): {atOctBelow.toFixed(1)} dB · AT 20 Hz (2 oct below):{' '}

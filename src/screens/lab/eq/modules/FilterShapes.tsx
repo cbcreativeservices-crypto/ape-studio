@@ -10,7 +10,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ResponseCurveGraph, eqResponseDb, type ResponseCurve } from '../../../../features/lab/fxViz';
 import { CheckQuestion, DragSlider, type CheckSpec } from '../../foundations/bits';
 import { colors, fonts } from '../../../../theme/tokens';
-import { biquadMagDb, fFromNorm, fmtHz, normFromF, rbjNotch } from './eqMath';
+import { biquadMagDb, fFromNorm, fmtHz, gainColor, normFromF, rbjNotch } from './eqMath';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
 
@@ -43,6 +43,9 @@ export function FilterShapesModule(_p: EqModuleComponentProps) {
   const meta = SHAPES.find((s) => s.key === shape)!;
   const hasGain = shape === 'bell' || shape === 'lowShelf' || shape === 'highShelf';
   const hasQ = shape === 'bell' || shape === 'notch';
+  // MIDI level colour (owner 2026-08-07): a boost warms; a cut, notch, or a
+  // pure high/low-pass (all attenuation) stays blue.
+  const gc = hasGain ? gainColor(gainDb, 18) : gainColor(0);
 
   const curves = useMemo<ResponseCurve[]>(() => {
     const at =
@@ -82,13 +85,13 @@ export function FilterShapesModule(_p: EqModuleComponentProps) {
       <View style={styles.panel}>
         <View style={styles.panelHead}>
           <Text style={styles.panelEyebrow}>{meta.label}</Text>
-          <Text style={styles.readout}>
+          <Text style={[styles.readout, { color: gc }]}>
             {fmtHz(freq)}
             {hasGain ? ` · ${gainDb >= 0 ? '+' : ''}${gainDb.toFixed(1)} dB` : ''}
             {hasQ ? ` · Q ${q.toFixed(1)}` : ''}
           </Text>
         </View>
-        <ResponseCurveGraph curves={curves} dbRange={18} height={150} />
+        <ResponseCurveGraph curves={curves} dbRange={18} height={150} mainColor={gc} />
         <Text style={styles.teach}>{meta.teach}</Text>
         {shape === 'highPass' || shape === 'lowPass' ? (
           <Text style={styles.honest}>Drawn at 12 dB/octave — slopes get their own lesson next.</Text>
@@ -107,6 +110,7 @@ export function FilterShapesModule(_p: EqModuleComponentProps) {
           value={(gainDb + 18) / 36}
           onChange={(t) => setGainDb(Math.round((t * 36 - 18) * 2) / 2)}
           readout={`${gainDb >= 0 ? '+' : ''}${gainDb.toFixed(1)} dB`}
+          tint={gc}
         />
       ) : null}
       {hasQ ? (

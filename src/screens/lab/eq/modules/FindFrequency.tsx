@@ -18,7 +18,7 @@ import { ResponseCurveGraph, eqResponseDb, type ResponseCurve } from '../../../.
 import { DragSlider } from '../../foundations/bits';
 import { MiniBtn } from './eqBits';
 import { colors, fonts } from '../../../../theme/tokens';
-import { baseSpectrumDb, bwOctFromQ, fFromNorm, fmtHz, normFromF } from './eqMath';
+import { baseSpectrumDb, bwOctFromQ, fFromNorm, fmtHz, gainColor, normFromF } from './eqMath';
 import type { EqModuleComponentProps } from './registry';
 
 type Hidden = { f: number; g: number; q: number };
@@ -169,6 +169,7 @@ export function FindFrequencyModule(_p: EqModuleComponentProps) {
         value={(sel.g + 18) / 36}
         onChange={(t) => setSel({ g: Math.round((t * 36 - 18) * 2) / 2 })}
         readout={`${sel.g >= 0 ? '+' : ''}${sel.g.toFixed(1)} dB`}
+        tint={gainColor(sel.g, 18)}
       />
       <DragSlider
         label="Q"

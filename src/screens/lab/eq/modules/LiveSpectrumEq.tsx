@@ -20,7 +20,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { EngineGate } from '../../../tools/EngineGate';
 import { DragSlider } from '../../foundations/bits';
 import { MiniBtn } from './eqBits';
-import { butterworthHpDb, bwOctFromQ, fFromNorm, fmtHz, normFromF } from './eqMath';
+import { butterworthHpDb, bwOctFromQ, fFromNorm, fmtHz, gainColor, normFromF } from './eqMath';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
 
@@ -198,6 +198,7 @@ export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
                 value={(bellG + 18) / 36}
                 onChange={(t) => setBellG(Math.round((t * 36 - 18) * 2) / 2)}
                 readout={`${bellG >= 0 ? '+' : ''}${bellG.toFixed(1)} dB`}
+                tint={gainColor(bellG, 18)}
               />
               <DragSlider
                 label="Q"

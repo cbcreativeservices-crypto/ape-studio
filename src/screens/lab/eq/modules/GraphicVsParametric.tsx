@@ -13,7 +13,7 @@ import { ResponseCurveGraph, type ResponseCurve } from '../../../../features/lab
 import { CheckQuestion, type CheckSpec } from '../../foundations/bits';
 import { GraphicBoard, MiniBtn } from './eqBits';
 import { colors, fonts } from '../../../../theme/tokens';
-import { fmtHz, graphicActualDb, OCT_CENTERS, Q_1OCT, Q_THIRD, THIRD_CENTERS } from './eqMath';
+import { fmtHz, gainColor, graphicActualDb, OCT_CENTERS, Q_1OCT, Q_THIRD, THIRD_CENTERS } from './eqMath';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
 
@@ -75,7 +75,13 @@ export function GraphicVsParametricModule(_p: EqModuleComponentProps) {
             ? `${fmtHz(centers[activeIdx])}  ·  ${gains[activeIdx] >= 0 ? '+' : ''}${gains[activeIdx].toFixed(1)} dB`
             : 'Touch a slider to read its frequency and level'}
         </Text>
-        <GraphicBoard centers={centers} gains={gains} onGain={setGain} onActiveIndex={setActiveIdx} />
+        <GraphicBoard
+          centers={centers}
+          gains={gains}
+          onGain={setGain}
+          onActiveIndex={setActiveIdx}
+          tintFor={(i) => gainColor(gains[i], 12)}
+        />
         <Text style={styles.honest}>
           Curve = the ACTUAL combined response of the board’s real filters (fixed{' '}
           {board === 'oct' ? '1-octave' : '1/3-octave'} bells) — more on that in the next lesson.

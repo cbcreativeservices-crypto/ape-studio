@@ -10,7 +10,7 @@ import { ResponseCurveGraph, eqResponseDb, type EqBandSpec, type ResponseCurve }
 import { DragSlider } from '../../foundations/bits';
 import { MiniBtn } from './eqBits';
 import { colors, fonts } from '../../../../theme/tokens';
-import { bwOctFromQ, fFromNorm, fmtHz, normFromF } from './eqMath';
+import { bwOctFromQ, fFromNorm, fmtHz, gainColor, normFromF } from './eqMath';
 import type { EqModuleComponentProps } from './registry';
 
 type UserBand = { f: number; g: number; q: number };
@@ -130,6 +130,7 @@ export function MatchCurveModule(_p: EqModuleComponentProps) {
         value={(sel.g + 15) / 30}
         onChange={(t) => setSel({ g: Math.round((t * 30 - 15) * 2) / 2 })}
         readout={`${sel.g >= 0 ? '+' : ''}${sel.g.toFixed(1)} dB`}
+        tint={gainColor(sel.g, 15)}
       />
       <DragSlider
         label="Q"
