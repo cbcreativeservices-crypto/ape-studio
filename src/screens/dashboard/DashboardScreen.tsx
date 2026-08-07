@@ -252,7 +252,14 @@ function GlassScreen({
           title lets the title run larger/taller. */}
       <View style={styles.glassReadout}>
         <View style={styles.glassHeaderRow}>
-          <Text style={styles.glassTitle} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65}>
+          {/* Title LED goes GREEN once the method is fully complete (owner
+              2026-08-06) — matching the check on the right. */}
+          <Text
+            style={[styles.glassTitle, complete && styles.glassTitleDone]}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.65}
+          >
             {title}
           </Text>
           {complete ? (
@@ -272,7 +279,9 @@ function GlassScreen({
           )}
         </View>
         {segments != null ? (
-          <LedMeter filled={segments} fullWidth />
+          // flat: behind the glass the meter is lit segments only — no bevel,
+          // no molded frame (owner 2026-08-06).
+          <LedMeter filled={segments} fullWidth flat />
         ) : subtitle != null ? (
           <Text
             style={[styles.glassSub, { color: subtitleColor ?? valueColor, textShadowColor: subtitleColor ?? valueColor }]}
@@ -952,7 +961,8 @@ export function DashboardScreen() {
           onLogoPress={() => setDeckOpen(true)}
           logo={
             <View style={styles.studyLogo}>
-              <View style={{ transform: [{ scale: 2.1 }] }}>
+              {/* Scaled down with the smaller key (owner 2026-08-06). */}
+              <View style={{ transform: [{ scale: 1.75 }] }}>
                 <NavIcon icon="Study" lit showLabel={false} />
               </View>
             </View>
@@ -1026,42 +1036,51 @@ export function DashboardScreen() {
               meter as a vertical VU column (filling up) on the FAR RIGHT. */}
           <View style={styles.topicHeadRow}>
             <View style={styles.topicTextCol}>
-              {/* Tap the title area → full term list for this topic (Booth
-                  2026-07-18). Swipe still owned by the card's PanResponder. */}
-              <Pressable
-                onPress={isCustom ? openFlaggedTerms : openTerms}
-                accessibilityRole="button"
-                accessibilityLabel={isCustom ? `List terms in ${topic.name}` : `List all terms in ${topic.name}`}
-              >
-                <Text style={styles.topicEyebrow}>{dispTopicInactive ? 'CURRENT TOPIC · INACTIVE' : 'CURRENT TOPIC'}</Text>
-                <Text style={[styles.topicName, dispTopicInactive && styles.topicNameDim]}>{dispTopic.name}</Text>
-                <Text style={styles.topicMeta}>
-                  {dispIsCustom
-                    ? `${starred.size} TERM${starred.size === 1 ? '' : 'S'}`
-                    : `TOPIC ${dispIdx + 1} OF ${topics.length} · ${data.currentCourse.name.toUpperCase()}`}
-                  {swipeHint ? `  ·  ${swipeHint}` : ''}
-                </Text>
-              </Pressable>
-              {/* Overall progress — label left-justified, the amber % below it
-                  (owner 2026-08-01); both keep their existing text sizes. */}
-              <View style={styles.pctBlock}>
-                <Text style={styles.pctLabel}>OVERALL TOPIC PROGRESS</Text>
-                <Text style={styles.pctBig}>{dispOverallPct}%</Text>
+              {/* The whole left half is now the SAME glass-covered LED readout
+                  as the method screens below (owner 2026-08-06): recessed
+                  cutout, dark screen face, one tinted pane over the lit text.
+                  GlassCover never intercepts touches, so tap/swipe still work. */}
+              <View style={[styles.cutoutMount, styles.topicGlass]}>
+                {/* Tap the title area → full term list for this topic (Booth
+                    2026-07-18). Swipe still owned by the card's PanResponder. */}
+                <Pressable
+                  onPress={isCustom ? openFlaggedTerms : openTerms}
+                  accessibilityRole="button"
+                  accessibilityLabel={isCustom ? `List terms in ${topic.name}` : `List all terms in ${topic.name}`}
+                >
+                  <Text style={styles.topicEyebrow}>{dispTopicInactive ? 'CURRENT TOPIC · INACTIVE' : 'CURRENT TOPIC'}</Text>
+                  <Text style={[styles.topicName, dispTopicInactive && styles.topicNameDim]}>{dispTopic.name}</Text>
+                  <Text style={styles.topicMeta}>
+                    {dispIsCustom
+                      ? `${starred.size} TERM${starred.size === 1 ? '' : 'S'}`
+                      : `TOPIC ${dispIdx + 1} OF ${topics.length} · ${data.currentCourse.name.toUpperCase()}`}
+                    {swipeHint ? `  ·  ${swipeHint}` : ''}
+                  </Text>
+                </Pressable>
+                {/* Overall progress — label left-justified, the amber % below it
+                    (owner 2026-08-01); both keep their existing text sizes. */}
+                <View style={styles.pctBlock}>
+                  <Text style={styles.pctLabel}>OVERALL TOPIC PROGRESS</Text>
+                  <Text style={styles.pctBig}>{dispOverallPct}%</Text>
+                </View>
+                <GlassCover />
               </View>
             </View>
 
             <View style={styles.topicCenterCol}>
               {/* Tap the trophy → full-size popup (Booth 2026-07-11). */}
               <Pressable
-                style={styles.topicTrophy}
+                style={[styles.topicTrophy, styles.topicTrophyBevel]}
                 onPress={() => setTrophyOpen(true)}
                 accessibilityRole="button"
                 accessibilityLabel={`View ${topic.name} trophy`}
               >
+                {/* Image 92 inside the 2+2 bevel keeps the 100px footprint —
+                    the card height doesn't grow (owner 2026-08-06). */}
                 <TrophyImage
                   iconUrl={dispTopic.icon_url}
-                  size={100}
-                  radius={12}
+                  size={92}
+                  radius={10}
                   fallback={<View style={styles.topicTrophyEmpty} />}
                 />
               </Pressable>
@@ -1683,12 +1702,13 @@ const styles = StyleSheet.create({
   // NavIcon Study glyph scaled up to the logo footprint.
   // Bordered so it reads as a pressable BUTTON (owner 2026-08-06) — the study
   // headphones sit in a subtly-lit rounded key that opens the Topic Deck.
+  // Sized down (owner 2026-08-06) — the 47px key crowded the header title.
   studyLogo: {
-    width: 47,
-    height: 47,
+    width: 40,
+    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 10,
+    borderRadius: 9,
     borderWidth: 1,
     borderColor: 'rgba(120,155,190,0.55)',
     backgroundColor: 'rgba(47,155,255,0.08)',
@@ -1717,18 +1737,48 @@ const styles = StyleSheet.create({
   },
   // Header row + its three columns (owner 2026-08-01).
   topicHeadRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
-  topicTextCol: { flex: 1, minWidth: 0 },
+  // Stretches so its glass pane spans the full card height beside the trophy
+  // cluster (owner 2026-08-06).
+  topicTextCol: { flex: 1, minWidth: 0, alignSelf: 'stretch' },
+  // The left-half glass LED readout — same recipe as the method screens:
+  // cutoutMount edges + dark face + GlassCover pane (owner 2026-08-06).
+  topicGlass: {
+    flex: 1,
+    alignSelf: 'stretch',
+    overflow: 'hidden',
+    backgroundColor: '#050608',
+    borderRadius: 3,
+    paddingHorizontal: 9,
+    paddingVertical: 7,
+    justifyContent: 'space-between',
+  },
   topicCenterCol: { alignItems: 'center', justifyContent: 'flex-start', gap: 6 },
   topicMeterCol: { alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch' },
   topicTrophy: { width: 100, height: 100 },
+  // Beveled frame around the topic image (owner 2026-08-06): RAISED metal lip
+  // lit from the same top-left as the glass panes' specular sweep — light
+  // top/left edges, shadow bottom/right — complementary to (not copying) the
+  // recessed cutoutMount used by the readouts.
+  topicTrophyBevel: {
+    padding: 2,
+    borderWidth: 2,
+    borderTopColor: 'rgba(255,255,255,0.35)',
+    borderLeftColor: 'rgba(255,255,255,0.20)',
+    borderBottomColor: '#000000',
+    borderRightColor: 'rgba(0,0,0,0.72)',
+    borderRadius: 13,
+    backgroundColor: '#101113',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   // Jog wheel under the trophy image, centered + enlarged (owner 2026-08-01).
   topicJog: { width: 96, height: 96, alignItems: 'center', justifyContent: 'center' },
   // Small dial hidden (still interactive) while the full-size wheel is open.
   hidden: { opacity: 0 },
   topicTrophyEmpty: {
-    width: 100,
-    height: 100,
-    borderRadius: 12,
+    width: 92,
+    height: 92,
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.05)',
     backgroundColor: 'rgba(255,255,255,0.02)',
@@ -1836,6 +1886,8 @@ const styles = StyleSheet.create({
     textShadowRadius: 6,
     textShadowOffset: { width: 0, height: 0 },
   },
+  // Completed method — the title segment relights in the check green.
+  glassTitleDone: { color: '#3fe06a', textShadowColor: 'rgba(63,224,106,0.6)' },
   // The % (or quiz status) — colored LED digits; colored glow set inline. Larger
   // to the right of the title, right-aligned; never shrinks below the title.
   glassValue: {
@@ -1871,10 +1923,10 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 0 },
   },
   glassTopGlare: { position: 'absolute', top: 0, left: 0, right: 0, height: 1.5, backgroundColor: 'rgba(255,255,255,0.30)' },
-  // Glass tint (owner 2026-08-06, rev 2): 13% GLOSSY — a milky white sheet, not
-  // the earlier dark smoked layer (which read flat/matte). The white lift is the
-  // room light reflecting off the pane; the gradients still shape the depth.
-  glassTint: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.13)' },
+  // Glass tint (owner 2026-08-06, rev 3): 5% gloss — 13% washed the panes too
+  // light; a faint milky lift reads as room light off the glass without dimming
+  // the LEDs. The gradients still shape the depth.
+  glassTint: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.05)' },
   // Top row: engraved title (left, on the coat) + square % LED box (right).
   methodTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   // Virtually-engraved Cinzel nameplate (Booth 2026-07-15). The wrapper bounds

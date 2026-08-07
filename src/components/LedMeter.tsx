@@ -24,6 +24,7 @@ export function LedMeter({
   segWidth,
   fullWidth = false,
   vertical = false,
+  flat = false,
 }: {
   filled: number;
   /** Fixed per-segment width → the meter self-sizes (compact panel mode). */
@@ -34,6 +35,10 @@ export function LedMeter({
   /** Vertical VU column that fills UPWARD — the lowest (green) segment lights
    *  first, climbing to red at the top (owner 2026-08-01). Self-sizes. */
   vertical?: boolean;
+  /** BEHIND-GLASS mode (owner 2026-08-06, dashboard glass screens): the meter
+   *  sits under a tinted pane, so the physical cues go — no segment bevel, no
+   *  raised housing frame. Just flat lit glass segments on the dark face. */
+  flat?: boolean;
 }) {
   const f = Math.max(0, Math.min(SEG_COUNT, Math.round(filled)));
   return (
@@ -43,6 +48,7 @@ export function LedMeter({
         vertical && styles.housingVert,
         !vertical && segWidth != null && styles.housingCompact,
         !vertical && fullWidth && styles.housingFull,
+        flat && styles.housingFlat,
       ]}
     >
       {Array.from({ length: SEG_COUNT }, (_, i) => {
@@ -62,7 +68,8 @@ export function LedMeter({
               // Raised physical LED block (Booth 2026-07-10): beveled edges —
               // lit top-left, shadowed bottom-right — like a bar you could
               // feel standing proud of the housing (reference: VU/PPM meter).
-              styles.seg3d,
+              // Skipped in flat (behind-glass) mode.
+              !flat && styles.seg3d,
               lit
                 ? [
                     { backgroundColor: c },
@@ -123,6 +130,16 @@ const styles = StyleSheet.create({
   },
   housingCompact: { width: 'auto', alignSelf: 'flex-start' },
   housingFull: { width: '100%', alignSelf: 'stretch' },
+  // Behind-glass: strip the molded plastic frame — the pane supplies the depth.
+  housingFlat: {
+    borderTopWidth: 0,
+    borderLeftWidth: 0,
+    borderBottomWidth: 0,
+    borderRightWidth: 0,
+    backgroundColor: 'transparent',
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+  },
   // Vertical VU column — stack bottom→top so segment 0 (green) sits at the
   // bottom and the fill climbs upward. Self-sizes to its 21 blocks.
   //
