@@ -22,7 +22,8 @@ import { MethodIcon } from '../../components/MethodIcon';
 import { DeckIcon } from '../../components/DeckIcon';
 import { CoachMark } from '../../components/CoachMark';
 import { ShareIcon } from '../../components/ShareIcon';
-import { ShareTermSheet, type ShareTermPayload } from '../../components/ShareTermSheet';
+import { ShareTermSheet, type NamedTerm, type ShareTermPayload } from '../../components/ShareTermSheet';
+import type { GlossaryShareTerm } from '../../features/glossary/glossaryShare';
 import { LowLightDim } from '../../features/settings/LowLightLayer';
 import { BookmarkIcon, HoldHintPressable, TermSelectIcons } from '../../features/flags/TermSelectIcons';
 import { SpeakButton, stopAllSpeech } from '../../components/SpeakButton';
@@ -805,11 +806,24 @@ export function GlossaryScreen({ route, navigation }: Props) {
     toggleBookmark('glossary', id);
   }, []);
 
-  // Share a term + its definition — now opens the PREVIEW pop-up first (user
-  // request 2026-07-17); the native share sheet fires from its SHARE button.
+  // Share a term — opens the SHARE HUB (owner spec 2026-08-06): section toggles,
+  // text/image/copy, and multi-term selection from lists/related. The actual
+  // handlers (shareTerm/shareSelected) live further down, once entryById and
+  // termIndex are in scope. Multi-select over search results:
   const [sharePayload, setSharePayload] = useState<ShareTermPayload | null>(null);
-  const shareTerm = useCallback((e: Entry) => {
-    setSharePayload({ term: e.term, definition: e.plain_english || e.definition });
+  const [selectMode, setSelectMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const toggleSelected = useCallback((id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+  const exitSelectMode = useCallback(() => {
+    setSelectMode(false);
+    setSelectedIds(new Set());
   }, []);
 
   const recordRecent = useCallback((id: string) => {
@@ -1089,6 +1103,133 @@ export function GlossaryScreen({ route, navigation }: Props) {
   const termIndex = useMemo(() => (entries.length ? buildTermIndex(entries) : null), [entries]);
   const entryById = useMemo(() => new Map(entries.map((e) => [e.id, e])), [entries]);
   const courseCodeById = useMemo(() => new Map(courses.map((c) => [c.id, c.code])), [courses]);
+
+  // --- Sharing (owner spec 2026-08-06) --------------------------------------
+  // Refs keep the async share/resolve closures reading CURRENT data even though
+  // resolve() can fire long after the sheet opened (e.g. list picker → share).
+  const entryByIdRef = useRef(entryById);
+  entryByIdRef.current = entryById;
+  const termIndexRef = useRef(termIndex);
+  termIndexRef.current = termIndex;
+  const isMemberRef = useRef(isMember);
+  isMemberRef.current = isMember;
+  const detailsRef = useRef(details);
+  detailsRef.current = details;
+  const bookmarksRef = useRef(bookmarks);
+  bookmarksRef.current = bookmarks;
+  const starredRef = useRef(starred);
+  starredRef.current = starred;
+  const recentRef = useRef(recent);
+  recentRef.current = recent;
+
+  /** Fetch (or reuse) a term's full detail and RETURN it (fetchDetails only
+   *  caches). Same two-query shape: base fields from `glossary` (all tiers) +
+   *  the academy-gated `common_mistakes` from `glossary_full_v` (non-fatal). */
+  const getDetail = useCallback(async (id: string): Promise<EntryDetail | null> => {
+    const cached = detailsRef.current[id];
+    if (cached) return cached;
+    const { data } = await supabase
+      .from('glossary')
+      .select(
+        'plain_english, purpose_function, practical_application, scenario_contexts, related_terms, category, difficulty',
+      )
+      .eq('id', id)
+      .single();
+    if (!data) return null;
+    const { data: mv } = await supabase
+      .from('glossary_full_v')
+      .select('common_mistakes')
+      .eq('id', id)
+      .maybeSingle();
+    const detail = {
+      ...(data as object),
+      common_mistakes: (mv?.common_mistakes as string[] | null) ?? null,
+    } as EntryDetail;
+    setDetails((prev) => ({ ...prev, [id]: detail }));
+    return detail;
+  }, []);
+
+  /** Resolve one term id → shareable content. Definitions are used verbatim;
+   *  Common Mistakes are included ONLY for a permitted (academy) viewer. */
+  const buildShareTerm = useCallback(
+    async (id: string): Promise<GlossaryShareTerm | null> => {
+      const e = entryByIdRef.current.get(id);
+      if (!e) return null;
+      const d = await getDetail(id);
+      const purpose = [d?.purpose_function, d?.practical_application].filter(Boolean).join('\n\n') || null;
+      return {
+        term: e.term,
+        definition: e.definition,
+        plainEnglish: d?.plain_english ?? e.plain_english ?? null,
+        purpose,
+        relatedTerms: d?.related_terms ?? [],
+        commonMistakes: isMemberRef.current && d?.common_mistakes?.length ? d.common_mistakes : [],
+      };
+    },
+    [getDetail],
+  );
+
+  const resolveShareTerms = useCallback(
+    async (ids: string[]): Promise<GlossaryShareTerm[]> => {
+      const out: GlossaryShareTerm[] = [];
+      for (const id of ids) {
+        const t = await buildShareTerm(id);
+        if (t) out.push(t);
+      }
+      return out;
+    },
+    [buildShareTerm],
+  );
+
+  const namedFrom = useCallback((ids: Iterable<string>): NamedTerm[] => {
+    const out: NamedTerm[] = [];
+    for (const id of ids) {
+      const e = entryByIdRef.current.get(id);
+      if (e) out.push({ id: e.id, term: e.term });
+    }
+    return out;
+  }, []);
+
+  /** Open the share hub for a SINGLE term, offering list/related sources so the
+   *  user can expand it into a multi-term share. */
+  const shareTerm = useCallback(
+    async (e: Entry) => {
+      const primary = await buildShareTerm(e.id);
+      if (!primary) return;
+      const index = termIndexRef.current;
+      const related: NamedTerm[] = index
+        ? primary.relatedTerms
+            .map((name) => ({ name, ids: linkIdsFor(name, index, e.id) }))
+            .filter((r) => r.ids.length > 0)
+            .map((r) => ({ id: r.ids[0], term: r.name }))
+        : [];
+      setSharePayload({
+        terms: [primary],
+        mistakesAllowed: isMemberRef.current,
+        lists: {
+          bookmarks: namedFrom(bookmarksRef.current),
+          custom: namedFrom(starredRef.current),
+          recent: namedFrom(recentRef.current),
+        },
+        related,
+        resolve: resolveShareTerms,
+      });
+    },
+    [buildShareTerm, namedFrom, resolveShareTerms],
+  );
+
+  /** Open the share hub for the current multi-select set (search results). Tap
+   *  order is preserved (Set insertion order). */
+  const shareSelected = useCallback(
+    async (ids: string[]) => {
+      if (!ids.length) return;
+      const terms = await resolveShareTerms(ids);
+      if (!terms.length) return;
+      setSharePayload({ terms, mistakesAllowed: isMemberRef.current, resolve: resolveShareTerms });
+      exitSelectMode();
+    },
+    [resolveShareTerms, exitSelectMode],
+  );
 
   const visible = useMemo(() => {
     let list = entries;
@@ -1548,19 +1689,36 @@ export function GlossaryScreen({ route, navigation }: Props) {
             loading ? (
               <GlossaryLoading count={cachedCount} />
             ) : visible.length === 0 ? null : (
-              <Text style={styles.resultCount}>
-                {visible.length} result{visible.length === 1 ? '' : 's'} · {filterLabel}
-              </Text>
+              <View style={styles.resultHeaderRow}>
+                <Text style={styles.resultCount}>
+                  {selectMode
+                    ? `${selectedIds.size} selected`
+                    : `${visible.length} result${visible.length === 1 ? '' : 's'} · ${filterLabel}`}
+                </Text>
+                {/* SELECT-to-share (owner spec 2026-08-06): pick several terms
+                    from the results, then Share Selected as one multi-term share. */}
+                <Pressable
+                  onPress={() => (selectMode ? exitSelectMode() : setSelectMode(true))}
+                  hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityLabel={selectMode ? 'Cancel selection' : 'Select terms to share'}
+                >
+                  <Text style={styles.selectToggle}>{selectMode ? 'CANCEL' : 'SELECT'}</Text>
+                </Pressable>
+              </View>
             )
           }
           ListEmptyComponent={
             loading ? null : <Text style={styles.empty}>No results for {search.trim() || filterLabel}</Text>
           }
-          extraData={[expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search]}
+          extraData={[expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, selectMode, selectedIds]}
           renderItem={({ item }) => {
             // List view expands INLINE; card view stays compact and opens the
             // popup overlay instead (below).
-            const expanded = !cardView && expandedIds.has(item.id);
+            // In SELECT mode rows stay compact (no inline expand) and tapping
+            // toggles selection instead (owner spec 2026-08-06).
+            const picked = selectMode && selectedIds.has(item.id);
+            const expanded = !cardView && !selectMode && expandedIds.has(item.id);
             const d = details[item.id];
             const mediaUrl = mediaById[item.id];
             // Active search query → highlight its occurrences GREEN in the term
@@ -1568,8 +1726,12 @@ export function GlossaryScreen({ route, navigation }: Props) {
             const hq = search.trim();
             return (
               <Pressable
-                style={cardView ? styles.cardItem : [styles.entry, expanded && styles.entryExpanded]}
+                style={cardView ? styles.cardItem : [styles.entry, expanded && styles.entryExpanded, picked && styles.entryPicked]}
                 onPress={() => {
+                  if (selectMode) {
+                    toggleSelected(item.id);
+                    return;
+                  }
                   if (cardView) {
                     openPopupRoot(item.id); // card tap = popup trail root
                     return;
@@ -1581,9 +1743,24 @@ export function GlossaryScreen({ route, navigation }: Props) {
                   // (Booth 2026-07-09b). Scrolling afterward is unaffected.
                   if (willExpand) scrollTermToTop(item.id);
                 }}
-                accessibilityRole="button"
-                accessibilityState={{ expanded }}
+                accessibilityRole={selectMode ? 'checkbox' : 'button'}
+                accessibilityState={selectMode ? { checked: picked } : { expanded }}
               >
+                {/* Selection overlay — sits above the row content so its own
+                    action icons don't fire while picking terms to share. */}
+                {selectMode ? (
+                  <Pressable
+                    style={[styles.selectOverlay, picked && styles.selectOverlayOn]}
+                    onPress={() => toggleSelected(item.id)}
+                    accessibilityRole="checkbox"
+                    accessibilityState={{ checked: picked }}
+                    accessibilityLabel={`Select ${item.term}`}
+                  >
+                    <View style={[styles.selBox, picked && styles.selBoxOn]}>
+                      {picked ? <Text style={styles.selCheck}>✓</Text> : null}
+                    </View>
+                  </Pressable>
+                ) : null}
                 <View style={styles.entryHeader}>
                   <View style={styles.entryTermWrap}>
                     <Text
@@ -1616,7 +1793,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
                     {/* Share this term + definition (Booth 2026-07-18) — the
                         familiar box-with-up-arrow share glyph. */}
                     <Pressable
-                      onPress={() => shareTerm(item)}
+                      onPress={() => void shareTerm(item)}
                       hitSlop={10}
                       accessibilityRole="button"
                       accessibilityLabel={`Share ${item.term}`}
@@ -1715,6 +1892,23 @@ export function GlossaryScreen({ route, navigation }: Props) {
             );
           }}
         />
+
+        {/* SHARE SELECTED bar — appears while picking terms to share (owner spec
+            2026-08-06). Resolves the tapped set (order preserved) and opens the
+            share hub in multi-term mode. */}
+        {selectMode && selectedIds.size > 0 ? (
+          <View style={styles.shareSelectedBar}>
+            <Pressable
+              style={styles.shareSelectedBtn}
+              onPress={() => void shareSelected(Array.from(selectedIds))}
+              accessibilityRole="button"
+              accessibilityLabel={`Share ${selectedIds.size} selected terms`}
+            >
+              <ShareIcon size={16} color="#0b1220" />
+              <Text style={styles.shareSelectedText}>SHARE SELECTED ({selectedIds.size})</Text>
+            </Pressable>
+          </View>
+        ) : null}
 
         {/* Term popup — card taps AND cross-link hops land here (Feature 1).
             The trail unwinds one hop per back (pill or tap on the body),
@@ -2292,7 +2486,59 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
     paddingLeft: 2,
   },
+  resultHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  selectToggle: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 11.5,
+    letterSpacing: 1.2,
+    color: colors.amber,
+    paddingBottom: 8,
+    paddingRight: 2,
+  },
   entry: { paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#1a1a1a' },
+  // Selected row (share-select mode).
+  entryPicked: { backgroundColor: 'rgba(255,180,0,0.07)' },
+  selectOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    paddingRight: 6,
+  },
+  selectOverlayOn: { backgroundColor: 'rgba(255,180,0,0.05)' },
+  selBox: {
+    width: 22,
+    height: 22,
+    borderRadius: 6,
+    borderWidth: 1.5,
+    borderColor: '#4a4b52',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#101012',
+  },
+  selBoxOn: { borderColor: colors.amber, backgroundColor: 'rgba(255,180,0,0.18)' },
+  selCheck: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: colors.amber, lineHeight: 17 },
+  shareSelectedBar: { position: 'absolute', left: 0, right: 0, bottom: 12, alignItems: 'center' },
+  shareSelectedBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: colors.amber,
+    borderRadius: 24,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 6,
+  },
+  shareSelectedText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, color: '#0b1220' },
   // Expanded rows get a BORDER around the whole term+definition (like the card
   // popup), persisting on scroll; several can be open at once (user request
   // 2026-07-18).

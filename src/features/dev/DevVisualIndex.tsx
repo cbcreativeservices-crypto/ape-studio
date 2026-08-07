@@ -17,15 +17,25 @@ import { INTRO_STORAGE_PREFIX, SCREEN_INTROS, type IntroKey } from '../intro/scr
 import { FLAGGED_TOPIC_ID } from '../flags/flaggedStore';
 import { requestDevPreview } from './devPreview';
 import { TrophyModal } from '../../components/TrophyModal';
-import { ShareTermSheet } from '../../components/ShareTermSheet';
+import { ShareTermSheet, type ShareTermPayload } from '../../components/ShareTermSheet';
 import { LearningIntroSheet } from '../intro/LearningIntroSheet';
 import type { LearningIntro } from '../intro/learningIntros';
 import { setPopupsSuppressed, usePopupsSuppressed } from './popupSuppressStore';
 
 const MOCK_STUDY = { achievementId: FLAGGED_TOPIC_ID, topicName: 'Preview' };
-const MOCK_SHARE = {
-  term: 'Phantom Power',
-  definition: '48 V DC sent down a balanced mic cable to power condenser microphones and active DIs.',
+const MOCK_SHARE: ShareTermPayload = {
+  terms: [
+    {
+      term: 'Phantom Power',
+      definition: '48 V DC sent down a balanced mic cable to power condenser microphones and active DIs.',
+      plainEnglish: 'A safe DC voltage that powers condenser mics through the same XLR cable that carries their signal.',
+      purpose: 'Powers condenser capsules and active direct boxes without a separate supply.',
+      relatedTerms: ['Condenser microphone', 'Balanced audio', 'XLR', 'Direct box'],
+      commonMistakes: [],
+    },
+  ],
+  mistakesAllowed: false,
+  resolve: async () => [],
 };
 const MOCK_INTRO: LearningIntro = {
   what: 'Safe practices for working around professional audio gear, power, and rigging.',
