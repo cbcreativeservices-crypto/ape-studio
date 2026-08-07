@@ -12,7 +12,7 @@
  * Dashboard root) that MIRRORS the dial's rotation via a shared Animated.Value.
  */
 import { useMemo, useRef } from 'react';
-import { PanResponder, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { PanResponder, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import Reanimated, { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 import Svg, { Circle, Defs, Ellipse, RadialGradient, Stop } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
@@ -296,20 +296,41 @@ export function JogDial({
 
 /** The big centred wheel shown while the dial is held — mirrors the dial's
  *  rotation. NOT dimmed (owner 2026-08-01): the current-topic container behind
- *  it stays fully visible and changes as you turn. Pointer-transparent (the
- *  finger stays on the small dial). Mount it at the screen root so it isn't
- *  clipped. */
-export function JogOverlay({ active, spin }: { active: boolean; spin: SharedValue<number> }) {
+ *  it stays fully visible and changes as you turn. Pointer-transparent except
+ *  the ✕ close key (the finger stays on the small dial). Mount it at the
+ *  screen root so it isn't clipped. */
+export function JogOverlay({
+  active,
+  spin,
+  onClose,
+}: {
+  active: boolean;
+  spin: SharedValue<number>;
+  /** Guaranteed escape hatch (owner 2026-08-06): the parked wheel closes on a
+   *  second TAP, but a slow/wiggly tap re-parks instead — this ✕ always works. */
+  onClose?: () => void;
+}) {
   const { width, height } = useWindowDimensions();
   // 23% larger than before (owner 2026-08-01), still capped to fit the screen.
   const size = Math.round(Math.min(width * 0.62, height * 0.4) * 1.23);
   if (!active) return null;
   return (
-    <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.overlay]}>
+    <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, styles.overlay]}>
       {/* Shifted down so the topic title + % stay visible (owner 2026-08-06);
           the dial's angle centre shifts with it. */}
-      <View style={{ transform: [{ translateY: OVERLAY_Y_OFFSET }] }}>
+      <View pointerEvents="box-none" style={{ transform: [{ translateY: OVERLAY_Y_OFFSET }] }}>
         <JogStack size={size} spin={spin} />
+        {onClose ? (
+          <Pressable
+            onPress={onClose}
+            hitSlop={10}
+            style={styles.closeKey}
+            accessibilityRole="button"
+            accessibilityLabel="Close the topic wheel"
+          >
+            <Text style={styles.closeX}>✕</Text>
+          </Pressable>
+        ) : null}
       </View>
     </View>
   );
@@ -321,4 +342,24 @@ const styles = StyleSheet.create({
   // No dim — the current-topic container behind stays visible and changes as you
   // turn (owner 2026-08-01).
   overlay: { alignItems: 'center', justifyContent: 'center', zIndex: 60 },
+  // ✕ close key at the wheel's top-right corner (owner 2026-08-06) — a small
+  // dark console key; the one control on the otherwise touch-transparent
+  // overlay, so a stuck-open wheel can always be dismissed.
+  closeKey: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#111214',
+    borderWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.32)',
+    borderLeftColor: 'rgba(255,255,255,0.18)',
+    borderBottomColor: '#000000',
+    borderRightColor: 'rgba(0,0,0,0.7)',
+  },
+  closeX: { fontSize: 16, lineHeight: 19, color: '#e8ecf2', fontWeight: '600' },
 });

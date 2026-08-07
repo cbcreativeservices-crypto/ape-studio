@@ -1517,9 +1517,20 @@ export function DashboardScreen() {
         <LowLightDim />
       </Modal>
 
-      {/* Big-wheel jog popup (owner 2026-08-01) — turn to scroll topics, release
-          to close. */}
-      <JogOverlay active={jogActive} spin={jogSpin} />
+      {/* Big-wheel jog popup (owner 2026-08-01) — stays open while in use; the
+          ✕ key (or a clean second tap on the dial) closes it (owner 2026-08-06). */}
+      <JogOverlay
+        active={jogActive}
+        spin={jogSpin}
+        onClose={() => {
+          // Same close-and-commit as the second-tap path.
+          jogParkedRef.current = false;
+          setJogParked(false);
+          jogActiveRef.current = false;
+          setJogActive(false);
+          goTo(scrollIdxRef.current);
+        }}
+      />
 
       {/* Topic-deck manager (blue Study icon) — reorder / remove / jump / mode. */}
       <TopicDeckSheet
