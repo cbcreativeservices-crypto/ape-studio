@@ -2008,7 +2008,8 @@ const styles = StyleSheet.create({
     // Right edge opened a touch (owner 2026-08-06): the 1px/20% lip barely
     // read — the other three sides implied the cutout, the right didn't. A
     // hair wider + brighter, still the panel's subtlest edge.
-    borderRightWidth: 1.5,
+    // Rev 2 (owner 2026-08-06): a tiny bit more space again — 1.5 -> 2.
+    borderRightWidth: 2,
     borderTopColor: '#000000',
     borderLeftColor: '#000000',
     borderRightColor: 'rgba(255,255,255,0.3)',
