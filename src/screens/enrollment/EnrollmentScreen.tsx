@@ -26,7 +26,7 @@ import { DeckIcon } from '../../components/DeckIcon';
 import { HomeIcon } from '../../components/HomeIcon';
 import { NavIcon } from '../../components/nav/NavIcon';
 import { LedMeter, segmentsForPct } from '../../components/LedMeter';
-import { MATRIX_SUBJECTS } from '../../data/courseTopicMatrix';
+import { fetchV3Curriculum, type V3Field } from '../../data/v3Curriculum';
 import {
   COREQ_TOPIC_GS,
   FOUNDATIONS_LAB_ROUTE,
@@ -80,15 +80,25 @@ const DRAG_ROW_H = 84; // drag distance per reorder step (tuned for collapsed + 
 
 type FilterKey = 'az' | 'home' | 'done' | 'new';
 
-/** gs → { name, subject } from the v2 curriculum matrix. */
-function useTopicIndex() {
-  return useMemo(() => {
-    const m = new Map<number, { name: string; subject: string }>();
-    for (const s of MATRIX_SUBJECTS) {
-      for (const t of s.topics) m.set(t.gs, { name: t.name, subject: s.name });
+/** A subject in the matrix shape the browse renders, built from the LIVE v3
+ *  curriculum (owner 2026-08-06). `order` is a stable synthetic index across
+ *  fields; `field` is carried for the field/subject grouping label. */
+type FlatSubject = { order: number; name: string; field: string; topics: { gs: number; name: string }[] };
+
+function flatSubjectsFromV3(fields: V3Field[]): FlatSubject[] {
+  let order = 0;
+  const out: FlatSubject[] = [];
+  for (const f of fields) {
+    for (const s of f.subjects) {
+      out.push({
+        order: order++,
+        name: s.subject,
+        field: f.field,
+        topics: s.topics.map((t) => ({ gs: t.gs, name: t.name })),
+      });
     }
-    return m;
-  }, []);
+  }
+  return out;
 }
 
 /**
@@ -162,7 +172,22 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   const paid = entitlement === 'academy';
 
   const enrolled = useEnrollment();
-  const topicIndex = useTopicIndex();
+  // LIVE v3 curriculum (owner 2026-08-06) — replaces the retired bundled v2 matrix.
+  const [v3Subjects, setV3Subjects] = useState<FlatSubject[]>([]);
+  useEffect(() => {
+    let alive = true;
+    void fetchV3Curriculum().then((fields) => {
+      if (alive) setV3Subjects(flatSubjectsFromV3(fields));
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+  const topicIndex = useMemo(() => {
+    const m = new Map<number, { name: string; subject: string }>();
+    for (const s of v3Subjects) for (const t of s.topics) m.set(t.gs, { name: t.name, subject: s.name });
+    return m;
+  }, [v3Subjects]);
   const [openSubject, setOpenSubject] = useState<number | null>(enrollUi.openSubject);
   const [payPrompt, setPayPrompt] = useState(false);
   const [homeSetupOpen, setHomeSetupOpen] = useState(false);
@@ -369,7 +394,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   // topics that aren't (or are no longer) enrolled (user request 2026-07-22).
   const expandedBrowseGs = useMemo<number[]>(() => {
     if (browseTab === 'subject') {
-      const s = MATRIX_SUBJECTS.find((x) => x.order === openSubject);
+      const s = v3Subjects.find((x) => x.order === openSubject);
       return s ? s.topics.map((t) => t.gs) : [];
     }
     if (!openItem) return [];
@@ -382,7 +407,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
       return p ? p.requiredTopics : [];
     }
     return [];
-  }, [browseTab, openItem, openSubject]);
+  }, [browseTab, openItem, openSubject, v3Subjects]);
 
   const allGs = useMemo(
     () => Array.from(new Set([...COREQ_TOPIC_GS, ...enrolled.map((e) => e.gs), ...expandedBrowseGs])),
@@ -670,8 +695,8 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
 
   // All topics A–Z for the "Topics" browse tab.
   const allTopicsAZ = useMemo(
-    () => MATRIX_SUBJECTS.flatMap((s) => s.topics.map((t) => ({ gs: t.gs, name: t.name }))).sort((a, b) => a.name.localeCompare(b.name)),
-    [],
+    () => v3Subjects.flatMap((s) => s.topics.map((t) => ({ gs: t.gs, name: t.name }))).sort((a, b) => a.name.localeCompare(b.name)),
+    [v3Subjects],
   );
   // One add/remove topic row (shared by every browse tab). Ungated — free users
   // build their list too (user request 2026-07-22).
@@ -1427,15 +1452,23 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                 })
               : browseTab === 'topic'
                 ? <View style={styles.subjectCard}>{allTopicsAZ.map((t) => topicAddRow(t.gs, t.name))}</View>
-                : MATRIX_SUBJECTS.map((s) => {
+                : v3Subjects.map((s, i) => {
                     const open = openSubject === s.order;
                     // Whole-subject add (user request 2026-07-22) — amber ADD ALL
                     // mirroring certs/programs; creates one subject bundle.
                     const key = `subject:${s.name}`;
                     const added = bundleKeySet.has(key);
                     const subjectGs = s.topics.map((t) => t.gs);
+                    // Field header shown once per field group (owner 2026-08-06:
+                    // browse is organized FIELD → SUBJECT → TOPIC).
+                    const showField = i === 0 || v3Subjects[i - 1].field !== s.field;
                     return (
                       <View key={s.order} style={styles.subjectCard}>
+                        {showField ? (
+                          <Text style={[styles.subjectName, { color: colors.textSub, fontSize: 12, letterSpacing: 1, marginBottom: 4 }]} numberOfLines={1}>
+                            {s.field.toUpperCase()}
+                          </Text>
+                        ) : null}
                         <View style={styles.browseItemHead}>
                           <Pressable style={styles.browseItemName} onPress={() => setOpenSubject((prev) => (prev === s.order ? null : s.order))} accessibilityRole="button" accessibilityState={{ expanded: open }} accessibilityLabel={s.name}>
                             <Text style={styles.subjectChevron}>{open ? '▾' : '▸'}</Text>
