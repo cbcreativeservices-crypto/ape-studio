@@ -1,17 +1,15 @@
 /**
  * Feature flags (CM1, Booth 2026-07-11).
  *
- * `commercialMode` gates the commercial-first rebuild. Institutional mode is
- * being RETIRED (owner 2026-08-06) — the app being built IS the commercial app,
- * so DEV defaults commercialMode ON (see EntitlementProvider) and all
- * development/testing happens there. This compile-time default stays FALSE only
- * so a RELEASE build isn't shipped commercial-first before commercial mode is
- * declared complete; flip it to true at that point.
+ * `commercialMode` gates the commercial-first structure. Institutional mode is
+ * RETIRED (owner 2026-08-06) — the app IS the commercial app, so this now
+ * defaults ON at boot (dev AND release). The institutional code paths remain
+ * only as dead branches reachable via the dev logo long-press for inspection.
  */
 export const FLAG_DEFAULTS = {
   /** Master switch for the commercial-first structure + entitlement gating.
-   *  Release default; dev forces ON in EntitlementProvider. */
-  commercialMode: false,
+   *  Defaults ON (owner 2026-08-06); dev long-press-logo can toggle it off. */
+  commercialMode: true,
 } as const;
 
 export type FlagName = keyof typeof FLAG_DEFAULTS;

@@ -104,10 +104,11 @@ type EntitlementContextValue = {
 const EntitlementContext = createContext<EntitlementContextValue | null>(null);
 
 export function EntitlementProvider({ children }: { children: ReactNode }) {
-  // Boot default (owner 2026-08-06): commercialMode stays OFF at startup so the
-  // app boots to the finished login screen, NOT the still-in-progress commercial
-  // Landing. Commercial mode must be completed first; flip the default here (or
-  // long-press the logo at runtime) to work on it.
+  // Boot default (owner 2026-08-06): commercialMode is ON — institutional mode is
+  // retired and the app IS the commercial app (FLAG_DEFAULTS.commercialMode=true).
+  // Boot still routes to the finished login screen (Splash → Auth/Main); the WIP
+  // pre-auth Landing is not wired into startup. Long-press the logo to toggle the
+  // dead institutional path for inspection.
   const [commercialMode, setCommercialModeState] = useState<boolean>(FLAG_DEFAULTS.commercialMode);
   const [entitlement, setEntitlementState] = useState<Entitlement>('anonymous');
   // Once the owner force-picks a tier via the dev toggle, stop auto-deriving
