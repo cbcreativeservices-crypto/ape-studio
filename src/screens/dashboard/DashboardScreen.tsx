@@ -1137,7 +1137,10 @@ export function DashboardScreen() {
 
             {/* Overall progress — vertical VU column, filling upward. */}
             <View style={styles.topicMeterCol}>
-              <LedMeter filled={segmentsForPct(dispOverallPct)} vertical />
+              {/* Always at least 1 green segment lit (owner 2026-08-06). midi:
+                  EXPERIMENTAL blue→red comparison on this vertical meter ONLY —
+                  likely to be reverted. */}
+              <LedMeter filled={Math.max(1, segmentsForPct(dispOverallPct))} vertical midi />
             </View>
           </View>
           {/* Topic/course intro buttons removed (user request 2026-07-18) — the
@@ -1254,7 +1257,8 @@ export function DashboardScreen() {
                       // Command AMBER, not pctColor's orange (owner 2026-08-06) —
                       // completion is signalled by the green check, not a ramp.
                       valueColor={isApplicable ? colors.amber : '#6f7072'}
-                      segments={isApplicable ? segmentsForPct(pct) : 0}
+                      // Always at least 1 green segment lit (owner 2026-08-06).
+                      segments={isApplicable ? Math.max(1, segmentsForPct(pct)) : 0}
                       complete={complete}
                     />
                   </View>

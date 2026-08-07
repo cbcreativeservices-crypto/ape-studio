@@ -319,7 +319,12 @@ export function JogOverlay({
       {/* Shifted down so the topic title + % stay visible (owner 2026-08-06);
           the dial's angle centre shifts with it. */}
       <View pointerEvents="box-none" style={{ transform: [{ translateY: OVERLAY_Y_OFFSET }] }}>
-        <JogStack size={size} spin={spin} />
+        {/* The wheel is PURELY VISUAL — it must NOT capture touches, or it
+            steals the turn gesture from the small dial underneath (owner
+            2026-08-06 fix). Only the ✕ key below is touchable. */}
+        <View pointerEvents="none">
+          <JogStack size={size} spin={spin} />
+        </View>
         {onClose ? (
           <Pressable
             onPress={onClose}

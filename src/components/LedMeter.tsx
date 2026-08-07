@@ -8,6 +8,7 @@
  * screens' animation in M4; the meter renders integer fills here.)
  */
 import { Platform, StyleSheet, View } from 'react-native';
+import { levelColor } from '../features/tools/levelColor';
 
 const SEG_COUNT = 21;
 
@@ -19,12 +20,19 @@ function colorFor(i: number): string {
   return '#cc0000';
 }
 
+// MIDI velocity ramp (blue→red) for the whole strip — EXPERIMENTAL comparison
+// (owner 2026-08-06, likely to be reverted). Segment 0 = blue (low), top = red.
+function midiColorFor(i: number): string {
+  return levelColor(i / (SEG_COUNT - 1));
+}
+
 export function LedMeter({
   filled,
   segWidth,
   fullWidth = false,
   vertical = false,
   flat = false,
+  midi = false,
 }: {
   filled: number;
   /** Fixed per-segment width → the meter self-sizes (compact panel mode). */
@@ -39,8 +47,13 @@ export function LedMeter({
    *  sits under a tinted pane, so the physical cues go — no segment bevel, no
    *  raised housing frame. Just flat lit glass segments on the dark face. */
   flat?: boolean;
+  /** EXPERIMENTAL (owner 2026-08-06, likely revert): recolor the whole strip
+   *  on the MIDI blue→red velocity ramp instead of the green→red positional
+   *  scheme. Currently used only by the Total Progress vertical meter. */
+  midi?: boolean;
 }) {
   const f = Math.max(0, Math.min(SEG_COUNT, Math.round(filled)));
+  const segColor = midi ? midiColorFor : colorFor;
   return (
     <View
       style={[
@@ -53,7 +66,7 @@ export function LedMeter({
     >
       {Array.from({ length: SEG_COUNT }, (_, i) => {
         const lit = i < f;
-        const c = colorFor(i);
+        const c = segColor(i);
         return (
           <View
             key={i}
