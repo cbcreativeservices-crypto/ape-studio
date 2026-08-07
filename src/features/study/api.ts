@@ -258,6 +258,25 @@ export async function fetchTopicMedia(glossaryIds: string[]): Promise<Record<str
   }
 }
 
+/** Topic name(s) a glossary term belongs to (owner 2026-08-06) — for the
+ *  Flashcards linked-term overlay, which shows the external term's topic. Dedups
+ *  by NAME so the v3 duplicate achievements (same name, different ids) collapse
+ *  to one topic label. Non-fatal: returns [] on any error. */
+export async function fetchTermTopicNames(glossaryId: string): Promise<string[]> {
+  try {
+    const { data: links } = await supabase
+      .from('glossary_topics')
+      .select('achievement_id')
+      .eq('glossary_id', glossaryId);
+    const ids = [...new Set(((links ?? []) as any[]).map((r) => r.achievement_id).filter(Boolean))];
+    if (ids.length === 0) return [];
+    const { data: achs } = await supabase.from('achievements').select('id, name').in('id', ids);
+    return [...new Set(((achs ?? []) as any[]).map((a) => a.name).filter(Boolean))] as string[];
+  } catch {
+    return [];
+  }
+}
+
 /**
  * Smooth display progress (Booth 2026-07-07: LEDs must creep, never leap).
  * Mirrors the SERVER completion rule exactly (owner 2026-08-06 gate change):

@@ -137,6 +137,37 @@ export async function fetchCommercialDashboard(order: number, caps: Caps): Promi
     }
   }
 
+  // v3 DUPLICATE-ACHIEVEMENT fallback (owner 2026-08-06): the active catalog
+  // achievement can have 0 glossary_topics while an inactive same-NAMED row holds
+  // the terms (v3 mapped them to the wrong id). Give those topics the sibling's
+  // term count so the LED denominator is real and locally-mirrored study progress
+  // shows. Mirrors the study read-path union in fetchTopicItems. (Server progress
+  // recording under the empty id is a separate backend repoint — flagged.)
+  const zeroTopics = topics.filter((t) => (itemCountByTopic.get(t.id) ?? 0) === 0);
+  if (zeroTopics.length) {
+    const nameById = new Map((achRows ?? []).map((a) => [(a as AchievementRow).id, (a as AchievementRow).name]));
+    const idsByName = new Map<string, string[]>();
+    for (const a of (achRows ?? []) as AchievementRow[]) {
+      idsByName.set(a.name, [...(idsByName.get(a.name) ?? []), a.id]);
+    }
+    const sibOwner = new Map<string, string>(); // sibling id → the zero-count topic it feeds
+    for (const t of zeroTopics) {
+      const nm = nameById.get(t.id);
+      if (!nm) continue;
+      for (const sid of idsByName.get(nm) ?? []) if (sid !== t.id) sibOwner.set(sid, t.id);
+    }
+    if (sibOwner.size) {
+      const { data: sibItems } = await supabase
+        .from('glossary_topics')
+        .select('achievement_id')
+        .in('achievement_id', [...sibOwner.keys()]);
+      for (const r of (sibItems ?? []) as { achievement_id: string }[]) {
+        const owner = sibOwner.get(r.achievement_id);
+        if (owner) itemCountByTopic.set(owner, (itemCountByTopic.get(owner) ?? 0) + 1);
+      }
+    }
+  }
+
   // 5. Compose progressByTopic: server row if present, else the entitlement.
   const progressByTopic = new Map<string, TopicProgress>();
   for (const t of topics) {

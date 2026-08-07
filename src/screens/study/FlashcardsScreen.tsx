@@ -35,6 +35,7 @@ import {
   fetchMethodState,
   fetchTopicItems,
   fetchTopicMedia,
+  fetchTermTopicNames,
   studyDisplayPct,
   type GlossaryItem,
   type ItemStates,
@@ -1654,6 +1655,18 @@ function LinkedTermOverlay({
   topInset: number;
   onClose: () => void;
 }) {
+  // Resolve the TOPIC(s) this external term belongs to (owner 2026-08-06).
+  const [topics, setTopics] = useState<string[]>([]);
+  useEffect(() => {
+    let alive = true;
+    setTopics([]);
+    void fetchTermTopicNames(item.id).then((names) => {
+      if (alive) setTopics(names);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [item.id]);
   return (
     <View style={[styles.linkedRoot, { paddingTop: topInset }]}>
       <Pressable
@@ -1672,6 +1685,12 @@ function LinkedTermOverlay({
           </View>
         ) : null}
         <Text style={styles.fsTermSmall}>{item.term}</Text>
+        {topics.length ? (
+          <>
+            <Text style={styles.linkedEyebrow}>{topics.length > 1 ? 'TOPICS' : 'TOPIC'}</Text>
+            <Text style={styles.fsDef}>{topics.join(' · ')}</Text>
+          </>
+        ) : null}
         <Text style={styles.linkedEyebrow}>DEFINITION</Text>
         <Text style={styles.fsDef}>{item.definition}</Text>
         {item.plain_english ? (

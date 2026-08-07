@@ -92,31 +92,24 @@ export function PaceTimerModal({
         />
         <View style={styles.card}>
           <View style={styles.headerRow}>
-            <Text style={styles.title}>PACE TIMER</Text>
+            <Text style={styles.title}>OPEN PACE SETTINGS</Text>
           </View>
 
-          <Text style={styles.explain}>
-            A practice aid — never a limit. Pick a pace and a thin bar tracks whether you're ahead,
-            on pace, or behind as you study. Pace is a multiple of quiz speed (20s per question).
-            Stopwatch just counts up and saves your best time.
-          </Text>
-
-          {/* Mini-fader: always visible without scrolling — shows the current
-              preset and, on tap, opens the SAME full-size PresetFader popup the
-              in-container fader button uses, so any pace/time preset is
-              reachable here without scrolling (replaces the old radio list). */}
-          {/* "open" label + the mini-fader, grouped in a nested container on the
-              LEFT of the card; tapping either opens the full-size fader. */}
+          {/* ONE container (owner 2026-08-06): all the explanatory text + the
+              fader image together, no nested inner container. Tap anywhere opens
+              the full-size PresetFader popup. */}
           <Pressable
-            style={styles.faderOpenRow}
+            style={styles.openPace}
             onPress={() => setFaderOpen(true)}
             accessibilityRole="button"
             accessibilityLabel="Open the pace fader"
           >
-            <Text style={styles.openLabel}>open</Text>
-            <View style={styles.miniHolder} pointerEvents="none">
-              <MiniFader preset={settings.preset} onPress={() => setFaderOpen(true)} />
-            </View>
+            <Text style={styles.explain}>
+              A practice aid — never a limit. Pick a pace and a thin bar tracks whether you're
+              ahead, on pace, or behind as you study. Pace is a multiple of quiz speed (20s per
+              question). Stopwatch just counts up and saves your best time.
+            </Text>
+            <MiniFader preset={settings.preset} onPress={() => setFaderOpen(true)} />
           </Pressable>
 
           {settings.preset === 'stopwatch' ? (
@@ -131,7 +124,17 @@ export function PaceTimerModal({
             </View>
           ) : null}
 
-          {/* TIME TRIAL — the official 15-minute challenge (opt-in). */}
+          <Pressable
+            style={styles.doneBtn}
+            onPress={handleDone}
+            accessibilityRole="button"
+            accessibilityLabel="Done — add the pace timer"
+          >
+            <Text style={styles.doneText}>DONE</Text>
+          </Pressable>
+
+          {/* TIME TRIAL — the official 15-minute challenge (opt-in). Moved to the
+              BOTTOM of the popup (owner 2026-08-06). */}
           <View style={styles.trial}>
             <Text style={styles.trialHead}>TIME TRIAL</Text>
             <Text style={styles.trialBody}>
@@ -149,15 +152,6 @@ export function PaceTimerModal({
               <Text style={styles.trialBtnText}>START 15-MIN TIME TRIAL</Text>
             </Pressable>
           </View>
-
-          <Pressable
-            style={styles.doneBtn}
-            onPress={handleDone}
-            accessibilityRole="button"
-            accessibilityLabel="Done — add the pace timer"
-          >
-            <Text style={styles.doneText}>DONE</Text>
-          </Pressable>
         </View>
 
         {/* Shared full-size fader popup — same component the container's
@@ -187,22 +181,19 @@ const styles = StyleSheet.create({
   },
   headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.4, color: colors.textPrimary },
-  explain: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 20, color: colors.textSub },
+  explain: { alignSelf: 'stretch', fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 20, color: colors.textSub },
 
-  // "open" + mini-fader, grouped left in a nested container (user 2026-07-25).
-  faderOpenRow: {
-    flexDirection: 'row',
+  // ONE container for the explanatory text + the fader image (owner 2026-08-06)
+  // — no nested inner holder; the fader sits directly below the copy.
+  openPace: {
     alignItems: 'center',
-    alignSelf: 'center',
-    gap: 10,
+    gap: 12,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: 'rgba(47,155,255,.3)',
     backgroundColor: 'rgba(47,155,255,.05)',
-    padding: 8,
+    padding: 12,
   },
-  openLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1, color: ACCENT },
-  miniHolder: { width: 200 },
   records: {
     borderRadius: 9,
     borderWidth: 1,
