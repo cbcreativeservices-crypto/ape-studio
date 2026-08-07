@@ -11,6 +11,7 @@ import { ResponseCurveGraph, eqResponseDb, type ResponseCurve } from '../../../.
 import { CheckQuestion, DragSlider, type CheckSpec } from '../../foundations/bits';
 import { colors, fonts } from '../../../../theme/tokens';
 import { biquadMagDb, fFromNorm, fmtHz, normFromF, rbjNotch } from './eqMath';
+import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
 
 type ShapeKey = 'bell' | 'lowShelf' | 'highShelf' | 'highPass' | 'lowPass' | 'notch';
@@ -57,10 +58,10 @@ export function FilterShapesModule(_p: EqModuleComponentProps) {
 
   return (
     <View style={styles.root}>
-      <Text style={styles.body}>
+      <GlossaryText style={styles.body}>
         EQ isn’t one shape — it’s a small family. Pick each one and move it: the differences teach
         themselves.
-      </Text>
+      </GlossaryText>
 
       <View style={styles.chipRow}>
         {SHAPES.map((s) => (

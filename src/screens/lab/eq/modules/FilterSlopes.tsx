@@ -11,6 +11,7 @@ import { ResponseCurveGraph, type ResponseCurve } from '../../../../features/lab
 import { CheckQuestion, type CheckSpec } from '../../foundations/bits';
 import { colors, fonts } from '../../../../theme/tokens';
 import { butterworthHpDb } from './eqMath';
+import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
 
 const CUTOFF = 80;
@@ -50,10 +51,10 @@ export function FilterSlopesModule(_p: EqModuleComponentProps) {
 
   return (
     <View style={styles.root}>
-      <Text style={styles.body}>
+      <GlossaryText style={styles.body}>
         Same filter, same 80 Hz cutoff — only the SLOPE changes. Slope describes how quickly
         attenuation increases beyond the filter’s transition region, in dB per octave.
-      </Text>
+      </GlossaryText>
 
       <View style={styles.chipRow}>
         {SLOPES.map((s) => (

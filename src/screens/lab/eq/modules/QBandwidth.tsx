@@ -12,7 +12,8 @@ import { StyleSheet, Text, View } from 'react-native';
 import { ResponseCurveGraph, eqResponseDb, type ResponseCurve } from '../../../../features/lab/fxViz';
 import { CheckQuestion, DragSlider, type CheckSpec } from '../../foundations/bits';
 import { colors, fonts } from '../../../../theme/tokens';
-import { bwOctFromQ } from './eqMath';
+import { bwOctFromQ, gainColor } from './eqMath';
+import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
 
 const FREQ = 1000;
@@ -47,10 +48,10 @@ export function QBandwidthModule(_p: EqModuleComponentProps) {
 
   return (
     <View style={styles.root}>
-      <Text style={styles.body}>
+      <GlossaryText style={styles.body}>
         Frequency and gain are frozen here (1 kHz, +9 dB) — the ONLY thing you’re changing is Q.
         Watch the same boost go from a broad, musical rise to a surgical spike.
-      </Text>
+      </GlossaryText>
 
       <View style={styles.banner}>
         <Text style={styles.bannerText}>HIGH Q = NARROW · LOW Q = WIDE</Text>
@@ -61,7 +62,7 @@ export function QBandwidthModule(_p: EqModuleComponentProps) {
           <Text style={styles.panelEyebrow}>SAME BOOST, DIFFERENT WIDTH</Text>
           <Text style={styles.readoutDim}>ghosts: Q 0.5 · Q 8</Text>
         </View>
-        <ResponseCurveGraph curves={curves} dbRange={12} height={150} />
+        <ResponseCurveGraph curves={curves} dbRange={12} height={150} mainColor={gainColor(GAIN_DB, 12)} />
         {/* The dual readout, large — the whole lesson in two numbers. */}
         <Text style={styles.qBig}>
           Q {q.toFixed(2)}  ↔  {bwOct.toFixed(2)} OCTAVES

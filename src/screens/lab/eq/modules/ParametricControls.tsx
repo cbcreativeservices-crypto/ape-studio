@@ -10,7 +10,8 @@ import { StyleSheet, Text, View } from 'react-native';
 import { ResponseCurveGraph, eqResponseDb, type ResponseCurve } from '../../../../features/lab/fxViz';
 import { CheckQuestion, DragSlider, type CheckSpec } from '../../foundations/bits';
 import { colors, fonts } from '../../../../theme/tokens';
-import { bwOctFromQ, fFromNorm, fmtHz, normFromF } from './eqMath';
+import { bwOctFromQ, fFromNorm, fmtHz, gainColor, normFromF } from './eqMath';
+import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
 
 const GAIN_RANGE = 18; // spec: −18 … +18 dB
@@ -34,6 +35,7 @@ export function ParametricControlsModule(_p: EqModuleComponentProps) {
   const [gainDb, setGainDb] = useState(6);
   const [q, setQ] = useState(2);
   const bwOct = bwOctFromQ(q);
+  const gc = gainColor(gainDb, GAIN_RANGE); // boost warms, cut stays blue
 
   const curves = useMemo<ResponseCurve[]>(
     () => [
@@ -47,21 +49,21 @@ export function ParametricControlsModule(_p: EqModuleComponentProps) {
 
   return (
     <View style={styles.root}>
-      <Text style={styles.body}>
+      <GlossaryText style={styles.body}>
         A fully parametric band gives you three controls. You already know two of them from the
         camera: pan (frequency) and zoom (Q). The third — gain — is what you DO to the region
         you’re looking at.
-      </Text>
+      </GlossaryText>
 
       <View style={styles.panel}>
         <View style={styles.panelHead}>
           <Text style={styles.panelEyebrow}>ONE PARAMETRIC BAND</Text>
-          <Text style={styles.readout}>
+          <Text style={[styles.readout, { color: gc }]}>
             {fmtHz(freq)} · {gainDb >= 0 ? '+' : ''}
             {gainDb.toFixed(1)} dB
           </Text>
         </View>
-        <ResponseCurveGraph curves={curves} dbRange={GAIN_RANGE} height={150} />
+        <ResponseCurveGraph curves={curves} dbRange={GAIN_RANGE} height={150} mainColor={gc} />
         {/* Spec mandate: show Q AND bandwidth together, always. */}
         <Text style={styles.qReadout}>
           Q: {q.toFixed(2)}   Bandwidth: {bwOct.toFixed(2)} octaves
@@ -81,6 +83,7 @@ export function ParametricControlsModule(_p: EqModuleComponentProps) {
         value={(gainDb + GAIN_RANGE) / (2 * GAIN_RANGE)}
         onChange={(t) => setGainDb(Math.round((t * 2 * GAIN_RANGE - GAIN_RANGE) * 2) / 2)}
         readout={`${gainDb >= 0 ? '+' : ''}${gainDb.toFixed(1)} dB`}
+        tint={gc}
       />
       <Text style={styles.roleLine}>Gain determines HOW MUCH you boost or cut.</Text>
 

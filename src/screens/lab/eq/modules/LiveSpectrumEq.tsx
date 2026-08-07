@@ -21,6 +21,7 @@ import { EngineGate } from '../../../tools/EngineGate';
 import { DragSlider } from '../../foundations/bits';
 import { MiniBtn } from './eqBits';
 import { butterworthHpDb, bwOctFromQ, fFromNorm, fmtHz, normFromF } from './eqMath';
+import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
 
 const FFT_SIZE = 8192;
@@ -161,10 +162,10 @@ export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
 
   return (
     <View style={styles.root}>
-      <Text style={styles.body}>
+      <GlossaryText style={styles.body}>
         The spectrum is your room; the amber curve is your design. Point the phone around and work
         the challenges below.
-      </Text>
+      </GlossaryText>
 
       <EngineGate state={state} lastError={lastError} />
       {!micPaused && (state === 'idle' || state === 'starting') && (
@@ -173,6 +174,41 @@ export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
 
       {live && (
         <>
+          {/* Controls sit ABOVE the view toggle (owner 2026-08-07). */}
+          <Text style={styles.sectionTitle}>LOW-CUT / HPF</Text>
+          <View style={styles.btnRow}>
+            <MiniBtn label="OFF" active={hpfHz == null} onPress={() => setHpfHz(null)} />
+            {HPF_CHOICES.map((hz) => (
+              <MiniBtn key={hz} label={`${hz} Hz`} active={hpfHz === hz} onPress={() => setHpfHz(hz)} />
+            ))}
+            {SLOPES.map((s) => (
+              <MiniBtn key={s} label={`${s} dB/OCT`} active={slope === s} onPress={() => setSlope(s)} />
+            ))}
+          </View>
+
+          <Text style={styles.sectionTitle}>PARAMETRIC BAND</Text>
+          <View style={styles.btnRow}>
+            <MiniBtn label={bellOn ? 'BAND ON' : 'BAND OFF'} active={bellOn} onPress={() => setBellOn((v) => !v)} />
+          </View>
+          {bellOn && (
+            <>
+              <DragSlider label="FREQUENCY" value={normFromF(bellF)} onChange={(t) => setBellF(fFromNorm(t))} readout={fmtHz(bellF)} />
+              <DragSlider
+                label="GAIN"
+                value={(bellG + 18) / 36}
+                onChange={(t) => setBellG(Math.round((t * 36 - 18) * 2) / 2)}
+                readout={`${bellG >= 0 ? '+' : ''}${bellG.toFixed(1)} dB`}
+              />
+              <DragSlider
+                label="Q"
+                value={Math.log(bellQ / 0.3) / Math.log(12 / 0.3)}
+                onChange={(t) => setBellQ(0.3 * Math.pow(12 / 0.3, Math.max(0, Math.min(1, t))))}
+                readout={`Q ${bellQ.toFixed(2)} · ${bwOctFromQ(bellQ).toFixed(2)} oct`}
+              />
+            </>
+          )}
+
+          <Text style={styles.sectionTitle}>VIEW</Text>
           <View style={styles.btnRow}>
             <MiniBtn label="SPECTRUM ONLY" active={mode === 'spectrum'} onPress={() => setMode('spectrum')} />
             <MiniBtn label="EQ ONLY" active={mode === 'eq'} onPress={() => setMode('eq')} />
@@ -233,8 +269,12 @@ export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
                               <Rect key={`slot-${c}`} x={x} y={ZERO_Y} width={w} height={FLOOR_Y - ZERO_Y} fill={SLOT_GRAY} fillOpacity={0.14} />
                             );
                           }
-                          const level = bands.levelsDb[i];
-                          const peak = bands.peakHoldDb[i];
+                          // In COMBINED, the EQ actually shapes the bars (owner
+                          // 2026-08-07) — so a low-cut visibly rolls the low end
+                          // off. SPECTRUM-only shows the raw room.
+                          const shape = mode === 'combined' ? eqAt(c) : 0;
+                          const level = bands.levelsDb[i] + shape;
+                          const peak = bands.peakHoldDb[i] + shape;
                           const barTop = yForDb(level);
                           return (
                             <G key={`band-${c}`}>
@@ -274,39 +314,6 @@ export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
               {anyUnresolvable && <Text style={styles.grayNote}>grayed bands: insufficient resolution at this setting</Text>}
             </View>
           </Pressable>
-
-          <Text style={styles.sectionTitle}>LOW-CUT / HPF</Text>
-          <View style={styles.btnRow}>
-            <MiniBtn label="OFF" active={hpfHz == null} onPress={() => setHpfHz(null)} />
-            {HPF_CHOICES.map((hz) => (
-              <MiniBtn key={hz} label={`${hz} Hz`} active={hpfHz === hz} onPress={() => setHpfHz(hz)} />
-            ))}
-            {SLOPES.map((s) => (
-              <MiniBtn key={s} label={`${s} dB/OCT`} active={slope === s} onPress={() => setSlope(s)} />
-            ))}
-          </View>
-
-          <Text style={styles.sectionTitle}>PARAMETRIC BAND</Text>
-          <View style={styles.btnRow}>
-            <MiniBtn label={bellOn ? 'BAND ON' : 'BAND OFF'} active={bellOn} onPress={() => setBellOn((v) => !v)} />
-          </View>
-          {bellOn && (
-            <>
-              <DragSlider label="FREQUENCY" value={normFromF(bellF)} onChange={(t) => setBellF(fFromNorm(t))} readout={fmtHz(bellF)} />
-              <DragSlider
-                label="GAIN"
-                value={(bellG + 18) / 36}
-                onChange={(t) => setBellG(Math.round((t * 36 - 18) * 2) / 2)}
-                readout={`${bellG >= 0 ? '+' : ''}${bellG.toFixed(1)} dB`}
-              />
-              <DragSlider
-                label="Q"
-                value={Math.log(bellQ / 0.3) / Math.log(12 / 0.3)}
-                onChange={(t) => setBellQ(0.3 * Math.pow(12 / 0.3, Math.max(0, Math.min(1, t))))}
-                readout={`Q ${bellQ.toFixed(2)} · ${bwOctFromQ(bellQ).toFixed(2)} oct`}
-              />
-            </>
-          )}
 
           <Text style={styles.sectionTitle}>GUIDED CHALLENGES</Text>
           {CHALLENGES.map((c) => (

@@ -62,14 +62,16 @@ export function MatchCurveModule(_p: EqModuleComponentProps) {
   const [target, setTarget] = useState<EqBandSpec[]>(() => makeTarget());
   const [bands, setBands] = useState<UserBand[]>(() => freshBands(1));
   const [selIdx, setSelIdx] = useState(0);
-  const [scored, setScored] = useState<number | null>(null);
+  // The score is a check-yourself TOGGLE (owner 2026-08-07): hidden until you
+  // ask, so you judge the match by eye first.
+  const [showScore, setShowScore] = useState(false);
 
   const newTarget = useCallback(() => {
     const t = makeTarget();
     setTarget(t);
     setBands(freshBands(t.length));
     setSelIdx(0);
-    setScored(null);
+    setShowScore(false);
   }, []);
 
   const sel = bands[Math.min(selIdx, bands.length - 1)];
@@ -93,7 +95,7 @@ export function MatchCurveModule(_p: EqModuleComponentProps) {
 
   const live = scoreMatch(target, bands);
   const verdict =
-    scored == null ? null : scored >= 90 ? 'EXCELLENT — that is the curve.' : scored >= 75 ? 'CLOSE — refine width and center.' : 'KEEP TRYING — start with WHERE, then HOW MUCH, then HOW WIDE.';
+    live >= 90 ? 'EXCELLENT — that is the curve.' : live >= 75 ? 'CLOSE — refine width and center.' : 'KEEP TRYING — start with WHERE, then HOW MUCH, then HOW WIDE.';
 
   return (
     <View style={styles.root}>
@@ -105,7 +107,7 @@ export function MatchCurveModule(_p: EqModuleComponentProps) {
       <View style={styles.panel}>
         <View style={styles.panelHead}>
           <Text style={styles.panelEyebrow}>TARGET (dim) vs YOUR EQ (amber)</Text>
-          <Text style={styles.readout}>MATCH {live}%</Text>
+          <Text style={styles.readout}>{showScore ? `MATCH ${live}%` : 'MATCH · hidden'}</Text>
         </View>
         <ResponseCurveGraph curves={curves} dbRange={15} height={150} />
         <Text style={styles.honest}>
@@ -137,16 +139,21 @@ export function MatchCurveModule(_p: EqModuleComponentProps) {
       />
 
       <View style={styles.btnRow}>
-        <Pressable onPress={() => setScored(live)} style={styles.checkBtn} accessibilityRole="button" accessibilityLabel="Score my match">
-          <Text style={styles.checkBtnText}>SCORE</Text>
+        <Pressable
+          onPress={() => setShowScore((v) => !v)}
+          style={styles.checkBtn}
+          accessibilityRole="button"
+          accessibilityLabel={showScore ? 'Hide accuracy' : 'Check your accuracy'}
+        >
+          <Text style={styles.checkBtnText}>{showScore ? 'HIDE ACCURACY' : 'CHECK YOUR ACCURACY'}</Text>
         </Pressable>
         <MiniBtn label="NEW TARGET" onPress={newTarget} />
       </View>
 
-      {scored != null && (
-        <View style={[styles.result, scored >= 90 ? styles.resultPass : null]}>
-          <Text style={[styles.resultHead, scored >= 90 ? styles.resultHeadPass : null]}>
-            SCORE {scored}% — {verdict}
+      {showScore && (
+        <View style={[styles.result, live >= 90 ? styles.resultPass : null]}>
+          <Text style={[styles.resultHead, live >= 90 ? styles.resultHeadPass : null]}>
+            ACCURACY {live}% — {verdict}
           </Text>
         </View>
       )}

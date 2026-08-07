@@ -11,6 +11,7 @@ import { DragSlider } from '../../foundations/bits';
 import { MiniBtn } from './eqBits';
 import { colors, fonts } from '../../../../theme/tokens';
 import { baseSpectrumDb, bwOctFromQ, fFromNorm, fmtHz, normFromF } from './eqMath';
+import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
 
 type Scenario = {
@@ -90,10 +91,10 @@ export function FixSignalModule(_p: EqModuleComponentProps) {
 
   return (
     <View style={styles.root}>
-      <Text style={styles.body}>
+      <GlossaryText style={styles.body}>
         Real problems don’t announce their frequency. Read the complaint, look at the spectrum,
         decide what to change — and how much, and how wide.
-      </Text>
+      </GlossaryText>
 
       <View style={styles.btnRow}>
         {SCENARIOS.map((s, i) => (

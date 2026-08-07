@@ -1,53 +1,65 @@
 /**
  * eqBits — shared EQ Lab interactives (owner spec 2026-08-07): the vertical
- * graphic-EQ fader and the multi-band board. Mirrors the DragSlider contract
- * (foundations/bits): claims the responder on touch, locks the host scroll via
- * the ScrollLock context for the gesture's duration, children are
- * pointerEvents-none so locationY stays track-relative.
+ * graphic-EQ fader and the multi-band board.
+ *
+ * Gesture rule (owner 2026-08-07 fix): a fader claims the responder ONLY on a
+ * clearly VERTICAL move — never on touch-start. That lets a horizontal swipe
+ * scroll the 1/3-octave board (and stops the swipe from reaching the screen
+ * edge and triggering the OS back gesture), while a vertical drag still wins
+ * over both the horizontal board scroller and the host vertical ScrollView
+ * (the deepest view that returns true on move becomes responder). `onActive`
+ * reports which fader is being dragged so a module can show its live value.
  */
 import { useRef, useState } from 'react';
 import { PanResponder, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
-import { useScrollLock } from '../../LabShell';
 
-const TRACK_H = 104;
+const TRACK_H = 108;
 
 /** One vertical fader: value 0..1 (bottom→top). */
 export function VerticalFader({
   value,
   onChange,
+  onActive,
   label,
-  hot,
+  tint,
 }: {
   value: number;
   onChange: (v: number) => void;
+  /** Fires true when this fader starts moving, false on release. */
+  onActive?: (active: boolean) => void;
   label: string;
-  /** Non-zero gain — tints the thumb amber so set bands read at a glance. */
-  hot?: boolean;
+  /** Colour for the thumb/fill when set (else neutral / amber-when-nonzero). */
+  tint?: string;
 }) {
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
-  const ctxLock = useScrollLock();
-  const lockRef = useRef(ctxLock);
-  lockRef.current = ctxLock;
+  const onActiveRef = useRef(onActive);
+  onActiveRef.current = onActive;
 
   const pan = useRef(
     PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dy) > Math.abs(g.dx),
+      // NEVER claim on start — leave horizontal swipes to the scroller.
+      onStartShouldSetPanResponder: () => false,
+      onStartShouldSetPanResponderCapture: () => false,
+      // Claim only a clearly vertical drag; the fader is deeper than either
+      // ScrollView, so returning true here wins the responder for vertical.
+      onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dy) > Math.abs(g.dx) + 2,
+      onMoveShouldSetPanResponderCapture: (_e, g) => Math.abs(g.dy) > Math.abs(g.dx) + 2,
       onPanResponderGrant: (e) => {
-        lockRef.current?.(true);
+        onActiveRef.current?.(true);
         onChangeRef.current(1 - Math.max(0, Math.min(1, e.nativeEvent.locationY / TRACK_H)));
       },
       onPanResponderMove: (e) => {
         onChangeRef.current(1 - Math.max(0, Math.min(1, e.nativeEvent.locationY / TRACK_H)));
       },
-      onPanResponderRelease: () => lockRef.current?.(false),
-      onPanResponderTerminate: () => lockRef.current?.(false),
+      onPanResponderRelease: () => onActiveRef.current?.(false),
+      onPanResponderTerminate: () => onActiveRef.current?.(false),
       onPanResponderTerminationRequest: () => false,
     }),
   ).current;
 
+  const thumbTint = tint ?? (value !== 0.5 ? colors.amber : undefined);
   return (
     <View style={styles.faderWrap}>
       <View style={styles.track} {...pan.panHandlers}>
@@ -55,11 +67,7 @@ export function VerticalFader({
         <View pointerEvents="none" style={styles.centerTick} />
         <View
           pointerEvents="none"
-          style={[
-            styles.thumb,
-            { top: (1 - value) * TRACK_H - 5 },
-            hot ? { backgroundColor: colors.amber } : null,
-          ]}
+          style={[styles.thumb, { top: (1 - value) * TRACK_H - 5 }, thumbTint ? { backgroundColor: thumbTint } : null]}
         />
       </View>
       <Text style={styles.faderLabel}>{label}</Text>
@@ -73,11 +81,17 @@ export function GraphicBoard({
   centers,
   gains,
   onGain,
+  onActiveIndex,
+  tintFor,
   range = 12,
 }: {
   centers: readonly number[];
   gains: number[];
   onGain: (i: number, db: number) => void;
+  /** Index of the fader currently being dragged, or null on release. */
+  onActiveIndex?: (i: number | null) => void;
+  /** Optional per-band thumb colour. */
+  tintFor?: (i: number) => string | undefined;
   range?: number;
 }) {
   const faders = centers.map((c, i) => (
@@ -86,12 +100,18 @@ export function GraphicBoard({
       label={c >= 1000 ? `${c / 1000}k` : `${c}`}
       value={(gains[i] + range) / (2 * range)}
       onChange={(v) => onGain(i, Math.round((v * 2 * range - range) * 2) / 2)}
-      hot={gains[i] !== 0}
+      onActive={(a) => onActiveIndex?.(a ? i : null)}
+      tint={tintFor?.(i)}
     />
   ));
   if (centers.length > 12) {
     return (
-      <ScrollView horizontal showsHorizontalScrollIndicator contentContainerStyle={styles.boardScroll}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator
+        directionalLockEnabled
+        contentContainerStyle={styles.boardScroll}
+      >
         {faders}
       </ScrollView>
     );
@@ -116,11 +136,11 @@ export function MiniBtn({ label, active, onPress }: { label: string; active?: bo
 }
 
 const styles = StyleSheet.create({
-  faderWrap: { alignItems: 'center', gap: 4, width: 28 },
-  track: { width: 28, height: TRACK_H, alignItems: 'center' },
+  faderWrap: { alignItems: 'center', gap: 4, width: 30 },
+  track: { width: 30, height: TRACK_H, alignItems: 'center' },
   trackLine: { position: 'absolute', top: 0, bottom: 0, width: 3, borderRadius: 1.5, backgroundColor: '#2a2c34' },
-  centerTick: { position: 'absolute', top: TRACK_H / 2 - 0.75, left: 2, right: 2, height: 1.5, backgroundColor: '#4a5060' },
-  thumb: { position: 'absolute', width: 20, height: 10, borderRadius: 3, backgroundColor: '#8f96a3', borderWidth: 1, borderColor: '#0c0c0f' },
+  centerTick: { position: 'absolute', top: TRACK_H / 2 - 0.75, left: 3, right: 3, height: 1.5, backgroundColor: '#4a5060' },
+  thumb: { position: 'absolute', width: 22, height: 11, borderRadius: 3, backgroundColor: '#8f96a3', borderWidth: 1, borderColor: '#0c0c0f' },
   faderLabel: { fontFamily: fonts.mono, fontSize: 9, color: colors.textSub },
   boardRow: { flexDirection: 'row', justifyContent: 'space-between' },
   boardScroll: { gap: 6, paddingRight: 8 },

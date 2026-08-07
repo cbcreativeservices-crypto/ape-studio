@@ -13,7 +13,8 @@ import { ResponseCurveGraph, type ResponseCurve } from '../../../../features/lab
 import { CheckQuestion, type CheckSpec } from '../../foundations/bits';
 import { GraphicBoard, MiniBtn } from './eqBits';
 import { colors, fonts } from '../../../../theme/tokens';
-import { graphicActualDb, OCT_CENTERS, Q_1OCT, Q_THIRD, THIRD_CENTERS } from './eqMath';
+import { fmtHz, graphicActualDb, OCT_CENTERS, Q_1OCT, Q_THIRD, THIRD_CENTERS } from './eqMath';
+import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
 
 const CHECK: CheckSpec = {
@@ -29,6 +30,7 @@ export function GraphicVsParametricModule(_p: EqModuleComponentProps) {
   const [board, setBoard] = useState<'oct' | 'third'>('oct');
   const [octGains, setOctGains] = useState<number[]>(Array(OCT_CENTERS.length).fill(0));
   const [thirdGains, setThirdGains] = useState<number[]>(Array(THIRD_CENTERS.length).fill(0));
+  const [activeIdx, setActiveIdx] = useState<number | null>(null);
 
   const centers = board === 'oct' ? OCT_CENTERS : THIRD_CENTERS;
   const gains = board === 'oct' ? octGains : thirdGains;
@@ -49,10 +51,10 @@ export function GraphicVsParametricModule(_p: EqModuleComponentProps) {
 
   return (
     <View style={styles.root}>
-      <Text style={styles.body}>
+      <GlossaryText style={styles.body}>
         A graphic EQ is a row of FIXED bands — one slider per frequency, gain only. You’ve been
         driving a parametric band; now drive the board.
-      </Text>
+      </GlossaryText>
 
       <View style={styles.btnRow}>
         <MiniBtn label="1-OCTAVE" active={board === 'oct'} onPress={() => setBoard('oct')} />
@@ -68,7 +70,12 @@ export function GraphicVsParametricModule(_p: EqModuleComponentProps) {
           <Text style={styles.readout}>±12 dB</Text>
         </View>
         <ResponseCurveGraph curves={curves} dbRange={15} height={130} />
-        <GraphicBoard centers={centers} gains={gains} onGain={setGain} />
+        <Text style={[styles.active, activeIdx != null && styles.activeOn]}>
+          {activeIdx != null
+            ? `${fmtHz(centers[activeIdx])}  ·  ${gains[activeIdx] >= 0 ? '+' : ''}${gains[activeIdx].toFixed(1)} dB`
+            : 'Touch a slider to read its frequency and level'}
+        </Text>
+        <GraphicBoard centers={centers} gains={gains} onGain={setGain} onActiveIndex={setActiveIdx} />
         <Text style={styles.honest}>
           Curve = the ACTUAL combined response of the board’s real filters (fixed{' '}
           {board === 'oct' ? '1-octave' : '1/3-octave'} bells) — more on that in the next lesson.
@@ -112,6 +119,8 @@ const styles = StyleSheet.create({
   panelEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.amber, flexShrink: 1 },
   readout: { fontFamily: fonts.mono, fontSize: 11.5, color: colors.textSub },
   honest: { fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 15, color: colors.textSub },
+  active: { fontFamily: fonts.mono, fontSize: 12.5, color: colors.textSub, textAlign: 'center' },
+  activeOn: { color: colors.amber, fontSize: 14 },
   compareRow: { flexDirection: 'row', gap: 10 },
   compareCol: { flex: 1, borderRadius: 10, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 10, gap: 3 },
   compareHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.amber, marginBottom: 2 },

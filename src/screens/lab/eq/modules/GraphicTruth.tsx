@@ -20,15 +20,17 @@ import { GraphicBoard, MiniBtn } from './eqBits';
 import { colors, fonts } from '../../../../theme/tokens';
 import {
   biquadMagDb,
+  fmtHz,
   graphicActualDb,
   graphicPhaseDeg,
   OCT_CENTERS,
   Q_1OCT,
   sliderCurveDb,
 } from './eqMath';
+import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
 
-const PRESET_LABEL = 'TRY 125 +3 · 250 +6 · 500 +3';
+const PRESET_LABEL = 'LOAD EXAMPLE — 125:+3  250:+6  500:+3 dB';
 
 const CHECK: CheckSpec = {
   question: 'The line the SLIDER POSITIONS draw across a graphic EQ is…',
@@ -47,6 +49,9 @@ export function GraphicTruthModule(_p: EqModuleComponentProps) {
   const [gains, setGains] = useState<number[]>(Array(OCT_CENTERS.length).fill(0));
   const [showIndividual, setShowIndividual] = useState(false);
   const [view, setView] = useState<'mag' | 'phase'>('mag');
+  // Which fader the finger is on — so its value is visible while you drag it
+  // (owner 2026-08-07: you couldn't see you were at +6 dB while touching it).
+  const [activeIdx, setActiveIdx] = useState<number | null>(null);
 
   const setGain = (i: number, db: number) => setGains((g) => g.map((v, k) => (k === i ? db : v)));
   const reset = () => setGains(Array(OCT_CENTERS.length).fill(0));
@@ -87,16 +92,21 @@ export function GraphicTruthModule(_p: EqModuleComponentProps) {
       <View style={styles.banner}>
         <Text style={styles.bannerText}>THE SLIDERS ARE NOT THE RESPONSE</Text>
       </View>
-      <Text style={styles.body}>
+      <GlossaryText style={styles.body}>
         Your eye connects the slider caps into a smooth line. But every band is a real filter with
         finite bandwidth — their responses overlap and COMBINE. Set the innocent-looking preset and
         compare the line you imagined (dim) with what the filters actually do (amber).
-      </Text>
+      </GlossaryText>
 
       <View style={styles.btnRow}>
         <MiniBtn label={PRESET_LABEL} onPress={preset} />
-        <MiniBtn label="RESET" onPress={reset} />
+        <MiniBtn label="CLEAR ALL BANDS" onPress={reset} />
       </View>
+      <Text style={styles.caption}>
+        LOAD EXAMPLE drops the sliders to a gentle-looking 125 Hz +3, 250 Hz +6, 500 Hz +3 dB —
+        exactly the innocent move whose real response surprises people. CLEAR ALL BANDS returns
+        every slider to 0 dB.
+      </Text>
       <View style={styles.btnRow}>
         <MiniBtn label="MAGNITUDE" active={view === 'mag'} onPress={() => setView('mag')} />
         <MiniBtn label="PHASE" active={view === 'phase'} onPress={() => setView('phase')} />
@@ -105,6 +115,21 @@ export function GraphicTruthModule(_p: EqModuleComponentProps) {
           active={showIndividual}
           onPress={() => setShowIndividual((v) => !v)}
         />
+      </View>
+      <Text style={styles.caption}>
+        Switch between MAGNITUDE and PHASE to compare the two results: MAGNITUDE shows how far the
+        real response (amber) departs from the smooth line the sliders imply (dim); PHASE shows the
+        phase shift the same filters apply — which the sliders don’t reveal at all. The point is the
+        gap between what you SEE on the board and what actually happens to the signal.
+      </Text>
+
+      {/* Live value of the fader under your finger (owner 2026-08-07). */}
+      <View style={styles.activeBar}>
+        <Text style={[styles.activeText, activeIdx != null && styles.activeTextOn]}>
+          {activeIdx != null
+            ? `${fmtHz(OCT_CENTERS[activeIdx])}  ·  ${gains[activeIdx] >= 0 ? '+' : ''}${gains[activeIdx].toFixed(1)} dB`
+            : 'Touch a slider to read its frequency and level here'}
+        </Text>
       </View>
 
       <View style={styles.panel}>
@@ -118,7 +143,7 @@ export function GraphicTruthModule(_p: EqModuleComponentProps) {
         ) : (
           <ResponseCurveGraph curves={phaseCurves} dbRange={180} height={150} />
         )}
-        <GraphicBoard centers={OCT_CENTERS} gains={gains} onGain={setGain} />
+        <GraphicBoard centers={OCT_CENTERS} gains={gains} onGain={setGain} onActiveIndex={setActiveIdx} />
         <Text style={styles.honest}>
           {view === 'mag'
             ? 'Real overlapping 1-octave bells, energy-combined — not the line through the caps.'
@@ -149,6 +174,9 @@ const styles = StyleSheet.create({
   banner: { borderRadius: 10, borderWidth: 1, borderColor: 'rgba(255,198,77,.4)', backgroundColor: '#17130a', padding: 12, alignItems: 'center' },
   bannerText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.2, color: colors.amber },
   btnRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  activeBar: { borderRadius: 8, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#101014', paddingVertical: 8, paddingHorizontal: 12, alignItems: 'center' },
+  activeText: { fontFamily: fonts.mono, fontSize: 13, color: colors.textSub },
+  activeTextOn: { color: colors.amber, fontSize: 15 },
   panel: { borderRadius: 12, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 12, gap: 10 },
   panelHead: { flexDirection: 'row', alignItems: 'center' },
   panelEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.amber, flexShrink: 1 },

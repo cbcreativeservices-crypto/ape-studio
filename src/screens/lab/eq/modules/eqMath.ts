@@ -4,6 +4,7 @@
  * 1/Q = 2·sinh(ln2/2 · BWoct) — the SAME numbers a console readout shows, so
  * the dual "Q · Bandwidth (oct)" displays the spec mandates stay honest.
  */
+import { levelColor } from '../../../../features/tools/levelColor';
 
 /** Bandwidth in octaves for a peaking filter of quality Q. */
 export function bwOctFromQ(q: number): number {
@@ -25,6 +26,14 @@ export function fmtHz(f: number): string {
   if (f >= 10000) return `${(f / 1000).toFixed(1)} kHz`;
   if (f >= 1000) return `${(f / 1000).toFixed(2)} kHz`;
   return `${Math.round(f)} Hz`;
+}
+
+// ---- MIDI level colour for gain/level (owner 2026-08-07) --------------------
+// Amplitude everywhere in the lab uses the app MIDI ramp. Owner rule: BELOW the
+// zero-crossing (a cut / negative level) stays BLUE — the ramp only warms for
+// POSITIVE level (boost). So 0 dB and below → blue; positive → green…red.
+export function gainColor(db: number, maxDb = 18): string {
+  return levelColor(Math.max(0, db) / Math.max(1, maxDb));
 }
 
 // ---- Variable-slope Butterworth magnitudes ---------------------------------

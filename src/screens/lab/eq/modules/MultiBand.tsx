@@ -17,6 +17,7 @@ import { useScrollLock } from '../../LabShell';
 import { MiniBtn } from './eqBits';
 import { colors, fonts } from '../../../../theme/tokens';
 import { bwOctFromQ, fmtHz, normFromF, fFromNorm } from './eqMath';
+import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
 
 // ---- Graph geometry (mirrors ResponseCurveGraph: viewBox 320, pad 8) -------
@@ -51,14 +52,22 @@ const DEFAULTS = (): Bands => ({
   ],
 });
 
-const BAND_META: { key: BandKey; label: string }[] = [
-  { key: 'hpf', label: 'HPF' },
-  { key: 'b0', label: 'LOW' },
-  { key: 'b1', label: 'LMF' },
-  { key: 'b2', label: 'HMF' },
-  { key: 'b3', label: 'HIGH' },
-  { key: 'lpf', label: 'LPF' },
+// Per-band colours (owner 2026-08-07): each parametric band is colour-coded on
+// BOTH its button and its node dot — LOW green · LMF amber · HMF blue · HIGH
+// purple. HPF/LPF are filters (neutral), not tone bands.
+const FILTER_COLOR = '#9aa0ad';
+const BAND_META: { key: BandKey; label: string; color: string }[] = [
+  { key: 'hpf', label: 'HPF', color: FILTER_COLOR },
+  { key: 'b0', label: 'LOW', color: colors.green },
+  { key: 'b1', label: 'LMF', color: colors.amber },
+  { key: 'b2', label: 'HMF', color: colors.blue },
+  { key: 'b3', label: 'HIGH', color: colors.purple },
+  { key: 'lpf', label: 'LPF', color: FILTER_COLOR },
 ];
+const BAND_COLOR: Record<BandKey, string> = BAND_META.reduce(
+  (m, b) => ((m[b.key] = b.color), m),
+  {} as Record<BandKey, string>,
+);
 
 function specsFor(b: Bands): EqBandSpec[] {
   const out: EqBandSpec[] = [];
@@ -194,27 +203,45 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
 
   return (
     <View style={styles.root}>
-      <Text style={styles.body}>
+      <GlossaryText style={styles.body}>
         Real EQs run several filters at once — and the filters INTERACT. The dim curves are each
         band alone; the amber curve is what they produce TOGETHER. Drag a node right on the graph:
         sideways = frequency, up/down = gain.
-      </Text>
+      </GlossaryText>
 
+      <Text style={styles.sectionTitle}>BANDS — tap to select · HPF/LPF switch on when tapped</Text>
       <View style={styles.chipRow}>
         {BAND_META.map((m) => {
+          const isFilter = m.key === 'hpf' || m.key === 'lpf';
           const on =
             m.key === 'hpf' ? bands.hpf.on : m.key === 'lpf' ? bands.lpf.on : bands.bells[Number(m.key.slice(1))].on;
+          const selected = sel === m.key;
+          const press = () => {
+            setSel(m.key);
+            // A filter is inert until enabled — tapping it selects AND switches
+            // it on so it does something immediately (owner 2026-08-07).
+            if (isFilter && !on) {
+              setBands((prev) =>
+                m.key === 'hpf' ? { ...prev, hpf: { ...prev.hpf, on: true } } : { ...prev, lpf: { ...prev.lpf, on: true } },
+              );
+            }
+          };
           return (
             <Pressable
               key={m.key}
-              onPress={() => setSel(m.key)}
+              onPress={press}
               hitSlop={6}
               accessibilityRole="button"
               accessibilityLabel={`${m.label} band${on ? '' : ', off'}`}
-              accessibilityState={{ selected: sel === m.key }}
-              style={[styles.chip, sel === m.key && styles.chipActive, !on && styles.chipOff]}
+              accessibilityState={{ selected }}
+              style={[
+                styles.chip,
+                { borderColor: selected ? m.color : '#2c2c33' },
+                selected && { backgroundColor: '#1a1a20' },
+                !on && styles.chipOff,
+              ]}
             >
-              <Text style={[styles.chipText, sel === m.key && styles.chipTextActive]}>
+              <Text style={[styles.chipText, { color: on ? m.color : colors.textSub }]}>
                 {on ? '●' : '○'} {m.label}
               </Text>
             </Pressable>
@@ -236,18 +263,23 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
             height={GRAPH_H + PAD_B}
             viewBox={`0 0 ${VB_W} ${GRAPH_H + PAD_B}`}
           >
-            {nodes.map((n) => (
-              <Circle
-                key={n.key}
-                cx={n.x}
-                cy={n.y}
-                r={n.key === sel ? 7 : 5}
-                fill={n.key === sel ? colors.amber : 'none'}
-                fillOpacity={n.key === sel ? 0.9 : 0}
-                stroke={n.key === sel ? colors.amber : '#8f96a3'}
-                strokeWidth={1.5}
-              />
-            ))}
+            {nodes.map((n) => {
+              // Node dot colour matches the band's button (owner 2026-08-07).
+              const col = BAND_COLOR[n.key];
+              const selected = n.key === sel;
+              return (
+                <Circle
+                  key={n.key}
+                  cx={n.x}
+                  cy={n.y}
+                  r={selected ? 7 : 5}
+                  fill={selected ? col : col}
+                  fillOpacity={selected ? 0.95 : 0.25}
+                  stroke={col}
+                  strokeWidth={1.5}
+                />
+              );
+            })}
           </Svg>
         </View>
       </View>
@@ -310,6 +342,7 @@ const styles = StyleSheet.create({
   root: { gap: 12 },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
+  sectionTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.amber },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: { borderRadius: 8, borderWidth: 1, borderColor: '#2c2c33', paddingHorizontal: 10, paddingVertical: 8, backgroundColor: '#17171c' },
   chipActive: { borderColor: 'rgba(255,198,77,.55)', backgroundColor: '#1d1708' },

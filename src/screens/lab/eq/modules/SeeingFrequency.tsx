@@ -24,6 +24,7 @@ import { LOUDNESS_STOPS } from '../../../../features/tools/levelColor';
 import { butterworthHighPassDb } from '../../../../features/lab/fxViz';
 import { colors, fonts } from '../../../../theme/tokens';
 import { EngineGate } from '../../../tools/EngineGate';
+import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
 
 const FFT_SIZE = 8192;
@@ -140,32 +141,20 @@ export function SeeingFrequencyModule(_p: EqModuleComponentProps) {
     [bands, barW, chartW],
   );
 
-  /** The analytic HPF curve + the shaded "covered" wedge (what the filter would
-   *  remove, between the curve and the 0 dB line). 12 dB/oct Butterworth —
-   *  mirrors the native Biquad; slope choices arrive with the Slopes module. */
+  /** The analytic HPF response curve, drawn OVER the now-rolled-off bars as a
+   *  reference of the filter's shape. 12 dB/oct Butterworth (mirrors the native
+   *  Biquad); slope choices arrive with the Slopes module. */
   const hpfPaths = useMemo(() => {
     if (hpfHz == null || !bands || barW <= 0 || chartW <= 0) return null;
     const PTS = 96;
-    const pts: { x: number; y: number; g: number }[] = [];
+    let curve = '';
     for (let k = 0; k <= PTS; k++) {
       const f = 20 * Math.pow(2, (10 * k) / PTS); // 20 Hz … ~20.48 kHz, log-even
       const g = Math.min(0, butterworthHighPassDb(hpfHz, f));
-      pts.push({ x: xForHz(f), y: Math.min(FLOOR_Y, yForDb(g)), g });
+      const y = Math.min(FLOOR_Y, yForDb(g));
+      curve += `${k === 0 ? 'M' : 'L'}${xForHz(f).toFixed(1)} ${y.toFixed(1)}`;
     }
-    const curve = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
-    // Shaded wedge: along the curve until it rejoins the 0 dB line, then back.
-    let end = pts.length - 1;
-    for (let i = 0; i < pts.length; i++) {
-      if (pts[i].g > -0.25) {
-        end = i;
-        break;
-      }
-    }
-    const wedgePts = pts.slice(0, end + 1);
-    const wedge =
-      wedgePts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ') +
-      ` L${wedgePts[wedgePts.length - 1].x.toFixed(1)} ${ZERO_Y} L${wedgePts[0].x.toFixed(1)} ${ZERO_Y} Z`;
-    return { curve, wedge };
+    return { curve };
   }, [hpfHz, bands, barW, chartW, xForHz]);
 
   const live = state === 'running' || micPaused;
@@ -173,11 +162,11 @@ export function SeeingFrequencyModule(_p: EqModuleComponentProps) {
   return (
     <View style={styles.root}>
       {/* Signature-moment framing (spec: appears very early, before any EQ). */}
-      <Text style={styles.body}>
+      <GlossaryText style={styles.body}>
         Your room isn’t silent at low frequencies. Watch the lower end of the spectrum — HVAC,
         traffic, handling noise, vibration and wind put energy below 100 Hz even when you don’t
         perceive much sound.
-      </Text>
+      </GlossaryText>
 
       {/* Honest not-ready card (absent/spike/denied/error). */}
       <EngineGate state={state} lastError={lastError} />
@@ -254,8 +243,12 @@ export function SeeingFrequencyModule(_p: EqModuleComponentProps) {
                               <Rect key={`slot-${c}`} x={x} y={ZERO_Y} width={w} height={FLOOR_Y - ZERO_Y} fill={SLOT_GRAY} fillOpacity={0.14} />
                             );
                           }
-                          const level = bands.levelsDb[i];
-                          const peak = bands.peakHoldDb[i];
+                          // Apply the low-cut to the DISPLAYED bars (owner
+                          // 2026-08-07): the filter actually rolls the low end
+                          // off, not just an overlay. 12 dB/oct.
+                          const roll = hpfHz != null ? butterworthHighPassDb(hpfHz, c) : 0;
+                          const level = bands.levelsDb[i] + roll;
+                          const peak = bands.peakHoldDb[i] + roll;
                           const barTop = yForDb(level);
                           return (
                             <G key={`band-${c}`}>
@@ -287,11 +280,9 @@ export function SeeingFrequencyModule(_p: EqModuleComponentProps) {
                           strokeOpacity={0.55}
                         />
                       )}
+                      {/* The filter's response, over the now-rolled-off bars. */}
                       {hpfPaths != null && (
-                        <>
-                          <Path d={hpfPaths.wedge} fill={CURVE_AMBER} fillOpacity={0.08} />
-                          <Path d={hpfPaths.curve} stroke={CURVE_AMBER} strokeWidth={2} fill="none" strokeOpacity={0.9} />
-                        </>
+                        <Path d={hpfPaths.curve} stroke={CURVE_AMBER} strokeWidth={2} fill="none" strokeOpacity={0.9} />
                       )}
                     </Svg>
                   )}
@@ -308,7 +299,7 @@ export function SeeingFrequencyModule(_p: EqModuleComponentProps) {
               <Text style={styles.unitLine}>
                 {hpfHz == null
                   ? '◂ look below 100 Hz — what energy lives there even when the room seems quiet?'
-                  : `HPF ${hpfHz} Hz · 12 dB/OCT · DESIGNED RESPONSE — ANALYTIC`}
+                  : `HPF ${hpfHz} Hz · 12 dB/OCT — the low end is rolled off; amber = the filter’s response`}
               </Text>
               {anyUnresolvable && (
                 <Text style={styles.grayNote}>grayed bands: insufficient resolution at this setting</Text>

@@ -207,10 +207,14 @@ export function ResponseCurveGraph({
   curves,
   dbRange = 18,
   height = 150,
+  mainColor,
 }: {
   curves: ResponseCurve[];
   dbRange?: number;
   height?: number;
+  /** Overrides the amber of the MAIN trace + its underfill (EQ Lab MIDI level
+   *  colouring, owner 2026-08-07). Omitted ⇒ the house amber. */
+  mainColor?: string;
 }) {
   const H = height;
   const padL = 8, padR = 8, padB = 14;
@@ -249,7 +253,13 @@ export function ResponseCurveGraph({
         <Line key={db} x1={padL} y1={yAt(db)} x2={W - padR} y2={yAt(db)} stroke={GRID} strokeWidth={0.6} />
       ))}
       {curves.map((c, i) =>
-        c.emphasis === 'main' && paths[i].fill ? <Path key={`f${i}`} d={paths[i].fill} fill="url(#fxRcgFill)" /> : null,
+        c.emphasis === 'main' && paths[i].fill ? (
+          mainColor ? (
+            <Path key={`f${i}`} d={paths[i].fill} fill={mainColor} fillOpacity={0.16} />
+          ) : (
+            <Path key={`f${i}`} d={paths[i].fill} fill="url(#fxRcgFill)" />
+          )
+        ) : null,
       )}
       {/* 0 dB reference — deliberately brighter than the rest of the graticule */}
       <Line x1={padL} y1={H / 2} x2={W - padR} y2={H / 2} stroke={AXIS} strokeWidth={1.1} />
@@ -266,7 +276,7 @@ export function ResponseCurveGraph({
           />
         ),
       )}
-      {curves.map((c, i) => (c.emphasis === 'main' ? <GlowPath key={`m${i}`} d={paths[i].d} /> : null))}
+      {curves.map((c, i) => (c.emphasis === 'main' ? <GlowPath key={`m${i}`} d={paths[i].d} color={mainColor} /> : null))}
       {FREQ_TICKS.map((f) => (
         <Line key={`t${f}`} x1={logX(f, 20, 20000, padL, padR)} y1={H - 4} x2={logX(f, 20, 20000, padL, padR)} y2={H} stroke={DIM} strokeWidth={1} strokeOpacity={0.55} />
       ))}

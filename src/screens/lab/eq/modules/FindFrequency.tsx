@@ -181,7 +181,7 @@ export function FindFrequencyModule(_p: EqModuleComponentProps) {
         <Pressable onPress={() => setVerdict(judge(hidden, bands))} style={styles.checkBtn} accessibilityRole="button" accessibilityLabel="Check">
           <Text style={styles.checkBtnText}>CHECK</Text>
         </Pressable>
-        <MiniBtn label="NEW SIGNAL" onPress={() => newRound(level)} />
+        <MiniBtn label="TRY A NEW SIGNAL CHALLENGE" onPress={() => newRound(level)} />
       </View>
 
       {verdict && (

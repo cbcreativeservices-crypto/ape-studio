@@ -18,6 +18,7 @@ import { CheckQuestion, type CheckSpec } from '../../foundations/bits';
 import { MiniBtn } from './eqBits';
 import { colors, fonts } from '../../../../theme/tokens';
 import { baseSpectrumDb } from './eqMath';
+import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
 
 /** The built-in problem: too much 250 Hz. */
@@ -76,10 +77,10 @@ export function EqChallengesModule(_p: EqModuleComponentProps) {
 
   return (
     <View style={styles.root}>
-      <Text style={styles.body}>
+      <GlossaryText style={styles.body}>
         This signal has an EXCESSIVE 250 Hz region (amber vs the dim healthy reference). Goal:
         reduce it. Try both strategies and compare what else changes.
-      </Text>
+      </GlossaryText>
 
       <View style={styles.btnRow}>
         <MiniBtn label="PROBLEM ONLY" active={strategy === 'none'} onPress={() => setStrategy('none')} />
@@ -111,7 +112,10 @@ export function EqChallengesModule(_p: EqModuleComponentProps) {
           <Text style={styles.compareHead}>BOOST +6 AROUND IT</Text>
           <Text style={styles.compareLine}>• Balance improves relatively</Text>
           <Text style={styles.compareLine}>• Whole signal gets louder</Text>
-          <Text style={styles.compareLine}>• Costs headroom / gain staging</Text>
+          <Text style={styles.compareLine}>
+            • Costs headroom and gain staging — the signal is louder, thus reducing available
+            headroom into the next stage
+          </Text>
         </View>
       </View>
 

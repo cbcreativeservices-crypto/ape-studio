@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { ScrollLockProvider } from '../LabShell';
+import { GlossaryLinkProvider } from '../../../features/glossary/glossaryLink';
 import { EQ_MODULES, type EqModuleComponentProps, type EqModuleId } from './modules/registry';
 import { SeeingFrequencyModule } from './modules/SeeingFrequency';
 import { WhyEqModule } from './modules/WhyEq';
@@ -91,17 +92,19 @@ export function EqModuleScreen() {
           </Pressable>
         </View>
       )}
-      <ScrollLockProvider value={setScrollLocked}>
-        <ScrollView
-          contentContainerStyle={styles.scroll}
-          keyboardShouldPersistTaps="handled"
-          scrollEnabled={!scrollLocked}
-        >
-          <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
-            {width > 0 ? <Comp width={width} focused={focused} /> : null}
-          </View>
-        </ScrollView>
-      </ScrollLockProvider>
+      <GlossaryLinkProvider>
+        <ScrollLockProvider value={setScrollLocked}>
+          <ScrollView
+            contentContainerStyle={styles.scroll}
+            keyboardShouldPersistTaps="handled"
+            scrollEnabled={!scrollLocked}
+          >
+            <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
+              {width > 0 ? <Comp width={width} focused={focused} /> : null}
+            </View>
+          </ScrollView>
+        </ScrollLockProvider>
+      </GlossaryLinkProvider>
     </View>
   );
 }

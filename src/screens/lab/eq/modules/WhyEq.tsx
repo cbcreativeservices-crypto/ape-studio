@@ -12,7 +12,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ResponseCurveGraph, eqResponseDb, type ResponseCurve } from '../../../../features/lab/fxViz';
 import { CheckQuestion, DragSlider, type CheckSpec } from '../../foundations/bits';
 import { colors, fonts } from '../../../../theme/tokens';
-import { fmtHz } from './eqMath';
+import { fmtHz, gainColor } from './eqMath';
+import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
 
 /** Three broad regions — deliberately coarse; precision arrives in lesson 5. */
@@ -48,24 +49,26 @@ export function WhyEqModule(_p: EqModuleComponentProps) {
     ],
     [region, gainDb],
   );
+  // MIDI level colour (owner 2026-08-07): boost warms toward red, a cut stays blue.
+  const gc = gainColor(gainDb, GAIN_RANGE);
 
   return (
     <View style={styles.root}>
-      <Text style={styles.body}>
+      <GlossaryText style={styles.body}>
         Every sound you work with is a balance of frequency content — lows, mids, highs, all at
         once. An equalizer changes that balance: you pick a frequency region and either raise it
         (BOOST) or lower it (CUT, also called attenuation).
-      </Text>
+      </GlossaryText>
 
       <View style={styles.panel}>
         <View style={styles.panelHead}>
           <Text style={styles.panelEyebrow}>EQ RESPONSE</Text>
-          <Text style={styles.readout}>
+          <Text style={[styles.readout, { color: gc }]}>
             {fmtHz(region.f)} · {gainDb >= 0 ? '+' : ''}
             {gainDb.toFixed(1)} dB
           </Text>
         </View>
-        <ResponseCurveGraph curves={curves} dbRange={GAIN_RANGE + 3} height={140} />
+        <ResponseCurveGraph curves={curves} dbRange={GAIN_RANGE + 3} height={140} mainColor={gc} />
         <Text style={styles.verdict}>
           {gainDb > 0.5
             ? 'BOOST — raising the level of this frequency region.'
@@ -97,6 +100,7 @@ export function WhyEqModule(_p: EqModuleComponentProps) {
         value={(gainDb + GAIN_RANGE) / (2 * GAIN_RANGE)}
         onChange={(t) => setGainDb(Math.round((t * 2 * GAIN_RANGE - GAIN_RANGE) * 2) / 2)}
         readout={`${gainDb >= 0 ? '+' : ''}${gainDb.toFixed(1)} dB`}
+        tint={gc}
       />
 
       <Text style={styles.caption}>
