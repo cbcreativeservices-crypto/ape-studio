@@ -75,6 +75,8 @@ import { WaveLabHomeScreen } from '../screens/lab/wave/WaveLabHomeScreen';
 import { WaveModuleScreen } from '../screens/lab/wave/WaveModuleScreen';
 import { MeterLabHomeScreen } from '../screens/lab/meter/MeterLabHomeScreen';
 import { MeterModuleScreen } from '../screens/lab/meter/MeterModuleScreen';
+import { EqLabHomeScreen } from '../screens/lab/eq/EqLabHomeScreen';
+import { EqModuleScreen } from '../screens/lab/eq/EqModuleScreen';
 import { FoundationsCourseScreen } from '../screens/lab/foundations/FoundationsCourseScreen';
 import { FoundationsPlaygroundScreen } from '../screens/lab/foundations/FoundationsPlaygroundScreen';
 import { PublicGlossaryScreen } from '../screens/landing/PublicGlossaryScreen';
@@ -173,6 +175,8 @@ export function RootNavigator() {
       <Stack.Screen name="WaveModule" component={WaveModuleScreen} />
       <Stack.Screen name="MeterLab" component={MeterLabHomeScreen} />
       <Stack.Screen name="MeterModule" component={MeterModuleScreen} />
+      <Stack.Screen name="EqLabHome" component={EqLabHomeScreen} />
+      <Stack.Screen name="EqModule" component={EqModuleScreen} />
       {/* Foundations of Sound — the Ear Lab's first module (course + sandbox). */}
       <Stack.Screen name="FoundationsCourse" component={FoundationsCourseScreen} />
       <Stack.Screen name="FoundationsPlayground" component={FoundationsPlaygroundScreen} />

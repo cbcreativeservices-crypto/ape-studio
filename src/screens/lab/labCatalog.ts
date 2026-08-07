@@ -110,7 +110,8 @@ export const LAB_CATEGORIES: LabCategory[] = [
     kind: 'list',
     labs: [
       { name: 'Equalizer', blurb: 'Graphic, parametric, shelves, filters, dynamic EQ.', route: 'EqLab' },
-      { name: 'EQ Lab', blurb: 'A deeper equalization workbench — curves, phase, and EQ matching.', status: 'development' },
+      // LIVE (slice 1, owner 2026-08-07): its own home + Seeing Frequency module.
+      { name: 'EQ Lab', blurb: 'See, hear, manipulate and diagnose frequency content — live spectrum, filters, training.', route: 'EqLabHome' },
     ],
   },
   {

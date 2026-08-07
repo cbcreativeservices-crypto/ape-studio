@@ -202,6 +202,11 @@ export type RootStackParamList = {
   /** Visual Audio Analysis (Meter Interpretation) Lab (owner 2026-07-29). */
   MeterLab: undefined;
   MeterModule: { id: import('../screens/lab/meter/modules/registry').MeterModuleId };
+  /** EQ Lab (owner spec 2026-08-07) — see/hear/manipulate/diagnose frequency
+   *  content; own home (LEARN/EXPLORE/TRAIN/CHALLENGE) + modules. Distinct from
+   *  the audible `EqLab` effect lab above. */
+  EqLabHome: undefined;
+  EqModule: { id: import('../screens/lab/eq/modules/registry').EqModuleId };
   /** FOUNDATIONS OF SOUND (owner 2026-07-26) — the FIRST module in the Ear
    *  Training & Audio Lab: a stepped teaching course (Modules 1–4 MVP) + the
    *  free Playground sandbox. Skia-animated (pre-Skia clients degrade
