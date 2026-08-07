@@ -1,34 +1,15 @@
 /**
  * Profile / Achievements / Gallery data layer — RLS-scoped reads only.
- * Album Level: tier = f(complete_count / 50) — denominator FIXED at 50 (D-5),
- * counted from server status rows, never client math over raw events.
- * Also feeds a tiny global store so the tab bar's AlbumDisc tracks live tier.
+ * `overallPct` = complete_count / 50 — a plain completion percentage from server
+ * status rows (never client math over raw events). The album-tier data (tier
+ * name + AlbumDisc) is still computed for the RETAINED academic Profile variant,
+ * but the commercial version no longer shows it and the live tab-bar tier store
+ * was REMOVED (owner 2026-08-07 — album progression retired for commercial).
  */
-import { useSyncExternalStore } from 'react';
 import { supabase } from '../../lib/supabase';
 import { albumTierFor, type AlbumTierName } from '../../theme/tokens';
 
 export const ALBUM_DENOMINATOR = 50; // locked (D-5)
-
-/* ---- tiny external store: live album tier for the tab bar ---- */
-let currentTier: AlbumTierName = 'Black';
-const listeners = new Set<() => void>();
-
-function setTier(tier: AlbumTierName) {
-  if (tier === currentTier) return;
-  currentTier = tier;
-  listeners.forEach((l) => l());
-}
-
-export function useAlbumTier(): AlbumTierName {
-  return useSyncExternalStore(
-    (cb) => {
-      listeners.add(cb);
-      return () => listeners.delete(cb);
-    },
-    () => currentTier,
-  );
-}
 
 /* ---- fetches ---- */
 
@@ -68,7 +49,6 @@ export async function fetchProfile(): Promise<ProfileData> {
   const done = completeCount ?? 0;
   const overallPct = Math.floor((done / ALBUM_DENOMINATOR) * 100);
   const tier = albumTierFor(overallPct);
-  setTier(tier.name);
 
   const initials =
     `${(user.first_name ?? user.nickname ?? '?').charAt(0)}${user.last_name_initial ?? ''}`.toUpperCase();
@@ -131,7 +111,6 @@ export async function fetchAchievements(): Promise<{ tiles: AchievementTile[]; e
   }));
 
   const earned = tiles.filter((t) => t.status === 'complete').length;
-  setTier(albumTierFor(Math.floor((earned / ALBUM_DENOMINATOR) * 100)).name);
   return { tiles, earned };
 }
 

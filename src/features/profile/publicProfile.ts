@@ -31,8 +31,6 @@ export const INTEREST_TOPICS = [
 
 /** Learning-goal options (personalizes recommendations; optional). */
 export const LEARNING_GOALS = ['Career', 'College', 'Church', 'Hobby', 'Studio', 'Broadcast'] as const;
-/** Preferred difficulty (optional). */
-export const DIFFICULTY_LEVELS = ['Beginner', 'Intermediate', 'Advanced'] as const;
 
 export type PublicProfile = {
   name: string;
@@ -45,9 +43,8 @@ export type PublicProfile = {
   primaryInterest: string;
   /** Optional very-short biography (user request 2026-07-18). */
   bio: string;
-  /** Optional learning preferences that personalize recommendations. */
+  /** Optional learning preference that personalizes recommendations. */
   learningGoal: string;
-  difficulty: string;
   /** Consent to be listed for employers/networking contact. Default OFF. */
   contactConsent: boolean;
   /** User opt-in to appear in the public Pro Registry directory (user request
@@ -64,7 +61,6 @@ export const EMPTY_PUBLIC_PROFILE: PublicProfile = {
   primaryInterest: '',
   bio: '',
   learningGoal: '',
-  difficulty: '',
   contactConsent: false,
   showInRegistry: false,
 };

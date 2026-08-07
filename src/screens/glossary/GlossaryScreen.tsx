@@ -38,6 +38,7 @@ import { isHazardTerm } from '../../lib/hazard';
 import { CautionBadge } from '../../components/CautionBadge';
 import { supabase } from '../../lib/supabase';
 import { V3_CURRICULUM_VERSION_ID } from '../../data/v3Curriculum';
+import { isCalcBackedTerm, calcLinkForTerm } from '../lab/calc/calcGlossaryLinks';
 import { SUPABASE_URL } from '../../lib/env';
 import { colors, fonts } from '../../theme/tokens';
 import {
@@ -392,6 +393,7 @@ function TermDetails({
   mistakesReadable = false,
   term,
   onLabAction,
+  onOpenCalc,
 }: {
   d: EntryDetail;
   /** The term name — auto-tagged into a "suggest a correction" report. */
@@ -414,8 +416,16 @@ function TermDetails({
    *  terms with a READY Learning Profile — honest-metrics §1.7). Absent (e.g.
    *  no navigation context) ⇒ never rendered. */
   onLabAction?: (action: GlossaryAction) => void;
+  /** Deep-link to the Calc Lab workspace that covers this term. Present ⇒ the
+   *  "Open in Calculator" row MAY render (only for calculator-covered terms).
+   *  Absent (no navigation context) ⇒ never rendered. */
+  onOpenCalc?: (workspaceId: string) => void;
 }) {
   const linkable = selfId != null && index != null && onLink != null;
+  // Calculator deep-link — ONLY for terms an actual Calc Lab workspace covers
+  // (owner 2026-08-07). The purple styling of the term title implies this link
+  // exists, so the affordance must match that same calculator-backed set.
+  const calcLink = term ? calcLinkForTerm(term) : null;
   // Audio-lab action row — ONLY for terms whose lab link is functional today.
   const labProfile = onLabAction ? getLearningProfile(term) : null;
   // Lab-lesson Common Mistakes (roadmap 2026-07-26): for a term genuinely taught
@@ -457,6 +467,20 @@ function TermDetails({
             ))}
           </View>
         </View>
+      ) : null}
+      {/* OPEN IN CALCULATOR (owner 2026-08-07) — an equation/calculator term
+          links straight to the Calc Lab workspace that computes it. Purple to
+          match the equation title styling; shown only for covered terms. */}
+      {calcLink && onOpenCalc ? (
+        <Pressable
+          style={styles.calcLinkBtn}
+          onPress={() => onOpenCalc(calcLink.workspaceId)}
+          accessibilityRole="button"
+          accessibilityLabel={`Open ${calcLink.workspaceName} in the Audio Calculator Laboratory`}
+        >
+          <Text style={styles.calcLinkSigma}>Σ</Text>
+          <Text style={styles.calcLinkText}>OPEN IN CALCULATOR · {calcLink.workspaceName.toUpperCase()}</Text>
+        </Pressable>
       ) : null}
       {linkable && firstText ? (
         <View style={styles.detailSection}>
@@ -956,6 +980,19 @@ export function GlossaryScreen({ route, navigation }: Props) {
   const onLabAction = useCallback(
     (action: GlossaryAction) => {
       (navigation as unknown as { navigate: (name: string) => void }).navigate(action.route);
+    },
+    [navigation],
+  );
+
+  /** Open the Calc Lab workspace that computes an equation term (owner
+   *  2026-08-07). CalcWorkspace is a RootStack route taking { id }; letting the
+   *  navigate bubble from this nested Glossary reaches the root navigator. */
+  const onOpenCalc = useCallback(
+    (workspaceId: string) => {
+      (navigation as unknown as { navigate: (name: string, params?: object) => void }).navigate(
+        'CalcWorkspace',
+        { id: workspaceId },
+      );
     },
     [navigation],
   );
@@ -1575,18 +1612,14 @@ export function GlossaryScreen({ route, navigation }: Props) {
         {/* The "Course" filter was removed (user request 2026-07-23) — the app is
             commercial and has no academic course codes in the public glossary. */}
         <Chip
-          // The Topic chip doubles as the entry point for the pinned
-          // "Equations & Formulas" filter (reached from the same picker), so it
-          // reflects that mode with the glossary's cyan accent when active.
-          label={
-            filter === 'equations'
-              ? 'Equations ✓'
-              : filter === 'topic' && selTopic
-                ? 'Topic ✓'
-                : 'Topic'
-          }
+          // The topic LIST button (owner 2026-08-06): always reads "Topic" and
+          // never morphs into "Equations ✓" — that relabel made the list button
+          // look like it disappeared. The Equations & Formulas view is still
+          // reachable inside this picker; while it's active the chip stays
+          // "Topic ✓" (amber) so the list button is consistent and re-openable.
+          label={(filter === 'topic' && selTopic) || filter === 'equations' ? 'Topic ✓' : 'Topic'}
           active={filter === 'topic' || filter === 'equations'}
-          accent={filter === 'equations' ? colors.cyanBright : '#ffc64d'}
+          accent="#ffc64d"
           onPress={() => {
             setFilter('topic');
             setTopicPickerOpen(true); // reopen the A–Z list to re-pick
@@ -1775,6 +1808,10 @@ export function GlossaryScreen({ route, navigation }: Props) {
                         { flexShrink: 1 },
                         cardView && styles.cardTerm,
                         expanded && styles.termExpanded,
+                        // An equation/calculator term IS purple (owner 2026-08-07):
+                        // every glossary term a Calc Lab workspace covers — so
+                        // purple always implies a real calculator link.
+                        isCalcBackedTerm(item.term) ? styles.termEquation : null,
                       ]}
                     >
                       {highlightNodes(item.term, hq)}
@@ -1890,6 +1927,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
                       begFirst={ttsBeg}
                       mistakesReadable={isMember}
                       onLabAction={onLabAction}
+                      onOpenCalc={onOpenCalc}
                     />
                   ) : (
                     <Text style={styles.detailLoading}>Loading…</Text>
@@ -2021,6 +2059,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
                             begFirst={ttsBeg}
                             mistakesReadable={isMember}
                             onLabAction={onLabAction}
+                            onOpenCalc={onOpenCalc}
                           />
                         ) : (
                           <Text style={styles.detailLoading}>Loading…</Text>
@@ -2747,6 +2786,13 @@ const styles = StyleSheet.create({
     textShadowRadius: 6,
     textShadowOffset: { width: 0, height: 0 },
   },
+  // Equation title = purple (owner 2026-08-07). Placed AFTER termExpanded in the
+  // style array so it wins over the amber expanded color and swaps the glow to
+  // match — an equation reads purple whether collapsed or expanded.
+  termEquation: {
+    color: colors.purple,
+    textShadowColor: 'rgba(168,130,255,.38)',
+  },
   // Same text style as the detail sections — the primary definition must not
   // read dimmer than the rest (Booth 2026-07-10). The purple (technical) / blue
   // (plain English) tinting was removed — both now use the standard body colour
@@ -2770,6 +2816,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 13,
   },
   labActionText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 0.5, color: colors.amber },
+  // "Open in Calculator" deep-link (owner 2026-08-07) — purple to match the
+  // equation title styling; the Σ echoes the glossary's global calculator button.
+  calcLinkBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    gap: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(168,130,255,.5)',
+    backgroundColor: '#15111f',
+    paddingVertical: 9,
+    paddingHorizontal: 13,
+    marginBottom: 4,
+  },
+  calcLinkSigma: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, lineHeight: 18, color: colors.purple },
+  calcLinkText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 0.5, color: colors.purple },
   detailBody: { fontFamily: fonts.barlowMedium, fontSize: 16, lineHeight: 25, color: colors.textSecondary },
   // "Suggest a correction" affordance at the foot of each detail reveal.
   suggestRow: {

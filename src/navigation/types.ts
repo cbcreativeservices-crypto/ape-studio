@@ -28,7 +28,9 @@ export type StudyStackParamList = {
 };
 
 export type AchievementsStackParamList = {
-  AchievementsGrid: undefined;
+  /** `from: 'profile'` ⇒ reached via the Profile link (not the bottom tab), so
+   *  the grid shows a back button to return to Profile (owner 2026-08-07). */
+  AchievementsGrid: { from?: 'profile' } | undefined;
   Gallery: undefined;
 };
 

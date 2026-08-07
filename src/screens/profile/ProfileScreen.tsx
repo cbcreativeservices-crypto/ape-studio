@@ -13,7 +13,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { KeyboardAwareScrollView } from '../../features/keyboard/keyboardControllerSafe';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -24,7 +23,6 @@ import { Toggle } from '../../components/Toggle';
 import { albumTitleFor, colors, fonts } from '../../theme/tokens';
 import { fetchProfile, type ProfileData } from '../../features/profile/api';
 import {
-  DIFFICULTY_LEVELS,
   EMPTY_PUBLIC_PROFILE,
   INTEREST_TOPICS,
   LEARNING_GOALS,
@@ -37,26 +35,11 @@ import { LowLightRow } from '../../features/settings/LowLightLayer';
 import { AudioOutputRow } from '../../features/audio/AudioOutputRow';
 import { DevVisualIndex } from '../../features/dev/DevVisualIndex';
 import { useTermList } from '../../features/flags/flaggedStore';
-import {
-  COREQ_TOPIC_GS,
-  PROGRAM_PATHS,
-  SPECIALIZED_CERTIFICATES,
-} from '../awards/awardsData';
-import { MATRIX_SUBJECTS } from '../../data/courseTopicMatrix';
+import { useBundles } from '../../features/enrollment/enrolledBundlesStore';
+import { useEnrollmentProgress } from '../../features/enrollment/enrollmentProgress';
 import { COPY } from '../../lib/copy';
 
 const CERTS: CertKey[] = ['mic', 'rec', 'mix', 'pa'];
-
-// The Awards screen persists the chosen goals under these keys (user request
-// 2026-07-18: the Profile shows/edits them). Editing opens the Awards pickers.
-const SPEC_CERT_KEY = 'ape:specCert';
-const PROGRAM_PATH_KEY = 'ape:programPath';
-
-// gs → topic name (for the goal "map"), resolved against the v2 matrix.
-const TOPIC_NAME_BY_GS = new Map(
-  MATRIX_SUBJECTS.flatMap((s) => s.topics.map((t) => [t.gs, t.name] as const)),
-);
-const nameForGs = (gs: number) => TOPIC_NAME_BY_GS.get(gs) ?? `Topic gs${gs}`;
 
 /** One compact statistic row with a subtle separator. */
 function StatRow({ label, value, last }: { label: string; value: string; last?: boolean }) {
@@ -124,9 +107,6 @@ export function ProfileScreen() {
   const { commercialMode, caps, entitlement } = useEntitlement();
   // Public / networking profile (device-local for now — backend frozen).
   const [pub, setPub] = useState<PublicProfile>(EMPTY_PUBLIC_PROFILE);
-  // Chosen goals (persisted by the Awards pickers; edited by opening them).
-  const [specCert, setSpecCert] = useState<string | null>(null);
-  const [programPath, setProgramPath] = useState<string | null>(null);
   // "Terms learned" — the self-assessed KNOWN list (client-side; no server metric
   // exists while the backend is frozen).
   const known = useTermList('known');
@@ -136,10 +116,6 @@ export function ProfileScreen() {
       fetchProfile()
         .then(setProfile)
         .catch(() => {});
-      // Re-read goals each time the screen refocuses (e.g. after editing them
-      // on the Awards screen).
-      AsyncStorage.getItem(SPEC_CERT_KEY).then(setSpecCert);
-      AsyncStorage.getItem(PROGRAM_PATH_KEY).then(setProgramPath);
     }, []),
   );
 
@@ -147,11 +123,21 @@ export function ProfileScreen() {
     loadPublicProfile().then(setPub);
   }, []);
 
-  const specCertData = useMemo(
-    () => SPECIALIZED_CERTIFICATES.find((c) => c.name === specCert) ?? null,
-    [specCert],
+  // Certificate + Program goals AUTO-populate from My Enrollments (owner
+  // 2026-08-07): every cert/program bundle the user enrolled, with live topic
+  // progress. Replaces the separately-picked Awards goal (ape:specCert/…).
+  const bundles = useBundles();
+  const certBundles = useMemo(() => bundles.filter((b) => b.kind === 'cert'), [bundles]);
+  const programBundles = useMemo(() => bundles.filter((b) => b.kind === 'program'), [bundles]);
+  const bundleGs = useMemo(
+    () => Array.from(new Set([...certBundles, ...programBundles].flatMap((b) => b.topics))),
+    [certBundles, programBundles],
   );
-  const programData = useMemo(() => PROGRAM_PATHS.find((p) => p.name === programPath) ?? null, [programPath]);
+  const bundleProg = useEnrollmentProgress(bundleGs);
+  const bundleDone = useCallback(
+    (topics: number[]) => topics.filter((gs) => bundleProg.get(gs)?.status === 'complete').length,
+    [bundleProg],
+  );
 
   const setPubKey = useCallback(<K extends keyof PublicProfile>(key: K, value: PublicProfile[K]) => {
     setPub((prev) => {
@@ -239,13 +225,9 @@ export function ProfileScreen() {
           {/* 1 — STUDENT IDENTITY CARD (user request 2026-07-18): avatar (photo
               or initials), name, membership, understated Student ID. */}
           <View style={styles.identityCard}>
-            {profile?.photoUrl ? (
-              <Image source={{ uri: profile.photoUrl }} style={styles.avatar} />
-            ) : (
-              <LinearGradient colors={['#ffd35e', '#f09e1a']} style={styles.avatar}>
-                <Text style={styles.avatarInitials}>{profile?.initials || '—'}</Text>
-              </LinearGradient>
-            )}
+            {/* Avatar circle REMOVED for commercial (owner 2026-08-07) — the
+                initials circle was a student-badge holdover; the name is now the
+                top of the identity card. (Academic branch keeps its avatar.) */}
             <Text style={styles.identityName}>{pub.name || profile?.nickname || 'Add your name'}</Text>
             <Text style={styles.planTag}>
               {academy ? 'ACADEMY MEMBER' : entitlement === 'lapsed' ? 'MEMBERSHIP LAPSED' : 'REFERENCE MODE'}
@@ -253,19 +235,9 @@ export function ProfileScreen() {
             {profile?.apeStudentId ? <Text style={styles.identityMeta}>ID · {profile.apeStudentId}</Text> : null}
           </View>
 
-          {/* 2 — ALBUM LEVEL (unchanged). */}
-          <View style={[styles.panel, styles.albumRow]}>
-            <View style={{ flexShrink: 1 }}>
-              <Text style={styles.tierMeta}>{profile?.overallPct ?? 0}% - Full Course Certification</Text>
-              <Text style={styles.tierName}>
-                ALBUM LEVEL: {albumTitleFor(profile?.tierName ?? 'Black').toUpperCase()}
-              </Text>
-              <Text style={styles.tierNote}>Higher tiers unlock as more courses launch</Text>
-            </View>
-            <View style={styles.albumBacking}>
-              <AlbumDisc level={profile?.tierName ?? 'Black'} size={60} />
-            </View>
-          </View>
+          {/* ALBUM LEVEL card REMOVED for commercial (owner 2026-08-07) — the
+              album→tier progression is retired; may return for the academic
+              variant (still rendered in the institutional branch below). */}
 
           {/* 3 — CURRENT LEARNING FOCUS. */}
           <Pressable
@@ -285,60 +257,53 @@ export function ProfileScreen() {
             )}
           </Pressable>
 
-          {/* 4a — CERTIFICATE GOAL (Specialization). Tap opens the Awards picker. */}
+          {/* 4a — CERTIFICATE GOALS — auto-populated from My Enrollments (owner
+              2026-08-07): every enrolled certificate, with live topic progress.
+              Tap → My Enrollments to add/remove. */}
           <Pressable
             style={styles.panel}
-            onPress={() => (navigation as any).navigate('Awards', { category: 'specialization' })}
+            onPress={() => (navigation as any).navigate('Awards', { category: 'enrollment' })}
             accessibilityRole="button"
           >
-            <Text style={styles.panelEyebrow}>CERTIFICATE GOAL</Text>
-            {specCertData ? (
+            <Text style={styles.panelEyebrow}>CERTIFICATE GOALS</Text>
+            {certBundles.length ? (
               <>
-                <Text style={styles.goalTitle}>{specCertData.name}</Text>
-                <Text style={styles.goalSub}>Specialized Certificate · 3 topics</Text>
-                <Text style={styles.goalMapHead}>SPECIALIZATION TOPICS</Text>
-                {specCertData.specializationTopics.map((gs) => (
-                  <Text key={gs} style={styles.goalMapItem}>
-                    • {nameForGs(gs)}
-                  </Text>
+                {certBundles.map((b) => (
+                  <View key={b.key} style={styles.goalBundle}>
+                    <Text style={styles.goalTitle}>{b.name}</Text>
+                    <Text style={styles.goalSub}>
+                      {bundleDone(b.topics)} of {b.topics.length} topics complete
+                    </Text>
+                  </View>
                 ))}
-                <Text style={styles.goalMapHead}>REQUIRED CORE · complete once, then waived</Text>
-                {COREQ_TOPIC_GS.map((gs) => (
-                  <Text key={gs} style={styles.goalCoreItem}>
-                    ✓ {nameForGs(gs)}
-                  </Text>
-                ))}
-                <Text style={styles.linkCta}>Change goal ›</Text>
+                <Text style={styles.linkCta}>Manage in My Enrollments ›</Text>
               </>
             ) : (
-              <Text style={styles.emptyLine}>Set your certificate goal ›</Text>
+              <Text style={styles.emptyLine}>Enroll in a certificate ›</Text>
             )}
           </Pressable>
 
-          {/* 4b — PROGRAM GOAL (can differ from the certificate goal). */}
+          {/* 4b — PROGRAM GOALS — auto-populated from My Enrollments. */}
           <Pressable
             style={styles.panel}
-            onPress={() => (navigation as any).navigate('Awards', { category: 'program' })}
+            onPress={() => (navigation as any).navigate('Awards', { category: 'enrollment' })}
             accessibilityRole="button"
           >
-            <Text style={styles.panelEyebrow}>PROGRAM GOAL</Text>
-            {programData ? (
+            <Text style={styles.panelEyebrow}>PROGRAM GOALS</Text>
+            {programBundles.length ? (
               <>
-                <Text style={styles.goalTitle}>{programData.name}</Text>
-                <Text style={styles.goalSub}>
-                  Academy Program Certificate · {programData.requiredTopics.length} topics
-                  {programData.electiveChooseOne?.length ? ' + 1 elective' : ''}
-                </Text>
-                <Text style={styles.goalMapHead}>REQUIRED CORE · complete once, then waived</Text>
-                {COREQ_TOPIC_GS.map((gs) => (
-                  <Text key={gs} style={styles.goalCoreItem}>
-                    ✓ {nameForGs(gs)}
-                  </Text>
+                {programBundles.map((b) => (
+                  <View key={b.key} style={styles.goalBundle}>
+                    <Text style={styles.goalTitle}>{b.name}</Text>
+                    <Text style={styles.goalSub}>
+                      {bundleDone(b.topics)} of {b.topics.length} topics complete
+                    </Text>
+                  </View>
                 ))}
-                <Text style={styles.linkCta}>View full topic map ›</Text>
+                <Text style={styles.linkCta}>Manage in My Enrollments ›</Text>
               </>
             ) : (
-              <Text style={styles.emptyLine}>Set your program goal ›</Text>
+              <Text style={styles.emptyLine}>Enroll in a program ›</Text>
             )}
           </Pressable>
 
@@ -351,7 +316,14 @@ export function ProfileScreen() {
             <StatRow label="Study Streak" value="—" last />
             {caps.completionRecords ? (
               <Pressable
-                onPress={() => (navigation as any).navigate('Achievements')}
+                onPress={() =>
+                  // Flag the origin so the grid shows a back button to Profile
+                  // (owner 2026-08-07 — there was no way back before).
+                  (navigation as any).navigate('Achievements', {
+                    screen: 'AchievementsGrid',
+                    params: { from: 'profile' },
+                  })
+                }
                 accessibilityRole="button"
                 accessibilityLabel="View trophies and records"
               >
@@ -391,12 +363,8 @@ export function ProfileScreen() {
               isOn={(o) => pub.learningGoal === o}
               onPick={(o) => setPubKey('learningGoal', pub.learningGoal === o ? '' : o)}
             />
-            <Text style={[styles.fieldLabel, { marginTop: 12 }]}>Preferred difficulty</Text>
-            <ChoiceChips
-              options={DIFFICULTY_LEVELS}
-              isOn={(o) => pub.difficulty === o}
-              onPick={(o) => setPubKey('difficulty', pub.difficulty === o ? '' : o)}
-            />
+            {/* "Preferred difficulty" REMOVED (owner 2026-08-07) — it changed
+                nothing, so it falsely implied an effect. */}
           </View>
 
           {/* 8 — ABOUT ME (optional, understated). */}
@@ -679,6 +647,8 @@ const styles = StyleSheet.create({
     paddingLeft: 4,
   },
 
+  // Each enrolled cert/program row inside its goals panel (owner 2026-08-07).
+  goalBundle: { marginTop: 8 },
   goalTitle: { fontFamily: fonts.oswaldMedium, fontSize: 17.5, color: colors.textPrimary, paddingLeft: 4 },
   goalSub: { fontFamily: fonts.barlowMedium, fontSize: 13, color: colors.textSub, paddingLeft: 4, marginTop: 2 },
   goalMapHead: {

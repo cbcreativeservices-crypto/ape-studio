@@ -1,8 +1,7 @@
 /**
  * TabBar — bottom nav (design-reference TabBar.dc.html): 60px, brushed-metal
  * gradient, top hairline + inset highlight. Home / Study / Achievements /
- * Profile, each a NavIcon. The Achievements glyph color tracks the live Album
- * Level (seed brief §2). Safe-area inset added below the 60px bar.
+ * Profile, each a NavIcon. Safe-area inset added below the 60px bar.
  */
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -11,7 +10,6 @@ import { CommonActions } from '@react-navigation/native';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { NavIcon, type NavIconName } from './NavIcon';
 import { useFootnote } from '../../lib/footnote';
-import type { AlbumTierName } from '../../theme/tokens';
 import { colors, fonts } from '../../theme/tokens';
 
 const TAB_ORDER: NavIconName[] = ['Home', 'Study', 'Achievements', 'Profile'];
@@ -22,7 +20,7 @@ const TAB_ROOTS: Partial<Record<NavIconName, string>> = {
   Achievements: 'AchievementsGrid',
 };
 
-export function TabBar({ state, navigation, album = 'Silver' }: BottomTabBarProps & { album?: AlbumTierName }) {
+export function TabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
   const activeRoute = state.routes[state.index]?.name;
   // Occasional reminder strip BELOW the nav buttons (Booth 2026-07-08) —
@@ -80,7 +78,7 @@ export function TabBar({ state, navigation, album = 'Silver' }: BottomTabBarProp
               accessibilityLabel={name}
               onPress={handlePress}
             >
-              <NavIcon icon={name} lit={lit} album={album} />
+              <NavIcon icon={name} lit={lit} />
             </Pressable>
           );
         })}

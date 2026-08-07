@@ -14,7 +14,6 @@ import { BrandLogo } from '../../components/BrandLogo';
 import { GlassButton } from '../../components/GlassButton';
 import { NavIcon, type NavIconName } from '../../components/nav/NavIcon';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
-import { useAlbumTier } from '../../features/profile/api';
 import { CONCEPT_MODULES } from '../../features/tools/learn';
 import { colors, fonts } from '../../theme/tokens';
 import { TOOLS, type ToolKey } from './toolsData';
@@ -155,7 +154,6 @@ function ToolIcon({ tool }: { tool: ToolKey }) {
 export function ToolsHubScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
   const { commercialMode, caps, entitlement } = useEntitlement();
-  const album = useAlbumTier();
   // Saved Measurements + Measurement Training are Academy-only (owner
   // 2026-08-05) — free accounts see them grayed + locked → Paywall. Gate on
   // entitlement, not caps (matches the AudioLearning training gate).
@@ -320,7 +318,7 @@ export function ToolsHubScreen({ navigation }: Props) {
               accessibilityLabel={name}
               onPress={() => navigation.navigate('Main', { screen: name } as never)}
             >
-              <NavIcon icon={name} lit={false} album={album} />
+              <NavIcon icon={name} lit={false} />
             </Pressable>
           ))}
         </View>

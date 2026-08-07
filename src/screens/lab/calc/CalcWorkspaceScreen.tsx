@@ -23,6 +23,7 @@ import { useCalcSectionOpen } from './calcPrefs';
 // implementation the workflow runner uses. One panel, no fork.
 import { FieldRow, buildValues, defaultUnitIdx, formatOutput, runCompute } from './calcPanel';
 import { buildReportFromCalc, reportToText } from './calcReport';
+import { GlossaryTermPopup } from '../../../features/glossary/GlossaryTermPopup';
 
 const SIGS = [3, 4, 5] as const;
 
@@ -33,6 +34,10 @@ export function CalcWorkspaceScreen() {
   const ws: Workspace | undefined = getWorkspace(route.params.id);
   const chain = useChainValue();
 
+  // Glossary term popup (owner 2026-08-07) — tapping an "IN THE GLOSSARY" chip
+  // shows the definition in-place; the Modal keeps this screen mounted, so the
+  // user returns to their exact inputs/scroll on close.
+  const [popupTerm, setPopupTerm] = useState<string | null>(null);
   const [fnIdx, setFnIdx] = useState(0);
   const [raw, setRaw] = useState<Record<string, string>>({});
   const [unitIdx, setUnitIdx] = useState<Record<string, number>>({});
@@ -283,9 +288,16 @@ export function CalcWorkspaceScreen() {
         <Text style={styles.eyebrow}>IN THE GLOSSARY</Text>
         <View style={styles.chipRow}>
           {ws.glossary.map((g) => (
-            <View key={g} style={styles.glossChip}>
+            // Tappable (owner 2026-08-07) → in-place glossary definition popup.
+            <Pressable
+              key={g}
+              style={styles.glossChip}
+              onPress={() => setPopupTerm(g)}
+              accessibilityRole="button"
+              accessibilityLabel={`Show the glossary definition of ${g}`}
+            >
               <Text style={styles.glossText}>{g}</Text>
-            </View>
+            </Pressable>
           ))}
         </View>
         <Pressable
@@ -298,6 +310,7 @@ export function CalcWorkspaceScreen() {
         </Pressable>
         <Text style={styles.caption}>Full definitions, plain-English versions, and linked labs live there.</Text>
       </KeyboardAwareScrollView>
+      <GlossaryTermPopup termName={popupTerm} onClose={() => setPopupTerm(null)} />
     </View>
   );
 }
@@ -380,7 +393,9 @@ const styles = StyleSheet.create({
   tr: { flexDirection: 'row', gap: 6 },
   th: { color: colors.amber, fontFamily: fonts.oswaldSemiBold, fontSize: 10.5 },
   td: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textSecondary },
-  glossChip: { borderRadius: 7, borderWidth: 1, borderColor: '#2c2c33', paddingHorizontal: 9, paddingVertical: 5, backgroundColor: '#141419' },
-  glossText: { fontFamily: fonts.barlowMedium, fontSize: 12, color: colors.textSecondary },
+  // Tappable glossary chips (owner 2026-08-07) — a purple hint marks them as
+  // links into the definition popup, matching the glossary's equation-purple.
+  glossChip: { borderRadius: 7, borderWidth: 1, borderColor: 'rgba(168,130,255,.4)', paddingHorizontal: 9, paddingVertical: 5, backgroundColor: '#15111f' },
+  glossText: { fontFamily: fonts.barlowMedium, fontSize: 12, color: colors.purple },
   glossLink: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.amber, marginTop: 2 },
 });

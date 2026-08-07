@@ -1,11 +1,13 @@
 /**
  * NavIcon — per-tab neon glyph, lit (active: colored + glow) / unlit (dim).
- *   Home = amber house · Study = blue headphones · Progress = AlbumDisc at tier
+ *   Home = amber house · Study = blue headphones · Progress = silver record
  *   · Profile = green person. (The "Achievements" tab is LABELED "PROGRESS".)
+ * The PROGRESS glyph is a fixed silver record — it no longer tracks an album
+ * tier (owner 2026-08-07, album progression retired for commercial).
  */
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
-import { colors, fonts, type AlbumTierName } from '../../theme/tokens';
+import { colors, fonts } from '../../theme/tokens';
 
 export type NavIconName = 'Home' | 'Study' | 'Achievements' | 'Profile';
 
@@ -19,7 +21,7 @@ const NAV_LABEL: Record<NavIconName, string> = {
 
 type Def = { color: string; glowRgba: string; font: number; spacing: number };
 
-function defFor(icon: NavIconName, album: AlbumTierName): Def {
+function defFor(icon: NavIconName): Def {
   switch (icon) {
     case 'Home':
       // App amber (was orange) — user request 2026-07-23.
@@ -42,15 +44,13 @@ function glowStyle(lit: boolean, rgba: string) {
 export function NavIcon({
   icon,
   lit,
-  album = 'Silver',
   showLabel = true,
 }: {
   icon: NavIconName;
   lit: boolean;
-  album?: AlbumTierName;
   showLabel?: boolean;
 }) {
-  const d = defFor(icon, album);
+  const d = defFor(icon);
   const glow = glowStyle(lit, d.glowRgba);
 
   return (

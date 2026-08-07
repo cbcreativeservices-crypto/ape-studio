@@ -13,7 +13,8 @@
 import { useCallback, useState } from 'react';
 import { Dimensions, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
+import type { AchievementsStackParamList } from '../../navigation/types';
 import { colors, fonts } from '../../theme/tokens';
 import { TrophyImage } from '../../components/TrophyImage';
 import { TrophyModal } from '../../components/TrophyModal';
@@ -31,6 +32,10 @@ const TILE = Math.floor((Dimensions.get('window').width - H_PAD * 2 - TILE_GAP *
 export function AchievementsScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
+  const route = useRoute<RouteProp<AchievementsStackParamList, 'AchievementsGrid'>>();
+  // Reached from the Profile link (not the bottom tab) ⇒ show a back button that
+  // returns to Profile (owner 2026-08-07). From the tab there's no back to show.
+  const cameFromProfile = route.params?.from === 'profile';
   const [tiles, setTiles] = useState<AchievementTile[]>([]);
   const [earned, setEarned] = useState(0);
   // Tapping a trophy opens it FULL-SIZE in a popup (Booth 2026-07-11) rather
@@ -66,6 +71,22 @@ export function AchievementsScreen() {
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScrollView contentContainerStyle={styles.scroll}>
         <View style={styles.headerRow}>
+          {cameFromProfile ? (
+            <Pressable
+              onPress={() => {
+                // Clear the origin flag so re-opening the grid from the bottom
+                // tab later doesn't still show the back button, then return.
+                navigation.setParams({ from: undefined } as never);
+                (navigation as any).navigate('Profile');
+              }}
+              hitSlop={10}
+              accessibilityRole="button"
+              accessibilityLabel="Back to profile"
+              style={styles.backBtn}
+            >
+              <Text style={styles.back}>‹</Text>
+            </Pressable>
+          ) : null}
           <Text style={styles.title}>ACHIEVEMENTS</Text>
           <Text style={styles.counter}>
             {earned} / {GRID_SLOTS}
@@ -145,6 +166,8 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
   scroll: { padding: H_PAD, gap: 14 },
   headerRow: { flexDirection: 'row', alignItems: 'baseline', gap: 10 },
+  backBtn: { alignSelf: 'center' },
+  back: { fontFamily: fonts.oswaldSemiBold, fontSize: 28, lineHeight: 28, color: colors.textSub, marginRight: -2 },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, letterSpacing: 1.4, color: colors.textPrimary },
   counter: {
     fontFamily: fonts.mono,
