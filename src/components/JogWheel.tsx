@@ -18,7 +18,14 @@ import Svg, { Circle, Defs, Ellipse, RadialGradient, Stop } from 'react-native-s
 import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../features/settings/store';
 
-const DETENT_DEG = 360 / 7; // ~51.4° per click
+// 8 clicks per full turn (owner 2026-08-06, was 7): one more detent + haptic
+// per rotation, so a full turn scrolls one topic further.
+const DETENT_DEG = 360 / 8; // 45° per click
+/** The big overlay wheel sits BELOW screen centre by this much (owner
+ *  2026-08-06) so the topic title + % in the Current Topic container stay in
+ *  view. The dial's angle math shifts its centre by the same amount so the
+ *  dimple still tracks exactly under the finger. */
+const OVERLAY_Y_OFFSET = 46;
 /** Min time between topic switches (owner 2026-08-01) — slow enough to WATCH the
  *  topic change behind the wheel, and no rapid-fire haptic "vibration". Faster
  *  spins just drop the excess steps; the wheel keeps turning smoothly. */
@@ -168,8 +175,9 @@ export function JogDial({
   // drag on either side turns it (down-right = right, up-right = left, and the
   // mirror on the left) — no curved motion needed.
   const { width, height } = useWindowDimensions();
-  const centerRef = useRef({ x: width / 2, y: height / 2 });
-  centerRef.current = { x: width / 2, y: height / 2 };
+  // Centre matches the overlay wheel's shifted position (OVERLAY_Y_OFFSET).
+  const centerRef = useRef({ x: width / 2, y: height / 2 + OVERLAY_Y_OFFSET });
+  centerRef.current = { x: width / 2, y: height / 2 + OVERLAY_Y_OFFSET };
   const DEAD_PX = 44; // ignore right at the centre (atan2 is unstable there)
 
   // The dimple is DRAWN at 2 o'clock (−30° in atan2 terms); rotating the wheel by
@@ -298,7 +306,11 @@ export function JogOverlay({ active, spin }: { active: boolean; spin: SharedValu
   if (!active) return null;
   return (
     <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.overlay]}>
-      <JogStack size={size} spin={spin} />
+      {/* Shifted down so the topic title + % stay visible (owner 2026-08-06);
+          the dial's angle centre shifts with it. */}
+      <View style={{ transform: [{ translateY: OVERLAY_Y_OFFSET }] }}>
+        <JogStack size={size} spin={spin} />
+      </View>
     </View>
   );
 }

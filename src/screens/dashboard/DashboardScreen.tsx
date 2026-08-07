@@ -1109,17 +1109,21 @@ export function DashboardScreen() {
                     setScrollIdx(next);
                   }}
                   onRelease={(wasTap) => {
-                    // First TAP → park the wheel open (stays visible). A second
-                    // tap, or any turn-and-release, commits and closes it.
-                    if (wasTap && !jogParkedRef.current) {
-                      jogParkedRef.current = true;
-                      setJogParked(true);
-                      return; // keep jogActive/overlay open
+                    // The wheel STAYS OPEN and usable through turns (owner
+                    // 2026-08-06 — it kept closing mid-use, incl. gesture
+                    // terminations): every release PARKS it open and commits
+                    // the selection live. ONLY a second tap (tap while already
+                    // parked) closes it.
+                    if (wasTap && jogParkedRef.current) {
+                      jogParkedRef.current = false;
+                      setJogParked(false);
+                      jogActiveRef.current = false;
+                      setJogActive(false);
+                      goTo(scrollIdxRef.current);
+                      return;
                     }
-                    jogParkedRef.current = false;
-                    setJogParked(false);
-                    jogActiveRef.current = false;
-                    setJogActive(false);
+                    jogParkedRef.current = true;
+                    setJogParked(true);
                     goTo(scrollIdxRef.current); // commit → lower rack updates now
                   }}
                 />
@@ -1869,7 +1873,9 @@ const styles = StyleSheet.create({
   methodLeft: { flex: 1, height: 58, justifyContent: 'center' },
   // LED instrument screen behind one continuous glass panel (owner 2026-08-06).
   glassScreen: { flex: 1, alignSelf: 'stretch', overflow: 'hidden', backgroundColor: '#050608', borderRadius: 3 },
-  glassReadout: { flex: 1, paddingHorizontal: 9, paddingVertical: 4, justifyContent: 'space-between' },
+  // Bottom padding > top (owner 2026-08-06): lifts the LED meter off the glass
+  // container's lower edge a touch.
+  glassReadout: { flex: 1, paddingHorizontal: 9, paddingTop: 4, paddingBottom: 9, justifyContent: 'space-between' },
   // Line 1 of the readout: title (left, grows) + % / green check (right).
   glassHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   // Instrument label — squared control-panel face. Brighter cool-white with a
@@ -1999,10 +2005,13 @@ const styles = StyleSheet.create({
     borderTopWidth: 2.5,
     borderLeftWidth: 1.5,
     borderBottomWidth: 1.5,
-    borderRightWidth: 1,
+    // Right edge opened a touch (owner 2026-08-06): the 1px/20% lip barely
+    // read — the other three sides implied the cutout, the right didn't. A
+    // hair wider + brighter, still the panel's subtlest edge.
+    borderRightWidth: 1.5,
     borderTopColor: '#000000',
     borderLeftColor: '#000000',
-    borderRightColor: 'rgba(255,255,255,0.2)',
+    borderRightColor: 'rgba(255,255,255,0.3)',
     borderBottomColor: 'rgba(255,255,255,0.38)',
     borderRadius: 2.5,
   },
