@@ -28,11 +28,10 @@ import {
   AWARD_ORDER,
   COREQ_TOPIC_GS,
   FOUNDATIONS_REQ_NAME,
-  PROGRAM_PATHS,
-  SPECIALIZED_CERTIFICATES,
   type AwardPage,
   type AwardTier,
 } from './awardsData';
+import { fetchV3Programs, fetchV3Certs, type V3Credential } from '../../data/v3Curriculum';
 import type { RootStackParamList } from '../../navigation/types';
 
 const SPEC_CERT_KEY = 'ape:specCert'; // chosen Specialized Certificate name (Level 1)
@@ -292,16 +291,32 @@ export function AwardsScreen({ navigation, route }: Props) {
   const [expandedCert, setExpandedCert] = useState<string | null>(null);
   const [expandedProg, setExpandedProg] = useState<string | null>(null);
 
-  // Both award catalogs listed A–Z by name (user request 2026-07-22). Sorted
-  // copies so the source arrays (and any other consumer) keep their order;
-  // every certificate/program is included — nothing is filtered.
+  // LIVE v3 certificates + programs (owner 2026-08-06) — replace the retired v2
+  // award data; aliased to the field names the picker/render already use.
+  const [v3Programs, setV3Programs] = useState<V3Credential[]>([]);
+  const [v3Certs, setV3Certs] = useState<V3Credential[]>([]);
+  useEffect(() => {
+    let alive = true;
+    void fetchV3Programs().then((p) => alive && setV3Programs(p));
+    void fetchV3Certs().then((c) => alive && setV3Certs(c));
+    return () => {
+      alive = false;
+    };
+  }, []);
+  // Both award catalogs listed A–Z by name (user request 2026-07-22).
   const specCertsAZ = useMemo(
-    () => [...SPECIALIZED_CERTIFICATES].sort((a, b) => a.name.localeCompare(b.name)),
-    [],
+    () =>
+      v3Certs
+        .map((c) => ({ name: c.name, specializationTopics: c.topicsGs }))
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    [v3Certs],
   );
   const programPathsAZ = useMemo(
-    () => [...PROGRAM_PATHS].sort((a, b) => a.name.localeCompare(b.name)),
-    [],
+    () =>
+      v3Programs
+        .map((p) => ({ name: p.name, requiredTopics: p.topicsGs, electiveChooseOne: p.electivesGs ?? [] }))
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    [v3Programs],
   );
 
   useEffect(() => {

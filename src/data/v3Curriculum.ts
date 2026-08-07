@@ -77,7 +77,7 @@ export function flattenV3(fields: V3Field[]): V3Topic[] {
 
 /** A v3 credential (program or certificate) with its member-topic gs list — the
  *  shape the enrollment browse consumes (owner 2026-08-06). */
-export type V3Credential = { slug: string; name: string; topicsGs: number[] };
+export type V3Credential = { slug: string; name: string; topicsGs: number[]; electivesGs?: number[] };
 
 /** Active v3 PROGRAMS with their required (non-elective) member topics, ordered. */
 export async function fetchV3Programs(): Promise<V3Credential[]> {
@@ -95,14 +95,20 @@ export async function fetchV3Programs(): Promise<V3Credential[]> {
       .in('program_id', ids)
       .order('seq');
     const byProg = new Map<string, number[]>();
+    const electivesByProg = new Map<string, number[]>();
     for (const l of (links ?? []) as any[]) {
-      if (l.is_elective) continue;
       if (l.gs == null) continue;
-      if (!byProg.has(l.program_id)) byProg.set(l.program_id, []);
-      byProg.get(l.program_id)!.push(l.gs);
+      const target = l.is_elective ? electivesByProg : byProg;
+      if (!target.has(l.program_id)) target.set(l.program_id, []);
+      target.get(l.program_id)!.push(l.gs);
     }
     return (progs as any[])
-      .map((p) => ({ slug: p.slug as string, name: p.name as string, topicsGs: byProg.get(p.id) ?? [] }))
+      .map((p) => ({
+        slug: p.slug as string,
+        name: p.name as string,
+        topicsGs: byProg.get(p.id) ?? [],
+        electivesGs: electivesByProg.get(p.id) ?? [],
+      }))
       .filter((p) => p.topicsGs.length > 0);
   } catch {
     return [];
