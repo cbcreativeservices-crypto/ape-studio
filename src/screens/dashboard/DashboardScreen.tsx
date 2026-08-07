@@ -1324,10 +1324,14 @@ export function DashboardScreen() {
                     <View style={styles.iconSticker}>
                       <MethodIcon
                         method="quiz"
-                        size={46}
-                        // Frame lights ONCE PASSED (done cue) — matches the method
-                        // icons; was inverted (lit until passed), owner 2026-08-01.
-                        glowColor={quizState === 'passed' ? METHOD_COLORS.quiz : undefined}
+                        // Same size + border layout as the method icons (owner
+                        // 2026-08-06 — the 46px quiz tile read too large).
+                        size={43}
+                        // PASSED → the whole icon goes GREEN, glyph AND border
+                        // (owner 2026-08-06). The border stays the faint default
+                        // line until then — a lit colored border means DONE.
+                        color={quizState === 'passed' ? '#3fe06a' : undefined}
+                        glowColor={quizState === 'passed' ? '#3fe06a' : undefined}
                       />
                     </View>
                     {/* Same tinted-glass pane as the title readout (owner 2026-08-06). */}
@@ -1867,10 +1871,10 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 0 },
   },
   glassTopGlare: { position: 'absolute', top: 0, left: 0, right: 0, height: 1.5, backgroundColor: 'rgba(255,255,255,0.30)' },
-  // Flat smoked-glass tint (owner 2026-08-06): a constant translucent overlay
-  // across the whole pane — THIS is what seats the lit segments behind the
-  // glass; the gradients alone left them reading printed on top.
-  glassTint: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(8,12,18,0.24)' },
+  // Glass tint (owner 2026-08-06, rev 2): 13% GLOSSY — a milky white sheet, not
+  // the earlier dark smoked layer (which read flat/matte). The white lift is the
+  // room light reflecting off the pane; the gradients still shape the depth.
+  glassTint: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.13)' },
   // Top row: engraved title (left, on the coat) + square % LED box (right).
   methodTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   // Virtually-engraved Cinzel nameplate (Booth 2026-07-15). The wrapper bounds
@@ -2007,7 +2011,9 @@ const styles = StyleSheet.create({
   // face matches the glass screens' dark tone; GlassCover lays the pane on top.
   iconWell: {
     width: 54,
-    height: 54,
+    // Same height as the title glass container (methodLeft = 58, owner
+    // 2026-08-06) so the two panes read as one row of matched instruments.
+    height: 58,
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',

@@ -155,6 +155,7 @@ export function MethodIcon({
   size = 44,
   glowColor,
   mono = false,
+  color,
 }: {
   method: MethodKey;
   size?: number;
@@ -163,11 +164,14 @@ export function MethodIcon({
   glowColor?: string;
   /** Render the glyph GRAY (a method not used in this topic — Booth 2026-07-11). */
   mono?: boolean;
+  /** Override the glyph's method color (owner 2026-08-06: the quiz clipboard
+   *  turns GREEN once passed). Ignored when `mono` is set. */
+  color?: string;
 }) {
   // Booth ruling 2026-07-07: the fill_in_blank puzzle glyph reads visually
   // heavier than its siblings — render it 15% smaller (62% → 52.7% of tile).
   const inner = size * 0.62 * (method === 'fill_in_blank' ? 0.85 : 1);
-  const glyphColor = mono ? '#565759' : undefined;
+  const glyphColor = mono ? '#565759' : color;
   return (
     <View
       style={[
