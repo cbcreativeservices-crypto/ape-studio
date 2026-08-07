@@ -30,8 +30,8 @@ export const LOUDNESS_STOPS: ReadonlyArray<{ pos: number; color: string }> = [
   { pos: 0.14, color: '#e6902f' }, // orange — only the hot top
   { pos: 0.3, color: '#e8c341' }, // yellow — a thin "getting hot" band
   { pos: 0.48, color: '#3fae52' }, // green — the healthy range's upper edge
-  { pos: 0.85, color: '#3fae52' }, // green — held wide down toward quiet
-  { pos: 1, color: MIDLINE_BLUE }, // silence / mid line — MIDI-0 blue
+  { pos: 0.72, color: '#3fae52' }, // green — lower edge (blue holds below this)
+  { pos: 1, color: MIDLINE_BLUE }, // silence / mid line — MIDI-0 blue (wider blue floor)
 ];
 
 function hexToRgb(h: string): [number, number, number] {
