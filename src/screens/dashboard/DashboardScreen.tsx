@@ -2037,10 +2037,10 @@ const styles = StyleSheet.create({
     borderTopColor: '#000000',
     borderLeftColor: '#000000',
     borderRightColor: '#000000',
-    // Bottom border is now the FINEST BLACK LINE at the extreme bottom (owner
-    // 2026-08-06); the gray highlight lip moved just above it (glassBottomHighlight
-    // in GlassCover) so it's gray-over-black at the lower edge.
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    // Black line at the extreme bottom (owner 2026-08-06); the gray highlight lip
+    // moved just above it (glassBottomHighlight in GlassCover) so it's gray-over-
+    // black at the lower edge. A hair thicker than hairline (owner 2026-08-06 rev2).
+    borderBottomWidth: 1,
     borderBottomColor: '#000000',
     borderRadius: 2.5,
   },

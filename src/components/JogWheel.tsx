@@ -314,29 +314,36 @@ export function JogOverlay({
   // 23% larger than before (owner 2026-08-01), still capped to fit the screen.
   const size = Math.round(Math.min(width * 0.62, height * 0.4) * 1.23);
   if (!active) return null;
+  // Wheel centre in SCREEN coords — shifted down so the topic title + % stay
+  // visible (owner 2026-08-06). Positioned by LAYOUT (absolute top/left), NOT a
+  // transform: a transform offsets the visual but not the touch hit-area, which
+  // left the ✕ dead and the wheel feeling frozen (owner 2026-08-06 fix).
+  const cx = width / 2;
+  const cy = height / 2 + OVERLAY_Y_OFFSET;
   return (
     <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, styles.overlay]}>
-      {/* Shifted down so the topic title + % stay visible (owner 2026-08-06);
-          the dial's angle centre shifts with it. */}
-      <View pointerEvents="box-none" style={{ transform: [{ translateY: OVERLAY_Y_OFFSET }] }}>
-        {/* The wheel is PURELY VISUAL — it must NOT capture touches, or it
-            steals the turn gesture from the small dial underneath (owner
-            2026-08-06 fix). Only the ✕ key below is touchable. */}
-        <View pointerEvents="none">
-          <JogStack size={size} spin={spin} />
-        </View>
-        {onClose ? (
-          <Pressable
-            onPress={onClose}
-            hitSlop={10}
-            style={styles.closeKey}
-            accessibilityRole="button"
-            accessibilityLabel="Close the topic wheel"
-          >
-            <Text style={styles.closeX}>✕</Text>
-          </Pressable>
-        ) : null}
+      {/* The wheel is PURELY VISUAL — it must NOT capture touches, or it steals
+          the turn gesture from the small dial underneath. */}
+      <View
+        pointerEvents="none"
+        style={{ position: 'absolute', left: cx - size / 2, top: cy - size / 2, width: size, height: size }}
+      >
+        <JogStack size={size} spin={spin} />
       </View>
+      {onClose ? (
+        // Direct child of the full-screen overlay, placed at the wheel's
+        // top-right in screen coords — hit-area matches the visual, always
+        // tappable so the wheel can always be dismissed.
+        <Pressable
+          onPress={onClose}
+          hitSlop={18}
+          style={[styles.closeKey, { left: cx + size / 2 - 22, top: cy - size / 2 - 8 }]}
+          accessibilityRole="button"
+          accessibilityLabel="Close the topic wheel"
+        >
+          <Text style={styles.closeX}>✕</Text>
+        </Pressable>
+      ) : null}
     </View>
   );
 }
@@ -352,8 +359,6 @@ const styles = StyleSheet.create({
   // overlay, so a stuck-open wheel can always be dismissed.
   closeKey: {
     position: 'absolute',
-    top: -4,
-    right: -4,
     width: 34,
     height: 34,
     borderRadius: 17,
