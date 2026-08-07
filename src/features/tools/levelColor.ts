@@ -18,12 +18,19 @@
 export const MIDLINE_BLUE = '#2f74ff';
 
 /** Loud → quiet stops. `pos` 0 = loudest (full scale), 1 = silence (the mid
- *  line). Velocity ramp: red → orange → yellow → green → blue. */
+ *  line). Velocity ramp: red → orange → yellow → green → blue.
+ *
+ *  GREEN is deliberately WIDE (owner 2026-08-07): the "good/healthy" operating
+ *  range should dominate the middle of the scale, so moderate levels read green
+ *  instead of jumping straight to yellow. Yellow is trimmed to a thin
+ *  "getting hot" band near the top; orange/red stay reserved for hot → clipping.
+ *  Two green stops hold a solid green plateau across the whole moderate band. */
 export const LOUDNESS_STOPS: ReadonlyArray<{ pos: number; color: string }> = [
   { pos: 0, color: '#ff5f4e' }, // full scale — red
-  { pos: 0.32, color: '#e6902f' }, // orange (widened: more orange/yellow before green)
-  { pos: 0.6, color: '#e8c341' }, // yellow
-  { pos: 0.83, color: '#3fae52' }, // green (pushed toward the quiet end)
+  { pos: 0.14, color: '#e6902f' }, // orange — only the hot top
+  { pos: 0.3, color: '#e8c341' }, // yellow — a thin "getting hot" band
+  { pos: 0.48, color: '#3fae52' }, // green — the healthy range's upper edge
+  { pos: 0.85, color: '#3fae52' }, // green — held wide down toward quiet
   { pos: 1, color: MIDLINE_BLUE }, // silence / mid line — MIDI-0 blue
 ];
 
