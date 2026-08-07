@@ -70,7 +70,7 @@ import {
 } from '../../features/dashboard/api';
 import { FREE_ENROLL_GS, isFreeEnrollGs, useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { supabase } from '../../lib/supabase';
-import { gateReadout, pctColor } from '../../features/dashboard/gates';
+import { gateReadout } from '../../features/dashboard/gates';
 import { fetchGlossaryItemsByIds, fetchTopicItems, studyDisplayPct } from '../../features/study/api';
 import { setLastStudyLocation } from '../../features/study/lastStudyLocation';
 import {
@@ -284,29 +284,42 @@ function GlassScreen({
           </Text>
         ) : null}
       </View>
-      {/* ONE continuous glass panel over the whole readout — a slight dim plus an
-          ambient lighting highlight. Purely decorative; passes touches through. */}
-      <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-        {/* Vertical sheen → dim: glass catches a little light up top and darkens
-            toward the bottom (the "slight dimming affect"). */}
-        <LinearGradient
-          colors={['rgba(255,255,255,0.10)', 'rgba(255,255,255,0.02)', 'rgba(0,0,0,0.14)', 'rgba(0,0,0,0.28)']}
-          locations={[0, 0.45, 0.75, 1]}
-          start={{ x: 0.5, y: 0 }}
-          end={{ x: 0.5, y: 1 }}
-          style={StyleSheet.absoluteFill}
-        />
-        {/* Ambient specular highlight sweeping from the top-left corner. */}
-        <LinearGradient
-          colors={['rgba(255,255,255,0.16)', 'rgba(255,255,255,0.04)', 'rgba(255,255,255,0)']}
-          locations={[0, 0.35, 0.7]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0.75, y: 0.9 }}
-          style={StyleSheet.absoluteFill}
-        />
-        {/* Crisp glass edge glare along the very top. */}
-        <View style={styles.glassTopGlare} />
-      </View>
+      <GlassCover />
+    </View>
+  );
+}
+
+/**
+ * GlassCover — the ONE continuous tinted-glass sheet, shared by the title/%
+ * LED screens AND the method-icon wells so every pane reads identically
+ * (owner 2026-08-06). A flat smoked tint (constant translucent overlay) does
+ * the heavy lifting of pushing the lit content BEHIND the pane — the gradients
+ * alone read as content printed on top. Decorative only; never blocks touches.
+ */
+function GlassCover() {
+  return (
+    <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+      {/* Flat smoked-glass tint over EVERYTHING beneath the pane. */}
+      <View style={styles.glassTint} />
+      {/* Vertical sheen → dim: glass catches a little light up top and darkens
+          toward the bottom (the "slight dimming affect"). */}
+      <LinearGradient
+        colors={['rgba(255,255,255,0.10)', 'rgba(255,255,255,0.02)', 'rgba(0,0,0,0.14)', 'rgba(0,0,0,0.28)']}
+        locations={[0, 0.45, 0.75, 1]}
+        start={{ x: 0.5, y: 0 }}
+        end={{ x: 0.5, y: 1 }}
+        style={StyleSheet.absoluteFill}
+      />
+      {/* Ambient specular highlight sweeping from the top-left corner. */}
+      <LinearGradient
+        colors={['rgba(255,255,255,0.16)', 'rgba(255,255,255,0.04)', 'rgba(255,255,255,0)']}
+        locations={[0, 0.35, 0.7]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0.75, y: 0.9 }}
+        style={StyleSheet.absoluteFill}
+      />
+      {/* Crisp glass edge glare along the very top. */}
+      <View style={styles.glassTopGlare} />
     </View>
   );
 }
@@ -1187,7 +1200,7 @@ export function DashboardScreen() {
                       in the method color once the method is complete — a "done"
                       cue, inverted from the old needs-action glow (user request
                       2026-07-17). */}
-                  <View style={styles.iconWell}>
+                  <View style={[styles.cutoutMount, styles.iconWell]}>
                     <View style={styles.iconSticker}>
                       <MethodIcon
                         method={m.key}
@@ -1199,6 +1212,8 @@ export function DashboardScreen() {
                         glowColor={isApplicable && complete ? METHOD_COLORS[m.key] : undefined}
                       />
                     </View>
+                    {/* Same tinted-glass pane as the title readout (owner 2026-08-06). */}
+                    <GlassCover />
                   </View>
                   <View style={styles.methodLeft}>
                     {/* LED instrument screen under one glass panel (owner
@@ -1208,7 +1223,9 @@ export function DashboardScreen() {
                       // % only ever shows 0–99 (never "100%"): completion swaps
                       // it for the green check via `complete` below.
                       value={isApplicable ? `${Math.min(pct, 99)}%` : '--'}
-                      valueColor={isApplicable ? pctColor(pct) : '#6f7072'}
+                      // Command AMBER, not pctColor's orange (owner 2026-08-06) —
+                      // completion is signalled by the green check, not a ramp.
+                      valueColor={isApplicable ? colors.amber : '#6f7072'}
                       segments={isApplicable ? segmentsForPct(pct) : 0}
                       complete={complete}
                     />
@@ -1303,7 +1320,7 @@ export function DashboardScreen() {
                   <View style={{ marginRight: 3 }}>
                     <PanelScrew angle={0} />
                   </View>
-                  <View style={styles.iconWell}>
+                  <View style={[styles.cutoutMount, styles.iconWell]}>
                     <View style={styles.iconSticker}>
                       <MethodIcon
                         method="quiz"
@@ -1313,6 +1330,8 @@ export function DashboardScreen() {
                         glowColor={quizState === 'passed' ? METHOD_COLORS.quiz : undefined}
                       />
                     </View>
+                    {/* Same tinted-glass pane as the title readout (owner 2026-08-06). */}
+                    <GlassCover />
                   </View>
                   <View style={styles.methodLeft}>
                     {/* Same LED-screen-under-glass as the method panels (owner
@@ -1848,6 +1867,10 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 0 },
   },
   glassTopGlare: { position: 'absolute', top: 0, left: 0, right: 0, height: 1.5, backgroundColor: 'rgba(255,255,255,0.30)' },
+  // Flat smoked-glass tint (owner 2026-08-06): a constant translucent overlay
+  // across the whole pane — THIS is what seats the lit segments behind the
+  // glass; the gradients alone left them reading printed on top.
+  glassTint: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(8,12,18,0.24)' },
   // Top row: engraved title (left, on the coat) + square % LED box (right).
   methodTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   // Virtually-engraved Cinzel nameplate (Booth 2026-07-15). The wrapper bounds
@@ -1979,18 +2002,16 @@ const styles = StyleSheet.create({
   },
   // Recessed cutout WELL — 58×58 so its top/bottom align with the button +
   // title/LED column (#5). Neutral dark recess (NOT lit).
+  // Recessed like the title readout (owner 2026-08-06): the shared cutoutMount
+  // supplies the panel-cut edges (replacing the old thin 1px border) and the
+  // face matches the glass screens' dark tone; GlassCover lays the pane on top.
   iconWell: {
     width: 54,
     height: 54,
-    borderRadius: 3,
+    overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#0b0c0d',
-    borderWidth: 1,
-    borderTopColor: '#000000',
-    borderLeftColor: '#000000',
-    borderRightColor: 'rgba(255,255,255,0.12)',
-    borderBottomColor: 'rgba(255,255,255,0.22)',
+    backgroundColor: '#050608',
   },
   // Plain black square surround (no border — the LIT line is the MethodIcon
   // TILE's own border, Booth 2026-07-11 #1). Sized so the enlarged 46px tile
@@ -2001,7 +2022,9 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#0b0c0d',
+    // Transparent (owner 2026-08-06): the well's dark face shows through — the
+    // old lighter fill read as a square seam under the new glass pane.
+    backgroundColor: 'transparent',
   },
   ledWell: {
     alignSelf: 'stretch',
