@@ -18,7 +18,10 @@ export const EQ_SECTION_META: { id: EqSection; title: string; note: string }[] =
   { id: 'challenge', title: 'CHALLENGE', note: 'Practical problems — you decide what to change.' },
 ];
 
-export type EqModuleId = 'spectrum';
+export type EqModuleId = 'spectrum' | 'whyEq' | 'camera' | 'parametric' | 'qband';
+
+/** Props every EQ Lab module component receives from EqModuleScreen. */
+export type EqModuleComponentProps = { width: number; focused: boolean };
 
 export type EqModuleDef = {
   id: EqModuleId;
@@ -27,7 +30,8 @@ export type EqModuleDef = {
   section: EqSection;
 };
 
-/** Modules that are BUILT — routable via EqModule { id }. */
+/** Modules that are BUILT — routable via EqModule { id }. Array order = the
+ *  spec's lesson order (it drives the host's prev/next module nav). */
 export const EQ_MODULES: EqModuleDef[] = [
   {
     id: 'spectrum',
@@ -36,15 +40,35 @@ export const EQ_MODULES: EqModuleDef[] = [
       'Live spectrum from your phone microphone — look below 100 Hz, then cover that region with a low-cut filter.',
     section: 'learn',
   },
+  {
+    id: 'whyEq',
+    title: 'Why We Use EQ',
+    blurb: 'Boost, cut, and the balance of frequency content.',
+    section: 'learn',
+  },
+  {
+    id: 'camera',
+    title: 'The Camera Analogy',
+    blurb: 'Fixed → semi-parametric → fully parametric. Move = frequency, zoom = Q.',
+    section: 'learn',
+  },
+  {
+    id: 'parametric',
+    title: 'Parametric Controls',
+    blurb: 'Frequency · Gain · Q — one band, live response graph.',
+    section: 'learn',
+  },
+  {
+    id: 'qband',
+    title: 'Q & Bandwidth',
+    blurb: 'Higher Q = narrower. Q and octave bandwidth, side by side.',
+    section: 'learn',
+  },
 ];
 
 /** Modules on the approved roadmap, not yet built — shown dimmed with an IN
  *  DEVELOPMENT badge (never tappable; honesty rule). Order = spec lesson order. */
 export const EQ_PLANNED: { title: string; blurb: string; section: EqSection }[] = [
-  { title: 'Why We Use EQ', blurb: 'Boost, cut, and the balance of frequency content.', section: 'learn' },
-  { title: 'The Camera Analogy', blurb: 'Fixed → semi-parametric → fully parametric. Move = frequency, zoom = Q.', section: 'learn' },
-  { title: 'Parametric Controls', blurb: 'Frequency · Gain · Q — one band, live response graph.', section: 'learn' },
-  { title: 'Q & Bandwidth', blurb: 'Higher Q = narrower. Q and octave bandwidth, side by side.', section: 'learn' },
   { title: 'Filter Shapes', blurb: 'Bell, shelves, high-pass, low-pass, notch — manipulate each one.', section: 'learn' },
   { title: 'Filter Slopes', blurb: '6 → 48 dB/octave overlaid, cutoff held constant.', section: 'learn' },
   { title: 'Graphic vs. Parametric', blurb: 'Fixed bands vs full control — why pros reach for each.', section: 'learn' },

@@ -1,9 +1,10 @@
 /**
  * EqModuleScreen — routes one EQ Lab module id to its component (Digital Lab
- * host idiom). Slice 1 hosts only "Seeing Frequency"; the prev/next top-nav
- * appears once a second live module lands. No GuidedLessonSheet yet — the 'eq'
- * lesson belongs to the audible Equalizer effect lab; this lab gets its own
- * lesson entry when the content registry grows one.
+ * host idiom). ScrollLockProvider wraps the ScrollView so DragSliders inside
+ * modules win their horizontal drags over the vertical scroll (owner
+ * 2026-07-30 drag-vs-scroll rule — the sliders grab the lock via context).
+ * No GuidedLessonSheet yet — the 'eq' lesson belongs to the audible Equalizer
+ * effect lab; this lab gets its own entry when the content registry grows one.
  */
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -11,11 +12,20 @@ import { useIsFocused, useNavigation, useRoute, type RouteProp } from '@react-na
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
-import { EQ_MODULES, type EqModuleId } from './modules/registry';
-import { SeeingFrequencyModule, type EqModuleComponentProps } from './modules/SeeingFrequency';
+import { ScrollLockProvider } from '../LabShell';
+import { EQ_MODULES, type EqModuleComponentProps, type EqModuleId } from './modules/registry';
+import { SeeingFrequencyModule } from './modules/SeeingFrequency';
+import { WhyEqModule } from './modules/WhyEq';
+import { CameraAnalogyModule } from './modules/CameraAnalogy';
+import { ParametricControlsModule } from './modules/ParametricControls';
+import { QBandwidthModule } from './modules/QBandwidth';
 
 const COMPONENTS: Record<EqModuleId, (p: EqModuleComponentProps) => React.JSX.Element> = {
   spectrum: SeeingFrequencyModule,
+  whyEq: WhyEqModule,
+  camera: CameraAnalogyModule,
+  parametric: ParametricControlsModule,
+  qband: QBandwidthModule,
 };
 
 export function EqModuleScreen() {
@@ -26,6 +36,9 @@ export function EqModuleScreen() {
   const meta = EQ_MODULES.find((m) => m.id === route.params.id) ?? EQ_MODULES[0];
   const Comp = COMPONENTS[meta.id];
   const [width, setWidth] = useState(0);
+  // Modules lock the ScrollView during horizontal drags (DragSlider grabs the
+  // lock from context — owner 2026-07-30 drag-vs-scroll rule).
+  const [scrollLocked, setScrollLocked] = useState(false);
   const idx = EQ_MODULES.findIndex((m) => m.id === meta.id);
   const last = EQ_MODULES.length - 1;
   const goToModule = (i: number) => {
@@ -58,11 +71,17 @@ export function EqModuleScreen() {
           </Pressable>
         </View>
       )}
-      <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-        <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
-          {width > 0 ? <Comp width={width} focused={focused} /> : null}
-        </View>
-      </ScrollView>
+      <ScrollLockProvider value={setScrollLocked}>
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          keyboardShouldPersistTaps="handled"
+          scrollEnabled={!scrollLocked}
+        >
+          <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
+            {width > 0 ? <Comp width={width} focused={focused} /> : null}
+          </View>
+        </ScrollView>
+      </ScrollLockProvider>
     </View>
   );
 }

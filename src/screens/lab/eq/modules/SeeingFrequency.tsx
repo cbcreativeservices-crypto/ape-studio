@@ -24,6 +24,7 @@ import { LOUDNESS_STOPS } from '../../../../features/tools/levelColor';
 import { butterworthHighPassDb } from '../../../../features/lab/fxViz';
 import { colors, fonts } from '../../../../theme/tokens';
 import { EngineGate } from '../../../tools/EngineGate';
+import type { EqModuleComponentProps } from './registry';
 
 const FFT_SIZE = 8192;
 
@@ -92,8 +93,6 @@ function bandLabels(centers: number[]): { i: number; text: string }[] {
   }
   return out;
 }
-
-export type EqModuleComponentProps = { width: number; focused: boolean };
 
 export function SeeingFrequencyModule(_p: EqModuleComponentProps) {
   // Ref-stable config (RtaScreen rule): useDspEngine's start() closes over this
