@@ -626,7 +626,9 @@ function LoadingCount() {
  *  the full total. Holds at the target once the ramp completes. */
 function CountUp({
   target,
-  durationMs = 1500,
+  // Slower ramp (owner 2026-08-06): +1.5s so the count-up spans more of the
+  // ~3s corpus load instead of finishing well before the list arrives.
+  durationMs = 3000,
   style,
   suffix = ' Terms',
 }: {

@@ -295,15 +295,13 @@ export function ShareTermSheet({
 
                 {/* Sections */}
                 <Text style={styles.sectionHead}>INCLUDE</Text>
+                {/* Order matches the term-detail view (owner 2026-08-06):
+                    Definition → Plain English → Purpose → Common Mistakes →
+                    Related terms (related sits LAST, not above Plain English). */}
                 <SectionToggle
                   label="Definition"
                   on={sections.definition}
                   onToggle={() => setSections((s) => ({ ...s, definition: !s.definition }))}
-                />
-                <SectionToggle
-                  label="Related terms"
-                  on={sections.relatedTerms}
-                  onToggle={() => setSections((s) => ({ ...s, relatedTerms: !s.relatedTerms }))}
                 />
                 <SectionToggle
                   label="Plain English"
@@ -322,6 +320,11 @@ export function ShareTermSheet({
                     onToggle={() => setSections((s) => ({ ...s, commonMistakes: !s.commonMistakes }))}
                   />
                 ) : null}
+                <SectionToggle
+                  label="Related terms"
+                  on={sections.relatedTerms}
+                  onToggle={() => setSections((s) => ({ ...s, relatedTerms: !s.relatedTerms }))}
+                />
 
                 {/* Pull more terms into one multi-term share. */}
                 {sources.length ? (
