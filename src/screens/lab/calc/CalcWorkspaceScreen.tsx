@@ -393,9 +393,9 @@ const styles = StyleSheet.create({
   tr: { flexDirection: 'row', gap: 6 },
   th: { color: colors.amber, fontFamily: fonts.oswaldSemiBold, fontSize: 10.5 },
   td: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textSecondary },
-  // Tappable glossary chips (owner 2026-08-07) — a purple hint marks them as
-  // links into the definition popup, matching the glossary's equation-purple.
-  glossChip: { borderRadius: 7, borderWidth: 1, borderColor: 'rgba(168,130,255,.4)', paddingHorizontal: 9, paddingVertical: 5, backgroundColor: '#15111f' },
-  glossText: { fontFamily: fonts.barlowMedium, fontSize: 12, color: colors.purple },
+  // Tappable glossary chips (owner 2026-08-07) — normal glossary-link styling
+  // (NOT purple; purple is reserved for calculator words inside the glossary).
+  glossChip: { borderRadius: 7, borderWidth: 1, borderColor: '#2c2c33', paddingHorizontal: 9, paddingVertical: 5, backgroundColor: '#141419' },
+  glossText: { fontFamily: fonts.barlowMedium, fontSize: 12, color: colors.textSecondary },
   glossLink: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.amber, marginTop: 2 },
 });

@@ -59,6 +59,7 @@ import { SwitchButton } from '../../components/SwitchButton';
 import { TrophyImage } from '../../components/TrophyImage';
 import { JogDial, JogOverlay } from '../../components/JogWheel';
 import { TrophyModal } from '../../components/TrophyModal';
+import { useTopicTrophies, trophyForTopicName } from '../../features/profile/topicTrophies';
 import { colors, fonts, spacing } from '../../theme/tokens';
 import {
   fetchDashboard,
@@ -360,6 +361,10 @@ export function DashboardScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<StudyStackParamList>>();
   const route = useRoute<RouteProp<StudyStackParamList, 'Dashboard'>>();
+  // Topic → trophy art by NAME (owner 2026-08-07): v3 topic rows carry no
+  // icon_url of their own, so the current-topic image resolves the trophy by
+  // name and only falls back to the row's own icon_url when there's no match.
+  const trophies = useTopicTrophies();
   const [data, setData] = useState<DashboardData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<string | null>(null);
@@ -1078,7 +1083,7 @@ export function DashboardScreen() {
                 {/* Image 92 inside the 2+2 bevel keeps the 100px footprint —
                     the card height doesn't grow (owner 2026-08-06). */}
                 <TrophyImage
-                  iconUrl={dispTopic.icon_url}
+                  iconUrl={trophyForTopicName(trophies, dispTopic.name) ?? dispTopic.icon_url}
                   size={92}
                   radius={10}
                   fallback={<View style={styles.topicTrophyEmpty} />}
@@ -1399,7 +1404,7 @@ export function DashboardScreen() {
 
       <TrophyModal
         visible={trophyOpen}
-        iconUrl={topic.icon_url}
+        iconUrl={trophyForTopicName(trophies, topic.name) ?? topic.icon_url}
         name={topic.name}
         onClose={() => setTrophyOpen(false)}
       />

@@ -79,7 +79,7 @@ export function GlossaryTermPopup({
           </View>
           <Text style={styles.source}>Pro Audio Training Academy Glossary</Text>
           <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent}>
-            {loading ? <ActivityIndicator color={colors.purple} style={styles.spinner} /> : null}
+            {loading ? <ActivityIndicator color={colors.amber} style={styles.spinner} /> : null}
             {notFound ? <Text style={styles.muted}>Full definition coming soon in the Glossary.</Text> : null}
             {row?.definition?.trim() ? <Text style={styles.def}>{row.definition.trim()}</Text> : null}
             {row?.plain_english?.trim() ? (
@@ -109,12 +109,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#101015',
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: 'rgba(168,130,255,.35)',
+    borderColor: '#2a2c34',
     padding: 18,
     maxHeight: '76%',
   },
   headerRow: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 },
-  term: { flex: 1, fontFamily: fonts.oswaldMedium, fontSize: 21, color: colors.purple },
+  term: { flex: 1, fontFamily: fonts.oswaldMedium, fontSize: 21, color: '#f4f5f7' },
   close: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, color: colors.textSub, marginTop: -2 },
   source: { fontFamily: fonts.barlowRegular, fontSize: 12, color: colors.textSub, marginTop: 2 },
   body: { marginTop: 12 },
@@ -134,10 +134,10 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: 'rgba(168,130,255,.5)',
-    backgroundColor: '#15111f',
+    borderColor: 'rgba(255,198,77,.45)',
+    backgroundColor: '#17140c',
     paddingVertical: 8,
     paddingHorizontal: 18,
   },
-  doneText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, color: colors.purple },
+  doneText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, color: colors.amber },
 });

@@ -294,6 +294,7 @@ function LinkedText({
   selfId,
   index,
   onLink,
+  onOpenCalc,
   highlight = '',
 }: {
   text: string;
@@ -301,6 +302,9 @@ function LinkedText({
   selfId: string;
   index: TermIndex | null;
   onLink: (ids: string[]) => void;
+  /** When provided, a calculator/equation word links DIRECTLY to its calculator
+   *  workspace (purple), instead of the normal blue glossary cross-link. */
+  onOpenCalc?: (workspaceId: string) => void;
   /** Active search query — occurrences are highlighted green in plain segments. */
   highlight?: string;
 }) {
@@ -310,15 +314,30 @@ function LinkedText({
   );
   return (
     <Text style={style}>
-      {segs.map((s, i) =>
-        s.ids ? (
+      {segs.map((s, i) => {
+        if (!s.ids) return <Text key={i}>{highlightNodes(s.text, highlight)}</Text>;
+        // A calculator-backed word links straight to its calculator (owner
+        // 2026-08-07): purple, and the tap opens the workspace rather than the
+        // glossary cross-link. Falls back to the normal blue link otherwise.
+        const calc = onOpenCalc ? calcLinkForTerm(s.text) : null;
+        if (calc) {
+          return (
+            <Text
+              key={i}
+              style={styles.termLinkCalc}
+              suppressHighlighting
+              onPress={() => onOpenCalc!(calc.workspaceId)}
+            >
+              {s.text}
+            </Text>
+          );
+        }
+        return (
           <Text key={i} style={styles.termLink} suppressHighlighting onPress={() => onLink(s.ids!)}>
             {s.text}
           </Text>
-        ) : (
-          <Text key={i}>{highlightNodes(s.text, highlight)}</Text>
-        ),
-      )}
+        );
+      })}
     </Text>
   );
 }
@@ -485,7 +504,14 @@ function TermDetails({
       {linkable && firstText ? (
         <View style={styles.detailSection}>
           <Text style={styles.detailEyebrow}>{firstLabel}</Text>
-          <LinkedText text={firstText} style={styles.detailBody} selfId={selfId!} index={index!} onLink={onLink!} />
+          <LinkedText
+            text={firstText}
+            style={styles.detailBody}
+            selfId={selfId!}
+            index={index!}
+            onLink={onLink!}
+            onOpenCalc={onOpenCalc}
+          />
         </View>
       ) : (
         <DetailSection label={firstLabel} text={firstText} />
@@ -1893,6 +1919,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
                     selfId={item.id}
                     index={termIndex}
                     onLink={onLinkPress}
+                    onOpenCalc={onOpenCalc}
                     highlight={hq}
                   />
                 ) : (
@@ -2432,8 +2459,9 @@ const styles = StyleSheet.create({
     borderBottomColor: '#1a1a1a',
   },
   topicRowActive: { backgroundColor: '#1d1607' },
-  // Pinned "Equations & Formulas" row at the top of the topic picker — its own
-  // cyan accent so it reads as a special cross-topic filter, not a topic.
+  // Pinned "Equations & Formulas" row at the top of the topic picker — PURPLE
+  // accent (owner 2026-08-07: equations/calculator = purple), so it reads as a
+  // special cross-topic filter, not a topic.
   equationsRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -2442,17 +2470,17 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 14,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(127,212,255,0.22)',
-    backgroundColor: 'rgba(127,212,255,0.06)',
+    borderBottomColor: 'rgba(168,130,255,0.28)',
+    backgroundColor: 'rgba(168,130,255,0.07)',
   },
   equationsRowText: {
     flexShrink: 1,
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 14,
     letterSpacing: 0.6,
-    color: colors.cyanBright,
+    color: colors.purple,
   },
-  equationsCount: { fontFamily: fonts.mono, fontSize: 13, color: colors.cyanBright },
+  equationsCount: { fontFamily: fonts.mono, fontSize: 13, color: colors.purple },
   // Formula shown on a row in the Equations & Formulas view.
   formulaWrap: { marginTop: 8, gap: 2 },
   formulaSymbolic: { fontFamily: fonts.mono, fontSize: 16, lineHeight: 24, color: colors.cyanBright },
@@ -2680,6 +2708,13 @@ const styles = StyleSheet.create({
     color: '#9fbede',
     textDecorationLine: 'underline',
     textDecorationColor: 'rgba(159,190,222,0.35)',
+  },
+  // A calculator/equation word inside a definition (owner 2026-08-07) — PURPLE,
+  // and its tap links DIRECTLY to the associated calculator, not the glossary.
+  termLinkCalc: {
+    color: colors.purple,
+    textDecorationLine: 'underline',
+    textDecorationColor: 'rgba(168,130,255,0.4)',
   },
   // Disambiguation chooser sheet.
   chooserBackdrop: {
