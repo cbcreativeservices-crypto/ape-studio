@@ -1802,7 +1802,7 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     marginTop: 4,
     textShadowColor: 'rgba(220,228,238,0.35)',
-    textShadowRadius: 1.4,
+    textShadowRadius: 3.4,
     textShadowOffset: { width: 0, height: 0 },
   },
   topicMeta: {
@@ -1812,7 +1812,7 @@ const styles = StyleSheet.create({
     color: colors.textSub,
     marginTop: 2,
     textShadowColor: 'rgba(200,210,222,0.3)',
-    textShadowRadius: 1.4,
+    textShadowRadius: 3.4,
     textShadowOffset: { width: 0, height: 0 },
   },
   pctBlock: { alignItems: 'flex-start', marginTop: 6, gap: 1 },
@@ -1830,7 +1830,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1.6,
     color: colors.textSubAlt,
     textShadowColor: 'rgba(200,205,212,0.3)',
-    textShadowRadius: 1.4,
+    textShadowRadius: 3.4,
     textShadowOffset: { width: 0, height: 0 },
   },
   provisionalNote: {
@@ -1916,7 +1916,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1.1,
     color: '#d3e0f0',
     textShadowColor: 'rgba(150,190,235,0.6)',
-    textShadowRadius: 6,
+    textShadowRadius: 8,
     textShadowOffset: { width: 0, height: 0 },
   },
   // Completed method — the title segment relights in the check green.
@@ -1930,7 +1930,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     letterSpacing: 1,
     textAlign: 'right',
-    textShadowRadius: 8,
+    textShadowRadius: 10,
     textShadowOffset: { width: 0, height: 0 },
   },
   // Green LED check — shown in place of the % when a method is fully complete.
@@ -1942,7 +1942,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     color: '#3fe06a',
     textShadowColor: 'rgba(63,224,106,0.75)',
-    textShadowRadius: 8,
+    textShadowRadius: 10,
     textShadowOffset: { width: 0, height: 0 },
   },
   // Quiz gate-summary line (sits where the method meter would be). Lit glow now
@@ -1952,7 +1952,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 15,
     letterSpacing: 1.2,
-    textShadowRadius: 4,
+    textShadowRadius: 6,
     textShadowOffset: { width: 0, height: 0 },
   },
   glassTopGlare: { position: 'absolute', top: 0, left: 0, right: 0, height: 1.5, backgroundColor: 'rgba(255,255,255,0.30)' },
@@ -2162,7 +2162,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     letterSpacing: 0.6,
     textShadowColor: 'rgba(255,255,255,0.2)',
-    textShadowRadius: 2,
+    textShadowRadius: 4,
     textShadowOffset: { width: 0, height: 0 },
   },
 });
