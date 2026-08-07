@@ -26,13 +26,11 @@ import { DeckIcon } from '../../components/DeckIcon';
 import { HomeIcon } from '../../components/HomeIcon';
 import { NavIcon } from '../../components/nav/NavIcon';
 import { LedMeter, segmentsForPct } from '../../components/LedMeter';
-import { fetchV3Curriculum, type V3Field } from '../../data/v3Curriculum';
+import { fetchV3Curriculum, fetchV3Programs, fetchV3Certs, type V3Field, type V3Credential } from '../../data/v3Curriculum';
 import {
   COREQ_TOPIC_GS,
   FOUNDATIONS_LAB_ROUTE,
   FOUNDATIONS_REQ_NAME,
-  PROGRAM_PATHS,
-  SPECIALIZED_CERTIFICATES,
 } from '../awards/awardsData';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { useEnrollmentProgress } from '../../features/enrollment/enrollmentProgress';
@@ -188,6 +186,26 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
     for (const s of v3Subjects) for (const t of s.topics) m.set(t.gs, { name: t.name, subject: s.name });
     return m;
   }, [v3Subjects]);
+  // LIVE v3 programs + certs (owner 2026-08-06) — replace the retired v2 award
+  // data; aliased to the field names the browse already uses.
+  const [v3Programs, setV3Programs] = useState<V3Credential[]>([]);
+  const [v3Certs, setV3Certs] = useState<V3Credential[]>([]);
+  useEffect(() => {
+    let alive = true;
+    void fetchV3Programs().then((p) => alive && setV3Programs(p));
+    void fetchV3Certs().then((c) => alive && setV3Certs(c));
+    return () => {
+      alive = false;
+    };
+  }, []);
+  const PROGRAM_PATHS = useMemo(
+    () => v3Programs.map((p) => ({ name: p.name, requiredTopics: p.topicsGs })),
+    [v3Programs],
+  );
+  const SPECIALIZED_CERTIFICATES = useMemo(
+    () => v3Certs.map((c) => ({ name: c.name, specializationTopics: c.topicsGs })),
+    [v3Certs],
+  );
   const [openSubject, setOpenSubject] = useState<number | null>(enrollUi.openSubject);
   const [payPrompt, setPayPrompt] = useState(false);
   const [homeSetupOpen, setHomeSetupOpen] = useState(false);
@@ -407,7 +425,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
       return p ? p.requiredTopics : [];
     }
     return [];
-  }, [browseTab, openItem, openSubject, v3Subjects]);
+  }, [browseTab, openItem, openSubject, v3Subjects, PROGRAM_PATHS, SPECIALIZED_CERTIFICATES]);
 
   const allGs = useMemo(
     () => Array.from(new Set([...COREQ_TOPIC_GS, ...enrolled.map((e) => e.gs), ...expandedBrowseGs])),
@@ -644,7 +662,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
       }
     }
     return out;
-  }, [enrolledGs, bundleKeySet]);
+  }, [enrolledGs, bundleKeySet, PROGRAM_PATHS, SPECIALIZED_CERTIFICATES]);
 
   // Derived containers respect the filter chips too (bug fix 2026-07-23): they
   // used to ignore them, so incomplete awards leaked into Completed and On Home.

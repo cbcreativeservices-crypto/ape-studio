@@ -74,3 +74,66 @@ export async function fetchV3Curriculum(): Promise<V3Field[]> {
 export function flattenV3(fields: V3Field[]): V3Topic[] {
   return fields.flatMap((f) => f.subjects.flatMap((s) => s.topics));
 }
+
+/** A v3 credential (program or certificate) with its member-topic gs list — the
+ *  shape the enrollment browse consumes (owner 2026-08-06). */
+export type V3Credential = { slug: string; name: string; topicsGs: number[] };
+
+/** Active v3 PROGRAMS with their required (non-elective) member topics, ordered. */
+export async function fetchV3Programs(): Promise<V3Credential[]> {
+  try {
+    const { data: progs } = await supabase
+      .from('programs')
+      .select('id, slug, name, sequence')
+      .eq('is_active', true)
+      .order('sequence');
+    if (!progs?.length) return [];
+    const ids = (progs as any[]).map((p) => p.id);
+    const { data: links } = await supabase
+      .from('program_topics')
+      .select('program_id, gs, seq, is_elective')
+      .in('program_id', ids)
+      .order('seq');
+    const byProg = new Map<string, number[]>();
+    for (const l of (links ?? []) as any[]) {
+      if (l.is_elective) continue;
+      if (l.gs == null) continue;
+      if (!byProg.has(l.program_id)) byProg.set(l.program_id, []);
+      byProg.get(l.program_id)!.push(l.gs);
+    }
+    return (progs as any[])
+      .map((p) => ({ slug: p.slug as string, name: p.name as string, topicsGs: byProg.get(p.id) ?? [] }))
+      .filter((p) => p.topicsGs.length > 0);
+  } catch {
+    return [];
+  }
+}
+
+/** Active v3 CERTIFICATES with their required member topics, ordered. */
+export async function fetchV3Certs(): Promise<V3Credential[]> {
+  try {
+    const { data: certs } = await supabase
+      .from('certificates')
+      .select('id, slug, name, sequence')
+      .eq('is_active', true)
+      .order('sequence');
+    if (!certs?.length) return [];
+    const ids = (certs as any[]).map((c) => c.id);
+    const { data: links } = await supabase
+      .from('certificate_topics')
+      .select('certificate_id, gs, seq, is_required')
+      .in('certificate_id', ids)
+      .order('seq');
+    const byCert = new Map<string, number[]>();
+    for (const l of (links ?? []) as any[]) {
+      if (l.gs == null) continue;
+      if (!byCert.has(l.certificate_id)) byCert.set(l.certificate_id, []);
+      byCert.get(l.certificate_id)!.push(l.gs);
+    }
+    return (certs as any[])
+      .map((c) => ({ slug: c.slug as string, name: c.name as string, topicsGs: byCert.get(c.id) ?? [] }))
+      .filter((c) => c.topicsGs.length > 0);
+  } catch {
+    return [];
+  }
+}
