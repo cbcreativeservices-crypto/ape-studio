@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { LabChip } from '../LabShell';
+import { ShareIcon } from '../../../components/ShareIcon';
 import type { CalcValues, FieldDef, OutputVal, Workspace } from './calcTypes';
 import { fmt, unitsFor } from './calcUnits';
 import { getWorkspace } from './registry';
@@ -237,8 +238,14 @@ export function CalcWorkspaceScreen() {
                       </Text>
                     ))
                   : null}
-                <Pressable style={styles.shareBtn} onPress={shareResult}>
-                  <Text style={styles.sendText}>SHARE / COPY RESULT</Text>
+                <Pressable
+                  style={styles.shareBtn}
+                  onPress={shareResult}
+                  accessibilityRole="button"
+                  accessibilityLabel="Share or copy result"
+                >
+                  <ShareIcon size={16} color={colors.green} />
+                  <Text style={styles.shareText}>SHARE / COPY RESULT</Text>
                 </Pressable>
               </View>
             )}
@@ -381,7 +388,21 @@ const styles = StyleSheet.create({
   resultNote: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSecondary },
   sendBtn: { borderRadius: 7, borderWidth: 1, borderColor: '#2c2c33', paddingHorizontal: 8, paddingVertical: 5, backgroundColor: '#17171c' },
   sendText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 0.8, color: colors.textSecondary },
-  shareBtn: { alignSelf: 'flex-start', borderRadius: 8, borderWidth: 1, borderColor: '#2c2c33', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: '#17171c', marginTop: 2 },
+  // Share / copy result — GREEN with the familiar share glyph (owner 2026-08-07).
+  shareBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    alignSelf: 'flex-start',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(55,224,95,.5)',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: '#0d1a11',
+    marginTop: 2,
+  },
+  shareText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 0.8, color: colors.green },
   stepsToggle: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.textSecondary },
   stepText: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 19, color: colors.textSecondary },
   formula: { fontFamily: fonts.mono, fontSize: 13, color: colors.textPrimary },
