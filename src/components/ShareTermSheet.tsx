@@ -380,10 +380,14 @@ export function ShareTermSheet({
         </View>
       </View>
 
-      {/* Off-screen capture target for SHARE AS IMAGE — laid out but not visible. */}
-      <View style={styles.captureHost} pointerEvents="none">
-        <GlossaryShareCard ref={captureRef} terms={staged} sections={effSections} />
-      </View>
+      {/* Off-screen capture target for SHARE AS IMAGE — laid out but not visible.
+          Only mount once terms are staged (avoids a terms[0] crash on the first
+          render frame, before the payload→staged effect runs). */}
+      {staged.length ? (
+        <View style={styles.captureHost} pointerEvents="none">
+          <GlossaryShareCard ref={captureRef} terms={staged} sections={effSections} />
+        </View>
+      ) : null}
 
       <LowLightDim />
     </Modal>

@@ -55,6 +55,11 @@ export const GlossaryShareCard = forwardRef<
   View,
   { terms: GlossaryShareTerm[]; sections: ShareSections }
 >(function GlossaryShareCard({ terms, sections: s }, ref) {
+  // Guard: the sheet mounts this capture target before `staged` is populated
+  // (the payload→staged effect runs after the first render), so terms can be
+  // empty for a frame. Never index terms[0] on an empty list — keep a ref'd
+  // empty node so the capture ref stays valid. (owner 2026-08-06 crash fix)
+  if (terms.length === 0) return <View ref={ref} collapsable={false} />;
   const multi = terms.length > 1;
   const related = s.relatedTerms
     ? dedupeRelated(
