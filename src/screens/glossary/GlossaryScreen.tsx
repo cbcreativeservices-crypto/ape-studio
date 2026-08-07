@@ -457,16 +457,6 @@ function TermDetails({
           </View>
         </View>
       ) : null}
-      {/* LAB COMMON MISTAKES (roadmap 2026-07-26) — the linked lab's authored
-          Common-Mistakes list, shown for lab-taught terms only. Distinct from the
-          entitlement-gated DB mistakes section below (this is free, client
-          content), so the eyebrow names its source lab. */}
-      {labMistakesText && labLesson ? (
-        <View style={styles.detailSection}>
-          <Text style={styles.detailEyebrow}>COMMON MISTAKES · {labLesson.name.toUpperCase()} LAB</Text>
-          <Text style={styles.detailBody}>{labMistakesText}</Text>
-        </View>
-      ) : null}
       {linkable && firstText ? (
         <View style={styles.detailSection}>
           <Text style={styles.detailEyebrow}>{firstLabel}</Text>
@@ -507,6 +497,18 @@ function TermDetails({
           </View>
         )}
       </View>
+      {/* LAB COMMON MISTAKES (roadmap 2026-07-26) — the linked lab's authored
+          Common-Mistakes list, shown for lab-taught terms only. Grouped WITH the
+          term's own Common Mistakes above (owner 2026-08-06 — it used to sit
+          above Plain English, which read as a misplaced duplicate). Free client
+          content (NOT the entitlement-gated DB mistakes), so the eyebrow names
+          its source lab. */}
+      {labMistakesText && labLesson ? (
+        <View style={styles.detailSection}>
+          <Text style={styles.detailEyebrow}>COMMON MISTAKES · {labLesson.name.toUpperCase()} LAB</Text>
+          <Text style={styles.detailBody}>{labMistakesText}</Text>
+        </View>
+      ) : null}
       {d.related_terms?.length && linkable ? (
         // RELATED TERMS are TAPPABLE — each opens that term in the glossary
         // (Booth 2026-07-11). Terms with no glossary match render as plain pills.
