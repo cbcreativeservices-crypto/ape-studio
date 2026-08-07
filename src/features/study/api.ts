@@ -260,18 +260,16 @@ export async function fetchTopicMedia(glossaryIds: string[]): Promise<Record<str
 
 /**
  * Smooth display progress (Booth 2026-07-07: LEDs must creep, never leap).
- * completion_pct only moves when an item reaches ALL required passes, so a
- * full first pass reads 0% then jumps. This grants partial credit per pass:
- *   flashcards — known = full credit, else views/2 (capped)
- *   fill/matching — attempts/required_passes (capped)
- * Derived from the SAME item_states grammar the server stores — display
- * only; every gate still reads the server's completion/time/accuracy fields.
+ * Mirrors the SERVER completion rule exactly (owner 2026-08-06 gate change):
+ *   flashcards — each card SEEN once (views>=1 OR known) = full credit
+ *   other      — each question answered CORRECTLY once (correct>=1) = full credit
+ * Derived from the SAME item_states grammar the server stores. No timer gate.
  */
 export function studyDisplayPct(
   states: ItemStates,
   totalItems: number,
   methodKey: string,
-  requiredPasses = 2,
+  _requiredPasses = 1,
 ): number {
   if (totalItems <= 0) return 0;
   let credit = 0;
@@ -279,14 +277,10 @@ export function studyDisplayPct(
     if (key.startsWith('_')) continue; // reserved keys (e.g. _batches)
     const v = states[key];
     if (methodKey === 'flashcards') {
-      // Booth 2026-07-09: flashcards is a view-based method — a single reveal
-      // (or "known") counts a card fully studied for the display %, so one
-      // thorough pass reaches 100%. (The SERVER gate still uses views≥2 OR
-      // known; if the backend wants display==gate, set flashcard required
-      // views to 1 — flagged in the backend hand-off.)
       credit += v.known || (v.views ?? 0) >= 1 ? 1 : 0;
     } else {
-      credit += Math.min(v.attempts ?? 0, requiredPasses) / requiredPasses;
+      // Correct once = fully studied (matches record_study_progress step 9).
+      credit += (v.correct ?? 0) >= 1 ? 1 : 0;
     }
   }
   return Math.min(100, (credit / totalItems) * 100);

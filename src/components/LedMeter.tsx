@@ -104,11 +104,12 @@ export function LedMeter({
 }
 
 /** The meter mounted in the SAME recessed panel well as the Dashboard study
- *  method containers (Booth 2026-07-11) — so every screen's meter matches. */
+ *  method containers (Booth 2026-07-11) — so every screen's meter matches.
+ *  Always shows at least 1 lit green segment (owner 2026-08-06). */
 export function LedMeterWell({ filled }: { filled: number }) {
   return (
     <View style={styles.well}>
-      <LedMeter filled={filled} fullWidth />
+      <LedMeter filled={Math.max(1, filled)} fullWidth />
     </View>
   );
 }
