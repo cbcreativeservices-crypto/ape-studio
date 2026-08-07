@@ -836,91 +836,18 @@ export function CourseSelectionScreen() {
         ...(otherCount > 0 ? [{ kind: 'more' as const, id: 'more' as const, count: otherCount }] : []),
       ]);
     };
-    if (commercialMode || isGuest) {
-      await buildPublicCatalog();
-      return;
-    }
+    // COMMERCIAL-FIRST (institutional retired — owner 2026-08-06): the MENU
+    // ALWAYS builds the PUBLIC (commercial) catalog now, for guests AND signed-in
+    // users, regardless of the `commercialMode` boot flag. The old authed
+    // `courses` deck rendered ACADEMIC course codes/names (the reverted-names bug)
+    // and is removed. getPublicCatalog already falls back to the bundled seed on
+    // any error, so this can't blank the carousel.
     try {
-      const { data: user, error: uErr } = await supabase.from('users').select('id').single();
-      if (uErr || !user) throw new Error('user_not_found');
-
-      const [{ data: courses, error: cErr }, { data: enrollments, error: eErr }, { data: prog, error: pErr }] =
-        await Promise.all([
-          supabase
-            .from('courses')
-            .select('id, code, name, sequence, achievement_count')
-            .order('sequence'), // includes SAFE (sequence 0) — the pre-req card
-          supabase.from('enrollment').select('course_id').eq('user_id', user.id),
-          supabase
-            .from('student_achievement_progress')
-            .select('status, achievements!inner(course_id, sequence_in_course)')
-            .eq('user_id', user.id),
-        ]);
-      if (cErr) throw cErr;
-      if (eErr) throw eErr;
-      if (pErr) throw pErr;
-
-      const enrolledIds = new Set((enrollments ?? []).map((e: any) => e.course_id));
-      const frontier = new Map<string, number>();
-      const completeByCourse = new Map<string, number>();
-      for (const row of (prog ?? []) as any[]) {
-        const cid = row.achievements.course_id;
-        if (row.status !== 'locked') {
-          frontier.set(cid, Math.max(frontier.get(cid) ?? 1, row.achievements.sequence_in_course));
-        }
-        if (row.status === 'complete') {
-          completeByCourse.set(cid, (completeByCourse.get(cid) ?? 0) + 1);
-        }
-      }
-
-      const courseCards: Card[] = (courses ?? []).map((c: any) => ({
-        kind: 'course',
-        id: c.id,
-        code: c.code,
-        name: c.name,
-        achievement_count: c.achievement_count,
-        enrolled: enrolledIds.has(c.id),
-        currentTopic: frontier.get(c.id) ?? 1,
-        isPrereq: c.sequence === 0,
-        completed: c.achievement_count > 0 && (completeByCourse.get(c.id) ?? 0) >= c.achievement_count,
-      }));
-
-      // Far-right tally card = Specialization Certificates to earn (user request
-      // 2026-07-22), linking to the Certificates screen.
-      const otherCount = OTHER_CERTS_COUNT;
-      // Tools card sits LEFT of the Glossary card (Booth 2026-07-09v); the
-      // Glossary remains the standard landing card (index 1 default below).
-      setCards([
-        // Ear Training & Audio Lab — pinned FAR LEFT, left of tools (owner
-        // request 2026-07-26).
-        { kind: 'lab', id: 'lab' },
-        { kind: 'tools', id: 'tools' },
-        { kind: 'glossary', id: 'glossary' },
-        ...courseCards,
-        ...(otherCount > 0 ? [{ kind: 'more' as const, id: 'more' as const, count: otherCount }] : []),
-      ]);
-    } catch (e: any) {
-      // SELF-HEAL (owner 2026-08-06): a session persisted on-device whose
-      // account has no student record (user_not_found) or no enrollment
-      // (not_enrolled) threw here and stranded the HOME tab on a retry
-      // dead-end no restart could clear. Fall back to the public catalog so
-      // Home is usable; a banner offers registration / sign-out.
-      if (e?.message === 'user_not_found' || e?.message === 'not_enrolled') {
-        try {
-          await buildPublicCatalog();
-          setStrandedSession(true);
-          return;
-        } catch {
-          // even the public catalog failed — fall through to the error state
-        }
-      }
-      setError(
-        e?.message === 'user_not_found'
-          ? 'This account is not linked to a student record. Complete registration first.'
-          : 'Could not load courses. Check your connection.',
-      );
+      await buildPublicCatalog();
+    } catch {
+      setError('Could not load courses. Check your connection.');
     }
-  }, [commercialMode]);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
