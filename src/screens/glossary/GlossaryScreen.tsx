@@ -37,6 +37,7 @@ import { sendFeedback } from '../../lib/feedback';
 import { isHazardTerm } from '../../lib/hazard';
 import { CautionBadge } from '../../components/CautionBadge';
 import { supabase } from '../../lib/supabase';
+import { V3_CURRICULUM_VERSION_ID } from '../../data/v3Curriculum';
 import { SUPABASE_URL } from '../../lib/env';
 import { colors, fonts } from '../../theme/tokens';
 import {
@@ -996,21 +997,22 @@ export function GlossaryScreen({ route, navigation }: Props) {
         try {
           const [{ data: courseRows }, { data: topicRows }] = await Promise.all([
             supabase.from('courses').select('id, code, sequence').order('sequence'),
-            // ALL 51 topics — deliberately no is_active filter (Booth ruling).
+            // TOPIC filter = the LIVE v3 curriculum only (owner 2026-08-06). The
+            // old query pulled ALL achievements (v2 + v3 + draft), so the list was
+            // a mix and many rows resolved to the wrong/empty curriculum.
             supabase
               .from('achievements')
-              .select('id, name, course_id, sequence_in_course')
-              .order('sequence_in_course'),
+              .select('id, name, global_sequence')
+              .eq('curriculum_version_id', V3_CURRICULUM_VERSION_ID)
+              .eq('is_active', true)
+              .order('global_sequence'),
           ]);
           if (!alive) return;
           setCourses((courseRows ?? []) as CourseRef[]);
-          const courseSeq = new Map((courseRows ?? []).map((c: any) => [c.id, c.sequence]));
           setTopics(
-            ((topicRows ?? []) as TopicRef[]).sort(
-              (a, b) =>
-                (courseSeq.get(a.course_id) ?? 99) - (courseSeq.get(b.course_id) ?? 99) ||
-                a.sequence_in_course - b.sequence_in_course,
-            ),
+            ((topicRows ?? []) as { id: string; name: string; global_sequence: number }[])
+              .map((t) => ({ id: t.id, name: t.name, course_id: '', sequence_in_course: t.global_sequence ?? 0 }))
+              .sort((a, b) => a.name.localeCompare(b.name)),
           );
 
           // Full corpus, paged past the 1000-row PostgREST cap.
