@@ -8,19 +8,26 @@
  */
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
-import { MATRIX_SUBJECTS } from '../../data/courseTopicMatrix';
 
 export type CurriculumStats = { totalTerms: number | null; termsByGs: Map<number, number> };
 
 const PAGE = 1000;
 
-export function useCurriculumStats(): CurriculumStats {
+/** Per-topic term counts for the given topic gs list (owner 2026-08-06: driven by
+ *  the LIVE v3 curriculum, not the retired v2 matrix). */
+export function useCurriculumStats(gsList: number[]): CurriculumStats {
   const [stats, setStats] = useState<CurriculumStats>({ totalTerms: null, termsByGs: new Map() });
+  const gsKey = gsList.join(',');
   useEffect(() => {
     let alive = true;
     (async () => {
       try {
-        const allGs = MATRIX_SUBJECTS.flatMap((s) => s.topics.map((t) => t.gs));
+        const allGs = gsList;
+        if (allGs.length === 0) {
+          const { count: c0 } = await supabase.from('glossary').select('id', { count: 'exact', head: true });
+          if (alive) setStats({ totalTerms: c0 ?? null, termsByGs: new Map() });
+          return;
+        }
         // Total distinct glossary terms (cheap head count).
         const { count } = await supabase.from('glossary').select('id', { count: 'exact', head: true });
 
@@ -58,6 +65,7 @@ export function useCurriculumStats(): CurriculumStats {
     return () => {
       alive = false;
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gsKey]);
   return stats;
 }

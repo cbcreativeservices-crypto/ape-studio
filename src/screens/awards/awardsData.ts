@@ -15,11 +15,13 @@ export type AwardCategory = 'specialization' | 'program';
 
 /**
  * Co-requisite topics auto-included in every award — Professional Audio Safety
- * (gs100) + Grounding & Electrical (gs120) + Workplace Skills (gs1590). In the
- * builders they show ALWAYS-checked, locked (can't be unchecked), and do NOT
- * count toward the chosen topics (user request 2026-07-18).
+ * v3 co-reqs (owner 2026-08-06): Professional Audio Safety (gs3060) + Grounding
+ * & Shielding (gs3070) + Electrical Power, Distribution & Safety (gs3080) +
+ * Workplace Skills (gs4370). The Foundations LAB is a 4th requisite surfaced
+ * separately (FOUNDATIONS_LAB_ROUTE). In the builders these show ALWAYS-checked,
+ * locked, and do NOT count toward the chosen topics (user request 2026-07-18).
  */
-export const COREQ_TOPIC_GS: number[] = [100, 120, 1590];
+export const COREQ_TOPIC_GS: number[] = [3060, 3070, 3080, 4370];
 
 /** The 4th required requisite for EVERY certificate/program (owner 2026-07-30):
  *  the "Foundations in Audio" lab (in the Ear Training & Audio Lab). Unlike the

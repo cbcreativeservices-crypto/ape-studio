@@ -1,6 +1,7 @@
 /**
- * Curriculum — the Academy's academic goals plus the full COURSE / TOPIC MATRIX
- * (v2 working SSoT): 26 subjects · 203 topics.
+ * Curriculum — overview stats + the full LIVE v3 curriculum tree, organized
+ * FIELD → SUBJECT → TOPIC (owner 2026-08-06; the v2 course/topic matrix is
+ * retired). Fetched at runtime from Supabase (fetchV3Curriculum).
  *
  * 2026-07-22 (user request): a glossary/curriculum OVERVIEW at the top (total
  * terms · topics · subjects) and an expandable curriculum TREE — each subject
@@ -15,8 +16,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../theme/tokens';
 import { BrandLogo } from '../../components/BrandLogo';
 import { consumeDevPreview } from '../../features/dev/devPreview';
-import { MATRIX_SUBJECTS, MATRIX_SUBJECT_COUNT, MATRIX_TOPIC_COUNT } from '../../data/courseTopicMatrix';
-import { PROGRAM_PATHS, SPECIALIZED_CERTIFICATES } from '../awards/awardsData';
+import { fetchV3Curriculum, fetchV3Programs, fetchV3Certs, type V3Field } from '../../data/v3Curriculum';
 import { subjectMeta } from '../../data/subjectMeta';
 import { useCurriculumStats } from '../../features/curriculum/curriculumStats';
 
@@ -76,15 +76,37 @@ export function CurriculumView({
   onOpenCategory?: (key: 'specialization' | 'program') => void;
 }) {
   const insets = useSafeAreaInsets();
-  const stats = useCurriculumStats();
   const [open, setOpen] = useState<number | null>(null);
 
-  const subjectsAZ = useMemo(() => [...MATRIX_SUBJECTS].sort((a, b) => a.name.localeCompare(b.name)), []);
+  // LIVE v3 curriculum (owner 2026-08-06) — replaces the retired v2 matrix.
+  const [v3Subjects, setV3Subjects] = useState<{ order: number; name: string; field: string; topics: { gs: number; name: string }[] }[]>([]);
+  const [credCounts, setCredCounts] = useState<{ programs: number; certs: number }>({ programs: 0, certs: 0 });
+  useEffect(() => {
+    let alive = true;
+    void fetchV3Curriculum().then((fields: V3Field[]) => {
+      if (!alive) return;
+      let order = 0;
+      const flat = fields.flatMap((f) =>
+        f.subjects.map((s) => ({ order: order++, name: s.subject, field: f.field, topics: s.topics.map((t) => ({ gs: t.gs, name: t.name })) })),
+      );
+      setV3Subjects(flat);
+    });
+    void Promise.all([fetchV3Programs(), fetchV3Certs()]).then(([p, c]) => {
+      if (alive) setCredCounts({ programs: p.length, certs: c.length });
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const allGs = useMemo(() => v3Subjects.flatMap((s) => s.topics.map((t) => t.gs)), [v3Subjects]);
+  const stats = useCurriculumStats(allGs);
+  const subjectsAZ = v3Subjects; // already Field → Subject order
 
   // Dev Visual Index: auto-expand the first subject for preview (TEMPORARY).
   useEffect(() => {
-    if (consumeDevPreview('curriculum:zoom')) setOpen(MATRIX_SUBJECTS[0]?.order ?? null);
-  }, []);
+    if (consumeDevPreview('curriculum:zoom')) setOpen(v3Subjects[0]?.order ?? null);
+  }, [v3Subjects]);
 
   const termsForSubject = (topics: { gs: number }[]): number | null => {
     let sum = 0;
@@ -111,10 +133,10 @@ export function CurriculumView({
         {(
           [
             { v: stats.totalTerms != null ? fmt(stats.totalTerms) : '—', label: 'GLOSSARY TERMS', color: '#37e05f', spin: stats.totalTerms == null },
-            { v: MATRIX_TOPIC_COUNT, label: 'STUDY TOPICS', color: colors.textPrimary },
-            { v: MATRIX_SUBJECT_COUNT, label: 'SUBJECT CATEGORIES', color: '#ffc64d' },
-            { v: SPECIALIZED_CERTIFICATES.length, label: 'CERTIFICATES AVAILABLE', color: '#5bb0ff', nav: 'specialization' },
-            { v: PROGRAM_PATHS.length, label: 'PROGRAMS AVAILABLE', color: '#c4a2ff', nav: 'program' },
+            { v: allGs.length || '—', label: 'STUDY TOPICS', color: colors.textPrimary },
+            { v: subjectsAZ.length || '—', label: 'SUBJECT CATEGORIES', color: '#ffc64d' },
+            { v: credCounts.certs || '—', label: 'CERTIFICATES AVAILABLE', color: '#5bb0ff', nav: 'specialization' },
+            { v: credCounts.programs || '—', label: 'PROGRAMS AVAILABLE', color: '#c4a2ff', nav: 'program' },
           ] as { v: string | number; label: string; color: string; nav?: 'specialization' | 'program'; spin?: boolean }[]
         ).map((s) => {
           const inner = (
@@ -175,12 +197,14 @@ export function CurriculumView({
 
       {/* Curriculum tree — each subject expands inline. */}
       <View style={styles.tree}>
-        {subjectsAZ.map((s) => {
+        {subjectsAZ.map((s, i) => {
           const isOpen = open === s.order;
           const meta = subjectMeta(s.name);
           const terms = termsForSubject(s.topics);
+          const showField = i === 0 || subjectsAZ[i - 1].field !== s.field;
           return (
             <View key={s.order} style={styles.subjectCard}>
+              {showField ? <Text style={styles.fieldHead}>{s.field.toUpperCase()}</Text> : null}
               <Pressable
                 style={styles.subjectRow}
                 onPress={() => setOpen((prev) => (prev === s.order ? null : s.order))}
@@ -270,6 +294,8 @@ const styles = StyleSheet.create({
   // Amber "SUBJECTS" subtitle above the subject list (user request 2026-07-22);
   // the negative bottom margin tucks it against the tree (scroll gap is 20).
   subjectsHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 2.2, color: colors.amber, marginBottom: -10 },
+  // Field group header in the v3 curriculum tree (owner 2026-08-06).
+  fieldHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.6, color: colors.textSub, marginTop: 10, marginBottom: 4 },
   tree: { gap: 8 },
   subjectCard: { backgroundColor: '#161616', borderWidth: 1, borderColor: '#232323', borderRadius: 9, overflow: 'hidden' },
   subjectRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 12, paddingHorizontal: 13 },
