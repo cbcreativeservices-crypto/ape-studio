@@ -19,6 +19,16 @@ import { WhyEqModule } from './modules/WhyEq';
 import { CameraAnalogyModule } from './modules/CameraAnalogy';
 import { ParametricControlsModule } from './modules/ParametricControls';
 import { QBandwidthModule } from './modules/QBandwidth';
+import { FilterShapesModule } from './modules/FilterShapes';
+import { FilterSlopesModule } from './modules/FilterSlopes';
+import { GraphicVsParametricModule } from './modules/GraphicVsParametric';
+import { GraphicTruthModule } from './modules/GraphicTruth';
+import { MultiBandModule } from './modules/MultiBand';
+import { LiveSpectrumEqModule } from './modules/LiveSpectrumEq';
+import { FindFrequencyModule } from './modules/FindFrequency';
+import { MatchCurveModule } from './modules/MatchCurve';
+import { FixSignalModule } from './modules/FixSignal';
+import { EqChallengesModule } from './modules/EqChallenges';
 
 const COMPONENTS: Record<EqModuleId, (p: EqModuleComponentProps) => React.JSX.Element> = {
   spectrum: SeeingFrequencyModule,
@@ -26,6 +36,16 @@ const COMPONENTS: Record<EqModuleId, (p: EqModuleComponentProps) => React.JSX.El
   camera: CameraAnalogyModule,
   parametric: ParametricControlsModule,
   qband: QBandwidthModule,
+  shapes: FilterShapesModule,
+  slopes: FilterSlopesModule,
+  gvp: GraphicVsParametricModule,
+  graphic: GraphicTruthModule,
+  multiband: MultiBandModule,
+  liveEq: LiveSpectrumEqModule,
+  findFreq: FindFrequencyModule,
+  matchCurve: MatchCurveModule,
+  fixSignal: FixSignalModule,
+  challenges: EqChallengesModule,
 };
 
 export function EqModuleScreen() {

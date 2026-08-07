@@ -18,7 +18,22 @@ export const EQ_SECTION_META: { id: EqSection; title: string; note: string }[] =
   { id: 'challenge', title: 'CHALLENGE', note: 'Practical problems — you decide what to change.' },
 ];
 
-export type EqModuleId = 'spectrum' | 'whyEq' | 'camera' | 'parametric' | 'qband';
+export type EqModuleId =
+  | 'spectrum'
+  | 'whyEq'
+  | 'camera'
+  | 'parametric'
+  | 'qband'
+  | 'shapes'
+  | 'slopes'
+  | 'gvp'
+  | 'graphic'
+  | 'multiband'
+  | 'liveEq'
+  | 'findFreq'
+  | 'matchCurve'
+  | 'fixSignal'
+  | 'challenges';
 
 /** Props every EQ Lab module component receives from EqModuleScreen. */
 export type EqModuleComponentProps = { width: number; focused: boolean };
@@ -64,19 +79,70 @@ export const EQ_MODULES: EqModuleDef[] = [
     blurb: 'Higher Q = narrower. Q and octave bandwidth, side by side.',
     section: 'learn',
   },
+  {
+    id: 'shapes',
+    title: 'Filter Shapes',
+    blurb: 'Bell, shelves, high-pass, low-pass, notch — manipulate each one.',
+    section: 'learn',
+  },
+  {
+    id: 'slopes',
+    title: 'Filter Slopes',
+    blurb: '6 → 48 dB/octave overlaid, cutoff held constant.',
+    section: 'learn',
+  },
+  {
+    id: 'gvp',
+    title: 'Graphic vs. Parametric',
+    blurb: 'Drive the 1-octave and 1/3-octave boards — fixed bands vs full control.',
+    section: 'learn',
+  },
+  {
+    id: 'multiband',
+    title: 'Multi-Band Parametric',
+    blurb: 'Six bands, dragged right on the graph — individual curves and the combined response.',
+    section: 'explore',
+  },
+  {
+    id: 'graphic',
+    title: 'What a Graphic EQ Really Does',
+    blurb: 'THE SLIDERS ARE NOT THE RESPONSE — overlapping filters, and phase.',
+    section: 'explore',
+  },
+  {
+    id: 'liveEq',
+    title: 'Live Spectrum + EQ',
+    blurb: 'Your room’s spectrum with the designed EQ response overlaid.',
+    section: 'explore',
+  },
+  {
+    id: 'findFreq',
+    title: 'Find the Frequency',
+    blurb: 'Something is wrong with this signal. Find it. Five levels.',
+    section: 'train',
+  },
+  {
+    id: 'matchCurve',
+    title: 'Match the Curve',
+    blurb: 'Recreate the gray target response — scored.',
+    section: 'train',
+  },
+  {
+    id: 'fixSignal',
+    title: 'Fix the Signal',
+    blurb: 'Diagnose and correct — nobody tells you which control.',
+    section: 'train',
+  },
+  {
+    id: 'challenges',
+    title: 'EQ Challenges',
+    blurb: 'Boost vs cut, head to head — balance, headroom, strategy.',
+    section: 'challenge',
+  },
 ];
 
 /** Modules on the approved roadmap, not yet built — shown dimmed with an IN
- *  DEVELOPMENT badge (never tappable; honesty rule). Order = spec lesson order. */
-export const EQ_PLANNED: { title: string; blurb: string; section: EqSection }[] = [
-  { title: 'Filter Shapes', blurb: 'Bell, shelves, high-pass, low-pass, notch — manipulate each one.', section: 'learn' },
-  { title: 'Filter Slopes', blurb: '6 → 48 dB/octave overlaid, cutoff held constant.', section: 'learn' },
-  { title: 'Graphic vs. Parametric', blurb: 'Fixed bands vs full control — why pros reach for each.', section: 'learn' },
-  { title: 'Multi-Band Parametric', blurb: 'Four bands + filters; individual curves and the combined response.', section: 'explore' },
-  { title: 'Graphic EQ', blurb: '1-octave and 1/3-octave — and what the sliders really do.', section: 'explore' },
-  { title: 'Live Spectrum + EQ', blurb: 'Your room’s spectrum with the EQ response overlaid.', section: 'explore' },
-  { title: 'Find the Frequency', blurb: 'Something is wrong with this signal. Find it.', section: 'train' },
-  { title: 'Match the Curve', blurb: 'Recreate the gray target response — scored.', section: 'train' },
-  { title: 'Fix the Signal', blurb: 'Diagnose and correct — nobody tells you which control.', section: 'train' },
-  { title: 'EQ Challenges', blurb: 'Boost vs cut, smooth vs jagged, and more.', section: 'challenge' },
-];
+ *  DEVELOPMENT badge (never tappable; honesty rule). EMPTY as of 2026-08-07:
+ *  every spec module is live. Ear-training (by-ear Find the Frequency, band
+ *  solo/audition) returns here when the audio playback build lands. */
+export const EQ_PLANNED: { title: string; blurb: string; section: EqSection }[] = [];
