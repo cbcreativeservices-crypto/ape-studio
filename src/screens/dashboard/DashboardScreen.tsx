@@ -207,92 +207,106 @@ function PanelScrew({ angle = 0 }: { angle?: number }) {
   );
 }
 
-/** ALL-CAPS legends read badly in a connected script — present them Title Case
- *  (e.g. "FILL-IN-BLANK" → "Fill-in-Blank") for the engraved nameplate. */
-function toTitle(s: string): string {
-  return s
-    .toLowerCase()
-    .split(' ')
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(' ');
-}
-
 /**
- * Engraved method/quiz title (Booth 2026-07-15): a virtually-engraved metal
- * nameplate legend, set in Great Vibes — a flowing calligraphic SCRIPT (the
- * elegant "Vladimir" feel the client wanted, but legible). The engraving is
- * code-drawn by stacking three copies: a DARK copy nudged up (the top edge of
- * the incised channel in shadow), a LIGHT copy nudged down (the lower lip
- * catching light), and the frosted paint-fill letter on top — machined into the
- * powder coat, not printed.
+ * GlassScreen — the study-method / quiz readout as an LED instrument screen
+ * behind ONE continuous glass panel (owner 2026-08-06, ref: M2-PRO face). The
+ * gray textured rack container stays; inside it the middle area now reads as a
+ * dark screen — TITLE over the % over a full-width LED meter — all under a
+ * single dimmed glass sheet with an ambient specular highlight for realism.
+ * Replaces the old engraved-nameplate title (and its fine white trace line).
  *
- * ADA: decorative layered text, so the wrapper carries the label and the copies
- * are hidden from the screen reader (Booth 2026-07-15).
+ * ADA: the wrapper carries a combined label; the glass overlay never intercepts
+ * touches (pointerEvents none) so the surrounding switch/icon stay reachable.
  */
-function EngravedTitle({
-  text,
-  off = false,
-  dark = false,
-  fillColor,
+function GlassScreen({
+  title,
+  value,
+  valueColor,
+  segments,
+  subtitle,
+  subtitleColor,
+  complete,
 }: {
-  text: string;
-  off?: boolean;
-  /** Flashcards charcoal panel — use the darker debossed floor. */
-  dark?: boolean;
-  fillColor?: string;
+  title: string;
+  value: string;
+  valueColor: string;
+  /** Method meter fill (0–21 segments). Omit for the quiz (uses `subtitle`). */
+  segments?: number;
+  /** Quiz gate summary shown where the method meter would sit. */
+  subtitle?: string;
+  subtitleColor?: string;
+  /** Method fully done (pct ≥ 100): show a green check instead of the % and
+   *  drop the number entirely (owner 2026-08-06). */
+  complete?: boolean;
 }) {
-  const display = toTitle(text);
-  // DEBOSSED (user request 2026-07-18): the letter floor sits BELOW the surface —
-  // its top-left edge in shadow, its bottom-right lip catching light. `fillColor`
-  // overrides the floor color (the quiz uses BLACK on its cream face).
-  const fillStyle = fillColor
-    ? [styles.engLayer, styles.engFillBase, { color: fillColor }]
-    : dark
-      ? [styles.engLayer, off ? styles.engFillOffDark : styles.engFillDark]
-      : [styles.engLayer, off ? styles.engFillOff : styles.engFill];
   return (
-    <View style={styles.engWrap} accessible accessibilityRole="text" accessibilityLabel={text}>
-      {/* top-left edge in shadow (deboss) */}
-      <Text
-        style={[styles.engLayer, styles.engDark]}
-        numberOfLines={1}
-        adjustsFontSizeToFit
-        minimumFontScale={0.7}
-        importantForAccessibility="no-hide-descendants"
-      >
-        {display}
-      </Text>
-      {/* bottom-right lip catching light (deboss) */}
-      <Text
-        style={[styles.engLayer, styles.engLight]}
-        numberOfLines={1}
-        adjustsFontSizeToFit
-        minimumFontScale={0.7}
-        importantForAccessibility="no-hide-descendants"
-      >
-        {display}
-      </Text>
-      <Text
-        style={fillStyle}
-        numberOfLines={1}
-        adjustsFontSizeToFit
-        minimumFontScale={0.7}
-        importantForAccessibility="no-hide-descendants"
-      >
-        {display}
-      </Text>
-      {/* Near-white trace ON TOP of the floor (user request 2026-07-24) — a light
-          line inside each debossed letter. Applied to ALL titles (on AND off);
-          it is a style detail, NOT the on/off indicator. */}
-      <Text
-        style={[styles.engLayer, styles.engTrace]}
-        numberOfLines={1}
-        adjustsFontSizeToFit
-        minimumFontScale={0.7}
-        importantForAccessibility="no-hide-descendants"
-      >
-        {display}
-      </Text>
+    <View
+      style={[styles.cutoutMount, styles.glassScreen]}
+      accessible
+      accessibilityRole="text"
+      accessibilityLabel={`${title}, ${complete ? 'complete' : value}${subtitle ? `, ${subtitle}` : ''}`}
+    >
+      {/* The lit readout, beneath the glass. Now TWO rows (owner 2026-08-06):
+          line 1 = title (left) + % / green check (right); line 2 = LED meter or
+          the quiz gate summary. The extra width from stacking the % beside the
+          title lets the title run larger/taller. */}
+      <View style={styles.glassReadout}>
+        <View style={styles.glassHeaderRow}>
+          <Text style={styles.glassTitle} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65}>
+            {title}
+          </Text>
+          {complete ? (
+            // Green LED check — replaces the % once the method is fully complete.
+            <Text style={styles.glassCheck} accessibilityElementsHidden importantForAccessibility="no">
+              ✓
+            </Text>
+          ) : (
+            <Text
+              style={[styles.glassValue, { color: valueColor, textShadowColor: valueColor }]}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.7}
+            >
+              {value}
+            </Text>
+          )}
+        </View>
+        {segments != null ? (
+          <LedMeter filled={segments} fullWidth />
+        ) : subtitle != null ? (
+          <Text
+            style={[styles.glassSub, { color: subtitleColor ?? valueColor, textShadowColor: subtitleColor ?? valueColor }]}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.7}
+          >
+            {subtitle}
+          </Text>
+        ) : null}
+      </View>
+      {/* ONE continuous glass panel over the whole readout — a slight dim plus an
+          ambient lighting highlight. Purely decorative; passes touches through. */}
+      <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+        {/* Vertical sheen → dim: glass catches a little light up top and darkens
+            toward the bottom (the "slight dimming affect"). */}
+        <LinearGradient
+          colors={['rgba(255,255,255,0.10)', 'rgba(255,255,255,0.02)', 'rgba(0,0,0,0.14)', 'rgba(0,0,0,0.28)']}
+          locations={[0, 0.45, 0.75, 1]}
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 0.5, y: 1 }}
+          style={StyleSheet.absoluteFill}
+        />
+        {/* Ambient specular highlight sweeping from the top-left corner. */}
+        <LinearGradient
+          colors={['rgba(255,255,255,0.16)', 'rgba(255,255,255,0.04)', 'rgba(255,255,255,0)']}
+          locations={[0, 0.35, 0.7]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0.75, y: 0.9 }}
+          style={StyleSheet.absoluteFill}
+        />
+        {/* Crisp glass edge glare along the very top. */}
+        <View style={styles.glassTopGlare} />
+      </View>
     </View>
   );
 }
@@ -1187,26 +1201,17 @@ export function DashboardScreen() {
                     </View>
                   </View>
                   <View style={styles.methodLeft}>
-                    {/* Method title is ENGRAVED into the powder coat (Booth
-                        2026-07-11); only the % survives as a small SQUARE LED
-                        box on the right, whose right edge aligns with the LED
-                        meter below it. */}
-                    <View style={styles.methodTopRow}>
-                      <EngravedTitle text={m.label} off={!isApplicable} />
-                      <View style={[styles.cutoutMount, styles.pctBox]}>
-                        <Text
-                          style={[
-                            styles.pctDigits,
-                            isApplicable ? { color: pctColor(pct) } : styles.titleDigitsOff,
-                          ]}
-                        >
-                          {isApplicable ? `${pct}%` : '--'}
-                        </Text>
-                      </View>
-                    </View>
-                    <View style={[styles.cutoutMount, styles.ledWell]}>
-                      <LedMeter filled={segmentsForPct(pct)} fullWidth />
-                    </View>
+                    {/* LED instrument screen under one glass panel (owner
+                        2026-08-06): TITLE · % · full-width LED meter. */}
+                    <GlassScreen
+                      title={m.label}
+                      // % only ever shows 0–99 (never "100%"): completion swaps
+                      // it for the green check via `complete` below.
+                      value={isApplicable ? `${Math.min(pct, 99)}%` : '--'}
+                      valueColor={isApplicable ? pctColor(pct) : '#6f7072'}
+                      segments={isApplicable ? segmentsForPct(pct) : 0}
+                      complete={complete}
+                    />
                   </View>
 
                   {isApplicable ? (
@@ -1310,21 +1315,9 @@ export function DashboardScreen() {
                     </View>
                   </View>
                   <View style={styles.methodLeft}>
-                    {/* Engraved title + square status LED box, same as the
-                        method panels (Booth 2026-07-11). */}
-                    <View style={styles.methodTopRow}>
-                      <EngravedTitle text="TOPIC QUIZ" />
-                      <View style={[styles.cutoutMount, styles.pctBox]}>
-                        <Text style={[styles.pctDigits, { color: qColor }]} numberOfLines={1}>
-                          {qShort}
-                        </Text>
-                      </View>
-                    </View>
-                    <View style={[styles.cutoutMount, styles.gateLed]}>
-                      <Text style={[styles.gateLine, { color: qColor }]} numberOfLines={1}>
-                        {qSummary}
-                      </Text>
-                    </View>
+                    {/* Same LED-screen-under-glass as the method panels (owner
+                        2026-08-06): TITLE · status · gate summary line. */}
+                    <GlassScreen title="TOPIC QUIZ" value={qShort} valueColor={qColor} subtitle={qSummary} subtitleColor={qColor} />
                   </View>
                   <SwitchButton
                     label={
@@ -1535,7 +1528,7 @@ const styles = StyleSheet.create({
     color: colors.textSub,
     textAlign: 'center',
   },
-  scroll: { padding: 14, paddingBottom: 16, gap: 10 },
+  scroll: { padding: 14, paddingBottom: 10, gap: 8 },
   // Stranded-session self-heal banner.
   strandedBanner: {
     borderRadius: 10,
@@ -1620,11 +1613,12 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 10,
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
-    paddingVertical: 14,
+    paddingVertical: 10,
     paddingHorizontal: 16,
     // Tall enough for the center trophy+jog cluster and the far-right vertical
     // meter (owner 2026-08-01) — the card clips its overflow, so reserve room.
-    minHeight: 232,
+    // Trimmed a little (owner 2026-08-06) so the full screen fits without scroll.
+    minHeight: 222,
   },
   topicCardProvisional: {
     // [TBD-DESIGN] proposal #1: warm tint + orange border for clamped topics.
@@ -1664,7 +1658,18 @@ const styles = StyleSheet.create({
   myEnrollBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 0.2, color: '#37e05f' },
   // Blue Study icon standing in for the company logo (owner 2026-08-01) — the
   // NavIcon Study glyph scaled up to the logo footprint.
-  studyLogo: { width: 47, height: 47, alignItems: 'center', justifyContent: 'center' },
+  // Bordered so it reads as a pressable BUTTON (owner 2026-08-06) — the study
+  // headphones sit in a subtly-lit rounded key that opens the Topic Deck.
+  studyLogo: {
+    width: 47,
+    height: 47,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(120,155,190,0.55)',
+    backgroundColor: 'rgba(47,155,255,0.08)',
+  },
   modeBtnTextOn: { color: colors.amber },
   modeBtnTextOnGreen: { color: '#37e05f' },
   pilotDot: {
@@ -1690,7 +1695,7 @@ const styles = StyleSheet.create({
   // Header row + its three columns (owner 2026-08-01).
   topicHeadRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
   topicTextCol: { flex: 1, minWidth: 0 },
-  topicCenterCol: { alignItems: 'center', justifyContent: 'flex-start', gap: 8 },
+  topicCenterCol: { alignItems: 'center', justifyContent: 'flex-start', gap: 6 },
   topicMeterCol: { alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch' },
   topicTrophy: { width: 100, height: 100 },
   // Jog wheel under the trophy image, centered + enlarged (owner 2026-08-01).
@@ -1744,7 +1749,7 @@ const styles = StyleSheet.create({
   // Real 500-series blank-panel proportion (~3.5:1 on its side) restored via
   // minHeight; the 58px content row centers, so icon/title/LED/button still
   // share top+bottom edges (Booth 2026-07-11 #4/#5).
-  methodInner: { paddingVertical: 7, paddingHorizontal: 8, minHeight: 86, justifyContent: 'center' },
+  methodInner: { paddingVertical: 6, paddingHorizontal: 8, minHeight: 80, justifyContent: 'center' },
   // LA-2A texture layer (BlackFaceBg / BrushedMetalBg): absolutely fills the
   // panel behind its content. overflow:hidden + matching radius is a second clip
   // on top of the parent ElevatedFrame's own rounded-corner clip.
@@ -1788,7 +1793,61 @@ const styles = StyleSheet.create({
   methodRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   // Column spans the button height; title at top, LED at bottom → their edges
   // align with the button's top/bottom.
-  methodLeft: { flex: 1, height: 54, justifyContent: 'space-between' },
+  methodLeft: { flex: 1, height: 58, justifyContent: 'center' },
+  // LED instrument screen behind one continuous glass panel (owner 2026-08-06).
+  glassScreen: { flex: 1, alignSelf: 'stretch', overflow: 'hidden', backgroundColor: '#050608', borderRadius: 3 },
+  glassReadout: { flex: 1, paddingHorizontal: 9, paddingVertical: 4, justifyContent: 'space-between' },
+  // Line 1 of the readout: title (left, grows) + % / green check (right).
+  glassHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
+  // Instrument label — squared control-panel face. Brighter cool-white with a
+  // stronger bloom so it reads as an LED lit BEHIND the glass, not ink printed
+  // on top (owner 2026-08-06). Larger + taller now that the % sits beside it.
+  glassTitle: {
+    flex: 1,
+    fontFamily: fonts.panelSemiBold,
+    fontSize: 14.5,
+    lineHeight: 17,
+    letterSpacing: 1.1,
+    color: '#d3e0f0',
+    textShadowColor: 'rgba(150,190,235,0.6)',
+    textShadowRadius: 6,
+    textShadowOffset: { width: 0, height: 0 },
+  },
+  // The % (or quiz status) — colored LED digits; colored glow set inline. Larger
+  // to the right of the title, right-aligned; never shrinks below the title.
+  glassValue: {
+    flexShrink: 0,
+    fontFamily: fonts.barlowCondensedSemiBold,
+    fontSize: 22,
+    lineHeight: 24,
+    letterSpacing: 1,
+    textAlign: 'right',
+    textShadowRadius: 8,
+    textShadowOffset: { width: 0, height: 0 },
+  },
+  // Green LED check — shown in place of the % when a method is fully complete.
+  glassCheck: {
+    flexShrink: 0,
+    fontFamily: fonts.barlowCondensedSemiBold,
+    fontSize: 24,
+    lineHeight: 24,
+    textAlign: 'right',
+    color: '#3fe06a',
+    textShadowColor: 'rgba(63,224,106,0.75)',
+    textShadowRadius: 8,
+    textShadowOffset: { width: 0, height: 0 },
+  },
+  // Quiz gate-summary line (sits where the method meter would be). Lit glow now
+  // tracks the status colour (set inline) so it reads backlit like the title.
+  glassSub: {
+    fontFamily: fonts.barlowCondensedSemiBold,
+    fontSize: 12,
+    lineHeight: 15,
+    letterSpacing: 1.2,
+    textShadowRadius: 4,
+    textShadowOffset: { width: 0, height: 0 },
+  },
+  glassTopGlare: { position: 'absolute', top: 0, left: 0, right: 0, height: 1.5, backgroundColor: 'rgba(255,255,255,0.30)' },
   // Top row: engraved title (left, on the coat) + square % LED box (right).
   methodTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   // Virtually-engraved Cinzel nameplate (Booth 2026-07-15). The wrapper bounds
