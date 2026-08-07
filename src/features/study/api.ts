@@ -83,6 +83,60 @@ export async function fetchTopicItems(achievementId: string): Promise<GlossaryIt
     console.warn('[study] glossary_study_v threw, falling back:', (e as Error).message);
   }
 
+  // ---- DUPLICATE-ACHIEVEMENT fallback (owner 2026-08-06) ----
+  // The v3 launch left several achievement rows sharing one topic NAME, with the
+  // glossary terms mapped to only ONE of those ids. If the id we were handed has
+  // no terms (e.g. Professional Audio Safety), union across every achievement_id
+  // that shares this id's name — the same dedup-by-name the glossary screen uses.
+  // Still goes through glossary_study_v, so entitlement gating is preserved.
+  try {
+    const { data: self } = await supabase
+      .from('achievements')
+      .select('name')
+      .eq('id', achievementId)
+      .maybeSingle();
+    const nm = (self as any)?.name as string | undefined;
+    if (nm) {
+      const { data: sibs } = await supabase.from('achievements').select('id').eq('name', nm);
+      const sibIds = ((sibs ?? []) as any[]).map((r) => r.id).filter((id: string) => id && id !== achievementId);
+      if (sibIds.length > 0) {
+        const { data: udata, error: uErr } = await supabase
+          .from('glossary_study_v')
+          .select(
+            'glossary_id, term, definition, plain_english, purpose_function, practical_application, scenario_contexts, related_terms, category, difficulty, common_mistakes',
+          )
+          .in('achievement_id', sibIds)
+          .order('term');
+        if (!uErr && udata && udata.length > 0) {
+          const seen = new Set<string>();
+          const out: GlossaryItem[] = [];
+          for (const g of udata as any[]) {
+            if (seen.has(g.glossary_id)) continue;
+            seen.add(g.glossary_id);
+            out.push({
+              id: g.glossary_id,
+              term: g.term,
+              definition: g.definition,
+              plain_english: g.plain_english ?? null,
+              purpose_function: g.purpose_function ?? null,
+              practical_application: g.practical_application ?? null,
+              scenario_contexts: g.scenario_contexts ?? null,
+              common_mistakes: g.common_mistakes ?? null,
+              related_terms: g.related_terms ?? null,
+              category: g.category ?? null,
+              difficulty: g.difficulty ?? null,
+              formula_symbolic: null,
+              formula_words: null,
+            });
+          }
+          if (out.length > 0) return out;
+        }
+      }
+    }
+  } catch (e) {
+    console.warn('[study] name-union fallback threw:', (e as Error).message);
+  }
+
   // ---- Legacy path (pre-v2.13) ----
   // 1) Which glossary terms belong to this topic (base mapping table).
   const { data: links, error: lErr } = await supabase

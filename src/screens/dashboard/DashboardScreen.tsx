@@ -382,11 +382,6 @@ export function DashboardScreen() {
   const jogSpin = useSharedValue(0);
   const jogActiveRef = useRef(false);
   const [jogActive, setJogActive] = useState(false);
-  // PARKED (owner 2026-08-05): a TAP opens the mirror wheel and leaves it open
-  // (instead of closing on release); a second tap — or a turn-and-release —
-  // commits and closes it.
-  const jogParkedRef = useRef(false);
-  const [jogParked, setJogParked] = useState(false);
   // CM6 (Booth 2026-07-11): commercialMode renders a PUBLIC course (seq order
   // from the seed) through this same screen; institutional path unchanged.
   const { commercialMode, caps, entitlement } = useEntitlement();
@@ -1093,43 +1088,17 @@ export function DashboardScreen() {
                   instantly and the same gesture scrolls the topics (owner
                   2026-08-01). Endless spin: the index wraps. Hidden (but still
                   driving the gesture) while the full-size wheel is open. */}
-              <View style={[styles.topicJog, jogActive && !jogParked && styles.hidden]}>
+              <View style={[styles.topicJog, jogActive && styles.hidden]}>
+                {/* Small dial just OPENS the big wheel (owner 2026-08-06); the
+                    big wheel is the turn control. Tap or press-hold both open. */}
                 <JogDial
                   size={96}
                   disabled={topics.length <= 1}
-                  spin={jogSpin}
-                  onGrant={() => {
+                  onOpen={() => {
                     jogActiveRef.current = true;
                     scrollIdxRef.current = idxRef.current;
                     setScrollIdx(idxRef.current);
                     setJogActive(true);
-                  }}
-                  // Preview only the TOP container while scrolling (the lower
-                  // rack stays put); the index wraps. Committed on release.
-                  onStep={(dir) => {
-                    const n = topics.length;
-                    if (n <= 0) return;
-                    const next = (((scrollIdxRef.current + dir) % n) + n) % n;
-                    scrollIdxRef.current = next;
-                    setScrollIdx(next);
-                  }}
-                  onRelease={(wasTap) => {
-                    // The wheel STAYS OPEN and usable through turns (owner
-                    // 2026-08-06 — it kept closing mid-use, incl. gesture
-                    // terminations): every release PARKS it open and commits
-                    // the selection live. ONLY a second tap (tap while already
-                    // parked) closes it.
-                    if (wasTap && jogParkedRef.current) {
-                      jogParkedRef.current = false;
-                      setJogParked(false);
-                      jogActiveRef.current = false;
-                      setJogActive(false);
-                      goTo(scrollIdxRef.current);
-                      return;
-                    }
-                    jogParkedRef.current = true;
-                    setJogParked(true);
-                    goTo(scrollIdxRef.current); // commit → lower rack updates now
                   }}
                 />
               </View>
@@ -1151,6 +1120,10 @@ export function DashboardScreen() {
               further.
             </Text>
           )}
+          {/* Same gray-lip-over-black-line lower edge as the glass readouts
+              (owner 2026-08-06). The black line is the card's own bottom border
+              (set below); this gray line sits just above it. */}
+          <View pointerEvents="none" style={styles.glassBottomHighlight} />
         </View>
 
         {/* Method blocks 1–5 — each frame carries its OWN LED meter (Booth
@@ -1533,10 +1506,16 @@ export function DashboardScreen() {
       <JogOverlay
         active={jogActive}
         spin={jogSpin}
+        disabled={topics.length <= 1}
+        // Drag the big wheel to preview the top container; commit on close.
+        onStep={(dir) => {
+          const n = topics.length;
+          if (n <= 0) return;
+          const next = (((scrollIdxRef.current + dir) % n) + n) % n;
+          scrollIdxRef.current = next;
+          setScrollIdx(next);
+        }}
         onClose={() => {
-          // Same close-and-commit as the second-tap path.
-          jogParkedRef.current = false;
-          setJogParked(false);
           jogActiveRef.current = false;
           setJogActive(false);
           goTo(scrollIdxRef.current);
@@ -1674,7 +1653,10 @@ const styles = StyleSheet.create({
     borderTopColor: '#4d4e52',
     borderLeftColor: '#34353a',
     borderRightColor: '#34353a',
-    borderBottomColor: '#070708',
+    // Pure black bottom line (owner 2026-08-06) — the glassBottomHighlight gray
+    // lip sits just above it, matching the glass readouts' lower edge.
+    borderBottomColor: '#000000',
+    borderBottomWidth: 1,
     // Square bottom corners so the side rails flow straight into the rack
     // chassis below (Booth 2026-07-11 #5).
     borderTopLeftRadius: 10,
@@ -1810,13 +1792,28 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.02)',
   },
   // Keep title/meta clear of the trophy in the top-right.
-  topicName: { fontFamily: fonts.oswaldMedium, fontSize: 18, letterSpacing: 0.4, color: colors.textPrimary, marginTop: 4 },
+  // Behind-glass fuzz (owner 2026-08-06) — the smallest soft halo so the text
+  // reads as sitting under the pane, not printed on it (RN <Text> has no true
+  // blur; a faint same-tone textShadow is the softening).
+  topicName: {
+    fontFamily: fonts.oswaldMedium,
+    fontSize: 18,
+    letterSpacing: 0.4,
+    color: colors.textPrimary,
+    marginTop: 4,
+    textShadowColor: 'rgba(220,228,238,0.35)',
+    textShadowRadius: 1.4,
+    textShadowOffset: { width: 0, height: 0 },
+  },
   topicMeta: {
     fontFamily: fonts.barlowCondensedMedium,
     fontSize: 12,
     letterSpacing: 0.7,
     color: colors.textSub,
     marginTop: 2,
+    textShadowColor: 'rgba(200,210,222,0.3)',
+    textShadowRadius: 1.4,
+    textShadowOffset: { width: 0, height: 0 },
   },
   pctBlock: { alignItems: 'flex-start', marginTop: 6, gap: 1 },
   pctBig: {
@@ -1827,7 +1824,15 @@ const styles = StyleSheet.create({
     textShadowRadius: 12,
     textShadowOffset: { width: 0, height: 0 },
   },
-  pctLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.6, color: colors.textSubAlt },
+  pctLabel: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 10,
+    letterSpacing: 1.6,
+    color: colors.textSubAlt,
+    textShadowColor: 'rgba(200,205,212,0.3)',
+    textShadowRadius: 1.4,
+    textShadowOffset: { width: 0, height: 0 },
+  },
   provisionalNote: {
     fontFamily: fonts.barlowCondensedMedium,
     fontSize: 13,
@@ -1952,8 +1957,9 @@ const styles = StyleSheet.create({
   },
   glassTopGlare: { position: 'absolute', top: 0, left: 0, right: 0, height: 1.5, backgroundColor: 'rgba(255,255,255,0.30)' },
   // Gray highlight lip along the lower edge (owner 2026-08-06) — sits just above
-  // the container's finest black bottom line (cutoutMount borderBottom).
-  glassBottomHighlight: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 1.5, backgroundColor: 'rgba(255,255,255,0.38)' },
+  // the container's finest black bottom line (cutoutMount borderBottom). One
+  // shade darker (owner 2026-08-06 rev2): 0.38 -> 0.28.
+  glassBottomHighlight: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 1.5, backgroundColor: 'rgba(255,255,255,0.28)' },
   // Glass tint (owner 2026-08-06, rev 3): 5% gloss — 13% washed the panes too
   // light; a faint milky lift reads as room light off the glass without dimming
   // the LEDs. The gradients still shape the depth.

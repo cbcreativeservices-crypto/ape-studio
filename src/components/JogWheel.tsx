@@ -148,63 +148,76 @@ function JogStack({ size, spin }: { size: number; spin?: SharedValue<number> }) 
 }
 
 /**
- * The small dial — the live jog control. Grabs the gesture on touch-DOWN (so the
- * card's swipe never steals it — see `disabled`/grant coordination in the host),
- * writes rotation into the shared `spin`, and steps detents.
+ * The small dial — now purely an OPENER (owner 2026-08-06): a tap OR a press-hold
+ * both open the big overlay wheel, which is the actual turn control. It does not
+ * turn anything itself.
  */
 export function JogDial({
   size = 74,
   disabled = false,
-  spin,
-  onGrant,
-  onStep,
-  onRelease,
+  onOpen,
 }: {
   size?: number;
   disabled?: boolean;
-  spin: SharedValue<number>;
-  onGrant: () => void;
-  onStep: (dir: -1 | 1) => void;
-  /** wasTap = a quick press with no turn (owner 2026-08-05): the host uses it to
-   *  PARK the overlay open on a tap instead of closing on release. */
-  onRelease: (wasTap: boolean) => void;
+  onOpen: () => void;
 }) {
-  // Angle is measured around the BIG wheel's centre (screen centre — the overlay
-  // centres it) using PAGE coordinates, so the finger can trace the circle
-  // anywhere, inside OR outside the wheel. That also means a straight up/down
-  // drag on either side turns it (down-right = right, up-right = left, and the
-  // mirror on the left) — no curved motion needed.
-  const { width, height } = useWindowDimensions();
-  // Centre matches the overlay wheel's shifted position (OVERLAY_Y_OFFSET).
-  const centerRef = useRef({ x: width / 2, y: height / 2 + OVERLAY_Y_OFFSET });
-  centerRef.current = { x: width / 2, y: height / 2 + OVERLAY_Y_OFFSET };
-  const DEAD_PX = 44; // ignore right at the centre (atan2 is unstable there)
+  return (
+    <Pressable
+      onPressIn={() => {
+        if (!disabled) onOpen();
+      }}
+      disabled={disabled}
+      style={[styles.wrap, { width: size, height: size }, disabled && styles.disabled]}
+      accessibilityRole="button"
+      accessibilityLabel="Open the topic wheel"
+    >
+      <JogStack size={size} />
+    </Pressable>
+  );
+}
 
-  // The dimple is DRAWN at 2 o'clock (−30° in atan2 terms); rotating the wheel by
-  // (fingerAngle + 30) puts the dimple exactly at the finger's angle. Tracking is
-  // ABSOLUTE — the dimple always sits where the finger is pressing, so it never
-  // drifts or flies off (no accumulation).
-  const DIMPLE_OFFSET = 30;
+/**
+ * The big centred wheel — the ACTUAL turn control (owner 2026-08-06). Opened by
+ * the small dial; once open, DRAG ANYWHERE on the overlay to turn (angle is
+ * measured around the wheel's centre, so a straight drag on any side works), it
+ * steps topic detents with a haptic, and the ✕ commits + closes. NOT dimmed:
+ * the current-topic container behind stays visible and updates as you turn.
+ * Mount it at the screen root so it isn't clipped.
+ */
+export function JogOverlay({
+  active,
+  spin,
+  onStep,
+  onClose,
+  disabled = false,
+}: {
+  active: boolean;
+  spin: SharedValue<number>;
+  onStep: (dir: -1 | 1) => void;
+  onClose: () => void;
+  disabled?: boolean;
+}) {
+  const { width, height } = useWindowDimensions();
+  // 23% larger than before (owner 2026-08-01), still capped to fit the screen.
+  const size = Math.round(Math.min(width * 0.62, height * 0.4) * 1.23);
+  // Wheel centre in SCREEN coords — shifted down so the topic title + % stay
+  // visible (owner 2026-08-06). Positioned by LAYOUT (absolute top/left), not a
+  // transform (a transform offsets the visual but not the touch hit-area).
+  const cx = width / 2;
+  const cy = height / 2 + OVERLAY_Y_OFFSET;
+
+  const DEAD_PX = 44; // ignore right at the centre (atan2 is unstable there)
+  const DIMPLE_OFFSET = 30; // dimple drawn at 2 o'clock; +30 puts it under the finger
+  const centerRef = useRef({ x: cx, y: cy });
+  centerRef.current = { x: cx, y: cy };
   const lastAngle = useRef(0);
   const accum = useRef(0);
   const inDead = useRef(false);
   const lastStepAt = useRef(0);
-  // Tap detection (owner 2026-08-05): a quick, STILL press that never stepped the
-  // wheel. The movement guard stops brief turn-attempts / accidental brushes from
-  // being read as taps (which made the overlay open/close sporadically).
-  const grantAt = useRef(0);
-  const stepped = useRef(false);
-  const moved = useRef(false);
-  const TAP_SLOP = 10; // px of finger travel still counts as a tap
-  const TAP_MS = 240; // max press duration for a tap
   const disabledRef = useRef(disabled);
   disabledRef.current = disabled;
-  const onGrantRef = useRef(onGrant);
-  onGrantRef.current = onGrant;
   const onStepRef = useRef(onStep);
   onStepRef.current = onStep;
-  const onReleaseRef = useRef(onRelease);
-  onReleaseRef.current = onRelease;
 
   const angleAt = (px: number, py: number) => {
     const { x, y } = centerRef.current;
@@ -214,53 +227,38 @@ export function JogDial({
     const now = Date.now();
     if (now - lastStepAt.current < MIN_STEP_MS) return; // throttle — slow enough to watch
     lastStepAt.current = now;
-    stepped.current = true; // any detent means this was a TURN, not a tap
     onStepRef.current(dir);
     if (hapticsEnabled()) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid).catch(() => {});
   };
-  /** A tap = released quickly, with no detent stepped AND the finger barely moved. */
-  const releaseKind = () => !stepped.current && !moved.current && Date.now() - grantAt.current < TAP_MS;
 
   const pan = useMemo(
     () =>
       PanResponder.create({
-        // Claim on touch-DOWN so the gesture is ours instantly (before the card's
-        // move-capture can look at it — the host also gates the card on grant).
         onStartShouldSetPanResponder: () => !disabledRef.current,
-        onStartShouldSetPanResponderCapture: () => !disabledRef.current,
         onMoveShouldSetPanResponder: () => !disabledRef.current,
         onPanResponderTerminationRequest: () => false,
         onPanResponderGrant: (_e, g) => {
-          grantAt.current = Date.now();
-          stepped.current = false;
-          moved.current = false;
-          onGrantRef.current();
           const a0 = angleAt(g.x0, g.y0);
           lastAngle.current = a0;
           accum.current = 0;
           lastStepAt.current = 0; // first detent applies immediately
           inDead.current = false;
-          spin.value = a0 + DIMPLE_OFFSET; // dimple appears exactly under the thumb
+          spin.value = a0 + DIMPLE_OFFSET; // dimple appears exactly under the finger
         },
         onPanResponderMove: (_e, g) => {
           if (disabledRef.current) return;
-          if (Math.hypot(g.dx, g.dy) > TAP_SLOP) moved.current = true; // any real travel → not a tap
           const { x, y } = centerRef.current;
-          // Right at the centre the angle is meaningless — hold steady and
-          // re-anchor on the way out so it never snaps/flies.
           if (Math.hypot(g.moveX - x, g.moveY - y) < DEAD_PX) {
             inDead.current = true;
             return;
           }
           const a = angleAt(g.moveX, g.moveY);
-          // ABSOLUTE: the dimple is placed exactly at the finger's angle.
           spin.value = a + DIMPLE_OFFSET;
           if (inDead.current) {
             inDead.current = false;
             lastAngle.current = a; // re-anchor detents without a jump
             return;
           }
-          // Detents count the shortest angular movement (throttled in step()).
           let d = a - lastAngle.current;
           while (d > 180) d -= 360;
           while (d < -180) d += 360;
@@ -275,75 +273,34 @@ export function JogDial({
             step(-1);
           }
         },
-        onPanResponderRelease: () => onReleaseRef.current(releaseKind()),
-        onPanResponderTerminate: () => onReleaseRef.current(false),
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
 
-  return (
-    <View
-      {...pan.panHandlers}
-      style={[styles.wrap, { width: size, height: size }, disabled && styles.disabled]}
-      accessibilityRole="adjustable"
-      accessibilityLabel="Jog dial — tap to open, then turn to change the topic"
-    >
-      <JogStack size={size} />
-    </View>
-  );
-}
-
-/** The big centred wheel shown while the dial is held — mirrors the dial's
- *  rotation. NOT dimmed (owner 2026-08-01): the current-topic container behind
- *  it stays fully visible and changes as you turn. Pointer-transparent except
- *  the ✕ close key (the finger stays on the small dial). Mount it at the
- *  screen root so it isn't clipped. */
-export function JogOverlay({
-  active,
-  spin,
-  onClose,
-}: {
-  active: boolean;
-  spin: SharedValue<number>;
-  /** Guaranteed escape hatch (owner 2026-08-06): the parked wheel closes on a
-   *  second TAP, but a slow/wiggly tap re-parks instead — this ✕ always works. */
-  onClose?: () => void;
-}) {
-  const { width, height } = useWindowDimensions();
-  // 23% larger than before (owner 2026-08-01), still capped to fit the screen.
-  const size = Math.round(Math.min(width * 0.62, height * 0.4) * 1.23);
   if (!active) return null;
-  // Wheel centre in SCREEN coords — shifted down so the topic title + % stay
-  // visible (owner 2026-08-06). Positioned by LAYOUT (absolute top/left), NOT a
-  // transform: a transform offsets the visual but not the touch hit-area, which
-  // left the ✕ dead and the wheel feeling frozen (owner 2026-08-06 fix).
-  const cx = width / 2;
-  const cy = height / 2 + OVERLAY_Y_OFFSET;
   return (
-    <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, styles.overlay]}>
-      {/* The wheel is PURELY VISUAL — it must NOT capture touches, or it steals
-          the turn gesture from the small dial underneath. */}
+    <View style={[StyleSheet.absoluteFill, styles.overlay]}>
+      {/* Full-screen turn surface — drag anywhere to rotate the wheel. The ✕
+          (a later sibling, so higher z) still wins taps on itself. */}
+      <View {...pan.panHandlers} style={StyleSheet.absoluteFill} />
+      {/* The wheel is purely visual — the surface above drives it. */}
       <View
         pointerEvents="none"
         style={{ position: 'absolute', left: cx - size / 2, top: cy - size / 2, width: size, height: size }}
       >
         <JogStack size={size} spin={spin} />
       </View>
-      {onClose ? (
-        // Direct child of the full-screen overlay, placed at the wheel's
-        // top-right in screen coords — hit-area matches the visual, always
-        // tappable so the wheel can always be dismissed.
-        <Pressable
-          onPress={onClose}
-          hitSlop={18}
-          style={[styles.closeKey, { left: cx + size / 2 - 22, top: cy - size / 2 - 8 }]}
-          accessibilityRole="button"
-          accessibilityLabel="Close the topic wheel"
-        >
-          <Text style={styles.closeX}>✕</Text>
-        </Pressable>
-      ) : null}
+      {/* ✕ commits the selection + closes; hit-area matches the visual. */}
+      <Pressable
+        onPress={onClose}
+        hitSlop={18}
+        style={[styles.closeKey, { left: cx + size / 2 - 22, top: cy - size / 2 - 8 }]}
+        accessibilityRole="button"
+        accessibilityLabel="Close the topic wheel"
+      >
+        <Text style={styles.closeX}>✕</Text>
+      </Pressable>
     </View>
   );
 }
