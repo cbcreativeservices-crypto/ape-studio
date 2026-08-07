@@ -329,6 +329,11 @@ function GlassCover() {
       />
       {/* Crisp glass edge glare along the very top. */}
       <View style={styles.glassTopGlare} />
+      {/* Bottom edge = a gray highlight lip with the finest black line right at
+          the extreme bottom beneath it (owner 2026-08-06). The black line is
+          the container's own bottom border (see cutoutMount); this gray line
+          sits just above it. */}
+      <View style={styles.glassBottomHighlight} />
     </View>
   );
 }
@@ -1398,6 +1403,8 @@ export function DashboardScreen() {
                           {l.text}
                         </Text>
                       ))}
+                    {/* Same glass pane so it gets the gray lip + black bottom line. */}
+                    <GlassCover />
                   </View>
                 )}
               </>
@@ -1940,6 +1947,9 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 0 },
   },
   glassTopGlare: { position: 'absolute', top: 0, left: 0, right: 0, height: 1.5, backgroundColor: 'rgba(255,255,255,0.30)' },
+  // Gray highlight lip along the lower edge (owner 2026-08-06) — sits just above
+  // the container's finest black bottom line (cutoutMount borderBottom).
+  glassBottomHighlight: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 1.5, backgroundColor: 'rgba(255,255,255,0.38)' },
   // Glass tint (owner 2026-08-06, rev 3): 5% gloss — 13% washed the panes too
   // light; a faint milky lift reads as room light off the glass without dimming
   // the LEDs. The gradients still shape the depth.
@@ -2015,7 +2025,6 @@ const styles = StyleSheet.create({
   cutoutMount: {
     borderTopWidth: 2.5,
     borderLeftWidth: 1.5,
-    borderBottomWidth: 1.5,
     // Right edge is a BLACK opening/gap (owner 2026-08-06 rev 3): earlier revs
     // made it a WHITE lit lip, which ate INTO the black gap — wrong direction.
     // Now black like the top/left shadow edges, and a touch bigger, so the
@@ -2024,7 +2033,11 @@ const styles = StyleSheet.create({
     borderTopColor: '#000000',
     borderLeftColor: '#000000',
     borderRightColor: '#000000',
-    borderBottomColor: 'rgba(255,255,255,0.38)',
+    // Bottom border is now the FINEST BLACK LINE at the extreme bottom (owner
+    // 2026-08-06); the gray highlight lip moved just above it (glassBottomHighlight
+    // in GlassCover) so it's gray-over-black at the lower edge.
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#000000',
     borderRadius: 2.5,
   },
   // ONE readout: method # + name left, % right (Booth 2026-07-10). Modern
@@ -2064,6 +2077,7 @@ const styles = StyleSheet.create({
   },
   // Quiz status/gate text LED screen (#4).
   gateDisplay: {
+    overflow: 'hidden',
     backgroundColor: '#0c0d0c',
     paddingVertical: 7,
     paddingHorizontal: 10,
