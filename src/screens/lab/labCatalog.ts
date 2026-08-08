@@ -93,10 +93,10 @@ export const LAB_CATEGORIES: LabCategory[] = [
     labs: [
       { name: 'Digital Audio Systems', blurb: 'Sampling, Nyquist, aliasing, bit depth, quantization, dither, A/D and D/A conversion.', route: 'DigitalLab' },
       { name: 'Visual Audio Analysis', blurb: 'Waveform, spectrum, spectrogram, waterfall, phase, correlation, LUFS, peak, RMS, VU.', route: 'MeterLab' },
-      { name: 'Harmonograph', blurb: 'Frequency ratios ↔ musical intervals, drawn as living Lissajous curves.', route: 'HarmonographLab' },
       { name: 'Signal Chain Builder', blurb: 'Generator → EQ → Comp → Gate → FX → Reverb → Limiter → Output.', route: 'SignalChainLab' },
       { name: 'Signal Detective', blurb: 'Identify the meter, read the display, spot the problem, prescribe the fix.', route: 'MeterModule', params: { id: 'detective' } },
-      { name: 'Gain Staging', blurb: 'Set levels right at every stage — headroom, noise floor, unity gain through the chain.', status: 'development' },
+      // LIVE (owner 2026-08-07): own home + 8 modules (Signal X-Ray et al).
+      { name: 'Gain Staging', blurb: 'Set levels right at every stage — headroom, noise floor, unity gain through the chain.', route: 'GainLabHome' },
     ],
   },
 
@@ -209,6 +209,9 @@ export const LAB_CATEGORIES: LabCategory[] = [
     kind: 'list',
     labs: [
       { name: 'Autotune', blurb: 'Pitch correction on the cents grid — amount, retune speed.', route: 'AutotuneLab' },
+      // Moved from Audio Fundamentals (owner 2026-08-07) — interval/ratio work
+      // belongs with pitch & tuning in the member Training Labs.
+      { name: 'Harmonograph', blurb: 'Frequency ratios ↔ musical intervals, drawn as living Lissajous curves.', route: 'HarmonographLab' },
       { name: 'Tunings Lab', blurb: 'Temperaments, reference pitches, just vs equal.', status: 'development' },
     ],
   },

@@ -10,7 +10,7 @@ import { ResponseCurveGraph, eqResponseDb, type ResponseCurve } from '../../../.
 import { DragSlider } from '../../foundations/bits';
 import { MiniBtn } from './eqBits';
 import { colors, fonts } from '../../../../theme/tokens';
-import { baseSpectrumDb, bwOctFromQ, fFromNorm, fmtHz, gainColor, normFromF } from './eqMath';
+import { baseSpectrumDb, bwOctFromQ, fFromNorm, fmtHz, gainColor, maxPosDb, normFromF } from './eqMath';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
 
@@ -112,7 +112,20 @@ export function FixSignalModule(_p: EqModuleComponentProps) {
           <Text style={styles.panelEyebrow}>SIGNAL (amber) vs REFERENCE (dim)</Text>
           <Text style={styles.readout}>SYNTHETIC</Text>
         </View>
-        <ResponseCurveGraph curves={curves} dbRange={24} height={150} />
+        <ResponseCurveGraph
+          curves={curves}
+          dbRange={24}
+          height={150}
+          // MIDI plot colour: warms with the remaining excess (owner 2026-08-07).
+          mainColor={gainColor(
+            maxPosDb(
+              (f) =>
+                eqResponseDb([{ type: 'peak', freq: sc.hidden.f, q: sc.hidden.q, gainDb: sc.hidden.g }], f) +
+                (band.g !== 0 ? eqResponseDb([{ type: 'peak', freq: band.f, q: band.q, gainDb: band.g }], f) : 0),
+            ),
+            12,
+          )}
+        />
       </View>
 
       <DragSlider label="FREQUENCY" value={normFromF(band.f)} onChange={(t) => setBand((b) => ({ ...b, f: fFromNorm(t) }))} readout={fmtHz(band.f)} />

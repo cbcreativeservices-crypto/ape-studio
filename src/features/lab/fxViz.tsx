@@ -199,6 +199,10 @@ export type ResponseCurve = {
   at: (f: number) => number;
   emphasis: 'main' | 'ref' | 'ghost'; // amber · dim solid · dim ghost
   label?: string;
+  /** Per-curve colour override (owner 2026-08-07). Multi-band displays give
+   *  EVERY band its own MIDI level colour, so one loud band can no longer
+   *  dictate the colour of the whole plot. Omitted ⇒ the emphasis default. */
+  color?: string;
 };
 
 /** Log-frequency magnitude chart (20 Hz–20 kHz), ±`dbRange` dB. The workhorse:
@@ -268,15 +272,19 @@ export function ResponseCurveGraph({
           <Path
             key={i}
             d={paths[i].d}
-            stroke={DIM}
-            strokeWidth={c.emphasis === 'ref' ? 1.2 : 1}
-            strokeOpacity={c.emphasis === 'ref' ? 0.9 : 0.7}
-            strokeDasharray={c.emphasis === 'ghost' ? '4 3' : undefined}
+            stroke={c.color ?? DIM}
+            // A colour-carrying curve is a real reading, not chrome — draw it
+            // solid and legible rather than dim/dashed.
+            strokeWidth={c.color ? 1.6 : c.emphasis === 'ref' ? 1.2 : 1}
+            strokeOpacity={c.color ? 0.95 : c.emphasis === 'ref' ? 0.9 : 0.7}
+            strokeDasharray={!c.color && c.emphasis === 'ghost' ? '4 3' : undefined}
             fill="none"
           />
         ),
       )}
-      {curves.map((c, i) => (c.emphasis === 'main' ? <GlowPath key={`m${i}`} d={paths[i].d} color={mainColor} /> : null))}
+      {curves.map((c, i) =>
+        c.emphasis === 'main' ? <GlowPath key={`m${i}`} d={paths[i].d} color={c.color ?? mainColor} /> : null,
+      )}
       {FREQ_TICKS.map((f) => (
         <Line key={`t${f}`} x1={logX(f, 20, 20000, padL, padR)} y1={H - 4} x2={logX(f, 20, 20000, padL, padR)} y2={H} stroke={DIM} strokeWidth={1} strokeOpacity={0.55} />
       ))}

@@ -184,7 +184,9 @@ export function SeeingFrequencyModule(_p: EqModuleComponentProps) {
           >
             <View style={styles.panel}>
               <View style={styles.panelHead}>
-                <Text style={styles.panelEyebrow}>LIVE SPECTRUM</Text>
+                <Text style={[styles.panelEyebrow, { flexShrink: 1 }]}>
+                  LIVE SPECTRUM OF YOUR ENVIRONMENT RIGHT NOW
+                </Text>
                 <Text style={styles.panelSettings}>1/3 OCT · FFT {FFT_SIZE}</Text>
               </View>
               <View style={styles.chartRow}>
@@ -287,6 +289,13 @@ export function SeeingFrequencyModule(_p: EqModuleComponentProps) {
                     </Svg>
                   )}
                   <View style={styles.labelRow}>
+                    {/* The extreme low end is labeled explicitly on the left
+                        (owner 2026-08-07) — what frequency the leftmost band is. */}
+                    {chartW > 0 && bands != null && bands.centers.length > 0 && (
+                      <Text style={[styles.freqLabel, styles.freqLabelEdge, { left: 0 }]}>
+                        {Math.round(bands.centers[0])} Hz
+                      </Text>
+                    )}
                     {chartW > 0 &&
                       labels.map((l) => (
                         <Text key={l.text} style={[styles.freqLabel, { left: (l.i + 0.5) * barW - 24 }]}>
@@ -296,7 +305,7 @@ export function SeeingFrequencyModule(_p: EqModuleComponentProps) {
                   </View>
                 </View>
               </View>
-              <Text style={styles.unitLine}>
+              <Text style={[styles.unitLine, hpfHz == null && styles.unitLineCallout]}>
                 {hpfHz == null
                   ? '◂ look below 100 Hz — what energy lives there even when the room seems quiet?'
                   : `HPF ${hpfHz} Hz · 12 dB/OCT — the low end is rolled off; amber = the filter’s response`}
@@ -369,7 +378,10 @@ const styles = StyleSheet.create({
   chartArea: { flex: 1, height: PANEL_H + 18 },
   labelRow: { position: 'absolute', top: PANEL_H + 2, left: 0, right: 0, height: 14 },
   freqLabel: { position: 'absolute', width: 48, textAlign: 'center', fontFamily: fonts.mono, fontSize: 10, color: colors.textSub },
+  freqLabelEdge: { textAlign: 'left', color: colors.amber },
   unitLine: { fontFamily: fonts.mono, fontSize: 10.5, color: colors.textSub },
+  // The "look below 100 Hz" invitation reads amber (owner 2026-08-07).
+  unitLineCallout: { color: colors.amber },
   grayNote: { fontFamily: fonts.barlowRegular, fontSize: 11.5, color: '#7a7f8a' },
 
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },

@@ -22,7 +22,7 @@ import Svg, { Circle, Ellipse, Line, Path, Polygon, Rect } from 'react-native-sv
 import { ResponseCurveGraph, eqResponseDb, type ResponseCurve } from '../../../../features/lab/fxViz';
 import { CheckQuestion, DragSlider, type CheckSpec } from '../../foundations/bits';
 import { colors, fonts } from '../../../../theme/tokens';
-import { bwOctFromQ, fFromNorm, fmtHz, gainColor, qFromBwOct } from './eqMath';
+import { bwOctFromQ, fFromNorm, fmtHz, gainColor, normFromF, qFromBwOct } from './eqMath';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
 
@@ -33,24 +33,30 @@ const PLOT_W = W - 2 * PAD;
 const PX_PER_OCT = PLOT_W / 10;
 const xForF = (f: number) => PAD + ((Math.log10(f) - Math.log10(20)) / 3) * PLOT_W;
 
-// ---- Scene geometry ---------------------------------------------------------
-const SCENE_H = 210;
-const FLOOR_Y = 150;
-const FOV_TOP = 60;
-const CAM_APEX: [number, number] = [160, 188];
+// ---- Scene geometry (compressed 2026-08-07: shorter scene lifts the sliders
+// higher on the phone screen) --------------------------------------------------
+const SCENE_H = 168;
+const FLOOR_Y = 116;
+const FOV_TOP = 42;
+const CAM_APEX: [number, number] = [160, 148];
 
 // ---- Analogy ↔ EQ mapping ---------------------------------------------------
 const bwFromZoom = (z: number) => 4 - 3.75 * z; // wide 4 oct … tight 0.25 oct
 const ANALOGY_GAIN_DB = 9; // fixed — gain is NOT part of the analogy (ruling)
-const FIXED_FREQ = 1000; // the frequency a FIXED EQ is bolted to
-const LOCKED_ZOOM = 0.35; // stages 1–2: the lens that cannot zoom
+/** The frequency a FIXED EQ is bolted to. 2 kHz lands at x≈211 on the shared
+ *  log axis — right on the LAMP, so the locked camera stares at exactly one
+ *  object (owner 2026-08-07: not the person, not the speaker beside it). */
+const FIXED_FREQ = 2000;
+/** Stages 0–1: the lens that cannot zoom. ≈0.89 octaves ⇒ a ±13.5 px view that
+ *  covers the lamp alone (person ends at x≈172, monitor starts at x≈262). */
+const LOCKED_ZOOM = 0.83;
 
 type Stage = 0 | 1 | 2;
 const STAGE_META: { label: string; camera: string; eq: string }[] = [
   {
     label: 'FIXED',
-    camera: 'The camera is on a tripod. You can swing it to look around the room…',
-    eq: '…but a FIXED EQ can’t follow — its frequency is bolted at 1 kHz.',
+    camera: 'The camera is bolted to its tripod, staring at one object — the lamp. It cannot move.',
+    eq: 'A FIXED EQ works at ONE frequency (2 kHz here) — you can’t choose where it operates.',
   },
   {
     label: 'SEMI-PARAMETRIC',
@@ -80,76 +86,83 @@ const FILL2 = '#22242c';
 /** The room, drawn with a little depth: window · chair · person · lamp ·
  *  studio monitor. `aimX`/`halfW` place the camera's field-of-view wedge on the
  *  shared frequency axis; `locked` dims the tie between camera and EQ (fixed). */
-function RoomScene({ aimX, halfW, locked }: { aimX: number; halfW: number; locked: boolean }) {
-  const fov = locked ? '#6c7688' : colors.amber;
+function RoomScene({ aimX, halfW }: { aimX: number; halfW: number }) {
+  // Camera and EQ always point at the same place now, so the field of view is
+  // always the live amber (owner 2026-08-07).
+  const fov = colors.amber;
   return (
     <Svg width="100%" height={SCENE_H} viewBox={`0 0 ${W} ${SCENE_H}`}>
       {/* Back wall / floor split for depth */}
-      <Rect x={PAD} y={40} width={PLOT_W} height={FLOOR_Y - 40} fill="#101216" />
-      <Polygon points={`${PAD},${FLOOR_Y} ${W - PAD},${FLOOR_Y} ${W - PAD - 16},${FLOOR_Y + 22} ${PAD + 16},${FLOOR_Y + 22}`} fill="#0c0d11" />
+      <Rect x={PAD} y={28} width={PLOT_W} height={FLOOR_Y - 28} fill="#101216" />
+      <Polygon points={`${PAD},${FLOOR_Y} ${W - PAD},${FLOOR_Y} ${W - PAD - 14},${FLOOR_Y + 16} ${PAD + 14},${FLOOR_Y + 16}`} fill="#0c0d11" />
       <Line x1={PAD} y1={FLOOR_Y} x2={W - PAD} y2={FLOOR_Y} stroke="#3a4150" strokeWidth={1.2} />
 
       {/* WINDOW — framed, with a sill in slight perspective */}
-      <Rect x={28} y={66} width={38} height={46} rx={2} fill={FILL} stroke={INK} strokeWidth={1.5} />
-      <Line x1={47} y1={66} x2={47} y2={112} stroke={INK} strokeWidth={1} />
-      <Line x1={28} y1={89} x2={66} y2={89} stroke={INK} strokeWidth={1} />
-      <Polygon points={`25,112 69,112 73,118 21,118`} fill={FILL2} stroke={INK} strokeWidth={1} strokeLinejoin="round" />
+      <Rect x={28} y={50} width={34} height={36} rx={2} fill={FILL} stroke={INK} strokeWidth={1.5} />
+      <Line x1={45} y1={50} x2={45} y2={86} stroke={INK} strokeWidth={1} />
+      <Line x1={28} y1={68} x2={62} y2={68} stroke={INK} strokeWidth={1} />
+      <Polygon points={`25,86 65,86 69,91 21,91`} fill={FILL2} stroke={INK} strokeWidth={1} strokeLinejoin="round" />
 
       {/* CHAIR — seat + back + legs with a depth offset */}
-      <Path d="M92 118 L92 150 M118 118 L118 150 M96 146 L114 146" stroke={INK} strokeWidth={1.4} />
-      <Polygon points={`92,116 118,116 122,110 96,110`} fill={FILL2} stroke={INK} strokeWidth={1.4} strokeLinejoin="round" />
-      <Path d="M118 116 L118 86 L122 82 L122 110" fill={FILL} stroke={INK} strokeWidth={1.4} strokeLinejoin="round" />
+      <Path d="M94 92 L94 116 M116 92 L116 116 M97 113 L113 113" stroke={INK} strokeWidth={1.4} />
+      <Polygon points={`94,90 116,90 120,85 98,85`} fill={FILL2} stroke={INK} strokeWidth={1.4} strokeLinejoin="round" />
+      <Path d="M116 90 L116 66 L120 62 L120 85" fill={FILL} stroke={INK} strokeWidth={1.4} strokeLinejoin="round" />
 
       {/* PERSON — proportioned figure, centered */}
-      <Circle cx={160} cy={78} r={8} fill={FILL2} stroke={INK} strokeWidth={1.5} />
-      <Path d="M160 86 Q152 98 154 120 L166 120 Q168 98 160 86 Z" fill={FILL} stroke={INK} strokeWidth={1.5} strokeLinejoin="round" />
-      <Path d="M154 92 L146 110 M166 92 L174 110" stroke={INK} strokeWidth={1.5} strokeLinecap="round" />
-      <Path d="M156 120 L153 150 M164 120 L167 150" stroke={INK} strokeWidth={1.5} strokeLinecap="round" />
+      <Circle cx={160} cy={58} r={7} fill={FILL2} stroke={INK} strokeWidth={1.5} />
+      <Path d="M160 65 Q153 75 155 92 L165 92 Q167 75 160 65 Z" fill={FILL} stroke={INK} strokeWidth={1.5} strokeLinejoin="round" />
+      <Path d="M155 70 L148 84 M165 70 L172 84" stroke={INK} strokeWidth={1.5} strokeLinecap="round" />
+      <Path d="M157 92 L154 116 M163 92 L166 116" stroke={INK} strokeWidth={1.5} strokeLinecap="round" />
 
       {/* FLOOR LAMP — base, pole, shade */}
-      <Ellipse cx={214} cy={150} rx={11} ry={3} fill={FILL2} stroke={INK} strokeWidth={1.2} />
-      <Line x1={214} y1={150} x2={214} y2={92} stroke={INK} strokeWidth={1.6} />
-      <Polygon points={`204,92 224,92 219,72 209,72`} fill={FILL} stroke={INK} strokeWidth={1.5} strokeLinejoin="round" />
-      <Line x1={207} y1={78} x2={221} y2={78} stroke={INK} strokeWidth={0.8} strokeOpacity={0.6} />
+      <Ellipse cx={214} cy={116} rx={10} ry={2.6} fill={FILL2} stroke={INK} strokeWidth={1.2} />
+      <Line x1={214} y1={116} x2={214} y2={70} stroke={INK} strokeWidth={1.6} />
+      <Polygon points={`205,70 223,70 219,54 209,54`} fill={FILL} stroke={INK} strokeWidth={1.5} strokeLinejoin="round" />
+      <Line x1={208} y1={60} x2={220} y2={60} stroke={INK} strokeWidth={0.8} strokeOpacity={0.6} />
 
       {/* STUDIO MONITOR — front face + top + side, iso depth; woofer/tweeter/port */}
-      <Polygon points={`262,84 286,84 292,78 268,78`} fill={FILL2} stroke={INK} strokeWidth={1.3} strokeLinejoin="round" />
-      <Polygon points={`286,84 286,128 292,122 292,78`} fill="#0f1116" stroke={INK} strokeWidth={1.3} strokeLinejoin="round" />
-      <Rect x={262} y={84} width={24} height={44} rx={1.5} fill={FILL} stroke={INK} strokeWidth={1.4} />
-      <Circle cx={274} cy={112} r={7} fill={FILL2} stroke={INK} strokeWidth={1.2} />
-      <Circle cx={274} cy={112} r={2.4} fill={INK} fillOpacity={0.5} />
-      <Circle cx={274} cy={94} r={3} fill={FILL2} stroke={INK} strokeWidth={1.1} />
-      <Line x1={269} y1={122} x2={279} y2={122} stroke={INK} strokeWidth={1} strokeOpacity={0.6} />
+      <Polygon points={`262,62 284,62 290,57 268,57`} fill={FILL2} stroke={INK} strokeWidth={1.3} strokeLinejoin="round" />
+      <Polygon points={`284,62 284,98 290,93 290,57`} fill="#0f1116" stroke={INK} strokeWidth={1.3} strokeLinejoin="round" />
+      <Rect x={262} y={62} width={22} height={36} rx={1.5} fill={FILL} stroke={INK} strokeWidth={1.4} />
+      <Circle cx={273} cy={85} r={6} fill={FILL2} stroke={INK} strokeWidth={1.2} />
+      <Circle cx={273} cy={85} r={2} fill={INK} fillOpacity={0.5} />
+      <Circle cx={273} cy={70} r={2.6} fill={FILL2} stroke={INK} strokeWidth={1.1} />
+      <Line x1={268} y1={93} x2={278} y2={93} stroke={INK} strokeWidth={1} strokeOpacity={0.6} />
 
       {/* CAMERA field of view — apex at the lens, covering the aimed zone */}
       <Polygon
         points={`${CAM_APEX[0]},${CAM_APEX[1]} ${aimX - halfW},${FOV_TOP} ${aimX + halfW},${FOV_TOP}`}
         fill={fov}
-        fillOpacity={locked ? 0.06 : 0.12}
+        fillOpacity={0.12}
         stroke={fov}
-        strokeOpacity={locked ? 0.4 : 0.6}
+        strokeOpacity={0.6}
         strokeWidth={1}
-        strokeDasharray={locked ? '4 4' : undefined}
       />
       <Line x1={aimX - halfW} y1={FOV_TOP} x2={aimX + halfW} y2={FOV_TOP} stroke={fov} strokeWidth={2} strokeOpacity={0.85} />
 
       {/* CAMERA body — on its tripod */}
-      <Rect x={146} y={190} width={28} height={15} rx={2.5} fill={FILL2} stroke={colors.amber} strokeWidth={1.5} />
-      <Circle cx={160} cy={190} r={5.5} fill={FILL} stroke={colors.amber} strokeWidth={1.5} />
-      <Rect x={166} y={185} width={8} height={5} rx={1} fill={FILL} stroke={colors.amber} strokeWidth={1.2} />
-      <Path d="M150 205 L142 210 M170 205 L178 210 M160 205 L160 210" stroke={colors.amber} strokeWidth={1.3} strokeLinecap="round" />
+      <Rect x={147} y={150} width={26} height={13} rx={2.5} fill={FILL2} stroke={colors.amber} strokeWidth={1.5} />
+      <Circle cx={160} cy={150} r={5} fill={FILL} stroke={colors.amber} strokeWidth={1.5} />
+      <Rect x={165} y={146} width={7} height={4} rx={1} fill={FILL} stroke={colors.amber} strokeWidth={1.2} />
+      <Path d="M151 163 L144 167 M169 163 L176 167 M160 163 L160 167" stroke={colors.amber} strokeWidth={1.3} strokeLinecap="round" />
     </Svg>
   );
 }
 
 export function CameraAnalogyModule(_p: EqModuleComponentProps) {
   const [stage, setStage] = useState<Stage>(0);
-  const [pan, setPan] = useState(0.5); // 0..1 → 20 Hz…20 kHz (where the camera points)
+  // Starts pointed at the lamp, so unlocking PAN continues from where the fixed
+  // camera was staring instead of jumping.
+  const [pan, setPan] = useState(normFromF(FIXED_FREQ));
   const [zoom, setZoom] = useState(LOCKED_ZOOM);
 
+  // FIXED (owner 2026-08-07): the camera is bolted down — the pan slider is
+  // LOCKED and the camera stares at the lamp. Panning only unlocks at
+  // semi-parametric, where the EQ can actually follow the camera.
+  const panActive = stage >= 1;
   const zoomActive = stage >= 2;
-  const cameraF = fFromNorm(pan); // where the camera is pointed
-  const eqFreq = stage === 0 ? FIXED_FREQ : cameraF; // a fixed EQ can't follow
+  const cameraF = panActive ? fFromNorm(pan) : FIXED_FREQ;
+  const eqFreq = cameraF; // camera and EQ always agree now
   const bwOct = bwFromZoom(zoomActive ? zoom : LOCKED_ZOOM);
   const q = qFromBwOct(bwOct);
 
@@ -172,10 +185,14 @@ export function CameraAnalogyModule(_p: EqModuleComponentProps) {
   return (
     <View style={styles.root}>
       <GlossaryText style={styles.body}>
-        Imagine a camera in a room. What the camera can DO — swing, pan-and-follow, or pan and
+        Imagine a camera in a room. What the camera can DO — stay bolted down, pan, or pan and
         zoom — is exactly the difference between fixed, semi-parametric, and fully parametric EQ.
       </GlossaryText>
 
+      <Text style={styles.stageCamera}>{meta.camera}</Text>
+      <Text style={styles.stageEq}>→ {meta.eq}</Text>
+
+      {/* EQ-type buttons sit JUST ABOVE the display (owner 2026-08-07). */}
       <View style={styles.chipRow}>
         {STAGE_META.map((s, i) => (
           <Pressable
@@ -191,27 +208,35 @@ export function CameraAnalogyModule(_p: EqModuleComponentProps) {
           </Pressable>
         ))}
       </View>
-      <Text style={styles.stageCamera}>{meta.camera}</Text>
-      <Text style={styles.stageEq}>→ {meta.eq}</Text>
 
       <View style={styles.panel}>
         <View style={styles.panelHead}>
           <Text style={styles.panelEyebrow}>THE ROOM</Text>
           <Text style={styles.readout}>
-            {stage === 0 ? `Camera ${fmtHz(cameraF)} · EQ 1 kHz (fixed)` : `${fmtHz(eqFreq)} · Q ${q.toFixed(1)} · ${bwOct.toFixed(2)} oct`}
+            {stage === 0
+              ? `${fmtHz(eqFreq)} — FIXED`
+              : `${fmtHz(eqFreq)} · Q ${q.toFixed(1)} · ${bwOct.toFixed(2)} oct`}
           </Text>
         </View>
-        <RoomScene aimX={aimX} halfW={halfW} locked={stage === 0} />
+        <RoomScene aimX={aimX} halfW={halfW} />
         <ResponseCurveGraph curves={curves} dbRange={12} height={116} mainColor={gc} />
         <Text style={styles.honest}>
           {stage === 0
-            ? 'Sweep the camera — the bell stays at 1 kHz. A fixed EQ can look, but not move.'
+            ? 'Locked on the lamp at 2 kHz. Nothing you do moves it — that is what “fixed” means.'
             : 'The bell = the real peaking response at a fixed +9 dB — gain is NOT part of this analogy.'}
         </Text>
       </View>
 
-      {/* Pan works in EVERY mode now (owner 2026-08-07). */}
-      <DragSlider label="PAN THE CAMERA" value={pan} onChange={setPan} readout={fmtHz(cameraF)} />
+      {/* FIXED locks BOTH controls (owner 2026-08-07) — a bolted-down camera
+          has no pan handle to grab. */}
+      {panActive ? (
+        <DragSlider label="PAN THE CAMERA" value={pan} onChange={setPan} readout={fmtHz(cameraF)} />
+      ) : (
+        <View style={styles.lockedRow}>
+          <Text style={styles.lockedLabel}>PAN THE CAMERA</Text>
+          <Text style={styles.lockedNote}>locked — bolted to the tripod</Text>
+        </View>
+      )}
       {zoomActive ? (
         <DragSlider
           label="ZOOM THE CAMERA"

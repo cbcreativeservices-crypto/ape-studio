@@ -36,6 +36,18 @@ export function gainColor(db: number, maxDb = 18): string {
   return levelColor(Math.max(0, db) / Math.max(1, maxDb));
 }
 
+/** Max POSITIVE dB of a response over the audible band (33 log samples) — feeds
+ *  gainColor so a trainer plot warms with its worst excess and reads blue once
+ *  the excess is corrected (owner 2026-08-07: MIDI colours on the EQ plots). */
+export function maxPosDb(at: (f: number) => number): number {
+  let m = 0;
+  for (let i = 0; i <= 32; i++) {
+    const v = at(20 * Math.pow(1000, i / 32));
+    if (v > m) m = v;
+  }
+  return m;
+}
+
 // ---- Variable-slope Butterworth magnitudes ---------------------------------
 /** n-th order Butterworth high-pass magnitude (dB): slope = order × 6 dB/oct.
  *  Analog-prototype form — the display-honest generalization of fxViz's fixed

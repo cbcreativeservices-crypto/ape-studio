@@ -18,7 +18,7 @@ import { ResponseCurveGraph, eqResponseDb, type ResponseCurve } from '../../../.
 import { DragSlider } from '../../foundations/bits';
 import { MiniBtn } from './eqBits';
 import { colors, fonts } from '../../../../theme/tokens';
-import { baseSpectrumDb, bwOctFromQ, fFromNorm, fmtHz, gainColor, normFromF } from './eqMath';
+import { baseSpectrumDb, bwOctFromQ, fFromNorm, fmtHz, gainColor, maxPosDb, normFromF } from './eqMath';
 import type { EqModuleComponentProps } from './registry';
 
 type Hidden = { f: number; g: number; q: number };
@@ -119,15 +119,20 @@ export function FindFrequencyModule(_p: EqModuleComponentProps) {
   const setSel = (patch: Partial<UserBand>) =>
     setBands((prev) => prev.map((b, i) => (i === selIdx ? { ...b, ...patch } : b)));
 
-  const curves = useMemo<ResponseCurve[]>(() => {
+  const { curves, plotColor } = useMemo<{ curves: ResponseCurve[]; plotColor: string }>(() => {
     const userAt = (f: number) =>
       bands.reduce((s, b) => s + (b.g !== 0 ? eqResponseDb([{ type: 'peak', freq: b.f, q: b.q, gainDb: b.g }], f) : 0), 0);
     const hiddenAt = (f: number) =>
       hidden.reduce((s, h) => s + eqResponseDb([{ type: 'peak', freq: h.f, q: h.q, gainDb: h.g }], f), 0);
-    return [
-      { at: (f: number) => baseSpectrumDb(f), emphasis: 'ref' }, // healthy reference
-      { at: (f: number) => baseSpectrumDb(f) + hiddenAt(f) + userAt(f), emphasis: 'main' },
-    ];
+    return {
+      curves: [
+        { at: (f: number) => baseSpectrumDb(f), emphasis: 'ref' }, // healthy reference
+        { at: (f: number) => baseSpectrumDb(f) + hiddenAt(f) + userAt(f), emphasis: 'main' },
+      ],
+      // MIDI plot colour (owner 2026-08-07): warms with the worst remaining
+      // excess vs the reference; a corrected signal reads blue/cool.
+      plotColor: gainColor(maxPosDb((f) => hiddenAt(f) + userAt(f)), 12),
+    };
   }, [hidden, bands]);
 
   return (
@@ -149,7 +154,7 @@ export function FindFrequencyModule(_p: EqModuleComponentProps) {
           <Text style={styles.panelEyebrow}>SIGNAL (amber) vs REFERENCE (dim)</Text>
           <Text style={styles.readout}>SYNTHETIC</Text>
         </View>
-        <ResponseCurveGraph curves={curves} dbRange={24} height={150} />
+        <ResponseCurveGraph curves={curves} dbRange={24} height={150} mainColor={plotColor} />
         <Text style={styles.honest}>
           Visual trainer on a synthetic spectrum — the by-ear version arrives with the audio build.
         </Text>

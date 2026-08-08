@@ -17,7 +17,7 @@ import { ResponseCurveGraph, eqResponseDb, type EqBandSpec, type ResponseCurve }
 import { CheckQuestion, type CheckSpec } from '../../foundations/bits';
 import { MiniBtn } from './eqBits';
 import { colors, fonts } from '../../../../theme/tokens';
-import { baseSpectrumDb } from './eqMath';
+import { baseSpectrumDb, gainColor, maxPosDb } from './eqMath';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
 
@@ -97,7 +97,16 @@ export function EqChallengesModule(_p: EqModuleComponentProps) {
             {strategy === 'none' ? '250 Hz +6 dB' : `overall shift ≈ ${overallShift >= 0 ? '+' : ''}${overallShift.toFixed(1)} dB`}
           </Text>
         </View>
-        <ResponseCurveGraph curves={curves} dbRange={24} height={150} />
+        <ResponseCurveGraph
+          curves={curves}
+          dbRange={24}
+          height={150}
+          // MIDI plot colour: warms with the excess still on the signal.
+          mainColor={gainColor(
+            maxPosDb((f) => eqResponseDb(PROBLEM, f) + (fix.length ? eqResponseDb(fix, f) : 0)),
+            12,
+          )}
+        />
         <Text style={styles.honest}>Synthetic spectrum — audible A/B arrives with the audio build.</Text>
       </View>
 

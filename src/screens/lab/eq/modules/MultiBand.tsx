@@ -16,7 +16,7 @@ import { DragSlider } from '../../foundations/bits';
 import { useScrollLock } from '../../LabShell';
 import { MiniBtn } from './eqBits';
 import { colors, fonts } from '../../../../theme/tokens';
-import { bwOctFromQ, fmtHz, normFromF, fFromNorm } from './eqMath';
+import { bwOctFromQ, fmtHz, gainColor, normFromF, fFromNorm } from './eqMath';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
 
@@ -102,6 +102,10 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
     const oy = ((GRAPH_H + PAD_B) * (1 - s)) / 2;
     return { x: (lx - ox) / s, y: (ly - oy) / s };
   };
+  // Anchored drag (owner 2026-08-07): grant fixes the start point in viewBox
+  // space; moves apply dx/dy — locationX/Y re-base when the finger leaves the
+  // graph, which flung nodes across the plot.
+  const anchorRef = useRef<{ x: number; y: number; s: number }>({ x: 0, y: 0, s: 1 });
 
   const applyDrag = (xVb: number, yVb: number) => {
     const key = selRef.current;
@@ -122,6 +126,8 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
       onPanResponderGrant: (e) => {
         lockRef.current?.(true);
         const { x, y } = toVb(e.nativeEvent.locationX, e.nativeEvent.locationY);
+        const w = layoutRef.current || VB_W;
+        anchorRef.current = { x, y, s: Math.min(w / VB_W, 1) };
         // Grab the nearest ENABLED band node by horizontal distance.
         const b = bandsRef.current;
         const cands: { key: BandKey; x: number }[] = [];
@@ -137,9 +143,10 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
         setSel(best.key);
         applyDrag(x, y);
       },
-      onPanResponderMove: (e) => {
-        const { x, y } = toVb(e.nativeEvent.locationX, e.nativeEvent.locationY);
-        applyDrag(x, y);
+      onPanResponderMove: (_e, g) => {
+        // Anchored: dx/dy from the grant point, scaled into viewBox units.
+        const a = anchorRef.current;
+        applyDrag(a.x + g.dx / a.s, a.y + g.dy / a.s);
       },
       onPanResponderRelease: () => lockRef.current?.(false),
       onPanResponderTerminate: () => lockRef.current?.(false),
@@ -150,18 +157,36 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
   const curves = useMemo<ResponseCurve[]>(() => {
     const list: ResponseCurve[] = [];
     const b = bands;
-    const each: EqBandSpec[][] = [];
-    if (b.hpf.on) each.push([{ type: 'highPass', freq: b.hpf.f, q: 0.707, gainDb: 0 }]);
-    for (const bell of b.bells) if (bell.on && bell.g !== 0) each.push([{ type: 'peak', freq: bell.f, q: bell.q, gainDb: bell.g }]);
-    if (b.lpf.on) each.push([{ type: 'lowPass', freq: b.lpf.f, q: 0.707, gainDb: 0 }]);
-    for (const spec of each) list.push({ at: (f: number) => eqResponseDb(spec, f), emphasis: 'ghost' });
+    // EVERY band draws its own curve in its OWN MIDI level colour (owner
+    // 2026-08-07) — a boost warms with ITS gain, a cut/filter stays blue, and
+    // no single band can dictate the colour of the others.
+    const each: { spec: EqBandSpec[]; gain: number }[] = [];
+    if (b.hpf.on) each.push({ spec: [{ type: 'highPass', freq: b.hpf.f, q: 0.707, gainDb: 0 }], gain: 0 });
+    for (const bell of b.bells) {
+      if (bell.on && bell.g !== 0) {
+        each.push({ spec: [{ type: 'peak', freq: bell.f, q: bell.q, gainDb: bell.g }], gain: bell.g });
+      }
+    }
+    if (b.lpf.on) each.push({ spec: [{ type: 'lowPass', freq: b.lpf.f, q: 0.707, gainDb: 0 }], gain: 0 });
+    for (const e of each) {
+      list.push({
+        at: (f: number) => eqResponseDb(e.spec, f),
+        emphasis: 'ghost',
+        color: gainColor(e.gain, DB_RANGE),
+      });
+    }
     const all = specsFor(b);
     if (bypass) {
       // Bypassed: the would-be composite stays as a dim reference, output flat.
       list.push({ at: (f: number) => eqResponseDb(all, f), emphasis: 'ref' });
-      list.push({ at: () => 0, emphasis: 'main' });
+      list.push({ at: () => 0, emphasis: 'main', color: gainColor(0) });
     } else {
-      list.push({ at: (f: number) => eqResponseDb(all, f), emphasis: 'main' });
+      list.push({
+        at: (f: number) => eqResponseDb(all, f),
+        emphasis: 'main',
+        // The COMBINED curve reads the total the signal actually experiences.
+        color: gainColor(Math.max(0, ...b.bells.filter((x) => x.on).map((x) => x.g)), DB_RANGE),
+      });
     }
     return list;
   }, [bands, bypass]);
@@ -255,6 +280,7 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
           <Text style={styles.readout}>{bypass ? 'BYPASSED' : `${specsFor(bands).length} ACTIVE`}</Text>
         </View>
         <View onLayout={(e) => setLayoutW(e.nativeEvent.layout.width)} {...pan.panHandlers}>
+          {/* Every curve carries its OWN MIDI colour (set per-curve above). */}
           <ResponseCurveGraph curves={curves} dbRange={DB_RANGE} height={GRAPH_H} />
           <Svg
             pointerEvents="none"

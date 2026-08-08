@@ -10,7 +10,7 @@ import { ResponseCurveGraph, eqResponseDb, type EqBandSpec, type ResponseCurve }
 import { DragSlider } from '../../foundations/bits';
 import { MiniBtn } from './eqBits';
 import { colors, fonts } from '../../../../theme/tokens';
-import { bwOctFromQ, fFromNorm, fmtHz, gainColor, normFromF } from './eqMath';
+import { bwOctFromQ, fFromNorm, fmtHz, gainColor, maxPosDb, normFromF } from './eqMath';
 import type { EqModuleComponentProps } from './registry';
 
 type UserBand = { f: number; g: number; q: number };
@@ -109,7 +109,21 @@ export function MatchCurveModule(_p: EqModuleComponentProps) {
           <Text style={styles.panelEyebrow}>TARGET (dim) vs YOUR EQ (amber)</Text>
           <Text style={styles.readout}>{showScore ? `MATCH ${live}%` : 'MATCH · hidden'}</Text>
         </View>
-        <ResponseCurveGraph curves={curves} dbRange={15} height={150} />
+        <ResponseCurveGraph
+          curves={curves}
+          dbRange={15}
+          height={150}
+          // MIDI plot colour: warms with the user's biggest boost (owner 2026-08-07).
+          mainColor={gainColor(
+            maxPosDb((f) =>
+              bands.reduce(
+                (s, b) => s + (b.g !== 0 ? eqResponseDb([{ type: 'peak', freq: b.f, q: b.q, gainDb: b.g }], f) : 0),
+                0,
+              ),
+            ),
+            15,
+          )}
+        />
         <Text style={styles.honest}>
           Target uses {target.length} hidden band{target.length > 1 ? 's' : ''} — you have the same
           number.

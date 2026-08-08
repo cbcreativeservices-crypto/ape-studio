@@ -186,9 +186,13 @@ export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
             ))}
           </View>
 
-          <Text style={styles.sectionTitle}>PARAMETRIC BAND</Text>
+          <Text style={styles.sectionTitle}>PARAMETRIC BAND · VIEW</Text>
+          {/* View buttons live to the RIGHT of the band toggle (owner 2026-08-07). */}
           <View style={styles.btnRow}>
             <MiniBtn label={bellOn ? 'BAND ON' : 'BAND OFF'} active={bellOn} onPress={() => setBellOn((v) => !v)} />
+            <MiniBtn label="SPECTRUM ONLY" active={mode === 'spectrum'} onPress={() => setMode('spectrum')} />
+            <MiniBtn label="EQ ONLY" active={mode === 'eq'} onPress={() => setMode('eq')} />
+            <MiniBtn label="COMBINED" active={mode === 'combined'} onPress={() => setMode('combined')} />
           </View>
           {bellOn && (
             <>
@@ -208,13 +212,6 @@ export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
               />
             </>
           )}
-
-          <Text style={styles.sectionTitle}>VIEW</Text>
-          <View style={styles.btnRow}>
-            <MiniBtn label="SPECTRUM ONLY" active={mode === 'spectrum'} onPress={() => setMode('spectrum')} />
-            <MiniBtn label="EQ ONLY" active={mode === 'eq'} onPress={() => setMode('eq')} />
-            <MiniBtn label="COMBINED" active={mode === 'combined'} onPress={() => setMode('combined')} />
-          </View>
 
           <Pressable
             onPress={state === 'running' ? onStop : onStart}

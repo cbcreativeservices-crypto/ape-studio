@@ -207,6 +207,10 @@ export type RootStackParamList = {
    *  the audible `EqLab` effect lab above. */
   EqLabHome: undefined;
   EqModule: { id: import('../screens/lab/eq/modules/registry').EqModuleId };
+  /** Gain Staging Lab (owner spec 2026-08-07) — hands-on signal-flow: keep the
+   *  signal healthy at every stage; Signal X-Ray reveals the whole chain. */
+  GainLabHome: undefined;
+  GainModule: { id: import('../screens/lab/gain/modules/registry').GainModuleId };
   /** FOUNDATIONS OF SOUND (owner 2026-07-26) — the FIRST module in the Ear
    *  Training & Audio Lab: a stepped teaching course (Modules 1–4 MVP) + the
    *  free Playground sandbox. Skia-animated (pre-Skia clients degrade

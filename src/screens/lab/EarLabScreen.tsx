@@ -9,6 +9,7 @@
  * non-tappable "in development — soon to be released" rows (§1.7: no dead
  * links). Fully data-driven from labCatalog.
  */
+import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -47,6 +48,10 @@ export function EarLabScreen({ navigation, route }: Props) {
   const { entitlement } = useEntitlement();
   const isMember = entitlement === 'academy';
   const section = route.params?.section; // undefined = the full combined list
+  // Accordion (owner 2026-08-07): every lab row loads COLLAPSED (name + reveal
+  // triangle); at most ONE row is expanded at a time, and the expanded row
+  // carries an explicit [OPEN] button — the triangle never opens the lab.
+  const [expandedKey, setExpandedKey] = useState<string | null>(null);
 
   // navigate is over-strict about the (route, params?) tuple across a union of
   // routes; go loose (the app-wide escape hatch) since routes/params come from
@@ -126,9 +131,20 @@ export function EarLabScreen({ navigation, route }: Props) {
                   ) : (
                     <>
                       <CategoryLabel cat={cat} />
-                      {categoryEntries(cat).map((leaf) => (
-                        <LabRow key={leaf.name} leaf={leaf} locked={locked} onOpen={() => openLeaf(leaf, sec.key)} inset />
-                      ))}
+                      {categoryEntries(cat).map((leaf) => {
+                        const k = `${cat.id}:${leaf.name}`;
+                        return (
+                          <LabRow
+                            key={k}
+                            leaf={leaf}
+                            locked={locked}
+                            expanded={expandedKey === k}
+                            onToggle={() => setExpandedKey((cur) => (cur === k ? null : k))}
+                            onOpen={() => openLeaf(leaf, sec.key)}
+                            inset
+                          />
+                        );
+                      })}
                     </>
                   )}
                 </View>
@@ -175,38 +191,72 @@ function CategoryLabel({ cat, onPress, locked }: { cat: LabCategory; onPress?: (
   );
 }
 
-/** One uniform lab row (identical size for hub labs and single labs). Dev
- *  placeholders are non-tappable + labeled. */
-function LabRow({ leaf, onOpen, inset, locked }: { leaf: LabLeaf; onOpen: () => void; inset?: boolean; locked?: boolean }) {
+/** One uniform lab row — an ACCORDION item (owner 2026-08-07): collapsed =
+ *  name + reveal triangle only; expanded = blurb + an explicit [OPEN] button
+ *  (never an arrow that could read as another triangle). Dev placeholders
+ *  expand to show their note but carry SOON instead of OPEN. */
+function LabRow({
+  leaf,
+  onOpen,
+  inset,
+  locked,
+  expanded,
+  onToggle,
+}: {
+  leaf: LabLeaf;
+  onOpen: () => void;
+  inset?: boolean;
+  locked?: boolean;
+  expanded: boolean;
+  onToggle: () => void;
+}) {
   const dev = leaf.status === 'development';
   const showLock = !!locked && !dev; // preview: readable + a small lock, never dimmed
   return (
     <Pressable
-      onPress={dev ? undefined : onOpen}
-      disabled={dev}
+      onPress={onToggle}
       accessibilityRole="button"
-      accessibilityState={{ disabled: dev }}
-      accessibilityLabel={
-        dev
-          ? `${leaf.name}, in development`
-          : showLock
-            ? `${leaf.name}, Academy members only — tap to preview and unlock`
-            : `Open ${leaf.name}`
-      }
-      style={({ pressed }) => [styles.row, inset && styles.rowInset, dev && styles.rowDev, pressed && !dev && styles.rowPressed]}
+      accessibilityState={{ expanded }}
+      accessibilityLabel={`${leaf.name}${dev ? ', in development' : ''}, ${expanded ? 'expanded' : 'collapsed'}`}
+      style={({ pressed }) => [
+        styles.row,
+        !expanded && styles.rowTight,
+        inset && styles.rowInset,
+        dev && styles.rowDev,
+        pressed && styles.rowPressed,
+      ]}
     >
+      <Text style={styles.rowCaret}>{expanded ? '▾' : '▸'}</Text>
       <View style={{ flex: 1 }}>
         <Text style={[styles.rowName, dev && styles.rowNameDev]}>{leaf.name}</Text>
-        <Text style={styles.rowBlurb} numberOfLines={2}>{leaf.blurb}</Text>
-        {dev ? <Text style={styles.devNote}>{DEV_NOTE}</Text> : null}
+        {expanded ? (
+          <>
+            <Text style={styles.rowBlurb}>{leaf.blurb}</Text>
+            {dev ? <Text style={styles.devNote}>{DEV_NOTE}</Text> : null}
+          </>
+        ) : null}
       </View>
-      {dev ? (
+      {expanded ? (
+        dev ? (
+          <Text style={styles.soon}>SOON</Text>
+        ) : (
+          <Pressable
+            onPress={onOpen}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={
+              showLock ? `${leaf.name}, Academy members only — open the preview` : `Open ${leaf.name}`
+            }
+            style={({ pressed }) => [styles.openBtn, pressed && styles.rowPressed]}
+          >
+            <Text style={styles.openBtnText}>{showLock ? '🔒 OPEN' : 'OPEN'}</Text>
+          </Pressable>
+        )
+      ) : dev ? (
         <Text style={styles.soon}>SOON</Text>
       ) : showLock ? (
         <Text style={styles.lock}>🔒</Text>
-      ) : (
-        <Text style={styles.rowChevron}>›</Text>
-      )}
+      ) : null}
     </Pressable>
   );
 }
@@ -277,6 +327,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   rowInset: { marginLeft: 12 },
+  rowTight: { minHeight: 48, paddingVertical: 9 },
+  rowCaret: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: colors.amber, width: 14, textAlign: 'center' },
+  openBtn: {
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255,198,77,.6)',
+    backgroundColor: '#1d1708',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+  },
+  openBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.amber },
   rowPressed: { backgroundColor: '#1f1a0e' },
   rowDev: { borderColor: '#2a2a2e', backgroundColor: '#121214' },
   rowName: { fontFamily: fonts.oswaldSemiBold, fontSize: 14.5, letterSpacing: 0.4, color: colors.textPrimary },

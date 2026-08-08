@@ -12,7 +12,7 @@
  * SIGNALS from meterEngine (badged). Nothing here measures real audio.
  */
 import { useMemo, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { DisplayGuideButton } from '../../../../features/lab/guidedLessons';
 import { LabChip, CollapsibleSection } from '../../LabShell';
@@ -955,18 +955,40 @@ export function DetectiveModule(p: MeterModuleProps) {
       </CollapsibleSection>
 
       <PanelCard>
-        <Text style={styles.caseCounter}>
-          CASE {idx + 1} OF {n} · QUESTION {step + 1} OF {qCount}
-        </Text>
+        {/* Case nav lives ON the counter line, above the display (owner
+            2026-08-07): PREV blue · NEXT green, no "CASE" in the labels. */}
+        <View style={styles.caseHeadRow}>
+          <Text style={[styles.caseCounter, { flex: 1 }]}>
+            CASE {idx + 1} OF {n} · QUESTION {step + 1} OF {qCount}
+          </Text>
+          <Pressable
+            onPress={() => goCase(idx - 1)}
+            onLongPress={() => p.help('detective')}
+            delayLongPress={350}
+            hitSlop={6}
+            accessibilityRole="button"
+            accessibilityLabel="Previous case"
+            style={[styles.caseNavBtn, styles.caseNavPrev]}
+          >
+            <Text style={styles.caseNavPrevText}>‹ PREV</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => goCase(idx + 1)}
+            onLongPress={() => p.help('detective')}
+            delayLongPress={350}
+            hitSlop={6}
+            accessibilityRole="button"
+            accessibilityLabel="Next case"
+            style={[styles.caseNavBtn, styles.caseNavNext]}
+          >
+            <Text style={styles.caseNavNextText}>NEXT ›</Text>
+          </Pressable>
+        </View>
         {vm && vs ? (
           <CaseHero vm={vm} vs={vs} width={p.width} focused={p.focused} kase={kase} />
         ) : (
           <VizUnavailableCard />
         )}
-        <View style={dstyles.chipRow}>
-          <LabChip label="‹ PREV CASE" selected={false} onPress={() => goCase(idx - 1)} onLongPress={() => p.help('detective')} />
-          <LabChip label="NEXT CASE ›" selected={false} onPress={() => goCase(idx + 1)} onLongPress={() => p.help('detective')} />
-        </View>
       </PanelCard>
 
       {/* ONE question at a time (owner 2026-08-05) — keyed per case+step so it
@@ -1014,4 +1036,11 @@ const styles = StyleSheet.create({
   zoneText: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   verdict: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18 },
   caseCounter: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.amber },
+  // Case nav on the counter line (owner 2026-08-07): PREV blue · NEXT green.
+  caseHeadRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  caseNavBtn: { borderRadius: 8, borderWidth: 1, paddingHorizontal: 10, paddingVertical: 6 },
+  caseNavPrev: { borderColor: 'rgba(47,155,255,.55)', backgroundColor: '#0d1420' },
+  caseNavPrevText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.8, color: colors.blue },
+  caseNavNext: { borderColor: 'rgba(55,224,95,.55)', backgroundColor: '#0c1a10' },
+  caseNavNextText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.8, color: colors.green },
 });

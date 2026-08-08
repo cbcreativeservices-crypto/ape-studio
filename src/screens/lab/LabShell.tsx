@@ -28,23 +28,19 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-type LabMode = 'learn' | 'explore' | 'practice' | 'test';
+// PRACTICE and TEST modes REMOVED app-wide (owner 2026-08-07): they only ever
+// led to "in development" placeholder screens — labs show LEARN + EXPLORE.
+type LabMode = 'learn' | 'explore';
 
 const MODES: { key: LabMode; label: string }[] = [
   { key: 'learn', label: 'LEARN' },
   { key: 'explore', label: 'EXPLORE' },
-  { key: 'practice', label: 'PRACTICE' },
-  { key: 'test', label: 'TEST' },
 ];
 
-/** Fixed per-mode tab color (owner 2026-07-31): LEARN green · EXPLORE amber ·
- *  PRACTICE blue · TEST purple — always on, across every lab that shows these
- *  four buttons. */
+/** Fixed per-mode tab color (owner 2026-07-31): LEARN green · EXPLORE amber. */
 export const MODE_COLORS: Record<LabMode, string> = {
   learn: colors.green,
   explore: colors.amber,
-  practice: colors.blue,
-  test: colors.purple,
 };
 
 /** Shared chip control (SignalGen/HarmonicsView idiom). Long-press opens the
@@ -303,24 +299,6 @@ export function LabShell({
                 <Text style={styles.caption}>{exploreCaption}</Text>
               </CollapsibleSection>
               {typeof children === 'function' ? children({ setScrollLocked }) : children}
-            </View>
-          ) : null}
-
-          {mode === 'practice' ? (
-            <View style={styles.panel}>
-              <Text style={styles.caption}>Exercises with optional hints and immediate feedback.</Text>
-              <View style={styles.placeholder}>
-                <Text style={styles.placeholderText}>Exercises in development</Text>
-              </View>
-            </View>
-          ) : null}
-
-          {mode === 'test' ? (
-            <View style={styles.panel}>
-              <Text style={styles.caption}>Randomized scored exercises without instructional overlays.</Text>
-              <View style={styles.placeholder}>
-                <Text style={styles.placeholderText}>Scored tests in development</Text>
-              </View>
             </View>
           ) : null}
 

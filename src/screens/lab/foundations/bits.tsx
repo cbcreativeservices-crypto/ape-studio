@@ -127,18 +127,30 @@ export function DragSlider({
     lockRef.current.prop?.(v);
   };
 
+  // ANCHORED drag math (owner 2026-08-07 fix): the grant tap positions the
+  // value once from locationX, then every move applies gestureState.dx to that
+  // anchor. locationX becomes unreliable the moment the finger leaves the
+  // track's bounds (it re-bases against whatever view is under the finger),
+  // which made sliders "whip around" to the opposite end at the extremes —
+  // dx never lies. Capture on start so the slider owns the touch immediately.
+  const baseRef = useRef(0);
   const pan = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
+      onStartShouldSetPanResponderCapture: () => true,
       onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dx) > Math.abs(g.dy),
       onPanResponderGrant: (e) => {
         setLock(true);
-        if (wRef.current > 0)
-          onChangeRef.current(Math.max(0, Math.min(1, e.nativeEvent.locationX / wRef.current)));
+        if (wRef.current > 0) {
+          const v = Math.max(0, Math.min(1, e.nativeEvent.locationX / wRef.current));
+          baseRef.current = v;
+          onChangeRef.current(v);
+        }
       },
-      onPanResponderMove: (e) => {
-        if (wRef.current > 0)
-          onChangeRef.current(Math.max(0, Math.min(1, e.nativeEvent.locationX / wRef.current)));
+      onPanResponderMove: (_e, g) => {
+        if (wRef.current > 0) {
+          onChangeRef.current(Math.max(0, Math.min(1, baseRef.current + g.dx / wRef.current)));
+        }
       },
       onPanResponderRelease: () => setLock(false),
       onPanResponderTerminate: () => setLock(false),

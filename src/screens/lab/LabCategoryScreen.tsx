@@ -7,7 +7,7 @@
  * language. Purely data-driven from labCatalog — adding a lab needs no change
  * here.
  */
-import { Fragment } from 'react';
+import { Fragment, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -20,6 +20,9 @@ type Props = NativeStackScreenProps<RootStackParamList, 'LabCategory'>;
 export function LabCategoryScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
   const cat = getCategory(route.params.id);
+  // Accordion (owner 2026-08-07): rows load collapsed; one expanded at a time;
+  // the expanded row opens via an explicit [OPEN] button.
+  const [expandedKey, setExpandedKey] = useState<string | null>(null);
 
   if (!cat || cat.kind !== 'list') {
     return (
@@ -45,9 +48,18 @@ export function LabCategoryScreen({ navigation, route }: Props) {
           <View key={fam.name} style={styles.section}>
             <Text style={styles.familyTitle}>{fam.name}</Text>
             <View style={styles.list}>
-              {fam.labs.map((leaf) => (
-                <LabRow key={leaf.name} leaf={leaf} onOpen={() => open(leaf)} />
-              ))}
+              {fam.labs.map((leaf) => {
+                const k = `${fam.name}:${leaf.name}`;
+                return (
+                  <LabRow
+                    key={k}
+                    leaf={leaf}
+                    expanded={expandedKey === k}
+                    onToggle={() => setExpandedKey((cur) => (cur === k ? null : k))}
+                    onOpen={() => open(leaf)}
+                  />
+                );
+              })}
             </View>
           </View>
         ))}
@@ -56,7 +68,12 @@ export function LabCategoryScreen({ navigation, route }: Props) {
           <View style={styles.list}>
             {cat.labs.map((leaf) => (
               <Fragment key={leaf.name}>
-                <LabRow leaf={leaf} onOpen={() => open(leaf)} />
+                <LabRow
+                  leaf={leaf}
+                  expanded={expandedKey === leaf.name}
+                  onToggle={() => setExpandedKey((cur) => (cur === leaf.name ? null : leaf.name))}
+                  onOpen={() => open(leaf)}
+                />
               </Fragment>
             ))}
           </View>
@@ -80,23 +97,49 @@ function Header({ title, subtitle, onBack }: { title: string; subtitle: string; 
   );
 }
 
-function LabRow({ leaf, onOpen }: { leaf: LabLeaf; onOpen: () => void }) {
+function LabRow({
+  leaf,
+  onOpen,
+  expanded,
+  onToggle,
+}: {
+  leaf: LabLeaf;
+  onOpen: () => void;
+  expanded: boolean;
+  onToggle: () => void;
+}) {
   const dev = leaf.status === 'development';
   return (
     <Pressable
-      onPress={dev ? undefined : onOpen}
-      disabled={dev}
+      onPress={onToggle}
       accessibilityRole="button"
-      accessibilityState={{ disabled: dev }}
-      accessibilityLabel={dev ? `${leaf.name}, in development` : `Open ${leaf.name}`}
-      style={({ pressed }) => [styles.row, dev && styles.rowDev, pressed && !dev && styles.rowPressed]}
+      accessibilityState={{ expanded }}
+      accessibilityLabel={`${leaf.name}${dev ? ', in development' : ''}, ${expanded ? 'expanded' : 'collapsed'}`}
+      style={({ pressed }) => [styles.row, dev && styles.rowDev, pressed && styles.rowPressed]}
     >
+      <Text style={styles.rowCaret}>{expanded ? '▾' : '▸'}</Text>
       <View style={{ flex: 1 }}>
         <Text style={[styles.rowName, dev && styles.rowNameDev]}>{leaf.name}</Text>
-        <Text style={styles.rowBlurb}>{leaf.blurb}</Text>
-        {dev ? <Text style={styles.devNote}>{DEV_NOTE}</Text> : null}
+        {expanded ? (
+          <>
+            <Text style={styles.rowBlurb}>{leaf.blurb}</Text>
+            {dev ? <Text style={styles.devNote}>{DEV_NOTE}</Text> : null}
+          </>
+        ) : null}
       </View>
-      {dev ? <Text style={styles.soon}>SOON</Text> : <Text style={styles.chevron}>›</Text>}
+      {expanded && !dev ? (
+        <Pressable
+          onPress={onOpen}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel={`Open ${leaf.name}`}
+          style={({ pressed }) => [styles.openBtn, pressed && styles.rowPressed]}
+        >
+          <Text style={styles.openBtnText}>OPEN</Text>
+        </Pressable>
+      ) : dev ? (
+        <Text style={styles.soon}>SOON</Text>
+      ) : null}
     </Pressable>
   );
 }
@@ -127,6 +170,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   rowPressed: { backgroundColor: '#1f1a0e' },
+  rowCaret: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: colors.amber, width: 14, textAlign: 'center' },
+  openBtn: { borderRadius: 8, borderWidth: 1, borderColor: 'rgba(255,198,77,.6)', backgroundColor: '#1d1708', paddingHorizontal: 14, paddingVertical: 8 },
+  openBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.amber },
   // Coming-soon (in-development) rows read dim + muted, no amber border.
   rowDev: { borderColor: '#2a2a2e', backgroundColor: '#121214' },
   rowName: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 0.4, color: colors.textPrimary },

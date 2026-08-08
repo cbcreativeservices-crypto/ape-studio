@@ -68,6 +68,9 @@ export function GraphicTruthModule(_p: EqModuleComponentProps) {
           list.push({
             at: (f: number) => biquadMagDb(rbjPeaking(c, Q_1OCT, g), f),
             emphasis: 'ghost',
+            // Each band in its OWN MIDI colour (owner 2026-08-07) — you can see
+            // at a glance which filters are boosting and by how much.
+            color: gainColor(g, 12),
           });
         }
       });
@@ -108,20 +111,11 @@ export function GraphicTruthModule(_p: EqModuleComponentProps) {
         exactly the innocent move whose real response surprises people. CLEAR ALL BANDS returns
         every slider to 0 dB.
       </Text>
-      <View style={styles.btnRow}>
-        <MiniBtn label="MAGNITUDE" active={view === 'mag'} onPress={() => setView('mag')} />
-        <MiniBtn label="PHASE" active={view === 'phase'} onPress={() => setView('phase')} />
-        <MiniBtn
-          label="SHOW INDIVIDUAL FILTERS"
-          active={showIndividual}
-          onPress={() => setShowIndividual((v) => !v)}
-        />
-      </View>
       <Text style={styles.caption}>
         Switch between MAGNITUDE and PHASE to compare the two results: MAGNITUDE shows how far the
-        real response (amber) departs from the smooth line the sliders imply (dim); PHASE shows the
-        phase shift the same filters apply — which the sliders don’t reveal at all. The point is the
-        gap between what you SEE on the board and what actually happens to the signal.
+        real response departs from the smooth line the sliders imply (dim); PHASE shows the phase
+        shift the same filters apply — which the sliders don’t reveal at all. The point is the gap
+        between what you SEE on the board and what actually happens to the signal.
       </Text>
 
       {/* Live value of the fader under your finger (owner 2026-08-07). */}
@@ -133,6 +127,17 @@ export function GraphicTruthModule(_p: EqModuleComponentProps) {
         </Text>
       </View>
 
+      {/* View controls sit JUST ABOVE the display (owner 2026-08-07). */}
+      <View style={styles.btnRow}>
+        <MiniBtn label="MAGNITUDE" active={view === 'mag'} onPress={() => setView('mag')} />
+        <MiniBtn label="PHASE" active={view === 'phase'} onPress={() => setView('phase')} />
+        <MiniBtn
+          label="SHOW INDIVIDUAL FILTERS"
+          active={showIndividual}
+          onPress={() => setShowIndividual((v) => !v)}
+        />
+      </View>
+
       <View style={styles.panel}>
         <View style={styles.panelHead}>
           <Text style={styles.panelEyebrow}>
@@ -140,7 +145,14 @@ export function GraphicTruthModule(_p: EqModuleComponentProps) {
           </Text>
         </View>
         {view === 'mag' ? (
-          <ResponseCurveGraph curves={magCurves} dbRange={12} height={150} />
+          // MIDI level colour (owner 2026-08-07): the actual response warms with
+          // the biggest boost on the board; an all-cut board reads blue.
+          <ResponseCurveGraph
+            curves={magCurves}
+            dbRange={12}
+            height={150}
+            mainColor={gainColor(Math.max(0, ...gains), 12)}
+          />
         ) : (
           <ResponseCurveGraph curves={phaseCurves} dbRange={180} height={150} />
         )}
