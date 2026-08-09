@@ -371,6 +371,12 @@ type EntryDetail = {
 
 const PAGE = 1000;
 
+/** The light blue of a cross-link inside a definition. Single source of truth
+ *  (owner 2026-08-07): `styles.termLink` paints the words with it, and the
+ *  SHOW/HIDE LINKS icon lights up in the same blue when links are on, so the
+ *  control visibly names what it controls. */
+const LINK_BLUE = '#9fbede';
+
 // iOS ScrollViews delay touch delivery to child buttons by default, making
 // taps feel slow/unresponsive. This turns it off. (Valid RN prop; RN 0.86's
 // type defs omit it, so it's spread untyped.)
@@ -691,8 +697,8 @@ function CountUp({
   target,
   // Slower ramp (owner 2026-08-06): +1.5s so the count-up spans more of the
   // ~3s corpus load instead of finishing well before the list arrives.
-  // Slowed a further 50% (owner 2026-08-07): 3s → 4.5s.
-  durationMs = 4500,
+  // Slowed a further 50% (owner 2026-08-07): 3s → 4.5s → 6.75s.
+  durationMs = 6750,
   style,
   suffix = ' Terms',
 }: {
@@ -1882,10 +1888,18 @@ export function GlossaryScreen({ route, navigation }: Props) {
                     <HoldHintPressable
                       onPress={() => setLinksOn(!linksOn)}
                       hint={linksOn ? 'Hides linked words in every definition' : 'Shows linked words in every definition'}
-                      selected={!linksOn}
+                      selected={linksOn}
                       accessibilityLabel={linksOn ? 'Hide links in definitions' : 'Show links in definitions'}
                     >
-                      <LinkIcon size={18} color={linksOn ? colors.textMuted : colors.amber} off={!linksOn} />
+                      {/* Lit in the SAME light blue as the link text inside
+                          definitions when links are on (so the icon reads as
+                          "this is what those blue words are"); plain gray when
+                          off. Links default ON, so it starts lit. */}
+                      <LinkIcon
+                        size={18}
+                        color={linksOn ? LINK_BLUE : colors.textMuted}
+                        off={!linksOn}
+                      />
                     </HoldHintPressable>
                     <SpeakButton text={speakTextFor(item, ttsBeg)} size={19} />
                     {/* Share this term + definition (Booth 2026-07-18) — the
@@ -2737,7 +2751,7 @@ const styles = StyleSheet.create({
   hlMatch: { color: '#37e05f' },
   termLink: {
     // One shade darker blue (user request 2026-07-18).
-    color: '#9fbede',
+    color: LINK_BLUE,
     textDecorationLine: 'underline',
     textDecorationColor: 'rgba(159,190,222,0.35)',
   },
