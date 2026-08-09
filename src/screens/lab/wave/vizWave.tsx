@@ -650,7 +650,12 @@ function RoomRing({
 // per frame (one circle per ray); the ring is one path.
 
 const PULSE_MS = 3000; // 3 s between pulses — more time to watch the decay
-const PULSE_ARRIVE = 0.9; // every reflection lands by 90% of the cycle
+const PULSE_ARRIVE = 0.9; // the pacing span is covered by 90% of the cycle
+/** Room diagonals the wavefront covers per pulse cycle. The pulse speed is
+ *  keyed to ROOM GEOMETRY, never to the surviving ray set, so the surface
+ *  material can't change how fast the pressure rays travel (owner 2026-08-07).
+ *  Sized to let the usual multi-bounce diffuse paths land inside the cycle. */
+const PACE_SPAN = 3.5;
 // Everything fades to nothing by this fraction of the cycle (2.98 s of 3 s),
 // leaving a clean beat before the next pulse — catches even long free-bounce
 // nodes that would otherwise still be travelling at the reset.
@@ -749,18 +754,18 @@ function pulseTimeEnv(u: number): number {
 /** The nodes for ALL rays, coloured by each ray's ECHO LEVEL (its own path
  *  length + material) on the MIDI ramp, decaying to blue over the pulse.
  *  Quantised into NODE_BUCKETS colour paths (fixed set of paths/frame). */
-function PulseNodes({ t, traces, maxLen, minLen }: { t: SharedValue<number>; traces: TraceRay[]; maxLen: number; minLen: number }) {
+function PulseNodes({ t, traces, paceLen, minLen }: { t: SharedValue<number>; traces: TraceRay[]; paceLen: number; minLen: number }) {
   // A soft bloom under every node so they read over the heat field.
   const glow = useDerivedValue(() => {
     const p = Skia.Path.Make();
-    const dist = t.value * (maxLen / PULSE_ARRIVE);
+    const dist = t.value * (paceLen / PULSE_ARRIVE);
     const env = pulseTimeEnv(t.value);
     for (let k = 0; k < traces.length; k++) {
       const n = nodeState(traces[k], dist, minLen, env);
       p.addCircle(n.x, n.y, n.r * 1.5);
     }
     return p;
-  }, [t, traces, maxLen, minLen]);
+  }, [t, traces, paceLen, minLen]);
   // One colour path per loudness bucket (fixed count → stable hook order).
   const buckets: SharedValue<SkPathT>[] = [];
   for (let b = 0; b < NODE_BUCKETS; b++) {
@@ -768,14 +773,14 @@ function PulseNodes({ t, traces, maxLen, minLen }: { t: SharedValue<number>; tra
     buckets.push(
       useDerivedValue(() => {
         const p = Skia.Path.Make();
-        const dist = t.value * (maxLen / PULSE_ARRIVE);
+        const dist = t.value * (paceLen / PULSE_ARRIVE);
         const env = pulseTimeEnv(t.value);
         for (let k = 0; k < traces.length; k++) {
           const n = nodeState(traces[k], dist, minLen, env);
           if (Math.round(n.amp * (NODE_BUCKETS - 1)) === b) p.addCircle(n.x, n.y, n.r);
         }
         return p;
-      }, [t, traces, maxLen, minLen]),
+      }, [t, traces, paceLen, minLen]),
     );
   }
   return (
@@ -795,18 +800,18 @@ function PulseNodes({ t, traces, maxLen, minLen }: { t: SharedValue<number>; tra
 function PulseRing({
   t,
   origins,
-  maxLen,
+  paceLen,
 }: {
   t: SharedValue<number>;
   origins: { x: number; y: number }[];
-  maxLen: number;
+  paceLen: number;
 }) {
   const path = useDerivedValue(() => {
     const p = Skia.Path.Make();
-    const r = t.value * (maxLen / PULSE_ARRIVE);
+    const r = t.value * (paceLen / PULSE_ARRIVE);
     if (r > 1.5) for (let i = 0; i < origins.length; i++) p.addCircle(origins[i].x, origins[i].y, r);
     return p;
-  }, [t, origins, maxLen]);
+  }, [t, origins, paceLen]);
   const op = useDerivedValue(() => 0.5 * (1 - t.value) * (1 - t.value), [t]);
   const glowOp = useDerivedValue(() => 0.24 * (1 - t.value) * (1 - t.value), [t]);
   return (
@@ -1128,14 +1133,24 @@ export function RoomSceneView(p: RoomSceneProps) {
   // radius IS the nodes' travelled distance (they ride its wavefront).
   const traces = rays && p.layers.pressure && mode !== 'modal' ? rays.traces : null;
   const tracing = !!traces && traces.length > 0;
-  // Pacing spans the LONGEST path (incl. diffuse reflections) so they all reach
-  // the listener within the pulse; the colour reference is the SHORTEST real
-  // reflection = the direct sound (reddest), so echo colour tracks path length.
-  const maxLen = useMemo(() => {
-    let m = 1;
-    if (traces) for (const r of traces) m = Math.max(m, r.len);
-    return m;
-  }, [traces]);
+  // PACING — CONSTANT SPEED, INDEPENDENT OF MATERIAL (owner 2026-08-07 fix).
+  // This used to normalise the wavefront to the LONGEST SURVIVING ray, but an
+  // absorptive wall kills long diffuse paths early (FREE_FADE below), so
+  // choosing a softer surface shrank that reference and visibly SLOWED the
+  // pulse — wrong: sound travels at one speed no matter what it bounces off.
+  // Material changes the reflected AMPLITUDE (segGain), never the speed.
+  // Pace on ROOM GEOMETRY instead — a fixed span of the room diagonal — which
+  // is invariant to material, boundary type and frequency. (pxPerM already
+  // scales the room to the canvas, so the on-screen speed also stays steady
+  // across room sizes.) A path longer than the span simply fades out still
+  // travelling, which is honest: very long echoes arrive late and quiet.
+  const paceLen = useMemo(
+    () => Math.max(1, PACE_SPAN * Math.hypot(scene.w * geo.pxPerM, scene.h * geo.pxPerM)),
+    [scene.w, scene.h, geo.pxPerM],
+  );
+  // The colour reference is the SHORTEST real reflection = the direct sound
+  // (reddest), so echo colour tracks path length. Image-source paths are
+  // material-independent by design, so this reference is stable too.
   const minLen = useMemo(() => {
     let m = Infinity;
     if (traces) for (const r of traces) if (!r.free) m = Math.min(m, r.len);
@@ -1384,8 +1399,8 @@ export function RoomSceneView(p: RoomSceneProps) {
             first, reflections later, all landed before the next pulse. */}
         {tracing && traces ? (
           <>
-            <PulseRing t={pulseT} origins={pulseOrigins} maxLen={maxLen} />
-            <PulseNodes t={pulseT} traces={traces} maxLen={maxLen} minLen={minLen} />
+            <PulseRing t={pulseT} origins={pulseOrigins} paceLen={paceLen} />
+            <PulseNodes t={pulseT} traces={traces} paceLen={paceLen} minLen={minLen} />
           </>
         ) : null}
         {/* ARRIVALS: tick fan + pulsing listener halo. */}

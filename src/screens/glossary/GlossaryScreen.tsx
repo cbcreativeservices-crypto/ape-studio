@@ -22,6 +22,8 @@ import { MethodIcon } from '../../components/MethodIcon';
 import { DeckIcon } from '../../components/DeckIcon';
 import { CoachMark } from '../../components/CoachMark';
 import { ShareIcon } from '../../components/ShareIcon';
+import { LinkIcon } from '../../components/LinkIcon';
+import { useGlossaryLinksPref } from '../../features/glossary/linksPref';
 import { ShareTermSheet, type NamedTerm, type ShareTermPayload } from '../../components/ShareTermSheet';
 import type { GlossaryShareTerm } from '../../features/glossary/glossaryShare';
 import { LowLightDim } from '../../features/settings/LowLightLayer';
@@ -296,6 +298,7 @@ function LinkedText({
   onLink,
   onOpenCalc,
   highlight = '',
+  linksOn = true,
 }: {
   text: string;
   style: StyleProp<TextStyle>;
@@ -307,10 +310,14 @@ function LinkedText({
   onOpenCalc?: (workspaceId: string) => void;
   /** Active search query — occurrences are highlighted green in plain segments. */
   highlight?: string;
+  /** SHOW/HIDE LINKS (owner 2026-08-07) — when false the definition renders as
+   *  plain prose: no blue cross-links, no purple calculator words. Search
+   *  highlighting still applies. */
+  linksOn?: boolean;
 }) {
   const segs = useMemo(
-    () => (index ? linkSegments(text, index, selfId) : [{ text } as LinkSeg]),
-    [text, index, selfId],
+    () => (index && linksOn ? linkSegments(text, index, selfId) : [{ text } as LinkSeg]),
+    [text, index, selfId, linksOn],
   );
   return (
     <Text style={style}>
@@ -413,6 +420,7 @@ function TermDetails({
   term,
   onLabAction,
   onOpenCalc,
+  linksOn = true,
 }: {
   d: EntryDetail;
   /** The term name — auto-tagged into a "suggest a correction" report. */
@@ -439,6 +447,9 @@ function TermDetails({
    *  "Open in Calculator" row MAY render (only for calculator-covered terms).
    *  Absent (no navigation context) ⇒ never rendered. */
   onOpenCalc?: (workspaceId: string) => void;
+  /** SHOW/HIDE LINKS (owner 2026-08-07) — delinks the definition prose. The
+   *  RELATED TERMS pills are a deliberate list, not inline links, so they stay. */
+  linksOn?: boolean;
 }) {
   const linkable = selfId != null && index != null && onLink != null;
   // Calculator deep-link — ONLY for terms an actual Calc Lab workspace covers
@@ -511,6 +522,7 @@ function TermDetails({
             index={index!}
             onLink={onLink!}
             onOpenCalc={onOpenCalc}
+            linksOn={linksOn}
           />
         </View>
       ) : (
@@ -679,7 +691,8 @@ function CountUp({
   target,
   // Slower ramp (owner 2026-08-06): +1.5s so the count-up spans more of the
   // ~3s corpus load instead of finishing well before the list arrives.
-  durationMs = 3000,
+  // Slowed a further 50% (owner 2026-08-07): 3s → 4.5s.
+  durationMs = 4500,
   style,
   suffix = ' Terms',
 }: {
@@ -799,6 +812,11 @@ export function GlossaryScreen({ route, navigation }: Props) {
   const [cardView, setCardView] = useState(false); // list (default) ↔ card view
   // TTS reads the OFFICIAL definition by default (ADV); BEG = plain English.
   const [ttsBeg, setTtsBeg] = useState(false);
+  // SHOW / HIDE LINKS (owner 2026-08-07): the cross-links inside definitions
+  // can be switched off so a definition reads as clean prose. The control lives
+  // in each term's icon row but the setting is GLOBAL — one flag for the whole
+  // glossary — and is REMEMBERED across launches (defaults to showing links).
+  const [linksOn, setLinksOn] = useGlossaryLinksPref();
   // CM4: commercial rendering — Common Mistakes gating + no academic course
   // filter in public UI (§1 naming rule). Server owns entitlement; we render.
   const { commercialMode, entitlement } = useEntitlement();
@@ -1776,7 +1794,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
           ListEmptyComponent={
             loading ? null : <Text style={styles.empty}>No results for {search.trim() || filterLabel}</Text>
           }
-          extraData={[expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, selectMode, selectedIds]}
+          extraData={[expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, selectMode, selectedIds, linksOn]}
           renderItem={({ item }) => {
             // List view expands INLINE; card view stays compact and opens the
             // popup overlay instead (below).
@@ -1858,6 +1876,17 @@ export function GlossaryScreen({ route, navigation }: Props) {
                     ) : null}
                   </View>
                   <View style={styles.entryActions}>
+                    {/* SHOW / HIDE LINKS (owner 2026-08-07) — sits LEFT of the
+                        other options. Shown per term, but the setting is global:
+                        it turns the definition cross-links on/off glossary-wide. */}
+                    <HoldHintPressable
+                      onPress={() => setLinksOn(!linksOn)}
+                      hint={linksOn ? 'Hides linked words in every definition' : 'Shows linked words in every definition'}
+                      selected={!linksOn}
+                      accessibilityLabel={linksOn ? 'Hide links in definitions' : 'Show links in definitions'}
+                    >
+                      <LinkIcon size={18} color={linksOn ? colors.textMuted : colors.amber} off={!linksOn} />
+                    </HoldHintPressable>
                     <SpeakButton text={speakTextFor(item, ttsBeg)} size={19} />
                     {/* Share this term + definition (Booth 2026-07-18) — the
                         familiar box-with-up-arrow share glyph. */}
@@ -1921,6 +1950,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
                     onLink={onLinkPress}
                     onOpenCalc={onOpenCalc}
                     highlight={hq}
+                    linksOn={linksOn}
                   />
                 ) : (
                   <Text
@@ -1955,6 +1985,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
                       mistakesReadable={isMember}
                       onLabAction={onLabAction}
                       onOpenCalc={onOpenCalc}
+                      linksOn={linksOn}
                     />
                   ) : (
                     <Text style={styles.detailLoading}>Loading…</Text>
@@ -2087,6 +2118,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
                             mistakesReadable={isMember}
                             onLabAction={onLabAction}
                             onOpenCalc={onOpenCalc}
+                            linksOn={linksOn}
                           />
                         ) : (
                           <Text style={styles.detailLoading}>Loading…</Text>
