@@ -35,15 +35,20 @@ import { TUBE_INK } from './tubeInks';
 
 type TubePart = 'envelope' | 'heater' | 'cathode' | 'grid' | 'screen' | 'suppressor' | 'plate' | 'vacuum';
 
+// BUILD ORDER (owner 2026-08-10): the chips march in the order a tube is
+// conceptually assembled — container → heat → emitter → collector (a working
+// DIODE), then each grid in the order history added them (triode → tetrode →
+// pentode). The live physics readout follows the SAME order, so "what's needed
+// next" is always the leftmost missing chip.
 const PARTS: { key: TubePart; label: string; note: string; pentodeOnly?: boolean }[] = [
-  { key: 'envelope', label: 'GLASS', note: 'The glass envelope seals the vacuum in and the air out. Break the seal and the tube dies — oxygen would burn the hot cathode instantly.' },
-  { key: 'heater', label: 'HEATER', note: 'The filament — a resistance wire that glows to heat the cathode. It is the reason tubes need warm-up time (and why they glow).' },
-  { key: 'cathode', label: 'CATHODE', note: 'The electron source: a coated sleeve around the heater that BOILS OFF electrons when hot (thermionic emission).' },
-  { key: 'grid', label: 'CONTROL GRID', note: 'A sparse spiral of wire between cathode and plate. Its small negative voltage gates the whole electron stream — the heart of amplification.' },
-  { key: 'screen', label: 'SCREEN GRID', note: 'Tetrode/pentode only: a second, positive grid that pulls electrons along and shields the control grid from the plate — faster, more stable gain.', pentodeOnly: true },
-  { key: 'suppressor', label: 'SUPPRESSOR', note: 'Pentode only: a third grid near the plate that pushes secondary electrons (knocked off the plate) back where they belong.', pentodeOnly: true },
-  { key: 'plate', label: 'PLATE', note: 'The anode — a metal box around everything, held at high positive voltage. It attracts the electron stream; its current is the amplified signal.' },
+  { key: 'envelope', label: 'GLASS', note: 'Step 1 — the container. The glass envelope seals the vacuum in and the air out. Break the seal and the tube dies — oxygen would burn the hot cathode instantly.' },
   { key: 'vacuum', label: 'VACUUM', note: 'The nothing that makes it work: with no air molecules in the way, electrons fly freely from cathode to plate. No vacuum, no tube.' },
+  { key: 'heater', label: 'HEATER', note: 'Step 2 — the heat. A resistance wire that glows to warm the cathode. It is the reason tubes need warm-up time (and why they glow).' },
+  { key: 'cathode', label: 'CATHODE', note: 'Step 3 — the electron source: a coated sleeve around the heater that BOILS OFF electrons when hot (thermionic emission).' },
+  { key: 'plate', label: 'PLATE', note: 'Step 4 — the collector. The anode box, held at high positive voltage, attracts the electron stream — with just these parts you have a working DIODE.' },
+  { key: 'grid', label: 'CONTROL GRID', note: 'Step 5 — the valve (TRIODE). A sparse spiral of wire whose small negative voltage gates the whole electron stream — the heart of amplification.' },
+  { key: 'screen', label: 'SCREEN GRID', note: 'Step 6 — the accelerator (TETRODE). A second, positive grid that pulls electrons along and shields the control grid from the plate — faster, more stable gain.', pentodeOnly: true },
+  { key: 'suppressor', label: 'SUPPRESSOR', note: 'Step 7 — the cleanup (PENTODE). A third grid near the plate that pushes secondary electrons (knocked off the plate) back where they belong.', pentodeOnly: true },
 ];
 
 const FLOW_STAGES: { until: number; text: string }[] = [
@@ -99,24 +104,22 @@ function InsideSection({ viz, width, focused, electron, help }: SectionProps) {
   };
   const highlight = lastTouched && visible.includes(lastTouched) ? lastTouched : null;
   // LIVE PHYSICS READOUT (owner 2026-08-10): hiding a part changes what the
-  // electrons DO in the drawing — this line names the dominant consequence, in
-  // cause-and-effect order (no emitter → no vacuum → no pull → no control …).
-  const off = (k: TubePart) => !visible.includes(k);
-  const physics = off('cathode')
-    ? 'NO CATHODE — the heater glows, but there is no coated emitter surface to boil electrons from. No emission.'
-    : off('heater')
-      ? 'COLD CATHODE — no heater, no heat. The electrons stay stuck in the metal, trembling — no emission, no current.'
-      : off('envelope')
-        ? 'NO GLASS = NO VACUUM — air floods in (gray). Electrons collide with air molecules and scatter before they get anywhere.'
-        : off('plate')
-          ? 'NO PLATE — nothing pulls the electrons across. They drift out, stall, and fall back into a space-charge cloud.'
-          : off('grid')
-            ? 'NO CONTROL GRID — the flow runs WIDE OPEN. Full current, but nothing can meter it into a signal.'
-            : off('screen')
-              ? 'NO SCREEN GRID — the electrons crawl the whole way. The screen grid’s + charge is the accelerator.'
-              : off('suppressor')
-                ? 'NO SUPPRESSOR — electrons slam the plate and knock SECONDARY electrons loose (red), leaking back toward the screen grid.'
-                : null;
+  // electrons DO in the drawing — this line names the consequence of the FIRST
+  // missing part in BUILD ORDER (= the leftmost dim chip), so the suggested
+  // next step always matches the button row, left to right.
+  const PHYSICS: Partial<Record<TubePart, string>> = {
+    envelope: 'NO GLASS = NO VACUUM — air floods in (gray dots). Any electron that tries to fly hits an air molecule and scatters. Nothing crosses.',
+    heater: 'NO HEATER — no heat, and nothing can boil electrons out of the cathode. No emission, no current.',
+    cathode: 'NO CATHODE — the heater glows, but there is no coated emitter surface to boil electrons from. No emission.',
+    plate: 'NO PLATE — nothing pulls the electrons across. They drift out, stall, and fall back into a space-charge cloud.',
+    grid: 'NO CONTROL GRID — the flow runs WIDE OPEN. Full current, but nothing can meter it into a signal.',
+    screen: 'NO SCREEN GRID — the electrons crawl the whole way across. The screen grid’s + charge is the accelerator.',
+    suppressor: 'NO SUPPRESSOR — electrons slam the plate hard enough to knock RED sparks loose: secondary electrons dripping backward off the glowing red plate walls.',
+  };
+  const firstMissing = PARTS.find((p) => !visible.includes(p.key) && PHYSICS[p.key]);
+  const physics = firstMissing
+    ? `${PHYSICS[firstMissing.key]}  ▸ Tap ${firstMissing.label} to add it back.`
+    : null;
   return (
     <View style={styles.panelCard}>
       {viz ? <CutawayViz viz={viz} width={width} kind="pentode" highlight={highlight} electron={electron} running={focused} visible={visible} /> : <VizUnavailableCard />}

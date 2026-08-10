@@ -452,16 +452,37 @@ export function TubeCutawayView({
     const demo = showSecondary && hasScreen;
     const auto = toggled && !showSecondary && g2On && !g3Fix && glassOn && plateOn;
     if (electronView && emitting && (demo || auto)) {
-      for (let i = 0; i < 5; i++) {
+      // Bigger + more numerous than the cyan stream dots (owner 2026-08-10:
+      // the reds were getting lost in the traffic — now they can't).
+      for (let i = 0; i < 8; i++) {
         const y = stackTop + 16 + hashW(i * 3.3) * (stackBot - stackTop - 32);
-        const f = (ph / (2 * Math.PI) + i / 5) % 1;
+        const f = (ph / (2 * Math.PI) + i / 8) % 1;
         const span = g3Fix ? 9 : 21; // stopped at suppressor vs reaching screen
         const sgn = i % 2 === 0 ? 1 : -1;
-        p.addCircle(cx + sgn * (52 - f * span), y, 1.8);
+        p.addCircle(cx + sgn * (52 - f * span), y, 2.4);
+      }
+      if (!g3Fix) {
+        // Impact flashes ON the plate walls — the bombardment points where the
+        // secondaries are being knocked loose. Pulsing so the eye finds them.
+        for (let k = 0; k < 3; k++) {
+          const yy = stackTop + 20 + hashW(k * 7.7) * (stackBot - stackTop - 40);
+          const rr = 2.2 + 1.6 * (0.5 + 0.5 * Math.sin(ph * 3 + k * 2.1));
+          p.addCircle(cx - 50.5, yy, rr);
+          p.addCircle(cx + 50.5, yy + 6, rr);
+        }
       }
     }
     return p;
   }, [phase, cx, stackTop, stackBot, electronView, showSecondary, hasScreen, hasSuppressor, emitting, toggled, g2On, g3On, glassOn, plateOn]);
+
+  // Unsuppressed bombardment: the whole PLATE pulses red — an element-scale cue
+  // no learner can miss (the readout's "(red)" now has an obvious referent).
+  const storm =
+    electronView && emitting && toggled && !showSecondary && g2On && !(hasSuppressor && g3On) && glassOn && plateOn;
+  const stormO = useDerivedValue(() => {
+    const ph = phase.value;
+    return storm ? 0.32 + 0.28 * Math.sin(ph * 2.4) : 0;
+  }, [phase, storm]);
 
   const stackH = stackBot - stackTop;
   return (
@@ -499,6 +520,10 @@ export function TubeCutawayView({
               stays visible (exactly how the reference cards draw it). */}
           <RoundedRect x={cx - 53} y={stackTop} width={106} height={stackH} r={5} color="#0e0e12" opacity={0.8} />
           <RoundedRect x={cx - 53} y={stackTop} width={106} height={stackH} r={5} color={INK.plate} style="stroke" strokeWidth={2.4} opacity={hl('plate') ? 1 : 0.9} />
+          {/* Unsuppressed bombardment: the plate glows RED-hot in pulses. */}
+          <RoundedRect x={cx - 53} y={stackTop} width={106} height={stackH} r={5} color={ACCENT_RED} style="stroke" strokeWidth={3.2} opacity={stormO}>
+            <BlurMask blur={5} style="normal" />
+          </RoundedRect>
           {hl('plate') ? (
             <RoundedRect x={cx - 53} y={stackTop} width={106} height={stackH} r={5} color={INK.plate} style="stroke" strokeWidth={4.2}>
               <BlurMask blur={4.5} style="normal" />
@@ -589,10 +614,10 @@ export function TubeCutawayView({
       <Path path={electrons} color={ELECTRON} opacity={0.9} />
       {/* Cold-cathode electrons: stuck to the sleeve, trembling, going nowhere. */}
       <Path path={coldDots} color={ELECTRON} opacity={0.35} />
-      <Path path={secondaries} color={ACCENT_RED} opacity={0.5}>
-        <BlurMask blur={4} style="normal" />
+      <Path path={secondaries} color={ACCENT_RED} opacity={0.6}>
+        <BlurMask blur={6} style="normal" />
       </Path>
-      <Path path={secondaries} color={ACCENT_RED} opacity={0.9} />
+      <Path path={secondaries} color={ACCENT_RED} opacity={0.95} />
 
       {/* ── The glass, overlaying the internals. The silhouette ALWAYS renders
           (hide-all = glass only, owner 2026-08-10); un-ticking GLASS keeps a
