@@ -50,13 +50,7 @@
         }
       ],
       "expo-sharing",
-      "expo-audio",
-      [
-        "expo-notifications",
-        {
-          "color": "#0e0e12"
-        }
-      ]
+      "expo-audio"
     ],
     "extra": {
       "eas": {
