@@ -24,7 +24,7 @@ import { colors, fonts } from '../theme/tokens';
  *  everywhere it is shown or referenced. */
 export const ACCURACY_TITLE = 'LEARN HERE — MEASURE WITH THE RIGHT TOOL';
 export const ACCURACY_BODY = [
-  'The labs and live meters here are built to help you SEE and understand how audio, acoustics, and signal flow actually work — learn the concepts with us.',
+  'The academy\'s labs and live meters are built to help you SEE and understand how audio, acoustics, and signal flow actually work — learn the concepts with us.',
   'Live tools read through your phone’s UNCALIBRATED microphone, sensors, and audio path, so treat their readings as relative, for learning. For accurate, real-world measurement, reach for a dedicated, CALIBRATED instrument.',
 ];
 export const ACCURACY_TOOLS: { job: string; use: string }[] = [

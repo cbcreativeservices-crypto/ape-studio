@@ -615,7 +615,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 2,
   },
-  refBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.3, color: colors.green },
+  refBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.3, color: '#ffffff' },
   // Ink-coded part chips (owner 2026-08-10) — reference-card color language.
   partChip: {
     borderRadius: 8,
@@ -637,8 +637,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   refChipOn: { borderColor: colors.green, backgroundColor: '#0e2414' },
-  refChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8, color: colors.green },
-  refChipTextOn: { color: colors.greenBright },
+  // Owner 2026-08-10: REFERENCE chip has WHITE text, only the FRAME green.
+  refChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8, color: '#ffffff' },
+  refChipTextOn: { color: '#ffffff' },
   // Bottom guided-lesson row — mirrors LabShell v2's lessonRow styling.
   lessonRow: {
     borderRadius: 9,

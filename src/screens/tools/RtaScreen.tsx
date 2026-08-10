@@ -537,9 +537,64 @@ const PIANO_H = 44;
 const KEYBED = '#ece9f0';
 const KEY_LINE = '#9a97a6';
 const KEY_BLACK = '#141319';
+const KEY_HILITE = '#37c6ff'; // detected-note highlight (accent cyan)
 /** Semitone offsets (from C) that are black keys. */
 const BLACK_SET = new Set([1, 3, 6, 8, 10]);
 const NOTE_C0 = 16.351598; // Hz — C0; note n semitones up = C0 · 2^(n/12).
+
+// ---- Dominant-pitch highlight (owner 2026-08-10) ---------------------------
+// With the piano shown, analyse the fine FFT spectrum, find the strongest tonal
+// peak, and track which musical note it lands on MOST CONSTANTLY over a short
+// window — then light that key. A steady tone locks a key; noise/chords/silence
+// light nothing (no false readout).
+const NOTE_NAMES = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
+/** Note label in this screen's C0-based index (matches the keybed's C-labels). */
+function noteLabel(idx: number): string {
+  return `${NOTE_NAMES[((idx % 12) + 12) % 12]}${Math.floor(idx / 12)}`;
+}
+/** Nearest note index (0 = C0) for a frequency. */
+function hzToNoteIdx(hz: number): number {
+  return Math.round(12 * Math.log2(hz / NOTE_C0));
+}
+const PITCH_POLL_MS = 80; // ~12.5 detections/s
+const PITCH_WINDOW = 14; // ~1.1 s of history for the "most constant" vote
+const PITCH_MIN_SHARE = 0.55; // winner must hold ≥55% of recent detections
+const PITCH_PROMINENCE_DB = 12; // peak must stand this far above the mean bin
+const PITCH_LO_HZ = 27.5; // A0 — below this, fundamentals aren't reliable here
+const PITCH_HI_HZ = 5000; // musical fundamentals of interest top out well below
+
+/** The strongest tonal peak in the fine spectrum, or null when nothing stands
+ *  out (silence, broadband noise). Parabolic-interpolated for sub-bin accuracy;
+ *  gated on PROMINENCE (peak vs mean) so it is scale/calibration independent. */
+function detectPeakHz(spec: Float32Array, sampleRate: number, fftSize: number): number | null {
+  const hzPerBin = sampleRate / fftSize;
+  if (hzPerBin <= 0) return null;
+  const lo = Math.max(1, Math.floor(PITCH_LO_HZ / hzPerBin));
+  const hi = Math.min(spec.length - 2, Math.ceil(PITCH_HI_HZ / hzPerBin));
+  if (hi <= lo) return null;
+  let peak = -Infinity;
+  let pi = -1;
+  let sum = 0;
+  let count = 0;
+  for (let i = lo; i <= hi; i++) {
+    const v = spec[i];
+    sum += v;
+    count += 1;
+    if (v > peak) {
+      peak = v;
+      pi = i;
+    }
+  }
+  if (pi < 1 || count === 0) return null;
+  if (peak - sum / count < PITCH_PROMINENCE_DB) return null; // no clear tone
+  // Parabolic peak interpolation in the dB domain.
+  const a = spec[pi - 1];
+  const b = spec[pi];
+  const c = spec[pi + 1];
+  const denom = a - 2 * b + c;
+  const delta = denom !== 0 ? Math.max(-0.5, Math.min(0.5, (0.5 * (a - c)) / denom)) : 0;
+  return (pi + delta) * hzPerBin;
+}
 
 /** Fractional band-index for a frequency (log-interpolated through centers) —
  *  the axis the bars are drawn on. */
@@ -557,7 +612,7 @@ function fracIndexForHz(hz: number, centers: number[]): number | null {
   return n - 1;
 }
 
-function PianoStrip({ bands }: { bands: DisplayBands | null }) {
+function PianoStrip({ bands, highlightIdx }: { bands: DisplayBands | null; highlightIdx: number | null }) {
   const [w, setW] = useState(0);
   const centers = bands?.centers ?? [];
   const n = centers.length;
@@ -572,17 +627,22 @@ function PianoStrip({ bands }: { bands: DisplayBands | null }) {
   const whiteXs: number[] = [];
   const blackKeys: { x: number }[] = [];
   const octaveLabels: { x: number; text: string }[] = [];
+  // The detected note's on-axis position (owner 2026-08-10) — lit if in range.
+  let hi: { x: number; black: boolean; label: string } | null = null;
   if (w > 0 && n > 0) {
     for (let midi = 0; midi <= 120; midi++) {
       const hz = NOTE_C0 * Math.pow(2, midi / 12);
       const x = xForHz(hz);
       if (x == null) continue;
       const semi = midi % 12;
-      if (BLACK_SET.has(semi)) blackKeys.push({ x });
+      const black = BLACK_SET.has(semi);
+      if (black) blackKeys.push({ x });
       else whiteXs.push(x);
       if (semi === 0) octaveLabels.push({ x, text: `C${Math.floor(midi / 12)}` });
+      if (highlightIdx != null && midi === highlightIdx) hi = { x, black, label: noteLabel(midi) };
     }
   }
+  const hiBw = Math.max(6, barW * 0.7);
 
   return (
     <View style={styles.pianoRow}>
@@ -592,6 +652,10 @@ function PianoStrip({ bands }: { bands: DisplayBands | null }) {
           <Svg width={w} height={PIANO_H}>
             {/* Keybed */}
             <Rect x={0} y={0} width={w} height={PIANO_H} rx={4} fill={KEYBED} />
+            {/* Detected-note highlight UNDER the keys/lines (owner 2026-08-10). */}
+            {hi && !hi.black && (
+              <Rect x={hi.x - hiBw / 2} y={1} width={hiBw} height={PIANO_H - 2} rx={2.5} fill={KEY_HILITE} />
+            )}
             {/* White-key separators */}
             {whiteXs.map((x, i) => (
               <Line key={`w-${i}`} x1={x} y1={0} x2={x} y2={PIANO_H} stroke={KEY_LINE} strokeWidth={0.75} />
@@ -611,6 +675,17 @@ function PianoStrip({ bands }: { bands: DisplayBands | null }) {
                 />
               );
             })}
+            {/* A lit BLACK key glows in the accent instead of ink. */}
+            {hi && hi.black && (
+              <Rect
+                x={hi.x - Math.max(2, barW * 0.55) / 2}
+                y={0}
+                width={Math.max(2, barW * 0.55)}
+                height={PIANO_H * 0.62}
+                rx={1.5}
+                fill={KEY_HILITE}
+              />
+            )}
           </Svg>
         )}
         {/* C-octave labels under the keybed */}
@@ -621,6 +696,8 @@ function PianoStrip({ bands }: { bands: DisplayBands | null }) {
             </Text>
           ))}
         </View>
+        {/* Detected-note readout, pinned above its key. */}
+        {hi && <Text style={[styles.pianoNote, { left: Math.max(0, Math.min(w - 36, hi.x - 18)) }]}>♪ {hi.label}</Text>}
       </View>
     </View>
   );
@@ -739,6 +816,51 @@ export function RtaScreen({ navigation }: Props) {
   // ramp (persisted, first-ever default ON — item 7), and a piano keyboard.
   const [colorsOn, setColorsOn] = useColorModePref();
   const [pianoOn, setPianoOn] = useState(false);
+
+  // DOMINANT-PITCH tracking (owner 2026-08-10): while the piano is shown, poll
+  // the fine spectrum, detect the strongest tonal peak, and light the note it
+  // lands on MOST CONSTANTLY over a ~1 s window. Steady tone → locked key;
+  // noise / chords / silence → nothing lit.
+  const pitchRingRef = useRef<(number | null)[]>([]);
+  const [pitchIdx, setPitchIdx] = useState<number | null>(null);
+  useEffect(() => {
+    if (!pianoOn || state !== 'running') {
+      pitchRingRef.current = [];
+      setPitchIdx(null);
+      return;
+    }
+    const id = setInterval(() => {
+      const meta = ApeDsp.getSpectrumMeta();
+      const spec = ApeDsp.getSpectrum();
+      if (!meta || meta.sampleRate <= 0 || meta.fftSize <= 0 || spec.length === 0) return;
+      const hz = detectPeakHz(spec, meta.sampleRate, meta.fftSize);
+      const ring = pitchRingRef.current;
+      ring.push(hz != null ? hzToNoteIdx(hz) : null);
+      if (ring.length > PITCH_WINDOW) ring.shift();
+      // Most CONSTANT note across the window (mode of the recent detections).
+      const counts = new Map<number, number>();
+      let valid = 0;
+      for (const m of ring) {
+        if (m == null) continue;
+        counts.set(m, (counts.get(m) ?? 0) + 1);
+        valid += 1;
+      }
+      let best: number | null = null;
+      let bestC = 0;
+      counts.forEach((c, m) => {
+        if (c > bestC) {
+          bestC = c;
+          best = m;
+        }
+      });
+      const stable =
+        best != null &&
+        valid >= Math.ceil(0.5 * ring.length) &&
+        bestC >= Math.ceil(PITCH_MIN_SHARE * ring.length);
+      setPitchIdx(stable ? best : null);
+    }, PITCH_POLL_MS);
+    return () => clearInterval(id);
+  }, [pianoOn, state]);
 
   /** RESET PEAK: native hold (unchanged call) + the derived-mode holds + clip latch. */
   const onResetPeak = useCallback(() => {
@@ -872,7 +994,7 @@ export function RtaScreen({ navigation }: Props) {
             >
               <BandsPanel bands={displayBands} mode={mode} alpha={alpha} midiColors={colorsOn} />
             </Pressable>
-            {pianoOn && <PianoStrip bands={displayBands} />}
+            {pianoOn && <PianoStrip bands={displayBands} highlightIdx={pitchIdx} />}
             <DisplayGuideButton onPress={helpAll} />
 
             {/* Display toggles (owner 2026-08-05): MIDI level colours + piano map. */}
@@ -1114,6 +1236,17 @@ const styles = StyleSheet.create({
     fontFamily: fonts.mono,
     fontSize: 12,
     color: colors.textSub,
+    textAlign: 'center',
+  },
+  // Detected-note readout, pinned over its lit key (owner 2026-08-10).
+  pianoNote: {
+    position: 'absolute',
+    top: 1,
+    width: 36,
+    fontFamily: fonts.mono,
+    fontWeight: '700',
+    fontSize: 11,
+    color: '#04121b',
     textAlign: 'center',
   },
 
