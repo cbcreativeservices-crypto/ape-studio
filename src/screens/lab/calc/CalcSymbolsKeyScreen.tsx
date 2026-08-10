@@ -50,6 +50,7 @@ export function CalcSymbolsKeyScreen() {
           SYMBOL_GROUPS.map((group) => (
             <View key={group.title} style={{ gap: 8 }}>
               <Text style={styles.groupTitle}>{group.title}</Text>
+              {group.note ? <Text style={styles.groupNote}>{group.note}</Text> : null}
               {group.entries.map((e) => (
                 <Pressable
                   key={`${group.title}-${e.symbol}-${e.name}`}
@@ -97,6 +98,7 @@ const styles = StyleSheet.create({
   emptyBody: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
 
   groupTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.4, color: colors.amber, marginTop: 6 },
+  groupNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17.5, color: colors.textSub, marginTop: -2 },
   row: {
     flexDirection: 'row',
     gap: 12,
