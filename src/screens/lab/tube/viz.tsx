@@ -458,23 +458,37 @@ export function TubeCutawayView({
     const demo = showSecondary && hasScreen;
     const auto = toggled && !showSecondary && g2On && !g3Fix && !airInside && plateOn;
     if (electronView && emitting && (demo || auto)) {
-      // Bigger + more numerous than the cyan stream dots (owner 2026-08-10:
-      // the reds were getting lost in the traffic — now they can't).
+      // FAIRY-STAR SPARKLES (owner 2026-08-10): each secondary is a 4-point
+      // star that TWINKLES — pulsing in and out of brilliance with a slow
+      // spin — unmistakably different from the round cyan stream dots.
+      const star = (sx: number, sy: number, R: number, rot: number) => {
+        const ir = R * 0.36; // inner radius — thin spikes = the fairy glint
+        for (let k = 0; k < 8; k++) {
+          const a = rot + (k * Math.PI) / 4;
+          const rad = k % 2 === 0 ? R : ir;
+          const vx = sx + rad * Math.cos(a);
+          const vy = sy + rad * Math.sin(a);
+          if (k === 0) p.moveTo(vx, vy);
+          else p.lineTo(vx, vy);
+        }
+        p.close();
+      };
       for (let i = 0; i < 8; i++) {
         const y = stackTop + 16 + hashW(i * 3.3) * (stackBot - stackTop - 32);
         const f = (ph / (2 * Math.PI) + i / 8) % 1;
         const span = g3Fix ? 9 : 21; // stopped at suppressor vs reaching screen
         const sgn = i % 2 === 0 ? 1 : -1;
-        p.addCircle(cx + sgn * (52 - f * span), y, 2.4);
+        const tw = 0.55 + 0.45 * Math.sin(ph * 4 + i * 2.3); // twinkle pulse
+        star(cx + sgn * (52 - f * span), y, 1.2 + 3.6 * tw, ph * 1.5 + i * 0.9);
       }
       if (!g3Fix) {
-        // Impact flashes ON the plate walls — the bombardment points where the
-        // secondaries are being knocked loose. Pulsing so the eye finds them.
+        // Impact sparkles ON the plate walls — bursting where electrons slam
+        // in and knock the secondaries loose. Bigger, counter-spinning.
         for (let k = 0; k < 3; k++) {
           const yy = stackTop + 20 + hashW(k * 7.7) * (stackBot - stackTop - 40);
-          const rr = 2.2 + 1.6 * (0.5 + 0.5 * Math.sin(ph * 3 + k * 2.1));
-          p.addCircle(cx - 50.5, yy, rr);
-          p.addCircle(cx + 50.5, yy + 6, rr);
+          const tw = 0.5 + 0.5 * Math.sin(ph * 3 + k * 2.1);
+          star(cx - 50.5, yy, 2.6 + 2.4 * tw, -ph * 1.2 + k);
+          star(cx + 50.5, yy + 6, 2.6 + 2.4 * tw, ph * 1.2 + k * 1.7);
         }
       }
     }
@@ -624,6 +638,10 @@ export function TubeCutawayView({
         <BlurMask blur={6} style="normal" />
       </Path>
       <Path path={secondaries} color={ACCENT_RED} opacity={0.95} />
+      {/* Hot glint core — the fairy-dust gleam riding on every red star. */}
+      <Path path={secondaries} color="#ffe3de" opacity={0.35}>
+        <BlurMask blur={1.2} style="normal" />
+      </Path>
 
       {/* ── The glass, overlaying the internals. The silhouette ALWAYS renders
           (hide-all = glass only, owner 2026-08-10); un-ticking GLASS keeps a

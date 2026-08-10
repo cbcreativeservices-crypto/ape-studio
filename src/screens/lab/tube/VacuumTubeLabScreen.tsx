@@ -126,7 +126,7 @@ function InsideSection({ viz, width, focused, electron, help }: SectionProps) {
     plate: 'NO PLATE — nothing pulls the electrons across. They drift out, stall, and fall back into a space-charge cloud.',
     grid: 'NO CONTROL GRID — the flow runs WIDE OPEN. Full current, but nothing can meter it into a signal.',
     screen: 'NO SCREEN GRID — the electrons crawl the whole way across. The screen grid’s + charge is the accelerator.',
-    suppressor: 'NO SUPPRESSOR — electrons slam the plate hard enough to knock RED sparks loose: secondary electrons dripping backward off the glowing red plate walls.',
+    suppressor: 'NO SUPPRESSOR — electrons slam the plate hard enough to knock RED SPARKLES loose: secondary electrons twinkling backward off the glowing red plate walls.',
   };
   const firstMissing = PARTS.find((p) => !visible.includes(p.key) && PHYSICS[p.key]);
   const physics = firstMissing
