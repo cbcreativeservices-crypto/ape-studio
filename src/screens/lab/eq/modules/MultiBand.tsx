@@ -6,7 +6,7 @@
  *
  * Nodes drag DIRECTLY on the graph (spec): touch grabs the nearest enabled
  * band; horizontal = frequency, vertical = gain (bells). Per-band ON/OFF,
- * whole-EQ BYPASS, RESET. No solo — auditioning arrives with the audio build.
+ * whole-EQ BYPASS, RESET. EqAuditionBar plays the composite curve on builds with the FX engine.
  */
 import { useMemo, useRef, useState } from 'react';
 import { PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -18,6 +18,7 @@ import { MiniBtn } from './eqBits';
 import { colors, fonts } from '../../../../theme/tokens';
 import { bwOctFromQ, fmtHz, gainColor, normFromF, fFromNorm } from './eqMath';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
+import { EqAuditionBar } from './eqAudition';
 import type { EqModuleComponentProps } from './registry';
 
 // ---- Graph geometry (mirrors ResponseCurveGraph: viewBox 320, pad 8) -------
@@ -81,6 +82,8 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
   const [bands, setBands] = useState<Bands>(DEFAULTS);
   const [sel, setSel] = useState<BandKey>('b1');
   const [bypass, setBypass] = useState(false);
+  // The curve the audition bar plays — bypass = flat (raw signal).
+  const auditionBands = useMemo(() => (bypass ? [] : specsFor(bands)), [bands, bypass]);
 
   const bandsRef = useRef(bands);
   bandsRef.current = bands;
@@ -354,6 +357,12 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
       ) : (
         <Text style={styles.caption}>HPF/LPF here are fixed 12 dB/octave — the Slopes lesson covers the rest.</Text>
       )}
+
+      {/* HEAR IT (owner 2026-08-10, test-signal MVP): the current composite
+          curve runs live on the native FX EQ — bypass included, so toggling
+          BYPASS while playing is an instant in/out A-B. Renders only when the
+          build carries the FX engine. */}
+      <EqAuditionBar bands={auditionBands} />
 
       <Text style={styles.caption}>
         Overlap two boosts and the composite rises HIGHER than either band alone; stack a cut into

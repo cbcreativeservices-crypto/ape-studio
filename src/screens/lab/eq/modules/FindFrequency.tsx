@@ -8,13 +8,14 @@
  * Five levels (spec): 1 find a large boost · 2 find a large cut · 3 find a
  * narrow resonance · 4 correct a tonal imbalance · 5 multiple problems.
  *
- * VISUAL TRAINER — the spectrum is synthetic and labeled as such; the by-ear
- * version arrives with the audio build (playback path). Match the dim
+ * VISUAL + BY-EAR TRAINER — the spectrum is synthetic and labeled as such; on
+ * builds with the FX engine, EqAuditionBar plays the hidden coloration live. Match the dim
  * reference: your correction is perfect when the amber curve sits back on it.
  */
 import { useCallback, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { ResponseCurveGraph, eqResponseDb, type ResponseCurve } from '../../../../features/lab/fxViz';
+import { ResponseCurveGraph, eqResponseDb, type EqBandSpec, type ResponseCurve } from '../../../../features/lab/fxViz';
+import { EqAuditionBar, eqAuditionAvailable } from './eqAudition';
 import { DragSlider } from '../../foundations/bits';
 import { MiniBtn } from './eqBits';
 import { colors, fonts } from '../../../../theme/tokens';
@@ -119,6 +120,16 @@ export function FindFrequencyModule(_p: EqModuleComponentProps) {
   const setSel = (patch: Partial<UserBand>) =>
     setBands((prev) => prev.map((b, i) => (i === selIdx ? { ...b, ...patch } : b)));
 
+  // What the audition plays: the HIDDEN coloration plus the user's correction
+  // bands — all peaks, exactly the curve the plot shows (owner 2026-08-10).
+  const auditionBands = useMemo<EqBandSpec[]>(
+    () => [
+      ...hidden.map((h) => ({ type: 'peak' as const, freq: h.f, q: h.q, gainDb: h.g })),
+      ...bands.filter((b) => b.g !== 0).map((b) => ({ type: 'peak' as const, freq: b.f, q: b.q, gainDb: b.g })),
+    ],
+    [hidden, bands],
+  );
+
   const { curves, plotColor } = useMemo<{ curves: ResponseCurve[]; plotColor: string }>(() => {
     const userAt = (f: number) =>
       bands.reduce((s, b) => s + (b.g !== 0 ? eqResponseDb([{ type: 'peak', freq: b.f, q: b.q, gainDb: b.g }], f) : 0), 0);
@@ -155,9 +166,16 @@ export function FindFrequencyModule(_p: EqModuleComponentProps) {
           <Text style={styles.readout}>SYNTHETIC</Text>
         </View>
         <ResponseCurveGraph curves={curves} dbRange={24} height={150} mainColor={plotColor} />
-        <Text style={styles.honest}>
-          Visual trainer on a synthetic spectrum — train your eyes here, no audio playback.
-        </Text>
+        {eqAuditionAvailable() ? (
+          // BY-EAR mode (owner 2026-08-10): the hidden coloration + your
+          // correction bands run live on the native EQ — hunt it with your
+          // ears, not just the plot. Correct it and the coloration disappears.
+          <EqAuditionBar bands={auditionBands} />
+        ) : (
+          <Text style={styles.honest}>
+            Visual trainer on a synthetic spectrum — train your eyes here, no audio playback.
+          </Text>
+        )}
       </View>
 
       {bands.length > 1 && (

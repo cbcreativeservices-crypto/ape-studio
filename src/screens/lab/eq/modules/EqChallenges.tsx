@@ -19,6 +19,7 @@ import { MiniBtn } from './eqBits';
 import { colors, fonts } from '../../../../theme/tokens';
 import { baseSpectrumDb, gainColor, maxPosDb } from './eqMath';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
+import { EqAuditionBar, eqAuditionAvailable } from './eqAudition';
 import type { EqModuleComponentProps } from './registry';
 
 /** The built-in problem: too much 250 Hz. */
@@ -51,6 +52,8 @@ export function EqChallengesModule(_p: EqModuleComponentProps) {
   const [strategy, setStrategy] = useState<Strategy>('none');
 
   const fix = strategy === 'cut' ? CUT_FIX : strategy === 'boost' ? BOOST_FIX : [];
+  // The audition plays PROBLEM + fix — the same sum the plot draws.
+  const auditionBands = useMemo<EqBandSpec[]>(() => [...PROBLEM, ...fix], [fix]);
 
   const curves = useMemo<ResponseCurve[]>(
     () => [
@@ -107,7 +110,13 @@ export function EqChallengesModule(_p: EqModuleComponentProps) {
             12,
           )}
         />
-        <Text style={styles.honest}>Synthetic spectrum — a visual exercise, no audio playback.</Text>
+        {eqAuditionAvailable() ? (
+          // Audible A/B (owner 2026-08-10): the PROBLEM coloration + your chosen
+          // fix run live — switch strategy while playing and hear cut vs boost.
+          <EqAuditionBar bands={auditionBands} />
+        ) : (
+          <Text style={styles.honest}>Synthetic spectrum — a visual exercise, no audio playback.</Text>
+        )}
       </View>
 
       <View style={styles.compareRow}>

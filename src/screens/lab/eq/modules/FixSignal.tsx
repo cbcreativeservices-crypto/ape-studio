@@ -6,7 +6,8 @@
  */
 import { useCallback, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { ResponseCurveGraph, eqResponseDb, type ResponseCurve } from '../../../../features/lab/fxViz';
+import { ResponseCurveGraph, eqResponseDb, type EqBandSpec, type ResponseCurve } from '../../../../features/lab/fxViz';
+import { EqAuditionBar, eqAuditionAvailable } from './eqAudition';
 import { DragSlider } from '../../foundations/bits';
 import { MiniBtn } from './eqBits';
 import { colors, fonts } from '../../../../theme/tokens';
@@ -62,6 +63,15 @@ export function FixSignalModule(_p: EqModuleComponentProps) {
   const [checked, setChecked] = useState<null | { pass: boolean }>(null);
 
   const sc = SCENARIOS[idx];
+  // The audition plays the scenario's HIDDEN problem + the user's correction —
+  // fix it right and the complaint audibly goes away (owner 2026-08-10).
+  const auditionBands = useMemo<EqBandSpec[]>(
+    () => [
+      { type: 'peak' as const, freq: sc.hidden.f, q: sc.hidden.q, gainDb: sc.hidden.g },
+      ...(band.g !== 0 ? [{ type: 'peak' as const, freq: band.f, q: band.q, gainDb: band.g }] : []),
+    ],
+    [sc, band],
+  );
 
   const goTo = useCallback((i: number) => {
     setIdx(i);
@@ -160,7 +170,11 @@ export function FixSignalModule(_p: EqModuleComponentProps) {
         </View>
       )}
 
-      <Text style={styles.honest}>Visual trainer on a synthetic spectrum — labeled honestly until the audio build.</Text>
+      {eqAuditionAvailable() ? (
+        <EqAuditionBar bands={auditionBands} />
+      ) : (
+        <Text style={styles.honest}>Visual trainer on a synthetic spectrum — no audio playback.</Text>
+      )}
     </View>
   );
 }
