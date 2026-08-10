@@ -73,9 +73,60 @@ function MediaGlyph({ color = '#7fbfff', size = 17 }: { color?: string; size?: n
   );
 }
 
+// ── Session cache (owner 2026-08-10, glossary speed #1) ──────────────────────
+// The heavy glossary reads — the ~22.7k-row corpus and the media/formula maps —
+// downloaded on EVERY Glossary focus. They now download ONCE per app session:
+// each loader memoizes its in-flight/settled Promise at module scope, so a
+// second visit (or a concurrent caller) reuses the same result instead of
+// re-paging Supabase. The cache lives for the app process only — a relaunch
+// re-fetches, and the fuller persistent-cache/delta-sync work is deferred to
+// launch prep (#2/#3). A failed load is NOT cached, so it can retry next focus.
+let ENTRIES_CACHE: Promise<Entry[]> | null = null;
+let MEDIA_CACHE: Promise<Record<string, string>> | null = null;
+let FORMULA_CACHE: Promise<Record<string, { symbolic: string; words: string | null }>> | null = null;
+
+/** Memoize a loader's Promise for the session; drop the cache if it rejects. */
+function sessionCache<T>(slot: () => Promise<T> | null, set: (p: Promise<T> | null) => void, run: () => Promise<T>): Promise<T> {
+  const existing = slot();
+  if (existing) return existing;
+  const p = run().catch((e) => {
+    set(null); // don't cache a failure — allow a retry on the next focus
+    throw e;
+  });
+  set(p);
+  return p;
+}
+
+/** Session-cached corpus load (all tiers), paged past the 1000-row PostgREST cap. */
+function loadAllEntries(): Promise<Entry[]> {
+  return sessionCache(
+    () => ENTRIES_CACHE,
+    (p) => (ENTRIES_CACHE = p),
+    async () => {
+      const all: Entry[] = [];
+      const PAGE_E = 1000;
+      for (let from = 0; ; from += PAGE_E) {
+        const { data, error } = await supabase
+          .from('glossary')
+          .select('id, term, definition, plain_english, course_id, achievement_id')
+          .order('term')
+          .range(from, from + PAGE_E - 1);
+        if (error) throw error;
+        all.push(...((data ?? []) as Entry[]));
+        if (!data || data.length < PAGE_E) break;
+      }
+      return all;
+    },
+  );
+}
+
 /** Load the first image per term across the whole glossary_media table (paged).
- *  Sparse today (art not fully uploaded), so this is cheap; empty → no icons. */
-async function loadAllGlossaryMedia(): Promise<Record<string, string>> {
+ *  Sparse today (art not fully uploaded), so this is cheap; empty → no icons.
+ *  Session-cached (owner 2026-08-10). */
+function loadAllGlossaryMedia(): Promise<Record<string, string>> {
+  return sessionCache(() => MEDIA_CACHE, (p) => (MEDIA_CACHE = p), fetchAllGlossaryMedia);
+}
+async function fetchAllGlossaryMedia(): Promise<Record<string, string>> {
   const out: Record<string, string> = {};
   try {
     const PAGE = 1000;
@@ -108,8 +159,12 @@ async function loadAllGlossaryMedia(): Promise<Record<string, string>> {
  *  today for every user. Isolating it means that 403 yields an empty map (the
  *  filter shows no terms) WITHOUT breaking the glossary corpus load. Once the
  *  backend grants the columns and populates them, the filter lights up with no
- *  client change. (Verified 2026-07-26: 0 of 14,246 rows currently carry one.) */
-async function loadAllGlossaryFormulas(): Promise<Record<string, { symbolic: string; words: string | null }>> {
+ *  client change. (Verified 2026-07-26: 0 of 14,246 rows currently carry one.)
+ *  Session-cached (owner 2026-08-10). */
+function loadAllGlossaryFormulas(): Promise<Record<string, { symbolic: string; words: string | null }>> {
+  return sessionCache(() => FORMULA_CACHE, (p) => (FORMULA_CACHE = p), fetchAllGlossaryFormulas);
+}
+async function fetchAllGlossaryFormulas(): Promise<Record<string, { symbolic: string; words: string | null }>> {
   const out: Record<string, { symbolic: string; words: string | null }> = {};
   try {
     const PAGE_F = 1000;
@@ -1137,18 +1192,10 @@ export function GlossaryScreen({ route, navigation }: Props) {
               .sort((a, b) => a.name.localeCompare(b.name)),
           );
 
-          // Full corpus, paged past the 1000-row PostgREST cap.
-          const all: Entry[] = [];
-          for (let from = 0; ; from += PAGE) {
-            const { data, error } = await supabase
-              .from('glossary')
-              .select('id, term, definition, plain_english, course_id, achievement_id')
-              .order('term')
-              .range(from, from + PAGE - 1);
-            if (error) throw error;
-            all.push(...((data ?? []) as Entry[]));
-            if (!data || data.length < PAGE) break;
-          }
+          // Full corpus — session-cached (owner 2026-08-10): downloads once per
+          // app session, so re-focusing the Glossary is instant instead of
+          // re-paging ~22.7k rows every visit.
+          const all = await loadAllEntries();
           if (alive) setEntries(all);
         } catch (e) {
           console.warn('[glossary] load failed:', (e as Error).message);
