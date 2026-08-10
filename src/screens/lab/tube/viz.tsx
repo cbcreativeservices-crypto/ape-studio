@@ -1566,6 +1566,12 @@ export function TubeVsTransistorView({
     const baseLeg = Skia.Path.Make();
     baseLeg.moveTo(rx, bot);
     baseLeg.lineTo(rx, bBot);
+    // …and its continuation INSIDE the package, dashed, up to the blue base
+    // layer (owner 2026-08-10: the control signal's route must be connected —
+    // nothing gates the flow from thin air).
+    const baseLegIn = Skia.Path.Make();
+    baseLegIn.moveTo(rx, bBot);
+    baseLegIn.lineTo(rx, midY + 1);
 
     // The conduit guide the carriers ride (drawn faintly, so the CONFINED path
     // is visible — the whole point of the comparison).
@@ -1577,13 +1583,29 @@ export function TubeVsTransistorView({
     conduit.lineTo(rx + 16, midY - 10);
     conduit.lineTo(rx + 16, bot);
 
-    return { bottle, streak, grid, heater, body, legs, baseLeg, conduit, bTop, bBot, bw2 };
+    return { bottle, streak, grid, heater, body, legs, baseLeg, baseLegIn, conduit, bTop, bBot, bw2 };
   }, [tcx, rx, top, bot, stackT, stackB, midY]);
 
   // The mini tube's heater glow breathes at the cathode centre.
   const filR = useDerivedValue(() => 8 + 1.8 * Math.sin(phase.value), [phase]);
   // The base "gate" pulses — a small control signal admitting a large flow.
   const baseR = useDerivedValue(() => 3 + 1.4 * (0.5 + 0.5 * Math.sin(phase.value * 2)), [phase]);
+
+  // THE BASE CURRENT itself (owner 2026-08-10): small blue pulses climbing the
+  // base leg into the base layer, on the same clock as the gate's pulse — the
+  // controlling signal is visibly CONNECTED, not implied.
+  const basePulses = useDerivedValue(() => {
+    const ph = phase.value;
+    const p = Skia.Path.Make();
+    const y0 = bot - 1;
+    const y1 = midY + 2;
+    for (let k = 0; k < 3; k++) {
+      const f = ((ph * 2) / (2 * Math.PI) + k / 3) % 1;
+      // Swell slightly as each pulse arrives at the base layer.
+      p.addCircle(rx, y0 - f * (y0 - y1), 1.5 + 0.8 * f);
+    }
+    return p;
+  }, [phase, rx, bot, midY]);
 
   const condXs = condPts.xs;
   const condYs = condPts.ys;
@@ -1683,10 +1705,21 @@ export function TubeVsTransistorView({
       {/* The conduction conduit — visible, so "confined" is unmistakable. */}
       <Path path={art.conduit} color={ELECTRON} style="stroke" strokeWidth={4.5} opacity={0.14} strokeJoin="round" />
       <Path path={art.conduit} color={ELECTRON} style="stroke" strokeWidth={1.2} opacity={0.4} strokeJoin="round" />
+      {/* The base wire's route INSIDE the package, dashed blue up to the base
+          layer — the control signal is connected, not implied. */}
+      <Path path={art.baseLegIn} color={INK.grid} style="stroke" strokeWidth={1.4} opacity={0.55}>
+        <DashPathEffect intervals={[3, 3]} />
+      </Path>
       {/* The base gate pulsing where the path crosses the thin blue layer. */}
       <Circle cx={rx} cy={midY - 2.5} r={baseR} color={INK.grid} opacity={0.8}>
         <BlurMask blur={4} style="normal" />
       </Circle>
+      {/* The base CURRENT: blue pulses climbing the leg into the base layer,
+          on the same clock as the gate — this is what's controlling the flow. */}
+      <Path path={basePulses} color={INK.grid} opacity={0.5}>
+        <BlurMask blur={4} style="normal" />
+      </Path>
+      <Path path={basePulses} color={INK.grid} opacity={0.95} />
 
       {/* Carriers: halo + cores. */}
       <Path path={carriers} color={ELECTRON} opacity={0.4}>

@@ -431,10 +431,16 @@ function SaturationSection({ viz, width, focused, help }: SectionProps) {
         onHelp={() => help('saturation')}
       />
       <Text style={styles.caption}>
-        Push past the straight region and the curve ROUNDS the peaks instead of chopping them:
-        SOFT clipping. Rounding compresses the loudest moments (tube “give”) and adds new
-        harmonics related to the note — which the ear reads as warmth and grit rather than fizz.
-        That gentle bend is most of what “tube sound” means.
+        WHY it rounds: the valve can only open so far. Near full swing there are no more electrons
+        to give (and at the other extreme the stream pinches off), so each extra dB of input buys
+        less and less output — the straight line bends over. Watch the left plot: at low DRIVE the
+        wave rides the straight middle of the curve; push harder and the peaks reach into the bend.
+      </Text>
+      <Text style={styles.caption}>
+        WHY it sounds good: rounding COMPRESSES the loudest moments (the “give” engineers love)
+        and adds harmonics related to the note — the ear reads warmth and grit. A circuit that
+        hits a hard wall instead shears the peaks off flat, adding harsh, fizzy harmonics. Same
+        overload, opposite character — that difference is the sound of tube gear.
       </Text>
     </View>
   );
@@ -459,7 +465,7 @@ function VersusSection({ viz, width, focused, help }: SectionProps) {
         </View>
         <View style={{ flex: 1, gap: 2 }}>
           <Text style={styles.vsHead}>TRANSISTOR</Text>
-          <Text style={styles.caption}>Charge carriers · semiconductor junctions · a tiny BASE current gates the flow · a few volts · instant-on, tiny, lasts</Text>
+          <Text style={styles.caption}>Charge carriers · semiconductor junctions · a tiny BASE current (the blue pulses climbing the middle leg) gates the flow at the thin blue base layer · a few volts · instant-on, tiny, lasts</Text>
         </View>
       </View>
       <Text style={styles.caption}>
@@ -520,7 +526,7 @@ const SECTIONS: { key: string; label: string; title: string; blurb: string; uses
   { key: 'highv', label: 'HIGH V', title: 'WHY TUBES NEED HIGH VOLTAGE', blurb: 'Weak attraction, weak current — why tube circuits live at hundreds of volts.', usesElectron: false, Comp: HighVoltSection },
   { key: 'types', label: 'TYPES', title: 'TRIODE · TETRODE · PENTODE', blurb: 'Three tubes, one story: each type adds ONE more grid to fix the previous type’s weakness. Switch between them — the newest grid glows in its own color, and the drawing shows what it fixes (and what it costs).', usesElectron: true, Comp: TypesSection },
   { key: 'bias', label: 'BIAS', title: 'TUBE BIAS', blurb: 'Cutoff · linear · saturation — one slider on the transfer curve.', usesElectron: false, Comp: BiasSection },
-  { key: 'sat', label: 'SATURATE', title: 'TUBE SATURATION', blurb: 'The straight line that rounds — soft clipping, compression, harmonics.', usesElectron: false, Comp: SaturationSection },
+  { key: 'sat', label: 'SATURATE', title: 'TUBE SATURATION', blurb: 'Every amplifier has a limit. Drive a tube toward its limit and it doesn’t slam into a wall — its transfer curve bends, ROUNDING the loudest peaks instead of chopping them off. That gentle bend is soft clipping, and it is most of what “tube sound” means.', usesElectron: false, Comp: SaturationSection },
   { key: 'versus', label: 'VS', title: 'TUBE vs TRANSISTOR', blurb: 'Two completely different physics doing the same job.', usesElectron: false, Comp: VersusSection },
   { key: 'classics', label: 'REFERENCE', title: 'THE TUBE REFERENCE LIBRARY', blurb: 'Thirty full-screen spec cards — structure, pins, ratings, substitutions.', usesElectron: false, Comp: ReferenceSection },
 ];
