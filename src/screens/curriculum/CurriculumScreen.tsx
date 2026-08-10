@@ -36,27 +36,40 @@ const CURRICULUM_INTRO =
 /** Thousands separator without relying on Intl (limited under Hermes). */
 const fmt = (n: number) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
-/** Spinning number placeholder shown in the GLOSSARY TERMS tile while the count
- *  loads (owner 2026-08-05; ramp reworked 2026-08-06): instead of a fixed 5-digit
- *  roll, the number GROWS from a single digit up through the magnitudes
- *  (1→2→3→4→5 digits) and loops, so it reads as "counting up" rather than
- *  starting at 10,000. Deterministic (no Math.random). */
-function SpinningCount({ color }: { color: string }) {
-  const [tick, setTick] = useState(0);
+// One-time count-up (owner 2026-08-10): the GLOSSARY TERMS figure counts up
+// ONCE — slowly, ease-out — to its real value, then holds forever. No looping
+// (the old placeholder wrapped every ~1.8 s, so it appeared to count up twice).
+// A module-level guard makes it animate at most once per app session, so
+// swiping back to this page (it's page 1 of the Awards pager) shows the final
+// number immediately instead of re-running the gimmick.
+const countedOnce = new Set<string>();
+
+function CountUp({ id, target, color }: { id: string; target: number | null; color: string }) {
+  const done = countedOnce.has(id);
+  const [n, setN] = useState<number | null>(done ? target : null);
   useEffect(() => {
-    const id = setInterval(() => setTick((t) => t + 1), 70);
-    return () => clearInterval(id);
-  }, []);
-  // Geometric ramp so each order of magnitude gets an equal, visible slice of
-  // the cycle: p=0 → 1 (single digit), p→1 → ~5 digits, then it wraps and grows
-  // from a single digit again.
-  const CYCLE = 26; // ticks per ramp (~1.8s at 70ms) before it loops
-  const CAP = 99999; // grows up to 5 digits
-  const p = (tick % CYCLE) / CYCLE;
-  const rolling = Math.max(1, Math.round(Math.exp(Math.log(CAP) * p)));
+    if (target == null) return; // still loading — show the placeholder dash
+    if (done) {
+      setN(target);
+      return;
+    }
+    countedOnce.add(id);
+    const DURATION = 2000; // ms — slow, single pass
+    const start = Date.now();
+    let raf = 0;
+    const step = () => {
+      const t = Math.min(1, (Date.now() - start) / DURATION);
+      const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic — fast then settles
+      setN(Math.round(eased * target));
+      if (t < 1) raf = requestAnimationFrame(step);
+      else setN(target);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [id, target, done]);
   return (
     <Text style={[styles.statValue, { color }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
-      {fmt(rolling)}
+      {n == null ? '—' : fmt(n)}
     </Text>
   );
 }
@@ -132,17 +145,17 @@ export function CurriculumView({
       <View style={styles.statsRow}>
         {(
           [
-            { v: stats.totalTerms != null ? fmt(stats.totalTerms) : '—', label: 'GLOSSARY TERMS', color: '#37e05f', spin: stats.totalTerms == null },
+            { v: stats.totalTerms != null ? fmt(stats.totalTerms) : '—', label: 'GLOSSARY TERMS', color: '#37e05f', countUp: stats.totalTerms },
             { v: allGs.length || '—', label: 'STUDY TOPICS', color: colors.textPrimary },
             { v: subjectsAZ.length || '—', label: 'SUBJECT CATEGORIES', color: '#ffc64d' },
             { v: credCounts.certs || '—', label: 'CERTIFICATES AVAILABLE', color: '#5bb0ff', nav: 'specialization' },
             { v: credCounts.programs || '—', label: 'PROGRAMS AVAILABLE', color: '#c4a2ff', nav: 'program' },
-          ] as { v: string | number; label: string; color: string; nav?: 'specialization' | 'program'; spin?: boolean }[]
+          ] as { v: string | number; label: string; color: string; nav?: 'specialization' | 'program'; countUp?: number | null }[]
         ).map((s) => {
           const inner = (
             <>
-              {s.spin ? (
-                <SpinningCount color={s.color} />
+              {s.countUp !== undefined ? (
+                <CountUp id="glossaryTerms" target={s.countUp} color={s.color} />
               ) : (
                 <Text style={[styles.statValue, { color: s.color }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
                   {s.v}
