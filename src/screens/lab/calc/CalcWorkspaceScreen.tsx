@@ -161,10 +161,31 @@ export function CalcWorkspaceScreen() {
             switch the calculation). */}
         <View style={styles.fnPicker}>
           <Text style={styles.eyebrowTight}>WHAT ARE YOU TRYING TO DETERMINE?</Text>
-          <View style={styles.chipRow}>
-            {ws.functions.map((f, i) => (
-              <LabChip key={f.key} label={f.name.toUpperCase()} selected={i === fnIdx} onPress={() => { setFnIdx(i); setStepsOpen(false); }} />
-            ))}
+          {/* Vertical radio list (owner 2026-08-09): the old wrapping all-caps
+              chips were hard to read/choose. Full-width rows with a readable name,
+              the formula as a subtitle, a radio dot, and a clear selected state. */}
+          <View style={styles.fnList}>
+            {ws.functions.map((f, i) => {
+              const sel = i === fnIdx;
+              return (
+                <Pressable
+                  key={f.key}
+                  style={[styles.fnOption, sel && styles.fnOptionSel]}
+                  onPress={() => { setFnIdx(i); setStepsOpen(false); }}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: sel }}
+                  accessibilityLabel={f.name}
+                >
+                  <View style={[styles.fnRadio, sel && styles.fnRadioSel]}>
+                    {sel ? <View style={styles.fnRadioDot} /> : null}
+                  </View>
+                  <View style={{ flex: 1, gap: 2 }}>
+                    <Text style={[styles.fnOptName, sel && styles.fnOptNameSel]}>{f.name}</Text>
+                    <Text style={styles.fnOptFormula} numberOfLines={1}>{f.formula}</Text>
+                  </View>
+                </Pressable>
+              );
+            })}
           </View>
         </View>
 
@@ -377,6 +398,34 @@ const styles = StyleSheet.create({
   // Function-picker block — scrolls with the page so it clears the top once the
   // user starts filling and the inputs pin up (owner 2026-08-09).
   fnPicker: { gap: 6 },
+  // Function-picker radio list (owner 2026-08-09) — clearer than wrapping chips.
+  fnList: { gap: 6 },
+  fnOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 11,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#2a2a30',
+    backgroundColor: '#131316',
+    paddingVertical: 11,
+    paddingHorizontal: 12,
+  },
+  fnOptionSel: { borderColor: 'rgba(255,198,77,.7)', backgroundColor: '#1a1409' },
+  fnRadio: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 1.5,
+    borderColor: '#4a4a52',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  fnRadioSel: { borderColor: colors.amber },
+  fnRadioDot: { width: 9, height: 9, borderRadius: 5, backgroundColor: colors.amber },
+  fnOptName: { fontFamily: fonts.oswaldSemiBold, fontSize: 13.5, letterSpacing: 0.3, color: colors.textSecondary },
+  fnOptNameSel: { color: colors.amber },
+  fnOptFormula: { fontFamily: fonts.mono, fontSize: 11, lineHeight: 15, color: colors.textSub },
   eyebrowTight: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.amber },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
