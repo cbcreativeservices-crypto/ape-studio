@@ -74,7 +74,7 @@ export function CalcLabScreen() {
           <Text style={styles.title}>AUDIO CALCULATOR LABORATORY</Text>
           <Text style={styles.subtitle}>Calculate · understand · chain results between tools</Text>
         </View>
-        <AccuracyNote compact detail="These are teaching calculations worked from each formula — not standards-compliant measurements. Verify real-world work with proper instruments." />
+        <AccuracyNote compact variant="calc" />
         {/* Symbol key (owner 2026-08-05): Greek letters + math/calculus symbols
             used across the calculators. Content authored separately. */}
         <Pressable

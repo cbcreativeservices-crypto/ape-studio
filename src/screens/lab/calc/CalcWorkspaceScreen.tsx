@@ -138,7 +138,7 @@ export function CalcWorkspaceScreen() {
           <Text style={styles.title}>{ws.name.toUpperCase()}</Text>
           <Text style={styles.subtitle}>{ws.tagline}</Text>
         </View>
-        <AccuracyNote compact detail="These are teaching calculations worked from each formula — not standards-compliant measurements. Verify real-world work with proper instruments." />
+        <AccuracyNote compact variant="calc" />
       </View>
 
       {/* Function picker — PINNED below the header so the top button row stays

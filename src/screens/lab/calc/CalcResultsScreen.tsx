@@ -65,7 +65,7 @@ export function CalcResultsScreen() {
           <Text style={styles.title}>SAVED RESULTS</Text>
           <Text style={styles.subtitle}>Completed workflow runs — stored, never recalculated</Text>
         </View>
-        <AccuracyNote compact detail="These are teaching calculations worked from each formula — not standards-compliant measurements. Verify real-world work with proper instruments." />
+        <AccuracyNote compact variant="calc" />
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll}>
