@@ -140,7 +140,7 @@ function LabRow({
           <Text style={styles.openBtnText}>OPEN</Text>
         </Pressable>
       ) : dev ? (
-        <Text style={styles.soon}>SOON</Text>
+        <Text style={styles.soon}>PLANNED</Text>
       ) : null}
     </Pressable>
   );
@@ -150,7 +150,8 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
   header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 10 },
   back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
-  title: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1.4, color: colors.textPrimary },
+  // Category name is BLUE (owner 2026-08-10).
+  title: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1.4, color: colors.blue },
   subtitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.amber, marginTop: 2 },
   scroll: { padding: 16, paddingBottom: 28, gap: 18 },
   intro: { fontFamily: fonts.barlowRegular, fontSize: 14.5, lineHeight: 21, color: colors.textSecondary },
@@ -173,9 +174,10 @@ const styles = StyleSheet.create({
   },
   rowPressed: { backgroundColor: '#1f1a0e' },
   rowCaret: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: colors.amber, width: 14, textAlign: 'center' },
-  openBtn: { borderRadius: 8, borderWidth: 1, borderColor: 'rgba(255,198,77,.6)', backgroundColor: '#1d1708', paddingHorizontal: 14, paddingVertical: 8 },
-  openBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.amber },
-  // Coming-soon (in-development) rows read dim + muted, no amber border.
+  // Revealed OPEN button is GREEN (owner 2026-08-10).
+  openBtn: { borderRadius: 8, borderWidth: 1, borderColor: 'rgba(55,224,95,.6)', backgroundColor: '#0c1a10', paddingHorizontal: 14, paddingVertical: 8 },
+  openBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.green },
+  // Planned (not-yet-open) rows read dim + muted, no amber border.
   rowDev: { borderColor: '#2a2a2e', backgroundColor: '#121214' },
   rowName: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 0.4, color: colors.textPrimary },
   rowNameDev: { color: colors.textSub },

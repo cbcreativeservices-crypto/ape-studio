@@ -239,7 +239,7 @@ function LabRow({
       </View>
       {expanded ? (
         dev ? (
-          <Text style={styles.soon}>SOON</Text>
+          <Text style={styles.soon}>PLANNED</Text>
         ) : (
           <Pressable
             onPress={onOpen}
@@ -254,7 +254,7 @@ function LabRow({
           </Pressable>
         )
       ) : dev ? (
-        <Text style={styles.soon}>SOON</Text>
+        <Text style={styles.soon}>PLANNED</Text>
       ) : showLock ? (
         <Text style={styles.lock}>🔒</Text>
       ) : null}
@@ -311,7 +311,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   iconGlyphSm: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: colors.amber },
-  catName: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1, color: colors.textPrimary },
+  // Category names are BLUE (owner 2026-08-10) — Sound, Signal, Equalization…
+  catName: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1, color: colors.blue },
   catCount: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1, color: colors.amberLabel, marginTop: 1 },
 
   // Uniform lab rows — same size for every topic (hub or single lab).
@@ -330,15 +331,17 @@ const styles = StyleSheet.create({
   rowInset: { marginLeft: 12 },
   rowTight: { minHeight: 48, paddingVertical: 9 },
   rowCaret: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: colors.amber, width: 14, textAlign: 'center' },
+  // Revealed OPEN button is GREEN (owner 2026-08-10) — the "go" affordance on
+  // the one row that's open.
   openBtn: {
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: 'rgba(255,198,77,.6)',
-    backgroundColor: '#1d1708',
+    borderColor: 'rgba(55,224,95,.6)',
+    backgroundColor: '#0c1a10',
     paddingHorizontal: 14,
     paddingVertical: 8,
   },
-  openBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.amber },
+  openBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.green },
   rowPressed: { backgroundColor: '#1f1a0e' },
   rowDev: { borderColor: '#2a2a2e', backgroundColor: '#121214' },
   rowName: { fontFamily: fonts.oswaldSemiBold, fontSize: 14.5, letterSpacing: 0.4, color: colors.textPrimary },
