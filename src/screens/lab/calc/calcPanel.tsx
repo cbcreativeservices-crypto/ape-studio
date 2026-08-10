@@ -98,6 +98,7 @@ export const FieldRow = memo(
     unitIdx,
     onText,
     onCycleUnit,
+    onFocus,
     footer,
   }: {
     field: FieldDef;
@@ -105,6 +106,10 @@ export const FieldRow = memo(
     unitIdx: number;
     onText: (t: string) => void;
     onCycleUnit: () => void;
+    /** Fires when this input takes focus (owner 2026-08-07) so the host can
+     *  pin the input block to the top of the screen, clear of the keyboard.
+     *  Pass a STABLE reference — the memo below compares by identity. */
+    onFocus?: () => void;
     /** Optional accessory under the input — chain USE (workspace) or the
      *  import/source controls (runner). Compared by REFERENCE in the memo. */
     footer?: ReactNode;
@@ -135,6 +140,7 @@ export const FieldRow = memo(
             placeholderTextColor="#4c4d55"
             keyboardType={isList ? 'default' : 'numbers-and-punctuation'}
             autoCorrect={false}
+            onFocus={onFocus}
             accessibilityLabel={field.name}
           />
           {!isList && units.length > 0 && units[0].label !== '' ? (
@@ -160,6 +166,7 @@ export const FieldRow = memo(
     prev.field === next.field &&
     prev.raw === next.raw &&
     prev.unitIdx === next.unitIdx &&
+    prev.onFocus === next.onFocus &&
     prev.footer === next.footer,
 );
 

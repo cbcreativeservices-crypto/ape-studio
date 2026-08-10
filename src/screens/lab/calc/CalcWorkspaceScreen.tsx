@@ -6,8 +6,8 @@
  * practical example, common mistakes, standards honesty block, glossary
  * terms, OS share sheet, and the Calculation Chain (SEND → / USE).
  */
-import { useMemo, useState } from 'react';
-import { Pressable, Share, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useMemo, useRef, useState } from 'react';
+import { Pressable, Share, StyleSheet, Text, View, type ScrollView } from 'react-native';
 import { KeyboardAwareScrollView } from '../../../features/keyboard/keyboardControllerSafe';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -39,6 +39,24 @@ export function CalcWorkspaceScreen() {
   // shows the definition in-place; the Modal keeps this screen mounted, so the
   // user returns to their exact inputs/scroll on close.
   const [popupTerm, setPopupTerm] = useState<string | null>(null);
+
+  // PIN THE INPUTS ON FOCUS (owner 2026-08-07). The on-screen keyboard covers
+  // the lower half of the device, so tapping a field could leave the very
+  // numbers you're typing hidden behind it. On focus we scroll the input panel
+  // to the TOP of the screen, which puts every field (and the answer directly
+  // under them) in the clear band above the keyboard.
+  // NOTE this cannot rely on KeyboardAwareScrollView: that library is loaded
+  // through a try/catch guard and degrades to a PLAIN ScrollView on any build
+  // that predates the native module (see keyboardControllerSafe) — including
+  // the current dev client. Doing the scroll ourselves works on every build.
+  const scrollRef = useRef<ScrollView | null>(null);
+  const inputsYRef = useRef(0);
+  const pinInputs = useCallback(() => {
+    const y = Math.max(0, inputsYRef.current - 8); // 8px breathing room
+    // Wait for the keyboard to start animating in, or the scroll gets clipped
+    // to the pre-keyboard content height on Android.
+    setTimeout(() => scrollRef.current?.scrollTo({ y, animated: true }), 60);
+  }, []);
   const [fnIdx, setFnIdx] = useState(0);
   const [raw, setRaw] = useState<Record<string, string>>({});
   const [unitIdx, setUnitIdx] = useState<Record<string, number>>({});
@@ -132,12 +150,19 @@ export function CalcWorkspaceScreen() {
         </View>
       </View>
 
-      <KeyboardAwareScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" bottomOffset={24}>
+      <KeyboardAwareScrollView
+        ref={scrollRef}
+        contentContainerStyle={styles.scroll}
+        keyboardShouldPersistTaps="handled"
+        bottomOffset={24}
+      >
         {/* Intro copy — hidden once the user begins entering values (owner
             2026-08-05: frees the upper screen for inputs). */}
         {!started ? <Text style={styles.body}>{ws.intro}</Text> : null}
 
-        <View style={styles.panel}>
+        {/* onLayout records where the input panel sits in the scroll content so
+            focusing a field can pin it to the top (owner 2026-08-07). */}
+        <View style={styles.panel} onLayout={(e) => { inputsYRef.current = e.nativeEvent.layout.y; }}>
           {/* Inputs FIRST (owner 2026-08-05). */}
           {fields.map((f) => {
             const units = unitsFor(f.quantity, f.unitIds);
@@ -166,6 +191,7 @@ export function CalcWorkspaceScreen() {
                 unitIdx={unitIdx[f.key] ?? defaultUnitIdx(f)}
                 onText={(t) => setRaw((r) => ({ ...r, [f.key]: t }))}
                 onCycleUnit={() => setUnitIdx((u) => ({ ...u, [f.key]: ((u[f.key] ?? defaultUnitIdx(f)) + 1) % units.length }))}
+                onFocus={pinInputs}
                 footer={footer}
               />
             );

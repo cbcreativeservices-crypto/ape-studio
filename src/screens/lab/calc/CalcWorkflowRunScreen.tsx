@@ -21,7 +21,7 @@
  * image arrives with the next native build (needs a view-capture module).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AccessibilityInfo, Alert, Pressable, Share, StyleSheet, Text, TextInput, View } from 'react-native';
+import { AccessibilityInfo, Alert, Pressable, Share, StyleSheet, Text, TextInput, View, type ScrollView as RNScrollView } from 'react-native';
 import { KeyboardAwareScrollView } from '../../../features/keyboard/keyboardControllerSafe';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -75,6 +75,16 @@ export function CalcWorkflowRunScreen() {
   const navigation = useNavigation<Nav>();
   const route = useRoute<RouteProp<RootStackParamList, 'CalcWorkflowRun'>>();
   const { entitlement } = useEntitlement();
+  // PIN THE INPUTS ON FOCUS (owner 2026-08-07) — see CalcWorkspaceScreen: the
+  // keyboard would otherwise cover the fields being typed into, and the shared
+  // KeyboardAwareScrollView degrades to a plain ScrollView on builds without
+  // the native keyboard-controller module.
+  const scrollRef = useRef<RNScrollView | null>(null);
+  const inputsYRef = useRef(0);
+  const pinInputs = useCallback(() => {
+    const y = Math.max(0, inputsYRef.current - 8);
+    setTimeout(() => scrollRef.current?.scrollTo({ y, animated: true }), 60);
+  }, []);
   const limits = WORKFLOW_LIMITS[entitlement];
 
   const [workflow, setWorkflow] = useState<Workflow | null>(null);
@@ -427,12 +437,12 @@ export function CalcWorkflowRunScreen() {
         {workflow.steps.map((s, i) => (
           <Pressable
             key={i}
-            style={[styles.stepPip, i === idx && styles.stepPipCurrent, computed[i]?.complete && styles.stepPipDone]}
+            style={[styles.stepPip, i === 0 && styles.stepPipWide, i === idx && styles.stepPipCurrent, computed[i]?.complete && styles.stepPipDone]}
             onPress={() => goTo(i)}
             accessibilityRole="button"
             accessibilityLabel={`Go to step ${i + 1}, ${stepName(i)}${computed[i]?.complete ? ', complete' : ', incomplete'}`}
           >
-            <Text style={[styles.stepPipText, i === idx && styles.stepPipTextCurrent]}>{i + 1}</Text>
+            <Text style={[styles.stepPipText, i === idx && styles.stepPipTextCurrent]}>{i === 0 ? 'Step 1' : i + 1}</Text>
           </Pressable>
         ))}
         <Pressable
@@ -445,7 +455,12 @@ export function CalcWorkflowRunScreen() {
         </Pressable>
       </View>
 
-      <KeyboardAwareScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" bottomOffset={24}>
+      <KeyboardAwareScrollView
+        ref={scrollRef}
+        contentContainerStyle={styles.scroll}
+        keyboardShouldPersistTaps="handled"
+        bottomOffset={24}
+      >
         {recalcNote ? <Text style={styles.recalcNote}>↻ {recalcNote}</Text> : null}
 
         {idx < n && cur ? (
@@ -495,7 +510,10 @@ export function CalcWorkflowRunScreen() {
               {step?.note ? <Text style={styles.stepNote}>{step.note}</Text> : null}
               <Text style={styles.caption}>{cur.resolved.ws.name}</Text>
 
-              <View style={styles.panel}>
+              {/* onLayout records the input panel's position so focusing a
+                  field pins it to the top, clear of the keyboard (owner
+                  2026-08-07 — same behaviour as the single calculator). */}
+              <View style={styles.panel} onLayout={(e) => { inputsYRef.current = e.nativeEvent.layout.y; }}>
                 {cur.fields.map((f) => {
                   const b = run.steps[idx]?.inputs[f.key];
                   const src = b ? sourceLabel(b.source, stepName, run.projectName) : null;
@@ -557,6 +575,7 @@ export function CalcWorkflowRunScreen() {
                       unitIdx={b?.unitIdx ?? defaultUnitIdx(f)}
                       onText={(t) => onEditField(f, t)}
                       onCycleUnit={() => onCycleUnit(f)}
+                      onFocus={pinInputs}
                       footer={footer}
                     />
                   );

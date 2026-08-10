@@ -8,10 +8,17 @@
  * keyboard avoidance, but no crash). The real behavior activates once a new EAS
  * build bundles the module (owner 2026-08-02).
  */
-import type { ComponentType, ReactNode } from 'react';
+import type { ComponentType, ReactNode, Ref } from 'react';
 import { ScrollView, type ScrollViewProps } from 'react-native';
 
-type KAScrollProps = ScrollViewProps & { bottomOffset?: number; children?: ReactNode };
+type KAScrollProps = ScrollViewProps & {
+  bottomOffset?: number;
+  children?: ReactNode;
+  /** Forwarded to the underlying ScrollView so callers can drive it (e.g. the
+   *  calculators scrollTo-pin their input panel on focus). Both the real
+   *  library and the fallback below hand this straight to a ScrollView. */
+  ref?: Ref<ScrollView>;
+};
 
 let KeyboardProvider: ComponentType<{ children?: ReactNode }>;
 let KeyboardAwareScrollView: ComponentType<KAScrollProps>;
