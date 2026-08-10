@@ -111,4 +111,57 @@ export const WORKFLOW_TEMPLATES: Workflow[] = [
     { workspaceId: 'electronics', fnKey: 'seriesR' },
     { workspaceId: 'electronics', fnKey: 'parallelR' },
   ]),
+
+  // -------------------------------------------------------------------------
+  // Expanded with the second-tier + advanced calculators (owner 2026-08-09).
+  // Common, field-useful sequences; every (workspaceId, fnKey) verified.
+  // -------------------------------------------------------------------------
+  tpl('loudness-delivery', 'Loudness Delivery', 'Gain to hit the platform target, then the true-peak ceiling.', [
+    { workspaceId: 'loudnorm', fnKey: 'normalize', note: 'Gain to reach the target LUFS, with the peak check.' },
+    { workspaceId: 'loudtp', fnKey: 'truePeakMargin', note: 'Confirm the true-peak ceiling for the delivery format.' },
+  ]),
+  tpl('room-survey', 'Room Acoustics Survey', 'RT60, then critical distance and the direct-to-reverberant ratio.', [
+    { workspaceId: 'sabine', fnKey: 'rtFromVA', note: 'Estimate RT60 for the room.' },
+    { workspaceId: 'critdist', fnKey: 'dc', note: 'Critical distance from RT60 and source directivity.' },
+    { workspaceId: 'critdist', fnKey: 'drr', note: 'Direct-to-reverberant ratio at the listener.' },
+  ]),
+  tpl('bass-boundaries', 'Bass & Boundaries', 'Axial modes, boundary cancellations, and the Schroeder transition.', [
+    { workspaceId: 'roommodes', fnKey: 'axial', note: 'The room’s axial modes.' },
+    { workspaceId: 'boundary', fnKey: 'sbir', note: 'Boundary cancellations & reinforcements (SBIR).' },
+    { workspaceId: 'schroeder', fnKey: 'fs', note: 'Where modal behaviour gives way to a diffuse field.' },
+  ]),
+  tpl('wireless-link', 'Wireless Mic Link', 'Free-space path loss, then the received power and link margin.', [
+    { workspaceId: 'rflink', fnKey: 'pathLoss', note: 'Path loss at this distance and frequency.' },
+    { workspaceId: 'rflink', fnKey: 'budget', note: 'Received power and how much link margin you have.' },
+  ]),
+  tpl('rack-power', 'Rack Power & Circuit', 'Current, heat and airflow, then the safe wattage for the breaker.', [
+    { workspaceId: 'rackheat', fnKey: 'heatLoad', note: 'Mains current, BTU/hr and the cooling airflow.' },
+    { workspaceId: 'rackheat', fnKey: 'safeLoad', note: 'Safe continuous wattage for the circuit.' },
+  ]),
+  tpl('power-run', 'Long Power Run', 'Voltage drop over the run, then the gauge that keeps it in spec.', [
+    { workspaceId: 'vdrop', fnKey: 'drop', note: 'Voltage lost over this length and gauge.' },
+    { workspaceId: 'vdrop', fnKey: 'gaugeFor', note: 'Gauge needed for your allowable drop.' },
+  ]),
+  tpl('passive-crossover', 'Passive Crossover', 'First-order and second-order component values for the crossover.', [
+    { workspaceId: 'crossover', fnKey: 'firstOrder', note: '6 dB/oct inductor & capacitor values.' },
+    { workspaceId: 'crossover', fnKey: 'secondOrder', note: '12 dB/oct Butterworth values.' },
+  ]),
+  tpl('line-array', 'Line-Array Aim', 'Directivity control, spatial aliasing, and far-throw loss.', [
+    { workspaceId: 'linearray', fnKey: 'directivity', note: 'Where the array controls directivity.' },
+    { workspaceId: 'linearray', fnKey: 'aliasing', note: 'Where element spacing starts to lobe.' },
+    { workspaceId: 'linearray', fnKey: 'distanceLoss', note: 'Level lost to the far seats.' },
+  ]),
+  tpl('sub-enclosure', 'Subwoofer Enclosure', 'Sealed tuning, vented port length, and displacement-limited SPL.', [
+    { workspaceId: 'driver', fnKey: 'sealed', note: 'Sealed-box resonance and system Q.' },
+    { workspaceId: 'driver', fnKey: 'portLength', note: 'Port length for a target vented tuning.' },
+    { workspaceId: 'driver', fnKey: 'excursionSPL', note: 'Max SPL the driver’s excursion allows.' },
+  ]),
+  tpl('stereo-mic', 'Stereo Mic Setup', 'Arrival delay & comb null, then the 3:1 spacing rule.', [
+    { workspaceId: 'stereomic', fnKey: 'pathDelay', note: 'Arrival delay and the first mono comb null.' },
+    { workspaceId: 'stereomic', fnKey: 'threeToOne', note: 'Minimum spacing to keep bleed clean in mono.' },
+  ]),
+  tpl('network-audio', 'Network Audio Link', 'Raw audio bandwidth, then the on-the-wire packet rate.', [
+    { workspaceId: 'netaudio', fnKey: 'bandwidth', note: 'Raw channels × sample rate × bit depth.' },
+    { workspaceId: 'netaudio', fnKey: 'packetize', note: 'Packets per second and the on-the-wire rate.' },
+  ]),
 ];
