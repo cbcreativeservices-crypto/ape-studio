@@ -181,7 +181,7 @@ export function CalcLabScreen() {
             <Text style={[styles.sectionTitle, { color: colors.blue }]}>{descOpen ? '▾' : '▸'}  ABOUT THIS LAB</Text>
           </Pressable>
           {descOpen ? (
-            <Text style={[styles.body, { color: colors.blue }]}>
+            <Text style={styles.body}>
               Every calculator here shows the result AND the reasoning: the formula, the worked
               steps, why it matters on the job, and the classic mistakes. Results can be SENT into
               another calculator — sensitivity → voltage → gain → headroom — like a real design chain.
