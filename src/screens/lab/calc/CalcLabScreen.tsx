@@ -126,7 +126,9 @@ export function CalcLabScreen() {
                   accessibilityRole="button"
                   accessibilityLabel="My workflows and templates"
                 >
-                  <Text style={styles.wfBtnText}>MY WORKFLOWS & TEMPLATES ›</Text>
+                  <Text style={styles.wfBtnText}>
+                    <Text style={{ color: colors.green }}>MY WORKFLOWS</Text> & <Text style={{ color: colors.blue }}>TEMPLATES</Text> ›
+                  </Text>
                 </Pressable>
               </View>
               {/* Phase 4: saved projects + saved results. */}

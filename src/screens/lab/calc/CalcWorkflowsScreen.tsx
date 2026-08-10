@@ -207,7 +207,7 @@ export function CalcWorkflowsScreen() {
       <ScrollView contentContainerStyle={styles.scroll}>
         {dropNote ? <Text style={styles.warnText}>⚠ {dropNote}</Text> : null}
 
-        <Text style={styles.sectionTitle}>
+        <Text style={[styles.sectionTitle, { color: colors.green }]}>
           MY WORKFLOWS{limits.savedWorkflows != null && limits.savedWorkflows > 0 ? ` · ${mine.length}/${limits.savedWorkflows}` : ''}
         </Text>
         {mine.length === 0 ? (
@@ -220,7 +220,7 @@ export function CalcWorkflowsScreen() {
           mine.map((w, i) => <Row key={w.id} w={w} template={false} index={i} count={mine.length} />)
         )}
 
-        <Text style={styles.sectionTitle}>WORKFLOW TEMPLATES</Text>
+        <Text style={[styles.sectionTitle, { color: colors.blue }]}>WORKFLOW TEMPLATES</Text>
         <Text style={styles.caption}>Built-in sequences using the lab’s calculators. Duplicate one to customize it.</Text>
         {WORKFLOW_TEMPLATES.map((w) => (
           <Row key={w.id} w={w} template />
