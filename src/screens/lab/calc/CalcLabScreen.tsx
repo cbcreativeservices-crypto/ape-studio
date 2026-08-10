@@ -158,19 +158,30 @@ export function CalcLabScreen() {
           ) : null}
         </View>
 
+        {/* Dense two-column grid (owner 2026-08-09: collapse the list to scroll
+            less). Every category + every calculator stays visible; the per-
+            category description line is dropped and each calculator is a compact
+            tile (name + one-line tagline) instead of a tall stacked card. */}
         {SECTION_META.map((sec) => {
           const items = WORKSPACES.filter((w) => w.section === sec.id);
           if (items.length === 0) return null;
           return (
-            <View key={sec.id} style={{ gap: 8 }}>
+            <View key={sec.id} style={styles.section}>
               <Text style={styles.sectionTitle}>{sec.title}</Text>
-              <Text style={styles.caption}>{sec.note}</Text>
-              {items.map((w) => (
-                <Pressable key={w.id} style={styles.card} onPress={() => navigation.navigate('CalcWorkspace', { id: w.id })}>
-                  <Text style={styles.cardName}>{w.name}</Text>
-                  <Text style={styles.caption}>{w.tagline}</Text>
-                </Pressable>
-              ))}
+              <View style={styles.grid}>
+                {items.map((w) => (
+                  <Pressable
+                    key={w.id}
+                    style={styles.tile}
+                    onPress={() => navigation.navigate('CalcWorkspace', { id: w.id })}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${w.name} — ${w.tagline}`}
+                  >
+                    <Text style={styles.tileName} numberOfLines={2}>{w.name}</Text>
+                    <Text style={styles.tileTag} numberOfLines={1}>{w.tagline}</Text>
+                  </Pressable>
+                ))}
+              </View>
             </View>
           );
         })}
@@ -202,12 +213,27 @@ const styles = StyleSheet.create({
   sigma: { fontFamily: fonts.oswaldSemiBold, fontSize: 24, lineHeight: 28, color: colors.purple },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.2, color: colors.textPrimary },
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
-  scroll: { padding: 16, paddingBottom: 34, gap: 14 },
+  scroll: { padding: 16, paddingBottom: 34, gap: 12 },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
-  sectionTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.4, color: colors.amber, marginTop: 6 },
+  sectionTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.4, color: colors.amber, marginTop: 2 },
   card: { borderRadius: 10, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 12, gap: 3 },
   cardName: { fontFamily: fonts.oswaldMedium, fontSize: 15.5, letterSpacing: 0.5, color: colors.textPrimary },
+  // Dense two-column calculator grid (owner 2026-08-09).
+  section: { gap: 6 },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  tile: {
+    width: '48%',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#131316',
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    gap: 1,
+  },
+  tileName: { fontFamily: fonts.oswaldMedium, fontSize: 12.5, letterSpacing: 0.3, color: colors.textPrimary },
+  tileTag: { fontFamily: fonts.barlowRegular, fontSize: 10.5, lineHeight: 13, color: colors.textSub },
   chainBanner: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17, color: '#5bff85' },
   soonWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 7 },
   soonChip: { borderRadius: 7, borderWidth: 1, borderColor: '#232329', paddingHorizontal: 9, paddingVertical: 5, backgroundColor: '#101014' },
