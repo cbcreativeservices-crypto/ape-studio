@@ -62,7 +62,9 @@ type Card =
   | { kind: 'freeTopic'; id: string; gs: number; name: string; courseOrder: number }
   /** CM2/CM3: a public catalog course (commercialMode). */
   | { kind: 'public'; id: string; order: number; name: string; topicCount: number; hasFreeTopic: boolean }
-  /** Placeholder standalone topic — catalog stub, content pending (Booth 2026-07-11). */
+  /** Audio-field topic card (legacy kind name 'comingTopic'; owner 2026-08-10):
+   *  a real audio-field TOPIC with its own course-card image. Membership-locked
+   *  for non-members — shown but gated, never labeled "coming soon". */
   | { kind: 'comingTopic'; id: string; name: string }
   /** Front-end-only PURPLE program placeholder card (owner 2026-08-01) — a
    *  finalized program slot with no public course/content yet (art supplied
@@ -119,10 +121,28 @@ let lastCenteredId: string | null = null;
 // landing time (was a fixed index; the deck head is now [Lab][Tools][Glossary]
 // after the 2026-07-26 far-left Lab move, so a hardcoded index would drift).
 
-// COMING-SOON topic stub cards RETIRED (owner 2026-08-10: no future-plan
-// promises anywhere — topics simply appear in the catalog when they ship).
-// The 'comingTopic' card kind remains in the type for old references but is
-// never produced.
+// AUDIO-FIELD TOPIC CARDS (owner 2026-08-10): each entry is a real audio-field
+// TOPIC that gets its OWN course-card image (course-cards bucket, keyed by name)
+// and represents that topic in the catalog. These are NOT "coming soon" and
+// carry no timeline — for free / non-member accounts they render LOCKED behind
+// membership (🔒 ACADEMY MODE), like every other paid topic. Owner is refining
+// each card's image/title. The 'comingTopic' kind name is legacy; the behavior
+// is a membership-locked topic card.
+const FIELD_TOPICS = [
+  'Assisted Listening Systems',
+  'Commercial 70/100V Systems',
+  'Corporate AV',
+  'DJ',
+  'Architectural Audio',
+  'Vehicle Audio',
+  'HiFi Consumer Audio',
+  'Audio Technician',
+  'Theatrical Sound',
+  'Audio Electronics',
+  'Road Crew',
+  'Live Sound',
+  'Worship Sound',
+] as const;
 
 /** Course-card art in the public `course-cards` bucket — STANDARDIZED WebP set
  *  (backend handoff 2026-07-16): filename = card_id with ':' -> '_' + '.webp',
@@ -157,7 +177,7 @@ const CARD_IMAGE: Record<string, string> = {
   // Free-topic taster cards (gs0 Safety · gs36 DAW Skills).
   free0: 'free_safety.webp',
   free36: 'free_daw.webp',
-  // Coming-soon topic stubs, keyed by DISPLAY NAME (unique).
+  // Audio-field topic cards, keyed by DISPLAY NAME (unique).
   'Assisted Listening Systems': 'topic_assist.webp',
   'Commercial 70/100V Systems': 'topic_commercial.webp',
   'Corporate AV': 'topic_corporate.webp',
@@ -539,19 +559,20 @@ function CourseCardView({
     (entitlement === 'academy' ||
       (entitlement !== 'anonymous' && pub.hasFreeTopic && pub.topicCount <= 1));
   // Free-topic tasters are ALWAYS unlocked + full-color (Booth 2026-07-11).
-  // Coming-soon topic stubs are locked (content pending).
+  // Audio-field topic cards are membership-locked for non-members (owner
+  // 2026-08-10) — shown, but gated behind Academy access, never "coming soon".
   const locked = (!!course && !course.enrolled) || (!!pub && !pubOpenable) || !!coming;
   const completed = !!course && course.enrolled && course.completed;
 
   // A locked TOPIC is GOLD; a locked COURSE stays PURPLE (Booth 2026-07-11).
-  // Topic = a single-topic public card, or a coming-soon stub.
+  // Topic = a single-topic public card, or an audio-field topic card.
   const isTopicCard = !!coming || (!!pub && pub.topicCount === 1);
   const lockedAccent = isTopicCard ? 'rgba(255,180,0,.6)' : 'rgba(150,90,220,.6)';
   const lockedEyebrow = isTopicCard ? '#ffc64d' : '#c4a2ff';
 
   // Certificate cards match the Awards colours (user request 2026-07-18):
   // Professional Certificate (multi-topic) = PURPLE; Specialization Certificate
-  // (single-topic / coming-soon) = BLUE — border + eyebrow, locked or not.
+  // (single-topic / audio-field topic) = BLUE — border + eyebrow, locked or not.
   const isProfCert = !!pub && pub.topicCount > 1;
   const isSpecCert = (!!pub && pub.topicCount === 1) || !!coming;
 
@@ -647,8 +668,8 @@ function CourseCardView({
               <GlassButton label="OPEN GLOSSARY" tint="blue" height={50} onPress={onOpenGlossary} />
             </View>
           ) : coming ? (
-            // Placeholder topic — same academy-locked key as the other locked
-            // topics (Booth 2026-07-11); content pending.
+            // Audio-field topic card — membership-locked for non-members (owner
+            // 2026-08-10): same Academy-locked key as the other paid topics.
             <View style={{ width: CARD_BTN_W }}>
               <GlassButton label="🔒 ACADEMY MODE" tint="steel" height={50} fontSize={13} onPress={onLockedPress} />
             </View>
@@ -784,7 +805,7 @@ export function CourseSelectionScreen() {
         hasFreeTopic: courseHasFreeTopic(pc),
       }));
       // Multi-topic COURSES on the left (catalog order); ALL single-topic
-      // TOPIC cards — live pubs + coming-soon stubs — form one A–Z group on
+      // TOPIC cards — live pubs + audio-field topic cards — form one A-Z group on
       // the right (Booth 2026-07-16: alphabetized; Worship Sound lands last).
       const multiPub = pubCards.filter((c) => c.topicCount > 1).sort((a, b) => a.order - b.order);
       // Purple PROGRAM cards in the owner's finalized order (2026-08-01):
@@ -808,7 +829,15 @@ export function CourseSelectionScreen() {
       }
       for (const c of multiPub) if (!placedOrders.has(c.order)) programCards.push(c);
       const singlePub = pubCards.filter((c) => c.topicCount <= 1);
-      const topicCards = [...singlePub].sort((a, b) => a.name.localeCompare(b.name));
+      // Audio-field topic cards (owner 2026-08-10): each field is its own topic
+      // card — course-card image, membership-locked for non-members. Mixed A–Z
+      // with the live single-topic pubs.
+      const fieldCards = FIELD_TOPICS.map((name, i) => ({
+        kind: 'comingTopic' as const,
+        id: `field-${i}`,
+        name,
+      }));
+      const topicCards = [...singlePub, ...fieldCards].sort((a, b) => a.name.localeCompare(b.name));
       // Far-right tally card = Specialization Certificates to earn (user request
       // 2026-07-22), linking to the Certificates screen. LIVE v3 count (owner
       // 2026-08-10: was the stale awardsData length); awardsData is the fallback
@@ -830,7 +859,7 @@ export function CourseSelectionScreen() {
           courseOrder: ft.courseOrder,
         })),
         ...programCards,
-        // A–Z topic group (live single-topic pubs + coming-soon stubs).
+        // A–Z topic group (live single-topic pubs + audio-field topic cards).
         ...topicCards,
         // Far-right tally card (only when there's more to tease).
         ...(otherCount > 0 ? [{ kind: 'more' as const, id: 'more' as const, count: otherCount }] : []),
