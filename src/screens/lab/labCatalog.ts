@@ -326,7 +326,10 @@ export function categoryCount(cat: LabCategory): number {
 
 /** Categories belonging to a top-level section, in catalog order. */
 export function sectionCategories(section: LabSection): LabCategory[] {
-  return LAB_CATEGORIES.filter((c) => c.section === section);
+  const cats = LAB_CATEGORIES.filter((c) => c.section === section);
+  // Training Lab is listed A→Z by category name (owner 2026-08-10). Audio
+  // Fundamentals keeps its deliberate Sound → Acoustics → Signal order.
+  return section === 'training' ? [...cats].sort((a, b) => a.name.localeCompare(b.name)) : cats;
 }
 
 /** The individual labs listed INLINE under a category on the landing. A hub's
