@@ -83,6 +83,11 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       { name: 'Wave Physics Laboratory', blurb: 'Reflection, absorption, interference, coverage, standing waves, arrays — room behaviour.', route: 'WaveLab' },
       { name: 'Microphone Principles', blurb: 'Pickup patterns, proximity, off-axis, plosives, stereo pairs — and what cupping the mic really does.', route: 'MicLab' },
       { name: 'Speaker Placement & Coverage', blurb: 'Dispersion, aim, height and tilt — who stands in the beam, drawn as a live coverage map.', route: 'SpeakerLab' },
+      { name: 'Cymatics Lab', blurb: 'Sound made visible — the standing-wave patterns that appear when a tone vibrates a plate or membrane.', status: 'development' },
+      // Dosimeter Lab (owner 2026-08-10): planned to AUTO-RUN in the background,
+      // accumulating the user's sound-exposure dose whenever audio output plays.
+      // Behavior to be scoped/built later — placeholder only for now.
+      { name: 'Dosimeter Lab', blurb: 'A background sound-exposure monitor — tracks your daily noise dose while audio plays.', status: 'development' },
     ],
   },
   {
@@ -227,6 +232,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     labs: [
       { name: 'Bass Guitar Physics', blurb: 'String division, wavelength, harmonics, fret fractions ↔ intervals.', route: 'BassLab' },
       { name: 'Instrument Recording Lab', blurb: 'Mic choice and placement per instrument.', status: 'development' },
+      { name: 'Microphone Selection Lab', blurb: 'Pick the right mic for the source — dynamic vs condenser vs ribbon, pattern and application.', status: 'development' },
     ],
   },
   {
@@ -239,6 +245,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     labs: [
       { name: 'Mixing Principle Lab', blurb: 'Balance, panning, depth, bus structure.', status: 'development' },
       { name: 'Room Mode Testing Lab', blurb: 'Find and tame axial / tangential / oblique modes.', status: 'development' },
+      { name: 'Custom Room Treatment Design Lab', blurb: 'Design absorption, diffusion and bass trapping for a room from its dimensions and use.', status: 'development' },
     ],
   },
   {
@@ -260,6 +267,9 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     labs: [
       { name: 'Vacuum Tube Fundamentals', blurb: 'How a tube amplifies by controlling electron flow — with an Electron View that shows the invisible.', route: 'TubeLab' },
       { name: 'Cable Troubleshooting Lab', blurb: 'Balanced vs unbalanced, hum, opens, shorts.', status: 'development' },
+      { name: 'Audio Connectors and Connections Lab', blurb: 'XLR, TRS, TS, speakON, RCA, banana — what each connector carries and how they mate.', status: 'development' },
+      { name: 'Patchbay Lab', blurb: 'Normalled, half-normalled and open patchbays — route signal without repatching the rack.', status: 'development' },
+      { name: 'Amplifier Types Lab', blurb: 'Class A, AB, D and tube — how each amplifies, and the sound, heat and efficiency trade-offs.', status: 'development' },
     ],
   },
   {
