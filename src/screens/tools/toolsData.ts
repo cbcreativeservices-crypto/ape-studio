@@ -239,4 +239,4 @@ export const MIC_LIMITS = [
 
 /** Status note (tech report §0/§2.3): the engine is a native module, not yet built. */
 export const ENGINE_NOTE =
-  'The live measurement engine is a native audio module (real-time capture + DSP) currently in development. It requires a new app build to ship — no simulated readings are shown in the meantime, because a meter that looks live but isn’t would violate the measurement-integrity rules this module is built on.';
+  'The live measurement engine is a native audio module (real-time capture + DSP) that is not part of this app build. No simulated readings are shown, because a meter that looks live but isn’t would violate the measurement-integrity rules this module is built on.';

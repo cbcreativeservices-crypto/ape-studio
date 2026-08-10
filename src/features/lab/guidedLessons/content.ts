@@ -891,8 +891,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'A visual-first lab on microphone behavior: pickup patterns, distance and the room, ' +
       'proximity effect, off-axis response, plosives and wind, handling noise, stereo pairs, ' +
       'and — the star — what your HAND does to a handheld mic. Every display is an ' +
-      'illustrative model drawn from the standard equations, never a measurement; audio ' +
-      'demonstrations arrive in a future release.',
+      'illustrative model drawn from the standard equations, never a measurement.',
     controls: [
       { key: 'polar_pattern', name: 'Polar pattern viewer', definition: 'The pattern is the mic’s sensitivity map by direction — r(θ) = |A + B·cosθ| drawn exactly. Drag the green source around the mic and read its pickup; switch OMNI · CARDIOID · SUPER · HYPER · FIGURE-8 to move the nulls.' },
       { key: 'distance', name: 'Mic distance', definition: 'Slides the mic away from the source. Direct sound falls ~6 dB per doubling of distance while the room stays roughly constant — the direct-to-room ratio IS what “close” sounds like. Typical speech working distance: 4–12 inches.' },
@@ -933,7 +932,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'A visual-first lab on getting sound TO people: dispersion, aiming, mounting height, ' +
       'coverage overlap, hot spots, dead zones, front fills, and the delay-speaker concept. ' +
       'The coverage map is a conceptual teaching model (within-pattern × distance falloff in ' +
-      'four color bands) — never an SPL prediction. Audio demos arrive in a future release.',
+      'four color bands) — never an SPL prediction.',
     controls: [
       { key: 'top_view', name: 'Top view (what the display shows)', definition: 'The room from above: stage strip at top, audience below, colored per seat-area — GREEN ideal, YELLOW acceptable, RED excessive (hot spot/overlap), GRAY insufficient (dead zone). Conceptual model, not SPL.' },
       { key: 'position', name: 'Speaker position', definition: 'Slides the selected cabinet along the stage line. Position decides WHERE the pattern lands — center clusters cover evenly but can leave sides gray; left/right pairs cover wide but overlap in the middle.' },
@@ -976,7 +975,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'river of current, which IS amplification. Then bias, saturation, tube types, and why ' +
       'the classic bottles matter. The Electron View toggle connects the glowing glass on ' +
       'the outside to the invisible physics inside. Every drawing is a schematic illustrative ' +
-      'model, never measured tube data; audio demonstrations arrive in a future release.',
+      'model, never measured tube data.',
     controls: [
       { key: 'electron_view', name: 'Electron View toggle', definition: 'Two mental models of the SAME tube. PHYSICAL VIEW: what you can see — glass, metal electrodes, the filament glow. ⚡ ELECTRON VIEW: what you cannot — the blue space-charge cloud, the streaming electrons, and the grid’s repelling field. Flip it often; connecting the two views is the whole game.' },
       { key: 'cutaway', name: 'The cutaway (what the display shows)', definition: 'A schematic side cross-section, drawn as a pentode (the fullest version). From the center out: heater filament → cathode sleeve → control grid → screen grid → suppressor grid → plate — all sealed in a vacuum inside the glass. Tap a part label to highlight it and read its job.' },

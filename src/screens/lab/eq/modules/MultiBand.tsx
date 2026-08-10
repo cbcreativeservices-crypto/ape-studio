@@ -358,7 +358,7 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
       <Text style={styles.caption}>
         Overlap two boosts and the composite rises HIGHER than either band alone; stack a cut into
         a boost’s skirt and they partly cancel. The combined curve — not any single band — is what
-        the signal experiences. Band auditioning (solo) arrives with the audio build.
+        the signal experiences.
       </Text>
     </View>
   );

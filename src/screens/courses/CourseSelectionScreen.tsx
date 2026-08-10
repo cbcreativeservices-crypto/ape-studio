@@ -119,24 +119,10 @@ let lastCenteredId: string | null = null;
 // landing time (was a fixed index; the deck head is now [Lab][Tools][Glossary]
 // after the 2026-07-26 far-left Lab move, so a hardcoded index would drift).
 
-/** Standalone topic cards awaiting content (Booth 2026-07-11) — rendered as
- *  locked "COMING SOON" topic cards on the right of the catalog. */
-const COMING_TOPICS = [
-  'Assisted Listening Systems',
-  'Commercial 70/100V Systems',
-  'Corporate AV',
-  'DJ',
-  'Architectural Audio',
-  'Vehicle Audio',
-  'HiFi Consumer Audio',
-  'Audio Technician',
-  'Theatrical Sound',
-  'Audio Electronics',
-  'Road Crew',
-  // Complete the 25-card standardized carousel (backend card map 2026-07-16).
-  'Live Sound',
-  'Worship Sound',
-] as const;
+// COMING-SOON topic stub cards RETIRED (owner 2026-08-10: no future-plan
+// promises anywhere — topics simply appear in the catalog when they ship).
+// The 'comingTopic' card kind remains in the type for old references but is
+// never produced.
 
 /** Course-card art in the public `course-cards` bucket — STANDARDIZED WebP set
  *  (backend handoff 2026-07-16): filename = card_id with ':' -> '_' + '.webp',
@@ -822,12 +808,7 @@ export function CourseSelectionScreen() {
       }
       for (const c of multiPub) if (!placedOrders.has(c.order)) programCards.push(c);
       const singlePub = pubCards.filter((c) => c.topicCount <= 1);
-      const comingCards = COMING_TOPICS.map((name, i) => ({
-        kind: 'comingTopic' as const,
-        id: `coming-${i}`,
-        name,
-      }));
-      const topicCards = [...singlePub, ...comingCards].sort((a, b) => a.name.localeCompare(b.name));
+      const topicCards = [...singlePub].sort((a, b) => a.name.localeCompare(b.name));
       // Far-right tally card = Specialization Certificates to earn (user request
       // 2026-07-22), linking to the Certificates screen. LIVE v3 count (owner
       // 2026-08-10: was the stale awardsData length); awardsData is the fallback

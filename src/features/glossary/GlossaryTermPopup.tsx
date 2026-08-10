@@ -80,7 +80,7 @@ export function GlossaryTermPopup({
           <Text style={styles.source}>Pro Audio Training Academy Glossary</Text>
           <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent}>
             {loading ? <ActivityIndicator color={colors.amber} style={styles.spinner} /> : null}
-            {notFound ? <Text style={styles.muted}>Full definition coming soon in the Glossary.</Text> : null}
+            {notFound ? <Text style={styles.muted}>No glossary entry was found for this term.</Text> : null}
             {row?.definition?.trim() ? <Text style={styles.def}>{row.definition.trim()}</Text> : null}
             {row?.plain_english?.trim() ? (
               <>

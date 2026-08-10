@@ -90,10 +90,10 @@ export function Badge({ text }: { text: string }) {
 export function ListeningSoonCard({ what }: { what: string }) {
   return (
     <View style={styles.soonCard}>
-      <Text style={styles.soonTitle}>🔈 LISTENING TEST — IN DEVELOPMENT</Text>
+      <Text style={styles.soonTitle}>🔈 VISUAL ONLY — NO AUDIO PLAYBACK</Text>
       <Text style={styles.soonBody}>
-        {what} needs real-time processing in the native audio engine — arriving in a future
-        release. The visuals above show exactly what you will hear.
+        {what} needs real-time processing in the native audio engine. The visuals above show
+        exactly what happens.
       </Text>
     </View>
   );

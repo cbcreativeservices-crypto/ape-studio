@@ -665,7 +665,7 @@ export function SamplingModule(p: DigitalModuleProps) {
             { k: 'INPUT ATTEN', v: filterOn ? `−${attenDb.toFixed(1)} dB` : '0 dB (off)' },
           ]}
         />
-        <Badge text="MAGNITUDE-ROLLOFF MODEL — PASSBAND RIPPLE · STOPBAND DEPTH · PHASE RESPONSE ARE IN DEVELOPMENT" />
+        <Badge text="MAGNITUDE-ROLLOFF MODEL — SHOWS ROLLOFF ONLY (NOT PASSBAND RIPPLE · STOPBAND DEPTH · PHASE)" />
       </PanelCard>
 
       <MythReality

@@ -43,11 +43,8 @@ export function CalcSymbolsKeyScreen() {
       <ScrollView contentContainerStyle={styles.scroll}>
         {empty ? (
           <View style={styles.emptyCard}>
-            <Text style={styles.emptyTitle}>Key coming soon</Text>
-            <Text style={styles.emptyBody}>
-              A reference for the Greek letters and calculus / math symbols used across the audio
-              calculators is being prepared. Check back shortly.
-            </Text>
+            <Text style={styles.emptyTitle}>Symbol key unavailable</Text>
+            <Text style={styles.emptyBody}>No symbol entries to show.</Text>
           </View>
         ) : (
           SYMBOL_GROUPS.map((group) => (

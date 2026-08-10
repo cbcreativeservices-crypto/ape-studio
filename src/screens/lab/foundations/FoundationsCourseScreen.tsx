@@ -1200,7 +1200,7 @@ const STEPS: Step[] = [
       options: ['Distance through the air, in meters', 'Time, in seconds', 'Frequency, low to high'],
       correctIdx: 1,
       reveal:
-        'A waveform display is a microphone’s diary: pressure at ONE point plotted over TIME. The space picture exists too — but no ordinary meter shows it. (Frequency on the x-axis is a different tool entirely: the analyzer, coming in Module 12.)',
+        'A waveform display is a microphone’s diary: pressure at ONE point plotted over TIME. The space picture exists too — but no ordinary meter shows it. (Frequency on the x-axis is a different tool entirely: the analyzer.)',
     },
   },
   {

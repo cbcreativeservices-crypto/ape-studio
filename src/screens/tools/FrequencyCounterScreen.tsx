@@ -152,7 +152,7 @@ function StatCell({ label, value, unit, help }: { label: string; value: string; 
 function EngineInDev({ extra }: { extra?: string }) {
   return (
     <View style={styles.statusCard}>
-      <Text style={styles.statusTitle}>MEASUREMENT ENGINE — IN DEVELOPMENT</Text>
+      <Text style={styles.statusTitle}>MEASUREMENT ENGINE — NOT IN THIS BUILD</Text>
       <Text style={styles.statusBody}>{ENGINE_NOTE}</Text>
       {extra ? <Text style={styles.statusBody}>{extra}</Text> : null}
     </View>

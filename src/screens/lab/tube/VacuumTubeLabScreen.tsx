@@ -481,7 +481,7 @@ export function VacuumTubeLabScreen() {
       </View>
       <ScrollView contentContainerStyle={styles.scroll}>
         <Text style={styles.futureNote}>
-          🔈 Audio demonstrations — coming in a future release. This lab teaches visually first.
+          🔈 This lab teaches visually — no audio playback.
         </Text>
         {!skiaAvailable ? <VizUnavailableCard /> : null}
         <View style={styles.chipRow}>

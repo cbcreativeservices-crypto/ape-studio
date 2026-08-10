@@ -56,17 +56,16 @@ export function ToolDemoScreen({ navigation, route }: Props) {
               <Demo />
             ) : (
               <View style={styles.authoringCard}>
-                <Text style={styles.authoringTitle}>DEMO IN DEVELOPMENT</Text>
+                <Text style={styles.authoringTitle}>NO VISUAL DEMO FOR THIS TOOL</Text>
                 <Text style={styles.authoringBody}>
-                  This tool's visual training demo is being built. Demos use labeled sample data and
-                  animations only — never simulated readings presented as live.
+                  Demos use labeled sample data and animations only — never simulated readings
+                  presented as live.
                 </Text>
               </View>
             )}
 
             <Text style={styles.footNote}>
-              Demos are visual and silent for now — audible test signals arrive with the audio
-              engine. Values shown are training examples, not measurements.
+              Demos are visual and silent. Values shown are training examples, not measurements.
             </Text>
           </>
         )}

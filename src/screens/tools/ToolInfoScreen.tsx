@@ -61,7 +61,7 @@ export function ToolInfoScreen({ navigation, route }: Props) {
             (engine build 2026-07-23: version 2 carries it). */}
         {ApeDsp.engineVersion() < 2 && (
           <View style={styles.statusCard}>
-            <Text style={styles.statusTitle}>MEASUREMENT ENGINE — IN DEVELOPMENT</Text>
+            <Text style={styles.statusTitle}>MEASUREMENT ENGINE — NOT IN THIS BUILD</Text>
             <Text style={styles.statusBody}>{ENGINE_NOTE}</Text>
           </View>
         )}

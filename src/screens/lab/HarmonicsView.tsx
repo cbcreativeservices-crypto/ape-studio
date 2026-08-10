@@ -1734,7 +1734,7 @@ export function HarmonicsView({
                   {`SOLO H${soloN} · ${soloN * f0} Hz sine — one harmonic alone${
                     additiveReady
                       ? '; PLAY MODEL sounds the full mixture.'
-                      : '; the full mixture needs the additive engine (coming later).'
+                      : '; the full mixture needs the additive engine.'
                   }`}
                 </Text>
               ) : null}

@@ -12,12 +12,10 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
-import { EQ_MODULES, EQ_PLANNED, EQ_SECTION_META, type EqModuleId } from './modules/registry';
+import { EQ_MODULES, EQ_SECTION_META, type EqModuleId } from './modules/registry';
 
 /** The lab's educational progression, banner-style (Digital Lab idiom). */
 const PATH = ['SEE', 'MANIPULATE', 'HEAR', 'IDENTIFY', 'CORRECT'];
-
-const DEV_NOTE = 'In development — the full build is coming.';
 
 export function EqLabHomeScreen() {
   const insets = useSafeAreaInsets();
@@ -52,8 +50,7 @@ export function EqLabHomeScreen() {
 
         {EQ_SECTION_META.map((sec) => {
           const live = EQ_MODULES.filter((m) => m.section === sec.id);
-          const planned = EQ_PLANNED.filter((m) => m.section === sec.id);
-          if (!live.length && !planned.length) return null;
+          if (!live.length) return null;
           return (
             <View key={sec.id} style={{ gap: 8 }}>
               <Text style={styles.sectionTitle}>{sec.title}</Text>
@@ -72,18 +69,6 @@ export function EqLabHomeScreen() {
                     <Text style={styles.caption}>{m.blurb}</Text>
                   </View>
                 </Pressable>
-              ))}
-              {planned.map((m) => (
-                // Honest dev placeholder — visible on the roadmap, never tappable.
-                <View key={m.title} style={[styles.card, styles.cardDev]}>
-                  <View style={{ flex: 1, gap: 2 }}>
-                    <View style={styles.devHead}>
-                      <Text style={[styles.cardName, styles.devName]}>{m.title}</Text>
-                      <Text style={styles.devBadge}>SOON</Text>
-                    </View>
-                    <Text style={[styles.caption, styles.devCaption]}>{DEV_NOTE}</Text>
-                  </View>
-                </View>
               ))}
             </View>
           );

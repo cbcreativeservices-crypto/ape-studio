@@ -69,28 +69,24 @@ export function LearningIntroSheet({
               return (
                 <View key={s.head} style={styles.section}>
                   <Text style={styles.sectionHead}>{s.head}</Text>
-                  {val ? (
-                    <Text style={styles.sectionBody}>{val}</Text>
-                  ) : (
-                    <Text style={styles.comingSoon}>Coming soon.</Text>
-                  )}
+                  {/* Unauthored sections render nothing — no forward promises
+                      (owner 2026-08-10). */}
+                  {val ? <Text style={styles.sectionBody}>{val}</Text> : null}
                 </View>
               );
             })}
 
-            <View style={styles.section}>
-              <Text style={styles.sectionHead}>WHAT YOU’LL LEARN</Text>
-              {intro.willLearn && intro.willLearn.length ? (
-                intro.willLearn.map((line) => (
+            {intro.willLearn && intro.willLearn.length ? (
+              <View style={styles.section}>
+                <Text style={styles.sectionHead}>WHAT YOU’LL LEARN</Text>
+                {intro.willLearn.map((line) => (
                   <View key={line} style={styles.bulletRow}>
                     <Text style={styles.bullet}>▸</Text>
                     <Text style={styles.bulletText}>{line}</Text>
                   </View>
-                ))
-              ) : (
-                <Text style={styles.comingSoon}>Coming soon.</Text>
-              )}
-            </View>
+                ))}
+              </View>
+            ) : null}
           </ScrollView>
 
           <Pressable style={styles.beginBtn} onPress={onBegin} accessibilityRole="button" accessibilityLabel="Begin">

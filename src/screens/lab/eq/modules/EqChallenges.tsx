@@ -107,7 +107,7 @@ export function EqChallengesModule(_p: EqModuleComponentProps) {
             12,
           )}
         />
-        <Text style={styles.honest}>Synthetic spectrum — audible A/B arrives with the audio build.</Text>
+        <Text style={styles.honest}>Synthetic spectrum — a visual exercise, no audio playback.</Text>
       </View>
 
       <View style={styles.compareRow}>

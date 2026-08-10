@@ -52,8 +52,9 @@ type Common = {
   extraLabs?: LabLeaf[];
 };
 
-/** Copy for a planned-but-unbuilt lab row. */
-export const DEV_NOTE = 'In development — soon to be released.';
+/** Legacy copy for a planned-lab row — UNREACHABLE since 2026-08-10 (dev rows
+ *  are stripped from LAB_CATEGORIES below; no future-plan promises shown). */
+export const DEV_NOTE = 'Not available.';
 
 /** A category is either a HUB (opens an existing lab home that owns its own
  *  drill-down; count = that lab's module registry length) or a LIST (opens a
@@ -66,7 +67,7 @@ export type LabCategory = Common &
 
 const labsPlural = (n: number) => `${n} ${n === 1 ? 'Lab' : 'Labs'}`;
 
-export const LAB_CATEGORIES: LabCategory[] = [
+const RAW_LAB_CATEGORIES: LabCategory[] = [
   // ── AUDIO FUNDAMENTALS ───────────────────────────────────────────────
   {
     id: 'sound',
@@ -273,6 +274,27 @@ export const LAB_CATEGORIES: LabCategory[] = [
     hubBlurb: 'SPL, dB, speaker power, delay, wavelength, room modes, cable loss, Ohm’s law, digital audio, coverage — chained.',
   },
 ];
+
+// NO FUTURE-PLAN LISTINGS (owner 2026-08-10): planned/unbuilt labs are simply
+// NOT shown — we build them, then they appear. Strip every status:'development'
+// leaf from families / labs / extraLabs; families and whole list-categories
+// that end up empty drop out too. Counts downstream auto-correct because they
+// read this filtered export.
+const liveLeaves = (ls?: LabLeaf[]) => ls?.filter((l) => l.status !== 'development');
+export const LAB_CATEGORIES: LabCategory[] = RAW_LAB_CATEGORIES.map((c): LabCategory => {
+  const extraLabs = liveLeaves(c.extraLabs);
+  if (c.kind === 'hub') return { ...c, extraLabs };
+  const families = c.families
+    ?.map((f) => ({ ...f, labs: f.labs.filter((l) => l.status !== 'development') }))
+    .filter((f) => f.labs.length > 0);
+  return { ...c, extraLabs, families, labs: liveLeaves(c.labs) };
+}).filter(
+  (c) =>
+    c.kind === 'hub' ||
+    (c.families?.length ?? 0) > 0 ||
+    (c.labs?.length ?? 0) > 0 ||
+    (c.extraLabs?.length ?? 0) > 0,
+);
 
 /** Computed leaf-lab count for a category (never hard-coded). */
 export function categoryCount(cat: LabCategory): number {

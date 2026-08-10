@@ -208,12 +208,7 @@ export function ToolsHubScreen({ navigation }: Props) {
             <Text style={styles.heroEyebrow}>AUDIO MEASUREMENT TOOLS</Text>
             <Text style={styles.heroTitle}>Measurement{'\n'}& Analysis</Text>
             <View style={styles.heroRule} />
-            <Text style={styles.heroCount}>
-              {TOOLS.filter((t) => !t.planned).length} tools available
-              {TOOLS.some((t) => t.planned)
-                ? ` · ${TOOLS.filter((t) => t.planned).length} in development`
-                : ''}
-            </Text>
+            <Text style={styles.heroCount}>{TOOLS.filter((t) => !t.planned).length} tools available</Text>
           </View>
 
           {/* Tools as SQUARE tiles, 2 across (Booth 2026-07-11). Always unlocked. */}

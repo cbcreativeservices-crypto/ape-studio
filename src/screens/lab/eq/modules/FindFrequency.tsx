@@ -156,7 +156,7 @@ export function FindFrequencyModule(_p: EqModuleComponentProps) {
         </View>
         <ResponseCurveGraph curves={curves} dbRange={24} height={150} mainColor={plotColor} />
         <Text style={styles.honest}>
-          Visual trainer on a synthetic spectrum — the by-ear version arrives with the audio build.
+          Visual trainer on a synthetic spectrum — train your eyes here, no audio playback.
         </Text>
       </View>
 

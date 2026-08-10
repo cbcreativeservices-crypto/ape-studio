@@ -22,11 +22,11 @@ export function EngineGate({ state, lastError }: { state: EngineState; lastError
         }
       : state === 'spike'
         ? {
-            title: 'NEW APP BUILD REQUIRED',
+            title: 'NOT SUPPORTED IN THIS APP BUILD',
             body:
               'This build carries the first-generation capture module only. The full measurement engine ' +
-              '(weighted metering, spectrum, pitch, signal generator) arrives with the next app build — ' +
-              'update to use this tool live.',
+              '(weighted metering, spectrum, pitch, signal generator) is not part of this app build, so ' +
+              'this tool cannot run live here.',
           }
         : state === 'denied'
           ? {

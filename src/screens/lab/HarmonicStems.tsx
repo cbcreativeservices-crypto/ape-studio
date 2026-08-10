@@ -584,7 +584,7 @@ export function HarmonicStems({
               <Text style={styles.sheetNote}>
                 {canSolo
                   ? detail.n === soloN
-                    ? `SOLO H${detail.n} · ${detail.n * f0} Hz sine — this harmonic alone as a real sine; the full mixture needs the additive engine (coming later).`
+                    ? `SOLO H${detail.n} · ${detail.n * f0} Hz sine — this harmonic alone as a real sine; the full mixture needs the additive engine.`
                     : 'SOLO plays this harmonic alone as a real sine at its exact frequency.'
                   : 'Solo playback needs the measurement engine.'}
               </Text>

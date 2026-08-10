@@ -330,7 +330,7 @@ function ConceptsSection({ help }: SectionProps) {
 function FutureAudioNote() {
   return (
     <Text style={styles.futureNote}>
-      🔈 Audio demonstrations — coming in a future release. This lab teaches visually first.
+      🔈 This lab teaches visually — no audio playback.
     </Text>
   );
 }
