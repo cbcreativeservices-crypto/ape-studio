@@ -7,6 +7,7 @@
  * this screen only renders it. While the list is empty it shows an honest
  * "being prepared" state rather than any placeholder definitions.
  */
+import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -14,11 +15,15 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { SYMBOL_GROUPS } from './symbolsKey';
+import { GlossaryTermPopup } from '../../../features/glossary/GlossaryTermPopup';
 
 export function CalcSymbolsKeyScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const empty = SYMBOL_GROUPS.length === 0;
+  // Tapping a linked symbol opens its full glossary definition in-place (owner
+  // 2026-08-09) — the popup preserves this screen, so the user returns here.
+  const [popupTerm, setPopupTerm] = useState<string | null>(null);
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -49,19 +54,27 @@ export function CalcSymbolsKeyScreen() {
             <View key={group.title} style={{ gap: 8 }}>
               <Text style={styles.groupTitle}>{group.title}</Text>
               {group.entries.map((e) => (
-                <View key={`${group.title}-${e.symbol}-${e.name}`} style={styles.row}>
+                <Pressable
+                  key={`${group.title}-${e.symbol}-${e.name}`}
+                  style={styles.row}
+                  onPress={e.glossaryTerm ? () => setPopupTerm(e.glossaryTerm!) : undefined}
+                  accessibilityRole={e.glossaryTerm ? 'button' : undefined}
+                  accessibilityLabel={e.glossaryTerm ? `${e.name} — open the glossary definition` : undefined}
+                >
                   <Text style={styles.symbol}>{e.symbol}</Text>
                   <View style={{ flex: 1, gap: 2 }}>
                     <Text style={styles.name}>{e.name}</Text>
                     <Text style={styles.meaning}>{e.meaning}</Text>
                     {e.example ? <Text style={styles.example}>{e.example}</Text> : null}
+                    {e.glossaryTerm ? <Text style={styles.linkHint}>ⓘ TAP FOR GLOSSARY DEFINITION</Text> : null}
                   </View>
-                </View>
+                </Pressable>
               ))}
             </View>
           ))
         )}
       </ScrollView>
+      <GlossaryTermPopup termName={popupTerm} onClose={() => setPopupTerm(null)} />
     </View>
   );
 }
@@ -97,8 +110,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#131316',
     padding: 12,
   },
-  symbol: { fontFamily: fonts.mono, fontSize: 24, color: colors.textPrimary, minWidth: 34, textAlign: 'center' },
+  // Body font (not mono) so the exotic glyphs — ∥ ∓ ā ∂ ∫ ∏ and sub/superscripts
+  // — render instead of tofu boxes (owner 2026-08-09).
+  symbol: { fontFamily: fonts.barlowSemiBold, fontSize: 22, color: colors.textPrimary, minWidth: 40, textAlign: 'center' },
   name: { fontFamily: fonts.oswaldMedium, fontSize: 14.5, letterSpacing: 0.4, color: colors.textPrimary },
   meaning: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSecondary },
-  example: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub },
+  example: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
+  linkHint: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 0.8, color: colors.cyanBright, marginTop: 3 },
 });

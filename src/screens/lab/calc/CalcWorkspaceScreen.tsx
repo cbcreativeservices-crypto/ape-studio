@@ -10,6 +10,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { Pressable, Share, StyleSheet, Text, View, type ScrollView } from 'react-native';
 import { KeyboardAwareScrollView } from '../../../features/keyboard/keyboardControllerSafe';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
@@ -31,7 +32,7 @@ const SIGS = [3, 4, 5] as const;
 
 export function CalcWorkspaceScreen() {
   const insets = useSafeAreaInsets();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'CalcWorkspace'>>();
   const ws: Workspace | undefined = getWorkspace(route.params.id);
   const chain = useChainValue();
@@ -292,7 +293,19 @@ export function CalcWorkspaceScreen() {
           </View>
         </View>
 
-        <Text style={styles.formula}>FORMULA   {fn.formula}</Text>
+        <View style={styles.formulaRow}>
+          <Text style={styles.formula}>FORMULA   {fn.formula}</Text>
+          {/* Jump to the Symbol Key at the point of need — a symbol in this
+              formula is where a user meets it (owner 2026-08-09). */}
+          <Pressable
+            onPress={() => navigation.navigate('CalcSymbolsKey')}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel="Symbol key — what these symbols mean"
+          >
+            <Text style={styles.formulaKey}>π KEY</Text>
+          </Pressable>
+        </View>
         {fn.note ? <Text style={styles.caption}>{fn.note}</Text> : null}
         {chain ? (
           <Text style={styles.chainBanner}>
@@ -429,7 +442,9 @@ const styles = StyleSheet.create({
   shareText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 0.8, color: colors.green },
   stepsToggle: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.textSecondary },
   stepText: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 19, color: colors.textSecondary },
-  formula: { fontFamily: fonts.mono, fontSize: 13, color: colors.textPrimary },
+  formulaRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
+  formula: { fontFamily: fonts.mono, fontSize: 13, color: colors.textPrimary, flexShrink: 1 },
+  formulaKey: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.8, color: colors.purple },
   chainBanner: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17, color: '#5bff85' },
   mistake: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 19, color: colors.textSecondary },
   warnBlock: { borderLeftWidth: 3, borderLeftColor: colors.amber, backgroundColor: '#151310', borderRadius: 6, padding: 10, marginTop: 4 },
