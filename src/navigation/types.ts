@@ -182,6 +182,10 @@ export type RootStackParamList = {
   SpeakerLab: undefined;
   /** Vacuum Tube Fundamentals (owner 2026-07-29) — visual-first, no audio playback. */
   TubeLab: undefined;
+  /** Tube Reference library (owner 2026-08-09) — 30 full-screen spec cards from
+   *  Storage; Academy-gated. Spec: docs/APE_TUBE_REFERENCE_SPEC_2026_08_09.md. */
+  TubeReference: undefined;
+  TubeCard: { id: string };
   /** Audio Calculator Laboratory (owner 2026-07-29) — unified calc workspaces. */
   CalcLab: undefined;
   CalcWorkspace: { id: string };

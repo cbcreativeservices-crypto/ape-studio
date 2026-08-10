@@ -28,6 +28,7 @@ import { LabChip } from '../LabShell';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../features/lab/guidedLessons';
 import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../foundations/bits';
 import { requireTubeViz, skiaAvailable, type TubeVizModule } from './skiaGate';
+import { TUBE_FAMILY_META, TUBE_REFS } from './tubeRefs';
 
 // ── Screen-owned data (no Skia dependency) ──────────────────────────────────
 
@@ -52,16 +53,8 @@ const FLOW_STAGES: { until: number; text: string }[] = [
   { until: 1.01, text: '5 · Steady current flows, cathode → plate. The tube is alive and ready to amplify.' },
 ];
 
-const CLASSICS: { name: string; kind: 'preamp' | 'power'; role: string; gear: string }[] = [
-  { name: '12AX7', kind: 'preamp', role: 'High-gain dual triode — THE preamp tube', gear: 'Nearly every guitar amp input stage; countless mic preamps' },
-  { name: '12AU7', kind: 'preamp', role: 'Low-gain dual triode — clean drivers', gear: 'Hi-fi line stages, studio gear, driver circuits' },
-  { name: '12AT7', kind: 'preamp', role: 'Medium-gain dual triode', gear: 'Reverb drivers, phase inverters' },
-  { name: 'EL34', kind: 'power', role: 'Power pentode — the British crunch', gear: 'Marshall stacks, Hiwatt' },
-  { name: 'EL84', kind: 'power', role: 'Small power pentode — chime', gear: 'Vox AC30, boutique combos' },
-  { name: '6L6GC', kind: 'power', role: 'Beam power tube — the American clean', gear: 'Fender Twin & Bassman, Mesa' },
-  { name: 'KT88', kind: 'power', role: 'Big beam power tube — authority', gear: 'Hi-fi power amps, bass rigs, McIntosh' },
-  { name: '6550', kind: 'power', role: 'Big beam power tube — headroom', gear: 'Ampeg SVT bass stacks, studio power amps' },
-];
+// The old 8-tube "Classics" teaser was RETIRED 2026-08-09 — replaced by the
+// full 30-card Tube Reference library (see ReferenceSection + tubeRefs.ts).
 
 // ── Shared bits ─────────────────────────────────────────────────────────────
 
@@ -360,29 +353,36 @@ function VersusViz({ viz, width, running }: { viz: TubeVizModule; width: number;
   return <viz.TubeVsTransistorView phase={phase} width={width} />;
 }
 
-// ── 10 · Classic audio tubes ────────────────────────────────────────────────
+// ── 10 · The Tube Reference library ─────────────────────────────────────────
+// Replaces the retired 8-tube Classics teaser (owner 2026-08-09): 30 owner-
+// produced full-screen spec cards, browsable + searchable, Academy-gated.
 
-function ClassicsSection({ viz, width, help }: SectionProps) {
-  const cardW = Math.max(180, (width - 10) / 2);
+function ReferenceSection(_p: SectionProps) {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   return (
     <View style={styles.panelCard}>
-      <DisplayGuideButton onPress={() => help('classic_tubes')} />
-      <ScrollView horizontal snapToInterval={cardW + 10} decelerationRate="fast" showsHorizontalScrollIndicator={false}>
-        <View style={{ flexDirection: 'row', gap: 10 }}>
-          {CLASSICS.map((c) => (
-            <Pressable key={c.name} style={[styles.tubeCard, { width: cardW }]} onLongPress={() => help('classic_tubes')} delayLongPress={300}>
-              {viz ? <viz.TubeGlyph width={cardW - 20} kind={c.kind} /> : <VizUnavailableCard />}
-              <Text style={styles.tubeName}>{c.name}</Text>
-              <Text style={styles.tubeKind}>{c.kind === 'preamp' ? 'PREAMP TUBE' : 'POWER TUBE'}</Text>
-              <Text style={styles.caption}>{c.role}</Text>
-              <Text style={styles.caption}>{c.gear}</Text>
-            </Pressable>
-          ))}
-        </View>
-      </ScrollView>
+      {TUBE_FAMILY_META.map((fam) => {
+        const items = TUBE_REFS.filter((r) => r.family === fam.key);
+        return (
+          <View key={fam.key} style={{ gap: 2 }}>
+            <Text style={styles.refFam}>
+              {fam.title} <Text style={styles.refCount}>· {items.length}</Text>
+            </Text>
+            <Text style={styles.caption}>{items.map((r) => r.short).join(' · ')}</Text>
+          </View>
+        );
+      })}
+      <Pressable
+        style={styles.refBtn}
+        onPress={() => navigation.navigate('TubeReference')}
+        accessibilityRole="button"
+        accessibilityLabel="Open the tube reference library"
+      >
+        <Text style={styles.refBtnText}>OPEN THE TUBE REFERENCE ›</Text>
+      </Pressable>
       <Text style={styles.caption}>
-        Small bottles amplify VOLTAGE at the front of the chain (preamp tubes); big bottles move
-        CURRENT into speakers at the end (power tubes). Eight names cover most of audio history.
+        Every card is a full-screen reference: internal structure, pin layout and functions, key
+        ratings, safe substitutions, and what to watch for. Academy membership unlocks all thirty.
       </Text>
     </View>
   );
@@ -400,7 +400,7 @@ const SECTIONS: { key: string; label: string; title: string; blurb: string; uses
   { key: 'bias', label: 'BIAS', title: 'TUBE BIAS', blurb: 'Cutoff · linear · saturation — one slider on the transfer curve.', usesElectron: false, Comp: BiasSection },
   { key: 'sat', label: 'SATURATE', title: 'TUBE SATURATION', blurb: 'The straight line that rounds — soft clipping, compression, harmonics.', usesElectron: false, Comp: SaturationSection },
   { key: 'versus', label: 'VS', title: 'TUBE vs TRANSISTOR', blurb: 'Two completely different physics doing the same job.', usesElectron: false, Comp: VersusSection },
-  { key: 'classics', label: 'CLASSICS', title: 'COMMON AUDIO TUBES', blurb: 'The eight bottles behind most of recorded music.', usesElectron: false, Comp: ClassicsSection },
+  { key: 'classics', label: 'REFERENCE', title: 'THE TUBE REFERENCE LIBRARY', blurb: 'Thirty full-screen spec cards — structure, pins, ratings, substitutions.', usesElectron: false, Comp: ReferenceSection },
 ];
 
 export function VacuumTubeLabScreen() {
@@ -504,9 +504,19 @@ const styles = StyleSheet.create({
   meterFill: { height: 9 },
   vsRow: { flexDirection: 'row', gap: 12 },
   vsHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.amber },
-  tubeCard: { gap: 4, borderRadius: 9, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#0f0f13', padding: 10 },
-  tubeName: { fontFamily: fonts.oswaldMedium, fontSize: 16, letterSpacing: 0.6, color: colors.textPrimary },
-  tubeKind: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.2, color: colors.amber },
+  // Tube Reference entry (replaces the retired Classics tube-card styles).
+  refFam: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.2, color: colors.amber },
+  refCount: { color: colors.textSub, letterSpacing: 0.4 },
+  refBtn: {
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255,198,77,.55)',
+    backgroundColor: '#1a1409',
+    paddingVertical: 13,
+    alignItems: 'center',
+    marginTop: 2,
+  },
+  refBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.3, color: colors.amber },
   // Bottom guided-lesson row — mirrors LabShell v2's lessonRow styling.
   lessonRow: {
     borderRadius: 9,
