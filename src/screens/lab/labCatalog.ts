@@ -69,25 +69,35 @@ export type LabCategory = Common &
 const labsPlural = (n: number) => `${n} ${n === 1 ? 'Lab' : 'Labs'}`;
 
 const RAW_LAB_CATEGORIES: LabCategory[] = [
-  // ── AUDIO FUNDAMENTALS ───────────────────────────────────────────────
+  // ── AUDIO FUNDAMENTALS (free): Sound · Acoustics · Signal ────────────
+  // Owner 2026-08-10: three fundamentals categories, all included free.
   {
     id: 'sound',
     glyph: '🔊',
     name: 'Sound',
-    description: 'How sound exists in the air — waves, hearing, microphones and loudspeakers.',
+    description: 'What sound is and how we hear and capture it — waves, amplitude, frequency, harmonics, hearing, microphones.',
     section: 'fundamentals',
     kind: 'list',
     labs: [
       { name: 'Foundations of Sound', blurb: 'Air, waves, amplitude, wavelength, phase, harmonics — sound made visible, module by module.', route: 'FoundationsCourse' },
       { name: 'Sound Playground', blurb: 'A free sandbox for every Foundations control and display at once.', route: 'FoundationsPlayground' },
-      { name: 'Wave Physics Laboratory', blurb: 'Reflection, absorption, interference, coverage, standing waves, arrays — room behaviour.', route: 'WaveLab' },
       { name: 'Microphone Principles', blurb: 'Pickup patterns, proximity, off-axis, plosives, stereo pairs — and what cupping the mic really does.', route: 'MicLab' },
-      { name: 'Speaker Placement & Coverage', blurb: 'Dispersion, aim, height and tilt — who stands in the beam, drawn as a live coverage map.', route: 'SpeakerLab' },
-      { name: 'Cymatics Lab', blurb: 'Sound made visible — the standing-wave patterns that appear when a tone vibrates a plate or membrane.', status: 'development' },
       // Dosimeter Lab (owner 2026-08-10): planned to AUTO-RUN in the background,
       // accumulating the user's sound-exposure dose whenever audio output plays.
       // Behavior to be scoped/built later — placeholder only for now.
       { name: 'Dosimeter Lab', blurb: 'A background sound-exposure monitor — tracks your daily noise dose while audio plays.', status: 'development' },
+    ],
+  },
+  {
+    id: 'acoustics',
+    glyph: '🏛',
+    name: 'Acoustics',
+    description: 'How sound behaves in real spaces — reflection, absorption, interference, standing waves, and speaker coverage.',
+    section: 'fundamentals',
+    kind: 'list',
+    labs: [
+      { name: 'Wave Physics Laboratory', blurb: 'Reflection, absorption, interference, coverage, standing waves, arrays — room behaviour.', route: 'WaveLab' },
+      { name: 'Speaker Placement & Coverage', blurb: 'Dispersion, aim, height and tilt — who stands in the beam, drawn as a live coverage map.', route: 'SpeakerLab' },
     ],
   },
   {
@@ -216,10 +226,21 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     kind: 'list',
     labs: [
       { name: 'Autotune', blurb: 'Pitch correction on the cents grid — amount, retune speed.', route: 'AutotuneLab' },
-      // Moved from Audio Fundamentals (owner 2026-08-07) — interval/ratio work
-      // belongs with pitch & tuning in the member Training Labs.
-      { name: 'Harmonograph', blurb: 'Frequency ratios ↔ musical intervals, drawn as living Lissajous curves.', route: 'HarmonographLab' },
       { name: 'Tunings Lab', blurb: 'Temperaments, reference pitches, just vs equal.', status: 'development' },
+    ],
+  },
+  {
+    // Sound Visualization (owner 2026-08-10): a members-only area for seeing
+    // sound take shape — cymatics, harmonograph, and other visual forms.
+    id: 'visualization',
+    glyph: '👁',
+    name: 'Sound Visualization',
+    description: 'Seeing sound take shape — cymatic plate patterns, harmonograph curves, and other visual forms of vibration.',
+    section: 'training',
+    kind: 'list',
+    labs: [
+      { name: 'Harmonograph', blurb: 'Frequency ratios ↔ musical intervals, drawn as living Lissajous curves.', route: 'HarmonographLab' },
+      { name: 'Cymatics Lab', blurb: 'Sound made visible — the standing-wave patterns that appear when a tone vibrates a plate or membrane.', status: 'development' },
     ],
   },
   {
