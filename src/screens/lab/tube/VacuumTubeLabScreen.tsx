@@ -94,7 +94,18 @@ function InsideSection({ viz, width, focused, electron, help }: SectionProps) {
   const allOn = visible.length === ALL_PART_KEYS.length;
   const sel = PARTS.find((p) => p.key === lastTouched) ?? null;
   const togglePart = (key: TubePart) => {
-    setVisible((v) => (v.includes(key) ? v.filter((x) => x !== key) : [...v, key]));
+    setVisible((v) => {
+      const has = v.includes(key);
+      let next = has ? v.filter((x) => x !== key) : [...v, key];
+      // PHYSICAL COUPLING (owner 2026-08-10): states must stay possible.
+      //  · Remove the GLASS → the seal is broken, so the VACUUM goes with it.
+      //  · Re-adding the GLASS alone does NOT restore the vacuum — the bottle
+      //    is back but still full of air until you pump it down (tap VACUUM).
+      //  · Adding the VACUUM needs a bottle to hold it → brings GLASS along.
+      if (key === 'envelope' && has) next = next.filter((x) => x !== 'vacuum');
+      if (key === 'vacuum' && !has && !next.includes('envelope')) next = [...next, 'envelope'];
+      return next;
+    });
     setLastTouched(key);
   };
   const toggleAll = () => {
@@ -108,7 +119,8 @@ function InsideSection({ viz, width, focused, electron, help }: SectionProps) {
   // missing part in BUILD ORDER (= the leftmost dim chip), so the suggested
   // next step always matches the button row, left to right.
   const PHYSICS: Partial<Record<TubePart, string>> = {
-    envelope: 'NO GLASS = NO VACUUM — air floods in (gray dots). Any electron that tries to fly hits an air molecule and scatters. Nothing crosses.',
+    envelope: 'NO GLASS — the seal is broken and air floods in (gray dots), taking the VACUUM with it. Nothing can cross air: any emitted electron scatters on contact.',
+    vacuum: 'NO VACUUM — the bottle is sealed but still full of air (gray dots). Air blocks the path: any emitted electron scatters on contact. Pump the air out.',
     heater: 'NO HEATER — no heat, and nothing can boil electrons out of the cathode. No emission, no current.',
     cathode: 'NO CATHODE — the heater glows, but there is no coated emitter surface to boil electrons from. No emission.',
     plate: 'NO PLATE — nothing pulls the electrons across. They drift out, stall, and fall back into a space-charge cloud.',

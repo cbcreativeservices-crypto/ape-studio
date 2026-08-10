@@ -246,6 +246,11 @@ export function TubeCutawayView({
   // stops, each for its own reason.
   const emitting = heaterOn && cathodeOn;
   const glassOn = show('envelope');
+  // AIR INSIDE (owner 2026-08-10, combination logic): the vacuum is a real
+  // state, not an annotation — air fills the tube when the seal is broken
+  // (glass off) OR the bottle was never pumped down (vacuum off). Either way
+  // electrons scatter; every downstream behavior keys off this one truth.
+  const airInside = !glassOn || !show('vacuum');
   const plateOn = show('plate');
   const g1On = show('grid');
   const g2On = hasScreen && show('screen');
@@ -350,9 +355,10 @@ export function TubeCutawayView({
     const T = ph / (2 * Math.PI);
     const rowY = (i: number) => stackTop + 8 + hashW(i * 13.7) * (stackBot - stackTop - 16);
 
-    if (toggled && !glassOn) {
-      // NO GLASS = NO VACUUM: air molecules everywhere — electrons zigzag a few
-      // steps off the cathode, collide, and are gone (f>0.45 = dead, respawn).
+    if (toggled && airInside) {
+      // AIR INSIDE (no glass OR no vacuum): air molecules everywhere —
+      // electrons zigzag a few steps off the cathode, collide, and are gone
+      // (f>0.45 = dead, respawn).
       for (let i = 0; i < 26; i++) {
         const f = (T * 1.4 + hashW(i * 71.3)) % 1;
         if (f > 0.45) continue;
@@ -409,7 +415,7 @@ export function TubeCutawayView({
       p.addCircle(cx + (hashW(i * 9.7) - 0.5) * 10, y, 1.6);
     }
     return p;
-  }, [phase, cx, stackTop, stackBot, electronView, emitting, toggled, glassOn, plateOn, g1On, g2On, hasScreen]);
+  }, [phase, cx, stackTop, stackBot, electronView, emitting, toggled, airInside, plateOn, g1On, g2On, hasScreen]);
 
   // COLD CATHODE (heater hidden, cathode shown): a few dim electrons cling to
   // the sleeve and tremble — not enough heat to escape the metal.
@@ -430,7 +436,7 @@ export function TubeCutawayView({
   const airDots = useDerivedValue(() => {
     const ph = phase.value;
     const p = Skia.Path.Make();
-    if (toggled && !glassOn) {
+    if (toggled && airInside) {
       for (let i = 0; i < 22; i++) {
         const x = cx - 52 + hashW(i * 3.7) * 104 + 4 * Math.sin(ph * 0.8 + i * 1.7);
         const y = topY + 14 + hashW(i * 8.9) * (baseY - topY - 26) + 3 * Math.cos(ph * 0.6 + i * 2.3);
@@ -438,7 +444,7 @@ export function TubeCutawayView({
       }
     }
     return p;
-  }, [phase, cx, topY, baseY, toggled, glassOn]);
+  }, [phase, cx, topY, baseY, toggled, airInside]);
 
   const secondaries = useDerivedValue(() => {
     const ph = phase.value;
@@ -450,7 +456,7 @@ export function TubeCutawayView({
     //    vanish (the suppressor visibly earning its place).
     const g3Fix = hasSuppressor && g3On;
     const demo = showSecondary && hasScreen;
-    const auto = toggled && !showSecondary && g2On && !g3Fix && glassOn && plateOn;
+    const auto = toggled && !showSecondary && g2On && !g3Fix && !airInside && plateOn;
     if (electronView && emitting && (demo || auto)) {
       // Bigger + more numerous than the cyan stream dots (owner 2026-08-10:
       // the reds were getting lost in the traffic — now they can't).
@@ -473,12 +479,12 @@ export function TubeCutawayView({
       }
     }
     return p;
-  }, [phase, cx, stackTop, stackBot, electronView, showSecondary, hasScreen, hasSuppressor, emitting, toggled, g2On, g3On, glassOn, plateOn]);
+  }, [phase, cx, stackTop, stackBot, electronView, showSecondary, hasScreen, hasSuppressor, emitting, toggled, g2On, g3On, airInside, plateOn]);
 
   // Unsuppressed bombardment: the whole PLATE pulses red — an element-scale cue
   // no learner can miss (the readout's "(red)" now has an obvious referent).
   const storm =
-    electronView && emitting && toggled && !showSecondary && g2On && !(hasSuppressor && g3On) && glassOn && plateOn;
+    electronView && emitting && toggled && !showSecondary && g2On && !(hasSuppressor && g3On) && !airInside && plateOn;
   const stormO = useDerivedValue(() => {
     const ph = phase.value;
     return storm ? 0.32 + 0.28 * Math.sin(ph * 2.4) : 0;
