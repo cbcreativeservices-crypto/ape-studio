@@ -590,8 +590,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   partChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8 },
-  allChip: { borderColor: '#9aa0ad', backgroundColor: '#1a1b20' },
-  allChipText: { color: colors.textPrimary },
+  allChip: { borderColor: 'rgba(55,224,95,.6)', backgroundColor: '#0c2012' },
+  allChipText: { color: colors.green },
   // Green REFERENCE section tab (owner 2026-08-10).
   refChip: {
     borderRadius: 8,

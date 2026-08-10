@@ -274,20 +274,22 @@ export function TubeCutawayView({
       else heater.lineTo(x, y);
     }
 
-    const gridP = Skia.Path.Make();
-    const screenP = Skia.Path.Make();
-    const suppP = Skia.Path.Make();
-    const dots = (path: ReturnType<typeof Skia.Path.Make>, dx: number) => {
+    // Grids drawn the way the REFERENCE CARDS draw them: fine horizontal coil
+    // turns (the winding cut by the section plane), not dots — G1 wound
+    // tightest, G2 coarser, G3 coarsest (true to construction and the cards).
+    const rungs = (dx: number, step: number) => {
+      const p = Skia.Path.Make();
       for (const sgn of [-1, 1]) {
-        for (let i = 0; i < 7; i++) {
-          const y = stackTop + 8 + ((stackBot - stackTop - 16) * i) / 6;
-          path.addCircle(cx + sgn * dx, y, 2.1);
+        for (let y = stackTop + 8; y <= stackBot - 8; y += step) {
+          p.moveTo(cx + sgn * dx - 4.5, y);
+          p.lineTo(cx + sgn * dx + 4.5, y);
         }
       }
+      return p;
     };
-    dots(gridP, 19);
-    if (hasScreen) dots(screenP, 31);
-    if (hasSuppressor) dots(suppP, 43);
+    const gridP = rungs(19, 7);
+    const screenP = hasScreen ? rungs(31, 10) : Skia.Path.Make();
+    const suppP = hasSuppressor ? rungs(43, 13) : Skia.Path.Make();
 
     // Slim support rods behind each grid-wire column — one path per grid type
     // so each grid's rods show/hide with it (owner 2026-08-10).
@@ -303,19 +305,9 @@ export function TubeCutawayView({
     const rodsS = rodPair(31);
     const rodsX = rodPair(43);
 
-    // Plate outline (open box brackets — kept for the amber highlight layer).
-    const plateOutline = Skia.Path.Make();
-    for (const sgn of [-1, 1]) {
-      plateOutline.moveTo(cx + sgn * 53, stackTop);
-      plateOutline.lineTo(cx + sgn * 53, stackBot);
-      plateOutline.lineTo(cx + sgn * 40, stackBot);
-      plateOutline.moveTo(cx + sgn * 53, stackTop);
-      plateOutline.lineTo(cx + sgn * 40, stackTop);
-    }
-
     const vacuum = Skia.Path.Make();
     vacuum.addRRect(Skia.RRectXY(Skia.XYWHRect(cx - 56, topY + 6, 112, baseY - topY - 10), 26, 26));
-    return { bottle, streak, innerRefl, nub, getterFlash, heater, gridP, screenP, suppP, rodsG, rodsS, rodsX, plateOutline, vacuum };
+    return { bottle, streak, innerRefl, nub, getterFlash, heater, gridP, screenP, suppP, rodsG, rodsS, rodsX, vacuum };
   }, [cx, topY, baseY, stackTop, stackBot, hasScreen, hasSuppressor]);
 
   // Physical view: the filament glow breathes (same radius law as ever).
@@ -400,18 +392,15 @@ export function TubeCutawayView({
       {/* Plate: gray metal box — translucent front face + gradient side walls. */}
       {show('plate') ? (
         <>
-          <RoundedRect x={cx - 40} y={stackTop} width={80} height={stackH} r={4} color="#3a3d44" opacity={0.16} />
-          <MetalPanel x={cx - 53} y={stackTop} w={13} h={stackH} />
-          <MetalPanel x={cx + 40} y={stackTop} w={13} h={stackH} />
-          <RoundedRect x={cx - 53} y={stackTop - 3.5} width={106} height={4} r={2}>
-            <LinearGradient start={vec(cx - 53, stackTop - 3.5)} end={vec(cx - 53, stackTop + 0.5)} colors={[PLATE_LIGHT, PLATE_DARK]} />
-          </RoundedRect>
-          {/* Plate outline in its card ink (amber-orange); tapping glows the same ink. */}
-          <Path path={parts.plateOutline} color={INK.plate} style="stroke" strokeWidth={1.8} opacity={hl('plate') ? 1 : 0.8} />
+          {/* Card-style plate: the near-black anode box with a bold amber
+              outline — the section plane opens the front, so everything inside
+              stays visible (exactly how the reference cards draw it). */}
+          <RoundedRect x={cx - 53} y={stackTop} width={106} height={stackH} r={5} color="#0e0e12" opacity={0.8} />
+          <RoundedRect x={cx - 53} y={stackTop} width={106} height={stackH} r={5} color={INK.plate} style="stroke" strokeWidth={2.4} opacity={hl('plate') ? 1 : 0.9} />
           {hl('plate') ? (
-            <Path path={parts.plateOutline} color={INK.plate} style="stroke" strokeWidth={3.4}>
-              <BlurMask blur={4} style="normal" />
-            </Path>
+            <RoundedRect x={cx - 53} y={stackTop} width={106} height={stackH} r={5} color={INK.plate} style="stroke" strokeWidth={4.2}>
+              <BlurMask blur={4.5} style="normal" />
+            </RoundedRect>
           ) : null}
         </>
       ) : null}
@@ -432,33 +421,36 @@ export function TubeCutawayView({
       {/* Grid helices: faint support rods + neat wire dots. */}
       {/* Grid helices in the card ink code: G1 blue · G2 purple · G3 gold —
           each with its own support rods, so each toggles as one unit. */}
-      {show('grid') ? <Path path={parts.rodsG} color="#5a5d67" style="stroke" strokeWidth={1} opacity={0.4} /> : null}
-      {hasScreen && show('screen') ? <Path path={parts.rodsS} color="#5a5d67" style="stroke" strokeWidth={1} opacity={0.4} /> : null}
-      {hasSuppressor && show('suppressor') ? <Path path={parts.rodsX} color="#5a5d67" style="stroke" strokeWidth={1} opacity={0.4} /> : null}
-      {hasSuppressor && show('suppressor') ? <Path path={parts.suppP} color={INK.suppressor} /> : null}
+      {show('grid') ? <Path path={parts.rodsG} color={INK.grid} style="stroke" strokeWidth={1.3} opacity={0.5} /> : null}
+      {hasScreen && show('screen') ? <Path path={parts.rodsS} color={INK.screen} style="stroke" strokeWidth={1.3} opacity={0.5} /> : null}
+      {hasSuppressor && show('suppressor') ? <Path path={parts.rodsX} color={INK.suppressor} style="stroke" strokeWidth={1.3} opacity={0.5} /> : null}
+      {hasSuppressor && show('suppressor') ? <Path path={parts.suppP} color={INK.suppressor} style="stroke" strokeWidth={1.7} /> : null}
       {hasSuppressor && show('suppressor') && hl('suppressor') ? (
-        <Path path={parts.suppP} color={INK.suppressor}>
+        <Path path={parts.suppP} color={INK.suppressor} style="stroke" strokeWidth={3}>
           <BlurMask blur={4} style="normal" />
         </Path>
       ) : null}
-      {hasScreen && show('screen') ? <Path path={parts.screenP} color={INK.screen} /> : null}
+      {hasScreen && show('screen') ? <Path path={parts.screenP} color={INK.screen} style="stroke" strokeWidth={1.7} /> : null}
       {hasScreen && show('screen') && hl('screen') ? (
-        <Path path={parts.screenP} color={INK.screen}>
+        <Path path={parts.screenP} color={INK.screen} style="stroke" strokeWidth={3}>
           <BlurMask blur={4} style="normal" />
         </Path>
       ) : null}
-      {show('grid') ? <Path path={parts.gridP} color={INK.grid} /> : null}
+      {show('grid') ? <Path path={parts.gridP} color={INK.grid} style="stroke" strokeWidth={1.7} /> : null}
       {show('grid') && hl('grid') ? (
-        <Path path={parts.gridP} color={INK.grid}>
+        <Path path={parts.gridP} color={INK.grid} style="stroke" strokeWidth={3}>
           <BlurMask blur={4} style="normal" />
         </Path>
       ) : null}
 
-      {/* Cathode sleeve: bright metal cylinder, rimmed in its teal card ink. */}
+      {/* Card-style cathode: a SOLID teal emitting sleeve (the coated cylinder),
+          with a lighter core streak — exactly the cards' teal bar. */}
       {show('cathode') ? (
         <>
-          <CathodeSleeve x={cx - 8} y={stackTop + 4} w={16} h={stackH - 8} />
-          <RoundedRect x={cx - 8} y={stackTop + 4} width={16} height={stackH - 8} r={6} color={INK.cathode} style="stroke" strokeWidth={1.4} opacity={hl('cathode') ? 1 : 0.75} />
+          <RoundedRect x={cx - 8} y={stackTop + 4} width={16} height={stackH - 8} r={6}>
+            <LinearGradient start={vec(cx - 8, stackTop)} end={vec(cx + 8, stackTop)} colors={['#63e2d4', '#2fae9f', '#1d7f73']} />
+          </RoundedRect>
+          <RoundedRect x={cx - 5.5} y={stackTop + 8} width={3} height={stackH - 16} r={1.5} color="#c8f4ee" opacity={0.5} />
           {hl('cathode') ? (
             <RoundedRect x={cx - 8} y={stackTop + 4} width={16} height={stackH - 8} r={6} color={INK.cathode} style="stroke" strokeWidth={2.8}>
               <BlurMask blur={3.5} style="normal" />
@@ -477,8 +469,9 @@ export function TubeCutawayView({
       {heaterOn ? (
         <>
           {!electronView ? <Path path={parts.heater} color={GLOW} style="stroke" strokeWidth={3.4} opacity={0.5}><BlurMask blur={3} style="normal" /></Path> : null}
-          {/* Heater filament in its orange card ink (white-hot core when lit). */}
-          <Path path={parts.heater} color={electronView ? INK.heater : FILAMENT_CORE} style="stroke" strokeWidth={1.8} />
+          {/* Heater in its orange card ink; a thin white-hot core when lit. */}
+          <Path path={parts.heater} color={INK.heater} style="stroke" strokeWidth={2} />
+          {!electronView ? <Path path={parts.heater} color={FILAMENT_CORE} style="stroke" strokeWidth={0.9} opacity={0.85} /> : null}
           {hl('heater') ? (
             <Path path={parts.heater} color={INK.heater} style="stroke" strokeWidth={3.2}>
               <BlurMask blur={4} style="normal" />
