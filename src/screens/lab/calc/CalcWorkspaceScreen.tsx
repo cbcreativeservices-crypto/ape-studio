@@ -141,17 +141,6 @@ export function CalcWorkspaceScreen() {
         <AccuracyNote compact variant="calc" />
       </View>
 
-      {/* Function picker — PINNED below the header so the top button row stays
-          visible while the user works (owner 2026-08-05). */}
-      <View style={styles.pinnedFns}>
-        <Text style={styles.eyebrowTight}>WHAT ARE YOU TRYING TO DETERMINE?</Text>
-        <View style={styles.chipRow}>
-          {ws.functions.map((f, i) => (
-            <LabChip key={f.key} label={f.name.toUpperCase()} selected={i === fnIdx} onPress={() => { setFnIdx(i); setStepsOpen(false); }} />
-          ))}
-        </View>
-      </View>
-
       <KeyboardAwareScrollView
         ref={scrollRef}
         contentContainerStyle={styles.scroll}
@@ -161,6 +150,22 @@ export function CalcWorkspaceScreen() {
         {/* Intro copy — hidden once the user begins entering values (owner
             2026-08-05: frees the upper screen for inputs). */}
         {!started ? <Text style={styles.body}>{ws.intro}</Text> : null}
+
+        {/* Function picker now scrolls WITH the page (owner 2026-08-09). It used
+            to be a fixed bar pinned below the header, so it kept occupying the top
+            even after the user started filling — pinning the inputs just slid them
+            up UNDER these buttons. Inside the scroll, focusing a field pins the
+            inputs to the top and these "what are you trying to determine?" buttons
+            scroll up out of the way (still reachable by scrolling back up to
+            switch the calculation). */}
+        <View style={styles.fnPicker}>
+          <Text style={styles.eyebrowTight}>WHAT ARE YOU TRYING TO DETERMINE?</Text>
+          <View style={styles.chipRow}>
+            {ws.functions.map((f, i) => (
+              <LabChip key={f.key} label={f.name.toUpperCase()} selected={i === fnIdx} onPress={() => { setFnIdx(i); setStepsOpen(false); }} />
+            ))}
+          </View>
+        </View>
 
         {/* onLayout records where the input panel sits in the scroll content so
             focusing a field can pin it to the top (owner 2026-08-07). */}
@@ -358,16 +363,9 @@ const styles = StyleSheet.create({
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
   scroll: { padding: 16, paddingBottom: 34, gap: 10 },
   eyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.amber, marginTop: 6 },
-  // Pinned function-picker bar below the header (owner 2026-08-05).
-  pinnedFns: {
-    paddingHorizontal: 16,
-    paddingTop: 4,
-    paddingBottom: 8,
-    gap: 6,
-    borderBottomWidth: 1,
-    borderBottomColor: '#1e1e22',
-    backgroundColor: colors.screenBg,
-  },
+  // Function-picker block — scrolls with the page so it clears the top once the
+  // user starts filling and the inputs pin up (owner 2026-08-09).
+  fnPicker: { gap: 6 },
   eyebrowTight: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.amber },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
