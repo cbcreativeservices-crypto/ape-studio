@@ -98,6 +98,25 @@ function InsideSection({ viz, width, focused, electron, help }: SectionProps) {
     setLastTouched(null);
   };
   const highlight = lastTouched && visible.includes(lastTouched) ? lastTouched : null;
+  // LIVE PHYSICS READOUT (owner 2026-08-10): hiding a part changes what the
+  // electrons DO in the drawing — this line names the dominant consequence, in
+  // cause-and-effect order (no emitter → no vacuum → no pull → no control …).
+  const off = (k: TubePart) => !visible.includes(k);
+  const physics = off('cathode')
+    ? 'NO CATHODE — the heater glows, but there is no coated emitter surface to boil electrons from. No emission.'
+    : off('heater')
+      ? 'COLD CATHODE — no heater, no heat. The electrons stay stuck in the metal, trembling — no emission, no current.'
+      : off('envelope')
+        ? 'NO GLASS = NO VACUUM — air floods in (gray). Electrons collide with air molecules and scatter before they get anywhere.'
+        : off('plate')
+          ? 'NO PLATE — nothing pulls the electrons across. They drift out, stall, and fall back into a space-charge cloud.'
+          : off('grid')
+            ? 'NO CONTROL GRID — the flow runs WIDE OPEN. Full current, but nothing can meter it into a signal.'
+            : off('screen')
+              ? 'NO SCREEN GRID — the electrons crawl the whole way. The screen grid’s + charge is the accelerator.'
+              : off('suppressor')
+                ? 'NO SUPPRESSOR — electrons slam the plate and knock SECONDARY electrons loose (red), leaking back toward the screen grid.'
+                : null;
   return (
     <View style={styles.panelCard}>
       {viz ? <CutawayViz viz={viz} width={width} kind="pentode" highlight={highlight} electron={electron} running={focused} visible={visible} /> : <VizUnavailableCard />}
@@ -135,10 +154,11 @@ function InsideSection({ viz, width, focused, electron, help }: SectionProps) {
           );
         })}
       </View>
+      {physics ? <Text style={styles.readout}>{physics}</Text> : null}
       <Text style={styles.caption}>
         {sel
           ? `${sel.note}${visible.includes(sel.key) ? '' : '  (Hidden — tap its chip again to bring it back.)'}`
-          : 'Tap any part to SHOW or HIDE it in the drawing — build the tube up piece by piece, or strip it down to bare glass. Each part wears the SAME color it has on the Tube Reference cards. (Drawn as a pentode — the fullest version.)'}
+          : 'Tap a part to REMOVE it and watch what the electrons do without it — every piece is there for a reason, and the drawing shows you why. Each part wears the SAME color it has on the Tube Reference cards. (Drawn as a pentode — the fullest version.)'}
       </Text>
     </View>
   );

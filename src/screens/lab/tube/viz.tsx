@@ -215,8 +215,11 @@ export function TubeCutawayView({
   showSecondary?: boolean;
   /** Inside screen show/hide toggles (owner 2026-08-10): which parts are drawn;
    *  undefined = all. The glass silhouette always renders (hide-all = glass
-   *  only), and electrons only appear while their emitter (heater/cathode) is
-   *  shown — no emitter, no electrons. */
+   *  only). PHYSICS-CONSEQUENCE mode (owner 2026-08-10 "next level"): hiding a
+   *  part changes what the electrons DO, not just what is drawn — no heater =
+   *  cold cathode (stuck electrons), no glass = air scatter, no plate = space
+   *  charge falls back, no G1 = wide-open flood, no G2 = crawl, no G3 = red
+   *  secondaries leak back. Each part visibly earns its place. */
   visible?: readonly TubePart[];
 }) {
   const w = width;
@@ -237,9 +240,20 @@ export function TubeCutawayView({
   // Show/hide toggles (owner 2026-08-10): undefined = everything visible.
   const show = (part: TubePart) => !visible || visible.includes(part);
   const heaterOn = show('heater');
-  const emitterOn = show('heater') || show('cathode');
+  const cathodeOn = show('cathode');
+  // Physics flags (owner 2026-08-10): emission needs BOTH the heater (the heat)
+  // and the cathode (the coated emitter surface) — hide either and the flow
+  // stops, each for its own reason.
+  const emitting = heaterOn && cathodeOn;
+  const glassOn = show('envelope');
+  const plateOn = show('plate');
+  const g1On = show('grid');
+  const g2On = hasScreen && show('screen');
+  const g3On = hasSuppressor && show('suppressor');
+  // Inside screen only (visible prop in use): physics consequences are live.
+  const toggled = visible !== undefined;
   // Mica spacers support the electrode stack — gone once the stack is gone.
-  const anyStack = show('plate') || show('grid') || show('screen') || show('suppressor') || show('cathode') || heaterOn;
+  const anyStack = show('plate') || show('grid') || show('screen') || show('suppressor') || cathodeOn || heaterOn;
 
   // Static geometry (symmetric side cross-section).
   const parts = useMemo(() => {
@@ -325,45 +339,129 @@ export function TubeCutawayView({
     return electronView || !heaterOn ? 0 : 0.1 + 0.035 * Math.sin(ph);
   }, [phase, electronView, heaterOn]);
 
+  // PHYSICS-CONSEQUENCE electron sim (owner 2026-08-10): what the electrons DO
+  // depends on which parts are present. Dominant effect wins: emission gate →
+  // air scatter (no glass) → space-charge fallback (no plate) → normal transit
+  // shaped by G1 (bunching), G2 (acceleration).
   const electrons = useDerivedValue(() => {
     const ph = phase.value;
     const p = Skia.Path.Make();
-    if (electronView && emitterOn) {
-      // Cloud near the cathode + streams drifting outward to both plates.
-      for (let i = 0; i < 30; i++) {
-        const row = hashW(i * 13.7);
-        const y = stackTop + 8 + row * (stackBot - stackTop - 16);
+    if (!electronView || !emitting) return p;
+    const T = ph / (2 * Math.PI);
+    const rowY = (i: number) => stackTop + 8 + hashW(i * 13.7) * (stackBot - stackTop - 16);
+
+    if (toggled && !glassOn) {
+      // NO GLASS = NO VACUUM: air molecules everywhere — electrons zigzag a few
+      // steps off the cathode, collide, and are gone (f>0.45 = dead, respawn).
+      for (let i = 0; i < 26; i++) {
+        const f = (T * 1.4 + hashW(i * 71.3)) % 1;
+        if (f > 0.45) continue;
         const sgn = i % 2 === 0 ? 1 : -1;
-        const f = (ph / (2 * Math.PI) + hashW(i * 71.3)) % 1;
-        const x = cx + sgn * (10 + f * 41);
-        p.addCircle(x, y + 2 * Math.sin(ph * 2 + i), 1.9);
+        const zig = 3.5 * Math.sin(ph * 6 + i * 2.7);
+        p.addCircle(cx + sgn * (10 + f * 26), rowY(i) + zig, 1.9);
       }
-      // Space-charge cloud hugging the cathode.
-      for (let i = 0; i < 12; i++) {
+      for (let i = 0; i < 8; i++) {
         const y = stackTop + 10 + hashW(i * 5.1) * (stackBot - stackTop - 20);
         p.addCircle(cx + (hashW(i * 9.7) - 0.5) * 10, y, 1.6);
       }
+      return p;
+    }
+
+    if (toggled && !plateOn) {
+      // NO PLATE: nothing pulls them across — drift out, stall, fall back
+      // (sin envelope out-and-return) into a THICK space-charge cloud.
+      for (let i = 0; i < 26; i++) {
+        const f = (T * 0.7 + hashW(i * 71.3)) % 1;
+        const sgn = i % 2 === 0 ? 1 : -1;
+        const r = 10 + 22 * Math.sin(Math.PI * f);
+        p.addCircle(cx + sgn * r, rowY(i) + 2 * Math.sin(ph * 2 + i), 1.9);
+      }
+      for (let i = 0; i < 18; i++) {
+        const y = stackTop + 10 + hashW(i * 5.1) * (stackBot - stackTop - 20);
+        p.addCircle(cx + (hashW(i * 9.7) - 0.5) * 14, y, 1.6);
+      }
+      return p;
+    }
+
+    // NORMAL TRANSIT — shaped by which grids are in:
+    //  G1 in  → the flow is METERED into marching bunches (4 packets);
+    //  G1 out → wide-open uncontrolled flood (more, faster, uniform).
+    //  G2 in  → crawl to the screen grid, then its + charge SNAPS them across;
+    //  G2 out → sluggish crawl the whole way.
+    const n = !toggled || g1On ? 30 : 38;
+    const rate = (toggled && !g1On ? 1.35 : 1) * (toggled && hasScreen && !g2On ? 0.55 : 1);
+    for (let i = 0; i < n; i++) {
+      const off =
+        toggled && g1On ? (i % 4) / 4 + hashW(i * 71.3) * 0.09 : hashW(i * 71.3);
+      const f = (T * rate + off) % 1;
+      const sgn = i % 2 === 0 ? 1 : -1;
+      const r =
+        toggled && g2On
+          ? f < 0.62
+            ? 10 + (f / 0.62) * 21
+            : 31 + ((f - 0.62) / 0.38) * 20
+          : 10 + f * 41;
+      p.addCircle(cx + sgn * r, rowY(i) + 2 * Math.sin(ph * 2 + i), 1.9);
+    }
+    // Space-charge cloud hugging the cathode.
+    for (let i = 0; i < 12; i++) {
+      const y = stackTop + 10 + hashW(i * 5.1) * (stackBot - stackTop - 20);
+      p.addCircle(cx + (hashW(i * 9.7) - 0.5) * 10, y, 1.6);
     }
     return p;
-  }, [phase, cx, stackTop, stackBot, electronView, emitterOn]);
+  }, [phase, cx, stackTop, stackBot, electronView, emitting, toggled, glassOn, plateOn, g1On, g2On, hasScreen]);
+
+  // COLD CATHODE (heater hidden, cathode shown): a few dim electrons cling to
+  // the sleeve and tremble — not enough heat to escape the metal.
+  const coldDots = useDerivedValue(() => {
+    const ph = phase.value;
+    const p = Skia.Path.Make();
+    if (electronView && toggled && cathodeOn && !heaterOn) {
+      for (let i = 0; i < 7; i++) {
+        const y = stackTop + 12 + hashW(i * 6.3) * (stackBot - stackTop - 24);
+        p.addCircle(cx + (i % 2 === 0 ? 8.5 : -8.5) + 0.8 * Math.sin(ph * 3 + i * 2.1), y, 1.5);
+      }
+    }
+    return p;
+  }, [phase, cx, stackTop, stackBot, electronView, toggled, cathodeOn, heaterOn]);
+
+  // AIR (glass hidden): gray molecules drift through the whole envelope — the
+  // vacuum is GONE, and the drawing says so at a glance.
+  const airDots = useDerivedValue(() => {
+    const ph = phase.value;
+    const p = Skia.Path.Make();
+    if (toggled && !glassOn) {
+      for (let i = 0; i < 22; i++) {
+        const x = cx - 52 + hashW(i * 3.7) * 104 + 4 * Math.sin(ph * 0.8 + i * 1.7);
+        const y = topY + 14 + hashW(i * 8.9) * (baseY - topY - 26) + 3 * Math.cos(ph * 0.6 + i * 2.3);
+        p.addCircle(x, y, 1.3);
+      }
+    }
+    return p;
+  }, [phase, cx, topY, baseY, toggled, glassOn]);
 
   const secondaries = useDerivedValue(() => {
     const ph = phase.value;
     const p = Skia.Path.Make();
-    if (showSecondary && electronView && hasScreen && emitterOn) {
-      // Secondary emission: electrons knocked BACK off the plate. In a
-      // tetrode they reach the screen grid (the problem); the pentode's
-      // suppressor turns them around (the fix).
+    // Secondary emission: electrons knocked BACK off the plate.
+    //  · Types screen (showSecondary): tetrode problem vs pentode fix, as ever.
+    //  · Inside screen (toggled): hiding G3 UNLEASHES the problem — red
+    //    secondaries leak back toward the + screen grid; re-add G3 and they
+    //    vanish (the suppressor visibly earning its place).
+    const g3Fix = hasSuppressor && g3On;
+    const demo = showSecondary && hasScreen;
+    const auto = toggled && !showSecondary && g2On && !g3Fix && glassOn && plateOn;
+    if (electronView && emitting && (demo || auto)) {
       for (let i = 0; i < 5; i++) {
         const y = stackTop + 16 + hashW(i * 3.3) * (stackBot - stackTop - 32);
         const f = (ph / (2 * Math.PI) + i / 5) % 1;
-        const span = hasSuppressor ? 9 : 21; // stopped at suppressor vs reaching screen
+        const span = g3Fix ? 9 : 21; // stopped at suppressor vs reaching screen
         const sgn = i % 2 === 0 ? 1 : -1;
         p.addCircle(cx + sgn * (52 - f * span), y, 1.8);
       }
     }
     return p;
-  }, [phase, cx, stackTop, stackBot, electronView, showSecondary, hasScreen, hasSuppressor, emitterOn]);
+  }, [phase, cx, stackTop, stackBot, electronView, showSecondary, hasScreen, hasSuppressor, emitting, toggled, g2On, g3On, glassOn, plateOn]);
 
   const stackH = stackBot - stackTop;
   return (
@@ -387,6 +485,10 @@ export function TubeCutawayView({
           <BlurMask blur={3} style="normal" />
         </Path>
       ) : null}
+
+      {/* AIR flooding the envelope when the glass is hidden (no vacuum!) —
+          gray molecules drifting everywhere the electrons need to fly. */}
+      <Path path={airDots} color="#9aa0ad" opacity={0.32} />
 
       {/* ── Internals (drawn first; the glass overlays them) ── */}
       {/* Plate: gray metal box — translucent front face + gradient side walls. */}
@@ -485,6 +587,8 @@ export function TubeCutawayView({
         <BlurMask blur={4.5} style="normal" />
       </Path>
       <Path path={electrons} color={ELECTRON} opacity={0.9} />
+      {/* Cold-cathode electrons: stuck to the sleeve, trembling, going nowhere. */}
+      <Path path={coldDots} color={ELECTRON} opacity={0.35} />
       <Path path={secondaries} color={ACCENT_RED} opacity={0.5}>
         <BlurMask blur={4} style="normal" />
       </Path>
