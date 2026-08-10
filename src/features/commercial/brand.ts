@@ -20,6 +20,10 @@ export const BRAND = {
    *  entry point into the product. Owner 2026-08-10: this is THE footer on every
    *  share surface. */
   productLine: 'Free Audio Glossary • Audio Calculators • Interactive Learning',
+  /** Attribution lead-in for the footer credit line (owner 2026-08-10): every
+   *  shared output carries "Generated with {brand}" so recipients see which app
+   *  it came from — the credit/advertising rides along on every share. */
+  generatedWith: 'Generated with',
   /** Report-type labels (single calculator vs multi-calculator workflow). */
   calculatorLabel: 'Professional Audio Engineering Calculator',
   workflowLabel: 'Professional Audio Engineering Workflow',
@@ -49,11 +53,13 @@ export function shareHeaderLines(subtitle: string): string[] {
 }
 
 /**
- * The ONE shared footer for EVERY outgoing share (owner 2026-08-10): the product
- * line + the tappable website. NO trailing company wordmark (the header already
- * carries identity — repeating it at the end is the "logo" the owner removed),
- * NO "Generated with". Callers render their own separator rule above these.
+ * The ONE shared footer for EVERY outgoing share (owner 2026-08-10): a
+ * "Generated with {brand}" CREDIT line (the app's attribution/advertising — it
+ * rides along on every share so recipients see where it came from), then the
+ * product line, then the tappable website. This credit line is NOT the old
+ * trailing wordmark the owner removed — that was a bare, redundant company name;
+ * this is a framed attribution. Callers render their own separator rule above.
  */
 export function shareFooterLines(): string[] {
-  return [BRAND.productLine, websiteUrl()];
+  return [`${BRAND.generatedWith} ${brandName()}`, BRAND.productLine, websiteUrl()];
 }
