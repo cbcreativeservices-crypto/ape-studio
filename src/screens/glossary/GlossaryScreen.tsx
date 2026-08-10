@@ -701,17 +701,28 @@ function CountUp({
   durationMs = 6750,
   style,
   suffix = ' Terms',
+  onLanded,
 }: {
   target: number;
   durationMs?: number;
   style?: any;
   suffix?: string;
+  /** Fires ONCE the moment the ramp reaches the final total (owner 2026-08-10)
+   *  — lets the loading popup swap its "#" placeholder for the real number at
+   *  the exact instant this animation lands. */
+  onLanded?: () => void;
 }) {
   const [val, setVal] = useState(1);
   const rafRef = useRef<number | null>(null);
   const startRef = useRef<number | null>(null);
+  const landedRef = useRef(false);
+  const land = () => {
+    if (landedRef.current) return;
+    landedRef.current = true;
+    onLanded?.();
+  };
   useEffect(() => {
-    // Nothing sensible to ramp toward yet — show the seed digit.
+    // Nothing sensible to ramp toward yet — show the seed digit (no landing).
     if (!target || target <= 1) {
       setVal(Math.max(1, target || 1));
       return;
@@ -726,11 +737,13 @@ function CountUp({
       const v = p >= 1 ? target : Math.max(1, Math.round(Math.exp(lnTarget * p)));
       setVal(v);
       if (p < 1) rafRef.current = requestAnimationFrame(tick);
+      else land(); // reached the total — signal the popup to reveal it too
     };
     rafRef.current = requestAnimationFrame(tick);
     return () => {
       if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [target, durationMs]);
   return (
     <Text style={style}>
@@ -742,11 +755,12 @@ function CountUp({
 
 /** Full-width "loading the corpus" panel (owner 2026-08-05) — shown in the term
  *  list area while the ~21k definitions page in, so it never just looks paused. */
-function GlossaryLoading({ count }: { count: number | null }) {
+function GlossaryLoading({ count, landed }: { count: number | null; landed: boolean }) {
   const dots = useDots();
-  // Owner 2026-08-05: replace "this" with the cached daily total-term count (the
-  // same figure shown top-right), so the reader sees how many are on the way.
-  const subject = count != null ? `${count.toLocaleString()} terms` : 'this';
+  // Owner 2026-08-10: the amount stays a single "#" until the TOP header count-up
+  // lands on the final total — then, at that exact moment, it becomes the real
+  // number here too. Never show the total before the animation reaches it.
+  const subject = landed && count != null ? `${count.toLocaleString()} terms` : '#';
   return (
     <View style={styles.loadingBox}>
       <Text style={styles.loadingTitle}>Loading glossary{dots}</Text>
@@ -771,6 +785,13 @@ export function GlossaryScreen({ route, navigation }: Props) {
   // instant total to display while the full corpus is still streaming in; once
   // loaded we fall through to the exact live visible.length below.
   const [cachedCount, setCachedCount] = useState<number | null>(null);
+  // Whether the header term-count animation has reached its final total (owner
+  // 2026-08-10): the loading popup shows "#" until this flips, then the real
+  // number — synced to the exact frame the top count-up lands. Reset each load.
+  const [countLanded, setCountLanded] = useState(false);
+  useEffect(() => {
+    if (loading) setCountLanded(false);
+  }, [loading]);
   const [search, setSearch] = useState('');
   const searchRef = useRef<TextInput>(null);
   // Search-field colour (owner 2026-08-01): the typed query goes GREEN once the
@@ -1606,7 +1627,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
           // Still paging in: ramp the count UP from a single digit to the target
           // (cached daily total, or the live loaded count) so it grows through
           // 1→2→3→4→5 digits instead of snapping to the full number (owner 2026-08-06).
-          <CountUp style={styles.count} target={cachedCount ?? visible.length} />
+          <CountUp style={styles.count} target={cachedCount ?? visible.length} onLanded={() => setCountLanded(true)} />
         ) : (
           // No cached total and nothing loaded yet — animate dots so it isn't frozen.
           <LoadingCount />
@@ -1776,7 +1797,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
             // message used to vanish the instant any term showed, because it only
             // lived in the empty slot). Once loaded, show the result count.
             loading ? (
-              <GlossaryLoading count={cachedCount} />
+              <GlossaryLoading count={cachedCount} landed={countLanded} />
             ) : visible.length === 0 ? null : (
               <View style={styles.resultHeaderRow}>
                 <Text style={styles.resultCount}>
