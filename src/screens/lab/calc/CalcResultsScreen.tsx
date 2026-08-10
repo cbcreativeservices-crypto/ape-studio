@@ -12,6 +12,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
+import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import type { SavedRunSummary } from './workflowModel';
 import { workflowStore } from './workflowStore';
@@ -64,6 +65,7 @@ export function CalcResultsScreen() {
           <Text style={styles.title}>SAVED RESULTS</Text>
           <Text style={styles.subtitle}>Completed workflow runs — stored, never recalculated</Text>
         </View>
+        <AccuracyNote compact detail="These are teaching calculations worked from each formula — not standards-compliant measurements. Verify real-world work with proper instruments." />
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll}>

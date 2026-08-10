@@ -10,6 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
+import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { EQ_MODULES, EQ_PLANNED, EQ_SECTION_META, type EqModuleId } from './modules/registry';
 
@@ -29,10 +30,11 @@ export function EqLabHomeScreen() {
         <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
-        <View style={{ flexShrink: 1 }}>
+        <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>EQ LAB</Text>
           <Text style={styles.subtitle}>See, hear, manipulate, and diagnose frequency content.</Text>
         </View>
+        <AccuracyNote compact detail="This lab can use your phone’s UNCALIBRATED microphone — read the analysis as relative, for learning. For accurate levels use a calibrated SPL meter or measurement mic." />
       </View>
       <ScrollView contentContainerStyle={styles.scroll}>
         <View style={styles.pathRow}>

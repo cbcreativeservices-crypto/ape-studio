@@ -16,6 +16,7 @@ import { NavIcon, type NavIconName } from '../../components/nav/NavIcon';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { CONCEPT_MODULES } from '../../features/tools/learn';
 import { colors, fonts } from '../../theme/tokens';
+import { AccuracyNote } from '../../components/AccuracyNote';
 import { TOOLS, type ToolKey } from './toolsData';
 import type { RootStackParamList } from '../../navigation/types';
 
@@ -186,6 +187,7 @@ export function ToolsHubScreen({ navigation }: Props) {
             <Text style={styles.eyebrow}>PROFESSIONAL AUDIO TOOLS</Text>
           </View>
           <View style={{ flex: 1 }} />
+          <AccuracyNote compact style={{ marginRight: 8 }} />
           {/* GLOSSARY key, like the other screens (Booth 2026-07-11). */}
           <View style={{ width: 96 }}>
             <GlassButton

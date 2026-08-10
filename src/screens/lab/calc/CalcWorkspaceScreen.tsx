@@ -15,6 +15,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { LabChip } from '../LabShell';
 import { ShareIcon } from '../../../components/ShareIcon';
+import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { CalcValues, FieldDef, OutputVal, Workspace } from './calcTypes';
 import { fmt, unitsFor } from './calcUnits';
 import { getWorkspace } from './registry';
@@ -133,10 +134,11 @@ export function CalcWorkspaceScreen() {
         <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
-        <View style={{ flexShrink: 1 }}>
+        <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>{ws.name.toUpperCase()}</Text>
           <Text style={styles.subtitle}>{ws.tagline}</Text>
         </View>
+        <AccuracyNote compact detail="These are teaching calculations worked from each formula — not standards-compliant measurements. Verify real-world work with proper instruments." />
       </View>
 
       {/* Function picker — PINNED below the header so the top button row stays

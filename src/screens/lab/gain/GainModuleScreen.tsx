@@ -9,6 +9,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useIsFocused, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
+import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { ScrollLockProvider } from '../LabShell';
 import { GlossaryLinkProvider } from '../../../features/glossary/glossaryLink';
@@ -49,10 +50,11 @@ export function GainModuleScreen() {
         <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
-        <View style={{ flexShrink: 1 }}>
+        <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>{meta.title.toUpperCase()}</Text>
           <Text style={styles.subtitle}>Gain Staging Lab</Text>
         </View>
+        <AccuracyNote compact />
       </View>
       <View style={styles.topNav}>
         <Pressable onPress={() => goToModule(idx - 1)} disabled={idx <= 0} hitSlop={8} accessibilityRole="button" accessibilityLabel="Previous module">

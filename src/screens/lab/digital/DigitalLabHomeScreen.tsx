@@ -9,6 +9,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
+import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useState } from 'react';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
@@ -42,10 +43,11 @@ export function DigitalLabHomeScreen() {
         <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
-        <View style={{ flexShrink: 1 }}>
+        <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>DIGITAL AUDIO SAMPLING & CONVERSION LAB</Text>
           <Text style={styles.subtitle}>Explore how analog sound becomes digital data — and how digital data becomes sound again.</Text>
         </View>
+        <AccuracyNote compact />
       </View>
       <ScrollView contentContainerStyle={styles.scroll}>
         <SignalPathBanner />

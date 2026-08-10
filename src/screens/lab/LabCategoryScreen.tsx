@@ -12,6 +12,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../theme/tokens';
+import { AccuracyNote } from '../../components/AccuracyNote';
 import type { RootStackParamList } from '../../navigation/types';
 import { categoryCountLabel, DEV_NOTE, getCategory, type LabLeaf } from './labCatalog';
 
@@ -89,10 +90,11 @@ function Header({ title, subtitle, onBack }: { title: string; subtitle: string; 
       <Pressable onPress={onBack} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
         <Text style={styles.back}>‹</Text>
       </Pressable>
-      <View style={{ flexShrink: 1 }}>
+      <View style={{ flexShrink: 1, flexGrow: 1 }}>
         <Text style={styles.title}>{title}</Text>
         {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
       </View>
+      <AccuracyNote compact />
     </View>
   );
 }

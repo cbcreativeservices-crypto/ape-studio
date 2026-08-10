@@ -28,6 +28,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
 import { colors, fonts } from '../../../theme/tokens';
+import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import type { CalcFunction, FieldDef, OutputVal, Workspace } from './calcTypes';
@@ -430,6 +431,7 @@ export function CalcWorkflowRunScreen() {
             {idx < n ? `Step ${idx + 1} of ${n} · ${cur?.resolved?.fn.name ?? ''}` : 'Results'}
           </Text>
         </View>
+        <AccuracyNote compact detail="These are teaching calculations worked from each formula — not standards-compliant measurements. Verify real-world work with proper instruments." />
       </View>
 
       {/* Vertical step list — the guided sequence at a glance. */}

@@ -60,6 +60,7 @@ import { WARNING_INFO } from '../../features/tools/measure/types';
 import { LOUDNESS_STOPS } from '../../features/tools/levelColor';
 import { useColorModePref } from '../../features/tools/colorModePref';
 import { colors, fonts } from '../../theme/tokens';
+import { AccuracyNote } from '../../components/AccuracyNote';
 import { EngineGate } from './EngineGate';
 import { useToolHelp, HelpHead, DisplayGuideButton, readoutKey } from '../../features/lab/guidedLessons';
 import type { RootStackParamList } from '../../navigation/types';
@@ -834,10 +835,11 @@ export function RtaScreen({ navigation }: Props) {
         <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
-        <View style={{ flexShrink: 1 }}>
+        <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>SPECTRUM ANALYZER / RTA</Text>
           <Text style={styles.subtitle}>Live RTA · dBFS · uncalibrated</Text>
         </View>
+        <AccuracyNote compact detail="This tool runs on your phone’s UNCALIBRATED microphone and audio path — read it as RELATIVE (dBFS), for learning. For accurate, absolute measurements use a calibrated SPL meter, measurement mic, or a dedicated instrument." />
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll}>

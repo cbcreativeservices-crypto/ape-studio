@@ -22,6 +22,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { GuidedLessonBody, GuidedLessonSheet, getLabLesson, type LabId } from '../../features/lab/guidedLessons';
+import { AccuracyNote } from '../../components/AccuracyNote';
 import { colors, fonts } from '../../theme/tokens';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -252,6 +253,8 @@ export function LabShell({
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.subtitle}>{subtitle}</Text>
         </View>
+        {/* Accuracy/calibration note — global honesty affordance (owner 2026-08-09). */}
+        <AccuracyNote compact />
         {headerAction ? <View style={styles.headerAction}>{headerAction}</View> : null}
       </View>
 

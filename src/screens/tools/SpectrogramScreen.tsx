@@ -49,6 +49,7 @@ import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO } from '../../features/tools/measure/types';
 import { colors, fonts } from '../../theme/tokens';
+import { AccuracyNote } from '../../components/AccuracyNote';
 import { heatColor } from '../../features/tools/levelColor';
 import { EngineGate } from './EngineGate';
 import { useToolHelp, HelpHead, DisplayGuideButton, readoutKey } from '../../features/lab/guidedLessons';
@@ -492,10 +493,11 @@ export function SpectrogramScreen({ navigation }: Props) {
         <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
-        <View style={{ flexShrink: 1 }}>
+        <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>SPECTROGRAM</Text>
           <Text style={styles.subtitle}>Frequency over time · dBFS · uncalibrated</Text>
         </View>
+        <AccuracyNote compact detail="This tool runs on your phone’s UNCALIBRATED microphone and audio path — read it as RELATIVE (dBFS), for learning. For accurate, absolute measurements use a calibrated SPL meter, measurement mic, or a dedicated instrument." />
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll}>

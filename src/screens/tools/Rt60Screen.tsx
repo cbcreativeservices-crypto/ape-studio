@@ -40,6 +40,7 @@ import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type WarningFlag } from '../../features/tools/measure/types';
 import { colors, fonts } from '../../theme/tokens';
+import { AccuracyNote } from '../../components/AccuracyNote';
 import { EngineGate } from './EngineGate';
 import { useToolHelp, HelpHead, DisplayGuideButton } from '../../features/lab/guidedLessons';
 import type { RootStackParamList } from '../../navigation/types';
@@ -357,10 +358,11 @@ export function Rt60Screen({ navigation }: Props) {
         <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
-        <View style={{ flexShrink: 1 }}>
+        <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>RT60 / REVERB DECAY</Text>
           <Text style={styles.subtitle}>Guided decay capture · octave bands</Text>
         </View>
+        <AccuracyNote compact detail="This tool runs on your phone’s UNCALIBRATED microphone and audio path — read it as RELATIVE, for learning. For accurate room measurements use a calibrated measurement mic and analyzer." />
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll}>

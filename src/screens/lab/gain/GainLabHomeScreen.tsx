@@ -9,6 +9,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
+import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GAIN_MODULES, GAIN_SECTION_META, type GainModuleId } from './modules/registry';
 
@@ -25,10 +26,11 @@ export function GainLabHomeScreen() {
         <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
-        <View style={{ flexShrink: 1 }}>
+        <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>GAIN STAGING LAB</Text>
           <Text style={styles.subtitle}>Keep the signal healthy at every stage of the chain.</Text>
         </View>
+        <AccuracyNote compact />
       </View>
       <ScrollView contentContainerStyle={styles.scroll}>
         <View style={styles.pathRow}>

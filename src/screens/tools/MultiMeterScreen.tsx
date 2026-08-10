@@ -79,6 +79,7 @@ import * as photo from '../../features/tools/capture/photo';
 import * as location from '../../features/tools/capture/location';
 import type { GeoFix } from '../../features/tools/capture/location';
 import { colors, fonts } from '../../theme/tokens';
+import { AccuracyNote } from '../../components/AccuracyNote';
 import { EngineGate } from './EngineGate';
 import { InteractionZone } from '../lab/LabShell';
 import { useToolHelp, DisplayGuideButton } from '../../features/lab/guidedLessons';
@@ -940,10 +941,11 @@ export function MultiMeterScreen({ navigation }: Props) {
         <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
-        <View style={{ flexShrink: 1 }}>
+        <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>PRO AUDIO MULTIMETER</Text>
           <Text style={styles.subtitle}>All-in-one live meter · mono · dBFS · uncalibrated</Text>
         </View>
+        <AccuracyNote compact detail="This tool runs on your phone’s UNCALIBRATED microphone and audio path — read it as RELATIVE (dBFS), for learning. For accurate, absolute measurements use a calibrated SPL meter, measurement mic, or a dedicated instrument." />
       </View>
 
       {/* 1 ── TOP STATUS BAR — pinned, instrument-style mono digits. Shown only

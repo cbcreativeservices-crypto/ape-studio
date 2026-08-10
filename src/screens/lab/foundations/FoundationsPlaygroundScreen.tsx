@@ -37,6 +37,7 @@ import { EngineGate } from '../../tools/EngineGate';
 import type { EngineState } from '../../../features/tools/engine/useDspEngine';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../features/lab/guidedLessons';
 import { colors, fonts } from '../../../theme/tokens';
+import { AccuracyNote } from '../../../components/AccuracyNote';
 import { LabChip, ScrollLockProvider } from '../LabShell';
 import { ConceptBadge, DragSlider, LevelMeterBar, VizUnavailableCard } from './bits';
 import { requireViz, type VizModule } from './skiaGate';
@@ -295,10 +296,11 @@ export function FoundationsPlaygroundScreen() {
         <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
-        <View style={{ flexShrink: 1 }}>
+        <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>FOUNDATIONS PLAYGROUND</Text>
           <Text style={styles.subtitle}>Every control drives every view — experiment freely</Text>
         </View>
+        <AccuracyNote compact />
       </View>
 
       <ScrollLockProvider value={setScrollLocked}>

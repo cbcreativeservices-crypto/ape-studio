@@ -7,6 +7,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useIsFocused, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
+import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { ScrollLockProvider } from '../LabShell';
@@ -63,10 +64,11 @@ export function MeterModuleScreen() {
         <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
-        <View style={{ flexShrink: 1 }}>
+        <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>{meta.title.toUpperCase()}</Text>
           <Text style={styles.subtitle}>Visual Audio Analysis Lab</Text>
         </View>
+        <AccuracyNote compact detail="These meters run on your phone’s UNCALIBRATED microphone — read them as relative, for learning. For accurate levels use a calibrated SPL meter or measurement mic." />
       </View>
       <ScrollLockProvider value={setScrollLocked}>
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" scrollEnabled={!scrollLocked}>

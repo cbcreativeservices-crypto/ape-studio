@@ -22,6 +22,7 @@ import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
+import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { LabChip } from '../LabShell';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../features/lab/guidedLessons';
@@ -425,10 +426,11 @@ export function VacuumTubeLabScreen() {
         <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
-        <View style={{ flexShrink: 1 }}>
+        <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>VACUUM TUBE FUNDAMENTALS</Text>
           <Text style={styles.subtitle}>Amplification by controlling electron flow</Text>
         </View>
+        <AccuracyNote compact />
       </View>
       <ScrollView contentContainerStyle={styles.scroll}>
         <Text style={styles.futureNote}>

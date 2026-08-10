@@ -43,6 +43,7 @@ import { guardAdditiveForEngine, guardToneLevelForEngine } from '../../../featur
 import { EngineGate } from '../../tools/EngineGate';
 import type { EngineState } from '../../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../../theme/tokens';
+import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { LabChip, ScrollLockProvider, useScrollLock } from '../LabShell';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../features/lab/guidedLessons';
@@ -1425,10 +1426,11 @@ export function FoundationsCourseScreen() {
         <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
-        <View style={{ flexShrink: 1 }}>
+        <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>FOUNDATIONS OF SOUND</Text>
           <Text style={styles.subtitle}>Understanding What You’re Hearing</Text>
         </View>
+        <AccuracyNote compact />
       </View>
 
       {/* Top navigation (owner 2026-08-05): jump straight to the beginning, or

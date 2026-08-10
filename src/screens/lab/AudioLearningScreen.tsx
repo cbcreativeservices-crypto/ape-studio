@@ -13,6 +13,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../theme/tokens';
+import { AccuracyNote } from '../../components/AccuracyNote';
 import type { RootStackParamList } from '../../navigation/types';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 
@@ -44,10 +45,11 @@ export function AudioLearningScreen({ navigation }: Props) {
         <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
-        <View style={{ flexShrink: 1 }}>
+        <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>AUDIO LEARNING</Text>
           <Text style={styles.subtitle}>Choose your path</Text>
         </View>
+        <AccuracyNote compact />
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll}>

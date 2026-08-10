@@ -36,6 +36,7 @@ import { MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor'
 import { isGenCapUnlockedThisSession, markGenCapUnlockedThisSession } from '../../features/tools/genCapSession';
 import { useColorModePref } from '../../features/tools/colorModePref';
 import { colors, fonts } from '../../theme/tokens';
+import { AccuracyNote } from '../../components/AccuracyNote';
 import { toolByKey } from './toolsData';
 import { DragSlider } from '../lab/foundations/bits';
 import { useToolHelp, HelpHead } from '../../features/lab/guidedLessons';
@@ -474,10 +475,11 @@ export function SignalGenScreen({ navigation }: Props) {
         <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
-        <View style={{ flexShrink: 1 }}>
+        <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>{tool.name.toUpperCase()}</Text>
           <Text style={styles.subtitle}>{tool.subtitle ?? 'Test-Signal Source'}</Text>
         </View>
+        <AccuracyNote compact detail="Test tones play through your phone’s uncalibrated speaker/output — the frequency is exact, the LEVEL is not. For calibrated output use dedicated signal-generation gear." />
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll} scrollEnabled={scrollEnabled}>

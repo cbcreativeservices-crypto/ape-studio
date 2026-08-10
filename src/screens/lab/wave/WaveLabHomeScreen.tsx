@@ -9,6 +9,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
+import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { WAVE_MODULES } from './modules/registry';
@@ -26,10 +27,11 @@ export function WaveLabHomeScreen() {
         <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
-        <View style={{ flexShrink: 1 }}>
+        <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>WAVE PHYSICS LABORATORY</Text>
           <Text style={styles.subtitle}>One room engine · fifteen experiments</Text>
         </View>
+        <AccuracyNote compact />
       </View>
       <ScrollView contentContainerStyle={styles.scroll}>
         {/* Guided Lessons at the very top, before the module list (owner 2026-08-05). */}

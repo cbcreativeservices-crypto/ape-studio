@@ -9,6 +9,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
+import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { METER_MODULES } from './modules/registry';
@@ -24,10 +25,11 @@ export function MeterLabHomeScreen() {
         <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
-        <View style={{ flexShrink: 1 }}>
+        <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>VISUAL AUDIO ANALYSIS LAB</Text>
           <Text style={styles.subtitle}>Learn to READ the meters — not just open them</Text>
         </View>
+        <AccuracyNote compact detail="These meters run on your phone’s UNCALIBRATED microphone — read them as relative, for learning. For accurate levels use a calibrated SPL meter or measurement mic." />
       </View>
       <ScrollView contentContainerStyle={styles.scroll}>
         <Text style={styles.body}>
