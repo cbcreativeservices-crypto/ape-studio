@@ -43,6 +43,12 @@ export function CalcLabScreen() {
     navigation.navigate('CalcWorkflowEdit', {});
   };
 
+  // Collapsible sections (owner 2026-08-09): workflows + description + each
+  // calculator category. Default open; local state (not persisted).
+  const [wfOpen, setWfOpen] = useState(true);
+  const [descOpen, setDescOpen] = useState(true);
+  const [openSecs, setOpenSecs] = useState<Record<string, boolean>>({});
+
   // Most-recent saved workflow (owner spec 2026-08-06) — quick jump on the home.
   const [recent, setRecent] = useState<Workflow | null>(null);
   const loadRecent = useCallback(() => {
@@ -89,11 +95,74 @@ export function CalcLabScreen() {
         </Pressable>
       </View>
       <ScrollView contentContainerStyle={styles.scroll}>
-        <Text style={styles.body}>
-          Every calculator here shows the result AND the reasoning: the formula, the worked
-          steps, why it matters on the job, and the classic mistakes. Results can be SENT into
-          another calculator — sensitivity → voltage → gain → headroom — like a real design chain.
-        </Text>
+        {/* CALCULATOR WORKFLOWS — moved to the TOP and collapsible (owner
+            2026-08-09). templates + my workflows + new + recent. */}
+        <View style={{ gap: 8 }}>
+          <Pressable
+            onPress={() => setWfOpen((o) => !o)}
+            accessibilityRole="button"
+            accessibilityState={{ expanded: wfOpen }}
+            accessibilityLabel="Calculator workflows section"
+          >
+            <Text style={styles.sectionTitle}>{wfOpen ? '▾' : '▸'}  CALCULATOR WORKFLOWS</Text>
+          </Pressable>
+          {wfOpen ? (
+            <>
+              <Text style={styles.caption}>
+                Run several calculators as one guided sequence — build your own or start from a template.
+              </Text>
+              <View style={styles.wfRow}>
+                <Pressable
+                  style={[styles.wfBtn, styles.wfBtnGreen]}
+                  onPress={onNewWorkflow}
+                  accessibilityRole="button"
+                  accessibilityLabel="New workflow"
+                >
+                  <Text style={[styles.wfBtnText, { color: colors.green }]}>＋ NEW WORKFLOW</Text>
+                </Pressable>
+                <Pressable
+                  style={styles.wfBtn}
+                  onPress={() => navigation.navigate('CalcWorkflows')}
+                  accessibilityRole="button"
+                  accessibilityLabel="My workflows and templates"
+                >
+                  <Text style={styles.wfBtnText}>MY WORKFLOWS & TEMPLATES ›</Text>
+                </Pressable>
+              </View>
+              {/* Phase 4: saved projects + saved results. */}
+              <View style={styles.wfRow}>
+                <Pressable
+                  style={styles.wfBtn}
+                  onPress={() => navigation.navigate('CalcProjects')}
+                  accessibilityRole="button"
+                  accessibilityLabel="Saved projects"
+                >
+                  <Text style={styles.wfBtnText}>SAVED PROJECTS ›</Text>
+                </Pressable>
+                <Pressable
+                  style={styles.wfBtn}
+                  onPress={() => navigation.navigate('CalcResults')}
+                  accessibilityRole="button"
+                  accessibilityLabel="Saved results"
+                >
+                  <Text style={styles.wfBtnText}>SAVED RESULTS ›</Text>
+                </Pressable>
+              </View>
+              {recent ? (
+                <Pressable
+                  style={styles.card}
+                  onPress={() => navigation.navigate('CalcWorkflowRun', { id: recent.id })}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Run recent workflow ${recent.name}`}
+                >
+                  <Text style={styles.caption}>RECENT · TAP TO RUN</Text>
+                  <Text style={styles.cardName}>{recent.name}</Text>
+                </Pressable>
+              ) : null}
+            </>
+          ) : null}
+        </View>
+
         {chain ? (
           <Text style={styles.chainBanner}>
             ⛓ CHAIN ACTIVE: {chain.label} from {chain.fromWorkspace} — open any calculator with a
@@ -101,60 +170,22 @@ export function CalcLabScreen() {
           </Text>
         ) : null}
 
-        {/* CALCULATOR WORKFLOWS (owner spec 2026-08-06): templates + my
-            workflows + new + recent, one section. */}
-        <View style={{ gap: 8 }}>
-          <Text style={styles.sectionTitle}>CALCULATOR WORKFLOWS</Text>
-          <Text style={styles.caption}>
-            Run several calculators as one guided sequence — build your own or start from a template.
-          </Text>
-          <View style={styles.wfRow}>
-            <Pressable
-              style={[styles.wfBtn, styles.wfBtnGreen]}
-              onPress={onNewWorkflow}
-              accessibilityRole="button"
-              accessibilityLabel="New workflow"
-            >
-              <Text style={[styles.wfBtnText, { color: colors.green }]}>＋ NEW WORKFLOW</Text>
-            </Pressable>
-            <Pressable
-              style={styles.wfBtn}
-              onPress={() => navigation.navigate('CalcWorkflows')}
-              accessibilityRole="button"
-              accessibilityLabel="My workflows and templates"
-            >
-              <Text style={styles.wfBtnText}>MY WORKFLOWS & TEMPLATES ›</Text>
-            </Pressable>
-          </View>
-          {/* Phase 4: saved projects + saved results. */}
-          <View style={styles.wfRow}>
-            <Pressable
-              style={styles.wfBtn}
-              onPress={() => navigation.navigate('CalcProjects')}
-              accessibilityRole="button"
-              accessibilityLabel="Saved projects"
-            >
-              <Text style={styles.wfBtnText}>SAVED PROJECTS ›</Text>
-            </Pressable>
-            <Pressable
-              style={styles.wfBtn}
-              onPress={() => navigation.navigate('CalcResults')}
-              accessibilityRole="button"
-              accessibilityLabel="Saved results"
-            >
-              <Text style={styles.wfBtnText}>SAVED RESULTS ›</Text>
-            </Pressable>
-          </View>
-          {recent ? (
-            <Pressable
-              style={styles.card}
-              onPress={() => navigation.navigate('CalcWorkflowRun', { id: recent.id })}
-              accessibilityRole="button"
-              accessibilityLabel={`Run recent workflow ${recent.name}`}
-            >
-              <Text style={styles.caption}>RECENT · TAP TO RUN</Text>
-              <Text style={styles.cardName}>{recent.name}</Text>
-            </Pressable>
+        {/* Screen description — collapsible (owner 2026-08-09). */}
+        <View style={{ gap: 6 }}>
+          <Pressable
+            onPress={() => setDescOpen((o) => !o)}
+            accessibilityRole="button"
+            accessibilityState={{ expanded: descOpen }}
+            accessibilityLabel="About this lab"
+          >
+            <Text style={styles.sectionTitle}>{descOpen ? '▾' : '▸'}  ABOUT THIS LAB</Text>
+          </Pressable>
+          {descOpen ? (
+            <Text style={styles.body}>
+              Every calculator here shows the result AND the reasoning: the formula, the worked
+              steps, why it matters on the job, and the classic mistakes. Results can be SENT into
+              another calculator — sensitivity → voltage → gain → headroom — like a real design chain.
+            </Text>
           ) : null}
         </View>
 
@@ -165,23 +196,33 @@ export function CalcLabScreen() {
         {SECTION_META.map((sec) => {
           const items = WORKSPACES.filter((w) => w.section === sec.id);
           if (items.length === 0) return null;
+          const open = openSecs[sec.id] ?? true;
           return (
             <View key={sec.id} style={styles.section}>
-              <Text style={styles.sectionTitle}>{sec.title}</Text>
-              <View style={styles.grid}>
-                {items.map((w) => (
-                  <Pressable
-                    key={w.id}
-                    style={styles.tile}
-                    onPress={() => navigation.navigate('CalcWorkspace', { id: w.id })}
-                    accessibilityRole="button"
-                    accessibilityLabel={`${w.name} — ${w.tagline}`}
-                  >
-                    <Text style={styles.tileName} numberOfLines={2}>{w.name}</Text>
-                    <Text style={styles.tileTag} numberOfLines={1}>{w.tagline}</Text>
-                  </Pressable>
-                ))}
-              </View>
+              <Pressable
+                onPress={() => setOpenSecs((m) => ({ ...m, [sec.id]: !(m[sec.id] ?? true) }))}
+                accessibilityRole="button"
+                accessibilityState={{ expanded: open }}
+                accessibilityLabel={`${sec.title} calculators`}
+              >
+                <Text style={styles.sectionTitle}>{open ? '▾' : '▸'}  {sec.title}</Text>
+              </Pressable>
+              {open ? (
+                <View style={styles.grid}>
+                  {items.map((w) => (
+                    <Pressable
+                      key={w.id}
+                      style={styles.tile}
+                      onPress={() => navigation.navigate('CalcWorkspace', { id: w.id })}
+                      accessibilityRole="button"
+                      accessibilityLabel={`${w.name} — ${w.tagline}`}
+                    >
+                      <Text style={styles.tileName} numberOfLines={2}>{w.name}</Text>
+                      <Text style={styles.tileTag} numberOfLines={1}>{w.tagline}</Text>
+                    </Pressable>
+                  ))}
+                </View>
+              ) : null}
             </View>
           );
         })}
@@ -260,11 +301,11 @@ const styles = StyleSheet.create({
     gap: 5,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: 'rgba(55,224,95,.6)',
-    backgroundColor: '#0c2012',
+    borderColor: 'rgba(240,240,240,.5)',
+    backgroundColor: '#181818',
     paddingHorizontal: 10,
     paddingVertical: 6,
   },
-  keyBtnGlyph: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, color: colors.green, marginTop: -1 },
-  keyBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: '#8ff0a8' },
+  keyBtnGlyph: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, color: colors.textPrimary, marginTop: -1 },
+  keyBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textPrimary },
 });
