@@ -1285,13 +1285,54 @@ export function TubeVsTransistorView({
   const bot = h - 22;
   const tcx = half * 0.5;
   const rx = half + half * 0.5;
+  const midY = (top + bot) / 2;
+
+  // LEFT interior stack (a MINI version of the Inside cutaway — same mental
+  // model, owner 2026-08-10: plate BOX around a central cathode, flow OUTWARD).
+  const stackT = top + 16;
+  const stackB = bot - 22;
+  const heaterCy = (stackT + stackB) / 2;
+
+  // RIGHT conduction conduit (owner 2026-08-10): carriers move ONLY through the
+  // defined path — emitter leg → emitter region → across the thin base →
+  // collector region → collector leg. Never free-floating like vacuum
+  // electrons; the confinement IS the lesson.
+  const condPts = useMemo(() => {
+    const pts = [
+      [rx - 16, bot],
+      [rx - 16, midY + 12],
+      [rx, midY + 8],
+      [rx, midY - 14],
+      [rx + 16, midY - 10],
+      [rx + 16, bot],
+    ];
+    const cum = [0];
+    for (let i = 1; i < pts.length; i++) {
+      cum.push(cum[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+    }
+    return { xs: pts.map((p) => p[0]), ys: pts.map((p) => p[1]), cum, total: cum[cum.length - 1] };
+  }, [rx, bot, midY]);
 
   const art = useMemo(() => {
     // LEFT — a real mini bottle.
     const bottle = makeBottlePath(tcx, top, bot - 4, 34, 22);
     const streak = makeStreakPath(tcx, top, bot - 4, 34, 22);
+    // Blue control-grid rungs between cathode and plate (cutaway style).
     const grid = Skia.Path.Make();
-    for (let i = -2; i <= 2; i++) grid.addCircle(tcx + i * 9, (top + bot) / 2, 1.8);
+    for (const sgn of [-1, 1]) {
+      for (let y = stackT + 6; y <= stackB - 6; y += 8) {
+        grid.moveTo(tcx + sgn * 14 - 3.5, y);
+        grid.lineTo(tcx + sgn * 14 + 3.5, y);
+      }
+    }
+    // Tiny orange heater zigzag inside the cathode.
+    const heater = Skia.Path.Make();
+    for (let i = 0; i <= 5; i++) {
+      const y = stackT + 8 + ((stackB - stackT - 16) * i) / 5;
+      const x = tcx + (i % 2 === 0 ? -2 : 2);
+      if (i === 0) heater.moveTo(x, y);
+      else heater.lineTo(x, y);
+    }
 
     // RIGHT — a TO-92 transistor package: D-shaped body, flat face, 3 legs.
     const body = Skia.Path.Make();
@@ -1305,36 +1346,75 @@ export function TubeVsTransistorView({
     body.lineTo(rx + bw2, bBot);
     body.close();
 
+    // Emitter + collector legs (outer two); the BASE leg is drawn separately in
+    // blue — the control electrode, same ink as the tube's grid.
     const legs = Skia.Path.Make();
-    for (const dx of [-16, 0, 16]) {
+    for (const dx of [-16, 16]) {
       legs.moveTo(rx + dx, bBot);
       legs.lineTo(rx + dx, bot);
     }
-    return { bottle, streak, grid, body, legs, bTop, bBot, bw2 };
-  }, [tcx, rx, top, bot]);
+    const baseLeg = Skia.Path.Make();
+    baseLeg.moveTo(rx, bot);
+    baseLeg.lineTo(rx, bBot);
 
-  // The mini tube's filament breathes.
-  const filR = useDerivedValue(() => 9 + 2 * Math.sin(phase.value), [phase]);
+    // The conduit guide the carriers ride (drawn faintly, so the CONFINED path
+    // is visible — the whole point of the comparison).
+    const conduit = Skia.Path.Make();
+    conduit.moveTo(rx - 16, bot);
+    conduit.lineTo(rx - 16, midY + 12);
+    conduit.lineTo(rx, midY + 8);
+    conduit.lineTo(rx, midY - 14);
+    conduit.lineTo(rx + 16, midY - 10);
+    conduit.lineTo(rx + 16, bot);
 
+    return { bottle, streak, grid, heater, body, legs, baseLeg, conduit, bTop, bBot, bw2 };
+  }, [tcx, rx, top, bot, stackT, stackB, midY]);
+
+  // The mini tube's heater glow breathes at the cathode centre.
+  const filR = useDerivedValue(() => 8 + 1.8 * Math.sin(phase.value), [phase]);
+  // The base "gate" pulses — a small control signal admitting a large flow.
+  const baseR = useDerivedValue(() => 3 + 1.4 * (0.5 + 0.5 * Math.sin(phase.value * 2)), [phase]);
+
+  const condXs = condPts.xs;
+  const condYs = condPts.ys;
+  const condCum = condPts.cum;
+  const condTotal = condPts.total;
   const carriers = useDerivedValue(() => {
     const ph = phase.value;
     const p = Skia.Path.Make();
-    // Tube: electrons crossing open vacuum, cathode → plate (upward).
+    // TUBE: electrons fly OUTWARD from the central cathode across open vacuum
+    // to the plate walls — the same picture the cutaway teaches.
     for (let i = 0; i < 12; i++) {
+      const sgn = i % 2 === 0 ? 1 : -1;
+      const y = stackT + 7 + hashW(i * 23.1) * (stackB - stackT - 14);
       const f = (ph / (2 * Math.PI) + hashW(i * 31.7)) % 1;
-      const x = tcx - 16 + hashW(i * 7.3) * 32;
-      p.addCircle(x, bot - 18 - f * (bot - top - 34), 1.8);
+      p.addCircle(tcx + sgn * (8 + f * 15), y + 1.5 * Math.sin(ph * 2 + i), 1.8);
     }
-    // Transistor: carriers crossing the junctions, emitter → collector.
-    for (let i = 0; i < 12; i++) {
-      const f = (ph / (2 * Math.PI) + hashW(i * 13.9)) % 1;
-      const x = rx - 24 + hashW(i * 5.9) * 48;
-      p.addCircle(x, bot - 12 - f * (bot - top - 24), 1.8);
+    // A little space-charge cloud hugging the cathode.
+    for (let i = 0; i < 5; i++) {
+      const y = stackT + 8 + hashW(i * 5.7) * (stackB - stackT - 16);
+      p.addCircle(tcx + (hashW(i * 9.1) - 0.5) * 7, y, 1.4);
+    }
+    // TRANSISTOR: carriers in single file ALONG the conduit — evenly spaced
+    // beads walking the path, never leaving it.
+    for (let i = 0; i < 10; i++) {
+      const f = ((ph / (2 * Math.PI)) * 0.5 + i / 10) % 1;
+      const s = f * condTotal;
+      for (let k = 1; k < 6; k++) {
+        if (s <= condCum[k]) {
+          const t = (s - condCum[k - 1]) / Math.max(1e-6, condCum[k] - condCum[k - 1]);
+          p.addCircle(
+            condXs[k - 1] + (condXs[k] - condXs[k - 1]) * t,
+            condYs[k - 1] + (condYs[k] - condYs[k - 1]) * t,
+            1.8,
+          );
+          break;
+        }
+      }
     }
     return p;
-  }, [phase, tcx, rx, half, top, bot]);
+  }, [phase, tcx, stackT, stackB, condXs, condYs, condCum, condTotal]);
 
-  const midY = (top + bot) / 2;
   const faceX = rx - art.bw2 + 6;
   const faceY = art.bTop + 8;
   const faceW = art.bw2 * 2 - 12;
@@ -1345,23 +1425,20 @@ export function TubeVsTransistorView({
       {/* Divider. */}
       <SkLine p1={{ x: half, y: 8 }} p2={{ x: half, y: h - 8 }} color={GHOST} strokeWidth={1.4} />
 
-      {/* ── LEFT: mini glowing tube ── */}
-      <Circle cx={tcx} cy={bot - 16} r={20} color={GLOW} opacity={0.28}>
-        <BlurMask blur={14} style="normal" />
+      {/* ── LEFT: mini cutaway tube — plate box · blue grid · teal cathode ── */}
+      {/* Card-style plate box around the works (amber ink). */}
+      <RoundedRect x={tcx - 26} y={stackT} width={52} height={stackB - stackT} r={4} color="#0e0e12" opacity={0.8} />
+      <RoundedRect x={tcx - 26} y={stackT} width={52} height={stackB - stackT} r={4} color={INK.plate} style="stroke" strokeWidth={1.8} opacity={0.9} />
+      {/* Control grid rungs (blue ink). */}
+      <Path path={art.grid} color={INK.grid} style="stroke" strokeWidth={1.4} />
+      {/* Heater glow + solid teal cathode at the centre. */}
+      <Circle cx={tcx} cy={heaterCy} r={filR} color={GLOW} opacity={0.4}>
+        <BlurMask blur={8} style="normal" />
       </Circle>
-      <Circle cx={tcx} cy={bot - 16} r={filR} color={FILAMENT_CORE} opacity={0.55}>
-        <BlurMask blur={6} style="normal" />
-      </Circle>
-      {/* Cathode bar (bottom, teal ink) and plate bar (top, amber ink). */}
-      <RoundedRect x={tcx - 20} y={bot - 16.5} width={40} height={5} r={2.2}>
-        <LinearGradient start={vec(tcx - 20, bot - 16.5)} end={vec(tcx - 20, bot - 11.5)} colors={[METAL_LIGHT, METAL_DARK]} />
+      <RoundedRect x={tcx - 5} y={stackT + 3} width={10} height={stackB - stackT - 6} r={4}>
+        <LinearGradient start={vec(tcx - 5, stackT)} end={vec(tcx + 5, stackT)} colors={['#63e2d4', '#2fae9f', '#1d7f73']} />
       </RoundedRect>
-      <RoundedRect x={tcx - 20} y={bot - 16.5} width={40} height={5} r={2.2} color={INK.cathode} style="stroke" strokeWidth={1.1} opacity={0.75} />
-      <RoundedRect x={tcx - 20} y={top + 11} width={40} height={6} r={2.5}>
-        <LinearGradient start={vec(tcx - 20, top + 11)} end={vec(tcx - 20, top + 17)} colors={[PLATE_LIGHT, PLATE_DARK]} />
-      </RoundedRect>
-      <RoundedRect x={tcx - 20} y={top + 11} width={40} height={6} r={2.5} color={INK.plate} style="stroke" strokeWidth={1.1} opacity={0.8} />
-      <Path path={art.grid} color={INK.grid} />
+      <Path path={art.heater} color={INK.heater} style="stroke" strokeWidth={1.4} />
       {/* Glass over the internals. */}
       <Path path={art.bottle}>
         <LinearGradient start={vec(tcx - 34, top)} end={vec(tcx + 34, top)} colors={['#8f97a822', '#58607012', '#47506018']} />
@@ -1372,9 +1449,11 @@ export function TubeVsTransistorView({
         <BlurMask blur={1.5} style="normal" />
       </Path>
 
-      {/* ── RIGHT: TO-92 transistor package ── */}
+      {/* ── RIGHT: TO-92 — carriers CONFINED to the conduction path ── */}
       <Path path={art.legs} color={METAL_DARK} style="stroke" strokeWidth={3.4} />
       <Path path={art.legs} color={METAL_LIGHT} style="stroke" strokeWidth={1.2} opacity={0.55} />
+      {/* Base leg in the CONTROL ink (blue — the transistor's "grid"). */}
+      <Path path={art.baseLeg} color={INK.grid} style="stroke" strokeWidth={3.2} opacity={0.85} />
       <Path path={art.body}>
         <LinearGradient start={vec(rx - art.bw2, art.bTop)} end={vec(rx + art.bw2, art.bBot)} colors={['#33333c', '#232329', '#17171c']} />
       </Path>
@@ -1383,14 +1462,21 @@ export function TubeVsTransistorView({
       <RoundedRect x={faceX} y={faceY} width={faceW} height={faceH} r={5}>
         <LinearGradient start={vec(faceX, faceY)} end={vec(faceX + faceW, faceY + faceH)} colors={['#3b3d47', '#26262d']} />
       </RoundedRect>
-      {/* Junction-layer inset: collector / thin base / emitter. */}
+      {/* Junction stack: collector / thin BASE (control blue) / emitter. */}
       <RoundedRect x={faceX + 5} y={midY - 22} width={faceW - 10} height={16} r={2}>
         <LinearGradient start={vec(0, midY - 22)} end={vec(0, midY - 6)} colors={['#54627a', '#3c4658']} />
       </RoundedRect>
-      <RoundedRect x={faceX + 5} y={midY - 5} width={faceW - 10} height={5} r={1.5} color={WAVE} opacity={0.75} />
+      <RoundedRect x={faceX + 5} y={midY - 5} width={faceW - 10} height={5} r={1.5} color={INK.grid} opacity={0.85} />
       <RoundedRect x={faceX + 5} y={midY + 1} width={faceW - 10} height={16} r={2}>
         <LinearGradient start={vec(0, midY + 1)} end={vec(0, midY + 17)} colors={['#4a5568', '#333c4b']} />
       </RoundedRect>
+      {/* The conduction conduit — visible, so "confined" is unmistakable. */}
+      <Path path={art.conduit} color={ELECTRON} style="stroke" strokeWidth={4.5} opacity={0.14} strokeJoin="round" />
+      <Path path={art.conduit} color={ELECTRON} style="stroke" strokeWidth={1.2} opacity={0.4} strokeJoin="round" />
+      {/* The base gate pulsing where the path crosses the thin blue layer. */}
+      <Circle cx={rx} cy={midY - 2.5} r={baseR} color={INK.grid} opacity={0.8}>
+        <BlurMask blur={4} style="normal" />
+      </Circle>
 
       {/* Carriers: halo + cores. */}
       <Path path={carriers} color={ELECTRON} opacity={0.4}>
