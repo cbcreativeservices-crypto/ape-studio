@@ -16,7 +16,9 @@
  */
 import { createContext, useContext, useMemo, useState, type ReactNode } from 'react';
 import { StyleSheet, Text, type StyleProp, type TextStyle } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { GlossaryTermPopup } from './GlossaryTermPopup';
+import { calcLinkForTerm } from '../../screens/lab/calc/calcGlossaryLinks';
 
 // Verified present in the `glossary` table (lowercased match keys). Longer
 // phrases must precede their sub-words so "cutoff frequency" wins over
@@ -85,18 +87,47 @@ export function GlossaryText({
   style?: StyleProp<TextStyle>;
 }) {
   const open = useContext(OpenCtx);
+  // For split-word calculator links (owner 2026-08-10). Loose type: this deep
+  // link targets the root stack from wherever the lab text renders.
+  const navigation = useNavigation<{ navigate: (route: string, params?: object) => void }>();
   const segs = useMemo(() => (open ? linkifyGlossary(children) : [{ text: children }]), [children, open]);
   return (
     <Text style={style}>
-      {segs.map((s, i) =>
-        s.term && open ? (
+      {segs.map((s, i) => {
+        if (!s.term || !open) return <Text key={i}>{s.text}</Text>;
+        // A term that is ALSO calculator-backed splits (owner 2026-08-10): the
+        // LEFT half of the word is BLUE → glossary definition; the RIGHT half
+        // is PURPLE → the calculator that uses it. One word, both doors.
+        const calc = calcLinkForTerm(s.term);
+        if (calc) {
+          const mid = Math.ceil(s.text.length / 2);
+          return (
+            <Text key={i}>
+              <Text
+                style={styles.link}
+                suppressHighlighting
+                accessibilityLabel={`${s.text} — open the glossary definition`}
+                onPress={() => open(s.term!)}
+              >
+                {s.text.slice(0, mid)}
+              </Text>
+              <Text
+                style={styles.linkCalc}
+                suppressHighlighting
+                accessibilityLabel={`${s.text} — open in the calculator`}
+                onPress={() => navigation.navigate('CalcWorkspace', { id: calc.workspaceId })}
+              >
+                {s.text.slice(mid)}
+              </Text>
+            </Text>
+          );
+        }
+        return (
           <Text key={i} style={styles.link} suppressHighlighting onPress={() => open(s.term!)}>
             {s.text}
           </Text>
-        ) : (
-          <Text key={i}>{s.text}</Text>
-        ),
-      )}
+        );
+      })}
     </Text>
   );
 }
@@ -105,4 +136,7 @@ const styles = StyleSheet.create({
   // The app's glossary-link blue (matches the glossary screen's termLink), so a
   // tappable term reads the same everywhere.
   link: { color: '#9fbede', textDecorationLine: 'underline', textDecorationColor: 'rgba(159,190,222,0.4)' },
+  // The calculator-link purple (colors.purple — matches the glossary screen's
+  // termLinkCalc) — the right half of a split dual-role word.
+  linkCalc: { color: '#b45bff', textDecorationLine: 'underline', textDecorationColor: 'rgba(168,130,255,0.4)' },
 });

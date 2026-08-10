@@ -323,19 +323,33 @@ function LinkedText({
     <Text style={style}>
       {segs.map((s, i) => {
         if (!s.ids) return <Text key={i}>{highlightNodes(s.text, highlight)}</Text>;
-        // A calculator-backed word links straight to its calculator (owner
-        // 2026-08-07): purple, and the tap opens the workspace rather than the
-        // glossary cross-link. Falls back to the normal blue link otherwise.
+        // A word that is BOTH a glossary term AND calculator-backed is SPLIT
+        // (owner 2026-08-10): the LEFT half of its letters is BLUE and opens the
+        // glossary definition; the RIGHT half is PURPLE and opens the calculator
+        // using it — one word, both doors, in the app's existing color code.
+        // (Previously the purple calculator link replaced the blue one entirely,
+        // losing the definition path.)
         const calc = onOpenCalc ? calcLinkForTerm(s.text) : null;
         if (calc) {
+          const mid = Math.ceil(s.text.length / 2);
           return (
-            <Text
-              key={i}
-              style={styles.termLinkCalc}
-              suppressHighlighting
-              onPress={() => onOpenCalc!(calc.workspaceId)}
-            >
-              {s.text}
+            <Text key={i}>
+              <Text
+                style={styles.termLink}
+                suppressHighlighting
+                accessibilityLabel={`${s.text} — open the glossary definition`}
+                onPress={() => onLink(s.ids!)}
+              >
+                {s.text.slice(0, mid)}
+              </Text>
+              <Text
+                style={styles.termLinkCalc}
+                suppressHighlighting
+                accessibilityLabel={`${s.text} — open in the calculator`}
+                onPress={() => onOpenCalc!(calc.workspaceId)}
+              >
+                {s.text.slice(mid)}
+              </Text>
             </Text>
           );
         }
