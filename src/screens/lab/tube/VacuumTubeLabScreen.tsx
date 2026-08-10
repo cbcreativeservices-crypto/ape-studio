@@ -438,9 +438,26 @@ export function VacuumTubeLabScreen() {
         </Text>
         {!skiaAvailable ? <VizUnavailableCard /> : null}
         <View style={styles.chipRow}>
-          {SECTIONS.map((sec, i) => (
-            <LabChip key={sec.key} label={sec.label} selected={sectionIdx === i} onPress={() => setSectionIdx(i)} />
-          ))}
+          {SECTIONS.map((sec, i) => {
+            const on = sectionIdx === i;
+            // REFERENCE tab is GREEN (owner 2026-08-10) to flag the tube library
+            // apart from the amber concept sections; the rest stay LabChip amber.
+            if (sec.key === 'classics') {
+              return (
+                <Pressable
+                  key={sec.key}
+                  style={[styles.refChip, on && styles.refChipOn]}
+                  onPress={() => setSectionIdx(i)}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: on }}
+                  accessibilityLabel={`${sec.label} — tube reference library`}
+                >
+                  <Text style={[styles.refChipText, on && styles.refChipTextOn]}>{sec.label}</Text>
+                </Pressable>
+              );
+            }
+            return <LabChip key={sec.key} label={sec.label} selected={on} onPress={() => setSectionIdx(i)} />;
+          })}
         </View>
         <Text style={styles.sectionTitle}>{s.title}</Text>
         <Text style={styles.body}>{s.blurb}</Text>
@@ -510,13 +527,25 @@ const styles = StyleSheet.create({
   refBtn: {
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: 'rgba(255,198,77,.55)',
-    backgroundColor: '#1a1409',
+    borderColor: 'rgba(55,224,95,.6)',
+    backgroundColor: '#0c2012',
     paddingVertical: 13,
     alignItems: 'center',
     marginTop: 2,
   },
-  refBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.3, color: colors.amber },
+  refBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.3, color: colors.green },
+  // Green REFERENCE section tab (owner 2026-08-10).
+  refChip: {
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(55,224,95,.55)',
+    backgroundColor: '#0c1a10',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+  },
+  refChipOn: { borderColor: colors.green, backgroundColor: '#0e2414' },
+  refChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8, color: colors.green },
+  refChipTextOn: { color: colors.greenBright },
   // Bottom guided-lesson row — mirrors LabShell v2's lessonRow styling.
   lessonRow: {
     borderRadius: 9,
