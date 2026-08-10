@@ -10,7 +10,7 @@
  * only arranges hierarchy, cleans recipient-facing language, and stamps
  * branding + a reference report id.
  */
-import { BRAND, brandName } from '../../../features/commercial/brand';
+import { BRAND, brandName, shareFooterLines } from '../../../features/commercial/brand';
 import type { SavedRunSummary } from './workflowModel';
 
 export type SharedReportValue = {
@@ -28,7 +28,7 @@ export type SharedReportValue = {
 export type SharedCalculatorReport = {
   reportId: string;
   reportType: 'calculator' | 'workflow';
-  companyName: string; // brandName() — carries ® when approved
+  companyName: string; // brandName() — no ® (owner 2026-08-10)
   reportLabel: string; // "Professional Audio Engineering Calculator" | "…Workflow"
   title: string; // calculator or workflow name — never truncated
   subtitle?: string; // e.g. the specific function on a single calculator
@@ -39,7 +39,10 @@ export type SharedCalculatorReport = {
   results: SharedReportValue[];
   notes: string[];
   warnings: string[];
-  footer: { generatedWith: string; companyName: string; productLine: string; website: string };
+  /** Common footer content (shared across ALL share surfaces). Owner 2026-08-10:
+   *  product line + tappable website only — NO "Generated with", NO trailing
+   *  company wordmark. */
+  footer: { lines: string[] };
 };
 
 // ---------------------------------------------------------------------------
@@ -112,12 +115,8 @@ const isWarningText = (s: string) =>
 // ---------------------------------------------------------------------------
 
 function footer() {
-  return {
-    generatedWith: BRAND.generatedWith,
-    companyName: brandName(),
-    productLine: BRAND.productLine,
-    website: BRAND.website,
-  };
+  // The ONE shared footer — identical on glossary, calc, and measurement shares.
+  return { lines: shareFooterLines() };
 }
 
 /** Build a report from a completed WORKFLOW summary (may be a single step). */
@@ -287,12 +286,10 @@ export function reportToText(r: SharedCalculatorReport): string {
     for (const w of r.warnings) L.push(`• ${w}`);
   }
 
-  // Footer
+  // Footer — the ONE shared branding block (product line + website), NO trailing
+  // company wordmark (owner 2026-08-10). Report ID kept as calc-only metadata.
   L.push(RULE);
-  L.push(r.footer.generatedWith);
-  L.push(r.footer.companyName);
-  L.push(r.footer.productLine);
-  L.push(r.footer.website);
+  for (const line of r.footer.lines) L.push(line);
   L.push(`Report ID: ${r.reportId}`);
 
   return L.join('\n');

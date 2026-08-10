@@ -20,6 +20,7 @@
 import { memo, useCallback, useMemo, useState } from 'react';
 import { Alert, FlatList, Pressable, Share, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { BRAND, shareFooterLines, shareHeaderLines } from '../../features/commercial/brand';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { compareCompatibility } from '../../features/tools/measure/compare';
 import { deleteMeasurement, useMeasurements } from '../../features/tools/measure/measurementStore';
@@ -62,13 +63,21 @@ function measurementToText(m: SavedMeasurement): string {
 
 async function shareMeasurements(ms: SavedMeasurement[]): Promise<void> {
   if (ms.length === 0) return;
-  const body =
+  // Common branding (owner 2026-08-10): the SAME header + footer as every other
+  // share surface — no more stale "AP&E" abbreviation, no missing footer.
+  const subtitle = ms.length === 1 ? 'Saved Measurement' : `Saved Measurements · ${ms.length}`;
+  const header = shareHeaderLines(subtitle).join('\n');
+  const middle =
     ms.length === 1
       ? measurementToText(ms[0])
-      : `AP&E — ${ms.length} saved measurements\n\n` +
-        ms.map(measurementToText).join('\n\n──────────\n\n');
+      : ms.map(measurementToText).join('\n\n──────────\n\n');
+  const footer = ['──────────', ...shareFooterLines()].join('\n');
+  const body = `${header}\n\n${middle}\n\n${footer}`;
   try {
-    await Share.share({ title: ms.length === 1 ? ms[0].title : 'AP&E saved measurements', message: body });
+    await Share.share({
+      title: ms.length === 1 ? ms[0].title : `${BRAND.name} — saved measurements`,
+      message: body,
+    });
   } catch {
     // User dismissed the share sheet, or the OS reported no target — non-fatal.
   }

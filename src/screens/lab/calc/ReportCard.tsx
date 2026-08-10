@@ -102,19 +102,27 @@ export const ReportCard = forwardRef<View, { report: SharedCalculatorReport }>(f
         </>
       ) : null}
 
-      {/* Footer — restrained; branding stays secondary to the calculation. */}
+      {/* Footer — the ONE shared branding block (product line + website), NO
+          trailing company wordmark (owner 2026-08-10). The last line is the
+          tappable website; any lines before it are the product tagline. */}
       <View style={styles.rule} />
-      <Text style={styles.footGen}>{r.footer.generatedWith}</Text>
-      <Text style={styles.footBrand}>{r.footer.companyName}</Text>
-      <Text style={styles.footLine}>{r.footer.productLine}</Text>
-      <Text
-        style={styles.footWebsite}
-        accessibilityRole="link"
-        accessibilityLabel={`Website ${r.footer.website}`}
-        onPress={() => Linking.openURL(`https://${r.footer.website}`).catch(() => {})}
-      >
-        {r.footer.website}
-      </Text>
+      {r.footer.lines.map((line, i) =>
+        i === r.footer.lines.length - 1 ? (
+          <Text
+            key={i}
+            style={styles.footWebsite}
+            accessibilityRole="link"
+            accessibilityLabel={`Website ${line}`}
+            onPress={() => Linking.openURL(line).catch(() => {})}
+          >
+            {line}
+          </Text>
+        ) : (
+          <Text key={i} style={styles.footLine}>
+            {line}
+          </Text>
+        ),
+      )}
       <Text style={styles.reportId}>Report ID: {r.reportId}</Text>
     </View>
   );
@@ -145,8 +153,6 @@ const styles = StyleSheet.create({
   bullet: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 19, color: '#c7ccd6', marginTop: 5 },
   warnBullet: { color: '#f2c9a0' },
 
-  footGen: { fontFamily: fonts.barlowRegular, fontSize: 12, color: '#8a909c', textAlign: 'center' },
-  footBrand: { fontFamily: fonts.oswaldSemiBold, fontSize: 13.5, letterSpacing: 0.8, color: colors.amber, textAlign: 'center', marginTop: 2 },
   footLine: { fontFamily: fonts.barlowRegular, fontSize: 12, color: '#9aa0ad', textAlign: 'center', marginTop: 2 },
   footWebsite: { fontFamily: fonts.barlowSemiBold, fontSize: 12.5, color: '#7fa8ff', textAlign: 'center', marginTop: 2 },
   reportId: { fontFamily: fonts.mono, fontSize: 11, color: '#6b7180', textAlign: 'center', marginTop: 8 },

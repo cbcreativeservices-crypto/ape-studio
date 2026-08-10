@@ -11,7 +11,7 @@
  * Branding is restrained and comes from the single BRAND source of truth; the
  * old sign-off "— from the Pro Audio Training Academy glossary" is retired.
  */
-import { BRAND } from '../commercial/brand';
+import { BRAND, shareFooterLines, websiteUrl } from '../commercial/brand';
 
 // --- Sections the user can include ------------------------------------------
 export type ShareSections = {
@@ -55,11 +55,10 @@ export type GlossaryShareTerm = {
 /** Above this many terms in one share, the UI warns the message will be long. */
 export const LARGE_SHARE_THRESHOLD = 25;
 
-// --- Brand strings (restrained; single source of truth) ---------------------
-const COMPANY = BRAND.name; // "Pro Audio Training Academy" — no ® in glossary shares (spec)
-// Tappable full URL (owner 2026-08-06): a bare domain isn't a live link in many
-// messaging apps — always emit the https:// form.
-export const WEBSITE = /^https?:\/\//i.test(BRAND.website) ? BRAND.website : `https://${BRAND.website}`;
+// --- Brand strings (single source of truth) ---------------------------------
+const COMPANY = BRAND.name; // "Pro Audio Training Academy" — no ® on shares (2026-08-10)
+// Tappable full URL — the ONE canonical website string (always https://).
+export const WEBSITE = websiteUrl();
 export const GLOSSARY_TAGLINE = 'Free Professional Audio Glossary';
 const SINGLE_SOURCE = `${COMPANY} Glossary`;
 const MULTI_HEADER_LINE2 = 'Professional Audio Glossary';
@@ -142,11 +141,10 @@ export function singleTermText(t: GlossaryShareTerm, s: ShareSections): string {
     if (related.length) L.push('', 'RELATED TERMS', ...bulletList(related));
   }
 
-  // Compact, restrained footer — NO company-name line (owner 2026-08-06): the
-  // source "Pro Audio Training Academy Glossary" already appears at the top, so
-  // repeating the company at the end is a redundant branding tag. Just the
-  // tagline + tappable website.
-  L.push('', GLOSSARY_TAGLINE, WEBSITE);
+  // The ONE shared footer (owner 2026-08-10) — identical across glossary, calc
+  // and measurement shares. NO trailing company wordmark (the source line at
+  // the top already names us).
+  L.push('', ...shareFooterLines());
   return L.join('\n');
 }
 
@@ -171,7 +169,7 @@ export function multiTermText(terms: GlossaryShareTerm[], s: ShareSections): str
     if (related.length) L.push('', 'RELATED TERMS', ...bulletList(related));
   }
 
-  L.push('', GLOSSARY_TAGLINE, WEBSITE);
+  L.push('', ...shareFooterLines());
   return L.join('\n');
 }
 

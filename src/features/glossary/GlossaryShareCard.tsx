@@ -12,12 +12,10 @@
 import { forwardRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../theme/tokens';
-import { BRAND } from '../commercial/brand';
+import { BRAND, shareFooterLines } from '../commercial/brand';
 import {
   dedupeRelated,
   termHeading,
-  GLOSSARY_TAGLINE,
-  WEBSITE,
   type GlossaryShareTerm,
   type ShareSections,
 } from './glossaryShare';
@@ -114,11 +112,20 @@ export const GlossaryShareCard = forwardRef<
         </>
       ) : null}
 
-      {/* Footer — restrained; content stays the focus. No company-name line
-          (owner 2026-08-06): the source line already names the glossary. */}
+      {/* Footer — the ONE shared branding block (owner 2026-08-10): product line
+          + website, identical across every share surface. No trailing wordmark. */}
       <View style={styles.rule} />
-      <Text style={styles.footLine}>{GLOSSARY_TAGLINE}</Text>
-      <Text style={styles.footWebsite}>{WEBSITE}</Text>
+      {shareFooterLines().map((line, i) =>
+        i === shareFooterLines().length - 1 ? (
+          <Text key={i} style={styles.footWebsite}>
+            {line}
+          </Text>
+        ) : (
+          <Text key={i} style={styles.footLine}>
+            {line}
+          </Text>
+        ),
+      )}
     </View>
   );
 });
