@@ -10,6 +10,7 @@
  */
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../theme/tokens';
+import { NavIcon } from '../../components/nav/NavIcon';
 import type { DeckMode } from '../../features/dashboard/deckOrderStore';
 
 type Item = { id: string; name: string };
@@ -57,7 +58,16 @@ export function TopicDeckSheet({
         {/* Panel — swallow taps so they don't close the sheet. */}
         <Pressable style={styles.panel} onPress={() => {}}>
           <View style={styles.head}>
-            <Text style={styles.title}>TOPIC DECK</Text>
+            {/* Study icon to the LEFT of the title (owner 2026-08-06) — matches
+                the header button that opens this sheet. */}
+            <View style={styles.headLeft}>
+              <View style={styles.headIcon}>
+                <View style={{ transform: [{ scale: 1.2 }] }}>
+                  <NavIcon icon="Study" lit showLabel={false} />
+                </View>
+              </View>
+              <Text style={styles.title}>TOPIC DECK</Text>
+            </View>
             <Pressable onPress={onClose} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close">
               <Text style={styles.close}>✕</Text>
             </Pressable>
@@ -181,6 +191,8 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   head: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  headLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  headIcon: { width: 26, height: 26, alignItems: 'center', justifyContent: 'center' },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.6, color: colors.textPrimary },
   close: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, color: colors.textSub },
 
