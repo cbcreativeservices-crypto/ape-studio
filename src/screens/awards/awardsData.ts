@@ -159,6 +159,18 @@ export type ProgramPath = {
 /** The 6 DAW electives shared by the Music Production & Electronic Music certs. */
 const DAW_ELECTIVES = [1270, 1280, 1290, 1300, 1310, 1320];
 
+/**
+ * ⚠ LEGACY / PARTIALLY DEAD (audit 2026-08-10). The `requiredTopics` /
+ * `electiveChooseOne` / `specializationTopics` gs below are PRE-v3 (legacy
+ * global_sequence). Live award topic membership now comes from the Supabase
+ * fetch (fetchV3Programs / fetchV3Certs → V3Credential.topicsGs), which
+ * AwardsScreen and EnrollmentScreen use — the topic-gs arrays here are NOT read
+ * for enrollment or topic resolution anywhere. What IS still (stalely) consumed:
+ * CourseSelectionScreen reads only `PROGRAM_PATHS.length` / `.name` and
+ * `SPECIALIZED_CERTIFICATES.length` for its "+N programs / +N certificates"
+ * tally cards — those counts (16 / 69) are stale vs live v3 (36 / 128) and
+ * should be re-pointed at the v3 fetch. Do NOT trust the gs here as valid v3.
+ */
 export const PROGRAM_PATHS: ProgramPath[] = [
   {
     name: 'Live Sound Production',
