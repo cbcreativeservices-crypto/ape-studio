@@ -1,32 +1,29 @@
 /**
- * TubeCardScreen — full-screen viewer for one tube reference card
+ * TubeCardScreen — viewer for one tube reference card
  * (spec: docs/APE_TUBE_REFERENCE_SPEC_2026_08_09.md).
  *
- * The cards are dense (2160×3840 — pin tables, ratings), so the viewer is a
- * zoomable surface: PINCH to zoom (1–4×), PAN when zoomed (clamped to the
- * card), SWIPE left/right when un-zoomed to move between tubes, DOUBLE-TAP to
- * toggle 1× ↔ 2.5×.
+ * LAYOUT (owner 2026-08-10): a FIXED nav bar sits ABOVE the image in its own
+ * space — it never overlays the card, and tube navigation is by the bar's
+ * ‹ / › arrows, NOT by swiping the image. Earlier a swipe-between-tubes gesture
+ * fought the image's pan/zoom for the same drags; removing it leaves the image
+ * area doing ONE job: pinch-zoom (1–4×) + pan when zoomed + double-tap 1×↔2.5×.
  *
- * DELIBERATELY built on core RN only (PanResponder + Animated): the project
- * has no react-native-gesture-handler / expo-image, and adding native modules
- * would leave this feature dark until the next EAS dev build (the same
- * constraint keyboardControllerSafe exists for). Native URL caching (Fresco /
- * NSURLCache) + Image.prefetch of the neighbours keeps paging snappy.
- *
- * Transform order [{translateX},{translateY},{scale}] keeps translation in
- * screen pixels (translate composes before the centre-anchored scale).
+ * DELIBERATELY core RN only (PanResponder + Animated + Image): the project has
+ * no gesture-handler / expo-image, and a native add would stay dark until the
+ * next EAS dev build. Native URL caching + Image.prefetch of neighbours keeps
+ * paging snappy.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Animated,
   Image,
+  type LayoutChangeEvent,
   PanResponder,
   Pressable,
   StyleSheet,
   Text,
   View,
-  useWindowDimensions,
 } from 'react-native';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -39,14 +36,12 @@ import { TUBE_CARD_ASPECT, TUBE_FAMILY_META, TUBE_REFS, tubeImageUrl } from './t
 
 const MAX_SCALE = 4;
 const DOUBLE_TAP_SCALE = 2.5;
-const SWIPE_DISTANCE = 72; // px of horizontal drag that commits a tube change
 const clamp = (x: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, x));
 
 export function TubeCardScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'TubeCard'>>();
-  const { width: screenW, height: screenH } = useWindowDimensions();
   const { entitlement } = useEntitlement();
   const unlocked = entitlement === 'academy';
 
@@ -55,45 +50,20 @@ export function TubeCardScreen() {
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
   const [retryKey, setRetryKey] = useState(0);
-
-  // CHROME (owner 2026-08-10): the cards are full-bleed designs — persistent
-  // bars were hiding real content (the card title up top, the wiring panel at
-  // the bottom). So the resting state is a CLEAN full-screen image: the bars
-  // show briefly on entry (so back/arrows are discoverable), auto-hide, and a
-  // SINGLE TAP toggles them back. Double-tap stays the zoom toggle.
-  const [chrome, setChrome] = useState(true);
-  const chromeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const singleTapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const armChromeAutoHide = () => {
-    if (chromeTimer.current) clearTimeout(chromeTimer.current);
-    chromeTimer.current = setTimeout(() => setChrome(false), 2500);
-  };
-  // Stable (setState-functional + refs only) so the memoized PanResponder's
-  // captured instance never goes stale.
-  const toggleChrome = () => {
-    setChrome((c) => {
-      if (chromeTimer.current) clearTimeout(chromeTimer.current);
-      if (!c) armChromeAutoHide();
-      return !c;
-    });
-  };
-  useEffect(() => {
-    armChromeAutoHide();
-    return () => {
-      if (chromeTimer.current) clearTimeout(chromeTimer.current);
-      if (singleTapTimer.current) clearTimeout(singleTapTimer.current);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
   const tube = TUBE_REFS[idx];
   const famTitle = TUBE_FAMILY_META.find((f) => f.key === tube.family)?.title ?? '';
 
-  // Fitted (contain) card size at scale 1.
-  const imgW = Math.min(screenW, screenH * TUBE_CARD_ASPECT);
+  // The image area measures itself (space BELOW the fixed nav bar). The card is
+  // fitted (contain) inside it at scale 1.
+  const [area, setArea] = useState({ w: 0, h: 0 });
+  const onAreaLayout = (e: LayoutChangeEvent) => {
+    const { width, height } = e.nativeEvent.layout;
+    setArea((a) => (a.w === width && a.h === height ? a : { w: width, h: height }));
+  };
+  const imgW = area.w > 0 && area.h > 0 ? Math.min(area.w, area.h * TUBE_CARD_ASPECT) : 0;
   const imgH = imgW / TUBE_CARD_ASPECT;
 
-  // ── Transform state: Animated values drive the view; refs hold the committed
-  // numbers (PanResponder handlers never read Animated internals).
+  // Transform: Animated values drive the view; refs hold committed numbers.
   const scaleAV = useRef(new Animated.Value(1)).current;
   const txAV = useRef(new Animated.Value(0)).current;
   const tyAV = useRef(new Animated.Value(0)).current;
@@ -104,15 +74,24 @@ export function TubeCardScreen() {
     txAV.setValue(tx);
     tyAV.setValue(ty);
   };
-  const maxT = (scale: number) => ({
-    x: Math.max(0, (imgW * scale - screenW) / 2),
-    y: Math.max(0, (imgH * scale - screenH) / 2),
-  });
-  const resetTransform = () => setTransform(1, 0, 0);
+  const areaRef = useRef(area);
+  areaRef.current = area;
+  const dimsRef = useRef({ imgW, imgH });
+  dimsRef.current = { imgW, imgH };
+  const maxT = (scale: number) => {
+    const a = areaRef.current;
+    const d = dimsRef.current;
+    return {
+      x: Math.max(0, (d.imgW * scale - a.w) / 2),
+      y: Math.max(0, (d.imgH * scale - a.h) / 2),
+    };
+  };
+  const resetTransform = () => {
+    setTransform(1, 0, 0);
+  };
 
-  // Gesture-session bookkeeping (one PanResponder, three modes).
   const session = useRef({
-    mode: 'idle' as 'idle' | 'pinch' | 'pan' | 'swipe',
+    mode: 'idle' as 'idle' | 'pinch' | 'pan',
     startScale: 1,
     startTx: 0,
     startTy: 0,
@@ -131,15 +110,16 @@ export function TubeCardScreen() {
     setFailed(false);
     resetTransform();
   };
-  // Keep handler logic on the latest idx without re-creating the responder.
-  const idxRef = useRef(idx);
-  idxRef.current = idx;
 
   const responder = useMemo(
     () =>
       PanResponder.create({
         onStartShouldSetPanResponder: () => true,
-        onMoveShouldSetPanResponder: () => true,
+        // Only claim MOVE gestures when there's something to do (a second
+        // finger, or a one-finger drag while zoomed) — never for un-zoomed
+        // one-finger drags, so nothing competes with a plain tap.
+        onMoveShouldSetPanResponder: (evt, g) =>
+          evt.nativeEvent.touches.length >= 2 || (cur.current.scale > 1.01 && (Math.abs(g.dx) > 2 || Math.abs(g.dy) > 2)),
         onPanResponderGrant: (evt) => {
           const s = session.current;
           s.mode = 'idle';
@@ -160,7 +140,6 @@ export function TubeCardScreen() {
           const s = session.current;
           const t = evt.nativeEvent.touches;
 
-          // Entering (or continuing) a pinch always wins.
           if (t.length >= 2) {
             if (s.mode !== 'pinch') {
               s.mode = 'pinch';
@@ -173,7 +152,6 @@ export function TubeCardScreen() {
             }
             const dist = Math.hypot(t[0].pageX - t[1].pageX, t[0].pageY - t[1].pageY);
             const scale = clamp(s.startScale * (dist / Math.max(1, s.startDist)), 0.8, MAX_SCALE);
-            // Mid-point follow keeps the zoom feeling anchored under the fingers.
             const midX = (t[0].pageX + t[1].pageX) / 2;
             const midY = (t[0].pageY + t[1].pageY) / 2;
             const m = maxT(scale);
@@ -186,8 +164,8 @@ export function TubeCardScreen() {
 
           if (Math.abs(g.dx) > 4 || Math.abs(g.dy) > 4) s.moved = true;
 
-          if (s.startScale > 1.01 && s.mode !== 'swipe') {
-            // Zoomed in → one finger pans the card, clamped to its edges.
+          // One finger only pans, and only while zoomed in (clamped to edges).
+          if (s.startScale > 1.01) {
             s.mode = 'pan';
             const m = maxT(cur.current.scale);
             setTransform(
@@ -195,35 +173,22 @@ export function TubeCardScreen() {
               clamp(s.startTx + g.dx, -m.x, m.x),
               clamp(s.startTy + g.dy, -m.y, m.y),
             );
-            return;
-          }
-
-          if (s.mode !== 'pan') {
-            // Un-zoomed → horizontal drag previews the tube change (slight
-            // resistance at the ends of the list).
-            s.mode = 'swipe';
-            const i = idxRef.current;
-            const atEdge = (g.dx > 0 && i === 0) || (g.dx < 0 && i === TUBE_REFS.length - 1);
-            txAV.setValue(atEdge ? g.dx / 3 : g.dx);
-            cur.current.tx = g.dx;
           }
         },
-        onPanResponderRelease: (evt, g) => {
+        onPanResponderRelease: () => {
           const s = session.current;
           const now = Date.now();
 
-          // Taps: SINGLE toggles the chrome (deferred until the double-tap
-          // window closes); DOUBLE toggles zoom.
+          // Double-tap toggles zoom.
           if (!s.moved && now - s.downAt < 240) {
             if (now - s.lastTapAt < 320) {
               s.lastTapAt = 0;
-              if (singleTapTimer.current) clearTimeout(singleTapTimer.current);
               if (cur.current.scale > 1.01) {
                 Animated.parallel([
                   Animated.spring(scaleAV, { toValue: 1, useNativeDriver: false }),
                   Animated.spring(txAV, { toValue: 0, useNativeDriver: false }),
                   Animated.spring(tyAV, { toValue: 0, useNativeDriver: false }),
-                ]).start(() => setTransform(1, 0, 0));
+                ]).start();
                 cur.current = { scale: 1, tx: 0, ty: 0 };
               } else {
                 Animated.spring(scaleAV, { toValue: DOUBLE_TAP_SCALE, useNativeDriver: false }).start();
@@ -232,34 +197,16 @@ export function TubeCardScreen() {
               return;
             }
             s.lastTapAt = now;
-            if (singleTapTimer.current) clearTimeout(singleTapTimer.current);
-            singleTapTimer.current = setTimeout(toggleChrome, 300);
-          }
-
-          if (s.mode === 'pinch') {
-            if (cur.current.scale < 1.05) {
-              // Released near/below 1× → settle back to the fitted card.
-              Animated.parallel([
-                Animated.spring(scaleAV, { toValue: 1, useNativeDriver: false }),
-                Animated.spring(txAV, { toValue: 0, useNativeDriver: false }),
-                Animated.spring(tyAV, { toValue: 0, useNativeDriver: false }),
-              ]).start();
-              cur.current = { scale: 1, tx: 0, ty: 0 };
-            }
             return;
           }
 
-          if (s.mode === 'swipe') {
-            const i = idxRef.current;
-            const commit =
-              Math.abs(g.dx) > SWIPE_DISTANCE &&
-              !((g.dx > 0 && i === 0) || (g.dx < 0 && i === TUBE_REFS.length - 1));
-            if (commit) {
-              goTo(g.dx < 0 ? i + 1 : i - 1);
-            } else {
-              Animated.spring(txAV, { toValue: 0, useNativeDriver: false }).start();
-              cur.current.tx = 0;
-            }
+          if (s.mode === 'pinch' && cur.current.scale < 1.05) {
+            Animated.parallel([
+              Animated.spring(scaleAV, { toValue: 1, useNativeDriver: false }),
+              Animated.spring(txAV, { toValue: 0, useNativeDriver: false }),
+              Animated.spring(tyAV, { toValue: 0, useNativeDriver: false }),
+            ]).start();
+            cur.current = { scale: 1, tx: 0, ty: 0 };
           }
         },
         onPanResponderTerminate: () => {
@@ -271,12 +218,10 @@ export function TubeCardScreen() {
           );
         },
       }),
-    // Screen metrics are the only inputs the closures capture besides refs.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [screenW, screenH],
+    [],
   );
 
-  // Prefetch neighbours so swiping feels instant.
   useEffect(() => {
     const prev = TUBE_REFS[idx - 1];
     const next = TUBE_REFS[idx + 1];
@@ -284,16 +229,15 @@ export function TubeCardScreen() {
     if (next) Image.prefetch(tubeImageUrl(next.file)).catch(() => {});
   }, [idx]);
 
-  // Deep-link guard: the route is safe to hit from anywhere — non-members get
-  // the same lock the browse screen shows, never the cards.
+  // Non-members never reach the cards (deep-link safe).
   if (!unlocked) {
     return (
       <View style={[styles.root, { paddingTop: insets.top + 10, paddingHorizontal: 16 }]}>
-        <View style={styles.header}>
+        <View style={styles.lockHeader}>
           <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
             <Text style={styles.back}>‹</Text>
           </Pressable>
-          <Text style={styles.hTitle}>TUBE REFERENCE</Text>
+          <Text style={styles.barTitle}>TUBE REFERENCE</Text>
         </View>
         <View style={styles.lockCard}>
           <Text style={styles.lockEyebrow}>ACADEMY MEMBERS</Text>
@@ -310,130 +254,120 @@ export function TubeCardScreen() {
   }
 
   return (
-    <View style={styles.rootViewer}>
-      {/* The zoomable card surface. */}
-      <View style={StyleSheet.absoluteFill} {...responder.panHandlers}>
-        <Animated.View
-          style={{
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-            transform: [{ translateX: txAV }, { translateY: tyAV }, { scale: scaleAV }],
-          }}
-        >
-          <Image
-            key={`${tube.file}-${retryKey}`}
-            source={{ uri: tubeImageUrl(tube.file) }}
-            style={{ width: imgW, height: imgH }}
-            resizeMode="contain"
-            onLoad={() => setLoaded(true)}
-            onError={() => setFailed(true)}
-            accessibilityLabel={`${tube.short} reference card — ${tube.role}`}
-          />
-        </Animated.View>
-      </View>
-
-      {!loaded && !failed ? (
-        <View style={styles.centerOverlay} pointerEvents="none">
-          <ActivityIndicator size="large" color={colors.amber} />
-          <Text style={styles.loadText}>LOADING {tube.short}…</Text>
-        </View>
-      ) : null}
-      {failed ? (
-        <View style={styles.centerOverlay}>
-          <Text style={styles.loadText}>Couldn’t load the {tube.short} card — check your connection.</Text>
-          <Pressable
-            style={styles.retryBtn}
-            onPress={() => {
-              setFailed(false);
-              setLoaded(false);
-              setRetryKey((k) => k + 1);
-            }}
-            accessibilityRole="button"
-            accessibilityLabel="Retry loading the card"
-          >
-            <Text style={styles.retryText}>RETRY</Text>
-          </Pressable>
-        </View>
-      ) : null}
-
-      {/* Chrome — hidden at rest so nothing covers the card (owner 2026-08-10);
-          single-tap toggles it. */}
-      {chrome ? (
-      <>
-      <View style={[styles.topBar, { paddingTop: insets.top + 8 }]} pointerEvents="box-none">
+    <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
+      {/* FIXED nav bar — ABOVE the image, its own space (owner 2026-08-10). */}
+      <View style={styles.navBar}>
         <Pressable onPress={() => navigation.goBack()} hitSlop={12} accessibilityRole="button" accessibilityLabel="Back to the tube list">
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flex: 1 }}>
-          <Text style={styles.hTitle}>
+          <Text style={styles.barTitle} numberOfLines={1}>
             {String(tube.num).padStart(2, '0')} / {TUBE_REFS.length} · {tube.short}
           </Text>
-          <Text style={styles.hSub}>{famTitle}</Text>
+          <Text style={styles.barSub} numberOfLines={1}>{famTitle}</Text>
         </View>
         <Pressable
           onPress={() => goTo(idx - 1)}
-          hitSlop={10}
           disabled={idx === 0}
+          hitSlop={8}
+          style={[styles.stepBtn, idx === 0 && styles.stepBtnOff]}
           accessibilityRole="button"
           accessibilityLabel="Previous tube"
         >
-          <Text style={[styles.navArrow, idx === 0 && styles.navArrowOff]}>‹</Text>
+          <Text style={styles.stepArrow}>‹</Text>
         </Pressable>
         <Pressable
           onPress={() => goTo(idx + 1)}
-          hitSlop={10}
           disabled={idx === TUBE_REFS.length - 1}
+          hitSlop={8}
+          style={[styles.stepBtn, idx === TUBE_REFS.length - 1 && styles.stepBtnOff]}
           accessibilityRole="button"
           accessibilityLabel="Next tube"
         >
-          <Text style={[styles.navArrow, idx === TUBE_REFS.length - 1 && styles.navArrowOff]}>›</Text>
+          <Text style={styles.stepArrow}>›</Text>
         </Pressable>
       </View>
 
-      {/* Gesture hint — part of the chrome, never resting on the card. */}
-      <View style={[styles.hintBar, { paddingBottom: insets.bottom + 8 }]} pointerEvents="none">
-        <Text style={styles.hintText}>PINCH TO ZOOM · SWIPE FOR NEXT TUBE · TAP FOR CONTROLS</Text>
+      {/* Image area — everything below the bar; pinch-zoom + pan only. */}
+      <View style={styles.imageArea} onLayout={onAreaLayout} {...responder.panHandlers}>
+        {imgW > 0 ? (
+          <Animated.View
+            style={{
+              width: imgW,
+              height: imgH,
+              transform: [{ translateX: txAV }, { translateY: tyAV }, { scale: scaleAV }],
+            }}
+          >
+            <Image
+              key={`${tube.file}-${retryKey}`}
+              source={{ uri: tubeImageUrl(tube.file) }}
+              style={{ width: imgW, height: imgH }}
+              resizeMode="contain"
+              onLoad={() => setLoaded(true)}
+              onError={() => setFailed(true)}
+              accessibilityLabel={`${tube.short} reference card — ${tube.role}`}
+            />
+          </Animated.View>
+        ) : null}
+
+        {!loaded && !failed ? (
+          <View style={styles.centerOverlay} pointerEvents="none">
+            <ActivityIndicator size="large" color={colors.amber} />
+            <Text style={styles.loadText}>LOADING {tube.short}…</Text>
+          </View>
+        ) : null}
+        {failed ? (
+          <View style={styles.centerOverlay}>
+            <Text style={styles.loadText}>Couldn’t load the {tube.short} card — check your connection.</Text>
+            <Pressable
+              style={styles.retryBtn}
+              onPress={() => {
+                setFailed(false);
+                setLoaded(false);
+                setRetryKey((k) => k + 1);
+              }}
+              accessibilityRole="button"
+              accessibilityLabel="Retry loading the card"
+            >
+              <Text style={styles.retryText}>RETRY</Text>
+            </Pressable>
+          </View>
+        ) : null}
       </View>
-      </>
-      ) : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.screenBg, gap: 12 },
-  rootViewer: { flex: 1, backgroundColor: '#000' },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingBottom: 8 },
+  root: { flex: 1, backgroundColor: '#000' },
   back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSecondary, marginTop: -4, paddingRight: 2 },
 
-  topBar: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
+  navBar: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
     paddingHorizontal: 14,
     paddingBottom: 8,
-    backgroundColor: 'rgba(0,0,0,.55)',
+    borderBottomWidth: 1,
+    borderBottomColor: '#1c1c22',
+    backgroundColor: colors.screenBg,
   },
-  hTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1, color: colors.textPrimary },
-  hSub: { fontFamily: fonts.barlowRegular, fontSize: 11.5, color: colors.textSub, marginTop: 1 },
-  navArrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 28, color: colors.textSecondary, paddingHorizontal: 6, marginTop: -3 },
-  navArrowOff: { opacity: 0.25 },
-
-  hintBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
+  barTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1, color: colors.textPrimary },
+  barSub: { fontFamily: fonts.barlowRegular, fontSize: 11.5, color: colors.textSub, marginTop: 1 },
+  stepBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#33333c',
+    backgroundColor: '#17171c',
     alignItems: 'center',
-    paddingTop: 8,
-    backgroundColor: 'rgba(0,0,0,.45)',
+    justifyContent: 'center',
   },
-  hintText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.1, color: colors.textSub },
+  stepBtnOff: { opacity: 0.3 },
+  stepArrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 24, color: colors.textSecondary, marginTop: -3 },
+
+  imageArea: { flex: 1, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
 
   centerOverlay: {
     position: 'absolute',
@@ -457,6 +391,7 @@ const styles = StyleSheet.create({
   },
   retryText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.amber },
 
+  lockHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingBottom: 12 },
   lockCard: {
     borderRadius: 12,
     borderWidth: 1,
