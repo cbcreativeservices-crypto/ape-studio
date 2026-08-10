@@ -164,4 +164,44 @@ export const WORKFLOW_TEMPLATES: Workflow[] = [
     { workspaceId: 'netaudio', fnKey: 'bandwidth', note: 'Raw channels × sample rate × bit depth.' },
     { workspaceId: 'netaudio', fnKey: 'packetize', note: 'Packets per second and the on-the-wire rate.' },
   ]),
+
+  // -------------------------------------------------------------------------
+  // Gap-fill pass (owner 2026-08-09): common tasks that had no template but
+  // map to existing calculators. Every (workspaceId, fnKey) verified.
+  // -------------------------------------------------------------------------
+  tpl('hearing-dose', 'Hearing Exposure & Dose', 'SPL at the listener, the allowable time, then the daily dose.', [
+    { workspaceId: 'spldist', fnKey: 'point', note: 'SPL at the audience or operator distance.' },
+    { workspaceId: 'dose', fnKey: 'allowNiosh', note: 'Allowable exposure time (NIOSH: 85 dBA, 3 dB exchange).' },
+    { workspaceId: 'dose', fnKey: 'doseNiosh', note: 'Daily dose from the actual exposure intervals.' },
+  ]),
+  tpl('gain-staging', 'Input Gain Staging', 'Mic output, the preamp gain to reach target, and the clip ceiling.', [
+    { workspaceId: 'micgain', fnKey: 'micout', note: 'Mic output voltage at the source SPL.' },
+    { workspaceId: 'micgain', fnKey: 'gain', note: 'Preamp gain to reach your target level.' },
+    { workspaceId: 'micgain', fnKey: 'maxspl', note: 'Loudest SPL before the preamp input clips.' },
+  ]),
+  tpl('cv-distribution', '70V / 100V Distribution', 'System load and line current, then how many more speakers fit.', [
+    { workspaceId: 'cv70', fnKey: 'load', note: 'System load, amp fit, and line current.' },
+    { workspaceId: 'cv70', fnKey: 'morespeakers', note: 'How many more taps the amplifier will take.' },
+  ]),
+  tpl('time-align', 'System Time Alignment', 'Delay to align a path offset, then the phase at the crossover.', [
+    { workspaceId: 'align', fnKey: 'delayForOffset', note: 'Delay to add to the closer source.' },
+    { workspaceId: 'align', fnKey: 'phaseAtFreq', note: 'Phase relationship at the crossover frequency.' },
+  ]),
+  tpl('treatment-plan', 'Acoustic Treatment Plan', 'Absorption needed for the target RT, the panels, and wall isolation.', [
+    { workspaceId: 'sabine', fnKey: 'neededA', note: 'Absorption needed for the target RT60.' },
+    { workspaceId: 'treatment', fnKey: 'panels', note: 'Panels required to add that absorption.' },
+    { workspaceId: 'transloss', fnKey: 'massTL', note: 'Isolation from a wall’s mass at a frequency.' },
+  ]),
+  tpl('monitor-latency', 'Monitoring Latency', 'One buffer’s latency, then the round-trip in-and-out.', [
+    { workspaceId: 'latency', fnKey: 'bufLatency', note: 'Latency of one processing buffer.' },
+    { workspaceId: 'latency', fnKey: 'roundTrip', note: 'Round-trip in + out monitoring latency.' },
+  ]),
+  tpl('session-storage', 'Digital Session Storage', 'Total multitrack session size, then the record time storage allows.', [
+    { workspaceId: 'filesize', fnKey: 'multitrack', note: 'Total size of the multitrack session.' },
+    { workspaceId: 'filesize', fnKey: 'recTime', note: 'Record time your storage allows.' },
+  ]),
+  tpl('speaker-limiter', 'Speaker Protection Limiter', 'Max continuous speaker voltage, then the limiter threshold to set.', [
+    { workspaceId: 'limiter', fnKey: 'maxv', note: 'Max continuous voltage the driver takes.' },
+    { workspaceId: 'limiter', fnKey: 'threshold', note: 'Processor limiter threshold to set.' },
+  ]),
 ];
