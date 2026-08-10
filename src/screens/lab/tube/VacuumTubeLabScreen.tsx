@@ -78,46 +78,74 @@ type SectionProps = { viz: TubeVizModule | null; width: number; focused: boolean
 
 // ── 1 · What's inside ───────────────────────────────────────────────────────
 
+const ALL_PART_KEYS: TubePart[] = PARTS.map((p) => p.key);
+
 function InsideSection({ viz, width, focused, electron, help }: SectionProps) {
-  const [part, setPart] = useState<TubePart | null>(null);
-  const sel = PARTS.find((p) => p.key === part) ?? null;
+  // Show/hide toggles (owner 2026-08-10): every chip switches its part's view
+  // in the drawing; HIDE ALL leaves only the glass. The last-tapped part still
+  // glows (when visible) and drives the explainer note.
+  const [visible, setVisible] = useState<TubePart[]>(ALL_PART_KEYS);
+  const [lastTouched, setLastTouched] = useState<TubePart | null>(null);
+  const allOn = visible.length === ALL_PART_KEYS.length;
+  const sel = PARTS.find((p) => p.key === lastTouched) ?? null;
+  const togglePart = (key: TubePart) => {
+    setVisible((v) => (v.includes(key) ? v.filter((x) => x !== key) : [...v, key]));
+    setLastTouched(key);
+  };
+  const toggleAll = () => {
+    // HIDE ALL = glass only (owner 2026-08-10); SHOW ALL restores everything.
+    setVisible(allOn ? ['envelope'] : ALL_PART_KEYS);
+    setLastTouched(null);
+  };
+  const highlight = lastTouched && visible.includes(lastTouched) ? lastTouched : null;
   return (
     <View style={styles.panelCard}>
-      {viz ? <CutawayViz viz={viz} width={width} kind="pentode" highlight={part} electron={electron} running={focused} /> : <VizUnavailableCard />}
+      {viz ? <CutawayViz viz={viz} width={width} kind="pentode" highlight={highlight} electron={electron} running={focused} visible={visible} /> : <VizUnavailableCard />}
       <IllustrationBadge />
       <DisplayGuideButton onPress={() => help('cutaway')} />
       {/* Part chips carry the reference-card INK CODE (owner 2026-08-10): each
           chip is the same color as its element in the drawing AND on the Tube
-          Reference cards — the chip row doubles as the color key. */}
+          Reference cards — the chip row doubles as the color key. Lit chip =
+          part shown; dim chip = part hidden. */}
       <View style={styles.chipRow}>
+        <Pressable
+          style={[styles.partChip, styles.allChip]}
+          onPress={toggleAll}
+          accessibilityRole="button"
+          accessibilityLabel={allOn ? 'Hide all parts — show only the glass' : 'Show all parts'}
+        >
+          <Text style={[styles.partChipText, styles.allChipText]}>{allOn ? 'HIDE ALL' : 'SHOW ALL'}</Text>
+        </Pressable>
         {PARTS.map((p) => {
           const ink = TUBE_INK[p.key];
-          const on = part === p.key;
+          const on = visible.includes(p.key);
           return (
             <Pressable
               key={p.key}
-              style={[styles.partChip, { borderColor: on ? ink : `${ink}66` }, on && { backgroundColor: `${ink}1f` }]}
-              onPress={() => setPart(on ? null : p.key)}
+              style={[styles.partChip, { borderColor: on ? ink : `${ink}40` }, on && { backgroundColor: `${ink}1f` }]}
+              onPress={() => togglePart(p.key)}
               onLongPress={() => help('cutaway')}
               delayLongPress={350}
               accessibilityRole="button"
               accessibilityState={{ selected: on }}
-              accessibilityLabel={p.label}
+              accessibilityLabel={`${p.label} — ${on ? 'shown, tap to hide' : 'hidden, tap to show'}`}
             >
-              <Text style={[styles.partChipText, { color: ink }, !on && { opacity: 0.85 }]}>{p.label}</Text>
+              <Text style={[styles.partChipText, { color: ink }, !on && { opacity: 0.38 }]}>{p.label}</Text>
             </Pressable>
           );
         })}
       </View>
       <Text style={styles.caption}>
-        {sel ? sel.note : 'Tap any part to light it up in its own color — the SAME color code the Tube Reference cards use, so the drawing and the cards read as one. (Drawn as a pentode — the fullest version; the Types section strips it back down.)'}
+        {sel
+          ? `${sel.note}${visible.includes(sel.key) ? '' : '  (Hidden — tap its chip again to bring it back.)'}`
+          : 'Tap any part to SHOW or HIDE it in the drawing — build the tube up piece by piece, or strip it down to bare glass. Each part wears the SAME color it has on the Tube Reference cards. (Drawn as a pentode — the fullest version.)'}
       </Text>
     </View>
   );
 }
-function CutawayViz({ viz, width, kind, highlight, electron, running, secondary }: { viz: TubeVizModule; width: number; kind: 'triode' | 'tetrode' | 'pentode'; highlight: TubePart | null; electron: boolean; running: boolean; secondary?: boolean }) {
+function CutawayViz({ viz, width, kind, highlight, electron, running, secondary, visible }: { viz: TubeVizModule; width: number; kind: 'triode' | 'tetrode' | 'pentode'; highlight: TubePart | null; electron: boolean; running: boolean; secondary?: boolean; visible?: TubePart[] }) {
   const phase = viz.usePhaseClock(running, 0.6);
-  return <viz.TubeCutawayView phase={phase} width={width} kind={kind} highlight={highlight} electronView={electron} showSecondary={secondary} />;
+  return <viz.TubeCutawayView phase={phase} width={width} kind={kind} highlight={highlight} electronView={electron} showSecondary={secondary} visible={visible} />;
 }
 
 // ── 2 · Electron flow (warm-up) ─────────────────────────────────────────────
@@ -562,6 +590,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   partChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8 },
+  allChip: { borderColor: '#9aa0ad', backgroundColor: '#1a1b20' },
+  allChipText: { color: colors.textPrimary },
   // Green REFERENCE section tab (owner 2026-08-10).
   refChip: {
     borderRadius: 8,
