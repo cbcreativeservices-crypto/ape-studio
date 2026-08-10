@@ -222,68 +222,43 @@ function hash(n: number): number {
   return s - Math.floor(s);
 }
 
-// Three colour-tracked reference molecules (owner 2026-08-05): spread across
-// the field, almost-even but not perfectly, each a distinct colour. They obey
-// the SAME motion as every white particle — so watching them makes the point
-// that each molecule only oscillates BACK AND FORTH in place; the pattern
-// travels, the particles do not. Home fractions of width / height + colour.
-const AIR_TRACERS: { fx: number; fy: number; color: string }[] = [
-  { fx: 0.22, fy: 0.3, color: '#37e05f' }, // green
-  { fx: 0.49, fy: 0.66, color: '#6fa8ff' }, // blue
-  { fx: 0.78, fy: 0.42, color: '#ffb14d' }, // amber
-];
+// SPARKLE-TRACKED molecules (owner 2026-08-10 — replaces the coloured tracers):
+// 19 candidate home positions banded left→right across the field. At any
+// moment exactly TWO of them wear a subtle white glint — a thin four-point
+// specular star breathing around the particle while it oscillates IN PLACE.
+// Every ~2 s ONE of the two hands off to a fresh location (staggered; each
+// highlight lives ~4 s), so the viewer's eye keeps landing on a new molecule
+// and the lesson repeats: each particle only moves back and forth — nothing
+// crosses the screen. Monochrome and restrained: a specular highlight, not an
+// ornament.
+const SPARKLE_N = 19;
+const SPARKLE_LIFE = 4; // seconds per highlight; the two slots stagger by 2 s
 
-/** One colour-tracked molecule: a faint HOME ring at its rest position + the
- *  bright dot that oscillates around it (never travels). Same displacement law
- *  as the particle field. */
-function AirTracer({
-  clock,
-  visHz,
-  amp,
-  dispMax,
-  lambda,
-  phasePx,
-  mode,
-  homeX,
-  homeY,
-  color,
-}: {
-  clock: SharedValue<number>;
-  visHz: number;
-  amp: number;
-  dispMax: number;
-  lambda: number;
-  phasePx: number;
-  mode: AirMode;
-  homeX: number;
-  homeY: number;
-  color: string;
-}) {
-  const dot = useDerivedValue(() => {
-    const t = clock.value;
-    let dx = 0;
-    if (mode === 'wave') {
-      const k = (2 * Math.PI) / lambda;
-      const om = 2 * Math.PI * visHz;
-      dx = amp * dispMax * Math.sin(om * t - k * (homeX + phasePx));
-    } else if (mode === 'noise') {
-      const tq = Math.floor(t * 22);
-      dx = amp * dispMax * 0.9 * (hash(homeX * 0.7 + tq * 311.7) - 0.5) * 2;
-    }
-    const p = Skia.Path.Make();
-    p.addCircle(homeX + dx, homeY, 2.2); // SAME radius as the white particles
-    return p;
-  }, [clock, visHz, amp, dispMax, lambda, phasePx, mode, homeX, homeY]);
-  return (
-    <Group>
-      {/* Coloured tracer at ~50% so it still reads among the white particles
-          (owner 2026-08-05) — and NO static outline twin. */}
-      <Path path={dot} color={color} opacity={0.2}>
-        <BlurMask blur={3} style="normal" />
-      </Path>
-      <Path path={dot} color={color} opacity={0.5} />
-    </Group>
-  );
+/** The 19 deterministic homes — one per horizontal band, jittered, so they
+ *  cover the display left→right without clustering. */
+function sparkleHomes(usableW: number, topPad: number, usableH: number): { xs: number[]; ys: number[] } {
+  const xs: number[] = [];
+  const ys: number[] = [];
+  for (let i = 0; i < SPARKLE_N; i++) {
+    xs.push(((i + 0.15 + 0.7 * hashJs(i * 3.31 + 1.7)) / SPARKLE_N) * usableW);
+    ys.push(topPad + hashJs(i * 7.73 + 9.1) * usableH);
+  }
+  return { xs, ys };
+}
+
+/** Thin 4-point glint star (worklet) — a professional specular highlight. */
+function addGlint(p: ReturnType<typeof Skia.Path.Make>, x: number, y: number, R: number, rot: number): void {
+  'worklet';
+  const ir = R * 0.18;
+  for (let k = 0; k < 8; k++) {
+    const a = rot + (k * Math.PI) / 4;
+    const rad = k % 2 === 0 ? R : ir;
+    const vx = x + rad * Math.cos(a);
+    const vy = y + rad * Math.sin(a);
+    if (k === 0) p.moveTo(vx, vy);
+    else p.lineTo(vx, vy);
+  }
+  p.close();
 }
 
 export function AirParticlesView({
@@ -355,6 +330,49 @@ export function AirParticlesView({
   const lambda = lambdaPx && lambdaPx > 8 ? lambdaPx : w / 2.2; // ~2 wavelengths by default
   const dispMax = (w / 2.2) / 7; // peak displacement — keyed to the DEFAULT scale so
   // particles never overlap into a solid band even when lambda tightens.
+
+  // Sparkle-tracker homes: 19 spots across the field (clear of the ear zone).
+  const sparkleXY = useMemo(() => sparkleHomes(w - earW, 8, h - 16), [w, earW, h]);
+  const sxs = sparkleXY.xs;
+  const sys = sparkleXY.ys;
+
+  // TWO sparkling molecules at a time, staggered hand-offs every 2 s. Each
+  // follows the SAME displacement law as the field — the glint just makes one
+  // particle followable, so its back-and-forth (never across) reads plainly.
+  const sparkles = useDerivedValue(() => {
+    const t = clock.value;
+    const p = Skia.Path.Make();
+    const k = (2 * Math.PI) / lambda;
+    const om = 2 * Math.PI * visHz;
+    const e0 = Math.floor(t / SPARKLE_LIFE);
+    for (let s = 0; s < 2; s++) {
+      const ts = t + s * (SPARKLE_LIFE / 2);
+      const e = Math.floor(ts / SPARKLE_LIFE);
+      const u = ts - e * SPARKLE_LIFE; // 0..LIFE within this slot's tenure
+      let idx = Math.floor(hash(e * 17.31 + s * 3.77) * SPARKLE_N) % SPARKLE_N;
+      if (s === 1) {
+        const idx0 = Math.floor(hash(e0 * 17.31) * SPARKLE_N) % SPARKLE_N;
+        if (idx === idx0) idx = (idx + 7) % SPARKLE_N;
+      }
+      const fade = Math.min(1, u / 0.6, (SPARKLE_LIFE - u) / 0.6);
+      if (fade <= 0.02) continue;
+      let dx = 0;
+      if (mode === 'wave') {
+        dx = amp * dispMax * Math.sin(om * t - k * (sxs[idx] + phasePx));
+      } else if (mode === 'noise') {
+        const tq = Math.floor(t * 22);
+        dx = amp * dispMax * 0.9 * (hash(idx * 127.1 + tq * 311.7) - 0.5) * 2;
+      }
+      const x = sxs[idx] + dx;
+      const y = sys[idx];
+      // Breathe gently; grow in / shrink out with the hand-off (size carries
+      // the fade — opacity stays constant across the shared path).
+      const R = Math.max(0.5, (4.4 + 1.1 * Math.sin(t * 5 + idx * 2.1)) * fade);
+      addGlint(p, x, y, R, t * 0.7 + idx);
+      p.addCircle(x, y, 2.2); // the molecule itself, brightened white
+    }
+    return p;
+  }, [clock, sxs, sys, visHz, amp, mode, lambda, dispMax, phasePx]);
 
   const path = useDerivedValue(() => {
     const t = clock.value;
@@ -462,23 +480,12 @@ export function AirParticlesView({
         <BlurMask blur={4} style="normal" />
       </Path>
       <Path path={path} color={PARTICLE} />
-      {/* Three COLOUR-TRACKED reference molecules — each oscillates in place
-          around its home ring, proving the particles only move back and forth. */}
-      {AIR_TRACERS.map((tr) => (
-        <AirTracer
-          key={tr.color}
-          clock={clock}
-          visHz={visHz}
-          amp={amp}
-          dispMax={dispMax}
-          lambda={lambda}
-          phasePx={phasePx}
-          mode={mode}
-          homeX={tr.fx * w}
-          homeY={tr.fy * (h - 8) + 4}
-          color={tr.color}
-        />
-      ))}
+      {/* SPARKLE-TRACKED molecules — two glinting at a time, handing off every
+          ~2 s, each only ever swinging back and forth in place. */}
+      <Path path={sparkles} color="#ffffff" opacity={0.22}>
+        <BlurMask blur={5} style="normal" />
+      </Path>
+      <Path path={sparkles} color="#f2f4f8" opacity={0.85} />
       {showEar ? (
         // Scaled up around its centre (owner 2026-08-05) so the ear reads clearly.
         <Group transform={[{ translateX: ear.cx }, { translateY: ear.cy }, { scale: earScale }, { translateX: -ear.cx }, { translateY: -ear.cy }]}>
@@ -1331,47 +1338,9 @@ export function RateComparatorView({
 
 export const RULER_ROOM_M = 7;
 
-/** A colour-tracked reference molecule for the wavelength view — oscillates in
- *  place with the wave (same law as the field dots), never travels. */
-function WaveTracer({
-  phase,
-  amp,
-  disp,
-  lambdaPx,
-  homeX,
-  homeY,
-  color,
-  opacity,
-}: {
-  phase: SharedValue<number>;
-  amp: number;
-  disp: number;
-  lambdaPx: number;
-  homeX: number;
-  homeY: number;
-  color: string;
-  opacity: number;
-}) {
-  const dot = useDerivedValue(() => {
-    const ph = phase.value;
-    const k = (2 * Math.PI) / Math.max(10, lambdaPx);
-    const dx = amp * disp * Math.sin(ph - k * homeX);
-    const p = Skia.Path.Make();
-    p.addCircle(homeX + dx, homeY, 1.9); // SAME radius as the field particles
-    return p;
-  }, [phase, amp, disp, lambdaPx, homeX, homeY]);
-  return (
-    <Group>
-      <Path path={dot} color={color} opacity={opacity * 0.4}>
-        <BlurMask blur={3} style="normal" />
-      </Path>
-      <Path path={dot} color={color} opacity={opacity} />
-    </Group>
-  );
-}
-
 export function WavelengthRulerView({
   phase,
+  clock,
   width,
   height = 158,
   freqHz,
@@ -1379,6 +1348,9 @@ export function WavelengthRulerView({
 }: {
   /** Phase clock (usePhaseClock) — continuous while the slider drags. */
   phase: SharedValue<number>;
+  /** Seconds clock (useVizClock) — paces the sparkle hand-offs (owner
+   *  2026-08-10); without it the sparkle-tracked molecules are skipped. */
+  clock?: SharedValue<number>;
   width: number;
   height?: number;
   freqHz: number;
@@ -1389,16 +1361,39 @@ export function WavelengthRulerView({
   const floorY = h - 18;
   const lambdaM = 343 / Math.max(20, freqHz);
   const lambdaPx = (lambdaM / RULER_ROOM_M) * w;
-  const tracerDisp = Math.min(9, lambdaPx / 7); // same excursion as the field dots
-  // Colour-tracked molecules (owner 2026-08-05): the standard three + a FOURTH
-  // above the listener's head — each just oscillates in place with the wave.
-  const headX = w - 26;
-  const waveTracers = [
-    { hx: w * 0.2, hy: 10 + 0.32 * (floorY - 56), color: '#37e05f', op: 0.55 },
-    { hx: w * 0.45, hy: 10 + 0.62 * (floorY - 56), color: '#6fa8ff', op: 0.55 },
-    { hx: w * 0.66, hy: 10 + 0.44 * (floorY - 56), color: '#ffb14d', op: 0.55 },
-    { hx: headX, hy: floorY - 58, color: '#ff5a8a', op: 0.9 }, // the molecule at the listener
-  ];
+  // Sparkle-tracked molecules (owner 2026-08-10, replacing the coloured
+  // tracers): 19 homes over the particle field; two glint at a time.
+  const sparkleXY = useMemo(() => sparkleHomes(w, 12, floorY - 52), [w, floorY]);
+  const sxs = sparkleXY.xs;
+  const sys = sparkleXY.ys;
+  const sparkles = useDerivedValue(() => {
+    const p = Skia.Path.Make();
+    if (!clock) return p;
+    const t = clock.value;
+    const ph = phase.value;
+    const k = (2 * Math.PI) / Math.max(10, lambdaPx);
+    const disp = Math.min(9, lambdaPx / 7); // same excursion as the field dots
+    const e0 = Math.floor(t / SPARKLE_LIFE);
+    for (let s = 0; s < 2; s++) {
+      const ts = t + s * (SPARKLE_LIFE / 2);
+      const e = Math.floor(ts / SPARKLE_LIFE);
+      const u = ts - e * SPARKLE_LIFE;
+      let idx = Math.floor(hash(e * 17.31 + s * 3.77) * SPARKLE_N) % SPARKLE_N;
+      if (s === 1) {
+        const idx0 = Math.floor(hash(e0 * 17.31) * SPARKLE_N) % SPARKLE_N;
+        if (idx === idx0) idx = (idx + 7) % SPARKLE_N;
+      }
+      const fade = Math.min(1, u / 0.6, (SPARKLE_LIFE - u) / 0.6);
+      if (fade <= 0.02) continue;
+      const dx = amp * disp * Math.sin(ph - k * sxs[idx]);
+      const x = sxs[idx] + dx;
+      const y = sys[idx];
+      const R = Math.max(0.5, (4 + 1 * Math.sin(t * 5 + idx * 2.1)) * fade);
+      addGlint(p, x, y, R, t * 0.7 + idx);
+      p.addCircle(x, y, 1.9); // matches the field-particle radius here
+    }
+    return p;
+  }, [phase, clock, sxs, sys, amp, lambdaPx]);
 
   // Dense particle field — compression bands are the star.
   const COLS = 38;
@@ -1513,21 +1508,12 @@ export function WavelengthRulerView({
           <BlurMask blur={3.5} style="normal" />
         </Path>
         <Path path={dots} color={PARTICLE} />
-        {/* Colour-tracked molecules: the standard three + a FOURTH above the
-            listener's head (owner 2026-08-05). */}
-        {waveTracers.map((tr, i) => (
-          <WaveTracer
-            key={i}
-            phase={phase}
-            amp={amp}
-            disp={tracerDisp}
-            lambdaPx={lambdaPx}
-            homeX={tr.hx}
-            homeY={tr.hy}
-            color={tr.color}
-            opacity={tr.op}
-          />
-        ))}
+        {/* SPARKLE-TRACKED molecules — two glinting at a time, handing off
+            every ~2 s, each only ever wobbling in place. */}
+        <Path path={sparkles} color="#ffffff" opacity={0.22}>
+          <BlurMask blur={5} style="normal" />
+        </Path>
+        <Path path={sparkles} color="#f2f4f8" opacity={0.85} />
         {/* Floor: gradient ground strip + edge line (house Floor idiom). */}
         <RoundedRect x={0} y={floorY} width={w} height={h - floorY} r={0}>
           <LinearGradient start={vec(0, floorY)} end={vec(0, h)} colors={['#17181d', '#0d0d10']} />

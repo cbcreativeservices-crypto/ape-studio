@@ -515,16 +515,18 @@ function M6Panel({ viz, width, focused, help }: PanelProps) {
       <Text style={styles.caption}>
         λ = speed ÷ frequency = 343 ÷ {f} ≈ {lambda.toFixed(2)} m — {(7 / lambda).toFixed(1)}{' '}
         wavelength{7 / lambda >= 1.95 ? 's' : ''} fit across the room. The amber bracket IS that
-        length, drawn to scale. The coloured dot above the head is the molecule at the listener —
-        watch it just wobble in place as the pattern flows past.
+        length, drawn to scale. Follow any GLINTING molecule — it only wobbles in place as the
+        pattern flows past. The wave crosses the room; the air does not.
       </Text>
     </View>
   );
 }
 function M6Viz({ viz, width, f, running }: { viz: VizModule; width: number; f: number; running: boolean }) {
-  // Phase clock — continuous while the slider drags the frequency.
+  // Phase clock — continuous while the slider drags the frequency; the seconds
+  // clock paces the sparkle-tracked molecules' hand-offs (owner 2026-08-10).
   const phase = viz.usePhaseClock(running, visHzFor(f));
-  return <viz.WavelengthRulerView phase={phase} width={width} freqHz={f} />;
+  const clock = viz.useVizClock(running);
+  return <viz.WavelengthRulerView phase={phase} clock={clock} width={width} freqHz={f} />;
 }
 
 // ─── M7 — Time vs space: the same wave on two rulers ────────────────────────
