@@ -55,6 +55,36 @@ export function TubeCardScreen() {
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
   const [retryKey, setRetryKey] = useState(0);
+
+  // CHROME (owner 2026-08-10): the cards are full-bleed designs — persistent
+  // bars were hiding real content (the card title up top, the wiring panel at
+  // the bottom). So the resting state is a CLEAN full-screen image: the bars
+  // show briefly on entry (so back/arrows are discoverable), auto-hide, and a
+  // SINGLE TAP toggles them back. Double-tap stays the zoom toggle.
+  const [chrome, setChrome] = useState(true);
+  const chromeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const singleTapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const armChromeAutoHide = () => {
+    if (chromeTimer.current) clearTimeout(chromeTimer.current);
+    chromeTimer.current = setTimeout(() => setChrome(false), 2500);
+  };
+  // Stable (setState-functional + refs only) so the memoized PanResponder's
+  // captured instance never goes stale.
+  const toggleChrome = () => {
+    setChrome((c) => {
+      if (chromeTimer.current) clearTimeout(chromeTimer.current);
+      if (!c) armChromeAutoHide();
+      return !c;
+    });
+  };
+  useEffect(() => {
+    armChromeAutoHide();
+    return () => {
+      if (chromeTimer.current) clearTimeout(chromeTimer.current);
+      if (singleTapTimer.current) clearTimeout(singleTapTimer.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const tube = TUBE_REFS[idx];
   const famTitle = TUBE_FAMILY_META.find((f) => f.key === tube.family)?.title ?? '';
 
@@ -182,10 +212,12 @@ export function TubeCardScreen() {
           const s = session.current;
           const now = Date.now();
 
-          // Double-tap: two quick, still taps → toggle zoom.
+          // Taps: SINGLE toggles the chrome (deferred until the double-tap
+          // window closes); DOUBLE toggles zoom.
           if (!s.moved && now - s.downAt < 240) {
             if (now - s.lastTapAt < 320) {
               s.lastTapAt = 0;
+              if (singleTapTimer.current) clearTimeout(singleTapTimer.current);
               if (cur.current.scale > 1.01) {
                 Animated.parallel([
                   Animated.spring(scaleAV, { toValue: 1, useNativeDriver: false }),
@@ -200,6 +232,8 @@ export function TubeCardScreen() {
               return;
             }
             s.lastTapAt = now;
+            if (singleTapTimer.current) clearTimeout(singleTapTimer.current);
+            singleTapTimer.current = setTimeout(toggleChrome, 300);
           }
 
           if (s.mode === 'pinch') {
@@ -323,7 +357,10 @@ export function TubeCardScreen() {
         </View>
       ) : null}
 
-      {/* Header overlay — back, position, tube, family. */}
+      {/* Chrome — hidden at rest so nothing covers the card (owner 2026-08-10);
+          single-tap toggles it. */}
+      {chrome ? (
+      <>
       <View style={[styles.topBar, { paddingTop: insets.top + 8 }]} pointerEvents="box-none">
         <Pressable onPress={() => navigation.goBack()} hitSlop={12} accessibilityRole="button" accessibilityLabel="Back to the tube list">
           <Text style={styles.back}>‹</Text>
@@ -354,10 +391,12 @@ export function TubeCardScreen() {
         </Pressable>
       </View>
 
-      {/* Gesture hint. */}
+      {/* Gesture hint — part of the chrome, never resting on the card. */}
       <View style={[styles.hintBar, { paddingBottom: insets.bottom + 8 }]} pointerEvents="none">
-        <Text style={styles.hintText}>PINCH TO ZOOM · SWIPE FOR NEXT TUBE · DOUBLE-TAP TO MAGNIFY</Text>
+        <Text style={styles.hintText}>PINCH TO ZOOM · SWIPE FOR NEXT TUBE · TAP FOR CONTROLS</Text>
       </View>
+      </>
+      ) : null}
     </View>
   );
 }
