@@ -326,9 +326,16 @@ export function CalcWorkspaceScreen() {
           </View>
         ) : null}
         <Text style={styles.eyebrow}>IN THE GLOSSARY</Text>
+        {/* Tap a term → in-place definition popup (owner 2026-08-07). The old
+            "OPEN THE GLOSSARY ›" link was removed (owner 2026-08-09): it switched
+            to the Glossary TAB, which popped this calculator off the stack —
+            stranding the user on the general glossary landing with no way back and
+            no focused term. The popup shows the SPECIFIC term and keeps every
+            input + the scroll position, so the user returns right here to keep
+            going. */}
+        <Text style={styles.caption}>Tap any term for its definition — it opens right here and keeps your inputs, so you return to your calculation.</Text>
         <View style={styles.chipRow}>
           {ws.glossary.map((g) => (
-            // Tappable (owner 2026-08-07) → in-place glossary definition popup.
             <Pressable
               key={g}
               style={styles.glossChip}
@@ -340,15 +347,6 @@ export function CalcWorkspaceScreen() {
             </Pressable>
           ))}
         </View>
-        <Pressable
-          onPress={() =>
-            // Established hub idiom (ToolsHub): jump to the Glossary tab.
-            navigation.navigate('Main', { screen: 'Study', params: { screen: 'Glossary' } } as never)
-          }
-        >
-          <Text style={styles.glossLink}>OPEN THE GLOSSARY ›</Text>
-        </Pressable>
-        <Text style={styles.caption}>Full definitions, plain-English versions, and linked labs live there.</Text>
       </KeyboardAwareScrollView>
       <GlossaryTermPopup termName={popupTerm} onClose={() => setPopupTerm(null)} />
     </View>
@@ -444,5 +442,4 @@ const styles = StyleSheet.create({
   // (NOT purple; purple is reserved for calculator words inside the glossary).
   glossChip: { borderRadius: 7, borderWidth: 1, borderColor: '#2c2c33', paddingHorizontal: 9, paddingVertical: 5, backgroundColor: '#141419' },
   glossText: { fontFamily: fonts.barlowMedium, fontSize: 12, color: colors.textSecondary },
-  glossLink: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.amber, marginTop: 2 },
 });
