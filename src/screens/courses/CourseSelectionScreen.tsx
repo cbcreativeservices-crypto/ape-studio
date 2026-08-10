@@ -44,6 +44,7 @@ import { setLastPublicCourse } from '../../features/commercial/commercialDashboa
 import { getPublicCatalog, freeTopicsFrom, courseHasFreeTopic } from '../../data/publicCourses';
 import { MATRIX_SUBJECTS } from '../../data/courseTopicMatrix';
 import { PROGRAM_PATHS, SPECIALIZED_CERTIFICATES } from '../awards/awardsData';
+import { fetchV3Certs, fetchV3Programs } from '../../data/v3Curriculum';
 import { useDefaultHomeGs, useHomeBundles, useHomeGs } from '../../features/home/homeCardsStore';
 import { setBundleLoaded, useBundles } from '../../features/enrollment/enrolledBundlesStore';
 import { isFreeEnrollGs, setActiveMany } from '../../features/enrollment/enrollmentStore';
@@ -742,6 +743,22 @@ export function CourseSelectionScreen() {
   // shows a friendly sign-up prompt (set in load(), keyed on the real session).
   const [isGuest, setIsGuest] = useState(false);
   const [guestGateOpen, setGuestGateOpen] = useState(false);
+  // LIVE v3 programs (owner 2026-08-10): the "+ N other programs" tally was based
+  // on the stale awardsData PROGRAM_PATHS (16) vs the live catalog (36). Fetch the
+  // real programs; seed with the awardsData values so the count is never empty.
+  const [v3ProgramCount, setV3ProgramCount] = useState(PROGRAM_PATHS.length);
+  const [v3ProgramNames, setV3ProgramNames] = useState<Set<string>>(PROGRAM_NAME_SET);
+  useEffect(() => {
+    let alive = true;
+    void fetchV3Programs().then((ps) => {
+      if (!alive || ps.length === 0) return;
+      setV3ProgramCount(ps.length);
+      setV3ProgramNames(new Set(ps.map((p) => normProgram(p.name))));
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
   // A LAPSED (cancelled) member keeps their Home cards as they set them up (the
   // store persists), but can no longer open them — a "Membership Expired" warning
   // fires instead (user request 2026-07-23).
@@ -812,8 +829,10 @@ export function CourseSelectionScreen() {
       }));
       const topicCards = [...singlePub, ...comingCards].sort((a, b) => a.name.localeCompare(b.name));
       // Far-right tally card = Specialization Certificates to earn (user request
-      // 2026-07-22), linking to the Certificates screen.
-      const otherCount = OTHER_CERTS_COUNT;
+      // 2026-07-22), linking to the Certificates screen. LIVE v3 count (owner
+      // 2026-08-10: was the stale awardsData length); awardsData is the fallback
+      // if the fetch is empty. (All active v3 certs are L1 specialization certs.)
+      const otherCount = (await fetchV3Certs()).length || OTHER_CERTS_COUNT;
       setCards([
         // Ear Training & Audio Lab — pinned FAR LEFT, left of tools (owner
         // request 2026-07-26).
@@ -915,10 +934,10 @@ export function CourseSelectionScreen() {
       const raw = rawCardTitle(c);
       if (!raw || raw === OTHER_PROGRAMS_CARD_TITLE) continue;
       const disp = CARD_TITLE_RENAMES[raw] ?? raw;
-      if (PROGRAM_NAME_SET.has(normProgram(disp))) shown++;
+      if (v3ProgramNames.has(normProgram(disp))) shown++;
     }
-    return Math.max(0, PROGRAM_PATHS.length - shown);
-  }, [displayDeck]);
+    return Math.max(0, v3ProgramCount - shown);
+  }, [displayDeck, v3ProgramNames, v3ProgramCount]);
 
   // Latest deck for the (stable) onViewableItemsChanged callback to read.
   const deckRef = useRef(displayDeck);
