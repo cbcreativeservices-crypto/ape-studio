@@ -38,6 +38,7 @@ import {
   addTopics,
   isFreeEnrollGs,
   moveTopic,
+  pruneInvalidGs,
   removeTopic,
   resetEnrollment,
   setActiveMany,
@@ -186,6 +187,14 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
     for (const s of v3Subjects) for (const t of s.topics) m.set(t.gs, { name: t.name, subject: s.name });
     return m;
   }, [v3Subjects]);
+  // Self-heal (owner 2026-08-10): once the LIVE v3 curriculum has loaded, drop
+  // any enrolled topic whose gs isn't an active v3 topic — stale pre-v3 rows
+  // that would otherwise render as "Topic gsN". Guarded on a loaded index so we
+  // never prune mid-fetch (empty index = still loading, not "all invalid").
+  useEffect(() => {
+    if (topicIndex.size === 0) return;
+    pruneInvalidGs(new Set(topicIndex.keys()));
+  }, [topicIndex]);
   // LIVE v3 programs + certs (owner 2026-08-06) — replace the retired v2 award
   // data; aliased to the field names the browse already uses.
   const [v3Programs, setV3Programs] = useState<V3Credential[]>([]);

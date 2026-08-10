@@ -22,20 +22,20 @@ import { supabase } from '../../lib/supabase';
 export type EnrollTopic = { gs: number; favorite: boolean; active: boolean };
 
 const KEY = 'ape:enrollmentList';
-// One-time seed marker. v4 (2026-07-22): the two free topics are Professional
-// Audio Safety (gs100) + DAW Fundamentals & Session Management (gs1240). The
-// other two required cores (gs120/gs1590) are NOT seeded — they join the list
-// only once the user adds their first certificate or program (user request
-// 2026-07-22, handled in EnrollmentScreen/AwardsScreen).
-const SEED_KEY = 'ape:enrollmentSeeded4';
-// The 2 auto-enrolled FREE topics a non-subscribed user sees (user request
-// 2026-07-22): gs100 "Professional Audio Safety" + gs1240 "DAW Fundamentals &
-// Session Management". Safety is ALSO a required core. Signal Path & Levels
-// (gs150) is NOT free.
-export const FREE_ENROLL_GS: readonly number[] = [100, 1240];
-/** Prior seeds to remove on re-seed: gs0/gs36 placeholders + gs150 (the retired
- *  substitute). */
-const LEGACY_FREE_GS: readonly number[] = [0, 36, 150];
+// One-time seed marker. v5 (2026-08-10): RE-KEYED TO v3. The two free topics are
+// Professional Audio Safety (gs3060) + DAW Fundamentals & Session Management
+// (gs3970). The old gs (100 / 1240) predated the v3 curriculum re-key — active
+// v3 topics live at gs 3000–4710, so 100/1240 resolved to NO topic and rendered
+// as "Topic gs100 / gs1240". Bumping the seed key re-seeds every existing user
+// once: drop the old free gs (now in LEGACY_FREE_GS) and add the v3 ones.
+const SEED_KEY = 'ape:enrollmentSeeded5';
+// The 2 auto-enrolled FREE topics a non-subscribed user sees: gs3060
+// "Professional Audio Safety" (ALSO a required core) + gs3970 "DAW Fundamentals
+// & Session Management". (v3 achievements.global_sequence.)
+export const FREE_ENROLL_GS: readonly number[] = [3060, 3970];
+/** Prior seeds to remove on re-seed: gs0/gs36 placeholders, gs150 (retired
+ *  substitute), and gs100/gs1240 (the pre-v3 free topics, re-keyed to 3060/3970). */
+const LEGACY_FREE_GS: readonly number[] = [0, 36, 150, 100, 1240];
 export function isFreeEnrollGs(gs: number): boolean {
   return FREE_ENROLL_GS.includes(gs);
 }
@@ -94,11 +94,14 @@ async function hydrate(): Promise<void> {
       }
       // One-time seed of the FREE topics so everyone is already enrolled in
       // them (user request 2026-07-22). Idempotent via SEED_KEY.
+      let migrated = false;
       try {
         const seeded = await AsyncStorage.getItem(SEED_KEY);
         if (seeded !== '1') {
-          // Migrate: drop the old placeholder free gs (0/36) if a prior build
-          // seeded them, so testers don't keep stale unnamed rows.
+          // Migrate: drop retired free/placeholder gs (LEGACY_FREE_GS) so testers
+          // don't keep stale unnamed rows — this is what clears the pre-v3
+          // gs100/gs1240 that rendered as "Topic gsN".
+          const before = loaded.length;
           loaded = loaded.filter((e) => !LEGACY_FREE_GS.includes(e.gs));
           const have = new Set(loaded.map((e) => e.gs));
           // Prepend so the free topics are the FIRST two shown (user request).
@@ -108,6 +111,7 @@ async function hydrate(): Promise<void> {
             active: true,
           }));
           loaded = [...freeAdd, ...loaded];
+          migrated = loaded.length !== before || freeAdd.length > 0;
           await AsyncStorage.setItem(SEED_KEY, '1');
           await AsyncStorage.setItem(KEY, JSON.stringify(loaded));
         }
@@ -117,6 +121,9 @@ async function hydrate(): Promise<void> {
       list = loaded;
       hydrated = true;
       emit();
+      // Push the re-keyed free topics to the server so the corrected list is the
+      // one the backend gates on (owner 2026-08-10 v3 re-key fix).
+      if (migrated) scheduleServerSync();
     })();
   }
   return hydrating;
@@ -161,6 +168,19 @@ export function addTopic(gs: number): void {
 export function removeTopic(gs: number): void {
   if (!list.some((e) => e.gs === gs)) return;
   commit(list.filter((e) => e.gs !== gs));
+}
+
+/** Self-heal (owner 2026-08-10): drop enrolled topics whose gs is NOT in `valid`
+ *  — stale pre-v3 rows that no longer resolve to an active curriculum topic and
+ *  would show as "Topic gsN". Commits (so it re-syncs the server) only when it
+ *  actually removes something. NEVER runs against an empty `valid` set (that
+ *  would be "curriculum still loading", not "everything is invalid"). */
+export function pruneInvalidGs(valid: Set<number>): number {
+  if (valid.size === 0) return 0;
+  const next = list.filter((e) => valid.has(e.gs));
+  const removed = list.length - next.length;
+  if (removed > 0) commit(next);
+  return removed;
 }
 
 /** Toggle membership — add if absent, remove if present (add-menu tap). */
