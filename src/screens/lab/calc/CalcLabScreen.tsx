@@ -45,7 +45,7 @@ export function CalcLabScreen() {
 
   // Collapsible sections (owner 2026-08-09): workflows + description + each
   // calculator category. Default open; local state (not persisted).
-  const [wfOpen, setWfOpen] = useState(true);
+  const [wfOpen, setWfOpen] = useState(false); // default collapsed (owner 2026-08-09)
   const [descOpen, setDescOpen] = useState(true);
   const [openSecs, setOpenSecs] = useState<Record<string, boolean>>({});
 
@@ -104,11 +104,11 @@ export function CalcLabScreen() {
             accessibilityState={{ expanded: wfOpen }}
             accessibilityLabel="Calculator workflows section"
           >
-            <Text style={styles.sectionTitle}>{wfOpen ? '▾' : '▸'}  CALCULATOR WORKFLOWS</Text>
+            <Text style={[styles.sectionTitle, { color: colors.green }]}>{wfOpen ? '▾' : '▸'}  CUSTOM CALCULATOR WORKFLOWS</Text>
           </Pressable>
           {wfOpen ? (
             <>
-              <Text style={styles.caption}>
+              <Text style={[styles.caption, { color: colors.green }]}>
                 Run several calculators as one guided sequence — build your own or start from a template.
               </Text>
               <View style={styles.wfRow}>
@@ -178,10 +178,10 @@ export function CalcLabScreen() {
             accessibilityState={{ expanded: descOpen }}
             accessibilityLabel="About this lab"
           >
-            <Text style={styles.sectionTitle}>{descOpen ? '▾' : '▸'}  ABOUT THIS LAB</Text>
+            <Text style={[styles.sectionTitle, { color: colors.blue }]}>{descOpen ? '▾' : '▸'}  ABOUT THIS LAB</Text>
           </Pressable>
           {descOpen ? (
-            <Text style={styles.body}>
+            <Text style={[styles.body, { color: colors.blue }]}>
               Every calculator here shows the result AND the reasoning: the formula, the worked
               steps, why it matters on the job, and the classic mistakes. Results can be SENT into
               another calculator — sensitivity → voltage → gain → headroom — like a real design chain.
