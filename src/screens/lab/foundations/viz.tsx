@@ -246,19 +246,27 @@ function sparkleHomes(usableW: number, topPad: number, usableH: number): { xs: n
   return { xs, ys };
 }
 
-/** Thin 4-point glint star (worklet) — a professional specular highlight. */
+/** Compound glint (worklet) — a specular star with real presence (owner
+ *  2026-08-10: the single thin star was too easy to miss): a 4-point main
+ *  star, a smaller cross rotated 45° (the classic 8-point camera-star look),
+ *  and a hot core knot. Still monochrome and professional — just brighter. */
 function addGlint(p: ReturnType<typeof Skia.Path.Make>, x: number, y: number, R: number, rot: number): void {
   'worklet';
-  const ir = R * 0.18;
-  for (let k = 0; k < 8; k++) {
-    const a = rot + (k * Math.PI) / 4;
-    const rad = k % 2 === 0 ? R : ir;
-    const vx = x + rad * Math.cos(a);
-    const vy = y + rad * Math.sin(a);
-    if (k === 0) p.moveTo(vx, vy);
-    else p.lineTo(vx, vy);
+  for (let arm = 0; arm < 2; arm++) {
+    const AR = arm === 0 ? R : R * 0.55; // secondary cross at 55% size
+    const off = rot + arm * (Math.PI / 4);
+    const ir = AR * 0.16;
+    for (let k = 0; k < 8; k++) {
+      const a = off + (k * Math.PI) / 4;
+      const rad = k % 2 === 0 ? AR : ir;
+      const vx = x + rad * Math.cos(a);
+      const vy = y + rad * Math.sin(a);
+      if (k === 0) p.moveTo(vx, vy);
+      else p.lineTo(vx, vy);
+    }
+    p.close();
   }
-  p.close();
+  p.addCircle(x, y, R * 0.2); // hot core knot
 }
 
 export function AirParticlesView({
@@ -354,7 +362,7 @@ export function AirParticlesView({
         const idx0 = Math.floor(hash(e0 * 17.31) * SPARKLE_N) % SPARKLE_N;
         if (idx === idx0) idx = (idx + 7) % SPARKLE_N;
       }
-      const fade = Math.min(1, u / 0.6, (SPARKLE_LIFE - u) / 0.6);
+      const fade = Math.min(1, u / 0.45, (SPARKLE_LIFE - u) / 0.45);
       if (fade <= 0.02) continue;
       let dx = 0;
       if (mode === 'wave') {
@@ -365,11 +373,15 @@ export function AirParticlesView({
       }
       const x = sxs[idx] + dx;
       const y = sys[idx];
-      // Breathe gently; grow in / shrink out with the hand-off (size carries
-      // the fade — opacity stays constant across the shared path).
-      const R = Math.max(0.5, (4.4 + 1.1 * Math.sin(t * 5 + idx * 2.1)) * fade);
-      addGlint(p, x, y, R, t * 0.7 + idx);
-      p.addCircle(x, y, 2.2); // the molecule itself, brightened white
+      // Dual-frequency shimmer (owner 2026-08-10: more visible, more sparkle):
+      // a slow breath plus a fast flicker, so the glint visibly twinkles.
+      // Size carries the fade — grows in, shrinks out on each hand-off.
+      const R = Math.max(
+        0.5,
+        (7 + 2.2 * Math.sin(t * 6 + idx * 2.1) + 0.9 * Math.sin(t * 13 + idx * 1.7)) * fade,
+      );
+      addGlint(p, x, y, R, t * 1.2 + idx);
+      p.addCircle(x, y, 2.2 + 1.0 * fade); // the molecule itself, larger + bright
     }
     return p;
   }, [clock, sxs, sys, visHz, amp, mode, lambda, dispMax, phasePx]);
@@ -481,11 +493,15 @@ export function AirParticlesView({
       </Path>
       <Path path={path} color={PARTICLE} />
       {/* SPARKLE-TRACKED molecules — two glinting at a time, handing off every
-          ~2 s, each only ever swinging back and forth in place. */}
-      <Path path={sparkles} color="#ffffff" opacity={0.22}>
+          ~2 s, each only ever swinging back and forth in place. Three layers
+          (owner 2026-08-10, more visible): wide bloom → tight glow → crisp star. */}
+      <Path path={sparkles} color="#ffffff" opacity={0.32}>
+        <BlurMask blur={14} style="normal" />
+      </Path>
+      <Path path={sparkles} color="#ffffff" opacity={0.45}>
         <BlurMask blur={5} style="normal" />
       </Path>
-      <Path path={sparkles} color="#f2f4f8" opacity={0.85} />
+      <Path path={sparkles} color="#f6f8fc" opacity={0.95} />
       {showEar ? (
         // Scaled up around its centre (owner 2026-08-05) so the ear reads clearly.
         <Group transform={[{ translateX: ear.cx }, { translateY: ear.cy }, { scale: earScale }, { translateX: -ear.cx }, { translateY: -ear.cy }]}>
@@ -1383,14 +1399,18 @@ export function WavelengthRulerView({
         const idx0 = Math.floor(hash(e0 * 17.31) * SPARKLE_N) % SPARKLE_N;
         if (idx === idx0) idx = (idx + 7) % SPARKLE_N;
       }
-      const fade = Math.min(1, u / 0.6, (SPARKLE_LIFE - u) / 0.6);
+      const fade = Math.min(1, u / 0.45, (SPARKLE_LIFE - u) / 0.45);
       if (fade <= 0.02) continue;
       const dx = amp * disp * Math.sin(ph - k * sxs[idx]);
       const x = sxs[idx] + dx;
       const y = sys[idx];
-      const R = Math.max(0.5, (4 + 1 * Math.sin(t * 5 + idx * 2.1)) * fade);
-      addGlint(p, x, y, R, t * 0.7 + idx);
-      p.addCircle(x, y, 1.9); // matches the field-particle radius here
+      // Dual-frequency shimmer (owner 2026-08-10) — see AirParticlesView.
+      const R = Math.max(
+        0.5,
+        (6 + 2 * Math.sin(t * 6 + idx * 2.1) + 0.8 * Math.sin(t * 13 + idx * 1.7)) * fade,
+      );
+      addGlint(p, x, y, R, t * 1.2 + idx);
+      p.addCircle(x, y, 1.9 + 0.9 * fade); // the molecule itself, larger + bright
     }
     return p;
   }, [phase, clock, sxs, sys, amp, lambdaPx]);
@@ -1509,11 +1529,15 @@ export function WavelengthRulerView({
         </Path>
         <Path path={dots} color={PARTICLE} />
         {/* SPARKLE-TRACKED molecules — two glinting at a time, handing off
-            every ~2 s, each only ever wobbling in place. */}
-        <Path path={sparkles} color="#ffffff" opacity={0.22}>
+            every ~2 s, each only ever wobbling in place. Three layers (owner
+            2026-08-10, more visible): wide bloom → tight glow → crisp star. */}
+        <Path path={sparkles} color="#ffffff" opacity={0.32}>
+          <BlurMask blur={14} style="normal" />
+        </Path>
+        <Path path={sparkles} color="#ffffff" opacity={0.45}>
           <BlurMask blur={5} style="normal" />
         </Path>
-        <Path path={sparkles} color="#f2f4f8" opacity={0.85} />
+        <Path path={sparkles} color="#f6f8fc" opacity={0.95} />
         {/* Floor: gradient ground strip + edge line (house Floor idiom). */}
         <RoundedRect x={0} y={floorY} width={w} height={h - floorY} r={0}>
           <LinearGradient start={vec(0, floorY)} end={vec(0, h)} colors={['#17181d', '#0d0d10']} />
