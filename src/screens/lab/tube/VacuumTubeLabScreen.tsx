@@ -262,12 +262,14 @@ function AmplifySection({ viz, width, focused, help }: SectionProps) {
       <IllustrationBadge text="ILLUSTRATIVE — gain drawn ~×7; the output is INVERTED (that sign-flip is real tube behavior)" />
       <DisplayGuideButton onPress={() => help('amplification')} />
       <Text style={styles.caption}>
-        Small control → large response. The tiny waveform wiggles the grid; the grid gates the big
-        plate current; the plate current, pulled through a resistor, becomes a LARGE copy of the
-        input — flipped upside-down, because MORE grid signal means MORE current means the plate
-        voltage DROPS.
+        Follow the color code: the small BLUE wave rides the blue wire INTO THE GRID — watch the
+        grid dots swell in time with it. Inside the glass, the much larger electron stream
+        (cathode → plate) breathes with that same rhythm: grid swings up, the stream floods; grid
+        swings down, it chokes. The AMBER wire carries the result out of the PLATE.
       </Text>
       <Text style={styles.caption}>
+        That plate current, pulled through a resistor, becomes a LARGE copy of the input — flipped
+        upside-down, because MORE grid signal means MORE current means the plate voltage DROPS.
         Every tube mic preamp, guitar amp, compressor and broadcast console ever made is this one
         picture, repeated.
       </Text>
@@ -311,26 +313,64 @@ function HvViz({ viz, width, highB, running }: { viz: TubeVizModule; width: numb
 
 // ── 6 · Tube types ──────────────────────────────────────────────────────────
 
-const TYPES: { kind: 'triode' | 'tetrode' | 'pentode'; label: string; note: string }[] = [
-  { kind: 'triode', label: 'TRIODE', note: 'One grid. Simple, warm, linear — the classic preamp element (both halves of a 12AX7 are triodes). Its weakness: the plate’s field reaches back through the grid, limiting gain and speed.' },
-  { kind: 'tetrode', label: 'TETRODE', note: 'Adds the SCREEN grid: a positive grid that shields the control grid from the plate — much higher gain and speed. New problem (shown in red): electrons knock SECONDARY electrons off the plate, and the screen steals them.' },
-  { kind: 'pentode', label: 'PENTODE', note: 'Adds the SUPPRESSOR grid by the plate: it turns the secondary electrons back (red dots now die at the suppressor). High gain, high power, well-behaved — the classic output tube (EL34, EL84).' },
+// Each type's NEWEST element GLOWS in its card ink in the drawing (owner
+// 2026-08-10: visual differentiation) and the text is structured so the three
+// stack as a story: grids · what the new grid adds · the cost · the fix.
+const TYPES: {
+  kind: 'triode' | 'tetrode' | 'pentode';
+  label: string;
+  grids: string;
+  newPart: TubePart;
+  adds: string;
+  strength: string;
+  weakness: string;
+}[] = [
+  {
+    kind: 'triode',
+    label: 'TRIODE',
+    grids: '1 GRID',
+    newPart: 'grid',
+    adds: 'THE CONTROL GRID (blue, glowing) — the valve itself. Three elements total: cathode, grid, plate.',
+    strength: 'Simple, warm, linear — the classic preamp element (both halves of a 12AX7 are triodes).',
+    weakness: 'The plate’s field reaches back through that single grid, limiting gain and speed.',
+  },
+  {
+    kind: 'tetrode',
+    label: 'TETRODE',
+    grids: '2 GRIDS',
+    newPart: 'screen',
+    adds: 'THE SCREEN GRID (purple, glowing) — a second, POSITIVE grid between control grid and plate.',
+    strength: 'It shields the control grid from the plate and accelerates the stream — much higher gain and speed.',
+    weakness: 'New problem, drawn in red: electrons hit the plate hard enough to knock SECONDARY electrons loose, and the positive screen steals them — current lost.',
+  },
+  {
+    kind: 'pentode',
+    label: 'PENTODE',
+    grids: '3 GRIDS',
+    newPart: 'suppressor',
+    adds: 'THE SUPPRESSOR GRID (gold, glowing) — a third grid right beside the plate.',
+    strength: 'It turns the secondary electrons around (watch the red dots die at it now). High gain, high power, well-behaved — the classic output tube (EL34, EL84).',
+    weakness: 'Cost and complexity — five elements in the bottle. For clean low-level warmth, the simple triode still rules the preamp.',
+  },
 ];
 
 function TypesSection({ viz, width, focused, electron, help }: SectionProps) {
   const [idx, setIdx] = useState(0);
   const t = TYPES[idx];
+  const ink = TUBE_INK[t.newPart];
   return (
     <View style={styles.panelCard}>
-      {viz ? <CutawayViz viz={viz} width={width} kind={t.kind} highlight={null} electron={electron} running={focused} secondary={idx > 0} /> : <VizUnavailableCard />}
-      <IllustrationBadge text="ILLUSTRATIVE — red dots = secondary emission (the tetrode's problem, the pentode's fix)" />
+      {viz ? <CutawayViz viz={viz} width={width} kind={t.kind} highlight={t.newPart} electron={electron} running={focused} secondary={idx > 0} /> : <VizUnavailableCard />}
+      <IllustrationBadge text="ILLUSTRATIVE — the newest grid GLOWS in its ink · red dots = secondary emission (the tetrode's problem, the pentode's fix)" />
       <DisplayGuideButton onPress={() => help('tube_types')} />
       <View style={styles.chipRow}>
         {TYPES.map((ty, i) => (
-          <LabChip key={ty.kind} label={ty.label} selected={idx === i} onPress={() => setIdx(i)} onLongPress={() => help('tube_types')} />
+          <LabChip key={ty.kind} label={`${ty.label} · ${ty.grids}`} selected={idx === i} onPress={() => setIdx(i)} onLongPress={() => help('tube_types')} />
         ))}
       </View>
-      <Text style={styles.caption}>{t.note}</Text>
+      <Text style={[styles.readout, { color: ink }]}>ADDS: {t.adds}</Text>
+      <Text style={styles.caption}>{t.strength}</Text>
+      <Text style={styles.caption}>{t.weakness}</Text>
     </View>
   );
 }
@@ -476,9 +516,9 @@ const SECTIONS: { key: string; label: string; title: string; blurb: string; uses
   { key: 'inside', label: 'INSIDE', title: 'WHAT’S INSIDE A VACUUM TUBE?', blurb: 'Glass, metal, wire, and nothing at all — tap each part to learn its job.', usesElectron: true, Comp: InsideSection },
   { key: 'flow', label: 'FLOW', title: 'ELECTRON FLOW', blurb: 'Drag the warm-up and watch heat become a cloud, and the cloud become current.', usesElectron: false, Comp: FlowSection },
   { key: 'grid', label: 'GRID', title: 'THE CONTROL GRID', blurb: 'The heart of amplification: a whisper of voltage gating a river of current.', usesElectron: true, Comp: GridSection },
-  { key: 'amplify', label: 'AMPLIFY', title: 'SIGNAL AMPLIFICATION', blurb: 'Small control → large response, drawn as waveforms.', usesElectron: false, Comp: AmplifySection },
+  { key: 'amplify', label: 'AMPLIFY', title: 'SIGNAL AMPLIFICATION', blurb: 'Your signal never touches the big current — it drives the GRID (blue). The grid is a valve: its tiny wiggle opens and chokes the tube’s much larger cathode→plate stream, and that gated stream leaves the PLATE (amber) as a big, flipped copy of the input.', usesElectron: false, Comp: AmplifySection },
   { key: 'highv', label: 'HIGH V', title: 'WHY TUBES NEED HIGH VOLTAGE', blurb: 'Weak attraction, weak current — why tube circuits live at hundreds of volts.', usesElectron: false, Comp: HighVoltSection },
-  { key: 'types', label: 'TYPES', title: 'TRIODE · TETRODE · PENTODE', blurb: 'What each added grid fixes — and the problem it introduces.', usesElectron: true, Comp: TypesSection },
+  { key: 'types', label: 'TYPES', title: 'TRIODE · TETRODE · PENTODE', blurb: 'Three tubes, one story: each type adds ONE more grid to fix the previous type’s weakness. Switch between them — the newest grid glows in its own color, and the drawing shows what it fixes (and what it costs).', usesElectron: true, Comp: TypesSection },
   { key: 'bias', label: 'BIAS', title: 'TUBE BIAS', blurb: 'Cutoff · linear · saturation — one slider on the transfer curve.', usesElectron: false, Comp: BiasSection },
   { key: 'sat', label: 'SATURATE', title: 'TUBE SATURATION', blurb: 'The straight line that rounds — soft clipping, compression, harmonics.', usesElectron: false, Comp: SaturationSection },
   { key: 'versus', label: 'VS', title: 'TUBE vs TRANSISTOR', blurb: 'Two completely different physics doing the same job.', usesElectron: false, Comp: VersusSection },

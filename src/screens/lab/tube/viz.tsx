@@ -949,18 +949,57 @@ export function AmplifyView({
   const tube = useMemo(() => {
     const bottle = makeBottlePath(tcx, tTop, tBase, hw, hw * 0.6);
     const streak = makeStreakPath(tcx, tTop, tBase, hw, hw * 0.6);
-    const grid = Skia.Path.Make();
-    for (let i = 0; i < 4; i++) grid.addCircle(tcx, mid - 18 + i * 12, 2);
-    const leads = Skia.Path.Make();
-    leads.moveTo(inX1, mid);
-    leads.lineTo(tcx - hw, mid);
-    leads.moveTo(tcx + hw, mid);
-    leads.lineTo(outX0, mid);
-    return { bottle, streak, grid, leads };
+    // INPUT lead → THE GRID (owner 2026-08-10: the grid is visibly the target).
+    // Drawn in the grid's blue ink, ending in an arrowhead at the glass, with a
+    // faint dashed continuation to the grid dots inside.
+    const leadIn = Skia.Path.Make();
+    leadIn.moveTo(inX1, mid);
+    leadIn.lineTo(tcx - hw - 2, mid);
+    const leadInArrow = Skia.Path.Make();
+    leadInArrow.moveTo(tcx - hw + 1, mid);
+    leadInArrow.lineTo(tcx - hw - 6, mid - 4.5);
+    leadInArrow.lineTo(tcx - hw - 6, mid + 4.5);
+    leadInArrow.close();
+    const leadInDash = Skia.Path.Make();
+    leadInDash.moveTo(tcx - hw + 2, mid);
+    leadInDash.lineTo(tcx - 5, mid);
+    // OUTPUT lead ← THE PLATE (amber): leaves from the plate bar at the top,
+    // then drops to the output wave's midline.
+    const leadOut = Skia.Path.Make();
+    leadOut.moveTo(tcx + hw * 0.6, mid - 31);
+    leadOut.lineTo(outX0 - 12, mid - 31);
+    leadOut.lineTo(outX0, mid);
+    return { bottle, streak, leadIn, leadInArrow, leadInDash, leadOut };
   }, [tcx, tTop, tBase, hw, mid, inX1, outX0]);
 
   // The little filament breathes.
   const filR = useDerivedValue(() => 6 + 1.5 * Math.sin(phase.value), [phase]);
+
+  // THE GRID PULSES with the arriving input (owner 2026-08-10): its dots swell
+  // and glow in time with the wave — the wiggle lands HERE.
+  const gridDots = useDerivedValue(() => {
+    const ph = phase.value;
+    const p = Skia.Path.Make();
+    const g = 0.5 + 0.5 * Math.sin(-ph); // the input's instantaneous swing
+    for (let i = 0; i < 4; i++) p.addCircle(tcx, mid - 18 + i * 12, 1.7 + 1.5 * g);
+    return p;
+  }, [phase, tcx, mid]);
+
+  // THE MUCH LARGER PLATE STREAM, gated by the grid: electrons rise cathode →
+  // plate, and their DENSITY follows the grid swing — input up, stream opens;
+  // input down, stream chokes. The "small wiggle, big valve" picture itself.
+  const stream = useDerivedValue(() => {
+    const ph = phase.value;
+    const p = Skia.Path.Make();
+    const g = 0.5 + 0.5 * Math.sin(-ph);
+    for (let i = 0; i < 16; i++) {
+      if (hashW(i * 3.1) > 0.25 + 0.75 * g) continue; // density gated by the grid
+      const f = ((ph / (2 * Math.PI)) * 1.3 + hashW(i * 7.9)) % 1;
+      const x = tcx + (hashW(i * 5.3) - 0.5) * hw * 0.8;
+      p.addCircle(x, mid + 20 - f * 48, 1.6);
+    }
+    return p;
+  }, [phase, tcx, hw, mid]);
 
   const waves = useDerivedValue(() => {
     const ph = phase.value;
@@ -1020,7 +1059,15 @@ export function AmplifyView({
       <SkLine p1={{ x: 0, y: mid }} p2={{ x: w, y: mid }} color={MIDLINE_BLUE} strokeWidth={1} />
 
       {/* ── The mini triode stage ── */}
-      <Path path={tube.leads} color={METAL} style="stroke" strokeWidth={2.2} />
+      {/* INPUT lead in GRID BLUE, arrowhead aimed at the grid: the signal's
+          target is the grid, unmistakably (owner 2026-08-10). */}
+      <Path path={tube.leadIn} color={INK.grid} style="stroke" strokeWidth={2.4} />
+      <Path path={tube.leadInArrow} color={INK.grid} />
+      <Path path={tube.leadInDash} color={INK.grid} style="stroke" strokeWidth={1.3} opacity={0.55}>
+        <DashPathEffect intervals={[3, 3]} />
+      </Path>
+      {/* OUTPUT lead in PLATE AMBER, leaving from the plate bar at the top. */}
+      <Path path={tube.leadOut} color={INK.plate} style="stroke" strokeWidth={2.4} opacity={0.9} />
       {/* Warm glow inside the little bottle. */}
       <Circle cx={tcx} cy={mid + 22} r={16} color={GLOW} opacity={0.3}>
         <BlurMask blur={12} style="normal" />
@@ -1038,7 +1085,17 @@ export function AmplifyView({
       {/* Card ink code: plate amber rim · cathode teal rim · grid blue dots. */}
       <RoundedRect x={tcx - hw * 0.6} y={mid - 34} width={hw * 1.2} height={6} r={2.5} color={INK.plate} style="stroke" strokeWidth={1.1} opacity={0.8} />
       <RoundedRect x={tcx - hw * 0.45} y={mid + 24} width={hw * 0.9} height={4.5} r={2} color={INK.cathode} style="stroke" strokeWidth={1.1} opacity={0.75} />
-      <Path path={tube.grid} color={INK.grid} />
+      {/* The gated PLATE STREAM: cathode → plate, density riding the grid swing
+          — the "much larger" current the little input meters. */}
+      <Path path={stream} color={ELECTRON} opacity={0.35}>
+        <BlurMask blur={3.5} style="normal" />
+      </Path>
+      <Path path={stream} color={ELECTRON} opacity={0.85} />
+      {/* The grid itself, PULSING with the arriving input (blue glow + dots). */}
+      <Path path={gridDots} color={INK.grid} opacity={0.45}>
+        <BlurMask blur={5} style="normal" />
+      </Path>
+      <Path path={gridDots} color={INK.grid} />
       {/* Glass over the internals. */}
       <Path path={tube.bottle}>
         <LinearGradient start={vec(tcx - hw, tTop)} end={vec(tcx + hw, tTop)} colors={['#8f97a824', '#58607012', '#47506019']} />
