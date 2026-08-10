@@ -29,6 +29,7 @@ import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../fe
 import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../foundations/bits';
 import { requireTubeViz, skiaAvailable, type TubeVizModule } from './skiaGate';
 import { TUBE_FAMILY_META, TUBE_REFS } from './tubeRefs';
+import { TUBE_INK } from './tubeInks';
 
 // ── Screen-owned data (no Skia dependency) ──────────────────────────────────
 
@@ -85,13 +86,31 @@ function InsideSection({ viz, width, focused, electron, help }: SectionProps) {
       {viz ? <CutawayViz viz={viz} width={width} kind="pentode" highlight={part} electron={electron} running={focused} /> : <VizUnavailableCard />}
       <IllustrationBadge />
       <DisplayGuideButton onPress={() => help('cutaway')} />
+      {/* Part chips carry the reference-card INK CODE (owner 2026-08-10): each
+          chip is the same color as its element in the drawing AND on the Tube
+          Reference cards — the chip row doubles as the color key. */}
       <View style={styles.chipRow}>
-        {PARTS.map((p) => (
-          <LabChip key={p.key} label={p.label} selected={part === p.key} onPress={() => setPart(part === p.key ? null : p.key)} onLongPress={() => help('cutaway')} />
-        ))}
+        {PARTS.map((p) => {
+          const ink = TUBE_INK[p.key];
+          const on = part === p.key;
+          return (
+            <Pressable
+              key={p.key}
+              style={[styles.partChip, { borderColor: on ? ink : `${ink}66` }, on && { backgroundColor: `${ink}1f` }]}
+              onPress={() => setPart(on ? null : p.key)}
+              onLongPress={() => help('cutaway')}
+              delayLongPress={350}
+              accessibilityRole="button"
+              accessibilityState={{ selected: on }}
+              accessibilityLabel={p.label}
+            >
+              <Text style={[styles.partChipText, { color: ink }, !on && { opacity: 0.85 }]}>{p.label}</Text>
+            </Pressable>
+          );
+        })}
       </View>
       <Text style={styles.caption}>
-        {sel ? sel.note : 'Tap any part to highlight it in the cutaway and read what it does. (Drawn as a pentode — the fullest version; the Types section strips it back down.)'}
+        {sel ? sel.note : 'Tap any part to light it up in its own color — the SAME color code the Tube Reference cards use, so the drawing and the cards read as one. (Drawn as a pentode — the fullest version; the Types section strips it back down.)'}
       </Text>
     </View>
   );
@@ -534,6 +553,15 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   refBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.3, color: colors.green },
+  // Ink-coded part chips (owner 2026-08-10) — reference-card color language.
+  partChip: {
+    borderRadius: 8,
+    borderWidth: 1,
+    backgroundColor: '#131316',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+  },
+  partChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8 },
   // Green REFERENCE section tab (owner 2026-08-10).
   refChip: {
     borderRadius: 8,

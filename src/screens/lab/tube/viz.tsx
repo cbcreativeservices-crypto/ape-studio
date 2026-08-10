@@ -42,6 +42,17 @@ import {
 import { useDerivedValue, type SharedValue } from 'react-native-reanimated';
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 import { MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../../features/tools/levelColor';
+import { TUBE_INK, TUBE_INK_EXTRA } from './tubeInks';
+
+// ── REFERENCE-CARD INK CODE (owner 2026-08-10) ──────────────────────────────
+// The Tube Reference cards define the official per-element color language;
+// every drawing below uses it so the lab animations and the reference images
+// read as ONE system: heater orange · cathode teal · control grid blue ·
+// screen grid purple · suppressor/beam gold · plate amber · glass silver.
+// Tap-highlights glow in the ELEMENT'S OWN ink (matching its card callout),
+// not a generic amber. Geometry & math unchanged — this is the ink layer.
+const INK = TUBE_INK;
+const INK_X = TUBE_INK_EXTRA;
 
 // App-wide amplitude→colour standard (owner 2026-07-31): the MIDI-velocity ramp,
 // MIDI-0 blue at the mid line climbing to red at ±full scale. Split into Skia
@@ -214,7 +225,9 @@ export function TubeCutawayView({
   const hasScreen = kind !== 'triode';
   const hasSuppressor = kind === 'pentode';
 
-  const colorFor = (part: TubePart, base: string) => (highlight === part ? WAVE : base);
+  // Reference-card ink code: each element is ALWAYS drawn in its own ink; a
+  // tapped part glows brighter in that same ink (its card-callout color).
+  const hl = (part: TubePart) => highlight === part;
 
   // Static geometry (symmetric side cross-section).
   const parts = useMemo(() => {
@@ -230,6 +243,14 @@ export function TubeCutawayView({
     // Evacuation tip nub on the dome.
     const nub = Skia.Path.Make();
     nub.addRRect(Skia.RRectXY(Skia.XYWHRect(cx - 2.4, topY - 7, 4.8, 9), 2.2, 2.2));
+
+    // Silver getter flash coating the inside of the dome (the mirror-like
+    // patch every real tube carries — drawn on all the reference cards).
+    const getterFlash = Skia.Path.Make();
+    getterFlash.moveTo(cx - 44, topY + 22);
+    getterFlash.cubicTo(cx - 30, topY + 3, cx + 30, topY + 3, cx + 44, topY + 22);
+    getterFlash.cubicTo(cx + 26, topY + 15, cx - 26, topY + 15, cx - 44, topY + 22);
+    getterFlash.close();
 
     const heater = Skia.Path.Make();
     // Zigzag filament inside the cathode sleeve.
@@ -278,7 +299,7 @@ export function TubeCutawayView({
 
     const vacuum = Skia.Path.Make();
     vacuum.addRRect(Skia.RRectXY(Skia.XYWHRect(cx - 56, topY + 6, 112, baseY - topY - 10), 26, 26));
-    return { bottle, streak, innerRefl, nub, heater, gridP, screenP, suppP, rods, plateOutline, vacuum };
+    return { bottle, streak, innerRefl, nub, getterFlash, heater, gridP, screenP, suppP, rods, plateOutline, vacuum };
   }, [cx, topY, baseY, stackTop, stackBot, hasScreen, hasSuppressor]);
 
   // Physical view: the filament glow breathes (same radius law as ever).
@@ -348,8 +369,8 @@ export function TubeCutawayView({
       <Circle cx={cx} cy={heaterCy} r={64} color={GLOW} opacity={ambientO}>
         <BlurMask blur={26} style="normal" />
       </Circle>
-      {highlight === 'vacuum' ? (
-        <Path path={parts.vacuum} color={WAVE} style="stroke" strokeWidth={2.4} opacity={0.85}>
+      {hl('vacuum') ? (
+        <Path path={parts.vacuum} color={INK.vacuum} style="stroke" strokeWidth={2.4} opacity={0.85}>
           <BlurMask blur={3} style="normal" />
         </Path>
       ) : null}
@@ -362,39 +383,50 @@ export function TubeCutawayView({
       <RoundedRect x={cx - 53} y={stackTop - 3.5} width={106} height={4} r={2}>
         <LinearGradient start={vec(cx - 53, stackTop - 3.5)} end={vec(cx - 53, stackTop + 0.5)} colors={[PLATE_LIGHT, PLATE_DARK]} />
       </RoundedRect>
-      <Path path={parts.plateOutline} color={colorFor('plate', '#767a84')} style="stroke" strokeWidth={1.6} opacity={highlight === 'plate' ? 1 : 0.65} />
-      {highlight === 'plate' ? (
-        <Path path={parts.plateOutline} color={WAVE} style="stroke" strokeWidth={3}>
+      {/* Plate outline in its card ink (amber-orange); tapping glows the same ink. */}
+      <Path path={parts.plateOutline} color={INK.plate} style="stroke" strokeWidth={1.8} opacity={hl('plate') ? 1 : 0.8} />
+      {hl('plate') ? (
+        <Path path={parts.plateOutline} color={INK.plate} style="stroke" strokeWidth={3.4}>
           <BlurMask blur={4} style="normal" />
         </Path>
       ) : null}
+
+      {/* Mica spacer discs capping the electrode stack (tan, as on the cards). */}
+      <RoundedRect x={cx - 50} y={stackTop - 9.5} width={100} height={5.5} r={2.4}>
+        <LinearGradient start={vec(cx - 50, stackTop - 9.5)} end={vec(cx - 50, stackTop - 4)} colors={[INK_X.micaHi, INK_X.micaLo]} />
+      </RoundedRect>
+      <RoundedRect x={cx - 50} y={stackBot + 3.5} width={100} height={5.5} r={2.4}>
+        <LinearGradient start={vec(cx - 50, stackBot + 3.5)} end={vec(cx - 50, stackBot + 9)} colors={[INK_X.micaHi, INK_X.micaLo]} />
+      </RoundedRect>
 
       {/* Grid helices: faint support rods + neat wire dots. */}
       <Path path={parts.rods} color="#5a5d67" style="stroke" strokeWidth={1} opacity={0.4} />
-      {hasSuppressor ? <Path path={parts.suppP} color={colorFor('suppressor', METAL)} /> : null}
-      {hasSuppressor && highlight === 'suppressor' ? (
-        <Path path={parts.suppP} color={WAVE}>
+      {/* Grid helices in the card ink code: G1 blue · G2 purple · G3 gold. */}
+      {hasSuppressor ? <Path path={parts.suppP} color={INK.suppressor} /> : null}
+      {hasSuppressor && hl('suppressor') ? (
+        <Path path={parts.suppP} color={INK.suppressor}>
           <BlurMask blur={4} style="normal" />
         </Path>
       ) : null}
-      {hasScreen ? <Path path={parts.screenP} color={colorFor('screen', METAL)} /> : null}
-      {hasScreen && highlight === 'screen' ? (
-        <Path path={parts.screenP} color={WAVE}>
+      {hasScreen ? <Path path={parts.screenP} color={INK.screen} /> : null}
+      {hasScreen && hl('screen') ? (
+        <Path path={parts.screenP} color={INK.screen}>
           <BlurMask blur={4} style="normal" />
         </Path>
       ) : null}
-      <Path path={parts.gridP} color={colorFor('grid', electronView ? ELECTRON : METAL)} />
-      {highlight === 'grid' ? (
-        <Path path={parts.gridP} color={WAVE}>
+      <Path path={parts.gridP} color={INK.grid} />
+      {hl('grid') ? (
+        <Path path={parts.gridP} color={INK.grid}>
           <BlurMask blur={4} style="normal" />
         </Path>
       ) : null}
 
-      {/* Cathode sleeve: bright metal cylinder around the heater. */}
+      {/* Cathode sleeve: bright metal cylinder, rimmed in its teal card ink. */}
       <CathodeSleeve x={cx - 8} y={stackTop + 4} w={16} h={stackH - 8} />
-      {highlight === 'cathode' ? (
-        <RoundedRect x={cx - 8} y={stackTop + 4} width={16} height={stackH - 8} r={6} color={WAVE} style="stroke" strokeWidth={2.6}>
-          <BlurMask blur={3} style="normal" />
+      <RoundedRect x={cx - 8} y={stackTop + 4} width={16} height={stackH - 8} r={6} color={INK.cathode} style="stroke" strokeWidth={1.4} opacity={hl('cathode') ? 1 : 0.75} />
+      {hl('cathode') ? (
+        <RoundedRect x={cx - 8} y={stackTop + 4} width={16} height={stackH - 8} r={6} color={INK.cathode} style="stroke" strokeWidth={2.8}>
+          <BlurMask blur={3.5} style="normal" />
         </RoundedRect>
       ) : null}
 
@@ -406,7 +438,13 @@ export function TubeCutawayView({
         <BlurMask blur={7} style="normal" />
       </Circle>
       {!electronView ? <Path path={parts.heater} color={GLOW} style="stroke" strokeWidth={3.4} opacity={0.5}><BlurMask blur={3} style="normal" /></Path> : null}
-      <Path path={parts.heater} color={colorFor('heater', electronView ? METAL : FILAMENT_CORE)} style="stroke" strokeWidth={1.8} />
+      {/* Heater filament in its orange card ink (white-hot core when lit). */}
+      <Path path={parts.heater} color={electronView ? INK.heater : FILAMENT_CORE} style="stroke" strokeWidth={1.8} />
+      {hl('heater') ? (
+        <Path path={parts.heater} color={INK.heater} style="stroke" strokeWidth={3.2}>
+          <BlurMask blur={4} style="normal" />
+        </Path>
+      ) : null}
 
       {/* Electrons: soft halo layer + bright cores. */}
       <Path path={electrons} color={ELECTRON} opacity={0.4}>
@@ -426,9 +464,13 @@ export function TubeCutawayView({
           colors={['#8f97a824', '#58607014', '#2e313b0e', '#47506019']}
         />
       </Path>
-      <Path path={parts.bottle} color={colorFor('envelope', GLASS_EDGE)} style="stroke" strokeWidth={2.4} />
-      {highlight === 'envelope' ? (
-        <Path path={parts.bottle} color={WAVE} style="stroke" strokeWidth={3.5} opacity={0.9}>
+      {/* Getter flash: the mirror-silver dome coating (reference-card look). */}
+      <Path path={parts.getterFlash} opacity={0.5}>
+        <LinearGradient start={vec(cx, topY + 3)} end={vec(cx, topY + 22)} colors={[INK_X.getterFlashHi, INK_X.getterFlashLo]} />
+      </Path>
+      <Path path={parts.bottle} color={hl('envelope') ? INK.envelope : INK_X.glassEdge} style="stroke" strokeWidth={2.4} />
+      {hl('envelope') ? (
+        <Path path={parts.bottle} color={INK.envelope} style="stroke" strokeWidth={3.5} opacity={0.9}>
           <BlurMask blur={4} style="normal" />
         </Path>
       ) : null}
@@ -549,13 +591,16 @@ export function ElectronFlowView({
       <Path path={heaterZig} color={GLOW} style="stroke" strokeWidth={3} opacity={0.45 * heaterO}>
         <BlurMask blur={2.5} style="normal" />
       </Path>
-      <Path path={heaterZig} color={heaterO > 0.15 ? FILAMENT_CORE : METAL} style="stroke" strokeWidth={1.8} />
+      {/* Heater in its orange card ink — white-hot core once it's glowing. */}
+      <Path path={heaterZig} color={heaterO > 0.15 ? FILAMENT_CORE : INK.heater} style="stroke" strokeWidth={1.8} />
 
-      {/* Cathode sleeve — the electron source. */}
+      {/* Cathode sleeve — the electron source, rimmed in its teal card ink. */}
       <CathodeSleeve x={cathX - 5} y={top} w={10} h={bot - top} r={5} />
+      <RoundedRect x={cathX - 5} y={top} width={10} height={bot - top} r={5} color={INK.cathode} style="stroke" strokeWidth={1.3} opacity={0.75} />
 
-      {/* Plate — gradient metal panel with a brass + terminal. */}
+      {/* Plate — gradient metal panel in its amber card ink, brass + terminal. */}
       <MetalPanel x={plateX - 3} y={top} w={11} h={bot - top} r={3.5} />
+      <RoundedRect x={plateX - 3} y={top} width={11} height={bot - top} r={3.5} color={INK.plate} style="stroke" strokeWidth={1.3} opacity={0.8} />
       <Circle cx={plateX + 15} cy={top + 16} r={7}>
         <RadialGradient c={vec(plateX + 13, top + 14)} r={9} colors={['#e8c887', '#a87e35']} />
       </Circle>
@@ -645,25 +690,27 @@ export function GridControlView({
   return (
     <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
       <Vignette w={w} h={h} />
-      {/* The grid's repelling field (electron view). */}
-      <Path path={field} color={ELECTRON} style="stroke" strokeWidth={2.6} opacity={0.25}>
+      {/* The grid's repelling field (electron view) — in the grid's blue ink. */}
+      <Path path={field} color={INK.grid} style="stroke" strokeWidth={2.6} opacity={0.3}>
         <BlurMask blur={3} style="normal" />
       </Path>
-      <Path path={field} color={ELECTRON} style="stroke" strokeWidth={1.2} opacity={0.55} />
+      <Path path={field} color={INK.grid} style="stroke" strokeWidth={1.2} opacity={0.6} />
 
-      {/* Cathode sleeve and plate panel — real metal, not bare lines. */}
+      {/* Cathode (teal ink) and plate (amber ink) — real metal, card-coded rims. */}
       <CathodeSleeve x={cathX - 5} y={top} w={10} h={bot - top} r={5} />
+      <RoundedRect x={cathX - 5} y={top} width={10} height={bot - top} r={5} color={INK.cathode} style="stroke" strokeWidth={1.3} opacity={0.75} />
       <MetalPanel x={plateX - 3} y={top} w={11} h={bot - top} r={3.5} />
+      <RoundedRect x={plateX - 3} y={top} width={11} height={bot - top} r={3.5} color={INK.plate} style="stroke" strokeWidth={1.3} opacity={0.8} />
 
-      {/* Grid: faint support rod + wire dots. */}
+      {/* Grid: faint support rod + wire dots in the control grid's blue ink. */}
       <SkLine p1={{ x: gridX, y: top + 6 }} p2={{ x: gridX, y: bot - 6 }} color="#5a5d67" strokeWidth={1} opacity={0.4} />
-      <Path path={gridDots} color={electronView ? ELECTRON : METAL} />
+      <Path path={gridDots} color={INK.grid} />
 
       {/* The grid's negativity, visualized on the wires themselves. */}
-      <Circle cx={gridX} cy={top - 8} r={4 + (1 - cond) * 3} color={ELECTRON} opacity={0.3}>
+      <Circle cx={gridX} cy={top - 8} r={4 + (1 - cond) * 3} color={INK.grid} opacity={0.3}>
         <BlurMask blur={5} style="normal" />
       </Circle>
-      <Circle cx={gridX} cy={top - 8} r={4 + (1 - cond) * 3} color={ELECTRON} opacity={0.25 + (1 - cond) * 0.6} />
+      <Circle cx={gridX} cy={top - 8} r={4 + (1 - cond) * 3} color={INK.grid} opacity={0.25 + (1 - cond) * 0.6} />
 
       {/* Electrons: halo + cores. */}
       <Path path={electrons} color={ELECTRON} opacity={0.4}>
@@ -791,7 +838,10 @@ export function AmplifyView({
       <RoundedRect x={tcx - hw * 0.45} y={mid + 24} width={hw * 0.9} height={4.5} r={2}>
         <LinearGradient start={vec(tcx - hw * 0.45, mid + 24)} end={vec(tcx - hw * 0.45, mid + 28.5)} colors={[METAL_LIGHT, METAL_DARK]} />
       </RoundedRect>
-      <Path path={tube.grid} color={METAL} />
+      {/* Card ink code: plate amber rim · cathode teal rim · grid blue dots. */}
+      <RoundedRect x={tcx - hw * 0.6} y={mid - 34} width={hw * 1.2} height={6} r={2.5} color={INK.plate} style="stroke" strokeWidth={1.1} opacity={0.8} />
+      <RoundedRect x={tcx - hw * 0.45} y={mid + 24} width={hw * 0.9} height={4.5} r={2} color={INK.cathode} style="stroke" strokeWidth={1.1} opacity={0.75} />
+      <Path path={tube.grid} color={INK.grid} />
       {/* Glass over the internals. */}
       <Path path={tube.bottle}>
         <LinearGradient start={vec(tcx - hw, tTop)} end={vec(tcx + hw, tTop)} colors={['#8f97a824', '#58607012', '#47506019']} />
@@ -888,12 +938,14 @@ export function HighVoltageView({
   return (
     <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
       <Vignette w={w} h={h} />
-      {/* Cathode and plate — real metal structures. */}
+      {/* Cathode (teal ink) and plate (amber ink) — real metal structures. */}
       <CathodeSleeve x={cathX - 5} y={top} w={10} h={bot - top} r={5} />
+      <RoundedRect x={cathX - 5} y={top} width={10} height={bot - top} r={5} color={INK.cathode} style="stroke" strokeWidth={1.3} opacity={0.75} />
       <MetalPanel x={plateX - 3} y={top} w={11} h={bot - top} r={3.5} />
-      {/* When B+ is high the plate visibly "pulls" — a faint charged sheen. */}
+      <RoundedRect x={plateX - 3} y={top} width={11} height={bot - top} r={3.5} color={INK.plate} style="stroke" strokeWidth={1.3} opacity={0.8} />
+      {/* When B+ is high the plate visibly "pulls" — a charged amber sheen. */}
       {highB ? (
-        <RoundedRect x={plateX - 3} y={top} width={11} height={bot - top} r={3.5} color={WAVE} opacity={0.2}>
+        <RoundedRect x={plateX - 3} y={top} width={11} height={bot - top} r={3.5} color={INK.plate} opacity={0.25}>
           <BlurMask blur={7} style="normal" />
         </RoundedRect>
       ) : null}
@@ -1256,14 +1308,16 @@ export function TubeVsTransistorView({
       <Circle cx={tcx} cy={bot - 16} r={filR} color={FILAMENT_CORE} opacity={0.55}>
         <BlurMask blur={6} style="normal" />
       </Circle>
-      {/* Cathode bar (bottom) and plate bar (top). */}
+      {/* Cathode bar (bottom, teal ink) and plate bar (top, amber ink). */}
       <RoundedRect x={tcx - 20} y={bot - 16.5} width={40} height={5} r={2.2}>
         <LinearGradient start={vec(tcx - 20, bot - 16.5)} end={vec(tcx - 20, bot - 11.5)} colors={[METAL_LIGHT, METAL_DARK]} />
       </RoundedRect>
+      <RoundedRect x={tcx - 20} y={bot - 16.5} width={40} height={5} r={2.2} color={INK.cathode} style="stroke" strokeWidth={1.1} opacity={0.75} />
       <RoundedRect x={tcx - 20} y={top + 11} width={40} height={6} r={2.5}>
         <LinearGradient start={vec(tcx - 20, top + 11)} end={vec(tcx - 20, top + 17)} colors={[PLATE_LIGHT, PLATE_DARK]} />
       </RoundedRect>
-      <Path path={art.grid} color={METAL} />
+      <RoundedRect x={tcx - 20} y={top + 11} width={40} height={6} r={2.5} color={INK.plate} style="stroke" strokeWidth={1.1} opacity={0.8} />
+      <Path path={art.grid} color={INK.grid} />
       {/* Glass over the internals. */}
       <Path path={art.bottle}>
         <LinearGradient start={vec(tcx - 34, top)} end={vec(tcx + 34, top)} colors={['#8f97a822', '#58607012', '#47506018']} />
