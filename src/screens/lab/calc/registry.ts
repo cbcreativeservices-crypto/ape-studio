@@ -11,6 +11,10 @@ import { WORKSPACES_LEVELS } from './workspaces/levels';
 import { WORKSPACES_SPL } from './workspaces/splSafety';
 import { WORKSPACES_SPEAKERS } from './workspaces/speakers';
 import { WORKSPACES_ROOMS_MUSIC } from './workspaces/roomsMusic';
+// Second-tier + advanced buildout (owner 2026-08-07).
+import { WORKSPACES_ROOMS_SECOND } from './workspaces/roomsSecond';
+import { WORKSPACES_ROOMS_ADVANCED } from './workspaces/roomsAdvanced';
+import { WORKSPACES_POWER_ELEC } from './workspaces/powerElec';
 
 export const WORKSPACES: Workspace[] = [
   WS_WAVE,
@@ -19,6 +23,9 @@ export const WORKSPACES: Workspace[] = [
   ...WORKSPACES_SPL,
   ...WORKSPACES_SPEAKERS,
   ...WORKSPACES_ROOMS_MUSIC,
+  ...WORKSPACES_ROOMS_SECOND,
+  ...WORKSPACES_ROOMS_ADVANCED,
+  ...WORKSPACES_POWER_ELEC,
 ];
 
 export function getWorkspace(id: string): Workspace | undefined {
