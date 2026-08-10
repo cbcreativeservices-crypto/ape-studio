@@ -121,6 +121,7 @@ export const QUANTITIES: Record<QuantityKind, UnitDef[]> = {
   ],
   volume: [
     { id: 'm3', label: 'm³', ...ident },
+    { id: 'l', label: 'L', ...lin(0.001) },
     { id: 'ft3', label: 'ft³', ...lin(0.028316846592) },
   ],
   sensitivity: [{ id: 'sens', label: 'dB SPL (1W/1m)', ...ident }],

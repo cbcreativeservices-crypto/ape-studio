@@ -1,8 +1,9 @@
 /**
- * Calculator Lab registry — the 25 LAUNCH workspaces (owner spec 2026-07-29)
- * grouped into sections, plus the post-launch tiers listed honestly as
- * IN DEVELOPMENT (Second Tier, Advanced Tier — the owner's roadmap of record;
- * see docs/APE_CALC_LAB roadmap note + project memory).
+ * Calculator Lab registry — the launch workspaces (owner spec 2026-07-29)
+ * grouped into sections, PLUS the full second-tier and advanced-tier buildout
+ * (owner 2026-08-07): all 28 roadmap calculators are now built and live, so
+ * COMING_SOON is empty. New workspace files only need an import + array spread
+ * here; workflowCatalog flattens WORKSPACES automatically.
  */
 import type { CalcSectionId, Workspace } from './calcTypes';
 import { WS_WAVE } from './workspaces/wave';
@@ -15,6 +16,11 @@ import { WORKSPACES_ROOMS_MUSIC } from './workspaces/roomsMusic';
 import { WORKSPACES_ROOMS_SECOND } from './workspaces/roomsSecond';
 import { WORKSPACES_ROOMS_ADVANCED } from './workspaces/roomsAdvanced';
 import { WORKSPACES_POWER_ELEC } from './workspaces/powerElec';
+import { WORKSPACES_SPEAKERS_ADV } from './workspaces/speakersAdv';
+import { WORKSPACES_DIGITAL_ADV } from './workspaces/digitalAdv';
+import { WORKSPACES_MICS_RF } from './workspaces/micsRf';
+import { WORKSPACES_LOUDNESS } from './workspaces/loudness';
+import { WORKSPACES_WAVES_ADV } from './workspaces/wavesAdv';
 
 export const WORKSPACES: Workspace[] = [
   WS_WAVE,
@@ -26,6 +32,11 @@ export const WORKSPACES: Workspace[] = [
   ...WORKSPACES_ROOMS_SECOND,
   ...WORKSPACES_ROOMS_ADVANCED,
   ...WORKSPACES_POWER_ELEC,
+  ...WORKSPACES_SPEAKERS_ADV,
+  ...WORKSPACES_DIGITAL_ADV,
+  ...WORKSPACES_MICS_RF,
+  ...WORKSPACES_LOUDNESS,
+  ...WORKSPACES_WAVES_ADV,
 ];
 
 export function getWorkspace(id: string): Workspace | undefined {
@@ -45,24 +56,7 @@ export const SECTION_META: { id: CalcSectionId; title: string; note: string }[] 
   { id: 'electronics', title: 'ELECTRONICS', note: 'Ohm’s law, dividers, reactance.' },
 ];
 
-/** Post-launch roadmap — shown dimmed with an IN DEVELOPMENT badge. */
-export const COMING_SOON: { title: string; items: string[] }[] = [
-  {
-    title: 'SECOND TIER — IN DEVELOPMENT',
-    items: [
-      'Critical Distance', 'Schroeder Frequency', 'Boundary Interference', 'Reflection Path',
-      'Stereo-Mic Geometry', 'Analog Alignment', 'Clock Drift', 'Network-Audio Bandwidth',
-      'Crossover Components', 'Transformer Ratios', 'Pads & Attenuators', 'Mic Sensitivity Converter',
-      'Voltage Drop', 'Rack Power & Heat', 'Timecode', 'Loudness Normalization', 'RF & Link Budget',
-    ],
-  },
-  {
-    title: 'ADVANCED TIER — IN DEVELOPMENT',
-    items: [
-      'Eyring & Millington–Sette RT', 'QRD & Primitive-Root Diffusers', 'Panel & Helmholtz Absorbers',
-      'Complex Impedance', 'FIR Filter Length', 'Convolution Resources', 'Intermodulation Products',
-      'Transmission-Loss Estimates', 'Loudness & True-Peak Analysis (ITU-R BS.1770-5)',
-      'Line-Array / Polar-Data Calculations', 'Driver Excursion & Enclosures',
-    ],
-  },
-];
+/** Post-launch roadmap — now fully built (owner buildout 2026-08-07), so this
+ *  is empty and the "IN DEVELOPMENT" strip renders nothing. Kept as an export
+ *  so CalcLabScreen's import stays valid and future roadmap items have a home. */
+export const COMING_SOON: { title: string; items: string[] }[] = [];
