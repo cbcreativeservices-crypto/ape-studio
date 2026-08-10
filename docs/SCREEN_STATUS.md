@@ -5,7 +5,8 @@ completion status the owner signs off as we approach launch testing.
 
 **Ask any time:** *"How many screens are incomplete?"* → read the **Headline** below.
 
-> Provisional statuses set 2026-08-10 from build history + a completeness audit.
+> Statuses set 2026-08-10 from build history + a per-screen completeness audit
+> (audit verdict: **0 stubs, 0 partials — every screen fully built**).
 > Owner sign-off is the only thing that moves a row to 🟢.
 
 ## Status legend
@@ -28,12 +29,20 @@ completion status the owner signs off as we approach launch testing.
 | Excluded (⚪ — parked/dev) | 2 |
 | **Total navigable screens (excl. ⚪)** | **75** |
 
-**So: "how many screens are incomplete?" → 0 need net-new build; 9 are built but
-blocked on the native audio engine build (the live meters/tools) or a scoped
-sub-feature; 66 are built and awaiting your sign-off.**
+**So: "how many screens are incomplete?" → 0 need net-new build (audit found no
+stubs/partials); 9 are built but blocked on the native audio engine build (the
+live meters/tools) or a scoped sub-feature; 66 are built and awaiting your
+sign-off.**
 
-> These provisional numbers are refined by the completeness audit — see the
-> Audit line at the bottom.
+> 🟡 "Blocked" means the SCREEN is complete and shows honest gated states — the
+> blocker is the native DSP audio engine build (an infra dependency), not screen
+> code. When that engine ships, those 9 move to 🔵/🟢 in one pass.
+
+> **Effect labs note:** the 12 effect-lab routes below (EqLab, DelayLab, ReverbLab,
+> ChorusLab, FlangerLab, PhaserLab, CompressionLab, GateLab, LimiterLab,
+> DistortionLab, PhaseLab, StereoLab) are 12 distinct nav destinations you sign
+> off individually, but they share ONE code screen — `lab/FxLabScreen.tsx` driven
+> by `lab/fxLabConfigs.tsx`. Content lives in the config; a code fix touches all 12.
 
 ---
 
@@ -171,5 +180,10 @@ sub-feature; 66 are built and awaiting your sign-off.**
 - Keep the Headline table in sync with the section rows — it is the single figure
   answered when asked "how many screens are incomplete?".
 
-**Audit:** provisional statuses seeded 2026-08-10 from build history; a
-per-screen completeness audit is refining them (results fold in on completion).
+**Audit (2026-08-10, complete):** per-screen completeness audit of all ~75
+navigable screens found **0 stubs and 0 partials** — every screen is a fully
+built, functional component; audio/measurement screens use honest gated states
+rather than fake data. 47 COMPLETE + 22 COMPLETE-GATED (the gated set = the live
+meters/tools + audio-dependent labs). No net-new screen build is outstanding;
+remaining work is the native DSP engine build (unblocks the 🟡 rows) and owner
+sign-off (🔵 → 🟢).

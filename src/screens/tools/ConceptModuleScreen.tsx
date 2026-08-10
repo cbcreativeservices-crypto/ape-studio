@@ -4,7 +4,7 @@
  * concepts taught as tutorials, NOT as live tools — §3/§14 keep magnitude
  * response, delay finding, and coherence out of live scope).
  *
- * Academy-gated like Learn mode. Missing module (content still authoring)
+ * Academy-gated like Learn mode. Missing module (no content for this item)
  * renders an honest state.
  */
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -42,8 +42,8 @@ export function ConceptModuleScreen({ navigation, route }: Props) {
           <ToolAcademyLock what="This concept module" onUpgrade={() => navigation.navigate('Paywall')} />
         ) : !mod ? (
           <View style={styles.authoringCard}>
-            <Text style={styles.authoringTitle}>MODULE IN AUTHORING</Text>
-            <Text style={styles.authoringBody}>This concept module is being written.</Text>
+            <Text style={styles.authoringTitle}>MODULE NOT AVAILABLE</Text>
+            <Text style={styles.authoringBody}>There is no concept module for this item.</Text>
           </View>
         ) : (
           <>

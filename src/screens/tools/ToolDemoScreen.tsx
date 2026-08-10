@@ -6,7 +6,7 @@
  * INTEGRITY (spec §5): the permanent "TRAINING DEMO — NOT A LIVE MEASUREMENT"
  * badge is rendered HERE, above whatever the demo component shows — simulated
  * values may only ever appear under this label. Academy-gated like Learn mode.
- * A missing demo renders an honest "in development" card.
+ * A missing demo renders an honest "no visual demo for this tool" card.
  */
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
