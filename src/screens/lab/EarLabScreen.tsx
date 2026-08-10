@@ -6,8 +6,9 @@
  * (Equalization, Dynamics, Time Effects, … Calculators). Each subject shows a
  * header + its labs; a subject that IS one big lab environment (the Calculator
  * Lab) is a tappable header that opens its own drill-down. Planned labs show as
- * non-tappable "in development — soon to be released" rows (§1.7: no dead
- * links). Fully data-driven from labCatalog.
+ * non-tappable, dimmed rows with a neutral, timeline-free DEV_NOTE (owner
+ * 2026-08-10: show the plan, never promise a feature or a date). Fully
+ * data-driven from labCatalog.
  */
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -217,7 +218,7 @@ function LabRow({
       onPress={onToggle}
       accessibilityRole="button"
       accessibilityState={{ expanded }}
-      accessibilityLabel={`${leaf.name}${dev ? ', in development' : ''}, ${expanded ? 'expanded' : 'collapsed'}`}
+      accessibilityLabel={`${leaf.name}${dev ? ', planned, not open yet' : ''}, ${expanded ? 'expanded' : 'collapsed'}`}
       style={({ pressed }) => [
         styles.row,
         !expanded && styles.rowTight,

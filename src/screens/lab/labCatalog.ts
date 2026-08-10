@@ -52,9 +52,10 @@ type Common = {
   extraLabs?: LabLeaf[];
 };
 
-/** Legacy copy for a planned-lab row — UNREACHABLE since 2026-08-10 (dev rows
- *  are stripped from LAB_CATEGORIES below; no future-plan promises shown). */
-export const DEV_NOTE = 'Not available.';
+/** Note shown on a planned-lab row (owner 2026-08-10): states the present fact
+ *  only — it is part of the curriculum but not open yet. NO timeline, NO promise
+ *  ("soon", "later", "coming", "in development" are all forbidden). */
+export const DEV_NOTE = 'Planned lab — not open yet.';
 
 /** A category is either a HUB (opens an existing lab home that owns its own
  *  drill-down; count = that lab's module registry length) or a LIST (opens a
@@ -275,26 +276,14 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
   },
 ];
 
-// NO FUTURE-PLAN LISTINGS (owner 2026-08-10): planned/unbuilt labs are simply
-// NOT shown — we build them, then they appear. Strip every status:'development'
-// leaf from families / labs / extraLabs; families and whole list-categories
-// that end up empty drop out too. Counts downstream auto-correct because they
-// read this filtered export.
-const liveLeaves = (ls?: LabLeaf[]) => ls?.filter((l) => l.status !== 'development');
-export const LAB_CATEGORIES: LabCategory[] = RAW_LAB_CATEGORIES.map((c): LabCategory => {
-  const extraLabs = liveLeaves(c.extraLabs);
-  if (c.kind === 'hub') return { ...c, extraLabs };
-  const families = c.families
-    ?.map((f) => ({ ...f, labs: f.labs.filter((l) => l.status !== 'development') }))
-    .filter((f) => f.labs.length > 0);
-  return { ...c, extraLabs, families, labs: liveLeaves(c.labs) };
-}).filter(
-  (c) =>
-    c.kind === 'hub' ||
-    (c.families?.length ?? 0) > 0 ||
-    (c.labs?.length ?? 0) > 0 ||
-    (c.extraLabs?.length ?? 0) > 0,
-);
+// PLANNED LABS ARE SHOWN (owner 2026-08-10, corrected): planned/unbuilt labs
+// (status:'development') DO appear as visible placeholders — the owner wants
+// students to see what the curriculum covers. What we must NOT do is PROMISE a
+// feature or imply a TIMELINE ("coming soon", "in development", "soon", "later",
+// "arrives with X build"). The dev rows are shown, non-tappable, labeled with a
+// neutral, timeline-free note (DEV_NOTE). No filtering here — the full plan is
+// the catalog.
+export const LAB_CATEGORIES: LabCategory[] = RAW_LAB_CATEGORIES;
 
 /** Computed leaf-lab count for a category (never hard-coded). */
 export function categoryCount(cat: LabCategory): number {

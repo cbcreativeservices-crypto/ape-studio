@@ -116,7 +116,7 @@ function LabRow({
       onPress={onToggle}
       accessibilityRole="button"
       accessibilityState={{ expanded }}
-      accessibilityLabel={`${leaf.name}${dev ? ', in development' : ''}, ${expanded ? 'expanded' : 'collapsed'}`}
+      accessibilityLabel={`${leaf.name}${dev ? ', planned, not open yet' : ''}, ${expanded ? 'expanded' : 'collapsed'}`}
       style={({ pressed }) => [styles.row, dev && styles.rowDev, pressed && styles.rowPressed]}
     >
       <Text style={styles.rowCaret}>{expanded ? '▾' : '▸'}</Text>
