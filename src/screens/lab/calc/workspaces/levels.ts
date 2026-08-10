@@ -323,6 +323,36 @@ const WS_OHMS: Workspace = {
       },
     },
     {
+      key: 'powerFromPeak',
+      name: 'Amplifier power from PEAK voltage',
+      inputs: ['vpk', 'z'],
+      formula: 'Vrms = Vpeak/√2 · P = Vrms² / Z',
+      note: 'Sine-wave assumption. Reading a scope gives PEAK volts — you MUST convert to RMS before the power formula, or the answer is 2× too high.',
+      compute: (v) => {
+        const pk = n(v.vpk);
+        const Z = n(v.z);
+        const rms = pk / Math.SQRT2;
+        return [
+          { label: 'AVERAGE POWER', value: (rms * rms) / Z, quantity: 'power' },
+          { label: 'VOLTAGE (RMS)', value: rms, quantity: 'voltage', chainable: false },
+          {
+            label: 'IF YOU HAD SKIPPED THE CONVERSION',
+            text: `Using the peak volts directly would read ${fmt((pk * pk) / Z)} W — exactly 2× too high, the classic amplifier-power mistake.`,
+          },
+        ];
+      },
+      steps: (v) => {
+        const pk = n(v.vpk);
+        const Z = n(v.z);
+        const rms = pk / Math.SQRT2;
+        return [
+          `A scope reads the crest (PEAK) voltage; power formulas need RMS, so convert first: Vrms = ${fmt(pk)} ÷ √2 = ${fmt(rms)} V.`,
+          `P = Vrms² ÷ Z = ${fmt(rms)}² ÷ ${fmt(Z)} = ${fmt(rms * rms)} ÷ ${fmt(Z)} = ${fmt((rms * rms) / Z)} W average.`,
+          `Skipping the ÷√2 (using ${fmt(pk)} V directly) would give ${fmt((pk * pk) / Z)} W — double the truth, because power goes as voltage SQUARED and (√2)² = 2.`,
+        ];
+      },
+    },
+    {
       key: 'vFromPZ',
       name: 'Voltage from power & impedance',
       inputs: ['p', 'z'],
@@ -674,8 +704,41 @@ const WS_QBW: Workspace = {
     { key: 'bw', name: 'BANDWIDTH', quantity: 'frequency', placeholder: '709', help: 'Width between the −3 dB edge frequencies.', warn: { test: (x) => x <= 0, msg: 'Bandwidth must be positive.' } },
     { key: 'noct', name: 'WIDTH IN OCTAVES', quantity: 'number', placeholder: '1', help: 'Bandwidth expressed as octaves between the edges: N = log2(f2/f1).', warn: { test: (x) => x <= 0, msg: 'Octave width must be positive.' } },
     { key: 'gain', name: 'GAIN', quantity: 'db', placeholder: '9', help: 'Boost (+) or cut (−) at the center of the parametric bell.' },
+    { key: 'flo', name: 'LOWER FREQUENCY', quantity: 'frequency', placeholder: '100', help: 'The bottom of the range whose logarithmic (musical) center you want.', warn: { test: (x) => x <= 0, msg: 'Frequency must be positive.' } },
+    { key: 'fhi', name: 'UPPER FREQUENCY', quantity: 'frequency', placeholder: '400', help: 'The top of the range whose logarithmic (musical) center you want.', warn: { test: (x) => x <= 0, msg: 'Frequency must be positive.' } },
   ],
   functions: [
+    {
+      key: 'geoCenter',
+      name: 'Center frequency between two frequencies',
+      inputs: ['flo', 'fhi'],
+      formula: 'fc = √(f₁ · f₂) — the GEOMETRIC mean',
+      note: 'Frequency is heard logarithmically, so the musical middle of two tones is their geometric mean, not their arithmetic average.',
+      compute: (v) => {
+        const a = Math.min(n(v.flo), n(v.fhi));
+        const b = Math.max(n(v.flo), n(v.fhi));
+        const fc = Math.sqrt(a * b);
+        const bw = b - a;
+        return [
+          { label: 'CENTER FREQUENCY (geometric)', value: fc, quantity: 'frequency' },
+          { label: 'ARITHMETIC AVERAGE (for contrast)', value: (a + b) / 2, quantity: 'frequency', chainable: false },
+          { label: 'WIDTH IN OCTAVES', value: log2(b / a), quantity: 'number', chainable: false },
+          { label: 'BANDWIDTH', value: bw, quantity: 'frequency', chainable: false },
+          { label: 'Q OF THIS BAND', value: fc / bw, quantity: 'number', chainable: false },
+        ];
+      },
+      steps: (v) => {
+        const a = Math.min(n(v.flo), n(v.fhi));
+        const b = Math.max(n(v.flo), n(v.fhi));
+        const fc = Math.sqrt(a * b);
+        return [
+          `The center is the GEOMETRIC mean: fc = √(f₁ × f₂) = √(${fmt(a)} × ${fmt(b)}) = √${fmt(a * b)} = ${fmt(fc)} Hz.`,
+          `The plain average would be (${fmt(a)} + ${fmt(b)}) ÷ 2 = ${fmt((a + b) / 2)} Hz — but that sits closer to the top octave, not the audible middle.`,
+          `Example: the musical center of 100 Hz and 400 Hz is 200 Hz (one octave up from 100, one octave down from 400), not 250 Hz.`,
+          `That is why parametric edges are geometric around fc, and why 1/3-octave bands are spaced by a constant RATIO, not a constant number of Hz.`,
+        ];
+      },
+    },
     {
       key: 'bwFromQ',
       name: 'Bandwidth & band edges from Q',

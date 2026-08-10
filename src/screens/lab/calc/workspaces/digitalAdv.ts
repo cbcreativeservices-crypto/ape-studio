@@ -449,4 +449,95 @@ const CONVOLUTION: Workspace = {
   ],
 };
 
-export const WORKSPACES_DIGITAL_ADV: Workspace[] = [CLOCKDRIFT, NETAUDIO, TIMECODE, FIRLEN, CONVOLUTION];
+// ---------------------------------------------------------------------------
+// Bit Depth · Dynamic Range · Quantization (owner 2026-08-10)
+// ---------------------------------------------------------------------------
+
+const BITDEPTH: Workspace = {
+  id: 'bitdepth',
+  name: 'Bit Depth · Dynamic Range',
+  tagline: 'Bits → theoretical SNR, dynamic range & quantization levels',
+  section: 'digital',
+  reportPrefix: 'BIT',
+  intro:
+    'What one more bit actually buys. Each bit doubles the number of quantization levels and adds ' +
+    'about 6 dB of theoretical dynamic range. Enter a bit depth to see its ideal signal-to-noise ' +
+    'ratio, its dynamic range, and how many distinct code values it can store — or solve backward ' +
+    'for the bit depth a target dynamic range needs.',
+  whyItMatters:
+    'It explains why 24-bit recording is standard (≈ 146 dB of theoretical range is far more than ' +
+    'any room or converter, so headroom costs nothing), why 16-bit is fine for a finished master ' +
+    '(≈ 98 dB comfortably exceeds most playback environments), and where the "6 dB per bit" rule ' +
+    'of thumb comes from.',
+  example:
+    '16-bit: SNR ≈ 6.02 × 16 + 1.76 ≈ 98.1 dB, from 2¹⁶ = 65,536 levels. 24-bit: 6.02 × 24 + 1.76 ' +
+    '≈ 146.2 dB, from 2²⁴ = 16,777,216 levels. Each added bit is one more doubling of levels and ' +
+    '≈ 6 dB more range.',
+  mistakes: [
+    'Quoting the SNR without the +1.76 dB — "6 dB per bit" gives the DYNAMIC RANGE (6.02·N); the full-scale-sine SNR adds ≈ 1.76 dB on top.',
+    'Expecting a real converter to reach the theoretical figure — thermal noise, jitter and analog stages put practical 24-bit converters near 120 dB, not 146 dB. The formula is the CEILING.',
+    'Believing more bits raise the loudest level — bit depth sets how far BELOW full scale the noise floor sits (dynamic range), not the maximum level.',
+    'Forgetting this assumes dither — the clean 6.02·N+1.76 result describes a properly dithered, full-scale sine; an undithered low-level signal distorts instead of just getting noisier.',
+  ],
+  warnings:
+    'Theoretical ideal: SNR = 6.02·N + 1.76 dB for a dithered full-scale sine wave; dynamic range ' +
+    '= 6.02·N dB; levels = 2^N. Real converters fall short of this ceiling because of analog ' +
+    'noise, jitter, and reference limits — treat it as the physics limit, not a spec you will measure.',
+  glossary: ['Bit Depth', 'Dynamic Range', 'Quantization', 'Dither', 'Signal-to-Noise Ratio'],
+  fields: [
+    { key: 'bits', name: 'BIT DEPTH', quantity: 'number', placeholder: '24', help: 'Bits per sample — common PCM depths are 16, 24 and 32.', warn: { test: (x) => x <= 0 || x > 64, msg: 'Bit depth should be a positive number of bits (common values: 16, 24, 32).' } },
+    { key: 'dr', name: 'TARGET DYNAMIC RANGE', quantity: 'db', placeholder: '96', help: 'A dynamic range in dB you want to find the required bit depth for.', warn: { test: (x) => x <= 0, msg: 'Dynamic range must be positive.' } },
+  ],
+  functions: [
+    {
+      key: 'fromBits',
+      name: 'SNR, dynamic range & levels from bit depth',
+      inputs: ['bits'],
+      formula: 'SNR = 6.02·N + 1.76 dB · range = 6.02·N · levels = 2^N',
+      compute: (v) => {
+        const N = n(v.bits);
+        return [
+          { label: 'THEORETICAL SNR (full-scale sine)', value: 6.02 * N + 1.76, quantity: 'db' },
+          { label: 'DYNAMIC RANGE', value: 6.02 * N, quantity: 'db', chainable: false },
+          { label: 'QUANTIZATION LEVELS 2^N', value: Math.pow(2, N), quantity: 'number', chainable: false },
+        ];
+      },
+      steps: (v) => {
+        const N = n(v.bits);
+        return [
+          `Each bit is one binary digit, so the number of distinct code values is 2^${fmt(N)} = ${fmt(Math.pow(2, N))}.`,
+          `Dynamic range ≈ 6.02 × N = 6.02 × ${fmt(N)} = ${fmt(6.02 * N)} dB — the "≈ 6 dB per bit" rule.`,
+          `Full-scale-sine SNR adds 1.76 dB: 6.02 × ${fmt(N)} + 1.76 = ${fmt(6.02 * N + 1.76)} dB. This is the dithered ideal; real converters land below it.`,
+        ];
+      },
+    },
+    {
+      key: 'bitsFromRange',
+      name: 'Bit depth for a target dynamic range (reverse)',
+      inputs: ['dr'],
+      formula: 'N = dynamic range / 6.02 (rounded up)',
+      compute: (v) => {
+        const dr = n(v.dr);
+        const exact = dr / 6.02;
+        const need = Math.ceil(exact - 1e-9);
+        return [
+          { label: 'BITS NEEDED (rounded up)', value: need, quantity: 'number' },
+          { label: 'EXACT (unrounded)', value: exact, quantity: 'number', chainable: false },
+          { label: 'RANGE THOSE BITS ACTUALLY GIVE', value: 6.02 * need, quantity: 'db', chainable: false },
+        ];
+      },
+      steps: (v) => {
+        const dr = n(v.dr);
+        const exact = dr / 6.02;
+        const need = Math.ceil(exact - 1e-9);
+        return [
+          `Each bit adds ≈ 6.02 dB, so bits = range ÷ 6.02 = ${fmt(dr)} ÷ 6.02 = ${fmt(exact)}.`,
+          `Bits come in whole numbers, so round UP to ${fmt(need)} bits — which delivers 6.02 × ${fmt(need)} = ${fmt(6.02 * need)} dB of range.`,
+          `(For example, a 90 dB target needs 15 bits of range → in practice you would pick 16-bit, the nearest standard depth.)`,
+        ];
+      },
+    },
+  ],
+};
+
+export const WORKSPACES_DIGITAL_ADV: Workspace[] = [CLOCKDRIFT, NETAUDIO, TIMECODE, FIRLEN, CONVOLUTION, BITDEPTH];

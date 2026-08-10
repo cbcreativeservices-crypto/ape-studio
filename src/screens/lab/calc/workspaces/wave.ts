@@ -74,9 +74,21 @@ export const WS_WAVE: Workspace = {
       key: 'freq',
       name: 'Frequency from period',
       inputs: ['t'],
-      formula: 'f = 1 / T',
-      compute: (v) => [{ label: 'FREQUENCY', value: 1 / n(v.t), quantity: 'frequency' }],
-      steps: (v) => [`f = 1 ÷ ${fmt(n(v.t))} s = ${fmt(1 / n(v.t))} Hz.`],
+      formula: 'f = 1 / T · ω = 2π·f',
+      compute: (v) => {
+        const f = 1 / n(v.t);
+        return [
+          { label: 'FREQUENCY', value: f, quantity: 'frequency' },
+          { label: 'ANGULAR FREQUENCY ω (rad/s)', value: 2 * Math.PI * f, quantity: 'number', chainable: false },
+        ];
+      },
+      steps: (v) => {
+        const f = 1 / n(v.t);
+        return [
+          `f = 1 ÷ ${fmt(n(v.t))} s = ${fmt(f)} Hz.`,
+          `Angular frequency (radians per second, used in filter/phase/reactance math): ω = 2π·f = 2π × ${fmt(f)} = ${fmt(2 * Math.PI * f)} rad/s.`,
+        ];
+      },
     },
     {
       key: 'speed',

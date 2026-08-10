@@ -9,6 +9,7 @@ import type { CalcSectionId, Workspace } from './calcTypes';
 import { WS_WAVE } from './workspaces/wave';
 import { WORKSPACES_TIME } from './workspaces/timePhase';
 import { WORKSPACES_LEVELS } from './workspaces/levels';
+import { WORKSPACES_DYNAMICS } from './workspaces/dynamics';
 import { WORKSPACES_SPL } from './workspaces/splSafety';
 import { WORKSPACES_SPEAKERS } from './workspaces/speakers';
 import { WORKSPACES_ROOMS_MUSIC } from './workspaces/roomsMusic';
@@ -26,6 +27,7 @@ export const WORKSPACES: Workspace[] = [
   WS_WAVE,
   ...WORKSPACES_TIME,
   ...WORKSPACES_LEVELS,
+  ...WORKSPACES_DYNAMICS,
   ...WORKSPACES_SPL,
   ...WORKSPACES_SPEAKERS,
   ...WORKSPACES_ROOMS_MUSIC,
