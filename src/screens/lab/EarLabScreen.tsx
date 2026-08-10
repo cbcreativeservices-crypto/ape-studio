@@ -311,8 +311,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   iconGlyphSm: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: colors.amber },
-  // Category names are BLUE (owner 2026-08-10) — Sound, Signal, Equalization…
-  catName: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1, color: colors.blue },
+  // Category names are AMBER and larger to read as titles (owner 2026-08-10) —
+  // Sound, Signal, Equalization…
+  catName: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1, color: colors.amber },
   catCount: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1, color: colors.amberLabel, marginTop: 1 },
 
   // Uniform lab rows — same size for every topic (hub or single lab).

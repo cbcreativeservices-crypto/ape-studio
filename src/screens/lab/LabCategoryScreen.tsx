@@ -150,8 +150,8 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
   header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 10 },
   back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
-  // Category name is BLUE (owner 2026-08-10).
-  title: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1.4, color: colors.blue },
+  // Category name is AMBER and larger to stand out as a title (owner 2026-08-10).
+  title: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, letterSpacing: 1.4, color: colors.amber },
   subtitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.amber, marginTop: 2 },
   scroll: { padding: 16, paddingBottom: 28, gap: 18 },
   intro: { fontFamily: fonts.barlowRegular, fontSize: 14.5, lineHeight: 21, color: colors.textSecondary },
