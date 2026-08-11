@@ -109,6 +109,43 @@ const METHOD_ORDER: { key: MethodKey; label: string }[] = [
   { key: 'scenarios', label: 'SCENARIOS' },
 ];
 
+/** SectionRackPanel — the Homework / Proficiency Check dividers as REAL rack
+ *  hardware (owner 2026-08-11, from studio-rack reference photos): a VENTED
+ *  BLANK PANEL — black-face texture, corner screws, horizontal vent slots
+ *  flanking the label — so the whole stack reads as one loaded studio rack. */
+function SectionRackPanel({ label, screwAngles }: { label: string; screwAngles: [number, number] }) {
+  return (
+    <ElevatedFrame contentStyle={styles.methodInner}>
+      <BlackFaceBg />
+      <View style={styles.methodRow}>
+        <View style={{ marginRight: 3 }}>
+          <PanelScrew angle={screwAngles[0]} />
+        </View>
+        <VentSlats />
+        <Text style={styles.sectionPanelText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+          {label}
+        </Text>
+        <VentSlats />
+        <View style={{ marginLeft: 3 }}>
+          <PanelScrew angle={screwAngles[1]} />
+        </View>
+      </View>
+    </ElevatedFrame>
+  );
+}
+
+/** A stack of horizontal vent slots — the punched cooling slats on a vented
+ *  1U blank. Dark slot + light lower lip so each reads as a punched opening. */
+function VentSlats() {
+  return (
+    <View style={styles.ventCol}>
+      <View style={styles.ventSlot} />
+      <View style={styles.ventSlot} />
+      <View style={styles.ventSlot} />
+    </View>
+  );
+}
+
 /** Per-method display %. Scenarios is round-based homework: its LED reflects
  *  server completion_pct (rounds ÷ 3 → 33/67/100), set by complete_scenario_round.
  *  Every other method creeps per-item from item_states via studyDisplayPct. */
@@ -1197,10 +1234,10 @@ export function DashboardScreen() {
             // as one mounted 500-series surface (Booth 2026-07-10 #9).
             <View key={m.key}>
               {/* Section header over the homework methods (owner 2026-08-11) —
-                  thin, borderless, centered. */}
+                  a vented blank rack panel, per the studio-rack reference. */}
               {m.key === 'fill_in_blank' ? (
-                <View style={styles.sectionDivider}>
-                  <Text style={styles.sectionDividerText}>Homework</Text>
+                <View style={styles.sectionPanelWrap}>
+                  <SectionRackPanel label="Homework" screwAngles={[30, 75]} />
                 </View>
               ) : null}
               {/* All method panels share the SAME gray coat again (user request
@@ -1302,11 +1339,9 @@ export function DashboardScreen() {
           );
         })}
 
-        {/* Section header over the quiz (owner 2026-08-11) — thin, borderless,
-            centered; marks the quiz as the proficiency gate for the topic. */}
-        <View style={styles.sectionDivider}>
-          <Text style={styles.sectionDividerText}>Proficiency Check - Pass to complete this topic</Text>
-        </View>
+        {/* Section header over the quiz (owner 2026-08-11) — a vented blank
+            rack panel; marks the quiz as the proficiency gate for the topic. */}
+        <SectionRackPanel label="Proficiency Check - Pass to complete this topic" screwAngles={[60, 15]} />
 
         {/* Quiz — the 6th slot in the SAME rack (same tight gap, Booth
             2026-07-10 #4). Kept RAISED at all times (Booth 2026-07-11 #4): when
@@ -1880,16 +1915,32 @@ const styles = StyleSheet.create({
   // minHeight; the 58px content row centers, so icon/title/LED/button still
   // share top+bottom edges (Booth 2026-07-11 #4/#5).
   methodInner: { paddingVertical: rs(6), paddingHorizontal: 8, minHeight: rs(80), justifyContent: 'center' },
-  // Section labels between method rows (owner 2026-08-11). Borderless + centered,
-  // now matched to the method/quiz container height (ElevatedFrame inner
-  // minHeight 80 + 1px borders ≈ 82) so every rack slot is equal height.
-  sectionDivider: { minHeight: rs(82), paddingVertical: 4, alignItems: 'center', justifyContent: 'center' },
-  sectionDividerText: {
+  // Section dividers as VENTED BLANK RACK PANELS (owner 2026-08-11): same
+  // ElevatedFrame + black-face + screws as the method rows, with punched vent
+  // slats flanking the engraved label. Height rides methodInner (equal slots).
+  sectionPanelWrap: { marginBottom: 8 },
+  sectionPanelText: {
     fontFamily: fonts.oswaldSemiBold,
-    fontSize: 12,
-    letterSpacing: 1.2,
+    fontSize: 12.5,
+    letterSpacing: 1.6,
     color: '#ffffff',
     textAlign: 'center',
+    paddingHorizontal: 10,
+    flexShrink: 1,
+    // engraved into the coat: dark cut below each stroke
+    textShadowColor: '#000000',
+    textShadowOffset: { width: 0, height: 1.5 },
+    textShadowRadius: 1,
+  },
+  ventCol: { flex: 1, minWidth: 14, justifyContent: 'center', gap: rs(6), paddingHorizontal: 4 },
+  ventSlot: {
+    height: rs(4),
+    borderRadius: 2,
+    backgroundColor: '#0a0b0d',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(0,0,0,0.9)',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.09)',
   },
   // LA-2A texture layer (BlackFaceBg / BrushedMetalBg): absolutely fills the
   // panel behind its content. overflow:hidden + matching radius is a second clip
