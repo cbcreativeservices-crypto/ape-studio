@@ -96,7 +96,7 @@ import { fetchCommercialDashboard, getLastPublicCourse } from '../../features/co
 // Rack density (owner 2026-08-11): ONE knob scales every rack slot's height
 // together — method rows, quiz, and the section labels — so the whole stack
 // fits on screen without scrolling. Lower = shorter/denser. Tune here only.
-const RACK_SCALE = 0.73;
+const RACK_SCALE = 0.82;
 const rs = (n: number) => Math.round(n * RACK_SCALE);
 // Glass-screen readout type scales WITH the chassis (owner 2026-08-11 — the
 // softer half-scale left it too big for the shorter panels).
