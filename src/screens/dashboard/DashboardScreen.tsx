@@ -1285,7 +1285,7 @@ export function DashboardScreen() {
                   a vented blank rack panel, per the studio-rack reference. */}
               {m.key === 'fill_in_blank' ? (
                 <View style={styles.sectionPanelWrap}>
-                  <SectionRackPanel label="Complete This Topic" angles={[6, -5]} />
+                  <SectionRackPanel label="Homework" angles={[6, -5]} />
                 </View>
               ) : null}
               {/* All method panels share the SAME gray coat again (user request
