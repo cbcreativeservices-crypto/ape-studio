@@ -184,7 +184,9 @@ export function RootNavigator() {
       <Stack.Screen name="EqLabHome" component={EqLabHomeScreen} />
       <Stack.Screen name="EqModule" component={EqModuleScreen} />
       <Stack.Screen name="GainLabHome" component={GainLabHomeScreen} />
-      <Stack.Screen name="GainModule" component={GainModuleScreen} />
+      {/* gestureEnabled:false — the swipe-back gesture was stealing the gain
+          sliders' horizontal drags (owner 2026-08-10); back = ‹ button. */}
+      <Stack.Screen name="GainModule" component={GainModuleScreen} options={{ gestureEnabled: false }} />
       {/* Foundations of Sound — the Ear Lab's first module (course + sandbox). */}
       <Stack.Screen name="FoundationsCourse" component={FoundationsCourseScreen} />
       <Stack.Screen name="FoundationsPlayground" component={FoundationsPlaygroundScreen} />
