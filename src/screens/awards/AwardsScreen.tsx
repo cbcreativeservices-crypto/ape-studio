@@ -31,7 +31,7 @@ import {
   type AwardPage,
   type AwardTier,
 } from './awardsData';
-import { fetchV3Programs, fetchV3Certs, type V3Credential } from '../../data/v3Curriculum';
+import { fetchV3Programs, fetchV3Certs, fetchV3Curriculum, flattenV3, type V3Credential } from '../../data/v3Curriculum';
 import type { RootStackParamList } from '../../navigation/types';
 
 const SPEC_CERT_KEY = 'ape:specCert'; // chosen Specialized Certificate name (Level 1)
@@ -295,10 +295,19 @@ export function AwardsScreen({ navigation, route }: Props) {
   // award data; aliased to the field names the picker/render already use.
   const [v3Programs, setV3Programs] = useState<V3Credential[]>([]);
   const [v3Certs, setV3Certs] = useState<V3Credential[]>([]);
+  // v3 gs → topic name (same source Explore uses). The award tables store only
+  // gs numbers; the retired v2 MATRIX_SUBJECTS map doesn't cover v3 gs, so
+  // topics rendered as "Topic gs#". Resolve names off the live v3 curriculum
+  // instead (owner 2026-08-11).
+  const [v3TopicNames, setV3TopicNames] = useState<Map<number, string>>(new Map());
   useEffect(() => {
     let alive = true;
     void fetchV3Programs().then((p) => alive && setV3Programs(p));
     void fetchV3Certs().then((c) => alive && setV3Certs(c));
+    void fetchV3Curriculum().then((fields) => {
+      if (!alive) return;
+      setV3TopicNames(new Map(flattenV3(fields).map((t) => [t.gs, t.name] as const)));
+    });
     return () => {
       alive = false;
     };
@@ -346,11 +355,12 @@ export function AwardsScreen({ navigation, route }: Props) {
     if (hasAccount) void AsyncStorage.setItem(PROGRAM_PATH_KEY, name);
   };
 
-  // Topic name lookup for the Level-1 summary.
+  // Topic name lookup: v3 curriculum first (the award tables use v3 gs), then
+  // the retired v2 matrix as a fallback, then a last-resort placeholder.
   const topicNameByGs = useRef(
     new Map(MATRIX_SUBJECTS.flatMap((s) => s.topics.map((t) => [t.gs, t.name] as const))),
   ).current;
-  const nameForGs = (gs: number) => topicNameByGs.get(gs) ?? `Topic gs${gs}`;
+  const nameForGs = (gs: number) => v3TopicNames.get(gs) ?? topicNameByGs.get(gs) ?? `Topic gs${gs}`;
 
   const summaryForTier = (tier: AwardTier): string | undefined => {
     if (tier.builder === 'specializations') return specCert ? `Certificate: ${specCert}` : undefined;
