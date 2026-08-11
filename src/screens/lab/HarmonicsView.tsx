@@ -1443,8 +1443,10 @@ export function HarmonicsView({
         {/* Color legend — model: fixed range re the fundamental; live:
             anchored to the observed max (spectrogram honesty idiom). */}
         <View style={styles.legendRow}>
-          {STEP_COLORS.map((c) => (
-            <View key={c} style={[styles.swatch, { backgroundColor: c }]} />
+          {STEP_COLORS.map((c, i) => (
+            // key by index — the ramp can repeat a hex (adjacent steps quantize
+            // to the same color), so keying by value collided (owner 2026-08-11).
+            <View key={i} style={[styles.swatch, { backgroundColor: c }]} />
           ))}
           <Text style={styles.legendText}>
             {view === 'model'
