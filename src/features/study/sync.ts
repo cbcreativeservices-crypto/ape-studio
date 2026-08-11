@@ -49,7 +49,7 @@ export function onStudyProgress(cb: () => void): () => void {
   progressListeners.add(cb);
   return () => progressListeners.delete(cb);
 }
-function emitStudyProgress() {
+export function emitStudyProgress() {
   progressListeners.forEach((cb) => {
     try {
       cb();

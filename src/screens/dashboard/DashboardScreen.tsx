@@ -100,6 +100,24 @@ const METHOD_ORDER: { key: MethodKey; label: string }[] = [
   { key: 'scenarios', label: 'SCENARIOS' },
 ];
 
+/** Per-method display %. Scenarios is round-based homework: its LED reflects
+ *  server completion_pct (rounds ÷ 3 → 33/67/100), set by complete_scenario_round.
+ *  Every other method creeps per-item from item_states via studyDisplayPct. */
+function methodDisplayPct(
+  row: { item_states?: unknown; completion_pct?: number | null } | undefined,
+  itemCount: number,
+  key: string,
+  requiredPasses: number,
+): number {
+  if (key === 'scenarios') return Math.round(row?.completion_pct ?? 0);
+  return studyDisplayPct(
+    (row?.item_states ?? {}) as Parameters<typeof studyDisplayPct>[0],
+    itemCount,
+    key,
+    requiredPasses,
+  );
+}
+
 // LA-2A-inspired panel textures (owner request 2026-07-25). Pure react-native-svg
 // gradients + fine vertical striations — NO image assets. Both fill their
 // container absolutely BEHIND the content; the parent ElevatedFrame already
@@ -888,14 +906,7 @@ export function DashboardScreen() {
     applicableKeys.length > 0
       ? Math.floor(
           applicableKeys.reduce(
-            (s, c) =>
-              s +
-              studyDisplayPct(
-                (rowFor(c.key)?.item_states ?? {}) as Parameters<typeof studyDisplayPct>[0],
-                topicItemCount,
-                c.key,
-                c.required_passes,
-              ),
+            (s, c) => s + methodDisplayPct(rowFor(c.key), topicItemCount, c.key, c.required_passes),
             0,
           ) / applicableKeys.length,
         )
@@ -910,14 +921,7 @@ export function DashboardScreen() {
     const itemCount = data.itemCountByTopic.get(t.id) ?? 0;
     return Math.floor(
       keys.reduce(
-        (s, c) =>
-          s +
-          studyDisplayPct(
-            (rows.find((r) => r.method_key === c.key)?.item_states ?? {}) as Parameters<typeof studyDisplayPct>[0],
-            itemCount,
-            c.key,
-            c.required_passes,
-          ),
+        (s, c) => s + methodDisplayPct(rows.find((r) => r.method_key === c.key), itemCount, c.key, c.required_passes),
         0,
       ) / keys.length,
     );
@@ -1173,12 +1177,7 @@ export function DashboardScreen() {
           // below still read the server completion/time/accuracy fields.
           const methodCfg = data.methodConfigs.find((c) => c.key === m.key);
           const pct = Math.round(
-            studyDisplayPct(
-              (cfgRow?.item_states ?? {}) as Parameters<typeof studyDisplayPct>[0],
-              data.itemCountByTopic.get(topic.id) ?? 0,
-              m.key,
-              methodCfg?.required_passes ?? 2,
-            ),
+            methodDisplayPct(cfgRow, data.itemCountByTopic.get(topic.id) ?? 0, m.key, methodCfg?.required_passes ?? 2),
           );
           const complete = isApplicable && pct >= 100;
           return (
