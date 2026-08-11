@@ -1984,7 +1984,8 @@ const styles = StyleSheet.create({
   sideScrew: { position: 'absolute', top: '50%', marginTop: -RACK_SCREW / 2, zIndex: 3 },
   // Laser-cut stencil label lit from behind (owner 2026-08-11): two stacked
   // layers share this base; the wrap centres them and the glow layer fills it.
-  stencilWrap: { flexShrink: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 10 },
+  // Backlit stencil dimmed to 37% brightness (owner 2026-08-11).
+  stencilWrap: { flexShrink: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 10, opacity: 0.37 },
   stencilBase: {
     fontFamily: fonts.panelSemiBold,
     fontSize: rt(10.5),
