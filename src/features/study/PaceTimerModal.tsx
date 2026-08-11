@@ -20,7 +20,6 @@ import {
   type PaceMethodKey,
 } from './paceStore';
 import { MiniFader, PresetFader } from './PresetFader';
-import { startTimeTrial } from './timeTrial';
 
 const ACCENT = colors.blue; // Study-tab accent
 
@@ -54,11 +53,6 @@ export function PaceTimerModal({
   // The full-size fader popup (shared with the in-container fader button via the
   // same PresetFader component) — opened here by tapping the mini-fader.
   const [faderOpen, setFaderOpen] = useState(false);
-
-  const beginTimeTrial = () => {
-    startTimeTrial(method, topicId ?? '');
-    onClose();
-  };
 
   // DONE is what ADDS the timer: finishing the popup turns the pace timer on and
   // starts it running, then closes. (The old top on/off Switch was removed.)
@@ -132,26 +126,6 @@ export function PaceTimerModal({
           >
             <Text style={styles.doneText}>DONE</Text>
           </Pressable>
-
-          {/* TIME TRIAL — the official 15-minute challenge (opt-in). Moved to the
-              BOTTOM of the popup (owner 2026-08-06). */}
-          <View style={styles.trial}>
-            <Text style={styles.trialHead}>TIME TRIAL</Text>
-            <Text style={styles.trialBody}>
-              Keep up with quiz pace for 15 minutes. Only correct answers count. If your average
-              pace over the 15 minutes matches or beats quiz pace, you clear this study method
-              toward unlocking the topic's quiz. Brief slow-downs are fine — catch up before time
-              runs out.
-            </Text>
-            <Pressable
-              style={styles.trialBtn}
-              onPress={beginTimeTrial}
-              accessibilityRole="button"
-              accessibilityLabel="Start 15-minute time trial"
-            >
-              <Text style={styles.trialBtnText}>START 15-MIN TIME TRIAL</Text>
-            </Pressable>
-          </View>
         </View>
 
         {/* Shared full-size fader popup — same component the container's
@@ -215,25 +189,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   doneText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.8, color: ACCENT },
-
-  // TIME TRIAL block.
-  trial: {
-    borderRadius: 9,
-    borderWidth: 1,
-    borderColor: 'rgba(55,224,95,.4)',
-    backgroundColor: 'rgba(55,224,95,.07)',
-    padding: 12,
-    gap: 8,
-  },
-  trialHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.green },
-  trialBody: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 19, color: colors.textSub },
-  trialBtn: {
-    borderRadius: 8,
-    backgroundColor: 'rgba(55,224,95,.12)',
-    borderWidth: 1.5,
-    borderColor: 'rgba(55,224,95,.7)',
-    paddingVertical: 10,
-    alignItems: 'center',
-  },
-  trialBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1, color: colors.green },
 });

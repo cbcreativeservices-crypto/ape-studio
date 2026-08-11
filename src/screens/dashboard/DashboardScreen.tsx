@@ -1187,6 +1187,13 @@ export function DashboardScreen() {
             // Unavailable methods are NOT recessed or dimmed — every slot reads
             // as one mounted 500-series surface (Booth 2026-07-10 #9).
             <View key={m.key}>
+              {/* Section header over the homework methods (owner 2026-08-11) —
+                  thin, borderless, centered. */}
+              {m.key === 'fill_in_blank' ? (
+                <View style={styles.sectionDivider}>
+                  <Text style={styles.sectionDividerText}>Homework</Text>
+                </View>
+              ) : null}
               {/* All method panels share the SAME gray coat again (user request
                   2026-07-23) — the Flashcards charcoal special-case was reverted. */}
               <ElevatedFrame depressed={complete} contentStyle={styles.methodInner}>
@@ -1285,6 +1292,12 @@ export function DashboardScreen() {
             </View>
           );
         })}
+
+        {/* Section header over the quiz (owner 2026-08-11) — thin, borderless,
+            centered; marks the quiz as the proficiency gate for the topic. */}
+        <View style={styles.sectionDivider}>
+          <Text style={styles.sectionDividerText}>Proficiency Check - Pass to complete this topic</Text>
+        </View>
 
         {/* Quiz — the 6th slot in the SAME rack (same tight gap, Booth
             2026-07-10 #4). Kept RAISED at all times (Booth 2026-07-11 #4): when
@@ -1858,6 +1871,15 @@ const styles = StyleSheet.create({
   // minHeight; the 58px content row centers, so icon/title/LED/button still
   // share top+bottom edges (Booth 2026-07-11 #4/#5).
   methodInner: { paddingVertical: 6, paddingHorizontal: 8, minHeight: 80, justifyContent: 'center' },
+  // Thin borderless section labels between method rows (owner 2026-08-11).
+  sectionDivider: { paddingVertical: 5, alignItems: 'center', justifyContent: 'center' },
+  sectionDividerText: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 12,
+    letterSpacing: 1.2,
+    color: '#ffffff',
+    textAlign: 'center',
+  },
   // LA-2A texture layer (BlackFaceBg / BrushedMetalBg): absolutely fills the
   // panel behind its content. overflow:hidden + matching radius is a second clip
   // on top of the parent ElevatedFrame's own rounded-corner clip.
