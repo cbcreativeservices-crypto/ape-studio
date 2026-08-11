@@ -1,6 +1,6 @@
 /**
  * S13 — Scenarios (LOCKED v1.1; single-pass; visuals from 21-s13-scenarios).
- * SCREENS-ONLY for Fall: no content, not gate-relevant, non-blocking.
+ * Structural kit only: no content source yet, not gate-relevant, non-blocking.
  *
  * Kit: prompt panel · optional media (audio = S12 player / image 80% 4:3 /
  * none = reflow up) · types — mc (tap=submit+advance) · multi_select
@@ -181,15 +181,14 @@ export function ScenariosScreen({ route }: Props) {
     judge(sequence.every((s, i) => s === item.correct[i]));
   }, [item, sequence, feedback, judge]);
 
-  /* ---- no-content state (Fall) ---- */
+  /* ---- no-content state ---- */
   if (items && items.length === 0) {
     return (
       <View style={[styles.center, { paddingTop: insets.top }]}>
         <StudyHeader method="scenarios" title="SCENARIO" />
-        <Text style={styles.emptyTitle}>NO FALL CONTENT</Text>
+        <Text style={styles.emptyTitle}>NO SCENARIOS FOR THIS TOPIC</Text>
         <Text style={styles.emptyBody}>
-          Scenarios launch with a future semester's content. They are not required for any Fall
-          topic.
+          This topic doesn't include scenario drills. Review it with its other study methods.
         </Text>
         {__DEV__ && (
           <View style={{ width: 220, marginTop: 8 }}>

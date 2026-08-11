@@ -1,10 +1,10 @@
 /**
- * Scenarios (S13) item shapes — SCREEN ONLY for Fall: no Fall content and not
- * gate-relevant (Code brief §5). Fetches return empty until the Spring content
- * pipeline lands; the screen renders its structural kit + a no-content state.
- * When content ships, wire fetches here and progress events through
- * StudySession ('answer' grammar — scenarios required_passes=1 per
- * study_methods).
+ * Scenarios (S13) item shapes. The scenarios study method has NO content store
+ * yet — there is no scenarios table in the backend and no authored items, so
+ * fetchScenarioItems returns empty for every topic and the screen renders its
+ * no-content state. When a content source exists, wire the fetch here and route
+ * progress events through StudySession ('answer' grammar — scenarios
+ * required_passes=1 per study_methods).
  *
  * The Ear Training (S12) study method was retired (Booth 2026-07-26, v4 MASTER
  * §13) — its item shape / fetch / dev fixtures were removed with it.
@@ -23,7 +23,8 @@ export type ScenarioItem = {
   explanation: string;
 };
 
-/** Fall reality: no content. Spring pipeline replaces these. */
+/** No scenario content source exists yet — always empty. Replace the body with
+ *  a real fetch once authored scenario items have a home in the backend. */
 export async function fetchScenarioItems(_achievementId: string): Promise<ScenarioItem[]> {
   return [];
 }
