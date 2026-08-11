@@ -2,7 +2,7 @@
  * GlossaryTermPopup — a lightweight, self-contained glossary definition popup
  * (owner 2026-08-07) for surfacing a term WITHOUT leaving the current screen.
  *
- * Built for the calculator ↔ glossary round-trip: tapping a term chip inside a
+ * Built for the calculator ↔︎ glossary round-trip: tapping a term chip inside a
  * Calc Lab workspace shows this overlay, and because it is a transparent Modal
  * layered over the caller (never a navigation push), the caller's state — the
  * user's calculator inputs and scroll position — is preserved for free. Closing

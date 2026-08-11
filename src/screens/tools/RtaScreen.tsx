@@ -758,7 +758,7 @@ export function RtaScreen({ navigation }: Props) {
       // spectrumEnabled stays ON for every mode (see cfg note) — the FFT must
       // keep running so the native band frame is populated. Reconfigure ONLY
       // when the octave FRACTION changes (10 = 1/1, everything else = 1/3);
-      // 7↔15↔31↔61 all ride the same native 1/3-oct FFT.
+      // 7↔︎15↔︎31↔︎61 all ride the same native 1/3-oct FFT.
       const needsConfig = cfg.fraction !== wantFraction;
       cfg.fraction = wantFraction;
       setMode(m);

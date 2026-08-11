@@ -75,7 +75,7 @@ export const SYMBOL_GROUPS: SymbolGroup[] = [
       { symbol: '| |', name: 'absolute value / magnitude', meaning: 'The size of a value, ignoring its sign or phase.', example: '|Z| = impedance magnitude', glossaryTerm: 'Magnitude' },
       { symbol: '∝', name: 'proportional to', meaning: 'Rises and falls together with.', example: 'SPL ∝ 1 / r²', glossaryTerm: 'Inverse Square Law' },
       { symbol: '→', name: 'yields / sends', meaning: 'Leads to — or SEND a result into the next calculator.', example: 'sensitivity → voltage → gain' },
-      { symbol: '↔', name: 'converts both ways', meaning: 'A two-way conversion.', example: 'frames ↔ time' },
+      { symbol: '↔︎', name: 'converts both ways', meaning: 'A two-way conversion.', example: 'frames ↔︎ time' },
       { symbol: ':', name: 'ratio', meaning: 'A ratio between two quantities.', example: '3:1 mic rule · N:1 turns', glossaryTerm: 'Ratio' },
     ],
   },

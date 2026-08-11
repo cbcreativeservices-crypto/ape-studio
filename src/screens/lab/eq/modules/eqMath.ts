@@ -1,6 +1,6 @@
 /**
  * eqMath — tiny shared helpers for the EQ Lab modules (owner spec 2026-08-07).
- * Q ↔ bandwidth-in-octaves uses the standard peaking-filter relation
+ * Q ↔︎ bandwidth-in-octaves uses the standard peaking-filter relation
  * 1/Q = 2·sinh(ln2/2 · BWoct) — the SAME numbers a console readout shows, so
  * the dual "Q · Bandwidth (oct)" displays the spec mandates stay honest.
  */

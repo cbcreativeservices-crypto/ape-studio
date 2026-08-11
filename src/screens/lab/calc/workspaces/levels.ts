@@ -13,7 +13,7 @@ const arr = (v: number | number[]) => (Array.isArray(v) ? v : [v]);
 const log10 = Math.log10;
 const log2 = Math.log2;
 
-/** dBu ↔ dBV offset: 20·log10(0.775) ≈ −2.2185 dB (dBu reads HIGHER). */
+/** dBu ↔︎ dBV offset: 20·log10(0.775) ≈ −2.2185 dB (dBu reads HIGHER). */
 const DBU_DBV_OFFSET = 20 * log10(0.775);
 
 // ---------------------------------------------------------------------------
@@ -139,7 +139,7 @@ const WS_LEVEL: Workspace = {
     },
     {
       key: 'dbuDbv',
-      name: 'dBu ↔ dBV',
+      name: 'dBu ↔︎ dBV',
       inputs: ['dbx'],
       formula: 'dBV = dBu − 2.218 · dBu = dBV + 2.218',
       note: 'The offset is exact: 20·log10(0.775 V ÷ 1 V) ≈ −2.218 dB. The same voltage always reads 2.218 dB HIGHER in dBu.',

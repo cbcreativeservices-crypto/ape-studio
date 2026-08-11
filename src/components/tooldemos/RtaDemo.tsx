@@ -162,7 +162,7 @@ function FreqLabels() {
 }
 
 /**
- * 15 bars that morph between two fixed height arrays (`which` 0 ↔ 1) with a
+ * 15 bars that morph between two fixed height arrays (`which` 0 ↔︎ 1) with a
  * gentle seeded flutter so the drawing feels alive. SVG geometry props animate
  * via Animated.createAnimatedComponent, so these drivers are non-native.
  */

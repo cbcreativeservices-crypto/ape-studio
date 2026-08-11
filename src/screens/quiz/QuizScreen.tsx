@@ -6,7 +6,7 @@
  *   grades timed_out past 602s).
  * - One question at a time; tap select → 350ms highlight → auto-advance.
  * - Renders served_options per type (Code brief §3): mc/fill = 6 strings pick
- *   1 · multi_select = 6 strings + Confirm · matching = K lefts ↔ K rights.
+ *   1 · multi_select = 6 strings + Confirm · matching = K lefts ↔︎ K rights.
  * - 🔴 F4: answers recorded as the served VALUE strings keyed by slot_index.
  * - App-switch: 2s grace; 1st loss = warning, 2nd = immediate submit → server
  *   voids + 15-min lockout. (Timer/warning/lockout UI is [TBD-DESIGN] — the

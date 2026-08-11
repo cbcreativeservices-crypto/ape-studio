@@ -81,7 +81,7 @@ export function EqLabHomeScreen() {
           <ToolChip label="Q & BANDWIDTH CALC" onPress={() => navigation.navigate('CalcWorkspace', { id: 'qbw' })} />
         </View>
         <Text style={styles.caption}>
-          The full RTA tool, the audible Equalizer effect lab, and the Q ↔ bandwidth calculator
+          The full RTA tool, the audible Equalizer effect lab, and the Q ↔︎ bandwidth calculator
           live alongside this lab — everything here links back to the glossary.
         </Text>
       </ScrollView>

@@ -6,7 +6,7 @@
  * space — it never overlays the card, and tube navigation is by the bar's
  * ‹ / › arrows, NOT by swiping the image. Earlier a swipe-between-tubes gesture
  * fought the image's pan/zoom for the same drags; removing it leaves the image
- * area doing ONE job: pinch-zoom (1–4×) + pan when zoomed + double-tap 1×↔2.5×.
+ * area doing ONE job: pinch-zoom (1–4×) + pan when zoomed + double-tap 1×↔︎2.5×.
  *
  * DELIBERATELY core RN only (PanResponder + Animated + Image): the project has
  * no gesture-handler / expo-image, and a native add would stay dark until the

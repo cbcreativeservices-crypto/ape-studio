@@ -406,7 +406,7 @@ export function HarmonicsView({
   const { state, frames, start, stop, lastError } = useDspEngine(cfg, { meter: true, waveform: true });
   const engineReady = state !== 'absent' && state !== 'spike';
   const running = state === 'running';
-  // Mic↔speaker feedback override (owner request 2026-07-26). LIVE mode needs
+  // Mic↔︎speaker feedback override (owner request 2026-07-26). LIVE mode needs
   // the mic AND the speaker at once, so the reference tone may sound only when
   // the user has physically flipped the override; otherwise the interlock keeps
   // the speaker muted while the mic listens.
@@ -856,7 +856,7 @@ export function HarmonicsView({
     if (isFeedbackAllowed()) void startTone();
   }, [startTone, start]);
 
-  /** LIVE tone ↔ feedback-override sync: while the mic is capturing in live
+  /** LIVE tone ↔︎ feedback-override sync: while the mic is capturing in live
    *  mode, the reference tone sounds iff the user has accepted feedback risk.
    *  Owns the tone's genRunning state (the global MicFeedbackGuard is the
    *  belt-and-suspenders cut for every OTHER screen). */

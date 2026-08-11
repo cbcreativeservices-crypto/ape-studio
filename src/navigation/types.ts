@@ -167,7 +167,7 @@ export type RootStackParamList = {
    *  chain as one instrument; scenario presets teach the interactions. */
   SignalChainLab: undefined;
   /** EXPANSION lab (owner 2026-07-26) — 4-string fretted bass: string division,
-   *  wavelength, natural harmonics, fraction ↔ interval. LabShell-based. */
+   *  wavelength, natural harmonics, fraction ↔︎ interval. LabShell-based. */
   BassLab: undefined;
   /** EXPANSION lab (owner 2026-07-26) — pitch correction on the cents grid:
    *  correction amount + retune speed on a generator melody (no mic). */

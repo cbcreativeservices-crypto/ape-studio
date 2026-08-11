@@ -1,5 +1,5 @@
 /**
- * MicFeedbackGuard — the mic↔speaker feedback interlock (owner request
+ * MicFeedbackGuard — the mic↔︎speaker feedback interlock (owner request
  * 2026-07-26). Mounted once at the app root. Whenever the MIC is capturing and
  * the user has NOT flipped the physical override, it cuts the generator
  * (speaker) so the built-in mic can never pick up the built-in speaker and howl

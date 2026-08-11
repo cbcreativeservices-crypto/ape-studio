@@ -718,7 +718,7 @@ export function RefractionModule(p: WaveModuleProps) {
           <DragSlider
             value={(grad + 1) / 2}
             onChange={(v) => setGrad(clampSnap(v * 2 - 1, -1, 1))}
-            label="GRADIENT — LAPSE ↔ INVERSION"
+            label="GRADIENT — LAPSE ↔︎ INVERSION"
             readout={grad > 0.1 ? 'INVERSION (warm aloft)' : grad < -0.1 ? 'LAPSE (cool aloft)' : 'NEUTRAL'}
             onHelp={() => p.help('refraction')}
           />

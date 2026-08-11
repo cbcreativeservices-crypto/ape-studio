@@ -170,7 +170,7 @@ const delayConfig: FxLabConfig = {
       label: 'PING-PONG', paramId: P.pingpong, lessonKey: 'ping_pong',
       choices: [
         { label: 'OFF', value: 0 },
-        { label: 'ON (L↔R)', value: 1 },
+        { label: 'ON (L↔︎R)', value: 1 },
       ],
       initial: 0,
     },

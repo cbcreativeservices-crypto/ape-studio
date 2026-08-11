@@ -5,7 +5,7 @@
  *
  * VALUE PASSING — the heart of the feature:
  *  - A field can IMPORT a numeric result from any EARLIER step whose
- *    QuantityKind matches (distance↔distance, time↔time; power never fills
+ *    QuantityKind matches (distance↔︎distance, time↔︎time; power never fills
  *    voltage). Imports are LIVE: the field derives its value from the upstream
  *    result each render, converted into the field's selected unit — so editing
  *    an earlier step automatically recalculates every dependent later result

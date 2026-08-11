@@ -239,7 +239,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     section: 'training',
     kind: 'list',
     labs: [
-      { name: 'Harmonograph', blurb: 'Frequency ratios ↔ musical intervals, drawn as living Lissajous curves.', route: 'HarmonographLab' },
+      { name: 'Harmonograph', blurb: 'Frequency ratios ↔︎ musical intervals, drawn as living Lissajous curves.', route: 'HarmonographLab' },
       { name: 'Cymatics Lab', blurb: 'Sound made visible — the standing-wave patterns that appear when a tone vibrates a plate or membrane.', status: 'development' },
     ],
   },
@@ -251,7 +251,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     section: 'training',
     kind: 'list',
     labs: [
-      { name: 'Bass Guitar Physics', blurb: 'String division, wavelength, harmonics, fret fractions ↔ intervals.', route: 'BassLab' },
+      { name: 'Bass Guitar Physics', blurb: 'String division, wavelength, harmonics, fret fractions ↔︎ intervals.', route: 'BassLab' },
       { name: 'Instrument Recording Lab', blurb: 'Mic choice and placement per instrument.', status: 'development' },
       { name: 'Microphone Selection Lab', blurb: 'Pick the right mic for the source — dynamic vs condenser vs ribbon, pattern and application.', status: 'development' },
     ],

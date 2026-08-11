@@ -249,7 +249,7 @@ function FullscreenIcon({ color }: { color: string }) {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      {/* Thin double-sided diagonal arrow (bottom-left ↔ top-right), gapped from
+      {/* Thin double-sided diagonal arrow (bottom-left ↔︎ top-right), gapped from
           the brackets (user request 2026-07-24). */}
       <Path
         d="M8.5 15.5 L15.5 8.5 M15.5 8.5 L12 8.5 M15.5 8.5 L15.5 12 M8.5 15.5 L12 15.5 M8.5 15.5 L8.5 12"
@@ -310,8 +310,8 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   const [items, setItems] = useState<GlossaryItem[] | null>(null);
   const [states, setStates] = useState<ItemStates>({});
   const [hidden, setHidden] = useState<Set<string>>(new Set());
-  // Flag list (Booth 2026-07-18): the ONE shared flagged set (glossary star ↔
-  // flashcards flag ↔ Flagged dashboard topic) via features/flags/flaggedStore.
+  // Flag list (Booth 2026-07-18): the ONE shared flagged set (glossary star ↔︎
+  // flashcards flag ↔︎ Flagged dashboard topic) via features/flags/flaggedStore.
   // Replaces the old per-topic `ape:fcHard:<id>` list.
   const bookmarked = useBookmarks(achievementId);
   // ★ starred = the user's notifications list (Booth 2026-07-18) — its own

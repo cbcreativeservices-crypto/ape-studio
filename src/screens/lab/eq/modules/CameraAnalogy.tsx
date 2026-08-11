@@ -40,7 +40,7 @@ const FLOOR_Y = 116;
 const FOV_TOP = 42;
 const CAM_APEX: [number, number] = [160, 148];
 
-// ---- Analogy ↔ EQ mapping ---------------------------------------------------
+// ---- Analogy ↔︎ EQ mapping ---------------------------------------------------
 const bwFromZoom = (z: number) => 4 - 3.75 * z; // wide 4 oct … tight 0.25 oct
 const ANALOGY_GAIN_DB = 9; // fixed — gain is NOT part of the analogy (ruling)
 /** The frequency a FIXED EQ is bolted to. 2 kHz lands at x≈211 on the shared

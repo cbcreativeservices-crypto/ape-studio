@@ -177,7 +177,7 @@ const NETAUDIO: Workspace = {
 const TIMECODE: Workspace = {
   id: 'timecode',
   name: 'Timecode',
-  tagline: 'Frames ↔ time, fps & pulldown',
+  tagline: 'Frames ↔︎ time, fps & pulldown',
   section: 'digital',
   reportPrefix: 'TC',
   intro:
@@ -197,7 +197,7 @@ const TIMECODE: Workspace = {
     'Forgetting drop-frame timecode SKIPS labels (not frames) to track real time at 29.97 — it is a counting trick, not lost media.',
   ],
   warnings:
-    'Non-drop conversions: time = frames ÷ fps. Pulldown offset uses the 1000/1001 (0.1%) film↔video ' +
+    'Non-drop conversions: time = frames ÷ fps. Pulldown offset uses the 1000/1001 (0.1%) film↔︎video ' +
     'factor. Drop-frame label mechanics are described, not renumbered here.',
   glossary: ['Timecode', 'Frame Rate', 'Synchronization', 'Sample Rate'],
   fields: [
@@ -267,10 +267,10 @@ const TIMECODE: Workspace = {
     },
     {
       key: 'pulldown',
-      name: '0.1% pulldown offset (30 ↔ 29.97)',
+      name: '0.1% pulldown offset (30 ↔︎ 29.97)',
       inputs: ['dur'],
       formula: 'offset = duration × (1/1000)',
-      note: 'The 1000/1001 factor between 30 fps and 29.97 fps (and 48 kHz ↔ 47.952 kHz).',
+      note: 'The 1000/1001 factor between 30 fps and 29.97 fps (and 48 kHz ↔︎ 47.952 kHz).',
       compute: (v) => {
         const off = n(v.dur) / 1000;
         return [

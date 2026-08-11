@@ -1,6 +1,6 @@
 /**
  * HarmonographLabScreen — Lab 16 "Harmonograph" (v4 MASTER §7) on the shared
- * LabShell. Frequency ratios ↔ musical intervals, made visible AND audible.
+ * LabShell. Frequency ratios ↔︎ musical intervals, made visible AND audible.
  *
  * LAYOUT v2 (owner 2026-07-29): collapsible READOUTS → DISPLAY → CONTROLS →
  * ACTIONS sections; PLAY INTERVAL is the compact HeaderPlayButton via

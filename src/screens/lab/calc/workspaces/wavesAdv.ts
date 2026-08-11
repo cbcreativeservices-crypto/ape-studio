@@ -11,7 +11,7 @@ const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 const ALIGN: Workspace = {
   id: 'align',
   name: 'Analog Alignment',
-  tagline: 'Time-align sources: offset ↔ delay ↔ phase',
+  tagline: 'Time-align sources: offset ↔︎ delay ↔︎ phase',
   section: 'waves',
   reportPrefix: 'ALIGN',
   intro:

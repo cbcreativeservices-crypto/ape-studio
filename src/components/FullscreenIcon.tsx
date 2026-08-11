@@ -1,6 +1,6 @@
 /**
  * FullscreenIcon — corner-bracket frame + a thin double-sided diagonal arrow
- * (bottom-left ↔ top-right). Shared so the flashcards row and the interactive
+ * (bottom-left ↔︎ top-right). Shared so the flashcards row and the interactive
  * study-method screens show the SAME glyph (user request 2026-07-25).
  */
 import Svg, { Path } from 'react-native-svg';

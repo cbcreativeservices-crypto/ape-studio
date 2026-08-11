@@ -8,7 +8,7 @@
  * number shown here is scripted from fixed arrays — nothing is measured, and
  * per spec §5 + measurement-tools §1.7 no LedMeter / live-meter lookalikes.
  *
- * Scenes: 1 TAPS → FREQUENCY (period bracket ↔ Hz ↔ BPM), 2 STABILITY
+ * Scenes: 1 TAPS → FREQUENCY (period bracket ↔︎ Hz ↔︎ BPM), 2 STABILITY
  * (regular vs jittery pulse train → confidence from consistency), 3 FREQUENCY
  * vs PITCH (440 Hz mapped onto an A4 tuner needle with a cents scale).
  * Animation: RN core Animated only, transforms/opacity on native driver.

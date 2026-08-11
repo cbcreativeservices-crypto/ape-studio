@@ -1,5 +1,5 @@
 /**
- * FeedbackAllowRow — the PHYSICAL override for the mic↔speaker feedback
+ * FeedbackAllowRow — the PHYSICAL override for the mic↔︎speaker feedback
  * interlock (owner request 2026-07-26: "If and only when my app needs them to
  * turn this off, have it there in that location a setting the user can
  * physically have to switch on them self").

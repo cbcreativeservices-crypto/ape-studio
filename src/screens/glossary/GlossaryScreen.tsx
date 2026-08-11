@@ -905,7 +905,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
   // anonymous commercial users may VIEW the topic list but not activate a topic;
   // tapping a locked row raises this brief membership hint.
   const [topicGate, setTopicGate] = useState(false);
-  const [cardView, setCardView] = useState(false); // list (default) ↔ card view
+  const [cardView, setCardView] = useState(false); // list (default) ↔︎ card view
   // TTS reads the OFFICIAL definition by default (ADV); BEG = plain English.
   const [ttsBeg, setTtsBeg] = useState(false);
   // SHOW / HIDE LINKS (owner 2026-08-07): the cross-links inside definitions

@@ -71,7 +71,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'delay_time', name: 'Delay time', definition: 'The gap between repeats. Short (≈60–150 ms) = slapback; longer, tempo-matched values (a quarter-note) lock the echoes to the groove.', range: '~1 ms – 2 s' },
       { key: 'feedback', name: 'Feedback', definition: 'How much of each echo is fed back to make the NEXT one — sets how many repeats you get. Near 100% runs away into self-oscillation.', range: '0 – ~100%' },
       { key: 'wet_dry', name: 'Wet / Dry', definition: 'The balance of dry signal vs echoes. Low keeps the delay behind the source; 100% wet is echoes only.' },
-      { key: 'ping_pong', name: 'Ping-pong', definition: 'Bounces the repeats left↔right across the stereo image. Always mono-check — hard-panned repeats can thin out in mono.' },
+      { key: 'ping_pong', name: 'Ping-pong', definition: 'Bounces the repeats left↔︎right across the stereo image. Always mono-check — hard-panned repeats can thin out in mono.' },
       { key: 'filtering', name: 'Repeat damping', definition: 'Rolls the highs (and often lows) off each repeat, so echoes recede into the background instead of stacking into harsh clutter.' },
     ],
     commonMistakes: [

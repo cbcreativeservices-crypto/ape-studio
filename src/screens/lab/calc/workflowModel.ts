@@ -7,8 +7,8 @@
  * formulas are never duplicated here.
  *
  * Value passing reuses the Calculation Chain's compatibility rule exactly:
- * a value may feed an input only when their QuantityKind MATCHES (distance ↔
- * distance, time ↔ time — power never auto-fills voltage). Units convert
+ * a value may feed an input only when their QuantityKind MATCHES (distance ↔︎
+ * distance, time ↔︎ time — power never auto-fills voltage). Units convert
  * through the quantity's BASE unit via calcUnits, as everywhere else.
  */
 import type { QuantityKind } from './calcUnits';

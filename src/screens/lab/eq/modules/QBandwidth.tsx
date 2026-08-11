@@ -65,7 +65,7 @@ export function QBandwidthModule(_p: EqModuleComponentProps) {
         <ResponseCurveGraph curves={curves} dbRange={12} height={150} mainColor={gainColor(GAIN_DB, 12)} />
         {/* The dual readout, large — the whole lesson in two numbers. */}
         <Text style={styles.qBig}>
-          Q {q.toFixed(2)}  ↔  {bwOct.toFixed(2)} OCTAVES
+          Q {q.toFixed(2)}  ↔︎  {bwOct.toFixed(2)} OCTAVES
         </Text>
       </View>
 

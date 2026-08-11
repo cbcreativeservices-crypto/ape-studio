@@ -15,7 +15,7 @@ const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 const WS_DISTDELAY: Workspace = {
   id: 'distdelay',
   name: 'Distance · Delay · Samples',
-  tagline: 'Meters ↔ milliseconds ↔ samples',
+  tagline: 'Meters ↔︎ milliseconds ↔︎ samples',
   section: 'waves',
   intro:
     'Sound in air, time on the clock, and samples in the box are three views of the same ' +
@@ -214,7 +214,7 @@ const WS_DISTDELAY: Workspace = {
 const WS_PHASE: Workspace = {
   id: 'phase',
   name: 'Phase & Time Offset',
-  tagline: 'Degrees ↔ time ↔ path difference',
+  tagline: 'Degrees ↔︎ time ↔︎ path difference',
   section: 'waves',
   intro:
     'Phase is time offset expressed per cycle. The same delay is a different number of degrees ' +

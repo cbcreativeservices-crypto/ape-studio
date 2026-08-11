@@ -228,7 +228,7 @@ const WS_BPM: Workspace = {
 const WS_PITCH: Workspace = {
   id: 'pitch',
   name: 'Pitch · Note · Cents',
-  tagline: 'Frequency ↔ note name · intervals · transposition',
+  tagline: 'Frequency ↔︎ note name · intervals · transposition',
   section: 'music',
   intro:
     'The translator between the physics side (hertz) and the musical side (note names, ' +

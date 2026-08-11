@@ -1,7 +1,7 @@
 /**
  * BassLabScreen — EXPANSION lab "Bass Guitar" (owner request 2026-07-26) on the
  * shared LabShell. A 4-string fretted electric bass makes string physics
- * tangible: string division ↔ fractions ↔ intervals ↔ the harmonic series.
+ * tangible: string division ↔︎ fractions ↔︎ intervals ↔︎ the harmonic series.
  *
  * LAYOUT v2 (owner 2026-07-29): collapsible READOUTS → DISPLAY → CONTROLS →
  * ACTIONS sections; PLAY/STOP is the compact HeaderPlayButton via LabShell's

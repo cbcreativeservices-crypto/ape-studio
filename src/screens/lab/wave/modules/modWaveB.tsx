@@ -568,7 +568,7 @@ export function DelayAlignModule(p: WaveModuleProps) {
 // ═════════════════════════════════════════════════════════════════════════════
 // MODULE 12 — CARDIOID SUBWOOFER
 
-const CSUB_SPACING = 1.2; // m front↔rear
+const CSUB_SPACING = 1.2; // m front↔︎rear
 const CSUB_REAR = { x: 7, y: 4.0 };
 const CSUB_FRONT = { x: 7, y: 4.0 + CSUB_SPACING };
 const CSUB_REAR_PROBE = { x: 7, y: 1.0 }; // fixed, 3 m behind the stack

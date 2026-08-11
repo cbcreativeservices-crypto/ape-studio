@@ -94,7 +94,7 @@ const STEREOMIC: Workspace = {
 const MICSENS: Workspace = {
   id: 'micsens',
   name: 'Mic Sensitivity Converter',
-  tagline: 'mV/Pa ↔ dBV/Pa & output at an SPL',
+  tagline: 'mV/Pa ↔︎ dBV/Pa & output at an SPL',
   section: 'mics',
   reportPrefix: 'SENS',
   intro:
