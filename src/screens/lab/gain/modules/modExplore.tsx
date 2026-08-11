@@ -217,8 +217,10 @@ export function TroubleshootModule(_p: GainModuleComponentProps) {
     setFound(false);
   }, []);
 
+  // One device at a time — before AND after the fault is found (owner
+  // 2026-08-10): finding it never opens the whole chain; you keep inspecting
+  // single stages, and the slider rides along on whichever one is open.
   const inspect = (key: string) => {
-    if (found) return;
     setRevealed(key);
     if (key === round.faultKey) setFound(true);
   };
@@ -235,19 +237,19 @@ export function TroubleshootModule(_p: GainModuleComponentProps) {
       <GlossaryText style={styles.body}>
         Real life: you do NOT get a meter at every stage. The master output is clipping — that’s
         all you know. Inspect ONE device at a time and find the FIRST stage that clips (clipping
-        cascades downstream, so work back upstream). Find it, and the whole chain opens up for you
-        to fix.
+        cascades downstream, so work back upstream). Find it, then fix it the same way — one
+        device at a time.
       </GlossaryText>
       <View style={styles.chain}>
-        {/* Source — collapsed like the rest until the fault is found. */}
+        {/* Source — stays collapsed unless it's the one under inspection. */}
         <DeviceCard
           name="Source"
           kind="source"
           first
-          xray={revealed === 'source' && !found}
-          onPress={!found ? () => inspect('source') : undefined}
+          xray={revealed === 'source'}
+          onPress={() => inspect('source')}
         >
-          {found || revealed === 'source' ? (
+          {revealed === 'source' ? (
             <DeviceMeter node={nodes[0]} showLevel />
           ) : (
             <Text style={styles.inspectHint}>TAP TO INSPECT</Text>
@@ -256,18 +258,18 @@ export function TroubleshootModule(_p: GainModuleComponentProps) {
         {stages.map((st, i) => {
           const node = nodes[i + 1];
           const isMaster = st.key === 'out';
-          const open = found || isMaster || revealed === st.key;
+          const open = isMaster || revealed === st.key;
           return (
             <View key={st.key}>
               <DeviceCard
                 name={st.name}
                 kind={st.kind}
                 last={isMaster}
-                xray={revealed === st.key && !found}
-                onPress={!found && !isMaster ? () => inspect(st.key) : undefined}
+                xray={revealed === st.key}
+                onPress={!isMaster || found ? () => inspect(st.key) : undefined}
               >
                 {open ? <DeviceMeter node={node} showLevel /> : <Text style={styles.inspectHint}>TAP TO INSPECT</Text>}
-                {found ? (
+                {found && revealed === st.key ? (
                   <DragSlider
                     label={st.kind === 'fader' ? 'FADER' : st.kind === 'output' ? 'OUTPUT' : st.kind === 'preamp' ? 'INPUT GAIN' : 'GAIN'}
                     value={(st.gain - st.min) / (st.max - st.min)}
@@ -297,7 +299,7 @@ export function TroubleshootModule(_p: GainModuleComponentProps) {
           <Text style={[styles.noteText, healthy && styles.noteTextGood]}>
             {healthy
               ? '✓ FIXED — healthy at every stage, master included. Take the green frame as your trophy.'
-              : `✓ FOUND — ${FAULT_EXPLAIN[round.faultKey]} Now bring every stage back into the healthy range.`}
+              : `✓ FOUND — ${FAULT_EXPLAIN[round.faultKey]} Tap a device to open its control and bring the chain back to healthy.`}
           </Text>
         </View>
       ) : null}
