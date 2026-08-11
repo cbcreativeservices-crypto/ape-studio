@@ -20,7 +20,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
-import { CableLink, DeviceCard, DeviceLeds, DeviceMeter, DragSlider, GainBtn } from '../gainViz';
+import { DeviceCard, DeviceLeds, DeviceMeter, DragSlider, GainBtn } from '../gainViz';
 import { chainIsHealthy, computeChain, meterFill, type ChainNode, type Stage } from '../gainEngine';
 import { levelColor } from '../../../../features/tools/levelColor';
 import type { GainModuleComponentProps } from './registry';
@@ -74,15 +74,8 @@ function DeviceRow({
   slider?: (key: string, v: number) => void;
 }) {
   return (
-    <DeviceCard
-      name={stage.name}
-      kind={stage.kind}
-      first={first}
-      last={last}
-      xray={xray}
-      headerRight={xray ? undefined : <DeviceLeds node={node} />}
-    >
-      {xray ? <DeviceMeter node={node} showLevel /> : null}
+    <DeviceCard name={stage.name} kind={stage.kind} first={first} last={last} xray={xray}>
+      {xray ? <DeviceMeter node={node} showLevel /> : <DeviceLeds node={node} />}
       {slider ? (
         <DragSlider
           label={stage.kind === 'fader' ? 'FADER' : stage.kind === 'output' ? 'OUTPUT' : stage.kind === 'preamp' ? 'INPUT GAIN' : 'GAIN'}
@@ -119,13 +112,12 @@ export function MultiStageModule(_p: GainModuleComponentProps) {
         <GainBtn label="RESET" onPress={() => setG(MULTI_START)} />
       </View>
       <View style={styles.chain}>
-        <DeviceCard name="Source" kind="source" first headerRight={xray ? undefined : <DeviceLeds node={nodes[0]} />}>
-          {xray ? <DeviceMeter node={nodes[0]} showLevel /> : null}
+        <DeviceCard name="Source" kind="source" first>
+          {xray ? <DeviceMeter node={nodes[0]} showLevel /> : <DeviceLeds node={nodes[0]} />}
           <Text style={styles.srcNote}>a quiet instrument/source — fixed</Text>
         </DeviceCard>
         {stages.map((st, i) => (
           <View key={st.key}>
-            <CableLink />
             <DeviceRow stage={st} node={nodes[i + 1]} last={i === stages.length - 1} xray={xray} slider={setGain} />
           </View>
         ))}
@@ -162,8 +154,8 @@ export function FreePlayModule(_p: GainModuleComponentProps) {
         <GainBtn label="RESET" onPress={() => { setSource(-30); setG({ pre: 20, eq: 0, comp: 0, fad: 0, bus: 0, out: 0 }); }} />
       </View>
       <View style={styles.chain}>
-        <DeviceCard name="Source" kind="source" first headerRight={xray ? undefined : <DeviceLeds node={nodes[0]} />}>
-          {xray ? <DeviceMeter node={nodes[0]} showLevel /> : null}
+        <DeviceCard name="Source" kind="source" first>
+          {xray ? <DeviceMeter node={nodes[0]} showLevel /> : <DeviceLeds node={nodes[0]} />}
           <DragSlider
             label="SOURCE LEVEL"
             value={(source + 40) / 38}
@@ -174,7 +166,6 @@ export function FreePlayModule(_p: GainModuleComponentProps) {
         </DeviceCard>
         {stages.map((st, i) => (
           <View key={st.key}>
-            <CableLink />
             <DeviceRow stage={st} node={nodes[i + 1]} last={i === stages.length - 1} xray={xray} slider={setGain} />
           </View>
         ))}
@@ -268,7 +259,6 @@ export function TroubleshootModule(_p: GainModuleComponentProps) {
           const open = found || isMaster || revealed === st.key;
           return (
             <View key={st.key}>
-              <CableLink />
               <DeviceCard
                 name={st.name}
                 kind={st.kind}
