@@ -140,33 +140,43 @@ function CornerScrews({ angles }: { angles: [number, number, number, number] }) 
 }
 
 /** SectionRackPanel — the Homework / Proficiency Check dividers as REAL rack
- *  hardware (owner 2026-08-11, from studio-rack reference photos): a VENTED
- *  BLANK PANEL — black-face texture, 4 corner screws, horizontal vent slots
- *  flanking the label — so the whole stack reads as one loaded studio rack. */
-function SectionRackPanel({ label, angles }: { label: string; angles: [number, number, number, number] }) {
+ *  hardware (owner 2026-08-11 rev2, per rack reference): a HALF-RU vented
+ *  blank — extra-dark face, ONE mounting screw per side (vertically centred,
+ *  like a 0.5U filler), BEEHIVE perforation flanking the centred LED label. */
+function SectionRackPanel({ label, angles }: { label: string; angles: [number, number] }) {
   return (
-    <ElevatedFrame contentStyle={[styles.methodInner, styles.sectionInner]}>
+    <ElevatedFrame contentStyle={styles.sectionInner}>
       <BlackFaceBg dark />
-      <CornerScrews angles={angles} />
+      <View style={[styles.sideScrew, { left: SCREW_INSET }]} pointerEvents="none">
+        <PanelScrew angle={angles[0]} size={RACK_SCREW} />
+      </View>
+      <View style={[styles.sideScrew, { right: SCREW_INSET }]} pointerEvents="none">
+        <PanelScrew angle={angles[1]} size={RACK_SCREW} />
+      </View>
       <View style={styles.methodRow}>
-        <VentSlats />
+        <VentHoles />
         <Text style={styles.sectionPanelText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
           {label}
         </Text>
-        <VentSlats />
+        <VentHoles />
       </View>
     </ElevatedFrame>
   );
 }
 
-/** A stack of horizontal vent slots — the punched cooling slats on a vented
- *  1U blank. Dark slot + light lower lip so each reads as a punched opening. */
-function VentSlats() {
+/** BEEHIVE venting — staggered rows of small punched round holes (honeycomb
+ *  pattern, like perforated rack blanks). Overflow-clipped so the field just
+ *  fills whatever width it gets. */
+function VentHoles() {
   return (
-    <View style={styles.ventCol}>
-      <View style={styles.ventSlot} />
-      <View style={styles.ventSlot} />
-      <View style={styles.ventSlot} />
+    <View style={styles.ventField}>
+      {[0, 1, 2].map((r) => (
+        <View key={r} style={[styles.ventHoleRow, r % 2 === 1 && styles.ventHoleRowStagger]}>
+          {Array.from({ length: 26 }, (_, i) => (
+            <View key={i} style={styles.ventHole} />
+          ))}
+        </View>
+      ))}
     </View>
   );
 }
@@ -233,10 +243,11 @@ const GRIT_SPECKS = (() => {
 // measured PIXEL space so the specks are round dots, not stretched streaks.
 function BlackFaceBg({ dark = false }: { dark?: boolean }) {
   const [size, setSize] = useState({ w: 0, h: 0 });
-  // Section (Homework / Proficiency) panels get a ~4-shades-darker gray coat so
-  // they read distinctly from the method/quiz panels (owner 2026-08-11).
+  // Section (Homework / Proficiency) panels get a MUCH darker gray coat (~7
+  // shades below the method panels — owner 2026-08-11 rev2: 3 more down from
+  // the earlier 4) so they read distinctly from the method/quiz panels.
   const gradId = dark ? 'apeGrayFaceDark' : 'apeGrayFace';
-  const stops = dark ? ['#26262a', '#323236', '#1a1a1e'] : ['#3a3a3e', '#46464b', '#2c2c30'];
+  const stops = dark ? ['#17171b', '#232327', '#0d0d11'] : ['#3a3a3e', '#46464b', '#2c2c30'];
   return (
     <View
       pointerEvents="none"
@@ -1267,7 +1278,7 @@ export function DashboardScreen() {
                   a vented blank rack panel, per the studio-rack reference. */}
               {m.key === 'fill_in_blank' ? (
                 <View style={styles.sectionPanelWrap}>
-                  <SectionRackPanel label="Homework" angles={[6, -5, -8, 4]} />
+                  <SectionRackPanel label="Homework" angles={[6, -5]} />
                 </View>
               ) : null}
               {/* All method panels share the SAME gray coat again (user request
@@ -1365,7 +1376,7 @@ export function DashboardScreen() {
 
         {/* Section header over the quiz (owner 2026-08-11) — a vented blank
             rack panel; marks the quiz as the proficiency gate for the topic. */}
-        <SectionRackPanel label="Proficiency Check" angles={[-6, 5, 7, -4]} />
+        <SectionRackPanel label="Proficiency Check" angles={[-6, 5]} />
 
         {/* Quiz — the 6th slot in the SAME rack (same tight gap, Booth
             2026-07-10 #4). Kept RAISED at all times (Booth 2026-07-11 #4): when
@@ -1938,9 +1949,16 @@ const styles = StyleSheet.create({
   // ElevatedFrame + black-face + screws as the method rows, with punched vent
   // slats flanking the engraved label. Height rides methodInner (equal slots).
   sectionPanelWrap: { marginBottom: 8 },
-  // Drop the labeled row into the panel's LOWER HALF (owner 2026-08-11) rather
-  // than vertical-centering it — overrides methodInner's justifyContent.
-  sectionInner: { justifyContent: 'flex-end', paddingBottom: rs(9) },
+  // HALF-RU filler panel (owner 2026-08-11 rev2): half the method-slot height,
+  // content back to vertical CENTER (the taller panel's lower-half bias is out).
+  sectionInner: {
+    minHeight: rs(40),
+    paddingVertical: rs(4),
+    paddingHorizontal: RACK_SCREW + 5,
+    justifyContent: 'center',
+  },
+  // The single per-side mounting screw, vertically centred like a 0.5U filler.
+  sideScrew: { position: 'absolute', top: '50%', marginTop: -RACK_SCREW / 2, zIndex: 3 },
   // Label typeface matches the LED-screen title (glassTitle): lit cool-white
   // with a soft blue backlight bloom, panel-display font (owner 2026-08-11).
   sectionPanelText: {
@@ -1955,15 +1973,18 @@ const styles = StyleSheet.create({
     textShadowRadius: 8,
     textShadowOffset: { width: 0, height: 0 },
   },
-  ventCol: { flex: 1, minWidth: 14, justifyContent: 'center', gap: rs(6), paddingHorizontal: 4 },
-  ventSlot: {
-    height: rs(4),
-    borderRadius: 2,
-    backgroundColor: '#0a0b0d',
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(0,0,0,0.9)',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.09)',
+  // Beehive perforation — staggered rows of punched round holes. The field
+  // clips its fixed-count rows to whatever width flex gives it.
+  ventField: { flex: 1, minWidth: 14, justifyContent: 'center', gap: 2.5, paddingHorizontal: 4, overflow: 'hidden' },
+  ventHoleRow: { flexDirection: 'row', gap: 3 },
+  ventHoleRowStagger: { marginLeft: 4 },
+  ventHole: {
+    width: 4.5,
+    height: 4.5,
+    borderRadius: 2.25,
+    backgroundColor: '#040506',
+    borderBottomWidth: 0.8,
+    borderBottomColor: 'rgba(255,255,255,0.10)',
   },
   // LA-2A texture layer (BlackFaceBg / BrushedMetalBg): absolutely fills the
   // panel behind its content. overflow:hidden + matching radius is a second clip
