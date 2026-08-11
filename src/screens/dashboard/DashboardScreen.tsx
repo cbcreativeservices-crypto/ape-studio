@@ -152,7 +152,7 @@ function CornerScrews({ angles }: { angles: [number, number, number, number] }) 
  *  like a 0.5U filler), BEEHIVE perforation flanking the centred LED label. */
 function SectionRackPanel({ label, angles }: { label: string; angles: [number, number] }) {
   return (
-    <ElevatedFrame contentStyle={styles.sectionInner}>
+    <ElevatedFrame borderless contentStyle={styles.sectionInner}>
       <BlackFaceBg dark />
       <View style={[styles.sideScrew, { left: SCREW_INSET }]} pointerEvents="none">
         <PanelScrew angle={angles[0]} size={RACK_SCREW} />
@@ -177,9 +177,19 @@ function SectionRackPanel({ label, angles }: { label: string; angles: [number, n
 function StencilLabel({ label }: { label: string }) {
   return (
     <View style={styles.stencilWrap}>
+      {/* light bleeding through the cut — wide soft bloom (dimmed) */}
       <Text style={[styles.stencilBase, styles.stencilGlow]} numberOfLines={1}>
         {label}
       </Text>
+      {/* TOP cut wall in shadow — the panel's thickness at the near edge */}
+      <Text style={[styles.stencilBase, styles.stencilWallTop]} numberOfLines={1}>
+        {label}
+      </Text>
+      {/* BOTTOM cut lip catching the front light — the far edge of the bore */}
+      <Text style={[styles.stencilBase, styles.stencilLipBottom]} numberOfLines={1}>
+        {label}
+      </Text>
+      {/* the glowing cut-out itself, recessed (light lower lip via its shadow) */}
       <Text style={[styles.stencilBase, styles.stencilFace]} numberOfLines={1}>
         {label}
       </Text>
@@ -1984,8 +1994,11 @@ const styles = StyleSheet.create({
   sideScrew: { position: 'absolute', top: '50%', marginTop: -RACK_SCREW / 2, zIndex: 3 },
   // Laser-cut stencil label lit from behind (owner 2026-08-11): two stacked
   // layers share this base; the wrap centres them and the glow layer fills it.
-  // Backlit stencil dimmed to 37% brightness (owner 2026-08-11).
-  stencilWrap: { flexShrink: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 10, opacity: 0.37 },
+  // Backlit laser-cut stencil with CUT-EDGE DEPTH (owner 2026-08-11). Four
+  // stacked layers: dim bloom behind → dark top wall → lit bottom lip → the
+  // recessed glowing cut on top. The panel reads as having real thickness, the
+  // light coming from below through the bore.
+  stencilWrap: { flexShrink: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 10 },
   stencilBase: {
     fontFamily: fonts.panelSemiBold,
     fontSize: rt(10.5),
@@ -1994,7 +2007,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     textShadowOffset: { width: 0, height: 0 },
   },
-  // Wide soft bloom BEHIND — light spilling out of the cut onto the dark panel.
+  // Wide soft bloom BEHIND — light spilling out of the cut onto the dark panel;
+  // dimmed to 37% brightness (owner 2026-08-11).
   stencilGlow: {
     position: 'absolute',
     left: 0,
@@ -2002,12 +2016,33 @@ const styles = StyleSheet.create({
     color: 'rgba(150,205,255,0.5)',
     textShadowColor: 'rgba(120,195,255,0.95)',
     textShadowRadius: 15,
+    opacity: 0.37,
   },
-  // The crisp bright cut-out itself, on top.
+  // TOP inner cut wall in shadow (panel thickness) — a black copy nudged UP so a
+  // dark rim sits at the letters' top edge.
+  stencilWallTop: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    color: '#000000',
+    transform: [{ translateY: -1.1 }],
+  },
+  // BOTTOM cut lip catching the front light — a bright copy nudged DOWN so a lit
+  // rim sits at the letters' bottom edge.
+  stencilLipBottom: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    color: 'rgba(205,230,255,0.85)',
+    transform: [{ translateY: 1.1 }],
+  },
+  // The glowing cut itself, recessed: a light lower lip via its own downward
+  // shadow sells the "pressed into / below the surface" read.
   stencilFace: {
-    color: '#eaf5ff',
-    textShadowColor: 'rgba(150,205,255,0.9)',
-    textShadowRadius: 5,
+    color: '#dfeeff',
+    textShadowColor: 'rgba(150,205,255,0.85)',
+    textShadowRadius: 4,
+    opacity: 0.62,
   },
   // Beehive perforation — staggered rows of punched round holes. The field
   // clips its fixed-count rows to whatever width flex gives it.

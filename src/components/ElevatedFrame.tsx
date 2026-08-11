@@ -99,6 +99,7 @@ export function ElevatedFrame({
   accent,
   chrome = false,
   dark = false,
+  borderless = false,
   children,
   contentStyle,
 }: {
@@ -111,6 +112,9 @@ export function ElevatedFrame({
   /** Deep-charcoal powder-coat variant (user request 2026-07-18 — the
    *  Flashcards panel ONLY; every other method keeps the default gray). */
   dark?: boolean;
+  /** Drop the thin edge border (owner 2026-08-11 — the section filler panels
+   *  read as bare cut blanks, no framed rim). */
+  borderless?: boolean;
   children: ReactNode;
   contentStyle?: StyleProp<ViewStyle>;
 }) {
@@ -120,6 +124,7 @@ export function ElevatedFrame({
         styles.outer,
         depressed ? styles.outerDepressed : styles.outerRaised,
         accent ? { borderColor: accent } : null,
+        borderless ? styles.outerBorderless : null,
       ]}
     >
       <View style={[styles.inner, chrome && styles.innerChrome, dark && styles.innerDark, contentStyle]}>
@@ -178,6 +183,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 5 },
     elevation: 7,
   },
+  outerBorderless: { borderWidth: 0 },
   outerDepressed: {
     // Seated in the rack — conveyed by edges/no-shadow ONLY. No seat margins:
     // rack gaps must be uniform (Booth 2026-07-10 #3).
