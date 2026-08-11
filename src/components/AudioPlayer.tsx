@@ -18,10 +18,18 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { requireOptionalNativeModule } from 'expo-modules-core';
-import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
 import { fonts } from '../theme/tokens';
 
 const AUDIO_AVAILABLE = requireOptionalNativeModule('ExpoAudio') != null;
+// Touch expo-audio ONLY when its native module is present. A STATIC import runs
+// expo-audio's own throwing requireNativeModule('ExpoAudio') at load time, which
+// crashes a dev client built before the module existed — so require it lazily
+// behind the availability flag (owner 2026-08-10 crash fix). `expoAudio` is
+// non-null exactly where <LivePlayer> is allowed to mount.
+const expoAudio: typeof import('expo-audio') | null = AUDIO_AVAILABLE
+  ? // eslint-disable-next-line @typescript-eslint/no-require-imports
+    require('expo-audio')
+  : null;
 
 const fmtTime = (s: number): string => {
   if (!isFinite(s) || s < 0) return '0:00';
@@ -38,8 +46,9 @@ export function AudioPlayer({ uri }: { uri: string | null }) {
 
 /** The real player — only mounted when the native module is available. */
 function LivePlayer({ uri }: { uri: string }) {
-  const player = useAudioPlayer({ uri });
-  const status = useAudioPlayerStatus(player);
+  // Safe: LivePlayer only renders when AUDIO_AVAILABLE, so expoAudio is set.
+  const player = expoAudio!.useAudioPlayer({ uri });
+  const status = expoAudio!.useAudioPlayerStatus(player);
   const [plays, setPlays] = useState(0);
 
   const ready = status.isLoaded;
