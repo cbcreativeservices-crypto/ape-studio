@@ -91,8 +91,16 @@ import type { RootStackParamList } from './types';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export function RootNavigator() {
+  // gestureEnabled:false is the app-wide DEFAULT (owner 2026-08-11): the iOS
+  // edge swipe-back was stealing full-width sliders' horizontal drags on every
+  // lab/tool/calc/module screen, since a slider's left end sits in the edge
+  // zone. Every screen here has a ‹ back button, so no navigation is lost.
+  // Screens that genuinely want a horizontal swipe own it via their OWN
+  // component gesture (e.g. full-screen flashcards in StudyStack) — unaffected
+  // by this navigator setting. Opt a single screen back IN with
+  // options={{ gestureEnabled: true }} if ever needed.
   return (
-    <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
+    <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false, gestureEnabled: false }}>
       <Stack.Screen name="Splash" component={SplashScreen} />
       <Stack.Screen name="Auth" component={AuthScreen} />
       <Stack.Screen name="Main" component={MainTabs} />
@@ -184,9 +192,7 @@ export function RootNavigator() {
       <Stack.Screen name="EqLabHome" component={EqLabHomeScreen} />
       <Stack.Screen name="EqModule" component={EqModuleScreen} />
       <Stack.Screen name="GainLabHome" component={GainLabHomeScreen} />
-      {/* gestureEnabled:false — the swipe-back gesture was stealing the gain
-          sliders' horizontal drags (owner 2026-08-10); back = ‹ button. */}
-      <Stack.Screen name="GainModule" component={GainModuleScreen} options={{ gestureEnabled: false }} />
+      <Stack.Screen name="GainModule" component={GainModuleScreen} />
       {/* Foundations of Sound — the Ear Lab's first module (course + sandbox). */}
       <Stack.Screen name="FoundationsCourse" component={FoundationsCourseScreen} />
       <Stack.Screen name="FoundationsPlayground" component={FoundationsPlaygroundScreen} />
