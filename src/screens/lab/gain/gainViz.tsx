@@ -230,6 +230,7 @@ export function DeviceCard({
   first,
   last,
   xray,
+  headerRight,
   onPress,
   children,
 }: {
@@ -239,24 +240,28 @@ export function DeviceCard({
   last?: boolean;
   /** X-Ray styling: scan-blue border + darkened face while revealed. */
   xray?: boolean;
+  /** Rendered right-aligned in the header row (compact status — SIG/CLIP LEDs)
+   *  so the device stays short (owner 2026-08-10). */
+  headerRight?: ReactNode;
   onPress?: () => void;
   children?: ReactNode;
 }) {
   const body = (
     <View style={[styles.device, xray && styles.deviceXray]}>
       {/* corner screws */}
-      <View style={[styles.screw, { top: 5, left: 5 }]} />
-      <View style={[styles.screw, { top: 5, right: 5 }]} />
-      <View style={[styles.screw, { bottom: 5, left: 5 }]} />
-      <View style={[styles.screw, { bottom: 5, right: 5 }]} />
+      <View style={[styles.screw, { top: 4, left: 4 }]} />
+      <View style={[styles.screw, { top: 4, right: 4 }]} />
+      <View style={[styles.screw, { bottom: 4, left: 4 }]} />
+      <View style={[styles.screw, { bottom: 4, right: 4 }]} />
       {/* jack labels — the signal path in/out of this box */}
-      {!first ? <Text style={[styles.jack, styles.jackIn]}>● INPUT</Text> : null}
-      {!last ? <Text style={[styles.jack, styles.jackOut]}>OUTPUT ●</Text> : null}
+      {!first ? <Text style={[styles.jack, styles.jackIn]}>● IN</Text> : null}
+      {!last ? <Text style={[styles.jack, styles.jackOut]}>OUT ●</Text> : null}
       <View style={styles.deviceHead}>
-        <StageIcon kind={kind} size={24} />
+        <StageIcon kind={kind} size={20} />
         <View style={styles.namePlate}>
           <Text style={styles.deviceName}>{name.toUpperCase()}</Text>
         </View>
+        {headerRight ? <View style={styles.deviceHeadRight}>{headerRight}</View> : null}
       </View>
       {children}
     </View>
@@ -304,22 +309,23 @@ export function DeviceMeter({ node, showLevel }: { node: ChainNode; showLevel?: 
  *  short strain-relief boot at each plug. Compact (24 px) so the whole chain
  *  fits on one screen. */
 export function CableLink() {
-  // The jacks sit at the right of each device; the cable connects them.
+  // The jacks sit at the right of each device; the cable runs STRAIGHT down
+  // from one OUTPUT to the next INPUT (owner 2026-08-10 — no bend/belly).
   const X = 268; // plug centre-x
-  const belly = 26; // how far the slack bows out to the right
+  const H = 16; // total cable height
   return (
     <View style={styles.cableWrap}>
-      <Svg width="100%" height={24} viewBox="0 0 320 24" preserveAspectRatio="xMaxYMid meet">
+      <Svg width="100%" height={H} viewBox={`0 0 320 ${H}`} preserveAspectRatio="xMaxYMid meet">
         {/* ── the cable itself: dark insulated sheath, sheen, then a slim red
              tracer to keep the app's signal-path idiom ── */}
-        <Path d={`M${X} 4 C ${X + belly} 8, ${X + belly} 16, ${X} 20`} stroke="#0b0b0d" strokeWidth={7} fill="none" strokeLinecap="round" />
-        <Path d={`M${X} 4 C ${X + belly} 8, ${X + belly} 16, ${X} 20`} stroke="#2c2f36" strokeWidth={5} fill="none" strokeLinecap="round" />
-        <Path d={`M${X} 5 C ${X + belly - 2} 8.5, ${X + belly - 2} 15.5, ${X} 19`} stroke="#5a5f6a" strokeWidth={1.3} fill="none" strokeLinecap="round" opacity={0.55} />
-        <Path d={`M${X} 4 C ${X + belly} 8, ${X + belly} 16, ${X} 20`} stroke="#c23a2d" strokeWidth={1} fill="none" strokeLinecap="round" opacity={0.7} />
+        <Path d={`M${X} 3 L ${X} 13`} stroke="#0b0b0d" strokeWidth={7} fill="none" strokeLinecap="round" />
+        <Path d={`M${X} 3 L ${X} 13`} stroke="#2c2f36" strokeWidth={5} fill="none" strokeLinecap="round" />
+        <Path d={`M${X - 1.4} 4 L ${X - 1.4} 12`} stroke="#5a5f6a" strokeWidth={1.3} fill="none" strokeLinecap="round" opacity={0.55} />
+        <Path d={`M${X} 3 L ${X} 13`} stroke="#c23a2d" strokeWidth={1} fill="none" strokeLinecap="round" opacity={0.7} />
         {/* ── TRS plug seated in the OUTPUT above (points UP) ── */}
         <Plug cx={X} y={0} dir="up" />
         {/* ── TRS plug seated in the INPUT below (points DOWN) ── */}
-        <Plug cx={X} y={24} dir="down" />
+        <Plug cx={X} y={H} dir="down" />
       </Svg>
     </View>
   );
@@ -467,18 +473,19 @@ const styles = StyleSheet.create({
   fixedTagText: { fontFamily: fonts.oswaldSemiBold, fontSize: 8.5, letterSpacing: 0.8, color: colors.textSub },
 
   // devices — compact so the whole chain fits (owner 2026-08-10)
-  device: { borderRadius: 10, borderWidth: 1.5, borderColor: '#34363e', backgroundColor: '#1a1c22', paddingTop: 7, paddingBottom: 6, paddingHorizontal: 14, gap: 5 },
+  device: { borderRadius: 10, borderWidth: 1.5, borderColor: '#34363e', backgroundColor: '#1a1c22', paddingTop: 5, paddingBottom: 5, paddingHorizontal: 14, gap: 4 },
   deviceXray: { borderColor: 'rgba(127,212,255,.55)', backgroundColor: '#10151b' },
-  screw: { position: 'absolute', width: 4.5, height: 4.5, borderRadius: 2.25, backgroundColor: '#55555f', borderWidth: 0.5, borderColor: '#0c0c0f' },
-  jack: { position: 'absolute', fontFamily: fonts.mono, fontSize: 7.5, color: '#8b8f97' },
-  jackIn: { top: 3, right: 14 },
-  jackOut: { bottom: 3, right: 14 },
+  screw: { position: 'absolute', width: 4, height: 4, borderRadius: 2, backgroundColor: '#55555f', borderWidth: 0.5, borderColor: '#0c0c0f' },
+  jack: { position: 'absolute', fontFamily: fonts.mono, fontSize: 7, color: '#8b8f97' },
+  jackIn: { top: 2, right: 12 },
+  jackOut: { bottom: 2, right: 12 },
   deviceHead: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  namePlate: { borderRadius: 4, borderWidth: 1, borderColor: '#2b2d35', backgroundColor: '#101216', paddingHorizontal: 7, paddingVertical: 2 },
+  deviceHeadRight: { marginLeft: 'auto' },
+  namePlate: { borderRadius: 4, borderWidth: 1, borderColor: '#2b2d35', backgroundColor: '#101216', paddingHorizontal: 7, paddingVertical: 1 },
   deviceName: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.1, color: colors.textPrimary },
 
-  // device LEDs
-  ledRow: { flexDirection: 'row', gap: 16, alignItems: 'center', marginTop: 1 },
+  // device LEDs — inline in the header (compact) so no separate row
+  ledRow: { flexDirection: 'row', gap: 12, alignItems: 'center' },
   ledItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   led: { width: 9, height: 9, borderRadius: 4.5, backgroundColor: '#23252d', borderWidth: 1, borderColor: '#0c0c0f' },
   ledSig: { backgroundColor: '#3fae52' },
@@ -495,7 +502,7 @@ const styles = StyleSheet.create({
   hVerdict: { fontFamily: fonts.barlowRegular, fontSize: 10.5, color: colors.textSub, flexShrink: 1 },
 
   // cable — compact patch cable between stacked devices
-  cableWrap: { height: 24, marginVertical: -1 },
+  cableWrap: { height: 16, marginVertical: -2 },
 
   // buttons
   btn: { borderRadius: 8, borderWidth: 1, borderColor: '#2c2c33', paddingHorizontal: 11, paddingVertical: 8, backgroundColor: '#17171c' },

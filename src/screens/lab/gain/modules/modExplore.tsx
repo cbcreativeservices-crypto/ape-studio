@@ -74,8 +74,15 @@ function DeviceRow({
   slider?: (key: string, v: number) => void;
 }) {
   return (
-    <DeviceCard name={stage.name} kind={stage.kind} first={first} last={last} xray={xray}>
-      {xray ? <DeviceMeter node={node} showLevel /> : <DeviceLeds node={node} />}
+    <DeviceCard
+      name={stage.name}
+      kind={stage.kind}
+      first={first}
+      last={last}
+      xray={xray}
+      headerRight={xray ? undefined : <DeviceLeds node={node} />}
+    >
+      {xray ? <DeviceMeter node={node} showLevel /> : null}
       {slider ? (
         <DragSlider
           label={stage.kind === 'fader' ? 'FADER' : stage.kind === 'output' ? 'OUTPUT' : stage.kind === 'preamp' ? 'INPUT GAIN' : 'GAIN'}
@@ -112,8 +119,8 @@ export function MultiStageModule(_p: GainModuleComponentProps) {
         <GainBtn label="RESET" onPress={() => setG(MULTI_START)} />
       </View>
       <View style={styles.chain}>
-        <DeviceCard name="Source" kind="source" first>
-          {xray ? <DeviceMeter node={nodes[0]} showLevel /> : <DeviceLeds node={nodes[0]} />}
+        <DeviceCard name="Source" kind="source" first headerRight={xray ? undefined : <DeviceLeds node={nodes[0]} />}>
+          {xray ? <DeviceMeter node={nodes[0]} showLevel /> : null}
           <Text style={styles.srcNote}>a quiet instrument/source — fixed</Text>
         </DeviceCard>
         {stages.map((st, i) => (
@@ -155,8 +162,8 @@ export function FreePlayModule(_p: GainModuleComponentProps) {
         <GainBtn label="RESET" onPress={() => { setSource(-30); setG({ pre: 20, eq: 0, comp: 0, fad: 0, bus: 0, out: 0 }); }} />
       </View>
       <View style={styles.chain}>
-        <DeviceCard name="Source" kind="source" first>
-          {xray ? <DeviceMeter node={nodes[0]} showLevel /> : <DeviceLeds node={nodes[0]} />}
+        <DeviceCard name="Source" kind="source" first headerRight={xray ? undefined : <DeviceLeds node={nodes[0]} />}>
+          {xray ? <DeviceMeter node={nodes[0]} showLevel /> : null}
           <DragSlider
             label="SOURCE LEVEL"
             value={(source + 40) / 38}
