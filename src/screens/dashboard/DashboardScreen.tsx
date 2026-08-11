@@ -1871,8 +1871,10 @@ const styles = StyleSheet.create({
   // minHeight; the 58px content row centers, so icon/title/LED/button still
   // share top+bottom edges (Booth 2026-07-11 #4/#5).
   methodInner: { paddingVertical: 6, paddingHorizontal: 8, minHeight: 80, justifyContent: 'center' },
-  // Thin borderless section labels between method rows (owner 2026-08-11).
-  sectionDivider: { paddingVertical: 5, alignItems: 'center', justifyContent: 'center' },
+  // Section labels between method rows (owner 2026-08-11). Borderless + centered,
+  // now matched to the method/quiz container height (ElevatedFrame inner
+  // minHeight 80 + 1px borders ≈ 82) so every rack slot is equal height.
+  sectionDivider: { minHeight: 82, paddingVertical: 5, alignItems: 'center', justifyContent: 'center' },
   sectionDividerText: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 12,
