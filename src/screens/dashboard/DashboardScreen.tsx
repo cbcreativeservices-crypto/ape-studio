@@ -107,7 +107,14 @@ const RACK_QUIZ_SWITCH_H = rs(58);
 // 19" mounting screw head, sized to the scaled rack. The 4 screws are pinned to
 // the panel CORNERS (absolute), not carried in the content row (owner 2026-08-11).
 const RACK_SCREW = rs(15);
-const SCREW_INSET = 3;
+const SCREW_INSET = 3; // horizontal inset from the rail edge
+// Vertical hole geometry (EIA-310): a 1U panel's two screws sit in the top &
+// bottom holes of its U — hole CENTERS 0.25" in from each edge on a 1.75" U =
+// 14.3%, giving the real 71.4% center-to-center. Inset the screw BOX so its
+// CENTER lands at 14.3% (subtract the screw radius). Proportional to rs(80) so
+// it stays true at any RACK_SCALE — a fixed px inset drifted as panels grew
+// (owner 2026-08-11).
+const SCREW_VINSET = Math.max(2, Math.round(rs(80) * 0.143 - RACK_SCREW / 2));
 
 const METHOD_ORDER: { key: MethodKey; label: string }[] = [
   { key: 'flashcards', label: 'FLASHCARDS' },
@@ -123,16 +130,16 @@ const METHOD_ORDER: { key: MethodKey; label: string }[] = [
 function CornerScrews({ angles }: { angles: [number, number, number, number] }) {
   return (
     <>
-      <View style={[styles.cornerScrew, { top: SCREW_INSET, left: SCREW_INSET }]} pointerEvents="none">
+      <View style={[styles.cornerScrew, { top: SCREW_VINSET, left: SCREW_INSET }]} pointerEvents="none">
         <PanelScrew angle={angles[0]} size={RACK_SCREW} />
       </View>
-      <View style={[styles.cornerScrew, { top: SCREW_INSET, right: SCREW_INSET }]} pointerEvents="none">
+      <View style={[styles.cornerScrew, { top: SCREW_VINSET, right: SCREW_INSET }]} pointerEvents="none">
         <PanelScrew angle={angles[1]} size={RACK_SCREW} />
       </View>
-      <View style={[styles.cornerScrew, { bottom: SCREW_INSET, left: SCREW_INSET }]} pointerEvents="none">
+      <View style={[styles.cornerScrew, { bottom: SCREW_VINSET, left: SCREW_INSET }]} pointerEvents="none">
         <PanelScrew angle={angles[2]} size={RACK_SCREW} />
       </View>
-      <View style={[styles.cornerScrew, { bottom: SCREW_INSET, right: SCREW_INSET }]} pointerEvents="none">
+      <View style={[styles.cornerScrew, { bottom: SCREW_VINSET, right: SCREW_INSET }]} pointerEvents="none">
         <PanelScrew angle={angles[3]} size={RACK_SCREW} />
       </View>
     </>
