@@ -93,6 +93,15 @@ import { loadAllLocalMethodStates, mergeItemStates } from '../../features/study/
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { fetchCommercialDashboard, getLastPublicCourse } from '../../features/commercial/commercialDashboard';
 
+// Rack density (owner 2026-08-11): ONE knob scales every rack slot's height
+// together — method rows, quiz, and the section labels — so the whole stack
+// fits on screen without scrolling. Lower = shorter/denser. Tune here only.
+const RACK_SCALE = 0.66;
+const rs = (n: number) => Math.round(n * RACK_SCALE);
+const RACK_ICON = rs(43);
+const RACK_SWITCH_H = rs(54);
+const RACK_QUIZ_SWITCH_H = rs(58);
+
 const METHOD_ORDER: { key: MethodKey; label: string }[] = [
   { key: 'flashcards', label: 'FLASHCARDS' },
   { key: 'fill_in_blank', label: 'FILL-IN-BLANK' },
@@ -1156,7 +1165,7 @@ export function DashboardScreen() {
                 label="Study"
                 variant="primary"
                 width={96}
-                height={58}
+                height={RACK_QUIZ_SWITCH_H}
                 disabled={starred.size === 0}
                 onPress={() =>
                   navigation.navigate('Flashcards', {
@@ -1219,7 +1228,7 @@ export function DashboardScreen() {
                     <View style={styles.iconSticker}>
                       <MethodIcon
                         method={m.key}
-                        size={43}
+                        size={RACK_ICON}
                         // Glyph ALWAYS lit (owner) — same as the quiz icon; only
                         // the frame lights on completion. (Was graying out the
                         // non-applicable methods — flashcards / fill-in-blank /
@@ -1253,7 +1262,7 @@ export function DashboardScreen() {
                       label={pct >= 100 ? 'Review' : pct <= 0 ? 'Start' : 'Continue'}
                       variant={pct >= 100 ? 'success' : pct <= 0 ? 'outline' : 'primary'}
                       width={89}
-                      height={54}
+                      height={RACK_SWITCH_H}
                       onPress={() => {
                         const routeName = STUDY_ROUTES[m.key];
                         if (routeName) {
@@ -1269,7 +1278,7 @@ export function DashboardScreen() {
                       label="Open"
                       variant="outline"
                       width={89}
-                      height={54}
+                      height={RACK_SWITCH_H}
                       onPress={() => {
                         const routeName = STUDY_ROUTES[m.key];
                         if (routeName) {
@@ -1281,7 +1290,7 @@ export function DashboardScreen() {
                     // Inactive slots carry the SAME action button as a CLEAR,
                     // UNLIT cap (not grey) — a DEAD switch: it travels + clicks
                     // on touch but opens nothing (Booth 2026-07-11).
-                    <SwitchButton label="" variant="clear" width={89} height={54} disabled />
+                    <SwitchButton label="" variant="clear" width={89} height={RACK_SWITCH_H} disabled />
                   )}
                   {/* right mounting screw — buttons nudged left for padding */}
                   <View style={{ marginLeft: 3 }}>
@@ -1348,7 +1357,7 @@ export function DashboardScreen() {
                         method="quiz"
                         // Same size + border layout as the method icons (owner
                         // 2026-08-06 — the 46px quiz tile read too large).
-                        size={43}
+                        size={RACK_ICON}
                         // PASSED → the whole icon goes GREEN, glyph AND border
                         // (owner 2026-08-06). The border stays the faint default
                         // line until then — a lit colored border means DONE.
@@ -1376,7 +1385,7 @@ export function DashboardScreen() {
                     }
                     variant={quizState === 'passed' ? 'success' : 'primary'}
                     width={96}
-                    height={58}
+                    height={RACK_QUIZ_SWITCH_H}
                     disabled={quizState === 'locked'}
                     onPress={() =>
                       navigation.navigate('Quiz', { achievementId: topic.id, topicName: topic.name })
@@ -1870,11 +1879,11 @@ const styles = StyleSheet.create({
   // Real 500-series blank-panel proportion (~3.5:1 on its side) restored via
   // minHeight; the 58px content row centers, so icon/title/LED/button still
   // share top+bottom edges (Booth 2026-07-11 #4/#5).
-  methodInner: { paddingVertical: 6, paddingHorizontal: 8, minHeight: 80, justifyContent: 'center' },
+  methodInner: { paddingVertical: rs(6), paddingHorizontal: 8, minHeight: rs(80), justifyContent: 'center' },
   // Section labels between method rows (owner 2026-08-11). Borderless + centered,
   // now matched to the method/quiz container height (ElevatedFrame inner
   // minHeight 80 + 1px borders ≈ 82) so every rack slot is equal height.
-  sectionDivider: { minHeight: 82, paddingVertical: 5, alignItems: 'center', justifyContent: 'center' },
+  sectionDivider: { minHeight: rs(82), paddingVertical: 4, alignItems: 'center', justifyContent: 'center' },
   sectionDividerText: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 12,
@@ -1925,7 +1934,7 @@ const styles = StyleSheet.create({
   methodRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   // Column spans the button height; title at top, LED at bottom → their edges
   // align with the button's top/bottom.
-  methodLeft: { flex: 1, height: 58, justifyContent: 'center' },
+  methodLeft: { flex: 1, height: rs(58), justifyContent: 'center' },
   // LED instrument screen behind one continuous glass panel (owner 2026-08-06).
   glassScreen: { flex: 1, alignSelf: 'stretch', overflow: 'hidden', backgroundColor: '#050608', borderRadius: 3 },
   // Bottom padding > top (owner 2026-08-06): lifts the LED meter off the glass
@@ -2135,10 +2144,10 @@ const styles = StyleSheet.create({
   // supplies the panel-cut edges (replacing the old thin 1px border) and the
   // face matches the glass screens' dark tone; GlassCover lays the pane on top.
   iconWell: {
-    width: 54,
-    // Same height as the title glass container (methodLeft = 58, owner
-    // 2026-08-06) so the two panes read as one row of matched instruments.
-    height: 58,
+    width: rs(54),
+    // Same height as the title glass container (methodLeft) so the two panes
+    // read as one row of matched instruments (owner 2026-08-06).
+    height: rs(58),
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
@@ -2148,8 +2157,8 @@ const styles = StyleSheet.create({
   // TILE's own border, Booth 2026-07-11 #1). Sized so the enlarged 46px tile
   // (#7) sits with a small black margin inside the 58 well.
   iconSticker: {
-    width: 50,
-    height: 50,
+    width: rs(50),
+    height: rs(50),
     borderRadius: 3,
     alignItems: 'center',
     justifyContent: 'center',
