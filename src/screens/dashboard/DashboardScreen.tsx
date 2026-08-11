@@ -162,12 +162,28 @@ function SectionRackPanel({ label, angles }: { label: string; angles: [number, n
       </View>
       <View style={styles.methodRow}>
         <VentHoles />
-        <Text style={styles.sectionPanelText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
-          {label}
-        </Text>
+        <StencilLabel label={label} />
         <VentHoles />
       </View>
     </ElevatedFrame>
+  );
+}
+
+/** StencilLabel — the label rendered as a LASER-CUT STENCIL in the panel, lit
+ *  from BEHIND (owner 2026-08-11): a wide soft bloom (light bleeding out of the
+ *  cut onto the dark panel) with a crisp bright letter on top (the cutout
+ *  itself). The dark section panel sits above the glow, so the type reads as
+ *  light coming through sharp cut-outs, not ink printed on the face. */
+function StencilLabel({ label }: { label: string }) {
+  return (
+    <View style={styles.stencilWrap}>
+      <Text style={[styles.stencilBase, styles.stencilGlow]} numberOfLines={1}>
+        {label}
+      </Text>
+      <Text style={[styles.stencilBase, styles.stencilFace]} numberOfLines={1}>
+        {label}
+      </Text>
+    </View>
   );
 }
 
@@ -1966,19 +1982,31 @@ const styles = StyleSheet.create({
   },
   // The single per-side mounting screw, vertically centred like a 0.5U filler.
   sideScrew: { position: 'absolute', top: '50%', marginTop: -RACK_SCREW / 2, zIndex: 3 },
-  // Label typeface matches the LED-screen title (glassTitle): lit cool-white
-  // with a soft blue backlight bloom, panel-display font (owner 2026-08-11).
-  sectionPanelText: {
+  // Laser-cut stencil label lit from behind (owner 2026-08-11): two stacked
+  // layers share this base; the wrap centres them and the glow layer fills it.
+  stencilWrap: { flexShrink: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 10 },
+  stencilBase: {
     fontFamily: fonts.panelSemiBold,
     fontSize: rt(10.5),
+    lineHeight: rt(13),
     letterSpacing: 1,
-    color: '#d3e0f0',
     textAlign: 'center',
-    paddingHorizontal: 10,
-    flexShrink: 1,
-    textShadowColor: 'rgba(150,190,235,0.6)',
-    textShadowRadius: 8,
     textShadowOffset: { width: 0, height: 0 },
+  },
+  // Wide soft bloom BEHIND — light spilling out of the cut onto the dark panel.
+  stencilGlow: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    color: 'rgba(150,205,255,0.5)',
+    textShadowColor: 'rgba(120,195,255,0.95)',
+    textShadowRadius: 15,
+  },
+  // The crisp bright cut-out itself, on top.
+  stencilFace: {
+    color: '#eaf5ff',
+    textShadowColor: 'rgba(150,205,255,0.9)',
+    textShadowRadius: 5,
   },
   // Beehive perforation — staggered rows of punched round holes. The field
   // clips its fixed-count rows to whatever width flex gives it.
