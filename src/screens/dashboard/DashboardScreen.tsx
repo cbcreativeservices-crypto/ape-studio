@@ -98,16 +98,16 @@ import { fetchCommercialDashboard, getLastPublicCourse } from '../../features/co
 // fits on screen without scrolling. Lower = shorter/denser. Tune here only.
 const RACK_SCALE = 0.73;
 const rs = (n: number) => Math.round(n * RACK_SCALE);
-// Text shrinks HALF as hard as the chassis (readability floor) — used for the
-// glass-screen readout type so it rebalances with RACK_SCALE instead of
-// clipping inside the shorter panels (owner 2026-08-11).
-const rt = (n: number) => Math.round(n * (0.5 + RACK_SCALE / 2));
+// Glass-screen readout type scales WITH the chassis (owner 2026-08-11 — the
+// softer half-scale left it too big for the shorter panels).
+const rt = (n: number) => Math.round(n * RACK_SCALE);
 const RACK_ICON = rs(43);
 const RACK_SWITCH_H = rs(54);
 const RACK_QUIZ_SWITCH_H = rs(58);
-// 19"-rack mounting screws: two per corner-column now (4 corners per panel),
-// sized to the scaled rack so the head reads ~1U-proportional.
-const RACK_SCREW = rs(17);
+// 19" mounting screw head, sized to the scaled rack. The 4 screws are pinned to
+// the panel CORNERS (absolute), not carried in the content row (owner 2026-08-11).
+const RACK_SCREW = rs(15);
+const SCREW_INSET = 3;
 
 const METHOD_ORDER: { key: MethodKey; label: string }[] = [
   { key: 'flashcards', label: 'FLASHCARDS' },
@@ -116,34 +116,44 @@ const METHOD_ORDER: { key: MethodKey; label: string }[] = [
   { key: 'scenarios', label: 'SCENARIOS' },
 ];
 
-/** ScrewPair — a 19" rack panel's CORNER mounting pair (owner 2026-08-11):
- *  two screws stacked at the panel's top and bottom edge, so with one column
- *  per side every panel bolts at all four corners like real hardware. */
-function ScrewPair({ top, bottom, side }: { top: number; bottom: number; side: 'left' | 'right' }) {
+/** CornerScrews — the four 19" rack mounting screws, ABSOLUTELY pinned to the
+ *  panel's corners (owner 2026-08-11) so they always sit top-left/top-right/
+ *  bottom-left/bottom-right regardless of how tall the content row is. `angles`
+ *  = [TL, TR, BL, BR], each a hair off-true like a hand-mounted rack. */
+function CornerScrews({ angles }: { angles: [number, number, number, number] }) {
   return (
-    <View style={[styles.screwCol, side === 'left' ? { marginRight: 3 } : { marginLeft: 3 }]}>
-      <PanelScrew angle={top} size={RACK_SCREW} />
-      <PanelScrew angle={bottom} size={RACK_SCREW} />
-    </View>
+    <>
+      <View style={[styles.cornerScrew, { top: SCREW_INSET, left: SCREW_INSET }]} pointerEvents="none">
+        <PanelScrew angle={angles[0]} size={RACK_SCREW} />
+      </View>
+      <View style={[styles.cornerScrew, { top: SCREW_INSET, right: SCREW_INSET }]} pointerEvents="none">
+        <PanelScrew angle={angles[1]} size={RACK_SCREW} />
+      </View>
+      <View style={[styles.cornerScrew, { bottom: SCREW_INSET, left: SCREW_INSET }]} pointerEvents="none">
+        <PanelScrew angle={angles[2]} size={RACK_SCREW} />
+      </View>
+      <View style={[styles.cornerScrew, { bottom: SCREW_INSET, right: SCREW_INSET }]} pointerEvents="none">
+        <PanelScrew angle={angles[3]} size={RACK_SCREW} />
+      </View>
+    </>
   );
 }
 
 /** SectionRackPanel — the Homework / Proficiency Check dividers as REAL rack
  *  hardware (owner 2026-08-11, from studio-rack reference photos): a VENTED
- *  BLANK PANEL — black-face texture, corner screws, horizontal vent slots
+ *  BLANK PANEL — black-face texture, 4 corner screws, horizontal vent slots
  *  flanking the label — so the whole stack reads as one loaded studio rack. */
-function SectionRackPanel({ label, screwAngles }: { label: string; screwAngles: [number, number] }) {
+function SectionRackPanel({ label, angles }: { label: string; angles: [number, number, number, number] }) {
   return (
     <ElevatedFrame contentStyle={styles.methodInner}>
       <BlackFaceBg />
+      <CornerScrews angles={angles} />
       <View style={styles.methodRow}>
-        <ScrewPair side="left" top={screwAngles[0]} bottom={screwAngles[1]} />
         <VentSlats />
         <Text style={styles.sectionPanelText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
           {label}
         </Text>
         <VentSlats />
-        <ScrewPair side="right" top={screwAngles[1]} bottom={screwAngles[0]} />
       </View>
     </ElevatedFrame>
   );
@@ -1253,7 +1263,7 @@ export function DashboardScreen() {
                   a vented blank rack panel, per the studio-rack reference. */}
               {m.key === 'fill_in_blank' ? (
                 <View style={styles.sectionPanelWrap}>
-                  <SectionRackPanel label="Homework" screwAngles={[30, 75]} />
+                  <SectionRackPanel label="Homework" angles={[6, -5, -8, 4]} />
                 </View>
               ) : null}
               {/* All method panels share the SAME gray coat again (user request
@@ -1263,12 +1273,12 @@ export function DashboardScreen() {
                     request 2026-07-25): near-black matte face + faint vertical
                     brushed grain. Existing light-on-black content is unchanged. */}
                 <BlackFaceBg />
+                {/* 4 corner mounting screws pinned to the panel corners (owner 2026-08-11) */}
+                <CornerScrews angles={[SCREW_ROT[i][0], SCREW_ROT[i][1], SCREW_ROT[i][1], SCREW_ROT[i][0]]} />
                 {/* Layout (Booth 2026-07-09e): a flex LEFT column (title row +
                     a PARTIAL-width LED meter) with a SQUARE action button on the
                     right. The LED no longer spans the full container width. */}
                 <View style={styles.methodRow}>
-                  {/* corner mounting screws — 19" rack pair per side (owner 2026-08-11) */}
-                  <ScrewPair side="left" top={SCREW_ROT[i][0]} bottom={SCREW_ROT[i][1]} />
                   {/* Icon in its recessed well. The glyph is always lit; the
                       ICON TILE's own thin line stays OFF (default faint line)
                       while the method still needs work, and LIGHTS (70% glow)
@@ -1343,8 +1353,6 @@ export function DashboardScreen() {
                     // on touch but opens nothing (Booth 2026-07-11).
                     <SwitchButton label="" variant="clear" width={89} height={RACK_SWITCH_H} disabled />
                   )}
-                  {/* right corner pair — buttons nudged left for padding */}
-                  <ScrewPair side="right" top={SCREW_ROT[i][1]} bottom={SCREW_ROT[i][0]} />
                 </View>
               </ElevatedFrame>
             </View>
@@ -1353,7 +1361,7 @@ export function DashboardScreen() {
 
         {/* Section header over the quiz (owner 2026-08-11) — a vented blank
             rack panel; marks the quiz as the proficiency gate for the topic. */}
-        <SectionRackPanel label="Proficiency Check" screwAngles={[60, 15]} />
+        <SectionRackPanel label="Proficiency Check" angles={[-6, 5, 7, -4]} />
 
         {/* Quiz — the 6th slot in the SAME rack (same tight gap, Booth
             2026-07-10 #4). Kept RAISED at all times (Booth 2026-07-11 #4): when
@@ -1365,6 +1373,7 @@ export function DashboardScreen() {
           {/* Gray textured rack-blank face, same as the method panels (owner
               2026-08-01) — the quiz now matches the rest of the rack. */}
           <BlackFaceBg />
+          <CornerScrews angles={[0, 5, -4, 3]} />
           {quizState === 'locked' && (
             <Animated.View pointerEvents="none" style={[styles.quizPulseBorder, { opacity: pulseOpacity }]} />
           )}
@@ -1395,7 +1404,6 @@ export function DashboardScreen() {
             return (
               <>
                 <View style={styles.methodRow}>
-                  <ScrewPair side="left" top={0} bottom={42} />
                   <View style={[styles.cutoutMount, styles.iconWell]}>
                     <View style={styles.iconSticker}>
                       <MethodIcon
@@ -1436,7 +1444,6 @@ export function DashboardScreen() {
                       navigation.navigate('Quiz', { achievementId: topic.id, topicName: topic.name })
                     }
                   />
-                  <ScrewPair side="right" top={90} bottom={27} />
                 </View>
 
                 {/* Detailed gate lines below the aligned row when locked. */}
@@ -1922,7 +1929,7 @@ const styles = StyleSheet.create({
   // Real 500-series blank-panel proportion (~3.5:1 on its side) restored via
   // minHeight; the 58px content row centers, so icon/title/LED/button still
   // share top+bottom edges (Booth 2026-07-11 #4/#5).
-  methodInner: { paddingVertical: rs(6), paddingHorizontal: 8, minHeight: rs(80), justifyContent: 'center' },
+  methodInner: { paddingVertical: rs(6), paddingHorizontal: RACK_SCREW + 5, minHeight: rs(80), justifyContent: 'center' },
   // Section dividers as VENTED BLANK RACK PANELS (owner 2026-08-11): same
   // ElevatedFrame + black-face + screws as the method rows, with punched vent
   // slats flanking the engraved label. Height rides methodInner (equal slots).
@@ -1991,9 +1998,9 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 10,
   },
   methodRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  // Corner mounting column — stretches the panel height so its two screws sit
-  // at the top and bottom corners like a real 19" rack ear (owner 2026-08-11).
-  screwCol: { alignSelf: 'stretch', justifyContent: 'space-between', paddingVertical: 1 },
+  // A single corner-pinned mounting screw (owner 2026-08-11). Absolute so it
+  // always lands at the true panel corner regardless of content-row height.
+  cornerScrew: { position: 'absolute', zIndex: 3 },
   // Column spans the button height; title at top, LED at bottom → their edges
   // align with the button's top/bottom.
   methodLeft: { flex: 1, height: rs(58), justifyContent: 'center' },
