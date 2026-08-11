@@ -29,6 +29,7 @@ function midiColorFor(i: number): string {
 export function LedMeter({
   filled,
   segWidth,
+  segHeight,
   fullWidth = false,
   vertical = false,
   flat = false,
@@ -37,6 +38,9 @@ export function LedMeter({
   filled: number;
   /** Fixed per-segment width → the meter self-sizes (compact panel mode). */
   segWidth?: number;
+  /** Override the horizontal segment height (default 10) — the Dashboard's
+   *  scaled rack passes its RACK_SCALE-derived height (owner 2026-08-11). */
+  segHeight?: number;
   /** Fill 100% of the parent (panel mode, Booth 2026-07-10 #7 — the meter's
    *  edges align with the title readout's edges). Taller raised blocks. */
   fullWidth?: boolean;
@@ -74,10 +78,10 @@ export function LedMeter({
               vertical
                 ? styles.segVert
                 : segWidth != null
-                  ? { width: segWidth, height: 10, borderRadius: 1 }
+                  ? { width: segWidth, height: segHeight ?? 10, borderRadius: 1 }
                   : fullWidth
-                    ? styles.segFull
-                    : styles.seg,
+                    ? [styles.segFull, segHeight != null && { height: segHeight }]
+                    : [styles.seg, segHeight != null && { height: segHeight }],
               // Raised physical LED block (Booth 2026-07-10): beveled edges —
               // lit top-left, shadowed bottom-right — like a bar you could
               // feel standing proud of the housing (reference: VU/PPM meter).

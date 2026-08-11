@@ -98,9 +98,16 @@ import { fetchCommercialDashboard, getLastPublicCourse } from '../../features/co
 // fits on screen without scrolling. Lower = shorter/denser. Tune here only.
 const RACK_SCALE = 0.73;
 const rs = (n: number) => Math.round(n * RACK_SCALE);
+// Text shrinks HALF as hard as the chassis (readability floor) — used for the
+// glass-screen readout type so it rebalances with RACK_SCALE instead of
+// clipping inside the shorter panels (owner 2026-08-11).
+const rt = (n: number) => Math.round(n * (0.5 + RACK_SCALE / 2));
 const RACK_ICON = rs(43);
 const RACK_SWITCH_H = rs(54);
 const RACK_QUIZ_SWITCH_H = rs(58);
+// 19"-rack mounting screws: two per corner-column now (4 corners per panel),
+// sized to the scaled rack so the head reads ~1U-proportional.
+const RACK_SCREW = rs(17);
 
 const METHOD_ORDER: { key: MethodKey; label: string }[] = [
   { key: 'flashcards', label: 'FLASHCARDS' },
@@ -108,6 +115,18 @@ const METHOD_ORDER: { key: MethodKey; label: string }[] = [
   { key: 'matching', label: 'MATCHING' },
   { key: 'scenarios', label: 'SCENARIOS' },
 ];
+
+/** ScrewPair — a 19" rack panel's CORNER mounting pair (owner 2026-08-11):
+ *  two screws stacked at the panel's top and bottom edge, so with one column
+ *  per side every panel bolts at all four corners like real hardware. */
+function ScrewPair({ top, bottom, side }: { top: number; bottom: number; side: 'left' | 'right' }) {
+  return (
+    <View style={[styles.screwCol, side === 'left' ? { marginRight: 3 } : { marginLeft: 3 }]}>
+      <PanelScrew angle={top} size={RACK_SCREW} />
+      <PanelScrew angle={bottom} size={RACK_SCREW} />
+    </View>
+  );
+}
 
 /** SectionRackPanel — the Homework / Proficiency Check dividers as REAL rack
  *  hardware (owner 2026-08-11, from studio-rack reference photos): a VENTED
@@ -118,17 +137,13 @@ function SectionRackPanel({ label, screwAngles }: { label: string; screwAngles: 
     <ElevatedFrame contentStyle={styles.methodInner}>
       <BlackFaceBg />
       <View style={styles.methodRow}>
-        <View style={{ marginRight: 3 }}>
-          <PanelScrew angle={screwAngles[0]} />
-        </View>
+        <ScrewPair side="left" top={screwAngles[0]} bottom={screwAngles[1]} />
         <VentSlats />
         <Text style={styles.sectionPanelText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
           {label}
         </Text>
         <VentSlats />
-        <View style={{ marginLeft: 3 }}>
-          <PanelScrew angle={screwAngles[1]} />
-        </View>
+        <ScrewPair side="right" top={screwAngles[1]} bottom={screwAngles[0]} />
       </View>
     </ElevatedFrame>
   );
@@ -255,9 +270,9 @@ function BlackFaceBg() {
 /** Panel mounting screw (Booth 2026-07-10) — BLACK phillips head. `angle`
  *  rotates the slots: mostly cardinal, a few a hair off-true like a real rack
  *  (#4). */
-function PanelScrew({ angle = 0 }: { angle?: number }) {
+function PanelScrew({ angle = 0, size = 15 }: { angle?: number; size?: number }) {
   return (
-    <Svg width={15} height={15} viewBox="0 0 14 14" style={{ transform: [{ rotate: `${angle}deg` }] }}>
+    <Svg width={size} height={size} viewBox="0 0 14 14" style={{ transform: [{ rotate: `${angle}deg` }] }}>
       <Circle cx={7} cy={7} r={6.4} fill="#131416" stroke="#000000" strokeWidth={0.9} />
       <Circle cx={7} cy={7} r={5} fill="#1e1f22" />
       <Circle cx={5.2} cy={5} r={1.8} fill="rgba(255,255,255,0.10)" />
@@ -345,8 +360,9 @@ function GlassScreen({
         </View>
         {segments != null ? (
           // flat: behind the glass the meter is lit segments only — no bevel,
-          // no molded frame (owner 2026-08-06).
-          <LedMeter filled={segments} fullWidth flat />
+          // no molded frame (owner 2026-08-06). Segment height rides RACK_SCALE
+          // so the strip stays balanced in the shorter screen (owner 2026-08-11).
+          <LedMeter filled={segments} fullWidth flat segHeight={rs(10)} />
         ) : subtitle != null ? (
           <Text
             style={[styles.glassSub, { color: subtitleColor ?? valueColor, textShadowColor: subtitleColor ?? valueColor }]}
@@ -1251,10 +1267,8 @@ export function DashboardScreen() {
                     a PARTIAL-width LED meter) with a SQUARE action button on the
                     right. The LED no longer spans the full container width. */}
                 <View style={styles.methodRow}>
-                  {/* left mounting screw — a touch of breathing room */}
-                  <View style={{ marginRight: 3 }}>
-                    <PanelScrew angle={SCREW_ROT[i][0]} />
-                  </View>
+                  {/* corner mounting screws — 19" rack pair per side (owner 2026-08-11) */}
+                  <ScrewPair side="left" top={SCREW_ROT[i][0]} bottom={SCREW_ROT[i][1]} />
                   {/* Icon in its recessed well. The glyph is always lit; the
                       ICON TILE's own thin line stays OFF (default faint line)
                       while the method still needs work, and LIGHTS (70% glow)
@@ -1329,10 +1343,8 @@ export function DashboardScreen() {
                     // on touch but opens nothing (Booth 2026-07-11).
                     <SwitchButton label="" variant="clear" width={89} height={RACK_SWITCH_H} disabled />
                   )}
-                  {/* right mounting screw — buttons nudged left for padding */}
-                  <View style={{ marginLeft: 3 }}>
-                    <PanelScrew angle={SCREW_ROT[i][1]} />
-                  </View>
+                  {/* right corner pair — buttons nudged left for padding */}
+                  <ScrewPair side="right" top={SCREW_ROT[i][1]} bottom={SCREW_ROT[i][0]} />
                 </View>
               </ElevatedFrame>
             </View>
@@ -1341,7 +1353,7 @@ export function DashboardScreen() {
 
         {/* Section header over the quiz (owner 2026-08-11) — a vented blank
             rack panel; marks the quiz as the proficiency gate for the topic. */}
-        <SectionRackPanel label="Proficiency Check - Pass to complete this topic" screwAngles={[60, 15]} />
+        <SectionRackPanel label="Proficiency Check" screwAngles={[60, 15]} />
 
         {/* Quiz — the 6th slot in the SAME rack (same tight gap, Booth
             2026-07-10 #4). Kept RAISED at all times (Booth 2026-07-11 #4): when
@@ -1383,9 +1395,7 @@ export function DashboardScreen() {
             return (
               <>
                 <View style={styles.methodRow}>
-                  <View style={{ marginRight: 3 }}>
-                    <PanelScrew angle={0} />
-                  </View>
+                  <ScrewPair side="left" top={0} bottom={42} />
                   <View style={[styles.cutoutMount, styles.iconWell]}>
                     <View style={styles.iconSticker}>
                       <MethodIcon
@@ -1426,9 +1436,7 @@ export function DashboardScreen() {
                       navigation.navigate('Quiz', { achievementId: topic.id, topicName: topic.name })
                     }
                   />
-                  <View style={{ marginLeft: 3 }}>
-                    <PanelScrew angle={90} />
-                  </View>
+                  <ScrewPair side="right" top={90} bottom={27} />
                 </View>
 
                 {/* Detailed gate lines below the aligned row when locked. */}
@@ -1983,14 +1991,18 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 10,
   },
   methodRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  // Corner mounting column — stretches the panel height so its two screws sit
+  // at the top and bottom corners like a real 19" rack ear (owner 2026-08-11).
+  screwCol: { alignSelf: 'stretch', justifyContent: 'space-between', paddingVertical: 1 },
   // Column spans the button height; title at top, LED at bottom → their edges
   // align with the button's top/bottom.
   methodLeft: { flex: 1, height: rs(58), justifyContent: 'center' },
   // LED instrument screen behind one continuous glass panel (owner 2026-08-06).
   glassScreen: { flex: 1, alignSelf: 'stretch', overflow: 'hidden', backgroundColor: '#050608', borderRadius: 3 },
   // Bottom padding > top (owner 2026-08-06): lifts the LED meter off the glass
-  // container's lower edge a touch.
-  glassReadout: { flex: 1, paddingHorizontal: 9, paddingTop: 4, paddingBottom: 9, justifyContent: 'space-between' },
+  // container's lower edge a touch. Vertical paddings ride RACK_SCALE so the
+  // readout stays balanced inside the shorter panel (owner 2026-08-11).
+  glassReadout: { flex: 1, paddingHorizontal: 8, paddingTop: rs(4), paddingBottom: rs(9), justifyContent: 'space-between' },
   // Line 1 of the readout: title (left, grows) + % / green check (right).
   glassHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   // Instrument label — squared control-panel face. Brighter cool-white with a
@@ -1999,9 +2011,9 @@ const styles = StyleSheet.create({
   glassTitle: {
     flex: 1,
     fontFamily: fonts.panelSemiBold,
-    fontSize: 14.5,
-    lineHeight: 17,
-    letterSpacing: 1.1,
+    fontSize: rt(14.5),
+    lineHeight: rt(17),
+    letterSpacing: 1,
     color: '#d3e0f0',
     textShadowColor: 'rgba(150,190,235,0.6)',
     textShadowRadius: 8,
@@ -2014,8 +2026,8 @@ const styles = StyleSheet.create({
   glassValue: {
     flexShrink: 0,
     fontFamily: fonts.barlowCondensedSemiBold,
-    fontSize: 22,
-    lineHeight: 24,
+    fontSize: rt(22),
+    lineHeight: rt(24),
     letterSpacing: 1,
     textAlign: 'right',
     textShadowRadius: 10,
@@ -2025,8 +2037,8 @@ const styles = StyleSheet.create({
   glassCheck: {
     flexShrink: 0,
     fontFamily: fonts.barlowCondensedSemiBold,
-    fontSize: 24,
-    lineHeight: 24,
+    fontSize: rt(24),
+    lineHeight: rt(24),
     textAlign: 'right',
     color: '#3fe06a',
     textShadowColor: 'rgba(63,224,106,0.75)',
@@ -2037,8 +2049,8 @@ const styles = StyleSheet.create({
   // tracks the status colour (set inline) so it reads backlit like the title.
   glassSub: {
     fontFamily: fonts.barlowCondensedSemiBold,
-    fontSize: 12,
-    lineHeight: 15,
+    fontSize: rt(12),
+    lineHeight: rt(15),
     letterSpacing: 1.2,
     textShadowRadius: 6,
     textShadowOffset: { width: 0, height: 0 },
