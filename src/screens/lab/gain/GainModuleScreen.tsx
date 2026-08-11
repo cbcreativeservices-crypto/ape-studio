@@ -37,6 +37,13 @@ export function GainModuleScreen() {
   const Comp = COMPONENTS[meta.id];
   const [width, setWidth] = useState(0);
   const [scrollLocked, setScrollLocked] = useState(false);
+  // Only let the page scroll when its content actually overflows the viewport.
+  // On the compacted slider modules everything fits, so we kill the vertical
+  // swipe gesture entirely — it was stealing the DragSliders' horizontal drags
+  // (owner 2026-08-10). PREV/NEXT remain the only way between modules.
+  const [viewportH, setViewportH] = useState(0);
+  const [contentH, setContentH] = useState(0);
+  const overflows = contentH > viewportH + 2;
   const idx = GAIN_MODULES.findIndex((m) => m.id === meta.id);
   const last = GAIN_MODULES.length - 1;
   const goToModule = (i: number) => {
@@ -72,7 +79,9 @@ export function GainModuleScreen() {
           <ScrollView
             contentContainerStyle={styles.scroll}
             keyboardShouldPersistTaps="handled"
-            scrollEnabled={!scrollLocked}
+            scrollEnabled={overflows && !scrollLocked}
+            onLayout={(e) => setViewportH(Math.round(e.nativeEvent.layout.height))}
+            onContentSizeChange={(_w, h) => setContentH(Math.round(h))}
           >
             <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
               {width > 0 ? <Comp width={width} focused={focused} /> : null}
