@@ -1285,7 +1285,7 @@ export function DashboardScreen() {
                   a vented blank rack panel, per the studio-rack reference. */}
               {m.key === 'fill_in_blank' ? (
                 <View style={styles.sectionPanelWrap}>
-                  <SectionRackPanel label="Homework" angles={[6, -5]} />
+                  <SectionRackPanel label="Complete This Topic" angles={[6, -5]} />
                 </View>
               ) : null}
               {/* All method panels share the SAME gray coat again (user request
@@ -1383,7 +1383,7 @@ export function DashboardScreen() {
 
         {/* Section header over the quiz (owner 2026-08-11) — a vented blank
             rack panel; marks the quiz as the proficiency gate for the topic. */}
-        <SectionRackPanel label="Proficiency Check" angles={[-6, 5]} />
+        <SectionRackPanel label="Complete This Topic" angles={[-6, 5]} />
 
         {/* Quiz — the 6th slot in the SAME rack (same tight gap, Booth
             2026-07-10 #4). Kept RAISED at all times (Booth 2026-07-11 #4): when
@@ -1970,7 +1970,7 @@ const styles = StyleSheet.create({
   // with a soft blue backlight bloom, panel-display font (owner 2026-08-11).
   sectionPanelText: {
     fontFamily: fonts.panelSemiBold,
-    fontSize: rt(14.5),
+    fontSize: rt(10.5),
     letterSpacing: 1,
     color: '#d3e0f0',
     textAlign: 'center',
@@ -1985,13 +1985,18 @@ const styles = StyleSheet.create({
   ventField: { flex: 1, minWidth: 14, justifyContent: 'center', gap: 2.5, paddingHorizontal: 4, overflow: 'hidden' },
   ventHoleRow: { flexDirection: 'row', gap: 3 },
   ventHoleRowStagger: { marginLeft: 4 },
+  // Punched hole with depth (owner 2026-08-11): a near-black bore, a dark rim
+  // shadow cast in from the TOP (near wall), and a lit crescent on the BOTTOM
+  // lip catching the top light — so each hole reads as bored, not painted.
   ventHole: {
     width: 4.5,
     height: 4.5,
     borderRadius: 2.25,
-    backgroundColor: '#040506',
-    borderBottomWidth: 0.8,
-    borderBottomColor: 'rgba(255,255,255,0.10)',
+    backgroundColor: '#030405',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(0,0,0,0.9)',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.17)',
   },
   // LA-2A texture layer (BlackFaceBg / BrushedMetalBg): absolutely fills the
   // panel behind its content. overflow:hidden + matching radius is a second clip
