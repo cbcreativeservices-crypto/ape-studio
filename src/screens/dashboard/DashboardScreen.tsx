@@ -2007,42 +2007,38 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     textShadowOffset: { width: 0, height: 0 },
   },
-  // Wide soft bloom BEHIND — light spilling out of the cut onto the dark panel;
-  // dimmed to 37% brightness (owner 2026-08-11).
+  // Soft bloom BEHIND — light spilling from the cut onto the dark panel; dimmed
+  // to 37% and kept TIGHT so it's a halo, not a haze (owner 2026-08-11).
   stencilGlow: {
     position: 'absolute',
     left: 0,
     right: 0,
-    color: 'rgba(150,205,255,0.5)',
-    textShadowColor: 'rgba(120,195,255,0.95)',
-    textShadowRadius: 15,
+    color: 'rgba(150,205,255,0.35)',
+    textShadowColor: 'rgba(120,195,255,0.85)',
+    textShadowRadius: 6,
     opacity: 0.37,
   },
-  // TOP inner cut wall in shadow (panel thickness) — a black copy nudged UP so a
-  // dark rim sits at the letters' top edge.
+  // TOP cut wall in shadow — a black copy nudged UP a WHOLE pixel (crisp, no
+  // blur) so a sharp dark rim sits at the letters' top edge.
   stencilWallTop: {
     position: 'absolute',
     left: 0,
     right: 0,
     color: '#000000',
-    transform: [{ translateY: -1.1 }],
+    transform: [{ translateY: -1 }],
   },
-  // BOTTOM cut lip catching the front light — a bright copy nudged DOWN so a lit
-  // rim sits at the letters' bottom edge.
+  // BOTTOM cut lip catching the light — a bright copy nudged DOWN a whole pixel.
   stencilLipBottom: {
     position: 'absolute',
     left: 0,
     right: 0,
-    color: 'rgba(205,230,255,0.85)',
-    transform: [{ translateY: 1.1 }],
+    color: 'rgba(205,230,255,0.8)',
+    transform: [{ translateY: 1 }],
   },
-  // The glowing cut itself, recessed: a light lower lip via its own downward
-  // shadow sells the "pressed into / below the surface" read.
+  // The cut itself — a SOLID, CRISP letter (opaque, no blur) so the type stays
+  // sharp; the layers above/below give the depth, the glow behind gives the halo.
   stencilFace: {
     color: '#dfeeff',
-    textShadowColor: 'rgba(150,205,255,0.85)',
-    textShadowRadius: 4,
-    opacity: 0.62,
   },
   // Beehive perforation — staggered rows of punched round holes. The field
   // clips its fixed-count rows to whatever width flex gives it.
