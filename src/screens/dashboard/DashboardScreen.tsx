@@ -145,8 +145,8 @@ function CornerScrews({ angles }: { angles: [number, number, number, number] }) 
  *  flanking the label — so the whole stack reads as one loaded studio rack. */
 function SectionRackPanel({ label, angles }: { label: string; angles: [number, number, number, number] }) {
   return (
-    <ElevatedFrame contentStyle={styles.methodInner}>
-      <BlackFaceBg />
+    <ElevatedFrame contentStyle={[styles.methodInner, styles.sectionInner]}>
+      <BlackFaceBg dark />
       <CornerScrews angles={angles} />
       <View style={styles.methodRow}>
         <VentSlats />
@@ -231,8 +231,12 @@ const GRIT_SPECKS = (() => {
 // bottom edges) with random bead-blasted particulate grit. The debossed titles
 // were already tuned for a gray floor, so they read correctly here. Drawn in
 // measured PIXEL space so the specks are round dots, not stretched streaks.
-function BlackFaceBg() {
+function BlackFaceBg({ dark = false }: { dark?: boolean }) {
   const [size, setSize] = useState({ w: 0, h: 0 });
+  // Section (Homework / Proficiency) panels get a ~4-shades-darker gray coat so
+  // they read distinctly from the method/quiz panels (owner 2026-08-11).
+  const gradId = dark ? 'apeGrayFaceDark' : 'apeGrayFace';
+  const stops = dark ? ['#26262a', '#323236', '#1a1a1e'] : ['#3a3a3e', '#46464b', '#2c2c30'];
   return (
     <View
       pointerEvents="none"
@@ -247,13 +251,13 @@ function BlackFaceBg() {
           <Defs>
             {/* objectBoundingBox gradient (default units) — size-independent, so
                 the shared id is safe across every panel instance. */}
-            <SvgLinearGradient id="apeGrayFace" x1="0" y1="0" x2="0" y2="1">
-              <Stop offset="0" stopColor="#3a3a3e" />
-              <Stop offset="0.42" stopColor="#46464b" />
-              <Stop offset="1" stopColor="#2c2c30" />
+            <SvgLinearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+              <Stop offset="0" stopColor={stops[0]} />
+              <Stop offset="0.42" stopColor={stops[1]} />
+              <Stop offset="1" stopColor={stops[2]} />
             </SvgLinearGradient>
           </Defs>
-          <Rect x={0} y={0} width={size.w} height={size.h} fill="url(#apeGrayFace)" />
+          <Rect x={0} y={0} width={size.w} height={size.h} fill={`url(#${gradId})`} />
           {/* Random particulate specks — round dots at pixel radius. */}
           {GRIT_SPECKS.map((g, i) => (
             <Circle
@@ -1934,18 +1938,22 @@ const styles = StyleSheet.create({
   // ElevatedFrame + black-face + screws as the method rows, with punched vent
   // slats flanking the engraved label. Height rides methodInner (equal slots).
   sectionPanelWrap: { marginBottom: 8 },
+  // Drop the labeled row into the panel's LOWER HALF (owner 2026-08-11) rather
+  // than vertical-centering it — overrides methodInner's justifyContent.
+  sectionInner: { justifyContent: 'flex-end', paddingBottom: rs(9) },
+  // Label typeface matches the LED-screen title (glassTitle): lit cool-white
+  // with a soft blue backlight bloom, panel-display font (owner 2026-08-11).
   sectionPanelText: {
-    fontFamily: fonts.oswaldSemiBold,
-    fontSize: 12.5,
-    letterSpacing: 1.6,
-    color: '#ffffff',
+    fontFamily: fonts.panelSemiBold,
+    fontSize: rt(14.5),
+    letterSpacing: 1,
+    color: '#d3e0f0',
     textAlign: 'center',
     paddingHorizontal: 10,
     flexShrink: 1,
-    // engraved into the coat: dark cut below each stroke
-    textShadowColor: '#000000',
-    textShadowOffset: { width: 0, height: 1.5 },
-    textShadowRadius: 1,
+    textShadowColor: 'rgba(150,190,235,0.6)',
+    textShadowRadius: 8,
+    textShadowOffset: { width: 0, height: 0 },
   },
   ventCol: { flex: 1, minWidth: 14, justifyContent: 'center', gap: rs(6), paddingHorizontal: 4 },
   ventSlot: {
