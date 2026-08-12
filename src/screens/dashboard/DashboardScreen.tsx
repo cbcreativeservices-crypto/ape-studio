@@ -1203,6 +1203,39 @@ export function DashboardScreen() {
             2026-07-23) — the dashboard follows the enrollment list, adjusted via
             the "My Enrollments" button above. */}
 
+        {/* Thin topic-nav strip (owner 2026-08-11): PREV / NEXT step through
+            topics; the centre DECK button opens the same Topic-Deck manager the
+            top-left Study icon opens. */}
+        <View style={styles.topicNav}>
+          <Pressable
+            onPress={() => goTo(topicIdx - 1)}
+            disabled={topicIdx <= 0}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel="Previous topic"
+          >
+            <Text style={[styles.topicNavArrow, topicIdx <= 0 && styles.topicNavDisabled]}>‹ PREV</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => setDeckOpen(true)}
+            hitSlop={8}
+            style={styles.topicNavDeckBtn}
+            accessibilityRole="button"
+            accessibilityLabel="Open the topic deck"
+          >
+            <Text style={styles.topicNavDeckText}>DECK</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => goTo(topicIdx + 1)}
+            disabled={topicIdx >= lastTopicIdx}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel="Next topic"
+          >
+            <Text style={[styles.topicNavArrow, topicIdx >= lastTopicIdx && styles.topicNavDisabled]}>NEXT ›</Text>
+          </Pressable>
+        </View>
+
         {/* Topic title block (swipeable — free roam across all topics) */}
         <View
           {...pan.panHandlers}
@@ -1810,6 +1843,36 @@ const styles = StyleSheet.create({
   },
 
 
+  // Thin topic-nav strip above the current-topic card (owner 2026-08-11).
+  topicNav: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 5,
+    paddingHorizontal: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.hairlineAlt,
+    backgroundColor: '#151517',
+  },
+  topicNavArrow: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 12.5,
+    letterSpacing: 1,
+    color: colors.amber,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+  },
+  topicNavDisabled: { color: '#45454d' },
+  topicNavDeckBtn: {
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: 'rgba(47,155,255,.6)',
+    backgroundColor: 'rgba(47,155,255,.12)',
+    paddingHorizontal: 16,
+    paddingVertical: 3,
+  },
+  topicNavDeckText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.4, color: colors.blue },
   topicCard: {
     // Powder-coat panel base (fallback behind the PanelFace texture), 3 shades
     // darker than the panels below (Booth 2026-07-11). overflow clips the coat
