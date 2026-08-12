@@ -1249,16 +1249,14 @@ export function DashboardScreen() {
                 {/* Overall progress — label left-justified, the amber % below it
                     (owner 2026-08-01); to its right, text-only ‹ › topic prev/next
                     buttons (owner 2026-08-11). */}
-                <View style={styles.pctRow}>
-                  <View style={styles.pctBlock}>
-                    <Text style={styles.pctLabel}>OVERALL TOPIC PROGRESS</Text>
+                <View style={styles.pctBlock}>
+                  <Text style={styles.pctLabel}>OVERALL TOPIC PROGRESS</Text>
+                  <View style={styles.pctValueRow}>
                     <Text style={styles.pctBig}>{dispOverallPct}%</Text>
-                  </View>
-                  <View style={styles.pctArrows}>
                     <Pressable
                       onPress={() => goTo(topicIdx - 1)}
                       disabled={topicIdx <= 0}
-                      hitSlop={10}
+                      hitSlop={16}
                       accessibilityRole="button"
                       accessibilityLabel="Previous topic"
                     >
@@ -1267,7 +1265,7 @@ export function DashboardScreen() {
                     <Pressable
                       onPress={() => goTo(topicIdx + 1)}
                       disabled={topicIdx >= lastTopicIdx}
-                      hitSlop={10}
+                      hitSlop={16}
                       accessibilityRole="button"
                       accessibilityLabel="Next topic"
                     >
@@ -2017,16 +2015,16 @@ const styles = StyleSheet.create({
     textShadowRadius: 3.4,
     textShadowOffset: { width: 0, height: 0 },
   },
-  // Row: the label+% block on the left, the ‹ › topic buttons at its right.
-  pctRow: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 6, gap: 8 },
-  pctBlock: { alignItems: 'flex-start', gap: 1 },
-  pctArrows: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingBottom: 2 },
+  pctBlock: { alignItems: 'flex-start', marginTop: 6, gap: 1 },
+  // The big % with the ‹ › topic buttons on the SAME line, right of it, so they
+  // stay inside the glass (overflow:hidden was clipping the › at the far edge).
+  pctValueRow: { flexDirection: 'row', alignItems: 'center', gap: 2 },
   pctArrow: {
     fontFamily: fonts.oswaldSemiBold,
-    fontSize: 30,
-    lineHeight: 34,
+    fontSize: 42,
+    lineHeight: 46,
     color: colors.amber,
-    paddingHorizontal: 8,
+    paddingHorizontal: 12,
   },
   pctArrowDisabled: { color: '#45454d' },
   pctBig: {
