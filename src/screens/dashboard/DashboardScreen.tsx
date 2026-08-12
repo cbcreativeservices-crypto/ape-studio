@@ -274,18 +274,18 @@ function BlackFaceBg({ dark = false, light = false, gold = false }: { dark?: boo
   const [size, setSize] = useState({ w: 0, h: 0 });
   // Face coats: default method gray · `dark` = the darker section-filler gray ·
   // `light` = the MID gray (halfway to LA-2A, now the Flashcards face) · `gold`
-  // = a REFLECTIVE brushed-gold panel matching the company logo — a vertical
-  // metallic ramp with a bright specular band in the upper-mid so it reads as
-  // polished gold catching the light (owner 2026-08-11).
-  const gradId = gold ? 'apeGoldFace' : light ? 'apeGrayFaceMid' : dark ? 'apeGrayFaceDark' : 'apeGrayFace';
+  // = a REFLECTIVE brushed-SILVER panel (owner 2026-08-11) — a vertical metallic
+  // ramp with a bright specular band in the upper-mid so it reads as polished
+  // chrome/silver catching the light.
+  const gradId = gold ? 'apeSilverFace' : light ? 'apeGrayFaceMid' : dark ? 'apeGrayFaceDark' : 'apeGrayFace';
   const gradStops: { o: number; c: string }[] = gold
     ? [
-        { o: 0, c: '#7c5f1c' },
-        { o: 0.16, c: '#d7b04c' },
-        { o: 0.4, c: '#ffe8b0' },
-        { o: 0.56, c: '#e6bd57' },
-        { o: 0.8, c: '#a9832b' },
-        { o: 1, c: '#6d541a' },
+        { o: 0, c: '#6f7376' },
+        { o: 0.16, c: '#b9bec2' },
+        { o: 0.4, c: '#f4f6f8' },
+        { o: 0.56, c: '#cdd2d6' },
+        { o: 0.8, c: '#9aa0a4' },
+        { o: 1, c: '#63686b' },
       ]
     : light
       ? [{ o: 0, c: '#828385' }, { o: 0.42, c: '#919294' }, { o: 1, c: '#77787a' }]
