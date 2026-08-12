@@ -86,6 +86,7 @@ import { FoundationsPlaygroundScreen } from '../screens/lab/foundations/Foundati
 import { PublicGlossaryScreen } from '../screens/landing/PublicGlossaryScreen';
 import { PaywallScreen } from '../screens/commercial/PaywallScreen';
 import { AmplitudeLabScreen, withAmplitudeOrientation } from '../screens/lab/amplitude/AmplitudeOrientation';
+import { MicSelectLabScreen } from '../screens/lab/micselect/MicSelectLabScreen';
 import { MainTabs } from './MainTabs';
 import type { RootStackParamList } from './types';
 
@@ -132,6 +133,7 @@ const Gated = {
   BinauralLab: withAmplitudeOrientation(BinauralLabScreen),
   ModularLab: withAmplitudeOrientation(ModularLabScreen),
   MicLab: withAmplitudeOrientation(MicPrinciplesLabScreen),
+  MicSelectLab: withAmplitudeOrientation(MicSelectLabScreen),
   SpeakerLab: withAmplitudeOrientation(SpeakerCoverageLabScreen),
   TubeLab: withAmplitudeOrientation(VacuumTubeLabScreen),
   DigitalModule: withAmplitudeOrientation(DigitalModuleScreen),
@@ -223,6 +225,9 @@ export function RootNavigator() {
       <Stack.Screen name="BinauralLab" component={Gated.BinauralLab} />
       <Stack.Screen name="ModularLab" component={Gated.ModularLab} />
       <Stack.Screen name="MicLab" component={Gated.MicLab} />
+      {/* Microphone Selection Lab (owner spec 2026-08-12) — selection &
+          characteristics, no audio/engine dependency. */}
+      <Stack.Screen name="MicSelectLab" component={Gated.MicSelectLab} />
       <Stack.Screen name="SpeakerLab" component={Gated.SpeakerLab} />
       <Stack.Screen name="TubeLab" component={Gated.TubeLab} />
       <Stack.Screen name="TubeReference" component={TubeReferenceScreen} />

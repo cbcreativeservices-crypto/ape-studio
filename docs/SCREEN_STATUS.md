@@ -24,10 +24,10 @@ completion status the owner signs off as we approach launch testing.
 |---|---|
 | **Incomplete (🔴 — needs dev work)** | **0** |
 | Blocked (🟡 — built, dependency-gated) | 9 |
-| Built, awaiting sign-off (🔵) | 66 |
+| Built, awaiting sign-off (🔵) | 68 |
 | Signed off (🟢) | 0 |
 | Excluded (⚪ — parked/dev) | 2 |
-| **Total navigable screens (excl. ⚪)** | **75** |
+| **Total navigable screens (excl. ⚪)** | **77** |
 
 **So: "how many screens are incomplete?" → 0 need net-new build (audit found no
 stubs/partials); 9 are built but blocked on the native audio engine build (the
@@ -127,6 +127,8 @@ sign-off.**
 | BinauralLab | 🔵 | |
 | ModularLab | 🔵 | |
 | MicLab (MicPrinciples) | 🔵 | |
+| MicSelectLab (Microphone Selection) | 🔵 | Added 2026-08-12: 9 lessons + Choose-the-Mic challenge + optional mic locker; no engine dependency. |
+| AmplitudeLab (Understanding Level & Amplitude) | 🔵 | Added 2026-08-12: color-language orientation; first lab in Audio Fundamentals + first-use gate across labs/tools. |
 | SpeakerLab (SpeakerCoverage) | 🔵 | Future-promise note removed 2026-08-10. |
 | TubeLab (VacuumTube) | 🔵 | VS animation redrawn 2026-08-10. |
 | TubeReference | 🔵 | |

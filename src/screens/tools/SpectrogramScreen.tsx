@@ -36,12 +36,13 @@
  * (React.memo keyed by the history reference); the 8 Hz column push touches
  * only the pieces above.
  */
-import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
-import Svg, { G, Line, Path, Rect } from 'react-native-svg';
+import Svg, { Line, Rect } from 'react-native-svg';
+import { AlphaType, Canvas, ColorType, Image as SkiaImage, Skia } from '@shopify/react-native-skia';
 import { ApeDsp, type EngineConfig } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
@@ -79,21 +80,18 @@ const CELL_CENTERS_HZ: number[] = Array.from({ length: ROWS }, (_, i) =>
  *  no engine setting changes, no settings epoch). */
 const DYN_RANGES = [40, 60, 80] as const;
 
-/** MIDI-velocity rainbow (owner 2026-07-29): near-silence stays near-black /
- *  very dark blue, then deep blue → cyan → green → yellow → orange → red
- *  (hue sweep ≈ 240° → 0°, saturated on the dark background). Piecewise linear
- *  over 8 stops [t, r, g, b]. */
-// The app-wide amplitude ramp (owner 2026-08-02): red = loud → blue = quiet
-// (levelColor heatColor), so the spectrogram level colours match every meter,
-// waveform and lab heat map. Kept named midiVelocityColor for its callers.
-function midiVelocityColor(t: number): string {
-  return heatColor(t);
-}
-
-/** ≤32 quantized colors — the per-column path-batching buckets. */
-const COLOR_BUCKETS = 32;
-const BUCKET_COLORS: readonly string[] = Array.from({ length: COLOR_BUCKETS }, (_, i) =>
-  midiVelocityColor((i + 0.5) / COLOR_BUCKETS),
+// The live raster draws as ONE fine SkImage (owner 2026-08-12): a full
+// colour-depth per-pixel colormap — the app-wide amplitude ramp (red = loud,
+// blue = quiet, via heatColor) — bilinear-scaled to the chart, replacing the
+// old ≤32-bucket per-column SVG strokes. Same real cells / floor / scale as
+// before; only the drawing is smoother. heatColor is sampled to an RGB LUT once.
+const RASTER_N = 256;
+const RASTER_LUT: ReadonlyArray<readonly [number, number, number]> = Array.from(
+  { length: RASTER_N },
+  (_, i) => {
+    const v = parseInt(heatColor(i / (RASTER_N - 1)).slice(1), 16);
+    return [(v >> 16) & 255, (v >> 8) & 255, v & 255] as const;
+  },
 );
 
 /** Color-anchor hysteresis: history columns are frozen paths, so the anchor
@@ -105,7 +103,6 @@ const ANCHOR_RISE_DB = 1;
 const ANCHOR_FALL_DB = 3;
 
 const GRID_H = 256; // grid pixel height; each of the 128 rows is 2 px tall
-const CELL_H = GRID_H / ROWS;
 const FREQ_LABELS = [
   { hz: 100, text: '100' },
   { hz: 1000, text: '1k' },
@@ -217,57 +214,42 @@ function Chip({ label, active, onPress, a11yLabel }: { label: string; active: bo
   );
 }
 
-/** Slight stroke overlap so adjacent columns never show background seams. */
-const COL_OVERLAP = 0.35;
-
-/** ONE spectrogram column: its 128 cells batched into ≤32 <Path> nodes (one
- *  per quantized color bucket present; contiguous equal-bucket runs merge into
- *  a single M/V stroke segment). memo — a mounted column NEVER rebuilds while
- *  it scrolls (its x is virtual; the parent <G> translates), only when the
- *  color anchor or dynamic range changes. Cells at/below the scale floor draw
- *  nothing — background is the floor. */
-const SpectroColumn = memo(function SpectroColumn({
-  cells,
-  x,
-  colW,
-  anchor,
-  dynRange,
-}: {
-  cells: number[];
-  x: number;
-  colW: number;
-  anchor: number;
-  dynRange: number;
-}) {
+/** Build the current history into ONE fine SkImage: `n` columns × ROWS rows,
+ *  each pixel the full-resolution amplitude colour of a REAL measured cell —
+ *  the SAME cells, floor and scale as the readouts (no fabrication). Cells
+ *  at/below the scale floor are TRANSPARENT so the grid background shows
+ *  through. Row 0 (low freq) maps to the bottom; the newest column is the
+ *  rightmost pixel. Drawn scaled to the chart with bilinear filtering →
+ *  smooth in time AND frequency. */
+function buildRasterImage(history: SpectroColumnData[], anchor: number, dynRange: number) {
+  const n = history.length;
+  if (n === 0) return null;
   const floor = anchor - dynRange;
-  const scale = COLOR_BUCKETS / dynRange;
-  const xs = x.toFixed(1);
-  const buckets: (string | undefined)[] = new Array<string | undefined>(COLOR_BUCKETS);
-  let run = -1;
-  let runStart = 0;
-  for (let r = 0; r <= ROWS; r++) {
-    let b = -1;
-    if (r < ROWS) {
-      const v = cells[r];
-      if (v > floor) b = Math.min(COLOR_BUCKETS - 1, Math.floor((v - floor) * scale));
-    }
-    if (b !== run) {
-      if (run >= 0) {
-        const y1 = (GRID_H - runStart * CELL_H).toFixed(1);
-        const y2 = (GRID_H - r * CELL_H).toFixed(1);
-        buckets[run] = (buckets[run] ?? '') + `M${xs} ${y1}V${y2}`;
+  const inv = 1 / dynRange;
+  const last = RASTER_N - 1;
+  const buf = new Uint8Array(n * ROWS * 4); // zero-filled = transparent background
+  for (let px = 0; px < n; px++) {
+    const cells = history[px].cells;
+    for (let py = 0; py < ROWS; py++) {
+      const v = cells[ROWS - 1 - py]; // py 0 = top = high freq; row 0 = low freq → bottom
+      if (v > floor) {
+        let t = (v - floor) * inv;
+        if (t > 1) t = 1;
+        const [r, g, b] = RASTER_LUT[(t * last) | 0];
+        const o = (py * n + px) * 4;
+        buf[o] = r;
+        buf[o + 1] = g;
+        buf[o + 2] = b;
+        buf[o + 3] = 255;
       }
-      run = b;
-      runStart = r;
     }
   }
-  const out: ReactElement[] = [];
-  for (let b = 0; b < COLOR_BUCKETS; b++) {
-    const d = buckets[b];
-    if (d) out.push(<Path key={b} d={d} stroke={BUCKET_COLORS[b]} strokeWidth={colW + COL_OVERLAP} />);
-  }
-  return <>{out}</>;
-});
+  return Skia.Image.MakeImage(
+    { width: n, height: ROWS, colorType: ColorType.RGBA_8888, alphaType: AlphaType.Unpremul },
+    Skia.Data.fromBytes(buf),
+    n * 4,
+  );
+}
 
 /** The 128×160 raster. React.memo keyed by the history REFERENCE: the 15 Hz
  *  meter poll re-renders the parent but props are unchanged, so this SVG only
@@ -286,57 +268,56 @@ const SpectrogramGrid = memo(function SpectrogramGrid({
   width: number;
   speed: number;
 }) {
+  // The whole history is one image; it rebuilds only when a new column lands
+  // (8 Hz) or the scale/anchor moves — never on the 15 Hz meter poll (memo).
+  const img = useMemo(
+    () => (anchor == null || history.length === 0 ? null : buildRasterImage(history, anchor, dynRange)),
+    [history, anchor, dynRange],
+  );
   if (width <= 0 || history.length === 0 || anchor == null) return null;
   // Each column is `speed`× wider → the waterfall scrolls `speed`× faster and
   // shows ~HISTORY_COLS/speed columns; the rest scroll off the (clipped) left.
   const colW = (width / HISTORY_COLS) * speed;
-  const newestId = history[history.length - 1].id;
-  const tx = width - (newestId + 1) * colW;
+  const imgW = history.length * colW;
+  const imgX = width - imgW; // newest column flush to the right edge
   const colsPer5s = 5000 / SPECTRO_POLL_MS; // 5 s of real time in columns (cadence is fixed)
   return (
-    <Svg width={width} height={GRID_H}>
-      {/* Subtle static grid — frequency decades + 5 s time marks (from "now"). */}
-      {FREQ_LABELS.map((l) => (
-        <Line
-          key={l.text}
-          x1={0}
-          x2={width}
-          y1={yForHz(l.hz)}
-          y2={yForHz(l.hz)}
-          stroke="#4a4a58"
-          strokeWidth={1}
-          strokeDasharray="3 5"
-          strokeOpacity={0.8}
-        />
-      ))}
-      {[1, 2, 3].map((k) => (
-        <Line
-          key={k}
-          x1={width - k * colsPer5s * colW}
-          x2={width - k * colsPer5s * colW}
-          y1={0}
-          y2={GRID_H}
-          stroke="#3c3c48"
-          strokeWidth={1}
-          strokeDasharray="3 5"
-          strokeOpacity={0.8}
-        />
-      ))}
-      {/* All columns live at fixed virtual x; scrolling = this one translate. */}
-      <G x={tx}>
-        {history.map((c) => (
-          <SpectroColumn
-            key={c.id}
-            cells={c.cells}
-            x={(c.id + 0.5) * colW}
-            colW={colW}
-            anchor={anchor}
-            dynRange={dynRange}
+    <View style={{ width, height: GRID_H }}>
+      {/* Smooth raster — one Skia SkImage, bilinear-scaled to the chart. */}
+      <Canvas style={StyleSheet.absoluteFill}>
+        {img ? <SkiaImage image={img} x={imgX} y={0} width={imgW} height={GRID_H} fit="fill" /> : null}
+      </Canvas>
+      {/* Subtle static grid — frequency decades + 5 s time marks — over the raster. */}
+      <Svg width={width} height={GRID_H} style={StyleSheet.absoluteFill}>
+        {FREQ_LABELS.map((l) => (
+          <Line
+            key={l.text}
+            x1={0}
+            x2={width}
+            y1={yForHz(l.hz)}
+            y2={yForHz(l.hz)}
+            stroke="#4a4a58"
+            strokeWidth={1}
+            strokeDasharray="3 5"
+            strokeOpacity={0.55}
           />
         ))}
-      </G>
-      <Rect x={0.5} y={0.5} width={width - 1} height={GRID_H - 1} stroke="#26262c" strokeWidth={1} fill="none" />
-    </Svg>
+        {[1, 2, 3].map((k) => (
+          <Line
+            key={k}
+            x1={width - k * colsPer5s * colW}
+            x2={width - k * colsPer5s * colW}
+            y1={0}
+            y2={GRID_H}
+            stroke="#3c3c48"
+            strokeWidth={1}
+            strokeDasharray="3 5"
+            strokeOpacity={0.55}
+          />
+        ))}
+        <Rect x={0.5} y={0.5} width={width - 1} height={GRID_H - 1} stroke="#26262c" strokeWidth={1} fill="none" />
+      </Svg>
+    </View>
   );
 });
 
@@ -655,8 +636,8 @@ export function SpectrogramScreen({ navigation }: Props) {
                 anchor actually mapped (see anchor docs). */}
             <View style={styles.legendRow}>
               <View style={styles.legendStrip}>
-                {BUCKET_COLORS.map((c, i) => (
-                  <View key={i} style={{ flex: 1, backgroundColor: c }} />
+                {Array.from({ length: 32 }, (_, i) => (
+                  <View key={i} style={{ flex: 1, backgroundColor: heatColor((i + 0.5) / 32) }} />
                 ))}
               </View>
               <Text style={styles.legendText}>

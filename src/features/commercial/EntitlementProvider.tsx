@@ -171,6 +171,12 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
     });
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'INITIAL_SESSION') {
+        // A REAL sign-out ends any dev tier override (owner 2026-08-12): the
+        // wordmark long-press latches devOverrode for the whole app run, so
+        // without this a later genuine login (e.g. an academy account) would
+        // NOT re-read the server and could look free/locked. Clearing it on
+        // sign-out lets the next SIGNED_IN derive real entitlement again.
+        if (event === 'SIGNED_OUT') devOverrode.current = false;
         clearLocalOnUserChange(session?.user?.id ?? null);
         void deriveAndApply(!!session);
       }

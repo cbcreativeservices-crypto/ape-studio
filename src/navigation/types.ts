@@ -225,6 +225,9 @@ export type RootStackParamList = {
    *  language orientation (owner 2026-08-12). The FIRST lab in Audio
    *  Fundamentals, and the shared body behind the first-use orientation gate. */
   AmplitudeLab: undefined;
+  /** Microphone Selection Lab (owner spec 2026-08-12) — types, characteristics
+   *  & applications: 9 lessons + Choose-the-Mic challenge + optional locker. */
+  MicSelectLab: undefined;
 };
 
 declare global {

@@ -1132,11 +1132,6 @@ export function DashboardScreen() {
   const quizState =
     rawQuizState === 'locked' && devBypass('bypassQuizLocks') ? 'ready' : rawQuizState;
 
-  // Swipe affordance in the topic meta line — directional (‹ prev / next ›).
-  const swipeHint = [topicIdx > 0 ? '‹ swipe' : null, topicIdx < lastTopicIdx ? 'swipe ›' : null]
-    .filter(Boolean)
-    .join(' · ');
-
   const pulseOpacity = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.25, 1] });
 
   return (
@@ -1243,37 +1238,38 @@ export function DashboardScreen() {
                     {dispIsCustom
                       ? `${starred.size} TERM${starred.size === 1 ? '' : 'S'}`
                       : `TOPIC ${dispIdx + 1} OF ${topics.length} · ${data.currentCourse.name.toUpperCase()}`}
-                    {swipeHint ? `  ·  ${swipeHint}` : ''}
                   </Text>
                 </Pressable>
-                {/* Overall progress — label left-justified, the amber % below it
-                    (owner 2026-08-01); to its right, text-only ‹ › topic prev/next
-                    buttons (owner 2026-08-11). */}
+                {/* Overall progress — label left-justified, the amber % below
+                    it (owner 2026-08-01). */}
                 <View style={styles.pctBlock}>
                   <Text style={styles.pctLabel}>OVERALL TOPIC PROGRESS</Text>
-                  <View style={styles.pctValueRow}>
-                    <Text style={styles.pctBig}>{dispOverallPct}%</Text>
-                    <Pressable
-                      onPress={() => goTo(topicIdx - 1)}
-                      disabled={topicIdx <= 0}
-                      hitSlop={16}
-                      accessibilityRole="button"
-                      accessibilityLabel="Previous topic"
-                    >
-                      <Text style={[styles.pctArrow, topicIdx <= 0 && styles.pctArrowDisabled]}>‹</Text>
-                    </Pressable>
-                    <Pressable
-                      onPress={() => goTo(topicIdx + 1)}
-                      disabled={topicIdx >= lastTopicIdx}
-                      hitSlop={16}
-                      accessibilityRole="button"
-                      accessibilityLabel="Next topic"
-                    >
-                      <Text style={[styles.pctArrow, topicIdx >= lastTopicIdx && styles.pctArrowDisabled]}>›</Text>
-                    </Pressable>
-                  </View>
+                  <Text style={styles.pctBig}>{dispOverallPct}%</Text>
                 </View>
                 <GlassCover />
+                {/* Prev / next topic — top-right of the glass, level with the
+                    CURRENT TOPIC eyebrow (owner 2026-08-12). Rendered ABOVE the
+                    pointer-transparent GlassCover so they stay tappable. */}
+                <View style={styles.topicNavArrows}>
+                  <Pressable
+                    onPress={() => goTo(topicIdx - 1)}
+                    disabled={topicIdx <= 0}
+                    hitSlop={12}
+                    accessibilityRole="button"
+                    accessibilityLabel="Previous topic"
+                  >
+                    <Text style={[styles.topicNavArrow, topicIdx <= 0 && styles.pctArrowDisabled]}>‹</Text>
+                  </Pressable>
+                  <Pressable
+                    onPress={() => goTo(topicIdx + 1)}
+                    disabled={topicIdx >= lastTopicIdx}
+                    hitSlop={12}
+                    accessibilityRole="button"
+                    accessibilityLabel="Next topic"
+                  >
+                    <Text style={[styles.topicNavArrow, topicIdx >= lastTopicIdx && styles.pctArrowDisabled]}>›</Text>
+                  </Pressable>
+                </View>
               </View>
             </View>
 
@@ -2016,15 +2012,15 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 0 },
   },
   pctBlock: { alignItems: 'flex-start', marginTop: 6, gap: 1 },
-  // The big % with the ‹ › topic buttons on the SAME line, right of it, so they
-  // stay inside the glass (overflow:hidden was clipping the › at the far edge).
-  pctValueRow: { flexDirection: 'row', alignItems: 'center', gap: 2 },
-  pctArrow: {
+  // Prev/next topic arrows — absolute, top-right of the glass, on the CURRENT
+  // TOPIC eyebrow line (owner 2026-08-12).
+  topicNavArrows: { position: 'absolute', top: 3, right: 8, flexDirection: 'row', alignItems: 'center', gap: 8, zIndex: 4 },
+  topicNavArrow: {
     fontFamily: fonts.oswaldSemiBold,
-    fontSize: 42,
-    lineHeight: 46,
+    fontSize: 30,
+    lineHeight: 32,
     color: colors.amber,
-    paddingHorizontal: 12,
+    paddingHorizontal: 5,
   },
   pctArrowDisabled: { color: '#45454d' },
   pctBig: {

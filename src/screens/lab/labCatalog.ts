@@ -257,7 +257,10 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     labs: [
       { name: 'Bass Guitar Physics', blurb: 'String division, wavelength, harmonics, fret fractions ↔︎ intervals.', route: 'BassLab' },
       { name: 'Instrument Recording Lab', blurb: 'Mic choice and placement per instrument.', status: 'development' },
-      { name: 'Microphone Selection Lab', blurb: 'Pick the right mic for the source — dynamic vs condenser vs ribbon, pattern and application.', status: 'development' },
+      // LIVE (owner spec 2026-08-12): 9 lessons + Choose-the-Mic challenge +
+      // optional mic-locker exercise. Selection & characteristics only — the
+      // physics/technique labs stay separate.
+      { name: 'Microphone Selection Lab', blurb: 'Read the specs, weigh the job, make a defensible choice — types, characteristics, patterns, and the Choose-the-Mic challenge.', route: 'MicSelectLab' },
     ],
   },
   {
