@@ -1428,9 +1428,8 @@ export function DashboardScreen() {
             No static amber accent — the animated quizPulseBorder is the only
             amber cue, so the scenarios→quiz seam matches every method frame. */}
         <ElevatedFrame depressed={false} contentStyle={styles.methodInner}>
-          {/* Reflective brushed-GOLD face (owner 2026-08-11) — the quiz panel
-              wears the company-logo gold as the topic's reward slot. */}
-          <BlackFaceBg gold />
+          {/* Mid LA-2A gray face — same as the Flashcards panel (owner 2026-08-11). */}
+          <BlackFaceBg light />
           <CornerScrews angles={[0, 5, -4, 3]} />
           {quizState === 'locked' && (
             <Animated.View pointerEvents="none" style={[styles.quizPulseBorder, { opacity: pulseOpacity }]} />
