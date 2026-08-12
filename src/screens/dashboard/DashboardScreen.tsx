@@ -107,6 +107,8 @@ const RACK_QUIZ_SWITCH_H = rs(58);
 // 19" mounting screw head, sized to the scaled rack. The 4 screws are pinned to
 // the panel CORNERS (absolute), not carried in the content row (owner 2026-08-11).
 const RACK_SCREW = rs(15);
+// A powered-off panel's icon glyph — dark, unlit (owner 2026-08-11).
+const OFF_ICON = '#3a3b41';
 const SCREW_INSET = 3; // horizontal inset from the rail edge
 // Vertical hole geometry (EIA-310): a 1U panel's two screws sit in the top &
 // bottom holes of its U — hole CENTERS 0.25" in from each edge on a 1.75" U =
@@ -375,6 +377,7 @@ function GlassScreen({
   subtitle,
   subtitleColor,
   complete,
+  off = false,
 }: {
   title: string;
   value: string;
@@ -387,13 +390,16 @@ function GlassScreen({
   /** Method fully done (pct ≥ 100): show a green check instead of the % and
    *  drop the number entirely (owner 2026-08-06). */
   complete?: boolean;
+  /** POWERED OFF (owner 2026-08-11): the screen is dark — title dimmed, no
+   *  value/check, LED strip unlit. Its stage of the rack hasn't unlocked yet. */
+  off?: boolean;
 }) {
   return (
     <View
       style={[styles.cutoutMount, styles.glassScreen]}
       accessible
       accessibilityRole="text"
-      accessibilityLabel={`${title}, ${complete ? 'complete' : value}${subtitle ? `, ${subtitle}` : ''}`}
+      accessibilityLabel={`${title}, ${off ? 'powered off' : complete ? 'complete' : value}${subtitle && !off ? `, ${subtitle}` : ''}`}
     >
       {/* The lit readout, beneath the glass. Now TWO rows (owner 2026-08-06):
           line 1 = title (left) + % / green check (right); line 2 = LED meter or
@@ -402,16 +408,17 @@ function GlassScreen({
       <View style={styles.glassReadout}>
         <View style={styles.glassHeaderRow}>
           {/* Title LED goes GREEN once the method is fully complete (owner
-              2026-08-06) — matching the check on the right. */}
+              2026-08-06) — matching the check on the right. Dim + unlit when the
+              panel is powered off. */}
           <Text
-            style={[styles.glassTitle, complete && styles.glassTitleDone]}
+            style={[styles.glassTitle, complete && styles.glassTitleDone, off && styles.glassTitleOff]}
             numberOfLines={1}
             adjustsFontSizeToFit
             minimumFontScale={0.65}
           >
             {title}
           </Text>
-          {complete ? (
+          {off ? null : complete ? (
             // Green LED check — replaces the % once the method is fully complete.
             <Text style={styles.glassCheck} accessibilityElementsHidden importantForAccessibility="no">
               ✓
@@ -427,7 +434,10 @@ function GlassScreen({
             </Text>
           )}
         </View>
-        {segments != null ? (
+        {off ? (
+          // Powered off — an unlit LED strip (methods) or a dark screen (quiz).
+          segments != null ? <LedMeter filled={0} fullWidth flat segHeight={rs(10)} /> : null
+        ) : segments != null ? (
           // flat: behind the glass the meter is lit segments only — no bevel,
           // no molded frame (owner 2026-08-06). Segment height rides RACK_SCALE
           // so the strip stays balanced in the shorter screen (owner 2026-08-11).
@@ -1029,6 +1039,17 @@ export function DashboardScreen() {
     .map((c) => gateReadout(c, rowFor(c.key)));
   const allGatesPass = readouts.every((r) => r.gatePass);
 
+  // POWER SEQUENCING (owner 2026-08-11): each unlock powers on the next stage of
+  // the rack. Flashcards is always live. The 3 homework methods (fill-in-blank /
+  // matching / scenarios) power on once EVERY term has been seen at least once in
+  // flashcards (flashcards display % = 100). The quiz powers on once the homework
+  // methods are complete (that's exactly `allGatesPass` → quizState !== 'locked').
+  const rackItemCount = data.itemCountByTopic.get(topic.id) ?? 0;
+  const flashcardsCfg = data.methodConfigs.find((c) => c.key === 'flashcards');
+  const flashcardsSeenAll =
+    Math.round(methodDisplayPct(rowFor('flashcards'), rackItemCount, 'flashcards', flashcardsCfg?.required_passes ?? 2)) >= 100;
+  const homeworkPowered = devBypass('bypassMethodLocks') || flashcardsSeenAll;
+
   // Topic "overall progress" = mean of the applicable methods' smooth display
   // progress (creeps with every pass, consistent with the per-method meters).
   const topicItemCount = data.itemCountByTopic.get(topic.id) ?? 0;
@@ -1311,6 +1332,9 @@ export function DashboardScreen() {
             methodDisplayPct(cfgRow, data.itemCountByTopic.get(topic.id) ?? 0, m.key, methodCfg?.required_passes ?? 2),
           );
           const complete = isApplicable && pct >= 100;
+          // Power gate: flashcards is always live; the 3 homework methods light
+          // up only once flashcards has shown every term once (owner 2026-08-11).
+          const powered = m.key === 'flashcards' || homeworkPowered;
           return (
             // 3D console-key frame (Booth 2026-07-09): raised while incomplete,
             // DEPRESSED (indented) once at 100%. Unavailable methods (ear
@@ -1348,11 +1372,10 @@ export function DashboardScreen() {
                       <MethodIcon
                         method={m.key}
                         size={RACK_ICON}
-                        // Glyph ALWAYS lit (owner) — same as the quiz icon; only
-                        // the frame lights on completion. (Was graying out the
-                        // non-applicable methods — flashcards / fill-in-blank /
-                        // scenarios — so they read wrong.)
-                        glowColor={isApplicable && complete ? METHOD_COLORS[m.key] : undefined}
+                        // Glyph lit when powered; dark when the stage is still
+                        // powered off (owner 2026-08-11). Frame lights on complete.
+                        color={powered ? undefined : OFF_ICON}
+                        glowColor={powered && isApplicable && complete ? METHOD_COLORS[m.key] : undefined}
                       />
                     </View>
                     {/* Same tinted-glass pane as the title readout (owner 2026-08-06). */}
@@ -1372,10 +1395,14 @@ export function DashboardScreen() {
                       // Always at least 1 green segment lit (owner 2026-08-06).
                       segments={isApplicable ? Math.max(1, segmentsForPct(pct)) : 0}
                       complete={complete}
+                      off={!powered}
                     />
                   </View>
 
-                  {isApplicable ? (
+                  {!powered ? (
+                    // Powered off — a DEAD clear cap: no light, no colour, no nav.
+                    <SwitchButton label="" variant="clear" width={89} height={RACK_SWITCH_H} disabled />
+                  ) : isApplicable ? (
                     <SwitchButton
                       // Start (blue) → Continue (amber) → Review (green), by progress.
                       label={pct >= 100 ? 'Review' : pct <= 0 ? 'Start' : 'Continue'}
@@ -1431,13 +1458,18 @@ export function DashboardScreen() {
           {/* Mid LA-2A gray face — same as the Flashcards panel (owner 2026-08-11). */}
           <BlackFaceBg light />
           <CornerScrews angles={[0, 5, -4, 3]} />
-          {quizState === 'locked' && (
+          {/* Amber attention pulse only once the quiz has POWERED ON and is
+              ready to take (owner 2026-08-11) — never on the dead/locked panel. */}
+          {quizState === 'ready' && (
             <Animated.View pointerEvents="none" style={[styles.quizPulseBorder, { opacity: pulseOpacity }]} />
           )}
           {/* Same anatomy as the method rows so every object aligns (#4):
               screw · icon square · title+status LED column · switch · screw. */}
           {(() => {
             const score = topicProg?.best_genuine_score ?? '';
+            // The quiz powers on once the homework methods are complete
+            // (allGatesPass → quizState !== 'locked'); until then it's dead.
+            const quizPowered = quizState !== 'locked';
             const qColor =
               quizState === 'ready' || quizState === 'passed'
                 ? '#5bff85'
@@ -1465,14 +1497,11 @@ export function DashboardScreen() {
                     <View style={styles.iconSticker}>
                       <MethodIcon
                         method="quiz"
-                        // Same size + border layout as the method icons (owner
-                        // 2026-08-06 — the 46px quiz tile read too large).
                         size={RACK_ICON}
-                        // PASSED → the whole icon goes GREEN, glyph AND border
-                        // (owner 2026-08-06). The border stays the faint default
-                        // line until then — a lit colored border means DONE.
-                        color={quizState === 'passed' ? '#3fe06a' : undefined}
-                        glowColor={quizState === 'passed' ? '#3fe06a' : undefined}
+                        // Dark when powered off; PASSED → the whole icon goes
+                        // GREEN (glyph AND border) once powered (owner 2026-08-11).
+                        color={!quizPowered ? OFF_ICON : quizState === 'passed' ? '#3fe06a' : undefined}
+                        glowColor={quizPowered && quizState === 'passed' ? '#3fe06a' : undefined}
                       />
                     </View>
                     {/* Same tinted-glass pane as the title readout (owner 2026-08-06). */}
@@ -1481,42 +1510,24 @@ export function DashboardScreen() {
                   <View style={styles.methodLeft}>
                     {/* Same LED-screen-under-glass as the method panels (owner
                         2026-08-06): TITLE · status · gate summary line. */}
-                    <GlassScreen title="TOPIC QUIZ" value={qShort} valueColor={qColor} subtitle={qSummary} subtitleColor={qColor} />
+                    <GlassScreen title="TOPIC QUIZ" value={qShort} valueColor={qColor} subtitle={qSummary} subtitleColor={qColor} off={!quizPowered} />
                   </View>
-                  <SwitchButton
-                    label={
-                      quizState === 'locked'
-                        ? 'Locked'
-                        : quizState === 'passed'
-                          ? 'Practice'
-                          : quizState === 'partial'
-                            ? 'Retry'
-                            : 'Start'
-                    }
-                    variant={quizState === 'passed' ? 'success' : 'primary'}
-                    width={96}
-                    height={RACK_QUIZ_SWITCH_H}
-                    disabled={quizState === 'locked'}
-                    onPress={() =>
-                      navigation.navigate('Quiz', { achievementId: topic.id, topicName: topic.name })
-                    }
-                  />
+                  {!quizPowered ? (
+                    // Powered off — a DEAD clear cap, no light/colour/nav.
+                    <SwitchButton label="" variant="clear" width={96} height={RACK_QUIZ_SWITCH_H} disabled />
+                  ) : (
+                    <SwitchButton
+                      label={quizState === 'passed' ? 'Practice' : quizState === 'partial' ? 'Retry' : 'Start'}
+                      variant={quizState === 'passed' ? 'success' : 'primary'}
+                      width={96}
+                      height={RACK_QUIZ_SWITCH_H}
+                      onPress={() => navigation.navigate('Quiz', { achievementId: topic.id, topicName: topic.name })}
+                    />
+                  )}
                 </View>
 
-                {/* Detailed gate lines below the aligned row when locked. */}
-                {quizState === 'locked' && (
-                  <View style={[styles.cutoutMount, styles.gateDisplay]}>
-                    {readouts
-                      .flatMap((r) => r.lines)
-                      .map((l, i) => (
-                        <Text key={i} style={[styles.gateLine, { color: l.color }]}>
-                          {l.text}
-                        </Text>
-                      ))}
-                    {/* Same glass pane so it gets the gray lip + black bottom line. */}
-                    <GlassCover />
-                  </View>
-                )}
+                {/* No gate-line readout when powered off — the dead panel stays
+                    dark (owner 2026-08-11); the sequence itself is the guidance. */}
               </>
             );
           })()}
@@ -2127,6 +2138,8 @@ const styles = StyleSheet.create({
   },
   // Completed method — the title segment relights in the check green.
   glassTitleDone: { color: '#3fe06a', textShadowColor: 'rgba(63,224,106,0.6)' },
+  // Powered off — the readout is dark, no backlight glow.
+  glassTitleOff: { color: '#41434a', textShadowColor: 'transparent', textShadowRadius: 0 },
   // The % (or quiz status) — colored LED digits; colored glow set inline. Larger
   // to the right of the title, right-aligned; never shrinks below the title.
   glassValue: {
