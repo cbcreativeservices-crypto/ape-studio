@@ -18,12 +18,20 @@ import { EntitlementProvider } from './src/features/commercial/EntitlementProvid
 import { AudioOutputGate } from './src/features/audio/AudioOutputGate';
 import { touchAudioActivity } from './src/features/audio/audioOutputStore';
 import { AudioBorderFrame } from './src/features/audio/AudioBorderFrame';
+import { ExposureCheckin } from './src/features/audio/ExposureCheckin';
+import { initExposureMonitor } from './src/features/audio/exposureMonitor';
+import { subscribeAudioOutput } from './src/features/audio/audioOutputStore';
 import { MicFeedbackGuard } from './src/features/audio/MicFeedbackGuard';
 import { ShakeToMute } from './src/features/audio/ShakeToMute';
 import { LowLightDim, LowLightProductionGate } from './src/features/settings/LowLightLayer';
 import { registerLowLightTap, touchLowLight } from './src/features/settings/lowLight';
 import { useAccountLocalSync } from './src/features/account/accountLocalSync';
 import { colors, fontAssets } from './src/theme/tokens';
+
+// Boot the Listening Exposure Monitor once (owner 2026-08-12): its 1 s poller
+// arms ONLY while the audio-output gate is open and the app is foregrounded —
+// zero cost while the app cannot sound. House hydrate-on-import idiom.
+initExposureMonitor(subscribeAudioOutput);
 
 const navTheme: Theme = {
   ...DarkTheme,
@@ -105,6 +113,10 @@ export default function App() {
             {/* Persistent thin red frame whenever audio output is enabled — a
                 global "the app can sound" indicator on every screen. */}
             <AudioBorderFrame />
+            {/* Listening Exposure Monitor check-ins (owner 2026-08-12): every
+                15 active minutes the red line becomes the bottom edge of this
+                top check-in panel. Renders nothing between check-ins. */}
+            <ExposureCheckin />
             {/* Mic↔speaker feedback interlock (owner request 2026-07-26): cuts
                 the speaker whenever the mic is capturing without the physical
                 override. Renders nothing; mounted once at the root. */}

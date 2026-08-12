@@ -129,6 +129,15 @@ export function touchAudioActivity(now: number = Date.now()): void {
   armIdleTimer();
 }
 
+/** Plain (non-hook) subscription to store changes — used by the exposure
+ *  monitor to arm/disarm its poller with the output gate (owner 2026-08-12). */
+export function subscribeAudioOutput(cb: () => void): () => void {
+  listeners.add(cb);
+  return () => {
+    listeners.delete(cb);
+  };
+}
+
 /** Subscribe to the enabled flag. Default false; resets false on every launch. */
 export function useAudioOutputEnabled(): boolean {
   return useSyncExternalStore(

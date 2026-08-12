@@ -86,10 +86,10 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       { name: 'Foundations of Sound', blurb: 'Air, waves, amplitude, wavelength, phase, harmonics — sound made visible, module by module.', route: 'FoundationsCourse' },
       { name: 'Sound Playground', blurb: 'A free sandbox for every Foundations control and display at once.', route: 'FoundationsPlayground' },
       { name: 'Microphone Principles', blurb: 'Pickup patterns, proximity, off-axis, plosives, stereo pairs — and what cupping the mic really does.', route: 'MicLab' },
-      // Dosimeter Lab (owner 2026-08-10): planned to AUTO-RUN in the background,
-      // accumulating the user's sound-exposure dose whenever audio output plays.
-      // Behavior to be scoped/built later — placeholder only for now.
-      { name: 'Dosimeter Lab', blurb: 'A background sound-exposure monitor — tracks your daily noise dose while audio plays.', status: 'development' },
+      // The dosimeter itself is NOT a catalog lab (owner 2026-08-12): it runs
+      // silently in the background; the user interacts with it ONLY from the
+      // Measurement & Analysis Tools menu (readout + popup) and the 15-minute
+      // check-ins inside audio tools/labs.
     ],
   },
   {

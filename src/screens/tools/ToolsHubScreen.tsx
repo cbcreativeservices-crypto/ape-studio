@@ -5,6 +5,7 @@
  * measurement tools with per-tool colored glass keys; each opens its
  * educational info screen (the live engine is Spike 0 — see toolsData notes).
  */
+import { useEffect, useState } from 'react';
 import { Dimensions, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -18,6 +19,12 @@ import { CONCEPT_MODULES } from '../../features/tools/learn';
 import { colors, fonts } from '../../theme/tokens';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { TOOLS, type ToolKey } from './toolsData';
+import {
+  fmtDuration,
+  getExposureSnapshot,
+  subscribeExposure,
+  type ExposureSnapshot,
+} from '../../features/audio/exposureMonitor';
 import type { RootStackParamList } from '../../navigation/types';
 
 const { width: SCREEN_W } = Dimensions.get('window');
@@ -25,6 +32,29 @@ const TILE_W = Math.floor((SCREEN_W - 14 * 2 - 12) / 2); // 2-across, 14 pad, 12
 const NAV_TABS: NavIconName[] = ['Home', 'Study', 'Achievements', 'Profile'];
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ToolsHub'>;
+
+/** Live dosimeter readout + the ONE entry into the Listening Exposure Monitor
+ *  popup (owner 2026-08-12): the monitor runs silently in the background —
+ *  this chip and the 15-minute check-ins are its only surfaces. */
+function DosimeterChip({ onOpen }: { onOpen: () => void }) {
+  const [snap, setSnap] = useState<ExposureSnapshot>(getExposureSnapshot());
+  useEffect(() => subscribeExposure(() => setSnap(getExposureSnapshot())), []);
+  const pct = Math.round(snap.todayDose * 100);
+  return (
+    <Pressable
+      onPress={onOpen}
+      accessibilityRole="button"
+      accessibilityLabel={`Listening exposure: dose ${pct} percent, ${fmtDuration(snap.todayActiveSec)} today. Open the monitor.`}
+      style={[styles.dosiChip, pct >= 100 && { borderColor: 'rgba(255,42,42,.8)' }, pct >= 80 && pct < 100 && { borderColor: 'rgba(255,180,0,.7)' }]}
+    >
+      <Text style={styles.dosiLabel}>DOSIMETER</Text>
+      <Text style={[styles.dosiValue, pct >= 100 && { color: '#ff6a5e' }]}>
+        {`${pct}% · ${snap.todayActiveSec > 0 ? fmtDuration(snap.todayActiveSec) : '0 min'}`}
+      </Text>
+      <Text style={styles.dosiOpen}>OPEN ›</Text>
+    </Pressable>
+  );
+}
 
 /** Per-tool icon accent (matches the glass-key tints). */
 const ICON_COLOR: Record<ToolKey, string> = {
@@ -206,7 +236,13 @@ export function ToolsHubScreen({ navigation }: Props) {
           {/* Hero — the module masthead (art can layer in later). */}
           <View style={styles.hero}>
             <Text style={styles.heroEyebrow}>AUDIO MEASUREMENT TOOLS</Text>
-            <Text style={styles.heroTitle}>Measurement{'\n'}& Analysis</Text>
+            {/* Title row: title LEFT, dosimeter readout + open control RIGHT
+                (owner 2026-08-12) — the ONE place the user interacts with the
+                Listening Exposure Monitor's readings and settings. */}
+            <View style={styles.heroTitleRow}>
+              <Text style={styles.heroTitle}>Measurement{'\n'}& Analysis</Text>
+              <DosimeterChip onOpen={() => navigation.navigate('ExposureMonitor')} />
+            </View>
             <View style={styles.heroRule} />
             <Text style={styles.heroCount}>{TOOLS.filter((t) => !t.planned).length} tools available</Text>
           </View>
@@ -376,6 +412,21 @@ const styles = StyleSheet.create({
   },
   heroEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 2.2, color: colors.amber },
   heroTitle: { fontFamily: fonts.oswaldMedium, fontSize: 22, lineHeight: 26, color: colors.textPrimary },
+  heroTitleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
+  // Dosimeter readout chip (owner 2026-08-12) — right of the hero title.
+  dosiChip: {
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: '#2c2c33',
+    backgroundColor: '#131316',
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    alignItems: 'flex-end',
+    gap: 1,
+  },
+  dosiLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 8.5, letterSpacing: 1.4, color: colors.textSub },
+  dosiValue: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.5, color: colors.textPrimary },
+  dosiOpen: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1.2, color: colors.green },
   heroRule: { width: 40, height: 2, backgroundColor: colors.amber, borderRadius: 1, marginTop: 2 },
   heroCount: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.textSub },
 

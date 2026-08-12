@@ -24,10 +24,10 @@ completion status the owner signs off as we approach launch testing.
 |---|---|
 | **Incomplete (🔴 — needs dev work)** | **0** |
 | Blocked (🟡 — built, dependency-gated) | 9 |
-| Built, awaiting sign-off (🔵) | 68 |
+| Built, awaiting sign-off (🔵) | 69 |
 | Signed off (🟢) | 0 |
 | Excluded (⚪ — parked/dev) | 2 |
-| **Total navigable screens (excl. ⚪)** | **77** |
+| **Total navigable screens (excl. ⚪)** | **78** |
 
 **So: "how many screens are incomplete?" → 0 need net-new build (audit found no
 stubs/partials); 9 are built but blocked on the native audio engine build (the
@@ -88,6 +88,7 @@ sign-off.**
 | ToolDemo | 🔵 | Visual/silent demos. |
 | ConceptModule | 🔵 | |
 | ToolLibrary (MeasurementLibrary) | 🔵 | Share branding unified 2026-08-10. |
+| ExposureMonitor (Listening Exposure) | 🔵 | Added 2026-08-12: app-wide audio dosimeter — check-ins, history, settings, privacy; works on any build (estimates labeled). |
 | SplMeter | 🟡 | Built; live audio needs native DSP engine build. |
 | Rta | 🟡 | Built; live audio needs native DSP engine build. |
 | WaveformLive | 🟡 | Built; live audio needs native DSP engine build. |

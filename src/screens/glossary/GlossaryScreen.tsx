@@ -2201,6 +2201,9 @@ export function GlossaryScreen({ route, navigation }: Props) {
                           selfId={item.id}
                           index={termIndex}
                           onLink={onLinkPress}
+                          // Honor the links toggle here too (user bug 2026-08-12:
+                          // the card popup's main definition ignored it).
+                          linksOn={linksOn}
                         />
                         {d ? (
                           <TermDetails

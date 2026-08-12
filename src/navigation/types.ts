@@ -228,6 +228,10 @@ export type RootStackParamList = {
   /** Microphone Selection Lab (owner spec 2026-08-12) — types, characteristics
    *  & applications: 9 lessons + Choose-the-Mic challenge + optional locker. */
   MicSelectLab: undefined;
+  /** Listening Exposure Monitor (owner spec 2026-08-12) — the app-wide audio
+   *  dosimeter: session/today/history, check-in settings, privacy controls.
+   *  UNGATED: hearing-safety information is never locked. */
+  ExposureMonitor: undefined;
 };
 
 declare global {

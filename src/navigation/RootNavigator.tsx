@@ -87,6 +87,7 @@ import { PublicGlossaryScreen } from '../screens/landing/PublicGlossaryScreen';
 import { PaywallScreen } from '../screens/commercial/PaywallScreen';
 import { AmplitudeLabScreen, withAmplitudeOrientation } from '../screens/lab/amplitude/AmplitudeOrientation';
 import { MicSelectLabScreen } from '../screens/lab/micselect/MicSelectLabScreen';
+import { ExposureMonitorScreen } from '../screens/tools/ExposureMonitorScreen';
 import { MainTabs } from './MainTabs';
 import type { RootStackParamList } from './types';
 
@@ -192,6 +193,12 @@ export function RootNavigator() {
       <Stack.Screen name="FrequencyCounter" component={Gated.FrequencyCounter} />
       {/* Pro Audio MultiMeter (Mono) — all-in-one live meter (owner 2026-07-29). */}
       <Stack.Screen name="MultiMeter" component={Gated.MultiMeter} />
+      {/* Listening Exposure Monitor (owner 2026-08-12) — a POPUP (modal) opened
+          from the ToolsHub dosimeter chip and the check-in panel; the ONLY
+          places the user interacts with dosimeter readings/settings. UNGATED
+          on purpose: hearing-safety info is never behind the orientation or a
+          paywall. */}
+      <Stack.Screen name="ExposureMonitor" component={ExposureMonitorScreen} options={{ presentation: 'modal' }} />
       {/* Spike-0 dev-only debug (entry rendered only when __DEV__). */}
       <Stack.Screen name="DspDebug" component={DspDebugScreen} />
       {/* Audio Learning Lab (v4 MASTER §13) — the pinned Home card opens the
