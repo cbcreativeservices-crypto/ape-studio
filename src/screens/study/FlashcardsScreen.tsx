@@ -331,7 +331,10 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   const [starredOnly, setStarredOnly] = useState(false);
   const [orderMode, setOrderMode] = useState<'az' | 'shuffle'>('az');
   const [shuffleNonce, setShuffleNonce] = useState(1);
-  const [revealedThisVisit, setRevealedThisVisit] = useState<Set<string>>(new Set());
+  // Tracks which cards were revealed this visit. View credit now comes from the
+  // term being SHOWN (see viewedThisSession effect), so this is only kept for
+  // its incidental resets elsewhere; nothing reads it for completion.
+  const [, setRevealedThisVisit] = useState<Set<string>>(new Set());
   // FILTERS popup: which definition sections show when a card is revealed
   // (levels 1..6). Never empty. Device-global preference (Booth 2026-07-09d).
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -819,6 +822,24 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   // card (term→definition→next term). Counted in goCard, not on reveal alone.
   const revealedCurrent = useRef(false);
 
+  // VIEW CREDIT = the TERM being SHOWN once (owner 2026-08-11): a user who
+  // already knows a term does NOT have to flip to its definition — seeing the
+  // term face is enough. Fires once per card per session; the Dashboard
+  // flashcards LED completes when every term has been shown at least once.
+  // (Homework + quiz still gate on their own completion — this only changes
+  // what counts as "seen" for flashcards.)
+  const viewedThisSession = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    if (!card || viewedThisSession.current.has(card.id)) return;
+    viewedThisSession.current.add(card.id);
+    session.current?.addEvent({ item: card.id, kind: 'view' });
+    setStates((prev) => ({
+      ...prev,
+      [card.id]: { ...prev[card.id], views: (prev[card.id]?.views ?? 0) + 1 },
+    }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [card?.id]);
+
   // pos: swipe UP reveals the FIRST enabled section, swipe DOWN the LAST
   // (Booth 2026-07-15). The section filters shape enabledLevels, so both ends
   // respect the user's selection.
@@ -826,17 +847,10 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     if (!card) return;
     setLevel(pos === 'first' ? enabledLevels[0] : enabledLevels[enabledLevels.length - 1]);
     revealedCurrent.current = true;
-    if (!revealedThisVisit.has(card.id)) {
-      session.current?.addEvent({ item: card.id, kind: 'view' });
-      setRevealedThisVisit((s) => new Set(s).add(card.id));
-      setStates((prev) => ({
-        ...prev,
-        [card.id]: { ...prev[card.id], views: (prev[card.id]?.views ?? 0) + 1 },
-      }));
-    } else {
-      session.current?.touch();
-    }
-  }, [card, revealedThisVisit, enabledLevels]);
+    // View credit is earned when the TERM is shown (see the effect above), so a
+    // reveal only registers activity — it no longer gates completion.
+    session.current?.touch();
+  }, [card, enabledLevels]);
 
   const goCard = useCallback(
     (dir: 1 | -1) => {
@@ -849,7 +863,6 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       }
       setIdx((i) => (i + dir + deck.length) % deck.length);
       setLevel(0);
-      setRevealedThisVisit(new Set());
       // Pace: each move to another card counts as one item advanced.
       setPaceAnswered((n) => n + 1);
       // T2 trigger: after ~5 swipes, offer the "Customize Your Deck" tutorial.
@@ -895,20 +908,12 @@ export function FlashcardsScreen({ navigation, route }: Props) {
         session.current?.touch();
         return;
       }
-      // Landing on a definition counts as a reveal (view credit).
+      // Landing on a definition is activity, not the completion trigger — view
+      // credit was already earned when the term was shown (effect above).
       revealedCurrent.current = true;
-      if (!revealedThisVisit.has(card.id)) {
-        session.current?.addEvent({ item: card.id, kind: 'view' });
-        setRevealedThisVisit((s) => new Set(s).add(card.id));
-        setStates((prev) => ({
-          ...prev,
-          [card.id]: { ...prev[card.id], views: (prev[card.id]?.views ?? 0) + 1 },
-        }));
-      } else {
-        session.current?.touch();
-      }
+      session.current?.touch();
     },
-    [card, level, enabledLevels, revealedThisVisit],
+    [card, level, enabledLevels],
   );
 
   // Full screen shows the STUDY SHEET when EITHER the sheet was opened directly
