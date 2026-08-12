@@ -177,10 +177,6 @@ function SectionRackPanel({ label, angles }: { label: string; angles: [number, n
 function StencilLabel({ label }: { label: string }) {
   return (
     <View style={styles.stencilWrap}>
-      {/* light bleeding through the cut — wide soft bloom (dimmed) */}
-      <Text style={[styles.stencilBase, styles.stencilGlow]} numberOfLines={1}>
-        {label}
-      </Text>
       {/* TOP cut wall in shadow — the panel's thickness at the near edge */}
       <Text style={[styles.stencilBase, styles.stencilWallTop]} numberOfLines={1}>
         {label}
@@ -274,13 +270,18 @@ const GRIT_SPECKS = (() => {
 // bottom edges) with random bead-blasted particulate grit. The debossed titles
 // were already tuned for a gray floor, so they read correctly here. Drawn in
 // measured PIXEL space so the specks are round dots, not stretched streaks.
-function BlackFaceBg({ dark = false }: { dark?: boolean }) {
+function BlackFaceBg({ dark = false, light = false }: { dark?: boolean; light?: boolean }) {
   const [size, setSize] = useState({ w: 0, h: 0 });
   // Section (Homework / Proficiency) panels get a MUCH darker gray coat (~7
-  // shades below the method panels — owner 2026-08-11 rev2: 3 more down from
-  // the earlier 4) so they read distinctly from the method/quiz panels.
-  const gradId = dark ? 'apeGrayFaceDark' : 'apeGrayFace';
-  const stops = dark ? ['#17171b', '#232327', '#0d0d11'] : ['#3a3a3e', '#46464b', '#2c2c30'];
+  // shades below the method panels — owner 2026-08-11 rev2). The QUIZ panel gets
+  // a LIGHT gray LA-2A face: a painted-aluminium silver, faintly brighter in the
+  // upper-mid where the light falls, edges a touch darker (owner 2026-08-11).
+  const gradId = light ? 'apeGrayFaceLight' : dark ? 'apeGrayFaceDark' : 'apeGrayFace';
+  const stops = light
+    ? ['#c9cbcc', '#dbdddd', '#c1c3c4']
+    : dark
+      ? ['#17171b', '#232327', '#0d0d11']
+      : ['#3a3a3e', '#46464b', '#2c2c30'];
   return (
     <View
       pointerEvents="none"
@@ -1417,10 +1418,10 @@ export function DashboardScreen() {
             proud, which read as the quiz being recessed below its neighbours.
             No static amber accent — the animated quizPulseBorder is the only
             amber cue, so the scenarios→quiz seam matches every method frame. */}
-        <ElevatedFrame depressed={false} chrome contentStyle={styles.methodInner}>
-          {/* Gray textured rack-blank face, same as the method panels (owner
-              2026-08-01) — the quiz now matches the rest of the rack. */}
-          <BlackFaceBg />
+        <ElevatedFrame depressed={false} contentStyle={styles.methodInner}>
+          {/* LA-2A light-gray painted-aluminium face (owner 2026-08-11) — the
+              quiz panel now reads as a Teletronix/UA classic front panel. */}
+          <BlackFaceBg light />
           <CornerScrews angles={[0, 5, -4, 3]} />
           {quizState === 'locked' && (
             <Animated.View pointerEvents="none" style={[styles.quizPulseBorder, { opacity: pulseOpacity }]} />
@@ -2006,17 +2007,6 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     textAlign: 'center',
     textShadowOffset: { width: 0, height: 0 },
-  },
-  // Soft bloom BEHIND — light spilling from the cut onto the dark panel; dimmed
-  // to 37% and kept TIGHT so it's a halo, not a haze (owner 2026-08-11).
-  stencilGlow: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    color: 'rgba(150,205,255,0.35)',
-    textShadowColor: 'rgba(120,195,255,0.85)',
-    textShadowRadius: 6,
-    opacity: 0.37,
   },
   // TOP cut wall in shadow — a black copy nudged UP a WHOLE pixel (crisp, no
   // blur) so a sharp dark rim sits at the letters' top edge.
