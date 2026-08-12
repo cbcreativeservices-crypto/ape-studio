@@ -71,7 +71,6 @@ import {
 } from '../../features/dashboard/api';
 import { FREE_ENROLL_GS, isFreeEnrollGs, useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { supabase } from '../../lib/supabase';
-import { gateReadout } from '../../features/dashboard/gates';
 import { fetchGlossaryItemsByIds, fetchTopicItems, studyDisplayPct } from '../../features/study/api';
 import { setLastStudyLocation } from '../../features/study/lastStudyLocation';
 import {
@@ -1033,22 +1032,24 @@ export function DashboardScreen() {
   const rowsForTopic = data.methodRows.filter((r) => r.achievement_id === topic.id);
   const rowFor = (key: string) => rowsForTopic.find((r) => r.method_key === key);
 
-  // Gate mirror over the applicable methods (display-only).
-  const readouts = data.methodConfigs
-    .filter((c) => applicable.has(c.key))
-    .map((c) => gateReadout(c, rowFor(c.key)));
-  const allGatesPass = readouts.every((r) => r.gatePass);
-
   // POWER SEQUENCING (owner 2026-08-11): each unlock powers on the next stage of
   // the rack. Flashcards is always live. The 3 homework methods (fill-in-blank /
   // matching / scenarios) power on once EVERY term has been seen at least once in
   // flashcards (flashcards display % = 100). The quiz powers on once the homework
   // methods are complete (that's exactly `allGatesPass` → quizState !== 'locked').
   const rackItemCount = data.itemCountByTopic.get(topic.id) ?? 0;
-  const flashcardsCfg = data.methodConfigs.find((c) => c.key === 'flashcards');
-  const flashcardsSeenAll =
-    Math.round(methodDisplayPct(rowFor('flashcards'), rackItemCount, 'flashcards', flashcardsCfg?.required_passes ?? 2)) >= 100;
+  const methodPct = (key: string) =>
+    Math.round(
+      methodDisplayPct(rowFor(key), rackItemCount, key, data.methodConfigs.find((c) => c.key === key)?.required_passes ?? 2),
+    );
+  const flashcardsSeenAll = methodPct('flashcards') >= 100;
   const homeworkPowered = devBypass('bypassMethodLocks') || flashcardsSeenAll;
+  // Quiz powers on ONLY when the (applicable) homework methods are all complete.
+  // Computed explicitly — NOT from `allGatesPass`, which is vacuously true when
+  // no methods are applicable and would light the quiz early (owner 2026-08-11).
+  const HOMEWORK_KEYS = ['fill_in_blank', 'matching', 'scenarios'];
+  const applicableHomework = HOMEWORK_KEYS.filter((k) => applicable.has(k));
+  const homeworkComplete = applicableHomework.length > 0 && applicableHomework.every((k) => methodPct(k) >= 100);
 
   // Topic "overall progress" = mean of the applicable methods' smooth display
   // progress (creeps with every pass, consistent with the per-method meters).
@@ -1093,7 +1094,10 @@ export function DashboardScreen() {
       ? 'passed'
       : status === 'passed_incomplete'
         ? 'partial'
-        : allGatesPass
+        : // The quiz is READY (powers on) ONLY once the homework methods are
+          // complete — NOT `allGatesPass`, which is vacuously true when a topic
+          // has no applicable methods and lit the quiz early (owner 2026-08-11).
+          homeworkComplete
           ? 'ready'
           : 'locked';
   // DEV BYPASS (Booth 2026-07-18): quiz always startable for screen testing.
@@ -1467,8 +1471,8 @@ export function DashboardScreen() {
               screw · icon square · title+status LED column · switch · screw. */}
           {(() => {
             const score = topicProg?.best_genuine_score ?? '';
-            // The quiz powers on once the homework methods are complete
-            // (allGatesPass → quizState !== 'locked'); until then it's dead.
+            // Powered on iff not locked (quizState is locked until the homework
+            // methods are complete — see rawQuizState above).
             const quizPowered = quizState !== 'locked';
             const qColor =
               quizState === 'ready' || quizState === 'passed'
