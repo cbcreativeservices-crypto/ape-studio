@@ -1132,13 +1132,6 @@ export function DashboardScreen() {
   const quizState =
     rawQuizState === 'locked' && devBypass('bypassQuizLocks') ? 'ready' : rawQuizState;
 
-  const swipeHint = [
-    topicIdx > 0 ? '‹ swipe' : null,
-    topicIdx < lastTopicIdx ? 'swipe ›' : null,
-  ]
-    .filter(Boolean)
-    .join(' · ');
-
   const pulseOpacity = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.25, 1] });
 
   return (
@@ -1278,7 +1271,6 @@ export function DashboardScreen() {
                     {dispIsCustom
                       ? `${starred.size} TERM${starred.size === 1 ? '' : 'S'}`
                       : `TOPIC ${dispIdx + 1} OF ${topics.length} · ${data.currentCourse.name.toUpperCase()}`}
-                    {swipeHint ? `  ·  ${swipeHint}` : ''}
                   </Text>
                 </Pressable>
                 {/* Overall progress — label left-justified, the amber % below it
@@ -1999,7 +1991,11 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     paddingHorizontal: 9,
     paddingVertical: 7,
-    justifyContent: 'space-between',
+    // Top-aligned (owner 2026-08-11): the progress block sits just below the
+    // meta line at a CONSISTENT gap. 'space-between' pushed it to the bottom, so
+    // the meta→progress gap ballooned whenever the meta was one line instead of
+    // two.
+    justifyContent: 'flex-start',
   },
   topicCenterCol: { alignItems: 'center', justifyContent: 'flex-start', gap: 6 },
   topicMeterCol: { alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch' },
