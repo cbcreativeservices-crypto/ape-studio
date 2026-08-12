@@ -1855,7 +1855,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 5,
+    paddingVertical: 1,
     paddingHorizontal: 6,
     borderRadius: 8,
     borderWidth: 1,
@@ -1865,10 +1865,11 @@ const styles = StyleSheet.create({
   topicNavArrow: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 12.5,
+    lineHeight: 14,
     letterSpacing: 1,
     color: colors.amber,
     paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingVertical: 1,
   },
   topicNavDisabled: { color: '#45454d' },
   topicNavDeckBtn: {
@@ -1877,9 +1878,9 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(47,155,255,.6)',
     backgroundColor: 'rgba(47,155,255,.12)',
     paddingHorizontal: 16,
-    paddingVertical: 3,
+    paddingVertical: 1,
   },
-  topicNavDeckText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.4, color: colors.blue },
+  topicNavDeckText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, lineHeight: 14, letterSpacing: 1.4, color: colors.blue },
   topicCard: {
     // Powder-coat panel base (fallback behind the PanelFace texture), 3 shades
     // darker than the panels below (Booth 2026-07-11). overflow clips the coat
