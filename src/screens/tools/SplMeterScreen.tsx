@@ -8,9 +8,19 @@
  * Integrity (§1.7/§5/§6):
  *  - Nothing is simulated — readouts render ONLY from a real meter frame while
  *    capture is running; every other state is EngineGate or the START card.
- *  - Every value is dBFS and labeled "dBFS · uncalibrated approximate". No
- *    number is ever presented as dB SPL (calibration does not exist yet).
- *  - Peak may legitimately exceed 0 dBFS (finding F1) — shown honestly in red,
+ *  - LEVEL readouts show ESTIMATED dB SPL / dBA / dBC (owner 2026-08-12: an SPL
+ *    meter must read positive dB SPL, not negative dBFS). Estimate = dBFS + the
+ *    field-calibration offset, or a nominal 0 dBFS ≈ 100 dB SPL when
+ *    uncalibrated — always labeled "field-calibrated (approximate)" or
+ *    "uncalibrated estimate", never a certified/IEC reading, and floored at 0 so
+ *    silence never shows a negative SPL. Saved records store the SAME estimated
+ *    dB SPL, flagged uncalibrated with the offset recorded (owner ruling
+ *    2026-08-12: SPL is what pro users expect — supersedes ruling R1's
+ *    dBFS-when-uncalibrated behaviour; log to governance). dBFS is reserved for
+ *    genuine digital readings, not SPL readouts.
+ *  - Peak may legitimately exceed 0 dBFS (finding F1) — the clip cue is the
+ *    colour (red as the RAW peak nears/exceeds 0 dBFS), independent of the SPL
+ *    estimate,
  *    never clamped.
  *  - Capture starts only on the explicit START press; the hook stops capture
  *    on unmount (§18: no DSP behind a closed screen).
@@ -57,10 +67,6 @@ function selectedLevelDb(m: MeterFrame, w: Weighting, r: MeterResponse): number 
   if (w === 'C') return r === 'fast' ? m.cFastDb : m.cSlowDb;
   return r === 'fast' ? m.zFastDb : m.zSlowDb;
 }
-
-/** dB display: one decimal, honest "+" above 0 dBFS (F1), em-dash for silence
- *  (-Infinity from the engine before any signal). */
-const fmtDb = (v: number) => (Number.isFinite(v) ? (v > 0 ? `+${v.toFixed(1)}` : v.toFixed(1)) : '—');
 
 const fmtElapsed = (sec: number) => {
   if (!Number.isFinite(sec) || sec < 0) return '0:00';
@@ -472,10 +478,17 @@ export function SplMeterScreen({ navigation }: Props) {
   // point (0 dBFS ≈ 100–120 dB SPL on typical phone mics) — the user matches
   // their reference meter.
   const [draftOffset, setDraftOffset] = useState(100);
-  const unitLabel = offset != null ? 'dB SPL · field-calibrated (approximate)' : 'dBFS · uncalibrated approximate';
-  /** Level shown to the user: calibrated when an offset exists, else raw dBFS. */
+  // LEVEL readouts read positive dB SPL (owner 2026-08-12): a real SPL meter
+  // shows dB SPL / dBA / dBC, not negative dBFS. Weighted unit + honest
+  // calibration state; uncalibrated is an approximate ESTIMATE, never certified.
+  const splUnit = weighting === 'C' ? 'dBC' : weighting === 'A' ? 'dBA' : 'dB SPL';
+  const unitLabel = `${splUnit} · ${offset != null ? 'field-calibrated (approximate)' : 'uncalibrated estimate'}`;
+  /** Estimated dB SPL shown to the user AND stored in saved records (owner
+   *  2026-08-12): dBFS + the field offset, or the nominal estimate when
+   *  uncalibrated; floored at 0 so it never reads negative. dBFS is reserved for
+   *  genuine digital readings, not SPL-meter readouts. */
   const shown = (rawDb: number, withDraft = false) =>
-    rawDb + (withDraft ? draftOffset : (offset ?? 0));
+    Math.max(0, rawDb + (withDraft ? draftOffset : (offset ?? NOMINAL_OFFSET)));
 
   const running = state === 'running';
   // Show the tool's meter UI while running OR while manually paused (mic off but
@@ -649,7 +662,9 @@ export function SplMeterScreen({ navigation }: Props) {
   // the blue brackets, and the circle centre use. Previously they printed raw
   // dBFS (e.g. −67), which disagreed with the needle and read like "67 dB" next
   // to a 40 dB room. estSpl() converts a dBFS reading to the SPL estimate.
-  const estSpl = (dbfs: number) => (Number.isFinite(dbfs) ? (dbfs + splOffset).toFixed(1) : '—');
+  // Floored at 0 (owner 2026-08-12): an estimated SPL can't be negative — quiet
+  // input just reads a low positive number, never a confusing minus.
+  const estSpl = (dbfs: number) => (Number.isFinite(dbfs) ? Math.max(0, dbfs + splOffset).toFixed(1) : '—');
   const vuMaxText = meter ? estSpl(meter.peakHoldDb) : '—';
   const vuLevelText = meter ? estSpl(selectedLevelDb(meter, weighting, response)) : '—';
   // Live SPL number for the CENTER of the circle gauge — the ESTIMATED dB SPL
@@ -679,10 +694,12 @@ export function SplMeterScreen({ navigation }: Props) {
       saveFlags.push('uncalibrated_input');
     // The engine logs Leq(A) and Leq(Z) only — a C-weighted selection stores
     // the unweighted Leq(Z) as its average (documented honest fallback).
-    // Values are stored AS DISPLAYED: dB SPL when field-calibrated, else dBFS
-    // (compare mode already warns on calibrated-vs-uncalibrated pairs).
+    // Values are stored AS DISPLAYED (owner 2026-08-12): estimated dB SPL always,
+    // with calibration_status + the offset recorded so an uncalibrated record is
+    // clearly an approximate estimate (compare mode warns on calibrated-vs-
+    // uncalibrated pairs).
     const avgDb = shown(weighting === 'A' ? m.leqADb : m.leqZDb);
-    const unit = offset != null ? 'dB SPL' : 'dBFS';
+    const unit = weighting === 'C' ? 'dBC' : weighting === 'A' ? 'dBA' : 'dB SPL';
     const payload: SplLogPayload = {
       kind: 'spl_log',
       weighting,
@@ -697,7 +714,7 @@ export function SplMeterScreen({ navigation }: Props) {
       id: Crypto.randomUUID(),
       tool_type: 'spl',
       created_at: new Date().toISOString(),
-      title: `SPL Log — Leq(${weighting === 'A' ? 'A' : 'Z'}) ${fmtDb(avgDb)} ${unit} · ${fmtElapsed(m.elapsedSec)}`,
+      title: `SPL Log — Leq(${weighting === 'A' ? 'A' : 'Z'}) ${avgDb.toFixed(1)} ${unit} · ${fmtElapsed(m.elapsedSec)}`,
       notes: '',
       input_device: 'phone microphone',
       calibration_status: offset != null ? 'calibrated' : 'uncalibrated',
@@ -705,7 +722,7 @@ export function SplMeterScreen({ navigation }: Props) {
       measurement_settings:
         offset != null
           ? { weighting, response, cal_offset_db: offset, cal_set_at: cal?.setAt ?? null }
-          : { weighting, response },
+          : { weighting, response, cal_offset_db: NOMINAL_OFFSET, cal_set_at: null },
       quality_state: evaluateQuality(saveFlags),
       warning_flags: saveFlags,
       data_payload: payload,
@@ -791,7 +808,7 @@ export function SplMeterScreen({ navigation }: Props) {
                 {`L${weighting}${response === 'fast' ? 'F' : 'S'} · ${weighting}-WEIGHTED · ${response.toUpperCase()}`}
               </Text>
               <Text style={styles.readoutValue}>
-                {meter ? fmtDb(shown(selectedLevelDb(meter, weighting, response))) : '—'}
+                {meter ? estSpl(selectedLevelDb(meter, weighting, response)) : '—'}
               </Text>
               <Text style={styles.readoutSub}>{unitLabel}</Text>
             </Pressable>
@@ -799,24 +816,20 @@ export function SplMeterScreen({ navigation }: Props) {
 
             {/* PEAK / PEAK HOLD — may exceed 0 dBFS (F1): red at ≥ 0, never clamped. */}
             <View style={styles.peakRow}>
-              {/* Peak cells stay RAW dBFS always — they are digital-headroom
-                  indicators; the ≥0 dBFS hot state is about the converter
-                  ceiling, not acoustic level (F1). */}
+              {/* Peak cells now read ESTIMATED dB SPL too (owner 2026-08-12) — no
+                  negative dBFS on an SPL meter. The COLOUR still flags digital
+                  clipping (levelColorForDb goes red as the RAW peak nears/exceeds
+                  0 dBFS, F1) — that cue is independent of the SPL estimate. */}
               <Pressable style={styles.peakCell} onLongPress={() => help('peak')} delayLongPress={260}>
-                <Text style={styles.cellLabel}>PEAK (dBFS)</Text>
-                {/* Peak text readouts are always red (owner 2026-07-31); the ≥0
-                    dBFS ceiling still escalates to the hot state. */}
-                {/* Number reads level on the amplitude ramp — louder red, quieter
-                    blue (owner 2026-08-12); ≥0 dBFS still lands red. */}
+                <Text style={styles.cellLabel}>PEAK</Text>
                 <Text style={[styles.cellValue, meter ? { color: levelColorForDb(meter.peakDb) } : styles.cellValueMax]}>
-                  {meter ? fmtDb(meter.peakDb) : '—'}
+                  {meter ? estSpl(meter.peakDb) : '—'}
                 </Text>
               </Pressable>
               <Pressable style={styles.peakCell} onLongPress={() => help('peak_hold')} delayLongPress={260}>
-                <Text style={styles.cellLabel}>PEAK HOLD (dBFS)</Text>
-                {/* MAX / peak-hold reading in red (owner 2026-07-30). */}
+                <Text style={styles.cellLabel}>PEAK HOLD</Text>
                 <Text style={[styles.cellValue, meter ? { color: levelColorForDb(meter.peakHoldDb) } : styles.cellValueMax]}>
-                  {meter ? fmtDb(meter.peakHoldDb) : '—'}
+                  {meter ? estSpl(meter.peakHoldDb) : '—'}
                 </Text>
               </Pressable>
               <Pressable
@@ -836,11 +849,11 @@ export function SplMeterScreen({ navigation }: Props) {
               <View style={styles.logRow}>
                 <View style={styles.logCell}>
                   <Text style={styles.cellLabel}>Leq(A)</Text>
-                  <Text style={styles.cellValue}>{meter ? fmtDb(shown(meter.leqADb)) : '—'}</Text>
+                  <Text style={styles.cellValue}>{meter ? estSpl(meter.leqADb) : '—'}</Text>
                 </View>
                 <View style={styles.logCell}>
                   <Text style={styles.cellLabel}>Leq(Z)</Text>
-                  <Text style={styles.cellValue}>{meter ? fmtDb(shown(meter.leqZDb)) : '—'}</Text>
+                  <Text style={styles.cellValue}>{meter ? estSpl(meter.leqZDb) : '—'}</Text>
                 </View>
                 <View style={styles.logCell}>
                   <Text style={styles.cellLabel}>ELAPSED</Text>
@@ -920,7 +933,7 @@ export function SplMeterScreen({ navigation }: Props) {
                     sound-level meter (same weighting and response on both).
                   </Text>
                   <Text style={styles.calDraftValue}>
-                    {meter ? fmtDb(shown(selectedLevelDb(meter, weighting, response), true)) : '—'}
+                    {meter ? Math.max(0, selectedLevelDb(meter, weighting, response) + draftOffset).toFixed(1) : '—'}
                     <Text style={styles.calDraftUnit}>  dB SPL (candidate)</Text>
                   </Text>
                   <View style={styles.controls}>
@@ -1215,11 +1228,11 @@ export function SplMeterScreen({ navigation }: Props) {
                   <View style={styles.logRow}>
                     <View style={styles.logCell}>
                       <Text style={styles.cellLabel}>Leq(A)</Text>
-                      <Text style={styles.cellValueSm}>{meter ? fmtDb(shown(meter.leqADb)) : '—'}</Text>
+                      <Text style={styles.cellValueSm}>{meter ? estSpl(meter.leqADb) : '—'}</Text>
                     </View>
                     <View style={styles.logCell}>
                       <Text style={styles.cellLabel}>Leq(Z)</Text>
-                      <Text style={styles.cellValueSm}>{meter ? fmtDb(shown(meter.leqZDb)) : '—'}</Text>
+                      <Text style={styles.cellValueSm}>{meter ? estSpl(meter.leqZDb) : '—'}</Text>
                     </View>
                     <View style={styles.logCell}>
                       <Text style={styles.cellLabel}>ELAPSED</Text>
@@ -1299,7 +1312,7 @@ export function SplMeterScreen({ navigation }: Props) {
                         sound-level meter (same weighting and response on both).
                       </Text>
                       <Text style={styles.calDraftValue}>
-                        {meter ? fmtDb(shown(selectedLevelDb(meter, weighting, response), true)) : '—'}
+                        {meter ? shown(selectedLevelDb(meter, weighting, response), true).toFixed(1) : '—'}
                         <Text style={styles.calDraftUnit}>  dB SPL (candidate)</Text>
                       </Text>
                       <View style={styles.controls}>
