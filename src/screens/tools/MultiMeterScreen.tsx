@@ -623,23 +623,15 @@ export function MultiMeterScreen({ navigation }: Props) {
     },
     [cfg, smoothing],
   );
-  // Peak-clip latch (owner 2026-08-05, item 5): the PEAK / PK HOLD readouts turn
-  // red only once the signal actually reaches 0 dBFS, and stay red until the
-  // peak-hold is reset.
-  const [hasPeaked, setHasPeaked] = useState(false);
-  useEffect(() => {
-    if (meter && ((Number.isFinite(meter.peakDb) && meter.peakDb >= 0) || (Number.isFinite(meter.peakHoldDb) && meter.peakHoldDb >= 0))) {
-      setHasPeaked(true);
-    }
-  }, [meter]);
+  // PEAK / PK HOLD readouts now colour on the amplitude ramp (levelColorForDb,
+  // owner 2026-08-12) — the old boolean "has peaked" red latch (item 5) is gone,
+  // so there is no per-poll latch state to track here anymore.
   const onResetPeakHold = useCallback(() => {
     resetPeakHold();
-    setHasPeaked(false);
   }, [resetPeakHold]);
 
   const onStart = useCallback(() => {
     setMicPaused(false);
-    setHasPeaked(false);
     // Fresh run = fresh derived state (stale holds/history/chips would lie).
     clearEnv();
     sgBinsRef.current = null;
@@ -1559,7 +1551,6 @@ const styles = StyleSheet.create({
   statusHoldRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   statusLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.2, color: colors.textSub },
   statusValue: { fontFamily: fonts.mono, fontSize: 17, color: colors.textPrimary },
-  statusValueRed: { color: '#ff5a48' }, // peak readouts red once they actually peak, until reset (item 5)
   statusReset: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: '#c9d6e4', marginTop: -2 },
 
   // Horizontal SPL level meter (owner 2026-08-05, item 7) — thin, left→right.
