@@ -1395,8 +1395,10 @@ export function DashboardScreen() {
                       <MethodIcon
                         method={m.key}
                         size={RACK_ICON}
-                        // Glyph lit when powered; dark when the stage is still
-                        // powered off (owner 2026-08-11). Frame lights on complete.
+                        // Glyph lit when powered; fully dark (accents suppressed)
+                        // when the stage is powered off (owner 2026-08-11). Frame
+                        // lights on complete.
+                        off={!powered}
                         color={powered ? undefined : OFF_ICON}
                         glowColor={powered && isApplicable && complete ? METHOD_COLORS[m.key] : undefined}
                       />
@@ -1523,6 +1525,7 @@ export function DashboardScreen() {
                         size={RACK_ICON}
                         // Dark when powered off; PASSED → the whole icon goes
                         // GREEN (glyph AND border) once powered (owner 2026-08-11).
+                        off={!quizPowered}
                         color={!quizPowered ? OFF_ICON : quizState === 'passed' ? '#3fe06a' : undefined}
                         glowColor={quizPowered && quizState === 'passed' ? '#3fe06a' : undefined}
                       />

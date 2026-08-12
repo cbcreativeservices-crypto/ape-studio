@@ -27,7 +27,7 @@ export const METHOD_COLORS: Record<MethodKey, string> = {
   glossary: '#5bb0ff',
 };
 
-function Glyph({ method, glow, color }: { method: MethodKey; glow?: boolean; color?: string }) {
+function Glyph({ method, glow, color, off }: { method: MethodKey; glow?: boolean; color?: string; off?: boolean }) {
   const c = color ?? METHOD_COLORS[method];
   // Quiz reads fuzzy at the larger tile size — its thin checkmarks/lines get
   // swallowed by the fat halo. Give it a tighter glow so the edges stay crisp
@@ -60,14 +60,14 @@ function Glyph({ method, glow, color }: { method: MethodKey; glow?: boolean; col
           <Path
             d="M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.12 11.88 1 10.5 1S8 2.12 8 3.5V5H4c-1.1 0-1.99.9-1.99 2v3.8H3.5c1.49 0 2.7 1.21 2.7 2.7s-1.21 2.7-2.7 2.7H2V20c0 1.1.9 2 2 2h3.8v-1.5c0-1.49 1.21-2.7 2.7-2.7 1.49 0 2.7 1.21 2.7 2.7V22H17c1.1 0 2-.9 2-2v-4h1.5c1.38 0 2.5-1.12 2.5-2.5S21.88 11 20.5 11z"
             fill={c}
-            stroke={glow ? c : '#7a4d08'}
+            stroke={glow ? c : off ? c : '#7a4d08'}
             // Tighter halo + crisper outline so the puzzle edges read sharp
             // at the larger tile size (Booth 2026-07-11 #4).
             strokeWidth={glow ? 1.8 : 1.05}
             strokeLinejoin="round"
             opacity={op}
           />
-          {!glow && (
+          {!glow && !off && (
             <Path
               d="M8 5V3.5C8 2.12 9.12 1 10.5 1S13 2.12 13 3.5V5h-1.4V3.5a1.1 1.1 0 0 0-2.2 0V5z"
               fill="rgba(255,255,255,.35)"
@@ -81,18 +81,20 @@ function Glyph({ method, glow, color }: { method: MethodKey; glow?: boolean; col
           <Path
             d="M10.9 5.5 L13 5.5 C17.5 5.5, 17.5 12, 12 12 C6.5 12, 6.5 18.5, 11 18.5 L13.1 18.5"
             fill="none"
-            stroke={glow ? c : '#6e1a12'}
+            stroke={glow ? c : off ? c : '#6e1a12'}
             strokeWidth={glow ? 4.4 : 3.2}
             opacity={op}
           />
-          <Path
-            d="M10.9 5.5 L13 5.5 C17.5 5.5, 17.5 12, 12 12 C6.5 12, 6.5 18.5, 11 18.5 L13.1 18.5"
-            fill="none"
-            stroke="#ff5a48"
-            strokeWidth={1.5}
-            opacity={op}
-          />
-          {!glow && (
+          {!off && (
+            <Path
+              d="M10.9 5.5 L13 5.5 C17.5 5.5, 17.5 12, 12 12 C6.5 12, 6.5 18.5, 11 18.5 L13.1 18.5"
+              fill="none"
+              stroke="#ff5a48"
+              strokeWidth={1.5}
+              opacity={op}
+            />
+          )}
+          {!glow && !off && (
             <>
               <Rect x={1} y={4.65} width={7} height={1.7} rx={0.85} fill="#d0d4da" />
               <Rect x={1.4} y={4.85} width={4.8} height={0.4} rx={0.2} fill="#eef1f5" />
@@ -156,6 +158,7 @@ export function MethodIcon({
   glowColor,
   mono = false,
   color,
+  off = false,
 }: {
   method: MethodKey;
   size?: number;
@@ -167,6 +170,10 @@ export function MethodIcon({
   /** Override the glyph's method color (owner 2026-08-06: the quiz clipboard
    *  turns GREEN once passed). Ignored when `mono` is set. */
   color?: string;
+  /** POWERED OFF (owner 2026-08-11): the glyph is fully dark — even the
+   *  hardcoded accent colors (matching's TRS connectors, fill-in-blank's
+   *  highlight) are suppressed so nothing reads as "lit". */
+  off?: boolean;
 }) {
   // Booth ruling 2026-07-07: the fill_in_blank puzzle glyph reads visually
   // heavier than its siblings — render it 15% smaller (62% → 52.7% of tile).
@@ -189,8 +196,8 @@ export function MethodIcon({
       ]}
     >
       <Svg width={inner} height={inner} viewBox="0 0 24 24">
-        <Glyph method={method} glow color={glyphColor} />
-        <Glyph method={method} color={glyphColor} />
+        <Glyph method={method} glow color={glyphColor} off={off} />
+        <Glyph method={method} color={glyphColor} off={off} />
       </Svg>
     </View>
   );
