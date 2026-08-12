@@ -15,6 +15,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { devBypass } from '../../config/devMode';
 import { DEV_COMMERCIAL_FLAG_KEY, DEV_ENTITLEMENT_KEY, FLAG_DEFAULTS } from '../../config/flags';
 import { supabase } from '../../lib/supabase';
+import { clearAllLocalMethodStates } from '../study/localProgress';
+import { emitStudyProgress } from '../study/sync';
 
 export type Entitlement = 'anonymous' | 'free' | 'academy' | 'lapsed';
 
@@ -115,6 +117,10 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
   // from the session for the rest of this app run (so the toggle isn't clobbered
   // by a token refresh while they inspect a tier).
   const devOverrode = useRef(false);
+  // Track the signed-in user id so we can wipe the device-local study mirror
+  // when the account changes (owner 2026-08-11).
+  const lastUid = useRef<string | null>(null);
+  const uidSeeded = useRef(false);
 
   // Server-driven entitlement (owner 2026-08-06): a no-account guest is
   // 'anonymous'; a signed-in account reads its real tier from the `entitlements`
@@ -147,9 +153,25 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
       }
       if (alive && !devOverrode.current) setEntitlementState(tier);
     };
-    void supabase.auth.getSession().then(({ data }) => deriveAndApply(!!data.session));
+    // Wipe the device's local study-progress mirror whenever the signed-in user
+    // CHANGES (sign-out, or sign-in as a different account) so progress never
+    // leaks across sessions — a fresh free/no-account login starts clear
+    // (owner 2026-08-11). The first observed session just seeds the baseline.
+    const clearLocalOnUserChange = (uid: string | null) => {
+      if (uidSeeded.current && uid !== lastUid.current) {
+        void clearAllLocalMethodStates();
+        emitStudyProgress(); // refresh any live dashboard off the cleared mirror
+      }
+      lastUid.current = uid;
+      uidSeeded.current = true;
+    };
+    void supabase.auth.getSession().then(({ data }) => {
+      clearLocalOnUserChange(data.session?.user?.id ?? null);
+      deriveAndApply(!!data.session);
+    });
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'INITIAL_SESSION') {
+        clearLocalOnUserChange(session?.user?.id ?? null);
         void deriveAndApply(!!session);
       }
     });

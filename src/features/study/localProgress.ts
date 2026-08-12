@@ -27,6 +27,19 @@ export async function saveLocalMethodStates(
   }
 }
 
+/** Wipe every locally-mirrored method row. Called when the signed-in user
+ *  changes (sign-out, or sign-in as a different user) so progress never leaks
+ *  across accounts — e.g. a fresh free/no-account login starts clear
+ *  (owner 2026-08-11). Server rows remain the source of truth for real users. */
+export async function clearAllLocalMethodStates(): Promise<void> {
+  try {
+    const keys = (await AsyncStorage.getAllKeys()).filter((k) => k.startsWith(PREFIX));
+    if (keys.length > 0) await AsyncStorage.multiRemove(keys);
+  } catch {
+    /* non-fatal */
+  }
+}
+
 export type LocalMethodRow = { achievement_id: string; method_key: string; item_states: ItemStates };
 
 /** Every locally-mirrored method row (for the Dashboard merge). */
