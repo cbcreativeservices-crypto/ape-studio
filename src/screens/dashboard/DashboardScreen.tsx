@@ -1247,10 +1247,33 @@ export function DashboardScreen() {
                   </Text>
                 </Pressable>
                 {/* Overall progress — label left-justified, the amber % below it
-                    (owner 2026-08-01); both keep their existing text sizes. */}
-                <View style={styles.pctBlock}>
-                  <Text style={styles.pctLabel}>OVERALL TOPIC PROGRESS</Text>
-                  <Text style={styles.pctBig}>{dispOverallPct}%</Text>
+                    (owner 2026-08-01); to its right, text-only ‹ › topic prev/next
+                    buttons (owner 2026-08-11). */}
+                <View style={styles.pctRow}>
+                  <View style={styles.pctBlock}>
+                    <Text style={styles.pctLabel}>OVERALL TOPIC PROGRESS</Text>
+                    <Text style={styles.pctBig}>{dispOverallPct}%</Text>
+                  </View>
+                  <View style={styles.pctArrows}>
+                    <Pressable
+                      onPress={() => goTo(topicIdx - 1)}
+                      disabled={topicIdx <= 0}
+                      hitSlop={10}
+                      accessibilityRole="button"
+                      accessibilityLabel="Previous topic"
+                    >
+                      <Text style={[styles.pctArrow, topicIdx <= 0 && styles.pctArrowDisabled]}>‹</Text>
+                    </Pressable>
+                    <Pressable
+                      onPress={() => goTo(topicIdx + 1)}
+                      disabled={topicIdx >= lastTopicIdx}
+                      hitSlop={10}
+                      accessibilityRole="button"
+                      accessibilityLabel="Next topic"
+                    >
+                      <Text style={[styles.pctArrow, topicIdx >= lastTopicIdx && styles.pctArrowDisabled]}>›</Text>
+                    </Pressable>
+                  </View>
                 </View>
                 <GlassCover />
               </View>
@@ -1994,7 +2017,18 @@ const styles = StyleSheet.create({
     textShadowRadius: 3.4,
     textShadowOffset: { width: 0, height: 0 },
   },
-  pctBlock: { alignItems: 'flex-start', marginTop: 6, gap: 1 },
+  // Row: the label+% block on the left, the ‹ › topic buttons at its right.
+  pctRow: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 6, gap: 8 },
+  pctBlock: { alignItems: 'flex-start', gap: 1 },
+  pctArrows: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingBottom: 2 },
+  pctArrow: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 30,
+    lineHeight: 34,
+    color: colors.amber,
+    paddingHorizontal: 8,
+  },
+  pctArrowDisabled: { color: '#45454d' },
   pctBig: {
     fontFamily: fonts.oswaldBold,
     fontSize: 32,
