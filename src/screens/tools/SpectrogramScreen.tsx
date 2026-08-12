@@ -50,7 +50,7 @@ import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO } from '../../features/tools/measure/types';
 import { colors, fonts } from '../../theme/tokens';
 import { AccuracyNote } from '../../components/AccuracyNote';
-import { heatColor } from '../../features/tools/levelColor';
+import { heatColor, levelColorForDb } from '../../features/tools/levelColor';
 import { EngineGate } from './EngineGate';
 import { useToolHelp, HelpHead, DisplayGuideButton, readoutKey } from '../../features/lab/guidedLessons';
 import type { RootStackParamList } from '../../navigation/types';
@@ -167,6 +167,7 @@ function StatCell({
   unit,
   help,
   peak,
+  levelDb,
 }: {
   label: string;
   value: string;
@@ -174,6 +175,10 @@ function StatCell({
   help?: (key: string) => void;
   /** Peak text readout (owner 2026-07-31): the top peak number always prints RED. */
   peak?: boolean;
+  /** When finite, colour the value on the amplitude ramp by this dB level
+   *  (louder = red, quieter = blue) instead of the flat peak red (owner
+   *  2026-08-12) — the number reads level like every meter. */
+  levelDb?: number | null;
 }) {
   return (
     <Pressable
@@ -184,7 +189,12 @@ function StatCell({
       accessibilityLabel={help ? `${label} — what it shows` : label}
     >
       <Text style={styles.statLabel}>{label}</Text>
-      <Text style={[styles.statValue, peak && styles.statValuePeak]}>
+      <Text
+        style={[
+          styles.statValue,
+          levelDb != null && Number.isFinite(levelDb) ? { color: levelColorForDb(levelDb) } : peak && styles.statValuePeak,
+        ]}
+      >
         {value}
         {unit ? <Text style={styles.statUnit}> {unit}</Text> : null}
       </Text>
@@ -515,8 +525,8 @@ export function SpectrogramScreen({ navigation }: Props) {
             {/* Numeric truth row — real values, unclamped. ABOVE the display (owner
                 2026-07-31). Peak readouts print RED. Long-press a cell. */}
             <View style={styles.statGrid}>
-              <StatCell help={help} label="OBS MAX" value={fmtDb(observedMax)} unit="dBFS" peak />
-              <StatCell help={help} label="PEAK" value={fmtDb(meter?.peakDb)} unit="dBFS" peak />
+              <StatCell help={help} label="OBS MAX" value={fmtDb(observedMax)} unit="dBFS" peak levelDb={observedMax} />
+              <StatCell help={help} label="PEAK" value={fmtDb(meter?.peakDb)} unit="dBFS" peak levelDb={meter?.peakDb} />
               <StatCell help={help} label="HISTORY" value={`${history.length}/${HISTORY_COLS}`} />
             </View>
 

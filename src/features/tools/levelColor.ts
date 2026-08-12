@@ -64,6 +64,19 @@ export function levelColor(l: number): string {
 }
 
 /**
+ * Colour a dB LEVEL readout on the amplitude ramp (owner 2026-08-12): at/below
+ * `minDb` reads blue (quiet), at/above `maxDb` reads red (loud) — so a NUMERIC
+ * level readout carries the same blue→red language as the meters and displays.
+ * Default −60…0 dBFS window matches the meters' scale. Non-finite (silence / no
+ * data) → MIDI-0 blue. Louder = redder, quieter = bluer.
+ */
+export function levelColorForDb(db: number | null | undefined, minDb = -60, maxDb = 0): string {
+  if (db == null || !Number.isFinite(db)) return MIDLINE_BLUE;
+  const frac = (db - minDb) / (maxDb - minDb);
+  return levelColor(Math.max(0, Math.min(1, frac)));
+}
+
+/**
  * Heat-map / spectrogram colour for a LEVEL fraction `t01` (0 = silence,
  * 1 = loudest). The single app-wide amplitude ramp — MIDI-0 blue (quiet) →
  * green → yellow → orange → red (loud) — with the very bottom darkened toward

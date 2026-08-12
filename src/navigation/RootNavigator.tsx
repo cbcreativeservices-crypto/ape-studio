@@ -85,10 +85,62 @@ import { FoundationsCourseScreen } from '../screens/lab/foundations/FoundationsC
 import { FoundationsPlaygroundScreen } from '../screens/lab/foundations/FoundationsPlaygroundScreen';
 import { PublicGlossaryScreen } from '../screens/landing/PublicGlossaryScreen';
 import { PaywallScreen } from '../screens/commercial/PaywallScreen';
+import { AmplitudeLabScreen, withAmplitudeOrientation } from '../screens/lab/amplitude/AmplitudeOrientation';
 import { MainTabs } from './MainTabs';
 import type { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+
+// Amplitude color-language orientation gate (owner spec 2026-08-12): every
+// INTERACTIVE audio lab / tool / module screen funnels through the one-time
+// "Understanding Level & Amplitude" orientation until it has been completed
+// once — either at a gated screen (Path B) or as the Foundations of Sound
+// START HERE step (Path A; same flag). This block is the SINGLE registry of
+// gated experiences — wrap future audio visualizers here, never inside the
+// screens. Hubs, info/reference/records pages, calculators, and the
+// Foundations course itself (it OPENS with the orientation) stay ungated.
+const Gated = {
+  ToolDemo: withAmplitudeOrientation(ToolDemoScreen),
+  SplMeter: withAmplitudeOrientation(SplMeterScreen),
+  Rta: withAmplitudeOrientation(RtaScreen),
+  Waveform: withAmplitudeOrientation(WaveformScreen),
+  SignalGen: withAmplitudeOrientation(SignalGenScreen),
+  Spectrogram: withAmplitudeOrientation(SpectrogramScreen),
+  Rt60: withAmplitudeOrientation(Rt60Screen),
+  FrequencyCounter: withAmplitudeOrientation(FrequencyCounterScreen),
+  MultiMeter: withAmplitudeOrientation(MultiMeterScreen),
+  HarmonicLab: withAmplitudeOrientation(HarmonicLabScreen),
+  OscillatorLab: withAmplitudeOrientation(OscillatorLabScreen),
+  NoiseLab: withAmplitudeOrientation(NoiseLabScreen),
+  HarmonographLab: withAmplitudeOrientation(HarmonographLabScreen),
+  EqLab: withAmplitudeOrientation(EqLabScreen),
+  DelayLab: withAmplitudeOrientation(DelayLabScreen),
+  ReverbLab: withAmplitudeOrientation(ReverbLabScreen),
+  ChorusLab: withAmplitudeOrientation(ChorusLabScreen),
+  FlangerLab: withAmplitudeOrientation(FlangerLabScreen),
+  PhaserLab: withAmplitudeOrientation(PhaserLabScreen),
+  CompressionLab: withAmplitudeOrientation(CompressionLabScreen),
+  GateLab: withAmplitudeOrientation(GateLabScreen),
+  LimiterLab: withAmplitudeOrientation(LimiterLabScreen),
+  DistortionLab: withAmplitudeOrientation(DistortionLabScreen),
+  PhaseLab: withAmplitudeOrientation(PhaseLabScreen),
+  StereoLab: withAmplitudeOrientation(StereoLabScreen),
+  SignalChainLab: withAmplitudeOrientation(SignalChainLabScreen),
+  BassLab: withAmplitudeOrientation(BassLabScreen),
+  AutotuneLab: withAmplitudeOrientation(AutotuneLabScreen),
+  FmLab: withAmplitudeOrientation(FmLabScreen),
+  BinauralLab: withAmplitudeOrientation(BinauralLabScreen),
+  ModularLab: withAmplitudeOrientation(ModularLabScreen),
+  MicLab: withAmplitudeOrientation(MicPrinciplesLabScreen),
+  SpeakerLab: withAmplitudeOrientation(SpeakerCoverageLabScreen),
+  TubeLab: withAmplitudeOrientation(VacuumTubeLabScreen),
+  DigitalModule: withAmplitudeOrientation(DigitalModuleScreen),
+  WaveModule: withAmplitudeOrientation(WaveModuleScreen),
+  MeterModule: withAmplitudeOrientation(MeterModuleScreen),
+  EqModule: withAmplitudeOrientation(EqModuleScreen),
+  GainModule: withAmplitudeOrientation(GainModuleScreen),
+  FoundationsPlayground: withAmplitudeOrientation(FoundationsPlaygroundScreen),
+} as const;
 
 export function RootNavigator() {
   // gestureEnabled:false is the app-wide DEFAULT (owner 2026-08-11): the iOS
@@ -122,22 +174,22 @@ export function RootNavigator() {
       {/* Phase-1 training layer (spec of record 2026-07-23): Learn/Demo per
           tool + Smaart concept modules. Academy-gated at content level. */}
       <Stack.Screen name="ToolLearn" component={ToolLearnScreen} />
-      <Stack.Screen name="ToolDemo" component={ToolDemoScreen} />
+      <Stack.Screen name="ToolDemo" component={Gated.ToolDemo} />
       <Stack.Screen name="ConceptModule" component={ConceptModuleScreen} />
       {/* Phase-2 saved-measurement library + A/B compare (spec §7/§8). */}
       <Stack.Screen name="ToolLibrary" component={MeasurementLibraryScreen} />
       {/* LIVE measurement screens (engine build 2026-07-23) — each gates
           itself honestly via EngineGate when the engine isn't in the build. */}
-      <Stack.Screen name="SplMeter" component={SplMeterScreen} />
-      <Stack.Screen name="Rta" component={RtaScreen} />
-      <Stack.Screen name="WaveformLive" component={WaveformScreen} />
-      <Stack.Screen name="SignalGen" component={SignalGenScreen} />
-      <Stack.Screen name="SpectrogramLive" component={SpectrogramScreen} />
-      <Stack.Screen name="Rt60Live" component={Rt60Screen} />
+      <Stack.Screen name="SplMeter" component={Gated.SplMeter} />
+      <Stack.Screen name="Rta" component={Gated.Rta} />
+      <Stack.Screen name="WaveformLive" component={Gated.Waveform} />
+      <Stack.Screen name="SignalGen" component={Gated.SignalGen} />
+      <Stack.Screen name="SpectrogramLive" component={Gated.Spectrogram} />
+      <Stack.Screen name="Rt60Live" component={Gated.Rt60} />
       {/* Frequency Counter & Tuner tool (2026-07-18; tuner merged 2026-07-23). */}
-      <Stack.Screen name="FrequencyCounter" component={FrequencyCounterScreen} />
+      <Stack.Screen name="FrequencyCounter" component={Gated.FrequencyCounter} />
       {/* Pro Audio MultiMeter (Mono) — all-in-one live meter (owner 2026-07-29). */}
-      <Stack.Screen name="MultiMeter" component={MultiMeterScreen} />
+      <Stack.Screen name="MultiMeter" component={Gated.MultiMeter} />
       {/* Spike-0 dev-only debug (entry rendered only when __DEV__). */}
       <Stack.Screen name="DspDebug" component={DspDebugScreen} />
       {/* Audio Learning Lab (v4 MASTER §13) — the pinned Home card opens the
@@ -146,33 +198,33 @@ export function RootNavigator() {
       <Stack.Screen name="AudioLearning" component={AudioLearningScreen} />
       <Stack.Screen name="EarLab" component={EarLabScreen} />
       <Stack.Screen name="LabCategory" component={LabCategoryScreen} />
-      <Stack.Screen name="HarmonicLab" component={HarmonicLabScreen} />
-      <Stack.Screen name="OscillatorLab" component={OscillatorLabScreen} />
-      <Stack.Screen name="NoiseLab" component={NoiseLabScreen} />
-      <Stack.Screen name="HarmonographLab" component={HarmonographLabScreen} />
+      <Stack.Screen name="HarmonicLab" component={Gated.HarmonicLab} />
+      <Stack.Screen name="OscillatorLab" component={Gated.OscillatorLab} />
+      <Stack.Screen name="NoiseLab" component={Gated.NoiseLab} />
+      <Stack.Screen name="HarmonographLab" component={Gated.HarmonographLab} />
       {/* The 12 effect labs (native effects path, engineVersion 6). */}
-      <Stack.Screen name="EqLab" component={EqLabScreen} />
-      <Stack.Screen name="DelayLab" component={DelayLabScreen} />
-      <Stack.Screen name="ReverbLab" component={ReverbLabScreen} />
-      <Stack.Screen name="ChorusLab" component={ChorusLabScreen} />
-      <Stack.Screen name="FlangerLab" component={FlangerLabScreen} />
-      <Stack.Screen name="PhaserLab" component={PhaserLabScreen} />
-      <Stack.Screen name="CompressionLab" component={CompressionLabScreen} />
-      <Stack.Screen name="GateLab" component={GateLabScreen} />
-      <Stack.Screen name="LimiterLab" component={LimiterLabScreen} />
-      <Stack.Screen name="DistortionLab" component={DistortionLabScreen} />
-      <Stack.Screen name="PhaseLab" component={PhaseLabScreen} />
-      <Stack.Screen name="StereoLab" component={StereoLabScreen} />
-      <Stack.Screen name="SignalChainLab" component={SignalChainLabScreen} />
+      <Stack.Screen name="EqLab" component={Gated.EqLab} />
+      <Stack.Screen name="DelayLab" component={Gated.DelayLab} />
+      <Stack.Screen name="ReverbLab" component={Gated.ReverbLab} />
+      <Stack.Screen name="ChorusLab" component={Gated.ChorusLab} />
+      <Stack.Screen name="FlangerLab" component={Gated.FlangerLab} />
+      <Stack.Screen name="PhaserLab" component={Gated.PhaserLab} />
+      <Stack.Screen name="CompressionLab" component={Gated.CompressionLab} />
+      <Stack.Screen name="GateLab" component={Gated.GateLab} />
+      <Stack.Screen name="LimiterLab" component={Gated.LimiterLab} />
+      <Stack.Screen name="DistortionLab" component={Gated.DistortionLab} />
+      <Stack.Screen name="PhaseLab" component={Gated.PhaseLab} />
+      <Stack.Screen name="StereoLab" component={Gated.StereoLab} />
+      <Stack.Screen name="SignalChainLab" component={Gated.SignalChainLab} />
       {/* Expansion labs (owner 2026-07-26). */}
-      <Stack.Screen name="BassLab" component={BassLabScreen} />
-      <Stack.Screen name="AutotuneLab" component={AutotuneLabScreen} />
-      <Stack.Screen name="FmLab" component={FmLabScreen} />
-      <Stack.Screen name="BinauralLab" component={BinauralLabScreen} />
-      <Stack.Screen name="ModularLab" component={ModularLabScreen} />
-      <Stack.Screen name="MicLab" component={MicPrinciplesLabScreen} />
-      <Stack.Screen name="SpeakerLab" component={SpeakerCoverageLabScreen} />
-      <Stack.Screen name="TubeLab" component={VacuumTubeLabScreen} />
+      <Stack.Screen name="BassLab" component={Gated.BassLab} />
+      <Stack.Screen name="AutotuneLab" component={Gated.AutotuneLab} />
+      <Stack.Screen name="FmLab" component={Gated.FmLab} />
+      <Stack.Screen name="BinauralLab" component={Gated.BinauralLab} />
+      <Stack.Screen name="ModularLab" component={Gated.ModularLab} />
+      <Stack.Screen name="MicLab" component={Gated.MicLab} />
+      <Stack.Screen name="SpeakerLab" component={Gated.SpeakerLab} />
+      <Stack.Screen name="TubeLab" component={Gated.TubeLab} />
       <Stack.Screen name="TubeReference" component={TubeReferenceScreen} />
       <Stack.Screen name="TubeCard" component={TubeCardScreen} />
       <Stack.Screen name="CalcLab" component={CalcLabScreen} />
@@ -184,18 +236,23 @@ export function RootNavigator() {
       <Stack.Screen name="CalcProjects" component={CalcProjectsScreen} />
       <Stack.Screen name="CalcResults" component={CalcResultsScreen} />
       <Stack.Screen name="DigitalLab" component={DigitalLabHomeScreen} />
-      <Stack.Screen name="DigitalModule" component={DigitalModuleScreen} />
+      <Stack.Screen name="DigitalModule" component={Gated.DigitalModule} />
       <Stack.Screen name="WaveLab" component={WaveLabHomeScreen} />
-      <Stack.Screen name="WaveModule" component={WaveModuleScreen} />
+      <Stack.Screen name="WaveModule" component={Gated.WaveModule} />
       <Stack.Screen name="MeterLab" component={MeterLabHomeScreen} />
-      <Stack.Screen name="MeterModule" component={MeterModuleScreen} />
+      <Stack.Screen name="MeterModule" component={Gated.MeterModule} />
       <Stack.Screen name="EqLabHome" component={EqLabHomeScreen} />
-      <Stack.Screen name="EqModule" component={EqModuleScreen} />
+      <Stack.Screen name="EqModule" component={Gated.EqModule} />
       <Stack.Screen name="GainLabHome" component={GainLabHomeScreen} />
-      <Stack.Screen name="GainModule" component={GainModuleScreen} />
+      <Stack.Screen name="GainModule" component={Gated.GainModule} />
+      {/* Understanding Level & Amplitude — the first lab in Audio Fundamentals
+          (owner 2026-08-12). UNGATED: it IS the orientation, so it must never
+          be wrapped in withAmplitudeOrientation (that would gate it behind
+          itself). */}
+      <Stack.Screen name="AmplitudeLab" component={AmplitudeLabScreen} />
       {/* Foundations of Sound — the Ear Lab's first module (course + sandbox). */}
       <Stack.Screen name="FoundationsCourse" component={FoundationsCourseScreen} />
-      <Stack.Screen name="FoundationsPlayground" component={FoundationsPlaygroundScreen} />
+      <Stack.Screen name="FoundationsPlayground" component={Gated.FoundationsPlayground} />
       {/* Anonymous public glossary (commercial browse path). */}
       <Stack.Screen name="PublicGlossary" component={PublicGlossaryScreen} />
       {/* CM7: academy paywall (modal; UI only). */}

@@ -17,6 +17,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Toggle } from '../../components/Toggle';
 import { resetCoachMarks } from '../../lib/coachMark';
 import { resetScreenIntros } from '../../features/intro/screenIntros';
+import { resetAmplitudeOrientation } from '../../features/lab/amplitudeOrientation';
 import { resetAskModes } from '../../features/permissions/permissionStore';
 import { sendFeedback } from '../../lib/feedback';
 import { supabase } from '../../lib/supabase';
@@ -300,7 +301,10 @@ export function SettingsScreen({ navigation }: Props) {
           <Pressable
             style={styles.row}
             onPress={() =>
-              Promise.all([resetCoachMarks(), resetScreenIntros()]).then(() =>
+              // Also replays the amplitude color-language orientation (its key is
+              // in the ape:intro:* family; the explicit call resets the LIVE flag
+              // so the gate re-arms without a relaunch).
+              Promise.all([resetCoachMarks(), resetScreenIntros(), resetAmplitudeOrientation()]).then(() =>
                 Alert.alert(
                   'Hints reset',
                   'Onboarding hints and the welcome greeting will show again on next open.',

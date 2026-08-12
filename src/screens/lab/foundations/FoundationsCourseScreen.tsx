@@ -38,6 +38,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ApeDsp, GEN_MODES } from '../../../../modules/ape-dsp';
 import { GlassButton } from '../../../components/GlassButton';
 import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
+import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { noteAudioActivity } from '../../../features/audio/audioOutputStore';
 import { guardAdditiveForEngine, guardToneLevelForEngine } from '../../../features/audio/speakerSafety';
 import { EngineGate } from '../../tools/EngineGate';
@@ -1354,6 +1355,15 @@ export function FoundationsCourseScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [step, setStep] = useState(0);
+  // No-account (anonymous) users always OPEN a lab at the first step and never
+  // resume a later one after an app close (owner 2026-08-12): their place is
+  // neither restored nor persisted. A registered account (free/academy/lapsed)
+  // resumes as before. Ref so the async restore/persist below reads the CURRENT
+  // tier, never a stale closure. (Gate on entitlement, not caps — the dev
+  // academy-lock bypass forces caps only, so this stays correct in dev.)
+  const { entitlement } = useEntitlement();
+  const noAccountRef = useRef(entitlement === 'anonymous');
+  noAccountRef.current = entitlement === 'anonymous';
   const [width, setWidth] = useState(0);
   // Collapsible intro TEXT (owner 2026-08-05) — the paragraph block at the top
   // of every module can be hidden; the title and the display below stay put.
@@ -1390,6 +1400,7 @@ export function FoundationsCourseScreen() {
   useEffect(() => {
     void AsyncStorage.getItem(STEP_KEY).then((v) => {
       if (navigatedRef.current) return; // the user's own tap already won
+      if (noAccountRef.current) return; // no account: always begin at the first step
       const n = v == null ? NaN : Number(v);
       if (Number.isInteger(n) && n > 0 && n < STEPS.length) {
         tone.stop(); // never carry a step-0 tone into the resumed step
@@ -1403,7 +1414,8 @@ export function FoundationsCourseScreen() {
       navigatedRef.current = true;
       tone.stop(); // each step owns its own sound — never carries over
       setStep(n);
-      void AsyncStorage.setItem(STEP_KEY, String(n));
+      // Persist the place only for registered accounts — guests never resume.
+      if (!noAccountRef.current) void AsyncStorage.setItem(STEP_KEY, String(n));
     },
     [tone],
   );

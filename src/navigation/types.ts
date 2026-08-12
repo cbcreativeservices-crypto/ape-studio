@@ -221,6 +221,10 @@ export type RootStackParamList = {
    *  honestly); freely open, nothing gated or graded. */
   FoundationsCourse: undefined;
   FoundationsPlayground: undefined;
+  /** Understanding Level & Amplitude — the app-wide blue→red magnitude color
+   *  language orientation (owner 2026-08-12). The FIRST lab in Audio
+   *  Fundamentals, and the shared body behind the first-use orientation gate. */
+  AmplitudeLab: undefined;
 };
 
 declare global {

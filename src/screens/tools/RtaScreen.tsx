@@ -57,7 +57,7 @@ import { meterWarningFlags, useDspEngine, useToolAutoStart } from '../../feature
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO } from '../../features/tools/measure/types';
-import { LOUDNESS_STOPS } from '../../features/tools/levelColor';
+import { LOUDNESS_STOPS, levelColorForDb } from '../../features/tools/levelColor';
 import { useColorModePref } from '../../features/tools/colorModePref';
 import { colors, fonts } from '../../theme/tokens';
 import { AccuracyNote } from '../../components/AccuracyNote';
@@ -275,6 +275,7 @@ function StatCell({
   help,
   clipped,
   frameRed,
+  levelDb,
 }: {
   label: string;
   value: string;
@@ -285,6 +286,10 @@ function StatCell({
   clipped?: boolean;
   /** Also paint the cell's frame red on clip (PEAK HOLD only). */
   frameRed?: boolean;
+  /** When finite, colour the value on the amplitude ramp by this dB level
+   *  (louder = red, quieter = blue) so the number reads level (owner
+   *  2026-08-12). The frame-red clip cue is unchanged. */
+  levelDb?: number;
 }) {
   return (
     <Pressable
@@ -295,7 +300,12 @@ function StatCell({
       accessibilityLabel={help ? `${label} — what it shows` : label}
     >
       <Text style={styles.statLabel}>{label}</Text>
-      <Text style={[styles.statValue, clipped && styles.statValuePeak]}>
+      <Text
+        style={[
+          styles.statValue,
+          levelDb != null && Number.isFinite(levelDb) ? { color: levelColorForDb(levelDb) } : clipped && styles.statValuePeak,
+        ]}
+      >
         {value}
         {unit ? <Text style={styles.statUnit}> {unit}</Text> : null}
       </Text>
@@ -981,8 +991,8 @@ export function RtaScreen({ navigation }: Props) {
                 PEAK HOLD stay neutral until an actual clip, then latch red.
                 Long-press any cell for what it shows. */}
             <View style={styles.statGrid}>
-              <StatCell help={help} label="PEAK" value={fmtDb(meter?.peakDb)} unit="dBFS" clipped={hasClipped} />
-              <StatCell help={help} label="PEAK HOLD" value={fmtDb(meter?.peakHoldDb)} unit="dBFS" clipped={hasClipped} frameRed={hasClipped} />
+              <StatCell help={help} label="PEAK" value={fmtDb(meter?.peakDb)} unit="dBFS" clipped={hasClipped} levelDb={meter?.peakDb} />
+              <StatCell help={help} label="PEAK HOLD" value={fmtDb(meter?.peakHoldDb)} unit="dBFS" clipped={hasClipped} frameRed={hasClipped} levelDb={meter?.peakHoldDb} />
               <StatCell help={help} label="BANDS" value={displayBands ? String(displayBands.centers.length) : '—'} />
             </View>
 

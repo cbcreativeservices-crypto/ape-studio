@@ -79,6 +79,10 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     section: 'fundamentals',
     kind: 'list',
     labs: [
+      // START HERE (owner 2026-08-12): the app-wide blue→red level/amplitude
+      // color language, taught once. First lab in Audio Fundamentals, before
+      // any other visual audio lab.
+      { name: 'Understanding Level & Amplitude', blurb: 'The blue→red color language every Academy display uses for level and amplitude — learn it once, recognize it everywhere.', route: 'AmplitudeLab' },
       { name: 'Foundations of Sound', blurb: 'Air, waves, amplitude, wavelength, phase, harmonics — sound made visible, module by module.', route: 'FoundationsCourse' },
       { name: 'Sound Playground', blurb: 'A free sandbox for every Foundations control and display at once.', route: 'FoundationsPlayground' },
       { name: 'Microphone Principles', blurb: 'Pickup patterns, proximity, off-axis, plosives, stereo pairs — and what cupping the mic really does.', route: 'MicLab' },

@@ -12,6 +12,12 @@
       "runtimeExecutable": "npx",
       "runtimeArgs": ["expo", "start", "--tunnel", "--port", "8090"],
       "port": 8090
+    },
+    {
+      "name": "expo-device",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["expo", "start", "--dev-client", "--clear"],
+      "port": 8081
     }
   ]
 }

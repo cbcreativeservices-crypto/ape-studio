@@ -69,7 +69,7 @@ import Svg, { Defs, G, Line, LinearGradient, Path, Rect, Stop } from 'react-nati
 import { ApeDsp, type EngineConfig } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
-import { heatColor, levelColor, MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
+import { heatColor, levelColor, levelColorForDb, MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type MultimeterSnapshotPayload } from '../../features/tools/measure/types';
@@ -957,18 +957,25 @@ export function MultiMeterScreen({ navigation }: Props) {
           <View style={styles.statusBar}>
             <Pressable style={styles.statusCell} onLongPress={() => help('spl')} delayLongPress={350}>
               <Text style={styles.statusLabel}>SPL·LAF</Text>
-              <Text style={styles.statusValue}>{meter ? fmtDb(meter.aFastDb) : '—'}</Text>
+              {/* Numbers read level on the amplitude ramp — louder red, quieter
+                  blue (owner 2026-08-12). */}
+              <Text style={[styles.statusValue, meter ? { color: levelColorForDb(meter.aFastDb) } : null]}>
+                {meter ? fmtDb(meter.aFastDb) : '—'}
+              </Text>
             </Pressable>
             <Pressable style={styles.statusCell} onLongPress={() => help('peak')} delayLongPress={350}>
               <Text style={styles.statusLabel}>PEAK</Text>
-              {/* Red only once it has actually peaked, until reset (item 5). */}
-              <Text style={[styles.statusValue, hasPeaked && styles.statusValueRed]}>
+              {/* Number reads level on the amplitude ramp (owner 2026-08-12) —
+                  ≥0 dBFS still lands red. */}
+              <Text style={[styles.statusValue, meter ? { color: levelColorForDb(meter.peakDb) } : null]}>
                 {meter ? fmtDb(meter.peakDb) : '—'}
               </Text>
             </Pressable>
             <Pressable style={styles.statusCell} onLongPress={() => help('rms')} delayLongPress={350}>
               <Text style={styles.statusLabel}>RMS</Text>
-              <Text style={styles.statusValue}>{meter ? fmtDb(meter.zFastDb) : '—'}</Text>
+              <Text style={[styles.statusValue, meter ? { color: levelColorForDb(meter.zFastDb) } : null]}>
+                {meter ? fmtDb(meter.zFastDb) : '—'}
+              </Text>
             </Pressable>
             {/* PEAK HOLD: long-press the cell (or tap ⟲) to reset — clears the
                 native meter hold, the per-band holds, AND the red peak latch. */}
@@ -985,7 +992,7 @@ export function MultiMeterScreen({ navigation }: Props) {
                   <Text style={styles.statusReset}>⟲</Text>
                 </Pressable>
               </View>
-              <Text style={[styles.statusValue, hasPeaked && styles.statusValueRed]}>
+              <Text style={[styles.statusValue, meter ? { color: levelColorForDb(meter.peakHoldDb) } : null]}>
                 {meter ? fmtDb(meter.peakHoldDb) : '—'}
               </Text>
             </Pressable>

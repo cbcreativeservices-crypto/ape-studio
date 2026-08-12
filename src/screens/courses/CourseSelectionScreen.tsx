@@ -50,6 +50,7 @@ import { setBundleLoaded, useBundles } from '../../features/enrollment/enrolledB
 import { isFreeEnrollGs, setActiveMany } from '../../features/enrollment/enrollmentStore';
 import { BookIcon } from '../../components/BookIcon';
 import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
+import { AboutHomeSheet } from '../about/AboutHomeSheet';
 
 type Card =
   | { kind: 'tools'; id: 'tools' }
@@ -746,6 +747,8 @@ export function CourseSelectionScreen() {
   // CM2 — commercial mode + entitlement (mock provider; server truth later).
   const { commercialMode, entitlement, caps, setCommercialMode, setEntitlement } = useEntitlement();
   const [upgradeOpen, setUpgradeOpen] = useState(false);
+  // Top-left "About" text button → the About popup (owner 2026-08-12).
+  const [aboutOpen, setAboutOpen] = useState(false);
   // A session-less GUEST may study the FREE topics only; opening any paid topic
   // shows a friendly sign-up prompt (set in load(), keyed on the real session).
   const [isGuest, setIsGuest] = useState(false);
@@ -1116,6 +1119,32 @@ export function CourseSelectionScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 16 }]}>
+      {/* Top-left About button (owner 2026-08-12): a plain text button in the
+          corner → the About popup. Absolutely positioned so the centered hero
+          below is undisturbed. */}
+      <Pressable
+        style={[styles.aboutBtn, { top: insets.top + 8 }]}
+        onPress={() => setAboutOpen(true)}
+        hitSlop={12}
+        accessibilityRole="button"
+        accessibilityLabel="About Pro Audio Training Academy"
+      >
+        <Text style={styles.aboutBtnText}>About</Text>
+      </Pressable>
+      <AboutHomeSheet visible={aboutOpen} onClose={() => setAboutOpen(false)} />
+
+      {/* Top-right Membership button (owner 2026-08-12): opposite About →
+          opens the academy Paywall. Same absolute-corner treatment. */}
+      <Pressable
+        style={[styles.membershipBtn, { top: insets.top + 8 }]}
+        onPress={() => (navigation as any).navigate('Paywall')}
+        hitSlop={12}
+        accessibilityRole="button"
+        accessibilityLabel="Membership"
+      >
+        <Text style={styles.aboutBtnText}>Membership</Text>
+      </Pressable>
+
       {/* Home-screen hero: large, centered logo + wordmark, dropped a little
           lower so this reads as the app's front door, not a small header
           (Booth 2026-07-09d). */}
@@ -1380,6 +1409,14 @@ const styles = StyleSheet.create({
   strandedText: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 19, color: colors.textSecondary },
   strandedRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center' },
   hero: { alignItems: 'center', gap: 8, marginTop: 6, paddingHorizontal: 24 },
+  // Top-left About text button — absolute so it sits in the corner without
+  // pushing the centered hero down (owner 2026-08-12).
+  // `top` is set inline from insets.top so the buttons clear the status bar
+  // (clock / battery / Wi-Fi) — absolute children anchor to the screen's top
+  // edge, not the root's safe-area padding (owner 2026-08-12 fix).
+  aboutBtn: { position: 'absolute', left: 8, zIndex: 10, paddingVertical: 6, paddingHorizontal: 6 },
+  aboutBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.6, color: colors.amberLabel },
+  membershipBtn: { position: 'absolute', right: 8, zIndex: 10, paddingVertical: 6, paddingHorizontal: 6 },
   // Curriculum + Awards links row above the carousel (user request 2026-07-17).
   awards: { marginTop: 8, paddingHorizontal: 20, gap: 6, alignItems: 'center' },
   // 5 buttons now (user request 2026-07-22) — tighter gap/padding to fit.

@@ -38,7 +38,7 @@ import * as Crypto from 'expo-crypto';
 import { ApeDsp, type WaveBucket } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
-import { MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
+import { MIDLINE_BLUE, WAVE_LEVEL_STOPS, levelColorForDb } from '../../features/tools/levelColor';
 import { useColorModePref } from '../../features/tools/colorModePref';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
@@ -358,7 +358,9 @@ export function WaveformScreen({ navigation }: Props) {
             <View style={styles.statGrid}>
               <Pressable style={styles.statCell} onLongPress={() => help('peak')} delayLongPress={260}>
                 <Text style={styles.statLabel}>PEAK</Text>
-                <Text style={styles.statValue}>
+                {/* Number reads level on the amplitude ramp — louder red, quieter
+                    blue (owner 2026-08-12). */}
+                <Text style={[styles.statValue, meter ? { color: levelColorForDb(meter.peakDb) } : null]}>
                   {fmtDb(meter?.peakDb)}
                   <Text style={styles.statUnit}> dBFS</Text>
                 </Text>

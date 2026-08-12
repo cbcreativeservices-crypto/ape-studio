@@ -37,6 +37,7 @@ import { WARNING_INFO, type SplLogPayload, type WarningFlag } from '../../featur
 import { colors, fonts } from '../../theme/tokens';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { EngineGate } from './EngineGate';
+import { levelColorForDb } from '../../features/tools/levelColor';
 import { MIC_LIMITS, toolByKey } from './toolsData';
 import { ApeDsp, type MeterFrame } from '../../../modules/ape-dsp';
 import { useToolHelp, HelpHead, DisplayGuideButton } from '../../features/lab/guidedLessons';
@@ -805,14 +806,16 @@ export function SplMeterScreen({ navigation }: Props) {
                 <Text style={styles.cellLabel}>PEAK (dBFS)</Text>
                 {/* Peak text readouts are always red (owner 2026-07-31); the ≥0
                     dBFS ceiling still escalates to the hot state. */}
-                <Text style={[styles.cellValue, styles.cellValueMax, meter != null && meter.peakDb >= 0 && styles.cellValueHot]}>
+                {/* Number reads level on the amplitude ramp — louder red, quieter
+                    blue (owner 2026-08-12); ≥0 dBFS still lands red. */}
+                <Text style={[styles.cellValue, meter ? { color: levelColorForDb(meter.peakDb) } : styles.cellValueMax]}>
                   {meter ? fmtDb(meter.peakDb) : '—'}
                 </Text>
               </Pressable>
               <Pressable style={styles.peakCell} onLongPress={() => help('peak_hold')} delayLongPress={260}>
                 <Text style={styles.cellLabel}>PEAK HOLD (dBFS)</Text>
                 {/* MAX / peak-hold reading in red (owner 2026-07-30). */}
-                <Text style={[styles.cellValue, styles.cellValueMax]}>
+                <Text style={[styles.cellValue, meter ? { color: levelColorForDb(meter.peakHoldDb) } : styles.cellValueMax]}>
                   {meter ? fmtDb(meter.peakHoldDb) : '—'}
                 </Text>
               </Pressable>

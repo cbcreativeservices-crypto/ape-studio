@@ -414,11 +414,14 @@ export function AwardsScreen({ navigation, route }: Props) {
           PRO AUDIO <Text style={styles.brandAccent}>TRAINING ACADEMY</Text>
         </Text>
         <View style={{ flex: 1 }} />
-        {/* Return control = the exact bottom-nav HOME icon + label, so it reads
-            clearly as HOME / Course Select (user request 2026-07-23). Nudged in
-            from the far edge with a little padding. */}
+        {/* HOME control = the exact bottom-nav HOME icon + label, so it reads
+            clearly as HOME / Course Select (user request 2026-07-23). It must go
+            to the Home tab (CourseSelection) — NOT goBack(), which returned to
+            whatever opened this screen (e.g. the Dashboard, via "My Enrollments").
+            The title area below is the separate ‹ Return. Nudged in from the far
+            edge with a little padding. */}
         <Pressable
-          onPress={() => navigation.goBack()}
+          onPress={() => navigation.navigate('Main', { screen: 'Home' })}
           hitSlop={10}
           accessibilityRole="button"
           accessibilityLabel="Home"
