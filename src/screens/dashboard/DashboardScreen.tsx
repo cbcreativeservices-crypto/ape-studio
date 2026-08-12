@@ -436,7 +436,13 @@ function GlassScreen({
           >
             {title}
           </Text>
-          {off ? null : complete ? (
+          {off ? (
+            // Powered off — a dark placeholder in the % slot so the row stays
+            // justified (title left · value right) exactly like a lit panel.
+            <Text style={[styles.glassValue, styles.glassValueOff]} numberOfLines={1}>
+              —
+            </Text>
+          ) : complete ? (
             // Green LED check — replaces the % once the method is fully complete.
             <Text style={styles.glassCheck} accessibilityElementsHidden importantForAccessibility="no">
               ✓
@@ -453,8 +459,9 @@ function GlassScreen({
           )}
         </View>
         {off ? (
-          // Powered off — an unlit LED strip (methods) or a dark screen (quiz).
-          segments != null ? <LedMeter filled={0} fullWidth flat segHeight={rs(10)} /> : null
+          // Powered off — always the unlit LED strip on the second line (methods
+          // AND quiz), so every dark panel matches the lit layout (owner 2026-08-11).
+          <LedMeter filled={0} fullWidth flat segHeight={rs(10)} />
         ) : segments != null ? (
           // flat: behind the glass the meter is lit segments only — no bevel,
           // no molded frame (owner 2026-08-06). Segment height rides RACK_SCALE
@@ -2241,6 +2248,8 @@ const styles = StyleSheet.create({
     textShadowRadius: 10,
     textShadowOffset: { width: 0, height: 0 },
   },
+  // Powered-off % slot — a dim dash so the readout row stays justified.
+  glassValueOff: { color: '#41434a', textShadowColor: 'transparent', textShadowRadius: 0 },
   // Green LED check — shown in place of the % when a method is fully complete.
   glassCheck: {
     flexShrink: 0,
