@@ -274,11 +274,11 @@ function BlackFaceBg({ dark = false, light = false }: { dark?: boolean; light?: 
   const [size, setSize] = useState({ w: 0, h: 0 });
   // Section (Homework / Proficiency) panels get a MUCH darker gray coat (~7
   // shades below the method panels — owner 2026-08-11 rev2). The QUIZ panel gets
-  // a LIGHT gray LA-2A face: a painted-aluminium silver, faintly brighter in the
-  // upper-mid where the light falls, edges a touch darker (owner 2026-08-11).
-  const gradId = light ? 'apeGrayFaceLight' : dark ? 'apeGrayFaceDark' : 'apeGrayFace';
+  // a MID gray — exactly halfway between the method gray and the LA-2A light
+  // face (owner 2026-08-11): a medium painted-metal gray, brighter upper-mid.
+  const gradId = light ? 'apeGrayFaceMid' : dark ? 'apeGrayFaceDark' : 'apeGrayFace';
   const stops = light
-    ? ['#c9cbcc', '#dbdddd', '#c1c3c4']
+    ? ['#828385', '#919294', '#77787a']
     : dark
       ? ['#17171b', '#232327', '#0d0d11']
       : ['#3a3a3e', '#46464b', '#2c2c30'];
