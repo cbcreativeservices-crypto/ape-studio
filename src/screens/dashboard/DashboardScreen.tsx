@@ -270,18 +270,28 @@ const GRIT_SPECKS = (() => {
 // bottom edges) with random bead-blasted particulate grit. The debossed titles
 // were already tuned for a gray floor, so they read correctly here. Drawn in
 // measured PIXEL space so the specks are round dots, not stretched streaks.
-function BlackFaceBg({ dark = false, light = false }: { dark?: boolean; light?: boolean }) {
+function BlackFaceBg({ dark = false, light = false, gold = false }: { dark?: boolean; light?: boolean; gold?: boolean }) {
   const [size, setSize] = useState({ w: 0, h: 0 });
-  // Section (Homework / Proficiency) panels get a MUCH darker gray coat (~7
-  // shades below the method panels — owner 2026-08-11 rev2). The QUIZ panel gets
-  // a MID gray — exactly halfway between the method gray and the LA-2A light
-  // face (owner 2026-08-11): a medium painted-metal gray, brighter upper-mid.
-  const gradId = light ? 'apeGrayFaceMid' : dark ? 'apeGrayFaceDark' : 'apeGrayFace';
-  const stops = light
-    ? ['#828385', '#919294', '#77787a']
-    : dark
-      ? ['#17171b', '#232327', '#0d0d11']
-      : ['#3a3a3e', '#46464b', '#2c2c30'];
+  // Face coats: default method gray · `dark` = the darker section-filler gray ·
+  // `light` = the MID gray (halfway to LA-2A, now the Flashcards face) · `gold`
+  // = a REFLECTIVE brushed-gold panel matching the company logo — a vertical
+  // metallic ramp with a bright specular band in the upper-mid so it reads as
+  // polished gold catching the light (owner 2026-08-11).
+  const gradId = gold ? 'apeGoldFace' : light ? 'apeGrayFaceMid' : dark ? 'apeGrayFaceDark' : 'apeGrayFace';
+  const gradStops: { o: number; c: string }[] = gold
+    ? [
+        { o: 0, c: '#7c5f1c' },
+        { o: 0.16, c: '#d7b04c' },
+        { o: 0.4, c: '#ffe8b0' },
+        { o: 0.56, c: '#e6bd57' },
+        { o: 0.8, c: '#a9832b' },
+        { o: 1, c: '#6d541a' },
+      ]
+    : light
+      ? [{ o: 0, c: '#828385' }, { o: 0.42, c: '#919294' }, { o: 1, c: '#77787a' }]
+      : dark
+        ? [{ o: 0, c: '#17171b' }, { o: 0.42, c: '#232327' }, { o: 1, c: '#0d0d11' }]
+        : [{ o: 0, c: '#3a3a3e' }, { o: 0.42, c: '#46464b' }, { o: 1, c: '#2c2c30' }];
   return (
     <View
       pointerEvents="none"
@@ -297,9 +307,9 @@ function BlackFaceBg({ dark = false, light = false }: { dark?: boolean; light?: 
             {/* objectBoundingBox gradient (default units) — size-independent, so
                 the shared id is safe across every panel instance. */}
             <SvgLinearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-              <Stop offset="0" stopColor={stops[0]} />
-              <Stop offset="0.42" stopColor={stops[1]} />
-              <Stop offset="1" stopColor={stops[2]} />
+              {gradStops.map((s) => (
+                <Stop key={s.o} offset={String(s.o)} stopColor={s.c} />
+              ))}
             </SvgLinearGradient>
           </Defs>
           <Rect x={0} y={0} width={size.w} height={size.h} fill={`url(#${gradId})`} />
@@ -1318,10 +1328,9 @@ export function DashboardScreen() {
               {/* All method panels share the SAME gray coat again (user request
                   2026-07-23) — the Flashcards charcoal special-case was reverted. */}
               <ElevatedFrame depressed={complete} contentStyle={styles.methodInner}>
-                {/* LA-2A BLACK-FACE panel texture behind the content (owner
-                    request 2026-07-25): near-black matte face + faint vertical
-                    brushed grain. Existing light-on-black content is unchanged. */}
-                <BlackFaceBg />
+                {/* Panel face: methods use the default gray; FLASHCARDS wears the
+                    mid LA-2A gray (owner 2026-08-11). */}
+                <BlackFaceBg light={m.key === 'flashcards'} />
                 {/* 4 corner mounting screws pinned to the panel corners (owner 2026-08-11) */}
                 <CornerScrews angles={[SCREW_ROT[i][0], SCREW_ROT[i][1], SCREW_ROT[i][1], SCREW_ROT[i][0]]} />
                 {/* Layout (Booth 2026-07-09e): a flex LEFT column (title row +
@@ -1419,9 +1428,9 @@ export function DashboardScreen() {
             No static amber accent — the animated quizPulseBorder is the only
             amber cue, so the scenarios→quiz seam matches every method frame. */}
         <ElevatedFrame depressed={false} contentStyle={styles.methodInner}>
-          {/* LA-2A light-gray painted-aluminium face (owner 2026-08-11) — the
-              quiz panel now reads as a Teletronix/UA classic front panel. */}
-          <BlackFaceBg light />
+          {/* Reflective brushed-GOLD face (owner 2026-08-11) — the quiz panel
+              wears the company-logo gold as the topic's reward slot. */}
+          <BlackFaceBg gold />
           <CornerScrews angles={[0, 5, -4, 3]} />
           {quizState === 'locked' && (
             <Animated.View pointerEvents="none" style={[styles.quizPulseBorder, { opacity: pulseOpacity }]} />
