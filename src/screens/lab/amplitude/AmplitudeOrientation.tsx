@@ -31,7 +31,7 @@ import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Canvas, LinearGradient, Path, Rect, Skia, vec } from '@shopify/react-native-skia';
+import { AlphaType, Canvas, ColorType, Image, LinearGradient, Path, Rect, Skia, vec } from '@shopify/react-native-skia';
 import {
   MIDLINE_BLUE,
   LOUDNESS_STOPS,
@@ -54,6 +54,8 @@ const LOUD_RED = LOUDNESS_STOPS[0].color;
 // Copy (spec 2026-08-12 — near-verbatim; changes route back to the owner)
 
 export const AMP_ORIENT_TITLE = 'UNDERSTANDING LEVEL & AMPLITUDE';
+/** Second title — same size/colour/emphasis as the main title (owner 2026-08-12). */
+export const AMP_ORIENT_TITLE2 = 'THE ACADEMY GLOBAL METHODOLOGY';
 export const AMP_ORIENT_SUBTITLE = 'Different displays. Same visual language.';
 
 /** Core explanation — also the START HERE step's paragraph text (Path A). */
@@ -107,22 +109,66 @@ const WAVE_BARS: number[] = Array.from({ length: N_WAVE }, (_, i) => {
  *  sloping noise floor elsewhere. */
 const RTA_MAGS = [0.1, 0.12, 0.3, 0.95, 0.38, 0.16, 0.12, 0.22, 0.45, 0.2, 0.12, 0.09, 0.07, 0.06, 0.05];
 
-const SG_COLS = 24;
-const SG_ROWS = 16;
-const SG_F0_ROW = 3; // rows counted from the BOTTOM (low freq at bottom)
-const SG_H3_ROW = 9;
-const SG_BURST_COLS = new Set([16, 17]);
-function spectroMag(col: number, rowFromBottom: number): number {
-  const e = env(col / (SG_COLS - 1));
-  let m = 0.04;
-  if (rowFromBottom === SG_F0_ROW) m = 0.95 * e;
-  else if (rowFromBottom === SG_H3_ROW) m = 0.45 * e;
-  if (SG_BURST_COLS.has(col)) m = Math.max(m, 0.75); // broadband transient
-  return m;
+// SPECTROGRAM (owner 2026-08-12): drawn as ONE fine SkImage — a per-pixel
+// spectral model at 200×110 internal resolution (≈20× the old blocky 24×16
+// grid), coloured through the amplitude ramp and scaled smoothly to the card.
+// Soft fundamental + 3rd/5th-harmonic bands modulated by the shared envelope,
+// plus the broadband transient streak — the SAME conceptual signal.
+const SG_IW = 200;
+const SG_IH = 110;
+
+/** heatColor sampled to an RGB LUT once (pure JS — safe at module scope). */
+const HEAT_LUT: ReadonlyArray<readonly [number, number, number]> = (() => {
+  const N = 160;
+  const lut: [number, number, number][] = [];
+  for (let i = 0; i < N; i++) {
+    const v = parseInt(heatColor(i / (N - 1)).slice(1), 16);
+    lut.push([(v >> 16) & 255, (v >> 8) & 255, v & 255]);
+  }
+  return lut;
+})();
+
+const gaussian = (x: number, mu: number, sig: number) => Math.exp(-((x - mu) * (x - mu)) / (2 * sig * sig));
+
+/** Smooth spectrogram magnitude at time `t` (0..1) and freq fraction `fy`
+ *  (0 = low, 1 = high) — the same conceptual signal as every other card. */
+function spectroMag(t: number, fy: number): number {
+  const e = env(t);
+  let m = 0.03; // faint floor
+  m += 0.95 * e * gaussian(fy, 0.16, 0.045); // fundamental (low)
+  m += 0.5 * e * gaussian(fy, 0.5, 0.055); // 3rd harmonic
+  m += 0.22 * e * gaussian(fy, 0.78, 0.05); // 5th harmonic (faint)
+  m += 0.78 * gaussian(t, 0.7, 0.022) * (0.6 + 0.4 * fy); // broadband transient
+  return m > 1 ? 1 : m;
+}
+
+/** Build the spectrogram as one fine SkImage (memoised per mount). */
+function buildSpectroImage() {
+  const buf = new Uint8Array(SG_IW * SG_IH * 4);
+  const last = HEAT_LUT.length - 1;
+  for (let py = 0; py < SG_IH; py++) {
+    const fy = 1 - py / (SG_IH - 1); // top row = high freq
+    for (let px = 0; px < SG_IW; px++) {
+      const [r, g, b] = HEAT_LUT[Math.round(spectroMag(px / (SG_IW - 1), fy) * last)];
+      const o = (py * SG_IW + px) * 4;
+      buf[o] = r;
+      buf[o + 1] = g;
+      buf[o + 2] = b;
+      buf[o + 3] = 255;
+    }
+  }
+  return Skia.Image.MakeImage(
+    { width: SG_IW, height: SG_IH, colorType: ColorType.RGBA_8888, alphaType: AlphaType.Opaque },
+    Skia.Data.fromBytes(buf),
+    SG_IW * 4,
+  );
 }
 
 const METER_SEGS = 12;
-const METER_LEVEL = 0.72; // sustain level — top of the healthy green band
+// PEAK reads higher and hotter than RMS (the average) for the SAME signal — the
+// crest factor made visible (owner 2026-08-12). Illustrative dBFS values.
+const PEAK_LEVEL = 0.86; // ≈ −3 dBFS
+const RMS_LEVEL = 0.56; // ≈ −14 dBFS
 const SPL_DB = 78;
 const SPL_MIN = 40;
 const SPL_MAX = 100;
@@ -213,31 +259,40 @@ function OscilloscopeCard() {
   );
 }
 
-/** 3 · LEVEL METER — vertical segments, each colored by ITS height on the
- *  scale; lit to the sustain level. Height + dB ticks carry the value too. */
-function LevelMeterCard() {
-  const lit = Math.round(METER_LEVEL * METER_SEGS);
+/** One vertical meter — segments lit to `level`, each coloured by its height on
+ *  the amplitude ramp, with a label and dB readout beneath. */
+function MeterBar({ level, label, db }: { level: number; label: string; db: string }) {
+  const lit = Math.round(level * METER_SEGS);
   return (
-    <View style={[styles.vizFill, styles.meterWrap]}>
+    <View style={styles.meterBarCol}>
       <View style={styles.meterCol}>
         {Array.from({ length: METER_SEGS }, (_, i) => {
           const idxFromBottom = METER_SEGS - 1 - i; // render top→bottom
           const frac = (idxFromBottom + 0.5) / METER_SEGS;
           const on = idxFromBottom < lit;
-          return (
-            <View
-              key={i}
-              style={[styles.meterSeg, { backgroundColor: on ? levelColor(frac) : '#1b1c20' }]}
-            />
-          );
+          return <View key={i} style={[styles.meterSeg, { backgroundColor: on ? levelColor(frac) : '#1b1c20' }]} />;
         })}
       </View>
+      <Text style={styles.meterBarLabel}>{label}</Text>
+      <Text style={styles.meterBarDb}>{db}</Text>
+    </View>
+  );
+}
+
+/** 3 · LEVEL METER — TWO meters for ONE signal (owner 2026-08-12): PEAK reads
+ *  higher and hotter, RMS (the average) lower and cooler — the difference the
+ *  learner should see. dB ticks on the left carry the value too. */
+function LevelMeterCard() {
+  return (
+    <View style={[styles.vizFill, styles.meterWrap]}>
       <View style={styles.meterTicks}>
         <Text style={styles.tickText}>0</Text>
         <Text style={styles.tickText}>−12</Text>
         <Text style={styles.tickText}>−24</Text>
-        <Text style={styles.tickText}>−40 dB</Text>
+        <Text style={styles.tickText}>−40</Text>
       </View>
+      <MeterBar level={PEAK_LEVEL} label="PEAK" db="−3" />
+      <MeterBar level={RMS_LEVEL} label="RMS" db="−14" />
     </View>
   );
 }
@@ -296,32 +351,13 @@ function RtaCard() {
  *  deep-navy silence floor (the app's standing heat-map color). */
 function SpectrogramCard() {
   const [w, onW] = useMeasuredWidth();
-  const cells = useMemo(() => {
-    if (w <= 0) return [];
-    const cw = w / SG_COLS;
-    const ch = VIZ_H / SG_ROWS;
-    const out: { x: number; y: number; cw: number; ch: number; c: string }[] = [];
-    for (let col = 0; col < SG_COLS; col++) {
-      for (let row = 0; row < SG_ROWS; row++) {
-        const fromBottom = SG_ROWS - 1 - row;
-        out.push({
-          x: col * cw,
-          y: row * ch,
-          cw: cw + 0.5, // overlap a hair so no grid seams
-          ch: ch + 0.5,
-          c: heatColor(spectroMag(col, fromBottom)),
-        });
-      }
-    }
-    return out;
-  }, [w]);
+  // One fine SkImage, built once and scaled smoothly to the card (no blocky grid).
+  const img = useMemo(() => buildSpectroImage(), []);
   return (
     <View style={styles.vizFill} onLayout={(e) => onW(Math.round(e.nativeEvent.layout.width))}>
-      {w > 0 ? (
+      {w > 0 && img ? (
         <Canvas style={{ width: w, height: VIZ_H }}>
-          {cells.map((r, i) => (
-            <Rect key={i} x={r.x} y={r.y} width={r.cw} height={r.ch} color={r.c} />
-          ))}
+          <Image image={img} x={0} y={0} width={w} height={VIZ_H} fit="fill" />
         </Canvas>
       ) : null}
       <Text style={styles.axisBottom}>TIME → · FREQ ↑</Text>
@@ -366,9 +402,21 @@ export function AmplitudeColorBody({ showHeader = true }: { showHeader?: boolean
       {showHeader ? (
         <View style={{ gap: 2 }}>
           <Text style={styles.title}>{AMP_ORIENT_TITLE}</Text>
+          {/* Second title — same size/weight/colour as the main title (owner 2026-08-12). */}
+          <Text style={styles.title}>{AMP_ORIENT_TITLE2}</Text>
           <Text style={styles.subtitle}>{AMP_ORIENT_SUBTITLE}</Text>
         </View>
       ) : null}
+
+      {/* Core methodology explanation leads (owner 2026-08-12): the text sits
+          directly under the titles, above the low→high colour spectrum. */}
+      <View style={styles.explain}>
+        {AMP_ORIENT_PARAS.map((p) => (
+          <Text key={p} style={styles.explainText}>
+            {p}
+          </Text>
+        ))}
+      </View>
 
       <GradientBar />
 
@@ -397,8 +445,8 @@ export function AmplitudeColorBody({ showHeader = true }: { showHeader?: boolean
         </VizCard>
         <VizCard
           title="LEVEL METER"
-          caption="Overall signal level"
-          a11y="Level meter example: a vertical meter lit to its level; higher segments are hotter colors"
+          caption="Peak vs RMS — same signal"
+          a11y="Level meter example: two meters for one signal — PEAK reads higher and hotter, RMS (average) reads lower and cooler"
         >
           <LevelMeterCard />
         </VizCard>
@@ -426,14 +474,6 @@ export function AmplitudeColorBody({ showHeader = true }: { showHeader?: boolean
       </View>
 
       <Text style={styles.honesty}>{HONESTY_LINE}</Text>
-
-      <View style={styles.explain}>
-        {AMP_ORIENT_PARAS.map((p) => (
-          <Text key={p} style={styles.explainText}>
-            {p}
-          </Text>
-        ))}
-      </View>
 
       <View style={styles.convention}>
         <Text style={styles.conventionTitle}>{CONVENTION_TITLE}</Text>
@@ -613,10 +653,13 @@ const styles = StyleSheet.create({
   },
 
   // Level meter
-  meterWrap: { flexDirection: 'row', justifyContent: 'center', gap: 8, paddingVertical: 1 },
-  meterCol: { width: 30, height: VIZ_H + 8, gap: 2 },
+  meterWrap: { flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-start', gap: 12, paddingVertical: 1 },
+  meterBarCol: { alignItems: 'center', gap: 1 },
+  meterCol: { width: 22, height: 72, gap: 2 },
   meterSeg: { flex: 1, borderRadius: 2 },
-  meterTicks: { height: VIZ_H + 8, justifyContent: 'space-between' },
+  meterBarLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.8, color: colors.textSub, marginTop: 3 },
+  meterBarDb: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, color: colors.textSecondary },
+  meterTicks: { height: 72, justifyContent: 'space-between', paddingRight: 1 },
   tickText: { fontFamily: fonts.oswaldSemiBold, fontSize: 8.5, letterSpacing: 0.5, color: '#5a5b63' },
 
   // SPL
