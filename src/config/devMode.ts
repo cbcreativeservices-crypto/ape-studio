@@ -16,10 +16,12 @@ export const DEV_BYPASS = {
    *  NOTE: the server (`start_quiz_attempt`) still re-checks gates — if it
    *  refuses, the client shows the server error; that is expected and the
    *  backend is frozen (do not "fix" it client-side beyond this bypass). */
-  bypassQuizLocks: true,
+  bypassQuizLocks: false,
   /** Topic frontier + method dead-switches ignored: every topic reachable,
-   *  every method tappable (screens may be empty if a topic has no content). */
-  bypassMethodLocks: true,
+   *  every method tappable (screens may be empty if a topic has no content).
+   *  OFF (owner 2026-08-11): forced every panel powered ON, hiding the new
+   *  Dashboard power-sequence; flip back to true for lock-free screen testing. */
+  bypassMethodLocks: false,
   /** Entitlement caps forced to full academy: paywalls/veils/upsells hidden.
    *  OFF (owner 2026-08-06): the owner needs to SEE each tier's gates/veils/
    *  upsells. With this off, commercialMode ON renders the real per-tier caps
