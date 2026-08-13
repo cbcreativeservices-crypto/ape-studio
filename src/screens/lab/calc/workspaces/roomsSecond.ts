@@ -48,6 +48,11 @@ const CRITICAL_DISTANCE: Workspace = {
       name: 'Critical distance from room + directivity',
       inputs: ['vol', 'rt60', 'q'],
       formula: 'Dc = 0.057 · √(Q · V / RT60)',
+      plainFormula:
+        'The critical distance equals 0.057 times the square root of the directivity times the room volume divided by the reverberation time.',
+      explain:
+        'The critical distance is where a source’s direct sound and the room’s reverberant field are equally loud — closer, you hear the source; farther, the room. A more directional source (higher Q) or a bigger, deader room pushes it out. Doubling the directivity multiplies the distance by about 1.4.',
+      keySymbols: ['·', '√', 'Q', '/'],
       compute: (v) => {
         const dc = 0.057 * Math.sqrt((n(v.q) * n(v.vol)) / n(v.rt60));
         return [
@@ -68,6 +73,11 @@ const CRITICAL_DISTANCE: Workspace = {
       name: 'Direct-to-reverberant ratio at a distance',
       inputs: ['vol', 'rt60', 'q', 'r'],
       formula: 'D/R = 20·log₁₀(Dc / r)',
+      plainFormula:
+        'The direct-to-reverberant ratio in dB equals twenty times the base-ten log of the critical distance divided by the listening distance.',
+      explain:
+        'Compares direct sound to the reverberant field at a given distance. Positive dB means the source still leads; zero is exactly at the critical distance; negative means the room is louder. Beyond the critical distance, moving farther costs clarity, not level.',
+      keySymbols: ['/', 'log₁₀'],
       note: 'Positive dB = direct sound still wins; 0 dB is exactly at Dc; negative = the room is louder than the source.',
       compute: (v) => {
         const dc = 0.057 * Math.sqrt((n(v.q) * n(v.vol)) / n(v.rt60));
@@ -128,6 +138,11 @@ const SCHROEDER: Workspace = {
       name: 'Schroeder frequency from room',
       inputs: ['vol', 'rt60'],
       formula: 'f_s = 2000 · √(RT60 / V)',
+      plainFormula:
+        'The Schroeder frequency equals 2000 times the square root of the reverberation time divided by the room volume.',
+      explain:
+        'Marks the transition between a room’s two behaviours: below it, sparse resonant modes you can count and treat individually; above it, the modes overlap into a dense field managed statistically with diffusion and absorption. Small rooms push it high — which is why small control rooms are a low-frequency battle.',
+      keySymbols: ['·', '√', '/'],
       compute: (v) => {
         const fs = 2000 * Math.sqrt(n(v.rt60) / n(v.vol));
         return [
@@ -148,6 +163,11 @@ const SCHROEDER: Workspace = {
       name: 'Room volume for a target Schroeder frequency (reverse)',
       inputs: ['fs', 'rt60'],
       formula: 'V = RT60 · (2000 / f_s)²',
+      plainFormula:
+        'The required room volume equals the reverberation time times the square of 2000 divided by the target Schroeder frequency.',
+      explain:
+        'The reverse: how big a room must be, at a given reverberation time, to bring the modal transition down to a target frequency. Because the frequency depends on the square root of volume, lowering it needs dramatically more space — halving the Schroeder frequency takes about four times the volume.',
+      keySymbols: ['·', '/', 'x²'],
       note: 'How big a room must be (at this RT60) to bring the modal transition down to your target.',
       compute: (v) => {
         const vol = n(v.rt60) * Math.pow(2000 / n(v.fs), 2);
@@ -205,6 +225,11 @@ const BOUNDARY: Workspace = {
       name: 'Cancellations & reinforcements from boundary distance',
       inputs: ['d', 'temp'],
       formula: 'f_null = (2k−1)·c/(4d) · f_peak = k·c/(2d)',
+      plainFormula:
+        'Cancellations fall at odd multiples of the speed of sound over four times the boundary distance; reinforcements fall at whole multiples of the speed of sound over twice the distance.',
+      explain:
+        'A speaker near a wall, floor, or console hears its own reflection, and the two comb-filter. The first, deepest cancellation is set purely by the driver-to-boundary distance. You cannot EQ a true cancellation back — the energy is gone — so you move the speaker or treat the boundary.',
+      keySymbols: ['−', '·', 'c', '/'],
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
         const d = n(v.d);
@@ -230,6 +255,10 @@ const BOUNDARY: Workspace = {
       name: 'Boundary distance for a chosen null (reverse)',
       inputs: ['fNull', 'temp'],
       formula: 'd = c / (4 · f_null)',
+      plainFormula: 'The boundary distance equals the speed of sound divided by four times the target null frequency.',
+      explain:
+        'Where to place the driver so its first cancellation lands on — or, more usefully, clears — a chosen frequency. In practice you move the null out of your working range rather than onto it, by changing how far the driver sits from the boundary.',
+      keySymbols: ['c', '/', '·'],
       note: 'Where to place the driver so its FIRST cancellation lands on (or clears) a given frequency.',
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
@@ -289,6 +318,11 @@ const REFLECTION: Workspace = {
       name: 'Comb pattern from two path lengths',
       inputs: ['dDirect', 'dReflected', 'temp'],
       formula: 'Δd = d₂ − d₁ · Δt = Δd/c · Δf = c/Δd · first null = c/(2Δd)',
+      plainFormula:
+        'The path difference equals the reflected path minus the direct path; the delay equals that difference over the speed of sound; the comb teeth are spaced by the speed of sound over the path difference; and the first null sits at half that spacing.',
+      explain:
+        'When a delayed copy of a sound arrives off a floor, desk, or wall, it combs with the direct sound. The extra distance the reflection travels sets everything — a longer difference packs more, closer-spaced notches. This is the physics behind desk-bounce dips and the 3:1 mic rule.',
+      keySymbols: ['Δ', '−', '/', 'c', 'x₁'],
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
         const dd = Math.abs(n(v.dReflected) - n(v.dDirect));
@@ -316,6 +350,11 @@ const REFLECTION: Workspace = {
       name: 'Path difference for a target first null (reverse)',
       inputs: ['fNull', 'temp'],
       formula: 'Δd = c / (2 · f_null)',
+      plainFormula:
+        'The path difference equals the speed of sound divided by twice the target first-null frequency.',
+      explain:
+        'The reverse: the extra reflected-path length that would place the first comb notch at a chosen frequency. Any reflection whose path is that much longer than the direct sound notches first there.',
+      keySymbols: ['Δ', 'c', '/', '·'],
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
         const dd = c / (2 * n(v.fNull));

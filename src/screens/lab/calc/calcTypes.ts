@@ -57,6 +57,20 @@ export type CalcFunction = {
   inputs: string[];
   /** The formula, human-readable (e.g. "T = 1 / f"). */
   formula: string;
+  /** FORMULA-KEY POPUP (owner 2026-08-13) — the purple key beside the formula
+   *  opens a popup UNIQUE to this formula, not the whole symbol key. These two
+   *  optional fields author its custom prose; the popup also auto-derives the
+   *  element list (from this function's input fields + their `help`) and the
+   *  symbol subset (the key entries whose glyph appears in `formula`).
+   *  `plainFormula`: the formula spelled out in words, no symbols
+   *    (e.g. "Period equals one second divided by the frequency").
+   *  `explain`: what the calculation does and what its elements mean, in prose. */
+  plainFormula?: string;
+  explain?: string;
+  /** Optional explicit, ordered glyph list for the popup's "symbols used" block
+   *  when auto-derivation from `formula` would be imperfect (exact author
+   *  control). Each string is a glyph as it appears in a SymbolEntry.symbol. */
+  keySymbols?: string[];
   /** Per-function caveat (model limits, standards note). */
   note?: string;
   compute: (v: CalcValues) => OutputVal[];

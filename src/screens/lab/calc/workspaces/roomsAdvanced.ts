@@ -55,6 +55,11 @@ const EYRING: Workspace = {
       name: 'RT60 — Eyring vs Sabine',
       inputs: ['vol', 'surf', 'aBar'],
       formula: 'Eyring: RT60 = 0.161·V / (−S·ln(1−ā))',
+      plainFormula:
+        'The Eyring reverberation time equals 0.161 times the room volume, divided by the negative surface area times the natural log of one minus the average absorption.',
+      explain:
+        'Sabine’s reverberation formula reads long once a room is fairly dead. Eyring corrects it by using −ln(1−ā) in place of the raw average absorption, which matters as absorption climbs. This gives the Eyring RT60 and how far Sabine over-estimates it for the same room. It assumes a diffuse field and ignores air absorption.',
+      keySymbols: ['·', '/', '−', 'ln', 'ā'],
       compute: (v) => {
         const V = n(v.vol);
         const S = n(v.surf);
@@ -85,6 +90,11 @@ const EYRING: Workspace = {
       name: 'Average absorption for a target RT60 (Eyring, reverse)',
       inputs: ['vol', 'surf', 'rtTarget'],
       formula: 'ā = 1 − exp(−0.161·V / (S·RT60))',
+      plainFormula:
+        'The required average absorption equals one minus e raised to the power of negative 0.161 times the volume, divided by the surface area times the target reverberation time.',
+      explain:
+        'The reverse of the Eyring model: the area-averaged absorption a room needs to reach your target RT60. It rearranges the Eyring equation to solve for absorption, then expresses that as a total absorption area (metric sabins) spread over the room’s surface.',
+      keySymbols: ['ā', '−', 'e', '·', '/'],
       note: 'The area-averaged absorption the room needs to hit your target RT60, by the Eyring model.',
       compute: (v) => {
         const V = n(v.vol);
@@ -150,6 +160,11 @@ const DIFFUSER: Workspace = {
       name: 'Well depths & diffusion bandwidth',
       inputs: ['N', 'f0', 'w', 'temp'],
       formula: 'dₙ = (n² mod N)·λ₀/(2N) · high edge = c/(2·width)',
+      plainFormula:
+        'Each well depth equals its residue (n squared, modulo N) times the design wavelength, divided by twice N; the high-frequency edge is the speed of sound divided by twice the well width.',
+      explain:
+        'A quadratic-residue diffuser is a row of wells whose depths follow the number-theory sequence n² mod N for a prime N, which scatters sound evenly over a band. The well DEPTHS set the low edge of diffusion (the design frequency); the well WIDTH sets the high edge. N must be prime for the pattern to spread energy evenly.',
+      keySymbols: ['λ', '·', '/', 'c', 'x²', 'x₁'],
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
         const N = Math.round(n(v.N));
@@ -233,6 +248,11 @@ const ABSORBER: Workspace = {
       name: 'Panel (membrane) absorber resonance',
       inputs: ['mass', 'gap'],
       formula: 'f₀ ≈ 60 / √(m · d)',
+      plainFormula:
+        'The resonant frequency is about 60 divided by the square root of the panel mass times the air-gap depth.',
+      explain:
+        'A panel (membrane) absorber flexes a mass over a sealed air gap, resonating at a low frequency where thin porous foam fails. A heavier panel or a deeper gap tunes it lower. It works across roughly a half-octave either side of this frequency, and only if the cavity is sealed so the trapped air acts as the spring.',
+      keySymbols: ['≈', '/', '√', '·', 'f', 'x₁'],
       compute: (v) => {
         const f0 = 60 / Math.sqrt(n(v.mass) * n(v.gap));
         return [
@@ -253,6 +273,11 @@ const ABSORBER: Workspace = {
       name: 'Perforated-panel Helmholtz resonance',
       inputs: ['openPct', 'depth', 'thick', 'hole', 'temp'],
       formula: 'f₀ ≈ (c/2π)·√(P / (d·(t + 0.8·D)))',
+      plainFormula:
+        'The resonant frequency is about the speed of sound over two pi, times the square root of the open-area fraction divided by the cavity depth times the effective neck length.',
+      explain:
+        'A Helmholtz (perforated-panel) absorber resonates the air in its holes against the cavity behind it. More open area or shorter necks tune it higher; a deeper cavity tunes it lower. The effective neck length adds a little (0.8 × hole diameter) to the panel thickness because the moving plug of air extends past the holes.',
+      keySymbols: ['≈', 'c', '/', 'π', '·', '√', 'f', 'x₁'],
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
         const P = n(v.openPct) / 100;
@@ -321,6 +346,11 @@ const TRANSMISSION: Workspace = {
       name: 'Transmission loss from mass & frequency',
       inputs: ['mass', 'f'],
       formula: 'TL ≈ 20·log₁₀(m · f) − 47',
+      plainFormula:
+        'The transmission loss in dB is about twenty times the base-ten log of the panel mass times the frequency, minus 47.',
+      explain:
+        'How much a single limp wall knocks a sound down as it passes through, by the mass law: heavier and higher in frequency both mean more isolation — about 6 dB for every doubling of either. That is why bass leaks first and why doubling drywall only adds ~6 dB. It ignores stiffness, the coincidence dip, and flanking paths.',
+      keySymbols: ['≈', '·', 'log₁₀', '−', 'f'],
       compute: (v) => {
         const m = n(v.mass);
         const f = n(v.f);
@@ -353,6 +383,11 @@ const TRANSMISSION: Workspace = {
       name: 'Panel mass for a target TL (reverse)',
       inputs: ['tlTarget', 'f'],
       formula: 'm = 10^((TL + 47)/20) / f',
+      plainFormula:
+        'The required panel mass equals ten raised to the quantity (target transmission loss plus 47) over twenty, then divided by the frequency.',
+      explain:
+        'The reverse of the mass-law calculation: the surface mass a wall needs to reach a target isolation at a given frequency. If the mass it demands is impractical, the fix isn’t more drywall — it’s decoupling and an air gap, which the mass law alone cannot describe.',
+      keySymbols: ['x²', '/', 'f'],
       compute: (v) => {
         const tl = n(v.tlTarget);
         const f = n(v.f);

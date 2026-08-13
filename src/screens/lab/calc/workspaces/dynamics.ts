@@ -63,6 +63,11 @@ const WS_COMPRESSOR: Workspace = {
       name: 'Output & gain reduction from threshold, ratio, input',
       inputs: ['thr', 'ratio', 'inLvl'],
       formula: 'out = thr + (in − thr)/ratio · GR = in − out',
+      plainFormula:
+        'The output equals the threshold plus the input’s amount above the threshold divided by the ratio; the gain reduction equals the input minus the output.',
+      explain:
+        'Above the threshold a compressor lets only one part in “ratio” of each extra decibel through. It takes how far the input sits above the threshold, divides that overshoot by the ratio, and adds it back onto the threshold — that is the output. Gain reduction is just how far the output landed below the input. A signal below the threshold passes untouched.',
+      keySymbols: ['−', '/'],
       note: 'Settled hard-knee gain. A signal below threshold passes at unity (0 dB reduction).',
       compute: (v) => {
         const thr = n(v.thr);
@@ -102,6 +107,11 @@ const WS_COMPRESSOR: Workspace = {
       name: 'Ratio needed for a target output (reverse)',
       inputs: ['thr', 'inLvl', 'targetOut'],
       formula: 'ratio = (in − thr) / (out − thr)',
+      plainFormula:
+        'The ratio equals the input’s amount above the threshold divided by the wanted output’s amount above the threshold.',
+      explain:
+        'Works backwards from a target. It compares how far the input sits above the threshold with how far you want the output to sit above it — the bigger that gap, the higher the ratio needed. If the target output is below the threshold, no downward ratio can reach it; only makeup gain or a lower threshold would.',
+      keySymbols: ['−', '/'],
       note: 'Requires the input to be above threshold and the target output to sit between threshold and input.',
       compute: (v) => {
         const thr = n(v.thr);
@@ -134,6 +144,11 @@ const WS_COMPRESSOR: Workspace = {
       name: 'Threshold for a target gain reduction (reverse)',
       inputs: ['inLvl', 'ratio', 'targetGr'],
       formula: 'thr = in − GR·ratio/(ratio − 1)',
+      plainFormula:
+        'The threshold equals the input minus the gain reduction times the ratio, divided by the ratio minus one.',
+      explain:
+        'Sets the threshold so a known input gets exactly the gain reduction you want. It converts your target gain reduction into how far above the threshold the input must sit (which depends on the ratio), then drops the threshold that far below the input. At 1:1 there is no gain reduction, so no threshold can produce the target.',
+      keySymbols: ['−', '·', '/'],
       note: 'How low to set the threshold so a known input gets exactly the gain reduction you want.',
       compute: (v) => {
         const inp = n(v.inLvl);

@@ -35,6 +35,37 @@ export type SymbolGroup = {
   entries: SymbolEntry[];
 };
 
+/** Groups excluded from the per-formula "symbols used" subset — the recurring
+ *  VALUES group is trivia (bare numbers like 2, 10, 0.707) that would match
+ *  spuriously against any formula's digits. The real notation groups stay. */
+const SUBSET_EXCLUDE_GROUP_TITLES = new Set(['VALUES THAT KEEP TURNING UP']);
+
+/**
+ * The symbol-key entries whose glyph actually appears in a formula string — the
+ * data for the per-formula key popup's "symbols used here" block (owner
+ * 2026-08-13). Order follows the key's own group order.
+ *
+ * `only` pins an explicit, ordered subset by glyph (author control, from
+ * CalcFunction.keySymbols) for the formulas where substring auto-matching would
+ * be imperfect. Without it, every notation entry whose glyph is a substring of
+ * the formula is included.
+ */
+export function symbolsInFormula(formula: string, only?: string[]): SymbolEntry[] {
+  const notation = SYMBOL_GROUPS.filter((g) => !SUBSET_EXCLUDE_GROUP_TITLES.has(g.title)).flatMap(
+    (g) => g.entries,
+  );
+  const glyphsOf = (e: SymbolEntry) => e.symbol.split(/\s+/).filter(Boolean);
+  if (only && only.length) {
+    // Prefer an EXACT symbol match (so 'T' picks the period variable, not the
+    // 'p n µ m k M G T' SI-prefixes collection) before falling back to any entry
+    // whose glyph list contains the token (so '/' still finds the '÷  /' entry).
+    return only
+      .map((glyph) => notation.find((e) => e.symbol === glyph) ?? notation.find((e) => glyphsOf(e).includes(glyph)))
+      .filter((e): e is SymbolEntry => !!e);
+  }
+  return notation.filter((e) => glyphsOf(e).some((g) => formula.includes(g)));
+}
+
 export const SYMBOL_GROUPS: SymbolGroup[] = [
   {
     title: 'GREEK LETTERS',

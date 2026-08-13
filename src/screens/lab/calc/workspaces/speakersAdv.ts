@@ -49,6 +49,11 @@ const CROSSOVER: Workspace = {
       name: 'First-order (6 dB/oct) components',
       inputs: ['fx', 'z'],
       formula: 'C = 0.1592/(f·R) · L = 0.1592·R/f',
+      plainFormula:
+        'The capacitor equals 0.1592 divided by the crossover frequency times the impedance; the inductor equals 0.1592 times the impedance divided by the frequency.',
+      explain:
+        'A first-order (6 dB/octave) passive crossover uses one capacitor in series with the tweeter to pass highs and one inductor in series with the woofer to pass lows. It is the gentlest slope and stays phase-coherent. The values assume a purely resistive load, so real reactive drivers need measurement and adjustment.',
+      keySymbols: ['/', '·', 'R', 'f'],
       compute: (v) => {
         const f = n(v.fx);
         const R = n(v.z);
@@ -73,6 +78,11 @@ const CROSSOVER: Workspace = {
       name: 'Second-order Butterworth (12 dB/oct) components',
       inputs: ['fx', 'z'],
       formula: 'C = 0.1125/(f·R) · L = 0.2251·R/f',
+      plainFormula:
+        'The capacitor equals 0.1125 divided by the frequency times the impedance; the inductor equals 0.2251 times the impedance divided by the frequency.',
+      explain:
+        'A second-order Butterworth (12 dB/octave) crossover — steeper than first-order, using a capacitor and inductor per filter at a Q of 0.707 for a maximally flat sum. The tweeter usually needs its polarity reversed so the two bands add flat through the crossover region.',
+      keySymbols: ['/', '·', 'R', 'f'],
       note: 'Butterworth (Q = 0.707) alignment. The tweeter usually needs reversed polarity for a flat sum.',
       compute: (v) => {
         const f = n(v.fx);
@@ -136,6 +146,11 @@ const LINEARRAY: Workspace = {
       name: 'Directivity control from array length',
       inputs: ['arrayLen', 'temp'],
       formula: 'onset ≈ c/L · tight control ≈ 2c/L',
+      plainFormula:
+        'Directivity control begins around the speed of sound divided by the array length, and becomes tight around twice that.',
+      explain:
+        'A line array controls its vertical pattern only down to about where it is one wavelength long — the speed of sound over the array length — and tightly once it is two wavelengths. Below that onset the array is effectively omnidirectional. Longer arrays buy lower-frequency pattern control.',
+      keySymbols: ['≈', 'c', '/'],
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
         const L = n(v.arrayLen);
@@ -158,6 +173,10 @@ const LINEARRAY: Workspace = {
       name: 'Spatial-aliasing frequency from element spacing',
       inputs: ['spacing', 'temp'],
       formula: 'f_alias ≈ c / spacing',
+      plainFormula: 'The spatial-aliasing frequency is about the speed of sound divided by the element spacing.',
+      explain:
+        'Above the frequency where elements are more than a wavelength apart, a line array grating-lobes — spraying energy off-axis into comb-filtered side lobes. Keeping element spacing under half a wavelength is the cleanest region. Tight spacing buys high-frequency cleanliness.',
+      keySymbols: ['≈', 'c', '/'],
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
         return [
@@ -178,6 +197,11 @@ const LINEARRAY: Workspace = {
       name: 'Point vs line-source distance loss',
       inputs: ['splRef', 'refDist', 'farDist'],
       formula: 'point: −20·log₁₀(r₂/r₁) · line (near field): −10·log₁₀(r₂/r₁)',
+      plainFormula:
+        'A point source loses twenty times the base-ten log of the distance ratio; a line source in its near field loses only ten times that log.',
+      explain:
+        'How level falls with distance for the two source types. A point source drops about 6 dB per doubling of distance; a line source in its near field drops only about 3 dB per doubling, giving it more reach — but only while the near field lasts, after which it reverts to point-source behaviour.',
+      keySymbols: ['−', 'log₁₀', '/', 'x₁'],
       compute: (v) => {
         const ratio = n(v.farDist) / n(v.refDist);
         const point = n(v.splRef) - 20 * Math.log10(ratio);
@@ -249,6 +273,11 @@ const DRIVER: Workspace = {
       name: 'Displacement-limited SPL',
       inputs: ['sd', 'xmax', 'f', 'dist'],
       formula: 'p = 1.2·2π·f²·Sd·(Xpk/√2) / r · SPL = 20·log₁₀(p / 20µPa)',
+      plainFormula:
+        'The radiated pressure equals 1.2 times two pi times the frequency squared times the cone area times the peak excursion over root two, divided by the distance; the SPL is twenty times the base-ten log of that pressure over 20 micropascals.',
+      explain:
+        'Low-frequency output is displacement-limited: a cone makes bass by moving air, and the air moved is cone area times excursion. This finds the maximum SPL a driver’s travel can produce at a frequency and distance. Dropping an octave needs four times the excursion for the same level — the physics behind big subwoofers.',
+      keySymbols: ['·', 'π', '/', '√', 'x²', 'f', 'µ', 'log₁₀', 'Sd'],
       compute: (v) => {
         const p = (1.2 * TWO_PI * n(v.f) * n(v.f) * n(v.sd) * (n(v.xmax) / Math.SQRT2)) / n(v.dist);
         const spl = 20 * Math.log10(p / 2e-5);
@@ -272,6 +301,11 @@ const DRIVER: Workspace = {
       name: 'Sealed box resonance & Q',
       inputs: ['fs', 'qts', 'vas', 'vb'],
       formula: 'fc = fs·√(1 + Vas/Vb) · Qtc = Qts·√(1 + Vas/Vb)',
+      plainFormula:
+        'The sealed-box resonance equals the driver’s free-air resonance times the square root of one plus the compliance-volume-to-box-volume ratio; the system Q equals the driver’s total Q times the same factor.',
+      explain:
+        'A sealed box acts as an air spring that raises both the driver’s resonance and its Q. The ratio of the driver’s compliance volume (Vas) to the box volume sets how much: a small box gives a peaky, higher-tuned system; a Qtc near 0.707 is maximally flat, and a bigger box is more damped.',
+      keySymbols: ['·', '√', '/', 'fs', 'Q'],
       compute: (v) => {
         const k = Math.sqrt(1 + n(v.vas) / n(v.vb));
         return [
@@ -294,6 +328,11 @@ const DRIVER: Workspace = {
       name: 'Vented port length for a target tuning',
       inputs: ['fbTarget', 'av', 'vb', 'temp'],
       formula: 'L_eff = c²·Av / ((2π·fb)²·Vb) · Lv = L_eff − 1.46·√(Av/π)',
+      plainFormula:
+        'The effective port length equals the speed of sound squared times the port area, divided by the square of two pi times the tuning frequency times the box volume; the physical length subtracts the end correction — 1.46 times the square root of the port area over pi.',
+      explain:
+        'In a vented (bass-reflex) box the port and the box air form a Helmholtz resonator tuned to fb. This finds the port length for a target tuning. The moving plug of air is acoustically longer than the physical port (the end correction), so a longer or narrower port tunes lower. A negative result means the port area already tunes higher than the target.',
+      keySymbols: ['c', '·', '/', 'π', 'x²', '√', '−', 'f'],
       note: 'End correction 1.46·√(Av/π) added back (one flanged + one free end); real ports vary.',
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));

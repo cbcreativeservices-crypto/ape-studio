@@ -49,6 +49,10 @@ const ALIGN: Workspace = {
       name: 'Delay to align a path offset',
       inputs: ['offset', 'temp', 'sr'],
       formula: 'delay = offset / c',
+      plainFormula: 'The delay equals the path offset divided by the speed of sound.',
+      explain:
+        'When two sources reach the listener at different times they comb. This turns the extra distance one source travels into the delay you add to the CLOSER (earlier) source so both arrive together, and also gives that delay in samples. The speed of sound comes from the air temperature.',
+      keySymbols: ['/', 'c'],
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
         const d = n(v.offset) / c;
@@ -71,6 +75,11 @@ const ALIGN: Workspace = {
       name: 'Phase offset at a frequency',
       inputs: ['offset', 'freq', 'temp'],
       formula: 'phase = 360 · offset · f / c',
+      plainFormula:
+        'The phase equals 360 degrees times the path offset times the frequency, divided by the speed of sound.',
+      explain:
+        'Shows the phase relationship a path offset creates at a chosen frequency (often the crossover). A full wavelength of offset is 360°, so the offset is scaled by frequency and divided by the speed of sound. Near 0° the sources reinforce; near 180° they cancel until aligned.',
+      keySymbols: ['·', '/', '°', 'f', 'c'],
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
         const wl = c / n(v.freq);
@@ -97,6 +106,10 @@ const ALIGN: Workspace = {
       name: 'Path distance from a delay (reverse)',
       inputs: ['delay', 'temp'],
       formula: 'distance = delay · c',
+      plainFormula: 'The path distance equals the delay times the speed of sound.',
+      explain:
+        'The reverse of the alignment calculation: converts a delay time back into the extra path length it represents. Useful for turning a measured or dialed-in delay into the physical offset between two sources.',
+      keySymbols: ['·', 'c'],
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
         return [{ label: 'PATH DISTANCE', value: n(v.delay) * c, quantity: 'length' }];
@@ -150,6 +163,11 @@ const IMD: Workspace = {
       name: 'Intermodulation products',
       inputs: ['f1', 'f2'],
       formula: '2nd: f₂±f₁ · 3rd: 2f₁±f₂, 2f₂±f₁',
+      plainFormula:
+        'Second-order tones appear at the sum and difference of the two frequencies; third-order tones appear at twice one frequency plus or minus the other.',
+      explain:
+        'A nonlinearity mixes two tones into new tones at their sums and differences. The second-order products are the simple sum and difference; the third-order products (twice one tone, minus the other) are the worst, because they land right beside the originals where no filter can remove them. This locates the frequencies, not their levels.',
+      keySymbols: ['±', 'x₁', 'f'],
       compute: (v) => {
         const f1 = n(v.f1);
         const f2 = n(v.f2);

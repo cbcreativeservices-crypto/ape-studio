@@ -50,6 +50,11 @@ const LOUDNORM: Workspace = {
       name: 'Gain to hit a target & peak check',
       inputs: ['measured', 'target', 'truePeak', 'ceiling'],
       formula: 'gain = target − measured · new TP = TP + gain',
+      plainFormula:
+        'The gain change equals the target loudness minus your measured loudness; the new true peak equals the old true peak plus that same gain.',
+      explain:
+        'Streaming and broadcast normalize everything to a loudness target in LUFS, where one LU equals one dB. This finds the level move to reach the target from your measured integrated loudness, then adds that same move to your true peak to confirm it stays under the ceiling. It changes level, not tone.',
+      keySymbols: ['−'],
       compute: (v) => {
         const gain = n(v.target) - n(v.measured);
         const newTP = n(v.truePeak) + gain;
@@ -126,6 +131,11 @@ const LOUDTP: Workspace = {
       name: 'Measurement window sizes',
       inputs: ['sr'],
       formula: 'momentary = 0.4 s · short-term = 3 s (× sample rate)',
+      plainFormula:
+        'The momentary window is 0.4 seconds and the short-term window is 3 seconds, each multiplied by the sample rate to get a length in samples.',
+      explain:
+        'BS.1770 measures loudness over fixed time windows. This turns those windows — 400 ms for the fast momentary meter and 3 s for the smoothed short-term meter — into a count of samples at your sample rate, and shows the 100 ms block step (75% overlap) that makes the two meters react at different speeds.',
+      keySymbols: ['×'],
       compute: (v) => {
         return [
           { label: 'MOMENTARY WINDOW (400 ms)', value: 0.4 * n(v.sr), quantity: 'samples', chainable: false },
@@ -143,6 +153,11 @@ const LOUDTP: Workspace = {
       name: 'Loudness difference & perceived ratio',
       inputs: ['lufsA', 'lufsB'],
       formula: 'ΔLU = A − B · perceived ≈ 2^(ΔLU/10)',
+      plainFormula:
+        'The loudness difference in LU equals A minus B; the perceived loudness ratio is about two raised to that difference divided by ten.',
+      explain:
+        'Compares two loudness values (one LU equals one dB) and estimates how much louder one sounds. Because a change of roughly ten LU is heard as about twice as loud, the perceived ratio is two raised to the difference over ten — a psychoacoustic rule of thumb, not an exact law.',
+      keySymbols: ['Δ', '−', '/', '≈', 'x²'],
       compute: (v) => {
         const d = n(v.lufsA) - n(v.lufsB);
         return [
@@ -163,6 +178,11 @@ const LOUDTP: Workspace = {
       name: 'True-peak ceiling & sample-peak margin',
       inputs: ['samplePeak', 'lossy'],
       formula: 'ceiling = −1 dBTP (lossless) or −2 dBTP (lossy)',
+      plainFormula:
+        'The recommended true-peak ceiling is minus one dBTP for lossless delivery, or minus two dBTP for lossy delivery.',
+      explain:
+        'Picks a safe true-peak ceiling and shows your margin to it. A sample-peak meter can under-read: true inter-sample peaks can sit up to about 3 dB higher, and lossy encoding (MP3/AAC) adds overshoot — so lossy delivery drops the ceiling from −1 to −2 dBTP. Measure true peak with an oversampling meter to be sure.',
+      keySymbols: ['−'],
       note: 'Inter-sample peaks can exceed the sample peak by up to ~3 dB; lossy encoding adds overshoot, so drop the ceiling.',
       compute: (v) => {
         const ceiling = n(v.lossy) >= 1 ? -2 : -1;

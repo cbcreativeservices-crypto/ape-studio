@@ -27,6 +27,7 @@ import { useCalcSectionOpen } from './calcPrefs';
 import { FieldRow, buildValues, defaultUnitIdx, formatOutput, runCompute } from './calcPanel';
 import { buildReportFromCalc, reportToText } from './calcReport';
 import { GlossaryTermPopup } from '../../../features/glossary/GlossaryTermPopup';
+import { FormulaKeyPopup } from './FormulaKeyPopup';
 
 const SIGS = [3, 4, 5] as const;
 
@@ -65,6 +66,9 @@ export function CalcWorkspaceScreen() {
   const [outUnit, setOutUnit] = useState<Record<string, number>>({});
   const [sig, setSig] = useState<number>(4);
   const [stepsOpen, setStepsOpen] = useState(false);
+  // Per-formula key popup (owner 2026-08-13) — the purple key opens THIS formula's
+  // own explanation, not the whole symbol key.
+  const [keyOpen, setKeyOpen] = useState(false);
   // Persisted collapse state for the bottom explanation sections (owner 2026-08-05).
   const { open: secOpen, toggle: toggleSec } = useCalcSectionOpen();
   // Once the user starts entering values, hide the intro copy to free the upper
@@ -316,13 +320,14 @@ export function CalcWorkspaceScreen() {
 
         <View style={styles.formulaRow}>
           <Text style={styles.formula}>FORMULA   {fn.formula}</Text>
-          {/* Jump to the Symbol Key at the point of need — a symbol in this
-              formula is where a user meets it (owner 2026-08-09). */}
+          {/* Opens THIS formula's own key popup — formula, plain-English reading,
+              what it calculates + its elements, and only the symbols it uses
+              (owner 2026-08-13). The full symbol key is one tap further in. */}
           <Pressable
-            onPress={() => navigation.navigate('CalcSymbolsKey')}
+            onPress={() => setKeyOpen(true)}
             hitSlop={8}
             accessibilityRole="button"
-            accessibilityLabel="Symbol key — what these symbols mean"
+            accessibilityLabel="Formula key — what this formula and its symbols mean"
           >
             <Text style={styles.formulaKey}>π KEY</Text>
           </Pressable>
@@ -383,6 +388,16 @@ export function CalcWorkspaceScreen() {
         </View>
       </KeyboardAwareScrollView>
       <GlossaryTermPopup termName={popupTerm} onClose={() => setPopupTerm(null)} />
+      <FormulaKeyPopup
+        fn={keyOpen ? fn : null}
+        fields={ws?.fields ?? []}
+        workspaceName={ws?.name}
+        onClose={() => setKeyOpen(false)}
+        onOpenFullKey={() => {
+          setKeyOpen(false);
+          navigation.navigate('CalcSymbolsKey');
+        }}
+      />
     </View>
   );
 }

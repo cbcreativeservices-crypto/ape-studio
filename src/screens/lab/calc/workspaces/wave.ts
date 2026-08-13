@@ -55,6 +55,10 @@ export const WS_WAVE: Workspace = {
       name: 'Period from frequency',
       inputs: ['f'],
       formula: 'T = 1 / f',
+      plainFormula: 'Period equals one second divided by the frequency.',
+      explain:
+        'Frequency is how many cycles happen each second; period is how long a single cycle lasts. They are reciprocals, so as frequency rises the period shrinks. Enter a frequency in hertz to get the time of one cycle — the basis for delay times, LFO rates, and sample timing.',
+      keySymbols: ['T', '/', 'f'],
       compute: (v) => {
         const f = n(v.f);
         return [
@@ -75,6 +79,11 @@ export const WS_WAVE: Workspace = {
       name: 'Frequency from period',
       inputs: ['t'],
       formula: 'f = 1 / T · ω = 2π·f',
+      plainFormula:
+        'Frequency equals one divided by the period; angular frequency equals two pi times the frequency.',
+      explain:
+        'The reverse of the period calculation: from the length of one cycle you recover how many cycles fit in a second. It also gives angular frequency (ω) — the same rate in radians per second, the form used in filter, phase, and reactance math, where one full cycle is 2π radians.',
+      keySymbols: ['ω', 'π', '·', '/', 'T', 'f'],
       compute: (v) => {
         const f = 1 / n(v.t);
         return [
@@ -95,6 +104,13 @@ export const WS_WAVE: Workspace = {
       name: 'Speed of sound from temperature',
       inputs: ['temp'],
       formula: 'c = 331.3 · √(1 + T/273.15)',
+      plainFormula:
+        'The speed of sound equals 331.3 metres per second times the square root of one plus the temperature in Celsius divided by 273.15.',
+      explain:
+        'Sound travels faster in warmer air. This classroom dry-air model gives the speed from temperature alone (273.15 shifts Celsius onto the absolute Kelvin scale). Use it to convert between distance and time — the basis of delay alignment and the “about a foot per millisecond” rule of thumb.',
+      // T here is air TEMPERATURE (°C), not the key's "period" — so it's left out
+      // of the symbol list; the FORMULA ELEMENTS block names it instead.
+      keySymbols: ['c', '·', '√', '/'],
       note: 'Classroom dry-air model — humidity/pressure effects (<1% typical) are ignored and disclosed.',
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
@@ -119,6 +135,10 @@ export const WS_WAVE: Workspace = {
       name: 'Wavelength from frequency',
       inputs: ['f', 'temp'],
       formula: 'λ = c / f',
+      plainFormula: 'Wavelength equals the speed of sound divided by the frequency.',
+      explain:
+        'Wavelength (λ) is the physical length of one cycle in air — low notes are long, high notes are short. It ties electrical audio to real space: room-mode frequencies, speaker spacing, mic-to-boundary interference, and how deep an absorber must be to affect a given frequency.',
+      keySymbols: ['λ', '/', 'c', 'f'],
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
         const l = c / n(v.f);
@@ -144,6 +164,11 @@ export const WS_WAVE: Workspace = {
       name: 'Frequencies hiding in a distance (reverse)',
       inputs: ['dist', 'temp'],
       formula: 'f = c / λ — with λ, λ/2, λ/4 read as the distance',
+      plainFormula:
+        'Frequency equals the speed of sound divided by the wavelength — reading a given distance as a full, half, or quarter wavelength.',
+      explain:
+        'A placement-oriented reverse of the wavelength calculation: instead of asking how long a frequency’s wave is, it asks which frequencies treat THIS distance as a whole, half, or quarter wave — the frequencies most affected by a boundary gap, driver spacing, or room dimension.',
+      keySymbols: ['λ', '/', 'c', 'f'],
       note: 'Placement-oriented reverse solve: which frequencies treat THIS distance as a full, half, or quarter wave.',
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
@@ -168,6 +193,11 @@ export const WS_WAVE: Workspace = {
       name: 'Cycles fitting in a distance',
       inputs: ['fKnown', 'dist', 'temp'],
       formula: 'cycles = d / λ · phase = cycles × 360°',
+      plainFormula:
+        'The number of cycles equals the distance divided by the wavelength; the phase equals that number of cycles times 360 degrees.',
+      explain:
+        'Counts how many wavelengths fit in a path length, then turns the leftover fraction of a cycle into a phase angle (one whole cycle is 360°). This is how a path-length difference between two arrivals becomes a phase offset at a given frequency — the root of comb filtering and alignment errors.',
+      keySymbols: ['λ', '/', '×', '°'],
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
         const lam = c / n(v.fKnown);

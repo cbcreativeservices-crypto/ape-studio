@@ -51,6 +51,11 @@ const STEREOMIC: Workspace = {
       name: 'Arrival delay & first comb null',
       inputs: ['spacing', 'angle', 'temp'],
       formula: 'path = spacing·sin(θ) · Δt = path/c · null = c/(2·path)',
+      plainFormula:
+        'The path difference equals the mic spacing times the sine of the source angle; the arrival delay equals that path divided by the speed of sound; and the first mono comb null is the speed of sound divided by twice the path difference.',
+      explain:
+        'Spaced mics hear an off-axis source at slightly different times — the delay that both builds the stereo image and, summed to mono, combs the response. This finds the extra distance to the farther mic, the arrival delay it creates, and the first cancellation frequency when the two mics are mixed to mono.',
+      keySymbols: ['θ', 'Δ', '·', '/', 'c'],
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
         const path = n(v.spacing) * Math.sin(n(v.angle) * DEG);
@@ -75,6 +80,10 @@ const STEREOMIC: Workspace = {
       name: '3:1 rule minimum spacing',
       inputs: ['micDist'],
       formula: 'min spacing = 3 × mic-to-source distance',
+      plainFormula: 'The minimum mic spacing equals three times the distance from the first mic to its source.',
+      explain:
+        'The 3:1 rule for multi-mic setups: place a second mic at least three times as far from the first mic as the first mic sits from its source. At that spacing the bleed arrives about 9.5 dB down — quiet enough that summing the mics stays clean instead of comb-filtering.',
+      keySymbols: ['×'],
       compute: (v) => {
         return [
           { label: 'MINIMUM MIC SPACING', value: 3 * n(v.micDist), quantity: 'length' },
@@ -128,6 +137,11 @@ const MICSENS: Workspace = {
       name: 'mV/Pa → dBV/Pa',
       inputs: ['mvpa'],
       formula: 'dBV/Pa = 20·log₁₀(mV/Pa ÷ 1000)',
+      plainFormula:
+        'The sensitivity in dBV per pascal equals twenty times the base-ten logarithm of the millivolts-per-pascal figure divided by one thousand.',
+      explain:
+        'Mic sensitivity is quoted two ways; this converts millivolts-per-pascal into decibels relative to 1 V/Pa. Because it is a voltage ratio it uses twenty times the base-ten log, and dividing by 1000 turns millivolts into volts before comparing to the 1 V reference.',
+      keySymbols: ['·', 'log₁₀', '÷'],
       compute: (v) => {
         return [{ label: 'SENSITIVITY (dBV/Pa)', value: 20 * Math.log10(n(v.mvpa) / 1000), quantity: 'number' }];
       },
@@ -140,6 +154,11 @@ const MICSENS: Workspace = {
       name: 'dBV/Pa → mV/Pa',
       inputs: ['dbvpa'],
       formula: 'mV/Pa = 1000 · 10^(dBV/Pa ÷ 20)',
+      plainFormula:
+        'The millivolts per pascal equals one thousand times ten raised to the dBV-per-pascal value divided by twenty.',
+      explain:
+        'The reverse conversion — from decibels relative to 1 V/Pa back to millivolts per pascal. It undoes the twenty-times-log by raising ten to the value over twenty, then multiplies by 1000 to express the result in millivolts.',
+      keySymbols: ['·', 'x²', '÷'],
       compute: (v) => {
         return [{ label: 'SENSITIVITY (mV/Pa)', value: 1000 * Math.pow(10, n(v.dbvpa) / 20), quantity: 'number' }];
       },
@@ -152,6 +171,11 @@ const MICSENS: Workspace = {
       name: 'Output voltage at an SPL',
       inputs: ['mvpa', 'spl'],
       formula: 'V = (mV/Pa ÷ 1000) · 20µPa·10^(SPL/20)',
+      plainFormula:
+        'The output voltage equals the sensitivity in volts per pascal (millivolts per pascal over one thousand) times the sound pressure — where the pressure is 20 micropascals times ten raised to the SPL over twenty.',
+      explain:
+        'Given a real SPL at the capsule, this predicts the output voltage. It turns the SPL into an actual pressure in pascals (20 µPa is the 0 dB SPL reference), then multiplies by the mic’s sensitivity in volts per pascal. The result is also shown in dBu and dBV for setting preamp gain.',
+      keySymbols: ['·', '÷', 'µ', 'x²'],
       compute: (v) => {
         const sens = n(v.mvpa) / 1000; // V/Pa
         const p = 2e-5 * Math.pow(10, n(v.spl) / 20); // Pa
@@ -217,6 +241,11 @@ const RFLINK: Workspace = {
       name: 'Free-space path loss',
       inputs: ['dist', 'freqMHz'],
       formula: 'FSPL = 20·log₁₀(d) + 20·log₁₀(f) − 147.56',
+      plainFormula:
+        'The free-space path loss in dB equals twenty times the base-ten log of the distance, plus twenty times the base-ten log of the frequency, minus 147.56.',
+      explain:
+        'Free-space (Friis) path loss — how much a radio signal weakens over a distance at a given frequency. Both distance and frequency raise the loss, so higher bands lose more per metre; 147.56 is the constant that makes it work with distance in metres and frequency in hertz. Walls and bodies add more on top.',
+      keySymbols: ['·', 'log₁₀', '−', 'f'],
       compute: (v) => {
         const f = n(v.freqMHz) * 1e6;
         const fspl = 20 * Math.log10(n(v.dist)) + 20 * Math.log10(f) - 147.56;
@@ -239,6 +268,11 @@ const RFLINK: Workspace = {
       name: 'Received power & link margin',
       inputs: ['ptx', 'gtx', 'grx', 'dist', 'freqMHz', 'rxsens'],
       formula: 'Prx = Ptx + Gtx + Grx − FSPL · margin = Prx − Rx sens',
+      plainFormula:
+        'The received power equals the transmit power plus the transmit and receive antenna gains minus the path loss; the link margin equals the received power minus the receiver sensitivity.',
+      explain:
+        'The RF link budget. It adds everything that helps the signal (transmit power, both antenna gains) and subtracts the free-space path loss to get the power at the receiver, then compares that to the receiver’s sensitivity. A comfortable positive margin is what keeps a wireless mic solid when a performer walks behind an obstruction.',
+      keySymbols: ['−'],
       compute: (v) => {
         const f = n(v.freqMHz) * 1e6;
         const fspl = 20 * Math.log10(n(v.dist)) + 20 * Math.log10(f) - 147.56;
