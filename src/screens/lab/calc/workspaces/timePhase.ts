@@ -89,6 +89,10 @@ const WS_DISTDELAY: Workspace = {
       name: 'Delay from distance',
       inputs: ['dist', 'temp'],
       formula: 't = d / c',
+      plainFormula: 'The delay equals the distance divided by the speed of sound.',
+      explain:
+        'Sound in air, time on the clock, and samples in the box are three views of one journey. This turns a distance into the time it takes to travel — the basis of delay-tower alignment and drum-mic compensation. The speed of sound comes from the air temperature.',
+      keySymbols: ['/', 'c'],
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
         const t = n(v.dist) / c;
@@ -123,6 +127,10 @@ const WS_DISTDELAY: Workspace = {
       name: 'Distance from delay (reverse)',
       inputs: ['delay', 'temp'],
       formula: 'd = c · t',
+      plainFormula: 'The distance equals the speed of sound times the delay time.',
+      explain:
+        'The reverse: the physical offset a delay represents in air. A reported latency in milliseconds becomes the distance a sound would travel in that time — useful for picturing what a delay setting means on stage.',
+      keySymbols: ['·', 'c'],
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
         const d = c * n(v.delay);
@@ -146,6 +154,10 @@ const WS_DISTDELAY: Workspace = {
       name: 'Time from samples',
       inputs: ['smp', 'sr', 'temp'],
       formula: 't = N / sr',
+      plainFormula: 'The time equals the number of samples divided by the sample rate.',
+      explain:
+        'Converts a sample count — a plugin delay report, a DSP setting, a region offset — into a time, and the equivalent distance in air. A time is telling you a distance; a sample count is telling you a time.',
+      keySymbols: ['/'],
       compute: (v) => {
         const t = n(v.smp) / n(v.sr);
         const c = speedOfSoundAir(n(v.temp));
@@ -171,6 +183,10 @@ const WS_DISTDELAY: Workspace = {
       name: 'Samples from time (reverse)',
       inputs: ['delay', 'sr'],
       formula: 'N = t · sr',
+      plainFormula: 'The number of samples equals the time times the sample rate.',
+      explain:
+        'The reverse: how many samples a delay time is. A sample-only DSP must pick a whole number, leaving a tiny residual — usually negligible, but it is why fractional-delay processing exists for precise alignment.',
+      keySymbols: ['·'],
       compute: (v) => {
         const N = n(v.delay) * n(v.sr);
         return [
@@ -287,6 +303,10 @@ const WS_PHASE: Workspace = {
       name: 'Phase from time offset',
       inputs: ['f', 'dt'],
       formula: 'φ = 360 · f · Δt',
+      plainFormula: 'The phase equals 360 degrees times the frequency times the time offset.',
+      explain:
+        'Phase is time offset expressed per cycle, so the same delay is a different number of degrees at every frequency. This gives the phase at a chosen frequency, plus how many whole cycles late the signal is — the reason two arrivals add at one frequency and cancel at another.',
+      keySymbols: ['φ', '·', 'f', 'Δ'],
       compute: (v) => {
         const total = 360 * n(v.f) * n(v.dt);
         const cycles = Math.floor(total / 360);
@@ -311,6 +331,10 @@ const WS_PHASE: Workspace = {
       name: 'Time offset from phase (reverse)',
       inputs: ['phi', 'f'],
       formula: 'Δt = φ / (360 · f)',
+      plainFormula: 'The time offset equals the phase divided by 360 degrees times the frequency.',
+      explain:
+        'The reverse: the smallest delay that produces a phase reading. Because phase repeats every 360°, a single reading cannot fix the absolute delay — offsets one full cycle apart look identical, so the true value needs the impulse response or the broadband phase slope.',
+      keySymbols: ['Δ', 'φ', '/', '·', 'f'],
       note: 'Cycle ambiguity: phase repeats every 360°, so φ, φ+360°, φ+720°… all fit — a single phase reading cannot fix the absolute delay.',
       compute: (v) => {
         const dt = n(v.phi) / (360 * n(v.f));
@@ -336,6 +360,11 @@ const WS_PHASE: Workspace = {
       name: 'Phase from path difference',
       inputs: ['pathDiff', 'f', 'temp'],
       formula: 'Δt = d / c · φ = 360 · f · Δt',
+      plainFormula:
+        'The time offset equals the path difference over the speed of sound; the phase is then 360 degrees times the frequency times that offset.',
+      explain:
+        'Turns an extra path length into a phase angle at a frequency. The longer path adds travel time, and that time becomes degrees per cycle. It is the geometry behind mic-pair placement and how a small position change reshapes the phase relationship.',
+      keySymbols: ['Δ', '/', 'c', 'φ', '·', 'f'],
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
         const dt = n(v.pathDiff) / c;
@@ -362,6 +391,11 @@ const WS_PHASE: Workspace = {
       name: 'Alignment frequencies from a delay',
       inputs: ['dt'],
       formula: 'f₉₀ = 1/(4Δt) · f₁₈₀ = 1/(2Δt) · f₃₆₀ = 1/Δt',
+      plainFormula:
+        'The 90-degree frequency is one over four times the offset; the 180-degree frequency (first cancellation) is one over twice the offset; and the 360-degree frequency is one over the offset.',
+      explain:
+        'Where a fixed delay lands at key phase angles: quarter cycle, half cycle (first cancellation), and full cycle (back in step, one cycle late). These repeat up the spectrum, so one fixed delay combs the whole range; below the 90° frequency the arrivals mostly reinforce — the safe zone for summation.',
+      keySymbols: ['/', 'Δ', 'x₁'],
       note: 'These repeat: 180° recurs at every odd multiple of f₁₈₀, full cycles at every multiple of f₃₆₀ — one fixed delay combs the whole spectrum.',
       compute: (v) => {
         const dt = n(v.dt);
@@ -449,6 +483,11 @@ const WS_COMB: Workspace = {
       name: 'Comb from time delay',
       inputs: ['dt'],
       formula: 'f_null = (2k+1)/(2Δt) · f_peak = k/Δt · spacing = 1/Δt',
+      plainFormula:
+        'Nulls fall at odd multiples of one over twice the delay; peaks fall at whole multiples of one over the delay; and the comb spacing is one over the delay.',
+      explain:
+        'Mixing a signal with a delayed copy carves evenly spaced peaks and notches — a comb. The delay alone sets where the first null lands and how the whole comb is spaced. Shorter delays push it higher and wider; longer delays crowd it into the low mids. It is a placement problem, not an EQ problem.',
+      keySymbols: ['/', 'Δ'],
       compute: (v) => {
         const dt = n(v.dt);
         return [
@@ -483,6 +522,11 @@ const WS_COMB: Workspace = {
       name: 'Comb from path-length difference',
       inputs: ['pathDiff', 'temp'],
       formula: 'Δt = d / c · then f_null = (2k+1)/(2Δt)',
+      plainFormula:
+        'The delay equals the path difference over the speed of sound; then the nulls fall at odd multiples of one over twice that delay.',
+      explain:
+        'The same comb, driven by the extra distance a reflection travels rather than a delay setting. It converts the path-length difference to a delay, then to the comb’s nulls. Measure the reflection’s EXTRA path — source to surface to mic, minus source to mic — not the surface distance alone.',
+      keySymbols: ['Δ', '/', 'c'],
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
         const dt = n(v.pathDiff) / c;
@@ -617,6 +661,10 @@ const WS_LATENCY: Workspace = {
       name: 'Latency of one buffer',
       inputs: ['buf', 'sr'],
       formula: 't = N / sr',
+      plainFormula: 'The buffer latency equals the buffer size in samples divided by the sample rate.',
+      explain:
+        'Audio is processed in buffers, and each buffer of N samples costs N over the sample rate in time. This gives that single-buffer delay and how many buffers the computer fills per second — smaller buffers mean less delay but more frequent, riskier processing deadlines.',
+      keySymbols: ['/'],
       compute: (v) => {
         const t = n(v.buf) / n(v.sr);
         return [
@@ -638,6 +686,11 @@ const WS_LATENCY: Workspace = {
       name: 'Round-trip monitoring latency',
       inputs: ['inBuf', 'outBuf', 'proc', 'sr'],
       formula: 't_rt = N_in/sr + N_out/sr + t_proc',
+      plainFormula:
+        'The round-trip latency equals the input buffer over the sample rate, plus the output buffer over the sample rate, plus the extra processing time.',
+      explain:
+        'What a performer monitoring through the DAW actually feels: in through the converter and input buffer, through any plugins, and back out through the output buffer. Past about 10 ms it feels like a small hard room; past 20 ms, timing falls apart. It shows whether a smaller buffer, fewer plugins, or direct monitoring is the fix.',
+      keySymbols: ['/'],
       compute: (v) => {
         const sr = n(v.sr);
         const tin = n(v.inBuf) / sr;
@@ -667,6 +720,10 @@ const WS_LATENCY: Workspace = {
       name: 'Milliseconds from samples',
       inputs: ['smp', 'sr'],
       formula: 't = N / sr',
+      plainFormula: 'The time equals the number of samples divided by the sample rate.',
+      explain:
+        'A plain sample-count-to-milliseconds conversion — reading a plugin’s reported delay, a region offset, or a loopback measurement as a time.',
+      keySymbols: ['/'],
       compute: (v) => [
         { label: 'TIME', value: n(v.smp) / n(v.sr), quantity: 'time', unit: 'ms' },
       ],
@@ -679,6 +736,10 @@ const WS_LATENCY: Workspace = {
       name: 'Samples from milliseconds (reverse)',
       inputs: ['t', 'sr'],
       formula: 'N = t · sr',
+      plainFormula: 'The number of samples equals the time times the sample rate.',
+      explain:
+        'The reverse: a delay time as a sample count, with the nearest whole sample — for setting sample-based delays or lining up regions on the grid.',
+      keySymbols: ['·'],
       compute: (v) => {
         const N = n(v.t) * n(v.sr);
         return [
@@ -770,6 +831,11 @@ const WS_FFT: Workspace = {
       name: 'Resolution from FFT size',
       inputs: ['N', 'sr', 'fInterest'],
       formula: 'Δf = sr / N · T = N / sr · cycles = f · N / sr',
+      plainFormula:
+        'The bin spacing equals the sample rate over the FFT size; the window duration equals the FFT size over the sample rate; and the cycles in the window equal the frequency times the FFT size over the sample rate.',
+      explain:
+        'An FFT chops the spectrum into evenly spaced bins — spacing is sample rate over FFT size — while looking at one window of signal that long. It also counts how many cycles of a frequency fit in the window, since the FFT needs about one full cycle before it can place a component at all.',
+      keySymbols: ['Δ', '/', '·', 'f'],
       compute: (v) => {
         const N = n(v.N);
         const sr = n(v.sr);
@@ -795,6 +861,10 @@ const WS_FFT: Workspace = {
       name: 'FFT size for a target resolution (reverse)',
       inputs: ['df', 'sr'],
       formula: 'N = sr / Δf',
+      plainFormula: 'The FFT size equals the sample rate divided by the target bin spacing.',
+      explain:
+        'The reverse: the FFT length needed to resolve two frequencies a target distance apart. FFTs want powers of two, so it rounds up — buying finer bins at the cost of a longer window. Check that the sound you are analyzing lasts at least that long.',
+      keySymbols: ['/', 'Δ'],
       compute: (v) => {
         const sr = n(v.sr);
         const df = n(v.df);
@@ -824,6 +894,11 @@ const WS_FFT: Workspace = {
       name: 'Time–frequency tradeoff at a glance',
       inputs: ['N', 'sr'],
       formula: 'Δf · T = 1  (since Δf = sr/N and T = N/sr)',
+      plainFormula:
+        'The bin spacing times the window duration always equals one, because the spacing is the sample rate over the FFT size and the window is its inverse.',
+      explain:
+        'The time–frequency trade in one line: sharpen frequency detail and you lengthen the window, smearing timing by the same factor. The FFT size only chooses WHERE on that line you sit — you cannot have both sharp frequency and sharp timing from one transform.',
+      keySymbols: ['Δ', '·', '/'],
       note: 'The product of bin spacing and window length is always exactly 1 — improving one side worsens the other by the same factor.',
       compute: (v) => {
         const N = n(v.N);

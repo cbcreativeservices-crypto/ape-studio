@@ -73,6 +73,10 @@ const WS_LEVEL: Workspace = {
       name: 'Voltage from dBu',
       inputs: ['dbu'],
       formula: 'V = 0.775 · 10^(dBu/20)',
+      plainFormula: 'The voltage equals 0.775 volts times ten raised to the dBu level over twenty.',
+      explain:
+        'dBu is referenced to 0.775 V RMS, the professional line-level scale. This undoes the twenty-times-log to recover the actual RMS voltage, and shows the same level in dBV. The 20 (not 10) is because voltage is an amplitude quantity.',
+      keySymbols: ['·', 'x²'],
       compute: (v) => {
         const volts = 0.775 * Math.pow(10, n(v.dbu) / 20);
         return [
@@ -94,6 +98,10 @@ const WS_LEVEL: Workspace = {
       name: 'dBu from voltage',
       inputs: ['vFromDbu'],
       formula: 'dBu = 20 · log10(V / 0.775)',
+      plainFormula: 'The dBu level equals twenty times the base-ten log of the voltage divided by 0.775.',
+      explain:
+        'Expresses an RMS voltage on the professional dBu scale (referenced to 0.775 V). Voltage is an amplitude, so the multiplier is 20 — doubling the voltage is +6 dB.',
+      keySymbols: ['·', 'log₁₀', '/'],
       compute: (v) => [{ label: 'LEVEL', value: 20 * log10(n(v.vFromDbu) / 0.775), quantity: 'db' }],
       steps: (v) => {
         const volts = n(v.vFromDbu);
@@ -108,6 +116,10 @@ const WS_LEVEL: Workspace = {
       name: 'Voltage from dBV',
       inputs: ['dbv'],
       formula: 'V = 10^(dBV/20)',
+      plainFormula: 'The voltage equals ten raised to the dBV level over twenty.',
+      explain:
+        'dBV is referenced to exactly 1 V RMS — the consumer line-level scale — so the reference divides away and the voltage is simply ten to the level over twenty. It also shows the same level in dBu.',
+      keySymbols: ['x²'],
       compute: (v) => {
         const volts = Math.pow(10, n(v.dbv) / 20);
         return [
@@ -128,6 +140,10 @@ const WS_LEVEL: Workspace = {
       name: 'dBV from voltage',
       inputs: ['vFromDbv'],
       formula: 'dBV = 20 · log10(V / 1)',
+      plainFormula: 'The dBV level equals twenty times the base-ten log of the voltage divided by one.',
+      explain:
+        'Expresses a voltage on the consumer dBV scale (referenced to 1 V), so the ratio is just the voltage itself. The 20 multiplier is because voltage is an amplitude quantity.',
+      keySymbols: ['·', 'log₁₀', '/'],
       compute: (v) => [{ label: 'LEVEL', value: 20 * log10(n(v.vFromDbv)), quantity: 'db' }],
       steps: (v) => {
         const volts = n(v.vFromDbv);
@@ -142,6 +158,11 @@ const WS_LEVEL: Workspace = {
       name: 'dBu ↔︎ dBV',
       inputs: ['dbx'],
       formula: 'dBV = dBu − 2.218 · dBu = dBV + 2.218',
+      plainFormula:
+        'A dBV reading equals the dBu reading minus 2.218; a dBu reading equals the dBV reading plus 2.218.',
+      explain:
+        'The two scales measure the same voltage against different references — dBu against 0.775 V, dBV against 1 V — so they differ by a fixed 2.218 dB (dBu always reads higher). Converting between them is a single addition.',
+      keySymbols: ['−', '·'],
       note: 'The offset is exact: 20·log10(0.775 V ÷ 1 V) ≈ −2.218 dB. The same voltage always reads 2.218 dB HIGHER in dBu.',
       compute: (v) => {
         const x = n(v.dbx);
@@ -164,6 +185,10 @@ const WS_LEVEL: Workspace = {
       name: 'dB from an AMPLITUDE ratio (voltage, SPL pressure)',
       inputs: ['ampRatio'],
       formula: 'dB = 20 · log10(ratio)',
+      plainFormula: 'The level change in dB equals twenty times the base-ten log of the amplitude ratio.',
+      explain:
+        'Amplitude quantities — voltage, sound pressure, fader gain — use the 20 multiplier. Power goes as amplitude squared, and squaring inside a log doubles it, which is the whole reason amplitudes use 20 where power uses 10. Doubling voltage is +6 dB.',
+      keySymbols: ['·', 'log₁₀'],
       note: 'Amplitude quantities — voltage, sound pressure, fader gain — use the 20 multiplier.',
       compute: (v) => [{ label: 'LEVEL CHANGE', value: 20 * log10(n(v.ampRatio)), quantity: 'db' }],
       steps: (v) => {
@@ -180,6 +205,10 @@ const WS_LEVEL: Workspace = {
       name: 'dB from a POWER ratio (watts, intensity)',
       inputs: ['powRatio'],
       formula: 'dB = 10 · log10(ratio)',
+      plainFormula: 'The level change in dB equals ten times the base-ten log of the power ratio.',
+      explain:
+        'Power quantities — watts, acoustic intensity — use the 10 multiplier. Doubling power is +3 dB. It agrees with the amplitude formula because doubling voltage quadruples power: 20·log(2) equals 10·log(4).',
+      keySymbols: ['·', 'log₁₀'],
       note: 'Power quantities — watts, acoustic intensity — use the 10 multiplier.',
       compute: (v) => [{ label: 'LEVEL CHANGE', value: 10 * log10(n(v.powRatio)), quantity: 'db' }],
       steps: (v) => {
@@ -196,6 +225,10 @@ const WS_LEVEL: Workspace = {
       name: 'Amplitude ratio from dB',
       inputs: ['dbAmp'],
       formula: 'ratio = 10^(dB/20)',
+      plainFormula: 'The amplitude ratio equals ten raised to the dB change over twenty.',
+      explain:
+        'Undoes the amplitude (twenty-times-log) formula to recover a voltage ratio from a dB change, and shows it as a percent of the original. A +6 dB move doubles the voltage.',
+      keySymbols: ['x²', '/'],
       compute: (v) => {
         const r = Math.pow(10, n(v.dbAmp) / 20);
         return [
@@ -217,6 +250,10 @@ const WS_LEVEL: Workspace = {
       name: 'Power ratio from dB',
       inputs: ['dbPow'],
       formula: 'ratio = 10^(dB/10)',
+      plainFormula: 'The power ratio equals ten raised to the dB change over ten.',
+      explain:
+        'Undoes the power (ten-times-log) formula to recover a wattage ratio from a dB change — divisor 10, not 20, because watts are power. A +3 dB move doubles the power.',
+      keySymbols: ['x²', '/'],
       compute: (v) => {
         const r = Math.pow(10, n(v.dbPow) / 10);
         return [
@@ -238,6 +275,11 @@ const WS_LEVEL: Workspace = {
       name: 'dB from a percent change',
       inputs: ['pct'],
       formula: 'dB = 20 · log10(1 + %/100)',
+      plainFormula:
+        'The level change in dB equals twenty times the base-ten log of one plus the percent change over 100.',
+      explain:
+        'Turns a percent change in an amplitude quantity (voltage, pressure) into decibels. A percent change in POWER would use ten-times-log instead — always name which quantity your percentage describes, since an amplitude can never drop by more than 100%.',
+      keySymbols: ['·', 'log₁₀', '/', '%'],
       note: 'For AMPLITUDE quantities (voltage, pressure). A percent change in POWER would use 10·log10 instead.',
       compute: (v) => {
         const p = n(v.pct);
@@ -305,6 +347,10 @@ const WS_OHMS: Workspace = {
       name: 'Power from voltage & impedance',
       inputs: ['vrms', 'z'],
       formula: 'P = V² / Z',
+      plainFormula: 'The power equals the voltage squared divided by the impedance.',
+      explain:
+        'One form of the power law for an amp-to-speaker circuit: from the RMS voltage across the load and its impedance, the power dissipated — and the current that flows with it. All these formulas assume RMS voltage.',
+      keySymbols: ['x²', '/', 'Z'],
       compute: (v) => {
         const V = n(v.vrms);
         const Z = n(v.z);
@@ -327,6 +373,11 @@ const WS_OHMS: Workspace = {
       name: 'Amplifier power from PEAK voltage',
       inputs: ['vpk', 'z'],
       formula: 'Vrms = Vpeak/√2 · P = Vrms² / Z',
+      plainFormula:
+        'The RMS voltage equals the peak voltage over root two; the power equals that RMS voltage squared over the impedance.',
+      explain:
+        'An oscilloscope shows PEAK volts, but every power formula needs RMS. This converts peak to RMS first (÷√2 for a sine), then computes power — skipping it reads exactly 2× too high, the classic amplifier-power mistake, because power goes as voltage squared and (√2)² is 2.',
+      keySymbols: ['√', '/', '·', 'x²', 'Z'],
       note: 'Sine-wave assumption. Reading a scope gives PEAK volts — you MUST convert to RMS before the power formula, or the answer is 2× too high.',
       compute: (v) => {
         const pk = n(v.vpk);
@@ -357,6 +408,10 @@ const WS_OHMS: Workspace = {
       name: 'Voltage from power & impedance',
       inputs: ['p', 'z'],
       formula: 'V = √(P · Z)',
+      plainFormula: 'The voltage equals the square root of the power times the impedance.',
+      explain:
+        'Rearranges the power law to find the RMS voltage that delivers a target power into a load, plus the current. “100 W into 8 Ω” is really a statement about ~28 V RMS and ~3.5 A.',
+      keySymbols: ['√', '·', 'Z'],
       compute: (v) => {
         const P = n(v.p);
         const Z = n(v.z);
@@ -381,6 +436,10 @@ const WS_OHMS: Workspace = {
       name: 'Current from power & voltage',
       inputs: ['p', 'vrms'],
       formula: 'I = P / V',
+      plainFormula: 'The current equals the power divided by the voltage.',
+      explain:
+        'Rearranges P = V·I for the current an amplifier and speaker cable must actually carry. Halving the load impedance at the same voltage doubles this current — the path to a thermal shutdown if the amp can’t supply it.',
+      keySymbols: ['/'],
       compute: (v) => [{ label: 'CURRENT', value: n(v.p) / n(v.vrms), quantity: 'current' }],
       steps: (v) => {
         const P = n(v.p);
@@ -396,6 +455,10 @@ const WS_OHMS: Workspace = {
       name: 'Impedance from voltage & power',
       inputs: ['vrms', 'p'],
       formula: 'Z = V² / P',
+      plainFormula: 'The impedance equals the voltage squared divided by the power.',
+      explain:
+        'Rearranges the power law to recover the load impedance from a measured voltage and power — a sanity check on what load an amplifier is really seeing versus the nominal rating.',
+      keySymbols: ['x²', '/'],
       compute: (v) => {
         const V = n(v.vrms);
         return [{ label: 'IMPEDANCE', value: (V * V) / n(v.p), quantity: 'impedance' }];
@@ -411,6 +474,11 @@ const WS_OHMS: Workspace = {
       name: 'RMS → peak · peak-to-peak',
       inputs: ['vrms'],
       formula: 'Vpeak = Vrms · √2 · Vpp = 2 · Vpeak',
+      plainFormula:
+        'The peak voltage equals the RMS voltage times root two; the peak-to-peak voltage is twice the peak.',
+      explain:
+        'A sine’s crest sits √2 (about 1.414) above its RMS value, and the peak-to-peak swing is twice that — the full excursion an amplifier’s rails must clear with headroom to spare. Sine waves only; music has a higher crest factor.',
+      keySymbols: ['·', '√'],
       note: 'Sine waves only — music and noise have higher crest factors.',
       compute: (v) => {
         const V = n(v.vrms);
@@ -434,6 +502,11 @@ const WS_OHMS: Workspace = {
       name: 'Peak → RMS · peak-to-peak (reverse)',
       inputs: ['vpk'],
       formula: 'Vrms = Vpeak / √2 · Vpp = 2 · Vpeak',
+      plainFormula:
+        'The RMS voltage equals the peak voltage over root two; the peak-to-peak voltage is twice the peak.',
+      explain:
+        'The reverse: from a scope’s peak reading to the RMS value every power formula on this page needs, plus the peak-to-peak swing. Forgetting the ÷√2 is what doubles a computed power.',
+      keySymbols: ['/', '√', '·'],
       compute: (v) => {
         const pk = n(v.vpk);
         return [
@@ -506,6 +579,10 @@ const WS_ELECTRONICS: Workspace = {
       name: 'Series resistance',
       inputs: ['rlist'],
       formula: 'Rtotal = R1 + R2 + …',
+      plainFormula: 'The total resistance equals the sum of all the series resistances.',
+      explain:
+        'In series the same current passes through every resistor, so their oppositions simply add. The total is always larger than any single resistor.',
+      keySymbols: ['R', 'x₁'],
       compute: (v) => {
         const rs = arr(v.rlist);
         return [{ label: 'TOTAL RESISTANCE', value: rs.reduce((a, b) => a + b, 0), quantity: 'impedance' }];
@@ -524,6 +601,11 @@ const WS_ELECTRONICS: Workspace = {
       name: 'Parallel resistance',
       inputs: ['rlist'],
       formula: '1/Rtotal = 1/R1 + 1/R2 + …',
+      plainFormula:
+        'The reciprocal of the total resistance equals the sum of the reciprocals of each resistance.',
+      explain:
+        'In parallel each resistor opens another path for current, so conductances (reciprocals) add. The combined value is always LESS than the smallest branch — two 8 Ω speakers in parallel are 4 Ω, not 16.',
+      keySymbols: ['/', 'R', 'x₁'],
       compute: (v) => {
         const rs = arr(v.rlist);
         const recip = rs.reduce((a, b) => a + 1 / b, 0);
@@ -544,6 +626,10 @@ const WS_ELECTRONICS: Workspace = {
       name: 'Voltage divider',
       inputs: ['vin', 'r1', 'r2'],
       formula: 'Vout = Vin · R2 / (R1 + R2)',
+      plainFormula: 'The output voltage equals the input voltage times R2, divided by R1 plus R2.',
+      explain:
+        'The input voltage splits across two resistors in proportion to their values, and the output is R2’s share. This circuit is every passive pad and volume pot. It assumes no load; whatever the output feeds sits in parallel with R2 and lowers the real output.',
+      keySymbols: ['·', 'R', '/', 'x₁'],
       note: 'UNLOADED divider — whatever the output feeds sits in parallel with R2 and lowers the real Vout.',
       compute: (v) => {
         const vin = n(v.vin);
@@ -572,6 +658,11 @@ const WS_ELECTRONICS: Workspace = {
       name: 'Capacitive reactance',
       inputs: ['f', 'cap'],
       formula: 'Xc = 1 / (2π · f · C)',
+      plainFormula:
+        'The capacitive reactance equals one divided by two pi times the frequency times the capacitance.',
+      explain:
+        'How much a capacitor “resists” AC at a frequency. Reactance falls as frequency rises, so a capacitor passes highs and blocks lows — the heart of every high-pass and tweeter feed. Reactance is meaningless without its frequency.',
+      keySymbols: ['/', 'π', '·', 'f'],
       note: 'C entered in µF; converted to farads (×10⁻⁶) before computing.',
       compute: (v) => {
         const C = n(v.cap) * 1e-6;
@@ -593,6 +684,10 @@ const WS_ELECTRONICS: Workspace = {
       name: 'Inductive reactance',
       inputs: ['f', 'ind'],
       formula: 'XL = 2π · f · L',
+      plainFormula: 'The inductive reactance equals two pi times the frequency times the inductance.',
+      explain:
+        'How much an inductor “resists” AC at a frequency — the mirror image of a capacitor. Reactance RISES with frequency, so an inductor passes lows and blocks highs, which is why inductors feed woofers in passive crossovers.',
+      keySymbols: ['π', '·', 'f'],
       note: 'L entered in mH; converted to henries (×10⁻³) before computing.',
       compute: (v) => {
         const L = n(v.ind) * 1e-3;
@@ -614,6 +709,11 @@ const WS_ELECTRONICS: Workspace = {
       name: 'RC cutoff frequency',
       inputs: ['r', 'cap'],
       formula: 'fc = 1 / (2π · R · C)',
+      plainFormula:
+        'The cutoff frequency equals one divided by two pi times the resistance times the capacitance.',
+      explain:
+        'The −3 dB corner of a first-order RC filter, where the capacitor’s reactance equals the resistance and the output sits 3 dB down. Whether it is high-pass or low-pass depends only on whether the output is taken across the resistor or the capacitor. It’s a gentle 6 dB/octave slope, not a brick wall.',
+      keySymbols: ['/', 'π', '·', 'R'],
       note: 'The −3 dB corner of a first-order RC filter (6 dB/octave slope). C entered in µF.',
       compute: (v) => {
         const C = n(v.cap) * 1e-6;
@@ -636,6 +736,10 @@ const WS_ELECTRONICS: Workspace = {
       name: 'RC time constant',
       inputs: ['r', 'cap'],
       formula: 'τ = R · C',
+      plainFormula: 'The time constant equals the resistance times the capacitance.',
+      explain:
+        'In one time constant a capacitor charges to 63.2% of the applied voltage (or discharges to 36.8%), and is about 99% settled after five. The same τ sets the attack and release feel of analog dynamics circuits.',
+      keySymbols: ['τ', '·', 'R'],
       note: 'C entered in µF; result shown in milliseconds.',
       compute: (v) => {
         const tau = n(v.r) * n(v.cap) * 1e-6;
@@ -713,6 +817,11 @@ const WS_QBW: Workspace = {
       name: 'Center frequency between two frequencies',
       inputs: ['flo', 'fhi'],
       formula: 'fc = √(f₁ · f₂) — the GEOMETRIC mean',
+      plainFormula:
+        'The center frequency equals the square root of the two frequencies multiplied together — their geometric mean.',
+      explain:
+        'Frequency is heard logarithmically, so the musical middle of two tones is their geometric mean, not their arithmetic average. The center of 100 Hz and 400 Hz is 200 Hz — one octave from each — not 250. It’s why parametric edges are geometric and 1/3-octave bands are spaced by a constant ratio.',
+      keySymbols: ['f', '√', '·', 'x₁'],
       note: 'Frequency is heard logarithmically, so the musical middle of two tones is their geometric mean, not their arithmetic average.',
       compute: (v) => {
         const a = Math.min(n(v.flo), n(v.fhi));
@@ -744,6 +853,11 @@ const WS_QBW: Workspace = {
       name: 'Bandwidth & band edges from Q',
       inputs: ['fc', 'q'],
       formula: 'BW = fc / Q · f1,f2 = fc·(√(1+1/4Q²) ∓ 1/2Q)',
+      plainFormula:
+        'The bandwidth equals the center frequency over Q; the edges equal the center times the square root of one plus one over four Q squared, minus or plus one over two Q.',
+      explain:
+        'What a Q knob means: bandwidth is center frequency over Q, and the −3 dB edges sit geometrically around the center (their product equals the center squared), not at center ± half-bandwidth. So the band extends further in Hz above the center than below.',
+      keySymbols: ['/', 'Q', '·', '√', 'x²', 'x₁'],
       compute: (v) => {
         const fc = n(v.fc);
         const q = n(v.q);
@@ -773,6 +887,10 @@ const WS_QBW: Workspace = {
       name: 'Q from bandwidth (reverse)',
       inputs: ['fc', 'bw'],
       formula: 'Q = fc / BW',
+      plainFormula: 'The Q equals the center frequency divided by the bandwidth.',
+      explain:
+        'The reverse: Q is simply the ratio of center frequency to bandwidth — a wider band is a lower Q. It also places the geometric −3 dB edges, which sit around the center rather than symmetrically in hertz.',
+      keySymbols: ['Q', '/'],
       compute: (v) => {
         const fc = n(v.fc);
         const q = fc / n(v.bw);
@@ -799,6 +917,11 @@ const WS_QBW: Workspace = {
       name: 'Octave width from Q',
       inputs: ['q'],
       formula: 'N = log2(f2 / f1) — using the exact edges',
+      plainFormula:
+        'The width in octaves equals the base-two log of the ratio of the upper edge to the lower edge.',
+      explain:
+        'Turns a Q into a width in octaves — the units EQ plots are drawn in. Octave width depends only on the edge ratio, so the center frequency cancels out entirely: Q 1.41 is about one octave everywhere.',
+      keySymbols: ['/', 'x₁'],
       compute: (v) => {
         const q = n(v.q);
         const { f1, f2 } = bandEdges(1000, q); // any fc — the octave width depends only on Q
@@ -822,6 +945,11 @@ const WS_QBW: Workspace = {
       name: 'Q from octave width (reverse)',
       inputs: ['noct'],
       formula: 'Q = √(2^N) / (2^N − 1)',
+      plainFormula:
+        'The Q equals the square root of two raised to the octave width, divided by two raised to that width minus one.',
+      explain:
+        'The reverse: the Q for a target octave width. It raises two to the octave count (the edge ratio), then combines it into Q. Handy anchors: one octave is Q ≈ 1.41, one-third octave Q ≈ 4.32, two octaves Q ≈ 0.67.',
+      keySymbols: ['√', 'x²', '/', '−'],
       compute: (v) => {
         const N = n(v.noct);
         const pw = Math.pow(2, N);
@@ -843,6 +971,11 @@ const WS_QBW: Workspace = {
       name: 'Parametric band reach',
       inputs: ['fc', 'q', 'gain'],
       formula: 'f1–f2 from fc & Q · audibility widens with |gain|',
+      plainFormula:
+        'The affected range runs from the lower edge to the upper edge set by the center frequency and Q; the audible reach widens as the absolute gain grows.',
+      explain:
+        'The −3 dB edges describe the bandpass shape, but a bell’s audible footprint grows with gain — the skirts approach flat only gradually. When sweeping for a problem frequency, listen past the calculated edges before deciding the filter is missing it.',
+      keySymbols: ['| |', 'x₁'],
       note: 'The −3 dB edges describe the bandpass shape; a bell’s AUDIBLE footprint grows with gain.',
       compute: (v) => {
         const fc = n(v.fc);

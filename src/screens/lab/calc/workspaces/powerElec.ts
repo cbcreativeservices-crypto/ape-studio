@@ -59,6 +59,10 @@ const TRANSFORMER: Workspace = {
       name: 'Turns ratio from impedances',
       inputs: ['zp', 'zs'],
       formula: 'N = √(Zp / Zs)',
+      plainFormula: 'The turns ratio equals the square root of the primary impedance divided by the secondary impedance.',
+      explain:
+        'A transformer trades voltage for current by its turns ratio. This finds that ratio from the impedances on each side. Voltage scales with the ratio, current scales inversely, and impedance scales with the SQUARE of the ratio — so a 2:1 transformer is a 4:1 impedance transformer.',
+      keySymbols: ['√', 'Z', '/', 'x₁'],
       compute: (v) => {
         const N = Math.sqrt(n(v.zp) / n(v.zs));
         return [
@@ -81,6 +85,10 @@ const TRANSFORMER: Workspace = {
       name: 'Reflected impedance from turns ratio',
       inputs: ['turns', 'zs'],
       formula: 'Zp = N² · Zs',
+      plainFormula: 'The reflected primary impedance equals the square of the turns ratio times the secondary impedance.',
+      explain:
+        'What the secondary load looks like from the primary side. Because impedance scales as the square of the turns ratio, a small load can be reflected up to match a large source — how an output transformer matches a speaker to a tube plate. A transformer is passive: it matches impedances but never adds power.',
+      keySymbols: ['x²', '·', 'Z', 'x₁'],
       note: 'What the secondary load looks like from the primary side.',
       compute: (v) => {
         const zp = n(v.turns) * n(v.turns) * n(v.zs);
@@ -137,6 +145,11 @@ const PADS: Workspace = {
       name: 'T-pad resistor values',
       inputs: ['atten', 'z'],
       formula: 'R1=R2 = Z·(K−1)/(K+1) · R3 = Z·2K/(K²−1) · K = 10^(dB/20)',
+      plainFormula:
+        'The series arms equal the impedance times (the multiplier minus one) over (the multiplier plus one); the shunt equals the impedance times twice the multiplier over (the multiplier squared minus one); the multiplier is ten raised to the attenuation over twenty.',
+      explain:
+        'A T-pad drops the signal a fixed amount while keeping the source and load impedance matched on both sides — two series arms and one shunt. A bare series resistor would attenuate but break the match and colour the response; the T network holds the impedance so nothing loads down or reflects.',
+      keySymbols: ['R', 'Z', '·', '−', '/', 'x²', 'x₁'],
       compute: (v) => {
         const K = Math.pow(10, n(v.atten) / 20);
         const Z = n(v.z);
@@ -161,6 +174,11 @@ const PADS: Workspace = {
       name: 'Pi-pad resistor values',
       inputs: ['atten', 'z'],
       formula: 'series R = Z·(K²−1)/(2K) · each shunt R = Z·(K+1)/(K−1)',
+      plainFormula:
+        'The series resistor equals the impedance times (the multiplier squared minus one) over twice the multiplier; each shunt resistor equals the impedance times (the multiplier plus one) over (the multiplier minus one).',
+      explain:
+        'A Pi-pad does the same job as a T-pad — a fixed, impedance-matched attenuation — but arranges one series resistor between two shunt resistors, one at each end. Same K multiplier (ten raised to the dB over twenty), different topology; both throw the signal away as heat by design.',
+      keySymbols: ['R', 'Z', '·', 'x²', '−', '/'],
       compute: (v) => {
         const K = Math.pow(10, n(v.atten) / 20);
         const Z = n(v.z);
@@ -222,6 +240,11 @@ const VDROP: Workspace = {
       name: 'Voltage drop over a run',
       inputs: ['awg', 'len', 'current', 'vsrc'],
       formula: 'R = ρ·2L/A · Vdrop = I·R · loss = I²·R',
+      plainFormula:
+        'The round-trip resistance equals the resistivity times twice the length over the cross-section area; the voltage drop equals the current times that resistance; and the power lost equals the current squared times the resistance.',
+      explain:
+        'Every metre of cable has resistance, and the current flows out and back (hence ×2), dropping voltage before it reaches the load. This gives the round-trip resistance, the volts lost, the share that never arrives, and the power burned as heat — the physics behind sagging long DC and phantom feeds.',
+      keySymbols: ['ρ', '·', '/', 'R', 'x²'],
       compute: (v) => {
         const A = awgAreaM2(n(v.awg));
         const R = (RHO_CU * 2 * n(v.len)) / A;
@@ -250,6 +273,11 @@ const VDROP: Workspace = {
       name: 'Gauge needed for an allowable drop (reverse)',
       inputs: ['len', 'current', 'vsrc', 'pct'],
       formula: 'A = ρ·2L·I / (Vsrc·pct%)',
+      plainFormula:
+        'The required conductor area equals the resistivity times twice the length times the current, divided by the supply voltage times the allowable-drop percentage.',
+      explain:
+        'The voltage-drop calculation solved backwards: the wire cross-section — and so the gauge — needed to keep a run within an allowable percentage drop. A longer run or more current needs more copper; choose the resulting AWG number or thicker (a lower number).',
+      keySymbols: ['ρ', '·', '/', '%'],
       compute: (v) => {
         const vdMax = (n(v.vsrc) * n(v.pct)) / 100;
         const Rmax = vdMax / n(v.current);
@@ -314,6 +342,11 @@ const RACK: Workspace = {
       name: 'Current, heat & airflow',
       inputs: ['watts', 'mains', 'dTempF'],
       formula: 'I = P/V · BTU/hr = W·3.412 · CFM = BTU/hr / (1.08·ΔT)',
+      plainFormula:
+        'The mains current equals the power over the voltage; the heat output equals the wattage times 3.412 BTU per hour; and the cooling airflow equals the heat output divided by 1.08 times the temperature rise.',
+      explain:
+        'Every watt a rack draws that doesn’t leave as sound leaves as heat. From the total device wattage this gives the mains current it pulls, the heat it dumps in BTU per hour, and the airflow (CFM) needed to hold a chosen temperature rise — sizing the circuit, the AC load, and the fans before something trips or cooks.',
+      keySymbols: ['Δ', '·', '/'],
       compute: (v) => {
         const W = n(v.watts);
         const btu = W * 3.412;
@@ -338,6 +371,10 @@ const RACK: Workspace = {
       name: 'Safe wattage for a breaker',
       inputs: ['breaker', 'mains'],
       formula: 'P_safe = 0.8 · I_breaker · V',
+      plainFormula: 'The safe continuous power equals 0.8 times the breaker’s current rating times the voltage.',
+      explain:
+        'The 80% rule for continuous loads: keep a circuit’s ongoing draw under 80% of its breaker rating so it doesn’t nuisance-trip. This turns a breaker’s amp rating and the mains voltage into the safe continuous wattage — and the absolute maximum for reference.',
+      keySymbols: ['·'],
       note: 'The 80% rule for continuous loads keeps the breaker from nuisance-tripping.',
       compute: (v) => {
         const full = n(v.breaker) * n(v.mains);
@@ -398,6 +435,11 @@ const COMPLEXZ: Workspace = {
       name: 'Impedance magnitude & phase at a frequency',
       inputs: ['r', 'indmH', 'capuF', 'f'],
       formula: '|Z| = √(R² + (XL − XC)²) · φ = atan((XL − XC)/R)',
+      plainFormula:
+        'The impedance magnitude equals the square root of resistance squared plus the net reactance squared; the phase angle is the arctangent of the net reactance over the resistance.',
+      explain:
+        'Resistors, inductors, and capacitors oppose AC differently, and they combine in quadrature — not by simple addition. This gives the total impedance magnitude and its phase angle at a frequency. Positive phase is inductive (current lags); negative is capacitive (current leads); the net reactance is XL minus XC.',
+      keySymbols: ['| |', 'Z', '√', 'R', 'X', 'x²', '−', 'φ', '/'],
       compute: (v) => {
         const R = n(v.r);
         const L = n(v.indmH) / 1000;
@@ -437,6 +479,11 @@ const COMPLEXZ: Workspace = {
       name: 'LC resonant frequency',
       inputs: ['indmH', 'capuF'],
       formula: 'f₀ = 1 / (2π·√(L·C))',
+      plainFormula:
+        'The resonant frequency equals one divided by two pi times the square root of the inductance times the capacitance.',
+      explain:
+        'Where inductive and capacitive reactance cancel, the circuit resonates. This finds that frequency for a given inductor and capacitor. At resonance a series LC looks purely resistive (and a parallel LC looks very large) — the tuning behind crossovers and filters.',
+      keySymbols: ['f', '/', 'π', '·', '√', 'x₁'],
       compute: (v) => {
         const L = n(v.indmH) / 1000;
         const C = n(v.capuF) / 1e6;

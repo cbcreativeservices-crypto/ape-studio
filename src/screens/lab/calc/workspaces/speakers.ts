@@ -98,6 +98,11 @@ const WS_SPEAKERPOWER: Workspace = {
       name: 'Predicted SPL at the listener',
       inputs: ['sens', 'power', 'dist', 'headroom', 'nspk'],
       formula: 'SPL = sens + 10·log10(P) − 20·log10(d) − headroom',
+      plainFormula:
+        'The predicted SPL equals the speaker’s sensitivity, plus ten times the base-ten log of the power, minus twenty times the base-ten log of the distance, minus the headroom.',
+      explain:
+        'The feasibility math of loudness: from a speaker’s 1 W / 1 m sensitivity, the power fed to it, and the listening distance, it predicts the level at the listener. Every doubling of power adds only 3 dB; every doubling of distance costs 6 dB. Extra boxes add 10·log of their count, assuming uncorrelated sources.',
+      keySymbols: ['·', 'log₁₀', '−'],
       note: 'Free-field inverse-square model; rooms add reverberant support this does not count.',
       primaryResultLabel: 'PREDICTED SPL (one speaker, after headroom)',
       compute: (v) => {
@@ -147,6 +152,11 @@ const WS_SPEAKERPOWER: Workspace = {
       name: 'Required amplifier power for a target SPL (reverse)',
       inputs: ['sens', 'target', 'dist', 'headroom', 'nspk'],
       formula: 'P = 10^((target + 20·log10(d) − sens + headroom) / 10)',
+      plainFormula:
+        'The required power equals ten raised to the quantity: target SPL plus twenty times the log of distance, minus sensitivity, plus headroom, all divided by ten.',
+      explain:
+        'Runs the SPL prediction backwards: how much amplifier power a target level actually demands at a given distance. One speaker carries the whole target; with several uncorrelated boxes the demand splits. It exposes when no single amplifier can save an insensitive box at the back of the room.',
+      keySymbols: ['x²', '·', 'log₁₀', '−', '/'],
       note: 'Solves the SPL prediction backwards for power — one speaker carries the whole target; with N speakers the demand is split.',
       compute: (v) => {
         const sens = n(v.sens);
@@ -194,6 +204,11 @@ const WS_SPEAKERPOWER: Workspace = {
       name: 'Maximum SPL from a given amplifier',
       inputs: ['sens', 'power', 'dist'],
       formula: 'SPLmax = sens + 10·log10(P) − 20·log10(d)',
+      plainFormula:
+        'The maximum SPL equals the sensitivity, plus ten times the log of the power, minus twenty times the log of the distance.',
+      explain:
+        'The loudest a given amplifier and speaker can reach at a distance — the same prediction with no headroom reserve. It is a cold-spec ceiling: real drivers give back 2–4 dB to power compression as the voice coils heat at full output.',
+      keySymbols: ['·', 'log₁₀', '−'],
       note: 'Cold-spec ceiling — real drivers lose 2–4 dB to power compression before reaching it.',
       compute: (v) => {
         const sens = n(v.sens);
@@ -277,6 +292,11 @@ const WS_IMPEDANCE: Workspace = {
       name: 'Parallel combination',
       inputs: ['zlist'],
       formula: 'Ztot = 1 / Σ(1/Zi)',
+      plainFormula:
+        'The total parallel impedance equals one divided by the sum of the reciprocals of each speaker’s impedance.',
+      explain:
+        'Wiring speakers in parallel lowers the load the amplifier sees — always below the lowest single box — so it demands more current. All branches share the amp’s voltage, so the lowest-impedance speaker draws the biggest power share. Below about 4 Ω many amplifiers run hot or current-limit.',
+      keySymbols: ['/', 'Σ', 'Z', 'x₁'],
       note: 'Parallel branches all see the amplifier’s full voltage — lower impedances draw a bigger power share.',
       compute: (v) => {
         const zs = arr(v.zlist).filter((z) => z > 0);
@@ -314,6 +334,10 @@ const WS_IMPEDANCE: Workspace = {
       name: 'Series combination',
       inputs: ['zlist'],
       formula: 'Ztot = ΣZi',
+      plainFormula: 'The total series impedance equals the sum of each speaker’s impedance.',
+      explain:
+        'Wiring speakers in series raises the load — always above the highest single box — so the amplifier delivers less total power. The same current flows through every speaker, so one open voice coil silences the whole string, and the raised impedance degrades the amp’s damping of each driver.',
+      keySymbols: ['Σ', 'Z', 'x₁'],
       note: 'Series speakers share the amplifier’s current; the amp delivers LESS total power into the raised load.',
       compute: (v) => {
         const zs = arr(v.zlist).filter((z) => z > 0);
@@ -338,6 +362,11 @@ const WS_IMPEDANCE: Workspace = {
       name: 'Series-parallel 2×2 (four speakers)',
       inputs: ['z4'],
       formula: 'Ztot = (Z1∥Z2) + (Z3∥Z4)',
+      plainFormula:
+        'The total impedance equals speaker one in parallel with speaker two, plus speaker three in parallel with speaker four.',
+      explain:
+        'The classic four-speaker wiring: two parallel pairs placed in series. Four 8-ohm boxes land back at 8 ohms — a load-friendly way to run four speakers off one amplifier. Each parallel pair halves, and the two pairs in series add back up.',
+      keySymbols: ['∥', 'Z', 'x₁'],
       note: 'The classic four-speaker wiring: two parallel pairs placed in series — four 8 Ω boxes land back at 8 Ω.',
       compute: (v) => {
         const zs = arr(v.z4).filter((z) => z > 0);
@@ -471,6 +500,11 @@ const WS_CABLE: Workspace = {
       name: 'Loss from a given gauge and length',
       inputs: ['len', 'awg', 'z', 'pamp'],
       formula: 'Rloop = 2·L·R/m · loss = 20·log10(Z/(Z+Rloop))',
+      plainFormula:
+        'The loop resistance equals two times the length times the resistance per metre; the level loss is twenty times the log of the load impedance divided by the load plus the loop resistance.',
+      explain:
+        'Speaker cable is a resistor in series with the speaker, and the current travels out and back (hence ×2). This turns gauge and length into the level lost, the share of amplifier power burned heating copper, and the ceiling it puts on system damping factor — the amp’s grip on the woofer.',
+      keySymbols: ['·', 'R', '/', 'log₁₀', 'Z'],
       compute: (v) => {
         const L = n(v.len);
         const g = nearestAwg(n(v.awg));
@@ -515,6 +549,11 @@ const WS_CABLE: Workspace = {
       name: 'Maximum cable length for a loss budget (reverse)',
       inputs: ['awg', 'z', 'maxloss'],
       formula: 'Rloop_max = Z·(10^(loss/20) − 1) · Lmax = Rloop_max / (2·R/m)',
+      plainFormula:
+        'The maximum loop resistance equals the impedance times (ten raised to the loss over twenty, minus one); the maximum length is that resistance divided by twice the resistance per metre.',
+      explain:
+        'The level-loss formula solved backwards for length: the longest one-way cable run of a given gauge that stays within your loss budget. A thicker gauge (lower AWG number) or a higher load impedance both allow a longer run.',
+      keySymbols: ['Z', '·', 'x²', '/', '−', 'R'],
       note: 'The level-loss formula solved backwards for length.',
       compute: (v) => {
         const g = nearestAwg(n(v.awg));
@@ -546,6 +585,11 @@ const WS_CABLE: Workspace = {
       name: 'Recommended gauge for a run (reverse)',
       inputs: ['len', 'z', 'maxloss'],
       formula: 'smallest listed gauge with 20·log10(Z/(Z+2·L·R/m)) within budget',
+      plainFormula:
+        'The recommended gauge is the thinnest listed wire whose level loss — twenty times the log of the load over the load plus the loop resistance — stays within the budget.',
+      explain:
+        'Scans the standard cable gauges and recommends the thinnest (highest AWG number) that keeps the run within your loss budget. Thicker always works; it just costs more copper. If even the heaviest listed gauge fails, the run is too long — shorten it, relax the budget, or switch to a 70 V line.',
+      keySymbols: ['·', 'log₁₀', 'Z', '/', 'R'],
       compute: (v) => {
         const L = n(v.len);
         const z = n(v.z);
@@ -684,6 +728,11 @@ const WS_CV70: Workspace = {
       name: 'System load, amp fit, and line current',
       inputs: ['taps', 'prated', 'vline', 'hr'],
       formula: 'load = Σtaps · amp ≥ Σtaps × 10^(headroom/10) · I = Σtaps / Vline',
+      plainFormula:
+        'The line load equals the sum of the tap settings; the recommended amplifier is at least that sum times ten raised to the headroom over ten; the line current is the load divided by the line voltage.',
+      explain:
+        'Budgeting a constant-voltage (70 V / 100 V) distributed line is simple addition: sum every speaker’s tap wattage. The amplifier’s rating is a hard ceiling — keep 20–25% in reserve. High line voltage means low current, which is exactly why these lines can run thin cable to dozens of speakers.',
+      keySymbols: ['Σ', '≥', '×', 'x²', '/'],
       compute: (v) => {
         const taps = arr(v.taps).filter((t) => t > 0);
         if (taps.length < 1) return [{ label: 'INPUT', text: 'Enter at least one tap wattage (e.g. "10, 10, 10").' }];
@@ -730,6 +779,11 @@ const WS_CV70: Workspace = {
       name: 'How many more speakers fit (reverse)',
       inputs: ['taps', 'prated', 'tapw', 'hr'],
       formula: 'more = floor((Prated/10^(headroom/10) − Σtaps) / tap)',
+      plainFormula:
+        'The number of extra speakers is the whole-number part of: the usable budget (rated power divided by ten raised to the headroom over ten) minus the current tap total, all divided by the added tap wattage.',
+      explain:
+        'Reserves the headroom first, then fills what is left of the amplifier with speakers at a chosen tap. It answers “how many more can I add to this zone?” — the floor of the remaining budget divided by each speaker’s tap.',
+      keySymbols: ['x²', '/', '−', 'Σ'],
       note: 'Reserves the headroom FIRST, then fills what is left with speakers at the given tap.',
       compute: (v) => {
         const taps = arr(v.taps).filter((t) => t > 0);

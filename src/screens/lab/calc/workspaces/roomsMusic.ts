@@ -112,6 +112,11 @@ const WS_BPM: Workspace = {
       name: 'Note values from BPM',
       inputs: ['bpm'],
       formula: 'beat (ms) = 60000 / BPM · dotted ×1.5 · triplet ×2/3',
+      plainFormula:
+        'The beat in milliseconds equals 60000 divided by the tempo; a dotted value is 1.5 times its straight length, and a triplet is two-thirds.',
+      explain:
+        'Everything on the time axis of a mix can lock to the tempo. One minute is 60000 ms, so the beat is 60000 over the BPM. The quarter note is the beat in 4/4; every other value scales from it — dotted ×1.5, triplet ×2/3 — giving the delay, LFO, and pre-delay times that sit in the groove.',
+      keySymbols: ['/', '×'],
       compute: (v) => {
         const beatMs = 60000 / n(v.bpm);
         return [
@@ -147,6 +152,10 @@ const WS_BPM: Workspace = {
       name: 'BPM from a measured interval (reverse)',
       inputs: ['interval'],
       formula: 'BPM = 60000 / ms',
+      plainFormula: 'The tempo equals 60000 divided by the beat interval in milliseconds.',
+      explain:
+        'The reverse: turns a tapped or measured beat interval back into a tempo. Sessions run on whole (or half) BPM values, so it also gives the nearest whole tempo — useful for matching a loop or a tapped feel to the session grid.',
+      keySymbols: ['/'],
       note: 'Reverse solve: turn a tapped or measured beat interval back into tempo.',
       compute: (v) => {
         const ms = n(v.interval) * 1000;
@@ -169,6 +178,11 @@ const WS_BPM: Workspace = {
       name: 'LFO rate synced to tempo',
       inputs: ['bpm', 'beatsPerCycle'],
       formula: 'Hz = BPM / (60 × beats per cycle)',
+      plainFormula:
+        'The LFO rate in hertz equals the tempo divided by 60 times the number of beats per cycle.',
+      explain:
+        'Syncs a modulation rate to the song. The BPM over 60 is beats per second; dividing by the beats you want one cycle to span gives the LFO frequency. A tremolo, auto-pan, or filter sweep at this rate breathes with the music instead of drifting against it.',
+      keySymbols: ['/', '×'],
       compute: (v) => {
         const hz = n(v.bpm) / (60 * n(v.beatsPerCycle));
         return [
@@ -191,6 +205,10 @@ const WS_BPM: Workspace = {
       name: 'Reverb pre-delay from tempo',
       inputs: ['bpm'],
       formula: 'pre-delay = beat (ms) × division',
+      plainFormula: 'The reverb pre-delay equals the beat in milliseconds times a note division.',
+      explain:
+        'Sets a reverb’s pre-delay to a musical fraction of the beat — a starting point for listening, not a rule. Short (a 1/64 note) tucks the reverb in behind the source; longer (a 1/16) separates the dry voice from the tail. Audition, then trust your ears.',
+      keySymbols: ['×'],
       note: 'Musical pre-delay is a STARTING POINT for listening, not a rule — the room in the recording and the vocal rhythm get the final vote.',
       compute: (v) => {
         const beatMs = 60000 / n(v.bpm);
@@ -300,6 +318,11 @@ const WS_PITCH: Workspace = {
       name: 'Note name from frequency',
       inputs: ['f', 'ref'],
       formula: 'm = 69 + 12·log₂(f / A4) · cents = (m − round m) × 100',
+      plainFormula:
+        'The MIDI number equals 69 plus twelve times the base-two log of the frequency over the A4 reference; the cents offset is the fractional part times 100.',
+      explain:
+        'Translates a frequency into a note name and tuning offset. Because pitch is logarithmic, twelve times the base-two log of the ratio to A4 gives the position in semitones, and MIDI 69 anchors A4. The leftover fraction, times 100, is how many cents sharp or flat the tone sits.',
+      keySymbols: ['·', '−', '×', '/'],
       compute: (v) => {
         const f = n(v.f);
         const ref = n(v.ref);
@@ -343,6 +366,11 @@ const WS_PITCH: Workspace = {
       name: 'Frequency from MIDI note',
       inputs: ['midi', 'ref'],
       formula: 'f = A4 · 2^((m − 69) / 12)',
+      plainFormula:
+        'The frequency equals the A4 reference times two raised to the number of semitones from A4 (the MIDI number minus 69) divided by twelve.',
+      explain:
+        'The reverse: the frequency of a MIDI note. Each of the twelve equal semitones per octave multiplies the frequency by the twelfth root of two, so raising two to the semitone distance over twelve and scaling by the A4 reference gives the note’s pitch in hertz.',
+      keySymbols: ['·', 'x²', '−', '/'],
       compute: (v) => {
         const m = n(v.midi);
         const ref = n(v.ref);
@@ -366,6 +394,11 @@ const WS_PITCH: Workspace = {
       name: 'Interval between two frequencies',
       inputs: ['f', 'f2'],
       formula: 'semitones = 12·log₂(f₂/f₁) · cents = 1200·log₂(f₂/f₁)',
+      plainFormula:
+        'The interval in semitones equals twelve times the base-two log of the ratio of the two frequencies; in cents it is 1200 times that log.',
+      explain:
+        'Measures the musical distance between two tones. Pitch intervals live in ratios, not differences, so it takes the base-two log of the frequency ratio — times twelve for semitones, times 1200 for cents — and names the nearest equal-tempered interval.',
+      keySymbols: ['·', '/', 'x₁'],
       compute: (v) => {
         const f1 = n(v.f);
         const f2 = n(v.f2);
@@ -397,6 +430,11 @@ const WS_PITCH: Workspace = {
       name: 'Transposition ratio & varispeed',
       inputs: ['semi', 'cents'],
       formula: 'ratio = 2^((semitones + cents/100) / 12)',
+      plainFormula:
+        'The frequency ratio equals two raised to the total shift — semitones plus cents over 100 — divided by twelve.',
+      explain:
+        'Turns a transposition in semitones and cents into the ratio every frequency is multiplied by. As pure varispeed that ratio is also the playback speed, so a clip’s pitch and length change together; keeping the length while shifting pitch needs a separate time-stretch DSP process.',
+      keySymbols: ['x²', '/'],
       note: 'Pure varispeed: pitch and playback length change together. Pitch-shift with preserved duration is a separate DSP process.',
       compute: (v) => {
         const total = n(v.semi) + n(v.cents) / 100;
@@ -516,6 +554,11 @@ const WS_FILESIZE: Workspace = {
       name: 'File size from format & duration',
       inputs: ['sr', 'bits', 'ch', 'dur'],
       formula: 'bytes/s = sample rate × bit depth ÷ 8 × channels',
+      plainFormula:
+        'The bytes per second equal the sample rate times the bit depth, divided by eight, times the number of channels.',
+      explain:
+        'Uncompressed PCM is pure multiplication: sample rate times bit depth times channels, divided by eight to turn bits into bytes. This gives the file size for a duration plus handy per-minute and per-hour rates. The ÷8 is where most estimates go wrong by a factor of eight.',
+      keySymbols: ['×', '÷'],
       compute: (v) => {
         const rate = pcmBytesPerSec(n(v.sr), n(v.bits), n(v.ch));
         return [
@@ -542,6 +585,10 @@ const WS_FILESIZE: Workspace = {
       name: 'Recording time from storage (reverse)',
       inputs: ['sr', 'bits', 'ch', 'storage'],
       formula: 'time = storage bytes ÷ (bytes/s)',
+      plainFormula: 'The recording time equals the available storage in bytes divided by the data rate in bytes per second.',
+      explain:
+        'The reverse: how long a card or drive lasts at a given format. It divides the free space by the per-second byte rate. Leave a reserve — filesystem overhead and one extra take mean you should never plan to hit 100%.',
+      keySymbols: ['÷'],
       note: 'Reverse solve: how long the free space lasts at this format. Leave a reserve — do not plan to hit 100%.',
       compute: (v) => {
         const rate = pcmBytesPerSec(n(v.sr), n(v.bits), n(v.ch));
@@ -565,6 +612,11 @@ const WS_FILESIZE: Workspace = {
       name: 'Multitrack session size',
       inputs: ['sr', 'bits', 'ch', 'tracks'],
       formula: 'session bytes/s = tracks × sample rate × bit depth ÷ 8 × channels',
+      plainFormula:
+        'The session’s bytes per second equal the track count times the sample rate times the bit depth, divided by eight, times the channels.',
+      explain:
+        'Scales the single-file rate by the number of simultaneously recording tracks. A 24-track session writes 24× the data of one track — the number that decides whether a drive survives a long multitrack date.',
+      keySymbols: ['×', '÷'],
       compute: (v) => {
         const rate = pcmBytesPerSec(n(v.sr), n(v.bits), n(v.ch)) * n(v.tracks);
         return [
@@ -645,6 +697,11 @@ const WS_ROOMMODES: Workspace = {
       name: 'Axial modes of the room',
       inputs: ['len', 'wid', 'hei', 'temp'],
       formula: 'f = n · c / (2 · L) for each dimension, n = 1…4',
+      plainFormula:
+        'Each modal frequency equals the mode number times the speed of sound, divided by twice the room dimension.',
+      explain:
+        'Between every pair of parallel surfaces, frequencies whose half-wavelengths divide the distance evenly form standing waves — room modes. This lists the axial modes for a room’s length, width, and height, flagging near-coincident modes that stack. Below a few hundred hertz the room is the biggest EQ in the chain; modes are treatable, not EQ-able.',
+      keySymbols: ['f', '·', 'c', '/'],
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
         const dims: [string, number][] = [
@@ -702,6 +759,11 @@ const WS_ROOMMODES: Workspace = {
       name: 'Modes of one dimension (boundary check)',
       inputs: ['dist', 'temp'],
       formula: 'f = n · c / (2 · d), n = 1…6',
+      plainFormula:
+        'Each modal frequency equals the mode number times the speed of sound, divided by twice the distance between the surfaces.',
+      explain:
+        'A quick check for any single pair of parallel surfaces — a wall pair, floor-to-ceiling, or a large desk under a ceiling. The lowest standing wave sits at the speed of sound over twice the gap, and every whole multiple stacks another mode on the same pair.',
+      keySymbols: ['f', '·', 'c', '/'],
       note: 'Quick check for any single pair of parallel surfaces — a wall pair, floor–ceiling, or a large desk under a ceiling.',
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
@@ -804,6 +866,10 @@ const WS_SABINE: Workspace = {
       name: 'RT60 from volume & absorption',
       inputs: ['vol', 'absA'],
       formula: 'RT60 = 0.161 · V / A',
+      plainFormula: 'The reverberation time equals 0.161 times the room volume, divided by the total absorption.',
+      explain:
+        'Sabine’s equation: RT60 is set by a room’s volume and its total absorption. A bigger room decays longer; more absorption decays shorter. The 0.161 is the metric Sabine constant. It assumes a diffuse field and average absorption below about 0.3 — dead rooms need the Eyring form instead.',
+      keySymbols: ['·', '/'],
       compute: (v) => [
         { label: 'RT60', value: (SABINE_K * n(v.vol)) / n(v.absA), quantity: 'time', unit: 's' },
       ],
@@ -821,6 +887,11 @@ const WS_SABINE: Workspace = {
       name: 'RT60 from a surface list',
       inputs: ['vol', 'surfaces', 'coeffs'],
       formula: 'A = Σ (Sᵢ · αᵢ) · RT60 = 0.161 · V / A',
+      plainFormula:
+        'The total absorption is the sum over surfaces of each area times its absorption coefficient; the reverberation time is then 0.161 times the volume over that total.',
+      explain:
+        'Builds the total absorption from a list of surfaces: each area times its absorption coefficient, summed. Because absorption is area × coefficient, treatment is bought in square metres that actually absorb. The result feeds straight into Sabine for the room’s RT60.',
+      keySymbols: ['Σ', 'α', '·', '/', 'x₁'],
       note: 'Areas and coefficients pair by position: first area with first α, and so on.',
       compute: (v) => {
         const S = arr(v.surfaces);
@@ -856,6 +927,10 @@ const WS_SABINE: Workspace = {
       name: 'Absorption needed for a target RT (reverse)',
       inputs: ['vol', 'targetRt', 'absA'],
       formula: 'A needed = 0.161 · V / RT target',
+      plainFormula: 'The absorption needed equals 0.161 times the volume, divided by the target reverberation time.',
+      explain:
+        'Rearranges Sabine to solve for absorption: how many square metres of equivalent absorption a target RT60 demands. Enter the current total absorption too and it gives the shortfall — the extra absorption to add to reach the target.',
+      keySymbols: ['·', '/'],
       note: 'Reverse solve: enter the current total absorption to also get the shortfall to add.',
       compute: (v) => {
         const needed = (SABINE_K * n(v.vol)) / n(v.targetRt);
@@ -958,6 +1033,11 @@ const WS_TREATMENT: Workspace = {
       name: 'Panels needed for the target RT',
       inputs: ['vol', 'rtCur', 'rtTgt', 'panelArea', 'alpha'],
       formula: 'ΔA = 0.161·V/RT_target − 0.161·V/RT_current · panels = ceil(ΔA / (S_panel · α))',
+      plainFormula:
+        'The absorption to add is 0.161 times the volume over the target RT minus the same over the current RT; the panel count is that shortfall divided by each panel’s area times its coefficient, rounded up.',
+      explain:
+        'The Sabine math chained into a shopping answer: from the room’s current decay and your target, it finds the missing absorption and converts it into a whole number of panels of a given size and coefficient — then predicts the RT60 you’ll actually land on, since a fraction of a panel doesn’t exist.',
+      keySymbols: ['Δ', '·', '/', '−', 'α'],
       compute: (v) => {
         const V = n(v.vol);
         const aCur = (SABINE_K * V) / n(v.rtCur);

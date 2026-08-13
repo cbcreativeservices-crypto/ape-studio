@@ -64,6 +64,11 @@ const WS_SPL_DIST: Workspace = {
       name: 'SPL at a new distance — point source',
       inputs: ['l1', 'd1', 'd2'],
       formula: 'L₂ = L₁ − 20·log10(d₂/d₁)',
+      plainFormula:
+        'The new level equals the known level minus twenty times the base-ten log of the ratio of the two distances.',
+      explain:
+        'A free-field point source loses 6 dB every time the distance doubles. This predicts the level at a new distance from a known level at a known distance — the basis of every coverage question, from the back row to the front-row heat.',
+      keySymbols: ['−', '·', 'log₁₀', '/', 'x₁'],
       note: 'Free-field point source: −6 dB per doubling of distance.',
       compute: (v) => {
         const drop = 20 * Math.log10(n(v.d2) / n(v.d1));
@@ -87,6 +92,11 @@ const WS_SPL_DIST: Workspace = {
       name: 'SPL at a new distance — idealized line source',
       inputs: ['l1', 'd1', 'd2'],
       formula: 'L₂ = L₁ − 10·log10(d₂/d₁)',
+      plainFormula:
+        'The new level equals the known level minus ten times the base-ten log of the ratio of the two distances.',
+      explain:
+        'An idealized (infinite) line source spreads cylindrically, so it loses only 3 dB per doubling of distance — half the falloff of a point source. Real line arrays only approximate this, and only in their near field, which is exactly why arrays throw farther.',
+      keySymbols: ['−', '·', 'log₁₀', '/', 'x₁'],
       note: 'Idealized (infinite) line source: −3 dB per doubling. Real line arrays only approximate this, and only in their near field.',
       compute: (v) => {
         const drop = 10 * Math.log10(n(v.d2) / n(v.d1));
@@ -109,6 +119,11 @@ const WS_SPL_DIST: Workspace = {
       name: 'SPL at a new distance — custom falloff rate',
       inputs: ['l1', 'd1', 'd2', 'rate'],
       formula: 'L₂ = L₁ − rate · log2(d₂/d₁)',
+      plainFormula:
+        'The new level equals the known level minus the per-doubling rate times the base-two log of the distance ratio (the number of doublings).',
+      explain:
+        'Uses a measured per-doubling falloff rate instead of the ideal 6 or 3 dB. Real arrays typically land between the two. The base-two log turns the distance ratio into a number of doublings, each costing the entered rate.',
+      keySymbols: ['−', '·', '/', 'x₁'],
       note: 'Use a measured per-doubling rate — real arrays typically land between 3 and 6 dB per doubling.',
       compute: (v) => {
         const drop = n(v.rate) * Math.log2(n(v.d2) / n(v.d1));
@@ -132,6 +147,11 @@ const WS_SPL_DIST: Workspace = {
       name: 'Required source SPL for a target (reverse)',
       inputs: ['lTarget', 'd1', 'd2'],
       formula: 'L₁ = L₂ + 20·log10(d₂/d₁)',
+      plainFormula:
+        'The required source level equals the target level plus twenty times the base-ten log of the distance ratio.',
+      explain:
+        'The reverse of the point-source law: how loud a source must be at the reference distance to deliver a target level farther away. It adds back the distance loss the target must overcome — sizing a system before the show.',
+      keySymbols: ['·', 'log₁₀', '/', 'x₁'],
       note: 'Reverse of the point-source law: how loud must it be at the reference distance to deliver the target level at d₂.',
       compute: (v) => {
         const gain = 20 * Math.log10(n(v.d2) / n(v.d1));
@@ -196,6 +216,11 @@ const WS_SPL_ADD: Workspace = {
       name: 'Combine any number of levels',
       inputs: ['levels'],
       formula: 'Ltot = 10·log10(Σ 10^(Lᵢ/10))',
+      plainFormula:
+        'The combined level equals ten times the base-ten log of the sum of each level converted to an energy ratio (ten raised to the level over ten).',
+      explain:
+        'Decibels are logarithms, so levels never add arithmetically. This converts each level back to an energy ratio, sums the energy, and converts back — the only honest way to combine sources. It shows how much the total sits above the loudest single source.',
+      keySymbols: ['·', 'log₁₀', 'Σ', 'x²', 'x₁'],
       compute: (v) => {
         const ls = arr(v.levels);
         const tot = dbSum(ls);
@@ -237,6 +262,11 @@ const WS_SPL_ADD: Workspace = {
       name: 'N identical (uncorrelated) sources',
       inputs: ['lvl', 'count'],
       formula: 'Ltot = L + 10·log10(N)',
+      plainFormula:
+        'The combined level equals one source’s level plus ten times the base-ten log of the number of sources.',
+      explain:
+        'N identical, uncorrelated sources add N times the energy, which is 10·log(N) of gain: two give +3 dB, four give +6 dB, ten give +10 dB. Each new identical source buys less than the last.',
+      keySymbols: ['·', 'log₁₀'],
       compute: (v) => {
         const gain = 10 * Math.log10(n(v.count));
         return [
@@ -258,6 +288,10 @@ const WS_SPL_ADD: Workspace = {
       name: 'Sources needed for a target increase (reverse)',
       inputs: ['delta'],
       formula: 'N = 10^(ΔdB/10)',
+      plainFormula: 'The number of sources equals ten raised to the target increase in dB, divided by ten.',
+      explain:
+        'The reverse: how many uncorrelated sources a target increase over one source needs. Because doubling sources always buys just +3 dB, the price of each extra dB grows fast — a 6 dB gain needs four sources, 10 dB needs ten.',
+      keySymbols: ['x²', 'Δ', '/'],
       note: 'Uncorrelated sum. Doubling sources always buys +3 dB — the price of each extra dB grows fast.',
       compute: (v) => {
         const N = Math.pow(10, n(v.delta) / 10);
@@ -283,6 +317,11 @@ const WS_SPL_ADD: Workspace = {
       name: 'Two sources — combined level & dominance check',
       inputs: ['la', 'lb'],
       formula: 'Ltot = 10·log10(10^(La/10) + 10^(Lb/10))',
+      plainFormula:
+        'The combined level equals ten times the base-ten log of the sum of the two sources’ energy ratios.',
+      explain:
+        'Energy-sums two levels and checks which dominates. When one source is more than about 10 dB below the other, it adds under half a dB — muting it is inaudible on a meter. Within 10 dB, both matter. It is why removing a quiet channel often changes nothing.',
+      keySymbols: ['·', 'log₁₀', 'x²'],
       compute: (v) => {
         const la = n(v.la);
         const lb = n(v.lb);
@@ -356,6 +395,11 @@ const WS_DOSE: Workspace = {
       name: 'Allowable time — NIOSH-style (85 dBA criterion, 3 dB exchange, 8 h)',
       inputs: ['lex'],
       formula: 'T = 480 min / 2^((L − 85)/3)',
+      plainFormula:
+        'The allowable time equals 480 minutes divided by two raised to the level minus 85, over three.',
+      explain:
+        'How long a level can run before the NIOSH-style criterion (85 dBA, 3 dB exchange, 8 hours) is used up. Every 3 dB above 85 halves the allowable time — brutally unintuitive, and why turning it up “just a little” matters so much. A teaching calculation, not medical or legal advice.',
+      keySymbols: ['/', 'x²', '−'],
       note: 'Criterion 85 dBA · exchange rate 3 dB · reference duration 8 h. Recommended-practice style; not a legal limit.',
       compute: (v) => {
         const T = allowMin(n(v.lex), 85, 3);
@@ -381,6 +425,11 @@ const WS_DOSE: Workspace = {
       name: 'Allowable time — OSHA-style (90 dBA criterion, 5 dB exchange, 8 h)',
       inputs: ['lex'],
       formula: 'T = 480 min / 2^((L − 90)/5)',
+      plainFormula:
+        'The allowable time equals 480 minutes divided by two raised to the level minus 90, over five.',
+      explain:
+        'The same idea under the OSHA-style criterion (90 dBA, 5 dB exchange, 8 hours), where every 5 dB above 90 halves the time. It is more lenient than the 3 dB model at high levels — the same day scores a very different dose under each. Teaching only, not compliance.',
+      keySymbols: ['/', 'x²', '−'],
       note: 'Criterion 90 dBA · exchange rate 5 dB · reference duration 8 h. Permissible-limit style; more lenient than the 3 dB model at high levels.',
       compute: (v) => {
         const T = allowMin(n(v.lex), 90, 5);
@@ -406,6 +455,11 @@ const WS_DOSE: Workspace = {
       name: 'Daily dose from intervals — NIOSH-style (85 dBA, 3 dB exchange)',
       inputs: ['doseLevels', 'doseMins'],
       formula: 'dose% = Σ (tᵢ / Tᵢ) × 100 · Tᵢ = 480 / 2^((Lᵢ−85)/3)',
+      plainFormula:
+        'The daily dose in percent is the sum over intervals of each duration divided by its allowable time, times 100; each allowable time is 480 divided by two raised to the interval level minus 85, over three.',
+      explain:
+        'Adds a day of mixed levels into a single dose under the NIOSH criterion. Each interval spends a share of the daily allowance — its duration over the time allowed at that level — and 100% is the full day’s allowance. Loud intervals dominate.',
+      keySymbols: ['Σ', '/', '×', 'x²', '−', 'x₁'],
       note: 'Intervals pair by position: first level with first duration. 100% = the full daily allowance under this criterion.',
       compute: (v) => {
         const ls = arr(v.doseLevels);
@@ -461,6 +515,11 @@ const WS_DOSE: Workspace = {
       name: 'Daily dose from intervals — OSHA-style (90 dBA, 5 dB exchange)',
       inputs: ['doseLevels', 'doseMins'],
       formula: 'dose% = Σ (tᵢ / Tᵢ) × 100 · Tᵢ = 480 / 2^((Lᵢ−90)/5)',
+      plainFormula:
+        'The daily dose in percent is the sum over intervals of each duration divided by its allowable time, times 100; each allowable time is 480 divided by two raised to the interval level minus 90, over five.',
+      explain:
+        'The same day scored under the OSHA criterion (90 dBA, 5 dB exchange). Comparing it with the NIOSH result shows how much the criterion choice changes the answer — the same intervals can read safe under one and over-exposed under the other.',
+      keySymbols: ['Σ', '/', '×', 'x²', '−', 'x₁'],
       note: 'Same intervals, different criterion — compare with the 85/3 result to see how much the criterion choice matters.',
       compute: (v) => {
         const ls = arr(v.doseLevels);
@@ -516,6 +575,11 @@ const WS_DOSE: Workspace = {
       name: 'Leq (energy average) from intervals',
       inputs: ['doseLevels', 'doseMins'],
       formula: 'Leq = 10·log10(Σ tᵢ·10^(Lᵢ/10) / Σ tᵢ)',
+      plainFormula:
+        'The equivalent level equals ten times the base-ten log of the time-weighted sum of each interval’s energy, divided by the total time.',
+      explain:
+        'The single steady level carrying the same total energy as the varying intervals. It weights each interval’s energy by its duration — criterion-free, pure energy math — so the loudest intervals dominate the average. Arithmetic dB averaging would badly under-read it.',
+      keySymbols: ['·', 'log₁₀', 'Σ', 'x²', '/', 'x₁'],
       note: 'The single steady level that carries the same total energy as the varying intervals. Criterion-free — pure energy math.',
       compute: (v) => {
         const ls = arr(v.doseLevels);
@@ -594,6 +658,11 @@ const WS_MIC_GAIN: Workspace = {
       name: 'Mic output voltage from SPL',
       inputs: ['sens', 'spl'],
       formula: 'p = 10^((SPL−94)/20) Pa · V = sens/1000 × p',
+      plainFormula:
+        'The pressure equals ten raised to the SPL minus 94, over twenty, in pascals; the voltage equals the sensitivity over 1000 times that pressure.',
+      explain:
+        'From sound pressure at the capsule to volts on the wire. 94 dB SPL is exactly 1 pascal — the anchor every sensitivity spec hangs on — so the SPL sets the pressure, and the mic’s millivolts-per-pascal sets the output voltage, also shown in dBV and dBu.',
+      keySymbols: ['x²', '−', '/', '×'],
       note: '94 dB SPL is exactly 1 pascal — the anchor every sensitivity spec hangs on.',
       compute: (v) => {
         const p = Math.pow(10, (n(v.spl) - 94) / 20);
@@ -619,6 +688,10 @@ const WS_MIC_GAIN: Workspace = {
       name: 'Required preamp gain to a target level',
       inputs: ['sens', 'spl', 'target', 'headroom'],
       formula: 'gain = target dBu − mic dBu',
+      plainFormula: 'The required gain equals the target output level in dBu minus the mic’s output level in dBu.',
+      explain:
+        'How much preamp gain a mic needs to reach a working level. Since the mic’s output tracks SPL dB-for-dB, a quiet source needs more gain and a loud one less. The recommended setting subtracts your headroom so peaks have somewhere to go.',
+      keySymbols: ['−'],
       note: 'The recommended setting subtracts your headroom so peaks above the entered SPL have somewhere to go.',
       compute: (v) => {
         const p = Math.pow(10, (n(v.spl) - 94) / 20);
@@ -649,6 +722,11 @@ const WS_MIC_GAIN: Workspace = {
       name: 'Max SPL before the preamp input clips (reverse)',
       inputs: ['sens', 'maxIn'],
       formula: 'SPLmax = 94 + maxIn dBu − mic dBu@94',
+      plainFormula:
+        'The maximum SPL equals 94 plus the preamp’s input clip level in dBu, minus the mic’s output level at 94 dB SPL.',
+      explain:
+        'Where the mic’s own output reaches the preamp’s input clip point — the SPL at which you should engage a pad. Because the output tracks SPL dB-for-dB, a hotter mic clips the preamp at a lower SPL. The mic also has its own max-SPL limit to respect.',
+      keySymbols: ['−'],
       note: 'Where the MIC OUTPUT alone hits the preamp’s input clip point — engage a pad before this, and remember the mic has its own max-SPL limit too.',
       compute: (v) => {
         const sensDbu = 20 * Math.log10(n(v.sens) / 1000 / V_REF_DBU);
@@ -714,6 +792,10 @@ const WS_LIMITER: Workspace = {
       name: 'Max continuous speaker voltage',
       inputs: ['pwr', 'z'],
       formula: 'V = √(P · Z)',
+      plainFormula: 'The maximum voltage equals the square root of the power times the impedance.',
+      explain:
+        'Working back from a speaker’s continuous power rating to the RMS voltage that dissipates that power in its nominal impedance — the first step in setting a protection limiter. It also expresses that voltage as a level at the speaker terminals.',
+      keySymbols: ['√', '·', 'Z'],
       compute: (v) => {
         const volts = Math.sqrt(n(v.pwr) * n(v.z));
         return [
@@ -735,6 +817,11 @@ const WS_LIMITER: Workspace = {
       name: 'Processor limiter threshold',
       inputs: ['pwr', 'z', 'ampGain', 'margin'],
       formula: 'thr dBu = 20·log10(√(P·Z)/0.775) − ampGain − margin',
+      plainFormula:
+        'The threshold in dBu equals twenty times the base-ten log of the max speaker voltage (root of power times impedance) over 0.775, minus the amplifier gain, minus the safety margin.',
+      explain:
+        'Turns a speaker’s voltage limit into a processor threshold by removing the amplifier’s voltage gain and a safety margin. The same threshold means a different speaker voltage on every amp, because the amp’s gain sits between them — an RMS/average protection starting point, not a tuned limiter.',
+      keySymbols: ['·', 'log₁₀', '√', '/', '−', 'Z'],
       note: 'RMS/average protection starting point. Verify the processor’s meter reference (dBu vs dBFS) before entering it.',
       compute: (v) => {
         const volts = Math.sqrt(n(v.pwr) * n(v.z));

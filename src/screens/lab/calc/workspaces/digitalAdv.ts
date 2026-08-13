@@ -46,6 +46,11 @@ const CLOCKDRIFT: Workspace = {
       name: 'Sample slip over a duration',
       inputs: ['sr', 'ppm', 'dur'],
       formula: 'slip = SR · (ppm×10⁻⁶) · t',
+      plainFormula:
+        'The samples slipped equal the sample rate times the clock error in parts per million (times ten to the minus six), times the elapsed time.',
+      explain:
+        'Two digital devices never run at exactly the same rate unless they share a clock. A tiny frequency error in parts per million slowly slips samples until a click or dropout. This gives the samples slipped, the timing error, and how often a whole sample is lost — the cumulative reason word clock and PTP exist.',
+      keySymbols: ['·', '×', 'x⁻¹'],
       compute: (v) => {
         const drift = n(v.ppm) * 1e-6;
         const slip = n(v.sr) * drift * n(v.dur);
@@ -70,6 +75,11 @@ const CLOCKDRIFT: Workspace = {
       name: 'Time until the slip budget is used up (reverse)',
       inputs: ['sr', 'ppm', 'maxSlip'],
       formula: 't = slip / (SR · ppm×10⁻⁶)',
+      plainFormula:
+        'The time to reach the slip budget equals the number of samples of slip divided by the sample rate times the clock error in parts per million.',
+      explain:
+        'The reverse: how long two unsynced clocks can run before they drift by a tolerable number of samples. A higher sample rate or a larger ppm error uses up the budget sooner — the practical measure of how tight your sync must be.',
+      keySymbols: ['/', '·', '×', 'x⁻¹'],
       compute: (v) => {
         const drift = n(v.ppm) * 1e-6;
         return [{ label: 'TIME TO REACH SLIP BUDGET', value: n(v.maxSlip) / (n(v.sr) * drift), quantity: 'time' }];
@@ -125,6 +135,10 @@ const NETAUDIO: Workspace = {
       name: 'Raw audio data rate',
       inputs: ['channels', 'sr', 'bitdepth'],
       formula: 'rate = channels × sample rate × bit depth',
+      plainFormula: 'The raw data rate equals the number of channels times the sample rate times the bit depth.',
+      explain:
+        'Audio-over-IP turns channels into data. The raw payload is simply channels times sample rate times bit depth — the bits per second one direction of a stream carries before any packet overhead. A full-duplex flow needs this rate both ways.',
+      keySymbols: ['×'],
       compute: (v) => {
         const raw = n(v.channels) * n(v.sr) * n(v.bitdepth);
         return [
@@ -146,6 +160,11 @@ const NETAUDIO: Workspace = {
       name: 'Packets & on-the-wire rate',
       inputs: ['channels', 'sr', 'bitdepth', 'packetms'],
       formula: 'wire = pkts/s × (payload + ~78 B header)',
+      plainFormula:
+        'The on-the-wire rate equals the packets per second times the payload plus about 78 bytes of header per packet.',
+      explain:
+        'The wire carries packet headers many times a second on top of the audio. Smaller packet times mean lower latency but more packets — and more header overhead. This estimates the realistic on-the-wire rate, showing why very low latency costs bandwidth.',
+      keySymbols: ['×', '/'],
       note: 'Header estimate 78 B/packet (Ethernet+IP+UDP+RTP + preamble + inter-frame gap).',
       compute: (v) => {
         const spp = n(v.sr) * n(v.packetms);
@@ -214,6 +233,10 @@ const TIMECODE: Workspace = {
       name: 'Frames → timecode',
       inputs: ['frames', 'fps'],
       formula: 'time = frames ÷ fps',
+      plainFormula: 'The time equals the frame count divided by the frame rate.',
+      explain:
+        'SMPTE timecode counts hours, minutes, seconds, and frames. This converts a frame count into a clock time and breaks it into HH:MM:SS:FF. A frame number means nothing without its frame rate, since 24, 25, 29.97, and 30 fps all count differently.',
+      keySymbols: ['÷'],
       compute: (v) => {
         const totS = n(v.frames) / n(v.fps);
         return [
@@ -250,6 +273,11 @@ const TIMECODE: Workspace = {
       name: 'Timecode → frames',
       inputs: ['hours', 'mins', 'secs', 'fps'],
       formula: 'frames = (h·3600 + m·60 + s) · fps',
+      plainFormula:
+        'The total frames equal the hours times 3600, plus the minutes times 60, plus the seconds, all times the frame rate.',
+      explain:
+        'The reverse: turns an HH:MM:SS timecode into a total frame count. It converts the clock time to seconds, then multiplies by the frame rate. Used to locate an exact frame or line up audio to a picture edit.',
+      keySymbols: ['·'],
       compute: (v) => {
         const totS = n(v.hours) * 3600 + n(v.mins) * 60 + n(v.secs);
         return [
@@ -270,6 +298,10 @@ const TIMECODE: Workspace = {
       name: '0.1% pulldown offset (30 ↔︎ 29.97)',
       inputs: ['dur'],
       formula: 'offset = duration × (1/1000)',
+      plainFormula: 'The pulldown offset equals the duration times one one-thousandth.',
+      explain:
+        'The 0.1% difference between 30 fps and 29.97 fps (and 48 kHz and 47.952 kHz), from the 1000/1001 film-to-video factor. Over an hour it is exactly 3.6 seconds of drift — the classic reason audio pulls up or down to stay locked to picture.',
+      keySymbols: ['×', '/'],
       note: 'The 1000/1001 factor between 30 fps and 29.97 fps (and 48 kHz ↔︎ 47.952 kHz).',
       compute: (v) => {
         const off = n(v.dur) / 1000;
@@ -328,6 +360,11 @@ const FIRLEN: Workspace = {
       name: 'Taps & latency for a transition',
       inputs: ['sr', 'trans', 'atten'],
       formula: 'N ≈ (fs/Δf)·(A/22) · latency = (N−1)/2',
+      plainFormula:
+        'The number of taps is about the sample rate divided by the transition width, times the stopband attenuation over 22; the latency is the taps minus one, over two.',
+      explain:
+        'A linear-phase FIR filter’s sharpness comes from its length: a narrower transition band and a deeper stopband both need more taps, and every tap adds latency. This sizes the tap count and the delay it costs — the trade behind linear-phase EQ, oversampling, and steep crossovers.',
+      keySymbols: ['≈', 'fs', '/', 'Δ', '·', '−'],
       compute: (v) => {
         const N = Math.ceil((n(v.sr) / n(v.trans)) * (n(v.atten) / 22));
         const latS = (N - 1) / 2;
@@ -351,6 +388,10 @@ const FIRLEN: Workspace = {
       name: 'Latency from a tap count (reverse)',
       inputs: ['sr', 'taps'],
       formula: 'latency = (N − 1) / 2 samples',
+      plainFormula: 'The latency equals the number of taps minus one, divided by two, in samples.',
+      explain:
+        'A linear-phase FIR delays the signal by half its length. This converts a known tap count into that fixed latency in samples and milliseconds — the delay you must budget for when a brickwall filter looks great on paper.',
+      keySymbols: ['−', '/'],
       compute: (v) => {
         const latS = (n(v.taps) - 1) / 2;
         return [
@@ -409,6 +450,11 @@ const CONVOLUTION: Workspace = {
       name: 'Direct-form compute & memory',
       inputs: ['irSec', 'sr', 'channels'],
       formula: 'taps = IR·fs · MAC/s = taps·fs·ch · mem = taps·4·ch',
+      plainFormula:
+        'The tap count equals the impulse-response length times the sample rate; the multiply-accumulates per second equal the taps times the sample rate times the channels; and the memory equals the taps times four bytes times the channels.',
+      explain:
+        'Direct convolution multiplies your signal by every sample of an impulse response. This shows the raw multiply-accumulate load and the memory an IR needs — numbers so large they explain why real convolution reverbs use partitioned FFT convolution instead of brute force.',
+      keySymbols: ['·', 'fs', '/'],
       compute: (v) => {
         const taps = n(v.irSec) * n(v.sr);
         const macs = taps * n(v.sr) * n(v.channels);
@@ -433,6 +479,10 @@ const CONVOLUTION: Workspace = {
       name: 'Processing-block latency',
       inputs: ['block', 'sr'],
       formula: 'latency = block ÷ sample rate',
+      plainFormula: 'The latency equals the block size divided by the sample rate.',
+      explain:
+        'Block-based processing adds delay: one block to fill going in, one coming out. This converts a processing or FFT-partition block size into its latency. Partitioned convolution keeps the first block small to cut this delay while staying efficient on the long tail.',
+      keySymbols: ['÷'],
       compute: (v) => {
         return [
           { label: 'BLOCK LATENCY', value: (n(v.block) / n(v.sr)) * 1000, quantity: 'time', unit: 'ms' },
@@ -494,6 +544,11 @@ const BITDEPTH: Workspace = {
       name: 'SNR, dynamic range & levels from bit depth',
       inputs: ['bits'],
       formula: 'SNR = 6.02·N + 1.76 dB · range = 6.02·N · levels = 2^N',
+      plainFormula:
+        'The signal-to-noise ratio equals 6.02 times the number of bits plus 1.76 dB; the dynamic range equals 6.02 times the bits; and the number of levels equals two raised to the bits.',
+      explain:
+        'What one more bit buys. Each bit doubles the quantization levels and adds about 6 dB of theoretical dynamic range; a full-scale sine’s SNR adds 1.76 dB on top. This is the dithered ideal — real converters fall below it. Bit depth sets how far below full scale the noise floor sits, not the maximum level.',
+      keySymbols: ['·', 'x²'],
       compute: (v) => {
         const N = n(v.bits);
         return [
@@ -516,6 +571,10 @@ const BITDEPTH: Workspace = {
       name: 'Bit depth for a target dynamic range (reverse)',
       inputs: ['dr'],
       formula: 'N = dynamic range / 6.02 (rounded up)',
+      plainFormula: 'The number of bits equals the dynamic range divided by 6.02, rounded up to a whole number.',
+      explain:
+        'The reverse: the bit depth a target dynamic range needs. Since each bit adds about 6.02 dB, it divides the target by 6.02 and rounds up to a whole bit — then shows the range those whole bits actually deliver. In practice you round to the nearest standard depth (16, 24, 32).',
+      keySymbols: ['/'],
       compute: (v) => {
         const dr = n(v.dr);
         const exact = dr / 6.02;
