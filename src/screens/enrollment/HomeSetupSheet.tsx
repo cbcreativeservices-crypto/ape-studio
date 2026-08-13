@@ -25,6 +25,7 @@ import { BookIcon } from '../../components/BookIcon';
 import { HomeIcon } from '../../components/HomeIcon';
 import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 import { MATRIX_SUBJECTS } from '../../data/courseTopicMatrix';
+import { fetchV3Curriculum } from '../../data/v3Curriculum';
 import { COREQ_TOPIC_GS } from '../awards/awardsData';
 import { useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { useBundles } from '../../features/enrollment/enrolledBundlesStore';
@@ -67,13 +68,30 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
     if (paid) fn(); // non-members: write blocked; the tap counter shows the upsell
   };
 
+  // LIVE v3 curriculum names (owner 2026-08-06): the retired v2 MATRIX_SUBJECTS
+  // doesn't cover v3 gs (3000+), so every enrolled topic rendered as "Topic gsN".
+  // Resolve names + subjects off the live curriculum (the same source Explore /
+  // Awards use); keep the v2 matrix only as a last-resort fallback.
+  const [v3Index, setV3Index] = useState<Map<number, { name: string; subject: string }>>(new Map());
+  useEffect(() => {
+    let alive = true;
+    void fetchV3Curriculum().then((fields) => {
+      if (!alive) return;
+      const m = new Map<number, { name: string; subject: string }>();
+      for (const f of fields) for (const s of f.subjects) for (const t of s.topics) m.set(t.gs, { name: t.name, subject: s.subject });
+      setV3Index(m);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
   const topicIndex = useMemo(() => {
     const m = new Map<number, { name: string; subject: string }>();
     for (const s of MATRIX_SUBJECTS) for (const t of s.topics) m.set(t.gs, { name: t.name, subject: s.name });
     return m;
   }, []);
-  const nameFor = (gs: number) => topicIndex.get(gs)?.name ?? `Topic gs${gs}`;
-  const subjectFor = (gs: number) => topicIndex.get(gs)?.subject ?? '';
+  const nameFor = (gs: number) => v3Index.get(gs)?.name ?? topicIndex.get(gs)?.name ?? `Topic gs${gs}`;
+  const subjectFor = (gs: number) => v3Index.get(gs)?.subject ?? topicIndex.get(gs)?.subject ?? '';
 
   // The user's enrolled topics, minus the required cores (those live locked in
   // the ALWAYS-ON section, not this editable list).

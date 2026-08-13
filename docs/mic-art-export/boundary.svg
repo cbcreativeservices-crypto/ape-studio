@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 150" width="100" height="150">
+  <!-- Boundary — fictional. Exported from micArt.tsx (Skia) 2026-08-12. -->
+  <defs>
+    <linearGradient id="plate" gradientUnits="userSpaceOnUse" x1="8" y1="96" x2="92" y2="122">
+      <stop offset="0" stop-color="#3b3f49"/>
+      <stop offset="1" stop-color="#15161b"/>
+    </linearGradient>
+    <linearGradient id="wedge" gradientUnits="userSpaceOnUse" x1="22" y1="74" x2="78" y2="102">
+      <stop offset="0" stop-color="#6e7482"/>
+      <stop offset="1" stop-color="#15161b"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="50" cy="109" rx="42" ry="13" fill="url(#plate)"/>
+  <path d="M22 102 L50 74 L78 102 Z" fill="url(#wedge)"/>
+  <rect x="38" y="94" width="24" height="6" rx="3" ry="3" fill="#23252c"/>
+  <line x1="39" y1="96.5" x2="61" y2="96.5" stroke="#565b66" stroke-width="1.4"/>
+  <line x1="24" y1="100" x2="50" y2="76" stroke="rgba(255,255,255,0.35)" stroke-width="1.2" opacity="0.5"/>
+</svg>

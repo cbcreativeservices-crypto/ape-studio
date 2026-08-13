@@ -15,6 +15,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import type { RootStackParamList } from '../../navigation/types';
 import { categoryCountLabel, DEV_NOTE, getCategory, type LabLeaf } from './labCatalog';
+import { useLabDone } from '../../features/lab/labCompletion';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'LabCategory'>;
 
@@ -111,17 +112,23 @@ function LabRow({
   onToggle: () => void;
 }) {
   const dev = leaf.status === 'development';
+  // Audio Fundamentals labs carry a stable `key`; show a ✓ once its credit is
+  // done (R6c). Hook called unconditionally — keyless labs pass '' (never done).
+  const done = useLabDone(leaf.key ?? '');
   return (
     <Pressable
       onPress={onToggle}
       accessibilityRole="button"
       accessibilityState={{ expanded }}
-      accessibilityLabel={`${leaf.name}${dev ? ', planned, not open yet' : ''}, ${expanded ? 'expanded' : 'collapsed'}`}
+      accessibilityLabel={`${leaf.name}${done ? ', completed' : ''}${dev ? ', planned, not open yet' : ''}, ${expanded ? 'expanded' : 'collapsed'}`}
       style={({ pressed }) => [styles.row, dev && styles.rowDev, pressed && styles.rowPressed]}
     >
       <Text style={styles.rowCaret}>{expanded ? '▾' : '▸'}</Text>
       <View style={{ flex: 1 }}>
-        <Text style={[styles.rowName, dev && styles.rowNameDev]}>{leaf.name}</Text>
+        <View style={styles.rowNameLine}>
+          <Text style={[styles.rowName, dev && styles.rowNameDev]}>{leaf.name}</Text>
+          {done ? <Text style={styles.doneCheck}>✓</Text> : null}
+        </View>
         {expanded ? (
           <>
             <Text style={styles.rowBlurb}>{leaf.blurb}</Text>
@@ -179,7 +186,9 @@ const styles = StyleSheet.create({
   openBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.green },
   // Planned (not-yet-open) rows read dim + muted, no amber border.
   rowDev: { borderColor: '#2a2a2e', backgroundColor: '#121214' },
-  rowName: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 0.4, color: colors.textPrimary },
+  rowNameLine: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  rowName: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 0.4, color: colors.textPrimary, flexShrink: 1 },
+  doneCheck: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: colors.green },
   rowNameDev: { color: colors.textSub },
   rowBlurb: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub, marginTop: 1 },
   devNote: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1, color: '#7a7c80', marginTop: 4 },

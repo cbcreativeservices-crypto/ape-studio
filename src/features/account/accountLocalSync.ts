@@ -26,37 +26,43 @@ import { clearLocalAccountData, resetAllLocalStores } from './clearLocalAccountD
  *  AFTER every clear rather than preserved through it. */
 const LOCAL_USER_ID_KEY = 'ape:localUserId';
 
-/** Handle a SIGNED_IN event: wipe + reset only when the user actually changed. */
-async function syncLocalToUser(userId: string): Promise<void> {
+/** The device's current IDENTITY = the signed-in user id, or '' for no-account
+ *  (guest / signed-out). Wipe + reset only when it actually CHANGES. */
+async function syncLocalToIdentity(identity: string): Promise<void> {
   let prev: string | null = null;
   try {
     prev = await AsyncStorage.getItem(LOCAL_USER_ID_KEY); // OLD marker, BEFORE clear
   } catch {
     prev = null;
   }
-  if (prev === userId) return; // same user re-auth / session restore — never wipe
+  if (prev === identity) return; // same identity (session restore / re-auth) — never wipe
 
   await clearLocalAccountData(); // removes ape:localUserId among the rest
   resetAllLocalStores();
   try {
-    await AsyncStorage.setItem(LOCAL_USER_ID_KEY, userId); // NEW marker, AFTER clear
+    await AsyncStorage.setItem(LOCAL_USER_ID_KEY, identity); // NEW marker, AFTER clear
   } catch {
-    // best-effort — a failed write just means we re-check next SIGNED_IN
+    // best-effort — a failed write just means we re-check on the next event
   }
 }
 
 /**
- * Mount once at the app root. Subscribes to auth state and clears device-local
- * data whenever the signed-in user differs from the one on the device. Cleans
- * up its subscription on unmount.
+ * Mount once at the app root. Clears device-local data whenever the IDENTITY
+ * changes — a different user signs in, OR the user signs OUT / enters no-account
+ * (identity ''). This is what makes a LOG OUT (and a fresh Guest start) reset the
+ * previous account's enrollment list, Home cards, and lab/tool state instead of
+ * leaking them into the next session (user bug 2026-08-13). A same-user session
+ * restore keeps everything. Cleans up its subscription on unmount.
  */
 export function useAccountLocalSync(): void {
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event !== 'SIGNED_IN') return;
-      const userId = session?.user?.id;
-      if (!userId) return;
-      void syncLocalToUser(userId);
+      // SIGNED_IN (login), SIGNED_OUT (logout → guest), INITIAL_SESSION (cold
+      // start). TOKEN_REFRESHED and the like keep the same identity, so the
+      // prev===identity guard above no-ops them.
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'INITIAL_SESSION') {
+        void syncLocalToIdentity(session?.user?.id ?? '');
+      }
     });
     return () => {
       data.subscription.unsubscribe();

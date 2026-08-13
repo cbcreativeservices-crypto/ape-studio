@@ -32,6 +32,7 @@ import {
 } from '../../features/study/api';
 import { StudySession } from '../../features/study/sync';
 import { saveLocalMethodStates } from '../../features/study/localProgress';
+import { SuggestCorrectionButton } from '../../features/study/SuggestCorrectionButton';
 import { incBrainOutput, resetBrainOutput, setRunning, usePaceSettings, useRunning } from '../../features/study/paceStore';
 import { setLastStudyLocation } from '../../features/study/lastStudyLocation';
 import { recordPaceSession } from '../../features/study/paceRecords';
@@ -400,15 +401,27 @@ export function MatchingScreen({ navigation, route }: Props) {
             tinted bars over the columns mark the two sides to be matched. */}
         {sideBars}
 
-        <View style={styles.columns}>{columnsBody}</View>
+        {/* Left/right swipe on the BOARD itself browses between boards (owner
+            2026-08-13) — the old thin hint strip was easy to miss and read as
+            broken. Horizontal-dominant gesture only, so vertical scroll + cell
+            taps are untouched. A swipe never counts toward the study gate. */}
+        <View style={styles.columns} {...pan.panHandlers}>{columnsBody}</View>
 
       </ScrollView>
 
-      {/* Swipe strip (Booth 2026-07-15): the space below the cards scrolls
-          between boards on a left/right swipe — an alternative to Prev/Next.
-          A swipe-bypass never counts toward the study timer/gate. */}
-      <View {...pan.panHandlers} style={styles.swipeStrip}>
-        <Text style={styles.swipeHint}>‹ swipe to browse questions ›</Text>
+      {/* Suggest a correction — bottom-right of the answers area, above Prev/Next
+          (owner 2026-08-13). */}
+      <View style={styles.reportRow}>
+        <SuggestCorrectionButton
+          tag={topicName}
+          context={{
+            Method: 'Matching',
+            Topic: topicName,
+            'Topic ID': achievementId,
+            Board: `${boardIdx + 1} of ${boards.length}`,
+            Terms: board.map((it) => it.term).join(', '),
+          }}
+        />
       </View>
 
       {/* Pinned footer (Booth 2026-07-08): scribble-glass Prev/Next, always
@@ -471,17 +484,6 @@ const styles = StyleSheet.create({
   ledRow: { flexDirection: 'row', alignItems: 'center', gap: 10, alignSelf: 'stretch' },
   ledPct: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: colors.amber, minWidth: 44, textAlign: 'right' },
   footer: { flexDirection: 'row', gap: 10, paddingHorizontal: 16, paddingBottom: 12, paddingTop: 4 },
-  // Swipe-to-browse strip below the cards (Booth 2026-07-15).
-  swipeStrip: {
-    marginHorizontal: 16,
-    marginBottom: 4,
-    paddingVertical: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#1c1c1e',
-    backgroundColor: '#0e0e10',
-  },
-  swipeHint: { fontFamily: fonts.barlowCondensedMedium, fontSize: 12, letterSpacing: 1.5, color: colors.textMuted },
+  // Suggest-a-correction row — right-aligned, just above the Prev/Next footer.
+  reportRow: { paddingHorizontal: 16, paddingBottom: 2, alignItems: 'flex-end' },
 });

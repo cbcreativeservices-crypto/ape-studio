@@ -218,6 +218,15 @@ export function JogOverlay({
   disabledRef.current = disabled;
   const onStepRef = useRef(onStep);
   onStepRef.current = onStep;
+  // Tap-outside-to-close (owner 2026-08-13): a TAP (no rotation) that lands
+  // OUTSIDE the wheel dismisses the overlay; drags still turn it, and a tap ON
+  // the wheel is ignored. Refs so the memoised PanResponder reads live values.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+  const sizeRef = useRef(size);
+  sizeRef.current = size;
+  const grantRef = useRef({ x: 0, y: 0 });
+  const movedRef = useRef(false);
 
   const angleAt = (px: number, py: number) => {
     const { x, y } = centerRef.current;
@@ -243,10 +252,15 @@ export function JogOverlay({
           accum.current = 0;
           lastStepAt.current = 0; // first detent applies immediately
           inDead.current = false;
+          grantRef.current = { x: g.x0, y: g.y0 };
+          movedRef.current = false;
           spin.value = a0 + DIMPLE_OFFSET; // dimple appears exactly under the finger
         },
         onPanResponderMove: (_e, g) => {
           if (disabledRef.current) return;
+          if (!movedRef.current && Math.hypot(g.moveX - grantRef.current.x, g.moveY - grantRef.current.y) > 8) {
+            movedRef.current = true; // it's a drag (rotation), not a tap
+          }
           const { x, y } = centerRef.current;
           if (Math.hypot(g.moveX - x, g.moveY - y) < DEAD_PX) {
             inDead.current = true;
@@ -272,6 +286,12 @@ export function JogOverlay({
             accum.current += DETENT_DEG;
             step(-1);
           }
+        },
+        onPanResponderRelease: () => {
+          // A tap (no drag) that landed beyond the wheel radius = dismiss.
+          const { x, y } = centerRef.current;
+          const outside = Math.hypot(grantRef.current.x - x, grantRef.current.y - y) > sizeRef.current / 2;
+          if (!movedRef.current && outside) onCloseRef.current();
         },
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps

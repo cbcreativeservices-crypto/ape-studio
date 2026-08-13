@@ -37,6 +37,13 @@ import {
   type ScenarioQ,
 } from '../../features/study/scenarioHomework';
 import { setLastStudyLocation } from '../../features/study/lastStudyLocation';
+import { saveLocalMethodStates } from '../../features/study/localProgress';
+import { SuggestCorrectionButton } from '../../features/study/SuggestCorrectionButton';
+import type { ItemStates } from '../../features/study/api';
+import { incBrainOutput, resetBrainOutput, setRunning, usePaceSettings, useRunning } from '../../features/study/paceStore';
+import { registerTrialAnswer, useTimeTrial } from '../../features/study/timeTrial';
+import { PaceTimerBar } from '../../features/study/PaceTimerBar';
+import { PaceTimerModal } from '../../features/study/PaceTimerModal';
 import { StudyHeader } from './StudyHeader';
 import type { StudyStackParamList } from '../../navigation/types';
 
@@ -72,7 +79,44 @@ export function ScenariosScreen({ route }: Props) {
 
   const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const answersRef = useRef<Record<string, ScenarioAnswer>>({});
+  // Local method-state mirror (parity with fill-in-blank / matching): the
+  // Dashboard reads this for immediate scenarios engagement and it powers the
+  // dev fast-complete flow (owner 2026-08-13). Production % still reads the
+  // server round-based completion_pct — this mirror is inert there.
+  const scenarioStatesRef = useRef<ItemStates>({});
   const initedRef = useRef(false);
+
+  // Pace timer (practice aid — device-local, never blocks study). Available on
+  // the 3 HOMEWORK methods, Scenarios included (owner 2026-08-13).
+  const { settings: pace, setEnabled, setPreset } = usePaceSettings('scenarios');
+  const running = useRunning('scenarios');
+  const trial = useTimeTrial('scenarios');
+  const [timerOpen, setTimerOpen] = useState(false);
+  const [elapsed, setElapsed] = useState(0);
+  const startRef = useRef<number | null>(null);
+  const elapsedRef = useRef(0);
+
+  // Pace clock: present while ENABLED; only ticks while also RUNNING. When
+  // enabled-but-paused the clock HOLDS; disabling resets to 0.
+  useEffect(() => {
+    if (!pace.enabled) {
+      startRef.current = null;
+      elapsedRef.current = 0;
+      setElapsed(0);
+      resetBrainOutput('scenarios');
+      return;
+    }
+    if (!running) return;
+    startRef.current = Date.now() - elapsedRef.current * 1000;
+    const id = setInterval(() => {
+      if (startRef.current != null) {
+        const e = (Date.now() - startRef.current) / 1000;
+        elapsedRef.current = e;
+        setElapsed(e);
+      }
+    }, 1000);
+    return () => clearInterval(id);
+  }, [pace.enabled, running]);
 
   const roundQuestions: ScenarioQ[] = hw?.rounds[activeRound - 1] ?? [];
   const total = roundQuestions.length;
@@ -96,6 +140,11 @@ export function ScenariosScreen({ route }: Props) {
       clearInteraction();
       setReport(buildRoundReport(r, rq, answersRef.current));
       setView('report');
+      // Local "round finished" sentinel so the Dashboard's dev fast-complete can
+      // treat scenarios as done even on topics with very few questions (owner
+      // 2026-08-13). Inert in production (scenarios % reads server completion_pct).
+      scenarioStatesRef.current._done = { correct: 1 };
+      void saveLocalMethodStates(achievementId, 'scenarios', scenarioStatesRef.current);
       void completeScenarioRound(achievementId, r).then((rc) => {
         setHw((prev) =>
           prev ? { ...prev, roundsCompleted: Math.max(prev.roundsCompleted, rc) } : prev,
@@ -174,6 +223,15 @@ export function ScenariosScreen({ route }: Props) {
       if (!item) return;
       answersRef.current[item.id] = { round: activeRound, correct };
       void recordScenarioAnswer(achievementId, item.id, activeRound, correct);
+      // Mirror engagement locally so the Dashboard reflects scenarios progress
+      // right away (and dev fast-complete can reach the quiz).
+      scenarioStatesRef.current[item.id] = {
+        attempts: (scenarioStatesRef.current[item.id]?.attempts ?? 0) + 1,
+        correct: correct ? 1 : (scenarioStatesRef.current[item.id]?.correct ?? 0),
+      };
+      void saveLocalMethodStates(achievementId, 'scenarios', scenarioStatesRef.current);
+      registerTrialAnswer('scenarios', correct); // time trial: only correct advances pace
+      if (correct) incBrainOutput('scenarios');
       setFeedback({ correct, text: item.explanation });
       advanceTimer.current = setTimeout(advance, EXPLANATION_MS);
     },
@@ -354,10 +412,31 @@ export function ScenariosScreen({ route }: Props) {
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScrollView contentContainerStyle={styles.scroll}>
-        <StudyHeader method="scenarios" title="SCENARIO" />
+        <StudyHeader
+          method="scenarios"
+          title="SCENARIO"
+          onOpenTimer={() => setTimerOpen(true)}
+          hideTimerButton={!!(pace.enabled || trial.active || trial.result)}
+        />
         <View style={{ alignSelf: 'stretch' }}>
           <LedMeterWell filled={Math.round((answeredInRound / Math.max(1, total)) * 21)} />
         </View>
+
+        {pace.enabled || trial.active || trial.result ? (
+          <PaceTimerBar
+            method="scenarios"
+            preset={pace.preset}
+            answered={answeredInRound}
+            total={total}
+            elapsed={elapsed}
+            enabled={pace.enabled}
+            onOpenSettings={() => setTimerOpen(true)}
+            running={running}
+            onToggleRunning={() => setRunning('scenarios', !running)}
+            onRemove={() => setEnabled(false)}
+            onPresetChange={setPreset}
+          />
+        ) : null}
 
         {item.term ? <Text style={styles.termTag}>{item.term.toUpperCase()}</Text> : null}
 
@@ -427,7 +506,22 @@ export function ScenariosScreen({ route }: Props) {
         <Text style={styles.counter}>
           ITEM {idx + 1} OF {total} · ROUND {activeRound} OF {SCENARIO_ROUNDS}
         </Text>
+
+        {/* Suggest a correction — bottom-right of the answers area (owner
+            2026-08-13). Scenarios auto-advances, so there is no Prev/Next. */}
+        <SuggestCorrectionButton
+          tag={item.term || `Round ${activeRound} · Item ${idx + 1}`}
+          context={{
+            Method: 'Scenarios',
+            Topic: topicName,
+            'Topic ID': achievementId,
+            'Item ID': item.id,
+            Round: `${activeRound} of ${SCENARIO_ROUNDS}`,
+            Prompt: item.prompt,
+          }}
+        />
       </ScrollView>
+      <PaceTimerModal visible={timerOpen} onClose={() => setTimerOpen(false)} method="scenarios" topicId={achievementId} />
     </View>
   );
 }

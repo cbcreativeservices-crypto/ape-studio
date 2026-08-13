@@ -12,7 +12,7 @@
  * delay concept), and the coverage-reading legend/check. Full help wiring
  * into the 'speaker' guided lesson.
  */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -21,6 +21,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { InteractionZone, LabChip, CollapsibleSection } from '../LabShell';
+import { markLabUnit, registerLabUnits } from '../../../features/lab/labCompletion';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../features/lab/guidedLessons';
 import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../foundations/bits';
 import { requireMsViz, skiaAvailable, type MsVizModule } from './skiaGate';
@@ -357,6 +358,15 @@ export function SpeakerCoverageLabScreen() {
     setLessonKey(k);
     setLessonOpen(true);
   };
+
+  // R6c: mark each section viewed → the Speaker Placement & Coverage lab
+  // completes once all sections have been seen.
+  useEffect(() => {
+    registerLabUnits('af_speaker_coverage', SECTIONS.map((x) => x.key));
+  }, []);
+  useEffect(() => {
+    markLabUnit('af_speaker_coverage', SECTIONS[sectionIdx].key);
+  }, [sectionIdx]);
 
   const s = SECTIONS[sectionIdx];
   return (

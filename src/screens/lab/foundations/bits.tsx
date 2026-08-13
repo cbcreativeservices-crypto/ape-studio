@@ -30,13 +30,16 @@ export type CheckSpec = {
   wrongHint?: string;
 };
 
-export function CheckQuestion({ spec }: { spec: CheckSpec }) {
+export function CheckQuestion({ spec, onSolved }: { spec: CheckSpec; onSolved?: () => void }) {
   const [picked, setPicked] = useState<number | null>(null);
   const [solved, setSolved] = useState(false);
   const pick = (i: number) => {
     if (solved) return;
     setPicked(i);
-    if (i === spec.correctIdx) setSolved(true);
+    if (i === spec.correctIdx) {
+      setSolved(true);
+      onSolved?.(); // optional: lets a host aggregate a "passed" state (R6c)
+    }
   };
   return (
     <View style={styles.checkCard}>

@@ -11,10 +11,11 @@
  * HONESTY: every display is driven by deterministic SYNTHESIZED TEACHING
  * SIGNALS from meterEngine (badged). Nothing here measures real audio.
  */
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { DisplayGuideButton } from '../../../../features/lab/guidedLessons';
+import { markLabUnit, PASS_UNIT } from '../../../../features/lab/labCompletion';
 import { LabChip, CollapsibleSection } from '../../LabShell';
 import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
 import { Badge, MythReality, PanelCard, ReadoutGrid, dstyles } from '../../digital/bits';
@@ -938,6 +939,14 @@ export function DetectiveModule(p: MeterModuleProps) {
   const kase = CASES[idx];
   const specs = [kase.what, kase.shows, kase.problem, kase.fix];
   const qCount = specs.length;
+  // R6c: the Signal Detective standalone lab completes on a genuine PASS — every
+  // question of every case answered correctly at least once (the whole
+  // graduation deck). CheckQuestion remounts per case+step, so aggregate here.
+  const solvedRef = useRef<Set<string>>(new Set());
+  const onSolved = () => {
+    solvedRef.current.add(`${idx}-${step}`);
+    if (solvedRef.current.size >= n * qCount) markLabUnit('af_signal_detective', PASS_UNIT);
+  };
   const goCase = (next: number) => {
     setIdx(((next % n) + n) % n);
     setStep(0); // new case → back to its first question
@@ -993,7 +1002,7 @@ export function DetectiveModule(p: MeterModuleProps) {
 
       {/* ONE question at a time (owner 2026-08-05) — keyed per case+step so it
           resets cleanly. Move between the case's four questions below. */}
-      <CheckQuestion key={`${idx}-${step}`} spec={specs[step]} />
+      <CheckQuestion key={`${idx}-${step}`} spec={specs[step]} onSolved={onSolved} />
       <View style={dstyles.chipRow}>
         <LabChip
           label="‹ PREVIOUS"

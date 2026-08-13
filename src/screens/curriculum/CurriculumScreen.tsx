@@ -19,6 +19,7 @@ import { consumeDevPreview } from '../../features/dev/devPreview';
 import { fetchV3Curriculum, fetchV3Programs, fetchV3Certs, type V3Field } from '../../data/v3Curriculum';
 import { subjectMeta } from '../../data/subjectMeta';
 import { useCurriculumStats } from '../../features/curriculum/curriculumStats';
+import { toggleTopic, useEnrollment } from '../../features/enrollment/enrollmentStore';
 
 /** Placeholder academic-goal lines — replace with the Academy's official copy. */
 const ACADEMIC_GOALS: string[] = [
@@ -90,6 +91,11 @@ export function CurriculumView({
 }) {
   const insets = useSafeAreaInsets();
   const [open, setOpen] = useState<number | null>(null);
+  // Enrollment list (user request): tapping a topic here adds/removes it, exactly
+  // like the Enrollments "Browse & Add" list. Ungated — free users build a list
+  // too. `toggleTopic` persists + syncs (signed-in) via the shared store.
+  const enrolled = useEnrollment();
+  const enrolledGs = useMemo(() => new Set(enrolled.map((e) => e.gs)), [enrolled]);
 
   // LIVE v3 curriculum (owner 2026-08-06) — replaces the retired v2 matrix.
   const [v3Subjects, setV3Subjects] = useState<{ order: number; name: string; field: string; topics: { gs: number; name: string }[] }[]>([]);
@@ -240,12 +246,23 @@ export function CurriculumView({
                   </Text>
 
                   <Text style={styles.subLabel}>TOPICS</Text>
-                  {s.topics.map((t) => (
-                    <View key={t.gs} style={styles.topicRow}>
-                      <Text style={styles.topicBullet}>•</Text>
-                      <Text style={styles.topicText}>{t.name}</Text>
-                    </View>
-                  ))}
+                  <Text style={styles.topicHint}>Tap a topic to add it to your enrollments.</Text>
+                  {s.topics.map((t) => {
+                    const on = enrolledGs.has(t.gs);
+                    return (
+                      <Pressable
+                        key={t.gs}
+                        style={styles.topicRow}
+                        onPress={() => toggleTopic(t.gs)}
+                        accessibilityRole="button"
+                        accessibilityState={{ selected: on }}
+                        accessibilityLabel={on ? `Remove ${t.name} from enrollments` : `Add ${t.name} to enrollments`}
+                      >
+                        <Text style={[styles.topicCheck, on && styles.topicCheckOn]}>{on ? '✓' : '+'}</Text>
+                        <Text style={[styles.topicText, on && styles.topicTextOn]}>{t.name}</Text>
+                      </Pressable>
+                    );
+                  })}
 
                   {meta.careers ? (
                     <>
@@ -321,9 +338,15 @@ const styles = StyleSheet.create({
   desc: { fontFamily: fonts.barlowMedium, fontSize: 15, lineHeight: 22, color: colors.textSecondary, marginTop: 8 },
   metaLine: { fontFamily: fonts.mono, fontSize: 12.5, color: colors.textSub },
   subLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.6, color: colors.amberLabel, marginTop: 4 },
-  topicRow: { flexDirection: 'row', gap: 10, alignItems: 'flex-start' },
+  topicRow: { flexDirection: 'row', gap: 10, alignItems: 'flex-start', paddingVertical: 3 },
   topicBullet: { fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 22, color: colors.textSub, width: 12 },
+  // Tap-to-enroll affordance (mirrors the Enrollments Browse & Add list): '+'
+  // when available (white topic), green '✓' once enrolled.
+  topicHint: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub, marginBottom: 2 },
+  topicCheck: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, lineHeight: 22, color: colors.textSub, width: 14, textAlign: 'center' },
+  topicCheckOn: { color: '#37e05f' },
   topicText: { flex: 1, fontFamily: fonts.barlowMedium, fontSize: 14.5, lineHeight: 22, color: colors.textPrimary },
+  topicTextOn: { color: '#7dffa1' },
   careers: { fontFamily: fonts.barlowMedium, fontSize: 14.5, lineHeight: 22, color: colors.textSecondary },
 
   // Academic goals.

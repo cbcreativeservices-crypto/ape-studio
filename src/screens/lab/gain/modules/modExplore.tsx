@@ -16,10 +16,11 @@
  *      stage that clips; find it and the whole chain unlocks for correction.
  *      All healthy ⇒ green border + floating TRY AGAIN.
  */
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
+import { markLabUnit } from '../../../../features/lab/labCompletion';
 import { DeviceCard, DeviceLeds, DeviceMeter, DragSlider, GainBtn } from '../gainViz';
 import { chainIsHealthy, computeChain, meterFill, type ChainNode, type Stage } from '../gainEngine';
 import { levelColor } from '../../../../features/tools/levelColor';
@@ -208,6 +209,12 @@ export function TroubleshootModule(_p: GainModuleComponentProps) {
   const firstClipKey = nodes.slice(1).find((n) => n.stageClipped)?.key ?? null;
   const healthy = found && chainIsHealthy(nodes);
   const setGain = useCallback((k: string, v: number) => setG((prev) => ({ ...prev, [k]: v })), []);
+
+  // R6c: the Troubleshoot CHALLENGE completes on an actual pass — the fault
+  // found AND the chain restored to healthy at every stage.
+  useEffect(() => {
+    if (healthy) markLabUnit('af_gain_staging', 'troubleshoot');
+  }, [healthy]);
 
   const newRound = useCallback(() => {
     const r = makeFault();

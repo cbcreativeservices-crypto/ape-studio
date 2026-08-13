@@ -88,6 +88,10 @@ export async function fetchCommercialDashboard(order: number, caps: Caps): Promi
       applicable_methods: a.applicable_methods ?? [],
       is_prerequisite: !!a.is_prerequisite,
       icon_url: a.icon_url,
+      // Carry gs so the Dashboard's membership gate can tell free (gs3060/gs3970)
+      // from paid topics (user request 2026-08-12). Without it the gate can't
+      // identify locked topics and they slip through to a failing study fetch.
+      global_sequence: a.global_sequence,
     });
     achievementIds.push(a.id);
     freeByAch.set(a.id, isFreeTopicGs(t.gs));

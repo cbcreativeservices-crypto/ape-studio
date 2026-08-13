@@ -6,6 +6,7 @@
  */
 import { supabase } from '../../lib/supabase';
 import { SUPABASE_URL } from '../../lib/env';
+import { devBypass } from '../../config/devMode';
 
 export type GlossaryItem = {
   id: string;
@@ -302,7 +303,11 @@ export function studyDisplayPct(
       credit += (v.correct ?? 0) >= 1 ? 1 : 0;
     }
   }
-  return Math.min(100, (credit / totalItems) * 100);
+  // ⏳ TEMP dev fast-complete (devMode.ts → devFastComplete, ~48h): 10 engaged
+  // items = 100% (viewed/known for flashcards, correct for homework). Applies to
+  // the in-screen meters AND the Dashboard, so the flow can be tested fast.
+  const denom = devBypass('devFastComplete') ? Math.min(totalItems, 10) : totalItems;
+  return Math.min(100, (credit / denom) * 100);
 }
 
 /**
@@ -373,7 +378,15 @@ export async function fetchMethodState(
     .eq('achievement_id', achievementId)
     .eq('method_key', methodKey)
     .maybeSingle();
-  if (error) throw error;
+  // NON-FATAL (user bug 2026-08-13): student_method_progress is user-scoped, so a
+  // GUEST (anon role) has no grant and this read 403s. That must NOT fail the whole
+  // study-screen load — the free topics are studyable signed-out, with progress on
+  // the device-local mirror. Return null and let the screen render with local state
+  // (same resilience the Dashboard already uses for guests).
+  if (error) {
+    console.warn('[study] method state unavailable (guest?):', error.message);
+    return null;
+  }
   if (!data) return null;
   const states: ItemStates = {};
   const raw = (data.item_states ?? {}) as Record<string, unknown>;

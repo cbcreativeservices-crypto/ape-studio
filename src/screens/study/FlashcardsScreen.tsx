@@ -14,7 +14,7 @@
  *  - Controls pinned to the bottom; card flexes to fill.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactElement, type ReactNode } from 'react';
-import { ActivityIndicator, Alert, Image, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, Image, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Ellipse, Path } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -58,11 +58,16 @@ import { INTRO_STORAGE_PREFIX } from '../../features/intro/screenIntros';
 import { StudySession } from '../../features/study/sync';
 import { saveLocalMethodStates } from '../../features/study/localProgress';
 import { ResetIcon } from '../../components/ResetIcon';
-import { incBrainOutput, resetBrainOutput, setRunning, usePaceSettings, useRunning } from '../../features/study/paceStore';
+import { LinkIcon } from '../../components/LinkIcon';
+import { sendFeedback } from '../../lib/feedback';
+import {
+  useSessionTimer,
+  SessionTimerButton,
+  SessionTimerPill,
+  SessionTimerModal,
+  SessionTimerBanner,
+} from '../../features/study/SessionTimer';
 import { setLastStudyLocation } from '../../features/study/lastStudyLocation';
-import { PaceTimerBar } from '../../features/study/PaceTimerBar';
-import { PaceTimerModal } from '../../features/study/PaceTimerModal';
-import { registerTrialAnswer, useTimeTrial } from '../../features/study/timeTrial';
 import { StudyHeader } from './StudyHeader';
 import type { StudyStackParamList } from '../../navigation/types';
 import { calcLinkForTerm } from '../lab/calc/calcGlossaryLinks';
@@ -103,6 +108,9 @@ const SECTIONS_KEY = 'ape:fcSections';
 /** Show/hide term media (images) on the card — device-global (user request
  *  2026-07-17). Default ON. */
 const SHOW_MEDIA_KEY = 'ape:fcShowMedia';
+/** Show/hide the tappable in-definition glossary links — device-global, default
+ *  ON (owner 2026-08-13). Toggling on any card applies to every definition. */
+const SHOW_LINKS_KEY = 'ape:fcShowLinks';
 
 type Difficulty = 'beginner' | 'intermediate' | 'advanced';
 
@@ -375,57 +383,16 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   // Show/hide term images on the card (user request 2026-07-17) — a FILTERS
   // popup toggle, device-global, default ON.
   const [showMedia, setShowMedia] = useState(true);
+  // Show/hide in-definition glossary links (owner 2026-08-13) — device-global,
+  // default ON. One toggle governs every card's definition text.
+  const [showLinks, setShowLinks] = useState(true);
+  // Optional silent session-length countdown (owner 2026-08-13) — flashcards-only.
+  const sessionTimer = useSessionTimer();
   // Self-retiring "tap/swipe" hint: hides after 5 reveal round-trips, for the
   // first 5 flashcard opens app-wide (lib/coachMark.ts).
   const coach = useCoachMark('ape:coach:flashcards', 5);
 
   const session = useRef<StudySession | null>(null);
-
-  // Pace timer (practice aid — device-local settings, never blocks study).
-  // answered = a plain per-visit advance counter (bumped when moving to another
-  // card); total = the current deck length; elapsed = a ~1s count-up.
-  const { settings: pace, setEnabled, setPreset } = usePaceSettings('flashcards');
-  const running = useRunning('flashcards');
-  // Time trial (opt-in 15:00 challenge) — the readout switches to its HUD while
-  // live. Flashcards have no graded answer; marking a card KNOWN (below) is the
-  // affirmative "I've got this" signal that advances the trial's correct count.
-  const trial = useTimeTrial('flashcards');
-  const [timerOpen, setTimerOpen] = useState(false);
-  const [paceAnswered, setPaceAnswered] = useState(0);
-  const [elapsed, setElapsed] = useState(0);
-  const startRef = useRef<number | null>(null);
-  const elapsedRef = useRef(0);
-
-  // Pace clock: present while ENABLED; only ticks while also RUNNING. When
-  // enabled-but-paused the clock HOLDS (elapsed kept); disabling resets to 0.
-  useEffect(() => {
-    if (!pace.enabled) {
-      startRef.current = null;
-      elapsedRef.current = 0;
-      setElapsed(0);
-      resetBrainOutput('flashcards'); // fresh pace session → zero the brain-output tally
-      return;
-    }
-    if (!running) return; // paused → hold the clock where it is
-    startRef.current = Date.now() - elapsedRef.current * 1000; // resume from held time
-    const id = setInterval(() => {
-      if (startRef.current != null) {
-        const e = (Date.now() - startRef.current) / 1000;
-        elapsedRef.current = e;
-        setElapsed(e);
-      }
-    }, 1000);
-    return () => clearInterval(id);
-  }, [pace.enabled, running]);
-
-  // Reset zeroes the readout's elapsed + answered session counters.
-  const handlePaceReset = useCallback(() => {
-    setPaceAnswered(0);
-    startRef.current = Date.now();
-    elapsedRef.current = 0;
-    setElapsed(0);
-    resetBrainOutput('flashcards');
-  }, []);
 
   const persistHidden = useCallback(
     (next: Set<string>) => {
@@ -446,15 +413,17 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       try {
         // Custom List pseudo-topic (user request 2026-07-18): items = the ★
         // starred list; no server method row exists, so method-state is skipped.
-        const [fetched, methodState, storedHidden, storedSections, storedShowMedia] = await Promise.all([
+        const [fetched, methodState, storedHidden, storedSections, storedShowMedia, storedShowLinks] = await Promise.all([
           flaggedMode ? fetchGlossaryItemsByIds([...getTermList('starred')]) : fetchTopicItems(achievementId),
           flaggedMode ? Promise.resolve(null) : fetchMethodState(achievementId, 'flashcards'),
           AsyncStorage.getItem(hiddenKey(achievementId)),
           AsyncStorage.getItem(SECTIONS_KEY),
           AsyncStorage.getItem(SHOW_MEDIA_KEY),
+          AsyncStorage.getItem(SHOW_LINKS_KEY),
         ]);
         if (!alive) return;
         if (storedShowMedia != null) setShowMedia(storedShowMedia !== '0');
+        if (storedShowLinks != null) setShowLinks(storedShowLinks !== '0');
         fetched.sort((a, b) => a.term.localeCompare(b.term));
         setItems(fetched);
         // Term images — non-fatal, academy-gated; empty map = text-only cards.
@@ -718,7 +687,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   /** Definition text with in-glossary terms as tappable highlighted links. */
   const renderLinked = useCallback(
     (text: string, currentId: string) => {
-      if (!linkRegex) return text;
+      if (!linkRegex || !showLinks) return text;
       const parts: (string | ReactElement)[] = [];
       let last = 0;
       let k = 0;
@@ -764,7 +733,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       parts.push(text.slice(last));
       return parts;
     },
-    [linkRegex, termIndex, navigation],
+    [linkRegex, termIndex, navigation, showLinks],
   );
 
   // Ordered subset of levels the user chose to see on reveal (never empty).
@@ -801,6 +770,33 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       return next;
     });
   }, []);
+
+  /** Show/hide the in-definition glossary links — persisted device-global, so
+   *  toggling on one card applies to every definition (owner 2026-08-13). */
+  const toggleLinks = useCallback(() => {
+    setShowLinks((cur) => {
+      const next = !cur;
+      void AsyncStorage.setItem(SHOW_LINKS_KEY, next ? '1' : '0');
+      return next;
+    });
+  }, []);
+
+  /** Per-card "Report Error" affordance (owner 2026-08-13): behaves like every
+   *  other feedback point — opens the mail composer pre-filled, carrying enough
+   *  locating data (term + id, topic + id, method, which section) to hunt the
+   *  content down. The user reviews and sends. */
+  const reportError = useCallback(
+    (termId: string, term: string, section: string) => {
+      sendFeedback('correction', term, {
+        Method: 'Flashcards',
+        Topic: topicName,
+        'Topic ID': achievementId,
+        'Term ID': termId,
+        Section: section,
+      });
+    },
+    [achievementId, topicName],
+  );
 
   /** Toggle the current card on the SHARED bookmark list (user request
    *  2026-07-18) — same list as the Glossary bookmark. */
@@ -863,8 +859,6 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       }
       setIdx((i) => (i + dir + deck.length) % deck.length);
       setLevel(0);
-      // Pace: each move to another card counts as one item advanced.
-      setPaceAnswered((n) => n + 1);
       // T2 trigger: after ~5 swipes, offer the "Customize Your Deck" tutorial.
       swipeCount.current += 1;
       if (
@@ -1023,10 +1017,6 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     } else {
       next.add(card.id);
       setInTermList('known', card.id, true);
-      // Time trial: marking a card known is the flashcard "correct" signal — it
-      // advances the trial's correct-per-minute pace (1.5s dwell guards it).
-      registerTrialAnswer('flashcards', true);
-      incBrainOutput('flashcards'); // one brain output per card marked KNOWN (correct press)
       if (!states[card.id]?.known) {
         session.current?.addEvent({ item: card.id, kind: 'known', value: true });
         setStates((prev) => ({ ...prev, [card.id]: { ...prev[card.id], known: true } }));
@@ -1041,6 +1031,42 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     persistHidden(next);
   }, [card, hidden, knownList, states, showKnown, deck.length, persistHidden]);
 
+  // Reconcile "known" marked in ANY popup list (TermSelectIcons → the global
+  // knownList) into THIS method's progress (user request 2026-08-13): a ✓ Known in
+  // the ALL / Bookmarks / Custom lists must credit the % and hit the server exactly
+  // like marking known on the card. Once per term — the `!known` guard matches
+  // toggleKnown, so there's no double credit.
+  useEffect(() => {
+    if (!items) return;
+    const newly = items.filter((it) => knownList.has(it.id) && !states[it.id]?.known);
+    if (newly.length === 0) return;
+    for (const it of newly) session.current?.addEvent({ item: it.id, kind: 'known', value: true });
+    setStates((prev) => {
+      const nx = { ...prev };
+      for (const it of newly) nx[it.id] = { ...nx[it.id], known: true };
+      return nx;
+    });
+    const nextHidden = new Set(hidden);
+    for (const it of newly) nextHidden.add(it.id);
+    setHidden(nextHidden);
+    persistHidden(nextHidden);
+  }, [knownList, items, states, hidden, persistHidden]);
+
+  // Resume where they left off (user request 2026-08-13): on FIRST load, start the
+  // deck at the first still-UNSEEN card so a returning user doesn't re-cycle cards
+  // they already finished — their earned % is untouched. Once; a brand-new topic
+  // (all unseen) just starts at 0.
+  const resumedRef = useRef(false);
+  useEffect(() => {
+    if (resumedRef.current || deck.length === 0) return;
+    resumedRef.current = true;
+    const firstUnseen = deck.findIndex((c) => {
+      const s = states[c.id];
+      return !s || ((s.views ?? 0) === 0 && !s.known);
+    });
+    if (firstUnseen > 0) setIdx(firstUnseen);
+  }, [deck, states]);
+
   /** Reset Deck = clear the local known-hidden list AND unflag THIS DECK's
    *  terms. The flag list is now shared app-wide (Booth 2026-07-18), so reset
    *  only removes flags belonging to this topic's items — flags set elsewhere
@@ -1048,7 +1074,12 @@ export function FlashcardsScreen({ navigation, route }: Props) {
    *  — known:false is never emitted. */
   const resetDeck = useCallback(() => {
     const deckFlagIds = (items ?? []).map((it) => it.id).filter((id) => bookmarked.has(id));
-    if (hidden.size === 0 && deckFlagIds.length === 0) return;
+    // Nothing hidden/flagged to clear → still restart the deck at card 1 so the
+    // button always does something visible (was silently no-op before).
+    if (hidden.size === 0 && deckFlagIds.length === 0) {
+      resetToStart();
+      return;
+    }
     Alert.alert(
       'Reset deck?',
       `Returns ${hidden.size} known card${hidden.size === 1 ? '' : 's'} and clears ${deckFlagIds.length} flag${deckFlagIds.length === 1 ? '' : 's'} from this topic. Progress already earned is kept.`,
@@ -1062,11 +1093,12 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             setHidden(empty);
             persistHidden(empty);
             removeBookmarks(achievementId, deckFlagIds);
+            resetToStart();
           },
         },
       ],
     );
-  }, [hidden, bookmarked, items, persistHidden]);
+  }, [hidden, bookmarked, items, persistHidden, resetToStart]);
 
   // ---- Full-screen guide + shake-to-known (Booth 2026-07-11) ----
   useEffect(() => {
@@ -1121,12 +1153,12 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   return (
     <View style={[styles.root, { paddingTop: insets.top }]} {...pan.panHandlers}>
       <View style={styles.body}>
+        {/* No pace timer on Flashcards (owner 2026-08-13) — the pace timer is a
+            HOMEWORK-method aid (Fill-in-Blank / Matching / Scenarios). */}
         <StudyHeader
           method="flashcards"
           title="FLASHCARDS"
           subtitle={`Topic · ${topicName}`}
-          onOpenTimer={() => setTimerOpen(true)}
-          hideTimerButton={!!(pace.enabled || trial.active || trial.result)}
         />
 
         <View style={styles.ledRow}>
@@ -1137,23 +1169,9 @@ export function FlashcardsScreen({ navigation, route }: Props) {
           <Text style={styles.counter}>
             {deck.length === 0 ? 0 : Math.min(idx, deck.length - 1) + 1} / {deck.length}
           </Text>
+          {/* Session-timer countdown, when running and set to show (owner 2026-08-13). */}
+          <SessionTimerPill timer={sessionTimer} />
         </View>
-
-        {pace.enabled || trial.active || trial.result ? (
-          <PaceTimerBar
-            method="flashcards"
-            preset={pace.preset}
-            answered={paceAnswered}
-            total={deck.length}
-            elapsed={elapsed}
-            enabled={pace.enabled}
-            onReset={handlePaceReset}
-            running={running}
-            onToggleRunning={() => setRunning('flashcards', !running)}
-            onRemove={() => setEnabled(false)}
-            onPresetChange={setPreset}
-          />
-        ) : null}
 
         {/* Filter rows (Booth 2026-07-08):
             row 1 — ALL · A–Z · SHUFFLE · RESET DECK
@@ -1263,6 +1281,9 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             onPress={() => { setStarredOnly((v) => !v); resetToStart(); }}
             onLongPress={() => handleChipLongPress('Custom list', 'starred')}
           />
+          {/* Session timer (blue clock) — right of Custom list; opens the length
+              picker (owner 2026-08-13). */}
+          <SessionTimerButton active={sessionTimer.running} onPress={sessionTimer.openConfig} />
         </View>
 
         <View style={styles.cardZone}>
@@ -1305,6 +1326,17 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                     size={21}
                     fill={starred.has(card.id) ? 'rgba(47,155,255,0.22)' : 'none'}
                   />
+                </Pressable>
+                {/* Glossary-link show/hide toggle, LEFT of the custom-list icon
+                    (owner 2026-08-13). Global across every definition; default ON. */}
+                <Pressable
+                  style={styles.cardLink}
+                  onPress={toggleLinks}
+                  hitSlop={10}
+                  accessibilityRole="button"
+                  accessibilityLabel={showLinks ? 'Hide glossary links' : 'Show glossary links'}
+                >
+                  <LinkIcon size={20} color={showLinks ? colors.blue : colors.textMuted} off={!showLinks} />
                 </Pressable>
                 {isHazardTerm(card.term) ? (
                   <View style={{ marginBottom: 10 }}>
@@ -1375,6 +1407,23 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                     )}
                   </>
                 )}
+                {/* Subtle error-report affordance, bottom-right of the card
+                    (owner 2026-08-13). Small, low-contrast text. */}
+                <Pressable
+                  style={styles.cardReport}
+                  onPress={() =>
+                    reportError(
+                      card.id,
+                      card.term,
+                      soloReveal ? LEVEL_LABELS[0] : level === 0 ? 'TERM' : LEVEL_LABELS[level - 1],
+                    )
+                  }
+                  hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Suggest a correction for ${card.term}`}
+                >
+                  <Text style={styles.cardReportText}>Suggest a correction</Text>
+                </Pressable>
               </View>
             </Pressable>
           ) : (
@@ -1490,18 +1539,6 @@ export function FlashcardsScreen({ navigation, route }: Props) {
           >
             <Text style={styles.fsCloseText}>✕</Text>
           </Pressable>
-          {/* Thin, border-less pace strip pinned to the very top — elapsed +
-              signed offset + marker only. Same gate as the in-screen readout. */}
-          {pace.enabled || trial.active || trial.result ? (
-            <PaceTimerBar
-              method="flashcards"
-              preset={pace.preset}
-              answered={paceAnswered}
-              total={deck.length}
-              elapsed={elapsed}
-              variant="fullscreen"
-            />
-          ) : null}
           {/* In Study Sheet mode tapping must NOT flip (term + sections are all
               shown at once); swipe still changes card. */}
           <Pressable onPress={studyMode ? undefined : onTap} style={styles.fsBody}>
@@ -1596,10 +1633,10 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       </Modal>
 
       {/* Term list — long-press a filter chip to see everything in that set. */}
-      <Modal visible={!!termList} transparent animationType="fade" onRequestClose={() => setTermList(null)}>
-        {/* No nested Pressables here (they were eating the scroll gesture on
-            long lists — Booth 2026-07-16): the backdrop close target sits
-            BEHIND the card, and the ScrollView owns the drag. */}
+      {/* animationType="none" + a virtualized FlatList so the popup appears
+          INSTANTLY on tap — the old fade + render-every-row ScrollView made long
+          lists (ALL, etc.) feel like nothing happened (user request 2026-08-13). */}
+      <Modal visible={!!termList} transparent animationType="none" onRequestClose={() => setTermList(null)}>
         <View style={styles.tlBackdrop}>
           <Pressable
             style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
@@ -1611,12 +1648,18 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             <Text style={styles.tlTitle}>
               {termList?.title} · {termListRows.length}
             </Text>
-            <ScrollView style={{ flexGrow: 0 }} showsVerticalScrollIndicator>
-              {termListRows.length > 0 ? (
-                termListRows.map((r) => (
-                  <View key={r.id} style={styles.tlRow}>
-                    {/* Tap the term → open its definition (user request
-                        2026-07-18). */}
+            {termListRows.length > 0 ? (
+              <FlatList
+                style={{ flexGrow: 0 }}
+                data={termListRows}
+                keyExtractor={(r) => r.id}
+                showsVerticalScrollIndicator
+                initialNumToRender={14}
+                windowSize={7}
+                removeClippedSubviews
+                renderItem={({ item: r }) => (
+                  <View style={styles.tlRow}>
+                    {/* Tap the term → open its definition (user request 2026-07-18). */}
                     <Pressable
                       style={{ flex: 1 }}
                       onPress={() => openTermFromList(r.id)}
@@ -1639,11 +1682,11 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                         user's flagged/heart/notify/known lists. */}
                     <TermSelectIcons id={r.id} bookmarkCtx={achievementId} />
                   </View>
-                ))
-              ) : (
-                <Text style={styles.tlEmpty}>No terms in this set.</Text>
-              )}
-            </ScrollView>
+                )}
+              />
+            ) : (
+              <Text style={styles.tlEmpty}>No terms in this set.</Text>
+            )}
             <Pressable style={styles.tlClose} onPress={() => setTermList(null)}>
               <Text style={styles.tlCloseText}>CLOSE</Text>
             </Pressable>
@@ -1665,7 +1708,10 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       <ScreenIntroOverlay introKey="flashcards" />
       {tutorial ? <IntroSheet introKey={tutorial.key} onDismiss={dismissTutorial} /> : null}
 
-      <PaceTimerModal visible={timerOpen} onClose={() => setTimerOpen(false)} method="flashcards" topicId={achievementId} />
+      {/* Session timer: length picker + expiry banner (owner 2026-08-13). */}
+      <SessionTimerModal timer={sessionTimer} />
+      <SessionTimerBanner timer={sessionTimer} />
+
     </View>
   );
 }
@@ -1834,6 +1880,16 @@ const styles = StyleSheet.create({
   // ★ custom-list toggle, sitting just left of the bookmark (user request 2026-07-23).
   cardStar: { position: 'absolute', top: 6, right: 40, zIndex: 2 },
   cardStarText: { fontSize: 21, lineHeight: 23, color: colors.textMuted },
+  // Glossary-links toggle, one slot left of the custom-list icon (owner 2026-08-13).
+  cardLink: { position: 'absolute', top: 7, right: 70, zIndex: 2 },
+  // Subtle bottom-right "Report Error" text button (owner 2026-08-13).
+  cardReport: { position: 'absolute', bottom: 6, right: 10, zIndex: 2, paddingVertical: 2, paddingHorizontal: 2 },
+  cardReportText: {
+    fontFamily: fonts.oswaldMedium,
+    fontSize: 10,
+    letterSpacing: 0.3,
+    color: 'rgba(255,255,255,0.28)',
+  },
   cardStarOn: { color: colors.amber },
   cardFlagStar: { fontSize: 20, color: colors.textMuted },
   cardFlagStarOn: {

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 150" width="100" height="150">
+  <!-- Lavalier — fictional. Exported from micArt.tsx (Skia) 2026-08-12. -->
+  <defs>
+    <linearGradient id="clip" gradientUnits="userSpaceOnUse" x1="58" y1="30" x2="74" y2="56">
+      <stop offset="0" stop-color="#3b3f49"/>
+      <stop offset="1" stop-color="#15161b"/>
+    </linearGradient>
+    <linearGradient id="cap" gradientUnits="userSpaceOnUse" x1="40" y1="22" x2="60" y2="54">
+      <stop offset="0" stop-color="#6e7482"/>
+      <stop offset="1" stop-color="#15161b"/>
+    </linearGradient>
+  </defs>
+  <path d="M50 52 C52 84 34 96 40 142" fill="none" stroke="#2a2c33" stroke-width="2.6"/>
+  <path d="M58 40 L74 30 L74 56 L58 48 Z" fill="url(#clip)"/>
+  <rect x="40" y="22" width="20" height="32" rx="9" ry="9" fill="url(#cap)"/>
+  <circle cx="50" cy="28" r="5" fill="#23252c"/>
+  <circle cx="50" cy="28" r="5" fill="none" stroke="#565b66" stroke-width="1"/>
+  <line x1="43" y1="26" x2="43" y2="50" stroke="rgba(255,255,255,0.35)" stroke-width="1.1" opacity="0.5"/>
+</svg>

@@ -39,6 +39,8 @@ import type { StudyStackParamList } from '../../navigation/types';
 import Svg, { Circle, Rect, Defs, LinearGradient as SvgLinearGradient, Stop, Line } from 'react-native-svg';
 import { AppHeader } from '../../components/AppHeader';
 import { NavIcon } from '../../components/nav/NavIcon';
+import { FundamentalsCreditBanner } from '../../features/lab/FundamentalsCreditBanner';
+import { StudyAccessSheet } from '../../features/commercial/StudyAccessSheet';
 import { TopicDeckSheet } from './TopicDeckSheet';
 import {
   orderDeckIds,
@@ -214,13 +216,33 @@ function VentHoles() {
 /** Per-method display %. Scenarios is round-based homework: its LED reflects
  *  server completion_pct (rounds ÷ 3 → 33/67/100), set by complete_scenario_round.
  *  Every other method creeps per-item from item_states via studyDisplayPct. */
+/** The Audio Fundamentals Lab is a lab-proxy topic (gs3081) — progress comes from
+ *  lab activities, not term study — so it is never placed in the Dashboard deck. */
+const AUDIO_FUNDAMENTALS_LAB_GS = 3081;
+
 function methodDisplayPct(
   row: { item_states?: unknown; completion_pct?: number | null } | undefined,
   itemCount: number,
   key: string,
   requiredPasses: number,
 ): number {
-  if (key === 'scenarios') return Math.round(row?.completion_pct ?? 0);
+  if (key === 'scenarios') {
+    // Production: round-based server completion. Dev fast-complete (⏳ TEMP,
+    // devMode.ts → devFastComplete): a finished round OR 10 answered questions
+    // (via the local mirror ScenariosScreen now writes) = 100%, so scenarios
+    // completes and the quiz unlocks without a server round-trip.
+    if (devBypass('devFastComplete')) {
+      const st = (row?.item_states ?? {}) as Record<string, unknown>;
+      // Done if the server says so, OR a scenario round was finished locally
+      // (the ScenariosScreen "_done" sentinel — covers thin/low-count content),
+      // OR 10 questions were answered.
+      if ((row?.completion_pct ?? 0) > 0 || st['_done']) return 100;
+      const answered = Object.keys(st).filter((k) => !k.startsWith('_')).length;
+      return Math.min(100, answered * 10);
+    }
+    return Math.round(row?.completion_pct ?? 0);
+  }
+  // flashcards / fill-in-blank / matching: studyDisplayPct honors devFastComplete.
   return studyDisplayPct(
     (row?.item_states ?? {}) as Parameters<typeof studyDisplayPct>[0],
     itemCount,
@@ -466,7 +488,8 @@ function GlassScreen({
           // flat: behind the glass the meter is lit segments only — no bevel,
           // no molded frame (owner 2026-08-06). Segment height rides RACK_SCALE
           // so the strip stays balanced in the shorter screen (owner 2026-08-11).
-          <LedMeter filled={segments} fullWidth flat segHeight={rs(10)} />
+          // MIDI blue→red ramp for the method meters (owner 2026-08-13).
+          <LedMeter filled={segments} fullWidth flat midi segHeight={rs(10)} />
         ) : subtitle != null ? (
           <Text
             style={[styles.glassSub, { color: subtitleColor ?? valueColor, textShadowColor: subtitleColor ?? valueColor }]}
@@ -574,6 +597,9 @@ export function DashboardScreen() {
   // CM6 (Booth 2026-07-11): commercialMode renders a PUBLIC course (seq order
   // from the seed) through this same screen; institutional path unchanged.
   const { commercialMode, caps, entitlement } = useEntitlement();
+  // Membership gate (user request 2026-08-12): a free user may LOAD a locked/paid
+  // topic into the Dashboard, but studying it raises the Academy upgrade sheet.
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
 
   // Enrollment-driven Dashboard (user request 2026-07-22): a COURSE ⇄ MY
   // ENROLLMENT toggle. In enrollment mode the top swiper iterates the user's
@@ -588,11 +614,17 @@ export function DashboardScreen() {
   const viewModeRef = useRef(viewMode);
   viewModeRef.current = viewMode;
   // The study swipe shows ACTIVE enrolled topics the user can ACCESS. Free/
-  // non-paid users only get the free topics regardless of what they've added
-  // (user request 2026-07-22); paid members get all their active topics.
+  // The dashboard deck = every ACTIVE enrolled topic, locked or not (user request
+  // 2026-08-13, reversing the 2026-07-22 free-only rule): a non-member SEES the
+  // paid topics they added and hits the Academy paywall when they try to STUDY one
+  // — the membership gate below enforces access, not this loader. Free topics stay
+  // open; locked ones render and gate on tap.
   const enrolledGsRef = useRef<number[]>([]);
+  // The Audio Fundamentals Lab (gs3081) is a LAB-PROXY topic — progress comes from
+  // working through the lab activities, not studying terms — so it must NEVER appear
+  // in the Dashboard's topic deck (owner 2026-08-13).
   enrolledGsRef.current = enrolled
-    .filter((e) => e.active && (caps.allTopics || isFreeEnrollGs(e.gs)))
+    .filter((e) => e.active && e.gs !== AUDIO_FUNDAMENTALS_LAB_GS)
     .map((e) => e.gs);
   const inactiveGs = useRef(new Set<number>());
   inactiveGs.current = new Set(enrolled.filter((e) => !e.active).map((e) => e.gs));
@@ -678,9 +710,12 @@ export function DashboardScreen() {
       // since returning authed users also default to the mock 'anonymous' state.
       const { data: sessData } = await supabase.auth.getSession();
       const isGuest = !sessData.session;
-      const guestFreeGs = enrolledGsRef.current.filter(isFreeEnrollGs);
+      // A guest also sees all their ACTIVE topics (locked included) so the paywall
+      // is reachable; a guest with nothing enrolled falls back to the free topics.
       const guestFetch = () =>
-        fetchEnrollmentDashboard(guestFreeGs.length > 0 ? guestFreeGs : [...FREE_ENROLL_GS]);
+        fetchEnrollmentDashboard(
+          enrolledGsRef.current.length > 0 ? enrolledGsRef.current : [...FREE_ENROLL_GS],
+        );
       let d: DashboardData;
       if (isGuest) {
         d = await guestFetch();
@@ -1054,53 +1089,68 @@ export function DashboardScreen() {
     topic.global_sequence != null &&
     inactiveGs.current.has(topic.global_sequence);
 
-  const applicable = new Set(topic.applicable_methods ?? []);
+  // EVERY real topic offers all four methods + a quiz — no exceptions (owner
+  // 2026-08-13). The backend `applicable_methods` column is incomplete/legacy
+  // (e.g. DAW gs3970 omits scenarios), so it is NOT authoritative here. Only the
+  // synthetic Custom List pseudo-topic (a flagged-terms list) has no methods.
+  const applicable = new Set<MethodKey>(isCustom ? [] : METHOD_ORDER.map((m) => m.key));
+  // The membership gate is computed from the DISPLAYED topic as `actMembershipLocked`
+  // (below, once dispTopic is known) — free = Safety gs3060 / DAW gs3970 only; gate
+  // on ENTITLEMENT, never caps; fail closed when gs is missing.
   const rowsForTopic = data.methodRows.filter((r) => r.achievement_id === topic.id);
   const rowFor = (key: string) => rowsForTopic.find((r) => r.method_key === key);
 
-  // POWER SEQUENCING (owner 2026-08-11): each unlock powers on the next stage of
-  // the rack. Flashcards is always live. The 3 homework methods (fill-in-blank /
-  // matching / scenarios) power on once EVERY term has been seen at least once in
-  // flashcards (flashcards display % = 100). The quiz powers on once the homework
-  // methods are complete (that's exactly `allGatesPass` → quizState !== 'locked').
+  // POWER SEQUENCING — strict, staged unlock (owner 2026-08-13):
+  //   1. Flashcards — always live.
+  //   2. Fill-in-blank + Matching — power on once flashcards is complete.
+  //   3. Scenarios — powers on only after flashcards AND fill-in-blank AND
+  //      matching are ALL complete (never before).
+  //   4. Quiz — powers on only after scenarios is complete (⇒ everything is).
   const rackItemCount = data.itemCountByTopic.get(topic.id) ?? 0;
   const methodPct = (key: string) =>
     Math.round(
       methodDisplayPct(rowFor(key), rackItemCount, key, data.methodConfigs.find((c) => c.key === key)?.required_passes ?? 2),
     );
+  const bypassLocks = devBypass('bypassMethodLocks');
   const flashcardsSeenAll = methodPct('flashcards') >= 100;
-  const homeworkPowered = devBypass('bypassMethodLocks') || flashcardsSeenAll;
-  // Quiz powers on ONLY when the (applicable) homework methods are all complete.
-  // Computed explicitly — NOT from `allGatesPass`, which is vacuously true when
-  // no methods are applicable and would light the quiz early (owner 2026-08-11).
-  const HOMEWORK_KEYS = ['fill_in_blank', 'matching', 'scenarios'];
-  const applicableHomework = HOMEWORK_KEYS.filter((k) => applicable.has(k));
-  const homeworkComplete = applicableHomework.length > 0 && applicableHomework.every((k) => methodPct(k) >= 100);
+  const coreHomeworkComplete = methodPct('fill_in_blank') >= 100 && methodPct('matching') >= 100;
+  const scenariosComplete = methodPct('scenarios') >= 100;
+  // Stage 2 powered: fill-in-blank + matching.
+  const homeworkPowered = bypassLocks || flashcardsSeenAll;
+  // Stage 3 powered: scenarios — gated behind flashcards + the two core homeworks.
+  const scenariosPowered = bypassLocks || (flashcardsSeenAll && coreHomeworkComplete);
+  // Stage 4 gate: the quiz powers on only when every method before it is complete.
+  const allMethodsComplete = flashcardsSeenAll && coreHomeworkComplete && scenariosComplete;
 
   // Topic "overall progress" = mean of the applicable methods' smooth display
   // progress (creeps with every pass, consistent with the per-method meters).
   const topicItemCount = data.itemCountByTopic.get(topic.id) ?? 0;
-  const applicableKeys = data.methodConfigs.filter((c) => applicable.has(c.key));
+  // Overall progress iterates over the topic's applicable_methods (the SAME
+  // source the per-method meters use), NOT methodConfigs — which is EMPTY for a
+  // guest (study_methods 403s for anon), so overall read 0% while every meter
+  // showed 100% (owner 2026-08-13). required_passes falls back to 2 like the meters.
+  const rpFor = (key: string) => data.methodConfigs.find((c) => c.key === key)?.required_passes ?? 2;
+  const applicableKeys = METHOD_ORDER.filter((m) => applicable.has(m.key)).map((m) => m.key);
   const overallPct =
     applicableKeys.length > 0
       ? Math.floor(
-          applicableKeys.reduce(
-            (s, c) => s + methodDisplayPct(rowFor(c.key), topicItemCount, c.key, c.required_passes),
-            0,
-          ) / applicableKeys.length,
+          applicableKeys.reduce((s, k) => s + methodDisplayPct(rowFor(k), topicItemCount, k, rpFor(k)), 0) /
+            applicableKeys.length,
         )
       : 0;
 
   // ---- Jog preview: the TOP container shows dispTopic while scrolling; the
   // lower rack stays on the committed `topic` until release (owner 2026-08-01).
   const overallPctFor = (t: Topic): number => {
-    const keys = data.methodConfigs.filter((c) => (t.applicable_methods ?? []).includes(c.key));
+    // Every real topic has all four methods (owner 2026-08-13); only the Custom
+    // List pseudo-topic has none.
+    const keys = t.id === FLAGGED_TOPIC_ID ? [] : METHOD_ORDER.map((m) => m.key);
     if (keys.length === 0) return 0;
     const rows = data.methodRows.filter((r) => r.achievement_id === t.id);
     const itemCount = data.itemCountByTopic.get(t.id) ?? 0;
     return Math.floor(
       keys.reduce(
-        (s, c) => s + methodDisplayPct(rows.find((r) => r.method_key === c.key), itemCount, c.key, c.required_passes),
+        (s, k) => s + methodDisplayPct(rows.find((r) => r.method_key === k), itemCount, k, rpFor(k)),
         0,
       ) / keys.length,
     );
@@ -1108,6 +1158,15 @@ export function DashboardScreen() {
   const dispIdx = jogActive ? scrollIdx : topicIdx;
   const dispTopic = topics[dispIdx] ?? topic;
   const dispIsCustom = dispTopic.id === FLAGGED_TOPIC_ID;
+  // The rack + quiz must ACT on the DISPLAYED topic (what the card shows), never
+  // the frozen committed `topic`: mid-jog the two diverge, so tapping a method
+  // while the carousel previews another topic opened the WRONG one and bypassed
+  // the gate (user bug 2026-08-13: an Astronomical Acoustics card opened DAW's
+  // flashcards). In steady state dispTopic === topic, so this only matters mid-jog.
+  const actMembershipLocked =
+    entitlement !== 'academy' &&
+    !dispIsCustom &&
+    !(dispTopic.global_sequence != null && isFreeEnrollGs(dispTopic.global_sequence));
   const dispTopicInactive =
     viewMode === 'enrollment' &&
     dispTopic.global_sequence != null &&
@@ -1120,10 +1179,9 @@ export function DashboardScreen() {
       ? 'passed'
       : status === 'passed_incomplete'
         ? 'partial'
-        : // The quiz is READY (powers on) ONLY once the homework methods are
-          // complete — NOT `allGatesPass`, which is vacuously true when a topic
-          // has no applicable methods and lit the quiz early (owner 2026-08-11).
-          homeworkComplete
+        : // The quiz is READY (powers on) ONLY once flashcards + both core
+          // homeworks + scenarios are all complete (owner 2026-08-13).
+          allMethodsComplete
           ? 'ready'
           : 'locked';
   // DEV BYPASS (Booth 2026-07-18): quiz always startable for screen testing.
@@ -1198,6 +1256,9 @@ export function DashboardScreen() {
             </View>
           </View>
         ) : null}
+
+        {/* R6c: Audio Fundamentals labs credit — renders only once earned. */}
+        <FundamentalsCreditBanner />
 
         {/* The COURSE ⇄ MY ENROLLMENT toggle was removed (user request
             2026-07-23) — the dashboard follows the enrollment list, adjusted via
@@ -1379,7 +1440,10 @@ export function DashboardScreen() {
           const complete = isApplicable && pct >= 100;
           // Power gate: flashcards is always live; the 3 homework methods light
           // up only once flashcards has shown every term once (owner 2026-08-11).
-          const powered = m.key === 'flashcards' || homeworkPowered;
+          // Staged power: flashcards always; fill-in-blank/matching after
+          // flashcards; scenarios only after both of those too (owner 2026-08-13).
+          const powered =
+            m.key === 'flashcards' ? true : m.key === 'scenarios' ? scenariosPowered : homeworkPowered;
           return (
             // 3D console-key frame (Booth 2026-07-09): raised while incomplete,
             // DEPRESSED (indented) once at 100%. Unavailable methods (ear
@@ -1457,9 +1521,15 @@ export function DashboardScreen() {
                       width={89}
                       height={RACK_SWITCH_H}
                       onPress={() => {
+                        // Locked/paid topic + non-member → the study-access sheet
+                        // instead of opening the study method.
+                        if (actMembershipLocked) {
+                          setUpgradeOpen(true);
+                          return;
+                        }
                         const routeName = STUDY_ROUTES[m.key];
                         if (routeName) {
-                          navigation.navigate(routeName, { achievementId: topic.id, topicName: topic.name });
+                          navigation.navigate(routeName, { achievementId: dispTopic.id, topicName: dispTopic.name });
                         }
                       }}
                     />
@@ -1569,7 +1639,13 @@ export function DashboardScreen() {
                       variant={quizState === 'passed' ? 'success' : 'primary'}
                       width={96}
                       height={RACK_QUIZ_SWITCH_H}
-                      onPress={() => navigation.navigate('Quiz', { achievementId: topic.id, topicName: topic.name })}
+                      onPress={() => {
+                        if (actMembershipLocked) {
+                          setUpgradeOpen(true);
+                          return;
+                        }
+                        navigation.navigate('Quiz', { achievementId: dispTopic.id, topicName: dispTopic.name });
+                      }}
                     />
                   )}
                 </View>
@@ -1692,6 +1768,19 @@ export function DashboardScreen() {
         </View>
         <LowLightDim />
       </Modal>
+
+      {/* Study gate (user request 2026-08-12/13): a locked/paid topic loads and is
+          browsable, but tapping a study method raises the topic-specific STUDY
+          ACCESS sheet for non-members (distinct copy from the generic ACADEMY MODE
+          upgrade sheet). Free topics + academy members are never gated. */}
+      <StudyAccessSheet
+        visible={upgradeOpen}
+        onClose={() => setUpgradeOpen(false)}
+        onUnlock={() => {
+          setUpgradeOpen(false);
+          (navigation as any).navigate('Paywall');
+        }}
+      />
 
       {/* Big-wheel jog popup (owner 2026-08-01) — stays open while in use; the
           ✕ key (or a clean second tap on the dial) closes it (owner 2026-08-06). */}

@@ -276,6 +276,7 @@ function StatCell({
   clipped,
   frameRed,
   levelDb,
+  onPress,
 }: {
   label: string;
   value: string;
@@ -290,14 +291,18 @@ function StatCell({
    *  (louder = red, quieter = blue) so the number reads level (owner
    *  2026-08-12). The frame-red clip cue is unchanged. */
   levelDb?: number;
+  /** When set, tapping the cell fires this (PEAK HOLD → reset). The long-press
+   *  help is preserved. */
+  onPress?: () => void;
 }) {
   return (
     <Pressable
       style={[styles.statCell, frameRed && styles.statCellClipped]}
+      onPress={onPress}
       onLongPress={help ? () => help(readoutKey(label)) : undefined}
       delayLongPress={350}
-      accessibilityRole={help ? 'button' : undefined}
-      accessibilityLabel={help ? `${label} — what it shows` : label}
+      accessibilityRole={onPress || help ? 'button' : undefined}
+      accessibilityLabel={onPress ? `${label} — tap to reset` : help ? `${label} — what it shows` : label}
     >
       <Text style={styles.statLabel}>{label}</Text>
       <Text
@@ -992,7 +997,7 @@ export function RtaScreen({ navigation }: Props) {
                 Long-press any cell for what it shows. */}
             <View style={styles.statGrid}>
               <StatCell help={help} label="PEAK" value={fmtDb(meter?.peakDb)} unit="dBFS" clipped={hasClipped} levelDb={meter?.peakDb} />
-              <StatCell help={help} label="PEAK HOLD" value={fmtDb(meter?.peakHoldDb)} unit="dBFS" clipped={hasClipped} frameRed={hasClipped} levelDb={meter?.peakHoldDb} />
+              <StatCell help={help} label="PEAK HOLD" value={fmtDb(meter?.peakHoldDb)} unit="dBFS" clipped={hasClipped} frameRed={hasClipped} levelDb={meter?.peakHoldDb} onPress={onResetPeak} />
               <StatCell help={help} label="BANDS" value={displayBands ? String(displayBands.centers.length) : '—'} />
             </View>
 

@@ -31,6 +31,10 @@ export type LabLeaf = {
   route?: keyof RootStackParamList;
   params?: object;
   status?: 'development';
+  /** Stable audio_fundamentals lab key — matches the labs-catalog seed and the
+   *  mark_lab_complete RPC (R6c). Present only on the 11 fundamentals labs that
+   *  count toward the universal certificate requirement. IMMUTABLE once live. */
+  key?: string;
 };
 
 /** An optional middle "Lab Family" grouping inside a category. */
@@ -82,10 +86,10 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       // START HERE (owner 2026-08-12): the app-wide blue→red level/amplitude
       // color language, taught once. First lab in Audio Fundamentals, before
       // any other visual audio lab.
-      { name: 'Understanding Level & Amplitude', blurb: 'The blue→red color language every Academy display uses for level and amplitude — learn it once, recognize it everywhere.', route: 'AmplitudeLab' },
-      { name: 'Foundations of Sound', blurb: 'Air, waves, amplitude, wavelength, phase, harmonics — sound made visible, module by module.', route: 'FoundationsCourse' },
-      { name: 'Sound Playground', blurb: 'A free sandbox for every Foundations control and display at once.', route: 'FoundationsPlayground' },
-      { name: 'Microphone Principles', blurb: 'Pickup patterns, proximity, off-axis, plosives, stereo pairs — and what cupping the mic really does.', route: 'MicLab' },
+      { name: 'Understanding Level & Amplitude', blurb: 'The blue→red color language every Academy display uses for level and amplitude — learn it once, recognize it everywhere.', route: 'AmplitudeLab', key: 'af_amplitude' },
+      { name: 'Foundations of Sound', blurb: 'Air, waves, amplitude, wavelength, phase, harmonics — sound made visible, module by module.', route: 'FoundationsCourse', key: 'af_foundations' },
+      { name: 'Sound Playground', blurb: 'A free sandbox for every Foundations control and display at once.', route: 'FoundationsPlayground', key: 'af_sound_playground' },
+      { name: 'Microphone Principles', blurb: 'Pickup patterns, proximity, off-axis, plosives, stereo pairs — and what cupping the mic really does.', route: 'MicLab', key: 'af_mic_principles' },
       // The dosimeter itself is NOT a catalog lab (owner 2026-08-12): it runs
       // silently in the background; the user interacts with it ONLY from the
       // Measurement & Analysis Tools menu (readout + popup) and the 15-minute
@@ -100,8 +104,8 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     section: 'fundamentals',
     kind: 'list',
     labs: [
-      { name: 'Wave Physics Laboratory', blurb: 'Reflection, absorption, interference, coverage, standing waves, arrays — room behaviour.', route: 'WaveLab' },
-      { name: 'Speaker Placement & Coverage', blurb: 'Dispersion, aim, height and tilt — who stands in the beam, drawn as a live coverage map.', route: 'SpeakerLab' },
+      { name: 'Wave Physics Laboratory', blurb: 'Reflection, absorption, interference, coverage, standing waves, arrays — room behaviour.', route: 'WaveLab', key: 'af_wave_physics' },
+      { name: 'Speaker Placement & Coverage', blurb: 'Dispersion, aim, height and tilt — who stands in the beam, drawn as a live coverage map.', route: 'SpeakerLab', key: 'af_speaker_coverage' },
     ],
   },
   {
@@ -112,12 +116,12 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     section: 'fundamentals',
     kind: 'list',
     labs: [
-      { name: 'Digital Audio Systems', blurb: 'Sampling, Nyquist, aliasing, bit depth, quantization, dither, A/D and D/A conversion.', route: 'DigitalLab' },
-      { name: 'Visual Audio Analysis', blurb: 'Waveform, spectrum, spectrogram, waterfall, phase, correlation, LUFS, peak, RMS, VU.', route: 'MeterLab' },
-      { name: 'Signal Chain Builder', blurb: 'Generator → EQ → Comp → Gate → FX → Reverb → Limiter → Output.', route: 'SignalChainLab' },
-      { name: 'Signal Detective', blurb: 'Identify the meter, read the display, spot the problem, prescribe the fix.', route: 'MeterModule', params: { id: 'detective' } },
+      { name: 'Digital Audio Systems', blurb: 'Sampling, Nyquist, aliasing, bit depth, quantization, dither, A/D and D/A conversion.', route: 'DigitalLab', key: 'af_digital_audio' },
+      { name: 'Visual Audio Analysis', blurb: 'Waveform, spectrum, spectrogram, waterfall, phase, correlation, LUFS, peak, RMS, VU.', route: 'MeterLab', key: 'af_visual_analysis' },
+      { name: 'Signal Chain Builder', blurb: 'Generator → EQ → Comp → Gate → FX → Reverb → Limiter → Output.', route: 'SignalChainLab', key: 'af_signal_chain' },
+      { name: 'Signal Detective', blurb: 'Identify the meter, read the display, spot the problem, prescribe the fix.', route: 'MeterModule', params: { id: 'detective' }, key: 'af_signal_detective' },
       // LIVE (owner 2026-08-07): own home + 8 modules (Signal X-Ray et al).
-      { name: 'Gain Staging', blurb: 'Set levels right at every stage — headroom, noise floor, unity gain through the chain.', route: 'GainLabHome' },
+      { name: 'Gain Staging', blurb: 'Set levels right at every stage — headroom, noise floor, unity gain through the chain.', route: 'GainLabHome', key: 'af_gain_staging' },
     ],
   },
 

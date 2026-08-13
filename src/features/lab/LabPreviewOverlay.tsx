@@ -16,9 +16,14 @@ import { endLabPreview, useLabPreview } from './labPreviewStore';
 export function LabPreviewOverlay() {
   const { active } = useLabPreview();
 
+  // Leave the previewed lab back to the list. The scrim must stay up THROUGH the
+  // stack-pop animation: clearing it at/before goBack() reveals the live
+  // (ungrayed) lab for a beat as it slides out (user report 2026-08-12). The
+  // overlay is a root sibling above the navigator, so keeping it visible covers
+  // the whole transition; clear it once the pop has settled.
   const leaveLab = () => {
-    endLabPreview();
     if (navigationRef.isReady() && navigationRef.canGoBack()) navigationRef.goBack();
+    setTimeout(endLabPreview, 350);
   };
 
   return (
@@ -26,10 +31,12 @@ export function LabPreviewOverlay() {
       visible={active}
       onClose={leaveLab}
       onSeePlans={() => {
-        // Pop the previewed lab first, then open the paywall — so returning from
-        // the paywall lands on the lab list, never back on the live lab.
-        leaveLab();
+        // Pop the previewed lab, then push the Paywall (which covers the whole
+        // stack) and clear the preview immediately — the Paywall hides the lab,
+        // so there's nothing to flash.
+        if (navigationRef.isReady() && navigationRef.canGoBack()) navigationRef.goBack();
         if (navigationRef.isReady()) navigationRef.navigate('Paywall');
+        endLabPreview();
       }}
     />
   );

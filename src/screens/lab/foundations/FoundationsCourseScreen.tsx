@@ -48,6 +48,7 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { LabChip, ScrollLockProvider, useScrollLock } from '../LabShell';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../features/lab/guidedLessons';
+import { markLabUnit, registerLabUnits } from '../../../features/lab/labCompletion';
 import { CheckQuestion, ConceptBadge, DragSlider, LevelMeterBar, VizUnavailableCard, type CheckSpec } from './bits';
 import { requireViz, skiaAvailable, type VizModule } from './skiaGate';
 
@@ -1419,6 +1420,16 @@ export function FoundationsCourseScreen() {
     },
     [tone],
   );
+
+  // R6c: mark each course step viewed → the Foundations of Sound lab completes
+  // once all modules have been seen. Register the unit set (step indices) on
+  // mount so the boot-loaded store never imports this heavy screen.
+  useEffect(() => {
+    registerLabUnits('af_foundations', STEPS.map((_, i) => String(i)));
+  }, []);
+  useEffect(() => {
+    markLabUnit('af_foundations', String(step));
+  }, [step]);
 
   const s = STEPS[step];
   const openPlayground = useCallback(() => {

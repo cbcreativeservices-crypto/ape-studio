@@ -31,6 +31,7 @@ import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { GuidedLessonSheet, getLabLesson, SOURCE_LESSON, DisplayGuideButton, type LessonContent } from '../../features/lab/guidedLessons';
 import { GrMeter } from '../../features/lab/fxViz';
+import { LabReviewButton } from '../../features/lab/LabReviewButton';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
@@ -377,6 +378,9 @@ export function SignalChainLabScreen() {
           </Text>
         )
       ) : null}
+
+      {/* R6c: sandbox capstone — no modules/challenge; explicit review credit. */}
+      <LabReviewButton labKey="af_signal_chain" />
 
       <GuidedLessonSheet
         visible={lessonOpen}

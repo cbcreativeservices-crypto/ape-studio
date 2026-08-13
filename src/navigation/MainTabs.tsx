@@ -5,6 +5,7 @@
  * tier no longer drives it; owner 2026-08-07.)
  */
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { CommonActions } from '@react-navigation/native';
 import { TabBar } from '../components/nav/TabBar';
 import { StudyStack } from './StudyStack';
 import { AchievementsStack } from './AchievementsStack';
@@ -13,6 +14,35 @@ import { ProfileScreen } from '../screens/profile/ProfileScreen';
 import type { MainTabParamList } from './types';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
+
+/**
+ * Guarded replacement for `popToTopOnBlur` (owner 2026-08-13). The built-in
+ * option dispatches POP_TO_TOP on EVERY blur — including when the tab's nested
+ * stack is already at its root (or not yet mounted), which logs the dev warning
+ * "The action 'POP_TO_TOP' was not handled by any navigator." Here we reset the
+ * nested stack to its root ONLY when it exists AND is off-root — the same
+ * guarded shape the TabBar uses on press — so no POP_TO_TOP ever fires at a
+ * single-route/unmounted stack. Still invisible: the reset lands while the tab
+ * is already blurred, so returning shows the root.
+ */
+function resetToRootOnBlur(root: string) {
+  return ({ navigation, route }: { navigation: any; route: { key: string } }) => ({
+    blur: () => {
+      const self = navigation.getState?.()?.routes?.find((r: { key: string }) => r.key === route.key);
+      const nested = self?.state;
+      if (
+        nested?.key &&
+        Array.isArray(nested.routes) &&
+        (nested.index !== 0 || nested.routes[0]?.name !== root)
+      ) {
+        navigation.dispatch({
+          ...CommonActions.reset({ index: 0, routes: [{ name: root }] }),
+          target: nested.key,
+        });
+      }
+    },
+  });
+}
 
 export function MainTabs() {
   return (
@@ -24,12 +54,17 @@ export function MainTabs() {
       tabBar={(props) => <TabBar {...props} />}
     >
       <Tab.Screen name="Home" component={CourseSelectionScreen} />
-      {/* popToTopOnBlur (Booth 2026-07-10, STUDY-tab regression #5): leaving a
-          stack-backed tab pops its stack to routes[0] using the navigator's
-          own LIVE keys (v7 built-in — no stale-key dispatch). Paired with the
-          Home glossary card's two-step mount, routes[0] is always the root. */}
-      <Tab.Screen name="Study" component={StudyStack} options={{ popToTopOnBlur: true }} />
-      <Tab.Screen name="Achievements" component={AchievementsStack} options={{ popToTopOnBlur: true }} />
+      {/* Reset-to-root-on-blur (Booth 2026-07-10, STUDY-tab regression #5):
+          leaving a stack-backed tab returns it to its root. GUARDED manual
+          version (owner 2026-08-13) — the built-in popToTopOnBlur logged
+          "POP_TO_TOP was not handled by any navigator" when the stack was
+          already at its root; resetToRootOnBlur only acts when off-root. */}
+      <Tab.Screen name="Study" component={StudyStack} listeners={resetToRootOnBlur('Dashboard')} />
+      <Tab.Screen
+        name="Achievements"
+        component={AchievementsStack}
+        listeners={resetToRootOnBlur('AchievementsGrid')}
+      />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );

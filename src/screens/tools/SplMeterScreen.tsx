@@ -826,7 +826,16 @@ export function SplMeterScreen({ navigation }: Props) {
                   {meter ? estSpl(meter.peakDb) : '—'}
                 </Text>
               </Pressable>
-              <Pressable style={styles.peakCell} onLongPress={() => help('peak_hold')} delayLongPress={260}>
+              {/* Tap the PEAK HOLD readout itself to reset (user request) — the
+                  dedicated RESET PEAK key still works; long-press = help. */}
+              <Pressable
+                style={styles.peakCell}
+                onPress={resetPeakHold}
+                onLongPress={() => help('peak_hold')}
+                delayLongPress={260}
+                accessibilityRole="button"
+                accessibilityLabel="Peak hold — tap to reset"
+              >
                 <Text style={styles.cellLabel}>PEAK HOLD</Text>
                 <Text style={[styles.cellValue, meter ? { color: levelColorForDb(meter.peakHoldDb) } : styles.cellValueMax]}>
                   {meter ? estSpl(meter.peakHoldDb) : '—'}

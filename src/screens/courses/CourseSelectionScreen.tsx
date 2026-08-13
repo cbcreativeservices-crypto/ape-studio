@@ -425,6 +425,7 @@ function CourseCardView({
           <Text style={[styles.cardAboveText, { color: '#c4a2ff' }]}>Professional Program Certificate</Text>
           <View style={[styles.cardAboveRule, { backgroundColor: '#c4a2ff' }]} />
         </View>
+        <Pressable onPress={onLockedPress} accessibilityRole="button" accessibilityLabel={`${item.name} — Academy membership required`}>
         {stubUrl ? (
           <ImageBackground
             source={{ uri: stubUrl }}
@@ -436,6 +437,7 @@ function CourseCardView({
         ) : (
           <View style={[styles.card, styles.cardNoImg, { borderColor: 'rgba(196,162,255,.65)' }]}>{stubInner}</View>
         )}
+        </Pressable>
       </View>
     );
   }
@@ -508,6 +510,7 @@ function CourseCardView({
           <Text style={[styles.cardAboveText, { color: '#5bff85' }]}>INCLUDED FOR EVERYONE</Text>
           <View style={[styles.cardAboveRule, { backgroundColor: '#5bff85' }]} />
         </View>
+        <Pressable onPress={onOpenLab} accessibilityRole="button" accessibilityLabel="Audio Fundamentals & Training Lab — open">
         <ImageBackground
           source={labUrl ? { uri: labUrl } : undefined}
           style={[styles.card, { borderColor: 'rgba(55,224,95,.6)' }]}
@@ -527,6 +530,7 @@ function CourseCardView({
             </View>
           </View>
         </ImageBackground>
+        </Pressable>
       </View>
     );
   }
@@ -564,6 +568,25 @@ function CourseCardView({
   // 2026-08-10) — shown, but gated behind Academy access, never "coming soon".
   const locked = (!!course && !course.enrolled) || (!!pub && !pubOpenable) || !!coming;
   const completed = !!course && course.enrolled && course.completed;
+
+  // Whole-card tap (user request): pressing anywhere on the card does what its
+  // primary key does. `null` = a purely-locked course (disabled "Locked" key),
+  // which stays inert. Mirrors the button handlers in `inner` below exactly.
+  const onCardPress: (() => void) | null = free
+    ? () => onOpenPublic(free.courseOrder, true)
+    : isTools
+      ? onOpenTools
+      : isGlossary
+        ? onOpenGlossary
+        : coming
+          ? onLockedPress
+          : pub
+            ? pubOpenable
+              ? () => onOpenPublic(pub.order)
+              : onLockedPress
+            : locked
+              ? null
+              : () => onOpenCourse(course!);
 
   // A locked TOPIC is GOLD; a locked COURSE stays PURPLE (Booth 2026-07-11).
   // Topic = a single-topic public card, or an audio-field topic card.
@@ -717,6 +740,18 @@ function CourseCardView({
     </View>
   );
 
+  // Whole-card tap: wrap the body so pressing anywhere fires the same action as
+  // the visible key. The inner GlassButton still works (RN routes the touch to
+  // the innermost responder, so there's no double-fire).
+  const pressableBody =
+    onCardPress != null ? (
+      <Pressable onPress={onCardPress} accessibilityRole="button" accessibilityLabel={`${title} — open`}>
+        {cardBody}
+      </Pressable>
+    ) : (
+      cardBody
+    );
+
   // COURSE / TOPIC (and FREE…) label sits ABOVE the card as a small caption with
   // a thin rule, keeping the per-type font colour (Booth 2026-07-11).
   return (
@@ -729,7 +764,7 @@ function CourseCardView({
       ) : null}
       {/* Glossary card wears a subtle blue outer glow (user request 2026-07-18)
           — on a wrapper because the card itself clips its own shadow. */}
-      {isGlossary ? <View style={styles.glossaryGlow}>{cardBody}</View> : cardBody}
+      {isGlossary ? <View style={styles.glossaryGlow}>{pressableBody}</View> : pressableBody}
     </View>
   );
 }

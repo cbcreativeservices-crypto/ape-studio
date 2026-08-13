@@ -33,6 +33,7 @@ import {
 } from '../../features/study/api';
 import { StudySession } from '../../features/study/sync';
 import { saveLocalMethodStates } from '../../features/study/localProgress';
+import { SuggestCorrectionButton } from '../../features/study/SuggestCorrectionButton';
 import { incBrainOutput, resetBrainOutput, setRunning, usePaceSettings, useRunning } from '../../features/study/paceStore';
 import { setLastStudyLocation } from '../../features/study/lastStudyLocation';
 import { recordPaceSession } from '../../features/study/paceRecords';
@@ -357,6 +358,21 @@ export function FillInBlankScreen({ navigation, route }: Props) {
           <Text style={styles.swipeHint}>‹ swipe to browse questions ›</Text>
         </View>
 
+        {/* Suggest a correction — bottom-right of the answers area, above
+            Prev/Next (owner 2026-08-13). */}
+        <View style={styles.reportRow}>
+          <SuggestCorrectionButton
+            tag={question?.item?.term}
+            context={{
+              Method: 'Fill in the blank',
+              Topic: topicName,
+              'Topic ID': achievementId,
+              Term: question?.item?.term,
+              'Term ID': question?.item?.id,
+            }}
+          />
+        </View>
+
         {/* Pinned footer (Booth 2026-07-08): scribble-glass Prev/Next at the
             bottom, same as Matching — swipe ‹ › still works too. */}
         <View style={styles.footer}>
@@ -425,6 +441,7 @@ const styles = StyleSheet.create({
   ledPct: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: colors.amber, minWidth: 44, textAlign: 'right' },
   counter: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSubAlt, minWidth: 56, textAlign: 'right' },
   footer: { flexDirection: 'row', gap: 10 },
+  reportRow: { paddingBottom: 2, alignItems: 'flex-end' },
   // Swipe-to-browse area below the answer grid (Booth 2026-07-15).
   swipeZone: { flex: 1, alignItems: 'center', justifyContent: 'center', minHeight: 44 },
   swipeHint: { fontFamily: fonts.barlowCondensedMedium, fontSize: 12, letterSpacing: 1.5, color: colors.textMuted },

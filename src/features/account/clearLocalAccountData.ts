@@ -23,6 +23,7 @@ import { resetLocal as resetPaceStore } from '../study/paceStore';
 import { resetLocal as resetLastStudyLocation } from '../study/lastStudyLocation';
 import { resetLocal as resetHomeCardsStore } from '../home/homeCardsStore';
 import { resetLocal as resetMeasurementStore } from '../tools/measure/measurementStore';
+import { resetLocal as resetLabCompletion } from '../lab/labCompletion';
 
 /**
  * Keys that MUST survive an account wipe: device-hardware calibration (per
@@ -37,15 +38,30 @@ const KEEP: ReadonlySet<string> = new Set<string>([
 ]);
 
 /**
+ * Onboarding / coach-mark "seen once" flags are DEVICE-level first-use state, NOT
+ * account data — a returning or guest user on the same device has already seen
+ * the tutorials. They must survive an account wipe, or every logout / guest entry
+ * would replay every intro popup (user bug 2026-08-13). Kept BY PREFIX/SUFFIX
+ * since they're an open family: `ape:intro:*` (all screen intros + app welcome +
+ * the amplitude orientation) and the `…FsGuide` fullscreen-guide keys. Settings →
+ * "Reset onboarding hints" is the intended way to replay them.
+ */
+function isOnboardingFlag(k: string): boolean {
+  return k.startsWith('ape:intro:') || k.endsWith('FsGuide');
+}
+
+/**
  * Remove all device-local USER data from AsyncStorage. Only touches keys under
  * the `ape:` namespace (leaves the Supabase `sb-*` auth session and any other
- * library keys alone) and preserves the KEEP allowlist. Best-effort: a failed
- * removal never throws.
+ * library keys alone) and preserves the KEEP allowlist + onboarding flags.
+ * Best-effort: a failed removal never throws.
  */
 export async function clearLocalAccountData(): Promise<void> {
   try {
     const keys = await AsyncStorage.getAllKeys();
-    const toRemove = keys.filter((k) => k.startsWith('ape:') && !KEEP.has(k));
+    const toRemove = keys.filter(
+      (k) => k.startsWith('ape:') && !KEEP.has(k) && !isOnboardingFlag(k),
+    );
     if (toRemove.length > 0) {
       await AsyncStorage.multiRemove(toRemove);
     }
@@ -68,4 +84,5 @@ export function resetAllLocalStores(): void {
   resetLastStudyLocation();
   resetHomeCardsStore();
   resetMeasurementStore();
+  resetLabCompletion();
 }

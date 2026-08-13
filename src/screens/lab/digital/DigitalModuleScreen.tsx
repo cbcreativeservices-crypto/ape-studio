@@ -4,7 +4,7 @@
  * and the shared GuidedLessonSheet wired to the 'digital' lesson so every
  * module's ⓘ/long-press help opens the two-tier popup.
  */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useIsFocused, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,6 +12,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
+import { markLabUnit } from '../../../features/lab/labCompletion';
 import { ScrollLockProvider } from '../LabShell';
 import { DIGITAL_MODULES, type DigitalModuleId } from './modules/registry';
 import { AnalogModule, SamplingModule } from './modules/modAnalog';
@@ -47,6 +48,11 @@ export function DigitalModuleScreen() {
   const focused = useIsFocused();
   const meta = DIGITAL_MODULES.find((m) => m.id === route.params.id) ?? DIGITAL_MODULES[0];
   const Comp = COMPONENTS[meta.id];
+  // R6c: mark this module viewed → the Digital Audio Systems lab completes once
+  // every module has been seen (fires mark_lab_complete server-side).
+  useEffect(() => {
+    if (focused) markLabUnit('af_digital_audio', meta.id);
+  }, [focused, meta.id]);
   const [width, setWidth] = useState(0);
   // Modules lock the ScrollView during their drags via the lockScroll prop
   // (owner 2026-07-29 drag-vs-scroll fix).

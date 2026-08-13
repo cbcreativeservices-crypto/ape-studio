@@ -31,6 +31,7 @@ import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { LabReviewButton } from '../../../features/lab/LabReviewButton';
 import { AlphaType, Canvas, ColorType, Image, LinearGradient, Path, Rect, Skia, vec } from '@shopify/react-native-skia';
 import {
   MIDLINE_BLUE,
@@ -529,6 +530,9 @@ export function AmplitudeLabScreen() {
       </View>
       <ScrollView contentContainerStyle={styles.gateScroll}>
         <AmplitudeColorBody />
+        {/* R6c: this read-through has no modules/challenge — an explicit review
+            records its Audio Fundamentals credit (§1.7: no fabricated progress). */}
+        <LabReviewButton labKey="af_amplitude" />
       </ScrollView>
     </View>
   );

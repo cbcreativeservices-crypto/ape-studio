@@ -33,6 +33,7 @@ import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../../features/audio/audioOutputStore';
 import { guardAdditiveForEngine, guardNoiseLevelForEngine, guardToneLevelForEngine } from '../../../features/audio/speakerSafety';
 import { eqResponseDb } from '../../../features/lab/fxViz';
+import { LabReviewButton } from '../../../features/lab/LabReviewButton';
 import { EngineGate } from '../../tools/EngineGate';
 import type { EngineState } from '../../../features/tools/engine/useDspEngine';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../features/lab/guidedLessons';
@@ -515,6 +516,8 @@ export function FoundationsPlaygroundScreen() {
           </>
         ) : null}
 
+        {/* R6c: sandbox — no modules/challenge; explicit review records credit. */}
+        <LabReviewButton labKey="af_sound_playground" />
       </ScrollView>
       </ScrollLockProvider>
 

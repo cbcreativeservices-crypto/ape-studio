@@ -969,14 +969,16 @@ export function MultiMeterScreen({ navigation }: Props) {
                 {meter ? fmtDb(meter.zFastDb) : '—'}
               </Text>
             </Pressable>
-            {/* PEAK HOLD: long-press the cell (or tap ⟲) to reset — clears the
-                native meter hold, the per-band holds, AND the red peak latch. */}
+            {/* PEAK HOLD: tap the cell (or the ⟲, or long-press) to reset —
+                clears the native meter hold, the per-band holds, AND the red
+                peak latch (user request: tap the readout, not just the key). */}
             <Pressable
               style={styles.statusCell}
+              onPress={onResetPeakHold}
               onLongPress={onResetPeakHold}
               delayLongPress={350}
               accessibilityRole="button"
-              accessibilityLabel="Peak hold — long-press to reset"
+              accessibilityLabel="Peak hold — tap to reset"
             >
               <View style={styles.statusHoldRow}>
                 <Text style={styles.statusLabel}>PK HOLD</Text>

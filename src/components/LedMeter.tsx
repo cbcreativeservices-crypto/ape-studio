@@ -113,7 +113,9 @@ export function LedMeter({
 export function LedMeterWell({ filled }: { filled: number }) {
   return (
     <View style={styles.well}>
-      <LedMeter filled={Math.max(1, filled)} fullWidth />
+      {/* Study-method progress meters (flashcards + homework) ride the MIDI
+       *  blue→red velocity ramp — start blue, climb to red (owner 2026-08-13). */}
+      <LedMeter filled={Math.max(1, filled)} fullWidth midi />
     </View>
   );
 }

@@ -252,7 +252,7 @@ export async function fetchDashboard(): Promise<DashboardData> {
   // 4. Active topics for the course, in sequence.
   const { data: topics, error: topErr } = await supabase
     .from('achievements')
-    .select('id, course_id, sequence_in_course, name, applicable_methods, is_prerequisite, icon_url')
+    .select('id, course_id, sequence_in_course, name, applicable_methods, is_prerequisite, icon_url, global_sequence')
     .eq('course_id', currentCourse.id)
     .eq('curriculum_version_id', cv)
     .eq('is_active', true)

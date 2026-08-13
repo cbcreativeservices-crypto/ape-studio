@@ -391,7 +391,8 @@ export function AwardsScreen({ navigation, route }: Props) {
       const ei = ENROLLMENT_IDX;
       setIdx(ei);
       setSwipeLocked(true); // landing on Enrollments locks the swipe (exit via Home)
-      requestAnimationFrame(() => listRef.current?.scrollToIndex({ index: ei, animated: true }));
+      // Instant jump so it doesn't flash through the Directory page en route.
+      requestAnimationFrame(() => listRef.current?.scrollToIndex({ index: ei, animated: false }));
       if (entitlement === 'anonymous') setPayPrompt({ label });
     },
     [entitlement],
@@ -459,7 +460,10 @@ export function AwardsScreen({ navigation, route }: Props) {
               onPress={() => {
                 setIdx(i);
                 setSwipeLocked(i === ENROLLMENT_IDX);
-                listRef.current?.scrollToIndex({ index: i, animated: true });
+                // Jump straight to the tapped page (animated:false) — an animated
+                // scroll slides THROUGH the in-between pages and onViewable flips
+                // the title/tab highlight through each, which read as a flash.
+                listRef.current?.scrollToIndex({ index: i, animated: false });
               }}
               style={[styles.tabBtn, active && { borderColor: tint, backgroundColor: '#1a1a1a' }]}
               accessibilityRole="button"
@@ -509,7 +513,8 @@ export function AwardsScreen({ navigation, route }: Props) {
                   const i = PAGE_ORDER.indexOf(key);
                   if (i >= 0) {
                     setIdx(i);
-                    listRef.current?.scrollToIndex({ index: i, animated: true });
+                    // Instant jump (no flash through intermediate pages).
+                    listRef.current?.scrollToIndex({ index: i, animated: false });
                   }
                 }}
               />

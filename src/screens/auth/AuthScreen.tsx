@@ -28,6 +28,7 @@ import { BrandLogo } from '../../components/BrandLogo';
 import { StudioButton } from '../../components/StudioButton';
 import { TextField } from '../../components/TextField';
 import { colors, fonts, spacing } from '../../theme/tokens';
+import { clearLocalAccountData, resetAllLocalStores } from '../../features/account/clearLocalAccountData';
 import { EMAIL_RE, passwordIssue, resetPassword, signIn } from '../../features/auth/api';
 import { supabase } from '../../lib/supabase';
 import { COPY } from '../../lib/copy';
@@ -70,9 +71,16 @@ export function AuthScreen({ navigation }: Props) {
       await supabase.auth.signOut();
     } catch {
       // Offline sign-out failure is fine — local session is still cleared.
-    } finally {
-      setBusy(false);
     }
+    // Guest Mode is a deliberate "fresh, no account" start (user bug 2026-08-12):
+    // wipe the previous account's device-local data — the enrollment list, Home
+    // cards, lab/tool state — so a no-account guest never INHERITS it (and so it
+    // can't open a locked topic a prior account had enrolled). Unlike a plain
+    // sign-out, entering Guest Mode is never a temporary detour back to the same
+    // account, so clearing here can't lose a returning user's data.
+    await clearLocalAccountData();
+    resetAllLocalStores();
+    setBusy(false);
     setEntitlement('anonymous');
     toHome();
   };

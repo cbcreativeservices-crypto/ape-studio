@@ -4,7 +4,7 @@
  * ScrollLockProvider (DragSliders win their horizontal drags) + prev/next
  * module nav.
  */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useIsFocused, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,6 +12,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { ScrollLockProvider } from '../LabShell';
+import { markLabUnit } from '../../../features/lab/labCompletion';
 import { GlossaryLinkProvider } from '../../../features/glossary/glossaryLink';
 import { GAIN_MODULES, type GainModuleComponentProps, type GainModuleId } from './modules/registry';
 import { FaderVsGainModule, FollowModule, InputGainModule, IntroModule, LowHighModule } from './modules/modLearn';
@@ -35,6 +36,11 @@ export function GainModuleScreen() {
   const focused = useIsFocused();
   const meta = GAIN_MODULES.find((m) => m.id === route.params.id) ?? GAIN_MODULES[0];
   const Comp = COMPONENTS[meta.id];
+  // R6c: mark each Gain module viewed. The Troubleshoot CHALLENGE is the
+  // exception — it completes on an actual PASS, from inside TroubleshootModule.
+  useEffect(() => {
+    if (focused && meta.id !== 'troubleshoot') markLabUnit('af_gain_staging', meta.id);
+  }, [focused, meta.id]);
   const [width, setWidth] = useState(0);
   const [scrollLocked, setScrollLocked] = useState(false);
   // Only let the page scroll when its content actually overflows the viewport.
