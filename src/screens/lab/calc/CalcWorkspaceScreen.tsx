@@ -6,8 +6,8 @@
  * practical example, common mistakes, standards honesty block, glossary
  * terms, OS share sheet, and the Calculation Chain (SEND → / USE).
  */
-import { useCallback, useMemo, useRef, useState } from 'react';
-import { Pressable, Share, StyleSheet, Text, View, type ScrollView } from 'react-native';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Alert, Pressable, Share, StyleSheet, Text, View, type ScrollView } from 'react-native';
 import { KeyboardAwareScrollView } from '../../../features/keyboard/keyboardControllerSafe';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -28,6 +28,8 @@ import { FieldRow, buildValues, defaultUnitIdx, formatOutput, runCompute } from 
 import { buildReportFromCalc, reportToText } from './calcReport';
 import { GlossaryTermPopup } from '../../../features/glossary/GlossaryTermPopup';
 import { FormulaKeyPopup } from './FormulaKeyPopup';
+import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
+import { consumeCalc, getCalcStatus, type CalcUsage } from '../../../features/lab/calcUsage';
 
 const SIGS = [3, 4, 5] as const;
 
@@ -94,6 +96,33 @@ export function CalcWorkspaceScreen() {
   // Compute once per (function, values) — NOT on every keystroke's re-render.
   const { outputs, steps, table, computeError } = useMemo(() => runCompute(fn, values), [fn, values]);
 
+  // ---- Capped-calc gate (owner 2026-08-13): FREE/LAPSED accounts get 10
+  // calculation OUTPUTS per rolling week (server-enforced via calc_consume).
+  // Academy is unlimited; anonymous guests must sign in. The result is hidden
+  // behind a CALCULATE button so there is one countable trigger per calculation.
+  const { entitlement, commercialMode } = useEntitlement();
+  // Caps only bite in commercial mode; institutional/dev mode grants full access.
+  const capped = commercialMode && (entitlement === 'free' || entitlement === 'lapsed');
+  const mustSignIn = commercialMode && entitlement === 'anonymous';
+  const [usage, setUsage] = useState<CalcUsage | null>(null);
+  const [consumedSig, setConsumedSig] = useState<string | null>(null);
+  const [consuming, setConsuming] = useState(false);
+  // Signature of the current calculation: function + entered values + input units.
+  // Editing any input re-arms the CALCULATE button; re-tapping the SAME inputs
+  // shows the already-revealed answer without spending another credit.
+  const inputSig = useMemo(() => JSON.stringify({ f: fn?.key ?? '', raw, unitIdx }), [fn, raw, unitIdx]);
+  // Load the current week's usage once for the "# / 10" counter.
+  useEffect(() => {
+    if (!capped) return;
+    let alive = true;
+    getCalcStatus().then((u) => {
+      if (alive) setUsage(u);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [capped]);
+
   if (!ws || !fn) {
     return (
       <View style={styles.root}>
@@ -101,6 +130,53 @@ export function CalcWorkspaceScreen() {
       </View>
     );
   }
+
+  // For capped users the answer is shown only after CALCULATE consumed a credit
+  // for THIS exact input set; uncapped users always see the live answer.
+  const resultUnlocked = !capped || consumedSig === inputSig;
+  const counterText =
+    capped && usage && !usage.unavailable ? `${usage.used} / ${usage.limit} free calculations this week` : null;
+
+  const runCappedCalc = async () => {
+    if (!values || consuming || consumedSig === inputSig) return;
+    setConsuming(true);
+    const u = await consumeCalc();
+    setConsuming(false);
+    setUsage(u);
+    if (u.unavailable) {
+      // Server unreachable / RPC not yet deployed → fail open: reveal, no count.
+      setConsumedSig(inputSig);
+      return;
+    }
+    if (!u.allowed) {
+      Alert.alert(
+        'Weekly limit reached',
+        `You’ve used all ${u.limit} free calculations for this week. They reset one week after your first one. Academy membership removes the limit.`,
+        [
+          { text: 'Not now', style: 'cancel' },
+          { text: 'See membership', onPress: () => (navigation as unknown as { navigate: (r: string) => void }).navigate('Paywall') },
+        ],
+      );
+      return; // do NOT reveal
+    }
+    setConsumedSig(inputSig); // reveal this result
+    if (u.used === 5) {
+      Alert.alert(
+        'Heads up — weekly limit',
+        `That’s 5 of ${u.limit} free calculations this week. After ${u.limit} you’ll wait for the weekly reset, or Academy membership removes the limit.`,
+        [{ text: 'Got it' }],
+      );
+    } else if (u.used >= u.limit) {
+      Alert.alert(
+        'Weekly limit reached',
+        `That was your last free calculation this week (${u.limit} of ${u.limit}). It resets one week after your first one. Academy membership removes the limit.`,
+        [
+          { text: 'OK', style: 'cancel' },
+          { text: 'See membership', onPress: () => (navigation as unknown as { navigate: (r: string) => void }).navigate('Paywall') },
+        ],
+      );
+    }
+  };
 
   const shareResult = () => {
     if (!values) return;
@@ -235,10 +311,38 @@ export function CalcWorkspaceScreen() {
               entered, then the live result. */}
           <View style={styles.resultPanel}>
             <Text style={styles.resultEyebrow}>YOUR ANSWER — {fn.name.toUpperCase()}</Text>
-            {!values ? (
+            {counterText ? <Text style={styles.usageCounter}>{counterText}</Text> : null}
+            {mustSignIn ? (
+              <View style={{ gap: 10 }}>
+                <Text style={styles.resultPlaceholder}>Create a free account (or sign in) to run calculations.</Text>
+                <Pressable
+                  style={[styles.calcBtn, styles.signInBtn]}
+                  onPress={() => (navigation as unknown as { navigate: (r: string) => void }).navigate('Auth')}
+                  accessibilityRole="button"
+                  accessibilityLabel="Sign in or create a free account to run calculations"
+                >
+                  <Text style={styles.calcBtnText}>SIGN IN / CREATE ACCOUNT</Text>
+                </Pressable>
+              </View>
+            ) : !values ? (
               <Text style={styles.resultPlaceholder}>
                 Your answer appears here. Fill in the values above to calculate.
               </Text>
+            ) : capped && !resultUnlocked ? (
+              <View style={{ gap: 8 }}>
+                <Pressable
+                  style={styles.calcBtn}
+                  onPress={runCappedCalc}
+                  disabled={consuming}
+                  accessibilityRole="button"
+                  accessibilityLabel="Calculate — uses one of your free weekly calculations"
+                >
+                  <Text style={styles.calcBtnText}>{consuming ? 'CALCULATING…' : 'CALCULATE'}</Text>
+                </Pressable>
+                <Text style={styles.resultPlaceholder}>
+                  Tap CALCULATE to reveal the answer — this uses one of your {usage?.limit ?? 10} free calculations this week.
+                </Text>
+              </View>
             ) : computeError ? (
               <Text style={styles.warnText}>⚠ These values don’t produce a valid result — check for zeros or reversed inputs.</Text>
             ) : (
@@ -310,11 +414,16 @@ export function CalcWorkspaceScreen() {
             )}
           </View>
 
-          <View style={styles.sigRow}>
-            <Text style={styles.sigLabel}>SIG. FIGURES</Text>
-            {SIGS.map((s) => (
-              <LabChip key={s} label={String(s)} selected={sig === s} onPress={() => setSig(s)} />
-            ))}
+          <View style={styles.sigBlock}>
+            <Text style={styles.sigLabel}>SIGNIFICANT FIGURES</Text>
+            <Text style={styles.sigHint}>
+              How many digits to show in each result — more figures means finer precision, not a more accurate answer.
+            </Text>
+            <View style={styles.sigRow}>
+              {SIGS.map((s) => (
+                <LabChip key={s} label={String(s)} selected={sig === s} onPress={() => setSig(s)} />
+              ))}
+            </View>
           </View>
         </View>
 
@@ -480,8 +589,24 @@ const styles = StyleSheet.create({
   },
   resultEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: colors.amber },
   resultPlaceholder: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSub },
+  // Free/lapsed weekly-cap UI (owner 2026-08-13): the "# / 10" counter + the
+  // CALCULATE trigger that reveals (and counts) one result.
+  usageCounter: { fontFamily: fonts.oswaldMedium, fontSize: 11.5, letterSpacing: 0.4, color: colors.amberLabel, marginBottom: 6 },
+  calcBtn: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    backgroundColor: colors.amber,
+    paddingVertical: 13,
+    paddingHorizontal: 16,
+  },
+  calcBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.2, color: '#141007' },
+  // Green variant for the guest SIGN IN / CREATE ACCOUNT button (owner 2026-08-13).
+  signInBtn: { backgroundColor: colors.green },
+  sigBlock: { gap: 5 },
   sigRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  sigLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.1, color: colors.textSub },
+  sigLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.1, color: colors.amberLabel },
+  sigHint: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16.5, color: colors.textSub },
   resultRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
   resultLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.9, color: colors.textSecondary, flexShrink: 1 },
   resultRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },

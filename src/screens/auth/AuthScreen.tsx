@@ -158,6 +158,22 @@ export function AuthScreen({ navigation }: Props) {
 
   return (
     <View style={styles.root}>
+      {/* Top-right RETURN — for someone who arrived here on purpose (e.g. a guest
+          who tapped "Sign in" from a calculator) and changed their mind: go back
+          and continue, rather than declining and having to reinitiate the login
+          (owner 2026-08-13). Only shown when there's a screen to return to, so it
+          never appears on the app's own sign-in entry point. */}
+      {navigation.canGoBack() ? (
+        <Pressable
+          style={[styles.returnBtn, { top: insets.top + 8 }]}
+          onPress={() => navigation.goBack()}
+          hitSlop={12}
+          accessibilityRole="button"
+          accessibilityLabel="Return without signing in"
+        >
+          <Text style={styles.returnText}>RETURN ›</Text>
+        </Pressable>
+      ) : null}
       <KeyboardAwareScrollView
         contentContainerStyle={[
           styles.scroll,
@@ -250,6 +266,18 @@ export function AuthScreen({ navigation }: Props) {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
+  returnBtn: {
+    position: 'absolute',
+    right: 16,
+    zIndex: 10,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.steelBorder,
+    backgroundColor: 'rgba(20,20,20,0.72)',
+  },
+  returnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.9, color: colors.textSecondary },
   scroll: { paddingHorizontal: 20, gap: 16 },
   header: { alignItems: 'center', gap: spacing.sm, marginTop: 6 },
   wordmark: { fontFamily: fonts.oswaldBold, fontSize: 21, color: colors.textPrimary, paddingVertical: 5 },

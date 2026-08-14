@@ -16,32 +16,30 @@ import { COMING_SOON, SECTION_META, WORKSPACES } from './registry';
 import { useChainValue } from './chainStore';
 import { workflowStore } from './workflowStore';
 import type { Workflow } from './workflowModel';
-import { WORKFLOW_LIMITS } from './workflowModel';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 
 export function CalcLabScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const chain = useChainValue();
-  const { entitlement } = useEntitlement();
+  const { entitlement, commercialMode } = useEntitlement();
 
-  // Custom workflows are ACADEMY-ONLY (owner 2026-08-06) — the home ＋NEW button
-  // must gate like the list screen does (this unguarded path was the hole that
-  // let an anonymous user build and save one).
-  const onNewWorkflow = () => {
-    if (WORKFLOW_LIMITS[entitlement].savedWorkflows === 0) {
-      Alert.alert(
-        'Build your own workflow?',
-        'Building your own calculator workflows is a feature of Academy membership. You can still run the built-in templates.',
-        [
-          { text: 'Not now', style: 'cancel' },
-          { text: 'See membership', onPress: () => (navigation as any).navigate('Paywall') },
-        ],
-      );
-      return;
-    }
-    navigation.navigate('CalcWorkflowEdit', {});
+  // ALL workflows are ACADEMY-ONLY (owner 2026-08-13): running a guided
+  // multi-step sequence, using templates, AND building your own. Individual
+  // calculators stay open to everyone. Caps only bite in commercial mode.
+  const workflowsAllowed = !commercialMode || entitlement === 'academy';
+  const gateWorkflow = (proceed: () => void) => {
+    if (workflowsAllowed) return proceed();
+    Alert.alert(
+      'Workflows are an Academy feature',
+      'Calculator workflows — running a guided multi-step sequence, using templates, or building your own — are part of Academy membership. Every individual calculator stays free to use.',
+      [
+        { text: 'Not now', style: 'cancel' },
+        { text: 'See membership', onPress: () => (navigation as any).navigate('Paywall') },
+      ],
+    );
   };
+  const onNewWorkflow = () => gateWorkflow(() => navigation.navigate('CalcWorkflowEdit', {}));
 
   // Collapsible sections (owner 2026-08-09): workflows + description + each
   // calculator category. Default open; local state (not persisted).
@@ -122,7 +120,7 @@ export function CalcLabScreen() {
                 </Pressable>
                 <Pressable
                   style={styles.wfBtn}
-                  onPress={() => navigation.navigate('CalcWorkflows')}
+                  onPress={() => gateWorkflow(() => navigation.navigate('CalcWorkflows'))}
                   accessibilityRole="button"
                   accessibilityLabel="My workflows and templates"
                 >
@@ -153,7 +151,7 @@ export function CalcLabScreen() {
               {recent ? (
                 <Pressable
                   style={styles.card}
-                  onPress={() => navigation.navigate('CalcWorkflowRun', { id: recent.id })}
+                  onPress={() => gateWorkflow(() => navigation.navigate('CalcWorkflowRun', { id: recent.id }))}
                   accessibilityRole="button"
                   accessibilityLabel={`Run recent workflow ${recent.name}`}
                 >
@@ -303,11 +301,12 @@ const styles = StyleSheet.create({
     gap: 5,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: 'rgba(240,240,240,.5)',
+    borderColor: 'rgba(180,91,255,.6)',
     backgroundColor: '#181818',
     paddingHorizontal: 10,
     paddingVertical: 6,
   },
-  keyBtnGlyph: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, color: colors.textPrimary, marginTop: -1 },
-  keyBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textPrimary },
+  // Purple to match the Σ lab brand and the per-formula π KEY (owner 2026-08-13).
+  keyBtnGlyph: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, color: colors.purple, marginTop: -1 },
+  keyBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.purple },
 });
