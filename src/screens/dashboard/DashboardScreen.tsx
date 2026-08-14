@@ -1203,8 +1203,9 @@ export function DashboardScreen() {
           onLogoPress={() => setDeckOpen(true)}
           logo={
             <View style={styles.studyLogo}>
-              {/* Scaled down with the smaller key (owner 2026-08-06). */}
-              <View style={{ transform: [{ scale: 1.75 }] }}>
+              {/* Scaled down with the smaller key (owner 2026-08-06); trimmed a
+                  further ~13% to sit better inside its border (owner 2026-08-13). */}
+              <View style={{ transform: [{ scale: 1.52 }] }}>
                 <NavIcon icon="Study" lit showLabel={false} />
               </View>
             </View>

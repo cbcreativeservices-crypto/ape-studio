@@ -1,20 +1,19 @@
 /**
- * HomeIcon — the house glyph (same shape as the bottom-nav Home tab) used as the
- * "add to Home screen" toggle so it clearly points to the Home screen (user
- * request 2026-07-22). Filled/lit when the item is on Home, outline when not.
+ * HomeIcon — the amber house glyph (same bundled art as the Home nav tab) used
+ * as the "add to Home screen" toggle so it clearly points to the Home screen
+ * (user request 2026-07-22). filled = the item is on Home (full color); not
+ * filled = dimmed. Replaced the SVG outline/fill with the shared PNG when the
+ * nav icons became bundled images (owner 2026-08-13); the `color` prop is kept
+ * for call-site compatibility but no longer tints the raster.
  */
-import Svg, { Path } from 'react-native-svg';
+import { Image } from 'react-native';
 
-export function HomeIcon({ color, filled, size = 20 }: { color: string; filled?: boolean; size?: number }) {
+export function HomeIcon({ filled, size = 20 }: { color?: string; filled?: boolean; size?: number }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24">
-      <Path
-        d="M12 3 L21 10.5 L21 21 L14.5 21 L14.5 14.5 L9.5 14.5 L9.5 21 L3 21 L3 10.5 Z"
-        fill={filled ? color : 'none'}
-        stroke={color}
-        strokeWidth={filled ? 1 : 1.8}
-        strokeLinejoin="round"
-      />
-    </Svg>
+    <Image
+      source={require('../../assets/icons/nav/nav-home.png')}
+      style={{ width: size, height: size, opacity: filled ? 1 : 0.35 }}
+      resizeMode="contain"
+    />
   );
 }
