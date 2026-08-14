@@ -106,5 +106,34 @@ Continue the work from here. Everything below is **committed & pushed** on branc
 
 ---
 
+## 6. Addendum — nav icon replacement (commit `d410ee0`, owner-approved on device)
+
+All four nav icons (HOME / STUDY / PROGRESS / PROFILE) were swapped from
+hand-drawn SVG/View glyphs to **bundled transparent PNGs** and approved on device.
+
+- **Art:** `assets/icons/nav/nav-{home,study,progress,profile}.png` (144×144,
+  transparent).
+- **Two funnel components carry all icon art** — `src/components/nav/NavIcon.tsx`
+  (4 glyphs) and `src/components/HomeIcon.tsx` (shared house / add-to-Home
+  toggle). Every reuse (bottom `TabBar`, ToolsHub 2nd nav row, Dashboard,
+  TopicDeckSheet, Awards, Enrollment ×6 + Home toggles, HomeSetupSheet) updates
+  through these two files. **To re-skin: replace the PNG, same filename.**
+- Active = full color + iOS glow; inactive = 0.4 opacity. `HomeIcon` `filled` →
+  opacity 1 (on Home) vs 0.35 (off).
+- **PROGRESS icon is now static** — no progress tracking (album/silver-record
+  progression retired). See `docs/APE_GOVERNANCE_DECISIONS_2026_08_13.md` R2.
+- Dashboard top-left Study logo shrunk to `scale: 1.52` (was 1.75) to sit inside
+  its border.
+- Verified: `tsc --noEmit` exit 0; Metro Android bundle HTTP 200, 0 unresolved
+  modules, all 4 `nav-*` assets registered.
+
+Governance of record for this cycle: `docs/APE_GOVERNANCE_DECISIONS_2026_08_13.md`
+(R1 nav-icon art system, R2 progress-icon-no-semantics, + full-absolute-path
+working practice).
+
+Pending items in §4 above are unchanged by this addendum.
+
+---
+
 *Handoff written 2026-08-13. Prior handoff: `docs/HANDOFF_2026_08_01.md` and the
 2026-08-12 session handoff (commit `b84ce38`).*
