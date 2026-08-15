@@ -27,6 +27,7 @@ class ApeDspModule : Module() {
   // add the audio-path honesty flags to each meter frame (mirrors how the iOS
   // module carries measurementMode across getFrame calls).
   private var measurementMode = false
+  private var bluetoothInput = false  // active input is a Bluetooth mic (SCO) — drives the JS unsupported-input warning
   private var sampleRate = 0.0
   private var framesPerBurst = 0.0
   private var lastError = ""
@@ -156,12 +157,14 @@ class ApeDspModule : Module() {
       sampleRate = r[1]
       framesPerBurst = r[2]
       measurementMode = r[3] == 1.0
+      bluetoothInput = detectBluetoothInput()
       lastError = ""
       promise.resolve(infoMap())
     }
 
     AsyncFunction("stop") { promise: Promise ->
       if (handle != 0L) nativeStopCapture(handle)
+      bluetoothInput = false
       promise.resolve(null)
     }
 
@@ -176,7 +179,7 @@ class ApeDspModule : Module() {
         "version" to m[0].toInt(), "sequence" to m[1], "settingsEpoch" to m[2].toInt(),
         "rmsDb" to m[3], "peakDb" to m[9], "peakHoldDb" to m[10],
         "droppedFrames" to m[15], "running" to (m[16] == 1.0), "captureStalled" to (m[17] == 1.0),
-        "processedInput" to !measurementMode, "bluetoothInput" to false, "interrupted" to false,
+        "processedInput" to !measurementMode, "bluetoothInput" to bluetoothInput, "interrupted" to false,
         "engineVersion" to nativeEngineVersion(),
       )
     }
@@ -205,7 +208,7 @@ class ApeDspModule : Module() {
         "droppedFrames" to m[15], "running" to (m[16] == 1.0), "captureStalled" to (m[17] == 1.0),
         // Android has no OS "processed input" query beyond the preset we got; if
         // Unprocessed wasn't honored the input is processed (uncalibrated warning).
-        "processedInput" to !measurementMode, "bluetoothInput" to false, "interrupted" to false,
+        "processedInput" to !measurementMode, "bluetoothInput" to bluetoothInput, "interrupted" to false,
       )
     }
 
@@ -405,6 +408,16 @@ class ApeDspModule : Module() {
    *  built-in speaker gets the protective high-pass (its micro-driver can't
    *  reproduce lows and over-excurses); any wired/BT/USB/line output reproduces
    *  lows fine and gets full range (cutoff 0 = bypass). */
+  /** True when the active INPUT device is a Bluetooth mic (SCO). BT audio is
+   *  band-limited (HFP), so measurements are unreliable — the JS surfaces the
+   *  "unsupported input" warning from this flag. Sampled once per capture start
+   *  (owner 2026-08-14). */
+  private fun detectBluetoothInput(): Boolean {
+    val am = appContext.reactContext?.getSystemService(Context.AUDIO_SERVICE) as? AudioManager ?: return false
+    return am.getDevices(AudioManager.GET_DEVICES_INPUTS)
+      .any { it.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO }
+  }
+
   private fun refreshOutputRouteAndHpf() {
     if (handle == 0L) return
     val am = appContext.reactContext?.getSystemService(Context.AUDIO_SERVICE) as? AudioManager ?: return
@@ -428,7 +441,7 @@ class ApeDspModule : Module() {
     "sampleRate" to sampleRate,
     "ioBufferDuration" to (if (sampleRate > 0) framesPerBurst / sampleRate else 0.0),
     "measurementMode" to measurementMode,
-    "bluetoothInput" to false,
+    "bluetoothInput" to bluetoothInput,
     "routeName" to "Android input",
     "inputPortType" to (if (measurementMode) "unprocessed" else "voice-recognition"),
     "outputRoute" to outputRoute,

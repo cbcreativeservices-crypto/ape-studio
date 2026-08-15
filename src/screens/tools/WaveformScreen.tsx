@@ -34,6 +34,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Svg, { Defs, G, Line, LinearGradient, Path, Rect, Stop, Text as SvgText } from 'react-native-svg';
+import { Canvas, Path as SkiaPath, LinearGradient as SkiaGradient, Skia, vec } from '@shopify/react-native-skia';
 import * as Crypto from 'expo-crypto';
 import { ApeDsp, type WaveBucket } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
@@ -64,6 +65,9 @@ const PANEL_H = 240;
 const PAD_V = 16;
 /** Accent for clip ticks / axis (teal, toolsData). */
 const TRACE = '#5fd9c4';
+// Skia gradient inputs derived from the shared amplitude ramp (offset → color).
+const WAVE_LEVEL_COLORS = WAVE_LEVEL_STOPS.map((s) => s.color);
+const WAVE_LEVEL_POS = WAVE_LEVEL_STOPS.map((s) => s.offset);
 
 /** Vertical zoom chips — owner 2026-07-29: ×6 added, DEFAULT ×4. */
 const ZOOMS = [1, 2, 4, 6] as const;
@@ -252,12 +256,15 @@ export function WaveformScreen({ navigation }: Props) {
       const b = displayBuckets[Math.round(f)];
       return { max: b.max, min: b.min, rms: b.rms };
     };
-    let top = ''; // max edge, left → right
-    let bottomRev = ''; // min edge, right → left (closes the area)
-    let rmsTop = '';
-    let rmsRev = '';
-    let clip = '';
+    // Build the trace as SKIA paths (owner 2026-08-14): react-native-svg rendered
+    // this dense per-pixel envelope COARSELY on Android; Skia is anti-aliased and
+    // identical on both platforms. Collect the min/max + RMS envelope per screen
+    // pixel, then close each into a filled area (top edge L→R, bottom edge R→L).
     const W = Math.round(panelW);
+    const topY = new Array<number>(W + 1);
+    const botY = new Array<number>(W + 1);
+    const rmsT = new Array<number>(W + 1);
+    const rmsB = new Array<number>(W + 1);
     for (let px = 0; px <= W; px++) {
       const s = sampleAt(px);
       let y1 = y(s.max);
@@ -267,17 +274,30 @@ export function WaveformScreen({ navigation }: Props) {
         y1 -= 0.5;
         y2 += 0.5;
       }
-      const cmd = px === 0 ? 'M' : 'L';
-      top += `${cmd}${px},${y1.toFixed(1)}`;
-      bottomRev = `L${px},${y2.toFixed(1)}` + bottomRev;
-      rmsTop += `${cmd}${px},${y(s.rms).toFixed(1)}`;
-      rmsRev = `L${px},${y(-s.rms).toFixed(1)}` + rmsRev;
+      topY[px] = y1;
+      botY[px] = y2;
+      rmsT[px] = y(s.rms);
+      rmsB[px] = y(-s.rms);
     }
-    // Clip ticks stay per REAL bucket (a bucket either clipped or it didn't).
+    const areaP = Skia.Path.Make();
+    areaP.moveTo(0, topY[0]);
+    for (let px = 1; px <= W; px++) areaP.lineTo(px, topY[px]);
+    for (let px = W; px >= 0; px--) areaP.lineTo(px, botY[px]);
+    areaP.close();
+    const rmsP = Skia.Path.Make();
+    rmsP.moveTo(0, rmsT[0]);
+    for (let px = 1; px <= W; px++) rmsP.lineTo(px, rmsT[px]);
+    for (let px = W; px >= 0; px--) rmsP.lineTo(px, rmsB[px]);
+    rmsP.close();
+    // Clip ticks per REAL bucket (a bucket either clipped or it didn't).
+    const clipP = Skia.Path.Make();
+    let hasClip = false;
     for (let i = 0; i < n; i++) {
       if (displayBuckets[i].clipped) {
-        const x = (panelW - (n - i - 0.5) * colW).toFixed(1);
-        clip += `M${x},4L${x},12`;
+        hasClip = true;
+        const x = panelW - (n - i - 0.5) * colW;
+        clipP.moveTo(x, 4);
+        clipP.lineTo(x, 12);
       }
     }
     // Level-colour gradient axis (owner 2026-07-31): the loudness ramp is keyed to
@@ -304,10 +324,11 @@ export function WaveformScreen({ navigation }: Props) {
       })
       .map((t) => ({ db: t.db, yTop: y(t.amp), yBot: y(-t.amp) }));
     return {
-      area: top + bottomRev + 'Z',
-      rmsArea: rmsTop + rmsRev + 'Z',
+      areaP,
+      rmsP,
+      clipP,
+      hasClip,
       dbTicks,
-      clip,
       observed,
       scaleMax,
       gradY0,
@@ -400,59 +421,65 @@ export function WaveformScreen({ navigation }: Props) {
                 accessibilityLabel={running ? 'Tap to stop capture' : 'Tap to start capture'}
               >
                 {panelW > 0 ? (
-                  <Svg width={panelW} height={PANEL_H}>
-                    {/* Level-colour gradient — red at ±full scale, deep green at the
-                        zero line, keyed to true amplitude (the SPL VU LED standard). */}
-                    <Defs>
-                      <LinearGradient
-                        id="waveLevel"
-                        x1={0}
-                        y1={scope?.gradY0 ?? 0}
-                        x2={0}
-                        y2={scope?.gradY1 ?? PANEL_H}
-                        gradientUnits="userSpaceOnUse"
-                      >
-                        {WAVE_LEVEL_STOPS.map((s) => (
-                          <Stop key={s.offset} offset={s.offset} stopColor={s.color} />
-                        ))}
-                      </LinearGradient>
-                    </Defs>
-                    {/* dB scale on the LEFT edge (owner 2026-07-31) — proportional,
-                        scales with zoom. Faint dashed guide across, label at left. */}
-                    {scope?.dbTicks.map((t) => (
-                      <G key={t.db}>
-                        <Line x1={30} x2={panelW} y1={t.yTop} y2={t.yTop} stroke={colors.hairlineDim} strokeDasharray="2 6" />
-                        <Line x1={30} x2={panelW} y1={t.yBot} y2={t.yBot} stroke={colors.hairlineDim} strokeDasharray="2 6" />
-                        <SvgText x={3} y={t.yTop + 4} fill={colors.textSecondary} fontSize={12} fontFamily={fonts.mono}>
-                          {t.db === 0 ? '0dB' : `${t.db}`}
-                        </SvgText>
-                        <SvgText x={3} y={t.yBot + 4} fill={colors.textSecondary} fontSize={12} fontFamily={fonts.mono}>
-                          {t.db === 0 ? '0dB' : `${t.db}`}
-                        </SvgText>
-                      </G>
-                    ))}
-                    {/* Zero line — centered, always visible (§11). The −∞ label sits
-                        ON the line (0 amplitude = −∞ dBFS). */}
-                    <Line x1={0} x2={panelW} y1={half} y2={half} stroke={MIDLINE_BLUE} strokeWidth={1} />
-                    <SvgText x={4} y={half + 5} fill={colors.textSecondary} fontSize={13} fontFamily={fonts.mono}>
-                      -∞
-                    </SvgText>
+                  <View style={{ width: panelW, height: PANEL_H }} pointerEvents="none">
+                    {/* Chrome — dB grid + zero line + labels + frame. SVG, UNDER the
+                        trace (thin straight lines/text render fine on both platforms). */}
+                    <Svg width={panelW} height={PANEL_H} style={StyleSheet.absoluteFill}>
+                      {scope?.dbTicks.map((t) => (
+                        <G key={t.db}>
+                          <Line x1={30} x2={panelW} y1={t.yTop} y2={t.yTop} stroke={colors.hairlineDim} strokeDasharray="2 6" />
+                          <Line x1={30} x2={panelW} y1={t.yBot} y2={t.yBot} stroke={colors.hairlineDim} strokeDasharray="2 6" />
+                          <SvgText x={3} y={t.yTop + 4} fill={colors.textSecondary} fontSize={12} fontFamily={fonts.mono}>
+                            {t.db === 0 ? '0dB' : `${t.db}`}
+                          </SvgText>
+                          <SvgText x={3} y={t.yBot + 4} fill={colors.textSecondary} fontSize={12} fontFamily={fonts.mono}>
+                            {t.db === 0 ? '0dB' : `${t.db}`}
+                          </SvgText>
+                        </G>
+                      ))}
+                      {/* Zero line — centered (§11); −∞ label on it (0 amplitude = −∞ dBFS). */}
+                      <Line x1={0} x2={panelW} y1={half} y2={half} stroke={MIDLINE_BLUE} strokeWidth={1} />
+                      <SvgText x={4} y={half + 5} fill={colors.textSecondary} fontSize={13} fontFamily={fonts.mono}>
+                        -∞
+                      </SvgText>
+                      <Rect x={0.5} y={0.5} width={panelW - 1} height={PANEL_H - 1} stroke="#26262c" strokeWidth={1} fill="none" />
+                    </Svg>
+                    {/* Trace — SKIA (anti-aliased identically on iOS AND Android; SVG
+                        was coarse on Android — owner 2026-08-14). DAW-style solid body
+                        + denser RMS core, MIDI level gradient (or flat teal when COLORS
+                        is off), red clip ticks in the top lane. */}
                     {scope ? (
-                      <>
-                        {/* DAW-style solid waveform: the peak (min/max) body +
-                            denser RMS core. MIDI level gradient, or a flat teal
-                            fill when COLORS is off (owner 2026-08-05, item 6). */}
-                        <Path d={scope.area} fill={colorsOn ? 'url(#waveLevel)' : TRACE} opacity={0.9} />
-                        <Path d={scope.rmsArea} fill={colorsOn ? 'url(#waveLevel)' : TRACE} opacity={0.6} />
-                        {/* Clipped buckets — red ticks in the top lane. */}
-                        {scope.clip !== '' ? (
-                          <Path d={scope.clip} stroke={colors.red} strokeWidth={scope.clipW} />
+                      <Canvas style={StyleSheet.absoluteFill}>
+                        {colorsOn ? (
+                          <SkiaPath path={scope.areaP} opacity={0.9}>
+                            <SkiaGradient
+                              start={vec(0, scope.gradY0)}
+                              end={vec(0, scope.gradY1)}
+                              colors={WAVE_LEVEL_COLORS}
+                              positions={WAVE_LEVEL_POS}
+                            />
+                          </SkiaPath>
+                        ) : (
+                          <SkiaPath path={scope.areaP} color={TRACE} opacity={0.9} />
+                        )}
+                        {colorsOn ? (
+                          <SkiaPath path={scope.rmsP} opacity={0.6}>
+                            <SkiaGradient
+                              start={vec(0, scope.gradY0)}
+                              end={vec(0, scope.gradY1)}
+                              colors={WAVE_LEVEL_COLORS}
+                              positions={WAVE_LEVEL_POS}
+                            />
+                          </SkiaPath>
+                        ) : (
+                          <SkiaPath path={scope.rmsP} color={TRACE} opacity={0.6} />
+                        )}
+                        {scope.hasClip ? (
+                          <SkiaPath path={scope.clipP} color={colors.red} style="stroke" strokeWidth={scope.clipW} />
                         ) : null}
-                      </>
+                      </Canvas>
                     ) : null}
-                    {/* Frame. */}
-                    <Rect x={0.5} y={0.5} width={panelW - 1} height={PANEL_H - 1} stroke="#26262c" strokeWidth={1} fill="none" />
-                  </Svg>
+                  </View>
                 ) : null}
                 {frozen ? <Text style={styles.frozenBadge}>FROZEN</Text> : null}
               </Pressable>
@@ -464,6 +491,11 @@ export function WaveformScreen({ navigation }: Props) {
                 ) : null}
                 <Text style={styles.axisText}>now</Text>
               </View>
+              {__DEV__ ? (
+                <Text style={[styles.axisText, { color: '#ffb400' }]}>
+                  DEV · recv {liveBuckets.length} · cap {capRef.current} · {(bucketSec * 1000).toFixed(1)} ms/bkt · win {windowBuckets}
+                </Text>
+              ) : null}
             </View>
 
             {/* Vertical zoom (display scaling ONLY) + freeze. */}

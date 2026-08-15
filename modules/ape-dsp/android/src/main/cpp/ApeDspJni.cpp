@@ -35,6 +35,7 @@ namespace {
 constexpr size_t kRingCapacity = 1 << 18;  // 262144 frames ≈ 5.5 s @ 48 kHz
 constexpr size_t kScratchSize = 8192;
 constexpr double kStallSeconds = 0.5;
+constexpr double kReopenBackoffSeconds = 1.5;  // capture-recovery watchdog: min spacing between reopen attempts
 constexpr size_t kMaxWaveBuckets = 1200;  // 5 ms buckets × 1200 = 6 s (fine trace)
 
 double nowSeconds() {
@@ -299,12 +300,64 @@ class NativeEngine {
     return true;
   }
 
+  // Capture-recovery watchdog reopen — CALLED ONLY FROM the analysis thread (the
+  // sole thread that touches inStream_ while running). No detached recovery
+  // thread (the use-after-free hazard the disconnect policy warned about): a
+  // reopen cannot race stopCapture(), which sets running_=false and JOINS the
+  // analysis thread BEFORE it closes inStream_. Returns
+  // true if capture is live again; on failure the honest captureStalled state
+  // persists (the user can still re-arm STOP→START). Reopens at the same
+  // requested 48 kHz and does NOT reconfigure the engine or touch
+  // inRate_/framesBurst_/measurementMode_ (JNI-thread getters read those) — the
+  // reopened built-in/replacement mic matches the first open in practice, and
+  // skipping the reconfigure removes any race with the snapshot getters.
+  bool reopenInputStream() {
+    if (inStream_) {
+      inStream_->requestStop();
+      inStream_->close();
+      inStream_.reset();
+    }
+    oboe::AudioStreamBuilder b;
+    b.setDirection(oboe::Direction::Input)
+        ->setPerformanceMode(oboe::PerformanceMode::LowLatency)
+        ->setSharingMode(oboe::SharingMode::Exclusive)
+        ->setFormat(oboe::AudioFormat::Float)
+        ->setChannelCount(oboe::ChannelCount::Mono)
+        ->setSampleRate(48000)
+        ->setSampleRateConversionQuality(oboe::SampleRateConversionQuality::None)
+        ->setInputPreset(unprocessedSupported_ ? oboe::InputPreset::Unprocessed
+                                               : oboe::InputPreset::VoiceRecognition)
+        ->setDataCallback(&inputCb_);
+    inputCb_.eng = this;
+    if (b.openStream(inStream_) != oboe::Result::OK || !inStream_) {
+      inStream_.reset();
+      return false;
+    }
+    if (inStream_->getChannelCount() != 1 ||
+        inStream_->getFormat() != oboe::AudioFormat::Float) {
+      inStream_->close();
+      inStream_.reset();
+      return false;
+    }
+    // Clear only the ring (SPSC — no producer in this window, we ARE the
+    // consumer) so stale pre-stall audio isn't replayed on resume.
+    ring_->clear();
+    if (inStream_->requestStart() != oboe::Result::OK) {
+      inStream_->close();
+      inStream_.reset();
+      return false;
+    }
+    lastWriteAt_.store(nowSeconds());  // grace period before the next stall check
+    return true;
+  }
+
   void startAnalysisThread() {
     apedsp::SpscRing* ring = ring_;
     apedsp::EngineHub* engine = &engine_;
     float* scratch = scratch_;
     std::atomic<bool>* running = &running_;
-    analysisThread_ = std::thread([ring, engine, scratch, running]() {
+    analysisThread_ = std::thread([this, ring, engine, scratch, running]() {
+      double lastReopenAt = 0.0;
       while (running->load(std::memory_order_relaxed)) {
         size_t total = 0, n;
         while ((n = ring->read(scratch, kScratchSize)) > 0) {
@@ -314,6 +367,18 @@ class NativeEngine {
         }
         if (total == 0) engine->processChunk(nullptr, 0, ring->dropped(), true);
         engine->analysisTick();
+        // Capture-recovery watchdog (owner 2026-08-14): a device unplug / route
+        // change closes the input stream, the callback stops, and lastWriteAt_
+        // goes stale. Reopen HERE on this owned, joinable thread (never a
+        // detached one) — rate-limited so a permanently-dead input just leaves
+        // the honest captureStalled state instead of hammering opens.
+        const double now = nowSeconds();
+        if (running->load(std::memory_order_relaxed) &&
+            (now - lastWriteAt_.load(std::memory_order_relaxed)) > kStallSeconds &&
+            (now - lastReopenAt) > kReopenBackoffSeconds) {
+          lastReopenAt = now;
+          reopenInputStream();
+        }
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
       }
     });
