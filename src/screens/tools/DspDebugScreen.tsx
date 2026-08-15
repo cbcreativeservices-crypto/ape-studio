@@ -28,6 +28,10 @@ function Row({ label, value, warn = false }: { label: string; value: string; war
 export function DspDebugScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
   const available = ApeDsp.isAvailable();
+  // Definitive engine tier (JS-computed from the native surface): 0 = module
+  // absent, 1 = Spike-0 capture-only, 2+ = full engine (2 base … 7 wave-2).
+  // The live tools require ≥ 2; below that they show the honest EngineGate.
+  const engineVersion = available ? ApeDsp.engineVersion() : 0;
   const [info, setInfo] = useState<DspInfo | null>(null);
   const [frame, setFrame] = useState<DspFrame | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -83,7 +87,7 @@ export function DspDebugScreen({ navigation }: Props) {
         <Pressable onPress={() => navigation.goBack()} hitSlop={10}>
           <Text style={styles.back}>‹ BACK</Text>
         </Pressable>
-        <Text style={styles.title}>APE-DSP SPIKE 0 · DEBUG</Text>
+        <Text style={styles.title}>APE-DSP · DEBUG</Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll}>
@@ -107,6 +111,14 @@ export function DspDebugScreen({ navigation }: Props) {
             </View>
 
             {error ? <Text style={styles.notice}>{error}</Text> : null}
+
+            <Text style={styles.section}>ENGINE</Text>
+            <Row label="Module available" value={String(available)} warn={!available} />
+            <Row
+              label="engineVersion"
+              value={engineVersion === 0 ? '0 (absent)' : engineVersion === 1 ? '1 (Spike-0 — capture only)' : `${engineVersion} (full engine)`}
+              warn={engineVersion < 2}
+            />
 
             <Text style={styles.section}>METERS (D4 proof engine)</Text>
             <Row label="RMS" value={db(frame?.rmsDb)} />

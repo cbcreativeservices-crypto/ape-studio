@@ -340,6 +340,15 @@ export function HarmonicStems({
         style={styles.plot}
         onLayout={(e) => setPlotW(Math.round(e.nativeEvent.layout.width))}
         {...pan.panHandlers}
+        // Scoped scroll-lock (owner 2026-08-14): touching the PLOT locks the host
+        // ScrollView so a vertical stem drag wins over page scroll from the first
+        // pixel — the belt-and-braces for the move-based PanResponder above.
+        // Scoped HERE (not over the whole view) so the rest of the lab scrolls
+        // freely. Plain touch events don't collide with pan.panHandlers' responder
+        // handlers; the PanResponder's own grant/release also toggle onDragActive.
+        onTouchStart={() => onDragActive?.(true)}
+        onTouchEnd={() => onDragActive?.(false)}
+        onTouchCancel={() => onDragActive?.(false)}
       >
         {GRID_DB.map((db) => (
           <View key={db} style={[styles.gridLine, { top: gridTop(db) }]} pointerEvents="none" />

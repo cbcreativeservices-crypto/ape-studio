@@ -5,10 +5,10 @@
  * 2026-07-23 (ape-dsp): renders REAL fine-spectrum frames only — never a
  * simulated column (measurement-tools §1.7). Honesty rules embodied here:
  *  - all levels are dBFS, uncalibrated, and labeled so (never dB SPL);
- *  - the colormap is RELATIVE to the observed maximum over the selected
- *    dynamic range (spec §12 required warning: "Color intensity is relative
- *    to the selected scale." — printed on screen, always); the legend prints
- *    the exact anchor the colors are mapped to;
+ *  - the colormap is FIXED: 0 dBFS at the top of the scale, the selected
+ *    dynamic range below it (owner 2026-08-14 — supersedes the old
+ *    observed-max RELATIVE colormap so a later loud event NEVER recolours
+ *    already-drawn history); the legend prints the fixed dB endpoints;
  *  - FREEZE stops the scrolling history only; capture keeps running and is
  *    said so on screen — nothing pretends to be paused that isn't;
  *  - capture starts only on the explicit START press; the hook stops capture
@@ -30,9 +30,9 @@
  * work is: build 1 new column (≤32 small paths), unmount the oldest, move the
  * <G>. Total steady-state SVG nodes ≈ 160 cols × ~6–16 paths ≈ 1–2.5k
  * (worst-case bound 160 × 32 = 5,120) + ~8 static grid/frame nodes. History
- * only rebuilds wholesale when the color anchor re-anchors (±1/−3 dB
- * hysteresis) or the user changes the dynamic range — a one-time ~20k-run
- * pass, never per-poll. The 15 Hz meter poll never re-renders the SVG
+ * only rebuilds wholesale when the user changes the dynamic range (the colour
+ * scale is otherwise fixed at 0 dBFS, so history never recolours) — a one-time
+ * ~20k-run pass, never per-poll. The 15 Hz meter poll never re-renders the SVG
  * (React.memo keyed by the history reference); the 8 Hz column push touches
  * only the pieces above.
  */
@@ -94,13 +94,11 @@ const RASTER_LUT: ReadonlyArray<readonly [number, number, number]> = Array.from(
   },
 );
 
-/** Color-anchor hysteresis: history columns are frozen paths, so the anchor
- *  (the level the top of the colormap maps to) re-anchors — triggering a
- *  one-time history rebuild — only when the observed max rises >1 dB above it
- *  or falls ≥3 dB below it. The legend always prints the anchor actually in
- *  use; OBS MAX always prints the true observed maximum. */
-const ANCHOR_RISE_DB = 1;
-const ANCHOR_FALL_DB = 3;
+/** FIXED colour anchor (owner 2026-08-14): the top of the colormap is a
+ *  constant 0 dBFS, the selected dynamic range below it. A cell's colour is
+ *  therefore permanent — a later loud event never recolours history. OBS MAX
+ *  still prints the true observed maximum as a NUMBER. */
+const FIXED_ANCHOR_DB = 0;
 
 const GRID_H = 256; // grid pixel height; each of the 128 rows is 2 px tall
 const FREQ_LABELS = [
@@ -263,18 +261,18 @@ const SpectrogramGrid = memo(function SpectrogramGrid({
   speed,
 }: {
   history: SpectroColumnData[];
-  anchor: number | null;
+  anchor: number;
   dynRange: number;
   width: number;
   speed: number;
 }) {
   // The whole history is one image; it rebuilds only when a new column lands
-  // (8 Hz) or the scale/anchor moves — never on the 15 Hz meter poll (memo).
+  // (8 Hz) or the dynamic range changes — never on the 15 Hz meter poll (memo).
   const img = useMemo(
-    () => (anchor == null || history.length === 0 ? null : buildRasterImage(history, anchor, dynRange)),
+    () => (history.length === 0 ? null : buildRasterImage(history, anchor, dynRange)),
     [history, anchor, dynRange],
   );
-  if (width <= 0 || history.length === 0 || anchor == null) return null;
+  if (width <= 0 || history.length === 0) return null;
   // Each column is `speed`× wider → the waterfall scrolls `speed`× faster and
   // shows ~HISTORY_COLS/speed columns; the rest scroll off the (clipped) left.
   const colW = (width / HISTORY_COLS) * speed;
@@ -379,21 +377,9 @@ export function SpectrogramScreen({ navigation }: Props) {
     return Number.isFinite(m) ? m : null;
   }, [history]);
 
-  /** The color anchor the frozen column paths are actually mapped to —
-   *  follows observedMax with rise/fall hysteresis so history rebuilds stay
-   *  rare (see constant docs). The legend prints THIS value. */
-  const [anchor, setAnchor] = useState<number | null>(null);
-  useEffect(() => {
-    if (observedMax == null) {
-      setAnchor(null);
-      return;
-    }
-    setAnchor((a) =>
-      a == null || observedMax > a + ANCHOR_RISE_DB || a - observedMax >= ANCHOR_FALL_DB
-        ? observedMax
-        : a,
-    );
-  }, [observedMax]);
+  // The colour anchor is FIXED at 0 dBFS (owner 2026-08-14) — history never
+  // recolours. observedMax is kept for the OBS MAX numeric readout only.
+  const anchor = FIXED_ANCHOR_DB;
 
   // STOP must not collapse the tool back to the intro card (that shrinks the
   // ScrollView and jumps the scroll). Hold the view mounted via micPaused; the
@@ -409,7 +395,6 @@ export function SpectrogramScreen({ navigation }: Props) {
     // Fresh run = fresh timeline: stale columns from a previous run would lie
     // about time continuity across the stop gap.
     setHistory([]);
-    setAnchor(null);
     colIdRef.current = 0;
     frozenRef.current = false;
     setFrozen(false);
@@ -558,7 +543,7 @@ export function SpectrogramScreen({ navigation }: Props) {
 
               <Text style={styles.unitLine}>dBFS · uncalibrated approximate</Text>
               {/* Required warning (spec §12) — always visible while live. */}
-              <Text style={styles.scaleNote}>Color intensity is relative to the selected scale.</Text>
+              <Text style={styles.scaleNote}>Colors map to a fixed scale: 0 dBFS at the top, down by the selected range.</Text>
             </View>
 
             {/* Display guide + scroll-speed (owner 2026-07-31): 1× / 2× / 3×. */}
@@ -641,7 +626,7 @@ export function SpectrogramScreen({ navigation }: Props) {
                 ))}
               </View>
               <Text style={styles.legendText}>
-                {anchor != null ? `${fmtDb(anchor - dynRange)} → ${fmtDb(anchor)} dBFS` : '—'}
+                {`${fmtDb(anchor - dynRange)} → ${fmtDb(anchor)} dBFS`}
               </Text>
             </View>
 

@@ -155,7 +155,8 @@ const SPEC_POLL_MS = 150; // ~6.7 Hz column cadence — NOT the 15 Hz meter poll
 const ROWS = 96; // frequency cells — linear grid (LIN) or log-spaced buckets (LOG)
 const HIST_COLS = 120; // 120 × 0.15 s = 18 s of history
 const CELL_FLOOR_DB = -100; // honest "no energy registered" cell value
-const LIVE_RANGE_DB = 60; // color range below the observed maximum (legend/color math)
+const LIVE_RANGE_DB = 60; // color range below the FIXED ceiling (legend/color math)
+const LIVE_CEILING_DB = 0; // FIXED 0 dBFS colour/scale top (owner 2026-08-14) — the live spectrum scale glues to a fixed reference, never the observed max
 const LIVE_DRAW_RANGE_DB = 40; // heatmap DRAW threshold below the max — cells in the
 // bottom 20 dB of the color scale are near-black on black anyway, and skipping them
 // keeps columns sparse (≤8 short paths) even in quiet rooms where per-bin noise sits
@@ -348,7 +349,7 @@ function Chip({
  *  parent with unchanged props, so this only rebuilds at the ~6.7 Hz column
  *  cadence. Cells at/below the DRAW floor emit nothing — background is the
  *  floor (black, the ramp's zero), never a fabricated level. The draw floor
- *  is max(observedMax − LIVE_DRAW_RANGE_DB, CELL_FLOOR_DB): sentinel
+ *  is max(LIVE_CEILING_DB − LIVE_DRAW_RANGE_DB, CELL_FLOOR_DB): sentinel
  *  "no energy registered" cells can never draw regardless of how low the
  *  color scale slides, and only cells within 40 dB of the max emit
  *  segments, keeping path strings far below the ~11.5k-cell worst case
@@ -364,8 +365,8 @@ const LiveHeatmap = memo(function LiveHeatmap({
   width: number;
 }) {
   if (width <= 0 || history.length === 0 || observedMax == null) return null;
-  const scaleFloor = observedMax - LIVE_RANGE_DB; // color mapping — matches the legend
-  const drawFloor = Math.max(observedMax - LIVE_DRAW_RANGE_DB, CELL_FLOOR_DB);
+  const scaleFloor = LIVE_CEILING_DB - LIVE_RANGE_DB; // FIXED colour mapping (owner 2026-08-14) — matches the legend
+  const drawFloor = Math.max(LIVE_CEILING_DB - LIVE_DRAW_RANGE_DB, CELL_FLOOR_DB);
   const colW = width / HIST_COLS;
   const startCol = HIST_COLS - history.length; // newest column at the right edge
   const buckets: string[] = new Array<string>(LIVE_STEPS).fill('');
@@ -385,7 +386,11 @@ const LiveHeatmap = memo(function LiveHeatmap({
   return (
     <Svg width={width} height={TOP_H}>
       {buckets.map((d, i) =>
-        d === '' ? null : <Path key={STEP_COLORS[i]} d={d} stroke={STEP_COLORS[i]} strokeWidth={colW + 0.4} />,
+        // Key by INDEX, not colour: two ramp steps can share a hex (the wide
+        // green plateau has two #3fae52 stops), which collided as duplicate keys
+        // and threw every frame → LogBox thrash made live mode unusable (owner
+        // 2026-08-14; same fix the legend swatches got 2026-08-11).
+        d === '' ? null : <Path key={i} d={d} stroke={STEP_COLORS[i]} strokeWidth={colW + 0.4} />,
       )}
     </Svg>
   );
@@ -586,7 +591,7 @@ export function HarmonicsView({
   const liveSlicePath = useMemo(() => {
     if (view !== 'live' || sliceW <= 0 || history.length === 0 || observedMax == null) return '';
     const col = history[history.length - 1];
-    const floorLevel = observedMax - LIVE_RANGE_DB;
+    const floorLevel = LIVE_CEILING_DB - LIVE_RANGE_DB; // FIXED (owner 2026-08-14)
     const cellH = TOP_H / ROWS;
     let d = '';
     for (let r = 0; r < ROWS; r++) {
@@ -1452,7 +1457,7 @@ export function HarmonicsView({
             {view === 'model'
               ? `${MODEL_FLOOR_DB} → 0 dB re full scale`
               : observedMax != null
-                ? `${fmtDb(observedMax - LIVE_RANGE_DB)} → ${fmtDb(observedMax)} dBFS`
+                ? `${fmtDb(LIVE_CEILING_DB - LIVE_RANGE_DB)} → ${fmtDb(LIVE_CEILING_DB)} dBFS`
                 : '—'}
           </Text>
         </View>

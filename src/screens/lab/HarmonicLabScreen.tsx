@@ -34,7 +34,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ApeDsp } from '../../../modules/ape-dsp';
 import { EngineGate } from '../tools/EngineGate';
 import { HarmonicsView } from './HarmonicsView';
-import { InteractionZone, LabShell } from './LabShell';
+import { LabShell } from './LabShell';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import type { RootStackParamList } from '../../navigation/types';
 
@@ -76,9 +76,11 @@ export function HarmonicLabScreen(_props: Props) {
               entirely. The InteractionZone claims the touch at touch-start so
               stem drags win over scroll; onDragActive keeps the shell's scroll
               locked for the drag's duration (they compose). */}
-          <InteractionZone>
-            <HarmonicsView onDragActive={setScrollLocked} />
-          </InteractionZone>
+          {/* No whole-view scroll-lock: it trapped the page scroll (owner
+              2026-08-14). The lock is now SCOPED to the stem plot inside
+              HarmonicStems — touching the plot locks scroll so a stem drag wins,
+              while the rest of the lab (and all of live mode) scrolls freely. */}
+          <HarmonicsView onDragActive={setScrollLocked} />
         </>
       )}
     </LabShell>

@@ -23,20 +23,22 @@ completion status the owner signs off as we approach launch testing.
 | Metric | Count |
 |---|---|
 | **Incomplete (🔴 — needs dev work)** | **0** |
-| Blocked (🟡 — built, dependency-gated) | 9 |
-| Built, awaiting sign-off (🔵) | 69 |
+| Blocked (🟡 — built, dependency-gated) | 1 |
+| Built, awaiting sign-off (🔵) | 77 |
 | Signed off (🟢) | 0 |
 | Excluded (⚪ — parked/dev) | 2 |
 | **Total navigable screens (excl. ⚪)** | **78** |
 
 **So: "how many screens are incomplete?" → 0 need net-new build (audit found no
-stubs/partials); 9 are built but blocked on the native audio engine build (the
-live meters/tools) or a scoped sub-feature; 66 are built and awaiting your
-sign-off.**
+stubs/partials); the native audio engine went LIVE and was iOS-verified
+2026-08-14, so the 8 measurement tools moved 🟡→🔵; 1 remains blocked
+(PublicGlossary — scoped CM4 anon rendering, not the engine); 77 are built and
+awaiting your sign-off.**
 
-> 🟡 "Blocked" means the SCREEN is complete and shows honest gated states — the
-> blocker is the native DSP audio engine build (an infra dependency), not screen
-> code. When that engine ships, those 9 move to 🔵/🟢 in one pass.
+> 🟡 "Blocked" means the SCREEN is complete and shows honest gated states. The
+> native DSP audio engine SHIPPED and was iOS-verified 2026-08-14 — the 8
+> measurement tools are now 🔵. The remaining 🟡 (PublicGlossary) is gated by a
+> scoped content sub-feature (CM4 anon rendering), not the engine.
 
 > **Effect labs note:** the 12 effect-lab routes below (EqLab, DelayLab, ReverbLab,
 > ChorusLab, FlangerLab, PhaserLab, CompressionLab, GateLab, LimiterLab,
@@ -89,14 +91,14 @@ sign-off.**
 | ConceptModule | 🔵 | |
 | ToolLibrary (MeasurementLibrary) | 🔵 | Share branding unified 2026-08-10. |
 | ExposureMonitor (Listening Exposure) | 🔵 | Added 2026-08-12: app-wide audio dosimeter — check-ins, history, settings, privacy; works on any build (estimates labeled). |
-| SplMeter | 🟡 | Built; live audio needs native DSP engine build. |
-| Rta | 🟡 | Built; live audio needs native DSP engine build. |
-| WaveformLive | 🟡 | Built; live audio needs native DSP engine build. |
-| SignalGen | 🟡 | Built; live audio needs native DSP engine build. |
-| SpectrogramLive | 🟡 | Built; live audio needs native DSP engine build. |
-| Rt60Live | 🟡 | Built; live audio needs native DSP engine build. |
-| FrequencyCounter | 🟡 | Built; live audio needs native DSP engine build. |
-| MultiMeter | 🟡 | 1800+ lines built; live audio needs native DSP engine build. |
+| SplMeter | 🔵 | Engine LIVE — iOS-verified 2026-08-14. |
+| Rta | 🔵 | Engine LIVE — iOS-verified 2026-08-14. |
+| WaveformLive | 🔵 | Engine LIVE — iOS-verified 2026-08-14. |
+| SignalGen | 🔵 | Engine LIVE — iOS-verified 2026-08-14. |
+| SpectrogramLive | 🔵 | Engine LIVE — iOS-verified 2026-08-14. |
+| Rt60Live | 🔵 | Engine LIVE — iOS-verified 2026-08-14. |
+| FrequencyCounter | 🔵 | Engine LIVE — iOS-verified 2026-08-14. |
+| MultiMeter | 🔵 | 1800+ lines built; engine LIVE — iOS-verified 2026-08-14. |
 | DspDebug | ⚪ | Dev-only diagnostic screen — not shipped. |
 
 ## Effect & Fundamentals Labs

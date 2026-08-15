@@ -52,6 +52,10 @@ export type DspInfo = {
   stopReason: string;
   /** Rolling native lifecycle event log (spike diagnostics). */
   events: string[];
+  /** Diagnostic (iOS builds from 2026-08-14+): output render-block pulls since
+   *  the last generator start — 0 means the engine is not running the output
+   *  graph. Undefined on older builds (no engineVersion bump). */
+  genRenderPulls?: number;
 };
 
 /** Engine meter frame — dBFS values; peak may exceed 0 dBFS (finding F1). */

@@ -327,6 +327,8 @@ export function SignalGenScreen({ navigation }: Props) {
   const [sweepRepeat, setSweepRepeat] = useState(false);
   const [running, setRunning] = useState(false);
   const [status, setStatus] = useState<GenStatus | null>(() => (ready ? ApeDsp.genStatus() : null));
+  // Native session/route info — for the dev output diagnostics (why is it silent?).
+  const [info, setInfo] = useState<ReturnType<typeof ApeDsp.getInfo>>(() => ApeDsp.getInfo());
   const [genError, setGenError] = useState('');
   const [colorsOn, setColorsOn] = useColorModePref(); // waveform MIDI colours, persisted (items 6/7)
   const [scrollEnabled, setScrollEnabled] = useState(true); // released while dragging the freq slider
@@ -368,6 +370,7 @@ export function SignalGenScreen({ navigation }: Props) {
     if (!running) return;
     const t = setInterval(() => {
       setStatus(ApeDsp.genStatus());
+      setInfo(ApeDsp.getInfo());
       noteAudioActivity();
     }, STATUS_POLL_MS);
     return () => clearInterval(t);
@@ -657,6 +660,41 @@ export function SignalGenScreen({ navigation }: Props) {
                   {status ? `${status.effectiveLevelDb.toFixed(1)} dBFS` : '—'}
                 </Text>
               </View>
+              {/* DEV output diagnostics (why is it silent?) — hidden in production. */}
+              {__DEV__ ? (
+                <>
+                  <View style={styles.statusRow}>
+                    <Text style={styles.statusLabel}>ROUTE</Text>
+                    <Text style={styles.statusValue}>{info?.outputRoute || info?.routeName || '—'}</Text>
+                  </View>
+                  <View style={styles.statusRow}>
+                    <Text style={styles.statusLabel}>SESSION</Text>
+                    <Text style={styles.statusValue}>
+                      {info
+                        ? `${info.running ? 'capture ON' : 'idle'} · ${info.measurementMode ? 'MEASUREMENT' : 'default'}`
+                        : '—'}
+                    </Text>
+                  </View>
+                  <View style={styles.statusRow}>
+                    <Text style={styles.statusLabel}>PULLS</Text>
+                    <Text style={styles.statusValue}>{info?.genRenderPulls ?? '— (needs new build)'}</Text>
+                  </View>
+                  {status?.genHpfHz != null ? (
+                    <View style={styles.statusRow}>
+                      <Text style={styles.statusLabel}>SPEAKER HPF</Text>
+                      <Text style={styles.statusValue}>
+                        {status.genHpfEngaged ? `${Math.round(status.genHpfHz)} Hz` : 'off'}
+                      </Text>
+                    </View>
+                  ) : null}
+                  {info?.lastError ? (
+                    <View style={styles.statusRow}>
+                      <Text style={styles.statusLabel}>LAST ERROR</Text>
+                      <Text style={styles.statusValue}>{info.lastError}</Text>
+                    </View>
+                  ) : null}
+                </>
+              ) : null}
               <Text style={styles.caption}>dBFS · uncalibrated approximate — digital output level, not dB SPL · hold for help</Text>
               {genError ? <Text style={styles.errorText}>Generator error: {genError}</Text> : null}
             </Pressable>

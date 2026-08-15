@@ -182,7 +182,12 @@ public class ApeDspModule: Module {
          let ratio = fm["ratio"] as? Double, let index = fm["index"] as? Double {
         self.core.genSetFm(ratio, index: index, decay: (fm["decaySec"] as? Double) ?? 0.0)
       }
-      if let m = params["mode"] as? Int { self.core.genSetMode(Int32(m)) }
+      // JS numbers bridge to Swift as Double/NSNumber, NEVER Int — `as? Int`
+      // silently failed, so setMode was never called and the generator stayed at
+      // its default GenMode::Off: it rendered PURE SILENCE while genStatus still
+      // reported RUNNING + level (root cause of "no sound", owner 2026-08-14).
+      // Read via NSNumber so any numeric bridge type sets the mode.
+      if let m = (params["mode"] as? NSNumber)?.intValue { self.core.genSetMode(Int32(m)) }
     }
     Function("genUnlockCap") { () -> Void in
       self.core.genUnlockCap()
@@ -226,7 +231,7 @@ public class ApeDspModule: Module {
       self.core.binSetSource(
         Int32(sourceIdx),
         on: (params["on"] as? Bool) ?? false,
-        type: Int32((params["type"] as? Int) ?? 0),
+        type: Int32(((params["type"] as? NSNumber)?.intValue) ?? 0),  // JS num → NSNumber, not Int
         freq: (params["freq"] as? Double) ?? 440.0,
         levelDb: (params["levelDb"] as? Double) ?? -20.0,
         az: (params["azDeg"] as? Double) ?? 0.0,
@@ -314,6 +319,7 @@ public class ApeDspModule: Module {
     let engine = AVAudioEngine()
     let node = AVAudioSourceNode(format: format) { [weak self] _, _, frameCount, audioBufferList -> OSStatus in
       guard let self else { return noErr }
+      self.genRenderPulls &+= 1  // diagnostic — confirms the engine is pulling audio
       let abl = UnsafeMutableAudioBufferListPointer(audioBufferList)
       if abl.count >= 2, let lData = abl[0].mData, let rData = abl[1].mData {
         let l = lData.assumingMemoryBound(to: Float.self)
@@ -326,6 +332,13 @@ public class ApeDspModule: Module {
     }
     engine.attach(node)
     engine.connect(node, to: engine.mainMixerNode, format: format)
+    // Explicitly wire mainMixer → hardware output and pin the mixer volume. The
+    // auto-connection can silently fail to reach the speaker under .playAndRecord
+    // (the core renders, ROUTE reads Speaker, yet no sound) — connecting the tail
+    // of the graph by hand is the fix. (owner 2026-08-14)
+    engine.connect(engine.mainMixerNode, to: engine.outputNode, format: nil)
+    engine.mainMixerNode.outputVolume = 1.0
+    genRenderPulls = 0
     engine.prepare()
     try engine.start()
     outEngine = engine
@@ -335,6 +348,10 @@ public class ApeDspModule: Module {
     logEvent("generator output STARTED (\(Int(sr)) Hz)")
   }
 
+  // Diagnostic: output render-block pulls since the last generator start
+  // (0 ⇒ the engine isn't running the graph). Read approximately from getInfo()
+  // — a benign audio↔main-thread race, fine for a diagnostic.
+  private var genRenderPulls = 0
   private var observers: [NSObjectProtocol] = []
 
   // MARK: - Permission + start
@@ -380,6 +397,7 @@ public class ApeDspModule: Module {
       "lastError": lastError,
       "stopReason": stopReason,
       "events": events,
+      "genRenderPulls": genRenderPulls,
     ]
   }
 

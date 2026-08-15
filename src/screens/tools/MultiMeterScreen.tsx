@@ -169,9 +169,10 @@ const SG_DYN_RANGE = 60; // fixed dynamic range (compact panel — recorded on s
 const SG_LOG_MIN = Math.log(SG_F_MIN);
 const SG_LOG_SPAN = Math.log(SG_F_MAX) - SG_LOG_MIN;
 const SG_CELL_H = SG_H / SG_ROWS;
-/** Anchor hysteresis (SpectrogramScreen values) — history rebuilds stay rare. */
-const ANCHOR_RISE_DB = 1;
-const ANCHOR_FALL_DB = 3;
+/** FIXED colour anchor (owner 2026-08-14): the mini-spectrogram colormap top is
+ *  a constant 0 dBFS, SG_DYN_RANGE below it — no dynamic re-anchor to the signal,
+ *  so a later loud event never recolours history. */
+const SG_ANCHOR_DB = 0;
 
 /** MIDI-velocity rainbow — COPIED from SpectrogramScreen (owner 2026-07-29):
  *  near-silence stays deep navy, then blue → green → yellow → orange → red.
@@ -326,10 +327,10 @@ const SgGrid = memo(function SgGrid({
   width,
 }: {
   history: SgColumnData[];
-  anchor: number | null;
+  anchor: number;
   width: number;
 }) {
-  if (width <= 0 || history.length === 0 || anchor == null) return null;
+  if (width <= 0 || history.length === 0) return null;
   const colW = width / SG_COLS;
   const newestId = history[history.length - 1].id;
   const tx = width - (newestId + 1) * colW;
@@ -425,26 +426,11 @@ export function MultiMeterScreen({ navigation }: Props) {
     envBinsRef.current = null;
   }, []);
 
-  // Mini spectrogram history + color anchor (SpectrogramScreen idiom).
+  // Mini spectrogram history. Colour anchor is FIXED at 0 dBFS (SG_ANCHOR_DB,
+  // owner 2026-08-14) — the schema glues to a fixed reference; a later loud
+  // event never recolours already-drawn history.
   const [sgHistory, setSgHistory] = useState<SgColumnData[]>([]);
   const sgColIdRef = useRef(0);
-  const [sgAnchor, setSgAnchor] = useState<number | null>(null);
-  const sgObservedMax = useMemo(() => {
-    let m = -Infinity;
-    for (const c of sgHistory) if (c.max > m) m = c.max;
-    return Number.isFinite(m) ? m : null;
-  }, [sgHistory]);
-  useEffect(() => {
-    if (sgObservedMax == null) {
-      setSgAnchor(null);
-      return;
-    }
-    setSgAnchor((a) =>
-      a == null || sgObservedMax > a + ANCHOR_RISE_DB || a - sgObservedMax >= ANCHOR_FALL_DB
-        ? sgObservedMax
-        : a,
-    );
-  }, [sgObservedMax]);
 
   // Smart detection (multiMeterDetect — pure fns; refs carry tracker state).
   const detectStateRef = useRef<DetectState>(initialDetectState());
@@ -637,7 +623,6 @@ export function MultiMeterScreen({ navigation }: Props) {
     sgBinsRef.current = null;
     setSpecView(null);
     setSgHistory([]);
-    setSgAnchor(null);
     sgColIdRef.current = 0;
     detectStateRef.current = initialDetectState();
     chipStateRef.current = {};
@@ -1175,7 +1160,7 @@ export function MultiMeterScreen({ navigation }: Props) {
                   <Text style={styles.miniEyebrow}>SPECTROGRAM</Text>
                 </Pressable>
                 <View style={styles.sgSurface}>
-                  <SgGridSized history={sgHistory} anchor={sgAnchor} />
+                  <SgGridSized history={sgHistory} anchor={SG_ANCHOR_DB} />
                 </View>
                 <Text style={styles.miniMeta}>
                   {SG_F_MIN}–{SG_F_MAX / 1000}k · {SG_DYN_RANGE} dB · ~{(1000 / (SPEC_POLL_MS * SLOW_EVERY)).toFixed(0)} col/s
@@ -1518,7 +1503,7 @@ export function MultiMeterScreen({ navigation }: Props) {
 
 /** Width-measuring host for the memoized raster (keeps SgGrid's memo keyed by
  *  the history reference — layout state lives here, not in the screen body). */
-function SgGridSized({ history, anchor }: { history: SgColumnData[]; anchor: number | null }) {
+function SgGridSized({ history, anchor }: { history: SgColumnData[]; anchor: number }) {
   const [w, setW] = useState(0);
   return (
     <View style={{ height: SG_H }} onLayout={(e) => setW(Math.round(e.nativeEvent.layout.width))}>
