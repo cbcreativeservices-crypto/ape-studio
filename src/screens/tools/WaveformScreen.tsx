@@ -491,11 +491,6 @@ export function WaveformScreen({ navigation }: Props) {
                 ) : null}
                 <Text style={styles.axisText}>now</Text>
               </View>
-              {__DEV__ ? (
-                <Text style={[styles.axisText, { color: '#ffb400' }]}>
-                  DEV · recv {liveBuckets.length} · cap {capRef.current} · {(bucketSec * 1000).toFixed(1)} ms/bkt · win {windowBuckets}
-                </Text>
-              ) : null}
             </View>
 
             {/* Vertical zoom (display scaling ONLY) + freeze. */}
