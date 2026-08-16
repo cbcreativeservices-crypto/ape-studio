@@ -10,7 +10,8 @@
  * mount points.
  */
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { connectorImageUrl } from '../connectorImages';
 import { colors, fonts } from '../../../../theme/tokens';
 import { CONNECTOR_INKS, CONNECTOR_INK_LABELS, type ConnectorInk } from '../connectorInks';
 import type { ConnectorRecord, PinoutVariant } from '../cableTypes';
@@ -77,10 +78,20 @@ function Pinout({ v }: { v: PinoutVariant }) {
 
 export function ConnectorCard({ rec }: { rec: ConnectorRecord }) {
   const hazard = rec.safety.level === 'mains' || rec.safety.level === 'speaker';
+  // Existing glossary term image (owner ruling 2026-08-16) — renders nothing
+  // for connectors not yet mapped; never a placeholder.
+  const imageUri = connectorImageUrl(rec.id);
   return (
     <View style={styles.card}>
-      {/* ART SLOT: owner-supplied connector illustration mounts here (front/
-          side/mating views) once delivered — nothing renders until then. */}
+      {imageUri ? (
+        <View
+          style={styles.imageFrame}
+          accessible
+          accessibilityLabel={`Photograph of a ${rec.displayName} connector`}
+        >
+          <Image source={{ uri: imageUri }} style={styles.image} resizeMode="contain" />
+        </View>
+      ) : null}
       <Text style={styles.name}>{rec.displayName.toUpperCase()}</Text>
       {rec.aliases.length ? <Text style={styles.hint}>{`Also called: ${rec.aliases.join(' · ')}`}</Text> : null}
       {rec.tier !== 'core' ? (
@@ -212,6 +223,17 @@ const styles = StyleSheet.create({
     padding: 12,
     gap: 7,
   },
+  imageFrame: {
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#232329',
+    backgroundColor: '#0c0d11',
+    height: 150,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  image: { width: '100%', height: '100%' },
   name: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.8, color: colors.textPrimary },
   // Safety-boundary text — MIN_FONT_SIZE 12 applies (sweep 2026-08-15).
   tierBadge: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.1, color: colors.orange },

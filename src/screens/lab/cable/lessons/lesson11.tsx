@@ -12,7 +12,7 @@
  * on the FINISH tap after that challenge's final stage is genuinely solved
  * (challenge_a / challenge_b units; lesson01 FINISH-tap precedent).
  */
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { markLabUnit } from '../../../../features/lab/labCompletion';
 import { colors, fonts } from '../../../../theme/tokens';
@@ -37,7 +37,11 @@ import {
   PrincipleBanner,
   VerdictBanner,
   lessonStyles as s,
+  useReduceMotion,
 } from './bits';
+
+/** Per-item cadence of the power-up cascade after a correct order (ms). */
+const CASCADE_STEP_MS = 220;
 
 /** Persisted-across-tab-switch progress for one challenge. Transient pick /
  *  order / verdict state deliberately lives in the (remounting) stage blocks. */
@@ -131,6 +135,28 @@ function OrderBlock({ stage, onDone }: { stage: OrderStage; onDone: () => void }
   const [order, setOrder] = useState<string[]>([]);
   const [result, setResult] = useState<'ok' | 'wrong' | null>(null);
 
+  // Power-up cascade (owner direction 2026-08-15: strategic animation): on a
+  // correct order the items "come alive" one by one IN THE LEARNER'S SEQUENCE
+  // — sources first, amplification last. Instant under reduced motion; purely
+  // reinforcing (the verdict banner + badge numbers carry the state).
+  const reduceMotion = useReduceMotion();
+  const [lit, setLit] = useState(0);
+  useEffect(() => {
+    if (result !== 'ok') {
+      setLit(0);
+      return;
+    }
+    if (reduceMotion) {
+      setLit(order.length);
+      return;
+    }
+    setLit(0);
+    const timer = setInterval(() => {
+      setLit((n) => (n + 1 >= order.length ? order.length : n + 1));
+    }, CASCADE_STEP_MS);
+    return () => clearInterval(timer);
+  }, [result, reduceMotion, order.length]);
+
   const toggle = useCallback(
     (id: string) => {
       if (result === 'ok') return;
@@ -169,6 +195,7 @@ function OrderBlock({ stage, onDone }: { stage: OrderStage; onDone: () => void }
         {stage.items.map((item) => {
           const pos = order.indexOf(item.id);
           const inOrder = pos >= 0;
+          const powered = result === 'ok' && pos >= 0 && pos < lit;
           return (
             <Pressable
               key={item.id}
@@ -177,10 +204,18 @@ function OrderBlock({ stage, onDone }: { stage: OrderStage; onDone: () => void }
               accessibilityRole="button"
               accessibilityState={{ selected: inOrder, disabled: result === 'ok' }}
               accessibilityLabel={`${item.label}${inOrder ? `, position ${pos + 1}` : ', not yet ordered'}`}
-              style={[styles.row, inOrder && styles.rowActive, result === 'ok' && { opacity: 0.75 }]}
+              style={[
+                styles.row,
+                inOrder && styles.rowActive,
+                result === 'ok' && !powered && { opacity: 0.75 },
+                powered && styles.rowPowered,
+              ]}
             >
-              <View style={[styles.badge, inOrder && styles.badgeActive]}>
-                <Text style={[styles.badgeText, inOrder && styles.badgeTextActive]} maxFontSizeMultiplier={1.5}>
+              <View style={[styles.badge, inOrder && styles.badgeActive, powered && styles.badgePowered]}>
+                <Text
+                  style={[styles.badgeText, inOrder && styles.badgeTextActive, powered && styles.badgeTextPowered]}
+                  maxFontSizeMultiplier={1.5}
+                >
                   {inOrder ? pos + 1 : '·'}
                 </Text>
               </View>
@@ -472,6 +507,11 @@ const styles = StyleSheet.create({
   badgeActive: { borderColor: 'rgba(255,198,77,.8)', backgroundColor: '#1a1409' },
   badgeText: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub },
   badgeTextActive: { color: colors.amber },
+  // Power-up cascade (done-green panel family; state also carried by badge
+  // numbers + the verdict banner — never color alone).
+  rowPowered: { borderColor: 'rgba(55,224,95,.55)', backgroundColor: '#0c1a10' },
+  badgePowered: { borderColor: 'rgba(55,224,95,.8)' },
+  badgeTextPowered: { color: colors.green },
   stageLine: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17.5, color: colors.textSub },
   stageLineDone: { color: colors.green },
   stageLineActive: { color: colors.amber },

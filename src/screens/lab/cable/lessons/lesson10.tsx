@@ -14,8 +14,8 @@
  * markLabUnit('af_cables', TESTER_UNIT) fires exactly once, when the eighth
  * cable's disposition is genuinely solved (§1.7 honesty).
  */
-import { useCallback, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { AccessibilityInfo, StyleSheet, Text, View } from 'react-native';
 import { markLabUnit } from '../../../../features/lab/labCompletion';
 import { colors, fonts } from '../../../../theme/tokens';
 import { TESTER_UNIT } from '../cableTypes';
@@ -39,6 +39,7 @@ import {
   PrincipleBanner,
   VerdictBanner,
   lessonStyles as s,
+  useReduceMotion,
   type Verdict,
 } from './bits';
 
@@ -46,9 +47,46 @@ function faultLabel(cable: TesterCable): string {
   return cable.faultOptions.find((o) => o.id === cable.faultId)?.label ?? cable.faultId;
 }
 
+/** Per-row scan cadence for the animated test run (ms). */
+const SCAN_STEP_MS = 150;
+
 /** Expected-vs-measured continuity map: monospace labeled rows, mismatches
- *  marked ✕ + the word FAULT, matches ✓ — glyphs and words, never color alone. */
-function ContinuityMap({ cable }: { cable: TesterCable }) {
+ *  marked ✕ + the word FAULT, matches ✓ — glyphs and words, never color alone.
+ *  With `animate`, rows reveal sequentially like a tester stepping through
+ *  conductors (owner direction 2026-08-15: strategic animation); static under
+ *  reduced motion, and the finished map is announced either way. */
+function ContinuityMap({ cable, animate }: { cable: TesterCable; animate?: boolean }) {
+  const reduceMotion = useReduceMotion();
+  const total = cable.expectedMap.length;
+  const [shown, setShown] = useState(animate ? 0 : total);
+
+  useEffect(() => {
+    if (!animate || reduceMotion) {
+      setShown(total);
+      return;
+    }
+    setShown(0);
+    const timer = setInterval(() => {
+      setShown((n) => (n + 1 >= total ? total : n + 1));
+    }, SCAN_STEP_MS);
+    return () => clearInterval(timer);
+  }, [animate, reduceMotion, total, cable.id]);
+
+  const done = shown >= total;
+  useEffect(() => {
+    if (animate && done) {
+      // Announce, never move focus (house §23 rule) — the scan's end state
+      // must not be silent to screen readers.
+      AccessibilityInfo.announceForAccessibility(`Test complete. ${total} paths measured.`);
+    }
+  }, [animate, done, total]);
+  useEffect(() => {
+    if (animate && !done) {
+      const t = setTimeout(() => setShown(total), SCAN_STEP_MS * (total + 2));
+      return () => clearTimeout(t); // backstop: the scan can never stall short
+    }
+  }, [animate, done, total]);
+
   return (
     <View style={st.map}>
       {/* ART SLOT: owner-supplied animated internal-wiring trace lands here —
@@ -61,7 +99,7 @@ function ContinuityMap({ cable }: { cable: TesterCable }) {
         <Text style={[st.mapCell, st.mapHead, st.cellVal]}>EXPECTED</Text>
         <Text style={[st.mapCell, st.mapHead, st.cellMeas]}>MEASURED</Text>
       </View>
-      {cable.expectedMap.map((exp, i) => {
+      {cable.expectedMap.slice(0, shown).map((exp, i) => {
         const meas = cable.actualMap[i] ?? exp;
         const ok = meas.value === exp.value;
         return (
@@ -74,6 +112,11 @@ function ContinuityMap({ cable }: { cable: TesterCable }) {
           </View>
         );
       })}
+      {!done ? (
+        <View style={st.mapRow}>
+          <Text style={[st.mapCell, st.cellPath, st.scanText]}>TESTING…</Text>
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -192,7 +235,7 @@ export function Lesson10Body() {
                 <OptionChip label="RUN TEST ›" active action onPress={() => setTested(true)} />
               </>
             ) : (
-              <ContinuityMap cable={cable} />
+              <ContinuityMap cable={cable} animate />
             )}
           </DetailCard>
 
@@ -270,6 +313,7 @@ const st = StyleSheet.create({
   mapCell: { fontFamily: fonts.mono, fontSize: 12, lineHeight: 17, color: colors.textSecondary },
   mapHead: { color: colors.amberLabel },
   cellPath: { flex: 1.15 },
+  scanText: { color: colors.amberLabel },
   cellVal: { flex: 0.75 },
   cellMeas: { flex: 1.3 },
   cellOk: { color: colors.green },

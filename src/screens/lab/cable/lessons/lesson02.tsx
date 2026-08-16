@@ -12,7 +12,7 @@
  * an ART SLOT comment at the mount point.
  */
 import { useCallback, useRef, useState } from 'react';
-import { AccessibilityInfo, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, LayoutAnimation, Platform, StyleSheet, Text, UIManager, View } from 'react-native';
 import { markLabUnit } from '../../../../features/lab/labCompletion';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { CableSectionId } from '../cableTypes';
@@ -24,7 +24,13 @@ import {
   L02_CHECKS,
   L02_RULE,
 } from '../data/lesson02';
-import { CheckDoneBanner, DetailCard, Eyebrow, LessonBanner, OptionChip, lessonStyles as s } from './bits';
+import { CheckDoneBanner, DetailCard, Eyebrow, LessonBanner, OptionChip, lessonStyles as s, useReduceMotion } from './bits';
+
+// LayoutAnimation opt-in on old-architecture Android (house convention:
+// per-file, like LabShell/MatchingScreen; a no-op under the New Architecture).
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 export function Lesson02Body() {
   // ── term explorers (§5.2a) — one selection per group ───────────────────
@@ -41,13 +47,17 @@ export function Lesson02Body() {
   const revealed = Math.min(peeled[sec.id] ?? 0, sec.layers.length);
   const fullyPeeled = CROSS_SECTIONS.filter((c) => (peeled[c.id] ?? 0) >= c.layers.length).length;
 
+  const reduceMotion = useReduceMotion();
   const peelNext = useCallback(() => {
+    // Strategic animation (owner 2026-08-15): each peel eases the next layer
+    // row in rather than snapping; static under reduced motion.
+    if (!reduceMotion) LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setPeeled((p) => {
       const cur = p[sec.id] ?? 0;
       if (cur >= sec.layers.length) return p;
       return { ...p, [sec.id]: cur + 1 };
     });
-  }, [sec]);
+  }, [sec, reduceMotion]);
 
   // ── knowledge check (§5.2c) — three CheckQuestions mount together, so the
   //    aggregate lives here (DetectiveModule idiom, local solved set) ──────
