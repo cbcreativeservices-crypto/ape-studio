@@ -16,7 +16,7 @@ export function EngineGate({ state, lastError }: { state: EngineState; lastError
       ? {
           title: 'MEASUREMENT ENGINE — NOT IN THIS BUILD',
           body:
-            'This install does not include the native audio engine (it ships in iOS development builds). ' +
+            'This install does not include the native audio engine (it ships in the app’s full iOS and Android builds). ' +
             'No simulated readings are shown in its place — a meter that looks live but isn’t would ' +
             'violate the measurement-integrity rules this module is built on.',
         }

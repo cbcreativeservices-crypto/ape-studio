@@ -6,7 +6,6 @@
  */
 import { supabase } from '../../lib/supabase';
 import { SUPABASE_URL } from '../../lib/env';
-import { devBypass } from '../../config/devMode';
 
 export type GlossaryItem = {
   id: string;
@@ -303,11 +302,7 @@ export function studyDisplayPct(
       credit += (v.correct ?? 0) >= 1 ? 1 : 0;
     }
   }
-  // ⏳ TEMP dev fast-complete (devMode.ts → devFastComplete, ~48h): 10 engaged
-  // items = 100% (viewed/known for flashcards, correct for homework). Applies to
-  // the in-screen meters AND the Dashboard, so the flow can be tested fast.
-  const denom = devBypass('devFastComplete') ? Math.min(totalItems, 10) : totalItems;
-  return Math.min(100, (credit / denom) * 100);
+  return Math.min(100, (credit / totalItems) * 100);
 }
 
 /**

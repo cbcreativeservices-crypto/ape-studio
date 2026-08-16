@@ -227,22 +227,10 @@ function methodDisplayPct(
   requiredPasses: number,
 ): number {
   if (key === 'scenarios') {
-    // Production: round-based server completion. Dev fast-complete (⏳ TEMP,
-    // devMode.ts → devFastComplete): a finished round OR 10 answered questions
-    // (via the local mirror ScenariosScreen now writes) = 100%, so scenarios
-    // completes and the quiz unlocks without a server round-trip.
-    if (devBypass('devFastComplete')) {
-      const st = (row?.item_states ?? {}) as Record<string, unknown>;
-      // Done if the server says so, OR a scenario round was finished locally
-      // (the ScenariosScreen "_done" sentinel — covers thin/low-count content),
-      // OR 10 questions were answered.
-      if ((row?.completion_pct ?? 0) > 0 || st['_done']) return 100;
-      const answered = Object.keys(st).filter((k) => !k.startsWith('_')).length;
-      return Math.min(100, answered * 10);
-    }
+    // Round-based server completion (record_scenario_answer / round RPCs).
     return Math.round(row?.completion_pct ?? 0);
   }
-  // flashcards / fill-in-blank / matching: studyDisplayPct honors devFastComplete.
+  // flashcards / fill-in-blank / matching: full-set completion via studyDisplayPct.
   return studyDisplayPct(
     (row?.item_states ?? {}) as Parameters<typeof studyDisplayPct>[0],
     itemCount,

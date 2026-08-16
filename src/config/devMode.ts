@@ -16,10 +16,10 @@ export const DEV_BYPASS = {
    *  NOTE: the server (`start_quiz_attempt`) still re-checks gates — if it
    *  refuses, the client shows the server error; that is expected and the
    *  backend is frozen (do not "fix" it client-side beyond this bypass). */
-  // OFF (owner 2026-08-13): with devFastComplete each method completes in 10
-  // items, so the quiz can be unlocked LEGITIMATELY through the real staged gate
-  // (flashcards → fill-in-blank + matching → scenarios → quiz). Forcing the quiz
-  // always-ready hid that gate and showed READY with nothing complete.
+  // OFF (owner 2026-08-13): the quiz should unlock LEGITIMATELY through the
+  // real staged gate (flashcards → fill-in-blank + matching → scenarios →
+  // quiz). Forcing it always-ready hid that gate and showed READY with
+  // nothing complete.
   bypassQuizLocks: false,
   /** Topic frontier + method dead-switches ignored: every topic reachable,
    *  every method tappable (screens may be empty if a topic has no content).
@@ -47,14 +47,10 @@ export const DEV_BYPASS = {
    *  bypasses them in __DEV__; the constants themselves are untouched, so
    *  flipping this to false restores the governed behavior exactly. */
   instantIntros: true,
-  /** ⏳ TEMPORARY (owner 2026-08-13, ~48h — REMOVE after 2026-08-15): fast-complete
-   *  the study methods so the flashcards → homework → quiz flow can be tested
-   *  quickly. Flashcards reach 100% at 10 cards VIEWED (10%/card); Fill-in-Blank
-   *  and Matching at 10 questions ANSWERED (10%/question); Scenarios (round-based,
-   *  no per-item state) completes after the first finished round. __DEV__-guarded,
-   *  so a release build ignores it regardless — flip to false when done testing. */
-  devFastComplete: true,
 } as const;
+// (devFastComplete — the ⏳ TEMP 2026-08-13 fast-complete aid — was REMOVED
+// on schedule 2026-08-16, along with its consumers in study/api.ts and
+// DashboardScreen. Method completion is back to full-set thresholds.)
 
 /** True only in dev builds AND when at least one bypass is on. */
 export const DEV_BYPASS_ACTIVE =
