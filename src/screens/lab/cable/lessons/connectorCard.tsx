@@ -9,9 +9,9 @@
  * swatches (+ text labels, never color alone). ART SLOT comments mark the
  * mount points.
  */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import { connectorImageUrl } from '../connectorImages';
+import { connectorImages } from '../connectorImages';
 import { colors, fonts } from '../../../../theme/tokens';
 import { CONNECTOR_INKS, CONNECTOR_INK_LABELS, type ConnectorInk } from '../connectorInks';
 import type { ConnectorRecord, PinoutVariant } from '../cableTypes';
@@ -78,18 +78,39 @@ function Pinout({ v }: { v: PinoutVariant }) {
 
 export function ConnectorCard({ rec }: { rec: ConnectorRecord }) {
   const hazard = rec.safety.level === 'mains' || rec.safety.level === 'speaker';
-  // Existing glossary term image (owner ruling 2026-08-16) — renders nothing
-  // for connectors not yet mapped; never a placeholder.
-  const imageUri = connectorImageUrl(rec.id);
+  // Glossary term photos (owner ruling 2026-08-16) — one image, or a labeled
+  // MALE/FEMALE/CABLE gallery for connectors with multiple views. Renders
+  // nothing for unmapped connectors; never a placeholder.
+  const images = connectorImages(rec.id);
+  const [imgIdx, setImgIdx] = useState(0);
+  useEffect(() => setImgIdx(0), [rec.id]); // reset gallery when the card switches connectors
+  const active = images[Math.min(imgIdx, images.length - 1)];
   return (
     <View style={styles.card}>
-      {imageUri ? (
+      {active ? (
         <View
           style={styles.imageFrame}
           accessible
-          accessibilityLabel={`Photograph of a ${rec.displayName} connector`}
+          accessibilityLabel={`Photograph of a ${rec.displayName} connector${active.label ? `, ${active.label.toLowerCase()} view` : ''}`}
         >
-          <Image source={{ uri: imageUri }} style={styles.image} resizeMode="contain" />
+          <Image source={{ uri: active.url }} style={styles.image} resizeMode="contain" />
+        </View>
+      ) : null}
+      {images.length > 1 ? (
+        <View style={styles.galleryRow}>
+          {images.map((im, i) => (
+            <Pressable
+              key={im.url}
+              onPress={() => setImgIdx(i)}
+              hitSlop={{ top: 6, bottom: 6 }}
+              accessibilityRole="button"
+              accessibilityState={{ selected: i === imgIdx }}
+              accessibilityLabel={`${im.label} view`}
+              style={[styles.galleryChip, i === imgIdx && styles.galleryChipActive]}
+            >
+              <Text style={[styles.galleryChipText, i === imgIdx && styles.galleryChipTextActive]}>{im.label}</Text>
+            </Pressable>
+          ))}
         </View>
       ) : null}
       <Text style={styles.name}>{rec.displayName.toUpperCase()}</Text>
@@ -234,6 +255,18 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   image: { width: '100%', height: '100%' },
+  galleryRow: { flexDirection: 'row', gap: 6, justifyContent: 'center' },
+  galleryChip: {
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#131316',
+    paddingVertical: 5,
+    paddingHorizontal: 12,
+  },
+  galleryChipActive: { borderColor: 'rgba(255,198,77,.65)', backgroundColor: '#1a1409' },
+  galleryChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textSecondary },
+  galleryChipTextActive: { color: colors.amber },
   name: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.8, color: colors.textPrimary },
   // Safety-boundary text — MIN_FONT_SIZE 12 applies (sweep 2026-08-15).
   tierBadge: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.1, color: colors.orange },

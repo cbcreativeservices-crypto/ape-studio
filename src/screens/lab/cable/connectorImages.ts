@@ -80,12 +80,40 @@ const CONNECTOR_IMAGE_FILES: Partial<Record<ConnectorId, string>> = {
   socapex_style: 'socapex.webp',
 };
 
-/** Public Storage URL for a connector image, or null when none is mapped. */
+/** Connectors with MULTIPLE views worth showing side by side (owner
+ *  enhancement 2026-08-16). The card renders these as a small labeled gallery;
+ *  every file here is also uploaded + verified live. Connectors absent from
+ *  this map fall back to the single CONNECTOR_IMAGE_FILES entry. */
+const CONNECTOR_IMAGE_GALLERIES: Partial<Record<ConnectorId, { file: string; label: string }[]>> = {
+  xlr3: [
+    { file: 'xlr-male.webp', label: 'MALE' },
+    { file: 'xlr-female.webp', label: 'FEMALE' },
+    { file: 'xlr-cable.webp', label: 'CABLE' },
+  ],
+};
+
+export type ConnectorImage = { url: string; label: string };
+
+function bucketUrl(file: string): string {
+  return `${SUPABASE_URL}/storage/v1/object/public/glossary-images/${file}`;
+}
+
+/** All images to show for a connector: the multi-view gallery if it has one,
+ *  else its single image, else []. Single-image connectors carry an empty
+ *  label (no view to disambiguate). */
+export function connectorImages(id: ConnectorId): ConnectorImage[] {
+  const gallery = CONNECTOR_IMAGE_GALLERIES[id];
+  if (gallery) return gallery.map((g) => ({ url: bucketUrl(g.file), label: g.label }));
+  const single = CONNECTOR_IMAGE_FILES[id];
+  return single ? [{ url: bucketUrl(single), label: '' }] : [];
+}
+
+/** Public Storage URL for a connector's primary image, or null when none is
+ *  mapped (kept for any single-image caller). */
 export function connectorImageUrl(id: ConnectorId): string | null {
-  const file = CONNECTOR_IMAGE_FILES[id];
-  return file ? `${SUPABASE_URL}/storage/v1/object/public/glossary-images/${file}` : null;
+  return connectorImages(id)[0]?.url ?? null;
 }
 
 export function hasConnectorImage(id: ConnectorId): boolean {
-  return CONNECTOR_IMAGE_FILES[id] != null;
+  return CONNECTOR_IMAGE_FILES[id] != null || CONNECTOR_IMAGE_GALLERIES[id] != null;
 }
