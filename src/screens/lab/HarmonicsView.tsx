@@ -161,7 +161,9 @@ const LIVE_DRAW_RANGE_DB = 40; // heatmap DRAW threshold below the max — cells
 // bottom 20 dB of the color scale are near-black on black anyway, and skipping them
 // keeps columns sparse (≤8 short paths) even in quiet rooms where per-bin noise sits
 // above CELL_FLOOR_DB; the legend keeps reporting the full LIVE_RANGE_DB scale.
-const WAVE_BUCKETS = 120; // live waveform strip columns (50 ms buckets)
+const LIVE_WAVE_WINDOW_SEC = 2; // live strip time window (resolution-agnostic)
+const LIVE_WAVE_HISTORY_SEC = 6; // WaveEnvelope ring span; bucket duration derived from the live count
+const WAVE_MAX_COLS = 128; // min/max downsample columns — high-res peak envelope, light (SVG)
 
 // Generator: Q4 safe default, cap never unlocked here.
 const GEN_LEVEL_DB = -20;
@@ -608,32 +610,59 @@ export function HarmonicsView({
    *  vertical stroke segments (WaveformScreen idiom). */
   const liveWave = useMemo(() => {
     if (view !== 'live' || waveW <= 0 || frames.waveform.length === 0) return null;
-    const buckets = frames.waveform.slice(0, WAVE_BUCKETS).reverse();
-    const n = buckets.length;
+    // Resolution-agnostic 2 s window over the fine engine history (owner
+    // 2026-08-15) — auto-adapts to the native bucket duration.
+    const total = frames.waveform.length;
+    const wantBuckets = Math.max(1, Math.round(total * (LIVE_WAVE_WINDOW_SEC / LIVE_WAVE_HISTORY_SEC)));
+    const src = frames.waveform.slice(0, wantBuckets).reverse(); // oldest → newest
+    const n = src.length;
+    if (n === 0) return null;
     let observed = 1;
-    for (const b of buckets) {
+    for (const b of src) {
       const m = Math.max(Math.abs(b.min), Math.abs(b.max));
       if (m > observed) observed = m;
     }
+    // Same scale rule as the Waveform Viewer: fixed full-scale for normal signal
+    // (no size pulsing, no transient-crush "outline"), expands only past 0 dBFS.
+    const scaleMax = Math.max(1.05, observed);
     const mid = WAVE_H / 2;
     const usable = mid - 3;
-    const colW = waveW / WAVE_BUCKETS;
-    const y = (v: number) => Math.min(WAVE_H - 1, Math.max(1, mid - (v / observed) * usable));
-    let d = '';
-    for (let i = 0; i < n; i++) {
-      const b = buckets[i];
-      const x = (waveW - (n - i - 0.5) * colW).toFixed(1);
-      let y1 = y(b.max);
-      let y2 = y(b.min);
+    const y = (v: number) => Math.min(WAVE_H - 1, Math.max(1, mid - (v * usable) / scaleMax));
+    // MIN/MAX downsample the fine buckets to a bounded column count — keeps every
+    // peak (DAW envelope) at high resolution, one filled body (no outline), light.
+    const cols = Math.max(1, Math.min(n, Math.round(waveW), WAVE_MAX_COLS));
+    const colW = waveW / cols;
+    let top = '';
+    let bottomRev = '';
+    for (let i = 0; i < cols; i++) {
+      const b0 = Math.floor((i / cols) * n);
+      const b1 = Math.min(n, Math.max(b0 + 1, Math.floor(((i + 1) / cols) * n)));
+      let mn = Infinity;
+      let mx = -Infinity;
+      for (let k = b0; k < b1; k++) {
+        const b = src[k];
+        if (b.max > mx) mx = b.max;
+        if (b.min < mn) mn = b.min;
+      }
+      if (mx === -Infinity) {
+        mx = 0;
+        mn = 0;
+      }
+      const x = ((i + 0.5) * colW).toFixed(1);
+      let y1 = y(mx);
+      let y2 = y(mn);
       if (y2 - y1 < 1) {
         y1 -= 0.5;
         y2 += 0.5;
       }
-      d += `M${x},${y1.toFixed(1)}L${x},${y2.toFixed(1)}`;
+      const cmd = i === 0 ? 'M' : 'L';
+      top += `${cmd}${x},${y1.toFixed(1)}`;
+      bottomRev = `L${x},${y2.toFixed(1)}` + bottomRev;
     }
     // Level-colour axis (loudness ramp keyed to amplitude — red at ±full, deep
     // green at the zero line), the SPL-VU standard shared across the app.
-    return { d, strokeW: Math.max(1, colW * 0.8), gradY0: mid - usable, gradY1: mid + usable };
+    const fullPix = usable / scaleMax;
+    return { area: top + bottomRev + 'Z', gradY0: mid - fullPix, gradY1: mid + fullPix };
   }, [view, waveW, frames.waveform]);
 
   // ---- Analytic playhead sweep — Animated loop on the NATIVE driver (visual
@@ -1414,7 +1443,7 @@ export function HarmonicsView({
                   ) : null}
                 </>
               ) : liveWave ? (
-                <Path d={liveWave.d} stroke="url(#harmWaveLevel)" opacity={0.95} strokeWidth={liveWave.strokeW} />
+                <Path d={liveWave.area} fill="url(#harmWaveLevel)" opacity={0.9} />
               ) : null}
             </Svg>
           ) : null}

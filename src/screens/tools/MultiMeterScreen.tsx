@@ -152,8 +152,6 @@ const CAP_HALO = '#7fd4ff';
 const CAP_CORE = '#d9f1ff';
 const PEAK_TICK = '#ffe8b0';
 const SLOT_GRAY = '#55555f';
-const ENV_LIVE = '#9fe8ff'; // fine-spectrum glow envelope
-const ENV_AVG = '#ffc64d'; // exponential AVERAGE trace
 const CURSOR = '#ff9de0';
 
 // ---------------------------------------------------------------------------
@@ -194,7 +192,9 @@ const SG_COLORS: readonly string[] = Array.from({ length: SG_BUCKETS }, (_, i) =
 // Mini oscilloscope (WaveformScreen language, compact)
 // ---------------------------------------------------------------------------
 const SCOPE_H = 128;
-const SCOPE_BUCKETS = 60; // 60 × 50 ms = 3 s window
+const SCOPE_WINDOW_SEC = 3; // mini-scope time window
+const ENGINE_HISTORY_SEC = 6; // WaveEnvelope ring span; bucket duration derived from the live count (resolution-agnostic)
+const SCOPE_MAX_COLS = 128; // min/max downsample columns — high-res peak envelope, light on this dense multi-panel screen
 
 // ---------------------------------------------------------------------------
 // Pitch honesty gating — IDENTICAL constants to FrequencyCounterScreen
@@ -813,7 +813,12 @@ export function MultiMeterScreen({ navigation }: Props) {
   const [scopeW, setScopeW] = useState(0);
   const scope = useMemo(() => {
     if (!running || scopeW <= 0) return null;
-    const src = frames.waveform.slice(0, SCOPE_BUCKETS).reverse();
+    // Resolution-agnostic 3 s window over the fine engine history (owner
+    // 2026-08-15) — auto-adapts to the native bucket duration.
+    const total = frames.waveform.length;
+    if (total === 0) return null;
+    const wantBuckets = Math.max(1, Math.round(total * (SCOPE_WINDOW_SEC / ENGINE_HISTORY_SEC)));
+    const src = frames.waveform.slice(0, wantBuckets).reverse(); // oldest → newest
     const n = src.length;
     if (n === 0) return null;
     let observed = 1;
@@ -821,39 +826,58 @@ export function MultiMeterScreen({ navigation }: Props) {
       const m = Math.max(Math.abs(b.min), Math.abs(b.max));
       if (m > observed) observed = m;
     }
+    // Same scale rule as the Waveform Viewer: fixed full-scale for normal signal
+    // (no size pulsing), expands only past 0 dBFS (disclosed as "scale ±").
     const scaleMax = Math.max(1.05, observed);
     const usable = half - 10;
     // Vertical zoom ×1/×2/×4 (owner 2026-08-05, item 2) — display scaling only.
     const y = (v: number) => Math.min(SCOPE_H - 2, Math.max(2, half - (v * scopeZoom * usable) / scaleMax));
-    const colW = scopeW / SCOPE_BUCKETS;
+    // MIN/MAX downsample the fine buckets to a bounded column count: keeps every
+    // peak (DAW envelope) at high resolution while staying light (SVG, one filled
+    // body — no outline stroke). Column i = oldest→newest, left→right.
+    const cols = Math.max(1, Math.min(n, Math.round(scopeW), SCOPE_MAX_COLS));
+    const colW = scopeW / cols;
     let top = '';
-    let bottomFwd = '';
     let bottomRev = '';
     let rmsTop = '';
     let rmsRev = '';
     let clip = '';
-    for (let i = 0; i < n; i++) {
-      const b = src[i];
-      const x = (scopeW - (n - i - 0.5) * colW).toFixed(1);
-      let y1 = y(b.max);
-      let y2 = y(b.min);
+    for (let i = 0; i < cols; i++) {
+      const b0 = Math.floor((i / cols) * n);
+      const b1 = Math.min(n, Math.max(b0 + 1, Math.floor(((i + 1) / cols) * n)));
+      let mn = Infinity;
+      let mx = -Infinity;
+      let rms = 0;
+      let clipped = false;
+      for (let k = b0; k < b1; k++) {
+        const b = src[k];
+        if (b.max > mx) mx = b.max;
+        if (b.min < mn) mn = b.min;
+        if (b.rms > rms) rms = b.rms;
+        if (b.clipped) clipped = true;
+      }
+      if (mx === -Infinity) {
+        mx = 0;
+        mn = 0;
+      }
+      const x = ((i + 0.5) * colW).toFixed(1);
+      let y1 = y(mx);
+      let y2 = y(mn);
       if (y2 - y1 < 1) {
         y1 -= 0.5;
         y2 += 0.5;
       }
       const cmd = i === 0 ? 'M' : 'L';
       top += `${cmd}${x},${y1.toFixed(1)}`;
-      bottomFwd += `${cmd}${x},${y2.toFixed(1)}`;
       bottomRev = `L${x},${y2.toFixed(1)}` + bottomRev;
-      rmsTop += `${cmd}${x},${y(b.rms).toFixed(1)}`;
-      rmsRev = `L${x},${y(-b.rms).toFixed(1)}` + rmsRev;
-      if (b.clipped) clip += `M${x},3L${x},9`;
+      rmsTop += `${cmd}${x},${y(rms).toFixed(1)}`;
+      rmsRev = `L${x},${y(-rms).toFixed(1)}` + rmsRev;
+      if (clipped) clip += `M${x},3L${x},9`;
     }
     // Velocity-ramp axis: blue at the mid line (0), red at |amp| = full scale.
     const fullPix = (scopeZoom * usable) / scaleMax;
     return {
       area: top + bottomRev + 'Z',
-      outline: top + bottomFwd,
       rmsArea: rmsTop + rmsRev + 'Z',
       clip,
       clipW: Math.max(1.5, colW * 0.8),
@@ -863,22 +887,6 @@ export function MultiMeterScreen({ navigation }: Props) {
       gradY1: half + fullPix,
     };
   }, [running, frames.waveform, scopeW, half, scopeZoom]);
-
-  // Hero overlay paths (live glow envelope + AVERAGE trace).
-  const overlay = useMemo(() => {
-    if (specView == null || plotW <= 0) return null;
-    const step = plotW / (ENV_POINTS - 1);
-    const build = (vals: number[]) => {
-      let d = '';
-      for (let i = 0; i < ENV_POINTS; i++) {
-        const y = yForDb(Math.max(FLOOR_DB, vals[i]));
-        d += `${i === 0 ? 'M' : 'L'}${(i * step).toFixed(1)},${y.toFixed(1)}`;
-      }
-      return d;
-    };
-    return { live: build(specView.env), avg: build(specView.avg) };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [specView, plotW, heroH, zoom]);
 
   // Visible 1/3-oct bands within the zoom window (log-mapped x + edges).
   const visibleBands = useMemo(() => {
@@ -1092,15 +1100,9 @@ export function MultiMeterScreen({ navigation }: Props) {
                           </G>
                         );
                       })}
-                      {/* FFT fine-spectrum overlay: glow pass + crisp edge,
-                          then the exponential AVERAGE trace. */}
-                      {overlay && (
-                        <>
-                          <Path d={overlay.live} stroke={ENV_LIVE} opacity={0.18} strokeWidth={4.5} fill="none" strokeLinejoin="round" />
-                          <Path d={overlay.live} stroke={ENV_LIVE} opacity={0.85} strokeWidth={1.3} fill="none" strokeLinejoin="round" />
-                          <Path d={overlay.avg} stroke={ENV_AVG} opacity={0.9} strokeWidth={1.2} fill="none" strokeLinejoin="round" />
-                        </>
-                      )}
+                      {/* No FFT/AVG line traces over the bars (owner 2026-08-15:
+                          "remove the trace ... I never wanted that"). The LED bars
+                          + peak-hold ARE the RTA. */}
                       {cursorX != null && <Line x1={cursorX} y1={2} x2={cursorX} y2={heroH - 2} stroke={CURSOR} strokeWidth={1.2} opacity={0.9} />}
                     </Svg>
                   )}
@@ -1133,7 +1135,6 @@ export function MultiMeterScreen({ navigation }: Props) {
 
               <View style={styles.legendRow}>
                 <Text style={styles.legendItem}>
-                  <Text style={{ color: ENV_LIVE }}>—</Text> FFT · <Text style={{ color: ENV_AVG }}>—</Text> AVG ·{' '}
                   <Text style={{ color: PEAK_TICK }}>▔</Text> PK HOLD
                 </Text>
                 {cursorX != null ? (
@@ -1198,10 +1199,8 @@ export function MultiMeterScreen({ navigation }: Props) {
                       <Line x1={0} x2={scopeW} y1={half} y2={half} stroke={MIDLINE_BLUE} strokeWidth={1} />
                       {scope && (
                         <>
-                          <Path d={scope.area} fill="url(#mmWfLevel)" opacity={0.5} />
-                          <Path d={scope.rmsArea} fill="url(#mmWfLevel)" opacity={0.55} />
-                          <Path d={scope.outline} stroke="url(#mmWfLevel)" opacity={0.35} strokeWidth={4} fill="none" strokeLinejoin="round" />
-                          <Path d={scope.outline} stroke="url(#mmWfLevel)" opacity={1} strokeWidth={1.3} fill="none" strokeLinejoin="round" />
+                          <Path d={scope.area} fill="url(#mmWfLevel)" opacity={0.85} />
+                          <Path d={scope.rmsArea} fill="url(#mmWfLevel)" opacity={0.6} />
                           {scope.clip !== '' && <Path d={scope.clip} stroke={colors.red} strokeWidth={scope.clipW} />}
                         </>
                       )}
