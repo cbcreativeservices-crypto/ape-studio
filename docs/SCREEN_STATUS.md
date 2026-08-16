@@ -46,6 +46,21 @@ awaiting your sign-off.**
 > off individually, but they share ONE code screen — `lab/FxLabScreen.tsx` driven
 > by `lab/fxLabConfigs.tsx`. Content lives in the config; a code fix touches all 12.
 
+> **Display decisions — 2026-08-15 (owner-verified on both phones, commit `c0ddc1a`):**
+> - **Waveform traces unified** (WaveformLive, MultiMeter mini-scope, HarmonicLab live
+>   strip): high resolution via **react-native-svg + min/max downsample to ≤128 columns**
+>   over the correct time window (3 s scope / 2 s strip), pulled resolution-agnostically
+>   from the fine engine history. **NOT Skia per-pixel** on the multi-panel screens — that
+>   starved the render thread and made the whole screen (scope + spectrogram) clunky.
+> - **Scale = `Math.max(1.05, observed)`** on all three: fixed full-scale for normal
+>   signal (no size pulsing), expands only past 0 dBFS (disclosed "scale ±"). Replaced the
+>   HarmonicLab strip's old pure auto-gain, which pulsed and crushed normal signal into a
+>   thin "green outline" on transients. **One filled body, no outline stroke** (mini-scope
+>   outline removed).
+> - **MultiMeter LIVE SPECTRUM (RTA): FFT + AVG line traces removed** — LED bars +
+>   peak-hold only ("never wanted that").
+> - Standing render rule recorded in governance memory (`integrity-and-governance`).
+
 ---
 
 ## Core / Navigation
@@ -98,7 +113,7 @@ awaiting your sign-off.**
 | SpectrogramLive | 🔵 | Engine LIVE — iOS-verified 2026-08-14. |
 | Rt60Live | 🔵 | Engine LIVE — iOS-verified 2026-08-14. |
 | FrequencyCounter | 🔵 | Engine LIVE — iOS-verified 2026-08-14. |
-| MultiMeter | 🔵 | 1800+ lines built; engine LIVE — iOS-verified 2026-08-14. |
+| MultiMeter | 🔵 | 1800+ lines built; engine LIVE — iOS-verified 2026-08-14. Mini-scope high-res SVG min/max + fixed scale, no outline; RTA (LIVE SPECTRUM) line traces removed 2026-08-15. |
 | DspDebug | ⚪ | Dev-only diagnostic screen — not shipped. |
 
 ## Effect & Fundamentals Labs
@@ -107,7 +122,7 @@ awaiting your sign-off.**
 | AudioLearning | 🔵 | Labs hub. |
 | EarLab | 🔵 | |
 | LabCategory | 🔵 | Dev-lab rows stripped 2026-08-10. |
-| HarmonicLab | 🔵 | |
+| HarmonicLab | 🔵 | Live waveform strip: high-res SVG min/max + fixed scale (no auto-gain pulse/outline) 2026-08-15. |
 | OscillatorLab | 🔵 | |
 | NoiseLab | 🔵 | |
 | HarmonographLab | 🔵 | |
