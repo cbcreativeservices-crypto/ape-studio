@@ -30,11 +30,16 @@ import { WAVE_MODULES } from '../../screens/lab/wave/modules/registry';
 import { DIGITAL_MODULES } from '../../screens/lab/digital/modules/registry';
 import { METER_MODULES } from '../../screens/lab/meter/modules/registry';
 import { GAIN_MODULES } from '../../screens/lab/gain/modules/registry';
+// Pure data (zero React/Skia) — safe for this boot-loaded store.
+import { CABLE_UNITS } from '../../screens/lab/cable/data/lessons';
 
 const STORAGE_KEY = 'ape:labProgress';
 
 /** Stable lab keys for the audio_fundamentals area (match the labs-catalog seed
- *  and the `key` on each fundamentals leaf in labCatalog.ts). IMMUTABLE. */
+ *  and the `key` on each fundamentals leaf in labCatalog.ts). IMMUTABLE.
+ *  af_cables added 2026-08-15 (owner ruling: 12th required fundamentals lab,
+ *  full certificate credit at launch; owner runs the seed SQL —
+ *  docs/APE_CABLE_LAB_SEED_2026_08_15.sql). */
 export type LabKey =
   | 'af_amplitude'
   | 'af_foundations'
@@ -46,7 +51,8 @@ export type LabKey =
   | 'af_visual_analysis'
   | 'af_signal_chain'
   | 'af_signal_detective'
-  | 'af_gain_staging';
+  | 'af_gain_staging'
+  | 'af_cables';
 
 /** The explicit-review unit (read-through / sandbox labs) and the challenge-pass
  *  unit (Signal Detective) — named so the wiring and the spec can't drift. */
@@ -70,6 +76,10 @@ export const LAB_UNITS: Partial<Record<LabKey, readonly string[]>> = {
   af_amplitude: [REVIEW_UNIT],
   af_sound_playground: [REVIEW_UNIT],
   af_signal_chain: [REVIEW_UNIT],
+  // Registry-derived (data/lessons.ts): lesson checks + tester + challenges +
+  // per-question critical-safety units + final. STATIC entry (not only
+  // registerLabUnits) so boot-time retryUnsent covers a finished-offline lab.
+  af_cables: CABLE_UNITS,
 };
 
 // ── in-memory state (mirrors persisted blob) ────────────────────────────────

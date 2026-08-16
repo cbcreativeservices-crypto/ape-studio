@@ -228,6 +228,11 @@ export type RootStackParamList = {
   /** Microphone Selection Lab (owner spec 2026-08-12) — types, characteristics
    *  & applications: 9 lessons + Choose-the-Mic challenge + optional locker. */
   MicSelectLab: undefined;
+  /** Cable & Connector Fundamentals (owner spec 2026-08-15) — the flagship
+   *  free Audio Fundamentals connector lab: 9 lessons + virtual cable tester +
+   *  final system challenge + safety-gated final check. Safety-critical
+   *  content area — see docs/APE_CABLE_LAB_PLAN_2026_08_15.md. */
+  CableLab: undefined;
   /** Listening Exposure Monitor (owner spec 2026-08-12) — the app-wide audio
    *  dosimeter: session/today/history, check-in settings, privacy controls.
    *  UNGATED: hearing-safety information is never locked. */

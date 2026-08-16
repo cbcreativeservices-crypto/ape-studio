@@ -120,6 +120,10 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       { name: 'Visual Audio Analysis', blurb: 'Waveform, spectrum, spectrogram, waterfall, phase, correlation, LUFS, peak, RMS, VU.', route: 'MeterLab', key: 'af_visual_analysis' },
       { name: 'Signal Chain Builder', blurb: 'Generator → EQ → Comp → Gate → FX → Reverb → Limiter → Output.', route: 'SignalChainLab', key: 'af_signal_chain' },
       { name: 'Signal Detective', blurb: 'Identify the meter, read the display, spot the problem, prescribe the fix.', route: 'MeterModule', params: { id: 'detective' }, key: 'af_signal_detective' },
+      // FLAGSHIP (owner spec 2026-08-15): connectors, cables, selection,
+      // inspection, virtual tester, system challenges, safety-gated final.
+      // Placed after the signal-flow labs, before Gain Staging (owner ruling).
+      { name: 'Cable & Connector Fundamentals', blurb: 'Identify it. Understand it. Connect it safely — what every connector carries, what’s inside the cable, and what happens when the wrong one is used.', route: 'CableLab', key: 'af_cables' },
       // LIVE (owner 2026-08-07): own home + 8 modules (Signal X-Ray et al).
       { name: 'Gain Staging', blurb: 'Set levels right at every stage — headroom, noise floor, unity gain through the chain.', route: 'GainLabHome', key: 'af_gain_staging' },
     ],
@@ -298,8 +302,9 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     kind: 'list',
     labs: [
       { name: 'Vacuum Tube Fundamentals', blurb: 'How a tube amplifies by controlling electron flow — with an Electron View that shows the invisible.', route: 'TubeLab' },
-      { name: 'Cable Troubleshooting Lab', blurb: 'Balanced vs unbalanced, hum, opens, shorts.', status: 'development' },
-      { name: 'Audio Connectors and Connections Lab', blurb: 'XLR, TRS, TS, speakON, RCA, banana — what each connector carries and how they mate.', status: 'development' },
+      // The planned 'Cable Troubleshooting Lab' and 'Audio Connectors and
+      // Connections Lab' rows were REMOVED (owner ruling 2026-08-15) —
+      // superseded by the free Cable & Connector Fundamentals lab (CableLab).
       { name: 'Patchbay Lab', blurb: 'Normalled, half-normalled and open patchbays — route signal without repatching the rack.', status: 'development' },
       { name: 'Amplifier Types Lab', blurb: 'Class A, AB, D and tube — how each amplifies, and the sound, heat and efficiency trade-offs.', status: 'development' },
     ],

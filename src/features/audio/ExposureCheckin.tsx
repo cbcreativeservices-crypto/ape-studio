@@ -48,7 +48,7 @@ const AUDIO_ROUTES = new Set<string>([
   'ReverbLab', 'ChorusLab', 'FlangerLab', 'PhaserLab', 'CompressionLab',
   'GateLab', 'LimiterLab', 'DistortionLab', 'PhaseLab', 'StereoLab',
   'SignalChainLab', 'BassLab', 'AutotuneLab', 'FmLab', 'BinauralLab',
-  'ModularLab', 'MicLab', 'MicSelectLab', 'SpeakerLab', 'TubeLab',
+  'ModularLab', 'MicLab', 'MicSelectLab', 'CableLab', 'SpeakerLab', 'TubeLab',
   'TubeReference', 'TubeCard', 'DigitalLab', 'DigitalModule', 'WaveLab',
   'WaveModule', 'MeterLab', 'MeterModule', 'EqLabHome', 'EqModule',
   'GainLabHome', 'GainModule', 'FoundationsCourse', 'FoundationsPlayground',
