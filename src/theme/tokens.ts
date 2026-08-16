@@ -112,6 +112,12 @@ export const fontAssets = {
  * Minimum font size — Booth ruling 2026-07-07: the previous 11px floor read
  * too small on device; every size ≤11 was raised +1 app-wide (7→8 … 11→12).
  * Do not introduce new text below this size.
+ *
+ * EXEMPTION (Booth ruling 2026-08-16, R4 in APE_GOVERNANCE_DECISIONS_2026_08_16):
+ * the stepped-lab CHROME idiom (uppercase Oswald eyebrows, step tags, option
+ * chips, progress counters — MicSelectLab/CableLab template, owner-approved on
+ * device) may sit at 10–11.5. The 12 floor governs everything that CARRIES
+ * MEANING: body, teaching, safety and readout text.
  */
 export const MIN_FONT_SIZE = 12;
 

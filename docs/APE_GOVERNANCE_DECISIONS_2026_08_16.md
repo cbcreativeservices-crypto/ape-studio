@@ -39,6 +39,17 @@ green in the learner's confirmed order — sources first, amplification last;
 state carried by numbers + verdicts, never color alone). Foundation:
 `useReduceMotion` + `Entrance` in `lessons/bits.tsx`.
 
+## R4 — MIN_FONT_SIZE CHROME EXEMPTION (closes 15B-R5)
+
+Owner ruling 2026-08-16: the stepped-lab CHROME idiom (uppercase Oswald
+eyebrows, step tags, option chips, progress counters — the MicSelectLab/
+CableLab template, owner-approved on device 2026-08-12/15) is EXEMPT from the
+MIN_FONT_SIZE=12 floor and may sit at 10–11.5. The 12 floor continues to
+govern all meaning-carrying text (body, teaching, safety, readouts) — the
+Cable Lab's safety-boundary text was already raised to 12 in the B9 sweep.
+No code change; exemption codified in the tokens.ts comment. Both labs stay
+exactly as device-approved.
+
 ## Process note of record
 
 2026-08-16 the owner reprimanded a major token overspend: a request for

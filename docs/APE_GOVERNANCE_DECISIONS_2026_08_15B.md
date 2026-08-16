@@ -67,7 +67,7 @@ shipping-blocking, all conservatively worded.
   the networked-audio blurb, L10 intro no longer promises the not-yet-present
   wiring animation and lists the true disposition set.
 
-## R5 — OPEN RULING WANTED: MIN_FONT_SIZE vs lab-chrome idiom
+## R5 — MIN_FONT_SIZE vs lab-chrome idiom — RESOLVED 2026-08-16 (chrome exempt; see APE_GOVERNANCE_DECISIONS_2026_08_16 R4)
 
 The sweep found the cable lab's chrome (11.5pt chips, 10.5pt tags/eyebrows)
 replicates MicSelect's ratified idiom, which itself sits below the
