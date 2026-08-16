@@ -111,7 +111,7 @@ export const L06_STRIPS: L06Strip[] = [
     title: 'ETHERNET — ONE PLUG, MANY SYSTEMS',
     paras: [
       'T568A and T568B are BOTH valid termination schemes. What matters is that both ends of a cable follow the same one: mixing ends builds a crossover cable, which modern auto-sensing equipment may tolerate but which is a mislabeled, inconsistent termination that will confuse later troubleshooting.',
-      'The connector proves NOTHING about the protocol: audio-over-IP systems (such as Dante or AVB), digital snake protocols (such as AES50), and plain office networking all use the same plug. Matching ports do not mean compatible equipment — the system behind the port decides, so identify ports from labels and documentation, not shape.',
+      'The connector proves NOTHING about the protocol: networked-audio systems (such as Dante or AVB), digital snake protocols (such as AES50), and plain office networking all use the same plug. Matching ports do not mean compatible equipment — the system behind the port decides, so identify ports from labels and documentation, not shape.',
       'Power over Ethernet can place tens of watts of DC power on the same cable as the data (up to roughly 90 W under IEEE 802.3bt). Standards-based PoE energizes only after detecting a compatible device — but that detection step belongs only to standards-based (IEEE 802.3af/at/bt) equipment. “Passive” PoE injectors — still widely sold — put their full voltage on the pairs permanently with no detection and can damage non-PoE devices (or a cable tester) connected to an energized run. Identify what feeds a run before patching it.',
     ],
   },

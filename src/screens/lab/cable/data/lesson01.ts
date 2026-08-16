@@ -49,7 +49,7 @@ export const CARRIED_CATEGORIES: CarriedCategory[] = [
   {
     id: 'network_audio',
     label: 'NETWORKED AUDIO',
-    blurb: 'Many channels of audio riding a computer network — Dante, AES50, AVB. The network AND the protocol must both match.',
+    blurb: 'Many channels of audio riding a computer network — Dante, AVB and similar systems. The network AND the protocol must both match.',
   },
   {
     id: 'clock_sync',

@@ -12,7 +12,7 @@
  * an ART SLOT comment at the mount point.
  */
 import { useCallback, useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, StyleSheet, Text, View } from 'react-native';
 import { markLabUnit } from '../../../../features/lab/labCompletion';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { CableSectionId } from '../cableTypes';
@@ -56,6 +56,11 @@ export function Lesson02Body() {
   const onCheckSolved = useCallback((i: number) => {
     solvedRef.current.add(i);
     setSolvedCount(solvedRef.current.size);
+    // Screen-reader feedback: CheckQuestion's reveal renders silently, so the
+    // outcome + progress are announced here (sweep 2026-08-15).
+    AccessibilityInfo.announceForAccessibility(
+      `Correct. ${solvedRef.current.size} of ${L02_CHECKS.length} solved.`,
+    );
     if (solvedRef.current.size >= L02_CHECKS.length) {
       // Genuine solve of all three checks → lesson unit credit (§1.7 honesty:
       // marked here and nowhere else; markLabUnit itself no-ops on repeats).
@@ -146,7 +151,7 @@ export function Lesson02Body() {
         ) : null}
       </DetailCard>
       {revealed < sec.layers.length ? (
-        <OptionChip label={revealed === 0 ? 'PEEL THE FIRST LAYER ›' : 'PEEL DEEPER ›'} active onPress={peelNext} />
+        <OptionChip label={revealed === 0 ? 'PEEL THE FIRST LAYER ›' : 'PEEL DEEPER ›'} active action onPress={peelNext} />
       ) : null}
 
       <Eyebrow text={`KNOWLEDGE CHECK · ${Math.min(solvedCount, L02_CHECKS.length)} OF ${L02_CHECKS.length} SOLVED`} />

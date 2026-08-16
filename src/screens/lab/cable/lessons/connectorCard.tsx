@@ -27,9 +27,10 @@ function Section({ title, children, startOpen }: { title: string; children: Reac
     <View style={styles.section}>
       <Pressable
         onPress={() => setOpen((o) => !o)}
+        hitSlop={{ top: 7, bottom: 7 }}
         accessibilityRole="button"
         accessibilityState={{ expanded: open }}
-        accessibilityLabel={`${title} section, ${open ? 'expanded' : 'collapsed'}`}
+        accessibilityLabel={`${title} section`}
         style={styles.sectionHead}
       >
         <Text style={styles.sectionTitle}>{title}</Text>
@@ -158,6 +159,36 @@ export function ConnectorCard({ rec }: { rec: ConnectorRecord }) {
   );
 }
 
+/** View-only browser for recognition-tier connectors (identify + purpose —
+ *  never assessed for pin detail). Sweep 2026-08-15: the recognition
+ *  inventory must actually render somewhere; lessons mount this strip. */
+export function RecognitionStrip({ rec, title }: { rec: ConnectorRecord[]; title?: string }) {
+  const [sel, setSel] = useState(rec[0]?.id ?? null);
+  const selected = rec.find((r) => r.id === sel);
+  if (!rec.length) return null;
+  return (
+    <View style={{ gap: 7 }}>
+      <Text style={styles.recogTitle}>{title ?? 'ALSO RECOGNIZE'}</Text>
+      <View style={styles.recogChips}>
+        {rec.map((r) => (
+          <Pressable
+            key={r.id}
+            onPress={() => setSel(r.id)}
+            hitSlop={{ top: 6, bottom: 6 }}
+            accessibilityRole="button"
+            accessibilityState={{ selected: r.id === sel }}
+            accessibilityLabel={r.displayName}
+            style={[styles.recogChip, r.id === sel && styles.recogChipActive]}
+          >
+            <Text style={[styles.recogChipText, r.id === sel && styles.recogChipTextActive]}>{r.displayName}</Text>
+          </Pressable>
+        ))}
+      </View>
+      {selected ? <ConnectorCard rec={selected} /> : null}
+    </View>
+  );
+}
+
 /** Ink legend row — render once per lesson that shows pinouts. */
 export function InkLegend({ inks }: { inks: ConnectorInk[] }) {
   return (
@@ -182,7 +213,8 @@ const styles = StyleSheet.create({
     gap: 7,
   },
   name: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.8, color: colors.textPrimary },
-  tierBadge: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.orange },
+  // Safety-boundary text — MIN_FONT_SIZE 12 applies (sweep 2026-08-15).
+  tierBadge: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.1, color: colors.orange },
   cautions: { borderRadius: 8, borderWidth: 1, borderColor: 'rgba(255,138,30,.45)', backgroundColor: '#1c1206', padding: 9, gap: 4 },
   cautionsHot: { borderColor: 'rgba(255,138,30,.7)' },
   cautionText: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17.5, color: '#ffb36b' },
@@ -197,7 +229,8 @@ const styles = StyleSheet.create({
   k: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.amberLabel },
   pinoutCard: { borderRadius: 8, borderWidth: 1, borderColor: '#232329', backgroundColor: '#0c0d11', padding: 9, gap: 5 },
   pinoutApp: { fontFamily: fonts.barlowMedium, fontSize: 13, color: colors.textPrimary, flexShrink: 1 },
-  confidence: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1, color: colors.green },
+  // Pinout trust signal — MIN_FONT_SIZE 12 applies (sweep 2026-08-15).
+  confidence: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8, color: colors.green },
   confidenceVaries: { color: colors.orange },
   rowBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   contactRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
@@ -207,4 +240,17 @@ const styles = StyleSheet.create({
   confuseCard: { borderRadius: 8, borderWidth: 1, borderColor: '#2c2c33', backgroundColor: '#0c0d11', padding: 9, gap: 3 },
   legend: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, paddingVertical: 4 },
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  recogTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.textSecondary, marginTop: 6 },
+  recogChips: { flexDirection: 'row', flexWrap: 'wrap', gap: 7 },
+  recogChip: {
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#131316',
+    paddingVertical: 8,
+    paddingHorizontal: 11,
+  },
+  recogChipActive: { borderColor: 'rgba(255,198,77,.65)', backgroundColor: '#1a1409' },
+  recogChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 0.7, color: colors.textSecondary },
+  recogChipTextActive: { color: colors.amber },
 });

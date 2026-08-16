@@ -14,7 +14,7 @@
  * (d) qualified-person recognition (view-only; tier badge draws the boundary).
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, StyleSheet, Text, View } from 'react-native';
 import { markLabUnit } from '../../../../features/lab/labCompletion';
 import { colors, fonts } from '../../../../theme/tokens';
 import { CheckQuestion } from '../../foundations/bits';
@@ -73,7 +73,17 @@ export function Lesson07Body() {
   const marked = useRef(false);
   const allSolved = solvedFlags.every(Boolean);
 
+  // CheckQuestion fires onSolved exactly once per question, so a plain
+  // counter is exact (lesson12 idiom) — it exists only so the announcement
+  // below can carry progress without side effects inside the state updater.
+  const solvedCountRef = useRef(0);
   const solveOne = useCallback((idx: number) => {
+    solvedCountRef.current += 1;
+    // Screen-reader feedback: CheckQuestion's reveal renders silently, so the
+    // outcome + progress are announced here (sweep 2026-08-15).
+    AccessibilityInfo.announceForAccessibility(
+      `Correct. ${Math.min(solvedCountRef.current, L07_CHECKS.length)} of ${L07_CHECKS.length} solved.`,
+    );
     setSolvedFlags((prev) => {
       if (prev[idx]) return prev;
       const next = prev.slice();
@@ -156,8 +166,10 @@ export function Lesson07Body() {
 
       {/* ── (c) the never list ─────────────────────────────────────────────── */}
       <Eyebrow text="THE NEVER LIST" />
-      <View style={st.neverCard} accessibilityRole="summary" accessibilityLabel="These are never acceptable">
-        <Text style={st.neverTitle}>THESE ARE NEVER ACCEPTABLE</Text>
+      <View style={st.neverCard}>
+        <Text style={st.neverTitle} accessibilityRole="header">
+          THESE ARE NEVER ACCEPTABLE
+        </Text>
         <Text style={st.neverSub}>{'No exceptions, no workarounds, and no “just this once.”'}</Text>
         {NEVER_ITEMS.map((t) => (
           <View key={t} style={st.neverRow}>

@@ -4,10 +4,63 @@
  * identically (MicSelect pixel conventions; verdicts are glyph + words +
  * color, never color alone; accessibility state on every Pressable).
  */
-import { useEffect } from 'react';
-import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { AccessibilityInfo, Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
+import type { CableLessonId } from '../cableTypes';
 import { CORE_PRINCIPLE } from '../data/lessons';
+
+/** Step navigation handed to lesson bodies by the shell (Lesson 12's REVIEW
+ *  CONNECTORS / RETRY CHALLENGE actions, owner spec §5.12). Lives here — not
+ *  in CableLabScreen — so lesson bodies never import the shell (no require
+ *  cycle). */
+export const CableStepNavCtx = createContext<((id: CableLessonId) => void) | null>(null);
+export function useCableStepNav() {
+  return useContext(CableStepNavCtx);
+}
+
+/** Reduce-motion preference (ExposureCheckin subscription pattern — the app
+ *  has no shared hook, so the Cable Lab carries its own; owner direction
+ *  2026-08-15: animate strategically, always respecting reduced motion). */
+export function useReduceMotion(): boolean {
+  const [rm, setRm] = useState(false);
+  useEffect(() => {
+    let alive = true;
+    void AccessibilityInfo.isReduceMotionEnabled().then((v) => {
+      if (alive) setRm(v);
+    });
+    const sub = AccessibilityInfo.addEventListener('reduceMotionChanged', setRm);
+    return () => {
+      alive = false;
+      sub.remove();
+    };
+  }, []);
+  return rm;
+}
+
+/** Soft entrance (fade + small rise) on mount — native-driver transforms only;
+ *  renders statically under reduced motion. Wrap feedback moments, not chrome. */
+export function Entrance({ children }: { children: React.ReactNode }) {
+  const reduceMotion = useReduceMotion();
+  const anim = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (reduceMotion) {
+      anim.setValue(1);
+      return;
+    }
+    Animated.timing(anim, { toValue: 1, duration: 260, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
+  }, [reduceMotion, anim]);
+  return (
+    <Animated.View
+      style={{
+        opacity: anim,
+        transform: [{ translateY: anim.interpolate({ inputRange: [0, 1], outputRange: [6, 0] }) }],
+      }}
+    >
+      {children}
+    </Animated.View>
+  );
+}
 
 /** The central principle, shown as the amber lesson banner (MicSelect idiom). */
 export function PrincipleBanner() {
@@ -38,18 +91,23 @@ export function OptionChip({
   active,
   onPress,
   disabled,
+  action,
 }: {
   label: string;
   active?: boolean;
   onPress: () => void;
   disabled?: boolean;
+  /** One-shot action buttons (FINISH/NEXT/RUN…) — suppresses the 'selected'
+   *  announcement that only answer chips should carry (sweep 2026-08-15). */
+  action?: boolean;
 }) {
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled}
+      hitSlop={{ top: 6, bottom: 6 }}
       accessibilityRole="button"
-      accessibilityState={{ selected: !!active, disabled: !!disabled }}
+      accessibilityState={{ selected: action ? undefined : !!active, disabled: !!disabled }}
       accessibilityLabel={label}
       style={[styles.chip, active && styles.chipActive, disabled && { opacity: 0.5 }]}
     >
@@ -77,19 +135,27 @@ export function VerdictBanner({ verdict, text }: { verdict: Verdict; text: strin
     AccessibilityInfo.announceForAccessibility(`${head}. ${text}`);
   }, [head, text]);
   return (
-    <View style={[styles.verdict, { borderColor: tint }]}>
-      <Text style={[styles.verdictHead, { color: tint }]}>{`${glyph} ${head.toUpperCase()}`}</Text>
-      <Text style={styles.verdictText}>{text}</Text>
-    </View>
+    <Entrance>
+      <View style={[styles.verdict, { borderColor: tint }]}>
+        <Text style={[styles.verdictHead, { color: tint }]}>{`${glyph} ${head.toUpperCase()}`}</Text>
+        <Text style={styles.verdictText}>{text}</Text>
+      </View>
+    </Entrance>
   );
 }
 
 /** Green completion banner for a lesson's solved knowledge check. */
 export function CheckDoneBanner({ text }: { text: string }) {
+  useEffect(() => {
+    // Completion must never be silent to screen readers (sweep 2026-08-15).
+    AccessibilityInfo.announceForAccessibility(`Complete. ${text}`);
+  }, [text]);
   return (
-    <View style={styles.doneBanner}>
-      <Text style={styles.doneText}>{`✓ ${text}`}</Text>
-    </View>
+    <Entrance>
+      <View style={styles.doneBanner}>
+        <Text style={styles.doneText}>{`✓ ${text}`}</Text>
+      </View>
+    </Entrance>
   );
 }
 

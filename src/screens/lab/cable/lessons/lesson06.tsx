@@ -7,13 +7,13 @@
  * (markLabUnit → af_cables/l06_digital, §1.7 honesty).
  */
 import { useCallback, useRef, useState } from 'react';
-import { Text, View } from 'react-native';
+import { AccessibilityInfo, Text, View } from 'react-native';
 import { markLabUnit } from '../../../../features/lab/labCompletion';
 import { CheckQuestion } from '../../foundations/bits';
 import type { ConnectorId } from '../cableTypes';
 import { getConnector } from '../data/registry';
 import { L06_CHECKS, L06_GROUPS, L06_INKS, L06_LEAD, L06_LESSON, L06_STRIPS } from '../data/lesson06';
-import { ConnectorCard, InkLegend } from './connectorCard';
+import { ConnectorCard, InkLegend, RecognitionStrip } from './connectorCard';
 import {
   CheckDoneBanner,
   DetailCard,
@@ -36,6 +36,9 @@ export function Lesson06Body() {
   }, []);
 
   const rec = getConnector(connId);
+  /** Recognition-tier record surfaced view-only (sweep 2026-08-15):
+   *  identify + purpose only — never assessed. */
+  const opticalcon = getConnector('opticalcon_style');
 
   // ── knowledge check (unit gate) ────────────────────────────────────────
   const solvedRef = useRef(0);
@@ -45,6 +48,11 @@ export function Lesson06Body() {
     // reaches the full set exactly once — genuine full solve → unit credit
     // (R6c honesty: marked here and nowhere else).
     solvedRef.current += 1;
+    // Screen-reader feedback: CheckQuestion's reveal renders silently, so the
+    // outcome + progress are announced here (sweep 2026-08-15).
+    AccessibilityInfo.announceForAccessibility(
+      `Correct. ${Math.min(solvedRef.current, L06_CHECKS.length)} of ${L06_CHECKS.length} solved.`,
+    );
     if (solvedRef.current >= L06_CHECKS.length) {
       setAllDone(true);
       markLabUnit('af_cables', 'l06_digital');
@@ -74,6 +82,7 @@ export function Lesson06Body() {
       {/* ART SLOT: owner-supplied connector artwork mounts inside ConnectorCard
           (its own ART SLOT) once delivered — nothing is drawn here (R3). */}
       {rec ? <ConnectorCard rec={rec} /> : null}
+      {opticalcon ? <RecognitionStrip rec={[opticalcon]} title="ALSO RECOGNIZE" /> : null}
 
       <Eyebrow text="WHAT THE RECORDS TEACH" />
       {L06_STRIPS.map((strip) => (

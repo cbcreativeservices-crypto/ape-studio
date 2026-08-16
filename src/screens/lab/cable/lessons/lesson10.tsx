@@ -182,14 +182,14 @@ export function Lesson10Body() {
             {!connected ? (
               <>
                 <Text style={s.body}>{DE_ENERGIZED_RULE}</Text>
-                <OptionChip label="CONNECT BOTH ENDS ›" active onPress={() => setConnected(true)} />
+                <OptionChip label="CONNECT BOTH ENDS ›" active action onPress={() => setConnected(true)} />
               </>
             ) : !tested ? (
               <>
                 <Text style={s.body}>
                   Both ends are seated in the tester and the cable touches nothing else — de-energized and isolated.
                 </Text>
-                <OptionChip label="RUN TEST ›" active onPress={() => setTested(true)} />
+                <OptionChip label="RUN TEST ›" active action onPress={() => setTested(true)} />
               </>
             ) : (
               <ContinuityMap cable={cable} />

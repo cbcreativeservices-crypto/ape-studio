@@ -529,7 +529,7 @@ export const CONNECTORS_DIGITAL: ConnectorRecord[] = [
       'Four balanced pairs give strong interference rejection',
     ],
     limitations: [
-      'The connector proves NOTHING about the protocol: audio-over-IP systems (such as Dante or AVB), digital snake protocols (such as AES50), and plain office networking all use the same plug — matching ports do not mean compatible equipment',
+      'The connector proves NOTHING about the protocol: networked-audio systems (such as Dante or AVB), digital snake protocols (such as AES50), and plain office networking all use the same plug — matching ports do not mean compatible equipment',
       'Cable category and condition set the real speed and distance; the plug looks identical on every grade',
       'The plastic latch tab is the weak point — it snaps off and the cable then creeps loose',
       'Field termination is skill-sensitive: split pairs and excess untwist pass a casual look but fail at speed',

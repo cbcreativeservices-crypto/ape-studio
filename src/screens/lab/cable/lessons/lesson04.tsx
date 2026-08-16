@@ -69,7 +69,9 @@ export function Lesson04Body() {
       markLabUnit('af_cables', 'l04_same_plug');
       return;
     }
-    setIdx((i) => i + 1);
+    // Closure value (not a functional update) so a queued double-tap writes
+    // the same index twice instead of skipping an item (sweep 2026-08-15).
+    setIdx(idx + 1);
     setPicked(null);
     setVerdict(null);
   }, [idx]);
@@ -147,6 +149,7 @@ export function Lesson04Body() {
               <OptionChip
                 label={idx >= PLUG_COMPARISONS.length - 1 ? 'FINISH CHECK ✓' : 'NEXT LOOK-ALIKE ›'}
                 active
+                action
                 onPress={next}
               />
             </>

@@ -151,10 +151,11 @@ export function Lesson08Body() {
             <OptionChip
               label={st.step >= scenario.steps.length - 1 ? 'SOLVE CONNECTION ✓' : 'NEXT DECISION ›'}
               active
+              action
               onPress={next}
             />
           ) : null}
-          {st.done ? <OptionChip label="NEXT CONNECTION ›" active onPress={goNextUnsolved} /> : null}
+          {st.done ? <OptionChip label="NEXT CONNECTION ›" active action onPress={goNextUnsolved} /> : null}
         </>
       ) : (
         <CheckDoneBanner text="All fourteen connections cabled with defensible choices — what travels, the connector, the construction, and the requirement that keeps each one reliable and safe." />

@@ -59,7 +59,9 @@ export function Lesson09Body() {
       markLabUnit('af_cables', 'l09_handling');
       return;
     }
-    setItemIdx((i) => i + 1);
+    // Closure value (not a functional update) so a queued double-tap writes
+    // the same index twice instead of skipping an item (sweep 2026-08-15).
+    setItemIdx(itemIdx + 1);
     setPicked(null);
     setVerdict(null);
   }, [itemIdx]);
@@ -132,6 +134,7 @@ export function Lesson09Body() {
             <OptionChip
               label={itemIdx >= SCENE_ITEMS.length - 1 ? 'FINISH INSPECTION ✓' : 'NEXT ITEM ›'}
               active
+              action
               onPress={next}
             />
           ) : null}

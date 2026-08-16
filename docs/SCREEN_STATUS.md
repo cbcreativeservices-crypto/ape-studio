@@ -24,10 +24,10 @@ completion status the owner signs off as we approach launch testing.
 |---|---|
 | **Incomplete (🔴 — needs dev work)** | **0** |
 | Blocked (🟡 — built, dependency-gated) | 1 |
-| Built, awaiting sign-off (🔵) | 77 |
+| Built, awaiting sign-off (🔵) | 78 |
 | Signed off (🟢) | 0 |
 | Excluded (⚪ — parked/dev) | 2 |
-| **Total navigable screens (excl. ⚪)** | **78** |
+| **Total navigable screens (excl. ⚪)** | **79** |
 
 **So: "how many screens are incomplete?" → 0 need net-new build (audit found no
 stubs/partials); the native audio engine went LIVE and was iOS-verified
@@ -147,6 +147,7 @@ awaiting your sign-off.**
 | MicLab (MicPrinciples) | 🔵 | |
 | MicSelectLab (Microphone Selection) | 🔵 | Added 2026-08-12: 9 lessons + Choose-the-Mic challenge + optional mic locker; no engine dependency. |
 | AmplitudeLab (Understanding Level & Amplitude) | 🔵 | Added 2026-08-12: color-language orientation; first lab in Audio Fundamentals + first-use gate across labs/tools. |
+| CableLab (Cable & Connector Fundamentals) | 🔵 | Added 2026-08-15: FLAGSHIP free fundamentals lab — 12 lessons, 48 verified connector records, virtual cable tester, dual system challenges, 7 required-correct safety questions (af_cables, 12th certificate lab; owner runs seed SQL at launch). Artwork owner-supplied (ART SLOTs waiting); owner copy pass pending. |
 | SpeakerLab (SpeakerCoverage) | 🔵 | Future-promise note removed 2026-08-10. |
 | TubeLab (VacuumTube) | 🔵 | VS animation redrawn 2026-08-10. |
 | TubeReference | 🔵 | |

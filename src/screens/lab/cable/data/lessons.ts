@@ -104,7 +104,7 @@ export const CABLE_LESSONS: CableLessonDef[] = [
     tag: 'TESTER',
     title: 'VIRTUAL CABLE TESTER',
     intro:
-      'Connect a cable to the simulated tester, read the continuity map, name the fault, then see the actual internal wiring animate. Decide: repair by a qualified person, relabel, or remove from service.',
+      'Connect a cable to the simulated tester, read the continuity map, and name the fault. Then decide what happens to the cable: return it to service, repair by a qualified person and retest, or remove it from service.',
   },
   {
     id: 'l11_challenge',

@@ -23,7 +23,7 @@
 export type TesterMapRow = {
   /** The tested path, exactly as the tester prints it ("Pin 2 → Pin 2"). */
   path: string;
-  /** Compact reading: CLOSED / OPEN / PAIRED / SPLIT (two pairs) / STEADY / DROPS ON FLEX. */
+  /** Compact reading: CLOSED / OPEN / PAIRED / SPLIT / STEADY / DROPS ON FLEX. */
   value: string;
 };
 
@@ -215,13 +215,13 @@ export const TESTER_CABLES: TesterCable[] = [
       { path: 'Tip → Tip', value: 'CLOSED' },
       { path: 'Sleeve → Sleeve', value: 'CLOSED' },
       { path: 'Tip → Sleeve', value: 'OPEN' },
-      { path: 'Sleeve, flexed at each plug', value: 'STEADY' },
+      { path: 'Sleeve (flex)', value: 'STEADY' },
     ],
     actualMap: [
       { path: 'Tip → Tip', value: 'CLOSED' },
       { path: 'Sleeve → Sleeve', value: 'CLOSED' },
       { path: 'Tip → Sleeve', value: 'OPEN' },
-      { path: 'Sleeve, flexed at each plug', value: 'DROPS ON FLEX' },
+      { path: 'Sleeve (flex)', value: 'DROPS ON FLEX' },
     ],
     faultId: 'intermittent_joint',
     faultOptions: [
@@ -333,10 +333,10 @@ export const TESTER_CABLES: TesterCable[] = [
       { path: 'Pin 6 → Pin 6', value: 'CLOSED' },
       { path: 'Pin 7 → Pin 7', value: 'CLOSED' },
       { path: 'Pin 8 → Pin 8', value: 'CLOSED' },
-      { path: 'Pins 1+2 — one twisted pair', value: 'PAIRED' },
-      { path: 'Pins 3+6 — one twisted pair', value: 'PAIRED' },
-      { path: 'Pins 4+5 — one twisted pair', value: 'PAIRED' },
-      { path: 'Pins 7+8 — one twisted pair', value: 'PAIRED' },
+      { path: 'Pair 1+2', value: 'PAIRED' },
+      { path: 'Pair 3+6', value: 'PAIRED' },
+      { path: 'Pair 4+5', value: 'PAIRED' },
+      { path: 'Pair 7+8', value: 'PAIRED' },
     ],
     actualMap: [
       { path: 'Pin 1 → Pin 1', value: 'CLOSED' },
@@ -347,10 +347,10 @@ export const TESTER_CABLES: TesterCable[] = [
       { path: 'Pin 6 → Pin 6', value: 'CLOSED' },
       { path: 'Pin 7 → Pin 7', value: 'CLOSED' },
       { path: 'Pin 8 → Pin 8', value: 'CLOSED' },
-      { path: 'Pins 1+2 — one twisted pair', value: 'PAIRED' },
-      { path: 'Pins 3+6 — one twisted pair', value: 'SPLIT (two pairs)' },
-      { path: 'Pins 4+5 — one twisted pair', value: 'SPLIT (two pairs)' },
-      { path: 'Pins 7+8 — one twisted pair', value: 'PAIRED' },
+      { path: 'Pair 1+2', value: 'PAIRED' },
+      { path: 'Pair 3+6', value: 'SPLIT' },
+      { path: 'Pair 4+5', value: 'SPLIT' },
+      { path: 'Pair 7+8', value: 'PAIRED' },
     ],
     faultId: 'split_pair',
     faultOptions: [
@@ -381,17 +381,17 @@ export const TESTER_CABLES: TesterCable[] = [
     label: 'Cable H — detachable power cord',
     connectorEnds: 'NEMA 5-15 wall plug → IEC C13',
     expectedMap: [
-      { path: 'Narrow blade → L (line)', value: 'CLOSED' },
-      { path: 'Wide blade → N (neutral)', value: 'CLOSED' },
-      { path: 'Round pin → E (earth)', value: 'CLOSED' },
+      { path: 'Narrow → LINE', value: 'CLOSED' },
+      { path: 'Wide → NEUTRAL', value: 'CLOSED' },
+      { path: 'Round → EARTH', value: 'CLOSED' },
       { path: 'L ↔ N', value: 'OPEN' },
       { path: 'L ↔ E', value: 'OPEN' },
       { path: 'N ↔ E', value: 'OPEN' },
     ],
     actualMap: [
-      { path: 'Narrow blade → L (line)', value: 'CLOSED' },
-      { path: 'Wide blade → N (neutral)', value: 'CLOSED' },
-      { path: 'Round pin → E (earth)', value: 'OPEN' },
+      { path: 'Narrow → LINE', value: 'CLOSED' },
+      { path: 'Wide → NEUTRAL', value: 'CLOSED' },
+      { path: 'Round → EARTH', value: 'OPEN' },
       { path: 'L ↔ N', value: 'OPEN' },
       { path: 'L ↔ E', value: 'OPEN' },
       { path: 'N ↔ E', value: 'OPEN' },

@@ -74,7 +74,7 @@ export const POWER_GROUPS: L07Group[] = [
     // reliability, not the stakes"), both records' notInterchangeableWith
     // (families do not intermate) and hotPlug (de-energize first default).
     blurb:
-      'Locking stage mains — the lock changes reliability, not the stakes. The two families do not intermate despite the shared name, and the beginner default for both is the same: de-energize before connecting or disconnecting.',
+      'Locking stage mains — the lock changes reliability, not the stakes. The two families do not intermate despite the shared name, and the rule for both is the same: de-energize before connecting or disconnecting.',
     connectors: [
       { id: 'powercon_xx', chip: 'powerCON 20 A' },
       { id: 'powercon_true1', chip: 'powerCON TRUE1' },

@@ -39,12 +39,15 @@ import {
   lessonStyles as s,
   type Verdict,
 } from './bits';
-import { ConnectorCard, InkLegend } from './connectorCard';
+import { ConnectorCard, InkLegend, RecognitionStrip } from './connectorCard';
 
 export function Lesson05Body() {
   // ── connector-card browser (six verified speaker records) ─────────────────
   const [conn, setConn] = useState<ConnectorId>('speakon_nl2');
   const rec = getConnector(conn);
+  /** Recognition-tier record surfaced view-only (sweep 2026-08-15):
+   *  identify + purpose only — never assessed. */
+  const nl8 = getConnector('speakon_nl8');
 
   // ── routing-picks exercise (the unit gate) ─────────────────────────────────
   const [idx, setIdx] = useState(0);
@@ -72,7 +75,9 @@ export function Lesson05Body() {
       markLabUnit('af_cables', 'l05_loudspeaker');
       return;
     }
-    setIdx((i) => i + 1);
+    // Closure value (not a functional update) so a queued double-tap writes
+    // the same index twice instead of skipping an item (sweep 2026-08-15).
+    setIdx(idx + 1);
     setPicked(null);
     setVerdict(null);
   }, [idx]);
@@ -111,6 +116,7 @@ export function Lesson05Body() {
       </View>
       <InkLegend inks={['speakerPos', 'speakerNeg']} />
       {rec ? <ConnectorCard rec={rec} /> : null}
+      {nl8 ? <RecognitionStrip rec={[nl8]} title="ALSO RECOGNIZE" /> : null}
 
       <Eyebrow text="INSTRUMENT CABLE VS LOUDSPEAKER CABLE" />
       {/* ART SLOT: owner-supplied side-by-side cross-section pair (shielded
@@ -170,6 +176,7 @@ export function Lesson05Body() {
             <OptionChip
               label={idx >= ROUTING_SCENARIOS.length - 1 ? 'FINISH CHECK ✓' : 'NEXT SCENARIO ›'}
               active
+              action
               onPress={next}
             />
           ) : null}

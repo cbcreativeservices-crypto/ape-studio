@@ -56,7 +56,9 @@ export function Lesson01Body() {
       markLabUnit('af_cables', 'l01_what_travels');
       return;
     }
-    setPairIdx((i) => i + 1);
+    // Closure value (not a functional update) so a queued double-tap writes
+    // the same index twice instead of skipping an item (sweep 2026-08-15).
+    setPairIdx(pairIdx + 1);
     setPicked(null);
     setVerdict(null);
   }, [pairIdx]);
@@ -104,7 +106,7 @@ export function Lesson01Body() {
           </DetailCard>
           {verdict ? <VerdictBanner verdict={verdict} text={verdict === 'wrong' ? 'Think about the LEVEL and the KIND of what leaves the source — then try again.' : pair.explain} /> : null}
           {solvedThis ? (
-            <OptionChip label={pairIdx >= CARRY_PAIRS.length - 1 ? 'FINISH CHECK ✓' : 'NEXT PAIR ›'} active onPress={next} />
+            <OptionChip label={pairIdx >= CARRY_PAIRS.length - 1 ? 'FINISH CHECK ✓' : 'NEXT PAIR ›'} active action onPress={next} />
           ) : null}
         </>
       ) : (

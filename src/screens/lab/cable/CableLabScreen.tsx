@@ -26,6 +26,7 @@ import { useEntitlement } from '../../../features/commercial/EntitlementProvider
 import { registerLabUnits, useLabCompletion } from '../../../features/lab/labCompletion';
 import { colors, fonts } from '../../../theme/tokens';
 import { CABLE_LESSONS, CABLE_UNITS, CORE_QUESTION } from './data/lessons';
+import { CableStepNavCtx } from './lessons/bits';
 import { LESSON_BODIES } from './lessons';
 
 const STEP_KEY = 'ape:cableStep';
@@ -69,6 +70,15 @@ export function CableLabScreen() {
   const Body = LESSON_BODIES[s.id];
   const last = CABLE_LESSONS.length - 1;
 
+  /** Lesson-id step jump for lesson bodies (Lesson 12 actions, §5.12). */
+  const goToLesson = useCallback(
+    (id: (typeof CABLE_LESSONS)[number]['id']) => {
+      const i = CABLE_LESSONS.findIndex((l) => l.id === id);
+      if (i >= 0) goTo(i);
+    },
+    [goTo],
+  );
+
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
@@ -83,10 +93,10 @@ export function CableLabScreen() {
       <Text style={styles.coreQ}>{CORE_QUESTION}</Text>
 
       <View style={styles.topNav}>
-        <Pressable onPress={() => goTo(0)} disabled={step === 0} hitSlop={8} accessibilityRole="button" accessibilityLabel="First lesson">
+        <Pressable onPress={() => goTo(0)} disabled={step === 0} hitSlop={{ top: 14, bottom: 14, left: 8, right: 8 }} accessibilityRole="button" accessibilityLabel="First lesson">
           <Text style={[styles.navBtn, step === 0 && styles.navBtnDisabled]}>⏮ START</Text>
         </Pressable>
-        <Pressable onPress={() => goTo(Math.max(0, step - 1))} disabled={step === 0} hitSlop={8} accessibilityRole="button" accessibilityLabel="Previous lesson">
+        <Pressable onPress={() => goTo(Math.max(0, step - 1))} disabled={step === 0} hitSlop={{ top: 14, bottom: 14, left: 8, right: 8 }} accessibilityRole="button" accessibilityLabel="Previous lesson">
           <Text style={[styles.navBtn, step === 0 && styles.navBtnDisabled]}>‹ PREV</Text>
         </Pressable>
         <View style={{ flex: 1 }} />
@@ -95,7 +105,7 @@ export function CableLabScreen() {
         <Pressable
           onPress={() => goTo(Math.min(last, step + 1))}
           disabled={step === last}
-          hitSlop={8}
+          hitSlop={{ top: 14, bottom: 14, left: 8, right: 8 }}
           accessibilityRole="button"
           accessibilityLabel="Next lesson"
         >
@@ -104,7 +114,14 @@ export function CableLabScreen() {
       </View>
       <View style={styles.dotsRow}>
         {CABLE_LESSONS.map((st, i) => (
-          <Pressable key={st.id} onPress={() => goTo(i)} hitSlop={8} accessibilityRole="button" accessibilityLabel={`Go to ${st.title}`}>
+          <Pressable
+            key={st.id}
+            onPress={() => goTo(i)}
+            hitSlop={{ top: 18, bottom: 18, left: 3, right: 3 }}
+            accessibilityRole="button"
+            accessibilityState={{ selected: i === step }}
+            accessibilityLabel={`Go to ${st.title}${i === step ? ', current lesson' : i < step ? ', visited' : ''}`}
+          >
             <View style={[styles.dot, i === step && styles.dotActive, i < step && styles.dotDone]} />
           </Pressable>
         ))}
@@ -115,7 +132,9 @@ export function CableLabScreen() {
         <Text style={styles.tag}>{`${s.tag} · ${step + 1} OF ${CABLE_LESSONS.length}`}</Text>
         <Text style={styles.stepTitle}>{s.title}</Text>
         <Text style={styles.body}>{s.intro}</Text>
-        <Body key={s.id} />
+        <CableStepNavCtx.Provider value={goToLesson}>
+          <Body key={s.id} />
+        </CableStepNavCtx.Provider>
         <View style={styles.navRow}>
           <View style={{ flex: 1 }}>
             <GlassButton label="‹ BACK" tint="gold" disabled={step === 0} onPress={() => goTo(Math.max(0, step - 1))} />

@@ -117,7 +117,7 @@ function OnePick({ pick, last, onNext }: { pick: ConnectionPick; last: boolean; 
       </DetailCard>
       {shown ? <VerdictBanner verdict={shown.verdict} text={verdictText(shown)} /> : null}
       {q1Solved && q2Solved ? (
-        <OptionChip label={last ? 'FINISH STAGE ✓' : 'NEXT CONNECTION ›'} active onPress={onNext} />
+        <OptionChip label={last ? 'FINISH STAGE ✓' : 'NEXT CONNECTION ›'} active action onPress={onNext} />
       ) : null}
     </>
   );
@@ -180,7 +180,9 @@ function OrderBlock({ stage, onDone }: { stage: OrderStage; onDone: () => void }
               style={[styles.row, inOrder && styles.rowActive, result === 'ok' && { opacity: 0.75 }]}
             >
               <View style={[styles.badge, inOrder && styles.badgeActive]}>
-                <Text style={[styles.badgeText, inOrder && styles.badgeTextActive]}>{inOrder ? pos + 1 : '·'}</Text>
+                <Text style={[styles.badgeText, inOrder && styles.badgeTextActive]} maxFontSizeMultiplier={1.5}>
+                  {inOrder ? pos + 1 : '·'}
+                </Text>
               </View>
               <Text style={styles.rowText}>{item.label}</Text>
             </Pressable>
@@ -193,11 +195,12 @@ function OrderBlock({ stage, onDone }: { stage: OrderStage; onDone: () => void }
         <VerdictBanner verdict="wrong" text={stage.wrongExplain} />
       ) : null}
       {result === 'ok' ? (
-        <OptionChip label="NEXT STAGE ›" active onPress={onDone} />
+        <OptionChip label="NEXT STAGE ›" active action onPress={onDone} />
       ) : (
         <OptionChip
           label="CONFIRM ORDER"
           active={order.length === stage.items.length}
+          action
           disabled={order.length !== stage.items.length}
           onPress={confirm}
         />
@@ -298,7 +301,7 @@ function FaultBlock({
       {whySolved && !allFound ? (
         <Text style={s.hint}>{`${foundCount} of ${faultIds.length} faults found — keep hunting in the patch list.`}</Text>
       ) : null}
-      {allFound ? <OptionChip label="FINISH CHALLENGE ✓" active onPress={onFinish} /> : null}
+      {allFound ? <OptionChip label="FINISH CHALLENGE ✓" active action onPress={onFinish} /> : null}
     </>
   );
 }
@@ -457,11 +460,12 @@ const styles = StyleSheet.create({
   rowText: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: colors.textSecondary, flexShrink: 1 },
   foundTag: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1, color: colors.green },
   badge: {
-    width: 24,
-    height: 24,
+    minWidth: 24,
+    minHeight: 24,
+    paddingHorizontal: 4,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#3a3a3a',
+    borderColor: '#3a3a44',
     alignItems: 'center',
     justifyContent: 'center',
   },

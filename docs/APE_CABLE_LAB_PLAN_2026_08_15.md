@@ -273,6 +273,22 @@ identification (recognition/inspection only — no wiring instruction).
 | B9 | Targeted tests (data validation, registration, persistence, safety gating, tester fault mapping, challenge validation) + §13 adversarial acceptance sweep + mobile-width visual review |
 | B10 | Owner on-device pass (both phones) → sign-off → governance close-out (+ seed SQL if Decision #2 = credit) |
 
+## 11b. Owner rulings on builder judgment calls (2026-08-15, post-build)
+
+1. **L4 answer key RATIFIED as built**: TOSLINK look-alike = "it depends" (same
+   fiber serves optical S/PDIF and ADAT; configuration, not cabling, is the
+   fix); USB-C = "no" (cable capabilities genuinely differ; downward-substitution
+   nuance carried in the consequence text).
+2. **L11 Challenge B RATIFIED as built**: the spec's phantom-through-patchbay
+   fault is replaced by the record-backed wrong-DC-adapter fault (no verified
+   record supports the phantom premise and Studio B has no patchbay); electric
+   guitar added to Challenge A equipment as the DI source.
+3. **L10 dispositions RATIFIED as built**: "relabel" is never a correct bench
+   disposition — it stands as a taught-against distractor.
+4. **Copy pass DEFERRED**: owner will review all authored copy (banners, hints,
+   disposition labels, L2 anatomy definitions) at a later date; the builder flag
+   inventory is the checklist for that pass.
+
 ## 12. Acceptance criteria
 
 The owner spec's §13 checklist (integration, content, interaction, visual quality,
