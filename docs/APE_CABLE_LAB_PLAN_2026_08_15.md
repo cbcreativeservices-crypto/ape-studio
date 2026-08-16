@@ -142,11 +142,15 @@ freely open (app idiom, Foundations ruling); **completion** is what's gated (§8
 
 ## 5. Visual design
 
-- **Medium: Skia** (`@shopify/react-native-skia`), micArt registry pattern — the ratified
-  medium for realistic objects (visual standards 2026-07-29; the owner's "SVG or
-  code-native" spec is satisfied by code-native Skia vector drawing). Top-level import
-  per MicSelect precedent (2026-08-12) — the stale pre-Skia dev-client era ended with
-  this week's EAS builds.
+- **OWNER RULING 2026-08-15 (supersedes the Skia-authored plan): connector artwork is
+  OWNER-SUPPLIED.** The code-authored XLR exemplar failed owner review; the owner
+  provides detailed drawings AFTER the build. Build order therefore: all lessons,
+  interactions, tester and challenges ship art-free with clean per-connector art
+  mount points (render nothing when no art exists — never a primitive stand-in, R3);
+  the art funnel component gets rebuilt around the owner's delivered format
+  (bundled PNG per the nav-icon precedent, or storage-bucket raster per the tube-card
+  precedent) when the drawings arrive. Pin-face contact diagrams follow the same
+  handoff; the face-geometry verification pass runs against the owner's drawings.
 - Bodies: layered gradient-formed illustrations, upper-left light, rim highlights, metal
   recipes lifted from tube/viz.tsx helpers. NEVER bare primitives.
 - **Pin faces: geometric-but-styled technical diagrams** (allowed for abstract data) with
