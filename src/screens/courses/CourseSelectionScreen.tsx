@@ -310,10 +310,10 @@ function warmCardArt() {
 // for a short warm-white tail; one eased revolution, faded in/out, then dark
 // until the next pass. Decorative only: skipped under reduce-motion, invisible
 // to the screen reader, and taps pass straight through.
-const SHIMMER_EVERY_MS = 13000;
-/** Fraction of the border the light travels per pass (owner 2026-08-16: a 91%
+const SHIMMER_EVERY_MS = 53000; // owner 2026-08-16: one pass every 53s (was 13s)
+/** Fraction of the border the light travels per pass (owner 2026-08-16: a 97%
  *  arc from the lower-left corner). */
-const SHIMMER_ARC = 0.91;
+const SHIMMER_ARC = 0.97;
 // Owner 2026-08-16: the 91% arc runs in the SAME total time (current time =
 // 100%), so the light travels a touch faster rather than the pass lengthening.
 const SHIMMER_SWEEP_MS = 1480;
