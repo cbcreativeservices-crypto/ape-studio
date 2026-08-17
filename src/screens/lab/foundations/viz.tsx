@@ -2222,16 +2222,27 @@ function HStackRow({
     return p;
   }, [clock, width, mid, n, amp, visHz]);
   const on = amp > 0.02;
-  const col = on ? levelColor(amp) : '#2a2a30';
+  // Fixed-scale symmetric ramp over the row's ±full-scale (blue at the mid line →
+  // peak colour at the excursion), matching THE SUM curve below — so a loud
+  // harmonic shows the whole climb, not a solid block. Off rows stay dim gray.
+  const gStart = vec(0, mid - HSTACK_ROW_H * 0.42);
+  const gEnd = vec(0, mid + HSTACK_ROW_H * 0.42);
   return (
     <Group>
       <SkLine p1={{ x: 0, y: mid }} p2={{ x: width, y: mid }} color="#161619" strokeWidth={1} />
       {on ? (
-        <Path path={path} color={col} style="stroke" strokeWidth={3.4} opacity={0.16}>
-          <BlurMask blur={4} style="normal" />
-        </Path>
-      ) : null}
-      <Path path={path} color={col} style="stroke" strokeWidth={on ? 2 : 1.2} opacity={on ? 1 : 0.5} />
+        <>
+          <Path path={path} style="stroke" strokeWidth={3.4} opacity={0.16}>
+            <BlurMask blur={4} style="normal" />
+            <LinearGradient start={gStart} end={gEnd} colors={MIDI_STOP_COLORS} positions={MIDI_STOP_POS} />
+          </Path>
+          <Path path={path} style="stroke" strokeWidth={2} opacity={1}>
+            <LinearGradient start={gStart} end={gEnd} colors={MIDI_STOP_COLORS} positions={MIDI_STOP_POS} />
+          </Path>
+        </>
+      ) : (
+        <Path path={path} color="#2a2a30" style="stroke" strokeWidth={1.2} opacity={0.5} />
+      )}
     </Group>
   );
 }
