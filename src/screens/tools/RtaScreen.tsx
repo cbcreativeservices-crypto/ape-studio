@@ -51,7 +51,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
 import Svg, { Defs, G, Line, LinearGradient, Rect, Stop } from 'react-native-svg';
-import { ApeDsp, type BandsFrame, type EngineConfig } from '../../../modules/ape-dsp';
+import { ApeDsp, type BandsFrame, type EngineConfig, type MeterFrame } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
@@ -271,6 +271,72 @@ function bandLabels(centers: number[]): { i: number; text: string }[] {
 
 const fmtDb = (v: number | undefined) =>
   v != null && Number.isFinite(v) ? `${v > 0 ? '+' : ''}${v.toFixed(1)}` : '—';
+
+// ---- Level weighting (owner 2026-08-17) ------------------------------------
+// The top-left readout can weight the broadband LEVEL: Z (flat), A, or C. On
+// this UNCALIBRATED tool everything stays in the dBFS domain (weighting only
+// changes which frequencies are emphasised before summing — it is NOT dB SPL),
+// so the honest unit is dBFS(A)/dBFS(C), never bare dBA/dBC. Reads the engine's
+// Fast weighted level from the same meter frame the PEAK cells use.
+type Weighting = 'Z' | 'A' | 'C';
+const WEIGHTINGS: readonly Weighting[] = ['C', 'A', 'Z'] as const; // stacked top→bottom
+/** Honest unit label per weighting — dBFS domain, never SPL. */
+const weightUnit = (w: Weighting): string => (w === 'Z' ? 'dBFS' : `dBFS(${w})`);
+/** The engine's Fast weighted level for the chosen weighting. */
+const weightedFastDb = (m: MeterFrame | null | undefined, w: Weighting): number | undefined => {
+  if (!m) return undefined;
+  return w === 'A' ? m.aFastDb : w === 'C' ? m.cFastDb : m.zFastDb;
+};
+
+/** Top-left LEVEL cell (owner 2026-08-17): the weighted broadband level with a
+ *  vertical C/A/Z unit toggle — active amber, inactive white, all three always
+ *  visible. Replaces the old fixed-dBFS PEAK cell; PEAK HOLD (next cell) keeps
+ *  the true broadband peak + clip latch. */
+function LevelCell({
+  meter,
+  weighting,
+  onWeighting,
+  help,
+}: {
+  meter: MeterFrame | null | undefined;
+  weighting: Weighting;
+  onWeighting: (w: Weighting) => void;
+  help?: (key: string) => void;
+}) {
+  const v = weightedFastDb(meter, weighting);
+  return (
+    <View style={styles.statCell}>
+      <Pressable
+        onLongPress={help ? () => help(readoutKey('LEVEL')) : undefined}
+        delayLongPress={350}
+        accessibilityLabel="LEVEL — what it shows"
+      >
+        <Text style={styles.statLabel}>LEVEL</Text>
+      </Pressable>
+      <View style={styles.levelRow}>
+        <Text style={[styles.statValue, v != null && Number.isFinite(v) ? { color: levelColorForDb(v) } : null]}>
+          {fmtDb(v)}
+        </Text>
+        <View style={styles.weightToggle}>
+          {WEIGHTINGS.map((w) => (
+            <Pressable
+              key={w}
+              onPress={() => onWeighting(w)}
+              hitSlop={4}
+              accessibilityRole="button"
+              accessibilityState={{ selected: weighting === w }}
+              accessibilityLabel={
+                w === 'Z' ? 'Unweighted, dBFS' : `${w}-weighted level, relative dBFS (not SPL)`
+              }
+            >
+              <Text style={[styles.weightOpt, weighting === w && styles.weightOptActive]}>{weightUnit(w)}</Text>
+            </Pressable>
+          ))}
+        </View>
+      </View>
+    </View>
+  );
+}
 
 function StatCell({
   label,
@@ -742,6 +808,8 @@ export function RtaScreen({ navigation }: Props) {
   }).current;
   const [mode, setMode] = useState<BandMode>(31);
   const [alpha, setAlpha] = useState(DEFAULT_ALPHA);
+  // Top-left LEVEL weighting (owner 2026-08-17): Z (flat) · A · C, dBFS domain.
+  const [weighting, setWeighting] = useState<Weighting>('Z');
   const fraction = fractionFor(mode); // what the ENGINE is banding at (save path)
 
   const { state, frames, start, stop, lastError, resetPeakHold } = useDspEngine(cfg, {
@@ -1000,7 +1068,9 @@ export function RtaScreen({ navigation }: Props) {
                 PEAK HOLD stay neutral until an actual clip, then latch red.
                 Long-press any cell for what it shows. */}
             <View style={styles.statGrid}>
-              <StatCell help={help} label="PEAK" value={fmtDb(meter?.peakDb)} unit="dBFS" clipped={hasClipped} levelDb={meter?.peakDb} />
+              {/* LEVEL with a C/A/Z weighting toggle (owner 2026-08-17) — honest
+                  relative dBFS(A)/dBFS(C), never dB SPL on this uncalibrated tool. */}
+              <LevelCell meter={meter} weighting={weighting} onWeighting={setWeighting} help={help} />
               <StatCell help={help} label="PEAK HOLD" value={fmtDb(meter?.peakHoldDb)} unit="dBFS" clipped={hasClipped} frameRed={hasClipped} levelDb={meter?.peakHoldDb} onPress={onResetPeak} />
               {/* BANDS reports the SELECTED band mode so it always matches the
                   BANDING chip below (owner 2026-08-17: the readout and the chip
@@ -1197,6 +1267,18 @@ const styles = StyleSheet.create({
   statValue: { fontFamily: fonts.mono, fontSize: 19, color: colors.textPrimary },
   statValuePeak: { color: '#ff5a48' }, // red once a clip has occurred, until reset (owner 2026-08-05)
   statUnit: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: '#ffffff' }, // dBFS markings white (owner 2026-08-05)
+
+  // LEVEL cell weighting toggle (owner 2026-08-17): value on the left, a vertical
+  // C/A/Z unit stack on the right — active amber, the other two white.
+  levelRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 6 },
+  weightToggle: { alignItems: 'flex-end', gap: 1 },
+  weightOpt: {
+    fontFamily: fonts.mono,
+    fontSize: 11,
+    letterSpacing: 0.3,
+    color: '#ffffff', // inactive: white (owner 2026-08-17)
+  },
+  weightOptActive: { color: colors.amber }, // active: amber
 
   // Live warning line (spec §6) — amber, plain language.
   liveWarn: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18.5, color: colors.amber },

@@ -65,9 +65,9 @@ export const TOOL_LESSONS: Record<ToolId, LessonContent> = {
     controls: [
       { key: 'banding', name: 'Band resolution', definition: 'How finely the spectrum is split: 1/1-octave is coarse and quick to read; 1/3-octave is finer, closer to how we hear tonal balance.' },
       { key: 'averaging', name: 'Averaging', definition: 'How much the bars are smoothed over time. More averaging steadies a jumpy display so you can read the trend; less reacts instantly.' },
-      { key: 'peak', name: 'Peak (readout)', definition: 'The highest instantaneous sample level right now, in dBFS — can briefly exceed the RMS bars on transients.' },
-      { key: 'peak_hold', name: 'Peak hold (readout)', definition: 'The maximum level seen since the last reset — catches brief peaks your eye would miss.' },
-      { key: 'bands', name: 'Bands (readout)', definition: 'How many frequency bands are being displayed at the current resolution.' },
+      { key: 'level', name: 'Level (readout)', definition: 'The overall broadband level right now. Tap the small C / A / Z stack to weight it: Z is flat (unweighted), A emphasises mid/high like the ear at quiet levels, C is near-flat with gentle roll-off. This tool is UNCALIBRATED, so the unit stays dBFS — dBFS(A)/dBFS(C) are relative, weighted digital levels, NOT dB SPL. Use them to compare tonal emphasis, not absolute loudness.' },
+      { key: 'peak_hold', name: 'Peak hold (readout)', definition: 'The maximum instantaneous peak seen since the last reset, in dBFS — catches brief peaks your eye would miss. Turns red at ≥ 0 dBFS (the converter is clipping). Tap the cell to reset it.' },
+      { key: 'bands', name: 'Bands (readout)', definition: 'How many frequency bands the selected banding mode shows — it matches the BANDING chip.' },
       { key: 'marks', name: 'What the display shows', definition: 'Each bar is one frequency band, low (left) → high (right); bar height is that band’s level. A thin cap floating above a bar is its peak-hold. Bars drawn GRAY are “not resolvable” — the FFT can’t reliably separate that low band at this window size, so the app dims them instead of faking a value.' },
     ],
     commonMistakes: [
