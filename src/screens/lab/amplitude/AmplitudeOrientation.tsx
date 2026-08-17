@@ -653,9 +653,15 @@ const styles = StyleSheet.create({
   dynText: {
     fontFamily: fonts.bravura, // SMuFL — engraved musical dynamics glyphs
     fontSize: 22,
+    // Bravura's native vertical metrics are enormous (fontBoundingBox ≈ 44/44 at
+    // 1em); without an explicit lineHeight RN builds an ~88px line box and the
+    // bar's overflow:hidden clips the glyph out of view. Pin the line box small
+    // so the glyph seats inside the 32px bar.
+    lineHeight: 24,
     color: '#000',
     textAlign: 'center',
-    includeFontPadding: false, // Android: trims the extra glyph padding so it centers in the bar
+    textAlignVertical: 'center',
+    includeFontPadding: false, // Android: drop the extra font padding
   },
   gradNames: {
     fontFamily: fonts.oswaldSemiBold,
