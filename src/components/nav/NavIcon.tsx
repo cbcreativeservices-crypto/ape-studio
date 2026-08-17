@@ -102,6 +102,10 @@ function ProgressFadersLit() {
           Animated.timing(v, { toValue: 0, duration: FADER_MS[i], easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
           Animated.timing(v, { toValue: 1, duration: FADER_MS[i], easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
         ]),
+        // CRITICAL: without this, loop() SNAPS the value back to its initial
+        // phase at the start of every cycle — the "jump" the owner saw. With
+        // it, each cycle continues from wherever the fader currently is.
+        { resetBeforeIteration: false },
       ),
     );
     loops.forEach((l) => l.start());
