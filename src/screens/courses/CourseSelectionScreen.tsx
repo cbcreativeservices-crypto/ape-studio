@@ -311,7 +311,13 @@ function warmCardArt() {
 // until the next pass. Decorative only: skipped under reduce-motion, invisible
 // to the screen reader, and taps pass straight through.
 const SHIMMER_EVERY_MS = 13000;
-const SHIMMER_SWEEP_MS = 1700;
+/** Fraction of the border the light travels per pass (owner 2026-08-16: a 37%
+ *  arc from the top edge, not a full lap). */
+const SHIMMER_ARC = 0.37;
+// Duration trimmed with the shorter travel so the light keeps roughly the pace
+// the owner approved on the full lap (1700ms / lap → ~900ms for a 37% arc,
+// with a little extra dwell for the fade envelope).
+const SHIMMER_SWEEP_MS = 900;
 
 function CardShimmer({ active }: { active: boolean }) {
   const [reduceMotion, setReduceMotion] = useState(false);
@@ -337,11 +343,11 @@ function CardShimmer({ active }: { active: boolean }) {
     }
     const run = () => {
       angle.value = 0;
-      angle.value = withTiming(2 * Math.PI, { duration: SHIMMER_SWEEP_MS, easing: Easing.inOut(Easing.cubic) });
+      angle.value = withTiming(SHIMMER_ARC * 2 * Math.PI, { duration: SHIMMER_SWEEP_MS, easing: Easing.inOut(Easing.cubic) });
       glow.value = withSequence(
-        withTiming(1, { duration: 300, easing: Easing.out(Easing.quad) }),
-        withTiming(1, { duration: SHIMMER_SWEEP_MS - 300 - 450 }),
-        withTiming(0, { duration: 450, easing: Easing.in(Easing.quad) }),
+        withTiming(1, { duration: 220, easing: Easing.out(Easing.quad) }),
+        withTiming(1, { duration: SHIMMER_SWEEP_MS - 220 - 330 }),
+        withTiming(0, { duration: 330, easing: Easing.in(Easing.quad) }),
       );
     };
     const first = setTimeout(run, 1200); // settle first, shimmer shortly after landing
