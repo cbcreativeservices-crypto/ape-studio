@@ -32,7 +32,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LabReviewButton } from '../../../features/lab/LabReviewButton';
-import { AlphaType, Canvas, ColorType, Image, LinearGradient, Path, Rect, Skia, Text as SkiaText, useFont, vec } from '@shopify/react-native-skia';
+import { AlphaType, Canvas, ColorType, DashPathEffect, Image, LinearGradient, Path, Rect, Skia, Text as SkiaText, useFont, vec } from '@shopify/react-native-skia';
 import {
   MIDLINE_BLUE,
   LOUDNESS_STOPS,
@@ -381,6 +381,7 @@ function RtaCard() {
  *  deep-navy silence floor (the app's standing heat-map color). */
 function SpectrogramCard() {
   const [w, onW] = useMeasuredWidth();
+  const [arrowW, onArrowW] = useMeasuredWidth(); // width of the arrow strip after the "time" label
   // One fine SkImage, built once and scaled smoothly to the card (no blocky grid).
   const img = useMemo(() => buildSpectroImage(), []);
   return (
@@ -390,11 +391,13 @@ function SpectrogramCard() {
           <Image image={img} x={0} y={0} width={w} height={VIZ_H} fit="fill" />
         </Canvas>
       ) : null}
-      {/* Time axis in the space BELOW the full-height display: a light-gray arrow
-          labelled "time". (Color already carries magnitude, so no amplitude arrow.) */}
+      {/* Time axis BELOW the full-height display: "time" label, then a dotted
+          light-gray arrow extending to the display's right edge. */}
       <View style={styles.spectroTimeRow}>
-        {w > 0 ? <AmplitudeArrow w={Math.max(0, w - 46)} h={13} dir="right" color={ARROW_GRAY} /> : null}
         <Text style={styles.spectroTimeLabel}>time</Text>
+        <View style={{ flex: 1 }} onLayout={(e) => onArrowW(Math.round(e.nativeEvent.layout.width))}>
+          {arrowW > 0 ? <AmplitudeArrow w={arrowW} h={13} dir="right" color={ARROW_GRAY} dotted /> : null}
+        </View>
       </View>
     </View>
   );
@@ -448,12 +451,30 @@ function AmplitudeArrow({
   h,
   dir = 'right',
   color,
+  dotted,
 }: {
   w: number;
   h: number;
   dir?: 'right' | 'up' | 'down';
   color?: string; // solid fill instead of the amplitude gradient (e.g. the spectrogram time arrow)
+  dotted?: boolean; // dotted shaft + solid head (right only) — the spectrogram time arrow
 }) {
+  // Dotted variant (right only): a dashed line shaft + a solid arrowhead.
+  const dashed = useMemo(() => {
+    if (!(dotted && dir === 'right')) return null;
+    const cy = h / 2;
+    const head = 12;
+    const wing = 6.5;
+    const shaft = Skia.Path.Make();
+    shaft.moveTo(0, cy);
+    shaft.lineTo(w - head, cy);
+    const tri = Skia.Path.Make();
+    tri.moveTo(w - head, cy - wing);
+    tri.lineTo(w, cy);
+    tri.lineTo(w - head, cy + wing);
+    tri.close();
+    return { shaft, tri };
+  }, [w, h, dir, dotted]);
   const path = useMemo(() => {
     const p = Skia.Path.Make();
     const head = 12; // arrowhead length
@@ -497,7 +518,14 @@ function AmplitudeArrow({
   const end = dir === 'up' ? vec(0, 0) : dir === 'down' ? vec(0, h) : vec(w, 0);
   return (
     <Canvas style={{ width: w, height: h }} pointerEvents="none">
-      {color ? (
+      {dashed ? (
+        <>
+          <Path path={dashed.shaft} style="stroke" strokeWidth={2.5} strokeCap="round" color={color ?? '#000000'}>
+            <DashPathEffect intervals={[2.5, 4]} />
+          </Path>
+          <Path path={dashed.tri} color={color ?? '#000000'} />
+        </>
+      ) : color ? (
         <Path path={path} color={color} />
       ) : (
         <Path path={path}>
@@ -557,17 +585,25 @@ function GradientBar() {
         </View>
         <Text style={[styles.gradEnd, { color: LOUD_RED }]}>HIGH</Text>
       </View>
-      {/* Mirror of quiet/loud, beneath the bar — now with the gradient arrow
-          running BETWEEN the words (less → more, low → high). */}
-      <View style={styles.lessMoreRow}>
-        <Text style={styles.qlText}>less</Text>
-        <View
-          style={{ flex: 1 }}
-          onLayout={(e) => setArrowW(Math.round(e.nativeEvent.layout.width))}
-        >
+      {/* Mirror of quiet/loud, beneath the bar. The gradient arrow spans EXACTLY
+          the bar's width (invisible LOW/HIGH spacers align the flanks); "less" and
+          "more" sit at those ends, over the spacers. */}
+      <View style={styles.gradRow}>
+        <View>
+          <Text style={[styles.gradEnd, styles.lmSpacer]}>LOW</Text>
+          <View style={[styles.lmLabelWrap, { alignItems: 'flex-start' }]}>
+            <Text style={styles.qlText}>less</Text>
+          </View>
+        </View>
+        <View style={{ flex: 1 }} onLayout={(e) => setArrowW(Math.round(e.nativeEvent.layout.width))}>
           {arrowW > 0 ? <AmplitudeArrow w={arrowW} h={ARROW_H} dir="right" /> : <View style={{ height: ARROW_H }} />}
         </View>
-        <Text style={styles.qlText}>more</Text>
+        <View>
+          <Text style={[styles.gradEnd, styles.lmSpacer]}>HIGH</Text>
+          <View style={[styles.lmLabelWrap, { alignItems: 'flex-end' }]}>
+            <Text style={styles.qlText}>more</Text>
+          </View>
+        </View>
       </View>
       <Text style={styles.gradNames}>DARK BLUE → BLUE → GREEN → YELLOW → ORANGE → RED</Text>
     </View>
@@ -806,11 +842,12 @@ const styles = StyleSheet.create({
   ampArrowLevel: { position: 'absolute', left: 1, top: 1 }, // level meter (full height, left gutter)
   ampArrowRta: { position: 'absolute', left: 1, top: 2 }, // spectrum/RTA (full height)
   // Spectrogram time axis: light-gray arrow + "time" label, below the display
-  spectroTimeRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 1 },
+  spectroTimeRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 1 },
   spectroTimeLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 8.5, letterSpacing: 1, color: ARROW_GRAY },
   // (Dynamics are drawn in a Skia Canvas now — see GradientBar — so no RN text styles here.)
   qlRow: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 2 },
-  lessMoreRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 2 }, // less [arrow] more
+  lmSpacer: { opacity: 0 }, // invisible LOW/HIGH copy sizing the flank so the arrow == bar width
+  lmLabelWrap: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, justifyContent: 'center' }, // overlay less/more
   qlText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.4, color: colors.textSub },
   gradNames: {
     fontFamily: fonts.oswaldSemiBold,
