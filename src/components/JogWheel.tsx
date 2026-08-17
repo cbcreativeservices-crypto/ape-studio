@@ -14,7 +14,7 @@
 import { useMemo, useRef } from 'react';
 import { PanResponder, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import Reanimated, { Easing as REasing, useAnimatedStyle, withTiming, type SharedValue } from 'react-native-reanimated';
-import Svg, { Circle, Defs, Ellipse, Line, RadialGradient, Stop } from 'react-native-svg';
+import Svg, { Circle, Defs, Ellipse, RadialGradient, Stop } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../features/settings/store';
 
@@ -112,33 +112,8 @@ function JogDimple({ size }: { size: number }) {
   );
 }
 
-/** Machined tick ring (owner 2026-08-16) — fine radial ticks just inside the
- *  rim that ROTATE with the wheel, so even small rotations are visible (the
- *  dimple alone made fine motion invisible). 36 ticks at 10°, every third one
- *  slightly longer/brighter — subtle, machined-metal, not a ruler. */
-function JogTicks({ size }: { size: number }) {
-  const c = size / 2;
-  const rOuter = c - size * 0.045;
-  const ticks = Array.from({ length: 36 }, (_, i) => {
-    const major = i % 3 === 0;
-    const rad = (i * 10 * Math.PI) / 180;
-    const rInner = rOuter - size * (major ? 0.034 : 0.02);
-    return (
-      <Line
-        key={i}
-        x1={c + rInner * Math.sin(rad)}
-        y1={c - rInner * Math.cos(rad)}
-        x2={c + rOuter * Math.sin(rad)}
-        y2={c - rOuter * Math.cos(rad)}
-        stroke="#c3c8d4"
-        strokeWidth={Math.max(1, size * 0.004)}
-        strokeLinecap="round"
-        opacity={major ? 0.16 : 0.07}
-      />
-    );
-  });
-  return <Svg width={size} height={size}>{ticks}</Svg>;
-}
+// (Tick-ring experiment removed — owner 2026-08-16: the wheel stays a clean
+// SSL-style dial; only the dimple marks rotation.)
 
 /** The rotating dimple layer. When `spin` is provided (the overlay) the rotation
  *  runs on the UI thread via Reanimated — so the dimple tracks the thumb with no
@@ -148,19 +123,13 @@ function JogDimpleLayer({ size, spin }: { size: number; spin?: SharedValue<numbe
   if (!spin) {
     return (
       <View style={StyleSheet.absoluteFill}>
-        <JogTicks size={size} />
-        <View style={StyleSheet.absoluteFill}>
-          <JogDimple size={size} />
-        </View>
+        <JogDimple size={size} />
       </View>
     );
   }
   return (
     <Reanimated.View style={[StyleSheet.absoluteFill, style]}>
-      <JogTicks size={size} />
-      <View style={StyleSheet.absoluteFill}>
-        <JogDimple size={size} />
-      </View>
+      <JogDimple size={size} />
     </Reanimated.View>
   );
 }
