@@ -67,15 +67,22 @@ const FADER_ICON = 22; // matches styles.icon
 const FADER_COL_W = 6;
 const FADER_TRACK_W = 3;
 const FADER_BLOCK_H = 6.5;
-const FADER_TOP_MIN = 2; // never fully all the way up
+const FADER_TOP_MIN = 2; // never fully all the way up — even on an excursion
 const FADER_BOTTOM_MAX = FADER_ICON - FADER_BLOCK_H; // 15.5 — may rest at the bottom
-// Per-fader travel windows (echo the art's resting spread) + slow periods.
-const FADER_RANGE: ReadonlyArray<[number, number]> = [
-  [4, 14],
-  [6, 15],
-  [FADER_TOP_MIN, 11],
-];
+// TOP-QUARTER rule (owner 2026-08-16): the top 1/4 of the fader travel
+// (translateY < ~3.9) is off-limits to the normal drift; ONE fader may visit it
+// at most ONCE EVERY 3 MINUTES (rotating), then resumes the normal range.
+const FADER_EXC_TOP = FADER_TOP_MIN; // excursion peak — inside the top quarter
+const FADER_NORMAL_TOP = [4, 6, 4]; // normal upper limits — all below the top quarter
+const FADER_BOTTOM = [14, 15, 11];
+/** Phase (0..1 over [EXC_TOP..bottom]) of each fader's NORMAL upper limit. */
+const FADER_NORM_PHASE = FADER_NORMAL_TOP.map((t, i) => (t - FADER_EXC_TOP) / (FADER_BOTTOM[i] - FADER_EXC_TOP));
 const FADER_MS = [4200, 5400, 6200]; // one direction; full cycle = ×2
+const FADER_EXC_EVERY_MS = 180000; // 3 minutes
+// Module-scope guard so remounting the tab can't produce excursions more often
+// than once per 3 minutes.
+let lastFaderExcursionAt = 0;
+let nextExcursionFader = 0;
 
 function ProgressFadersLit() {
   const [reduceMotion, setReduceMotion] = useState(false);
@@ -91,37 +98,70 @@ function ProgressFadersLit() {
     };
   }, []);
 
-  // 0 = top of each fader's window, 1 = bottom. Start mid-window, desynced.
-  const phases = useRef([new Animated.Value(0.55), new Animated.Value(0.8), new Animated.Value(0.2)]).current;
+  // Phase 0 = excursion peak, FADER_NORM_PHASE[i] = normal upper limit,
+  // 1 = bottom. Start mid-window, desynced.
+  const phases = useRef([new Animated.Value(0.55), new Animated.Value(0.8), new Animated.Value(0.45)]).current;
 
   useEffect(() => {
     if (reduceMotion) return;
-    const loops = phases.map((v, i) =>
+    const ease = Easing.inOut(Easing.sin);
+    // Normal drift: between the fader's NORMAL upper limit and its bottom —
+    // never into the top quarter. resetBeforeIteration:false is CRITICAL:
+    // without it loop() snaps back to the initial phase each cycle (the jump
+    // the owner saw); with it every cycle continues from the current position.
+    const makeLoop = (i: number) =>
       Animated.loop(
         Animated.sequence([
-          Animated.timing(v, { toValue: 0, duration: FADER_MS[i], easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
-          Animated.timing(v, { toValue: 1, duration: FADER_MS[i], easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+          Animated.timing(phases[i], { toValue: FADER_NORM_PHASE[i], duration: FADER_MS[i], easing: ease, useNativeDriver: true }),
+          Animated.timing(phases[i], { toValue: 1, duration: FADER_MS[i], easing: ease, useNativeDriver: true }),
         ]),
-        // CRITICAL: without this, loop() SNAPS the value back to its initial
-        // phase at the start of every cycle — the "jump" the owner saw. With
-        // it, each cycle continues from wherever the fader currently is.
         { resetBeforeIteration: false },
-      ),
-    );
+      );
+    const loops = phases.map((_, i) => makeLoop(i));
     loops.forEach((l) => l.start());
-    return () => loops.forEach((l) => l.stop());
+    let stopped = false;
+    // Top-quarter excursion: at most once every 3 minutes (module-guarded), one
+    // fader (rotating) glides up into the top quarter, back to the bottom, and
+    // rejoins its normal loop.
+    const iv = setInterval(() => {
+      if (stopped) return;
+      const now = Date.now();
+      if (now - lastFaderExcursionAt < FADER_EXC_EVERY_MS) return;
+      lastFaderExcursionAt = now;
+      const i = nextExcursionFader;
+      nextExcursionFader = (nextExcursionFader + 1) % phases.length;
+      loops[i].stop();
+      Animated.sequence([
+        Animated.timing(phases[i], { toValue: 0, duration: FADER_MS[i], easing: ease, useNativeDriver: true }),
+        Animated.timing(phases[i], { toValue: 1, duration: Math.round(FADER_MS[i] * 1.2), easing: ease, useNativeDriver: true }),
+      ]).start(({ finished }) => {
+        if (finished && !stopped) {
+          loops[i] = makeLoop(i);
+          loops[i].start();
+        }
+      });
+    }, FADER_EXC_EVERY_MS);
+    return () => {
+      stopped = true;
+      clearInterval(iv);
+      loops.forEach((l) => l.stop());
+    };
   }, [reduceMotion, phases]);
 
   return (
     <View style={styles.faderRow} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-      {FADER_RANGE.map(([top, bottom], i) => (
+      {FADER_BOTTOM.map((bottom, i) => (
         <View key={i} style={styles.faderCol}>
           {/* Track — static, never animates. */}
           <View style={styles.faderTrack} />
           <Animated.View
             style={[
               styles.faderBlock,
-              { transform: [{ translateY: phases[i].interpolate({ inputRange: [0, 1], outputRange: [top, bottom] }) }] },
+              {
+                transform: [
+                  { translateY: phases[i].interpolate({ inputRange: [0, 1], outputRange: [FADER_EXC_TOP, bottom] }) },
+                ],
+              },
             ]}
           >
             <View style={styles.faderGroove} />
