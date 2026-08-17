@@ -321,6 +321,9 @@ const SHIMMER_SWEEP_MS = 1480;
 // breathes up to FULL at mid-arc, and ENDS 87% dimmer (0.13) before going dark.
 const SHIMMER_GLOW_START = 0.69;
 const SHIMMER_GLOW_END = 0.13;
+/** Master dim (owner 2026-08-16): the WHOLE trace 57% dimmer — every envelope
+ *  value (start / mid peak / end) is scaled by this. */
+const SHIMMER_MASTER = 0.43;
 /** Sweep angle of the card's lower-left corner (start of the pass). */
 const SHIMMER_START_RAD = Math.PI - Math.atan2(CARD_H, CARD_W);
 
@@ -352,10 +355,10 @@ function CardShimmer({ active }: { active: boolean }) {
       // Intensity breathes with the travel (owner 2026-08-16): starts 31%
       // dimmer, rises to FULL at mid-arc, falls to 87% dimmer at the end of
       // travel, then drops dark until the next pass.
-      glow.value = SHIMMER_GLOW_START;
+      glow.value = SHIMMER_GLOW_START * SHIMMER_MASTER;
       glow.value = withSequence(
-        withTiming(1, { duration: SHIMMER_SWEEP_MS / 2, easing: Easing.inOut(Easing.sin) }),
-        withTiming(SHIMMER_GLOW_END, { duration: SHIMMER_SWEEP_MS / 2, easing: Easing.inOut(Easing.sin) }),
+        withTiming(SHIMMER_MASTER, { duration: SHIMMER_SWEEP_MS / 2, easing: Easing.inOut(Easing.sin) }),
+        withTiming(SHIMMER_GLOW_END * SHIMMER_MASTER, { duration: SHIMMER_SWEEP_MS / 2, easing: Easing.inOut(Easing.sin) }),
         withTiming(0, { duration: 140, easing: Easing.in(Easing.quad) }),
       );
     };
