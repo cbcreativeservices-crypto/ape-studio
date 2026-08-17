@@ -369,13 +369,46 @@ function SpectrogramCard() {
 // ─────────────────────────────────────────────────────────────────────────────
 // The gradient bar + the shared page body
 
+/** Musical dynamics, softest → loudest = low → high level (owner 2026-08-16):
+ *  the same magnitude scale a musician already reads. Overlaid on the gradient,
+ *  each mark filled with the ramp color at its position and outlined in black so
+ *  it stays legible against the matching color behind it. */
+const DYNAMICS = ['PPP', 'PP', 'P', 'MP', 'MF', 'F', 'FF', 'FFF'] as const;
+
+/** 8 one-pixel offsets → a crisp black outline (RN has no text-stroke prop). */
+const OUTLINE_OFFSETS: ReadonlyArray<readonly [number, number]> = [
+  [-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1],
+];
+
+/** One dynamics mark: black-outlined glyph with a gradient-color fill. The
+ *  wrapper sizes to the fill text; the absolute black copies overlay it exactly,
+ *  offset by ±1px on all sides to form the outline. */
+function OutlinedMark({ text, color }: { text: string; color: string }) {
+  return (
+    <View style={styles.dynStack}>
+      {OUTLINE_OFFSETS.map(([dx, dy], k) => (
+        <Text
+          key={k}
+          numberOfLines={1}
+          style={[styles.dynText, styles.dynAbs, { transform: [{ translateX: dx }, { translateY: dy }] }]}
+        >
+          {text}
+        </Text>
+      ))}
+      <Text numberOfLines={1} style={[styles.dynText, { color }]}>
+        {text}
+      </Text>
+    </View>
+  );
+}
+
 function GradientBar() {
   const n = 48;
   return (
     <View
       style={{ gap: 5 }}
       accessible
-      accessibilityLabel="The Academy magnitude scale: dark blue for the lowest level, through blue, green, yellow and orange, to red for the highest level"
+      accessibilityLabel="The Academy magnitude scale: dark blue for the lowest level, through blue, green, yellow and orange, to red for the highest level — marked with musical dynamics from triple piano (softest) at the low end to triple forte (loudest) at the high end"
     >
       <View style={styles.gradRow}>
         <Text style={styles.gradEnd}>LOW</Text>
@@ -383,6 +416,19 @@ function GradientBar() {
           {Array.from({ length: n }, (_, i) => (
             <View key={i} style={{ flex: 1, backgroundColor: heatColor(i / (n - 1)) }} />
           ))}
+          {/* Musical-dynamics overlay (decorative to SR — the bar's label covers it). */}
+          <View
+            style={styles.dynOverlay}
+            pointerEvents="none"
+            accessibilityElementsHidden
+            importantForAccessibility="no-hide-descendants"
+          >
+            {DYNAMICS.map((d, i) => (
+              <View key={d} style={styles.dynCell}>
+                <OutlinedMark text={d} color={heatColor((i + 0.5) / DYNAMICS.length)} />
+              </View>
+            ))}
+          </View>
         </View>
         <Text style={[styles.gradEnd, { color: LOUD_RED }]}>HIGH</Text>
       </View>
@@ -600,13 +646,19 @@ const styles = StyleSheet.create({
   gradEnd: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1.2, color: MIDLINE_BLUE },
   gradBar: {
     flex: 1,
-    height: 26,
+    height: 32, // raised from 26 to give the dynamics marks room to breathe
     flexDirection: 'row',
     borderRadius: 7,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: '#2c2c33',
   },
+  // Musical-dynamics overlay across the gradient
+  dynOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, flexDirection: 'row', alignItems: 'center' },
+  dynCell: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  dynStack: { alignItems: 'center', justifyContent: 'center' },
+  dynText: { fontFamily: fonts.oswaldBold, fontSize: 12, letterSpacing: 0.3, textAlign: 'center' },
+  dynAbs: { position: 'absolute', top: 0, left: 0, color: '#000' },
   gradNames: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 9.5,
