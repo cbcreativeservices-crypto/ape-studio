@@ -311,12 +311,18 @@ function warmCardArt() {
 // until the next pass. Decorative only: skipped under reduce-motion, invisible
 // to the screen reader, and taps pass straight through.
 const SHIMMER_EVERY_MS = 13000;
-/** Fraction of the border the light travels per pass (owner 2026-08-16: a 59%
+/** Fraction of the border the light travels per pass (owner 2026-08-16: a 73%
  *  arc from the top edge, not a full lap). */
-const SHIMMER_ARC = 0.59;
+const SHIMMER_ARC = 0.73;
 // Duration keeps the light near the approved full-lap pace (1700ms / lap →
-// ~1200ms for a 59% arc, with dwell for the fade envelope).
-const SHIMMER_SWEEP_MS = 1200;
+// ~1480ms for a 73% arc).
+const SHIMMER_SWEEP_MS = 1480;
+// Intensity envelope (owner 2026-08-16): the pass BEGINS 31% dimmer (0.69),
+// breathes up to FULL at mid-arc, and ENDS 87% dimmer (0.13) before going dark.
+const SHIMMER_GLOW_START = 0.69;
+const SHIMMER_GLOW_END = 0.13;
+/** Sweep angle of the card's lower-left corner (start of the pass). */
+const SHIMMER_START_RAD = Math.PI - Math.atan2(CARD_H, CARD_W);
 
 function CardShimmer({ active }: { active: boolean }) {
   const [reduceMotion, setReduceMotion] = useState(false);
@@ -343,11 +349,14 @@ function CardShimmer({ active }: { active: boolean }) {
     const run = () => {
       angle.value = 0;
       angle.value = withTiming(SHIMMER_ARC * 2 * Math.PI, { duration: SHIMMER_SWEEP_MS, easing: Easing.inOut(Easing.cubic) });
-      // Intensity breathes with the travel (owner 2026-08-16): low → high →
-      // low across the one pass — brightest at mid-arc, dark at both ends.
+      // Intensity breathes with the travel (owner 2026-08-16): starts 31%
+      // dimmer, rises to FULL at mid-arc, falls to 87% dimmer at the end of
+      // travel, then drops dark until the next pass.
+      glow.value = SHIMMER_GLOW_START;
       glow.value = withSequence(
         withTiming(1, { duration: SHIMMER_SWEEP_MS / 2, easing: Easing.inOut(Easing.sin) }),
-        withTiming(0, { duration: SHIMMER_SWEEP_MS / 2, easing: Easing.inOut(Easing.sin) }),
+        withTiming(SHIMMER_GLOW_END, { duration: SHIMMER_SWEEP_MS / 2, easing: Easing.inOut(Easing.sin) }),
+        withTiming(0, { duration: 140, easing: Easing.in(Easing.quad) }),
       );
     };
     const first = setTimeout(run, 1200); // settle first, shimmer shortly after landing
@@ -359,8 +368,10 @@ function CardShimmer({ active }: { active: boolean }) {
     };
   }, [active, reduceMotion, angle, glow]);
 
-  // Start the pass at the top edge (−90°) — reads as light travelling clockwise.
-  const transform = useDerivedValue(() => [{ rotate: angle.value - Math.PI / 2 }]);
+  // Start the pass at the LOWER-LEFT corner (owner 2026-08-16), travelling
+  // clockwise — up the left edge, across the top, down the right. The corner's
+  // sweep angle in screen coords (y down): π − atan(CARD_H/CARD_W).
+  const transform = useDerivedValue(() => [{ rotate: angle.value + SHIMMER_START_RAD }]);
 
   if (!active || reduceMotion) return null;
   return (

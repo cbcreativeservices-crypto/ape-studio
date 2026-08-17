@@ -6,9 +6,8 @@
  * (S5/S8) live HERE so the bottom nav is hidden on them (locked spec);
  * Settings (S11) joins in M7.
  */
-import { Platform } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { NAV_FADE, NAV_PUSH_REDUCED, useReduceMotionNav } from './reduceMotionNav';
+import { NAV_FADE, NAV_PUSH, NAV_PUSH_REDUCED, useReduceMotionNav } from './reduceMotionNav';
 import { SplashScreen } from '../screens/SplashScreen';
 import { AuthScreen } from '../screens/auth/AuthScreen';
 import { ResultsScreen } from '../screens/results/ResultsScreen';
@@ -168,9 +167,7 @@ export function RootNavigator() {
   // Swipe-back is enabled per-screen ONLY on read-only content pages with no
   // full-width sliders (the 2026-08-11 ruling still governs slider screens).
   const reduceMotion = useReduceMotionNav();
-  const push = reduceMotion
-    ? NAV_PUSH_REDUCED
-    : ({ animation: Platform.OS === 'ios' ? 'default' : 'slide_from_right' } as const);
+  const push = reduceMotion ? NAV_PUSH_REDUCED : NAV_PUSH;
   const swipe = { gestureEnabled: true } as const; // safe pilot set only
   return (
     <Stack.Navigator

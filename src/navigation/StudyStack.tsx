@@ -3,9 +3,8 @@
  * method screens (S2/S3/S4). Nesting keeps the bottom tab bar visible on the
  * study screens, per the locked specs.
  */
-import { Platform } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { NAV_FADE, NAV_PUSH_REDUCED, useReduceMotionNav } from './reduceMotionNav';
+import { NAV_FADE, NAV_PUSH, NAV_PUSH_REDUCED, useReduceMotionNav } from './reduceMotionNav';
 import { DashboardScreen } from '../screens/dashboard/DashboardScreen';
 import { FlashcardsScreen } from '../screens/study/FlashcardsScreen';
 import { FillInBlankScreen } from '../screens/study/FillInBlankScreen';
@@ -22,9 +21,7 @@ export function StudyStack() {
   // Dashboard = PUSH (platform-native horizontal; short fade under Reduce
   // Motion). Glossary ⇄ Dashboard are EQUAL-LEVEL destinations → fade-through.
   const reduceMotion = useReduceMotionNav();
-  const push = reduceMotion
-    ? NAV_PUSH_REDUCED
-    : ({ animation: Platform.OS === 'ios' ? 'default' : 'slide_from_right' } as const);
+  const push = reduceMotion ? NAV_PUSH_REDUCED : NAV_PUSH;
   return (
     // gestureEnabled:false everywhere: study/quiz screens own horizontal swipes
     // (card prev/next, matching boards) and Dashboard is reached only via the
