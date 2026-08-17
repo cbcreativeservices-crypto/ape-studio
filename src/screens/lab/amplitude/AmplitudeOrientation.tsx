@@ -403,10 +403,16 @@ function GradientBar() {
       <View style={styles.gradRow}>
         <Text style={styles.gradEnd}>LOW</Text>
         <View style={styles.gradBar}>
-          {Array.from({ length: n }, (_, i) => (
-            <View key={i} style={{ flex: 1, backgroundColor: heatColor(i / (n - 1)) }} />
-          ))}
-          {/* Musical-dynamics overlay (decorative to SR — the bar's label covers it). */}
+          {/* Color slices in their OWN clipped, rounded layer. */}
+          <View style={styles.gradSlices}>
+            {Array.from({ length: n }, (_, i) => (
+              <View key={i} style={{ flex: 1, backgroundColor: heatColor(i / (n - 1)) }} />
+            ))}
+          </View>
+          {/* Musical-dynamics overlay — a SIBLING of the clipped slices (parent is
+              NOT overflow:hidden) so the tall SMuFL glyphs can never be clipped by
+              the bar. allowFontScaling off so iOS Dynamic Type can't enlarge them.
+              Decorative to SR — the bar's own label covers the meaning. */}
           <View
             style={styles.dynOverlay}
             pointerEvents="none"
@@ -416,7 +422,7 @@ function GradientBar() {
             {DYNAMICS.map((d, i) => (
               <View key={i} style={styles.dynCell}>
                 {d ? (
-                  <Text numberOfLines={1} style={styles.dynText}>
+                  <Text allowFontScaling={false} numberOfLines={1} style={styles.dynText}>
                     {d}
                   </Text>
                 ) : null}
@@ -640,28 +646,34 @@ const styles = StyleSheet.create({
   gradEnd: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1.2, color: MIDLINE_BLUE },
   gradBar: {
     flex: 1,
-    height: 32, // raised from 26 to give the dynamics marks room to breathe
-    flexDirection: 'row',
+    height: 32,
     borderRadius: 7,
-    overflow: 'hidden',
     borderWidth: 1,
     borderColor: '#2c2c33',
+    // No overflow:hidden — that clipped the tall SMuFL glyphs. The color slices
+    // get their own clipped layer (gradSlices) instead.
   },
-  // Musical-dynamics overlay across the gradient
+  gradSlices: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    flexDirection: 'row',
+    borderRadius: 6,
+    overflow: 'hidden',
+  },
+  // Musical-dynamics overlay across the gradient (unclipped sibling of the slices)
   dynOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, flexDirection: 'row', alignItems: 'center' },
   dynCell: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   dynText: {
     fontFamily: fonts.bravura, // SMuFL — engraved musical dynamics glyphs
-    fontSize: 22,
-    // Bravura's native vertical metrics are enormous (fontBoundingBox ≈ 44/44 at
-    // 1em); without an explicit lineHeight RN builds an ~88px line box and the
-    // bar's overflow:hidden clips the glyph out of view. Pin the line box small
-    // so the glyph seats inside the 32px bar.
-    lineHeight: 24,
+    fontSize: 19, // measured glyph ink ≈ 0.6em tall → ~11px, seats inside the 32px bar
+    lineHeight: 26,
     color: '#000',
     textAlign: 'center',
     textAlignVertical: 'center',
-    includeFontPadding: false, // Android: drop the extra font padding
+    includeFontPadding: false,
   },
   gradNames: {
     fontFamily: fonts.oswaldSemiBold,
