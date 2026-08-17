@@ -66,9 +66,11 @@ const WEIGHTINGS: Weighting[] = ['A', 'C', 'Z'];
 type ResponseMode = 'fast' | 'slow' | 'avg5';
 const RESPONSES: ResponseMode[] = ['fast', 'slow', 'avg5'];
 const responseLabel = (r: ResponseMode) => (r === 'fast' ? 'FAST' : r === 'slow' ? 'SLOW' : '5 SEC AVG');
-/** Rolling-average window: samples pushed at the ~20 Hz text cadence, so 100
- *  samples ≈ 5 s. */
-const AVG5_SAMPLES = 100;
+/** 5 SEC AVG: a TRUE 5-second window (samples kept by timestamp, not count) so
+ *  the average is honest regardless of frame timing; the number it shows only
+ *  refreshes every 2 s (owner 2026-08-17). */
+const AVG5_WINDOW_MS = 5000;
+const AVG5_REFRESH_MS = 2000;
 
 /** The selected weighting × response reading from a real meter frame. */
 function selectedLevelDb(m: MeterFrame, w: Weighting, r: MeterResponse): number {
@@ -582,11 +584,13 @@ export function SplMeterScreen({ navigation }: Props) {
   const offsetRef = useRef(offset);
   offsetRef.current = offset;
   // Rolling 5-second average (owner 2026-08-17): the selected weighting's FAST
-  // level, energy-averaged over a 5 s window in the POWER domain (never a dB
-  // average). Fed at the text cadence; avg5Ref feeds the needle on the rAF
-  // path, avg5Db the text readouts. Cleared on weighting change / start / stop.
-  const avg5RingRef = useRef<number[]>([]);
+  // level, energy-averaged over a TRUE 5 s window (samples kept by timestamp) in
+  // the POWER domain (never a dB average). The ring is fed continuously, but the
+  // DISPLAYED value (avg5Db + the needle's avg5Ref) only refreshes every 2 s.
+  // Cleared on weighting change / start / stop.
+  const avg5RingRef = useRef<{ t: number; p: number }[]>([]);
   const avg5Ref = useRef(NaN);
+  const lastAvg5PushRef = useRef(0);
   const [avg5Db, setAvg5Db] = useState<number>(NaN);
   // The critical loop: while running, read the native meter frame DIRECTLY (a
   // synchronous JSI call — the native analysis thread refreshes it every ~50 ms)
@@ -617,16 +621,22 @@ export function SplMeterScreen({ navigation }: Props) {
       const dtText = now - lastTextRef.current;
       lastTextRef.current = now;
       setDisplayMeter(m);
-      // Feed the 5 s ring with the current weighting's FAST power, recompute avg.
+      // Feed the true 5 s ring with the current weighting's FAST power; drop
+      // samples older than the window. The displayed average refreshes only
+      // every 2 s (owner 2026-08-17) — no faster.
       const wf = w === 'A' ? m.aFastDb : w === 'C' ? m.cFastDb : m.zFastDb;
       if (Number.isFinite(wf)) {
         const ring = avg5RingRef.current;
-        ring.push(Math.pow(10, wf / 10));
-        if (ring.length > AVG5_SAMPLES) ring.shift();
-        const mean = ring.reduce((s, p) => s + p, 0) / ring.length;
-        const db = mean > 0 ? 10 * Math.log10(mean) : NaN;
-        avg5Ref.current = db;
-        setAvg5Db(db);
+        ring.push({ t: now, p: Math.pow(10, wf / 10) });
+        const cutoff = now - AVG5_WINDOW_MS;
+        while (ring.length && ring[0].t < cutoff) ring.shift();
+        if (now - lastAvg5PushRef.current >= AVG5_REFRESH_MS && ring.length) {
+          lastAvg5PushRef.current = now;
+          const mean = ring.reduce((s, e) => s + e.p, 0) / ring.length;
+          const db = mean > 0 ? 10 * Math.log10(mean) : NaN;
+          avg5Ref.current = db;
+          setAvg5Db(db);
+        }
       }
       // 3-second EMA of the estimated SPL → the gauge zone COLOR (not the number).
       if (Number.isFinite(lvl)) {
@@ -646,6 +656,7 @@ export function SplMeterScreen({ navigation }: Props) {
       setZoneSpl(null);
       avg5RingRef.current = [];
       avg5Ref.current = NaN;
+      lastAvg5PushRef.current = 0;
       setAvg5Db(NaN);
     }
   }, [running, liveRmsDb, livePeakDb]);
@@ -654,6 +665,7 @@ export function SplMeterScreen({ navigation }: Props) {
   useEffect(() => {
     avg5RingRef.current = [];
     avg5Ref.current = NaN;
+    lastAvg5PushRef.current = 0;
     setAvg5Db(NaN);
   }, [weighting]);
 
@@ -750,10 +762,16 @@ export function SplMeterScreen({ navigation }: Props) {
       : dbfs
         ? fmtRaw(readoutLevel) // raw dBFS (flat/Z), may be negative
         : Math.max(0, readoutLevel + splOffset).toFixed(1); // SPL estimate, floored at 0
-  const readoutUnitSub = dbfs ? 'dBFS · uncalibrated (raw digital level)' : unitLabel;
-  const readoutEyebrow = dbfs
-    ? `RAW · dBFS · ${responseLabel(response)}`
-    : `${splUnit} · ${weighting}-WEIGHTED · ${responseLabel(response)}`;
+  // De-duplicated readout text (owner 2026-08-17): the unit + response already
+  // show in the toggles, so the inline card shows only the HONESTY line. The
+  // fullscreen view (no toggles) adds an IDENTITY line so you still know what
+  // you're reading — the two lines never repeat each other.
+  const readoutIdentity = `${dbfs ? 'dBFS' : splUnit} · ${responseLabel(response)}`;
+  const readoutHonesty = dbfs
+    ? 'raw digital level · uncalibrated'
+    : offset != null
+      ? 'field-calibrated · approximate'
+      : 'uncalibrated estimate';
   const activeUnit = dbfs ? 'dBFS' : weighting === 'A' ? 'dBA' : weighting === 'C' ? 'dBC' : 'dB SPL';
   const UNIT_OPTS: { key: string; select: () => void }[] = [
     { key: 'dBFS', select: () => { setDbfs(true); setWeighting('Z'); } },
@@ -893,9 +911,14 @@ export function SplMeterScreen({ navigation }: Props) {
 
         {showMeter && (
           <>
-            {/* PEAK / PEAK HOLD — moved ABOVE the # readout (owner 2026-08-17).
-                May exceed 0 dBFS (F1): red at ≥ 0, never clamped. The COLOUR
-                flags digital clipping independent of the SPL estimate. */}
+            {/* WHAT THE DISPLAY SHOWS — moved ABOVE the peak/# readouts (owner
+                2026-08-17). */}
+            <DisplayGuideButton onPress={helpAll} />
+
+            {/* PEAK · PEAK HOLD · FULLSCREEN (owner 2026-08-17): peak readouts on
+                top; the ⛶ fullscreen button is a standalone control to the RIGHT
+                of PEAK HOLD. Peak may exceed 0 dBFS (F1) — the COLOUR flags
+                digital clipping, independent of the SPL estimate. */}
             <View style={styles.peakRow}>
               <Pressable style={styles.peakCell} onLongPress={() => help('peak')} delayLongPress={260}>
                 <Text style={styles.cellLabel}>PEAK</Text>
@@ -903,8 +926,7 @@ export function SplMeterScreen({ navigation }: Props) {
                   {meter ? estSpl(meter.peakDb) : '—'}
                 </Text>
               </Pressable>
-              {/* Tap the PEAK HOLD readout itself to reset (owner 2026-08-17).
-                  Long-press = help. */}
+              {/* Tap the PEAK HOLD readout itself to reset. Long-press = help. */}
               <Pressable
                 style={styles.peakCell}
                 onPress={resetPeakHold}
@@ -919,40 +941,36 @@ export function SplMeterScreen({ navigation }: Props) {
                 </Text>
                 <Text style={styles.cellHint}>tap to reset</Text>
               </Pressable>
+              <Pressable
+                style={styles.fsBtn}
+                onPress={() => setReadoutFsOpen(true)}
+                accessibilityRole="button"
+                accessibilityLabel="Open the readout full screen"
+              >
+                <Text style={styles.fsBtnIcon}>⛶</Text>
+                <Text style={styles.fsBtnLabel}>FULL{'\n'}SCREEN</Text>
+              </Pressable>
             </View>
 
-            {/* Big live readout (owner 2026-08-17): RESPONSE toggle on the LEFT
-                (FAST · SLOW · 5 SEC AVG), the number in the middle (tap = START/
-                STOP, ⛶ = fullscreen), UNIT toggle on the RIGHT (dBFS · dBA · dBC ·
-                dB SPL). */}
+            {/* Big live readout (owner 2026-08-17): RESPONSE toggle LEFT
+                (FAST · SLOW · 5 SEC AVG), number center (tap = START/STOP), UNIT
+                toggle RIGHT (dBFS · dBA · dBC · dB SPL). The toggles carry unit +
+                response, so the card shows only the honesty line (no repetition). */}
             <View style={styles.readoutRow}>
               {renderResponseToggle()}
-              <View style={styles.readoutCardWrap}>
-                <Pressable
-                  style={styles.readoutCard}
-                  onPress={running ? stopMeter : startMeter}
-                  accessibilityRole="button"
-                  accessibilityLabel={running ? 'Tap to stop the meter' : 'Tap to start the meter'}
-                >
-                  <Text style={styles.readoutEyebrow}>{readoutEyebrow}</Text>
-                  <Text style={styles.readoutValue} numberOfLines={1}>
-                    {bigText}
-                  </Text>
-                  <Text style={styles.readoutSub}>{readoutUnitSub}</Text>
-                </Pressable>
-                <Pressable
-                  style={styles.fsIconBtn}
-                  onPress={() => setReadoutFsOpen(true)}
-                  hitSlop={8}
-                  accessibilityRole="button"
-                  accessibilityLabel="Open the readout full screen"
-                >
-                  <Text style={styles.fsIcon}>⛶</Text>
-                </Pressable>
-              </View>
+              <Pressable
+                style={[styles.readoutCard, styles.readoutCardFlex]}
+                onPress={running ? stopMeter : startMeter}
+                accessibilityRole="button"
+                accessibilityLabel={running ? 'Tap to stop the meter' : 'Tap to start the meter'}
+              >
+                <Text style={styles.readoutValue} numberOfLines={1}>
+                  {bigText}
+                </Text>
+                <Text style={styles.readoutSub}>{readoutHonesty}</Text>
+              </Pressable>
               {renderUnitToggle()}
             </View>
-            <DisplayGuideButton onPress={helpAll} />
 
             {/* Session log (spec §9 View 2): Leq + elapsed + reset/save. */}
             <View style={styles.logCard}>
@@ -1522,8 +1540,9 @@ export function SplMeterScreen({ navigation }: Props) {
         </View>
       </Modal>
 
-      {/* ── Fullscreen # readout (owner 2026-08-17): the number + its response/
-          unit toggles alone, with PEAK (top-left) and PEAK HOLD (top-right). ── */}
+      {/* ── Fullscreen # readout (owner 2026-08-17): the number ALONE (no side
+          toggles), with PEAK (top-left) and PEAK HOLD (top-right). The number
+          spans ~4/5 of the screen width. ── */}
       <Modal
         visible={readoutFsOpen}
         animationType="fade"
@@ -1561,22 +1580,22 @@ export function SplMeterScreen({ navigation }: Props) {
             </Pressable>
           </View>
 
-          {/* Center: response toggle · big number · unit toggle. */}
+          {/* Center: identity line · BIG number (~4/5 screen width) · honesty
+              line. No toggles here (owner 2026-08-17) — set them on the main
+              screen; the two text lines never repeat each other. */}
           <View style={styles.fsCenter}>
-            {renderResponseToggle()}
             <Pressable
               style={styles.fsCard}
               onPress={running ? stopMeter : startMeter}
               accessibilityRole="button"
               accessibilityLabel={running ? 'Tap to stop the meter' : 'Tap to start the meter'}
             >
-              <Text style={styles.readoutEyebrow}>{readoutEyebrow}</Text>
-              <Text style={styles.fsValue} numberOfLines={1}>
+              <Text style={styles.fsIdentity}>{readoutIdentity}</Text>
+              <Text style={[styles.fsValue, { fontSize: Math.round(winW * 0.26) }]} numberOfLines={1}>
                 {bigText}
               </Text>
-              <Text style={styles.readoutSub}>{readoutUnitSub}</Text>
+              <Text style={styles.fsHonesty}>{readoutHonesty}</Text>
             </Pressable>
-            {renderUnitToggle()}
           </View>
         </View>
       </Modal>
@@ -1637,31 +1656,43 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   readoutEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: colors.amberLabel },
-  readoutValue: { fontFamily: fonts.mono, fontSize: 46, color: colors.textPrimary, letterSpacing: 1 },
-  readoutSub: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.amber },
+  readoutValue: { fontFamily: fonts.mono, fontSize: 54, color: colors.textPrimary, letterSpacing: 1 },
+  readoutSub: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.amber, textAlign: 'center' },
 
   // Readout row: response toggle (left) · number card (center) · unit toggle
   // (right) — owner 2026-08-17.
   readoutRow: { flexDirection: 'row', alignItems: 'stretch', gap: 8 },
-  readoutCardWrap: { flex: 1, position: 'relative' },
-  // Vertical side toggle (response / unit): active amber, inactive white.
-  sideToggle: { justifyContent: 'center', alignItems: 'center', gap: 12, minWidth: 54 },
+  readoutCardFlex: { flex: 1, justifyContent: 'center' },
+  // Vertical side toggle (response / unit): active amber, inactive white. Fixed
+  // width so both columns match and "5 SEC AVG" wraps within it.
+  sideToggle: { justifyContent: 'center', alignItems: 'center', gap: 12, width: 50 },
   sideOpt: { fontFamily: fonts.mono, fontSize: 11, letterSpacing: 0.3, color: '#ffffff', textAlign: 'center' },
   sideOptActive: { color: colors.amber },
-  // Fullscreen icon pinned to the card's top-right (a sibling overlay so its tap
-  // is independent of the card's start/stop press).
-  fsIconBtn: { position: 'absolute', top: 6, right: 6, padding: 4 },
-  fsIcon: { fontFamily: fonts.mono, fontSize: 16, color: colors.textSub },
+  // Standalone FULLSCREEN button, right of PEAK HOLD (owner 2026-08-17).
+  fsBtn: {
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#3a3a3a',
+    backgroundColor: '#161616',
+    paddingHorizontal: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 2,
+  },
+  fsBtnIcon: { fontFamily: fonts.mono, fontSize: 18, color: colors.textSecondary },
+  fsBtnLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 0.8, color: colors.textSub, textAlign: 'center' },
 
-  // Fullscreen # readout view (owner 2026-08-17).
+  // Fullscreen # readout view (owner 2026-08-17): number alone, no toggles.
   fsRoot: { flex: 1, backgroundColor: colors.screenBg, paddingHorizontal: 16 },
   fsTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   fsCorner: { alignItems: 'flex-start', gap: 2 },
   fsCornerRight: { alignItems: 'flex-end', gap: 2 },
   fsCornerValue: { fontFamily: fonts.mono, fontSize: 22, color: colors.textPrimary },
-  fsCenter: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, paddingBottom: 40 },
-  fsCard: { flex: 1, alignItems: 'center', gap: 10 },
-  fsValue: { fontFamily: fonts.mono, fontSize: 62, color: colors.textPrimary, letterSpacing: 1 },
+  fsCenter: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingBottom: 40 },
+  fsCard: { alignItems: 'center', gap: 8 },
+  fsIdentity: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1.4, color: colors.amberLabel },
+  fsValue: { fontFamily: fonts.mono, color: colors.textPrimary, letterSpacing: 1 },
+  fsHonesty: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.amber },
 
   // Peak row.
   peakRow: { flexDirection: 'row', gap: 10, alignItems: 'stretch' },
