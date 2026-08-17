@@ -426,12 +426,15 @@ function LiveWarnings({ flags }: { flags: WarningFlag[] }) {
 // closing it leaves every other screen untouched. The setting is persisted, so
 // the popup reopens exactly where the user left it.
 const FS_BRIGHT_KEY = 'ape:splFsBright';
+const FS_RED_KEY = 'ape:splFsRed';
 const FS_MAX_DIM = 0.72; // black wash at the darkest (non-red) setting
-const FS_RED_AT = 0.04; // brightness ≤ this → red mode (far left)
+const FS_RED_AT = 0.04; // brightness ≤ this → LATCH red mode (far left)
+const FS_RED_EXIT = 0.22; // brightness ≥ this → leave red mode (hysteresis, so it "stays")
 const FS_RED_WASH = 'rgba(255,40,25,0.14)';
-const FS_THUMB = 18;
+const FS_THUMB = 16;
 
-/** Discreet horizontal brightness slider (0 = darkest/red, 1 = full bright). */
+/** Discreet, light-gray brightness line (0 = darkest/red, 1 = full bright).
+ *  Hidden by default — revealed by the sun icon (owner 2026-08-17). */
 function BrightnessSlider({
   value,
   onChange,
@@ -448,26 +451,21 @@ function BrightnessSlider({
   };
   const thumbLeft = w > 0 ? value * (w - FS_THUMB) : 0;
   return (
-    <View style={styles.brightRow} pointerEvents="box-none">
-      {/* left end = red-mode marker · right end = brightness */}
-      <View style={styles.brightRedDot} />
-      <View
-        style={styles.brightTrack}
-        onLayout={(e) => setW(e.nativeEvent.layout.width)}
-        onStartShouldSetResponder={() => true}
-        onMoveShouldSetResponder={() => true}
-        onResponderGrant={(e) => setFromX(e.nativeEvent.locationX)}
-        onResponderMove={(e) => setFromX(e.nativeEvent.locationX)}
-        onResponderRelease={onRelease}
-        onResponderTerminate={onRelease}
-        accessibilityRole="adjustable"
-        accessibilityLabel="Screen brightness — slide left to dim, far left for red night mode"
-      >
-        <View style={styles.brightBase} />
-        <View style={[styles.brightFill, { width: thumbLeft + FS_THUMB / 2 }]} />
-        <View style={[styles.brightThumb, { left: thumbLeft }]} />
-      </View>
-      <Text style={styles.brightSun}>☀</Text>
+    <View
+      style={styles.brightTrack}
+      onLayout={(e) => setW(e.nativeEvent.layout.width)}
+      onStartShouldSetResponder={() => true}
+      onMoveShouldSetResponder={() => true}
+      onResponderGrant={(e) => setFromX(e.nativeEvent.locationX)}
+      onResponderMove={(e) => setFromX(e.nativeEvent.locationX)}
+      onResponderRelease={onRelease}
+      onResponderTerminate={onRelease}
+      accessibilityRole="adjustable"
+      accessibilityLabel="Screen brightness — slide left to dim, far left for red night mode"
+    >
+      <View style={styles.brightBase} />
+      <View style={[styles.brightFill, { width: thumbLeft + FS_THUMB / 2 }]} />
+      <View style={[styles.brightThumb, { left: thumbLeft }]} />
     </View>
   );
 }
@@ -541,25 +539,51 @@ export function SplMeterScreen({ navigation }: Props) {
   // so the fullscreen view reopens at the user's last setting; NEVER applied to
   // any other screen (the overlays live inside the fullscreen modal only).
   const [fsBright, setFsBright] = useState(1);
+  // Red night-mode LATCHES once activated at the far-left (owner 2026-08-17):
+  // once on it stays on until the user deliberately brightens past the exit
+  // point — small movements never drop it. Persisted with the dim level.
+  const [fsRedLatched, setFsRedLatched] = useState(false);
+  // The dimmer line + thumb are HIDDEN by default (a rare option): only a small
+  // discreet sun icon shows; pressing it reveals the slider (owner 2026-08-17).
+  const [fsDimmerOpen, setFsDimmerOpen] = useState(false);
   const fsBrightRef = useRef(1);
   fsBrightRef.current = fsBright;
+  const fsRedLatchedRef = useRef(false);
+  fsRedLatchedRef.current = fsRedLatched;
   useEffect(() => {
-    AsyncStorage.getItem(FS_BRIGHT_KEY)
-      .then((v) => {
-        const n = v != null ? parseFloat(v) : NaN;
+    AsyncStorage.multiGet([FS_BRIGHT_KEY, FS_RED_KEY])
+      .then((pairs) => {
+        const map = Object.fromEntries(pairs) as Record<string, string | null>;
+        const n = map[FS_BRIGHT_KEY] != null ? parseFloat(map[FS_BRIGHT_KEY] as string) : NaN;
         if (Number.isFinite(n)) setFsBright(Math.max(0, Math.min(1, n)));
+        if (map[FS_RED_KEY] === '1') setFsRedLatched(true);
       })
       .catch(() => {});
   }, []);
-  const persistFsBright = useCallback(() => {
-    void AsyncStorage.setItem(FS_BRIGHT_KEY, String(fsBrightRef.current));
+  const persistFsSettings = useCallback(() => {
+    void AsyncStorage.multiSet([
+      [FS_BRIGHT_KEY, String(fsBrightRef.current)],
+      [FS_RED_KEY, fsRedLatchedRef.current ? '1' : '0'],
+    ]);
   }, []);
+  // Slider change: set the dim level and latch/unlatch red with hysteresis so it
+  // stays red once activated until the user clearly brightens.
+  const onBrightChange = useCallback((v: number) => {
+    setFsBright(v);
+    if (v <= FS_RED_AT) setFsRedLatched(true);
+    else if (v >= FS_RED_EXIT) setFsRedLatched(false);
+  }, []);
+  // Each fullscreen open starts with the dimmer hidden (just the sun icon).
+  useEffect(() => {
+    if (!readoutFsOpen) setFsDimmerOpen(false);
+  }, [readoutFsOpen]);
   const fsDimOpacity = (1 - fsBright) * FS_MAX_DIM;
-  const fsRedMode = fsBright <= FS_RED_AT;
-  // Global Low-Light overrides the local dimmer: locked dim + red, no slider.
+  // Global Low-Light overrides the local dimmer: locked dim + red, no controls.
   const fsEffDim = lowLightOn ? LOW_LIGHT_DIM : fsDimOpacity;
-  const fsEffRed = lowLightOn ? true : fsRedMode;
-  const fsShowSlider = !lowLightOn;
+  const fsEffRed = lowLightOn ? true : fsRedLatched;
+  // The sun toggle (and the dimmer it reveals) is available only when global
+  // Low-Light isn't already locking the popup.
+  const fsDimmerAvailable = !lowLightOn;
   const [justSaved, setJustSaved] = useState(false);
   const savedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(
@@ -1717,24 +1741,28 @@ export function SplMeterScreen({ navigation }: Props) {
 
             {/* Dim wash — local slider value, OR the global Low-Light lock. */}
             {fsEffDim > 0 && <View pointerEvents="none" style={[styles.fsDim, { opacity: fsEffDim }]} />}
-            {/* Brightness / red-mode slider — hidden while global Low-Light locks
-                the popup (owner 2026-08-17). Bottom-full in portrait, bottom-RIGHT
-                in landscape. Above the dim (usable), below the red wash. */}
-            {fsShowSlider && (
-              <View
-                style={[
-                  styles.fsSliderDock,
-                  fsLandscape
-                    ? { right: 18, bottom: 18, width: Math.round(fsWorkW * 0.42) }
-                    : { left: 18, right: 18, bottom: 26 },
-                ]}
-                pointerEvents="box-none"
-              >
-                <BrightnessSlider value={fsBright} onChange={setFsBright} onRelease={persistFsBright} />
+            {/* Lower-right SUN icon (discreet) + the dimmer LINE it reveals on
+                press (owner 2026-08-17: the slider is a rare option, hidden until
+                the sun is tapped). Hidden entirely while global Low-Light locks
+                the popup. Above the dim (usable), below the red wash. */}
+            {fsDimmerAvailable && (
+              <View style={styles.fsDimmerDock} pointerEvents="box-none">
+                {fsDimmerOpen && (
+                  <BrightnessSlider value={fsBright} onChange={onBrightChange} onRelease={persistFsSettings} />
+                )}
+                <Pressable
+                  style={styles.fsSunBtn}
+                  onPress={() => setFsDimmerOpen((o) => !o)}
+                  hitSlop={14}
+                  accessibilityRole="button"
+                  accessibilityLabel={fsDimmerOpen ? 'Hide the brightness slider' : 'Show the brightness slider'}
+                >
+                  <Text style={styles.fsSun}>☀</Text>
+                </Pressable>
               </View>
             )}
-            {/* Night-vision RED wash (far-left slider, or global Low-Light). Local
-                to this modal — cleared the instant it closes. */}
+            {/* Night-vision RED wash — latched local red, or global Low-Light.
+                Local to this modal — cleared the instant it closes. */}
             {fsEffRed && <View pointerEvents="none" style={styles.fsRedWash} />}
           </View>
         </View>
@@ -1843,23 +1871,34 @@ const styles = StyleSheet.create({
   // Dock position is applied inline (portrait bottom-full · landscape bottom-right).
   fsDim: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#000000', zIndex: 50 },
   fsRedWash: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: FS_RED_WASH, zIndex: 70 },
-  fsSliderDock: { position: 'absolute', zIndex: 60 },
-  brightRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  brightRedDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#8a1a12' },
-  brightTrack: { flex: 1, height: 26, justifyContent: 'center' },
-  brightBase: { position: 'absolute', left: 0, right: 0, top: 11, height: 4, borderRadius: 2, backgroundColor: '#333' },
-  brightFill: { position: 'absolute', left: 0, top: 11, height: 4, borderRadius: 2, backgroundColor: '#c9a24a' },
+  // Lower-right dock: the sun icon lives at the right; the slider (when revealed)
+  // fills to its left. Discreet + light-gray (owner 2026-08-17).
+  fsDimmerDock: {
+    position: 'absolute',
+    left: 18,
+    right: 16,
+    bottom: 16,
+    zIndex: 60,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    justifyContent: 'flex-end',
+  },
+  fsSunBtn: { padding: 4 },
+  fsSun: { fontFamily: fonts.mono, fontSize: 15, color: '#8a8c90' },
+  brightTrack: { flex: 1, height: 24, justifyContent: 'center' },
+  brightBase: { position: 'absolute', left: 0, right: 0, top: 11, height: 2, borderRadius: 1, backgroundColor: '#4a4a4e' },
+  brightFill: { position: 'absolute', left: 0, top: 11, height: 2, borderRadius: 1, backgroundColor: '#9aa0a6' },
   brightThumb: {
     position: 'absolute',
-    top: 4,
+    top: (24 - FS_THUMB) / 2,
     width: FS_THUMB,
     height: FS_THUMB,
     borderRadius: FS_THUMB / 2,
-    backgroundColor: '#efe9d8',
+    backgroundColor: '#b9bdc2',
     borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.5)',
+    borderColor: 'rgba(0,0,0,0.35)',
   },
-  brightSun: { fontFamily: fonts.mono, fontSize: 14, color: '#c9a24a' },
 
   // Peak row.
   peakRow: { flexDirection: 'row', gap: 10, alignItems: 'stretch' },
