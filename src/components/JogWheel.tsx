@@ -13,8 +13,8 @@
  */
 import { useMemo, useRef } from 'react';
 import { PanResponder, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
-import Reanimated, { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
-import Svg, { Circle, Defs, Ellipse, RadialGradient, Stop } from 'react-native-svg';
+import Reanimated, { Easing as REasing, useAnimatedStyle, withTiming, type SharedValue } from 'react-native-reanimated';
+import Svg, { Circle, Defs, Ellipse, Line, RadialGradient, Stop } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../features/settings/store';
 
@@ -112,6 +112,34 @@ function JogDimple({ size }: { size: number }) {
   );
 }
 
+/** Machined tick ring (owner 2026-08-16) — fine radial ticks just inside the
+ *  rim that ROTATE with the wheel, so even small rotations are visible (the
+ *  dimple alone made fine motion invisible). 36 ticks at 10°, every third one
+ *  slightly longer/brighter — subtle, machined-metal, not a ruler. */
+function JogTicks({ size }: { size: number }) {
+  const c = size / 2;
+  const rOuter = c - size * 0.045;
+  const ticks = Array.from({ length: 36 }, (_, i) => {
+    const major = i % 3 === 0;
+    const rad = (i * 10 * Math.PI) / 180;
+    const rInner = rOuter - size * (major ? 0.034 : 0.02);
+    return (
+      <Line
+        key={i}
+        x1={c + rInner * Math.sin(rad)}
+        y1={c - rInner * Math.cos(rad)}
+        x2={c + rOuter * Math.sin(rad)}
+        y2={c - rOuter * Math.cos(rad)}
+        stroke="#c3c8d4"
+        strokeWidth={Math.max(1, size * 0.004)}
+        strokeLinecap="round"
+        opacity={major ? 0.16 : 0.07}
+      />
+    );
+  });
+  return <Svg width={size} height={size}>{ticks}</Svg>;
+}
+
 /** The rotating dimple layer. When `spin` is provided (the overlay) the rotation
  *  runs on the UI thread via Reanimated — so the dimple tracks the thumb with no
  *  bridge lag (owner 2026-08-05). The small dial passes no spin and stays put. */
@@ -120,13 +148,19 @@ function JogDimpleLayer({ size, spin }: { size: number; spin?: SharedValue<numbe
   if (!spin) {
     return (
       <View style={StyleSheet.absoluteFill}>
-        <JogDimple size={size} />
+        <JogTicks size={size} />
+        <View style={StyleSheet.absoluteFill}>
+          <JogDimple size={size} />
+        </View>
       </View>
     );
   }
   return (
     <Reanimated.View style={[StyleSheet.absoluteFill, style]}>
-      <JogDimple size={size} />
+      <JogTicks size={size} />
+      <View style={StyleSheet.absoluteFill}>
+        <JogDimple size={size} />
+      </View>
     </Reanimated.View>
   );
 }
@@ -212,6 +246,9 @@ export function JogOverlay({
   centerRef.current = { x: cx, y: cy };
   const lastAngle = useRef(0);
   const accum = useRef(0);
+  // Continuous (unbounded) rotation target — finger deltas accumulate here so
+  // the wheel never wraps/teleports; spin chases it (owner 2026-08-16 polish).
+  const spinTarget = useRef(0);
   const inDead = useRef(false);
   const lastStepAt = useRef(0);
   const disabledRef = useRef(disabled);
@@ -254,7 +291,16 @@ export function JogOverlay({
           inDead.current = false;
           grantRef.current = { x: g.x0, y: g.y0 };
           movedRef.current = false;
-          spin.value = a0 + DIMPLE_OFFSET; // dimple appears exactly under the finger
+          // Elegant grab (owner 2026-08-16): the dimple GLIDES under the finger
+          // (short eased turn along the nearest path) instead of teleporting.
+          // Unwrap the target to the closest equivalent of the current spin so
+          // the glide never takes the long way round.
+          const current = spin.value;
+          let diff = (a0 + DIMPLE_OFFSET - current) % 360;
+          if (diff > 180) diff -= 360;
+          if (diff < -180) diff += 360;
+          spinTarget.current = current + diff;
+          spin.value = withTiming(spinTarget.current, { duration: 130, easing: REasing.out(REasing.quad) });
         },
         onPanResponderMove: (_e, g) => {
           if (disabledRef.current) return;
@@ -267,7 +313,6 @@ export function JogOverlay({
             return;
           }
           const a = angleAt(g.moveX, g.moveY);
-          spin.value = a + DIMPLE_OFFSET;
           if (inDead.current) {
             inDead.current = false;
             lastAngle.current = a; // re-anchor detents without a jump
@@ -277,6 +322,12 @@ export function JogOverlay({
           while (d > 180) d -= 360;
           while (d < -180) d += 360;
           lastAngle.current = a;
+          // Tight tracking with a whisper of smoothing (owner 2026-08-16):
+          // finger deltas accumulate into the continuous target and the wheel
+          // chases it over ~60ms — glued to the finger, but event jitter is
+          // filtered out so the motion reads machined, not raw.
+          spinTarget.current += d;
+          spin.value = withTiming(spinTarget.current, { duration: 60, easing: REasing.linear });
           accum.current += d;
           while (accum.current >= DETENT_DEG) {
             accum.current -= DETENT_DEG;
