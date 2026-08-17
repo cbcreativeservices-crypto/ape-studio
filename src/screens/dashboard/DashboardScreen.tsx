@@ -21,6 +21,7 @@ import {
   Alert,
   Animated,
   FlatList,
+  InteractionManager,
   Modal,
   PanResponder,
   Pressable,
@@ -71,6 +72,7 @@ import {
   type DashboardData,
   type Topic,
 } from '../../features/dashboard/api';
+import { getDashboardCache, setDashboardCache } from '../../features/dashboard/dashboardCache';
 import { FREE_ENROLL_GS, isFreeEnrollGs, useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { supabase } from '../../lib/supabase';
 import { fetchGlossaryItemsByIds, fetchTopicItems, studyDisplayPct } from '../../features/study/api';
@@ -560,14 +562,19 @@ export function DashboardScreen() {
   // icon_url of their own, so the current-topic image resolves the trophy by
   // name and only falls back to the row's own icon_url when there's no match.
   const trophies = useTopicTrophies();
-  const [data, setData] = useState<DashboardData | null>(null);
+  // Instant landing (owner 2026-08-17): seed from the in-memory cache of the
+  // last successful load, so a remounted Dashboard paints its content
+  // immediately and the fresh fetch streams in silently behind it.
+  const [data, setData] = useState<DashboardData | null>(() => getDashboardCache()?.data ?? null);
+  const dataRef = useRef(data);
+  dataRef.current = data;
   const [error, setError] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<string | null>(null);
   // A persisted session with no student record: self-healed to the guest view,
   // with a non-blocking banner offering to finish registration or sign out.
   const [strandedSession, setStrandedSession] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [topicIdx, setTopicIdx] = useState(0);
+  const [loading, setLoading] = useState(() => getDashboardCache() == null);
+  const [topicIdx, setTopicIdx] = useState(() => getDashboardCache()?.topicIdx ?? 0);
   // During a jog scroll, the TOP container previews this index while the lower
   // rack stays on topicIdx until release (owner 2026-08-01) — keeps it fast.
   const [scrollIdx, setScrollIdx] = useState(0);
@@ -675,7 +682,10 @@ export function DashboardScreen() {
   );
 
   const load = useCallback(async () => {
-    setLoading(true);
+    // Silent refresh (owner 2026-08-17): only show the cold spinner when there
+    // is NOTHING to display — with content (state or cache) on screen, the
+    // refetch streams in behind it and swaps in via setData.
+    if (!dataRef.current) setLoading(true);
     setError(null);
     setStrandedSession(false);
     try {
@@ -783,9 +793,15 @@ export function DashboardScreen() {
       );
       const frontier = frontierId ? Math.max(0, orderedIds.indexOf(frontierId)) : 0;
       const stored = await getLastTopicIndex(d.currentCourse.id);
-      setTopicIdx(stored != null ? Math.min(stored, orderedIds.length - 1) : frontier);
+      const idx = stored != null ? Math.min(stored, orderedIds.length - 1) : frontier;
+      setTopicIdx(idx);
       setData(d);
+      setDashboardCache(d, idx); // instant landing next time (owner 2026-08-17)
     } catch (e: any) {
+      // A SILENT refresh that fails must never replace good on-screen content
+      // with the error screen (owner 2026-08-17) — e.g. a brief offline blip on
+      // return. The error state is for the no-content cold path only.
+      if (dataRef.current) return;
       setErrorCode(e?.message ?? 'unknown');
       setError(
         e?.message === 'not_enrolled'
@@ -801,7 +817,11 @@ export function DashboardScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      load();
+      // Defer the refetch until the landing transition has finished (owner
+      // 2026-08-17): kicking off the fetch + full re-render mid-transition was
+      // janking the arrival. Content (cached or live) is already on screen.
+      const task = InteractionManager.runAfterInteractions(() => void load());
+      return () => task.cancel();
     }, [load]),
   );
 

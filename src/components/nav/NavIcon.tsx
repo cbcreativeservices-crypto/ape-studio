@@ -105,6 +105,10 @@ function ProgressFadersLit() {
   useEffect(() => {
     if (reduceMotion) return;
     const ease = Easing.inOut(Easing.sin);
+    // react-native-web's vendored NativeAnimatedHelper references Platform
+    // without importing it and throws when native-driver paths run on web —
+    // JS driver there; native driver on device.
+    const nativeDriver = Platform.OS !== 'web';
     // Normal drift: between the fader's NORMAL upper limit and its bottom —
     // never into the top quarter. resetBeforeIteration:false is CRITICAL:
     // without it loop() snaps back to the initial phase each cycle (the jump
@@ -112,8 +116,8 @@ function ProgressFadersLit() {
     const makeLoop = (i: number) =>
       Animated.loop(
         Animated.sequence([
-          Animated.timing(phases[i], { toValue: FADER_NORM_PHASE[i], duration: FADER_MS[i], easing: ease, useNativeDriver: true }),
-          Animated.timing(phases[i], { toValue: 1, duration: FADER_MS[i], easing: ease, useNativeDriver: true }),
+          Animated.timing(phases[i], { toValue: FADER_NORM_PHASE[i], duration: FADER_MS[i], easing: ease, useNativeDriver: nativeDriver }),
+          Animated.timing(phases[i], { toValue: 1, duration: FADER_MS[i], easing: ease, useNativeDriver: nativeDriver }),
         ]),
         { resetBeforeIteration: false },
       );
@@ -132,8 +136,8 @@ function ProgressFadersLit() {
       nextExcursionFader = (nextExcursionFader + 1) % phases.length;
       loops[i].stop();
       Animated.sequence([
-        Animated.timing(phases[i], { toValue: 0, duration: FADER_MS[i], easing: ease, useNativeDriver: true }),
-        Animated.timing(phases[i], { toValue: 1, duration: Math.round(FADER_MS[i] * 1.2), easing: ease, useNativeDriver: true }),
+        Animated.timing(phases[i], { toValue: 0, duration: FADER_MS[i], easing: ease, useNativeDriver: nativeDriver }),
+        Animated.timing(phases[i], { toValue: 1, duration: Math.round(FADER_MS[i] * 1.2), easing: ease, useNativeDriver: nativeDriver }),
       ]).start(({ finished }) => {
         if (finished && !stopped) {
           loops[i] = makeLoop(i);

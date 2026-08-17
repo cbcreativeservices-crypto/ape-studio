@@ -24,6 +24,7 @@ import { resetLocal as resetLastStudyLocation } from '../study/lastStudyLocation
 import { resetLocal as resetHomeCardsStore } from '../home/homeCardsStore';
 import { resetLocal as resetMeasurementStore } from '../tools/measure/measurementStore';
 import { resetLocal as resetLabCompletion } from '../lab/labCompletion';
+import { resetLocal as resetDashboardCache } from '../dashboard/dashboardCache';
 
 /**
  * Keys that MUST survive an account wipe: device-hardware calibration (per
@@ -85,4 +86,5 @@ export function resetAllLocalStores(): void {
   resetHomeCardsStore();
   resetMeasurementStore();
   resetLabCompletion();
+  resetDashboardCache();
 }
