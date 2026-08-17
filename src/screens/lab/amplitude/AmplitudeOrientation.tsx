@@ -392,6 +392,7 @@ const DYN_MARKS: ReadonlyArray<{ g: string; frac: number }> = [
 
 const DYN_BAR_H = 36; // gradient bar height (matches styles.gradBar)
 const DYN_SIZE = 26; // glyph point size (owner: 2pt smaller); forte ink ≈ 0.6em
+const DYN_SHIFT = 10; // px the whole marks group is nudged left (owner 2026-08-16)
 /** Baseline y that vertically centers the tallest glyph (forte) in the bar:
  *  forte ink sits ~0.445em above / 0.15em below baseline, so its ink centre is
  *  0.1475em above the baseline. */
@@ -433,7 +434,7 @@ function GradientBar() {
               {DYN_MARKS.map((m, i) => (
                 <SkiaText
                   key={i}
-                  x={m.frac * barW - dynFont.getTextWidth(m.g) / 2}
+                  x={m.frac * barW - dynFont.getTextWidth(m.g) / 2 - DYN_SHIFT}
                   y={DYN_BASELINE}
                   text={m.g}
                   font={dynFont}
@@ -444,6 +445,11 @@ function GradientBar() {
           ) : null}
         </View>
         <Text style={[styles.gradEnd, { color: LOUD_RED }]}>HIGH</Text>
+      </View>
+      {/* Mirror of quiet/loud, beneath LOW/HIGH: the magnitude gloss. */}
+      <View style={styles.qlRow}>
+        <Text style={styles.qlText}>less</Text>
+        <Text style={styles.qlText}>more</Text>
       </View>
       <Text style={styles.gradNames}>DARK BLUE → BLUE → GREEN → YELLOW → ORANGE → RED</Text>
     </View>
