@@ -373,7 +373,11 @@ function SpectrogramCard() {
  *  the same magnitude scale a musician already reads. Overlaid on the gradient,
  *  each mark filled with the ramp color at its position and outlined in black so
  *  it stays legible against the matching color behind it. */
-const DYNAMICS = ['PPP', 'PP', 'P', 'MP', 'MF', 'F', 'FF', 'FFF'] as const;
+const DYNAMICS = ['ppp', 'pp', 'p', 'mp', 'mf', 'f', 'ff', 'fff'] as const;
+
+/** Italic slant applied via skewX so it reads like real dynamics notation on
+ *  both platforms (no italic Oswald variant is bundled for faux-italic). */
+const DYN_ITALIC = { skewX: '-12deg' } as const;
 
 /** 8 one-pixel offsets → a crisp black outline (RN has no text-stroke prop). */
 const OUTLINE_OFFSETS: ReadonlyArray<readonly [number, number]> = [
@@ -390,12 +394,12 @@ function OutlinedMark({ text, color }: { text: string; color: string }) {
         <Text
           key={k}
           numberOfLines={1}
-          style={[styles.dynText, styles.dynAbs, { transform: [{ translateX: dx }, { translateY: dy }] }]}
+          style={[styles.dynText, styles.dynAbs, { transform: [DYN_ITALIC, { translateX: dx }, { translateY: dy }] }]}
         >
           {text}
         </Text>
       ))}
-      <Text numberOfLines={1} style={[styles.dynText, { color }]}>
+      <Text numberOfLines={1} style={[styles.dynText, { color, transform: [DYN_ITALIC] }]}>
         {text}
       </Text>
     </View>
