@@ -386,18 +386,16 @@ function SpectrogramCard() {
   return (
     <View style={styles.vizFill} onLayout={(e) => onW(Math.round(e.nativeEvent.layout.width))}>
       {w > 0 && img ? (
-        <Canvas style={{ width: w, height: VIZ_H }}>
-          <Image image={img} x={0} y={0} width={w} height={VIZ_H} fit="fill" />
+        <Canvas style={{ width: w, height: VIZ_H - 4 }}>
+          <Image image={img} x={0} y={0} width={w} height={VIZ_H - 4} fit="fill" />
         </Canvas>
       ) : null}
-      {/* Spectrogram has no amplitude arrow (color already carries magnitude); a
-          plain BLACK arrow marks the TIME axis instead, along the bottom edge. */}
-      {w > 0 ? (
-        <View style={styles.ampArrowTime} pointerEvents="none">
-          <AmplitudeArrow w={w - 8} h={ARROW_H} dir="right" color="#000000" />
-        </View>
-      ) : null}
-      <Text style={styles.axisBottom}>TIME → · FREQ ↑</Text>
+      {/* Time axis marked BELOW the display: a light-gray arrow, labelled "time".
+          (Color already carries magnitude, so there is no amplitude arrow here.) */}
+      <View style={styles.spectroTimeRow}>
+        {w > 0 ? <AmplitudeArrow w={Math.max(0, w - 46)} h={ARROW_H} dir="right" color={ARROW_GRAY} /> : null}
+        <Text style={styles.spectroTimeLabel}>time</Text>
+      </View>
     </View>
   );
 }
@@ -443,6 +441,7 @@ const ARROW_STOP_T = [0, 0.2, 0.4, 0.6, 0.8, 1];
 const ARROW_COLORS = ARROW_STOP_T.map((t) => heatColor(t));
 const ARROW_H = 14; // horizontal-arrow canvas height (not too thick, not too thin)
 const ARROW_GUTTER = 16; // reserved edge strip so a vertical arrow never covers the data
+const ARROW_GRAY = '#b3b3bb'; // light gray for the spectrogram time-axis arrow + label
 
 function AmplitudeArrow({
   w,
@@ -812,7 +811,9 @@ const styles = StyleSheet.create({
   ampArrowBottomHalf: { position: 'absolute', left: 1, top: VIZ_H / 2 + 2 }, // (−phase, bottom half)
   ampArrowLevel: { position: 'absolute', left: 1, top: 1 }, // level meter (full height, left gutter)
   ampArrowRta: { position: 'absolute', left: 1, top: 2 }, // spectrum/RTA (full height)
-  ampArrowTime: { position: 'absolute', left: 4, top: VIZ_H - 13 }, // spectrogram time axis (bottom)
+  // Spectrogram time axis: light-gray arrow + "time" label, below the display
+  spectroTimeRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 2 },
+  spectroTimeLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 8.5, letterSpacing: 1, color: ARROW_GRAY },
   // (Dynamics are drawn in a Skia Canvas now — see GradientBar — so no RN text styles here.)
   qlRow: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 2 },
   qlText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.4, color: colors.textSub },
