@@ -30,6 +30,10 @@ const OVERLAY_Y_OFFSET = 46;
  *  topic change behind the wheel, and no rapid-fire haptic "vibration". Faster
  *  spins just drop the excess steps; the wheel keeps turning smoothly. */
 const MIN_STEP_MS = 300;
+/** Per-event angular delta (deg) above which the UI-thread spring engages to
+ *  fill frames between touch events; below it, a direct set suffices and no
+ *  animation object is created (owner 2026-08-16: engage only when needed). */
+const FAST_SPIN_DEG = 1.5;
 
 /** FIXED base of the wheel — rim + matte-black concave disc. */
 function JogBase({ size }: { size: number }) {
@@ -293,21 +297,26 @@ export function JogOverlay({
           while (d > 180) d -= 360;
           while (d < -180) d += 360;
           lastAngle.current = a;
-          // High-refresh tracking (owner 2026-08-16, "faster resolution"): a
-          // DIRECT set only changes the angle when a JS touch event lands
-          // (~60Hz, and it stalls whenever the Dashboard re-renders mid-turn),
-          // which reads as coarse on a high-refresh display. A STIFF UI-thread
-          // spring fills the frames BETWEEN events at native display refresh:
-          // ~20ms response, velocity carried across retargets (none of the
-          // restart lag of the earlier 60ms chase), clamped so it never
-          // overshoots the finger.
+          // High-refresh tracking, ENGAGED ONLY WHEN NEEDED (owner 2026-08-16,
+          // conserve app speed): slow/fine movement is already smooth at JS
+          // event rate, so it gets a free direct set — no animation object at
+          // all. Only FAST motion (big per-event delta, where 60Hz reads as
+          // coarse on a high-refresh display) engages the stiff UI-thread
+          // spring that fills the frames between events (~20ms response,
+          // velocity carried across retargets, clamped — never overshoots the
+          // finger). Nothing runs between gestures or when the overlay is
+          // closed (it unmounts).
           spinTarget.current += d;
-          spin.value = withSpring(spinTarget.current, {
-            stiffness: 1800,
-            damping: 90,
-            mass: 1,
-            overshootClamping: true,
-          });
+          if (Math.abs(d) < FAST_SPIN_DEG) {
+            spin.value = spinTarget.current;
+          } else {
+            spin.value = withSpring(spinTarget.current, {
+              stiffness: 1800,
+              damping: 90,
+              mass: 1,
+              overshootClamping: true,
+            });
+          }
           accum.current += d;
           while (accum.current >= DETENT_DEG) {
             accum.current -= DETENT_DEG;
