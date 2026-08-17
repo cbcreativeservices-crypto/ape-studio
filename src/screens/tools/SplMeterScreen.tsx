@@ -59,7 +59,16 @@ type Weighting = SplLogPayload['weighting']; // 'A' | 'C' | 'Z'
 type MeterResponse = SplLogPayload['response']; // 'fast' | 'slow'
 
 const WEIGHTINGS: Weighting[] = ['A', 'C', 'Z'];
-const RESPONSES: MeterResponse[] = ['fast', 'slow'];
+
+// Meter time-response (owner 2026-08-17): FAST/SLOW come straight from the
+// engine frame; '5 SEC AVG' is a client-side rolling 5-second energy average
+// (power-domain, honest) of the selected weighting's fast level.
+type ResponseMode = 'fast' | 'slow' | 'avg5';
+const RESPONSES: ResponseMode[] = ['fast', 'slow', 'avg5'];
+const responseLabel = (r: ResponseMode) => (r === 'fast' ? 'FAST' : r === 'slow' ? 'SLOW' : '5 SEC AVG');
+/** Rolling-average window: samples pushed at the ~20 Hz text cadence, so 100
+ *  samples ≈ 5 s. */
+const AVG5_SAMPLES = 100;
 
 /** The selected weighting × response reading from a real meter frame. */
 function selectedLevelDb(m: MeterFrame, w: Weighting, r: MeterResponse): number {
@@ -458,7 +467,13 @@ export function SplMeterScreen({ navigation }: Props) {
   useToolAutoStart(state, startMeter);
 
   const [weighting, setWeighting] = useState<Weighting>('A');
-  const [response, setResponse] = useState<MeterResponse>('fast');
+  const [response, setResponse] = useState<ResponseMode>('fast');
+  // dBFS readout mode (owner 2026-08-17): show the RAW digital level (no SPL
+  // offset) alongside the weighted dB SPL options. Uses the flat (Z) level.
+  const [dbfs, setDbfs] = useState(false);
+  // Fullscreen big-readout view (owner 2026-08-17): the number + its response/
+  // unit toggles alone, with PEAK / PEAK HOLD in the top corners.
+  const [readoutFsOpen, setReadoutFsOpen] = useState(false);
   const [justSaved, setJustSaved] = useState(false);
   const savedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(
@@ -566,6 +581,13 @@ export function SplMeterScreen({ navigation }: Props) {
   responseRef.current = response;
   const offsetRef = useRef(offset);
   offsetRef.current = offset;
+  // Rolling 5-second average (owner 2026-08-17): the selected weighting's FAST
+  // level, energy-averaged over a 5 s window in the POWER domain (never a dB
+  // average). Fed at the text cadence; avg5Ref feeds the needle on the rAF
+  // path, avg5Db the text readouts. Cleared on weighting change / start / stop.
+  const avg5RingRef = useRef<number[]>([]);
+  const avg5Ref = useRef(NaN);
+  const [avg5Db, setAvg5Db] = useState<number>(NaN);
   // The critical loop: while running, read the native meter frame DIRECTLY (a
   // synchronous JSI call — the native analysis thread refreshes it every ~50 ms)
   // every animation frame and push it straight into the SharedValues. This keeps
@@ -576,7 +598,10 @@ export function SplMeterScreen({ navigation }: Props) {
   useRafFrameLoop(running, (now) => {
     const m = ApeDsp.getMeterFrame();
     if (!m) return;
-    const lvl = selectedLevelDb(m, weightingRef.current, responseRef.current);
+    const w = weightingRef.current;
+    const r = responseRef.current;
+    // 5 SEC AVG reads the rolling ring; FAST/SLOW read the frame.
+    const lvl = r === 'avg5' ? avg5Ref.current : selectedLevelDb(m, w, r);
     liveRmsDb.value = Number.isFinite(lvl) ? lvl : -120;
     livePeakDb.value = Number.isFinite(m.peakDb) ? m.peakDb : -120;
     // AUTO-RANGE feed: a smoothed EMA of the estimated SPL so the auto 0-VU
@@ -592,6 +617,17 @@ export function SplMeterScreen({ navigation }: Props) {
       const dtText = now - lastTextRef.current;
       lastTextRef.current = now;
       setDisplayMeter(m);
+      // Feed the 5 s ring with the current weighting's FAST power, recompute avg.
+      const wf = w === 'A' ? m.aFastDb : w === 'C' ? m.cFastDb : m.zFastDb;
+      if (Number.isFinite(wf)) {
+        const ring = avg5RingRef.current;
+        ring.push(Math.pow(10, wf / 10));
+        if (ring.length > AVG5_SAMPLES) ring.shift();
+        const mean = ring.reduce((s, p) => s + p, 0) / ring.length;
+        const db = mean > 0 ? 10 * Math.log10(mean) : NaN;
+        avg5Ref.current = db;
+        setAvg5Db(db);
+      }
       // 3-second EMA of the estimated SPL → the gauge zone COLOR (not the number).
       if (Number.isFinite(lvl)) {
         const s = lvl + (offsetRef.current ?? NOMINAL_OFFSET);
@@ -608,8 +644,18 @@ export function SplMeterScreen({ navigation }: Props) {
       livePeakDb.value = -120;
       zoneEmaRef.current = null;
       setZoneSpl(null);
+      avg5RingRef.current = [];
+      avg5Ref.current = NaN;
+      setAvg5Db(NaN);
     }
   }, [running, liveRmsDb, livePeakDb]);
+  // A weighting change restarts the 5 s window — the old ring holds the other
+  // weighting's powers, which would otherwise contaminate the average.
+  useEffect(() => {
+    avg5RingRef.current = [];
+    avg5Ref.current = NaN;
+    setAvg5Db(NaN);
+  }, [weighting]);
 
   // AUTO range recompute — reads the smoothed EMA a few times a second and parks
   // the 0-VU reference 10 dB ABOVE the current level, so the live signal sits
@@ -648,7 +694,7 @@ export function SplMeterScreen({ navigation }: Props) {
   const vuLive0 = rangeRef - splOffset;
   // Printed TOP-LEFT on the VU face (owner 2026-07-30): the weighting + response
   // in use (the RANGE now lives in the blue in-arc brackets and the chip row).
-  const vuRangeText = `${weighting} · ${response === 'fast' ? 'FAST' : 'SLOW'}`;
+  const vuRangeText = `${weighting} · ${response === 'fast' ? 'FAST' : response === 'slow' ? 'SLOW' : '5s AVG'}`;
   // SPL bracket printed inside the arc (BLUE — the 0 value equals the blue RANGE
   // button): low number at −20 (= RANGE − 20), high at 0 (= RANGE).
   const vuBrackets = {
@@ -665,12 +711,23 @@ export function SplMeterScreen({ navigation }: Props) {
   // Floored at 0 (owner 2026-08-12): an estimated SPL can't be negative — quiet
   // input just reads a low positive number, never a confusing minus.
   const estSpl = (dbfs: number) => (Number.isFinite(dbfs) ? Math.max(0, dbfs + splOffset).toFixed(1) : '—');
+  // The reading for the CURRENT response (owner 2026-08-17): FAST/SLOW from the
+  // frame, or the rolling 5-second average — so the big number, VU and dial all
+  // agree with the selected response.
+  const levelNow = (m: MeterFrame | null): number | null => {
+    if (!m) return null;
+    if (response === 'avg5') return Number.isFinite(avg5Db) ? avg5Db : null;
+    return selectedLevelDb(m, weighting, response);
+  };
   const vuMaxText = meter ? estSpl(meter.peakHoldDb) : '—';
-  const vuLevelText = meter ? estSpl(selectedLevelDb(meter, weighting, response)) : '—';
+  const vuLevelText = meter ? estSpl(levelNow(meter) ?? NaN) : '—';
   // Live SPL number for the CENTER of the circle gauge — the ESTIMATED dB SPL
   // (level + splOffset) so it matches the node's position on the dial's scale —
   // plus its zone colour so the number turns the colour of the arc zone it's in.
-  const dialSpl = meter ? Math.round(selectedLevelDb(meter, weighting, response) + splOffset) : null;
+  const dialSpl = (() => {
+    const lv = levelNow(meter);
+    return lv == null ? null : Math.round(lv + splOffset);
+  })();
   const dialCenterText = dialSpl != null ? `${dialSpl}` : '—';
   // COLOR from the 3-second average (owner 2026-08-05) — the number is live but
   // its zone color is smoothed so it doesn't flash at a threshold.
@@ -680,6 +737,69 @@ export function SplMeterScreen({ navigation }: Props) {
   // in the 79–85 dB monitoring band lights the glowing gold frame around the
   // gauge (matches the dial's gold sweet-spot band). Never in SPL/OPTIMAL.
   const inSweetSpot = dialMode === 'studio' && colorSpl != null && colorSpl >= 79 && colorSpl <= 85;
+
+  // ── Big # readout (owner 2026-08-17) ───────────────────────────────────────
+  // Response toggle on the LEFT (FAST/SLOW/5 SEC AVG), unit toggle on the RIGHT
+  // (dBFS raw + the three weighted SPL units), a fullscreen icon, PEAK/PEAK HOLD
+  // moved ABOVE. dBFS shows the true digital level with NO SPL offset.
+  const readoutLevel = levelNow(meter); // weighted dB, pre-offset, or null
+  const fmtRaw = (v: number) => `${v > 0 ? '+' : ''}${v.toFixed(1)}`;
+  const bigText =
+    readoutLevel == null
+      ? '—'
+      : dbfs
+        ? fmtRaw(readoutLevel) // raw dBFS (flat/Z), may be negative
+        : Math.max(0, readoutLevel + splOffset).toFixed(1); // SPL estimate, floored at 0
+  const readoutUnitSub = dbfs ? 'dBFS · uncalibrated (raw digital level)' : unitLabel;
+  const readoutEyebrow = dbfs
+    ? `RAW · dBFS · ${responseLabel(response)}`
+    : `${splUnit} · ${weighting}-WEIGHTED · ${responseLabel(response)}`;
+  const activeUnit = dbfs ? 'dBFS' : weighting === 'A' ? 'dBA' : weighting === 'C' ? 'dBC' : 'dB SPL';
+  const UNIT_OPTS: { key: string; select: () => void }[] = [
+    { key: 'dBFS', select: () => { setDbfs(true); setWeighting('Z'); } },
+    { key: 'dBA', select: () => { setDbfs(false); setWeighting('A'); } },
+    { key: 'dBC', select: () => { setDbfs(false); setWeighting('C'); } },
+    { key: 'dB SPL', select: () => { setDbfs(false); setWeighting('Z'); } },
+  ];
+  // Calibration candidate reading — shared by the screen + VU-popup panels.
+  const calDraftText = (() => {
+    const lv = levelNow(meter);
+    return lv == null ? '—' : Math.max(0, lv + draftOffset).toFixed(1);
+  })();
+  // Left (response) + right (unit) toggles — shared by the inline readout and
+  // the fullscreen view. Functions so each render site gets its own instances.
+  const renderResponseToggle = () => (
+    <View style={styles.sideToggle}>
+      {RESPONSES.map((r) => (
+        <Pressable
+          key={r}
+          onPress={() => setResponse(r)}
+          hitSlop={4}
+          accessibilityRole="button"
+          accessibilityState={{ selected: response === r }}
+          accessibilityLabel={`${responseLabel(r)} response`}
+        >
+          <Text style={[styles.sideOpt, response === r && styles.sideOptActive]}>{responseLabel(r)}</Text>
+        </Pressable>
+      ))}
+    </View>
+  );
+  const renderUnitToggle = () => (
+    <View style={styles.sideToggle}>
+      {UNIT_OPTS.map((u) => (
+        <Pressable
+          key={u.key}
+          onPress={u.select}
+          hitSlop={4}
+          accessibilityRole="button"
+          accessibilityState={{ selected: activeUnit === u.key }}
+          accessibilityLabel={u.key === 'dBFS' ? 'dBFS — raw digital level, uncalibrated' : `${u.key} weighted level`}
+        >
+          <Text style={[styles.sideOpt, activeUnit === u.key && styles.sideOptActive]}>{u.key}</Text>
+        </Pressable>
+      ))}
+    </View>
+  );
 
   /** SAVE LOG → Saved Measurement Library (spec §7; payload = SplLogPayload). */
   const onSaveLog = useCallback(() => {
@@ -700,10 +820,13 @@ export function SplMeterScreen({ navigation }: Props) {
     // uncalibrated pairs).
     const avgDb = shown(weighting === 'A' ? m.leqADb : m.leqZDb);
     const unit = weighting === 'C' ? 'dBC' : weighting === 'A' ? 'dBA' : 'dB SPL';
+    // The saved payload's response is fast|slow only; 5 SEC AVG (a display-time
+    // integration) records as SLOW, its closest logged sibling.
+    const saveResponse: MeterResponse = response === 'fast' ? 'fast' : 'slow';
     const payload: SplLogPayload = {
       kind: 'spl_log',
       weighting,
-      response,
+      response: saveResponse,
       durationSec: m.elapsedSec,
       timeline: [], // timeline capture ships with a later engine pass
       timelineStepSec: 0,
@@ -721,8 +844,8 @@ export function SplMeterScreen({ navigation }: Props) {
       sample_rate: null, // info polling is out of scope for this screen
       measurement_settings:
         offset != null
-          ? { weighting, response, cal_offset_db: offset, cal_set_at: cal?.setAt ?? null }
-          : { weighting, response, cal_offset_db: NOMINAL_OFFSET, cal_set_at: null },
+          ? { weighting, response: saveResponse, cal_offset_db: offset, cal_set_at: cal?.setAt ?? null }
+          : { weighting, response: saveResponse, cal_offset_db: NOMINAL_OFFSET, cal_set_at: null },
       quality_state: evaluateQuality(saveFlags),
       warning_flags: saveFlags,
       data_payload: payload,
@@ -770,65 +893,18 @@ export function SplMeterScreen({ navigation }: Props) {
 
         {showMeter && (
           <>
-            {/* Weighting × response selection (spec §9 required controls). */}
-            <View style={styles.chipsRow}>
-              <View style={styles.chipGroup}>
-                <HelpHead title="WEIGHTING" onHelp={() => help('weighting')} style={styles.chipGroupLabel} />
-                <View style={styles.chipSet}>
-                  {WEIGHTINGS.map((w) => (
-                    <Chip key={w} label={w} selected={weighting === w} onPress={() => setWeighting(w)} />
-                  ))}
-                </View>
-              </View>
-              <View style={styles.chipGroup}>
-                <HelpHead title="RESPONSE" onHelp={() => help('response')} style={styles.chipGroupLabel} />
-                <View style={styles.chipSet}>
-                  {RESPONSES.map((r) => (
-                    <Chip
-                      key={r}
-                      label={r.toUpperCase()}
-                      tint={r === 'fast' ? 'green' : 'purple'}
-                      selected={response === r}
-                      onPress={() => setResponse(r)}
-                    />
-                  ))}
-                </View>
-              </View>
-            </View>
-
-            {/* Big live readout of the selected weighting × response. Tapping the
-                display toggles the meter START/STOP (owner 2026-07-31). */}
-            <Pressable
-              style={styles.readoutCard}
-              onPress={running ? stopMeter : startMeter}
-              accessibilityRole="button"
-              accessibilityLabel={running ? 'Tap to stop the meter' : 'Tap to start the meter'}
-            >
-              <Text style={styles.readoutEyebrow}>
-                {`L${weighting}${response === 'fast' ? 'F' : 'S'} · ${weighting}-WEIGHTED · ${response.toUpperCase()}`}
-              </Text>
-              <Text style={styles.readoutValue}>
-                {meter ? estSpl(selectedLevelDb(meter, weighting, response)) : '—'}
-              </Text>
-              <Text style={styles.readoutSub}>{unitLabel}</Text>
-            </Pressable>
-            <DisplayGuideButton onPress={helpAll} />
-
-            {/* PEAK / PEAK HOLD — may exceed 0 dBFS (F1): red at ≥ 0, never clamped. */}
+            {/* PEAK / PEAK HOLD — moved ABOVE the # readout (owner 2026-08-17).
+                May exceed 0 dBFS (F1): red at ≥ 0, never clamped. The COLOUR
+                flags digital clipping independent of the SPL estimate. */}
             <View style={styles.peakRow}>
-              {/* Peak cells now read ESTIMATED dB SPL too (owner 2026-08-12) — no
-                  negative dBFS on an SPL meter. The COLOUR still flags digital
-                  clipping (levelColorForDb goes red as the RAW peak nears/exceeds
-                  0 dBFS, F1) — that cue is independent of the SPL estimate. */}
               <Pressable style={styles.peakCell} onLongPress={() => help('peak')} delayLongPress={260}>
                 <Text style={styles.cellLabel}>PEAK</Text>
                 <Text style={[styles.cellValue, meter ? { color: levelColorForDb(meter.peakDb) } : styles.cellValueMax]}>
                   {meter ? estSpl(meter.peakDb) : '—'}
                 </Text>
               </Pressable>
-              {/* Tap the PEAK HOLD readout itself to reset (owner 2026-08-17: the
-                  separate RESET PEAK key is gone — a small in-cell instruction
-                  tells the user to tap to reset). Long-press = help. */}
+              {/* Tap the PEAK HOLD readout itself to reset (owner 2026-08-17).
+                  Long-press = help. */}
               <Pressable
                 style={styles.peakCell}
                 onPress={resetPeakHold}
@@ -844,6 +920,39 @@ export function SplMeterScreen({ navigation }: Props) {
                 <Text style={styles.cellHint}>tap to reset</Text>
               </Pressable>
             </View>
+
+            {/* Big live readout (owner 2026-08-17): RESPONSE toggle on the LEFT
+                (FAST · SLOW · 5 SEC AVG), the number in the middle (tap = START/
+                STOP, ⛶ = fullscreen), UNIT toggle on the RIGHT (dBFS · dBA · dBC ·
+                dB SPL). */}
+            <View style={styles.readoutRow}>
+              {renderResponseToggle()}
+              <View style={styles.readoutCardWrap}>
+                <Pressable
+                  style={styles.readoutCard}
+                  onPress={running ? stopMeter : startMeter}
+                  accessibilityRole="button"
+                  accessibilityLabel={running ? 'Tap to stop the meter' : 'Tap to start the meter'}
+                >
+                  <Text style={styles.readoutEyebrow}>{readoutEyebrow}</Text>
+                  <Text style={styles.readoutValue} numberOfLines={1}>
+                    {bigText}
+                  </Text>
+                  <Text style={styles.readoutSub}>{readoutUnitSub}</Text>
+                </Pressable>
+                <Pressable
+                  style={styles.fsIconBtn}
+                  onPress={() => setReadoutFsOpen(true)}
+                  hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityLabel="Open the readout full screen"
+                >
+                  <Text style={styles.fsIcon}>⛶</Text>
+                </Pressable>
+              </View>
+              {renderUnitToggle()}
+            </View>
+            <DisplayGuideButton onPress={helpAll} />
 
             {/* Session log (spec §9 View 2): Leq + elapsed + reset/save. */}
             <View style={styles.logCard}>
@@ -936,7 +1045,7 @@ export function SplMeterScreen({ navigation }: Props) {
                     sound-level meter (same weighting and response on both).
                   </Text>
                   <Text style={styles.calDraftValue}>
-                    {meter ? Math.max(0, selectedLevelDb(meter, weighting, response) + draftOffset).toFixed(1) : '—'}
+                    {calDraftText}
                     <Text style={styles.calDraftUnit}>  dB SPL (candidate)</Text>
                   </Text>
                   <View style={styles.controls}>
@@ -1134,7 +1243,16 @@ export function SplMeterScreen({ navigation }: Props) {
                         <HelpHead title="WEIGHTING" onHelp={() => help('weighting')} style={styles.chipGroupLabel} />
                         <View style={styles.chipSetWrap}>
                           {WEIGHTINGS.map((w) => (
-                            <Chip key={w} label={w} compact selected={weighting === w} onPress={() => setWeighting(w)} />
+                            <Chip
+                              key={w}
+                              label={w}
+                              compact
+                              selected={!dbfs && weighting === w}
+                              onPress={() => {
+                                setDbfs(false);
+                                setWeighting(w);
+                              }}
+                            />
                           ))}
                         </View>
                       </View>
@@ -1144,8 +1262,8 @@ export function SplMeterScreen({ navigation }: Props) {
                           {RESPONSES.map((r) => (
                             <Chip
                               key={r}
-                              label={r.toUpperCase()}
-                              tint={r === 'fast' ? 'green' : 'purple'}
+                              label={responseLabel(r)}
+                              tint={r === 'fast' ? 'green' : r === 'slow' ? 'purple' : 'amber'}
                               compact
                               selected={response === r}
                               onPress={() => setResponse(r)}
@@ -1315,7 +1433,7 @@ export function SplMeterScreen({ navigation }: Props) {
                         sound-level meter (same weighting and response on both).
                       </Text>
                       <Text style={styles.calDraftValue}>
-                        {meter ? shown(selectedLevelDb(meter, weighting, response), true).toFixed(1) : '—'}
+                        {calDraftText}
                         <Text style={styles.calDraftUnit}>  dB SPL (candidate)</Text>
                       </Text>
                       <View style={styles.controls}>
@@ -1403,6 +1521,65 @@ export function SplMeterScreen({ navigation }: Props) {
           </ScrollView>
         </View>
       </Modal>
+
+      {/* ── Fullscreen # readout (owner 2026-08-17): the number + its response/
+          unit toggles alone, with PEAK (top-left) and PEAK HOLD (top-right). ── */}
+      <Modal
+        visible={readoutFsOpen}
+        animationType="fade"
+        statusBarTranslucent
+        onRequestClose={() => setReadoutFsOpen(false)}
+      >
+        <View style={[styles.fsRoot, { paddingTop: insets.top + 8 }]}>
+          {/* Corners: PEAK left, close center, PEAK HOLD right. */}
+          <View style={styles.fsTopRow}>
+            <View style={styles.fsCorner}>
+              <Text style={styles.cellLabel}>PEAK</Text>
+              <Text style={[styles.fsCornerValue, meter ? { color: levelColorForDb(meter.peakDb) } : styles.cellValueMax]}>
+                {meter ? estSpl(meter.peakDb) : '—'}
+              </Text>
+            </View>
+            <Pressable
+              onPress={() => setReadoutFsOpen(false)}
+              hitSlop={14}
+              accessibilityRole="button"
+              accessibilityLabel="Close fullscreen readout"
+            >
+              <Text style={styles.vuClose}>✕</Text>
+            </Pressable>
+            <Pressable
+              style={styles.fsCornerRight}
+              onPress={resetPeakHold}
+              accessibilityRole="button"
+              accessibilityLabel="Peak hold — tap to reset"
+            >
+              <Text style={styles.cellLabel}>PEAK HOLD</Text>
+              <Text style={[styles.fsCornerValue, meter ? { color: levelColorForDb(meter.peakHoldDb) } : styles.cellValueMax]}>
+                {meter ? estSpl(meter.peakHoldDb) : '—'}
+              </Text>
+              <Text style={styles.cellHint}>tap to reset</Text>
+            </Pressable>
+          </View>
+
+          {/* Center: response toggle · big number · unit toggle. */}
+          <View style={styles.fsCenter}>
+            {renderResponseToggle()}
+            <Pressable
+              style={styles.fsCard}
+              onPress={running ? stopMeter : startMeter}
+              accessibilityRole="button"
+              accessibilityLabel={running ? 'Tap to stop the meter' : 'Tap to start the meter'}
+            >
+              <Text style={styles.readoutEyebrow}>{readoutEyebrow}</Text>
+              <Text style={styles.fsValue} numberOfLines={1}>
+                {bigText}
+              </Text>
+              <Text style={styles.readoutSub}>{readoutUnitSub}</Text>
+            </Pressable>
+            {renderUnitToggle()}
+          </View>
+        </View>
+      </Modal>
       {sheet}
     </View>
   );
@@ -1460,8 +1637,31 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   readoutEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: colors.amberLabel },
-  readoutValue: { fontFamily: fonts.mono, fontSize: 58, color: colors.textPrimary, letterSpacing: 1 },
+  readoutValue: { fontFamily: fonts.mono, fontSize: 46, color: colors.textPrimary, letterSpacing: 1 },
   readoutSub: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.amber },
+
+  // Readout row: response toggle (left) · number card (center) · unit toggle
+  // (right) — owner 2026-08-17.
+  readoutRow: { flexDirection: 'row', alignItems: 'stretch', gap: 8 },
+  readoutCardWrap: { flex: 1, position: 'relative' },
+  // Vertical side toggle (response / unit): active amber, inactive white.
+  sideToggle: { justifyContent: 'center', alignItems: 'center', gap: 12, minWidth: 54 },
+  sideOpt: { fontFamily: fonts.mono, fontSize: 11, letterSpacing: 0.3, color: '#ffffff', textAlign: 'center' },
+  sideOptActive: { color: colors.amber },
+  // Fullscreen icon pinned to the card's top-right (a sibling overlay so its tap
+  // is independent of the card's start/stop press).
+  fsIconBtn: { position: 'absolute', top: 6, right: 6, padding: 4 },
+  fsIcon: { fontFamily: fonts.mono, fontSize: 16, color: colors.textSub },
+
+  // Fullscreen # readout view (owner 2026-08-17).
+  fsRoot: { flex: 1, backgroundColor: colors.screenBg, paddingHorizontal: 16 },
+  fsTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
+  fsCorner: { alignItems: 'flex-start', gap: 2 },
+  fsCornerRight: { alignItems: 'flex-end', gap: 2 },
+  fsCornerValue: { fontFamily: fonts.mono, fontSize: 22, color: colors.textPrimary },
+  fsCenter: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, paddingBottom: 40 },
+  fsCard: { flex: 1, alignItems: 'center', gap: 10 },
+  fsValue: { fontFamily: fonts.mono, fontSize: 62, color: colors.textPrimary, letterSpacing: 1 },
 
   // Peak row.
   peakRow: { flexDirection: 'row', gap: 10, alignItems: 'stretch' },
