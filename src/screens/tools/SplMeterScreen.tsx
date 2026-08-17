@@ -26,7 +26,7 @@
  *    on unmount (§18: no DSP behind a closed screen).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Animated, Modal, Pressable, ScrollView, StatusBar, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../../features/settings/store';
@@ -428,38 +428,75 @@ function LiveWarnings({ flags }: { flags: WarningFlag[] }) {
 const FS_BRIGHT_KEY = 'ape:splFsBright';
 const FS_RED_KEY = 'ape:splFsRed';
 const FS_MAX_DIM = 0.72; // black wash at the darkest (non-red) setting
-const FS_RED_AT = 0.04; // brightness ≤ this → LATCH red mode (far left)
+const FS_RED_AT = 0.06; // brightness ≤ this → LATCH red mode (far left)
 const FS_RED_EXIT = 0.22; // brightness ≥ this → leave red mode (hysteresis, so it "stays")
-const FS_RED_WASH = 'rgba(255,40,25,0.14)';
-const FS_THUMB = 16;
+// Distinct night-vision RED (owner 2026-08-17: the old faint wash just merged
+// into the dim). A moderate black dim + a STRONG red overlay reads clearly red.
+const FS_RED_DIM = 0.4;
+const FS_RED_WASH = 'rgba(220,8,8,0.46)';
+const FS_THUMB = 26; // bigger thumb = easier to grab (owner 2026-08-17)
 
 /** Discreet, light-gray brightness line (0 = darkest/red, 1 = full bright).
- *  Hidden by default — revealed by the sun icon (owner 2026-08-17). */
+ *  ANCHORED drag (relative to the grab point) — grabbing never snaps the thumb
+ *  and pushing past an end just holds it there; the thumb tracks on LOCAL state
+ *  for smoothness, while onLive updates the dim imperatively (owner 2026-08-17).
+ *  onCommit fires on release; onInteract keeps the auto-hide timer alive. */
 function BrightnessSlider({
   value,
-  onChange,
-  onRelease,
+  onLive,
+  onCommit,
+  onInteract,
 }: {
   value: number;
-  onChange: (v: number) => void;
-  onRelease: () => void;
+  onLive: (v: number) => void;
+  onCommit: (v: number) => void;
+  onInteract: () => void;
 }) {
   const [w, setW] = useState(0);
-  const setFromX = (x: number) => {
-    if (w <= FS_THUMB) return;
-    onChange(Math.max(0, Math.min(1, (x - FS_THUMB / 2) / (w - FS_THUMB))));
-  };
-  const thumbLeft = w > 0 ? value * (w - FS_THUMB) : 0;
+  const [pos, setPos] = useState(value);
+  const posRef = useRef(value);
+  const draggingRef = useRef(false);
+  const anchorX = useRef(0);
+  const anchorPos = useRef(value);
+  // Sync the thumb to committed value only when NOT dragging (never fight a drag).
+  useEffect(() => {
+    if (!draggingRef.current) {
+      posRef.current = value;
+      setPos(value);
+    }
+  }, [value]);
+  const usable = Math.max(1, w - FS_THUMB);
+  const thumbLeft = pos * usable;
   return (
     <View
       style={styles.brightTrack}
+      hitSlop={{ top: 14, bottom: 14, left: 8, right: 8 }}
       onLayout={(e) => setW(e.nativeEvent.layout.width)}
       onStartShouldSetResponder={() => true}
       onMoveShouldSetResponder={() => true}
-      onResponderGrant={(e) => setFromX(e.nativeEvent.locationX)}
-      onResponderMove={(e) => setFromX(e.nativeEvent.locationX)}
-      onResponderRelease={onRelease}
-      onResponderTerminate={onRelease}
+      onResponderGrant={(e) => {
+        draggingRef.current = true;
+        anchorX.current = e.nativeEvent.locationX;
+        anchorPos.current = posRef.current;
+        onInteract();
+      }}
+      onResponderMove={(e) => {
+        const dv = (e.nativeEvent.locationX - anchorX.current) / usable;
+        const np = Math.max(0, Math.min(1, anchorPos.current + dv));
+        posRef.current = np;
+        setPos(np);
+        onLive(np);
+        onInteract();
+      }}
+      onResponderRelease={() => {
+        draggingRef.current = false;
+        onCommit(posRef.current);
+        onInteract();
+      }}
+      onResponderTerminate={() => {
+        draggingRef.current = false;
+        onCommit(posRef.current);
+      }}
       accessibilityRole="adjustable"
       accessibilityLabel="Screen brightness — slide left to dim, far left for red night mode"
     >
@@ -529,9 +566,6 @@ export function SplMeterScreen({ navigation }: Props) {
   // Fullscreen big-readout view (owner 2026-08-17): the number alone, with
   // PEAK / PEAK HOLD in the top corners + a popup-local brightness/red slider.
   const [readoutFsOpen, setReadoutFsOpen] = useState(false);
-  // Rotate the fullscreen readout 90° to a landscape layout (bigger number) —
-  // the app is portrait-locked, so this is a transform, not a device rotation.
-  const [fsLandscape, setFsLandscape] = useState(false);
   // Global Low-Light (Profile) — when ON it LOCKS the popup in red and hides the
   // local dimmer; turning Low-Light off restores the dimmer (owner 2026-08-17).
   const lowLightOn = useLowLight();
@@ -546,10 +580,13 @@ export function SplMeterScreen({ navigation }: Props) {
   // The dimmer line + thumb are HIDDEN by default (a rare option): only a small
   // discreet sun icon shows; pressing it reveals the slider (owner 2026-08-17).
   const [fsDimmerOpen, setFsDimmerOpen] = useState(false);
-  const fsBrightRef = useRef(1);
-  fsBrightRef.current = fsBright;
   const fsRedLatchedRef = useRef(false);
   fsRedLatchedRef.current = fsRedLatched;
+  // Live dim/red run through Animated values (NOT React state) while the slider
+  // drags, so the heavy screen never re-renders per move — that removes the drag
+  // lag/jump (owner 2026-08-17). Committed state re-syncs them between drags.
+  const fsDimAnim = useRef(new Animated.Value(0)).current;
+  const fsRedAnim = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     AsyncStorage.multiGet([FS_BRIGHT_KEY, FS_RED_KEY])
       .then((pairs) => {
@@ -560,30 +597,70 @@ export function SplMeterScreen({ navigation }: Props) {
       })
       .catch(() => {});
   }, []);
-  const persistFsSettings = useCallback(() => {
-    void AsyncStorage.multiSet([
-      [FS_BRIGHT_KEY, String(fsBrightRef.current)],
-      [FS_RED_KEY, fsRedLatchedRef.current ? '1' : '0'],
-    ]);
+  const fsDimOpacity = (1 - fsBright) * FS_MAX_DIM;
+  // Global Low-Light overrides the local dimmer: locked dim + red, no controls.
+  const fsEffRed = lowLightOn ? true : fsRedLatched;
+  const fsBaseDim = lowLightOn ? LOW_LIGHT_DIM : fsDimOpacity;
+  const fsTargetDim = fsEffRed ? FS_RED_DIM : fsBaseDim;
+  const fsDimmerAvailable = !lowLightOn;
+  // Hold the Animated overlays at the committed look between drags.
+  useEffect(() => {
+    fsDimAnim.setValue(fsTargetDim);
+    fsRedAnim.setValue(fsEffRed ? 1 : 0);
+  }, [fsTargetDim, fsEffRed, fsDimAnim, fsRedAnim]);
+  // Live drag → update the overlays imperatively; red shows the instant the
+  // thumb reaches the far-left so the mode is DISTINCT, not a merge.
+  const onDimLive = useCallback(
+    (p: number) => {
+      const red = p <= FS_RED_AT;
+      fsRedAnim.setValue(red ? 1 : 0);
+      fsDimAnim.setValue(red ? FS_RED_DIM : (1 - p) * FS_MAX_DIM);
+    },
+    [fsDimAnim, fsRedAnim],
+  );
+  // Release → commit level + latch red (hysteresis so it STAYS) + persist.
+  const onDimCommit = useCallback((p: number) => {
+    setFsBright(p);
+    const red = p <= FS_RED_AT ? true : p >= FS_RED_EXIT ? false : fsRedLatchedRef.current;
+    setFsRedLatched(red);
+    void AsyncStorage.multiSet([[FS_BRIGHT_KEY, String(p)], [FS_RED_KEY, red ? '1' : '0']]);
   }, []);
-  // Slider change: set the dim level and latch/unlatch red with hysteresis so it
-  // stays red once activated until the user clearly brightens.
-  const onBrightChange = useCallback((v: number) => {
-    setFsBright(v);
-    if (v <= FS_RED_AT) setFsRedLatched(true);
-    else if (v >= FS_RED_EXIT) setFsRedLatched(false);
+  // Auto-hide the slider after 13 s of no screen interaction (owner 2026-08-17).
+  const dimmerHideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const armDimmerHide = useCallback(() => {
+    if (dimmerHideTimer.current) clearTimeout(dimmerHideTimer.current);
+    dimmerHideTimer.current = setTimeout(() => setFsDimmerOpen(false), 13000);
   }, []);
+  useEffect(() => {
+    if (readoutFsOpen && fsDimmerOpen) armDimmerHide();
+    else if (dimmerHideTimer.current) {
+      clearTimeout(dimmerHideTimer.current);
+      dimmerHideTimer.current = null;
+    }
+    return () => {
+      if (dimmerHideTimer.current) clearTimeout(dimmerHideTimer.current);
+    };
+  }, [readoutFsOpen, fsDimmerOpen, armDimmerHide]);
   // Each fullscreen open starts with the dimmer hidden (just the sun icon).
   useEffect(() => {
     if (!readoutFsOpen) setFsDimmerOpen(false);
   }, [readoutFsOpen]);
-  const fsDimOpacity = (1 - fsBright) * FS_MAX_DIM;
-  // Global Low-Light overrides the local dimmer: locked dim + red, no controls.
-  const fsEffDim = lowLightOn ? LOW_LIGHT_DIM : fsDimOpacity;
-  const fsEffRed = lowLightOn ? true : fsRedLatched;
-  // The sun toggle (and the dimmer it reveals) is available only when global
-  // Low-Light isn't already locking the popup.
-  const fsDimmerAvailable = !lowLightOn;
+  // Allow REAL device rotation while the fullscreen readout is open (owner
+  // 2026-08-17: no manual button). Loaded via a GUARDED DYNAMIC import — the
+  // native module is absent on dev builds that predate it, and a static import
+  // would throw at load (expo-screen-orientation requires the native module at
+  // module-eval), so the whole screen would crash. Dynamic import rejects
+  // instead, we swallow it, and it starts working after the next native build.
+  useEffect(() => {
+    if (readoutFsOpen) {
+      import('expo-screen-orientation').then((so) => so.unlockAsync()).catch(() => {});
+    }
+    return () => {
+      import('expo-screen-orientation')
+        .then((so) => so.lockAsync(so.OrientationLock.PORTRAIT_UP))
+        .catch(() => {});
+    };
+  }, [readoutFsOpen]);
   const [justSaved, setJustSaved] = useState(false);
   const savedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(
@@ -663,11 +740,9 @@ export function SplMeterScreen({ navigation }: Props) {
   // session log + calibration higher on the screen.
   const [gaugeOpen, setGaugeOpen] = useState(true);
   const { width: winW, height: winH } = useWindowDimensions();
-  // Fullscreen readout layout: landscape swaps the working dims so the number
-  // can grow (owner 2026-08-17).
-  const fsWorkW = fsLandscape ? winH : winW;
-  const fsWorkH = fsLandscape ? winW : winH;
-  const fsNumSize = Math.round(Math.min(fsWorkW * 0.26, fsWorkH * 0.6));
+  // Fullscreen number size — scales with the CURRENT (real) orientation's
+  // dimensions, so rotating the phone to landscape enlarges it (owner 2026-08-17).
+  const fsNumSize = Math.round(Math.min(winW * 0.26, winH * 0.6));
   // TOP area (owner 2026-07-30): a LEFT column holds the VU plus the RANGE /
   // WEIGHTING / PEAK-HOLD controls; a thin TALL LED meter runs down the RIGHT,
   // spanning the full height of that column (top of the VU → just above the
@@ -1662,109 +1737,89 @@ export function SplMeterScreen({ navigation }: Props) {
         statusBarTranslucent
         onRequestClose={() => setReadoutFsOpen(false)}
       >
-        <View style={styles.fsBackdrop}>
-          {/* Portrait fills the modal; landscape is a 90°-rotated box sized to
-              the swapped screen dims (owner 2026-08-17: the app is portrait-
-              locked, so a device rotation isn't possible — this transform gives a
-              landscape layout with a bigger number). */}
-          <View
-            style={[
-              styles.fsRoot,
-              fsLandscape
-                ? {
-                    position: 'absolute',
-                    width: winH,
-                    height: winW,
-                    left: (winW - winH) / 2,
-                    top: (winH - winW) / 2,
-                    transform: [{ rotate: '90deg' }],
-                    paddingTop: 12,
-                  }
-                : { flex: 1, paddingTop: insets.top + 8 },
-            ]}
-          >
-            {/* Top: ✕ (top-LEFT) · rotate (center) · PEAK then PEAK HOLD (right). */}
-            <View style={styles.fsTopRow}>
-              <Pressable
-                onPress={() => setReadoutFsOpen(false)}
-                hitSlop={14}
-                accessibilityRole="button"
-                accessibilityLabel="Close fullscreen readout"
-              >
-                <Text style={styles.vuClose}>✕</Text>
-              </Pressable>
-              <Pressable
-                onPress={() => setFsLandscape((v) => !v)}
-                hitSlop={12}
-                accessibilityRole="button"
-                accessibilityLabel={fsLandscape ? 'Rotate readout to portrait' : 'Rotate readout to landscape'}
-              >
-                <Text style={styles.fsRotate}>⤢ {fsLandscape ? 'PORTRAIT' : 'LANDSCAPE'}</Text>
-              </Pressable>
-              <View style={styles.fsPeakGroup}>
-                <View style={styles.fsCorner}>
-                  <Text style={styles.cellLabel}>PEAK</Text>
-                  <Text style={[styles.fsCornerValue, meter ? { color: levelColorForDb(meter.peakDb) } : styles.cellValueMax]}>
-                    {meter ? estSpl(meter.peakDb) : '—'}
-                  </Text>
-                </View>
-                <Pressable
-                  style={styles.fsCorner}
-                  onPress={resetPeakHold}
-                  accessibilityRole="button"
-                  accessibilityLabel="Peak hold — tap to reset"
-                >
-                  <Text style={styles.cellLabel}>PEAK HOLD</Text>
-                  <Text style={[styles.fsCornerValue, meter ? { color: levelColorForDb(meter.peakHoldDb) } : styles.cellValueMax]}>
-                    {meter ? estSpl(meter.peakHoldDb) : '—'}
-                  </Text>
-                  <Text style={styles.cellHint}>tap to reset</Text>
-                </Pressable>
-              </View>
-            </View>
+        <View
+          style={[styles.fsRoot, { paddingTop: insets.top + 8 }]}
+          onTouchStart={fsDimmerOpen ? armDimmerHide : undefined}
+          onTouchMove={fsDimmerOpen ? armDimmerHide : undefined}
+        >
+          {/* Hide the status bar (clock/battery) in fullscreen — the OS glyphs
+              can't be dimmed from JS, so removing them is the closest to what the
+              user expects for a dark meter (owner 2026-08-17). Restores on close. */}
+          <StatusBar hidden animated />
 
-            {/* Center: identity · BIG number · honesty. */}
-            <View style={styles.fsCenter}>
-              <Pressable
-                style={styles.fsCard}
-                onPress={running ? stopMeter : startMeter}
-                accessibilityRole="button"
-                accessibilityLabel={running ? 'Tap to stop the meter' : 'Tap to start the meter'}
-              >
-                <Text style={styles.fsIdentity}>{readoutIdentity}</Text>
-                <Text style={[styles.fsValue, { fontSize: fsNumSize }]} numberOfLines={1}>
-                  {bigText}
+          {/* Top: ✕ (top-LEFT) · PEAK then PEAK HOLD (right). Real device rotation
+              (expo-screen-orientation) re-flows this — no manual toggle. */}
+          <View style={styles.fsTopRow}>
+            <Pressable
+              onPress={() => setReadoutFsOpen(false)}
+              hitSlop={16}
+              accessibilityRole="button"
+              accessibilityLabel="Close fullscreen readout"
+            >
+              <Text style={styles.vuClose}>✕</Text>
+            </Pressable>
+            <View style={styles.fsPeakGroup}>
+              <View style={styles.fsCorner}>
+                <Text style={styles.cellLabel}>PEAK</Text>
+                <Text style={[styles.fsCornerValue, meter ? { color: levelColorForDb(meter.peakDb) } : styles.cellValueMax]}>
+                  {meter ? estSpl(meter.peakDb) : '—'}
                 </Text>
-                <Text style={styles.fsHonesty}>{readoutHonesty}</Text>
+              </View>
+              <Pressable
+                style={styles.fsCorner}
+                onPress={resetPeakHold}
+                accessibilityRole="button"
+                accessibilityLabel="Peak hold — tap to reset"
+              >
+                <Text style={styles.cellLabel}>PEAK HOLD</Text>
+                <Text style={[styles.fsCornerValue, meter ? { color: levelColorForDb(meter.peakHoldDb) } : styles.cellValueMax]}>
+                  {meter ? estSpl(meter.peakHoldDb) : '—'}
+                </Text>
+                <Text style={styles.cellHint}>tap to reset</Text>
               </Pressable>
             </View>
-
-            {/* Dim wash — local slider value, OR the global Low-Light lock. */}
-            {fsEffDim > 0 && <View pointerEvents="none" style={[styles.fsDim, { opacity: fsEffDim }]} />}
-            {/* Lower-right SUN icon (discreet) + the dimmer LINE it reveals on
-                press (owner 2026-08-17: the slider is a rare option, hidden until
-                the sun is tapped). Hidden entirely while global Low-Light locks
-                the popup. Above the dim (usable), below the red wash. */}
-            {fsDimmerAvailable && (
-              <View style={styles.fsDimmerDock} pointerEvents="box-none">
-                {fsDimmerOpen && (
-                  <BrightnessSlider value={fsBright} onChange={onBrightChange} onRelease={persistFsSettings} />
-                )}
-                <Pressable
-                  style={styles.fsSunBtn}
-                  onPress={() => setFsDimmerOpen((o) => !o)}
-                  hitSlop={14}
-                  accessibilityRole="button"
-                  accessibilityLabel={fsDimmerOpen ? 'Hide the brightness slider' : 'Show the brightness slider'}
-                >
-                  <Text style={styles.fsSun}>☀</Text>
-                </Pressable>
-              </View>
-            )}
-            {/* Night-vision RED wash — latched local red, or global Low-Light.
-                Local to this modal — cleared the instant it closes. */}
-            {fsEffRed && <View pointerEvents="none" style={styles.fsRedWash} />}
           </View>
+
+          {/* Center: identity · BIG number · honesty. */}
+          <View style={styles.fsCenter}>
+            <Pressable
+              style={styles.fsCard}
+              onPress={running ? stopMeter : startMeter}
+              accessibilityRole="button"
+              accessibilityLabel={running ? 'Tap to stop the meter' : 'Tap to start the meter'}
+            >
+              <Text style={styles.fsIdentity}>{readoutIdentity}</Text>
+              <Text style={[styles.fsValue, { fontSize: fsNumSize }]} numberOfLines={1}>
+                {bigText}
+              </Text>
+              <Text style={styles.fsHonesty}>{readoutHonesty}</Text>
+            </Pressable>
+          </View>
+
+          {/* Dim wash — Animated so slider drags don't re-render the screen. */}
+          <Animated.View pointerEvents="none" style={[styles.fsDim, { opacity: fsDimAnim }]} />
+          {/* DISTINCT night-vision red — a strong red over the dim, Animated in. */}
+          <Animated.View pointerEvents="none" style={[styles.fsRedWash, { opacity: fsRedAnim }]} />
+
+          {/* Revealed dimmer LINE — HIGHER up the screen (owner 2026-08-17), above
+              the dim/red so it stays usable + visible. */}
+          {fsDimmerAvailable && fsDimmerOpen && (
+            <View style={[styles.fsSliderDock, { bottom: Math.round(winH * 0.22) }]} pointerEvents="box-none">
+              <BrightnessSlider value={fsBright} onLive={onDimLive} onCommit={onDimCommit} onInteract={armDimmerHide} />
+            </View>
+          )}
+          {/* Discreet SUN toggle pinned to the lower-right corner. */}
+          {fsDimmerAvailable && (
+            <Pressable
+              style={styles.fsSunBtn}
+              onPress={() => setFsDimmerOpen((o) => !o)}
+              hitSlop={16}
+              accessibilityRole="button"
+              accessibilityLabel={fsDimmerOpen ? 'Hide the brightness slider' : 'Show the brightness slider'}
+            >
+              <Text style={styles.fsSun}>☀</Text>
+            </Pressable>
+          )}
         </View>
       </Modal>
       {sheet}
@@ -1853,13 +1908,11 @@ const styles = StyleSheet.create({
   fsBtnLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 0.8, color: colors.green, textAlign: 'center' },
 
   // Fullscreen # readout view (owner 2026-08-17): number alone, no toggles.
-  fsBackdrop: { flex: 1, backgroundColor: colors.screenBg },
-  fsRoot: { backgroundColor: colors.screenBg, paddingHorizontal: 16 },
+  fsRoot: { flex: 1, backgroundColor: colors.screenBg, paddingHorizontal: 16 },
   fsTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   fsCorner: { alignItems: 'flex-start', gap: 2 },
   // PEAK + PEAK HOLD grouped on the RIGHT, PEAK to the left (owner 2026-08-17).
   fsPeakGroup: { flexDirection: 'row', gap: 16, alignItems: 'flex-start' },
-  fsRotate: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, color: colors.textSub },
   fsCornerValue: { fontFamily: fonts.mono, fontSize: 22, color: colors.textPrimary },
   fsCenter: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingBottom: 40 },
   fsCard: { alignItems: 'center', gap: 8 },
@@ -1868,34 +1921,26 @@ const styles = StyleSheet.create({
   fsHonesty: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.amber },
 
   // Popup-local brightness / red-mode overlays + slider (owner 2026-08-17).
-  // Dock position is applied inline (portrait bottom-full · landscape bottom-right).
+  // Both overlays are Animated (opacity driven imperatively during a drag).
   fsDim: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#000000', zIndex: 50 },
   fsRedWash: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: FS_RED_WASH, zIndex: 70 },
-  // Lower-right dock: the sun icon lives at the right; the slider (when revealed)
-  // fills to its left. Discreet + light-gray (owner 2026-08-17).
-  fsDimmerDock: {
-    position: 'absolute',
-    left: 18,
-    right: 16,
-    bottom: 16,
-    zIndex: 60,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    justifyContent: 'flex-end',
-  },
-  fsSunBtn: { padding: 4 },
+  // Revealed dimmer line — sits HIGHER up the screen (bottom set inline), above
+  // the overlays so it stays usable. Discreet light-gray.
+  fsSliderDock: { position: 'absolute', left: 24, right: 24, zIndex: 65 },
+  // Discreet SUN toggle in the lower-right corner — above the overlays so it is
+  // always findable (the way out of a dark/red screen).
+  fsSunBtn: { position: 'absolute', right: 14, bottom: 16, padding: 8, zIndex: 75 },
   fsSun: { fontFamily: fonts.mono, fontSize: 15, color: '#8a8c90' },
-  brightTrack: { flex: 1, height: 24, justifyContent: 'center' },
-  brightBase: { position: 'absolute', left: 0, right: 0, top: 11, height: 2, borderRadius: 1, backgroundColor: '#4a4a4e' },
-  brightFill: { position: 'absolute', left: 0, top: 11, height: 2, borderRadius: 1, backgroundColor: '#9aa0a6' },
+  brightTrack: { height: 44, justifyContent: 'center' }, // tall = easy to grab
+  brightBase: { position: 'absolute', left: 0, right: 0, top: 21, height: 2, borderRadius: 1, backgroundColor: '#4a4a4e' },
+  brightFill: { position: 'absolute', left: 0, top: 21, height: 2, borderRadius: 1, backgroundColor: '#9aa0a6' },
   brightThumb: {
     position: 'absolute',
-    top: (24 - FS_THUMB) / 2,
+    top: (44 - FS_THUMB) / 2,
     width: FS_THUMB,
     height: FS_THUMB,
     borderRadius: FS_THUMB / 2,
-    backgroundColor: '#b9bdc2',
+    backgroundColor: '#c4c8cc',
     borderWidth: 1,
     borderColor: 'rgba(0,0,0,0.35)',
   },
