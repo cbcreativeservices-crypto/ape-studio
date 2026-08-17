@@ -105,3 +105,24 @@ export const WAVE_LEVEL_STOPS: ReadonlyArray<{ offset: number; color: string }> 
   const offsets = [0, 0.06, 0.16, 0.28, 0.4, 0.5, 0.6, 0.72, 0.84, 0.94, 1];
   return offsets.map((offset) => ({ offset, color: levelColor(Math.abs(1 - 2 * offset)) }));
 })();
+
+/**
+ * Gradient colours for a level-encoding BAR (owner ruling 2026-08-16): a bar whose
+ * SIZE encodes a level must show the RAMP climbing from silence (blue) up to the
+ * level's colour — the peak colour belongs only at the TIP, not filling the whole
+ * bar. Returns a colour list for `expo-linear-gradient`'s `colors` prop, ordered
+ * base(blue) → tip(colour(level)). For a horizontal bar map base→tip left→right;
+ * for a vertical bar, base→tip bottom→top.
+ */
+export function rampColors(level: number, steps = 6): [string, string, ...string[]] {
+  const L = Math.max(0, Math.min(1, level));
+  const c = Array.from({ length: steps }, (_, i) => levelColor((i / (steps - 1)) * L));
+  return c as [string, string, ...string[]];
+}
+
+/** Symmetric ramp for a zero-centred (bipolar) bar: blue at the mid line, climbing
+ *  to the peak colour at BOTH tips. Ordered tip → centre → tip. */
+export function rampColorsSymmetric(level: number, half = 3): [string, string, ...string[]] {
+  const up = rampColors(level, half); // blue … colour(level)
+  return [...up.slice().reverse(), ...up.slice(1)] as [string, string, ...string[]];
+}

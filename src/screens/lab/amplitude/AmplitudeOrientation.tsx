@@ -40,6 +40,8 @@ import {
   WAVE_LEVEL_STOPS,
   heatColor,
   levelColor,
+  rampColors,
+  rampColorsSymmetric,
 } from '../../../features/tools/levelColor';
 import {
   markAmplitudeOrientationComplete,
@@ -111,22 +113,8 @@ const WAVE_BARS: number[] = Array.from({ length: N_WAVE }, (_, i) => {
  *  sloping noise floor elsewhere. */
 const RTA_MAGS = [0.1, 0.12, 0.3, 0.95, 0.38, 0.16, 0.12, 0.22, 0.45, 0.2, 0.12, 0.09, 0.07, 0.06, 0.05];
 
-/** Colours sampling the amplitude ramp from silence (blue) up to `level` — so a
- *  bar shows the WHOLE gradient climbing to its peak colour, not a solid block of
- *  the peak (owner 2026-08-16: the peak colour belongs at the bar's TIP, with the
- *  ramp beneath it). */
-type GradColors = [string, string, ...string[]];
-function rampTo(level: number, steps = 6): GradColors {
-  const L = Math.max(0, Math.min(1, level));
-  const c = Array.from({ length: steps }, (_, i) => levelColor((i / (steps - 1)) * L));
-  return c as GradColors;
-}
-/** The ramp mirrored about the centre — for a zero-centred waveform bar: blue at
- *  the mid line, climbing to the peak colour at BOTH tips. */
-function rampSymmetric(level: number, half = 3): GradColors {
-  const up = rampTo(level, half); // blue … colour(level)
-  return [...up.slice().reverse(), ...up.slice(1)] as GradColors; // colour(level) … blue … colour(level)
-}
+// Level-bar ramp helpers now live in features/tools/levelColor (rampColors /
+// rampColorsSymmetric) so every visualizer shares the one standard.
 
 // SPECTROGRAM (owner 2026-08-12): drawn as ONE fine SkImage — a per-pixel
 // spectral model at 200×110 internal resolution (≈20× the old blocky 24×16
@@ -231,7 +219,7 @@ function WaveformCard() {
             <View style={{ flex: 1 - a, opacity: 0 }} />
             {/* Gradient climbs from blue at the mid line to the peak colour at each tip. */}
             <GradientView
-              colors={rampSymmetric(a)}
+              colors={rampColorsSymmetric(a)}
               start={{ x: 0, y: 0 }}
               end={{ x: 0, y: 1 }}
               style={{ flex: Math.max(0.02, a * 2), borderRadius: 1 }}
@@ -390,7 +378,7 @@ function RtaCard() {
             <View style={{ flex: 1 - m, opacity: 0 }} />
             {/* Gradient climbs from blue at the base to the peak colour at the top. */}
             <GradientView
-              colors={rampTo(m)}
+              colors={rampColors(m)}
               start={{ x: 0, y: 1 }}
               end={{ x: 0, y: 0 }}
               style={{ flex: Math.max(0.03, m), borderRadius: 1.5 }}

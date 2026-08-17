@@ -44,7 +44,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Modal, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Line, Path } from 'react-native-svg';
 import { colors, fonts } from '../../theme/tokens';
-import { levelColor } from '../../features/tools/levelColor';
+import { rampColors } from '../../features/tools/levelColor';
+import { LinearGradient as GradientView } from 'expo-linear-gradient';
 import {
   AMP_FLOOR,
   DBC_FLOOR_DB,
@@ -427,11 +428,11 @@ export function HarmonicStems({
                 {/* The STEM SLIDE LINE is coloured by LEVEL via the MIDI ramp
                     (owner 2026-08-05): higher = red, lower = blue. The node
                     (handle) keeps its odd/even/selected identity hue. */}
-                <View
-                  style={[
-                    styles.stem,
-                    { height: stemH + HANDLE_D / 2, backgroundColor: levelColor(frac), opacity: off ? 0.3 : 0.95 },
-                  ]}
+                <GradientView
+                  colors={rampColors(frac)}
+                  start={{ x: 0, y: 1 }}
+                  end={{ x: 0, y: 0 }}
+                  style={[styles.stem, { height: stemH + HANDLE_D / 2, opacity: off ? 0.3 : 0.95 }]}
                 />
                 <View
                   style={[

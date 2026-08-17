@@ -22,7 +22,8 @@ import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Line, Path, Rect } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
-import { levelColor } from '../../../features/tools/levelColor';
+import { levelColor, rampColors } from '../../../features/tools/levelColor';
+import { LinearGradient as GradientView } from 'expo-linear-gradient';
 import { DragSlider } from '../foundations/bits';
 import { VerticalFader } from '../eq/modules/eqBits';
 import {
@@ -77,7 +78,7 @@ export function StageMeterV({ node }: { node: ChainNode }) {
         <View style={[styles.vZone, { bottom: 0, height: pct(ZONE_LOW_FILL), backgroundColor: '#13233f' }]} />
         <View style={[styles.vZone, { bottom: pct(ZONE_LOW_FILL), height: pct(ZONE_HOT_FILL - ZONE_LOW_FILL), backgroundColor: '#122a17' }]} />
         <View style={[styles.vZone, { bottom: pct(ZONE_HOT_FILL), height: pct(1 - ZONE_HOT_FILL), backgroundColor: '#2a1410' }]} />
-        <View style={[styles.vFill, { height: pct(fill), backgroundColor: col }]} />
+        <GradientView colors={rampColors(fill)} start={{ x: 0, y: 1 }} end={{ x: 0, y: 0 }} style={[styles.vFill, { height: pct(fill) }]} />
         <View style={[styles.vCeil, { bottom: pct(ZONE_CLIP_FILL) }]} />
       </View>
       {node.stageClipped ? (
@@ -307,7 +308,7 @@ export function DeviceMeter({ node, showLevel }: { node: ChainNode; showLevel?: 
         <View style={[styles.hZone, { left: 0, width: pct(ZONE_LOW_FILL), backgroundColor: '#13233f' }]} />
         <View style={[styles.hZone, { left: pct(ZONE_LOW_FILL), width: pct(ZONE_HOT_FILL - ZONE_LOW_FILL), backgroundColor: '#122a17' }]} />
         <View style={[styles.hZone, { left: pct(ZONE_HOT_FILL), width: pct(1 - ZONE_HOT_FILL), backgroundColor: '#2a1410' }]} />
-        <View style={[styles.hFill, { width: pct(fill), backgroundColor: col }]} />
+        <GradientView colors={rampColors(fill)} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[styles.hFill, { width: pct(fill) }]} />
         <View style={[styles.hCeil, { left: pct(ZONE_CLIP_FILL) }]} />
       </View>
       <View style={styles.hUnder}>

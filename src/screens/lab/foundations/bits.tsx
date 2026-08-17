@@ -17,7 +17,8 @@
 import { useRef, useState } from 'react';
 import { PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
-import { levelColor } from '../../../features/tools/levelColor';
+import { levelColor, rampColors } from '../../../features/tools/levelColor';
+import { LinearGradient as GradientView } from 'expo-linear-gradient';
 import { useScrollLock } from '../LabShell';
 
 export type CheckSpec = {
@@ -184,10 +185,21 @@ export function DragSlider({
             report thumb-local coords and snap the value toward 0. Making the
             children transparent keeps the wrap itself the touch target. */}
         <View pointerEvents="none" style={styles.sliderTrack} />
-        <View
-          pointerEvents="none"
-          style={[styles.sliderFill, { width: `${value * 100}%` }, accent ? { backgroundColor: accent, opacity: 0.85 } : null]}
-        />
+        {levelTint ? (
+          // LEVEL slider: the fill shows the ramp climbing to its peak, not a solid block.
+          <GradientView
+            pointerEvents="none"
+            colors={rampColors(value)}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={[styles.sliderFill, { width: `${value * 100}%`, opacity: 0.85 }]}
+          />
+        ) : (
+          <View
+            pointerEvents="none"
+            style={[styles.sliderFill, { width: `${value * 100}%` }, accent ? { backgroundColor: accent, opacity: 0.85 } : null]}
+          />
+        )}
         <View
           pointerEvents="none"
           style={[styles.sliderThumb, { left: Math.max(0, value * w - 9) }, accent ? { backgroundColor: accent } : null]}

@@ -69,7 +69,8 @@ import Svg, { Defs, G, Line, LinearGradient, Path, Rect, Stop } from 'react-nati
 import { ApeDsp, type EngineConfig } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
-import { heatColor, levelColor, levelColorForDb, MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
+import { heatColor, levelColorForDb, MIDLINE_BLUE, rampColors, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
+import { LinearGradient as GradientView } from 'expo-linear-gradient';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type MultimeterSnapshotPayload } from '../../features/tools/measure/types';
@@ -991,7 +992,12 @@ export function MultiMeterScreen({ navigation }: Props) {
                  peak-hold tick, MIDI-coloured (blue quiet → red loud). */}
           <View style={styles.hMeterWrap}>
             <View style={styles.hMeterTrack}>
-              <View style={[styles.hMeterFill, { width: `${splFrac * 100}%`, backgroundColor: levelColor(splFrac) }]} />
+              <GradientView
+                colors={rampColors(splFrac)}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={[styles.hMeterFill, { width: `${splFrac * 100}%` }]}
+              />
               {splHoldFrac > 0 ? (
                 <View style={[styles.hMeterHold, { left: `${Math.min(99.3, splHoldFrac * 100)}%` }]} />
               ) : null}
