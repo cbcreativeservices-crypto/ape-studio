@@ -49,6 +49,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { EngineGate } from './EngineGate';
 import { levelColorForDb } from '../../features/tools/levelColor';
+import { useLowLight, LOW_LIGHT_DIM } from '../../features/settings/lowLight';
 import { MIC_LIMITS, toolByKey } from './toolsData';
 import { ApeDsp, type MeterFrame } from '../../../modules/ape-dsp';
 import { useToolHelp, HelpHead, DisplayGuideButton } from '../../features/lab/guidedLessons';
@@ -530,6 +531,12 @@ export function SplMeterScreen({ navigation }: Props) {
   // Fullscreen big-readout view (owner 2026-08-17): the number alone, with
   // PEAK / PEAK HOLD in the top corners + a popup-local brightness/red slider.
   const [readoutFsOpen, setReadoutFsOpen] = useState(false);
+  // Rotate the fullscreen readout 90° to a landscape layout (bigger number) —
+  // the app is portrait-locked, so this is a transform, not a device rotation.
+  const [fsLandscape, setFsLandscape] = useState(false);
+  // Global Low-Light (Profile) — when ON it LOCKS the popup in red and hides the
+  // local dimmer; turning Low-Light off restores the dimmer (owner 2026-08-17).
+  const lowLightOn = useLowLight();
   // Popup-local brightness (1 = full bright, 0 = darkest + red mode). Persisted
   // so the fullscreen view reopens at the user's last setting; NEVER applied to
   // any other screen (the overlays live inside the fullscreen modal only).
@@ -549,6 +556,10 @@ export function SplMeterScreen({ navigation }: Props) {
   }, []);
   const fsDimOpacity = (1 - fsBright) * FS_MAX_DIM;
   const fsRedMode = fsBright <= FS_RED_AT;
+  // Global Low-Light overrides the local dimmer: locked dim + red, no slider.
+  const fsEffDim = lowLightOn ? LOW_LIGHT_DIM : fsDimOpacity;
+  const fsEffRed = lowLightOn ? true : fsRedMode;
+  const fsShowSlider = !lowLightOn;
   const [justSaved, setJustSaved] = useState(false);
   const savedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(
@@ -627,7 +638,12 @@ export function SplMeterScreen({ navigation }: Props) {
   // Collapsible circle-meter (owner 2026-07-30): minimize the gauge to bring the
   // session log + calibration higher on the screen.
   const [gaugeOpen, setGaugeOpen] = useState(true);
-  const { width: winW } = useWindowDimensions();
+  const { width: winW, height: winH } = useWindowDimensions();
+  // Fullscreen readout layout: landscape swaps the working dims so the number
+  // can grow (owner 2026-08-17).
+  const fsWorkW = fsLandscape ? winH : winW;
+  const fsWorkH = fsLandscape ? winW : winH;
+  const fsNumSize = Math.round(Math.min(fsWorkW * 0.26, fsWorkH * 0.6));
   // TOP area (owner 2026-07-30): a LEFT column holds the VU plus the RANGE /
   // WEIGHTING / PEAK-HOLD controls; a thin TALL LED meter runs down the RIGHT,
   // spanning the full height of that column (top of the VU → just above the
@@ -1622,69 +1638,105 @@ export function SplMeterScreen({ navigation }: Props) {
         statusBarTranslucent
         onRequestClose={() => setReadoutFsOpen(false)}
       >
-        <View style={[styles.fsRoot, { paddingTop: insets.top + 8 }]}>
-          {/* Corners: PEAK left, close center, PEAK HOLD right. */}
-          <View style={styles.fsTopRow}>
-            <View style={styles.fsCorner}>
-              <Text style={styles.cellLabel}>PEAK</Text>
-              <Text style={[styles.fsCornerValue, meter ? { color: levelColorForDb(meter.peakDb) } : styles.cellValueMax]}>
-                {meter ? estSpl(meter.peakDb) : '—'}
-              </Text>
+        <View style={styles.fsBackdrop}>
+          {/* Portrait fills the modal; landscape is a 90°-rotated box sized to
+              the swapped screen dims (owner 2026-08-17: the app is portrait-
+              locked, so a device rotation isn't possible — this transform gives a
+              landscape layout with a bigger number). */}
+          <View
+            style={[
+              styles.fsRoot,
+              fsLandscape
+                ? {
+                    position: 'absolute',
+                    width: winH,
+                    height: winW,
+                    left: (winW - winH) / 2,
+                    top: (winH - winW) / 2,
+                    transform: [{ rotate: '90deg' }],
+                    paddingTop: 12,
+                  }
+                : { flex: 1, paddingTop: insets.top + 8 },
+            ]}
+          >
+            {/* Top: ✕ (top-LEFT) · rotate (center) · PEAK then PEAK HOLD (right). */}
+            <View style={styles.fsTopRow}>
+              <Pressable
+                onPress={() => setReadoutFsOpen(false)}
+                hitSlop={14}
+                accessibilityRole="button"
+                accessibilityLabel="Close fullscreen readout"
+              >
+                <Text style={styles.vuClose}>✕</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => setFsLandscape((v) => !v)}
+                hitSlop={12}
+                accessibilityRole="button"
+                accessibilityLabel={fsLandscape ? 'Rotate readout to portrait' : 'Rotate readout to landscape'}
+              >
+                <Text style={styles.fsRotate}>⤢ {fsLandscape ? 'PORTRAIT' : 'LANDSCAPE'}</Text>
+              </Pressable>
+              <View style={styles.fsPeakGroup}>
+                <View style={styles.fsCorner}>
+                  <Text style={styles.cellLabel}>PEAK</Text>
+                  <Text style={[styles.fsCornerValue, meter ? { color: levelColorForDb(meter.peakDb) } : styles.cellValueMax]}>
+                    {meter ? estSpl(meter.peakDb) : '—'}
+                  </Text>
+                </View>
+                <Pressable
+                  style={styles.fsCorner}
+                  onPress={resetPeakHold}
+                  accessibilityRole="button"
+                  accessibilityLabel="Peak hold — tap to reset"
+                >
+                  <Text style={styles.cellLabel}>PEAK HOLD</Text>
+                  <Text style={[styles.fsCornerValue, meter ? { color: levelColorForDb(meter.peakHoldDb) } : styles.cellValueMax]}>
+                    {meter ? estSpl(meter.peakHoldDb) : '—'}
+                  </Text>
+                  <Text style={styles.cellHint}>tap to reset</Text>
+                </Pressable>
+              </View>
             </View>
-            <Pressable
-              onPress={() => setReadoutFsOpen(false)}
-              hitSlop={14}
-              accessibilityRole="button"
-              accessibilityLabel="Close fullscreen readout"
-            >
-              <Text style={styles.vuClose}>✕</Text>
-            </Pressable>
-            <Pressable
-              style={styles.fsCornerRight}
-              onPress={resetPeakHold}
-              accessibilityRole="button"
-              accessibilityLabel="Peak hold — tap to reset"
-            >
-              <Text style={styles.cellLabel}>PEAK HOLD</Text>
-              <Text style={[styles.fsCornerValue, meter ? { color: levelColorForDb(meter.peakHoldDb) } : styles.cellValueMax]}>
-                {meter ? estSpl(meter.peakHoldDb) : '—'}
-              </Text>
-              <Text style={styles.cellHint}>tap to reset</Text>
-            </Pressable>
-          </View>
 
-          {/* Center: identity line · BIG number (~4/5 screen width) · honesty
-              line. No toggles here (owner 2026-08-17) — set them on the main
-              screen; the two text lines never repeat each other. */}
-          <View style={styles.fsCenter}>
-            <Pressable
-              style={styles.fsCard}
-              onPress={running ? stopMeter : startMeter}
-              accessibilityRole="button"
-              accessibilityLabel={running ? 'Tap to stop the meter' : 'Tap to start the meter'}
-            >
-              <Text style={styles.fsIdentity}>{readoutIdentity}</Text>
-              <Text style={[styles.fsValue, { fontSize: Math.round(winW * 0.26) }]} numberOfLines={1}>
-                {bigText}
-              </Text>
-              <Text style={styles.fsHonesty}>{readoutHonesty}</Text>
-            </Pressable>
-          </View>
+            {/* Center: identity · BIG number · honesty. */}
+            <View style={styles.fsCenter}>
+              <Pressable
+                style={styles.fsCard}
+                onPress={running ? stopMeter : startMeter}
+                accessibilityRole="button"
+                accessibilityLabel={running ? 'Tap to stop the meter' : 'Tap to start the meter'}
+              >
+                <Text style={styles.fsIdentity}>{readoutIdentity}</Text>
+                <Text style={[styles.fsValue, { fontSize: fsNumSize }]} numberOfLines={1}>
+                  {bigText}
+                </Text>
+                <Text style={styles.fsHonesty}>{readoutHonesty}</Text>
+              </Pressable>
+            </View>
 
-          {/* Popup-LOCAL dim wash — darkens everything in this modal as the
-              slider moves left. pointerEvents none so the readouts stay tappable
-              through it; the slider (below) renders ABOVE it so it stays usable. */}
-          {fsDimOpacity > 0 && (
-            <View pointerEvents="none" style={[styles.fsDim, { opacity: fsDimOpacity }]} />
-          )}
-          {/* Discreet brightness / red-mode slider at the BOTTOM — above the dim
-              so it stays visible/usable, below the red wash so it reads red too. */}
-          <View style={styles.fsSliderDock} pointerEvents="box-none">
-            <BrightnessSlider value={fsBright} onChange={setFsBright} onRelease={persistFsBright} />
+            {/* Dim wash — local slider value, OR the global Low-Light lock. */}
+            {fsEffDim > 0 && <View pointerEvents="none" style={[styles.fsDim, { opacity: fsEffDim }]} />}
+            {/* Brightness / red-mode slider — hidden while global Low-Light locks
+                the popup (owner 2026-08-17). Bottom-full in portrait, bottom-RIGHT
+                in landscape. Above the dim (usable), below the red wash. */}
+            {fsShowSlider && (
+              <View
+                style={[
+                  styles.fsSliderDock,
+                  fsLandscape
+                    ? { right: 18, bottom: 18, width: Math.round(fsWorkW * 0.42) }
+                    : { left: 18, right: 18, bottom: 26 },
+                ]}
+                pointerEvents="box-none"
+              >
+                <BrightnessSlider value={fsBright} onChange={setFsBright} onRelease={persistFsBright} />
+              </View>
+            )}
+            {/* Night-vision RED wash (far-left slider, or global Low-Light). Local
+                to this modal — cleared the instant it closes. */}
+            {fsEffRed && <View pointerEvents="none" style={styles.fsRedWash} />}
           </View>
-          {/* Night-vision RED wash at the far-left position (like Profile's
-              low-light). Local to this modal — cleared the instant it closes. */}
-          {fsRedMode && <View pointerEvents="none" style={styles.fsRedWash} />}
         </View>
       </Modal>
       {sheet}
@@ -1757,24 +1809,29 @@ const styles = StyleSheet.create({
   sideOpt: { fontFamily: fonts.mono, fontSize: 11, letterSpacing: 0.3, color: '#ffffff', textAlign: 'center' },
   sideOptActive: { color: colors.amber },
   // Standalone FULLSCREEN button, right of PEAK HOLD (owner 2026-08-17).
+  // FULLSCREEN button — green icon like the flashcards fullscreen (owner
+  // 2026-08-17).
   fsBtn: {
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#3a3a3a',
-    backgroundColor: '#161616',
+    borderColor: colors.green,
+    backgroundColor: '#0d1710',
     paddingHorizontal: 12,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 2,
   },
-  fsBtnIcon: { fontFamily: fonts.mono, fontSize: 18, color: colors.textSecondary },
-  fsBtnLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 0.8, color: colors.textSub, textAlign: 'center' },
+  fsBtnIcon: { fontFamily: fonts.mono, fontSize: 18, color: colors.green },
+  fsBtnLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 0.8, color: colors.green, textAlign: 'center' },
 
   // Fullscreen # readout view (owner 2026-08-17): number alone, no toggles.
-  fsRoot: { flex: 1, backgroundColor: colors.screenBg, paddingHorizontal: 16 },
+  fsBackdrop: { flex: 1, backgroundColor: colors.screenBg },
+  fsRoot: { backgroundColor: colors.screenBg, paddingHorizontal: 16 },
   fsTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   fsCorner: { alignItems: 'flex-start', gap: 2 },
-  fsCornerRight: { alignItems: 'flex-end', gap: 2 },
+  // PEAK + PEAK HOLD grouped on the RIGHT, PEAK to the left (owner 2026-08-17).
+  fsPeakGroup: { flexDirection: 'row', gap: 16, alignItems: 'flex-start' },
+  fsRotate: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, color: colors.textSub },
   fsCornerValue: { fontFamily: fonts.mono, fontSize: 22, color: colors.textPrimary },
   fsCenter: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingBottom: 40 },
   fsCard: { alignItems: 'center', gap: 8 },
@@ -1783,9 +1840,10 @@ const styles = StyleSheet.create({
   fsHonesty: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.amber },
 
   // Popup-local brightness / red-mode overlays + slider (owner 2026-08-17).
+  // Dock position is applied inline (portrait bottom-full · landscape bottom-right).
   fsDim: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#000000', zIndex: 50 },
   fsRedWash: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: FS_RED_WASH, zIndex: 70 },
-  fsSliderDock: { position: 'absolute', left: 18, right: 18, bottom: 26, zIndex: 60 },
+  fsSliderDock: { position: 'absolute', zIndex: 60 },
   brightRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   brightRedDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#8a1a12' },
   brightTrack: { flex: 1, height: 26, justifyContent: 'center' },
