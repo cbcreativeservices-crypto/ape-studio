@@ -27,6 +27,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../../features/settings/store';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -417,6 +418,59 @@ function LiveWarnings({ flags }: { flags: WarningFlag[] }) {
   );
 }
 
+// ── Fullscreen readout brightness / red mode (owner 2026-08-17) ──────────────
+// A popup-LOCAL control: dims the ENTIRE fullscreen readout as the slider moves
+// left, and at the far-left position enters a night-vision RED mode like the
+// Profile low-light look. The overlays live INSIDE the fullscreen modal, so
+// closing it leaves every other screen untouched. The setting is persisted, so
+// the popup reopens exactly where the user left it.
+const FS_BRIGHT_KEY = 'ape:splFsBright';
+const FS_MAX_DIM = 0.72; // black wash at the darkest (non-red) setting
+const FS_RED_AT = 0.04; // brightness ≤ this → red mode (far left)
+const FS_RED_WASH = 'rgba(255,40,25,0.14)';
+const FS_THUMB = 18;
+
+/** Discreet horizontal brightness slider (0 = darkest/red, 1 = full bright). */
+function BrightnessSlider({
+  value,
+  onChange,
+  onRelease,
+}: {
+  value: number;
+  onChange: (v: number) => void;
+  onRelease: () => void;
+}) {
+  const [w, setW] = useState(0);
+  const setFromX = (x: number) => {
+    if (w <= FS_THUMB) return;
+    onChange(Math.max(0, Math.min(1, (x - FS_THUMB / 2) / (w - FS_THUMB))));
+  };
+  const thumbLeft = w > 0 ? value * (w - FS_THUMB) : 0;
+  return (
+    <View style={styles.brightRow} pointerEvents="box-none">
+      {/* left end = red-mode marker · right end = brightness */}
+      <View style={styles.brightRedDot} />
+      <View
+        style={styles.brightTrack}
+        onLayout={(e) => setW(e.nativeEvent.layout.width)}
+        onStartShouldSetResponder={() => true}
+        onMoveShouldSetResponder={() => true}
+        onResponderGrant={(e) => setFromX(e.nativeEvent.locationX)}
+        onResponderMove={(e) => setFromX(e.nativeEvent.locationX)}
+        onResponderRelease={onRelease}
+        onResponderTerminate={onRelease}
+        accessibilityRole="adjustable"
+        accessibilityLabel="Screen brightness — slide left to dim, far left for red night mode"
+      >
+        <View style={styles.brightBase} />
+        <View style={[styles.brightFill, { width: thumbLeft + FS_THUMB / 2 }]} />
+        <View style={[styles.brightThumb, { left: thumbLeft }]} />
+      </View>
+      <Text style={styles.brightSun}>☀</Text>
+    </View>
+  );
+}
+
 export function SplMeterScreen({ navigation }: Props) {
   const { help, helpAll, sheet } = useToolHelp('spl');
   const insets = useSafeAreaInsets();
@@ -473,9 +527,28 @@ export function SplMeterScreen({ navigation }: Props) {
   // dBFS readout mode (owner 2026-08-17): show the RAW digital level (no SPL
   // offset) alongside the weighted dB SPL options. Uses the flat (Z) level.
   const [dbfs, setDbfs] = useState(false);
-  // Fullscreen big-readout view (owner 2026-08-17): the number + its response/
-  // unit toggles alone, with PEAK / PEAK HOLD in the top corners.
+  // Fullscreen big-readout view (owner 2026-08-17): the number alone, with
+  // PEAK / PEAK HOLD in the top corners + a popup-local brightness/red slider.
   const [readoutFsOpen, setReadoutFsOpen] = useState(false);
+  // Popup-local brightness (1 = full bright, 0 = darkest + red mode). Persisted
+  // so the fullscreen view reopens at the user's last setting; NEVER applied to
+  // any other screen (the overlays live inside the fullscreen modal only).
+  const [fsBright, setFsBright] = useState(1);
+  const fsBrightRef = useRef(1);
+  fsBrightRef.current = fsBright;
+  useEffect(() => {
+    AsyncStorage.getItem(FS_BRIGHT_KEY)
+      .then((v) => {
+        const n = v != null ? parseFloat(v) : NaN;
+        if (Number.isFinite(n)) setFsBright(Math.max(0, Math.min(1, n)));
+      })
+      .catch(() => {});
+  }, []);
+  const persistFsBright = useCallback(() => {
+    void AsyncStorage.setItem(FS_BRIGHT_KEY, String(fsBrightRef.current));
+  }, []);
+  const fsDimOpacity = (1 - fsBright) * FS_MAX_DIM;
+  const fsRedMode = fsBright <= FS_RED_AT;
   const [justSaved, setJustSaved] = useState(false);
   const savedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(
@@ -1597,6 +1670,21 @@ export function SplMeterScreen({ navigation }: Props) {
               <Text style={styles.fsHonesty}>{readoutHonesty}</Text>
             </Pressable>
           </View>
+
+          {/* Popup-LOCAL dim wash — darkens everything in this modal as the
+              slider moves left. pointerEvents none so the readouts stay tappable
+              through it; the slider (below) renders ABOVE it so it stays usable. */}
+          {fsDimOpacity > 0 && (
+            <View pointerEvents="none" style={[styles.fsDim, { opacity: fsDimOpacity }]} />
+          )}
+          {/* Discreet brightness / red-mode slider at the BOTTOM — above the dim
+              so it stays visible/usable, below the red wash so it reads red too. */}
+          <View style={styles.fsSliderDock} pointerEvents="box-none">
+            <BrightnessSlider value={fsBright} onChange={setFsBright} onRelease={persistFsBright} />
+          </View>
+          {/* Night-vision RED wash at the far-left position (like Profile's
+              low-light). Local to this modal — cleared the instant it closes. */}
+          {fsRedMode && <View pointerEvents="none" style={styles.fsRedWash} />}
         </View>
       </Modal>
       {sheet}
@@ -1693,6 +1781,27 @@ const styles = StyleSheet.create({
   fsIdentity: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1.4, color: colors.amberLabel },
   fsValue: { fontFamily: fonts.mono, color: colors.textPrimary, letterSpacing: 1 },
   fsHonesty: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.amber },
+
+  // Popup-local brightness / red-mode overlays + slider (owner 2026-08-17).
+  fsDim: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#000000', zIndex: 50 },
+  fsRedWash: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: FS_RED_WASH, zIndex: 70 },
+  fsSliderDock: { position: 'absolute', left: 18, right: 18, bottom: 26, zIndex: 60 },
+  brightRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  brightRedDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#8a1a12' },
+  brightTrack: { flex: 1, height: 26, justifyContent: 'center' },
+  brightBase: { position: 'absolute', left: 0, right: 0, top: 11, height: 4, borderRadius: 2, backgroundColor: '#333' },
+  brightFill: { position: 'absolute', left: 0, top: 11, height: 4, borderRadius: 2, backgroundColor: '#c9a24a' },
+  brightThumb: {
+    position: 'absolute',
+    top: 4,
+    width: FS_THUMB,
+    height: FS_THUMB,
+    borderRadius: FS_THUMB / 2,
+    backgroundColor: '#efe9d8',
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.5)',
+  },
+  brightSun: { fontFamily: fonts.mono, fontSize: 14, color: '#c9a24a' },
 
   // Peak row.
   peakRow: { flexDirection: 'row', gap: 10, alignItems: 'stretch' },
