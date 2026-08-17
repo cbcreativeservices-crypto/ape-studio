@@ -310,9 +310,7 @@ function warmCardArt() {
 // for a short warm-white tail; one eased revolution, faded in/out, then dark
 // until the next pass. Decorative only: skipped under reduce-motion, invisible
 // to the screen reader, and taps pass straight through.
-// Owner 2026-08-16: 13s FOR NOW (tuning pass); the ruled production cadence is
-// 53s — flip back before launch.
-const SHIMMER_EVERY_MS = 13000;
+const SHIMMER_EVERY_MS = 37000; // owner 2026-08-16: one pass every 37s
 /** Fraction of the border the light travels per pass (owner 2026-08-16: a 97%
  *  arc from the lower-left corner). */
 const SHIMMER_ARC = 0.97;
