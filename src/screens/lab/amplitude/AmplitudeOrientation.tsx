@@ -230,25 +230,26 @@ function WaveformCard() {
  *  standing ±full-scale vertical gradient (WAVE_LEVEL_STOPS). */
 function OscilloscopeCard() {
   const [w, onW] = useMeasuredWidth();
+  const plotW = w > 0 ? w - ARROW_GUTTER : 0; // leave the left gutter for the arrow
   const path = useMemo(() => {
-    if (w <= 0) return null;
+    if (plotW <= 0) return null;
     const p = Skia.Path.Make();
     const mid = VIZ_H / 2;
     const half = VIZ_H / 2 - 3;
     for (let i = 0; i <= 120; i++) {
-      const x = (i / 120) * w;
+      const x = (i / 120) * plotW;
       const y = mid - trace(i / 120) * half;
       if (i === 0) p.moveTo(x, y);
       else p.lineTo(x, y);
     }
     return p;
-  }, [w]);
+  }, [plotW]);
   return (
     <View style={styles.vizFill} onLayout={(e) => onW(Math.round(e.nativeEvent.layout.width))}>
-      {w > 0 && path ? (
-        <Canvas style={{ width: w, height: VIZ_H }}>
+      {plotW > 0 && path ? (
+        <Canvas style={{ width: plotW, height: VIZ_H, marginLeft: ARROW_GUTTER }}>
           {/* zero line — always MIDI-0 blue */}
-          <Rect x={0} y={VIZ_H / 2 - 0.75} width={w} height={1.5} color={MIDLINE_BLUE} opacity={0.55} />
+          <Rect x={0} y={VIZ_H / 2 - 0.75} width={plotW} height={1.5} color={MIDLINE_BLUE} opacity={0.55} />
           <Path path={path} style="stroke" strokeWidth={2.5} strokeJoin="round" strokeCap="round">
             <LinearGradient
               start={vec(0, 0)}
@@ -428,6 +429,7 @@ const DYN_BASELINE = DYN_BAR_H / 2 + 0.1475 * DYN_SIZE;
 const ARROW_STOP_T = [0, 0.2, 0.4, 0.6, 0.8, 1];
 const ARROW_COLORS = ARROW_STOP_T.map((t) => heatColor(t));
 const ARROW_H = 14; // horizontal-arrow canvas height (not too thick, not too thin)
+const ARROW_GUTTER = 16; // reserved edge strip so a vertical arrow never covers the data
 
 function AmplitudeArrow({ w, h, dir = 'right' }: { w: number; h: number; dir?: 'right' | 'up' }) {
   const path = useMemo(() => {
@@ -770,9 +772,9 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   // Amplitude-arrow overlays on the display cards (absolute, so no layout shift)
-  ampArrowTopHalf: { position: 'absolute', left: 2, top: 4 }, // waveform / oscilloscope (top half)
-  ampArrowLevel: { position: 'absolute', left: 2, top: 1 }, // level meter (full height, left gutter)
-  ampArrowRta: { position: 'absolute', left: 2, top: 2 }, // spectrum/RTA (full height)
+  ampArrowTopHalf: { position: 'absolute', left: 1, top: 4 }, // waveform / oscilloscope (top half)
+  ampArrowLevel: { position: 'absolute', left: 1, top: 1 }, // level meter (full height, left gutter)
+  ampArrowRta: { position: 'absolute', left: 1, top: 2 }, // spectrum/RTA (full height)
   // (Dynamics are drawn in a Skia Canvas now — see GradientBar — so no RN text styles here.)
   qlRow: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 2 },
   qlText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.4, color: colors.textSub },
@@ -813,11 +815,11 @@ const styles = StyleSheet.create({
   },
 
   // Waveform
-  waveRow: { height: VIZ_H, flexDirection: 'row', alignItems: 'stretch', gap: 1 },
+  waveRow: { height: VIZ_H, flexDirection: 'row', alignItems: 'stretch', gap: 1, paddingLeft: ARROW_GUTTER },
   waveBarCol: { flex: 1, flexDirection: 'column' },
   waveMidline: {
     position: 'absolute',
-    left: 0,
+    left: ARROW_GUTTER,
     right: 0,
     top: VIZ_H / 2 - 0.75,
     height: 1.5,
@@ -843,7 +845,7 @@ const styles = StyleSheet.create({
   splTicks: { flexDirection: 'row', justifyContent: 'space-between' },
 
   // RTA
-  rtaRow: { height: VIZ_H, flexDirection: 'row', alignItems: 'stretch', gap: 2 },
+  rtaRow: { height: VIZ_H, flexDirection: 'row', alignItems: 'stretch', gap: 2, paddingLeft: ARROW_GUTTER },
   rtaBarCol: { flex: 1, flexDirection: 'column' },
 
   honesty: {
