@@ -386,14 +386,14 @@ function SpectrogramCard() {
   return (
     <View style={styles.vizFill} onLayout={(e) => onW(Math.round(e.nativeEvent.layout.width))}>
       {w > 0 && img ? (
-        <Canvas style={{ width: w, height: VIZ_H - 4 }}>
-          <Image image={img} x={0} y={0} width={w} height={VIZ_H - 4} fit="fill" />
+        <Canvas style={{ width: w, height: VIZ_H }}>
+          <Image image={img} x={0} y={0} width={w} height={VIZ_H} fit="fill" />
         </Canvas>
       ) : null}
-      {/* Time axis marked BELOW the display: a light-gray arrow, labelled "time".
-          (Color already carries magnitude, so there is no amplitude arrow here.) */}
+      {/* Time axis in the space BELOW the full-height display: a light-gray arrow
+          labelled "time". (Color already carries magnitude, so no amplitude arrow.) */}
       <View style={styles.spectroTimeRow}>
-        {w > 0 ? <AmplitudeArrow w={Math.max(0, w - 46)} h={ARROW_H} dir="right" color={ARROW_GRAY} /> : null}
+        {w > 0 ? <AmplitudeArrow w={Math.max(0, w - 46)} h={13} dir="right" color={ARROW_GRAY} /> : null}
         <Text style={styles.spectroTimeLabel}>time</Text>
       </View>
     </View>
@@ -812,7 +812,7 @@ const styles = StyleSheet.create({
   ampArrowLevel: { position: 'absolute', left: 1, top: 1 }, // level meter (full height, left gutter)
   ampArrowRta: { position: 'absolute', left: 1, top: 2 }, // spectrum/RTA (full height)
   // Spectrogram time axis: light-gray arrow + "time" label, below the display
-  spectroTimeRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 2 },
+  spectroTimeRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 1 },
   spectroTimeLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 8.5, letterSpacing: 1, color: ARROW_GRAY },
   // (Dynamics are drawn in a Skia Canvas now — see GradientBar — so no RN text styles here.)
   qlRow: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 2 },
