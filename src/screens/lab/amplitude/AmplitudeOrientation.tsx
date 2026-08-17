@@ -217,9 +217,12 @@ function WaveformCard() {
         ))}
       </View>
       <View style={styles.waveMidline} pointerEvents="none" />
-      {/* Amplitude grows midline → top; arrow on the top half (bipolar display). */}
+      {/* Amplitude grows away from the midline on BOTH phases: ↑ top half, ↓ bottom. */}
       <View style={styles.ampArrowTopHalf} pointerEvents="none">
         <AmplitudeArrow w={14} h={VIZ_H / 2 - 6} dir="up" />
+      </View>
+      <View style={styles.ampArrowBottomHalf} pointerEvents="none">
+        <AmplitudeArrow w={14} h={VIZ_H / 2 - 6} dir="down" />
       </View>
       <Text style={styles.axisBottom}>TIME →</Text>
     </View>
@@ -260,9 +263,12 @@ function OscilloscopeCard() {
           </Path>
         </Canvas>
       ) : null}
-      {/* Amplitude grows zero-line → top; arrow on the top half (bipolar). */}
+      {/* Amplitude grows away from the zero line on BOTH phases: ↑ top, ↓ bottom. */}
       <View style={styles.ampArrowTopHalf} pointerEvents="none">
         <AmplitudeArrow w={14} h={VIZ_H / 2 - 6} dir="up" />
+      </View>
+      <View style={styles.ampArrowBottomHalf} pointerEvents="none">
+        <AmplitudeArrow w={14} h={VIZ_H / 2 - 6} dir="down" />
       </View>
       <Text style={styles.axisBottom}>TIME →</Text>
     </View>
@@ -384,6 +390,13 @@ function SpectrogramCard() {
           <Image image={img} x={0} y={0} width={w} height={VIZ_H} fit="fill" />
         </Canvas>
       ) : null}
+      {/* Spectrogram has no amplitude arrow (color already carries magnitude); a
+          plain BLACK arrow marks the TIME axis instead, along the bottom edge. */}
+      {w > 0 ? (
+        <View style={styles.ampArrowTime} pointerEvents="none">
+          <AmplitudeArrow w={w - 8} h={ARROW_H} dir="right" color="#000000" />
+        </View>
+      ) : null}
       <Text style={styles.axisBottom}>TIME → · FREQ ↑</Text>
     </View>
   );
@@ -431,7 +444,17 @@ const ARROW_COLORS = ARROW_STOP_T.map((t) => heatColor(t));
 const ARROW_H = 14; // horizontal-arrow canvas height (not too thick, not too thin)
 const ARROW_GUTTER = 16; // reserved edge strip so a vertical arrow never covers the data
 
-function AmplitudeArrow({ w, h, dir = 'right' }: { w: number; h: number; dir?: 'right' | 'up' }) {
+function AmplitudeArrow({
+  w,
+  h,
+  dir = 'right',
+  color,
+}: {
+  w: number;
+  h: number;
+  dir?: 'right' | 'up' | 'down';
+  color?: string; // solid fill instead of the amplitude gradient (e.g. the spectrogram time arrow)
+}) {
   const path = useMemo(() => {
     const p = Skia.Path.Make();
     const head = 12; // arrowhead length
@@ -446,6 +469,15 @@ function AmplitudeArrow({ w, h, dir = 'right' }: { w: number; h: number; dir?: '
       p.lineTo(cx + wing, head);
       p.lineTo(cx + shaft, head);
       p.lineTo(cx + shaft, h);
+    } else if (dir === 'down') {
+      const cx = w / 2;
+      p.moveTo(cx - shaft, 0);
+      p.lineTo(cx - shaft, h - head);
+      p.lineTo(cx - wing, h - head);
+      p.lineTo(cx, h);
+      p.lineTo(cx + wing, h - head);
+      p.lineTo(cx + shaft, h - head);
+      p.lineTo(cx + shaft, 0);
     } else {
       const cy = h / 2;
       const end = w - head;
@@ -463,12 +495,16 @@ function AmplitudeArrow({ w, h, dir = 'right' }: { w: number; h: number; dir?: '
   if (w <= 0 || h <= 0) return null;
   // Gradient runs low→high along the arrow (blue at the low end, red at the tip).
   const start = dir === 'up' ? vec(0, h) : vec(0, 0);
-  const end = dir === 'up' ? vec(0, 0) : vec(w, 0);
+  const end = dir === 'up' ? vec(0, 0) : dir === 'down' ? vec(0, h) : vec(w, 0);
   return (
     <Canvas style={{ width: w, height: h }} pointerEvents="none">
-      <Path path={path}>
-        <LinearGradient start={start} end={end} colors={ARROW_COLORS} positions={ARROW_STOP_T} />
-      </Path>
+      {color ? (
+        <Path path={path} color={color} />
+      ) : (
+        <Path path={path}>
+          <LinearGradient start={start} end={end} colors={ARROW_COLORS} positions={ARROW_STOP_T} />
+        </Path>
+      )}
     </Canvas>
   );
 }
@@ -772,9 +808,11 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   // Amplitude-arrow overlays on the display cards (absolute, so no layout shift)
-  ampArrowTopHalf: { position: 'absolute', left: 1, top: 4 }, // waveform / oscilloscope (top half)
+  ampArrowTopHalf: { position: 'absolute', left: 1, top: 4 }, // waveform / oscilloscope (+phase, top half)
+  ampArrowBottomHalf: { position: 'absolute', left: 1, top: VIZ_H / 2 + 2 }, // (−phase, bottom half)
   ampArrowLevel: { position: 'absolute', left: 1, top: 1 }, // level meter (full height, left gutter)
   ampArrowRta: { position: 'absolute', left: 1, top: 2 }, // spectrum/RTA (full height)
+  ampArrowTime: { position: 'absolute', left: 4, top: VIZ_H - 13 }, // spectrogram time axis (bottom)
   // (Dynamics are drawn in a Skia Canvas now — see GradientBar — so no RN text styles here.)
   qlRow: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 2 },
   qlText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.4, color: colors.textSub },
