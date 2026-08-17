@@ -32,7 +32,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LabReviewButton } from '../../../features/lab/LabReviewButton';
-import { AlphaType, Canvas, ColorType, Image, LinearGradient, Path, Rect, Skia, vec } from '@shopify/react-native-skia';
+import { AlphaType, Canvas, ColorType, Image, LinearGradient, Path, Rect, Skia, Text as SkiaText, useFont, vec } from '@shopify/react-native-skia';
 import {
   MIDLINE_BLUE,
   LOUDNESS_STOPS,
@@ -378,22 +378,30 @@ const SM_P = ''; // dynamicPiano
 const SM_M = ''; // dynamicMezzo
 const SM_F = ''; // dynamicForte
 
-/** Positions held: ppp, p, mf and ff removed; the remaining four stay exactly
- *  where they were — no re-spacing. null = an empty slot that keeps pp/mp/f/fff
- *  aligned to their original places on the bar. */
-const DYNAMICS: readonly (string | null)[] = [
-  null,
-  SM_P + SM_P, // pp
-  null,
-  SM_M + SM_P, // mp
-  null,
-  SM_F, // f
-  null,
-  SM_F + SM_F + SM_F, // fff
+/** The four marks kept (ppp, p, mf, ff removed), each at its ORIGINAL position on
+ *  the 8-zone bar — pp/mp/f/fff land on zones 1,3,5,7 → evenly spaced, no
+ *  re-spacing. Drawn with Skia (below) at an exact baseline, so RN's text-layout
+ *  quirks with this music font (clipping / disappearing / Dynamic-Type scaling)
+ *  can't touch them. */
+const DYN_MARKS: ReadonlyArray<{ g: string; frac: number }> = [
+  { g: SM_P + SM_P, frac: 1.5 / 8 }, // pp
+  { g: SM_M + SM_P, frac: 3.5 / 8 }, // mp
+  { g: SM_F, frac: 5.5 / 8 }, // f
+  { g: SM_F + SM_F + SM_F, frac: 7.5 / 8 }, // fff
 ];
+
+const DYN_BAR_H = 36; // gradient bar height (matches styles.gradBar)
+const DYN_SIZE = 28; // glyph point size; measured forte ink ≈ 0.6em → ~17px
+/** Baseline y that vertically centers the tallest glyph (forte) in the bar:
+ *  forte ink sits ~0.445em above / 0.15em below baseline, so its ink centre is
+ *  0.1475em above the baseline. */
+const DYN_BASELINE = DYN_BAR_H / 2 + 0.1475 * DYN_SIZE;
 
 function GradientBar() {
   const n = 48;
+  const [barW, setBarW] = useState(0);
+  // Skia loads its OWN copy of the font at the exact point size we draw at.
+  const dynFont = useFont(require('../../../../assets/fonts/Bravura.otf'), DYN_SIZE);
   return (
     <View
       style={{ gap: 5 }}
@@ -402,36 +410,33 @@ function GradientBar() {
     >
       <View style={styles.gradRow}>
         <Text style={styles.gradEnd}>LOW</Text>
-        <View style={styles.gradBar}>
+        <View
+          style={styles.gradBar}
+          onLayout={(e) => setBarW(Math.round(e.nativeEvent.layout.width))}
+        >
           {/* Color slices in their OWN clipped, rounded layer. */}
           <View style={styles.gradSlices}>
             {Array.from({ length: n }, (_, i) => (
               <View key={i} style={{ flex: 1, backgroundColor: heatColor(i / (n - 1)) }} />
             ))}
           </View>
-          {/* Musical-dynamics overlay — a SIBLING of the clipped slices (parent is
-              NOT overflow:hidden) so the tall SMuFL glyphs can never be clipped by
-              the bar. allowFontScaling off so iOS Dynamic Type can't enlarge them.
-              Decorative to SR — the bar's own label covers the meaning. */}
-          <View
-            style={styles.dynOverlay}
-            pointerEvents="none"
-            accessibilityElementsHidden
-            importantForAccessibility="no-hide-descendants"
-          >
-            {DYNAMICS.map((d, i) => (
-              <View key={i} style={styles.dynCell}>
-                {d ? (
-                  // No numberOfLines (it clips a tall glyph to its line box);
-                  // allowFontScaling off + maxFontSizeMultiplier 1 so the device
-                  // text-size setting can't enlarge and then clip the glyph.
-                  <Text allowFontScaling={false} maxFontSizeMultiplier={1} style={styles.dynText}>
-                    {d}
-                  </Text>
-                ) : null}
-              </View>
-            ))}
-          </View>
+          {/* Musical dynamics drawn in Skia at an exact baseline — no RN text
+              layout, so no clipping / disappearing / Dynamic-Type scaling. Each
+              glyph is horizontally centred on its position (frac × width). */}
+          {barW > 0 && dynFont ? (
+            <Canvas style={{ position: 'absolute', top: 0, left: 0, width: barW, height: DYN_BAR_H }} pointerEvents="none">
+              {DYN_MARKS.map((m, i) => (
+                <SkiaText
+                  key={i}
+                  x={m.frac * barW - dynFont.getTextWidth(m.g) / 2}
+                  y={DYN_BASELINE}
+                  text={m.g}
+                  font={dynFont}
+                  color="#000000"
+                />
+              ))}
+            </Canvas>
+          ) : null}
         </View>
         <Text style={[styles.gradEnd, { color: LOUD_RED }]}>HIGH</Text>
       </View>
@@ -666,18 +671,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     overflow: 'hidden',
   },
-  // Musical-dynamics overlay across the gradient (unclipped sibling of the slices)
-  dynOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, flexDirection: 'row', alignItems: 'center' },
-  dynCell: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  dynText: {
-    fontFamily: fonts.bravura, // SMuFL — engraved musical dynamics glyphs
-    fontSize: 22, // measured glyph ink ≈ 0.6em → ~13px; sits with margin in the 36px bar
-    // No lineHeight — a line box shorter than the glyph clips it on iOS. The
-    // overlay is an unclipped sibling, so the full glyph shows and centers.
-    color: '#000',
-    textAlign: 'center',
-    includeFontPadding: false,
-  },
+  // (Dynamics are drawn in a Skia Canvas now — see GradientBar — so no RN text styles here.)
   gradNames: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 9.5,
