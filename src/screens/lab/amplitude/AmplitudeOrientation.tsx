@@ -373,7 +373,10 @@ function SpectrogramCard() {
  *  the same magnitude scale a musician already reads. Overlaid on the gradient,
  *  each mark filled with the ramp color at its position and outlined in black so
  *  it stays legible against the matching color behind it. */
-const DYNAMICS = ['ppp', 'pp', 'p', 'mp', 'mf', 'f', 'ff', 'fff'] as const;
+/** Positions held (owner 2026-08-16): ppp, p, mf and ff removed; the remaining
+ *  four stay exactly where they were — no re-spacing. null = an empty slot that
+ *  keeps pp/mp/f/fff aligned to their original places on the bar. */
+const DYNAMICS: readonly (string | null)[] = [null, 'pp', null, 'mp', null, 'f', null, 'fff'];
 
 /** Italic slant applied via skewX so it reads like real dynamics notation on
  *  both platforms (no italic Oswald variant is bundled for faux-italic). */
@@ -385,7 +388,7 @@ function GradientBar() {
     <View
       style={{ gap: 5 }}
       accessible
-      accessibilityLabel="The Academy magnitude scale: dark blue for the lowest level, through blue, green, yellow and orange, to red for the highest level — marked with musical dynamics from triple piano (softest) at the low end to triple forte (loudest) at the high end"
+      accessibilityLabel="The Academy magnitude scale: dark blue for the lowest level, through blue, green, yellow and orange, to red for the highest level — marked with musical dynamics rising with level: pianissimo, mezzo-piano, forte, fortississimo"
     >
       <View style={styles.gradRow}>
         <Text style={styles.gradEnd}>LOW</Text>
@@ -400,11 +403,13 @@ function GradientBar() {
             accessibilityElementsHidden
             importantForAccessibility="no-hide-descendants"
           >
-            {DYNAMICS.map((d) => (
-              <View key={d} style={styles.dynCell}>
-                <Text numberOfLines={1} style={styles.dynText}>
-                  {d}
-                </Text>
+            {DYNAMICS.map((d, i) => (
+              <View key={i} style={styles.dynCell}>
+                {d ? (
+                  <Text numberOfLines={1} style={styles.dynText}>
+                    {d}
+                  </Text>
+                ) : null}
               </View>
             ))}
           </View>
