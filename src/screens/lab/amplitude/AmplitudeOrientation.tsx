@@ -398,6 +398,57 @@ const DYN_SHIFT = 10; // px the whole marks group is nudged left (owner 2026-08-
  *  0.1475em above the baseline. */
 const DYN_BASELINE = DYN_BAR_H / 2 + 0.1475 * DYN_SIZE;
 
+// ── Amplitude arrow ──────────────────────────────────────────────────────────
+// A gradient arrow in the SAME amplitude ramp as the bar — a reusable "amplitude
+// grows THIS way" indicator (owner 2026-08-16). Drawn in Skia so it's crisp and
+// can be dropped over any display. dir 'right' = low→high left→right; dir 'up' =
+// low→high bottom→top (for the vertical displays).
+const ARROW_STOP_T = [0, 0.2, 0.4, 0.6, 0.8, 1];
+const ARROW_COLORS = ARROW_STOP_T.map((t) => heatColor(t));
+const ARROW_H = 14; // horizontal-arrow canvas height (not too thick, not too thin)
+
+function AmplitudeArrow({ w, h, dir = 'right' }: { w: number; h: number; dir?: 'right' | 'up' }) {
+  const path = useMemo(() => {
+    const p = Skia.Path.Make();
+    const head = 12; // arrowhead length
+    const shaft = 3; // shaft half-thickness
+    const wing = 6.5; // arrowhead half-height
+    if (dir === 'up') {
+      const cx = w / 2;
+      p.moveTo(cx - shaft, h);
+      p.lineTo(cx - shaft, head);
+      p.lineTo(cx - wing, head);
+      p.lineTo(cx, 0);
+      p.lineTo(cx + wing, head);
+      p.lineTo(cx + shaft, head);
+      p.lineTo(cx + shaft, h);
+    } else {
+      const cy = h / 2;
+      const end = w - head;
+      p.moveTo(0, cy - shaft);
+      p.lineTo(end, cy - shaft);
+      p.lineTo(end, cy - wing);
+      p.lineTo(w, cy);
+      p.lineTo(end, cy + wing);
+      p.lineTo(end, cy + shaft);
+      p.lineTo(0, cy + shaft);
+    }
+    p.close();
+    return p;
+  }, [w, h, dir]);
+  if (w <= 0 || h <= 0) return null;
+  // Gradient runs low→high along the arrow (blue at the low end, red at the tip).
+  const start = dir === 'up' ? vec(0, h) : vec(0, 0);
+  const end = dir === 'up' ? vec(0, 0) : vec(w, 0);
+  return (
+    <Canvas style={{ width: w, height: h }} pointerEvents="none">
+      <Path path={path}>
+        <LinearGradient start={start} end={end} colors={ARROW_COLORS} positions={ARROW_STOP_T} />
+      </Path>
+    </Canvas>
+  );
+}
+
 function GradientBar() {
   const n = 48;
   const [barW, setBarW] = useState(0);
@@ -413,6 +464,19 @@ function GradientBar() {
       <View style={styles.qlRow}>
         <Text style={styles.qlText}>quiet</Text>
         <Text style={styles.qlText}>loud</Text>
+      </View>
+      {/* Complementary gradient arrow, aligned above the bar via invisible LOW/HIGH
+          spacers so it spans exactly the bar's width. */}
+      <View
+        style={styles.gradRow}
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants"
+      >
+        <Text style={[styles.gradEnd, styles.gradEndHidden]}>LOW</Text>
+        <View style={{ flex: 1 }}>
+          {barW > 0 ? <AmplitudeArrow w={barW} h={ARROW_H} dir="right" /> : <View style={{ height: ARROW_H }} />}
+        </View>
+        <Text style={[styles.gradEnd, styles.gradEndHidden]}>HIGH</Text>
       </View>
       <View style={styles.gradRow}>
         <Text style={styles.gradEnd}>LOW</Text>
@@ -663,6 +727,7 @@ const styles = StyleSheet.create({
   // Gradient bar
   gradRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   gradEnd: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1.2, color: MIDLINE_BLUE },
+  gradEndHidden: { opacity: 0 }, // invisible spacer copy that keeps the arrow aligned to the bar
   gradBar: {
     flex: 1,
     height: 36, // a little taller so the glyphs have margin top and bottom
