@@ -13,6 +13,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  AccessibilityInfo,
   ActivityIndicator,
   Alert,
   Dimensions,
@@ -25,6 +26,8 @@ import {
   View,
   type ViewToken,
 } from 'react-native';
+import { Canvas, Group, RoundedRect, SweepGradient, vec } from '@shopify/react-native-skia';
+import { Easing, useDerivedValue, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -298,6 +301,89 @@ function warmCardArt() {
   urls.forEach((u) => {
     Image.prefetch(u).catch(() => {});
   });
+}
+
+// ── Featured-card shimmer (owner 2026-08-16) ─────────────────────────────────
+// Every 13s the HOME-POSITIONED (centered) card gets one soft light-sweep along
+// its border — a subtle "this is the featured card" cue, not a spotlight. A thin
+// Skia rounded-rect stroke carries a sweep gradient that is transparent except
+// for a short warm-white tail; one eased revolution, faded in/out, then dark
+// until the next pass. Decorative only: skipped under reduce-motion, invisible
+// to the screen reader, and taps pass straight through.
+const SHIMMER_EVERY_MS = 13000;
+const SHIMMER_SWEEP_MS = 1700;
+
+function CardShimmer({ active }: { active: boolean }) {
+  const [reduceMotion, setReduceMotion] = useState(false);
+  useEffect(() => {
+    let live = true;
+    void AccessibilityInfo.isReduceMotionEnabled().then((v) => {
+      if (live) setReduceMotion(v);
+    });
+    const sub = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduceMotion);
+    return () => {
+      live = false;
+      sub.remove();
+    };
+  }, []);
+
+  const angle = useSharedValue(0); // sweep rotation, 0..2π
+  const glow = useSharedValue(0); // stroke opacity envelope
+
+  useEffect(() => {
+    if (!active || reduceMotion) {
+      glow.value = 0;
+      return;
+    }
+    const run = () => {
+      angle.value = 0;
+      angle.value = withTiming(2 * Math.PI, { duration: SHIMMER_SWEEP_MS, easing: Easing.inOut(Easing.cubic) });
+      glow.value = withSequence(
+        withTiming(1, { duration: 300, easing: Easing.out(Easing.quad) }),
+        withTiming(1, { duration: SHIMMER_SWEEP_MS - 300 - 450 }),
+        withTiming(0, { duration: 450, easing: Easing.in(Easing.quad) }),
+      );
+    };
+    const first = setTimeout(run, 1200); // settle first, shimmer shortly after landing
+    const iv = setInterval(run, SHIMMER_EVERY_MS);
+    return () => {
+      clearTimeout(first);
+      clearInterval(iv);
+      glow.value = 0;
+    };
+  }, [active, reduceMotion, angle, glow]);
+
+  // Start the pass at the top edge (−90°) — reads as light travelling clockwise.
+  const transform = useDerivedValue(() => [{ rotate: angle.value - Math.PI / 2 }]);
+
+  if (!active || reduceMotion) return null;
+  return (
+    <Canvas
+      pointerEvents="none"
+      style={{ position: 'absolute', left: 0, bottom: 0, width: CARD_W, height: CARD_H }}
+    >
+      <Group opacity={glow}>
+        <RoundedRect x={0.75} y={0.75} width={CARD_W - 1.5} height={CARD_H - 1.5} r={15.5} style="stroke" strokeWidth={1.6}>
+          <SweepGradient
+            c={vec(CARD_W / 2, CARD_H / 2)}
+            origin={vec(CARD_W / 2, CARD_H / 2)}
+            transform={transform}
+            // Mostly transparent ring; a short warm tail rising to a soft
+            // white head just behind the sweep point, then a crisp cutoff.
+            colors={[
+              'rgba(255,224,168,0)',
+              'rgba(255,224,168,0)',
+              'rgba(255,220,160,0.28)',
+              'rgba(255,240,208,0.78)',
+              'rgba(255,252,240,0.92)',
+              'rgba(255,224,168,0)',
+            ]}
+            positions={[0, 0.66, 0.85, 0.955, 0.985, 1]}
+          />
+        </RoundedRect>
+      </Group>
+    </Canvas>
+  );
 }
 
 /** One carousel card — full-bleed art (when available) + gradient + overlay. */
@@ -1325,29 +1411,34 @@ export function CourseSelectionScreen() {
         horizontal
         showsHorizontalScrollIndicator={false}
         keyExtractor={(c) => c.id}
-        extraData={otherProgramsCount}
+        extraData={[otherProgramsCount, activeIdx]}
         snapToInterval={CARD_W + CARD_GAP}
         decelerationRate="fast"
         contentContainerStyle={{ paddingHorizontal: SIDE_PAD, gap: CARD_GAP, alignItems: 'center' }}
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={{ itemVisiblePercentThreshold: 60 }}
         getItemLayout={(_d, i) => ({ length: CARD_W + CARD_GAP, offset: (CARD_W + CARD_GAP) * i, index: i })}
-        renderItem={({ item }) => (
-          <CourseCardView
-            item={item}
-            onOpenCourse={openCourse}
-            onOpenGlossary={openGlossary}
-            onOpenTools={openTools}
-            onOpenLab={openLab}
-            onOpenPublic={openPublicCourse}
-            onLockedPress={() => setUpgradeOpen(true)}
-            onOpenMore={openMore}
-            onOpenPrograms={openPrograms}
-            onOpenTopic={openTopic}
-            onOpenBundle={openBundle}
-            academy={academy}
-            otherProgramsCount={otherProgramsCount}
-          />
+        renderItem={({ item, index }) => (
+          <View>
+            <CourseCardView
+              item={item}
+              onOpenCourse={openCourse}
+              onOpenGlossary={openGlossary}
+              onOpenTools={openTools}
+              onOpenLab={openLab}
+              onOpenPublic={openPublicCourse}
+              onLockedPress={() => setUpgradeOpen(true)}
+              onOpenMore={openMore}
+              onOpenPrograms={openPrograms}
+              onOpenTopic={openTopic}
+              onOpenBundle={openBundle}
+              academy={academy}
+              otherProgramsCount={otherProgramsCount}
+            />
+            {/* Featured-card shimmer — overlays the CARD (bottom CARD_H of the
+                cell; the caption strip sits above), taps pass through. */}
+            <CardShimmer active={index === activeIdx} />
+          </View>
         )}
       />
 
