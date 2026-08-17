@@ -511,6 +511,7 @@ function AmplitudeArrow({
 function GradientBar() {
   const n = 48;
   const [barW, setBarW] = useState(0);
+  const [arrowW, setArrowW] = useState(0); // width of the gap between "less" and "more"
   // Skia loads its OWN copy of the font at the exact point size we draw at.
   const dynFont = useFont(require('../../../../assets/fonts/Bravura.otf'), DYN_SIZE);
   return (
@@ -523,19 +524,6 @@ function GradientBar() {
       <View style={styles.qlRow}>
         <Text style={styles.qlText}>quiet</Text>
         <Text style={styles.qlText}>loud</Text>
-      </View>
-      {/* Complementary gradient arrow, aligned above the bar via invisible LOW/HIGH
-          spacers so it spans exactly the bar's width. */}
-      <View
-        style={styles.gradRow}
-        accessibilityElementsHidden
-        importantForAccessibility="no-hide-descendants"
-      >
-        <Text style={[styles.gradEnd, styles.gradEndHidden]}>LOW</Text>
-        <View style={{ flex: 1 }}>
-          {barW > 0 ? <AmplitudeArrow w={barW} h={ARROW_H} dir="right" /> : <View style={{ height: ARROW_H }} />}
-        </View>
-        <Text style={[styles.gradEnd, styles.gradEndHidden]}>HIGH</Text>
       </View>
       <View style={styles.gradRow}>
         <Text style={styles.gradEnd}>LOW</Text>
@@ -569,9 +557,16 @@ function GradientBar() {
         </View>
         <Text style={[styles.gradEnd, { color: LOUD_RED }]}>HIGH</Text>
       </View>
-      {/* Mirror of quiet/loud, beneath LOW/HIGH: the magnitude gloss. */}
-      <View style={styles.qlRow}>
+      {/* Mirror of quiet/loud, beneath the bar — now with the gradient arrow
+          running BETWEEN the words (less → more, low → high). */}
+      <View style={styles.lessMoreRow}>
         <Text style={styles.qlText}>less</Text>
+        <View
+          style={{ flex: 1 }}
+          onLayout={(e) => setArrowW(Math.round(e.nativeEvent.layout.width))}
+        >
+          {arrowW > 0 ? <AmplitudeArrow w={arrowW} h={ARROW_H} dir="right" /> : <View style={{ height: ARROW_H }} />}
+        </View>
         <Text style={styles.qlText}>more</Text>
       </View>
       <Text style={styles.gradNames}>DARK BLUE → BLUE → GREEN → YELLOW → ORANGE → RED</Text>
@@ -786,7 +781,6 @@ const styles = StyleSheet.create({
   // Gradient bar
   gradRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   gradEnd: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1.2, color: MIDLINE_BLUE },
-  gradEndHidden: { opacity: 0 }, // invisible spacer copy that keeps the arrow aligned to the bar
   gradBar: {
     flex: 1,
     height: 36, // a little taller so the glyphs have margin top and bottom
@@ -816,6 +810,7 @@ const styles = StyleSheet.create({
   spectroTimeLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 8.5, letterSpacing: 1, color: ARROW_GRAY },
   // (Dynamics are drawn in a Skia Canvas now — see GradientBar — so no RN text styles here.)
   qlRow: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 2 },
+  lessMoreRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 2 }, // less [arrow] more
   qlText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.4, color: colors.textSub },
   gradNames: {
     fontFamily: fonts.oswaldSemiBold,
