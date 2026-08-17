@@ -217,6 +217,10 @@ function WaveformCard() {
         ))}
       </View>
       <View style={styles.waveMidline} pointerEvents="none" />
+      {/* Amplitude grows midline → top; arrow on the top half (bipolar display). */}
+      <View style={styles.ampArrowTopHalf} pointerEvents="none">
+        <AmplitudeArrow w={14} h={VIZ_H / 2 - 6} dir="up" />
+      </View>
       <Text style={styles.axisBottom}>TIME →</Text>
     </View>
   );
@@ -255,6 +259,10 @@ function OscilloscopeCard() {
           </Path>
         </Canvas>
       ) : null}
+      {/* Amplitude grows zero-line → top; arrow on the top half (bipolar). */}
+      <View style={styles.ampArrowTopHalf} pointerEvents="none">
+        <AmplitudeArrow w={14} h={VIZ_H / 2 - 6} dir="up" />
+      </View>
       <Text style={styles.axisBottom}>TIME →</Text>
     </View>
   );
@@ -286,6 +294,10 @@ function MeterBar({ level, label, db }: { level: number; label: string; db: stri
 function LevelMeterCard() {
   return (
     <View style={[styles.vizFill, styles.meterWrap]}>
+      {/* Amplitude grows bottom → top; full-height arrow in the left gutter. */}
+      <View style={styles.ampArrowLevel} pointerEvents="none">
+        <AmplitudeArrow w={14} h={72} dir="up" />
+      </View>
       <View style={styles.meterTicks}>
         <Text style={styles.tickText}>0</Text>
         <Text style={styles.tickText}>−12</Text>
@@ -304,11 +316,17 @@ function SplCard() {
   const n = 20;
   const frac = (SPL_DB - SPL_MIN) / (SPL_MAX - SPL_MIN);
   const lit = Math.round(frac * n);
+  const [w, onW] = useMeasuredWidth();
   return (
-    <View style={[styles.vizFill, { justifyContent: 'center', gap: 6 }]}>
+    <View
+      style={[styles.vizFill, { justifyContent: 'center', gap: 6 }]}
+      onLayout={(e) => onW(Math.round(e.nativeEvent.layout.width))}
+    >
       <Text style={styles.splReadout}>
         {SPL_DB} <Text style={styles.splUnit}>dB SPL</Text>
       </Text>
+      {/* Amplitude grows left → right, matching the horizontal SPL bar. */}
+      {w > 0 ? <AmplitudeArrow w={w} h={ARROW_H} dir="right" /> : null}
       <View style={styles.splRow}>
         {Array.from({ length: n }, (_, i) => (
           <View
@@ -342,6 +360,10 @@ function RtaCard() {
             <View style={{ flex: Math.max(0.03, m), backgroundColor: levelColor(m), borderRadius: 1.5 }} />
           </View>
         ))}
+      </View>
+      {/* Magnitude grows bottom → top; full-height arrow at the left. */}
+      <View style={styles.ampArrowRta} pointerEvents="none">
+        <AmplitudeArrow w={14} h={VIZ_H - 8} dir="up" />
       </View>
       <Text style={styles.axisBottom}>LOW ← FREQUENCY → HIGH</Text>
     </View>
@@ -747,6 +769,10 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     overflow: 'hidden',
   },
+  // Amplitude-arrow overlays on the display cards (absolute, so no layout shift)
+  ampArrowTopHalf: { position: 'absolute', left: 2, top: 4 }, // waveform / oscilloscope (top half)
+  ampArrowLevel: { position: 'absolute', left: 2, top: 1 }, // level meter (full height, left gutter)
+  ampArrowRta: { position: 'absolute', left: 2, top: 2 }, // spectrum/RTA (full height)
   // (Dynamics are drawn in a Skia Canvas now — see GradientBar — so no RN text styles here.)
   qlRow: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 2 },
   qlText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.4, color: colors.textSub },
