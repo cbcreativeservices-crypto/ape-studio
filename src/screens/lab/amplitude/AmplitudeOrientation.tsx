@@ -422,7 +422,10 @@ function GradientBar() {
             {DYNAMICS.map((d, i) => (
               <View key={i} style={styles.dynCell}>
                 {d ? (
-                  <Text allowFontScaling={false} numberOfLines={1} style={styles.dynText}>
+                  // No numberOfLines (it clips a tall glyph to its line box);
+                  // allowFontScaling off + maxFontSizeMultiplier 1 so the device
+                  // text-size setting can't enlarge and then clip the glyph.
+                  <Text allowFontScaling={false} maxFontSizeMultiplier={1} style={styles.dynText}>
                     {d}
                   </Text>
                 ) : null}
@@ -646,7 +649,7 @@ const styles = StyleSheet.create({
   gradEnd: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1.2, color: MIDLINE_BLUE },
   gradBar: {
     flex: 1,
-    height: 32,
+    height: 36, // a little taller so the glyphs have margin top and bottom
     borderRadius: 7,
     borderWidth: 1,
     borderColor: '#2c2c33',
@@ -668,11 +671,11 @@ const styles = StyleSheet.create({
   dynCell: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   dynText: {
     fontFamily: fonts.bravura, // SMuFL — engraved musical dynamics glyphs
-    fontSize: 19, // measured glyph ink ≈ 0.6em tall → ~11px, seats inside the 32px bar
-    lineHeight: 26,
+    fontSize: 22, // measured glyph ink ≈ 0.6em → ~13px; sits with margin in the 36px bar
+    // No lineHeight — a line box shorter than the glyph clips it on iOS. The
+    // overlay is an unclipped sibling, so the full glyph shows and centers.
     color: '#000',
     textAlign: 'center',
-    textAlignVertical: 'center',
     includeFontPadding: false,
   },
   gradNames: {
