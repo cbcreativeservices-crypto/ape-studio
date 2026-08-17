@@ -369,18 +369,28 @@ function SpectrogramCard() {
 // ─────────────────────────────────────────────────────────────────────────────
 // The gradient bar + the shared page body
 
-/** Musical dynamics, softest → loudest = low → high level (owner 2026-08-16):
- *  the same magnitude scale a musician already reads. Overlaid on the gradient,
- *  each mark filled with the ramp color at its position and outlined in black so
- *  it stays legible against the matching color behind it. */
-/** Positions held (owner 2026-08-16): ppp, p, mf and ff removed; the remaining
- *  four stay exactly where they were — no re-spacing. null = an empty slot that
- *  keeps pp/mp/f/fff aligned to their original places on the bar. */
-const DYNAMICS: readonly (string | null)[] = [null, 'pp', null, 'mp', null, 'f', null, 'fff'];
+/** Musical dynamics on the level gradient (owner 2026-08-16): the same magnitude
+ *  scale a musician already reads, rendered in the SMuFL music font (Bravura) so
+ *  the marks are genuine engraved notation. Composed from the canonical SMuFL
+ *  dynamic letters — p U+E520, m U+E521, f U+E522 — so the glyphs are always
+ *  correct regardless of the font's ligature set. */
+const SM_P = ''; // dynamicPiano
+const SM_M = ''; // dynamicMezzo
+const SM_F = ''; // dynamicForte
 
-/** Italic slant applied via skewX so it reads like real dynamics notation on
- *  both platforms (no italic Oswald variant is bundled for faux-italic). */
-const DYN_ITALIC = { skewX: '-12deg' } as const;
+/** Positions held: ppp, p, mf and ff removed; the remaining four stay exactly
+ *  where they were — no re-spacing. null = an empty slot that keeps pp/mp/f/fff
+ *  aligned to their original places on the bar. */
+const DYNAMICS: readonly (string | null)[] = [
+  null,
+  SM_P + SM_P, // pp
+  null,
+  SM_M + SM_P, // mp
+  null,
+  SM_F, // f
+  null,
+  SM_F + SM_F + SM_F, // fff
+];
 
 function GradientBar() {
   const n = 48;
@@ -641,12 +651,11 @@ const styles = StyleSheet.create({
   dynOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, flexDirection: 'row', alignItems: 'center' },
   dynCell: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   dynText: {
-    fontFamily: fonts.oswaldMedium,
-    fontSize: 13,
-    letterSpacing: 0.3,
+    fontFamily: fonts.bravura, // SMuFL — engraved musical dynamics glyphs
+    fontSize: 22,
     color: '#000',
     textAlign: 'center',
-    transform: [DYN_ITALIC],
+    includeFontPadding: false, // Android: trims the extra glyph padding so it centers in the bar
   },
   gradNames: {
     fontFamily: fonts.oswaldSemiBold,

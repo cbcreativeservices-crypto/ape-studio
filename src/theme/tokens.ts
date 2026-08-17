@@ -87,6 +87,9 @@ export const fonts = {
   // crisp deboss on the panels.
   panelSemiBold: 'ChakraPetch_600SemiBold',
   panelBold: 'ChakraPetch_700Bold',
+  // Bravura — SMuFL music-notation font (Steinberg, OFL). Used for engraved
+  // musical glyphs, e.g. the dynamics marks on the amplitude scale.
+  bravura: 'Bravura',
 } as const;
 
 /** Map passed to useFonts(). */
@@ -106,6 +109,7 @@ export const fontAssets = {
   Yellowtail_400Regular: require('@expo-google-fonts/yellowtail/400Regular/Yellowtail_400Regular.ttf'),
   ChakraPetch_600SemiBold: require('@expo-google-fonts/chakra-petch/600SemiBold/ChakraPetch_600SemiBold.ttf'),
   ChakraPetch_700Bold: require('@expo-google-fonts/chakra-petch/700Bold/ChakraPetch_700Bold.ttf'),
+  Bravura: require('../../assets/fonts/Bravura.otf'),
 };
 
 /**
