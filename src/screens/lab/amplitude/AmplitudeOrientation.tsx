@@ -391,7 +391,7 @@ const DYN_MARKS: ReadonlyArray<{ g: string; frac: number }> = [
 ];
 
 const DYN_BAR_H = 36; // gradient bar height (matches styles.gradBar)
-const DYN_SIZE = 28; // glyph point size; measured forte ink ≈ 0.6em → ~17px
+const DYN_SIZE = 26; // glyph point size (owner: 2pt smaller); forte ink ≈ 0.6em
 /** Baseline y that vertically centers the tallest glyph (forte) in the bar:
  *  forte ink sits ~0.445em above / 0.15em below baseline, so its ink centre is
  *  0.1475em above the baseline. */
@@ -408,6 +408,11 @@ function GradientBar() {
       accessible
       accessibilityLabel="The Academy magnitude scale: dark blue for the lowest level, through blue, green, yellow and orange, to red for the highest level — marked with musical dynamics rising with level: pianissimo, mezzo-piano, forte, fortississimo"
     >
+      {/* Plain-language gloss above the bar: the dynamics run quiet → loud. */}
+      <View style={styles.qlRow}>
+        <Text style={styles.qlText}>quiet</Text>
+        <Text style={styles.qlText}>loud</Text>
+      </View>
       <View style={styles.gradRow}>
         <Text style={styles.gradEnd}>LOW</Text>
         <View
@@ -672,6 +677,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   // (Dynamics are drawn in a Skia Canvas now — see GradientBar — so no RN text styles here.)
+  qlRow: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 2 },
+  qlText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.4, color: colors.textSub },
   gradNames: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 9.5,
