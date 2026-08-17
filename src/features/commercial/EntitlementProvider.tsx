@@ -156,9 +156,12 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
     // Wipe the device's local study-progress mirror whenever the signed-in user
     // CHANGES (sign-out, or sign-in as a different account) so progress never
     // leaks across sessions — a fresh free/no-account login starts clear
-    // (owner 2026-08-11). The first observed session just seeds the baseline.
+    // (owner 2026-08-11). The first observed session just seeds the baseline —
+    // EXCEPT a guest launch (no session at app start): a no-account user is
+    // factory-reset every session, our stated no-tracking promise (owner
+    // 2026-08-17), so the mirror from any previous guest run is wiped too.
     const clearLocalOnUserChange = (uid: string | null) => {
-      if (uidSeeded.current && uid !== lastUid.current) {
+      if ((uidSeeded.current && uid !== lastUid.current) || (!uidSeeded.current && uid === null)) {
         void clearAllLocalMethodStates();
         emitStudyProgress(); // refresh any live dashboard off the cleared mirror
       }
