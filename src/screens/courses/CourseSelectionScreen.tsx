@@ -311,18 +311,17 @@ function warmCardArt() {
 // until the next pass. Decorative only: skipped under reduce-motion, invisible
 // to the screen reader, and taps pass straight through.
 const SHIMMER_EVERY_MS = 13000;
-/** Fraction of the border the light travels per pass (owner 2026-08-16: a 73%
- *  arc from the top edge, not a full lap). */
-const SHIMMER_ARC = 0.73;
-// Duration keeps the light near the approved full-lap pace (1700ms / lap →
-// ~1480ms for a 73% arc).
+/** Fraction of the border the light travels per pass (owner 2026-08-16: a 91%
+ *  arc from the lower-left corner). */
+const SHIMMER_ARC = 0.91;
+// Owner 2026-08-16: the 91% arc runs in the SAME total time (current time =
+// 100%), so the light travels a touch faster rather than the pass lengthening.
 const SHIMMER_SWEEP_MS = 1480;
-// Intensity envelope (owner 2026-08-16): the pass BEGINS 31% dimmer (0.69),
-// breathes up to FULL at mid-arc, and ENDS 87% dimmer (0.13) before going dark.
-const SHIMMER_GLOW_START = 0.69;
-const SHIMMER_GLOW_END = 0.13;
-/** Master dim (owner 2026-08-16): the WHOLE trace 57% dimmer — every envelope
- *  value (start / mid peak / end) is scaled by this. */
+// Intensity envelope (owner 2026-08-16): fade IN over the first 17% of the
+// pass, hold, fade OUT over the last 19% — all times relative to the pass.
+const SHIMMER_FADE_IN = 0.17;
+const SHIMMER_FADE_OUT = 0.19;
+/** Master dim (owner 2026-08-16): the WHOLE trace 57% dimmer. */
 const SHIMMER_MASTER = 0.43;
 /** Sweep angle of the card's lower-left corner (start of the pass). */
 const SHIMMER_START_RAD = Math.PI - Math.atan2(CARD_H, CARD_W);
@@ -352,14 +351,13 @@ function CardShimmer({ active }: { active: boolean }) {
     const run = () => {
       angle.value = 0;
       angle.value = withTiming(SHIMMER_ARC * 2 * Math.PI, { duration: SHIMMER_SWEEP_MS, easing: Easing.inOut(Easing.cubic) });
-      // Intensity breathes with the travel (owner 2026-08-16): starts 31%
-      // dimmer, rises to FULL at mid-arc, falls to 87% dimmer at the end of
-      // travel, then drops dark until the next pass.
-      glow.value = SHIMMER_GLOW_START * SHIMMER_MASTER;
+      // Intensity envelope (owner 2026-08-16): fade in over the first 17% of
+      // the pass, hold the (master-dimmed) level, fade out over the last 19%.
+      glow.value = 0;
       glow.value = withSequence(
-        withTiming(SHIMMER_MASTER, { duration: SHIMMER_SWEEP_MS / 2, easing: Easing.inOut(Easing.sin) }),
-        withTiming(SHIMMER_GLOW_END * SHIMMER_MASTER, { duration: SHIMMER_SWEEP_MS / 2, easing: Easing.inOut(Easing.sin) }),
-        withTiming(0, { duration: 140, easing: Easing.in(Easing.quad) }),
+        withTiming(SHIMMER_MASTER, { duration: SHIMMER_SWEEP_MS * SHIMMER_FADE_IN, easing: Easing.out(Easing.quad) }),
+        withTiming(SHIMMER_MASTER, { duration: SHIMMER_SWEEP_MS * (1 - SHIMMER_FADE_IN - SHIMMER_FADE_OUT) }),
+        withTiming(0, { duration: SHIMMER_SWEEP_MS * SHIMMER_FADE_OUT, easing: Easing.in(Easing.quad) }),
       );
     };
     const first = setTimeout(run, 1200); // settle first, shimmer shortly after landing
