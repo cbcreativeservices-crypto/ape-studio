@@ -50,7 +50,14 @@ export function MainTabs() {
       // Booth 2026-07-07: the app opens on Course Selection (glossary-first
       // carousel with persisted position), not the Dashboard.
       initialRouteName="Home"
-      screenOptions={{ headerShown: false }}
+      // Transition standard (owner 2026-08-16): bottom-nav destination ⇄
+      // destination = FADE-THROUGH (~200ms) — content fades, the TabBar stays
+      // stationary. No zoom/bounce/shift.
+      screenOptions={{
+        headerShown: false,
+        animation: 'fade',
+        transitionSpec: { animation: 'timing', config: { duration: 200 } },
+      }}
       tabBar={(props) => <TabBar {...props} />}
     >
       <Tab.Screen name="Home" component={CourseSelectionScreen} />

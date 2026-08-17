@@ -6,7 +6,9 @@
  * (S5/S8) live HERE so the bottom nav is hidden on them (locked spec);
  * Settings (S11) joins in M7.
  */
+import { Platform } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { NAV_FADE, NAV_PUSH_REDUCED, useReduceMotionNav } from './reduceMotionNav';
 import { SplashScreen } from '../screens/SplashScreen';
 import { AuthScreen } from '../screens/auth/AuthScreen';
 import { ResultsScreen } from '../screens/results/ResultsScreen';
@@ -156,11 +158,29 @@ export function RootNavigator() {
   // component gesture (e.g. full-screen flashcards in StudyStack) — unaffected
   // by this navigator setting. Opt a single screen back IN with
   // options={{ gestureEnabled: true }} if ever needed.
+  //
+  // TRANSITION STANDARD (owner 2026-08-16): switching areas FADES, opening
+  // content PUSHES. Default here = the push (platform-native horizontal;
+  // 'default' on iOS = UIKit push w/ native easing + swipe-back support,
+  // 'slide_from_right' on Android = subtle horizontal push). Area-level
+  // destinations (Awards/Certificates, ToolsHub, Splash/Auth/Main) override
+  // with NAV_FADE. Under Reduce Motion the push becomes a very short fade.
+  // Swipe-back is enabled per-screen ONLY on read-only content pages with no
+  // full-width sliders (the 2026-08-11 ruling still governs slider screens).
+  const reduceMotion = useReduceMotionNav();
+  const push = reduceMotion
+    ? NAV_PUSH_REDUCED
+    : ({ animation: Platform.OS === 'ios' ? 'default' : 'slide_from_right' } as const);
+  const swipe = { gestureEnabled: true } as const; // safe pilot set only
   return (
-    <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false, gestureEnabled: false }}>
-      <Stack.Screen name="Splash" component={SplashScreen} />
-      <Stack.Screen name="Auth" component={AuthScreen} />
-      <Stack.Screen name="Main" component={MainTabs} />
+    <Stack.Navigator
+      initialRouteName="Splash"
+      screenOptions={{ headerShown: false, gestureEnabled: false, ...push }}
+    >
+      {/* App-entry area switches — fade-through, never a push. */}
+      <Stack.Screen name="Splash" component={SplashScreen} options={NAV_FADE} />
+      <Stack.Screen name="Auth" component={AuthScreen} options={NAV_FADE} />
+      <Stack.Screen name="Main" component={MainTabs} options={NAV_FADE} />
       {/* Reward loop — exits are explicit buttons/auto-advance, never a back gesture. */}
       <Stack.Screen name="Results" component={ResultsScreen} options={{ gestureEnabled: false }} />
       <Stack.Screen name="Trophy" component={TrophyScreen} options={{ gestureEnabled: false }} />
@@ -169,20 +189,23 @@ export function RootNavigator() {
       {/* Institutional Mode parked container (user request 2026-07-17). */}
       <Stack.Screen name="Institutional" component={InstitutionalScreen} options={{ presentation: 'modal' }} />
       <Stack.Screen name="About" component={AboutScreen} options={{ presentation: 'modal' }} />
-      {/* Awards (Booth 2026-07-15) — Certificates/Diplomas/Hall of Fame, bottom nav hidden. */}
-      <Stack.Screen name="Awards" component={AwardsScreen} />
+      {/* Awards (Booth 2026-07-15) — Certificates/Diplomas/Hall of Fame, bottom
+          nav hidden. An AREA-level destination (Dashboard ⇄ Certificates) → fade. */}
+      <Stack.Screen name="Awards" component={AwardsScreen} options={NAV_FADE} />
       {/* Directory — "Get Discovered" profile info (user request 2026-07-22) — modal. */}
       <Stack.Screen name="Directory" component={DirectoryScreen} options={{ presentation: 'modal' }} />
-      {/* Measurement & Analysis tools (Booth 2026-07-09v) — bottom nav hidden. */}
-      <Stack.Screen name="ToolsHub" component={ToolsHubScreen} />
-      <Stack.Screen name="ToolInfo" component={ToolInfoScreen} />
+      {/* Measurement & Analysis tools (Booth 2026-07-09v) — bottom nav hidden.
+          The TOOLS AREA root (Dashboard ⇄ Tools) → fade; everything inside it
+          pushes. */}
+      <Stack.Screen name="ToolsHub" component={ToolsHubScreen} options={NAV_FADE} />
+      <Stack.Screen name="ToolInfo" component={ToolInfoScreen} options={swipe} />
       {/* Phase-1 training layer (spec of record 2026-07-23): Learn/Demo per
           tool + Smaart concept modules. Academy-gated at content level. */}
-      <Stack.Screen name="ToolLearn" component={ToolLearnScreen} />
+      <Stack.Screen name="ToolLearn" component={ToolLearnScreen} options={swipe} />
       <Stack.Screen name="ToolDemo" component={Gated.ToolDemo} />
-      <Stack.Screen name="ConceptModule" component={ConceptModuleScreen} />
+      <Stack.Screen name="ConceptModule" component={ConceptModuleScreen} options={swipe} />
       {/* Phase-2 saved-measurement library + A/B compare (spec §7/§8). */}
-      <Stack.Screen name="ToolLibrary" component={MeasurementLibraryScreen} />
+      <Stack.Screen name="ToolLibrary" component={MeasurementLibraryScreen} options={swipe} />
       {/* LIVE measurement screens (engine build 2026-07-23) — each gates
           itself honestly via EngineGate when the engine isn't in the build. */}
       <Stack.Screen name="SplMeter" component={Gated.SplMeter} />
@@ -206,9 +229,9 @@ export function RootNavigator() {
       {/* Audio Learning Lab (v4 MASTER §13) — the pinned Home card opens the
           EarLab landing menu; HarmonicLab is the one live lab today. Bottom nav
           hidden like the other tool screens. */}
-      <Stack.Screen name="AudioLearning" component={AudioLearningScreen} />
-      <Stack.Screen name="EarLab" component={EarLabScreen} />
-      <Stack.Screen name="LabCategory" component={LabCategoryScreen} />
+      <Stack.Screen name="AudioLearning" component={AudioLearningScreen} options={swipe} />
+      <Stack.Screen name="EarLab" component={EarLabScreen} options={swipe} />
+      <Stack.Screen name="LabCategory" component={LabCategoryScreen} options={swipe} />
       <Stack.Screen name="HarmonicLab" component={Gated.HarmonicLab} />
       <Stack.Screen name="OscillatorLab" component={Gated.OscillatorLab} />
       <Stack.Screen name="NoiseLab" component={Gated.NoiseLab} />
@@ -240,8 +263,8 @@ export function RootNavigator() {
       <Stack.Screen name="CableLab" component={Gated.CableLab} />
       <Stack.Screen name="SpeakerLab" component={Gated.SpeakerLab} />
       <Stack.Screen name="TubeLab" component={Gated.TubeLab} />
-      <Stack.Screen name="TubeReference" component={TubeReferenceScreen} />
-      <Stack.Screen name="TubeCard" component={TubeCardScreen} />
+      <Stack.Screen name="TubeReference" component={TubeReferenceScreen} options={swipe} />
+      <Stack.Screen name="TubeCard" component={TubeCardScreen} options={swipe} />
       <Stack.Screen name="CalcLab" component={CalcLabScreen} />
       <Stack.Screen name="CalcWorkspace" component={CalcWorkspaceScreen} />
       <Stack.Screen name="CalcSymbolsKey" component={CalcSymbolsKeyScreen} />
@@ -264,7 +287,7 @@ export function RootNavigator() {
           (owner 2026-08-12). UNGATED: it IS the orientation, so it must never
           be wrapped in withAmplitudeOrientation (that would gate it behind
           itself). */}
-      <Stack.Screen name="AmplitudeLab" component={AmplitudeLabScreen} />
+      <Stack.Screen name="AmplitudeLab" component={AmplitudeLabScreen} options={swipe} />
       {/* Foundations of Sound — the Ear Lab's first module (course + sandbox). */}
       <Stack.Screen name="FoundationsCourse" component={FoundationsCourseScreen} />
       <Stack.Screen name="FoundationsPlayground" component={Gated.FoundationsPlayground} />
