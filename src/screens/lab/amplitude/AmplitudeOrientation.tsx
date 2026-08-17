@@ -411,23 +411,28 @@ function RtaCard() {
  *  deep-navy silence floor (the app's standing heat-map color). */
 function SpectrogramCard() {
   const [w, onW] = useMeasuredWidth();
-  const [arrowW, onArrowW] = useMeasuredWidth(); // width of the arrow strip after the "time" label
+  const [arrowW, onArrowW] = useMeasuredWidth(); // width of the arrow strip between past/now
+  const [nowW, onNowW] = useMeasuredWidth(); // width of the "now" label
   // One fine SkImage, built once and scaled smoothly to the card (no blocky grid).
   const img = useMemo(() => buildSpectroImage(), []);
+  const specW = w > 0 && nowW > 0 ? Math.round(w - nowW / 2) : w; // right edge centred on the word "now"
   return (
     <View style={styles.vizFill} onLayout={(e) => onW(Math.round(e.nativeEvent.layout.width))}>
-      {w > 0 && img ? (
-        <Canvas style={{ width: w, height: VIZ_H }}>
-          <Image image={img} x={0} y={0} width={w} height={VIZ_H} fit="fill" />
+      {specW > 0 && img ? (
+        <Canvas style={{ width: specW, height: VIZ_H }}>
+          <Image image={img} x={0} y={0} width={specW} height={VIZ_H} fit="fill" />
         </Canvas>
       ) : null}
       {/* Live scrolling display: new sound enters at the RIGHT ("now") and scrolls
-          LEFT. A dotted light-gray arrow points left (the scroll direction). */}
+          LEFT into the "past". Dotted gray arrow points left, ending at "past". */}
       <View style={styles.spectroTimeRow}>
+        <Text style={styles.spectroTimeLabel}>past</Text>
         <View style={{ flex: 1 }} onLayout={(e) => onArrowW(Math.round(e.nativeEvent.layout.width))}>
           {arrowW > 0 ? <AmplitudeArrow w={arrowW} h={13} dir="left" color={ARROW_GRAY} dotted /> : null}
         </View>
-        <Text style={styles.spectroTimeLabel}>now</Text>
+        <Text style={styles.spectroTimeLabel} onLayout={(e) => onNowW(Math.round(e.nativeEvent.layout.width))}>
+          now
+        </Text>
       </View>
     </View>
   );
@@ -457,13 +462,12 @@ const DYN_MARKS: ReadonlyArray<{ g: string; frac: number }> = [
   { g: SM_F + SM_F + SM_F, frac: 7.5 / 8 }, // fff
 ];
 
-const DYN_BAR_H = 36; // gradient bar height (matches styles.gradBar)
 const DYN_SIZE = 26; // glyph point size (owner: 2pt smaller); forte ink ≈ 0.6em
 const DYN_SHIFT = 10; // px the whole marks group is nudged left (owner 2026-08-16)
-/** Baseline y that vertically centers the tallest glyph (forte) in the bar:
- *  forte ink sits ~0.445em above / 0.15em below baseline, so its ink centre is
- *  0.1475em above the baseline. */
-const DYN_BASELINE = DYN_BAR_H / 2 + 0.1475 * DYN_SIZE;
+const DYN_ROW_H = 24; // height of the dynamics row (now ABOVE the bar, between quiet/loud)
+/** Baseline y centring the tallest glyph (forte) in the dynamics row: forte ink
+ *  sits ~0.445em above / 0.15em below the baseline (ink centre 0.1475em above). */
+const DYN_ROW_BASELINE = DYN_ROW_H / 2 + 0.1475 * DYN_SIZE;
 
 // ── Amplitude arrow ──────────────────────────────────────────────────────────
 // A gradient arrow in the SAME amplitude ramp as the bar — a reusable "amplitude
@@ -576,7 +580,7 @@ function AmplitudeArrow({
 
 function GradientBar() {
   const n = 48;
-  const [barW, setBarW] = useState(0);
+  const [dynW, setDynW] = useState(0); // width of the dynamics strip (== bar width)
   const [arrowW, setArrowW] = useState(0); // width of the gap between "less" and "more"
   // Skia loads its OWN copy of the font at the exact point size we draw at.
   const dynFont = useFont(require('../../../../assets/fonts/Bravura.otf'), DYN_SIZE);
@@ -586,40 +590,54 @@ function GradientBar() {
       accessible
       accessibilityLabel="The Academy magnitude scale: dark blue for the lowest level, through blue, green, yellow and orange, to red for the highest level — marked with musical dynamics rising with level: pianissimo, mezzo-piano, forte, fortississimo"
     >
-      {/* Plain-language gloss above the bar: the dynamics run quiet → loud. */}
-      <View style={styles.qlRow}>
-        <Text style={styles.qlText}>quiet</Text>
-        <Text style={styles.qlText}>loud</Text>
+      {/* Musical dynamics ABOVE the bar, between quiet and loud — drawn in Skia at
+          an exact baseline (no RN text-layout quirks), each mark coloured to match
+          the gradient directly below it. Flanked by invisible LOW/HIGH spacers so
+          the marks align to the bar; quiet/loud overlaid at the ends. */}
+      <View style={styles.gradRow}>
+        <View>
+          <Text style={[styles.gradEnd, styles.lmSpacer]}>LOW</Text>
+          <View style={[styles.lmLabelWrap, { alignItems: 'flex-start' }]}>
+            <Text style={styles.qlText}>quiet</Text>
+          </View>
+        </View>
+        <View style={{ flex: 1 }} onLayout={(e) => setDynW(Math.round(e.nativeEvent.layout.width))}>
+          {dynW > 0 && dynFont ? (
+            <Canvas style={{ width: dynW, height: DYN_ROW_H }} pointerEvents="none">
+              {DYN_MARKS.map((m, i) => {
+                const cx = m.frac * dynW - DYN_SHIFT; // glyph centre (matches the shift used on the bar)
+                return (
+                  <SkiaText
+                    key={i}
+                    x={cx - dynFont.getTextWidth(m.g) / 2}
+                    y={DYN_ROW_BASELINE}
+                    text={m.g}
+                    font={dynFont}
+                    color={heatColor(Math.max(0, Math.min(1, cx / dynW)))}
+                  />
+                );
+              })}
+            </Canvas>
+          ) : (
+            <View style={{ height: DYN_ROW_H }} />
+          )}
+        </View>
+        <View>
+          <Text style={[styles.gradEnd, styles.lmSpacer]}>HIGH</Text>
+          <View style={[styles.lmLabelWrap, { alignItems: 'flex-end' }]}>
+            <Text style={styles.qlText}>loud</Text>
+          </View>
+        </View>
       </View>
       <View style={styles.gradRow}>
         <Text style={styles.gradEnd}>LOW</Text>
-        <View
-          style={styles.gradBar}
-          onLayout={(e) => setBarW(Math.round(e.nativeEvent.layout.width))}
-        >
+        <View style={styles.gradBar}>
           {/* Color slices in their OWN clipped, rounded layer. */}
           <View style={styles.gradSlices}>
             {Array.from({ length: n }, (_, i) => (
               <View key={i} style={{ flex: 1, backgroundColor: heatColor(i / (n - 1)) }} />
             ))}
           </View>
-          {/* Musical dynamics drawn in Skia at an exact baseline — no RN text
-              layout, so no clipping / disappearing / Dynamic-Type scaling. Each
-              glyph is horizontally centred on its position (frac × width). */}
-          {barW > 0 && dynFont ? (
-            <Canvas style={{ position: 'absolute', top: 0, left: 0, width: barW, height: DYN_BAR_H }} pointerEvents="none">
-              {DYN_MARKS.map((m, i) => (
-                <SkiaText
-                  key={i}
-                  x={m.frac * barW - dynFont.getTextWidth(m.g) / 2 - DYN_SHIFT}
-                  y={DYN_BASELINE}
-                  text={m.g}
-                  font={dynFont}
-                  color="#000000"
-                />
-              ))}
-            </Canvas>
-          ) : null}
         </View>
         <Text style={[styles.gradEnd, { color: LOUD_RED }]}>HIGH</Text>
       </View>
