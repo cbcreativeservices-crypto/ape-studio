@@ -13,7 +13,7 @@
  */
 import { useMemo, useRef } from 'react';
 import { PanResponder, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
-import Reanimated, { Easing as REasing, useAnimatedStyle, withTiming, type SharedValue } from 'react-native-reanimated';
+import Reanimated, { Easing as REasing, useAnimatedStyle, withSpring, withTiming, type SharedValue } from 'react-native-reanimated';
 import Svg, { Circle, Defs, Ellipse, RadialGradient, Stop } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../features/settings/store';
@@ -293,12 +293,21 @@ export function JogOverlay({
           while (d > 180) d -= 360;
           while (d < -180) d += 360;
           lastAngle.current = a;
-          // DIRECT 1:1 tracking (owner 2026-08-16: the 60ms chase lagged badly —
-          // restarted every touch event, it compounded into speed-proportional
-          // lag on fast spins). Zero smoothing: the wheel is glued to the
-          // finger; the continuous unbounded target still prevents wraps.
+          // High-refresh tracking (owner 2026-08-16, "faster resolution"): a
+          // DIRECT set only changes the angle when a JS touch event lands
+          // (~60Hz, and it stalls whenever the Dashboard re-renders mid-turn),
+          // which reads as coarse on a high-refresh display. A STIFF UI-thread
+          // spring fills the frames BETWEEN events at native display refresh:
+          // ~20ms response, velocity carried across retargets (none of the
+          // restart lag of the earlier 60ms chase), clamped so it never
+          // overshoots the finger.
           spinTarget.current += d;
-          spin.value = spinTarget.current;
+          spin.value = withSpring(spinTarget.current, {
+            stiffness: 1800,
+            damping: 90,
+            mass: 1,
+            overshootClamping: true,
+          });
           accum.current += d;
           while (accum.current >= DETENT_DEG) {
             accum.current -= DETENT_DEG;
