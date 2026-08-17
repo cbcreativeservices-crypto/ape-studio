@@ -421,13 +421,13 @@ function SpectrogramCard() {
           <Image image={img} x={0} y={0} width={w} height={VIZ_H} fit="fill" />
         </Canvas>
       ) : null}
-      {/* Time axis BELOW the full-height display: "time" label, then a dotted
-          light-gray arrow extending to the display's right edge. */}
+      {/* Live scrolling display: new sound enters at the RIGHT ("now") and scrolls
+          LEFT. A dotted light-gray arrow points left (the scroll direction). */}
       <View style={styles.spectroTimeRow}>
-        <Text style={styles.spectroTimeLabel}>time</Text>
         <View style={{ flex: 1 }} onLayout={(e) => onArrowW(Math.round(e.nativeEvent.layout.width))}>
-          {arrowW > 0 ? <AmplitudeArrow w={arrowW} h={13} dir="right" color={ARROW_GRAY} dotted /> : null}
+          {arrowW > 0 ? <AmplitudeArrow w={arrowW} h={13} dir="left" color={ARROW_GRAY} dotted /> : null}
         </View>
+        <Text style={styles.spectroTimeLabel}>now</Text>
       </View>
     </View>
   );
@@ -485,23 +485,31 @@ function AmplitudeArrow({
 }: {
   w: number;
   h: number;
-  dir?: 'right' | 'up' | 'down';
+  dir?: 'right' | 'up' | 'down' | 'left';
   color?: string; // solid fill instead of the amplitude gradient (e.g. the spectrogram time arrow)
-  dotted?: boolean; // dotted shaft + solid head (right only) — the spectrogram time arrow
+  dotted?: boolean; // dotted shaft + solid head (horizontal only) — the spectrogram time arrow
 }) {
-  // Dotted variant (right only): a dashed line shaft + a solid arrowhead.
+  // Dotted variant (horizontal): a dashed line shaft + a solid arrowhead.
   const dashed = useMemo(() => {
-    if (!(dotted && dir === 'right')) return null;
+    if (!(dotted && (dir === 'right' || dir === 'left'))) return null;
     const cy = h / 2;
     const head = 12;
     const wing = 6.5;
     const shaft = Skia.Path.Make();
-    shaft.moveTo(0, cy);
-    shaft.lineTo(w - head, cy);
     const tri = Skia.Path.Make();
-    tri.moveTo(w - head, cy - wing);
-    tri.lineTo(w, cy);
-    tri.lineTo(w - head, cy + wing);
+    if (dir === 'left') {
+      shaft.moveTo(w, cy);
+      shaft.lineTo(head, cy);
+      tri.moveTo(head, cy - wing);
+      tri.lineTo(0, cy);
+      tri.lineTo(head, cy + wing);
+    } else {
+      shaft.moveTo(0, cy);
+      shaft.lineTo(w - head, cy);
+      tri.moveTo(w - head, cy - wing);
+      tri.lineTo(w, cy);
+      tri.lineTo(w - head, cy + wing);
+    }
     tri.close();
     return { shaft, tri };
   }, [w, h, dir, dotted]);
