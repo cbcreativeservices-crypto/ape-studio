@@ -316,9 +316,9 @@ const SHIMMER_EVERY_MS = 13000;
 /** Fraction of the border the light travels per pass (owner 2026-08-16: a 97%
  *  arc from the lower-left corner). */
 const SHIMMER_ARC = 0.97;
-// Owner 2026-08-16: the 91% arc runs in the SAME total time (current time =
-// 100%), so the light travels a touch faster rather than the pass lengthening.
-const SHIMMER_SWEEP_MS = 1480;
+// Owner 2026-08-16: trace slowed 13% (1480 → ~1670ms). The envelope points are
+// all pass-relative, so they stretch with it.
+const SHIMMER_SWEEP_MS = 1670;
 // Intensity envelope (owner 2026-08-16): fade IN over the first 17% of the
 // pass; hold; fade OUT starting at 67% of the pass, reaching 0% brightness at
 // 99% — all times relative to the pass.
