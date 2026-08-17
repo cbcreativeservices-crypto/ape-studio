@@ -75,7 +75,6 @@ import {
 import { setLastStudyLocation } from '../../features/study/lastStudyLocation';
 import { StudyHeader } from './StudyHeader';
 import type { StudyStackParamList } from '../../navigation/types';
-import { calcLinkForTerm } from '../lab/calc/calcGlossaryLinks';
 
 /**
  * The user's own "Flagged" pseudo-topic (Booth 2026-07-18): the Dashboard's
@@ -718,35 +717,14 @@ export function FlashcardsScreen({ navigation, route }: Props) {
         if (!hit || hit.id === currentId) continue; // own term stays plain
         if (m.index > last) parts.push(text.slice(last, m.index));
         const item = hit;
-        // A term that is ALSO calculator-backed splits (owner 2026-08-10):
-        // LEFT half BLUE → the definition popup; RIGHT half PURPLE → the
-        // calculator that uses it. Same color code as the glossary screen.
-        const calc = calcLinkForTerm(item.term);
-        if (calc) {
-          const word = m[0];
-          const mid = Math.ceil(word.length / 2);
-          parts.push(
-            <Text key={`lnk-${k++}`}>
-              <Text style={styles.termLink} onPress={() => setLinkedTerm(item)}>
-                {word.slice(0, mid)}
-              </Text>
-              <Text
-                style={styles.termLinkCalc}
-                onPress={() =>
-                  (navigation.navigate as unknown as (r: string, p?: object) => void)('CalcWorkspace', { id: calc.workspaceId })
-                }
-              >
-                {word.slice(mid)}
-              </Text>
-            </Text>,
-          );
-        } else {
-          parts.push(
-            <Text key={`lnk-${k++}`} style={styles.termLink} onPress={() => setLinkedTerm(item)}>
-              {m[0]}
-            </Text>,
-          );
-        }
+        // A linked glossary term is ONE blue definition link — no blue/purple
+        // calculator split outside the glossary (owner 2026-08-17: the dual-role
+        // split belongs to the glossary screen alone).
+        parts.push(
+          <Text key={`lnk-${k++}`} style={styles.termLink} onPress={() => setLinkedTerm(item)}>
+            {m[0]}
+          </Text>,
+        );
         last = m.index + m[0].length;
       }
       if (parts.length === 0) return text;
@@ -1951,7 +1929,6 @@ const styles = StyleSheet.create({
   // underlined, tappable → LinkedTermOverlay.
   termLink: { color: '#7fbfff', textDecorationLine: 'underline' },
   // Right half of a split dual-role word (owner 2026-08-10) — calculator purple.
-  termLinkCalc: { color: colors.purple, textDecorationLine: 'underline' },
   // Linked-term full-screen viewer (absolute overlay, not a Modal, so it can
   // cover the full-screen study modal too).
   linkedRoot: {

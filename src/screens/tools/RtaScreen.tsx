@@ -69,12 +69,16 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Rta'>;
 
 const FFT_SIZE = 8192;
 
-/** Averaging chips → exponential band-average α (higher = faster response). */
+/** Averaging chips → exponential band-average α (higher = faster response).
+ *  FAST bumped + made the default (owner 2026-08-17: the display felt slow and
+ *  laggy — it now tracks the input sooner). */
 const AVG_CHOICES = [
-  { label: 'FAST', alpha: 0.6 },
-  { label: 'MED', alpha: 0.35 },
-  { label: 'SLOW', alpha: 0.15 },
+  { label: 'FAST', alpha: 0.8 },
+  { label: 'MED', alpha: 0.45 },
+  { label: 'SLOW', alpha: 0.2 },
 ] as const;
+/** Opening averaging α — FAST, so the analyzer is responsive on entry. */
+const DEFAULT_ALPHA = 0.8;
 
 // ---- Band-count modes (owner spec 2026-07-29) ------------------------------
 type BandMode = 7 | 10 | 15 | 31 | 61;
@@ -734,10 +738,10 @@ export function RtaScreen({ navigation }: Props) {
     fftSize: FFT_SIZE,
     fraction: 3,
     spectrumEnabled: true,
-    bandAvgAlpha: 0.35,
+    bandAvgAlpha: DEFAULT_ALPHA,
   }).current;
   const [mode, setMode] = useState<BandMode>(31);
-  const [alpha, setAlpha] = useState(0.35);
+  const [alpha, setAlpha] = useState(DEFAULT_ALPHA);
   const fraction = fractionFor(mode); // what the ENGINE is banding at (save path)
 
   const { state, frames, start, stop, lastError, resetPeakHold } = useDspEngine(cfg, {
@@ -998,7 +1002,10 @@ export function RtaScreen({ navigation }: Props) {
             <View style={styles.statGrid}>
               <StatCell help={help} label="PEAK" value={fmtDb(meter?.peakDb)} unit="dBFS" clipped={hasClipped} levelDb={meter?.peakDb} />
               <StatCell help={help} label="PEAK HOLD" value={fmtDb(meter?.peakHoldDb)} unit="dBFS" clipped={hasClipped} frameRed={hasClipped} levelDb={meter?.peakHoldDb} onPress={onResetPeak} />
-              <StatCell help={help} label="BANDS" value={displayBands ? String(displayBands.centers.length) : '—'} />
+              {/* BANDS reports the SELECTED band mode so it always matches the
+                  BANDING chip below (owner 2026-08-17: the readout and the chip
+                  must not disagree — e.g. show 31, not the native 30). */}
+              <StatCell help={help} label="BANDS" value={String(mode)} />
             </View>
 
             {/* Tapping the display toggles START/STOP (owner 2026-07-31). */}

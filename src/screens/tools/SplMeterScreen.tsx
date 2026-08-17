@@ -826,8 +826,9 @@ export function SplMeterScreen({ navigation }: Props) {
                   {meter ? estSpl(meter.peakDb) : '—'}
                 </Text>
               </Pressable>
-              {/* Tap the PEAK HOLD readout itself to reset (user request) — the
-                  dedicated RESET PEAK key still works; long-press = help. */}
+              {/* Tap the PEAK HOLD readout itself to reset (owner 2026-08-17: the
+                  separate RESET PEAK key is gone — a small in-cell instruction
+                  tells the user to tap to reset). Long-press = help. */}
               <Pressable
                 style={styles.peakCell}
                 onPress={resetPeakHold}
@@ -840,14 +841,7 @@ export function SplMeterScreen({ navigation }: Props) {
                 <Text style={[styles.cellValue, meter ? { color: levelColorForDb(meter.peakHoldDb) } : styles.cellValueMax]}>
                   {meter ? estSpl(meter.peakHoldDb) : '—'}
                 </Text>
-              </Pressable>
-              <Pressable
-                style={styles.ctrlBtnSmall}
-                onPress={resetPeakHold}
-                accessibilityRole="button"
-                accessibilityLabel="Reset peak hold"
-              >
-                <Text style={styles.ctrlText}>RESET{'\n'}PEAK</Text>
+                <Text style={styles.cellHint}>tap to reset</Text>
               </Pressable>
             </View>
 
@@ -1485,6 +1479,8 @@ const styles = StyleSheet.create({
   cellValue: { fontFamily: fonts.mono, fontSize: 20, color: colors.textPrimary },
   cellValueHot: { color: colors.red },
   cellValueMax: { color: '#e0362b' },
+  // Small in-cell instruction under the PEAK HOLD value (owner 2026-08-17).
+  cellHint: { fontFamily: fonts.barlowRegular, fontSize: 11, color: colors.textMuted, marginTop: 1 },
 
   // Session log card.
   logCard: {
