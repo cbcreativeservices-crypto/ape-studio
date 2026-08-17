@@ -231,10 +231,11 @@ export async function fetchGlossaryItemsByIds(idList: string[]): Promise<Glossar
 
 /**
  * Term images (glossary_media, Booth 2026-07-16): first image per term for
- * the flashcard TERM view. The table is academy/institutional-only
- * (authenticated SELECT), so any error/empty just returns {} — cards without
- * an image render exactly as before. URLs resolve into the public
- * glossary-images bucket.
+ * the flashcard TERM view. Readable by EVERY role incl. anon (owner ruling
+ * 2026-08-17: images carry no separate gate — access control lives at the
+ * topic gate). Any error/empty just returns {} — cards without an image
+ * render exactly as before. URLs resolve into the public glossary-images
+ * bucket.
  */
 export async function fetchTopicMedia(glossaryIds: string[]): Promise<Record<string, string>> {
   if (glossaryIds.length === 0) return {};

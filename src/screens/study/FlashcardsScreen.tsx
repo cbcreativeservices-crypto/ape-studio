@@ -56,7 +56,12 @@ import { devBypass } from '../../config/devMode';
 import { IntroSheet, ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
 import { INTRO_STORAGE_PREFIX } from '../../features/intro/screenIntros';
 import { StudySession } from '../../features/study/sync';
-import { saveLocalMethodStates } from '../../features/study/localProgress';
+import { supabase } from '../../lib/supabase';
+import {
+  loadLocalMethodStates,
+  mergeItemStates,
+  saveLocalMethodStates,
+} from '../../features/study/localProgress';
 import { ResetIcon } from '../../components/ResetIcon';
 import { LinkIcon } from '../../components/LinkIcon';
 import { sendFeedback } from '../../lib/feedback';
@@ -413,9 +418,18 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       try {
         // Custom List pseudo-topic (user request 2026-07-18): items = the ★
         // starred list; no server method row exists, so method-state is skipped.
-        const [fetched, methodState, storedHidden, storedSections, storedShowMedia, storedShowLinks] = await Promise.all([
+        const [fetched, methodState, localStates, storedHidden, storedSections, storedShowMedia, storedShowLinks] = await Promise.all([
           flaggedMode ? fetchGlossaryItemsByIds([...getTermList('starred')]) : fetchTopicItems(achievementId),
           flaggedMode ? Promise.resolve(null) : fetchMethodState(achievementId, 'flashcards'),
+          // Device-mirror for the resume merge — SIGNED-IN only (owner ruling
+          // 2026-08-17): an account keeps its progress; a no-account guest is
+          // factory-reset each session, so guests must NOT resume from the mirror.
+          flaggedMode
+            ? Promise.resolve(null)
+            : supabase.auth
+                .getSession()
+                .then(({ data }) => (data.session ? loadLocalMethodStates(achievementId, 'flashcards') : null))
+                .catch(() => null),
           AsyncStorage.getItem(hiddenKey(achievementId)),
           AsyncStorage.getItem(SECTIONS_KEY),
           AsyncStorage.getItem(SHOW_MEDIA_KEY),
@@ -426,7 +440,8 @@ export function FlashcardsScreen({ navigation, route }: Props) {
         if (storedShowLinks != null) setShowLinks(storedShowLinks !== '0');
         fetched.sort((a, b) => a.term.localeCompare(b.term));
         setItems(fetched);
-        // Term images — non-fatal, academy-gated; empty map = text-only cards.
+        // Term images — non-fatal, ungated (all roles read glossary_media);
+        // empty map = text-only cards.
         // PREFETCH every image up front (Booth 2026-07-16) so fast swiping
         // shows art instantly from cache instead of streaming per card.
         void fetchTopicMedia(fetched.map((it) => it.id)).then((m) => {
@@ -436,7 +451,12 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             Image.prefetch(uri).catch(() => {});
           }
         });
-        const st = methodState?.itemStates ?? {};
+        // MERGE the device mirror over the server row (same rule the Dashboard
+        // uses for display): resume must survive a server write that is slow,
+        // offline-queued, or rejected — otherwise a returning user restarts at
+        // card 0 despite having just studied (owner bug 2026-08-17). The merge
+        // never regresses a view/known; server truth still governs the gates.
+        const st = mergeItemStates(methodState?.itemStates, localStates);
         setStates(st);
         if (storedSections != null) {
           const arr = (JSON.parse(storedSections) as number[]).filter((n) => ALL_LEVELS.includes(n));

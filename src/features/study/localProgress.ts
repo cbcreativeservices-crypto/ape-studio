@@ -40,6 +40,19 @@ export async function clearAllLocalMethodStates(): Promise<void> {
   }
 }
 
+/** One mirrored method row (for a study screen's own resume merge). */
+export async function loadLocalMethodStates(
+  achievementId: string,
+  methodKey: string,
+): Promise<ItemStates | null> {
+  try {
+    const raw = await AsyncStorage.getItem(keyFor(achievementId, methodKey));
+    return raw ? (JSON.parse(raw) as ItemStates) : null;
+  } catch {
+    return null;
+  }
+}
+
 export type LocalMethodRow = { achievement_id: string; method_key: string; item_states: ItemStates };
 
 /** Every locally-mirrored method row (for the Dashboard merge). */
