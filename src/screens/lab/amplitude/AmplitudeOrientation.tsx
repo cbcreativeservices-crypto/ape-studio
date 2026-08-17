@@ -379,33 +379,6 @@ const DYNAMICS = ['ppp', 'pp', 'p', 'mp', 'mf', 'f', 'ff', 'fff'] as const;
  *  both platforms (no italic Oswald variant is bundled for faux-italic). */
 const DYN_ITALIC = { skewX: '-12deg' } as const;
 
-/** 8 one-pixel offsets → a crisp black outline (RN has no text-stroke prop). */
-const OUTLINE_OFFSETS: ReadonlyArray<readonly [number, number]> = [
-  [-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1],
-];
-
-/** One dynamics mark: black-outlined glyph with a gradient-color fill. The
- *  wrapper sizes to the fill text; the absolute black copies overlay it exactly,
- *  offset by ±1px on all sides to form the outline. */
-function OutlinedMark({ text, color }: { text: string; color: string }) {
-  return (
-    <View style={styles.dynStack}>
-      {OUTLINE_OFFSETS.map(([dx, dy], k) => (
-        <Text
-          key={k}
-          numberOfLines={1}
-          style={[styles.dynText, styles.dynAbs, { transform: [DYN_ITALIC, { translateX: dx }, { translateY: dy }] }]}
-        >
-          {text}
-        </Text>
-      ))}
-      <Text numberOfLines={1} style={[styles.dynText, { color, transform: [DYN_ITALIC] }]}>
-        {text}
-      </Text>
-    </View>
-  );
-}
-
 function GradientBar() {
   const n = 48;
   return (
@@ -427,9 +400,11 @@ function GradientBar() {
             accessibilityElementsHidden
             importantForAccessibility="no-hide-descendants"
           >
-            {DYNAMICS.map((d, i) => (
+            {DYNAMICS.map((d) => (
               <View key={d} style={styles.dynCell}>
-                <OutlinedMark text={d} color={heatColor((i + 0.5) / DYNAMICS.length)} />
+                <Text numberOfLines={1} style={styles.dynText}>
+                  {d}
+                </Text>
               </View>
             ))}
           </View>
@@ -660,9 +635,14 @@ const styles = StyleSheet.create({
   // Musical-dynamics overlay across the gradient
   dynOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, flexDirection: 'row', alignItems: 'center' },
   dynCell: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  dynStack: { alignItems: 'center', justifyContent: 'center' },
-  dynText: { fontFamily: fonts.oswaldBold, fontSize: 12, letterSpacing: 0.3, textAlign: 'center' },
-  dynAbs: { position: 'absolute', top: 0, left: 0, color: '#000' },
+  dynText: {
+    fontFamily: fonts.oswaldMedium,
+    fontSize: 13,
+    letterSpacing: 0.3,
+    color: '#000',
+    textAlign: 'center',
+    transform: [DYN_ITALIC],
+  },
   gradNames: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 9.5,
