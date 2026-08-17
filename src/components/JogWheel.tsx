@@ -300,7 +300,9 @@ export function JogOverlay({
           if (diff > 180) diff -= 360;
           if (diff < -180) diff += 360;
           spinTarget.current = current + diff;
-          spin.value = withTiming(spinTarget.current, { duration: 130, easing: REasing.out(REasing.quad) });
+          // 50ms (owner 2026-08-16: was 130 — read as sluggish): still no
+          // teleport pop, but effectively instant.
+          spin.value = withTiming(spinTarget.current, { duration: 50, easing: REasing.out(REasing.quad) });
         },
         onPanResponderMove: (_e, g) => {
           if (disabledRef.current) return;
@@ -322,12 +324,12 @@ export function JogOverlay({
           while (d > 180) d -= 360;
           while (d < -180) d += 360;
           lastAngle.current = a;
-          // Tight tracking with a whisper of smoothing (owner 2026-08-16):
-          // finger deltas accumulate into the continuous target and the wheel
-          // chases it over ~60ms — glued to the finger, but event jitter is
-          // filtered out so the motion reads machined, not raw.
+          // DIRECT 1:1 tracking (owner 2026-08-16: the 60ms chase lagged badly —
+          // restarted every touch event, it compounded into speed-proportional
+          // lag on fast spins). Zero smoothing: the wheel is glued to the
+          // finger; the continuous unbounded target still prevents wraps.
           spinTarget.current += d;
-          spin.value = withTiming(spinTarget.current, { duration: 60, easing: REasing.linear });
+          spin.value = spinTarget.current;
           accum.current += d;
           while (accum.current >= DETENT_DEG) {
             accum.current -= DETENT_DEG;
