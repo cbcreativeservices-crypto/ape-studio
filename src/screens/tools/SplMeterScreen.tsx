@@ -1735,6 +1735,10 @@ export function SplMeterScreen({ navigation }: Props) {
         visible={readoutFsOpen}
         animationType="fade"
         statusBarTranslucent
+        // iOS RN Modals default to portrait-only — without this the fullscreen
+        // readout won't rotate even though the screen unlocked orientation
+        // (owner 2026-08-18: the device turns but the app stayed portrait).
+        supportedOrientations={['portrait', 'landscape', 'landscape-left', 'landscape-right']}
         onRequestClose={() => setReadoutFsOpen(false)}
       >
         <View
