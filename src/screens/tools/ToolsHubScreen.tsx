@@ -16,14 +16,13 @@ import Svg, {
   Defs,
   Line,
   LinearGradient as SvgLinearGradient,
-  Path,
   Rect,
   Stop,
   type SvgProps,
 } from 'react-native-svg';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 // Measurement-tool card strips (Booth 2026-08-17): full-width 2:1 SVG previews
-// of each tool's display, replacing the old inline ToolIcon glyph. Imported as
+// of each tool's display (replaced the old inline icon glyphs). Imported as
 // components via react-native-svg-transformer (metro.config.js). The SVGs are
 // the design deliverable — do not restyle/re-export them.
 import ToolStripSpl from '../../../assets/tool-strips/tool_01_spl_reference_meter_strip.svg';
@@ -79,132 +78,6 @@ function DosimeterChip({ onOpen }: { onOpen: () => void }) {
       <Text style={styles.dosiOpen}>OPEN ›</Text>
     </Pressable>
   );
-}
-
-/** Per-tool icon accent (matches the glass-key tints). */
-const ICON_COLOR: Record<ToolKey, string> = {
-  spl: '#ffa64d',
-  rta: '#7fbfff',
-  waveform: '#5fd9c4',
-  spectrogram: '#b78aff',
-  rt60: '#5bff85',
-  signalgen: '#ffd24d',
-  hzcounter: '#4dd0e1',
-  multimeter: '#c9d6e4', // steel — matches the tool's glass-key tint
-};
-
-/** Tiny static ICON per tool (iconography, not a meter — spec §1.7). */
-function ToolIcon({ tool }: { tool: ToolKey }) {
-  const c = ICON_COLOR[tool];
-  switch (tool) {
-    case 'spl':
-      // gauge arc + needle
-      return (
-        <Svg width={40} height={30} viewBox="0 0 40 30">
-          <Path d="M6 26 A 15 15 0 0 1 34 26" stroke={c} strokeWidth={2.5} fill="none" strokeLinecap="round" />
-          <Line x1={20} y1={25} x2={28} y2={13} stroke={c} strokeWidth={2.5} strokeLinecap="round" />
-          <Circle cx={20} cy={25} r={2.4} fill={c} />
-        </Svg>
-      );
-    case 'rta':
-      // analyzer bars
-      return (
-        <Svg width={40} height={30} viewBox="0 0 40 30">
-          {[4, 11, 18, 25, 32].map((x, i) => {
-            const h = [12, 20, 26, 16, 9][i];
-            return <Rect key={x} x={x} y={28 - h} width={4.5} height={h} rx={1} fill={c} />;
-          })}
-        </Svg>
-      );
-    case 'waveform':
-      return (
-        <Svg width={40} height={30} viewBox="0 0 40 30">
-          <Line x1={2} y1={15} x2={38} y2={15} stroke={c} strokeWidth={0.8} opacity={0.4} />
-          <Path
-            d="M2 15 Q 6 2, 10 15 T 18 15 Q 21 7, 24 15 T 30 15 Q 33 11, 36 15"
-            stroke={c}
-            strokeWidth={2.2}
-            fill="none"
-            strokeLinecap="round"
-          />
-        </Svg>
-      );
-    case 'spectrogram':
-      return (
-        <Svg width={40} height={30} viewBox="0 0 40 30">
-          {[0, 1, 2, 3].map((col) =>
-            [0, 1, 2].map((row) => (
-              <Rect
-                key={`${col}-${row}`}
-                x={3 + col * 9}
-                y={3 + row * 9}
-                width={7}
-                height={7}
-                rx={1.5}
-                fill={c}
-                opacity={[0.9, 0.35, 0.6, 0.2, 0.5, 0.8, 0.3, 0.7, 0.45, 0.85, 0.25, 0.55][col * 3 + row]}
-              />
-            )),
-          )}
-        </Svg>
-      );
-    case 'rt60':
-      return (
-        <Svg width={40} height={30} viewBox="0 0 40 30">
-          <Line x1={3} y1={27} x2={37} y2={27} stroke={c} strokeWidth={0.8} opacity={0.4} />
-          <Path d="M4 3 Q 10 22, 22 25 T 37 27" stroke={c} strokeWidth={2.2} fill="none" strokeLinecap="round" />
-        </Svg>
-      );
-    case 'signalgen':
-      // a clean sine + a noise burst — a signal SOURCE
-      return (
-        <Svg width={40} height={30} viewBox="0 0 40 30">
-          <Path
-            d="M2 15 Q 7 4, 12 15 T 22 15"
-            stroke={c}
-            strokeWidth={2.2}
-            fill="none"
-            strokeLinecap="round"
-          />
-          {[24, 27, 30, 33, 36].map((x, i) => {
-            const h = [8, 16, 6, 13, 9][i];
-            return <Line key={x} x1={x} y1={15 - h / 2} x2={x} y2={15 + h / 2} stroke={c} strokeWidth={1.8} strokeLinecap="round" />;
-          })}
-        </Svg>
-      );
-    case 'hzcounter':
-      // square wave + tuner needle — one engine, counter + tuner (merged 2026-07-23)
-      return (
-        <Svg width={40} height={30} viewBox="0 0 40 30">
-          <Path
-            d="M3 24 H8 V12 H14 V24 H20 V12 H24"
-            stroke={c}
-            strokeWidth={2}
-            fill="none"
-            strokeLinejoin="round"
-            strokeLinecap="round"
-          />
-          <Line x1={32} y1={26} x2={29} y2={8} stroke={c} strokeWidth={2.2} strokeLinecap="round" />
-          <Circle cx={32} cy={26} r={2.2} fill={c} />
-        </Svg>
-      );
-    case 'multimeter':
-      // quad-panel glyph — bars · wave · raster · gauge (one meter, four views)
-      return (
-        <Svg width={40} height={30} viewBox="0 0 40 30">
-          {[3, 8, 13].map((x, i) => {
-            const h = [8, 12, 6][i];
-            return <Rect key={x} x={x} y={13 - h} width={3.5} height={h} rx={1} fill={c} />;
-          })}
-          <Path d="M22 8 Q 25 2, 28 8 T 34 8" stroke={c} strokeWidth={1.8} fill="none" strokeLinecap="round" />
-          {[3, 8, 13].map((x, i) => (
-            <Rect key={`r${x}`} x={x} y={19} width={4} height={8} rx={1} fill={c} opacity={[0.85, 0.4, 0.6][i]} />
-          ))}
-          <Path d="M22 27 A 6.5 6.5 0 0 1 35 27" stroke={c} strokeWidth={1.8} fill="none" strokeLinecap="round" />
-          <Line x1={28.5} y1={27} x2={32} y2={21} stroke={c} strokeWidth={1.8} strokeLinecap="round" />
-        </Svg>
-      );
-  }
 }
 
 /** Tile display order (owner 2026-08-17): 2-across, top→down / left→right —
@@ -777,17 +650,6 @@ const styles = StyleSheet.create({
     minHeight: 36,
     color: colors.textPrimary,
     textAlign: 'center',
-  },
-  // Old icon well — retained (orphaned) until Booth's cleanup pass. See ToolIcon.
-  tileIconWell: {
-    width: 56,
-    height: 40,
-    borderRadius: 6,
-    backgroundColor: '#0b0b0d',
-    borderWidth: 1,
-    borderColor: '#000',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   comingChip: {
     position: 'absolute',

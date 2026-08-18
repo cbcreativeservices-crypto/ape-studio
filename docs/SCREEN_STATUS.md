@@ -24,16 +24,16 @@ completion status the owner signs off as we approach launch testing.
 |---|---|
 | **Incomplete (🔴 — needs dev work)** | **0** |
 | Blocked (🟡 — built, dependency-gated) | 1 |
-| Built, awaiting sign-off (🔵) | 76 |
-| Signed off (🟢) | 2 |
+| Built, awaiting sign-off (🔵) | 75 |
+| Signed off (🟢) | 3 |
 | Excluded (⚪ — parked/dev) | 2 |
 | **Total navigable screens (excl. ⚪)** | **79** |
 
 **So: "how many screens are incomplete?" → 0 need net-new build (audit found no
 stubs/partials); the native audio engine went LIVE and was iOS-verified
 2026-08-14, so the 8 measurement tools moved 🟡→🔵; 1 remains blocked
-(PublicGlossary — scoped CM4 anon rendering, not the engine); TubeReference +
-TubeCard were owner-signed-off 2026-08-17 (40 tubes × 2 pages — first 🟢s); 76
+(PublicGlossary — scoped CM4 anon rendering, not the engine); ToolsHub +
+TubeReference + TubeCard were owner-signed-off 2026-08-17 (the first 🟢s); 75
 are built and awaiting your sign-off.**
 
 > 🟡 "Blocked" means the SCREEN is complete and shows honest gated states. The
@@ -100,7 +100,7 @@ are built and awaiting your sign-off.**
 ## Tools
 | Screen (route) | Status | Notes |
 |---|---|---|
-| ToolsHub | 🔵 | Redesigned 2026-08-17: recessed glass-display tiles cut into a gray rack panel (matches dashboard method-panel face/grit), two-radius nested corners, SVG per-tool display strips, press-sink + Rigid haptic + power-on glow → timed exit (mirrors dashboard SwitchButtons). "N in development" tally removed 2026-08-10. |
+| ToolsHub | 🟢 | **Owner-approved 2026-08-17** (minor aesthetic tweaks may follow). Redesigned 2026-08-17: recessed glass-display tiles cut into a gray rack panel (matches dashboard method-panel face/grit), two-radius nested corners, SVG per-tool display strips, press-sink + Rigid haptic + power-on glow → timed exit (mirrors dashboard SwitchButtons). |
 | ToolInfo | 🔵 | Engine-status card honest ("not in this build"). |
 | ToolLearn | 🔵 | Academy-gated learn content. |
 | ToolDemo | 🔵 | Visual/silent demos. |
