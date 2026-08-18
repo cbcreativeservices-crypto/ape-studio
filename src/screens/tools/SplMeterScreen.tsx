@@ -1375,6 +1375,10 @@ export function SplMeterScreen({ navigation }: Props) {
         visible={vuOpen}
         animationType="fade"
         statusBarTranslucent
+        // Tolerate landscape so it never conflicts with the Full VU modal on top
+        // when that forces landscape (portrait-only here HARD-CRASHES iOS). This
+        // home is driven back to portrait by lockPortrait when Full VU closes.
+        supportedOrientations={['portrait', 'landscape', 'landscape-left', 'landscape-right']}
         onRequestClose={() => setVuOpen(false)}
       >
         <View style={[styles.vuModalRoot, { paddingTop: insets.top + 8 }]}>
@@ -1709,7 +1713,11 @@ export function SplMeterScreen({ navigation }: Props) {
         visible={vuFsOpen}
         animationType="fade"
         statusBarTranslucent
-        supportedOrientations={['landscape', 'landscape-left', 'landscape-right']}
+        // Must include portrait: presenting a landscape-ONLY modal while the app
+        // is portrait-locked has "no common orientation" and HARD-CRASHES iOS
+        // (owner 2026-08-18). lockLandscape() still forces the landscape view;
+        // supportedOrientations only prevents the presentation-time conflict.
+        supportedOrientations={['portrait', 'landscape', 'landscape-left', 'landscape-right']}
         onRequestClose={() => setVuFsOpen(false)}
       >
         <View style={[styles.vuFsRoot, { paddingTop: insets.top }]}>
@@ -1764,6 +1772,7 @@ export function SplMeterScreen({ navigation }: Props) {
         transparent
         animationType="fade"
         statusBarTranslucent
+        supportedOrientations={['portrait', 'landscape', 'landscape-left', 'landscape-right']}
         onRequestClose={() => setSettingPopup(null)}
       >
         <Pressable style={styles.popupBackdrop} onPress={() => setSettingPopup(null)} accessibilityRole="button" accessibilityLabel="Close">
