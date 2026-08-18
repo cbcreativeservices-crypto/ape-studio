@@ -765,9 +765,11 @@ export function SplMeterScreen({ navigation }: Props) {
   // AUTO range (owner 2026-07-30): when on, the 0-VU reference tracks a slow EMA
   // of the measured SPL so the needle stays on-scale and visibly swinging around
   // centre. Manual chips turn it off. autoRangeDb is the rounded auto reference.
-  // Default to AUTO range (owner 2026-08-18): the user starts auto-ranged and can
-  // switch to a manual chip if they want a fixed 0-VU reference.
-  const [rangeAuto, setRangeAuto] = useState(true);
+  // Default to a FIXED range (owner 2026-08-18): AUTO kept re-referencing the
+  // 0-VU point in 5 dB steps, so the needle re-centered instead of SWINGING like
+  // a real VU. Fixed (rangeDb, 60 dB @ 0 VU) lets it swing; AUTO stays available
+  // in the Range popup.
+  const [rangeAuto, setRangeAuto] = useState(false);
   const [autoRangeDb, setAutoRangeDb] = useState(80);
   const splEmaRef = useRef<number | null>(null);
   // 3-second averaged SPL that drives the gauge ZONE COLOR only (owner
