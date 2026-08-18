@@ -24,7 +24,8 @@ import { DecayCurveGraph } from '../../../../features/lab/fxViz';
 import { LabChip } from '../../LabShell';
 import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
 import { Badge, PanelCard, ReadoutGrid, dstyles } from '../../digital/bits';
-import { LabPhoto } from '../../labPhoto';
+import { LabPhoto, useLabPhoto } from '../../labPhoto';
+import { MATERIAL_PHOTOS } from '../materialPhotos';
 import { WaveLayout } from './waveLayout';
 import { requireWaveViz, type WaveVizModule } from '../skiaGate';
 import type { WaveLayers } from '../vizWave';
@@ -1165,6 +1166,7 @@ function newSource(kind: WaveSource['kind'], id: string, x: number, y: number): 
 
 export function RoomBuilderModule(p: WaveModuleProps) {
   const viz = useState(() => requireWaveViz())[0];
+  const openPhoto = useLabPhoto();
   const [wV, setWV] = useState((12 - 3) / 27);
   const [hV, setHV] = useState((8 - 3) / 27);
   const [boundary, setBoundary] = useState<[MaterialKey, MaterialKey, MaterialKey, MaterialKey]>(['drywall', 'drywall', 'drywall', 'drywall']);
@@ -1308,7 +1310,12 @@ export function RoomBuilderModule(p: WaveModuleProps) {
               onPress={() =>
                 setBoundary((prev) => prev.map((b, i) => (i === selWall ? m : b)) as [MaterialKey, MaterialKey, MaterialKey, MaterialKey])
               }
-              onLongPress={() => p.help('room_builder')}
+              // foam/fiberglass long-press → their reference photo; others → the lesson.
+              onLongPress={() => {
+                const photo = MATERIAL_PHOTOS[m];
+                if (photo) openPhoto(photo.file, photo.caption);
+                else p.help('room_builder');
+              }}
             />
           ))}
         </View>

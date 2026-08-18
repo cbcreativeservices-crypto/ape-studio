@@ -15,7 +15,7 @@
  * interactive controls) — those stay code-drawn. Callers pass only verified
  * bucket filenames; an absent LabPhotoLightbox just makes the tile non-tappable.
  */
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useState, type ReactNode } from 'react';
 import { Image, Modal, Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { SUPABASE_URL } from '../../lib/env';
 
@@ -61,6 +61,17 @@ export function LabPhotoLightbox({ children }: { children: ReactNode }) {
         </Pressable>
       </Modal>
     </LightboxCtx.Provider>
+  );
+}
+
+/** Open the shared lightbox programmatically (e.g. from a control's long-press)
+ *  instead of tapping a tile. Returns a no-op if no <LabPhotoLightbox> is above
+ *  in the tree. */
+export function useLabPhoto(): (file: string, caption?: string) => void {
+  const open = useContext(LightboxCtx);
+  return useCallback(
+    (file: string, caption?: string) => open?.({ url: labPhotoUrl(file), caption }),
+    [open],
   );
 }
 
