@@ -23,7 +23,7 @@ import { Canvas, Line as SkLine, Path as SkPath, Skia, vec } from '@shopify/reac
 import { GlassButton } from '../../../components/GlassButton';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { colors, fonts } from '../../../theme/tokens';
-import { MicVisual } from './micArt';
+import { MicPhotoLightbox, MicVisual } from './micArt';
 import {
   CHALLENGE_BASE,
   CHALLENGE_FACTORS,
@@ -875,6 +875,7 @@ export function MicSelectLabScreen() {
   const s = STEPS[step];
 
   return (
+    <MicPhotoLightbox>
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
         <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
@@ -934,6 +935,7 @@ export function MicSelectLabScreen() {
         </View>
       </ScrollView>
     </View>
+    </MicPhotoLightbox>
   );
 }
 

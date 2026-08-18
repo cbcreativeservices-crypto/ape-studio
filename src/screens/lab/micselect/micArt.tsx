@@ -8,8 +8,8 @@
  * requested size, so one set of coordinates serves cards, chips and the
  * challenge list. Static geometry only — no animation.
  */
-import { useState } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { createContext, useContext, useState, type ReactNode } from 'react';
+import { Image, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Canvas, Circle, Group, Line, LinearGradient, Oval, Path, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
 import type { MicKind } from './micSelectData';
 import { micImageUrl } from './micImages';
@@ -322,15 +322,44 @@ export function MicArt({ kind, w = 56, h = 84 }: { kind: MicKind; w?: number; h?
   );
 }
 
+// ── Tap-to-enlarge photo lightbox (owner 2026-08-18) ─────────────────────────
+// One shared fullscreen modal for the whole lab. Wrap the lab screen in
+// <MicPhotoLightbox> once; every MicVisual then opens the big photo on tap.
+const LightboxCtx = createContext<((kind: MicKind) => void) | null>(null);
+
+export function MicPhotoLightbox({ children }: { children: ReactNode }) {
+  const [kind, setKind] = useState<MicKind | null>(null);
+  const url = kind ? micImageUrl(kind) : null;
+  return (
+    <LightboxCtx.Provider value={setKind}>
+      {children}
+      <Modal visible={!!url} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setKind(null)}>
+        <Pressable style={styles.lbBackdrop} onPress={() => setKind(null)} accessibilityRole="button" accessibilityLabel="Close photo">
+          <View style={styles.lbCard}>
+            {url ? (
+              <Image source={{ uri: url }} style={styles.lbImage} resizeMode="contain" accessibilityIgnoresInvertColors />
+            ) : null}
+          </View>
+          <View style={styles.lbClose} pointerEvents="none">
+            <Text style={styles.lbCloseX}>✕</Text>
+          </View>
+        </Pressable>
+      </Modal>
+    </LightboxCtx.Provider>
+  );
+}
+
 /** Mic visual = the real reference PHOTO when the kind has one (owner 2026-08-17,
  *  Option A), on a light tile so the seamless-white product shot reads cleanly
- *  against the dark lab UI. Falls back to the code-drawn MicArt illustration if
- *  the kind is unmapped or the image fails to load — never a blank. */
+ *  against the dark lab UI. TAP to enlarge in the shared lightbox (owner
+ *  2026-08-18) — a ⤢ hint marks it zoomable. Falls back to the code-drawn MicArt
+ *  illustration if the kind is unmapped or the image fails to load — never a blank. */
 export function MicVisual({ kind, w = 56, h = 84 }: { kind: MicKind; w?: number; h?: number }) {
   const url = micImageUrl(kind);
+  const open = useContext(LightboxCtx);
   const [failed, setFailed] = useState(false);
   if (!url || failed) return <MicArt kind={kind} w={w} h={h} />;
-  return (
+  const tile = (
     <View style={[styles.photoTile, { width: w, height: h }]}>
       <Image
         source={{ uri: url }}
@@ -340,7 +369,18 @@ export function MicVisual({ kind, w = 56, h = 84 }: { kind: MicKind; w?: number;
         accessibilityIgnoresInvertColors
         accessibilityLabel={`${kind} microphone photo`}
       />
+      {open && w >= 40 ? (
+        <View style={styles.zoomBadge} pointerEvents="none">
+          <Text style={styles.zoomIcon}>⤢</Text>
+        </View>
+      ) : null}
     </View>
+  );
+  if (!open) return tile;
+  return (
+    <Pressable onPress={() => open(kind)} accessibilityRole="button" accessibilityLabel={`Enlarge ${kind} microphone photo`}>
+      {tile}
+    </Pressable>
   );
 }
 
@@ -349,4 +389,23 @@ const styles = StyleSheet.create({
   // white/near-white rounded tile makes that read as intentional on the dark UI.
   photoTile: { backgroundColor: '#f4f4f5', borderRadius: 7, overflow: 'hidden', padding: 3 },
   photo: { width: '100%', height: '100%' },
+  // Small "tap to enlarge" hint, bottom-right of the photo.
+  zoomBadge: {
+    position: 'absolute',
+    right: 2,
+    bottom: 2,
+    width: 15,
+    height: 15,
+    borderRadius: 4,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  zoomIcon: { color: '#fff', fontSize: 10, lineHeight: 12 },
+  // Fullscreen lightbox.
+  lbBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.9)', alignItems: 'center', justifyContent: 'center', padding: 20 },
+  lbCard: { width: '92%', aspectRatio: 1, backgroundColor: '#f4f4f5', borderRadius: 14, overflow: 'hidden', padding: 10 },
+  lbImage: { width: '100%', height: '100%' },
+  lbClose: { position: 'absolute', top: 44, right: 22 },
+  lbCloseX: { color: '#fff', fontSize: 26, fontWeight: '700' },
 });
