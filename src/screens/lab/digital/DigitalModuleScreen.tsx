@@ -14,6 +14,7 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { markLabUnit } from '../../../features/lab/labCompletion';
 import { ScrollLockProvider } from '../LabShell';
+import { LabPhotoLightbox } from '../labPhoto';
 import { DIGITAL_MODULES, type DigitalModuleId } from './modules/registry';
 import { AnalogModule, SamplingModule } from './modules/modAnalog';
 import { QuantModule, BinaryModule } from './modules/modQuant';
@@ -102,7 +103,11 @@ export function DigitalModuleScreen() {
       <ScrollLockProvider value={setScrollLocked}>
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" scrollEnabled={!scrollLocked}>
         <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
-          {width > 0 ? <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} /> : null}
+          {width > 0 ? (
+            <LabPhotoLightbox>
+              <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} />
+            </LabPhotoLightbox>
+          ) : null}
         </View>
         {/* Guided-lesson entry lives at the BOTTOM (owner 2026-07-29, LabShell v2). */}
         <Pressable
