@@ -22,6 +22,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import { markLabUnit } from '../../../../features/lab/labCompletion';
 import { DeviceCard, DeviceLeds, DeviceMeter, DragSlider, GainBtn } from '../gainViz';
+import { LabPhoto } from '../../labPhoto';
 import { chainIsHealthy, computeChain, meterFill, type ChainNode, type Stage } from '../gainEngine';
 import { levelColor } from '../../../../features/tools/levelColor';
 import type { GainModuleComponentProps } from './registry';
@@ -107,6 +108,24 @@ export function MultiStageModule(_p: GainModuleComponentProps) {
         is a SIG light and a CLIP light. SIGNAL X-RAY sees through every box at once: the level at
         every point in the chain, gain staging as a system instead of isolated knobs.
       </GlossaryText>
+      {/* Reference photos of two of those separate devices (owner 2026-08-18) —
+          supplementary, tap to enlarge; the interactive chain below is unchanged. */}
+      <View style={styles.photoRow}>
+        <LabPhoto
+          file="mic-preamp.webp"
+          h={100}
+          style={{ flex: 1 }}
+          accessibilityLabel="microphone preamplifier"
+          caption="A microphone preamplifier — the first gain stage, raising a mic's tiny signal to line level. It's where gain staging starts: set too hot here and everything downstream inherits the distortion."
+        />
+        <LabPhoto
+          file="compressor.webp"
+          h={100}
+          style={{ flex: 1 }}
+          accessibilityLabel="hardware compressor"
+          caption="A compressor — one box in the chain. Its make-up gain can push the level back up after it reduces peaks, so it's a common place for a stage to run too hot."
+        />
+      </View>
       <View style={styles.btnRow}>
         <GainBtn label={xray ? 'SIGNAL X-RAY · ON' : 'SIGNAL X-RAY'} active={xray} onPress={() => setXray((v) => !v)} />
         <GainBtn label="TEST YOURSELF — RANDOM" onPress={() => setG(randomGains())} />
@@ -330,6 +349,7 @@ const styles = StyleSheet.create({
   },
   tryAgainWrap: { position: 'absolute', top: 2, alignSelf: 'center', zIndex: 10 },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
+  photoRow: { flexDirection: 'row', gap: 8 },
   btnRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chain: { gap: 0 },
   srcNote: { fontFamily: fonts.barlowRegular, fontSize: 11.5, color: colors.textSub },

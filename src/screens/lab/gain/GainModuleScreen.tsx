@@ -12,6 +12,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { ScrollLockProvider } from '../LabShell';
+import { LabPhotoLightbox } from '../labPhoto';
 import { markLabUnit } from '../../../features/lab/labCompletion';
 import { GlossaryLinkProvider } from '../../../features/glossary/glossaryLink';
 import { GAIN_MODULES, type GainModuleComponentProps, type GainModuleId } from './modules/registry';
@@ -90,7 +91,11 @@ export function GainModuleScreen() {
             onContentSizeChange={(_w, h) => setContentH(Math.round(h))}
           >
             <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
-              {width > 0 ? <Comp width={width} focused={focused} /> : null}
+              {width > 0 ? (
+                <LabPhotoLightbox>
+                  <Comp width={width} focused={focused} />
+                </LabPhotoLightbox>
+              ) : null}
             </View>
           </ScrollView>
         </ScrollLockProvider>
