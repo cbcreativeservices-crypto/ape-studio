@@ -26,6 +26,7 @@ import { ShakeToMute } from './src/features/audio/ShakeToMute';
 import { LowLightDim, LowLightProductionGate } from './src/features/settings/LowLightLayer';
 import { registerLowLightTap, touchLowLight } from './src/features/settings/lowLight';
 import { useAccountLocalSync } from './src/features/account/accountLocalSync';
+import { lockPortrait } from './src/lib/screenOrientationSafe';
 import { colors, fontAssets } from './src/theme/tokens';
 
 // Boot the Listening Exposure Monitor once (owner 2026-08-12): its 1 s poller
@@ -69,12 +70,10 @@ export default function App() {
   // declares "default" so the OS permits rotation — required for the SPL meter's
   // fullscreen auto-rotate — but every other screen must stay portrait, so we
   // lock PORTRAIT_UP once at boot. The SPL fullscreen unlocks on entry and
-  // re-locks PORTRAIT_UP on exit; nothing else touches orientation. Guarded
-  // dynamic import — inert (no crash) until a build bundles the native module.
+  // re-locks PORTRAIT_UP on exit; nothing else touches orientation. lockPortrait
+  // is a no-op (never throws) on dev clients that predate the native module.
   useEffect(() => {
-    import('expo-screen-orientation')
-      .then((so) => so.lockAsync(so.OrientationLock.PORTRAIT_UP))
-      .catch(() => {});
+    lockPortrait();
   }, []);
 
   // Hold on a dark surface until fonts resolve (avoids a white flash + FOUT).

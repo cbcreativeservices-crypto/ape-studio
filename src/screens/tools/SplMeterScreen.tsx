@@ -36,6 +36,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
 import * as Crypto from 'expo-crypto';
 import { GlassButton } from '../../components/GlassButton';
+import { lockPortrait, unlockOrientation } from '../../lib/screenOrientationSafe';
 import { requireVizMeters, type VizMetersModule } from '../lab/meter/skiaGate';
 import { CollapsibleSection } from '../lab/LabShell';
 import type { LiveMeterDrive, PeakHoldMode } from '../lab/meter/vizMeters';
@@ -646,19 +647,15 @@ export function SplMeterScreen({ navigation }: Props) {
     if (!readoutFsOpen) setFsDimmerOpen(false);
   }, [readoutFsOpen]);
   // Allow REAL device rotation while the fullscreen readout is open (owner
-  // 2026-08-17: no manual button). Loaded via a GUARDED DYNAMIC import — the
-  // native module is absent on dev builds that predate it, and a static import
-  // would throw at load (expo-screen-orientation requires the native module at
-  // module-eval), so the whole screen would crash. Dynamic import rejects
-  // instead, we swallow it, and it starts working after the next native build.
+  // 2026-08-17: no manual button); re-lock portrait on close. Both go through
+  // screenOrientationSafe, which require()s the native module inside try/catch
+  // and no-ops when it's absent — so a dev client that predates the module can't
+  // crash here (a dynamic import().catch() did NOT reliably catch the synchronous
+  // module-eval throw — owner 2026-08-18).
   useEffect(() => {
-    if (readoutFsOpen) {
-      import('expo-screen-orientation').then((so) => so.unlockAsync()).catch(() => {});
-    }
+    if (readoutFsOpen) unlockOrientation();
     return () => {
-      import('expo-screen-orientation')
-        .then((so) => so.lockAsync(so.OrientationLock.PORTRAIT_UP))
-        .catch(() => {});
+      lockPortrait();
     };
   }, [readoutFsOpen]);
   const [justSaved, setJustSaved] = useState(false);
