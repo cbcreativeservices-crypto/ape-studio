@@ -60,7 +60,7 @@ const FLOW_STAGES: { until: number; text: string }[] = [
 ];
 
 // The old 8-tube "Classics" teaser was RETIRED 2026-08-09 — replaced by the
-// full 30-card Tube Reference library (see ReferenceSection + tubeRefs.ts).
+// full 40-card Tube Reference library (see ReferenceSection + tubeRefs.ts).
 
 // ── Shared bits ─────────────────────────────────────────────────────────────
 
@@ -482,8 +482,9 @@ function VersusViz({ viz, width, running }: { viz: TubeVizModule; width: number;
 }
 
 // ── 10 · The Tube Reference library ─────────────────────────────────────────
-// Replaces the retired 8-tube Classics teaser (owner 2026-08-09): 30 owner-
-// produced full-screen spec cards, browsable + searchable, Academy-gated.
+// Replaces the retired 8-tube Classics teaser (owner 2026-08-09): 40 owner-
+// produced full-screen spec cards (two pages each, owner 2026-08-17),
+// browsable + searchable, Academy-gated.
 
 function ReferenceSection(_p: SectionProps) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -510,7 +511,7 @@ function ReferenceSection(_p: SectionProps) {
       </Pressable>
       <Text style={styles.caption}>
         Every card is a full-screen reference: internal structure, pin layout and functions, key
-        ratings, safe substitutions, and what to watch for. Academy membership unlocks all thirty.
+        ratings, safe substitutions, and what to watch for. Academy membership unlocks all forty.
       </Text>
     </View>
   );
@@ -528,7 +529,7 @@ const SECTIONS: { key: string; label: string; title: string; blurb: string; uses
   { key: 'bias', label: 'BIAS', title: 'TUBE BIAS', blurb: 'Cutoff · linear · saturation — one slider on the transfer curve.', usesElectron: false, Comp: BiasSection },
   { key: 'sat', label: 'SATURATE', title: 'TUBE SATURATION', blurb: 'Every amplifier has a limit. Drive a tube toward its limit and it doesn’t slam into a wall — its transfer curve bends, ROUNDING the loudest peaks instead of chopping them off. That gentle bend is soft clipping, and it is most of what “tube sound” means.', usesElectron: false, Comp: SaturationSection },
   { key: 'versus', label: 'VS', title: 'TUBE vs TRANSISTOR', blurb: 'Two completely different physics doing the same job.', usesElectron: false, Comp: VersusSection },
-  { key: 'classics', label: 'REFERENCE', title: 'THE TUBE REFERENCE LIBRARY', blurb: 'Thirty full-screen spec cards — structure, pins, ratings, substitutions.', usesElectron: false, Comp: ReferenceSection },
+  { key: 'classics', label: 'REFERENCE', title: 'THE TUBE REFERENCE LIBRARY', blurb: 'Forty full-screen spec cards — structure, pins, ratings, substitutions.', usesElectron: false, Comp: ReferenceSection },
 ];
 
 export function VacuumTubeLabScreen() {

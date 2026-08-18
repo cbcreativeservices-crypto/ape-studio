@@ -32,11 +32,19 @@ import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GlassButton } from '../../../components/GlassButton';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
-import { TUBE_CARD_ASPECT, TUBE_FAMILY_META, TUBE_REFS, tubeImageUrl } from './tubeRefs';
+import { TUBE_CARD_ASPECT, TUBE_FAMILY_META, TUBE_PAGES, TUBE_REFS, tubePageUrl, type TubeFamily } from './tubeRefs';
 
 const MAX_SCALE = 4;
 const DOUBLE_TAP_SCALE = 2.5;
 const clamp = (x: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, x));
+
+/** Brief (≤3-word) category label per family, shown left of the page toggle. */
+const FAMILY_SHORT: Record<TubeFamily, string> = {
+  preamp: 'Preamp Triode',
+  power: 'Power Output',
+  dht: 'Directly-Heated Triode',
+  rectifier: 'Rectifier',
+};
 
 export function TubeCardScreen() {
   const insets = useSafeAreaInsets();
@@ -47,11 +55,14 @@ export function TubeCardScreen() {
 
   const startIdx = Math.max(0, TUBE_REFS.findIndex((r) => r.id === route.params.id));
   const [idx, setIdx] = useState(startIdx);
+  // Each tube has two pages (owner 2026-08-17); the toggle picks which.
+  const [page, setPage] = useState<1 | 2>(1);
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
   const [retryKey, setRetryKey] = useState(0);
   const tube = TUBE_REFS[idx];
   const famTitle = TUBE_FAMILY_META.find((f) => f.key === tube.family)?.title ?? '';
+  const catTitle = FAMILY_SHORT[tube.family];
 
   // The image area measures itself (space BELOW the fixed nav bar). The card is
   // fitted (contain) inside it at scale 1.
@@ -106,6 +117,15 @@ export function TubeCardScreen() {
   const goTo = (nextIdx: number) => {
     if (nextIdx < 0 || nextIdx >= TUBE_REFS.length) return;
     setIdx(nextIdx);
+    setPage(1); // new tube always opens on page 1
+    setLoaded(false);
+    setFailed(false);
+    resetTransform();
+  };
+
+  const goPage = (nextPage: 1 | 2) => {
+    if (nextPage === page) return;
+    setPage(nextPage);
     setLoaded(false);
     setFailed(false);
     resetTransform();
@@ -225,9 +245,12 @@ export function TubeCardScreen() {
   useEffect(() => {
     const prev = TUBE_REFS[idx - 1];
     const next = TUBE_REFS[idx + 1];
-    if (prev) Image.prefetch(tubeImageUrl(prev.file)).catch(() => {});
-    if (next) Image.prefetch(tubeImageUrl(next.file)).catch(() => {});
-  }, [idx]);
+    // The other page of THIS tube (so the toggle is instant), plus page 1 of
+    // each neighbour (so tube stepping stays snappy).
+    Image.prefetch(tubePageUrl(tube.stem, 2)).catch(() => {});
+    if (prev) Image.prefetch(tubePageUrl(prev.stem, 1)).catch(() => {});
+    if (next) Image.prefetch(tubePageUrl(next.stem, 1)).catch(() => {});
+  }, [idx, tube.stem]);
 
   // Non-members never reach the cards (deep-link safe).
   if (!unlocked) {
@@ -288,6 +311,27 @@ export function TubeCardScreen() {
         </Pressable>
       </View>
 
+      {/* Page toggle — each tube has two pages (owner 2026-08-17). Its own
+          fixed row above the image, never over it (same rule as the nav bar).
+          A brief category label sits to the LEFT of the page buttons. */}
+      <View style={styles.pageRow}>
+        <Text style={styles.pageCat} numberOfLines={1}>{catTitle}</Text>
+        <View style={styles.pageTabs}>
+          {([1, 2] as const).map((p) => (
+            <Pressable
+              key={p}
+              onPress={() => goPage(p)}
+              style={[styles.pageTab, page === p && styles.pageTabOn]}
+              accessibilityRole="button"
+              accessibilityState={{ selected: page === p }}
+              accessibilityLabel={`Show page ${p} of ${TUBE_PAGES}`}
+            >
+              <Text style={[styles.pageTabText, page === p && styles.pageTabTextOn]}>PAGE {p}</Text>
+            </Pressable>
+          ))}
+        </View>
+      </View>
+
       {/* Image area — everything below the bar; pinch-zoom + pan only. */}
       <View style={styles.imageArea} onLayout={onAreaLayout} {...responder.panHandlers}>
         {imgW > 0 ? (
@@ -299,13 +343,13 @@ export function TubeCardScreen() {
             }}
           >
             <Image
-              key={`${tube.file}-${retryKey}`}
-              source={{ uri: tubeImageUrl(tube.file) }}
+              key={`${tube.stem}-p${page}-${retryKey}`}
+              source={{ uri: tubePageUrl(tube.stem, page) }}
               style={{ width: imgW, height: imgH }}
               resizeMode="contain"
               onLoad={() => setLoaded(true)}
               onError={() => setFailed(true)}
-              accessibilityLabel={`${tube.short} reference card — ${tube.role}`}
+              accessibilityLabel={`${tube.short} reference card, page ${page} of ${TUBE_PAGES} — ${tube.role}`}
             />
           </Animated.View>
         ) : null}
@@ -313,7 +357,7 @@ export function TubeCardScreen() {
         {!loaded && !failed ? (
           <View style={styles.centerOverlay} pointerEvents="none">
             <ActivityIndicator size="large" color={colors.amber} />
-            <Text style={styles.loadText}>LOADING {tube.short}…</Text>
+            <Text style={styles.loadText}>LOADING {tube.short} · PAGE {page}…</Text>
           </View>
         ) : null}
         {failed ? (
@@ -366,6 +410,42 @@ const styles = StyleSheet.create({
   },
   stepBtnOff: { opacity: 0.3 },
   stepArrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 24, color: colors.textSecondary, marginTop: -3 },
+
+  // Page toggle row — centered PAGE 1 / PAGE 2 segments (owner 2026-08-17).
+  pageRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#1c1c22',
+    backgroundColor: colors.screenBg,
+  },
+  // Brief category label at the left of the page-toggle row.
+  pageCat: {
+    flex: 1,
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 12.5,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    color: colors.textSecondary,
+  },
+  pageTabs: { flexDirection: 'row', gap: 8 },
+  pageTab: {
+    minWidth: 92,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#33333c',
+    backgroundColor: '#17171c',
+    paddingVertical: 7,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+  },
+  pageTabOn: { borderColor: 'rgba(255,198,77,.6)', backgroundColor: 'rgba(255,198,77,.12)' },
+  pageTabText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.4, color: colors.textSub },
+  pageTabTextOn: { color: colors.amber },
 
   imageArea: { flex: 1, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
 

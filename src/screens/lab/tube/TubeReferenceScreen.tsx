@@ -51,7 +51,7 @@ export function TubeReferenceScreen() {
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>TUBE REFERENCE</Text>
-          <Text style={styles.subtitle}>30 tubes · structure, pins, ratings, substitutions</Text>
+          <Text style={styles.subtitle}>40 tubes · structure, pins, ratings, substitutions</Text>
         </View>
       </View>
 
@@ -81,7 +81,7 @@ export function TubeReferenceScreen() {
             <Text style={styles.lockEyebrow}>ACADEMY MEMBERS</Text>
             <Text style={styles.lockTitle}>The Tube Reference Library</Text>
             <Text style={styles.lockBody}>
-              Thirty full-screen reference cards — internal structure, pin layout and functions, key
+              Forty full-screen reference cards — internal structure, pin layout and functions, key
               ratings, safe substitutions, and what to watch for — for the tubes behind most of
               recorded music. An Academy membership unlocks every card.
             </Text>

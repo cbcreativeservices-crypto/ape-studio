@@ -5,12 +5,35 @@
  * measurement tools with per-tool colored glass keys; each opens its
  * educational info screen (the live engine is Spike 0 — see toolsData notes).
  */
-import { useEffect, useState } from 'react';
-import { Dimensions, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useRef, useState, type FC } from 'react';
+import { Animated, Dimensions, Easing, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as Haptics from 'expo-haptics';
+import { hapticsEnabled } from '../../features/settings/store';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Svg, { Circle, Line, Path, Rect } from 'react-native-svg';
+import Svg, {
+  Circle,
+  Defs,
+  Line,
+  LinearGradient as SvgLinearGradient,
+  Path,
+  Rect,
+  Stop,
+  type SvgProps,
+} from 'react-native-svg';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+// Measurement-tool card strips (Booth 2026-08-17): full-width 2:1 SVG previews
+// of each tool's display, replacing the old inline ToolIcon glyph. Imported as
+// components via react-native-svg-transformer (metro.config.js). The SVGs are
+// the design deliverable — do not restyle/re-export them.
+import ToolStripSpl from '../../../assets/tool-strips/tool_01_spl_reference_meter_strip.svg';
+import ToolStripRta from '../../../assets/tool-strips/tool_02_spectrum_analyzer_rta_strip.svg';
+import ToolStripWaveform from '../../../assets/tool-strips/tool_03_waveform_viewer_strip.svg';
+import ToolStripSpectrogram from '../../../assets/tool-strips/tool_04_spectrogram_strip.svg';
+import ToolStripRt60 from '../../../assets/tool-strips/tool_05_rt60_reverb_decay_strip.svg';
+import ToolStripSignalgen from '../../../assets/tool-strips/tool_06_tone_noise_generator_strip.svg';
+import ToolStripHzcounter from '../../../assets/tool-strips/tool_07_frequency_counter_tuner_strip.svg';
+import ToolStripMultimeter from '../../../assets/tool-strips/tool_08_pro_audio_multimeter_strip.svg';
 import { BrandLogo } from '../../components/BrandLogo';
 import { GlassButton } from '../../components/GlassButton';
 import { NavIcon, type NavIconName } from '../../components/nav/NavIcon';
@@ -18,7 +41,7 @@ import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { CONCEPT_MODULES } from '../../features/tools/learn';
 import { colors, fonts } from '../../theme/tokens';
 import { AccuracyNote } from '../../components/AccuracyNote';
-import { TOOLS, type ToolKey } from './toolsData';
+import { toolByKey, type ToolKey } from './toolsData';
 import {
   fmtDuration,
   getExposureSnapshot,
@@ -28,7 +51,9 @@ import {
 import type { RootStackParamList } from '../../navigation/types';
 
 const { width: SCREEN_W } = Dimensions.get('window');
-const TILE_W = Math.floor((SCREEN_W - 14 * 2 - 12) / 2); // 2-across, 14 pad, 12 gap
+// 2-across INSIDE the gray panel: subtract the scroll padding (14×2), the
+// panel's border (1×2) + padding (12×2), and the 12px gap between the two tiles.
+const TILE_W = Math.floor((SCREEN_W - 14 * 2 - (1 + 12) * 2 - 12) / 2);
 const NAV_TABS: NavIconName[] = ['Home', 'Study', 'Achievements', 'Profile'];
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ToolsHub'>;
@@ -182,6 +207,249 @@ function ToolIcon({ tool }: { tool: ToolKey }) {
   }
 }
 
+/** Tile display order (owner 2026-08-17): 2-across, top→down / left→right —
+ *  SPL · MultiMeter / Waveform · RTA / Spectrogram · Noise Gen / RT60 · Freq. */
+const TILE_ORDER: ToolKey[] = [
+  'spl',
+  'multimeter',
+  'waveform',
+  'rta',
+  'spectrogram',
+  'signalgen',
+  'rt60',
+  'hzcounter',
+];
+
+/** Tool → card-strip component (2:1 SVG preview of the tool's display). */
+const TOOL_STRIP: Record<ToolKey, FC<SvgProps>> = {
+  spl: ToolStripSpl,
+  rta: ToolStripRta,
+  waveform: ToolStripWaveform,
+  spectrogram: ToolStripSpectrogram,
+  rt60: ToolStripRt60,
+  signalgen: ToolStripSignalgen,
+  hzcounter: ToolStripHzcounter,
+  multimeter: ToolStripMultimeter,
+};
+
+/** Screen-reader description per strip (strips carry zero glyphs — Booth §6). */
+const STRIP_LABEL: Record<ToolKey, string> = {
+  spl: 'SPL reference meter: analogue VU meter with needle beside a segmented LED level ladder',
+  rta: 'Spectrum analyser: thirty-one frequency bands as vertical bars with peak-hold markers',
+  waveform: 'Waveform viewer: oscilloscope waveform around a centre zero line',
+  spectrogram: 'Spectrogram: frequency content over time as a colour heat map',
+  rt60: 'RT60 reverb decay: decay curve falling to a noise floor with a fitted decay line',
+  signalgen: 'Tone and noise generator: a sine wave giving way to broadband noise',
+  hzcounter: 'Frequency counter and tuner: tuning meter with a needle reading off centre',
+  multimeter: 'Pro audio multimeter: combined level bar, spectrum, spectrogram and oscilloscope',
+};
+
+/** Full-width 2:1 strip that replaces the old icon well above each tile title. */
+function ToolStrip({ tool }: { tool: ToolKey }) {
+  const Strip = TOOL_STRIP[tool];
+  return (
+    <View style={styles.tileStrip}>
+      {/* Inner keeps the strip's true 2:1 so it's never distorted; the outer
+          2.5:1 crop (overflow hidden) trims only the safe top/bottom margin. */}
+      <View style={styles.tileStripInner}>
+        <Strip
+          width="100%"
+          height="100%"
+          accessibilityRole="image"
+          accessibilityLabel={STRIP_LABEL[tool]}
+        />
+      </View>
+    </View>
+  );
+}
+
+// Bead-blast GRIT — the same deterministic random particulate the dashboard's
+// study-method panels use (BlackFaceBg): a one-time xorshift point cloud stored
+// as panel fractions, multiplied into pixel space so each speck stays a round
+// dot at any size (no tiling, no streaks). Copied to match exactly.
+const GRIT_SPECKS = (() => {
+  let s = 0x2545f491 >>> 0;
+  const rnd = () => {
+    s ^= s << 13;
+    s ^= s >>> 17;
+    s ^= s << 5;
+    return ((s >>> 0) % 1_000_000) / 1_000_000;
+  };
+  const out: { fx: number; fy: number; r: number; light: boolean; a: number }[] = [];
+  for (let i = 0; i < 130; i++) {
+    out.push({ fx: rnd(), fy: rnd(), r: 0.45 + rnd() * 0.7, light: rnd() > 0.5, a: 0.05 + rnd() * 0.09 });
+  }
+  return out;
+})();
+
+/** PanelFace — the GRAY textured rack-blank the tool cutouts are mounted in.
+ *  A faithful copy of the dashboard study-method panel face (BlackFaceBg,
+ *  default method gray): a medium-gray vertical gradient + bead-blasted grit +
+ *  a lit top lip and a shadowed bottom edge, drawn in measured PIXEL space so
+ *  the specks are round dots. Decorative; never blocks touches. */
+function PanelFace() {
+  const [size, setSize] = useState({ w: 0, h: 0 });
+  // Darkened well below the dashboard method-panel gray (owner 2026-08-17).
+  const gradStops = [
+    { o: 0, c: '#16161a' },
+    { o: 0.42, c: '#222227' },
+    { o: 1, c: '#08080c' },
+  ];
+  return (
+    <View
+      pointerEvents="none"
+      style={StyleSheet.absoluteFill}
+      onLayout={(e) => {
+        const { width, height } = e.nativeEvent.layout;
+        setSize((p) => (p.w === Math.round(width) && p.h === Math.round(height) ? p : { w: Math.round(width), h: Math.round(height) }));
+      }}
+    >
+      {size.w > 0 && size.h > 0 ? (
+        <Svg width={size.w} height={size.h}>
+          <Defs>
+            <SvgLinearGradient id="apeToolsPanelFace" x1="0" y1="0" x2="0" y2="1">
+              {gradStops.map((st) => (
+                <Stop key={st.o} offset={String(st.o)} stopColor={st.c} />
+              ))}
+            </SvgLinearGradient>
+          </Defs>
+          <Rect x={0} y={0} width={size.w} height={size.h} fill="url(#apeToolsPanelFace)" />
+          {/* Random particulate specks — round dots at pixel radius. */}
+          {GRIT_SPECKS.map((g, i) => (
+            <Circle
+              key={i}
+              cx={g.fx * size.w}
+              cy={g.fy * size.h}
+              r={g.r}
+              fill={g.light ? `rgba(255,255,255,${g.a})` : `rgba(0,0,0,${g.a + 0.03})`}
+            />
+          ))}
+          {/* Top lit lip + bottom shadow so the panel reads as its own mounted blank. */}
+          <Line x1={0} y1={0.6} x2={size.w} y2={0.6} stroke="rgba(255,255,255,0.16)" strokeWidth={0.7} />
+          <Line x1={0} y1={size.h - 0.6} x2={size.w} y2={size.h - 0.6} stroke="rgba(0,0,0,0.4)" strokeWidth={0.9} />
+        </Svg>
+      ) : null}
+    </View>
+  );
+}
+
+/** Dark-gray-glass 3D display overlay — the dashboard GlassScreen look
+ *  (smoked tint · vertical sheen→dim · top-left specular · edge glares) applied
+ *  over each tool tile (owner 2026-08-17). Decorative; never blocks touches.
+ *  Gradient lightened per owner 2026-08-17 — the dim was too heavy. */
+function TileGlass() {
+  return (
+    <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+      <View style={styles.glassTint} />
+      {/* Vertical sheen → dim: catches light up top, darkens gently toward the bottom. */}
+      <LinearGradient
+        colors={['rgba(255,255,255,0.12)', 'rgba(255,255,255,0.03)', 'rgba(0,0,0,0.05)', 'rgba(0,0,0,0.12)']}
+        locations={[0, 0.5, 0.8, 1]}
+        start={{ x: 0.5, y: 0 }}
+        end={{ x: 0.5, y: 1 }}
+        style={StyleSheet.absoluteFill}
+      />
+      {/* Ambient specular highlight sweeping from the top-left corner. */}
+      <LinearGradient
+        colors={['rgba(255,255,255,0.16)', 'rgba(255,255,255,0.04)', 'rgba(255,255,255,0)']}
+        locations={[0, 0.35, 0.7]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0.75, y: 0.9 }}
+        style={StyleSheet.absoluteFill}
+      />
+      <View style={styles.glassTopGlare} />
+      <View style={styles.glassBottomHighlight} />
+    </View>
+  );
+}
+
+const TILE_SINK = 1; // px the display sinks when pressed (a subtle recess, owner 2026-08-17)
+
+/** One tool tile as a pressable panel display — sinks into its recess with a
+ *  haptic click, lights up (powers on) on press, then exits after a beat, the
+ *  same hardware feel as the dashboard SwitchButtons (owner 2026-08-17). */
+function ToolTile({
+  tool,
+  name,
+  planned,
+  onActivate,
+}: {
+  tool: ToolKey;
+  name: string;
+  planned?: boolean;
+  onActivate: () => void;
+}) {
+  const sink = useRef(new Animated.Value(0)).current;
+  const glow = useRef(new Animated.Value(0)).current;
+  const busy = useRef(false);
+
+  const animateIn = () =>
+    Animated.parallel([
+      Animated.timing(sink, { toValue: 1, duration: 90, useNativeDriver: true }),
+      Animated.timing(glow, { toValue: 1, duration: 170, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+    ]).start();
+  const animateOut = () =>
+    Animated.parallel([
+      Animated.timing(sink, { toValue: 0, duration: 140, useNativeDriver: true }),
+      Animated.timing(glow, { toValue: 0, duration: 240, easing: Easing.in(Easing.quad), useNativeDriver: true }),
+    ]).start();
+
+  const onIn = () => {
+    if (busy.current) return;
+    // Tactile "click" on touch-down — the exact call the dashboard switches use.
+    if (hapticsEnabled()) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid).catch(() => {});
+    animateIn();
+  };
+  // On a real tap onPress sets busy + navigates; a cancelled press just reverts.
+  const onOut = () => {
+    setTimeout(() => {
+      if (!busy.current) animateOut();
+    }, 60);
+  };
+  const activate = () => {
+    if (busy.current) return;
+    busy.current = true;
+    // Hold the sunk + illuminated state a beat so the "power on" reads, then exit.
+    setTimeout(() => {
+      onActivate();
+      sink.setValue(0);
+      glow.setValue(0);
+      busy.current = false;
+    }, 190);
+  };
+
+  const translateY = sink.interpolate({ inputRange: [0, 1], outputRange: [0, TILE_SINK] });
+
+  return (
+    <Pressable
+      onPress={activate}
+      onPressIn={onIn}
+      onPressOut={onOut}
+      accessibilityRole="button"
+      accessibilityLabel={name}
+      style={styles.tileCutout}
+    >
+      {/* Static cavity shadow the panel lip casts — revealed as the display sinks. */}
+      <LinearGradient pointerEvents="none" colors={['rgba(0,0,0,0.6)', 'rgba(0,0,0,0)']} style={styles.tileCavityTop} />
+      {/* The DISPLAY 'cap' — the only mover: sinks into the recess on press. */}
+      <Animated.View style={[styles.tileCap, { transform: [{ translateY }] }]}>
+        <ToolStrip tool={tool} />
+        <Text style={styles.tileName} numberOfLines={2}>
+          {name.replace(' / ', '\n')}
+        </Text>
+        <TileGlass />
+        {/* Illumination — the screen powers on (glow ramps up) when pressed. */}
+        <Animated.View pointerEvents="none" style={[styles.tileGlowLight, { opacity: glow }]} />
+        {planned && (
+          <View style={styles.comingChip}>
+            <Text style={styles.comingChipText}>COMING</Text>
+          </View>
+        )}
+      </Animated.View>
+    </Pressable>
+  );
+}
+
 export function ToolsHubScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
   const { commercialMode, caps, entitlement } = useEntitlement();
@@ -217,7 +485,6 @@ export function ToolsHubScreen({ navigation }: Props) {
             <Text style={styles.eyebrow}>PROFESSIONAL AUDIO TOOLS</Text>
           </View>
           <View style={{ flex: 1 }} />
-          <AccuracyNote compact style={{ marginRight: 8 }} />
           {/* GLOSSARY key, like the other screens (Booth 2026-07-11). */}
           <View style={{ width: 96 }}>
             <GlassButton
@@ -235,6 +502,9 @@ export function ToolsHubScreen({ navigation }: Props) {
         <ScrollView contentContainerStyle={styles.scroll}>
           {/* Hero — the module masthead (art can layer in later). */}
           <View style={styles.hero}>
+            {/* Accuracy ⓘ — top-right corner of the hero, above the dosimeter
+                (owner 2026-08-17; moved out of the screen header). */}
+            <AccuracyNote compact style={styles.heroAccuracy} />
             <Text style={styles.heroEyebrow}>AUDIO MEASUREMENT TOOLS</Text>
             {/* Title row: title LEFT, dosimeter readout + open control RIGHT
                 (owner 2026-08-12) — the ONE place the user interacts with the
@@ -244,45 +514,37 @@ export function ToolsHubScreen({ navigation }: Props) {
               <DosimeterChip onOpen={() => navigation.navigate('ExposureMonitor')} />
             </View>
             <View style={styles.heroRule} />
-            <Text style={styles.heroCount}>{TOOLS.filter((t) => !t.planned).length} tools available</Text>
           </View>
 
-          {/* Tools as SQUARE tiles, 2 across (Booth 2026-07-11). Always unlocked. */}
-          <View style={styles.grid}>
-            {TOOLS.map((t) => (
-              <Pressable
-                key={t.key}
-                style={[styles.tile, { borderColor: ICON_COLOR[t.key] + '66' }]}
-                onPress={() =>
-                  // The Frequency Counter and the MultiMeter have their own
-                  // full live screens (each owns its useToolUsage telemetry);
-                  // the rest open their educational info screen (Booth
-                  // 2026-07-18; MultiMeter owner spec 2026-07-29).
-                  t.key === 'hzcounter'
-                    ? navigation.navigate('FrequencyCounter')
-                    : t.key === 'multimeter'
-                      ? navigation.navigate('MultiMeter')
-                      : navigation.navigate('ToolInfo', { toolKey: t.key })
-                }
-                accessibilityRole="button"
-                accessibilityLabel={t.name}
-              >
-                <View style={styles.tileIconWell}>
-                  <ToolIcon tool={t.key} />
-                </View>
-                {/* One title only (Booth 2026-07-11) — the subtitle lives on the
-                    tool's info screen, not the tile. */}
-                <Text style={styles.tileName} numberOfLines={2}>
-                  {t.name}
-                </Text>
-                {/* Placeholder tools (Booth 2026-07-18): honest COMING chip, no fake engine. */}
-                {t.planned && (
-                  <View style={styles.comingChip}>
-                    <Text style={styles.comingChipText}>COMING</Text>
-                  </View>
-                )}
-              </Pressable>
-            ))}
+          {/* The 8 tools sit as recessed cutouts in ONE gray panel (owner
+              2026-08-17): the panel's gray metal shows in the gaps between tiles
+              and around the grid, and each tile's black cut-edge + glass makes it
+              read as a display poking through from behind. */}
+          <View style={styles.panelShadow}>
+            <View style={styles.panel}>
+              <PanelFace />
+              <View style={styles.grid}>
+              {TILE_ORDER.map(toolByKey).map((t) => (
+                <ToolTile
+                  key={t.key}
+                  tool={t.key}
+                  name={t.name}
+                  planned={t.planned}
+                  // The Frequency Counter and the MultiMeter have their own full
+                  // live screens (each owns its useToolUsage telemetry); the rest
+                  // open their educational info screen (Booth 2026-07-18;
+                  // MultiMeter owner spec 2026-07-29).
+                  onActivate={() =>
+                    t.key === 'hzcounter'
+                      ? navigation.navigate('FrequencyCounter')
+                      : t.key === 'multimeter'
+                        ? navigation.navigate('MultiMeter')
+                        : navigation.navigate('ToolInfo', { toolKey: t.key })
+                  }
+                />
+              ))}
+              </View>
+            </View>
           </View>
 
           {/* Saved Measurement Library — Academy-only (owner 2026-08-05). Free
@@ -401,15 +663,19 @@ const styles = StyleSheet.create({
   },
   scroll: { padding: 14, paddingBottom: 24, gap: 10 },
 
-  // Compact hero so all 3 tile rows fit without scrolling (Booth 2026-07-11).
+  // Compact hero (Booth 2026-07-11); tightened after the tool count was removed
+  // (owner 2026-08-17).
   hero: {
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#26262c',
     backgroundColor: '#121214',
-    padding: 14,
-    gap: 5,
+    paddingHorizontal: 14,
+    paddingTop: 12,
+    paddingBottom: 11,
+    gap: 4,
   },
+  heroAccuracy: { position: 'absolute', top: 10, right: 14, zIndex: 2 },
   heroEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 2.2, color: colors.amber },
   heroTitle: { fontFamily: fonts.oswaldMedium, fontSize: 22, lineHeight: 26, color: colors.textPrimary },
   heroTitleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
@@ -428,20 +694,91 @@ const styles = StyleSheet.create({
   dosiValue: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.5, color: colors.textPrimary },
   dosiOpen: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1.2, color: colors.green },
   heroRule: { width: 40, height: 2, backgroundColor: colors.amber, borderRadius: 1, marginTop: 2 },
-  heroCount: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.textSub },
 
   // 2-across tile grid — short enough that all 3 rows fit above the nav without
   // scrolling (not perfect squares, Booth 2026-07-11).
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-  tile: {
+  // Tile height is now content-driven: a full-width 2:1 strip + the title
+  // (Booth 2026-08-17, ruling D-1). This grows each tile ~40% vs the old fixed
+  // 104 — approved; the grid now scrolls.
+  // Each tile is a CUTOUT in the gray panel (owner 2026-08-17): black cut-edges
+  // (thicker top/left shadow, thin bottom line) give the opening real depth. The
+  // dark cavity (#040405) shows at the top as the display 'cap' sinks on press.
+  // Mirrors the dashboard cutoutMount + SwitchButton cutout.
+  tileCutout: {
     width: TILE_W,
-    height: 104,
-    borderRadius: 12,
-    borderWidth: 1,
-    backgroundColor: '#131316',
-    padding: 12,
-    justifyContent: 'space-between',
+    // Frame corner just barely sharper than the inner glass (10 vs 11) — the two
+    // radii sit only 1pt apart (owner 2026-08-17).
+    borderRadius: 10,
+    borderTopWidth: 2.5,
+    borderLeftWidth: 1.5,
+    borderRightWidth: 2.5,
+    borderBottomWidth: 1,
+    borderTopColor: '#000',
+    borderLeftColor: '#000',
+    borderRightColor: '#000',
+    borderBottomColor: '#000',
+    backgroundColor: '#040405', // dark cavity revealed as the cap sinks
+    overflow: 'hidden',
   },
+  // The DISPLAY 'cap' — the tool's screen; the only part that travels on press.
+  // Its corner is ROUNDER (11) than the frame's sharper cut (9) — a two-radius
+  // nested look, with the dark cavity peeking at the corner gap (owner 2026-08-17).
+  tileCap: { backgroundColor: '#0b0c0e', borderRadius: 11, overflow: 'hidden', padding: 9, gap: 8 },
+  // Shadow the panel lip casts into the cavity top, seen when the cap sinks.
+  tileCavityTop: { position: 'absolute', top: 0, left: 0, right: 0, height: 8 },
+  // Power-on illumination that ramps up on press (lightens/glows the screen).
+  // Peak brightness reduced 39% (0.24 → 0.146) per owner 2026-08-17.
+  tileGlowLight: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(165,200,255,0.146)' },
+  // The gray rack panel the cutouts are mounted in.
+  // The outer surrounding panel stays SQUARE-cornered (owner 2026-08-17); only
+  // the 8 tiles inside are rounded.
+  panel: {
+    borderRadius: 0,
+    borderWidth: 1,
+    borderColor: '#000',
+    padding: 12,
+    overflow: 'hidden',
+  },
+  // Wrapper carries the panel's drop shadow (a rounded overflow:hidden view
+  // can't cast its own shadow on iOS). Square corners, matching the panel.
+  panelShadow: {
+    borderRadius: 0,
+    backgroundColor: '#0a0a0c',
+    ...Platform.select({
+      ios: { shadowColor: '#000', shadowOpacity: 0.5, shadowRadius: 12, shadowOffset: { width: 0, height: 6 } },
+      android: { elevation: 8 },
+      default: {},
+    }),
+  },
+  // Dark-gray-glass 3D display overlay parts (mirrors the dashboard GlassScreen).
+  glassTint: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.05)' },
+  glassTopGlare: { position: 'absolute', top: 0, left: 0, right: 0, height: 1.5, backgroundColor: 'rgba(255,255,255,0.30)' },
+  glassBottomHighlight: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 1.5, backgroundColor: 'rgba(255,255,255,0.20)' },
+  // Strips are 2:1, but the tiles read too tall at full height, so we crop to
+  // 2.5:1 — which trims only the strips' safe top/bottom margin (all plot
+  // content sits inside y 104–920 of 1024), losing nothing (owner 2026-08-17).
+  tileStrip: {
+    width: '100%',
+    aspectRatio: 2.5,
+    borderRadius: 6,
+    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tileStripInner: { width: '100%', aspectRatio: 2 },
+  // Same typeface as the hero "Measurement & Analysis" title (Oswald Medium),
+  // just smaller so tiles can be shorter (owner 2026-08-17). Two lines reserved
+  // so two-up rows stay aligned regardless of title wrap.
+  tileName: {
+    fontFamily: fonts.oswaldMedium,
+    fontSize: 15,
+    lineHeight: 18,
+    minHeight: 36,
+    color: colors.textPrimary,
+    textAlign: 'center',
+  },
+  // Old icon well — retained (orphaned) until Booth's cleanup pass. See ToolIcon.
   tileIconWell: {
     width: 56,
     height: 40,
@@ -452,7 +789,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  tileName: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.5, color: colors.textPrimary },
   comingChip: {
     position: 'absolute',
     top: 8,
