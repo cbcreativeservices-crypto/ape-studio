@@ -36,7 +36,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
 import * as Crypto from 'expo-crypto';
 import { GlassButton } from '../../components/GlassButton';
-import { lockPortrait, unlockOrientation } from '../../lib/screenOrientationSafe';
+import { lockLandscape, lockPortrait, unlockOrientation } from '../../lib/screenOrientationSafe';
 import { requireVizMeters, type VizMetersModule } from '../lab/meter/skiaGate';
 import { CollapsibleSection } from '../lab/LabShell';
 import type { LiveMeterDrive, PeakHoldMode } from '../lab/meter/vizMeters';
@@ -716,7 +716,19 @@ export function SplMeterScreen({ navigation }: Props) {
   // ── Full-screen VU popup (owner directive 2026-07-29) ─────────────────────
   // Skia meters load ONLY through the meter gate (§1.7 honest fallback).
   const viz = useMemo(() => requireVizMeters(), []);
-  const [vuOpen, setVuOpen] = useState(false);
+  // VU is the tool's HOME (owner 2026-08-18): it shows on entry; the digital
+  // readout sits behind it (reachable via the header "VU" button ⇄ the home's
+  // "DIGITAL READOUT" nav). vuFsOpen is the landscape-only full VU screen.
+  const [vuOpen, setVuOpen] = useState(true);
+  const [vuFsOpen, setVuFsOpen] = useState(false);
+  // Full VU screen is LANDSCAPE-ONLY (owner 2026-08-18): force landscape while it
+  // is open, re-lock portrait on close. Portrait full VU is never shown.
+  useEffect(() => {
+    if (vuFsOpen) lockLandscape();
+    return () => {
+      lockPortrait();
+    };
+  }, [vuFsOpen]);
   // User setting for the LED meter's peak-hold cap linger (owner 2026-07-30).
   const [holdMode, setHoldMode] = useState<PeakHoldMode>('1s');
   // RANGE (owner 2026-07-30): the environmental SPL that reads 0 VU. The wide VU
@@ -1086,7 +1098,7 @@ export function SplMeterScreen({ navigation }: Props) {
           <View style={styles.vuOpenFrame}>
             {viz ? <viz.VuGlyph size={58} /> : <VuGlyphFallback />}
           </View>
-          <Text style={styles.vuOpenLabel}>VU View</Text>
+          <Text style={styles.vuOpenLabel}>VU HOME</Text>
         </Pressable>
       </View>
 
@@ -1338,15 +1350,26 @@ export function SplMeterScreen({ navigation }: Props) {
         onRequestClose={() => setVuOpen(false)}
       >
         <View style={[styles.vuModalRoot, { paddingTop: insets.top + 8 }]}>
+          {/* SPL Meter HOME header — title + nav to the digital readout and the
+              landscape-only full VU screen (owner 2026-08-18). */}
           <View style={styles.vuModalHead}>
-            <Text style={styles.vuModalTitle}>{`${tool.name.toUpperCase()} · VU`}</Text>
+            <Text style={styles.vuModalTitle}>SPL METER HOME</Text>
+            <View style={{ flex: 1 }} />
             <Pressable
+              style={styles.homeNavBtn}
               onPress={() => setVuOpen(false)}
-              hitSlop={14}
               accessibilityRole="button"
-              accessibilityLabel="Close"
+              accessibilityLabel="Open the digital readout"
             >
-              <Text style={styles.vuClose}>✕</Text>
+              <Text style={styles.homeNavText}>DIGITAL ›</Text>
+            </Pressable>
+            <Pressable
+              style={[styles.homeNavBtn, styles.homeNavBtnFs]}
+              onPress={() => setVuFsOpen(true)}
+              accessibilityRole="button"
+              accessibilityLabel="Open the full VU screen in landscape"
+            >
+              <Text style={styles.homeNavTextFs}>⛶ FULL VU</Text>
             </Pressable>
           </View>
           <ScrollView contentContainerStyle={styles.vuScroll}>
@@ -1726,6 +1749,60 @@ export function SplMeterScreen({ navigation }: Props) {
               </>
             )}
           </ScrollView>
+        </View>
+      </Modal>
+
+      {/* ── FULL VU (owner 2026-08-18): LANDSCAPE-ONLY — VU on the LEFT, the tall
+          LED meter on the RIGHT. Portrait is blocked (supportedOrientations +
+          lockLandscape); the screen re-locks portrait on close. ── */}
+      <Modal
+        visible={vuFsOpen}
+        animationType="fade"
+        statusBarTranslucent
+        supportedOrientations={['landscape', 'landscape-left', 'landscape-right']}
+        onRequestClose={() => setVuFsOpen(false)}
+      >
+        <View style={[styles.vuFsRoot, { paddingTop: insets.top }]}>
+          <Pressable
+            style={styles.vuFsClose}
+            onPress={() => setVuFsOpen(false)}
+            hitSlop={16}
+            accessibilityRole="button"
+            accessibilityLabel="Close the full VU screen"
+          >
+            <Text style={styles.vuClose}>✕</Text>
+          </Pressable>
+          {viz ? (
+            <View style={styles.vuFsRow}>
+              <View style={styles.vuFsLeft}>
+                <VuTopMeter
+                  viz={viz}
+                  live={live}
+                  vuW={Math.round(Math.max(winW, winH) * 0.66)}
+                  vuH={Math.round(Math.min(winW, winH) * 0.74)}
+                  live0Db={vuLive0}
+                  maxText={vuMaxText}
+                  levelText={vuLevelText}
+                  rangeText={vuRangeText}
+                  brackets={vuBrackets}
+                  peakHold={holdMode}
+                />
+              </View>
+              <SideLed
+                viz={viz}
+                live={live}
+                ledW={92}
+                ledH={Math.round(Math.min(winW, winH) * 0.82)}
+                holdMode={holdMode}
+                splOffset={splOffset}
+                weightingLabel={weighting}
+              />
+            </View>
+          ) : (
+            <View style={styles.vuUnavailCard}>
+              <Text style={styles.vuUnavailTitle}>VU METER NEEDS THE NEW DEV BUILD</Text>
+            </View>
+          )}
         </View>
       </Modal>
 
@@ -2135,6 +2212,24 @@ const styles = StyleSheet.create({
   vuModalTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1.6, color: colors.textPrimary },
   vuClose: { fontFamily: fonts.oswaldSemiBold, fontSize: 22, color: colors.textSecondary, padding: 4 },
   vuScroll: { padding: 16, paddingBottom: 40, gap: 14, alignItems: 'stretch' },
+  // SPL Meter HOME nav buttons (→ digital readout, → full VU).
+  homeNavBtn: {
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#131316',
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    marginLeft: 8,
+  },
+  homeNavText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.8, color: colors.textSecondary },
+  homeNavBtnFs: { borderColor: 'rgba(55,224,95,.5)' },
+  homeNavTextFs: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.8, color: colors.green },
+  // Full VU (landscape) — VU left, tall LED right.
+  vuFsRoot: { flex: 1, backgroundColor: '#0c0c0f', alignItems: 'center', justifyContent: 'center' },
+  vuFsClose: { position: 'absolute', top: 8, left: 14, zIndex: 10, padding: 6 },
+  vuFsRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 18 },
+  vuFsLeft: { alignItems: 'center', justifyContent: 'center' },
   // Below-the-VU row: round SPL gauge (left) + thin LED meter (right).
   heroRow: { flexDirection: 'row', gap: 12, alignItems: 'flex-start', justifyContent: 'center' },
   // Top area: LEFT control column + tall LED down the right.

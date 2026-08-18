@@ -40,6 +40,18 @@ export function lockPortrait(): void {
   }
 }
 
+/** Force landscape (either side). No-op (and never throws) when the native
+ *  module is absent. */
+export function lockLandscape(): void {
+  const so = getScreenOrientation();
+  if (!so) return;
+  try {
+    so.lockAsync(so.OrientationLock.LANDSCAPE).catch(() => {});
+  } catch {
+    /* ignore */
+  }
+}
+
 /** Allow the device to rotate freely. No-op (and never throws) when the native
  *  module is absent. */
 export function unlockOrientation(): void {
