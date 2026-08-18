@@ -1729,7 +1729,10 @@ export function SplMeterScreen({ navigation }: Props) {
                 <Text style={styles.vuFsCloseX}>✕</Text>
               </View>
               {viz ? (
-                <View style={[styles.vuFsRow, winW < winH && styles.vuFsCol]}>
+                // pointerEvents none: the Skia meters must NOT capture taps, or the
+                // tap-to-close is eaten wherever a meter covers the screen (portrait)
+                // — owner 2026-08-18. Nothing here is interactive anyway.
+                <View style={[styles.vuFsRow, winW < winH && styles.vuFsCol]} pointerEvents="none">
                   <View style={styles.vuFsLeft}>
                     <VuTopMeter
                       viz={viz}
