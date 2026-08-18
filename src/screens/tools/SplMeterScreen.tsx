@@ -431,10 +431,14 @@ const FS_RED_KEY = 'ape:splFsRed';
 const FS_MAX_DIM = 0.72; // black wash at the darkest (non-red) setting
 const FS_RED_AT = 0.06; // brightness ≤ this → LATCH red mode (far left)
 const FS_RED_EXIT = 0.22; // brightness ≥ this → leave red mode (hysteresis, so it "stays")
-// Distinct night-vision RED (owner 2026-08-17: the old faint wash just merged
-// into the dim). A moderate black dim + a STRONG red overlay reads clearly red.
-const FS_RED_DIM = 0.4;
-const FS_RED_WASH = 'rgba(220,8,8,0.46)';
+// Night-vision RED via a MULTIPLY blend (owner 2026-08-18: an alpha wash either
+// merged into the dim when faint, or reddened the BLACK when strong). Multiply
+// keeps black BLACK (black × red = black) and turns only the lit readouts a
+// submarine red — like the app's low-light mode, but properly hue-preserving.
+// The black dim sets the LOW brightness; the multiply sets the red. Opaque red
+// (the fade is the view's animated opacity).
+const FS_RED_DIM = 0.5;
+const FS_RED_WASH = 'rgb(235,30,25)';
 const FS_THUMB = 30; // bigger thumb = easier to grab (owner 2026-08-17/18)
 
 /** Discreet, light-gray brightness line (0 = darkest/red, 1 = full bright).
@@ -1908,7 +1912,9 @@ const styles = StyleSheet.create({
   fsBtnLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 0.8, color: colors.green, textAlign: 'center' },
 
   // Fullscreen # readout view (owner 2026-08-17): number alone, no toggles.
-  fsRoot: { flex: 1, backgroundColor: colors.screenBg, paddingHorizontal: 16 },
+  // isolation:isolate makes the red MULTIPLY wash blend only against the
+  // fullscreen content (not whatever is behind the modal).
+  fsRoot: { flex: 1, backgroundColor: colors.screenBg, paddingHorizontal: 16, isolation: 'isolate' },
   fsTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   fsCorner: { alignItems: 'flex-start', gap: 2 },
   // PEAK + PEAK HOLD grouped on the RIGHT, PEAK to the left (owner 2026-08-17).
@@ -1923,7 +1929,7 @@ const styles = StyleSheet.create({
   // Popup-local brightness / red-mode overlays + slider (owner 2026-08-17).
   // Both overlays are Animated (opacity driven imperatively during a drag).
   fsDim: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#000000', zIndex: 50 },
-  fsRedWash: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: FS_RED_WASH, zIndex: 70 },
+  fsRedWash: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: FS_RED_WASH, mixBlendMode: 'multiply', zIndex: 70 },
   // Revealed dimmer line — sits HIGHER up the screen (bottom set inline), above
   // the overlays so it stays usable. Discreet light-gray.
   fsSliderDock: { position: 'absolute', left: 0, right: 0, alignItems: 'center', zIndex: 65 },
