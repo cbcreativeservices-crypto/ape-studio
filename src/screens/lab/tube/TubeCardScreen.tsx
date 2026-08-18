@@ -3,10 +3,16 @@
  * (spec: docs/APE_TUBE_REFERENCE_SPEC_2026_08_09.md).
  *
  * LAYOUT (owner 2026-08-10): a FIXED nav bar sits ABOVE the image in its own
- * space — it never overlays the card, and tube navigation is by the bar's
- * ‹ / › arrows, NOT by swiping the image. Earlier a swipe-between-tubes gesture
- * fought the image's pan/zoom for the same drags; removing it leaves the image
- * area doing ONE job: pinch-zoom (1–4×) + pan when zoomed + double-tap 1×↔︎2.5×.
+ * space — it never overlays the card. Tube stepping is by the bar's ‹ / ›
+ * arrows and the PAGE 1 / PAGE 2 tabs.
+ *
+ * SWIPE (owner 2026-08-18): a horizontal swipe on the image also flips through
+ * the sheets, in reading order — page 1 → page 2 → next tube's page 1 → … (and
+ * the reverse). The earlier swipe was removed because it fought the image's
+ * pan for the SAME one-finger drag; this one only arms when the image is NOT
+ * zoomed (scale ≈ 1, where there is no pan to fight), so the two never compete.
+ * The sheet follows the finger and snaps to the next/prev sheet past a
+ * threshold, else springs back.
  *
  * DELIBERATELY core RN only (PanResponder + Animated + Image): the project has
  * no gesture-handler / expo-image, and a native add would stay dark until the
@@ -89,6 +95,11 @@ export function TubeCardScreen() {
   areaRef.current = area;
   const dimsRef = useRef({ imgW, imgH });
   dimsRef.current = { imgW, imgH };
+  // Live idx/page for the (once-memoized) pan responder to read without staleness.
+  const idxRef = useRef(idx);
+  idxRef.current = idx;
+  const pageRef = useRef(page);
+  pageRef.current = page;
   const maxT = (scale: number) => {
     const a = areaRef.current;
     const d = dimsRef.current;
@@ -102,7 +113,7 @@ export function TubeCardScreen() {
   };
 
   const session = useRef({
-    mode: 'idle' as 'idle' | 'pinch' | 'pan',
+    mode: 'idle' as 'idle' | 'pinch' | 'pan' | 'swipe',
     startScale: 1,
     startTx: 0,
     startTy: 0,
@@ -131,15 +142,46 @@ export function TubeCardScreen() {
     resetTransform();
   };
 
+  // Flip one sheet in reading order: page 1 → page 2 → next tube page 1 → … .
+  // Returns false at the very ends (so a swipe there springs back). Used by the
+  // swipe gesture; reads live idx/page via refs. resetTransform() re-centres the
+  // incoming sheet at scale 1.
+  const goSheet = (dir: 1 | -1): boolean => {
+    const i = idxRef.current;
+    const p = pageRef.current;
+    let ni = i;
+    let np: 1 | 2 = p;
+    if (dir === 1) {
+      if (p === 1) np = 2;
+      else if (i < TUBE_REFS.length - 1) { ni = i + 1; np = 1; }
+      else return false;
+    } else {
+      if (p === 2) np = 1;
+      else if (i > 0) { ni = i - 1; np = 2; }
+      else return false;
+    }
+    if (ni !== i) setIdx(ni);
+    setPage(np);
+    setLoaded(false);
+    setFailed(false);
+    resetTransform();
+    return true;
+  };
+  const goSheetRef = useRef(goSheet);
+  goSheetRef.current = goSheet;
+
   const responder = useMemo(
     () =>
       PanResponder.create({
         onStartShouldSetPanResponder: () => true,
-        // Only claim MOVE gestures when there's something to do (a second
-        // finger, or a one-finger drag while zoomed) — never for un-zoomed
-        // one-finger drags, so nothing competes with a plain tap.
+        // Claim MOVE gestures for: a second finger (pinch); a one-finger drag
+        // while zoomed (pan); OR a clearly-horizontal one-finger drag while NOT
+        // zoomed (swipe between sheets). A plain tap moves too little to arm any
+        // of these, so double-tap zoom still works.
         onMoveShouldSetPanResponder: (evt, g) =>
-          evt.nativeEvent.touches.length >= 2 || (cur.current.scale > 1.01 && (Math.abs(g.dx) > 2 || Math.abs(g.dy) > 2)),
+          evt.nativeEvent.touches.length >= 2 ||
+          (cur.current.scale > 1.01 && (Math.abs(g.dx) > 2 || Math.abs(g.dy) > 2)) ||
+          (cur.current.scale <= 1.01 && Math.abs(g.dx) > 10 && Math.abs(g.dx) > Math.abs(g.dy) * 1.4),
         onPanResponderGrant: (evt) => {
           const s = session.current;
           s.mode = 'idle';
@@ -184,7 +226,7 @@ export function TubeCardScreen() {
 
           if (Math.abs(g.dx) > 4 || Math.abs(g.dy) > 4) s.moved = true;
 
-          // One finger only pans, and only while zoomed in (clamped to edges).
+          // One finger, zoomed in → pan (clamped to edges).
           if (s.startScale > 1.01) {
             s.mode = 'pan';
             const m = maxT(cur.current.scale);
@@ -193,11 +235,35 @@ export function TubeCardScreen() {
               clamp(s.startTx + g.dx, -m.x, m.x),
               clamp(s.startTy + g.dy, -m.y, m.y),
             );
+          } else {
+            // One finger, not zoomed → swipe between sheets: the sheet follows
+            // the finger. Dampen the drag hard at the very ends (nowhere to go).
+            s.mode = 'swipe';
+            const atStart = idxRef.current === 0 && pageRef.current === 1;
+            const atEnd = idxRef.current === TUBE_REFS.length - 1 && pageRef.current === 2;
+            let dx = g.dx;
+            if ((dx < 0 && atEnd) || (dx > 0 && atStart)) dx *= 0.32;
+            txAV.setValue(dx);
           }
         },
-        onPanResponderRelease: () => {
+        onPanResponderRelease: (_evt, g) => {
           const s = session.current;
           const now = Date.now();
+
+          // Swipe → snap to the next/prev sheet past a threshold, else spring
+          // the current sheet back to centre.
+          if (s.mode === 'swipe') {
+            const w = areaRef.current.w || 1;
+            const threshold = Math.min(90, w * 0.22);
+            let committed = false;
+            if (g.dx <= -threshold) committed = goSheetRef.current(1);
+            else if (g.dx >= threshold) committed = goSheetRef.current(-1);
+            if (!committed) {
+              Animated.spring(txAV, { toValue: 0, bounciness: 4, useNativeDriver: false }).start();
+              cur.current = { ...cur.current, tx: 0 };
+            }
+            return;
+          }
 
           // Double-tap toggles zoom.
           if (!s.moved && now - s.downAt < 240) {
@@ -245,10 +311,11 @@ export function TubeCardScreen() {
   useEffect(() => {
     const prev = TUBE_REFS[idx - 1];
     const next = TUBE_REFS[idx + 1];
-    // The other page of THIS tube (so the toggle is instant), plus page 1 of
-    // each neighbour (so tube stepping stays snappy).
+    // The other page of THIS tube (so the toggle/forward-swipe is instant),
+    // plus both neighbours' facing pages: next→page 1 (forward swipe lands
+    // there), prev→page 2 (backward swipe lands there).
     Image.prefetch(tubePageUrl(tube.stem, 2)).catch(() => {});
-    if (prev) Image.prefetch(tubePageUrl(prev.stem, 1)).catch(() => {});
+    if (prev) Image.prefetch(tubePageUrl(prev.stem, 2)).catch(() => {});
     if (next) Image.prefetch(tubePageUrl(next.stem, 1)).catch(() => {});
   }, [idx, tube.stem]);
 
