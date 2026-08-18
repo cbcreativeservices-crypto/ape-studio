@@ -435,7 +435,7 @@ const FS_RED_EXIT = 0.22; // brightness ≥ this → leave red mode (hysteresis,
 // into the dim). A moderate black dim + a STRONG red overlay reads clearly red.
 const FS_RED_DIM = 0.4;
 const FS_RED_WASH = 'rgba(220,8,8,0.46)';
-const FS_THUMB = 26; // bigger thumb = easier to grab (owner 2026-08-17)
+const FS_THUMB = 30; // bigger thumb = easier to grab (owner 2026-08-17/18)
 
 /** Discreet, light-gray brightness line (0 = darkest/red, 1 = full bright).
  *  ANCHORED drag (relative to the grab point) — grabbing never snaps the thumb
@@ -502,7 +502,6 @@ function BrightnessSlider({
       accessibilityLabel="Screen brightness — slide left to dim, far left for red night mode"
     >
       <View style={styles.brightBase} />
-      <View style={[styles.brightFill, { width: thumbLeft + FS_THUMB / 2 }]} />
       <View style={[styles.brightThumb, { left: thumbLeft }]} />
     </View>
   );
@@ -1892,14 +1891,14 @@ const styles = StyleSheet.create({
   sideToggle: { justifyContent: 'center', alignItems: 'center', gap: 12, width: 50 },
   sideOpt: { fontFamily: fonts.mono, fontSize: 11, letterSpacing: 0.3, color: '#ffffff', textAlign: 'center' },
   sideOptActive: { color: colors.amber },
-  // Standalone FULLSCREEN button, right of PEAK HOLD (owner 2026-08-17).
-  // FULLSCREEN button — green icon like the flashcards fullscreen (owner
-  // 2026-08-17).
+  // Standalone FULLSCREEN button, right of PEAK HOLD. The FRAME matches the other
+  // screen buttons (neutral #26262c/#131316, same as peakCell); only the CONTENTS
+  // — the ⛶ icon + label — are green (owner 2026-08-18).
   fsBtn: {
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: colors.green,
-    backgroundColor: '#0d1710',
+    borderColor: '#26262c',
+    backgroundColor: '#131316',
     paddingHorizontal: 12,
     alignItems: 'center',
     justifyContent: 'center',
@@ -1927,23 +1926,35 @@ const styles = StyleSheet.create({
   fsRedWash: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: FS_RED_WASH, zIndex: 70 },
   // Revealed dimmer line — sits HIGHER up the screen (bottom set inline), above
   // the overlays so it stays usable. Discreet light-gray.
-  fsSliderDock: { position: 'absolute', left: 24, right: 24, zIndex: 65 },
+  fsSliderDock: { position: 'absolute', left: 0, right: 0, alignItems: 'center', zIndex: 65 },
   // Discreet SUN toggle in the lower-right corner — above the overlays so it is
   // always findable (the way out of a dark/red screen).
   fsSunBtn: { position: 'absolute', right: 14, bottom: 16, padding: 8, zIndex: 75 },
   fsSun: { fontFamily: fonts.mono, fontSize: 15, color: '#8a8c90' },
-  brightTrack: { height: 44, justifyContent: 'center' }, // tall = easy to grab
-  brightBase: { position: 'absolute', left: 0, right: 0, top: 21, height: 2, borderRadius: 1, backgroundColor: '#4a4a4e' },
-  brightFill: { position: 'absolute', left: 0, top: 21, height: 2, borderRadius: 1, backgroundColor: '#9aa0a6' },
+  // Narrower than the screen (centered by fsSliderDock) and TRANSPARENT — an
+  // outlined pill, not a colored line, so it reads as glass over the dark meter
+  // and is easy to grab (owner 2026-08-18).
+  brightTrack: { height: 44, width: '62%', justifyContent: 'center' }, // tall = easy to grab
+  brightBase: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 15,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: 'transparent',
+    borderWidth: 1.5,
+    borderColor: 'rgba(224,226,230,0.5)',
+  },
   brightThumb: {
     position: 'absolute',
     top: (44 - FS_THUMB) / 2,
     width: FS_THUMB,
     height: FS_THUMB,
     borderRadius: FS_THUMB / 2,
-    backgroundColor: '#c4c8cc',
-    borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.35)',
+    backgroundColor: 'rgba(255,255,255,0.22)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255,255,255,0.75)',
   },
 
   // Peak row.
