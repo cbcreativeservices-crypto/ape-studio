@@ -20,8 +20,8 @@ function colorFor(i: number): string {
   return '#cc0000';
 }
 
-// MIDI velocity ramp (blue→red) for the whole strip — EXPERIMENTAL comparison
-// (owner 2026-08-06, likely to be reverted). Segment 0 = blue (low), top = red.
+// MIDI velocity ramp (blue→red) for the whole strip — the STANDARD for the
+// study-method progress meters (owner 2026-08-13). Segment 0 = blue (low), top = red.
 function midiColorFor(i: number): string {
   return levelColor(i / (SEG_COUNT - 1));
 }
@@ -51,9 +51,11 @@ export function LedMeter({
    *  sits under a tinted pane, so the physical cues go — no segment bevel, no
    *  raised housing frame. Just flat lit glass segments on the dark face. */
   flat?: boolean;
-  /** EXPERIMENTAL (owner 2026-08-06, likely revert): recolor the whole strip
-   *  on the MIDI blue→red velocity ramp instead of the green→red positional
-   *  scheme. Currently used only by the Total Progress vertical meter. */
+  /** Recolor the whole strip on the MIDI blue→red velocity ramp instead of the
+   *  green→red positional scheme. The STANDARD for study-method progress meters
+   *  (owner 2026-08-13): the dashboard glass method/quiz meters + all four study
+   *  screens (via LedMeterWell). Also used by the Total Progress vertical column,
+   *  which its call site still flags as an experimental comparison. */
   midi?: boolean;
 }) {
   const f = Math.max(0, Math.min(SEG_COUNT, Math.round(filled)));
