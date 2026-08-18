@@ -283,7 +283,32 @@ function splZoneColor(spl: number, mode: DialMode): string {
 
 /** Peak-hold linger options for the LED meter's user setting. */
 const HOLD_MODES: PeakHoldMode[] = ['off', '1s', '3s', 'inf'];
-const holdLabel = (m: PeakHoldMode) => (m === 'off' ? 'OFF' : m === 'inf' ? '∞' : m);
+const holdLabel = (m: PeakHoldMode) =>
+  m === 'off' ? 'OFF'
+  : m === 'inf' ? '∞'
+  : m.endsWith('m') ? `${m.slice(0, -1)} MIN`
+  : m.endsWith('h') ? `${m.slice(0, -1)} HR`
+  : m; // seconds stay as-is ('1s', '30s', …)
+
+/** Peak-hold DURATION options for the popup (owner 2026-08-18): OFF + 1 s … 1 h. */
+const HOLD_POPUP_MODES: PeakHoldMode[] = [
+  'off', '1s', '2s', '3s', '5s', '10s', '20s', '30s', '1m', '5m', '10m', '30m', '1h',
+];
+
+/** One selectable option inside a bottom-bar setting popup (owner 2026-08-18). */
+function PopupOpt({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
+  return (
+    <Pressable
+      style={[styles.popupOpt, selected && styles.popupOptSel]}
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityState={{ selected }}
+      accessibilityLabel={label}
+    >
+      <Text style={[styles.popupOptText, selected && styles.popupOptTextSel]}>{label}</Text>
+    </Pressable>
+  );
+}
 
 /** Plain-RN mini-VU fallback for pre-Skia clients (cream face, red zone,
  *  tilted needle) — the opener must read as a tiny VU even without Skia. */
@@ -721,6 +746,9 @@ export function SplMeterScreen({ navigation }: Props) {
   // "DIGITAL READOUT" nav). vuFsOpen is the landscape-only full VU screen.
   const [vuOpen, setVuOpen] = useState(true);
   const [vuFsOpen, setVuFsOpen] = useState(false);
+  // Which setting popup is open from the VU home's bottom control bar (owner
+  // 2026-08-18): Range · Weighting · Response · Peak Hold.
+  const [settingPopup, setSettingPopup] = useState<null | 'range' | 'unit' | 'response' | 'hold'>(null);
   // Full VU screen is LANDSCAPE-ONLY (owner 2026-08-18): force landscape while it
   // is open, re-lock portrait on close. Portrait full VU is never shown.
   useEffect(() => {
@@ -1425,112 +1453,34 @@ export function SplMeterScreen({ navigation }: Props) {
                         </Text>
                       </View>
                     )}
-                    {/* 3 — RANGE selector (blue chips) — horizontal scroll. */}
-                    <View style={styles.chipGroup}>
-                      <HelpHead title={`RANGE · ${rangeRef} dB @0 VU${rangeAuto ? ' (AUTO)' : ''}`} onHelp={() => help('range')} style={styles.chipGroupLabel} />
-                  {/* Single horizontal scroll row (owner 2026-07-30) — the values
-                      no longer wrap to two rows. */}
-                  <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.rangeScroll}
-                  >
-                    {RANGE_VALUES.map((v) => {
-                      const sel = !rangeAuto && rangeDb === v;
-                      const autoHint = rangeAuto && v === autoNearest;
-                      return (
-                        <Pressable
-                          key={v}
-                          style={[styles.rangeChip, autoHint && styles.rangeChipAutoHint, sel && styles.rangeChipSelected]}
-                          onPress={() => {
-                            setRangeAuto(false);
-                            setRangeDb(v);
-                          }}
-                          accessibilityRole="button"
-                          accessibilityState={{ selected: sel }}
-                          accessibilityLabel={autoHint ? `Range ${v} dB (chosen by AUTO)` : `Range ${v} dB`}
-                        >
-                          <Text style={[styles.rangeChipText, autoHint && styles.rangeChipTextAutoHint, sel && styles.rangeChipTextSelected]}>
-                            {v}
-                          </Text>
-                        </Pressable>
-                      );
-                    })}
-                    <Pressable
-                      style={[styles.rangeChip, styles.rangeChipAuto, rangeAuto && styles.rangeChipSelected]}
-                      onPress={() => setRangeAuto(true)}
-                      accessibilityRole="button"
-                      accessibilityState={{ selected: rangeAuto }}
-                      accessibilityLabel="Auto range"
-                    >
-                      <Text style={[styles.rangeChipText, rangeAuto && styles.rangeChipTextSelected]}>AUTO</Text>
-                    </Pressable>
-                  </ScrollView>
-                </View>
-
-                    {/* WEIGHTING × RESPONSE — compact to fit the left column. */}
-                    <View style={styles.chipsRow}>
-                      <View style={styles.chipGroup}>
-                        {/* 4-unit selector SPL · A · C · FS (owner 2026-08-18), mirroring
-                            the digital readout's UNIT_OPTS so the VU reads the same units. */}
-                        <HelpHead title="UNITS" onHelp={() => help('weighting')} style={styles.chipGroupLabel} />
-                        <View style={styles.chipSetWrap}>
-                          {UNIT_OPTS.map((u) => (
-                            <Chip
-                              key={u.key}
-                              label={u.key === 'dB SPL' ? 'SPL' : u.key === 'dBFS' ? 'FS' : u.key === 'dBA' ? 'A' : 'C'}
-                              compact
-                              selected={activeUnit === u.key}
-                              onPress={u.select}
-                            />
-                          ))}
-                        </View>
-                      </View>
-                      <View style={styles.chipGroup}>
-                        <HelpHead title="RESPONSE" onHelp={() => help('response')} style={styles.chipGroupLabel} />
-                        <View style={styles.chipSetWrap}>
-                          {RESPONSES.map((r) => (
-                            <Chip
-                              key={r}
-                              label={responseLabel(r)}
-                              tint={r === 'fast' ? 'green' : r === 'slow' ? 'purple' : 'amber'}
-                              compact
-                              selected={response === r}
-                              onPress={() => setResponse(r)}
-                            />
-                          ))}
-                        </View>
-                      </View>
-                    </View>
-                    {/* PEAK HOLD (compact) + RESET. */}
-                    <View style={styles.chipGroup}>
-                      <HelpHead title="PEAK HOLD" onHelp={() => help('peak_hold')} style={styles.chipGroupLabel} />
-                      <View style={styles.chipSetWrap}>
-                        {HOLD_MODES.map((m) => (
-                          <Chip
-                            key={m}
-                            label={holdLabel(m)}
-                            accessibilityLabel={m === 'inf' ? 'Infinite peak hold' : `Peak hold ${holdLabel(m)}`}
-                            bigGlyph={m === 'inf'}
-                            compact
-                            selected={holdMode === m}
-                            onPress={() => setHoldMode(m)}
-                          />
-                        ))}
-                        <Pressable
-                          style={[styles.ctrlBtn, styles.holdResetBtnSm]}
-                          onPress={resetPeakHold}
-                          accessibilityRole="button"
-                          accessibilityLabel="Reset peak hold"
-                        >
-                          <Text style={styles.ctrlTextSm}>RESET</Text>
-                        </Pressable>
-                      </View>
-                    </View>
+                    {/* Controls now live in the BOTTOM CONTROL BAR (owner 2026-08-18):
+                        RANGE · WEIGHTING · RESPONSE · PEAK HOLD each open a popup. */}
                   </View>
                   {viz ? (
                     <SideLed viz={viz} live={live} ledW={ledW} ledH={leftColH} holdMode={holdMode} splOffset={splOffset} weightingLabel={weighting} />
                   ) : null}
+                </View>
+
+                {/* BOTTOM CONTROL BAR (owner 2026-08-18): four buttons under the VU,
+                    each shows its current value and opens a chooser popup. */}
+                <View style={styles.ctrlBar}>
+                  {[
+                    { key: 'range' as const, label: 'RANGE', value: rangeAuto ? 'AUTO' : `${rangeDb}` },
+                    { key: 'unit' as const, label: 'WEIGHTING', value: activeUnit === 'dB SPL' ? 'SPL' : activeUnit === 'dBFS' ? 'FS' : activeUnit === 'dBA' ? 'A' : 'C' },
+                    { key: 'response' as const, label: 'RESPONSE', value: responseLabel(response) },
+                    { key: 'hold' as const, label: 'PEAK HOLD', value: holdLabel(holdMode) },
+                  ].map((b) => (
+                    <Pressable
+                      key={b.key}
+                      style={styles.ctrlBarBtn}
+                      onPress={() => setSettingPopup(b.key)}
+                      accessibilityRole="button"
+                      accessibilityLabel={`${b.label}: ${b.value}. Tap to change.`}
+                    >
+                      <Text style={styles.ctrlBarLabel}>{b.label}</Text>
+                      <Text style={styles.ctrlBarValue} numberOfLines={1}>{b.value}</Text>
+                    </Pressable>
+                  ))}
                 </View>
 
                 {/* 4 — The round SPL gauge — COLLAPSIBLE (owner 2026-07-30) so the
@@ -1804,6 +1754,57 @@ export function SplMeterScreen({ navigation }: Props) {
             </View>
           )}
         </View>
+      </Modal>
+
+      {/* ── Setting chooser popup (owner 2026-08-18) — opened by the VU home's
+          bottom control bar; one modal serves Range · Weighting · Response ·
+          Peak Hold. ── */}
+      <Modal
+        visible={settingPopup != null}
+        transparent
+        animationType="fade"
+        statusBarTranslucent
+        onRequestClose={() => setSettingPopup(null)}
+      >
+        <Pressable style={styles.popupBackdrop} onPress={() => setSettingPopup(null)} accessibilityRole="button" accessibilityLabel="Close">
+          <View style={styles.popupCard}>
+            <Text style={styles.popupTitle}>
+              {settingPopup === 'range' ? 'RANGE · dB AT 0 VU'
+                : settingPopup === 'unit' ? 'WEIGHTING'
+                : settingPopup === 'response' ? 'RESPONSE'
+                : 'PEAK HOLD'}
+            </Text>
+            <View style={styles.popupGrid}>
+              {settingPopup === 'range' && (
+                <>
+                  <PopupOpt label="AUTO" selected={rangeAuto} onPress={() => { setRangeAuto(true); setSettingPopup(null); }} />
+                  {RANGE_VALUES.map((v) => (
+                    <PopupOpt key={v} label={`${v}`} selected={!rangeAuto && rangeDb === v} onPress={() => { setRangeAuto(false); setRangeDb(v); setSettingPopup(null); }} />
+                  ))}
+                </>
+              )}
+              {settingPopup === 'unit' && UNIT_OPTS.map((u) => (
+                <PopupOpt
+                  key={u.key}
+                  label={u.key === 'dB SPL' ? 'SPL' : u.key === 'dBFS' ? 'FS' : u.key === 'dBA' ? 'A' : 'C'}
+                  selected={activeUnit === u.key}
+                  onPress={() => { u.select(); setSettingPopup(null); }}
+                />
+              ))}
+              {settingPopup === 'response' && RESPONSES.map((r) => (
+                <PopupOpt key={r} label={responseLabel(r)} selected={response === r} onPress={() => { setResponse(r); setSettingPopup(null); }} />
+              ))}
+              {settingPopup === 'hold' && HOLD_POPUP_MODES.map((m) => (
+                <PopupOpt key={m} label={holdLabel(m)} selected={holdMode === m} onPress={() => { setHoldMode(m); setSettingPopup(null); }} />
+              ))}
+            </View>
+            {settingPopup === 'hold' && (
+              <Pressable style={styles.popupResetBtn} onPress={() => { resetPeakHold(); setSettingPopup(null); }} accessibilityRole="button" accessibilityLabel="Reset peak hold now">
+                <Text style={styles.popupResetText}>RESET PEAK HOLD NOW</Text>
+              </Pressable>
+            )}
+          </View>
+        </Pressable>
       </Modal>
 
       {/* ── Fullscreen # readout (owner 2026-08-17): the number ALONE (no side
@@ -2230,6 +2231,58 @@ const styles = StyleSheet.create({
   vuFsClose: { position: 'absolute', top: 8, left: 14, zIndex: 10, padding: 6 },
   vuFsRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 18 },
   vuFsLeft: { alignItems: 'center', justifyContent: 'center' },
+  // Bottom control bar (Range · Weighting · Response · Peak Hold).
+  ctrlBar: { flexDirection: 'row', gap: 8 },
+  ctrlBarBtn: {
+    flex: 1,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#131316',
+    paddingVertical: 9,
+    paddingHorizontal: 6,
+    alignItems: 'center',
+    gap: 3,
+  },
+  ctrlBarLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 0.8, color: colors.textSub },
+  ctrlBarValue: { fontFamily: fonts.mono, fontSize: 14, color: colors.amber },
+  // Setting chooser popup.
+  popupBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.72)', alignItems: 'center', justifyContent: 'center', padding: 26 },
+  popupCard: {
+    width: '100%',
+    maxWidth: 420,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#2b2b33',
+    backgroundColor: '#141418',
+    padding: 18,
+    gap: 14,
+  },
+  popupTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.6, color: colors.textSecondary, textAlign: 'center' },
+  popupGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 9, justifyContent: 'center' },
+  popupOpt: {
+    minWidth: 62,
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: '#33333c',
+    backgroundColor: '#1a1a1f',
+    paddingVertical: 11,
+    paddingHorizontal: 12,
+    alignItems: 'center',
+  },
+  popupOptSel: { borderColor: 'rgba(255,198,77,.7)', backgroundColor: '#1c1608' },
+  popupOptText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.6, color: colors.textSecondary },
+  popupOptTextSel: { color: colors.amber },
+  popupResetBtn: {
+    alignSelf: 'center',
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: '#3a3a44',
+    backgroundColor: '#17171c',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  popupResetText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.textSecondary },
   // Below-the-VU row: round SPL gauge (left) + thin LED meter (right).
   heroRow: { flexDirection: 'row', gap: 12, alignItems: 'flex-start', justifyContent: 'center' },
   // Top area: LEFT control column + tall LED down the right.

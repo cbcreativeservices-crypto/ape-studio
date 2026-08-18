@@ -87,7 +87,32 @@ export type LiveMeterDrive = {
 /** Peak-hold linger setting for the live LED meter (SPL popup, 2026-07-30):
  *  how long a peak cap sits before it decays. 'off' hides the cap entirely;
  *  'inf' latches the loudest peak until the input rises past it. */
-export type PeakHoldMode = 'off' | '1s' | '3s' | 'inf';
+export type PeakHoldMode =
+  | 'off' | '1s' | '2s' | '3s' | '5s' | '10s' | '20s' | '30s'
+  | '1m' | '5m' | '10m' | '30m' | '1h' | 'inf';
+
+/** Peak-hold linger in seconds for a mode ('inf' latches at ~1e9; 'off' = 0).
+ *  Owner 2026-08-18: extended from off/1s/3s/inf to a full 1 s … 1 h range for
+ *  the VU meter's peak-hold duration popup. The hold is a JS/Skia computation
+ *  (no native change), so any duration works. */
+export function holdModeSeconds(m: PeakHoldMode): number {
+  switch (m) {
+    case 'off': return 0;
+    case '1s': return 1;
+    case '2s': return 2;
+    case '3s': return 3;
+    case '5s': return 5;
+    case '10s': return 10;
+    case '20s': return 20;
+    case '30s': return 30;
+    case '1m': return 60;
+    case '5m': return 300;
+    case '10m': return 600;
+    case '30m': return 1800;
+    case '1h': return 3600;
+    case 'inf': return 1e9;
+  }
+}
 
 function withAlpha(hex: string, a: number): string {
   const r = parseInt(hex.slice(1, 3), 16);
@@ -1014,7 +1039,7 @@ export function VuMeterView(p: {
   // the phase-clock delta (the same idiom as the ballistics above). When the prop is
   // absent/'off' the tick is disabled and nothing is drawn (meter-lab unaffected).
   const pkEnabled = p.peakHold != null && p.peakHold !== 'off';
-  const pkHoldSecs = p.peakHold === '3s' ? 3 : p.peakHold === '1s' ? 1 : 1e9; // 'inf' latches
+  const pkHoldSecs = p.peakHold && p.peakHold !== 'off' ? holdModeSeconds(p.peakHold) : 1e9; // 'inf' latches
   const pkAng = useSharedValue(-1e9);
   const pkAge = useSharedValue(0);
   const pkLastPh = useSharedValue(-1);
@@ -2825,7 +2850,7 @@ export function PeakAvgMeterView(p: {
   const weightingLabel = p.weightingLabel ?? '';
   const livePeak = p.live.peakDb;
   const liveRms = p.live.rmsDb;
-  const holdSecs = holdMode === '1s' ? 1 : holdMode === '3s' ? 3 : holdMode === 'inf' ? 1e9 : 0;
+  const holdSecs = holdModeSeconds(holdMode);
   const showCap = holdMode !== 'off';
 
   // Average marker color (owner 2026-07-30) — a distinct purple, drawn from the
