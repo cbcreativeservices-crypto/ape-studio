@@ -725,7 +725,9 @@ export function SplMeterScreen({ navigation }: Props) {
   // AUTO range (owner 2026-07-30): when on, the 0-VU reference tracks a slow EMA
   // of the measured SPL so the needle stays on-scale and visibly swinging around
   // centre. Manual chips turn it off. autoRangeDb is the rounded auto reference.
-  const [rangeAuto, setRangeAuto] = useState(false);
+  // Default to AUTO range (owner 2026-08-18): the user starts auto-ranged and can
+  // switch to a manual chip if they want a fixed 0-VU reference.
+  const [rangeAuto, setRangeAuto] = useState(true);
   const [autoRangeDb, setAutoRangeDb] = useState(80);
   const splEmaRef = useRef<number | null>(null);
   // 3-second averaged SPL that drives the gauge ZONE COLOR only (owner
@@ -1446,18 +1448,17 @@ export function SplMeterScreen({ navigation }: Props) {
                     {/* WEIGHTING × RESPONSE — compact to fit the left column. */}
                     <View style={styles.chipsRow}>
                       <View style={styles.chipGroup}>
-                        <HelpHead title="WEIGHTING" onHelp={() => help('weighting')} style={styles.chipGroupLabel} />
+                        {/* 4-unit selector SPL · A · C · FS (owner 2026-08-18), mirroring
+                            the digital readout's UNIT_OPTS so the VU reads the same units. */}
+                        <HelpHead title="UNITS" onHelp={() => help('weighting')} style={styles.chipGroupLabel} />
                         <View style={styles.chipSetWrap}>
-                          {WEIGHTINGS.map((w) => (
+                          {UNIT_OPTS.map((u) => (
                             <Chip
-                              key={w}
-                              label={w}
+                              key={u.key}
+                              label={u.key === 'dB SPL' ? 'SPL' : u.key === 'dBFS' ? 'FS' : u.key === 'dBA' ? 'A' : 'C'}
                               compact
-                              selected={!dbfs && weighting === w}
-                              onPress={() => {
-                                setDbfs(false);
-                                setWeighting(w);
-                              }}
+                              selected={activeUnit === u.key}
+                              onPress={u.select}
                             />
                           ))}
                         </View>
