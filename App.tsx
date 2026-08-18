@@ -65,6 +65,18 @@ export default function App() {
     return unsub;
   }, []);
 
+  // Portrait-only app, enforced at RUNTIME (owner 2026-08-18). app.json now
+  // declares "default" so the OS permits rotation — required for the SPL meter's
+  // fullscreen auto-rotate — but every other screen must stay portrait, so we
+  // lock PORTRAIT_UP once at boot. The SPL fullscreen unlocks on entry and
+  // re-locks PORTRAIT_UP on exit; nothing else touches orientation. Guarded
+  // dynamic import — inert (no crash) until a build bundles the native module.
+  useEffect(() => {
+    import('expo-screen-orientation')
+      .then((so) => so.lockAsync(so.OrientationLock.PORTRAIT_UP))
+      .catch(() => {});
+  }, []);
+
   // Hold on a dark surface until fonts resolve (avoids a white flash + FOUT).
   if (!fontsLoaded) {
     return <View style={{ flex: 1, backgroundColor: colors.splashBg }} />;
