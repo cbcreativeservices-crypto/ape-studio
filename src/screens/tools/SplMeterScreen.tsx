@@ -36,7 +36,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
 import * as Crypto from 'expo-crypto';
 import { GlassButton } from '../../components/GlassButton';
-import { lockLandscape, lockPortrait, unlockOrientation } from '../../lib/screenOrientationSafe';
+import { lockPortrait, unlockOrientation } from '../../lib/screenOrientationSafe';
 import { requireVizMeters, type VizMetersModule } from '../lab/meter/skiaGate';
 import { CollapsibleSection } from '../lab/LabShell';
 import type { LiveMeterDrive, PeakHoldMode } from '../lab/meter/vizMeters';
@@ -749,10 +749,11 @@ export function SplMeterScreen({ navigation }: Props) {
   // Which setting popup is open from the VU home's bottom control bar (owner
   // 2026-08-18): Range · Weighting · Response · Peak Hold.
   const [settingPopup, setSettingPopup] = useState<null | 'range' | 'unit' | 'response' | 'hold'>(null);
-  // Full VU screen is LANDSCAPE-ONLY (owner 2026-08-18): force landscape while it
-  // is open, re-lock portrait on close. Portrait full VU is never shown.
+  // Full VU supports BOTH orientations (owner 2026-08-18): unlock rotation while
+  // open so the user can turn the phone — landscape lays VU + LED side by side,
+  // portrait stacks VU over LED. Re-lock portrait for the rest of the app on close.
   useEffect(() => {
-    if (vuFsOpen) lockLandscape();
+    if (vuFsOpen) unlockOrientation();
     return () => {
       lockPortrait();
     };
@@ -1706,17 +1707,17 @@ export function SplMeterScreen({ navigation }: Props) {
         </View>
       </Modal>
 
-      {/* ── FULL VU (owner 2026-08-18): LANDSCAPE-ONLY — VU on the LEFT, the tall
-          LED meter on the RIGHT. Portrait is blocked (supportedOrientations +
-          lockLandscape); the screen re-locks portrait on close. ── */}
+      {/* ── FULL VU (owner 2026-08-18): BOTH orientations. LANDSCAPE lays the VU
+          and the tall LED side by side (VU left, LED right); PORTRAIT stacks them
+          (VU on top, LED below, centered). The user rotates freely (unlocked
+          while open); the app re-locks portrait on close. ── */}
       <Modal
         visible={vuFsOpen}
         animationType="fade"
         statusBarTranslucent
-        // Must include portrait: presenting a landscape-ONLY modal while the app
-        // is portrait-locked has "no common orientation" and HARD-CRASHES iOS
-        // (owner 2026-08-18). lockLandscape() still forces the landscape view;
-        // supportedOrientations only prevents the presentation-time conflict.
+        // Both orientations — a portrait-only or landscape-only modal presented
+        // against the opposite app lock gives iOS "no common orientation" and
+        // HARD-CRASHES (owner 2026-08-18).
         supportedOrientations={['portrait', 'landscape', 'landscape-left', 'landscape-right']}
         onRequestClose={() => setVuFsOpen(false)}
       >
@@ -1731,13 +1732,13 @@ export function SplMeterScreen({ navigation }: Props) {
             <Text style={styles.vuClose}>✕</Text>
           </Pressable>
           {viz ? (
-            <View style={styles.vuFsRow}>
+            <View style={[styles.vuFsRow, winW < winH && styles.vuFsCol]}>
               <View style={styles.vuFsLeft}>
                 <VuTopMeter
                   viz={viz}
                   live={live}
-                  vuW={Math.round(Math.max(winW, winH) * 0.66)}
-                  vuH={Math.round(Math.min(winW, winH) * 0.74)}
+                  vuW={winW >= winH ? Math.round(winW * 0.64) : Math.round(winW * 0.92)}
+                  vuH={winW >= winH ? Math.round(winH * 0.78) : Math.round(winH * 0.4)}
                   live0Db={vuLive0}
                   maxText={vuMaxText}
                   levelText={vuLevelText}
@@ -1750,7 +1751,7 @@ export function SplMeterScreen({ navigation }: Props) {
                 viz={viz}
                 live={live}
                 ledW={92}
-                ledH={Math.round(Math.min(winW, winH) * 0.82)}
+                ledH={winW >= winH ? Math.round(winH * 0.82) : Math.round(winH * 0.4)}
                 holdMode={holdMode}
                 splOffset={splOffset}
                 weightingLabel={weighting}
@@ -2239,6 +2240,8 @@ const styles = StyleSheet.create({
   vuFsRoot: { flex: 1, backgroundColor: '#0c0c0f', alignItems: 'center', justifyContent: 'center' },
   vuFsClose: { position: 'absolute', top: 8, left: 14, zIndex: 10, padding: 6 },
   vuFsRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 18 },
+  // Portrait: stack VU over the LED, centered.
+  vuFsCol: { flexDirection: 'column', gap: 22 },
   vuFsLeft: { alignItems: 'center', justifyContent: 'center' },
   // Bottom control bar (Range · Weighting · Response · Peak Hold).
   ctrlBar: { flexDirection: 'row', gap: 8 },
