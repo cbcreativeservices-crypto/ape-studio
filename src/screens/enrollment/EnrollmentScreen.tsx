@@ -159,9 +159,10 @@ const enrollUi = {
   collapsed: [] as string[],
   recordOpen: false,
   browseOpen: false,
-  browseTab: 'cert' as 'cert' | 'program' | 'subject' | 'topic',
+  browseTab: 'cert' as 'cert' | 'program' | 'subject' | 'field' | 'topic',
   openItem: null as string | null,
   openSubject: null as number | null,
+  openField: null as number | null,
 };
 
 export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
@@ -216,6 +217,9 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
     [v3Certs],
   );
   const [openSubject, setOpenSubject] = useState<number | null>(enrollUi.openSubject);
+  // Second browse list — Fields (owner 2026-08-18). Which field card is expanded
+  // (by order index), mirroring openSubject.
+  const [openField, setOpenField] = useState<number | null>(enrollUi.openField);
   const [payPrompt, setPayPrompt] = useState(false);
   const [homeSetupOpen, setHomeSetupOpen] = useState(false);
   const [homeFull, setHomeFull] = useState(false);
@@ -393,6 +397,9 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   useEffect(() => {
     enrollUi.openSubject = openSubject;
   }, [openSubject]);
+  useEffect(() => {
+    enrollUi.openField = openField;
+  }, [openField]);
 
   const homeGs = useHomeGs();
   const homeSet = useMemo(() => new Set(homeGs), [homeGs]);
@@ -401,7 +408,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   const homeBundleKeys = useHomeBundles();
   const homeBundleSet = useMemo(() => new Set(homeBundleKeys), [homeBundleKeys]);
   // Default to Certificates (far-left tab) on first load (user request 2026-07-22).
-  const [browseTab, setBrowseTab] = useState<'cert' | 'program' | 'subject' | 'topic'>(enrollUi.browseTab);
+  const [browseTab, setBrowseTab] = useState<'cert' | 'program' | 'subject' | 'field' | 'topic'>(enrollUi.browseTab);
   const [openItem, setOpenItem] = useState<string | null>(enrollUi.openItem);
   useEffect(() => {
     enrollUi.browseTab = browseTab;
@@ -416,6 +423,20 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
       if (toggleHome(gs) === 'full') setHomeFull(true);
     });
 
+  // Fields — the top-level Field→Subject→Topic grouping (owner 2026-08-18),
+  // derived from the same v3 curriculum as Subjects. Each field aggregates the
+  // topics of every subject in it. Field order = first-seen (alphabetical data).
+  const v3Fields = useMemo(() => {
+    const out: { order: number; name: string; topics: { gs: number; name: string }[] }[] = [];
+    const idx = new Map<string, number>();
+    for (const s of v3Subjects) {
+      let i = idx.get(s.field);
+      if (i === undefined) { i = out.length; idx.set(s.field, i); out.push({ order: i, name: s.field, topics: [] }); }
+      out[i].topics.push(...s.topics);
+    }
+    return out;
+  }, [v3Subjects]);
+
   // Topics of the currently EXPANDED browse item (cert / program / subject) — so
   // browse rows can show "(in progress)" from real study progress even for
   // topics that aren't (or are no longer) enrolled (user request 2026-07-22).
@@ -423,6 +444,10 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
     if (browseTab === 'subject') {
       const s = v3Subjects.find((x) => x.order === openSubject);
       return s ? s.topics.map((t) => t.gs) : [];
+    }
+    if (browseTab === 'field') {
+      const f = v3Fields.find((x) => x.order === openField);
+      return f ? f.topics.map((t) => t.gs) : [];
     }
     if (!openItem) return [];
     if (browseTab === 'cert') {
@@ -434,7 +459,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
       return p ? p.requiredTopics : [];
     }
     return [];
-  }, [browseTab, openItem, openSubject, v3Subjects, PROGRAM_PATHS, SPECIALIZED_CERTIFICATES]);
+  }, [browseTab, openItem, openSubject, openField, v3Subjects, v3Fields, PROGRAM_PATHS, SPECIALIZED_CERTIFICATES]);
 
   const allGs = useMemo(
     () => Array.from(new Set([...COREQ_TOPIC_GS, ...enrolled.map((e) => e.gs), ...expandedBrowseGs])),
@@ -512,6 +537,10 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
     addTopics(topics);
     setActiveMany(topics, false);
   };
+  // Whole FIELD — enroll its topics (owner 2026-08-18). Fields do NOT create a
+  // bundle card (unlike subjects); toggle state derives from enrollment.
+  const addWholeField = (topics: number[]) => { addTopics(topics); setActiveMany(topics, false); };
+  const removeWholeField = (topics: number[]) => { topics.forEach((gs) => { if (!isFreeEnrollGs(gs)) removeTopic(gs); }); };
   // REMOVE ALL — drop a cert/program/subject bundle AND its topics from the
   // enrollment list (user request 2026-07-22). The two mandatory free topics are
   // kept (they can never be un-enrolled).
@@ -994,7 +1023,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   // Shared BROWSE & ADD tab row — used both in-flow and in the pinned overlay.
   const renderBrowseTabs = () => (
     <View style={styles.browseTabs}>
-      {([['cert', 'Certificates', BLUE], ['program', 'Programs', PURPLE], ['subject', 'Subjects', colors.amber], ['topic', 'Topics', colors.textPrimary]] as const).map(([k, label, tint]) => {
+      {([['cert', 'Certificates', BLUE], ['program', 'Programs', PURPLE], ['subject', 'Subjects', colors.amber], ['field', 'Fields', colors.green], ['topic', 'Topics', colors.textPrimary]] as const).map(([k, label, tint]) => {
         const on = browseTab === k;
         return (
           <Pressable
@@ -1003,6 +1032,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             onPress={() => {
               setBrowseTab(k);
               setOpenSubject(null);
+              setOpenField(null);
               setOpenItem(null);
               setBrowseOpen(true); // clicking a filter auto-reveals the list (user request 2026-07-24)
             }}
@@ -1479,6 +1509,27 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                 })
               : browseTab === 'topic'
                 ? <View style={styles.subjectCard}>{allTopicsAZ.map((t) => topicAddRow(t.gs, t.name))}</View>
+                : browseTab === 'field'
+                ? v3Fields.map((f) => {
+                    const open = openField === f.order;
+                    const fieldGs = f.topics.map((t) => t.gs);
+                    const addable = fieldGs.filter((gs) => !isFreeEnrollGs(gs));
+                    const added = addable.length > 0 && addable.every((gs) => enrolledGs.has(gs));
+                    return (
+                      <View key={f.order} style={styles.subjectCard}>
+                        <View style={styles.browseItemHead}>
+                          <Pressable style={styles.browseItemName} onPress={() => setOpenField((prev) => (prev === f.order ? null : f.order))} accessibilityRole="button" accessibilityState={{ expanded: open }} accessibilityLabel={f.name}>
+                            <Text style={styles.subjectChevron}>{open ? '▾' : '▸'}</Text>
+                            <Text style={[styles.subjectName, { color: colors.green }]} numberOfLines={2}>{f.name}</Text>
+                          </Pressable>
+                          <Pressable style={[styles.addAllBtn, added && styles.removeAllBtn]} onPress={() => (added ? removeWholeField(fieldGs) : addWholeField(fieldGs))} accessibilityRole="button" accessibilityLabel={added ? `Remove all topics in ${f.name}` : `Add all topics in ${f.name}`}>
+                            <Text style={[styles.addAllText, added && styles.removeAllText]}>{added ? 'REMOVE ALL' : 'ADD ALL'}</Text>
+                          </Pressable>
+                        </View>
+                        {open ? f.topics.map((t) => topicAddRow(t.gs, t.name)) : null}
+                      </View>
+                    );
+                  })
                 : v3Subjects.map((s, i) => {
                     const open = openSubject === s.order;
                     // Whole-subject add (user request 2026-07-22) — amber ADD ALL
