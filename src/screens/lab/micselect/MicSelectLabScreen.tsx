@@ -23,7 +23,7 @@ import { Canvas, Line as SkLine, Path as SkPath, Skia, vec } from '@shopify/reac
 import { GlassButton } from '../../../components/GlassButton';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { colors, fonts } from '../../../theme/tokens';
-import { MicArt } from './micArt';
+import { MicVisual } from './micArt';
 import {
   CHALLENGE_BASE,
   CHALLENGE_FACTORS,
@@ -156,7 +156,7 @@ function TypesStep() {
               accessibilityLabel={m.name}
               style={[styles.micCell, active && styles.micCellActive]}
             >
-              <MicArt kind={m.kind} w={44} h={66} />
+              <MicVisual kind={m.kind} w={44} h={66} />
               <Text style={styles.micCellName} numberOfLines={2}>
                 {m.name}
               </Text>
@@ -193,7 +193,7 @@ function CharsStep() {
     <View style={styles.stepGap}>
       <Text style={styles.body}>{CHAR_INTRO}</Text>
       <View style={styles.charHub}>
-        <MicArt kind="condenser" w={48} h={72} />
+        <MicVisual kind="condenser" w={48} h={72} />
         <View style={styles.chipWrap}>
           {CHARACTERISTICS.map((x) => (
             <Chip key={x.key} label={x.name} active={sel === x.key} onPress={() => setSel(x.key)} />
@@ -396,7 +396,7 @@ function SplStep() {
             accessibilityState={{ selected: mic === m.key }}
             style={[styles.profileCell, mic === m.key && styles.micCellActive]}
           >
-            <MicArt kind={m.kind} w={36} h={54} />
+            <MicVisual kind={m.kind} w={36} h={54} />
             <Text style={styles.micCellName} numberOfLines={2}>
               {m.name}
             </Text>
@@ -445,7 +445,7 @@ function PowerStep() {
         ))}
       </View>
       <View style={styles.powerDiagram}>
-        <MicArt kind={pc.kind} w={44} h={66} />
+        <MicVisual kind={pc.kind} w={44} h={66} />
         <View style={styles.cableLine} />
         <View style={styles.preampBox}>
           <Text style={styles.preampText}>PREAMP</Text>
@@ -478,7 +478,7 @@ function FormStep() {
       </Text>
       {FORM_FACTORS.map((f) => (
         <View key={f.key} style={styles.formRow}>
-          <MicArt kind={f.kind} w={40} h={60} />
+          <MicVisual kind={f.kind} w={40} h={60} />
           <View style={{ flex: 1 }}>
             <Text style={styles.detailName}>{f.name}</Text>
             <Text style={styles.tierExamples}>{f.apps.join(' · ')}</Text>
@@ -611,7 +611,7 @@ function ChallengeStep() {
           accessibilityState={{ selected: pick === m.key }}
           style={[styles.formRow, pick === m.key && styles.micCellActive]}
         >
-          <MicArt kind={m.kind} w={36} h={54} />
+          <MicVisual kind={m.kind} w={36} h={54} />
           <View style={{ flex: 1 }}>
             <Text style={styles.detailName}>{m.label}</Text>
             <Text style={styles.tierExamples}>{m.specs.join(' · ')}</Text>
@@ -733,7 +733,7 @@ function LockerStep() {
             accessibilityState={{ checked: on, disabled: full }}
             style={[styles.formRow, on && styles.micCellActive, full && { opacity: 0.45 }]}
           >
-            <MicArt kind={m.kind} w={30} h={45} />
+            <MicVisual kind={m.kind} w={30} h={45} />
             <View style={{ flex: 1 }}>
               <Text style={styles.detailName}>{`${on ? '☑' : '☐'}  ${m.name}`}</Text>
               <Text style={styles.tierExamples}>

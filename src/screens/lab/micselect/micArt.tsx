@@ -8,8 +8,11 @@
  * requested size, so one set of coordinates serves cards, chips and the
  * challenge list. Static geometry only — no animation.
  */
+import { useState } from 'react';
+import { Image, StyleSheet, View } from 'react-native';
 import { Canvas, Circle, Group, Line, LinearGradient, Oval, Path, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
 import type { MicKind } from './micSelectData';
+import { micImageUrl } from './micImages';
 
 const BODY_HI = '#6e7482';
 const BODY_MID = '#3b3f49';
@@ -318,3 +321,32 @@ export function MicArt({ kind, w = 56, h = 84 }: { kind: MicKind; w?: number; h?
     </Canvas>
   );
 }
+
+/** Mic visual = the real reference PHOTO when the kind has one (owner 2026-08-17,
+ *  Option A), on a light tile so the seamless-white product shot reads cleanly
+ *  against the dark lab UI. Falls back to the code-drawn MicArt illustration if
+ *  the kind is unmapped or the image fails to load — never a blank. */
+export function MicVisual({ kind, w = 56, h = 84 }: { kind: MicKind; w?: number; h?: number }) {
+  const url = micImageUrl(kind);
+  const [failed, setFailed] = useState(false);
+  if (!url || failed) return <MicArt kind={kind} w={w} h={h} />;
+  return (
+    <View style={[styles.photoTile, { width: w, height: h }]}>
+      <Image
+        source={{ uri: url }}
+        style={styles.photo}
+        resizeMode="contain"
+        onError={() => setFailed(true)}
+        accessibilityIgnoresInvertColors
+        accessibilityLabel={`${kind} microphone photo`}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  // Light product-card tile — the bucket photos are on seamless white, so a
+  // white/near-white rounded tile makes that read as intentional on the dark UI.
+  photoTile: { backgroundColor: '#f4f4f5', borderRadius: 7, overflow: 'hidden', padding: 3 },
+  photo: { width: '100%', height: '100%' },
+});
