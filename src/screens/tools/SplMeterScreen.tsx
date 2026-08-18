@@ -1435,18 +1435,24 @@ export function SplMeterScreen({ navigation }: Props) {
                     onLayout={(e) => setLeftColH(Math.round(e.nativeEvent.layout.height))}
                   >
                     {viz ? (
-                      <VuTopMeter
-                        viz={viz}
-                        live={live}
-                        vuW={vuW}
-                        vuH={vuH}
-                        live0Db={vuLive0}
-                        maxText={vuMaxText}
-                        levelText={vuLevelText}
-                        rangeText={vuRangeText}
-                        brackets={vuBrackets}
-                        peakHold={holdMode}
-                      />
+                      vuFsOpen ? (
+                        // Paused while the Full VU covers this home (owner 2026-08-18)
+                        // — never run two live Skia VU meters at once (it was slow).
+                        <View style={{ width: vuW, height: vuH }} />
+                      ) : (
+                        <VuTopMeter
+                          viz={viz}
+                          live={live}
+                          vuW={vuW}
+                          vuH={vuH}
+                          live0Db={vuLive0}
+                          maxText={vuMaxText}
+                          levelText={vuLevelText}
+                          rangeText={vuRangeText}
+                          brackets={vuBrackets}
+                          peakHold={holdMode}
+                        />
+                      )
                     ) : (
                       /* Honest gate for pre-Skia clients (§1.7): readouts stay live. */
                       <View style={styles.vuUnavailCard}>
@@ -1461,7 +1467,7 @@ export function SplMeterScreen({ navigation }: Props) {
                     {/* Controls now live in the BOTTOM CONTROL BAR (owner 2026-08-18):
                         RANGE · WEIGHTING · RESPONSE · PEAK HOLD each open a popup. */}
                   </View>
-                  {viz ? (
+                  {viz && !vuFsOpen ? (
                     <SideLed viz={viz} live={live} ledW={ledW} ledH={leftColH} holdMode={holdMode} splOffset={splOffset} weightingLabel={weighting} />
                   ) : null}
                 </View>
@@ -1723,13 +1729,13 @@ export function SplMeterScreen({ navigation }: Props) {
       >
         <View style={[styles.vuFsRoot, { paddingTop: insets.top }]}>
           <Pressable
-            style={styles.vuFsClose}
+            style={[styles.vuFsClose, { top: insets.top + 6 }]}
             onPress={() => setVuFsOpen(false)}
-            hitSlop={16}
+            hitSlop={20}
             accessibilityRole="button"
             accessibilityLabel="Close the full VU screen"
           >
-            <Text style={styles.vuClose}>✕</Text>
+            <Text style={styles.vuFsCloseX}>✕</Text>
           </Pressable>
           {viz ? (
             <View style={[styles.vuFsRow, winW < winH && styles.vuFsCol]}>
@@ -2238,7 +2244,22 @@ const styles = StyleSheet.create({
   homeNavTextFs: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.8, color: colors.green },
   // Full VU (landscape) — VU left, tall LED right.
   vuFsRoot: { flex: 1, backgroundColor: '#0c0c0f', alignItems: 'center', justifyContent: 'center' },
-  vuFsClose: { position: 'absolute', top: 8, left: 14, zIndex: 10, padding: 6 },
+  // Visible, always-on-top close button (a plain ✕ under the notch was untappable
+  // in portrait — owner 2026-08-18). `top` is set inline from the safe-area inset.
+  vuFsClose: {
+    position: 'absolute',
+    left: 12,
+    zIndex: 30,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(18,18,22,0.9)',
+    borderWidth: 1,
+    borderColor: '#3a3a44',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  vuFsCloseX: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, color: colors.textSecondary },
   vuFsRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 18 },
   // Portrait: stack VU over the LED, centered.
   vuFsCol: { flexDirection: 'column', gap: 22 },
