@@ -1005,6 +1005,17 @@ export function SplMeterScreen({ navigation }: Props) {
       ? 'field-calibrated · approximate'
       : 'uncalibrated estimate';
   const activeUnit = dbfs ? 'dBFS' : weighting === 'A' ? 'dBA' : weighting === 'C' ? 'dBC' : 'dB SPL';
+  // Session-log Leq follows the SELECTED dB unit (owner 2026-08-18): one column,
+  // labeled + valued in the active unit. A→Leq(A); Z/C→Leq(Z) (C's documented
+  // honest fallback); FS shows the raw dBFS Leq (no SPL estimate).
+  const logLeqLabel = `Leq · ${activeUnit}`;
+  const logLeqValue = !meter
+    ? '—'
+    : dbfs
+      ? meter.leqZDb.toFixed(1)
+      : weighting === 'A'
+        ? estSpl(meter.leqADb)
+        : estSpl(meter.leqZDb);
   const UNIT_OPTS: { key: string; select: () => void }[] = [
     { key: 'dBFS', select: () => { setDbfs(true); setWeighting('Z'); } },
     { key: 'dBA', select: () => { setDbfs(false); setWeighting('A'); } },
@@ -1210,12 +1221,8 @@ export function SplMeterScreen({ navigation }: Props) {
               <Pressable onLongPress={() => help('session_log')} delayLongPress={260}>
               <View style={styles.logRow}>
                 <View style={styles.logCell}>
-                  <Text style={[styles.cellLabel, weighting === 'A' && styles.logActive]}>Leq(A)</Text>
-                  <Text style={[styles.cellValue, weighting === 'A' && styles.logActive]}>{meter ? estSpl(meter.leqADb) : '—'}</Text>
-                </View>
-                <View style={styles.logCell}>
-                  <Text style={[styles.cellLabel, weighting !== 'A' && styles.logActive]}>Leq(Z)</Text>
-                  <Text style={[styles.cellValue, weighting !== 'A' && styles.logActive]}>{meter ? estSpl(meter.leqZDb) : '—'}</Text>
+                  <Text style={styles.cellLabel}>{logLeqLabel}</Text>
+                  <Text style={styles.cellValue}>{logLeqValue}</Text>
                 </View>
                 <View style={styles.logCell}>
                   <Text style={styles.cellLabel}>ELAPSED</Text>
@@ -1540,12 +1547,8 @@ export function SplMeterScreen({ navigation }: Props) {
                   <HelpHead title="SESSION LOG" onHelp={() => help('session_log')} style={styles.sectionHeadSm} />
                   <View style={styles.logRow}>
                     <View style={styles.logCell}>
-                      <Text style={[styles.cellLabel, weighting === 'A' && styles.logActive]}>Leq(A)</Text>
-                      <Text style={[styles.cellValueSm, weighting === 'A' && styles.logActive]}>{meter ? estSpl(meter.leqADb) : '—'}</Text>
-                    </View>
-                    <View style={styles.logCell}>
-                      <Text style={[styles.cellLabel, weighting !== 'A' && styles.logActive]}>Leq(Z)</Text>
-                      <Text style={[styles.cellValueSm, weighting !== 'A' && styles.logActive]}>{meter ? estSpl(meter.leqZDb) : '—'}</Text>
+                      <Text style={styles.cellLabel}>{logLeqLabel}</Text>
+                      <Text style={styles.cellValueSm}>{logLeqValue}</Text>
                     </View>
                     <View style={styles.logCell}>
                       <Text style={styles.cellLabel}>ELAPSED</Text>
@@ -2091,9 +2094,6 @@ const styles = StyleSheet.create({
   cellValueSm: { fontFamily: fonts.mono, fontSize: 14, color: colors.textPrimary },
   logRow: { flexDirection: 'row', gap: 10 },
   logCell: { flex: 1, gap: 4 },
-  // The session-log Leq column matching the selected dB unit highlights amber
-  // (owner 2026-08-18): weighting A → Leq(A); Z/C/FS → Leq(Z) (C stores Leq(Z)).
-  logActive: { color: colors.amber },
   logNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted },
 
   // Controls (house ctrl-button style).
