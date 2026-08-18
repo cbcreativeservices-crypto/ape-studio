@@ -51,11 +51,14 @@ export function LabChip({
   selected,
   onPress,
   onLongPress,
+  photoHint,
 }: {
   label: string;
   selected: boolean;
   onPress: () => void;
   onLongPress?: () => void;
+  /** Show a tiny 📷 to signal "long-press to see a photo" (owner 2026-08-18). */
+  photoHint?: boolean;
 }) {
   return (
     <Pressable
@@ -65,9 +68,18 @@ export function LabChip({
       delayLongPress={350}
       accessibilityRole="button"
       accessibilityState={{ selected }}
-      accessibilityLabel={onLongPress ? `${label} — long-press for its guided lesson` : label}
+      accessibilityLabel={
+        photoHint
+          ? `${label} — long-press to see a photo`
+          : onLongPress
+            ? `${label} — long-press for its guided lesson`
+            : label
+      }
     >
-      <Text style={[styles.chipText, selected && styles.chipTextSelected]}>{label}</Text>
+      <Text style={[styles.chipText, selected && styles.chipTextSelected]}>
+        {label}
+        {photoHint ? <Text style={styles.chipPhotoHint}> 📷</Text> : null}
+      </Text>
     </Pressable>
   );
 }
@@ -437,6 +449,7 @@ const styles = StyleSheet.create({
   chipSelected: { borderColor: 'rgba(255,198,77,.65)', backgroundColor: '#1a1409' },
   chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8, color: colors.textSecondary },
   chipTextSelected: { color: colors.amber },
+  chipPhotoHint: { fontSize: 9 },
 
   // PHONE SPEAKER OUTPUT tickbox
   spkToggle: {

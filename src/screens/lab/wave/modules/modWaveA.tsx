@@ -354,6 +354,7 @@ export function ReflectionModule(p: WaveModuleProps) {
                 key={m}
                 label={MATERIALS[m].label.toUpperCase()}
                 selected={mat === m}
+                photoHint={!!MATERIAL_PHOTOS[m]}
                 onPress={() => setMat(m)}
                 // foam/fiberglass long-press → their reference photo; others → the lesson.
                 onLongPress={() => {
@@ -495,6 +496,7 @@ export function AbsorptionModule(p: WaveModuleProps) {
                 key={m}
                 label={MATERIALS[m].label.toUpperCase()}
                 selected={mat === m}
+                photoHint={!!MATERIAL_PHOTOS[m]}
                 onPress={() => setMat(m)}
                 // foam/fiberglass long-press → their reference photo; others → the lesson.
                 onLongPress={() => {

@@ -1307,6 +1307,7 @@ export function RoomBuilderModule(p: WaveModuleProps) {
               key={m}
               label={MATERIALS[m].label.toUpperCase()}
               selected={boundary[selWall] === m}
+              photoHint={!!MATERIAL_PHOTOS[m]}
               onPress={() =>
                 setBoundary((prev) => prev.map((b, i) => (i === selWall ? m : b)) as [MaterialKey, MaterialKey, MaterialKey, MaterialKey])
               }
