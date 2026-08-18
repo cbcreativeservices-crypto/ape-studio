@@ -24,6 +24,7 @@ import { ResponseCurveGraph, type ResponseCurve } from '../../../../features/lab
 import { LabChip } from '../../LabShell';
 import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
 import { Badge, PanelCard, ReadoutGrid, dstyles } from '../../digital/bits';
+import { LabPhoto } from '../../labPhoto';
 import { WaveLayout } from './waveLayout';
 import {
   MATERIALS,
@@ -426,6 +427,24 @@ export function AbsorptionModule(p: WaveModuleProps) {
     <WaveLayout
       explain={
         <PanelCard>
+          {/* Reference photos of the porous absorbers this module teaches
+              (owner 2026-08-18) — supplementary, tap to enlarge. */}
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            <LabPhoto
+              file="acoustic-foam.webp"
+              h={104}
+              style={{ flex: 1 }}
+              accessibilityLabel="acoustic foam panel"
+              caption="Acoustic foam — a porous absorber. It turns sound into heat by friction where air-particle velocity is high (about a quarter-wavelength off the wall), so thin foam absorbs highs well but lets bass pass."
+            />
+            <LabPhoto
+              file="fiberglass-panel.webp"
+              h={104}
+              style={{ flex: 1 }}
+              accessibilityLabel="fiberglass broadband absorber panel"
+              caption="A rigid fiberglass broadband absorber — thicker and denser than foam, often on an air gap, so it keeps absorbing lower in frequency. Real bass control means thickness and air gaps, not thin panels."
+            />
+          </View>
           <Text style={dstyles.eyebrow}>WHY BASS SURVIVES</Text>
           <Text style={dstyles.body}>
             Slide the frequency down with a porous material selected (foam, fiberglass, curtains,

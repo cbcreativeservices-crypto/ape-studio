@@ -24,6 +24,7 @@ import { DecayCurveGraph } from '../../../../features/lab/fxViz';
 import { LabChip } from '../../LabShell';
 import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
 import { Badge, PanelCard, ReadoutGrid, dstyles } from '../../digital/bits';
+import { LabPhoto } from '../../labPhoto';
 import { WaveLayout } from './waveLayout';
 import { requireWaveViz, type WaveVizModule } from '../skiaGate';
 import type { WaveLayers } from '../vizWave';
@@ -349,6 +350,17 @@ export function LineArrayModule(p: WaveModuleProps) {
 
   return (
     <WaveLayout
+      explain={
+        <PanelCard>
+          <Text style={dstyles.eyebrow}>REAL HARDWARE</Text>
+          <LabPhoto
+            file="line-array.webp"
+            h={150}
+            accessibilityLabel="line array loudspeaker"
+            caption="A line array — several small boxes hung in a vertical column. Because the column's length is comparable to a wavelength, the boxes couple into one tall source that controls the vertical pattern (long throw, even coverage). The section view below is this array."
+          />
+        </PanelCard>
+      }
       readouts={
         <>
           <ReadoutGrid
@@ -630,6 +642,17 @@ export function CardioidSubModule(p: WaveModuleProps) {
 
   return (
     <WaveLayout
+      explain={
+        <PanelCard>
+          <Text style={dstyles.eyebrow}>REAL HARDWARE</Text>
+          <LabPhoto
+            file="subwoofer.webp"
+            h={150}
+            accessibilityLabel="subwoofer loudspeaker"
+            caption="A subwoofer — a large driver in a ported cabinet for low frequencies. Two of them, one delayed and flipped in polarity, cancel behind the stack and add in front: a cardioid pattern. The free-field heat map below is that two-sub pattern."
+          />
+        </PanelCard>
+      }
       readouts={
         <ReadoutGrid
           help={p.help}
