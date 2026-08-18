@@ -751,12 +751,11 @@ export function SplMeterScreen({ navigation }: Props) {
   const [settingPopup, setSettingPopup] = useState<null | 'range' | 'unit' | 'response' | 'hold'>(null);
   // Full VU supports BOTH orientations (owner 2026-08-18): unlock rotation while
   // open so the user can turn the phone — landscape lays VU + LED side by side,
-  // portrait stacks VU over LED. Re-lock portrait for the rest of the app on close.
+  // portrait stacks VU over LED. The instant it closes, re-lock PORTRAIT so the
+  // (portrait-only) home never lingers sideways.
   useEffect(() => {
     if (vuFsOpen) unlockOrientation();
-    return () => {
-      lockPortrait();
-    };
+    else lockPortrait();
   }, [vuFsOpen]);
   // User setting for the LED meter's peak-hold cap linger (owner 2026-07-30).
   const [holdMode, setHoldMode] = useState<PeakHoldMode>('1s');
@@ -1710,62 +1709,53 @@ export function SplMeterScreen({ navigation }: Props) {
               </>
             )}
           </ScrollView>
-        </View>
-      </Modal>
 
-      {/* ── FULL VU (owner 2026-08-18): BOTH orientations. LANDSCAPE lays the VU
-          and the tall LED side by side (VU left, LED right); PORTRAIT stacks them
-          (VU on top, LED below, centered). The user rotates freely (unlocked
-          while open); the app re-locks portrait on close. ── */}
-      <Modal
-        visible={vuFsOpen}
-        animationType="fade"
-        statusBarTranslucent
-        // Both orientations — a portrait-only or landscape-only modal presented
-        // against the opposite app lock gives iOS "no common orientation" and
-        // HARD-CRASHES (owner 2026-08-18).
-        supportedOrientations={['portrait', 'landscape', 'landscape-left', 'landscape-right']}
-        onRequestClose={() => setVuFsOpen(false)}
-      >
-        <View style={[styles.vuFsRoot, { paddingTop: insets.top }]}>
-          <Pressable
-            style={[styles.vuFsClose, { top: insets.top + 6 }]}
-            onPress={() => setVuFsOpen(false)}
-            hitSlop={20}
-            accessibilityRole="button"
-            accessibilityLabel="Close the full VU screen"
-          >
-            <Text style={styles.vuFsCloseX}>✕</Text>
-          </Pressable>
-          {viz ? (
-            <View style={[styles.vuFsRow, winW < winH && styles.vuFsCol]}>
-              <View style={styles.vuFsLeft}>
-                <VuTopMeter
-                  viz={viz}
-                  live={live}
-                  vuW={winW >= winH ? Math.round(winW * 0.64) : Math.round(winW * 0.92)}
-                  vuH={winW >= winH ? Math.round(winH * 0.78) : Math.round(winH * 0.4)}
-                  live0Db={vuLive0}
-                  maxText={vuMaxText}
-                  levelText={vuLevelText}
-                  rangeText={vuRangeText}
-                  brackets={vuBrackets}
-                  peakHold={holdMode}
-                />
-              </View>
-              <SideLed
-                viz={viz}
-                live={live}
-                ledW={92}
-                ledH={winW >= winH ? Math.round(winH * 0.82) : Math.round(winH * 0.4)}
-                holdMode={holdMode}
-                splOffset={splOffset}
-                weightingLabel={weighting}
-              />
-            </View>
-          ) : (
-            <View style={styles.vuUnavailCard}>
-              <Text style={styles.vuUnavailTitle}>VU METER NEEDS THE NEW DEV BUILD</Text>
+          {/* FULL VU overlay (owner 2026-08-18): rendered INSIDE the home — NOT a
+              second stacked modal. A modal-over-modal went BLACK on iOS over the
+              home. Both orientations (rotation unlocked while open); the home
+              meters behind it are paused (vuFsOpen), so nothing double-renders. */}
+          {vuFsOpen && (
+            <View style={styles.vuFsRoot}>
+              <Pressable
+                style={styles.vuFsClose}
+                onPress={() => setVuFsOpen(false)}
+                hitSlop={20}
+                accessibilityRole="button"
+                accessibilityLabel="Close the full VU screen"
+              >
+                <Text style={styles.vuFsCloseX}>✕</Text>
+              </Pressable>
+              {viz ? (
+                <View style={[styles.vuFsRow, winW < winH && styles.vuFsCol]}>
+                  <View style={styles.vuFsLeft}>
+                    <VuTopMeter
+                      viz={viz}
+                      live={live}
+                      vuW={winW >= winH ? Math.round(winW * 0.64) : Math.round(winW * 0.92)}
+                      vuH={winW >= winH ? Math.round(winH * 0.78) : Math.round(winH * 0.4)}
+                      live0Db={vuLive0}
+                      maxText={vuMaxText}
+                      levelText={vuLevelText}
+                      rangeText={vuRangeText}
+                      brackets={vuBrackets}
+                      peakHold={holdMode}
+                    />
+                  </View>
+                  <SideLed
+                    viz={viz}
+                    live={live}
+                    ledW={92}
+                    ledH={winW >= winH ? Math.round(winH * 0.82) : Math.round(winH * 0.4)}
+                    holdMode={holdMode}
+                    splOffset={splOffset}
+                    weightingLabel={weighting}
+                  />
+                </View>
+              ) : (
+                <View style={styles.vuUnavailCard}>
+                  <Text style={styles.vuUnavailTitle}>VU METER NEEDS THE NEW DEV BUILD</Text>
+                </View>
+              )}
             </View>
           )}
         </View>
@@ -2242,14 +2232,25 @@ const styles = StyleSheet.create({
   homeNavText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.8, color: colors.textSecondary },
   homeNavBtnFs: { borderColor: 'rgba(55,224,95,.5)' },
   homeNavTextFs: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.8, color: colors.green },
-  // Full VU (landscape) — VU left, tall LED right.
-  vuFsRoot: { flex: 1, backgroundColor: '#0c0c0f', alignItems: 'center', justifyContent: 'center' },
+  // Full VU overlay — absolute-fill inside the home (not a second modal).
+  vuFsRoot: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#0c0c0f',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 100,
+  },
   // Visible, always-on-top close button (a plain ✕ under the notch was untappable
   // in portrait — owner 2026-08-18). `top` is set inline from the safe-area inset.
   vuFsClose: {
     position: 'absolute',
+    top: 10,
     left: 12,
-    zIndex: 30,
+    zIndex: 130,
     width: 40,
     height: 40,
     borderRadius: 20,
