@@ -85,6 +85,26 @@ reusing the dashboard's study-method-panel language so the two screens match.
   the strips) are left in the file for a later cleanup pass, per the
   don't-delete-in-this-pass convention.
 
+## R4 — MEASUREMENT-STRIPS WORK ORDER CLOSED
+
+The 2026-08-17 CCODE work order (`CCODE_WORK_ORDER_MEASUREMENT_TOOL_STRIPS`) is
+**CLOSED / superseded**. Its deliverable — the 8 per-tool 2:1 display strips —
+shipped (R2) and the screen they live on (**ToolsHub**) is **owner-signed-off
+2026-08-17** (SCREEN_STATUS 🟢). The two acceptance items left open at handoff
+resolve as follows:
+
+- **Colorblind / high-contrast / dark modes (work-order criterion 9 / R-4):** the
+  strips are **fixed-palette SVG images** — they render identically in every
+  Settings display mode. They cannot break; they simply do not adapt. This is the
+  work order's own accepted caveat (R-4) — confirmed and accepted.
+- **Tile-04 (spectrogram) vector weight (criterion 8 / R-3):** never surfaced as
+  jank — the screen scrolls and its press animation runs smoothly on device, and
+  it was signed off. No PNG swap needed.
+
+The strips were also cropped 2:1 → 2.5:1 and reframed as recessed glass displays
+(R3), so the work order's original "full-width 2:1 inset" layout (D-1) was
+superseded by owner direction during the redesign. No open items remain.
+
 ## Process note
 
 Consistent with `verify-before-claiming-done`: a real **web-only regression**
