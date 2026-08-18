@@ -1210,12 +1210,12 @@ export function SplMeterScreen({ navigation }: Props) {
               <Pressable onLongPress={() => help('session_log')} delayLongPress={260}>
               <View style={styles.logRow}>
                 <View style={styles.logCell}>
-                  <Text style={styles.cellLabel}>Leq(A)</Text>
-                  <Text style={styles.cellValue}>{meter ? estSpl(meter.leqADb) : '—'}</Text>
+                  <Text style={[styles.cellLabel, weighting === 'A' && styles.logActive]}>Leq(A)</Text>
+                  <Text style={[styles.cellValue, weighting === 'A' && styles.logActive]}>{meter ? estSpl(meter.leqADb) : '—'}</Text>
                 </View>
                 <View style={styles.logCell}>
-                  <Text style={styles.cellLabel}>Leq(Z)</Text>
-                  <Text style={styles.cellValue}>{meter ? estSpl(meter.leqZDb) : '—'}</Text>
+                  <Text style={[styles.cellLabel, weighting !== 'A' && styles.logActive]}>Leq(Z)</Text>
+                  <Text style={[styles.cellValue, weighting !== 'A' && styles.logActive]}>{meter ? estSpl(meter.leqZDb) : '—'}</Text>
                 </View>
                 <View style={styles.logCell}>
                   <Text style={styles.cellLabel}>ELAPSED</Text>
@@ -1540,12 +1540,12 @@ export function SplMeterScreen({ navigation }: Props) {
                   <HelpHead title="SESSION LOG" onHelp={() => help('session_log')} style={styles.sectionHeadSm} />
                   <View style={styles.logRow}>
                     <View style={styles.logCell}>
-                      <Text style={styles.cellLabel}>Leq(A)</Text>
-                      <Text style={styles.cellValueSm}>{meter ? estSpl(meter.leqADb) : '—'}</Text>
+                      <Text style={[styles.cellLabel, weighting === 'A' && styles.logActive]}>Leq(A)</Text>
+                      <Text style={[styles.cellValueSm, weighting === 'A' && styles.logActive]}>{meter ? estSpl(meter.leqADb) : '—'}</Text>
                     </View>
                     <View style={styles.logCell}>
-                      <Text style={styles.cellLabel}>Leq(Z)</Text>
-                      <Text style={styles.cellValueSm}>{meter ? estSpl(meter.leqZDb) : '—'}</Text>
+                      <Text style={[styles.cellLabel, weighting !== 'A' && styles.logActive]}>Leq(Z)</Text>
+                      <Text style={[styles.cellValueSm, weighting !== 'A' && styles.logActive]}>{meter ? estSpl(meter.leqZDb) : '—'}</Text>
                     </View>
                     <View style={styles.logCell}>
                       <Text style={styles.cellLabel}>ELAPSED</Text>
@@ -2091,6 +2091,9 @@ const styles = StyleSheet.create({
   cellValueSm: { fontFamily: fonts.mono, fontSize: 14, color: colors.textPrimary },
   logRow: { flexDirection: 'row', gap: 10 },
   logCell: { flex: 1, gap: 4 },
+  // The session-log Leq column matching the selected dB unit highlights amber
+  // (owner 2026-08-18): weighting A → Leq(A); Z/C/FS → Leq(Z) (C stores Leq(Z)).
+  logActive: { color: colors.amber },
   logNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted },
 
   // Controls (house ctrl-button style).
