@@ -1375,11 +1375,11 @@ export function SplMeterScreen({ navigation }: Props) {
         visible={vuOpen}
         animationType="fade"
         statusBarTranslucent
-        // Tolerate landscape so it never conflicts with the Full VU modal on top
-        // when that forces landscape (portrait-only here HARD-CRASHES iOS). This
-        // home is driven back to portrait by lockPortrait when Full VU closes.
+        // Tolerate landscape so the in-home Full VU overlay can rotate; the home
+        // is driven back to portrait by lockPortrait when Full VU closes.
         supportedOrientations={['portrait', 'landscape', 'landscape-left', 'landscape-right']}
-        onRequestClose={() => setVuOpen(false)}
+        // Android back: close the Full VU overlay first if it's up, else the home.
+        onRequestClose={() => (vuFsOpen ? setVuFsOpen(false) : setVuOpen(false))}
       >
         <View style={[styles.vuModalRoot, { paddingTop: insets.top + 8 }]}>
           {/* SPL Meter HOME header — title + nav to the digital readout and the
