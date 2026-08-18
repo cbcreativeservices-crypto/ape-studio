@@ -41,7 +41,6 @@ import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { LabShell, LabChip, CollapsibleSection, HeaderPlayButton } from './LabShell';
-import { LabPhoto, LabPhotoLightbox } from './labPhoto';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -193,7 +192,6 @@ export function BassLabScreen() {
   const airWavelen = SPEED_OF_SOUND / soundHz;
 
   return (
-    <LabPhotoLightbox>
     <LabShell
       labId="bass"
       title="BASS GUITAR LAB"
@@ -249,14 +247,6 @@ export function BassLabScreen() {
       <CollapsibleSection title="DISPLAY">
         {/* THE FRETBOARD — true geometry, tappable. */}
         <View style={styles.panelCard}>
-          {/* Reference photo (owner 2026-08-18) — supplements, never replaces,
-              the interactive true-geometry fretboard below. Tap to enlarge. */}
-          <LabPhoto
-            file="bass-guitar.webp"
-            h={140}
-            accessibilityLabel="electric bass guitar"
-            caption="A 4-string electric bass. Fretting shortens the vibrating string by an exact ratio, and touching a node rings a natural harmonic — the interactive fretboard below is drawn at true geometry."
-          />
           <Text style={styles.badge}>TRUE FRET GEOMETRY — NUT → BRIDGE · DRAWN FROM THE EQUATIONS</Text>
           <Fretboard
             mode={mode}
@@ -370,7 +360,6 @@ export function BassLabScreen() {
         onClose={() => setLessonOpen(false)}
       />
     </LabShell>
-    </LabPhotoLightbox>
   );
 }
 

@@ -28,7 +28,6 @@ import {
 } from '../bits';
 import { CheckQuestion, DragSlider, VizUnavailableCard } from '../../foundations/bits';
 import { LabChip } from '../../LabShell';
-import { LabPhoto } from '../../labPhoto';
 import { requireVizDac } from '../skiaGate';
 import { colors, fonts } from '../../../../theme/tokens';
 
@@ -159,14 +158,6 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
       {/* ── The DAC chain ────────────────────────────────────────────────── */}
       <PanelCard>
         <PanelHead title="THE D-TO-A CHAIN" helpLabel="zoh" onHelp={() => help('zoh')} />
-        {/* Reference photo (owner 2026-08-18) — the physical converter the
-            schematic strip below models. Supplementary, tap to enlarge. */}
-        <LabPhoto
-          file="dac.webp"
-          h={140}
-          accessibilityLabel="digital-to-analog converter"
-          caption="A digital-to-analog converter (DAC) — the box that turns PCM numbers back into a continuous analog voltage. The schematic strip below traces what happens inside: data → held steps → reconstruction filter → smooth analog."
-        />
         {viz ? <viz.DacChainStrip width={vw} running={focused} /> : <VizUnavailableCard />}
         <Text style={dstyles.caption}>
           PCM data is clocked into the DAC element, whose held output is the stepped intermediate —

@@ -33,7 +33,6 @@ import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { LabShell, LabChip, CollapsibleSection, HeaderPlayButton } from './LabShell';
-import { LabPhoto, LabPhotoLightbox } from './labPhoto';
 
 const ACTIVITY_MS = 500;
 const STATUS_MS = 100; // live env/step poll while running (10 Hz)
@@ -254,7 +253,6 @@ export function ModularLabScreen() {
   };
 
   return (
-    <LabPhotoLightbox>
     <LabShell
       labId="modular"
       title="MODULAR SYNTH LAB"
@@ -276,14 +274,6 @@ export function ModularLabScreen() {
         {/* HERO — the live patch-flow diagram (its env meter and step LEDs are
             the lab's REAL readouts — native modStatus, §1.7). */}
         <View style={styles.panelCard}>
-          {/* Reference photo of real hardware (owner 2026-08-18) — supplements,
-              never replaces, the live signal-flow diagram below. Tap to enlarge. */}
-          <LabPhoto
-            file="modular-synth.webp"
-            h={150}
-            accessibilityLabel="modular synthesizer"
-            caption="A real modular synth — each function (oscillator, filter, amplifier, envelope, LFO…) is a separate module you connect with patch cables. The diagram below is this lab's live signal path."
-          />
           <Text style={styles.badge}>SIGNAL FLOW — THE ACTUAL NATIVE PATH · ACTIVE ROUTINGS LIT</Text>
           <PatchDiagram patch={patch} envLevel={envLevel} activeStep={activeStep} running={running} onBox={openLesson} />
           <Text style={styles.caption}>
@@ -467,7 +457,6 @@ export function ModularLabScreen() {
         onClose={() => setLessonOpen(false)}
       />
     </LabShell>
-    </LabPhotoLightbox>
   );
 }
 
