@@ -73,7 +73,11 @@ export default function App() {
   // re-locks PORTRAIT_UP on exit; nothing else touches orientation. lockPortrait
   // is a no-op (never throws) on dev clients that predate the native module.
   useEffect(() => {
-    lockPortrait();
+    try {
+      lockPortrait();
+    } catch {
+      /* orientation is best-effort — never let it break boot */
+    }
   }, []);
 
   // Hold on a dark surface until fonts resolve (avoids a white flash + FOUT).
