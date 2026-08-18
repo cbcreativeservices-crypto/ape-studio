@@ -1016,6 +1016,10 @@ export function SplMeterScreen({ navigation }: Props) {
       : weighting === 'A'
         ? estSpl(meter.leqADb)
         : estSpl(meter.leqZDb);
+  // ALWAYS show BOTH Leq columns (owner 2026-08-18): the SELECTED unit's Leq
+  // (logLeqValue) AND the raw dBFS Leq — the honest digital reference — even when
+  // dBFS is the selected unit (they then read the same).
+  const logDbfsValue = meter ? meter.leqZDb.toFixed(1) : '—';
   const UNIT_OPTS: { key: string; select: () => void }[] = [
     { key: 'dBFS', select: () => { setDbfs(true); setWeighting('Z'); } },
     { key: 'dBA', select: () => { setDbfs(false); setWeighting('A'); } },
@@ -1223,6 +1227,10 @@ export function SplMeterScreen({ navigation }: Props) {
                 <View style={styles.logCell}>
                   <Text style={styles.cellLabel}>{logLeqLabel}</Text>
                   <Text style={styles.cellValue}>{logLeqValue}</Text>
+                </View>
+                <View style={styles.logCell}>
+                  <Text style={styles.cellLabel}>Leq · dBFS</Text>
+                  <Text style={styles.cellValue}>{logDbfsValue}</Text>
                 </View>
                 <View style={styles.logCell}>
                   <Text style={styles.cellLabel}>ELAPSED</Text>
@@ -1549,6 +1557,10 @@ export function SplMeterScreen({ navigation }: Props) {
                     <View style={styles.logCell}>
                       <Text style={styles.cellLabel}>{logLeqLabel}</Text>
                       <Text style={styles.cellValueSm}>{logLeqValue}</Text>
+                    </View>
+                    <View style={styles.logCell}>
+                      <Text style={styles.cellLabel}>Leq · dBFS</Text>
+                      <Text style={styles.cellValueSm}>{logDbfsValue}</Text>
                     </View>
                     <View style={styles.logCell}>
                       <Text style={styles.cellLabel}>ELAPSED</Text>
