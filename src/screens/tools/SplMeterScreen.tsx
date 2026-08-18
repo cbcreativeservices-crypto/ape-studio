@@ -1715,16 +1715,19 @@ export function SplMeterScreen({ navigation }: Props) {
               home. Both orientations (rotation unlocked while open); the home
               meters behind it are paused (vuFsOpen), so nothing double-renders. */}
           {vuFsOpen && (
-            <View style={styles.vuFsRoot}>
-              <Pressable
-                style={styles.vuFsClose}
-                onPress={() => setVuFsOpen(false)}
-                hitSlop={20}
-                accessibilityRole="button"
-                accessibilityLabel="Close the full VU screen"
-              >
+            // The whole overlay closes on tap (nothing here is interactive), so
+            // exit is reliable even where a Skia meter would eat the ✕ tap
+            // (owner 2026-08-18: ✕ didn't close in portrait). The ✕ stays as a
+            // visible affordance, top-right.
+            <Pressable
+              style={styles.vuFsRoot}
+              onPress={() => setVuFsOpen(false)}
+              accessibilityRole="button"
+              accessibilityLabel="Close the full VU screen — tap anywhere"
+            >
+              <View style={styles.vuFsClose} pointerEvents="none">
                 <Text style={styles.vuFsCloseX}>✕</Text>
-              </Pressable>
+              </View>
               {viz ? (
                 <View style={[styles.vuFsRow, winW < winH && styles.vuFsCol]}>
                   <View style={styles.vuFsLeft}>
@@ -1756,7 +1759,7 @@ export function SplMeterScreen({ navigation }: Props) {
                   <Text style={styles.vuUnavailTitle}>VU METER NEEDS THE NEW DEV BUILD</Text>
                 </View>
               )}
-            </View>
+            </Pressable>
           )}
         </View>
       </Modal>
@@ -2249,7 +2252,7 @@ const styles = StyleSheet.create({
   vuFsClose: {
     position: 'absolute',
     top: 10,
-    left: 12,
+    right: 14,
     zIndex: 130,
     width: 40,
     height: 40,
