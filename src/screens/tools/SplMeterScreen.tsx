@@ -50,6 +50,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { EngineGate } from './EngineGate';
 import { SkinnedVu } from './SkinnedVu';
+import { Spl3dGauge } from './Spl3dGauge';
 import { levelColorForDb } from '../../features/tools/levelColor';
 import { useLowLight, LOW_LIGHT_DIM } from '../../features/settings/lowLight';
 import { MIC_LIMITS, toolByKey } from './toolsData';
@@ -144,57 +145,43 @@ function SideLed({
  *  RIGHT the thin live LED meter (PEAK + AVERAGE with a user peak-hold). Both
  *  are driven by the SAME polled RMS/peak SharedValues off one shared clock. */
 function VuHero({
-  viz,
-  live,
   dialW,
-  dialH,
-  splOffset,
+  level,
   calibrated,
   dialMode,
   onDialMode,
   onModeHelp,
   centerText,
   centerColor,
-  sweetSpot,
   onToggle,
 }: {
-  viz: VizMetersModule;
-  live: LiveMeterDrive;
   dialW: number;
-  dialH: number;
-  splOffset: number;
+  /** Smoothed estimated dB SPL driving the segment fill; null = meter off. */
+  level: number | null;
   calibrated: boolean;
   dialMode: DialMode;
   onDialMode: (m: DialMode) => void;
   onModeHelp: () => void;
   centerText: string;
   centerColor?: string;
-  sweetSpot: boolean;
-  /** Tap the dial (not the mode chips) to toggle the meter START/STOP. */
+  /** Tap the gauge (not the mode chips) to toggle the meter START/STOP. */
   onToggle?: () => void;
 }) {
-  const phase = viz.usePhaseClock(true, 1 / VU_LOOP);
   return (
-    // SPL gauge — its OWN full-width row so labels sit outside the arc. The
+    // SPL gauge — the isometric 3D segmented ring (owner 2026-08-19). The
     // STUDIO/SPL chooser is pinned to the TOP-LEFT corner of the container
-    // (owner 2026-07-30); the LED shares the top row with the VU. Tapping the
-    // dial toggles START/STOP; the corner mode chips render OVER this Pressable
-    // and keep their own taps (owner 2026-07-31).
-    <View style={{ width: dialW, alignSelf: 'center', height: dialH }}>
+    // (owner 2026-07-30). Tapping the gauge toggles START/STOP; the corner
+    // mode chips render OVER this Pressable and keep their own taps.
+    <View style={{ width: dialW, alignSelf: 'center' }}>
       <Pressable onPress={onToggle} accessibilityRole={onToggle ? 'button' : undefined}>
-      <viz.SplDialView
-        width={dialW}
-        height={dialH}
-        phase={phase}
-        live={live}
-        splOffset={splOffset}
-        calibrated={calibrated}
-        labelMode={dialMode}
-        loopSeconds={VU_LOOP}
-        centerText={centerText}
-        centerColor={centerColor}
-        sweetSpot={sweetSpot}
-      />
+        <Spl3dGauge
+          width={dialW}
+          mode={dialMode}
+          level={level}
+          calibrated={calibrated}
+          centerText={centerText}
+          centerColor={centerColor}
+        />
       </Pressable>
       <View style={styles.dialModeCorner}>
         {(['studio', 'spl', 'optimal'] as const).map((m) => (
@@ -793,9 +780,8 @@ export function SplMeterScreen({ navigation }: Props) {
   const vuH = Math.round(vuW * 0.56);
   const [leftColH, setLeftColH] = useState(0);
   // Below the top area: the SPL gauge gets its OWN FULL-WIDTH row so its callout
-  // labels sit OUTSIDE the arc with leader lines.
+  // labels sit OUTSIDE the ring with leader lines (3D gauge sizes itself).
   const dialW = winW - 32;
-  const dialH = Math.round(dialW * 0.92);
   // Live meter drive (responsiveness fix 2026-07-30): two SharedValues the Skia
   // meters chase on the UI thread. RMS = the selected weighting × response level;
   // peak = the raw peak (F1: may exceed 0 dBFS, never clamped). −120 = silence.
@@ -955,7 +941,7 @@ export function SplMeterScreen({ navigation }: Props) {
   // Control-room sweet spot (owner 2026-07-30): in STUDIO mode only, a live level
   // in the 79–85 dB monitoring band lights the glowing gold frame around the
   // gauge (matches the dial's gold sweet-spot band). Never in SPL/OPTIMAL.
-  const inSweetSpot = dialMode === 'studio' && colorSpl != null && colorSpl >= 79 && colorSpl <= 85;
+  // (Sweet-spot detection now lives visually in the 3D gauge's gold segments.)
 
   // ── Big # readout (owner 2026-08-17) ───────────────────────────────────────
   // Response toggle on the LEFT (FAST/SLOW/5 SEC AVG), unit toggle on the RIGHT
@@ -1515,20 +1501,16 @@ export function SplMeterScreen({ navigation }: Props) {
                   </Pressable>
                   <Text style={styles.gaugeToggleChevron}>{gaugeOpen ? '▾' : '▸'}</Text>
                 </Pressable>
-                {gaugeOpen && viz ? (
+                {gaugeOpen ? (
                   <VuHero
-                    viz={viz}
-                    live={live}
                     dialW={dialW}
-                    dialH={dialH}
-                    splOffset={splOffset}
+                    level={colorSpl}
                     calibrated={calibrated}
                     dialMode={dialMode}
                     onDialMode={setDialMode}
                     onModeHelp={() => help('mode')}
                     centerText={dialCenterText}
                     centerColor={dialCenterColor}
-                    sweetSpot={inSweetSpot}
                     onToggle={running ? stopMeter : startMeter}
                   />
                 ) : null}
