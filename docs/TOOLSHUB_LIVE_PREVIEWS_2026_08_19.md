@@ -131,3 +131,29 @@ Updated phone check: step 2 above now also covers the tuner (whistle a steady
 note → needle homes toward centre and greens when in tune) and the MultiMeter
 (RTA left, spectrogram right). Step 3 now only watches the two DEMO cards; RT60
 should sweep continuously with no blanking.
+
+---
+
+## Revision 3 — more field feedback (2026-08-19)
+
+Hub tiles + the MultiMeter mini + the SPL Meter screen's navigation:
+
+1. **MultiMeter spectrogram bug fixed** — it was drawing all 46 history columns
+   from the far left, spilling over the RTA panel. Now sliced to the newest 22
+   columns so it stays inside the right panel; RTA (left) and spectrogram
+   (right) truly share the tile.
+2. **MultiMeter level bar thickened** (h 30 → 52) so the level reads clearly at
+   tile size.
+3. **Tile titles**: moved ABOVE the display, kept white, and forced onto ONE
+   line (auto-shrink to fit instead of wrapping; the `/` names no longer break).
+4. **SPL Meter screen navigation** (`SplMeterScreen.tsx`, separate from the
+   previews):
+   - **Added the missing back button** to the SPL Meter HOME (top-left ‹) —
+     the user was getting stuck there with no way out; it exits to the tool
+     intro.
+   - **Digital readout back** now returns to the SPL Meter HOME (not out to the
+     tool intro), matching the hardware-back behavior.
+   - **Full VU settings** (RANGE · WEIGHTING · RESPONSE · PEAK HOLD) now render
+     as a **column to the LEFT of the VU meter in landscape** (portrait keeps
+     the bottom bar — no room beside a near-full-width VU). The VU needs the
+     phone (Skia + engine) to see this.

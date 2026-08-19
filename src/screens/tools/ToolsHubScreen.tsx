@@ -336,10 +336,12 @@ function ToolTile({
       <LinearGradient pointerEvents="none" colors={['rgba(0,0,0,0.6)', 'rgba(0,0,0,0)']} style={styles.tileCavityTop} />
       {/* The DISPLAY 'cap' — the only mover: sinks into the recess on press. */}
       <Animated.View style={[styles.tileCap, { transform: [{ translateY }] }]}>
-        <ToolStrip tool={tool} live={live} active={active} />
-        <Text style={styles.tileName} numberOfLines={2}>
-          {name.replace(' / ', '\n')}
+        {/* Title ABOVE the display (owner 2026-08-19), on ONE line — auto-shrinks
+            to fit the tile width so long names don't wrap to a second line. */}
+        <Text style={styles.tileName} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65}>
+          {name}
         </Text>
+        <ToolStrip tool={tool} live={live} active={active} />
         <TileGlass />
         {/* Illumination — the screen powers on (glow ramps up) when pressed. */}
         <Animated.View pointerEvents="none" style={[styles.tileGlowLight, { opacity: glow }]} />
@@ -685,8 +687,10 @@ const styles = StyleSheet.create({
   tileName: {
     fontFamily: fonts.oswaldMedium,
     fontSize: 15,
-    lineHeight: 18,
-    minHeight: 36,
+    lineHeight: 20,
+    // One line now (owner 2026-08-19) — the title auto-shrinks to fit rather
+    // than wrapping, so a single reserved line keeps two-up rows aligned.
+    minHeight: 20,
     color: colors.textPrimary,
     textAlign: 'center',
   },

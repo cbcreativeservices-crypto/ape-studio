@@ -1037,6 +1037,15 @@ export function SplMeterScreen({ navigation }: Props) {
       ? 'field-calibrated · approximate'
       : 'uncalibrated estimate';
   const activeUnit = dbfs ? 'dBFS' : weighting === 'A' ? 'dBA' : weighting === 'C' ? 'dBC' : 'dB SPL';
+  // Full VU settings items — RANGE · WEIGHTING · RESPONSE · PEAK HOLD, each
+  // opening the shared chooser popup. Rendered as a LEFT COLUMN in landscape
+  // and a bottom bar in portrait (owner 2026-08-19).
+  const fsCtrlItems = [
+    { key: 'range' as const, label: 'RANGE', value: rangeAuto ? 'AUTO' : `${rangeDb}` },
+    { key: 'unit' as const, label: 'WEIGHTING', value: activeUnit === 'dB SPL' ? 'SPL' : activeUnit === 'dBFS' ? 'FS' : activeUnit === 'dBA' ? 'A' : 'C' },
+    { key: 'response' as const, label: 'RESPONSE', value: responseLabel(response) },
+    { key: 'hold' as const, label: 'PEAK HOLD', value: holdLabel(holdMode) },
+  ];
   // Session-log Leq follows the SELECTED dB unit (owner 2026-08-18): one column,
   // labeled + valued in the active unit. A→Leq(A); Z/C→Leq(Z) (C's documented
   // honest fallback); FS shows the raw dBFS Leq (no SPL estimate).
@@ -1158,7 +1167,10 @@ export function SplMeterScreen({ navigation }: Props) {
       {view === 'digital' ? (
       <View style={{ flex: 1, paddingTop: insets.top + 10 }}>
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
+        {/* Back from the digital readout returns to the SPL Meter HOME (the
+            meter's own menu), NOT out to the tool intro — owner 2026-08-19.
+            Mirrors the hardware-back handler. */}
+        <Pressable onPress={() => setView('home')} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back to SPL Meter home">
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
@@ -1429,6 +1441,12 @@ export function SplMeterScreen({ navigation }: Props) {
           {/* SPL Meter HOME header — title + nav to the digital readout and the
               landscape-only full VU screen (owner 2026-08-18). */}
           <View style={styles.vuModalHead}>
+            {/* Back button (owner 2026-08-19): the SPL Meter HOME is the meter's
+                landing view — without this the user was stuck with no way out.
+                Exits the tool (back to the tool intro). */}
+            <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back" style={styles.vuModalBack}>
+              <Text style={styles.back}>‹</Text>
+            </Pressable>
             <Text style={styles.vuModalTitle}>SPL METER HOME</Text>
             <View style={{ flex: 1 }} />
             <Pressable
@@ -1786,60 +1804,76 @@ export function SplMeterScreen({ navigation }: Props) {
                     <Text style={styles.vuFsLedToggleText}>{vuFsLedHidden ? 'SHOW LED' : 'HIDE LED'}</Text>
                   </Pressable>
 
-                  {/* pointerEvents none: the Skia meters must NOT capture taps, or
-                      the tap-to-close is eaten wherever a meter covers the screen
-                      (portrait) — owner 2026-08-18. With the LED hidden the single
-                      VU centers in the freed space (no zoom — owner). */}
-                  <View style={[styles.vuFsRow, winW < winH && styles.vuFsCol]} pointerEvents="none">
-                    <View style={styles.vuFsLeft}>
-                      <VuTopMeter
-                        viz={viz}
-                        live={live}
-                        vuW={winW >= winH ? Math.round(winW * 0.64) : Math.round(winW * 0.92)}
-                        vuH={winW >= winH ? Math.round(winH * 0.78) : Math.round(winH * 0.4)}
-                        live0Db={vuLive0}
-                        maxText={vuMaxText}
-                        levelText={vuLevelText}
-                        rangeText={vuRangeText}
-                        brackets={vuBrackets}
-                        peakHold={holdMode}
-                      />
-                    </View>
-                    {!vuFsLedHidden && (
-                      <SideLed
-                        viz={viz}
-                        live={live}
-                        ledW={92}
-                        ledH={winW >= winH ? Math.round(winH * 0.82) : Math.round(winH * 0.4)}
-                        holdMode={holdMode}
-                        splOffset={splOffset}
-                        weightingLabel={weighting}
-                      />
+                  {/* Stage (owner 2026-08-19): in LANDSCAPE the settings are a
+                      COLUMN to the LEFT of the VU; in portrait they stay a bottom
+                      bar (below). box-none so taps on the meter / empty areas still
+                      close the screen; only the settings buttons handle their taps
+                      (the meter row itself stays pointerEvents="none" so a Skia
+                      meter can't eat the tap-to-close — owner 2026-08-18). */}
+                  <View style={styles.vuFsStage} pointerEvents="box-none">
+                    {winW >= winH && (
+                      <View style={styles.vuFsCtrlCol}>
+                        {fsCtrlItems.map((b) => (
+                          <Pressable
+                            key={b.key}
+                            style={styles.vuFsCtrlColBtn}
+                            onPress={() => setSettingPopup(b.key)}
+                            accessibilityRole="button"
+                            accessibilityLabel={`${b.label}: ${b.value}. Tap to change.`}
+                          >
+                            <Text style={styles.ctrlBarLabel}>{b.label}</Text>
+                            <Text style={styles.ctrlBarValue} numberOfLines={1}>{b.value}</Text>
+                          </Pressable>
+                        ))}
+                      </View>
                     )}
+                    <View style={[styles.vuFsRow, winW < winH && styles.vuFsCol]} pointerEvents="none">
+                      <View style={styles.vuFsLeft}>
+                        <VuTopMeter
+                          viz={viz}
+                          live={live}
+                          vuW={winW >= winH ? Math.round(winW * 0.6) : Math.round(winW * 0.92)}
+                          vuH={winW >= winH ? Math.round(winH * 0.78) : Math.round(winH * 0.4)}
+                          live0Db={vuLive0}
+                          maxText={vuMaxText}
+                          levelText={vuLevelText}
+                          rangeText={vuRangeText}
+                          brackets={vuBrackets}
+                          peakHold={holdMode}
+                        />
+                      </View>
+                      {!vuFsLedHidden && (
+                        <SideLed
+                          viz={viz}
+                          live={live}
+                          ledW={92}
+                          ledH={winW >= winH ? Math.round(winH * 0.82) : Math.round(winH * 0.4)}
+                          holdMode={holdMode}
+                          splOffset={splOffset}
+                          weightingLabel={weighting}
+                        />
+                      )}
+                    </View>
                   </View>
 
-                  {/* Settings bar (owner 2026-08-18) — mirrors the home's bottom
-                      control bar: RANGE · WEIGHTING · RESPONSE · PEAK HOLD, each
-                      opening the shared chooser popup (which paints above this). */}
-                  <View style={[styles.vuFsCtrlBar, { paddingBottom: insets.bottom + 10 }]}>
-                    {[
-                      { key: 'range' as const, label: 'RANGE', value: rangeAuto ? 'AUTO' : `${rangeDb}` },
-                      { key: 'unit' as const, label: 'WEIGHTING', value: activeUnit === 'dB SPL' ? 'SPL' : activeUnit === 'dBFS' ? 'FS' : activeUnit === 'dBA' ? 'A' : 'C' },
-                      { key: 'response' as const, label: 'RESPONSE', value: responseLabel(response) },
-                      { key: 'hold' as const, label: 'PEAK HOLD', value: holdLabel(holdMode) },
-                    ].map((b) => (
-                      <Pressable
-                        key={b.key}
-                        style={styles.ctrlBarBtn}
-                        onPress={() => setSettingPopup(b.key)}
-                        accessibilityRole="button"
-                        accessibilityLabel={`${b.label}: ${b.value}. Tap to change.`}
-                      >
-                        <Text style={styles.ctrlBarLabel}>{b.label}</Text>
-                        <Text style={styles.ctrlBarValue} numberOfLines={1}>{b.value}</Text>
-                      </Pressable>
-                    ))}
-                  </View>
+                  {/* Portrait keeps the settings as a bottom bar — no room for a
+                      left column beside a near-full-width VU. */}
+                  {winW < winH && (
+                    <View style={[styles.vuFsCtrlBar, { paddingBottom: insets.bottom + 10 }]}>
+                      {fsCtrlItems.map((b) => (
+                        <Pressable
+                          key={b.key}
+                          style={styles.ctrlBarBtn}
+                          onPress={() => setSettingPopup(b.key)}
+                          accessibilityRole="button"
+                          accessibilityLabel={`${b.label}: ${b.value}. Tap to change.`}
+                        >
+                          <Text style={styles.ctrlBarLabel}>{b.label}</Text>
+                          <Text style={styles.ctrlBarValue} numberOfLines={1}>{b.value}</Text>
+                        </Pressable>
+                      ))}
+                    </View>
+                  )}
                 </>
               ) : (
                 <View style={styles.vuUnavailCard}>
@@ -2297,6 +2331,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 8,
   },
+  vuModalBack: { marginRight: 6 },
   vuModalTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1.6, color: colors.textPrimary },
   vuClose: { fontFamily: fonts.oswaldSemiBold, fontSize: 22, color: colors.textSecondary, padding: 4 },
   vuScroll: { padding: 16, paddingBottom: 40, gap: 14, alignItems: 'stretch' },
@@ -2342,6 +2377,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   vuFsCloseX: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, color: colors.textSecondary },
+  // Full VU stage — a row so the settings COLUMN sits left of the VU (landscape).
+  vuFsStage: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 16 },
+  // Settings column (landscape), left of the VU meter (owner 2026-08-19).
+  vuFsCtrlCol: { width: 106, flexDirection: 'column', justifyContent: 'center', gap: 10, zIndex: 130 },
+  vuFsCtrlColBtn: {
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#131316',
+    paddingVertical: 10,
+    paddingHorizontal: 6,
+    alignItems: 'center',
+    gap: 3,
+  },
   vuFsRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 18 },
   // Portrait: stack VU over the LED, centered.
   vuFsCol: { flexDirection: 'column', gap: 22 },

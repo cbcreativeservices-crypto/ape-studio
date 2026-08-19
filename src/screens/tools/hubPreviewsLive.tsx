@@ -606,11 +606,13 @@ HubSpectroMini.displayName = 'HubSpectroMini';
 // spectrogram on the RIGHT. (The static tool_08 strip is the resting art; this
 // opaque live layer replaces it wholesale while frames flow.)
 
-// Top level bar track.
+// Top level bar track — deliberately thick so the level reads clearly at tile
+// size (owner 2026-08-19).
 const MM_BAR_TRACK_X = 104;
 const MM_BAR_TRACK_W = 1840;
-const MM_BAR_Y = 116;
-const MM_BAR_H = 30;
+const MM_BAR_Y = 104;
+const MM_BAR_H = 52;
+const MM_BAR_RX = 26;
 const MM_LEVEL_FLOOR = -62; // lively preview window (matches the SPL ladder)
 const MM_LEVEL_SPAN = 50;
 
@@ -625,11 +627,14 @@ const MM_RTA_TOP_Y = 210; // 0 dBFS
 const MM_RTA_BOT_Y = 892; // −90 dBFS
 const mmRtaY = (db: number) => clamp(MM_RTA_TOP_Y + (db / -90) * (MM_RTA_BOT_Y - MM_RTA_TOP_Y), MM_RTA_TOP_Y, MM_RTA_BOT_Y);
 
-// RIGHT panel — spectrogram.
+// RIGHT panel — spectrogram. Only the newest MM_SG_COLS history columns are
+// drawn, so the heat map stays INSIDE the right panel (x 1060→1936) and never
+// spills left over the RTA — the column pitch is sized for exactly this count.
 const MM_SG_PANEL = { x: 1040, y: 172, w: 918, h: 744 };
+const MM_SG_COLS = 22;
 const MM_SG_GEOM = {
   xRight: 1936,
-  colW: (1936 - 1060) / 22,
+  colW: (1936 - 1060) / MM_SG_COLS,
   cellW: 42,
   yBottom: 892,
   rowH: (892 - 210) / 20,
@@ -640,8 +645,8 @@ const MM_SG_GEOM = {
 
 const MM_CHROME = (
   <G>
-    {/* Top slim level-bar track. */}
-    <Rect x={MM_BAR_TRACK_X} y={MM_BAR_Y} width={MM_BAR_TRACK_W} height={MM_BAR_H} rx={15} fill="#141821" />
+    {/* Top level-bar track (thick — easy to read at tile size). */}
+    <Rect x={MM_BAR_TRACK_X} y={MM_BAR_Y} width={MM_BAR_TRACK_W} height={MM_BAR_H} rx={MM_BAR_RX} fill="#141821" />
     {/* LEFT — RTA panel + gridlines. */}
     <Rect x={MM_RTA_PANEL.x} y={MM_RTA_PANEL.y} width={MM_RTA_PANEL.w} height={MM_RTA_PANEL.h} rx={14} fill="#0b0f16" stroke="#1e2635" strokeWidth={4} />
     {[381, 553, 725].map((y, i) => (
@@ -686,9 +691,10 @@ const HubMultiMini: FC = memo(() => {
     }
   }
 
-  // Spectrogram — the same live history, painted into the RIGHT panel.
+  // Spectrogram — the newest MM_SG_COLS columns of the shared history, painted
+  // into the RIGHT panel only (slicing keeps it from spilling over the RTA).
   const spectroCols = useSyncExternalStore(subscribeHubPreview, () => getHubPreview().spectroCols);
-  const sgPaths = useMemo(() => heatPaths(spectroCols, MM_SG_GEOM), [spectroCols]);
+  const sgPaths = useMemo(() => heatPaths(spectroCols.slice(-MM_SG_COLS), MM_SG_GEOM), [spectroCols]);
 
   return (
     <LiveShell>
@@ -703,7 +709,7 @@ const HubMultiMini: FC = memo(() => {
         {MM_CHROME}
         {/* Top level bar. */}
         {barW > 4 && (
-          <Rect x={MM_BAR_TRACK_X} y={MM_BAR_Y} width={barW} height={MM_BAR_H} rx={Math.min(15, barW / 2)} fill="url(#hpLvlhMm)" />
+          <Rect x={MM_BAR_TRACK_X} y={MM_BAR_Y} width={barW} height={MM_BAR_H} rx={Math.min(MM_BAR_RX, barW / 2)} fill="url(#hpLvlhMm)" />
         )}
         {/* LEFT — RTA bars + peak caps. */}
         <G fill="url(#hpLvlMm)">{bars}</G>
