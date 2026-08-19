@@ -38,7 +38,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GlassButton } from '../../../components/GlassButton';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
-import { TUBE_CARD_ASPECT, TUBE_FAMILY_META, TUBE_PAGES, TUBE_REFS, tubePageUrl, type TubeFamily } from './tubeRefs';
+import { TUBE_CARD_ASPECT, TUBE_FAMILY_META, TUBE_REFS, pageCountOf, tubeRefPageUrl, type TubeFamily } from './tubeRefs';
 
 const MAX_SCALE = 4;
 const DOUBLE_TAP_SCALE = 2.5;
@@ -67,6 +67,7 @@ export function TubeCardScreen() {
   const [failed, setFailed] = useState(false);
   const [retryKey, setRetryKey] = useState(0);
   const tube = TUBE_REFS[idx];
+  const pageCount = pageCountOf(tube); // 2 for normal tubes, 1 for a promo prop
   const famTitle = TUBE_FAMILY_META.find((f) => f.key === tube.family)?.title ?? '';
   const catTitle = FAMILY_SHORT[tube.family];
 
@@ -149,15 +150,16 @@ export function TubeCardScreen() {
   const goSheet = (dir: 1 | -1): boolean => {
     const i = idxRef.current;
     const p = pageRef.current;
+    const curPages = pageCountOf(TUBE_REFS[i]);
     let ni = i;
     let np: 1 | 2 = p;
     if (dir === 1) {
-      if (p === 1) np = 2;
+      if (p < curPages) np = (p + 1) as 1 | 2;
       else if (i < TUBE_REFS.length - 1) { ni = i + 1; np = 1; }
       else return false;
     } else {
-      if (p === 2) np = 1;
-      else if (i > 0) { ni = i - 1; np = 2; }
+      if (p > 1) np = (p - 1) as 1 | 2;
+      else if (i > 0) { ni = i - 1; np = pageCountOf(TUBE_REFS[i - 1]); } // land on prev tube's LAST page
       else return false;
     }
     if (ni !== i) setIdx(ni);
@@ -239,8 +241,10 @@ export function TubeCardScreen() {
             // One finger, not zoomed → swipe between sheets: the sheet follows
             // the finger. Dampen the drag hard at the very ends (nowhere to go).
             s.mode = 'swipe';
+            const lastIdx = TUBE_REFS.length - 1;
             const atStart = idxRef.current === 0 && pageRef.current === 1;
-            const atEnd = idxRef.current === TUBE_REFS.length - 1 && pageRef.current === 2;
+            const atEnd =
+              idxRef.current === lastIdx && pageRef.current === pageCountOf(TUBE_REFS[lastIdx]);
             let dx = g.dx;
             if ((dx < 0 && atEnd) || (dx > 0 && atStart)) dx *= 0.32;
             txAV.setValue(dx);
@@ -313,11 +317,12 @@ export function TubeCardScreen() {
     const next = TUBE_REFS[idx + 1];
     // The other page of THIS tube (so the toggle/forward-swipe is instant),
     // plus both neighbours' facing pages: next→page 1 (forward swipe lands
-    // there), prev→page 2 (backward swipe lands there).
-    Image.prefetch(tubePageUrl(tube.stem, 2)).catch(() => {});
-    if (prev) Image.prefetch(tubePageUrl(prev.stem, 2)).catch(() => {});
-    if (next) Image.prefetch(tubePageUrl(next.stem, 1)).catch(() => {});
-  }, [idx, tube.stem]);
+    // there), prev→its LAST page (backward swipe lands there). A single-page
+    // tube has no page 2 to prefetch.
+    if (pageCount >= 2) Image.prefetch(tubeRefPageUrl(tube, 2)).catch(() => {});
+    if (prev) Image.prefetch(tubeRefPageUrl(prev, pageCountOf(prev))).catch(() => {});
+    if (next) Image.prefetch(tubeRefPageUrl(next, 1)).catch(() => {});
+  }, [idx, pageCount, tube]);
 
   // Non-members never reach the cards (deep-link safe).
   if (!unlocked) {
@@ -383,20 +388,22 @@ export function TubeCardScreen() {
           A brief category label sits to the LEFT of the page buttons. */}
       <View style={styles.pageRow}>
         <Text style={styles.pageCat} numberOfLines={1}>{catTitle}</Text>
-        <View style={styles.pageTabs}>
-          {([1, 2] as const).map((p) => (
-            <Pressable
-              key={p}
-              onPress={() => goPage(p)}
-              style={[styles.pageTab, page === p && styles.pageTabOn]}
-              accessibilityRole="button"
-              accessibilityState={{ selected: page === p }}
-              accessibilityLabel={`Show page ${p} of ${TUBE_PAGES}`}
-            >
-              <Text style={[styles.pageTabText, page === p && styles.pageTabTextOn]}>PAGE {p}</Text>
-            </Pressable>
-          ))}
-        </View>
+        {pageCount > 1 ? (
+          <View style={styles.pageTabs}>
+            {Array.from({ length: pageCount }, (_, k) => (k + 1) as 1 | 2).map((p) => (
+              <Pressable
+                key={p}
+                onPress={() => goPage(p)}
+                style={[styles.pageTab, page === p && styles.pageTabOn]}
+                accessibilityRole="button"
+                accessibilityState={{ selected: page === p }}
+                accessibilityLabel={`Show page ${p} of ${pageCount}`}
+              >
+                <Text style={[styles.pageTabText, page === p && styles.pageTabTextOn]}>PAGE {p}</Text>
+              </Pressable>
+            ))}
+          </View>
+        ) : null}
       </View>
 
       {/* Image area — everything below the bar; pinch-zoom + pan only. */}
@@ -410,13 +417,13 @@ export function TubeCardScreen() {
             }}
           >
             <Image
-              key={`${tube.stem}-p${page}-${retryKey}`}
-              source={{ uri: tubePageUrl(tube.stem, page) }}
+              key={`${tube.id}-p${page}-${retryKey}`}
+              source={{ uri: tubeRefPageUrl(tube, page) }}
               style={{ width: imgW, height: imgH }}
               resizeMode="contain"
               onLoad={() => setLoaded(true)}
               onError={() => setFailed(true)}
-              accessibilityLabel={`${tube.short} reference card, page ${page} of ${TUBE_PAGES} — ${tube.role}`}
+              accessibilityLabel={`${tube.short} reference card, page ${page} of ${pageCount} — ${tube.role}`}
             />
           </Animated.View>
         ) : null}
