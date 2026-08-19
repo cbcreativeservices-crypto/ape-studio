@@ -378,7 +378,7 @@ function ToolTile({
 
 export function ToolsHubScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
-  const { commercialMode, caps, entitlement } = useEntitlement();
+  const { entitlement } = useEntitlement();
   // ONE shared mic/DSP session + tick for the live tile previews (owner
   // 2026-08-19). Auto-starts on entry (OS permission prompt on first visit),
   // force-stops on blur/background, resumes on return; 'denied' rests the live
@@ -388,10 +388,6 @@ export function ToolsHubScreen({ navigation }: Props) {
   // 2026-08-05) — free accounts see them grayed + locked → Paywall. Gate on
   // entitlement, not caps (matches the AudioLearning training gate).
   const isMember = entitlement === 'academy';
-  // The TOOLS themselves are always usable (Booth 2026-07-11) — the academy
-  // upsell is for the TUTORIALS on how to use them, shown as the bottom banner
-  // until the user is an academy member (returns if their subscription lapses).
-  const showAcademyBanner = commercialMode && !caps.audioTools;
   return (
     <View style={styles.root}>
       <View style={{ paddingTop: insets.top + 10, flex: 1 }}>
@@ -533,11 +529,10 @@ export function ToolsHubScreen({ navigation }: Props) {
       </View>
 
       {/* Bottom nav — this screen lives outside MainTabs, so we render our own
-          bar routing back into the tabs (Booth 2026-07-11). When the upsell
-          banner shows, the safe-area inset moves to the banner (bottommost). */}
+          bar routing back into the tabs (Booth 2026-07-11). */}
       <LinearGradient
         colors={['#1b1b1b', '#0d0d0d']}
-        style={[styles.navBar, { paddingBottom: showAcademyBanner ? 0 : insets.bottom }]}
+        style={[styles.navBar, { paddingBottom: insets.bottom }]}
       >
         <View style={styles.navRow}>
           {NAV_TABS.map((name) => (
@@ -553,21 +548,6 @@ export function ToolsHubScreen({ navigation }: Props) {
           ))}
         </View>
       </LinearGradient>
-
-      {/* Permanent academy-upsell notice BELOW the nav (Booth 2026-07-11) — 100%
-          of the time for non-academy users; hidden for academy, returns if lapsed. */}
-      {showAcademyBanner && (
-        <Pressable
-          style={[styles.banner, { paddingBottom: 11 + insets.bottom }]}
-          onPress={() => navigation.navigate('Paywall')}
-          accessibilityRole="button"
-          accessibilityLabel="Upgrade to Academy Mode"
-        >
-          <Text style={styles.bannerText} numberOfLines={2}>
-            Upgrade to Academy Mode to learn how to use these tools ›
-          </Text>
-        </Pressable>
-      )}
     </View>
   );
 }
@@ -788,21 +768,6 @@ const styles = StyleSheet.create({
   trainingNum: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub },
   trainingTitle: { flex: 1, fontFamily: fonts.oswaldMedium, fontSize: 14, color: colors.textPrimary },
   trainingChevron: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, color: colors.textSub },
-  // Permanent academy-upsell notice (below the nav) — BLUE theme (Booth 2026-07-11).
-  banner: {
-    backgroundColor: '#0b1420',
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(91,176,255,.45)',
-    paddingTop: 11,
-    paddingHorizontal: 16,
-  },
-  bannerText: {
-    fontFamily: fonts.oswaldSemiBold,
-    fontSize: 13,
-    letterSpacing: 0.6,
-    color: '#7fd4ff',
-    textAlign: 'center',
-  },
   // Bottom nav bar (routes back into MainTabs).
   navBar: { borderTopWidth: 1, borderTopColor: colors.black },
   navRow: { flexDirection: 'row', height: 60 },
