@@ -10,11 +10,10 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { GlassButton } from '../../components/GlassButton';
-import { ApeDsp } from '../../../modules/ape-dsp';
 import { useToolUsage } from '../../features/tools/telemetry';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { colors, fonts } from '../../theme/tokens';
-import { ENGINE_NOTE, MIC_LIMITS, toolByKey } from './toolsData';
+import { MIC_LIMITS, toolByKey } from './toolsData';
 import { LockedButton, MembershipRequiredNote } from './ToolLockUi';
 import type { RootStackParamList } from '../../navigation/types';
 
@@ -57,14 +56,9 @@ export function ToolInfoScreen({ navigation, route }: Props) {
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll}>
-        {/* Honest status — shown only while THIS BUILD lacks the engine
-            (engine build 2026-07-23: version 2 carries it). */}
-        {ApeDsp.engineVersion() < 2 && (
-          <View style={styles.statusCard}>
-            <Text style={styles.statusTitle}>MEASUREMENT ENGINE — NOT IN THIS BUILD</Text>
-            <Text style={styles.statusBody}>{ENGINE_NOTE}</Text>
-          </View>
-        )}
+        {/* (Owner 2026-08-19) The "MEASUREMENT ENGINE — NOT IN THIS BUILD" intro
+            banner was removed: the engine ships in the real builds, and the live
+            meter screen still gates honestly via EngineGate if it can't start. */}
 
         {/* Engine build (2026-07-23): OPEN TOOL for tools with a live screen.
             The live screen gates itself honestly (EngineGate) when the native
@@ -150,17 +144,6 @@ const styles = StyleSheet.create({
   scroll: { padding: 16, paddingBottom: 28, gap: 12 },
 
   trainRow: { flexDirection: 'row', gap: 12 },
-
-  statusCard: {
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(255,180,0,.45)',
-    backgroundColor: '#1a1409',
-    padding: 14,
-    gap: 6,
-  },
-  statusTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: colors.amber },
-  statusBody: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
 
   purpose: { fontFamily: fonts.barlowRegular, fontSize: 15.5, lineHeight: 23, color: colors.textSecondary },
   sectionHead: {
