@@ -749,6 +749,9 @@ export function SplMeterScreen({ navigation }: Props) {
   // at a time. 'home' is the entry (was the always-open `vuOpen` native Modal).
   const [view, setView] = useState<'home' | 'digital'>('home');
   const [vuFsOpen, setVuFsOpen] = useState(false);
+  // Full VU: hide/show the right-side LED level meter (owner 2026-08-18). When
+  // hidden the VU simply centers in the freed space (no zoom — owner).
+  const [vuFsLedHidden, setVuFsLedHidden] = useState(false);
   // Which setting popup is open from the VU home's bottom control bar (owner
   // 2026-08-18): Range · Weighting · Response · Peak Hold.
   const [settingPopup, setSettingPopup] = useState<null | 'range' | 'unit' | 'response' | 'hold'>(null);
@@ -1756,48 +1759,88 @@ export function SplMeterScreen({ navigation }: Props) {
               home. Both orientations (rotation unlocked while open); the home
               meters behind it are paused (vuFsOpen), so nothing double-renders. */}
           {vuFsOpen && (
-            // The whole overlay closes on tap (nothing here is interactive), so
-            // exit is reliable even where a Skia meter would eat the ✕ tap
-            // (owner 2026-08-18: ✕ didn't close in portrait). The ✕ stays as a
-            // visible affordance, top-right.
+            // The meter AREA closes on tap (reliable even where a Skia meter would
+            // eat the ✕ — owner 2026-08-18: ✕ didn't close in portrait). The LED
+            // toggle (top-left) and the settings bar (bottom) are INTERACTIVE child
+            // Pressables: they act on their own taps while the meter / empty areas
+            // still fall through to close — the same pattern as the settings popup.
             <Pressable
               style={styles.vuFsRoot}
               onPress={() => setVuFsOpen(false)}
               accessibilityRole="button"
-              accessibilityLabel="Close the full VU screen — tap anywhere"
+              accessibilityLabel="Close the full VU screen — tap the meter to close"
             >
               <View style={styles.vuFsClose} pointerEvents="none">
                 <Text style={styles.vuFsCloseX}>✕</Text>
               </View>
               {viz ? (
-                // pointerEvents none: the Skia meters must NOT capture taps, or the
-                // tap-to-close is eaten wherever a meter covers the screen (portrait)
-                // — owner 2026-08-18. Nothing here is interactive anyway.
-                <View style={[styles.vuFsRow, winW < winH && styles.vuFsCol]} pointerEvents="none">
-                  <View style={styles.vuFsLeft}>
-                    <VuTopMeter
-                      viz={viz}
-                      live={live}
-                      vuW={winW >= winH ? Math.round(winW * 0.64) : Math.round(winW * 0.92)}
-                      vuH={winW >= winH ? Math.round(winH * 0.78) : Math.round(winH * 0.4)}
-                      live0Db={vuLive0}
-                      maxText={vuMaxText}
-                      levelText={vuLevelText}
-                      rangeText={vuRangeText}
-                      brackets={vuBrackets}
-                      peakHold={holdMode}
-                    />
+                <>
+                  {/* LED hide/show (owner 2026-08-18) — interactive, top-left. */}
+                  <Pressable
+                    style={styles.vuFsLedToggle}
+                    onPress={() => setVuFsLedHidden((h) => !h)}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: !vuFsLedHidden }}
+                    accessibilityLabel={vuFsLedHidden ? 'Show the LED level meter' : 'Hide the LED level meter'}
+                  >
+                    <Text style={styles.vuFsLedToggleText}>{vuFsLedHidden ? 'SHOW LED' : 'HIDE LED'}</Text>
+                  </Pressable>
+
+                  {/* pointerEvents none: the Skia meters must NOT capture taps, or
+                      the tap-to-close is eaten wherever a meter covers the screen
+                      (portrait) — owner 2026-08-18. With the LED hidden the single
+                      VU centers in the freed space (no zoom — owner). */}
+                  <View style={[styles.vuFsRow, winW < winH && styles.vuFsCol]} pointerEvents="none">
+                    <View style={styles.vuFsLeft}>
+                      <VuTopMeter
+                        viz={viz}
+                        live={live}
+                        vuW={winW >= winH ? Math.round(winW * 0.64) : Math.round(winW * 0.92)}
+                        vuH={winW >= winH ? Math.round(winH * 0.78) : Math.round(winH * 0.4)}
+                        live0Db={vuLive0}
+                        maxText={vuMaxText}
+                        levelText={vuLevelText}
+                        rangeText={vuRangeText}
+                        brackets={vuBrackets}
+                        peakHold={holdMode}
+                      />
+                    </View>
+                    {!vuFsLedHidden && (
+                      <SideLed
+                        viz={viz}
+                        live={live}
+                        ledW={92}
+                        ledH={winW >= winH ? Math.round(winH * 0.82) : Math.round(winH * 0.4)}
+                        holdMode={holdMode}
+                        splOffset={splOffset}
+                        weightingLabel={weighting}
+                      />
+                    )}
                   </View>
-                  <SideLed
-                    viz={viz}
-                    live={live}
-                    ledW={92}
-                    ledH={winW >= winH ? Math.round(winH * 0.82) : Math.round(winH * 0.4)}
-                    holdMode={holdMode}
-                    splOffset={splOffset}
-                    weightingLabel={weighting}
-                  />
-                </View>
+
+                  {/* Settings bar (owner 2026-08-18) — mirrors the home's bottom
+                      control bar: RANGE · WEIGHTING · RESPONSE · PEAK HOLD, each
+                      opening the shared chooser popup (which paints above this). */}
+                  <View style={[styles.vuFsCtrlBar, { paddingBottom: insets.bottom + 10 }]}>
+                    {[
+                      { key: 'range' as const, label: 'RANGE', value: rangeAuto ? 'AUTO' : `${rangeDb}` },
+                      { key: 'unit' as const, label: 'WEIGHTING', value: activeUnit === 'dB SPL' ? 'SPL' : activeUnit === 'dBFS' ? 'FS' : activeUnit === 'dBA' ? 'A' : 'C' },
+                      { key: 'response' as const, label: 'RESPONSE', value: responseLabel(response) },
+                      { key: 'hold' as const, label: 'PEAK HOLD', value: holdLabel(holdMode) },
+                    ].map((b) => (
+                      <Pressable
+                        key={b.key}
+                        style={styles.ctrlBarBtn}
+                        onPress={() => setSettingPopup(b.key)}
+                        accessibilityRole="button"
+                        accessibilityLabel={`${b.label}: ${b.value}. Tap to change.`}
+                      >
+                        <Text style={styles.ctrlBarLabel}>{b.label}</Text>
+                        <Text style={styles.ctrlBarValue} numberOfLines={1}>{b.value}</Text>
+                      </Pressable>
+                    ))}
+                  </View>
+                </>
               ) : (
                 <View style={styles.vuUnavailCard}>
                   <Text style={styles.vuUnavailTitle}>VU METER NEEDS THE NEW DEV BUILD</Text>
@@ -2303,6 +2346,33 @@ const styles = StyleSheet.create({
   // Portrait: stack VU over the LED, centered.
   vuFsCol: { flexDirection: 'column', gap: 22 },
   vuFsLeft: { alignItems: 'center', justifyContent: 'center' },
+  // Full VU LED hide/show toggle — mirrors the ✕, top-LEFT, always tappable.
+  vuFsLedToggle: {
+    position: 'absolute',
+    top: 10,
+    left: 14,
+    zIndex: 130,
+    height: 40,
+    paddingHorizontal: 14,
+    borderRadius: 20,
+    backgroundColor: 'rgba(18,18,22,0.9)',
+    borderWidth: 1,
+    borderColor: '#3a3a44',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  vuFsLedToggleText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textSecondary },
+  // Full VU settings bar — pinned across the bottom, above the meter (owner
+  // 2026-08-18). paddingBottom is set inline from the safe-area inset.
+  vuFsCtrlBar: {
+    position: 'absolute',
+    left: 12,
+    right: 12,
+    bottom: 0,
+    zIndex: 130,
+    flexDirection: 'row',
+    gap: 8,
+  },
   // Bottom control bar (Range · Weighting · Response · Peak Hold).
   ctrlBar: { flexDirection: 'row', gap: 8 },
   ctrlBarBtn: {
