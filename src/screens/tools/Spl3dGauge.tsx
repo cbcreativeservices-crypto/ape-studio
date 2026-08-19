@@ -9,10 +9,13 @@
  * names the band the level is in. (Animated gold shimmer is a follow-up.)
  * react-native-svg only — renders on any client.
  */
-import { memo, useId, type ReactNode } from 'react';
+import { memo, useEffect, useId, type ReactNode } from 'react';
 import { View } from 'react-native';
-import Svg, { Circle, Defs, Ellipse, G, LinearGradient, Path, RadialGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
+import Svg, { ClipPath, Circle, Defs, Ellipse, G, LinearGradient, Path, RadialGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
+import Animated, { cancelAnimation, Easing, useAnimatedProps, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import { fonts } from '../../theme/tokens';
+
+const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
 export type DialMode3d = 'studio' | 'spl' | 'optimal';
 
@@ -310,7 +313,7 @@ const NUMERALS = (() => {
 })();
 
 /* ── Segments (precomputed) ─────────────────────────────────────────── */
-type SegDef = { faceD: string; outerD: string; innerD: string; capsD: string; edgeD: string; midSpl: number; cosMid: number };
+type SegDef = { faceD: string; outerD: string; innerD: string; capsD: string; edgeD: string; midSpl: number; cosMid: number; bbox: [number, number, number, number] };
 const SEG_DEFS: SegDef[] = (() => {
   const out: SegDef[] = [];
   const spanDeg = (2 * ANG) / SEGS;
@@ -319,6 +322,9 @@ const SEG_DEFS: SegDef[] = (() => {
     const a2 = -ANG + (i + 1) * spanDeg - GAP_DEG / 2;
     const midSpl = S_MIN + ((i + 0.5) / SEGS) * (S_MAX - S_MIN);
     const midDeg = (a1 + a2) / 2;
+    const pts = [...arcPts(a1, a2, 1), ...arcPts(a1, a2, K_IN)];
+    const xs = pts.map((p) => p.x);
+    const ys = pts.map((p) => p.y);
     out.push({
       faceD: facePath(a1, a2),
       outerD: outerWallPath(a1, a2),
@@ -327,6 +333,7 @@ const SEG_DEFS: SegDef[] = (() => {
       edgeD: outerArcPath(a1, a2),
       midSpl,
       cosMid: Math.cos((midDeg * Math.PI) / 180),
+      bbox: [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)],
     });
   }
   return out;
@@ -350,6 +357,30 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
   const band = level == null ? null : activeBand(level, mode);
   // The gold target shines only while the level is INSIDE a gold band.
   const goldActive = band?.zone === 'gold';
+
+  // Gold-target region (clip + bounds) for the animated specular sweep.
+  const goldSegs = SEG_DEFS.filter((sd) => zoneKey(sd.midSpl, mode) === 'gold');
+  const goldClipD = goldSegs.map((sd) => sd.faceD).join(' ');
+  const gxmin = goldSegs.length ? Math.min(...goldSegs.map((s) => s.bbox[0])) : 0;
+  const gymin = goldSegs.length ? Math.min(...goldSegs.map((s) => s.bbox[1])) : 0;
+  const gxmax = goldSegs.length ? Math.max(...goldSegs.map((s) => s.bbox[2])) : 0;
+  const gymax = goldSegs.length ? Math.max(...goldSegs.map((s) => s.bbox[3])) : 0;
+  const BAND_W = 70;
+  // A specular band that sweeps across the gold faces on the UI thread. `sweep`
+  // loops 0→1 only while the gold target is active; cancelled otherwise so a
+  // steady level costs nothing.
+  const sweep = useSharedValue(0);
+  useEffect(() => {
+    cancelAnimation(sweep);
+    sweep.value = 0;
+    if (goldActive) {
+      sweep.value = withRepeat(withTiming(1, { duration: 1500, easing: Easing.inOut(Easing.ease) }), -1, false);
+    }
+    return () => cancelAnimation(sweep);
+  }, [goldActive, sweep]);
+  const sweepProps = useAnimatedProps(() => ({
+    x: gxmin - BAND_W + sweep.value * (gxmax - gxmin + BAND_W * 2),
+  }));
 
   // Each block is built from its own faces so it reads as a solid 3D wedge:
   //   inner wall (back, darkest) → end-caps (cut sides, dark) → outer wall
@@ -423,6 +454,17 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
             <Stop offset="0.66" stopColor="#f2ca55" />
             <Stop offset="1" stopColor="#8c6412" />
           </LinearGradient>
+          {/* Moving specular streak for the animated gold shimmer. */}
+          <LinearGradient id={`${uid}-goldsweep`} x1="0" y1="0" x2="1" y2="0">
+            <Stop offset="0" stopColor="#ffffff" stopOpacity="0" />
+            <Stop offset="0.5" stopColor="#fff7de" stopOpacity="0.7" />
+            <Stop offset="1" stopColor="#ffffff" stopOpacity="0" />
+          </LinearGradient>
+          {goldActive && (
+            <ClipPath id={`${uid}-goldclip`}>
+              <Path d={goldClipD} />
+            </ClipPath>
+          )}
         </Defs>
 
         {/* Graphite faceplate + machined rim + bevel edge. */}
@@ -438,6 +480,17 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
         {/* Extruded ring, then the numerals seated on the tiles. */}
         {walls}
         {faces}
+        {/* Animated specular streak sweeping across the active gold target. */}
+        {goldActive && (
+          <AnimatedRect
+            animatedProps={sweepProps}
+            y={gymin - 2}
+            width={BAND_W}
+            height={gymax - gymin + 4}
+            fill={`url(#${uid}-goldsweep)`}
+            clipPath={`url(#${uid}-goldclip)`}
+          />
+        )}
         {NUMERALS}
 
         {/* Centre LCD + live readouts. */}
