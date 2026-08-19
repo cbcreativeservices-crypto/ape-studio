@@ -168,22 +168,12 @@ function VuHero({
   onToggle?: () => void;
 }) {
   return (
-    // SPL gauge — the isometric 3D segmented ring (owner 2026-08-19). The
-    // STUDIO/SPL chooser is pinned to the TOP-LEFT corner of the container
-    // (owner 2026-07-30). Tapping the gauge toggles START/STOP; the corner
-    // mode chips render OVER this Pressable and keep their own taps.
+    // SPL gauge — the isometric 3D segmented ring (owner 2026-08-19 rev 2).
+    // The STUDIO/SPL/OPTIMAL chooser is its OWN ROW above the gauge — it used
+    // to be an absolute overlay on the canvas and collided with the gauge
+    // title/badge. Tapping the gauge toggles START/STOP.
     <View style={{ width: dialW, alignSelf: 'center' }}>
-      <Pressable onPress={onToggle} accessibilityRole={onToggle ? 'button' : undefined}>
-        <Spl3dGauge
-          width={dialW}
-          mode={dialMode}
-          level={level}
-          calibrated={calibrated}
-          centerText={centerText}
-          centerColor={centerColor}
-        />
-      </Pressable>
-      <View style={styles.dialModeCorner}>
+      <View style={styles.dialModeRow}>
         {(['studio', 'spl', 'optimal'] as const).map((m) => (
           <Pressable
             key={m}
@@ -203,6 +193,16 @@ function VuHero({
           </Pressable>
         ))}
       </View>
+      <Pressable onPress={onToggle} accessibilityRole={onToggle ? 'button' : undefined}>
+        <Spl3dGauge
+          width={dialW}
+          mode={dialMode}
+          level={level}
+          calibrated={calibrated}
+          centerText={centerText}
+          centerColor={centerColor}
+        />
+      </Pressable>
     </View>
   );
 }
@@ -2439,7 +2439,9 @@ const styles = StyleSheet.create({
   gaugeToggleInfo: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, color: colors.amberLabel },
 
   // STUDIO / SPL chooser — pinned to the TOP-LEFT corner of the circle meter.
-  dialModeCorner: { position: 'absolute', top: 6, left: 6, flexDirection: 'row', gap: 6, zIndex: 2 },
+  // Mode chips in their OWN ROW above the 3D gauge (rev 2 — the absolute
+  // corner overlay collided with the gauge's title/badge).
+  dialModeRow: { flexDirection: 'row', gap: 6, marginBottom: 8 },
   dialModeChip: {
     borderRadius: 7,
     borderWidth: 1,
