@@ -929,16 +929,8 @@ export function SplMeterScreen({ navigation }: Props) {
     RANGE_VALUES[0] as number,
   );
   const vuLive0 = rangeRef - splOffset;
-  // Printed TOP-LEFT on the VU face (owner 2026-07-30): the weighting + response
-  // in use (the RANGE now lives in the blue in-arc brackets and the chip row).
-  const vuRangeText = `${weighting} · ${response === 'fast' ? 'FAST' : response === 'slow' ? 'SLOW' : '5s AVG'}`;
-  // VU corner readouts (printed inside the glass) — BUGFIX 2026-07-30: these must
-  // show the ESTIMATED dB SPL (level + splOffset), the SAME number the needle,
-  // the blue brackets, and the circle centre use. Previously they printed raw
-  // dBFS (e.g. −67), which disagreed with the needle and read like "67 dB" next
-  // to a 40 dB room. estSpl() converts a dBFS reading to the SPL estimate.
-  // Floored at 0 (owner 2026-08-12): an estimated SPL can't be negative — quiet
-  // input just reads a low positive number, never a confusing minus.
+  // estSpl converts a dBFS reading to the ESTIMATED dB SPL (level + splOffset),
+  // floored at 0 (owner 2026-08-12) — used by the circle gauge and readouts.
   const estSpl = (dbfs: number) => (Number.isFinite(dbfs) ? Math.max(0, dbfs + splOffset).toFixed(1) : '—');
   // The reading for the CURRENT response (owner 2026-08-17): FAST/SLOW from the
   // frame, or the rolling 5-second average — so the big number, VU and dial all
@@ -948,8 +940,6 @@ export function SplMeterScreen({ navigation }: Props) {
     if (response === 'avg5') return Number.isFinite(avg5Db) ? avg5Db : null;
     return selectedLevelDb(m, weighting, response);
   };
-  const vuMaxText = meter ? estSpl(meter.peakHoldDb) : '—';
-  const vuLevelText = meter ? estSpl(levelNow(meter) ?? NaN) : '—';
   // Live SPL number for the CENTER of the circle gauge — the ESTIMATED dB SPL
   // (level + splOffset) so it matches the node's position on the dial's scale —
   // plus its zone colour so the number turns the colour of the arc zone it's in.
@@ -1461,7 +1451,6 @@ export function SplMeterScreen({ navigation }: Props) {
                           live0Db={vuLive0}
                           running={running}
                           fit="contain"
-                          cornerReadouts={{ maxText: vuMaxText, levelText: vuLevelText, rangeText: vuRangeText }}
                         />
                       )
                     ) : (
@@ -1786,7 +1775,6 @@ export function SplMeterScreen({ navigation }: Props) {
                           live0Db={vuLive0}
                           running={running}
                           fit="contain"
-                          cornerReadouts={{ maxText: vuMaxText, levelText: vuLevelText, rangeText: vuRangeText }}
                         />
                       </View>
                       {!vuFsLedHidden && (

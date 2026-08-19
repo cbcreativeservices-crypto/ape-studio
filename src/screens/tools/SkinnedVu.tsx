@@ -15,11 +15,11 @@
  * live rms SharedValue. Geometry + scale are exported so the ToolsHub SPL tile
  * shares the identical face.
  */
-import { useMemo, type ReactNode } from 'react';
-import { StyleSheet, Text as RVText, View } from 'react-native';
+import { type ReactNode } from 'react';
+import { View } from 'react-native';
 import Animated, { useAnimatedStyle, useFrameCallback, useSharedValue } from 'react-native-reanimated';
 import Svg, { Circle, G, Image as SvgImage, Line, Path, Text as SvgText } from 'react-native-svg';
-import { colors, fonts } from '../../theme/tokens';
+import { fonts } from '../../theme/tokens';
 import type { LiveMeterDrive } from '../lab/meter/vizMeters';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -180,14 +180,13 @@ export type SkinnedVuProps = {
   running?: boolean;
   /** 'contain' shows the whole skinned unit (border + screws); 'cover' fills. */
   fit?: 'contain' | 'cover';
-  cornerReadouts?: { maxText?: string; levelText?: string; rangeText?: string };
 };
 
 /** The skinned analogue VU. The needle integrates the live rms on the UI thread
  *  (rise tc 0.20 s, fall 0.45 s) and rotates about the DEEP scale centre via
  *  useAnimatedStyle, clipped to the face window; the PEAK lamp lights when the
  *  true peak crosses −3 dBFS. */
-export function SkinnedVu({ width, height, live, live0Db, running = true, fit = 'contain', cornerReadouts }: SkinnedVuProps) {
+export function SkinnedVu({ width, height, live, live0Db, running = true, fit = 'contain' }: SkinnedVuProps) {
   const vuVal = useSharedValue(0);
   const lampT = useSharedValue(0);
 
@@ -227,11 +226,6 @@ export function SkinnedVu({ width, height, live, live0Db, running = true, fit = 
   const clip = { left: toX(VU_FACE.x), top: toY(VU_FACE.y), width: VU_FACE.w * scale, height: VU_FACE.h * scale };
   const lampD = SKIN_LAMP.r * 2 * scale;
 
-  const readouts = useMemo(
-    () => cornerReadouts,
-    [cornerReadouts?.maxText, cornerReadouts?.levelText, cornerReadouts?.rangeText],
-  );
-
   return (
     <View style={{ width, height }}>
       <Svg width={width} height={height} viewBox={SKIN_VB} preserveAspectRatio={par}>
@@ -262,32 +256,6 @@ export function SkinnedVu({ width, height, live, live0Db, running = true, fit = 
           <View style={{ width: '100%', height: bladeLen, borderRadius: needleW, backgroundColor: NEEDLE }} />
         </Animated.View>
       </View>
-      {readouts && (
-        <>
-          {!!readouts.maxText && (
-            <RVText style={[rStyles.readout, { top: toY(210), left: toX(300) }]}>{readouts.maxText}</RVText>
-          )}
-          {!!readouts.levelText && (
-            <RVText style={[rStyles.readout, { top: toY(210), left: toX(920), width: 180 * scale + 120, textAlign: 'right' } ]}>
-              {readouts.levelText}
-            </RVText>
-          )}
-          {!!readouts.rangeText && (
-            <RVText style={[rStyles.readout, { top: toY(720), left: toX(300) }]}>{readouts.rangeText}</RVText>
-          )}
-        </>
-      )}
     </View>
   );
 }
-
-const rStyles = StyleSheet.create({
-  readout: {
-    position: 'absolute',
-    fontFamily: fonts.mono,
-    fontSize: 11,
-    letterSpacing: 0.5,
-    color: colors.amberLabel,
-    opacity: 0.85,
-  },
-});
