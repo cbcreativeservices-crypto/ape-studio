@@ -46,7 +46,7 @@ import { toolByKey, type ToolKey } from './toolsData';
 // live frames, three run labeled scripted demos. All react-native-svg — the
 // hub stays Skia-free and web-previewable.
 import { useHubPreviewEngine } from './hubPreviewEngine';
-import { HUB_LIVE_MINIS } from './hubPreviewsLive';
+import { HUB_LIVE_MINIS, HUB_SKIN_MINIS } from './hubPreviewsLive';
 import { HUB_SIM_MINIS } from './hubPreviewsSim';
 import {
   fmtDuration,
@@ -133,12 +133,19 @@ function ToolStrip({ tool, live, active }: { tool: ToolKey; live: boolean; activ
   const Strip = TOOL_STRIP[tool];
   const Sim = HUB_SIM_MINIS[tool];
   const Live = HUB_LIVE_MINIS[tool];
+  // Always-on skinned display (SPL): its own photoreal face replaces the static
+  // artwork in every state (needle rests when there's no live signal).
+  const Skin = HUB_SKIN_MINIS[tool];
   return (
     <View style={styles.tileStrip} pointerEvents="none">
       {/* Inner keeps the strip's true 2:1 so it's never distorted; the outer
           2.5:1 crop (overflow hidden) trims only the safe top/bottom margin. */}
       <View style={styles.tileStripInner}>
-        {Sim ? (
+        {Skin ? (
+          <View style={StyleSheet.absoluteFill} accessibilityRole="image" accessibilityLabel={STRIP_LABEL[tool]}>
+            <Skin />
+          </View>
+        ) : Sim ? (
           <View
             style={StyleSheet.absoluteFill}
             accessibilityRole="image"

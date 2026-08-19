@@ -10,7 +10,7 @@
 import { useState } from 'react';
 import { Platform, StyleSheet, Text, View, type LayoutChangeEvent } from 'react-native';
 import { LinearGradient as RnLinearGradient } from 'expo-linear-gradient';
-import { LinearGradient, RadialGradient, Stop } from 'react-native-svg';
+import { LinearGradient, Stop } from 'react-native-svg';
 import { fonts } from '../../theme/tokens';
 
 /** Measured width of a preview root (the minis position RN overlays in pt
@@ -84,16 +84,8 @@ export function MirGrad({ id, y1, y2 }: { id: string; y1: number; y2: number }) 
   );
 }
 
-/** The strips' amber ambient radial (drawn under the chrome). */
-export function AmbGrad({ id, peak = 0.26 }: { id: string; peak?: number }) {
-  return (
-    <RadialGradient id={id} cx="14%" cy="10%" r="85%">
-      <Stop offset="0" stopColor="#f5a020" stopOpacity={peak} />
-      <Stop offset="0.55" stopColor="#f5a020" stopOpacity={peak > 0.22 ? 0.05 : 0.04} />
-      <Stop offset="1" stopColor="#f5a020" stopOpacity="0" />
-    </RadialGradient>
-  );
-}
+// (The strips' amber ambient radial was removed from the minis — owner
+// 2026-08-19: no amber glow on the tile displays.)
 
 /** The strips' bottom vignette, as an RN overlay so it stays TOPMOST above the
  *  minis' RN needle/cursor/plotter overlays (in the art the vignette is the

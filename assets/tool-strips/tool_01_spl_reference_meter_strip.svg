@@ -5,7 +5,7 @@
 <linearGradient id="face_b01" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7eed2"></stop><stop offset="0.45" stop-color="#f0e4bf"></stop><stop offset="1" stop-color="#dccfa2"></stop></linearGradient>
 <linearGradient id="bez_b01" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#20242c"></stop><stop offset="1" stop-color="#0b0e14"></stop></linearGradient>
 </defs>
-<rect width="2048" height="1024" fill="#060608"></rect><rect width="2048" height="1024" fill="url(#amb_b01)"></rect>
+<rect width="2048" height="1024" fill="#060608"></rect>
 <rect x="96" y="150" width="1330" height="724" rx="26" fill="url(#bez_b01)" stroke="#333c4d" stroke-width="5"></rect>
 <rect x="130" y="184" width="1262" height="656" rx="14" fill="url(#face_b01)"></rect>
 <path d="M346,523.3A470,470 0 0 1 1176,523.3" fill="none" stroke="#141414" stroke-width="7"></path>

@@ -2,7 +2,7 @@
 
 <defs><radialGradient id="amb_b02" cx="14%" cy="10%" r="85%"><stop offset="0" stop-color="#f5a020" stop-opacity="0.26"></stop><stop offset="0.55" stop-color="#f5a020" stop-opacity="0.05"></stop><stop offset="1" stop-color="#f5a020" stop-opacity="0"></stop></radialGradient>
 <linearGradient id="vig_b02" x1="0" y1="0" x2="0" y2="1"><stop offset="0.55" stop-color="#000" stop-opacity="0"></stop><stop offset="1" stop-color="#000" stop-opacity="0.45"></stop></linearGradient><linearGradient id="lvl_b02" gradientUnits="userSpaceOnUse" x1="0" y1="104" x2="0" y2="920"><stop offset="0" stop-color="#e8503a"></stop><stop offset="0.14" stop-color="#f0a23c"></stop><stop offset="0.26" stop-color="#e9dc4d"></stop><stop offset="0.4" stop-color="#8ed24c"></stop><stop offset="0.56" stop-color="#34b96e"></stop><stop offset="0.72" stop-color="#2b9ad2"></stop><stop offset="0.88" stop-color="#2166c4"></stop><stop offset="1" stop-color="#143a86"></stop></linearGradient></defs>
-<rect width="2048" height="1024" fill="#060608"></rect><rect width="2048" height="1024" fill="url(#amb_b02)"></rect>
+<rect width="2048" height="1024" fill="#060608"></rect>
 <rect x="90" y="78" width="1868" height="874" rx="14" fill="#0b0f16" stroke="#1e2635" stroke-width="4"></rect>
 <line x1="124" y1="756.8" x2="1924" y2="756.8" stroke="#1b2434" stroke-width="3"></line><line x1="124" y1="593.6" x2="1924" y2="593.6" stroke="#1b2434" stroke-width="3"></line><line x1="124" y1="430.4" x2="1924" y2="430.4" stroke="#1b2434" stroke-width="3"></line><line x1="124" y1="267.2" x2="1924" y2="267.2" stroke="#1b2434" stroke-width="3"></line>
 <line x1="124" y1="104" x2="1924" y2="104" stroke="#2f3d55" stroke-width="4"></line>

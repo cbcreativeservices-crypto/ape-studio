@@ -22,7 +22,7 @@
 import { memo, useEffect, useRef, useState, type FC } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Defs, G, Line, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
-import { AmbGrad, DemoTag, LvlGrad, MirGrad, NATIVE_DRIVER, useMeasuredWidth, Vignette } from './hubPreviewShared';
+import { DemoTag, LvlGrad, MirGrad, NATIVE_DRIVER, useMeasuredWidth, Vignette } from './hubPreviewShared';
 import type { ToolKey } from './toolsData';
 
 const VB = '0 0 2048 1024';
@@ -238,11 +238,7 @@ const HubSignalGenSim: FC<{ active: boolean }> = memo(({ active }) => {
   return (
     <View style={StyleSheet.absoluteFill} onLayout={onLayout} pointerEvents="none">
       <Svg width="100%" height="100%" viewBox={VB}>
-        <Defs>
-          <AmbGrad id="hpAmbGen" />
-        </Defs>
         <Rect width={2048} height={1024} fill="#060608" />
-        <Rect width={2048} height={1024} fill="url(#hpAmbGen)" />
         {GEN_CHROME}
       </Svg>
       {/* Clipped plot window holding the two cross-fading wave slots. */}
@@ -382,7 +378,6 @@ const HubRt60Sim: FC<{ active: boolean }> = memo(({ active }) => {
     <View style={StyleSheet.absoluteFill} pointerEvents="none">
       <Svg width="100%" height="100%" viewBox={VB}>
         <Defs>
-          <AmbGrad id="hpAmbRt" />
           <LvlGrad id="hpLvlRt" y1={104} y2={920} />
           <LinearGradient id="hpFillRt" gradientUnits="userSpaceOnUse" x1="0" y1={104} x2="0" y2={920}>
             <Stop offset="0" stopColor="#f0a23c" stopOpacity={0.28} />
@@ -391,7 +386,6 @@ const HubRt60Sim: FC<{ active: boolean }> = memo(({ active }) => {
           </LinearGradient>
         </Defs>
         <Rect width={2048} height={1024} fill="#060608" />
-        <Rect width={2048} height={1024} fill="url(#hpAmbRt)" />
         {RT60_CHROME}
         {/* Persistent measurement: fill + decay curve + noise floor + fit line. */}
         <Path d={rt60Path(RT60_POINTS.length, true)} fill="url(#hpFillRt)" />
