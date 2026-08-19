@@ -21,6 +21,7 @@
  * image caching (Fresco / NSURLCache) keeps repeat views fast.
  */
 import { SUPABASE_URL } from '../../../lib/env';
+import { supabase } from '../../../lib/supabase';
 
 export type TubeFamily = 'preamp' | 'power' | 'dht' | 'rectifier';
 
@@ -134,10 +135,37 @@ const TUBE_CARD_WIDTH = 2048;
 const TUBE_CARD_QUALITY = 75;
 
 /** Optimized public URL for one card page (bucket `tube-diagrams`, public read).
- *  `page` is 1 or 2; the underlying file is `<stem>-p<page>.png`. */
+ *  `page` is 1 or 2; the underlying file is `<stem>-p<page>.png`.
+ *
+ *  DEPRECATED for display (owner 2026-08-19): the tube cards are paid content
+ *  and are now served through the entitlement-gated `tube-image` Edge Function
+ *  via `fetchTubePageUri` below. Kept only as a reference to the legacy path;
+ *  do not use for rendering. Once every client uses the gated path, the
+ *  `tube-diagrams` bucket is flipped to private and this URL stops resolving. */
 export function tubePageUrl(stem: string, page: 1 | 2): string {
   const file = `${stem}-p${page}.png`;
   return `${SUPABASE_URL}/storage/v1/render/image/public/tube-diagrams/${file}?width=${TUBE_CARD_WIDTH}&quality=${TUBE_CARD_QUALITY}&format=webp`;
+}
+
+/**
+ * Secured card-page URL (owner 2026-08-19). Calls the `tube-image` Edge
+ * Function, which verifies the caller's session + active academy entitlement
+ * server-side and returns a short-lived (120 s) signed URL for the requested
+ * page. Returns null when not entitled, not signed in, or unreachable — the
+ * viewer then shows its load-failure state. supabase.functions.invoke attaches
+ * the current session's access token automatically.
+ */
+export async function fetchTubePageUri(stem: string, page: 1 | 2): Promise<string | null> {
+  try {
+    const { data, error } = await supabase.functions.invoke('tube-image', {
+      body: { stem, page },
+    });
+    if (error) return null;
+    const url = (data as { url?: string } | null)?.url;
+    return url ?? null;
+  } catch {
+    return null;
+  }
 }
 
 /** Case-insensitive search over short name, header name, alternates, base and

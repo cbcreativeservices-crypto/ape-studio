@@ -24,7 +24,11 @@ const CORS = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-const BUCKET = Deno.env.get("PRIVATE_TUBE_BUCKET") ?? "tube-diagrams-secure";
+// Signs from the existing `tube-diagrams` bucket. Signed URLs work whether the
+// bucket is public or private, so this is deployed while the bucket is still
+// public (app keeps working); flip the bucket to private after the app migrates
+// to this gated path — no object copy needed. Override via PRIVATE_TUBE_BUCKET.
+const BUCKET = Deno.env.get("PRIVATE_TUBE_BUCKET") ?? "tube-diagrams";
 const SIGNED_TTL_SECONDS = 120;
 
 function json(body: unknown, status = 200) {
