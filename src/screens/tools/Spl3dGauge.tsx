@@ -83,39 +83,72 @@ function wallPath(a1: number, a2: number): string {
   return band(o) + band(inn) + cap(o[0], inn[0]) + cap(o[STEPS], inn[STEPS]);
 }
 
-/* ── Palette (rev 6 — graphite theme, separated gold/yellow) ─────────── */
-type ZoneKey = 'grey' | 'green' | 'gold' | 'yellow' | 'orange' | 'red';
+/* ── Palette (rev 7 — owner's 4-zone semantic) ──────────────────────────
+ * GREY = below ideal · GREEN = ideal · ORANGE = exceeding ideal · RED = max+.
+ * EVERY segment carries its zone colour (dim until the level reaches it, bright
+ * once lit), so the whole arc always reads as a gray→green→orange→red scale. */
+type ZoneKey = 'grey' | 'green' | 'orange' | 'red';
 const ZONE_HEX: Record<ZoneKey, string> = {
-  grey: '#767b84', // studio "below monitoring" — lit but neutral
+  grey: '#7b818b',
   green: '#34c06b',
-  gold: '#e8b93a', // sweet spot — warm, distinct from yellow
-  yellow: '#f2d641', // caution — brighter/greener than gold
   orange: '#f0863a',
   red: '#e23b2c',
 };
-const UNLIT_FACE = '#34373d'; // "off" — dark, dead, reads as empty channel
-const UNLIT_WALL = '#212327';
-const UNLIT_STROKE = '#3f434a';
 
+/** Per-mode band edges → zone. Ideal (green) is each mode's target listening/
+ *  monitoring range; below it grey, above it orange then red. */
 function zoneKey(s: number, mode: DialMode3d): ZoneKey {
   if (mode === 'studio') {
     if (s < 60) return 'grey';
-    if (s < 79) return 'green';
-    if (s < 85) return 'gold';
-    if (s < 95) return 'yellow';
+    if (s < 85) return 'green';
     if (s < 100) return 'orange';
     return 'red';
   }
   if (mode === 'spl') {
-    if (s < 85) return 'green';
-    if (s < 90) return 'yellow';
-    if (s < 96) return 'orange';
+    if (s < 55) return 'grey';
+    if (s < 88) return 'green';
+    if (s < 97) return 'orange';
     return 'red';
   }
+  // optimal
+  if (s < 60) return 'grey';
   if (s < 85) return 'green';
-  if (s < 95) return 'yellow';
-  if (s < 100) return 'orange';
+  if (s < 97) return 'orange';
   return 'red';
+}
+
+/** Contiguous named bands for the LIVE "current range" readout (centre-bottom).
+ *  Each entry is the UPPER edge (exclusive) + label + zone. Last entry catches
+ *  everything above. Names track the callouts. */
+type Band = { hi: number; name: string; zone: ZoneKey };
+const BANDS: Record<DialMode3d, Band[]> = {
+  studio: [
+    { hi: 60, name: 'BELOW MONITORING', zone: 'grey' },
+    { hi: 76, name: 'EDITING LEVEL', zone: 'green' },
+    { hi: 85, name: 'CRITICAL BALANCING', zone: 'green' },
+    { hi: 100, name: 'IMPACT CHECK', zone: 'orange' },
+    { hi: Infinity, name: 'OVER — UNSAFE', zone: 'red' },
+  ],
+  spl: [
+    { hi: 55, name: 'QUIET', zone: 'grey' },
+    { hi: 72, name: 'CONVERSATION', zone: 'green' },
+    { hi: 88, name: 'STUDIO LISTENING', zone: 'green' },
+    { hi: 97, name: 'CONCERT', zone: 'orange' },
+    { hi: Infinity, name: '100+ dB — UNSAFE', zone: 'red' },
+  ],
+  optimal: [
+    { hi: 60, name: 'AMBIENT', zone: 'grey' },
+    { hi: 79, name: 'PROGRAM', zone: 'green' },
+    { hi: 85, name: 'REFERENCE', zone: 'green' },
+    { hi: 94, name: 'SHOW', zone: 'orange' },
+    { hi: 97, name: 'HIGH', zone: 'orange' },
+    { hi: 100, name: 'LIMIT', zone: 'red' },
+    { hi: Infinity, name: '100+ dB LAeq', zone: 'red' },
+  ],
+};
+function activeBand(level: number, mode: DialMode3d): Band {
+  const bands = BANDS[mode];
+  return bands.find((b) => level < b.hi) ?? bands[bands.length - 1];
 }
 
 function shade(hex: string, f: number): string {
@@ -128,12 +161,11 @@ function shade(hex: string, f: number): string {
 const INK = '#e8e9ec';
 const INK_DIM = '#9498a0';
 const INK_FAINT = '#6c707a';
-// Callout inks — vivid on graphite.
+// Callout inks — vivid on graphite, one per zone (matches the arc sections).
+const C_GREY = '#aab0b8';
 const C_GREEN = '#4fd07f';
-const C_AMBER = '#e8b93a';
 const C_ORANGE = '#f0863a';
 const C_RED = '#ff5a48';
-const C_GOLD = '#f0c64a';
 
 /* ── Per-mode chrome: titles + callouts ─────────────────────────────── */
 type Anchor = 'start' | 'end' | 'middle';
@@ -142,10 +174,10 @@ const LX = 196; // LEFT column right edge (anchor 'end')
 const RX_COL = 808; // RIGHT column left edge (anchor 'start')
 const CALLOUTS: Record<DialMode3d, Callout[]> = {
   studio: [
-    { spl: 79, color: C_GOLD, big: true, t1: 'CRITICAL BALANCING', t2: '76dB–84dB', tx: CX, ty: 90, a: 'middle' },
+    { spl: 79, color: C_GREEN, big: true, t1: 'CRITICAL BALANCING', t2: '76dB–84dB', tx: CX, ty: 90, a: 'middle' },
     { spl: 62, color: C_GREEN, t1: 'BACKGROUND · DETAIL', t2: '60–65 dB SPL', tx: LX, ty: 250, a: 'end' },
     { spl: 72, color: C_GREEN, t1: 'GENERAL EDITING', t2: '70–75 dB SPL', tx: RX_COL, ty: 156, a: 'start' },
-    { spl: 90, color: C_AMBER, t1: 'IMPACT CHECK', t2: '85–95 dB SPL · brief', tx: RX_COL, ty: 320, a: 'start' },
+    { spl: 90, color: C_ORANGE, t1: 'IMPACT CHECK', t2: '85–95 dB SPL · brief', tx: RX_COL, ty: 320, a: 'start' },
   ],
   spl: [
     { spl: 79, color: C_GREEN, big: true, t1: 'STUDIO LISTENING', t2: '~79 dBC', tx: CX, ty: 90, a: 'middle' },
@@ -155,9 +187,9 @@ const CALLOUTS: Record<DialMode3d, Callout[]> = {
   ],
   optimal: [
     { spl: 69, color: C_GREEN, big: true, t1: 'PROGRAM', t2: '60–78 dBA', tx: CX, ty: 96, a: 'middle' },
-    { spl: 50, color: C_GREEN, t1: 'AMBIENT', t2: '40–59 dBA', tx: LX, ty: 250, a: 'end' },
+    { spl: 50, color: C_GREY, t1: 'AMBIENT', t2: '40–59 dBA', tx: LX, ty: 250, a: 'end' },
     { spl: 81, color: C_GREEN, t1: 'REFERENCE', t2: '79–84 dBA', tx: RX_COL, ty: 138, a: 'start' },
-    { spl: 89, color: C_AMBER, t1: 'SHOW', t2: '85–93 dBA', tx: RX_COL, ty: 208, a: 'start' },
+    { spl: 89, color: C_ORANGE, t1: 'SHOW', t2: '85–93 dBA', tx: RX_COL, ty: 208, a: 'start' },
     { spl: 95, color: C_ORANGE, t1: 'HIGH', t2: '94–96 dBA', tx: RX_COL, ty: 278, a: 'start' },
     { spl: 98, color: C_RED, t1: 'LIMIT', t2: '97–99 dBA', tx: RX_COL, ty: 348, a: 'start' },
     { spl: 100, color: C_RED, t1: '100+ dB LAeq', t2: 'WHO 15-MIN LIMIT', tx: RX_COL, ty: 418, a: 'start' },
@@ -214,10 +246,10 @@ function chrome(mode: DialMode3d, calibrated: boolean): ReactNode {
   [40, 50, 60, 70, 80, 90, 100].forEach((s) => {
     const a = theta(s);
     const cosA = Math.cos((a * Math.PI) / 180);
-    const p = ept(a, cosA > 0.55 ? 1.17 : cosA < -0.15 ? 1.15 : 1.1);
-    const dy = cosA > 0.55 ? -3 : cosA < -0.15 ? DEPTH + 16 : 8;
+    const p = ept(a, cosA > 0.55 ? 1.18 : cosA < -0.15 ? 1.16 : 1.11);
+    const dy = cosA > 0.55 ? -4 : cosA < -0.15 ? DEPTH + 18 : 8;
     els.push(
-      <SvgText key={`n${s}`} x={p.x} y={p.y + dy} fill={s >= 100 ? C_RED : INK_DIM} fontFamily={fonts.oswaldSemiBold} fontSize={20} textAnchor="middle">
+      <SvgText key={`n${s}`} x={p.x} y={p.y + dy} fill={s >= 100 ? C_RED : INK} fontFamily={fonts.oswaldSemiBold} fontSize={23} textAnchor="middle">
         {s}
       </SvgText>,
     );
@@ -228,12 +260,12 @@ function chrome(mode: DialMode3d, calibrated: boolean): ReactNode {
     els.push(<Path key={`l${c.spl}`} d={L.d} fill="none" stroke={c.color} strokeWidth={1.3} opacity={0.6} />);
     els.push(<Circle key={`d${c.spl}`} cx={L.ax} cy={L.ay} r={2.6} fill={c.color} />);
     els.push(
-      <SvgText key={`t${c.spl}`} x={c.tx} y={c.ty} fill={c.color} fontFamily={fonts.oswaldSemiBold} fontSize={c.big ? 23 : 16} letterSpacing={0.4} textAnchor={c.a}>
+      <SvgText key={`t${c.spl}`} x={c.tx} y={c.ty} fill={c.color} fontFamily={fonts.oswaldSemiBold} fontSize={c.big ? 24 : 19} letterSpacing={0.4} textAnchor={c.a}>
         {c.t1}
       </SvgText>,
     );
     els.push(
-      <SvgText key={`s${c.spl}`} x={c.tx} y={c.ty + (c.big ? 20 : 18)} fill={INK_FAINT} fontFamily={fonts.oswaldSemiBold} fontSize={c.big ? 14 : 12.5} textAnchor={c.a}>
+      <SvgText key={`s${c.spl}`} x={c.tx} y={c.ty + (c.big ? 21 : 19)} fill={INK_FAINT} fontFamily={fonts.oswaldSemiBold} fontSize={c.big ? 14 : 13} textAnchor={c.a}>
         {c.t2}
       </SvgText>,
     );
@@ -282,27 +314,29 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
   SEG_DEFS.forEach((sd, i) => {
     const isLit = i < lit;
     const isTop = isLit && i === lit - 1;
+    // EVERY segment carries its zone colour (owner rev 7): dim until reached,
+    // bright once lit — so the whole arc reads gray→green→orange→red always.
+    const key = zoneKey(sd.midSpl, mode);
+    const base = ZONE_HEX[key];
     if (isLit) {
-      const key = zoneKey(sd.midSpl, mode);
-      const base = ZONE_HEX[key];
       // Directional wall shading: top segments catch light, front ends are dark.
       const wf = 0.46 + 0.18 * sd.cosMid;
       walls.push(<Path key={`w${i}`} d={sd.wallD} fill={shade(base, wf)} />);
-      faces.push(
-        <Path key={`f${i}`} d={sd.faceD} fill={`url(#${zg(key)})`} stroke={shade(base, 0.7)} strokeWidth={0.75} />,
-      );
+      faces.push(<Path key={`f${i}`} d={sd.faceD} fill={`url(#${zg(key)})`} stroke={shade(base, 0.7)} strokeWidth={0.75} />);
       // Leading lit block — bright top edge so the fill front reads at a glance.
       if (isTop) {
         faces.push(<Path key={`fh${i}`} d={sd.faceD} fill={shade(base, 1.25)} opacity={0.5} />);
         faces.push(<Path key={`fe${i}`} d={sd.outerD} fill="none" stroke={shade(base, 1.55)} strokeWidth={2.2} strokeLinecap="round" />);
       }
     } else {
-      walls.push(<Path key={`w${i}`} d={sd.wallD} fill={UNLIT_WALL} />);
-      faces.push(<Path key={`f${i}`} d={sd.faceD} fill={UNLIT_FACE} stroke={UNLIT_STROKE} strokeWidth={0.75} />);
+      // Unreached: same zone colour, dimmed — the scale colour stays visible.
+      walls.push(<Path key={`w${i}`} d={sd.wallD} fill={shade(base, 0.24)} />);
+      faces.push(<Path key={`f${i}`} d={sd.faceD} fill={shade(base, 0.36)} stroke={shade(base, 0.46)} strokeWidth={0.75} />);
     }
   });
 
-  const numColor = centerColor ?? INK;
+  const band = level == null ? null : activeBand(level, mode);
+  const numColor = band ? ZONE_HEX[band.zone] : centerColor ?? INK;
 
   return (
     <View style={{ width, height }} pointerEvents="none">
@@ -358,6 +392,13 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
         <SvgText x={CX} y={CY + 50} fill={INK_DIM} fontFamily={fonts.oswaldSemiBold} fontSize={15} letterSpacing={2.5} textAnchor="middle">
           dB SPL · AVG
         </SvgText>
+        {/* LIVE current-range readout (owner rev 7): names the band the level is
+            in right now — CONVERSATION / CONCERT / REFERENCE / … in its colour. */}
+        {band && (
+          <SvgText x={CX} y={CY + 96} fill={ZONE_HEX[band.zone]} fontFamily={fonts.oswaldSemiBold} fontSize={25} letterSpacing={1.5} textAnchor="middle">
+            {band.name}
+          </SvgText>
+        )}
       </Svg>
     </View>
   );
