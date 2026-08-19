@@ -42,7 +42,7 @@ export default function Nav() {
           ))}
         </ul>
         <Link
-          href="/dashboard"
+          href="/login"
           className="rounded-md bg-amber px-4 py-2 text-sm font-semibold text-background transition-colors hover:bg-amber-deep"
         >
           Member Sign In

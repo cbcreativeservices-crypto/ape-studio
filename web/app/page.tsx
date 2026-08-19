@@ -34,7 +34,7 @@ export default function Home() {
               Verify a Credential
             </Link>
             <Link
-              href="/dashboard"
+              href="/login"
               className="w-full rounded-md border border-border px-6 py-3 text-center text-sm font-semibold text-foreground transition-colors hover:border-amber hover:text-amber sm:w-auto"
             >
               Member Sign In
