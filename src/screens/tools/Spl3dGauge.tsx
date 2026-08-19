@@ -51,14 +51,16 @@ function arcPts(a1: number, a2: number, k: number): { x: number; y: number }[] {
 }
 const P = (p: { x: number; y: number }, dy = 0) => `${p.x.toFixed(1)} ${(p.y + dy).toFixed(1)}`;
 
-/** Top face: annular sector on the tilted ellipse. */
+/** Top face: annular sector on the tilted ellipse. Every point carries its own
+ *  'L' command — a stray join('L') here once produced 'LL' tokens, which the
+ *  iOS native SVG path parser hard-crashes on (2026-08-19). Keep joins ''. */
 function facePath(a1: number, a2: number): string {
   const o = arcPts(a1, a2, 1);
-  const inn = arcPts(a1, a2, K_IN);
+  const inn = arcPts(a1, a2, K_IN).reverse();
   return (
     `M${P(o[0])}` +
     o.slice(1).map((p) => `L${P(p)}`).join('') +
-    inn.slice().reverse().map((p) => `L${P(p)}`).join('L').replace(/^L?/, 'L') +
+    inn.map((p) => `L${P(p)}`).join('') +
     'Z'
   );
 }
