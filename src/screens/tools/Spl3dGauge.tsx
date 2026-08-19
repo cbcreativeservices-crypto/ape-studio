@@ -56,15 +56,26 @@ function outerArcPath(a1: number, a2: number): string {
   const o = arcPts(a1, a2, 1);
   return `M${P(o[0])}` + o.slice(1).map((p) => `L${P(p)}`).join('');
 }
-/** Wall as ONE filled solid: down the far side of the outer arc, back along the
- *  inner arc — a single silhouette so the block reads as one extruded object. */
-function wallPath(a1: number, a2: number): string {
+/** Each wall face is drawn SEPARATELY so the block reads as a solid 3D wedge:
+ *  the outer wall (front, lit→shadow gradient), the two radial end-caps (the
+ *  cut sides seen in the gaps between blocks), and the inner wall (back, dark).
+ *  A face `band` runs along an arc, then back along the same arc dropped DEPTH. */
+function bandPath(pts: { x: number; y: number }[]): string {
+  return `M${P(pts[0])}` + pts.slice(1).map((p) => `L${P(p)}`).join('') + pts.slice().reverse().map((p) => `L${P(p, DEPTH)}`).join('') + 'Z';
+}
+function capPath(po: { x: number; y: number }, pi: { x: number; y: number }): string {
+  return `M${P(po)}L${P(pi)}L${P(pi, DEPTH)}L${P(po, DEPTH)}Z`;
+}
+function outerWallPath(a1: number, a2: number): string {
+  return bandPath(arcPts(a1, a2, 1));
+}
+function innerWallPath(a1: number, a2: number): string {
+  return bandPath(arcPts(a1, a2, K_IN));
+}
+function capsPath(a1: number, a2: number): string {
   const o = arcPts(a1, a2, 1);
   const inn = arcPts(a1, a2, K_IN);
-  const band = (pts: { x: number; y: number }[]) =>
-    `M${P(pts[0])}` + pts.slice(1).map((p) => `L${P(p)}`).join('') + pts.slice().reverse().map((p) => `L${P(p, DEPTH)}`).join('') + 'Z';
-  const cap = (po: { x: number; y: number }, pi: { x: number; y: number }) => `M${P(po)}L${P(pi)}L${P(pi, DEPTH)}L${P(po, DEPTH)}Z`;
-  return band(o) + band(inn) + cap(o[0], inn[0]) + cap(o[STEPS], inn[STEPS]);
+  return capPath(o[0], inn[0]) + capPath(o[STEPS], inn[STEPS]);
 }
 
 /* ── Palette (rev 8 — 6-zone) ───────────────────────────────────────── */
@@ -241,13 +252,13 @@ function chrome(mode: DialMode3d, calibrated: boolean): ReactNode {
   const [t1, t2] = TITLES[mode];
   const els: ReactNode[] = [];
   els.push(
-    <SvgText key="t1" x={CX} y={44} fill={INK} fontFamily={fonts.oswaldSemiBold} fontSize={27} letterSpacing={2} textAnchor="middle">
+    <SvgText key="t1" x={CX} y={54} fill={INK} fontFamily={fonts.oswaldSemiBold} fontSize={27} letterSpacing={2} textAnchor="middle">
       {t1}
     </SvgText>,
   );
   if (t2) {
     els.push(
-      <SvgText key="t2" x={CX} y={67} fill={INK_DIM} fontFamily={fonts.oswaldSemiBold} fontSize={18} textAnchor="middle">
+      <SvgText key="t2" x={CX} y={77} fill={INK_DIM} fontFamily={fonts.oswaldSemiBold} fontSize={18} textAnchor="middle">
         {t2}
       </SvgText>,
     );
@@ -299,15 +310,24 @@ const NUMERALS = (() => {
 })();
 
 /* ── Segments (precomputed) ─────────────────────────────────────────── */
-const SEG_DEFS = (() => {
-  const out: { faceD: string; wallD: string; outerD: string; midSpl: number; cosMid: number }[] = [];
+type SegDef = { faceD: string; outerD: string; innerD: string; capsD: string; edgeD: string; midSpl: number; cosMid: number };
+const SEG_DEFS: SegDef[] = (() => {
+  const out: SegDef[] = [];
   const spanDeg = (2 * ANG) / SEGS;
   for (let i = 0; i < SEGS; i++) {
     const a1 = -ANG + i * spanDeg + GAP_DEG / 2;
     const a2 = -ANG + (i + 1) * spanDeg - GAP_DEG / 2;
     const midSpl = S_MIN + ((i + 0.5) / SEGS) * (S_MAX - S_MIN);
     const midDeg = (a1 + a2) / 2;
-    out.push({ faceD: facePath(a1, a2), wallD: wallPath(a1, a2), outerD: outerArcPath(a1, a2), midSpl, cosMid: Math.cos((midDeg * Math.PI) / 180) });
+    out.push({
+      faceD: facePath(a1, a2),
+      outerD: outerWallPath(a1, a2),
+      innerD: innerWallPath(a1, a2),
+      capsD: capsPath(a1, a2),
+      edgeD: outerArcPath(a1, a2),
+      midSpl,
+      cosMid: Math.cos((midDeg * Math.PI) / 180),
+    });
   }
   return out;
 })();
@@ -331,6 +351,9 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
   // The gold target shines only while the level is INSIDE a gold band.
   const goldActive = band?.zone === 'gold';
 
+  // Each block is built from its own faces so it reads as a solid 3D wedge:
+  //   inner wall (back, darkest) → end-caps (cut sides, dark) → outer wall
+  //   (front, lit→shadow gradient) → top face (brightest) → top-edge bevel.
   const walls: ReactNode[] = [];
   const faces: ReactNode[] = [];
   SEG_DEFS.forEach((sd, i) => {
@@ -338,18 +361,23 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
     const isTop = isLit && i === lit - 1;
     const key = zoneKey(sd.midSpl, mode);
     const base = ZONE_HEX[key];
+    const m = isLit ? 1 : 0.42; // dim multiplier for unreached blocks
+    // Inner wall (mostly hidden) — darkest.
+    walls.push(<Path key={`wi${i}`} d={sd.innerD} fill={shade(base, 0.2 * m + 0.04)} />);
+    // Radial end-caps — the wedge's cut sides, visible in the gaps.
+    walls.push(<Path key={`wc${i}`} d={sd.capsD} fill={shade(base, 0.3 * m + 0.05)} />);
+    // Outer wall (front-facing) — vertical lit→shadow gradient = real height.
+    walls.push(<Path key={`wo${i}`} d={sd.outerD} fill={`url(#${uid}-${key}w)`} opacity={isLit ? 1 : 0.5} />);
+    // Top face — brightest; gold reflective while active.
+    const faceFill = isLit
+      ? key === 'gold'
+        ? `url(#${uid}-${goldActive ? 'goldshine' : 'gold'})`
+        : `url(#${zg(key)})`
+      : shade(base, 0.36);
+    faces.push(<Path key={`f${i}`} d={sd.faceD} fill={faceFill} />);
+    // Bright top-outer bevel = the crisp lit edge of the block's top.
     if (isLit) {
-      const wf = 0.34 + 0.16 * sd.cosMid; // directional: top bright, front dark
-      walls.push(<Path key={`w${i}`} d={sd.wallD} fill={shade(base, wf)} />);
-      // Gold face: reflective while active, plain top-lit once exceeded.
-      const faceFill = key === 'gold' ? `url(#${uid}-${goldActive ? 'goldshine' : 'gold'})` : `url(#${zg(key)})`;
-      faces.push(<Path key={`f${i}`} d={sd.faceD} fill={faceFill} />);
-      // Every lit tile gets a fine bright top-outer bevel (the block's lit edge).
-      faces.push(<Path key={`b${i}`} d={sd.outerD} fill="none" stroke={shade(base, isTop ? 1.6 : 1.32)} strokeWidth={isTop ? 2.4 : 1.1} strokeLinecap="round" opacity={isTop ? 1 : 0.8} />);
-    } else {
-      const wf = 0.16 + 0.06 * sd.cosMid;
-      walls.push(<Path key={`w${i}`} d={sd.wallD} fill={shade(base, wf)} />);
-      faces.push(<Path key={`f${i}`} d={sd.faceD} fill={shade(base, 0.34)} />);
+      faces.push(<Path key={`b${i}`} d={sd.edgeD} fill="none" stroke={shade(base, isTop ? 1.6 : 1.34)} strokeWidth={isTop ? 2.4 : 1.1} strokeLinecap="round" opacity={isTop ? 1 : 0.85} />);
     }
   });
 
@@ -377,6 +405,14 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
               <Stop offset="0" stopColor={shade(ZONE_HEX[k], 1.24)} />
               <Stop offset="0.5" stopColor={ZONE_HEX[k]} />
               <Stop offset="1" stopColor={shade(ZONE_HEX[k], 0.84)} />
+            </LinearGradient>
+          ))}
+          {/* Per-zone OUTER-WALL gradients — bright where they meet the top face,
+              dropping into shadow at the bottom, so the block has real height. */}
+          {(Object.keys(ZONE_HEX) as ZoneKey[]).map((k) => (
+            <LinearGradient key={`${k}w`} id={`${uid}-${k}w`} x1="0" y1="0" x2="0" y2="1">
+              <Stop offset="0" stopColor={shade(ZONE_HEX[k], 0.62)} />
+              <Stop offset="1" stopColor={shade(ZONE_HEX[k], 0.26)} />
             </LinearGradient>
           ))}
           {/* Reflective gold — a diagonal specular band for the active target. */}
