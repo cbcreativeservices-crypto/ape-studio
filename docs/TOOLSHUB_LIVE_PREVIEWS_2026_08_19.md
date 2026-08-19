@@ -1,11 +1,14 @@
 # Tools & Analysis hub — LIVE tile previews (overnight build 2026-08-19)
 
 Owner spec (2026-08-19, overnight session): the 8 tool-card miniature displays
-come alive — 5 cards react to the REAL microphone, 3 cards run tasteful
-scripted demonstrations. Existing tools untouched; card layout/styling/
-navigation unchanged. This doc is the morning handoff: what was built, what
-was verified, what to check on the phone, and the three small rulings made in
-your name overnight (all reversible in minutes).
+come alive. This doc is the morning handoff. **See "Revision 2 — field
+feedback" at the bottom for the changes made after your first look** (SPL
+sensitivity, MultiMeter re-layout, RT60 continuous, tuner made real-time,
+waveform 2× zoom); the body below describes the original build.
+
+> After Revision 2 the split is **6 live mic cards** (SPL, MultiMeter,
+> Waveform, RTA, Spectrogram, **Tuner**) + **2 scripted DEMO cards** (Tone/Noise
+> Gen, RT60).
 
 ## What was built
 
@@ -92,3 +95,39 @@ confirmed it as correct behavior, so nothing changed.
 
 ⚠️ Requires the CURRENT EAS dev build (ape-dsp v7). On the stale client the
 live cards will just rest on their static artwork — that's the honest state.
+
+---
+
+## Revision 2 — field feedback (2026-08-19, after first phone look)
+
+Six changes from your notes; all typecheck-clean and web-verified (live mic
+behavior needs the phone):
+
+1. **SPL VU meter "does not move" → fixed.** The needle was anchored so 0 VU
+   needed a near-full-scale (−18 dBFS) signal; re-anchored to the **real SPL
+   meter's default (−40 dBFS** = its RANGE 60 − offset 100), and the LED
+   ladder / peak-hold / peak-lamp moved to a lively −62…−12 dBFS window. Normal
+   room speech now swings the needle and lights the ladder; claps hit the peak
+   lamp. If it feels too hot or too cold, it's two constants (`SPL_LIVE0`,
+   `SPL_LED_FLOOR/SPAN` in `hubPreviewsLive.tsx`).
+2. **Pro Audio MultiMeter re-laid-out** so it no longer reads like the RTA tile
+   below it: now a slim **level bar on top, RTA on the LEFT, spectrogram on the
+   RIGHT** — three different instruments side by side.
+3. **RT60 no longer clears/pauses.** The decay curve, fitted line, and noise
+   floor stay drawn permanently; the only motion is a glowing "measurement
+   head" that sweeps down the curve and wraps seamlessly — continuous, no
+   blanking.
+4. **Tuner is now REAL-TIME**, not a scripted demo. The needle and cents cursor
+   track live pitch from the mic (whistle, sing, or tune a real string in front
+   of the phone). It moved from the DEMO set to the live set and lost its DEMO
+   tag (it's a genuine meter now); pitch detection is enabled on the shared
+   engine.
+5. **Waveform now defaults to ×2 zoom** (matching the Waveform tool's own
+   default) — quiet signals read twice as tall, loud transients clip at the
+   panel edge.
+6. Only **two** DEMO cards remain (Tone/Noise Gen, RT60) — verified on the hub.
+
+Updated phone check: step 2 above now also covers the tuner (whistle a steady
+note → needle homes toward centre and greens when in tune) and the MultiMeter
+(RTA left, spectrogram right). Step 3 now only watches the two DEMO cards; RT60
+should sweep continuously with no blanking.

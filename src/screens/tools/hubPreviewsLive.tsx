@@ -24,11 +24,11 @@
  * pinned userSpaceOnUse to absolute level (fixed-reference rule 2026-08-14);
  * heat cells use the app-wide heatColor ramp with the fixed 0 dBFS anchor.
  */
-import { memo, useEffect, useMemo, useRef, useSyncExternalStore, type FC, type ReactNode } from 'react';
+import { memo, useEffect, useMemo, useRef, useState, useSyncExternalStore, type FC, type ReactNode } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Defs, G, Line, LinearGradient, Path, Polygon, Rect, Stop } from 'react-native-svg';
 import { heatColor } from '../../features/tools/levelColor';
-import type { WaveBucket } from '../../../modules/ape-dsp';
+import type { PitchFrame, WaveBucket } from '../../../modules/ape-dsp';
 import {
   getHubPreview,
   subscribeHubPreview,
@@ -109,8 +109,11 @@ function heatPaths(
 /* 01 — SPL REFERENCE METER (analogue VU + LED ladder)                 */
 /* ================================================================== */
 
-/** 0 VU anchor: −18 dBFS (VuMeterView's live0Db default). */
-const SPL_LIVE0 = -18;
+/** 0 VU anchor in dBFS — matches the REAL SPL meter's default sensitivity
+ *  (SplMeterScreen live0Db = RANGE 60 − NOMINAL_OFFSET 100 = −40), NOT the raw
+ *  VuMeterView −18 default, which needed a near-full-scale signal and left the
+ *  needle pinned in an ordinary room (owner 2026-08-19: "does not move"). */
+const SPL_LIVE0 = -40;
 const VU_MAX = Math.pow(10, 3 / 20); // +3 dB rel 0 VU (integrator ceiling)
 const VU_HUB_X = 761;
 const VU_HUB_Y = 744;
@@ -187,7 +190,12 @@ const SPL_CHROME = (
 );
 
 /** The art's ladder: bottom 17 segments are the live span, top 9 are
- *  permanently-unlit headroom chrome. Level maps −60..0 dBFS across the 17. */
+ *  permanently-unlit headroom chrome. Level maps a lively preview window
+ *  (−62…−12 dBFS) across the 17 live segments so ordinary room speech drives
+ *  the ladder instead of resting near-dead (owner 2026-08-19 sensitivity). */
+const SPL_LED_FLOOR = -62;
+const SPL_LED_SPAN = 50; // top of the ladder ≈ −12 dBFS
+const SPL_LAMP_DB = -12; // peak lamp lights on loud speech / claps, not only digital-clip
 const LED_LIVE_SEGS = 17;
 const LED_SPAN_TOP_Y = LED_BOT_Y - 26 * (LED_LIVE_SEGS - 1); // top live seg y (418.9)
 const LED_SPAN_BOT = LED_BOT_Y + LED_H; // bottom edge of the ladder (851)
@@ -231,17 +239,17 @@ const HubSplMini: FC = memo(() => {
   if (lastTickRef.current !== d.tick) {
     lastTickRef.current = d.tick;
     const now = Date.now();
-    const pf = clamp((peakDb + 60) / 60, 0, 1);
+    const pf = clamp((peakDb - SPL_LED_FLOOR) / SPL_LED_SPAN, 0, 1);
     const h = holdRef.current;
     if (pf >= h.v) {
       h.v = pf;
       h.until = now + 1500;
     } else if (now > h.until) {
-      h.v = Math.max(pf, h.v - (26 / 60) * TICK_SEC); // release ≈26 dB/s
+      h.v = Math.max(pf, h.v - (26 / SPL_LED_SPAN) * TICK_SEC); // release ≈26 dB/s over the window
     }
-    if (peakDb >= -3) lampRef.current = now;
+    if (peakDb >= SPL_LAMP_DB) lampRef.current = now;
   }
-  const frac = clamp((db + 60) / 60, 0, 1);
+  const frac = clamp((db - SPL_LED_FLOOR) / SPL_LED_SPAN, 0, 1);
   const lit = Math.min(LED_LIVE_SEGS, Math.round(frac * LED_LIVE_SEGS));
   const holdV = holdRef.current.v;
   const lampLit = Date.now() - lampRef.current < 350;
@@ -440,7 +448,8 @@ HubRtaMini.displayName = 'HubRtaMini';
 
 const WAVE_WINDOW_BUCKETS = 60; // 3 s of 50 ms buckets
 const WAVE_MID = 512;
-const WAVE_FS_PX = 408; // ±full scale in canvas units (art max ±~314 of this)
+const WAVE_FS_PX = 408; // ±full scale in canvas units = the plot's half height
+const WAVE_ZOOM = 2; // default ×2 (WaveformScreen's DEFAULT_ZOOM) — owner 2026-08-19
 
 const WAVE_CHROME_UNDER = (
   <G>
@@ -468,6 +477,7 @@ function buildEnvelope(
   fsPx: number,
   windowBuckets: number,
   minBandPx: number,
+  zoom = 1,
 ): string | null {
   if (waveNewestFirst.length === 0) return null;
   const slice = waveNewestFirst.slice(0, windowBuckets).reverse();
@@ -482,6 +492,9 @@ function buildEnvelope(
   const scale = scaleRef.current;
   const n = windowBuckets;
   const step = (x1 - x0) / (n - 1);
+  // Zoom multiplies on top of the autoscale (WaveformScreen contract): the
+  // loudest sample pegs the plot edge and everything quieter is `zoom`× taller.
+  // Excursions clamp to ±fsPx so a loud transient clips at the panel, not over it.
   const top: string[] = [];
   const bot: string[] = [];
   for (let i = 0; i < n; i++) {
@@ -489,8 +502,10 @@ function buildEnvelope(
     const bk = i < pad ? null : slice[i - pad];
     const vMax = bk && Number.isFinite(bk.max) ? bk.max : 0;
     const vMin = bk && Number.isFinite(bk.min) ? bk.min : 0;
-    let yT = mid - (vMax / scale) * fsPx;
-    let yB = mid - (vMin / scale) * fsPx;
+    const eT = clamp((vMax / scale) * zoom, -1, 1) * fsPx;
+    const eB = clamp((vMin / scale) * zoom, -1, 1) * fsPx;
+    let yT = mid - eT;
+    let yB = mid - eB;
     if (yB - yT < minBandPx * 2) {
       const c = (yT + yB) / 2;
       yT = c - minBandPx;
@@ -506,7 +521,7 @@ function buildEnvelope(
 const HubWaveMini: FC = memo(() => {
   const d = useHubData();
   const scaleRef = useRef(1.05);
-  const pts = buildEnvelope(d.wave, scaleRef, 124, 1924, WAVE_MID, WAVE_FS_PX, WAVE_WINDOW_BUCKETS, 3);
+  const pts = buildEnvelope(d.wave, scaleRef, 124, 1924, WAVE_MID, WAVE_FS_PX, WAVE_WINDOW_BUCKETS, 3, WAVE_ZOOM);
 
   return (
     <LiveShell>
@@ -583,95 +598,118 @@ const HubSpectroMini: FC = memo(() => {
 HubSpectroMini.displayName = 'HubSpectroMini';
 
 /* ================================================================== */
-/* 08 — PRO AUDIO MULTIMETER (H-bar · 30-bar RTA · spectrogram · scope)*/
+/* 08 — PRO AUDIO MULTIMETER (level bar · RTA LEFT · spectrogram RIGHT) */
 /* ================================================================== */
+// Owner 2026-08-19: the mini must NOT read like the standalone RTA tile below
+// it, so the "all-in-one" reads as three DIFFERENT instruments side by side —
+// a slim level bar across the top, a spectrum analyser on the LEFT, and a
+// spectrogram on the RIGHT. (The static tool_08 strip is the resting art; this
+// opaque live layer replaces it wholesale while frames flow.)
 
-const MM_BAR_X0 = 131.8;
-const MM_BAR_PITCH = 60;
-const MM_BAR_W = 44.4;
-const mmYForDb = (db: number) => clamp(214 + (db / -90) * (612 - 214), 214, 612);
+// Top level bar track.
+const MM_BAR_TRACK_X = 104;
+const MM_BAR_TRACK_W = 1840;
+const MM_BAR_Y = 116;
+const MM_BAR_H = 30;
+const MM_LEVEL_FLOOR = -62; // lively preview window (matches the SPL ladder)
+const MM_LEVEL_SPAN = 50;
 
+// LEFT panel — RTA. 30 native bands grouped to 15 chunky bars for readability
+// at half-tile width.
+const MM_RTA_PANEL = { x: 90, y: 172, w: 918, h: 744 };
+const MM_RTA_BARS = 15;
+const MM_RTA_X0 = 128;
+const MM_RTA_PITCH = 57;
+const MM_RTA_W = 44;
+const MM_RTA_TOP_Y = 210; // 0 dBFS
+const MM_RTA_BOT_Y = 892; // −90 dBFS
+const mmRtaY = (db: number) => clamp(MM_RTA_TOP_Y + (db / -90) * (MM_RTA_BOT_Y - MM_RTA_TOP_Y), MM_RTA_TOP_Y, MM_RTA_BOT_Y);
+
+// RIGHT panel — spectrogram.
+const MM_SG_PANEL = { x: 1040, y: 172, w: 918, h: 744 };
 const MM_SG_GEOM = {
-  xRight: 974,
-  colW: (974 - 132) / 22,
-  cellW: 40,
-  yBottom: 888,
-  rowH: (888 - 690) / 20,
-  cellH: 11,
+  xRight: 1936,
+  colW: (1936 - 1060) / 22,
+  cellW: 42,
+  yBottom: 892,
+  rowH: (892 - 210) / 20,
+  cellH: 36,
   rows: 20,
   rowOf: (r: number) => Math.min(SPECTRO_ROWS - 1, Math.floor((r * SPECTRO_ROWS) / 20)),
 };
 
 const MM_CHROME = (
   <G>
-    {/* Top H-bar track. */}
-    <Rect x={124} y={132} width={1800} height={34} rx={17} fill="#141821" />
-    {/* Mid RTA panel + gridlines. */}
-    <Rect x={104} y={174} width={1840} height={478} rx={14} fill="#0b0f16" stroke="#1e2635" strokeWidth={4} />
-    {[512.5, 413, 313.5].map((y, i) => (
-      <Line key={i} x1={124} y1={y} x2={1924} y2={y} stroke="#1b2434" strokeWidth={3} />
+    {/* Top slim level-bar track. */}
+    <Rect x={MM_BAR_TRACK_X} y={MM_BAR_Y} width={MM_BAR_TRACK_W} height={MM_BAR_H} rx={15} fill="#141821" />
+    {/* LEFT — RTA panel + gridlines. */}
+    <Rect x={MM_RTA_PANEL.x} y={MM_RTA_PANEL.y} width={MM_RTA_PANEL.w} height={MM_RTA_PANEL.h} rx={14} fill="#0b0f16" stroke="#1e2635" strokeWidth={4} />
+    {[381, 553, 725].map((y, i) => (
+      <Line key={i} x1={MM_RTA_PANEL.x + 30} y1={y} x2={MM_RTA_PANEL.x + MM_RTA_PANEL.w - 30} y2={y} stroke="#1b2434" strokeWidth={3} />
     ))}
-    {/* Bottom-left mini spectrogram panel. */}
-    <Rect x={124} y={668} width={878} height={228} rx={12} fill="#04070f" stroke="#1e2635" strokeWidth={4} />
-    {/* Bottom-right mini scope panel + centerline (UNDER the polygon here). */}
-    <Rect x={1046} y={668} width={878} height={228} rx={12} fill="#080b12" stroke="#1e2635" strokeWidth={4} />
-    <Line x1={1054} y1={782} x2={1916} y2={782} stroke="#2b7fd4" strokeWidth={6} />
+    {/* RIGHT — spectrogram panel. */}
+    <Rect x={MM_SG_PANEL.x} y={MM_SG_PANEL.y} width={MM_SG_PANEL.w} height={MM_SG_PANEL.h} rx={14} fill="#04070f" stroke="#1e2635" strokeWidth={4} />
   </G>
 );
 
 const HubMultiMini: FC = memo(() => {
   const d = useHubData();
-  const scaleRef = useRef(1.05);
 
+  // Level bar (lively window; fixed-reference gradient maps absolute level).
   const db = dbOr(d.meter?.aFastDb);
-  const frac = clamp((db + 60) / 60, 0, 1);
-  const barW = frac * 1296;
+  const lvlFrac = clamp((db - MM_LEVEL_FLOOR) / MM_LEVEL_SPAN, 0, 1);
+  const barW = lvlFrac * MM_BAR_TRACK_W;
 
+  // RTA — group the 30 native bands to 15 bars (max of each pair).
   const b = d.bands;
-  const n = b ? Math.min(30, b.levelsDb.length) : 0;
   const bars: ReactNode[] = [];
   const caps: ReactNode[] = [];
-  for (let i = 0; i < n; i++) {
-    if (b!.resolvable[i] === false) continue;
-    const x = MM_BAR_X0 + MM_BAR_PITCH * i;
-    const yTop = mmYForDb(dbOr(b!.levelsDb[i], -90));
-    const h = 612 - yTop;
-    if (h >= 2) bars.push(<Rect key={i} x={x} y={yTop} width={MM_BAR_W} height={h} rx={3} />);
-    const pk = dbOr(b!.peakHoldDb[i], -90);
-    if (pk > -88) {
-      caps.push(
-        <Rect key={i} x={x - 2} y={mmYForDb(pk) - 4.5} width={MM_BAR_W + 4} height={9} rx={3} fill="#e6d5a0" opacity={0.9} />,
-      );
+  if (b) {
+    const src = b.levelsDb;
+    const pk = b.peakHoldDb;
+    const res = b.resolvable;
+    for (let j = 0; j < MM_RTA_BARS; j++) {
+      const a = 2 * j;
+      const c = Math.min(a + 1, src.length - 1);
+      if (res[a] === false && res[c] === false) continue;
+      const lvl = Math.max(dbOr(src[a], -90), dbOr(src[c], -90));
+      const x = MM_RTA_X0 + MM_RTA_PITCH * j;
+      const yTop = mmRtaY(lvl);
+      const h = MM_RTA_BOT_Y - yTop;
+      if (h >= 2) bars.push(<Rect key={j} x={x} y={yTop} width={MM_RTA_W} height={h} rx={3} />);
+      const pkDb = Math.max(dbOr(pk[a], -90), dbOr(pk[c], -90));
+      if (pkDb > -88) {
+        caps.push(
+          <Rect key={j} x={x - 2} y={mmRtaY(pkDb) - 4.5} width={MM_RTA_W + 4} height={9} rx={3} fill="#e6d5a0" opacity={0.9} />,
+        );
+      }
     }
   }
 
-  const sgPaths = useMemo(
-    () => heatPaths(d.spectroCols.slice(-22), MM_SG_GEOM),
-    [d.spectroCols],
-  );
-
-  const scopePts = buildEnvelope(d.wave, scaleRef, 1054, 1916, 782, 92, 40, 2);
+  // Spectrogram — the same live history, painted into the RIGHT panel.
+  const spectroCols = useSyncExternalStore(subscribeHubPreview, () => getHubPreview().spectroCols);
+  const sgPaths = useMemo(() => heatPaths(spectroCols, MM_SG_GEOM), [spectroCols]);
 
   return (
     <LiveShell>
       <Svg width="100%" height="100%" viewBox={VB}>
         <Defs>
           <AmbGrad id="hpAmbMm" peak={0.2} />
-          <LvlGrad id="hpLvlMm" y1={214} y2={612} />
-          <MirGrad id="hpMirMm" y1={690} y2={874} />
+          <LvlGrad id="hpLvlMm" y1={MM_RTA_TOP_Y} y2={MM_RTA_BOT_Y} />
           <HGrad id="hpLvlhMm" />
         </Defs>
         <Rect width={2048} height={1024} fill="#060608" />
         <Rect width={2048} height={1024} fill="url(#hpAmbMm)" />
         {MM_CHROME}
-        {/* DATA — level bar (fixed-reference gradient: color maps absolute level). */}
+        {/* Top level bar. */}
         {barW > 4 && (
-          <Rect x={124} y={132} width={barW} height={34} rx={Math.min(17, barW / 2)} fill="url(#hpLvlhMm)" />
+          <Rect x={MM_BAR_TRACK_X} y={MM_BAR_Y} width={barW} height={MM_BAR_H} rx={Math.min(15, barW / 2)} fill="url(#hpLvlhMm)" />
         )}
+        {/* LEFT — RTA bars + peak caps. */}
         <G fill="url(#hpLvlMm)">{bars}</G>
         {caps}
+        {/* RIGHT — spectrogram cells. */}
         {sgPaths.map((p, i) => (p ? <Path key={i} d={p} fill={HEAT_12[i]} /> : null))}
-        {scopePts && <Polygon points={scopePts} fill="url(#hpMirMm)" opacity={0.95} />}
       </Svg>
       <Vignette />
     </LiveShell>
@@ -679,20 +717,207 @@ const HubMultiMini: FC = memo(() => {
 });
 HubMultiMini.displayName = 'HubMultiMini';
 
-/** Horizontal level ramp for the MultiMeter H-bar (art: blue left → red right,
- *  pinned x 124→1420 = the bar's full-scale extent). Note #f0a13c here is NOT
- *  a typo for LVL's #f0a23c — the tool_08 artwork genuinely uses both hexes. */
+/** Horizontal level ramp for the MultiMeter top level bar (blue left → red
+ *  right), pinned to the track's full extent. Note #f0a13c here is NOT a typo
+ *  for LVL's #f0a23c — the tool_08 artwork genuinely uses both hexes. */
 const HGRAD_STOPS: ReadonlyArray<readonly [number, string]> = [
   [0, '#143a86'], [0.12, '#2166c4'], [0.28, '#2b9ad2'], [0.44, '#34b96e'],
   [0.6, '#8ed24c'], [0.74, '#e9dc4d'], [0.86, '#f0a13c'], [1, '#e8503a'],
 ];
 function HGrad({ id }: { id: string }) {
   return (
-    <LinearGradient id={id} gradientUnits="userSpaceOnUse" x1={124} y1="0" x2={1420} y2="0">
+    <LinearGradient id={id} gradientUnits="userSpaceOnUse" x1={MM_BAR_TRACK_X} y1="0" x2={MM_BAR_TRACK_X + MM_BAR_TRACK_W} y2="0">
       {rampStops(HGRAD_STOPS)}
     </LinearGradient>
   );
 }
+
+/* ================================================================== */
+/* 07 — FREQUENCY COUNTER & TUNER (REAL-TIME live pitch)               */
+/* ================================================================== */
+// Owner 2026-08-19: real-time action, not a scripted demo. The needle + cents
+// cursor track the live YIN pitch from the mic (whistle, sing, or tune a real
+// instrument in front of the phone). Chrome ported verbatim from tool_07.
+
+const TUNER_CX = 1024;
+const TUNER_CY = 706;
+const TUNER_DEG_PER_CENT = 56 / 50; // ±50¢ → ±56° of needle travel
+const TUNER_PX_PER_CENT = 13.04; // cents cursor travel on the bottom ruler
+const TUNER_TIP_LEN = 320;
+const TUNER_TAIL_LEN = 58;
+
+const TUNER_MINOR_TICKS: ReadonlyArray<readonly [number, number, number, number]> = [
+  [754.3, 482.9, 777.4, 502], [777.4, 457.7, 798.5, 478.9], [802.8, 434.8, 821.8, 458],
+  [830.3, 414.5, 846.9, 439.5], [890.6, 382.4, 902.1, 410.1], [922.8, 370.9, 931.5, 399.7],
+  [956, 362.7, 961.8, 392.1], [989.8, 357.7, 992.8, 387.5], [1058.2, 357.7, 1055.2, 387.5],
+  [1092, 362.7, 1086.2, 392.1], [1125.2, 370.9, 1116.5, 399.7], [1157.4, 382.4, 1145.9, 410.1],
+  [1217.7, 414.5, 1201.1, 439.5], [1245.2, 434.8, 1226.2, 458], [1270.6, 457.7, 1249.5, 478.9],
+  [1293.7, 482.9, 1270.6, 502],
+];
+const TUNER_MAJOR_TICKS: ReadonlyArray<readonly [number, number, number, number]> = [
+  [733.8, 510.3, 786.9, 546.1], [859.7, 397, 889.7, 453.5], [1024, 356, 1024, 420],
+  [1188.3, 397, 1158.3, 453.5], [1314.2, 510.3, 1261.1, 546.1],
+];
+const TUNER_RULER_MAJOR_X = [372, 698, 1024, 1350, 1676];
+const TUNER_RULER_MINOR_X = [453.5, 535, 616.5, 779.5, 861, 942.5, 1105.5, 1187, 1268.5, 1431.5, 1513, 1594.5];
+
+const TUNER_CHROME = (
+  <G>
+    <Rect x={90} y={78} width={1868} height={874} rx={18} fill="#0c1016" stroke="#243046" strokeWidth={5} />
+    <Path d="M715.6,498A372,372 0 0 1 1332.4,498" fill="none" stroke="#28303d" strokeWidth={46} strokeLinecap="round" />
+    <Path d="M715.6,498A372,372 0 0 1 1332.4,498" fill="none" stroke="#7d8798" strokeWidth={9} />
+    <Path d="M984.1,336.1A372,372 0 0 1 1063.9,336.1" fill="none" stroke="#34b96e" strokeWidth={46} />
+    <Path d="M984.1,336.1A372,372 0 0 1 1063.9,336.1" fill="none" stroke="#7ce8a6" strokeWidth={9} />
+    <G stroke="#aeb9cb" strokeWidth={6} opacity={0.75}>
+      {TUNER_MINOR_TICKS.map(([x1, y1, x2, y2], i) => (
+        <Line key={i} x1={x1} y1={y1} x2={x2} y2={y2} />
+      ))}
+    </G>
+    <G stroke="#eef3fa" strokeWidth={12}>
+      {TUNER_MAJOR_TICKS.map(([x1, y1, x2, y2], i) => (
+        <Line key={i} x1={x1} y1={y1} x2={x2} y2={y2} />
+      ))}
+    </G>
+    <Line x1={1024} y1={304} x2={1024} y2={260} stroke="#f5b942" strokeWidth={16} strokeLinecap="round" />
+    <Rect x={372} y={852} width={1304} height={124} rx={18} fill="#0a0e15" stroke="#2e3a50" strokeWidth={5} />
+    <Rect x={928} y={862} width={192} height={104} rx={12} fill="#34b96e" opacity={0.16} />
+    <Rect x={928} y={862} width={192} height={104} rx={12} fill="#0f2b1b" stroke="#34b96e" strokeWidth={7} />
+    <Line x1={1024} y1={874} x2={1024} y2={954} stroke="#7ce8a6" strokeWidth={7} />
+    {TUNER_RULER_MAJOR_X.map((x) => (
+      <Line key={x} x1={x} y1={962} x2={x} y2={932} stroke="#6b7688" strokeWidth={7} opacity={0.85} />
+    ))}
+    {TUNER_RULER_MINOR_X.map((x) => (
+      <Line key={x} x1={x} y1={962} x2={x} y2={944} stroke="#6b7688" strokeWidth={5} opacity={0.5} />
+    ))}
+  </G>
+);
+
+/** Cents off the nearest equal-tempered note (A4=440), clamped to the ±50¢
+ *  dial. null when the frequency is out of a sane instrument range. */
+function centsOf(freq: number): number | null {
+  if (!(freq > 0)) return null;
+  const midi = Math.round(12 * Math.log2(freq / 440) + 69);
+  if (midi < 12 || midi > 120) return null; // ~C0…C9
+  const fNote = 440 * Math.pow(2, (midi - 69) / 12);
+  return clamp(1200 * Math.log2(freq / fNote), -50, 50);
+}
+
+const HubTunerLive: FC = memo(() => {
+  const d = useHubData();
+  const [w, onLayout] = useMeasuredWidth();
+  const [inTune, setInTune] = useState(false);
+  const cents = useRef(new Animated.Value(0)).current;
+  const lastTickRef = useRef(-1);
+
+  // Chase the live cents each tick (honesty gate matches the Frequency Counter
+  // tool: voiced + confident + above the noise floor). When silent the needle
+  // eases back to centre so the dial rests instead of freezing on a stale note.
+  if (lastTickRef.current !== d.tick) {
+    lastTickRef.current = d.tick;
+    const p = d.pitch;
+    const voiced = !!p && p.voiced && p.confidence >= 0.5 && p.levelDb >= -60;
+    const c = voiced ? centsOf(p!.freq) : null;
+    const target = c == null ? 0 : c;
+    const nowInTune = c != null && Math.abs(c) < 5;
+    if (nowInTune !== inTune) setInTune(nowInTune);
+    Animated.timing(cents, {
+      toValue: target,
+      duration: HUB_TICK_MS + 50,
+      easing: Easing.out(Easing.quad),
+      useNativeDriver: NATIVE_DRIVER,
+    }).start();
+  }
+
+  const s = w / 2048;
+  const rotate = cents.interpolate({
+    inputRange: [-50, 50],
+    outputRange: [`-${50 * TUNER_DEG_PER_CENT}deg`, `${50 * TUNER_DEG_PER_CENT}deg`],
+  });
+  const cursorX = cents.interpolate({
+    inputRange: [-50, 50],
+    outputRange: [-50 * TUNER_PX_PER_CENT * s, 50 * TUNER_PX_PER_CENT * s],
+  });
+  const needleColor = inTune ? '#7ce8a6' : '#ffcf6a';
+
+  return (
+    <LiveShell>
+      <View style={StyleSheet.absoluteFill} onLayout={onLayout}>
+        <Svg width="100%" height="100%" viewBox={VB}>
+          <Defs>
+            <AmbGrad id="hpAmbTun" peak={0.24} />
+          </Defs>
+          <Rect width={2048} height={1024} fill="#060608" />
+          <Rect width={2048} height={1024} fill="url(#hpAmbTun)" />
+          {TUNER_CHROME}
+        </Svg>
+        {s > 0 && (
+          <>
+            <Animated.View
+              pointerEvents="none"
+              style={{
+                position: 'absolute',
+                left: TUNER_CX * s - 21 * s,
+                top: (TUNER_CY - TUNER_TIP_LEN) * s,
+                width: 42 * s,
+                height: TUNER_TIP_LEN * 2 * s,
+                transform: [{ rotate }],
+              }}
+            >
+              <View
+                style={{
+                  position: 'absolute', top: 0, left: 0,
+                  width: 42 * s, height: (TUNER_TIP_LEN + TUNER_TAIL_LEN) * s,
+                  borderRadius: 21 * s, backgroundColor: needleColor, opacity: 0.16,
+                }}
+              />
+              <View
+                style={{
+                  position: 'absolute', top: 0, left: 12.5 * s,
+                  width: 17 * s, height: (TUNER_TIP_LEN + TUNER_TAIL_LEN) * s,
+                  borderRadius: 8.5 * s, backgroundColor: needleColor,
+                }}
+              />
+            </Animated.View>
+            <View
+              pointerEvents="none"
+              style={{
+                position: 'absolute', left: (TUNER_CX - 46) * s, top: (TUNER_CY - 46) * s,
+                width: 92 * s, height: 92 * s, borderRadius: 46 * s,
+                backgroundColor: '#151a22', borderWidth: Math.max(1, 6 * s), borderColor: '#3a4354',
+              }}
+            />
+            <View
+              pointerEvents="none"
+              style={{
+                position: 'absolute', left: (TUNER_CX - 18) * s, top: (TUNER_CY - 18) * s,
+                width: 36 * s, height: 36 * s, borderRadius: 18 * s, backgroundColor: '#f5b942',
+              }}
+            />
+            <Animated.View
+              pointerEvents="none"
+              style={{
+                position: 'absolute', left: (TUNER_CX - 40) * s, top: 806 * s,
+                width: 80 * s, height: 164 * s, transform: [{ translateX: cursorX }],
+              }}
+            >
+              <Svg width={80 * s} height={42 * s} viewBox="0 0 80 42">
+                <Polygon points="0,0 80,0 40,42" fill={needleColor} />
+              </Svg>
+              <View
+                style={{
+                  position: 'absolute', left: 26.5 * s, top: 52 * s,
+                  width: 27 * s, height: 112 * s, borderRadius: 13 * s, backgroundColor: needleColor,
+                }}
+              />
+            </Animated.View>
+          </>
+        )}
+        <Vignette />
+      </View>
+    </LiveShell>
+  );
+});
+HubTunerLive.displayName = 'HubTunerLive';
 
 /* ================================================================== */
 
@@ -702,4 +927,5 @@ export const HUB_LIVE_MINIS: Partial<Record<ToolKey, FC>> = {
   waveform: HubWaveMini,
   spectrogram: HubSpectroMini,
   multimeter: HubMultiMini,
+  hzcounter: HubTunerLive,
 };

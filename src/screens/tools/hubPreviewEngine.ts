@@ -29,6 +29,7 @@ import {
   type BandsFrame,
   type EngineConfig,
   type MeterFrame,
+  type PitchFrame,
   type SpectrumMeta,
   type WaveBucket,
 } from '../../../modules/ape-dsp';
@@ -60,6 +61,9 @@ export type HubPreviewData = {
   tick: number;
   meter: MeterFrame | null;
   bands: BandsFrame | null;
+  /** Live YIN pitch (freq/confidence/voiced/levelDb) — drives the real-time
+   *  tuner mini. */
+  pitch: PitchFrame | null;
   /** Raw waveform ring, NEWEST-FIRST (ApeDsp.getWaveform contract). */
   wave: WaveBucket[];
   /** Rolling spectrogram history, oldest → newest. Reference changes only when
@@ -67,7 +71,7 @@ export type HubPreviewData = {
   spectroCols: HubSpectroCol[];
 };
 
-const EMPTY: HubPreviewData = { tick: 0, meter: null, bands: null, wave: [], spectroCols: [] };
+const EMPTY: HubPreviewData = { tick: 0, meter: null, bands: null, pitch: null, wave: [], spectroCols: [] };
 
 let data: HubPreviewData = EMPTY;
 const subs = new Set<() => void>();
@@ -95,6 +99,7 @@ const HUB_ENGINE_CFG: EngineConfig = {
   fraction: 3,
   spectrumEnabled: true,
   waveformEnabled: true,
+  pitchEnabled: true, // real-time tuner mini
   bandAvgAlpha: 0.8,
 };
 
@@ -257,6 +262,7 @@ export function useHubPreviewEngine(): HubPreview {
         tick,
         meter: wd,
         bands: ApeDsp.getBandsFrame(),
+        pitch: ApeDsp.getPitchFrame(),
         wave: ApeDsp.getWaveform(HUB_WAVE_BUCKETS),
         spectroCols,
       });
