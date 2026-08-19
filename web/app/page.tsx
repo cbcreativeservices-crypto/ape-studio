@@ -1,5 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
 import { TAGLINE, KNOWLEDGE } from "@/lib/brand";
+import logoHero from "@/public/logo-hero.png";
 
 export default function Home() {
   return (
@@ -15,7 +17,18 @@ export default function Home() {
           }}
         />
         <div className="relative mx-auto max-w-6xl px-4 py-24 text-center sm:px-6 sm:py-32">
-          <p className="font-mono text-xs uppercase tracking-[0.3em] text-amber">
+          <Image
+            src={logoHero}
+            alt="Pro Audio Training Academy"
+            width={160}
+            height={160}
+            priority
+            className="mx-auto h-32 w-32 sm:h-40 sm:w-40"
+          />
+          <p className="mt-6 font-display text-2xl font-semibold uppercase tracking-wide text-foreground sm:text-3xl">
+            Pro Audio Training Academy
+          </p>
+          <p className="mt-6 font-mono text-xs uppercase tracking-[0.3em] text-amber">
             Professional Audio Education
           </p>
           <h1 className="mx-auto mt-5 max-w-3xl font-display text-4xl font-semibold uppercase leading-tight tracking-wide text-foreground sm:text-6xl">
@@ -53,34 +66,6 @@ export default function Home() {
           information for institutions, and hosts member references such as the
           Vacuum Tube Reference.
         </p>
-      </section>
-
-      {/* Pillars */}
-      <section className="mx-auto max-w-6xl px-4 pb-8 sm:px-6">
-        <div className="grid gap-6 md:grid-cols-3">
-          {PILLARS.map((p) => (
-            <Link
-              key={p.href}
-              href={p.href}
-              className="group rounded-lg border border-border bg-surface p-6 transition-colors hover:border-amber"
-            >
-              <div
-                className="flex h-10 w-10 items-center justify-center rounded-md font-display text-lg font-bold"
-                style={{ backgroundColor: `${p.tint}22`, color: p.tint }}
-                aria-hidden
-              >
-                {p.badge}
-              </div>
-              <h2 className="mt-4 font-display text-lg font-semibold uppercase tracking-wide text-foreground">
-                {p.title}
-              </h2>
-              <p className="mt-2 text-sm text-text-sub">{p.body}</p>
-              <span className="mt-4 inline-block text-sm font-semibold text-amber transition-transform group-hover:translate-x-0.5">
-                {p.cta} &rarr;
-              </span>
-            </Link>
-          ))}
-        </div>
       </section>
 
       {/* Knowledge / progress */}
@@ -136,36 +121,3 @@ export default function Home() {
   );
 }
 
-const PILLARS: {
-  href: string;
-  badge: string;
-  title: string;
-  body: string;
-  cta: string;
-  tint: string;
-}[] = [
-  {
-    href: "/credentials",
-    badge: "✓",
-    title: "Credentials",
-    body: "Verifiable records of completed educational work — how they’re earned, what they show, and what they mean.",
-    cta: "About credentials",
-    tint: "#37e05f",
-  },
-  {
-    href: "/tubes",
-    badge: "▤",
-    title: "Tube Reference",
-    body: "A secured library of vacuum tube spec cards for Academy members, available on any screen.",
-    cta: "Browse tubes",
-    tint: "#2f9bff",
-  },
-  {
-    href: "/dashboard",
-    badge: "▸",
-    title: "Your Academy",
-    body: "Sign in to see your membership, progress, and credentials, and continue learning in the app.",
-    cta: "Member sign in",
-    tint: "#ffc64d",
-  },
-];
