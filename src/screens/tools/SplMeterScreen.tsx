@@ -26,7 +26,7 @@
  *    on unmount (§18: no DSP behind a closed screen).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Modal, Pressable, ScrollView, StatusBar, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Animated, BackHandler, Pressable, ScrollView, StatusBar, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../../features/settings/store';
@@ -744,7 +744,10 @@ export function SplMeterScreen({ navigation }: Props) {
   // VU is the tool's HOME (owner 2026-08-18): it shows on entry; the digital
   // readout sits behind it (reachable via the header "VU" button ⇄ the home's
   // "DIGITAL READOUT" nav). vuFsOpen is the landscape-only full VU screen.
-  const [vuOpen, setVuOpen] = useState(true);
+  // De-modalized home/digital switch (Phase 1, 2026-08-19): the tool's HOME (the
+  // VU) and the digital readout are ordinary in-tree views now — only one renders
+  // at a time. 'home' is the entry (was the always-open `vuOpen` native Modal).
+  const [view, setView] = useState<'home' | 'digital'>('home');
   const [vuFsOpen, setVuFsOpen] = useState(false);
   // Which setting popup is open from the VU home's bottom control bar (owner
   // 2026-08-18): Range · Weighting · Response · Peak Hold.
@@ -757,6 +760,32 @@ export function SplMeterScreen({ navigation }: Props) {
     if (vuFsOpen) unlockOrientation();
     else lockPortrait();
   }, [vuFsOpen]);
+  // Declarative orientation (Phase 2, 2026-08-19): react-native-screens OWNS
+  // orientation on this native stack and IGNORES expo-screen-orientation, so we
+  // drive the per-screen option directly: free-rotate ('all') while Full VU OR
+  // the fullscreen readout is open (owner: BOTH free-rotate), portrait otherwise.
+  // The imperative screenOrientationSafe calls (above, and the readout effect
+  // near line 683) are KEPT as a harmless fallback until this is confirmed
+  // driving rotation on-device with a fresh build; only then are they removed.
+  useEffect(() => {
+    navigation.setOptions({ orientation: vuFsOpen || readoutFsOpen ? 'all' : 'portrait' });
+  }, [vuFsOpen, readoutFsOpen, navigation]);
+  // Hardware BACK (Phase 1, 2026-08-19): the removed Modals handled Android back
+  // for free — replicate the same priority now that everything is in-tree. Close
+  // the settings popup, then Full VU, then the fullscreen readout, then fall the
+  // digital view back to home; only when nothing is open does the default back
+  // (leave the screen) proceed.
+  useEffect(() => {
+    const onBack = () => {
+      if (settingPopup != null) { setSettingPopup(null); return true; }
+      if (vuFsOpen) { setVuFsOpen(false); return true; }
+      if (readoutFsOpen) { setReadoutFsOpen(false); return true; }
+      if (view === 'digital') { setView('home'); return true; }
+      return false;
+    };
+    const sub = BackHandler.addEventListener('hardwareBackPress', onBack);
+    return () => sub.remove();
+  }, [settingPopup, vuFsOpen, readoutFsOpen, view]);
   // User setting for the LED meter's peak-hold cap linger (owner 2026-07-30).
   const [holdMode, setHoldMode] = useState<PeakHoldMode>('1s');
   // RANGE (owner 2026-07-30): the environmental SPL that reads 0 VU. The wide VU
@@ -1122,7 +1151,9 @@ export function SplMeterScreen({ navigation }: Props) {
   }, [state, weighting, response, offset, cal]);
 
   return (
-    <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+    <View style={styles.root}>
+      {view === 'digital' ? (
+      <View style={{ flex: 1, paddingTop: insets.top + 10 }}>
       <View style={styles.header}>
         <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
@@ -1136,7 +1167,7 @@ export function SplMeterScreen({ navigation }: Props) {
             + enclosed in a framed container (owner 2026-07-30). */}
         <Pressable
           style={styles.vuOpenBtn}
-          onPress={() => setVuOpen(true)}
+          onPress={() => setView('home')}
           accessibilityRole="button"
           accessibilityLabel="Open full-screen VU meter"
         >
@@ -1384,20 +1415,13 @@ export function SplMeterScreen({ navigation }: Props) {
         {/* Amber warnings, at the very BOTTOM (owner 2026-07-30). */}
         <LiveWarnings flags={flags} />
       </ScrollView>
-
-      {/* ── Full-screen VU popup: live meters + mirrored readouts/controls ──
-          Same state, same handlers — the meter keeps running; nothing here is
-          a second copy of the measurement. ✕ (top right) closes. */}
-      <Modal
-        visible={vuOpen}
-        animationType="fade"
-        statusBarTranslucent
-        // Tolerate landscape so the in-home Full VU overlay can rotate; the home
-        // is driven back to portrait by lockPortrait when Full VU closes.
-        supportedOrientations={['portrait', 'landscape', 'landscape-left', 'landscape-right']}
-        // Android back: close the Full VU overlay first if it's up, else the home.
-        onRequestClose={() => (vuFsOpen ? setVuFsOpen(false) : setVuOpen(false))}
-      >
+      </View>
+      ) : (
+      /* ── SPL Meter HOME (de-modalized 2026-08-19): the VU home, now an ordinary
+         in-tree view (was the always-open `vuOpen` native Modal). Same state,
+         same handlers — the meter keeps running; nothing here is a second copy of
+         the measurement. Reached via the header "VU HOME"; "DIGITAL ›" returns.
+         Hardware BACK is handled by the BackHandler effect above. */
         <View style={[styles.vuModalRoot, { paddingTop: insets.top + 8 }]}>
           {/* SPL Meter HOME header — title + nav to the digital readout and the
               landscape-only full VU screen (owner 2026-08-18). */}
@@ -1406,7 +1430,7 @@ export function SplMeterScreen({ navigation }: Props) {
             <View style={{ flex: 1 }} />
             <Pressable
               style={styles.homeNavBtn}
-              onPress={() => setVuOpen(false)}
+              onPress={() => setView('digital')}
               accessibilityRole="button"
               accessibilityLabel="Open the digital readout"
             >
@@ -1782,20 +1806,14 @@ export function SplMeterScreen({ navigation }: Props) {
             </Pressable>
           )}
         </View>
-      </Modal>
+      )}
 
-      {/* ── Setting chooser popup (owner 2026-08-18) — opened by the VU home's
-          bottom control bar; one modal serves Range · Weighting · Response ·
-          Peak Hold. ── */}
-      <Modal
-        visible={settingPopup != null}
-        transparent
-        animationType="fade"
-        statusBarTranslucent
-        supportedOrientations={['portrait', 'landscape', 'landscape-left', 'landscape-right']}
-        onRequestClose={() => setSettingPopup(null)}
-      >
-        <Pressable style={styles.popupBackdrop} onPress={() => setSettingPopup(null)} accessibilityRole="button" accessibilityLabel="Close">
+      {/* ── Setting chooser overlay (de-modalized 2026-08-19) — opened by the VU
+          home's bottom control bar; one in-tree absolute-fill overlay serves
+          Range · Weighting · Response · Peak Hold. The semi-transparent backdrop
+          Pressable closes it (BackHandler covers Android back). ── */}
+      {settingPopup != null && (
+        <Pressable style={[styles.popupBackdrop, styles.overlayAbs]} onPress={() => setSettingPopup(null)} accessibilityRole="button" accessibilityLabel="Close">
           <View style={styles.popupCard}>
             <Text style={styles.popupTitle}>
               {settingPopup === 'range' ? 'RANGE · dB AT 0 VU'
@@ -1834,23 +1852,16 @@ export function SplMeterScreen({ navigation }: Props) {
             )}
           </View>
         </Pressable>
-      </Modal>
+      )}
 
-      {/* ── Fullscreen # readout (owner 2026-08-17): the number ALONE (no side
-          toggles), with PEAK (top-left) and PEAK HOLD (top-right). The number
-          spans ~4/5 of the screen width. ── */}
-      <Modal
-        visible={readoutFsOpen}
-        animationType="fade"
-        statusBarTranslucent
-        // iOS RN Modals default to portrait-only — without this the fullscreen
-        // readout won't rotate even though the screen unlocked orientation
-        // (owner 2026-08-18: the device turns but the app stayed portrait).
-        supportedOrientations={['portrait', 'landscape', 'landscape-left', 'landscape-right']}
-        onRequestClose={() => setReadoutFsOpen(false)}
-      >
+      {/* ── Fullscreen # readout (de-modalized 2026-08-19): the number ALONE (no
+          side toggles), with PEAK (top-left) and PEAK HOLD (top-right). The number
+          spans ~4/5 of the screen width. Now an in-tree absolute-fill overlay; its
+          rotation is governed by the route's declarative `orientation` option
+          (Phase 2), which is set to 'all' while it is open. ── */}
+      {readoutFsOpen && (
         <View
-          style={[styles.fsRoot, { paddingTop: insets.top + 8 }]}
+          style={[styles.fsRoot, styles.overlayAbs, { paddingTop: insets.top + 8 }]}
           onTouchStart={fsDimmerOpen ? armDimmerHide : undefined}
           onTouchMove={fsDimmerOpen ? armDimmerHide : undefined}
         >
@@ -1933,7 +1944,7 @@ export function SplMeterScreen({ navigation }: Props) {
             </Pressable>
           )}
         </View>
-      </Modal>
+      )}
       {sheet}
     </View>
   );
@@ -2023,6 +2034,10 @@ const styles = StyleSheet.create({
   // isolation:isolate makes the red MULTIPLY wash blend only against the
   // fullscreen content (not whatever is behind the modal).
   fsRoot: { flex: 1, backgroundColor: colors.screenBg, paddingHorizontal: 16, isolation: 'isolate' },
+  // De-modalized full-screen overlays (2026-08-19): absolute-fill, above the
+  // in-tree home/digital view. Replaces the native Modal windows the settings
+  // chooser and fullscreen readout used to open in.
+  overlayAbs: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 200 },
   fsTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   fsCorner: { alignItems: 'flex-start', gap: 2 },
   // PEAK + PEAK HOLD grouped on the RIGHT, PEAK to the left (owner 2026-08-17).

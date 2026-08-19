@@ -74,6 +74,22 @@ fullscreen leaves; `React.memo` the meter components; stop the whole-tree re-ren
 `mixBlendMode:'multiply'`+`isolation` for a plain rgba overlay; consider a Skia patch bump;
 verify landscape safe-area/edge-to-edge insets on the Pixel.
 
+## On-device result — 2026-08-18 eve (first pass, Phase 1+2 in working tree, UNCOMMITTED)
+- **Both phones loaded and run** the new bundle (Pixel included — encouraging for the S4
+  de-modalize). NOT yet confirmed: the row-3 *edit-while-running* Fast-Refresh test on the
+  Pixel (the real S4 proof).
+- **iOS never enters landscape (ever)** — Full VU / readout stay portrait.
+  - **Prime suspect: STALE iOS BINARY, not code.** If the installed dev build was compiled
+    while `app.json` was `orientation:"portrait"`, its `Info.plist`
+    `UISupportedInterfaceOrientations` permits portrait only → neither the declarative
+    `navigation.setOptions({orientation:'all'})` nor the imperative `screenOrientationSafe`
+    unlock can rotate it. **TOMORROW FIRST:** confirm which iOS build is installed and, if it
+    predates `orientation:"default"`, do a fresh EAS `development` build and retest BEFORE
+    editing rotation code. (Same prereq the plan already flagged.)
+  - Only if a fresh, `default`-manifest build STILL won't rotate is it a code issue (then look
+    at the react-native-screens per-screen `orientation` option actually reaching the route).
+- Owner tabled the rest of the VU work to 2026-08-19; other (non-VU) fixes proceeding tonight.
+
 ## Prereq build
 A fresh EAS `development` build is needed for on-device orientation (the installed client
 predates the module + `default` manifest). Phase 1's de-modalization + Phase 0 relief do not
