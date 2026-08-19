@@ -1,0 +1,157 @@
+@import "tailwindcss";
+
+/*
+ * Pro Audio Training Academy — web theme.
+ * Dark-first. Brand tokens mirror shared/brand/tokens.ts (and the mobile
+ * app's src/theme/tokens.ts). Font CSS variables (--font-display, --font-body,
+ * --font-mono) are set on <html> by next/font in app/layout.tsx.
+ */
+
+:root {
+  /* Surfaces */
+  --background: #0c0c0c;
+  --surface: #151515;
+  --surface-raised: #1c1c1e;
+  --border: #2a2a2e;
+
+  /* Brand accents */
+  --amber: #ffc64d;
+  --amber-deep: #ffb400;
+  --orange: #ff8a1e;
+  --blue: #2f9bff;
+  --cyan: #5bb0ff;
+  --green: #37e05f;
+  --purple: #b45bff;
+  --gold: #ffc233;
+  --red: #ff4b3a;
+
+  /* Text */
+  --foreground: #f0f0f0;
+  --text-sub: #a6a6ad;
+  --text-muted: #8a8b93;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-border: var(--border);
+
+  --color-amber: var(--amber);
+  --color-amber-deep: var(--amber-deep);
+  --color-orange: var(--orange);
+  --color-blue: var(--blue);
+  --color-cyan: var(--cyan);
+  --color-green: var(--green);
+  --color-purple: var(--purple);
+  --color-gold: var(--gold);
+  --color-red: var(--red);
+
+  --color-foreground: var(--foreground);
+  --color-text-sub: var(--text-sub);
+  --color-text-muted: var(--text-muted);
+
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-mono: var(--font-mono);
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+}
+
+/* Themed container for injected legal/long-form HTML (privacy, terms). */
+.legal-prose {
+  color: var(--text-sub);
+  line-height: 1.7;
+  font-size: 0.975rem;
+}
+.legal-prose h2 {
+  color: var(--foreground);
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  margin-top: 2.25rem;
+  margin-bottom: 0.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+.legal-prose h3 {
+  color: var(--foreground);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 1.75rem;
+  margin-bottom: 0.5rem;
+}
+.legal-prose h4 {
+  color: var(--text-sub);
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 1.25rem;
+  margin-bottom: 0.4rem;
+}
+.legal-prose p {
+  margin: 0.85rem 0;
+}
+.legal-prose ul,
+.legal-prose ol {
+  margin: 0.85rem 0 0.85rem 1.25rem;
+  padding-left: 0.75rem;
+}
+.legal-prose ul { list-style: disc; }
+.legal-prose ol { list-style: decimal; }
+.legal-prose li { margin: 0.35rem 0; }
+.legal-prose a {
+  color: var(--amber);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.legal-prose a:hover { color: var(--amber-deep); }
+.legal-prose strong { color: var(--foreground); font-weight: 600; }
+.legal-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.25rem 0;
+  font-size: 0.9rem;
+}
+.legal-prose th,
+.legal-prose td {
+  border: 1px solid var(--border);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  vertical-align: top;
+}
+.legal-prose th { color: var(--foreground); background: var(--surface-raised); }
+.legal-prose details {
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin: 0.75rem 0;
+  background: var(--surface);
+}
+.legal-prose summary {
+  color: var(--foreground);
+  font-weight: 600;
+  cursor: pointer;
+}
+.legal-prose .contact-card {
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--surface);
+}
+.legal-prose .val {
+  color: var(--amber);
+  font-family: var(--font-mono), monospace;
+}
