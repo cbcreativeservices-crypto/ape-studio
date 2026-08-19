@@ -1424,31 +1424,20 @@ export function SplMeterScreen({ navigation }: Props) {
                     style={[styles.topLeftCol, { width: leftColW }]}
                     onLayout={(e) => setLeftColH(Math.round(e.nativeEvent.layout.height))}
                   >
-                    {viz ? (
-                      vuFsOpen ? (
-                        // Paused while the Full VU covers this home (owner 2026-08-18)
-                        // — never run two live Skia VU meters at once (it was slow).
-                        <View style={{ width: vuW, height: vuH }} />
-                      ) : (
-                        <SkinnedVu
-                          width={vuW}
-                          height={vuH}
-                          live={live}
-                          live0Db={vuLive0}
-                          running={running}
-                          fit="contain"
-                        />
-                      )
+                    {/* The skinned VU is SVG — it needs NO Skia, so it renders on
+                        every client (2026-08-19; the old pre-Skia gate card is gone). */}
+                    {vuFsOpen ? (
+                      // Paused while the Full VU covers this home (owner 2026-08-18).
+                      <View style={{ width: vuW, height: vuH }} />
                     ) : (
-                      /* Honest gate for pre-Skia clients (§1.7): readouts stay live. */
-                      <View style={styles.vuUnavailCard}>
-                        <Text style={styles.vuUnavailTitle}>VU METER NEEDS THE NEW DEV BUILD</Text>
-                        <Text style={styles.vuUnavailBody}>
-                          This dev client predates the graphics engine the meters render on. The
-                          digital readouts below are fully live — install the newest dev build to see
-                          the needles.
-                        </Text>
-                      </View>
+                      <SkinnedVu
+                        width={vuW}
+                        height={vuH}
+                        live={live}
+                        live0Db={vuLive0}
+                        running={running}
+                        fit="contain"
+                      />
                     )}
                     {/* Controls now live in the BOTTOM CONTROL BAR (owner 2026-08-18):
                         RANGE · WEIGHTING · RESPONSE · PEAK HOLD each open a popup. */}
@@ -1712,18 +1701,22 @@ export function SplMeterScreen({ navigation }: Props) {
               <View style={styles.vuFsClose} pointerEvents="none">
                 <Text style={styles.vuFsCloseX}>✕</Text>
               </View>
-              {viz ? (
+              {/* The skinned VU is SVG (no Skia) — the Full VU always renders;
+                  only the Skia LED (and its toggle) gate on viz (2026-08-19). */}
+              {(
                 <>
                   {/* LED hide/show (owner 2026-08-18) — interactive, top-left. */}
-                  <Pressable
-                    style={styles.vuFsLedToggle}
-                    onPress={() => setVuFsLedHidden((h) => !h)}
-                    accessibilityRole="button"
-                    accessibilityState={{ selected: !vuFsLedHidden }}
-                    accessibilityLabel={vuFsLedHidden ? 'Show the LED level meter' : 'Hide the LED level meter'}
-                  >
-                    <Text style={styles.vuFsLedToggleText}>{vuFsLedHidden ? 'SHOW LED' : 'HIDE LED'}</Text>
-                  </Pressable>
+                  {viz && (
+                    <Pressable
+                      style={styles.vuFsLedToggle}
+                      onPress={() => setVuFsLedHidden((h) => !h)}
+                      accessibilityRole="button"
+                      accessibilityState={{ selected: !vuFsLedHidden }}
+                      accessibilityLabel={vuFsLedHidden ? 'Show the LED level meter' : 'Hide the LED level meter'}
+                    >
+                      <Text style={styles.vuFsLedToggleText}>{vuFsLedHidden ? 'SHOW LED' : 'HIDE LED'}</Text>
+                    </Pressable>
+                  )}
 
                   {/* Stage (owner 2026-08-19): in LANDSCAPE the settings are a
                       COLUMN to the LEFT of the VU; in portrait they stay a bottom
@@ -1759,7 +1752,7 @@ export function SplMeterScreen({ navigation }: Props) {
                           fit="contain"
                         />
                       </View>
-                      {!vuFsLedHidden && (
+                      {!vuFsLedHidden && viz && (
                         <SideLed
                           viz={viz}
                           live={live}
@@ -1792,10 +1785,6 @@ export function SplMeterScreen({ navigation }: Props) {
                     </View>
                   )}
                 </>
-              ) : (
-                <View style={styles.vuUnavailCard}>
-                  <Text style={styles.vuUnavailTitle}>VU METER NEEDS THE NEW DEV BUILD</Text>
-                </View>
               )}
             </Pressable>
           )}

@@ -13,11 +13,18 @@
  * probe has passed.
  */
 
+import { Platform } from 'react-native';
+
 let available = false;
 try {
   // Probe: throws on clients without the native lib.
   require('@shopify/react-native-skia');
-  available = true;
+  // WEB (2026-08-19): the JS module loads, but Skia on web needs CanvasKit
+  // (WASM, loaded via LoadSkiaWeb) which this app does not ship — the import
+  // succeeds and then the FIRST Skia API call throws ("PictureRecorder of
+  // undefined"), white-screening any route that renders a Skia component in
+  // the web preview. Only pass the gate on web if CanvasKit actually exists.
+  available = Platform.OS !== 'web' || typeof (globalThis as { CanvasKit?: unknown }).CanvasKit !== 'undefined';
 } catch {
   available = false;
 }
