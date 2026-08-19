@@ -36,7 +36,12 @@ const DEPTH = 20; // extrusion depth — shallow, walls hug the faces (rev 2)
 const ANG = 122; // gauge half-span: scale runs −122° … +122°, gap at bottom
 const SEGS = 13;
 const GAP_DEG = 2.2;
-const S_MIN = 50;
+// Floor lowered 50→36 (owner 2026-08-19): an uncalibrated phone in a normal
+// room estimates ~30–45 dB SPL. At a 50 floor the fill was ALWAYS 0 (nothing
+// lit, ring looked dead); at 36 a ~40 dB room lights ~1 segment at rest and
+// climbs with sound. Zone COLOURS stay tied to absolute SPL (zoneColor), so
+// the low segments just read grey/green as before — only the range extends.
+const S_MIN = 36;
 const S_MAX = 100;
 
 const theta = (s: number) => -ANG + ((Math.min(S_MAX, Math.max(S_MIN, s)) - S_MIN) / (S_MAX - S_MIN)) * 2 * ANG;
@@ -128,35 +133,34 @@ const INK_DIM = '#5c6066';
 
 type Anchor = 'start' | 'end' | 'middle';
 type Callout = { spl: number; color: string; big?: boolean; t1: string; t2: string; tx: number; ty: number; a: Anchor };
-// Positions on a strict COLUMN grid (rev 3, 2026-08-19 — verified collision-
-// free by an analytical box model). The ring occupies x 232–768, y 174–446, so:
-//   LEFT column  — right-aligned, right edge at x228 (clears the ring by 4px)
-//   RIGHT column — left-aligned,  left edge at x778 (clears the ring by 10px)
-//   CENTER       — centred at x500, seated above the ring apex at y116
-// Each column stacks top→bottom in ring-anchor order so leaders never cross.
-const LX = 228; // LEFT column right edge (anchor 'end')
-const RX_COL = 778; // RIGHT column left edge (anchor 'start')
+// Callout layout (rev 4, 2026-08-19 — owner: smaller text, on the SIDES, longer
+// leaders). Columns pushed to the canvas EDGES; each callout sits on its own
+// anchor's side so no leader crosses the centre readout; the mode's hero sits
+// centred above the ring apex. Verified collision-free (boxes + numerals +
+// leader-hole test) by an analytical model at S_MIN 36.
+const LX = 196; // LEFT column right edge (anchor 'end')
+const RX_COL = 808; // RIGHT column left edge (anchor 'start')
 const CALLOUTS: Record<DialMode3d, Callout[]> = {
   studio: [
-    { spl: 79, color: GOLD_INK, big: true, t1: 'CRITICAL BALANCING', t2: '76dB–84dB', tx: CX, ty: 116, a: 'middle' },
-    { spl: 72, color: Z_GREEN, t1: 'GENERAL EDITING', t2: '70–75 dB SPL', tx: LX, ty: 158, a: 'end' },
-    { spl: 62, color: Z_GREEN, t1: 'BACKGROUND · DETAIL', t2: '60–65 dB SPL', tx: LX, ty: 258, a: 'end' },
-    { spl: 90, color: Z_AMBER_TXT, t1: 'IMPACT CHECK', t2: '85–95 dB SPL · brief', tx: RX_COL, ty: 206, a: 'start' },
+    { spl: 79, color: GOLD_INK, big: true, t1: 'CRITICAL BALANCING', t2: '76dB–84dB', tx: CX, ty: 112, a: 'middle' },
+    { spl: 62, color: Z_GREEN, t1: 'BACKGROUND · DETAIL', t2: '60–65 dB SPL', tx: LX, ty: 250, a: 'end' },
+    { spl: 72, color: Z_GREEN, t1: 'GENERAL EDITING', t2: '70–75 dB SPL', tx: RX_COL, ty: 160, a: 'start' },
+    { spl: 90, color: Z_AMBER_TXT, t1: 'IMPACT CHECK', t2: '85–95 dB SPL · brief', tx: RX_COL, ty: 320, a: 'start' },
   ],
   spl: [
-    { spl: 79, color: Z_GREEN, t1: 'STUDIO LISTENING', t2: '~79 dBC', tx: CX, ty: 116, a: 'middle' },
-    { spl: 60, color: Z_GREEN, t1: 'CONVERSATION', t2: '~60 dBA', tx: LX, ty: 206, a: 'end' },
+    { spl: 79, color: Z_GREEN, t1: 'STUDIO LISTENING', t2: '~79 dBC', tx: CX, ty: 112, a: 'middle' },
+    { spl: 60, color: Z_GREEN, t1: 'CONVERSATION', t2: '~60 dBA', tx: LX, ty: 250, a: 'end' },
     { spl: 93, color: Z_ORANGE, t1: 'CONCERT', t2: '90dB–96dB', tx: RX_COL, ty: 170, a: 'start' },
-    { spl: 100, color: Z_RED, t1: '100+ dB', t2: 'UNSAFE >15 MIN/DAY', tx: RX_COL, ty: 300, a: 'start' },
+    { spl: 100, color: Z_RED, t1: '100+ dB', t2: 'UNSAFE >15 MIN/DAY', tx: RX_COL, ty: 320, a: 'start' },
   ],
   optimal: [
-    { spl: 81, color: Z_GREEN, t1: 'REFERENCE', t2: '79–84 dBA', tx: CX, ty: 116, a: 'middle' },
-    { spl: 69, color: Z_GREEN, t1: 'PROGRAM', t2: '60–78 dBA', tx: LX, ty: 158, a: 'end' },
-    { spl: 50, color: Z_GREEN, t1: 'AMBIENT', t2: '40–59 dBA', tx: LX, ty: 300, a: 'end' },
-    { spl: 89, color: Z_AMBER_TXT, t1: 'SHOW', t2: '85–93 dBA', tx: RX_COL, ty: 150, a: 'start' },
-    { spl: 95, color: Z_ORANGE, t1: 'HIGH', t2: '94–96 dBA', tx: RX_COL, ty: 224, a: 'start' },
-    { spl: 98, color: Z_RED, t1: 'LIMIT', t2: '97–99 dBA', tx: RX_COL, ty: 298, a: 'start' },
-    { spl: 100, color: Z_RED, t1: '100+ dB LAeq', t2: 'WHO 15-MIN LIMIT', tx: RX_COL, ty: 372, a: 'start' },
+    { spl: 69, color: Z_GREEN, t1: 'PROGRAM', t2: '60–78 dBA', tx: CX, ty: 110, a: 'middle' },
+    { spl: 50, color: Z_GREEN, t1: 'AMBIENT', t2: '40–59 dBA', tx: LX, ty: 250, a: 'end' },
+    { spl: 81, color: Z_GREEN, t1: 'REFERENCE', t2: '79–84 dBA', tx: RX_COL, ty: 140, a: 'start' },
+    { spl: 89, color: Z_AMBER_TXT, t1: 'SHOW', t2: '85–93 dBA', tx: RX_COL, ty: 208, a: 'start' },
+    { spl: 95, color: Z_ORANGE, t1: 'HIGH', t2: '94–96 dBA', tx: RX_COL, ty: 276, a: 'start' },
+    { spl: 98, color: Z_RED, t1: 'LIMIT', t2: '97–99 dBA', tx: RX_COL, ty: 344, a: 'start' },
+    { spl: 100, color: Z_RED, t1: '100+ dB LAeq', t2: 'WHO 15-MIN LIMIT', tx: RX_COL, ty: 412, a: 'start' },
   ],
 };
 const TITLES: Record<DialMode3d, [string, string | null]> = {
@@ -192,7 +196,7 @@ function chrome(mode: DialMode3d, calibrated: boolean): ReactNode {
   // position-aware (rev 2): numbers over the ring's top sit ABOVE the blocks,
   // side numbers sit level, and the 50/100 ends sit BELOW their walls — the
   // flat +depth offset was hiding 70/80 behind the top blocks.
-  [50, 60, 70, 80, 90, 100].forEach((s) => {
+  [40, 50, 60, 70, 80, 90, 100].forEach((s) => {
     const a = theta(s);
     const cosA = Math.cos((a * Math.PI) / 180);
     // Side numerals (60/90) tuck close to the ring so they never collide with
@@ -213,12 +217,12 @@ function chrome(mode: DialMode3d, calibrated: boolean): ReactNode {
     els.push(<Circle key={`d${c.spl}`} cx={ap.x} cy={ap.y} r={7} fill="none" stroke={c.color} strokeWidth={3.5} />);
     els.push(<Line key={`l${c.spl}`} x1={ap.x} y1={ap.y} x2={c.tx} y2={c.ty + 4} stroke={c.color} strokeWidth={2.5} opacity={0.7} />);
     els.push(
-      <SvgText key={`t${c.spl}`} x={c.tx} y={c.ty} fill={c.color} fontFamily={fonts.oswaldSemiBold} fontSize={c.big ? 26 : 19} letterSpacing={0.5} textAnchor={c.a}>
+      <SvgText key={`t${c.spl}`} x={c.tx} y={c.ty} fill={c.color} fontFamily={fonts.oswaldSemiBold} fontSize={c.big ? 21 : 16} letterSpacing={0.4} textAnchor={c.a}>
         {c.t1}
       </SvgText>,
     );
     els.push(
-      <SvgText key={`s${c.spl}`} x={c.tx} y={c.ty + 21} fill={INK_DIM} fontFamily={fonts.oswaldSemiBold} fontSize={16} textAnchor={c.a}>
+      <SvgText key={`s${c.spl}`} x={c.tx} y={c.ty + 18} fill={INK_DIM} fontFamily={fonts.oswaldSemiBold} fontSize={13} textAnchor={c.a}>
         {c.t2}
       </SvgText>,
     );
