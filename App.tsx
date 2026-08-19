@@ -5,12 +5,13 @@
  */
 import { useEffect } from 'react';
 import { useFonts } from 'expo-font';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { DarkTheme, NavigationContainer, type Theme } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { KeyboardProvider } from './src/features/keyboard/keyboardControllerSafe';
 import { RootNavigator } from './src/navigation/RootNavigator';
+import { Spl3dGaugePreview } from './src/screens/tools/Spl3dGaugePreview';
 import { navigationRef } from './src/navigation/navigationRef';
 import { LabPreviewOverlay } from './src/features/lab/LabPreviewOverlay';
 import { endLabPreview, getLabPreview } from './src/features/lab/labPreviewStore';
@@ -83,6 +84,19 @@ export default function App() {
   // Hold on a dark surface until fonts resolve (avoids a white flash + FOUT).
   if (!fontsLoaded) {
     return <View style={{ flex: 1, backgroundColor: colors.splashBg }} />;
+  }
+
+  // DEV + WEB ONLY: `localhost:8090/#gaugepreview` renders the standalone 3D-gauge
+  // layout harness (all three modes, demo data) so Claude can see + iterate the
+  // gauge in the browser — the real gauge only draws while the native engine
+  // runs, which never happens on web. Inert on device and in release builds.
+  if (__DEV__ && Platform.OS === 'web' && typeof window !== 'undefined' && window.location.hash === '#gaugepreview') {
+    return (
+      <SafeAreaProvider>
+        <StatusBar style="light" />
+        <Spl3dGaugePreview />
+      </SafeAreaProvider>
+    );
   }
 
   return (
