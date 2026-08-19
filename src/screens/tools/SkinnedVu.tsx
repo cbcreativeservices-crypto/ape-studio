@@ -31,13 +31,16 @@ export const SKIN_NEEDLE_L = 452;
 
 // Voltage-linear needle deflection (real VU physics) tuned to the reference:
 // −20 lands left, 0 near top-centre, +5 to the right, ± ends past them.
-const A0 = -46.8;
-const A1 = 47.7;
 const ANG_MIN = -48;
 const ANG_MAX = 48;
-const clamp = (v: number, lo: number, hi: number) => (v < lo ? lo : v > hi ? hi : v);
-/** angle (deg from vertical, + = right) for a linear voltage `v` (1.0 = 0 VU). */
-export const vuAngle = (v: number) => clamp(A0 + A1 * v, ANG_MIN, ANG_MAX);
+/** angle (deg from vertical, + = right) for a linear voltage `v` (1.0 = 0 VU).
+ *  A worklet so useAnimatedStyle can call it on the UI thread AND the scale
+ *  builder can call it on the JS thread (constants inlined for worklet safety). */
+export function vuAngle(v: number): number {
+  'worklet';
+  const x = -46.8 + 47.7 * v;
+  return x < -48 ? -48 : x > 48 ? 48 : x;
+}
 const vuDbAngle = (dbv: number) => vuAngle(Math.pow(10, dbv / 20));
 export const skinPt = (deg: number, r: number) => {
   const a = (deg * Math.PI) / 180;
