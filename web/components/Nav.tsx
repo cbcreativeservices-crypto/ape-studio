@@ -4,9 +4,10 @@ import logoMark from "@/public/logo-mark.png";
 
 const NAV_LINKS: { href: string; label: string }[] = [
   { href: "/academy", label: "Academy" },
+  { href: "/curriculum", label: "Curriculum" },
+  { href: "/membership", label: "Membership" },
   { href: "/credentials", label: "Credentials" },
-  { href: "/tubes", label: "Tube Reference" },
-  { href: "/institutions", label: "For Institutions" },
+  { href: "/institutions", label: "Institutions" },
   { href: "/verify", label: "Verify" },
 ];
 
