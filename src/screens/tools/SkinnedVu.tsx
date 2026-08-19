@@ -27,35 +27,36 @@ export const VU_SKIN = require('../../../assets/tool-strips/vu_skin_spl.png');
 export const SKIN_VB = '0 0 1586 992';
 export const VU_MAX = Math.pow(10, 6 / 20); // integrator ceiling (+6 dB rel 0 VU)
 
-/* ── Measured scale geometry (skin space, 1586×992) ─────────────────── */
-/** Scale-arc centre — BELOW the meter, like the real movement. */
-export const VU_CTR = { x: 775, y: 1300 };
-const R_LINE = 930; // the arc baseline the ticks rise from
-const R_MAJ = 982; // major tick tops
-const R_MIN = 956; // minor tick tops
-const R_ZERO = 998; // the 0 tick is extra tall
-const R_NUM = 1040; // number centres
-const ANG_END_L = -30; // the − end
-const ANG_END_R = 30; // the + end
-export const VU_NEEDLE_TIP = 995; // needle tip radius
-export const VU_NEEDLE_BASE = 470; // blade start (hidden below the face)
+/* ── Scale geometry (skin space, 1586×992) ──────────────────────────── */
+// The needle pivots at the VISIBLE DOME, and the scale is centred on that same
+// point — a real fixed axle. (An arc centred far below looked shallow but made
+// the needle slide across the bottom border instead of pivoting.) The scale
+// therefore spans a WIDE angle about the dome, exactly like a real VU face.
+export const VU_CTR = { x: 795, y: 803 }; // the dome — the FIXED needle pivot
+const R_LINE = 505; // the arc baseline the ticks rise from
+const R_MAJ = 543; // major tick tops
+const R_MIN = 527; // minor tick tops
+const R_ZERO = 552; // the 0 tick is extra tall
+const R_NUM = 575; // number centres
+const ANG_END_L = -46; // the − end (just past −20 at −41°)
+const ANG_END_R = 45; // the + end (just past +5 at +43°)
+export const VU_NEEDLE_TIP = 528; // needle tip radius (just below the arc)
 
 /** Face window (skin space) — the needle is CLIPPED to this so the blade never
  *  paints over the bezel below the glass. */
-export const VU_FACE = { x: 250, y: 165, w: 1090, h: 648, rx: 40 };
+export const VU_FACE = { x: 250, y: 175, w: 1090, h: 638, rx: 40 };
 
-/* ── Deflection: voltage-linear (black side), compressed red side ───── */
-// θ(v=0)=−26.5 (rest, just left of −20) … θ(v=1 / 0 VU)=+12.4; red side
-// 2.45°/dB (measured compression) to +5 → +24.65, capped at the + end.
+/* ── Deflection about the dome: voltage-linear black side, compressed red ── */
+// θ(v=0)=−48° (rest, just left of −20) … θ(v=1 / 0 VU)=+22°; red side 4.2°/dB
+// to +5 → +43°, capped at the + end. Matches the reference face's angular
+// positions to within a degree.
 export function vuAngle(v: number): number {
   'worklet';
-  if (v <= 1) {
-    const t = v < 0 ? 0 : v;
-    return -26.5 + 38.9 * t;
-  }
-  const db = (20 * Math.log(v)) / Math.LN10;
-  const a = 12.4 + 2.45 * db;
-  return a > 28.3 ? 28.3 : a;
+  const t = v < 0 ? 0 : v;
+  if (t <= 1) return -48 + 70 * t;
+  const db = (20 * Math.log(t)) / Math.LN10;
+  const a = 22 + 4.2 * db;
+  return a > 46 ? 46 : a;
 }
 const vuDbAngle = (dbv: number) => vuAngle(Math.pow(10, dbv / 20));
 export const skinPt = (deg: number, r: number) => {
@@ -201,12 +202,13 @@ export function SkinnedVu({ width, height, live, live0Db, running = true, fit = 
   const offY = (height - 992 * scale) / 2;
   const toX = (x: number) => offX + x * scale;
   const toY = (y: number) => offY + y * scale;
-  // Needle pivot (deep centre) in pt space + blade box (blade fills the tip
-  // span; the rest of the box is empty so it rotates about the pivot).
+  // Needle pivot = the dome, in pt space. The blade box is centred on the pivot
+  // and the blade fills its TOP half from the pivot to the tip, so it rotates
+  // about a FIXED axle (a small inner gap lets the dome graphic show).
   const pivX = toX(VU_CTR.x);
   const pivY = toY(VU_CTR.y);
   const tipLen = VU_NEEDLE_TIP * scale;
-  const bladeLen = (VU_NEEDLE_TIP - VU_NEEDLE_BASE) * scale;
+  const bladeLen = tipLen - 12 * scale;
   const needleW = Math.max(2, 8 * scale);
   // Face clip window in pt space (relative to the widget box).
   const clip = { left: toX(VU_FACE.x), top: toY(VU_FACE.y), width: VU_FACE.w * scale, height: VU_FACE.h * scale };

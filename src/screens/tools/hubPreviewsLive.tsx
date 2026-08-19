@@ -32,9 +32,9 @@ import {
   SKIN_LAMP,
   SKIN_VB,
   SPL_SCALE,
+  VU_CTR,
   VU_FACE,
   VU_MAX,
-  VU_NEEDLE_BASE,
   VU_NEEDLE_TIP,
   VU_SKIN,
   skinPt,
@@ -146,7 +146,6 @@ const HubSplSkin: FC = memo(() => {
   }
   const ang = vuAngle(vuRef.current);
   const tip = skinPt(ang, VU_NEEDLE_TIP);
-  const base = skinPt(ang, VU_NEEDLE_BASE);
   const lampLit = peakDb >= -3;
 
   return (
@@ -160,11 +159,11 @@ const HubSplSkin: FC = memo(() => {
         <SvgImage href={VU_SKIN} x={0} y={0} width={1586} height={992} preserveAspectRatio="xMidYMid slice" />
         {SPL_SCALE}
         {lampLit && <Circle cx={SKIN_LAMP.x} cy={SKIN_LAMP.y} r={SKIN_LAMP.r - 5} fill="#ff4a30" />}
-        {/* Needle — long-throw blade from the deep scale centre, clipped to the
-            face window so it never paints over the bezel. */}
+        {/* Needle — pivots at the DOME (fixed axle), clipped to the face window
+            so it never paints over the bezel. */}
         <G clipPath="url(#hpVuFace)">
-          <Line x1={base.x + 4} y1={base.y + 5} x2={tip.x + 4} y2={tip.y + 5} stroke="rgba(28,14,2,0.3)" strokeWidth={10} strokeLinecap="round" />
-          <Line x1={base.x} y1={base.y} x2={tip.x} y2={tip.y} stroke="#1a1206" strokeWidth={8} strokeLinecap="round" />
+          <Line x1={VU_CTR.x + 4} y1={VU_CTR.y + 5} x2={tip.x + 4} y2={tip.y + 5} stroke="rgba(28,14,2,0.3)" strokeWidth={10} strokeLinecap="round" />
+          <Line x1={VU_CTR.x} y1={VU_CTR.y} x2={tip.x} y2={tip.y} stroke="#1a1206" strokeWidth={8} strokeLinecap="round" />
         </G>
       </Svg>
     </View>
