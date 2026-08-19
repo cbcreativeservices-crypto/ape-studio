@@ -1,24 +1,30 @@
 /**
- * Spl3dGauge — the SPL REFERENCE GAUGE as an ISOMETRIC 3D segmented ring
- * (owner 2026-08-19, from a stock-render reference; rev 2 after first look):
- * ~13 extruded blocks tilted into an ellipse fill with the live level.
+ * Spl3dGauge — the SPL REFERENCE GAUGE as an ISOMETRIC 3D segmented ring.
+ * rev 6 (owner 2026-08-19, full designer-critique pass): graphite faceplate,
+ * ring recessed into a dark well, lit top faces gradient-lit with a bright
+ * leading edge, directional wall shading + deeper extrusion + contact shadow,
+ * refined palette (gold vs yellow separated), elbowed leaders that clear the
+ * blocks, quieted numerals, and a recessed LCD panel behind the centre readout.
  *
- * rev 2 (owner):
- *  - Callouts are HAND-PLACED per mode (explicit positions) so STUDIO, SPL and
- *    OPTIMAL each balance — the generic column stack didn't fit all three.
- *  - Canvas cropped to the content (viewBox 1000×500) — no dead band below.
- *  - Walls are REAL connected geometry (outer band + inner band + end caps
- *    joined to the face), depth 20 — the old offset-copy trick detached at the
- *    ring's sides and read as a floating shadow.
- *
- * Zone bands ported from the flat SplDialView (unified 2026-07-30): GREEN to
- * 84, YELLOW 85–94, ORANGE 95–99, RED 100+; STUDIO greys below 60 and golds
- * the 79–85 sweet spot; SPL uses yellow 85–90, orange CONCERT 90–96, red 96+.
+ * Zone bands (unified 2026-07-30): STUDIO grey<60, green<79, GOLD 79–85 sweet
+ * spot, yellow<95, orange<100, red; SPL green<85, yellow<90, orange CONCERT
+ * <96, red; OPTIMAL green<85, yellow<95, orange<100, red.
  * react-native-svg only — renders on any client.
  */
-import { memo, type ReactNode } from 'react';
+import { memo, useId, type ReactNode } from 'react';
 import { View } from 'react-native';
-import Svg, { Circle, G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, {
+  Circle,
+  Defs,
+  Ellipse,
+  G,
+  LinearGradient,
+  Path,
+  RadialGradient,
+  Rect,
+  Stop,
+  Text as SvgText,
+} from 'react-native-svg';
 import { fonts } from '../../theme/tokens';
 
 export type DialMode3d = 'studio' | 'spl' | 'optimal';
@@ -28,19 +34,14 @@ const VB_W = 1000;
 const VB_H = 500;
 export const GAUGE_ASPECT = VB_H / VB_W;
 const CX = 500;
-const CY = 300; // ring centre
+const CY = 296; // ring centre
 const RX = 268; // outer ellipse x-radius
-const RY = 126; // outer ellipse y-radius (isometric tilt ≈ 0.47)
+const RY = 128; // outer ellipse y-radius (isometric tilt ≈ 0.48)
 const K_IN = 0.7; // inner radius ratio (ring thickness)
-const DEPTH = 20; // extrusion depth — shallow, walls hug the faces (rev 2)
+const DEPTH = 30; // extrusion depth — deepened rev 6 for real mass
 const ANG = 122; // gauge half-span: scale runs −122° … +122°, gap at bottom
 const SEGS = 13;
-const GAP_DEG = 2.2;
-// Floor lowered 50→36 (owner 2026-08-19): an uncalibrated phone in a normal
-// room estimates ~30–45 dB SPL. At a 50 floor the fill was ALWAYS 0 (nothing
-// lit, ring looked dead); at 36 a ~40 dB room lights ~1 segment at rest and
-// climbs with sound. Zone COLOURS stay tied to absolute SPL (zoneColor), so
-// the low segments just read grey/green as before — only the range extends.
+const GAP_DEG = 2.6;
 const S_MIN = 36;
 const S_MAX = 100;
 
@@ -62,58 +63,59 @@ const P = (p: { x: number; y: number }, dy = 0) => `${p.x.toFixed(1)} ${(p.y + d
 function facePath(a1: number, a2: number): string {
   const o = arcPts(a1, a2, 1);
   const inn = arcPts(a1, a2, K_IN).reverse();
-  return (
-    `M${P(o[0])}` +
-    o.slice(1).map((p) => `L${P(p)}`).join('') +
-    inn.map((p) => `L${P(p)}`).join('') +
-    'Z'
-  );
+  return `M${P(o[0])}` + o.slice(1).map((p) => `L${P(p)}`).join('') + inn.map((p) => `L${P(p)}`).join('') + 'Z';
 }
 
-/** REAL wall geometry (rev 2): outer band + inner band + both end caps, all
- *  attached to the face outline — one multi-subpath fill per segment. */
+/** The outer top edge only — re-stroked bright on the leading lit block. */
+function outerArcPath(a1: number, a2: number): string {
+  const o = arcPts(a1, a2, 1);
+  return `M${P(o[0])}` + o.slice(1).map((p) => `L${P(p)}`).join('');
+}
+
+/** REAL wall geometry: outer band + inner band + both end caps, all attached to
+ *  the face outline — one multi-subpath fill per segment. */
 function wallPath(a1: number, a2: number): string {
   const o = arcPts(a1, a2, 1);
   const inn = arcPts(a1, a2, K_IN);
   const band = (pts: { x: number; y: number }[]) =>
-    `M${P(pts[0])}` +
-    pts.slice(1).map((p) => `L${P(p)}`).join('') +
-    pts.slice().reverse().map((p) => `L${P(p, DEPTH)}`).join('') +
-    'Z';
-  const cap = (po: { x: number; y: number }, pi: { x: number; y: number }) =>
-    `M${P(po)}L${P(pi)}L${P(pi, DEPTH)}L${P(po, DEPTH)}Z`;
+    `M${P(pts[0])}` + pts.slice(1).map((p) => `L${P(p)}`).join('') + pts.slice().reverse().map((p) => `L${P(p, DEPTH)}`).join('') + 'Z';
+  const cap = (po: { x: number; y: number }, pi: { x: number; y: number }) => `M${P(po)}L${P(pi)}L${P(pi, DEPTH)}L${P(po, DEPTH)}Z`;
   return band(o) + band(inn) + cap(o[0], inn[0]) + cap(o[STEPS], inn[STEPS]);
 }
 
-/* ── Zones (ported from SplDialView) ────────────────────────────────── */
-const F_GREY = '#a9adb5';
-const F_GREEN = '#3fae52';
-const F_GOLD = '#dfaf35';
-const F_YELLOW = '#e5c23c';
-const F_ORANGE = '#e8842a';
-const F_RED = '#d93a2b';
-const F_UNLIT = '#c6c9ce';
-const W_UNLIT = '#9a9ea5';
+/* ── Palette (rev 6 — graphite theme, separated gold/yellow) ─────────── */
+type ZoneKey = 'grey' | 'green' | 'gold' | 'yellow' | 'orange' | 'red';
+const ZONE_HEX: Record<ZoneKey, string> = {
+  grey: '#767b84', // studio "below monitoring" — lit but neutral
+  green: '#34c06b',
+  gold: '#e8b93a', // sweet spot — warm, distinct from yellow
+  yellow: '#f2d641', // caution — brighter/greener than gold
+  orange: '#f0863a',
+  red: '#e23b2c',
+};
+const UNLIT_FACE = '#34373d'; // "off" — dark, dead, reads as empty channel
+const UNLIT_WALL = '#212327';
+const UNLIT_STROKE = '#3f434a';
 
-function zoneColor(s: number, mode: DialMode3d): string {
+function zoneKey(s: number, mode: DialMode3d): ZoneKey {
   if (mode === 'studio') {
-    if (s < 60) return F_GREY;
-    if (s < 79) return F_GREEN;
-    if (s < 85) return F_GOLD;
-    if (s < 95) return F_YELLOW;
-    if (s < 100) return F_ORANGE;
-    return F_RED;
+    if (s < 60) return 'grey';
+    if (s < 79) return 'green';
+    if (s < 85) return 'gold';
+    if (s < 95) return 'yellow';
+    if (s < 100) return 'orange';
+    return 'red';
   }
   if (mode === 'spl') {
-    if (s < 85) return F_GREEN;
-    if (s < 90) return F_YELLOW;
-    if (s < 96) return F_ORANGE;
-    return F_RED;
+    if (s < 85) return 'green';
+    if (s < 90) return 'yellow';
+    if (s < 96) return 'orange';
+    return 'red';
   }
-  if (s < 85) return F_GREEN;
-  if (s < 95) return F_YELLOW;
-  if (s < 100) return F_ORANGE;
-  return F_RED;
+  if (s < 85) return 'green';
+  if (s < 95) return 'yellow';
+  if (s < 100) return 'orange';
+  return 'red';
 }
 
 function shade(hex: string, f: number): string {
@@ -122,45 +124,43 @@ function shade(hex: string, f: number): string {
   return `#${((c((n >> 16) & 255) << 16) | (c((n >> 8) & 255) << 8) | c(n & 255)).toString(16).padStart(6, '0')}`;
 }
 
-/* ── Per-mode chrome: titles + HAND-PLACED callouts (rev 2) ─────────── */
-const Z_GREEN = '#1f7a34';
-const Z_AMBER_TXT = '#8a6508';
-const Z_ORANGE = '#c9631a';
-const Z_RED = '#b3271e';
-const GOLD_INK = '#d4a017';
-const INK = '#26282d';
-const INK_DIM = '#5c6066';
+/* ── Graphite theme inks ────────────────────────────────────────────── */
+const INK = '#e8e9ec';
+const INK_DIM = '#9498a0';
+const INK_FAINT = '#6c707a';
+// Callout inks — vivid on graphite.
+const C_GREEN = '#4fd07f';
+const C_AMBER = '#e8b93a';
+const C_ORANGE = '#f0863a';
+const C_RED = '#ff5a48';
+const C_GOLD = '#f0c64a';
 
+/* ── Per-mode chrome: titles + callouts ─────────────────────────────── */
 type Anchor = 'start' | 'end' | 'middle';
 type Callout = { spl: number; color: string; big?: boolean; t1: string; t2: string; tx: number; ty: number; a: Anchor };
-// Callout layout (rev 4, 2026-08-19 — owner: smaller text, on the SIDES, longer
-// leaders). Columns pushed to the canvas EDGES; each callout sits on its own
-// anchor's side so no leader crosses the centre readout; the mode's hero sits
-// centred above the ring apex. Verified collision-free (boxes + numerals +
-// leader-hole test) by an analytical model at S_MIN 36.
 const LX = 196; // LEFT column right edge (anchor 'end')
 const RX_COL = 808; // RIGHT column left edge (anchor 'start')
 const CALLOUTS: Record<DialMode3d, Callout[]> = {
   studio: [
-    { spl: 79, color: GOLD_INK, big: true, t1: 'CRITICAL BALANCING', t2: '76dB–84dB', tx: CX, ty: 112, a: 'middle' },
-    { spl: 62, color: Z_GREEN, t1: 'BACKGROUND · DETAIL', t2: '60–65 dB SPL', tx: LX, ty: 250, a: 'end' },
-    { spl: 72, color: Z_GREEN, t1: 'GENERAL EDITING', t2: '70–75 dB SPL', tx: RX_COL, ty: 160, a: 'start' },
-    { spl: 90, color: Z_AMBER_TXT, t1: 'IMPACT CHECK', t2: '85–95 dB SPL · brief', tx: RX_COL, ty: 320, a: 'start' },
+    { spl: 79, color: C_GOLD, big: true, t1: 'CRITICAL BALANCING', t2: '76dB–84dB', tx: CX, ty: 90, a: 'middle' },
+    { spl: 62, color: C_GREEN, t1: 'BACKGROUND · DETAIL', t2: '60–65 dB SPL', tx: LX, ty: 250, a: 'end' },
+    { spl: 72, color: C_GREEN, t1: 'GENERAL EDITING', t2: '70–75 dB SPL', tx: RX_COL, ty: 156, a: 'start' },
+    { spl: 90, color: C_AMBER, t1: 'IMPACT CHECK', t2: '85–95 dB SPL · brief', tx: RX_COL, ty: 320, a: 'start' },
   ],
   spl: [
-    { spl: 79, color: Z_GREEN, t1: 'STUDIO LISTENING', t2: '~79 dBC', tx: CX, ty: 112, a: 'middle' },
-    { spl: 60, color: Z_GREEN, t1: 'CONVERSATION', t2: '~60 dBA', tx: LX, ty: 250, a: 'end' },
-    { spl: 93, color: Z_ORANGE, t1: 'CONCERT', t2: '90dB–96dB', tx: RX_COL, ty: 170, a: 'start' },
-    { spl: 100, color: Z_RED, t1: '100+ dB', t2: 'UNSAFE >15 MIN/DAY', tx: RX_COL, ty: 320, a: 'start' },
+    { spl: 79, color: C_GREEN, big: true, t1: 'STUDIO LISTENING', t2: '~79 dBC', tx: CX, ty: 90, a: 'middle' },
+    { spl: 60, color: C_GREEN, t1: 'CONVERSATION', t2: '~60 dBA', tx: LX, ty: 250, a: 'end' },
+    { spl: 93, color: C_ORANGE, t1: 'CONCERT', t2: '90dB–96dB', tx: RX_COL, ty: 168, a: 'start' },
+    { spl: 100, color: C_RED, t1: '100+ dB', t2: 'UNSAFE >15 MIN/DAY', tx: RX_COL, ty: 320, a: 'start' },
   ],
   optimal: [
-    { spl: 69, color: Z_GREEN, t1: 'PROGRAM', t2: '60–78 dBA', tx: CX, ty: 110, a: 'middle' },
-    { spl: 50, color: Z_GREEN, t1: 'AMBIENT', t2: '40–59 dBA', tx: LX, ty: 250, a: 'end' },
-    { spl: 81, color: Z_GREEN, t1: 'REFERENCE', t2: '79–84 dBA', tx: RX_COL, ty: 140, a: 'start' },
-    { spl: 89, color: Z_AMBER_TXT, t1: 'SHOW', t2: '85–93 dBA', tx: RX_COL, ty: 208, a: 'start' },
-    { spl: 95, color: Z_ORANGE, t1: 'HIGH', t2: '94–96 dBA', tx: RX_COL, ty: 276, a: 'start' },
-    { spl: 98, color: Z_RED, t1: 'LIMIT', t2: '97–99 dBA', tx: RX_COL, ty: 344, a: 'start' },
-    { spl: 100, color: Z_RED, t1: '100+ dB LAeq', t2: 'WHO 15-MIN LIMIT', tx: RX_COL, ty: 412, a: 'start' },
+    { spl: 69, color: C_GREEN, big: true, t1: 'PROGRAM', t2: '60–78 dBA', tx: CX, ty: 96, a: 'middle' },
+    { spl: 50, color: C_GREEN, t1: 'AMBIENT', t2: '40–59 dBA', tx: LX, ty: 250, a: 'end' },
+    { spl: 81, color: C_GREEN, t1: 'REFERENCE', t2: '79–84 dBA', tx: RX_COL, ty: 138, a: 'start' },
+    { spl: 89, color: C_AMBER, t1: 'SHOW', t2: '85–93 dBA', tx: RX_COL, ty: 208, a: 'start' },
+    { spl: 95, color: C_ORANGE, t1: 'HIGH', t2: '94–96 dBA', tx: RX_COL, ty: 278, a: 'start' },
+    { spl: 98, color: C_RED, t1: 'LIMIT', t2: '97–99 dBA', tx: RX_COL, ty: 348, a: 'start' },
+    { spl: 100, color: C_RED, t1: '100+ dB LAeq', t2: 'WHO 15-MIN LIMIT', tx: RX_COL, ty: 418, a: 'start' },
   ],
 };
 const TITLES: Record<DialMode3d, [string, string | null]> = {
@@ -169,61 +169,71 @@ const TITLES: Record<DialMode3d, [string, string | null]> = {
   optimal: ['OPTIMAL REFERENCE LISTENING', 'dBA · LAeq WHERE NOTED'],
 };
 
+/** Elbowed leader: a short radial stub off the anchor (clearing the top face),
+ *  then a straight run to the label — so no leader crosses a coloured block. */
+function leaderPath(spl: number, tx: number, ty: number, hero: boolean): { d: string; ax: number; ay: number } {
+  const A = ept(theta(spl), 1.06);
+  let nx = A.x - CX;
+  let ny = A.y - CY;
+  const len = Math.hypot(nx, ny) || 1;
+  nx /= len;
+  ny /= len;
+  const stub = hero ? { x: A.x, y: A.y - 26 } : { x: A.x + nx * 20, y: A.y + ny * 20 };
+  return { d: `M${P(A)}L${P(stub)}L${tx.toFixed(1)} ${(ty + 4).toFixed(1)}`, ax: A.x, ay: A.y };
+}
+
 function chrome(mode: DialMode3d, calibrated: boolean): ReactNode {
   const [t1, t2] = TITLES[mode];
   const els: ReactNode[] = [];
-  els.push(<Rect key="plate" x={4} y={4} width={VB_W - 8} height={VB_H - 8} rx={26} fill="#d2d3d6" />);
   els.push(
-    <SvgText key="t1" x={CX} y={44} fill={INK} fontFamily={fonts.oswaldSemiBold} fontSize={28} letterSpacing={2} textAnchor="middle">
+    <SvgText key="t1" x={CX} y={44} fill={INK} fontFamily={fonts.oswaldSemiBold} fontSize={27} letterSpacing={2} textAnchor="middle">
       {t1}
     </SvgText>,
   );
   if (t2) {
     els.push(
-      <SvgText key="t2" x={CX} y={68} fill={INK_DIM} fontFamily={fonts.oswaldSemiBold} fontSize={20} textAnchor="middle">
+      <SvgText key="t2" x={CX} y={67} fill={INK_DIM} fontFamily={fonts.oswaldSemiBold} fontSize={18} textAnchor="middle">
         {t2}
       </SvgText>,
     );
   }
   if (!calibrated) {
+    // Neutral amber status pill — parked at the BOTTOM of the card (rev 6.1) so
+    // it never competes with the hero callout for the top-centre space.
+    const by = VB_H - 34;
+    els.push(<Rect key="badgebg" x={CX - 116} y={by} width={232} height={22} rx={11} fill="#00000038" stroke="#5a4a1e" strokeWidth={1} />);
     els.push(
-      <SvgText key="badge" x={CX} y={t2 ? 90 : 68} fill={Z_RED} fontFamily={fonts.oswaldSemiBold} fontSize={18} letterSpacing={1.5} textAnchor="middle">
+      <SvgText key="badge" x={CX} y={by + 16} fill="#c59b3a" fontFamily={fonts.oswaldSemiBold} fontSize={14} letterSpacing={1.6} textAnchor="middle">
         ESTIMATED · UNCALIBRATED
       </SvgText>,
     );
   }
-  // Scale numbers ring the tilted ellipse, outside the blocks. The offset is
-  // position-aware (rev 2): numbers over the ring's top sit ABOVE the blocks,
-  // side numbers sit level, and the 50/100 ends sit BELOW their walls — the
-  // flat +depth offset was hiding 70/80 behind the top blocks.
+  // Scale numerals — quieted (rev 6): 20px, dim ink, receding. Three even bands
+  // just outside the blocks: TOP above apex, SIDES in the ring↔column gap,
+  // BOTTOM clear of the front wall.
   [40, 50, 60, 70, 80, 90, 100].forEach((s) => {
     const a = theta(s);
     const cosA = Math.cos((a * Math.PI) / 180);
-    // Numerals in three even bands just OUTSIDE the blocks (rev 5): TOP sit above
-    // the apex, SIDES tuck into the gap between the ring and the callout columns,
-    // BOTTOM clear the extruded front wall. One consistent look, no floaters.
     const p = ept(a, cosA > 0.55 ? 1.17 : cosA < -0.15 ? 1.15 : 1.1);
-    const dy = cosA > 0.55 ? -2 : cosA < -0.15 ? DEPTH + 18 : 10;
+    const dy = cosA > 0.55 ? -3 : cosA < -0.15 ? DEPTH + 16 : 8;
     els.push(
-      <SvgText key={`n${s}`} x={p.x} y={p.y + dy} fill={s >= 100 ? Z_RED : INK} fontFamily={fonts.oswaldSemiBold} fontSize={25} textAnchor="middle">
+      <SvgText key={`n${s}`} x={p.x} y={p.y + dy} fill={s >= 100 ? C_RED : INK_DIM} fontFamily={fonts.oswaldSemiBold} fontSize={20} textAnchor="middle">
         {s}
       </SvgText>,
     );
   });
-  // Column callouts with anchor rings + leader lines. c.tx is the label's
-  // ring-facing edge in every column (right edge for 'end', left edge for
-  // 'start', centre for 'middle'), so the leader lands cleanly on the block.
+  // Callouts with a fine hairline elbow leader + small anchor dot.
   CALLOUTS[mode].forEach((c) => {
-    const ap = ept(theta(c.spl), 1.02);
-    els.push(<Circle key={`d${c.spl}`} cx={ap.x} cy={ap.y} r={7} fill="none" stroke={c.color} strokeWidth={3.5} />);
-    els.push(<Line key={`l${c.spl}`} x1={ap.x} y1={ap.y} x2={c.tx} y2={c.ty + 4} stroke={c.color} strokeWidth={2.5} opacity={0.7} />);
+    const L = leaderPath(c.spl, c.tx, c.ty, c.a === 'middle');
+    els.push(<Path key={`l${c.spl}`} d={L.d} fill="none" stroke={c.color} strokeWidth={1.3} opacity={0.6} />);
+    els.push(<Circle key={`d${c.spl}`} cx={L.ax} cy={L.ay} r={2.6} fill={c.color} />);
     els.push(
-      <SvgText key={`t${c.spl}`} x={c.tx} y={c.ty} fill={c.color} fontFamily={fonts.oswaldSemiBold} fontSize={c.big ? 21 : 16} letterSpacing={0.4} textAnchor={c.a}>
+      <SvgText key={`t${c.spl}`} x={c.tx} y={c.ty} fill={c.color} fontFamily={fonts.oswaldSemiBold} fontSize={c.big ? 23 : 16} letterSpacing={0.4} textAnchor={c.a}>
         {c.t1}
       </SvgText>,
     );
     els.push(
-      <SvgText key={`s${c.spl}`} x={c.tx} y={c.ty + 18} fill={INK_DIM} fontFamily={fonts.oswaldSemiBold} fontSize={13} textAnchor={c.a}>
+      <SvgText key={`s${c.spl}`} x={c.tx} y={c.ty + (c.big ? 20 : 18)} fill={INK_FAINT} fontFamily={fonts.oswaldSemiBold} fontSize={c.big ? 14 : 12.5} textAnchor={c.a}>
         {c.t2}
       </SvgText>,
     );
@@ -236,15 +246,16 @@ const CHROME: Record<string, ReactNode> = {};
   CHROME[`${m}0`] = chrome(m, false);
 });
 
-/* ── Segments (precomputed) ─────────────────────────────────────────── */
+/* ── Segments (precomputed geometry + mid angle) ────────────────────── */
 const SEG_DEFS = (() => {
-  const out: { faceD: string; wallD: string; midSpl: number }[] = [];
+  const out: { faceD: string; wallD: string; outerD: string; midSpl: number; cosMid: number }[] = [];
   const spanDeg = (2 * ANG) / SEGS;
   for (let i = 0; i < SEGS; i++) {
     const a1 = -ANG + i * spanDeg + GAP_DEG / 2;
     const a2 = -ANG + (i + 1) * spanDeg - GAP_DEG / 2;
     const midSpl = S_MIN + ((i + 0.5) / SEGS) * (S_MAX - S_MIN);
-    out.push({ faceD: facePath(a1, a2), wallD: wallPath(a1, a2), midSpl });
+    const midDeg = (a1 + a2) / 2;
+    out.push({ faceD: facePath(a1, a2), wallD: wallPath(a1, a2), outerD: outerArcPath(a1, a2), midSpl, cosMid: Math.cos((midDeg * Math.PI) / 180) });
   }
   return out;
 })();
@@ -259,38 +270,92 @@ export type Spl3dGaugeProps = {
   centerColor?: string;
 };
 
-/** The isometric segmented SPL gauge. Segments light up to the live level;
- *  the topmost lit block glows so the fill edge reads at a glance. */
+/** The isometric segmented SPL gauge on a graphite instrument face. */
 export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, centerColor }: Spl3dGaugeProps) => {
   const height = Math.round(width * GAUGE_ASPECT);
   const lit = level == null ? 0 : Math.max(0, Math.min(SEGS, Math.floor(((level - S_MIN) / (S_MAX - S_MIN)) * SEGS + 0.5)));
+  const uid = 'g' + useId().replace(/:/g, '');
+  const zg = (k: ZoneKey) => `${uid}-${k}`;
 
   const walls: ReactNode[] = [];
   const faces: ReactNode[] = [];
   SEG_DEFS.forEach((sd, i) => {
     const isLit = i < lit;
     const isTop = isLit && i === lit - 1;
-    const face = isLit ? zoneColor(sd.midSpl, mode) : F_UNLIT;
-    walls.push(<Path key={`w${i}`} d={sd.wallD} fill={isLit ? shade(face, 0.55) : W_UNLIT} />);
-    if (isTop) faces.push(<Path key={`g${i}`} d={sd.faceD} fill={face} opacity={0.5} transform="translate(0,-3)" />);
-    faces.push(
-      <Path key={`f${i}`} d={sd.faceD} fill={isTop ? shade(face, 1.18) : face} stroke={isLit ? shade(face, 0.75) : '#aeb1b7'} strokeWidth={1.5} />,
-    );
+    if (isLit) {
+      const key = zoneKey(sd.midSpl, mode);
+      const base = ZONE_HEX[key];
+      // Directional wall shading: top segments catch light, front ends are dark.
+      const wf = 0.46 + 0.18 * sd.cosMid;
+      walls.push(<Path key={`w${i}`} d={sd.wallD} fill={shade(base, wf)} />);
+      faces.push(
+        <Path key={`f${i}`} d={sd.faceD} fill={`url(#${zg(key)})`} stroke={shade(base, 0.7)} strokeWidth={0.75} />,
+      );
+      // Leading lit block — bright top edge so the fill front reads at a glance.
+      if (isTop) {
+        faces.push(<Path key={`fh${i}`} d={sd.faceD} fill={shade(base, 1.25)} opacity={0.5} />);
+        faces.push(<Path key={`fe${i}`} d={sd.outerD} fill="none" stroke={shade(base, 1.55)} strokeWidth={2.2} strokeLinecap="round" />);
+      }
+    } else {
+      walls.push(<Path key={`w${i}`} d={sd.wallD} fill={UNLIT_WALL} />);
+      faces.push(<Path key={`f${i}`} d={sd.faceD} fill={UNLIT_FACE} stroke={UNLIT_STROKE} strokeWidth={0.75} />);
+    }
   });
+
+  const numColor = centerColor ?? INK;
 
   return (
     <View style={{ width, height }} pointerEvents="none">
       <Svg width={width} height={height} viewBox={`0 0 ${VB_W} ${VB_H}`}>
+        <Defs>
+          {/* Graphite faceplate — top-lit brushed metal. */}
+          <LinearGradient id={`${uid}-plate`} x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0" stopColor="#2b2e33" />
+            <Stop offset="1" stopColor="#1b1d21" />
+          </LinearGradient>
+          {/* Recessed well the ring sits in. */}
+          <RadialGradient id={`${uid}-well`} cx="0.5" cy="0.46" r="0.62">
+            <Stop offset="0" stopColor="#101215" />
+            <Stop offset="1" stopColor="#212429" />
+          </RadialGradient>
+          {/* Centre LCD glass. */}
+          <RadialGradient id={`${uid}-lcd`} cx="0.5" cy="0.42" r="0.7">
+            <Stop offset="0" stopColor="#1a1d21" />
+            <Stop offset="1" stopColor="#0b0c0e" />
+          </RadialGradient>
+          {/* Per-zone top-face gradients (lit-from-above sheen). */}
+          {(Object.keys(ZONE_HEX) as ZoneKey[]).map((k) => (
+            <LinearGradient key={k} id={zg(k)} x1="0" y1="0" x2="0" y2="1">
+              <Stop offset="0" stopColor={shade(ZONE_HEX[k], 1.22)} />
+              <Stop offset="0.5" stopColor={ZONE_HEX[k]} />
+              <Stop offset="1" stopColor={shade(ZONE_HEX[k], 0.86)} />
+            </LinearGradient>
+          ))}
+        </Defs>
+
+        {/* Faceplate + machined rim + beveled edges. */}
+        <Rect x={4} y={4} width={VB_W - 8} height={VB_H - 8} rx={26} fill={`url(#${uid}-plate)`} stroke="#0c0d0f" strokeWidth={1.5} />
+        <Rect x={5.5} y={5.5} width={VB_W - 11} height={VB_H - 11} rx={24} fill="none" stroke="#494d55" strokeWidth={1} opacity={0.6} />
+
+        {/* Recessed well + soft contact shadow that seats the ring. */}
+        <Ellipse cx={CX} cy={CY + 6} rx={RX + 16} ry={RY + 14} fill={`url(#${uid}-well)`} />
+        <Ellipse cx={CX} cy={CY + DEPTH + 6} rx={RX * 1.02} ry={RY * 0.52} fill="#000000" opacity={0.28} />
+
+        {/* Chrome (title, badge, numerals, callouts) — behind the ring so the
+            ring's near wall can overlap the bottom numerals cleanly. */}
         {CHROME[`${mode}${calibrated ? 1 : 0}`]}
-        {/* Extruded ring: walls first, then top faces (the ring never
-            self-overlaps at this tilt, so painter's order is safe). */}
+
+        {/* Extruded ring: walls first, then top faces. */}
         {walls}
         {faces}
-        {/* Centre readout, inside the ring hole. */}
-        <SvgText x={CX} y={CY + 20} fill={centerColor ?? INK} fontFamily={fonts.mono} fontSize={86} textAnchor="middle">
+
+        {/* Centre LCD panel + faint top sheen, then the live readout. */}
+        <Ellipse cx={CX} cy={CY} rx={RX * 0.6} ry={RY * 0.6} fill={`url(#${uid}-lcd)`} stroke="#000000" strokeWidth={1} />
+        <Ellipse cx={CX} cy={CY - RY * 0.32} rx={RX * 0.44} ry={RY * 0.16} fill="#ffffff" opacity={0.05} />
+        <SvgText x={CX} y={CY + 22} fill={numColor} fontFamily={fonts.mono} fontSize={84} textAnchor="middle">
           {centerText}
         </SvgText>
-        <SvgText x={CX} y={CY + 54} fill={INK_DIM} fontFamily={fonts.oswaldSemiBold} fontSize={22} letterSpacing={1.5} textAnchor="middle">
+        <SvgText x={CX} y={CY + 50} fill={INK_DIM} fontFamily={fonts.oswaldSemiBold} fontSize={15} letterSpacing={2.5} textAnchor="middle">
           dB SPL · AVG
         </SvgText>
       </Svg>
