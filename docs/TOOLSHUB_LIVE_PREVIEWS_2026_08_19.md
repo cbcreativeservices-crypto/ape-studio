@@ -34,13 +34,11 @@ well inside the ≤~700 budget; needles ride the native driver between ticks.
 
 ## Rulings made overnight (flag if wrong)
 
-1. ⚠️ **THE ONE TO DECIDE: the hub mic feeds the DOSIMETER.** With the menu
-   mic hot, the exposure monitor counts ordinary room sound (≥45 dB SPL est.)
-   as environmental exposure — browsing the tools menu accrues daily dose on
-   the very DosimeterChip shown above the tiles, and a long stay could fire a
-   15-minute check-in. Options: (a) accept it (mic-on IS the monitor's
-   designed trigger), or (b) I add an "ambient/exempt" flag so hub-preview
-   capture doesn't count. 10-minute change either way — your call.
+1. ✅ **DECIDED (owner, 2026-08-19 morning): the hub mic feeds the DOSIMETER,
+   and that is correct.** With the menu mic hot, the exposure monitor counts
+   ordinary room sound (≥45 dB SPL est.) as environmental exposure — browsing
+   the tools menu accrues daily dose on the DosimeterChip shown above the
+   tiles, exactly as designed. No exempt flag; the behavior stands as-is.
 2. **Mic auto-starts on the hub** (your spec §6) — an explicit exemption to
    the "user starts DSP" default, noted in code comments as owner order
    2026-08-19. Also: the **speaker is force-muted** while the hub mic is hot
@@ -63,8 +61,8 @@ An 8-angle multi-agent review ran over the diff; 10 findings confirmed, 9
 fixed on the spot (teardown races, a permission re-prompt loop on Android, the
 DEMO tag sitting in the tile crop's hidden band, LED-ladder headroom mapping,
 VU needle red-zone alignment, a sim-loop deadlock class, render-phase state
-skew, zombie animation loops). The 10th is ruling #1 above — deliberately
-left for you.
+skew, zombie animation loops). The 10th was ruling #1 above — the owner
+confirmed it as correct behavior, so nothing changed.
 
 ## Verified overnight
 
