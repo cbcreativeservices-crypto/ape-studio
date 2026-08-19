@@ -26,9 +26,19 @@
  */
 import { memo, useEffect, useMemo, useRef, useState, useSyncExternalStore, type FC, type ReactNode } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
-import Svg, { Circle, Defs, G, Image as SvgImage, Line, LinearGradient, Path, Polygon, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, Defs, G, Image as SvgImage, Line, LinearGradient, Path, Polygon, Rect } from 'react-native-svg';
 import { heatColor } from '../../features/tools/levelColor';
-import { fonts } from '../../theme/tokens';
+import {
+  SKIN_LAMP,
+  SKIN_NEEDLE_L,
+  SKIN_PIVOT,
+  SKIN_VB,
+  SPL_SCALE,
+  VU_MAX,
+  VU_SKIN,
+  skinPt,
+  vuAngle,
+} from './SkinnedVu';
 import type { PitchFrame, WaveBucket } from '../../../modules/ape-dsp';
 import {
   getHubPreview,
@@ -109,74 +119,12 @@ function heatPaths(
 /* ================================================================== */
 /* 01 — SPL REFERENCE METER (SKINNED analogue VU) — owner 2026-08-19    */
 /* ================================================================== */
-// The tile shows vu_skin_spl.png (a photoreal VU meter face) as the background;
-// ONLY the needle, pivot cap, and the gauge scale (arc + ticks + numbers) are
-// drawn on top. Everything is react-native-svg in the skin's native 1586×992
-// space (preserveAspectRatio slice), so the overlay lines up with the printed
-// face at any tile size. Always on — the needle rests when there's no signal.
+// The tile shows vu_skin_spl.png as the background; the gauge scale, PEAK lamp,
+// needle, and pivot are drawn on top. Geometry + scale are shared with the SPL
+// Meter screen's VU (SkinnedVu) so the tile and the tool match EXACTLY.
 
-const VU_SKIN = require('../../../assets/tool-strips/vu_skin_spl.png');
-const SKIN_VB = '0 0 1586 992';
 /** 0 VU anchor in dBFS — the real SPL meter's default (RANGE 60 − offset 100). */
 const SPL_LIVE0 = -40;
-const VU_MAX = Math.pow(10, 3 / 20); // +3 dB rel 0 VU (integrator ceiling)
-
-// Skin geometry (measured from vu_skin_spl.png): the needle pivots at the
-// bottom-centre dome; the scale arc sweeps the glowing face above it.
-const SKIN_PIVOT = { x: 795, y: 802 };
-const SKIN_R_ARC = 585;
-const SKIN_R_MAJ_IN = 544;
-const SKIN_R_MIN_IN = 564;
-const SKIN_R_NUM = 630;
-const SKIN_NEEDLE_L = 560;
-/** 0 VU sits at ~71% of the sweep — the standard VU face proportion. */
-const VU_ZERO_FRAC = 0.71;
-
-const vuValAngle = (vuVal: number) => -62 + 124 * clamp(VU_ZERO_FRAC * vuVal, 0, 1.02);
-const vuDbAngle = (dbv: number) => vuValAngle(Math.pow(10, dbv / 20));
-const skinPt = (deg: number, r: number) => {
-  const a = (deg * Math.PI) / 180;
-  return { x: SKIN_PIVOT.x + r * Math.sin(a), y: SKIN_PIVOT.y - r * Math.cos(a) };
-};
-
-const SPL_TICKS: ReadonlyArray<{ db: number; major: boolean }> = [
-  { db: -20, major: true }, { db: -10, major: true }, { db: -7, major: false },
-  { db: -5, major: true }, { db: -3, major: true }, { db: -2, major: false },
-  { db: -1, major: false }, { db: 0, major: true }, { db: 1, major: false },
-  { db: 2, major: false }, { db: 3, major: true },
-];
-const SPL_INK = '#2a1a08'; // dark scale ink on the cream face
-const SPL_INK_RED = '#b3231a';
-
-/** The printed gauge scale (arc + ticks + numbers) — constant, built once. */
-const SPL_SCALE = (() => {
-  const els: ReactNode[] = [];
-  const pL = skinPt(vuDbAngle(-20), SKIN_R_ARC);
-  const p0 = skinPt(vuDbAngle(0), SKIN_R_ARC);
-  const pR = skinPt(vuDbAngle(3), SKIN_R_ARC);
-  els.push(
-    <Path key="arc" d={`M${pL.x.toFixed(1)} ${pL.y.toFixed(1)}A${SKIN_R_ARC} ${SKIN_R_ARC} 0 0 1 ${pR.x.toFixed(1)} ${pR.y.toFixed(1)}`} fill="none" stroke={SPL_INK} strokeWidth={5} />,
-  );
-  els.push(
-    <Path key="arcRed" d={`M${p0.x.toFixed(1)} ${p0.y.toFixed(1)}A${SKIN_R_ARC} ${SKIN_R_ARC} 0 0 1 ${pR.x.toFixed(1)} ${pR.y.toFixed(1)}`} fill="none" stroke={SPL_INK_RED} strokeWidth={11} />,
-  );
-  SPL_TICKS.forEach((t) => {
-    const a = vuDbAngle(t.db);
-    const pi = skinPt(a, t.major ? SKIN_R_MAJ_IN : SKIN_R_MIN_IN);
-    const po = skinPt(a, SKIN_R_ARC);
-    const col = t.db >= 0 ? SPL_INK_RED : SPL_INK;
-    els.push(<Line key={`t${t.db}`} x1={pi.x} y1={pi.y} x2={po.x} y2={po.y} stroke={col} strokeWidth={t.major ? 7 : 4} />);
-    if (t.major) {
-      const pn = skinPt(a, SKIN_R_NUM);
-      els.push(
-        <SvgText key={`n${t.db}`} x={pn.x} y={pn.y + 18} fill={col} fontFamily={fonts.oswaldSemiBold} fontSize={52} textAnchor="middle">
-          {t.db > 0 ? `+${t.db}` : `${t.db}`}
-        </SvgText>,
-      );
-    }
-  });
-  return <G>{els}</G>;
-})();
 
 /** SPL Reference Meter tile — the skinned VU. Always mounted; the needle rests
  *  at the bottom of the scale when no live signal is flowing. */
@@ -186,24 +134,27 @@ const HubSplSkin: FC = memo(() => {
   const lastTickRef = useRef(-2);
 
   const db = dbOr(d.meter?.aFastDb);
+  const peakDb = dbOr(d.meter?.peakDb);
   // Advance the VU ballistics once per store tick — rise tc 0.15 s, fall 0.45 s.
   if (lastTickRef.current !== d.tick) {
     lastTickRef.current = d.tick;
-    const target = db <= -119 ? 0 : Math.min(VU_MAX * 1.06, Math.pow(10, (db - SPL_LIVE0) / 20));
+    const target = db <= -119 ? 0 : Math.min(VU_MAX * 1.04, Math.pow(10, (db - SPL_LIVE0) / 20));
     const prev = vuRef.current;
     const tc = target > prev ? 0.15 : 0.45;
     vuRef.current = prev + (target - prev) * (1 - Math.exp(-TICK_SEC / tc));
   }
-  const tip = skinPt(vuValAngle(vuRef.current), SKIN_NEEDLE_L);
+  const tip = skinPt(vuAngle(vuRef.current), SKIN_NEEDLE_L);
+  const lampLit = peakDb >= -3;
 
   return (
     <View style={StyleSheet.absoluteFill}>
       <Svg width="100%" height="100%" viewBox={SKIN_VB} preserveAspectRatio="xMidYMid slice">
         <SvgImage href={VU_SKIN} x={0} y={0} width={1586} height={992} preserveAspectRatio="xMidYMid slice" />
         {SPL_SCALE}
+        {lampLit && <Circle cx={SKIN_LAMP.x} cy={SKIN_LAMP.y} r={SKIN_LAMP.r} fill="#ff5b3a" />}
         {/* Needle — a soft cast shadow under the dark blade. */}
         <Line x1={SKIN_PIVOT.x} y1={SKIN_PIVOT.y} x2={tip.x + 5} y2={tip.y + 5} stroke="rgba(28,14,2,0.32)" strokeWidth={9} strokeLinecap="round" />
-        <Line x1={SKIN_PIVOT.x} y1={SKIN_PIVOT.y} x2={tip.x} y2={tip.y} stroke="#171004" strokeWidth={7} strokeLinecap="round" />
+        <Line x1={SKIN_PIVOT.x} y1={SKIN_PIVOT.y} x2={tip.x} y2={tip.y} stroke="#1a1206" strokeWidth={7} strokeLinecap="round" />
         {/* Pivot post / cap over the dome. */}
         <Circle cx={SKIN_PIVOT.x} cy={SKIN_PIVOT.y} r={30} fill="#120c03" />
         <Circle cx={SKIN_PIVOT.x} cy={SKIN_PIVOT.y} r={12} fill="#4a3618" />

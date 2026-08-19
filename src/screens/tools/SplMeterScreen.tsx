@@ -1460,7 +1460,7 @@ export function SplMeterScreen({ navigation }: Props) {
                           live={live}
                           live0Db={vuLive0}
                           running={running}
-                          fit="cover"
+                          fit="contain"
                           cornerReadouts={{ maxText: vuMaxText, levelText: vuLevelText, rangeText: vuRangeText }}
                         />
                       )
