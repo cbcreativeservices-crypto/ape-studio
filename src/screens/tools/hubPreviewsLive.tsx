@@ -26,15 +26,16 @@
  */
 import { memo, useEffect, useMemo, useRef, useState, useSyncExternalStore, type FC, type ReactNode } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
-import Svg, { Circle, Defs, G, Image as SvgImage, Line, LinearGradient, Path, Polygon, Rect } from 'react-native-svg';
+import Svg, { Circle, ClipPath, Defs, G, Image as SvgImage, Line, LinearGradient, Path, Polygon, Rect } from 'react-native-svg';
 import { heatColor } from '../../features/tools/levelColor';
 import {
   SKIN_LAMP,
-  SKIN_NEEDLE_L,
-  SKIN_PIVOT,
   SKIN_VB,
   SPL_SCALE,
+  VU_FACE,
   VU_MAX,
+  VU_NEEDLE_BASE,
+  VU_NEEDLE_TIP,
   VU_SKIN,
   skinPt,
   vuAngle,
@@ -143,21 +144,28 @@ const HubSplSkin: FC = memo(() => {
     const tc = target > prev ? 0.15 : 0.45;
     vuRef.current = prev + (target - prev) * (1 - Math.exp(-TICK_SEC / tc));
   }
-  const tip = skinPt(vuAngle(vuRef.current), SKIN_NEEDLE_L);
+  const ang = vuAngle(vuRef.current);
+  const tip = skinPt(ang, VU_NEEDLE_TIP);
+  const base = skinPt(ang, VU_NEEDLE_BASE);
   const lampLit = peakDb >= -3;
 
   return (
     <View style={StyleSheet.absoluteFill}>
       <Svg width="100%" height="100%" viewBox={SKIN_VB} preserveAspectRatio="xMidYMid slice">
+        <Defs>
+          <ClipPath id="hpVuFace">
+            <Rect x={VU_FACE.x} y={VU_FACE.y} width={VU_FACE.w} height={VU_FACE.h} rx={VU_FACE.rx} />
+          </ClipPath>
+        </Defs>
         <SvgImage href={VU_SKIN} x={0} y={0} width={1586} height={992} preserveAspectRatio="xMidYMid slice" />
         {SPL_SCALE}
-        {lampLit && <Circle cx={SKIN_LAMP.x} cy={SKIN_LAMP.y} r={SKIN_LAMP.r} fill="#ff5b3a" />}
-        {/* Needle — a soft cast shadow under the dark blade. */}
-        <Line x1={SKIN_PIVOT.x} y1={SKIN_PIVOT.y} x2={tip.x + 5} y2={tip.y + 5} stroke="rgba(28,14,2,0.32)" strokeWidth={9} strokeLinecap="round" />
-        <Line x1={SKIN_PIVOT.x} y1={SKIN_PIVOT.y} x2={tip.x} y2={tip.y} stroke="#1a1206" strokeWidth={7} strokeLinecap="round" />
-        {/* Pivot post / cap over the dome. */}
-        <Circle cx={SKIN_PIVOT.x} cy={SKIN_PIVOT.y} r={30} fill="#120c03" />
-        <Circle cx={SKIN_PIVOT.x} cy={SKIN_PIVOT.y} r={12} fill="#4a3618" />
+        {lampLit && <Circle cx={SKIN_LAMP.x} cy={SKIN_LAMP.y} r={SKIN_LAMP.r - 5} fill="#ff4a30" />}
+        {/* Needle — long-throw blade from the deep scale centre, clipped to the
+            face window so it never paints over the bezel. */}
+        <G clipPath="url(#hpVuFace)">
+          <Line x1={base.x + 4} y1={base.y + 5} x2={tip.x + 4} y2={tip.y + 5} stroke="rgba(28,14,2,0.3)" strokeWidth={10} strokeLinecap="round" />
+          <Line x1={base.x} y1={base.y} x2={tip.x} y2={tip.y} stroke="#1a1206" strokeWidth={8} strokeLinecap="round" />
+        </G>
       </Svg>
     </View>
   );
