@@ -128,29 +128,35 @@ const INK_DIM = '#5c6066';
 
 type Anchor = 'start' | 'end' | 'middle';
 type Callout = { spl: number; color: string; big?: boolean; t1: string; t2: string; tx: number; ty: number; a: Anchor };
-// Positions hand-balanced per mode around the 1000×500 canvas (ring occupies
-// x 232–768, y 174–446): LEFT labels end-aligned, RIGHT start-aligned.
+// Positions on a strict COLUMN grid (rev 3, 2026-08-19 — verified collision-
+// free by an analytical box model). The ring occupies x 232–768, y 174–446, so:
+//   LEFT column  — right-aligned, right edge at x228 (clears the ring by 4px)
+//   RIGHT column — left-aligned,  left edge at x778 (clears the ring by 10px)
+//   CENTER       — centred at x500, seated above the ring apex at y116
+// Each column stacks top→bottom in ring-anchor order so leaders never cross.
+const LX = 228; // LEFT column right edge (anchor 'end')
+const RX_COL = 778; // RIGHT column left edge (anchor 'start')
 const CALLOUTS: Record<DialMode3d, Callout[]> = {
   studio: [
-    { spl: 72, color: Z_GREEN, t1: 'GENERAL EDITING', t2: '70–75 dB SPL', tx: 252, ty: 128, a: 'end' },
-    { spl: 62, color: Z_GREEN, t1: 'BACKGROUND · DETAIL', t2: '60–65 dB SPL', tx: 212, ty: 236, a: 'end' },
-    { spl: 79, color: GOLD_INK, big: true, t1: 'CRITICAL BALANCING', t2: '76dB–84dB', tx: 664, ty: 116, a: 'middle' },
-    { spl: 90, color: Z_AMBER_TXT, t1: 'IMPACT CHECK', t2: '85–95 dB SPL · brief', tx: 788, ty: 210, a: 'start' },
+    { spl: 79, color: GOLD_INK, big: true, t1: 'CRITICAL BALANCING', t2: '76dB–84dB', tx: CX, ty: 116, a: 'middle' },
+    { spl: 72, color: Z_GREEN, t1: 'GENERAL EDITING', t2: '70–75 dB SPL', tx: LX, ty: 158, a: 'end' },
+    { spl: 62, color: Z_GREEN, t1: 'BACKGROUND · DETAIL', t2: '60–65 dB SPL', tx: LX, ty: 258, a: 'end' },
+    { spl: 90, color: Z_AMBER_TXT, t1: 'IMPACT CHECK', t2: '85–95 dB SPL · brief', tx: RX_COL, ty: 206, a: 'start' },
   ],
   spl: [
-    { spl: 60, color: Z_GREEN, t1: 'CONVERSATION', t2: '~60 dBA', tx: 224, ty: 194, a: 'end' },
-    { spl: 79, color: Z_GREEN, t1: 'STUDIO LISTENING', t2: '~79 dBC', tx: 590, ty: 118, a: 'middle' },
-    { spl: 93, color: Z_ORANGE, t1: 'CONCERT', t2: '90dB–96dB', tx: 788, ty: 168, a: 'start' },
-    { spl: 100, color: Z_RED, t1: '100+ dB', t2: 'UNSAFE >15 MIN/DAY', tx: 788, ty: 300, a: 'start' },
+    { spl: 79, color: Z_GREEN, t1: 'STUDIO LISTENING', t2: '~79 dBC', tx: CX, ty: 116, a: 'middle' },
+    { spl: 60, color: Z_GREEN, t1: 'CONVERSATION', t2: '~60 dBA', tx: LX, ty: 206, a: 'end' },
+    { spl: 93, color: Z_ORANGE, t1: 'CONCERT', t2: '90dB–96dB', tx: RX_COL, ty: 170, a: 'start' },
+    { spl: 100, color: Z_RED, t1: '100+ dB', t2: 'UNSAFE >15 MIN/DAY', tx: RX_COL, ty: 300, a: 'start' },
   ],
   optimal: [
-    { spl: 69, color: Z_GREEN, t1: 'PROGRAM', t2: '60–78 dBA', tx: 240, ty: 140, a: 'end' },
-    { spl: 50, color: Z_GREEN, t1: 'AMBIENT', t2: '40–59 dBA', tx: 200, ty: 316, a: 'end' },
-    { spl: 81, color: Z_GREEN, t1: 'REFERENCE', t2: '79–84 dBA', tx: 560, ty: 114, a: 'middle' },
-    { spl: 89, color: Z_AMBER_TXT, t1: 'SHOW', t2: '85–93 dBA', tx: 792, ty: 138, a: 'start' },
-    { spl: 95, color: Z_ORANGE, t1: 'HIGH', t2: '94–96 dBA', tx: 792, ty: 216, a: 'start' },
-    { spl: 98, color: Z_RED, t1: 'LIMIT', t2: '97–99 dBA', tx: 792, ty: 294, a: 'start' },
-    { spl: 100, color: Z_RED, t1: '100+ dB LAeq', t2: 'WHO 15-MIN LIMIT', tx: 792, ty: 372, a: 'start' },
+    { spl: 81, color: Z_GREEN, t1: 'REFERENCE', t2: '79–84 dBA', tx: CX, ty: 116, a: 'middle' },
+    { spl: 69, color: Z_GREEN, t1: 'PROGRAM', t2: '60–78 dBA', tx: LX, ty: 158, a: 'end' },
+    { spl: 50, color: Z_GREEN, t1: 'AMBIENT', t2: '40–59 dBA', tx: LX, ty: 300, a: 'end' },
+    { spl: 89, color: Z_AMBER_TXT, t1: 'SHOW', t2: '85–93 dBA', tx: RX_COL, ty: 150, a: 'start' },
+    { spl: 95, color: Z_ORANGE, t1: 'HIGH', t2: '94–96 dBA', tx: RX_COL, ty: 224, a: 'start' },
+    { spl: 98, color: Z_RED, t1: 'LIMIT', t2: '97–99 dBA', tx: RX_COL, ty: 298, a: 'start' },
+    { spl: 100, color: Z_RED, t1: '100+ dB LAeq', t2: 'WHO 15-MIN LIMIT', tx: RX_COL, ty: 372, a: 'start' },
   ],
 };
 const TITLES: Record<DialMode3d, [string, string | null]> = {
@@ -199,18 +205,20 @@ function chrome(mode: DialMode3d, calibrated: boolean): ReactNode {
       </SvgText>,
     );
   });
-  // Hand-placed callouts with anchor rings + leader lines.
+  // Column callouts with anchor rings + leader lines. c.tx is the label's
+  // ring-facing edge in every column (right edge for 'end', left edge for
+  // 'start', centre for 'middle'), so the leader lands cleanly on the block.
   CALLOUTS[mode].forEach((c) => {
     const ap = ept(theta(c.spl), 1.02);
     els.push(<Circle key={`d${c.spl}`} cx={ap.x} cy={ap.y} r={7} fill="none" stroke={c.color} strokeWidth={3.5} />);
-    els.push(<Line key={`l${c.spl}`} x1={ap.x} y1={ap.y} x2={c.tx} y2={c.ty + 6} stroke={c.color} strokeWidth={2.5} opacity={0.7} />);
+    els.push(<Line key={`l${c.spl}`} x1={ap.x} y1={ap.y} x2={c.tx} y2={c.ty + 4} stroke={c.color} strokeWidth={2.5} opacity={0.7} />);
     els.push(
-      <SvgText key={`t${c.spl}`} x={c.tx} y={c.ty} fill={c.color} fontFamily={fonts.oswaldSemiBold} fontSize={c.big ? 32 : 26} letterSpacing={0.5} textAnchor={c.a}>
+      <SvgText key={`t${c.spl}`} x={c.tx} y={c.ty} fill={c.color} fontFamily={fonts.oswaldSemiBold} fontSize={c.big ? 26 : 19} letterSpacing={0.5} textAnchor={c.a}>
         {c.t1}
       </SvgText>,
     );
     els.push(
-      <SvgText key={`s${c.spl}`} x={c.tx} y={c.ty + 24} fill={INK_DIM} fontFamily={fonts.oswaldSemiBold} fontSize={20} textAnchor={c.a}>
+      <SvgText key={`s${c.spl}`} x={c.tx} y={c.ty + 21} fill={INK_DIM} fontFamily={fonts.oswaldSemiBold} fontSize={16} textAnchor={c.a}>
         {c.t2}
       </SvgText>,
     );
