@@ -38,7 +38,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GlassButton } from '../../../components/GlassButton';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
-import { TUBE_CARD_ASPECT, TUBE_FAMILY_META, TUBE_REFS, pageCountOf, tubeRefPageUrl, type TubeFamily } from './tubeRefs';
+import { TUBE_CARD_ASPECT, TUBE_FAMILY_META, TUBE_REFS, fetchTubePageUri, pageCountOf, type TubeFamily } from './tubeRefs';
 
 const MAX_SCALE = 4;
 const DOUBLE_TAP_SCALE = 2.5;
@@ -66,6 +66,9 @@ export function TubeCardScreen() {
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
   const [retryKey, setRetryKey] = useState(0);
+  // Secured card URLs are fetched from the tube-image Edge Function (signed,
+  // short-lived), so the visible page's URI resolves asynchronously.
+  const [pageUri, setPageUri] = useState<string | null>(null);
   const tube = TUBE_REFS[idx];
   const pageCount = pageCountOf(tube); // 2 for normal tubes, 1 for a promo prop
   const famTitle = TUBE_FAMILY_META.find((f) => f.key === tube.family)?.title ?? '';
@@ -312,17 +315,46 @@ export function TubeCardScreen() {
     [],
   );
 
+  // Resolve the VISIBLE page's signed URL whenever the tube/page changes or a
+  // retry is requested. A failure (not entitled / offline) shows the load-error
+  // state, consistent with the previous behaviour.
+  useEffect(() => {
+    let alive = true;
+    setPageUri(null);
+    setLoaded(false);
+    setFailed(false);
+    fetchTubePageUri(tube.stem, page)
+      .then((u) => {
+        if (!alive) return;
+        if (u) setPageUri(u);
+        else setFailed(true);
+      })
+      .catch(() => {
+        if (alive) setFailed(true);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [tube.stem, page, retryKey]);
+
   useEffect(() => {
     const prev = TUBE_REFS[idx - 1];
     const next = TUBE_REFS[idx + 1];
-    // The other page of THIS tube (so the toggle/forward-swipe is instant),
-    // plus both neighbours' facing pages: next→page 1 (forward swipe lands
-    // there), prev→its LAST page (backward swipe lands there). A single-page
-    // tube has no page 2 to prefetch.
-    if (pageCount >= 2) Image.prefetch(tubeRefPageUrl(tube, 2)).catch(() => {});
-    if (prev) Image.prefetch(tubeRefPageUrl(prev, pageCountOf(prev))).catch(() => {});
-    if (next) Image.prefetch(tubeRefPageUrl(next, 1)).catch(() => {});
-  }, [idx, pageCount, tube]);
+    // Warm the neighbours the same way, via signed URLs: the other page of THIS
+    // tube (so the toggle/forward-swipe is instant), plus both neighbours'
+    // facing pages (next→page 1, prev→page 2). Best-effort; failures are ignored.
+    let alive = true;
+    const warm = async (stem: string, p: 1 | 2) => {
+      const u = await fetchTubePageUri(stem, p);
+      if (alive && u) Image.prefetch(u).catch(() => {});
+    };
+    void warm(tube.stem, 2);
+    if (prev) void warm(prev.stem, 2);
+    if (next) void warm(next.stem, 1);
+    return () => {
+      alive = false;
+    };
+  }, [idx, tube.stem]);
 
   // Non-members never reach the cards (deep-link safe).
   if (!unlocked) {
@@ -408,7 +440,7 @@ export function TubeCardScreen() {
 
       {/* Image area — everything below the bar; pinch-zoom + pan only. */}
       <View style={styles.imageArea} onLayout={onAreaLayout} {...responder.panHandlers}>
-        {imgW > 0 ? (
+        {imgW > 0 && pageUri ? (
           <Animated.View
             style={{
               width: imgW,
@@ -417,8 +449,8 @@ export function TubeCardScreen() {
             }}
           >
             <Image
-              key={`${tube.id}-p${page}-${retryKey}`}
-              source={{ uri: tubeRefPageUrl(tube, page) }}
+              key={`${tube.stem}-p${page}-${retryKey}`}
+              source={{ uri: pageUri }}
               style={{ width: imgW, height: imgH }}
               resizeMode="contain"
               onLoad={() => setLoaded(true)}
