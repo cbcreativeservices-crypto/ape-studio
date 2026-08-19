@@ -199,10 +199,11 @@ function chrome(mode: DialMode3d, calibrated: boolean): ReactNode {
   [40, 50, 60, 70, 80, 90, 100].forEach((s) => {
     const a = theta(s);
     const cosA = Math.cos((a * Math.PI) / 180);
-    // Side numerals (60/90) tuck close to the ring so they never collide with
-    // the side callout columns; top/bottom numerals sit farther out.
-    const p = ept(a, cosA > 0.6 || cosA < 0 ? 1.15 : 1.06);
-    const dy = cosA > 0.6 ? -6 : cosA < 0 ? DEPTH + 26 : 14;
+    // Numerals in three even bands just OUTSIDE the blocks (rev 5): TOP sit above
+    // the apex, SIDES tuck into the gap between the ring and the callout columns,
+    // BOTTOM clear the extruded front wall. One consistent look, no floaters.
+    const p = ept(a, cosA > 0.55 ? 1.17 : cosA < -0.15 ? 1.15 : 1.1);
+    const dy = cosA > 0.55 ? -2 : cosA < -0.15 ? DEPTH + 18 : 10;
     els.push(
       <SvgText key={`n${s}`} x={p.x} y={p.y + dy} fill={s >= 100 ? Z_RED : INK} fontFamily={fonts.oswaldSemiBold} fontSize={25} textAnchor="middle">
         {s}

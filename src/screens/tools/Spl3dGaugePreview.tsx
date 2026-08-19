@@ -16,9 +16,9 @@ import { fonts } from '../../theme/tokens';
 // Demo levels chosen to light a good spread of each mode's zones so the colours
 // + lit edge are visible: studio into the gold sweet spot, spl into orange, etc.
 const DEMOS: { mode: DialMode3d; level: number; center: string; color: string }[] = [
-  { mode: 'studio', level: 81, center: '81', color: '#dfaf35' },
+  { mode: 'studio', level: 84, center: '84', color: '#dfaf35' },
   { mode: 'spl', level: 92, center: '92', color: '#e8842a' },
-  { mode: 'optimal', level: 74, center: '74', color: '#3fae52' },
+  { mode: 'optimal', level: 90, center: '90', color: '#e5c23c' },
 ];
 
 export function Spl3dGaugePreview({ width = 900 }: { width?: number }) {
