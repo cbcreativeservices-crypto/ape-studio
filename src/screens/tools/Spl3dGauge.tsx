@@ -151,32 +151,68 @@ const C_YELLOW = '#f0dd5a';
 const C_ORANGE = '#f0863a';
 const C_RED = '#ff5a48';
 
-type Anchor = 'start' | 'end' | 'middle';
-type Callout = { spl: number; color: string; big?: boolean; t1: string; t2: string; tx: number; ty: number; a: Anchor };
-const LX = 178; // LEFT column right edge (further out, rev 8)
+type Anchor = 'start' | 'end';
+type CalloutDef = { spl: number; color: string; t1: string; t2: string };
+type Placed = CalloutDef & { tx: number; ty: number; a: Anchor; fs: number; ang: number };
+const LX = 178; // LEFT column right edge
 const RX_COL = 816; // RIGHT column left edge
-const CALLOUTS: Record<DialMode3d, Callout[]> = {
+const SIDE_MAXW = 178; // usable label width in a side margin
+const CALLOUTS: Record<DialMode3d, CalloutDef[]> = {
   studio: [
-    { spl: 79, color: C_GOLD, big: true, t1: 'CRITICAL BALANCING', t2: '76–84 dB SPL', tx: CX, ty: 90, a: 'middle' },
-    { spl: 62, color: C_GREEN, t1: 'BACKGROUND', t2: '60–65 dB SPL', tx: LX, ty: 250, a: 'end' },
-    { spl: 72, color: C_GREEN, t1: 'GENERAL EDITING', t2: '70–75 dB SPL', tx: RX_COL, ty: 156, a: 'start' },
-    { spl: 90, color: C_YELLOW, t1: 'IMPACT CHECK', t2: '85–95 dB · brief', tx: RX_COL, ty: 320, a: 'start' },
+    { spl: 62, color: C_GREEN, t1: 'BACKGROUND', t2: '60–65 dB SPL' },
+    { spl: 72, color: C_GREEN, t1: 'GENERAL EDITING', t2: '70–75 dB SPL' },
+    { spl: 79, color: C_GOLD, t1: 'CRITICAL BALANCING', t2: '76–84 dB SPL' },
+    { spl: 90, color: C_YELLOW, t1: 'IMPACT CHECK', t2: '85–95 dB SPL' },
   ],
   spl: [
-    { spl: 79, color: C_GREEN, big: true, t1: 'STUDIO LISTENING', t2: '~79 dBC', tx: CX, ty: 90, a: 'middle' },
-    { spl: 60, color: C_GREEN, t1: 'CONVERSATION', t2: '~60 dBA', tx: LX, ty: 250, a: 'end' },
-    { spl: 93, color: C_ORANGE, t1: 'CONCERT', t2: '90–96 dB', tx: RX_COL, ty: 168, a: 'start' },
-    { spl: 100, color: C_RED, t1: '100+ dB', t2: 'UNSAFE >15 MIN', tx: RX_COL, ty: 320, a: 'start' },
+    { spl: 60, color: C_GREEN, t1: 'CONVERSATION', t2: '~60 dBA' },
+    { spl: 79, color: C_GREEN, t1: 'STUDIO LISTENING', t2: '~79 dBC' },
+    { spl: 93, color: C_ORANGE, t1: 'CONCERT', t2: '90–96 dB' },
+    { spl: 100, color: C_RED, t1: '100+ dB', t2: 'UNSAFE >15 MIN' },
   ],
   optimal: [
-    { spl: 69, color: C_GREEN, big: true, t1: 'PROGRAM', t2: '60–78 dBA', tx: CX, ty: 96, a: 'middle' },
-    { spl: 50, color: C_GREY, t1: 'AMBIENT', t2: '40–59 dBA', tx: LX, ty: 250, a: 'end' },
-    { spl: 81, color: C_GOLD, t1: 'REFERENCE', t2: '79–84 dBA', tx: RX_COL, ty: 138, a: 'start' },
-    { spl: 89, color: C_GOLD, t1: 'SHOW', t2: '85–93 dBA', tx: RX_COL, ty: 208, a: 'start' },
-    { spl: 95, color: C_YELLOW, t1: 'HIGH', t2: '94–96 dBA', tx: RX_COL, ty: 278, a: 'start' },
-    { spl: 98, color: C_RED, t1: 'LIMIT', t2: '97–99 dBA', tx: RX_COL, ty: 348, a: 'start' },
-    { spl: 100, color: C_RED, t1: '100+ dB LAeq', t2: 'WHO 15-MIN', tx: RX_COL, ty: 418, a: 'start' },
+    { spl: 50, color: C_GREY, t1: 'AMBIENT', t2: '40–59 dBA' },
+    { spl: 69, color: C_GREEN, t1: 'PROGRAM', t2: '60–78 dBA' },
+    { spl: 81, color: C_GOLD, t1: 'REFERENCE', t2: '79–84 dBA' },
+    { spl: 89, color: C_GOLD, t1: 'SHOW', t2: '85–93 dBA' },
+    { spl: 95, color: C_YELLOW, t1: 'HIGH', t2: '94–96 dBA' },
+    { spl: 98, color: C_ORANGE, t1: 'LIMIT', t2: '97–99 dBA' },
+    { spl: 100, color: C_RED, t1: '100+ dB LAeq', t2: 'WHO 15-MIN' },
   ],
+};
+
+/** Auto-layout (rev 9 — owner: no centre-locked "titles"; balance the sides;
+ *  never cross leaders). Each range goes to the side it sits on; a near-top
+ *  range goes to whichever side is emptier. Within a column the items are
+ *  ORDERED by arc angle and de-overlapped downward, so leaders fan out and
+ *  never cross. Long labels auto-shrink to fit the margin. */
+function layoutMode(mode: DialMode3d): Placed[] {
+  const items = CALLOUTS[mode].map((c) => ({ ...c, ang: theta(c.spl) }));
+  const L: (CalloutDef & { ang: number })[] = [];
+  const R: (CalloutDef & { ang: number })[] = [];
+  items.forEach((c) => {
+    if (Math.abs(c.ang) >= 18) (c.ang < 0 ? L : R).push(c);
+  });
+  items.filter((c) => Math.abs(c.ang) < 18).forEach((c) => (L.length <= R.length ? L : R).push(c));
+  const out: Placed[] = [];
+  const place = (arr: (CalloutDef & { ang: number })[], tx: number, a: Anchor) => {
+    arr.sort((x, y) => x.ang - y.ang);
+    let py = 112;
+    arr.forEach((c) => {
+      const ty = Math.max(ept(c.ang, 1).y + 4, py);
+      py = ty + 56;
+      const fs = Math.max(15, Math.min(21, Math.floor(SIDE_MAXW / (c.t1.length * 0.56))));
+      out.push({ ...c, tx, ty, a, fs });
+    });
+  };
+  place(L, LX, 'end');
+  place(R, RX_COL, 'start');
+  return out;
+}
+const LAID_OUT: Record<DialMode3d, Placed[]> = {
+  studio: layoutMode('studio'),
+  spl: layoutMode('spl'),
+  optimal: layoutMode('optimal'),
 };
 const TITLES: Record<DialMode3d, [string, string | null]> = {
   studio: ['STUDIO REFERENCE MONITORING LEVELS', null],
@@ -184,15 +220,17 @@ const TITLES: Record<DialMode3d, [string, string | null]> = {
   optimal: ['OPTIMAL REFERENCE LISTENING', 'dBA · LAeq WHERE NOTED'],
 };
 
-/** Elbowed leader: short radial stub off the anchor, then a run to the label. */
-function leaderPath(spl: number, tx: number, ty: number, hero: boolean): { d: string; ax: number; ay: number } {
+/** Elbowed leader: a radial stub off the anchor (clears the ring), then a run
+ *  to the label. The radial stub points up-and-out for near-top ranges, so a
+ *  side-placed top range never drags its line across the coloured blocks. */
+function leaderPath(spl: number, tx: number, ty: number): { d: string; ax: number; ay: number } {
   const A = ept(theta(spl), 1.04);
   let nx = A.x - CX;
   let ny = A.y - CY;
   const len = Math.hypot(nx, ny) || 1;
   nx /= len;
   ny /= len;
-  const stub = hero ? { x: A.x, y: A.y - 24 } : { x: A.x + nx * 22, y: A.y + ny * 22 };
+  const stub = { x: A.x + nx * 24, y: A.y + ny * 24 };
   return { d: `M${P(A)}L${P(stub)}L${tx.toFixed(1)} ${(ty + 4).toFixed(1)}`, ax: A.x, ay: A.y };
 }
 
@@ -220,19 +258,19 @@ function chrome(mode: DialMode3d, calibrated: boolean): ReactNode {
       </SvgText>,
     );
   }
-  // Callouts — larger (rev 8) with a hairline elbow leader + small anchor dot;
-  // the light-grey subtitle always sits BELOW the coloured title.
-  CALLOUTS[mode].forEach((c) => {
-    const L = leaderPath(c.spl, c.tx, c.ty, c.a === 'middle');
+  // Callouts — auto-laid-out ranges (rev 9): angle-ordered side columns, never
+  // centre-locked, leaders never cross; light-grey subtitle below the title.
+  LAID_OUT[mode].forEach((c) => {
+    const L = leaderPath(c.spl, c.tx, c.ty);
     els.push(<Path key={`l${c.spl}`} d={L.d} fill="none" stroke={c.color} strokeWidth={1.3} opacity={0.6} />);
     els.push(<Circle key={`d${c.spl}`} cx={L.ax} cy={L.ay} r={2.8} fill={c.color} />);
     els.push(
-      <SvgText key={`t${c.spl}`} x={c.tx} y={c.ty} fill={c.color} fontFamily={fonts.oswaldSemiBold} fontSize={c.big ? 27 : 21} letterSpacing={0.4} textAnchor={c.a}>
+      <SvgText key={`t${c.spl}`} x={c.tx} y={c.ty} fill={c.color} fontFamily={fonts.oswaldSemiBold} fontSize={c.fs} letterSpacing={0.3} textAnchor={c.a}>
         {c.t1}
       </SvgText>,
     );
     els.push(
-      <SvgText key={`s${c.spl}`} x={c.tx} y={c.ty + (c.big ? 23 : 21)} fill={INK_FAINT} fontFamily={fonts.oswaldSemiBold} fontSize={c.big ? 15 : 14} textAnchor={c.a}>
+      <SvgText key={`s${c.spl}`} x={c.tx} y={c.ty + 19} fill={INK_FAINT} fontFamily={fonts.oswaldSemiBold} fontSize={13.5} textAnchor={c.a}>
         {c.t2}
       </SvgText>,
     );
@@ -373,7 +411,7 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
           dB SPL · AVG
         </SvgText>
         {band && (
-          <SvgText x={CX} y={CY + 96} fill={ZONE_HEX[band.zone]} fontFamily={fonts.oswaldSemiBold} fontSize={25} letterSpacing={1.5} textAnchor="middle">
+          <SvgText x={CX} y={CY + 100} fill={ZONE_HEX[band.zone]} fontFamily={fonts.oswaldSemiBold} fontSize={33} letterSpacing={1.2} textAnchor="middle">
             {band.name}
           </SvgText>
         )}
