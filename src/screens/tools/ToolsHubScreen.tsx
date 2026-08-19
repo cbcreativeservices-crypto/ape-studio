@@ -330,27 +330,41 @@ function ToolTile({
       onPressOut={onOut}
       accessibilityRole="button"
       accessibilityLabel={name}
-      style={styles.tileCutout}
+      style={styles.tileFrame}
     >
-      {/* Static cavity shadow the panel lip casts — revealed as the display sinks. */}
-      <LinearGradient pointerEvents="none" colors={['rgba(0,0,0,0.6)', 'rgba(0,0,0,0)']} style={styles.tileCavityTop} />
-      {/* The DISPLAY 'cap' — the only mover: sinks into the recess on press. */}
-      <Animated.View style={[styles.tileCap, { transform: [{ translateY }] }]}>
-        {/* Title ABOVE the display (owner 2026-08-19), on ONE line — auto-shrinks
-            to fit the tile width so long names don't wrap to a second line. */}
-        <Text style={styles.tileName} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65}>
-          {name}
-        </Text>
-        <ToolStrip tool={tool} live={live} active={active} />
-        <TileGlass />
-        {/* Illumination — the screen powers on (glow ramps up) when pressed. */}
-        <Animated.View pointerEvents="none" style={[styles.tileGlowLight, { opacity: glow }]} />
-        {planned && (
-          <View style={styles.comingChip}>
-            <Text style={styles.comingChipText}>COMING</Text>
-          </View>
-        )}
-      </Animated.View>
+      {/* Metallic BEZEL (owner 2026-08-19, reference image): a raised, top-lit
+          brushed-gray frame around every display. The bezel never moves — only
+          the screen inside sinks on press, like real rack hardware. */}
+      <LinearGradient
+        colors={['#5c6067', '#3e4147', '#2b2d32', '#1d1f23']}
+        locations={[0, 0.14, 0.62, 1]}
+        style={styles.tileBezel}
+      >
+        {/* Bright catch-light along the bezel's top edge. */}
+        <View pointerEvents="none" style={styles.tileBezelTopLight} />
+        {/* Dark seam / step between the bezel and the recessed screen. */}
+        <View style={styles.tileCutout}>
+          {/* Static cavity shadow the panel lip casts — revealed as the display sinks. */}
+          <LinearGradient pointerEvents="none" colors={['rgba(0,0,0,0.6)', 'rgba(0,0,0,0)']} style={styles.tileCavityTop} />
+          {/* The DISPLAY 'cap' — the only mover: sinks into the recess on press. */}
+          <Animated.View style={[styles.tileCap, { transform: [{ translateY }] }]}>
+            {/* Title ABOVE the display (owner 2026-08-19), on ONE line — auto-shrinks
+                to fit the tile width so long names don't wrap to a second line. */}
+            <Text style={styles.tileName} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65}>
+              {name}
+            </Text>
+            <ToolStrip tool={tool} live={live} active={active} />
+            <TileGlass />
+            {/* Illumination — the screen powers on (glow ramps up) when pressed. */}
+            <Animated.View pointerEvents="none" style={[styles.tileGlowLight, { opacity: glow }]} />
+            {planned && (
+              <View style={styles.comingChip}>
+                <Text style={styles.comingChipText}>COMING</Text>
+              </View>
+            )}
+          </Animated.View>
+        </View>
+      </LinearGradient>
     </Pressable>
   );
 }
@@ -619,11 +633,37 @@ const styles = StyleSheet.create({
   // (thicker top/left shadow, thin bottom line) give the opening real depth. The
   // dark cavity (#040405) shows at the top as the display 'cap' sinks on press.
   // Mirrors the dashboard cutoutMount + SwitchButton cutout.
-  tileCutout: {
+  // Outer FRAME (owner 2026-08-19, reference image): a 1px black keyline that
+  // separates each module from the rack panel, wrapping the metallic bezel.
+  tileFrame: {
     width: TILE_W,
-    // Frame corner just barely sharper than the inner glass (10 vs 11) — the two
-    // radii sit only 1pt apart (owner 2026-08-17).
-    borderRadius: 10,
+    borderRadius: 13,
+    backgroundColor: '#000',
+    padding: 1,
+    overflow: 'hidden',
+  },
+  // The metallic bezel face (top-lit gradient set inline). Its padding IS the
+  // visible bezel width — slightly thicker at the bottom, like real hardware.
+  tileBezel: {
+    borderRadius: 12,
+    overflow: 'hidden',
+    paddingTop: 5,
+    paddingHorizontal: 5,
+    paddingBottom: 6,
+  },
+  // Catch-light along the bezel's top edge.
+  tileBezelTopLight: {
+    position: 'absolute',
+    top: 0,
+    left: 6,
+    right: 6,
+    height: 1.2,
+    backgroundColor: 'rgba(255,255,255,0.34)',
+  },
+  // Dark seam / recess step between the bezel and the screen (the cavity the
+  // display cap sinks into on press).
+  tileCutout: {
+    borderRadius: 9,
     borderTopWidth: 2.5,
     borderLeftWidth: 1.5,
     borderRightWidth: 2.5,
@@ -638,7 +678,7 @@ const styles = StyleSheet.create({
   // The DISPLAY 'cap' — the tool's screen; the only part that travels on press.
   // Its corner is ROUNDER (11) than the frame's sharper cut (9) — a two-radius
   // nested look, with the dark cavity peeking at the corner gap (owner 2026-08-17).
-  tileCap: { backgroundColor: '#0b0c0e', borderRadius: 11, overflow: 'hidden', padding: 9, gap: 8 },
+  tileCap: { backgroundColor: '#0b0c0e', borderRadius: 8, overflow: 'hidden', padding: 9, gap: 8 },
   // Shadow the panel lip casts into the cavity top, seen when the cap sinks.
   tileCavityTop: { position: 'absolute', top: 0, left: 0, right: 0, height: 8 },
   // Power-on illumination that ramps up on press (lightens/glows the screen).
