@@ -12,14 +12,16 @@
  * server wiring for the code + real session persistence lands later; the mock
  * entitlement setter is __DEV__-guarded (release builds defer to the server).
  */
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
+import { devBypass } from '../../config/devMode';
 import { KeyboardAwareScrollView } from '../../features/keyboard/keyboardControllerSafe';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -84,6 +86,18 @@ export function AuthScreen({ navigation }: Props) {
     setEntitlement('anonymous');
     toHome();
   };
+
+  // WEB PREVIEW ONLY (dev): auto-enter Guest Mode once so the browser preview
+  // boots straight into the app. __DEV__-guarded via devBypass + Platform gate,
+  // so the phone dev client and release builds are untouched. See devMode.ts.
+  const autoGuestFired = useRef(false);
+  useEffect(() => {
+    if (Platform.OS === 'web' && devBypass('webPreviewAutoGuest') && !autoGuestFired.current) {
+      autoGuestFired.current = true;
+      void enterGuest();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   /* CREATE ACCOUNT — email + password (+ optional access/promo code). */
   const onCreateAccount = async () => {

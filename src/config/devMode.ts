@@ -47,6 +47,14 @@ export const DEV_BYPASS = {
    *  bypasses them in __DEV__; the constants themselves are untouched, so
    *  flipping this to false restores the governed behavior exactly. */
   instantIntros: true,
+  /** WEB PREVIEW ONLY: auto-enter Guest Mode on the Auth screen so the browser
+   *  preview (localhost:8090) boots straight into the app, letting Claude drive
+   *  and screenshot screens without the login step (RN-web swallows synthetic
+   *  presses on the guest button). Consumed as `devBypass('webPreviewAutoGuest')
+   *  && Platform.OS === 'web'`, so it NEVER affects the phone dev client (real
+   *  login/create-account testing is untouched) and is inert in release builds
+   *  (__DEV__). Flip to false to test the real web login flow. */
+  webPreviewAutoGuest: true,
 } as const;
 // (devFastComplete — the ⏳ TEMP 2026-08-13 fast-complete aid — was REMOVED
 // on schedule 2026-08-16, along with its consumers in study/api.ts and
