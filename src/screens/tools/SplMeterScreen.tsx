@@ -49,6 +49,7 @@ import { WARNING_INFO, type SplLogPayload, type WarningFlag } from '../../featur
 import { colors, fonts } from '../../theme/tokens';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { EngineGate } from './EngineGate';
+import { SkinnedVu } from './SkinnedVu';
 import { levelColorForDb } from '../../features/tools/levelColor';
 import { useLowLight, LOW_LIGHT_DIM } from '../../features/settings/lowLight';
 import { MIC_LIMITS, toolByKey } from './toolsData';
@@ -102,46 +103,6 @@ const NOMINAL_OFFSET = 100;
  *  classic wide horizontal VU — the relative meter around the RANGE reference.
  *  `live0Db` is driven to (RANGE − splOffset) so a measured SPL == RANGE parks
  *  the needle at 0 VU; MAX + the current level are printed inside the glass. */
-function VuTopMeter({
-  viz,
-  live,
-  vuW,
-  vuH,
-  live0Db,
-  maxText,
-  levelText,
-  rangeText,
-  brackets,
-  peakHold,
-}: {
-  viz: VizMetersModule;
-  live: LiveMeterDrive;
-  vuW: number;
-  vuH: number;
-  live0Db: number;
-  maxText: string;
-  levelText: string;
-  rangeText: string;
-  brackets: { lowText: string; highText: string; mid10Text?: string; mid5Text?: string };
-  peakHold: PeakHoldMode;
-}) {
-  const phase = viz.usePhaseClock(true, 1 / VU_LOOP);
-  return (
-    <viz.VuMeterView
-      width={vuW}
-      height={vuH}
-      phase={phase}
-      live={live}
-      showPeakLed
-      loopSeconds={VU_LOOP}
-      live0Db={live0Db}
-      cornerReadouts={{ maxText, levelText, rangeText }}
-      scaleBrackets={brackets}
-      peakHold={peakHold}
-    />
-  );
-}
-
 /** Tall LED PEAK/AVERAGE meter down the RIGHT side (owner 2026-07-30): spans
  *  from the top of the VU all the way down past the controls, ending above the
  *  circle meter. Its own phase clock; reads the same live SharedValues. */
@@ -971,14 +932,6 @@ export function SplMeterScreen({ navigation }: Props) {
   // Printed TOP-LEFT on the VU face (owner 2026-07-30): the weighting + response
   // in use (the RANGE now lives in the blue in-arc brackets and the chip row).
   const vuRangeText = `${weighting} · ${response === 'fast' ? 'FAST' : response === 'slow' ? 'SLOW' : '5s AVG'}`;
-  // SPL bracket printed inside the arc (BLUE — the 0 value equals the blue RANGE
-  // button): low number at −20 (= RANGE − 20), high at 0 (= RANGE).
-  const vuBrackets = {
-    lowText: `${rangeRef - 20}`,
-    mid10Text: `${rangeRef - 10}`,
-    mid5Text: `${rangeRef - 5}`,
-    highText: `${rangeRef}`,
-  };
   // VU corner readouts (printed inside the glass) — BUGFIX 2026-07-30: these must
   // show the ESTIMATED dB SPL (level + splOffset), the SAME number the needle,
   // the blue brackets, and the circle centre use. Previously they printed raw
@@ -1501,17 +1454,14 @@ export function SplMeterScreen({ navigation }: Props) {
                         // — never run two live Skia VU meters at once (it was slow).
                         <View style={{ width: vuW, height: vuH }} />
                       ) : (
-                        <VuTopMeter
-                          viz={viz}
+                        <SkinnedVu
+                          width={vuW}
+                          height={vuH}
                           live={live}
-                          vuW={vuW}
-                          vuH={vuH}
                           live0Db={vuLive0}
-                          maxText={vuMaxText}
-                          levelText={vuLevelText}
-                          rangeText={vuRangeText}
-                          brackets={vuBrackets}
-                          peakHold={holdMode}
+                          running={running}
+                          fit="cover"
+                          cornerReadouts={{ maxText: vuMaxText, levelText: vuLevelText, rangeText: vuRangeText }}
                         />
                       )
                     ) : (
@@ -1829,17 +1779,14 @@ export function SplMeterScreen({ navigation }: Props) {
                     )}
                     <View style={[styles.vuFsRow, winW < winH && styles.vuFsCol]} pointerEvents="none">
                       <View style={styles.vuFsLeft}>
-                        <VuTopMeter
-                          viz={viz}
+                        <SkinnedVu
+                          width={winW >= winH ? Math.round(winW * 0.6) : Math.round(winW * 0.92)}
+                          height={winW >= winH ? Math.round(winH * 0.78) : Math.round(winH * 0.4)}
                           live={live}
-                          vuW={winW >= winH ? Math.round(winW * 0.6) : Math.round(winW * 0.92)}
-                          vuH={winW >= winH ? Math.round(winH * 0.78) : Math.round(winH * 0.4)}
                           live0Db={vuLive0}
-                          maxText={vuMaxText}
-                          levelText={vuLevelText}
-                          rangeText={vuRangeText}
-                          brackets={vuBrackets}
-                          peakHold={holdMode}
+                          running={running}
+                          fit="contain"
+                          cornerReadouts={{ maxText: vuMaxText, levelText: vuLevelText, rangeText: vuRangeText }}
                         />
                       </View>
                       {!vuFsLedHidden && (
