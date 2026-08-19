@@ -3,10 +3,11 @@ import Link from "next/link";
 import logoMark from "@/public/logo-mark.png";
 
 const NAV_LINKS: { href: string; label: string }[] = [
-  { href: "/verify", label: "Verify a Credential" },
+  { href: "/academy", label: "Academy" },
+  { href: "/credentials", label: "Credentials" },
   { href: "/tubes", label: "Tube Reference" },
   { href: "/institutions", label: "For Institutions" },
-  { href: "/contact", label: "Contact" },
+  { href: "/verify", label: "Verify" },
 ];
 
 export default function Nav() {

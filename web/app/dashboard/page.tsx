@@ -125,7 +125,10 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-display text-3xl font-semibold uppercase tracking-wide text-foreground">
+          <p className="font-mono text-xs uppercase tracking-[0.3em] text-amber">
+            Your Academy
+          </p>
+          <h1 className="mt-3 font-display text-3xl font-semibold uppercase tracking-wide text-foreground">
             {d.displayName ? `Welcome back, ${d.displayName}` : "Welcome back"}
           </h1>
           <span
@@ -169,7 +172,7 @@ export default function DashboardPage() {
               href={APP_DEEPLINK}
               className="inline-block rounded-md bg-amber px-6 py-3 text-sm font-semibold text-background transition-colors hover:bg-amber-deep"
             >
-              Continue in the app
+              Continue Learning in the App
             </a>
           ) : (
             <p className="text-sm text-text-muted">

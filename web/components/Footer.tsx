@@ -4,10 +4,21 @@ const FOOTER_SECTIONS: { heading: string; links: { href: string; label: string }
   {
     heading: "Academy",
     links: [
+      { href: "/academy", label: "The Academy" },
+      { href: "/curriculum", label: "Curriculum Development" },
+      { href: "/credentials", label: "Credentials" },
+      { href: "/membership", label: "Membership" },
+      { href: "/about", label: "About" },
+      { href: "/standards", label: "Educational Standards" },
+    ],
+  },
+  {
+    heading: "Verify & Organizations",
+    links: [
       { href: "/verify", label: "Verify a Credential" },
-      { href: "/tubes", label: "Tube Reference" },
+      { href: "/employers", label: "For Employers" },
       { href: "/institutions", label: "For Institutions" },
-      { href: "/contact", label: "Contact" },
+      { href: "/tubes", label: "Tube Reference" },
     ],
   },
   {
@@ -16,6 +27,7 @@ const FOOTER_SECTIONS: { heading: string; links: { href: string; label: string }
       { href: "/terms", label: "Terms of Service" },
       { href: "/privacy", label: "Privacy Policy" },
       { href: "/support", label: "Support" },
+      { href: "/contact", label: "Contact" },
     ],
   },
 ];
@@ -24,16 +36,16 @@ export default function Footer() {
   const year = 2026;
   return (
     <footer className="mt-auto border-t border-border bg-surface">
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-[2fr_1fr_1fr]">
+      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-[2fr_1fr_1fr_1fr]">
         <div>
           <p className="font-display text-lg font-semibold uppercase tracking-wide text-foreground">
             Pro Audio Training Academy
           </p>
           <p className="mt-2 max-w-sm text-sm text-text-muted">
-            Professional audio education, certification, and credential
-            verification. The Academy&rsquo;s training and testing live in the
-            mobile app; this site is your companion for credentials, references,
-            and account access.
+            A structured educational system for learning, organizing, applying,
+            and documenting professional audio knowledge. The mobile app is the
+            primary learning environment; this site supports accounts,
+            credentials, references, and verification.
           </p>
         </div>
         {FOOTER_SECTIONS.map((section) => (
