@@ -33,14 +33,17 @@ export const VU_MAX = Math.pow(10, 6 / 20); // integrator ceiling (+6 dB rel 0 V
 // the needle slide across the bottom border instead of pivoting.) The scale
 // therefore spans a WIDE angle about the dome, exactly like a real VU face.
 export const VU_CTR = { x: 795, y: 803 }; // the dome — the FIXED needle pivot
-const R_LINE = 505; // the arc baseline the ticks rise from
-const R_MAJ = 543; // major tick tops
-const R_MIN = 527; // minor tick tops
-const R_ZERO = 552; // the 0 tick is extra tall
-const R_NUM = 575; // number centres
+// Radii chosen (owner 2026-08-19 rev3) to (a) sit the arc LOWER in the face —
+// apex ≈ y328 instead of jammed at the top — and (b) give the numbers real
+// clearance above the ticks (R_NUM − R_MAJ = 60, was 32 → numbers touched).
+const R_LINE = 379; // the arc baseline the ticks rise from
+const R_MAJ = 415; // major tick tops
+const R_MIN = 399; // minor tick tops
+const R_ZERO = 427; // the 0 tick is extra tall
+const R_NUM = 475; // number centres (60 clear of the major ticks)
 const ANG_END_L = -46; // the − end (just past −20 at −41°)
 const ANG_END_R = 45; // the + end (just past +5 at +43°)
-export const VU_NEEDLE_TIP = 528; // needle tip radius (just below the arc)
+export const VU_NEEDLE_TIP = 425; // needle tip radius (reaches the tick line)
 
 /** Face window (skin space) — the needle is CLIPPED to this so the blade never
  *  paints over the bezel below the glass. */
@@ -120,10 +123,10 @@ export const SPL_SCALE = (() => {
       <SvgText
         key={`N${m.db}`}
         x={pn.x}
-        y={pn.y + 24}
+        y={pn.y + 20}
         fill={col}
         fontFamily={fonts.oswaldSemiBold}
-        fontSize={68}
+        fontSize={58}
         textAnchor="middle"
         transform={`rotate(${a.toFixed(1)} ${pn.x.toFixed(1)} ${pn.y.toFixed(1)})`}
       >
@@ -139,15 +142,15 @@ export const SPL_SCALE = (() => {
     els.push(<Line key={`m${i}`} x1={pi.x} y1={pi.y} x2={po.x} y2={po.y} stroke={col} strokeWidth={5} />);
   });
   // − / + end symbols, just above the arc ends.
-  const pMinus = skinPt(ANG_END_L, R_NUM - 26);
-  const pPlus = skinPt(ANG_END_R, R_NUM - 26);
+  const pMinus = skinPt(ANG_END_L, R_NUM - 18);
+  const pPlus = skinPt(ANG_END_R, R_NUM - 18);
   els.push(
-    <SvgText key="sM" x={pMinus.x} y={pMinus.y + 26} fill={INK} fontFamily={fonts.oswaldSemiBold} fontSize={80} textAnchor="middle" transform={`rotate(${ANG_END_L} ${pMinus.x.toFixed(1)} ${pMinus.y.toFixed(1)})`}>
+    <SvgText key="sM" x={pMinus.x} y={pMinus.y + 22} fill={INK} fontFamily={fonts.oswaldSemiBold} fontSize={66} textAnchor="middle" transform={`rotate(${ANG_END_L} ${pMinus.x.toFixed(1)} ${pMinus.y.toFixed(1)})`}>
       −
     </SvgText>,
   );
   els.push(
-    <SvgText key="sP" x={pPlus.x} y={pPlus.y + 26} fill={INK_RED} fontFamily={fonts.oswaldSemiBold} fontSize={80} textAnchor="middle" transform={`rotate(${ANG_END_R} ${pPlus.x.toFixed(1)} ${pPlus.y.toFixed(1)})`}>
+    <SvgText key="sP" x={pPlus.x} y={pPlus.y + 22} fill={INK_RED} fontFamily={fonts.oswaldSemiBold} fontSize={66} textAnchor="middle" transform={`rotate(${ANG_END_R} ${pPlus.x.toFixed(1)} ${pPlus.y.toFixed(1)})`}>
       +
     </SvgText>,
   );

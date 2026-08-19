@@ -6,7 +6,7 @@
  * educational info screen (the live engine is Spike 0 — see toolsData notes).
  */
 import { useEffect, useRef, useState, type FC } from 'react';
-import { Animated, Dimensions, Easing, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Animated, Dimensions, Easing, InteractionManager, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../../features/settings/store';
@@ -129,40 +129,55 @@ const STRIP_LABEL: Record<ToolKey, string> = {
  *  scripted animated preview; the five mic tools render the static artwork as
  *  the resting state with the live mini fading in over it while frames flow —
  *  absent/spike/denied engines simply rest on the art (no fake meters, §1.7). */
-function ToolStrip({ tool, live, active }: { tool: ToolKey; live: boolean; active: boolean }) {
+function ToolStrip({ tool, live, active, ready }: { tool: ToolKey; live: boolean; active: boolean; ready: boolean }) {
   const Strip = TOOL_STRIP[tool];
   const Sim = HUB_SIM_MINIS[tool];
   const Live = HUB_LIVE_MINIS[tool];
   // Always-on skinned display (SPL): its own photoreal face replaces the static
   // artwork in every state (needle rests when there's no live signal).
   const Skin = HUB_SKIN_MINIS[tool];
+  // Fade the display in when it mounts, so the deferred content doesn't pop.
+  const fade = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (ready) {
+      Animated.timing(fade, { toValue: 1, duration: 260, easing: Easing.out(Easing.quad), useNativeDriver: true }).start();
+    }
+  }, [ready, fade]);
   return (
     <View style={styles.tileStrip} pointerEvents="none">
       {/* Inner keeps the strip's true 2:1 so it's never distorted; the outer
           2.5:1 crop (overflow hidden) trims only the safe top/bottom margin. */}
       <View style={styles.tileStripInner}>
-        {Skin ? (
-          <View style={StyleSheet.absoluteFill} accessibilityRole="image" accessibilityLabel={STRIP_LABEL[tool]}>
-            <Skin />
-          </View>
-        ) : Sim ? (
-          <View
-            style={StyleSheet.absoluteFill}
-            accessibilityRole="image"
-            accessibilityLabel={`${STRIP_LABEL[tool]} (animated demonstration)`}
-          >
-            <Sim active={active} />
-          </View>
-        ) : (
-          <>
-            <Strip
-              width="100%"
-              height="100%"
-              accessibilityRole="image"
-              accessibilityLabel={STRIP_LABEL[tool]}
-            />
-            {live && Live ? <Live /> : null}
-          </>
+        {/* Displays are DEFERRED until after the open transition (owner 2026-08-19
+            perf): the heavy SVG art / skin PNG / minis would otherwise render
+            synchronously during navigation and stall the screen from opening.
+            Until ready the tile shows its dark screen (reads as "powering on"). */}
+        {ready && (
+          <Animated.View style={[StyleSheet.absoluteFill, { opacity: fade }]}>
+            {Skin ? (
+              <View style={StyleSheet.absoluteFill} accessibilityRole="image" accessibilityLabel={STRIP_LABEL[tool]}>
+                <Skin />
+              </View>
+            ) : Sim ? (
+              <View
+                style={StyleSheet.absoluteFill}
+                accessibilityRole="image"
+                accessibilityLabel={`${STRIP_LABEL[tool]} (animated demonstration)`}
+              >
+                <Sim active={active} />
+              </View>
+            ) : (
+              <>
+                <Strip
+                  width="100%"
+                  height="100%"
+                  accessibilityRole="image"
+                  accessibilityLabel={STRIP_LABEL[tool]}
+                />
+                {live && Live ? <Live /> : null}
+              </>
+            )}
+          </Animated.View>
         )}
       </View>
     </View>
@@ -280,6 +295,7 @@ function ToolTile({
   planned,
   live,
   active,
+  ready,
   onActivate,
 }: {
   tool: ToolKey;
@@ -287,6 +303,7 @@ function ToolTile({
   planned?: boolean;
   live: boolean;
   active: boolean;
+  ready: boolean;
   onActivate: () => void;
 }) {
   const sink = useRef(new Animated.Value(0)).current;
@@ -360,7 +377,7 @@ function ToolTile({
             <Text style={styles.tileName} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65}>
               {name}
             </Text>
-            <ToolStrip tool={tool} live={live} active={active} />
+            <ToolStrip tool={tool} live={live} active={active} ready={ready} />
             <TileGlass />
             {/* Illumination — the screen powers on (glow ramps up) when pressed. */}
             <Animated.View pointerEvents="none" style={[styles.tileGlowLight, { opacity: glow }]} />
@@ -384,6 +401,28 @@ export function ToolsHubScreen({ navigation }: Props) {
   // force-stops on blur/background, resumes on return; 'denied' rests the live
   // tiles on their static artwork without re-prompting.
   const hubPreview = useHubPreviewEngine();
+  // Defer the tile displays until the open transition finishes so the heavy SVG
+  // art / skin PNG / minis never render synchronously during navigation (owner
+  // 2026-08-19: the screen was slow to open). The frame + titles paint instantly;
+  // the displays fill a beat later.
+  const [displaysReady, setDisplaysReady] = useState(false);
+  useEffect(() => {
+    let done = false;
+    const finish = () => {
+      if (!done) {
+        done = true;
+        setDisplaysReady(true);
+      }
+    };
+    // Prefer "after the open transition"; a timeout GUARANTEES the displays
+    // still appear even if no interaction handle ever resolves.
+    const handle = InteractionManager.runAfterInteractions(finish);
+    const t = setTimeout(finish, 350);
+    return () => {
+      handle.cancel();
+      clearTimeout(t);
+    };
+  }, []);
   // Saved Measurements + Measurement Training are Academy-only (owner
   // 2026-08-05) — free accounts see them grayed + locked → Paywall. Gate on
   // entitlement, not caps (matches the AudioLearning training gate).
@@ -459,6 +498,7 @@ export function ToolsHubScreen({ navigation }: Props) {
                   planned={t.planned}
                   live={hubPreview.engineLive}
                   active={hubPreview.active}
+                  ready={displaysReady}
                   // The Frequency Counter and the MultiMeter have their own full
                   // live screens (each owns its useToolUsage telemetry); the rest
                   // open their educational info screen (Booth 2026-07-18;
