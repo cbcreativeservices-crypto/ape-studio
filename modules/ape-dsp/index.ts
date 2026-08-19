@@ -377,12 +377,15 @@ export const ApeDsp = {
   getSpectrum(): Float32Array {
     return this.engineVersion() >= 2 ? toFloat32(native!.getSpectrumData()) : new Float32Array(0);
   },
-  /** Waveform history, newest first. */
-  getWaveform(): WaveBucket[] {
+  /** Waveform history, newest first. `maxBuckets` caps the decode for
+   *  consumers that only need the newest slice (the ToolsHub previews read 60
+   *  of the ring's ~1200 buckets 12.5×/s — decoding the rest is pure GC churn). */
+  getWaveform(maxBuckets = Number.POSITIVE_INFINITY): WaveBucket[] {
     if (this.engineVersion() < 2) return [];
     const q = toFloat32(native!.getWaveformData());
     const out: WaveBucket[] = [];
-    for (let i = 0; i + 3 < q.length; i += 4) {
+    const end = Math.min(q.length, maxBuckets * 4);
+    for (let i = 0; i + 3 < end; i += 4) {
       out.push({ min: q[i], max: q[i + 1], rms: q[i + 2], clipped: q[i + 3] > 0.5 });
     }
     return out;

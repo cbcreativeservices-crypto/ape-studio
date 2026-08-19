@@ -41,6 +41,13 @@ import { CONCEPT_MODULES } from '../../features/tools/learn';
 import { colors, fonts } from '../../theme/tokens';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { toolByKey, type ToolKey } from './toolsData';
+// Live tile previews (owner order 2026-08-19): the hub owns ONE shared mic/DSP
+// session + tick (hubPreviewEngine); five tiles redraw their strip artwork from
+// live frames, three run labeled scripted demos. All react-native-svg — the
+// hub stays Skia-free and web-previewable.
+import { useHubPreviewEngine } from './hubPreviewEngine';
+import { HUB_LIVE_MINIS } from './hubPreviewsLive';
+import { HUB_SIM_MINIS } from './hubPreviewsSim';
 import {
   fmtDuration,
   getExposureSnapshot,
@@ -117,20 +124,39 @@ const STRIP_LABEL: Record<ToolKey, string> = {
   multimeter: 'Pro audio multimeter: combined level bar, spectrum, spectrogram and oscilloscope',
 };
 
-/** Full-width 2:1 strip that replaces the old icon well above each tile title. */
-function ToolStrip({ tool }: { tool: ToolKey }) {
+/** Full-width 2:1 strip that replaces the old icon well above each tile title.
+ *  Now the tile's DISPLAY (owner 2026-08-19): the three demo tools render their
+ *  scripted animated preview; the five mic tools render the static artwork as
+ *  the resting state with the live mini fading in over it while frames flow —
+ *  absent/spike/denied engines simply rest on the art (no fake meters, §1.7). */
+function ToolStrip({ tool, live, active }: { tool: ToolKey; live: boolean; active: boolean }) {
   const Strip = TOOL_STRIP[tool];
+  const Sim = HUB_SIM_MINIS[tool];
+  const Live = HUB_LIVE_MINIS[tool];
   return (
-    <View style={styles.tileStrip}>
+    <View style={styles.tileStrip} pointerEvents="none">
       {/* Inner keeps the strip's true 2:1 so it's never distorted; the outer
           2.5:1 crop (overflow hidden) trims only the safe top/bottom margin. */}
       <View style={styles.tileStripInner}>
-        <Strip
-          width="100%"
-          height="100%"
-          accessibilityRole="image"
-          accessibilityLabel={STRIP_LABEL[tool]}
-        />
+        {Sim ? (
+          <View
+            style={StyleSheet.absoluteFill}
+            accessibilityRole="image"
+            accessibilityLabel={`${STRIP_LABEL[tool]} (animated demonstration)`}
+          >
+            <Sim active={active} />
+          </View>
+        ) : (
+          <>
+            <Strip
+              width="100%"
+              height="100%"
+              accessibilityRole="image"
+              accessibilityLabel={STRIP_LABEL[tool]}
+            />
+            {live && Live ? <Live /> : null}
+          </>
+        )}
       </View>
     </View>
   );
@@ -245,11 +271,15 @@ function ToolTile({
   tool,
   name,
   planned,
+  live,
+  active,
   onActivate,
 }: {
   tool: ToolKey;
   name: string;
   planned?: boolean;
+  live: boolean;
+  active: boolean;
   onActivate: () => void;
 }) {
   const sink = useRef(new Animated.Value(0)).current;
@@ -306,7 +336,7 @@ function ToolTile({
       <LinearGradient pointerEvents="none" colors={['rgba(0,0,0,0.6)', 'rgba(0,0,0,0)']} style={styles.tileCavityTop} />
       {/* The DISPLAY 'cap' — the only mover: sinks into the recess on press. */}
       <Animated.View style={[styles.tileCap, { transform: [{ translateY }] }]}>
-        <ToolStrip tool={tool} />
+        <ToolStrip tool={tool} live={live} active={active} />
         <Text style={styles.tileName} numberOfLines={2}>
           {name.replace(' / ', '\n')}
         </Text>
@@ -326,6 +356,11 @@ function ToolTile({
 export function ToolsHubScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
   const { commercialMode, caps, entitlement } = useEntitlement();
+  // ONE shared mic/DSP session + tick for the live tile previews (owner
+  // 2026-08-19). Auto-starts on entry (OS permission prompt on first visit),
+  // force-stops on blur/background, resumes on return; 'denied' rests the live
+  // tiles on their static artwork without re-prompting.
+  const hubPreview = useHubPreviewEngine();
   // Saved Measurements + Measurement Training are Academy-only (owner
   // 2026-08-05) — free accounts see them grayed + locked → Paywall. Gate on
   // entitlement, not caps (matches the AudioLearning training gate).
@@ -403,17 +438,21 @@ export function ToolsHubScreen({ navigation }: Props) {
                   tool={t.key}
                   name={t.name}
                   planned={t.planned}
+                  live={hubPreview.engineLive}
+                  active={hubPreview.active}
                   // The Frequency Counter and the MultiMeter have their own full
                   // live screens (each owns its useToolUsage telemetry); the rest
                   // open their educational info screen (Booth 2026-07-18;
-                  // MultiMeter owner spec 2026-07-29).
-                  onActivate={() =>
-                    t.key === 'hzcounter'
-                      ? navigation.navigate('FrequencyCounter')
-                      : t.key === 'multimeter'
-                        ? navigation.navigate('MultiMeter')
-                        : navigation.navigate('ToolInfo', { toolKey: t.key })
-                  }
+                  // MultiMeter owner spec 2026-07-29). The hub's preview mic is
+                  // released BEFORE navigating so the tool's own engine session
+                  // never races the hub teardown (single native session, no
+                  // refcount — hubPreviewEngine header).
+                  onActivate={() => {
+                    hubPreview.stopForNavigation();
+                    if (t.key === 'hzcounter') navigation.navigate('FrequencyCounter');
+                    else if (t.key === 'multimeter') navigation.navigate('MultiMeter');
+                    else navigation.navigate('ToolInfo', { toolKey: t.key });
+                  }}
                 />
               ))}
               </View>
