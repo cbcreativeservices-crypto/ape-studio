@@ -151,7 +151,7 @@ const C_YELLOW = '#f0dd5a';
 const C_ORANGE = '#f0863a';
 const C_RED = '#ff5a48';
 
-type Anchor = 'start' | 'end';
+type Anchor = 'start' | 'end' | 'middle';
 type CalloutDef = { spl: number; color: string; t1: string; t2: string };
 type Placed = CalloutDef & { tx: number; ty: number; a: Anchor; fs: number; ang: number };
 const LX = 178; // LEFT column right edge
@@ -181,32 +181,41 @@ const CALLOUTS: Record<DialMode3d, CalloutDef[]> = {
   ],
 };
 
-/** Auto-layout (rev 9 — owner: no centre-locked "titles"; balance the sides;
- *  never cross leaders). Each range goes to the side it sits on; a near-top
- *  range goes to whichever side is emptier. Within a column the items are
- *  ORDERED by arc angle and de-overlapped downward, so leaders fan out and
- *  never cross. Long labels auto-shrink to fit the margin. */
+/** Auto-layout (rev 10 — owner: place ranges HIGHER, next to the wheel, so
+ *  leaders run straight out from the anchor without sharp kinks or grazing
+ *  under the tiles). Each range's label sits just OUTSIDE the wheel AT ITS OWN
+ *  ANGLE (radial), so the leader is a short near-radial line. Near-top ranges
+ *  (|angle|<22°) go to a short top row above the apex; everything else hugs the
+ *  left/right of the wheel, ordered by angle and de-overlapped just enough to
+ *  not touch. Long labels auto-shrink. */
+const LABEL_K = 1.24; // label sits at this radius (just outside the tiles)
+function fitFs(t1: string) {
+  return Math.max(15, Math.min(21, Math.floor(SIDE_MAXW / (t1.length * 0.56))));
+}
 function layoutMode(mode: DialMode3d): Placed[] {
   const items = CALLOUTS[mode].map((c) => ({ ...c, ang: theta(c.spl) }));
-  const L: (CalloutDef & { ang: number })[] = [];
-  const R: (CalloutDef & { ang: number })[] = [];
-  items.forEach((c) => {
-    if (Math.abs(c.ang) >= 18) (c.ang < 0 ? L : R).push(c);
-  });
-  items.filter((c) => Math.abs(c.ang) < 18).forEach((c) => (L.length <= R.length ? L : R).push(c));
+  const top = items.filter((c) => Math.abs(c.ang) < 22).sort((a, b) => a.ang - b.ang);
+  const left = items.filter((c) => c.ang <= -22).sort((a, b) => a.ang - b.ang);
+  const right = items.filter((c) => c.ang >= 22).sort((a, b) => a.ang - b.ang);
   const out: Placed[] = [];
-  const place = (arr: (CalloutDef & { ang: number })[], tx: number, a: Anchor) => {
-    arr.sort((x, y) => x.ang - y.ang);
-    let py = 112;
+  // Top row: above the apex, spread by angle (a lone one nudged off dead-centre).
+  const nt = top.length;
+  top.forEach((c, i) => {
+    const tx = nt === 1 ? CX + 66 : CX + (i - (nt - 1) / 2) * 236;
+    out.push({ ...c, tx, ty: 118, a: 'middle', fs: fitFs(c.t1) });
+  });
+  // Sides: radial, hugging the wheel, de-overlapped downward.
+  const placeSide = (arr: (CalloutDef & { ang: number })[], a: Anchor) => {
+    let py = -Infinity;
     arr.forEach((c) => {
-      const ty = Math.max(ept(c.ang, 1).y + 4, py);
-      py = ty + 56;
-      const fs = Math.max(15, Math.min(21, Math.floor(SIDE_MAXW / (c.t1.length * 0.56))));
-      out.push({ ...c, tx, ty, a, fs });
+      const lp = ept(c.ang, LABEL_K);
+      const ty = Math.max(lp.y, py + 44);
+      py = ty;
+      out.push({ ...c, tx: lp.x, ty, a, fs: fitFs(c.t1) });
     });
   };
-  place(L, LX, 'end');
-  place(R, RX_COL, 'start');
+  placeSide(left, 'end');
+  placeSide(right, 'start');
   return out;
 }
 const LAID_OUT: Record<DialMode3d, Placed[]> = {
@@ -220,18 +229,12 @@ const TITLES: Record<DialMode3d, [string, string | null]> = {
   optimal: ['OPTIMAL REFERENCE LISTENING', 'dBA · LAeq WHERE NOTED'],
 };
 
-/** Elbowed leader: a radial stub off the anchor (clears the ring), then a run
- *  to the label. The radial stub points up-and-out for near-top ranges, so a
- *  side-placed top range never drags its line across the coloured blocks. */
+/** Straight leader from the anchor (just outside the tile) to the label's inner
+ *  point (rev 10). Because the label sits radially outward from the anchor, the
+ *  line is near-radial — no sharp kink, and it never runs under the tiles. */
 function leaderPath(spl: number, tx: number, ty: number): { d: string; ax: number; ay: number } {
-  const A = ept(theta(spl), 1.04);
-  let nx = A.x - CX;
-  let ny = A.y - CY;
-  const len = Math.hypot(nx, ny) || 1;
-  nx /= len;
-  ny /= len;
-  const stub = { x: A.x + nx * 24, y: A.y + ny * 24 };
-  return { d: `M${P(A)}L${P(stub)}L${tx.toFixed(1)} ${(ty + 4).toFixed(1)}`, ax: A.x, ay: A.y };
+  const A = ept(theta(spl), 1.05);
+  return { d: `M${P(A)}L${tx.toFixed(1)} ${(ty - 6).toFixed(1)}`, ax: A.x, ay: A.y };
 }
 
 function chrome(mode: DialMode3d, calibrated: boolean): ReactNode {
