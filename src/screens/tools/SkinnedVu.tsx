@@ -33,17 +33,18 @@ export const VU_MAX = Math.pow(10, 6 / 20); // integrator ceiling (+6 dB rel 0 V
 // the needle slide across the bottom border instead of pivoting.) The scale
 // therefore spans a WIDE angle about the dome, exactly like a real VU face.
 export const VU_CTR = { x: 795, y: 803 }; // the dome — the FIXED needle pivot
-// Radii chosen (owner 2026-08-19 rev3) to (a) sit the arc LOWER in the face —
-// apex ≈ y328 instead of jammed at the top — and (b) give the numbers real
-// clearance above the ticks (R_NUM − R_MAJ = 60, was 32 → numbers touched).
-const R_LINE = 379; // the arc baseline the ticks rise from
-const R_MAJ = 415; // major tick tops
-const R_MIN = 399; // minor tick tops
-const R_ZERO = 427; // the 0 tick is extra tall
-const R_NUM = 475; // number centres (60 clear of the major ticks)
-const ANG_END_L = -46; // the − end (just past −20 at −41°)
-const ANG_END_R = 45; // the + end (just past +5 at +43°)
-export const VU_NEEDLE_TIP = 425; // needle tip radius (reaches the tick line)
+// Radii (owner 2026-08-19 rev4): arc apex ≈ y278 — halfway between the old
+// jammed-at-top (y228) and the too-low rev3 (y328). R_NUM − R_MAJ = 60 keeps
+// the numbers well clear of the ticks. The − / + ends are pushed to ±52° so
+// they no longer collide with the −20 / +5 numbers.
+const R_LINE = 429; // the arc baseline the ticks rise from
+const R_MAJ = 465; // major tick tops
+const R_MIN = 449; // minor tick tops
+const R_ZERO = 477; // the 0 tick is extra tall
+const R_NUM = 525; // number centres (60 clear of the major ticks)
+const ANG_END_L = -52; // the − end (11° past −20 at −41° — clear of the number)
+const ANG_END_R = 52; // the + end (9° past +5 at +43°)
+export const VU_NEEDLE_TIP = 475; // needle tip radius (reaches the tick line)
 
 /** Face window (skin space) — the needle is CLIPPED to this so the blade never
  *  paints over the bezel below the glass. */
@@ -154,13 +155,21 @@ export const SPL_SCALE = (() => {
       +
     </SvgText>,
   );
-  // PEAK label + lamp bezel (unlit: red ring, pale centre — per the reference).
+  // PEAK label + RED lamp (always red; unlit = dark red, off). The bright,
+  // illuminated clip state is drawn on top by the renderer.
   els.push(<SvgText key="pk" x={SKIN_LAMP.x - 62} y={SKIN_LAMP.y + 20} fill={INK} fontFamily={fonts.oswaldSemiBold} fontSize={58} letterSpacing={4} textAnchor="end">PEAK</SvgText>);
-  els.push(<Circle key="pkRing" cx={SKIN_LAMP.x} cy={SKIN_LAMP.y} r={SKIN_LAMP.r} fill="#f0e4c8" stroke="#a02818" strokeWidth={10} />);
+  els.push(<Circle key="pkSocket" cx={SKIN_LAMP.x} cy={SKIN_LAMP.y} r={SKIN_LAMP.r + 5} fill="#241207" />);
+  els.push(<Circle key="pkBg" cx={SKIN_LAMP.x} cy={SKIN_LAMP.y} r={SKIN_LAMP.r} fill="#6e1409" />);
+  els.push(<Circle key="pkHi" cx={SKIN_LAMP.x - 9} cy={SKIN_LAMP.y - 9} r={SKIN_LAMP.r * 0.42} fill="#9c2a1a" opacity={0.7} />);
   return <G>{els}</G>;
 })();
 
 const NEEDLE = '#1a1206';
+
+/** A centred circle box (left/top/size/radius) for the lamp-glow overlays. */
+function lampGlowBox(cx: number, cy: number, d: number) {
+  return { left: cx - d / 2, top: cy - d / 2, width: d, height: d, borderRadius: d / 2 };
+}
 
 export type SkinnedVuProps = {
   width: number;
@@ -196,6 +205,7 @@ export function SkinnedVu({ width, height, live, live0Db, running = true, fit = 
 
   const needleStyle = useAnimatedStyle(() => ({ transform: [{ rotate: `${vuAngle(vuVal.value)}deg` }] }));
   const lampStyle = useAnimatedStyle(() => ({ opacity: lampT.value }));
+  const lampGlowStyle = useAnimatedStyle(() => ({ opacity: lampT.value * 0.4 }));
 
   // Map the skin's 1586×992 space onto the width×height box the SAME way the
   // <Svg preserveAspectRatio> does, so RN overlays line up with the SVG.
@@ -228,22 +238,12 @@ export function SkinnedVu({ width, height, live, live0Db, running = true, fit = 
         <SvgImage href={VU_SKIN} x={0} y={0} width={1586} height={992} preserveAspectRatio="xMidYMid slice" />
         {SPL_SCALE}
       </Svg>
-      {/* PEAK lamp lit glow. */}
-      <Animated.View
-        pointerEvents="none"
-        style={[
-          {
-            position: 'absolute',
-            left: toX(SKIN_LAMP.x) - lampD / 2,
-            top: toY(SKIN_LAMP.y) - lampD / 2,
-            width: lampD,
-            height: lampD,
-            borderRadius: lampD / 2,
-            backgroundColor: '#ff4a30',
-          },
-          lampStyle,
-        ]}
-      />
+      {/* PEAK lamp — illuminated clip state: a soft halo, a bright red core, and
+          a hot centre, so it reads like a real lamp glowing from inside. All
+          fade in together with the clip. */}
+      <Animated.View pointerEvents="none" style={[{ position: 'absolute', ...lampGlowBox(toX(SKIN_LAMP.x), toY(SKIN_LAMP.y), lampD * 2.1), backgroundColor: '#ff2a12' }, lampGlowStyle]} />
+      <Animated.View pointerEvents="none" style={[{ position: 'absolute', ...lampGlowBox(toX(SKIN_LAMP.x), toY(SKIN_LAMP.y), lampD), backgroundColor: '#ff5a34' }, lampStyle]} />
+      <Animated.View pointerEvents="none" style={[{ position: 'absolute', ...lampGlowBox(toX(SKIN_LAMP.x) - 6 * scale, toY(SKIN_LAMP.y) - 6 * scale, lampD * 0.5), backgroundColor: '#ffe6ac' }, lampStyle]} />
       {/* Needle — clipped to the face window; the blade rotates about the deep
           scale centre far below the widget, exactly like the real movement. */}
       <View pointerEvents="none" style={{ position: 'absolute', ...clip, overflow: 'hidden' }}>

@@ -158,7 +158,14 @@ const HubSplSkin: FC = memo(() => {
         </Defs>
         <SvgImage href={VU_SKIN} x={0} y={0} width={1586} height={992} preserveAspectRatio="xMidYMid slice" />
         {SPL_SCALE}
-        {lampLit && <Circle cx={SKIN_LAMP.x} cy={SKIN_LAMP.y} r={SKIN_LAMP.r - 5} fill="#ff4a30" />}
+        {/* PEAK lamp illuminated (clipping): halo + bright core + hot centre. */}
+        {lampLit && (
+          <>
+            <Circle cx={SKIN_LAMP.x} cy={SKIN_LAMP.y} r={SKIN_LAMP.r * 2.1} fill="#ff2a12" opacity={0.4} />
+            <Circle cx={SKIN_LAMP.x} cy={SKIN_LAMP.y} r={SKIN_LAMP.r} fill="#ff5a34" />
+            <Circle cx={SKIN_LAMP.x - 6} cy={SKIN_LAMP.y - 6} r={SKIN_LAMP.r * 0.5} fill="#ffe6ac" />
+          </>
+        )}
         {/* Needle — pivots at the DOME (fixed axle), clipped to the face window
             so it never paints over the bezel. */}
         <G clipPath="url(#hpVuFace)">
