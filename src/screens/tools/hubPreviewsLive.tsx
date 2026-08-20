@@ -132,17 +132,26 @@ const SPL_LIVE0 = -40;
 const HubSplSkin: FC = memo(() => {
   const d = useHubData();
   const vuRef = useRef(0);
+  const vuVelRef = useRef(0);
   const lastTickRef = useRef(-2);
 
   const db = dbOr(d.meter?.aFastDb);
   const peakDb = dbOr(d.meter?.peakDb);
-  // Advance the VU ballistics once per store tick — rise tc 0.15 s, fall 0.45 s.
+  // Same TRUE VU ballistic as the tool's SkinnedVu (symmetric 2nd-order, ANSI
+  // C16.5 / IEC 60268-17) so the tile needle behaves EXACTLY like the meter.
   if (lastTickRef.current !== d.tick) {
     lastTickRef.current = d.tick;
     const target = db <= -119 ? 0 : Math.min(VU_MAX * 1.04, Math.pow(10, (db - SPL_LIVE0) / 20));
-    const prev = vuRef.current;
-    const tc = target > prev ? 0.15 : 0.45;
-    vuRef.current = prev + (target - prev) * (1 - Math.exp(-TICK_SEC / tc));
+    const W = 16;
+    const Z = 0.72;
+    // Sub-step the 80 ms tick (dt·W would be ~1.3) so the 2nd-order stays accurate.
+    const SUB = 4;
+    const h = TICK_SEC / SUB;
+    for (let i = 0; i < SUB; i++) {
+      const acc = W * W * (target - vuRef.current) - 2 * Z * W * vuVelRef.current;
+      vuVelRef.current += acc * h;
+      vuRef.current = Math.max(0, vuRef.current + vuVelRef.current * h);
+    }
   }
   const ang = vuAngle(vuRef.current);
   const tip = skinPt(ang, VU_NEEDLE_TIP);

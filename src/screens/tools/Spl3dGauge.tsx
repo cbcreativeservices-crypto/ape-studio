@@ -84,7 +84,7 @@ function capsPath(a1: number, a2: number): string {
 /* ── Palette (rev 8 — 6-zone) ───────────────────────────────────────── */
 type ZoneKey = 'grey' | 'green' | 'gold' | 'orange' | 'red';
 const ZONE_HEX: Record<ZoneKey, string> = {
-  grey: '#7b818b',
+  grey: '#929aa4', // lit = bright silver ("on"); below-level blocks dim to dark grey
   green: '#34c06b',
   gold: '#e0b13a', // plain gold (target band once exceeded)
   orange: '#f0863a',

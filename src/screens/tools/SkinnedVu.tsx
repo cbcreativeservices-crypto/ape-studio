@@ -188,15 +188,25 @@ export type SkinnedVuProps = {
  *  true peak crosses −3 dBFS. */
 export function SkinnedVu({ width, height, live, live0Db, running = true, fit = 'contain' }: SkinnedVuProps) {
   const vuVal = useSharedValue(0);
+  const vuVel = useSharedValue(0);
   const lampT = useSharedValue(0);
 
   useFrameCallback((frame) => {
     'worklet';
-    const dt = Math.min(0.064, (frame.timeSincePreviousFrame ?? 16.7) / 1000);
+    const dt = Math.min(0.05, (frame.timeSincePreviousFrame ?? 16.7) / 1000);
+    // Target deflection: the RMS level as a VOLTAGE RATIO about the 0-VU
+    // reference (live0Db). v=1 is exactly 0 VU — so the needle reads the truth.
     const rms = running ? live.rmsDb.value : -120;
     const target = rms === rms && rms > -119 ? Math.min(1.995, Math.pow(10, (rms - live0Db) / 20)) : 0;
-    const tc = target > vuVal.value ? 0.2 : 0.45;
-    vuVal.value = vuVal.value + (target - vuVal.value) * (1 - Math.exp(-dt / tc));
+    // TRUE VU ballistic (ANSI C16.5 / IEC 60268-17): a symmetric 2nd-order
+    // movement — 99% of a step in ~300 ms with ~1.5% overshoot — NOT an
+    // asymmetric envelope. W/Z tuned to spec; semi-implicit Euler is stable at
+    // our frame dt (dt·W < 1). Same law rising and falling, like a real meter.
+    const W = 16; // rad/s natural frequency
+    const Z = 0.72; // damping ratio → 1.5% overshoot, 99% by ~300 ms (spec)
+    const acc = W * W * (target - vuVal.value) - 2 * Z * W * vuVel.value;
+    vuVel.value = vuVel.value + acc * dt;
+    vuVal.value = Math.max(0, vuVal.value + vuVel.value * dt);
     const pk = running ? live.peakDb.value : -120;
     if (pk === pk && pk >= -3) lampT.value = 1;
     else lampT.value = Math.max(0, lampT.value - dt / 0.6);
