@@ -27,7 +27,7 @@ Browser-iterate tools via `modules/ape-dsp/apeDspSim.ts` (web sim) + `src/screen
 ## Open items (TODO)
 
 1. Waveform **color-wheel custom-colour button** (membership) — needs a colour-picker component (none exists).
-2. **dBFS sweep** across SPL/VU, RTA, spectrogram (+ MultiMeter **saved snapshot → dBC**).
+2. ~~dBFS sweep across SPL/VU, RTA, spectrogram + MultiMeter snapshot → dBC~~ — **DONE** (`9eb2d58`): weighted → dBA/dBC, unweighted/peak → "relative dB", notes reworded; colour anchors stay 0 dB full-scale; snapshot records dBC. dBFS kept as the SPL screen's selectable digital option.
 3. **iOS MultiMeter randomly reverts to START** — interim resilience auto-resume added; root cause needs the Metro log line (blur vs remount vs JS/SVG error). Not from the warm-session change (that doesn't touch state→idle).
 4. VU change orders 3–12 (tabled, thought-out sequence) — `VU_CHANGE_ORDERS_TABLED_2026_08_18.md`. #8 blocked on owner colour-scheme images; #11 confirm; #12 skins design.
 5. Pre-launch cleanups: temp KT88 promo tube; RtaScreen still has its own copy of the 1/6-oct derivation (dedupe to `sixthOctave.ts`).
