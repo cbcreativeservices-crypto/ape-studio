@@ -13,7 +13,7 @@
  * simulate (measurement-tools §1.7).
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { PermissionsAndroid, Platform } from 'react-native';
+import { InteractionManager, PermissionsAndroid, Platform } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import {
   ApeDsp,
@@ -31,6 +31,9 @@ import type { WarningFlag } from '../measure/types';
 async function ensureMicPermission(): Promise<boolean> {
   if (Platform.OS !== 'android') return true;
   try {
+    // Perf (rev 22): check first — once granted, skip the request() bridge
+    // round-trip that ran on EVERY engine start (every tool open + hub resume).
+    if (await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.RECORD_AUDIO)) return true;
     const res = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.RECORD_AUDIO);
     return res === PermissionsAndroid.RESULTS.GRANTED;
   } catch {
@@ -182,8 +185,15 @@ export function useToolAutoStart(state: EngineState, start: () => void): void {
     if (done.current) return;
     if (state === 'idle') {
       done.current = true;
-      start();
+      // Perf (rev 22): start AFTER the push transition finishes, not during it.
+      // The landing card is already on screen, so this costs no perceived delay;
+      // it lets the tool's heavy native ApeDsp.start() run once the screen has
+      // painted and any in-flight hub teardown stop() has settled — instead of
+      // racing it mid-transition (which serialized the audio HAL open on Android).
+      const task = InteractionManager.runAfterInteractions(() => start());
+      return () => task.cancel();
     }
+    return undefined;
   }, [state, start]);
 }
 

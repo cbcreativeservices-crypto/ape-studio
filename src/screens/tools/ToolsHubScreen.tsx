@@ -337,12 +337,14 @@ function ToolTile({
     if (busy.current) return;
     busy.current = true;
     // Hold the sunk + illuminated state a beat so the "power on" reads, then exit.
+    // Perf (rev 22): trimmed 190→90 ms — still reads as a power-on tap but halves
+    // the fixed latency before navigation starts.
     setTimeout(() => {
       onActivate();
       sink.setValue(0);
       glow.setValue(0);
       busy.current = false;
-    }, 190);
+    }, 90);
   };
 
   const translateY = sink.interpolate({ inputRange: [0, 1], outputRange: [0, TILE_SINK] });
