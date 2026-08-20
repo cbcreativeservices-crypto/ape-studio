@@ -486,6 +486,13 @@ function BrightnessSlider({
 export function SplMeterScreen({ navigation }: Props) {
   const { help, helpAll, sheet } = useToolHelp('spl');
   const insets = useSafeAreaInsets();
+  // Camera/notch housing size for the LANDSCAPE fullscreens (owner rev 24: the
+  // gauge's left chips sat under the iPhone lens). We can't trust insets.left in
+  // the programmatically-locked landscape overlay (it often stays at its stale
+  // portrait 0, with the sensor-housing dimension only in insets.top), so take
+  // the MAX across edges and inset both sides — clears the lens in either
+  // landscape orientation. ~0 extra on notchless phones.
+  const camInset = Math.max(insets.left, insets.right, insets.top);
   const tool = toolByKey('spl');
   // Lifecycle-only engine (responsiveness fix 2026-07-30): we do NOT let the
   // engine poll frames into React state — that 15 Hz whole-screen re-render was
@@ -1719,7 +1726,7 @@ export function SplMeterScreen({ navigation }: Props) {
               accessibilityRole="button"
               accessibilityLabel="Close the full VU screen — tap the meter to close"
             >
-              <View style={styles.vuFsClose} pointerEvents="none">
+              <View style={[styles.vuFsClose, { right: camInset + 14 }]} pointerEvents="none">
                 <Text style={styles.vuFsCloseX}>✕</Text>
               </View>
               {/* LANDSCAPE-ONLY (owner 2026-08-19): render the Full VU content
@@ -1731,7 +1738,7 @@ export function SplMeterScreen({ navigation }: Props) {
                   {/* LED hide/show (owner 2026-08-18) — interactive, top-left. */}
                   {viz && (
                     <Pressable
-                      style={styles.vuFsLedToggle}
+                      style={[styles.vuFsLedToggle, { left: camInset + 14 }]}
                       onPress={() => setVuFsLedHidden((h) => !h)}
                       accessibilityRole="button"
                       accessibilityState={{ selected: !vuFsLedHidden }}
@@ -1747,7 +1754,7 @@ export function SplMeterScreen({ navigation }: Props) {
                       close the screen; only the settings buttons handle their taps
                       (the meter row itself stays pointerEvents="none" so a Skia
                       meter can't eat the tap-to-close — owner 2026-08-18). */}
-                  <View style={styles.vuFsStage} pointerEvents="box-none">
+                  <View style={[styles.vuFsStage, { paddingHorizontal: camInset }]} pointerEvents="box-none">
                     {winW >= winH && (
                       <View style={styles.vuFsCtrlCol}>
                         {fsCtrlItems.map((b) => (
@@ -1824,10 +1831,10 @@ export function SplMeterScreen({ navigation }: Props) {
             >
               {winW >= winH ? (
                 <>
-                  <View style={styles.vuFsClose} pointerEvents="none">
+                  <View style={[styles.vuFsClose, { right: camInset + 14 }]} pointerEvents="none">
                     <Text style={styles.vuFsCloseX}>✕</Text>
                   </View>
-                  <View style={[styles.gaugeFsStage, { paddingLeft: insets.left + 14, paddingRight: insets.right + 8 }]} pointerEvents="box-none">
+                  <View style={[styles.gaugeFsStage, { paddingLeft: camInset + 16, paddingRight: camInset + 12 }]} pointerEvents="box-none">
                     <View style={styles.gaugeFsChipsCol} pointerEvents="auto">
                       {(['studio', 'spl', 'optimal'] as const).map((m) => (
                         <Pressable
