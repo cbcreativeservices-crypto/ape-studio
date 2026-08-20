@@ -30,7 +30,7 @@
  *    quality flags shown live (spec §6/§7).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { BackHandler, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Svg, { Defs, G, Line, LinearGradient, Path, Rect, Stop, Text as SvgText } from 'react-native-svg';
@@ -101,6 +101,19 @@ export function WaveformScreen({ navigation }: Props) {
   const [panelW, setPanelW] = useState(0);
   const [zoom, setZoom] = useState<Zoom>(DEFAULT_ZOOM);
   const [windowSec, setWindowSec] = useState<WindowSec>(DEFAULT_WINDOW);
+  // ZOOM / WINDOW are compact value-buttons that open a small chooser popup
+  // (owner rev 24 — the VU-fullscreen style). Android back closes it first.
+  const [wavePopup, setWavePopup] = useState<null | 'zoom' | 'window'>(null);
+  useEffect(() => {
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (wavePopup != null) {
+        setWavePopup(null);
+        return true;
+      }
+      return false;
+    });
+    return () => sub.remove();
+  }, [wavePopup]);
   // FREEZE: non-null = the FULL engine history held on screen (so the window
   // control still slices real data while frozen). Capture continues (spec §11
   // freeze control) — only the drawing stops updating.
@@ -538,50 +551,39 @@ export function WaveformScreen({ navigation }: Props) {
               </View>
             </View>
 
-            {/* Vertical zoom (display scaling ONLY) + freeze. */}
-            <View style={styles.chipRow}>
-              <Text style={styles.rowLabel}>ZOOM</Text>
-              {ZOOMS.map((z) => (
-                <Pressable
-                  key={z}
-                  style={[styles.chip, zoom === z && styles.chipGreen]}
-                  onPress={() => setZoom(z)}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected: zoom === z }}
-                  accessibilityLabel={`Vertical zoom ${z} times`}
-                >
-                  <Text style={[styles.chipText, zoom === z && styles.chipTextGreen]}>×{z}</Text>
-                </Pressable>
-              ))}
+            {/* ZOOM + WINDOW are compact value-buttons that open a chooser popup
+                (owner rev 24 — the VU-fullscreen style); FREEZE stays an inline
+                toggle. Display scaling / history length ONLY (capture unaffected). */}
+            <View style={styles.ctrlRow}>
               <Pressable
-                style={[styles.chip, styles.chipWide, frozen != null && styles.chipFrozen]}
+                style={styles.ctrlBtn}
+                onPress={() => setWavePopup('zoom')}
+                accessibilityRole="button"
+                accessibilityLabel={`Vertical zoom ${zoom} times. Tap to change.`}
+              >
+                <Text style={styles.ctrlLabel}>ZOOM</Text>
+                <Text style={styles.ctrlValue}>×{zoom}</Text>
+              </Pressable>
+              <Pressable
+                style={styles.ctrlBtn}
+                onPress={() => setWavePopup('window')}
+                accessibilityRole="button"
+                accessibilityLabel={`Time window ${shownSec.toFixed(1)} seconds. Tap to change.`}
+              >
+                <Text style={styles.ctrlLabel}>WINDOW</Text>
+                <Text style={styles.ctrlValue}>{windowSec}s</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.ctrlBtn, frozen != null && styles.ctrlBtnActive]}
                 onPress={toggleFreeze}
                 disabled={displayBuckets.length === 0}
                 accessibilityRole="button"
                 accessibilityState={{ selected: frozen != null, disabled: displayBuckets.length === 0 }}
                 accessibilityLabel={frozen ? 'Unfreeze display' : 'Freeze display'}
               >
-                <Text style={[styles.chipText, frozen != null && styles.chipTextFrozen]}>
-                  {frozen ? 'FROZEN' : 'FREEZE'}
-                </Text>
+                <Text style={styles.ctrlLabel}>FREEZE</Text>
+                <Text style={[styles.ctrlValue, frozen != null && styles.ctrlValueActive]}>{frozen ? 'FROZEN' : 'LIVE'}</Text>
               </Pressable>
-            </View>
-
-            {/* Time window (display history length — real buckets only). */}
-            <View style={styles.chipRow}>
-              <Text style={styles.rowLabel}>WINDOW</Text>
-              {WINDOWS.map((w) => (
-                <Pressable
-                  key={w}
-                  style={[styles.chip, windowSec === w && styles.chipBlue]}
-                  onPress={() => setWindowSec(w)}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected: windowSec === w }}
-                  accessibilityLabel={`Time window ${w} seconds`}
-                >
-                  <Text style={[styles.chipText, windowSec === w && styles.chipTextBlue]}>{w}s</Text>
-                </Pressable>
-              ))}
             </View>
             {/* Display toggles (owner 2026-08-05): COLORS + clip RESET. */}
             <View style={styles.chipRow}>
@@ -657,6 +659,52 @@ export function WaveformScreen({ navigation }: Props) {
           </>
         ) : null}
       </ScrollView>
+
+      {/* ZOOM / WINDOW chooser popup (owner rev 24). Tap outside or Android-back
+          to close; picking an option applies + closes. */}
+      {wavePopup != null ? (
+        <Pressable
+          style={styles.popupBackdrop}
+          onPress={() => setWavePopup(null)}
+          accessibilityRole="button"
+          accessibilityLabel="Close"
+        >
+          <View style={styles.popupCard}>
+            <Text style={styles.popupTitle}>{wavePopup === 'zoom' ? 'VERTICAL ZOOM' : 'TIME WINDOW'}</Text>
+            <View style={styles.popupGrid}>
+              {wavePopup === 'zoom'
+                ? ZOOMS.map((z) => (
+                    <Pressable
+                      key={z}
+                      style={[styles.popupOpt, zoom === z && styles.popupOptSel]}
+                      onPress={() => {
+                        setZoom(z);
+                        setWavePopup(null);
+                      }}
+                      accessibilityRole="button"
+                      accessibilityState={{ selected: zoom === z }}
+                    >
+                      <Text style={[styles.popupOptText, zoom === z && styles.popupOptTextSel]}>×{z}</Text>
+                    </Pressable>
+                  ))
+                : WINDOWS.map((w) => (
+                    <Pressable
+                      key={w}
+                      style={[styles.popupOpt, windowSec === w && styles.popupOptSel]}
+                      onPress={() => {
+                        setWindowSec(w);
+                        setWavePopup(null);
+                      }}
+                      accessibilityRole="button"
+                      accessibilityState={{ selected: windowSec === w }}
+                    >
+                      <Text style={[styles.popupOptText, windowSec === w && styles.popupOptTextSel]}>{w}s</Text>
+                    </Pressable>
+                  ))}
+            </View>
+          </View>
+        </Pressable>
+      ) : null}
       {sheet}
     </View>
   );
@@ -695,6 +743,61 @@ const styles = StyleSheet.create({
   axisText: { fontFamily: fonts.mono, fontSize: 13, color: colors.textSecondary },
 
   // Zoom / window / freeze chip rows.
+  // Compact ZOOM/WINDOW/FREEZE value-buttons + their chooser popup (owner rev 24).
+  ctrlRow: { flexDirection: 'row', gap: 10 },
+  ctrlBtn: {
+    flex: 1,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#131316',
+    paddingVertical: 9,
+    paddingHorizontal: 6,
+    alignItems: 'center',
+    gap: 3,
+  },
+  ctrlBtnActive: { borderColor: 'rgba(120,170,255,.55)', backgroundColor: '#10151f' },
+  ctrlLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 0.8, color: colors.textSub },
+  ctrlValue: { fontFamily: fonts.mono, fontSize: 15, color: colors.amber },
+  ctrlValueActive: { color: '#8fb6ff' },
+  popupBackdrop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.72)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 26,
+    zIndex: 50,
+  },
+  popupCard: {
+    width: '100%',
+    maxWidth: 420,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#2b2b33',
+    backgroundColor: '#141418',
+    padding: 18,
+    gap: 14,
+  },
+  popupTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.6, color: colors.textSecondary, textAlign: 'center' },
+  popupGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 9, justifyContent: 'center' },
+  popupOpt: {
+    minWidth: 62,
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: '#33333c',
+    backgroundColor: '#1a1a1f',
+    paddingVertical: 11,
+    paddingHorizontal: 12,
+    alignItems: 'center',
+  },
+  popupOptSel: { borderColor: 'rgba(255,198,77,.7)', backgroundColor: '#1c1608' },
+  popupOptText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 0.6, color: colors.textSecondary },
+  popupOptTextSel: { color: colors.amber },
+
   chipRow: { flexDirection: 'row', gap: 10, alignItems: 'stretch' },
   rowLabel: {
     width: 56,
