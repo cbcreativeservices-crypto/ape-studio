@@ -86,11 +86,12 @@ function capsPath(a1: number, a2: number): string {
 }
 
 /* ── Palette (rev 8 — 6-zone) ───────────────────────────────────────── */
-type ZoneKey = 'grey' | 'green' | 'gold' | 'orange' | 'red';
+type ZoneKey = 'grey' | 'green' | 'gold' | 'yellow' | 'orange' | 'red';
 const ZONE_HEX: Record<ZoneKey, string> = {
   grey: '#929aa4', // lit = bright silver ("on"); below-level blocks dim to dark grey
   green: '#34c06b',
   gold: '#e0b13a', // plain gold (target band once exceeded)
+  yellow: '#e8d43a', // caution — studio CRITICAL IMPACT (85–95); brighter/greener than gold
   orange: '#f0863a',
   red: '#e23b2c',
 };
@@ -101,7 +102,8 @@ function zoneKey(s: number, mode: DialMode3d): ZoneKey {
     if (s < 60) return 'grey';
     if (s < 76) return 'green';
     if (s < 85) return 'gold';
-    if (s < 100) return 'orange';
+    if (s < 96) return 'yellow'; // 85–95 CRITICAL IMPACT (owner rev 24: yellow restored)
+    if (s < 100) return 'orange'; // 96–99 HIGH
     return 'red';
   }
   if (mode === 'spl') {
@@ -127,7 +129,8 @@ const BANDS: Record<DialMode3d, Band[]> = {
     { hi: 70, name: 'BACKGROUND', zone: 'green' }, // 60–65
     { hi: 76, name: 'GENERAL EDITING', zone: 'green' }, // 70–75
     { hi: 85, name: 'CRITICAL BALANCING', zone: 'gold' }, // 76–84
-    { hi: 100, name: 'IMPACT CHECK', zone: 'orange' }, // 85–95
+    { hi: 96, name: 'CRITICAL IMPACT', zone: 'yellow' }, // 85–95
+    { hi: 100, name: 'HIGH', zone: 'orange' }, // 96–99
     { hi: Infinity, name: 'OVER — UNSAFE', zone: 'red' }, // 100+
   ],
   spl: [
@@ -165,6 +168,7 @@ const INK_FAINT = '#787c85';
 const C_GREY = '#aab0b8';
 const C_GREEN = '#4fd07f';
 const C_GOLD = '#f2ca55';
+const C_YELLOW = '#ecdb55';
 const C_ORANGE = '#f0863a';
 const C_RED = '#ff5a48';
 
@@ -179,7 +183,8 @@ const CALLOUTS: Record<DialMode3d, CalloutDef[]> = {
     { spl: 62, color: C_GREEN, t1: 'BACKGROUND', t2: '60–65 dB SPL' },
     { spl: 72, color: C_GREEN, t1: 'GENERAL EDITING', t2: '70–75 dB SPL' },
     { spl: 79, color: C_GOLD, t1: 'CRITICAL BALANCING', t2: '76–84 dB SPL' },
-    { spl: 90, color: C_ORANGE, t1: 'IMPACT CHECK', t2: '85–95 dB SPL' },
+    { spl: 90, color: C_YELLOW, t1: 'CRITICAL IMPACT', t2: '85–95 dB SPL' },
+    { spl: 98, color: C_ORANGE, t1: 'HIGH', t2: '96–99 dB SPL' },
   ],
   spl: [
     { spl: 60, color: C_GREEN, t1: 'CONVERSATION', t2: '~60 dBA' },
@@ -639,7 +644,7 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
             rev 22): orange in the orange bands, red in the red bands — matching
             the lit segment colour. Everything is a 5 s average, so this only
             appears on a sustained loud level, never a transient. */}
-        {band && (band.zone === 'orange' || band.zone === 'red') && (
+        {band && (band.zone === 'yellow' || band.zone === 'orange' || band.zone === 'red') && (
           <SvgText x={CX} y={CY + 128} fill={ZONE_HEX[band.zone]} fontFamily={fonts.oswaldSemiBold} fontSize={19} letterSpacing={4} textAnchor="middle">
             WARNING
           </SvgText>
