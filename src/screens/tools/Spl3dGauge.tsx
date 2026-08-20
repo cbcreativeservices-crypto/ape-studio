@@ -32,8 +32,11 @@ const K_IN = 0.68;
 const K_MID = (1 + K_IN) / 2; // face mid-radius (numerals ride here)
 const DEPTH = 30;
 const ANG = 122;
-const SEGS = 13;
-const GAP_DEG = 2.4;
+// 26 segments (rev 23 — owner doubled 13→26): each ~2.46 dB, so the lit edge
+// tracks the readout more tightly and the zone bands read at finer resolution.
+const SEGS = 26;
+// Gap halved with the segment width so the finer tiles aren't eaten by gaps.
+const GAP_DEG = 1.3;
 const S_MIN = 36;
 const S_MAX = 100;
 
@@ -492,7 +495,9 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
   SEG_DEFS.forEach((sd, i) => {
     const isLit = i < lit;
     const isTop = isLit && i === lit - 1;
-    const key = zoneKey(sd.midSpl, mode);
+    // The extreme right-hand tile is ALWAYS red (owner rev 23): the top of the
+    // scale reads as the danger limit even when its dB range falls in orange.
+    const key: ZoneKey = i === SEGS - 1 ? 'red' : zoneKey(sd.midSpl, mode);
     const base = ZONE_HEX[key];
     const m = isLit ? 1 : 0.42; // dim multiplier for unreached blocks
     // Inner wall (mostly hidden) — darkest.
