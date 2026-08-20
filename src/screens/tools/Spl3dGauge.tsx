@@ -630,6 +630,15 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
             {band.name}
           </SvgText>
         )}
+        {/* WARNING subtitle whenever the active band is an unsafe zone (owner
+            rev 22): orange in the orange bands, red in the red bands — matching
+            the lit segment colour. Everything is a 5 s average, so this only
+            appears on a sustained loud level, never a transient. */}
+        {band && (band.zone === 'orange' || band.zone === 'red') && (
+          <SvgText x={CX} y={CY + 128} fill={ZONE_HEX[band.zone]} fontFamily={fonts.oswaldSemiBold} fontSize={19} letterSpacing={4} textAnchor="middle">
+            WARNING
+          </SvgText>
+        )}
 
         {/* Glass over the display: corner specular sweep + top glare + bottom
             edge highlight — the reflective sheen of a screen behind glass. */}
