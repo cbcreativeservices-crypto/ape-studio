@@ -240,6 +240,20 @@ export function SettingsScreen({ navigation }: Props) {
           </View>
         </View>
 
+        {/* MICROPHONE — live measurement-tool capture behaviour (rev 24). */}
+        <View>
+          <Text style={styles.sectionEyebrow}>MICROPHONE</Text>
+          <View style={styles.row}>
+            <View style={{ flex: 1, paddingRight: 10 }}>
+              <Text style={styles.rowLabel}>Release mic in the background</Text>
+              <Text style={styles.rowHint}>
+                Stops the microphone the moment you switch away from a measurement tool, and re-starts it when you return. Turn off to keep it ready for an instant resume.
+              </Text>
+            </View>
+            <Toggle on={local.micReleaseOnBackground} onChange={(v) => setLocalKey('micReleaseOnBackground', v)} />
+          </View>
+        </View>
+
         {/* FEEDBACK & SUPPORT — opens the mail composer, pre-filled. */}
         <View>
           <Text style={styles.sectionEyebrow}>FEEDBACK & SUPPORT</Text>

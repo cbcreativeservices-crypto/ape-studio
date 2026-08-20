@@ -13,7 +13,7 @@
  * simulate (measurement-tools §1.7).
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { InteractionManager, PermissionsAndroid, Platform } from 'react-native';
+import { AppState, InteractionManager, PermissionsAndroid, Platform } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import {
   ApeDsp,
@@ -23,7 +23,8 @@ import {
   type PitchFrame,
   type WaveBucket,
 } from '../../../../modules/ape-dsp';
-import { acquireMic, releaseMic } from './micSession';
+import { micReleaseOnBackgroundEnabled } from '../../settings/store';
+import { acquireMic, releaseMic, releaseMicNow } from './micSession';
 import type { WarningFlag } from '../measure/types';
 
 /** Android runtime mic-permission request (iOS requests it natively inside the
@@ -179,7 +180,7 @@ export function useDspEngine(config: EngineConfig, poll: {
  *  state is 'idle' and only once, so a deliberate manual STOP (which returns the
  *  state to 'idle') never silently re-arms the mic. No-op for absent / spike /
  *  denied / error — those keep showing the honest EngineGate. */
-export function useToolAutoStart(state: EngineState, start: () => void): void {
+export function useToolAutoStart(state: EngineState, start: () => void, stop?: () => void): void {
   const done = useRef(false);
   useEffect(() => {
     if (done.current) return;
@@ -195,6 +196,37 @@ export function useToolAutoStart(state: EngineState, start: () => void): void {
     }
     return undefined;
   }, [state, start]);
+
+  // Background release + foreground resume (rev 24), gated on the user setting
+  // "Release microphone in the background". TOOLS only — the hub owns its own
+  // AppState handling. Only wires when the caller passes `stop` (opts in). The
+  // setting is read AT EVENT TIME so toggling it takes effect immediately.
+  const stateRef = useRef(state);
+  stateRef.current = state;
+  const startRef = useRef(start);
+  startRef.current = start;
+  const stopRef = useRef(stop);
+  stopRef.current = stop;
+  const releasedForBg = useRef(false);
+  useEffect(() => {
+    if (!stop) return undefined;
+    const sub = AppState.addEventListener('change', (s) => {
+      if (!micReleaseOnBackgroundEnabled()) return; // OFF → keep the warm session
+      if (s === 'background') {
+        // 'inactive' (app-switcher peek, a permission alert) is NOT backgrounding
+        // — only a real 'background' releases, so we don't tear down mid-prompt.
+        if (stateRef.current === 'running') {
+          releasedForBg.current = true;
+          stopRef.current?.(); // state → idle + debounced release
+          releaseMicNow(); // hard stop now — no hot mic lingering in the background
+        }
+      } else if (s === 'active' && releasedForBg.current) {
+        releasedForBg.current = false;
+        startRef.current(); // resume on return — re-acquires (cold, since released)
+      }
+    });
+    return () => sub.remove();
+  }, [stop]);
 }
 
 /** Map live native conditions → the Phase-2 quality flags (spec §6). The SAME

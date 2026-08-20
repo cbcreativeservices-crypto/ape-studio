@@ -408,7 +408,7 @@ export function SpectrogramScreen({ navigation }: Props) {
 
   // Open straight into the live spectrogram — no redundant START screen (owner
   // 2026-08-01).
-  useToolAutoStart(state, onStart);
+  useToolAutoStart(state, onStart, stop);
 
   const toggleFreeze = useCallback(() => {
     frozenRef.current = !frozenRef.current;

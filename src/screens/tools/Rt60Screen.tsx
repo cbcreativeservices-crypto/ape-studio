@@ -286,7 +286,7 @@ export function Rt60Screen({ navigation }: Props) {
 
   // Open straight into the live capture panel — no redundant START screen
   // (owner 2026-08-01). The user still ARMS each measurement explicitly.
-  useToolAutoStart(state, onStart);
+  useToolAutoStart(state, onStart, stop);
 
   /** Final flag set: the capture window's conditions + the engine's verdict. */
   const flags = useMemo<WarningFlag[]>(() => {

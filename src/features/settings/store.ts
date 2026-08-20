@@ -28,6 +28,11 @@ export type LocalSettings = {
   colorBlind: ColorBlindMode;
   reduceAnimations: boolean;
   haptics: boolean;
+  // Release the microphone the instant the app is backgrounded while inside a
+  // live measurement tool (rev 24). ON (default) = privacy-first: the mic stops
+  // immediately and re-acquires (a moment to re-warm) when you return. OFF =
+  // keep the warm session alive in the background for an instant resume.
+  micReleaseOnBackground: boolean;
   // COMMERCIAL notification set (user request 2026-07-18). Device-local intent
   // flags — notification_preferences (server) is FROZEN and has no columns for
   // these, so they live in AsyncStorage. Actual scheduling wires with
@@ -56,6 +61,7 @@ export const DEFAULT_LOCAL_SETTINGS: LocalSettings = {
   colorBlind: 'off',
   reduceAnimations: false,
   haptics: true,
+  micReleaseOnBackground: true,
   notifyDailyStudy: false,
   notifyContinue: false,
   continueDays: 3,
@@ -140,11 +146,16 @@ export const NOTIFY_FREQ: Record<CommercialNotifyKey, { mode: NotifyFreqMode; la
 
 const KEY = 'ape:settings';
 
-// Synchronous mirror of the "Haptic feedback" toggle so low-level components
-// (e.g. SwitchButton) can honour it without an async read (Booth 2026-07-11 #4).
+// Synchronous mirrors so low-level, non-React code can honour these toggles
+// without an async read: haptics (SwitchButton, Booth 2026-07-11 #4) and the
+// mic background-release setting (the tool engine's AppState handler, rev 24).
 let hapticsOn = DEFAULT_LOCAL_SETTINGS.haptics;
 export function hapticsEnabled(): boolean {
   return hapticsOn;
+}
+let micReleaseOnBg = DEFAULT_LOCAL_SETTINGS.micReleaseOnBackground;
+export function micReleaseOnBackgroundEnabled(): boolean {
+  return micReleaseOnBg;
 }
 
 export async function loadLocalSettings(): Promise<LocalSettings> {
@@ -152,6 +163,7 @@ export async function loadLocalSettings(): Promise<LocalSettings> {
     const raw = await AsyncStorage.getItem(KEY);
     const merged = raw ? { ...DEFAULT_LOCAL_SETTINGS, ...JSON.parse(raw) } : DEFAULT_LOCAL_SETTINGS;
     hapticsOn = merged.haptics;
+    micReleaseOnBg = merged.micReleaseOnBackground;
     return merged;
   } catch {
     return DEFAULT_LOCAL_SETTINGS;
@@ -160,6 +172,7 @@ export async function loadLocalSettings(): Promise<LocalSettings> {
 
 export async function saveLocalSettings(s: LocalSettings): Promise<void> {
   hapticsOn = s.haptics;
+  micReleaseOnBg = s.micReleaseOnBackground;
   await AsyncStorage.setItem(KEY, JSON.stringify(s));
 }
 

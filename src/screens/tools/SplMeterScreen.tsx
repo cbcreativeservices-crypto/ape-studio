@@ -539,7 +539,7 @@ export function SplMeterScreen({ navigation }: Props) {
 
   // Open straight into the live meter — no redundant START screen (owner
   // 2026-08-01). Fires once; a deliberate STOP still holds the tool on-screen.
-  useToolAutoStart(state, startMeter);
+  useToolAutoStart(state, startMeter, stop);
 
   const [weighting, setWeighting] = useState<Weighting>('A');
   const [response, setResponse] = useState<ResponseMode>('fast');

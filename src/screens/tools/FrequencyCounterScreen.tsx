@@ -512,7 +512,7 @@ function LivePitchMode({
 
   // Open straight into the live counter/tuner once this mode is chosen — no
   // redundant START screen (owner 2026-08-01).
-  useToolAutoStart(state, onStart);
+  useToolAutoStart(state, onStart, stop);
 
   // Readouts come ONLY from a live frame — stale frames after STOP are never
   // shown (the SPL screen's integrity idiom).

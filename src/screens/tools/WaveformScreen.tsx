@@ -186,7 +186,7 @@ export function WaveformScreen({ navigation }: Props) {
 
   // Open straight into the live oscilloscope — no redundant START screen (owner
   // 2026-08-01).
-  useToolAutoStart(state, onStart);
+  useToolAutoStart(state, onStart, stop);
 
   /** Save the on-screen envelope to the library (Phase 2, spec §7) —
    *  numbers only, never audio. */

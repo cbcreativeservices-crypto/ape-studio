@@ -979,7 +979,7 @@ export function RtaScreen({ navigation }: Props) {
 
   // Go straight to the live tool on open — no redundant START screen (owner
   // 2026-08-01). A manual STOP still holds the tool on-screen (micPaused).
-  useToolAutoStart(state, onStart);
+  useToolAutoStart(state, onStart, stop);
 
   /** SAVE TRACE (spec §10 View 2 → §7 library). Real polled data only — always
    *  the NATIVE frame: display-time regrouping (7/15/61) never alters the
