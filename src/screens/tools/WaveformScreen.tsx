@@ -390,7 +390,7 @@ export function WaveformScreen({ navigation }: Props) {
           <Text style={styles.title}>WAVEFORM VIEWER (OSCILLOSCOPE)</Text>
           <Text style={styles.subtitle}>Live oscilloscope · amplitude vs time</Text>
         </View>
-        <AccuracyNote compact detail="This tool runs on your phone’s UNCALIBRATED microphone and audio path — read it as RELATIVE (dBFS), for learning. For accurate, absolute measurements use a calibrated SPL meter, measurement mic, or a dedicated instrument." />
+        <AccuracyNote compact detail="This tool runs on your phone’s UNCALIBRATED microphone — read every level as RELATIVE, for learning, NOT a calibrated SPL reading. For accurate, absolute measurements use a calibrated SPL meter, measurement mic, or a dedicated instrument." />
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll}>
@@ -407,6 +407,8 @@ export function WaveformScreen({ navigation }: Props) {
 
         {showView ? (
           <>
+            {/* "What the display shows" moved ABOVE the readouts (owner rev 24). */}
+            <DisplayGuideButton onPress={helpAll} />
             {/* Live readouts — ABOVE the viewer (owner 2026-07-31). Real meter
                 frame only; peak NEVER clamped (F1). */}
             <View style={styles.statGrid}>
@@ -416,7 +418,7 @@ export function WaveformScreen({ navigation }: Props) {
                     blue (owner 2026-08-12). */}
                 <Text style={[styles.statValue, meter ? { color: levelColorForDb(meter.peakDb) } : null]}>
                   {fmtDb(meter?.peakDb)}
-                  <Text style={styles.statUnit}> dBFS</Text>
+                  <Text style={styles.statUnit}> dB</Text>
                 </Text>
               </Pressable>
               {/* Tap to RESET the shown count; long-press for help (owner 2026-08-01).
@@ -433,6 +435,9 @@ export function WaveformScreen({ navigation }: Props) {
                 <Text style={[styles.statValue, hasClipped ? styles.statValueRed : styles.statValueGreen]}>
                   {meter ? clipShown : '—'}
                 </Text>
+                {/* Reset lives IN the container now (owner rev 24 — the separate
+                    RESET CLIP button was removed). */}
+                <Text style={styles.statHint}>tap to reset</Text>
               </Pressable>
               <Pressable style={styles.statCell} onLongPress={() => help('window')} delayLongPress={260}>
                 <Text style={styles.statLabel}>WINDOW</Text>
@@ -590,27 +595,9 @@ export function WaveformScreen({ navigation }: Props) {
               >
                 <Text style={[styles.chipText, colorsOn && styles.chipTextGreen]}>COLORS</Text>
               </Pressable>
-              <Pressable
-                style={[styles.chip, styles.chipWide]}
-                onPress={resetClip}
-                accessibilityRole="button"
-                accessibilityLabel="Reset the clip overrun count"
-              >
-                <Text style={styles.chipText}>RESET CLIP</Text>
-              </Pressable>
             </View>
 
-            {zoom > 1 ? (
-              // Required §11 honesty line — visible whenever zoom is engaged.
-              <Text style={styles.liveWarn}>Vertical zoom changes display size, not audio level.</Text>
-            ) : null}
-            <Text style={styles.settingsNote}>
-              Zoom and window change the display only — capture keeps running unchanged.
-            </Text>
-
-            <DisplayGuideButton onPress={helpAll} />
-
-            {/* START / SAVE — ABOVE the dBFS + warning notes (owner 2026-08-05, item 10). */}
+            {/* START / SAVE. Notices now live at the very BOTTOM (owner rev 24). */}
             <View style={styles.controls}>
               <View style={{ flex: 1 }}>
                 {running ? (
@@ -645,10 +632,17 @@ export function WaveformScreen({ navigation }: Props) {
               <Text style={styles.libraryLink}>VIEW SAVED MEASUREMENTS ›</Text>
             </Pressable>
 
-            <Text style={styles.calNote}>Levels are dBFS · uncalibrated approximate — not dB SPL.</Text>
+            {/* ── ALL NOTICES AT THE BOTTOM (owner rev 24 — standard). ── */}
+            {zoom > 1 ? (
+              // Required §11 honesty line — visible whenever zoom is engaged.
+              <Text style={styles.liveWarn}>Vertical zoom changes display size, not audio level.</Text>
+            ) : null}
+            <Text style={styles.settingsNote}>
+              Zoom and window change the display only — capture keeps running unchanged.
+            </Text>
+            <Text style={styles.calNote}>Levels are RELATIVE (uncalibrated) — not a calibrated SPL meter.</Text>
 
-            {/* Live quality warnings (spec §6) — same flags stored on save.
-                Below the controls (owner 2026-08-05, item 10). */}
+            {/* Live quality warnings (spec §6) — same flags stored on save. */}
             {flags.map((f) => (
               <Text key={f} style={styles.liveWarn}>
                 ⚠ {WARNING_INFO[f].message} {WARNING_INFO[f].hint}
@@ -753,6 +747,7 @@ const styles = StyleSheet.create({
   statValueGreen: { color: colors.green }, // clip readout before the first event (item 4)
   statValueBlue: { color: '#7fa8ff' },
   statUnit: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: colors.amberLabel },
+  statHint: { fontFamily: fonts.barlowRegular, fontSize: 10, color: colors.textMuted, marginTop: 2 },
   statUnitBlue: { color: '#7fa8ff' },
   statUnitWhite: { color: colors.textPrimary },
   calNote: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.textSecondary },
