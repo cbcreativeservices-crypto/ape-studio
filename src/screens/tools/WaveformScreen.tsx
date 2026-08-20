@@ -42,6 +42,8 @@ import { GlassButton } from '../../components/GlassButton';
 import { meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { MIDLINE_BLUE, WAVE_LEVEL_STOPS, levelColorForDb } from '../../features/tools/levelColor';
 import { useColorModePref } from '../../features/tools/colorModePref';
+import { useWaveColorPref, WAVE_COLOR_SWATCHES } from '../../features/tools/waveColorPref';
+import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO } from '../../features/tools/measure/types';
@@ -111,7 +113,7 @@ export function WaveformScreen({ navigation }: Props) {
   const [windowSec, setWindowSec] = useState<WindowSec>(DEFAULT_WINDOW);
   // ZOOM / WINDOW are compact value-buttons that open a small chooser popup
   // (owner rev 24 — the VU-fullscreen style). Android back closes it first.
-  const [wavePopup, setWavePopup] = useState<null | 'zoom' | 'window'>(null);
+  const [wavePopup, setWavePopup] = useState<null | 'zoom' | 'window' | 'color'>(null);
   // Landscape-only fullscreen (owner rev 24 — controls on the left, like SPL/VU).
   const [waveFsOpen, setWaveFsOpen] = useState(false);
   useEffect(() => {
@@ -147,6 +149,12 @@ export function WaveformScreen({ navigation }: Props) {
   // COLORS toggle (owner 2026-08-05, items 6/7): MIDI level colours on the
   // trace, persisted per user, first-ever default ON.
   const [colorsOn, setColorsOn] = useColorModePref();
+  // Custom flat-trace colour (Academy members) — applied when the MIDI gradient
+  // (COLORS) is off. Non-members are routed to the paywall (owner rev 24).
+  const [waveColor, setWaveColor] = useWaveColorPref();
+  const traceColor = waveColor ?? TRACE;
+  const { entitlement } = useEntitlement();
+  const isMember = entitlement === 'academy';
   // Clip latch (owner 2026-08-05, item 4): the CLIP OVERRUNS readout stays
   // GREEN "0" until the first real overrun, then turns RED and holds until reset.
   const [hasClipped, setHasClipped] = useState(false);
@@ -453,22 +461,22 @@ export function WaveformScreen({ navigation }: Props) {
                 <SkiaGradient start={vec(0, scope.gradY0)} end={vec(0, scope.gradY1)} colors={WAVE_LEVEL_COLORS} positions={WAVE_LEVEL_POS} />
               </SkiaPath>
             ) : (
-              <SkiaPath path={scope.areaP!} color={TRACE} opacity={0.9} />
+              <SkiaPath path={scope.areaP!} color={traceColor} opacity={0.9} />
             )}
             {colorsOn ? (
               <SkiaPath path={scope.rmsP!} opacity={0.6}>
                 <SkiaGradient start={vec(0, scope.gradY0)} end={vec(0, scope.gradY1)} colors={WAVE_LEVEL_COLORS} positions={WAVE_LEVEL_POS} />
               </SkiaPath>
             ) : (
-              <SkiaPath path={scope.rmsP!} color={TRACE} opacity={0.6} />
+              <SkiaPath path={scope.rmsP!} color={traceColor} opacity={0.6} />
             )}
             {scope.hasClip ? <SkiaPath path={scope.clipP!} color={colors.red} style="stroke" strokeWidth={scope.clipW} /> : null}
           </Canvas>
         ) : scope ? (
           // Web fallback (no CanvasKit): SVG trace, flat trace colour.
           <Svg width={scopeW} height={scopeH} style={StyleSheet.absoluteFill}>
-            <Path d={scope.areaD} fill={TRACE} opacity={0.9} />
-            <Path d={scope.rmsD} fill={TRACE} opacity={0.6} />
+            <Path d={scope.areaD} fill={traceColor} opacity={0.9} />
+            <Path d={scope.rmsD} fill={traceColor} opacity={0.6} />
             {scope.hasClip ? <Path d={scope.clipD} stroke={colors.red} strokeWidth={scope.clipW} fill="none" /> : null}
           </Svg>
         ) : null}
@@ -612,8 +620,18 @@ export function WaveformScreen({ navigation }: Props) {
               >
                 <Text style={[styles.chipText, colorsOn && styles.chipTextGreen]}>COLORS</Text>
               </Pressable>
-              {/* Fullscreen (owner rev 24) — the colour-wheel button will sit to its
-                  LEFT once built; landscape-only, controls on the left. */}
+              {/* Custom trace colour (owner rev 24) — Academy members open the
+                  picker; everyone else is routed to the paywall. */}
+              <Pressable
+                style={[styles.chip, styles.colorChip]}
+                onPress={() => (isMember ? setWavePopup('color') : navigation.navigate('Paywall'))}
+                accessibilityRole="button"
+                accessibilityLabel={isMember ? 'Waveform colour — pick a custom colour' : 'Waveform colour — Academy membership required'}
+              >
+                <View style={[styles.colorDot, { backgroundColor: traceColor }]} />
+                <Text style={styles.chipText}>{isMember ? '🎨' : '🔒'}</Text>
+              </Pressable>
+              {/* Fullscreen — to the RIGHT of the colour button (owner rev 24). */}
               <Pressable
                 style={[styles.chip, styles.chipWide]}
                 onPress={() => setWaveFsOpen(true)}
@@ -740,38 +758,61 @@ export function WaveformScreen({ navigation }: Props) {
           accessibilityLabel="Close"
         >
           <View style={styles.popupCard}>
-            <Text style={styles.popupTitle}>{wavePopup === 'zoom' ? 'VERTICAL ZOOM' : 'TIME WINDOW'}</Text>
+            <Text style={styles.popupTitle}>
+              {wavePopup === 'zoom' ? 'VERTICAL ZOOM' : wavePopup === 'window' ? 'TIME WINDOW' : 'WAVEFORM COLOUR'}
+            </Text>
             <View style={styles.popupGrid}>
-              {wavePopup === 'zoom'
-                ? ZOOMS.map((z) => (
+              {wavePopup === 'zoom' &&
+                ZOOMS.map((z) => (
+                  <Pressable
+                    key={z}
+                    style={[styles.popupOpt, zoom === z && styles.popupOptSel]}
+                    onPress={() => {
+                      setZoom(z);
+                      setWavePopup(null);
+                    }}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: zoom === z }}
+                  >
+                    <Text style={[styles.popupOptText, zoom === z && styles.popupOptTextSel]}>×{z}</Text>
+                  </Pressable>
+                ))}
+              {wavePopup === 'window' &&
+                WINDOWS.map((w) => (
+                  <Pressable
+                    key={w}
+                    style={[styles.popupOpt, windowSec === w && styles.popupOptSel]}
+                    onPress={() => {
+                      setWindowSec(w);
+                      setWavePopup(null);
+                    }}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: windowSec === w }}
+                  >
+                    <Text style={[styles.popupOptText, windowSec === w && styles.popupOptTextSel]}>{w}s</Text>
+                  </Pressable>
+                ))}
+              {wavePopup === 'color' &&
+                WAVE_COLOR_SWATCHES.map((c) => {
+                  const sel = traceColor.toLowerCase() === c.toLowerCase();
+                  return (
                     <Pressable
-                      key={z}
-                      style={[styles.popupOpt, zoom === z && styles.popupOptSel]}
+                      key={c}
+                      style={[styles.swatch, { backgroundColor: c }, sel && styles.swatchSel]}
                       onPress={() => {
-                        setZoom(z);
+                        setWaveColor(c === WAVE_COLOR_SWATCHES[0] ? null : c);
                         setWavePopup(null);
                       }}
                       accessibilityRole="button"
-                      accessibilityState={{ selected: zoom === z }}
-                    >
-                      <Text style={[styles.popupOptText, zoom === z && styles.popupOptTextSel]}>×{z}</Text>
-                    </Pressable>
-                  ))
-                : WINDOWS.map((w) => (
-                    <Pressable
-                      key={w}
-                      style={[styles.popupOpt, windowSec === w && styles.popupOptSel]}
-                      onPress={() => {
-                        setWindowSec(w);
-                        setWavePopup(null);
-                      }}
-                      accessibilityRole="button"
-                      accessibilityState={{ selected: windowSec === w }}
-                    >
-                      <Text style={[styles.popupOptText, windowSec === w && styles.popupOptTextSel]}>{w}s</Text>
-                    </Pressable>
-                  ))}
+                      accessibilityState={{ selected: sel }}
+                      accessibilityLabel={`Waveform colour ${c}${c === WAVE_COLOR_SWATCHES[0] ? ' (default)' : ''}`}
+                    />
+                  );
+                })}
             </View>
+            {wavePopup === 'color' ? (
+              <Text style={styles.popupNote}>Applies to the flat trace (turn COLORS off to see it).</Text>
+            ) : null}
           </View>
         </Pressable>
       ) : null}
@@ -867,6 +908,12 @@ const styles = StyleSheet.create({
   popupOptSel: { borderColor: 'rgba(255,198,77,.7)', backgroundColor: '#1c1608' },
   popupOptText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 0.6, color: colors.textSecondary },
   popupOptTextSel: { color: colors.amber },
+  // Custom-colour button + swatch picker (owner rev 24).
+  colorChip: { flexDirection: 'row', gap: 5 },
+  colorDot: { width: 14, height: 14, borderRadius: 7, borderWidth: 1, borderColor: '#00000066' },
+  swatch: { width: 46, height: 46, borderRadius: 23, borderWidth: 2, borderColor: '#33333c' },
+  swatchSel: { borderColor: '#ffffff', borderWidth: 3 },
+  popupNote: { fontFamily: fonts.barlowRegular, fontSize: 11.5, color: colors.textMuted, textAlign: 'center' },
   // Landscape fullscreen (owner rev 24).
   fsRoot: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#0c0c0f', zIndex: 40 },
   fsClose: {
