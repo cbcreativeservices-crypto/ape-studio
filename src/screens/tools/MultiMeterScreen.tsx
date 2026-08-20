@@ -975,9 +975,9 @@ export function MultiMeterScreen({ navigation }: Props) {
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>PRO AUDIO MULTIMETER</Text>
-          <Text style={styles.subtitle}>All-in-one live meter · mono · dBFS · uncalibrated</Text>
+          <Text style={styles.subtitle}>All-in-one live meter · mono · dBC · uncalibrated</Text>
         </View>
-        <AccuracyNote compact detail="This tool runs on your phone’s UNCALIBRATED microphone and audio path — read it as RELATIVE (dBFS), for learning. For accurate, absolute measurements use a calibrated SPL meter, measurement mic, or a dedicated instrument." />
+        <AccuracyNote compact detail="Levels are shown A/C-weighted (dBA/dBC) so they read in a familiar scale, but this runs on your phone’s UNCALIBRATED microphone — treat every number as RELATIVE, for learning, NOT a calibrated SPL reading. For accurate, absolute measurements use a calibrated SPL meter, measurement mic, or a dedicated instrument." />
       </View>
 
       {/* 1 ── TOP STATUS BAR — pinned, instrument-style mono digits. Shown only
@@ -993,7 +993,7 @@ export function MultiMeterScreen({ navigation }: Props) {
               onLongPress={() => help('spl')}
               delayLongPress={350}
               accessibilityRole="button"
-              accessibilityLabel="C-weighted SPL, fast — uncalibrated dBFS. Tap for details."
+              accessibilityLabel="C-weighted SPL, fast (dBC) — uncalibrated, relative. Tap for details."
             >
               {/* Default weighting is C (owner rev 24: dBC). The ⓘ is the honesty
                   cue — the reading is uncalibrated dBFS, not a true SPL. */}
@@ -1043,7 +1043,7 @@ export function MultiMeterScreen({ navigation }: Props) {
               </Text>
             </Pressable>
           </View>
-          <Text style={styles.statusUnit}>all levels dBFS · uncalibrated approximate — not dB SPL</Text>
+          <Text style={styles.statusUnit}>uncalibrated · RELATIVE levels — not a calibrated SPL meter</Text>
 
           {/* 7 ── Horizontal main SPL level meter (owner 2026-08-05) — like the
                  VU screen's, but horizontal + thinner. Left→right level with a
@@ -1071,7 +1071,7 @@ export function MultiMeterScreen({ navigation }: Props) {
               ))}
             </View>
             <Text style={styles.hMeterCaption}>
-              SPL·LCF {meter ? fmtDb(meter.cFastDb) : '—'} dBFS
+              SPL·LCF {meter ? fmtDb(meter.cFastDb) : '—'} dBC
             </Text>
           </View>
         </>
@@ -1086,9 +1086,9 @@ export function MultiMeterScreen({ navigation }: Props) {
             <Text style={styles.intro}>
               Every meter at once: weighted level, peak and RMS, a 61-band (1/6-octave) spectrum,
               a scrolling spectrogram, a live oscilloscope, dominant frequency with musical
-              note, and smart signal detection. Every level is digital level at the microphone input
-              (dBFS), uncalibrated and approximate — never dB SPL. Press START to begin capture;
-              nothing is simulated while stopped.
+              note, and smart signal detection. Levels read A/C-weighted (dBA/dBC) in a familiar
+              scale, but from your phone’s uncalibrated mic — RELATIVE and approximate, not a
+              calibrated SPL meter. Press START to begin capture; nothing is simulated while stopped.
             </Text>
             <GlassButton
               label={state === 'starting' ? 'STARTING…' : 'START'}
@@ -1219,7 +1219,7 @@ export function MultiMeterScreen({ navigation }: Props) {
                   <Text style={styles.legendHint}>tap/drag to read Hz + dB</Text>
                 )}
               </View>
-              <Text style={styles.unitLine}>dBFS · uncalibrated approximate</Text>
+              <Text style={styles.unitLine}>relative dB · uncalibrated</Text>
               {anyUnresolvable && (
                 <Text style={styles.grayNote}>grayed bands: insufficient resolution at this setting</Text>
               )}
@@ -1467,8 +1467,9 @@ export function MultiMeterScreen({ navigation }: Props) {
         )}
 
         <Text style={styles.reminder}>
-          Every level here is digital level at the microphone input (dBFS), uncalibrated and
-          approximate. Microphone position and the phone mic's response strongly affect every panel.
+          Every level here is A/C-weighted (dBA/dBC) from your phone’s uncalibrated mic — RELATIVE
+          and approximate, not a calibrated SPL meter. Microphone position and the phone mic's
+          response strongly affect every panel.
         </Text>
       </ScrollView>
 
