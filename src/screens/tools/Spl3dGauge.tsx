@@ -9,7 +9,7 @@
  * names the band the level is in. (Animated gold shimmer is a follow-up.)
  * react-native-svg only — renders on any client.
  */
-import { memo, useEffect, useId, type ReactNode } from 'react';
+import { memo, useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { View } from 'react-native';
 import Svg, { ClipPath, Circle, Defs, Ellipse, G, LinearGradient, Path, RadialGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import Animated, { cancelAnimation, Easing, useAnimatedProps, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
@@ -348,7 +348,8 @@ const SEG_DEFS: SegDef[] = (() => {
  *  deterministic PRNG (stable across renders) and split into 3 groups that
  *  twinkle out of phase; each group's opacity animates on the UI thread. ── */
 const SPARKLE_HUES = ['#f6dd8b', '#e8b93a', '#c9971f', '#fff2cf'];
-type Sparkle = { x: number; y: number; r: number; c: string; g: number };
+const SPARKLE_BASE = 56; // "1×" count; the overlay breathes up to 3× (rev 19)
+type Sparkle = { x: number; y: number; r: number; c: string; tier: number };
 const GOLD_SPARKLES: Sparkle[] = (() => {
   let s = 0x9e3779b9 | 0;
   const rnd = () => {
@@ -360,7 +361,10 @@ const GOLD_SPARKLES: Sparkle[] = (() => {
   const out: Sparkle[] = [];
   const bandX = 155;
   const bandY = 135;
-  for (let i = 0; i < 56; i++) {
+  // 3 tiers of SPARKLE_BASE particles each (168 = 3×). Tier 0 is always shown;
+  // tiers 1 and 2 fade in as the density ramps up. Each tier cycles all 4 edges
+  // so any subset looks evenly distributed.
+  for (let i = 0; i < SPARKLE_BASE * 3; i++) {
     const edge = i % 4;
     const along = rnd();
     const depth = Math.pow(rnd(), 1.7); // biased to the very edge
@@ -370,12 +374,12 @@ const GOLD_SPARKLES: Sparkle[] = (() => {
     else if (edge === 1) { x = 18 + along * (VB_W - 36); y = VB_H - 16 - depth * bandY; }
     else if (edge === 2) { x = 16 + depth * bandX; y = 18 + along * (VB_H - 36); }
     else { x = VB_W - 16 - depth * bandX; y = 18 + along * (VB_H - 36); }
-    out.push({ x, y, r: 1.4 + rnd() * 3.6, c: SPARKLE_HUES[(rnd() * SPARKLE_HUES.length) | 0], g: i % 3 });
+    out.push({ x, y, r: 1.4 + rnd() * 3.6, c: SPARKLE_HUES[(rnd() * SPARKLE_HUES.length) | 0], tier: (i / SPARKLE_BASE) | 0 });
   }
   return out;
 })();
-function sparkleGroup(g: number): ReactNode {
-  return GOLD_SPARKLES.filter((p) => p.g === g).map((p, i) => <Circle key={i} cx={p.x} cy={p.y} r={p.r} fill={p.c} />);
+function sparkleTier(tier: number): ReactNode {
+  return GOLD_SPARKLES.filter((p) => p.tier === tier).map((p, i) => <Circle key={i} cx={p.x} cy={p.y} r={p.r} fill={p.c} />);
 }
 
 export type Spl3dGaugeProps = {
@@ -397,7 +401,10 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
   // The gold target shines only on the LIT gold blocks, and only while the
   // (averaged) level is currently INSIDE a gold band (owner rev 14).
   const goldLit = SEG_DEFS.filter((sd, i) => i < lit && zoneKey(sd.midSpl, mode) === 'gold');
+  // SHIMMER needs a lit gold tile to sweep; the SPARKLE celebrates simply being
+  // in a gold BAND (even before the first gold tile lights, owner rev 19).
   const goldActive = band?.zone === 'gold' && goldLit.length > 0;
+  const inGoldBand = band?.zone === 'gold';
   const goldClipD = goldLit.map((sd) => sd.faceD).join(' ');
   const gxmin = goldLit.length ? Math.min(...goldLit.map((s) => s.bbox[0])) : 0;
   const gymin = goldLit.length ? Math.min(...goldLit.map((s) => s.bbox[1])) : 0;
@@ -420,17 +427,54 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
     x: gxmin - BAND_W + sweep.value * (gxmax - gxmin + BAND_W * 2),
   }));
 
-  // Gold-sparkle twinkle — one looping phase; three groups fade out of sync.
+  // Gold sparkle stays on for a MINIMUM of 5 s once triggered (owner rev 19):
+  // entering a gold zone (re)starts a 5 s window; when the level leaves gold the
+  // sparkle holds out the remainder before fading. Each re-entry restarts it.
+  const [sparkleOn, setSparkleOn] = useState(false);
+  const goldStartRef = useRef(0);
+  const hideRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (inGoldBand) {
+      if (hideRef.current) { clearTimeout(hideRef.current); hideRef.current = null; }
+      goldStartRef.current = Date.now();
+      setSparkleOn(true);
+    } else if (sparkleOn && !hideRef.current) {
+      const remain = Math.max(0, 5000 - (Date.now() - goldStartRef.current));
+      hideRef.current = setTimeout(() => { hideRef.current = null; setSparkleOn(false); }, remain);
+    }
+  }, [inGoldBand, sparkleOn]);
+  useEffect(() => () => { if (hideRef.current) clearTimeout(hideRef.current); }, []);
+
+  // Two clocks while the sparkle is on: TWINKLE (fast, 0.8 s — 3× faster) makes
+  // each tier shimmer; DENSITY is a slow triangle (0→1→0 over 13 s, looping) that
+  // fades tiers 1 & 2 in and out, so the particle COUNT breathes 1×→3×→1× (rev 19).
   const twinkle = useSharedValue(0);
+  const density = useSharedValue(0);
   useEffect(() => {
     cancelAnimation(twinkle);
+    cancelAnimation(density);
     twinkle.value = 0;
-    if (goldActive) twinkle.value = withRepeat(withTiming(1, { duration: 2400, easing: Easing.linear }), -1, false);
-    return () => cancelAnimation(twinkle);
-  }, [goldActive, twinkle]);
-  const sparkle0 = useAnimatedProps(() => ({ opacity: 0.22 + 0.58 * (0.5 + 0.5 * Math.sin(twinkle.value * 6.2832)) }));
-  const sparkle1 = useAnimatedProps(() => ({ opacity: 0.22 + 0.58 * (0.5 + 0.5 * Math.sin(twinkle.value * 6.2832 + 2.09)) }));
-  const sparkle2 = useAnimatedProps(() => ({ opacity: 0.22 + 0.58 * (0.5 + 0.5 * Math.sin(twinkle.value * 6.2832 + 4.19)) }));
+    density.value = 0;
+    if (sparkleOn) {
+      twinkle.value = withRepeat(withTiming(1, { duration: 800, easing: Easing.linear }), -1, false);
+      density.value = withRepeat(withTiming(1, { duration: 6500, easing: Easing.inOut(Easing.ease) }), -1, true);
+    }
+    return () => {
+      cancelAnimation(twinkle);
+      cancelAnimation(density);
+    };
+  }, [sparkleOn, twinkle, density]);
+  // tier 0 always on; tiers 1 & 2 gate on the density ramp (fade windows). The
+  // twinkle expression is inlined — a worklet can't call a plain JS helper.
+  const sparkle0 = useAnimatedProps(() => ({
+    opacity: 0.24 + 0.56 * (0.5 + 0.5 * Math.sin(twinkle.value * 6.2832)),
+  }));
+  const sparkle1 = useAnimatedProps(() => ({
+    opacity: (0.24 + 0.56 * (0.5 + 0.5 * Math.sin(twinkle.value * 6.2832 + 2.09))) * Math.max(0, Math.min(1, (density.value - 0.12) / 0.32)),
+  }));
+  const sparkle2 = useAnimatedProps(() => ({
+    opacity: (0.24 + 0.56 * (0.5 + 0.5 * Math.sin(twinkle.value * 6.2832 + 4.19))) * Math.max(0, Math.min(1, (density.value - 0.5) / 0.32)),
+  }));
 
   // Each block is built from its own faces so it reads as a solid 3D wedge:
   //   inner wall (back, darkest) → end-caps (cut sides, dark) → outer wall
@@ -583,13 +627,19 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
         <Rect x={17} y={15.5} width={VB_W - 34} height={1.6} rx={0.8} fill="#ffffff" opacity={0.26} />
         <Rect x={17} y={VB_H - 17} width={VB_W - 34} height={1.4} rx={0.7} fill="#ffffff" opacity={0.12} />
 
-        {/* GOLD SPARKLE — a twinkling gold-glitter frame while in a gold target
-            zone (owner rev 18). Three groups fade out of phase on the UI thread. */}
-        {goldActive && (
+        {/* Thin INNER frame line, tinted to the active zone (owner rev 19): the
+            glass edge glows green / gold / orange / red with the current band. */}
+        {band && (
+          <Rect x={16.5} y={16.5} width={VB_W - 33} height={VB_H - 33} rx={16} fill="none" stroke={ZONE_HEX[band.zone]} strokeWidth={2} opacity={0.9} />
+        )}
+
+        {/* GOLD SPARKLE — a twinkling gold-glitter frame, held ≥5 s once the
+            gold zone is hit (owner rev 19). Three groups fade out of phase. */}
+        {sparkleOn && (
           <>
-            <AnimatedG animatedProps={sparkle0}>{sparkleGroup(0)}</AnimatedG>
-            <AnimatedG animatedProps={sparkle1}>{sparkleGroup(1)}</AnimatedG>
-            <AnimatedG animatedProps={sparkle2}>{sparkleGroup(2)}</AnimatedG>
+            <AnimatedG animatedProps={sparkle0}>{sparkleTier(0)}</AnimatedG>
+            <AnimatedG animatedProps={sparkle1}>{sparkleTier(1)}</AnimatedG>
+            <AnimatedG animatedProps={sparkle2}>{sparkleTier(2)}</AnimatedG>
           </>
         )}
       </Svg>

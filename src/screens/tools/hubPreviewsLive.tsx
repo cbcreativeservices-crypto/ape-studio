@@ -133,6 +133,7 @@ const HubSplSkin: FC = memo(() => {
   const d = useHubData();
   const vuRef = useRef(0);
   const vuVelRef = useRef(0);
+  const lampRef = useRef(0);
   const lastTickRef = useRef(-2);
 
   const db = dbOr(d.meter?.aFastDb);
@@ -152,10 +153,13 @@ const HubSplSkin: FC = memo(() => {
       vuVelRef.current += acc * h;
       vuRef.current = Math.max(0, vuRef.current + vuVelRef.current * h);
     }
+    // PEAK lamp: ramp toward lit/unlit so the brightness CHANGES smoothly on a
+    // clip (owner rev 19) — same treatment as the tool's SkinnedVu.
+    lampRef.current += ((peakDb >= -3 ? 1 : 0) - lampRef.current) * 0.5;
   }
   const ang = vuAngle(vuRef.current);
   const tip = skinPt(ang, VU_NEEDLE_TIP);
-  const lampLit = peakDb >= -3;
+  const lampGlow = lampRef.current; // 0 = dark-red base only, 1 = fully lit
 
   return (
     <View style={StyleSheet.absoluteFill}>
@@ -167,12 +171,14 @@ const HubSplSkin: FC = memo(() => {
         </Defs>
         <SvgImage href={VU_SKIN} x={0} y={0} width={1586} height={992} preserveAspectRatio="xMidYMid slice" />
         {SPL_SCALE}
-        {/* PEAK lamp illuminated (clipping): halo + bright core + hot centre. */}
-        {lampLit && (
+        {/* PEAK lamp — the dark-red base is in SPL_SCALE (always red); this
+            illuminated layer (halo + bright core + hot centre) fades in with the
+            clip so the lamp CHANGES brightness, matching the tool VU (rev 19). */}
+        {lampGlow > 0.01 && (
           <>
-            <Circle cx={SKIN_LAMP.x} cy={SKIN_LAMP.y} r={SKIN_LAMP.r * 2.1} fill="#ff2a12" opacity={0.4} />
-            <Circle cx={SKIN_LAMP.x} cy={SKIN_LAMP.y} r={SKIN_LAMP.r} fill="#ff5a34" />
-            <Circle cx={SKIN_LAMP.x - 6} cy={SKIN_LAMP.y - 6} r={SKIN_LAMP.r * 0.5} fill="#ffe6ac" />
+            <Circle cx={SKIN_LAMP.x} cy={SKIN_LAMP.y} r={SKIN_LAMP.r * 2.1} fill="#ff2a12" opacity={0.4 * lampGlow} />
+            <Circle cx={SKIN_LAMP.x} cy={SKIN_LAMP.y} r={SKIN_LAMP.r} fill="#ff5a34" opacity={lampGlow} />
+            <Circle cx={SKIN_LAMP.x - 6} cy={SKIN_LAMP.y - 6} r={SKIN_LAMP.r * 0.5} fill="#ffe6ac" opacity={lampGlow} />
           </>
         )}
         {/* Needle — pivots at the DOME (fixed axle), clipped to the face window
