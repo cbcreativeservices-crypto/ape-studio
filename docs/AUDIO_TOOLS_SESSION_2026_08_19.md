@@ -17,7 +17,7 @@ Branch: `audio-tools-engine`. Work on the live measurement tools (SPL gauge, VU,
 | **SPL 3D gauge** | 26 segments (was 13); yellow zone restored (studio: 85–95 CRITICAL IMPACT yellow, 96–99 HIGH orange, 100+ red); zone-coloured WARNING subtitle on orange/red/yellow; gold tiles + shimmer + sparkle unified (`goldActive`, can't appear apart); solid segments (LCD covers inner walls); landscape fullscreen (chips left, camera inset) |
 | **Full VU / SPL home** | fullscreen camera inset; (VU list items 3–12 still tabled — `VU_CHANGE_ORDERS_TABLED_2026_08_18.md`) |
 | **MultiMeter** | default **61-band 1/6-oct** RTA (derived from FFT via shared `src/features/tools/sixthOctave.ts`); primary readout → **dBC** (SPL·LCF) + ⓘ honesty; dB scale under the horizontal meter; SMART DETECTION → bottom; all dBFS labels → dBC / "relative dB" |
-| **Waveform Viewer** | web-safe (SVG fallback when no Skia/CanvasKit); legend → top; notices → bottom; RESET CLIP removed → tap-the-container; PEAK/notes dBFS → relative; ZOOM/WINDOW → compact popups; landscape fullscreen with left controls |
+| **Waveform Viewer** | web-safe (SVG fallback when no Skia/CanvasKit); legend → top; notices → bottom; RESET CLIP removed → tap-the-container; PEAK/notes dBFS → relative; ZOOM/WINDOW → compact popups; landscape fullscreen with left controls; **custom trace-colour picker** (12-swatch, Academy-gated, persisted via `useWaveColorPref`) |
 | **RTA** | dBFS sweep: weighting unit `dBFS`/`dBFS(A)`/`dBFS(C)` → `dB`/`dBA`/`dBC`; PEAK HOLD → `dB`; subtitle/unit/note reworded to "relative, uncalibrated, not SPL" |
 | **Spectrogram** | dBFS sweep: subtitle/unit/OBS-MAX/PEAK/legend/scale-note → "relative dB" (colour anchor stays 0 dB full-scale per fixed-reference governance) |
 | **SPL / VU** | already defaults to dBA (dBFS kept as a selectable digital option); accuracy note reworded off dBFS |
@@ -30,9 +30,10 @@ Browser-iterate tools via `modules/ape-dsp/apeDspSim.ts` (web sim) + `src/screen
 ## Open items (TODO)
 
 1. **iOS MultiMeter randomly reverts to START** — interim resilience auto-resume added; root cause needs the Metro log line (blur vs remount vs JS/SVG error). Not from the warm-session change (that doesn't touch state→idle).
-2. Waveform **color-wheel custom-colour button** (membership) — needs a colour-picker component (none exists).
-3. VU change orders 3–12 (tabled, thought-out sequence) — `VU_CHANGE_ORDERS_TABLED_2026_08_18.md`. #8 blocked on owner colour-scheme images; #11 confirm; #12 skins design.
-4. Pre-launch cleanups: temp KT88 promo tube; RtaScreen still has its own copy of the 1/6-oct derivation (dedupe to `sixthOctave.ts`).
+2. VU change orders 3–12 (tabled, thought-out sequence) — `VU_CHANGE_ORDERS_TABLED_2026_08_18.md`. #8 blocked on owner colour-scheme images; #11 confirm; #12 skins design.
+3. Pre-launch cleanups: temp KT88 promo tube; RtaScreen still has its own copy of the 1/6-oct derivation (dedupe to `sixthOctave.ts`).
+
+The Waveform Viewer's own request list (rev 24) is now COMPLETE: legend-top, notices-bottom, in-container clip reset, dBFS→relative, ZOOM/WINDOW popups, fullscreen, and the custom colour picker.
 
 ## Verify on device (not web-testable)
 
