@@ -12,6 +12,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { KeyboardProvider } from './src/features/keyboard/keyboardControllerSafe';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { Spl3dGaugePreview } from './src/screens/tools/Spl3dGaugePreview';
+import { MultiMeterPreview } from './src/screens/tools/MultiMeterPreview';
 import { navigationRef } from './src/navigation/navigationRef';
 import { LabPreviewOverlay } from './src/features/lab/LabPreviewOverlay';
 import { endLabPreview, getLabPreview } from './src/features/lab/labPreviewStore';
@@ -95,6 +96,19 @@ export default function App() {
       <SafeAreaProvider>
         <StatusBar style="light" />
         <Spl3dGaugePreview />
+      </SafeAreaProvider>
+    );
+  }
+
+  // DEV + WEB ONLY: `localhost:8090/#multimeterpreview` renders the real
+  // MultiMeterScreen (Skia-free SVG) in a minimal navigator with the ape-dsp SIM
+  // overlay, so the all-in-one meter can be seen + iterated in the browser.
+  // Outside RootNavigator, so it skips AmplitudeOrientation's web-Skia throw.
+  if (__DEV__ && Platform.OS === 'web' && typeof window !== 'undefined' && window.location.hash === '#multimeterpreview') {
+    return (
+      <SafeAreaProvider>
+        <StatusBar style="light" />
+        <MultiMeterPreview />
       </SafeAreaProvider>
     );
   }

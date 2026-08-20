@@ -16,7 +16,9 @@
  * has the module but not the engine — callers must degrade to the honest
  * "install the new dev build" state, never crash, never simulate.
  */
+import { Platform } from 'react-native';
 import { requireNativeModule } from 'expo-modules-core';
+import { makeApeDspSim } from './apeDspSim';
 
 export type DspFrame = {
   version: number;
@@ -572,3 +574,14 @@ export const EQ_BAND_TYPES = {
   lowPass: 4,
   highPass: 5,
 } as const;
+
+// ── DEV + WEB ONLY ──────────────────────────────────────────────────────────
+// No native audio engine exists on web, so the live tools would only ever show
+// their honest "not in this build" gate. Overlay the animated sim frames onto
+// the singleton (apeDspSim.ts) so every real tool screen renders with fake data
+// in the browser for layout/design iteration — the whole-tool analogue of the
+// #gaugepreview harness. Inert on device and in release builds; touches nothing
+// native. Remove the overlay by removing this block.
+if (__DEV__ && Platform.OS === 'web') {
+  Object.assign(ApeDsp, makeApeDspSim());
+}
