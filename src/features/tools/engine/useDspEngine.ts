@@ -65,11 +65,19 @@ export function useDspEngine(config: EngineConfig, poll: {
   bands?: boolean;
   pitch?: boolean;
   waveform?: boolean;
+}, opts?: {
+  /** Force a full stop+restart of the shared capture on every start() instead
+   *  of adopting a warm stream. The HUB sets this so returning to the tools menu
+   *  never adopts a stale/frozen stream (rev 24 frozen-preview fix). Tools omit
+   *  it and adopt for the instant open. */
+  freshStart?: boolean;
 }) {
   const [state, setState] = useState<EngineState>(() => {
     if (!ApeDsp.isAvailable()) return 'absent';
     return ApeDsp.engineVersion() >= 2 ? 'idle' : 'spike';
   });
+  const freshStartRef = useRef(opts?.freshStart ?? false);
+  freshStartRef.current = opts?.freshStart ?? false;
   const [frames, setFrames] = useState<DspPoll>({ meter: null, bands: null, pitch: null, waveform: [] });
   const [lastError, setLastError] = useState('');
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -104,7 +112,7 @@ export function useDspEngine(config: EngineConfig, poll: {
       // open (instant — no HAL re-open), otherwise it starts once. setMicActive
       // is owned by the session coordinator so the interlock tracks the REAL
       // capture state across the debounced handoff.
-      await acquireMic(configRef.current);
+      await acquireMic(configRef.current, freshStartRef.current);
       if (gen !== genRef.current) {
         // Torn down while starting — hand the stream back (debounced, so a fast
         // re-acquire by the next screen keeps it warm).

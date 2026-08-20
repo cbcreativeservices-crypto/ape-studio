@@ -151,7 +151,11 @@ export function useHubPreviewEngine(): HubPreview {
   // backgrounding — treating it as such would tear the session down mid-prompt.
   const [appActive, setAppActive] = useState(AppState.currentState !== 'background');
   // Lifecycle-only consumer (poll: {}) — we run our own shared tick below.
-  const { state, start, stop } = useDspEngine(HUB_ENGINE_CFG, {});
+  // freshStart: on resume the hub fully restarts capture rather than adopting
+  // the warm stream, so returning to the tools menu can never show frozen
+  // previews from a stream iOS reports as running but has stopped feeding
+  // (rev 24). The hub→tool handoff still adopts (the tool omits freshStart).
+  const { state, start, stop } = useDspEngine(HUB_ENGINE_CFG, {}, { freshStart: true });
   const navLockRef = useRef(false);
   // One dead-capture recovery attempt per focus session (watchdog below).
   const deadRetryRef = useRef(false);

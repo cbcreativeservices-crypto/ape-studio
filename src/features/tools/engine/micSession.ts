@@ -63,10 +63,29 @@ function captureAlive(): boolean {
  * Ensure the shared stream is open with `cfg` applied, adopting a warm+alive
  * stream if one exists (instant — no HAL re-open). The caller MUST have secured
  * mic permission first. Resolves once capture is live; rejects if start fails.
+ *
+ * `forceRestart` tears the stream fully down and re-opens it even if it looks
+ * warm — the HUB uses this on resume so it never adopts a stream that iOS is
+ * reporting as running but has actually stopped delivering frames (the frozen-
+ * preview bug on returning to the tools menu). Tools omit it and adopt.
  */
-export async function acquireMic(cfg: EngineConfig): Promise<void> {
+export async function acquireMic(cfg: EngineConfig, forceRestart = false): Promise<void> {
   cancelPendingRelease();
   ApeDsp.setEngineConfig(cfg); // live reconfig — cheap, never restarts capture
+  if (forceRestart && streamState !== 'stopped') {
+    // Race-safe hard reset: let any in-flight start settle, then fully stop
+    // (awaited) so the fresh open below can't overlap a half-torn-down HAL.
+    if (startInFlight) {
+      try {
+        await startInFlight;
+      } catch {
+        /* fall through to the stop + fresh start */
+      }
+    }
+    streamState = 'stopped';
+    startInFlight = null;
+    await ApeDsp.stop();
+  }
   if (streamState === 'open') {
     if (captureAlive()) {
       setMicActive(true);
