@@ -819,9 +819,10 @@ export function MultiMeterScreen({ navigation }: Props) {
   const info = running ? ApeDsp.getInfo() : null;
   const half = SCOPE_H / 2;
 
-  // Horizontal SPL meter fractions (item 7): map −60…0 dBFS → 0…1.
+  // Horizontal SPL meter fractions (item 7): map −60…0 dBFS → 0…1. Default
+  // weighting is C (owner rev 24) to match the status cell.
   const SPL_MIN_DB = -60;
-  const splFrac = meter ? Math.max(0, Math.min(1, (meter.aFastDb - SPL_MIN_DB) / -SPL_MIN_DB)) : 0;
+  const splFrac = meter ? Math.max(0, Math.min(1, (meter.cFastDb - SPL_MIN_DB) / -SPL_MIN_DB)) : 0;
   const splHoldFrac = meter ? Math.max(0, Math.min(1, (meter.peakHoldDb - SPL_MIN_DB) / -SPL_MIN_DB)) : 0;
 
   // Mini-scope geometry (WaveformScreen scope math, compact ×1, autoscaled).
@@ -955,12 +956,24 @@ export function MultiMeterScreen({ navigation }: Props) {
       {(running || micPaused) && (
         <>
           <View style={styles.statusBar}>
-            <Pressable style={styles.statusCell} onLongPress={() => help('spl')} delayLongPress={350}>
-              <Text style={styles.statusLabel}>SPL·LAF</Text>
+            <Pressable
+              style={styles.statusCell}
+              onPress={() => help('spl')}
+              onLongPress={() => help('spl')}
+              delayLongPress={350}
+              accessibilityRole="button"
+              accessibilityLabel="C-weighted SPL, fast — uncalibrated dBFS. Tap for details."
+            >
+              {/* Default weighting is C (owner rev 24: dBC). The ⓘ is the honesty
+                  cue — the reading is uncalibrated dBFS, not a true SPL. */}
+              <View style={styles.statusHoldRow}>
+                <Text style={styles.statusLabel}>SPL·LCF</Text>
+                <Text style={styles.statusInfo}>ⓘ</Text>
+              </View>
               {/* Numbers read level on the amplitude ramp — louder red, quieter
                   blue (owner 2026-08-12). */}
-              <Text style={[styles.statusValue, meter ? { color: levelColorForDb(meter.aFastDb) } : null]}>
-                {meter ? fmtDb(meter.aFastDb) : '—'}
+              <Text style={[styles.statusValue, meter ? { color: levelColorForDb(meter.cFastDb) } : null]}>
+                {meter ? fmtDb(meter.cFastDb) : '—'}
               </Text>
             </Pressable>
             <Pressable style={styles.statusCell} onLongPress={() => help('peak')} delayLongPress={350}>
@@ -1027,7 +1040,7 @@ export function MultiMeterScreen({ navigation }: Props) {
               ))}
             </View>
             <Text style={styles.hMeterCaption}>
-              SPL·LAF {meter ? fmtDb(meter.aFastDb) : '—'} dBFS
+              SPL·LCF {meter ? fmtDb(meter.cFastDb) : '—'} dBFS
             </Text>
           </View>
         </>
@@ -1571,6 +1584,8 @@ const styles = StyleSheet.create({
   },
   statusHoldRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   statusLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.2, color: colors.textSub },
+  // Honesty cue on the dBC readout (owner rev 24) — tap the cell for the note.
+  statusInfo: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, color: colors.amberLabel, marginLeft: 3, marginTop: -1 },
   statusValue: { fontFamily: fonts.mono, fontSize: 17, color: colors.textPrimary },
   statusReset: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: '#c9d6e4', marginTop: -2 },
 
