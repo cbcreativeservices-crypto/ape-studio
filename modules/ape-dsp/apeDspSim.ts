@@ -141,7 +141,11 @@ const INFO: DspInfo = {
   genRenderPulls: 0,
 };
 
-/** The subset of ApeDsp the live tools read — overridden onto the singleton. */
+/** The subset of ApeDsp the live tools read — overridden onto the singleton.
+ *  Because the sim reports engineVersion 2, methods NOT overridden here would
+ *  hit `native!.x()` and throw on web (native is null) — so the generator /
+ *  rt60 / legacy read methods are stubbed too (e.g. the exposure monitor polls
+ *  genStatus globally). Anything genuinely unused stays a harmless no-op. */
 export function makeApeDspSim() {
   return {
     isAvailable: () => true,
@@ -158,5 +162,15 @@ export function makeApeDspSim() {
     getSpectrumMeta: spectrumMeta,
     getSpectrum: spectrum,
     getWaveform: waveform,
+    // Generator / rt60 / legacy — safe stubs so global pollers don't crash.
+    getFrame: () => ({ ...meter(), rmsDb: meter().zFastDb }),
+    genStatus: () => ({ running: false, capUnlocked: false, effectiveLevelDb: -20, defaultLevelDb: -20, capDb: -12 }),
+    genStart: () => Promise.resolve({ running: true, capUnlocked: false, effectiveLevelDb: -20, defaultLevelDb: -20, capDb: -12 }),
+    genStop: () => Promise.resolve(),
+    genSet: () => {},
+    genUnlockCap: () => {},
+    genRelockCap: () => {},
+    rt60Arm: () => {},
+    rt60Cancel: () => {},
   };
 }

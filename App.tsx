@@ -3,7 +3,7 @@
  * Loads the locked type families, wraps the app in a dark navigation theme +
  * safe-area provider, and renders the RootNavigator. Dark theme, portrait-only.
  */
-import { useEffect } from 'react';
+import { useEffect, type ComponentType } from 'react';
 import { useFonts } from 'expo-font';
 import { Platform, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
@@ -12,7 +12,9 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { KeyboardProvider } from './src/features/keyboard/keyboardControllerSafe';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { Spl3dGaugePreview } from './src/screens/tools/Spl3dGaugePreview';
-import { MultiMeterPreview } from './src/screens/tools/MultiMeterPreview';
+import { ToolPreview } from './src/screens/tools/ToolPreview';
+import { MultiMeterScreen } from './src/screens/tools/MultiMeterScreen';
+import { WaveformScreen } from './src/screens/tools/WaveformScreen';
 import { navigationRef } from './src/navigation/navigationRef';
 import { LabPreviewOverlay } from './src/features/lab/LabPreviewOverlay';
 import { endLabPreview, getLabPreview } from './src/features/lab/labPreviewStore';
@@ -100,15 +102,23 @@ export default function App() {
     );
   }
 
-  // DEV + WEB ONLY: `localhost:8090/#multimeterpreview` renders the real
-  // MultiMeterScreen (Skia-free SVG) in a minimal navigator with the ape-dsp SIM
-  // overlay, so the all-in-one meter can be seen + iterated in the browser.
-  // Outside RootNavigator, so it skips AmplitudeOrientation's web-Skia throw.
-  if (__DEV__ && Platform.OS === 'web' && typeof window !== 'undefined' && window.location.hash === '#multimeterpreview') {
+  // DEV + WEB ONLY: `localhost:8090/#<tool>preview` renders a real (Skia-free
+  // SVG) tool screen in a minimal navigator with the ape-dsp SIM overlay, so the
+  // tool can be seen + iterated in the browser. Outside RootNavigator, so it
+  // skips AmplitudeOrientation's web-Skia throw.
+  const toolPreview =
+    __DEV__ && Platform.OS === 'web' && typeof window !== 'undefined'
+      ? window.location.hash === '#multimeterpreview'
+        ? { name: 'MultiMeter', component: MultiMeterScreen as ComponentType }
+        : window.location.hash === '#waveformpreview'
+          ? { name: 'WaveformLive', component: WaveformScreen as ComponentType }
+          : null
+      : null;
+  if (toolPreview) {
     return (
       <SafeAreaProvider>
         <StatusBar style="light" />
-        <MultiMeterPreview />
+        <ToolPreview name={toolPreview.name} component={toolPreview.component} />
       </SafeAreaProvider>
     );
   }

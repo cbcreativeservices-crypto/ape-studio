@@ -30,7 +30,7 @@
  *    quality flags shown live (spec §6/§7).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Svg, { Defs, G, Line, LinearGradient, Path, Rect, Stop, Text as SvgText } from 'react-native-svg';
@@ -61,6 +61,13 @@ const ENGINE_HISTORY_SEC = 6.0;
 /** Slice headroom — the engine never sends more than its ring capacity. */
 const MAX_BUCKETS = 4096;
 const PANEL_H = 240;
+/** Skia's CanvasKit isn't shipped on web (nor any Spike-0 build), so the trace
+ *  is drawn with SVG there and Skia on device — the tool never blanks. Enables
+ *  the dev #waveformpreview and hardens against no-CanvasKit runtimes. */
+const SKIA_READY =
+  Platform.OS !== 'web' ||
+  (typeof globalThis !== 'undefined' && !!(globalThis as { CanvasKit?: unknown }).CanvasKit);
+
 /** Vertical inset of the drawable area (leaves the clip-tick lane at top). */
 const PAD_V = 16;
 /** Accent for clip ticks / axis (teal, toolsData). */
@@ -279,25 +286,48 @@ export function WaveformScreen({ navigation }: Props) {
       rmsT[px] = y(s.rms);
       rmsB[px] = y(-s.rms);
     }
-    const areaP = Skia.Path.Make();
-    areaP.moveTo(0, topY[0]);
-    for (let px = 1; px <= W; px++) areaP.lineTo(px, topY[px]);
-    for (let px = W; px >= 0; px--) areaP.lineTo(px, botY[px]);
-    areaP.close();
-    const rmsP = Skia.Path.Make();
-    rmsP.moveTo(0, rmsT[0]);
-    for (let px = 1; px <= W; px++) rmsP.lineTo(px, rmsT[px]);
-    for (let px = W; px >= 0; px--) rmsP.lineTo(px, rmsB[px]);
-    rmsP.close();
+    // Skia paths on device; SVG path strings on web (CanvasKit absent).
+    type SkPath = ReturnType<typeof Skia.Path.Make>;
+    let areaP: SkPath | null = null;
+    let rmsP: SkPath | null = null;
+    let clipP: SkPath | null = null;
+    let areaD = '';
+    let rmsD = '';
+    let clipD = '';
+    if (SKIA_READY) {
+      areaP = Skia.Path.Make();
+      areaP.moveTo(0, topY[0]);
+      for (let px = 1; px <= W; px++) areaP.lineTo(px, topY[px]);
+      for (let px = W; px >= 0; px--) areaP.lineTo(px, botY[px]);
+      areaP.close();
+      rmsP = Skia.Path.Make();
+      rmsP.moveTo(0, rmsT[0]);
+      for (let px = 1; px <= W; px++) rmsP.lineTo(px, rmsT[px]);
+      for (let px = W; px >= 0; px--) rmsP.lineTo(px, rmsB[px]);
+      rmsP.close();
+      clipP = Skia.Path.Make();
+    } else {
+      areaD = `M0 ${topY[0].toFixed(1)}`;
+      for (let px = 1; px <= W; px++) areaD += `L${px} ${topY[px].toFixed(1)}`;
+      for (let px = W; px >= 0; px--) areaD += `L${px} ${botY[px].toFixed(1)}`;
+      areaD += 'Z';
+      rmsD = `M0 ${rmsT[0].toFixed(1)}`;
+      for (let px = 1; px <= W; px++) rmsD += `L${px} ${rmsT[px].toFixed(1)}`;
+      for (let px = W; px >= 0; px--) rmsD += `L${px} ${rmsB[px].toFixed(1)}`;
+      rmsD += 'Z';
+    }
     // Clip ticks per REAL bucket (a bucket either clipped or it didn't).
-    const clipP = Skia.Path.Make();
     let hasClip = false;
     for (let i = 0; i < n; i++) {
       if (displayBuckets[i].clipped) {
         hasClip = true;
         const x = panelW - (n - i - 0.5) * colW;
-        clipP.moveTo(x, 4);
-        clipP.lineTo(x, 12);
+        if (SKIA_READY && clipP) {
+          clipP.moveTo(x, 4);
+          clipP.lineTo(x, 12);
+        } else {
+          clipD += `M${x.toFixed(1)} 4L${x.toFixed(1)} 12`;
+        }
       }
     }
     // Level-colour gradient axis (owner 2026-07-31): the loudness ramp is keyed to
@@ -327,6 +357,9 @@ export function WaveformScreen({ navigation }: Props) {
       areaP,
       rmsP,
       clipP,
+      areaD,
+      rmsD,
+      clipD,
       hasClip,
       dbTicks,
       observed,
@@ -448,10 +481,10 @@ export function WaveformScreen({ navigation }: Props) {
                         was coarse on Android — owner 2026-08-14). DAW-style solid body
                         + denser RMS core, MIDI level gradient (or flat teal when COLORS
                         is off), red clip ticks in the top lane. */}
-                    {scope ? (
+                    {scope && SKIA_READY ? (
                       <Canvas style={StyleSheet.absoluteFill}>
                         {colorsOn ? (
-                          <SkiaPath path={scope.areaP} opacity={0.9}>
+                          <SkiaPath path={scope.areaP!} opacity={0.9}>
                             <SkiaGradient
                               start={vec(0, scope.gradY0)}
                               end={vec(0, scope.gradY1)}
@@ -460,10 +493,10 @@ export function WaveformScreen({ navigation }: Props) {
                             />
                           </SkiaPath>
                         ) : (
-                          <SkiaPath path={scope.areaP} color={TRACE} opacity={0.9} />
+                          <SkiaPath path={scope.areaP!} color={TRACE} opacity={0.9} />
                         )}
                         {colorsOn ? (
-                          <SkiaPath path={scope.rmsP} opacity={0.6}>
+                          <SkiaPath path={scope.rmsP!} opacity={0.6}>
                             <SkiaGradient
                               start={vec(0, scope.gradY0)}
                               end={vec(0, scope.gradY1)}
@@ -472,12 +505,19 @@ export function WaveformScreen({ navigation }: Props) {
                             />
                           </SkiaPath>
                         ) : (
-                          <SkiaPath path={scope.rmsP} color={TRACE} opacity={0.6} />
+                          <SkiaPath path={scope.rmsP!} color={TRACE} opacity={0.6} />
                         )}
                         {scope.hasClip ? (
-                          <SkiaPath path={scope.clipP} color={colors.red} style="stroke" strokeWidth={scope.clipW} />
+                          <SkiaPath path={scope.clipP!} color={colors.red} style="stroke" strokeWidth={scope.clipW} />
                         ) : null}
                       </Canvas>
+                    ) : scope ? (
+                      // Web fallback (no CanvasKit): SVG trace, flat trace colour.
+                      <Svg width={panelW} height={PANEL_H} style={StyleSheet.absoluteFill}>
+                        <Path d={scope.areaD} fill={TRACE} opacity={0.9} />
+                        <Path d={scope.rmsD} fill={TRACE} opacity={0.6} />
+                        {scope.hasClip ? <Path d={scope.clipD} stroke={colors.red} strokeWidth={scope.clipW} fill="none" /> : null}
+                      </Svg>
                     ) : null}
                   </View>
                 ) : null}
