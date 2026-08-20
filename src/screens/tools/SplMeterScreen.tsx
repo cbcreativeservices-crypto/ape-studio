@@ -36,7 +36,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
 import * as Crypto from 'expo-crypto';
 import { GlassButton } from '../../components/GlassButton';
-import { lockPortrait, unlockOrientation } from '../../lib/screenOrientationSafe';
+import { lockLandscape, lockPortrait, unlockOrientation } from '../../lib/screenOrientationSafe';
 import { requireVizMeters, type VizMetersModule } from '../lab/meter/skiaGate';
 import { CollapsibleSection } from '../lab/LabShell';
 import type { LiveMeterDrive, PeakHoldMode } from '../lab/meter/vizMeters';
@@ -153,7 +153,7 @@ function VuHero({
   onModeHelp,
   centerText,
   centerColor,
-  onToggle,
+  onOpenFullscreen,
 }: {
   dialW: number;
   /** Smoothed estimated dB SPL driving the segment fill; null = meter off. */
@@ -164,14 +164,13 @@ function VuHero({
   onModeHelp: () => void;
   centerText: string;
   centerColor?: string;
-  /** Tap the gauge (not the mode chips) to toggle the meter START/STOP. */
-  onToggle?: () => void;
+  /** Tap the gauge (not the mode chips) to open the fullscreen landscape gauge. */
+  onOpenFullscreen?: () => void;
 }) {
   return (
-    // SPL gauge — the isometric 3D segmented ring (owner 2026-08-19 rev 2).
-    // The STUDIO/SPL/OPTIMAL chooser is its OWN ROW above the gauge — it used
-    // to be an absolute overlay on the canvas and collided with the gauge
-    // title/badge. Tapping the gauge toggles START/STOP.
+    // SPL gauge — the isometric 3D segmented ring. The STUDIO/SPL/OPTIMAL chooser
+    // is its own row above the gauge. Tapping the gauge opens the fullscreen
+    // (landscape) view (owner 2026-08-19).
     <View style={{ width: dialW, alignSelf: 'center' }}>
       <View style={styles.dialModeRow}>
         {(['studio', 'spl', 'optimal'] as const).map((m) => (
@@ -193,7 +192,7 @@ function VuHero({
           </Pressable>
         ))}
       </View>
-      <Pressable onPress={onToggle} accessibilityRole={onToggle ? 'button' : undefined}>
+      <Pressable onPress={onOpenFullscreen} accessibilityRole={onOpenFullscreen ? 'button' : undefined} accessibilityLabel="Open the fullscreen SPL gauge">
         <Spl3dGauge
           width={dialW}
           mode={dialMode}
@@ -697,20 +696,23 @@ export function SplMeterScreen({ navigation }: Props) {
   // at a time. 'home' is the entry (was the always-open `vuOpen` native Modal).
   const [view, setView] = useState<'home' | 'digital'>('home');
   const [vuFsOpen, setVuFsOpen] = useState(false);
+  // Fullscreen SPL reference gauge — landscape-only, same as Full VU (owner
+  // 2026-08-19). Tapping the gauge opens it; both fullscreens force landscape so
+  // the phone never has to be flipped.
+  const [gaugeFsOpen, setGaugeFsOpen] = useState(false);
   // Full VU: hide/show the right-side LED level meter (owner 2026-08-18). When
   // hidden the VU simply centers in the freed space (no zoom — owner).
   const [vuFsLedHidden, setVuFsLedHidden] = useState(false);
   // Which setting popup is open from the VU home's bottom control bar (owner
   // 2026-08-18): Range · Weighting · Response · Peak Hold.
   const [settingPopup, setSettingPopup] = useState<null | 'range' | 'unit' | 'response' | 'hold'>(null);
-  // Full VU supports BOTH orientations (owner 2026-08-18): unlock rotation while
-  // open so the user can turn the phone — landscape lays VU + LED side by side,
-  // portrait stacks VU over LED. The instant it closes, re-lock PORTRAIT so the
-  // (portrait-only) home never lingers sideways.
+  // Both fullscreens are LANDSCAPE-ONLY (owner 2026-08-19): force landscape on
+  // open so the phone never needs flipping, and re-lock PORTRAIT the instant
+  // both are closed so the portrait-only home never lingers sideways.
   useEffect(() => {
-    if (vuFsOpen) unlockOrientation();
+    if (vuFsOpen || gaugeFsOpen) lockLandscape();
     else lockPortrait();
-  }, [vuFsOpen]);
+  }, [vuFsOpen, gaugeFsOpen]);
   // Declarative orientation (Phase 2, 2026-08-19): react-native-screens OWNS
   // orientation on this native stack and IGNORES expo-screen-orientation, so we
   // drive the per-screen option directly: free-rotate ('all') while Full VU OR
@@ -719,8 +721,11 @@ export function SplMeterScreen({ navigation }: Props) {
   // near line 683) are KEPT as a harmless fallback until this is confirmed
   // driving rotation on-device with a fresh build; only then are they removed.
   useEffect(() => {
-    navigation.setOptions({ orientation: vuFsOpen || readoutFsOpen ? 'all' : 'portrait' });
-  }, [vuFsOpen, readoutFsOpen, navigation]);
+    // Full VU + Full Gauge = LANDSCAPE-ONLY; the fullscreen readout still free-
+    // rotates. Portrait everywhere else.
+    const orientation = vuFsOpen || gaugeFsOpen ? 'landscape' : readoutFsOpen ? 'all' : 'portrait';
+    navigation.setOptions({ orientation });
+  }, [vuFsOpen, gaugeFsOpen, readoutFsOpen, navigation]);
   // Hardware BACK (Phase 1, 2026-08-19): the removed Modals handled Android back
   // for free — replicate the same priority now that everything is in-tree. Close
   // the settings popup, then Full VU, then the fullscreen readout, then fall the
@@ -729,6 +734,7 @@ export function SplMeterScreen({ navigation }: Props) {
   useEffect(() => {
     const onBack = () => {
       if (settingPopup != null) { setSettingPopup(null); return true; }
+      if (gaugeFsOpen) { setGaugeFsOpen(false); return true; }
       if (vuFsOpen) { setVuFsOpen(false); return true; }
       if (readoutFsOpen) { setReadoutFsOpen(false); return true; }
       if (view === 'digital') { setView('home'); return true; }
@@ -736,7 +742,7 @@ export function SplMeterScreen({ navigation }: Props) {
     };
     const sub = BackHandler.addEventListener('hardwareBackPress', onBack);
     return () => sub.remove();
-  }, [settingPopup, vuFsOpen, readoutFsOpen, view]);
+  }, [settingPopup, gaugeFsOpen, vuFsOpen, readoutFsOpen, view]);
   // User setting for the LED meter's peak-hold cap linger (owner 2026-07-30).
   const [holdMode, setHoldMode] = useState<PeakHoldMode>('1s');
   // RANGE (owner 2026-07-30): the environmental SPL that reads 0 VU. The wide VU
@@ -782,6 +788,11 @@ export function SplMeterScreen({ navigation }: Props) {
   // Below the top area: the SPL gauge gets its OWN FULL-WIDTH row so its callout
   // labels sit OUTSIDE the ring with leader lines (3D gauge sizes itself).
   const dialW = winW - 32;
+  // Fullscreen (landscape) gauge width — fills the long side but stays within the
+  // short side given the gauge's 2:1 aspect, leaving room for the mode chips.
+  const fsLong = Math.max(winW, winH);
+  const fsShort = Math.min(winW, winH);
+  const gaugeFsW = Math.round(Math.min(fsLong * 0.92, fsShort * 1.8));
   // Live meter drive (responsiveness fix 2026-07-30): two SharedValues the Skia
   // meters chase on the UI thread. RMS = the selected weighting × response level;
   // peak = the raw peak (F1: may exceed 0 dBFS, never clamped). −120 = silence.
@@ -1507,7 +1518,7 @@ export function SplMeterScreen({ navigation }: Props) {
                     onModeHelp={() => help('mode')}
                     centerText={gaugeText}
                     centerColor={dialCenterColor}
-                    onToggle={running ? stopMeter : startMeter}
+                    onOpenFullscreen={() => setGaugeFsOpen(true)}
                   />
                 ) : null}
 
@@ -1793,6 +1804,48 @@ export function SplMeterScreen({ navigation }: Props) {
                   )}
                 </>
               )}
+            </Pressable>
+          )}
+
+          {/* Fullscreen SPL reference gauge — LANDSCAPE-ONLY (owner 2026-08-19).
+              Tap anywhere to close; the mode chips switch STUDIO/SPL/OPTIMAL. */}
+          {gaugeFsOpen && (
+            <Pressable
+              style={styles.vuFsRoot}
+              onPress={() => setGaugeFsOpen(false)}
+              accessibilityRole="button"
+              accessibilityLabel="Close the fullscreen SPL gauge — tap to close"
+            >
+              <View style={styles.vuFsClose} pointerEvents="none">
+                <Text style={styles.vuFsCloseX}>✕</Text>
+              </View>
+              <View style={styles.gaugeFsStage} pointerEvents="box-none">
+                <View style={styles.dialModeRow} pointerEvents="auto">
+                  {(['studio', 'spl', 'optimal'] as const).map((m) => (
+                    <Pressable
+                      key={m}
+                      style={[styles.dialModeChip, dialMode === m && styles.chipSelected]}
+                      onPress={() => setDialMode(m)}
+                      onLongPress={() => help('mode')}
+                      delayLongPress={260}
+                      accessibilityRole="button"
+                      accessibilityState={{ selected: dialMode === m }}
+                    >
+                      <Text style={[styles.dialModeChipText, dialMode === m && styles.chipTextSelected]}>{m.toUpperCase()}</Text>
+                    </Pressable>
+                  ))}
+                </View>
+                <View pointerEvents="none">
+                  <Spl3dGauge
+                    width={gaugeFsW}
+                    mode={dialMode}
+                    level={gaugeSpl}
+                    calibrated={calibrated}
+                    centerText={gaugeText}
+                    centerColor={dialCenterColor}
+                  />
+                </View>
+              </View>
             </Pressable>
           )}
         </View>
@@ -2292,6 +2345,7 @@ const styles = StyleSheet.create({
   vuFsCloseX: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, color: colors.textSecondary },
   // Full VU stage — a row so the settings COLUMN sits left of the VU (landscape).
   vuFsStage: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 16 },
+  gaugeFsStage: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 },
   // Settings column (landscape), left of the VU meter (owner 2026-08-19).
   vuFsCtrlCol: { width: 106, flexDirection: 'column', justifyContent: 'center', gap: 10, zIndex: 130 },
   vuFsCtrlColBtn: {

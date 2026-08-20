@@ -266,7 +266,7 @@ function chrome(mode: DialMode3d, calibrated: boolean): ReactNode {
     );
   }
   if (!calibrated) {
-    const by = VB_H - 34;
+    const by = VB_H - 48; // padded up off the glass edge (owner rev 16)
     els.push(<Rect key="badgebg" x={CX - 116} y={by} width={232} height={22} rx={11} fill="#00000038" stroke="#5a4a1e" strokeWidth={1} />);
     els.push(
       <SvgText key="badge" x={CX} y={by + 16} fill="#c59b3a" fontFamily={fonts.oswaldSemiBold} fontSize={14} letterSpacing={1.6} textAnchor="middle">
