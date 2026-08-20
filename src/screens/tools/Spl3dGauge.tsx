@@ -16,6 +16,7 @@ import Animated, { cancelAnimation, Easing, useAnimatedProps, useSharedValue, wi
 import { fonts } from '../../theme/tokens';
 
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
+const AnimatedG = Animated.createAnimatedComponent(G);
 
 export type DialMode3d = 'studio' | 'spl' | 'optimal';
 
@@ -242,12 +243,15 @@ const TITLES: Record<DialMode3d, [string, string | null]> = {
   optimal: ['OPTIMAL REFERENCE LISTENING', 'dBA · LAeq WHERE NOTED'],
 };
 
-/** Straight leader from the anchor (just outside the tile) to the label's inner
- *  point (rev 10). Because the label sits radially outward from the anchor, the
- *  line is near-radial — no sharp kink, and it never runs under the tiles. */
-function leaderPath(spl: number, tx: number, ty: number): { d: string; ax: number; ay: number } {
+/** Straight leader from the anchor to the label's inner point. For SIDE labels
+ *  the anchor is beside the text, so the line ends just above the title; for TOP
+ *  ('middle') labels the anchor is BELOW the text, so it must end BELOW the
+ *  subtitle — otherwise the line runs up THROUGH the title + subtitle (owner
+ *  rev 18: the grey 60–78 dBA subtitle intersecting the green leader). */
+function leaderPath(spl: number, tx: number, ty: number, a: Anchor): { d: string; ax: number; ay: number } {
   const A = ept(theta(spl), 1.05);
-  return { d: `M${P(A)}L${tx.toFixed(1)} ${(ty - 6).toFixed(1)}`, ax: A.x, ay: A.y };
+  const endY = a === 'middle' ? ty + 27 : ty - 6;
+  return { d: `M${P(A)}L${tx.toFixed(1)} ${endY.toFixed(1)}`, ax: A.x, ay: A.y };
 }
 
 function chrome(mode: DialMode3d, calibrated: boolean): ReactNode {
@@ -277,7 +281,7 @@ function chrome(mode: DialMode3d, calibrated: boolean): ReactNode {
   // Callouts — auto-laid-out ranges (rev 9): angle-ordered side columns, never
   // centre-locked, leaders never cross; light-grey subtitle below the title.
   LAID_OUT[mode].forEach((c) => {
-    const L = leaderPath(c.spl, c.tx, c.ty);
+    const L = leaderPath(c.spl, c.tx, c.ty, c.a);
     els.push(<Path key={`l${c.spl}`} d={L.d} fill="none" stroke={c.color} strokeWidth={1.3} opacity={0.6} />);
     els.push(<Circle key={`d${c.spl}`} cx={L.ax} cy={L.ay} r={2.8} fill={c.color} />);
     els.push(
@@ -338,6 +342,42 @@ const SEG_DEFS: SegDef[] = (() => {
   return out;
 })();
 
+/* ── Gold sparkle overlay (owner rev 18) — a gold-glitter frame that twinkles
+ *  over the glass while the level sits in a GOLD target zone, a celebratory
+ *  "ideal zone" flourish. Particles are pre-scattered in a border band by a
+ *  deterministic PRNG (stable across renders) and split into 3 groups that
+ *  twinkle out of phase; each group's opacity animates on the UI thread. ── */
+const SPARKLE_HUES = ['#f6dd8b', '#e8b93a', '#c9971f', '#fff2cf'];
+type Sparkle = { x: number; y: number; r: number; c: string; g: number };
+const GOLD_SPARKLES: Sparkle[] = (() => {
+  let s = 0x9e3779b9 | 0;
+  const rnd = () => {
+    s = (s + 0x6d2b79f5) | 0;
+    let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  const out: Sparkle[] = [];
+  const bandX = 155;
+  const bandY = 135;
+  for (let i = 0; i < 56; i++) {
+    const edge = i % 4;
+    const along = rnd();
+    const depth = Math.pow(rnd(), 1.7); // biased to the very edge
+    let x: number;
+    let y: number;
+    if (edge === 0) { x = 18 + along * (VB_W - 36); y = 16 + depth * bandY; }
+    else if (edge === 1) { x = 18 + along * (VB_W - 36); y = VB_H - 16 - depth * bandY; }
+    else if (edge === 2) { x = 16 + depth * bandX; y = 18 + along * (VB_H - 36); }
+    else { x = VB_W - 16 - depth * bandX; y = 18 + along * (VB_H - 36); }
+    out.push({ x, y, r: 1.4 + rnd() * 3.6, c: SPARKLE_HUES[(rnd() * SPARKLE_HUES.length) | 0], g: i % 3 });
+  }
+  return out;
+})();
+function sparkleGroup(g: number): ReactNode {
+  return GOLD_SPARKLES.filter((p) => p.g === g).map((p, i) => <Circle key={i} cx={p.x} cy={p.y} r={p.r} fill={p.c} />);
+}
+
 export type Spl3dGaugeProps = {
   width: number;
   mode: DialMode3d;
@@ -379,6 +419,18 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
   const sweepProps = useAnimatedProps(() => ({
     x: gxmin - BAND_W + sweep.value * (gxmax - gxmin + BAND_W * 2),
   }));
+
+  // Gold-sparkle twinkle — one looping phase; three groups fade out of sync.
+  const twinkle = useSharedValue(0);
+  useEffect(() => {
+    cancelAnimation(twinkle);
+    twinkle.value = 0;
+    if (goldActive) twinkle.value = withRepeat(withTiming(1, { duration: 2400, easing: Easing.linear }), -1, false);
+    return () => cancelAnimation(twinkle);
+  }, [goldActive, twinkle]);
+  const sparkle0 = useAnimatedProps(() => ({ opacity: 0.22 + 0.58 * (0.5 + 0.5 * Math.sin(twinkle.value * 6.2832)) }));
+  const sparkle1 = useAnimatedProps(() => ({ opacity: 0.22 + 0.58 * (0.5 + 0.5 * Math.sin(twinkle.value * 6.2832 + 2.09)) }));
+  const sparkle2 = useAnimatedProps(() => ({ opacity: 0.22 + 0.58 * (0.5 + 0.5 * Math.sin(twinkle.value * 6.2832 + 4.19)) }));
 
   // Each block is built from its own faces so it reads as a solid 3D wedge:
   //   inner wall (back, darkest) → end-caps (cut sides, dark) → outer wall
@@ -530,6 +582,16 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
         <Rect x={14} y={14} width={VB_W - 28} height={VB_H - 28} rx={18} fill={`url(#${uid}-glass)`} />
         <Rect x={17} y={15.5} width={VB_W - 34} height={1.6} rx={0.8} fill="#ffffff" opacity={0.26} />
         <Rect x={17} y={VB_H - 17} width={VB_W - 34} height={1.4} rx={0.7} fill="#ffffff" opacity={0.12} />
+
+        {/* GOLD SPARKLE — a twinkling gold-glitter frame while in a gold target
+            zone (owner rev 18). Three groups fade out of phase on the UI thread. */}
+        {goldActive && (
+          <>
+            <AnimatedG animatedProps={sparkle0}>{sparkleGroup(0)}</AnimatedG>
+            <AnimatedG animatedProps={sparkle1}>{sparkleGroup(1)}</AnimatedG>
+            <AnimatedG animatedProps={sparkle2}>{sparkleGroup(2)}</AnimatedG>
+          </>
+        )}
       </Svg>
     </View>
   );
