@@ -1,17 +1,28 @@
 # VU meter change orders — TABLED to 2026-08-19 (owner)
 
 Owner prepared these 2026-08-18 but chose to table all VU-meter changes until a
-deeper dive tomorrow. All items below affect the VU meters. Do NOT start these
-until the owner reopens the VU work. Screen: `src/screens/tools/SplMeterScreen.tsx`
-(see [[spl-vu-meter-restructure]] in memory for the current structure).
+deeper dive. All items below affect the VU meters. Screen:
+`src/screens/tools/SplMeterScreen.tsx` (see [[spl-vu-meter-restructure]] in
+memory for the current structure).
+
+## STATUS (updated 2026-08-19)
+- ✅ **Items 1 & 2 DONE** (commit `caf44e5`): Full VU settings bar + LED
+  hide/show with the meter centering when the LED is hidden.
+- ⏳ **Items 3–12 still TABLED** — owner is doing these in a dedicated
+  before-bed session (it's a thought-out sequence). Do NOT start until then.
+- Recommended order when reopened: **3 + 10** (double-range toggle + Full VU
+  opens in auto), then **4 → 5 → 6** (LED readout relocation + widen VU + red
+  above 100 + 105 dB range) as one layout pass, then **7, 9** (long-press /
+  tap gestures). **BLOCKED on owner input:** #8 needs the LED colour-scheme
+  example images; #11 needs a confirm (borderline non-VU); #12 skins design.
 
 ## Full VU screen
-1. **Add VU settings buttons** to the Full VU screen, along the bottom (which
+1. ✅ **Add VU settings buttons** to the Full VU screen, along the bottom (which
    settings TBD with owner — likely mirror the home's Range · Weighting ·
-   Response · Peak Hold).
-2. **LED hide/show:** allow the right-side vertical LED meter in Full VU to be
+   Response · Peak Hold). — DONE (bottom bar in landscape, column in portrait).
+2. ✅ **LED hide/show:** allow the right-side vertical LED meter in Full VU to be
    hidden/shown. When hidden, **center the VU meter** in the freed space — it does
-   NOT need to zoom/enlarge, just center.
+   NOT need to zoom/enlarge, just center. — DONE.
 
 ## Range
 3. **"Double range" toggle**, placed next to the RANGE title. Doubles the VU's dB
@@ -49,6 +60,10 @@ until the owner reopens the VU work. Screen: `src/screens/tools/SplMeterScreen.t
     session-log Leq readouts follow the selected SPL/A/C/FS unit rather than the
     fixed Leq(A)/Leq(Z) columns. (Borderline non-VU; owner may want this done
     sooner — confirm.)
+
+## VU skins
+12. Add **selectable VU types / skins** — the user can choose between different
+    VU meter looks. (Design/skins TBD with owner.)
 
 ---
 More lists may follow; non-SPL-meter items get done same-day, SPL/VU items append
