@@ -64,12 +64,14 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useIsFocused } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
 import Svg, { Defs, G, Line, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 import { ApeDsp, type EngineConfig } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
+import { deriveSixthOctave, NO_LEVEL, SIXTH_BANDS, SIXTH_EDGE, type DisplayBands } from '../../features/tools/sixthOctave';
 import { heatColor, levelColorForDb, MIDLINE_BLUE, rampColors, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 import { LinearGradient as GradientView } from 'expo-linear-gradient';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
@@ -420,6 +422,14 @@ export function MultiMeterScreen({ navigation }: Props) {
     sampleRate: number;
   };
   const [specView, setSpecView] = useState<SpecView | null>(null);
+  // 1/6-octave (61-band) RTA derived from the fine spectrum (owner rev 24 — the
+  // MultiMeter defaults to 61 bands; the native engine only delivers 1/3-oct).
+  const [sixthBands, setSixthBands] = useState<DisplayBands | null>(null);
+  const sixthSmoothRef = useRef<Float64Array | null>(null);
+  const sixthHoldRef = useRef<Float64Array>(new Float64Array(SIXTH_BANDS).fill(NO_LEVEL));
+  const everStartedRef = useRef(false); // true once the user has started (resilience gate)
+  const bandAlphaRef = useRef(smoothing.bandAlpha);
+  bandAlphaRef.current = smoothing.bandAlpha;
   const envAvgRef = useRef<Float64Array | null>(null);
   const envBinsRef = useRef<{ key: string; map: Int32Array } | null>(null);
   const sgBinsRef = useRef<{ key: string; map: Int32Array } | null>(null);
@@ -492,6 +502,11 @@ export function MultiMeterScreen({ navigation }: Props) {
         peak: Number.isFinite(pk) && pk >= SPEC_PEAK_MIN_DB ? { hz: pkI * hzPerBin, db: pk } : null,
         sampleRate: meta.sampleRate,
       });
+
+      // 61-band 1/6-oct RTA from the same real frame (owner rev 24).
+      setSixthBands(
+        deriveSixthOctave(spec, meta.sampleRate, meta.fftSize, bandAlphaRef.current, sixthSmoothRef, sixthHoldRef.current),
+      );
 
       if (tick % SLOW_EVERY !== 0) return;
 
@@ -616,6 +631,7 @@ export function MultiMeterScreen({ navigation }: Props) {
   // so there is no per-poll latch state to track here anymore.
   const onResetPeakHold = useCallback(() => {
     resetPeakHold();
+    sixthHoldRef.current.fill(NO_LEVEL); // clear the derived 61-band holds too
   }, [resetPeakHold]);
 
   const onStart = useCallback(() => {
@@ -624,6 +640,9 @@ export function MultiMeterScreen({ navigation }: Props) {
     clearEnv();
     sgBinsRef.current = null;
     setSpecView(null);
+    setSixthBands(null);
+    sixthSmoothRef.current = null;
+    sixthHoldRef.current.fill(NO_LEVEL);
     setSgHistory([]);
     sgColIdRef.current = 0;
     detectStateRef.current = initialDetectState();
@@ -632,6 +651,7 @@ export function MultiMeterScreen({ navigation }: Props) {
     setChips([]);
     setCursorX(null);
     lastGoodRef.current = null;
+    everStartedRef.current = true;
     void start();
   }, [clearEnv, start]);
 
@@ -647,6 +667,17 @@ export function MultiMeterScreen({ navigation }: Props) {
       onStart();
     }
   }, [state, onStart]);
+
+  // Resilience (owner rev 24): if the engine drops back to idle while we're
+  // still ON-SCREEN and the user hadn't stopped it, resume — this masks the iOS
+  // "randomly reverts to START" report. Gated on isFocused (navigating away
+  // still stops for privacy) and everStarted (a fresh entry still shows the
+  // manual START card by design). Survives a stray blur/refocus, not a full
+  // remount (refs reset then). Root cause still tracked via the Metro log.
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    if (isFocused && everStartedRef.current && !micPaused && state === 'idle') onStart();
+  }, [isFocused, micPaused, state, onStart]);
 
   // ---- Snapshot (owner spec §8): capture AT BUTTON PRESS, confirm w/ notes --
   type SnapshotDraft = {
@@ -815,7 +846,7 @@ export function MultiMeterScreen({ navigation }: Props) {
 
   // ---- Derived render data ---------------------------------------------------
   const liveFlags = running ? meterWarningFlags(meter) : [];
-  const bands = running ? frames.bands : null;
+  const bands = running ? sixthBands : null; // 61-band 1/6-oct (owner rev 24)
   const info = running ? ApeDsp.getInfo() : null;
   const half = SCOPE_H / 2;
 
@@ -904,10 +935,10 @@ export function MultiMeterScreen({ navigation }: Props) {
     };
   }, [running, frames.waveform, scopeW, half, scopeZoom]);
 
-  // Visible 1/3-oct bands within the zoom window (log-mapped x + edges).
+  // Visible 1/6-oct bands within the zoom window (log-mapped x + edges).
   const visibleBands = useMemo(() => {
     if (bands == null || plotW <= 0) return [];
-    const edge = Math.pow(2, 1 / 6);
+    const edge = SIXTH_EDGE; // 1/6-oct half-width = center × 2^(±1/12)
     const out: { key: number; x: number; w: number; level: number; hold: number; ok: boolean }[] = [];
     bands.centers.forEach((c, i) => {
       if (c < zoom.min || c > zoom.max) return; // outside the window — hidden
@@ -1053,8 +1084,8 @@ export function MultiMeterScreen({ navigation }: Props) {
         {!micPaused && (state === 'idle' || state === 'starting') && (
           <>
             <Text style={styles.intro}>
-              Every meter at once: weighted level, peak and RMS, a 31-band spectrum with an FFT
-              overlay, a scrolling spectrogram, a live oscilloscope, dominant frequency with musical
+              Every meter at once: weighted level, peak and RMS, a 61-band (1/6-octave) spectrum,
+              a scrolling spectrogram, a live oscilloscope, dominant frequency with musical
               note, and smart signal detection. Every level is digital level at the microphone input
               (dBFS), uncalibrated and approximate — never dB SPL. Press START to begin capture;
               nothing is simulated while stopped.
@@ -1077,7 +1108,7 @@ export function MultiMeterScreen({ navigation }: Props) {
               <View style={styles.panelHead}>
                 <Text style={styles.panelEyebrow}>LIVE SPECTRUM</Text>
                 <Text style={styles.panelSettings}>
-                  1/3 OCT · FFT {FFT_SIZE} · α {smoothing.bandAlpha.toFixed(2)}
+                  1/6 OCT · derived · FFT {FFT_SIZE} · α {smoothing.bandAlpha.toFixed(2)}
                 </Text>
               </View>
 
