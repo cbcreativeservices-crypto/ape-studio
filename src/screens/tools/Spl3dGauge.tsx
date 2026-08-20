@@ -418,9 +418,23 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
     <View style={{ width, height }} pointerEvents="none">
       <Svg width={width} height={height} viewBox={`0 0 ${VB_W} ${VB_H}`}>
         <Defs>
-          <LinearGradient id={`${uid}-plate`} x1="0" y1="0" x2="0" y2="1">
-            <Stop offset="0" stopColor="#2b2e33" />
-            <Stop offset="1" stopColor="#1b1d21" />
+          {/* Metallic bezel — same brushed top-lit gradient as the ToolsHub tiles. */}
+          <LinearGradient id={`${uid}-bezel`} x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0" stopColor="#5c6067" />
+            <Stop offset="0.14" stopColor="#3e4147" />
+            <Stop offset="0.62" stopColor="#2b2d32" />
+            <Stop offset="1" stopColor="#1d1f23" />
+          </LinearGradient>
+          {/* Recessed dark glass screen. */}
+          <LinearGradient id={`${uid}-screen`} x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0" stopColor="#141619" />
+            <Stop offset="1" stopColor="#08090b" />
+          </LinearGradient>
+          {/* Glass specular sweep from the top-left corner. */}
+          <LinearGradient id={`${uid}-glass`} x1="0" y1="0" x2="0.8" y2="0.9">
+            <Stop offset="0" stopColor="#ffffff" stopOpacity="0.14" />
+            <Stop offset="0.34" stopColor="#ffffff" stopOpacity="0.04" />
+            <Stop offset="0.62" stopColor="#ffffff" stopOpacity="0" />
           </LinearGradient>
           <RadialGradient id={`${uid}-well`} cx="0.5" cy="0.46" r="0.62">
             <Stop offset="0" stopColor="#101215" />
@@ -467,9 +481,13 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
           )}
         </Defs>
 
-        {/* Graphite faceplate + machined rim + bevel edge. */}
-        <Rect x={4} y={4} width={VB_W - 8} height={VB_H - 8} rx={26} fill={`url(#${uid}-plate)`} stroke="#0c0d0f" strokeWidth={1.5} />
-        <Rect x={5.5} y={5.5} width={VB_W - 11} height={VB_H - 11} rx={24} fill="none" stroke="#494d55" strokeWidth={1} opacity={0.6} />
+        {/* Recessed GLASS DISPLAY treatment (matches the ToolsHub tiles): black
+            keyline → brushed metal bezel → catch-light → dark seam → the screen. */}
+        <Rect x={0} y={0} width={VB_W} height={VB_H} rx={30} fill="#000000" />
+        <Rect x={2.5} y={2.5} width={VB_W - 5} height={VB_H - 5} rx={28} fill={`url(#${uid}-bezel)`} />
+        <Rect x={10} y={5} width={VB_W - 20} height={2} rx={1} fill="#ffffff" opacity={0.32} />
+        <Rect x={11} y={11} width={VB_W - 22} height={VB_H - 22} rx={21} fill="#040405" />
+        <Rect x={14} y={14} width={VB_W - 28} height={VB_H - 28} rx={18} fill={`url(#${uid}-screen)`} />
 
         {/* Recessed well + contact shadow. */}
         <Ellipse cx={CX} cy={CY + 6} rx={RX + 16} ry={RY + 14} fill={`url(#${uid}-well)`} />
@@ -507,6 +525,12 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
             {band.name}
           </SvgText>
         )}
+
+        {/* Glass over the display: corner specular sweep + top glare + bottom
+            edge highlight — the reflective sheen of a screen behind glass. */}
+        <Rect x={14} y={14} width={VB_W - 28} height={VB_H - 28} rx={18} fill={`url(#${uid}-glass)`} />
+        <Rect x={17} y={15.5} width={VB_W - 34} height={1.6} rx={0.8} fill="#ffffff" opacity={0.26} />
+        <Rect x={17} y={VB_H - 17} width={VB_W - 34} height={1.4} rx={0.7} fill="#ffffff" opacity={0.12} />
       </Svg>
     </View>
   );
