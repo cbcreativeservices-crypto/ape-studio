@@ -280,8 +280,10 @@ const fmtDb = (v: number | undefined) =>
 // Fast weighted level from the same meter frame the PEAK cells use.
 type Weighting = 'Z' | 'A' | 'C';
 const WEIGHTINGS: readonly Weighting[] = ['C', 'A', 'Z'] as const; // stacked top→bottom
-/** Honest unit label per weighting — dBFS domain, never SPL. */
-const weightUnit = (w: Weighting): string => (w === 'Z' ? 'dBFS' : `dBFS(${w})`);
+/** Level unit per weighting (owner rev 24: dBA/dBC, never default dBFS). Z is
+ *  unweighted → plain relative dB. Honesty (uncalibrated, relative, not SPL)
+ *  lives in the accuracy note + subtitle, not in a confusing dBFS unit. */
+const weightUnit = (w: Weighting): string => (w === 'Z' ? 'dB' : `dB${w}`);
 /** The engine's Fast weighted level for the chosen weighting. */
 const weightedFastDb = (m: MeterFrame | null | undefined, w: Weighting): number | undefined => {
   if (!m) return undefined;
@@ -326,7 +328,7 @@ function LevelCell({
               accessibilityRole="button"
               accessibilityState={{ selected: weighting === w }}
               accessibilityLabel={
-                w === 'Z' ? 'Unweighted, dBFS' : `${w}-weighted level, relative dBFS (not SPL)`
+                w === 'Z' ? 'Unweighted, relative dB' : `${w}-weighted level (dB${w}), uncalibrated relative, not SPL`
               }
             >
               <Text style={[styles.weightOpt, weighting === w && styles.weightOptActive]}>{weightUnit(w)}</Text>
@@ -604,7 +606,7 @@ function BandsPanel({
         </View>
       </View>
 
-      <Text style={styles.unitLine}>dBFS · uncalibrated approximate</Text>
+      <Text style={styles.unitLine}>relative dB · uncalibrated approximate</Text>
       {anyUnresolvable && (
         <Text style={styles.grayNote}>grayed bands: insufficient resolution at this setting</Text>
       )}
@@ -1046,9 +1048,9 @@ export function RtaScreen({ navigation }: Props) {
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>SPECTRUM ANALYZER / RTA</Text>
-          <Text style={styles.subtitle}>Live RTA · dBFS · uncalibrated</Text>
+          <Text style={styles.subtitle}>Live RTA · relative · uncalibrated</Text>
         </View>
-        <AccuracyNote compact detail="This tool runs on your phone’s UNCALIBRATED microphone and audio path — read it as RELATIVE (dBFS), for learning. For accurate, absolute measurements use a calibrated SPL meter, measurement mic, or a dedicated instrument." />
+        <AccuracyNote compact detail="This tool runs on your phone’s UNCALIBRATED microphone — read every level as RELATIVE (A/C-weighted so it reads in a familiar scale), for learning, NOT a calibrated SPL reading. For accurate, absolute measurements use a calibrated SPL meter, measurement mic, or a dedicated instrument." />
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll}>
@@ -1068,10 +1070,10 @@ export function RtaScreen({ navigation }: Props) {
                 PEAK HOLD stay neutral until an actual clip, then latch red.
                 Long-press any cell for what it shows. */}
             <View style={styles.statGrid}>
-              {/* LEVEL with a C/A/Z weighting toggle (owner 2026-08-17) — honest
-                  relative dBFS(A)/dBFS(C), never dB SPL on this uncalibrated tool. */}
+              {/* LEVEL with a C/A/Z weighting toggle — dBA/dBC (rev 24), relative +
+                  uncalibrated, never dB SPL. PEAK HOLD is the digital peak → plain dB. */}
               <LevelCell meter={meter} weighting={weighting} onWeighting={setWeighting} help={help} />
-              <StatCell help={help} label="PEAK HOLD" value={fmtDb(meter?.peakHoldDb)} unit="dBFS" clipped={hasClipped} frameRed={hasClipped} levelDb={meter?.peakHoldDb} onPress={onResetPeak} />
+              <StatCell help={help} label="PEAK HOLD" value={fmtDb(meter?.peakHoldDb)} unit="dB" clipped={hasClipped} frameRed={hasClipped} levelDb={meter?.peakHoldDb} onPress={onResetPeak} />
               {/* BANDS reports the SELECTED band mode so it always matches the
                   BANDING chip below (owner 2026-08-17: the readout and the chip
                   must not disagree — e.g. show 31, not the native 30). */}

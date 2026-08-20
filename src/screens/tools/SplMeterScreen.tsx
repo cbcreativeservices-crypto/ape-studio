@@ -1133,7 +1133,7 @@ export function SplMeterScreen({ navigation }: Props) {
           <Text style={styles.title}>{tool.name.toUpperCase()}</Text>
           {tool.subtitle ? <Text style={styles.subtitle}>{tool.subtitle}</Text> : null}
         </View>
-        <AccuracyNote compact detail="This tool runs on your phone’s UNCALIBRATED microphone and audio path — read it as RELATIVE (dBFS), for learning. For accurate, absolute measurements use a calibrated SPL meter, measurement mic, or a dedicated instrument." />
+        <AccuracyNote compact detail="This tool runs on your phone’s UNCALIBRATED microphone — read every level as RELATIVE, for learning, NOT a calibrated SPL reading. For accurate, absolute measurements use a calibrated SPL meter, measurement mic, or a dedicated instrument." />
         {/* Mini-VU opener → the full-screen VU popup (owner 2026-07-29). Larger
             + enclosed in a framed container (owner 2026-07-30). */}
         <Pressable

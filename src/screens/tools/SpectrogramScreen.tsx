@@ -471,9 +471,9 @@ export function SpectrogramScreen({ navigation }: Props) {
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>SPECTROGRAM</Text>
-          <Text style={styles.subtitle}>Frequency over time · dBFS · uncalibrated</Text>
+          <Text style={styles.subtitle}>Frequency over time · relative · uncalibrated</Text>
         </View>
-        <AccuracyNote compact detail="This tool runs on your phone’s UNCALIBRATED microphone and audio path — read it as RELATIVE (dBFS), for learning. For accurate, absolute measurements use a calibrated SPL meter, measurement mic, or a dedicated instrument." />
+        <AccuracyNote compact detail="This tool runs on your phone’s UNCALIBRATED microphone — read the colours as RELATIVE level, for learning, NOT a calibrated SPL reading. For accurate, absolute measurements use a calibrated SPL meter, measurement mic, or a dedicated instrument." />
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll}>
@@ -491,8 +491,8 @@ export function SpectrogramScreen({ navigation }: Props) {
             {/* Numeric truth row — real values, unclamped. ABOVE the display (owner
                 2026-07-31). Peak readouts print RED. Long-press a cell. */}
             <View style={styles.statGrid}>
-              <StatCell help={help} label="OBS MAX" value={fmtDb(observedMax)} unit="dBFS" peak levelDb={observedMax} />
-              <StatCell help={help} label="PEAK" value={fmtDb(meter?.peakDb)} unit="dBFS" peak levelDb={meter?.peakDb} />
+              <StatCell help={help} label="OBS MAX" value={fmtDb(observedMax)} unit="dB" peak levelDb={observedMax} />
+              <StatCell help={help} label="PEAK" value={fmtDb(meter?.peakDb)} unit="dB" peak levelDb={meter?.peakDb} />
               <StatCell help={help} label="HISTORY" value={`${history.length}/${HISTORY_COLS}`} />
             </View>
 
@@ -541,9 +541,9 @@ export function SpectrogramScreen({ navigation }: Props) {
                 time → · ~{((HISTORY_COLS / speed) * SPECTRO_POLL_MS / 1000).toFixed(0)} s visible · {speed}× scroll · {ROWS} freq rows
               </Text>
 
-              <Text style={styles.unitLine}>dBFS · uncalibrated approximate</Text>
+              <Text style={styles.unitLine}>relative dB · uncalibrated approximate</Text>
               {/* Required warning (spec §12) — always visible while live. */}
-              <Text style={styles.scaleNote}>Colors map to a fixed scale: 0 dBFS at the top, down by the selected range.</Text>
+              <Text style={styles.scaleNote}>Colors map to a fixed scale: 0 dB (full scale) at the top, down by the selected range.</Text>
             </View>
 
             {/* Display guide + scroll-speed (owner 2026-07-31): 1× / 2× / 3×. */}
@@ -626,7 +626,7 @@ export function SpectrogramScreen({ navigation }: Props) {
                 ))}
               </View>
               <Text style={styles.legendText}>
-                {`${fmtDb(anchor - dynRange)} → ${fmtDb(anchor)} dBFS`}
+                {`${fmtDb(anchor - dynRange)} → ${fmtDb(anchor)} dB`}
               </Text>
             </View>
 

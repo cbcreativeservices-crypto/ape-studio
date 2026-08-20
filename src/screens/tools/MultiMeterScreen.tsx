@@ -761,7 +761,7 @@ export function MultiMeterScreen({ navigation }: Props) {
       bandsHz,
       levelsDb,
       bandPeakHoldDb,
-      splDb: m.aFastDb,
+      splDb: m.cFastDb, // dBC — matches the display default (owner rev 24)
       peakDb: m.peakDb,
       rmsDb: m.zFastDb,
       peakHoldDb: m.peakHoldDb,
@@ -822,7 +822,7 @@ export function MultiMeterScreen({ navigation }: Props) {
       id: Crypto.randomUUID(),
       tool_type: 'multimeter',
       created_at: new Date().toISOString(),
-      title: `MultiMeter snapshot — LAF ${fmtDb(draft.payload.splDb)} dBFS`,
+      title: `MultiMeter snapshot — LCF ${fmtDb(draft.payload.splDb)} dBC`,
       notes: notes.trim(),
       input_device: draft.routeName.length > 0 ? draft.routeName : 'Device microphone',
       calibration_status: 'uncalibrated',
@@ -1480,10 +1480,10 @@ export function MultiMeterScreen({ navigation }: Props) {
             <Text style={styles.sheetTitle}>MEASUREMENT SNAPSHOT</Text>
             <Text style={styles.sheetSummary}>
               {draft
-                ? `LAF ${fmtDb(draft.payload.splDb)} · peak ${fmtDb(draft.payload.peakDb)} · ` +
+                ? `LCF ${fmtDb(draft.payload.splDb)} dBC · peak ${fmtDb(draft.payload.peakDb)} · ` +
                   `${draft.payload.bandsHz.length} bands · ${draft.payload.detections.length} detection${
                     draft.payload.detections.length === 1 ? '' : 's'
-                  } · dBFS uncalibrated`
+                  } · uncalibrated relative`
                 : ''}
             </Text>
             <TextInput
