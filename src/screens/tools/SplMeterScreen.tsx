@@ -793,7 +793,9 @@ export function SplMeterScreen({ navigation }: Props) {
   // within the short side. Sized off the SHORT side minus the chips band.
   const fsLong = Math.max(winW, winH);
   const fsShort = Math.min(winW, winH);
-  const gaugeFsW = Math.round(Math.min(fsLong * 0.86, (fsShort - 104) * 1.9));
+  // Chips now sit in a LEFT column (owner rev 20), so the gauge uses the full
+  // short side (minus a small margin) and leaves the long side for the chips.
+  const gaugeFsW = Math.round(Math.min(fsLong - 150, (fsShort - 28) * 1.9));
   // Live meter drive (responsiveness fix 2026-07-30): two SharedValues the Skia
   // meters chase on the UI thread. RMS = the selected weighting × response level;
   // peak = the raw peak (F1: may exceed 0 dBFS, never clamped). −120 = silence.
@@ -1825,8 +1827,8 @@ export function SplMeterScreen({ navigation }: Props) {
                   <View style={styles.vuFsClose} pointerEvents="none">
                     <Text style={styles.vuFsCloseX}>✕</Text>
                   </View>
-                  <View style={[styles.gaugeFsStage, { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 8 }]} pointerEvents="box-none">
-                    <View style={styles.dialModeRow} pointerEvents="auto">
+                  <View style={[styles.gaugeFsStage, { paddingLeft: insets.left + 14, paddingRight: insets.right + 8 }]} pointerEvents="box-none">
+                    <View style={styles.gaugeFsChipsCol} pointerEvents="auto">
                       {(['studio', 'spl', 'optimal'] as const).map((m) => (
                         <Pressable
                           key={m}
@@ -2353,7 +2355,9 @@ const styles = StyleSheet.create({
   vuFsCloseX: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, color: colors.textSecondary },
   // Full VU stage — a row so the settings COLUMN sits left of the VU (landscape).
   vuFsStage: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 16 },
-  gaugeFsStage: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 14, paddingHorizontal: 16 },
+  // Fullscreen gauge: chips in a LEFT column, gauge to their right (owner rev 20).
+  gaugeFsStage: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 20 },
+  gaugeFsChipsCol: { flexDirection: 'column', gap: 10 },
   // Settings column (landscape), left of the VU meter (owner 2026-08-19).
   vuFsCtrlCol: { width: 106, flexDirection: 'column', justifyContent: 'center', gap: 10, zIndex: 130 },
   vuFsCtrlColBtn: {

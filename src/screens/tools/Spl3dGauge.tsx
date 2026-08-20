@@ -605,9 +605,11 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
         )}
         {NUMERALS}
 
-        {/* Centre LCD + live readouts. */}
-        <Ellipse cx={CX} cy={CY} rx={RX * 0.6} ry={RY * 0.6} fill={`url(#${uid}-lcd)`} stroke="#000000" strokeWidth={1} />
-        <Ellipse cx={CX} cy={CY - RY * 0.32} rx={RX * 0.44} ry={RY * 0.16} fill="#ffffff" opacity={0.05} />
+        {/* Centre LCD — enlarged to 0.72 (owner rev 20) so it COVERS each
+            segment's inner wall/hole; the blocks then read as SOLID wedges
+            emerging from behind the disc instead of hollow troughs. */}
+        <Ellipse cx={CX} cy={CY} rx={RX * 0.72} ry={RY * 0.72} fill={`url(#${uid}-lcd)`} stroke="#000000" strokeWidth={1.5} />
+        <Ellipse cx={CX} cy={CY - RY * 0.38} rx={RX * 0.52} ry={RY * 0.19} fill="#ffffff" opacity={0.05} />
         <SvgText x={CX} y={CY + 22} fill={numColor} fontFamily={fonts.mono} fontSize={84} textAnchor="middle">
           {centerText}
         </SvgText>
