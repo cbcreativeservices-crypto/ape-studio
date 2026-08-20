@@ -102,8 +102,8 @@ function zoneKey(s: number, mode: DialMode3d): ZoneKey {
   }
   if (mode === 'spl') {
     if (s < 55) return 'grey';
-    if (s < 88) return 'green';
-    if (s < 97) return 'orange';
+    if (s < 90) return 'green'; // CONCERT (orange) starts at 90
+    if (s < 100) return 'orange';
     return 'red';
   }
   // optimal — REFERENCE + SHOW are both gold targets
@@ -116,28 +116,31 @@ function zoneKey(s: number, mode: DialMode3d): ZoneKey {
 
 type Band = { hi: number; name: string; zone: ZoneKey };
 const BANDS: Record<DialMode3d, Band[]> = {
+  // Band edges are the EXACT dB ranges printed on the callouts, so the readout
+  // + zone colour match the labels when read from the meter (owner rev 15).
   studio: [
     { hi: 60, name: 'BELOW MONITORING', zone: 'grey' },
-    { hi: 76, name: 'EDITING LEVEL', zone: 'green' },
-    { hi: 85, name: 'CRITICAL BALANCING', zone: 'gold' },
-    { hi: 100, name: 'IMPACT CHECK', zone: 'orange' },
-    { hi: Infinity, name: 'OVER — UNSAFE', zone: 'red' },
+    { hi: 70, name: 'BACKGROUND', zone: 'green' }, // 60–65
+    { hi: 76, name: 'GENERAL EDITING', zone: 'green' }, // 70–75
+    { hi: 85, name: 'CRITICAL BALANCING', zone: 'gold' }, // 76–84
+    { hi: 100, name: 'IMPACT CHECK', zone: 'orange' }, // 85–95
+    { hi: Infinity, name: 'OVER — UNSAFE', zone: 'red' }, // 100+
   ],
   spl: [
     { hi: 55, name: 'QUIET', zone: 'grey' },
-    { hi: 72, name: 'CONVERSATION', zone: 'green' },
-    { hi: 88, name: 'STUDIO LISTENING', zone: 'green' },
-    { hi: 97, name: 'CONCERT', zone: 'orange' },
-    { hi: Infinity, name: '100+ dB — UNSAFE', zone: 'red' },
+    { hi: 70, name: 'CONVERSATION', zone: 'green' }, // ~60
+    { hi: 90, name: 'STUDIO LISTENING', zone: 'green' }, // ~79
+    { hi: 100, name: 'CONCERT', zone: 'orange' }, // 90–96
+    { hi: Infinity, name: '100+ dB — UNSAFE', zone: 'red' }, // 100+
   ],
   optimal: [
-    { hi: 60, name: 'AMBIENT', zone: 'grey' },
-    { hi: 79, name: 'PROGRAM', zone: 'green' },
-    { hi: 85, name: 'REFERENCE', zone: 'gold' },
-    { hi: 94, name: 'SHOW', zone: 'gold' },
-    { hi: 97, name: 'HIGH', zone: 'orange' },
-    { hi: 100, name: 'LIMIT', zone: 'orange' },
-    { hi: Infinity, name: '100+ dB LAeq', zone: 'red' },
+    { hi: 60, name: 'AMBIENT', zone: 'grey' }, // 40–59
+    { hi: 79, name: 'PROGRAM', zone: 'green' }, // 60–78
+    { hi: 85, name: 'REFERENCE', zone: 'gold' }, // 79–84
+    { hi: 94, name: 'SHOW', zone: 'gold' }, // 85–93
+    { hi: 97, name: 'HIGH', zone: 'orange' }, // 94–96
+    { hi: 100, name: 'LIMIT', zone: 'orange' }, // 97–99
+    { hi: Infinity, name: '100+ dB LAeq', zone: 'red' }, // 100+
   ],
 };
 function activeBand(level: number, mode: DialMode3d): Band {
@@ -512,8 +515,9 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
         <SvgText x={CX} y={CY + 22} fill={numColor} fontFamily={fonts.mono} fontSize={84} textAnchor="middle">
           {centerText}
         </SvgText>
-        <SvgText x={CX} y={CY + 50} fill={INK_DIM} fontFamily={fonts.oswaldSemiBold} fontSize={15} letterSpacing={2.5} textAnchor="middle">
-          dB SPL · AVG
+        {/* The reference gauge always reads the 5-second average. */}
+        <SvgText x={CX} y={CY + 50} fill={INK_DIM} fontFamily={fonts.oswaldSemiBold} fontSize={14} letterSpacing={2} textAnchor="middle">
+          dB SPL · 5s AVG
         </SvgText>
         {band && (
           <SvgText x={CX} y={CY + 100} fill={ZONE_HEX[band.zone]} fontFamily={fonts.oswaldSemiBold} fontSize={33} letterSpacing={1.2} textAnchor="middle">

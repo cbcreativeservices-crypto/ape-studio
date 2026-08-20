@@ -933,11 +933,17 @@ export function SplMeterScreen({ navigation }: Props) {
     const lv = levelNow(meter);
     return lv == null ? null : Math.round(lv + splOffset);
   })();
-  const dialCenterText = dialSpl != null ? `${dialSpl}` : '—';
   // COLOR from the 3-second average (owner 2026-08-05) — the number is live but
   // its zone color is smoothed so it doesn't flash at a threshold.
   const colorSpl = zoneSpl ?? dialSpl;
   const dialCenterColor = colorSpl != null ? splZoneColor(colorSpl, dialMode) : undefined;
+  // The 3 REFERENCE GAUGES ALWAYS read the 5-SECOND AVERAGE (owner 2026-08-19),
+  // independent of the RESPONSE toggle — a reference gauge shows a stable
+  // averaged level, not the live FAST/SLOW value. `avg5Db` is the rolling 5 s
+  // mean (refreshes every 2 s); + splOffset makes it an estimated dB SPL. This
+  // drives BOTH the segment fill/zone AND the centre number so they agree.
+  const gaugeSpl = Number.isFinite(avg5Db) ? Math.round(avg5Db + splOffset) : null;
+  const gaugeText = gaugeSpl != null ? `${gaugeSpl}` : '—';
   // Control-room sweet spot (owner 2026-07-30): in STUDIO mode only, a live level
   // in the 79–85 dB monitoring band lights the glowing gold frame around the
   // gauge (matches the dial's gold sweet-spot band). Never in SPL/OPTIMAL.
@@ -1494,12 +1500,12 @@ export function SplMeterScreen({ navigation }: Props) {
                 {gaugeOpen ? (
                   <VuHero
                     dialW={dialW}
-                    level={colorSpl}
+                    level={gaugeSpl}
                     calibrated={calibrated}
                     dialMode={dialMode}
                     onDialMode={setDialMode}
                     onModeHelp={() => help('mode')}
-                    centerText={dialCenterText}
+                    centerText={gaugeText}
                     centerColor={dialCenterColor}
                     onToggle={running ? stopMeter : startMeter}
                   />
