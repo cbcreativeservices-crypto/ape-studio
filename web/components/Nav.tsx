@@ -6,6 +6,7 @@ const NAV_LINKS: { href: string; label: string }[] = [
   { href: "/academy", label: "Academy" },
   { href: "/curriculum", label: "Curriculum" },
   { href: "/membership", label: "Membership" },
+  { href: "/store", label: "Store" },
   { href: "/credentials", label: "Credentials" },
   { href: "/institutions", label: "Institutions" },
   { href: "/verify", label: "Verify" },
@@ -15,7 +16,7 @@ export default function Nav() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur">
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-        <Link href="/" className="flex items-center gap-3" aria-label="Pro Audio Training Academy home">
+        <Link href="/" aria-label="Pro Audio Training Academy home">
           <Image
             src={logoMark}
             alt=""
@@ -24,12 +25,6 @@ export default function Nav() {
             priority
             className="h-9 w-9 rounded-sm"
           />
-          <span className="hidden font-display text-base font-semibold uppercase tracking-wide text-foreground sm:inline">
-            Pro Audio Training Academy
-          </span>
-          <span className="font-display text-base font-semibold uppercase tracking-wide text-foreground sm:hidden">
-            The Academy
-          </span>
         </Link>
         <ul className="hidden items-center gap-6 md:flex">
           {NAV_LINKS.map((link) => (

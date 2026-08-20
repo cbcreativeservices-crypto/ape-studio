@@ -69,6 +69,84 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+  text-wrap: balance;
+}
+
+@keyframes app-screen-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.app-screen-marquee-track {
+  animation: app-screen-marquee 48s linear infinite;
+}
+
+.app-screen-marquee:hover .app-screen-marquee-track {
+  animation-play-state: paused;
+}
+
+.app-screen-marquee-fade {
+  background: linear-gradient(to right, var(--background), transparent);
+}
+
+.app-screen-marquee-fade-right {
+  background: linear-gradient(to left, var(--background), transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-screen-marquee-track {
+    animation: none;
+  }
+  .app-screen-marquee-viewport {
+    overflow-x: auto;
+  }
+}
+
+/* Home page: a light, professional wash of the glossary-art palette
+ * (electric blue, violet, faint grid) behind the sections. */
+.home-atmosphere {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  opacity: 0.47;
+  background:
+    radial-gradient(ellipse 70% 38% at 88% 8%, rgba(47, 155, 255, 0.14), transparent 58%),
+    radial-gradient(ellipse 48% 32% at 6% 28%, rgba(180, 91, 255, 0.08), transparent 52%),
+    radial-gradient(ellipse 55% 30% at 78% 58%, rgba(91, 176, 255, 0.08), transparent 55%),
+    radial-gradient(ellipse 42% 24% at 18% 82%, rgba(180, 91, 255, 0.07), transparent 50%),
+    radial-gradient(ellipse 36% 20% at 52% 100%, rgba(47, 155, 255, 0.06), transparent 48%);
+}
+
+.home-atmosphere::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.35;
+  background-image:
+    linear-gradient(rgba(91, 176, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(91, 176, 255, 0.07) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black 10%, transparent 75%);
+}
+
+.home-atmosphere::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.55;
+  background-image:
+    radial-gradient(circle at 18% 22%, rgba(91, 176, 255, 0.45) 0 1px, transparent 2px),
+    radial-gradient(circle at 72% 18%, rgba(180, 91, 255, 0.4) 0 1px, transparent 2px),
+    radial-gradient(circle at 88% 46%, rgba(91, 176, 255, 0.35) 0 1px, transparent 2px),
+    radial-gradient(circle at 12% 62%, rgba(180, 91, 255, 0.35) 0 1px, transparent 2px),
+    radial-gradient(circle at 64% 74%, rgba(91, 176, 255, 0.3) 0 1px, transparent 2px),
+    radial-gradient(circle at 40% 88%, rgba(180, 91, 255, 0.3) 0 1px, transparent 2px);
 }
 
 /* Themed container for injected legal/long-form HTML (privacy, terms). */

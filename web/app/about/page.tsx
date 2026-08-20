@@ -14,6 +14,7 @@ export default function Page() {
         eyebrow="About"
         title="Why the Academy exists"
         lede="Professional audio contains an enormous amount of interconnected terminology and technical knowledge. Finding an isolated piece of information is easy. Understanding how the pieces fit together is much harder."
+        screen="home"
       />
 
       <Section>

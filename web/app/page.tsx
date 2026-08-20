@@ -1,312 +1,286 @@
 import Image from "next/image";
 import Link from "next/link";
 import { TAGLINE, KNOWLEDGE } from "@/lib/brand";
-import logoHero from "@/public/logo-hero.png";
+import { AppScreen } from "@/components/AppScreen";
+import { AppScreenMarquee } from "@/components/AppScreenMarquee";
+import {
+  FEATURED_SCREEN_IDS,
+  HERO_SCREEN_IDS,
+  getAppScreen,
+} from "@/lib/app-screens";
 
 export default function Home() {
   return (
-    <>
+    <div className="relative">
+      <div className="home-atmosphere" aria-hidden />
+      <div className="relative z-[1]">
       {/* 1 — HERO */}
       <section className="relative overflow-hidden border-b border-border">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-40"
+          className="pointer-events-none absolute inset-0"
           style={{
             background:
-              "radial-gradient(60% 50% at 50% 0%, rgba(255,198,77,0.14), transparent 70%)",
+              "radial-gradient(55% 45% at 82% 0%, rgba(47,155,255,0.056), transparent 68%), radial-gradient(40% 35% at 50% 0%, rgba(255,198,77,0.038), transparent 70%)",
           }}
         />
-        <div className="relative mx-auto max-w-6xl px-4 py-20 text-center sm:px-6 sm:py-28">
-          <Image
-            src={logoHero}
-            alt="Pro Audio Training Academy"
-            width={160}
-            height={160}
-            priority
-            className="mx-auto h-28 w-28 sm:h-36 sm:w-36"
-          />
-          <p className="mt-6 font-display text-2xl font-semibold uppercase tracking-wide text-foreground sm:text-3xl">
-            Pro Audio Training Academy
-          </p>
-          <p className="mt-5 font-mono text-xs uppercase tracking-[0.3em] text-amber">
-            Professional Audio Education
-          </p>
-          <h1 className="mx-auto mt-5 max-w-3xl font-display text-4xl font-semibold uppercase leading-tight tracking-wide text-foreground sm:text-6xl">
-            {TAGLINE}
+        <div className="relative mx-auto max-w-6xl px-4 pt-8 pb-0 text-center sm:px-6 sm:pt-10">
+          <h1 className="mx-auto max-w-3xl">
+            <span className="block font-display text-lg font-semibold uppercase tracking-wide text-foreground sm:text-xl">
+              Pro Audio Training Academy
+            </span>
+            <span className="mt-1 block font-mono text-xs uppercase tracking-[0.3em] text-amber">
+              Professional Audio Education
+            </span>
+            <span className="mt-3 block font-display text-2xl font-semibold uppercase leading-tight tracking-wide text-foreground sm:text-4xl">
+              {TAGLINE}
+            </span>
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-text-sub">
+          <p className="mx-auto mt-3 max-w-2xl text-base text-text-sub sm:text-lg">
             Learn professional audio through a structured curriculum, technical
             references, interactive practice, and assessments — and earn
-            credentials you can prove.
+            credentials you can prove anywhere.
           </p>
-          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
               href="/academy"
-              className="w-full rounded-md bg-amber px-6 py-3 text-center text-sm font-semibold text-background transition-colors hover:bg-amber-deep sm:w-auto"
+              className="w-full rounded-md bg-amber px-6 py-2.5 text-center text-sm font-semibold text-background transition-colors hover:bg-amber-deep sm:w-auto"
             >
               Explore the Academy
             </Link>
             <Link
-              href="#how-it-works"
-              className="w-full rounded-md border border-border px-6 py-3 text-center text-sm font-semibold text-foreground transition-colors hover:border-amber hover:text-amber sm:w-auto"
+              href="#in-the-app"
+              className="w-full rounded-md border border-border px-6 py-2.5 text-center text-sm font-semibold text-foreground transition-colors hover:border-amber hover:text-amber sm:w-auto"
             >
               See How It Works
             </Link>
           </div>
         </div>
+        <AppScreenMarquee ids={HERO_SCREEN_IDS} />
       </section>
 
-      {/* 2 — WHAT YOU CAN DO */}
+      {/* 2 — KNOWLEDGE GAPS */}
+      <Band tint>
+        <div className="mx-auto grid max-w-5xl items-center gap-8 md:grid-cols-[1fr_auto] md:gap-12">
+          <div className="text-center md:text-left">
+            <h2 className="font-display text-2xl font-semibold uppercase tracking-wide text-foreground sm:text-3xl">
+              {KNOWLEDGE.slice(0, KNOWLEDGE.indexOf("Find out")).trim()}
+              <span className="mt-1 block">
+                {KNOWLEDGE.slice(KNOWLEDGE.indexOf("Find out"))}
+              </span>
+            </h2>
+            <p className="mx-auto mt-3 max-w-2xl text-text-sub md:mx-0">
+              Professional audio knowledge is rarely acquired in a neat, linear
+              order. Most people know some areas well and have gaps in others. The
+              Academy helps you see both.
+            </p>
+            <Link
+              href="/curriculum"
+              className="mt-6 inline-flex w-full items-center justify-center rounded-md bg-amber px-8 py-3 font-display text-base font-semibold uppercase tracking-wide text-background transition-colors hover:bg-amber-deep sm:w-auto"
+            >
+              Explore the curriculum
+            </Link>
+          </div>
+          <AppScreen
+            screen={getAppScreen("study")}
+            size="md"
+            className="shrink-0"
+          />
+        </div>
+      </Band>
+
+      {/* 3 — WHAT YOU CAN DO */}
       <Band>
         <SectionHead
           eyebrow="What you can do"
           title="A complete way to learn audio"
         />
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {DO.map((d) => (
-            <div key={d.title} className="rounded-lg border border-border bg-surface p-5">
+            <div key={d.title} className="rounded-lg border border-border bg-surface/80 p-4 backdrop-blur-[2px]">
               <div
-                className="flex h-9 w-9 items-center justify-center rounded-md font-display text-base font-bold"
+                className="flex h-8 w-8 items-center justify-center rounded-md font-display text-sm font-bold"
                 style={{ backgroundColor: `${d.tint}22`, color: d.tint }}
                 aria-hidden
               >
                 {d.badge}
               </div>
-              <h3 className="mt-3 font-display text-base font-semibold uppercase tracking-wide text-foreground">
+              <h3 className="mt-2 font-display text-base font-semibold uppercase tracking-wide text-foreground">
                 {d.title}
               </h3>
-              <p className="mt-1.5 text-sm text-text-sub">{d.body}</p>
+              <p className="mt-1 text-sm text-text-sub">{d.body}</p>
             </div>
           ))}
         </div>
       </Band>
 
-      {/* 3 — APP PREVIEW */}
-      <Band tint>
+      {/* 3 — GLOSSARY */}
+      <section className="relative overflow-hidden border-b border-border">
+        <Image
+          src="/glossary-bg.png"
+          alt=""
+          fill
+          className="object-cover object-[100%_68%]"
+          sizes="100vw"
+          aria-hidden
+        />
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-transparent"
+        />
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background/50"
+        />
+        <div className="relative mx-auto flex max-w-6xl flex-col items-center gap-6 px-4 py-12 sm:px-6 md:flex-row md:items-center md:justify-start md:gap-8">
+          <div className="max-w-xl text-center md:text-left">
+            <p className="font-mono text-xs uppercase tracking-[0.3em] text-amber">
+              Glossary
+            </p>
+            <h2 className="mt-1.5 font-display text-2xl font-semibold uppercase tracking-wide text-foreground">
+              Look up terms, then go deeper
+            </h2>
+            <p className="mt-2 text-text-sub">
+              Glossary, technical references, diagrams, and specifications.
+            </p>
+          </div>
+          <AppScreen
+            screen={getAppScreen("home")}
+            size="md"
+            className="shrink-0"
+          />
+        </div>
+      </section>
+
+      {/* 6 — APP PREVIEW */}
+      <Band tint id="in-the-app">
         <SectionHead
           eyebrow="In the app"
           title="Where the learning happens"
           lede="The mobile app is the primary learning environment — explore the curriculum, study each concept, and practice what you learn."
         />
-        <div className="mx-auto mt-8 grid max-w-4xl gap-6 sm:grid-cols-3">
-          {SCREENS.map((s) => (
-            <PhoneFrame key={s.step} step={s.step} title={s.title} body={s.body} tint={s.tint} />
+        <div className="mx-auto mt-5 grid max-w-4xl gap-6 sm:grid-cols-3">
+          {FEATURED_SCREEN_IDS.map((id) => (
+            <AppScreen key={id} screen={getAppScreen(id)} size="md" caption />
           ))}
         </div>
-        <p className="mx-auto mt-6 max-w-2xl text-center text-xs text-text-muted">
+        <p className="mx-auto mt-4 max-w-2xl text-center text-xs text-text-muted">
           Interactive studying lives in the mobile app. Sign in on this site to
           track progress and continue where you left off.
         </p>
       </Band>
 
-      {/* 4 — WHAT YOU CAN LEARN */}
-      <Band>
-        <SectionHead
-          eyebrow="What you can learn"
-          title="From fundamentals to specialized work"
-          lede="A structured curriculum spanning the breadth of professional audio. A few of the areas covered:"
-        />
-        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-          {SUBJECTS.map((s) => (
-            <div
-              key={s}
-              className="rounded-md border border-border bg-surface px-4 py-3 text-sm text-text-sub"
-            >
-              {s}
-            </div>
-          ))}
-        </div>
-        <div className="mt-8 text-center">
-          <Link href="/curriculum" className="text-sm font-semibold text-amber hover:text-amber-deep">
-            Explore the curriculum &rarr;
-          </Link>
-        </div>
-      </Band>
-
-      {/* 5 — FIND YOUR KNOWLEDGE GAPS */}
-      <Band tint>
-        <h2 className="mx-auto max-w-3xl text-center font-display text-2xl font-semibold uppercase tracking-wide text-foreground sm:text-3xl">
-          {KNOWLEDGE}
-        </h2>
-        <p className="mx-auto mt-5 max-w-2xl text-center text-text-sub">
-          Professional audio knowledge is rarely acquired in a neat, linear
-          order. Most people know some areas well and have gaps in others. The
-          Academy helps you see both.
-        </p>
-        <div className="mx-auto mt-8 grid max-w-4xl gap-4 sm:grid-cols-3">
-          {[
-            { k: "What you already know", tint: "#37e05f" },
-            { k: "Where your gaps are", tint: "#ff8a1e" },
-            { k: "What to learn next", tint: "#2f9bff" },
-          ].map((x, i) => (
-            <div key={x.k} className="rounded-lg border border-border bg-surface p-5 text-center">
-              <span
-                className="font-mono text-xs font-bold"
-                style={{ color: x.tint }}
-              >
-                {i + 1}
-              </span>
-              <p className="mt-2 font-display text-base font-semibold uppercase tracking-wide text-foreground">
-                {x.k}
-              </p>
-            </div>
-          ))}
-        </div>
-      </Band>
-
-      {/* 6 — HOW LEARNING WORKS */}
-      <Band id="how-it-works">
-        <SectionHead
-          eyebrow="How learning works"
-          title="Study, practice, prove"
-        />
-        <ol className="mx-auto mt-8 flex max-w-4xl flex-col gap-3 sm:flex-row sm:items-stretch">
-          {FLOW.map((f, i) => (
-            <li key={f} className="flex flex-1 items-center gap-3">
-              <div className="flex-1 rounded-lg border border-border bg-surface px-4 py-4 text-center">
-                <span className="font-mono text-xs text-text-muted">Step {i + 1}</span>
-                <p className="mt-1 font-display text-sm font-semibold uppercase tracking-wide text-foreground">
-                  {f}
-                </p>
-              </div>
-              {i < FLOW.length - 1 ? (
-                <span aria-hidden className="hidden text-text-muted sm:inline">
-                  &rarr;
-                </span>
-              ) : null}
-            </li>
-          ))}
-        </ol>
-      </Band>
-
-      {/* 7 — MEMBERSHIP PHILOSOPHY */}
-      <Band tint>
+      {/* 6 — MEMBERSHIP */}
+      <Band compact>
         <div className="mx-auto max-w-3xl text-center">
-          <p className="font-display text-2xl font-semibold uppercase tracking-wide text-foreground">
+          <p className="font-display text-xl font-semibold uppercase tracking-wide text-foreground sm:text-2xl">
             One membership. Not a series of extra charges.
           </p>
-          <p className="mt-4 text-text-sub">
+          <p className="mt-2 text-text-sub">
             Education, tools, assessments, and eligible credentials are included —
             not a new fee every time you finish a topic or earn a credential.
           </p>
           <Link
             href="/membership"
-            className="mt-5 inline-block text-sm font-semibold text-amber hover:text-amber-deep"
+            className="mt-3 inline-block text-sm font-semibold text-amber hover:text-amber-deep"
           >
             How membership works &rarr;
           </Link>
         </div>
       </Band>
 
-      {/* 8 — CREDIBILITY */}
-      <Band>
-        <SectionHead
-          eyebrow="A serious educational system"
-          title="Built to be trusted"
-        />
-        <div className="mx-auto mt-8 grid max-w-4xl gap-3 sm:grid-cols-2">
-          {CREDIBILITY.map((c) => (
-            <div key={c} className="flex items-start gap-3 rounded-md border border-border bg-surface px-4 py-3">
-              <span aria-hidden className="mt-0.5 text-amber">
-                ✓
-              </span>
-              <span className="text-sm text-text-sub">{c}</span>
-            </div>
-          ))}
-        </div>
-        <div className="mx-auto mt-6 max-w-4xl text-center text-sm text-text-muted">
-          Read more about our{" "}
-          <Link href="/standards" className="text-amber underline underline-offset-2 hover:text-amber-deep">
-            educational standards
-          </Link>{" "}
-          and{" "}
-          <Link href="/about" className="text-amber underline underline-offset-2 hover:text-amber-deep">
-            the Academy
-          </Link>
-          .
-        </div>
-      </Band>
-
-      {/* 9 — CREDENTIALS */}
+      {/* 7 — CREDIBILITY + CREDENTIALS */}
       <Band tint>
-        <SectionHead
-          eyebrow="Credentials"
-          title="Earn it. Prove it."
-          lede="Complete a credential’s defined requirements and it’s awarded to your account — a verifiable record anyone can confirm from a code or QR code, with no personal information beyond your name disclosed."
-        />
-        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Link
-            href="/credentials"
-            className="rounded-md border border-border px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:border-amber hover:text-amber"
-          >
-            About credentials
-          </Link>
-          <Link
-            href="/verify"
-            className="rounded-md border border-border px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:border-amber hover:text-amber"
-          >
-            Verify a Credential
-          </Link>
+        <div className="grid items-start gap-8 md:grid-cols-2 md:gap-10">
+          <div>
+            <SectionHead
+              align="left"
+              eyebrow="A serious educational system"
+              title="Built to be trusted"
+            />
+            <div className="mt-4 grid gap-2">
+              {CREDIBILITY.map((c) => (
+                <div key={c} className="flex items-start gap-3 rounded-md border border-border bg-surface/75 px-3 py-2.5 backdrop-blur-[2px]">
+                  <span aria-hidden className="mt-0.5 text-amber">
+                    ✓
+                  </span>
+                  <span className="text-sm text-text-sub">{c}</span>
+                </div>
+              ))}
+            </div>
+            <p className="mt-3 text-sm text-text-muted">
+              Read more about our{" "}
+              <Link href="/standards" className="text-amber underline underline-offset-2 hover:text-amber-deep">
+                educational standards
+              </Link>{" "}
+              and{" "}
+              <Link href="/about" className="text-amber underline underline-offset-2 hover:text-amber-deep">
+                the Academy
+              </Link>
+              .
+            </p>
+          </div>
+          <div>
+            <SectionHead
+              align="left"
+              eyebrow="Credentials"
+              title="Earn it. Prove it."
+              lede="Complete a credential’s defined requirements and it’s awarded to your account — a verifiable record anyone can confirm from a code or QR code, with no personal information beyond your name disclosed."
+            />
+            <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+              <Link
+                href="/credentials"
+                className="rounded-md border border-border px-5 py-2.5 text-center text-sm font-semibold text-foreground transition-colors hover:border-amber hover:text-amber"
+              >
+                About credentials
+              </Link>
+              <Link
+                href="/verify"
+                className="rounded-md border border-border px-5 py-2.5 text-center text-sm font-semibold text-foreground transition-colors hover:border-amber hover:text-amber"
+              >
+                Verify a Credential
+              </Link>
+            </div>
+            <AppScreen
+              screen={getAppScreen("achievements")}
+              size="sm"
+              className="mt-5 md:mx-0"
+            />
+          </div>
         </div>
       </Band>
 
-      {/* 10 — EMPLOYERS / INSTITUTIONS */}
+      {/* 8 — EMPLOYERS / INSTITUTIONS + CTA */}
       <Band>
-        <div className="grid gap-6 md:grid-cols-2">
-          <div className="rounded-lg border border-border bg-surface p-6">
-            <h2 className="font-display text-xl font-semibold uppercase tracking-wide text-foreground">
+        <div className="grid gap-3 md:grid-cols-2">
+          <div className="rounded-lg border border-border bg-surface/80 p-5 backdrop-blur-[2px]">
+            <h2 className="font-display text-lg font-semibold uppercase tracking-wide text-foreground">
               For employers
             </h2>
-            <p className="mt-2 text-sm text-text-sub">
+            <p className="mt-1.5 text-sm text-text-sub">
               Confirm a candidate’s Academy credential and understand what it
               represents.
             </p>
-            <Link href="/employers" className="mt-4 inline-block text-sm font-semibold text-amber hover:text-amber-deep">
+            <Link href="/employers" className="mt-3 inline-block text-sm font-semibold text-amber hover:text-amber-deep">
               For employers &rarr;
             </Link>
           </div>
-          <div className="rounded-lg border border-border bg-surface p-6">
-            <h2 className="font-display text-xl font-semibold uppercase tracking-wide text-foreground">
+          <div className="rounded-lg border border-border bg-surface/80 p-5 backdrop-blur-[2px]">
+            <h2 className="font-display text-lg font-semibold uppercase tracking-wide text-foreground">
               For institutions
             </h2>
-            <p className="mt-2 text-sm text-text-sub">
+            <p className="mt-1.5 text-sm text-text-sub">
               Licensing and custom training for schools, employers, and education
               programs, with credentialing and learner progress.
             </p>
-            <Link href="/institutions" className="mt-4 inline-block text-sm font-semibold text-amber hover:text-amber-deep">
+            <Link href="/institutions" className="mt-3 inline-block text-sm font-semibold text-amber hover:text-amber-deep">
               For institutions &rarr;
             </Link>
           </div>
         </div>
       </Band>
-
-      {/* 11 — FINAL CTA */}
-      <section className="border-t border-border">
-        <div className="mx-auto max-w-3xl px-4 py-20 text-center sm:px-6">
-          <h2 className="font-display text-2xl font-semibold uppercase tracking-wide text-foreground sm:text-3xl">
-            Start learning the craft
-          </h2>
-          <p className="mx-auto mt-4 max-w-xl text-text-sub">
-            Explore how the Academy is structured, what you’ll learn, and how
-            credentials work.
-          </p>
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link
-              href="/academy"
-              className="w-full rounded-md bg-amber px-6 py-3 text-center text-sm font-semibold text-background transition-colors hover:bg-amber-deep sm:w-auto"
-            >
-              Explore the Academy
-            </Link>
-            <Link
-              href="/curriculum"
-              className="w-full rounded-md border border-border px-6 py-3 text-center text-sm font-semibold text-foreground transition-colors hover:border-amber hover:text-amber sm:w-auto"
-            >
-              See the curriculum
-            </Link>
-          </div>
-        </div>
-      </section>
-    </>
+      </div>
+    </div>
   );
 }
 
@@ -316,17 +290,25 @@ function Band({
   children,
   tint,
   id,
+  compact,
 }: {
   children: React.ReactNode;
   tint?: boolean;
   id?: string;
+  compact?: boolean;
 }) {
   return (
     <section
       id={id}
-      className={`border-b border-border ${tint ? "bg-surface" : ""}`}
+      className={`border-b border-border ${
+        tint ? "bg-[rgba(21,21,21,0.35)]" : "bg-transparent"
+      }`}
     >
-      <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">{children}</div>
+      <div
+        className={`mx-auto max-w-6xl px-4 sm:px-6 ${compact ? "py-8" : "py-10"}`}
+      >
+        {children}
+      </div>
     </section>
   );
 }
@@ -335,51 +317,22 @@ function SectionHead({
   eyebrow,
   title,
   lede,
+  align = "center",
+  className = "",
 }: {
   eyebrow: string;
   title: string;
   lede?: string;
+  align?: "center" | "left";
+  className?: string;
 }) {
   return (
-    <div className="mx-auto max-w-3xl text-center">
+    <div className={`${align === "center" ? "mx-auto max-w-3xl text-center" : ""} ${className}`}>
       <p className="font-mono text-xs uppercase tracking-[0.3em] text-amber">{eyebrow}</p>
-      <h2 className="mt-3 font-display text-2xl font-semibold uppercase tracking-wide text-foreground sm:text-3xl">
+      <h2 className="mt-1.5 font-display text-2xl font-semibold uppercase tracking-wide text-foreground">
         {title}
       </h2>
-      {lede ? <p className="mt-4 text-text-sub">{lede}</p> : null}
-    </div>
-  );
-}
-
-function PhoneFrame({
-  step,
-  title,
-  body,
-  tint,
-}: {
-  step: string;
-  title: string;
-  body: string;
-  tint: string;
-}) {
-  return (
-    <div className="mx-auto w-full max-w-[220px]">
-      <div className="rounded-[1.75rem] border border-border bg-background p-2 shadow-xl">
-        <div
-          className="flex aspect-[9/16] flex-col items-center justify-center rounded-[1.35rem] p-5 text-center"
-          style={{
-            background: `radial-gradient(120% 80% at 50% 0%, ${tint}22, transparent 70%)`,
-          }}
-        >
-          <span className="font-mono text-[0.6rem] uppercase tracking-[0.3em]" style={{ color: tint }}>
-            {step}
-          </span>
-          <p className="mt-3 font-display text-lg font-semibold uppercase tracking-wide text-foreground">
-            {title}
-          </p>
-          <p className="mt-2 text-xs text-text-sub">{body}</p>
-        </div>
-      </div>
+      {lede ? <p className="mt-2 text-text-sub">{lede}</p> : null}
     </div>
   );
 }
@@ -393,29 +346,6 @@ const DO: { badge: string; title: string; body: string; tint: string }[] = [
   { badge: "4", title: "Assess", body: "Quizzes and progress tracking that show what you know.", tint: "#b45bff" },
   { badge: "5", title: "Earn", body: "Educational credentials with independent verification.", tint: "#ff8a1e" },
 ];
-
-const SCREENS: { step: string; title: string; body: string; tint: string }[] = [
-  { step: "Explore", title: "Explore", body: "Browse subjects and find where to start.", tint: "#2f9bff" },
-  { step: "Learn", title: "Learn", body: "Study each concept — the what, why, and how.", tint: "#ffc64d" },
-  { step: "Practice", title: "Practice", body: "Labs, flashcards, and exercises.", tint: "#37e05f" },
-];
-
-const SUBJECTS: string[] = [
-  "Audio Fundamentals",
-  "Microphones",
-  "Recording",
-  "Mixing",
-  "Live Sound",
-  "Loudspeakers",
-  "Acoustics & Measurement",
-  "Signal Processing",
-  "Connectivity",
-  "Audio Systems",
-  "Electronic Music",
-  "Career & Professional Skills",
-];
-
-const FLOW: string[] = ["Learn", "Practice", "Assess", "Progress", "Credential"];
 
 const CREDIBILITY: string[] = [
   "Curriculum developed from professional and educational experience",

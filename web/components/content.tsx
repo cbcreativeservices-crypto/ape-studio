@@ -1,23 +1,38 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { AppScreen } from "@/components/AppScreen";
+import { getAppScreen, type AppScreenId } from "@/lib/app-screens";
 
-/** Standard page header: eyebrow + title + optional lede. */
+/** Standard page header: eyebrow + title + optional lede, with an optional app screen. */
 export function PageHero({
   eyebrow,
   title,
   lede,
+  screen,
 }: {
   eyebrow: string;
   title: string;
   lede?: ReactNode;
+  screen?: AppScreenId;
 }) {
   return (
-    <div className="mx-auto max-w-3xl px-4 pt-16 sm:px-6">
-      <p className="font-mono text-xs uppercase tracking-[0.3em] text-amber">{eyebrow}</p>
-      <h1 className="mt-4 font-display text-3xl font-semibold uppercase tracking-wide text-foreground sm:text-4xl">
-        {title}
-      </h1>
-      {lede ? <p className="mt-5 text-lg text-text-sub">{lede}</p> : null}
+    <div
+      className={`mx-auto px-4 pt-12 sm:px-6 ${
+        screen
+          ? "flex max-w-5xl flex-col items-center gap-8 md:flex-row md:items-start md:gap-10"
+          : "max-w-3xl"
+      }`}
+    >
+      <div className={screen ? "flex-1" : undefined}>
+        <p className="font-mono text-xs uppercase tracking-[0.3em] text-amber">{eyebrow}</p>
+        <h1 className="mt-3 font-display text-3xl font-semibold uppercase tracking-wide text-foreground sm:text-4xl">
+          {title}
+        </h1>
+        {lede ? <p className="mt-4 text-lg text-text-sub">{lede}</p> : null}
+      </div>
+      {screen ? (
+        <AppScreen screen={getAppScreen(screen)} size="md" className="shrink-0" />
+      ) : null}
     </div>
   );
 }

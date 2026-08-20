@@ -15,6 +15,7 @@ export default function Page() {
         eyebrow="The Academy"
         title="What Pro Audio Training Academy is"
         lede="A structured educational system for professional audio — built to organize an enormous, interconnected body of knowledge into something you can learn, apply, and document."
+        screen="home"
       />
 
       <Section>

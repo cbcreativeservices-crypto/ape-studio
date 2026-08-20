@@ -15,6 +15,7 @@ export default function Page() {
         eyebrow="Credentials"
         title="A verifiable record of completed work"
         lede="An Academy credential documents educational work you have completed — earned by meeting defined requirements, and verifiable by anyone you share it with."
+        screen="achievements"
       />
 
       <Section title="How they’re earned">

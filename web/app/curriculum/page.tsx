@@ -15,6 +15,7 @@ export default function Page() {
         eyebrow="Curriculum Development"
         title="How the curriculum is built"
         lede="Professional audio is a large, interconnected field. The Academy organizes it into a structure you can move through deliberately — from fundamentals to advanced work."
+        screen="study"
       />
 
       <Section title="How it’s organized">
