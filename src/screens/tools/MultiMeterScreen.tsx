@@ -54,6 +54,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactElem
 import {
   Image,
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -634,6 +635,19 @@ export function MultiMeterScreen({ navigation }: Props) {
     void start();
   }, [clearEnv, start]);
 
+  // DEV + WEB preview only (#multimeterpreview): auto-start once so the harness
+  // shows the live (sim) panels without a tap — RN-web synthetic presses on the
+  // START button are unreliable. No effect on device or in release builds.
+  const previewAutoStartedRef = useRef(false);
+  useEffect(() => {
+    if (!(__DEV__ && Platform.OS === 'web')) return;
+    if (previewAutoStartedRef.current) return;
+    if (state === 'idle') {
+      previewAutoStartedRef.current = true;
+      onStart();
+    }
+  }, [state, onStart]);
+
   // ---- Snapshot (owner spec §8): capture AT BUTTON PRESS, confirm w/ notes --
   type SnapshotDraft = {
     payload: MultimeterSnapshotPayload;
@@ -1002,8 +1016,18 @@ export function MultiMeterScreen({ navigation }: Props) {
                 <View style={[styles.hMeterHold, { left: `${Math.min(99.3, splHoldFrac * 100)}%` }]} />
               ) : null}
             </View>
+            {/* dBFS reference scale under the bar (owner rev 24) — the meter maps
+                −60…0 dBFS linearly, so evenly-spaced ticks read true. */}
+            <View style={styles.hMeterScale}>
+              {[-60, -50, -40, -30, -20, -10, 0].map((db) => (
+                <View key={db} style={styles.hMeterTickCol}>
+                  <View style={styles.hMeterTick} />
+                  <Text style={styles.hMeterTickLabel}>{db}</Text>
+                </View>
+              ))}
+            </View>
             <Text style={styles.hMeterCaption}>
-              SPL·LAF {meter ? fmtDb(meter.aFastDb) : '—'} dBFS · level {-60}→0
+              SPL·LAF {meter ? fmtDb(meter.aFastDb) : '—'} dBFS
             </Text>
           </View>
         </>
@@ -1338,30 +1362,9 @@ export function MultiMeterScreen({ navigation }: Props) {
               </Text>
             ))}
 
-            {/* 7 ── SMART DETECTION */}
-            <View style={styles.panel}>
-              <Pressable onLongPress={() => help('detection')} delayLongPress={350}>
-                <Text style={styles.panelEyebrow}>SMART DETECTION</Text>
-              </Pressable>
-              {chips.length === 0 ? (
-                <Text style={styles.detectEmpty}>no conditions detected right now</Text>
-              ) : (
-                <View style={styles.detectWrap}>
-                  {chips.map((c) => (
-                    <View key={c.id} style={[styles.detectChip, c.severity === 'red' ? styles.detectChipRed : styles.detectChipAmber]}>
-                      <Text style={[styles.detectLabel, c.severity === 'red' ? styles.detectLabelRed : styles.detectLabelAmber]}>
-                        {c.label}
-                      </Text>
-                      <Text style={styles.detectDetail}>{c.detail}</Text>
-                    </View>
-                  ))}
-                </View>
-              )}
-              {/* Owner's framing — VERBATIM. */}
-              <Text style={styles.detectCaption}>
-                likely conditions based on the measured signal — not guarantees
-              </Text>
-            </View>
+            {/* SMART DETECTION moved to the very bottom (owner rev 24): its chips
+                come and go with the signal, so keeping it mid-scroll reflowed the
+                panels below it. It now lives under everything else. */}
 
             {/* 8 ── MEASUREMENT SNAPSHOT */}
             <Pressable
@@ -1390,6 +1393,32 @@ export function MultiMeterScreen({ navigation }: Props) {
             >
               <Text style={styles.libraryLink}>VIEW SAVED MEASUREMENTS ›</Text>
             </Pressable>
+
+            {/* 9 ── SMART DETECTION — pinned to the very bottom so its changing
+                   height never pushes the meters/controls above it (owner rev 24). */}
+            <View style={styles.panel}>
+              <Pressable onLongPress={() => help('detection')} delayLongPress={350}>
+                <Text style={styles.panelEyebrow}>SMART DETECTION</Text>
+              </Pressable>
+              {chips.length === 0 ? (
+                <Text style={styles.detectEmpty}>no conditions detected right now</Text>
+              ) : (
+                <View style={styles.detectWrap}>
+                  {chips.map((c) => (
+                    <View key={c.id} style={[styles.detectChip, c.severity === 'red' ? styles.detectChipRed : styles.detectChipAmber]}>
+                      <Text style={[styles.detectLabel, c.severity === 'red' ? styles.detectLabelRed : styles.detectLabelAmber]}>
+                        {c.label}
+                      </Text>
+                      <Text style={styles.detectDetail}>{c.detail}</Text>
+                    </View>
+                  ))}
+                </View>
+              )}
+              {/* Owner's framing — VERBATIM. */}
+              <Text style={styles.detectCaption}>
+                likely conditions based on the measured signal — not guarantees
+              </Text>
+            </View>
           </>
         )}
 
@@ -1558,6 +1587,11 @@ const styles = StyleSheet.create({
   },
   hMeterFill: { position: 'absolute', left: 0, top: 0, bottom: 0, borderRadius: 6 },
   hMeterHold: { position: 'absolute', top: -1, bottom: -1, width: 2, backgroundColor: '#ffffff' },
+  // dBFS reference scale under the horizontal meter (owner rev 24).
+  hMeterScale: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 1 },
+  hMeterTickCol: { alignItems: 'center' },
+  hMeterTick: { width: 1, height: 4, backgroundColor: '#4a4a52' },
+  hMeterTickLabel: { fontFamily: fonts.mono, fontSize: 9, color: colors.textMuted, marginTop: 1 },
   hMeterCaption: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub },
 
   // Oscilloscope ×1/×2/×4 zoom chips (item 2).
