@@ -788,11 +788,12 @@ export function SplMeterScreen({ navigation }: Props) {
   // Below the top area: the SPL gauge gets its OWN FULL-WIDTH row so its callout
   // labels sit OUTSIDE the ring with leader lines (3D gauge sizes itself).
   const dialW = winW - 32;
-  // Fullscreen (landscape) gauge width — fills the long side but stays within the
-  // short side given the gauge's 2:1 aspect, leaving room for the mode chips.
+  // Fullscreen (landscape) gauge width — centred with padding: fills the long
+  // side but leaves room, and (given the 2:1 aspect) keeps the chips row + margin
+  // within the short side. Sized off the SHORT side minus the chips band.
   const fsLong = Math.max(winW, winH);
   const fsShort = Math.min(winW, winH);
-  const gaugeFsW = Math.round(Math.min(fsLong * 0.92, fsShort * 1.8));
+  const gaugeFsW = Math.round(Math.min(fsLong * 0.86, (fsShort - 104) * 1.9));
   // Live meter drive (responsiveness fix 2026-07-30): two SharedValues the Skia
   // meters chase on the UI thread. RMS = the selected weighting × response level;
   // peak = the raw peak (F1: may exceed 0 dBFS, never clamped). −120 = silence.
@@ -1719,9 +1720,11 @@ export function SplMeterScreen({ navigation }: Props) {
               <View style={styles.vuFsClose} pointerEvents="none">
                 <Text style={styles.vuFsCloseX}>✕</Text>
               </View>
-              {/* The skinned VU is SVG (no Skia) — the Full VU always renders;
-                  only the Skia LED (and its toggle) gate on viz (2026-08-19). */}
-              {(
+              {/* LANDSCAPE-ONLY (owner 2026-08-19): render the Full VU content
+                  ONLY in landscape, so the portrait orientation never ghosts the
+                  old stacked layout during the flip. The skinned VU is SVG (no
+                  Skia); only the Skia LED (+ its toggle) gate on viz. */}
+              {winW >= winH && (
                 <>
                   {/* LED hide/show (owner 2026-08-18) — interactive, top-left. */}
                   {viz && (
@@ -1808,7 +1811,8 @@ export function SplMeterScreen({ navigation }: Props) {
           )}
 
           {/* Fullscreen SPL reference gauge — LANDSCAPE-ONLY (owner 2026-08-19).
-              Tap anywhere to close; the mode chips switch STUDIO/SPL/OPTIMAL. */}
+              Content renders ONLY in landscape so the portrait orientation never
+              ghosts a squished layout during the flip. Tap anywhere to close. */}
           {gaugeFsOpen && (
             <Pressable
               style={styles.vuFsRoot}
@@ -1816,36 +1820,40 @@ export function SplMeterScreen({ navigation }: Props) {
               accessibilityRole="button"
               accessibilityLabel="Close the fullscreen SPL gauge — tap to close"
             >
-              <View style={styles.vuFsClose} pointerEvents="none">
-                <Text style={styles.vuFsCloseX}>✕</Text>
-              </View>
-              <View style={styles.gaugeFsStage} pointerEvents="box-none">
-                <View style={styles.dialModeRow} pointerEvents="auto">
-                  {(['studio', 'spl', 'optimal'] as const).map((m) => (
-                    <Pressable
-                      key={m}
-                      style={[styles.dialModeChip, dialMode === m && styles.chipSelected]}
-                      onPress={() => setDialMode(m)}
-                      onLongPress={() => help('mode')}
-                      delayLongPress={260}
-                      accessibilityRole="button"
-                      accessibilityState={{ selected: dialMode === m }}
-                    >
-                      <Text style={[styles.dialModeChipText, dialMode === m && styles.chipTextSelected]}>{m.toUpperCase()}</Text>
-                    </Pressable>
-                  ))}
-                </View>
-                <View pointerEvents="none">
-                  <Spl3dGauge
-                    width={gaugeFsW}
-                    mode={dialMode}
-                    level={gaugeSpl}
-                    calibrated={calibrated}
-                    centerText={gaugeText}
-                    centerColor={dialCenterColor}
-                  />
-                </View>
-              </View>
+              {winW >= winH ? (
+                <>
+                  <View style={styles.vuFsClose} pointerEvents="none">
+                    <Text style={styles.vuFsCloseX}>✕</Text>
+                  </View>
+                  <View style={[styles.gaugeFsStage, { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 8 }]} pointerEvents="box-none">
+                    <View style={styles.dialModeRow} pointerEvents="auto">
+                      {(['studio', 'spl', 'optimal'] as const).map((m) => (
+                        <Pressable
+                          key={m}
+                          style={[styles.dialModeChip, dialMode === m && styles.chipSelected]}
+                          onPress={() => setDialMode(m)}
+                          onLongPress={() => help('mode')}
+                          delayLongPress={260}
+                          accessibilityRole="button"
+                          accessibilityState={{ selected: dialMode === m }}
+                        >
+                          <Text style={[styles.dialModeChipText, dialMode === m && styles.chipTextSelected]}>{m.toUpperCase()}</Text>
+                        </Pressable>
+                      ))}
+                    </View>
+                    <View pointerEvents="none">
+                      <Spl3dGauge
+                        width={gaugeFsW}
+                        mode={dialMode}
+                        level={gaugeSpl}
+                        calibrated={calibrated}
+                        centerText={gaugeText}
+                        centerColor={dialCenterColor}
+                      />
+                    </View>
+                  </View>
+                </>
+              ) : null}
             </Pressable>
           )}
         </View>
@@ -2345,7 +2353,7 @@ const styles = StyleSheet.create({
   vuFsCloseX: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, color: colors.textSecondary },
   // Full VU stage — a row so the settings COLUMN sits left of the VU (landscape).
   vuFsStage: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 16 },
-  gaugeFsStage: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 },
+  gaugeFsStage: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 14, paddingHorizontal: 16 },
   // Settings column (landscape), left of the VU meter (owner 2026-08-19).
   vuFsCtrlCol: { width: 106, flexDirection: 'column', justifyContent: 'center', gap: 10, zIndex: 130 },
   vuFsCtrlColBtn: {
