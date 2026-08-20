@@ -6,18 +6,26 @@
  * decorative may resemble a live meter). The real UI lands with the native
  * DSP module (Spike 0).
  */
+import { useCallback } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { GlassButton } from '../../components/GlassButton';
 import { useToolUsage } from '../../features/tools/telemetry';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { holdMicWarm, releaseMic } from '../../features/tools/engine/micSession';
 import { colors, fonts } from '../../theme/tokens';
-import { MIC_LIMITS, toolByKey } from './toolsData';
+import { MIC_LIMITS, toolByKey, type ToolKey } from './toolsData';
 import { LockedButton, MembershipRequiredNote } from './ToolLockUi';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ToolInfo'>;
+
+/** Tools whose OPEN screen captures the mic — the info screen holds the warm
+ *  session across the user's dwell so the tool adopts it instantly (rev 22).
+ *  (signalgen is an OUTPUT generator; hzcounter/multimeter never route here.) */
+const MIC_INPUT_TOOLS: ReadonlySet<ToolKey> = new Set<ToolKey>(['spl', 'rta', 'waveform', 'spectrogram', 'rt60']);
 
 function Bullets({ items }: { items: string[] }) {
   return (
@@ -38,6 +46,19 @@ export function ToolInfoScreen({ navigation, route }: Props) {
   // T-1 telemetry: this screen owns the tool session (stays mounted while the
   // live screen is pushed on top), so its lifetime ≈ time spent in the tool.
   useToolUsage(tool.key);
+  // Hold the warm mic session across this info screen for input tools, so the
+  // tool the user opens ADOPTS it instead of cold-starting (rev 22 warm handoff).
+  // holdMicWarm only PRESERVES an already-open stream (from the hub) — it never
+  // starts capture or prompts here; if the mic isn't warm, the tool starts it on
+  // open. Release (debounced) on blur so the opened tool cancels it by adopting.
+  const isInputTool = MIC_INPUT_TOOLS.has(tool.key);
+  useFocusEffect(
+    useCallback(() => {
+      if (!isInputTool) return undefined;
+      holdMicWarm();
+      return () => releaseMic();
+    }, [isInputTool]),
+  );
   // OPEN TOOL is free for everyone; the LEARN/DEMO training layer is Academy-
   // only (owner 2026-08-05). Gate on entitlement, not caps.
   const { entitlement } = useEntitlement();

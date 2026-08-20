@@ -23,7 +23,7 @@ import {
   type PitchFrame,
   type WaveBucket,
 } from '../../../../modules/ape-dsp';
-import { setMicActive } from '../../audio/audioOutputStore';
+import { acquireMic, releaseMic } from './micSession';
 import type { WarningFlag } from '../measure/types';
 
 /** Android runtime mic-permission request (iOS requests it natively inside the
@@ -99,15 +99,18 @@ export function useDspEngine(config: EngineConfig, poll: {
         return;
       }
       if (gen !== genRef.current) return;
-      ApeDsp.setEngineConfig(configRef.current);
-      await ApeDsp.start();
+      // Warm-session handoff (rev 22): adopt the shared stream if it's already
+      // open (instant — no HAL re-open), otherwise it starts once. setMicActive
+      // is owned by the session coordinator so the interlock tracks the REAL
+      // capture state across the debounced handoff.
+      await acquireMic(configRef.current);
       if (gen !== genRef.current) {
-        // Torn down while starting — close the native ordering hole too.
-        void ApeDsp.stop();
+        // Torn down while starting — hand the stream back (debounced, so a fast
+        // re-acquire by the next screen keeps it warm).
+        releaseMic();
         return;
       }
       setState('running');
-      setMicActive(true); // mic is now capturing → the feedback interlock arms
       stopPolling();
       // Only run the React-state poll if the caller actually wants frames. A
       // lifecycle-only consumer (poll: {}) drives its own low-latency loop off
@@ -136,8 +139,7 @@ export function useDspEngine(config: EngineConfig, poll: {
   const stop = useCallback(() => {
     genRef.current++;
     stopPolling();
-    void ApeDsp.stop();
-    setMicActive(false); // mic released → interlock disarms
+    releaseMic(); // debounced — a tools screen mounting within the window keeps it warm
     setState((s) => (s === 'running' || s === 'starting' ? 'idle' : s));
   }, [stopPolling]);
 
@@ -151,8 +153,7 @@ export function useDspEngine(config: EngineConfig, poll: {
       () => () => {
         genRef.current++;
         stopPolling();
-        void ApeDsp.stop();
-        setMicActive(false);
+        releaseMic(); // debounced handoff — the next tools screen keeps it warm
         setState((s) => (s === 'running' || s === 'starting' ? 'idle' : s));
       },
       [stopPolling],
@@ -164,8 +165,7 @@ export function useDspEngine(config: EngineConfig, poll: {
     () => () => {
       genRef.current++;
       stopPolling();
-      void ApeDsp.stop();
-      setMicActive(false);
+      releaseMic();
     },
     [stopPolling],
   );
