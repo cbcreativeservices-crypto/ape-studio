@@ -394,17 +394,25 @@ export type Spl3dGaugeProps = {
 
 export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, centerColor }: Spl3dGaugeProps) => {
   const height = Math.round(width * GAUGE_ASPECT);
-  const lit = level == null ? 0 : Math.max(0, Math.min(SEGS, Math.floor(((level - S_MIN) / (S_MAX - S_MIN)) * SEGS + 0.5)));
+  // Light the segment the level is CURRENTLY IN (floor + 1), not the nearest by
+  // midpoint (round). This makes the tile a band covers light up the instant the
+  // level enters that band, so the gold tile + gold FX can never fall out of sync
+  // at the band's lower edge (owner rev 21).
+  const lit = level == null ? 0 : Math.max(0, Math.min(SEGS, Math.floor(((level - S_MIN) / (S_MAX - S_MIN)) * SEGS) + 1));
   const uid = 'g' + useId().replace(/:/g, '');
   const zg = (k: ZoneKey) => `${uid}-${k}`;
   const band = level == null ? null : activeBand(level, mode);
   // The gold target shines only on the LIT gold blocks, and only while the
   // (averaged) level is currently INSIDE a gold band (owner rev 14).
   const goldLit = SEG_DEFS.filter((sd, i) => i < lit && zoneKey(sd.midSpl, mode) === 'gold');
-  // SHIMMER needs a lit gold tile to sweep; the SPARKLE celebrates simply being
-  // in a gold BAND (even before the first gold tile lights, owner rev 19).
-  const goldActive = band?.zone === 'gold' && goldLit.length > 0;
-  const inGoldBand = band?.zone === 'gold';
+  // ONE gold condition drives the lit-gold TILES, the gold SHIMMER, and the gold
+  // SPARKLE so they can never appear apart (owner rev 21). It fires only when the
+  // LIT EDGE tile is itself gold AND we're inside a gold band — which guarantees
+  // a gold tile is lit (the edge) whenever the shimmer/sparkle show, and stops
+  // both the instant the level climbs past gold into orange (exceeded = no shine).
+  const litEdgeGold = lit > 0 && zoneKey(SEG_DEFS[lit - 1].midSpl, mode) === 'gold';
+  const goldActive = band?.zone === 'gold' && litEdgeGold;
+  const inGoldBand = goldActive;
   const goldClipD = goldLit.map((sd) => sd.faceD).join(' ');
   const gxmin = goldLit.length ? Math.min(...goldLit.map((s) => s.bbox[0])) : 0;
   const gymin = goldLit.length ? Math.min(...goldLit.map((s) => s.bbox[1])) : 0;
