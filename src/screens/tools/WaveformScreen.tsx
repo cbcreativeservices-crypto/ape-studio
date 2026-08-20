@@ -30,9 +30,10 @@
  *    quality flags shown live (spec §6/§7).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { BackHandler, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { BackHandler, Platform, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { lockLandscape, lockPortrait } from '../../lib/screenOrientationSafe';
 import Svg, { Defs, G, Line, LinearGradient, Path, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { Canvas, Path as SkiaPath, LinearGradient as SkiaGradient, Skia, vec } from '@shopify/react-native-skia';
 import * as Crypto from 'expo-crypto';
@@ -61,6 +62,8 @@ const ENGINE_HISTORY_SEC = 6.0;
 /** Slice headroom — the engine never sends more than its ring capacity. */
 const MAX_BUCKETS = 4096;
 const PANEL_H = 240;
+/** Left control-column width in the landscape fullscreen (owner rev 24). */
+const FS_CTRL_W = 108;
 /** Skia's CanvasKit isn't shipped on web (nor any Spike-0 build), so the trace
  *  is drawn with SVG there and Skia on device — the tool never blanks. Enables
  *  the dev #waveformpreview and hardens against no-CanvasKit runtimes. */
@@ -98,22 +101,40 @@ export function WaveformScreen({ navigation }: Props) {
     { meter: true, waveform: true },
   );
 
+  const { width: winW, height: winH } = useWindowDimensions();
+  // Front-camera / notch inset for the LANDSCAPE fullscreen — max across edges
+  // since the locked-landscape overlay can't trust insets.left (rev 24, matches
+  // the SPL/VU fullscreens).
+  const camInset = Math.max(insets.left, insets.right, insets.top);
   const [panelW, setPanelW] = useState(0);
   const [zoom, setZoom] = useState<Zoom>(DEFAULT_ZOOM);
   const [windowSec, setWindowSec] = useState<WindowSec>(DEFAULT_WINDOW);
   // ZOOM / WINDOW are compact value-buttons that open a small chooser popup
   // (owner rev 24 — the VU-fullscreen style). Android back closes it first.
   const [wavePopup, setWavePopup] = useState<null | 'zoom' | 'window'>(null);
+  // Landscape-only fullscreen (owner rev 24 — controls on the left, like SPL/VU).
+  const [waveFsOpen, setWaveFsOpen] = useState(false);
+  useEffect(() => {
+    if (waveFsOpen) lockLandscape();
+    else lockPortrait();
+  }, [waveFsOpen]);
+  useEffect(() => {
+    navigation.setOptions({ orientation: waveFsOpen ? 'landscape' : 'portrait' });
+  }, [waveFsOpen, navigation]);
   useEffect(() => {
     const sub = BackHandler.addEventListener('hardwareBackPress', () => {
       if (wavePopup != null) {
         setWavePopup(null);
         return true;
       }
+      if (waveFsOpen) {
+        setWaveFsOpen(false);
+        return true;
+      }
       return false;
     });
     return () => sub.remove();
-  }, [wavePopup]);
+  }, [wavePopup, waveFsOpen]);
   // FREEZE: non-null = the FULL engine history held on screen (so the window
   // control still slices real data while frozen). Capture continues (spec §11
   // freeze control) — only the drawing stops updating.
@@ -160,6 +181,13 @@ export function WaveformScreen({ navigation }: Props) {
     [source, windowBuckets],
   );
   const shownSec = displayBuckets.length * bucketSec;
+
+  // Scope size: the normal card (panelW × PANEL_H) or the landscape fullscreen
+  // (fills the space right of the left control column). ONE geometry memo serves
+  // whichever is showing (owner rev 24).
+  const fsLandscape = waveFsOpen && winW >= winH;
+  const scopeW = fsLandscape ? Math.max(120, winW - FS_CTRL_W - camInset - 44) : panelW;
+  const scopeH = fsLandscape ? Math.max(120, winH - insets.top - insets.bottom - 28) : PANEL_H;
 
   const meter = frames.meter;
   // Live quality flags (spec §6) — the SAME flags get stored on save.
@@ -245,7 +273,7 @@ export function WaveformScreen({ navigation }: Props) {
   // the 15 Hz poll — bounded and cheap.
   const scope = useMemo(() => {
     const n = displayBuckets.length;
-    if (n === 0 || panelW <= 0) return null;
+    if (n === 0 || scopeW <= 0) return null;
     // Samples can exceed ±1 (F1): autoscale full-scale to the observed max.
     let observed = 1;
     for (const b of displayBuckets) {
@@ -253,12 +281,12 @@ export function WaveformScreen({ navigation }: Props) {
       if (m > observed) observed = m;
     }
     const scaleMax = Math.max(1.05, observed);
-    const half = PANEL_H / 2;
+    const half = scopeH / 2;
     const usable = half - PAD_V;
     const rawY = (v: number) => half - (v * zoom * usable) / scaleMax;
     // Zoomed traces clip at the panel edge (display only — zoom is not gain).
-    const y = (v: number) => Math.min(PANEL_H - 2, Math.max(2, rawY(v)));
-    const colW = panelW / windowBuckets;
+    const y = (v: number) => Math.min(scopeH - 2, Math.max(2, rawY(v)));
+    const colW = scopeW / windowBuckets;
 
     // PER-PIXEL min/max envelope (owner 2026-07-31): sample the bucket envelope at
     // EVERY screen pixel (linearly interpolated between bucket centres) so the
@@ -270,7 +298,7 @@ export function WaveformScreen({ navigation }: Props) {
     // slewed the edges into triangles when the buckets are wide (e.g. the 0.5 s
     // window) — that rounding is gone.
     const sampleAt = (px: number) => {
-      let f = n - 0.5 - (panelW - px) / colW; // fractional bucket index at this x
+      let f = n - 0.5 - (scopeW - px) / colW; // fractional bucket index at this x
       if (f < 0) f = 0;
       if (f > n - 1) f = n - 1;
       const b = displayBuckets[Math.round(f)];
@@ -280,7 +308,7 @@ export function WaveformScreen({ navigation }: Props) {
     // this dense per-pixel envelope COARSELY on Android; Skia is anti-aliased and
     // identical on both platforms. Collect the min/max + RMS envelope per screen
     // pixel, then close each into a filled area (top edge L→R, bottom edge R→L).
-    const W = Math.round(panelW);
+    const W = Math.round(scopeW);
     const topY = new Array<number>(W + 1);
     const botY = new Array<number>(W + 1);
     const rmsT = new Array<number>(W + 1);
@@ -334,7 +362,7 @@ export function WaveformScreen({ navigation }: Props) {
     for (let i = 0; i < n; i++) {
       if (displayBuckets[i].clipped) {
         hasClip = true;
-        const x = panelW - (n - i - 0.5) * colW;
+        const x = scopeW - (n - i - 0.5) * colW;
         if (SKIA_READY && clipP) {
           clipP.moveTo(x, 4);
           clipP.lineTo(x, 12);
@@ -381,7 +409,7 @@ export function WaveformScreen({ navigation }: Props) {
       gradY1,
       clipW: Math.max(1.5, colW * 0.8),
     };
-  }, [displayBuckets, panelW, zoom, windowBuckets]);
+  }, [displayBuckets, scopeW, scopeH, zoom, windowBuckets]);
 
   const running = state === 'running';
   // Keep the viewer up while running OR while manually paused (mic off, still on
@@ -391,7 +419,61 @@ export function WaveformScreen({ navigation }: Props) {
   useEffect(() => {
     if (running) setMicPaused(false);
   }, [running]);
-  const half = PANEL_H / 2;
+  const half = scopeH / 2;
+
+  // The scope visual (chrome + trace), sized to scopeW × scopeH — rendered in the
+  // normal card OR the landscape fullscreen (owner rev 24). pointerEvents none so
+  // the parent (card = tap-to-toggle; fullscreen = display-only) owns touches.
+  const scopeInner =
+    scopeW > 0 ? (
+      <View style={{ width: scopeW, height: scopeH }} pointerEvents="none">
+        <Svg width={scopeW} height={scopeH} style={StyleSheet.absoluteFill}>
+          {scope?.dbTicks.map((t) => (
+            <G key={t.db}>
+              <Line x1={30} x2={scopeW} y1={t.yTop} y2={t.yTop} stroke={colors.hairlineDim} strokeDasharray="2 6" />
+              <Line x1={30} x2={scopeW} y1={t.yBot} y2={t.yBot} stroke={colors.hairlineDim} strokeDasharray="2 6" />
+              <SvgText x={3} y={t.yTop + 4} fill={colors.textSecondary} fontSize={12} fontFamily={fonts.mono}>
+                {t.db === 0 ? '0dB' : `${t.db}`}
+              </SvgText>
+              <SvgText x={3} y={t.yBot + 4} fill={colors.textSecondary} fontSize={12} fontFamily={fonts.mono}>
+                {t.db === 0 ? '0dB' : `${t.db}`}
+              </SvgText>
+            </G>
+          ))}
+          <Line x1={0} x2={scopeW} y1={half} y2={half} stroke={MIDLINE_BLUE} strokeWidth={1} />
+          <SvgText x={4} y={half + 5} fill={colors.textSecondary} fontSize={13} fontFamily={fonts.mono}>
+            -∞
+          </SvgText>
+          <Rect x={0.5} y={0.5} width={scopeW - 1} height={scopeH - 1} stroke="#26262c" strokeWidth={1} fill="none" />
+        </Svg>
+        {scope && SKIA_READY ? (
+          <Canvas style={StyleSheet.absoluteFill}>
+            {colorsOn ? (
+              <SkiaPath path={scope.areaP!} opacity={0.9}>
+                <SkiaGradient start={vec(0, scope.gradY0)} end={vec(0, scope.gradY1)} colors={WAVE_LEVEL_COLORS} positions={WAVE_LEVEL_POS} />
+              </SkiaPath>
+            ) : (
+              <SkiaPath path={scope.areaP!} color={TRACE} opacity={0.9} />
+            )}
+            {colorsOn ? (
+              <SkiaPath path={scope.rmsP!} opacity={0.6}>
+                <SkiaGradient start={vec(0, scope.gradY0)} end={vec(0, scope.gradY1)} colors={WAVE_LEVEL_COLORS} positions={WAVE_LEVEL_POS} />
+              </SkiaPath>
+            ) : (
+              <SkiaPath path={scope.rmsP!} color={TRACE} opacity={0.6} />
+            )}
+            {scope.hasClip ? <SkiaPath path={scope.clipP!} color={colors.red} style="stroke" strokeWidth={scope.clipW} /> : null}
+          </Canvas>
+        ) : scope ? (
+          // Web fallback (no CanvasKit): SVG trace, flat trace colour.
+          <Svg width={scopeW} height={scopeH} style={StyleSheet.absoluteFill}>
+            <Path d={scope.areaD} fill={TRACE} opacity={0.9} />
+            <Path d={scope.rmsD} fill={TRACE} opacity={0.6} />
+            {scope.hasClip ? <Path d={scope.clipD} stroke={colors.red} strokeWidth={scope.clipW} fill="none" /> : null}
+          </Svg>
+        ) : null}
+      </View>
+    ) : null;
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -471,74 +553,7 @@ export function WaveformScreen({ navigation }: Props) {
                 accessibilityRole="button"
                 accessibilityLabel={running ? 'Tap to stop capture' : 'Tap to start capture'}
               >
-                {panelW > 0 ? (
-                  <View style={{ width: panelW, height: PANEL_H }} pointerEvents="none">
-                    {/* Chrome — dB grid + zero line + labels + frame. SVG, UNDER the
-                        trace (thin straight lines/text render fine on both platforms). */}
-                    <Svg width={panelW} height={PANEL_H} style={StyleSheet.absoluteFill}>
-                      {scope?.dbTicks.map((t) => (
-                        <G key={t.db}>
-                          <Line x1={30} x2={panelW} y1={t.yTop} y2={t.yTop} stroke={colors.hairlineDim} strokeDasharray="2 6" />
-                          <Line x1={30} x2={panelW} y1={t.yBot} y2={t.yBot} stroke={colors.hairlineDim} strokeDasharray="2 6" />
-                          <SvgText x={3} y={t.yTop + 4} fill={colors.textSecondary} fontSize={12} fontFamily={fonts.mono}>
-                            {t.db === 0 ? '0dB' : `${t.db}`}
-                          </SvgText>
-                          <SvgText x={3} y={t.yBot + 4} fill={colors.textSecondary} fontSize={12} fontFamily={fonts.mono}>
-                            {t.db === 0 ? '0dB' : `${t.db}`}
-                          </SvgText>
-                        </G>
-                      ))}
-                      {/* Zero line — centered (§11); −∞ label on it (0 amplitude = −∞ dBFS). */}
-                      <Line x1={0} x2={panelW} y1={half} y2={half} stroke={MIDLINE_BLUE} strokeWidth={1} />
-                      <SvgText x={4} y={half + 5} fill={colors.textSecondary} fontSize={13} fontFamily={fonts.mono}>
-                        -∞
-                      </SvgText>
-                      <Rect x={0.5} y={0.5} width={panelW - 1} height={PANEL_H - 1} stroke="#26262c" strokeWidth={1} fill="none" />
-                    </Svg>
-                    {/* Trace — SKIA (anti-aliased identically on iOS AND Android; SVG
-                        was coarse on Android — owner 2026-08-14). DAW-style solid body
-                        + denser RMS core, MIDI level gradient (or flat teal when COLORS
-                        is off), red clip ticks in the top lane. */}
-                    {scope && SKIA_READY ? (
-                      <Canvas style={StyleSheet.absoluteFill}>
-                        {colorsOn ? (
-                          <SkiaPath path={scope.areaP!} opacity={0.9}>
-                            <SkiaGradient
-                              start={vec(0, scope.gradY0)}
-                              end={vec(0, scope.gradY1)}
-                              colors={WAVE_LEVEL_COLORS}
-                              positions={WAVE_LEVEL_POS}
-                            />
-                          </SkiaPath>
-                        ) : (
-                          <SkiaPath path={scope.areaP!} color={TRACE} opacity={0.9} />
-                        )}
-                        {colorsOn ? (
-                          <SkiaPath path={scope.rmsP!} opacity={0.6}>
-                            <SkiaGradient
-                              start={vec(0, scope.gradY0)}
-                              end={vec(0, scope.gradY1)}
-                              colors={WAVE_LEVEL_COLORS}
-                              positions={WAVE_LEVEL_POS}
-                            />
-                          </SkiaPath>
-                        ) : (
-                          <SkiaPath path={scope.rmsP!} color={TRACE} opacity={0.6} />
-                        )}
-                        {scope.hasClip ? (
-                          <SkiaPath path={scope.clipP!} color={colors.red} style="stroke" strokeWidth={scope.clipW} />
-                        ) : null}
-                      </Canvas>
-                    ) : scope ? (
-                      // Web fallback (no CanvasKit): SVG trace, flat trace colour.
-                      <Svg width={panelW} height={PANEL_H} style={StyleSheet.absoluteFill}>
-                        <Path d={scope.areaD} fill={TRACE} opacity={0.9} />
-                        <Path d={scope.rmsD} fill={TRACE} opacity={0.6} />
-                        {scope.hasClip ? <Path d={scope.clipD} stroke={colors.red} strokeWidth={scope.clipW} fill="none" /> : null}
-                      </Svg>
-                    ) : null}
-                  </View>
-                ) : null}
+                {!waveFsOpen ? scopeInner : null}
                 {frozen ? <Text style={styles.frozenBadge}>FROZEN</Text> : null}
               </Pressable>
               {/* Time axis + honest scale disclosure. */}
@@ -596,6 +611,17 @@ export function WaveformScreen({ navigation }: Props) {
                 accessibilityLabel="Toggle MIDI level colours on the waveform"
               >
                 <Text style={[styles.chipText, colorsOn && styles.chipTextGreen]}>COLORS</Text>
+              </Pressable>
+              {/* Fullscreen (owner rev 24) — the colour-wheel button will sit to its
+                  LEFT once built; landscape-only, controls on the left. */}
+              <Pressable
+                style={[styles.chip, styles.chipWide]}
+                onPress={() => setWaveFsOpen(true)}
+                disabled={displayBuckets.length === 0}
+                accessibilityRole="button"
+                accessibilityLabel="Open fullscreen (landscape)"
+              >
+                <Text style={styles.chipText}>⛶ FULLSCREEN</Text>
               </Pressable>
             </View>
 
@@ -659,6 +685,50 @@ export function WaveformScreen({ navigation }: Props) {
           </>
         ) : null}
       </ScrollView>
+
+      {/* ── LANDSCAPE FULLSCREEN (owner rev 24) — controls in a LEFT column, the
+          scope fills the rest; camera-inset ✕ top-right. Content renders only in
+          landscape so the portrait flip never ghosts a squished layout. ── */}
+      {waveFsOpen ? (
+        <View style={styles.fsRoot}>
+          <Pressable
+            style={[styles.fsClose, { right: camInset + 14, top: insets.top + 8 }]}
+            onPress={() => setWaveFsOpen(false)}
+            accessibilityRole="button"
+            accessibilityLabel="Close fullscreen"
+          >
+            <Text style={styles.fsCloseX}>✕</Text>
+          </Pressable>
+          {winW >= winH ? (
+            <View
+              style={[
+                styles.fsStage,
+                { paddingLeft: camInset + 14, paddingRight: camInset + 14, paddingTop: insets.top + 8, paddingBottom: insets.bottom + 8 },
+              ]}
+            >
+              <View style={styles.fsCtrlCol}>
+                <Pressable style={styles.ctrlBtn} onPress={() => setWavePopup('zoom')} accessibilityRole="button" accessibilityLabel={`Zoom ${zoom}×. Tap to change.`}>
+                  <Text style={styles.ctrlLabel}>ZOOM</Text>
+                  <Text style={styles.ctrlValue}>×{zoom}</Text>
+                </Pressable>
+                <Pressable style={styles.ctrlBtn} onPress={() => setWavePopup('window')} accessibilityRole="button" accessibilityLabel={`Window ${windowSec} seconds. Tap to change.`}>
+                  <Text style={styles.ctrlLabel}>WINDOW</Text>
+                  <Text style={styles.ctrlValue}>{windowSec}s</Text>
+                </Pressable>
+                <Pressable style={[styles.ctrlBtn, frozen != null && styles.ctrlBtnActive]} onPress={toggleFreeze} disabled={displayBuckets.length === 0} accessibilityRole="button">
+                  <Text style={styles.ctrlLabel}>FREEZE</Text>
+                  <Text style={[styles.ctrlValue, frozen != null && styles.ctrlValueActive]}>{frozen ? 'FROZEN' : 'LIVE'}</Text>
+                </Pressable>
+                <Pressable style={[styles.ctrlBtn, colorsOn && styles.ctrlBtnActive]} onPress={() => setColorsOn(!colorsOn)} accessibilityRole="button">
+                  <Text style={styles.ctrlLabel}>COLORS</Text>
+                  <Text style={[styles.ctrlValue, colorsOn && styles.ctrlValueActive]}>{colorsOn ? 'ON' : 'OFF'}</Text>
+                </Pressable>
+              </View>
+              <View style={styles.fsScope}>{scopeInner}</View>
+            </View>
+          ) : null}
+        </View>
+      ) : null}
 
       {/* ZOOM / WINDOW chooser popup (owner rev 24). Tap outside or Android-back
           to close; picking an option applies + closes. */}
@@ -797,6 +867,24 @@ const styles = StyleSheet.create({
   popupOptSel: { borderColor: 'rgba(255,198,77,.7)', backgroundColor: '#1c1608' },
   popupOptText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 0.6, color: colors.textSecondary },
   popupOptTextSel: { color: colors.amber },
+  // Landscape fullscreen (owner rev 24).
+  fsRoot: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#0c0c0f', zIndex: 40 },
+  fsClose: {
+    position: 'absolute',
+    zIndex: 45,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(18,18,22,0.9)',
+    borderWidth: 1,
+    borderColor: '#3a3a44',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  fsCloseX: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, color: colors.textSecondary },
+  fsStage: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 16 },
+  fsCtrlCol: { width: FS_CTRL_W, gap: 10, justifyContent: 'center' },
+  fsScope: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 
   chipRow: { flexDirection: 'row', gap: 10, alignItems: 'stretch' },
   rowLabel: {
