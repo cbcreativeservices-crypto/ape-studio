@@ -82,22 +82,21 @@ function capsPath(a1: number, a2: number): string {
 }
 
 /* ── Palette (rev 8 — 6-zone) ───────────────────────────────────────── */
-type ZoneKey = 'grey' | 'green' | 'gold' | 'yellow' | 'orange' | 'red';
+type ZoneKey = 'grey' | 'green' | 'gold' | 'orange' | 'red';
 const ZONE_HEX: Record<ZoneKey, string> = {
   grey: '#7b818b',
   green: '#34c06b',
   gold: '#e0b13a', // plain gold (target band once exceeded)
-  yellow: '#efd23f',
   orange: '#f0863a',
   red: '#e23b2c',
 };
 
+// 5-zone scale (owner: no yellow — gold target, then straight to orange, red).
 function zoneKey(s: number, mode: DialMode3d): ZoneKey {
   if (mode === 'studio') {
     if (s < 60) return 'grey';
     if (s < 76) return 'green';
     if (s < 85) return 'gold';
-    if (s < 92) return 'yellow';
     if (s < 100) return 'orange';
     return 'red';
   }
@@ -111,7 +110,6 @@ function zoneKey(s: number, mode: DialMode3d): ZoneKey {
   if (s < 60) return 'grey';
   if (s < 79) return 'green';
   if (s < 94) return 'gold';
-  if (s < 97) return 'yellow';
   if (s < 100) return 'orange';
   return 'red';
 }
@@ -122,8 +120,7 @@ const BANDS: Record<DialMode3d, Band[]> = {
     { hi: 60, name: 'BELOW MONITORING', zone: 'grey' },
     { hi: 76, name: 'EDITING LEVEL', zone: 'green' },
     { hi: 85, name: 'CRITICAL BALANCING', zone: 'gold' },
-    { hi: 92, name: 'IMPACT CHECK', zone: 'yellow' },
-    { hi: 100, name: 'TOO LOUD', zone: 'orange' },
+    { hi: 100, name: 'IMPACT CHECK', zone: 'orange' },
     { hi: Infinity, name: 'OVER — UNSAFE', zone: 'red' },
   ],
   spl: [
@@ -138,7 +135,7 @@ const BANDS: Record<DialMode3d, Band[]> = {
     { hi: 79, name: 'PROGRAM', zone: 'green' },
     { hi: 85, name: 'REFERENCE', zone: 'gold' },
     { hi: 94, name: 'SHOW', zone: 'gold' },
-    { hi: 97, name: 'HIGH', zone: 'yellow' },
+    { hi: 97, name: 'HIGH', zone: 'orange' },
     { hi: 100, name: 'LIMIT', zone: 'orange' },
     { hi: Infinity, name: '100+ dB LAeq', zone: 'red' },
   ],
@@ -161,7 +158,6 @@ const INK_FAINT = '#787c85';
 const C_GREY = '#aab0b8';
 const C_GREEN = '#4fd07f';
 const C_GOLD = '#f2ca55';
-const C_YELLOW = '#f0dd5a';
 const C_ORANGE = '#f0863a';
 const C_RED = '#ff5a48';
 
@@ -176,7 +172,7 @@ const CALLOUTS: Record<DialMode3d, CalloutDef[]> = {
     { spl: 62, color: C_GREEN, t1: 'BACKGROUND', t2: '60–65 dB SPL' },
     { spl: 72, color: C_GREEN, t1: 'GENERAL EDITING', t2: '70–75 dB SPL' },
     { spl: 79, color: C_GOLD, t1: 'CRITICAL BALANCING', t2: '76–84 dB SPL' },
-    { spl: 90, color: C_YELLOW, t1: 'IMPACT CHECK', t2: '85–95 dB SPL' },
+    { spl: 90, color: C_ORANGE, t1: 'IMPACT CHECK', t2: '85–95 dB SPL' },
   ],
   spl: [
     { spl: 60, color: C_GREEN, t1: 'CONVERSATION', t2: '~60 dBA' },
@@ -189,7 +185,7 @@ const CALLOUTS: Record<DialMode3d, CalloutDef[]> = {
     { spl: 69, color: C_GREEN, t1: 'PROGRAM', t2: '60–78 dBA' },
     { spl: 81, color: C_GOLD, t1: 'REFERENCE', t2: '79–84 dBA' },
     { spl: 89, color: C_GOLD, t1: 'SHOW', t2: '85–93 dBA' },
-    { spl: 95, color: C_YELLOW, t1: 'HIGH', t2: '94–96 dBA' },
+    { spl: 95, color: C_ORANGE, t1: 'HIGH', t2: '94–96 dBA' },
     { spl: 98, color: C_ORANGE, t1: 'LIMIT', t2: '97–99 dBA' },
     { spl: 100, color: C_RED, t1: '100+ dB LAeq', t2: 'WHO 15-MIN' },
   ],
@@ -255,13 +251,13 @@ function chrome(mode: DialMode3d, calibrated: boolean): ReactNode {
   const [t1, t2] = TITLES[mode];
   const els: ReactNode[] = [];
   els.push(
-    <SvgText key="t1" x={CX} y={54} fill={INK} fontFamily={fonts.oswaldSemiBold} fontSize={27} letterSpacing={2} textAnchor="middle">
+    <SvgText key="t1" x={CX} y={64} fill={INK} fontFamily={fonts.oswaldSemiBold} fontSize={27} letterSpacing={2} textAnchor="middle">
       {t1}
     </SvgText>,
   );
   if (t2) {
     els.push(
-      <SvgText key="t2" x={CX} y={77} fill={INK_DIM} fontFamily={fonts.oswaldSemiBold} fontSize={18} textAnchor="middle">
+      <SvgText key="t2" x={CX} y={87} fill={INK_DIM} fontFamily={fonts.oswaldSemiBold} fontSize={18} textAnchor="middle">
         {t2}
       </SvgText>,
     );
@@ -355,16 +351,15 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
   const uid = 'g' + useId().replace(/:/g, '');
   const zg = (k: ZoneKey) => `${uid}-${k}`;
   const band = level == null ? null : activeBand(level, mode);
-  // The gold target shines only while the level is INSIDE a gold band.
-  const goldActive = band?.zone === 'gold';
-
-  // Gold-target region (clip + bounds) for the animated specular sweep.
-  const goldSegs = SEG_DEFS.filter((sd) => zoneKey(sd.midSpl, mode) === 'gold');
-  const goldClipD = goldSegs.map((sd) => sd.faceD).join(' ');
-  const gxmin = goldSegs.length ? Math.min(...goldSegs.map((s) => s.bbox[0])) : 0;
-  const gymin = goldSegs.length ? Math.min(...goldSegs.map((s) => s.bbox[1])) : 0;
-  const gxmax = goldSegs.length ? Math.max(...goldSegs.map((s) => s.bbox[2])) : 0;
-  const gymax = goldSegs.length ? Math.max(...goldSegs.map((s) => s.bbox[3])) : 0;
+  // The gold target shines only on the LIT gold blocks, and only while the
+  // (averaged) level is currently INSIDE a gold band (owner rev 14).
+  const goldLit = SEG_DEFS.filter((sd, i) => i < lit && zoneKey(sd.midSpl, mode) === 'gold');
+  const goldActive = band?.zone === 'gold' && goldLit.length > 0;
+  const goldClipD = goldLit.map((sd) => sd.faceD).join(' ');
+  const gxmin = goldLit.length ? Math.min(...goldLit.map((s) => s.bbox[0])) : 0;
+  const gymin = goldLit.length ? Math.min(...goldLit.map((s) => s.bbox[1])) : 0;
+  const gxmax = goldLit.length ? Math.max(...goldLit.map((s) => s.bbox[2])) : 0;
+  const gymax = goldLit.length ? Math.max(...goldLit.map((s) => s.bbox[3])) : 0;
   const BAND_W = 70;
   // A specular band that sweeps across the gold faces on the UI thread. `sweep`
   // loops 0→1 only while the gold target is active; cancelled otherwise so a
@@ -425,10 +420,10 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
             <Stop offset="0.62" stopColor="#2b2d32" />
             <Stop offset="1" stopColor="#1d1f23" />
           </LinearGradient>
-          {/* Recessed dark glass screen. */}
+          {/* Recessed glass screen — lightened (owner rev 14: was too dark). */}
           <LinearGradient id={`${uid}-screen`} x1="0" y1="0" x2="0" y2="1">
-            <Stop offset="0" stopColor="#141619" />
-            <Stop offset="1" stopColor="#08090b" />
+            <Stop offset="0" stopColor="#2b2f35" />
+            <Stop offset="1" stopColor="#1a1d22" />
           </LinearGradient>
           {/* Glass specular sweep from the top-left corner. */}
           <LinearGradient id={`${uid}-glass`} x1="0" y1="0" x2="0.8" y2="0.9">
@@ -437,8 +432,8 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
             <Stop offset="0.62" stopColor="#ffffff" stopOpacity="0" />
           </LinearGradient>
           <RadialGradient id={`${uid}-well`} cx="0.5" cy="0.46" r="0.62">
-            <Stop offset="0" stopColor="#101215" />
-            <Stop offset="1" stopColor="#212429" />
+            <Stop offset="0" stopColor="#15181c" />
+            <Stop offset="1" stopColor="#2a2e34" />
           </RadialGradient>
           <RadialGradient id={`${uid}-lcd`} cx="0.5" cy="0.42" r="0.7">
             <Stop offset="0" stopColor="#1a1d21" />

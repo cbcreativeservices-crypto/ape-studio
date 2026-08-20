@@ -1478,6 +1478,8 @@ export function SplMeterScreen({ navigation }: Props) {
                   accessibilityState={{ expanded: gaugeOpen }}
                   accessibilityLabel={gaugeOpen ? 'Collapse SPL gauge' : 'Expand SPL gauge'}
                 >
+                  {/* Reveal triangle on the LEFT of the title (owner rev 14). */}
+                  <Text style={[styles.gaugeToggleChevron, styles.gaugeToggleChevronLeft]}>{gaugeOpen ? '▾' : '▸'}</Text>
                   <Text style={styles.gaugeToggleText}>SPL REFERENCE GAUGE</Text>
                   <View style={{ flex: 1 }} />
                   <Pressable
@@ -1488,7 +1490,6 @@ export function SplMeterScreen({ navigation }: Props) {
                   >
                     <Text style={styles.gaugeToggleInfo}>ⓘ</Text>
                   </Pressable>
-                  <Text style={styles.gaugeToggleChevron}>{gaugeOpen ? '▾' : '▸'}</Text>
                 </Pressable>
                 {gaugeOpen ? (
                   <VuHero
@@ -2425,6 +2426,7 @@ const styles = StyleSheet.create({
   },
   gaugeToggleText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.textSecondary },
   gaugeToggleChevron: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, color: colors.textSub, marginLeft: 10 },
+  gaugeToggleChevronLeft: { marginLeft: 0, marginRight: 10 },
   gaugeToggleInfo: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, color: colors.amberLabel },
 
   // STUDIO / SPL chooser — pinned to the TOP-LEFT corner of the circle meter.
