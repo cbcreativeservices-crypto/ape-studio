@@ -60,6 +60,7 @@ import { WARNING_INFO } from '../../features/tools/measure/types';
 import { LOUDNESS_STOPS, levelColorForDb } from '../../features/tools/levelColor';
 import { useColorModePref } from '../../features/tools/colorModePref';
 import { useToolColorPref } from '../../features/tools/waveColorPref';
+import { deriveSixthOctave, NO_LEVEL, SIXTH_BANDS, type DisplayBands } from '../../features/tools/sixthOctave';
 import { ColorWheelButton } from '../../components/ColorWheelButton';
 import { colors, fonts } from '../../theme/tokens';
 import { AccuracyNote } from '../../components/AccuracyNote';
@@ -98,16 +99,7 @@ const fractionFor = (m: BandMode): 1 | 3 => (m === 10 ? 1 : 3);
 
 /** What the display renders — the native frame directly (10/31) or an honest
  *  client-side derivation of it (7/15/61). Same honesty grammar throughout. */
-type DisplayBands = {
-  centers: number[];
-  levelsDb: number[];
-  peakHoldDb: number[];
-  resolvable: boolean[];
-};
-
-/** Sentinel well under the display floor — derived gray bands carry it so no
- *  bar and no tick can ever render for them. */
-const NO_LEVEL = -999;
+// DisplayBands + NO_LEVEL are shared via sixthOctave.ts (imported above).
 
 /** 7/15-band regrouping of the native 1/3-octave frame. Levels ENERGY-average
  *  (mean of the members' linear powers — never a dB average); centers are the
@@ -152,62 +144,12 @@ function regroupBands(nb: BandsFrame, groups: number, hold: Map<number, number>)
   return { centers, levelsDb, peakHoldDb, resolvable };
 }
 
-// ---- 1/6-octave (61-band) derivation from the fine FFT spectrum ------------
-const SIXTH_BANDS = 61;
-/** 1/6-oct centers, 20 Hz × 2^(k/6) → 20 Hz … 20.48 kHz (log-even). */
-const SIXTH_CENTERS: number[] = Array.from({ length: SIXTH_BANDS }, (_, k) => 20 * Math.pow(2, k / 6));
-const SIXTH_EDGE = Math.pow(2, 1 / 12); // band edges at center × 2^(±1/12)
+// ---- 1/6-octave (61-band) derivation ---------------------------------------
+// The derivation, its constants (SIXTH_BANDS/SIXTH_CENTERS/NO_LEVEL) and the
+// DisplayBands type are SHARED with the MultiMeter via ../../features/tools/
+// sixthOctave.ts (deduped 2026-08-21 — this was a byte-identical local copy).
+// Only the RTA's own poll cadence stays local.
 const SIXTH_POLL_MS = 80; // ~12.5 Hz — near the hook's 15 Hz frame poll
-
-/** Aggregate one REAL fine-spectrum frame (dBFS per bin) into the 61 bands:
- *  bin powers ENERGY-SUMMED per band, exponential α on the summed POWER (the
- *  same averaging behavior the native band path applies), client-side peak
- *  hold on the derived level. Honesty (same grammar as native `resolvable`):
- *  a band is resolvable only if ≥1 bin lands in it AND its bandwidth spans at
- *  least one bin width at this FFT size — otherwise gray, no bar, no hold. */
-function deriveSixthOctave(
-  spec: Float32Array,
-  sampleRate: number,
-  fftSize: number,
-  alpha: number,
-  smoothRef: { current: Float64Array | null },
-  hold: Float64Array,
-): DisplayBands {
-  const hzPerBin = sampleRate / fftSize;
-  const power = new Float64Array(SIXTH_BANDS);
-  const binCount = new Int32Array(SIXTH_BANDS);
-  const nyquist = sampleRate / 2;
-  for (let i = 1; i < spec.length; i++) {
-    const f = i * hzPerBin;
-    if (f > nyquist) break;
-    const k = Math.round(6 * Math.log2(f / 20));
-    if (k < 0 || k >= SIXTH_BANDS) continue;
-    power[k] += Math.pow(10, spec[i] / 10);
-    binCount[k] += 1;
-  }
-  const first = smoothRef.current == null;
-  const sm = smoothRef.current ?? Float64Array.from(power);
-  smoothRef.current = sm;
-  const levelsDb: number[] = [];
-  const peakHoldDb: number[] = [];
-  const resolvable: boolean[] = [];
-  for (let k = 0; k < SIXTH_BANDS; k++) {
-    const widthHz = SIXTH_CENTERS[k] * (SIXTH_EDGE - 1 / SIXTH_EDGE);
-    const ok = binCount[k] >= 1 && widthHz >= hzPerBin;
-    resolvable.push(ok);
-    if (!ok) {
-      levelsDb.push(NO_LEVEL);
-      peakHoldDb.push(NO_LEVEL);
-      continue;
-    }
-    if (!first) sm[k] += alpha * (power[k] - sm[k]);
-    const db = sm[k] > 0 ? 10 * Math.log10(sm[k]) : NO_LEVEL;
-    if (db > hold[k]) hold[k] = db;
-    levelsDb.push(db);
-    peakHoldDb.push(hold[k]);
-  }
-  return { centers: SIXTH_CENTERS, levelsDb, peakHoldDb, resolvable };
-}
 
 /** Honest meta line per mode — derived views disclose their derivation. */
 function metaFor(mode: BandMode, alpha: number, fftSize: number): string {
