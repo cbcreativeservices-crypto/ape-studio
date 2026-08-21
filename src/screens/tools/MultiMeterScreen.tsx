@@ -72,6 +72,7 @@ import { ApeDsp, type EngineConfig } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
 import { deriveSixthOctave, NO_LEVEL, SIXTH_BANDS, SIXTH_EDGE, type DisplayBands } from '../../features/tools/sixthOctave';
+import { useSplCalibration } from '../../features/tools/measure/calibrationStore';
 import { heatColor, levelColorForDb, MIDLINE_BLUE, rampColors, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 import { LinearGradient as GradientView } from 'expo-linear-gradient';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
@@ -103,6 +104,17 @@ type Props = NativeStackScreenProps<RootStackParamList, 'MultiMeter'>;
 // Engine + poll cadences
 // ---------------------------------------------------------------------------
 const FFT_SIZE = 8192;
+/** Uncalibrated dBFS → dB-SPL estimate: 0 dBFS ≈ this many dB SPL on a typical
+ *  phone mic (owner ruling 2026-08-12) — the shared field calibration overrides
+ *  it. Matches the SPL meter. */
+const NOMINAL_OFFSET = 100;
+/** The 4 readout modes (owner rev 24 — long-press the SPL cell to switch), same
+ *  set + semantics as the SPL meter. A/C weight the level; A/C/SPL add the SPL
+ *  offset (estimated dB SPL); FS is the raw digital level (dBFS). */
+type UnitMode = 'A' | 'C' | 'FS' | 'SPL';
+const UNIT_MODES: readonly UnitMode[] = ['A', 'C', 'FS', 'SPL'] as const;
+const MODE_UNIT: Record<UnitMode, string> = { A: 'dBA', C: 'dBC', FS: 'dBFS', SPL: 'dB SPL' };
+const MODE_LABEL: Record<UnitMode, string> = { A: 'SPL·LAF', C: 'SPL·LCF', FS: 'LEVEL·FS', SPL: 'SPL·L' };
 /** The fine-spectrum poll (envelope + spectrogram + detection feed) — its own
  *  ~12.5 Hz interval, exactly the SpectrogramScreen idiom (the hook's 15 Hz
  *  frame poll does not carry the spectrum payload). */
@@ -572,6 +584,23 @@ export function MultiMeterScreen({ navigation }: Props) {
     stop();
   }, [stop]);
   const meter = running ? frames.meter : null;
+
+  // Readout mode (owner rev 24 — long-press the SPL cell): A/C/FS/SPL, same as
+  // the SPL meter. Shared field calibration → estimated dB SPL; nominal 100 when
+  // uncalibrated. The chosen mode RIPPLES to PEAK/RMS and the horizontal meter.
+  const [unitMode, setUnitMode] = useState<UnitMode>('C');
+  const [unitPopup, setUnitPopup] = useState(false);
+  const cal = useSplCalibration();
+  const splOffset = cal?.offsetDb ?? NOMINAL_OFFSET;
+  const calibrated = cal?.offsetDb != null;
+  // Weighted broadband level for the chosen mode (A/C weight; FS/SPL are flat Z).
+  const modeLevel = (m: typeof meter): number | undefined =>
+    !m ? undefined : unitMode === 'A' ? m.aFastDb : unitMode === 'C' ? m.cFastDb : m.zFastDb;
+  // Raw dBFS → displayed value: FS shows the raw digital dB; A/C/SPL add the SPL
+  // offset (estimated dB SPL, floored at 0). Colour always uses the RAW dBFS.
+  const applyRef = (dbfs: number | undefined): number | undefined =>
+    dbfs == null || !Number.isFinite(dbfs) ? undefined : unitMode === 'FS' ? dbfs : Math.max(0, dbfs + splOffset);
+
   const live = running ? frames.pitch : null;
   const lowSignal = live != null && live.levelDb < PITCH_LOW_SIGNAL_DB;
   const accepted =
@@ -853,7 +882,9 @@ export function MultiMeterScreen({ navigation }: Props) {
   // Horizontal SPL meter fractions (item 7): map −60…0 dBFS → 0…1. Default
   // weighting is C (owner rev 24) to match the status cell.
   const SPL_MIN_DB = -60;
-  const splFrac = meter ? Math.max(0, Math.min(1, (meter.cFastDb - SPL_MIN_DB) / -SPL_MIN_DB)) : 0;
+  // Fill maps the RAW weighted dBFS level (−60…0) for the current mode — the
+  // caption shows the mode's value/unit (owner rev 24).
+  const splFrac = meter ? Math.max(0, Math.min(1, ((modeLevel(meter) ?? SPL_MIN_DB) - SPL_MIN_DB) / -SPL_MIN_DB)) : 0;
   const splHoldFrac = meter ? Math.max(0, Math.min(1, (meter.peakHoldDb - SPL_MIN_DB) / -SPL_MIN_DB)) : 0;
 
   // Mini-scope geometry (WaveformScreen scope math, compact ×1, autoscaled).
@@ -975,9 +1006,9 @@ export function MultiMeterScreen({ navigation }: Props) {
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>PRO AUDIO MULTIMETER</Text>
-          <Text style={styles.subtitle}>All-in-one live meter · mono · dBC · uncalibrated</Text>
+          <Text style={styles.subtitle}>All-in-one live meter · mono · uncalibrated</Text>
         </View>
-        <AccuracyNote compact detail="Levels are shown A/C-weighted (dBA/dBC) so they read in a familiar scale, but this runs on your phone’s UNCALIBRATED microphone — treat every number as RELATIVE, for learning, NOT a calibrated SPL reading. For accurate, absolute measurements use a calibrated SPL meter, measurement mic, or a dedicated instrument." />
+        <AccuracyNote compact detail="Levels read as an ESTIMATED dB SPL (dBA/dBC/dB SPL, nominal reference) or raw dBFS — long-press the SPL cell to switch. This runs on your phone’s UNCALIBRATED microphone, so every number is APPROXIMATE, for learning, NOT a certified reading. For accurate, absolute measurements use a calibrated SPL meter, measurement mic, or a dedicated instrument." />
       </View>
 
       {/* 1 ── TOP STATUS BAR — pinned, instrument-style mono digits. Shown only
@@ -987,38 +1018,35 @@ export function MultiMeterScreen({ navigation }: Props) {
       {(running || micPaused) && (
         <>
           <View style={styles.statusBar}>
+            {/* SPL cell — LONG-PRESS to switch A/C/FS/SPL (owner rev 24); tap = help.
+                Label/value/unit follow the mode; the mode RIPPLES to PEAK/RMS +
+                the horizontal meter. Colour uses the RAW dBFS (amplitude ramp). */}
             <Pressable
               style={styles.statusCell}
               onPress={() => help('spl')}
-              onLongPress={() => help('spl')}
+              onLongPress={() => setUnitPopup(true)}
               delayLongPress={350}
               accessibilityRole="button"
-              accessibilityLabel="C-weighted SPL, fast (dBC) — uncalibrated, relative. Tap for details."
+              accessibilityLabel={`${MODE_LABEL[unitMode]} (${MODE_UNIT[unitMode]}), ${calibrated ? 'field-calibrated approximate' : unitMode === 'FS' ? 'relative digital level' : 'uncalibrated estimate'}. Long-press to change mode; tap for details.`}
             >
-              {/* Default weighting is C (owner rev 24: dBC). The ⓘ is the honesty
-                  cue — the reading is uncalibrated dBFS, not a true SPL. */}
               <View style={styles.statusHoldRow}>
-                <Text style={styles.statusLabel}>SPL·LCF</Text>
+                <Text style={styles.statusLabel}>{MODE_LABEL[unitMode]}</Text>
                 <Text style={styles.statusInfo}>ⓘ</Text>
               </View>
-              {/* Numbers read level on the amplitude ramp — louder red, quieter
-                  blue (owner 2026-08-12). */}
-              <Text style={[styles.statusValue, meter ? { color: levelColorForDb(meter.cFastDb) } : null]}>
-                {meter ? fmtDb(meter.cFastDb) : '—'}
+              <Text style={[styles.statusValue, meter ? { color: levelColorForDb(modeLevel(meter) as number) } : null]}>
+                {meter ? fmtDb(applyRef(modeLevel(meter))) : '—'}
               </Text>
             </Pressable>
             <Pressable style={styles.statusCell} onLongPress={() => help('peak')} delayLongPress={350}>
               <Text style={styles.statusLabel}>PEAK</Text>
-              {/* Number reads level on the amplitude ramp (owner 2026-08-12) —
-                  ≥0 dBFS still lands red. */}
               <Text style={[styles.statusValue, meter ? { color: levelColorForDb(meter.peakDb) } : null]}>
-                {meter ? fmtDb(meter.peakDb) : '—'}
+                {meter ? fmtDb(applyRef(meter.peakDb)) : '—'}
               </Text>
             </Pressable>
             <Pressable style={styles.statusCell} onLongPress={() => help('rms')} delayLongPress={350}>
               <Text style={styles.statusLabel}>RMS</Text>
               <Text style={[styles.statusValue, meter ? { color: levelColorForDb(meter.zFastDb) } : null]}>
-                {meter ? fmtDb(meter.zFastDb) : '—'}
+                {meter ? fmtDb(applyRef(meter.zFastDb)) : '—'}
               </Text>
             </Pressable>
             {/* PEAK HOLD: tap the cell (or the ⟲, or long-press) to reset —
@@ -1039,11 +1067,18 @@ export function MultiMeterScreen({ navigation }: Props) {
                 </Pressable>
               </View>
               <Text style={[styles.statusValue, meter ? { color: levelColorForDb(meter.peakHoldDb) } : null]}>
-                {meter ? fmtDb(meter.peakHoldDb) : '—'}
+                {meter ? fmtDb(applyRef(meter.peakHoldDb)) : '—'}
               </Text>
             </Pressable>
           </View>
-          <Text style={styles.statusUnit}>uncalibrated · RELATIVE levels — not a calibrated SPL meter</Text>
+          <Text style={styles.statusUnit}>
+            {MODE_UNIT[unitMode]} ·{' '}
+            {calibrated
+              ? 'field-calibrated (approximate)'
+              : unitMode === 'FS'
+                ? 'relative digital level — not dB SPL'
+                : 'uncalibrated estimate — approximate dB SPL, not a calibrated meter'}
+          </Text>
 
           {/* 7 ── Horizontal main SPL level meter (owner 2026-08-05) — like the
                  VU screen's, but horizontal + thinner. Left→right level with a
@@ -1066,12 +1101,13 @@ export function MultiMeterScreen({ navigation }: Props) {
               {[-60, -50, -40, -30, -20, -10, 0].map((db) => (
                 <View key={db} style={styles.hMeterTickCol}>
                   <View style={styles.hMeterTick} />
-                  <Text style={styles.hMeterTickLabel}>{db}</Text>
+                  {/* Labels follow the mode: raw dBFS in FS, offset SPL estimate else. */}
+                  <Text style={styles.hMeterTickLabel}>{unitMode === 'FS' ? db : Math.max(0, db + splOffset)}</Text>
                 </View>
               ))}
             </View>
             <Text style={styles.hMeterCaption}>
-              SPL·LCF {meter ? fmtDb(meter.cFastDb) : '—'} dBC
+              {MODE_LABEL[unitMode]} {meter ? fmtDb(applyRef(modeLevel(meter))) : '—'} {MODE_UNIT[unitMode]}
             </Text>
           </View>
         </>
@@ -1473,6 +1509,35 @@ export function MultiMeterScreen({ navigation }: Props) {
         </Text>
       </ScrollView>
 
+      {/* Readout-mode chooser (owner rev 24) — long-press the SPL cell opens it;
+          picking a mode applies + closes. Tap outside to dismiss. */}
+      {unitPopup ? (
+        <Pressable style={styles.unitPopupBackdrop} onPress={() => setUnitPopup(false)} accessibilityRole="button" accessibilityLabel="Close">
+          <View style={styles.unitPopupCard}>
+            <Text style={styles.unitPopupTitle}>READOUT MODE</Text>
+            <View style={styles.unitPopupGrid}>
+              {UNIT_MODES.map((m) => (
+                <Pressable
+                  key={m}
+                  style={[styles.unitPopupOpt, unitMode === m && styles.unitPopupOptSel]}
+                  onPress={() => {
+                    setUnitMode(m);
+                    setUnitPopup(false);
+                  }}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: unitMode === m }}
+                >
+                  <Text style={[styles.unitPopupOptText, unitMode === m && styles.unitPopupOptTextSel]}>{MODE_UNIT[m]}</Text>
+                </Pressable>
+              ))}
+            </View>
+            <Text style={styles.unitPopupNote}>
+              {calibrated ? 'Field-calibrated (approximate).' : 'FS = raw digital; A/C/SPL = uncalibrated dB-SPL estimate.'}
+            </Text>
+          </View>
+        </Pressable>
+      ) : null}
+
       {/* Snapshot confirm sheet: notes, then save (values frozen at press). */}
       <Modal visible={draft != null} transparent animationType="fade" onRequestClose={() => setDraft(null)}>
         <View style={styles.sheetScrim}>
@@ -1848,6 +1913,45 @@ const styles = StyleSheet.create({
   },
 
   // Snapshot sheet.
+  // Readout-mode chooser popup (owner rev 24).
+  unitPopupBackdrop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.72)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 26,
+    zIndex: 50,
+  },
+  unitPopupCard: {
+    width: '100%',
+    maxWidth: 380,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#2b2b33',
+    backgroundColor: '#141418',
+    padding: 18,
+    gap: 12,
+  },
+  unitPopupTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.6, color: colors.textSecondary, textAlign: 'center' },
+  unitPopupGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 9, justifyContent: 'center' },
+  unitPopupOpt: {
+    minWidth: 74,
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: '#33333c',
+    backgroundColor: '#1a1a1f',
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    alignItems: 'center',
+  },
+  unitPopupOptSel: { borderColor: 'rgba(255,198,77,.7)', backgroundColor: '#1c1608' },
+  unitPopupOptText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 0.6, color: colors.textSecondary },
+  unitPopupOptTextSel: { color: colors.amber },
+  unitPopupNote: { fontFamily: fonts.barlowRegular, fontSize: 11.5, color: colors.textMuted, textAlign: 'center' },
   sheetScrim: { flex: 1, backgroundColor: 'rgba(0,0,0,.7)', justifyContent: 'center', padding: 20 },
   sheetCard: {
     borderRadius: 14,
