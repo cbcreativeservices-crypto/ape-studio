@@ -10,6 +10,20 @@
 import AVFoundation
 import ExpoModulesCore
 
+/// Hardware model identifier (e.g. "iPhone16,2") via uname — computed once. Used
+/// as the community mic-catalog device key on iOS, where PlatformConstants does
+/// not expose the model (owner 2026-08-21). Not user-identifying (same string
+/// for every unit of a model).
+private let apeDeviceModel: String = {
+  var sysinfo = utsname()
+  uname(&sysinfo)
+  let machine = withUnsafeBytes(of: &sysinfo.machine) { raw -> String in
+    let bytes = raw.prefix { $0 != 0 }
+    return String(decoding: bytes, as: UTF8.self)
+  }
+  return machine.isEmpty ? "unknown" : machine
+}()
+
 public class ApeDspModule: Module {
   private let core = ApeDspCore()
   private var engine: AVAudioEngine?
@@ -391,6 +405,9 @@ public class ApeDspModule: Module {
       "bluetoothInput": bluetoothInput,
       "routeName": routeName,
       "inputPortType": inputPortType,
+      // Hardware model identifier (e.g. "iPhone16,2") for the community mic
+      // catalog device key — iOS PlatformConstants can't provide this (2026-08-21).
+      "model": apeDeviceModel,
       "outputRoute": outputRoute,
       "running": running,
       "desiredRunning": desiredRunning,

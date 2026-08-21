@@ -134,7 +134,8 @@ export function buildDeviceKey(info: DspInfo | null, native?: Partial<Pick<Devic
   const d = platformDeviceInfo();
   return {
     platform: Platform.OS,
-    model: native?.model ?? d.model,
+    // iOS supplies the hw model via getInfo (uname); Android via PlatformConstants.
+    model: native?.model ?? info?.model ?? d.model,
     osVersion: native?.osVersion ?? d.osVersion,
     osBuild: native?.osBuild ?? d.osBuild,
     appVersion: appVersion(),

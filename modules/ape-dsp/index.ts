@@ -41,6 +41,9 @@ export type DspInfo = {
   sampleRate: number;
   ioBufferDuration: number;
   measurementMode: boolean;
+  /** Hardware model id (iOS "iPhone16,2" via uname; undefined on older builds /
+   *  Android, where PlatformConstants supplies it). Community mic-catalog key. */
+  model?: string;
   bluetoothInput: boolean;
   routeName: string;
   inputPortType: string;
@@ -266,11 +269,23 @@ export type Rt60Frame = {
   curveStepSec: number;
 };
 
+/** Manufacturer-declared microphone metadata (Android API 28+ getMicrophones).
+ *  All fields may be null/unknown. Community mic-catalog Tier A. */
+export type NativeMicInfo = {
+  sensitivityDbFs: number | null;
+  frequencyResponse: [number, number][] | null;
+  channelMapping: 'direct' | 'processed' | 'unknown';
+  directionality: string | null;
+  address: string | null;
+};
+
 type NativeApeDsp = {
   start(): Promise<DspInfo>;
   stop(): Promise<void>;
   getFrame(): DspFrame;
   getInfo(): DspInfo;
+  /** Android only (API 28+); undefined on iOS / older builds. */
+  getMicrophoneInfo?(): NativeMicInfo | null;
   resetPeakHold(): void;
   // Engine build:
   setEngineConfig(cfg: EngineConfig): void;
@@ -355,6 +370,14 @@ export const ApeDsp = {
   },
   getInfo(): DspInfo | null {
     return native ? native.getInfo() : null;
+  },
+  /** Manufacturer-declared mic metadata (Android API 28+). null elsewhere. */
+  getMicrophoneInfo(): NativeMicInfo | null {
+    try {
+      return native && typeof native.getMicrophoneInfo === 'function' ? native.getMicrophoneInfo() : null;
+    } catch {
+      return null;
+    }
   },
   resetPeakHold(): void {
     native?.resetPeakHold();

@@ -13,6 +13,7 @@ import android.content.pm.PackageManager
 import android.media.AudioDeviceCallback
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
+import android.media.MicrophoneInfo
 import android.os.Build
 import androidx.core.content.ContextCompat
 import expo.modules.kotlin.Promise
@@ -169,6 +170,10 @@ class ApeDspModule : Module() {
     }
 
     Function("getInfo") { infoMap() }
+    // Manufacturer-declared microphone metadata (API 28+) for the community mic
+    // catalog — sensitivity, frequency response, directionality, id. NOT a
+    // substitute for calibration; fields may be unknown. null when unavailable.
+    Function("getMicrophoneInfo") { micInfoMap() }
     Function("resetPeakHold") { if (handle != 0L) nativeResetPeakHold(handle) }
     Function("resetLeq") { if (handle != 0L) nativeResetLeq(handle) }
 
@@ -432,6 +437,39 @@ class ApeDspModule : Module() {
     outputRoute = if (hasNonSpeaker) "Headphones" else "Speaker"
     // 150 Hz matches JS speakerSafety SPEAKER_HPF_HZ.
     nativeGenSetHpf(handle, if (hasNonSpeaker) 0.0 else 150.0)
+  }
+
+  // Manufacturer-declared built-in microphone metadata (API 28+). Returns null
+  // when unavailable / pre-P. Values may be UNKNOWN — mapped to null so the JS
+  // side records "not declared" honestly. DIRECT/PROCESSED channel mapping needs
+  // an active AudioRecord (getActiveMicrophones); our capture is Oboe-owned, so
+  // it is reported "unknown" here.
+  private fun micInfoMap(): Map<String, Any?>? {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return null
+    val am = appContext.reactContext?.getSystemService(Context.AUDIO_SERVICE) as? AudioManager ?: return null
+    val mics = try { am.microphones } catch (e: Exception) { return null }
+    if (mics.isEmpty()) return null
+    val mic = mics.firstOrNull { it.type == AudioDeviceInfo.TYPE_BUILTIN_MIC } ?: mics.first()
+    val sens = mic.sensitivity
+    val freq = try { mic.frequencyResponse } catch (e: Exception) { emptyList<android.util.Pair<Float, Float>>() }
+    val freqOut = if (freq.isNullOrEmpty()) null else freq.map { listOf(it.first, it.second) }
+    val addr = mic.address
+    return mapOf(
+      "sensitivityDbFs" to (if (sens == MicrophoneInfo.SENSITIVITY_UNKNOWN) null else sens),
+      "frequencyResponse" to freqOut,
+      "channelMapping" to "unknown",
+      "directionality" to directionalityName(mic.directionality),
+      "address" to (if (addr.isNullOrEmpty()) null else addr),
+    )
+  }
+
+  private fun directionalityName(d: Int): String? = when (d) {
+    MicrophoneInfo.DIRECTIONALITY_OMNI -> "omni"
+    MicrophoneInfo.DIRECTIONALITY_BI_DIRECTIONAL -> "bidirectional"
+    MicrophoneInfo.DIRECTIONALITY_CARDIOID -> "cardioid"
+    MicrophoneInfo.DIRECTIONALITY_HYPER_CARDIOID -> "hypercardioid"
+    MicrophoneInfo.DIRECTIONALITY_SUPER_CARDIOID -> "supercardioid"
+    else -> null
   }
 
   private fun infoMap(): Map<String, Any?> = mapOf(

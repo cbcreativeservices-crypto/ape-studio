@@ -56,7 +56,8 @@ export function ContributeCalibrationPrompt({
     try {
       await setCrowdsourceConsent(true); // opting in
       const info = ApeDsp.isAvailable() ? ApeDsp.getInfo() : null;
-      const record = buildCapabilityRecord(info);
+      const micInfo = ApeDsp.isAvailable() ? ApeDsp.getMicrophoneInfo() : null;
+      const record = buildCapabilityRecord(info, { micInfo });
       const c = makeContribution({ record, offsetDb, nominalStart, referenceQuality: ref });
       await queueContribution(c);
       void uploadQueuedContributions(); // best-effort drain now; retries later if offline
