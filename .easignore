@@ -1,12 +1,10 @@
-# .easignore — files EAS Build excludes from the project upload.
-#
-# IMPORTANT: when this file exists, EAS uses it INSTEAD of .gitignore (not in
-# addition), so it must carry over every .gitignore entry below, PLUS the heavy
-# build-irrelevant trees that were bloating the upload (owner 2026-08-18: the
-# archive / ingest / docs folders are hundreds of MB of old SQL + notes and are
-# never needed to build the app). Keep this in sync with .gitignore.
+# .easignore — files excluded from the EAS Build upload tarball.
+# IMPORTANT: when this file exists it REPLACES .gitignore for the upload, so the
+# standard ignores below must be kept in sync with .gitignore (or node_modules
+# etc. would be uploaded). Extra section = large dirs the native build never uses
+# (the 2026-08-21 upload was 819 MB, almost entirely these).
 
-# ── carried over from .gitignore ─────────────────────────────────────────────
+# ── mirror of .gitignore (keep in sync) ──────────────────────────────────────
 node_modules/
 .expo/
 dist/
@@ -32,8 +30,16 @@ __pycache__/
 *.pyc
 /ios
 /android
+docs/service_key.txt
 
-# ── extra: large folders that are NOT part of the app build ──────────────────
+# ── not needed for the native build (the upload bloat) ───────────────────────
 audio_app_archive/
 machineA_ingest/
+FLAGGED_TERMS/
+HANDOFF_2026_08_01_SUB90/
+web/
 docs/
+scripts/
+supabase/
+*.zip
+qr-tubes.png
