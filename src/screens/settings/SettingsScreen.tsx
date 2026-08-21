@@ -19,6 +19,7 @@ import { resetCoachMarks } from '../../lib/coachMark';
 import { resetScreenIntros } from '../../features/intro/screenIntros';
 import { resetAmplitudeOrientation } from '../../features/lab/amplitudeOrientation';
 import { resetAskModes } from '../../features/permissions/permissionStore';
+import { hasCrowdsourceConsent, setCrowdsourceConsent } from '../../features/tools/measure/deviceProfile';
 import { sendFeedback } from '../../lib/feedback';
 import { supabase } from '../../lib/supabase';
 import { colors, fonts } from '../../theme/tokens';
@@ -50,9 +51,12 @@ export function SettingsScreen({ navigation }: Props) {
   const [local, setLocal] = useState<LocalSettings>(DEFAULT_LOCAL_SETTINGS);
   const [prefs, setPrefs] = useState<NotificationPrefs | null>(null);
   const [apeId, setApeId] = useState('');
+  // Community mic-catalog contribution consent (device-local, opt-in, default off).
+  const [contribute, setContribute] = useState(false);
 
   useEffect(() => {
     loadLocalSettings().then(setLocal);
+    void hasCrowdsourceConsent().then(setContribute);
     fetchNotificationPrefs().then(setPrefs);
     supabase
       .from('users')
@@ -251,6 +255,26 @@ export function SettingsScreen({ navigation }: Props) {
               </Text>
             </View>
             <Toggle on={local.micReleaseOnBackground} onChange={(v) => setLocalKey('micReleaseOnBackground', v)} />
+          </View>
+        </View>
+
+        {/* COMMUNITY MIC CATALOG — anonymous, opt-in calibration contribution. */}
+        <View>
+          <Text style={styles.sectionEyebrow}>COMMUNITY MIC CATALOG</Text>
+          <View style={styles.row}>
+            <View style={{ flex: 1, paddingRight: 10 }}>
+              <Text style={styles.rowLabel}>Contribute anonymized calibration data</Text>
+              <Text style={styles.rowHint}>
+                When you calibrate, share your offset and phone model anonymously so other owners of your phone start closer to accurate. Never sends audio, location, or anything that identifies you. Turning this off clears anything queued.
+              </Text>
+            </View>
+            <Toggle
+              on={contribute}
+              onChange={(v) => {
+                setContribute(v);
+                void setCrowdsourceConsent(v);
+              }}
+            />
           </View>
         </View>
 

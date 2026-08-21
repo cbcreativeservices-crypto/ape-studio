@@ -42,6 +42,7 @@ import { CollapsibleSection } from '../lab/LabShell';
 import type { LiveMeterDrive, PeakHoldMode } from '../lab/meter/vizMeters';
 import { ColorWheelButton } from '../../components/ColorWheelButton';
 import { LedColorPicker } from '../../components/LedColorPicker';
+import { ContributeCalibrationPrompt } from '../../components/ContributeCalibrationPrompt';
 import { resolveLedFill, useLedAvgColorPref, useLedColorPref } from '../../features/tools/ledScheme';
 import { meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { useRafFrameLoop } from '../../features/tools/engine/useRafFrameLoop';
@@ -673,6 +674,14 @@ export function SplMeterScreen({ navigation }: Props) {
   // point (0 dBFS ≈ 100–120 dB SPL on typical phone mics) — the user matches
   // their reference meter.
   const [draftOffset, setDraftOffset] = useState(100);
+  // After a real calibration, offer to contribute it to the anonymous community
+  // mic catalog (owner 2026-08-21). non-null = the prompt is open for that offset.
+  const [contribOffset, setContribOffset] = useState<number | null>(null);
+  const commitCalibration = useCallback((o: number) => {
+    setSplCalibration(o);
+    setCalibrating(false);
+    setContribOffset(o);
+  }, []);
   // LEVEL readouts read positive dB SPL (owner 2026-08-12): a real SPL meter
   // shows dB SPL / dBA / dBC, not negative dBFS. Weighted unit + honest
   // calibration state; uncalibrated is an approximate ESTIMATE, never certified.
@@ -1398,10 +1407,7 @@ export function SplMeterScreen({ navigation }: Props) {
                     </Pressable>
                     <Pressable
                       style={[styles.ctrlBtn, styles.ctrlBtnSaved]}
-                      onPress={() => {
-                        setSplCalibration(draftOffset);
-                        setCalibrating(false);
-                      }}
+                      onPress={() => commitCalibration(draftOffset)}
                       accessibilityRole="button"
                       accessibilityLabel="Set calibration"
                     >
@@ -1721,10 +1727,7 @@ export function SplMeterScreen({ navigation }: Props) {
                         </Pressable>
                         <Pressable
                           style={[styles.ctrlBtn, styles.ctrlBtnSaved]}
-                          onPress={() => {
-                            setSplCalibration(draftOffset);
-                            setCalibrating(false);
-                          }}
+                          onPress={() => commitCalibration(draftOffset)}
                           accessibilityRole="button"
                           accessibilityLabel="Set calibration"
                         >
@@ -2012,6 +2015,15 @@ export function SplMeterScreen({ navigation }: Props) {
         onLevelPick={setLedPref}
         avgPref={avgPref}
         onAvgPick={setAvgPref}
+      />
+
+      {/* After a real calibration: offer to contribute it anonymously to the
+          community mic catalog (owner 2026-08-21). */}
+      <ContributeCalibrationPrompt
+        visible={contribOffset != null}
+        offsetDb={contribOffset ?? 0}
+        nominalStart={NOMINAL_OFFSET}
+        onClose={() => setContribOffset(null)}
       />
 
       {/* ── Fullscreen # readout (de-modalized 2026-08-19): the number ALONE (no
