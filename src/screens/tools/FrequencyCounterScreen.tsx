@@ -30,6 +30,8 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
 import Svg, { Line, Path, Text as SvgText } from 'react-native-svg';
 import { GlassButton } from '../../components/GlassButton';
+import { ColorWheelButton } from '../../components/ColorWheelButton';
+import { useToolColorPref } from '../../features/tools/waveColorPref';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { LockedButton, MembershipRequiredNote, MEMBERSHIP_REQUIRED } from './ToolLockUi';
 import { useToolUsage } from '../../features/tools/telemetry';
@@ -369,12 +371,16 @@ function TunerGauge({
   note,
   dim,
   inTune,
+  tuneColor,
 }: {
   freq: number | null;
   note: { name: string; octave: number; cents: number } | null;
   dim: boolean;
   inTune: boolean;
+  /** MEMBER custom in-tune colour (owner 2026-08-21). null = default green. */
+  tuneColor?: string | null;
 }) {
+  const tuneInk = tuneColor ?? colors.green;
   const [w, setW] = useState(0);
   const cx = w / 2;
   const cy = GAUGE_H - 20;
@@ -394,7 +400,7 @@ function TunerGauge({
   const cents = note ? Math.max(-50, Math.min(50, note.cents)) : 0;
 
   return (
-    <View style={[styles.gaugeWrap, inTune && styles.gaugeWrapInTune]}>
+    <View style={[styles.gaugeWrap, inTune && styles.gaugeWrapInTune, inTune && tuneColor ? { borderColor: tuneColor } : null]}>
       <View style={styles.gaugeHeader}>
         <Text style={[styles.gaugeHz, dim && styles.readoutDim]}>{freq != null ? `${fmtHz(freq)} Hz` : '— Hz'}</Text>
         <Text style={styles.gaugeArrow}>→</Text>
@@ -417,7 +423,7 @@ function TunerGauge({
                   y1={t.y1}
                   x2={t.x2}
                   y2={t.y2}
-                  stroke={t.key === 0 ? (inTune ? colors.green : colors.amber) : t.major ? colors.textSub : colors.hairlineAlt}
+                  stroke={t.key === 0 ? (inTune ? tuneInk : colors.amber) : t.major ? colors.textSub : colors.hairlineAlt}
                   strokeWidth={t.key === 0 ? 2.5 : 1.5}
                 />
               ))}
@@ -444,7 +450,7 @@ function TunerGauge({
                   dim && styles.readoutDim,
                 ]}
               >
-                <View style={[styles.gaugeNeedle, inTune && styles.gaugeNeedleInTune]} />
+                <View style={[styles.gaugeNeedle, inTune && styles.gaugeNeedleInTune, inTune && tuneColor ? { backgroundColor: tuneColor } : null]} />
               </View>
             )}
             <View pointerEvents="none" style={[styles.gaugeHub, { left: cx - 6, top: cy - 6 }]} />
@@ -472,6 +478,8 @@ function LivePitchMode({
     { meter: true, pitch: true },
   );
   const [a4, setA4] = useState(440);
+  // MEMBER custom in-tune colour for the tuner gauge (owner 2026-08-21).
+  const [tunerColor, setTunerColor] = useToolColorPref('ape:tools:tunerColor');
   // Tuner-only variable detection band (high-pass low-cut + low-pass high-cut).
   // Defaults span the full reliable range, so the tuner is unrestricted until
   // the user narrows it to force an octave.
@@ -670,7 +678,7 @@ function LivePitchMode({
         <>
           {/* Top display (owner 2026-08-05): the demo's Hz-vs-Pitch arc gauge,
               live. */}
-          <TunerGauge freq={shownFreq} note={note} dim={isHeld} inTune={tunerInTune} />
+          <TunerGauge freq={shownFreq} note={note} dim={isHeld} inTune={tunerInTune} tuneColor={tunerColor} />
 
           {/* Current display — compact; the ENTIRE container turns green when in
               tune within ±1 cent (owner 2026-08-05). */}
@@ -779,6 +787,17 @@ function LivePitchMode({
               <Text style={[styles.a4ChipText, a4 === v && styles.a4ChipTextOn]}>{v}</Text>
             </Pressable>
           ))}
+          {/* MEMBER in-tune colour (owner 2026-08-21) — discreet wheel + spectrum. */}
+          <ColorWheelButton
+            style={styles.tunerWheel}
+            current={tunerColor}
+            onPick={setTunerColor}
+            accessibilityLabel="Tuner colour"
+            feature="the tuner in-tune colour"
+            pickerTitle="TUNER COLOUR"
+            pickerNote="Recolours the in-tune needle, marker, and glow."
+            size={20}
+          />
         </View>
       )}
 
@@ -1427,6 +1446,7 @@ const styles = StyleSheet.create({
   // Honest range/unit footnote under the stat grid.
   gridNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted },
   a4Row: { flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' },
+  tunerWheel: { marginLeft: 4, padding: 2 },
   // Variable detection-band controls (low-cut / high-cut) — tuner only.
   bandControls: { gap: 8 },
   bandTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.amberLabel },
