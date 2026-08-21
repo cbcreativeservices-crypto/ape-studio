@@ -43,7 +43,7 @@ import { meterWarningFlags, useDspEngine, useToolAutoStart } from '../../feature
 import { MIDLINE_BLUE, WAVE_LEVEL_STOPS, levelColorForDb } from '../../features/tools/levelColor';
 import { useColorModePref } from '../../features/tools/colorModePref';
 import { useWaveColorPref, WAVE_COLOR_SWATCHES } from '../../features/tools/waveColorPref';
-import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { ColorWheelButton } from '../../components/ColorWheelButton';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO } from '../../features/tools/measure/types';
@@ -149,12 +149,10 @@ export function WaveformScreen({ navigation }: Props) {
   // COLORS toggle (owner 2026-08-05, items 6/7): MIDI level colours on the
   // trace, persisted per user, first-ever default ON.
   const [colorsOn, setColorsOn] = useColorModePref();
-  // Custom flat-trace colour (Academy members) — applied when the MIDI gradient
-  // (COLORS) is off. Non-members are routed to the paywall (owner rev 24).
+  // Custom flat-trace colour — applied when the MIDI gradient (COLORS) is off.
+  // The colour-wheel button (member-gated) opens the picker (owner rev 24 / rule).
   const [waveColor, setWaveColor] = useWaveColorPref();
   const traceColor = waveColor ?? TRACE;
-  const { entitlement } = useEntitlement();
-  const isMember = entitlement === 'academy';
   // Clip latch (owner 2026-08-05, item 4): the CLIP OVERRUNS readout stays
   // GREEN "0" until the first real overrun, then turns RED and holds until reset.
   const [hasClipped, setHasClipped] = useState(false);
@@ -620,17 +618,13 @@ export function WaveformScreen({ navigation }: Props) {
               >
                 <Text style={[styles.chipText, colorsOn && styles.chipTextGreen]}>COLORS</Text>
               </Pressable>
-              {/* Custom trace colour (owner rev 24) — Academy members open the
-                  picker; everyone else is routed to the paywall. */}
-              <Pressable
-                style={[styles.chip, styles.colorChip]}
-                onPress={() => (isMember ? setWavePopup('color') : navigation.navigate('Paywall'))}
-                accessibilityRole="button"
-                accessibilityLabel={isMember ? 'Waveform colour — pick a custom colour' : 'Waveform colour — Academy membership required'}
-              >
+              {/* Custom trace colour — discreet color-wheel, member-gated (owner
+                  2026-08-20 rule); non-members get the membership popup. The dot
+                  shows the current colour. */}
+              <View style={[styles.chip, styles.colorChip]}>
                 <View style={[styles.colorDot, { backgroundColor: traceColor }]} />
-                <Text style={styles.chipText}>{isMember ? '🎨' : '🔒'}</Text>
-              </Pressable>
+                <ColorWheelButton onCustomize={() => setWavePopup('color')} accessibilityLabel="Waveform colour" feature="the waveform trace colour" size={20} />
+              </View>
               {/* Fullscreen — to the RIGHT of the colour button (owner rev 24). */}
               <Pressable
                 style={[styles.chip, styles.chipWide]}
