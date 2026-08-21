@@ -560,6 +560,9 @@ export function SplMeterScreen({ navigation }: Props) {
   // Fullscreen big-readout view (owner 2026-08-17): the number alone, with
   // PEAK / PEAK HOLD in the top corners + a popup-local brightness/red slider.
   const [readoutFsOpen, setReadoutFsOpen] = useState(false);
+  // Closing phase for the fullscreen readout (owner 2026-08-21) — like the VU, it
+  // stays mounted as a cover until the window settles back to portrait on close.
+  const [readoutFsClosing, setReadoutFsClosing] = useState(false);
   // Global Low-Light (Profile) — when ON it LOCKS the popup in red and hides the
   // local dimmer; turning Low-Light off restores the dimmer (owner 2026-08-17).
   const lowLightOn = useLowLight();
@@ -646,11 +649,11 @@ export function SplMeterScreen({ navigation }: Props) {
   // crash here (a dynamic import().catch() did NOT reliably catch the synchronous
   // module-eval throw — owner 2026-08-18).
   useEffect(() => {
-    if (readoutFsOpen) unlockOrientation();
+    if (readoutFsOpen && !readoutFsClosing) unlockOrientation();
     return () => {
       lockPortrait();
     };
-  }, [readoutFsOpen]);
+  }, [readoutFsOpen, readoutFsClosing]);
   const [justSaved, setJustSaved] = useState(false);
   const savedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(
@@ -718,6 +721,15 @@ export function SplMeterScreen({ navigation }: Props) {
   // 2026-08-19). Tapping the gauge opens it; both fullscreens force landscape so
   // the phone never has to be flipped.
   const [gaugeFsOpen, setGaugeFsOpen] = useState(false);
+  // CLOSING phase (owner 2026-08-21 bug): a landscape-only fullscreen must NOT
+  // unmount the instant it's closed — that reveals the portrait-designed screen
+  // underneath while the OS is still rotating landscape→portrait (the "ghost
+  // portrait VU" flash). Instead we enter `closing`: orientation is asked back to
+  // portrait while the opaque overlay stays up as a cover, and we only truly
+  // unmount once the window has actually become portrait (see the finish effects
+  // below). Same fix for the gauge + readout.
+  const [vuFsClosing, setVuFsClosing] = useState(false);
+  const [gaugeFsClosing, setGaugeFsClosing] = useState(false);
   // Full VU: hide/show the right-side LED level meter (owner 2026-08-18). When
   // hidden the VU simply centers in the freed space (no zoom — owner).
   const [vuFsLedHidden, setVuFsLedHidden] = useState(false);
@@ -728,9 +740,9 @@ export function SplMeterScreen({ navigation }: Props) {
   // open so the phone never needs flipping, and re-lock PORTRAIT the instant
   // both are closed so the portrait-only home never lingers sideways.
   useEffect(() => {
-    if (vuFsOpen || gaugeFsOpen) lockLandscape();
+    if ((vuFsOpen && !vuFsClosing) || (gaugeFsOpen && !gaugeFsClosing)) lockLandscape();
     else lockPortrait();
-  }, [vuFsOpen, gaugeFsOpen]);
+  }, [vuFsOpen, vuFsClosing, gaugeFsOpen, gaugeFsClosing]);
   // Declarative orientation (Phase 2, 2026-08-19): react-native-screens OWNS
   // orientation on this native stack and IGNORES expo-screen-orientation, so we
   // drive the per-screen option directly: free-rotate ('all') while Full VU OR
@@ -741,9 +753,14 @@ export function SplMeterScreen({ navigation }: Props) {
   useEffect(() => {
     // Full VU + Full Gauge = LANDSCAPE-ONLY; the fullscreen readout still free-
     // rotates. Portrait everywhere else.
-    const orientation = vuFsOpen || gaugeFsOpen ? 'landscape' : readoutFsOpen ? 'all' : 'portrait';
+    const orientation =
+      (vuFsOpen && !vuFsClosing) || (gaugeFsOpen && !gaugeFsClosing)
+        ? 'landscape'
+        : readoutFsOpen && !readoutFsClosing
+          ? 'all'
+          : 'portrait';
     navigation.setOptions({ orientation });
-  }, [vuFsOpen, gaugeFsOpen, readoutFsOpen, navigation]);
+  }, [vuFsOpen, vuFsClosing, gaugeFsOpen, gaugeFsClosing, readoutFsOpen, readoutFsClosing, navigation]);
   // Hardware BACK (Phase 1, 2026-08-19): the removed Modals handled Android back
   // for free — replicate the same priority now that everything is in-tree. Close
   // the settings popup, then Full VU, then the fullscreen readout, then fall the
@@ -752,15 +769,15 @@ export function SplMeterScreen({ navigation }: Props) {
   useEffect(() => {
     const onBack = () => {
       if (settingPopup != null) { setSettingPopup(null); return true; }
-      if (gaugeFsOpen) { setGaugeFsOpen(false); return true; }
-      if (vuFsOpen) { setVuFsOpen(false); return true; }
-      if (readoutFsOpen) { setReadoutFsOpen(false); return true; }
+      if (gaugeFsOpen && !gaugeFsClosing) { setGaugeFsClosing(true); return true; }
+      if (vuFsOpen && !vuFsClosing) { setVuFsClosing(true); return true; }
+      if (readoutFsOpen && !readoutFsClosing) { setReadoutFsClosing(true); return true; }
       if (view === 'digital') { setView('home'); return true; }
       return false;
     };
     const sub = BackHandler.addEventListener('hardwareBackPress', onBack);
     return () => sub.remove();
-  }, [settingPopup, gaugeFsOpen, vuFsOpen, readoutFsOpen, view]);
+  }, [settingPopup, gaugeFsOpen, gaugeFsClosing, vuFsOpen, vuFsClosing, readoutFsOpen, readoutFsClosing, view]);
   // User setting for the LED meter's peak-hold cap linger (owner 2026-07-30).
   const [holdMode, setHoldMode] = useState<PeakHoldMode>('1s');
   // RANGE (owner 2026-07-30): the environmental SPL that reads 0 VU. The wide VU
@@ -788,6 +805,29 @@ export function SplMeterScreen({ navigation }: Props) {
   // session log + calibration higher on the screen.
   const [gaugeOpen, setGaugeOpen] = useState(true);
   const { width: winW, height: winH } = useWindowDimensions();
+  // Finish a fullscreen close only once the window has actually rotated back to
+  // portrait (owner 2026-08-21 ghost-flash fix). Until then the opaque overlay
+  // stays up as a cover. A 700 ms fallback guarantees we never latch closed if
+  // the rotation never arrives (e.g. OS rotation lock).
+  const fsPortrait = winH > winW;
+  useEffect(() => {
+    if (!vuFsClosing) return;
+    if (fsPortrait) { setVuFsOpen(false); setVuFsClosing(false); return; }
+    const t = setTimeout(() => { setVuFsOpen(false); setVuFsClosing(false); }, 700);
+    return () => clearTimeout(t);
+  }, [vuFsClosing, fsPortrait]);
+  useEffect(() => {
+    if (!gaugeFsClosing) return;
+    if (fsPortrait) { setGaugeFsOpen(false); setGaugeFsClosing(false); return; }
+    const t = setTimeout(() => { setGaugeFsOpen(false); setGaugeFsClosing(false); }, 700);
+    return () => clearTimeout(t);
+  }, [gaugeFsClosing, fsPortrait]);
+  useEffect(() => {
+    if (!readoutFsClosing) return;
+    if (fsPortrait) { setReadoutFsOpen(false); setReadoutFsClosing(false); return; }
+    const t = setTimeout(() => { setReadoutFsOpen(false); setReadoutFsClosing(false); }, 700);
+    return () => clearTimeout(t);
+  }, [readoutFsClosing, fsPortrait]);
   // Fullscreen number size — scales with the CURRENT (real) orientation's
   // dimensions, so rotating the phone to landscape enlarges it (owner 2026-08-17).
   const fsNumSize = Math.round(Math.min(winW * 0.26, winH * 0.6));
@@ -1211,7 +1251,7 @@ export function SplMeterScreen({ navigation }: Props) {
               </Pressable>
               <Pressable
                 style={styles.fsBtn}
-                onPress={() => setReadoutFsOpen(true)}
+                onPress={() => { setReadoutFsClosing(false); setReadoutFsOpen(true); }}
                 accessibilityRole="button"
                 accessibilityLabel="Open the readout full screen"
               >
@@ -1434,7 +1474,7 @@ export function SplMeterScreen({ navigation }: Props) {
             </Pressable>
             <Pressable
               style={[styles.homeNavBtn, styles.homeNavBtnFs]}
-              onPress={() => setVuFsOpen(true)}
+              onPress={() => { setVuFsClosing(false); setVuFsOpen(true); }}
               accessibilityRole="button"
               accessibilityLabel="Open the full VU screen in landscape"
             >
@@ -1472,8 +1512,10 @@ export function SplMeterScreen({ navigation }: Props) {
                   >
                     {/* The skinned VU is SVG — it needs NO Skia, so it renders on
                         every client (2026-08-19; the old pre-Skia gate card is gone). */}
-                    {vuFsOpen ? (
-                      // Paused while the Full VU covers this home (owner 2026-08-18).
+                    {vuFsOpen || vuFsClosing ? (
+                      // Paused while the Full VU covers this home (owner 2026-08-18);
+                      // stays paused through the close rotation so the home VU never
+                      // renders sideways behind the cover (owner 2026-08-21).
                       <View style={{ width: vuW, height: vuH }} />
                     ) : (
                       <SkinnedVu
@@ -1557,7 +1599,7 @@ export function SplMeterScreen({ navigation }: Props) {
                     onModeHelp={() => help('mode')}
                     centerText={gaugeText}
                     centerColor={dialCenterColor}
-                    onOpenFullscreen={() => setGaugeFsOpen(true)}
+                    onOpenFullscreen={() => { setGaugeFsClosing(false); setGaugeFsOpen(true); }}
                   />
                 ) : null}
 
@@ -1743,7 +1785,7 @@ export function SplMeterScreen({ navigation }: Props) {
               second stacked modal. A modal-over-modal went BLACK on iOS over the
               home. Both orientations (rotation unlocked while open); the home
               meters behind it are paused (vuFsOpen), so nothing double-renders. */}
-          {vuFsOpen && (
+          {(vuFsOpen || vuFsClosing) && (
             // The meter AREA closes on tap (reliable even where a Skia meter would
             // eat the ✕ — owner 2026-08-18: ✕ didn't close in portrait). The LED
             // toggle (top-left) and the settings bar (bottom) are INTERACTIVE child
@@ -1751,7 +1793,7 @@ export function SplMeterScreen({ navigation }: Props) {
             // still fall through to close — the same pattern as the settings popup.
             <Pressable
               style={styles.vuFsRoot}
-              onPress={() => setVuFsOpen(false)}
+              onPress={() => setVuFsClosing(true)}
               accessibilityRole="button"
               accessibilityLabel="Close the full VU screen — tap the meter to close"
             >
@@ -1761,8 +1803,10 @@ export function SplMeterScreen({ navigation }: Props) {
               {/* LANDSCAPE-ONLY (owner 2026-08-19): render the Full VU content
                   ONLY in landscape, so the portrait orientation never ghosts the
                   old stacked layout during the flip. The skinned VU is SVG (no
-                  Skia); only the Skia LED (+ its toggle) gate on viz. */}
-              {winW >= winH && (
+                  Skia); only the Skia LED (+ its toggle) gate on viz. While
+                  CLOSING the content is hidden so only the dark cover shows during
+                  the landscape→portrait rotation. */}
+              {winW >= winH && !vuFsClosing && (
                 <>
                   {/* LED controls cluster (owner 2026-08-18/21) — top-LEFT row that
                       stays ABOVE the vertically-centred settings column so nothing
@@ -1867,14 +1911,14 @@ export function SplMeterScreen({ navigation }: Props) {
           {/* Fullscreen SPL reference gauge — LANDSCAPE-ONLY (owner 2026-08-19).
               Content renders ONLY in landscape so the portrait orientation never
               ghosts a squished layout during the flip. Tap anywhere to close. */}
-          {gaugeFsOpen && (
+          {(gaugeFsOpen || gaugeFsClosing) && (
             <Pressable
               style={styles.vuFsRoot}
-              onPress={() => setGaugeFsOpen(false)}
+              onPress={() => setGaugeFsClosing(true)}
               accessibilityRole="button"
               accessibilityLabel="Close the fullscreen SPL gauge — tap to close"
             >
-              {winW >= winH ? (
+              {winW >= winH && !gaugeFsClosing ? (
                 <>
                   <View style={[styles.vuFsClose, { right: camInset + 14 }]} pointerEvents="none">
                     <Text style={styles.vuFsCloseX}>✕</Text>
@@ -1975,7 +2019,7 @@ export function SplMeterScreen({ navigation }: Props) {
           spans ~4/5 of the screen width. Now an in-tree absolute-fill overlay; its
           rotation is governed by the route's declarative `orientation` option
           (Phase 2), which is set to 'all' while it is open. ── */}
-      {readoutFsOpen && (
+      {(readoutFsOpen || readoutFsClosing) && (
         <View
           style={[styles.fsRoot, styles.overlayAbs, { paddingTop: insets.top + 8 }]}
           onTouchStart={fsDimmerOpen ? armDimmerHide : undefined}
@@ -1990,7 +2034,7 @@ export function SplMeterScreen({ navigation }: Props) {
               (expo-screen-orientation) re-flows this — no manual toggle. */}
           <View style={styles.fsTopRow}>
             <Pressable
-              onPress={() => setReadoutFsOpen(false)}
+              onPress={() => setReadoutFsClosing(true)}
               hitSlop={16}
               accessibilityRole="button"
               accessibilityLabel="Close fullscreen readout"

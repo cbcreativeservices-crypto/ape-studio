@@ -1089,14 +1089,12 @@ export function RtaScreen({ navigation }: Props) {
               <StatCell help={help} label="BANDS" value={String(mode)} />
             </View>
 
-            {/* Tapping the display toggles START/STOP (owner 2026-07-31). */}
-            <Pressable
-              onPress={state === 'running' ? onStop : onStart}
-              accessibilityRole="button"
-              accessibilityLabel={state === 'running' ? 'Tap to stop capture' : 'Tap to start capture'}
-            >
-              <BandsPanel bands={displayBands} mode={mode} alpha={alpha} midiColors={colorsOn} flatColor={rtaColor} />
-            </Pressable>
+            {/* The display is NOT tap-to-toggle anymore (owner 2026-08-21): tapping
+                the live graph was freezing the analyzer — easy to trigger by
+                accident inside the ScrollView (a scroll-touch reads as a tap) and
+                confusing on the Pixel where the restart is slow. START/STOP lives
+                on the explicit button below; the graph is now inert. */}
+            <BandsPanel bands={displayBands} mode={mode} alpha={alpha} midiColors={colorsOn} flatColor={rtaColor} />
             {pianoOn && <PianoStrip bands={displayBands} highlightIdx={pitchIdx} />}
             <DisplayGuideButton onPress={helpAll} />
 

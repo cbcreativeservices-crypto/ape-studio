@@ -116,27 +116,40 @@ export function WaveformScreen({ navigation }: Props) {
   const [wavePopup, setWavePopup] = useState<null | 'zoom' | 'window' | 'color'>(null);
   // Landscape-only fullscreen (owner rev 24 — controls on the left, like SPL/VU).
   const [waveFsOpen, setWaveFsOpen] = useState(false);
+  // CLOSING phase (owner 2026-08-21 ghost-flash fix, mirrors SplMeterScreen): keep
+  // the opaque fullscreen mounted as a cover while the OS rotates landscape→
+  // portrait on close, so the portrait-designed screen never flashes sideways.
+  const [waveFsClosing, setWaveFsClosing] = useState(false);
   useEffect(() => {
-    if (waveFsOpen) lockLandscape();
+    if (waveFsOpen && !waveFsClosing) lockLandscape();
     else lockPortrait();
-  }, [waveFsOpen]);
+  }, [waveFsOpen, waveFsClosing]);
   useEffect(() => {
-    navigation.setOptions({ orientation: waveFsOpen ? 'landscape' : 'portrait' });
-  }, [waveFsOpen, navigation]);
+    navigation.setOptions({ orientation: waveFsOpen && !waveFsClosing ? 'landscape' : 'portrait' });
+  }, [waveFsOpen, waveFsClosing, navigation]);
+  // Finish the close only once the window has actually rotated back to portrait;
+  // a 700 ms fallback guards against a rotation that never arrives.
+  const fsPortrait = winH > winW;
+  useEffect(() => {
+    if (!waveFsClosing) return;
+    if (fsPortrait) { setWaveFsOpen(false); setWaveFsClosing(false); return; }
+    const t = setTimeout(() => { setWaveFsOpen(false); setWaveFsClosing(false); }, 700);
+    return () => clearTimeout(t);
+  }, [waveFsClosing, fsPortrait]);
   useEffect(() => {
     const sub = BackHandler.addEventListener('hardwareBackPress', () => {
       if (wavePopup != null) {
         setWavePopup(null);
         return true;
       }
-      if (waveFsOpen) {
-        setWaveFsOpen(false);
+      if (waveFsOpen && !waveFsClosing) {
+        setWaveFsClosing(true);
         return true;
       }
       return false;
     });
     return () => sub.remove();
-  }, [wavePopup, waveFsOpen]);
+  }, [wavePopup, waveFsOpen, waveFsClosing]);
   // FREEZE: non-null = the FULL engine history held on screen (so the window
   // control still slices real data while frozen). Capture continues (spec §11
   // freeze control) — only the drawing stops updating.
@@ -191,7 +204,7 @@ export function WaveformScreen({ navigation }: Props) {
   // Scope size: the normal card (panelW × PANEL_H) or the landscape fullscreen
   // (fills the space right of the left control column). ONE geometry memo serves
   // whichever is showing (owner rev 24).
-  const fsLandscape = waveFsOpen && winW >= winH;
+  const fsLandscape = waveFsOpen && !waveFsClosing && winW >= winH;
   const scopeW = fsLandscape ? Math.max(120, winW - FS_CTRL_W - camInset - 44) : panelW;
   const scopeH = fsLandscape ? Math.max(120, winH - insets.top - insets.bottom - 28) : PANEL_H;
 
@@ -559,7 +572,7 @@ export function WaveformScreen({ navigation }: Props) {
                 accessibilityRole="button"
                 accessibilityLabel={running ? 'Tap to stop capture' : 'Tap to start capture'}
               >
-                {!waveFsOpen ? scopeInner : null}
+                {!waveFsOpen && !waveFsClosing ? scopeInner : null}
                 {frozen ? <Text style={styles.frozenBadge}>FROZEN</Text> : null}
               </Pressable>
               {/* Time axis + honest scale disclosure. */}
@@ -628,7 +641,7 @@ export function WaveformScreen({ navigation }: Props) {
               {/* Fullscreen — to the RIGHT of the colour button (owner rev 24). */}
               <Pressable
                 style={[styles.chip, styles.chipWide]}
-                onPress={() => setWaveFsOpen(true)}
+                onPress={() => { setWaveFsClosing(false); setWaveFsOpen(true); }}
                 disabled={displayBuckets.length === 0}
                 accessibilityRole="button"
                 accessibilityLabel="Open fullscreen (landscape)"
@@ -701,17 +714,17 @@ export function WaveformScreen({ navigation }: Props) {
       {/* ── LANDSCAPE FULLSCREEN (owner rev 24) — controls in a LEFT column, the
           scope fills the rest; camera-inset ✕ top-right. Content renders only in
           landscape so the portrait flip never ghosts a squished layout. ── */}
-      {waveFsOpen ? (
+      {waveFsOpen || waveFsClosing ? (
         <View style={styles.fsRoot}>
           <Pressable
             style={[styles.fsClose, { right: camInset + 14, top: insets.top + 8 }]}
-            onPress={() => setWaveFsOpen(false)}
+            onPress={() => setWaveFsClosing(true)}
             accessibilityRole="button"
             accessibilityLabel="Close fullscreen"
           >
             <Text style={styles.fsCloseX}>✕</Text>
           </Pressable>
-          {winW >= winH ? (
+          {winW >= winH && !waveFsClosing ? (
             <View
               style={[
                 styles.fsStage,
