@@ -154,6 +154,12 @@ export function ExposureMonitorScreen() {
           <Row label="Highest level" value={snap.todayMaxDb > 0 ? `${Math.round(snap.todayMaxDb)} dBA est.` : '—'} />
           <Row label="Check-ins today" value={String(snap.checkinsToday)} />
           <Row label="Time remaining" value={fmtRemaining(snap.remainingSec, snap.confidence, snap.todayDose)} />
+          {snap.hadGap ? (
+            <Text style={styles.note}>
+              The microphone stream dropped samples during this session, so measured time may be undercounted — treat
+              this dose as a conservative estimate and restart monitoring for an uninterrupted reading.
+            </Text>
+          ) : null}
           <Text style={styles.note}>
             Quiet breaks reduce continuous strain, but today’s accumulated dose remains accumulated — it resets at
             midnight, not after a pause.

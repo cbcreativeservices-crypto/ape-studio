@@ -109,6 +109,10 @@ export type ExposureSnapshot = {
   /** Estimated recommended seconds remaining at the current level (null = n/a). */
   remainingSec: number | null;
   checkinsToday: number;
+  /** True when the mic capture dropped/overran samples during THIS session while
+   *  it was the measured source (Phase 1 A1): the integrated dose spanned a gap,
+   *  so it's an under-estimate — disclosed, never silently trusted. */
+  hadGap: boolean;
   settings: ExposureSettings;
 };
 
@@ -185,6 +189,12 @@ let currentDb: number | null = null;
 let route: RouteKey = 'unknown';
 let currentMeasured = false; // true when the live level is a field-calibrated mic measurement
 let session: { startMs: number; activeSec: number; maxDb: number; lastActiveMs: number } | null = null;
+// Mic-capture continuity for exposure (Phase 1 A1): droppedFrames is a monotonic
+// per-capture counter; a NEW drop while the mic is the measured source means the
+// dose integral spanned a gap. `sessionHadGap` latches for the session (disclosed
+// in the snapshot), reset when a session opens/closes.
+let lastMicDropped = 0;
+let sessionHadGap = false;
 let ttsSpeaking = false;
 let elevatedSec = 0; // consecutive active seconds at/above the advisory level
 let advisoryFiredThisSession = false;
@@ -289,6 +299,7 @@ function closeSession(endMs: number): void {
   session = null;
   elevatedSec = 0;
   advisoryFiredThisSession = false;
+  sessionHadGap = false; // continuity latch is per-session
   void persistDay(true);
 }
 
@@ -308,7 +319,7 @@ function rollDayIfNeeded(): void {
  *  what the mic is MEASURING while a tool monitors (dB SPL, measured when
  *  field-calibrated). Max, never a sum: two simultaneous sources are one
  *  acoustic exposure, never two listening durations (§30). */
-function readSources(): { active: boolean; db: number | null; rt: RouteKey; measured: boolean } {
+function readSources(): { active: boolean; db: number | null; rt: RouteKey; measured: boolean; micGap: boolean } {
   // ── Output (playback) ──
   let outDbfs = -Infinity;
   if (ApeDsp.isAvailable()) {
@@ -324,21 +335,29 @@ function readSources(): { active: boolean; db: number | null; rt: RouteKey; meas
   // ── Incoming (mic-measured environmental) ──
   let inDb: number | null = null;
   let inMeasured = false;
+  let micGap = false;
   if (isMicActive() && ApeDsp.isAvailable()) {
     const f = ApeDsp.getMeterFrame();
-    if (f?.running && Number.isFinite(f.aFastDb)) {
-      const cal = getSplCalibration();
-      const spl = Math.round((f.aFastDb + (cal?.offsetDb ?? INPUT_NOMINAL_OFFSET)) * 10) / 10;
-      if (spl >= INPUT_FLOOR_SPL) {
-        inDb = spl;
-        inMeasured = cal != null;
+    if (f?.running) {
+      // Continuity: a NEW dropout since the last read means the mic stream
+      // overran/stalled — track the monotonic counter (it resets to 0 on a fresh
+      // capture, which is not a gap).
+      if (f.droppedFrames > lastMicDropped) micGap = true;
+      lastMicDropped = f.droppedFrames;
+      if (Number.isFinite(f.aFastDb)) {
+        const cal = getSplCalibration();
+        const spl = Math.round((f.aFastDb + (cal?.offsetDb ?? INPUT_NOMINAL_OFFSET)) * 10) / 10;
+        if (spl >= INPUT_FLOOR_SPL) {
+          inDb = spl;
+          inMeasured = cal != null;
+        }
       }
     }
   }
 
-  if (outDb == null && inDb == null) return { active: false, db: null, rt: 'unknown', measured: false };
-  if (inDb != null && (outDb == null || inDb >= outDb)) return { active: true, db: inDb, rt: 'environmental', measured: inMeasured };
-  return { active: true, db: outDb, rt: outRoute, measured: false };
+  if (outDb == null && inDb == null) return { active: false, db: null, rt: 'unknown', measured: false, micGap };
+  if (inDb != null && (outDb == null || inDb >= outDb)) return { active: true, db: inDb, rt: 'environmental', measured: inMeasured, micGap };
+  return { active: true, db: outDb, rt: outRoute, measured: false, micGap };
 }
 
 /** One 1 s tick of the monitor. */
@@ -376,7 +395,12 @@ function tick(): void {
         return;
       }
       session = { startMs: now - pendingSec * 1000, activeSec: pendingSec, maxDb: 0, lastActiveMs: now };
+      sessionHadGap = false; // fresh session — clear the continuity latch
     }
+
+    // A dropout while the mic is the measured source means this session's dose
+    // integral spanned a gap (Phase 1 A1) — latch it for honest disclosure.
+    if (src.micGap && route === 'environmental') sessionHadGap = true;
 
     const dt = 1; // seconds
     session.activeSec += dt;
@@ -522,6 +546,7 @@ export function getExposureSnapshot(): ExposureSnapshot {
     measured: route === 'environmental' && currentMeasured,
     remainingSec: remaining,
     checkinsToday: d?.checkins ?? 0,
+    hadGap: sessionHadGap,
     settings,
   };
 }
