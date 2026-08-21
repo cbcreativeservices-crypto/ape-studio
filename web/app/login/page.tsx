@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { getSupabaseBrowser } from "@/lib/supabase";
+import GetTheApp from "@/components/GetTheApp";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -130,6 +131,8 @@ export default function LoginPage() {
           Need help?
         </Link>
       </div>
+
+      <GetTheApp className="mt-10" />
     </div>
   );
 }
