@@ -25,6 +25,11 @@ export const FLAG_SEVERITY: Record<WarningFlag, Exclude<QualityState, 'valid'>> 
   settings_mismatch: 'caution',
   unsupported_input: 'invalid',
   file_unsupported: 'invalid',
+  // A stream dropout breaks continuity — instantaneous readings survive, but any
+  // held/integrated value (peak-hold, Leq, exposure) is suspect, so this LIMITS
+  // (caution) the live view. Time-integrated tools additionally hard-invalidate
+  // the affected interval in the engine (Phase 1 A1), independent of this flag.
+  capture_dropout: 'caution',
   engine_inactive: 'invalid',
 };
 

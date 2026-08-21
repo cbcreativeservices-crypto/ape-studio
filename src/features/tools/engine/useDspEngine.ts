@@ -245,6 +245,11 @@ export function meterWarningFlags(m: MeterFrame | null): WarningFlag[] {
   if (m.clipRuns > 0) flags.push('input_clipping');
   if (m.processedInput) flags.push('uncalibrated_input'); // OS is filtering the mic
   if (m.bluetoothInput) flags.push('unsupported_input'); // HFP band-limits (spike rule)
+  // Continuity: droppedFrames is a monotonic per-capture counter — any dropout
+  // this session means the stream overran/stalled and held/integrated values
+  // (peak-hold, Leq, exposure) may have spanned a gap (Phase 1 A2). Sticky for
+  // the session by design; a fresh capture (restart) clears it.
+  if (m.droppedFrames > 0) flags.push('capture_dropout');
   if (m.captureStalled || !m.running) flags.push('engine_inactive');
   return flags;
 }

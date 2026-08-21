@@ -31,6 +31,7 @@ export type WarningFlag =
   | 'settings_mismatch'
   | 'unsupported_input'
   | 'file_unsupported'
+  | 'capture_dropout' // the audio stream dropped/overran samples — continuity broke
   | 'engine_inactive';
 
 /** Plain-language warning copy (spec §6: warnings appear on-screen, never
@@ -85,6 +86,11 @@ export const WARNING_INFO: Record<WarningFlag, { label: string; message: string;
     label: 'INPUT',
     message: 'This input device is not supported for measurement.',
     hint: 'Use the built-in microphone or a supported input.',
+  },
+  capture_dropout: {
+    label: 'DROPOUT',
+    message: 'The audio stream dropped samples — continuity was interrupted.',
+    hint: 'Close other audio apps and avoid heavy load; restart the measurement for a clean run.',
   },
   file_unsupported: {
     label: 'FILE',
