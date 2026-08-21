@@ -44,6 +44,7 @@ import { MIDLINE_BLUE, WAVE_LEVEL_STOPS, levelColorForDb } from '../../features/
 import { useColorModePref } from '../../features/tools/colorModePref';
 import { useWaveColorPref, WAVE_COLOR_SWATCHES } from '../../features/tools/waveColorPref';
 import { ColorWheelButton } from '../../components/ColorWheelButton';
+import { SpectrumColorPicker } from '../../components/SpectrumColorPicker';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO } from '../../features/tools/measure/types';
@@ -166,6 +167,8 @@ export function WaveformScreen({ navigation }: Props) {
   // The colour-wheel button (member-gated) opens the picker (owner rev 24 / rule).
   const [waveColor, setWaveColor] = useWaveColorPref();
   const traceColor = waveColor ?? TRACE;
+  // Whether the colour popup is showing the full spectrum wheel vs the swatches.
+  const [waveSpectrum, setWaveSpectrum] = useState(false);
   // Clip latch (owner 2026-08-05, item 4): the CLIP OVERRUNS readout stays
   // GREEN "0" until the first real overrun, then turns RED and holds until reset.
   const [hasClipped, setHasClipped] = useState(false);
@@ -636,7 +639,7 @@ export function WaveformScreen({ navigation }: Props) {
                   shows the current colour. */}
               <View style={[styles.chip, styles.colorChip]}>
                 <View style={[styles.colorDot, { backgroundColor: traceColor }]} />
-                <ColorWheelButton onCustomize={() => setWavePopup('color')} accessibilityLabel="Waveform colour" feature="the waveform trace colour" size={20} />
+                <ColorWheelButton onCustomize={() => { setWaveSpectrum(false); setWavePopup('color'); }} accessibilityLabel="Waveform colour" feature="the waveform trace colour" size={20} />
               </View>
               {/* Fullscreen — to the RIGHT of the colour button (owner rev 24). */}
               <Pressable
@@ -799,7 +802,7 @@ export function WaveformScreen({ navigation }: Props) {
                     <Text style={[styles.popupOptText, windowSec === w && styles.popupOptTextSel]}>{w}s</Text>
                   </Pressable>
                 ))}
-              {wavePopup === 'color' &&
+              {wavePopup === 'color' && !waveSpectrum &&
                 WAVE_COLOR_SWATCHES.map((c) => {
                   const sel = traceColor.toLowerCase() === c.toLowerCase();
                   return (
@@ -807,7 +810,10 @@ export function WaveformScreen({ navigation }: Props) {
                       key={c}
                       style={[styles.swatch, { backgroundColor: c }, sel && styles.swatchSel]}
                       onPress={() => {
-                        setWaveColor(c === WAVE_COLOR_SWATCHES[0] ? null : c);
+                        const picked = c === WAVE_COLOR_SWATCHES[0] ? null : c;
+                        setWaveColor(picked);
+                        // Picking a custom colour auto-disables COLORS so it shows.
+                        if (picked) setColorsOn(false);
                         setWavePopup(null);
                       }}
                       accessibilityRole="button"
@@ -817,8 +823,29 @@ export function WaveformScreen({ navigation }: Props) {
                   );
                 })}
             </View>
+            {wavePopup === 'color' && waveSpectrum ? (
+              <SpectrumColorPicker
+                value={waveColor}
+                onPick={(c) => {
+                  setWaveColor(c);
+                  setColorsOn(false);
+                  setWaveSpectrum(false);
+                  setWavePopup(null);
+                }}
+              />
+            ) : null}
             {wavePopup === 'color' ? (
-              <Text style={styles.popupNote}>Applies to the flat trace (turn COLORS off to see it).</Text>
+              <Pressable
+                onPress={() => setWaveSpectrum((v) => !v)}
+                hitSlop={8}
+                accessibilityRole="button"
+                accessibilityLabel={waveSpectrum ? 'Back to swatches' : 'Open the colour spectrum wheel'}
+              >
+                <Text style={styles.spectrumLink}>{waveSpectrum ? '‹ SWATCHES' : '＋ SPECTRUM'}</Text>
+              </Pressable>
+            ) : null}
+            {wavePopup === 'color' && !waveSpectrum ? (
+              <Text style={styles.popupNote}>Applies to the flat trace. Picking a colour turns the COLORS ramp off automatically.</Text>
             ) : null}
           </View>
         </Pressable>
@@ -921,6 +948,7 @@ const styles = StyleSheet.create({
   swatch: { width: 46, height: 46, borderRadius: 23, borderWidth: 2, borderColor: '#33333c' },
   swatchSel: { borderColor: '#ffffff', borderWidth: 3 },
   popupNote: { fontFamily: fonts.barlowRegular, fontSize: 11.5, color: colors.textMuted, textAlign: 'center' },
+  spectrumLink: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.2, color: colors.amber, textAlign: 'center', paddingVertical: 6 },
   // Landscape fullscreen (owner rev 24).
   fsRoot: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#0c0c0f', zIndex: 40 },
   fsClose: {

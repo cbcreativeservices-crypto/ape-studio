@@ -9,9 +9,10 @@
  * owns the entitlement gate + the "MEMBER FEATURE" popup for non-members, so
  * this modal is only ever shown to members. See [[customization-member-rule]].
  */
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SchemeSwatch } from './ColorWheelButton';
+import { SpectrumColorPicker } from './SpectrumColorPicker';
 import { LED_AVG_DEFAULT, LED_SCHEMES } from '../features/tools/ledScheme';
 import { LOUDNESS_STOPS } from '../features/tools/levelColor';
 import { WAVE_COLOR_SWATCHES } from '../features/tools/waveColorPref';
@@ -35,12 +36,30 @@ export function LedColorPicker({
   onAvgPick: (c: string | null) => void;
 }): ReactNode {
   const eq = (a: string | null, b: string) => !!a && a.toLowerCase() === b.toLowerCase();
+  const [spectrumFor, setSpectrumFor] = useState<null | 'level' | 'avg'>(null);
+  const levelHex = levelPref && levelPref.startsWith('#') ? levelPref : null;
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <Pressable style={styles.scrim} onPress={onClose} accessibilityRole="button" accessibilityLabel="Close">
         {/* Inner card: stop the backdrop tap so picking inside never closes. */}
         <Pressable style={styles.card} onPress={() => {}} accessibilityRole="none">
           <Text style={styles.title}>LED METER COLOUR</Text>
+          {spectrumFor ? (
+            <View style={styles.spectrumWrap}>
+              <Text style={styles.section}>{spectrumFor === 'level' ? 'LEVEL' : 'AVERAGE'} · CUSTOM</Text>
+              <SpectrumColorPicker
+                value={spectrumFor === 'level' ? levelHex : avgPref}
+                onPick={(c) => {
+                  if (spectrumFor === 'level') onLevelPick(c);
+                  else onAvgPick(c);
+                  setSpectrumFor(null);
+                }}
+              />
+              <Pressable onPress={() => setSpectrumFor(null)} hitSlop={8} style={styles.doneBtn} accessibilityRole="button" accessibilityLabel="Back">
+                <Text style={styles.doneText}>‹ BACK</Text>
+              </Pressable>
+            </View>
+          ) : (
           <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollInner} showsVerticalScrollIndicator={false}>
             {/* ── LEVEL (the moving peak fill) ───────────────────────────── */}
             <Text style={styles.section}>LEVEL</Text>
@@ -88,6 +107,9 @@ export function LedColorPicker({
                 );
               })}
             </View>
+            <Pressable onPress={() => setSpectrumFor('level')} hitSlop={8} accessibilityRole="button" accessibilityLabel="Custom level colour from the spectrum">
+              <Text style={styles.spectrumLink}>＋ SPECTRUM</Text>
+            </Pressable>
 
             {/* ── AVERAGE (the average marker/level) ─────────────────────── */}
             <Text style={[styles.section, styles.sectionGap]}>AVERAGE MARKER</Text>
@@ -115,9 +137,13 @@ export function LedColorPicker({
                 );
               })}
             </View>
+            <Pressable onPress={() => setSpectrumFor('avg')} hitSlop={8} accessibilityRole="button" accessibilityLabel="Custom average colour from the spectrum">
+              <Text style={styles.spectrumLink}>＋ SPECTRUM</Text>
+            </Pressable>
 
             <Text style={styles.note}>Recolours the moving LED. The white peak-hold cap keeps its reference colour.</Text>
           </ScrollView>
+          )}
           <Pressable onPress={onClose} hitSlop={8} style={styles.doneBtn} accessibilityRole="button" accessibilityLabel="Done">
             <Text style={styles.doneText}>DONE</Text>
           </Pressable>
@@ -142,6 +168,8 @@ const styles = StyleSheet.create({
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.8, color: colors.amber, textAlign: 'center', marginBottom: 6 },
   scroll: { flexGrow: 0 },
   scrollInner: { gap: 8, paddingBottom: 4 },
+  spectrumWrap: { alignItems: 'center', gap: 6, paddingVertical: 6 },
+  spectrumLink: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.2, color: colors.amber, textAlign: 'center', paddingVertical: 6 },
   section: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.4, color: colors.textSecondary, textAlign: 'center' },
   sectionGap: { marginTop: 12 },
   subLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.textMuted, textAlign: 'center', marginTop: 2 },

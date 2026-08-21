@@ -9,6 +9,7 @@ import { useId, useState, type ReactNode } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient as SvgGradient, Path, Rect, Stop } from 'react-native-svg';
 import { useEntitlement } from '../features/commercial/EntitlementProvider';
+import { SpectrumColorPicker } from './SpectrumColorPicker';
 import { LOUDNESS_STOPS } from '../features/tools/levelColor';
 import { WAVE_COLOR_SWATCHES } from '../features/tools/waveColorPref';
 import { navigationRef } from '../navigation/navigationRef';
@@ -102,6 +103,7 @@ export function ColorWheelButton({
   const isMember = entitlement === 'academy';
   const [gate, setGate] = useState(false);
   const [picker, setPicker] = useState(false);
+  const [spectrum, setSpectrum] = useState(false);
   const openForMember = () => (onPick ? setPicker(true) : onCustomize?.());
   return (
     <>
@@ -119,6 +121,22 @@ export function ColorWheelButton({
         <Pressable style={styles.scrim} onPress={() => setPicker(false)} accessibilityRole="button" accessibilityLabel="Close">
           <View style={styles.card}>
             <Text style={styles.pickerTitle}>{pickerTitle}</Text>
+            {spectrum ? (
+              <>
+                <SpectrumColorPicker
+                  value={typeof current === 'string' ? current : null}
+                  onPick={(c) => {
+                    onPick?.(c);
+                    setPicker(false);
+                    setSpectrum(false);
+                  }}
+                />
+                <Pressable onPress={() => setSpectrum(false)} hitSlop={8} accessibilityRole="button" accessibilityLabel="Back to swatches">
+                  <Text style={styles.spectrumLink}>‹ SWATCHES</Text>
+                </Pressable>
+              </>
+            ) : (
+              <>
             {/* SCHEMES (optional): the DEFAULT gradient chip + each preset. */}
             {schemes && schemes.length > 0 ? (
               <View style={styles.schemeGrid}>
@@ -192,6 +210,11 @@ export function ColorWheelButton({
               })}
             </View>
             {pickerNote ? <Text style={styles.body}>{pickerNote}</Text> : null}
+                <Pressable onPress={() => setSpectrum(true)} hitSlop={8} accessibilityRole="button" accessibilityLabel="Open the colour spectrum wheel">
+                  <Text style={styles.spectrumLink}>＋ SPECTRUM</Text>
+                </Pressable>
+              </>
+            )}
           </View>
         </Pressable>
       </Modal>
@@ -249,6 +272,7 @@ const styles = StyleSheet.create({
   ctaText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.4, color: colors.amber },
   dismiss: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textMuted, paddingVertical: 6 },
   pickerTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.6, color: colors.textSecondary, textAlign: 'center' },
+  spectrumLink: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.amber, textAlign: 'center', paddingVertical: 8 },
   sectionLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.4, color: colors.textMuted, textAlign: 'center', marginTop: 2 },
   schemeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center' },
   schemeChip: {

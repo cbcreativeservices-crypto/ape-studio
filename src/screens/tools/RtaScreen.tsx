@@ -78,6 +78,10 @@ const AVG_CHOICES = [
   { label: 'FAST', alpha: 0.8 },
   { label: 'MED', alpha: 0.45 },
   { label: 'SLOW', alpha: 0.2 },
+  // ~5 s exponential time constant (owner 2026-08-21) — a long, steady average
+  // for room/EQ work. Approximate: the exact settle time varies a little with
+  // the band mode's update rate, but this is the "very slow / ~5 s" option.
+  { label: '5 SEC', alpha: 0.016 },
 ] as const;
 /** Opening averaging α — FAST, so the analyzer is responsive on entry. */
 const DEFAULT_ALPHA = 0.8;
@@ -1113,7 +1117,13 @@ export function RtaScreen({ navigation }: Props) {
               <ColorWheelButton
                 style={styles.rtaColorBtn}
                 current={rtaColor}
-                onPick={setRtaColor}
+                onPick={(c) => {
+                  setRtaColor(c);
+                  // Picking a custom colour auto-disables the level-ramp COLORS
+                  // toggle so the choice actually shows (owner 2026-08-21) — the
+                  // ramp otherwise overrides the flat colour.
+                  if (c) setColorsOn(false);
+                }}
                 accessibilityLabel="RTA bar colour"
                 feature="the RTA bar colour"
                 pickerTitle="RTA BAR COLOUR"
