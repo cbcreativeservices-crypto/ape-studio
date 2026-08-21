@@ -14,7 +14,6 @@ export default function Page() {
         eyebrow="About"
         title="Why the Academy exists"
         lede="Professional audio contains an enormous amount of interconnected terminology and technical knowledge. Finding an isolated piece of information is easy. Understanding how the pieces fit together is much harder."
-        screen="home"
       />
 
       <Section>
@@ -33,11 +32,16 @@ export default function Page() {
 
       <Section title="Founder">
         <p>
-          The Academy is led by a founder with professional audio experience
-          that informs the curriculum’s direction and standards.
+          The Academy was founded by Professor Channing “Cháno” Booth, who has
+          taught professional audio at San Diego Miramar College for 28 years and
+          brings four decades of experience in live audio, studio recording, and
+          production — alongside a performing career as a professional jazz
+          pianist.
         </p>
-        <p className="text-sm text-text-muted">
-          A fuller founder profile is being finalized for publication.
+        <p>
+          <a href="/founder" className="text-amber underline underline-offset-2 hover:text-amber-deep">
+            Read more about the founder →
+          </a>
         </p>
       </Section>
 

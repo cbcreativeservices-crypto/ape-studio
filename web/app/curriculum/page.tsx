@@ -15,7 +15,6 @@ export default function Page() {
         eyebrow="Curriculum Development"
         title="How the curriculum is built"
         lede="Professional audio is a large, interconnected field. The Academy organizes it into a structure you can move through deliberately — from fundamentals to advanced work."
-        screen="study"
       />
 
       <Section title="How it’s organized">
@@ -69,15 +68,23 @@ export default function Page() {
         </p>
       </Section>
 
-      <Section title="Technical accuracy and updates">
+      <Section title="Technical accuracy, review, and updates">
         <p>
-          Curriculum content is developed for technical accuracy and reviewed
-          and revised over time as the field and best practices evolve. Where
-          corrections are needed, they are made and the material is updated.
+          Curriculum content is developed for technical accuracy and reviewed on
+          its merits. Review is currently led by the Academy’s Curriculum
+          Director; as the Academy grows, outside and peer review will expand.
         </p>
-        <p className="text-sm text-text-muted">
-          Details of the Academy’s review and sourcing process are being
-          finalized for publication here.
+        <p>
+          The material draws on established technical references, recognized
+          industry standards and best practices, manufacturer and equipment
+          documentation, and decades of professional practice in the field.
+        </p>
+        <p>
+          Where corrections are needed, they are made and the material is
+          updated — both as issues are found and through periodic review as the
+          field and best practices evolve. Learners can flag anything that looks
+          wrong or unclear through the feedback and suggestion links found
+          throughout the app.
         </p>
       </Section>
 
