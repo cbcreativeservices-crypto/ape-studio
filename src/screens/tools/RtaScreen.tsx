@@ -70,6 +70,9 @@ import type { RootStackParamList } from '../../navigation/types';
 type Props = NativeStackScreenProps<RootStackParamList, 'Rta'>;
 
 const FFT_SIZE = 8192;
+/** HI-RES mode FFT (the engine's Q5 16384 ceiling): ~2.9 Hz bins, resolves the
+ *  sub-bass 1/6-oct bands 8192 leaves grayed. Fits the 32768 rolling buffer. */
+const HIRES_FFT = 16384;
 
 /** Averaging chips → exponential band-average α (higher = faster response).
  *  FAST bumped + made the default (owner 2026-08-17: the display felt slow and
@@ -207,15 +210,15 @@ function deriveSixthOctave(
 }
 
 /** Honest meta line per mode — derived views disclose their derivation. */
-function metaFor(mode: BandMode, alpha: number): string {
+function metaFor(mode: BandMode, alpha: number, fftSize: number): string {
   const a = `α ${alpha.toFixed(2)}`;
   switch (mode) {
     case 10:
-      return `1/1 OCT · FFT ${FFT_SIZE} · ${a}`;
+      return `1/1 OCT · FFT ${fftSize} · ${a}`;
     case 31:
-      return `1/3 OCT · FFT ${FFT_SIZE} · ${a}`;
+      return `1/3 OCT · FFT ${fftSize} · ${a}`;
     case 61:
-      return `1/6 OCT · derived from FFT ${FFT_SIZE} · ${a}`;
+      return `1/6 OCT · derived from FFT ${fftSize} · ${a}`;
     default:
       return `${mode} BANDS · grouped from 1/3 OCT · ${a}`;
   }
@@ -421,12 +424,14 @@ function BandsPanel({
   bands,
   mode,
   alpha,
+  fftSize,
   midiColors,
   flatColor,
 }: {
   bands: DisplayBands | null;
   mode: BandMode;
   alpha: number;
+  fftSize: number;
   /** COLORS toggle (owner 2026-08-05): recolour the columns with the app-wide
    *  MIDI level ramp (red at 0 dBFS → blue at the floor) instead of the LED ramp. */
   midiColors?: boolean;
@@ -446,7 +451,7 @@ function BandsPanel({
     <View style={styles.panel}>
       <View style={styles.panelHead}>
         <Text style={styles.panelEyebrow}>LIVE RTA</Text>
-        <Text style={styles.panelSettings}>{metaFor(mode, alpha)}</Text>
+        <Text style={styles.panelSettings}>{metaFor(mode, alpha, fftSize)}</Text>
       </View>
 
       <View style={styles.chartRow}>
@@ -881,6 +886,25 @@ export function RtaScreen({ navigation }: Props) {
     [cfg, alpha, clearDerived],
   );
 
+  // HI-RES / low-frequency detail (owner 2026-08-21): doubling the FFT halves the
+  // bin width (~5.9 → ~2.9 Hz at 48 k), so the sub-bass 1/6-oct bands that were
+  // grayed as unresolvable (band narrower than a bin) become resolvable — down to
+  // ~30 Hz instead of ~55. Trade-off: a longer window = slower time response.
+  // 16384 is the engine's Q5 ceiling and fits the 32768 rolling buffer, so this
+  // is a pure config change (no native work).
+  const [hiRes, setHiRes] = useState(false);
+  const fftSize = hiRes ? HIRES_FFT : FFT_SIZE;
+  const applyHiRes = useCallback(
+    (on: boolean) => {
+      if (on === hiRes) return;
+      cfg.fftSize = on ? HIRES_FFT : FFT_SIZE;
+      setHiRes(on);
+      clearDerived(); // bin geometry changed — stale holds/smoothing would lie
+      ApeDsp.setEngineConfig(cfg);
+    },
+    [cfg, hiRes, clearDerived],
+  );
+
   // 61-band mode: aggregate the REAL fine spectrum on its own ~12.5 Hz poll
   // (the hook's 15 Hz frame poll doesn't carry the spectrum payload).
   useEffect(() => {
@@ -1098,7 +1122,7 @@ export function RtaScreen({ navigation }: Props) {
                 accident inside the ScrollView (a scroll-touch reads as a tap) and
                 confusing on the Pixel where the restart is slow. START/STOP lives
                 on the explicit button below; the graph is now inert. */}
-            <BandsPanel bands={displayBands} mode={mode} alpha={alpha} midiColors={colorsOn} flatColor={rtaColor} />
+            <BandsPanel bands={displayBands} mode={mode} alpha={alpha} fftSize={fftSize} midiColors={colorsOn} flatColor={rtaColor} />
             {pianoOn && <PianoStrip bands={displayBands} highlightIdx={pitchIdx} />}
             <DisplayGuideButton onPress={helpAll} />
 
@@ -1168,9 +1192,15 @@ export function RtaScreen({ navigation }: Props) {
                 <Chip key={c.label} label={c.label} active={alpha === c.alpha} onPress={() => applyAlpha(c.alpha)} />
               ))}
             </View>
+            <View style={styles.ctrlRow}>
+              <Text style={styles.ctrlLabel}>RESOLUTION</Text>
+              <Chip label="STD" active={!hiRes} onPress={() => applyHiRes(false)} a11yLabel="Standard resolution — faster response" />
+              <Chip label="HI-RES" active={hiRes} onPress={() => applyHiRes(true)} a11yLabel="High resolution — reveals lower frequencies, slower response" />
+            </View>
             <Text style={styles.settingsNote}>
-              Changing banding or averaging restarts the band average and peak hold (new settings
-              epoch).
+              Changing banding, averaging, or resolution restarts the band average and peak hold (new
+              settings epoch). HI-RES doubles the FFT for finer low-frequency detail (down to ~30 Hz) at a
+              slower response.
             </Text>
 
             <View style={styles.buttonRow}>
