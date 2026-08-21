@@ -2842,10 +2842,13 @@ export function PeakAvgMeterView(p: {
    *  the header caption as "dB SPL · <weightingLabel>"; empty ⇒ "LEVEL · dB SPL". */
   weightingLabel?: string;
   /** MEMBER LED colour override (owner 2026-08-20, [[customization-member-rule]]).
-   *  Recolours ONLY the loudness PEAK fill; the purple avg + white cap are
-   *  untouched. `{flat}` = one solid colour; `{stops}` = a custom gradient
+   *  Recolours ONLY the loudness PEAK fill; the avg marker + white cap are
+   *  untouched by this. `{flat}` = one solid colour; `{stops}` = a custom gradient
    *  (pos 0 = top/loud … pos 1 = bottom). Omitted/null ⇒ the default loudness ramp. */
   ledFill?: { flat: string } | { stops: readonly { pos: number; color: string }[] } | null;
+  /** MEMBER AVERAGE-marker colour override (owner 2026-08-21). Recolours the avg
+   *  fill, the avg level line, and the AVG readouts. Omitted/null ⇒ default purple. */
+  avgColor?: string | null;
 }) {
   const w = p.width;
   const h = p.height ?? 260;
@@ -2864,8 +2867,14 @@ export function PeakAvgMeterView(p: {
   const showCap = holdMode !== 'off';
 
   // Average marker color (owner 2026-07-30) — a distinct purple, drawn from the
-  // bottom up to the average level, below the loudness-colored peak fill.
+  // bottom up to the average level, below the loudness-colored peak fill. A member
+  // may override it (owner 2026-08-21); `avgInk` is the effective colour.
   const AVG_PURPLE = '#b45bff';
+  const avgInk = p.avgColor ?? AVG_PURPLE;
+  // The bright avg LEVEL LINE + readout number are normally a light purple tint;
+  // when the avg is a custom colour, use white so the marker stays legible on it.
+  const avgLineInk = p.avgColor ? '#ffffff' : '#efdcff';
+  const avgNumInk = p.avgColor ?? '#d69bff';
 
   // LEFT readout column (owner 2026-07-30): the parent now hands this view a WIDER
   // width (~104) so two prominent stacked numeric readouts (purple AVG, white
@@ -3112,10 +3121,10 @@ export function PeakAvgMeterView(p: {
         <Path path={G.well} color={frameFill} />
         {/* Unlit LED stack (single combined bar). */}
         <Path path={G.unlit} color="#12151b" opacity={0.95} />
-        {/* AVERAGE — purple fill from the bottom up to the avg level (≤ peak). */}
-        <Path path={litAvg} color={AVG_PURPLE} />
+        {/* AVERAGE — fill from the bottom up to the avg level (≤ peak). */}
+        <Path path={litAvg} color={avgInk} />
         {/* PRIMARY reading: the bright average level LINE (equals the VU/dial SPL). */}
-        <Path path={avgCap} color="#efdcff" />
+        <Path path={avgCap} color={avgLineInk} />
         {/* PEAK — loudness zones above the avg level. One vertical gradient keyed to
             ABSOLUTE y (barTop=100 dB SPL … barBot=40) using the app-wide MIDI
             velocity ramp: MIDI-0 blue at the BOTTOM climbing through green/yellow/
@@ -3183,7 +3192,7 @@ export function PeakAvgMeterView(p: {
           textShadowOffset: { width: 0, height: 1 },
         }}
       />
-      <Lbl x={roX} y={roMid + 2} w={roW} align="center" size={8.5} font={fonts.oswaldSemiBold} ls={1} color={AVG_PURPLE}>
+      <Lbl x={roX} y={roMid + 2} w={roW} align="center" size={8.5} font={fonts.oswaldSemiBold} ls={1} color={avgInk}>
         AVG
       </Lbl>
       <AnimatedTextInput
@@ -3201,7 +3210,7 @@ export function PeakAvgMeterView(p: {
           fontFamily: fonts.oswaldSemiBold,
           fontSize: 18,
           letterSpacing: 0.3,
-          color: '#d69bff',
+          color: avgNumInk,
           includeFontPadding: false,
           textShadowColor: 'rgba(0,0,0,0.9)',
           textShadowRadius: 3,
@@ -3216,7 +3225,7 @@ export function PeakAvgMeterView(p: {
       <Lbl x={wellX + wellW * 0.42} y={barBot + 5} w={wellW * 0.16} align="center" size={9.5} color="#b6bac4">
         /
       </Lbl>
-      <Lbl x={wellX + wellW * 0.58} y={barBot + 5} w={wellW * 0.42} align="left" size={9.5} font={fonts.oswaldSemiBold} color={AVG_PURPLE} ls={0.6}>
+      <Lbl x={wellX + wellW * 0.58} y={barBot + 5} w={wellW * 0.42} align="left" size={9.5} font={fonts.oswaldSemiBold} color={avgInk} ls={0.6}>
         AVG
       </Lbl>
       <Lbl x={10} y={h - 14} w={w - 20} align="left" size={8.5} color="#b6bac4">

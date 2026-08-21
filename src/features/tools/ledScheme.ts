@@ -92,3 +92,12 @@ export function resolveLedFill(pref: string | null | undefined): LedFill {
 export function useLedColorPref(): [string | null, (c: string | null) => void] {
   return useToolColorPref('ape:tools:ledScheme');
 }
+
+/** The LED's default AVERAGE-marker colour (matches PeakAvgMeterView's AVG_PURPLE). */
+export const LED_AVG_DEFAULT = '#b45bff';
+
+/** Member AVERAGE-marker colour pref: [color, setColor]; null = the default purple.
+ *  A single flat colour (the average is one marker/line, not a gradient). */
+export function useLedAvgColorPref(): [string | null, (c: string | null) => void] {
+  return useToolColorPref('ape:tools:ledAvgColor');
+}

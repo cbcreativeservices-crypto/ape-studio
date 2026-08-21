@@ -23,7 +23,7 @@ const DEFAULT_RAMP = LOUDNESS_STOPS;
 export type WheelScheme = { id: string; label: string; stops: readonly { pos: number; color: string }[] };
 
 /** A small horizontal gradient preview of a scheme (right edge = loud/pos 0). */
-function SchemeSwatch({ stops, w = 100, h = 34 }: { stops: readonly { pos: number; color: string }[]; w?: number; h?: number }) {
+export function SchemeSwatch({ stops, w = 100, h = 34 }: { stops: readonly { pos: number; color: string }[]; w?: number; h?: number }) {
   const gid = useId().replace(/[^a-zA-Z0-9]/g, '') + 'led';
   return (
     <Svg width={w} height={h}>

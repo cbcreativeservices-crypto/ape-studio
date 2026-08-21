@@ -41,7 +41,8 @@ import { requireVizMeters, type VizMetersModule } from '../lab/meter/skiaGate';
 import { CollapsibleSection } from '../lab/LabShell';
 import type { LiveMeterDrive, PeakHoldMode } from '../lab/meter/vizMeters';
 import { ColorWheelButton } from '../../components/ColorWheelButton';
-import { LED_SCHEMES, resolveLedFill, useLedColorPref } from '../../features/tools/ledScheme';
+import { LedColorPicker } from '../../components/LedColorPicker';
+import { resolveLedFill, useLedAvgColorPref, useLedColorPref } from '../../features/tools/ledScheme';
 import { meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { useRafFrameLoop } from '../../features/tools/engine/useRafFrameLoop';
 import { setSplCalibration, useSplCalibration } from '../../features/tools/measure/calibrationStore';
@@ -118,6 +119,7 @@ function SideLed({
   splOffset,
   weightingLabel,
   ledFill,
+  avgColor,
 }: {
   viz: VizMetersModule;
   live: LiveMeterDrive;
@@ -128,6 +130,8 @@ function SideLed({
   weightingLabel: string;
   /** MEMBER LED colour override (resolved from the pref). null = default ramp. */
   ledFill?: { flat: string } | { stops: readonly { pos: number; color: string }[] } | null;
+  /** MEMBER average-marker colour (null = default purple). */
+  avgColor?: string | null;
 }) {
   const phase = viz.usePhaseClock(true, 1 / VU_LOOP);
   if (ledH <= 0) return <View style={{ width: ledW }} />;
@@ -142,6 +146,7 @@ function SideLed({
       splOffset={splOffset}
       weightingLabel={weightingLabel}
       ledFill={ledFill}
+      avgColor={avgColor}
     />
   );
 }
@@ -934,7 +939,10 @@ export function SplMeterScreen({ navigation }: Props) {
   // scheme or a flat colour; null = the default loudness ramp. Resolved once here
   // and passed to every SideLed. Gated by the ColorWheelButton (entitlement).
   const [ledPref, setLedPref] = useLedColorPref();
+  const [avgPref, setAvgPref] = useLedAvgColorPref();
   const ledFill = useMemo(() => resolveLedFill(ledPref), [ledPref]);
+  // One shared LED colour picker (LEVEL + AVERAGE), opened by either wheel.
+  const [ledPickerOpen, setLedPickerOpen] = useState(false);
   // VU RANGE wiring (owner 2026-07-30, corrected): the RANGE value is the SPL that
   // reads 0 VU (the selected number sits AT the 0 mark); the −20 mark is 20 dB
   // below it. So RANGE 80 shows 80 dB at 0 and 60 dB at −20. The dBFS that reads
@@ -1481,7 +1489,7 @@ export function SplMeterScreen({ navigation }: Props) {
                         RANGE · WEIGHTING · RESPONSE · PEAK HOLD each open a popup. */}
                   </View>
                   {viz && !vuFsOpen ? (
-                    <SideLed viz={viz} live={live} ledW={ledW} ledH={leftColH} holdMode={holdMode} splOffset={splOffset} weightingLabel={weighting} ledFill={ledFill} />
+                    <SideLed viz={viz} live={live} ledW={ledW} ledH={leftColH} holdMode={holdMode} splOffset={splOffset} weightingLabel={weighting} ledFill={ledFill} avgColor={avgPref} />
                   ) : null}
                 </View>
 
@@ -1505,6 +1513,16 @@ export function SplMeterScreen({ navigation }: Props) {
                       <Text style={styles.ctrlBarValue} numberOfLines={1}>{b.value}</Text>
                     </Pressable>
                   ))}
+                  {/* LED colour customization (MEMBER, owner 2026-08-21) — discreet
+                      trailing wheel; also reachable from the Full VU HUD. */}
+                  {viz && (
+                    <ColorWheelButton
+                      style={styles.ctrlBarWheel}
+                      onCustomize={() => setLedPickerOpen(true)}
+                      feature="the LED meter colours"
+                      accessibilityLabel="Customize LED colours"
+                    />
+                  )}
                 </View>
 
                 {/* 4 — The round SPL gauge — COLLAPSIBLE (owner 2026-07-30) so the
@@ -1746,33 +1764,31 @@ export function SplMeterScreen({ navigation }: Props) {
                   Skia); only the Skia LED (+ its toggle) gate on viz. */}
               {winW >= winH && (
                 <>
-                  {/* LED hide/show (owner 2026-08-18) — interactive, top-left. */}
+                  {/* LED controls cluster (owner 2026-08-18/21) — top-LEFT row that
+                      stays ABOVE the vertically-centred settings column so nothing
+                      obscures it: HIDE LED toggle + (members) the colour wheel. */}
                   {viz && (
-                    <Pressable
-                      style={[styles.vuFsLedToggle, { left: camInset + 14 }]}
-                      onPress={() => setVuFsLedHidden((h) => !h)}
-                      accessibilityRole="button"
-                      accessibilityState={{ selected: !vuFsLedHidden }}
-                      accessibilityLabel={vuFsLedHidden ? 'Show the LED level meter' : 'Hide the LED level meter'}
-                    >
-                      <Text style={styles.vuFsLedToggleText}>{vuFsLedHidden ? 'SHOW LED' : 'HIDE LED'}</Text>
-                    </Pressable>
-                  )}
-                  {/* LED colour customization (MEMBER, owner 2026-08-20) — a discreet
-                      wheel pill under HIDE LED; only meaningful while the LED shows. */}
-                  {viz && !vuFsLedHidden && (
-                    <ColorWheelButton
-                      style={[styles.vuFsLedWheel, { left: camInset + 14 }]}
-                      schemes={LED_SCHEMES}
-                      current={ledPref}
-                      onPick={setLedPref}
-                      swatchesTitle="SOLID COLOUR"
-                      defaultLabel="Loudness"
-                      pickerTitle="LED METER COLOUR"
-                      pickerNote="Recolours the moving LED level. The average marker and peak-hold cap keep their reference colours."
-                      feature="the LED meter colours"
-                      accessibilityLabel="Customize LED colour"
-                    />
+                    <View style={[styles.vuFsLedRow, { left: camInset + 14 }]} pointerEvents="box-none">
+                      <Pressable
+                        style={styles.vuFsLedTogglePill}
+                        onPress={() => setVuFsLedHidden((h) => !h)}
+                        accessibilityRole="button"
+                        accessibilityState={{ selected: !vuFsLedHidden }}
+                        accessibilityLabel={vuFsLedHidden ? 'Show the LED level meter' : 'Hide the LED level meter'}
+                      >
+                        <Text style={styles.vuFsLedToggleText}>{vuFsLedHidden ? 'SHOW LED' : 'HIDE LED'}</Text>
+                      </Pressable>
+                      {/* Colour customization (MEMBER, owner 2026-08-20) — only
+                          meaningful while the LED is shown. */}
+                      {!vuFsLedHidden && (
+                        <ColorWheelButton
+                          style={styles.vuFsLedWheelPill}
+                          onCustomize={() => setLedPickerOpen(true)}
+                          feature="the LED meter colours"
+                          accessibilityLabel="Customize LED colours"
+                        />
+                      )}
+                    </View>
                   )}
 
                   {/* Stage (owner 2026-08-19): in LANDSCAPE the settings are a
@@ -1819,6 +1835,7 @@ export function SplMeterScreen({ navigation }: Props) {
                           splOffset={splOffset}
                           weightingLabel={weighting}
                           ledFill={ledFill}
+                          avgColor={avgPref}
                         />
                       )}
                     </View>
@@ -1941,6 +1958,17 @@ export function SplMeterScreen({ navigation }: Props) {
           </View>
         </Pressable>
       )}
+
+      {/* MEMBER LED colour picker (LEVEL + AVERAGE) — one modal shared by the
+          bottom-bar wheel and the Full VU HUD wheel (owner 2026-08-21). */}
+      <LedColorPicker
+        visible={ledPickerOpen}
+        onClose={() => setLedPickerOpen(false)}
+        levelPref={ledPref}
+        onLevelPick={setLedPref}
+        avgPref={avgPref}
+        onAvgPick={setAvgPref}
+      />
 
       {/* ── Fullscreen # readout (de-modalized 2026-08-19): the number ALONE (no
           side toggles), with PEAK (top-left) and PEAK HOLD (top-right). The number
@@ -2409,12 +2437,11 @@ const styles = StyleSheet.create({
   // Portrait: stack VU over the LED, centered.
   vuFsCol: { flexDirection: 'column', gap: 22 },
   vuFsLeft: { alignItems: 'center', justifyContent: 'center' },
-  // Full VU LED hide/show toggle — mirrors the ✕, top-LEFT, always tappable.
-  vuFsLedToggle: {
-    position: 'absolute',
-    top: 10,
-    left: 14,
-    zIndex: 130,
+  // Full VU LED controls — a top-LEFT row (HIDE LED + colour wheel) pinned ABOVE
+  // the vertically-centred settings column so neither control is ever obscured
+  // (owner 2026-08-21 bug: the wheel was dropping behind the RANGE button).
+  vuFsLedRow: { position: 'absolute', top: 10, zIndex: 140, flexDirection: 'row', alignItems: 'center', gap: 8 },
+  vuFsLedTogglePill: {
     height: 40,
     paddingHorizontal: 14,
     borderRadius: 20,
@@ -2425,10 +2452,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   vuFsLedToggleText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textSecondary },
-  vuFsLedWheel: {
-    position: 'absolute',
-    top: 58,
-    zIndex: 130,
+  vuFsLedWheelPill: {
     width: 52,
     height: 40,
     borderRadius: 20,
@@ -2461,6 +2485,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     alignItems: 'center',
     gap: 3,
+  },
+  ctrlBarWheel: {
+    width: 46,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#131316',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   ctrlBarLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 0.8, color: colors.textSub },
   ctrlBarValue: { fontFamily: fonts.mono, fontSize: 14, color: colors.amber },
