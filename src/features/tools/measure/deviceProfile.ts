@@ -105,14 +105,38 @@ export type CalibrationContribution = {
 const nowIso = (): string => new Date().toISOString();
 const appVersion = (): string => Constants.expoConfig?.version ?? '0.0.0';
 
-/** Build the device key from the engine's info surface (`ApeDsp.getInfo()`).
- *  `model`/`osBuild` come from the native batch — null-safe until then. */
+/** Device identity from React Native's PlatformConstants — no native module.
+ *  ANDROID exposes the hardware model directly (e.g. "Pixel 8 Pro"), so the
+ *  Pixel-first catalog works with zero native code. iOS PlatformConstants does
+ *  NOT expose the hardware model (e.g. "iPhone16,2") — that needs a native utsname
+ *  getter (folded into the native batch); until then iOS `model` stays null and
+ *  the community offer is simply inert on iOS. */
+function platformDeviceInfo(): { model: string | null; osVersion: string | null; osBuild: string | null } {
+  const c = (Platform.constants ?? {}) as Record<string, unknown>;
+  const asStr = (v: unknown): string | null => (typeof v === 'string' && v.length > 0 ? v : null);
+  if (Platform.OS === 'android') {
+    return {
+      model: asStr(c.Model),
+      osVersion: asStr(c.Release) ?? (Platform.Version != null ? String(Platform.Version) : null),
+      osBuild: asStr(c.Fingerprint),
+    };
+  }
+  return {
+    model: null,
+    osVersion: asStr(c.osVersion) ?? (Platform.Version != null ? String(Platform.Version) : null),
+    osBuild: null,
+  };
+}
+
+/** Build the device key from the engine's info surface (`ApeDsp.getInfo()`) plus
+ *  PlatformConstants. `native` can override model/os (iOS native utsname). */
 export function buildDeviceKey(info: DspInfo | null, native?: Partial<Pick<DeviceKey, 'model' | 'osVersion' | 'osBuild'>>): DeviceKey {
+  const d = platformDeviceInfo();
   return {
     platform: Platform.OS,
-    model: native?.model ?? null,
-    osVersion: native?.osVersion ?? (Platform.Version != null ? String(Platform.Version) : null),
-    osBuild: native?.osBuild ?? null,
+    model: native?.model ?? d.model,
+    osVersion: native?.osVersion ?? d.osVersion,
+    osBuild: native?.osBuild ?? d.osBuild,
     appVersion: appVersion(),
     engineVersion: info?.engineVersion ?? null,
     measurementGrade: info?.measurementMode ?? false,

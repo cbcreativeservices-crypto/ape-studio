@@ -18,6 +18,7 @@
 #include <cstdint>
 #include <memory>
 #include <mutex>
+#include <sys/resource.h>
 #include <thread>
 #include <vector>
 
@@ -250,6 +251,7 @@ class NativeEngine {
     }
     inRate_ = static_cast<double>(inStream_->getSampleRate());  // drive the DSP at THIS rate
     framesBurst_ = inStream_->getFramesPerBurst();
+    lastXruns_ = 0;  // fresh stream — reset the adaptive-buffer baseline
     measurementMode_ =
         unprocessedSupported_ && inStream_->getInputPreset() == oboe::InputPreset::Unprocessed;
 
@@ -357,6 +359,11 @@ class NativeEngine {
     float* scratch = scratch_;
     std::atomic<bool>* running = &running_;
     analysisThread_ = std::thread([this, ring, engine, scratch, running]() {
+      // Elevate the DSP worker's priority so the drain/analysis cadence stays
+      // deterministic under load (Phase 1 A4). Best-effort: a negative nice may be
+      // capped without CAP_SYS_NICE, which is harmless. This is the analysis
+      // thread, not the Oboe callback (Oboe runs its own high-priority thread).
+      setpriority(PRIO_PROCESS, 0, -16);
       double lastReopenAt = 0.0;
       while (running->load(std::memory_order_relaxed)) {
         size_t total = 0, n;
@@ -367,6 +374,21 @@ class NativeEngine {
         }
         if (total == 0) engine->processChunk(nullptr, 0, ring->dropped(), true);
         engine->analysisTick();
+        // Adaptive input buffer (Phase 1 A3): if the OS reports NEW xruns
+        // (glitches), grow the Oboe buffer by one burst — up to capacity —
+        // trading a few ms of latency for capture continuity. Measurement
+        // integrity outweighs a slightly later display frame. Runs on this same
+        // analysis thread as reopenInputStream(), so inStream_ access is race-free.
+        if (inStream_) {
+          auto xr = inStream_->getXRunCount();
+          if (xr && xr.value() > lastXruns_) {
+            lastXruns_ = xr.value();
+            const int32_t cur = inStream_->getBufferSizeInFrames();
+            const int32_t cap = inStream_->getBufferCapacityInFrames();
+            const int32_t want = cur + (framesBurst_ > 0 ? framesBurst_ : 192);
+            if (want <= cap) inStream_->setBufferSizeInFrames(want);
+          }
+        }
         // Capture-recovery watchdog (owner 2026-08-14): a device unplug / route
         // change closes the input stream, the callback stops, and lastWriteAt_
         // goes stale. Reopen HERE on this owned, joinable thread (never a
@@ -401,6 +423,9 @@ class NativeEngine {
   double inRate_ = 48000.0;
   double outRate_ = 48000.0;
   int32_t framesBurst_ = 0;
+  // Adaptive-buffer state (Phase 1 A3): last OS-reported input xrun count, so the
+  // analysis loop can grow the Oboe buffer only when NEW glitches appear.
+  int32_t lastXruns_ = 0;
   // Deinterleaved stereo scratch for the output callback (renderStereo writes
   // separate L/R; Oboe wants interleaved LRLR). Preallocated in openOutput —
   // never resized in the RT callback.

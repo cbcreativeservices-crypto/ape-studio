@@ -10,6 +10,7 @@
 
 #include <atomic>
 #include <chrono>
+#include <pthread/qos.h>
 #include <thread>
 #include <vector>
 
@@ -123,6 +124,11 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
   float *scratch = _scratch;
   std::atomic<bool> *running = &_running;
   _analysisThread = std::thread([ring, engine, scratch, running]() {
+    // Elevate the DSP worker off the default QoS so the OS schedules it promptly
+    // and the analysis cadence stays deterministic under load (Phase 1 A4). This
+    // is the analysis thread, NOT the real-time audio callback (that stays on the
+    // OS audio thread); USER_INITIATED is high without competing with the UI.
+    pthread_set_qos_class_self_np(QOS_CLASS_USER_INITIATED, 0);
     while (running->load(std::memory_order_relaxed)) {
       size_t total = 0;
       size_t n;
