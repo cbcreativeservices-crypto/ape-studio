@@ -220,6 +220,11 @@ export function Rt60Screen({ navigation }: Props) {
   // occur while armed/recording. The latched set is what DONE shows and SAVE
   // stores — the flags describe THE CAPTURE, not the whole session.
   const clipBaseRef = useRef(0);
+  // droppedFrames is ALSO session-cumulative (Phase 1 A1): a dropout that
+  // occurred before this ARM must not poison a clean re-armed capture, so it gets
+  // the same baseline-at-ARM treatment as clipRuns. A dropout DURING the armed
+  // window means the decay curve has a gap → the capture carries capture_dropout.
+  const dropBaseRef = useRef(0);
   const [windowFlags, setWindowFlags] = useState<WarningFlag[]>([]);
 
   // Poll the native RT60 state machine while capture runs (slow — 3.3 Hz).
@@ -253,8 +258,12 @@ export function Rt60Screen({ navigation }: Props) {
       const next = [...prev];
       if (meter.clipRuns > clipBaseRef.current && !next.includes('input_clipping'))
         next.push('input_clipping');
+      if (meter.droppedFrames > dropBaseRef.current && !next.includes('capture_dropout'))
+        next.push('capture_dropout');
+      // Both clipRuns and droppedFrames are baselined above; take the rest of the
+      // live flags as-is (they're not session-cumulative counters).
       for (const f of meterWarningFlags(meter))
-        if (f !== 'input_clipping' && !next.includes(f)) next.push(f);
+        if (f !== 'input_clipping' && f !== 'capture_dropout' && !next.includes(f)) next.push(f);
       return next.length === prev.length ? prev : next;
     });
   }, [meter, rtState]);
@@ -262,7 +271,9 @@ export function Rt60Screen({ navigation }: Props) {
   /** ARM / RE-ARM: baseline the window, ensure capture is running, arm native. */
   const armCapture = useCallback(async () => {
     if (state !== 'running') await start(); // returning from the library etc.
-    clipBaseRef.current = ApeDsp.getMeterFrame()?.clipRuns ?? 0;
+    const base = ApeDsp.getMeterFrame();
+    clipBaseRef.current = base?.clipRuns ?? 0;
+    dropBaseRef.current = base?.droppedFrames ?? 0;
     setWindowFlags([]);
     setRt60(null); // drop a retained DONE — the user chose to re-measure
     ApeDsp.rt60Arm();
