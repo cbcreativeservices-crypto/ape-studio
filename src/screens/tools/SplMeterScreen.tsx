@@ -43,6 +43,8 @@ import type { LiveMeterDrive, PeakHoldMode } from '../lab/meter/vizMeters';
 import { ColorWheelButton } from '../../components/ColorWheelButton';
 import { LedColorPicker } from '../../components/LedColorPicker';
 import { ContributeCalibrationPrompt } from '../../components/ContributeCalibrationPrompt';
+import { buildDeviceKey } from '../../features/tools/measure/deviceProfile';
+import { fetchCommunityProfile, type CommunityProfile } from '../../features/tools/measure/catalogClient';
 import { resolveLedFill, useLedAvgColorPref, useLedColorPref } from '../../features/tools/ledScheme';
 import { meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { useRafFrameLoop } from '../../features/tools/engine/useRafFrameLoop';
@@ -682,6 +684,15 @@ export function SplMeterScreen({ navigation }: Props) {
     setCalibrating(false);
     setContribOffset(o);
   }, []);
+  // Community starting point for this phone model (null until the catalog has
+  // enough contributions AND the native batch supplies the device model).
+  const [community, setCommunity] = useState<CommunityProfile | null>(null);
+  const openCalibration = useCallback(() => {
+    setDraftOffset(offset ?? 100);
+    setCalibrating(true);
+    const info = ApeDsp.isAvailable() ? ApeDsp.getInfo() : null;
+    void fetchCommunityProfile(buildDeviceKey(info)).then(setCommunity);
+  }, [offset]);
   // LEVEL readouts read positive dB SPL (owner 2026-08-12): a real SPL meter
   // shows dB SPL / dBA / dBC, not negative dBFS. Weighted unit + honest
   // calibration state; uncalibrated is an approximate ESTIMATE, never certified.
@@ -1353,10 +1364,7 @@ export function SplMeterScreen({ navigation }: Props) {
                 <View style={styles.controls}>
                   <Pressable
                     style={styles.ctrlBtn}
-                    onPress={() => {
-                      setDraftOffset(offset ?? 100);
-                      setCalibrating(true);
-                    }}
+                    onPress={openCalibration}
                     accessibilityRole="button"
                     accessibilityLabel="Calibrate against a reference meter"
                   >
@@ -1379,6 +1387,20 @@ export function SplMeterScreen({ navigation }: Props) {
                     Play steady pink noise and adjust until this reading matches your reference
                     sound-level meter (same weighting and response on both).
                   </Text>
+                  {community != null ? (
+                    <Pressable
+                      style={styles.calCommunity}
+                      onPress={() => setDraftOffset(community.suggestedOffsetDb)}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Use the community starting point, plus ${community.suggestedOffsetDb.toFixed(1)} decibels`}
+                    >
+                      <Text style={styles.calCommunityText}>
+                        Community start: +{community.suggestedOffsetDb.toFixed(1)} dB · {community.trustedCount} calibration
+                        {community.trustedCount === 1 ? '' : 's'}
+                      </Text>
+                      <Text style={styles.calCommunitySub}>Tap to use, then fine-tune against your own reference.</Text>
+                    </Pressable>
+                  ) : null}
                   <Text style={styles.calDraftValue}>
                     {calDraftText}
                     <Text style={styles.calDraftUnit}>  dB SPL (candidate)</Text>
@@ -1673,10 +1695,7 @@ export function SplMeterScreen({ navigation }: Props) {
                     <View style={styles.controls}>
                       <Pressable
                         style={styles.ctrlBtn}
-                        onPress={() => {
-                          setDraftOffset(offset ?? 100);
-                          setCalibrating(true);
-                        }}
+                        onPress={openCalibration}
                         accessibilityRole="button"
                         accessibilityLabel="Calibrate against a reference meter"
                       >
@@ -1699,6 +1718,20 @@ export function SplMeterScreen({ navigation }: Props) {
                         Play steady pink noise and adjust until this reading matches your reference
                         sound-level meter (same weighting and response on both).
                       </Text>
+                      {community != null ? (
+                        <Pressable
+                          style={styles.calCommunity}
+                          onPress={() => setDraftOffset(community.suggestedOffsetDb)}
+                          accessibilityRole="button"
+                          accessibilityLabel={`Use the community starting point, plus ${community.suggestedOffsetDb.toFixed(1)} decibels`}
+                        >
+                          <Text style={styles.calCommunityText}>
+                            Community start: +{community.suggestedOffsetDb.toFixed(1)} dB · {community.trustedCount} calibration
+                            {community.trustedCount === 1 ? '' : 's'}
+                          </Text>
+                          <Text style={styles.calCommunitySub}>Tap to use, then fine-tune against your own reference.</Text>
+                        </Pressable>
+                      ) : null}
                       <Text style={styles.calDraftValue}>
                         {calDraftText}
                         <Text style={styles.calDraftUnit}>  dB SPL (candidate)</Text>
@@ -2361,6 +2394,9 @@ const styles = StyleSheet.create({
   calStatus: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.textSub },
   calStatusOn: { color: '#5bff85' },
   calHint: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 19, color: colors.textSecondary },
+  calCommunity: { borderRadius: 10, borderWidth: 1, borderColor: 'rgba(255,198,77,.4)', backgroundColor: '#1c1608', paddingVertical: 8, paddingHorizontal: 12 },
+  calCommunityText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.4, color: colors.amber },
+  calCommunitySub: { fontFamily: fonts.barlowRegular, fontSize: 11.5, color: colors.textMuted, marginTop: 1 },
   calDraftValue: { fontFamily: fonts.mono, fontSize: 30, color: colors.textPrimary, textAlign: 'center' },
   calDraftUnit: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.amber },
   calNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted },

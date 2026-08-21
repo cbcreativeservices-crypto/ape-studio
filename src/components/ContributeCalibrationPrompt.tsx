@@ -20,6 +20,7 @@ import {
   setCrowdsourceConsent,
   type ReferenceQuality,
 } from '../features/tools/measure/deviceProfile';
+import { uploadQueuedContributions } from '../features/tools/measure/catalogClient';
 import { colors, fonts } from '../theme/tokens';
 
 const REFS: { key: ReferenceQuality; label: string; sub: string }[] = [
@@ -58,6 +59,7 @@ export function ContributeCalibrationPrompt({
       const record = buildCapabilityRecord(info);
       const c = makeContribution({ record, offsetDb, nominalStart, referenceQuality: ref });
       await queueContribution(c);
+      void uploadQueuedContributions(); // best-effort drain now; retries later if offline
     } catch {
       /* best-effort — never block calibration on a contribution write */
     }
