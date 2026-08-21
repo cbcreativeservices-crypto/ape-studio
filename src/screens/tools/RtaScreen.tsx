@@ -59,6 +59,8 @@ import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO } from '../../features/tools/measure/types';
 import { LOUDNESS_STOPS, levelColorForDb } from '../../features/tools/levelColor';
 import { useColorModePref } from '../../features/tools/colorModePref';
+import { useToolColorPref } from '../../features/tools/waveColorPref';
+import { ColorWheelButton } from '../../components/ColorWheelButton';
 import { colors, fonts } from '../../theme/tokens';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { EngineGate } from './EngineGate';
@@ -416,6 +418,7 @@ function BandsPanel({
   mode,
   alpha,
   midiColors,
+  flatColor,
 }: {
   bands: DisplayBands | null;
   mode: BandMode;
@@ -423,6 +426,9 @@ function BandsPanel({
   /** COLORS toggle (owner 2026-08-05): recolour the columns with the app-wide
    *  MIDI level ramp (red at 0 dBFS → blue at the floor) instead of the LED ramp. */
   midiColors?: boolean;
+  /** Custom flat bar colour (Academy member, owner rule 2026-08-20) — used only
+   *  when COLORS (the MIDI ramp) is OFF; null = the default blue gradient. */
+  flatColor?: string | null;
 }) {
   const [chartW, setChartW] = useState(0);
 
@@ -551,7 +557,7 @@ function BandsPanel({
                             y={barTop}
                             width={w}
                             height={FLOOR_Y - barTop}
-                            fill={midiColors ? 'url(#rtaBarFillMidi)' : 'url(#rtaBarFill)'}
+                            fill={midiColors ? 'url(#rtaBarFillMidi)' : (flatColor ?? 'url(#rtaBarFill)')}
                             fillOpacity={0.96}
                           />
                           {/* Glow cap: soft halo + bright core at the tip. */}
@@ -904,6 +910,9 @@ export function RtaScreen({ navigation }: Props) {
   // Display toggles (owner 2026-08-05): recolor the bars with the MIDI level
   // ramp (persisted, first-ever default ON — item 7), and a piano keyboard.
   const [colorsOn, setColorsOn] = useColorModePref();
+  // Custom flat bar colour (member-gated) — used when COLORS (the MIDI ramp) is
+  // off (owner rule 2026-08-20). BAR_HOT is the default gradient's top colour.
+  const [rtaColor, setRtaColor] = useToolColorPref('ape:tools:rtaColor');
   const [pianoOn, setPianoOn] = useState(false);
 
   // DOMINANT-PITCH tracking (owner 2026-08-10): while the piano is shown, poll
@@ -1086,7 +1095,7 @@ export function RtaScreen({ navigation }: Props) {
               accessibilityRole="button"
               accessibilityLabel={state === 'running' ? 'Tap to stop capture' : 'Tap to start capture'}
             >
-              <BandsPanel bands={displayBands} mode={mode} alpha={alpha} midiColors={colorsOn} />
+              <BandsPanel bands={displayBands} mode={mode} alpha={alpha} midiColors={colorsOn} flatColor={rtaColor} />
             </Pressable>
             {pianoOn && <PianoStrip bands={displayBands} highlightIdx={pitchIdx} />}
             <DisplayGuideButton onPress={helpAll} />
@@ -1102,6 +1111,17 @@ export function RtaScreen({ navigation }: Props) {
               >
                 <Text style={[styles.ctrlText, colorsOn && styles.ctrlTextOnGreen]}>COLORS</Text>
               </Pressable>
+              {/* Custom bar colour — discreet wheel, member-gated (owner rule 2026-08-20). */}
+              <ColorWheelButton
+                style={styles.rtaColorBtn}
+                current={rtaColor}
+                onPick={setRtaColor}
+                accessibilityLabel="RTA bar colour"
+                feature="the RTA bar colour"
+                pickerTitle="RTA BAR COLOUR"
+                pickerNote="Applies when COLORS (the level ramp) is off."
+                size={22}
+              />
               <Pressable
                 style={[styles.ctrlBtn, pianoOn && styles.ctrlBtnOnBlue]}
                 onPress={() => setPianoOn((v) => !v)}
@@ -1319,6 +1339,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#161616',
     paddingVertical: 14,
     alignItems: 'center',
+  },
+  // Discreet colour-wheel button in the control row (owner rule 2026-08-20).
+  rtaColorBtn: {
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#3a3a3a',
+    backgroundColor: '#161616',
+    paddingHorizontal: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   ctrlBtnSaved: { borderColor: 'rgba(91,255,133,.65)', backgroundColor: '#0d1710' },
   ctrlBtnDisabled: { opacity: 0.45 },

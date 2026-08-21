@@ -15,6 +15,7 @@ import { Spl3dGaugePreview } from './src/screens/tools/Spl3dGaugePreview';
 import { ToolPreview } from './src/screens/tools/ToolPreview';
 import { MultiMeterScreen } from './src/screens/tools/MultiMeterScreen';
 import { WaveformScreen } from './src/screens/tools/WaveformScreen';
+import { RtaScreen } from './src/screens/tools/RtaScreen';
 import { navigationRef } from './src/navigation/navigationRef';
 import { LabPreviewOverlay } from './src/features/lab/LabPreviewOverlay';
 import { endLabPreview, getLabPreview } from './src/features/lab/labPreviewStore';
@@ -112,7 +113,9 @@ export default function App() {
         ? { name: 'MultiMeter', component: MultiMeterScreen as ComponentType }
         : window.location.hash === '#waveformpreview'
           ? { name: 'WaveformLive', component: WaveformScreen as ComponentType }
-          : null
+          : window.location.hash === '#rtapreview'
+            ? { name: 'Rta', component: RtaScreen as ComponentType }
+            : null
       : null;
   if (toolPreview) {
     return (

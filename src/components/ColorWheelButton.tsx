@@ -9,6 +9,7 @@ import { useState, type ReactNode } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
 import { useEntitlement } from '../features/commercial/EntitlementProvider';
+import { WAVE_COLOR_SWATCHES } from '../features/tools/waveColorPref';
 import { navigationRef } from '../navigation/navigationRef';
 import { colors, fonts } from '../theme/tokens';
 
@@ -36,12 +37,26 @@ export function ColorWheel({ size = 22 }: { size?: number }) {
 
 export function ColorWheelButton({
   onCustomize,
+  current,
+  onPick,
+  swatches = WAVE_COLOR_SWATCHES,
+  pickerTitle = 'CHOOSE A COLOUR',
+  pickerNote,
   size = 22,
   style,
   accessibilityLabel = 'Customize colours',
   feature = 'customizing colours and meter skins',
 }: {
-  onCustomize: () => void;
+  /** Custom member action (e.g. open a tool's own picker). Ignored if onPick set. */
+  onCustomize?: () => void;
+  /** Built-in swatch picker: the current custom colour (null/undefined = default). */
+  current?: string | null;
+  /** Built-in swatch picker: called with the chosen colour, or null for the first
+   *  (default) swatch. When provided, the member tap opens the built-in picker. */
+  onPick?: (c: string | null) => void;
+  swatches?: readonly string[];
+  pickerTitle?: string;
+  pickerNote?: string;
   size?: number;
   style?: StyleProp<ViewStyle>;
   accessibilityLabel?: string;
@@ -51,10 +66,12 @@ export function ColorWheelButton({
   const { entitlement } = useEntitlement();
   const isMember = entitlement === 'academy';
   const [gate, setGate] = useState(false);
+  const [picker, setPicker] = useState(false);
+  const openForMember = () => (onPick ? setPicker(true) : onCustomize?.());
   return (
     <>
       <Pressable
-        onPress={() => (isMember ? onCustomize() : setGate(true))}
+        onPress={() => (isMember ? openForMember() : setGate(true))}
         style={style}
         hitSlop={8}
         accessibilityRole="button"
@@ -62,6 +79,45 @@ export function ColorWheelButton({
       >
         <ColorWheel size={size} />
       </Pressable>
+      {/* Built-in swatch picker (members). */}
+      <Modal visible={picker} transparent animationType="fade" onRequestClose={() => setPicker(false)}>
+        <Pressable style={styles.scrim} onPress={() => setPicker(false)} accessibilityRole="button" accessibilityLabel="Close">
+          <View style={styles.card}>
+            <Text style={styles.pickerTitle}>{pickerTitle}</Text>
+            <View style={styles.grid}>
+              <Pressable
+                style={[styles.swatch, styles.swatchDefault, !current && styles.swatchSel]}
+                onPress={() => {
+                  onPick?.(null);
+                  setPicker(false);
+                }}
+                accessibilityRole="button"
+                accessibilityState={{ selected: !current }}
+                accessibilityLabel="Default colour"
+              >
+                <Text style={styles.swatchDefaultText}>DEF</Text>
+              </Pressable>
+              {swatches.map((c) => {
+                const sel = !!current && current.toLowerCase() === c.toLowerCase();
+                return (
+                  <Pressable
+                    key={c}
+                    style={[styles.swatch, { backgroundColor: c }, sel && styles.swatchSel]}
+                    onPress={() => {
+                      onPick?.(c);
+                      setPicker(false);
+                    }}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: sel }}
+                    accessibilityLabel={`Colour ${c}`}
+                  />
+                );
+              })}
+            </View>
+            {pickerNote ? <Text style={styles.body}>{pickerNote}</Text> : null}
+          </View>
+        </Pressable>
+      </Modal>
       <Modal visible={gate} transparent animationType="fade" onRequestClose={() => setGate(false)}>
         <Pressable style={styles.scrim} onPress={() => setGate(false)} accessibilityRole="button" accessibilityLabel="Close">
           <View style={styles.card}>
@@ -115,4 +171,10 @@ const styles = StyleSheet.create({
   },
   ctaText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.4, color: colors.amber },
   dismiss: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textMuted, paddingVertical: 6 },
+  pickerTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.6, color: colors.textSecondary, textAlign: 'center' },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 9, justifyContent: 'center' },
+  swatch: { width: 46, height: 46, borderRadius: 23, borderWidth: 2, borderColor: '#33333c', alignItems: 'center', justifyContent: 'center' },
+  swatchSel: { borderColor: '#ffffff', borderWidth: 3 },
+  swatchDefault: { backgroundColor: '#1a1a1f' },
+  swatchDefaultText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.5, color: colors.textMuted },
 });

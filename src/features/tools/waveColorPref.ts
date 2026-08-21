@@ -7,8 +7,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const KEY = 'ape:tools:waveColor';
-
 /** Curated palette shown in the picker (first is the app default teal). */
 export const WAVE_COLOR_SWATCHES = [
   '#5fd9c4', // default teal
@@ -25,23 +23,33 @@ export const WAVE_COLOR_SWATCHES = [
   '#9aa0aa', // grey
 ] as const;
 
-/** [color|null, setColor] — persisted; null = tool default. */
-export function useWaveColorPref(): [string | null, (c: string | null) => void] {
+/** Generic per-tool custom-colour pref: [color|null, setColor] — persisted at
+ *  `key`; null = the tool's default. Each tool passes its own key so colours are
+ *  independent (owner rule 2026-08-20 — customization is member-gated). */
+export function useToolColorPref(key: string): [string | null, (c: string | null) => void] {
   const [color, setColor] = useState<string | null>(null);
   useEffect(() => {
     let alive = true;
     void (async () => {
-      const raw = await AsyncStorage.getItem(KEY);
+      const raw = await AsyncStorage.getItem(key);
       if (alive && raw) setColor(raw);
     })();
     return () => {
       alive = false;
     };
-  }, []);
-  const set = useCallback((c: string | null) => {
-    setColor(c);
-    if (c) void AsyncStorage.setItem(KEY, c);
-    else void AsyncStorage.removeItem(KEY);
-  }, []);
+  }, [key]);
+  const set = useCallback(
+    (c: string | null) => {
+      setColor(c);
+      if (c) void AsyncStorage.setItem(key, c);
+      else void AsyncStorage.removeItem(key);
+    },
+    [key],
+  );
   return [color, set];
+}
+
+/** Waveform trace colour (the first consumer). */
+export function useWaveColorPref(): [string | null, (c: string | null) => void] {
+  return useToolColorPref('ape:tools:waveColor');
 }
