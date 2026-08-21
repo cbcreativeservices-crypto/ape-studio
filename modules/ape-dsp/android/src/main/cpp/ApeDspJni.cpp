@@ -485,6 +485,21 @@ Java_expo_modules_apedsp_ApeDspModule_nativeResetLeq(JNIEnv*, jobject, jlong h) 
   eng(h)->engine_.resetLeq();
 }
 
+// Startup capture-health probe (C1): [inputStuck?1:0, dcOffset, probeReady?1:0].
+JNIEXPORT jdoubleArray JNICALL
+Java_expo_modules_apedsp_ApeDspModule_nativeHealthProbe(JNIEnv* env, jobject, jlong h) {
+  double out[3] = {0.0, 0.0, 0.0};
+  if (h != 0) {
+    auto& e = eng(h)->engine_;
+    out[0] = e.inputStuck() ? 1.0 : 0.0;
+    out[1] = static_cast<double>(e.dcOffset());
+    out[2] = e.probeReady() ? 1.0 : 0.0;
+  }
+  jdoubleArray a = env->NewDoubleArray(3);
+  env->SetDoubleArrayRegion(a, 0, 3, out);
+  return a;
+}
+
 JNIEXPORT void JNICALL
 Java_expo_modules_apedsp_ApeDspModule_nativeSetEngineConfig(JNIEnv*, jobject, jlong h,
                                                             jint fftSize, jint fraction,

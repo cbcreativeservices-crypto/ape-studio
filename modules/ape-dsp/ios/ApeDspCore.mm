@@ -195,6 +195,14 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
   };
 }
 
+- (NSDictionary<NSString *, id> *)healthProbe {
+  return @{
+    @"inputStuck" : @(_engine->inputStuck()),
+    @"dcOffset" : @(_engine->dcOffset()),
+    @"probeReady" : @(_engine->probeReady()),
+  };
+}
+
 - (NSDictionary<NSString *, id> *)meterFrame {
   const apedsp::MeterFrame f = _engine->meterFrame();
   const bool running = _running.load(std::memory_order_relaxed);

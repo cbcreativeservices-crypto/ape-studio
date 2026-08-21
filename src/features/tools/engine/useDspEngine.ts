@@ -18,6 +18,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import {
   ApeDsp,
   type BandsFrame,
+  type DspInfo,
   type EngineConfig,
   type MeterFrame,
   type PitchFrame,
@@ -252,4 +253,12 @@ export function meterWarningFlags(m: MeterFrame | null): WarningFlag[] {
   if (m.droppedFrames > 0) flags.push('capture_dropout');
   if (m.captureStalled || !m.running) flags.push('engine_inactive');
   return flags;
+}
+
+/** Startup capture-health flags (Phase 1 C1) from the session info surface —
+ *  separate from the per-frame meter flags because the probe is session-level.
+ *  Only fires once the ~0.5 s probe has completed (probeReady). */
+export function healthWarningFlags(info: DspInfo | null): WarningFlag[] {
+  if (info?.health?.probeReady && info.health.inputStuck) return ['dead_input'];
+  return [];
 }

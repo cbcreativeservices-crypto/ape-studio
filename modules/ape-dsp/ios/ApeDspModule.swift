@@ -408,6 +408,8 @@ public class ApeDspModule: Module {
       // Hardware model identifier (e.g. "iPhone16,2") for the community mic
       // catalog device key — iOS PlatformConstants can't provide this (2026-08-21).
       "model": apeDeviceModel,
+      // Startup capture-health probe (C1): { inputStuck, dcOffset, probeReady }.
+      "health": core.healthProbe(),
       "outputRoute": outputRoute,
       "running": running,
       "desiredRunning": desiredRunning,

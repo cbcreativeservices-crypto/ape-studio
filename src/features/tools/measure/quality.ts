@@ -30,6 +30,8 @@ export const FLAG_SEVERITY: Record<WarningFlag, Exclude<QualityState, 'valid'>> 
   // (caution) the live view. Time-integrated tools additionally hard-invalidate
   // the affected interval in the engine (Phase 1 A1), independent of this flag.
   capture_dropout: 'caution',
+  // A frozen/muted input produces no real measurement at all.
+  dead_input: 'invalid',
   engine_inactive: 'invalid',
 };
 

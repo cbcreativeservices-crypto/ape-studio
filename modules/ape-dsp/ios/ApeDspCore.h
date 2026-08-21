@@ -48,6 +48,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// Engine-build frames (dictionary bridge — scalars + small arrays only,
 /// polled ≤30 Hz per the spike bridge rules).
 - (NSDictionary<NSString *, id> *)meterFrame;
+
+/// Startup capture-health probe result (C1): { inputStuck, dcOffset, probeReady }.
+- (NSDictionary<NSString *, id> *)healthProbe;
 - (NSDictionary<NSString *, id> *)bandsFrame;       // ≤30 bands: NSArrays OK
 - (NSDictionary<NSString *, id> *)pitchFrame;
 - (NSDictionary<NSString *, id> *)spectrumMeta;

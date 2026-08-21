@@ -134,6 +134,15 @@ class EngineHub {
     roll_.assign(kRollSize, 0.0f);
     rollHead_ = 0;
     rollFilled_ = 0;
+    // Reset the startup health probe for this fresh capture (~0.5 s window).
+    probeSum_ = 0.0;
+    probeMin_ = 1e9f;
+    probeMax_ = -1e9f;
+    probeCount_ = 0;
+    probeTarget_ = static_cast<uint64_t>(fs * 0.5);
+    probeDone_ = false;
+    probeStuck_ = false;
+    probeDc_ = 0.0f;
     // RT60 capture buffer: 3.5 s at the actual rate (analysis-thread-only).
     rt60Buf_.assign(static_cast<size_t>(fs * 3.5), 0.0f);
     rt60Written_ = 0;
@@ -238,6 +247,20 @@ class EngineHub {
         // Rolling buffer for FFT/pitch.
         roll_[rollHead_] = z;
         rollHead_ = (rollHead_ + 1) & (kRollSize - 1);
+        // Startup health probe (C1): accumulate DC + range over the first window.
+        if (!probeDone_) {
+          probeSum_ += static_cast<double>(z);
+          if (z < probeMin_) probeMin_ = z;
+          if (z > probeMax_) probeMax_ = z;
+          if (++probeCount_ >= probeTarget_) {
+            probeDc_ = static_cast<float>(probeSum_ / static_cast<double>(probeCount_));
+            // A dead/stuck input holds a constant value (no self-noise/dither) —
+            // range under ~-100 dBFS peak-to-peak means the mic isn't delivering
+            // real signal even though callbacks arrive. Distinct from captureStalled.
+            probeStuck_ = (probeMax_ - probeMin_) < 1e-5f;
+            probeDone_ = true;
+          }
+        }
       }
       leqCount_ += n;
       if (rollFilled_ < kRollSize) rollFilled_ = std::min(rollFilled_ + n, kRollSize);
@@ -297,6 +320,13 @@ class EngineHub {
     meter_.droppedFrames = droppedFrames;
     meter_.running = running;
   }
+
+  // ---- Startup health-probe results (C1) — read from the bridge thread. Plain
+  // bool/float reads of analysis-thread-written values: benign (stable once
+  // probeReady), no tearing on aligned scalars. ----
+  bool probeReady() const { return probeDone_; }
+  bool inputStuck() const { return probeDone_ && probeStuck_; }
+  float dcOffset() const { return probeDc_; }
 
   // ---- Analysis thread: once per drain pass (~50 ms cadence) ----
   void analysisTick() {
@@ -445,6 +475,16 @@ class EngineHub {
   double leqZSum_ = 0.0, leqASum_ = 0.0;
   uint64_t leqCount_ = 0;
   MeterFrame meter_{};
+
+  // Startup capture-health probe (Phase 1 C1): over the first ~0.5 s of a fresh
+  // capture, accumulate DC mean + min/max to catch a stuck/dead input (constant
+  // samples — a muted or broken mic that still delivers callbacks) and a large DC
+  // offset. Analysis-thread-owned; reset in configureSampleRate (each open).
+  double probeSum_ = 0.0;
+  float probeMin_ = 1e9f, probeMax_ = -1e9f;
+  uint64_t probeCount_ = 0, probeTarget_ = 24000;  // ~0.5 s @ 48 k; set in configure
+  bool probeDone_ = false, probeStuck_ = false;
+  float probeDc_ = 0.0f;
 
   // Spectrum path.
   std::unique_ptr<Fft> fft_;

@@ -46,7 +46,7 @@ import { ContributeCalibrationPrompt } from '../../components/ContributeCalibrat
 import { buildDeviceKey } from '../../features/tools/measure/deviceProfile';
 import { fetchCommunityProfile, type CommunityProfile } from '../../features/tools/measure/catalogClient';
 import { resolveLedFill, useLedAvgColorPref, useLedColorPref } from '../../features/tools/ledScheme';
-import { meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
+import { healthWarningFlags, meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { useRafFrameLoop } from '../../features/tools/engine/useRafFrameLoop';
 import { setSplCalibration, useSplCalibration } from '../../features/tools/measure/calibrationStore';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
@@ -724,7 +724,7 @@ export function SplMeterScreen({ navigation }: Props) {
   // Note: meterWarningFlags raises 'uncalibrated_input' only for OS-PROCESSED
   // input (measurement mode not honored) — that stays a warning even when
   // field-calibrated, because it undermines the calibration itself.
-  const flags = meterWarningFlags(meter);
+  const flags = [...meterWarningFlags(meter), ...healthWarningFlags(ApeDsp.getInfo())];
 
   // ── Full-screen VU popup (owner directive 2026-07-29) ─────────────────────
   // Skia meters load ONLY through the meter gate (§1.7 honest fallback).
@@ -1147,7 +1147,7 @@ export function SplMeterScreen({ navigation }: Props) {
     // Read the FRESHEST frame directly at save time (no polled React state now).
     const m = state === 'running' ? ApeDsp.getMeterFrame() : null;
     if (!m) return;
-    const saveFlags = meterWarningFlags(m);
+    const saveFlags = [...meterWarningFlags(m), ...healthWarningFlags(ApeDsp.getInfo())];
     // Without a field calibration the record is explicitly uncalibrated
     // (spec §9 required warning). With one (ruling R1), the record carries
     // calibration_status 'calibrated' + the disclosed offset instead.

@@ -44,6 +44,10 @@ export type DspInfo = {
   /** Hardware model id (iOS "iPhone16,2" via uname; undefined on older builds /
    *  Android, where PlatformConstants supplies it). Community mic-catalog key. */
   model?: string;
+  /** Startup capture-health probe (C1): inputStuck = a dead/frozen mic (constant
+   *  samples) once probeReady; dcOffset = measured DC mean. Undefined on older
+   *  builds. */
+  health?: { inputStuck: boolean; dcOffset: number; probeReady: boolean };
   bluetoothInput: boolean;
   routeName: string;
   inputPortType: string;

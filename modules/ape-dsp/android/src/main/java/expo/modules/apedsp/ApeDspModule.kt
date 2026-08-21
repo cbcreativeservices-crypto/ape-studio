@@ -51,6 +51,7 @@ class ApeDspModule : Module() {
   private external fun nativeStopCapture(h: Long)
   private external fun nativeResetPeakHold(h: Long)
   private external fun nativeResetLeq(h: Long)
+  private external fun nativeHealthProbe(h: Long): DoubleArray  // C1: [stuck, dcOffset, ready]
   private external fun nativeSetEngineConfig(
     h: Long, fftSize: Int, fraction: Int, spectrum: Boolean, pitch: Boolean,
     waveform: Boolean, bandAvgAlpha: Double,
@@ -487,7 +488,14 @@ class ApeDspModule : Module() {
     "lastError" to lastError,
     "stopReason" to "",
     "events" to emptyList<String>(),
+    // Startup capture-health probe (C1): { inputStuck, dcOffset, probeReady }.
+    "health" to healthMap(),
   )
+
+  private fun healthMap(): Map<String, Any?> {
+    val h = if (handle != 0L) nativeHealthProbe(handle) else DoubleArray(3)
+    return mapOf("inputStuck" to (h[0] == 1.0), "dcOffset" to h[1], "probeReady" to (h[2] == 1.0))
+  }
 
   private fun genStatusMap(): Map<String, Any?> {
     // 8 fixed slots (see nativeGenStatus). additiveNorm (HV-2): 1 = not

@@ -32,6 +32,7 @@ export type WarningFlag =
   | 'unsupported_input'
   | 'file_unsupported'
   | 'capture_dropout' // the audio stream dropped/overran samples — continuity broke
+  | 'dead_input' // startup probe: the mic delivers constant samples (frozen/muted)
   | 'engine_inactive';
 
 /** Plain-language warning copy (spec §6: warnings appear on-screen, never
@@ -91,6 +92,11 @@ export const WARNING_INFO: Record<WarningFlag, { label: string; message: string;
     label: 'DROPOUT',
     message: 'The audio stream dropped samples — continuity was interrupted.',
     hint: 'Close other audio apps and avoid heavy load; restart the measurement for a clean run.',
+  },
+  dead_input: {
+    label: 'NO INPUT',
+    message: 'The microphone is delivering no real signal (frozen or muted at the system level).',
+    hint: 'Check that the mic isn’t covered or muted, close other apps using it, and restart the measurement.',
   },
   file_unsupported: {
     label: 'FILE',
