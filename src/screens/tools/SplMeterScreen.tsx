@@ -40,6 +40,8 @@ import { lockLandscape, lockPortrait, unlockOrientation } from '../../lib/screen
 import { requireVizMeters, type VizMetersModule } from '../lab/meter/skiaGate';
 import { CollapsibleSection } from '../lab/LabShell';
 import type { LiveMeterDrive, PeakHoldMode } from '../lab/meter/vizMeters';
+import { ColorWheelButton } from '../../components/ColorWheelButton';
+import { LED_SCHEMES, resolveLedFill, useLedColorPref } from '../../features/tools/ledScheme';
 import { meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { useRafFrameLoop } from '../../features/tools/engine/useRafFrameLoop';
 import { setSplCalibration, useSplCalibration } from '../../features/tools/measure/calibrationStore';
@@ -115,6 +117,7 @@ function SideLed({
   holdMode,
   splOffset,
   weightingLabel,
+  ledFill,
 }: {
   viz: VizMetersModule;
   live: LiveMeterDrive;
@@ -123,6 +126,8 @@ function SideLed({
   holdMode: PeakHoldMode;
   splOffset: number;
   weightingLabel: string;
+  /** MEMBER LED colour override (resolved from the pref). null = default ramp. */
+  ledFill?: { flat: string } | { stops: readonly { pos: number; color: string }[] } | null;
 }) {
   const phase = viz.usePhaseClock(true, 1 / VU_LOOP);
   if (ledH <= 0) return <View style={{ width: ledW }} />;
@@ -136,6 +141,7 @@ function SideLed({
       holdMode={holdMode}
       splOffset={splOffset}
       weightingLabel={weightingLabel}
+      ledFill={ledFill}
     />
   );
 }
@@ -924,6 +930,11 @@ export function SplMeterScreen({ navigation }: Props) {
   // badges the dial ESTIMATED — never a certified SPL reading (§1.7).
   const splOffset = offset ?? NOMINAL_OFFSET;
   const calibrated = offset != null;
+  // MEMBER LED colour (owner 2026-08-20): the tools' LED peak fill may be a member
+  // scheme or a flat colour; null = the default loudness ramp. Resolved once here
+  // and passed to every SideLed. Gated by the ColorWheelButton (entitlement).
+  const [ledPref, setLedPref] = useLedColorPref();
+  const ledFill = useMemo(() => resolveLedFill(ledPref), [ledPref]);
   // VU RANGE wiring (owner 2026-07-30, corrected): the RANGE value is the SPL that
   // reads 0 VU (the selected number sits AT the 0 mark); the −20 mark is 20 dB
   // below it. So RANGE 80 shows 80 dB at 0 and 60 dB at −20. The dBFS that reads
@@ -1470,7 +1481,7 @@ export function SplMeterScreen({ navigation }: Props) {
                         RANGE · WEIGHTING · RESPONSE · PEAK HOLD each open a popup. */}
                   </View>
                   {viz && !vuFsOpen ? (
-                    <SideLed viz={viz} live={live} ledW={ledW} ledH={leftColH} holdMode={holdMode} splOffset={splOffset} weightingLabel={weighting} />
+                    <SideLed viz={viz} live={live} ledW={ledW} ledH={leftColH} holdMode={holdMode} splOffset={splOffset} weightingLabel={weighting} ledFill={ledFill} />
                   ) : null}
                 </View>
 
@@ -1747,6 +1758,22 @@ export function SplMeterScreen({ navigation }: Props) {
                       <Text style={styles.vuFsLedToggleText}>{vuFsLedHidden ? 'SHOW LED' : 'HIDE LED'}</Text>
                     </Pressable>
                   )}
+                  {/* LED colour customization (MEMBER, owner 2026-08-20) — a discreet
+                      wheel pill under HIDE LED; only meaningful while the LED shows. */}
+                  {viz && !vuFsLedHidden && (
+                    <ColorWheelButton
+                      style={[styles.vuFsLedWheel, { left: camInset + 14 }]}
+                      schemes={LED_SCHEMES}
+                      current={ledPref}
+                      onPick={setLedPref}
+                      swatchesTitle="SOLID COLOUR"
+                      defaultLabel="Loudness"
+                      pickerTitle="LED METER COLOUR"
+                      pickerNote="Recolours the moving LED level. The average marker and peak-hold cap keep their reference colours."
+                      feature="the LED meter colours"
+                      accessibilityLabel="Customize LED colour"
+                    />
+                  )}
 
                   {/* Stage (owner 2026-08-19): in LANDSCAPE the settings are a
                       COLUMN to the LEFT of the VU; in portrait they stay a bottom
@@ -1791,6 +1818,7 @@ export function SplMeterScreen({ navigation }: Props) {
                           holdMode={holdMode}
                           splOffset={splOffset}
                           weightingLabel={weighting}
+                          ledFill={ledFill}
                         />
                       )}
                     </View>
@@ -2397,6 +2425,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   vuFsLedToggleText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textSecondary },
+  vuFsLedWheel: {
+    position: 'absolute',
+    top: 58,
+    zIndex: 130,
+    width: 52,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(18,18,22,0.9)',
+    borderWidth: 1,
+    borderColor: '#3a3a44',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   // Full VU settings bar — pinned across the bottom, above the meter (owner
   // 2026-08-18). paddingBottom is set inline from the safe-area inset.
   vuFsCtrlBar: {

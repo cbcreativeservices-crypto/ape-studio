@@ -5,15 +5,40 @@
  * get a membership popup explaining the advanced feature, with a Paywall CTA —
  * never a hard jump straight to the Paywall. Gate by ENTITLEMENT, never caps.
  */
-import { useState, type ReactNode } from 'react';
+import { useId, useState, type ReactNode } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
-import Svg, { Circle, Path } from 'react-native-svg';
+import Svg, { Circle, Defs, LinearGradient as SvgGradient, Path, Rect, Stop } from 'react-native-svg';
 import { useEntitlement } from '../features/commercial/EntitlementProvider';
+import { LOUDNESS_STOPS } from '../features/tools/levelColor';
 import { WAVE_COLOR_SWATCHES } from '../features/tools/waveColorPref';
 import { navigationRef } from '../navigation/navigationRef';
 import { colors, fonts } from '../theme/tokens';
 
 const HUES = ['#ff5a48', '#f0863a', '#ffd35e', '#4fd07f', '#4dd0e1', '#c77dff'];
+/** The default-chip preview ramp (the app-wide loudness ramp). */
+const DEFAULT_RAMP = LOUDNESS_STOPS;
+
+/** A member colour SCHEME shown as a gradient chip in the picker. `stops` are
+ *  oriented pos 0 = loud … pos 1 = quiet; the chip fills right→loud. */
+export type WheelScheme = { id: string; label: string; stops: readonly { pos: number; color: string }[] };
+
+/** A small horizontal gradient preview of a scheme (right edge = loud/pos 0). */
+function SchemeSwatch({ stops, w = 100, h = 34 }: { stops: readonly { pos: number; color: string }[]; w?: number; h?: number }) {
+  const gid = useId().replace(/[^a-zA-Z0-9]/g, '') + 'led';
+  return (
+    <Svg width={w} height={h}>
+      <Defs>
+        <SvgGradient id={gid} x1="0" y1="0" x2="1" y2="0">
+          {stops.map((s, i) => (
+            // right = loud (pos 0) ⇒ offset = 1 − pos, so the hot colour sits right.
+            <Stop key={`${s.pos}-${i}`} offset={`${(1 - s.pos) * 100}%`} stopColor={s.color} />
+          ))}
+        </SvgGradient>
+      </Defs>
+      <Rect x={0} y={0} width={w} height={h} rx={6} fill={`url(#${gid})`} />
+    </Svg>
+  );
+}
 
 /** A small rainbow color-wheel glyph (6 wedges + a dark hub). */
 export function ColorWheel({ size = 22 }: { size?: number }) {
@@ -40,6 +65,9 @@ export function ColorWheelButton({
   current,
   onPick,
   swatches = WAVE_COLOR_SWATCHES,
+  schemes,
+  defaultLabel = 'Default',
+  swatchesTitle,
   pickerTitle = 'CHOOSE A COLOUR',
   pickerNote,
   size = 22,
@@ -49,12 +77,19 @@ export function ColorWheelButton({
 }: {
   /** Custom member action (e.g. open a tool's own picker). Ignored if onPick set. */
   onCustomize?: () => void;
-  /** Built-in swatch picker: the current custom colour (null/undefined = default). */
+  /** Built-in swatch picker: the current custom colour/scheme id (null = default). */
   current?: string | null;
-  /** Built-in swatch picker: called with the chosen colour, or null for the first
-   *  (default) swatch. When provided, the member tap opens the built-in picker. */
+  /** Built-in swatch picker: called with the chosen colour/scheme id, or null for
+   *  DEFAULT. When provided, the member tap opens the built-in picker. */
   onPick?: (c: string | null) => void;
   swatches?: readonly string[];
+  /** Optional preset SCHEMES (gradient chips) shown above the solid swatches.
+   *  Picking one calls onPick(scheme.id); the consumer decodes id vs hex. */
+  schemes?: readonly WheelScheme[];
+  /** Label under the DEFAULT chip (e.g. "Loudness" for the LED). */
+  defaultLabel?: string;
+  /** Optional heading above the solid-colour swatches (shown only with schemes). */
+  swatchesTitle?: string;
   pickerTitle?: string;
   pickerNote?: string;
   size?: number;
@@ -84,19 +119,61 @@ export function ColorWheelButton({
         <Pressable style={styles.scrim} onPress={() => setPicker(false)} accessibilityRole="button" accessibilityLabel="Close">
           <View style={styles.card}>
             <Text style={styles.pickerTitle}>{pickerTitle}</Text>
+            {/* SCHEMES (optional): the DEFAULT gradient chip + each preset. */}
+            {schemes && schemes.length > 0 ? (
+              <View style={styles.schemeGrid}>
+                <Pressable
+                  style={[styles.schemeChip, !current && styles.schemeChipSel]}
+                  onPress={() => {
+                    onPick?.(null);
+                    setPicker(false);
+                  }}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: !current }}
+                  accessibilityLabel={`${defaultLabel} (default)`}
+                >
+                  <SchemeSwatch stops={DEFAULT_RAMP} />
+                  <Text style={styles.schemeLabel}>{defaultLabel}</Text>
+                </Pressable>
+                {schemes.map((s) => {
+                  const sel = current === s.id;
+                  return (
+                    <Pressable
+                      key={s.id}
+                      style={[styles.schemeChip, sel && styles.schemeChipSel]}
+                      onPress={() => {
+                        onPick?.(s.id);
+                        setPicker(false);
+                      }}
+                      accessibilityRole="button"
+                      accessibilityState={{ selected: sel }}
+                      accessibilityLabel={`${s.label} scheme`}
+                    >
+                      <SchemeSwatch stops={s.stops} />
+                      <Text style={styles.schemeLabel}>{s.label}</Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            ) : null}
+            {schemes && schemes.length > 0 && swatchesTitle ? <Text style={styles.sectionLabel}>{swatchesTitle}</Text> : null}
             <View style={styles.grid}>
-              <Pressable
-                style={[styles.swatch, styles.swatchDefault, !current && styles.swatchSel]}
-                onPress={() => {
-                  onPick?.(null);
-                  setPicker(false);
-                }}
-                accessibilityRole="button"
-                accessibilityState={{ selected: !current }}
-                accessibilityLabel="Default colour"
-              >
-                <Text style={styles.swatchDefaultText}>DEF</Text>
-              </Pressable>
+              {/* DEFAULT solid chip — only when there is no scheme section (schemes
+                  already provide the default). */}
+              {!(schemes && schemes.length > 0) ? (
+                <Pressable
+                  style={[styles.swatch, styles.swatchDefault, !current && styles.swatchSel]}
+                  onPress={() => {
+                    onPick?.(null);
+                    setPicker(false);
+                  }}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: !current }}
+                  accessibilityLabel="Default colour"
+                >
+                  <Text style={styles.swatchDefaultText}>DEF</Text>
+                </Pressable>
+              ) : null}
               {swatches.map((c) => {
                 const sel = !!current && current.toLowerCase() === c.toLowerCase();
                 return (
@@ -172,6 +249,21 @@ const styles = StyleSheet.create({
   ctaText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.4, color: colors.amber },
   dismiss: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textMuted, paddingVertical: 6 },
   pickerTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.6, color: colors.textSecondary, textAlign: 'center' },
+  sectionLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.4, color: colors.textMuted, textAlign: 'center', marginTop: 2 },
+  schemeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center' },
+  schemeChip: {
+    width: 104,
+    borderRadius: 9,
+    borderWidth: 2,
+    borderColor: '#33333c',
+    backgroundColor: '#101014',
+    padding: 3,
+    alignItems: 'center',
+    gap: 2,
+    overflow: 'hidden',
+  },
+  schemeChipSel: { borderColor: '#ffffff', borderWidth: 3 },
+  schemeLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 0.8, color: colors.textSecondary, paddingBottom: 2 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 9, justifyContent: 'center' },
   swatch: { width: 46, height: 46, borderRadius: 23, borderWidth: 2, borderColor: '#33333c', alignItems: 'center', justifyContent: 'center' },
   swatchSel: { borderColor: '#ffffff', borderWidth: 3 },

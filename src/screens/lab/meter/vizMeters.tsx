@@ -2841,6 +2841,11 @@ export function PeakAvgMeterView(p: {
   /** The user's weighting curve label — e.g. "A"/"C"/"Z" (default ""). Shown in
    *  the header caption as "dB SPL · <weightingLabel>"; empty ⇒ "LEVEL · dB SPL". */
   weightingLabel?: string;
+  /** MEMBER LED colour override (owner 2026-08-20, [[customization-member-rule]]).
+   *  Recolours ONLY the loudness PEAK fill; the purple avg + white cap are
+   *  untouched. `{flat}` = one solid colour; `{stops}` = a custom gradient
+   *  (pos 0 = top/loud … pos 1 = bottom). Omitted/null ⇒ the default loudness ramp. */
+  ledFill?: { flat: string } | { stops: readonly { pos: number; color: string }[] } | null;
 }) {
   const w = p.width;
   const h = p.height ?? 260;
@@ -2848,6 +2853,11 @@ export function PeakAvgMeterView(p: {
   const holdMode = p.holdMode ?? '1s';
   const splOffset = p.splOffset ?? 100;
   const weightingLabel = p.weightingLabel ?? '';
+  // Resolve the peak-fill paint: a member flat colour, a member gradient, or the
+  // default app-wide loudness ramp.
+  const ledFill = p.ledFill ?? null;
+  const ledFlat = ledFill && 'flat' in ledFill ? ledFill.flat : null;
+  const ledStops = ledFill && 'stops' in ledFill ? ledFill.stops : LOUDNESS_STOPS;
   const livePeak = p.live.peakDb;
   const liveRms = p.live.rmsDb;
   const holdSecs = holdModeSeconds(holdMode);
@@ -3110,14 +3120,20 @@ export function PeakAvgMeterView(p: {
             ABSOLUTE y (barTop=100 dB SPL … barBot=40) using the app-wide MIDI
             velocity ramp: MIDI-0 blue at the BOTTOM climbing through green/yellow/
             orange to red at the TOP (owner 2026-07-31). */}
-        <Path path={litPeak}>
-          <LinearGradient
-            start={vec(0, barTop)}
-            end={vec(0, barBot)}
-            colors={LOUDNESS_STOPS.map((s) => s.color)}
-            positions={LOUDNESS_STOPS.map((s) => s.pos)}
-          />
-        </Path>
+        {ledFlat ? (
+          // MEMBER flat colour — one solid fill for the whole peak region.
+          <Path path={litPeak} color={ledFlat} />
+        ) : (
+          // Default ramp OR a member SCHEME gradient (same top→bottom orientation).
+          <Path path={litPeak}>
+            <LinearGradient
+              start={vec(0, barTop)}
+              end={vec(0, barBot)}
+              colors={ledStops.map((s) => s.color)}
+              positions={ledStops.map((s) => s.pos)}
+            />
+          </Path>
+        )}
         {/* Floating user peak-hold cap. */}
         <Path path={cap} color="#f2f5fa" />
         <Path path={G.ticks} color="#565a64" style="stroke" strokeWidth={1} />
