@@ -18,15 +18,18 @@ import { fonts } from '../theme/tokens';
 
 type QrComponent = ComponentType<{ value: string; size: number; backgroundColor?: string; color?: string }>;
 
-let QRCode: QrComponent | null = null;
-try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const mod = require('react-native-qrcode-svg');
-  QRCode = (mod?.default ?? mod) as QrComponent;
-} catch (e) {
-  console.warn('[credential-qr] react-native-qrcode-svg unavailable:', (e as Error).message);
-  QRCode = null;
-}
+// TEMPORARILY DISABLED (2026-08-21): react-native-qrcode-svg is being isolated as
+// a possible launch-crash cause (it drags in text-encoding + qrcode). Kept out of
+// the bundle entirely — renders the pending tile — until confirmed safe. Restore
+// by uncommenting the require below.
+const QRCode: QrComponent | null = null;
+// try {
+//   const mod = require('react-native-qrcode-svg');
+//   QRCode = (mod?.default ?? mod) as QrComponent;
+// } catch (e) {
+//   console.warn('[credential-qr] react-native-qrcode-svg unavailable:', (e as Error).message);
+//   QRCode = null;
+// }
 
 export function CredentialQr({
   token,

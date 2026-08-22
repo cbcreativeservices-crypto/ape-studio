@@ -51,21 +51,23 @@ export type PurchaseHandlers = {
   onError: (message: string | null) => void;
 };
 
-let iapMod: IapApi | null = null;
-let iapTried = false;
 /** Lazily load expo-iap. Returns null (never throws) when the native module
  *  isn't in this build — callers then report "unavailable". */
 function getIap(): IapApi | null {
-  if (iapTried) return iapMod;
-  iapTried = true;
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    iapMod = require('expo-iap') as IapApi;
-  } catch (e) {
-    console.warn('[iap] expo-iap unavailable (rebuild needed to enable IAP):', (e as Error).message);
-    iapMod = null;
-  }
-  return iapMod;
+  // TEMPORARILY DISABLED (2026-08-21): keep expo-iap OUT of the JS bundle entirely
+  // while isolating a launch crash on the current (pre-expo-iap) dev builds.
+  // Purchases report "unavailable"; nothing is granted. Re-enable by uncommenting
+  // the require below AND making a new build that bundles expo-iap.
+  return null;
+  // if (iapTried) return iapMod;
+  // iapTried = true;
+  // try {
+  //   iapMod = require('expo-iap') as IapApi;
+  // } catch (e) {
+  //   console.warn('[iap] expo-iap unavailable (rebuild needed to enable IAP):', (e as Error).message);
+  //   iapMod = null;
+  // }
+  // return iapMod;
 }
 
 let connected = false;
