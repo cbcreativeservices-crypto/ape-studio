@@ -12,7 +12,8 @@
  * answer{correct:true}; wrong pick → red flash on both + answer{correct:false}.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, LayoutAnimation, PanResponder, Platform, ScrollView, StyleSheet, Text, UIManager, View } from 'react-native';
+import { ActivityIndicator, PanResponder, ScrollView, StyleSheet, Text, View } from 'react-native';
+import Animated, { FadeOut, LinearTransition } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -49,17 +50,11 @@ const CORRECT_FLASH_MS = 550; // green flash on a right pair before it locks
 const ADVANCE_MS = 750; // board-complete pause (lets the last green flash show)
 const WRONG_FLASH_MS = 650; // red flash on a wrong pair
 
-// Android needs this opt-in for LayoutAnimation (no-op / undefined on Fabric).
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
-// Quick collapse when a matched pair is removed: the leaving cells fade while the
-// remaining cards slide UP into place (user request 2026-07-25).
-const CARD_COLLAPSE_ANIM: Parameters<typeof LayoutAnimation.configureNext>[0] = {
-  duration: 360, // 2× slower than the original 180ms (user request 2026-07-25)
-  update: { type: LayoutAnimation.Types.easeInEaseOut },
-  delete: { type: LayoutAnimation.Types.easeInEaseOut, property: LayoutAnimation.Properties.opacity },
-};
+// Matched-pair collapse is now handled per-cell by Reanimated (Fabric-native):
+// each cell's `exiting` fades it out and sibling `layout` slides the rest up when
+// it's removed — replacing the old global LayoutAnimation.configureNext (owner
+// debug audit 2026-08-21). Durations kept close to the prior feel.
+const COLLAPSE_MS = 320;
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -284,7 +279,9 @@ export function MatchingScreen({ navigation, route }: Props) {
         setSelectedLeft(null);
         setCorrectFlash(answeredId); // green flash, then the pair animates out
         scheduleFlash(() => {
-          LayoutAnimation.configureNext(CARD_COLLAPSE_ANIM); // slide the rest up
+          // Clearing correctFlash unmounts the matched cells → each cell's
+          // Reanimated `exiting` fades it out and sibling `layout` slides the
+          // rest up (no global LayoutAnimation).
           setCorrectFlash((c) => (c === answeredId ? null : c));
         }, CORRECT_FLASH_MS);
         if (next.size === board.length) {
@@ -365,30 +362,32 @@ export function MatchingScreen({ navigation, route }: Props) {
         {leftPrompts
           .filter(({ it }) => !locked.has(it.id) || correctFlash === it.id)
           .map(({ it, text }) => (
-            <AnswerCell
-              key={it.id}
-              label={text}
-              state={leftState(it.id)}
-              fontSize={17}
-              borderWidth={1.5}
-              minHeight={52}
-              onPress={() => pickLeft(it.id)}
-            />
+            <Animated.View key={it.id} layout={LinearTransition.duration(COLLAPSE_MS)} exiting={FadeOut.duration(COLLAPSE_MS)}>
+              <AnswerCell
+                label={text}
+                state={leftState(it.id)}
+                fontSize={17}
+                borderWidth={1.5}
+                minHeight={52}
+                onPress={() => pickLeft(it.id)}
+              />
+            </Animated.View>
           ))}
       </View>
       <View style={styles.column}>
         {rightOrder
           .filter((it) => !locked.has(it.id) || correctFlash === it.id)
           .map((it) => (
-            <AnswerCell
-              key={it.id}
-              label={it.term}
-              state={rightState(it.id)}
-              fontSize={18}
-              borderWidth={1.5}
-              minHeight={52}
-              onPress={() => pickRight(it.id)}
-            />
+            <Animated.View key={it.id} layout={LinearTransition.duration(COLLAPSE_MS)} exiting={FadeOut.duration(COLLAPSE_MS)}>
+              <AnswerCell
+                label={it.term}
+                state={rightState(it.id)}
+                fontSize={18}
+                borderWidth={1.5}
+                minHeight={52}
+                onPress={() => pickRight(it.id)}
+              />
+            </Animated.View>
           ))}
       </View>
     </>
