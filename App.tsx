@@ -27,6 +27,7 @@ import { ExposureCheckin } from './src/features/audio/ExposureCheckin';
 import { initExposureMonitor } from './src/features/audio/exposureMonitor';
 import { subscribeAudioOutput } from './src/features/audio/audioOutputStore';
 import { MicFeedbackGuard } from './src/features/audio/MicFeedbackGuard';
+import { SingleDeviceGuard } from './src/features/account/SingleDeviceGuard';
 import { ShakeToMute } from './src/features/audio/ShakeToMute';
 import { LowLightDim, LowLightProductionGate } from './src/features/settings/LowLightLayer';
 import { registerLowLightTap, touchLowLight } from './src/features/settings/lowLight';
@@ -177,6 +178,10 @@ export default function App() {
                 the speaker whenever the mic is capturing without the physical
                 override. Renders nothing; mounted once at the root. */}
             <MicFeedbackGuard />
+            {/* Single-device login (owner 2026-08-21): if the account is claimed
+                by a newer device, this one signs out on next foreground. Renders
+                nothing; fails open until the backend migration is run. */}
+            <SingleDeviceGuard />
             {/* Shake-to-panic-mute (owner request 2026-07-26): while audio can
                 sound, a decisive shake instantly silences everything and
                 re-locks the app to silent. Renders nothing. */}

@@ -38,6 +38,7 @@ import { resetLocal as resetSettingsMirrors } from '../settings/store';
  */
 const KEEP: ReadonlySet<string> = new Set<string>([
   'ape:splCalOffset', // device mic calibration — hardware (governance R1)
+  'ape:deviceId', // stable per-install id for single-device login (survives switch)
   'ape:dev:commercialMode', // dev-only override
   'ape:dev:entitlement', // dev-only override
   'ape:devSuppressPopups', // dev-only override

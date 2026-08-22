@@ -31,6 +31,8 @@ import { StudioButton } from '../../components/StudioButton';
 import { TextField } from '../../components/TextField';
 import { colors, fonts, spacing } from '../../theme/tokens';
 import { clearLocalAccountData, resetAllLocalStores } from '../../features/account/clearLocalAccountData';
+import { getDeviceId } from '../../features/account/deviceIdentity';
+import { claimThisDevice, getActiveDeviceId } from '../../features/account/singleDevice';
 import {
   EMAIL_RE,
   passwordIssue,
@@ -69,6 +71,40 @@ export function AuthScreen({ navigation }: Props) {
   const [busy, setBusy] = useState(false);
 
   const toHome = () => navigation.reset({ index: 0, routes: [{ name: 'Main', params: { screen: 'Home' } }] });
+  const toMain = () => navigation.reset({ index: 0, routes: [{ name: 'Main' }] });
+
+  /* SINGLE-DEVICE LOGIN (owner 2026-08-21): claim this device as the account's
+   * active one, prompting first if another device already holds it. On confirm
+   * we take over (the other device signs out on its next foreground); on cancel
+   * we sign back out and stay. Fails open (un-migrated backend → just proceed). */
+  const claimAndProceed = async (proceed: () => void) => {
+    const [active, mine] = await Promise.all([getActiveDeviceId(), getDeviceId()]);
+    if (active && active !== mine) {
+      setBusy(false);
+      Alert.alert(
+        'Already signed in elsewhere',
+        'This account is signed in on another device. Continue here and sign that device out?',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+            onPress: () => {
+              void supabase.auth.signOut().catch(() => {});
+            },
+          },
+          {
+            text: 'Continue',
+            onPress: () => {
+              void claimThisDevice().then(proceed);
+            },
+          },
+        ],
+      );
+      return;
+    }
+    await claimThisDevice();
+    proceed();
+  };
 
   /* GUEST MODE — free, no account, nothing saved. Signs out any lingering
    * session FIRST (owner bug 2026-08-06): the Dashboard keys its guest-safe
@@ -142,7 +178,7 @@ export function AuthScreen({ navigation }: Props) {
           // an influencer/event user knows to retry it (Settings → Redeem code).
           setBusy(false);
           Alert.alert('Account created', `${redeem.message}\n\nYou can add a code later in Settings.`, [
-            { text: 'Continue', onPress: toHome },
+            { text: 'Continue', onPress: () => void claimAndProceed(toHome) },
           ]);
           return;
         }
@@ -151,7 +187,7 @@ export function AuthScreen({ navigation }: Props) {
       // production setEntitlement no-ops; a granted code was already applied via
       // refreshEntitlement above, so only default to 'free' when nothing granted.
       if (!granted) setEntitlement('free');
-      toHome();
+      await claimAndProceed(toHome); // brand-new account → claims silently
     } finally {
       setBusy(false);
     }
@@ -172,7 +208,7 @@ export function AuthScreen({ navigation }: Props) {
         setError(err);
         return;
       }
-      navigation.reset({ index: 0, routes: [{ name: 'Main' }] }); // Study tab = Dashboard
+      await claimAndProceed(toMain); // Study tab = Dashboard (single-device claim)
     } finally {
       setBusy(false);
     }
@@ -231,7 +267,7 @@ export function AuthScreen({ navigation }: Props) {
       }
       // verifyOtp left an active session; the password is now updated → go in.
       setMode('main');
-      navigation.reset({ index: 0, routes: [{ name: 'Main' }] });
+      await claimAndProceed(toMain); // single-device claim on recovery sign-in
     } finally {
       setBusy(false);
     }
