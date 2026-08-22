@@ -131,10 +131,10 @@ export function PaywallScreen({ navigation }: Props) {
                   {p.badge && <Text style={styles.planBadge}>{p.badge}</Text>}
                 </View>
                 <Text style={styles.planPrice}>{p.price}</Text>
-                <Text style={styles.planSub}>{p.sub}</Text>
-                {/* End-of-year introductory deadline on every tier (user
-                    request 2026-07-17). */}
-                <Text style={styles.planDeadline}>{COPY.introDeadline}</Text>
+                {/* Annual's sub is the savings cue → green; others muted. */}
+                <Text style={[styles.planSub, p.id === 'annual' && styles.planSubSave]}>{p.sub}</Text>
+                {/* Per-card end-of-year deadline consolidated to ONE note under
+                    the plans (owner 2026-08-21) — was repeated on all 3 tiers. */}
                 <View style={[styles.radio, active && styles.radioOn]}>
                   {active && <View style={styles.radioDot} />}
                 </View>
@@ -143,11 +143,16 @@ export function PaywallScreen({ navigation }: Props) {
           })}
         </View>
 
-        {/* Pricing-honesty reassurance at the decision point (owner 2026-08-21),
-            echoing the onboarding "Commitment" promise. */}
-        <Text style={styles.valueLine}>One membership. Not a series of extra charges.</Text>
+        {/* Pricing-honesty promise at the decision point (owner 2026-08-21),
+            echoing the onboarding "Commitment". The check + hairline divider make
+            it read as a commitment, not a stray line. */}
+        <View style={styles.promiseRow}>
+          <Text style={styles.promiseCheck}>✓</Text>
+          <Text style={styles.valueLine}>One membership. Not a series of extra charges.</Text>
+        </View>
 
-        {/* Beta pricing note (Booth 2026-07-18). */}
+        {/* Single consolidated pricing/deadline note (Booth 2026-07-18; owner
+            2026-08-21 made it the ONE place the end-of-year deadline appears). */}
         <Text style={styles.betaNote}>{COPY.betaPricingNote}</Text>
 
         {busy ? (
@@ -167,13 +172,11 @@ export function PaywallScreen({ navigation }: Props) {
         <Pressable onPress={busy ? undefined : onRestore} accessibilityRole="button" hitSlop={8}>
           <Text style={styles.restore}>Restore purchases</Text>
         </Pressable>
-        <Text style={styles.storeNote}>
-          Secure in-app purchase. Subscriptions renew until cancelled; manage in your app-store settings.
-        </Text>
-
+        {/* One consolidated renewal/legal line (owner 2026-08-21 — merged the
+            two near-duplicate app-store notes). */}
         <Text style={styles.legal}>
-          Payment is charged to your app-store account. Subscriptions renew automatically unless canceled at least
-          24 hours before the period ends. Manage or cancel in your app-store settings.
+          Secure in-app purchase. Subscriptions renew automatically unless cancelled at least 24 hours before the
+          period ends — manage or cancel anytime in your app-store settings.
         </Text>
       </ScrollView>
     </View>
@@ -190,7 +193,19 @@ const styles = StyleSheet.create({
   body: { fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 22, color: colors.textSecondary },
 
   plans: { gap: 12, marginTop: 6 },
-  // Pricing-honesty reassurance line (owner 2026-08-21) — quietly emphasized.
+  // Pricing-honesty promise (owner 2026-08-21): a check + hairline divider so it
+  // reads as a commitment at the decision point.
+  promiseRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: 4,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#1e1e1e',
+  },
+  promiseCheck: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: '#5bff85' },
   valueLine: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 14,
@@ -198,9 +213,8 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: colors.textPrimary,
     textAlign: 'center',
-    marginTop: 2,
   },
-  // Beta pricing note (Booth 2026-07-18).
+  // Single consolidated pricing/deadline note (Booth 2026-07-18).
   betaNote: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.amberLabel },
   plan: {
     borderRadius: 10,
@@ -226,8 +240,8 @@ const styles = StyleSheet.create({
   },
   planPrice: { fontFamily: fonts.oswaldBold, fontSize: 20, color: colors.amber, marginTop: 4 },
   planSub: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.textSub, marginTop: 2 },
-  // End-of-year deadline line — amber, on every plan (user request 2026-07-17).
-  planDeadline: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16, color: colors.amberLabel, marginTop: 4 },
+  // Annual savings cue — green (value signal at a glance).
+  planSubSave: { color: '#5bff85' },
   radio: {
     position: 'absolute',
     right: 16,
@@ -251,7 +265,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingVertical: 6,
   },
-  storeNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textMuted, textAlign: 'center' },
   legal: {
     fontFamily: fonts.barlowRegular,
     fontSize: 11,
