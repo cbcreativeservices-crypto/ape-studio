@@ -91,6 +91,21 @@ export function capsFor(state: Entitlement): Caps {
   }
 }
 
+/**
+ * Map the caller's academy entitlement rows → tier. A user may hold MULTIPLE
+ * academy rows (e.g. an expired one + an active one) with NO guaranteed order,
+ * so we scan for ANY active, non-expired row rather than trusting row [0] (owner
+ * debug audit — the old `[0]` could classify an active member as lapsed).
+ */
+type EntRow = { status?: string; expires_at?: string | null };
+function academyTierFromRows(rows: EntRow[]): Entitlement {
+  const now = Date.now();
+  const active = rows.some(
+    (r) => r.status === 'active' && (!r.expires_at || new Date(r.expires_at).getTime() > now),
+  );
+  return active ? 'academy' : rows.length > 0 ? 'lapsed' : 'free';
+}
+
 type EntitlementContextValue = {
   /** Master flag — OFF means render today's (institutional) app. */
   commercialMode: boolean;
@@ -153,20 +168,18 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
         setEntitlementState('anonymous');
         return;
       }
-      let tier: Entitlement = 'free';
-      try {
-        const { data } = await supabase
-          .from('entitlements')
-          .select('product, status, expires_at')
-          .eq('product', 'academy');
-        const acad = (data ?? [])[0] as { status?: string; expires_at?: string | null } | undefined;
-        if (acad) {
-          const notExpired = !acad.expires_at || new Date(acad.expires_at).getTime() > Date.now();
-          tier = acad.status === 'active' && notExpired ? 'academy' : 'lapsed';
-        }
-      } catch {
-        // Network/RLS failure — fall back to a safe signed-in default.
+      const { data, error } = await supabase
+        .from('entitlements')
+        .select('product, status, expires_at')
+        .eq('product', 'academy');
+      if (error) {
+        // supabase-js RESOLVES with { error }; a transient RLS/network failure
+        // must NOT silently downgrade a paying member to free. Keep the current
+        // tier and let a later auth event / refreshEntitlement re-derive.
+        console.warn('[entitlement] read failed, keeping current tier:', error.message);
+        return;
       }
+      const tier = academyTierFromRows((data ?? []) as EntRow[]);
       if (alive && !devOverrode.current) setEntitlementState(tier);
     };
     // Wipe the device's local study-progress mirror whenever the signed-in user
@@ -219,21 +232,16 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
       setEntitlementState('anonymous');
       return;
     }
-    let tier: Entitlement = 'free';
-    try {
-      const { data } = await supabase
-        .from('entitlements')
-        .select('product, status, expires_at')
-        .eq('product', 'academy');
-      const acad = (data ?? [])[0] as { status?: string; expires_at?: string | null } | undefined;
-      if (acad) {
-        const notExpired = !acad.expires_at || new Date(acad.expires_at).getTime() > Date.now();
-        tier = acad.status === 'active' && notExpired ? 'academy' : 'lapsed';
-      }
-    } catch {
-      // Network/RLS failure — leave the current tier as-is.
+    const { data, error } = await supabase
+      .from('entitlements')
+      .select('product, status, expires_at')
+      .eq('product', 'academy');
+    if (error) {
+      // Don't downgrade on a transient read failure (see deriveAndApply).
+      console.warn('[entitlement] refresh read failed, keeping current tier:', error.message);
       return;
     }
+    const tier = academyTierFromRows((data ?? []) as EntRow[]);
     if (!devOverrode.current) setEntitlementState(tier);
   }, []);
 

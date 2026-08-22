@@ -68,6 +68,11 @@ export function isScenariosExempt(achievementId: string): boolean {
 
 /** Record that a topic is confirmed to have no scenario content (idempotent). */
 export async function markScenariosExempt(achievementId: string): Promise<void> {
+  // Hydrate FIRST (parity with enrollmentStore/measurementStore): the Scenarios
+  // screen can reach this before anything mounted useScenarioExempt (deep link /
+  // resume), so writing without loading the stored set first would overwrite it
+  // with just this one id and lose every prior exemption.
+  await hydrate();
   if (exempt.has(achievementId)) return;
   exempt.add(achievementId);
   emit();

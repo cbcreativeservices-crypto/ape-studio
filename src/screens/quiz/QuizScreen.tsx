@@ -76,6 +76,10 @@ export function QuizScreen({ navigation, route }: Props) {
   const focusLossDuration = useRef(0);
   const blurStartedAt = useRef<number | null>(null);
   const submitted = useRef(false);
+  // Highlight→advance timer — cleared on unmount so it can't submit/navigate on
+  // an unmounted screen (e.g. force-submit or back mid-highlight). Debug audit.
+  const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (advanceTimer.current) clearTimeout(advanceTimer.current); }, []);
 
   /* ---- attempt start (online-only; idempotent resume) ---- */
   useEffect(() => {
@@ -217,7 +221,8 @@ export function QuizScreen({ navigation, route }: Props) {
   const recordAndAdvance = useCallback(
     (slot: number, value: AnswerValue) => {
       answers.current[String(slot)] = value; // F4: slot-keyed VALUES
-      setTimeout(advance, HIGHLIGHT_MS);
+      if (advanceTimer.current) clearTimeout(advanceTimer.current);
+      advanceTimer.current = setTimeout(advance, HIGHLIGHT_MS);
     },
     [advance],
   );
@@ -243,7 +248,7 @@ export function QuizScreen({ navigation, route }: Props) {
   const confirmMulti = useCallback(() => {
     if (!question || multiSel.size === 0) return;
     // Preserve served order for determinism (grading is set-based server-side).
-    const opts = question.options as string[];
+    const opts = Array.isArray(question.options) ? (question.options as string[]) : [];
     recordAndAdvance(
       question.slot_index,
       opts.filter((o) => multiSel.has(o)),
@@ -263,8 +268,9 @@ export function QuizScreen({ navigation, route }: Props) {
       const nextPairs: [string, string][] = [...pairs, [leftSel, value]];
       setPairs(nextPairs);
       setLeftSel(null);
-      const k = (question.options as MatchingOptions).lefts.length;
-      if (nextPairs.length === k) recordAndAdvance(question.slot_index, nextPairs);
+      const lefts = (question.options as MatchingOptions)?.lefts;
+      const k = Array.isArray(lefts) ? lefts.length : 0;
+      if (k > 0 && nextPairs.length === k) recordAndAdvance(question.slot_index, nextPairs);
     },
     [question, leftSel, pairs, recordAndAdvance],
   );
@@ -319,8 +325,18 @@ export function QuizScreen({ navigation, route }: Props) {
   }
 
   const isMatching = question.question_type === 'matching';
-  const matching = isMatching ? (question.options as MatchingOptions) : null;
-  const singleOpts = !isMatching ? (question.options as string[]) : [];
+  // Runtime shape guards (owner debug audit): `as` casts are compile-time only,
+  // so a malformed/partial RPC payload would crash the render on .lefts.map /
+  // singleOpts.map. A bad matching payload → renders nothing for that question;
+  // a bad single payload → empty option list. Better than a hard crash.
+  const rawOpts = question.options as unknown;
+  const matching: MatchingOptions | null =
+    isMatching &&
+    Array.isArray((rawOpts as MatchingOptions)?.lefts) &&
+    Array.isArray((rawOpts as MatchingOptions)?.rights)
+      ? (rawOpts as MatchingOptions)
+      : null;
+  const singleOpts: string[] = !isMatching && Array.isArray(rawOpts) ? (rawOpts as string[]) : [];
   const isMulti = question.question_type === 'multi_select';
 
   const singleState = (opt: string): AnswerCellState => (picked === opt ? 'selectedBlue' : picked ? 'dimmed' : 'default');

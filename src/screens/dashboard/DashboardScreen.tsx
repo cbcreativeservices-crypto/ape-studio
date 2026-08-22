@@ -569,6 +569,11 @@ export function DashboardScreen() {
   const [data, setData] = useState<DashboardData | null>(() => getDashboardCache()?.data ?? null);
   const dataRef = useRef(data);
   dataRef.current = data;
+  // Guards setState in the async load() against an unmount mid-fetch (e.g. logout
+  // during a slow fetch) — the Dashboard is long-lived so it rarely bites, but
+  // this makes it airtight. Owner debug audit.
+  const mountedRef = useRef(true);
+  useEffect(() => () => { mountedRef.current = false; }, []);
   const [error, setError] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<string | null>(null);
   // A persisted session with no student record: self-healed to the guest view,
@@ -660,9 +665,17 @@ export function DashboardScreen() {
   const [intro, setIntro] = useState<{ kind: 'course' | 'topic'; key: string; name: string } | null>(null);
   const [introSeen, setIntroSeen] = useState<Set<string>>(new Set());
   useEffect(() => {
-    AsyncStorage.getItem('ape:learnIntrosSeen').then((v) => {
-      if (v) setIntroSeen(new Set(JSON.parse(v) as string[]));
-    });
+    AsyncStorage.getItem('ape:learnIntrosSeen')
+      .then((v) => {
+        if (!v) return;
+        try {
+          const a = JSON.parse(v);
+          if (Array.isArray(a)) setIntroSeen(new Set(a as string[]));
+        } catch {
+          /* corrupt value — intros simply replay, never an unhandled rejection */
+        }
+      })
+      .catch(() => {});
   }, []);
 
   // The Dashboard must always open at the TOP (Booth 2026-07-11): a stale scroll
@@ -795,14 +808,15 @@ export function DashboardScreen() {
       const frontier = frontierId ? Math.max(0, orderedIds.indexOf(frontierId)) : 0;
       const stored = await getLastTopicIndex(d.currentCourse.id);
       const idx = stored != null ? Math.min(stored, orderedIds.length - 1) : frontier;
+      setDashboardCache(d, idx); // instant landing next time (owner 2026-08-17)
+      if (!mountedRef.current) return; // unmounted mid-fetch — don't setState
       setTopicIdx(idx);
       setData(d);
-      setDashboardCache(d, idx); // instant landing next time (owner 2026-08-17)
     } catch (e: any) {
       // A SILENT refresh that fails must never replace good on-screen content
       // with the error screen (owner 2026-08-17) — e.g. a brief offline blip on
       // return. The error state is for the no-content cold path only.
-      if (dataRef.current) return;
+      if (dataRef.current || !mountedRef.current) return;
       setErrorCode(e?.message ?? 'unknown');
       setError(
         e?.message === 'not_enrolled'
@@ -812,7 +826,7 @@ export function DashboardScreen() {
             : 'Could not load the dashboard. Check your connection and pull to retry.',
       );
     } finally {
-      setLoading(false);
+      if (mountedRef.current) setLoading(false);
     }
   }, [commercialMode, caps]);
 

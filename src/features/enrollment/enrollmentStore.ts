@@ -59,21 +59,45 @@ function persist() {
 // (guests stay device-local). Best-effort — the local list is the source and
 // re-syncs on the next change if a sync fails.
 let syncTimer: ReturnType<typeof setTimeout> | null = null;
-function scheduleServerSync() {
+let syncRetries = 0;
+const MAX_SYNC_RETRIES = 4;
+function scheduleServerSync(delayMs = 800) {
   if (syncTimer) clearTimeout(syncTimer);
   syncTimer = setTimeout(() => {
     void (async () => {
       try {
         const { data } = await supabase.auth.getSession();
         if (!data.session) return;
-        await supabase.rpc('sync_my_enrollments', {
+        // supabase-js RESOLVES with { error } — the old dead catch never saw RPC
+        // errors, so a failed FINAL sync left the server master list stale with
+        // no retry until the user next edited enrollment (backend gates v3
+        // study/quiz on this list). Check error + re-arm a bounded backoff.
+        const { error } = await supabase.rpc('sync_my_enrollments', {
           p_items: list.map((e, i) => ({ gs: e.gs, favorite: e.favorite, active: e.active, position: i })),
         });
-      } catch {
-        /* best-effort */
+        if (error) {
+          if (syncRetries < MAX_SYNC_RETRIES) {
+            syncRetries++;
+            scheduleServerSync(Math.min(30_000, 1500 * 2 ** (syncRetries - 1))); // 1.5s→3s→6s→12s
+          } else {
+            console.warn('[enrollment] sync_my_enrollments giving up after retries:', error.message);
+            syncRetries = 0;
+          }
+          return;
+        }
+        syncRetries = 0; // success
+      } catch (e) {
+        // Transport throw (network) — same bounded backoff.
+        if (syncRetries < MAX_SYNC_RETRIES) {
+          syncRetries++;
+          scheduleServerSync(Math.min(30_000, 1500 * 2 ** (syncRetries - 1)));
+        } else {
+          console.warn('[enrollment] sync_my_enrollments threw, giving up:', (e as Error).message);
+          syncRetries = 0;
+        }
       }
     })();
-  }, 800);
+  }, delayMs);
 }
 
 async function hydrate(): Promise<void> {

@@ -50,3 +50,9 @@ export function getQueuedSubmissions(): QueuedSubmissionRow[] {
 export function deleteQueuedSubmission(attemptId: string): void {
   db.runSync('DELETE FROM quiz_submission_queue WHERE attempt_id = ?', [attemptId]);
 }
+
+/** Drop the entire queue — called on account switch so one user's un-synced
+ *  offline quiz submissions never replay under the next user's session. */
+export function clearQueuedSubmissions(): void {
+  db.runSync('DELETE FROM quiz_submission_queue');
+}

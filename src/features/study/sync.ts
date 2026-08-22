@@ -109,7 +109,17 @@ export async function replayQueue(): Promise<void> {
   }
 
   for (const g of groups.values()) {
-    const events: StudyEvent[] = g.flatMap((r) => JSON.parse(r.events_json) as StudyEvent[]);
+    let events: StudyEvent[];
+    try {
+      events = g.flatMap((r) => JSON.parse(r.events_json) as StudyEvent[]);
+    } catch (e) {
+      // Corrupt events_json: parsing used to run OUTSIDE the try below, so a
+      // poisoned row threw before the drop logic and wedged the queue AND
+      // aborted the live flush every cycle. Drop the bad group and continue.
+      console.warn('[study-sync] dropping unparseable queued batch:', (e as Error).message);
+      deleteQueuedBatches(g.map((r) => r.id));
+      continue;
+    }
     const seconds = g.reduce((s, r) => s + r.active_seconds, 0);
     const { achievement_id, method_key } = g[0];
 

@@ -457,17 +457,28 @@ export function FlashcardsScreen({ navigation, route }: Props) {
         // never regresses a view/known; server truth still governs the gates.
         const st = mergeItemStates(methodState?.itemStates, localStates);
         setStates(st);
+        // Local prefs are parsed in their OWN guards: a corrupt device pref must
+        // degrade to the default, NOT surface as a "could not load topic" error
+        // (the topic itself loaded fine off the server). Owner debug audit.
         if (storedSections != null) {
-          const arr = (JSON.parse(storedSections) as number[]).filter((n) => ALL_LEVELS.includes(n));
-          if (arr.length) setSections(new Set(arr));
+          try {
+            const arr = (JSON.parse(storedSections) as number[]).filter((n) => ALL_LEVELS.includes(n));
+            if (arr.length) setSections(new Set(arr));
+          } catch {
+            /* bad section pref — keep the default selection */
+          }
         }
         // Hidden list: persisted local choice wins; first visit seeds it from
         // the server's known flags.
+        let hiddenSet: Set<string> | null = null;
         if (storedHidden != null) {
-          setHidden(new Set(JSON.parse(storedHidden) as string[]));
-        } else {
-          setHidden(new Set(Object.keys(st).filter((k) => !k.startsWith('_') && st[k]?.known)));
+          try {
+            hiddenSet = new Set(JSON.parse(storedHidden) as string[]);
+          } catch {
+            hiddenSet = null; // bad pref → fall through to the server-seeded default
+          }
         }
+        setHidden(hiddenSet ?? new Set(Object.keys(st).filter((k) => !k.startsWith('_') && st[k]?.known)));
       } catch {
         if (alive) setError('Could not load this topic. Check your connection.');
       }

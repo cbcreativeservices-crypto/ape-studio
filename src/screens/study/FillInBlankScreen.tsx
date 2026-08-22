@@ -85,6 +85,10 @@ export function FillInBlankScreen({ navigation, route }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [fullscreen, setFullscreen] = useState(false);
   const session = useRef<StudySession | null>(null);
+  // Auto-advance timer — tracked so it's cleared on unmount (no setState after
+  // unmount if the user leaves during the feedback hold). Owner debug audit.
+  const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (advanceTimer.current) clearTimeout(advanceTimer.current); }, []);
 
   // Pace timer (practice aid — device-local settings, never blocks study).
   const { settings: pace, setEnabled, setPreset } = usePaceSettings('fill_in_blank');
@@ -244,7 +248,8 @@ export function FillInBlankScreen({ navigation, route }: Props) {
       }));
       // Hold the correct/incorrect coloring long enough to register the
       // result before advancing (Booth 2026-07-08: give real feedback).
-      setTimeout(() => {
+      if (advanceTimer.current) clearTimeout(advanceTimer.current);
+      advanceTimer.current = setTimeout(() => {
         setPicked(null);
         setQIdx((i) => i + 1);
       }, FEEDBACK_MS);

@@ -27,3 +27,9 @@ export function getQueuedSubmissions(): QueuedSubmissionRow[] {
 export function deleteQueuedSubmission(attemptId: string): void {
   queue.delete(attemptId);
 }
+
+/** Drop the entire queue — called on account switch (parity with the native
+ *  sibling) so queued submissions never replay under the next user. */
+export function clearQueuedSubmissions(): void {
+  queue.clear();
+}

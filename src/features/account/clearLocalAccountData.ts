@@ -26,6 +26,8 @@ import { resetLocal as resetHomeCardsStore } from '../home/homeCardsStore';
 import { resetLocal as resetMeasurementStore } from '../tools/measure/measurementStore';
 import { resetLocal as resetLabCompletion } from '../lab/labCompletion';
 import { resetLocal as resetDashboardCache } from '../dashboard/dashboardCache';
+import { clearQueuedBatches } from '../study/studyQueueStorage';
+import { clearQueuedSubmissions } from '../quiz/submissionQueueStorage';
 
 /**
  * Keys that MUST survive an account wipe: device-hardware calibration (per
@@ -89,4 +91,11 @@ export function resetAllLocalStores(): void {
   resetMeasurementStore();
   resetLabCompletion();
   resetDashboardCache();
+  // Offline SQLite/in-memory queues carry NO user id — if not dropped here, a
+  // departing user's queued study batches / quiz submissions would replay under
+  // the NEXT user's session and be credited to the wrong account. Their local
+  // progress mirror is already wiped on switch, so dropping the queue is
+  // consistent (owner debug audit 2026-08-21).
+  clearQueuedBatches();
+  clearQueuedSubmissions();
 }

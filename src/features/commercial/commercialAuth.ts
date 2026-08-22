@@ -21,10 +21,18 @@ export type FavoritesMigration = { favorites: string[]; recent: string[] };
 /** Collect the anonymous device-local glossary state to migrate on signup. */
 export async function collectFavoritesMigration(): Promise<FavoritesMigration> {
   const [f, r] = await Promise.all([AsyncStorage.getItem(FAVS_KEY), AsyncStorage.getItem(RECENT_KEY)]);
-  return {
-    favorites: f ? (JSON.parse(f) as string[]) : [],
-    recent: r ? (JSON.parse(r) as string[]) : [],
+  // Defensive parse: a corrupt anonymous glossary blob must NEVER throw here —
+  // this runs on the signup path and would otherwise block account creation.
+  const safeList = (v: string | null): string[] => {
+    if (!v) return [];
+    try {
+      const a = JSON.parse(v);
+      return Array.isArray(a) ? (a as string[]) : [];
+    } catch {
+      return [];
+    }
   };
+  return { favorites: safeList(f), recent: safeList(r) };
 }
 
 export type CommercialSignupResult = { success: true } | { success: false; error: string };

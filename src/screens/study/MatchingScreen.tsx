@@ -92,6 +92,27 @@ export function MatchingScreen({ navigation, route }: Props) {
   const [wrongPair, setWrongPair] = useState<{ left: string; right: string } | null>(null);
   const [correctFlash, setCorrectFlash] = useState<string | null>(null); // item id flashing green
   const session = useRef<StudySession | null>(null);
+  // Flash/advance timers — tracked + cleared on unmount. Critical here because
+  // one of them fires LayoutAnimation.configureNext, which is GLOBAL: firing it
+  // after this screen unmounts would animate the NEXT screen's first layout
+  // commit on Fabric. `mounted` gates the deferred work. Owner debug audit.
+  const mounted = useRef(true);
+  const flashTimers = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+      flashTimers.current.forEach((t) => clearTimeout(t));
+      flashTimers.current.clear();
+    };
+  }, []);
+  const scheduleFlash = (fn: () => void, ms: number) => {
+    const t = setTimeout(() => {
+      flashTimers.current.delete(t);
+      if (mounted.current) fn();
+    }, ms);
+    flashTimers.current.add(t);
+  };
 
   // Pace timer (practice aid — device-local settings, never blocks study).
   const { settings: pace, setEnabled, setPreset } = usePaceSettings('matching');
@@ -262,16 +283,16 @@ export function MatchingScreen({ navigation, route }: Props) {
         setLocked(next);
         setSelectedLeft(null);
         setCorrectFlash(answeredId); // green flash, then the pair animates out
-        setTimeout(() => {
+        scheduleFlash(() => {
           LayoutAnimation.configureNext(CARD_COLLAPSE_ANIM); // slide the rest up
           setCorrectFlash((c) => (c === answeredId ? null : c));
         }, CORRECT_FLASH_MS);
         if (next.size === board.length) {
-          setTimeout(() => goBoardRef.current(1), ADVANCE_MS);
+          scheduleFlash(() => goBoardRef.current(1), ADVANCE_MS);
         }
       } else {
         setWrongPair({ left: selectedLeft, right: rightId });
-        setTimeout(() => {
+        scheduleFlash(() => {
           setWrongPair(null);
           setSelectedLeft(null);
         }, WRONG_FLASH_MS);

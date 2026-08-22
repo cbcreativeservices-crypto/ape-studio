@@ -34,3 +34,9 @@ export function deleteQueuedBatches(ids: number[]): void {
     if (drop.has(queue[i].id)) queue.splice(i, 1);
   }
 }
+
+/** Drop the entire queue — called on account switch (parity with the native
+ *  sibling) so queued batches never replay under the next user. */
+export function clearQueuedBatches(): void {
+  queue.length = 0;
+}

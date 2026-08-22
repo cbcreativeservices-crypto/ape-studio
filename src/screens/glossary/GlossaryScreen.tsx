@@ -1162,9 +1162,17 @@ export function GlossaryScreen({ route, navigation }: Props) {
       let alive = true;
       // Recently-viewed (device-side; no backend table). Flagged terms hydrate
       // via flaggedStore (shared with Flashcards — Booth 2026-07-18).
-      AsyncStorage.getItem(RECENT_KEY).then((v) => {
-        if (alive && v) setRecent(JSON.parse(v) as string[]);
-      });
+      AsyncStorage.getItem(RECENT_KEY)
+        .then((v) => {
+          if (!alive || !v) return;
+          try {
+            const a = JSON.parse(v);
+            if (Array.isArray(a)) setRecent(a as string[]);
+          } catch {
+            /* corrupt value — recently-viewed just stays empty */
+          }
+        })
+        .catch(() => {});
       AsyncStorage.getItem(TTS_MODE_KEY).then((v) => {
         if (alive && v != null) setTtsBeg(v === '1');
       });

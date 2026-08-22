@@ -41,5 +41,13 @@ export function getQueuedBatches(): StudyQueueRow[] {
 }
 
 export function deleteQueuedBatches(ids: number[]): void {
+  if (ids.length === 0) return; // empty IN () is invalid SQL — guard it
   db.runSync(`DELETE FROM study_queue WHERE id IN (${ids.join(',')})`);
+}
+
+/** Drop the entire queue — called on account switch so one user's un-synced
+ *  offline batches never replay under the next user's session (cross-account
+ *  contamination). See clearLocalAccountData / resetAllLocalStores. */
+export function clearQueuedBatches(): void {
+  db.runSync('DELETE FROM study_queue');
 }
