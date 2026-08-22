@@ -27,6 +27,21 @@ type Props = NativeStackScreenProps<RootStackParamList, 'ToolInfo'>;
  *  (signalgen is an OUTPUT generator; hzcounter/multimeter never route here.) */
 const MIC_INPUT_TOOLS: ReadonlySet<ToolKey> = new Set<ToolKey>(['spl', 'rta', 'waveform', 'spectrogram', 'rt60']);
 
+/** OPEN TOOL → the live screen for each tool that routes through ToolInfo. Keys
+ *  absent here show NO open button rather than falling through to the wrong tool:
+ *  the previous ternary sent ANY unmapped key (e.g. multimeter, reachable via a
+ *  concept module's related-tool link) to the Signal Generator. hzcounter is
+ *  intentionally omitted — it opens from its own hub entry, not here. */
+const OPEN_TOOL_ROUTE: Partial<Record<ToolKey, keyof RootStackParamList>> = {
+  spl: 'SplMeter',
+  rta: 'Rta',
+  waveform: 'WaveformLive',
+  spectrogram: 'SpectrogramLive',
+  rt60: 'Rt60Live',
+  signalgen: 'SignalGen',
+  multimeter: 'MultiMeter',
+};
+
 function Bullets({ items }: { items: string[] }) {
   return (
     <View style={{ gap: 6 }}>
@@ -60,9 +75,8 @@ export function ToolInfoScreen({ navigation, route }: Props) {
     }, [isInputTool]),
   );
   // OPEN TOOL is free for everyone; the LEARN/DEMO training layer is Academy-
-  // only (owner 2026-08-05). Gate on entitlement, not caps.
-  const { entitlement } = useEntitlement();
-  const isMember = entitlement === 'academy';
+  // only (owner 2026-08-05). Gate on real standing (isMember), not caps.
+  const { isMember } = useEntitlement();
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -84,27 +98,13 @@ export function ToolInfoScreen({ navigation, route }: Props) {
         {/* Engine build (2026-07-23): OPEN TOOL for tools with a live screen.
             The live screen gates itself honestly (EngineGate) when the native
             engine isn't in this build — never a fake meter. */}
-        {tool.key !== 'hzcounter' && (
+        {OPEN_TOOL_ROUTE[tool.key] && (
           <GlassButton
             label="OPEN TOOL"
             tint="green"
             height={52}
             fontSize={15}
-            onPress={() =>
-              navigation.navigate(
-                tool.key === 'spl'
-                  ? 'SplMeter'
-                  : tool.key === 'rta'
-                    ? 'Rta'
-                    : tool.key === 'waveform'
-                      ? 'WaveformLive'
-                      : tool.key === 'spectrogram'
-                        ? 'SpectrogramLive'
-                        : tool.key === 'rt60'
-                          ? 'Rt60Live'
-                          : 'SignalGen',
-              )
-            }
+            onPress={() => (navigation as any).navigate(OPEN_TOOL_ROUTE[tool.key])}
           />
         )}
 

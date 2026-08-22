@@ -290,6 +290,19 @@ export function MatchingScreen({ navigation, route }: Props) {
       </View>
     );
   }
+  // Loaded but the topic has no items — show an exit instead of spinning forever
+  // (StudyStack has no header/back gesture; the spinner below would trap the
+  // user with only the tab bar to escape). Owner launch-triage E6.
+  if (items && items.length === 0) {
+    return (
+      <View style={styles.center}>
+        <Text style={styles.errorText}>This topic has no matching items yet.</Text>
+        <View style={{ width: 180 }}>
+          <StudioButton label="Back" variant="secondary" small onPress={() => navigation.goBack()} />
+        </View>
+      </View>
+    );
+  }
   if (!items || !board) {
     return (
       <View style={styles.center}>

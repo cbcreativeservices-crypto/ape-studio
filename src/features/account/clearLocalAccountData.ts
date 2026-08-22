@@ -21,6 +21,7 @@ import { resetLocal as resetEnrolledBundlesStore } from '../enrollment/enrolledB
 import { resetLocal as resetFlaggedStore } from '../flags/flaggedStore';
 import { resetLocal as resetPaceStore } from '../study/paceStore';
 import { resetLocal as resetLastStudyLocation } from '../study/lastStudyLocation';
+import { resetLocal as resetScenarioExempt } from '../study/scenarioExempt';
 import { resetLocal as resetHomeCardsStore } from '../home/homeCardsStore';
 import { resetLocal as resetMeasurementStore } from '../tools/measure/measurementStore';
 import { resetLocal as resetLabCompletion } from '../lab/labCompletion';
@@ -83,6 +84,7 @@ export function resetAllLocalStores(): void {
   resetFlaggedStore();
   resetPaceStore();
   resetLastStudyLocation();
+  resetScenarioExempt();
   resetHomeCardsStore();
   resetMeasurementStore();
   resetLabCompletion();

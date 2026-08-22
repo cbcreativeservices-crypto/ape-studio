@@ -142,11 +142,11 @@ export const AWARD_ORDER: AwardCategory[] = ['specialization', 'program'];
 
 /**
  * Academy Program Certificates — the 15 full-program certificates (CCODE
- * handoff 2026-07-18, curriculum v2). Each certificate = the 3 shared core
- * pre-reqs (COREQ_TOPIC_GS: gs100 / gs120 / gs1590, surfaced separately so they
- * are never double-added) + its required topics + an optional "choose one"
- * elective group. Topics are referenced by gs (the achievement's
- * global_sequence) and resolved to names against the v2 matrix at render.
+ * handoff 2026-07-18). Each certificate = the shared core requisites
+ * (COREQ_TOPIC_GS = gs3060 / gs3070 / gs3080 / gs4370, plus the Foundations lab,
+ * surfaced separately so they are never double-added) + its required topics + an
+ * optional "choose one" elective group. Topics are referenced by gs (the
+ * achievement's global_sequence) and resolved to names at render.
  */
 export type ProgramPath = {
   name: string;
@@ -270,10 +270,10 @@ export const PROGRAM_PATHS: ProgramPath[] = [
 
 /**
  * Specialized Certificates — the 68 three-topic certificates (CCODE handoff
- * 2026-07-18, curriculum v2; Architectural Audio added 2026-07-22). Each = the
- * 3 shared core pre-reqs (COREQ_TOPIC_GS: gs100 / gs120 / gs1590, surfaced
- * separately) + exactly 3 specialization topics that define the certificate.
- * Topics are referenced by gs and resolved to names against the v2 matrix at
+ * 2026-07-18; Architectural Audio added 2026-07-22). Each = the shared core
+ * requisites (COREQ_TOPIC_GS = gs3060 / gs3070 / gs3080 / gs4370, plus the
+ * Foundations lab, surfaced separately) + exactly 3 specialization topics that
+ * define the certificate. Topics are referenced by gs and resolved to names at
  * render.
  *
  * NAMING (user request 2026-07-22): a leading "Audio " is dropped from the

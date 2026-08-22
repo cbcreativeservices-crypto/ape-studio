@@ -98,6 +98,73 @@ export async function setLastCourse(courseId: string): Promise<void> {
 export const ENROLLMENT_COURSE_ID = 'enrollment';
 
 /**
+ * Item-universe sizes per topic — the Dashboard denominator for study-method
+ * completion. Counts glossary_topics rows by achievement_id; for any topic whose
+ * DIRECT count is 0, unions across sibling achievements that share the same NAME.
+ *
+ * This mirrors the duplicate-achievement name-union in features/study/api.ts
+ * (fetchTopicItems): the v3 launch left several achievement rows sharing one
+ * topic name with the glossary terms mapped to only ONE of those ids (e.g.
+ * Professional Audio Safety / gs3060). Without the union the Dashboard reads a
+ * 0 denominator while Flashcards happily loads terms via the sibling union — so
+ * flashcards % is stuck at 0, homeworkPowered never flips, and fill-in-blank /
+ * matching / scenarios / quiz are all dead switches forever. gs3060 is an
+ * auto-enrolled free topic, i.e. the first thing a new tester touches.
+ */
+async function resolveItemCounts(
+  topicIds: string[],
+  topicNameById: Map<string, string>,
+): Promise<Map<string, number>> {
+  const counts = new Map<string, number>();
+  if (topicIds.length === 0) return counts;
+
+  // Direct counts (glossary_topics is a unique (achievement_id, glossary_id)
+  // mapping, so row count == distinct term count for a single achievement_id).
+  const { data: direct } = await supabase
+    .from('glossary_topics')
+    .select('achievement_id')
+    .in('achievement_id', topicIds);
+  for (const r of (direct ?? []) as { achievement_id: string }[]) {
+    counts.set(r.achievement_id, (counts.get(r.achievement_id) ?? 0) + 1);
+  }
+
+  // Topics with zero direct terms → resolve siblings by name and union, deduping
+  // by glossary_id exactly as the study fetch does.
+  const zeroIds = topicIds.filter((id) => (counts.get(id) ?? 0) === 0);
+  if (zeroIds.length === 0) return counts;
+
+  const names = Array.from(
+    new Set(zeroIds.map((id) => topicNameById.get(id)).filter(Boolean) as string[]),
+  );
+  if (names.length === 0) return counts;
+
+  const { data: sibs } = await supabase.from('achievements').select('id, name').in('name', names);
+  const nameByAch = new Map<string, string>();
+  for (const s of (sibs ?? []) as { id: string; name: string }[]) nameByAch.set(s.id, s.name);
+  const allSibIds = Array.from(nameByAch.keys());
+  if (allSibIds.length === 0) return counts;
+
+  const { data: sibItems } = await supabase
+    .from('glossary_topics')
+    .select('achievement_id, glossary_id')
+    .in('achievement_id', allSibIds);
+  const glossaryByName = new Map<string, Set<string>>();
+  for (const r of (sibItems ?? []) as { achievement_id: string; glossary_id: string }[]) {
+    const name = nameByAch.get(r.achievement_id);
+    if (!name) continue;
+    const set = glossaryByName.get(name) ?? new Set<string>();
+    set.add(r.glossary_id);
+    glossaryByName.set(name, set);
+  }
+  for (const id of zeroIds) {
+    const name = topicNameById.get(id);
+    const set = name ? glossaryByName.get(name) : undefined;
+    if (set && set.size > 0) counts.set(id, set.size);
+  }
+  return counts;
+}
+
+/**
  * Enrollment-driven Dashboard (user request 2026-07-22): builds a DashboardData
  * whose `topics` are the user's enrolled topics resolved from their
  * global_sequence (gs), in the given order, so the EXISTING Dashboard renders
@@ -181,17 +248,11 @@ export async function fetchEnrollmentDashboard(gsList: number[]): Promise<Dashbo
   const topicIds = topics.map((t) => t.id);
   if (topicIds.length === 0) return empty;
 
-  const itemCountByTopic = new Map<string, number>();
   const progressByTopic = new Map<string, TopicProgress>();
   let methodRows: MethodProgressRow[] = [];
 
-  const { data: topicItems } = await supabase
-    .from('glossary_topics')
-    .select('achievement_id')
-    .in('achievement_id', topicIds);
-  for (const r of (topicItems ?? []) as { achievement_id: string }[]) {
-    itemCountByTopic.set(r.achievement_id, (itemCountByTopic.get(r.achievement_id) ?? 0) + 1);
-  }
+  const nameById = new Map<string, string>(topics.map((t) => [t.id, t.name]));
+  const itemCountByTopic = await resolveItemCounts(topicIds, nameById);
 
   if (userId !== 'local') {
     const [{ data: prog }, { data: mRows }] = await Promise.all([
@@ -259,13 +320,16 @@ export async function fetchDashboard(): Promise<DashboardData> {
     .order('sequence_in_course');
   if (topErr) throw topErr;
   const topicIds = (topics ?? []).map((t) => t.id);
+  const nameById = new Map<string, string>(((topics ?? []) as Topic[]).map((t) => [t.id, t.name]));
 
   // 5. Own per-topic + per-method progress (missing row = locked / no progress).
+  //    itemCountByTopic goes through resolveItemCounts (name-union) so the
+  //    duplicate-achievement topics don't read a 0 denominator — see the helper.
   const [
     { data: prog, error: progErr },
     { data: methodRows, error: mErr },
     { data: cfg, error: cfgErr },
-    { data: topicItems, error: tiErr },
+    itemCountByTopic,
   ] = await Promise.all([
     supabase
       .from('student_achievement_progress')
@@ -281,17 +345,11 @@ export async function fetchDashboard(): Promise<DashboardData> {
       .from('study_methods')
       .select('key, name, sequence, min_engagement_seconds, requires_accuracy, accuracy_threshold, required_passes')
       .order('sequence'),
-    supabase.from('glossary_topics').select('achievement_id').in('achievement_id', topicIds),
+    resolveItemCounts(topicIds, nameById),
   ]);
   if (progErr) throw progErr;
   if (mErr) throw mErr;
   if (cfgErr) throw cfgErr;
-  if (tiErr) throw tiErr;
-
-  const itemCountByTopic = new Map<string, number>();
-  for (const r of (topicItems ?? []) as { achievement_id: string }[]) {
-    itemCountByTopic.set(r.achievement_id, (itemCountByTopic.get(r.achievement_id) ?? 0) + 1);
-  }
 
   const progressByTopic = new Map<string, TopicProgress>();
   for (const p of (prog ?? []) as TopicProgress[]) progressByTopic.set(p.achievement_id, p);

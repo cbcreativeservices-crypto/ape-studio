@@ -168,8 +168,7 @@ const enrollUi = {
 export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<any>();
-  const { entitlement } = useEntitlement();
-  const paid = entitlement === 'academy';
+  const { isMember: paid } = useEntitlement();
 
   const enrolled = useEnrollment();
   // LIVE v3 curriculum (owner 2026-08-06) — replaces the retired bundled v2 matrix.
@@ -610,7 +609,12 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   // Dashboard resume behavior.
   const lastLoc = useLastStudyLocation();
   const resumeLastOrDashboard = () => {
-    if (lastLoc?.kind === 'method') {
+    // Deep-resuming straight into a method screen BYPASSES the Dashboard's
+    // membership gate (owner launch-triage): a lapsed/free user could re-enter
+    // paid study that way. Only academy members jump directly into a method;
+    // everyone else routes through the Dashboard, which applies the free-topic /
+    // paywall gate for the resumed topic (free topics still open one tap away).
+    if (lastLoc?.kind === 'method' && paid) {
       navigation.navigate('Main', {
         screen: 'Study',
         params: {

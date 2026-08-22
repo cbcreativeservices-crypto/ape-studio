@@ -6,18 +6,20 @@
  * 🔒 lock and an "Academy membership required" note. Tapping a locked control
  * routes to the Paywall (the app's standard 🔒 idiom).
  *
- * Gating is by ENTITLEMENT (`entitlement === 'academy'`), never caps — matching
- * the AudioLearning / EarLab training gate, so the dev academy-bypass on caps
- * doesn't hide these while the owner tests the free experience.
+ * Gating is by REAL academy standing (the provider's `isMember`), never caps —
+ * matching the AudioLearning / EarLab training gate, so the dev academy-bypass on
+ * caps doesn't hide these while the owner tests the free experience. `isMember`
+ * is the single source for this idiom (see EntitlementProvider).
  */
 import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { colors, fonts } from '../../theme/tokens';
 
 export const MEMBERSHIP_REQUIRED = 'Academy membership required';
 
-/** True when the current entitlement may NOT use the Academy tool extras. */
-export function useToolsLocked(entitlement: string): boolean {
-  return entitlement !== 'academy';
+/** True when the current user may NOT use the Academy tool extras. */
+export function useToolsLocked(): boolean {
+  return !useEntitlement().isMember;
 }
 
 /** A grayed, locked stand-in for a tool button. Looks disabled (steel/lock) but

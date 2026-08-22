@@ -85,18 +85,6 @@ function ChoiceChips({
   );
 }
 
-/** Static stand-in blocks approximating the design's QR mock (C-3 pending). */
-const STUB_BLOCKS = [
-  { c: 0, r: 0, w: 2, h: 2 },
-  { c: 5, r: 0, w: 2, h: 2 },
-  { c: 3, r: 1, w: 1, h: 1 },
-  { c: 2, r: 3, w: 1, h: 1 },
-  { c: 4, r: 3, w: 2, h: 2 },
-  { c: 0, r: 5, w: 2, h: 2 },
-  { c: 3, r: 5, w: 1, h: 1 },
-  { c: 6, r: 6, w: 1, h: 1 },
-];
-
 export function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
@@ -171,8 +159,6 @@ export function ProfileScreen() {
       return next;
     });
   }, []);
-
-  const cell = 96 / 7; // stub grid geometry inside the 112px QR box (8px padding)
 
   // Institutional Mode is no longer a user-facing switch (user request
   // 2026-07-23) — it will be triggered automatically when a user signs in with an
@@ -516,22 +502,13 @@ export function ProfileScreen() {
           <Text style={styles.nickname}>{(profile?.nickname ?? '—').toUpperCase()}</Text>
           <Text style={styles.apeId}>{profile?.apeStudentId ?? ''}</Text>
 
-          {/* QR stub — 120×120 white tile, pattern only (C-3) */}
+          {/* QR is NOT a real, scannable credential yet — the verifiable ID code
+              is server-issued once the Academy Registry is wired. Show an honest
+              "pending" tile instead of a fabricated QR pattern that looks
+              scannable (owner launch-triage 2026-08-21). */}
           <View style={styles.qrBox}>
-            {STUB_BLOCKS.map((b, i) => (
-              <View
-                key={i}
-                style={{
-                  position: 'absolute',
-                  left: 8 + b.c * cell,
-                  top: 8 + b.r * cell,
-                  width: b.w * cell - 2,
-                  height: b.h * cell - 2,
-                  backgroundColor: '#000000',
-                }}
-              />
-            ))}
-            <Text style={styles.qrStubLabel}>C-3</Text>
+            <Text style={styles.qrPendingTitle}>QR</Text>
+            <Text style={styles.qrPendingSub}>Issued when your Registry ID goes live</Text>
           </View>
         </View>
 
@@ -756,14 +733,23 @@ const styles = StyleSheet.create({
     marginTop: 8,
     backgroundColor: '#ffffff',
     borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 10,
   },
-  qrStubLabel: {
-    position: 'absolute',
-    bottom: 3,
-    right: 5,
-    fontFamily: fonts.mono,
-    fontSize: 9,
-    color: '#999999',
+  qrPendingTitle: {
+    fontFamily: fonts.oswaldBold,
+    fontSize: 22,
+    letterSpacing: 2,
+    color: '#c9c9c9',
+  },
+  qrPendingSub: {
+    marginTop: 6,
+    fontFamily: fonts.barlowMedium,
+    fontSize: 9.5,
+    lineHeight: 13,
+    textAlign: 'center',
+    color: '#9a9a9a',
   },
 
   panel: {

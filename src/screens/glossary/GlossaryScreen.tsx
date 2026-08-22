@@ -915,12 +915,10 @@ export function GlossaryScreen({ route, navigation }: Props) {
   const [linksOn, setLinksOn] = useGlossaryLinksPref();
   // CM4: commercial rendering — Common Mistakes gating + no academic course
   // filter in public UI (§1 naming rule). Server owns entitlement; we render.
-  const { commercialMode, entitlement } = useEntitlement();
-  // Real membership (owner 2026-07-29): gate the mistakes veil + topic-filter
-  // links on ENTITLEMENT, never on caps (dev-bypassed) or the commercialMode
-  // compile flag — that regression hid both selling points. Only a current
-  // paying member (academy) reads the mistakes and can activate a topic.
-  const isMember = entitlement === 'academy';
+  const { commercialMode, isMember } = useEntitlement();
+  // Real membership: gate the mistakes veil + topic-filter links on true
+  // standing (provider isMember), never on caps (dev-bypassed) — that regression
+  // hid both selling points. See the isMember doc in EntitlementProvider.
   const listRef = useRef<FlatList<Entry>>(null);
   // Multiple simultaneous expansions in list view (user request 2026-07-18);
   // `focusedId` = the most-recently opened term (drives scroll + view-toggle).

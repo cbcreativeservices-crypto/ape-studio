@@ -262,6 +262,18 @@ export function FillInBlankScreen({ navigation, route }: Props) {
       </View>
     );
   }
+  // Loaded but the topic has no items — offer an exit instead of an endless
+  // spinner (StudyStack has no header/back gesture). Owner launch-triage E6.
+  if (items && items.length === 0) {
+    return (
+      <View style={styles.center}>
+        <Text style={styles.errorText}>This topic has no fill-in-the-blank items yet.</Text>
+        <View style={{ width: 180 }}>
+          <StudioButton label="Back" variant="secondary" small onPress={() => navigation.goBack()} />
+        </View>
+      </View>
+    );
+  }
   if (!items || !question) {
     return (
       <View style={styles.center}>

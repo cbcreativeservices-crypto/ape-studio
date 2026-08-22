@@ -196,10 +196,17 @@ export class StudySession {
         this.onSnapshot(snap);
         emitStudyProgress(); // progress committed — refresh any live dashboard
       } catch (e) {
-        if (isNetworkError(e)) {
-          enqueue(this.achievementId, this.methodKey, batchId, seconds, events);
-        } else {
-          console.warn('[study-sync] batch rejected:', (e as Error).message);
+        // NEVER drop the events here. The buffer was already spliced out above,
+        // so a bare `console.warn` would silently lose a study session on any
+        // non-network rejection (a transient RLS/token gap, or an RPC that
+        // hasn't been deployed yet). Persist to the durable queue instead: it
+        // survives an app restart and replays on the next flush. replayQueue()
+        // remains the SINGLE arbiter that eventually drops a genuinely poisoned
+        // batch (it drops on a non-network failure during replay), so this
+        // cannot wedge the queue — it only buys the events one durable retry.
+        enqueue(this.achievementId, this.methodKey, batchId, seconds, events);
+        if (!isNetworkError(e)) {
+          console.warn('[study-sync] batch rejected, queued for retry:', (e as Error).message);
           this.onRejected?.((e as Error).message);
         }
       }

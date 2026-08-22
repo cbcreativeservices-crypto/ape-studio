@@ -15,6 +15,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Platform,
   Pressable,
   StyleSheet,
@@ -23,7 +24,6 @@ import {
 } from 'react-native';
 import { devBypass } from '../../config/devMode';
 import { KeyboardAwareScrollView } from '../../features/keyboard/keyboardControllerSafe';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { BrandLogo } from '../../components/BrandLogo';
@@ -31,34 +31,42 @@ import { StudioButton } from '../../components/StudioButton';
 import { TextField } from '../../components/TextField';
 import { colors, fonts, spacing } from '../../theme/tokens';
 import { clearLocalAccountData, resetAllLocalStores } from '../../features/account/clearLocalAccountData';
-import { EMAIL_RE, passwordIssue, resetPassword, signIn } from '../../features/auth/api';
+import {
+  EMAIL_RE,
+  passwordIssue,
+  requestPasswordReset,
+  signIn,
+  updatePassword,
+  verifyRecoveryOtp,
+} from '../../features/auth/api';
 import { supabase } from '../../lib/supabase';
 import { COPY } from '../../lib/copy';
 import { registerCommercialUser } from '../../features/commercial/commercialAuth';
+import { redeemAccessCode } from '../../features/commercial/accessCode';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { AppWelcomeOverlay } from '../../features/intro/AppWelcomeOverlay';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Auth'>;
 
-const STAY_KEY = 'ape:stayLoggedIn';
-
 export function AuthScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
-  const { setEntitlement } = useEntitlement();
+  const { setEntitlement, refreshEntitlement } = useEntitlement();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   // Optional organization invitation / promo / access code (user request
   // 2026-07-22).
   const [accessCode, setAccessCode] = useState('');
-  const [stayLoggedIn, setStayLoggedIn] = useState(true);
+
+  // Password recovery (in-app OTP, no deep link) — see features/auth/api.ts.
+  const [mode, setMode] = useState<'main' | 'recovery'>('main');
+  const [resetCode, setResetCode] = useState('');
+  const [newPassword, setNewPassword] = useState('');
 
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-
-  const persistStay = () => AsyncStorage.setItem(STAY_KEY, stayLoggedIn ? '1' : '0');
 
   const toHome = () => navigation.reset({ index: 0, routes: [{ name: 'Main', params: { screen: 'Home' } }] });
 
@@ -114,17 +122,35 @@ export function AuthScreen({ navigation }: Props) {
     }
     setBusy(true);
     try {
-      // NOTE: the access/org/promo code is captured here and will be applied to
-      // the new account once the server accepts it (backend frozen). The open
-      // commercial signup handles the email + password today.
       const result = await registerCommercialUser(email.trim(), password);
       if (!result.success) {
         setError(result.error);
         return;
       }
-      await persistStay();
-      // Mock entitlement → 'free' post-signup (server truth once wired).
-      setEntitlement('free');
+      // Optional access/promo code (owner 2026-08-21: comp accounts / event
+      // offers). Best-effort AFTER the account exists — a bad or not-yet-live
+      // code never blocks the finished signup; the user just lands as free.
+      const code = accessCode.trim();
+      let granted = false;
+      if (code) {
+        const redeem = await redeemAccessCode(code);
+        if (redeem.ok) {
+          granted = true;
+          await refreshEntitlement(); // pick up the granted academy entitlement
+        } else {
+          // Account is created + signed in; surface why the code didn't apply so
+          // an influencer/event user knows to retry it (Settings → Redeem code).
+          setBusy(false);
+          Alert.alert('Account created', `${redeem.message}\n\nYou can add a code later in Settings.`, [
+            { text: 'Continue', onPress: toHome },
+          ]);
+          return;
+        }
+      }
+      // Mock entitlement → 'free' post-signup (server truth once wired). In
+      // production setEntitlement no-ops; a granted code was already applied via
+      // refreshEntitlement above, so only default to 'free' when nothing granted.
+      if (!granted) setEntitlement('free');
       toHome();
     } finally {
       setBusy(false);
@@ -146,13 +172,14 @@ export function AuthScreen({ navigation }: Props) {
         setError(err);
         return;
       }
-      await persistStay();
       navigation.reset({ index: 0, routes: [{ name: 'Main' }] }); // Study tab = Dashboard
     } finally {
       setBusy(false);
     }
   };
 
+  /* FORGOT PASSWORD — send the 6-digit recovery code, then switch to the in-app
+   * recovery panel (no deep link needed; see features/auth/api.ts). */
   const onResetPassword = async () => {
     setError(null);
     setInfo(null);
@@ -162,12 +189,60 @@ export function AuthScreen({ navigation }: Props) {
     }
     setBusy(true);
     try {
-      const err = await resetPassword(email.trim());
-      if (err) setError(err);
-      else setInfo(`Password reset email sent to ${email.trim()}.`);
+      const err = await requestPasswordReset(email.trim());
+      if (err) {
+        setError(err);
+        return;
+      }
+      setResetCode('');
+      setNewPassword('');
+      setMode('recovery');
+      setInfo(`We emailed a 6-digit code to ${email.trim()}. Enter it below with your new password.`);
     } finally {
       setBusy(false);
     }
+  };
+
+  /* SET NEW PASSWORD — verify the emailed code (establishes a recovery session),
+   * then update the password and drop straight into the app. */
+  const onSubmitNewPassword = async () => {
+    setError(null);
+    setInfo(null);
+    if (!/^\d{6}$/.test(resetCode.trim())) {
+      setError('Enter the 6-digit code from the email.');
+      return;
+    }
+    const pwIssue = passwordIssue(newPassword);
+    if (pwIssue) {
+      setError(pwIssue);
+      return;
+    }
+    setBusy(true);
+    try {
+      const verifyErr = await verifyRecoveryOtp(email.trim(), resetCode);
+      if (verifyErr) {
+        setError('That code is incorrect or expired. Request a new one and try again.');
+        return;
+      }
+      const updateErr = await updatePassword(newPassword);
+      if (updateErr) {
+        setError(updateErr);
+        return;
+      }
+      // verifyOtp left an active session; the password is now updated → go in.
+      setMode('main');
+      navigation.reset({ index: 0, routes: [{ name: 'Main' }] });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const cancelRecovery = () => {
+    setMode('main');
+    setError(null);
+    setInfo(null);
+    setResetCode('');
+    setNewPassword('');
   };
 
   return (
@@ -216,60 +291,81 @@ export function AuthScreen({ navigation }: Props) {
           placeholder="you@email.com"
           keyboardType="email-address"
         />
-        <TextField label="Password" value={password} onChangeText={setPassword} password />
+        {mode === 'recovery' ? (
+          /* ---- In-app password recovery (OTP; no deep link) ---- */
+          <>
+            <Text style={styles.codeHint}>
+              Enter the 6-digit code we emailed you, then choose a new password. The code expires shortly — tap
+              Resend if it doesn’t arrive.
+            </Text>
+            <TextField
+              label="6-digit code"
+              value={resetCode}
+              onChangeText={setResetCode}
+              placeholder="123456"
+              keyboardType="number-pad"
+            />
+            <TextField label="New password" value={newPassword} onChangeText={setNewPassword} password />
 
-        {/* Optional organization / promo access code + its explanation. */}
-        <TextField
-          label="Access or promo code (optional)"
-          value={accessCode}
-          onChangeText={setAccessCode}
-          placeholder="Enter a code, if you have one"
-          autoCapitalize="characters"
-        />
-        <Text style={styles.codeHint}>
-          Join with an access code — enter the invitation or access code provided by your employer, school, church,
-          training organization, or other sponsoring institution.
-        </Text>
+            {error && <Text style={styles.error}>{error}</Text>}
+            {info && <Text style={styles.info}>{info}</Text>}
 
-        {/* Stay logged in (login convenience). */}
-        <Pressable
-          style={styles.stayRow}
-          onPress={() => setStayLoggedIn((v) => !v)}
-          accessibilityRole="checkbox"
-          accessibilityState={{ checked: stayLoggedIn }}
-          accessibilityLabel="Stay logged in"
-        >
-          <View style={[styles.stayBox, stayLoggedIn && styles.stayBoxOn]}>
-            {stayLoggedIn ? <Text style={styles.stayCheck}>✓</Text> : null}
-          </View>
-          <Text style={styles.stayLabel}>Stay logged in on this device</Text>
-        </Pressable>
-
-        {/* Error / info */}
-        {error && <Text style={styles.error}>{error}</Text>}
-        {info && <Text style={styles.info}>{info}</Text>}
-
-        {/* Actions */}
-        {busy ? (
-          <View style={styles.busyWrap}>
-            <ActivityIndicator color={colors.amber} />
-          </View>
+            {busy ? (
+              <View style={styles.busyWrap}>
+                <ActivityIndicator color={colors.amber} />
+              </View>
+            ) : (
+              <View style={styles.btnStack}>
+                <StudioButton label="Set New Password" variant="primary" onPress={onSubmitNewPassword} />
+                <StudioButton label="Resend Code" variant="secondary" onPress={onResetPassword} />
+                <StudioButton label="Cancel" variant="secondary" onPress={cancelRecovery} />
+              </View>
+            )}
+          </>
         ) : (
-          <View style={styles.btnStack}>
-            <StudioButton label="Create Account" variant="primary" onPress={onCreateAccount} />
-            <StudioButton label="Login" variant="secondary" onPress={onLogin} />
-            <StudioButton label="Guest Mode (Free)" variant="secondary" onPress={enterGuest} />
-          </View>
-        )}
+          <>
+            <TextField label="Password" value={password} onChangeText={setPassword} password />
 
-        {/* Footer — password reset */}
-        <Text style={styles.footerText}>
-          Forgot password?{' '}
-          <Text style={styles.footerLink} onPress={busy ? undefined : onResetPassword}>
-            Reset via email
-          </Text>
-        </Text>
-        <Text style={styles.guestNote}>Guest Mode is free — but your progress isn’t saved without an account.</Text>
+            {/* Optional organization / promo access code + its explanation. */}
+            <TextField
+              label="Access or promo code (optional)"
+              value={accessCode}
+              onChangeText={setAccessCode}
+              placeholder="Enter a code, if you have one"
+              autoCapitalize="characters"
+            />
+            <Text style={styles.codeHint}>
+              Join with an access code — enter the invitation or access code provided by your employer, school, church,
+              training organization, or other sponsoring institution.
+            </Text>
+
+            {/* Error / info */}
+            {error && <Text style={styles.error}>{error}</Text>}
+            {info && <Text style={styles.info}>{info}</Text>}
+
+            {/* Actions */}
+            {busy ? (
+              <View style={styles.busyWrap}>
+                <ActivityIndicator color={colors.amber} />
+              </View>
+            ) : (
+              <View style={styles.btnStack}>
+                <StudioButton label="Create Account" variant="primary" onPress={onCreateAccount} />
+                <StudioButton label="Login" variant="secondary" onPress={onLogin} />
+                <StudioButton label="Guest Mode (Free)" variant="secondary" onPress={enterGuest} />
+              </View>
+            )}
+
+            {/* Footer — password reset */}
+            <Text style={styles.footerText}>
+              Forgot password?{' '}
+              <Text style={styles.footerLink} onPress={busy ? undefined : onResetPassword}>
+                Reset via email
+              </Text>
+            </Text>
+            <Text style={styles.guestNote}>Guest Mode is free — but your progress isn’t saved without an account.</Text>
+          </>
+        )}
       </KeyboardAwareScrollView>
 
       {/* First-run greeting, shown OVER the login screen (user request 2026-07-23). */}
@@ -300,21 +396,6 @@ const styles = StyleSheet.create({
   betaNote: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.amberLabel },
   // Access-code explanation (user request 2026-07-22).
   codeHint: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: colors.textSub, marginTop: -8 },
-  // Stay-logged-in checkbox row.
-  stayRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  stayBox: {
-    width: 22,
-    height: 22,
-    borderRadius: 5,
-    borderWidth: 1.5,
-    borderColor: '#3a3a3a',
-    backgroundColor: '#141414',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  stayBoxOn: { borderColor: 'rgba(55,224,95,.7)', backgroundColor: 'rgba(55,224,95,.12)' },
-  stayCheck: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: '#37e05f' },
-  stayLabel: { fontFamily: fonts.barlowMedium, fontSize: 14, color: colors.textSecondary },
   error: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 19, color: colors.red },
   info: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 19, color: colors.green },
   busyWrap: { height: 48, alignItems: 'center', justifyContent: 'center' },

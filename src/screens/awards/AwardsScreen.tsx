@@ -300,10 +300,17 @@ export function AwardsScreen({ navigation, route }: Props) {
   // topics rendered as "Topic gs#". Resolve names off the live v3 curriculum
   // instead (owner 2026-08-11).
   const [v3TopicNames, setV3TopicNames] = useState<Map<number, string>>(new Map());
+  // Distinguishes "still loading" from "genuinely empty" so the pickers can show
+  // an honest empty state instead of just the REQUIRED-CORE banner over blank.
+  const [v3Loaded, setV3Loaded] = useState(false);
   useEffect(() => {
     let alive = true;
-    void fetchV3Programs().then((p) => alive && setV3Programs(p));
-    void fetchV3Certs().then((c) => alive && setV3Certs(c));
+    void Promise.all([fetchV3Programs(), fetchV3Certs()]).then(([p, c]) => {
+      if (!alive) return;
+      setV3Programs(p);
+      setV3Certs(c);
+      setV3Loaded(true);
+    });
     void fetchV3Curriculum().then((fields) => {
       if (!alive) return;
       setV3TopicNames(new Map(flattenV3(fields).map((t) => [t.gs, t.name] as const)));
@@ -569,6 +576,14 @@ export function AwardsScreen({ navigation, route }: Props) {
               <Text style={styles.coreBannerText}>{[...COREQ_TOPIC_GS.map((gs) => nameForGs(gs)), FOUNDATIONS_REQ_NAME].join('  ·  ')}</Text>
             </View>
 
+            {specCertsAZ.length === 0 ? (
+              <Text style={styles.awardsEmpty}>
+                {v3Loaded
+                  ? 'Specialization certificates aren’t available right now. Pull up again in a moment, or check your connection.'
+                  : 'Loading certificates…'}
+              </Text>
+            ) : null}
+
             {specCertsAZ.map((c) => {
               const open = expandedCert === c.name;
               return (
@@ -652,6 +667,14 @@ export function AwardsScreen({ navigation, route }: Props) {
               <Text style={styles.coreBannerHead}>REQUIRED CORE · EVERY PROGRAM</Text>
               <Text style={styles.coreBannerText}>{[...COREQ_TOPIC_GS.map((gs) => nameForGs(gs)), FOUNDATIONS_REQ_NAME].join('  ·  ')}</Text>
             </View>
+
+            {programPathsAZ.length === 0 ? (
+              <Text style={styles.awardsEmpty}>
+                {v3Loaded
+                  ? 'Program paths aren’t available right now. Pull up again in a moment, or check your connection.'
+                  : 'Loading program paths…'}
+              </Text>
+            ) : null}
 
             {programPathsAZ.map((p) => {
               const open = expandedProg === p.name;
@@ -894,6 +917,15 @@ const styles = StyleSheet.create({
   },
   coreBannerHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.6, color: colors.textSub },
   coreBannerText: { fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
+  awardsEmpty: {
+    fontFamily: fonts.barlowRegular,
+    fontSize: 14,
+    lineHeight: 20,
+    color: colors.textMuted,
+    textAlign: 'center',
+    paddingVertical: 28,
+    paddingHorizontal: 12,
+  },
   cardChevron: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: colors.textSub, width: 14 },
   pathCardGoldOn: { borderColor: 'rgba(255,198,77,.75)', backgroundColor: '#221c0d' },
   radioGoldOn: { borderColor: '#ffc64d' },

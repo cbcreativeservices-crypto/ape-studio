@@ -454,7 +454,7 @@ function CourseCardView({
 }) {
   // CM3: the card RENDERS entitlement capabilities (server-owned once live) —
   // it never decides them. Flag OFF ⇒ everything unlocked-looking as today.
-  const { commercialMode, caps, entitlement } = useEntitlement();
+  const { commercialMode, caps, entitlement, isMember } = useEntitlement();
 
   // "+ XX other" tally card — its own compact look, far right of the deck.
   // (After the hook above so hook order stays stable.)
@@ -511,6 +511,12 @@ function CourseCardView({
   // via CARD_IMAGE[item.id]. Tapping raises the membership prompt.
   if (item.kind === 'programStub') {
     const stubUrl = cardImageUrl(item.id);
+    // An academy MEMBER already has access — the stub is just unreleased content,
+    // so don't upsell them the membership they hold (owner launch-triage). Members
+    // see "COMING SOON"; non-members keep the "ACADEMY MODE" → paywall path.
+    const onStubPress = isMember
+      ? () => Alert.alert('Coming soon', `${item.name} is on the way — it'll appear here when it's ready.`)
+      : onLockedPress;
     const stubInner = (
       <>
         <LinearGradient
@@ -524,7 +530,13 @@ function CourseCardView({
         </View>
         <View style={{ alignItems: 'center' }}>
           <View style={{ width: CARD_BTN_W }}>
-            <GlassButton label="🔒 ACADEMY MODE" tint="steel" height={50} fontSize={13} onPress={onLockedPress} />
+            <GlassButton
+              label={isMember ? 'COMING SOON' : '🔒 ACADEMY MODE'}
+              tint="steel"
+              height={50}
+              fontSize={13}
+              onPress={onStubPress}
+            />
           </View>
         </View>
       </>
@@ -535,7 +547,11 @@ function CourseCardView({
           <Text style={[styles.cardAboveText, { color: '#c4a2ff' }]}>Professional Program Certificate</Text>
           <View style={[styles.cardAboveRule, { backgroundColor: '#c4a2ff' }]} />
         </View>
-        <Pressable onPress={onLockedPress} accessibilityRole="button" accessibilityLabel={`${item.name} — Academy membership required`}>
+        <Pressable
+          onPress={onStubPress}
+          accessibilityRole="button"
+          accessibilityLabel={`${item.name} — ${isMember ? 'coming soon' : 'Academy membership required'}`}
+        >
         {stubUrl ? (
           <ImageBackground
             source={{ uri: stubUrl }}

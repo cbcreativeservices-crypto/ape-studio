@@ -294,6 +294,21 @@ export function QuizScreen({ navigation, route }: Props) {
       </View>
     );
   }
+  // Attempt started but the server returned no questions — offer an exit rather
+  // than spinning forever (no header/back gesture on this stack). No answers
+  // exist yet, so a plain Back is safe (no wipe prompt needed). Launch-triage E6.
+  if (payload && payload.questions.length === 0) {
+    return (
+      <View style={styles.center}>
+        <Text style={styles.errorText}>
+          This quiz has no questions available right now. Please try again later.
+        </Text>
+        <View style={{ width: 200 }}>
+          <StudioButton label="Back" variant="secondary" small onPress={() => navigation.goBack()} />
+        </View>
+      </View>
+    );
+  }
   if (!payload || !question || submitting) {
     return (
       <View style={styles.center}>

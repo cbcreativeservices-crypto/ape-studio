@@ -115,3 +115,67 @@ landscape fullscreen must follow the same pattern.
    colours + spectrum wheel, contribute prompt, Pixel capture feel.
 3. Pre-launch (already tracked): remove the KT88 promo tube; VU change orders
    3–12 tabled; Phase 2 calibration scaffolding deferred until commit.
+
+---
+
+# Launch-Triage Session — 2026-08-21 (PM)
+
+Full-code launch triage separating true engine gates from assets/polish. Detail
++ file:line in `docs/APE_LAUNCH_TRIAGE_2026_08_21.md`; this section records the
+rulings. All code changes typecheck clean (`tsc --noEmit`).
+
+## R7 — Six engine gates fixed (were tester-blocking)
+
+- **E1** EAS env vars were entirely absent → any cloud build would boot-crash;
+  `EXPO_PUBLIC_SUPABASE_URL/ANON_KEY` added to all three environments. **DONE.**
+- **E2** Password reset was a black hole (no URL scheme). Ruling: in-app OTP
+  recovery (`verifyOtp type:'recovery'` → `updateUser`), no deep link. Requires
+  the Reset Password email template to carry `{{ .Token }}`. **DONE.**
+- **E3** Duplicate-achievement 0% wedge (gs3060 Professional Audio Safety, an
+  auto-enrolled free topic): the Dashboard item-count now mirrors the study
+  fetch's sibling-name union so the denominator is never falsely 0.
+- **E4** No-scenario topics could never satisfy the quiz gate. Ruling: a topic
+  CONFIRMED empty (homework loaded, zero questions) is marked exempt
+  (device-local `scenarioExempt` store) and satisfies the scenarios term; a load
+  ERROR never exempts. Meter shows 100% for exempt topics.
+- **E5** Non-network study-progress rejections were dropped silently. Ruling:
+  enqueue to the durable queue on any rejection (one durable retry; replayQueue
+  stays the poison-drop arbiter). `record_scenario_answer` / `credit_time_trial`
+  gained the missing `{error}` checks (supabase-js returns, never throws).
+- **E6** Empty study screens (Matching / FIB / Quiz) trapped users on a
+  header-less stack → now show a Back exit.
+
+## R8 — Access / promo codes are a LAUNCH feature (frozen-backend amendment)
+
+Owner ruling: the access/promo code is NOT vestigial — it comps free Academy
+accounts (influencers), bulk seats, and event/convention offers, and must ship
+at launch. Narrow amendment to the frozen backend (mic-catalog precedent):
+`access_codes` + `access_code_redemptions` tables + `redeem_access_code()`
+SECURITY DEFINER RPC (`docs/APE_ACCESS_CODES_2026_08_21.sql`, RUN 2026-08-21).
+GRANT/comp codes are functional now; DISCOUNT codes return `discount_pending`
+until the IAP checkout flow exists. Client: redeem on Create Account + Settings →
+MEMBERSHIP.
+
+## R9 — Two gating idioms are DELIBERATE, now centralized
+
+`caps.*` = bypass-aware ladder (lock-free screen testing); real academy standing
+= member-perk / training gates kept lockable so the owner can test the FREE
+experience under caps-bypass (per ToolLockUi). Not a bug — but centralized into
+one documented `EntitlementProvider.isMember` (real standing, NOT bypass-aware);
+~11 ad-hoc sites now consume it. Behavior-neutral.
+
+## R10 — No fabricated credentials
+
+The Directory Registry ID / verification URL / issue date and the Profile
+Student-ID QR were hardcoded/fabricated (same ID for every user, server sync
+pending). Ruling: show an honest "pending issuance" state — never present a
+fabricated, verifiable-looking credential. Real values fill in when the Registry
+backend ships.
+
+## Outstanding (owner) — launch-triage
+
+1. Device pass on the fixed flows (password reset, gs3060 unlock, scenarios
+   exemption, empty-topic exits, promo redemption, pending credentials).
+2. IAP purchase path — the one remaining PAID-launch blocker; turnkey notes in
+   the triage doc (backend is purchase-ready; use react-native-iap + a
+   validate-purchase edge function; no RevenueCat needed).

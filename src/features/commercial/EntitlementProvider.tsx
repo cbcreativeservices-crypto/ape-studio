@@ -98,9 +98,25 @@ type EntitlementContextValue = {
   entitlement: Entitlement;
   /** Capabilities for the current state. */
   caps: Caps;
+  /**
+   * TRUE academy standing — the single source for member-perk / training gates
+   * (Audio Tools LEARN/DEMO, EarLab, colour customization, Tube Reference, etc.).
+   *
+   * There are TWO deliberate gating idioms (do not merge them):
+   *   • `caps.*`   — the ladder capabilities, which the dev `bypassAcademyLocks`
+   *                  forces to academy so screens can be tested LOCK-FREE.
+   *   • `isMember` — real academy standing, NOT affected by that bypass, so the
+   *                  owner can test the genuine FREE experience of the member
+   *                  perks while caps-bypass is on (see ToolLockUi header).
+   * Use `caps` for ladder content; use `isMember` for member-only extras.
+   */
+  isMember: boolean;
   /** DEV-ONLY overrides (persisted). No-ops outside __DEV__. */
   setCommercialMode: (on: boolean) => void;
   setEntitlement: (state: Entitlement) => void;
+  /** Re-read the server entitlement NOW (e.g. after redeeming an access code).
+   *  Real read on every build — unlike setEntitlement, which is dev-only. */
+  refreshEntitlement: () => Promise<void>;
 };
 
 const EntitlementContext = createContext<EntitlementContextValue | null>(null);
@@ -174,12 +190,15 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
     });
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'INITIAL_SESSION') {
-        // A REAL sign-out ends any dev tier override (owner 2026-08-12): the
-        // wordmark long-press latches devOverrode for the whole app run, so
-        // without this a later genuine login (e.g. an academy account) would
-        // NOT re-read the server and could look free/locked. Clearing it on
-        // sign-out lets the next SIGNED_IN derive real entitlement again.
-        if (event === 'SIGNED_OUT') devOverrode.current = false;
+        // A REAL sign-in OR sign-out ends any dev tier override (owner
+        // 2026-08-12; extended to SIGNED_IN per launch-triage). The wordmark
+        // long-press AND entering Guest Mode both latch devOverrode for the app
+        // run; without clearing on SIGNED_IN, tapping Guest and then logging in
+        // as an academy account stayed gated as anonymous/free forever (the
+        // login never re-read the server). The wordmark tier toggle fires no
+        // auth event, so it still persists between real sign-in/out. DEV-only —
+        // setEntitlement no-ops in release, so devOverrode is never set there.
+        if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') devOverrode.current = false;
         clearLocalOnUserChange(session?.user?.id ?? null);
         void deriveAndApply(!!session);
       }
@@ -188,6 +207,34 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
       alive = false;
       sub.subscription.unsubscribe();
     };
+  }, []);
+
+  // Re-read the server entitlement on demand (after redeeming an access code, a
+  // purchase, etc.). Mirrors the effect's derive logic but is callable anytime.
+  // Respects a dev tier override so it doesn't clobber the wordmark toggle.
+  const refreshEntitlement = useCallback(async () => {
+    if (devOverrode.current) return;
+    const { data: sess } = await supabase.auth.getSession();
+    if (!sess.session) {
+      setEntitlementState('anonymous');
+      return;
+    }
+    let tier: Entitlement = 'free';
+    try {
+      const { data } = await supabase
+        .from('entitlements')
+        .select('product, status, expires_at')
+        .eq('product', 'academy');
+      const acad = (data ?? [])[0] as { status?: string; expires_at?: string | null } | undefined;
+      if (acad) {
+        const notExpired = !acad.expires_at || new Date(acad.expires_at).getTime() > Date.now();
+        tier = acad.status === 'active' && notExpired ? 'academy' : 'lapsed';
+      }
+    } catch {
+      // Network/RLS failure — leave the current tier as-is.
+      return;
+    }
+    if (!devOverrode.current) setEntitlementState(tier);
   }, []);
 
   const setCommercialMode = useCallback((on: boolean) => {
@@ -217,10 +264,14 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
         !commercialMode || devBypass('bypassAcademyLocks')
           ? capsFor('academy')
           : capsFor(entitlement),
+      // Real standing (see the doc on isMember above) — deliberately NOT
+      // bypass-aware, so member-perk gates stay testable-as-free.
+      isMember: entitlement === 'academy',
       setCommercialMode,
       setEntitlement,
+      refreshEntitlement,
     }),
-    [commercialMode, entitlement, setCommercialMode, setEntitlement],
+    [commercialMode, entitlement, setCommercialMode, setEntitlement, refreshEntitlement],
   );
 
   return <EntitlementContext.Provider value={value}>{children}</EntitlementContext.Provider>;

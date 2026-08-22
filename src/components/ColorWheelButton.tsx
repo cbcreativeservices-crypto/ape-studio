@@ -99,8 +99,7 @@ export function ColorWheelButton({
   /** Phrase for the membership popup: "…is a member feature." */
   feature?: string;
 }): ReactNode {
-  const { entitlement } = useEntitlement();
-  const isMember = entitlement === 'academy';
+  const { isMember } = useEntitlement();
   const [gate, setGate] = useState(false);
   const [picker, setPicker] = useState(false);
   const [spectrum, setSpectrum] = useState(false);

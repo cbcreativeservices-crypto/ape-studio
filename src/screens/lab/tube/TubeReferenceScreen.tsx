@@ -22,8 +22,7 @@ import { TUBE_FAMILY_META, searchTubes, type TubeRef } from './tubeRefs';
 export function TubeReferenceScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { entitlement } = useEntitlement();
-  const unlocked = entitlement === 'academy';
+  const { isMember: unlocked } = useEntitlement();
   const [query, setQuery] = useState('');
 
   const hits = useMemo(() => searchTubes(query), [query]);

@@ -33,13 +33,10 @@ const DIRECTORY_INTRO_TITLE = 'Get Discovered';
 // in paragraphs 1 and 3 below and renders green in both.
 const BRAND_PHRASE = 'Pro Audio Training Academy Professional Registry';
 
-// Placeholder Registry confirmation details shown once a user is registered
-// (has an account). Real values come from the account's Registry record when the
-// backend is wired (user request 2026-07-22).
-const REGISTRY_ID = 'APE-2026-000148';
-const REGISTRY_CONFIRM_URL = 'proaudiotrainingacademy.com/registry/APE-2026-000148';
-const REGISTRY_SITE_URL = 'proaudiotrainingacademy.com';
-const REGISTRY_DATE = 'Jul 21, 2026'; // placeholder issue date pending backend
+// The Registry ID / verification URL / issue date come from the account's real
+// server-issued Registry record once the backend is wired. Until then the UI
+// shows an honest "pending issuance" state — no fabricated ID/URL/date is
+// presented as a verifiable credential (owner launch-triage 2026-08-21).
 
 /** Faint, semi-transparent gray QR-like pattern painted behind the "QR / CODE"
  *  placeholder text inside the black box (user request 2026-07-22). */
@@ -173,14 +170,18 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
           their Registry confirmation ID + links. RIGHT = a nested green square
           holding a black QR CODE box. */}
       {hasAccount ? (
-        // REGISTERED — a centered, larger QR for easy scanning, with the user's
-        // Registry name, ID + issue date, and links below (user request 2026-07-22).
+        // REGISTERED — the public Registry record (server-issued ID, QR, and
+        // verification link) is NOT LIVE yet: the backend registry isn't wired,
+        // so we must NOT present a fabricated ID/date/QR/URL as a real,
+        // verifiable credential (owner launch-triage — make it honest). Show the
+        // user's chosen Registry name + status and an explicit "pending
+        // issuance" state; the real record fills in here once the Registry ships.
         <View style={styles.registryBoxCol}>
           <View style={styles.qrLarge}>
             <View style={styles.qrLargeBlack}>
               <QrArt />
               <Text style={styles.qrText}>QR</Text>
-              <Text style={styles.qrText}>CODE</Text>
+              <Text style={styles.qrText}>PREVIEW</Text>
             </View>
           </View>
           <Text style={styles.registryConfirmName}>{registryName || 'Add your Registry name in Profile'}</Text>
@@ -189,24 +190,13 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
           <Text style={styles.registryStatus}>{isGraduate ? 'GRADUATE' : 'USER'}</Text>
           <View style={styles.registryMetaRow}>
             <Text style={styles.registryDataLabel}>REGISTRY ID</Text>
-            <Text style={styles.registryId}>{REGISTRY_ID}</Text>
+            <Text style={styles.registryId}>Pending</Text>
           </View>
-          <Text style={styles.registryDate}>Issued {REGISTRY_DATE}</Text>
-          {/* Links go live only after ≥1 completed paid month (user request 2026-07-22). */}
-          {linksActive ? (
-            <>
-              <Text style={styles.registryLink} numberOfLines={1}>
-                {REGISTRY_CONFIRM_URL}
-              </Text>
-              <Text style={styles.registryLink} numberOfLines={1}>
-                {REGISTRY_SITE_URL}
-              </Text>
-            </>
-          ) : (
-            <Text style={styles.registryPending}>
-              Your public Registry links activate once your first full month of membership is completed.
-            </Text>
-          )}
+          <Text style={styles.registryPending}>
+            {linksActive
+              ? 'Your Registry ID, QR code, and public verification link are issued when the Academy Registry goes live — they’ll appear here automatically.'
+              : 'Your public Registry record is issued once your first full month of membership is completed and the Academy Registry goes live.'}
+          </Text>
         </View>
       ) : (
         // NOT REGISTERED — CTA + button on the left, QR square on the right.

@@ -135,14 +135,18 @@ export async function recordScenarioAnswer(
   correct: boolean,
 ): Promise<void> {
   try {
-    await supabase.rpc('record_scenario_answer', {
+    // supabase-js RESOLVES with { error } rather than throwing, so the catch
+    // below never sees an RPC error — check `error` explicitly or a failed
+    // persist (mid-round resume relies on it) would pass completely silently.
+    const { error } = await supabase.rpc('record_scenario_answer', {
       p_achievement_id: achievementId,
       p_question_id: questionId,
       p_round: round,
       p_correct: correct,
     });
-  } catch {
-    /* non-fatal — local UI already advanced */
+    if (error) console.warn('[scenario] record_scenario_answer failed:', error.message);
+  } catch (e) {
+    console.warn('[scenario] record_scenario_answer threw:', (e as Error).message);
   }
 }
 

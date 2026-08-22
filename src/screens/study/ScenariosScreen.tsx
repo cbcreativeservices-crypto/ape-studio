@@ -37,6 +37,8 @@ import {
   type ScenarioQ,
 } from '../../features/study/scenarioHomework';
 import { setLastStudyLocation } from '../../features/study/lastStudyLocation';
+import { markScenariosExempt } from '../../features/study/scenarioExempt';
+import { emitStudyProgress } from '../../features/study/sync';
 import { saveLocalMethodStates } from '../../features/study/localProgress';
 import { SuggestCorrectionButton } from '../../features/study/SuggestCorrectionButton';
 import type { ItemStates } from '../../features/study/api';
@@ -76,6 +78,10 @@ export function ScenariosScreen({ route }: Props) {
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [report, setReport] = useState<RoundReport | null>(null);
   const [busy, setBusy] = useState(false);
+  // Why the nocontent view is showing: 'empty' = topic genuinely has no
+  // scenarios (marked exempt so the quiz can still unlock); 'error' = the
+  // homework failed to load (recoverable, NOT exempt).
+  const [noContentReason, setNoContentReason] = useState<'empty' | 'error'>('empty');
 
   const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const answersRef = useRef<Record<string, ScenarioAnswer>>({});
@@ -189,7 +195,22 @@ export function ScenariosScreen({ route }: Props) {
   useEffect(() => {
     if (!loaded || initedRef.current) return;
     initedRef.current = true;
-    if (!hw || !hw.rounds.some((r) => r.length > 0)) {
+    if (!hw) {
+      // Homework failed to load (RPC error / no auth / offline). This is NOT a
+      // confirmation that the topic lacks scenarios — do NOT exempt it, or a
+      // transient failure would falsely unlock the quiz. Recoverable: leaving
+      // and re-entering re-fetches.
+      setNoContentReason('error');
+      setView('nocontent');
+      return;
+    }
+    if (!hw.rounds.some((r) => r.length > 0)) {
+      // Homework loaded but the topic genuinely has zero scenario questions.
+      // Record the exemption (owner launch-triage E4) so the Dashboard stops
+      // treating scenarios as an unsatisfiable term of the quiz gate, then nudge
+      // any live Dashboard to recompute the unlock.
+      setNoContentReason('empty');
+      void markScenariosExempt(achievementId).then(() => emitStudyProgress());
       setView('nocontent');
       return;
     }
@@ -292,12 +313,17 @@ export function ScenariosScreen({ route }: Props) {
 
   /* ---- no content ---- */
   if (view === 'nocontent') {
+    const isError = noContentReason === 'error';
     return (
       <View style={[styles.center, { paddingTop: insets.top }]}>
         <StudyHeader method="scenarios" title="SCENARIO" />
-        <Text style={styles.emptyTitle}>NO SCENARIOS FOR THIS TOPIC</Text>
+        <Text style={styles.emptyTitle}>
+          {isError ? 'SCENARIOS UNAVAILABLE' : 'NO SCENARIOS FOR THIS TOPIC'}
+        </Text>
         <Text style={styles.emptyBody}>
-          This topic doesn't include scenario drills. Review it with its other study methods.
+          {isError
+            ? "We couldn't load the scenario drills right now. Check your connection, then go back and open Scenarios again — your other study methods are unaffected."
+            : "This topic doesn't include scenario drills, so this method counts as complete — the quiz unlocks once your other methods are done."}
         </Text>
       </View>
     );

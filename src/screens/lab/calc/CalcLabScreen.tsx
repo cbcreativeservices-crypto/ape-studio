@@ -22,12 +22,12 @@ export function CalcLabScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const chain = useChainValue();
-  const { entitlement, commercialMode } = useEntitlement();
+  const { isMember, commercialMode } = useEntitlement();
 
   // ALL workflows are ACADEMY-ONLY (owner 2026-08-13): running a guided
   // multi-step sequence, using templates, AND building your own. Individual
   // calculators stay open to everyone. Caps only bite in commercial mode.
-  const workflowsAllowed = !commercialMode || entitlement === 'academy';
+  const workflowsAllowed = !commercialMode || isMember;
   const gateWorkflow = (proceed: () => void) => {
     if (workflowsAllowed) return proceed();
     Alert.alert(

@@ -56,8 +56,7 @@ export function TubeCardScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'TubeCard'>>();
-  const { entitlement } = useEntitlement();
-  const unlocked = entitlement === 'academy';
+  const { isMember: unlocked } = useEntitlement();
 
   const startIdx = Math.max(0, TUBE_REFS.findIndex((r) => r.id === route.params.id));
   const [idx, setIdx] = useState(startIdx);

@@ -315,14 +315,29 @@ export function studyDisplayPct(
  * stems there are a question-bank change, flagged for the backend session.)
  */
 export function splitSentences(text: string): string[] {
-  const parts = text
-    // Split on ender+space, AND on a missing space before a new capitalized
-    // sentence ("...ends.Next...") — those were slipping 2+ sentences into one
-    // matching cell (Booth 2026-07-16).
-    .split(/(?<=[.!?])\s+|(?<=[.!?])(?=[A-Z0-9("'])/)
-    .map((s) => s.trim())
-    .filter((s) => s.length > 0);
-  return parts.length > 0 ? parts : [text];
+  if (!text) return [];
+  // Protect periods that are NOT sentence enders, then split. Without this,
+  // periods inside citations (1910.28, 1926.501), decimals/constants (16.61),
+  // and abbreviations (OSHA 1910.95) shattered definitions into fragments like
+  // "28) and 6 feet in construction (1926." (Booth 2026-08-21).
+  const DOT = '@@D@@'; // sentinel for a protected (non-ending) period
+  let t = text;
+  // digit.digit — decimals & regulatory citations
+  for (let i = 0; i < 4; i++) t = t.replace(/(\d)\.(\d)/g, `$1${DOT}$2`);
+  // known abbreviations that carry a trailing period
+  t = t.replace(
+    /\b(U\.S|e\.g|i\.e|No|vs|approx|Inc|Fig|Eq|Ch|Sec|cf|al|Dr|Mr|Ms|St)\./gi,
+    (m) => m.replace(/\./g, DOT),
+  );
+  const parts = t
+    // ender + whitespace + capital/quote/paren, OR a missing-space join
+    // ("...ends.Next..."). Never breaks inside a number, citation, or abbrev.
+    .split(/(?<=[.!?])\s+(?=[A-Z0-9("'])|(?<=[a-z][.!?])(?=[A-Z])/)
+    .map((s) => s.split(DOT).join('.').trim())
+    .filter(Boolean)
+    // Guardrail: drop shattered fragments (too short, or starting mid-token).
+    .filter((s) => s.length >= 15 && /^[A-Z0-9"'(]/.test(s));
+  return parts.length > 0 ? parts : [text.trim()];
 }
 
 export function randomSentence(text: string): string {

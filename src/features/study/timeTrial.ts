@@ -29,6 +29,7 @@
 import { useSyncExternalStore } from 'react';
 import { supabase } from '../../lib/supabase';
 import { SEC_PER_Q, type PaceMethodKey, type PaceStatus } from './paceStore';
+import { emitStudyProgress } from './sync';
 
 /** The full trial duration, in seconds (15:00). */
 export const TIME_TRIAL_SECONDS = 15 * 60;
@@ -329,11 +330,21 @@ export async function recordTimeTrialPass(args: {
   seconds: number;
 }): Promise<void> {
   try {
-    await supabase.rpc('credit_time_trial', {
+    // supabase-js RESOLVES with { error } rather than throwing, so the catch
+    // below is dead code for RPC errors — check `error` explicitly. This credit
+    // is what marks the method complete for the quiz unlock, so a silent loss
+    // would leave the learner unable to reach the quiz with no signal at all.
+    const { error } = await supabase.rpc('credit_time_trial', {
       p_achievement_id: args.topicId,
       p_method_key: args.method,
     });
-  } catch {
-    // Swallow: crediting is best-effort; a failed write never disrupts study.
+    if (error) {
+      console.warn('[time-trial] credit_time_trial failed:', error.message);
+    } else {
+      emitStudyProgress(); // credit landed — refresh any live Dashboard/quiz gate
+    }
+  } catch (e) {
+    // Swallow the throw path: crediting is best-effort; never disrupts study.
+    console.warn('[time-trial] credit_time_trial threw:', (e as Error).message);
   }
 }

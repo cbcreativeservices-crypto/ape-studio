@@ -92,6 +92,7 @@ import { LearningIntroSheet } from '../../features/intro/LearningIntroSheet';
 import { getCourseIntro, getTopicIntro, isIntroEmpty } from '../../features/intro/learningIntros';
 import { replayQuizSubmissions } from '../../features/quiz/api';
 import { onStudyProgress } from '../../features/study/sync';
+import { isScenariosExempt, useScenarioExempt } from '../../features/study/scenarioExempt';
 import { loadAllLocalMethodStates, mergeItemStates } from '../../features/study/localProgress';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { fetchCommercialDashboard, getLastPublicCourse } from '../../features/commercial/commercialDashboard';
@@ -695,7 +696,7 @@ export function DashboardScreen() {
       for (const { result } of replayed) {
         Alert.alert(
           'Offline quiz submitted',
-          `Score ${result.score}/25 — ${result.outcome.replace(/_/g, ' ')}. (Full results screen builds in M6.)`,
+          `Score ${result.score}/25 — ${result.outcome.replace(/_/g, ' ')}.`,
         );
       }
       // A session-less GUEST studies the FREE topics on-device only. It must NEVER
@@ -832,6 +833,11 @@ export function DashboardScreen() {
   // 2026-07-15). The Dashboard stays mounted under the pushed study screen, so
   // this fires while the flush completes and again on return.
   useEffect(() => onStudyProgress(() => void load()), [load]);
+
+  // Subscribe to scenario exemptions (owner launch-triage E4): hydrates the set
+  // on mount and re-renders when a topic is confirmed to have no scenarios, so
+  // the quiz gate below can unlock without a manual reload.
+  useScenarioExempt();
 
   // Toggle Course ⇄ My Enrollment (user request 2026-07-22) — reload at once.
   const switchMode = useCallback(
@@ -1115,13 +1121,25 @@ export function DashboardScreen() {
   //      matching are ALL complete (never before).
   //   4. Quiz — powers on only after scenarios is complete (⇒ everything is).
   const rackItemCount = data.itemCountByTopic.get(topic.id) ?? 0;
-  const methodPct = (key: string) =>
-    Math.round(
-      methodDisplayPct(rowFor(key), rackItemCount, key, data.methodConfigs.find((c) => c.key === key)?.required_passes ?? 2),
-    );
+  const rpFor = (key: string) => data.methodConfigs.find((c) => c.key === key)?.required_passes ?? 2;
+  // Smooth display % for one method. A topic CONFIRMED to have no scenario content
+  // (marked exempt by the Scenarios screen — owner launch-triage E4) reads 100%
+  // for scenarios: its quiz already unlocks via the exemption, so its meter and
+  // the topic's overall % must show complete too, not a stuck 0%.
+  const smoothPct = (
+    row: Parameters<typeof methodDisplayPct>[0],
+    itemCount: number,
+    key: string,
+    topicId: string,
+  ) =>
+    key === 'scenarios' && isScenariosExempt(topicId) ? 100 : methodDisplayPct(row, itemCount, key, rpFor(key));
+  const methodPct = (key: string) => Math.round(smoothPct(rowFor(key), rackItemCount, key, topic.id));
   const bypassLocks = devBypass('bypassMethodLocks');
   const flashcardsSeenAll = methodPct('flashcards') >= 100;
   const coreHomeworkComplete = methodPct('fill_in_blank') >= 100 && methodPct('matching') >= 100;
+  // Scenarios is a hard term of the quiz gate; methodPct already treats a
+  // confirmed-empty topic as 100% (smoothPct), so exempt topics read complete
+  // and their quiz can't lock forever.
   const scenariosComplete = methodPct('scenarios') >= 100;
   // Stage 2 powered: fill-in-blank + matching.
   const homeworkPowered = bypassLocks || flashcardsSeenAll;
@@ -1136,13 +1154,13 @@ export function DashboardScreen() {
   // Overall progress iterates over the topic's applicable_methods (the SAME
   // source the per-method meters use), NOT methodConfigs — which is EMPTY for a
   // guest (study_methods 403s for anon), so overall read 0% while every meter
-  // showed 100% (owner 2026-08-13). required_passes falls back to 2 like the meters.
-  const rpFor = (key: string) => data.methodConfigs.find((c) => c.key === key)?.required_passes ?? 2;
+  // showed 100% (owner 2026-08-13). smoothPct handles the required_passes
+  // fallback + the scenarios exemption so overall matches the per-method meters.
   const applicableKeys = METHOD_ORDER.filter((m) => applicable.has(m.key)).map((m) => m.key);
   const overallPct =
     applicableKeys.length > 0
       ? Math.floor(
-          applicableKeys.reduce((s, k) => s + methodDisplayPct(rowFor(k), topicItemCount, k, rpFor(k)), 0) /
+          applicableKeys.reduce((s, k) => s + smoothPct(rowFor(k), topicItemCount, k, topic.id), 0) /
             applicableKeys.length,
         )
       : 0;
@@ -1157,10 +1175,8 @@ export function DashboardScreen() {
     const rows = data.methodRows.filter((r) => r.achievement_id === t.id);
     const itemCount = data.itemCountByTopic.get(t.id) ?? 0;
     return Math.floor(
-      keys.reduce(
-        (s, k) => s + methodDisplayPct(rows.find((r) => r.method_key === k), itemCount, k, rpFor(k)),
-        0,
-      ) / keys.length,
+      keys.reduce((s, k) => s + smoothPct(rows.find((r) => r.method_key === k), itemCount, k, t.id), 0) /
+        keys.length,
     );
   };
   const dispIdx = jogActive ? scrollIdx : topicIdx;
@@ -1442,10 +1458,10 @@ export function DashboardScreen() {
           // Smooth display progress (Booth: creep, never leap) — partial
           // credit per pass from the server-stored item_states. Gate lines
           // below still read the server completion/time/accuracy fields.
-          const methodCfg = data.methodConfigs.find((c) => c.key === m.key);
-          const pct = Math.round(
-            methodDisplayPct(cfgRow, data.itemCountByTopic.get(topic.id) ?? 0, m.key, methodCfg?.required_passes ?? 2),
-          );
+          // smoothPct handles the required_passes fallback + the scenarios
+          // exemption (an empty-scenarios topic reads 100% so its meter matches
+          // the unlocked quiz — owner launch-triage E4).
+          const pct = Math.round(smoothPct(cfgRow, data.itemCountByTopic.get(topic.id) ?? 0, m.key, topic.id));
           const complete = isApplicable && pct >= 100;
           // Power gate: flashcards is always live; the 3 homework methods light
           // up only once flashcards has shown every term once (owner 2026-08-11).

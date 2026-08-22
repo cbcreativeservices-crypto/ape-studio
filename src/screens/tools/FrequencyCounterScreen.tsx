@@ -1189,8 +1189,7 @@ export function FrequencyCounterScreen({ navigation }: Props) {
   useToolUsage('hzcounter'); // T-1 telemetry (this tool skips ToolInfo)
   // Academy-gated extras (owner 2026-08-05): Light Pulse, LEARN/DEMO, and the
   // Saved Measurements library. Free accounts see them locked → Paywall.
-  const { entitlement } = useEntitlement();
-  const isMember = entitlement === 'academy';
+  const { isMember } = useEntitlement();
 
   const goBack = () => (mode ? setMode(null) : navigation.goBack());
   const modeMeta = MODES.find((m) => m.key === mode) ?? null;

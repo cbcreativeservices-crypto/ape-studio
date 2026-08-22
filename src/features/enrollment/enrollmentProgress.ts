@@ -22,6 +22,13 @@ import { loadAllLocalMethodStates, mergeItemStates } from '../study/localProgres
 
 export type TopicProg = { pct: number; status: TopicStatus };
 
+// Every real topic offers all four study methods (owner 2026-08-13). This is the
+// canonical order — the same one the Dashboard uses (DashboardScreen METHOD_ORDER).
+// We do NOT read achievements.applicable_methods (legacy/incomplete) or gate on
+// methodConfigs (EMPTY for a guest, since study_methods 403s for anon) — doing so
+// made every guest topic read 0% and disagree with the Dashboard (launch-triage).
+const STUDY_METHOD_KEYS = ['flashcards', 'fill_in_blank', 'matching', 'scenarios'] as const;
+
 export function useEnrollmentProgress(gsList: number[]): Map<number, TopicProg> {
   const [map, setMap] = useState<Map<number, TopicProg>>(new Map());
   const key = [...gsList].sort((a, b) => a - b).join(',');
@@ -62,28 +69,28 @@ export function useEnrollmentProgress(gsList: number[]): Map<number, TopicProg> 
           rows.find((r) => r.achievement_id === achievementId && r.method_key === methodKey)
             ?.item_states ?? {};
 
+        // required_passes per method, falling back to 2 when study_methods is
+        // unavailable (guest) — matches the Dashboard's rpFor.
+        const rpFor = (k: string) => d.methodConfigs.find((c) => c.key === k)?.required_passes ?? 2;
         const out = new Map<number, TopicProg>();
         for (const t of d.topics) {
-          const applicable = new Set(t.applicable_methods ?? []);
-          const cfgs = d.methodConfigs.filter((c) => applicable.has(c.key));
           const itemCount = d.itemCountByTopic.get(t.id) ?? 0;
-          // Mean of the applicable methods' smooth display % (creeps with each
-          // pass), identical to the Dashboard topic card's overallPct.
-          const pct = cfgs.length
-            ? Math.round(
-                cfgs.reduce(
-                  (s, c) =>
-                    s +
-                    studyDisplayPct(
-                      itemStatesFor(t.id, c.key) as Parameters<typeof studyDisplayPct>[0],
-                      itemCount,
-                      c.key,
-                      c.required_passes,
-                    ),
-                  0,
-                ) / cfgs.length,
-              )
-            : 0;
+          // Mean of all four methods' smooth display % (creeps with each pass),
+          // identical to the Dashboard topic card's overallPct — computed the
+          // same way for every tier so the two screens always agree.
+          const pct = Math.round(
+            STUDY_METHOD_KEYS.reduce(
+              (s, k) =>
+                s +
+                studyDisplayPct(
+                  itemStatesFor(t.id, k) as Parameters<typeof studyDisplayPct>[0],
+                  itemCount,
+                  k,
+                  rpFor(k),
+                ),
+              0,
+            ) / STUDY_METHOD_KEYS.length,
+          );
           if (t.global_sequence != null) {
             out.set(t.global_sequence, { pct, status: d.progressByTopic.get(t.id)?.status ?? 'locked' });
           }

@@ -33,8 +33,7 @@ const TRAIN_DESC =
 
 export function AudioLearningScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
-  const { entitlement } = useEntitlement();
-  const isMember = entitlement === 'academy';
+  const { isMember } = useEntitlement();
 
   const goFundamentals = () => navigation.navigate('EarLab', { section: 'fundamentals' });
   const goTraining = () => navigation.navigate('EarLab', { section: 'training' });

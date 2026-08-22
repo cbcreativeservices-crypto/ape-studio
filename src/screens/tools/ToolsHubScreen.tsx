@@ -397,7 +397,7 @@ function ToolTile({
 
 export function ToolsHubScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
-  const { entitlement } = useEntitlement();
+  const { isMember } = useEntitlement();
   // ONE shared mic/DSP session + tick for the live tile previews (owner
   // 2026-08-19). Auto-starts on entry (OS permission prompt on first visit),
   // force-stops on blur/background, resumes on return; 'denied' rests the live
@@ -427,8 +427,8 @@ export function ToolsHubScreen({ navigation }: Props) {
   }, []);
   // Saved Measurements + Measurement Training are Academy-only (owner
   // 2026-08-05) — free accounts see them grayed + locked → Paywall. Gate on
-  // entitlement, not caps (matches the AudioLearning training gate).
-  const isMember = entitlement === 'academy';
+  // entitlement, not caps (matches the AudioLearning training gate) — now via
+  // the shared provider isMember (real standing; see EntitlementProvider).
   return (
     <View style={styles.root}>
       <View style={{ paddingTop: insets.top + 10, flex: 1 }}>

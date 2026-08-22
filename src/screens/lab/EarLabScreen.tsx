@@ -46,8 +46,7 @@ const TRAINING_INTRO_FREE =
 
 export function EarLabScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
-  const { entitlement } = useEntitlement();
-  const isMember = entitlement === 'academy';
+  const { isMember } = useEntitlement();
   const section = route.params?.section; // undefined = the full combined list
   // Accordion (owner 2026-08-07): every lab row loads COLLAPSED (name + reveal
   // triangle); at most ONE row is expanded at a time, and the expanded row

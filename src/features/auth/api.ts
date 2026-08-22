@@ -89,8 +89,39 @@ export async function signIn(email: string, password: string): Promise<string | 
   return error ? error.message : null;
 }
 
-export async function resetPassword(email: string): Promise<string | null> {
+/**
+ * Password recovery — fully IN-APP (no deep link / URL scheme).
+ *
+ * The native app has no URL scheme (app.json) and detectSessionInUrl is off, so
+ * the default emailed magic-LINK can never return to the app — a locked-out user
+ * would be unrecoverable. Instead we use the 6-digit recovery OTP:
+ *   1. requestPasswordReset → sends the recovery email.
+ *   2. user reads the CODE from the email and enters it in-app.
+ *   3. verifyRecoveryOtp(email, code) → establishes a recovery session.
+ *   4. updatePassword(newPw) → sets the new password on that session.
+ *
+ * OWNER SETUP (one-time, Supabase dashboard → Auth → Email Templates → "Reset
+ * Password"): the template MUST include the {{ .Token }} variable so the email
+ * carries the 6-digit code. The default template only has {{ .ConfirmationURL }},
+ * whose link is inert here. Auth config, not DB schema — outside the freeze.
+ */
+export async function requestPasswordReset(email: string): Promise<string | null> {
   const { error } = await supabase.auth.resetPasswordForEmail(email);
+  return error ? error.message : null;
+}
+
+/** Back-compat alias (older call sites). */
+export const resetPassword = requestPasswordReset;
+
+/** Verify the 6-digit recovery code → recovery session. Returns error or null. */
+export async function verifyRecoveryOtp(email: string, token: string): Promise<string | null> {
+  const { error } = await supabase.auth.verifyOtp({ email, token: token.trim(), type: 'recovery' });
+  return error ? error.message : null;
+}
+
+/** Set a new password on the active (recovery) session. Returns error or null. */
+export async function updatePassword(newPassword: string): Promise<string | null> {
+  const { error } = await supabase.auth.updateUser({ password: newPassword });
   return error ? error.message : null;
 }
 

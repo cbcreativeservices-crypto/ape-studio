@@ -9,18 +9,22 @@
  * haptics) · ACCOUNT (AP&E ID + app version, read-only). No Save button.
  */
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Constants from 'expo-constants';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Toggle } from '../../components/Toggle';
+import { TextField } from '../../components/TextField';
+import { StudioButton } from '../../components/StudioButton';
 import { resetCoachMarks } from '../../lib/coachMark';
 import { resetScreenIntros } from '../../features/intro/screenIntros';
 import { resetAmplitudeOrientation } from '../../features/lab/amplitudeOrientation';
 import { resetAskModes } from '../../features/permissions/permissionStore';
 import { hasCrowdsourceConsent, setCrowdsourceConsent } from '../../features/tools/measure/deviceProfile';
 import { sendFeedback } from '../../lib/feedback';
+import { redeemAccessCode } from '../../features/commercial/accessCode';
+import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { supabase } from '../../lib/supabase';
 import { colors, fonts } from '../../theme/tokens';
 import {
@@ -53,6 +57,29 @@ export function SettingsScreen({ navigation }: Props) {
   const [apeId, setApeId] = useState('');
   // Community mic-catalog contribution consent (device-local, opt-in, default off).
   const [contribute, setContribute] = useState(false);
+
+  // Access / promo code redemption (owner 2026-08-21) — for users who already
+  // have an account (e.g. an influencer comped after signing up free).
+  const { entitlement, refreshEntitlement } = useEntitlement();
+  const [redeemOpen, setRedeemOpen] = useState(false);
+  const [redeemCode, setRedeemCode] = useState('');
+  const [redeemBusy, setRedeemBusy] = useState(false);
+  const isMember = entitlement === 'academy';
+
+  const submitRedeem = useCallback(async () => {
+    const code = redeemCode.trim();
+    if (!code || redeemBusy) return;
+    setRedeemBusy(true);
+    try {
+      const res = await redeemAccessCode(code);
+      if (res.ok) await refreshEntitlement();
+      setRedeemOpen(false);
+      setRedeemCode('');
+      Alert.alert(res.ok ? 'Code applied' : 'Code not applied', res.message);
+    } finally {
+      setRedeemBusy(false);
+    }
+  }, [redeemCode, redeemBusy, refreshEntitlement]);
 
   useEffect(() => {
     loadLocalSettings().then(setLocal);
@@ -302,6 +329,30 @@ export function SettingsScreen({ navigation }: Props) {
           <Text style={styles.thanks}>Thank you for your support!</Text>
         </View>
 
+        {/* MEMBERSHIP — redeem an access / promo code (owner 2026-08-21): comp
+            accounts, bulk seats, event offers. Available to any signed-in user. */}
+        <View>
+          <Text style={styles.sectionEyebrow}>MEMBERSHIP</Text>
+          <View style={[styles.row, styles.rowBorder]}>
+            <Text style={styles.rowLabel}>Status</Text>
+            <Text style={[styles.mono, { color: isMember ? colors.green : colors.textSubAlt }]}>
+              {isMember ? 'ACADEMY — ACTIVE' : entitlement === 'lapsed' ? 'LAPSED' : 'FREE'}
+            </Text>
+          </View>
+          <Pressable
+            style={styles.row}
+            onPress={() => {
+              setRedeemCode('');
+              setRedeemOpen(true);
+            }}
+            accessibilityRole="button"
+            accessibilityLabel="Redeem an access or promo code"
+          >
+            <Text style={styles.rowLabel}>Redeem access or promo code</Text>
+            <Text style={[styles.mono, { color: colors.amber }]}>›</Text>
+          </Pressable>
+        </View>
+
         {/* ACCOUNT */}
         <View>
           <Text style={styles.sectionEyebrow}>ACCOUNT</Text>
@@ -378,6 +429,36 @@ export function SettingsScreen({ navigation }: Props) {
         </View>
       </ScrollView>
 
+      {/* Redeem access / promo code popup (owner 2026-08-21). */}
+      <Modal visible={redeemOpen} transparent animationType="fade" onRequestClose={() => setRedeemOpen(false)}>
+        <Pressable style={styles.modalBackdrop} onPress={() => !redeemBusy && setRedeemOpen(false)}>
+          <Pressable style={styles.modalCard} onPress={() => {}}>
+            <Text style={styles.modalTitle}>REDEEM A CODE</Text>
+            <Text style={styles.modalBody}>
+              Enter an access or promo code from an event, sponsor, or the Academy. Membership codes apply
+              instantly; discount codes apply at checkout when purchasing is available.
+            </Text>
+            <TextField
+              label="Access or promo code"
+              value={redeemCode}
+              onChangeText={setRedeemCode}
+              placeholder="Enter your code"
+              autoCapitalize="characters"
+            />
+            {redeemBusy ? (
+              <View style={{ height: 48, alignItems: 'center', justifyContent: 'center' }}>
+                <ActivityIndicator color={colors.amber} />
+              </View>
+            ) : (
+              <View style={{ gap: 10, marginTop: 6 }}>
+                <StudioButton label="Redeem" variant="primary" onPress={submitRedeem} />
+                <StudioButton label="Cancel" variant="secondary" onPress={() => setRedeemOpen(false)} />
+              </View>
+            )}
+          </Pressable>
+        </Pressable>
+      </Modal>
+
       {/* Notification schedule popup (user request 2026-07-23). */}
       {picker ? (
         <NotifyScheduleModal
@@ -420,6 +501,25 @@ const styles = StyleSheet.create({
     color: colors.amberLabel,
     marginBottom: 8,
   },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.72)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+  },
+  modalCard: {
+    width: '100%',
+    maxWidth: 420,
+    backgroundColor: '#141414',
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: colors.steelBorder,
+    padding: 20,
+    gap: 12,
+  },
+  modalTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1.4, color: colors.textPrimary },
+  modalBody: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 19, color: colors.textMuted },
   row: {
     flexDirection: 'row',
     alignItems: 'center',

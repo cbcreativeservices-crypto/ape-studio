@@ -11,9 +11,11 @@
  * Order is user-arrangeable (move up/down). Persisted to AsyncStorage — same
  * tiny external-store pattern as flaggedStore.
  *
- * NOTE: this is a CLIENT list; it does NOT touch the backend `enrollment` table
- * (backend frozen). "Saved" in the account sense is gated in the UI by
- * entitlement (anonymous = warned it won't be saved).
+ * NOTE: this is the device-local source of truth. For a signed-in user it is
+ * ALSO best-effort mirrored to the backend via the `sync_my_enrollments` RPC
+ * (see scheduleServerSync below, added 2026-08-06) — failures are swallowed and
+ * the local list stays authoritative. Guests never sync. "Saved" in the account
+ * sense is gated in the UI by entitlement (anonymous = warned it won't be saved).
  */
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
