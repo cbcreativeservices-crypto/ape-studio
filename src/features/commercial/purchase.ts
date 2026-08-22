@@ -8,15 +8,15 @@
  * NEVER granted client-side; the server verifies the receipt and writes the
  * entitlements row (source 'appstore'/'playstore', store_ref = transaction id).
  *
- * FAILS SAFE / OPEN: if the native module isn't in this build, or the edge
- * function isn't deployed yet, purchases simply can't complete (nothing is
- * granted) and the UI shows an honest message — it never crashes or fake-grants.
- * Until the edge function + store products exist, grant testers access via a comp
- * code (accessCode) or an entitlements row.
+ * expo-iap is LAZY-LOADED (require on first use, not a top-level import): the
+ * native module only exists in a build made AFTER expo-iap was added, so a
+ * static import would crash the whole app at startup on older dev builds
+ * (RootNavigator statically pulls in PaywallScreen → this file). Lazy + guarded
+ * means: no native module → purchases simply report unavailable, the app never
+ * crashes, and nothing is fake-granted. Rebuild the dev/preview app to enable IAP.
  */
 import { supabase } from '../../lib/supabase';
 import {
-  ALL_SKUS,
   INAPP_SKUS,
   PLANS,
   SUBSCRIPTION_SKUS,
@@ -24,20 +24,19 @@ import {
   type PlanId,
 } from './iapProducts';
 
-// expo-iap (OpenIAP). Imported lazily-safe: importing is fine; the native calls
-// are wrapped in try/catch so a build WITHOUT the module never crashes the UI.
-import {
-  initConnection,
-  endConnection,
-  fetchProducts,
-  requestPurchase,
-  finishTransaction,
-  getAvailablePurchases,
-  purchaseUpdatedListener,
-  purchaseErrorListener,
-} from 'expo-iap';
+/** The subset of the expo-iap (OpenIAP) API we call — typed without importing. */
+type Sub = { remove: () => void };
+type IapApi = {
+  initConnection: (opts?: unknown) => Promise<unknown>;
+  endConnection: () => Promise<unknown>;
+  fetchProducts: (a: { skus: string[]; type: 'subs' | 'in-app' }) => Promise<unknown[]>;
+  requestPurchase: (a: unknown) => Promise<unknown>;
+  finishTransaction: (a: { purchase: unknown; isConsumable: boolean }) => Promise<unknown>;
+  getAvailablePurchases: () => Promise<unknown[]>;
+  purchaseUpdatedListener: (cb: (p: IapPurchase) => void) => Sub;
+  purchaseErrorListener: (cb: (e: { code?: string; message?: string }) => void) => Sub;
+};
 
-/** Minimal shape we rely on from an expo-iap Purchase (OpenIAP unified fields). */
 type IapPurchase = {
   id?: string;
   productId?: string;
@@ -52,19 +51,31 @@ export type PurchaseHandlers = {
   onError: (message: string | null) => void;
 };
 
-type Sub = { remove: () => void };
+let iapMod: IapApi | null = null;
+let iapTried = false;
+/** Lazily load expo-iap. Returns null (never throws) when the native module
+ *  isn't in this build — callers then report "unavailable". */
+function getIap(): IapApi | null {
+  if (iapTried) return iapMod;
+  iapTried = true;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    iapMod = require('expo-iap') as IapApi;
+  } catch (e) {
+    console.warn('[iap] expo-iap unavailable (rebuild needed to enable IAP):', (e as Error).message);
+    iapMod = null;
+  }
+  return iapMod;
+}
 
 let connected = false;
 let listeners: Sub[] = [];
 let handlers: PurchaseHandlers | null = null;
 
 function isCancel(code: unknown): boolean {
-  const c = String(code ?? '').toLowerCase();
-  return c.includes('cancel'); // E_USER_CANCELLED / user-cancelled variants
+  return String(code ?? '').toLowerCase().includes('cancel');
 }
 
-/** Send a completed purchase to the server verifier. Returns true only when the
- *  server confirms and writes the entitlement. */
 async function validateWithServer(p: IapPurchase): Promise<boolean> {
   try {
     const { data, error } = await supabase.functions.invoke('validate-purchase', {
@@ -87,27 +98,28 @@ async function validateWithServer(p: IapPurchase): Promise<boolean> {
 }
 
 /**
- * Open the store connection and register the purchase listeners. Call when the
- * paywall opens. Returns false if IAP isn't available in this build (native
- * module missing / store not prepared) so the UI can explain.
+ * Open the store connection and register the purchase listeners. Returns false
+ * if IAP isn't available in this build (native module missing / store not
+ * prepared) so the UI can explain.
  */
 export async function initPurchases(h: PurchaseHandlers): Promise<boolean> {
   handlers = h;
+  const iap = getIap();
+  if (!iap) return false;
   try {
-    await initConnection();
+    await iap.initConnection();
   } catch (e) {
-    console.warn('[iap] initConnection failed (module not in this build?):', (e as Error).message);
+    console.warn('[iap] initConnection failed:', (e as Error).message);
     return false;
   }
   if (listeners.length === 0) {
     listeners.push(
-      purchaseUpdatedListener((purchase) => {
+      iap.purchaseUpdatedListener((purchase) => {
         void (async () => {
-          const p = purchase as IapPurchase;
-          const ok = await validateWithServer(p);
+          const ok = await validateWithServer(purchase);
           if (ok) {
             try {
-              await finishTransaction({ purchase: purchase as never, isConsumable: false });
+              await iap.finishTransaction({ purchase, isConsumable: false });
             } catch (e) {
               console.warn('[iap] finishTransaction failed:', (e as Error).message);
             }
@@ -119,17 +131,16 @@ export async function initPurchases(h: PurchaseHandlers): Promise<boolean> {
       }),
     );
     listeners.push(
-      purchaseErrorListener((err) => {
-        if (isCancel((err as { code?: string })?.code)) {
-          handlers?.onError(null); // user cancelled — no error UI
+      iap.purchaseErrorListener((err) => {
+        if (isCancel(err?.code)) {
+          handlers?.onError(null);
           return;
         }
-        handlers?.onError((err as { message?: string })?.message ?? 'The purchase could not be completed.');
+        handlers?.onError(err?.message ?? 'The purchase could not be completed.');
       }),
     );
   }
   connected = true;
-  // Warm the product catalog (prices/localized titles) — non-fatal.
   void loadStoreProducts();
   return true;
 }
@@ -147,8 +158,9 @@ export async function teardownPurchases(): Promise<void> {
   listeners = [];
   if (connected) {
     connected = false;
+    const iap = getIap();
     try {
-      await endConnection();
+      await iap?.endConnection();
     } catch {
       /* ignore */
     }
@@ -157,10 +169,12 @@ export async function teardownPurchases(): Promise<void> {
 
 /** Fetch localized store products (both subs + in-app). Best-effort. */
 export async function loadStoreProducts(): Promise<unknown[]> {
+  const iap = getIap();
+  if (!iap) return [];
   try {
     const [subs, inapp] = await Promise.all([
-      fetchProducts({ skus: SUBSCRIPTION_SKUS, type: 'subs' }).catch(() => []),
-      fetchProducts({ skus: INAPP_SKUS, type: 'in-app' }).catch(() => []),
+      iap.fetchProducts({ skus: SUBSCRIPTION_SKUS, type: 'subs' }).catch(() => []),
+      iap.fetchProducts({ skus: INAPP_SKUS, type: 'in-app' }).catch(() => []),
     ]);
     return [...(subs as unknown[]), ...(inapp as unknown[])];
   } catch {
@@ -170,8 +184,10 @@ export async function loadStoreProducts(): Promise<unknown[]> {
 
 /** Start the purchase flow for a plan. Result arrives via the listeners. */
 export async function buyPlan(planId: PlanId): Promise<void> {
+  const iap = getIap();
+  if (!iap) throw new Error('In-app purchases are not available in this build.');
   const plan = PLANS[planId];
-  await requestPurchase({
+  await iap.requestPurchase({
     request: { apple: { sku: plan.sku }, google: { skus: [plan.sku] } },
     type: plan.kind,
   });
@@ -183,14 +199,16 @@ export async function buyPlan(planId: PlanId): Promise<void> {
  * entitlement was (re)granted.
  */
 export async function restorePurchases(): Promise<boolean> {
+  const iap = getIap();
+  if (!iap) return false;
   try {
-    const purchases = (await getAvailablePurchases()) as IapPurchase[];
+    const purchases = (await iap.getAvailablePurchases()) as IapPurchase[];
     let any = false;
     for (const p of purchases) {
       if (p.productId && planIdForSku(p.productId) && (await validateWithServer(p))) {
         any = true;
         try {
-          await finishTransaction({ purchase: p as never, isConsumable: false });
+          await iap.finishTransaction({ purchase: p, isConsumable: false });
         } catch {
           /* ignore finalize error on restore */
         }
@@ -202,5 +220,3 @@ export async function restorePurchases(): Promise<boolean> {
     return false;
   }
 }
-
-export { ALL_SKUS };
