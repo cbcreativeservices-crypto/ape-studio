@@ -17,6 +17,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { AlbumDisc } from '../../components/AlbumDisc';
+import { CredentialQr } from '../../components/CredentialQr';
 import { CertIcon, type CertKey } from '../../components/CertIcon';
 import { GlassButton } from '../../components/GlassButton';
 import { Toggle } from '../../components/Toggle';
@@ -502,14 +503,10 @@ export function ProfileScreen() {
           <Text style={styles.nickname}>{(profile?.nickname ?? '—').toUpperCase()}</Text>
           <Text style={styles.apeId}>{profile?.apeStudentId ?? ''}</Text>
 
-          {/* QR is NOT a real, scannable credential yet — the verifiable ID code
-              is server-issued once the Academy Registry is wired. Show an honest
-              "pending" tile instead of a fabricated QR pattern that looks
-              scannable (owner launch-triage 2026-08-21). */}
-          <View style={styles.qrBox}>
-            <Text style={styles.qrPendingTitle}>QR</Text>
-            <Text style={styles.qrPendingSub}>Issued when your Registry ID goes live</Text>
-          </View>
+          {/* Real credential QR (owner 2026-08-21): encodes the Academy Registry
+              lookup URL for this user's permanent qr_token. Falls back to an
+              honest pending tile when the token isn't loaded yet. */}
+          <CredentialQr token={profile?.qrToken} size={120} />
         </View>
 
         {/* CERTIFICATIONS grid (MIC/REC/MIX/PA) PARKED — a future academic-version

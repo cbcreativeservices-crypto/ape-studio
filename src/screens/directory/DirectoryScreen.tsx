@@ -20,6 +20,9 @@ import { BrandLogo } from '../../components/BrandLogo';
 import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { loadPublicProfile } from '../../features/profile/publicProfile';
+import { fetchMyQrToken } from '../../features/profile/api';
+import { REGISTRY_BASE_URL } from '../../features/profile/registry';
+import { CredentialQr } from '../../components/CredentialQr';
 import { useBundles } from '../../features/enrollment/enrolledBundlesStore';
 import { useEnrollmentProgress } from '../../features/enrollment/enrollmentProgress';
 import type { RootStackParamList } from '../../navigation/types';
@@ -88,18 +91,17 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
   // (user request 2026-07-22).
   const { entitlement } = useEntitlement();
   const hasAccount = entitlement !== 'anonymous';
-  // The public Registry links only go live once the member has completed at
-  // least one full paid month — the same "paid at least once" rule that gates
-  // certificate grants (user request 2026-07-22). Backend can't yet report the
-  // completed-month, so we gate on active paid (academy) standing as the proxy.
-  const linksActive = entitlement === 'academy';
   const [acctNote, setAcctNote] = useState(false);
   // The name the user chose for the Registry (set in Profile) — shown on the
   // confirmation once registered (user request 2026-07-22).
   const [registryName, setRegistryName] = useState('');
+  // Permanent credential token → the real QR + public verification URL (owner
+  // 2026-08-21). null until loaded / for guests → the QR shows its pending state.
+  const [qrToken, setQrToken] = useState<string | null>(null);
   useEffect(() => {
     loadPublicProfile().then((p) => setRegistryName(p.registryName || p.name || ''));
-  }, []);
+    if (hasAccount) void fetchMyQrToken().then(setQrToken);
+  }, [hasAccount]);
   // A member is listed as "User" until they earn their first certificate or
   // program, then "Graduate" (user request 2026-07-22). Proxy: any enrolled
   // cert/program bundle with all topics complete.
@@ -170,33 +172,25 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
           their Registry confirmation ID + links. RIGHT = a nested green square
           holding a black QR CODE box. */}
       {hasAccount ? (
-        // REGISTERED — the public Registry record (server-issued ID, QR, and
-        // verification link) is NOT LIVE yet: the backend registry isn't wired,
-        // so we must NOT present a fabricated ID/date/QR/URL as a real,
-        // verifiable credential (owner launch-triage — make it honest). Show the
-        // user's chosen Registry name + status and an explicit "pending
-        // issuance" state; the real record fills in here once the Registry ships.
+        // REGISTERED — the real, scannable credential QR (owner 2026-08-21):
+        // encodes this user's permanent registry lookup URL (qr_token). Anyone
+        // can scan it to verify the holder's credentials on the Academy Registry.
+        // Falls back to a pending tile until the token loads.
         <View style={styles.registryBoxCol}>
-          <View style={styles.qrLarge}>
-            <View style={styles.qrLargeBlack}>
-              <QrArt />
-              <Text style={styles.qrText}>QR</Text>
-              <Text style={styles.qrText}>PREVIEW</Text>
-            </View>
-          </View>
+          <CredentialQr token={qrToken} size={160} />
           <Text style={styles.registryConfirmName}>{registryName || 'Add your Registry name in Profile'}</Text>
           {/* Listed as "User" until the first earned certificate/program, then
               "Graduate" (user request 2026-07-22). */}
           <Text style={styles.registryStatus}>{isGraduate ? 'GRADUATE' : 'USER'}</Text>
-          <View style={styles.registryMetaRow}>
-            <Text style={styles.registryDataLabel}>REGISTRY ID</Text>
-            <Text style={styles.registryId}>Pending</Text>
-          </View>
-          <Text style={styles.registryPending}>
-            {linksActive
-              ? 'Your Registry ID, QR code, and public verification link are issued when the Academy Registry goes live — they’ll appear here automatically.'
-              : 'Your public Registry record is issued once your first full month of membership is completed and the Academy Registry goes live.'}
-          </Text>
+          {qrToken ? (
+            <Text style={styles.registryLink} numberOfLines={1}>
+              Scan to verify · {REGISTRY_BASE_URL.replace(/^https?:\/\//, '')}/registry
+            </Text>
+          ) : (
+            <Text style={styles.registryPending}>
+              Your verification QR appears here once your account finishes setting up.
+            </Text>
+          )}
         </View>
       ) : (
         // NOT REGISTERED — CTA + button on the left, QR square on the right.

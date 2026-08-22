@@ -18,6 +18,8 @@ export type ProfileData = {
   apeStudentId: string;
   initials: string;
   photoUrl: string | null;
+  /** Permanent per-user credential token → the QR / public registry lookup. */
+  qrToken: string | null;
   earnedCerts: Set<'mic' | 'rec' | 'mix' | 'pa'>;
   completeCount: number;
   overallPct: number;
@@ -27,7 +29,7 @@ export type ProfileData = {
 export async function fetchProfile(): Promise<ProfileData> {
   const { data: user, error } = await supabase
     .from('users')
-    .select('id, nickname, ape_student_id, first_name, last_name_initial, photo_url')
+    .select('id, nickname, ape_student_id, first_name, last_name_initial, photo_url, qr_token')
     .single();
   if (error || !user) throw new Error('user_not_found');
 
@@ -58,11 +60,25 @@ export async function fetchProfile(): Promise<ProfileData> {
     apeStudentId: user.ape_student_id,
     initials,
     photoUrl: user.photo_url,
+    qrToken: (user as { qr_token?: string | null }).qr_token ?? null,
     earnedCerts,
     completeCount: done,
     overallPct,
     tierName: tier.name,
   };
+}
+
+/** The current user's permanent credential token (for the QR / registry link),
+ *  used by screens that don't load the full profile (e.g. Directory). Returns
+ *  null when signed out or on any error — callers show the pending state. */
+export async function fetchMyQrToken(): Promise<string | null> {
+  try {
+    const { data, error } = await supabase.from('users').select('qr_token').single();
+    if (error || !data) return null;
+    return (data as { qr_token?: string | null }).qr_token ?? null;
+  } catch {
+    return null;
+  }
 }
 
 export type AchievementTile = {
