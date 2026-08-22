@@ -29,6 +29,7 @@ import { markLabUnit, registerLabUnits } from '../../../features/lab/labCompleti
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../features/lab/guidedLessons';
 import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../foundations/bits';
 import { requireMsViz, skiaAvailable, type MsVizModule } from './skiaGate';
+import { MicCutaway } from './MicCutaway';
 
 // ── Pure models the SCREEN owns (no Skia dependency — readouts must work
 //    even on pre-Skia clients showing the honest card). ─────────────────────
@@ -236,6 +237,31 @@ type SectionProps = {
    *  so the object wins over the page while a finger is down. */
   onLock?: (v: boolean) => void;
 };
+
+// ── 0 · Inside the capsule — the generator (react-native-svg, works on every
+//    client; does NOT use the Skia viz module) ────────────────────────────────
+
+function CapsuleSection({ width, focused, help }: SectionProps) {
+  return (
+    <View style={styles.panelCard}>
+      <MicCutaway width={width} running={focused} />
+      <IllustrationBadge text="MOVING-COIL DYNAMIC CUTAWAY — ILLUSTRATIVE MODEL · coil travel exaggerated ~1,000×; the on-drawing caveat states the mass-controlled-cardioid honesty note · amber = induced current (⊗/⊙ mark its direction, and flip as it reverses)" />
+      <DisplayGuideButton onPress={() => help('capsule')} />
+      <Text style={styles.readout}>e = B · l · v — voltage tracks the coil’s VELOCITY</Text>
+      <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('capsule')}>
+        <Text style={styles.caption}>
+          A dynamic mic is a tiny generator run in reverse of a speaker. Sound pressure moves the
+          diaphragm, the diaphragm moves a coil of wire through the magnet’s gap, and moving a wire
+          through a magnetic field induces a voltage — e = B·l·v. The output follows the coil’s
+          SPEED, not its position: it peaks when the coil moves fastest and reverses every half-cycle
+          (watch the ⊗/⊙ current markers flip and the glow pulse). The little humbucking coil outside
+          the gap cancels stray hum. The rear port and phase-shift felt are what make it directional —
+          the same parts you meet again in POLAR, PROXIMITY, and the cupping cutaway.
+        </Text>
+      </CollapsibleSection>
+    </View>
+  );
+}
 
 // ── 1 · Polar patterns ──────────────────────────────────────────────────────
 
@@ -694,6 +720,7 @@ function MistakesSection({ viz, width, help }: SectionProps) {
 // ── The sectioned shell ─────────────────────────────────────────────────────
 
 const SECTIONS: { key: string; label: string; title: string; blurb: string; Comp: (p: SectionProps) => React.JSX.Element }[] = [
+  { key: 'capsule', label: 'CAPSULE', title: 'INSIDE THE CAPSULE', blurb: 'Before the patterns: how a dynamic mic turns sound into voltage — a coil moving in a magnetic gap.', Comp: CapsuleSection },
   { key: 'polar', label: 'POLAR', title: 'PICKUP PATTERNS', blurb: 'A microphone doesn’t hear equally in every direction — the pattern is its map of sensitivity.', Comp: PolarSection },
   { key: 'distance', label: 'DISTANCE', title: 'DISTANCE & THE ROOM', blurb: 'Move in and the direct sound wins; back off and the room takes over.', Comp: DistanceSection },
   { key: 'proximity', label: 'PROXIMITY', title: 'PROXIMITY EFFECT', blurb: 'Directional mics get bassier as you move in — a tool AND a trap.', Comp: ProximitySection },

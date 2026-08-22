@@ -18,6 +18,12 @@
       "runtimeExecutable": "npx",
       "runtimeArgs": ["expo", "start", "--dev-client", "--clear"],
       "port": 8081
+    },
+    {
+      "name": "mic-preview",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["--yes", "http-server", "docs/art/mic-cutaway", "-p", "8123", "-c-1"],
+      "port": 8123
     }
   ]
 }
