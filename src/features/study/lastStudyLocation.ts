@@ -31,6 +31,10 @@ const STORAGE_KEY = 'ape:lastStudyLoc';
 let current: LastStudyLocation = null;
 const listeners = new Set<() => void>();
 let hydrated = false;
+// True once a real write has happened — so an in-flight hydrate() (which set
+// `hydrated` before its await) never clobbers a fresh value with the stale
+// stored one. Owner debug audit.
+let wrote = false;
 
 function emit(): void {
   listeners.forEach((l) => l());
@@ -39,6 +43,7 @@ function emit(): void {
 /** Record the last study location (persist + notify subscribers). */
 export function setLastStudyLocation(loc: LastStudyLocation): void {
   current = loc;
+  wrote = true;
   emit();
   if (loc == null) {
     void AsyncStorage.removeItem(STORAGE_KEY).catch(() => {});
@@ -58,7 +63,7 @@ async function hydrate(): Promise<void> {
   hydrated = true;
   try {
     const raw = await AsyncStorage.getItem(STORAGE_KEY);
-    if (!raw) return;
+    if (wrote || !raw) return; // a write landed during load — don't clobber it
     const parsed = JSON.parse(raw) as { kind?: unknown; route?: unknown; achievementId?: unknown; topicName?: unknown };
     if (parsed?.kind === 'dashboard') {
       current = { kind: 'dashboard' };
@@ -89,6 +94,7 @@ async function hydrate(): Promise<void> {
 export function resetLocal(): void {
   current = null;
   hydrated = false;
+  wrote = false;
   emit();
 }
 

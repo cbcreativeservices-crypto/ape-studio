@@ -176,6 +176,15 @@ export async function saveLocalSettings(s: LocalSettings): Promise<void> {
   await AsyncStorage.setItem(KEY, JSON.stringify(s));
 }
 
+/** Reset the synchronous mirrors to defaults on account switch — low-level code
+ *  reads these without an async load, so without this the next user would see the
+ *  previous user's haptics / mic-release setting until Settings is re-opened.
+ *  The persisted `ape:settings` key is removed by the `ape:*` sweep. */
+export function resetLocal(): void {
+  hapticsOn = DEFAULT_LOCAL_SETTINGS.haptics;
+  micReleaseOnBg = DEFAULT_LOCAL_SETTINGS.micReleaseOnBackground;
+}
+
 /* ---- notification preferences (server row) ---- */
 
 export type NotificationPrefs = {

@@ -16,6 +16,10 @@ export type StudyQueueRow = {
 };
 
 const db = SQLite.openDatabaseSync('ape-studio.db');
+// MIGRATION NOTE (owner debug audit 2026-08-21): this uses CREATE TABLE IF NOT
+// EXISTS only. Before EVER adding/renaming a column here, add a PRAGMA
+// user_version migration (ALTER TABLE on upgrade) — on an existing install
+// `IF NOT EXISTS` will NOT alter the table, so new-column inserts would throw.
 db.execSync(`CREATE TABLE IF NOT EXISTS study_queue (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   achievement_id TEXT NOT NULL,

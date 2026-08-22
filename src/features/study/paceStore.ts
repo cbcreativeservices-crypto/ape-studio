@@ -71,6 +71,10 @@ const DEFAULTS: PaceSettings = { enabled: false, preset: 'quiz' };
 const cache = new Map<PaceMethodKey, PaceSettings>();
 const listeners = new Map<PaceMethodKey, Set<() => void>>();
 const hydrated = new Set<PaceMethodKey>();
+// Methods written before their hydrate() read resolved — so the in-flight load
+// (which added to `hydrated` before its await) can't clobber a fresh value with
+// the stale stored one. Owner debug audit.
+const wrote = new Set<PaceMethodKey>();
 
 const storageKey = (m: PaceMethodKey) => `ape:pace:${m}`;
 
@@ -84,6 +88,7 @@ function emit(m: PaceMethodKey): void {
 
 function writeSettings(m: PaceMethodKey, next: PaceSettings): void {
   cache.set(m, next);
+  wrote.add(m);
   emit(m);
   void AsyncStorage.setItem(storageKey(m), JSON.stringify(next)).catch(() => {});
 }
@@ -94,7 +99,7 @@ async function hydrate(m: PaceMethodKey): Promise<void> {
   hydrated.add(m);
   try {
     const raw = await AsyncStorage.getItem(storageKey(m));
-    if (!raw) return;
+    if (wrote.has(m) || !raw) return; // a write landed during load — don't clobber
     const parsed = JSON.parse(raw) as Partial<PaceSettings>;
     const preset: PacePreset =
       typeof parsed.preset === 'string' && parsed.preset in SEC_PER_Q
@@ -299,6 +304,7 @@ export function resetLocal(): void {
   ]);
   cache.clear();
   hydrated.clear();
+  wrote.clear();
   runningCache.clear();
   brainCache.clear();
   autoTrackCache.clear();

@@ -28,6 +28,8 @@ import { resetLocal as resetLabCompletion } from '../lab/labCompletion';
 import { resetLocal as resetDashboardCache } from '../dashboard/dashboardCache';
 import { clearQueuedBatches } from '../study/studyQueueStorage';
 import { clearQueuedSubmissions } from '../quiz/submissionQueueStorage';
+import { resetLocal as resetDeckOrder } from '../dashboard/deckOrderStore';
+import { resetLocal as resetSettingsMirrors } from '../settings/store';
 
 /**
  * Keys that MUST survive an account wipe: device-hardware calibration (per
@@ -91,6 +93,8 @@ export function resetAllLocalStores(): void {
   resetMeasurementStore();
   resetLabCompletion();
   resetDashboardCache();
+  resetDeckOrder();
+  resetSettingsMirrors();
   // Offline SQLite/in-memory queues carry NO user id — if not dropped here, a
   // departing user's queued study batches / quiz submissions would replay under
   // the NEXT user's session and be credited to the wrong account. Their local

@@ -37,7 +37,39 @@ in persistence/data-integrity and the supabase entitlement read.
 
 ---
 
-## 🟡 NEEDS DECISION — for the owner (ranked)
+## ✅ OWNER DECISIONS — resolved 2026-08-21 (second pass)
+
+1. **expo-speech-recognition** — RESOLVED: newest published is `56.0.1`; NO
+   SDK-57 version exists yet, and peer deps are `*` (npm won't block). `expo
+   install --check` = "Dependencies are up to date" (all other native deps
+   confirmed compatible). Action: keep 56.0.1 (guarded at entry), DEVICE-TEST
+   dictation on a build that bundles it; if it crashes, gate/remove for launch.
+2. **Stores stale after account switch** — DONE (scope: the two synchronous
+   module-cache stores). Added `resetLocal` to `deckOrderStore` + `settings/store`
+   (haptics/mic-release mirrors), wired into `resetAllLocalStores`. Owner's
+   broader answer: adopt a **SINGLE-DEVICE-LOGIN model** (one account active per
+   device; logging in elsewhere prompts "continue → previous device logs out") —
+   captured as a new feature, see `docs/APE_SINGLE_DEVICE_LOGIN_PLAN.md` (TODO).
+3. **`expo install --check`** — DONE: clean, no incompatibilities.
+4. **measurementStore wipe-on-switch** — CONFIRMED keep wiping (treated as
+   personal/account data). No change.
+5. **Entitlement double-derive** — DEFERRED by owner (perf micro-opt).
+6. **SQLite queue migrations** — NOTED in code (migration-note comments added to
+   both native queue files). No migration built yet.
+7. **Hydration races** — DONE for the two reachable stores (`lastStudyLocation`,
+   `paceStore`: added a `wrote` guard so an in-flight load can't clobber a fresh
+   write). `exposureMonitor` LEFT intentionally: it hydrates at boot BEFORE any
+   dose accrual, so the race is unreachable, and it's dose-accuracy-sensitive (R1).
+8. **Matching LayoutAnimation → Reanimated** — POSTPONED (owner wants to
+   understand it first; the after-unmount global-fire is already fixed).
+9. **QR codes** — NOT dead: HIGH PRIORITY feature. Each user's `users.qr_token`
+   (uuid, already in schema) drives transcript lookup. Build into Profile, Pro
+   Registry screen, and a website QR-lookup system. `react-native-qrcode-svg`
+   KEPT. Plan: `docs/APE_QR_CREDENTIAL_PLAN.md` — replaces the "pending" QR
+   placeholders added earlier this session with the real code.
+10. **Dead try/catch cosmetics** — LEAVE (noted for a later cleanup pass).
+
+## 🟡 NEEDS DECISION — original findings (see resolutions above)
 
 ### Medium
 

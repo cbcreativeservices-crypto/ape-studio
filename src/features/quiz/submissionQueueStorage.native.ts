@@ -16,6 +16,9 @@ export type QueuedSubmissionRow = {
 };
 
 const db = SQLite.openDatabaseSync('ape-studio.db');
+// MIGRATION NOTE (owner debug audit 2026-08-21): CREATE TABLE IF NOT EXISTS only.
+// Before EVER changing this schema, add a PRAGMA user_version migration — an
+// existing install won't be ALTERed by IF NOT EXISTS, so new-column inserts throw.
 db.execSync(`CREATE TABLE IF NOT EXISTS quiz_submission_queue (
   attempt_id TEXT PRIMARY KEY,
   achievement_id TEXT NOT NULL,

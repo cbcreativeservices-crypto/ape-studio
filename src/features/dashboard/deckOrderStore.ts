@@ -106,6 +106,17 @@ export function orderDeckIds(all: { id: string; name: string }[], p: DeckPrefs, 
   return firstId && sorted.includes(firstId) ? [firstId, ...sorted.filter((id) => id !== firstId)] : sorted;
 }
 
+/** Reset the in-memory cache on account switch (parity with the other local
+ *  stores — see clearLocalAccountData/resetAllLocalStores). The persisted key is
+ *  removed by the `ape:*` sweep; this drops the cache so the next user doesn't
+ *  briefly see the previous user's deck order until relaunch. */
+export function resetLocal(): void {
+  prefs = { ...DEFAULT };
+  hydrated = false;
+  hydrating = null;
+  emit();
+}
+
 /** Live view of the deck prefs (any screen). */
 export function useDeckPrefs(): DeckPrefs {
   const [snap, setSnap] = useState<DeckPrefs>(prefs);
