@@ -143,6 +143,10 @@ export function PaywallScreen({ navigation }: Props) {
           })}
         </View>
 
+        {/* Pricing-honesty reassurance at the decision point (owner 2026-08-21),
+            echoing the onboarding "Commitment" promise. */}
+        <Text style={styles.valueLine}>One membership. Not a series of extra charges.</Text>
+
         {/* Beta pricing note (Booth 2026-07-18). */}
         <Text style={styles.betaNote}>{COPY.betaPricingNote}</Text>
 
@@ -186,6 +190,16 @@ const styles = StyleSheet.create({
   body: { fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 22, color: colors.textSecondary },
 
   plans: { gap: 12, marginTop: 6 },
+  // Pricing-honesty reassurance line (owner 2026-08-21) — quietly emphasized.
+  valueLine: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 14,
+    letterSpacing: 0.3,
+    lineHeight: 20,
+    color: colors.textPrimary,
+    textAlign: 'center',
+    marginTop: 2,
+  },
   // Beta pricing note (Booth 2026-07-18).
   betaNote: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.amberLabel },
   plan: {
