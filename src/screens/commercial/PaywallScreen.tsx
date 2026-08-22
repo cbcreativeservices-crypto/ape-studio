@@ -1,17 +1,24 @@
 /**
- * PaywallScreen — academy upgrade paywall (CM7, Booth 2026-07-11). UI ONLY:
- * monthly + annual plans + the verbatim §2 marketing line. Store wiring
- * (RevenueCat / StoreKit) waits for the products ruling — the purchase buttons
- * are intentionally inert placeholders here. Prices are illustrative until the
- * store products are configured (ROUTE TO GOVERNANCE).
+ * PaywallScreen — academy upgrade paywall (CM7). LIVE (owner 2026-08-21): wired
+ * to expo-iap via features/commercial/purchase.ts — CONTINUE starts the store
+ * purchase, the server verifies the receipt (validate-purchase edge function)
+ * and writes the entitlement, then refreshEntitlement reflects it. Restore
+ * Purchases re-grants a prior buy. FAILS SAFE: no native module / un-deployed
+ * edge function → nothing is granted and the UI explains; never a fake unlock.
+ * The plan prices below are display copy mirroring public.products; the store is
+ * the source of truth at purchase. Store product IDs: features/commercial/
+ * iapProducts.ts. Owner setup: docs/APE_IAP_PLAN_2026_08_21.md.
  */
-import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { GlassButton } from '../../components/GlassButton';
 import { COPY } from '../../lib/copy';
 import { colors, fonts } from '../../theme/tokens';
+import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { buyPlan, initPurchases, restorePurchases, teardownPurchases } from '../../features/commercial/purchase';
+import type { PlanId } from '../../features/commercial/iapProducts';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Paywall'>;
@@ -27,7 +34,69 @@ const PLANS: Plan[] = [
 
 export function PaywallScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
+  const { refreshEntitlement } = useEntitlement();
   const [selected, setSelected] = useState<Plan['id']>('annual');
+  const [busy, setBusy] = useState(false);
+  // Whether in-app purchasing is usable in THIS build (native module present +
+  // store connection). Assume true until init says otherwise.
+  const [available, setAvailable] = useState(true);
+
+  useEffect(() => {
+    let alive = true;
+    void initPurchases({
+      onSuccess: () => {
+        // Server verified the receipt + wrote the entitlement — reflect it now.
+        void refreshEntitlement().then(() => {
+          if (!alive) return;
+          setBusy(false);
+          Alert.alert('Welcome to Academy', 'Your Academy access is active. Enjoy!', [
+            { text: 'Great', onPress: () => navigation.goBack() },
+          ]);
+        });
+      },
+      onError: (message) => {
+        if (!alive) return;
+        setBusy(false);
+        if (message) Alert.alert('Purchase', message);
+      },
+    }).then((ok) => {
+      if (alive) setAvailable(ok);
+    });
+    return () => {
+      alive = false;
+      void teardownPurchases();
+    };
+  }, [refreshEntitlement, navigation]);
+
+  const onContinue = () => {
+    if (!available) {
+      Alert.alert(
+        'Purchasing unavailable',
+        'In-app purchases aren’t available in this build yet. Please update the app, or restore a previous purchase.',
+      );
+      return;
+    }
+    setBusy(true);
+    buyPlan(selected as PlanId).catch((e: unknown) => {
+      setBusy(false);
+      Alert.alert('Purchase', (e as Error)?.message ?? 'The purchase could not be started.');
+    });
+  };
+
+  const onRestore = () => {
+    setBusy(true);
+    restorePurchases()
+      .then(async (any) => {
+        if (any) await refreshEntitlement();
+        setBusy(false);
+        Alert.alert(
+          any ? 'Purchases restored' : 'Nothing to restore',
+          any ? 'Your Academy access has been restored.' : 'No previous Academy purchase was found for this store account.',
+          any ? [{ text: 'Great', onPress: () => navigation.goBack() }] : undefined,
+        );
+      })
+      .catch(() => setBusy(false));
+  };
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
@@ -77,16 +146,26 @@ export function PaywallScreen({ navigation }: Props) {
         {/* Beta pricing note (Booth 2026-07-18). */}
         <Text style={styles.betaNote}>{COPY.betaPricingNote}</Text>
 
-        <GlassButton
-          label="CONTINUE"
-          // Glossary blue (Booth 2026-07-11 #2) — matches UPGRADE TO ACADEMY.
-          tint="blue"
-          height={54}
-          fontSize={15}
-          // Store wiring pending the RevenueCat/StoreKit ruling — inert for now.
-          onPress={undefined}
-        />
-        <Text style={styles.storeNote}>Secure in-app purchase — available soon.</Text>
+        {busy ? (
+          <View style={styles.busyWrap}>
+            <ActivityIndicator color={colors.amber} />
+          </View>
+        ) : (
+          <GlassButton
+            label="CONTINUE"
+            // Glossary blue (Booth 2026-07-11 #2) — matches UPGRADE TO ACADEMY.
+            tint="blue"
+            height={54}
+            fontSize={15}
+            onPress={onContinue}
+          />
+        )}
+        <Pressable onPress={busy ? undefined : onRestore} accessibilityRole="button" hitSlop={8}>
+          <Text style={styles.restore}>Restore purchases</Text>
+        </Pressable>
+        <Text style={styles.storeNote}>
+          Secure in-app purchase. Subscriptions renew until cancelled; manage in your app-store settings.
+        </Text>
 
         <Text style={styles.legal}>
           Payment is charged to your app-store account. Subscriptions renew automatically unless canceled at least
@@ -150,6 +229,14 @@ const styles = StyleSheet.create({
   radioOn: { borderColor: colors.amber },
   radioDot: { width: 11, height: 11, borderRadius: 6, backgroundColor: colors.amber },
 
+  busyWrap: { height: 54, alignItems: 'center', justifyContent: 'center' },
+  restore: {
+    fontFamily: fonts.barlowSemiBold,
+    fontSize: 13,
+    color: colors.amber,
+    textAlign: 'center',
+    paddingVertical: 6,
+  },
   storeNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textMuted, textAlign: 'center' },
   legal: {
     fontFamily: fonts.barlowRegular,
