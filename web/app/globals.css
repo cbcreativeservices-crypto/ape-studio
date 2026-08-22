@@ -8,6 +8,7 @@
  */
 
 :root {
+  color-scheme: dark;
   /* Surfaces */
   --background: #0c0c0c;
   --surface: #151515;
@@ -90,7 +91,8 @@ h1, h2, h3, h4, h5, h6 {
   animation: app-screen-marquee 48s linear infinite;
 }
 
-.app-screen-marquee:hover .app-screen-marquee-track {
+.app-screen-marquee:hover .app-screen-marquee-track,
+.app-screen-marquee.is-paused .app-screen-marquee-track {
   animation-play-state: paused;
 }
 

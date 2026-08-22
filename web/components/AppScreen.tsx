@@ -12,34 +12,11 @@ const WIDTH = {
 
 type Asset = { kind: "video"; src: string } | { kind: "image"; src: string };
 
-const assetCache = new Map<string, Promise<Asset | null>>();
-
-function resolveAsset(file: string): Promise<Asset | null> {
-  const cached = assetCache.get(file);
-  if (cached) return cached;
-
-  const pending = (async () => {
-    const candidates: Asset[] = [
-      { kind: "video", src: `/app-screens/${file}.webm` },
-      { kind: "video", src: `/app-screens/${file}.mp4` },
-      { kind: "video", src: `/app-screens/${file}.mov` },
-      { kind: "image", src: `/app-screens/${file}.webp` },
-      { kind: "image", src: `/app-screens/${file}.png` },
-      { kind: "image", src: `/app-screens/${file}.jpg` },
-    ];
-    for (const item of candidates) {
-      try {
-        const res = await fetch(item.src, { method: "HEAD" });
-        if (res.ok) return item;
-      } catch {
-        /* try the next candidate */
-      }
-    }
-    return null;
-  })();
-
-  assetCache.set(file, pending);
-  return pending;
+function assetFromScreen(screen: AppScreenDef): Asset {
+  if (screen.media === "video") {
+    return { kind: "video", src: `/app-screens/${screen.file}.mp4` };
+  }
+  return { kind: "image", src: `/app-screens/${screen.file}.png` };
 }
 
 export function AppScreen({
@@ -56,25 +33,24 @@ export function AppScreen({
   /** Hide from AT when this frame is a duplicate in the marquee. */
   decorative?: boolean;
 }) {
-  const [asset, setAsset] = useState<Asset | null>(null);
+  const [failed, setFailed] = useState(false);
   const [ready, setReady] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const planned = assetFromScreen(screen);
+  const asset = failed ? null : planned;
 
   useEffect(() => {
-    let cancelled = false;
-    setAsset(null);
+    setFailed(false);
     setReady(false);
-    void resolveAsset(screen.file).then((found) => {
-      if (!cancelled) setAsset(found);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [screen.file]);
+  }, [screen.file, screen.media]);
 
   useEffect(() => {
     const el = videoRef.current;
-    if (!el || asset?.kind !== "video") return;
+    if (!el || planned.kind !== "video" || failed) return;
+
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return;
+
     const io = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) void el.play().catch(() => {});
@@ -84,7 +60,7 @@ export function AppScreen({
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [asset]);
+  }, [planned.kind, planned.src, failed]);
 
   const label = `${screen.title}. ${screen.caption}`;
   const imageFit = screen.fit === "contain" ? "object-contain" : "object-cover";
@@ -130,6 +106,7 @@ export function AppScreen({
               preload="metadata"
               src={asset.src}
               onLoadedData={() => setReady(true)}
+              onError={() => setFailed(true)}
               aria-hidden={decorative}
               aria-label={decorative ? undefined : label}
             />
@@ -143,6 +120,7 @@ export function AppScreen({
                 ready ? "opacity-100" : "opacity-0"
               }`}
               onLoad={() => setReady(true)}
+              onError={() => setFailed(true)}
             />
           ) : null}
         </div>

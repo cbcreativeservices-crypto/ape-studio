@@ -5,7 +5,9 @@
  * transcript at the Academy Registry. The QR in Profile + Directory encodes this
  * URL; the website /registry/<token> page reads it via public_verify_by_token.
  */
-export const REGISTRY_BASE_URL = 'https://proaudiotrainingacademy.com';
+// Canonical host = www (matches the website's metadataBase / sitemap / robots),
+// so the QR encodes the canonical URL and scans avoid a redirect hop.
+export const REGISTRY_BASE_URL = 'https://www.proaudiotrainingacademy.com';
 
 /** The public verification URL for a user's credential token. */
 export function registryUrl(qrToken: string): string {

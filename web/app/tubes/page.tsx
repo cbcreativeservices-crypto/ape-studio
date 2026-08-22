@@ -81,7 +81,7 @@ export default function TubesPage() {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search tubes — 12AX7, ECC83, octal, rectifier…"
-        className="mt-6 w-full rounded-md border border-border bg-surface px-4 py-3 text-foreground outline-none placeholder:text-text-muted focus:border-amber"
+        className="mt-6 w-full rounded-md border border-border bg-surface px-4 py-3 text-foreground placeholder:text-text-muted focus:border-amber"
         aria-label="Search tubes"
       />
 

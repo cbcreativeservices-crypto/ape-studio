@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import logoMark from "@/public/logo-mark.png";
 
 const NAV_LINKS: { href: string; label: string }[] = [
@@ -13,20 +14,60 @@ const NAV_LINKS: { href: string; label: string }[] = [
   { href: "/verify", label: "Verify" },
 ];
 
+function isCurrent(pathname: string, href: string) {
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
 export default function Nav() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    document.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
+    const menu = menuRef.current;
+    const toggle = toggleRef.current;
+    const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+
+    const focusables = () =>
+      menu
+        ? Array.from(
+            menu.querySelectorAll<HTMLElement>("a[href], button:not([disabled])"),
+          )
+        : [];
+
+    focusables()[0]?.focus();
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpen(false);
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const items = focusables();
+      if (items.length === 0) return;
+      const firstEl = items[0];
+      const lastEl = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === firstEl) {
+        e.preventDefault();
+        lastEl.focus();
+      } else if (!e.shiftKey && document.activeElement === lastEl) {
+        e.preventDefault();
+        firstEl.focus();
+      }
+    };
+
+    document.addEventListener("keydown", onKey);
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
+      document.body.style.overflow = prevOverflow;
+      toggle?.focus();
     };
   }, [open]);
 
@@ -48,31 +89,40 @@ export default function Nav() {
           />
         </Link>
         <ul className="hidden items-center gap-6 lg:flex">
-          {NAV_LINKS.map((link) => (
-            <li key={link.href}>
-              <Link
-                href={link.href}
-                className="text-sm font-medium text-text-sub transition-colors hover:text-amber"
-              >
-                {link.label}
-              </Link>
-            </li>
-          ))}
+          {NAV_LINKS.map((link) => {
+            const current = isCurrent(pathname, link.href);
+            return (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  aria-current={current ? "page" : undefined}
+                  className={`text-sm font-medium transition-colors hover:text-amber ${
+                    current ? "text-amber" : "text-text-sub"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
         <div className="flex items-center gap-3">
           <Link
             href="/login"
+            aria-current={pathname === "/login" ? "page" : undefined}
             className="hidden text-sm font-medium text-text-sub transition-colors hover:text-amber sm:inline"
           >
             Sign in
           </Link>
           <Link
             href="/get"
+            aria-current={pathname === "/get" ? "page" : undefined}
             className="rounded-md bg-amber px-4 py-2 text-sm font-semibold text-background transition-colors hover:bg-amber-deep"
           >
             Get the app
           </Link>
           <button
+            ref={toggleRef}
             type="button"
             className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-border text-foreground lg:hidden"
             aria-expanded={open}
@@ -93,24 +143,32 @@ export default function Nav() {
       </nav>
       {open ? (
         <div
+          ref={menuRef}
           id="mobile-nav"
           className="border-t border-border bg-background lg:hidden"
         >
           <ul className="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-4 sm:px-6">
-            {NAV_LINKS.map((link) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className="block rounded-md px-2 py-2.5 text-base font-medium text-foreground hover:bg-surface hover:text-amber"
-                  onClick={() => setOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
+            {NAV_LINKS.map((link) => {
+              const current = isCurrent(pathname, link.href);
+              return (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    aria-current={current ? "page" : undefined}
+                    className={`block rounded-md px-2 py-2.5 text-base font-medium hover:bg-surface hover:text-amber ${
+                      current ? "text-amber" : "text-foreground"
+                    }`}
+                    onClick={() => setOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              );
+            })}
             <li>
               <Link
                 href="/login"
+                aria-current={pathname === "/login" ? "page" : undefined}
                 className="block rounded-md px-2 py-2.5 text-base font-medium text-text-sub hover:bg-surface hover:text-amber sm:hidden"
                 onClick={() => setOpen(false)}
               >

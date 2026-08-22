@@ -3,6 +3,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
+import { GATE_ENABLED } from "@/lib/gate";
+import { TAGLINE } from "@/lib/brand";
 
 // Self-hosted brand fonts (woff2 in ./fonts, sourced from @fontsource).
 // Self-hosting avoids build-time/runtime requests to Google Fonts.
@@ -39,37 +41,56 @@ const mono = localFont({
 
 const SITE_URL = "https://www.proaudiotrainingacademy.com";
 
+const DESCRIPTION =
+  "Learn the Craft. Earn the Credential. Structured professional audio education in the app — credentials you can verify here.";
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: "Pro Audio Training Academy",
     template: "%s · Pro Audio Training Academy",
   },
-  description:
-    "Learn the Craft. Earn the Credential. Structured professional audio education in the app — credentials you can verify here.",
+  description: DESCRIPTION,
   applicationName: "Pro Audio Training Academy",
   keywords: [
     "pro audio training",
-    "audio certification",
+    "professional audio education",
     "audio engineering course",
     "credential verification",
     "tube reference",
   ],
+  robots: GATE_ENABLED
+    ? { index: false, follow: false }
+    : { index: true, follow: true },
+  icons: {
+    icon: "/logo-mark.png",
+    apple: "/logo-hero.png",
+  },
   openGraph: {
     type: "website",
     siteName: "Pro Audio Training Academy",
     title: "Pro Audio Training Academy",
-    description:
-      "Learn the Craft. Earn the Credential. Structured professional audio education in the app — credentials you can verify here.",
+    description: DESCRIPTION,
     url: SITE_URL,
+    images: [{ url: "/logo-hero.png", alt: "Pro Audio Training Academy" }],
   },
   twitter: {
     card: "summary",
     title: "Pro Audio Training Academy",
-    description:
-      "Learn the Craft. Earn the Credential. Structured professional audio education in the app — credentials you can verify here.",
+    description: DESCRIPTION,
+    images: ["/logo-hero.png"],
   },
-  robots: { index: true, follow: true },
+};
+
+const ORG_JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "EducationalOrganization",
+  name: "Pro Audio Training Academy",
+  url: SITE_URL,
+  description: DESCRIPTION,
+  slogan: TAGLINE,
+  email: "info@proaudiotrainingacademy.com",
+  logo: `${SITE_URL}/logo-hero.png`,
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -77,12 +98,26 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       className={`${display.variable} ${body.variable} ${mono.variable} h-full antialiased`}
+      style={{ colorScheme: "dark" }}
     >
       <body className="flex min-h-full flex-col bg-background text-foreground">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_JSON_LD) }}
+        />
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-amber focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-background"
+        >
+          Skip to content
+        </a>
         <Nav />
-        <main className="flex-1">{children}</main>
+        <main id="main-content" className="flex-1">
+          {children}
+        </main>
         <Footer />
       </body>
     </html>
   );
 }
+

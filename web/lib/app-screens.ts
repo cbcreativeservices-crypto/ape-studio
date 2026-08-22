@@ -2,10 +2,10 @@
  * Website slots for mobile-app captures.
  *
  * Drop files in `web/public/app-screens/` using the `file` stem:
- *   {file}.webm, {file}.mp4, or {file}.mov — short looping screen recordings
- *   {file}.webp, {file}.png, or {file}.jpg  — poster / still (optional)
+ *   media: "video" → `{file}.mp4`
+ *   media: "image" → `{file}.png`
  *
- * Until a file is there, the matching phone frame shows a labeled placeholder.
+ * Missing files fall back to a labeled placeholder in the phone frame.
  */
 
 const video = (id: string, title: string, caption: string, file: string, tint: string) =>
@@ -146,7 +146,7 @@ export const APP_SCREENS = {
     id: "achievements",
     title: "Credentials",
     caption: "Earn it, then prove it.",
-    media: "video" as const,
+    media: "image" as const,
     tint: "#ff8a1e",
     file: "achievements",
     fit: "cover" as const,

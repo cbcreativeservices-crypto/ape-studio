@@ -7,6 +7,9 @@ import {
   APP_QR_READY,
 } from "@/lib/appstore";
 
+const NOTIFY_MAIL =
+  "mailto:info@proaudiotrainingacademy.com?subject=Notify%20me%20when%20the%20app%20is%20available";
+
 function AppleGlyph() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden className="h-6 w-6 shrink-0" fill="currentColor">
@@ -32,38 +35,50 @@ function Badge({
   top,
   bottom,
 }: {
-  href?: string;
+  href: string;
   glyph: React.ReactNode;
   top: string;
   bottom: string;
 }) {
-  const inner = (
-    <span className="flex items-center gap-3 rounded-lg border border-border bg-surface px-4 py-2.5">
-      {glyph}
-      <span className="text-left leading-tight">
-        <span className="block text-[0.65rem] uppercase tracking-wide text-text-muted">{top}</span>
-        <span className="block text-sm font-semibold text-foreground">{bottom}</span>
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="transition-transform hover:-translate-y-0.5"
+    >
+      <span className="flex items-center gap-3 rounded-lg border border-border bg-surface px-4 py-2.5">
+        {glyph}
+        <span className="text-left leading-tight">
+          <span className="block text-[0.65rem] uppercase tracking-wide text-text-muted">{top}</span>
+          <span className="block text-sm font-semibold text-foreground">{bottom}</span>
+        </span>
       </span>
-    </span>
+    </a>
   );
-
-  if (href) {
-    return (
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="transition-transform hover:-translate-y-0.5"
-      >
-        {inner}
-      </a>
-    );
-  }
-  // Not live yet — non-clickable, dimmed.
-  return <span className="cursor-default opacity-45">{inner}</span>;
 }
 
 export default function GetTheApp({ className = "" }: { className?: string }) {
+  if (!APP_LINKS_LIVE) {
+    return (
+      <section className={`rounded-xl border border-border bg-surface/40 p-5 ${className}`}>
+        <h2 className="font-display text-lg font-semibold uppercase tracking-wide text-foreground">
+          Get the app
+        </h2>
+        <p className="mt-1 text-sm text-text-sub">
+          The Pro Audio Training Academy app is not in the stores yet. Create your
+          account there when listings go live — membership is inside the app.
+        </p>
+        <a
+          href={NOTIFY_MAIL}
+          className="mt-4 inline-flex rounded-md border border-border px-4 py-2.5 text-sm font-semibold text-foreground transition-colors hover:border-amber hover:text-amber"
+        >
+          Email us to be notified
+        </a>
+      </section>
+    );
+  }
+
   return (
     <section className={`rounded-xl border border-border bg-surface/40 p-5 ${className}`}>
       <h2 className="font-display text-lg font-semibold uppercase tracking-wide text-foreground">
@@ -76,22 +91,26 @@ export default function GetTheApp({ className = "" }: { className?: string }) {
 
       <div className="mt-4 flex flex-col gap-5 sm:flex-row sm:items-center">
         <div className="flex flex-wrap gap-3">
-          <Badge
-            href={APP_LINKS_LIVE && APP_STORE_URL ? APP_STORE_URL : undefined}
-            glyph={<AppleGlyph />}
-            top="Download on the"
-            bottom="App Store"
-          />
-          <Badge
-            href={APP_LINKS_LIVE && PLAY_STORE_URL ? PLAY_STORE_URL : undefined}
-            glyph={<PlayGlyph />}
-            top="Get it on"
-            bottom="Google Play"
-          />
+          {APP_STORE_URL ? (
+            <Badge
+              href={APP_STORE_URL}
+              glyph={<AppleGlyph />}
+              top="Download on the"
+              bottom="App Store"
+            />
+          ) : null}
+          {PLAY_STORE_URL ? (
+            <Badge
+              href={PLAY_STORE_URL}
+              glyph={<PlayGlyph />}
+              top="Get it on"
+              bottom="Google Play"
+            />
+          ) : null}
         </div>
 
-        <div className="flex items-center gap-3">
-          {APP_QR_READY ? (
+        {APP_QR_READY ? (
+          <div className="flex items-center gap-3">
             <Image
               src={APP_QR_SRC}
               alt="Scan to download the Pro Audio Training Academy app"
@@ -99,22 +118,10 @@ export default function GetTheApp({ className = "" }: { className?: string }) {
               height={96}
               className="rounded-md border border-border bg-white p-1"
             />
-          ) : (
-            <div className="flex h-24 w-24 items-center justify-center rounded-md border border-dashed border-border text-center text-[0.65rem] leading-tight text-text-muted">
-              QR
-              <br />
-              coming soon
-            </div>
-          )}
-          <span className="text-xs text-text-muted sm:hidden">Scan to download</span>
-        </div>
+            <span className="text-xs text-text-muted sm:hidden">Scan to download</span>
+          </div>
+        ) : null}
       </div>
-
-      {!APP_LINKS_LIVE ? (
-        <p className="mt-4 text-xs text-text-muted">
-          App Store and Google Play links are coming soon.
-        </p>
-      ) : null}
     </section>
   );
 }

@@ -36,7 +36,7 @@ export default function GetPage() {
           ? "Taking you to your app store…"
           : APP_LINKS_LIVE
             ? "Choose your platform below to download the app and create your account."
-            : "Accounts are created in the app. Store listings will appear here when they go live."}
+            : "Accounts are created in the app. Store listings are not live yet — ask to be notified if you want a note when they are."}
       </p>
 
       <GetTheApp className="mt-8 w-full text-left" />

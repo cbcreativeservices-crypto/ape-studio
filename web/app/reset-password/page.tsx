@@ -78,7 +78,7 @@ export default function ResetPasswordPage() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-2 w-full rounded-md border border-border bg-surface px-3 py-2.5 text-foreground outline-none focus:border-amber"
+              className="mt-2 w-full rounded-md border border-border bg-surface px-3 py-2.5 text-foreground focus:border-amber"
             />
           </div>
           <div>
@@ -92,7 +92,7 @@ export default function ResetPasswordPage() {
               required
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
-              className="mt-2 w-full rounded-md border border-border bg-surface px-3 py-2.5 text-foreground outline-none focus:border-amber"
+              className="mt-2 w-full rounded-md border border-border bg-surface px-3 py-2.5 text-foreground focus:border-amber"
             />
           </div>
           {error ? (

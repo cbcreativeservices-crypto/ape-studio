@@ -27,7 +27,7 @@ export default function VerifyForm({ initial = "" }: { initial?: string }) {
         autoCapitalize="characters"
         autoComplete="off"
         spellCheck={false}
-        className="flex-1 rounded-md border border-border bg-surface px-4 py-3 font-mono uppercase tracking-widest text-foreground outline-none placeholder:normal-case placeholder:tracking-normal placeholder:text-text-muted focus:border-amber"
+        className="flex-1 rounded-md border border-border bg-surface px-4 py-3 font-mono uppercase tracking-widest text-foreground placeholder:normal-case placeholder:tracking-normal placeholder:text-text-muted focus:border-amber"
       />
       <button
         type="submit"

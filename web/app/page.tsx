@@ -92,7 +92,7 @@ export default function Home() {
           eyebrow="What you can do"
           title="A complete way to learn audio"
         />
-        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {DO.map((d) => (
             <div key={d.title} className="rounded-lg border border-border bg-surface/80 p-4 backdrop-blur-[2px]">
               <div
@@ -168,7 +168,7 @@ export default function Home() {
         <div className="mt-5 text-center">
           <Link
             href="/get"
-            className="inline-flex rounded-md bg-amber px-6 py-2.5 text-sm font-semibold text-background transition-colors hover:bg-amber-deep"
+            className="text-sm font-semibold text-amber hover:text-amber-deep"
           >
             Get the app
           </Link>
@@ -188,7 +188,7 @@ export default function Home() {
             <div className="mt-4 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Link
                 href="/get"
-                className="rounded-md bg-amber px-6 py-2.5 text-sm font-semibold text-background transition-colors hover:bg-amber-deep"
+                className="rounded-md border border-border px-6 py-2.5 text-sm font-semibold text-foreground transition-colors hover:border-amber hover:text-amber"
               >
                 Get the app
               </Link>
@@ -275,8 +275,8 @@ export default function Home() {
             Create your account. Start learning.
           </h2>
           <p className="mt-2 text-text-sub">
-            Membership is available inside the Pro Audio Training Academy app.
-            Store listings will appear here when they go live.
+            Create your account in the Pro Audio Training Academy app, then sign
+            in here to track progress and verify credentials.
           </p>
           <Link
             href="/get"
@@ -347,7 +347,7 @@ function SectionHead({
   return (
     <div className={`${align === "center" ? "mx-auto max-w-3xl text-center" : ""} ${className}`}>
       <p className="font-mono text-xs uppercase tracking-[0.3em] text-amber">{eyebrow}</p>
-      <h2 className="mt-1.5 font-display text-2xl font-semibold uppercase tracking-wide text-foreground">
+      <h2 className="mt-1.5 font-display text-2xl font-semibold tracking-wide text-foreground">
         {title}
       </h2>
       {lede ? <p className="mt-2 text-text-sub">{lede}</p> : null}
