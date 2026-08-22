@@ -16,10 +16,14 @@ export default function Page() {
       <PageHero
         eyebrow="For Institutions"
         title="Licensing & custom training"
-        lede="Structured professional audio education for organizations that train people — schools, colleges and universities, training organizations and audio programs, companies and production teams, AV departments, houses of worship, and others responsible for audio training."
+        lede="For schools, companies, and programs that train people on audio — a structured curriculum, progress you can follow, and credentials you can verify."
       />
 
       <Section title="What organizations can do">
+        <p>
+          Schools, colleges, companies, production teams, AV departments, houses
+          of worship, and other programs that train people on audio.
+        </p>
         <List
           items={[
             "put people through a structured, assessed audio curriculum",
@@ -46,7 +50,7 @@ export default function Page() {
           href={`mailto:${EMAIL}?subject=Institution%20licensing%20inquiry`}
           className="mt-2 inline-block rounded-md bg-amber px-6 py-3 text-sm font-semibold text-background transition-colors hover:bg-amber-deep"
         >
-          Email {EMAIL}
+          Request codes
         </a>
       </Section>
 

@@ -34,7 +34,9 @@ export default function GetPage() {
       <p className="mt-3 text-sm text-text-sub">
         {redirecting
           ? "Taking you to your app store…"
-          : "Choose your platform below to download the app and create your account."}
+          : APP_LINKS_LIVE
+            ? "Choose your platform below to download the app and create your account."
+            : "Accounts are created in the app. Store listings will appear here when they go live."}
       </p>
 
       <GetTheApp className="mt-8 w-full text-left" />

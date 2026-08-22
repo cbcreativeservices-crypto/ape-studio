@@ -78,7 +78,7 @@ export default function Page() {
       </Section>
 
       <CTARow
-        primary={{ href: "/curriculum", label: "How the curriculum is built" }}
+        primary={{ href: "/get", label: "Get the app" }}
         secondary={{ href: "/credentials", label: "About credentials" }}
       />
     </div>

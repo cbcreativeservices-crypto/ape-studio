@@ -8,6 +8,7 @@ const FOOTER_SECTIONS: { heading: string; links: { href: string; label: string }
       { href: "/curriculum", label: "Curriculum Development" },
       { href: "/credentials", label: "Credentials" },
       { href: "/membership", label: "Membership" },
+      { href: "/get", label: "Get the app" },
       { href: "/about", label: "About" },
       { href: "/standards", label: "Educational Standards" },
     ],
@@ -22,12 +23,12 @@ const FOOTER_SECTIONS: { heading: string; links: { href: string; label: string }
     ],
   },
   {
-    heading: "Legal",
+    heading: "Help",
     links: [
-      { href: "/terms", label: "Terms of Service" },
-      { href: "/privacy", label: "Privacy Policy" },
       { href: "/support", label: "Support" },
       { href: "/contact", label: "Contact" },
+      { href: "/terms", label: "Terms of Service" },
+      { href: "/privacy", label: "Privacy Policy" },
     ],
   },
 ];

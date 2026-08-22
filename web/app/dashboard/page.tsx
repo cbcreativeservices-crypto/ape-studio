@@ -252,9 +252,9 @@ export default function DashboardPage() {
           </ul>
         ) : (
           <p className="mt-3 text-sm text-text-muted">
-            No credentials yet. Earn certificates and program credentials by
-            completing topics and final exams in the app — they&rsquo;ll appear here
-            and can be verified from your{" "}
+            No credentials yet. Earn credentials by completing topics and
+            assessments in the app — they’ll appear here and can be verified from
+            your{" "}
             <Link href="/verify" className="text-amber underline underline-offset-2 hover:text-amber-deep">
               verification page
             </Link>

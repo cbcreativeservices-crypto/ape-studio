@@ -20,15 +20,19 @@ export default function Page() {
 
       <Section title="How they’re earned">
         <p>
-          Each certificate and program credential has a defined set of topics
-          and assessments that must be completed. When you satisfy those
-          requirements through the Academy, the credential is awarded to your
-          account and recorded.
+          Each credential has a defined set of topics and assessments that must
+          be completed. When you satisfy those requirements through the Academy,
+          the credential is awarded to your account and recorded.
         </p>
         <p>
           An included credential is part of your{" "}
           <Link href="/membership">membership</Link> — not an extra charge. It’s
           part of the educational experience, not a product sold back to you.
+        </p>
+        <p>
+          Credentials are named for the program of study they document. The work
+          they cover includes subjects such as Foundations of Sound, Signal
+          Processing, and Studio Recording.
         </p>
       </Section>
 

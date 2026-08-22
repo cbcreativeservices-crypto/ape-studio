@@ -17,6 +17,23 @@ export default function Page() {
         lede="Professional audio is a large, interconnected field. The Academy organizes it into a structure you can move through deliberately — from fundamentals to advanced work."
       />
 
+      <Section title="What’s in the curriculum">
+        <p>
+          Subjects include the areas working audio people actually study. A
+          sample of what’s in the app:
+        </p>
+        <List
+          items={[
+            "Foundations of Sound",
+            "Foundations & Safety",
+            "Mics, Amps, & Speakers",
+            "Signal Processing",
+            "Acoustics & Measurement",
+            "Studio Recording",
+          ]}
+        />
+      </Section>
+
       <Section title="How it’s organized">
         <p>The curriculum connects professional audio across four levels:</p>
         <p className="font-mono text-foreground">
@@ -89,7 +106,7 @@ export default function Page() {
       </Section>
 
       <CTARow
-        primary={{ href: "/academy", label: "About the Academy" }}
+        primary={{ href: "/get", label: "Get the app" }}
         secondary={{ href: "/standards", label: "Educational standards" }}
       />
     </div>

@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     template: "%s · Pro Audio Training Academy",
   },
   description:
-    "Professional audio education and certification. Verify Academy credentials, browse the tube reference, and access your member dashboard.",
+    "Learn the Craft. Earn the Credential. Structured professional audio education in the app — credentials you can verify here.",
   applicationName: "Pro Audio Training Academy",
   keywords: [
     "pro audio training",
@@ -60,14 +60,14 @@ export const metadata: Metadata = {
     siteName: "Pro Audio Training Academy",
     title: "Pro Audio Training Academy",
     description:
-      "Professional audio education and certification. Verify credentials, browse the tube reference, and access your member dashboard.",
+      "Learn the Craft. Earn the Credential. Structured professional audio education in the app — credentials you can verify here.",
     url: SITE_URL,
   },
   twitter: {
     card: "summary",
     title: "Pro Audio Training Academy",
     description:
-      "Professional audio education and certification. Verify credentials and access your member dashboard.",
+      "Learn the Craft. Earn the Credential. Structured professional audio education in the app — credentials you can verify here.",
   },
   robots: { index: true, follow: true },
 };

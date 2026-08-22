@@ -25,7 +25,7 @@ export function PageHero({
     >
       <div className={screen ? "flex-1" : undefined}>
         <p className="font-mono text-xs uppercase tracking-[0.3em] text-amber">{eyebrow}</p>
-        <h1 className="mt-3 font-display text-3xl font-semibold uppercase tracking-wide text-foreground sm:text-4xl">
+        <h1 className="mt-3 font-display text-3xl font-semibold tracking-wide text-foreground sm:text-4xl">
           {title}
         </h1>
         {lede ? <p className="mt-4 text-lg text-text-sub">{lede}</p> : null}
@@ -48,7 +48,7 @@ export function Section({
   return (
     <section className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
       {title ? (
-        <h2 className="mb-3 border-t border-border pt-8 font-display text-xl font-semibold uppercase tracking-wide text-foreground">
+        <h2 className="mb-3 border-t border-border pt-8 font-display text-xl font-semibold tracking-wide text-foreground">
           {title}
         </h2>
       ) : null}
@@ -62,7 +62,7 @@ export function Section({
 /** A brand messaging line rendered as a pull-quote (used at most once per page). */
 export function BrandLine({ children }: { children: ReactNode }) {
   return (
-    <p className="mx-auto max-w-3xl px-4 py-6 text-center font-display text-xl font-semibold uppercase tracking-wide text-foreground sm:px-6 sm:text-2xl">
+    <p className="mx-auto max-w-3xl px-4 py-6 text-center font-display text-xl font-semibold tracking-wide text-foreground sm:px-6 sm:text-2xl">
       {children}
     </p>
   );

@@ -4,7 +4,7 @@ import { PageHero, Section, CTARow } from "@/components/content";
 export const metadata: Metadata = {
   title: "Membership",
   description:
-    "The membership philosophy behind Pro Audio Training Academy: making professional audio education accessible, with one membership instead of a series of extra charges.",
+    "One membership for Pro Audio Training Academy: education, tools, assessments, and eligible credentials — available in the mobile app.",
 };
 
 export default function Page() {
@@ -34,7 +34,7 @@ export default function Page() {
       <Section title="One membership. Not a series of extra charges.">
         <p>
           We do not believe learners should have to pay another fee every time
-          they complete a topic, earn an eligible certificate, access another
+          they complete a topic, earn an included credential, access another
           learning tool, or reach another milestone.
         </p>
         <p>
@@ -50,31 +50,15 @@ export default function Page() {
         </p>
       </Section>
 
-      <Section title="Learn more. Become more prepared.">
-        <p>The purpose of Pro Audio Training Academy is straightforward:</p>
+      <Section title="What’s included">
         <p>
-          Help more people learn audio, strengthen their technical knowledge,
-          prepare for employment, improve the work they already do, and gain
-          access to knowledge they may not otherwise have had.
-        </p>
-        <p>
-          We want the Academy to help reduce some of the financial and
-          educational barriers that can make professional audio difficult to
-          enter. A learner’s opportunity to develop their knowledge should not be
-          determined solely by their ability to purchase expensive equipment,
-          attend a particular school, or repeatedly pay for individual pieces of
-          education. Our membership approach is designed around that principle.
+          Education, tools, assessments, and eligible credentials are part of
+          membership. Plans and prices are in the app.
         </p>
       </Section>
 
-      <div className="mx-auto max-w-3xl px-4 sm:px-6">
-        <p className="text-sm text-text-muted">
-          Membership is available in the Pro Audio Training Academy mobile app.
-        </p>
-      </div>
-
       <CTARow
-        primary={{ href: "/academy", label: "About the Academy" }}
+        primary={{ href: "/get", label: "Get the app" }}
         secondary={{ href: "/credentials", label: "About credentials" }}
       />
     </div>

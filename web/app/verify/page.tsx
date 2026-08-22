@@ -4,7 +4,7 @@ import VerifyForm from "@/components/VerifyForm";
 export const metadata: Metadata = {
   title: "Verify a Credential",
   description:
-    "Confirm a Pro Audio Training Academy certificate or program credential from its verification code or QR code.",
+    "Confirm a Pro Audio Training Academy credential from its verification code or QR code.",
 };
 
 export default function Page() {

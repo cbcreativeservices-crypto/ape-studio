@@ -25,34 +25,28 @@ export default function Home() {
           }}
         />
         <div className="relative mx-auto max-w-6xl px-4 pt-8 pb-0 text-center sm:px-6 sm:pt-10">
-          <h1 className="mx-auto max-w-3xl">
-            <span className="block font-display text-lg font-semibold uppercase tracking-wide text-foreground sm:text-xl">
-              Pro Audio Training Academy
-            </span>
-            <span className="mt-1 block font-mono text-xs uppercase tracking-[0.3em] text-amber">
-              Professional Audio Education
-            </span>
-            <span className="mt-3 block font-display text-2xl font-semibold uppercase leading-tight tracking-wide text-foreground sm:text-4xl">
-              {TAGLINE}
-            </span>
+          <p className="font-display text-lg font-semibold uppercase tracking-wide text-foreground sm:text-xl">
+            Pro Audio Training Academy
+          </p>
+          <h1 className="mx-auto mt-3 max-w-3xl font-display text-2xl font-semibold uppercase leading-tight tracking-wide text-foreground sm:text-4xl">
+            {TAGLINE}
           </h1>
           <p className="mx-auto mt-3 max-w-2xl text-base text-text-sub sm:text-lg">
-            Learn professional audio through a structured curriculum, technical
-            references, interactive practice, and assessments — and earn
-            credentials you can prove anywhere.
+            A structured way to learn professional audio — and a credential you
+            can show.
           </p>
           <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
-              href="/academy"
+              href="/get"
               className="w-full rounded-md bg-amber px-6 py-2.5 text-center text-sm font-semibold text-background transition-colors hover:bg-amber-deep sm:w-auto"
             >
-              Explore the Academy
+              Get the app
             </Link>
             <Link
-              href="#in-the-app"
+              href="/academy"
               className="w-full rounded-md border border-border px-6 py-2.5 text-center text-sm font-semibold text-foreground transition-colors hover:border-amber hover:text-amber sm:w-auto"
             >
-              See How It Works
+              Explore the Academy
             </Link>
           </div>
         </div>
@@ -63,12 +57,15 @@ export default function Home() {
       <Band tint>
         <div className="mx-auto grid max-w-5xl items-center gap-8 md:grid-cols-[1fr_auto] md:gap-12">
           <div className="text-center md:text-left">
-            <h2 className="font-display text-2xl font-semibold uppercase tracking-wide text-foreground sm:text-3xl">
-              {KNOWLEDGE.slice(0, KNOWLEDGE.indexOf("Find out")).trim()}
-              <span className="mt-1 block">
-                {KNOWLEDGE.slice(KNOWLEDGE.indexOf("Find out"))}
-              </span>
+            <p className="font-mono text-xs uppercase tracking-[0.3em] text-amber">
+              Knowledge
+            </p>
+            <h2 className="mt-1.5 font-display text-2xl font-semibold tracking-wide text-foreground sm:text-3xl">
+              You already know some of it.
             </h2>
+            <p className="mx-auto mt-3 max-w-2xl font-display text-lg font-semibold tracking-wide text-foreground md:mx-0">
+              {KNOWLEDGE}
+            </p>
             <p className="mx-auto mt-3 max-w-2xl text-text-sub md:mx-0">
               Professional audio knowledge is rarely acquired in a neat, linear
               order. Most people know some areas well and have gaps in others. The
@@ -76,7 +73,7 @@ export default function Home() {
             </p>
             <Link
               href="/curriculum"
-              className="mt-6 inline-flex w-full items-center justify-center rounded-md bg-amber px-8 py-3 font-display text-base font-semibold uppercase tracking-wide text-background transition-colors hover:bg-amber-deep sm:w-auto"
+              className="mt-6 inline-flex w-full items-center justify-center rounded-md border border-border px-8 py-3 font-display text-base font-semibold tracking-wide text-foreground transition-colors hover:border-amber hover:text-amber sm:w-auto"
             >
               Explore the curriculum
             </Link>
@@ -165,9 +162,17 @@ export default function Home() {
           ))}
         </div>
         <p className="mx-auto mt-4 max-w-2xl text-center text-xs text-text-muted">
-          Interactive studying lives in the mobile app. Sign in on this site to
-          track progress and continue where you left off.
+          Interactive studying lives in the mobile app. Create your account there,
+          then sign in here to track progress and verify credentials.
         </p>
+        <div className="mt-5 text-center">
+          <Link
+            href="/get"
+            className="inline-flex rounded-md bg-amber px-6 py-2.5 text-sm font-semibold text-background transition-colors hover:bg-amber-deep"
+          >
+            Get the app
+          </Link>
+        </div>
       </Band>
 
       {/* 6 — MEMBERSHIP */}
@@ -176,16 +181,24 @@ export default function Home() {
           <p className="font-display text-xl font-semibold uppercase tracking-wide text-foreground sm:text-2xl">
             One membership. Not a series of extra charges.
           </p>
-          <p className="mt-2 text-text-sub">
-            Education, tools, assessments, and eligible credentials are included —
-            not a new fee every time you finish a topic or earn a credential.
-          </p>
-          <Link
-            href="/membership"
-            className="mt-3 inline-block text-sm font-semibold text-amber hover:text-amber-deep"
-          >
-            How membership works &rarr;
-          </Link>
+            <p className="mt-2 text-text-sub">
+              Education, tools, assessments, and eligible credentials are included —
+              not a new fee every time you finish a topic or earn a credential.
+            </p>
+            <div className="mt-4 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Link
+                href="/get"
+                className="rounded-md bg-amber px-6 py-2.5 text-sm font-semibold text-background transition-colors hover:bg-amber-deep"
+              >
+                Get the app
+              </Link>
+              <Link
+                href="/membership"
+                className="text-sm font-semibold text-amber hover:text-amber-deep"
+              >
+                How membership works
+              </Link>
+            </div>
         </div>
       </Band>
 
@@ -209,13 +222,15 @@ export default function Home() {
               ))}
             </div>
             <p className="mt-3 text-sm text-text-muted">
-              Read more about our{" "}
+              Founded by Professor Channing “Cháno” Booth, who has taught
+              professional audio at San Diego Miramar College for 28 years and
+              spent four decades in the field.{" "}
+              <Link href="/founder" className="text-amber underline underline-offset-2 hover:text-amber-deep">
+                About the founder
+              </Link>
+              . Read our{" "}
               <Link href="/standards" className="text-amber underline underline-offset-2 hover:text-amber-deep">
                 educational standards
-              </Link>{" "}
-              and{" "}
-              <Link href="/about" className="text-amber underline underline-offset-2 hover:text-amber-deep">
-                the Academy
               </Link>
               .
             </p>
@@ -225,7 +240,7 @@ export default function Home() {
               align="left"
               eyebrow="Credentials"
               title="Earn it. Prove it."
-              lede="Complete a credential’s defined requirements and it’s awarded to your account — a verifiable record anyone can confirm from a code or QR code, with no personal information beyond your name disclosed."
+              lede="Finish the requirements, and the credential is yours — anyone can confirm it from a code. Verification shows your name and the credential. Nothing else."
             />
             <div className="mt-4 flex flex-col gap-2 sm:flex-row">
               <Link
@@ -242,7 +257,7 @@ export default function Home() {
               </Link>
             </div>
             <AppScreen
-              screen={getAppScreen("achievements")}
+              screen={getAppScreen("quiz")}
               size="sm"
               className="mt-5 md:mx-0"
             />
@@ -250,33 +265,36 @@ export default function Home() {
         </div>
       </Band>
 
-      {/* 8 — EMPLOYERS / INSTITUTIONS + CTA */}
+      {/* 8 — GET THE APP */}
       <Band>
-        <div className="grid gap-3 md:grid-cols-2">
-          <div className="rounded-lg border border-border bg-surface/80 p-5 backdrop-blur-[2px]">
-            <h2 className="font-display text-lg font-semibold uppercase tracking-wide text-foreground">
-              For employers
-            </h2>
-            <p className="mt-1.5 text-sm text-text-sub">
-              Confirm a candidate’s Academy credential and understand what it
-              represents.
-            </p>
-            <Link href="/employers" className="mt-3 inline-block text-sm font-semibold text-amber hover:text-amber-deep">
-              For employers &rarr;
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="font-mono text-xs uppercase tracking-[0.3em] text-amber">
+            Start in the app
+          </p>
+          <h2 className="mt-1.5 font-display text-2xl font-semibold tracking-wide text-foreground">
+            Create your account. Start learning.
+          </h2>
+          <p className="mt-2 text-text-sub">
+            Membership is available inside the Pro Audio Training Academy app.
+            Store listings will appear here when they go live.
+          </p>
+          <Link
+            href="/get"
+            className="mt-5 inline-flex rounded-md bg-amber px-8 py-3 font-display text-base font-semibold tracking-wide text-background transition-colors hover:bg-amber-deep"
+          >
+            Get the app
+          </Link>
+          <p className="mt-6 text-sm text-text-muted">
+            Confirm a candidate’s credential?{" "}
+            <Link href="/verify" className="text-amber underline underline-offset-2 hover:text-amber-deep">
+              Verify a credential
             </Link>
-          </div>
-          <div className="rounded-lg border border-border bg-surface/80 p-5 backdrop-blur-[2px]">
-            <h2 className="font-display text-lg font-semibold uppercase tracking-wide text-foreground">
+            . Training a team?{" "}
+            <Link href="/institutions" className="text-amber underline underline-offset-2 hover:text-amber-deep">
               For institutions
-            </h2>
-            <p className="mt-1.5 text-sm text-text-sub">
-              Licensing and custom training for schools, employers, and education
-              programs, with credentialing and learner progress.
-            </p>
-            <Link href="/institutions" className="mt-3 inline-block text-sm font-semibold text-amber hover:text-amber-deep">
-              For institutions &rarr;
             </Link>
-          </div>
+            .
+          </p>
         </div>
       </Band>
       </div>

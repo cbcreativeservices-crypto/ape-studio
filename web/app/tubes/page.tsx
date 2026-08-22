@@ -45,8 +45,8 @@ export default function TubesPage() {
       <Shell>
         <LockCard
           title="Member Reference"
-          body="The complete Vacuum Tube Reference is available to Pro Audio Training Academy members. Sign in to view the full reference."
-          cta={{ href: "/login", label: "Sign in" }}
+          body="The complete Vacuum Tube Reference is available to Pro Audio Training Academy members. Create your account in the app, then sign in here."
+          cta={{ href: "/get", label: "Get the app" }}
         />
       </Shell>
     );
@@ -58,7 +58,7 @@ export default function TubesPage() {
         <LockCard
           title="Member Reference"
           body="The complete Vacuum Tube Reference is available to Academy members. Academy membership unlocks this and other member resources — join in the Pro Audio Training Academy mobile app."
-          cta={{ href: "/dashboard", label: "Go to dashboard" }}
+          cta={{ href: "/get", label: "Get the app" }}
         />
       </Shell>
     );
