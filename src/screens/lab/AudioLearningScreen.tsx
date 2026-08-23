@@ -9,13 +9,21 @@
  * but free users may still open the Training catalog in PREVIEW (EarLab enforces
  * the per-lab lock + shared UpgradeSheet); this screen only chooses the path.
  */
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ImageBackground, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../theme/tokens';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import type { RootStackParamList } from '../../navigation/types';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+
+// Card background art (owner 2026-08-22). Bundled PNGs; each ImageBackground
+// carries a LinearGradient scrim so the frame's text and CTA stay legible over
+// the art (same treatment as the CourseSelection lab card). A null source just
+// renders the card's solid background (graceful until the file is dropped in).
+const BG_TRAINING = require('../../../assets/lab-backgrounds/training-labs.png');
+const BG_FUNDAMENTALS: number | null = require('../../../assets/lab-backgrounds/audio-fundamentals.png');
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AudioLearning'>;
 
@@ -61,22 +69,35 @@ export function AudioLearningScreen({ navigation }: Props) {
           accessibilityLabel="Audio Fundamentals. Included free. Explore fundamentals."
           style={({ pressed }) => [styles.card, styles.cardFree, pressed && styles.cardPressed]}
         >
-          <View style={styles.cardHead}>
-            <View style={[styles.iconBadge, styles.iconBadgeFree]}>
-              <Text style={styles.iconGlyph}>📘</Text>
-            </View>
-            <View style={{ flex: 1, gap: 6 }}>
-              <Text style={styles.cardTitle}>Audio Fundamentals</Text>
-              <View style={[styles.badge, styles.badgeFree]}>
-                <Text style={styles.badgeFreeText}>INCLUDED FREE</Text>
+          <ImageBackground
+            source={BG_FUNDAMENTALS ?? undefined}
+            style={styles.cardBg}
+            imageStyle={styles.cardImg}
+          >
+            {BG_FUNDAMENTALS != null ? (
+              <LinearGradient
+                colors={['rgba(10,17,13,0.78)', 'rgba(10,17,13,0.42)', 'rgba(10,17,13,0.88)']}
+                locations={[0, 0.5, 1]}
+                style={StyleSheet.absoluteFill}
+              />
+            ) : null}
+            <View style={styles.cardHead}>
+              <View style={[styles.iconBadge, styles.iconBadgeFree]}>
+                <Text style={styles.iconGlyph}>📘</Text>
+              </View>
+              <View style={{ flex: 1, gap: 6 }}>
+                <Text style={styles.cardTitle}>Audio Fundamentals</Text>
+                <View style={[styles.badge, styles.badgeFree]}>
+                  <Text style={styles.badgeFreeText}>INCLUDED FREE</Text>
+                </View>
               </View>
             </View>
-          </View>
-          <Text style={styles.cardDesc}>{FUND_DESC}</Text>
-          <View style={[styles.cta, styles.ctaFree]}>
-            <Text style={[styles.ctaText, styles.ctaTextFree]}>EXPLORE FUNDAMENTALS</Text>
-            <Text style={[styles.ctaChevron, styles.ctaTextFree]}>›</Text>
-          </View>
+            <Text style={styles.cardDesc}>{FUND_DESC}</Text>
+            <View style={[styles.cta, styles.ctaFree]}>
+              <Text style={[styles.ctaText, styles.ctaTextFree]}>EXPLORE FUNDAMENTALS</Text>
+              <Text style={[styles.ctaChevron, styles.ctaTextFree]}>›</Text>
+            </View>
+          </ImageBackground>
         </Pressable>
 
         {/* ── Training Labs — members; free users preview ──────────────── */}
@@ -90,27 +111,40 @@ export function AudioLearningScreen({ navigation }: Props) {
           }
           style={({ pressed }) => [styles.card, styles.cardMember, pressed && styles.cardPressed]}
         >
-          <View style={styles.cardHead}>
-            <View style={[styles.iconBadge, styles.iconBadgeMember]}>
-              <Text style={styles.iconGlyph}>🧪</Text>
-            </View>
-            <View style={{ flex: 1, gap: 6 }}>
-              <Text style={styles.cardTitle}>Training Labs</Text>
-              <View style={[styles.badge, styles.badgeMember]}>
-                <Text style={styles.badgeMemberText}>
-                  {isMember ? 'ACADEMY MEMBERSHIP' : '🔒 ACADEMY MEMBERSHIP'}
-                </Text>
+          <ImageBackground
+            source={BG_TRAINING ?? undefined}
+            style={styles.cardBg}
+            imageStyle={styles.cardImg}
+          >
+            {BG_TRAINING != null ? (
+              <LinearGradient
+                colors={['rgba(20,15,26,0.78)', 'rgba(20,15,26,0.42)', 'rgba(20,15,26,0.88)']}
+                locations={[0, 0.5, 1]}
+                style={StyleSheet.absoluteFill}
+              />
+            ) : null}
+            <View style={styles.cardHead}>
+              <View style={[styles.iconBadge, styles.iconBadgeMember]}>
+                <Text style={styles.iconGlyph}>🧪</Text>
+              </View>
+              <View style={{ flex: 1, gap: 6 }}>
+                <Text style={styles.cardTitle}>Training Labs</Text>
+                <View style={[styles.badge, styles.badgeMember]}>
+                  <Text style={styles.badgeMemberText}>
+                    {isMember ? 'ACADEMY MEMBERSHIP' : '🔒 ACADEMY MEMBERSHIP'}
+                  </Text>
+                </View>
               </View>
             </View>
-          </View>
-          <Text style={styles.cardDesc}>{TRAIN_DESC}</Text>
-          {/* Free users PREVIEW → green (they can look); Academy members OPEN → purple (matches the card). */}
-          <View style={[styles.cta, isMember ? styles.ctaMember : styles.ctaFree]}>
-            <Text style={[styles.ctaText, isMember ? styles.ctaTextMember : styles.ctaTextFree]}>
-              {isMember ? 'EXPLORE THE TRAINING LABS' : 'PREVIEW TRAINING LABS'}
-            </Text>
-            <Text style={[styles.ctaChevron, isMember ? styles.ctaTextMember : styles.ctaTextFree]}>›</Text>
-          </View>
+            <Text style={styles.cardDesc}>{TRAIN_DESC}</Text>
+            {/* Free users PREVIEW → green (they can look); Academy members OPEN → purple (matches the card). */}
+            <View style={[styles.cta, isMember ? styles.ctaMember : styles.ctaFree]}>
+              <Text style={[styles.ctaText, isMember ? styles.ctaTextMember : styles.ctaTextFree]}>
+                {isMember ? 'EXPLORE THE TRAINING LABS' : 'PREVIEW TRAINING LABS'}
+              </Text>
+              <Text style={[styles.ctaChevron, isMember ? styles.ctaTextMember : styles.ctaTextFree]}>›</Text>
+            </View>
+          </ImageBackground>
         </Pressable>
       </ScrollView>
     </View>
@@ -129,12 +163,15 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 14,
     borderWidth: 1,
-    padding: 16,
-    gap: 12,
+    // Art is full-bleed inside the frame; padding + spacing live on cardBg so
+    // the image reaches the rounded border. overflow:hidden clips it.
+    overflow: 'hidden',
   },
   cardFree: { borderColor: 'rgba(55,224,95,.5)', backgroundColor: '#0f1712' },
   cardMember: { borderColor: 'rgba(180,91,255,.5)', backgroundColor: '#140f1a' },
   cardPressed: { opacity: 0.85 },
+  cardBg: { padding: 16, gap: 12 },
+  cardImg: { borderRadius: 14 },
 
   cardHead: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   iconBadge: {
