@@ -128,18 +128,29 @@ export function HarmonographLabScreen() {
   // is an exact harmonic. Between them the figure precesses like the detune
   // lesson.
   const nearInt = (x: number) => Math.abs(x - Math.round(x)) < 0.03;
-  const isExact = nearInt(n1) && nearInt(n2) && detune === 0;
   const fmtN = (x: number) => (nearInt(x) ? String(Math.round(x)) : x.toFixed(2));
   // Oscillator readout: Hz + the "×N harmonic" tag only on a real sweet spot
   // (integer ≥ 1); otherwise the "(between)" precession cue.
   const oscReadout = (hz: number, n: number) =>
     `${fmtHz(hz)}${nearInt(n) && Math.round(n) >= 1 ? ` · ×${Math.round(n)}` : ' (between)'}`;
-  // Match a named interval when BOTH oscillators sit on (near) its integers.
-  const matched = RATIOS.find((r) => Math.abs(n1 - r.n1) < 0.03 && Math.abs(n2 - r.n2) < 0.03);
+  // Match a named interval by the RATIO n1:n2 at ANY scale (owner 2026-08-23) —
+  // so a 3:2 reads as "Perfect 5th" whether it's 330:220 Hz or a slow 3:2 Hz
+  // pendulum pair. 2% relative tolerance.
+  const matched = RATIOS.find((r) => n2 > 0 && Math.abs(n1 / n2 - r.n1 / r.n2) <= (r.n1 / r.n2) * 0.02);
+  // Real, audible integer harmonics (1..) — the only state that truthfully
+  // sounds through the additive engine.
+  const bothHarmonic = nearInt(n1) && nearInt(n2) && Math.round(n1) >= 1 && Math.round(n2) >= 1;
+  // Figure "closes" on a clean small-integer ratio (scale-independent).
+  const isExact = matched != null && detune === 0;
+  // Audio may sound only on real integer harmonics with the ratio locked —
+  // never for a sub-audio pendulum pair (honesty rule).
+  const playable = additiveReady && detune === 0 && bothHarmonic;
   const ratio = {
     n1,
     n2,
-    label: matched?.label ?? `${fmtN(n1)}:${fmtN(n2)}`,
+    // On a named interval → its label; otherwise the live ratio as "R : 1"
+    // (fmtN reads "0" for sub-integer arms, so never build "n1:n2" here).
+    label: matched?.label ?? (n2 > 0 ? `${(n1 / n2).toFixed(2)} : 1` : '—'),
     interval: matched?.interval ?? 'CUSTOM RATIO',
   };
   const damping = DAMPINGS.find((d) => d.key === dampKey)!;
@@ -173,7 +184,8 @@ export function HarmonographLabScreen() {
   );
 
   const startInterval = useCallback(async () => {
-    if (!additiveReady || detune !== 0) return;
+    // Only sound real integer-harmonic pairs (never a sub-audio pendulum pair).
+    if (!additiveReady || detune !== 0 || !bothHarmonic) return;
     const gen = ++genRef.current;
     const ok = await requestAudioOutput();
     if (!ok || gen !== genRef.current) return;
@@ -190,7 +202,7 @@ export function HarmonographLabScreen() {
     } catch (e) {
       if (gen === genRef.current) setGenError(e instanceof Error ? e.message : String(e));
     }
-  }, [additiveReady, detune, requestAudioOutput, intervalGenParams, ratio]);
+  }, [additiveReady, detune, bothHarmonic, requestAudioOutput, intervalGenParams, ratio]);
 
   const stopInterval = useCallback(() => {
     genRef.current++;
@@ -208,25 +220,33 @@ export function HarmonographLabScreen() {
     return () => clearInterval(id);
   }, [running]);
 
-  // Ratio switch while sounding retunes in place; detune silences (visual-only).
-  const pickRatio = (i: number) => {
-    setN1(RATIOS[i].n1);
-    setN2(RATIOS[i].n2);
-    if (running) {
-      ApeDsp.genSet(intervalGenParams(RATIOS[i].n1, RATIOS[i].n2));
+  // Retune the interval audio to a new (n1,n2), or stop it if the new pair is
+  // not a real integer-harmonic pair (never fake a tone for a slow/off-grid
+  // pendulum pair — honesty rule).
+  const retuneOrStop = (a: number, b: number) => {
+    if (!running) return;
+    if (nearInt(a) && nearInt(b) && Math.round(a) >= 1 && Math.round(b) >= 1) {
+      ApeDsp.genSet(intervalGenParams(a, b));
       noteAudioActivity();
+    } else {
+      stopInterval();
     }
   };
-  // Slider-driven oscillator frequency (harmonic number 1..8) — retunes live.
+  // Ratio chip: KEEP OSC 1 (your speed), set OSC 2 to form the interval ratio
+  // n1:n2 at the current scale (owner 2026-08-23). detune silences separately.
+  const pickRatio = (i: number) => {
+    const r = RATIOS[i];
+    const nn2 = n1 * (r.n2 / r.n1);
+    setN2(nn2);
+    retuneOrStop(n1, nn2);
+  };
+  // Slider-driven oscillator frequency (harmonic number; may be fractional).
   const setOsc = (which: 1 | 2, nn: number) => {
     const a = which === 1 ? nn : n1;
     const b = which === 2 ? nn : n2;
     if (which === 1) setN1(nn);
     else setN2(nn);
-    if (running) {
-      ApeDsp.genSet(intervalGenParams(a, b));
-      noteAudioActivity();
-    }
+    retuneOrStop(a, b);
   };
   const pickDetune = (d: (typeof DETUNES)[number]['key']) => {
     setDetune(d);
@@ -251,7 +271,7 @@ export function HarmonographLabScreen() {
       headerAction={
         <HeaderPlayButton
           playing={running}
-          disabled={!additiveReady || detune !== 0}
+          disabled={!playable}
           onPress={() => (running ? stopInterval() : void startInterval())}
           label={running ? 'Stop' : 'Play interval'}
         />
@@ -266,15 +286,15 @@ export function HarmonographLabScreen() {
           bezel: [
             { k: 'RATIO', v: ratio.label, helpKey: 'ratio_lock' },
             { k: 'INTERVAL', v: ratio.interval, flex: 1.6, helpKey: 'ratio_lock' },
-            { k: 'OSC 1', v: `${Math.round(hz1)} Hz`, tint: ARM_X, helpKey: 'ratio_lock' },
-            { k: 'OSC 2', v: `${Math.round(hz2)} Hz`, tint: ARM_Y, helpKey: 'ratio_lock' },
+            { k: 'OSC 1', v: fmtHz(hz1), tint: ARM_X, helpKey: 'ratio_lock' },
+            { k: 'OSC 2', v: fmtHz(hz2), tint: ARM_Y, helpKey: 'ratio_lock' },
           ],
           render: (_w, h) => (
             // Tapping the display toggles play/stop (owner 2026-07-31) — same
-            // gate as the header button (interval play needs v3 + no detune).
+            // gate as the header button (needs v3, no detune, real harmonics).
             <Pressable
               onPress={
-                additiveReady && detune === 0
+                playable || running
                   ? () => (running ? stopInterval() : void startInterval())
                   : undefined
               }
@@ -401,10 +421,12 @@ export function HarmonographLabScreen() {
         <Text style={styles.sectionHead}>WHAT YOU’RE SEEING</Text>
         <Text style={styles.caption}>
           {isExact
-            ? `Harmonics ${Math.round(n1)} and ${Math.round(n2)} of ${BASE_F0} Hz — an exact ${ratio.label} ratio; the figure closes.`
+            ? bothHarmonic
+              ? `Harmonics ${Math.round(n1)} and ${Math.round(n2)} of ${BASE_F0} Hz — an exact ${ratio.label} ratio; the figure closes.`
+              : `A clean ${ratio.label} ratio (${ratio.interval.toLowerCase()}) — the figure closes. Both arms sit below hearing, so it draws but doesn’t sound.`
             : detune !== 0
               ? `Detuned +${detune * 100}% — the near-miss never closes; the slow precession IS beating.`
-              : `Between exact ratios (${ratio.label}) — the figure precesses and never quite closes, just like a slight detune.`}
+              : `Between simple ratios — the figure precesses and never quite closes, just like a slight detune.`}
         </Text>
       </View>
 
@@ -425,12 +447,23 @@ export function HarmonographLabScreen() {
             the play/stop control itself is the header ▶. */}
         {engineReady ? (
           additiveReady ? (
-            detune === 0 ? (
+            detune !== 0 ? (
+              <Text style={styles.caption}>
+                Audio pauses under detune — the additive engine renders exact integer harmonics, so a
+                detuned ratio cannot sound truthfully. Re-lock the ratio to play the interval.
+              </Text>
+            ) : !bothHarmonic ? (
+              <Text style={styles.caption}>
+                Both arms are below the audio range (real harmonograph pendulum speeds), so the figure
+                draws but does not sound. Land both on integer harmonics (1–8) — a RATIO chip with
+                OSC 1 on a whole number, or the sweet spots — to hear the interval.
+              </Text>
+            ) : (
               <>
                 <Text style={styles.caption}>
                   {stereoReady
-                    ? `PLAY (header ▶) is HARD-PANNED STEREO — ${hz1} Hz on LEFT, ${hz2} Hz on RIGHT (harmonics ${ratio.n1} & ${ratio.n2} of ${BASE_F0} Hz), an exact ${ratio.label} ratio. The XY figure as sound: X-drive left, Y-drive right — headphones split it cleanly.`
-                    : `PLAY (header ▶) sounds harmonics ${ratio.n2} and ${ratio.n1} of ${BASE_F0} Hz through the additive engine — an exact ${ratio.label} ratio. Output ${GEN_LEVEL_DB} dBFS · uncalibrated.`}
+                    ? `PLAY (header ▶) is HARD-PANNED STEREO — ${Math.round(hz1)} Hz on LEFT, ${Math.round(hz2)} Hz on RIGHT (harmonics ${Math.round(n1)} & ${Math.round(n2)} of ${BASE_F0} Hz), an exact ${ratio.label} ratio. The XY figure as sound: X-drive left, Y-drive right — headphones split it cleanly.`
+                    : `PLAY (header ▶) sounds harmonics ${Math.round(n2)} and ${Math.round(n1)} of ${BASE_F0} Hz through the additive engine — an exact ${ratio.label} ratio. Output ${GEN_LEVEL_DB} dBFS · uncalibrated.`}
                 </Text>
                 <Text style={styles.advisory}>
                   {`Speaker high-pass (${SPEAKER_HPF_HZ} Hz): the ${hz2} Hz tone is attenuated ${speakerGuardDb(hz2).toFixed(1)} dB` +
@@ -439,11 +472,6 @@ export function HarmonographLabScreen() {
                 </Text>
                 {genError ? <Text style={styles.error}>{genError}</Text> : null}
               </>
-            ) : (
-              <Text style={styles.caption}>
-                Audio pauses under detune — the additive engine renders exact integer harmonics, so a
-                detuned ratio cannot sound truthfully. Re-lock the ratio to play the interval.
-              </Text>
             )
           ) : (
             <Text style={styles.caption}>
