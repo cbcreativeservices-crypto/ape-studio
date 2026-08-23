@@ -53,11 +53,11 @@ const ACTIVITY_MS = 500;
 const BASE_F0 = 110; // Hz — harmonics n₁/n₂ of this sound the interval
 
 // Oscillator FREQUENCY range (owner 2026-08-23): each arm sweeps LOG from
-// 0.01 Hz up to the 8th harmonic (880 Hz). Below ~110 Hz is real harmonograph
+// 0.1 Hz up to the 8th harmonic (880 Hz). Below ~110 Hz is real harmonograph
 // pendulum territory (sub-audio, visual only); integer harmonics 1..8 still
 // land in the range as the audible "sweet spots" and the ratio chips snap to
 // them exactly. Harmonic number n = hz / BASE_F0 (may be fractional/tiny).
-const OSC_F_MIN = 0.01;
+const OSC_F_MIN = 0.1;
 const OSC_F_MAX = 8 * BASE_F0; // 880 Hz
 const oscFreqFromPos = (v: number) =>
   OSC_F_MIN * Math.pow(OSC_F_MAX / OSC_F_MIN, Math.max(0, Math.min(1, v)));
@@ -320,7 +320,7 @@ export function HarmonographLabScreen() {
             kind: 'fader',
             id: 'osc1',
             label: 'OSC 1',
-            // Log frequency sweep 0.01 Hz → 880 Hz (owner 2026-08-23).
+            // Log frequency sweep 0.1 Hz → 880 Hz (owner 2026-08-23).
             value: oscPosFromFreq(hz1),
             onChange: (v) => setOsc(1, oscFreqFromPos(v) / BASE_F0),
             // Lane/drag-tag get the full readout (harmonic multiple when on a
@@ -435,9 +435,15 @@ export function HarmonographLabScreen() {
         <Text style={styles.caption}>
           Integers 1–8 are the sweet spots — the figure closes and the tone is an exact harmonic.
           Sweep OSC 1 or OSC 2 between them and the figure precesses, just like a slight detune.
-          Take an arm all the way down toward 0.01 Hz and you’re in real harmonograph pendulum
-          territory — far below hearing, so it draws but doesn’t sound. Use the RATIO chips to snap
-          back to an exact interval.
+          Use the RATIO chips to snap back to an exact interval.
+        </Text>
+        <Text style={styles.sectionHead}>REAL-TIME SWINGS</Text>
+        <Text style={styles.caption}>
+          The pen swings at the true frequency you set: 1 Hz is one full swing per second, 0.1 Hz one
+          swing every ten seconds. Down at 0.1–a-few Hz you’re in real harmonograph pendulum
+          territory — slow, watchable, and below hearing, so it draws but doesn’t sound. Up in the
+          audible range the arms swing far too fast to see, so the figure fills in at once and you
+          hear the interval instead.
         </Text>
       </View>
 
@@ -510,7 +516,12 @@ const TRACE_STEPS = [
 
 /** How long the pen takes to walk the full trace on a selection change. Slowed
  *  (owner 2026-08-05) so the figure EMERGES rather than snapping in. */
-const DRAW_MS = 11000;
+// The pen draws in REAL TIME (owner 2026-08-23): the slower arm swings at its
+// actual Hz — 1 Hz = one end-to-end-and-back per second, 0.1 Hz = one per 10 s.
+// The figure spans BASE_TURNS turns of the slower arm, so the full reveal takes
+// BASE_TURNS / slowerHz seconds (≈24 s at 1 Hz, ~4 min at 0.1 Hz; a few ms at
+// the audio-range harmonics, which are far too fast to watch — you hear them).
+const BASE_TURNS = 24;
 /** Rotary-table spin period (one full paper rotation). */
 const TABLE_MS = 9000;
 
@@ -599,7 +610,7 @@ function HarmonographFigure({
   const SIZE = 320;
   const M = 160; // downsampled pen path for the animated drive arms
   const { segs, penX, penY } = useMemo(() => {
-    const C = 24; // base cycles drawn
+    const C = BASE_TURNS; // base cycles drawn
     const N = 3000;
     const thetaMax = 2 * Math.PI * C;
     const k = -Math.log(endAmp) / thetaMax;
@@ -660,15 +671,20 @@ function HarmonographFigure({
     return { segs: segList, penX, penY };
   }, [n1, n2, phaseDeg, endAmp, rotary, detune]);
 
-  // The pen: 0 → 1 walks the whole trace, restarted whenever the figure
-  // changes (segs identity), then HOLDS at 1.
+  // REAL-TIME reveal: the slower arm swings at its actual Hz. The trace spans
+  // BASE_TURNS turns of the slower arm, so the full draw takes
+  // BASE_TURNS / slowerHz seconds. Clamp the slower arm to the 0.1 Hz floor.
+  const slowerHz = Math.max(OSC_F_MIN, Math.min(hz1, hz2));
+  const drawMs = (BASE_TURNS / slowerHz) * 1000;
+  // The pen: 0 → 1 walks the whole trace, restarted whenever the figure or the
+  // real-time rate changes, then HOLDS at 1.
   const progress = useSharedValue(0);
   useEffect(() => {
     cancelAnimation(progress);
     progress.value = 0;
-    progress.value = withTiming(1, { duration: DRAW_MS, easing: Easing.linear });
+    progress.value = withTiming(1, { duration: drawMs, easing: Easing.linear });
     return () => cancelAnimation(progress);
-  }, [segs, progress]);
+  }, [segs, drawMs, progress]);
 
   // Rotary paper/table spin — a real harmonograph turns the paper in rotary
   // mode; the table rotates under the trace to show it shaping the figure.
