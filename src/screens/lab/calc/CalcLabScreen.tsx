@@ -189,18 +189,17 @@ export function CalcLabScreen() {
           ) : null}
         </View>
 
-        {/* Dense two-column grid (owner 2026-08-09: collapse the list to scroll
-            less). Every category + every calculator stays visible; the per-
-            category description line is dropped and each calculator is a compact
-            tile (name + one-line tagline) instead of a tall stacked card. */}
+        {/* Dense two-column grid. Categories default COLLAPSED and only one
+            opens at a time (owner 2026-08-23), matching the lab-menu accordion
+            idiom; each calculator is a compact tile (name + one-line tagline). */}
         {SECTION_META.map((sec) => {
           const items = WORKSPACES.filter((w) => w.section === sec.id);
           if (items.length === 0) return null;
-          const open = openSecs[sec.id] ?? true;
+          const open = openSecs[sec.id] ?? false;
           return (
             <View key={sec.id} style={styles.section}>
               <Pressable
-                onPress={() => setOpenSecs((m) => ({ ...m, [sec.id]: !(m[sec.id] ?? true) }))}
+                onPress={() => setOpenSecs((m) => (m[sec.id] ? {} : { [sec.id]: true }))}
                 accessibilityRole="button"
                 accessibilityState={{ expanded: open }}
                 accessibilityLabel={`${sec.title} calculators`}

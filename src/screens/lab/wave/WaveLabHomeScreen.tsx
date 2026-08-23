@@ -12,6 +12,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
+import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { WAVE_MODULES } from './modules/registry';
 
 export function WaveLabHomeScreen() {
@@ -20,6 +21,8 @@ export function WaveLabHomeScreen() {
   const [lessonOpen, setLessonOpen] = useState(false);
   const builder = WAVE_MODULES.find((m) => m.id === 'builder');
   const modules = WAVE_MODULES.filter((m) => m.id !== 'builder');
+  // Accordion: every module collapsed by default, only one open at a time.
+  const [openId, setOpenId] = useState<string | null>(null);
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -50,24 +53,27 @@ export function WaveLabHomeScreen() {
         </Text>
         <Text style={styles.sectionTitle}>THE 15 MODULES</Text>
         {modules.map((m) => (
-          <Pressable key={m.id} style={styles.card} onPress={() => navigation.navigate('WaveModule', { id: m.id })}>
-            <Text style={styles.cardTag}>{m.num}</Text>
-            <View style={{ flex: 1, gap: 2 }}>
-              <Text style={styles.cardName}>{m.title}</Text>
-              <Text style={styles.caption}>{m.blurb}</Text>
-            </View>
-          </Pressable>
+          <ModuleAccordionRow
+            key={m.id}
+            num={m.num}
+            name={m.title}
+            blurb={m.blurb}
+            expanded={openId === m.id}
+            onToggle={() => setOpenId((cur) => (cur === m.id ? null : m.id))}
+            onOpen={() => navigation.navigate('WaveModule', { id: m.id })}
+          />
         ))}
         {builder && (
           <>
             <Text style={styles.sectionTitle}>PUT IT ALL TOGETHER</Text>
-            <Pressable style={[styles.card, styles.builderCard]} onPress={() => navigation.navigate('WaveModule', { id: builder.id })}>
-              <Text style={styles.cardTag}>{builder.num}</Text>
-              <View style={{ flex: 1, gap: 2 }}>
-                <Text style={styles.cardName}>{builder.title}</Text>
-                <Text style={styles.caption}>{builder.blurb}</Text>
-              </View>
-            </Pressable>
+            <ModuleAccordionRow
+              num={builder.num}
+              name={builder.title}
+              blurb={builder.blurb}
+              expanded={openId === builder.id}
+              onToggle={() => setOpenId((cur) => (cur === builder.id ? null : builder.id))}
+              onOpen={() => navigation.navigate('WaveModule', { id: builder.id })}
+            />
           </>
         )}
       </ScrollView>

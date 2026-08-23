@@ -13,6 +13,7 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useState } from 'react';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
+import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { DIGITAL_MODULES, type DigitalModuleId } from './modules/registry';
 
 const PATH = ['SOUND', 'ANALOG', 'SAMPLES', 'NUMBERS', 'PROCESSING', 'RECONSTRUCTION', 'SOUND'];
@@ -36,6 +37,8 @@ export function DigitalLabHomeScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [lessonOpen, setLessonOpen] = useState(false);
   const open = (id: DigitalModuleId) => navigation.navigate('DigitalModule', { id });
+  // Accordion: every module collapsed by default, only one open at a time.
+  const [openId, setOpenId] = useState<DigitalModuleId | null>(null);
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -58,13 +61,15 @@ export function DigitalLabHomeScreen() {
         </Text>
         <Text style={styles.sectionTitle}>THE EIGHT MODULES</Text>
         {DIGITAL_MODULES.map((m, i) => (
-          <Pressable key={m.id} style={styles.card} onPress={() => open(m.id)}>
-            <Text style={styles.cardTag}>{i + 1}</Text>
-            <View style={{ flex: 1, gap: 2 }}>
-              <Text style={styles.cardName}>{m.title}</Text>
-              <Text style={styles.caption}>{m.blurb}</Text>
-            </View>
-          </Pressable>
+          <ModuleAccordionRow
+            key={m.id}
+            num={i + 1}
+            name={m.title}
+            blurb={m.blurb}
+            expanded={openId === m.id}
+            onToggle={() => setOpenId((cur) => (cur === m.id ? null : m.id))}
+            onOpen={() => open(m.id)}
+          />
         ))}
         <Text style={styles.sectionTitle}>SECONDARY TOOLS</Text>
         <View style={styles.toolWrap}>

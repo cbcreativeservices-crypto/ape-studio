@@ -5,6 +5,7 @@
  * (LEARN / EXPLORE / TRAIN / CHALLENGE); built modules open, planned modules
  * are listed honestly as IN DEVELOPMENT. Mirrors DigitalLabHomeScreen.
  */
+import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,6 +13,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
+import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { EQ_MODULES, EQ_SECTION_META, type EqModuleId } from './modules/registry';
 
 /** The lab's educational progression, banner-style (Digital Lab idiom). */
@@ -21,6 +23,8 @@ export function EqLabHomeScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const open = (id: EqModuleId) => navigation.navigate('EqModule', { id });
+  // Accordion: every module collapsed by default, only one open at a time.
+  const [openId, setOpenId] = useState<EqModuleId | null>(null);
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -56,19 +60,14 @@ export function EqLabHomeScreen() {
               <Text style={styles.sectionTitle}>{sec.title}</Text>
               <Text style={styles.caption}>{sec.note}</Text>
               {live.map((m) => (
-                <Pressable
+                <ModuleAccordionRow
                   key={m.id}
-                  style={styles.card}
-                  onPress={() => open(m.id)}
-                  accessibilityRole="button"
-                  accessibilityLabel={m.title}
-                >
-                  <Text style={styles.cardTag}>▶</Text>
-                  <View style={{ flex: 1, gap: 2 }}>
-                    <Text style={styles.cardName}>{m.title}</Text>
-                    <Text style={styles.caption}>{m.blurb}</Text>
-                  </View>
-                </Pressable>
+                  name={m.title}
+                  blurb={m.blurb}
+                  expanded={openId === m.id}
+                  onToggle={() => setOpenId((cur) => (cur === m.id ? null : m.id))}
+                  onOpen={() => open(m.id)}
+                />
               ))}
             </View>
           );

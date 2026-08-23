@@ -4,6 +4,7 @@
  * so the signal stays healthy as it moves through the chain — without
  * overloading one stage or starving the next. Mirrors the EQ Lab home.
  */
+import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -11,6 +12,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
+import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { GAIN_MODULES, GAIN_SECTION_META, type GainModuleId } from './modules/registry';
 
 const PATH = ['SOURCE', 'PREAMP', 'PROCESSING', 'FADER', 'OUTPUT'];
@@ -19,6 +21,8 @@ export function GainLabHomeScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const open = (id: GainModuleId) => navigation.navigate('GainModule', { id });
+  // Accordion: every module collapsed by default, only one open at a time.
+  const [openId, setOpenId] = useState<GainModuleId | null>(null);
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -56,19 +60,14 @@ export function GainLabHomeScreen() {
               <Text style={styles.sectionTitle}>{sec.title}</Text>
               <Text style={styles.caption}>{sec.note}</Text>
               {mods.map((m) => (
-                <Pressable
+                <ModuleAccordionRow
                   key={m.id}
-                  style={styles.card}
-                  onPress={() => open(m.id)}
-                  accessibilityRole="button"
-                  accessibilityLabel={m.title}
-                >
-                  <Text style={styles.cardTag}>▶</Text>
-                  <View style={{ flex: 1, gap: 2 }}>
-                    <Text style={styles.cardName}>{m.title}</Text>
-                    <Text style={styles.caption}>{m.blurb}</Text>
-                  </View>
-                </Pressable>
+                  name={m.title}
+                  blurb={m.blurb}
+                  expanded={openId === m.id}
+                  onToggle={() => setOpenId((cur) => (cur === m.id ? null : m.id))}
+                  onOpen={() => open(m.id)}
+                />
               ))}
             </View>
           );
