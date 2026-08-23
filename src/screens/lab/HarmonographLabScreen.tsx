@@ -379,7 +379,7 @@ export function HarmonographLabScreen() {
     >
       {!engineReady ? <EngineGate state={gate} /> : null}
 
-      <View style={styles.panelCard}>
+      <View style={{ gap: 6 }}>
         <Text style={styles.sectionHead}>WHAT YOU’RE SEEING</Text>
         <Text style={styles.caption}>
           {isExact
@@ -390,7 +390,7 @@ export function HarmonographLabScreen() {
         </Text>
       </View>
 
-      <View style={styles.panelCard}>
+      <View style={{ gap: 6 }}>
         <Text style={styles.sectionHead}>SWEET SPOTS</Text>
         <Text style={styles.caption}>
           Integers 1–8 are the sweet spots — the figure closes and the tone is an exact harmonic.
@@ -398,7 +398,7 @@ export function HarmonographLabScreen() {
         </Text>
       </View>
 
-      <View style={styles.panelCard}>
+      <View style={{ gap: 6 }}>
         <Text style={styles.sectionHead}>THE INTERVAL, AS SOUND</Text>
         {/* DRIVE FROM OSCILLATORS — real interval audio (v3 additive only);
             the play/stop control itself is the header ▶. */}

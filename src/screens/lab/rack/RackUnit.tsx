@@ -116,13 +116,6 @@ export function RackUnit({
             locations={[0, 0.4, 0.8, 1]}
             style={StyleSheet.absoluteFill}
           />
-          {stage.badge ? (
-            // pointerEvents none: the badge overlays the glass and must never
-            // dead-zone a tap-to-play stage (review 2026-08-23).
-            <Text style={styles.badge} numberOfLines={1} pointerEvents="none">
-              {stage.badge}
-            </Text>
-          ) : null}
           {laneActive && bound ? (
             <View style={styles.dragTag} pointerEvents="none">
               <Text style={styles.dragTagText} numberOfLines={1}>
@@ -133,6 +126,14 @@ export function RackUnit({
         </View>
         {stage.bezel?.length || stage.onGuide ? (
           <BezelReadouts items={stage.bezel ?? []} onGuide={stage.onGuide} onHelp={onHelp} />
+        ) : null}
+        {stage.badge ? (
+          // Honesty badge: silk-screened on the FACEPLATE under the unit —
+          // never floated over the glass (owner 2026-08-23: no hover objects
+          // may block the display). Still pinned with it.
+          <Text style={styles.badgeStrip} numberOfLines={1}>
+            {stage.badge}
+          </Text>
         ) : null}
       </View>
 
@@ -229,19 +230,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#0c0c0f',
     overflow: 'hidden',
   },
-  badge: {
-    position: 'absolute',
-    top: 6,
-    right: 8,
+  badgeStrip: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 12,
     letterSpacing: 0.6,
-    color: '#8a8b93',
-    backgroundColor: 'rgba(12,12,15,0.66)',
-    borderRadius: 4,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    maxWidth: '78%',
+    color: '#6d6f75',
+    textAlign: 'center',
+    paddingTop: 4,
+    paddingBottom: 1,
+    paddingHorizontal: 8,
   },
   dragTag: {
     position: 'absolute',

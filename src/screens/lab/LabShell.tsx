@@ -326,20 +326,24 @@ export function LabShell({
             >
               {(api) => (
                 <View style={styles.panel}>
-                  <CollapsibleSection title="DESCRIPTION" startOpen={false}>
+                  {/* ONE collapsible for the entire well (owner 2026-08-23):
+                      description + every teaching block + the lesson entry
+                      collapse together, so once the text is read the well goes
+                      quiet and the dock/stage own the screen. */}
+                  <CollapsibleSection title="LAB NOTES">
                     <Text style={styles.intro}>{intro}</Text>
                     <Text style={styles.caption}>{exploreCaption}</Text>
+                    {typeof children === 'function' ? children(api) : children}
+                    {/* Guided-lesson entry lives at the BOTTOM (owner 2026-07-29). */}
+                    <Pressable
+                      style={styles.lessonRow}
+                      onPress={() => setLessonOpen(true)}
+                      accessibilityRole="button"
+                      accessibilityLabel="Open the guided lesson"
+                    >
+                      <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
+                    </Pressable>
                   </CollapsibleSection>
-                  {typeof children === 'function' ? children(api) : children}
-                  {/* Guided-lesson entry lives at the BOTTOM (owner 2026-07-29). */}
-                  <Pressable
-                    style={styles.lessonRow}
-                    onPress={() => setLessonOpen(true)}
-                    accessibilityRole="button"
-                    accessibilityLabel="Open the guided lesson"
-                  >
-                    <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
-                  </Pressable>
                 </View>
               )}
             </RackUnit>
