@@ -1,0 +1,258 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Lab UX — Room Builder as a Rack Unit</title><style>
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Barlow:wght@400;500&display=swap');
+:root{--bg:#0c0c0c;--panel:#131316;--line:#26262c;--amber:#ffc64d;--amber2:#d99f1f;--green:#37e05f;--blue:#2f9bff;--txt:#f4f4f6;--sub:#8a8b93;--body:#c9ccd2}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--body);font-family:Barlow,sans-serif}
+#wrap{display:flex;gap:26px;justify-content:center;align-items:flex-start;padding:22px}
+h1{font-family:Oswald;font-weight:600;font-size:15px;letter-spacing:1.6px;color:var(--txt);margin:0 0 2px}
+.k{font-family:Oswald;font-weight:600;font-size:10.5px;letter-spacing:1.4px;color:var(--sub)}
+.nav{display:flex;gap:6px;margin:0 0 10px}
+.nav a{font-family:Oswald;font-weight:600;font-size:10px;letter-spacing:1px;text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:4px 9px;color:var(--sub)}
+.nav a.on{border-color:var(--amber);color:var(--amber);background:#1d1708}
+/* phone */
+#phoneCol{width:300px;flex:none}
+#phone{width:300px;height:650px;border:2px solid #2c2c33;border-radius:24px;overflow:hidden;background:var(--bg);display:flex;flex-direction:column;position:relative}
+#chrome{height:50px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;justify-content:center;padding:0 12px;flex:none}
+#chrome .t{font-family:Oswald;font-weight:600;font-size:12px;letter-spacing:1.2px;color:var(--txt)}
+#chrome .s{font-size:9.5px;color:var(--sub)}
+/* STAGE */
+#stageZ{flex:none;padding:8px 8px 0;background:linear-gradient(#141417,#101013)}
+#glass{border:1px solid #3a3a44;border-radius:10px 10px 0 0;background:radial-gradient(ellipse at 45% 40%,#18222e 0%,#101820 60%,#0b0f14 100%);height:196px;position:relative;overflow:hidden;box-shadow:inset 0 2px 8px rgba(0,0,0,.6)}
+#glass svg{position:absolute;inset:0;touch-action:none}
+#simb{position:absolute;right:5px;top:5px;font-family:Oswald;font-weight:600;font-size:6.5px;letter-spacing:.8px;color:#5f6167;border:1px solid #26262c;border-radius:3px;padding:1px 4px;background:rgba(12,12,12,.55)}
+#dragTag{position:absolute;pointer-events:none;font-family:Oswald;font-weight:600;font-size:10px;color:#0c0c0c;background:var(--amber);border-radius:4px;padding:2px 6px;display:none;transform:translate(-50%,-130%)}
+#bezel{border:1px solid #3a3a44;border-top:none;border-radius:0 0 10px 10px;background:linear-gradient(#191a1e,#121316);display:flex;height:34px}
+.bz{flex:1;display:flex;flex-direction:column;justify-content:center;padding:0 7px;border-right:1px solid #26262c}
+.bz:last-child{border-right:none}
+.bz .bk{font-family:Oswald;font-weight:600;font-size:6.5px;letter-spacing:.8px;color:var(--sub)}
+.bz .bv{font-family:Oswald;font-weight:600;font-size:11px;color:var(--amber);transition:color .2s}
+/* WELL */
+#well{flex:1;overflow-y:auto;padding:9px 10px;display:flex;flex-direction:column;gap:8px;scrollbar-width:none;position:relative}
+#well::-webkit-scrollbar{display:none}
+.card{border:1px solid var(--line);border-radius:9px;background:var(--panel);padding:9px;display:flex;flex-direction:column;gap:6px}
+.eyebrow{font-family:Oswald;font-weight:600;font-size:9px;letter-spacing:1.4px;color:var(--amber)}
+.bl{font-size:9.5px;line-height:13.5px;color:var(--body)}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{font-family:Oswald;font-weight:600;font-size:8.5px;letter-spacing:.7px;color:var(--body);border:1px solid rgba(255,198,77,.4);border-radius:6px;padding:4px 7px;background:#17140c;cursor:pointer;user-select:none}
+.chip.on{color:#0c0c0c;background:var(--amber);border-color:var(--amber)}
+.chip.dim{opacity:.55}
+/* DOCK */
+#dock{flex:none;border-top:1px solid #2c2c33;background:linear-gradient(#15161a,#101114);padding:7px 8px 9px;display:flex;flex-direction:column;gap:7px;position:relative}
+#lane{height:40px;border:1px solid var(--line);border-radius:8px;background:#0f0f12;position:relative;touch-action:none;cursor:ew-resize}
+#laneFill{position:absolute;left:0;top:0;bottom:0;border-radius:8px 0 0 8px;background:rgba(255,198,77,.14)}
+#laneThumb{position:absolute;top:3px;bottom:3px;width:20px;border-radius:5px;background:var(--amber);box-shadow:0 0 6px rgba(255,198,77,.4)}
+#laneLab{position:absolute;left:9px;top:50%;transform:translateY(-50%);font-family:Oswald;font-weight:600;font-size:9px;letter-spacing:1px;color:var(--sub);pointer-events:none}
+#laneVal{position:absolute;right:9px;top:50%;transform:translateY(-50%);font-family:Oswald;font-weight:600;font-size:12px;color:var(--amber);pointer-events:none}
+#strip{display:flex;gap:5px}
+.db{flex:1;border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:5px 4px 6px;display:flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer;user-select:none}
+.db.sel{border-color:var(--amber);background:#1d1708}
+.db .dl{font-family:Oswald;font-weight:600;font-size:7.5px;letter-spacing:.7px;color:var(--sub);white-space:nowrap}
+.db .dv{font-family:Oswald;font-weight:600;font-size:10.5px;color:var(--amber);white-space:nowrap}
+.db.sel .dl{color:var(--amber)}
+/* TRAY */
+#trayBack{position:absolute;left:0;right:0;top:0;bottom:0;background:rgba(0,0,0,.62);display:none}
+#tray{position:absolute;left:6px;right:6px;bottom:104px;border:1px solid #2b2b33;border-radius:12px;background:#141418;padding:10px;display:none;flex-direction:column;gap:7px;box-shadow:0 -8px 30px rgba(0,0,0,.5)}
+#tray .th{display:flex;justify-content:space-between;align-items:center}
+#tray .tt{font-family:Oswald;font-weight:600;font-size:9.5px;letter-spacing:1.2px;color:var(--txt)}
+#tray .tx{font-family:Oswald;font-weight:600;font-size:11px;color:var(--sub);cursor:pointer;padding:2px 6px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}
+.gcell{border:1px solid rgba(255,198,77,.35);border-radius:7px;background:#17140c;padding:7px 4px;text-align:center;font-family:Oswald;font-weight:600;font-size:8.5px;letter-spacing:.6px;color:var(--body);cursor:pointer;user-select:none}
+.gcell.on{background:var(--amber);border-color:var(--amber);color:#0c0c0c}
+.treset{font-family:Oswald;font-weight:600;font-size:8.5px;letter-spacing:1px;color:#57c8cf;border:1px solid rgba(63,174,180,.5);border-radius:7px;padding:5px;text-align:center;cursor:pointer}
+/* right column */
+#mapCol{width:250px;flex:none;display:flex;flex-direction:column;gap:13px}
+.lamp{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:var(--panel)}
+.dot{width:13px;height:13px;border-radius:50%;flex:none;background:var(--green)}
+.lamp .ll{font-family:Oswald;font-weight:600;font-size:11px;letter-spacing:1.1px;color:var(--txt)}
+.lamp .ls{font-size:10px;color:var(--sub)}
+#note{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:12px;font-size:11.5px;line-height:16.5px;color:var(--body)}
+#note b{color:var(--amber);font-weight:500}
+#try{border:1px solid rgba(55,224,95,.4);border-radius:10px;background:#0e1510;padding:12px;font-size:11.5px;line-height:17px;color:var(--body)}
+#try b{color:var(--green);font-weight:500}
+#try .kk{font-family:Oswald;font-weight:600;font-size:10px;letter-spacing:1.3px;color:var(--green);margin-bottom:6px}
+</style></head><body>
+<div id="wrap">
+  <div id="phoneCol">
+    <h1>ROOM BUILDER — AS A RACK UNIT</h1>
+    <div class="nav"><a href="labux_before.html">① AS SHIPPED</a><a class="on" href="labux_after.html">② RACK UNIT (proposed)</a></div>
+    <div id="phone">
+      <div id="chrome"><div class="t">ROOM BUILDER</div><div class="s">Wave Physics Laboratory · Rack Unit</div></div>
+      <div id="stageZ">
+        <div id="glass">
+          <svg id="room" viewBox="0 0 284 196"></svg>
+          <div id="simb">SIMULATED VALUES — UX MOCK</div>
+          <div id="dragTag"></div>
+        </div>
+        <div id="bezel">
+          <div class="bz"><div class="bk">RT60 @500</div><div class="bv" id="bRT">1.42 s</div></div>
+          <div class="bz"><div class="bk" id="bLVLk">LEVEL @500</div><div class="bv" id="bLVL">−9.2 dB</div></div>
+          <div class="bz"><div class="bk">1ST ARRIVAL</div><div class="bv" id="bARR">21.4 ms</div></div>
+          <div class="bz"><div class="bk">SOURCES</div><div class="bv" id="bSRC">2/4</div></div>
+        </div>
+      </div>
+      <div id="well">
+        <div class="card"><div class="eyebrow">WHAT TO TRY</div>
+          <div class="bl">• Build a cardioid: two SUBs 1.2 m apart, rear delayed ~3.5 ms, polarity inverted — energy forward, silence behind.</div>
+          <div class="bl">• Open WALLS ▸ and A/B FOAM vs GLASS — watch RT60 on the bezel while the tray is open.</div>
+          <div class="bl">• Shrink the room to ~4 × 3 m and watch the modes snap in.</div></div>
+        <div class="card"><div class="eyebrow">COMMON MISTAKES</div>
+          <div class="bl">• Reading the heat map as loudness at every frequency — it is the view frequency only.</div>
+          <div class="bl">• Treating a first reflection with foam and expecting the 60 Hz mode to move.</div></div>
+        <div class="card"><div class="eyebrow">KNOWLEDGE CHECK</div>
+          <div class="bl">Two subs 1.2 m apart, rear delayed 3.5 ms and inverted. Where does the energy go?</div>
+          <div class="chips"><span class="chip">FORWARD</span><span class="chip">BACKWARD</span><span class="chip">EVERYWHERE</span><span class="chip">NOWHERE</span></div>
+          <div class="bl" style="color:#6d6f75">The display stays pinned above while you answer.</div></div>
+        <div class="bl" style="color:#5f6167;text-align:center;padding:4px 0">— notices live at the bottom (owner standard) —</div>
+      </div>
+      <div id="trayBack"></div>
+      <div id="tray">
+        <div class="th"><div class="tt" id="trayTitle">WALL MATERIALS</div><div class="tx" id="trayClose">✕</div></div>
+        <div id="trayBody"></div>
+      </div>
+      <div id="dock">
+        <div id="lane"><div id="laneFill"></div><div id="laneThumb"></div><div id="laneLab">ROOM WIDTH</div><div id="laneVal">12.0 m</div></div>
+        <div id="strip"></div>
+      </div>
+    </div>
+  </div>
+  <div id="mapCol">
+    <div class="lamp"><div class="dot"></div><div><div class="ll">DISPLAY</div><div class="ls">pinned — structurally cannot leave</div></div></div>
+    <div class="lamp"><div class="dot"></div><div><div class="ll">READOUTS</div><div class="ls">printed on the bezel — always live</div></div></div>
+    <div class="lamp"><div class="dot"></div><div><div class="ll">ACTIVE CONTROL</div><div class="ls">the dock — zero scroll to reach</div></div></div>
+    <div id="try"><div class="kk">TRY IT — THIS MOCK IS LIVE</div>
+      <b>Ride the lane</b> — it's pre-bound to ROOM WIDTH; the room and RT60 react while a value tag rides your finger.<br>
+      <b>Tap DEPTH or FREQ</b> — the lane re-binds: <i>tap the legend, ride the fader</i>.<br>
+      <b>Open WALLS ▸</b> — a sticky tray covers only the reading well. A/B FOAM vs GLASS and watch RT60 move on the bezel <i>while the tray is open</i>.<br>
+      <b>Open SRCS ▸</b> — tap LEVEL or DELAY inside to bind the lane through the tray.<br>
+      <b>Drag a source on the glass</b> — on-glass gestures stay primary; 1ST ARRIVAL follows.<br>
+      <b>Scroll the middle</b> — prose and the check scroll; nothing else moves.</div>
+    <div id="note"><b>Same module, same content.</b> The 2,300&nbsp;px scroll became a fixed faceplate: stage 230&nbsp;px · reading well (the only scroller) · dock 104&nbsp;px. The well now holds ONLY things that are meant to scroll — prose, mistakes, the check — each read with the display still on screen.</div>
+  </div>
+</div>
+<script>
+// ---------- state ----------
+const MATS={DRYWALL:.10,BRICK:.04,GLASS:.03,CONCRETE:.02,WOOD:.09,CURTAIN:.35,FOAM:.55,FIBERGLASS:.75};
+const st={roomW:12,roomD:8,freq:500,walls:{N:'DRYWALL',E:'GLASS',S:'DRYWALL',W:'BRICK'},selWall:'E',
+  srcs:[{id:1,k:'SPK',x:.4,y:.42,lvl:0,del:0,pol:1},{id:2,k:'SUB',x:.66,y:.62,lvl:0,del:3.5,pol:-1}],selSrc:2,
+  lis:{x:.53,y:.7}};
+// ---------- physics-ish (labeled simulated) ----------
+function rt60(){const a=(MATS[st.walls.N]+MATS[st.walls.E]+MATS[st.walls.S]+MATS[st.walls.W])/4;
+  const V=st.roomW*st.roomD*3, S=2*(st.roomW+st.roomD)*3+2*st.roomW*st.roomD;
+  return Math.min(3.5,Math.max(.12,0.161*V/(S*(a*0.85+0.02))));}
+function arr(){const s=st.srcs.find(x=>x.id===st.selSrc)||st.srcs[0];
+  const dx=(s.x-st.lis.x)*st.roomW,dy=(s.y-st.lis.y)*st.roomD;return Math.hypot(dx,dy)/343*1000+ s.del;}
+function lvl(){const s=st.srcs.find(x=>x.id===st.selSrc)||st.srcs[0];
+  const d=Math.max(.5,Math.hypot((s.x-st.lis.x)*st.roomW,(s.y-st.lis.y)*st.roomD));
+  return s.lvl-20*Math.log10(d)-3+ (Math.sin(st.freq/97)*1.6);}
+const fmt={roomW:v=>v.toFixed(1)+' m',roomD:v=>v.toFixed(1)+' m',freq:v=>v>=1000?(v/1000).toFixed(1)+' kHz':Math.round(v)+' Hz',lvl:v=>(v>=0?'+':'')+v.toFixed(1)+' dB',del:v=>v.toFixed(1)+' ms'};
+// ---------- params (the dock grammar) ----------
+const P={
+ roomW:{lab:'ROOM WIDTH',get:()=>st.roomW,set:v=>st.roomW=v,min:3,max:30,f:fmt.roomW,kind:'fader'},
+ roomD:{lab:'ROOM DEPTH',get:()=>st.roomD,set:v=>st.roomD=v,min:3,max:30,f:fmt.roomD,kind:'fader'},
+ freq:{lab:'FREQ OF VIEW',get:()=>st.freq,set:v=>st.freq=v,min:40,max:8000,log:true,f:fmt.freq,kind:'fader'},
+ walls:{lab:'WALLS',kind:'tray',val:()=>st.walls[st.selWall]},
+ srcs:{lab:'SRCS',kind:'tray',val:()=>st.srcs.length+'/4'},
+ lvl:{lab:'SRC LEVEL',get:()=>st.srcs.find(s=>s.id===st.selSrc).lvl,set:v=>st.srcs.find(s=>s.id===st.selSrc).lvl=v,min:-24,max:6,f:fmt.lvl,kind:'fader'},
+ del:{lab:'SRC DELAY',get:()=>st.srcs.find(s=>s.id===st.selSrc).del,set:v=>st.srcs.find(s=>s.id===st.selSrc).del=v,min:0,max:20,f:fmt.del,kind:'fader'},
+};
+let bound='roomW'; // initialParam — pre-bound at mount (the hard rule)
+// ---------- dock strip ----------
+const strip=document.getElementById('strip');
+const DOCK=['roomW','roomD','freq','walls','srcs'];
+function drawStrip(){strip.innerHTML='';for(const id of DOCK){const p=P[id];const d=document.createElement('div');
+ d.className='db'+(id===bound?' sel':'');
+ const v=p.kind==='fader'?p.f(p.get()):p.val();
+ d.innerHTML=`<div class="dl">${p.lab}${p.kind==='tray'?' ▸':' ▪'}</div><div class="dv">${v}</div>`;
+ d.onclick=()=>{if(p.kind==='fader'){bound=id;drawStrip();drawLane(true);}else openTray(id);};
+ strip.appendChild(d);}}
+// ---------- lane ----------
+const lane=document.getElementById('lane'),thumb=document.getElementById('laneThumb'),fill=document.getElementById('laneFill'),
+ laneLab=document.getElementById('laneLab'),laneVal=document.getElementById('laneVal'),dragTag=document.getElementById('dragTag');
+function norm(p){const v=p.get();return p.log?Math.log(v/p.min)/Math.log(p.max/p.min):(v-p.min)/(p.max-p.min);}
+function denorm(p,n){n=Math.max(0,Math.min(1,n));return p.log?p.min*Math.pow(p.max/p.min,n):p.min+n*(p.max-p.min);}
+function drawLane(anim){const p=P[bound];const n=norm(p);const w=lane.clientWidth-24;
+ thumb.style.transition=anim?'left .14s':'none';fill.style.transition=anim?'width .14s':'none';
+ thumb.style.left=(2+n*w)+'px';fill.style.width=(12+n*w)+'px';
+ laneLab.textContent=p.lab;laneVal.textContent=p.f(p.get());}
+let dragging=false;
+lane.addEventListener('pointerdown',e=>{dragging=true;lane.setPointerCapture(e.pointerId);moveLane(e);});
+lane.addEventListener('pointermove',e=>{if(dragging)moveLane(e);});
+lane.addEventListener('pointerup',()=>{dragging=false;dragTag.style.display='none';});
+function moveLane(e){const p=P[bound];const r=lane.getBoundingClientRect();
+ const n=(e.clientX-r.left-12)/(r.width-24);p.set(denorm(p,n));
+ drawLane(false);drawStrip();render();
+ // drag tag rides the interaction (graft D) — shown IN the glass above the lane
+ dragTag.style.display='block';const g=document.getElementById('glass').getBoundingClientRect();
+ dragTag.style.left=Math.max(30,Math.min(g.width-30,e.clientX-g.left))+'px';dragTag.style.top=(g.height-6)+'px';
+ dragTag.textContent=p.lab+'  '+p.f(p.get());}
+// ---------- tray ----------
+const tray=document.getElementById('tray'),trayBack=document.getElementById('trayBack'),trayBody=document.getElementById('trayBody'),trayTitle=document.getElementById('trayTitle');
+document.getElementById('trayClose').onclick=closeTray;trayBack.onclick=closeTray;
+function closeTray(){tray.style.display='none';trayBack.style.display='none';}
+function openTray(id){tray.style.display='flex';trayBack.style.display='block';drawTray(id);}
+function drawTray(id){trayTitle.textContent=id==='walls'?'WALL MATERIALS — STICKY: A/B WHILE WATCHING THE BEZEL':'SOURCES';
+ if(id==='walls'){
+  trayBody.innerHTML=`<div class="chips" id="wsel"></div><div class="grid3" id="mgrid"></div><div class="treset" id="mreset">⟲ RESET ALL WALLS TO DRYWALL</div>`;
+  const ws=document.getElementById('wsel');
+  for(const w of ['N','E','S','W']){const c=document.createElement('span');c.className='chip'+(st.selWall===w?' on':'');
+   c.textContent=w+' · '+st.walls[w];c.onclick=()=>{st.selWall=w;drawTray('walls');render();};ws.appendChild(c);}
+  const mg=document.getElementById('mgrid');
+  for(const m of Object.keys(MATS)){const c=document.createElement('div');c.className='gcell'+(st.walls[st.selWall]===m?' on':'');
+   c.textContent=m;c.onclick=()=>{st.walls[st.selWall]=m;drawTray('walls');drawStrip();render();};mg.appendChild(c);}
+  document.getElementById('mreset').onclick=()=>{st.walls={N:'DRYWALL',E:'DRYWALL',S:'DRYWALL',W:'DRYWALL'};drawTray('walls');drawStrip();render();};
+ }else{
+  trayBody.innerHTML=`<div class="chips" id="schips"></div><div class="chips" id="sctl"></div><div class="bl" style="color:#8a8b93">Tap LEVEL or DELAY to bind the lane below — the tray stays open.</div>`;
+  const sc=document.getElementById('schips');
+  for(const s of st.srcs){const c=document.createElement('span');c.className='chip'+(st.selSrc===s.id?' on':'');
+   c.textContent=s.id+' · '+s.k;c.onclick=()=>{st.selSrc=s.id;drawTray('srcs');render();};sc.appendChild(c);}
+  const ct=document.getElementById('sctl');
+  for(const [pid,label] of [['lvl','LEVEL ▪'],['del','DELAY ▪']]){const c=document.createElement('span');c.className='chip'+(bound===pid?' on':'');
+   c.textContent=label;c.onclick=()=>{bound=pid;drawTray('srcs');drawStrip();drawLane(true);};ct.appendChild(c);}
+  const s=st.srcs.find(x=>x.id===st.selSrc);
+  const pol=document.createElement('span');pol.className='chip'+(s.pol===-1?' on':'');pol.textContent='POLARITY Ø';
+  pol.onclick=()=>{s.pol*=-1;drawTray('srcs');render();};ct.appendChild(pol);
+ }}
+// ---------- room display ----------
+const room=document.getElementById('room');
+function render(){
+ const W=284,H=196,pad=16;
+ const ar=st.roomW/st.roomD;let rw=W-pad*2,rh=rw/ar;if(rh>H-pad*2){rh=H-pad*2;rw=rh*ar;}
+ const rx=(W-rw)/2,ry=(H-rh)/2;
+ const aAvg=(MATS[st.walls.N]+MATS[st.walls.E]+MATS[st.walls.S]+MATS[st.walls.W])/4;
+ const heat=Math.max(.15,.7-aAvg);
+ const wallCol=w=>MATS[st.walls[w]]>.3?'#3fae52':'#4a4a55';
+ let s=`<defs><radialGradient id="h" cx=".5" cy=".5"><stop offset="0" stop-color="#ff5f4e" stop-opacity="${.5*heat+.1}"/><stop offset=".45" stop-color="#e8c341" stop-opacity="${.3*heat}"/><stop offset="1" stop-color="#2f74ff" stop-opacity="0"/></radialGradient></defs>`;
+ s+=`<line x1="${rx}" y1="${ry}" x2="${rx+rw}" y2="${ry}" stroke="${wallCol('N')}" stroke-width="2.5"/>`;
+ s+=`<line x1="${rx+rw}" y1="${ry}" x2="${rx+rw}" y2="${ry+rh}" stroke="${wallCol('E')}" stroke-width="2.5"/>`;
+ s+=`<line x1="${rx}" y1="${ry+rh}" x2="${rx+rw}" y2="${ry+rh}" stroke="${wallCol('S')}" stroke-width="2.5"/>`;
+ s+=`<line x1="${rx}" y1="${ry}" x2="${rx}" y2="${ry+rh}" stroke="${wallCol('W')}" stroke-width="2.5"/>`;
+ for(const src of st.srcs){const cx=rx+src.x*rw,cy=ry+src.y*rh;
+  s+=`<ellipse cx="${cx}" cy="${cy}" rx="${rw*.36}" ry="${rh*.34}" fill="url(#h)"/>`;
+  const rings=Math.round(3+Math.log2(st.freq/40));
+  for(let i=0;i<Math.min(rings,6);i++)s+=`<circle cx="${cx}" cy="${cy}" r="${10+i*(90-st.freq/120)/5}" fill="none" stroke="#7fd4ff" stroke-opacity="${.3-i*.045}"/>`;
+  s+=`<rect data-src="${src.id}" x="${cx-8}" y="${cy-8}" width="16" height="16" rx="2" fill="${src.id===st.selSrc?'#ffc64d':'#b98f37'}" style="cursor:grab"/>`;
+  s+=`<text x="${cx}" y="${cy+20}" fill="#ffc64d" font-size="7" text-anchor="middle" font-family="Oswald">${src.k} ${src.id}${src.pol===-1?' Ø':''}</text>`;}
+ const lx=rx+st.lis.x*rw,ly=ry+st.lis.y*rh;
+ s+=`<circle data-lis="1" cx="${lx}" cy="${ly}" r="7" fill="none" stroke="#37e05f" stroke-width="2" style="cursor:grab"/><text x="${lx}" y="${ly+18}" fill="#37e05f" font-size="7" text-anchor="middle" font-family="Oswald">LISTENER</text>`;
+ s+=`<text x="${rx+4}" y="${ry+11}" fill="#5f6167" font-size="7" font-family="Oswald">${st.roomW.toFixed(1)} × ${st.roomD.toFixed(1)} m</text>`;
+ room.innerHTML=s;
+ // bezel
+ document.getElementById('bRT').textContent=rt60().toFixed(2)+' s';
+ document.getElementById('bLVLk').textContent='LEVEL @'+fmt.freq(st.freq).replace(' ','');
+ document.getElementById('bLVL').textContent=lvl().toFixed(1)+' dB';
+ document.getElementById('bARR').textContent=arr().toFixed(1)+' ms';
+ document.getElementById('bSRC').textContent=st.srcs.length+'/4';
+}
+// on-glass source/listener drag (existing gesture, now scroll-free)
+let glassDrag=null;
+room.addEventListener('pointerdown',e=>{const t=e.target;
+ if(t.dataset.src){glassDrag={kind:'src',id:+t.dataset.src};room.setPointerCapture(e.pointerId);}
+ else if(t.dataset.lis){glassDrag={kind:'lis'};room.setPointerCapture(e.pointerId);}});
+room.addEventListener('pointermove',e=>{if(!glassDrag)return;const r=room.getBoundingClientRect();
+ const x=Math.max(.05,Math.min(.95,(e.clientX-r.left)/r.width)),y=Math.max(.08,Math.min(.9,(e.clientY-r.top)/r.height));
+ if(glassDrag.kind==='src'){const s=st.srcs.find(z=>z.id===glassDrag.id);s.x=x;s.y=y;st.selSrc=s.id;}else{st.lis.x=x;st.lis.y=y;}
+ render();});
+room.addEventListener('pointerup',()=>glassDrag=null);
+// init
+drawStrip();drawLane(true);render();
+window.addEventListener('resize',()=>drawLane(false));
+</script></body></html>

@@ -1,0 +1,170 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Lab UX — the Room Builder problem</title><style>
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Barlow:wght@400;500&display=swap');
+:root{--bg:#0c0c0c;--panel:#131316;--line:#26262c;--amber:#ffc64d;--amber2:#d99f1f;--green:#37e05f;--red:#ff5f4e;--txt:#f4f4f6;--sub:#8a8b93;--body:#c9ccd2}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--body);font-family:Barlow,sans-serif}
+#wrap{display:flex;gap:26px;justify-content:center;align-items:flex-start;padding:22px}
+h1{font-family:Oswald;font-weight:600;font-size:15px;letter-spacing:1.6px;color:var(--txt);margin:0 0 2px}
+.k{font-family:Oswald;font-weight:600;font-size:10.5px;letter-spacing:1.4px;color:var(--sub)}
+/* phone */
+#phoneCol{width:300px;flex:none}
+#phone{width:300px;height:650px;border:2px solid #2c2c33;border-radius:24px;overflow:hidden;background:var(--bg);position:relative}
+#chrome{height:56px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;justify-content:center;padding:0 12px}
+#chrome .t{font-family:Oswald;font-weight:600;font-size:12px;letter-spacing:1.2px;color:var(--txt)}
+#chrome .s{font-size:9.5px;color:var(--sub)}
+#scr{height:594px;overflow-y:auto;padding:10px 10px 24px;display:flex;flex-direction:column;gap:9px;scrollbar-width:none}
+#scr::-webkit-scrollbar{display:none}
+.card{border:1px solid var(--line);border-radius:9px;background:var(--panel);padding:10px;display:flex;flex-direction:column;gap:7px}
+.eyebrow{font-family:Oswald;font-weight:600;font-size:9.5px;letter-spacing:1.4px;color:var(--amber)}
+.bl{font-size:10px;line-height:14px;color:var(--body)}
+.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}
+.cell{border:1px solid var(--line);border-radius:6px;padding:5px 6px;background:#0f0f12}
+.cell .ck{font-family:Oswald;font-weight:600;font-size:7px;letter-spacing:.8px;color:var(--sub)}
+.cell .cv{font-family:Oswald;font-weight:600;font-size:11px;color:var(--amber);margin-top:1px}
+.badge{font-family:Oswald;font-weight:600;font-size:7px;letter-spacing:.8px;color:#6d6f75;border:1px solid var(--line);border-radius:4px;padding:2px 5px;align-self:flex-start}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{font-family:Oswald;font-weight:600;font-size:8.5px;letter-spacing:.7px;color:var(--body);border:1px solid rgba(255,198,77,.4);border-radius:6px;padding:4px 7px;background:#17140c}
+.chip.on{color:#0c0c0c;background:var(--amber);border-color:var(--amber)}
+.slider{display:flex;flex-direction:column;gap:3px}
+.slider .lr{display:flex;justify-content:space-between}
+.slider .lab{font-family:Oswald;font-weight:600;font-size:8.5px;letter-spacing:1px;color:var(--sub)}
+.slider .ro{font-family:Oswald;font-weight:600;font-size:8.5px;color:var(--amber)}
+.track{height:22px;border:1px solid var(--line);border-radius:6px;background:#0f0f12;position:relative}
+.thumb{position:absolute;top:2px;bottom:2px;width:16px;border-radius:4px;background:var(--amber)}
+#disp{height:190px;border:1px solid #3a3320;border-radius:8px;background:radial-gradient(ellipse at 42% 40%,#1a2432 0%,#101821 55%,#0b0f15 100%);position:relative;overflow:hidden}
+#disp svg{position:absolute;inset:0}
+.gbtn{border:1px solid rgba(55,224,95,.55);color:var(--green);border-radius:7px;padding:6px;text-align:center;font-family:Oswald;font-weight:600;font-size:9px;letter-spacing:1px;background:#0c1a10}
+/* minimap + lamps */
+#mapCol{width:240px;flex:none;display:flex;flex-direction:column;gap:14px}
+#lamps{display:flex;flex-direction:column;gap:8px}
+.lamp{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--panel)}
+.dot{width:14px;height:14px;border-radius:50%;flex:none;transition:background .15s}
+.lamp .ll{font-family:Oswald;font-weight:600;font-size:11.5px;letter-spacing:1.1px;color:var(--txt)}
+.lamp .ls{font-size:10.5px;color:var(--sub)}
+#map{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:12px;position:relative}
+#stack{position:relative;width:100%;}
+.blk{position:absolute;left:34px;right:8px;border-radius:3px;border:1px solid #2e2e35;background:#1a1a1f;overflow:hidden}
+.blk span{position:absolute;left:5px;top:50%;transform:translateY(-50%);font-family:Oswald;font-weight:600;font-size:8px;letter-spacing:.7px;color:#9a9ca3;white-space:nowrap}
+.blk.disp{background:#2b2410;border-color:var(--amber2)}
+.blk.disp span{color:var(--amber)}
+.blk.rout{background:#14212b;border-color:#2f6a9b}.blk.rout span{color:#7fc0ff}
+.px{position:absolute;left:0;width:28px;text-align:right;font-family:Oswald;font-size:7.5px;color:#5b5d63}
+#vp{position:absolute;left:30px;right:4px;border:2px solid var(--green);border-radius:5px;pointer-events:none;box-shadow:0 0 0 2000px rgba(0,0,0,.42);transition:border-color .15s}
+#note{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:12px;font-size:12px;line-height:17px;color:var(--body)}
+#note b{color:var(--amber);font-weight:500}
+</style></head><body>
+<div id="wrap">
+  <div id="phoneCol">
+    <h1>ROOM BUILDER — AS SHIPPED</h1>
+    <div style="display:flex;gap:6px;margin:6px 0 10px">
+      <a href="labux_before.html" style="font-family:Oswald;font-weight:600;font-size:10px;letter-spacing:1px;text-decoration:none;border:1px solid var(--amber);border-radius:6px;padding:4px 9px;color:var(--amber);background:#1d1708">① AS SHIPPED</a>
+      <a href="labux_after.html" style="font-family:Oswald;font-weight:600;font-size:10px;letter-spacing:1px;text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:4px 9px;color:var(--sub)">② RACK UNIT (proposed)</a>
+    </div>
+    <div class="k" style="margin-bottom:10px">SCROLL THE PHONE. WATCH THE LAMPS.</div>
+    <div id="phone">
+      <div id="chrome"><div class="t">ROOM BUILDER</div><div class="s">Wave Physics Laboratory</div></div>
+      <div id="scr"></div>
+    </div>
+  </div>
+  <div id="mapCol">
+    <div id="lamps">
+      <div class="lamp"><div class="dot" id="d1"></div><div><div class="ll">DISPLAY</div><div class="ls" id="s1"></div></div></div>
+      <div class="lamp"><div class="dot" id="d2"></div><div><div class="ll">READOUTS</div><div class="ls" id="s2"></div></div></div>
+      <div class="lamp"><div class="dot" id="d3"></div><div><div class="ll">ACTIVE CONTROL</div><div class="ls" id="s3">scroll to a slider…</div></div></div>
+    </div>
+    <div id="map"><div class="k" style="margin-bottom:8px">SCREEN BUDGET · FULL MODULE STACK</div><div id="stack"></div></div>
+    <div id="note"><b>The problem, measured:</b> this one module stacks <b id="totpx"></b> of content into a <b>594&nbsp;px</b> viewport. The room display owns 12% of the stack; the six readouts live in a separate card <i>above</i> it; the source sliders sit ~2.3 screens <i>below</i> it. Adjusting a sub's <b>DELAY</b> while seeing the interference pattern change is physically impossible.</div>
+  </div>
+</div>
+<script>
+const S=[ // faithful stack: [key,label,height,kind]
+ ['try','WHAT TO TRY · 3 bullets',150,'card'],
+ ['rout','AT THE LISTENER · 6 READOUTS',148,'rout'],
+ ['layers','LAYER CHIPS',34,'card'],
+ ['disp','ROOM DISPLAY (Skia)',200,'disp'],
+ ['guide','DISPLAY GUIDE BTN',34,'card'],
+ ['sl1','ROOM WIDTH slider',52,'ctl'],
+ ['sl2','ROOM DEPTH slider',52,'ctl'],
+ ['sl3','FREQ OF VIEW slider',52,'ctl'],
+ ['walls','WALL MATERIALS · 2 chip banks',168,'card'],
+ ['srcadd','SOURCES · add + select chips',96,'card'],
+ ['sl4','SOURCE FREQ slider',52,'ctl'],
+ ['sl5','LEVEL slider',52,'ctl'],
+ ['sl6','DELAY slider',52,'ctl'],
+ ['pol','POLARITY + AIM + COVERAGE',118,'card'],
+ ['rm','REMOVE SOURCE btn',44,'card'],
+ ['mis','COMMON MISTAKES card',150,'card'],
+ ['chk','KNOWLEDGE CHECK card',170,'card'],
+];
+const GAP=9, PAD=10;
+// build phone content
+const scr=document.getElementById('scr');
+function card(inner,extra){const d=document.createElement('div');d.className='card'+(extra?' '+extra:'');d.innerHTML=inner;return d}
+function chips(list,onIdx){return '<div class="chips">'+list.map((c,i)=>`<span class="chip${i===onIdx?' on':''}">${c}</span>`).join('')+'</div>'}
+function slider(lab,ro,pos){return `<div class="slider"><div class="lr"><span class="lab">${lab}</span><span class="ro">${ro}</span></div><div class="track"><div class="thumb" style="left:${pos}%"></div></div></div>`}
+const els={};
+function push(key,node){node.dataset.key=key;els[key]=node;scr.appendChild(node)}
+push('try',card('<div class="eyebrow">WHAT TO TRY</div><div class="bl">• Build a cardioid: two SUBs 1.2 m apart, rear one delayed ~3.5 ms with polarity inverted — HEAT shows energy forward, silence behind.</div><div class="bl">• Find a comb: one SPEAKER near a GLASS wall, view ~2 kHz, drag the listener slowly and watch ARRIVALS ripple.</div><div class="bl">• Meet your room modes: shrink to ~4 × 3 m, view 40–120 Hz, treat two walls with FIBERGLASS, watch RT60 fall.</div>'));
+push('rout',card('<div class="eyebrow">AT THE LISTENER</div><div class="grid">'+[['ROOM','12.0 × 8.0 m'],['LEVEL @ 500 Hz','−9.2 dB'],['1ST ARRIVAL','21.4 ms'],['EARLY <80 ms','5 arrivals'],['RT60 @ 500','1.42 s'],['SOURCES','2/4']].map(c=>`<div class="cell"><div class="ck">${c[0]}</div><div class="cv">${c[1]}</div></div>`).join('')+'</div><span class="badge">ILLUSTRATIVE MODEL — NOT A ROOM SIMULATOR</span>'));
+push('layers',card(chips(['PRESSURE','HEAT','RAYS','ARRIVALS'],1)));
+const disp=document.createElement('div');disp.id='disp';disp.dataset.key='disp';disp.innerHTML=`<svg viewBox="0 0 280 190">
+<defs><radialGradient id="h1" cx=".5" cy=".5"><stop offset="0" stop-color="#ff5f4e" stop-opacity=".55"/><stop offset=".45" stop-color="#e8c341" stop-opacity=".3"/><stop offset="1" stop-color="#2f74ff" stop-opacity="0"/></radialGradient></defs>
+<rect x="18" y="12" width="244" height="166" fill="none" stroke="#4a4a55" stroke-width="1.5"/>
+<ellipse cx="112" cy="88" rx="88" ry="62" fill="url(#h1)"/><ellipse cx="196" cy="118" rx="56" ry="42" fill="url(#h1)" opacity=".7"/>
+${[0,1,2,3,4].map(i=>`<circle cx="112" cy="88" r="${16+i*17}" fill="none" stroke="#7fd4ff" stroke-opacity="${.34-i*.055}" stroke-width="1"/>`).join('')}
+<rect x="104" y="80" width="15" height="15" fill="#ffc64d" rx="2"/><text x="112" y="107" fill="#ffc64d" font-size="7" text-anchor="middle" font-family="Oswald">SPK 1</text>
+<rect x="188" y="110" width="15" height="15" fill="#ffc64d" rx="2" opacity=".8"/><text x="196" y="137" fill="#ffc64d" font-size="7" text-anchor="middle" font-family="Oswald">SUB 2</text>
+<circle cx="152" cy="132" r="7" fill="none" stroke="#37e05f" stroke-width="2"/><text x="152" y="152" fill="#37e05f" font-size="7" text-anchor="middle" font-family="Oswald">LISTENER</text></svg>`;
+push('disp',disp);
+push('guide',(()=>{const d=document.createElement('div');d.className='gbtn';d.textContent='ⓘ WHAT THE DISPLAY SHOWS';return d})());
+push('sl1',card(slider('ROOM WIDTH','12.00 m',31)));
+push('sl2',card(slider('ROOM DEPTH','8.00 m',17)));
+push('sl3',card(slider('FREQUENCY OF VIEW','500 Hz',46)));
+push('walls',card('<div class="eyebrow">WALL MATERIALS</div>'+chips(['N · DRYWALL','E · GLASS','S · DRYWALL','W · BRICK'],1)+chips(['DRYWALL','BRICK','GLASS','CONCRETE','WOOD','CURTAIN','FOAM','FIBERGLASS'],2)+'<span class="badge">TEACHING α VALUES — NOT ISO 354 DATA</span>'));
+push('srcadd',card('<div class="eyebrow">SOURCES — 2/4</div>'+chips(['+ POINT','+ SPEAKER','+ SUB'],-1)+chips(['1 · SPEAKER','2 · SUB'],1)));
+push('sl4',card(slider('SOURCE FREQUENCY','63 Hz',12)));
+push('sl5',card(slider('LEVEL','+0.0 dB',80)));
+push('sl6',card(slider('DELAY','3.5 ms',18)));
+push('pol',card(chips(['POLARITY Ø INVERT'],0)+slider('AIM','0°',50)+chips(['60°','90°','120°'],1)));
+push('rm',(()=>{const d=document.createElement('div');d.className='gbtn';d.style.borderColor='rgba(63,174,180,.55)';d.style.color='#57c8cf';d.textContent='REMOVE SELECTED SOURCE';return d})());
+push('mis',card('<div class="eyebrow">COMMON MISTAKES</div><div class="bl">• Reading the heat map as loudness at every frequency — it is the view frequency only.</div><div class="bl">• Treating a first reflection with foam and expecting the 60 Hz mode to move.</div><div class="bl">• Inverting polarity to “fix” a comb instead of moving the source.</div>'));
+push('chk',card('<div class="eyebrow">KNOWLEDGE CHECK</div><div class="bl">Two subs 1.2 m apart, rear delayed 3.5 ms and inverted. Where does the energy go?</div>'+chips(['FORWARD','BACKWARD','EVERYWHERE','NOWHERE'],-1)+'<div class="bl" style="color:#6d6f75">Answer to reveal the why.</div>'));
+// minimap
+const total=S.reduce((n,s)=>n+s[2],0)+GAP*(S.length-1)+PAD*2;
+document.getElementById('totpx').textContent='≈'+Math.round(total)+' px';
+const MAPH=470, k=MAPH/total, stack=document.getElementById('stack');
+stack.style.height=MAPH+'px';
+let y=PAD;
+for(const s of S){
+  const b=document.createElement('div');
+  b.className='blk'+(s[0]==='disp'?' disp':s[0]==='rout'?' rout':'');
+  b.style.top=(y*k)+'px';b.style.height=Math.max(4,s[2]*k-1.5)+'px';
+  b.innerHTML=`<span>${s[1]}</span>`;stack.appendChild(b);
+  if(s[2]>=52){const p=document.createElement('div');p.className='px';p.style.top=(y*k)+'px';p.textContent=s[2];stack.appendChild(p);}
+  y+=s[2]+GAP;
+}
+const vp=document.createElement('div');vp.id='vp';stack.appendChild(vp);
+// live lamps
+const d1=document.getElementById('d1'),d2=document.getElementById('d2'),d3=document.getElementById('d3');
+const s1=document.getElementById('s1'),s2=document.getElementById('s2'),s3=document.getElementById('s3');
+function pos(key){let y=PAD;for(const s of S){if(s[0]===key)return[y,y+s[2]];y+=s[2]+GAP}return[0,0]}
+function upd(){
+  const st=scr.scrollTop, vh=scr.clientHeight;
+  vp.style.top=(st*k)+'px';vp.style.height=(vh*k)+'px';
+  const [dt,db]=pos('disp'); const visD=Math.max(0,Math.min(db,st+vh)-Math.max(dt,st))/(db-dt);
+  const [rt,rb]=pos('rout'); const visR=Math.max(0,Math.min(rb,st+vh)-Math.max(rt,st))/(rb-rt);
+  d1.style.background=visD>0.65?'var(--green)':visD>0.15?'var(--amber)':'var(--red)';
+  s1.textContent=visD>0.65?'visible — cause & effect intact':visD>0.15?Math.round(visD*100)+'% visible — squinting':'OFF-SCREEN — adjusting blind';
+  d2.style.background=visR>0.65?'var(--green)':visR>0.15?'var(--amber)':'var(--red)';
+  s2.textContent=visR>0.65?'visible':visR>0.15?Math.round(visR*100)+'% visible':'OFF-SCREEN — numbers unseen';
+  vp.style.borderColor=visD>0.65?'var(--green)':visD>0.15?'var(--amber)':'var(--red)';
+  // nearest control in view
+  let firstCtl=null;let yy=PAD;
+  for(const s of S){if((s[0].startsWith('sl')||s[0]==='pol')&&yy>=st-20&&yy<=st+vh-40){firstCtl=s;break}yy+=s[2]+GAP}
+  if(firstCtl){d3.style.background='var(--amber)';s3.textContent=firstCtl[1]+(visD<0.15?'  ·  display gone':'');}
+  else{d3.style.background='#3a3a42';s3.textContent='no slider in view';}
+}
+scr.addEventListener('scroll',upd);upd();
+// gentle attract loop until the user scrolls
+let auto=true;scr.addEventListener('wheel',()=>auto=false,{once:true});scr.addEventListener('touchstart',()=>auto=false,{once:true});
+let dir=1;setInterval(()=>{if(!auto)return;scr.scrollTop+=dir*2.2;if(scr.scrollTop>=scr.scrollHeight-scr.clientHeight-4)dir=-1;if(scr.scrollTop<=2)dir=1;},30);
+</script></body></html>
