@@ -16,7 +16,7 @@
  * The shell itself produces no sound; each lab's Explore panel owns its audio
  * lifecycle (the compact header PLAY is supplied BY the lab via headerAction).
  */
-import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
+import { useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { LayoutAnimation, Platform, Pressable, ScrollView, StyleSheet, Text, UIManager, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -24,6 +24,14 @@ import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { GuidedLessonBody, GuidedLessonSheet, getLabLesson, type LabId } from '../../features/lab/guidedLessons';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { colors, fonts } from '../../theme/tokens';
+import { ScrollLockCtx, ScrollLockProvider, useScrollLock } from './scrollLock';
+import { RackUnit } from './rack/RackUnit';
+import type { DockParam, RackStage } from './rack/rackTypes';
+
+// The scroll-lock context moved to ./scrollLock (2026-08-23, Rack Unit kit —
+// avoids an import cycle). Re-exported here so the 30+ existing call sites
+// keep importing from LabShell unchanged.
+export { ScrollLockProvider, useScrollLock };
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -162,23 +170,6 @@ export function CollapsibleSection({
  *  flight, so the drag wins over scroll. */
 export type LabShellExploreApi = { setScrollLocked: (locked: boolean) => void };
 
-const ScrollLockCtx = createContext<((locked: boolean) => void) | null>(null);
-
-/** Provider for the scroll-lock control. LabShell supplies it automatically to
- *  its Explore content; NON-LabShell hosts (module screens, the foundations
- *  course/playground) wrap their own ScrollView content in this and pass their
- *  `setScrollLocked` so drag primitives inside — DragSlider, RoomSceneView —
- *  lock the scroll during a gesture with NO prop threading (owner 2026-07-30
- *  systemic drag-vs-scroll fix). */
-export const ScrollLockProvider = ScrollLockCtx.Provider;
-
-/** Grab the nearest scroll-lock setter from context (null when there is no
- *  LabShell / ScrollLockProvider above). Drag primitives call this and lock on
- *  gesture start / unlock on release so the object wins over the page. */
-export function useScrollLock(): ((locked: boolean) => void) | null {
-  return useContext(ScrollLockCtx);
-}
-
 /** Wrap ANY drag/touch-interactive surface: the moment a finger lands inside,
  *  the shell's scroll is disabled until release/cancel — the object wins over
  *  the page (owner 2026-07-29 drag-vs-scroll fix). Purely additive: children
@@ -223,6 +214,7 @@ export function LabShell({
   intro,
   exploreCaption,
   headerAction,
+  rack,
   children,
 }: {
   labId: LabId;
@@ -234,9 +226,21 @@ export function LabShell({
   /** Compact control rendered top-right of the header (typically
    *  <HeaderPlayButton/> — owner 2026-07-29). */
   headerAction?: ReactNode;
+  /** RACK UNIT opt-in (APE_LAB_UX_PROPOSAL 2026-08-23): when present, Explore
+   *  renders as a pinned instrument faceplate — stage + bezel readouts pinned
+   *  on top, the dock (lane + value-buttons) pinned at the bottom, and the
+   *  children become the SCROLL WELL between them. Absent → exact legacy
+   *  behavior; migration is opt-in per lab. */
+  rack?: {
+    stage: RackStage;
+    params: DockParam[];
+    initialParam: string;
+    /** Guided-lesson router for dock/bezel long-presses (helpKey → lesson). */
+    onHelp?: (helpKey?: string) => void;
+  };
   /** The lab's interactive Explore content. A function child receives the
    *  shell API (scroll-lock control for drag editors); a plain node renders
-   *  as-is. */
+   *  as-is. In rack mode this content is the scroll WELL. */
   children: ReactNode | ((api: LabShellExploreApi) => ReactNode);
 }) {
   const insets = useSafeAreaInsets();
@@ -296,38 +300,85 @@ export function LabShell({
         })}
       </View>
 
-      <ScrollLockCtx.Provider value={setScrollLocked}>
-        <ScrollView contentContainerStyle={styles.scroll} scrollEnabled={!scrollLocked}>
+      {rack ? (
+        // RACK MODE: the frame owns the layout — stage + dock pinned, children
+        // scroll in the well. No outer ScrollView (RackUnit owns the well's).
+        // RackUnit stays MOUNTED across LEARN↔EXPLORE (hidden, not unmounted)
+        // so the bound lane, open tray, and well scroll survive a tab hop
+        // (review 2026-08-23).
+        <>
           {mode === 'learn' ? (
-            <View style={styles.panel}>
-              <Text style={styles.caption}>
-                What this lab teaches — definitions, common mistakes, pro tips, and the formula.
-              </Text>
-              <GuidedLessonBody lesson={lesson} />
-            </View>
+            <ScrollView contentContainerStyle={styles.scroll}>
+              <View style={styles.panel}>
+                <Text style={styles.caption}>
+                  What this lab teaches — definitions, common mistakes, pro tips, and the formula.
+                </Text>
+                <GuidedLessonBody lesson={lesson} />
+              </View>
+            </ScrollView>
           ) : null}
+          <View style={mode === 'explore' ? styles.rackFill : styles.rackHidden}>
+            <RackUnit
+              stage={rack.stage}
+              params={rack.params}
+              initialParam={rack.initialParam}
+              onHelp={rack.onHelp}
+            >
+              {(api) => (
+                <View style={styles.panel}>
+                  <CollapsibleSection title="DESCRIPTION" startOpen={false}>
+                    <Text style={styles.intro}>{intro}</Text>
+                    <Text style={styles.caption}>{exploreCaption}</Text>
+                  </CollapsibleSection>
+                  {typeof children === 'function' ? children(api) : children}
+                  {/* Guided-lesson entry lives at the BOTTOM (owner 2026-07-29). */}
+                  <Pressable
+                    style={styles.lessonRow}
+                    onPress={() => setLessonOpen(true)}
+                    accessibilityRole="button"
+                    accessibilityLabel="Open the guided lesson"
+                  >
+                    <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
+                  </Pressable>
+                </View>
+              )}
+            </RackUnit>
+          </View>
+        </>
+      ) : (
+        <ScrollLockCtx.Provider value={setScrollLocked}>
+          <ScrollView contentContainerStyle={styles.scroll} scrollEnabled={!scrollLocked}>
+            {mode === 'learn' ? (
+              <View style={styles.panel}>
+                <Text style={styles.caption}>
+                  What this lab teaches — definitions, common mistakes, pro tips, and the formula.
+                </Text>
+                <GuidedLessonBody lesson={lesson} />
+              </View>
+            ) : null}
 
-          {mode === 'explore' ? (
-            <View style={styles.panel}>
-              <CollapsibleSection title="DESCRIPTION">
-                <Text style={styles.intro}>{intro}</Text>
-                <Text style={styles.caption}>{exploreCaption}</Text>
-              </CollapsibleSection>
-              {typeof children === 'function' ? children({ setScrollLocked }) : children}
-            </View>
-          ) : null}
+            {mode === 'explore' ? (
+              <View style={styles.panel}>
+                <CollapsibleSection title="DESCRIPTION">
+                  <Text style={styles.intro}>{intro}</Text>
+                  <Text style={styles.caption}>{exploreCaption}</Text>
+                </CollapsibleSection>
+                {typeof children === 'function' ? children({ setScrollLocked }) : children}
+              </View>
+            ) : null}
 
-          {/* Guided-lesson entry lives at the BOTTOM (owner 2026-07-29). */}
-          <Pressable
-            style={styles.lessonRow}
-            onPress={() => setLessonOpen(true)}
-            accessibilityRole="button"
-            accessibilityLabel="Open the guided lesson"
-          >
-            <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
-          </Pressable>
-        </ScrollView>
-      </ScrollLockCtx.Provider>
+            {/* Guided-lesson entry lives at the BOTTOM (owner 2026-07-29). */}
+            <Pressable
+              style={styles.lessonRow}
+              onPress={() => setLessonOpen(true)}
+              accessibilityRole="button"
+              accessibilityLabel="Open the guided lesson"
+            >
+              <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
+            </Pressable>
+          </ScrollView>
+        </ScrollLockCtx.Provider>
+      )}
 
       <GuidedLessonSheet visible={lessonOpen} lesson={lesson} onClose={() => setLessonOpen(false)} />
     </View>
@@ -408,6 +459,9 @@ const styles = StyleSheet.create({
 
   panel: { gap: 12 },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSub },
+  // Rack mode: the frame fills the shell; hidden (not unmounted) during LEARN.
+  rackFill: { flex: 1 },
+  rackHidden: { display: 'none' },
 
   section: { borderRadius: 10, borderWidth: 1, borderColor: '#232329', backgroundColor: '#101014' },
   sectionHead: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingVertical: 9 },

@@ -42,12 +42,11 @@ import { ApeDsp, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { guardAdditiveForEngine, speakerGuardDb, SPEAKER_HPF_HZ } from '../../features/audio/speakerSafety';
-import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../features/lab/guidedLessons';
+import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
-import { LabShell, LabChip, CollapsibleSection, HeaderPlayButton } from './LabShell';
-import { DragSlider } from './foundations/bits';
+import { LabShell, LabChip, HeaderPlayButton } from './LabShell';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -220,6 +219,11 @@ export function HarmonographLabScreen() {
   const hz1 = ratio.n1 * BASE_F0;
   const hz2 = ratio.n2 * BASE_F0;
 
+  // ── RACK UNIT pilot (APE_LAB_UX_PROPOSAL 2026-08-23, owner-approved) ──────
+  // The figure + its readouts pin on the stage/bezel; the oscillator sliders
+  // become the pre-bound lane ("tap the legend, ride the fader"); the ratio
+  // and detune collections become STICKY trays (A/B while the figure redraws);
+  // phase/damping/mode share one group tray. Only the teaching prose scrolls.
   return (
     <LabShell
       labId="harmonograph"
@@ -235,13 +239,148 @@ export function HarmonographLabScreen() {
           label={running ? 'Stop' : 'Play interval'}
         />
       }
+      rack={{
+        initialParam: 'osc1',
+        onHelp: openLesson,
+        stage: {
+          size: 'L', // the figure IS the lab — earns the tall glass
+          badge: 'DETERMINISTIC FIGURE — FROM THE EQUATIONS',
+          onGuide: () => openLesson('display'),
+          bezel: [
+            { k: 'RATIO', v: ratio.label, helpKey: 'ratio_lock' },
+            { k: 'INTERVAL', v: ratio.interval, flex: 1.6, helpKey: 'ratio_lock' },
+            { k: 'OSC 1', v: `${Math.round(hz1)} Hz`, tint: ARM_X, helpKey: 'ratio_lock' },
+            { k: 'OSC 2', v: `${Math.round(hz2)} Hz`, tint: ARM_Y, helpKey: 'ratio_lock' },
+          ],
+          render: (_w, h) => (
+            // Tapping the display toggles play/stop (owner 2026-07-31) — same
+            // gate as the header button (interval play needs v3 + no detune).
+            <Pressable
+              onPress={
+                additiveReady && detune === 0
+                  ? () => (running ? stopInterval() : void startInterval())
+                  : undefined
+              }
+              accessibilityRole="button"
+              accessibilityLabel={running ? 'Tap to stop' : 'Tap to play interval'}
+            >
+              <HarmonographFigure
+                n1={ratio.n1}
+                n2={ratio.n2}
+                hz1={hz1}
+                hz2={hz2}
+                phaseDeg={phase}
+                endAmp={damping.endAmp}
+                rotary={rotary}
+                detune={detune}
+                height={h}
+              />
+            </Pressable>
+          ),
+        },
+        params: [
+          {
+            kind: 'fader',
+            id: 'osc1',
+            label: 'OSC 1',
+            value: (n1 - 1) / 7,
+            onChange: (v) => setOsc(1, 1 + v * 7),
+            // Lane/drag-tag get the full readout (harmonic multiple + the
+            // "(between)" off-integer cue); the dock key gets the compact Hz.
+            format: () => `${Math.round(hz1)} Hz · ×${fmtN(n1)}${nearInt(n1) ? '' : ' (between)'}`,
+            formatShort: () => `${Math.round(hz1)} Hz`,
+            tint: ARM_X,
+            helpKey: 'ratio_lock',
+          },
+          {
+            kind: 'fader',
+            id: 'osc2',
+            label: 'OSC 2',
+            value: (n2 - 1) / 7,
+            onChange: (v) => setOsc(2, 1 + v * 7),
+            format: () => `${Math.round(hz2)} Hz · ×${fmtN(n2)}${nearInt(n2) ? '' : ' (between)'}`,
+            formatShort: () => `${Math.round(hz2)} Hz`,
+            tint: ARM_Y,
+            helpKey: 'ratio_lock',
+          },
+          {
+            kind: 'options',
+            id: 'ratio',
+            label: 'RATIO',
+            valueLabel: ratio.label,
+            options: RATIOS.map((r) => ({ id: r.label, label: `${r.label} ${r.interval}` })),
+            selectedId: matched?.label ?? null,
+            onSelect: (id) => {
+              const i = RATIOS.findIndex((r) => r.label === id);
+              if (i >= 0) pickRatio(i);
+            },
+            sticky: true, // A/B intervals while the figure redraws — the lesson
+            helpKey: 'ratio_lock',
+          },
+          {
+            kind: 'group',
+            id: 'shape',
+            label: 'SHAPE',
+            // All three states stay visible on the key (φ · damping initial ·
+            // R when rotary) — no hidden state behind a closed tray.
+            valueLabel: `${phase}°·${damping.label[0]}${rotary ? '·R' : ''}`,
+            helpKey: 'phase',
+            render: () => (
+              <View style={{ gap: 10 }}>
+                <Text style={styles.sectionHead}>PHASE</Text>
+                <View style={styles.chipRow}>
+                  {PHASES.map((p) => (
+                    <LabChip
+                      key={p}
+                      label={`φ ${p}°`}
+                      selected={phase === p}
+                      onPress={() => setPhase(p)}
+                      onLongPress={() => openLesson('phase')}
+                    />
+                  ))}
+                </View>
+                <Text style={styles.sectionHead}>DAMPING · MODE</Text>
+                <View style={styles.chipRow}>
+                  {DAMPINGS.map((d) => (
+                    <LabChip
+                      key={d.key}
+                      label={d.label}
+                      selected={dampKey === d.key}
+                      onPress={() => setDampKey(d.key)}
+                      onLongPress={() => openLesson('damping')}
+                    />
+                  ))}
+                  <LabChip
+                    label={rotary ? 'ROTARY' : 'LATERAL'}
+                    selected={rotary}
+                    onPress={() => setRotary((v) => !v)}
+                    onLongPress={() => openLesson('mode')}
+                  />
+                </View>
+              </View>
+            ),
+          },
+          {
+            kind: 'options',
+            id: 'detune',
+            label: 'DETUNE',
+            valueLabel: detune === 0 ? 'LOCK' : `+${detune * 100}%`,
+            options: DETUNES.map((d) => ({ id: String(d.key), label: d.label })),
+            selectedId: String(detune),
+            onSelect: (id) => {
+              const d = DETUNES.find((x) => String(x.key) === id);
+              if (d) pickDetune(d.key);
+            },
+            sticky: true, // watch the precession start while comparing
+            helpKey: 'ratio_lock',
+          },
+        ],
+      }}
     >
       {!engineReady ? <EngineGate state={gate} /> : null}
 
-      <CollapsibleSection title="READOUTS">
-        <Text style={styles.readMain}>
-          {ratio.label} — {ratio.interval} · {Math.round(hz1)} Hz : {Math.round(hz2)} Hz
-        </Text>
+      <View style={styles.panelCard}>
+        <Text style={styles.sectionHead}>WHAT YOU’RE SEEING</Text>
         <Text style={styles.caption}>
           {isExact
             ? `Harmonics ${Math.round(n1)} and ${Math.round(n2)} of ${BASE_F0} Hz — an exact ${ratio.label} ratio; the figure closes.`
@@ -249,125 +388,18 @@ export function HarmonographLabScreen() {
               ? `Detuned +${detune * 100}% — the near-miss never closes; the slow precession IS beating.`
               : `Between exact ratios (${ratio.label}) — the figure precesses and never quite closes, just like a slight detune.`}
         </Text>
-      </CollapsibleSection>
+      </View>
 
-      <CollapsibleSection title="DISPLAY">
-        {/* THE FIGURE — deterministic path math (the model IS the drawing);
-            it draws itself over ~3 s on every selection change, then holds. */}
-        <View style={styles.panelCard}>
-          <Text style={styles.badge}>DETERMINISTIC FIGURE — DRAWN FROM THE EQUATIONS</Text>
-          {/* Tapping the display toggles play/stop (owner 2026-07-31) — matches
-              the header button's gate (interval play needs v3 + no detune). */}
-          <Pressable
-            onPress={
-              additiveReady && detune === 0
-                ? () => (running ? stopInterval() : void startInterval())
-                : undefined
-            }
-            accessibilityRole="button"
-            accessibilityLabel={running ? 'Tap to stop' : 'Tap to play interval'}
-          >
-            <HarmonographFigure
-              n1={ratio.n1}
-              n2={ratio.n2}
-              hz1={hz1}
-              hz2={hz2}
-              phaseDeg={phase}
-              endAmp={damping.endAmp}
-              rotary={rotary}
-              detune={detune}
-            />
-          </Pressable>
-          <Text style={styles.caption}>
-            {isExact
-              ? `${ratio.label} (${ratio.interval.toLowerCase()}) — a simple integer ratio closes into a stable figure.`
-              : detune !== 0
-                ? `${ratio.label} detuned ${detune * 100}% — the near-miss never closes; the slow precession you see IS beating.`
-                : `${ratio.label} — between exact harmonics, so the figure slowly precesses instead of closing.`}
-          </Text>
-          <DisplayGuideButton onPress={() => openLesson('display')} />
-        </View>
-      </CollapsibleSection>
-
-      <CollapsibleSection title="CONTROLS">
-        {/* Sliders first (owner 2026-08-05 wave-style order): dial each
-            oscillator's frequency and watch the figure emerge. */}
-        <Text style={styles.sectionHead}>OSCILLATOR FREQUENCIES</Text>
+      <View style={styles.panelCard}>
+        <Text style={styles.sectionHead}>SWEET SPOTS</Text>
         <Text style={styles.caption}>
           Integers 1–8 are the sweet spots — the figure closes and the tone is an exact harmonic.
-          Sweep between them and the figure precesses, just like a slight detune.
+          Sweep OSC 1 or OSC 2 between them and the figure precesses, just like a slight detune.
         </Text>
-        <DragSlider
-          value={(n1 - 1) / 7}
-          onChange={(v) => setOsc(1, 1 + v * 7)}
-          label="OSC 1 · X ARM FREQUENCY"
-          readout={`${Math.round(hz1)} Hz · ×${fmtN(n1)}${nearInt(n1) ? '' : ' (between)'}`}
-          onHelp={() => openLesson('ratio_lock')}
-        />
-        <DragSlider
-          value={(n2 - 1) / 7}
-          onChange={(v) => setOsc(2, 1 + v * 7)}
-          label="OSC 2 · Y ARM FREQUENCY"
-          readout={`${Math.round(hz2)} Hz · ×${fmtN(n2)}${nearInt(n2) ? '' : ' (between)'}`}
-          onHelp={() => openLesson('ratio_lock')}
-        />
+      </View>
 
-        <Text style={styles.sectionHead}>RATIO — INTERVAL</Text>
-        <View style={styles.chipRow}>
-          {RATIOS.map((r) => (
-            <LabChip
-              key={r.label}
-              label={`${r.label} ${r.interval}`}
-              selected={Math.abs(n1 - r.n1) < 0.03 && Math.abs(n2 - r.n2) < 0.03}
-              onPress={() => pickRatio(RATIOS.indexOf(r))}
-              onLongPress={() => openLesson('ratio_lock')}
-            />
-          ))}
-        </View>
-
-        <Text style={styles.sectionHead}>PHASE · DAMPING · MODE · DETUNE</Text>
-        <View style={styles.chipRow}>
-          {PHASES.map((p) => (
-            <LabChip
-              key={p}
-              label={`φ ${p}°`}
-              selected={phase === p}
-              onPress={() => setPhase(p)}
-              onLongPress={() => openLesson('phase')}
-            />
-          ))}
-        </View>
-        <View style={styles.chipRow}>
-          {DAMPINGS.map((d) => (
-            <LabChip
-              key={d.key}
-              label={d.label}
-              selected={dampKey === d.key}
-              onPress={() => setDampKey(d.key)}
-              onLongPress={() => openLesson('damping')}
-            />
-          ))}
-          <LabChip
-            label={rotary ? 'ROTARY' : 'LATERAL'}
-            selected={rotary}
-            onPress={() => setRotary((v) => !v)}
-            onLongPress={() => openLesson('mode')}
-          />
-        </View>
-        <View style={styles.chipRow}>
-          {DETUNES.map((d) => (
-            <LabChip
-              key={d.key}
-              label={d.label}
-              selected={detune === d.key}
-              onPress={() => pickDetune(d.key)}
-              onLongPress={() => openLesson('ratio_lock')}
-            />
-          ))}
-        </View>
-      </CollapsibleSection>
-
-      <CollapsibleSection title="ACTIONS">
+      <View style={styles.panelCard}>
+        <Text style={styles.sectionHead}>THE INTERVAL, AS SOUND</Text>
         {/* DRIVE FROM OSCILLATORS — real interval audio (v3 additive only);
             the play/stop control itself is the header ▶. */}
         {engineReady ? (
@@ -399,7 +431,7 @@ export function HarmonographLabScreen() {
             </Text>
           )
         ) : null}
-      </CollapsibleSection>
+      </View>
 
       <GuidedLessonSheet
         visible={lessonOpen}
@@ -500,6 +532,7 @@ function HarmonographFigure({
   endAmp,
   rotary,
   detune,
+  height,
 }: {
   n1: number;
   n2: number;
@@ -509,6 +542,10 @@ function HarmonographFigure({
   endAmp: number;
   rotary: boolean;
   detune: number;
+  /** Rendered height (Rack Unit stage glass) — the square 320 viewBox scales
+   *  to fit; the figure's own #0c0c0f ground matches the glass, so letterbox
+   *  margins read as more glass. Default = the legacy 320. */
+  height?: number;
 }) {
   const SIZE = 320;
   const M = 160; // downsampled pen path for the animated drive arms
@@ -616,7 +653,7 @@ function HarmonographFigure({
   const tableProps = useAnimatedProps(() => ({ rotation: spin.value }));
 
   return (
-    <Svg width="100%" height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`}>
+    <Svg width="100%" height={height ?? SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`}>
       <Defs>
         <RadialGradient id="hgDisc" cx="50%" cy="50%" r="50%">
           <Stop offset="0%" stopColor="#221b0e" stopOpacity={1} />
