@@ -33,7 +33,8 @@ type Props = NativeStackScreenProps<RootStackParamList, 'EarLab'>;
 const INTRO =
   'A professional audio curriculum in two parts: Audio Fundamentals — free to ' +
   'start, with the deeper labs unlocked by membership — and the members-only ' +
-  'Training Lab. Choose a lab to hear it, see it, measure it, and take it apart.';
+  'Advanced Training Labs. Choose a lab to hear it, see it, measure it, and take ' +
+  'it apart.';
 const FUNDAMENTALS_INTRO =
   'Start free with the essentials — level and amplitude, the foundations of ' +
   'sound, and wave physics. The deeper Fundamentals labs open with Academy ' +
@@ -42,8 +43,8 @@ const TRAINING_INTRO_MEMBER =
   'Your members-only workbench: interactive demonstrations, visualizations, ' +
   'controls and guided experiments across every audio discipline.';
 const TRAINING_INTRO_FREE =
-  'Preview everything the Training Labs include with Academy membership. Browse ' +
-  'the full catalog below — unlock any lab to launch it.';
+  'Preview everything the Advanced Training Labs include with Academy membership. ' +
+  'Browse the full catalog below — unlock any lab to launch it.';
 
 export function EarLabScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
@@ -67,6 +68,10 @@ export function EarLabScreen({ navigation, route }: Props) {
   const sectionLocked = (sec: LabSection) => sec === 'training' && !isMember;
   const leafLocked = (leaf: LabLeaf, sec: LabSection) =>
     (sec === 'training' || !!leaf.member) && !isMember;
+  // Free-tier cue: mark the free-included Fundamentals labs green so a non-member
+  // sees what they already get. Members get everything, so no green distinction.
+  const freeIncluded = (leaf: LabLeaf, sec: LabSection) =>
+    !isMember && sec === 'fundamentals' && !leaf.member && leaf.status !== 'development';
 
   const openLeaf = (leaf: LabLeaf, sec: LabSection) => {
     if (!leaf.route) return;
@@ -84,8 +89,8 @@ export function EarLabScreen({ navigation, route }: Props) {
     section === 'fundamentals'
       ? 'AUDIO FUNDAMENTALS'
       : section === 'training'
-        ? 'TRAINING LABS'
-        : 'AUDIO FUNDAMENTALS & TRAINING LAB';
+        ? 'ADVANCED TRAINING LABS'
+        : 'AUDIO FUNDAMENTALS & ADVANCED TRAINING LABS';
   const headerSub =
     section === 'fundamentals'
       ? 'Free to start — more with membership'
@@ -142,6 +147,7 @@ export function EarLabScreen({ navigation, route }: Props) {
                             key={k}
                             leaf={leaf}
                             locked={leafLocked(leaf, sec.key)}
+                            freeIncluded={freeIncluded(leaf, sec.key)}
                             expanded={expandedKey === k}
                             onToggle={() => setExpandedKey((cur) => (cur === k ? null : k))}
                             onOpen={() => openLeaf(leaf, sec.key)}
@@ -163,7 +169,7 @@ export function EarLabScreen({ navigation, route }: Props) {
 
 const SECTIONS = [
   { key: 'fundamentals' as const, title: 'AUDIO FUNDAMENTALS', note: 'Free to start' },
-  { key: 'training' as const, title: 'TRAINING LAB', note: 'Members only' },
+  { key: 'training' as const, title: 'ADVANCED TRAINING LABS', note: 'Members only' },
 ];
 
 /** Subject header (glyph + name + count). Tappable (a card, with a chevron) when
@@ -204,6 +210,7 @@ function LabRow({
   onOpen,
   inset,
   locked,
+  freeIncluded,
   expanded,
   onToggle,
 }: {
@@ -211,6 +218,10 @@ function LabRow({
   onOpen: () => void;
   inset?: boolean;
   locked?: boolean;
+  /** Free-tier only: this lab is included free — green row + FREE tag so a
+   *  non-member can see what they already get (owner 2026-08-23). Members see
+   *  uniform rows (no free/paid distinction). */
+  freeIncluded?: boolean;
   expanded: boolean;
   onToggle: () => void;
 }) {
@@ -221,16 +232,17 @@ function LabRow({
       onPress={onToggle}
       accessibilityRole="button"
       accessibilityState={{ expanded }}
-      accessibilityLabel={`${leaf.name}${dev ? ', planned, not open yet' : ''}, ${expanded ? 'expanded' : 'collapsed'}`}
+      accessibilityLabel={`${leaf.name}${dev ? ', planned, not open yet' : ''}${freeIncluded ? ', included free' : ''}, ${expanded ? 'expanded' : 'collapsed'}`}
       style={({ pressed }) => [
         styles.row,
         !expanded && styles.rowTight,
         inset && styles.rowInset,
         dev && styles.rowDev,
+        freeIncluded && styles.rowFree,
         pressed && styles.rowPressed,
       ]}
     >
-      <Text style={styles.rowCaret}>{expanded ? '▾' : '▸'}</Text>
+      <Text style={[styles.rowCaret, freeIncluded && styles.rowCaretFree]}>{expanded ? '▾' : '▸'}</Text>
       <View style={{ flex: 1 }}>
         <Text style={[styles.rowName, dev && styles.rowNameDev]}>{leaf.name}</Text>
         {expanded ? (
@@ -260,6 +272,8 @@ function LabRow({
         <Text style={styles.soon}>PLANNED</Text>
       ) : showLock ? (
         <Text style={styles.lock}>🔒</Text>
+      ) : freeIncluded ? (
+        <Text style={styles.freeTag}>FREE</Text>
       ) : null}
     </Pressable>
   );
@@ -334,7 +348,11 @@ const styles = StyleSheet.create({
   },
   rowInset: { marginLeft: 12 },
   rowTight: { minHeight: 48, paddingVertical: 9 },
+  // Free-included lab (free tier only): green frame + tint so it reads as "yours."
+  rowFree: { borderColor: 'rgba(55,224,95,.5)', backgroundColor: '#0f1712' },
   rowCaret: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: colors.amber, width: 14, textAlign: 'center' },
+  rowCaretFree: { color: colors.green },
+  freeTag: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.green, paddingHorizontal: 4 },
   // Revealed OPEN button is GREEN (owner 2026-08-10) — the "go" affordance on
   // the one row that's open.
   openBtn: {

@@ -37,7 +37,7 @@ const BLUE = '#7fbfff';
 const AMBER = colors.amber;
 const GRAY = '#54565c';
 const ROW_H = 64; // estimated editable-row height for the drag-to-reorder step
-const FOUNDATIONS_LABEL = 'Audio Fundamentals & Training Lab';
+const FOUNDATIONS_LABEL = 'Audio Fundamentals & Advanced Training Labs';
 
 export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boolean; onClose: () => void; paid?: boolean }) {
   const insets = useSafeAreaInsets();

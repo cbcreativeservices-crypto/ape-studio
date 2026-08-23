@@ -32,14 +32,16 @@ type Props = NativeStackScreenProps<RootStackParamList, 'AudioLearning'>;
 const INTRO =
   'Build your foundational knowledge or strengthen your understanding through ' +
   'interactive practice. Start free with the core Audio Fundamentals; the deeper ' +
-  'Fundamentals labs and the full Training Labs come with Academy membership.';
+  'Fundamentals labs and the Advanced Training Labs come with Academy membership.';
 
 const FUND_DESC =
-  'Start free with level, the foundations of sound, and wave physics. Signal, ' +
-  'measurement, microphones and the deeper labs open with membership.';
+  'The bedrock of professional audio: how sound behaves, how we hear it, and how ' +
+  'signal moves through a system. Core labs are free — the deeper Fundamentals ' +
+  'unlock with membership.';
+const FUND_CERT = 'Required for every Academy certificate';
 const TRAIN_DESC =
-  'Develop practical understanding through interactive demonstrations, ' +
-  'visualizations, controls, listening exercises, and guided technical experiments.';
+  'Go further: interactive demonstrations, visualizations, hands-on controls, ' +
+  'listening exercises, and guided experiments across every audio discipline.';
 
 export function AudioLearningScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
@@ -68,7 +70,7 @@ export function AudioLearningScreen({ navigation }: Props) {
         <Pressable
           onPress={goFundamentals}
           accessibilityRole="button"
-          accessibilityLabel="Audio Fundamentals. Free to start. Explore fundamentals."
+          accessibilityLabel="Audio Fundamentals. Free to start. Required for every Academy certificate. Explore fundamentals."
           style={({ pressed }) => [styles.card, styles.cardFree, pressed && styles.cardPressed]}
         >
           <ImageBackground
@@ -95,6 +97,10 @@ export function AudioLearningScreen({ navigation }: Props) {
               </View>
             </View>
             <Text style={styles.cardDesc}>{FUND_DESC}</Text>
+            <View style={styles.certNote}>
+              <Text style={styles.certGlyph}>🎓</Text>
+              <Text style={styles.certText}>{FUND_CERT}</Text>
+            </View>
             <View style={[styles.cta, styles.ctaFree]}>
               <Text style={[styles.ctaText, styles.ctaTextFree]}>EXPLORE FUNDAMENTALS</Text>
               <Text style={[styles.ctaChevron, styles.ctaTextFree]}>›</Text>
@@ -102,14 +108,14 @@ export function AudioLearningScreen({ navigation }: Props) {
           </ImageBackground>
         </Pressable>
 
-        {/* ── Training Labs — members; free users preview ──────────────── */}
+        {/* ── Advanced Training Labs — members; free users preview ─────── */}
         <Pressable
           onPress={goTraining}
           accessibilityRole="button"
           accessibilityLabel={
             isMember
-              ? 'Training Labs. Academy membership. Explore the training labs.'
-              : 'Training Labs. Requires Academy membership. Preview training labs.'
+              ? 'Advanced Training Labs. Academy membership. Explore the advanced training labs.'
+              : 'Advanced Training Labs. Requires Academy membership. Preview advanced training labs.'
           }
           style={({ pressed }) => [styles.card, styles.cardMember, pressed && styles.cardPressed]}
         >
@@ -130,7 +136,7 @@ export function AudioLearningScreen({ navigation }: Props) {
                 <Text style={styles.iconGlyph}>🧪</Text>
               </View>
               <View style={{ flex: 1, gap: 6 }}>
-                <Text style={styles.cardTitle}>Training Labs</Text>
+                <Text style={styles.cardTitle}>Advanced Training Labs</Text>
                 <View style={[styles.badge, styles.badgeMember]}>
                   <Text style={styles.badgeMemberText}>
                     {isMember ? 'ACADEMY MEMBERSHIP' : '🔒 ACADEMY MEMBERSHIP'}
@@ -142,7 +148,7 @@ export function AudioLearningScreen({ navigation }: Props) {
             {/* Free users PREVIEW → green (they can look); Academy members OPEN → purple (matches the card). */}
             <View style={[styles.cta, isMember ? styles.ctaMember : styles.ctaFree]}>
               <Text style={[styles.ctaText, isMember ? styles.ctaTextMember : styles.ctaTextFree]}>
-                {isMember ? 'EXPLORE THE TRAINING LABS' : 'PREVIEW TRAINING LABS'}
+                {isMember ? 'EXPLORE ADVANCED LABS' : 'PREVIEW ADVANCED LABS'}
               </Text>
               <Text style={[styles.ctaChevron, isMember ? styles.ctaTextMember : styles.ctaTextFree]}>›</Text>
             </View>
@@ -197,6 +203,23 @@ const styles = StyleSheet.create({
   badgeMemberText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: '#c98bff' },
 
   cardDesc: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
+
+  // Certificate requirement — amber (academy/credential gold), set apart from the
+  // free/paid green so it reads as "this matters for your certificate."
+  certNote: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    alignSelf: 'flex-start',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255,198,77,.5)',
+    backgroundColor: 'rgba(255,198,77,.12)',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  certGlyph: { fontSize: 13 },
+  certText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 0.8, color: '#ffdd94' },
 
   cta: {
     flexDirection: 'row',

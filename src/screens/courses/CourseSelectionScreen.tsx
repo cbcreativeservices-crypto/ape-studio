@@ -234,7 +234,7 @@ function rawCardTitle(item: Card): string | null {
     case 'glossary':
       return 'Professional Audio Glossary';
     case 'lab':
-      return 'Audio Fundamentals & Training Lab';
+      return 'Audio Fundamentals & Advanced Training Labs';
     case 'freeTopic':
     case 'public':
     case 'comingTopic':
@@ -636,7 +636,7 @@ function CourseCardView({
           <Text style={[styles.cardAboveText, { color: '#5bff85' }]}>INCLUDED FOR EVERYONE</Text>
           <View style={[styles.cardAboveRule, { backgroundColor: '#5bff85' }]} />
         </View>
-        <Pressable onPress={onOpenLab} accessibilityRole="button" accessibilityLabel="Audio Fundamentals & Training Lab — open">
+        <Pressable onPress={onOpenLab} accessibilityRole="button" accessibilityLabel="Audio Fundamentals & Advanced Training Labs — open">
         <ImageBackground
           source={labUrl ? { uri: labUrl } : undefined}
           style={[styles.card, { borderColor: 'rgba(55,224,95,.6)' }]}
@@ -648,7 +648,7 @@ function CourseCardView({
             style={StyleSheet.absoluteFill}
           />
           <View>
-            <Text style={styles.cardTitle}>Audio Fundamentals & Training Lab</Text>
+            <Text style={styles.cardTitle}>Audio Fundamentals & Advanced Training Labs</Text>
           </View>
           <View style={{ alignItems: 'center' }}>
             <View style={{ width: CARD_BTN_W }}>

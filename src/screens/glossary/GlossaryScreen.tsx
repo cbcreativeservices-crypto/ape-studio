@@ -557,7 +557,7 @@ function TermDetails({
           unwired or unrelated terms (owner directive 2026-07-26). */}
       {labProfile && onLabAction ? (
         <View style={styles.labActionWrap}>
-          <Text style={styles.detailEyebrow}>AUDIO FUNDAMENTALS & TRAINING LAB</Text>
+          <Text style={styles.detailEyebrow}>AUDIO FUNDAMENTALS & ADVANCED TRAINING LABS</Text>
           <View style={styles.labActionRow}>
             {labProfile.actions.map((action) => (
               <Pressable

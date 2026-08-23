@@ -29,7 +29,7 @@ export function LabCategoryScreen({ navigation, route }: Props) {
   if (!cat || cat.kind !== 'list') {
     return (
       <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-        <Header title="AUDIO FUNDAMENTALS & TRAINING LAB" subtitle="" onBack={() => navigation.goBack()} />
+        <Header title="AUDIO FUNDAMENTALS & ADVANCED TRAINING LABS" subtitle="" onBack={() => navigation.goBack()} />
         <Text style={styles.empty}>This category is not available.</Text>
       </View>
     );
