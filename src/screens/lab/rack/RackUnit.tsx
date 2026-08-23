@@ -220,8 +220,9 @@ export function RackUnit({
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
-  // The stage sits on the faceplate: a slim metallic margin around the glass.
-  stageWrap: { paddingHorizontal: 10, paddingTop: 2 },
+  // The stage sits on the faceplate: a slim metallic margin around the glass,
+  // with breathing room below the shell's mode tabs (owner 2026-08-23).
+  stageWrap: { paddingHorizontal: 10, paddingTop: 10 },
   glass: {
     borderWidth: 1,
     borderColor: '#3a3a44',
