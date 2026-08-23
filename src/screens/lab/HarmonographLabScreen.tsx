@@ -52,6 +52,19 @@ const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
 const BASE_F0 = 110; // Hz — harmonics n₁/n₂ of this sound the interval
 
+// Oscillator FREQUENCY range (owner 2026-08-23): each arm sweeps LOG from
+// 0.01 Hz up to the 8th harmonic (880 Hz). Below ~110 Hz is real harmonograph
+// pendulum territory (sub-audio, visual only); integer harmonics 1..8 still
+// land in the range as the audible "sweet spots" and the ratio chips snap to
+// them exactly. Harmonic number n = hz / BASE_F0 (may be fractional/tiny).
+const OSC_F_MIN = 0.01;
+const OSC_F_MAX = 8 * BASE_F0; // 880 Hz
+const oscFreqFromPos = (v: number) =>
+  OSC_F_MIN * Math.pow(OSC_F_MAX / OSC_F_MIN, Math.max(0, Math.min(1, v)));
+const oscPosFromFreq = (hz: number) =>
+  Math.log(Math.max(OSC_F_MIN, hz) / OSC_F_MIN) / Math.log(OSC_F_MAX / OSC_F_MIN);
+const fmtHz = (hz: number) => `${hz >= 100 ? Math.round(hz) : hz >= 1 ? hz.toFixed(1) : hz.toFixed(2)} Hz`;
+
 /** Ratio-locked intervals (n₁:n₂ = harmonic numbers of BASE_F0). */
 const RATIOS: { n1: number; n2: number; label: string; interval: string }[] = [
   { n1: 1, n2: 1, label: '1:1', interval: 'UNISON' },
@@ -117,6 +130,10 @@ export function HarmonographLabScreen() {
   const nearInt = (x: number) => Math.abs(x - Math.round(x)) < 0.03;
   const isExact = nearInt(n1) && nearInt(n2) && detune === 0;
   const fmtN = (x: number) => (nearInt(x) ? String(Math.round(x)) : x.toFixed(2));
+  // Oscillator readout: Hz + the "×N harmonic" tag only on a real sweet spot
+  // (integer ≥ 1); otherwise the "(between)" precession cue.
+  const oscReadout = (hz: number, n: number) =>
+    `${fmtHz(hz)}${nearInt(n) && Math.round(n) >= 1 ? ` · ×${Math.round(n)}` : ' (between)'}`;
   // Match a named interval when BOTH oscillators sit on (near) its integers.
   const matched = RATIOS.find((r) => Math.abs(n1 - r.n1) < 0.03 && Math.abs(n2 - r.n2) < 0.03);
   const ratio = {
@@ -283,12 +300,13 @@ export function HarmonographLabScreen() {
             kind: 'fader',
             id: 'osc1',
             label: 'OSC 1',
-            value: (n1 - 1) / 7,
-            onChange: (v) => setOsc(1, 1 + v * 7),
-            // Lane/drag-tag get the full readout (harmonic multiple + the
-            // "(between)" off-integer cue); the dock key gets the compact Hz.
-            format: () => `${Math.round(hz1)} Hz · ×${fmtN(n1)}${nearInt(n1) ? '' : ' (between)'}`,
-            formatShort: () => `${Math.round(hz1)} Hz`,
+            // Log frequency sweep 0.01 Hz → 880 Hz (owner 2026-08-23).
+            value: oscPosFromFreq(hz1),
+            onChange: (v) => setOsc(1, oscFreqFromPos(v) / BASE_F0),
+            // Lane/drag-tag get the full readout (harmonic multiple when on a
+            // sweet spot, else the "(between)" cue); the dock key gets Hz only.
+            format: () => oscReadout(hz1, n1),
+            formatShort: () => fmtHz(hz1),
             tint: ARM_X,
             helpKey: 'ratio_lock',
           },
@@ -296,10 +314,10 @@ export function HarmonographLabScreen() {
             kind: 'fader',
             id: 'osc2',
             label: 'OSC 2',
-            value: (n2 - 1) / 7,
-            onChange: (v) => setOsc(2, 1 + v * 7),
-            format: () => `${Math.round(hz2)} Hz · ×${fmtN(n2)}${nearInt(n2) ? '' : ' (between)'}`,
-            formatShort: () => `${Math.round(hz2)} Hz`,
+            value: oscPosFromFreq(hz2),
+            onChange: (v) => setOsc(2, oscFreqFromPos(v) / BASE_F0),
+            format: () => oscReadout(hz2, n2),
+            formatShort: () => fmtHz(hz2),
             tint: ARM_Y,
             helpKey: 'ratio_lock',
           },
@@ -395,6 +413,9 @@ export function HarmonographLabScreen() {
         <Text style={styles.caption}>
           Integers 1–8 are the sweet spots — the figure closes and the tone is an exact harmonic.
           Sweep OSC 1 or OSC 2 between them and the figure precesses, just like a slight detune.
+          Take an arm all the way down toward 0.01 Hz and you’re in real harmonograph pendulum
+          territory — far below hearing, so it draws but doesn’t sound. Use the RATIO chips to snap
+          back to an exact interval.
         </Text>
       </View>
 
