@@ -249,20 +249,23 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     kind: 'list',
     labs: [
       { name: 'Autotune', blurb: 'Pitch correction on the cents grid — amount, retune speed.', route: 'AutotuneLab' },
+      // Moved here from Sound Visualization (owner 2026-08-23): it teaches
+      // frequency ratios ↔ musical intervals, so it lives with Pitch & Tuning.
+      { name: 'Harmonograph', blurb: 'Frequency ratios ↔︎ musical intervals, drawn as living Lissajous curves.', route: 'HarmonographLab' },
       { name: 'Tunings Lab', blurb: 'Temperaments, reference pitches, just vs equal.', status: 'development' },
     ],
   },
   {
     // Sound Visualization (owner 2026-08-10): a members-only area for seeing
-    // sound take shape — cymatics, harmonograph, and other visual forms.
+    // sound take shape — cymatics and other visual forms. (Harmonograph moved
+    // to Pitch & Tuning on 2026-08-23.)
     id: 'visualization',
     glyph: '👁',
     name: 'Sound Visualization',
-    description: 'Seeing sound take shape — cymatic plate patterns, harmonograph curves, and other visual forms of vibration.',
+    description: 'Seeing sound take shape — cymatic plate patterns and other visual forms of vibration.',
     section: 'training',
     kind: 'list',
     labs: [
-      { name: 'Harmonograph', blurb: 'Frequency ratios ↔︎ musical intervals, drawn as living Lissajous curves.', route: 'HarmonographLab' },
       { name: 'Cymatics Lab', blurb: 'Sound made visible — the standing-wave patterns that appear when a tone vibrates a plate or membrane.', status: 'development' },
     ],
   },

@@ -496,12 +496,19 @@ export function InspectStripView({
     const i = Math.round((locX - INS_PAD) / dxRef.current);
     onSelectRef.current(Math.max(0, Math.min(nRef.current - 1, i)));
   };
+  const baseXRef = useRef(0); // anchored-drag base — avoids locationX re-base whip
   const pan = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dx) > Math.abs(g.dy),
-      onPanResponderGrant: (e) => pick(e.nativeEvent.locationX),
-      onPanResponderMove: (e) => pick(e.nativeEvent.locationX),
+      // Anchor to the gesture START X (owner 2026-08-23): base + gestureState.dx
+      // reproduces the true finger X without re-basing, so dragging past the
+      // track edge no longer jumps the selection to the opposite sample.
+      onPanResponderGrant: (e, g) => {
+        baseXRef.current = e.nativeEvent.locationX - g.dx;
+        pick(baseXRef.current);
+      },
+      onPanResponderMove: (_e, g) => pick(baseXRef.current + g.dx),
       onPanResponderTerminationRequest: () => false,
     }),
   ).current;

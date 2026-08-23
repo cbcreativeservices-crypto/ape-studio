@@ -358,6 +358,7 @@ function Stage({
   const stateRef = useRef({ sources, toXY, onSelect, onMove, c, rMax });
   stateRef.current = { sources, toXY, onSelect, onMove, c, rMax };
   const dragIdx = useRef(-1);
+  const dragBase = useRef({ x: 0, y: 0 }); // finger pos at grab — anchored-drag base
 
   const pan = useRef(
     PanResponder.create({
@@ -376,17 +377,22 @@ function Stage({
         });
         if (best >= 0) {
           dragIdx.current = best;
+          dragBase.current = { x, y }; // this fires at touch start (dx=0)
           st.onSelect(best);
           setScrollLocked(true);
           return true;
         }
         return false;
       },
-      onPanResponderMove: (e) => {
+      onPanResponderMove: (_e, g) => {
         const st = stateRef.current;
         const i = dragIdx.current;
         if (i < 0) return;
-        const { locationX: x, locationY: y } = e.nativeEvent;
+        // Anchored delta (owner 2026-08-23): base + gestureState reproduces the
+        // true finger position without re-basing, so dragging past the pad bounds
+        // no longer teleports the source to the far side.
+        const x = dragBase.current.x + g.dx;
+        const y = dragBase.current.y + g.dy;
         const dx = x - st.c;
         const dy = y - st.c;
         let az = (Math.atan2(dx, -dy) * 180) / Math.PI; // 0 = up (front)

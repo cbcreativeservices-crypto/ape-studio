@@ -968,7 +968,7 @@ export function DetectiveModule(p: MeterModuleProps) {
             2026-08-07): PREV blue · NEXT green, no "CASE" in the labels. */}
         <View style={styles.caseHeadRow}>
           <Text style={[styles.caseCounter, { flex: 1 }]}>
-            CASE {idx + 1} OF {n} · QUESTION {step + 1} OF {qCount}
+            {idx + 1} OF {n} · QUESTION {step + 1} OF {qCount}
           </Text>
           <Pressable
             onPress={() => goCase(idx - 1)}

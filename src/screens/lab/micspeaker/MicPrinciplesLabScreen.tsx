@@ -284,16 +284,21 @@ function PolarSection({ viz, width, focused, help, onLock }: SectionProps) {
   );
   const g = gainAt(pat.a, pat.b, angle);
 
+  const posBaseRef = useRef({ x: 0, y: 0 }); // anchored-drag base — see onPanResponderGrant
   const pan = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => false,
       onMoveShouldSetPanResponder: (_e, gs) => Math.abs(gs.dx) > 4 || Math.abs(gs.dy) > 4,
-      onPanResponderMove: (e) => {
-        // Free positioning: the head goes wherever the finger is; the ONLY
-        // limit is the collision floor against the mic's silhouette.
-        setSrc(
-          clampPolarSource(e.nativeEvent.locationX, e.nativeEvent.locationY, widthRef.current),
-        );
+      onPanResponderGrant: (e, g) => {
+        // Anchor to the gesture START (owner 2026-08-23): base = location − dx.
+        posBaseRef.current = { x: e.nativeEvent.locationX - g.dx, y: e.nativeEvent.locationY - g.dy };
+      },
+      onPanResponderMove: (_e, g) => {
+        // Free positioning: the head follows the finger. base + gestureState
+        // reproduces the true finger position without re-basing, so it no longer
+        // teleports when the finger leaves the canvas bounds. The ONLY limit is
+        // the collision floor against the mic's silhouette.
+        setSrc(clampPolarSource(posBaseRef.current.x + g.dx, posBaseRef.current.y + g.dy, widthRef.current));
       },
       onPanResponderTerminationRequest: () => false,
     }),
@@ -618,6 +623,7 @@ function HandSection({ viz, width, help, onLock }: SectionProps) {
   const [why, setWhy] = useState(false);
   const zone = zoneAt(pos);
 
+  const baseYRef = useRef(0); // anchored-drag base — see onPanResponderGrant
   const pan = useRef(
     PanResponder.create({
       // Claim on TOUCH START: this vertical drag would otherwise race the
@@ -626,14 +632,17 @@ function HandSection({ viz, width, help, onLock }: SectionProps) {
       // the position chips remain the tap alternative.
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: (_e, gs) => Math.abs(gs.dy) > 2,
-      onPanResponderGrant: (e) => {
-        const v = Math.max(0, Math.min(1, 1 - (e.nativeEvent.locationY - 16) / 184));
-        setPos(v);
+      onPanResponderGrant: (e, g) => {
+        // Anchor to the gesture's START Y (owner 2026-08-23): base + gestureState.dy
+        // reproduces the true finger Y without re-basing, so dragging past the
+        // canvas edge no longer whips the hand to the opposite end.
+        baseYRef.current = e.nativeEvent.locationY - g.dy;
+        setPos(Math.max(0, Math.min(1, 1 - (baseYRef.current - 16) / 184)));
       },
-      onPanResponderMove: (e) => {
+      onPanResponderMove: (_e, g) => {
         // Drag the hand along the mic body: top of the canvas = full cup.
-        const v = Math.max(0, Math.min(1, 1 - (e.nativeEvent.locationY - 16) / 184));
-        setPos(v);
+        const y = baseYRef.current + g.dy;
+        setPos(Math.max(0, Math.min(1, 1 - (y - 16) / 184)));
       },
       onPanResponderTerminationRequest: () => false,
     }),
