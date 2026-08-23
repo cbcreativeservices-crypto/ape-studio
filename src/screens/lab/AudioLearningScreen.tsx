@@ -1,13 +1,15 @@
 /**
- * AudioLearningScreen — the two-way fork that separates the free AUDIO
- * FUNDAMENTALS from the members-only TRAINING LABS BEFORE the combined lab list
- * (owner 2026-08-02). Reached from the HOME "Audio Fundamentals & Training Lab"
- * card; each destination card routes into EarLab with the matching `section`, so
- * the existing data-driven lab list is reused (never duplicated).
+ * AudioLearningScreen — the two-way fork that separates AUDIO FUNDAMENTALS from
+ * the members-only TRAINING LABS BEFORE the combined lab list (owner 2026-08-02).
+ * Reached from the HOME "Audio Fundamentals & Training Lab" card; each destination
+ * card routes into EarLab with the matching `section`, so the existing data-driven
+ * lab list is reused (never duplicated).
  *
- * Fundamentals are free for everyone. Training Labs require Academy membership,
- * but free users may still open the Training catalog in PREVIEW (EarLab enforces
- * the per-lab lock + shared UpgradeSheet); this screen only chooses the path.
+ * Audio Fundamentals is free to START: the core intro labs are free, while the
+ * deeper Fundamentals labs carry `member: true` and the whole Training Lab is
+ * members-only (owner 2026-08-23). Free users may still open any locked lab in
+ * PREVIEW (EarLab enforces the per-lab lock + shared UpgradeSheet); this screen
+ * only chooses the path.
  */
 import { ImageBackground, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -29,12 +31,12 @@ type Props = NativeStackScreenProps<RootStackParamList, 'AudioLearning'>;
 
 const INTRO =
   'Build your foundational knowledge or strengthen your understanding through ' +
-  'interactive practice. Audio Fundamentals are included free for everyone, ' +
-  'while Training Labs are available to Academy members.';
+  'interactive practice. Start free with the core Audio Fundamentals; the deeper ' +
+  'Fundamentals labs and the full Training Labs come with Academy membership.';
 
 const FUND_DESC =
-  'Build a strong foundation in sound, hearing, signal flow, gain structure, and ' +
-  'the essential principles used throughout every audio field.';
+  'Start free with level, the foundations of sound, and wave physics. Signal, ' +
+  'measurement, microphones and the deeper labs open with membership.';
 const TRAIN_DESC =
   'Develop practical understanding through interactive demonstrations, ' +
   'visualizations, controls, listening exercises, and guided technical experiments.';
@@ -62,11 +64,11 @@ export function AudioLearningScreen({ navigation }: Props) {
       <ScrollView contentContainerStyle={styles.scroll}>
         <Text style={styles.intro}>{INTRO}</Text>
 
-        {/* ── Audio Fundamentals — free for everyone ───────────────────── */}
+        {/* ── Audio Fundamentals — free to start (core labs free) ──────── */}
         <Pressable
           onPress={goFundamentals}
           accessibilityRole="button"
-          accessibilityLabel="Audio Fundamentals. Included free. Explore fundamentals."
+          accessibilityLabel="Audio Fundamentals. Free to start. Explore fundamentals."
           style={({ pressed }) => [styles.card, styles.cardFree, pressed && styles.cardPressed]}
         >
           <ImageBackground
@@ -88,7 +90,7 @@ export function AudioLearningScreen({ navigation }: Props) {
               <View style={{ flex: 1, gap: 6 }}>
                 <Text style={styles.cardTitle}>Audio Fundamentals</Text>
                 <View style={[styles.badge, styles.badgeFree]}>
-                  <Text style={styles.badgeFreeText}>INCLUDED FREE</Text>
+                  <Text style={styles.badgeFreeText}>FREE TO START</Text>
                 </View>
               </View>
             </View>

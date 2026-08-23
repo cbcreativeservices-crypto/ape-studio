@@ -17,7 +17,8 @@ import type { RootStackParamList } from '../../navigation/types';
 import { WORKSPACES } from './calc/registry';
 
 /** Which top-level section a category lives under: AUDIO FUNDAMENTALS is the
- *  free + required part, TRAINING LAB is members-only. */
+ *  required part (core labs free, deeper labs `member: true`), TRAINING LAB is
+ *  entirely members-only. */
 export type LabSection = 'fundamentals' | 'training';
 
 /** One tappable lab (leaf). `route` is a real screen; `params` for hub-module
@@ -35,6 +36,11 @@ export type LabLeaf = {
    *  mark_lab_complete RPC (R6c). Present only on the 11 fundamentals labs that
    *  count toward the universal certificate requirement. IMMUTABLE once live. */
   key?: string;
+  /** Member-only override for a lab that lives in a FREE section (owner
+   *  2026-08-23). Most of Audio Fundamentals is free, but these deeper labs
+   *  require Academy membership. Lock = `leaf.member || section === 'training'`.
+   *  Training-section labs don't need this (the section already gates them). */
+  member?: boolean;
 };
 
 /** An optional middle "Lab Family" grouping inside a category. */
@@ -73,8 +79,12 @@ export type LabCategory = Common &
 const labsPlural = (n: number) => `${n} ${n === 1 ? 'Lab' : 'Labs'}`;
 
 const RAW_LAB_CATEGORIES: LabCategory[] = [
-  // ── AUDIO FUNDAMENTALS (free): Sound · Acoustics · Signal ────────────
-  // Owner 2026-08-10: three fundamentals categories, all included free.
+  // ── AUDIO FUNDAMENTALS: Sound · Acoustics · Signal ───────────────────
+  // Owner 2026-08-10: three fundamentals categories. Owner 2026-08-23: the
+  // section is no longer all-free — the core intro labs (Level & Amplitude,
+  // Foundations of Sound, Wave Physics) stay free; deeper labs carry
+  // `member: true` and lock for non-members (all of Signal, plus Sound
+  // Playground, Mic Principles, Speaker Placement & Coverage).
   {
     id: 'sound',
     glyph: '🔊',
@@ -88,8 +98,8 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       // any other visual audio lab.
       { name: 'Understanding Level & Amplitude', blurb: 'The blue→red color language every Academy display uses for level and amplitude — learn it once, recognize it everywhere.', route: 'AmplitudeLab', key: 'af_amplitude' },
       { name: 'Foundations of Sound', blurb: 'Air, waves, amplitude, wavelength, phase, harmonics — sound made visible, module by module.', route: 'FoundationsCourse', key: 'af_foundations' },
-      { name: 'Sound Playground', blurb: 'A free sandbox for every Foundations control and display at once.', route: 'FoundationsPlayground', key: 'af_sound_playground' },
-      { name: 'Microphone Principles', blurb: 'Pickup patterns, proximity, off-axis, plosives, stereo pairs — and what cupping the mic really does.', route: 'MicLab', key: 'af_mic_principles' },
+      { name: 'Sound Playground', blurb: 'A sandbox for every Foundations control and display at once.', route: 'FoundationsPlayground', key: 'af_sound_playground', member: true },
+      { name: 'Microphone Principles', blurb: 'Pickup patterns, proximity, off-axis, plosives, stereo pairs — and what cupping the mic really does.', route: 'MicLab', key: 'af_mic_principles', member: true },
       // The dosimeter itself is NOT a catalog lab (owner 2026-08-12): it runs
       // silently in the background; the user interacts with it ONLY from the
       // Measurement & Analysis Tools menu (readout + popup) and the 15-minute
@@ -105,7 +115,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     kind: 'list',
     labs: [
       { name: 'Wave Physics Laboratory', blurb: 'Reflection, absorption, interference, coverage, standing waves, arrays — room behaviour.', route: 'WaveLab', key: 'af_wave_physics' },
-      { name: 'Speaker Placement & Coverage', blurb: 'Dispersion, aim, height and tilt — who stands in the beam, drawn as a live coverage map.', route: 'SpeakerLab', key: 'af_speaker_coverage' },
+      { name: 'Speaker Placement & Coverage', blurb: 'Dispersion, aim, height and tilt — who stands in the beam, drawn as a live coverage map.', route: 'SpeakerLab', key: 'af_speaker_coverage', member: true },
     ],
   },
   {
@@ -116,16 +126,17 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     section: 'fundamentals',
     kind: 'list',
     labs: [
-      { name: 'Digital Audio Systems', blurb: 'Sampling, Nyquist, aliasing, bit depth, quantization, dither, A/D and D/A conversion.', route: 'DigitalLab', key: 'af_digital_audio' },
-      { name: 'Visual Audio Analysis', blurb: 'Waveform, spectrum, spectrogram, waterfall, phase, correlation, LUFS, peak, RMS, VU.', route: 'MeterLab', key: 'af_visual_analysis' },
-      { name: 'Signal Chain Builder', blurb: 'Generator → EQ → Comp → Gate → FX → Reverb → Limiter → Output.', route: 'SignalChainLab', key: 'af_signal_chain' },
-      { name: 'Signal Detective', blurb: 'Identify the meter, read the display, spot the problem, prescribe the fix.', route: 'MeterModule', params: { id: 'detective' }, key: 'af_signal_detective' },
+      { name: 'Digital Audio Systems', blurb: 'Sampling, Nyquist, aliasing, bit depth, quantization, dither, A/D and D/A conversion.', route: 'DigitalLab', key: 'af_digital_audio', member: true },
+      { name: 'Visual Audio Analysis', blurb: 'Waveform, spectrum, spectrogram, waterfall, phase, correlation, LUFS, peak, RMS, VU.', route: 'MeterLab', key: 'af_visual_analysis', member: true },
+      { name: 'Signal Chain Builder', blurb: 'Generator → EQ → Comp → Gate → FX → Reverb → Limiter → Output.', route: 'SignalChainLab', key: 'af_signal_chain', member: true },
+      { name: 'Signal Detective', blurb: 'Identify the meter, read the display, spot the problem, prescribe the fix.', route: 'MeterModule', params: { id: 'detective' }, key: 'af_signal_detective', member: true },
       // FLAGSHIP (owner spec 2026-08-15): connectors, cables, selection,
       // inspection, virtual tester, system challenges, safety-gated final.
       // Placed after the signal-flow labs, before Gain Staging (owner ruling).
-      { name: 'Cable & Connector Fundamentals', blurb: 'Identify it. Understand it. Connect it safely — what every connector carries, what’s inside the cable, and what happens when the wrong one is used.', route: 'CableLab', key: 'af_cables' },
+      // Owner 2026-08-23: now member-only along with the rest of Signal.
+      { name: 'Cable & Connector Fundamentals', blurb: 'Identify it. Understand it. Connect it safely — what every connector carries, what’s inside the cable, and what happens when the wrong one is used.', route: 'CableLab', key: 'af_cables', member: true },
       // LIVE (owner 2026-08-07): own home + 8 modules (Signal X-Ray et al).
-      { name: 'Gain Staging', blurb: 'Set levels right at every stage — headroom, noise floor, unity gain through the chain.', route: 'GainLabHome', key: 'af_gain_staging' },
+      { name: 'Gain Staging', blurb: 'Set levels right at every stage — headroom, noise floor, unity gain through the chain.', route: 'GainLabHome', key: 'af_gain_staging', member: true },
     ],
   },
 

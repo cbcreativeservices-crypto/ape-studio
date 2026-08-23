@@ -31,12 +31,13 @@ import {
 type Props = NativeStackScreenProps<RootStackParamList, 'EarLab'>;
 
 const INTRO =
-  'A professional audio curriculum in two parts: the free, required Audio ' +
-  'Fundamentals, and the members-only Training Lab. Choose a lab to hear it, ' +
-  'see it, measure it, and take it apart.';
+  'A professional audio curriculum in two parts: Audio Fundamentals — free to ' +
+  'start, with the deeper labs unlocked by membership — and the members-only ' +
+  'Training Lab. Choose a lab to hear it, see it, measure it, and take it apart.';
 const FUNDAMENTALS_INTRO =
-  'Included free for everyone: the essential principles of sound and signal — ' +
-  'hear them, see them, measure them, and take them apart.';
+  'Start free with the essentials — level and amplitude, the foundations of ' +
+  'sound, and wave physics. The deeper Fundamentals labs open with Academy ' +
+  'membership.';
 const TRAINING_INTRO_MEMBER =
   'Your members-only workbench: interactive demonstrations, visualizations, ' +
   'controls and guided experiments across every audio discipline.';
@@ -58,20 +59,23 @@ export function EarLabScreen({ navigation, route }: Props) {
   // the typed labCatalog.
   const go = navigation.navigate as unknown as (route: string, params?: object) => void;
 
-  // Training labs are members-only. Free users still OPEN the real lab (live
-  // readouts / animations / mic), but a preview flag makes the root overlay gray
-  // it out, block interaction, and show the Academy upgrade sheet (owner
-  // 2026-08-02). Fundamentals are free to everyone.
-  const isLocked = (sec: LabSection) => sec === 'training' && !isMember;
+  // Members-only labs. Free users still OPEN the real lab (live readouts /
+  // animations / mic), but a preview flag makes the root overlay gray it out,
+  // block interaction, and show the Academy upgrade sheet (owner 2026-08-02).
+  // The whole Training Lab is members-only; in Audio Fundamentals the core labs
+  // are free and the deeper ones carry `member: true` (owner 2026-08-23).
+  const sectionLocked = (sec: LabSection) => sec === 'training' && !isMember;
+  const leafLocked = (leaf: LabLeaf, sec: LabSection) =>
+    (sec === 'training' || !!leaf.member) && !isMember;
 
   const openLeaf = (leaf: LabLeaf, sec: LabSection) => {
     if (!leaf.route) return;
-    if (isLocked(sec)) startLabPreview(leaf.route, leaf.name);
+    if (leafLocked(leaf, sec)) startLabPreview(leaf.route, leaf.name);
     go(leaf.route, leaf.params);
   };
   const openHub = (cat: LabCategory) => {
     if (cat.kind !== 'hub') return;
-    if (isLocked(cat.section)) startLabPreview(cat.route, cat.name);
+    if (sectionLocked(cat.section)) startLabPreview(cat.route, cat.name);
     go(cat.route, cat.params);
   };
 
@@ -84,7 +88,7 @@ export function EarLabScreen({ navigation, route }: Props) {
         : 'AUDIO FUNDAMENTALS & TRAINING LAB';
   const headerSub =
     section === 'fundamentals'
-      ? 'Free & required — the foundation'
+      ? 'Free to start — more with membership'
       : section === 'training'
         ? isMember
           ? 'Members-only hands-on labs'
@@ -115,19 +119,19 @@ export function EarLabScreen({ navigation, route }: Props) {
         <Text style={styles.intro}>{intro}</Text>
 
         {shownSections.map((sec) => {
-          const locked = isLocked(sec.key);
+          const secLocked = sectionLocked(sec.key);
           return (
             <View key={sec.key} style={styles.section}>
               <View style={styles.sectionHead}>
                 <Text style={styles.sectionTitle}>{sec.title}</Text>
-                <Text style={styles.sectionNote}>{locked ? 'Members only · preview' : sec.note}</Text>
+                <Text style={styles.sectionNote}>{secLocked ? 'Members only · preview' : sec.note}</Text>
               </View>
               {sectionCategories(sec.key).map((cat) => (
                 <View key={cat.id} style={styles.catBlock}>
                   {cat.kind === 'hub' ? (
                     // A hub subject is one lab environment — a tappable header that
                     // opens its own module drill-down (e.g. the Calculator Lab).
-                    <CategoryLabel cat={cat} locked={locked} onPress={() => openHub(cat)} />
+                    <CategoryLabel cat={cat} locked={secLocked} onPress={() => openHub(cat)} />
                   ) : (
                     <>
                       <CategoryLabel cat={cat} />
@@ -137,7 +141,7 @@ export function EarLabScreen({ navigation, route }: Props) {
                           <LabRow
                             key={k}
                             leaf={leaf}
-                            locked={locked}
+                            locked={leafLocked(leaf, sec.key)}
                             expanded={expandedKey === k}
                             onToggle={() => setExpandedKey((cur) => (cur === k ? null : k))}
                             onOpen={() => openLeaf(leaf, sec.key)}
@@ -158,7 +162,7 @@ export function EarLabScreen({ navigation, route }: Props) {
 }
 
 const SECTIONS = [
-  { key: 'fundamentals' as const, title: 'AUDIO FUNDAMENTALS', note: 'Free & required' },
+  { key: 'fundamentals' as const, title: 'AUDIO FUNDAMENTALS', note: 'Free to start' },
   { key: 'training' as const, title: 'TRAINING LAB', note: 'Members only' },
 ];
 
