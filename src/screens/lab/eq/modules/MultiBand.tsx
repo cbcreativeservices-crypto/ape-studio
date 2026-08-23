@@ -125,6 +125,11 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
   const pan = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
+      // Claim at the CAPTURE phase on touch-down (owner 2026-08-23): this vertical
+      // node-drag would otherwise be stolen by the host ScrollView (same axis).
+      // Matching the VerticalFader, grabbing on start lets grant lock the scroll
+      // before any movement is interpreted as a page scroll.
+      onStartShouldSetPanResponderCapture: () => true,
       onMoveShouldSetPanResponder: () => true,
       onPanResponderGrant: (e) => {
         lockRef.current?.(true);
