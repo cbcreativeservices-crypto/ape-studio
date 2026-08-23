@@ -8,11 +8,13 @@
  *     (S/M/L, auto-drops one size on short viewports) and NEVER resized
  *     during an interaction (never resize a live Skia canvas — judge ruling).
  *   WELL — the only ScrollView: prose, mistakes, CheckQuestion, notices.
- *     Wrapped in ScrollLockProvider for legacy in-well drag widgets. Trays
- *     overlay the WELL ONLY; the glass stays bright and live.
+ *     Wrapped in ScrollLockProvider for legacy in-well drag widgets. The well
+ *     wraps its CONTENT height (owner 2026-08-23): collapse the notes and the
+ *     dock rides up beneath them; long content shrinks to fit and scrolls.
  *   DOCK — the shared ParamLane, PRE-BOUND to the module's teaching parameter
  *     (`initialParam` is required — the owner's cause→effect rule made
- *     structural), over a strip of DockButtons.
+ *     structural), over a strip of DockButtons. Blank faceplate fills below.
+ *   Trays overlay everything BELOW the stage; the glass/bezel stay live.
  *
  * During any lane drag a DRAG TAG rides the glass bottom edge with the live
  * value (the Faceplate graft) — the value is never hidden under the finger.
@@ -59,6 +61,7 @@ export function RackUnit({
   const [wellLocked, setWellLocked] = useState(false);
   const [laneActive, setLaneActive] = useState(false);
   const [glassW, setGlassW] = useState(0);
+  const [stageBlockH, setStageBlockH] = useState(0); // tray overlay top edge
   const insets = useSafeAreaInsets();
 
   // Contract check once, not per render (a wrong id would otherwise warn ~60/s
@@ -104,9 +107,9 @@ export function RackUnit({
   }, [interacting, glassH, targetH]);
 
   return (
-    <View style={styles.root}>
+    <View style={[styles.root, { paddingBottom: insets.bottom }]}>
       {/* ── STAGE — pinned; structurally cannot leave the screen ─────────── */}
-      <View style={styles.stageWrap}>
+      <View style={styles.stageWrap} onLayout={(e) => setStageBlockH(Math.round(e.nativeEvent.layout.height))}>
         <View style={[styles.glass, { height: glassH }]} onLayout={(e) => setGlassW(Math.round(e.nativeEvent.layout.width) - 2)}>
           {glassW > 0 ? stage.render(glassW, glassH - 2) : null}
           {/* Smoked-glass sheen (ToolsHub TileGlass language). Decorative. */}
@@ -137,19 +140,20 @@ export function RackUnit({
         ) : null}
       </View>
 
-      {/* ── WELL — the only scroller; trays overlay THIS zone only ───────── */}
+      {/* ── WELL — the only scroller. It wraps its CONTENT height (owner
+             2026-08-23): collapse LAB NOTES and the dock rides up directly
+             beneath it, leaving blank faceplate below — not a dead gap in the
+             middle. Long content still shrinks to fit and scrolls. ─────────── */}
       <View style={styles.wellWrap}>
         <ScrollLockProvider value={setWellLocked}>
-          <ScrollView contentContainerStyle={styles.well} scrollEnabled={!wellLocked}>
+          <ScrollView style={styles.wellScroll} contentContainerStyle={styles.well} scrollEnabled={!wellLocked}>
             {typeof children === 'function' ? children({ setScrollLocked: setWellLocked }) : children}
           </ScrollView>
         </ScrollLockProvider>
-        <DockTray param={trayParam} onClose={() => setOpenTrayId(null)} onHelp={onHelp} />
       </View>
 
-      {/* ── DOCK — lane + strip; pinned. Bottom safe-area respected so the
-             keys never sit in the home-indicator / gesture zone. ───────────── */}
-      <View style={[styles.dock, { paddingBottom: 9 + insets.bottom }]}>
+      {/* ── DOCK — lane + strip; rides directly under the well content ────── */}
+      <View style={styles.dock}>
         {bound ? (
           <ParamLane
             label={bound.label}
@@ -214,12 +218,29 @@ export function RackUnit({
           })}
         </View>
       </View>
+
+      {/* Blank faceplate below the raised dock — calm, non-interactive. */}
+      <View style={styles.filler} pointerEvents="none" />
+
+      {/* Tray overlay at ROOT level (owner 2026-08-23 dock-up layout): covers
+          everything BELOW the stage block — the glass/bezel stay bright and
+          live (the load-bearing rule); the dock may dim under the backdrop. */}
+      <View style={[styles.trayLayer, { top: stageBlockH }]} pointerEvents="box-none">
+        <DockTray
+          param={trayParam}
+          onClose={() => setOpenTrayId(null)}
+          onHelp={onHelp}
+          bottomInset={insets.bottom}
+        />
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
+  filler: { flex: 1 },
+  trayLayer: { position: 'absolute', left: 0, right: 0, bottom: 0 },
   // The stage sits on the faceplate: a slim metallic margin around the glass,
   // with breathing room below the shell's mode tabs (owner 2026-08-23).
   stageWrap: { paddingHorizontal: 10, paddingTop: 10 },
@@ -251,8 +272,11 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
   },
   dragTagText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.5, color: '#0c0c0c' },
-  wellWrap: { flex: 1, position: 'relative' },
-  well: { padding: 12, paddingBottom: 18, gap: 10 },
+  // The well wraps its content (dock rides up under it) but shrinks + scrolls
+  // when the content outgrows the space above the dock.
+  wellWrap: { flexGrow: 0, flexShrink: 1 },
+  wellScroll: { flexGrow: 0 },
+  well: { padding: 12, paddingBottom: 14, gap: 10 },
   dock: {
     borderTopWidth: 1,
     borderTopColor: '#2c2c33',

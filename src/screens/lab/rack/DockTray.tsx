@@ -9,8 +9,9 @@
  *   the lesson.
  *
  * The card uses the tools' popup tokens (#141418 face, #2b2b33 border, r14 —
- * SplMeter popupCard) but anchors above the dock and its backdrop dims ONLY
- * the scroll well: the glass stays bright and live. De-modalized in-tree
+ * SplMeter popupCard) and rises from the bottom of the faceplate; the backdrop
+ * dims everything BELOW the stage (well + dock) but the GLASS/BEZEL stay
+ * bright and live — that is the load-bearing rule. De-modalized in-tree
  * overlay (never a native Modal — the 2026-08-19 iOS lesson); Android back
  * closes the tray first (BackHandler, registered only while open).
  */
@@ -59,12 +60,16 @@ export function DockTray({
   param,
   onClose,
   onHelp,
+  bottomInset = 0,
 }: {
   /** The open options/group param (null = tray closed, renders nothing). */
   param: Extract<DockParam, { kind: 'options' | 'group' }> | null;
   onClose: () => void;
   /** Long-press lesson router (helpKey → GuidedLessonSheet). */
   onHelp?: (helpKey?: string) => void;
+  /** Bottom safe-area (the overlay layer is positioned to the border box, so
+   *  the parent's padding does not apply here). */
+  bottomInset?: number;
 }) {
   const open = param != null;
   useEffect(() => {
@@ -89,7 +94,7 @@ export function DockTray({
         accessibilityRole="button"
         accessibilityLabel="Close the tray"
       />
-      <View style={styles.card}>
+      <View style={[styles.card, { bottom: 6 + bottomInset }]}>
         <View style={styles.head}>
           <Text style={styles.title} numberOfLines={1}>
             {param.label}
@@ -148,7 +153,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 8,
     right: 8,
-    bottom: 6,
     maxHeight: '86%',
     borderRadius: 14,
     borderWidth: 1,
