@@ -604,7 +604,14 @@ function HarmonographFigure({
     const thetaMax = 2 * Math.PI * C;
     const k = -Math.log(endAmp) / thetaMax;
     const phi = (phaseDeg * Math.PI) / 180;
-    const f2 = n2 * (1 + detune);
+    // The figure is a function of the RATIO n1:n2, not the absolute harmonic
+    // numbers — a 3:2 is a 3:2 whether the arms are 330:220 Hz or 3:2 Hz
+    // pendulums (owner 2026-08-23). Normalize by the slower arm so the pen
+    // always draws C full turns of the pattern at any absolute speed; without
+    // this, low-Hz arms (n≪1) barely complete a swing and the figure flattens.
+    const mn = Math.max(1e-9, Math.min(n1, n2));
+    const ax = n1 / mn;
+    const ay = (n2 * (1 + detune)) / mn;
     const cx = SIZE / 2;
     const r = SIZE / 2 - 12;
     const xs = new Array<number>(N + 1);
@@ -616,11 +623,11 @@ function HarmonographFigure({
       let x: number;
       let y: number;
       if (rotary) {
-        x = 0.5 * (Math.sin(n1 * th + phi) + Math.sin(f2 * th)) * env;
-        y = 0.5 * (Math.cos(n1 * th + phi) - Math.cos(f2 * th)) * env;
+        x = 0.5 * (Math.sin(ax * th + phi) + Math.sin(ay * th)) * env;
+        y = 0.5 * (Math.cos(ax * th + phi) - Math.cos(ay * th)) * env;
       } else {
-        x = Math.sin(n1 * th + phi) * env;
-        y = Math.sin(f2 * th) * env;
+        x = Math.sin(ax * th + phi) * env;
+        y = Math.sin(ay * th) * env;
       }
       xs[i] = cx + x * r;
       ys[i] = cx - y * r;
