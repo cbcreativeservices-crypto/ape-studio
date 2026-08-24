@@ -210,11 +210,12 @@ const GRIT_SPECKS = (() => {
  *  the specks are round dots. Decorative; never blocks touches. */
 function PanelFace() {
   const [size, setSize] = useState({ w: 0, h: 0 });
-  // Darkened well below the dashboard method-panel gray (owner 2026-08-17).
+  // The dashboard study-method panel coat, exactly (owner 2026-08-23 —
+  // supersedes the 2026-08-17 darkening): BlackFaceBg's default method gray.
   const gradStops = [
-    { o: 0, c: '#16161a' },
-    { o: 0.42, c: '#222227' },
-    { o: 1, c: '#08080c' },
+    { o: 0, c: '#3a3a3e' },
+    { o: 0.42, c: '#46464b' },
+    { o: 1, c: '#2c2c30' },
   ];
   return (
     <View
