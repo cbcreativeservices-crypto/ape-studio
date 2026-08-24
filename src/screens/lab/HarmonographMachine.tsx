@@ -17,22 +17,22 @@
  * The drawing runs until the pen SETTLES (swing ≤ ~4%), so the trace length
  * derives from the damping chip — nothing is cut off mid-swing — then holds.
  *
- * ANIMATION ARCHITECTURE (hard-won, 2026-08-23): react-native-svg transform
- * props (x/y, translateX/translateY, rotation on G) are extracted at JS render
- * time and DO NOT apply through Reanimated's native prop path — groups
- * silently stay put (the "floating weights" device bug). So every moving part
- * here animates PRIMITIVE native props only (cx/cy, x1..y2, strokeDashoffset),
- * and the one thing that must translate as a unit — the orbiting platform with
- * its paper and ink — lives in a plain RN Animated.View layer, where Reanimated
- * transforms are bulletproof. Three stacked layers, painter-ordered:
- *   1. base Svg   — backdrop, legs, weights (animated ellipses), below/above
- *                   shafts (animated lines), slab, holes;
- *   2. platform   — Animated.View (translateX/Y style) holding a small Svg with
- *                   the platform faces, paper, and the dash-revealed ink whose
- *                   offset follows ARC LENGTH at current time (head glued to
- *                   the nib), plus the wet-ink dash window;
- *   3. top Svg    — the arms and pen (animated primitives) and the "THE
- *                   DRAWING" inset with its own dash-revealed copy.
+ * ANIMATION ARCHITECTURE (hard-won, 2026-08-23):
+ *  - react-native-svg TRANSFORM props (x/y, translateX/translateY, rotation on
+ *    G) are extracted at JS render time and DO NOT apply through Reanimated's
+ *    native prop path — groups silently stay put. Every moving part animates
+ *    PRIMITIVE props only (cx/cy, x1..y2, strokeDashoffset), each element also
+ *    carrying its REST-POSE as static initial props so the first paint is a
+ *    complete machine even before the UI-thread mapper runs.
+ *  - The one thing that must translate as a unit — the orbiting platform with
+ *    its paper and ink — is a plain RN Animated.View (useAnimatedStyle
+ *    transform: bulletproof) holding its own small Svg.
+ *  - GRADIENT IDS ARE UNIQUE PER SVG ROOT (…B/…P/…T): duplicate ids across
+ *    roots break fills in react-native-svg (the documented ToolsHub tile-06
+ *    failure) — that's what vanished the platform in the previous build.
+ *  - Ink reveals along a precomputed path whose strokeDashoffset follows the
+ *    ARC LENGTH at the current time (head glued to the nib); a wet-ink head
+ *    rides the reveal as a short bright dash window.
  */
 import { memo, useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -61,17 +61,17 @@ import Animated, {
 } from 'react-native-reanimated';
 import { fonts } from '../../theme/tokens';
 
-/** Damping reference: the damping chips are defined as "amplitude left after
- *  TURNS_REF turns"; the drawing then CONTINUES until the pen settles. */
+/** Damping reference: the chips mean "amplitude left after TURNS_REF turns";
+ *  the drawing then CONTINUES until the pen settles. */
 export const TURNS_REF = 24;
 const STOP_ENV = 0.04;
-/** Total slower-arm turns for a full drawing at this damping (used by the
- *  screen for the real-time drawMs = turns / slowerHz). */
+/** Total slower-arm turns for a full drawing at this damping (screen uses it
+ *  for the real-time drawMs = turns / slowerHz). */
 export function drawTurns(endAmp: number): number {
   return (TURNS_REF * Math.log(STOP_ENV)) / Math.log(Math.min(0.9, Math.max(0.01, endAmp)));
 }
 
-/* ── the machine, in inches (Sims build, stylized to fit the stage) ───────── */
+/* ── the machine, in inches ───────────────────────────────────────────────── */
 const T = 36;
 const HR: readonly [number, number] = [9, 9];
 const HA: readonly [number, number] = [33, 9];
@@ -107,8 +107,8 @@ function dpj(dx: number, dy: number): [number, number] {
   return [(dx * CY - dy * SY) * SC, -(dx * SY + dy * CY) * SP * SC];
 }
 
-/* ── motion (single source of truth; runs as JS for the ink precompute and as
-      a worklet for the live machine) ─────────────────────────────────────── */
+/* ── motion (single source of truth: JS for the ink precompute, worklet for
+      the live machine) ──────────────────────────────────────────────────── */
 type Mode = { axr: number; ayr: number; ph: number; k: number; rotary: boolean; det: number };
 function motion(phi: number, m: Mode) {
   'worklet';
@@ -158,7 +158,7 @@ function motion(phi: number, m: Mode) {
   return { sA, sB, ox, oy, tAx, tAy, tBx, tBy, px, py, env };
 }
 
-/* ── static scenery (fixed camera → module-load constants) ────────────────── */
+/* ── static scenery + REST POSE (module-load constants) ───────────────────── */
 const P2 = (p: [number, number]) => `${p[0].toFixed(1)},${p[1].toFixed(1)}`;
 const slabTop = [pj(0, 0, 0), pj(T, 0, 0), pj(T, T, 0), pj(0, T, 0)];
 const slabE1 = [pj(0, 0, -0.8), pj(T, 0, -0.8)];
@@ -176,7 +176,6 @@ const GRAIN = [1, 2, 3, 4, 5, 6].map((i) => {
     c = pj(34.5, i * 5 + 1.2, 0);
   return `M${a[0].toFixed(1)} ${a[1].toFixed(1)} Q ${b[0].toFixed(1)} ${b[1].toFixed(1)} ${c[0].toFixed(1)} ${c[1].toFixed(1)}`;
 });
-// platform + paper (rendered inside the Animated.View layer)
 const PLATC = [
   pj(HR[0] - PLATH, HR[1] - PLATH, PLATZ),
   pj(HR[0] + PLATH, HR[1] - PLATH, PLATZ),
@@ -184,7 +183,6 @@ const PLATC = [
   pj(HR[0] - PLATH, HR[1] + PLATH, PLATZ),
 ];
 const PLATE = [pj(HR[0] - PLATH, HR[1] + PLATH, PLATZ - 0.7), pj(HR[0] + PLATH, HR[1] + PLATH, PLATZ - 0.7)];
-// platform layer bounds (viewBox units) with orbit + stroke margin
 const PB = (() => {
   const xs = [...PLATC, ...PLATE].map((p) => p[0]);
   const ys = [...PLATC, ...PLATE].map((p) => p[1]);
@@ -196,13 +194,23 @@ const PB = (() => {
     h: Math.max(...ys) - Math.min(...ys) + 2 * mArg,
   };
 })();
-// weight rest centers (each pendulum's discs/shadow animate cx/cy from these)
-const WREST = {
-  A: { w: [HA[0], HA[1], -WGT] as const, sh: pj(HA[0], HA[1], -LEGZ + 0.5) },
-  B: { w: [HB[0], HB[1], -WGT] as const, sh: pj(HB[0], HB[1], -LEGZ + 0.5) },
-  R: { w: [HR[0], HR[1], -WGT + 3] as const, sh: pj(HR[0], HR[1], -LEGZ + 0.5) },
-};
 const PEN_Z = PLATZ + 0.9;
+// rest pose (s = 0, no orbit): every animated element's initial static props
+const R_shaftA_below = [pj(HA[0], HA[1], -BOT), pj(HA[0], HA[1], 0)];
+const R_shaftB_below = [pj(HB[0], HB[1], -BOT), pj(HB[0], HB[1], 0)];
+const R_shaftA_above = [pj(HA[0], HA[1], 0), pj(HA[0], HA[1], TOP)];
+const R_shaftB_above = [pj(HB[0], HB[1], 0), pj(HB[0], HB[1], TOP)];
+const R_shaftR = [pj(HR[0], HR[1], -WGT + 3), pj(HR[0], HR[1], PLATZ - 0.8)];
+const R_discA = [-1, 0, 1].map((i) => pj(HA[0], HA[1], -WGT + i * 1.15));
+const R_discB = [-1, 0, 1].map((i) => pj(HB[0], HB[1], -WGT + i * 1.15));
+const R_discR = [-1, 0, 1].map((i) => pj(HR[0], HR[1], -WGT + 3 + i * 1.15));
+const R_shadA = pj(HA[0], HA[1], -LEGZ + 0.5);
+const R_shadB = pj(HB[0], HB[1], -LEGZ + 0.5);
+const R_shadR = pj(HR[0], HR[1], -LEGZ + 0.5);
+const R_armA = [pj(HA[0], HA[1], TOP), pj(HR[0], HR[1], PEN_Z)];
+const R_armB = [pj(HB[0], HB[1], TOP), pj(HR[0], HR[1], PEN_Z)];
+const R_pen = pj(HR[0], HR[1], PEN_Z);
+const R_penTop = pj(HR[0], HR[1], PLATZ + 3.4);
 // inset
 const IX = 252,
   IY = 26,
@@ -221,8 +229,6 @@ const COL_B = '#b48bff';
 const DISC_RX = 2.5 * SC * 0.62,
   DISC_RY = 2.5 * SC * 0.3;
 
-/** memo: dock presses / tray opens re-render the screen constantly — the
- *  machine only re-renders when ITS values change. */
 export const HarmonographMachine = memo(function HarmonographMachine({
   n1,
   n2,
@@ -250,7 +256,6 @@ export const HarmonographMachine = memo(function HarmonographMachine({
       axr: n1 / mn,
       ayr: n2 / mn,
       ph: (phaseDeg * Math.PI) / 180,
-      // damping rate fixed by the chip's "amplitude after TURNS_REF turns"
       k: -Math.log(endAmp) / (2 * Math.PI * TURNS_REF),
       rotary,
       det: detune,
@@ -258,8 +263,7 @@ export const HarmonographMachine = memo(function HarmonographMachine({
     [n1, n2, mn, phaseDeg, endAmp, rotary, detune],
   );
 
-  /* ink precompute — DEFERRED so lane drags stay responsive (machine parts
-     track the live mode; the heavy rebuild runs at low priority). */
+  /* ink precompute — DEFERRED so lane drags stay responsive */
   const dMode = useDeferredValue(mode);
   const dThetaMax = useDeferredValue(thetaMax);
   const dDrawMs = useDeferredValue(drawMs);
@@ -311,35 +315,38 @@ export const HarmonographMachine = memo(function HarmonographMachine({
 
   const M = useDerivedValue(() => motion(progress.value * thetaMax, mode));
 
-  /* layout scale: viewBox units → px (for the platform Animated.View layer) */
+  /* layout scale (viewBox units → px) for the platform layer */
   const [box, setBox] = useState({ w: 0, h: 0 });
   const sc = box.w > 0 ? Math.min(box.w / VBW, box.h / VBH) : 0;
   const offX = (box.w - VBW * sc) / 2,
     offY = (box.h - VBH * sc) / 2;
 
-  /* ── animated props (PRIMITIVES ONLY — see header) ───────────────────── */
-  const mkShaftBelow = (H: readonly [number, number], axis: 'x' | 'y', sKey: 'sA' | 'sB') =>
-    useAnimatedProps(() => {
-      const s = M.value[sKey];
-      const off = (s * BOT) / TOP;
-      const zz = -Math.sqrt(Math.max(0, WGT * WGT - ((s * WGT) / TOP) * ((s * WGT) / TOP))) * (BOT / WGT);
-      const a = axis === 'x' ? pj(H[0] + off, H[1], zz) : pj(H[0], H[1] + off, zz);
-      const b = pj(H[0], H[1], 0);
-      return { x1: a[0], y1: a[1], x2: b[0], y2: b[1] };
-    });
-  const shaftABelow = mkShaftBelow(HA, 'x', 'sA');
-  const shaftBBelow = mkShaftBelow(HB, 'y', 'sB');
+  /* ── animated props — primitives only, explicit and unrolled ─────────── */
+  const shaftABelow = useAnimatedProps(() => {
+    const s = M.value.sA;
+    const off = (s * BOT) / TOP;
+    const wu = (s * WGT) / TOP;
+    const zz = -Math.sqrt(Math.max(0, WGT * WGT - wu * wu)) * (BOT / WGT);
+    const a = pj(HA[0] + off, HA[1], zz);
+    return { x1: a[0], y1: a[1] };
+  });
+  const shaftBBelow = useAnimatedProps(() => {
+    const s = M.value.sB;
+    const off = (s * BOT) / TOP;
+    const wu = (s * WGT) / TOP;
+    const zz = -Math.sqrt(Math.max(0, WGT * WGT - wu * wu)) * (BOT / WGT);
+    const a = pj(HB[0], HB[1] + off, zz);
+    return { x1: a[0], y1: a[1] };
+  });
   const shaftAAbove = useAnimatedProps(() => {
     const m = M.value;
-    const a = pj(HA[0], HA[1], 0);
     const b = pj(m.tAx, m.tAy, Math.sqrt(Math.max(0, TOP * TOP - m.sA * m.sA)));
-    return { x1: a[0], y1: a[1], x2: b[0], y2: b[1] };
+    return { x2: b[0], y2: b[1] };
   });
   const shaftBAbove = useAnimatedProps(() => {
     const m = M.value;
-    const a = pj(HB[0], HB[1], 0);
     const b = pj(m.tBx, m.tBy, Math.sqrt(Math.max(0, TOP * TOP - m.sB * m.sB)));
-    return { x1: a[0], y1: a[1], x2: b[0], y2: b[1] };
+    return { x2: b[0], y2: b[1] };
   });
   const shaftR = useAnimatedProps(() => {
     const m = M.value;
@@ -347,42 +354,61 @@ export const HarmonographMachine = memo(function HarmonographMachine({
     const b = pj(HR[0] + m.ox, HR[1] + m.oy, PLATZ - 0.8);
     return { x1: a[0], y1: a[1], x2: b[0], y2: b[1] };
   });
-  /* weights: each disc + shadow is its own animated ellipse (cx/cy) */
-  const mkDisc = (rest: readonly [number, number, number], i: number, du: () => [number, number]) =>
-    useAnimatedProps(() => {
-      const d = du();
-      const c = pj(rest[0], rest[1], rest[2] + i * 1.15);
-      return { cx: c[0] + d[0], cy: c[1] + d[1] };
-    });
-  const duA = () => {
-    'worklet';
-    return dpj((M.value.sA * WGT) / TOP, 0);
-  };
-  const duB = () => {
-    'worklet';
-    return dpj(0, (M.value.sB * WGT) / TOP);
-  };
-  const duR = () => {
-    'worklet';
-    return dpj((-M.value.ox * WGT) / TOP, (-M.value.oy * WGT) / TOP);
-  };
-  const discA = [mkDisc(WREST.A.w, -1, duA), mkDisc(WREST.A.w, 0, duA), mkDisc(WREST.A.w, 1, duA)];
-  const discB = [mkDisc(WREST.B.w, -1, duB), mkDisc(WREST.B.w, 0, duB), mkDisc(WREST.B.w, 1, duB)];
-  const discR = [mkDisc(WREST.R.w, -1, duR), mkDisc(WREST.R.w, 0, duR), mkDisc(WREST.R.w, 1, duR)];
-  const mkShadow = (sh: [number, number], du: () => [number, number]) =>
-    useAnimatedProps(() => {
-      const d = du();
-      return { cx: sh[0] + d[0], cy: sh[1] + d[1] };
-    });
-  const shadA = mkShadow(WREST.A.sh, duA);
-  const shadB = mkShadow(WREST.B.sh, duB);
-  const shadR = mkShadow(WREST.R.sh, duR);
-  /* platform layer translation (RN view transform — reliable) */
+  // weights: one hook per disc/shadow (cx/cy) — no group transforms, ever
+  const discA0 = useAnimatedProps(() => {
+    const d = dpj((M.value.sA * WGT) / TOP, 0);
+    return { cx: R_discA[0][0] + d[0], cy: R_discA[0][1] + d[1] };
+  });
+  const discA1 = useAnimatedProps(() => {
+    const d = dpj((M.value.sA * WGT) / TOP, 0);
+    return { cx: R_discA[1][0] + d[0], cy: R_discA[1][1] + d[1] };
+  });
+  const discA2 = useAnimatedProps(() => {
+    const d = dpj((M.value.sA * WGT) / TOP, 0);
+    return { cx: R_discA[2][0] + d[0], cy: R_discA[2][1] + d[1] };
+  });
+  const shadA = useAnimatedProps(() => {
+    const d = dpj((M.value.sA * WGT) / TOP, 0);
+    return { cx: R_shadA[0] + d[0], cy: R_shadA[1] + d[1] };
+  });
+  const discB0 = useAnimatedProps(() => {
+    const d = dpj(0, (M.value.sB * WGT) / TOP);
+    return { cx: R_discB[0][0] + d[0], cy: R_discB[0][1] + d[1] };
+  });
+  const discB1 = useAnimatedProps(() => {
+    const d = dpj(0, (M.value.sB * WGT) / TOP);
+    return { cx: R_discB[1][0] + d[0], cy: R_discB[1][1] + d[1] };
+  });
+  const discB2 = useAnimatedProps(() => {
+    const d = dpj(0, (M.value.sB * WGT) / TOP);
+    return { cx: R_discB[2][0] + d[0], cy: R_discB[2][1] + d[1] };
+  });
+  const shadB = useAnimatedProps(() => {
+    const d = dpj(0, (M.value.sB * WGT) / TOP);
+    return { cx: R_shadB[0] + d[0], cy: R_shadB[1] + d[1] };
+  });
+  const discR0 = useAnimatedProps(() => {
+    const d = dpj((-M.value.ox * WGT) / TOP, (-M.value.oy * WGT) / TOP);
+    return { cx: R_discR[0][0] + d[0], cy: R_discR[0][1] + d[1] };
+  });
+  const discR1 = useAnimatedProps(() => {
+    const d = dpj((-M.value.ox * WGT) / TOP, (-M.value.oy * WGT) / TOP);
+    return { cx: R_discR[1][0] + d[0], cy: R_discR[1][1] + d[1] };
+  });
+  const discR2 = useAnimatedProps(() => {
+    const d = dpj((-M.value.ox * WGT) / TOP, (-M.value.oy * WGT) / TOP);
+    return { cx: R_discR[2][0] + d[0], cy: R_discR[2][1] + d[1] };
+  });
+  const shadR = useAnimatedProps(() => {
+    const d = dpj((-M.value.ox * WGT) / TOP, (-M.value.oy * WGT) / TOP);
+    return { cx: R_shadR[0] + d[0], cy: R_shadR[1] + d[1] };
+  });
+  /* platform layer translation (RN view transform) */
   const platStyle = useAnimatedStyle(() => {
     const d = dpj(M.value.ox, M.value.oy);
     return { transform: [{ translateX: d[0] * sc }, { translateY: d[1] * sc }] };
   }, [sc]);
-  /* arms + pen (primitives) */
+  /* arms + pen */
   const armA = useAnimatedProps(() => {
     const m = M.value;
     const a = pj(m.tAx, m.tAy, Math.sqrt(Math.max(0, TOP * TOP - m.sA * m.sA)));
@@ -396,13 +422,11 @@ export const HarmonographMachine = memo(function HarmonographMachine({
     return { x1: a[0], y1: a[1], x2: b[0], y2: b[1] };
   });
   const penShadow = useAnimatedProps(() => {
-    const m = M.value;
-    const p = pj(m.px, m.py, PEN_Z);
+    const p = pj(M.value.px, M.value.py, PEN_Z);
     return { cx: p[0] + 2, cy: p[1] + 3 };
   });
   const penBand = useAnimatedProps(() => {
-    const m = M.value;
-    const p = pj(m.px, m.py, PEN_Z);
+    const p = pj(M.value.px, M.value.py, PEN_Z);
     return { cx: p[0], cy: p[1] - 1 };
   });
   const penBody = useAnimatedProps(() => {
@@ -412,16 +436,14 @@ export const HarmonographMachine = memo(function HarmonographMachine({
     return { x1: a[0], y1: a[1], x2: b[0], y2: b[1] };
   });
   const penNib = useAnimatedProps(() => {
-    const m = M.value;
-    const p = pj(m.px, m.py, PLATZ + 3.4);
+    const p = pj(M.value.px, M.value.py, PLATZ + 3.4);
     return { cx: p[0], cy: p[1] };
   });
   const penCollar = useAnimatedProps(() => {
-    const m = M.value;
-    const p = pj(m.px, m.py, PEN_Z);
+    const p = pj(M.value.px, M.value.py, PEN_Z);
     return { cx: p[0], cy: p[1] - 1 };
   });
-  /* ink reveal (dashoffset follows arc length at current time) */
+  /* ink reveal */
   const HEAD = 26;
   const inkP = useAnimatedProps(() => {
     const f = Math.min(ink.N - 0.001, Math.max(0, progress.value * ink.N));
@@ -448,67 +470,86 @@ export const HarmonographMachine = memo(function HarmonographMachine({
     return { strokeDashoffset: HEAD - s };
   });
 
-  const gradDefs = (
-    <Defs>
-      <LinearGradient id="hmWood" x1="0" y1="0" x2="1" y2="1">
-        <Stop offset="0" stopColor="#8a6a3e" />
-        <Stop offset="0.5" stopColor="#6e5230" />
-        <Stop offset="1" stopColor="#4c3820" />
-      </LinearGradient>
-      <LinearGradient id="hmWoodE" x1="0" y1="0" x2="0" y2="1">
-        <Stop offset="0" stopColor="#3c2c17" />
-        <Stop offset="1" stopColor="#241a0d" />
-      </LinearGradient>
-      <LinearGradient id="hmPaper" x1="0" y1="0" x2="1" y2="1">
-        <Stop offset="0" stopColor="#efe9d6" />
-        <Stop offset="1" stopColor="#d9d2bc" />
-      </LinearGradient>
-      <LinearGradient id="hmSteel" x1="0" y1="0" x2="1" y2="0">
-        <Stop offset="0" stopColor="#63666e" />
-        <Stop offset="0.45" stopColor="#2e3036" />
-        <Stop offset="1" stopColor="#1c1d21" />
-      </LinearGradient>
-      <RadialGradient id="hmFloor" cx="0.5" cy="0.5" r="0.5">
-        <Stop offset="0" stopColor="#141419" />
-        <Stop offset="1" stopColor="#0a0a0d" stopOpacity={0} />
-      </RadialGradient>
-    </Defs>
-  );
-
   return (
-    <View style={{ width: '100%', height }} onLayout={(e) => setBox({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
-      {/* ── layer 1: base machine ─────────────────────────────────────────── */}
+    <View
+      style={{ width: '100%', height }}
+      onLayout={(e) => setBox({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}
+    >
+      {/* ── layer 1: base machine (gradient ids suffixed B) ──────────────── */}
       <Svg width="100%" height={height} viewBox={`0 0 ${VBW} ${VBH}`} style={StyleSheet.absoluteFill}>
-        {gradDefs}
+        <Defs>
+          <LinearGradient id="hmWoodB" x1="0" y1="0" x2="1" y2="1">
+            <Stop offset="0" stopColor="#8a6a3e" />
+            <Stop offset="0.5" stopColor="#6e5230" />
+            <Stop offset="1" stopColor="#4c3820" />
+          </LinearGradient>
+          <LinearGradient id="hmWoodEB" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0" stopColor="#3c2c17" />
+            <Stop offset="1" stopColor="#241a0d" />
+          </LinearGradient>
+          <LinearGradient id="hmSteelB" x1="0" y1="0" x2="1" y2="0">
+            <Stop offset="0" stopColor="#63666e" />
+            <Stop offset="0.45" stopColor="#2e3036" />
+            <Stop offset="1" stopColor="#1c1d21" />
+          </LinearGradient>
+          <RadialGradient id="hmFloorB" cx="0.5" cy="0.5" r="0.5">
+            <Stop offset="0" stopColor="#141419" />
+            <Stop offset="1" stopColor="#0a0a0d" stopOpacity={0} />
+          </RadialGradient>
+        </Defs>
         <Rect x={0} y={0} width={VBW} height={VBH} fill="#0b0b0e" />
-        <Ellipse cx={MX + 20} cy={MY + LEGZ * CP * SC - 14} rx={150} ry={36} fill="url(#hmFloor)" />
+        <Ellipse cx={MX + 20} cy={MY + LEGZ * CP * SC - 14} rx={150} ry={36} fill="url(#hmFloorB)" />
         {LEGS.map((L, i) => (
           <G key={i}>
             <Line x1={L[0][0]} y1={L[0][1]} x2={L[1][0]} y2={L[1][1]} stroke="#3a2c18" strokeWidth={4.2} strokeLinecap="round" />
             <Line x1={L[0][0]} y1={L[0][1]} x2={L[1][0]} y2={L[1][1]} stroke="#59452a" strokeWidth={1.8} strokeLinecap="round" />
           </G>
         ))}
-        {/* moving floor shadows */}
-        <AEllipse animatedProps={shadR} rx={13} ry={4} fill="#000" opacity={0.32} />
-        <AEllipse animatedProps={shadA} rx={13} ry={4} fill="#000" opacity={0.32} />
-        <AEllipse animatedProps={shadB} rx={13} ry={4} fill="#000" opacity={0.32} />
-        {/* below-table shafts + weights (far → near) */}
-        <ALine animatedProps={shaftR} stroke="#5d4527" strokeWidth={3.2} strokeLinecap="round" />
-        {discR.map((ap, i) => (
-          <AEllipse key={`r${i}`} animatedProps={ap} rx={DISC_RX} ry={DISC_RY} fill="url(#hmSteel)" stroke="#0e0f12" strokeWidth={0.8} />
-        ))}
-        <ALine animatedProps={shaftABelow} stroke="#5d4527" strokeWidth={3.2} strokeLinecap="round" />
-        {discA.map((ap, i) => (
-          <AEllipse key={`a${i}`} animatedProps={ap} rx={DISC_RX} ry={DISC_RY} fill="url(#hmSteel)" stroke="#0e0f12" strokeWidth={0.8} />
-        ))}
-        <ALine animatedProps={shaftBBelow} stroke="#5d4527" strokeWidth={3.2} strokeLinecap="round" />
-        {discB.map((ap, i) => (
-          <AEllipse key={`b${i}`} animatedProps={ap} rx={DISC_RX} ry={DISC_RY} fill="url(#hmSteel)" stroke="#0e0f12" strokeWidth={0.8} />
-        ))}
-        {/* table */}
-        <Polygon points={`${P2(slabTop[0])} ${P2(slabTop[1])} ${P2(slabE1[1])} ${P2(slabE1[0])}`} fill="url(#hmWoodE)" />
+        <AEllipse animatedProps={shadR} cx={R_shadR[0]} cy={R_shadR[1]} rx={13} ry={4} fill="#000" opacity={0.32} />
+        <AEllipse animatedProps={shadA} cx={R_shadA[0]} cy={R_shadA[1]} rx={13} ry={4} fill="#000" opacity={0.32} />
+        <AEllipse animatedProps={shadB} cx={R_shadB[0]} cy={R_shadB[1]} rx={13} ry={4} fill="#000" opacity={0.32} />
+        <ALine
+          animatedProps={shaftR}
+          x1={R_shaftR[0][0]}
+          y1={R_shaftR[0][1]}
+          x2={R_shaftR[1][0]}
+          y2={R_shaftR[1][1]}
+          stroke="#5d4527"
+          strokeWidth={3.2}
+          strokeLinecap="round"
+        />
+        <AEllipse animatedProps={discR0} cx={R_discR[0][0]} cy={R_discR[0][1]} rx={DISC_RX} ry={DISC_RY} fill="url(#hmSteelB)" stroke="#0e0f12" strokeWidth={0.8} />
+        <AEllipse animatedProps={discR1} cx={R_discR[1][0]} cy={R_discR[1][1]} rx={DISC_RX} ry={DISC_RY} fill="url(#hmSteelB)" stroke="#0e0f12" strokeWidth={0.8} />
+        <AEllipse animatedProps={discR2} cx={R_discR[2][0]} cy={R_discR[2][1]} rx={DISC_RX} ry={DISC_RY} fill="url(#hmSteelB)" stroke="#0e0f12" strokeWidth={0.8} />
+        <ALine
+          animatedProps={shaftABelow}
+          x1={R_shaftA_below[0][0]}
+          y1={R_shaftA_below[0][1]}
+          x2={R_shaftA_below[1][0]}
+          y2={R_shaftA_below[1][1]}
+          stroke="#5d4527"
+          strokeWidth={3.2}
+          strokeLinecap="round"
+        />
+        <AEllipse animatedProps={discA0} cx={R_discA[0][0]} cy={R_discA[0][1]} rx={DISC_RX} ry={DISC_RY} fill="url(#hmSteelB)" stroke="#0e0f12" strokeWidth={0.8} />
+        <AEllipse animatedProps={discA1} cx={R_discA[1][0]} cy={R_discA[1][1]} rx={DISC_RX} ry={DISC_RY} fill="url(#hmSteelB)" stroke="#0e0f12" strokeWidth={0.8} />
+        <AEllipse animatedProps={discA2} cx={R_discA[2][0]} cy={R_discA[2][1]} rx={DISC_RX} ry={DISC_RY} fill="url(#hmSteelB)" stroke="#0e0f12" strokeWidth={0.8} />
+        <ALine
+          animatedProps={shaftBBelow}
+          x1={R_shaftB_below[0][0]}
+          y1={R_shaftB_below[0][1]}
+          x2={R_shaftB_below[1][0]}
+          y2={R_shaftB_below[1][1]}
+          stroke="#5d4527"
+          strokeWidth={3.2}
+          strokeLinecap="round"
+        />
+        <AEllipse animatedProps={discB0} cx={R_discB[0][0]} cy={R_discB[0][1]} rx={DISC_RX} ry={DISC_RY} fill="url(#hmSteelB)" stroke="#0e0f12" strokeWidth={0.8} />
+        <AEllipse animatedProps={discB1} cx={R_discB[1][0]} cy={R_discB[1][1]} rx={DISC_RX} ry={DISC_RY} fill="url(#hmSteelB)" stroke="#0e0f12" strokeWidth={0.8} />
+        <AEllipse animatedProps={discB2} cx={R_discB[2][0]} cy={R_discB[2][1]} rx={DISC_RX} ry={DISC_RY} fill="url(#hmSteelB)" stroke="#0e0f12" strokeWidth={0.8} />
+        <Polygon points={`${P2(slabTop[0])} ${P2(slabTop[1])} ${P2(slabE1[1])} ${P2(slabE1[0])}`} fill="url(#hmWoodEB)" />
         <Polygon points={`${P2(slabTop[1])} ${P2(slabTop[2])} ${P2(slabE2[0])} ${P2(slabE1[1])}`} fill="#1c130a" />
-        <Polygon points={slabTop.map(P2).join(' ')} fill="url(#hmWood)" stroke="#2a1f10" strokeWidth={1} />
+        <Polygon points={slabTop.map(P2).join(' ')} fill="url(#hmWoodB)" stroke="#2a1f10" strokeWidth={1} />
         {GRAIN.map((d, i) => (
           <Path key={i} d={d} stroke="#00000022" strokeWidth={0.8} fill="none" />
         ))}
@@ -518,12 +559,29 @@ export const HarmonographMachine = memo(function HarmonographMachine({
             <Ellipse cx={h[0]} cy={h[1]} rx={2.4 * SC} ry={2.4 * SC * SP} fill="none" stroke="#a89468" strokeWidth={1} strokeOpacity={0.5} />
           </G>
         ))}
-        {/* above-table lateral shafts (OSC identity colors) */}
-        <ALine animatedProps={shaftAAbove} stroke={COL_A} strokeWidth={3} strokeLinecap="round" />
-        <ALine animatedProps={shaftBAbove} stroke={COL_B} strokeWidth={3} strokeLinecap="round" />
+        <ALine
+          animatedProps={shaftAAbove}
+          x1={R_shaftA_above[0][0]}
+          y1={R_shaftA_above[0][1]}
+          x2={R_shaftA_above[1][0]}
+          y2={R_shaftA_above[1][1]}
+          stroke={COL_A}
+          strokeWidth={3}
+          strokeLinecap="round"
+        />
+        <ALine
+          animatedProps={shaftBAbove}
+          x1={R_shaftB_above[0][0]}
+          y1={R_shaftB_above[0][1]}
+          x2={R_shaftB_above[1][0]}
+          y2={R_shaftB_above[1][1]}
+          stroke={COL_B}
+          strokeWidth={3}
+          strokeLinecap="round"
+        />
       </Svg>
 
-      {/* ── layer 2: orbiting platform + paper + ink (RN transform) ───────── */}
+      {/* ── layer 2: orbiting platform + paper + ink (gradient id P) ─────── */}
       {sc > 0 ? (
         <Animated.View
           pointerEvents="none"
@@ -539,9 +597,14 @@ export const HarmonographMachine = memo(function HarmonographMachine({
           ]}
         >
           <Svg width="100%" height="100%" viewBox={`${PB.x} ${PB.y} ${PB.w} ${PB.h}`}>
-            {gradDefs}
+            <Defs>
+              <LinearGradient id="hmPaperP" x1="0" y1="0" x2="1" y2="1">
+                <Stop offset="0" stopColor="#efe9d6" />
+                <Stop offset="1" stopColor="#d9d2bc" />
+              </LinearGradient>
+            </Defs>
             <Polygon points={`${P2(PLATC[3])} ${P2(PLATC[2])} ${P2(PLATE[1])} ${P2(PLATE[0])}`} fill="#241a0d" />
-            <Polygon points={PLATC.map(P2).join(' ')} fill="url(#hmPaper)" stroke="#b8ad8d" strokeWidth={0.8} />
+            <Polygon points={PLATC.map(P2).join(' ')} fill="url(#hmPaperP)" stroke="#b8ad8d" strokeWidth={0.8} />
             <APath
               d={ink.dP}
               animatedProps={inkP}
@@ -551,6 +614,7 @@ export const HarmonographMachine = memo(function HarmonographMachine({
               fill="none"
               strokeLinejoin="round"
               strokeDasharray={`${ink.totP.toFixed(1)} ${ink.totP.toFixed(1)}`}
+              strokeDashoffset={ink.totP}
             />
             <APath
               d={ink.dP}
@@ -561,23 +625,55 @@ export const HarmonographMachine = memo(function HarmonographMachine({
               fill="none"
               strokeLinecap="round"
               strokeDasharray={`${HEAD} ${ink.totP.toFixed(1)}`}
+              strokeDashoffset={HEAD}
             />
           </Svg>
         </Animated.View>
       ) : null}
 
-      {/* ── layer 3: arms, pen, inset ─────────────────────────────────────── */}
+      {/* ── layer 3: arms, pen, inset (gradient id T) ─────────────────────── */}
       <Svg width="100%" height={height} viewBox={`0 0 ${VBW} ${VBH}`} style={StyleSheet.absoluteFill}>
-        {gradDefs}
-        <AEllipse animatedProps={penShadow} rx={4.4} ry={1.8} fill="#000" opacity={0.2} />
-        <ALine animatedProps={armA} stroke="#b9a276" strokeWidth={2.4} strokeLinecap="round" />
-        <ALine animatedProps={armB} stroke="#b9a276" strokeWidth={2.4} strokeLinecap="round" />
-        <ACircle animatedProps={penBand} r={2.4} fill="none" stroke="#7d2a35" strokeWidth={1} />
-        <ALine animatedProps={penBody} stroke="#20242c" strokeWidth={2.8} strokeLinecap="round" />
-        <ACircle animatedProps={penNib} r={1.7} fill="#e0435a" />
-        <ACircle animatedProps={penCollar} r={1.2} fill="#c9a25e" />
-        {/* inset: the drawing, straight-on */}
-        <Rect x={IX} y={IY} width={IW} height={IW} rx={8} fill="url(#hmPaper)" stroke="#26262c" strokeWidth={1.3} />
+        <Defs>
+          <LinearGradient id="hmPaperT" x1="0" y1="0" x2="1" y2="1">
+            <Stop offset="0" stopColor="#efe9d6" />
+            <Stop offset="1" stopColor="#d9d2bc" />
+          </LinearGradient>
+        </Defs>
+        <AEllipse animatedProps={penShadow} cx={R_pen[0] + 2} cy={R_pen[1] + 3} rx={4.4} ry={1.8} fill="#000" opacity={0.2} />
+        <ALine
+          animatedProps={armA}
+          x1={R_armA[0][0]}
+          y1={R_armA[0][1]}
+          x2={R_armA[1][0]}
+          y2={R_armA[1][1]}
+          stroke="#b9a276"
+          strokeWidth={2.4}
+          strokeLinecap="round"
+        />
+        <ALine
+          animatedProps={armB}
+          x1={R_armB[0][0]}
+          y1={R_armB[0][1]}
+          x2={R_armB[1][0]}
+          y2={R_armB[1][1]}
+          stroke="#b9a276"
+          strokeWidth={2.4}
+          strokeLinecap="round"
+        />
+        <ACircle animatedProps={penBand} cx={R_pen[0]} cy={R_pen[1] - 1} r={2.4} fill="none" stroke="#7d2a35" strokeWidth={1} />
+        <ALine
+          animatedProps={penBody}
+          x1={R_pen[0]}
+          y1={R_pen[1]}
+          x2={R_penTop[0]}
+          y2={R_penTop[1]}
+          stroke="#20242c"
+          strokeWidth={2.8}
+          strokeLinecap="round"
+        />
+        <ACircle animatedProps={penNib} cx={R_penTop[0]} cy={R_penTop[1]} r={1.7} fill="#e0435a" />
+        <ACircle animatedProps={penCollar} cx={R_pen[0]} cy={R_pen[1] - 1} r={1.2} fill="#c9a25e" />
+        <Rect x={IX} y={IY} width={IW} height={IW} rx={8} fill="url(#hmPaperT)" stroke="#26262c" strokeWidth={1.3} />
         <Rect x={IX + 2} y={IY + 2} width={IW - 4} height={IW - 4} rx={6} fill="none" stroke="#b8ad8d" strokeWidth={0.6} strokeOpacity={0.6} />
         <APath
           d={ink.dI}
@@ -588,6 +684,7 @@ export const HarmonographMachine = memo(function HarmonographMachine({
           fill="none"
           strokeLinejoin="round"
           strokeDasharray={`${ink.totI.toFixed(1)} ${ink.totI.toFixed(1)}`}
+          strokeDashoffset={ink.totI}
         />
         <APath
           d={ink.dI}
@@ -598,6 +695,7 @@ export const HarmonographMachine = memo(function HarmonographMachine({
           fill="none"
           strokeLinecap="round"
           strokeDasharray={`${HEAD} ${ink.totI.toFixed(1)}`}
+          strokeDashoffset={HEAD}
         />
         <SvgText
           x={IX + IW / 2}
