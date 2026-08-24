@@ -35,7 +35,23 @@ import { EqChallengesModule } from './modules/EqChallenges';
 /** Rack-mode modules (APE_LAB_UX_PROPOSAL 2026-08-23) render the RackUnit
  *  frame THEMSELVES — pinned stage + dock with their own scroll well — so the
  *  host must give them the full height and NOT wrap them in a ScrollView. */
-const RACK_MODULES = new Set<EqModuleId>(['liveEq']);
+const RACK_MODULES = new Set<EqModuleId>([
+  'liveEq',
+  'spectrum',
+  'parametric',
+  'qband',
+  'shapes',
+  'slopes',
+  'gvp',
+  'graphic',
+  'multiband',
+  'findFreq',
+  'matchCurve',
+  'fixSignal',
+  // Kept classic (each carries a dated in-file note): whyEq (beginner chip
+  // co-visibility), camera (two pixel-aligned panels outgrow the glass),
+  // challenges (no continuous teaching parameter).
+]);
 
 const COMPONENTS: Record<EqModuleId, (p: EqModuleComponentProps) => React.JSX.Element> = {
   spectrum: SeeingFrequencyModule,

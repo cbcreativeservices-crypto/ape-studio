@@ -6,6 +6,11 @@
  *
  * All-analytic: the curve is the real RBJ peaking response (fxViz — DESIGNED
  * RESPONSE grammar), no audio required.
+ *
+ * RACK evaluated 2026-08-23 — KEPT CLASSIC: a gentle intro lesson with one
+ * slider; the rack would bury the three REGION chips (deliberately co-visible
+ * with the graph for beginners) behind a tray and add dock grammar before the
+ * student has met parametric controls (lesson 5).
  */
 import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';

@@ -6,16 +6,28 @@
  * way (owner ruling): graphic = FAST fixed-band control (still professionally
  * used); parametric = substantially greater PRECISION — never "pros don't use
  * graphic EQs."
+ *
+ * RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23): renders the RackUnit frame
+ * itself. The FADER BANK is a spatial editor, so the whole board rides the
+ * PINNED STAGE with the actual-response curve above it — the stage lives
+ * outside any ScrollView, which structurally ends the fader-vs-scroll race
+ * (corrections-audit #8). The bezel reads the board format and the fader under
+ * your finger; the dock carries the board picker (sticky tray) and RESET.
  */
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { ResponseCurveGraph, type ResponseCurve } from '../../../../features/lab/fxViz';
 import { CheckQuestion, type CheckSpec } from '../../foundations/bits';
-import { GraphicBoard, MiniBtn } from './eqBits';
+import { GraphicBoard } from './eqBits';
 import { colors, fonts } from '../../../../theme/tokens';
+import { RackUnit } from '../../rack/RackUnit';
+import type { DockParam } from '../../rack/rackTypes';
 import { fmtHz, gainColor, graphicActualDb, OCT_CENTERS, Q_1OCT, Q_THIRD, THIRD_CENTERS } from './eqMath';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
+
+// Board block on the stage: 108 track + gap + fader labels (eqBits geometry).
+const BOARD_BLOCK_H = 126;
 
 const CHECK: CheckSpec = {
   question: 'What can a PARAMETRIC band adjust that a GRAPHIC band cannot?',
@@ -49,84 +61,112 @@ export function GraphicVsParametricModule(_p: EqModuleComponentProps) {
     [centers, gains, q],
   );
 
+  // Bezel-safe active index (the sticky BOARD tray can swap centers mid-touch).
+  const liveIdx = activeIdx != null && activeIdx < centers.length ? activeIdx : null;
+
+  const params: DockParam[] = [
+    {
+      kind: 'options',
+      id: 'board',
+      label: 'BOARD',
+      valueLabel: board === 'oct' ? '1/1 OCT' : '1/3 OCT',
+      options: [
+        { id: 'oct', label: '1-OCTAVE · 10 BANDS' },
+        { id: 'third', label: '1/3-OCTAVE · 31 BANDS' },
+      ],
+      selectedId: board,
+      onSelect: (id) => setBoard(id as 'oct' | 'third'),
+      sticky: true, // swap boards while the curve reacts
+    },
+    { kind: 'action', id: 'reset', label: 'RESET', onPress: reset },
+  ];
+
   return (
-    <View style={styles.root}>
-      <GlossaryText style={styles.body}>
-        A graphic EQ is a row of FIXED bands — one slider per frequency, gain only. You’ve been
-        driving a parametric band; now drive the board.
-      </GlossaryText>
+    <RackUnit
+      initialParam="board"
+      params={params}
+      stage={{
+        size: 'L', // the board is the star
+        badge: `Curve = the ACTUAL combined response of the board’s real filters (fixed ${
+          board === 'oct' ? '1-octave' : '1/3-octave'
+        } bells)`,
+        bezel: [
+          { k: 'BOARD', v: board === 'oct' ? '10 · 1/1 OCT' : '31 · 1/3 OCT' },
+          { k: 'RANGE', v: '±12 dB' },
+          // The fader under your finger — live, never hidden by the hand.
+          // (bounds-guarded: the sticky BOARD tray can swap centers mid-touch)
+          { k: 'BAND', v: liveIdx != null ? fmtHz(centers[liveIdx]) : '—' },
+          {
+            k: 'LEVEL',
+            v: liveIdx != null ? `${gains[liveIdx] >= 0 ? '+' : ''}${gains[liveIdx].toFixed(1)} dB` : '—',
+            tint: liveIdx != null ? gainColor(gains[liveIdx], 12) : undefined,
+          },
+        ],
+        render: (w, h) => {
+          const curveH = Math.max(60, h - BOARD_BLOCK_H - 14 - 12);
+          return (
+            <View style={{ width: w, height: h, paddingHorizontal: 8, paddingTop: 6, gap: 4 }}>
+              <ResponseCurveGraph curves={curves} dbRange={15} height={curveH} />
+              <GraphicBoard
+                centers={centers}
+                gains={gains}
+                onGain={setGain}
+                onActiveIndex={setActiveIdx}
+                tintFor={(i) => gainColor(gains[i], 12)}
+              />
+            </View>
+          );
+        },
+      }}
+    >
+      <View style={styles.well}>
+        <GlossaryText style={styles.body}>
+          A graphic EQ is a row of FIXED bands — one slider per frequency, gain only. You’ve been
+          driving a parametric band; now drive the board. The bezel reads the fader under your
+          finger.
+        </GlossaryText>
 
-      <View style={styles.btnRow}>
-        <MiniBtn label="1-OCTAVE" active={board === 'oct'} onPress={() => setBoard('oct')} />
-        <MiniBtn label="1/3-OCTAVE" active={board === 'third'} onPress={() => setBoard('third')} />
-        <MiniBtn label="RESET" onPress={reset} />
-      </View>
+        {board === 'third' && (
+          <Text style={styles.caption}>1/3-OCTAVE: 31 bands — scroll the board sideways to reach them all.</Text>
+        )}
 
-      <View style={styles.panel}>
-        <View style={styles.panelHead}>
-          <Text style={styles.panelEyebrow}>
-            {board === 'oct' ? '10 BANDS · 1/1 OCTAVE' : '31 BANDS · 1/3 OCTAVE — scroll the board'}
-          </Text>
-          <Text style={styles.readout}>±12 dB</Text>
-        </View>
-        <ResponseCurveGraph curves={curves} dbRange={15} height={130} />
-        <Text style={[styles.active, activeIdx != null && styles.activeOn]}>
-          {activeIdx != null
-            ? `${fmtHz(centers[activeIdx])}  ·  ${gains[activeIdx] >= 0 ? '+' : ''}${gains[activeIdx].toFixed(1)} dB`
-            : 'Touch a slider to read its frequency and level'}
+        <Text style={styles.caption}>
+          The line printed under the display is the honesty line: the amber curve is the ACTUAL
+          combined response of the board’s real fixed-width bells — more on that in the next lesson.
         </Text>
-        <GraphicBoard
-          centers={centers}
-          gains={gains}
-          onGain={setGain}
-          onActiveIndex={setActiveIdx}
-          tintFor={(i) => gainColor(gains[i], 12)}
-        />
-        <Text style={styles.honest}>
-          Curve = the ACTUAL combined response of the board’s real filters (fixed{' '}
-          {board === 'oct' ? '1-octave' : '1/3-octave'} bells) — more on that in the next lesson.
+
+        {/* The honest comparison (owner ruling). */}
+        <View style={styles.compareRow}>
+          <View style={styles.compareCol}>
+            <Text style={styles.compareHead}>GRAPHIC EQ</Text>
+            <Text style={styles.compareLine}>• Fixed frequencies</Text>
+            <Text style={styles.compareLine}>• Fixed / defined bandwidth</Text>
+            <Text style={styles.compareLine}>• Adjustable gain</Text>
+            <Text style={styles.compareWhy}>Fast, repeatable, fixed-band control — rooms, monitors, quick shaping.</Text>
+          </View>
+          <View style={styles.compareCol}>
+            <Text style={styles.compareHead}>PARAMETRIC EQ</Text>
+            <Text style={styles.compareLine}>• Adjustable frequency</Text>
+            <Text style={styles.compareLine}>• Adjustable gain</Text>
+            <Text style={styles.compareLine}>• Adjustable Q / bandwidth</Text>
+            <Text style={styles.compareWhy}>Substantially greater precision — put the filter exactly where the problem is.</Text>
+          </View>
+        </View>
+        <Text style={styles.caption}>
+          Both remain professional tools. The choice is workflow: speed and fixed bands versus
+          precision and full control.
         </Text>
-      </View>
 
-      {/* The honest comparison (owner ruling). */}
-      <View style={styles.compareRow}>
-        <View style={styles.compareCol}>
-          <Text style={styles.compareHead}>GRAPHIC EQ</Text>
-          <Text style={styles.compareLine}>• Fixed frequencies</Text>
-          <Text style={styles.compareLine}>• Fixed / defined bandwidth</Text>
-          <Text style={styles.compareLine}>• Adjustable gain</Text>
-          <Text style={styles.compareWhy}>Fast, repeatable, fixed-band control — rooms, monitors, quick shaping.</Text>
-        </View>
-        <View style={styles.compareCol}>
-          <Text style={styles.compareHead}>PARAMETRIC EQ</Text>
-          <Text style={styles.compareLine}>• Adjustable frequency</Text>
-          <Text style={styles.compareLine}>• Adjustable gain</Text>
-          <Text style={styles.compareLine}>• Adjustable Q / bandwidth</Text>
-          <Text style={styles.compareWhy}>Substantially greater precision — put the filter exactly where the problem is.</Text>
-        </View>
+        <CheckQuestion spec={CHECK} />
       </View>
-      <Text style={styles.caption}>
-        Both remain professional tools. The choice is workflow: speed and fixed bands versus
-        precision and full control.
-      </Text>
-
-      <CheckQuestion spec={CHECK} />
-    </View>
+    </RackUnit>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { gap: 12 },
+  well: { gap: 12 },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
-  btnRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  panel: { borderRadius: 12, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 12, gap: 10 },
-  panelHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
-  panelEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.amber, flexShrink: 1 },
-  readout: { fontFamily: fonts.mono, fontSize: 11.5, color: colors.textSub },
-  honest: { fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 15, color: colors.textSub },
-  active: { fontFamily: fonts.mono, fontSize: 12.5, color: colors.textSub, textAlign: 'center' },
-  activeOn: { color: colors.amber, fontSize: 14 },
   compareRow: { flexDirection: 'row', gap: 10 },
   compareCol: { flex: 1, borderRadius: 10, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 10, gap: 3 },
   compareHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.amber, marginBottom: 2 },

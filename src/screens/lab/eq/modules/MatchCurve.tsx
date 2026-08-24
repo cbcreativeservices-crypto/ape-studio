@@ -3,14 +3,22 @@
  * TARGET response with your own EQ; scored on closeness. Tests frequency +
  * gain + Q understanding WITHOUT requiring hearing — deliberately the lab's
  * most accessible trainer (spec highlight).
+ *
+ * RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23): this module renders the RackUnit
+ * frame itself. The target+attempt plot PINS on the stage — the whole game is
+ * watching your amber curve settle onto the dim target while a lane moves;
+ * FREQ/GAIN/Q are dock faders (FREQ pre-bound: WHERE, then HOW MUCH, then HOW
+ * WIDE); SCORE and NEW are keys. The MATCH score reads on the bezel — hidden
+ * until you ask (the owner's check-yourself toggle, now a tap-to-reveal
+ * readout window); BAND on the bezel switches bands on two-band targets.
  */
 import { useCallback, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { ResponseCurveGraph, eqResponseDb, type EqBandSpec, type ResponseCurve } from '../../../../features/lab/fxViz';
-import { DragSlider } from '../../foundations/bits';
-import { MiniBtn } from './eqBits';
 import { colors, fonts } from '../../../../theme/tokens';
 import { bwOctFromQ, fFromNorm, fmtHz, gainColor, maxPosDb, normFromF } from './eqMath';
+import { RackUnit } from '../../rack/RackUnit';
+import type { BezelItem, DockParam } from '../../rack/rackTypes';
 import type { EqModuleComponentProps } from './registry';
 
 type UserBand = { f: number; g: number; q: number };
@@ -93,100 +101,116 @@ export function MatchCurveModule(_p: EqModuleComponentProps) {
     [target, bands],
   );
 
+  // MIDI plot colour: warms with the user's biggest boost (owner 2026-08-07).
+  const plotColor = gainColor(
+    maxPosDb((f) =>
+      bands.reduce(
+        (s, b) => s + (b.g !== 0 ? eqResponseDb([{ type: 'peak', freq: b.f, q: b.q, gainDb: b.g }], f) : 0),
+        0,
+      ),
+    ),
+    15,
+  );
+
   const live = scoreMatch(target, bands);
   const verdict =
     live >= 90 ? 'EXCELLENT — that is the curve.' : live >= 75 ? 'CLOSE — refine width and center.' : 'KEEP TRYING — start with WHERE, then HOW MUCH, then HOW WIDE.';
 
-  return (
-    <View style={styles.root}>
-      <Text style={styles.body}>
-        Recreate the dim TARGET curve with your band{bands.length > 1 ? 's' : ''}. No hearing
-        required — this is pure understanding of frequency, gain and Q.
-      </Text>
+  const params: DockParam[] = [
+    {
+      kind: 'fader',
+      id: 'freq',
+      label: 'FREQ',
+      value: normFromF(sel.f),
+      onChange: (t) => setSel({ f: fFromNorm(t) }),
+      format: () => fmtHz(sel.f),
+    },
+    {
+      kind: 'fader',
+      id: 'gain',
+      label: 'GAIN',
+      value: (sel.g + 15) / 30,
+      onChange: (t) => setSel({ g: Math.round((t * 30 - 15) * 2) / 2 }),
+      format: () => `${sel.g >= 0 ? '+' : ''}${sel.g.toFixed(1)} dB`,
+      formatShort: () => `${sel.g >= 0 ? '+' : ''}${sel.g.toFixed(1)}`,
+      tint: gainColor(sel.g, 15),
+    },
+    {
+      kind: 'fader',
+      id: 'q',
+      label: 'Q',
+      value: Math.log(sel.q / 0.3) / Math.log(12 / 0.3),
+      onChange: (t) => setSel({ q: 0.3 * Math.pow(12 / 0.3, Math.max(0, Math.min(1, t))) }),
+      format: () => `Q ${sel.q.toFixed(2)} · ${bwOctFromQ(sel.q).toFixed(2)} oct`,
+      formatShort: () => `Q${sel.q.toFixed(1)}`,
+    },
+    { kind: 'action', id: 'score', label: showScore ? 'HIDE' : 'SCORE', onPress: () => setShowScore((v) => !v) },
+    { kind: 'action', id: 'new', label: 'NEW', onPress: newTarget },
+  ];
 
-      <View style={styles.panel}>
-        <View style={styles.panelHead}>
-          <Text style={styles.panelEyebrow}>TARGET (dim) vs YOUR EQ (amber)</Text>
-          <Text style={styles.readout}>{showScore ? `MATCH ${live}%` : 'MATCH · hidden'}</Text>
-        </View>
-        <ResponseCurveGraph
-          curves={curves}
-          dbRange={15}
-          height={150}
-          // MIDI plot colour: warms with the user's biggest boost (owner 2026-08-07).
-          mainColor={gainColor(
-            maxPosDb((f) =>
-              bands.reduce(
-                (s, b) => s + (b.g !== 0 ? eqResponseDb([{ type: 'peak', freq: b.f, q: b.q, gainDb: b.g }], f) : 0),
-                0,
-              ),
-            ),
-            15,
-          )}
-        />
+  const bezel: BezelItem[] = [
+    // The check-yourself toggle: tap the MATCH window to reveal/hide the score.
+    {
+      k: 'MATCH',
+      v: showScore ? `${live}%` : 'HIDDEN',
+      tint: showScore ? (live >= 90 ? colors.green : undefined) : '#7a7f8a',
+      onPress: () => setShowScore((v) => !v),
+    },
+    { k: 'BANDS', v: String(target.length) },
+    ...(bands.length > 1
+      ? [
+          {
+            k: 'BAND',
+            v: `${Math.min(selIdx, bands.length - 1) + 1}/${bands.length}`,
+            onPress: () => setSelIdx((i) => (i + 1) % bands.length),
+          },
+        ]
+      : []),
+  ];
+
+  return (
+    <RackUnit
+      initialParam="freq"
+      params={params}
+      stage={{
+        size: 'L',
+        // Legend, verbatim from the pre-rack panel head.
+        badge: 'TARGET (dim) vs YOUR EQ (amber)',
+        bezel,
+        render: (w, h) => (
+          <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center' }}>
+            <ResponseCurveGraph curves={curves} dbRange={15} height={Math.max(80, h - 18)} mainColor={plotColor} />
+          </View>
+        ),
+      }}
+    >
+      <View style={styles.well}>
+        <Text style={styles.body}>
+          Recreate the dim TARGET curve with your band{bands.length > 1 ? 's' : ''}. No hearing
+          required — this is pure understanding of frequency, gain and Q.
+          {bands.length > 1 ? ' Tap the BAND window on the bezel to switch bands.' : ''}
+        </Text>
         <Text style={styles.honest}>
           Target uses {target.length} hidden band{target.length > 1 ? 's' : ''} — you have the same
-          number.
+          number. Judge the match by eye first; SCORE when you’re ready.
         </Text>
+
+        {showScore && (
+          <View style={[styles.result, live >= 90 ? styles.resultPass : null]}>
+            <Text style={[styles.resultHead, live >= 90 ? styles.resultHeadPass : null]}>
+              ACCURACY {live}% — {verdict}
+            </Text>
+          </View>
+        )}
       </View>
-
-      {bands.length > 1 && (
-        <View style={styles.btnRow}>
-          {bands.map((_, i) => (
-            <MiniBtn key={i} label={`BAND ${i + 1}`} active={selIdx === i} onPress={() => setSelIdx(i)} />
-          ))}
-        </View>
-      )}
-
-      <DragSlider label="FREQUENCY" value={normFromF(sel.f)} onChange={(t) => setSel({ f: fFromNorm(t) })} readout={fmtHz(sel.f)} />
-      <DragSlider
-        label="GAIN"
-        value={(sel.g + 15) / 30}
-        onChange={(t) => setSel({ g: Math.round((t * 30 - 15) * 2) / 2 })}
-        readout={`${sel.g >= 0 ? '+' : ''}${sel.g.toFixed(1)} dB`}
-        tint={gainColor(sel.g, 15)}
-      />
-      <DragSlider
-        label="Q"
-        value={Math.log(sel.q / 0.3) / Math.log(12 / 0.3)}
-        onChange={(t) => setSel({ q: 0.3 * Math.pow(12 / 0.3, Math.max(0, Math.min(1, t))) })}
-        readout={`Q ${sel.q.toFixed(2)} · ${bwOctFromQ(sel.q).toFixed(2)} oct`}
-      />
-
-      <View style={styles.btnRow}>
-        <Pressable
-          onPress={() => setShowScore((v) => !v)}
-          style={styles.checkBtn}
-          accessibilityRole="button"
-          accessibilityLabel={showScore ? 'Hide accuracy' : 'Check your accuracy'}
-        >
-          <Text style={styles.checkBtnText}>{showScore ? 'HIDE ACCURACY' : 'CHECK YOUR ACCURACY'}</Text>
-        </Pressable>
-        <MiniBtn label="NEW TARGET" onPress={newTarget} />
-      </View>
-
-      {showScore && (
-        <View style={[styles.result, live >= 90 ? styles.resultPass : null]}>
-          <Text style={[styles.resultHead, live >= 90 ? styles.resultHeadPass : null]}>
-            ACCURACY {live}% — {verdict}
-          </Text>
-        </View>
-      )}
-    </View>
+    </RackUnit>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { gap: 12 },
+  well: { gap: 12 },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
-  btnRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, alignItems: 'center' },
-  panel: { borderRadius: 12, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 12, gap: 8 },
-  panelHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
-  panelEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.amber, flexShrink: 1 },
-  readout: { fontFamily: fonts.mono, fontSize: 12, color: colors.amber },
   honest: { fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 15, color: colors.textSub },
-  checkBtn: { borderRadius: 8, borderWidth: 1, borderColor: 'rgba(255,198,77,.55)', backgroundColor: '#1d1708', paddingHorizontal: 22, paddingVertical: 10 },
-  checkBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.2, color: colors.amber },
   result: { borderRadius: 10, borderWidth: 1, borderColor: '#3a3a42', backgroundColor: '#131316', padding: 12 },
   resultPass: { borderColor: 'rgba(55,224,95,.5)', backgroundColor: '#0c1a10' },
   resultHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 0.8, color: colors.textSecondary },

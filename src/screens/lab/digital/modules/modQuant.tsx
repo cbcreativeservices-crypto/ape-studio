@@ -1,7 +1,15 @@
 /**
  * digital/modQuant — Module 3 (Quantization & Bit Depth + Dither) and
  * Module 4 (Binary Sample Values) of the Digital Audio Sampling & Conversion
- * Lab. NO Skia here — the visuals load only via skiaGate.requireVizQuant();
+ * Lab.
+ *
+ * RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23): both modules render the RackUnit
+ * frame themselves — the hero viz pins on the stage with its honesty badge
+ * verbatim, readouts print on the bezel, the teaching fader rides the dock
+ * lane, and prose/tables/secondary panels/checks scroll in the well (which
+ * carries its own guided-lesson entry row).
+ *
+ * NO Skia here — the visuals load only via skiaGate.requireVizQuant();
  * pre-Skia clients get the honest VizUnavailableCard while every readout,
  * table, bit switch and check question still works.
  *
@@ -18,8 +26,10 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { DigitalModuleProps } from '../DigitalModuleScreen';
 import { Badge, MythReality, PanelCard, ReadoutGrid, dstyles } from '../bits';
-import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
+import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
 import { LabChip, CollapsibleSection } from '../../LabShell';
+import { RackUnit } from '../../rack/RackUnit';
+import type { DockParam } from '../../rack/rackTypes';
 import { requireVizQuant } from '../skiaGate';
 import type { DitherMode } from '../vizQuant';
 
@@ -85,6 +95,16 @@ function SectionHead({ title, onHelp }: { title: string; onHelp: () => void }) {
   );
 }
 
+/** Guided-lesson entry row at the bottom of the rack well (rack modules own
+ *  their well, so they carry the host's lessonRow themselves). */
+function LessonRow({ onPress }: { onPress: () => void }) {
+  return (
+    <Pressable style={styles.lessonRow} onPress={onPress} accessibilityRole="button" accessibilityLabel="Open the guided lesson">
+      <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
+    </Pressable>
+  );
+}
+
 // ═════════════════════════════════════════════════════════════════════════════
 // MODULE 3 — QUANTIZATION & BIT DEPTH
 
@@ -127,62 +147,88 @@ export function QuantModule(p: DigitalModuleProps) {
   // Below ~8 steps of peak swing the error locks to the signal (correlated).
   const correlated = amp < 8 * step;
 
-  const readouts = [
-    { k: 'BIT DEPTH', v: `${bits}-bit` },
-    { k: 'LEVELS = 2ᴺ', v: fmtGroup(levels) },
-    { k: 'STEP SIZE', v: `1/${fmtGroup(half)} FS` },
-    { k: 'THEOR. DR', v: `≈ ${drTheory.toFixed(1)} dB` },
-    { k: 'PEAK', v: fmtDb(levelDb, 0) },
-    { k: 'HEADROOM', v: `${(-levelDb).toFixed(0)} dB` },
+  const params: DockParam[] = [
+    {
+      kind: 'fader',
+      id: 'level',
+      label: 'LEVEL',
+      value: (levelDb + 40) / 40,
+      onChange: (v) => setLevelDb(Math.round(-40 + v * 40)),
+      format: () => fmtDb(levelDb, 0),
+      formatShort: () => `${levelDb} dB`,
+      helpKey: 'quant_error',
+    },
+    {
+      kind: 'options',
+      id: 'bits',
+      label: 'BITS',
+      valueLabel: `${bits}-BIT`,
+      options: BIT_CHOICES.map((b) => ({ id: String(b), label: `${b}-BIT` })),
+      selectedId: String(bits),
+      onSelect: (id) => setBits(Number(id)),
+      sticky: true, // A/B bit depths while the steps move on the glass
+      helpKey: 'quant_levels',
+    },
+    {
+      kind: 'toggle',
+      id: 'error',
+      label: 'ERROR',
+      value: errorOnly,
+      onToggle: () => setErrorOnly(!errorOnly),
+      helpKey: 'quant_error',
+    },
   ];
 
   return (
-    <View style={styles.stack}>
-      <PanelCard>
-        <SectionHead title="QUANTIZATION — AMPLITUDE IN STEPS" onHelp={() => p.help('bit_depth')} />
+    <RackUnit
+      initialParam="level"
+      params={params}
+      onHelp={p.help}
+      stage={{
+        size: 'L', // the step grid + whiskers are the lesson
+        badge: errorOnly
+          ? `ERROR VIEW — VERTICAL ZOOM ×${fmtGroup(levels)} (±½ STEP FILLS THE PANEL)`
+          : bits >= 12
+            ? `AT ${bits}-BIT THE STEPS ARE SUB-PIXEL — DRAWN HONESTLY AS A FINE BAND, NOT EXAGGERATED`
+            : 'AMBER = ORIGINAL · BLUE = SAMPLED · GREEN = STORED/RESULT · RED = ROUNDING ERROR',
+        onGuide: () => p.help('bit_depth'),
+        bezel: [
+          { k: 'BITS', v: `${bits}-bit`, helpKey: 'bit_depth' },
+          { k: 'LEVELS', v: fmtGroup(levels), helpKey: 'quant_levels' },
+          { k: 'TH. DR', v: `≈${drTheory.toFixed(1)} dB`, helpKey: 'bit_depth' },
+          { k: 'PEAK', v: fmtDb(levelDb, 0), helpKey: 'quant_error' },
+        ],
+        render: (w, h) =>
+          viz ? (
+            <viz.QuantView width={w} height={h} bits={bits} levelDb={levelDb} errorOnly={errorOnly} />
+          ) : (
+            <View style={{ flex: 1, justifyContent: 'center', padding: 12 }}>
+              <VizUnavailableCard />
+            </View>
+          ),
+      }}
+    >
+      <View style={styles.stack}>
         <Text style={dstyles.body}>
           Sampling measured WHEN; quantization measures HOW LOUD. Each sample is rounded to the nearest of 2ᴺ levels — the red
-          whiskers are what rounding throws away. Quantization bites hardest on quiet signals: drag the level down and watch.
+          whiskers are what rounding throws away. Quantization bites hardest on quiet signals: ride the LEVEL lane down and watch.
         </Text>
-        {viz ? (
-          <viz.QuantView width={p.width} bits={bits} levelDb={levelDb} errorOnly={errorOnly} />
-        ) : (
-          <VizUnavailableCard />
-        )}
-        {errorOnly ? (
-          <Badge text={`ERROR VIEW — VERTICAL ZOOM ×${fmtGroup(levels)} (±½ STEP FILLS THE PANEL)`} />
-        ) : bits >= 12 ? (
-          <Badge text={`AT ${bits}-BIT THE STEPS ARE SUB-PIXEL — DRAWN HONESTLY AS A FINE BAND, NOT EXAGGERATED`} />
-        ) : (
-          <Badge text="AMBER = ORIGINAL · BLUE = SAMPLED · GREEN = STORED/RESULT · RED = ROUNDING ERROR" />
-        )}
-        <View style={dstyles.chipRow}>
-          {BIT_CHOICES.map((b) => (
-            <LabChip
-              key={b}
-              label={`${b}-BIT`}
-              selected={bits === b}
-              onPress={() => setBits(b)}
-              onLongPress={() => p.help('quant_levels')}
-            />
-          ))}
-        </View>
-        <DragSlider
-          value={(levelDb + 40) / 40}
-          onChange={(v) => setLevelDb(Math.round(-40 + v * 40))}
-          label="SIGNAL LEVEL"
-          readout={fmtDb(levelDb, 0)}
-          onHelp={() => p.help('quant_error')}
+        <ReadoutGrid
+          help={p.help}
+          helpKey="quant_error"
+          items={
+            errorOnly
+              ? [
+                  { k: 'STEP SIZE', v: `1/${fmtGroup(half)} FS` },
+                  { k: 'HEADROOM', v: `${(-levelDb).toFixed(0)} dB` },
+                  { k: 'ERROR RMS', v: fmtDb(errRmsDb) },
+                ]
+              : [
+                  { k: 'STEP SIZE', v: `1/${fmtGroup(half)} FS` },
+                  { k: 'HEADROOM', v: `${(-levelDb).toFixed(0)} dB` },
+                ]
+          }
         />
-        <View style={dstyles.chipRow}>
-          <LabChip
-            label="ERROR ONLY"
-            selected={errorOnly}
-            onPress={() => setErrorOnly(!errorOnly)}
-            onLongPress={() => p.help('quant_error')}
-          />
-        </View>
-        <ReadoutGrid help={p.help} helpKey="quant_error" items={errorOnly ? [...readouts, { k: 'ERROR RMS', v: fmtDb(errRmsDb) }] : readouts} />
         {errorOnly ? (
           <Text style={dstyles.caption}>
             {correlated
@@ -190,49 +236,50 @@ export function QuantModule(p: DigitalModuleProps) {
               : 'At this healthy level the error is small and noise-like — a benign hiss floor far below the signal.'}
           </Text>
         ) : null}
-      </PanelCard>
 
-      <CollapsibleSection title="REAL CONVERTERS — THEORY VS PRACTICE">
-        <Text style={dstyles.body}>
-          6.02·N + 1.76 dB is the FORMULA, not the product. Analog input noise, clock jitter and converter linearity set the
-          real limit: the industry measure is ENOB (effective number of bits), and even excellent 24-bit converters deliver
-          roughly 20–21 effective bits (~120–125 dB). A nominal 24-bit converter does NOT deliver 144 dB usable.
-        </Text>
-        <MythReality
-          myth="Higher bit depth means better frequency response — 24-bit sounds brighter and more detailed on top."
-          reality="Bit depth sets AMPLITUDE resolution and dynamic range only: more bits = a lower quantization-noise floor. Frequency response is set by sample rate. Nothing about bit depth touches treble."
-        />
-      </CollapsibleSection>
+        <CollapsibleSection title="REAL CONVERTERS — THEORY VS PRACTICE">
+          <Text style={dstyles.body}>
+            6.02·N + 1.76 dB is the FORMULA, not the product. Analog input noise, clock jitter and converter linearity set the
+            real limit: the industry measure is ENOB (effective number of bits), and even excellent 24-bit converters deliver
+            roughly 20–21 effective bits (~120–125 dB). A nominal 24-bit converter does NOT deliver 144 dB usable.
+          </Text>
+          <MythReality
+            myth="Higher bit depth means better frequency response — 24-bit sounds brighter and more detailed on top."
+            reality="Bit depth sets AMPLITUDE resolution and dynamic range only: more bits = a lower quantization-noise floor. Frequency response is set by sample rate. Nothing about bit depth touches treble."
+          />
+        </CollapsibleSection>
 
-      <PanelCard>
-        <SectionHead title="DITHER — THE FIX FOR CORRELATED ERROR" onHelp={() => p.help('dither')} />
-        <Text style={dstyles.body}>
-          A tiny sine reduced to 8 bits, zoomed in to the last few steps. Undithered, the rounding error locks to the signal —
-          the histogram shows discrete spikes. Adding the right noise BEFORE rounding decorrelates it: dither linearizes
-          quantization and preserves low-level behavior at the cost of a controlled noise increase.
-        </Text>
-        <View style={dstyles.chipRow}>
-          <LabChip label="NO DITHER" selected={dither === 'none'} onPress={() => setDither('none')} onLongPress={() => p.help('dither')} />
-          <LabChip label="RPDF" selected={dither === 'rpdf'} onPress={() => setDither('rpdf')} onLongPress={() => p.help('dither')} />
-          <LabChip label="TPDF" selected={dither === 'tpdf'} onPress={() => setDither('tpdf')} onLongPress={() => p.help('dither')} />
-          <LabChip label="NOISE-SHAPED" selected={dither === 'shaped'} onPress={() => setDither('shaped')} onLongPress={() => p.help('noise_shaping')} />
-        </View>
-        {viz ? <viz.DitherView width={p.width} mode={dither} /> : <VizUnavailableCard />}
-        <Badge text="REAL DITHER MATH (RPDF/TPDF/1ST-ORDER SHAPING) · SPECTRUM STRIP IS A SIMPLIFIED SHAPE, NOT AN FFT" />
-        <Text style={dstyles.caption}>
-          {dither === 'none'
-            ? 'NO DITHER: the error repeats with the signal — correlated spikes in the histogram. Audible as gritty distortion and gated fades, not hiss.'
-            : dither === 'rpdf'
-              ? 'RPDF (flat, ±½ step): decorrelates the error VALUES, but the error POWER still tracks the signal — quiet passages can breathe.'
-              : dither === 'tpdf'
-                ? 'TPDF (two uniforms summed, ±1 step): the standard. Error value AND power decorrelate — a steady, benign noise floor.'
-                : 'NOISE-SHAPED: TPDF plus first-order error feedback pushes the noise toward the top of the band, where hearing is least sensitive. Same honest trade, spent more cleverly.'}
-        </Text>
-      </PanelCard>
+        <PanelCard>
+          <SectionHead title="DITHER — THE FIX FOR CORRELATED ERROR" onHelp={() => p.help('dither')} />
+          <Text style={dstyles.body}>
+            A tiny sine reduced to 8 bits, zoomed in to the last few steps. Undithered, the rounding error locks to the signal —
+            the histogram shows discrete spikes. Adding the right noise BEFORE rounding decorrelates it: dither linearizes
+            quantization and preserves low-level behavior at the cost of a controlled noise increase.
+          </Text>
+          <View style={dstyles.chipRow}>
+            <LabChip label="NO DITHER" selected={dither === 'none'} onPress={() => setDither('none')} onLongPress={() => p.help('dither')} />
+            <LabChip label="RPDF" selected={dither === 'rpdf'} onPress={() => setDither('rpdf')} onLongPress={() => p.help('dither')} />
+            <LabChip label="TPDF" selected={dither === 'tpdf'} onPress={() => setDither('tpdf')} onLongPress={() => p.help('dither')} />
+            <LabChip label="NOISE-SHAPED" selected={dither === 'shaped'} onPress={() => setDither('shaped')} onLongPress={() => p.help('noise_shaping')} />
+          </View>
+          {viz ? <viz.DitherView width={p.width} mode={dither} /> : <VizUnavailableCard />}
+          <Badge text="REAL DITHER MATH (RPDF/TPDF/1ST-ORDER SHAPING) · SPECTRUM STRIP IS A SIMPLIFIED SHAPE, NOT AN FFT" />
+          <Text style={dstyles.caption}>
+            {dither === 'none'
+              ? 'NO DITHER: the error repeats with the signal — correlated spikes in the histogram. Audible as gritty distortion and gated fades, not hiss.'
+              : dither === 'rpdf'
+                ? 'RPDF (flat, ±½ step): decorrelates the error VALUES, but the error POWER still tracks the signal — quiet passages can breathe.'
+                : dither === 'tpdf'
+                  ? 'TPDF (two uniforms summed, ±1 step): the standard. Error value AND power decorrelate — a steady, benign noise floor.'
+                  : 'NOISE-SHAPED: TPDF plus first-order error feedback pushes the noise toward the top of the band, where hearing is least sensitive. Same honest trade, spent more cleverly.'}
+          </Text>
+        </PanelCard>
 
-      <CheckQuestion spec={CHECK_BITDEPTH} />
-      <CheckQuestion spec={CHECK_DITHER} />
-    </View>
+        <CheckQuestion spec={CHECK_BITDEPTH} />
+        <CheckQuestion spec={CHECK_DITHER} />
+        <LessonRow onPress={() => p.help()} />
+      </View>
+    </RackUnit>
   );
 }
 
@@ -315,6 +362,7 @@ export function BinaryModule(p: DigitalModuleProps) {
   const [reg, setReg] = useState(16384); // 0100 0000 0000 0000 = +0.5 FS = −6 dBFS
 
   const v = INSPECT_SAMPLES[sel];
+  const lastIdx = INSPECT_SAMPLES.length - 1;
   const flipBit = (idx: number) => {
     // idx 0 = MSB … 15 = LSB, on the unsigned pattern; back to signed after.
     const u = (reg & 0xffff) ^ (1 << (15 - idx));
@@ -326,101 +374,128 @@ export function BinaryModule(p: DigitalModuleProps) {
   }, [reg]);
   const cellW = Math.floor((p.width - 4 * 7) / 8);
 
+  const params: DockParam[] = [
+    {
+      kind: 'fader',
+      id: 'sample',
+      label: 'SAMPLE',
+      value: sel / lastIdx,
+      onChange: (t) => setSel(Math.max(0, Math.min(lastIdx, Math.round(t * lastIdx)))),
+      format: () => `sample #${sel} · ${(sel / 48).toFixed(3)} ms`,
+      formatShort: () => `#${sel}`,
+      helpKey: 'binary_sample',
+    },
+  ];
+
   return (
-    <View style={styles.stack}>
-      <PanelCard>
-        <SectionHead title="SAMPLE INSPECTOR — WHAT IS ACTUALLY STORED" onHelp={() => p.help('binary_sample')} />
+    <RackUnit
+      initialParam="sample"
+      params={params}
+      onHelp={p.help}
+      stage={{
+        size: 'M', // the 28-sample strip reads fine at medium height
+        onGuide: () => p.help('binary_sample'),
+        bezel: [
+          { k: 'SAMPLE', v: `#${sel}`, helpKey: 'binary_sample' },
+          { k: 'DECIMAL', v: fmtGroup(v), helpKey: 'binary_sample' },
+          { k: 'HEX', v: fmtHex16(v), helpKey: 'binary_sample' },
+          { k: 'LEVEL', v: fmtDb(sampleDb(v)), helpKey: 'binary_sample' },
+        ],
+        render: (w, h) =>
+          viz ? (
+            <viz.InspectStripView width={w} height={h} values={INSPECT_SAMPLES} selected={sel} onSelect={setSel} />
+          ) : (
+            <View style={{ flex: 1, justifyContent: 'center', padding: 12 }}>
+              <VizUnavailableCard />
+            </View>
+          ),
+      }}
+    >
+      <View style={styles.stack}>
         <Text style={dstyles.body}>
-          A digital recording is nothing but a list of integers. Tap or drag across this 28-sample snippet (16-bit · 48 kHz)
-          and read the SAME stored number every way at once — every row below derives from one signed 16-bit integer.
+          A digital recording is nothing but a list of integers. Ride the SAMPLE lane — or tap and
+          drag across the strip itself (16-bit · 48 kHz) — and read the SAME stored number every way
+          at once: every readout derives from one signed 16-bit integer.
         </Text>
-        {viz ? (
-          <viz.InspectStripView width={p.width} values={INSPECT_SAMPLES} selected={sel} onSelect={setSel} />
-        ) : (
-          <VizUnavailableCard />
-        )}
         <ReadoutGrid
           help={p.help}
           helpKey="binary_sample"
           items={[
-            { k: 'SAMPLE #', v: `${sel}` },
             { k: 'TIME', v: `${(sel / 48).toFixed(3)} ms` },
-            { k: 'DECIMAL', v: fmtGroup(v) },
             { k: 'BINARY', v: fmtBin16(v) },
-            { k: 'HEX', v: fmtHex16(v) },
             { k: 'NORMALIZED', v: (v / 32768).toFixed(5) },
             { k: '% OF FS', v: `${((v / 32768) * 100).toFixed(2)}%` },
-            { k: 'LEVEL', v: fmtDb(sampleDb(v)) },
           ]}
         />
-      </PanelCard>
 
-      <PanelCard>
-        <SectionHead title="SIGNED NUMBERS — TWO'S COMPLEMENT" onHelp={() => p.help('twos_complement')} />
-        <Text style={dstyles.body}>
-          Audio swings negative, so the 65,536 patterns are split around zero. The SAME 16 bits read differently depending on
-          the convention:
-        </Text>
-        <View style={styles.table}>
-          <View style={styles.tRow}>
-            <Text style={[styles.tHead, styles.tBinCol]}>BIT PATTERN</Text>
-            <Text style={[styles.tHead, styles.tNumCol]}>UNSIGNED</Text>
-            <Text style={[styles.tHead, styles.tNumCol]}>TWO'S COMP</Text>
-          </View>
-          {SIGNED_ROWS.map((r) => (
-            <View key={r.note} style={styles.tRow}>
-              <Text style={[styles.tMono, styles.tBinCol]}>{fmtBin16(r.v)}</Text>
-              <Text style={[styles.tMono, styles.tNumCol]}>{fmtGroup(r.v & 0xffff)}</Text>
-              <Text style={[styles.tMono, styles.tNumCol, r.v < 0 && styles.tNeg]}>{r.v > 0 ? `+${fmtGroup(r.v)}` : fmtGroup(r.v)}</Text>
+        <PanelCard>
+          <SectionHead title="SIGNED NUMBERS — TWO'S COMPLEMENT" onHelp={() => p.help('twos_complement')} />
+          <Text style={dstyles.body}>
+            Audio swings negative, so the 65,536 patterns are split around zero. The SAME 16 bits read differently depending on
+            the convention:
+          </Text>
+          <View style={styles.table}>
+            <View style={styles.tRow}>
+              <Text style={[styles.tHead, styles.tBinCol]}>BIT PATTERN</Text>
+              <Text style={[styles.tHead, styles.tNumCol]}>UNSIGNED</Text>
+              <Text style={[styles.tHead, styles.tNumCol]}>TWO'S COMP</Text>
             </View>
-          ))}
-        </View>
-        <Text style={dstyles.caption}>
-          Why one more negative code? Zero has exactly one pattern and it lives on the non-negative side — that leaves 32,768
-          codes below zero but only 32,767 above it. That is why full scale is −32,768…+32,767, not ±32,768.
-        </Text>
-      </PanelCard>
+            {SIGNED_ROWS.map((r) => (
+              <View key={r.note} style={styles.tRow}>
+                <Text style={[styles.tMono, styles.tBinCol]}>{fmtBin16(r.v)}</Text>
+                <Text style={[styles.tMono, styles.tNumCol]}>{fmtGroup(r.v & 0xffff)}</Text>
+                <Text style={[styles.tMono, styles.tNumCol, r.v < 0 && styles.tNeg]}>{r.v > 0 ? `+${fmtGroup(r.v)}` : fmtGroup(r.v)}</Text>
+              </View>
+            ))}
+          </View>
+          <Text style={dstyles.caption}>
+            Why one more negative code? Zero has exactly one pattern and it lives on the non-negative side — that leaves 32,768
+            codes below zero but only 32,767 above it. That is why full scale is −32,768…+32,767, not ±32,768.
+          </Text>
+        </PanelCard>
 
-      <PanelCard>
-        <SectionHead title="BIT TOGGLING — FLIP THE REGISTER YOURSELF" onHelp={() => p.help('bit_toggle')} />
-        <Text style={dstyles.body}>
-          Sixteen switches, one sample. Each bit's weight is printed under it — the MSB carries the only negative weight
-          (−32,768: the sign bit). Flip bits and watch the value, the level and the sample dot move.
-        </Text>
-        <View style={styles.byteHead}>
-          <Text style={styles.byteLabel}>MSB ← HIGH BYTE</Text>
-        </View>
-        <View style={styles.bitRow}>
-          {regBits.slice(0, 8).map((on, i) => (
-            <BitCell key={i} on={on} weight={BIT_WEIGHTS[i]} isSign={i === 0} cellW={cellW} onFlip={() => flipBit(i)} />
-          ))}
-        </View>
-        <View style={styles.bitRow}>
-          {regBits.slice(8, 16).map((on, i) => (
-            <BitCell key={i + 8} on={on} weight={BIT_WEIGHTS[i + 8]} isSign={false} cellW={cellW} onFlip={() => flipBit(i + 8)} />
-          ))}
-        </View>
-        <View style={[styles.byteHead, { alignItems: 'flex-end' }]}>
-          <Text style={styles.byteLabel}>LOW BYTE → LSB</Text>
-        </View>
-        {viz ? <viz.BitDotStrip width={p.width} value={reg} /> : null}
-        <ReadoutGrid
-          help={p.help}
-          helpKey="bit_toggle"
-          items={[
-            { k: 'DECIMAL', v: fmtGroup(reg) },
-            { k: 'HEX', v: fmtHex16(reg) },
-            { k: 'NORMALIZED', v: (reg / 32768).toFixed(5) },
-            { k: 'LEVEL', v: fmtDb(sampleDb(reg)) },
-          ]}
-        />
-        <View style={dstyles.chipRow}>
-          <LabChip label="RESET (+16,384 · −6 dBFS)" selected={false} onPress={() => setReg(16384)} />
-        </View>
-      </PanelCard>
+        <PanelCard>
+          <SectionHead title="BIT TOGGLING — FLIP THE REGISTER YOURSELF" onHelp={() => p.help('bit_toggle')} />
+          <Text style={dstyles.body}>
+            Sixteen switches, one sample. Each bit's weight is printed under it — the MSB carries the only negative weight
+            (−32,768: the sign bit). Flip bits and watch the value, the level and the sample dot move.
+          </Text>
+          <View style={styles.byteHead}>
+            <Text style={styles.byteLabel}>MSB ← HIGH BYTE</Text>
+          </View>
+          <View style={styles.bitRow}>
+            {regBits.slice(0, 8).map((on, i) => (
+              <BitCell key={i} on={on} weight={BIT_WEIGHTS[i]} isSign={i === 0} cellW={cellW} onFlip={() => flipBit(i)} />
+            ))}
+          </View>
+          <View style={styles.bitRow}>
+            {regBits.slice(8, 16).map((on, i) => (
+              <BitCell key={i + 8} on={on} weight={BIT_WEIGHTS[i + 8]} isSign={false} cellW={cellW} onFlip={() => flipBit(i + 8)} />
+            ))}
+          </View>
+          <View style={[styles.byteHead, { alignItems: 'flex-end' }]}>
+            <Text style={styles.byteLabel}>LOW BYTE → LSB</Text>
+          </View>
+          {viz ? <viz.BitDotStrip width={p.width} value={reg} /> : null}
+          <ReadoutGrid
+            help={p.help}
+            helpKey="bit_toggle"
+            items={[
+              { k: 'DECIMAL', v: fmtGroup(reg) },
+              { k: 'HEX', v: fmtHex16(reg) },
+              { k: 'NORMALIZED', v: (reg / 32768).toFixed(5) },
+              { k: 'LEVEL', v: fmtDb(sampleDb(reg)) },
+            ]}
+          />
+          <View style={dstyles.chipRow}>
+            <LabChip label="RESET (+16,384 · −6 dBFS)" selected={false} onPress={() => setReg(16384)} />
+          </View>
+        </PanelCard>
 
-      <CheckQuestion spec={CHECK_MSB} />
-    </View>
+        <CheckQuestion spec={CHECK_MSB} />
+        <LessonRow onPress={() => p.help()} />
+      </View>
+    </RackUnit>
   );
 }
 
@@ -428,6 +503,18 @@ const styles = StyleSheet.create({
   stack: { gap: 12 },
   headRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   info: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.amber, marginTop: 6 },
+
+  // Guided-lesson entry row — mirrors the host's lessonRow styling.
+  lessonRow: {
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#131316',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    marginTop: 4,
+  },
+  lessonRowText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.9, color: colors.textSecondary },
 
   // Signed-numbers table
   table: { borderRadius: 8, borderWidth: 1, borderColor: '#232329', backgroundColor: '#0f0f13', padding: 8, gap: 6 },

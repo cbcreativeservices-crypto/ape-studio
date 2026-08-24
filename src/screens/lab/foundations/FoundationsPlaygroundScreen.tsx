@@ -1,14 +1,24 @@
 /**
  * FoundationsPlaygroundScreen — the Foundations of Sound SANDBOX (owner
  * 2026-07-26: "include all controls"). Every adjustment updates every view at
- * the same time:
+ * the same time.
  *
- *   CONTROLS: frequency · amplitude · waveform (sine/square/saw/triangle) ·
- *   harmonic richness · phase · speaker polarity · noise colors · sweep rate ·
- *   stereo balance · delay · EQ low-pass + filter Q
- *   VIEWS: air particles · speaker cone · analytic waveform · analytic
- *   spectrum (EQ curve applied via the SAME RBJ math the DSP runs — lockstep)
- *   · LEVEL (dBFS · relative) · frequency / wavelength / period readouts
+ * RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23, owner-approved): this screen now
+ * renders the RackUnit frame directly (own header kept; no LabShell). The law:
+ * *reading may scroll; operating may not.*
+ *   STAGE (L) — ALL views pinned in one glass: speaker cone + air particles
+ *     side by side (the animated conceptual model), analytic waveform and
+ *     analytic spectrum beneath (EQ curve applied via the SAME RBJ math the
+ *     DSP runs — lockstep). Pre-Skia clients get the honest card in the glass
+ *     while audio still works (§1.7).
+ *   BEZEL — FREQ / λ / PERIOD readouts (source-aware) + LEVEL (dBFS ·
+ *     relative, MIDI-ramp tint).
+ *   DOCK — FREQ + LEVEL faders (FREQ pre-bound: the teaching parameter),
+ *     SOURCE group tray (wave/noise/sweep + harmonics + phase/polarity), FX
+ *     group tray (stereo balance + delay + EQ low-pass + Q), PLAY toggle key.
+ *   WELL — the honesty disclosures in full, the teaching captions, the level
+ *     bar, and the lab-review credit button. Long-press anything (bezel cells,
+ *     dock keys, tray chips) → the per-control guided lesson, as before.
  *
  * HONESTY (§1.7): particle/cone motion is the slowed CONCEPTUAL model
  * (badged); waveform/spectrum are ANALYTIC — drawn from the settings, not
@@ -16,19 +26,18 @@
  * "LEVEL (dBFS · relative)" (owner ruling — "SPL" is reserved for the real
  * mic-based meter). Phase/polarity captions state they are inaudible ALONE
  * (mono, single source) — the setup for Module 10. Stereo/delay/EQ audio
- * needs the v6 effects path; pre-Skia clients get the honest card for the
- * animated views while audio still works.
+ * needs the v6 effects path. The stage badge is the condensed one-liner; the
+ * full disclosure texts read verbatim in the well.
  *
  * AUDIO: house idiom throughout — audio-output gate, additive/sine/noise/sweep
  * through the ONE generator lifecycle, fx via fxSet with fxReset on every stop
  * path (no leakage), speaker-safety guards, keepalive, teardown on blur.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ApeDsp, FX, FX_PARAM, EQ_BAND_TYPES, GEN_MODES } from '../../../../modules/ape-dsp';
-import { GlassButton } from '../../../components/GlassButton';
 import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../../features/audio/audioOutputStore';
 import { guardAdditiveForEngine, guardNoiseLevelForEngine, guardToneLevelForEngine } from '../../../features/audio/speakerSafety';
@@ -36,10 +45,13 @@ import { eqResponseDb } from '../../../features/lab/fxViz';
 import { LabReviewButton } from '../../../features/lab/LabReviewButton';
 import { EngineGate } from '../../tools/EngineGate';
 import type { EngineState } from '../../../features/tools/engine/useDspEngine';
-import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../features/lab/guidedLessons';
+import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
+import { levelColor } from '../../../features/tools/levelColor';
 import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
-import { LabChip, ScrollLockProvider } from '../LabShell';
+import { LabChip } from '../LabShell';
+import { RackUnit } from '../rack/RackUnit';
+import type { BezelItem, DockParam } from '../rack/rackTypes';
 import { ConceptBadge, DragSlider, LevelMeterBar, VizUnavailableCard } from './bits';
 import { requireViz, type VizModule } from './skiaGate';
 import { visHzFor } from './FoundationsCourseScreen';
@@ -125,8 +137,8 @@ export function FoundationsPlaygroundScreen() {
   const fxReady = engineReady && ApeDsp.fxAvailable();
   const viz = useMemo(() => requireViz(), []);
 
-  // Per-control help (owner request 2026-07-26): long-press a chip / tap a
-  // slider's ⓘ → the two-tier "what it does" popup from the foundations lesson.
+  // Per-control help (owner request 2026-07-26): long-press a chip / key / a
+  // bezel cell → the two-tier "what it does" popup from the foundations lesson.
   const [lessonKey, setLessonKey] = useState<string | undefined>(undefined);
   const [lessonOpen, setLessonOpen] = useState(false);
   const help = useCallback((key: string) => {
@@ -278,18 +290,229 @@ export function FoundationsPlaygroundScreen() {
   const amp01 = (levelDb + 48) / 32;
   const airMode = source === 'noise' ? 'noise' : 'wave';
   const displayVisHz = source === 'sweep' ? visHzFor(900) : visHzFor(freq);
-  const [width, setWidth] = useState(0);
-  // Drag-vs-scroll (owner 2026-07-30): DragSliders lock this screen's scroll
-  // during a drag via the ScrollLockProvider below — no per-slider wiring.
-  const [scrollLocked, setScrollLocked] = useState(false);
-  // Air-window wavelength (px): wide at low pitch, tight at high pitch — only
-  // for a single-frequency wave (noise/sweep have no single λ).
-  const airLambdaPx = source === 'wave' && width > 0 ? width / (1.3 + 4.7 * freq01) : undefined;
   const gainDbAt = useMemo(() => {
     if (eqCut <= 0) return null;
     const band = [{ type: 'lowPass' as const, freq: eqCut, q: eqQ, gainDb: 0 }];
     return (f: number) => eqResponseDb(band, f);
   }, [eqCut, eqQ]);
+
+  // ── Rack declarations ──────────────────────────────────────────────────────
+  const levelCell: BezelItem = {
+    k: 'LEVEL',
+    v: `${levelDb} dBFS`,
+    tint: levelColor(lvl01),
+    helpKey: 'amplitude',
+  };
+  const bezel: BezelItem[] =
+    source === 'wave'
+      ? [
+          { k: 'FREQ', v: `${freq} Hz`, helpKey: 'readouts' },
+          { k: 'λ', v: `${(SPEED_OF_SOUND / freq).toFixed(2)} m`, helpKey: 'readouts' },
+          { k: 'PERIOD', v: `${((1 / freq) * 1000).toFixed(2)} ms`, helpKey: 'readouts' },
+          levelCell,
+        ]
+      : source === 'sweep'
+        ? [{ k: 'SWEEP', v: '100 Hz → 8 kHz', flex: 2.4, helpKey: 'sweep' }, levelCell]
+        : [{ k: 'CONTENT', v: 'BROADBAND — NO SINGLE PITCH', flex: 2.4, helpKey: 'noise' }, levelCell];
+
+  const sourceValue =
+    source === 'wave'
+      ? WAVES.find((w) => w.key === wave)!.label
+      : source === 'noise'
+        ? NOISES.find((n) => n.key === noise)!.label
+        : sweepKey === 'slow'
+          ? 'SWP·S'
+          : 'SWP·F';
+  const panOn = Math.abs(balance - 0.5) > 0.02;
+  const fxValue =
+    [panOn ? 'PAN' : null, delayMs > 0 ? 'DLY' : null, eqCut > 0 ? 'EQ' : null]
+      .filter(Boolean)
+      .join('·') || 'OFF';
+
+  const params: DockParam[] = [
+    {
+      kind: 'fader',
+      id: 'freq',
+      label: 'FREQ',
+      value: freq01,
+      onChange: setFreq01,
+      format: () => `${freq} Hz`,
+      helpKey: 'frequency',
+    },
+    {
+      kind: 'fader',
+      id: 'level',
+      label: 'LEVEL',
+      value: lvl01,
+      onChange: setLvl01,
+      format: () => `${levelDb} dBFS`,
+      formatShort: () => `${levelDb} dB`,
+      tint: levelColor(lvl01),
+      helpKey: 'amplitude',
+    },
+    {
+      kind: 'group',
+      id: 'source',
+      label: 'SOURCE',
+      valueLabel: sourceValue,
+      helpKey: 'waveform',
+      render: () => (
+        <View style={{ gap: 10 }}>
+          <Text style={styles.sectionHead}>WAVE</Text>
+          <View style={styles.chipRow}>
+            {WAVES.map((wv) => (
+              <LabChip
+                key={wv.key}
+                label={wv.label}
+                selected={source === 'wave' && wave === wv.key}
+                onPress={() => {
+                  setSource('wave');
+                  setWave(wv.key);
+                }}
+                onLongPress={() => help('waveform')}
+              />
+            ))}
+          </View>
+          <Text style={styles.sectionHead}>NOISE · SWEEP</Text>
+          <View style={styles.chipRow}>
+            {NOISES.map((nz) => (
+              <LabChip
+                key={nz.key}
+                label={`${nz.label} NOISE`}
+                selected={source === 'noise' && noise === nz.key}
+                onPress={() => {
+                  setSource('noise');
+                  setNoise(nz.key);
+                }}
+                onLongPress={() => help('noise')}
+              />
+            ))}
+            {SWEEPS.map((sw) => (
+              <LabChip
+                key={sw.key}
+                label={sw.label}
+                selected={source === 'sweep' && sweepKey === sw.key}
+                onPress={() => {
+                  setSource('sweep');
+                  setSweepKey(sw.key);
+                }}
+                onLongPress={() => help('sweep')}
+              />
+            ))}
+          </View>
+          {source === 'wave' ? (
+            <>
+              <Text style={styles.sectionHead}>HARMONIC RICHNESS</Text>
+              <View style={styles.chipRow}>
+                {RICHNESS.map((r) => (
+                  <LabChip
+                    key={r.key}
+                    label={r.label}
+                    selected={keep === r.key}
+                    onPress={() => setKeep(r.key)}
+                    onLongPress={() => help('harmonics')}
+                  />
+                ))}
+              </View>
+              <Text style={styles.sectionHead}>PHASE · POLARITY</Text>
+              <View style={styles.chipRow}>
+                {PHASES.map((p) => (
+                  <LabChip
+                    key={p}
+                    label={`PHASE ${p}°`}
+                    selected={phase === p}
+                    onPress={() => setPhase(p)}
+                    onLongPress={() => help('phase')}
+                  />
+                ))}
+                <LabChip
+                  label={inverted ? 'POLARITY −' : 'POLARITY +'}
+                  selected={inverted}
+                  onPress={() => setInverted((v) => !v)}
+                  onLongPress={() => help('polarity')}
+                />
+              </View>
+            </>
+          ) : null}
+        </View>
+      ),
+    },
+    {
+      kind: 'group',
+      id: 'fx',
+      label: 'FX',
+      valueLabel: fxValue,
+      helpKey: 'eq',
+      render: () => (
+        <View style={{ gap: 10 }}>
+          <DragSlider
+            value={balance}
+            onChange={setBalance}
+            label="STEREO BALANCE"
+            readout={
+              balance < 0.48
+                ? `L ${Math.round((0.5 - balance) * 200)}%`
+                : balance > 0.52
+                  ? `R ${Math.round((balance - 0.5) * 200)}%`
+                  : 'CENTER'
+            }
+            onHelp={() => help('stereo_balance')}
+          />
+          <Text style={styles.sectionHead}>DELAY</Text>
+          <View style={styles.chipRow}>
+            {DELAYS.map((d) => (
+              <LabChip
+                key={d.key}
+                label={d.label}
+                selected={delayMs === d.key}
+                onPress={() => setDelayMs(d.key)}
+                onLongPress={() => help('delay')}
+              />
+            ))}
+          </View>
+          <Text style={styles.sectionHead}>EQ LOW-PASS</Text>
+          <View style={styles.chipRow}>
+            {EQ_CUTS.map((c) => (
+              <LabChip
+                key={c.key}
+                label={c.label}
+                selected={eqCut === c.key}
+                onPress={() => setEqCut(c.key)}
+                onLongPress={() => help('eq')}
+              />
+            ))}
+            {eqCut > 0
+              ? QS.map((q) => (
+                  <LabChip
+                    key={q.key}
+                    label={q.label}
+                    selected={eqQ === q.key}
+                    onPress={() => setEqQ(q.key)}
+                    onLongPress={() => help('filter_q')}
+                  />
+                ))
+              : null}
+          </View>
+          {!fxReady && engineReady ? (
+            <Text style={styles.caption}>
+              Balance / delay / EQ audio need the v6+ effects build — the drawings still respond.
+            </Text>
+          ) : null}
+        </View>
+      ),
+    },
+    ...(engineReady
+      ? [
+          {
+            kind: 'toggle',
+            id: 'play',
+            label: playing ? 'STOP' : 'PLAY',
+            value: playing,
+            onToggle: () => (playing ? stop() : void start()),
+          } satisfies DockParam,
+        ]
+      : []),
+  ];
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -304,107 +527,54 @@ export function FoundationsPlaygroundScreen() {
         <AccuracyNote compact />
       </View>
 
-      <ScrollLockProvider value={setScrollLocked}>
-      <ScrollView contentContainerStyle={styles.scroll} scrollEnabled={!scrollLocked}>
-        {!engineReady ? <EngineGate state={gate} /> : null}
-
-        {/* LEVEL (dBFS · relative) — ABOVE the displays (owner 2026-08-05). */}
-        <Pressable onLongPress={() => help('amplitude')} delayLongPress={260}>
-          <LevelMeterBar levelDb={levelDb} minDb={-48} maxDb={-16} />
-        </Pressable>
-
-        {/* ── THE VIEWS at the TOP — all driven by the same settings ─────── */}
-        <View
-          style={styles.panelCard}
-          onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 24)}
-        >
-          {width > 0 ? (
+      <RackUnit
+        initialParam="freq"
+        params={params}
+        onHelp={(k) => {
+          if (k) help(k);
+        }}
+        stage={{
+          size: 'L', // the whole playground of views — earns the tall glass
+          badge: 'CONCEPTUAL MODEL — SLOWED · WAVEFORM/SPECTRUM ANALYTIC, NOT MEASURED',
+          onGuide: () => help('waveform'),
+          bezel,
+          render: (w, h) =>
             viz ? (
-              <PlaygroundViz
+              <StageViz
                 viz={viz}
-                width={width}
+                w={w}
+                h={h}
                 visHz={displayVisHz}
                 amp={0.25 + amp01 * 0.75}
                 airMode={airMode}
                 running={playing}
-                lambdaPx={airLambdaPx}
+                source={source}
+                freq01={freq01}
+                freq={freq}
+                amps={amps}
+                phases={phases}
+                level={0.35 + amp01 * 0.65}
+                noiseKind={source === 'noise' ? noise : null}
+                gainDbAt={gainDbAt}
               />
             ) : (
-              <VizUnavailableCard />
-            )
-          ) : null}
-          <ConceptBadge />
-          <DisplayGuideButton onPress={() => help('waveform')} />
-          {width > 0 && viz ? (
-            source === 'sweep' ? (
-              <Text style={styles.caption}>
-                Sweep is a moving tone — the waveform and spectrum drawings pause (a fixed frame
-                would misrepresent a signal that never holds still). Watch the air motion and the
-                level instead.
-              </Text>
-            ) : (
-              <>
-                <Text style={styles.winLabel}>WAVEFORM — pressure vs time (one “window” of the signal)</Text>
-                <viz.AnalyticWaveformView
-                  width={width}
-                  amps={amps}
-                  phasesDeg={phases}
-                  level={0.35 + amp01 * 0.65}
-                  noise={source === 'noise' ? noise : null}
-                />
-                <Text style={styles.winLabel}>
-                  SPECTRUM — which frequencies, how strong{eqCut > 0 ? ' (EQ curve applied)' : ''}{' '}
-                  · {source === 'noise' ? 'log axis 40 Hz–16 kHz' : `linear axis to ${13 * freq} Hz`}
-                </Text>
-                <viz.AnalyticSpectrumView
-                  width={width}
-                  f0={freq}
-                  amps={amps}
-                  gainDbAt={gainDbAt}
-                  noise={source === 'noise' ? noise : null}
-                />
-                <Text style={styles.badge}>
-                  ANALYTIC — DRAWN FROM THE SETTINGS, NOT A MEASUREMENT (the measurement tools do
-                  the real thing)
-                </Text>
-              </>
-            )
-          ) : null}
-          <Pressable style={styles.readoutRow} onLongPress={() => help('readouts')} delayLongPress={260}>
-            {source === 'wave' ? (
-              <>
-                <Readout label="FREQUENCY" value={`${freq} Hz`} />
-                <Readout label="WAVELENGTH" value={`${(SPEED_OF_SOUND / freq).toFixed(2)} m`} />
-                <Readout label="PERIOD" value={`${((1 / freq) * 1000).toFixed(2)} ms`} />
-              </>
-            ) : source === 'sweep' ? (
-              <Readout label="SWEEP" value="100 Hz → 8 kHz" />
-            ) : (
-              <Readout label="CONTENT" value="broadband — no single pitch" />
-            )}
-          </Pressable>
-        </View>
+              <View style={styles.unavailWrap}>
+                <VizUnavailableCard />
+              </View>
+            ),
+        }}
+      >
+        {!engineReady ? <EngineGate state={gate} /> : null}
 
-        {/* ── SIGNAL CONTROLS ────────────────────────────────────────────── */}
+        {/* LEVEL (dBFS · relative) — the commanded output level, never "SPL". */}
+        <Pressable onLongPress={() => help('amplitude')} delayLongPress={260}>
+          <LevelMeterBar levelDb={levelDb} minDb={-48} maxDb={-16} />
+        </Pressable>
+        {genError ? <Text style={styles.error}>{genError}</Text> : null}
+
+        {/* Source-aware teaching captions (reading — they may scroll). */}
         {source === 'wave' ? (
           <>
-            <DragSlider value={freq01} onChange={setFreq01} label="FREQUENCY" readout={`${freq} Hz`} onHelp={() => help('frequency')} />
-            <View style={styles.chipRow}>
-              {RICHNESS.map((r) => (
-                <LabChip key={r.key} label={r.label} selected={keep === r.key} onPress={() => setKeep(r.key)} onLongPress={() => help('harmonics')} />
-              ))}
-            </View>
-            <View style={styles.chipRow}>
-              {PHASES.map((p) => (
-                <LabChip key={p} label={`PHASE ${p}°`} selected={phase === p} onPress={() => setPhase(p)} onLongPress={() => help('phase')} />
-              ))}
-              <LabChip
-                label={inverted ? 'POLARITY −' : 'POLARITY +'}
-                selected={inverted}
-                onPress={() => setInverted((v) => !v)}
-                onLongPress={() => help('polarity')}
-              />
-            </View>
             <Text style={styles.caption}>
               Phase shifts and polarity flips change the DRAWING but are inaudible on a single
               mono source — hold that thought for Module 10, where two copies collide.
@@ -417,7 +587,11 @@ export function FoundationsPlaygroundScreen() {
             ) : null}
           </>
         ) : source === 'sweep' ? (
-          <Text style={styles.caption}>Sweeping 100 Hz → 8 kHz, repeating — listen to the pitch climb.</Text>
+          <Text style={styles.caption}>
+            Sweeping 100 Hz → 8 kHz, repeating — listen to the pitch climb. The waveform and
+            spectrum drawings pause (a fixed frame would misrepresent a signal that never holds
+            still); watch the air motion and the level instead.
+          </Text>
         ) : (
           <Text style={styles.caption}>
             Noise is BROADBAND — every frequency at once, so there is no single pitch and the
@@ -425,101 +599,23 @@ export function FoundationsPlaygroundScreen() {
             brown −6 dB/oct.
           </Text>
         )}
+        <Text style={styles.caption}>
+          AIR — spacing tightens as pitch rises (that spacing IS wavelength). WAVEFORM — pressure
+          vs time, one “window” of the signal. SPECTRUM — which frequencies, how strong
+          {eqCut > 0 ? ' (EQ curve applied)' : ''}.
+        </Text>
 
-        <DragSlider value={lvl01} onChange={setLvl01} label="AMPLITUDE (LEVEL)" readout={`${levelDb} dBFS`} onHelp={() => help('amplitude')} levelTint />
-
-        {/* ── PROCESSING (v6 effects path) ───────────────────────────────── */}
-        <Text style={styles.sectionHead}>PROCESSING</Text>
-        <DragSlider
-          value={balance}
-          onChange={setBalance}
-          label="STEREO BALANCE"
-          readout={balance < 0.48 ? `L ${Math.round((0.5 - balance) * 200)}%` : balance > 0.52 ? `R ${Math.round((balance - 0.5) * 200)}%` : 'CENTER'}
-          onHelp={() => help('stereo_balance')}
-        />
-        <View style={styles.chipRow}>
-          {DELAYS.map((d) => (
-            <LabChip key={d.key} label={d.label} selected={delayMs === d.key} onPress={() => setDelayMs(d.key)} onLongPress={() => help('delay')} />
-          ))}
-        </View>
-        <View style={styles.chipRow}>
-          {EQ_CUTS.map((c) => (
-            <LabChip key={c.key} label={c.label} selected={eqCut === c.key} onPress={() => setEqCut(c.key)} onLongPress={() => help('eq')} />
-          ))}
-          {eqCut > 0
-            ? QS.map((q) => (
-                <LabChip key={q.key} label={q.label} selected={eqQ === q.key} onPress={() => setEqQ(q.key)} onLongPress={() => help('filter_q')} />
-              ))
-            : null}
-        </View>
-        {!fxReady && engineReady ? (
-          <Text style={styles.caption}>
-            Balance / delay / EQ audio need the v6+ effects build — the drawings below still
-            respond.
-          </Text>
-        ) : null}
-
-        {/* ── SOURCE — below the other controls, above PLAY (owner 2026-08-05). */}
-        <Text style={styles.sectionHead}>SOURCE</Text>
-        <View style={styles.chipRow}>
-          {WAVES.map((wv) => (
-            <LabChip
-              key={wv.key}
-              label={wv.label}
-              selected={source === 'wave' && wave === wv.key}
-              onPress={() => {
-                setSource('wave');
-                setWave(wv.key);
-              }}
-              onLongPress={() => help('waveform')}
-            />
-          ))}
-        </View>
-        <View style={styles.chipRow}>
-          {NOISES.map((nz) => (
-            <LabChip
-              key={nz.key}
-              label={`${nz.label} NOISE`}
-              selected={source === 'noise' && noise === nz.key}
-              onPress={() => {
-                setSource('noise');
-                setNoise(nz.key);
-              }}
-              onLongPress={() => help('noise')}
-            />
-          ))}
-          {SWEEPS.map((sw) => (
-            <LabChip
-              key={sw.key}
-              label={sw.label}
-              selected={source === 'sweep' && sweepKey === sw.key}
-              onPress={() => {
-                setSource('sweep');
-                setSweepKey(sw.key);
-              }}
-              onLongPress={() => help('sweep')}
-            />
-          ))}
-        </View>
-
-        {/* ── PLAY ───────────────────────────────────────────────────────── */}
-        {engineReady ? (
-          <>
-            <GlassButton
-              label={playing ? 'STOP' : 'PLAY'}
-              tint="green"
-              height={52}
-              fontSize={15}
-              onPress={() => (playing ? stop() : void start())}
-            />
-            {genError ? <Text style={styles.error}>{genError}</Text> : null}
-          </>
-        ) : null}
+        {/* Full honesty disclosures, verbatim (the stage badge is the condensed
+            one-liner — these are the complete texts). */}
+        <ConceptBadge />
+        <Text style={styles.badge}>
+          ANALYTIC — DRAWN FROM THE SETTINGS, NOT A MEASUREMENT (the measurement tools do the
+          real thing)
+        </Text>
 
         {/* R6c: sandbox — no modules/challenge; explicit review records credit. */}
         <LabReviewButton labKey="af_sound_playground" />
-      </ScrollView>
-      </ScrollLockProvider>
+      </RackUnit>
 
       <GuidedLessonSheet
         visible={lessonOpen}
@@ -531,41 +627,87 @@ export function FoundationsPlaygroundScreen() {
   );
 }
 
-function PlaygroundViz({
+/** The pinned stage: speaker + air side by side (one shared clock — phase-
+ *  locked), analytic waveform + spectrum beneath. Height-parametric: every
+ *  pane is sized from the glass height the rack grants. */
+function StageViz({
   viz,
-  width,
+  w,
+  h,
   visHz,
   amp,
   airMode,
   running,
-  lambdaPx,
+  source,
+  freq01,
+  freq,
+  amps,
+  phases,
+  level,
+  noiseKind,
+  gainDbAt,
 }: {
   viz: VizModule;
-  width: number;
+  w: number;
+  h: number;
   visHz: number;
   amp: number;
   airMode: 'wave' | 'noise';
   running: boolean;
-  /** Spatial wavelength (px) for the air window — tightens with pitch so the
-   *  spacing matches the WAVELENGTH readout. Undefined for noise (no λ). */
-  lambdaPx?: number;
+  source: SourceKind;
+  freq01: number;
+  freq: number;
+  amps: number[];
+  phases: number[];
+  level: number;
+  noiseKind: NoiseKind | null;
+  gainDbAt: ((f: number) => number) | null;
 }) {
   const clock = viz.useVizClock(running);
-  return (
-    <View style={{ gap: 4 }}>
-      <Text style={styles.winLabel}>SPEAKER</Text>
-      <viz.SpeakerConeView clock={clock} width={width} visHz={visHz} amp={amp} mode={airMode} />
-      <Text style={styles.winLabel}>AIR — spacing tightens as pitch rises (that spacing IS wavelength)</Text>
-      <viz.AirParticlesView clock={clock} width={width} visHz={visHz} amp={amp} mode={airMode} lambdaPx={lambdaPx} />
-    </View>
-  );
-}
+  const GAP = 3;
+  const LABEL_H = 12;
+  const rowH = Math.max(56, Math.round(h * 0.4));
+  const paneH = Math.max(30, Math.floor((h - rowH - 2 * (LABEL_H + GAP)) / 2));
+  const spkW = Math.min(110, Math.max(84, Math.round(w * 0.32)));
+  const airW = Math.max(60, w - spkW - GAP);
+  // Air-window wavelength (px): wide at low pitch, tight at high pitch — only
+  // for a single-frequency wave (noise/sweep have no single λ).
+  const airLambdaPx = source === 'wave' ? airW / (1.3 + 4.7 * freq01) : undefined;
 
-function Readout({ label, value }: { label: string; value: string }) {
   return (
-    <View style={{ gap: 1 }}>
-      <Text style={styles.readoutLabel}>{label}</Text>
-      <Text style={styles.readoutValue}>{value}</Text>
+    <View style={{ width: w, height: h }}>
+      <View style={{ flexDirection: 'row', gap: GAP }}>
+        <viz.SpeakerConeView clock={clock} width={spkW} height={rowH} visHz={visHz} amp={amp} mode={airMode} />
+        <viz.AirParticlesView
+          clock={clock}
+          width={airW}
+          height={rowH}
+          visHz={visHz}
+          amp={amp}
+          mode={airMode}
+          lambdaPx={airLambdaPx}
+        />
+      </View>
+      {source === 'sweep' ? (
+        <View style={[styles.sweepPause, { height: h - rowH }]}>
+          <Text style={styles.sweepPauseText}>
+            SWEEP — a moving tone: the waveform and spectrum drawings pause. Watch the air motion
+            and the level.
+          </Text>
+        </View>
+      ) : (
+        <>
+          <Text style={[styles.stageLabel, { height: LABEL_H, marginTop: GAP }]} numberOfLines={1}>
+            WAVEFORM — PRESSURE VS TIME
+          </Text>
+          <viz.AnalyticWaveformView width={w} height={paneH} amps={amps} phasesDeg={phases} level={level} noise={noiseKind} />
+          <Text style={[styles.stageLabel, { height: LABEL_H, marginTop: GAP }]} numberOfLines={1}>
+            SPECTRUM — {noiseKind ? 'LOG 40 Hz–16 kHz' : `LINEAR TO ${13 * freq} Hz`}
+            {gainDbAt ? ' · EQ APPLIED' : ''}
+          </Text>
+          <viz.AnalyticSpectrumView width={w} height={paneH} f0={freq} amps={amps} gainDbAt={gainDbAt} noise={noiseKind} />
+        </>
+      )}
     </View>
   );
 }
@@ -576,22 +718,26 @@ const styles = StyleSheet.create({
   back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1.4, color: colors.textPrimary },
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
-  scroll: { padding: 16, paddingBottom: 30, gap: 12 },
   sectionHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.5, color: colors.amber },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSecondary },
   error: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: '#ff6b5e' },
-  panelCard: {
-    gap: 10,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#131316',
-    padding: 12,
-  },
-  winLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.1, color: colors.textSecondary },
   badge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1, lineHeight: 13, color: colors.textSub },
-  readoutRow: { flexDirection: 'row', gap: 22, flexWrap: 'wrap' },
-  readoutLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.1, color: colors.textSub },
-  readoutValue: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 0.4, color: colors.amber },
+  // Stage chrome
+  stageLabel: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 8.5,
+    letterSpacing: 1,
+    color: '#9a9ca8',
+    paddingHorizontal: 4,
+  },
+  sweepPause: { justifyContent: 'center', paddingHorizontal: 16 },
+  sweepPauseText: {
+    fontFamily: fonts.barlowRegular,
+    fontSize: 12.5,
+    lineHeight: 17,
+    color: colors.textSub,
+    textAlign: 'center',
+  },
+  unavailWrap: { flex: 1, justifyContent: 'center', padding: 10 },
 });

@@ -18,6 +18,20 @@ import { GAIN_MODULES, type GainModuleComponentProps, type GainModuleId } from '
 import { FaderVsGainModule, FollowModule, InputGainModule, IntroModule, LowHighModule } from './modules/modLearn';
 import { FreePlayModule, MultiStageModule, TroubleshootModule } from './modules/modExplore';
 
+/** Rack-mode modules (APE_LAB_UX_PROPOSAL 2026-08-23) render the RackUnit
+ *  frame THEMSELVES — pinned stage + dock with their own scroll well — so the
+ *  host gives them the full height and no ScrollView. */
+const RACK_MODULES = new Set<GainModuleId>([
+  'intro',
+  'input',
+  'follow',
+  'lowhigh',
+  'fadervsgain',
+  'multistage',
+  'freeplay',
+  'troubleshoot',
+]);
+
 const COMPONENTS: Record<GainModuleId, (p: GainModuleComponentProps) => React.JSX.Element> = {
   intro: IntroModule,
   input: InputGainModule,
@@ -82,17 +96,25 @@ export function GainModuleScreen() {
       </View>
       <GlossaryLinkProvider>
         <ScrollLockProvider value={setScrollLocked}>
-          <ScrollView
-            contentContainerStyle={styles.scroll}
-            keyboardShouldPersistTaps="handled"
-            scrollEnabled={overflows && !scrollLocked}
-            onLayout={(e) => setViewportH(Math.round(e.nativeEvent.layout.height))}
-            onContentSizeChange={(_w, h) => setContentH(Math.round(h))}
-          >
-            <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
+          {RACK_MODULES.has(meta.id) ? (
+            // Rack module: full height — the module's RackUnit pins stage +
+            // dock and owns the scroll well.
+            <View style={styles.rackFill} onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
               {width > 0 ? <Comp width={width} focused={focused} /> : null}
             </View>
-          </ScrollView>
+          ) : (
+            <ScrollView
+              contentContainerStyle={styles.scroll}
+              keyboardShouldPersistTaps="handled"
+              scrollEnabled={overflows && !scrollLocked}
+              onLayout={(e) => setViewportH(Math.round(e.nativeEvent.layout.height))}
+              onContentSizeChange={(_w, h) => setContentH(Math.round(h))}
+            >
+              <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
+                {width > 0 ? <Comp width={width} focused={focused} /> : null}
+              </View>
+            </ScrollView>
+          )}
         </ScrollLockProvider>
       </GlossaryLinkProvider>
     </View>
@@ -110,4 +132,5 @@ const styles = StyleSheet.create({
   navBtnDisabled: { color: '#45454d' },
   navPos: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, color: colors.textSub },
   scroll: { padding: 16, paddingBottom: 30, gap: 12 },
+  rackFill: { flex: 1 },
 });

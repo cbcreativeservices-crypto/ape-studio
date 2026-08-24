@@ -3,6 +3,14 @@
  * (owner spec 2026-07-29): Phase Meter · Stereo Image · Oscilloscope ·
  * Signal Detective (the graduation exercise).
  *
+ * RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23): each module renders the RackUnit
+ * frame ITSELF (MeterModuleScreen gives rack modules the full height, no host
+ * ScrollView). The display PINS on the stage with the standing honesty line as
+ * its badge; the live numbers (correlation, mono fold, M/S split, case/score)
+ * read on the bezel; continuous params ride the dock lane; settings live in
+ * sticky trays. Only prose, mistakes and CheckQuestions scroll — each well
+ * carries its own guided-lesson entry row at the bottom.
+ *
  * NO Skia in this file: renderers load solely through skiaGate
  * (requireVizMeters / requireVizSpectral); pre-Skia clients render
  * VizUnavailableCard (§1.7) while every number that pure math can supply
@@ -17,8 +25,10 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { DisplayGuideButton } from '../../../../features/lab/guidedLessons';
 import { markLabUnit, PASS_UNIT } from '../../../../features/lab/labCompletion';
 import { LabChip, CollapsibleSection } from '../../LabShell';
-import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
-import { Badge, MythReality, PanelCard, ReadoutGrid, dstyles } from '../../digital/bits';
+import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
+import { MythReality, dstyles } from '../../digital/bits';
+import { RackUnit } from '../../rack/RackUnit';
+import type { BezelItem, DockParam } from '../../rack/rackTypes';
 import {
   requireVizMeters,
   requireVizSpectral,
@@ -34,6 +44,24 @@ import {
   type WaterfallOpts,
 } from '../meterEngine';
 import type { MeterModuleProps } from '../MeterModuleScreen';
+
+/** The standing honesty badge (§1.7), silk-screened under every stage. */
+const HONESTY = 'SYNTHESIZED TEACHING SIGNAL — NOTHING HERE MEASURES REAL AUDIO';
+
+/** The well's guided-lesson entry row (rack modules own it — the host's bottom
+ *  row only exists on non-rack modules; styling mirrors MeterModuleScreen). */
+function LessonRow({ onPress }: { onPress: () => void }) {
+  return (
+    <Pressable
+      style={styles.lessonRow}
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel="Open the guided lesson"
+    >
+      <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
+    </Pressable>
+  );
+}
 
 // ═════════════════════════════════════════════════════════════════════════════
 // MODULE 8 — PHASE METER (correlation + goniometer)
@@ -107,18 +135,20 @@ const CHECK_PHASE_HEALTHY: CheckSpec = {
 function PhaseHero({
   vm,
   width,
+  height,
   focused,
   width01,
   phaseDeg,
 }: {
   vm: VizMetersModule;
   width: number;
+  height?: number;
   focused: boolean;
   width01: number;
   phaseDeg: number;
 }) {
   const phase = vm.usePhaseClock(focused, 0.8);
-  return <vm.PhaseMeterView width={width} width01={width01} phaseDeg={phaseDeg} phase={phase} />;
+  return <vm.PhaseMeterView width={width} height={height} width01={width01} phaseDeg={phaseDeg} phase={phase} />;
 }
 
 export function PhaseModule(p: MeterModuleProps) {
@@ -140,59 +170,78 @@ export function PhaseModule(p: MeterModuleProps) {
 
   const zoneColor = PHASE_ZONES[phaseZoneIdx(corr)].color;
 
+  // PHASE is the teaching parameter (the MythReality drag): riding it toward
+  // 180° is the cause; the correlation dive + mono-fold debt is the effect.
+  const params: DockParam[] = [
+    {
+      kind: 'fader',
+      id: 'phase',
+      label: 'PHASE',
+      value: phaseV,
+      onChange: setPhaseV,
+      format: () => `${phaseDeg}° (R vs L)`,
+      formatShort: () => `${phaseDeg}°`,
+      helpKey: 'phase_meter',
+    },
+    {
+      kind: 'fader',
+      id: 'width',
+      label: 'WIDTH',
+      value: widthV,
+      onChange: setWidthV,
+      format: () => `${Math.round(widthV * 100)} %`,
+      formatShort: () => `${Math.round(widthV * 100)}%`,
+      helpKey: 'stereo_width',
+    },
+  ];
+
+  const bezel: BezelItem[] = [
+    { k: 'CORR', v: `${corr >= 0 ? '+' : ''}${corr.toFixed(2)}`, tint: zoneColor, helpKey: 'phase_meter' },
+    { k: 'WIDTH', v: `${Math.round(widthV * 100)} %`, helpKey: 'stereo_width' },
+    { k: 'PHASE', v: `${phaseDeg}°`, helpKey: 'phase_meter' },
+    { k: 'MONO FOLD', v: `${foldDb >= 0 ? '+' : ''}${foldDb.toFixed(1)} dB`, tint: zoneColor, helpKey: 'phase_meter', flex: 1.15 },
+  ];
+
   return (
-    <View style={{ gap: 12 }}>
-      <PanelCard>
-        {vm ? (
-          <PhaseHero vm={vm} width={p.width} focused={p.focused} width01={widthV} phaseDeg={phaseDeg} />
-        ) : (
-          <VizUnavailableCard />
-        )}
-        <DisplayGuideButton onPress={() => p.help('phase_meter')} />
-        <DragSlider
-          value={widthV}
-          onChange={setWidthV}
-          label="WIDTH"
-          readout={`${Math.round(widthV * 100)} %`}
-          onHelp={() => p.help('stereo_width')}
-        />
-        <DragSlider
-          value={phaseV}
-          onChange={setPhaseV}
-          label="PHASE (R vs L)"
-          readout={`${phaseDeg}°`}
-          onHelp={() => p.help('phase_meter')}
-        />
-        <ReadoutGrid
-          help={p.help}
-          helpKey="phase_meter"
-          items={[
-            { k: 'CORRELATION', v: `${corr >= 0 ? '+' : ''}${corr.toFixed(2)}` },
-            { k: 'WIDTH', v: `${Math.round(widthV * 100)} %` },
-            { k: 'PHASE', v: `${phaseDeg}°` },
-            { k: 'MONO FOLD', v: `${foldDb >= 0 ? '+' : ''}${foldDb.toFixed(1)} dB` },
-          ]}
-        />
+    <RackUnit
+      initialParam="phase"
+      params={params}
+      onHelp={p.help}
+      stage={{
+        size: 'L',
+        badge: HONESTY,
+        onGuide: () => p.help('phase_meter'),
+        bezel,
+        render: (w, h) =>
+          vm ? (
+            <PhaseHero vm={vm} width={w} height={h} focused={p.focused} width01={widthV} phaseDeg={phaseDeg} />
+          ) : (
+            <VizUnavailableCard />
+          ),
+      }}
+    >
+      <View style={styles.well}>
         <ZoneCaptions corr={corr} />
         <Text style={[styles.verdict, { color: zoneColor }]}>{monoVerdict(corr, foldDb)}</Text>
-      </PanelCard>
 
-      <CollapsibleSection title="THE DOT CLOUD (GONIOMETER)">
-        <Text style={dstyles.body}>
-          The picture attached to the number: every instant of the stereo signal lands as one dot. A
-          vertical line is mono, a fat ball is wide, and a HORIZONTAL line is pure anti-phase — the
-          shape the correlation meter summarizes as −1. A lean to one side means channel imbalance.
-        </Text>
-        <DisplayGuideButton onPress={() => p.help('goniometer')} />
-      </CollapsibleSection>
+        <CollapsibleSection title="THE DOT CLOUD (GONIOMETER)">
+          <Text style={dstyles.body}>
+            The picture attached to the number: every instant of the stereo signal lands as one dot. A
+            vertical line is mono, a fat ball is wide, and a HORIZONTAL line is pure anti-phase — the
+            shape the correlation meter summarizes as −1. A lean to one side means channel imbalance.
+          </Text>
+          <DisplayGuideButton onPress={() => p.help('goniometer')} />
+        </CollapsibleSection>
 
-      <MythReality
-        myth="Out-of-phase tricks just make a mix sound wider — the width is free."
-        reality="The width is borrowed against mono compatibility. Drag PHASE toward 180° and watch: the image gets huge while the correlation dives to −1 — then read the MONO FOLD number. Any mono playback (club PA, phone, smart speaker) collects that debt."
-      />
-      <CheckQuestion spec={CHECK_PHASE_PA} />
-      <CheckQuestion spec={CHECK_PHASE_HEALTHY} />
-    </View>
+        <MythReality
+          myth="Out-of-phase tricks just make a mix sound wider — the width is free."
+          reality="The width is borrowed against mono compatibility. Drag PHASE toward 180° and watch: the image gets huge while the correlation dives to −1 — then read the MONO FOLD number. Any mono playback (club PA, phone, smart speaker) collects that debt."
+        />
+        <CheckQuestion spec={CHECK_PHASE_PA} />
+        <CheckQuestion spec={CHECK_PHASE_HEALTHY} />
+        <LessonRow onPress={() => p.help()} />
+      </View>
+    </RackUnit>
   );
 }
 
@@ -263,16 +312,18 @@ const CHECK_MS: CheckSpec = {
 function StereoHero({
   vm,
   width,
+  height,
   focused,
   preset,
 }: {
   vm: VizMetersModule;
   width: number;
+  height?: number;
   focused: boolean;
   preset: StereoPreset;
 }) {
   const phase = vm.usePhaseClock(focused, 0.7);
-  return <vm.StereoImageView width={width} preset={preset} phase={phase} />;
+  return <vm.StereoImageView width={width} height={height} preset={preset} phase={phase} />;
 }
 
 export function StereoModule(p: MeterModuleProps) {
@@ -280,67 +331,81 @@ export function StereoModule(p: MeterModuleProps) {
   const [preset, setPreset] = useState<StereoPreset>('mono');
   const cur = STEREO_PRESETS.find((s) => s.key === preset) ?? STEREO_PRESETS[0];
 
+  // No continuous parameter in this module — the teaching collection is the
+  // PRESET tray (sticky: A/B presets while the image reacts on the glass).
+  const params: DockParam[] = [
+    {
+      kind: 'options',
+      id: 'preset',
+      label: 'PRESET',
+      valueLabel: cur.label,
+      selectedId: preset,
+      onSelect: (id) => setPreset(id as StereoPreset),
+      sticky: true,
+      helpKey: 'stereo_width',
+      options: STEREO_PRESETS.map((s) => ({ id: s.key, label: s.label })),
+    },
+  ];
+
+  const bezel: BezelItem[] = [
+    { k: 'PRESET', v: cur.label, helpKey: 'stereo_width' },
+    { k: 'MID (SHARED)', v: cur.mid, helpKey: 'stereo_width', flex: 1.15 },
+    { k: 'SIDE (DIFF)', v: cur.side, helpKey: 'stereo_width', flex: 1.15 },
+  ];
+
   return (
-    <View style={{ gap: 12 }}>
-      <PanelCard>
-        {vm ? (
-          <StereoHero vm={vm} width={p.width} focused={p.focused} preset={preset} />
-        ) : (
-          <VizUnavailableCard />
-        )}
-        <DisplayGuideButton onPress={() => p.help('stereo_width')} />
-        <View style={dstyles.chipRow}>
-          {STEREO_PRESETS.map((s) => (
-            <LabChip
-              key={s.key}
-              label={s.label}
-              selected={preset === s.key}
-              onPress={() => setPreset(s.key)}
-              onLongPress={() => p.help('stereo_width')}
-            />
-          ))}
-        </View>
+    <RackUnit
+      initialParam="preset"
+      params={params}
+      onHelp={p.help}
+      stage={{
+        size: 'L',
+        badge: HONESTY,
+        onGuide: () => p.help('stereo_width'),
+        bezel,
+        render: (w, h) =>
+          vm ? (
+            <StereoHero vm={vm} width={w} height={h} focused={p.focused} preset={preset} />
+          ) : (
+            <VizUnavailableCard />
+          ),
+      }}
+    >
+      <View style={styles.well}>
         <Text style={dstyles.caption}>{cur.caption}</Text>
-        <ReadoutGrid
-          help={p.help}
-          helpKey="stereo_width"
-          items={[
-            { k: 'MID (SHARED)', v: cur.mid },
-            { k: 'SIDE (DIFFERENCE)', v: cur.side },
-          ]}
+
+        <CollapsibleSection title="MID = SHARED · SIDE = DIFFERENCE">
+          <Text style={dstyles.body}>
+            A stereo signal is two channels: LEFT and RIGHT. MID and SIDE are just a different way to
+            look at those same two channels:
+          </Text>
+          <Text style={dstyles.body}>
+            • MID = L + R — everything the two channels have IN COMMON. Anything panned dead center —
+            lead vocal, bass, kick, snare — is fully in the Mid. If you collapse to mono, the Mid is
+            all that is left.
+          </Text>
+          <Text style={dstyles.body}>
+            • SIDE = L − R — everything the two channels DISAGREE about. A sound only appears in the
+            Side to the extent it differs between left and right: hard-panned guitars, stereo room
+            and reverb, widening effects, doubled parts. A perfectly centered sound has ZERO Side; a
+            sound only in one speaker is half Mid, half Side.
+          </Text>
+          <Text style={dstyles.body}>
+            WIDTH is not a separate effect — it is simply how loud Side is compared to Mid. Turn Side
+            UP and the image spreads (more size, less focus); turn it DOWN toward zero and everything
+            pulls back to the center (mono). That is why a mono fold-down — which throws the Side away
+            and keeps only the Mid — reveals exactly what was hiding in the difference signal.
+          </Text>
+        </CollapsibleSection>
+
+        <MythReality
+          myth="Wider is always better — push every element to the sides."
+          reality="Width is a position, not a quality. Compare WIDE and HARD L-R with MONO: what the sides gain in size, the center loses in focus — and everything in Side vanishes from a mono sum. Great mixes SPEND width on a few elements and keep the anchors in the Mid."
         />
-      </PanelCard>
-
-      <CollapsibleSection title="MID = SHARED · SIDE = DIFFERENCE">
-        <Text style={dstyles.body}>
-          A stereo signal is two channels: LEFT and RIGHT. MID and SIDE are just a different way to
-          look at those same two channels:
-        </Text>
-        <Text style={dstyles.body}>
-          • MID = L + R — everything the two channels have IN COMMON. Anything panned dead center —
-          lead vocal, bass, kick, snare — is fully in the Mid. If you collapse to mono, the Mid is
-          all that is left.
-        </Text>
-        <Text style={dstyles.body}>
-          • SIDE = L − R — everything the two channels DISAGREE about. A sound only appears in the
-          Side to the extent it differs between left and right: hard-panned guitars, stereo room
-          and reverb, widening effects, doubled parts. A perfectly centered sound has ZERO Side; a
-          sound only in one speaker is half Mid, half Side.
-        </Text>
-        <Text style={dstyles.body}>
-          WIDTH is not a separate effect — it is simply how loud Side is compared to Mid. Turn Side
-          UP and the image spreads (more size, less focus); turn it DOWN toward zero and everything
-          pulls back to the center (mono). That is why a mono fold-down — which throws the Side away
-          and keeps only the Mid — reveals exactly what was hiding in the difference signal.
-        </Text>
-      </CollapsibleSection>
-
-      <MythReality
-        myth="Wider is always better — push every element to the sides."
-        reality="Width is a position, not a quality. Compare WIDE and HARD L-R with MONO: what the sides gain in size, the center loses in focus — and everything in Side vanishes from a mono sum. Great mixes SPEND width on a few elements and keep the anchors in the Mid."
-      />
-      <CheckQuestion spec={CHECK_MS} />
-    </View>
+        <CheckQuestion spec={CHECK_MS} />
+        <LessonRow onPress={() => p.help()} />
+      </View>
+    </RackUnit>
   );
 }
 
@@ -391,6 +456,7 @@ const CHECK_LISSAJOUS_LINE: CheckSpec = {
 function ScopeHero({
   vm,
   width,
+  height,
   focused,
   signal,
   xy,
@@ -399,6 +465,7 @@ function ScopeHero({
 }: {
   vm: VizMetersModule;
   width: number;
+  height?: number;
   focused: boolean;
   signal: SignalKey;
   xy: boolean;
@@ -407,7 +474,15 @@ function ScopeHero({
 }) {
   const phase = vm.usePhaseClock(focused, xy ? 0.8 : 0.6);
   return (
-    <vm.ScopeView width={width} signal={signal} xy={xy} width01={width01} phaseDeg={phaseDeg} phase={phase} />
+    <vm.ScopeView
+      width={width}
+      height={height}
+      signal={signal}
+      xy={xy}
+      width01={width01}
+      phaseDeg={phaseDeg}
+      phase={phase}
+    />
   );
 }
 
@@ -418,6 +493,7 @@ export function ScopeModule(p: MeterModuleProps) {
   const [widthV, setWidthV] = useState(0);
   const [phaseV, setPhaseV] = useState(0);
   const phaseDeg = Math.round(phaseV * 180);
+  const sigLabel = SCOPE_SIGNALS.find((s) => s.key === signal)?.label ?? 'SINE';
 
   // Correlation of the X-Y pair — same math the phase module teaches.
   const corr = useMemo(() => {
@@ -425,93 +501,115 @@ export function ScopeModule(p: MeterModuleProps) {
     return correlationOf(l, r);
   }, [widthV, phaseDeg]);
 
+  // Riding a Lissajous lane IS entering X-Y mode (cause→effect, zero taps —
+  // the LiveSpectrumEq bellFader idiom).
+  const xyFader = (set: (v: number) => void) => (v: number) => {
+    if (!xy) setXy(true);
+    set(v);
+  };
+
+  const params: DockParam[] = [
+    {
+      kind: 'options',
+      id: 'signal',
+      label: 'SIGNAL',
+      valueLabel: sigLabel,
+      selectedId: signal,
+      onSelect: (id) => setSignal(id as SignalKey),
+      sticky: true,
+      helpKey: 'oscilloscope',
+      options: SCOPE_SIGNALS.map((s) => ({ id: s.key, label: s.label })),
+    },
+    {
+      kind: 'toggle',
+      id: 'xy',
+      label: 'X-Y',
+      value: xy,
+      onToggle: () => setXy((v) => !v),
+      helpKey: 'lissajous',
+    },
+    {
+      kind: 'fader',
+      id: 'width',
+      label: 'WIDTH',
+      value: widthV,
+      onChange: xyFader(setWidthV),
+      format: () => `${Math.round(widthV * 100)} %`,
+      formatShort: () => `${Math.round(widthV * 100)}%`,
+      helpKey: 'lissajous',
+    },
+    {
+      kind: 'fader',
+      id: 'phase',
+      label: 'PHASE',
+      value: phaseV,
+      onChange: xyFader(setPhaseV),
+      format: () => `${phaseDeg}° (R vs L)`,
+      formatShort: () => `${phaseDeg}°`,
+      helpKey: 'lissajous',
+    },
+  ];
+
+  const bezel: BezelItem[] = [
+    // MODE cell taps to flip TIME ↔ X-Y (PK-HOLD-style tap cell).
+    { k: 'MODE', v: xy ? 'X-Y' : 'TIME', onPress: () => setXy((v) => !v), helpKey: 'lissajous' },
+    { k: 'SIGNAL', v: xy ? '—' : sigLabel, helpKey: 'oscilloscope' },
+    { k: 'CORR', v: xy ? `${corr >= 0 ? '+' : ''}${corr.toFixed(2)}` : '—', helpKey: 'lissajous' },
+    { k: 'WIDTH', v: xy ? `${Math.round(widthV * 100)} %` : '—', helpKey: 'lissajous' },
+  ];
+
   return (
-    <View style={{ gap: 12 }}>
-      <PanelCard>
-        {vm ? (
-          <ScopeHero
-            vm={vm}
-            width={p.width}
-            focused={p.focused}
-            signal={signal}
-            xy={xy}
-            width01={widthV}
-            phaseDeg={phaseDeg}
-          />
-        ) : (
-          <VizUnavailableCard />
-        )}
-        <DisplayGuideButton onPress={() => p.help(xy ? 'lissajous' : 'oscilloscope')} />
-        <View style={dstyles.chipRow}>
-          <LabChip
-            label="X-Y (LISSAJOUS)"
-            selected={xy}
-            onPress={() => setXy(!xy)}
-            onLongPress={() => p.help('lissajous')}
-          />
-        </View>
-        {!xy ? (
-          <View style={dstyles.chipRow}>
-            {SCOPE_SIGNALS.map((s) => (
-              <LabChip
-                key={s.key}
-                label={s.label}
-                selected={signal === s.key}
-                onPress={() => setSignal(s.key)}
-                onLongPress={() => p.help('oscilloscope')}
-              />
-            ))}
-          </View>
-        ) : (
-          <>
-            <DragSlider
-              value={widthV}
-              onChange={setWidthV}
-              label="WIDTH"
-              readout={`${Math.round(widthV * 100)} %`}
-              onHelp={() => p.help('lissajous')}
+    <RackUnit
+      initialParam="phase"
+      params={params}
+      onHelp={p.help}
+      stage={{
+        size: 'L',
+        badge: HONESTY,
+        onGuide: () => p.help(xy ? 'lissajous' : 'oscilloscope'),
+        bezel,
+        render: (w, h) =>
+          vm ? (
+            <ScopeHero
+              vm={vm}
+              width={w}
+              height={h}
+              focused={p.focused}
+              signal={signal}
+              xy={xy}
+              width01={widthV}
+              phaseDeg={phaseDeg}
             />
-            <DragSlider
-              value={phaseV}
-              onChange={setPhaseV}
-              label="PHASE (R vs L)"
-              readout={`${phaseDeg}°`}
-              onHelp={() => p.help('lissajous')}
-            />
-            <ReadoutGrid
-              help={p.help}
-              helpKey="oscilloscope"
-              items={[
-                { k: 'CORRELATION', v: `${corr >= 0 ? '+' : ''}${corr.toFixed(2)}` },
-                { k: 'WIDTH', v: `${Math.round(widthV * 100)} %` },
-                { k: 'PHASE', v: `${phaseDeg}°` },
-              ]}
-            />
-          </>
-        )}
+          ) : (
+            <VizUnavailableCard />
+          ),
+      }}
+    >
+      <View style={styles.well}>
         <Text style={dstyles.caption}>
           {xy
-            ? 'Left drives X, right drives Y: a thin 45° line = MONO (L and R identical). The OPPOSITE diagonal = anti-phase — the mono-death picture. A cloud between them is real stereo.'
+            ? 'Left drives X, right drives Y: a thin 45° line = MONO (L and R identical). The OPPOSITE diagonal = anti-phase — the mono-death picture. A cloud between them is real stereo. Riding WIDTH or PHASE switches X-Y mode on.'
             : 'Reading flat-tops: when the trace slams into a ceiling and flattens, clipping is happening RIGHT THERE — whatever the meters further down the chain claim.'}
         </Text>
-      </PanelCard>
 
-      <CollapsibleSection title="THE RAWEST VIEW">
-        <Text style={dstyles.body}>
-          The oscilloscope draws the voltage itself against time — no averaging, no ballistics, no
-          weighting. Sine = one smooth curve, square = shelves with fast edges, saw = ramps, speech =
-          bursts with gaps. It answers one question no other meter answers as directly: what is the
-          signal actually DOING right now?
-        </Text>
-      </CollapsibleSection>
+        <CollapsibleSection title="THE RAWEST VIEW">
+          <Text style={dstyles.body}>
+            The oscilloscope draws the voltage itself against time — no averaging, no ballistics, no
+            weighting. Sine = one smooth curve, square = shelves with fast edges, saw = ramps, speech =
+            bursts with gaps. It answers one question no other meter answers as directly: what is the
+            signal actually DOING right now?
+          </Text>
+        </CollapsibleSection>
 
-      <MythReality
-        myth="If no meter shows red, nothing is clipping anywhere in the chain."
-        reality="Meters read the point where they are inserted. The scope shows the waveform itself — flat-tops mean clipping is happening at THIS point in the chain, even when a meter later in the path (after a pad or trim) reads a polite level."
-      />
-      <CheckQuestion spec={CHECK_SCOPE_SQUARE} />
-      <CheckQuestion spec={CHECK_LISSAJOUS_LINE} />
-    </View>
+        <MythReality
+          myth="If no meter shows red, nothing is clipping anywhere in the chain."
+          reality="Meters read the point where they are inserted. The scope shows the waveform itself — flat-tops mean clipping is happening at THIS point in the chain, even when a meter later in the path (after a pad or trim) reads a polite level."
+        />
+        <CheckQuestion spec={CHECK_SCOPE_SQUARE} />
+        <CheckQuestion spec={CHECK_LISSAJOUS_LINE} />
+        <LessonRow onPress={() => p.help()} />
+      </View>
+    </RackUnit>
   );
 }
 
@@ -907,26 +1005,28 @@ function CaseHero({
   vm,
   vs,
   width,
+  height,
   focused,
   kase,
 }: {
   vm: VizMetersModule;
   vs: VizSpectralModule;
   width: number;
+  height?: number;
   focused: boolean;
   kase: DetectiveCase;
 }) {
   const phase = vm.usePhaseClock(focused, kase.visHz);
   if (kase.kind === 'dc')
-    return <vm.WaveformView width={width} signal="sine" gain={0.55} dcOffset={0.35} showClip phase={phase} />;
-  if (kase.kind === 'over') return <vm.PeakMeterView width={width} signal="music" gain={2.2} phase={phase} />;
-  if (kase.kind === 'hum') return <vs.SpectrumPatternView width={width} pattern="hum" phase={phase} />;
+    return <vm.WaveformView width={width} height={height} signal="sine" gain={0.55} dcOffset={0.35} showClip phase={phase} />;
+  if (kase.kind === 'over') return <vm.PeakMeterView width={width} height={height} signal="music" gain={2.2} phase={phase} />;
+  if (kase.kind === 'hum') return <vs.SpectrumPatternView width={width} height={height} pattern="hum" phase={phase} />;
   if (kase.kind === 'feedback')
-    return <vs.SpectrogramPatternView width={width} pattern="feedback" phase={phase} />;
-  if (kase.kind === 'ring') return <vs.WaterfallView width={width} opts={RING_OPTS} animate phase={phase} />;
+    return <vs.SpectrogramPatternView width={width} height={height} pattern="feedback" phase={phase} />;
+  if (kase.kind === 'ring') return <vs.WaterfallView width={width} height={height} opts={RING_OPTS} animate phase={phase} />;
   if (kase.kind === 'antiphase')
-    return <vm.PhaseMeterView width={width} width01={0.15} phaseDeg={175} phase={phase} />;
-  return <vm.VuMeterView width={width} signal="snare" showPeakLed phase={phase} />;
+    return <vm.PhaseMeterView width={width} height={height} width01={0.15} phaseDeg={175} phase={phase} />;
+  return <vm.VuMeterView width={width} height={height} signal="snare" showPeakLed phase={phase} />;
 }
 
 export function DetectiveModule(p: MeterModuleProps) {
@@ -942,9 +1042,12 @@ export function DetectiveModule(p: MeterModuleProps) {
   // R6c: the Signal Detective standalone lab completes on a genuine PASS — every
   // question of every case answered correctly at least once (the whole
   // graduation deck). CheckQuestion remounts per case+step, so aggregate here.
+  // solvedN mirrors the ref as state so the bezel SOLVED cell reads live.
   const solvedRef = useRef<Set<string>>(new Set());
+  const [solvedN, setSolvedN] = useState(0);
   const onSolved = () => {
     solvedRef.current.add(`${idx}-${step}`);
+    setSolvedN(solvedRef.current.size);
     if (solvedRef.current.size >= n * qCount) markLabUnit('af_signal_detective', PASS_UNIT);
   };
   const goCase = (next: number) => {
@@ -952,84 +1055,80 @@ export function DetectiveModule(p: MeterModuleProps) {
     setStep(0); // new case → back to its first question
   };
 
+  // The evidence PINS on the stage (rack law): the unlabeled display stays
+  // visible while every question below is read and answered. Case nav = dock
+  // action keys; round/score live on the bezel.
+  const params: DockParam[] = [
+    { kind: 'action', id: 'prev', label: '‹ PREV', onPress: () => goCase(idx - 1) },
+    { kind: 'action', id: 'next', label: 'NEXT ›', onPress: () => goCase(idx + 1) },
+  ];
+
+  const bezel: BezelItem[] = [
+    { k: 'CASE', v: `${idx + 1}/${n}`, helpKey: 'detective' },
+    { k: 'QUESTION', v: `${step + 1}/${qCount}`, helpKey: 'detective' },
+    { k: 'SOLVED', v: `${solvedN}/${n * qCount}`, tint: solvedN >= n * qCount ? '#5bff85' : undefined, helpKey: 'detective' },
+  ];
+
   return (
-    <View style={{ gap: 12 }}>
-      <CollapsibleSection title="THE GRADUATION EXERCISE">
-        <Text style={dstyles.body}>
-          An unlabeled display, configured with a real-world fault. Work each case in order: name the
-          meter, read what it shows, spot the problem, prescribe the fix. Everything you learned in
-          modules 1–10 is in this deck.
-        </Text>
-        <DisplayGuideButton onPress={() => p.help('detective')} />
-      </CollapsibleSection>
-
-      <PanelCard>
-        {/* Case nav lives ON the counter line, above the display (owner
-            2026-08-07): PREV blue · NEXT green, no "CASE" in the labels. */}
-        <View style={styles.caseHeadRow}>
-          <Text style={[styles.caseCounter, { flex: 1 }]}>
-            {idx + 1} OF {n} · QUESTION {step + 1} OF {qCount}
-          </Text>
-          <Pressable
-            onPress={() => goCase(idx - 1)}
-            onLongPress={() => p.help('detective')}
-            delayLongPress={350}
-            hitSlop={6}
-            accessibilityRole="button"
-            accessibilityLabel="Previous case"
-            style={[styles.caseNavBtn, styles.caseNavPrev]}
-          >
-            <Text style={styles.caseNavPrevText}>‹ PREV</Text>
-          </Pressable>
-          <Pressable
-            onPress={() => goCase(idx + 1)}
-            onLongPress={() => p.help('detective')}
-            delayLongPress={350}
-            hitSlop={6}
-            accessibilityRole="button"
-            accessibilityLabel="Next case"
-            style={[styles.caseNavBtn, styles.caseNavNext]}
-          >
-            <Text style={styles.caseNavNextText}>NEXT ›</Text>
-          </Pressable>
+    <RackUnit
+      initialParam="case"
+      params={params}
+      onHelp={p.help}
+      stage={{
+        size: 'L',
+        badge: HONESTY,
+        onGuide: () => p.help('detective'),
+        bezel,
+        render: (w, h) =>
+          vm && vs ? (
+            <CaseHero vm={vm} vs={vs} width={w} height={h} focused={p.focused} kase={kase} />
+          ) : (
+            <VizUnavailableCard />
+          ),
+      }}
+    >
+      <View style={styles.well}>
+        {/* ONE question at a time (owner 2026-08-05) — keyed per case+step so it
+            resets cleanly. Move between the case's four questions below. */}
+        <CheckQuestion key={`${idx}-${step}`} spec={specs[step]} onSolved={onSolved} />
+        <View style={dstyles.chipRow}>
+          <LabChip
+            label="‹ PREVIOUS"
+            selected={false}
+            onPress={() => (step > 0 ? setStep(step - 1) : goCase(idx - 1))}
+          />
+          {step < qCount - 1 ? (
+            <LabChip label="NEXT QUESTION ›" selected={false} onPress={() => setStep(step + 1)} />
+          ) : (
+            <LabChip label="NEXT CASE ›" selected={false} onPress={() => goCase(idx + 1)} />
+          )}
         </View>
-        {vm && vs ? (
-          <CaseHero vm={vm} vs={vs} width={p.width} focused={p.focused} kase={kase} />
-        ) : (
-          <VizUnavailableCard />
-        )}
-      </PanelCard>
 
-      {/* ONE question at a time (owner 2026-08-05) — keyed per case+step so it
-          resets cleanly. Move between the case's four questions below. */}
-      <CheckQuestion key={`${idx}-${step}`} spec={specs[step]} onSolved={onSolved} />
-      <View style={dstyles.chipRow}>
-        <LabChip
-          label="‹ PREVIOUS"
-          selected={false}
-          onPress={() => (step > 0 ? setStep(step - 1) : goCase(idx - 1))}
-        />
-        {step < qCount - 1 ? (
-          <LabChip label="NEXT QUESTION ›" selected={false} onPress={() => setStep(step + 1)} />
-        ) : (
-          <LabChip label="NEXT CASE ›" selected={false} onPress={() => goCase(idx + 1)} />
-        )}
+        <CollapsibleSection title="THE GRADUATION EXERCISE">
+          <Text style={dstyles.body}>
+            An unlabeled display, configured with a real-world fault. Work each case in order: name the
+            meter, read what it shows, spot the problem, prescribe the fix. Everything you learned in
+            modules 1–10 is in this deck.
+          </Text>
+        </CollapsibleSection>
+
+        <CollapsibleSection title="WHY IT WORKS">
+          <Text style={dstyles.caption}>
+            Wrong guesses teach as much as right ones — every reveal explains WHY the answer is what it
+            is. Cycle the deck until naming the meter, reading the story, spotting the fault and
+            prescribing the fix is automatic. That reflex is the whole lab.
+          </Text>
+        </CollapsibleSection>
+        <LessonRow onPress={() => p.help()} />
       </View>
-
-      <CollapsibleSection title="WHY IT WORKS">
-        <Text style={dstyles.caption}>
-          Wrong guesses teach as much as right ones — every reveal explains WHY the answer is what it
-          is. Cycle the deck until naming the meter, reading the story, spotting the fault and
-          prescribing the fix is automatic. That reflex is the whole lab.
-        </Text>
-      </CollapsibleSection>
-    </View>
+    </RackUnit>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
+  well: { gap: 12 },
   zoneRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1044,12 +1143,16 @@ const styles = StyleSheet.create({
   zoneMark: { fontFamily: fonts.mono, fontSize: 13, width: 26, color: colors.textSub },
   zoneText: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   verdict: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18 },
-  caseCounter: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.amber },
-  // Case nav on the counter line (owner 2026-08-07): PREV blue · NEXT green.
-  caseHeadRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  caseNavBtn: { borderRadius: 8, borderWidth: 1, paddingHorizontal: 10, paddingVertical: 6 },
-  caseNavPrev: { borderColor: 'rgba(47,155,255,.55)', backgroundColor: '#0d1420' },
-  caseNavPrevText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.8, color: colors.blue },
-  caseNavNext: { borderColor: 'rgba(55,224,95,.55)', backgroundColor: '#0c1a10' },
-  caseNavNextText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.8, color: colors.green },
+  // The rack well's guided-lesson entry row — mirrors MeterModuleScreen's
+  // lessonRow styling (the host only renders its own row for non-rack modules).
+  lessonRow: {
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#131316',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    marginTop: 4,
+  },
+  lessonRowText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.9, color: colors.textSecondary },
 });

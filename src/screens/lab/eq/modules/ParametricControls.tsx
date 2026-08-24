@@ -4,12 +4,21 @@
  * with the response graph changing continuously. Q is displayed BOTH ways
  * (Q number + bandwidth in octaves, spec mandate) so the two vocabularies
  * connect. The camera lesson made two of these intuitive; gain is new here.
+ *
+ * RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23): this module renders the RackUnit
+ * frame itself (EqModuleScreen gives rack modules the full height, no host
+ * ScrollView). The response curve PINS on the stage; FREQ/GAIN/Q/BW read on
+ * the bezel (the spec's dual Q+bandwidth readout, always visible); the three
+ * controls ride the dock lane as faders — FREQ binds on mount (WHERE is the
+ * first lesson). Only the prose and the check question scroll.
  */
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { ResponseCurveGraph, eqResponseDb, type ResponseCurve } from '../../../../features/lab/fxViz';
-import { CheckQuestion, DragSlider, type CheckSpec } from '../../foundations/bits';
+import { CheckQuestion, type CheckSpec } from '../../foundations/bits';
 import { colors, fonts } from '../../../../theme/tokens';
+import { RackUnit } from '../../rack/RackUnit';
+import type { DockParam } from '../../rack/rackTypes';
 import { bwOctFromQ, fFromNorm, fmtHz, gainColor, normFromF } from './eqMath';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
@@ -47,66 +56,76 @@ export function ParametricControlsModule(_p: EqModuleComponentProps) {
     [freq, q, gainDb],
   );
 
+  const params: DockParam[] = [
+    {
+      kind: 'fader',
+      id: 'freq',
+      label: 'FREQ',
+      value: normFromF(freq),
+      onChange: (t) => setFreq(fFromNorm(t)),
+      format: () => fmtHz(freq),
+    },
+    {
+      kind: 'fader',
+      id: 'gain',
+      label: 'GAIN',
+      value: (gainDb + GAIN_RANGE) / (2 * GAIN_RANGE),
+      onChange: (t) => setGainDb(Math.round((t * 2 * GAIN_RANGE - GAIN_RANGE) * 2) / 2),
+      format: () => `${gainDb >= 0 ? '+' : ''}${gainDb.toFixed(1)} dB`,
+      formatShort: () => `${gainDb >= 0 ? '+' : ''}${gainDb.toFixed(1)}`,
+      tint: gc,
+    },
+    {
+      kind: 'fader',
+      id: 'q',
+      label: 'Q',
+      value: normFromQ(q),
+      onChange: (t) => setQ(qFromNorm(t)),
+      // Spec mandate: show Q AND bandwidth together, always.
+      format: () => `Q ${q.toFixed(2)} · ${bwOct.toFixed(2)} oct`,
+      formatShort: () => `Q${q.toFixed(1)}`,
+    },
+  ];
+
   return (
-    <View style={styles.root}>
-      <GlossaryText style={styles.body}>
-        A fully parametric band gives you three controls. You already know two of them from the
-        camera: pan (frequency) and zoom (Q). The third — gain — is what you DO to the region
-        you’re looking at.
-      </GlossaryText>
+    <RackUnit
+      initialParam="freq"
+      params={params}
+      stage={{
+        size: 'M', // response-curve teaching chart
+        bezel: [
+          { k: 'FREQ', v: fmtHz(freq) },
+          { k: 'GAIN', v: `${gainDb >= 0 ? '+' : ''}${gainDb.toFixed(1)} dB`, tint: gc },
+          // The dual readout — the two vocabularies, side by side, always.
+          { k: 'Q', v: q.toFixed(2) },
+          { k: 'BW', v: `${bwOct.toFixed(2)} oct` },
+        ],
+        render: (w, h) => (
+          <View style={{ width: w, height: h, justifyContent: 'center', paddingHorizontal: 8 }}>
+            <ResponseCurveGraph curves={curves} dbRange={GAIN_RANGE} height={Math.max(80, h - 26)} mainColor={gc} />
+          </View>
+        ),
+      }}
+    >
+      <View style={styles.well}>
+        <GlossaryText style={styles.body}>
+          A fully parametric band gives you three controls. You already know two of them from the
+          camera: pan (frequency) and zoom (Q). The third — gain — is what you DO to the region
+          you’re looking at.
+        </GlossaryText>
 
-      <View style={styles.panel}>
-        <View style={styles.panelHead}>
-          <Text style={styles.panelEyebrow}>ONE PARAMETRIC BAND</Text>
-          <Text style={[styles.readout, { color: gc }]}>
-            {fmtHz(freq)} · {gainDb >= 0 ? '+' : ''}
-            {gainDb.toFixed(1)} dB
-          </Text>
-        </View>
-        <ResponseCurveGraph curves={curves} dbRange={GAIN_RANGE} height={150} mainColor={gc} />
-        {/* Spec mandate: show Q AND bandwidth together, always. */}
-        <Text style={styles.qReadout}>
-          Q: {q.toFixed(2)}   Bandwidth: {bwOct.toFixed(2)} octaves
-        </Text>
+        <Text style={styles.roleLine}>Frequency determines WHERE the EQ operates.</Text>
+        <Text style={styles.roleLine}>Gain determines HOW MUCH you boost or cut.</Text>
+        <Text style={styles.roleLine}>Q determines HOW WIDE or NARROW the affected range is.</Text>
+
+        <CheckQuestion spec={CHECK} />
       </View>
-
-      <DragSlider
-        label="FREQUENCY"
-        value={normFromF(freq)}
-        onChange={(t) => setFreq(fFromNorm(t))}
-        readout={fmtHz(freq)}
-      />
-      <Text style={styles.roleLine}>Frequency determines WHERE the EQ operates.</Text>
-
-      <DragSlider
-        label="GAIN"
-        value={(gainDb + GAIN_RANGE) / (2 * GAIN_RANGE)}
-        onChange={(t) => setGainDb(Math.round((t * 2 * GAIN_RANGE - GAIN_RANGE) * 2) / 2)}
-        readout={`${gainDb >= 0 ? '+' : ''}${gainDb.toFixed(1)} dB`}
-        tint={gc}
-      />
-      <Text style={styles.roleLine}>Gain determines HOW MUCH you boost or cut.</Text>
-
-      <DragSlider
-        label="Q / BANDWIDTH"
-        value={normFromQ(q)}
-        onChange={(t) => setQ(qFromNorm(t))}
-        readout={`Q ${q.toFixed(2)} · ${bwOct.toFixed(2)} oct`}
-      />
-      <Text style={styles.roleLine}>Q determines HOW WIDE or NARROW the affected range is.</Text>
-
-      <CheckQuestion spec={CHECK} />
-    </View>
+    </RackUnit>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { gap: 12 },
+  well: { gap: 12 },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
-  panel: { borderRadius: 12, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 12, gap: 8 },
-  panelHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  panelEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.amber },
-  readout: { fontFamily: fonts.mono, fontSize: 12, color: colors.amber },
-  qReadout: { fontFamily: fonts.mono, fontSize: 13, color: colors.amber, textAlign: 'center' },
-  roleLine: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17, color: colors.textSub, marginTop: -6 },
+  roleLine: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
 });

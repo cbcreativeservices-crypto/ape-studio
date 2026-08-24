@@ -30,6 +30,21 @@ export type DigitalModuleProps = {
   lockScroll?: (v: boolean) => void;
 };
 
+/** Rack-mode modules (APE_LAB_UX_PROPOSAL 2026-08-23) render the RackUnit
+ *  frame THEMSELVES — pinned stage + dock with their own scroll well (incl.
+ *  the guided-lesson entry row) — so the host gives them the full height and
+ *  no ScrollView. */
+const RACK_MODULES = new Set<DigitalModuleId>([
+  'analog',
+  'sampling',
+  'quant',
+  'binary',
+  'adc',
+  'processing',
+  'dac',
+  'errors',
+]);
+
 const COMPONENTS: Record<DigitalModuleId, (p: DigitalModuleProps) => React.JSX.Element> = {
   analog: AnalogModule,
   sampling: SamplingModule,
@@ -100,6 +115,13 @@ export function DigitalModuleScreen() {
         </Pressable>
       </View>
       <ScrollLockProvider value={setScrollLocked}>
+      {RACK_MODULES.has(meta.id) ? (
+        // Rack module: full height — the module's RackUnit pins stage + dock
+        // and owns the scroll well (incl. its own guided-lesson entry row).
+        <View style={styles.rackFill} onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
+          {width > 0 ? <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} /> : null}
+        </View>
+      ) : (
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" scrollEnabled={!scrollLocked}>
         <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
           {width > 0 ? <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} /> : null}
@@ -114,6 +136,7 @@ export function DigitalModuleScreen() {
           <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
         </Pressable>
       </ScrollView>
+      )}
       </ScrollLockProvider>
       <GuidedLessonSheet visible={lessonOpen} lesson={getLabLesson('digital')} controlKey={lessonKey} onClose={() => setLessonOpen(false)} />
     </View>
@@ -131,6 +154,7 @@ const styles = StyleSheet.create({
   navBtnDisabled: { color: '#45454d' },
   navPos: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, color: colors.textSub },
   scroll: { padding: 16, paddingBottom: 30, gap: 12 },
+  rackFill: { flex: 1 },
   // Bottom guided-lesson row — mirrors LabShell v2's lessonRow styling.
   lessonRow: {
     borderRadius: 9,

@@ -22,6 +22,10 @@
  *
  * Abstract data stays abstract but styled (standards §2): gradient underfills,
  * layered glow strokes, never hairline-on-black.
+ *
+ * RACK UNIT (2026-08-23): QuantView and InspectStripView take an optional
+ * `height` so the pinned stage glass can size them (defaults preserved for
+ * legacy callers).
  */
 import { useEffect, useMemo, useRef } from 'react';
 import { PanResponder, StyleSheet, Text as RNText, View } from 'react-native';
@@ -96,14 +100,16 @@ export function QuantView({
   bits,
   levelDb,
   errorOnly,
+  height = 184,
 }: {
   width: number;
   bits: number;
   /** Signal peak level, dBFS (0 … −40). */
   levelDb: number;
   errorOnly: boolean;
+  height?: number;
 }) {
-  const H = 184;
+  const H = height;
   const geo = useMemo(() => {
     const padX = 10;
     const innerW = width - padX * 2;
@@ -189,7 +195,7 @@ export function QuantView({
     errFill.close();
 
     return { padX, midY, ampPx, levelLines, drawIndividual, sigPath, origDots, quantDots, whiskers, recon, errPath, errFill };
-  }, [width, bits, levelDb]);
+  }, [width, bits, levelDb, H]);
 
   const { padX, midY, ampPx, levelLines, drawIndividual, sigPath, origDots, quantDots, whiskers, recon, errPath, errFill } = geo;
 
@@ -474,13 +480,16 @@ export function InspectStripView({
   values,
   selected,
   onSelect,
+  height = INS_H,
 }: {
   width: number;
   /** Signed 16-bit sample values (−32768..32767). */
   values: number[];
   selected: number;
   onSelect: (i: number) => void;
+  height?: number;
 }) {
+  const h = height;
   const n = values.length;
   const innerW = width - INS_PAD * 2;
   const dx = n > 1 ? innerW / (n - 1) : innerW;
@@ -514,8 +523,8 @@ export function InspectStripView({
   ).current;
 
   const geo = useMemo(() => {
-    const midY = INS_H / 2;
-    const ampPx = INS_H / 2 - 14;
+    const midY = h / 2;
+    const ampPx = h / 2 - 14;
     const xs: number[] = [];
     const ys: number[] = [];
     const stems = Skia.Path.Make();
@@ -531,14 +540,14 @@ export function InspectStripView({
     }
     const trace = smoothThrough(xs, ys);
     return { midY, xs, ys, stems, dots, trace };
-  }, [width, values, n, dx]);
+  }, [width, values, n, dx, h]);
 
   const selX = geo.xs[selected] ?? INS_PAD;
   const selY = geo.ys[selected] ?? geo.midY;
 
   return (
     <View {...pan.panHandlers}>
-      <Canvas pointerEvents="none" style={{ width, height: INS_H, backgroundColor: BG, borderRadius: 8 }}>
+      <Canvas pointerEvents="none" style={{ width, height: h, backgroundColor: BG, borderRadius: 8 }}>
         <SkLine p1={{ x: INS_PAD - 6, y: geo.midY }} p2={{ x: width - INS_PAD + 6, y: geo.midY }} color="#3a3a42" strokeWidth={1} />
         <Path path={geo.trace} color={ACCENT_BLUE} style="stroke" strokeWidth={3.4} opacity={0.16}>
           <BlurMask blur={4} style="normal" />
@@ -547,7 +556,7 @@ export function InspectStripView({
         <Path path={geo.stems} color={GRID} style="stroke" strokeWidth={1.4} />
         <Path path={geo.dots} color={WAVE} opacity={0.9} />
         {/* Selection: vertical guide + glow halo + lifted dot. */}
-        <SkLine p1={{ x: selX, y: 6 }} p2={{ x: selX, y: INS_H - 6 }} color={ACCENT_GREEN} strokeWidth={1} opacity={0.55} />
+        <SkLine p1={{ x: selX, y: 6 }} p2={{ x: selX, y: h - 6 }} color={ACCENT_GREEN} strokeWidth={1} opacity={0.55} />
         <Circle cx={selX} cy={selY} r={9} color={ACCENT_GREEN} opacity={0.3}>
           <BlurMask blur={6} style="normal" />
         </Circle>

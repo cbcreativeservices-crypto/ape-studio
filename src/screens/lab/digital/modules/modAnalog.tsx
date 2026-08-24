@@ -2,6 +2,13 @@
  * digital/modAnalog — Module 1 (The Analog Signal) + Module 2 (Sampling &
  * Sample Rate) of the Digital Audio Sampling & Conversion Lab.
  *
+ * RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23): both modules render the RackUnit
+ * frame themselves — DigitalModuleScreen gives rack modules the full height and
+ * no host ScrollView. The hero viz PINS on the stage (height-parametric), its
+ * honesty badge stays with it verbatim, readouts print on the bezel, the
+ * teaching faders ride the dock lane, and only prose/secondary panels/checks
+ * scroll in the well (which carries its own guided-lesson entry row).
+ *
  * NO Skia in this file: the visuals load solely through
  * skiaGate.requireVizSignal(); pre-Skia clients render VizUnavailableCard
  * (§1.7) and every readout that needs the drawn-waveform math hides with it.
@@ -18,18 +25,22 @@
  * would produce.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ApeDsp, GEN_MODES } from '../../../../../modules/ape-dsp';
 import { GlassButton } from '../../../../components/GlassButton';
 import { useAudioOutputGate } from '../../../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../../../features/audio/audioOutputStore';
 import { guardToneLevelForEngine } from '../../../../features/audio/speakerSafety';
 import { DisplayGuideButton } from '../../../../features/lab/guidedLessons';
+import { levelColor } from '../../../../features/tools/levelColor';
+import { colors, fonts } from '../../../../theme/tokens';
 import { EngineGate } from '../../../tools/EngineGate';
 import type { EngineState } from '../../../../features/tools/engine/useDspEngine';
 import { LabChip, CollapsibleSection } from '../../LabShell';
 import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
 import { Badge, MythReality, PanelCard, ReadoutGrid, dstyles } from '../bits';
+import { RackUnit } from '../../rack/RackUnit';
+import type { DockParam } from '../../rack/rackTypes';
 import { requireVizSignal, type VizSignalModule } from '../skiaGate';
 import type { WaveKind } from '../vizSignal';
 import type { DigitalModuleProps } from '../DigitalModuleScreen';
@@ -41,6 +52,12 @@ import type { DigitalModuleProps } from '../DigitalModuleScreen';
 function fmtHz(f: number): string {
   if (f >= 1000) return `${Number((f / 1000).toFixed(2))} kHz`;
   return `${Math.round(f)} Hz`;
+}
+
+/** Compact ≤7-char frequency for the dock button. */
+function fmtHzShort(f: number): string {
+  if (f >= 1000) return `${Number((f / 1000).toFixed(1))}k`;
+  return `${Math.round(f)}`;
 }
 
 /** Alias of input f sampled at fs: fold around the nearest multiple of fs. */
@@ -60,6 +77,28 @@ function visHzFor(freqHz: number, lo: number, hi: number): number {
   return 0.5 + 1.25 * (Math.log(f / lo) / Math.log(hi / lo));
 }
 
+/** Guided-lesson entry row at the bottom of the rack well (rack modules own
+ *  their well, so they carry the host's lessonRow themselves). */
+function LessonRow({ onPress }: { onPress: () => void }) {
+  return (
+    <Pressable style={lessonStyles.row} onPress={onPress} accessibilityRole="button" accessibilityLabel="Open the guided lesson">
+      <Text style={lessonStyles.text}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
+    </Pressable>
+  );
+}
+const lessonStyles = StyleSheet.create({
+  row: {
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#131316',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    marginTop: 4,
+  },
+  text: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.9, color: colors.textSecondary },
+});
+
 // ═════════════════════════════════════════════════════════════════════════════
 // MODULE 1 — THE ANALOG SIGNAL
 
@@ -71,6 +110,16 @@ const WAVE_CHIP_LIST: { key: WaveKind; label: string }[] = [
   { key: 'impulse', label: 'IMPULSE' },
   { key: 'noise', label: 'WHITE NOISE' },
 ];
+
+/** Short dock-button value per wave. */
+const WAVE_SHORT: Record<WaveKind, string> = {
+  sine: 'SINE',
+  square: 'SQUARE',
+  triangle: 'TRI',
+  saw: 'SAW',
+  impulse: 'IMPULSE',
+  noise: 'NOISE',
+};
 
 const F1_MIN = 60;
 const F1_MAX = 2000;
@@ -95,6 +144,7 @@ const ANALOG_CHECK: CheckSpec = {
 function AnalogHero({
   viz,
   width,
+  height,
   focused,
   wave,
   freqHz,
@@ -106,6 +156,7 @@ function AnalogHero({
 }: {
   viz: VizSignalModule;
   width: number;
+  height: number;
   focused: boolean;
   wave: WaveKind;
   freqHz: number;
@@ -120,6 +171,7 @@ function AnalogHero({
   return (
     <viz.AnalogChainView
       width={width}
+      height={height}
       phase={phase}
       wave={wave}
       amp={amp}
@@ -150,114 +202,156 @@ export function AnalogModule(p: DigitalModuleProps) {
     [viz, wave, amp, noiseOn, distOn],
   );
 
-  const readouts = [
-    { k: 'FREQUENCY', v: wave === 'noise' ? 'broadband' : `${freq} Hz` },
-    { k: 'PERIOD', v: wave === 'noise' ? '—' : `${(1000 / freq).toFixed(2)} ms` },
-    { k: 'PEAK', v: stats ? `${stats.peak.toFixed(2)} FS` : '—' },
-    { k: 'RMS', v: stats ? `${stats.rms.toFixed(2)} FS` : '—' },
-    { k: 'CREST FACTOR', v: stats ? `${stats.crestDb.toFixed(1)} dB` : '—' },
-    { k: 'POLARITY', v: inverted ? 'INVERTED' : 'NORMAL' },
+  const modsLabel =
+    [inverted && 'Ø', noiseOn && 'NSE', distOn && 'DST'].filter(Boolean).join('·') || 'OFF';
+
+  const params: DockParam[] = [
+    {
+      kind: 'fader',
+      id: 'freq',
+      label: 'FREQ',
+      value: freqV,
+      onChange: setFreqV,
+      format: () => (wave === 'noise' ? 'broadband' : `${freq} Hz`),
+      formatShort: () => (wave === 'noise' ? 'BB' : fmtHzShort(freq)),
+      helpKey: 'source',
+    },
+    {
+      kind: 'fader',
+      id: 'amp',
+      label: 'AMP',
+      value: ampV,
+      onChange: setAmpV,
+      format: () => `${amp.toFixed(2)} ×FS`,
+      formatShort: () => amp.toFixed(2),
+      tint: levelColor(ampV),
+      helpKey: 'source',
+    },
+    {
+      kind: 'fader',
+      id: 'zoom',
+      label: 'ZOOM',
+      value: zoomV,
+      onChange: setZoomV,
+      format: () => `${cycles.toFixed(1)} cycles in view`,
+      formatShort: () => `${cycles.toFixed(1)}cyc`,
+      helpKey: 'waveform_view',
+    },
+    {
+      kind: 'options',
+      id: 'wave',
+      label: 'WAVE',
+      valueLabel: WAVE_SHORT[wave],
+      options: WAVE_CHIP_LIST.map((c) => ({ id: c.key, label: c.label })),
+      selectedId: wave,
+      onSelect: (id) => setWave(id as WaveKind),
+      sticky: true, // teaching collection — A/B shapes while the glass reacts
+      helpKey: 'source',
+    },
+    {
+      kind: 'group',
+      id: 'mods',
+      label: 'MODS',
+      valueLabel: modsLabel,
+      helpKey: 'source',
+      render: () => (
+        <View style={{ gap: 10 }}>
+          <View style={dstyles.chipRow}>
+            <LabChip
+              label="POLARITY Ø INVERT"
+              selected={inverted}
+              onPress={() => setInverted(!inverted)}
+              onLongPress={() => p.help('source')}
+            />
+            <LabChip label="ADD NOISE" selected={noiseOn} onPress={() => setNoiseOn(!noiseOn)} onLongPress={() => p.help('source')} />
+            <LabChip
+              label="ADD DISTORTION"
+              selected={distOn}
+              onPress={() => setDistOn(!distOn)}
+              onLongPress={() => p.help('source')}
+            />
+          </View>
+          {distOn ? <Badge text="DISTORTION = SOFT tanh BEND ON THE DRAWN VOLTAGE — A DISCLOSED MODEL OF GENTLE ANALOG OVERDRIVE" /> : null}
+          {noiseOn ? <Badge text="NOISE = SMALL BROADBAND FUZZ (±0.05 FS) ADDED TO THE DRAWN VOLTAGE" /> : null}
+        </View>
+      ),
+    },
   ];
 
   return (
-    <View style={{ gap: 12 }}>
-      {/* Description FIRST, in a reveal toggle (owner 2026-08-05). */}
-      <CollapsibleSection title="WHAT EXISTS ON THIS WIRE">
-        <Text style={dstyles.body}>
-          The microphone does not create binary information. Its diaphragm rides the arriving air
-          pressure, and the capsule turns that motion into a continuously varying VOLTAGE — an
-          analog of the pressure. Between any two instants there are infinitely many voltage
-          values; nothing is divided into steps, frames, or numbers.
-        </Text>
-        <Text style={dstyles.body}>
-          Everything in this module — the cone, the traveling pressure, the diaphragm, the trace —
-          is one physical event seen three ways, locked to the same clock. This continuous voltage
-          is what the analog-to-digital converter will measure in Module 2. Until that measurement
-          happens, digital audio does not exist.
-        </Text>
-      </CollapsibleSection>
-
-      <PanelCard>
-        {/* Readouts → display → guide → controls (sliders first) — wave-style. */}
-        <ReadoutGrid items={readouts} help={p.help} helpKey="waveform_view" />
-        <Badge text="PEAK · RMS · CREST COMPUTED FROM THE ACTUAL DRAWN WAVEFORM SAMPLES" />
-        {viz ? (
-          <AnalogHero
-            viz={viz}
-            width={p.width}
-            focused={p.focused}
-            wave={wave}
-            freqHz={freq}
-            amp={amp}
-            inverted={inverted}
-            noise={noiseOn}
-            distortion={distOn}
-            cycles={cycles}
-          />
-        ) : (
-          <VizUnavailableCard />
-        )}
-        <Badge text="ILLUSTRATIVE MODEL — SLOWED FOR VISIBILITY · ONE EVENT, THREE PHASE-LOCKED VIEWS: PRESSURE → DIAPHRAGM → VOLTAGE · AMPLITUDE COLOR = MIDI LOUDNESS RAMP (blue quiet → red full scale)" />
-        <DisplayGuideButton onPress={() => p.help('waveform_view')} />
-        <DragSlider
-          value={freqV}
-          onChange={setFreqV}
-          label="FREQUENCY"
-          readout={wave === 'noise' ? 'broadband' : `${freq} Hz`}
-          onHelp={() => p.help('source')}
-        />
-        <DragSlider
-          value={ampV}
-          onChange={setAmpV}
-          label="AMPLITUDE"
-          readout={`${amp.toFixed(2)} ×FS`}
-          onHelp={() => p.help('source')}
-          levelTint
-        />
-        <DragSlider
-          value={zoomV}
-          onChange={setZoomV}
-          label="TIME ZOOM"
-          readout={`${cycles.toFixed(1)} cycles in view`}
-          onHelp={() => p.help('waveform_view')}
-        />
-        <View style={dstyles.chipRow}>
-          {WAVE_CHIP_LIST.map((c) => (
-            <LabChip
-              key={c.key}
-              label={c.label}
-              selected={wave === c.key}
-              onPress={() => setWave(c.key)}
-              onLongPress={() => p.help('source')}
+    <RackUnit
+      initialParam="freq"
+      params={params}
+      onHelp={p.help}
+      stage={{
+        size: 'L', // the three phase-locked views ARE the lesson
+        badge:
+          'ILLUSTRATIVE MODEL — SLOWED FOR VISIBILITY · ONE EVENT, THREE PHASE-LOCKED VIEWS: PRESSURE → DIAPHRAGM → VOLTAGE · AMPLITUDE COLOR = MIDI LOUDNESS RAMP (blue quiet → red full scale)',
+        onGuide: () => p.help('waveform_view'),
+        bezel: [
+          { k: 'FREQ', v: wave === 'noise' ? 'broadband' : `${freq} Hz`, helpKey: 'source' },
+          { k: 'PERIOD', v: wave === 'noise' ? '—' : `${(1000 / freq).toFixed(2)} ms`, helpKey: 'waveform_view' },
+          { k: 'PEAK', v: stats ? `${stats.peak.toFixed(2)} FS` : '—', helpKey: 'waveform_view' },
+          { k: 'RMS', v: stats ? `${stats.rms.toFixed(2)} FS` : '—', helpKey: 'waveform_view' },
+        ],
+        render: (w, h) =>
+          viz ? (
+            <AnalogHero
+              viz={viz}
+              width={w}
+              height={h}
+              focused={p.focused}
+              wave={wave}
+              freqHz={freq}
+              amp={amp}
+              inverted={inverted}
+              noise={noiseOn}
+              distortion={distOn}
+              cycles={cycles}
             />
-          ))}
-        </View>
-        <Badge text="SQUARE · SAW · TRIANGLE · IMPULSE ARE DRAWN BAND-LIMITED (12 HARMONICS) — HONEST SHAPES, NOT IDEALIZED CORNERS" />
-        <View style={dstyles.chipRow}>
-          <LabChip
-            label="POLARITY Ø INVERT"
-            selected={inverted}
-            onPress={() => setInverted(!inverted)}
-            onLongPress={() => p.help('source')}
-          />
-          <LabChip label="ADD NOISE" selected={noiseOn} onPress={() => setNoiseOn(!noiseOn)} onLongPress={() => p.help('source')} />
-          <LabChip
-            label="ADD DISTORTION"
-            selected={distOn}
-            onPress={() => setDistOn(!distOn)}
-            onLongPress={() => p.help('source')}
-          />
-        </View>
-        {distOn ? <Badge text="DISTORTION = SOFT tanh BEND ON THE DRAWN VOLTAGE — A DISCLOSED MODEL OF GENTLE ANALOG OVERDRIVE" /> : null}
-        {noiseOn ? <Badge text="NOISE = SMALL BROADBAND FUZZ (±0.05 FS) ADDED TO THE DRAWN VOLTAGE" /> : null}
-      </PanelCard>
+          ) : (
+            <View style={{ flex: 1, justifyContent: 'center', padding: 12 }}>
+              <VizUnavailableCard />
+            </View>
+          ),
+      }}
+    >
+      <View style={{ gap: 12 }}>
+        {/* Description FIRST, in a reveal toggle (owner 2026-08-05). */}
+        <CollapsibleSection title="WHAT EXISTS ON THIS WIRE">
+          <Text style={dstyles.body}>
+            The microphone does not create binary information. Its diaphragm rides the arriving air
+            pressure, and the capsule turns that motion into a continuously varying VOLTAGE — an
+            analog of the pressure. Between any two instants there are infinitely many voltage
+            values; nothing is divided into steps, frames, or numbers.
+          </Text>
+          <Text style={dstyles.body}>
+            Everything in this module — the cone, the traveling pressure, the diaphragm, the trace —
+            is one physical event seen three ways, locked to the same clock. This continuous voltage
+            is what the analog-to-digital converter will measure in Module 2. Until that measurement
+            happens, digital audio does not exist.
+          </Text>
+        </CollapsibleSection>
 
-      <MythReality
-        myth="A microphone converts sound into digital data — ones and zeros come out of the mic."
-        reality="A microphone creates a continuously varying voltage that mirrors air pressure. Everything on this screen is analog; numbers only appear when a converter measures this voltage — that story starts in Module 2."
-      />
-      <CheckQuestion spec={ANALOG_CHECK} />
-    </View>
+        <Badge text="PEAK · RMS · CREST COMPUTED FROM THE ACTUAL DRAWN WAVEFORM SAMPLES" />
+        <ReadoutGrid
+          help={p.help}
+          helpKey="waveform_view"
+          items={[
+            { k: 'CREST FACTOR', v: stats ? `${stats.crestDb.toFixed(1)} dB` : '—' },
+            { k: 'POLARITY', v: inverted ? 'INVERTED' : 'NORMAL' },
+          ]}
+        />
+        <Badge text="SQUARE · SAW · TRIANGLE · IMPULSE ARE DRAWN BAND-LIMITED (12 HARMONICS) — HONEST SHAPES, NOT IDEALIZED CORNERS" />
+
+        <MythReality
+          myth="A microphone converts sound into digital data — ones and zeros come out of the mic."
+          reality="A microphone creates a continuously varying voltage that mirrors air pressure. Everything on this screen is analog; numbers only appear when a converter measures this voltage — that story starts in Module 2."
+        />
+        <CheckQuestion spec={ANALOG_CHECK} />
+        <LessonRow onPress={() => p.help()} />
+      </View>
+    </RackUnit>
   );
 }
 
@@ -368,6 +462,7 @@ function useAliasTone(engineReady: boolean, focused: boolean) {
 function SamplingHero({
   viz,
   width,
+  height,
   focused,
   freqHz,
   sampleRate,
@@ -379,6 +474,7 @@ function SamplingHero({
 }: {
   viz: VizSignalModule;
   width: number;
+  height: number;
   focused: boolean;
   freqHz: number;
   sampleRate: number;
@@ -393,6 +489,7 @@ function SamplingHero({
   return (
     <viz.SamplingView
       width={width}
+      height={height}
       phase={phase}
       freqHz={freqHz}
       sampleRate={sampleRate}
@@ -415,7 +512,7 @@ export function SamplingModule(p: DigitalModuleProps) {
   const [cutV, setCutV] = useState(0.85);
   const [slope, setSlope] = useState(24);
 
-  // Input frequency — the NYQUIST SWEEP slider. Range adapts so the sweep can
+  // Input frequency — the NYQUIST SWEEP fader. Range adapts so the sweep can
   // actually cross Nyquist at studio rates (96k/192k get the honest caption).
   const fMax = rateMode.kind === 'abs' ? Math.min(rateMode.fs * 0.75, 30000) : 8000;
   const f = Math.round(F2_MIN * Math.pow(fMax / F2_MIN, freqV));
@@ -459,221 +556,262 @@ export function SamplingModule(p: DigitalModuleProps) {
   const canInput = f >= PLAY_MIN_HZ && f <= PLAY_MAX_HZ;
   const canAlias = alias >= PLAY_MIN_HZ && alias <= PLAY_MAX_HZ;
 
-  const readouts = [
-    { k: 'SAMPLE RATE', v: rateMode.kind === 'abs' ? fmtHz(fs) : `${fmtHz(fs)} (${rateMode.mult}×f)` },
-    { k: 'INTERVAL', v: `${(1e6 / fs).toFixed(3)} µs` },
-    { k: 'INPUT', v: fmtHz(f) },
-    { k: 'SAMPLES / CYCLE', v: spc.toFixed(2) },
-    { k: 'NYQUIST', v: fmtHz(nyq) },
-    { k: 'f / NYQUIST', v: `${(f / nyq).toFixed(2)}×` },
-    { k: 'READS AS', v: fmtHz(alias) },
-    { k: '24-BIT STEREO', v: `${((fs * 48) / 1e6).toFixed(3)} Mb/s` },
+  const params: DockParam[] = [
+    {
+      kind: 'fader',
+      id: 'freq',
+      label: 'FREQ',
+      value: freqV,
+      onChange: setFreqV,
+      format: () => `${fmtHz(f)} — sweep through Nyquist`,
+      formatShort: () => fmtHzShort(f),
+      helpKey: 'nyquist',
+    },
+    {
+      kind: 'fader',
+      id: 'zoom',
+      label: 'ZOOM',
+      value: zoomV,
+      onChange: setZoomV,
+      format: () => `${nShown} samples · ${cycles.toFixed(cycles < 3 ? 2 : 1)} cycles in view`,
+      formatShort: () => `${nShown}smp`,
+      helpKey: 'samples_per_cycle',
+    },
+    {
+      kind: 'group',
+      id: 'rate',
+      label: 'RATE',
+      valueLabel: rateMode.kind === 'abs' ? `${rateMode.fs / 1000}k` : `${rateMode.mult}/CYC`,
+      helpKey: 'sample_rate',
+      render: () => (
+        <View style={{ gap: 10 }}>
+          <View style={dstyles.chipRow}>
+            {RATE_CHIPS.map((r) => (
+              <LabChip
+                key={r}
+                label={`${r / 1000}k`}
+                selected={rateMode.kind === 'abs' && rateMode.fs === r}
+                onPress={() => setRateMode({ kind: 'abs', fs: r })}
+                onLongPress={() => p.help('sample_rate')}
+              />
+            ))}
+          </View>
+          <View style={dstyles.chipRow}>
+            {CYC_CHIPS.map((m) => (
+              <LabChip
+                key={m}
+                label={`${m} /CYC`}
+                selected={rateMode.kind === 'cyc' && rateMode.mult === m}
+                onPress={() => setRateMode({ kind: 'cyc', mult: m })}
+                onLongPress={() => p.help('samples_per_cycle')}
+              />
+            ))}
+          </View>
+          <Badge text="DEMO MODES: SAMPLE RATE SET RELATIVE TO THE INPUT FREQUENCY — FOR VISUALIZATION, NOT A REAL CONVERTER SETTING" />
+        </View>
+      ),
+    },
+    {
+      kind: 'toggle',
+      id: 'recon',
+      label: 'RECON',
+      value: recon,
+      onToggle: () => setRecon(!recon),
+      helpKey: 'nyquist',
+    },
   ];
 
   return (
-    <View style={{ gap: 12 }}>
-      <PanelCard>
-        {viz ? (
-          <SamplingHero
-            viz={viz}
-            width={p.width}
-            focused={p.focused}
-            freqHz={f}
-            sampleRate={fs}
-            cyclesShown={cycles}
-            showRecon={recon}
-            filterOn={filterOn}
-            cutoffHz={cutoffHz}
-            slopeDbOct={slope}
-          />
-        ) : (
-          <VizUnavailableCard />
-        )}
-        <Badge text="EVERY DOT IS A MEASUREMENT OF THE CONTINUOUS SIGNAL — NOT A BLOCK OF SOUND. BELOW NYQUIST THE DOTS DESCRIBE IT COMPLETELY." />
-        <DisplayGuideButton onPress={() => p.help('sample_rate')} />
-        <View style={dstyles.chipRow}>
-          {RATE_CHIPS.map((r) => (
-            <LabChip
-              key={r}
-              label={`${r / 1000}k`}
-              selected={rateMode.kind === 'abs' && rateMode.fs === r}
-              onPress={() => setRateMode({ kind: 'abs', fs: r })}
-              onLongPress={() => p.help('sample_rate')}
+    <RackUnit
+      initialParam="freq"
+      params={params}
+      onHelp={p.help}
+      stage={{
+        size: 'L', // the sampling scene is the star
+        badge:
+          'EVERY DOT IS A MEASUREMENT OF THE CONTINUOUS SIGNAL — NOT A BLOCK OF SOUND. BELOW NYQUIST THE DOTS DESCRIBE IT COMPLETELY.',
+        onGuide: () => p.help('sample_rate'),
+        bezel: [
+          {
+            k: 'FS',
+            v: rateMode.kind === 'abs' ? fmtHz(fs) : `${fmtHz(fs)} (${rateMode.mult}×f)`,
+            helpKey: 'sample_rate',
+          },
+          { k: 'INPUT', v: fmtHz(f), helpKey: 'nyquist' },
+          { k: 'NYQUIST', v: fmtHz(nyq), helpKey: 'nyquist' },
+          { k: 'READS AS', v: fmtHz(alias), tint: aliased ? '#ff6b5e' : undefined, helpKey: 'aliasing' },
+        ],
+        render: (w, h) =>
+          viz ? (
+            <SamplingHero
+              viz={viz}
+              width={w}
+              height={h}
+              focused={p.focused}
+              freqHz={f}
+              sampleRate={fs}
+              cyclesShown={cycles}
+              showRecon={recon}
+              filterOn={filterOn}
+              cutoffHz={cutoffHz}
+              slopeDbOct={slope}
             />
-          ))}
-        </View>
-        <View style={dstyles.chipRow}>
-          {CYC_CHIPS.map((m) => (
-            <LabChip
-              key={m}
-              label={`${m} /CYC`}
-              selected={rateMode.kind === 'cyc' && rateMode.mult === m}
-              onPress={() => setRateMode({ kind: 'cyc', mult: m })}
-              onLongPress={() => p.help('samples_per_cycle')}
-            />
-          ))}
-        </View>
-        <Badge text="DEMO MODES: SAMPLE RATE SET RELATIVE TO THE INPUT FREQUENCY — FOR VISUALIZATION, NOT A REAL CONVERTER SETTING" />
-        <View style={dstyles.chipRow}>
-          <LabChip
-            label="RECONSTRUCTED"
-            selected={recon}
-            onPress={() => setRecon(!recon)}
-            onLongPress={() => p.help('nyquist')}
-          />
-        </View>
+          ) : (
+            <View style={{ flex: 1, justifyContent: 'center', padding: 12 }}>
+              <VizUnavailableCard />
+            </View>
+          ),
+      }}
+    >
+      <View style={{ gap: 12 }}>
         {recon && !aliased ? (
           <Badge text="RECONSTRUCTION OF A PURE SINE IS THE SINE ITSELF — THE CURVE THROUGH THE DOTS IS EXACT BAND-LIMITED MATH, NOT SMOOTHING" />
         ) : null}
-        <DragSlider
-          value={freqV}
-          onChange={setFreqV}
-          label="INPUT FREQUENCY — SWEEP THROUGH NYQUIST"
-          readout={fmtHz(f)}
-          onHelp={() => p.help('nyquist')}
-        />
         {sweepBlocked ? (
           <Text style={dstyles.caption}>
             At {fmtHz(fs)} the sweep tops out below Nyquist ({fmtHz(nyq)}) — pick 8–48 kHz or a
             per-cycle demo mode to cross it.
           </Text>
         ) : null}
-        <DragSlider
-          value={zoomV}
-          onChange={setZoomV}
-          label="ZOOM"
-          readout={`${nShown} samples · ${cycles.toFixed(cycles < 3 ? 2 : 1)} cycles in view`}
-          onHelp={() => p.help('samples_per_cycle')}
-        />
-        <ReadoutGrid items={readouts} help={p.help} helpKey="sample_rate" />
-      </PanelCard>
-
-      <PanelCard>
-        <Text style={dstyles.eyebrow}>NYQUIST & THE FOLD</Text>
-        <Text style={dstyles.body}>
-          Nyquist is half the sample rate — the highest frequency the sampled data can represent.
-          Sweep the input upward: below Nyquist the dots track it; above, the same dots fit a
-          LOWER-frequency sinusoid exactly (bright curve above), computed as |f − nearest multiple
-          of fs|. The diagram shows the whole axis folding at Nyquist.
-        </Text>
-        {viz ? <viz.FoldView width={p.width} freqHz={f} sampleRate={fs} /> : <VizUnavailableCard />}
-        <DisplayGuideButton onPress={() => p.help('aliasing')} />
-      </PanelCard>
-
-      <PanelCard>
-        <Text style={dstyles.eyebrow}>ALIAS AUDIO — HEAR THE FOLD</Text>
-        <Text style={dstyles.body}>
-          Play the input tone, then the alias the math predicts for it. Hold PLAY PREDICTED ALIAS
-          and drag the frequency slider up through Nyquist — the pitch folds back down while the
-          input keeps rising.
-        </Text>
-        {!engineReady ? (
-          <EngineGate state={gate} />
-        ) : (
-          <View style={{ gap: 8 }}>
-            <GlassButton
-              label={playing === 'input' ? 'STOP' : `PLAY INPUT — ${fmtHz(f)}`}
-              tint="green"
-              height={46}
-              fontSize={13.5}
-              disabled={!canInput}
-              onPress={() => (playing === 'input' ? stop() : play('input', f))}
-            />
-            <GlassButton
-              label={playing === 'alias' ? 'STOP' : `PLAY PREDICTED ALIAS — ${fmtHz(alias)}`}
-              tint={aliased ? 'gold' : 'green'}
-              height={46}
-              fontSize={13.5}
-              disabled={!canAlias}
-              onPress={() => (playing === 'alias' ? stop() : play('alias', alias))}
-            />
-            {!aliased ? (
-              <Text style={dstyles.caption}>
-                Below Nyquist the predicted alias IS the input — both buttons play the same tone.
-              </Text>
-            ) : null}
-            {!canInput || !canAlias ? (
-              <Text style={dstyles.caption}>
-                Tones outside ~{PLAY_MIN_HZ} Hz–{fmtHz(PLAY_MAX_HZ)} are gated off (generator and
-                hearing range) — the math readouts above stay live.
-              </Text>
-            ) : null}
-          </View>
-        )}
-        <Badge text="SYNTHESIZED PREDICTION — THE GENERATOR PLAYS THE TONE THE MATH PREDICTS; A REAL CONVERTER WITHOUT AN ANTI-ALIAS FILTER WOULD PRODUCE IT" />
-      </PanelCard>
-
-      <PanelCard>
-        <Text style={dstyles.eyebrow}>ANTI-ALIASING FILTER</Text>
-        <Text style={dstyles.body}>
-          A low-pass BEFORE the sampler removes content above Nyquist so it can never fold down.
-          Filter off: an above-Nyquist input reaches the sampler and the alias appears in the
-          sampled data above. Filter on: the input is attenuated before measurement — the alias is
-          gone, and honest cost: real signal near the cutoff is attenuated too.
-        </Text>
-        <View style={dstyles.chipRow}>
-          <LabChip
-            label="FILTER OFF"
-            selected={!filterOn}
-            onPress={() => setFilterOn(false)}
-            onLongPress={() => p.help('aa_filter')}
-          />
-          <LabChip
-            label="FILTER ON"
-            selected={filterOn}
-            onPress={() => setFilterOn(true)}
-            onLongPress={() => p.help('aa_filter')}
-          />
-          {SLOPE_CHIPS.map((s) => (
-            <LabChip
-              key={s}
-              label={`${s} dB/OCT`}
-              selected={filterOn && slope === s}
-              onPress={() => {
-                setSlope(s);
-                setFilterOn(true);
-              }}
-              onLongPress={() => p.help('aa_filter')}
-            />
-          ))}
-        </View>
-        <DragSlider
-          value={cutV}
-          onChange={setCutV}
-          label="CUTOFF"
-          readout={`${fmtHz(cutoffHz)} · ${(cutoffHz / nyq).toFixed(2)}×Nyquist`}
-          onHelp={() => p.help('aa_filter')}
-        />
-        {viz ? (
-          <viz.AAFilterView
-            width={p.width}
-            sampleRate={fs}
-            cutoffHz={cutoffHz}
-            slopeDbOct={slope}
-            freqHz={f}
-            filterOn={filterOn}
-          />
-        ) : (
-          <VizUnavailableCard />
-        )}
         <ReadoutGrid
           help={p.help}
-          helpKey="aa_filter"
+          helpKey="sample_rate"
           items={[
-            { k: 'CUTOFF', v: fmtHz(cutoffHz) },
-            { k: 'SLOPE', v: `${slope} dB/oct` },
-            { k: 'INPUT ATTEN', v: filterOn ? `−${attenDb.toFixed(1)} dB` : '0 dB (off)' },
+            { k: 'INTERVAL', v: `${(1e6 / fs).toFixed(3)} µs` },
+            { k: 'SAMPLES / CYCLE', v: spc.toFixed(2), helpKey: 'samples_per_cycle' },
+            { k: 'f / NYQUIST', v: `${(f / nyq).toFixed(2)}×`, helpKey: 'nyquist' },
+            { k: '24-BIT STEREO', v: `${((fs * 48) / 1e6).toFixed(3)} Mb/s` },
           ]}
         />
-        <Badge text="MAGNITUDE-ROLLOFF MODEL — SHOWS ROLLOFF ONLY (NOT PASSBAND RIPPLE · STOPBAND DEPTH · PHASE)" />
-      </PanelCard>
 
-      <MythReality
-        myth="More samples per second makes the waveform smoother — 192 kHz audio has smoother curves than 48 kHz."
-        reality="Below Nyquist the samples uniquely describe ONE band-limited signal, and reconstruction returns exactly that signal — turn on RECONSTRUCTED at 3 samples per cycle and watch the curve hug the original. A higher sample rate buys BANDWIDTH (a higher Nyquist), not smoothness."
-      />
-      <CheckQuestion spec={CHECK_ALIAS} />
-      <CheckQuestion spec={CHECK_AA} />
-    </View>
+        <PanelCard>
+          <Text style={dstyles.eyebrow}>NYQUIST & THE FOLD</Text>
+          <Text style={dstyles.body}>
+            Nyquist is half the sample rate — the highest frequency the sampled data can represent.
+            Sweep the input upward: below Nyquist the dots track it; above, the same dots fit a
+            LOWER-frequency sinusoid exactly (bright curve above), computed as |f − nearest multiple
+            of fs|. The diagram shows the whole axis folding at Nyquist.
+          </Text>
+          {viz ? <viz.FoldView width={p.width} freqHz={f} sampleRate={fs} /> : <VizUnavailableCard />}
+          <DisplayGuideButton onPress={() => p.help('aliasing')} />
+        </PanelCard>
+
+        <PanelCard>
+          <Text style={dstyles.eyebrow}>ALIAS AUDIO — HEAR THE FOLD</Text>
+          <Text style={dstyles.body}>
+            Play the input tone, then the alias the math predicts for it. Hold PLAY PREDICTED ALIAS
+            and ride the FREQ lane up through Nyquist — the pitch folds back down while the
+            input keeps rising.
+          </Text>
+          {!engineReady ? (
+            <EngineGate state={gate} />
+          ) : (
+            <View style={{ gap: 8 }}>
+              <GlassButton
+                label={playing === 'input' ? 'STOP' : `PLAY INPUT — ${fmtHz(f)}`}
+                tint="green"
+                height={46}
+                fontSize={13.5}
+                disabled={!canInput}
+                onPress={() => (playing === 'input' ? stop() : play('input', f))}
+              />
+              <GlassButton
+                label={playing === 'alias' ? 'STOP' : `PLAY PREDICTED ALIAS — ${fmtHz(alias)}`}
+                tint={aliased ? 'gold' : 'green'}
+                height={46}
+                fontSize={13.5}
+                disabled={!canAlias}
+                onPress={() => (playing === 'alias' ? stop() : play('alias', alias))}
+              />
+              {!aliased ? (
+                <Text style={dstyles.caption}>
+                  Below Nyquist the predicted alias IS the input — both buttons play the same tone.
+                </Text>
+              ) : null}
+              {!canInput || !canAlias ? (
+                <Text style={dstyles.caption}>
+                  Tones outside ~{PLAY_MIN_HZ} Hz–{fmtHz(PLAY_MAX_HZ)} are gated off (generator and
+                  hearing range) — the math readouts above stay live.
+                </Text>
+              ) : null}
+            </View>
+          )}
+          <Badge text="SYNTHESIZED PREDICTION — THE GENERATOR PLAYS THE TONE THE MATH PREDICTS; A REAL CONVERTER WITHOUT AN ANTI-ALIAS FILTER WOULD PRODUCE IT" />
+        </PanelCard>
+
+        <PanelCard>
+          <Text style={dstyles.eyebrow}>ANTI-ALIASING FILTER</Text>
+          <Text style={dstyles.body}>
+            A low-pass BEFORE the sampler removes content above Nyquist so it can never fold down.
+            Filter off: an above-Nyquist input reaches the sampler and the alias appears in the
+            sampled data above. Filter on: the input is attenuated before measurement — the alias is
+            gone, and honest cost: real signal near the cutoff is attenuated too.
+          </Text>
+          <View style={dstyles.chipRow}>
+            <LabChip
+              label="FILTER OFF"
+              selected={!filterOn}
+              onPress={() => setFilterOn(false)}
+              onLongPress={() => p.help('aa_filter')}
+            />
+            <LabChip
+              label="FILTER ON"
+              selected={filterOn}
+              onPress={() => setFilterOn(true)}
+              onLongPress={() => p.help('aa_filter')}
+            />
+            {SLOPE_CHIPS.map((s) => (
+              <LabChip
+                key={s}
+                label={`${s} dB/OCT`}
+                selected={filterOn && slope === s}
+                onPress={() => {
+                  setSlope(s);
+                  setFilterOn(true);
+                }}
+                onLongPress={() => p.help('aa_filter')}
+              />
+            ))}
+          </View>
+          <DragSlider
+            value={cutV}
+            onChange={setCutV}
+            label="CUTOFF"
+            readout={`${fmtHz(cutoffHz)} · ${(cutoffHz / nyq).toFixed(2)}×Nyquist`}
+            onHelp={() => p.help('aa_filter')}
+          />
+          {viz ? (
+            <viz.AAFilterView
+              width={p.width}
+              sampleRate={fs}
+              cutoffHz={cutoffHz}
+              slopeDbOct={slope}
+              freqHz={f}
+              filterOn={filterOn}
+            />
+          ) : (
+            <VizUnavailableCard />
+          )}
+          <ReadoutGrid
+            help={p.help}
+            helpKey="aa_filter"
+            items={[
+              { k: 'CUTOFF', v: fmtHz(cutoffHz) },
+              { k: 'SLOPE', v: `${slope} dB/oct` },
+              { k: 'INPUT ATTEN', v: filterOn ? `−${attenDb.toFixed(1)} dB` : '0 dB (off)' },
+            ]}
+          />
+          <Badge text="MAGNITUDE-ROLLOFF MODEL — SHOWS ROLLOFF ONLY (NOT PASSBAND RIPPLE · STOPBAND DEPTH · PHASE)" />
+        </PanelCard>
+
+        <MythReality
+          myth="More samples per second makes the waveform smoother — 192 kHz audio has smoother curves than 48 kHz."
+          reality="Below Nyquist the samples uniquely describe ONE band-limited signal, and reconstruction returns exactly that signal — turn on RECONSTRUCTED at 3 samples per cycle and watch the curve hug the original. A higher sample rate buys BANDWIDTH (a higher Nyquist), not smoothness."
+        />
+        <CheckQuestion spec={CHECK_ALIAS} />
+        <CheckQuestion spec={CHECK_AA} />
+        <LessonRow onPress={() => p.help()} />
+      </View>
+    </RackUnit>
   );
 }

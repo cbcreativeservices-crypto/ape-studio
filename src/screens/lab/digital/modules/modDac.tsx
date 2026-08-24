@@ -4,6 +4,14 @@
  * reconstruction hero; Module 8 is the permanent MYTH vs REALITY charter panel
  * plus the honest jitter model.
  *
+ * RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23): both modules render the RackUnit
+ * frame themselves. Module 7 pins the reconstruction hero (MODE + LAYERS in
+ * dock trays — it has no fader, so the lane stays hidden; the ISP explorer and
+ * its sliders remain a well station). Module 8 pins the jitter scene with the
+ * JITTER lane + RANDOM/PERIODIC tray; the charter panel reads in the well.
+ * Honesty badges stay with their displays verbatim; the well carries its own
+ * guided-lesson entry row.
+ *
  * CHARTER (owner): sample values describe a band-limited signal; the DAC +
  * reconstruction filter produce a CONTINUOUS analog waveform via band-limited
  * interpolation — never connect-the-dots, never stair steps as the final
@@ -19,7 +27,6 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { DigitalModuleProps } from '../DigitalModuleScreen';
 import {
   Badge,
-  ModeChips,
   MythReality,
   PanelCard,
   ReadoutGrid,
@@ -28,6 +35,8 @@ import {
 } from '../bits';
 import { CheckQuestion, DragSlider, VizUnavailableCard } from '../../foundations/bits';
 import { LabChip } from '../../LabShell';
+import { RackUnit } from '../../rack/RackUnit';
+import type { DockParam } from '../../rack/rackTypes';
 import { requireVizDac } from '../skiaGate';
 import { colors, fonts } from '../../../../theme/tokens';
 
@@ -46,6 +55,16 @@ function PanelHead({ title, helpLabel, onHelp }: { title: string; helpLabel?: st
       <Text style={dstyles.eyebrow}>{title}</Text>
       {onHelp && helpLabel ? <HelpLink label={helpLabel} onPress={onHelp} /> : null}
     </View>
+  );
+}
+
+/** Guided-lesson entry row at the bottom of the rack well (rack modules own
+ *  their well, so they carry the host's lessonRow themselves). */
+function LessonRow({ onPress }: { onPress: () => void }) {
+  return (
+    <Pressable style={local.lessonRow} onPress={onPress} accessibilityRole="button" accessibilityLabel="Open the guided lesson">
+      <Text style={local.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
+    </Pressable>
   );
 }
 
@@ -107,20 +126,32 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
 
   const toggleLayer = (k: LayerKey) => setLayers((s) => ({ ...s, [k]: !s[k] }));
   const showZoh = layers.zoh && mode !== 'simple'; // SIMPLIFIED hides the intermediate
+  const layerCount =
+    (layers.samples ? 1 : 0) + (showZoh ? 1 : 0) + (layers.recon ? 1 : 0) + (layers.original ? 1 : 0);
 
-  return (
-    <View style={{ gap: 12 }}>
-      {/* ── Hero: the four-layer reconstruction ─────────────────────────── */}
-      <PanelCard>
-        <PanelHead title="MODULE 7 · NUMBERS BACK INTO SOUND" helpLabel="reconstruction" onHelp={() => help('reconstruction')} />
-        <Text style={dstyles.body}>
-          The stored sample values describe exactly one band-limited signal. The DAC plus its
-          reconstruction filter OUTPUT that signal — a continuous analog waveform, made by
-          band-limited interpolation. Not straight lines between dots. Not stair steps. Toggle the
-          layers and watch the reconstructed curve pass through every sample while clearing every
-          step corner — and lie exactly on the original.
-        </Text>
-        <ModeChips mode={mode} onMode={setMode} />
+  const params: DockParam[] = [
+    {
+      kind: 'options',
+      id: 'mode',
+      label: 'MODE',
+      valueLabel: mode === 'simple' ? 'SIMPLE' : mode === 'xray' ? 'X-RAY' : 'STD',
+      options: [
+        { id: 'simple', label: 'SIMPLIFIED' },
+        { id: 'standard', label: 'STANDARD' },
+        { id: 'xray', label: 'X-RAY' },
+      ],
+      selectedId: mode,
+      onSelect: (id) => setMode(id as ViewMode),
+      sticky: true, // A/B the views while the hero reacts
+      helpKey: 'reconstruction',
+    },
+    {
+      kind: 'group',
+      id: 'layers',
+      label: 'LAYERS',
+      valueLabel: `${layerCount}/4`,
+      helpKey: 'reconstruction',
+      render: () => (
         <View style={dstyles.chipRow}>
           {LAYER_CHIPS.map((c) =>
             c.key === 'zoh' && mode === 'simple' ? null : (
@@ -134,150 +165,183 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
             ),
           )}
         </View>
-        {viz ? (
-          <viz.ReconstructionView
-            width={vw}
-            running={focused}
-            showSamples={layers.samples}
-            showZoh={showZoh}
-            showRecon={layers.recon}
-            showOriginal={layers.original}
-            xray={mode === 'xray'}
-          />
-        ) : (
-          <VizUnavailableCard />
-        )}
-        <Badge text="CONCEPTUAL MODEL — SLOWED FOR VISIBILITY · ZOH DRAWN AS THE INTERMEDIATE STAGE IT IS" />
+      ),
+    },
+  ];
+
+  return (
+    <RackUnit
+      initialParam="mode"
+      params={params}
+      onHelp={help}
+      stage={{
+        size: 'L', // the four-layer hero IS the module
+        badge: 'CONCEPTUAL MODEL — SLOWED FOR VISIBILITY · ZOH DRAWN AS THE INTERMEDIATE STAGE IT IS',
+        onGuide: () => help('reconstruction'),
+        bezel: [
+          { k: 'FS', v: '48 kHz', helpKey: 'reconstruction' },
+          { k: 'MODE', v: mode === 'simple' ? 'SIMPLE' : mode === 'xray' ? 'X-RAY' : 'STD', helpKey: 'reconstruction' },
+          { k: 'LAYERS', v: `${layerCount}/4`, helpKey: 'reconstruction' },
+        ],
+        render: (w, h) =>
+          viz ? (
+            <viz.ReconstructionView
+              width={w}
+              height={h}
+              running={focused}
+              showSamples={layers.samples}
+              showZoh={showZoh}
+              showRecon={layers.recon}
+              showOriginal={layers.original}
+              xray={mode === 'xray'}
+            />
+          ) : (
+            <View style={{ flex: 1, justifyContent: 'center', padding: 12 }}>
+              <VizUnavailableCard />
+            </View>
+          ),
+      }}
+    >
+      <View style={{ gap: 12 }}>
+        {/* ── The hero's reading ─────────────────────────────────────────── */}
+        <Text style={dstyles.body}>
+          The stored sample values describe exactly one band-limited signal. The DAC plus its
+          reconstruction filter OUTPUT that signal — a continuous analog waveform, made by
+          band-limited interpolation. Not straight lines between dots. Not stair steps. Toggle the
+          LAYERS and watch the reconstructed curve pass through every sample while clearing every
+          step corner — and lie exactly on the original.
+        </Text>
         <Text style={dstyles.caption}>
           The dim steps are the zero-order hold — a real intermediate voltage inside the converter,
           and a useful model. The final analog output is the bright continuous curve: below Nyquist
           it overlays the original signal exactly. That identity is the whole point of the module.
         </Text>
-      </PanelCard>
 
-      {/* ── The DAC chain ────────────────────────────────────────────────── */}
-      <PanelCard>
-        <PanelHead title="THE D-TO-A CHAIN" helpLabel="zoh" onHelp={() => help('zoh')} />
-        {viz ? <viz.DacChainStrip width={vw} running={focused} /> : <VizUnavailableCard />}
-        <Text style={dstyles.caption}>
-          PCM data is clocked into the DAC element, whose held output is the stepped intermediate —
-          then the reconstruction filter turns steps into the smooth analog waveform. The
-          step→smooth handoff happens at the filter block, nowhere else.
-        </Text>
-      </PanelCard>
-
-      {/* ── Frequency domain: images + oversampling ──────────────────────── */}
-      <PanelCard>
-        <PanelHead title="SPECTRAL IMAGES & OVERSAMPLING" helpLabel="spectral images" onHelp={() => help('spectral_images')} />
-        <Text style={dstyles.body}>
-          In the frequency domain, sampling mirrored the audio spectrum around every multiple of the
-          sample rate. The reconstruction filter's job is to remove those images. Oversample and the
-          images slide far away — so the analog filter can relax from a cliff into a gentle slope.
-        </Text>
-        <View style={dstyles.chipRow}>
-          {OS_CHOICES.map((c) => (
-            <LabChip
-              key={c}
-              label={`${c}×`}
-              selected={os === c}
-              onPress={() => setOs(c)}
-              onLongPress={() => help('oversampling')}
-            />
-          ))}
-        </View>
-        {viz ? <viz.ImagesView width={vw} os={os} /> : <VizUnavailableCard />}
-        <ReadoutGrid
-          help={help}
-          helpKey="oversampling"
-          items={[
-            { k: 'OUTPUT RATE', v: `${os} × 48 kHz` },
-            { k: 'FIRST IMAGE AT', v: `${os * 48} kHz` },
-            { k: 'FILTER TRANSITION', v: `20 → ${os * 48 - 20} kHz` },
-          ]}
-        />
-        <Badge text="DRAWN SPECTRA — ILLUSTRATIVE MIRROR MATH, √f AXIS COMPRESSION · NOT A MEASUREMENT" />
-        <Text style={dstyles.caption}>
-          Oversampling relaxes the analog filter — it adds no new information. The audio band was
-          fully described by the original samples; the extra rate only buys engineering room.
-        </Text>
-      </PanelCard>
-
-      {/* ── Inter-sample peaks — the advanced star ───────────────────────── */}
-      <PanelCard>
-        <PanelHead title="INTER-SAMPLE PEAK EXPLORER" helpLabel="inter-sample peaks" onHelp={() => help('isp')} />
-        <Text style={dstyles.body}>
-          A near-Nyquist sine, its samples normalized to −0.1 dBFS — every stored value is legal, and
-          a sample-peak meter approves. But the continuous waveform the DAC must reconstruct arcs
-          ABOVE 0 dBFS between the samples. Drag the phase and watch the true peak swing while the
-          samples never move past the line.
-        </Text>
-        <DragSlider
-          label="FREQUENCY"
-          value={ratio01}
-          onChange={setRatio01}
-          readout={`${(ratio * 48).toFixed(1)} kHz (${ratio.toFixed(3)} · fs)`}
-          onHelp={() => help('isp')}
-        />
-        <DragSlider
-          label="SAMPLE PHASE"
-          value={phase01}
-          onChange={setPhase01}
-          readout={`${phaseDeg.toFixed(0)}°`}
-          onHelp={() => help('isp')}
-        />
-        {viz ? <viz.IspView width={vw} running={focused} ratio={ratio} phaseDeg={phaseDeg} /> : <VizUnavailableCard />}
-        <ReadoutGrid
-          help={help}
-          helpKey="isp"
-          items={[
-            { k: 'SAMPLE PEAK', v: `${isp.samplePeakDb.toFixed(2)} dBFS` },
-            { k: 'TRUE PEAK', v: `${isp.truePeakDb >= 0 ? '+' : ''}${isp.truePeakDb.toFixed(2)} dBTP` },
-            { k: 'METER MISSES', v: `${isp.missDb.toFixed(2)} dB` },
-          ]}
-        />
-        <View style={[local.riskRow, isp.clipRisk ? local.riskOn : local.riskOff]}>
-          <Text style={[local.riskText, { color: isp.clipRisk ? colors.red : colors.greenBright }]}>
-            {isp.clipRisk
-              ? '⚠ CLIP RISK — reconstruction exceeds 0 dBFS: the DAC or a downstream encoder can overload'
-              : '✓ NO OVERSHOOT — at this phase a sample lands close enough to the crest'}
+        {/* ── The DAC chain ────────────────────────────────────────────────── */}
+        <PanelCard>
+          <PanelHead title="THE D-TO-A CHAIN" helpLabel="zoh" onHelp={() => help('zoh')} />
+          {viz ? <viz.DacChainStrip width={vw} running={focused} /> : <VizUnavailableCard />}
+          <Text style={dstyles.caption}>
+            PCM data is clocked into the DAC element, whose held output is the stepped intermediate —
+            then the reconstruction filter turns steps into the smooth analog waveform. The
+            step→smooth handoff happens at the filter block, nowhere else.
           </Text>
-        </View>
-        <Text style={dstyles.caption}>
-          Exact math for a pure sine: where the samples land in phase sets the SAMPLE peak; the
-          sine's amplitude is the TRUE peak. This gap is why sample-peak meters miss what true-peak
-          meters catch — true-peak metering oversamples to estimate the reconstructed waveform.
-        </Text>
-      </PanelCard>
+        </PanelCard>
 
-      <CheckQuestion
-        spec={{
-          question: 'The reconstruction filter’s output — the waveform on the DAC’s analog connector — looks like:',
-          options: [
-            'Stair steps matching the held sample values',
-            'Straight lines connecting the sample dots',
-            'A continuous band-limited waveform passing through the sample values',
-          ],
-          correctIdx: 2,
-          reveal:
-            'The samples describe exactly one band-limited signal, and the DAC + reconstruction filter produce it — a continuous analog waveform via band-limited interpolation. The steps are an intermediate stage; connect-the-dots never happens at all.',
-          wrongHint: 'Look at the hero view: the bright output curve never touches a step corner and is never a straight segment.',
-        }}
-      />
-      <CheckQuestion
-        spec={{
-          question: 'Every sample in a file sits below 0 dBFS. Can the DAC’s analog output still overload?',
-          options: [
-            'No — the samples are the signal, so below 0 dBFS is always safe',
-            'Yes — the reconstructed waveform between samples can rise above 0 dBFS',
-            'Only if the file is floating point',
-          ],
-          correctIdx: 1,
-          reveal:
-            'True. Near-Nyquist content can put every sample below full scale while the continuous reconstruction arcs above it between them — inter-sample peaks. That is why true-peak (oversampled) meters exist.',
-          wrongHint: 'The explorer above shows legal samples with the reconstruction glowing red above the 0 dBFS line.',
-        }}
-      />
-    </View>
+        {/* ── Frequency domain: images + oversampling ──────────────────────── */}
+        <PanelCard>
+          <PanelHead title="SPECTRAL IMAGES & OVERSAMPLING" helpLabel="spectral images" onHelp={() => help('spectral_images')} />
+          <Text style={dstyles.body}>
+            In the frequency domain, sampling mirrored the audio spectrum around every multiple of the
+            sample rate. The reconstruction filter's job is to remove those images. Oversample and the
+            images slide far away — so the analog filter can relax from a cliff into a gentle slope.
+          </Text>
+          <View style={dstyles.chipRow}>
+            {OS_CHOICES.map((c) => (
+              <LabChip
+                key={c}
+                label={`${c}×`}
+                selected={os === c}
+                onPress={() => setOs(c)}
+                onLongPress={() => help('oversampling')}
+              />
+            ))}
+          </View>
+          {viz ? <viz.ImagesView width={vw} os={os} /> : <VizUnavailableCard />}
+          <ReadoutGrid
+            help={help}
+            helpKey="oversampling"
+            items={[
+              { k: 'OUTPUT RATE', v: `${os} × 48 kHz` },
+              { k: 'FIRST IMAGE AT', v: `${os * 48} kHz` },
+              { k: 'FILTER TRANSITION', v: `20 → ${os * 48 - 20} kHz` },
+            ]}
+          />
+          <Badge text="DRAWN SPECTRA — ILLUSTRATIVE MIRROR MATH, √f AXIS COMPRESSION · NOT A MEASUREMENT" />
+          <Text style={dstyles.caption}>
+            Oversampling relaxes the analog filter — it adds no new information. The audio band was
+            fully described by the original samples; the extra rate only buys engineering room.
+          </Text>
+        </PanelCard>
+
+        {/* ── Inter-sample peaks — the advanced star ───────────────────────── */}
+        <PanelCard>
+          <PanelHead title="INTER-SAMPLE PEAK EXPLORER" helpLabel="inter-sample peaks" onHelp={() => help('isp')} />
+          <Text style={dstyles.body}>
+            A near-Nyquist sine, its samples normalized to −0.1 dBFS — every stored value is legal, and
+            a sample-peak meter approves. But the continuous waveform the DAC must reconstruct arcs
+            ABOVE 0 dBFS between the samples. Drag the phase and watch the true peak swing while the
+            samples never move past the line.
+          </Text>
+          <DragSlider
+            label="FREQUENCY"
+            value={ratio01}
+            onChange={setRatio01}
+            readout={`${(ratio * 48).toFixed(1)} kHz (${ratio.toFixed(3)} · fs)`}
+            onHelp={() => help('isp')}
+          />
+          <DragSlider
+            label="SAMPLE PHASE"
+            value={phase01}
+            onChange={setPhase01}
+            readout={`${phaseDeg.toFixed(0)}°`}
+            onHelp={() => help('isp')}
+          />
+          {viz ? <viz.IspView width={vw} running={focused} ratio={ratio} phaseDeg={phaseDeg} /> : <VizUnavailableCard />}
+          <ReadoutGrid
+            help={help}
+            helpKey="isp"
+            items={[
+              { k: 'SAMPLE PEAK', v: `${isp.samplePeakDb.toFixed(2)} dBFS` },
+              { k: 'TRUE PEAK', v: `${isp.truePeakDb >= 0 ? '+' : ''}${isp.truePeakDb.toFixed(2)} dBTP` },
+              { k: 'METER MISSES', v: `${isp.missDb.toFixed(2)} dB` },
+            ]}
+          />
+          <View style={[local.riskRow, isp.clipRisk ? local.riskOn : local.riskOff]}>
+            <Text style={[local.riskText, { color: isp.clipRisk ? colors.red : colors.greenBright }]}>
+              {isp.clipRisk
+                ? '⚠ CLIP RISK — reconstruction exceeds 0 dBFS: the DAC or a downstream encoder can overload'
+                : '✓ NO OVERSHOOT — at this phase a sample lands close enough to the crest'}
+            </Text>
+          </View>
+          <Text style={dstyles.caption}>
+            Exact math for a pure sine: where the samples land in phase sets the SAMPLE peak; the
+            sine's amplitude is the TRUE peak. This gap is why sample-peak meters miss what true-peak
+            meters catch — true-peak metering oversamples to estimate the reconstructed waveform.
+          </Text>
+        </PanelCard>
+
+        <CheckQuestion
+          spec={{
+            question: 'The reconstruction filter’s output — the waveform on the DAC’s analog connector — looks like:',
+            options: [
+              'Stair steps matching the held sample values',
+              'Straight lines connecting the sample dots',
+              'A continuous band-limited waveform passing through the sample values',
+            ],
+            correctIdx: 2,
+            reveal:
+              'The samples describe exactly one band-limited signal, and the DAC + reconstruction filter produce it — a continuous analog waveform via band-limited interpolation. The steps are an intermediate stage; connect-the-dots never happens at all.',
+            wrongHint: 'Look at the hero view: the bright output curve never touches a step corner and is never a straight segment.',
+          }}
+        />
+        <CheckQuestion
+          spec={{
+            question: 'Every sample in a file sits below 0 dBFS. Can the DAC’s analog output still overload?',
+            options: [
+              'No — the samples are the signal, so below 0 dBFS is always safe',
+              'Yes — the reconstructed waveform between samples can rise above 0 dBFS',
+              'Only if the file is floating point',
+            ],
+            correctIdx: 1,
+            reveal:
+              'True. Near-Nyquist content can put every sample below full scale while the continuous reconstruction arcs above it between them — inter-sample peaks. That is why true-peak (oversampled) meters exist.',
+            wrongHint: 'The explorer above shows legal samples with the reconstruction glowing red above the 0 dBFS line.',
+          }}
+        />
+        <LessonRow onPress={() => help()} />
+      </View>
+    </RackUnit>
   );
 }
 
@@ -328,58 +392,78 @@ const MYTHS: { myth: string; reality: string }[] = [
   },
 ];
 
-export function ErrorsModule({ width, focused, help }: DigitalModuleProps) {
+export function ErrorsModule({ width: _width, focused, help }: DigitalModuleProps) {
   const viz = useState(() => requireVizDac())[0];
   const [jitAmt, setJitAmt] = useState(0.6);
   const [jitMode, setJitMode] = useState<'random' | 'periodic'>('random');
-  const vw = width - 26;
   const peakDevNs = jitAmt * 8; // the honest number behind the ×1000 drawing
 
-  return (
-    <View style={{ gap: 12 }}>
-      {/* ── The charter panel ────────────────────────────────────────────── */}
-      <PanelCard>
-        <PanelHead title="MODULE 8 · MYTH vs REALITY" helpLabel="myths" onHelp={() => help('myths')} />
-        <Text style={dstyles.body}>
-          The permanent misconception panel — every classic digital-audio myth, next to what is
-          actually true. If one line of this lab survives in your memory, make it one of these.
-        </Text>
-        {MYTHS.map((m) => (
-          <MythReality key={m.myth} myth={m.myth} reality={m.reality} />
-        ))}
-      </PanelCard>
+  const params: DockParam[] = [
+    {
+      kind: 'fader',
+      id: 'jitter',
+      label: 'JITTER',
+      value: jitAmt,
+      onChange: setJitAmt,
+      format: () => `±${peakDevNs.toFixed(1)} ns`,
+      formatShort: () => `±${peakDevNs.toFixed(1)}ns`,
+      helpKey: 'jitter',
+    },
+    {
+      kind: 'options',
+      id: 'jmode',
+      label: 'MODE',
+      valueLabel: jitMode === 'random' ? 'RANDOM' : 'PERIOD',
+      options: [
+        { id: 'random', label: 'RANDOM' },
+        { id: 'periodic', label: 'PERIODIC' },
+      ],
+      selectedId: jitMode,
+      onSelect: (id) => setJitMode(id as 'random' | 'periodic'),
+      sticky: true, // A/B the two error characters while the glass reacts
+      helpKey: 'jitter',
+    },
+  ];
 
-      {/* ── Clock & jitter ───────────────────────────────────────────────── */}
-      <PanelCard>
-        <PanelHead title="CLOCK & JITTER" helpLabel="jitter" onHelp={() => help('jitter')} />
+  return (
+    <RackUnit
+      initialParam="jitter"
+      params={params}
+      onHelp={help}
+      stage={{
+        size: 'M', // the jitter scene operates; the charter reads below
+        badge: 'TIMING DEVIATION EXAGGERATED ×1000 FOR VISIBILITY — ILLUSTRATIVE MODEL',
+        onGuide: () => help('jitter'),
+        bezel: [
+          { k: 'INTERVAL', v: '20.83 µs @48k', helpKey: 'jitter' },
+          { k: 'PEAK DEV', v: `±${peakDevNs.toFixed(1)} ns`, helpKey: 'jitter' },
+          { k: 'MODE', v: jitMode.toUpperCase(), helpKey: 'jitter' },
+        ],
+        render: (w, h) =>
+          viz ? (
+            <viz.JitterView width={w} height={h} running={focused} amount={jitAmt} mode={jitMode} />
+          ) : (
+            <View style={{ flex: 1, justifyContent: 'center', padding: 12 }}>
+              <VizUnavailableCard />
+            </View>
+          ),
+      }}
+    >
+      <View style={{ gap: 12 }}>
+        {/* ── Clock & jitter — the pinned scene's reading ──────────────────── */}
         <Text style={dstyles.body}>
           Jitter is timing variation of the sampling instants — not value rounding. Measure the
           right voltage at the wrong moment and you store a wrong value; the error grows with how
           fast the signal is changing at that instant.
         </Text>
-        <View style={dstyles.chipRow}>
-          <LabChip label="RANDOM" selected={jitMode === 'random'} onPress={() => setJitMode('random')} onLongPress={() => help('jitter')} />
-          <LabChip label="PERIODIC" selected={jitMode === 'periodic'} onPress={() => setJitMode('periodic')} onLongPress={() => help('jitter')} />
-        </View>
-        <DragSlider
-          label="JITTER AMOUNT"
-          value={jitAmt}
-          onChange={setJitAmt}
-          readout={`±${peakDevNs.toFixed(1)} ns`}
-          onHelp={() => help('jitter')}
-        />
-        {viz ? <viz.JitterView width={vw} running={focused} amount={jitAmt} mode={jitMode} /> : <VizUnavailableCard />}
         <ReadoutGrid
           help={help}
           helpKey="jitter"
           items={[
-            { k: 'NOMINAL INTERVAL', v: '20.83 µs @48k' },
-            { k: 'PEAK DEVIATION', v: `±${peakDevNs.toFixed(1)} ns` },
             { k: 'MATTERS AT', v: 'ADC / DAC conversion' },
             { k: 'HARMLESS AT', v: 'buffered · reclocked playback' },
           ]}
         />
-        <Badge text="TIMING DEVIATION EXAGGERATED ×1000 FOR VISIBILITY — ILLUSTRATIVE MODEL" />
         <Text style={dstyles.caption}>
           The whiskers show the value error: error ≈ slope × timing error — biggest where the
           waveform is steepest, zero where it is flat. Jitter matters where a clock times an actual
@@ -387,87 +471,110 @@ export function ErrorsModule({ width, focused, help }: DigitalModuleProps) {
           regardless of the cable. Claims that clocks and cables transform playback sound should be
           weighed against that.
         </Text>
-      </PanelCard>
 
-      {/* ── Data rate — the mental math ──────────────────────────────────── */}
-      <PanelCard>
-        <PanelHead title="DATA RATE — THE MENTAL MATH" helpLabel="data rate" onHelp={() => help('data_rate')} />
-        <ReadoutGrid
-          help={help}
-          helpKey="data_rate"
-          items={[
-            { k: 'FORMAT', v: '48k × 24-bit × 2ch' },
-            { k: 'BIT RATE', v: '2.304 Mbit/s' },
-            { k: 'STORAGE', v: '≈ 17.3 MB/min' },
-          ]}
+        {/* ── The charter panel ────────────────────────────────────────────── */}
+        <PanelCard>
+          <PanelHead title="MODULE 8 · MYTH vs REALITY" helpLabel="myths" onHelp={() => help('myths')} />
+          <Text style={dstyles.body}>
+            The permanent misconception panel — every classic digital-audio myth, next to what is
+            actually true. If one line of this lab survives in your memory, make it one of these.
+          </Text>
+          {MYTHS.map((m) => (
+            <MythReality key={m.myth} myth={m.myth} reality={m.reality} />
+          ))}
+        </PanelCard>
+
+        {/* ── Data rate — the mental math ──────────────────────────────────── */}
+        <PanelCard>
+          <PanelHead title="DATA RATE — THE MENTAL MATH" helpLabel="data rate" onHelp={() => help('data_rate')} />
+          <ReadoutGrid
+            help={help}
+            helpKey="data_rate"
+            items={[
+              { k: 'FORMAT', v: '48k × 24-bit × 2ch' },
+              { k: 'BIT RATE', v: '2.304 Mbit/s' },
+              { k: 'STORAGE', v: '≈ 17.3 MB/min' },
+            ]}
+          />
+          <Text style={dstyles.caption}>
+            Rate = sample rate × bit depth × channels. Do it once in your head and you can sanity-check
+            any session. The full calculator (with storage planning) lives in the Calculator
+            Laboratory.
+          </Text>
+        </PanelCard>
+
+        {/* ── Knowledge checks ─────────────────────────────────────────────── */}
+        <CheckQuestion
+          spec={{
+            question: 'Which signal chain is in the correct order?',
+            options: [
+              'mic → ADC → preamp → anti-aliasing → DSP → reconstruction → DAC → amp → speaker',
+              'mic → preamp → anti-aliasing → ADC → DSP → DAC → reconstruction → amp → speaker',
+              'mic → preamp → ADC → anti-aliasing → DSP → DAC → amp → reconstruction → speaker',
+            ],
+            correctIdx: 1,
+            reveal:
+              'Analog gain and the anti-aliasing filter must come BEFORE the ADC (nothing above Nyquist may reach the sampler), and the reconstruction filter comes right AFTER the DAC — before amplification.',
+            wrongHint: 'Two anchors: anti-aliasing is always immediately before the ADC; reconstruction is always immediately after the DAC.',
+          }}
         />
-        <Text style={dstyles.caption}>
-          Rate = sample rate × bit depth × channels. Do it once in your head and you can sanity-check
-          any session. The full calculator (with storage planning) lives in the Calculator
-          Laboratory.
-        </Text>
-      </PanelCard>
-
-      {/* ── Knowledge checks ─────────────────────────────────────────────── */}
-      <CheckQuestion
-        spec={{
-          question: 'Which signal chain is in the correct order?',
-          options: [
-            'mic → ADC → preamp → anti-aliasing → DSP → reconstruction → DAC → amp → speaker',
-            'mic → preamp → anti-aliasing → ADC → DSP → DAC → reconstruction → amp → speaker',
-            'mic → preamp → ADC → anti-aliasing → DSP → DAC → amp → reconstruction → speaker',
-          ],
-          correctIdx: 1,
-          reveal:
-            'Analog gain and the anti-aliasing filter must come BEFORE the ADC (nothing above Nyquist may reach the sampler), and the reconstruction filter comes right AFTER the DAC — before amplification.',
-          wrongHint: 'Two anchors: anti-aliasing is always immediately before the ADC; reconstruction is always immediately after the DAC.',
-        }}
-      />
-      <CheckQuestion
-        spec={{
-          question: 'A recorded waveform shows peaks sliced flat at a constant ceiling. Which stage did the damage?',
-          options: [
-            'The reconstruction filter smoothing too hard',
-            'Jitter on the DAC clock',
-            'The analog input or converter driven past full scale — clipping at/before the ADC',
-          ],
-          correctIdx: 2,
-          reveal:
-            'Flat-topped peaks are clipping: the signal hit the ceiling of the analog stage or the converter’s full scale. The information above the ceiling was never stored — no later stage can bring it back.',
-          wrongHint: 'The reconstruction filter and clock change timing/smoothness — neither slices amplitude flat.',
-        }}
-      />
-      <CheckQuestion
-        spec={{
-          question: 'fs = 48 kHz, no anti-aliasing filter, and a 30 kHz tone reaches the sampler. What frequency lands in the file?',
-          options: ['30 kHz', '24 kHz', '18 kHz', 'Nothing — it disappears'],
-          correctIdx: 2,
-          reveal:
-            'Above Nyquist (24 kHz) the tone folds: alias = |30 − 48| = 18 kHz. The samples fit an 18 kHz sine exactly, and it lands in-band — permanently. That is why the anti-aliasing filter sits BEFORE the sampler.',
-          wrongHint: 'Fold it around Nyquist: alias = |f − nearest multiple of fs|.',
-        }}
-      />
-      <CheckQuestion
-        spec={{
-          question: 'You archive long spoken-word interviews and, separately, multitrack music masters. A sensible format pairing?',
-          options: [
-            'Everything at 192 kHz / 32-bit float — higher is always better',
-            'Spoken word 48 kHz / 24-bit mono; music masters 96 kHz / 24-bit — spend bandwidth where it pays',
-            'Spoken word 192 kHz for sibilance; music 44.1 kHz / 16-bit to save space',
-          ],
-          correctIdx: 1,
-          reveal:
-            'Match the format to the content: speech needs clean 20 kHz bandwidth and headroom (48k/24 mono is generous, and the data rate stays sane for hours of tape); music masters may justify 96k for processing margin. Blanket maximums just multiply storage without audible return.',
-          wrongHint: 'Recall the data-rate math above — every doubling of fs doubles the storage for the same minutes.',
-        }}
-      />
-    </View>
+        <CheckQuestion
+          spec={{
+            question: 'A recorded waveform shows peaks sliced flat at a constant ceiling. Which stage did the damage?',
+            options: [
+              'The reconstruction filter smoothing too hard',
+              'Jitter on the DAC clock',
+              'The analog input or converter driven past full scale — clipping at/before the ADC',
+            ],
+            correctIdx: 2,
+            reveal:
+              'Flat-topped peaks are clipping: the signal hit the ceiling of the analog stage or the converter’s full scale. The information above the ceiling was never stored — no later stage can bring it back.',
+            wrongHint: 'The reconstruction filter and clock change timing/smoothness — neither slices amplitude flat.',
+          }}
+        />
+        <CheckQuestion
+          spec={{
+            question: 'fs = 48 kHz, no anti-aliasing filter, and a 30 kHz tone reaches the sampler. What frequency lands in the file?',
+            options: ['30 kHz', '24 kHz', '18 kHz', 'Nothing — it disappears'],
+            correctIdx: 2,
+            reveal:
+              'Above Nyquist (24 kHz) the tone folds: alias = |30 − 48| = 18 kHz. The samples fit an 18 kHz sine exactly, and it lands in-band — permanently. That is why the anti-aliasing filter sits BEFORE the sampler.',
+            wrongHint: 'Fold it around Nyquist: alias = |f − nearest multiple of fs|.',
+          }}
+        />
+        <CheckQuestion
+          spec={{
+            question: 'You archive long spoken-word interviews and, separately, multitrack music masters. A sensible format pairing?',
+            options: [
+              'Everything at 192 kHz / 32-bit float — higher is always better',
+              'Spoken word 48 kHz / 24-bit mono; music masters 96 kHz / 24-bit — spend bandwidth where it pays',
+              'Spoken word 192 kHz for sibilance; music 44.1 kHz / 16-bit to save space',
+            ],
+            correctIdx: 1,
+            reveal:
+              'Match the format to the content: speech needs clean 20 kHz bandwidth and headroom (48k/24 mono is generous, and the data rate stays sane for hours of tape); music masters may justify 96k for processing margin. Blanket maximums just multiply storage without audible return.',
+            wrongHint: 'Recall the data-rate math above — every doubling of fs doubles the storage for the same minutes.',
+          }}
+        />
+        <LessonRow onPress={() => help()} />
+      </View>
+    </RackUnit>
   );
 }
 
 const local = StyleSheet.create({
   headRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', gap: 8 },
   helpLink: { fontFamily: fonts.barlowMedium, fontSize: 12.5, color: colors.amber },
+  lessonRow: {
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#131316',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    marginTop: 4,
+  },
+  lessonRowText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.9, color: colors.textSecondary },
   riskRow: { borderRadius: 8, borderWidth: 1, paddingVertical: 8, paddingHorizontal: 10 },
   riskOn: { borderColor: 'rgba(255,75,58,.55)', backgroundColor: '#170f0e' },
   riskOff: { borderColor: 'rgba(55,224,95,.45)', backgroundColor: '#0e130f' },

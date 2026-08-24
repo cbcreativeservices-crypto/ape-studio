@@ -6,13 +6,22 @@
  * counterintuitive inverse is stated head-on:
  *
  *   HIGH Q = NARROW · LOW Q = WIDE
+ *
+ * RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23): this module renders the RackUnit
+ * frame itself (EqModuleScreen gives rack modules the full height, no host
+ * ScrollView). The curve-vs-ghosts chart PINS on the stage with the ghost
+ * legend as its badge; the frozen FREQ/GAIN and the live dual Q+BW readout sit
+ * on the bezel; the single Q fader rides the dock lane — riding it while the
+ * bump narrows against the pinned ghosts IS the lesson. Prose scrolls.
  */
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { ResponseCurveGraph, eqResponseDb, type ResponseCurve } from '../../../../features/lab/fxViz';
-import { CheckQuestion, DragSlider, type CheckSpec } from '../../foundations/bits';
+import { CheckQuestion, type CheckSpec } from '../../foundations/bits';
 import { colors, fonts } from '../../../../theme/tokens';
-import { bwOctFromQ, gainColor } from './eqMath';
+import { RackUnit } from '../../rack/RackUnit';
+import type { DockParam } from '../../rack/rackTypes';
+import { bwOctFromQ, fmtHz, gainColor } from './eqMath';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
 
@@ -46,56 +55,66 @@ export function QBandwidthModule(_p: EqModuleComponentProps) {
     [q],
   );
 
+  const params: DockParam[] = [
+    {
+      kind: 'fader',
+      id: 'q',
+      label: 'Q',
+      value: normFromQ(q),
+      onChange: (t) => setQ(qFromNorm(t)),
+      // The dual readout — the whole lesson in two numbers.
+      format: () => `Q ${q.toFixed(2)} · ${bwOct.toFixed(2)} oct`,
+      formatShort: () => `Q${q.toFixed(1)}`,
+    },
+  ];
+
   return (
-    <View style={styles.root}>
-      <GlossaryText style={styles.body}>
-        Frequency and gain are frozen here (1 kHz, +9 dB) — the ONLY thing you’re changing is Q.
-        Watch the same boost go from a broad, musical rise to a surgical spike.
-      </GlossaryText>
+    <RackUnit
+      initialParam="q"
+      params={params}
+      stage={{
+        size: 'M', // response-curve teaching chart
+        badge: 'ghosts: Q 0.5 · Q 8',
+        bezel: [
+          // The live dual readout, then the deliberately frozen parameters.
+          { k: 'Q', v: q.toFixed(2) },
+          { k: 'BW', v: `${bwOct.toFixed(2)} oct` },
+          { k: 'FREQ', v: fmtHz(FREQ), tint: '#7a7f8a' },
+          { k: 'GAIN', v: `+${GAIN_DB.toFixed(1)} dB`, tint: '#7a7f8a' },
+        ],
+        render: (w, h) => (
+          <View style={{ width: w, height: h, justifyContent: 'center', paddingHorizontal: 8 }}>
+            <ResponseCurveGraph curves={curves} dbRange={12} height={Math.max(80, h - 26)} mainColor={gainColor(GAIN_DB, 12)} />
+          </View>
+        ),
+      }}
+    >
+      <View style={styles.well}>
+        <GlossaryText style={styles.body}>
+          Frequency and gain are frozen here (1 kHz, +9 dB) — the ONLY thing you’re changing is Q.
+          Watch the same boost go from a broad, musical rise to a surgical spike.
+        </GlossaryText>
 
-      <View style={styles.banner}>
-        <Text style={styles.bannerText}>HIGH Q = NARROW · LOW Q = WIDE</Text>
-      </View>
-
-      <View style={styles.panel}>
-        <View style={styles.panelHead}>
-          <Text style={styles.panelEyebrow}>SAME BOOST, DIFFERENT WIDTH</Text>
-          <Text style={styles.readoutDim}>ghosts: Q 0.5 · Q 8</Text>
+        <View style={styles.banner}>
+          <Text style={styles.bannerText}>HIGH Q = NARROW · LOW Q = WIDE</Text>
         </View>
-        <ResponseCurveGraph curves={curves} dbRange={12} height={150} mainColor={gainColor(GAIN_DB, 12)} />
-        {/* The dual readout, large — the whole lesson in two numbers. */}
-        <Text style={styles.qBig}>
-          Q {q.toFixed(2)}  ↔︎  {bwOct.toFixed(2)} OCTAVES
+
+        <Text style={styles.caption}>
+          Q and bandwidth are two ways of describing the same thing: Q = center frequency ÷
+          bandwidth. The counterintuitive part — a bigger Q number means a SMALLER affected region —
+          trips up almost everyone once. Not you, now.
         </Text>
+
+        <CheckQuestion spec={CHECK} />
       </View>
-
-      <DragSlider
-        label="Q"
-        value={normFromQ(q)}
-        onChange={(t) => setQ(qFromNorm(t))}
-        readout={`Q ${q.toFixed(2)} · ${bwOct.toFixed(2)} oct`}
-      />
-
-      <Text style={styles.caption}>
-        Q and bandwidth are two ways of describing the same thing: Q = center frequency ÷
-        bandwidth. The counterintuitive part — a bigger Q number means a SMALLER affected region —
-        trips up almost everyone once. Not you, now.
-      </Text>
-
-      <CheckQuestion spec={CHECK} />
-    </View>
+    </RackUnit>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { gap: 12 },
+  well: { gap: 12 },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   banner: { borderRadius: 10, borderWidth: 1, borderColor: 'rgba(255,198,77,.4)', backgroundColor: '#17130a', padding: 12, alignItems: 'center' },
   bannerText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.2, color: colors.amber },
-  panel: { borderRadius: 12, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 12, gap: 8 },
-  panelHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  panelEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.amber },
-  readoutDim: { fontFamily: fonts.mono, fontSize: 11, color: colors.textSub },
-  qBig: { fontFamily: fonts.mono, fontSize: 16, color: colors.amber, textAlign: 'center' },
 });

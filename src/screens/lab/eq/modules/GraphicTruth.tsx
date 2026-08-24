@@ -4,9 +4,16 @@
  *
  * Two curves over one 10-band board: the smooth SLIDER CURVE a beginner reads
  * by connecting the knobs, and the ACTUAL combined response of the real
- * overlapping filters. SHOW INDIVIDUAL FILTERS reveals every band's own bell
- * under the composite ("that's the revelation"); MAGNITUDE | PHASE shows that
- * a conventional minimum-phase EQ shifts phase around the regions it touches.
+ * overlapping filters. FILTERS (dock key) reveals every band's own bell under
+ * the composite ("that's the revelation"); MAGNITUDE | PHASE shows that a
+ * conventional minimum-phase EQ shifts phase around the regions it touches.
+ *
+ * RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23): renders the RackUnit frame
+ * itself. Curve + FADER BANK share the PINNED STAGE — the bank is a spatial
+ * editor and the stage lives outside any ScrollView, which structurally ends
+ * the fader-vs-scroll race (corrections-audit #8). The per-view honesty line
+ * is the badge (dynamic); the fader under your finger reads on the bezel; the
+ * dock carries VIEW (sticky tray), the FILTERS toggle, EXAMPLE and CLEAR.
  *
  * Technical framing (owner ruling): filters INTERACT because they overlap and
  * each introduces frequency-dependent phase shift — NEVER framed as "adjacent
@@ -16,8 +23,10 @@ import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { ResponseCurveGraph, rbjPeaking, type ResponseCurve } from '../../../../features/lab/fxViz';
 import { CheckQuestion, type CheckSpec } from '../../foundations/bits';
-import { GraphicBoard, MiniBtn } from './eqBits';
+import { GraphicBoard } from './eqBits';
 import { colors, fonts } from '../../../../theme/tokens';
+import { RackUnit } from '../../rack/RackUnit';
+import type { DockParam } from '../../rack/rackTypes';
 import {
   biquadMagDb,
   fmtHz,
@@ -31,7 +40,8 @@ import {
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
 
-const PRESET_LABEL = 'LOAD EXAMPLE — 125:+3  250:+6  500:+3 dB';
+// Board block on the stage: 108 track + gap + fader labels (eqBits geometry).
+const BOARD_BLOCK_H = 126;
 
 const CHECK: CheckSpec = {
   question: 'The line the SLIDER POSITIONS draw across a graphic EQ is…',
@@ -50,7 +60,7 @@ export function GraphicTruthModule(_p: EqModuleComponentProps) {
   const [gains, setGains] = useState<number[]>(Array(OCT_CENTERS.length).fill(0));
   const [showIndividual, setShowIndividual] = useState(false);
   const [view, setView] = useState<'mag' | 'phase'>('mag');
-  // Which fader the finger is on — so its value is visible while you drag it
+  // Which fader the finger is on — its value reads on the BEZEL while you drag
   // (owner 2026-08-07: you couldn't see you were at +6 dB while touching it).
   const [activeIdx, setActiveIdx] = useState<number | null>(null);
 
@@ -91,115 +101,123 @@ export function GraphicTruthModule(_p: EqModuleComponentProps) {
     [gains],
   );
 
+  const params: DockParam[] = [
+    {
+      kind: 'options',
+      id: 'view',
+      label: 'VIEW',
+      valueLabel: view === 'mag' ? 'MAG' : 'PHASE',
+      options: [
+        { id: 'mag', label: 'MAGNITUDE' },
+        { id: 'phase', label: 'PHASE' },
+      ],
+      selectedId: view,
+      onSelect: (id) => setView(id as 'mag' | 'phase'),
+      sticky: true, // flip views while the same board holds
+    },
+    { kind: 'toggle', id: 'indiv', label: 'FILTERS', value: showIndividual, onToggle: () => setShowIndividual((v) => !v) },
+    { kind: 'action', id: 'preset', label: 'EXAMPLE', onPress: preset },
+    { kind: 'action', id: 'clear', label: 'CLEAR', onPress: reset },
+  ];
+
   return (
-    <View style={styles.root}>
-      <View style={styles.banner}>
-        <Text style={styles.bannerText}>THE SLIDERS ARE NOT THE RESPONSE</Text>
-      </View>
-      <GlossaryText style={styles.body}>
-        Your eye connects the slider caps into a smooth line. But every band is a real filter with
-        finite bandwidth — their responses overlap and COMBINE. Set the innocent-looking preset and
-        compare the line you imagined (dim) with what the filters actually do (amber).
-      </GlossaryText>
+    <RackUnit
+      initialParam="view"
+      params={params}
+      stage={{
+        size: 'L', // curve + board — the revelation is the display
+        // Per-view honesty line (verbatim, dynamic).
+        badge:
+          view === 'mag'
+            ? 'Real overlapping 1-octave bells, energy-combined — not the line through the caps.'
+            : 'Conventional minimum-phase EQ shifts phase around every region it touches — it never changes “only amplitude.”',
+        bezel: [
+          { k: 'VIEW', v: view === 'mag' ? 'MAG' : 'PHASE ±180°' },
+          { k: 'FILTERS', v: showIndividual ? 'SHOWN' : 'HIDDEN' },
+          // The fader under your finger — live, never hidden by the hand.
+          { k: 'BAND', v: activeIdx != null ? fmtHz(OCT_CENTERS[activeIdx]) : '—' },
+          {
+            k: 'LEVEL',
+            v:
+              activeIdx != null
+                ? `${gains[activeIdx] >= 0 ? '+' : ''}${gains[activeIdx].toFixed(1)} dB`
+                : '—',
+            tint: activeIdx != null ? gainColor(gains[activeIdx], 12) : undefined,
+          },
+        ],
+        render: (w, h) => {
+          const curveH = Math.max(60, h - BOARD_BLOCK_H - 14 - 12);
+          return (
+            <View style={{ width: w, height: h, paddingHorizontal: 8, paddingTop: 6, gap: 4 }}>
+              {view === 'mag' ? (
+                // MIDI level colour (owner 2026-08-07): the actual response warms
+                // with the biggest boost on the board; an all-cut board reads blue.
+                <ResponseCurveGraph
+                  curves={magCurves}
+                  dbRange={12}
+                  height={curveH}
+                  mainColor={gainColor(Math.max(0, ...gains), 12)}
+                />
+              ) : (
+                <ResponseCurveGraph curves={phaseCurves} dbRange={180} height={curveH} />
+              )}
+              <GraphicBoard
+                centers={OCT_CENTERS}
+                gains={gains}
+                onGain={setGain}
+                onActiveIndex={setActiveIdx}
+                tintFor={(i) => gainColor(gains[i], 12)}
+              />
+            </View>
+          );
+        },
+      }}
+    >
+      <View style={styles.well}>
+        <View style={styles.banner}>
+          <Text style={styles.bannerText}>THE SLIDERS ARE NOT THE RESPONSE</Text>
+        </View>
+        <GlossaryText style={styles.body}>
+          Your eye connects the slider caps into a smooth line. But every band is a real filter with
+          finite bandwidth — their responses overlap and COMBINE. Set the innocent-looking preset and
+          compare the line you imagined (dim) with what the filters actually do (amber).
+        </GlossaryText>
 
-      <View style={styles.btnRow}>
-        <MiniBtn label={PRESET_LABEL} onPress={preset} />
-        <MiniBtn label="CLEAR ALL BANDS" onPress={reset} />
-      </View>
-      <Text style={styles.caption}>
-        LOAD EXAMPLE drops the sliders to a gentle-looking 125 Hz +3, 250 Hz +6, 500 Hz +3 dB —
-        exactly the innocent move whose real response surprises people. CLEAR ALL BANDS returns
-        every slider to 0 dB.
-      </Text>
-      <Text style={styles.caption}>
-        Switch between MAGNITUDE and PHASE to compare the two results: MAGNITUDE shows how far the
-        real response departs from the smooth line the sliders imply (dim); PHASE shows the phase
-        shift the same filters apply — which the sliders don’t reveal at all. The point is the gap
-        between what you SEE on the board and what actually happens to the signal.
-      </Text>
-
-      {/* Live value of the fader under your finger (owner 2026-08-07). */}
-      <View style={styles.activeBar}>
-        <Text style={[styles.activeText, activeIdx != null && styles.activeTextOn]}>
-          {activeIdx != null
-            ? `${fmtHz(OCT_CENTERS[activeIdx])}  ·  ${gains[activeIdx] >= 0 ? '+' : ''}${gains[activeIdx].toFixed(1)} dB`
-            : 'Touch a slider to read its frequency and level here'}
+        <Text style={styles.caption}>
+          EXAMPLE drops the sliders to a gentle-looking 125 Hz +3, 250 Hz +6, 500 Hz +3 dB — exactly
+          the innocent move whose real response surprises people. CLEAR returns every slider to 0 dB.
+          FILTERS reveals every band’s own bell under the composite.
         </Text>
-      </View>
+        <Text style={styles.caption}>
+          Switch the VIEW between MAGNITUDE and PHASE to compare the two results: MAGNITUDE shows how
+          far the real response departs from the smooth line the sliders imply (dim); PHASE shows the
+          phase shift the same filters apply — which the sliders don’t reveal at all. The point is
+          the gap between what you SEE on the board and what actually happens to the signal.
+        </Text>
 
-      {/* View controls sit JUST ABOVE the display (owner 2026-08-07). */}
-      <View style={styles.btnRow}>
-        <MiniBtn label="MAGNITUDE" active={view === 'mag'} onPress={() => setView('mag')} />
-        <MiniBtn label="PHASE" active={view === 'phase'} onPress={() => setView('phase')} />
-        <MiniBtn
-          label="SHOW INDIVIDUAL FILTERS"
-          active={showIndividual}
-          onPress={() => setShowIndividual((v) => !v)}
-        />
-      </View>
-
-      <View style={styles.panel}>
-        <View style={styles.panelHead}>
-          <Text style={styles.panelEyebrow}>
-            {view === 'mag' ? 'SLIDER CURVE (dim) vs ACTUAL RESPONSE (amber)' : 'PHASE — ±180° (0° reference dim)'}
+        {/* The spec's memorable challenge — sliders look smooth, response says otherwise. */}
+        <View style={styles.challenge}>
+          <Text style={styles.challengeHead}>CHALLENGE — FLAT → SMOOTH → JAGGED</Text>
+          <Text style={styles.caption}>
+            Reset the board, then build what LOOKS like a beautiful smooth +6 dB rise from 125 Hz to
+            1 kHz using only the sliders. Now look at the amber curve — and the phase view. Then try
+            the same target with one parametric band in the Parametric Controls module: where, how
+            much, how wide. That’s the precision argument in one move.
           </Text>
         </View>
-        {view === 'mag' ? (
-          // MIDI level colour (owner 2026-08-07): the actual response warms with
-          // the biggest boost on the board; an all-cut board reads blue.
-          <ResponseCurveGraph
-            curves={magCurves}
-            dbRange={12}
-            height={150}
-            mainColor={gainColor(Math.max(0, ...gains), 12)}
-          />
-        ) : (
-          <ResponseCurveGraph curves={phaseCurves} dbRange={180} height={150} />
-        )}
-        <GraphicBoard
-          centers={OCT_CENTERS}
-          gains={gains}
-          onGain={setGain}
-          onActiveIndex={setActiveIdx}
-          tintFor={(i) => gainColor(gains[i], 12)}
-        />
-        <Text style={styles.honest}>
-          {view === 'mag'
-            ? 'Real overlapping 1-octave bells, energy-combined — not the line through the caps.'
-            : 'Conventional minimum-phase EQ shifts phase around every region it touches — it never changes “only amplitude.”'}
-        </Text>
-      </View>
 
-      {/* The spec's memorable challenge — sliders look smooth, response says otherwise. */}
-      <View style={styles.challenge}>
-        <Text style={styles.challengeHead}>CHALLENGE — FLAT → SMOOTH → JAGGED</Text>
-        <Text style={styles.caption}>
-          Reset the board, then build what LOOKS like a beautiful smooth +6 dB rise from 125 Hz to
-          1 kHz using only the sliders. Now look at the amber curve — and the phase view. Then try
-          the same target with one parametric band in the Parametric Controls module: where, how
-          much, how wide. That’s the precision argument in one move.
-        </Text>
+        <CheckQuestion spec={CHECK} />
       </View>
-
-      <CheckQuestion spec={CHECK} />
-    </View>
+    </RackUnit>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { gap: 12 },
+  well: { gap: 12 },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   banner: { borderRadius: 10, borderWidth: 1, borderColor: 'rgba(255,198,77,.4)', backgroundColor: '#17130a', padding: 12, alignItems: 'center' },
   bannerText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.2, color: colors.amber },
-  btnRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  activeBar: { borderRadius: 8, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#101014', paddingVertical: 8, paddingHorizontal: 12, alignItems: 'center' },
-  activeText: { fontFamily: fonts.mono, fontSize: 13, color: colors.textSub },
-  activeTextOn: { color: colors.amber, fontSize: 15 },
-  panel: { borderRadius: 12, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 12, gap: 10 },
-  panelHead: { flexDirection: 'row', alignItems: 'center' },
-  panelEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.amber, flexShrink: 1 },
-  honest: { fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 15, color: colors.textSub },
   challenge: { borderRadius: 10, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 12, gap: 6 },
   challengeHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.amber },
 });

@@ -4,36 +4,43 @@
  * visual: every enabled band's OWN curve (ghosts) plus the resulting COMBINED
  * response (amber). Filters interact; the composite is the point.
  *
- * Nodes drag DIRECTLY on the graph (spec): touch grabs the nearest enabled
- * band; horizontal = frequency, vertical = gain (bells). Per-band ON/OFF,
- * whole-EQ BYPASS, RESET. EqAuditionBar plays the composite curve on builds with the FX engine.
+ * RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23): renders the RackUnit frame
+ * itself. The node-drag graph is a SPATIAL EDITOR, so it owns the PINNED
+ * STAGE — the stage lives outside any ScrollView, which structurally ends the
+ * drag-vs-scroll race (corrections-audit #8); the old scroll-lock plumbing is
+ * gone. Nodes drag DIRECTLY on the glass (spec): touch grabs the nearest
+ * enabled band; horizontal = frequency, vertical = gain (bells). The selected
+ * band's FREQ/GAIN/Q ride the dock lane (exact pre-rack mappings); the BAND
+ * tray (sticky) carries the colour-coded selectors + per-band ON/OFF + RESET;
+ * BYPASS is a dock key for instant in/out A-B. EqAuditionBar plays the
+ * composite curve in the well on builds with the FX engine.
  */
 import { useMemo, useRef, useState } from 'react';
 import { PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { ResponseCurveGraph, eqResponseDb, type EqBandSpec, type ResponseCurve } from '../../../../features/lab/fxViz';
-import { DragSlider } from '../../foundations/bits';
-import { useScrollLock } from '../../LabShell';
 import { MiniBtn } from './eqBits';
 import { colors, fonts } from '../../../../theme/tokens';
+import { RackUnit } from '../../rack/RackUnit';
+import type { DockParam } from '../../rack/rackTypes';
 import { bwOctFromQ, fmtHz, gainColor, normFromF, fFromNorm } from './eqMath';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import { EqAuditionBar } from './eqAudition';
 import type { EqModuleComponentProps } from './registry';
 
-// ---- Graph geometry (mirrors ResponseCurveGraph: viewBox 320, pad 8) -------
+// ---- Graph geometry (mirrors ResponseCurveGraph: viewBox 320, pad 8; the
+//      HEIGHT is now the stage's — the glass grants it at render) ------------
 const VB_W = 320;
 const PAD = 8;
-const GRAPH_H = 150;
 const PAD_B = 14;
 const DB_RANGE = 18;
 const xVbForF = (f: number) => PAD + ((Math.log10(f) - Math.log10(20)) / 3) * (VB_W - 2 * PAD);
-const yVbForDb = (db: number) =>
-  GRAPH_H / 2 - (Math.max(-DB_RANGE, Math.min(DB_RANGE, db)) / DB_RANGE) * (GRAPH_H / 2 - 8);
+const yVbForDb = (db: number, h: number) =>
+  h / 2 - (Math.max(-DB_RANGE, Math.min(DB_RANGE, db)) / DB_RANGE) * (h / 2 - 8);
 const fForXVb = (x: number) =>
   Math.max(20, Math.min(20000, 20 * Math.pow(10, ((x - PAD) / (VB_W - 2 * PAD)) * 3)));
-const dbForYVb = (y: number) =>
-  Math.max(-DB_RANGE, Math.min(DB_RANGE, ((GRAPH_H / 2 - y) / (GRAPH_H / 2 - 8)) * DB_RANGE));
+const dbForYVb = (y: number, h: number) =>
+  Math.max(-DB_RANGE, Math.min(DB_RANGE, ((h / 2 - y) / (h / 2 - 8)) * DB_RANGE));
 
 type BandKey = 'hpf' | 'b0' | 'b1' | 'b2' | 'b3' | 'lpf';
 type Bands = {
@@ -90,19 +97,18 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
   const selRef = useRef(sel);
   selRef.current = sel;
 
-  // ---- Direct node dragging on the graph (spec: "drag nodes directly") ----
-  const [layoutW, setLayoutW] = useState(0);
-  const layoutRef = useRef(0);
-  layoutRef.current = layoutW;
-  const ctxLock = useScrollLock();
-  const lockRef = useRef(ctxLock);
-  lockRef.current = ctxLock;
+  // ---- Direct node dragging on the STAGE glass (spec: "drag nodes directly").
+  // The stage is pinned outside any ScrollView, so the old scroll-lock
+  // plumbing (useScrollLock + lockRef) is REMOVED — a node drag can no longer
+  // fight a page scroll by construction (rack conversion 2026-08-23).
+  const layoutRef = useRef(0); // pan surface width (stage onLayout)
+  const graphHRef = useRef(150); // graph height granted by the glass
 
   const toVb = (lx: number, ly: number) => {
     const w = layoutRef.current || VB_W;
     const s = Math.min(w / VB_W, 1);
     const ox = (w - VB_W * s) / 2;
-    const oy = ((GRAPH_H + PAD_B) * (1 - s)) / 2;
+    const oy = ((graphHRef.current + PAD_B) * (1 - s)) / 2;
     return { x: (lx - ox) / s, y: (ly - oy) / s };
   };
   // Anchored drag (owner 2026-08-07): grant fixes the start point in viewBox
@@ -117,22 +123,19 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
       if (key === 'hpf') return { ...prev, hpf: { ...prev.hpf, f } };
       if (key === 'lpf') return { ...prev, lpf: { ...prev.lpf, f } };
       const i = Number(key.slice(1));
-      const g = Math.round(dbForYVb(yVb) * 2) / 2;
+      const g = Math.round(dbForYVb(yVb, graphHRef.current) * 2) / 2;
       return { ...prev, bells: prev.bells.map((b, k) => (k === i ? { ...b, f, g } : b)) };
     });
   };
 
   const pan = useRef(
     PanResponder.create({
+      // Claim on touch-down: on the pinned stage nothing competes for the
+      // gesture, but claiming early keeps the grab instant and deliberate.
       onStartShouldSetPanResponder: () => true,
-      // Claim at the CAPTURE phase on touch-down (owner 2026-08-23): this vertical
-      // node-drag would otherwise be stolen by the host ScrollView (same axis).
-      // Matching the VerticalFader, grabbing on start lets grant lock the scroll
-      // before any movement is interpreted as a page scroll.
       onStartShouldSetPanResponderCapture: () => true,
       onMoveShouldSetPanResponder: () => true,
       onPanResponderGrant: (e) => {
-        lockRef.current?.(true);
         const { x, y } = toVb(e.nativeEvent.locationX, e.nativeEvent.locationY);
         const w = layoutRef.current || VB_W;
         anchorRef.current = { x, y, s: Math.min(w / VB_W, 1) };
@@ -156,8 +159,6 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
         const a = anchorRef.current;
         applyDrag(a.x + g.dx / a.s, a.y + g.dy / a.s);
       },
-      onPanResponderRelease: () => lockRef.current?.(false),
-      onPanResponderTerminate: () => lockRef.current?.(false),
       onPanResponderTerminationRequest: () => false,
     }),
   ).current;
@@ -199,21 +200,10 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
     return list;
   }, [bands, bypass]);
 
-  // Node markers, drawn over the graph in the SAME viewBox (stays aligned).
-  const nodes = useMemo(() => {
-    const b = bands;
-    const out: { key: BandKey; x: number; y: number }[] = [];
-    if (b.hpf.on) out.push({ key: 'hpf', x: xVbForF(b.hpf.f), y: yVbForDb(0) });
-    if (b.lpf.on) out.push({ key: 'lpf', x: xVbForF(b.lpf.f), y: yVbForDb(0) });
-    b.bells.forEach((bell, i) => {
-      if (bell.on) out.push({ key: `b${i}` as BandKey, x: xVbForF(bell.f), y: yVbForDb(bell.g) });
-    });
-    return out;
-  }, [bands]);
-
   const isBell = sel.startsWith('b');
   const bellIdx = isBell ? Number(sel.slice(1)) : -1;
   const selBell = isBell ? bands.bells[bellIdx] : null;
+  const selMeta = BAND_META.find((m) => m.key === sel)!;
   const selOn = sel === 'hpf' ? bands.hpf.on : sel === 'lpf' ? bands.lpf.on : bands.bells[bellIdx].on;
   const selF = sel === 'hpf' ? bands.hpf.f : sel === 'lpf' ? bands.lpf.f : bands.bells[bellIdx].f;
 
@@ -234,163 +224,216 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
           : { ...prev, bells: prev.bells.map((b, k) => (k === bellIdx ? { ...b, on: !b.on } : b)) },
     );
 
-  return (
-    <View style={styles.root}>
-      <GlossaryText style={styles.body}>
-        Real EQs run several filters at once — and the filters INTERACT. The dim curves are each
-        band alone; the amber curve is what they produce TOGETHER. Drag a node right on the graph:
-        sideways = frequency, up/down = gain.
-      </GlossaryText>
-
-      <Text style={styles.sectionTitle}>BANDS — tap to select · HPF/LPF switch on when tapped</Text>
-      <View style={styles.chipRow}>
-        {BAND_META.map((m) => {
-          const isFilter = m.key === 'hpf' || m.key === 'lpf';
-          const on =
-            m.key === 'hpf' ? bands.hpf.on : m.key === 'lpf' ? bands.lpf.on : bands.bells[Number(m.key.slice(1))].on;
-          const selected = sel === m.key;
-          const press = () => {
-            setSel(m.key);
-            // A filter is inert until enabled — tapping it selects AND switches
-            // it on so it does something immediately (owner 2026-08-07).
-            if (isFilter && !on) {
-              setBands((prev) =>
-                m.key === 'hpf' ? { ...prev, hpf: { ...prev.hpf, on: true } } : { ...prev, lpf: { ...prev.lpf, on: true } },
-              );
-            }
-          };
-          return (
-            <Pressable
-              key={m.key}
-              onPress={press}
-              hitSlop={6}
-              accessibilityRole="button"
-              accessibilityLabel={`${m.label} band${on ? '' : ', off'}`}
-              accessibilityState={{ selected }}
-              style={[
-                styles.chip,
-                { borderColor: selected ? m.color : '#2c2c33' },
-                selected && { backgroundColor: '#1a1a20' },
-                !on && styles.chipOff,
-              ]}
-            >
-              <Text style={[styles.chipText, { color: on ? m.color : colors.textSub }]}>
-                {on ? '●' : '○'} {m.label}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </View>
-
-      <View style={styles.panel}>
-        <View style={styles.panelHead}>
-          <Text style={styles.panelEyebrow}>BANDS (dim) + COMBINED (amber)</Text>
-          <Text style={styles.readout}>{bypass ? 'BYPASSED' : `${specsFor(bands).length} ACTIVE`}</Text>
-        </View>
-        <View onLayout={(e) => setLayoutW(e.nativeEvent.layout.width)} {...pan.panHandlers}>
-          {/* Every curve carries its OWN MIDI colour (set per-curve above). */}
-          <ResponseCurveGraph curves={curves} dbRange={DB_RANGE} height={GRAPH_H} />
-          <Svg
-            pointerEvents="none"
-            style={StyleSheet.absoluteFill}
-            width="100%"
-            height={GRAPH_H + PAD_B}
-            viewBox={`0 0 ${VB_W} ${GRAPH_H + PAD_B}`}
-          >
-            {nodes.map((n) => {
-              // Node dot colour matches the band's button (owner 2026-08-07).
-              const col = BAND_COLOR[n.key];
-              const selected = n.key === sel;
+  // ---- Dock declaration: the selected band's params ride the lane (exact
+  //      pre-rack DragSlider mappings) — GAIN/Q only exist for bells.
+  const freqParam: DockParam = {
+    kind: 'fader',
+    id: 'freq',
+    label: 'FREQ',
+    value: normFromF(selF),
+    onChange: (t) => setSelF(fFromNorm(t)),
+    format: () => fmtHz(selF),
+    tint: selMeta.color,
+  };
+  const bellParams: DockParam[] = selBell
+    ? [
+        {
+          kind: 'fader',
+          id: 'gain',
+          label: 'GAIN',
+          value: (selBell.g + DB_RANGE) / (2 * DB_RANGE),
+          onChange: (t) =>
+            setBands((prev) => ({
+              ...prev,
+              bells: prev.bells.map((b, k) =>
+                k === bellIdx ? { ...b, g: Math.round((t * 2 * DB_RANGE - DB_RANGE) * 2) / 2 } : b,
+              ),
+            })),
+          format: () => `${selBell.g >= 0 ? '+' : ''}${selBell.g.toFixed(1)} dB`,
+          formatShort: () => `${selBell.g >= 0 ? '+' : ''}${selBell.g.toFixed(1)}`,
+          tint: gainColor(selBell.g, DB_RANGE),
+        },
+        {
+          kind: 'fader',
+          id: 'q',
+          label: 'Q',
+          value: Math.log(selBell.q / 0.3) / Math.log(12 / 0.3),
+          onChange: (t) =>
+            setBands((prev) => ({
+              ...prev,
+              bells: prev.bells.map((b, k) =>
+                k === bellIdx ? { ...b, q: 0.3 * Math.pow(12 / 0.3, Math.max(0, Math.min(1, t))) } : b,
+              ),
+            })),
+          format: () => `Q ${selBell.q.toFixed(2)} · ${bwOctFromQ(selBell.q).toFixed(2)} oct`,
+          formatShort: () => `Q${selBell.q.toFixed(1)}`,
+        },
+      ]
+    : [];
+  const params: DockParam[] = [
+    freqParam,
+    ...bellParams,
+    {
+      kind: 'group',
+      id: 'band',
+      label: 'BAND',
+      valueLabel: selMeta.label,
+      render: () => (
+        <View style={{ gap: 10 }}>
+          <Text style={styles.trayHead}>BANDS — tap to select · HPF/LPF switch on when tapped</Text>
+          <View style={styles.chipRow}>
+            {BAND_META.map((m) => {
+              const isFilter = m.key === 'hpf' || m.key === 'lpf';
+              const on =
+                m.key === 'hpf' ? bands.hpf.on : m.key === 'lpf' ? bands.lpf.on : bands.bells[Number(m.key.slice(1))].on;
+              const selected = sel === m.key;
+              const press = () => {
+                setSel(m.key);
+                // A filter is inert until enabled — tapping it selects AND switches
+                // it on so it does something immediately (owner 2026-08-07).
+                if (isFilter && !on) {
+                  setBands((prev) =>
+                    m.key === 'hpf' ? { ...prev, hpf: { ...prev.hpf, on: true } } : { ...prev, lpf: { ...prev.lpf, on: true } },
+                  );
+                }
+              };
               return (
-                <Circle
-                  key={n.key}
-                  cx={n.x}
-                  cy={n.y}
-                  r={selected ? 7 : 5}
-                  fill={selected ? col : col}
-                  fillOpacity={selected ? 0.95 : 0.25}
-                  stroke={col}
-                  strokeWidth={1.5}
-                />
+                <Pressable
+                  key={m.key}
+                  onPress={press}
+                  hitSlop={6}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${m.label} band${on ? '' : ', off'}`}
+                  accessibilityState={{ selected }}
+                  style={[
+                    styles.chip,
+                    { borderColor: selected ? m.color : '#2c2c33' },
+                    selected && { backgroundColor: '#1a1a20' },
+                    !on && styles.chipOff,
+                  ]}
+                >
+                  <Text style={[styles.chipText, { color: on ? m.color : colors.textSub }]}>
+                    {on ? '●' : '○'} {m.label}
+                  </Text>
+                </Pressable>
               );
             })}
-          </Svg>
+          </View>
+          <View style={styles.chipRow}>
+            <MiniBtn label={selOn ? 'BAND ON' : 'BAND OFF'} active={selOn} onPress={toggleSel} />
+            {/* Reset-in-container rule: RESET lives in the tray it resets. */}
+            <MiniBtn label="RESET" onPress={() => { setBands(DEFAULTS()); setBypass(false); }} />
+          </View>
         </View>
+      ),
+    },
+    { kind: 'toggle', id: 'byp', label: 'BYP', value: bypass, onToggle: () => setBypass((v) => !v) },
+  ];
+
+  return (
+    <RackUnit
+      initialParam="freq"
+      params={params}
+      stage={{
+        size: 'L', // the node-drag graph is the star
+        badge: bypass
+          ? 'BYPASSED — output flat · dim = the would-be composite'
+          : 'BANDS (dim) + COMBINED (amber)',
+        bezel: [
+          { k: 'BAND', v: selMeta.label, tint: selMeta.color },
+          { k: 'FREQ', v: fmtHz(selF) },
+          {
+            k: 'GAIN',
+            v: selBell ? `${selBell.g >= 0 ? '+' : ''}${selBell.g.toFixed(1)} dB` : '—',
+            tint: selBell ? gainColor(selBell.g, DB_RANGE) : undefined,
+          },
+          { k: 'EQ', v: bypass ? 'BYPASS' : `${specsFor(bands).length} ACTIVE` },
+        ],
+        render: (w, h) => {
+          const gh = Math.max(80, h - PAD_B - 10);
+          graphHRef.current = gh;
+          // Node markers, drawn over the graph in the SAME viewBox (stays aligned).
+          const b = bands;
+          const nodes: { key: BandKey; x: number; y: number }[] = [];
+          if (b.hpf.on) nodes.push({ key: 'hpf', x: xVbForF(b.hpf.f), y: yVbForDb(0, gh) });
+          if (b.lpf.on) nodes.push({ key: 'lpf', x: xVbForF(b.lpf.f), y: yVbForDb(0, gh) });
+          b.bells.forEach((bell, i) => {
+            if (bell.on) nodes.push({ key: `b${i}` as BandKey, x: xVbForF(bell.f), y: yVbForDb(bell.g, gh) });
+          });
+          return (
+            <View style={{ width: w, height: h, justifyContent: 'center', paddingHorizontal: 6 }}>
+              <View
+                onLayout={(e) => (layoutRef.current = e.nativeEvent.layout.width)}
+                {...pan.panHandlers}
+              >
+                {/* Every curve carries its OWN MIDI colour (set per-curve above). */}
+                <ResponseCurveGraph curves={curves} dbRange={DB_RANGE} height={gh} />
+                <Svg
+                  pointerEvents="none"
+                  style={StyleSheet.absoluteFill}
+                  width="100%"
+                  height={gh + PAD_B}
+                  viewBox={`0 0 ${VB_W} ${gh + PAD_B}`}
+                >
+                  {nodes.map((n) => {
+                    // Node dot colour matches the band's button (owner 2026-08-07).
+                    const col = BAND_COLOR[n.key];
+                    const selected = n.key === sel;
+                    return (
+                      <Circle
+                        key={n.key}
+                        cx={n.x}
+                        cy={n.y}
+                        r={selected ? 7 : 5}
+                        fill={col}
+                        fillOpacity={selected ? 0.95 : 0.25}
+                        stroke={col}
+                        strokeWidth={1.5}
+                      />
+                    );
+                  })}
+                </Svg>
+              </View>
+            </View>
+          );
+        },
+      }}
+    >
+      <View style={styles.well}>
+        <GlossaryText style={styles.body}>
+          Real EQs run several filters at once — and the filters INTERACT. The dim curves are each
+          band alone; the amber curve is what they produce TOGETHER. Drag a node right on the glass:
+          sideways = frequency, up/down = gain. The BAND tray picks (and switches on) a band; its
+          FREQ, GAIN and Q ride the fader.
+        </GlossaryText>
+
+        {!selBell && (
+          <Text style={styles.caption}>HPF/LPF here are fixed 12 dB/octave — the Slopes lesson covers the rest.</Text>
+        )}
+
+        {/* HEAR IT (owner 2026-08-10, test-signal MVP): the current composite
+            curve runs live on the native FX EQ — bypass included, so toggling
+            BYP while playing is an instant in/out A-B. Renders only when the
+            build carries the FX engine. */}
+        <EqAuditionBar bands={auditionBands} />
+
+        <Text style={styles.caption}>
+          Overlap two boosts and the composite rises HIGHER than either band alone; stack a cut into
+          a boost’s skirt and they partly cancel. The combined curve — not any single band — is what
+          the signal experiences.
+        </Text>
       </View>
-
-      <View style={styles.chipRow}>
-        <MiniBtn label={selOn ? 'BAND ON' : 'BAND OFF'} active={selOn} onPress={toggleSel} />
-        <MiniBtn label="BYPASS EQ" active={bypass} onPress={() => setBypass((v) => !v)} />
-        <MiniBtn label="RESET" onPress={() => { setBands(DEFAULTS()); setBypass(false); }} />
-      </View>
-
-      <DragSlider
-        label={`${BAND_META.find((m) => m.key === sel)!.label} FREQUENCY`}
-        value={normFromF(selF)}
-        onChange={(t) => setSelF(fFromNorm(t))}
-        readout={fmtHz(selF)}
-      />
-      {selBell ? (
-        <>
-          <DragSlider
-            label="GAIN"
-            value={(selBell.g + DB_RANGE) / (2 * DB_RANGE)}
-            onChange={(t) =>
-              setBands((prev) => ({
-                ...prev,
-                bells: prev.bells.map((b, k) =>
-                  k === bellIdx ? { ...b, g: Math.round((t * 2 * DB_RANGE - DB_RANGE) * 2) / 2 } : b,
-                ),
-              }))
-            }
-            readout={`${selBell.g >= 0 ? '+' : ''}${selBell.g.toFixed(1)} dB`}
-          />
-          <DragSlider
-            label="Q / BANDWIDTH"
-            value={Math.log(selBell.q / 0.3) / Math.log(12 / 0.3)}
-            onChange={(t) =>
-              setBands((prev) => ({
-                ...prev,
-                bells: prev.bells.map((b, k) =>
-                  k === bellIdx ? { ...b, q: 0.3 * Math.pow(12 / 0.3, Math.max(0, Math.min(1, t))) } : b,
-                ),
-              }))
-            }
-            readout={`Q ${selBell.q.toFixed(2)} · ${bwOctFromQ(selBell.q).toFixed(2)} oct`}
-          />
-        </>
-      ) : (
-        <Text style={styles.caption}>HPF/LPF here are fixed 12 dB/octave — the Slopes lesson covers the rest.</Text>
-      )}
-
-      {/* HEAR IT (owner 2026-08-10, test-signal MVP): the current composite
-          curve runs live on the native FX EQ — bypass included, so toggling
-          BYPASS while playing is an instant in/out A-B. Renders only when the
-          build carries the FX engine. */}
-      <EqAuditionBar bands={auditionBands} />
-
-      <Text style={styles.caption}>
-        Overlap two boosts and the composite rises HIGHER than either band alone; stack a cut into
-        a boost’s skirt and they partly cancel. The combined curve — not any single band — is what
-        the signal experiences.
-      </Text>
-    </View>
+    </RackUnit>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { gap: 12 },
+  well: { gap: 12 },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
-  sectionTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.amber },
+  trayHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.amber },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: { borderRadius: 8, borderWidth: 1, borderColor: '#2c2c33', paddingHorizontal: 10, paddingVertical: 8, backgroundColor: '#17171c' },
-  chipActive: { borderColor: 'rgba(255,198,77,.55)', backgroundColor: '#1d1708' },
   chipOff: { opacity: 0.55 },
   chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.7, color: colors.textSecondary },
-  chipTextActive: { color: colors.amber },
-  panel: { borderRadius: 12, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 12, gap: 8 },
-  panelHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
-  panelEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.amber, flexShrink: 1 },
-  readout: { fontFamily: fonts.mono, fontSize: 11.5, color: colors.textSub },
 });

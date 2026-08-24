@@ -4,12 +4,24 @@
  * High Shelf · High-Pass/Low-Cut · Low-Pass/High-Cut · Notch. Every curve is
  * the real filter response (fxViz RBJ mirrors; notch via eqMath's cookbook
  * coefficients).
+ *
+ * RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23): this module renders the RackUnit
+ * frame itself (EqModuleScreen gives rack modules the full height, no host
+ * ScrollView). The response curve PINS on the stage with the 12 dB/oct honesty
+ * line as its badge (HPF/LPF only, as before); SHAPE/FREQ/GAIN/Q state reads
+ * on the bezel ("—" = the control doesn't apply to this shape). The dock
+ * carries only the faders the shape really has (FREQ always; GAIN for bell +
+ * shelves; Q for bell + notch) plus a STICKY SHAPE tray — A/B-ing the six
+ * shapes while the glass reacts is the lesson. The per-shape teaching line
+ * scrolls in the well.
  */
 import { useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { ResponseCurveGraph, eqResponseDb, type ResponseCurve } from '../../../../features/lab/fxViz';
-import { CheckQuestion, DragSlider, type CheckSpec } from '../../foundations/bits';
+import { CheckQuestion, type CheckSpec } from '../../foundations/bits';
 import { colors, fonts } from '../../../../theme/tokens';
+import { RackUnit } from '../../rack/RackUnit';
+import type { DockParam } from '../../rack/rackTypes';
 import { biquadMagDb, fFromNorm, fmtHz, gainColor, normFromF, rbjNotch } from './eqMath';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
@@ -24,6 +36,16 @@ const SHAPES: { key: ShapeKey; label: string; teach: string }[] = [
   { key: 'lowPass', label: 'LOW-PASS / HIGH-CUT', teach: 'PASSES the lows, removes energy above the cutoff — the mirror of the high-pass.' },
   { key: 'notch', label: 'NOTCH', teach: 'A deep, narrow null AT one frequency with the rest untouched — for surgically removing a single problem (hum, ring, feedback).' },
 ];
+
+/** Compact shape names for the dock button + bezel (≤7 mono chars). */
+const SHAPE_SHORT: Record<ShapeKey, string> = {
+  bell: 'BELL',
+  lowShelf: 'L-SHELF',
+  highShelf: 'H-SHELF',
+  highPass: 'HPF',
+  lowPass: 'LPF',
+  notch: 'NOTCH',
+};
 
 const CHECK: CheckSpec = {
   question: 'Which filter leaves everything ABOVE its frequency alone and removes energy BELOW it?',
@@ -59,86 +81,102 @@ export function FilterShapesModule(_p: EqModuleComponentProps) {
     return [{ at, emphasis: 'main' }];
   }, [shape, freq, gainDb, q]);
 
+  // Only the controls this shape really has reach the dock (the two-names
+  // lesson keeps its vocabulary: the frequency lane is CUTOFF on a pass
+  // filter, NOTCH on a notch). RackUnit re-binds the lane if a fader vanishes.
+  const params: DockParam[] = [
+    {
+      kind: 'fader',
+      id: 'freq',
+      label: shape === 'highPass' || shape === 'lowPass' ? 'CUTOFF' : shape === 'notch' ? 'NOTCH' : 'FREQ',
+      value: normFromF(freq),
+      onChange: (t) => setFreq(fFromNorm(t)),
+      format: () => fmtHz(freq),
+    },
+  ];
+  if (hasGain) {
+    params.push({
+      kind: 'fader',
+      id: 'gain',
+      label: 'GAIN',
+      value: (gainDb + 18) / 36,
+      onChange: (t) => setGainDb(Math.round((t * 36 - 18) * 2) / 2),
+      format: () => `${gainDb >= 0 ? '+' : ''}${gainDb.toFixed(1)} dB`,
+      formatShort: () => `${gainDb >= 0 ? '+' : ''}${gainDb.toFixed(1)}`,
+      tint: gc,
+    });
+  }
+  if (hasQ) {
+    params.push({
+      kind: 'fader',
+      id: 'q',
+      label: 'Q',
+      value: Math.log(q / 0.3) / Math.log(12 / 0.3),
+      onChange: (t) => setQ(0.3 * Math.pow(12 / 0.3, Math.max(0, Math.min(1, t)))),
+      format: () => `Q ${q.toFixed(1)}`,
+    });
+  }
+  params.push({
+    kind: 'options',
+    id: 'shape',
+    label: 'SHAPE',
+    valueLabel: SHAPE_SHORT[shape],
+    options: SHAPES.map((s) => ({ id: s.key, label: s.label })),
+    selectedId: shape,
+    // Sticky: A/B-ing the six shapes while the curve reacts IS the lesson.
+    sticky: true,
+    onSelect: (id) => setShape(id as ShapeKey),
+  });
+
   return (
-    <View style={styles.root}>
-      <GlossaryText style={styles.body}>
-        EQ isn’t one shape — it’s a small family. Pick each one and move it: the differences teach
-        themselves.
-      </GlossaryText>
+    <RackUnit
+      initialParam="freq"
+      params={params}
+      stage={{
+        size: 'M', // response-curve teaching chart
+        badge:
+          shape === 'highPass' || shape === 'lowPass'
+            ? 'Drawn at 12 dB/octave — slopes get their own lesson next.'
+            : undefined,
+        bezel: [
+          { k: 'SHAPE', v: SHAPE_SHORT[shape] },
+          { k: 'FREQ', v: fmtHz(freq) },
+          {
+            k: 'GAIN',
+            v: hasGain ? `${gainDb >= 0 ? '+' : ''}${gainDb.toFixed(1)} dB` : '—',
+            tint: hasGain ? gc : '#7a7f8a',
+          },
+          { k: 'Q', v: hasQ ? q.toFixed(1) : '—', tint: hasQ ? undefined : '#7a7f8a' },
+        ],
+        render: (w, h) => (
+          <View style={{ width: w, height: h, justifyContent: 'center', paddingHorizontal: 8 }}>
+            <ResponseCurveGraph curves={curves} dbRange={18} height={Math.max(80, h - 26)} mainColor={gc} />
+          </View>
+        ),
+      }}
+    >
+      <View style={styles.well}>
+        <GlossaryText style={styles.body}>
+          EQ isn’t one shape — it’s a small family. Pick each one and move it: the differences teach
+          themselves.
+        </GlossaryText>
 
-      <View style={styles.chipRow}>
-        {SHAPES.map((s) => (
-          <Pressable
-            key={s.key}
-            onPress={() => setShape(s.key)}
-            hitSlop={6}
-            accessibilityRole="button"
-            accessibilityLabel={s.label}
-            accessibilityState={{ selected: shape === s.key }}
-            style={[styles.chip, shape === s.key && styles.chipActive]}
-          >
-            <Text style={[styles.chipText, shape === s.key && styles.chipTextActive]}>{s.label}</Text>
-          </Pressable>
-        ))}
-      </View>
-
-      <View style={styles.panel}>
-        <View style={styles.panelHead}>
-          <Text style={styles.panelEyebrow}>{meta.label}</Text>
-          <Text style={[styles.readout, { color: gc }]}>
-            {fmtHz(freq)}
-            {hasGain ? ` · ${gainDb >= 0 ? '+' : ''}${gainDb.toFixed(1)} dB` : ''}
-            {hasQ ? ` · Q ${q.toFixed(1)}` : ''}
-          </Text>
+        {/* The selected shape's teaching line follows the SHAPE tray pick. */}
+        <View style={styles.teachCard}>
+          <Text style={styles.teachHead}>{meta.label}</Text>
+          <Text style={styles.teach}>{meta.teach}</Text>
         </View>
-        <ResponseCurveGraph curves={curves} dbRange={18} height={150} mainColor={gc} />
-        <Text style={styles.teach}>{meta.teach}</Text>
-        {shape === 'highPass' || shape === 'lowPass' ? (
-          <Text style={styles.honest}>Drawn at 12 dB/octave — slopes get their own lesson next.</Text>
-        ) : null}
+
+        <CheckQuestion spec={CHECK} />
       </View>
-
-      <DragSlider
-        label={shape === 'highPass' || shape === 'lowPass' ? 'CUTOFF FREQUENCY' : shape === 'notch' ? 'NOTCH FREQUENCY' : 'FREQUENCY'}
-        value={normFromF(freq)}
-        onChange={(t) => setFreq(fFromNorm(t))}
-        readout={fmtHz(freq)}
-      />
-      {hasGain ? (
-        <DragSlider
-          label="GAIN"
-          value={(gainDb + 18) / 36}
-          onChange={(t) => setGainDb(Math.round((t * 36 - 18) * 2) / 2)}
-          readout={`${gainDb >= 0 ? '+' : ''}${gainDb.toFixed(1)} dB`}
-          tint={gc}
-        />
-      ) : null}
-      {hasQ ? (
-        <DragSlider
-          label="Q"
-          value={Math.log(q / 0.3) / Math.log(12 / 0.3)}
-          onChange={(t) => setQ(0.3 * Math.pow(12 / 0.3, Math.max(0, Math.min(1, t))))}
-          readout={`Q ${q.toFixed(1)}`}
-        />
-      ) : null}
-
-      <CheckQuestion spec={CHECK} />
-    </View>
+    </RackUnit>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { gap: 12 },
+  well: { gap: 12 },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
-  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  chip: { borderRadius: 8, borderWidth: 1, borderColor: '#2c2c33', paddingHorizontal: 10, paddingVertical: 8, backgroundColor: '#17171c' },
-  chipActive: { borderColor: 'rgba(255,198,77,.55)', backgroundColor: '#1d1708' },
-  chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 0.7, color: colors.textSecondary },
-  chipTextActive: { color: colors.amber },
-  panel: { borderRadius: 12, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 12, gap: 8 },
-  panelHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
-  panelEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.amber, flexShrink: 1 },
-  readout: { fontFamily: fonts.mono, fontSize: 11.5, color: colors.amber },
+  teachCard: { borderRadius: 10, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 12, gap: 4 },
+  teachHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.amber },
   teach: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSecondary },
-  honest: { fontFamily: fonts.barlowRegular, fontSize: 11.5, color: colors.textSub },
 });

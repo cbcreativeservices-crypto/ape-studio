@@ -1,26 +1,41 @@
 /**
  * meter/modMeterB — Modules 5–7 of the Visual Audio Analysis Lab (owner spec
  * 2026-07-29): Spectrum Analyzer, Spectrogram, and the ⭐ Waterfall (CSD).
+ *
+ * RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23): each module renders the RackUnit
+ * frame ITSELF (MeterModuleScreen gives rack modules the full height, no host
+ * ScrollView). The analyzer glass PINS on the stage with the honesty line as
+ * its badge (these draw meterEngine's deterministic SYNTHETIC teaching
+ * patterns — never measurements); live numbers read on the bezel; every
+ * setting rides the dock (faders bind the shared lane, pattern/room/reverb
+ * collections open STICKY trays so you A/B while the glass reacts). Only the
+ * teaching prose, mistakes and check questions scroll — the well carries its
+ * own guided-lesson entry row. Law: reading may scroll; operating may not.
+ *
  * NO Skia here — the spectral renderers load only via skiaGate.
- * requireVizSpectral(); pre-Skia clients get the honest VizUnavailableCard
- * while every chip, slider, readout and check question still works.
+ * requireVizSpectral(); pre-Skia clients get the honest VizUnavailableCard in
+ * the glass while every dock control, bezel readout and check question still
+ * works.
  *
  * CHARTER (anti-misconception):
  *  • M5 — a spectrum is read as a SHAPE (where is the energy, smooth or
  *    spiky, what sticks up) — never bin-by-bin.
  *  • M6 — AXES FIRST: time →, frequency ↑, color = level. The #1 error is
- *    reading a spectrogram like a waveform (up ≠ loud).
+ *    reading a spectrogram like a waveform (up ≠ loud). The axes are printed
+ *    permanently on the bezel.
  *  • M7 — level and decay are DIFFERENT AXES: EQ changes level (Y); only
- *    damping/treatment shortens ring time (Z). Taller ≠ longer.
+ *    damping/treatment shortens ring time (Z). Taller ≠ longer. DAMPING is
+ *    the pre-bound lane; RT·125 vs RT·4k on the bezel shows highs die first.
  */
 import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { MeterModuleProps } from '../MeterModuleScreen';
-import { Badge, MythReality, PanelCard, ReadoutGrid, dstyles } from '../../digital/bits';
-import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
-import { LabChip, CollapsibleSection } from '../../LabShell';
-import { DisplayGuideButton } from '../../../../features/lab/guidedLessons';
+import { MythReality, ReadoutGrid, dstyles } from '../../digital/bits';
+import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
+import { CollapsibleSection } from '../../LabShell';
+import { RackUnit } from '../../rack/RackUnit';
+import type { DockParam } from '../../rack/rackTypes';
 import { requireVizSpectral, type VizSpectralModule } from '../skiaGate';
 import {
   SPECTRUM_LABELS,
@@ -123,28 +138,55 @@ function CommonMistakes({ items }: { items: string[] }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Skia-gated viz children. Each is rendered ONLY when viz ≠ null and stays
-// mounted from then on, so the viz.usePhaseClock hook order is stable.
-
-function SpectrumViz({ viz, width, pattern, running }: { viz: VizSpectralModule; width: number; pattern: SpectrumKey; running: boolean }) {
-  // Gentle bar shimmer — the live-analyzer feel without pretending to measure.
-  const phase = viz.usePhaseClock(running, 1.1);
-  return <viz.SpectrumPatternView width={width} pattern={pattern} phase={phase} />;
+/** The well's guided-lesson entry row — rack modules own their well, so each
+ *  carries the row the host ScrollView used to append (MeterModuleScreen
+ *  lessonRow styling copied locally; owner 2026-07-29, LabShell v2). */
+function LessonRow({ onPress }: { onPress: () => void }) {
+  return (
+    <Pressable
+      style={styles.lessonRow}
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel="Open the guided lesson"
+    >
+      <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
+    </Pressable>
+  );
 }
 
-function SpectrogramViz({ viz, width, pattern, running, mode }: { viz: VizSpectralModule; width: number; pattern: SpectrogramKey; running: boolean; mode: 'scroll' | 'snapshot' }) {
+/** Honest fallback INSIDE the glass for pre-Skia clients (skiaGate rule). */
+function GlassFallback({ w, h }: { w: number; h: number }) {
+  return (
+    <View style={{ width: w, height: h, justifyContent: 'center', padding: 10 }}>
+      <VizUnavailableCard />
+    </View>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Skia-gated viz children. Each is rendered ONLY when viz ≠ null and stays
+// mounted from then on, so the viz.usePhaseClock hook order is stable. All are
+// height-parametric — they consume whatever glass the rack grants at mount
+// (RackUnit guarantees the height never changes mid-interaction).
+
+function SpectrumViz({ viz, width, height, pattern, running }: { viz: VizSpectralModule; width: number; height: number; pattern: SpectrumKey; running: boolean }) {
+  // Gentle bar shimmer — the live-analyzer feel without pretending to measure.
+  const phase = viz.usePhaseClock(running, 1.1);
+  return <viz.SpectrumPatternView width={width} height={height} pattern={pattern} phase={phase} />;
+}
+
+function SpectrogramViz({ viz, width, height, pattern, running, mode }: { viz: VizSpectralModule; width: number; height: number; pattern: SpectrogramKey; running: boolean; mode: 'scroll' | 'snapshot' }) {
   // 0.2 Hz → an exactly 5-second loop (owner 2026-08-05): scroll mode rolls
   // the last 5 s off to the left; snapshot shows the full 5 s at once.
   const phase = viz.usePhaseClock(running, 0.2);
-  return <viz.SpectrogramPatternView width={width} pattern={pattern} phase={phase} mode={mode} />;
+  return <viz.SpectrogramPatternView width={width} height={height} pattern={pattern} phase={phase} mode={mode} />;
 }
 
-function WaterfallViz({ viz, width, opts, running }: { viz: VizSpectralModule; width: number; opts: WaterfallOpts; running: boolean }) {
+function WaterfallViz({ viz, width, height, opts, running }: { viz: VizSpectralModule; width: number; height: number; opts: WaterfallOpts; running: boolean }) {
   // Build-then-collapse loop clock — REAL-TIME (owner 2026-08-05): the ridge
   // crosses each 1-second floor marker at one real second.
   const phase = viz.usePhaseClock(running, viz.WATERFALL_REALTIME_HZ);
-  return <viz.WaterfallView width={width} height={330} opts={opts} phase={phase} animate />;
+  return <viz.WaterfallView width={width} height={height} opts={opts} phase={phase} animate />;
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -215,54 +257,69 @@ export function SpectrumModule(p: MeterModuleProps) {
   const [pattern, setPattern] = useState<SpectrumKey>('speech');
   const scan = useMemo(() => scanSpectrum(pattern), [pattern]);
 
+  const params: DockParam[] = [
+    {
+      kind: 'options',
+      id: 'pattern',
+      label: 'PATTERN',
+      valueLabel: SPECTRUM_LABELS[pattern].toUpperCase(),
+      options: SPECTRUM_KEYS.map((k) => ({ id: k, label: SPECTRUM_LABELS[k].toUpperCase() })),
+      selectedId: pattern,
+      onSelect: (id) => setPattern(id as SpectrumKey),
+      // Teaching collection: the tray STAYS OPEN so you A/B shapes while the
+      // analyzer redraws — learning the tells IS the lesson.
+      sticky: true,
+      helpKey: 'spectral_patterns',
+    },
+  ];
+
   return (
-    <View style={styles.stack}>
-      <PanelCard>
-        <SectionHead title="SPECTRUM — WHAT DOES THIS SHAPE TELL ME?" onHelp={() => p.help('spectrum_read')} />
+    <RackUnit
+      initialParam="pattern"
+      params={params}
+      onHelp={p.help}
+      stage={{
+        size: 'L', // the shape IS the lesson
+        badge: 'SYNTHETIC TEACHING PATTERNS — ANALYTIC, NOT A MEASUREMENT',
+        onGuide: () => p.help('spectrum_read'),
+        bezel: [
+          { k: 'PATTERN', v: SPECTRUM_LABELS[pattern].toUpperCase(), helpKey: 'spectral_patterns', flex: 1.4 },
+          { k: 'PEAK', v: fmtHz(scan.peakF), helpKey: 'spectrum_read' },
+          { k: 'LEVEL', v: `${scan.peakDb.toFixed(1)} dB rel`, helpKey: 'spectrum_read' },
+          { k: 'TILT', v: `${scan.tiltDbOct >= 0 ? '+' : ''}${scan.tiltDbOct.toFixed(1)}/oct`, helpKey: 'spectrum_read' },
+        ],
+        render: (w, h) =>
+          viz ? (
+            <SpectrumViz viz={viz} width={w} height={h} pattern={pattern} running={p.focused} />
+          ) : (
+            <GlassFallback w={w} h={h} />
+          ),
+      }}
+    >
+      <View style={styles.stack}>
         <Text style={dstyles.body}>
           A spectrum analyzer answers one question: what does this SHAPE mean? Left = lows, right = highs, height = energy.
-          Seven shapes cover most of what you will ever see on a stage or in a mix — tap through them until each tell is
-          instant.
+          Seven shapes cover most of what you will ever see on a stage or in a mix — open PATTERN and tap through them
+          until each tell is instant.
         </Text>
-        {viz ? <SpectrumViz viz={viz} width={p.width} pattern={pattern} running={p.focused} /> : <VizUnavailableCard />}
-        <DisplayGuideButton onPress={() => p.help('spectrum_read')} />
-        <View style={dstyles.chipRow}>
-          {SPECTRUM_KEYS.map((k) => (
-            <LabChip
-              key={k}
-              label={SPECTRUM_LABELS[k].toUpperCase()}
-              selected={pattern === k}
-              onPress={() => setPattern(k)}
-              onLongPress={() => p.help('spectral_patterns')}
-            />
-          ))}
-        </View>
         <Text style={dstyles.caption}>{SPECTRUM_CAPTIONS[pattern]}</Text>
-        <ReadoutGrid
-          help={p.help}
-          helpKey="spectrum_read"
-          items={[
-            { k: 'PEAK FREQ', v: fmtHz(scan.peakF) },
-            { k: 'PEAK LEVEL', v: `${scan.peakDb.toFixed(1)} dB (rel)` },
-            { k: 'SPECTRAL TILT', v: `${scan.tiltDbOct >= 0 ? '+' : ''}${scan.tiltDbOct.toFixed(1)} dB/oct` },
-          ]}
-        />
-      </PanelCard>
 
-      <CollapsibleSection title="WHAT TO LOOK FOR" onHelp={() => p.help('spectrum_read')}>
-        <Text style={dstyles.body}>Three questions decode any spectrum:</Text>
-        {LOOK_FOR.map((q, i) => (
-          <View key={i} style={styles.lookRow}>
-            <Text style={styles.lookNum}>{i + 1}</Text>
-            <Text style={[dstyles.body, { flex: 1 }]}>{q}</Text>
-          </View>
-        ))}
-      </CollapsibleSection>
+        <CollapsibleSection title="WHAT TO LOOK FOR" onHelp={() => p.help('spectrum_read')}>
+          <Text style={dstyles.body}>Three questions decode any spectrum:</Text>
+          {LOOK_FOR.map((q, i) => (
+            <View key={i} style={styles.lookRow}>
+              <Text style={styles.lookNum}>{i + 1}</Text>
+              <Text style={[dstyles.body, { flex: 1 }]}>{q}</Text>
+            </View>
+          ))}
+        </CollapsibleSection>
 
-      <CommonMistakes items={SPECTRUM_MISTAKES} />
-      <CheckQuestion spec={CHECK_SPECTRUM_ID} />
-      <CheckQuestion spec={CHECK_HUM_VS_FEEDBACK} />
-    </View>
+        <CommonMistakes items={SPECTRUM_MISTAKES} />
+        <CheckQuestion spec={CHECK_SPECTRUM_ID} />
+        <CheckQuestion spec={CHECK_HUM_VS_FEEDBACK} />
+        <LessonRow onPress={() => p.help()} />
+      </View>
+    </RackUnit>
   );
 }
 
@@ -327,72 +384,88 @@ export function SpectrogramModule(p: MeterModuleProps) {
   // 5 s picture at once, for comparing the complete pattern). Owner 2026-08-05.
   const [snapshot, setSnapshot] = useState(false);
 
+  const params: DockParam[] = [
+    {
+      kind: 'options',
+      id: 'pattern',
+      label: 'PATTERN',
+      valueLabel: SPECTROGRAM_LABELS[pattern].toUpperCase(),
+      options: SPECTROGRAM_KEYS.map((k) => ({ id: k, label: SPECTROGRAM_LABELS[k].toUpperCase() })),
+      selectedId: pattern,
+      onSelect: (id) => setPattern(id as SpectrogramKey),
+      sticky: true, // A/B how each sound PAINTS while the film keeps rolling
+      helpKey: 'spectrogram_patterns',
+    },
+    {
+      kind: 'options',
+      id: 'view',
+      label: 'VIEW',
+      valueLabel: snapshot ? 'SNAP 5s' : 'ELAPSED',
+      options: [
+        { id: 'scroll', label: 'ELAPSED TIME' },
+        { id: 'snapshot', label: 'SNAPSHOT — FULL 5 s' },
+      ],
+      selectedId: snapshot ? 'snapshot' : 'scroll',
+      onSelect: (id) => setSnapshot(id === 'snapshot'),
+      sticky: true,
+      helpKey: 'spectrogram_axes',
+    },
+  ];
+
   return (
-    <View style={styles.stack}>
-      {/* AXES FIRST — before any pattern. The whole module hinges on this. */}
-      <CollapsibleSection title="READ THE AXES FIRST" onHelp={() => p.help('spectrogram_axes')}>
-        <Text style={dstyles.body}>
-          Time runs HORIZONTAL — the newest moment is at the RIGHT edge and older sound scrolls off to
-          the LEFT. Frequency runs VERTICAL (low at the bottom, high at the top). Loudness is the
-          COLOR — brighter = louder. The #1 error in all of metering is reading a spectrogram like a
-          waveform, where up means loud. Here, up means HIGH-PITCHED.
-        </Text>
-        <ReadoutGrid
-          help={p.help}
-          helpKey="spectrogram_axes"
-          items={[
-            { k: 'TIME', v: 'new → right' },
-            { k: 'FREQUENCY', v: '↑ up' },
-            { k: 'LEVEL', v: '= color' },
-          ]}
-        />
-      </CollapsibleSection>
-
-      <PanelCard>
-        <SectionHead title="PATTERN LIBRARY" onHelp={() => p.help('spectrogram_patterns')} />
-        <Text style={dstyles.body}>
-          Six sounds, filmed over time. Learn how each one PAINTS and you can identify a sound from the picture alone.
-        </Text>
-        {viz ? (
-          <SpectrogramViz viz={viz} width={p.width} pattern={pattern} running={p.focused} mode={snapshot ? 'snapshot' : 'scroll'} />
-        ) : (
-          <VizUnavailableCard />
-        )}
-        <DisplayGuideButton onPress={() => p.help('spectrogram_axes')} />
-        {/* ELAPSED TIME = real-world scrolling (new at the right, rolls left);
-            SNAPSHOT = the full 5 s picture at once for comparison. */}
-        <View style={dstyles.chipRow}>
-          <LabChip
-            label="ELAPSED TIME"
-            selected={!snapshot}
-            onPress={() => setSnapshot(false)}
-            onLongPress={() => p.help('spectrogram_axes')}
-          />
-          <LabChip
-            label="SNAPSHOT — FULL 5 s"
-            selected={snapshot}
-            onPress={() => setSnapshot(true)}
-            onLongPress={() => p.help('spectrogram_axes')}
-          />
-        </View>
-        <View style={dstyles.chipRow}>
-          {SPECTROGRAM_KEYS.map((k) => (
-            <LabChip
-              key={k}
-              label={SPECTROGRAM_LABELS[k].toUpperCase()}
-              selected={pattern === k}
-              onPress={() => setPattern(k)}
-              onLongPress={() => p.help('spectrogram_patterns')}
+    <RackUnit
+      initialParam="pattern"
+      params={params}
+      onHelp={p.help}
+      stage={{
+        size: 'L',
+        badge: 'SYNTHETIC TEACHING PATTERNS — ANALYTIC, NOT A MEASUREMENT',
+        onGuide: () => p.help('spectrogram_axes'),
+        // AXES FIRST (the module's charter) — printed permanently on the bezel.
+        bezel: [
+          { k: 'TIME', v: 'new → right', helpKey: 'spectrogram_axes' },
+          { k: 'FREQ', v: '↑ up', helpKey: 'spectrogram_axes' },
+          { k: 'LEVEL', v: '= color', helpKey: 'spectrogram_axes' },
+          { k: 'MODE', v: snapshot ? 'SNAP' : 'SCROLL', helpKey: 'spectrogram_axes' },
+        ],
+        render: (w, h) =>
+          viz ? (
+            <SpectrogramViz
+              viz={viz}
+              width={w}
+              height={h}
+              pattern={pattern}
+              running={p.focused}
+              mode={snapshot ? 'snapshot' : 'scroll'}
             />
-          ))}
-        </View>
-        <Text style={dstyles.caption}>{SPECTROGRAM_CAPTIONS[pattern]}</Text>
-      </PanelCard>
+          ) : (
+            <GlassFallback w={w} h={h} />
+          ),
+      }}
+    >
+      <View style={styles.stack}>
+        {/* AXES FIRST — before any pattern. The whole module hinges on this. */}
+        <CollapsibleSection title="READ THE AXES FIRST" onHelp={() => p.help('spectrogram_axes')}>
+          <Text style={dstyles.body}>
+            Time runs HORIZONTAL — the newest moment is at the RIGHT edge and older sound scrolls off to
+            the LEFT. Frequency runs VERTICAL (low at the bottom, high at the top). Loudness is the
+            COLOR — brighter = louder. The #1 error in all of metering is reading a spectrogram like a
+            waveform, where up means loud. Here, up means HIGH-PITCHED.
+          </Text>
+        </CollapsibleSection>
 
-      <CommonMistakes items={SPECTROGRAM_MISTAKES} />
-      <CheckQuestion spec={CHECK_SGRAM_AXES} />
-      <CheckQuestion spec={CHECK_WHISTLE_VS_FEEDBACK} />
-    </View>
+        <Text style={dstyles.body}>
+          Six sounds, filmed over time. Open PATTERN and learn how each one PAINTS — then you can identify a sound from
+          the picture alone. VIEW switches between the rolling real-time film and the full 5-second snapshot.
+        </Text>
+        <Text style={dstyles.caption}>{SPECTROGRAM_CAPTIONS[pattern]}</Text>
+
+        <CommonMistakes items={SPECTROGRAM_MISTAKES} />
+        <CheckQuestion spec={CHECK_SGRAM_AXES} />
+        <CheckQuestion spec={CHECK_WHISTLE_VS_FEEDBACK} />
+        <LessonRow onPress={() => p.help()} />
+      </View>
+    </RackUnit>
   );
 }
 
@@ -427,7 +500,7 @@ const FIELD_GUIDE: { title: string; helpKey: string; caption: string }[] = [
     title: 'DAMPING',
     helpKey: 'damping',
     caption:
-      'Drag the slider from CONCRETE toward PANELS and watch the mountain’s tail shorten — HIGHS first (porous absorbers eat them easily), LOWS last (they need thickness). This is why bass traps are thick.',
+      'Ride the DAMPING lane from CONCRETE toward PANELS and watch the mountain’s tail shorten — HIGHS first (porous absorbers eat them easily), LOWS last (they need thickness). Watch RT·4k fall on the bezel while RT·125 barely moves. This is why bass traps are thick.',
   },
   {
     title: 'COMPARE ROOMS',
@@ -445,7 +518,7 @@ const FIELD_GUIDE: { title: string; helpKey: string; caption: string }[] = [
     title: 'RINGING FILTERS',
     helpKey: 'eq_ridge',
     caption:
-      'Switch HIGH-Q RING on: a needle-thin ridge appears at 1.2 kHz and LINGERS far behind its neighbors. High-Q filters store energy — the filter itself rings, which is why surgical boosts can sound "resonant".',
+      'Switch Q RING on: a needle-thin ridge appears at 1.2 kHz and LINGERS far behind its neighbors. High-Q filters store energy — the filter itself rings, which is why surgical boosts can sound "resonant".',
   },
   {
     title: 'REVERB TAILS',
@@ -481,7 +554,7 @@ const CHECK_RIDGE_FIX: CheckSpec = {
   correctIdx: 0,
   reveal:
     'EQ moves the ridge up and down (level); the room keeps storing and releasing energy at 250 Hz for just as long. Only absorption — damping, treatment, bass trapping — shortens the DECAY. The waterfall shows both axes separately, which is exactly why it exists.',
-  wrongHint: 'Try the EQ slider in this module: the mountain gets taller or shorter — does it get LONGER or SHORTER into the picture?',
+  wrongHint: 'Try the EQ lane in this module: the mountain gets taller or shorter — does it get LONGER or SHORTER into the picture?',
 };
 
 const WATERFALL_MISTAKES = [
@@ -515,80 +588,119 @@ export function WaterfallModule(p: MeterModuleProps) {
   );
   const ringing = rt.ratio >= 1.6;
 
+  const params: DockParam[] = [
+    {
+      // The teaching parameter (pre-bound): ride it and watch RT·4k collapse
+      // on the bezel while RT·125 holds — highs die first, lows need thickness.
+      kind: 'fader',
+      id: 'damping',
+      label: 'DAMPING',
+      value: damping01,
+      onChange: setDamping01,
+      format: () => `${dampingLabel(damping01)} · ${Math.round(damping01 * 100)}%`,
+      formatShort: () => dampingLabel(damping01),
+      helpKey: 'damping',
+    },
+    {
+      kind: 'fader',
+      id: 'eq',
+      label: 'EQ 250',
+      value: (eqBoostDb + 12) / 24,
+      onChange: (v) => setEqBoostDb(Math.round(-12 + v * 24)),
+      format: () => `${eqBoostDb >= 0 ? '+' : '−'}${Math.abs(eqBoostDb)} dB @ 250 Hz`,
+      formatShort: () => `${eqBoostDb >= 0 ? '+' : '−'}${Math.abs(eqBoostDb)} dB`,
+      helpKey: 'eq_ridge',
+    },
+    {
+      kind: 'options',
+      id: 'room',
+      label: 'ROOM',
+      valueLabel: ROOM_LABELS[room].toUpperCase(),
+      options: ROOM_KEYS.map((k) => ({ id: k, label: ROOM_LABELS[k].toUpperCase() })),
+      selectedId: room,
+      onSelect: (id) => setRoom(id as RoomKey),
+      sticky: true, // A/B rooms while the mountain rebuilds — the lesson
+      helpKey: 'room_ring',
+    },
+    {
+      kind: 'options',
+      id: 'reverb',
+      label: 'REVERB',
+      valueLabel: REVERB_LABELS[reverb].toUpperCase(),
+      options: REVERB_KEYS.map((k) => ({ id: k, label: REVERB_LABELS[k].toUpperCase() })),
+      selectedId: reverb,
+      onSelect: (id) => setReverb(id as ReverbKey),
+      sticky: true,
+      helpKey: 'reverb_tails',
+    },
+    {
+      kind: 'toggle',
+      id: 'qring',
+      label: 'Q RING',
+      value: qRing,
+      onToggle: () => setQRing((v) => !v),
+      helpKey: 'eq_ridge',
+    },
+  ];
+
   return (
-    <View style={styles.stack}>
-      {/* AXES FIRST — three axes, and Z is the one nobody expects. */}
-      <CollapsibleSection title="THE WATERFALL — READ THE AXES FIRST" onHelp={() => p.help('waterfall_axes')}>
-        <Text style={dstyles.body}>
-          X = frequency across. Y = amplitude up. Z = TIME stepping TOWARD you: the loud start
-          (t = 0) stands tall at the BACK, and each later instant steps down toward the front —
-          the decay cascades toward the viewer, and the white floor bands mark each second going
-          by. The mountain range collapsing toward you IS decay — watch it once and RT60 stops
-          being an abstract number.
-        </Text>
-        <ReadoutGrid
-          help={p.help}
-          helpKey="waterfall_axes"
-          items={[
-            { k: 'X — ACROSS', v: 'frequency' },
-            { k: 'Y — UP', v: 'amplitude' },
-            { k: 'Z — TOWARD YOU', v: 'time (t=0 at back)' },
-          ]}
-        />
-      </CollapsibleSection>
-
-      <PanelCard>
-        <SectionHead title="BUILD A SCENE — THEN WATCH IT COLLAPSE" onHelp={() => p.help('waterfall_decay')} />
-        {viz ? <WaterfallViz viz={viz} width={p.width} opts={opts} running={p.focused} /> : <VizUnavailableCard />}
-        <DisplayGuideButton onPress={() => p.help('waterfall_axes')} />
-
-        <Text style={styles.groupLabel}>ROOM</Text>
-        <View style={dstyles.chipRow}>
-          {ROOM_KEYS.map((k) => (
-            <LabChip
-              key={k}
-              label={ROOM_LABELS[k].toUpperCase()}
-              selected={room === k}
-              onPress={() => setRoom(k)}
-              onLongPress={() => p.help('room_ring')}
-            />
-          ))}
-        </View>
-
-        <DragSlider
-          value={damping01}
-          onChange={setDamping01}
-          label="DAMPING · CONCRETE → CURTAINS → CARPET → PANELS"
-          readout={`${dampingLabel(damping01)} · ${Math.round(damping01 * 100)}%`}
-          onHelp={() => p.help('damping')}
-        />
-        <DragSlider
-          value={(eqBoostDb + 12) / 24}
-          onChange={(v) => setEqBoostDb(Math.round(-12 + v * 24))}
-          label="EQ · 250 Hz BOOST"
-          readout={`${eqBoostDb >= 0 ? '+' : '−'}${Math.abs(eqBoostDb)} dB @ 250 Hz`}
-          onHelp={() => p.help('eq_ridge')}
-        />
-
-        <Text style={styles.groupLabel}>FILTER · REVERB</Text>
-        <View style={dstyles.chipRow}>
-          <LabChip
-            label="HIGH-Q RING"
-            selected={qRing}
-            onPress={() => setQRing(!qRing)}
-            onLongPress={() => p.help('eq_ridge')}
+    <RackUnit
+      initialParam="damping"
+      params={params}
+      onHelp={p.help}
+      stage={{
+        size: 'L', // the flagship — the collapsing range IS the module
+        badge: 'SYNTHETIC CSD — DRAWN FROM THE RT60 MODEL, NOT A MEASUREMENT',
+        onGuide: () => p.help('waterfall_axes'),
+        bezel: [
+          { k: 'RT·125', v: `${rt.r125.toFixed(2)} s`, helpKey: 'waterfall_decay' },
+          { k: 'RT·4k', v: `${rt.r4k.toFixed(2)} s`, helpKey: 'waterfall_decay' },
+          {
+            k: 'RIDGE',
+            v: ringing ? fmtHz(rt.f) : 'none',
+            tint: ringing ? '#ff6b5e' : '#7a7f8a',
+            helpKey: 'room_ring',
+          },
+          {
+            k: 'VS MED',
+            v: ringing ? `${rt.ratio.toFixed(1)}×` : 'even',
+            tint: ringing ? '#ff6b5e' : '#7a7f8a',
+            helpKey: 'waterfall_decay',
+          },
+        ],
+        render: (w, h) =>
+          viz ? (
+            <WaterfallViz viz={viz} width={w} height={h} opts={opts} running={p.focused} />
+          ) : (
+            <GlassFallback w={w} h={h} />
+          ),
+      }}
+    >
+      <View style={styles.stack}>
+        {/* AXES FIRST — three axes, and Z is the one nobody expects. */}
+        <CollapsibleSection title="THE WATERFALL — READ THE AXES FIRST" onHelp={() => p.help('waterfall_axes')}>
+          <Text style={dstyles.body}>
+            X = frequency across. Y = amplitude up. Z = TIME stepping TOWARD you: the loud start
+            (t = 0) stands tall at the BACK, and each later instant steps down toward the front —
+            the decay cascades toward the viewer, and the white floor bands mark each second going
+            by. The mountain range collapsing toward you IS decay — watch it once and RT60 stops
+            being an abstract number.
+          </Text>
+          <ReadoutGrid
+            help={p.help}
+            helpKey="waterfall_axes"
+            items={[
+              { k: 'X — ACROSS', v: 'frequency' },
+              { k: 'Y — UP', v: 'amplitude' },
+              { k: 'Z — TOWARD YOU', v: 'time (t=0 at back)' },
+            ]}
           />
-          {REVERB_KEYS.map((k) => (
-            <LabChip
-              key={k}
-              label={REVERB_LABELS[k].toUpperCase()}
-              selected={reverb === k}
-              onPress={() => setReverb(k)}
-              onLongPress={() => p.help('reverb_tails')}
-            />
-          ))}
-        </View>
+        </CollapsibleSection>
 
+        <Text style={dstyles.body}>
+          Build a scene, then watch it collapse: ROOM and REVERB pick the scene, the DAMPING and EQ 250
+          lanes reshape it live, Q RING plants a ringing filter. The bezel keeps score.
+        </Text>
         <ReadoutGrid
           help={p.help}
           helpKey="waterfall_decay"
@@ -604,28 +716,29 @@ export function WaterfallModule(p: MeterModuleProps) {
         <Text style={dstyles.caption}>
           {ringing
             ? `${fmtHz(rt.f)} decays ${rt.ratio.toFixed(1)}× slower than the median of the range — that ridge is RINGING.`
-            : 'Even decay across the range — nothing rings. Pick CLASSROOM or flip HIGH-Q RING to plant a ridge.'}
+            : 'Even decay across the range — nothing rings. Pick CLASSROOM or flip Q RING to plant a ridge.'}
         </Text>
-      </PanelCard>
 
-      <CollapsibleSection title="FIELD GUIDE — WHAT TO TRY">
-        {FIELD_GUIDE.map((s) => (
-          <View key={s.title} style={styles.fieldSection}>
-            <SectionHead title={s.title} onHelp={() => p.help(s.helpKey)} />
-            <Text style={dstyles.caption}>{s.caption}</Text>
-          </View>
-        ))}
-      </CollapsibleSection>
+        <CollapsibleSection title="FIELD GUIDE — WHAT TO TRY">
+          {FIELD_GUIDE.map((s) => (
+            <View key={s.title} style={styles.fieldSection}>
+              <SectionHead title={s.title} onHelp={() => p.help(s.helpKey)} />
+              <Text style={dstyles.caption}>{s.caption}</Text>
+            </View>
+          ))}
+        </CollapsibleSection>
 
-      <MythReality
-        myth="EQ-cutting a ringing frequency shortens its decay."
-        reality="EQ changes LEVEL; only damping/treatment shortens RING TIME — the waterfall shows both axes separately."
-      />
+        <MythReality
+          myth="EQ-cutting a ringing frequency shortens its decay."
+          reality="EQ changes LEVEL; only damping/treatment shortens RING TIME — the waterfall shows both axes separately."
+        />
 
-      <CommonMistakes items={WATERFALL_MISTAKES} />
-      <CheckQuestion spec={CHECK_Z_AXIS} />
-      <CheckQuestion spec={CHECK_RIDGE_FIX} />
-    </View>
+        <CommonMistakes items={WATERFALL_MISTAKES} />
+        <CheckQuestion spec={CHECK_Z_AXIS} />
+        <CheckQuestion spec={CHECK_RIDGE_FIX} />
+        <LessonRow onPress={() => p.help()} />
+      </View>
+    </RackUnit>
   );
 }
 
@@ -635,7 +748,6 @@ const styles = StyleSheet.create({
   stack: { gap: 12 },
   headRow: { flexDirection: 'row', alignItems: 'center', gap: 7 },
   info: { color: colors.amber, fontSize: 13, marginTop: 5 },
-  groupLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: colors.textSecondary, marginTop: 2 },
 
   lookRow: { flexDirection: 'row', gap: 9, alignItems: 'flex-start' },
   lookNum: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: colors.amber, width: 14, textAlign: 'center', marginTop: 2 },
@@ -654,4 +766,17 @@ const styles = StyleSheet.create({
   mistakeRow: { flexDirection: 'row', gap: 8, alignItems: 'flex-start' },
   mistakeX: { fontFamily: fonts.barlowMedium, fontSize: 13, color: '#ff6b5e', marginTop: 1 },
   mistakeText: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSecondary },
+
+  // Guided-lesson entry row — MeterModuleScreen lessonRow styling copied
+  // locally (rack modules own their well, incl. this row).
+  lessonRow: {
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#131316',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    marginTop: 4,
+  },
+  lessonRowText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.9, color: colors.textSecondary },
 });

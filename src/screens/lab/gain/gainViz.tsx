@@ -17,6 +17,11 @@
  *
  * Meters colour by the app MIDI ramp (levelColor): blue = too low, green =
  * healthy, yellow/red = hot/overload.
+ *
+ * RACK UNIT (2026-08-23, APE_LAB_UX_PROPOSAL): ChainStage renders the whole
+ * chain as meter columns inside the pinned stage glass, height-parametric —
+ * faders move to the dock, so the columns carry meters/LEDs/collapsed slots
+ * only. stageTint/stageStatus feed the bezel readouts.
  */
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -68,12 +73,12 @@ export function sourceDesc(node: ChainNode): string {
 const VM_H = 118;
 const VM_W = 18;
 
-export function StageMeterV({ node }: { node: ChainNode }) {
+export function StageMeterV({ node, height = VM_H }: { node: ChainNode; height?: number }) {
   const fill = meterFill(node.level);
   const col = levelColor(fill);
   return (
     <View style={styles.vWrap}>
-      <View style={styles.vTrack}>
+      <View style={[styles.vTrack, { height }]}>
         {/* zones, bottom-up: too-low · healthy · hot/over */}
         <View style={[styles.vZone, { bottom: 0, height: pct(ZONE_LOW_FILL), backgroundColor: '#13233f' }]} />
         <View style={[styles.vZone, { bottom: pct(ZONE_LOW_FILL), height: pct(ZONE_HOT_FILL - ZONE_LOW_FILL), backgroundColor: '#122a17' }]} />
@@ -199,6 +204,120 @@ export function ChainColumns({
             />
           </View>
         ))}
+      </View>
+    </View>
+  );
+}
+
+// ───────────────────────────────────── rack stage (Rack Unit, 2026-08-23) ───
+/** Meter-tint helper for bezel cells / dock faders (the MIDI ramp). */
+export function stageTint(node: ChainNode): string {
+  return levelColor(meterFill(node.level));
+}
+
+/** Compact bezel status cell for a node — spread into a BezelItem. */
+export function stageStatus(node: ChainNode): { v: string; tint: string } {
+  if (node.stageClipped) return { v: 'CLIP', tint: '#ff5f4e' };
+  if (node.distorted) return { v: 'DIST', tint: '#ff7a1e' };
+  if (node.region === 'low') return { v: 'LOW', tint: '#6f9bff' };
+  if (node.region === 'hot') return { v: 'HOT', tint: '#ffc64d' };
+  return { v: 'OK', tint: '#3fae52' };
+}
+
+export type StageColSpec = {
+  key: string;
+  name: string;
+  kind: StageKind;
+  node: ChainNode;
+  /** 'meter' (default) — the 3-zone meter; 'leds' — closed-face SIG/CLIP only
+   *  (real-gear honesty, X-Ray OFF); 'hidden' — collapsed, tap to inspect. */
+  display?: 'meter' | 'leds' | 'hidden';
+  /** Gain readout under the column (stages whose fader rides the dock). */
+  readout?: string;
+  /** Show the FIXED tag under the column (no user control anywhere). */
+  fixed?: boolean;
+  onPress?: () => void;
+  /** Scan-blue highlight (the inspected / X-Rayed column). */
+  active?: boolean;
+};
+
+/** The pinned chain display for the Rack Unit stage: the whole signal path as
+ *  columns inside the glass, height-parametric. Faders live on the dock — the
+ *  columns show only what the signal is DOING at each point. */
+export function ChainStage({ w, h, cols }: { w: number; h: number; cols: StageColSpec[] }) {
+  const meterH = Math.max(44, h - 110);
+  return (
+    <View style={[styles.stageGlass, { width: w, height: h }]}>
+      {/* Signal path header: INPUT ▸ … ▸ OUTPUT */}
+      <View style={styles.pathRow}>
+        <Text style={styles.pathEnd}>INPUT</Text>
+        <View style={styles.pathLine} />
+        <Text style={styles.pathArrowBig}>▸</Text>
+        <View style={styles.pathLine} />
+        <Text style={styles.pathEnd}>OUTPUT</Text>
+      </View>
+      <View style={styles.stageCols}>
+        {cols.map((c, i) => {
+          const display = c.display ?? 'meter';
+          const inner = (
+            <View style={[styles.stageCol, c.active && styles.stageColActive]}>
+              <StageIcon kind={c.kind} size={20} />
+              <Text style={styles.colName} numberOfLines={1} adjustsFontSizeToFit>
+                {c.name}
+              </Text>
+              {display === 'meter' ? (
+                <StageMeterV node={c.node} height={meterH} />
+              ) : display === 'leds' ? (
+                <View style={styles.slotWrap}>
+                  <View style={[styles.slotBox, { height: meterH }]}>
+                    <View style={[styles.led, c.node.level > LOW_EDGE && styles.ledSig]} />
+                    <Text style={styles.slotLedLabel}>SIG</Text>
+                    <View style={[styles.led, c.node.stageClipped && styles.ledClip, { marginTop: 8 }]} />
+                    <Text style={styles.slotLedLabel}>CLIP</Text>
+                  </View>
+                  <Text style={styles.slotUnder}> </Text>
+                </View>
+              ) : (
+                <View style={styles.slotWrap}>
+                  <View style={[styles.slotBox, { height: meterH }]}>
+                    <Text style={styles.slotQ}>?</Text>
+                  </View>
+                  <Text style={styles.slotUnder}>INSPECT</Text>
+                </View>
+              )}
+              {c.readout ? (
+                <Text style={[styles.colReadout, { color: stageTint(c.node) }]} numberOfLines={1}>
+                  {c.readout}
+                </Text>
+              ) : c.fixed ? (
+                <View style={styles.fixedTag}>
+                  <Text style={styles.fixedTagText}>FIXED</Text>
+                </View>
+              ) : (
+                <Text style={styles.colReadout}> </Text>
+              )}
+            </View>
+          );
+          return (
+            <View key={c.key} style={styles.stageColWrap}>
+              {i > 0 ? (
+                <Text style={[styles.stageArrow, c.node.distorted && { color: '#ff5f4e' }]}>▸</Text>
+              ) : null}
+              {c.onPress ? (
+                <Pressable
+                  onPress={c.onPress}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${c.name} stage — tap to inspect`}
+                  style={styles.stageColPress}
+                >
+                  {inner}
+                </Pressable>
+              ) : (
+                inner
+              )}
+            </View>
+          );
+        })}
       </View>
     </View>
   );
@@ -446,6 +565,38 @@ const styles = StyleSheet.create({
   colNote: { fontFamily: fonts.barlowRegular, fontSize: 9.5, lineHeight: 12, color: colors.textSub, textAlign: 'center', maxWidth: 84 },
   fixedTag: { borderRadius: 4, borderWidth: 1, borderColor: '#33353d', paddingHorizontal: 6, paddingVertical: 2, backgroundColor: '#101014' },
   fixedTagText: { fontFamily: fonts.oswaldSemiBold, fontSize: 8.5, letterSpacing: 0.8, color: colors.textSub },
+
+  // rack stage — the chain as columns inside the pinned glass (2026-08-23)
+  stageGlass: { paddingHorizontal: 10, paddingVertical: 6, gap: 6 },
+  stageCols: { flex: 1, flexDirection: 'row', alignItems: 'center' },
+  stageColWrap: { flex: 1, flexDirection: 'row', alignItems: 'center', minWidth: 0 },
+  stageColPress: { flex: 1, minWidth: 0 },
+  stageCol: {
+    flex: 1,
+    alignItems: 'center',
+    gap: 4,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'transparent',
+    paddingVertical: 2,
+    minWidth: 0,
+  },
+  stageColActive: { borderColor: 'rgba(127,212,255,.55)', backgroundColor: '#10151b' },
+  stageArrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: '#4a5060', paddingHorizontal: 1 },
+  slotWrap: { alignItems: 'center', gap: 3, width: 34 },
+  slotBox: {
+    width: 26,
+    borderRadius: 4,
+    backgroundColor: '#0c0d11',
+    borderWidth: 1,
+    borderColor: '#23252d',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 6,
+  },
+  slotQ: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, color: colors.textSub },
+  slotUnder: { fontFamily: fonts.oswaldSemiBold, fontSize: 8.5, letterSpacing: 0.4, color: colors.textSub },
+  slotLedLabel: { fontFamily: fonts.mono, fontSize: 8, color: colors.textSub, marginTop: 2 },
 
   // stage rows — left ¾ data panel, right ¼ device + cable (owner 2026-08-10)
   stageRow: { flexDirection: 'row', gap: 8, alignItems: 'stretch' },

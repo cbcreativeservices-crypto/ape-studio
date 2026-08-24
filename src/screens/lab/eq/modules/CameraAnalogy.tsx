@@ -15,6 +15,11 @@
  * viewBox, padL/padR 8), so the camera's field of view sits pixel-aligned above
  * the bell it points at. Owner 2026-08-07: the pan slider works in EVERY mode —
  * in FIXED you can sweep the camera and watch the EQ refuse to move.
+ *
+ * RACK evaluated 2026-08-23 — KEPT CLASSIC: the lesson's display is TWO
+ * pixel-aligned panels (scene 168 + response 116 ≈ 284) that outgrow even the
+ * L stage, and the FIXED stage LOCKS both controls — a dock lane that refuses
+ * to move contradicts the rack's always-live fader grammar.
  */
 import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';

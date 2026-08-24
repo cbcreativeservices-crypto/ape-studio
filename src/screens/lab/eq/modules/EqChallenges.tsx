@@ -10,6 +10,11 @@
  * changing spectral balance. Sometimes cutting the unwanted region is more
  * effective than boosting everything around it — but boosting is not
  * inherently wrong. The overall-level readout shows the practical difference.
+ *
+ * RACK evaluated 2026-08-23 — KEPT CLASSIC: no continuous teaching parameter
+ * (three strategy buttons, an A/B comparison table and a quiz); a rack with an
+ * empty lane pins a graph but improves nothing, and the compare columns are
+ * exactly reading content.
  */
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
