@@ -2,7 +2,26 @@
  * HarmonicsView — the Ear Lab's hear-see-control HARMONICS centerpiece
  * (Explore panel; modeled on the owner's desktop-analyzer reference).
  *
- * THREE LINKED PANELS share ONE frequency axis with TWO scales (chip toggle):
+ * RACK UNIT layout (APE_LAB_UX_PROPOSAL 2026-08-23, owner-approved): this
+ * view no longer renders a scrolling panel — it OWNS the state/audio and
+ * hands its host (HarmonicLabScreen) three parts via a render prop:
+ *   - `rack`: the pinned STAGE (the three linked panels drawn to the glass's
+ *     w×h by HarmonicStage below) + BEZEL readouts (F0 · THD · CREST · SLOPE
+ *     in model view; F0 · MIC · TONE · MAX in live) + the DOCK params —
+ *     F0 as the pre-bound LOG fader (the old six preset chips, now
+ *     continuous 60→300 Hz), PRESET as a sticky tray (A/B waveshapes while
+ *     the glass redraws, RESTORE as the in-tray reset), AXIS as a sticky
+ *     LOG/LIN tray, MODE as the MODEL/LIVE switch;
+ *   - `headerAction`: the compact HeaderPlayButton (PLAY MODEL / PLAY TONE /
+ *     START TONE + MIC per mode — the old GlassButtons, moved up);
+ *   - `renderWell`: the scroll WELL — teaching prose, the STEM EDITOR (a
+ *     drag editor, so it stays in the well with its group/overlay/A-B chips;
+ *     it locks the well's scroll through the shell api), honesty notes,
+ *     advisories, FeedbackAllowRow, errors.
+ * The integrity badges render verbatim as the stage badge; tap-the-display
+ * still toggles the LIVE capture (owner 2026-07-31); model mode stays inert.
+ *
+ * THREE LINKED PANELS share ONE frequency axis with TWO scales (dock tray):
  *  - LOG (default — the RX-style reference view): f0/1.5 → 13.5×f0, each
  *    octave equal height, plus a vertical PIANO-KEY gutter on the right edge
  *    so harmonics visibly line up with note pitches (the key nearest each
@@ -17,7 +36,7 @@
  *
  * TWO MODES (integrity rules, measurement-tools §1.7):
  *  1. ANALYTIC (default) — an EDITABLE 12-harmonic additive model
- *     (harmonicModel.ts), NO mic, nothing measured. Preset chips load the
+ *     (harmonicModel.ts), NO mic, nothing measured. Preset picks load the
  *     canonical series (sine/square/triangle/saw/pulse + four SIMPLIFIED
  *     INSTRUCTIONAL clipping/saturation recipes) into the model; the stem
  *     editor (HarmonicStems) drags per-harmonic level, and its long-press
@@ -50,7 +69,10 @@
  * stroke-segment idiom; node count = steps, independent of cell count).
  * The heatmap component is React.memo keyed by the history reference, so
  * the 15 Hz poll never rebuilds it (~6.7 Hz only). Log row-bucket edges are
- * cached per (f0, Nyquist) — never rebuilt per frame.
+ * cached per (f0, Nyquist) — never rebuilt per frame. The height-dependent
+ * geometry (row y's, marker y's, piano keys) is memoized per stage height
+ * inside HarmonicStage — the glass never resizes during an interaction
+ * (RackUnit's law), so those memos are effectively mount-time.
  *
  * Sound lifecycle: every start passes requestAudioOutput(); a 2 Hz
  * noteAudioActivity() keepalive runs while the tone sounds (SignalGen idiom);
@@ -62,15 +84,16 @@
  *    on stems + analytic bands/lobes, with a legend), SOLO ODD/EVEN (mute
  *    the complement — H1 counts as odd; pressing the active solo unsolos),
  *    MUTE ODD/EVEN (group toggles), NORMALIZE (max amp → 1), RESTORE
- *    (re-apply the active preset).
+ *    (re-apply the active preset — now the PRESET tray's in-tray reset).
  *  - Stem-editor OVERLAYS: ENVELOPE (line tracing contributing stem tops +
  *    "≈ N dB per octave" from the least-squares fit, guarded at ≥3
  *    qualifying harmonics) and SPACING (ticks + the even-spacing teaching
  *    line; LIN shows it visually, LOG bunches musically).
- *  - MEASUREMENTS row: THD % / THD dB / crest factor / dB-per-octave slope,
- *    with a tap-open breakdown sheet showing the actual formula and every
- *    per-harmonic component. THD+N is shown as "live measurement required"
- *    — the analytic model has no noise, so a number would be fabricated.
+ *  - MEASUREMENTS: THD % / crest factor / dB-per-octave slope now read on
+ *    the BEZEL (tap THD for the breakdown sheet with the actual formula and
+ *    every per-harmonic component). THD+N is shown as "live measurement
+ *    required" — the analytic model has no noise, so a number would be
+ *    fabricated.
  *  - A/B: SNAPSHOT A stores the current set; the A/B toggle overlays it as
  *    dashed ghosts (stem tops + waveform) while B stays editable.
  *  - SOLO HARMONIC AUDIO — the one new sound: harmonic n as a REAL sine at
@@ -87,12 +110,11 @@
  * IS the exact rendering of one harmonic). v2/absent engines keep the exact
  * prior behavior and honesty notes (graceful fallback, nothing breaks).
  */
-import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactElement, type ReactNode } from 'react';
 import { Animated, Easing, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import Svg, { Defs, Line, LinearGradient, Path, Rect, Stop, Text as SvgText } from 'react-native-svg';
-import { ApeDsp, GEN_MODES, type EngineConfig, type GenParams } from '../../../modules/ape-dsp';
-import { GlassButton } from '../../components/GlassButton';
+import { ApeDsp, GEN_MODES, type EngineConfig, type GenParams, type WaveBucket } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { isFeedbackAllowed, noteAudioActivity, useFeedbackAllowed } from '../../features/audio/audioOutputStore';
 import { FeedbackAllowRow } from '../../features/audio/FeedbackAllowRow';
@@ -101,8 +123,10 @@ import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/use
 import { heatColor, levelColor, MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 import { WARNING_INFO } from '../../features/tools/measure/types';
 import { EngineGate } from '../tools/EngineGate';
-import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../features/lab/guidedLessons';
+import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { colors, fonts } from '../../theme/tokens';
+import { HeaderPlayButton, type LabShellExploreApi } from './LabShell';
+import type { BezelItem, DockParam, RackStage } from './rack/rackTypes';
 import {
   additivePayload,
   AMP_FLOOR,
@@ -130,17 +154,26 @@ import { HarmonicStems } from './HarmonicStems';
 type ViewMode = 'model' | 'live';
 type AxisMode = 'log' | 'lin';
 
-/** f0 presets — 100 Hz default matches the reference labels (1: 100Hz …). */
-const F0_PRESETS = [60, 80, 100, 150, 200, 300] as const;
+/** Fundamental FADER range (rack conversion 2026-08-23): the six old preset
+ *  chips (60–300 Hz) became the dock's pre-bound LOG fader over the same
+ *  span — pickF0 always accepted any Hz, so nothing else changes. */
+const F0_MIN = 60;
+const F0_MAX = 300;
 const DEFAULT_F0 = 100;
+const f0FromPos = (v: number) =>
+  Math.round(F0_MIN * Math.pow(F0_MAX / F0_MIN, Math.max(0, Math.min(1, v))));
+const f0Pos = (hz: number) =>
+  Math.log(Math.max(F0_MIN, Math.min(F0_MAX, hz)) / F0_MIN) / Math.log(F0_MAX / F0_MIN);
+
 const HARMONICS = 12; // labeled markers 1..12 at n×f0
 const AXIS_MULT = 13; // LIN axis top = 13×f0 → harmonics evenly spaced
 const LOG_LO_DIV = 1.5; // LOG axis bottom = f0/1.5 (guarded > 0)
 const LOG_MULT = 13.5; // LOG axis top = 13.5×f0 (clamped to Nyquist in live)
 
-// Panel geometry (portrait: top row square-ish, thin waveform strip below).
-const TOP_H = 252;
-const WAVE_H = 60;
+// Stage geometry (rack): the glass height h splits into the shared-axis top
+// row and a thin waveform strip; widths keep the original gutters.
+const STAGE_PAD = 6;
+const WAVE_STRIP_H = 44; // waveform strip height inside the glass
 const GUTTER_W = 84; // fits "12: 1.2k · G#3 +2¢" at mono 9
 const PIANO_W = 30; // right-edge piano-key gutter (LOG axis only)
 const MIN_LABEL_GAP = 12; // px — drop gutter labels that would overlap (LOG crowds high n)
@@ -182,23 +215,18 @@ const WAVE_CYCLES = 3;
 
 // Solo-audio honesty ceiling: never sound a clamped/aliased stand-in above
 // this (well under any device Nyquist). 12 × 300 Hz = 3.6 kHz today, so the
-// guard is unreachable with the current f0 presets — it protects the future.
+// guard is unreachable with the current f0 range — it protects the future.
 const SOLO_MAX_HZ = 20000;
 // Envelope-slope guard: a dB/oct figure from fewer than 3 qualifying
 // harmonics is a line through ≤2 points — show "—" instead.
 const MIN_SLOPE_HARMONICS = 3;
 
-// Model-wave velocity-ramp axis: ±1 normalized maps to mid ∓ amp (see
-// buildWavePath), so full scale sits at these y's — blue mid line → red peaks.
-const WAVE_MODEL_AMP = WAVE_H / 2 - 4;
-const WAVE_MODEL_Y0 = WAVE_H / 2 - WAVE_MODEL_AMP;
-const WAVE_MODEL_Y1 = WAVE_H / 2 + WAVE_MODEL_AMP;
-
 /** Waveform strip path from a ±1-normalized wave (shared by the live model
- *  wave and the A/B ghost — identical scaling so the shapes compare). */
-function buildWavePath(wave: readonly number[], w: number): string {
-  const mid = WAVE_H / 2;
-  const amp = WAVE_MODEL_AMP;
+ *  wave and the A/B ghost — identical scaling so the shapes compare). The
+ *  strip height is the stage's, so ±1 maps to mid ∓ (waveH/2 − 4). */
+function buildWavePath(wave: readonly number[], w: number, waveH: number): string {
+  const mid = waveH / 2;
+  const amp = waveH / 2 - 4;
   let d = '';
   for (let i = 0; i < wave.length; i++) {
     d += `${i === 0 ? 'M' : 'L'}${((i / (wave.length - 1)) * w).toFixed(1)},${(mid - wave[i] * amp).toFixed(1)}`;
@@ -235,18 +263,6 @@ const STEP_COLORS: readonly string[] = Array.from({ length: LIVE_STEPS }, (_, i)
   rampColor((i + 0.5) / LIVE_STEPS),
 );
 
-/** Per-row heatmap y endpoints, precomputed once — they depend only on the
- *  TOP_H/ROWS module constants, and stringifying them inside the cell loop
- *  would repeat up to ~23k identical toFixed calls per rebuild (toFixed is
- *  slow on Hermes). The +0.4 px oversize kills row seams (spectrogram
- *  idiom). */
-const ROW_Y_TOP: readonly string[] = Array.from({ length: ROWS }, (_, r) =>
-  (TOP_H - (r + 1) * (TOP_H / ROWS)).toFixed(1),
-);
-const ROW_Y_BOT: readonly string[] = Array.from({ length: ROWS }, (_, r) =>
-  (TOP_H - r * (TOP_H / ROWS) + 0.4).toFixed(1),
-);
-
 // Note math (noteInfo/midiToHz/BLACK_PC) and the canonical series recipes
 // (incl. the corrected triangle/saw phase-sign math) moved to
 // harmonicModel.ts — one source, shared with the stem editor + identity card.
@@ -254,7 +270,7 @@ const ROW_Y_BOT: readonly string[] = Array.from({ length: ROWS }, (_, r) =>
 /** Downsample one REAL fine-spectrum frame to ROWS linear cells over 0..fMax
  *  (max dB per cell). A row narrower than one FFT bin samples the nearest
  *  bin (a real measured value — no interpolation, no fabrication): at 96
- *  rows the low-f0 presets drop below one bin width, and without the
+ *  rows the low-f0 range drops below one bin width, and without the
  *  fallback those rows would stripe at the floor forever (downsampleLog's
  *  rule, mirrored here). */
 function downsampleLinear(
@@ -356,15 +372,23 @@ function Chip({
  *  color scale slides, and only cells within 40 dB of the max emit
  *  segments, keeping path strings far below the ~11.5k-cell worst case
  *  even at quiet capture levels. Color steps still map over the full
- *  LIVE_RANGE_DB scale so drawn colors match the legend. */
+ *  LIVE_RANGE_DB scale so drawn colors match the legend. Row y endpoints
+ *  are precomputed per stage height by the caller (they'd otherwise repeat
+ *  ~23k identical toFixed calls per rebuild — slow on Hermes). */
 const LiveHeatmap = memo(function LiveHeatmap({
   history,
   observedMax,
   width,
+  topH,
+  rowYTop,
+  rowYBot,
 }: {
   history: number[][];
   observedMax: number | null;
   width: number;
+  topH: number;
+  rowYTop: readonly string[];
+  rowYBot: readonly string[];
 }) {
   if (width <= 0 || history.length === 0 || observedMax == null) return null;
   const scaleFloor = LIVE_CEILING_DB - LIVE_RANGE_DB; // FIXED colour mapping (owner 2026-08-14) — matches the legend
@@ -382,11 +406,11 @@ const LiveHeatmap = memo(function LiveHeatmap({
         LIVE_STEPS - 1,
         Math.floor(((v - scaleFloor) / LIVE_RANGE_DB) * LIVE_STEPS),
       );
-      buckets[step] += `M${x},${ROW_Y_TOP[r]}L${x},${ROW_Y_BOT[r]}`;
+      buckets[step] += `M${x},${rowYTop[r]}L${x},${rowYBot[r]}`;
     }
   }
   return (
-    <Svg width={width} height={TOP_H}>
+    <Svg width={width} height={topH}>
       {buckets.map((d, i) =>
         // Key by INDEX, not colour: two ramp steps can share a hex (the wide
         // green plateau has two #3fae52 stops), which collided as duplicate keys
@@ -398,12 +422,542 @@ const LiveHeatmap = memo(function LiveHeatmap({
   );
 });
 
-export function HarmonicsView({
-  onDragActive,
+/** HarmonicStage — the pinned display (rack STAGE): the three linked panels
+ *  drawn to the glass's w×h. Pure display — every piece of state stays in
+ *  HarmonicsView; this component owns only its measured sub-widths and the
+ *  height-dependent geometry memos (row buckets, marker y's, piano keys),
+ *  all keyed on the glass height the frame hands in. */
+function HarmonicStage({
+  w,
+  h,
+  view,
+  axis,
+  f0,
+  nyquist,
+  model,
+  oddEvenHl,
+  ghost,
+  modelWave,
+  history,
+  observedMax,
+  waveFrames,
+  running,
 }: {
-  /** Optional: stem-drag lifecycle, threaded to the host ScrollView so it
-   *  can set scrollEnabled={false} during a vertical stem drag. */
-  onDragActive?: (active: boolean) => void;
+  w: number;
+  h: number;
+  view: ViewMode;
+  axis: AxisMode;
+  f0: number;
+  nyquist: number;
+  model: HarmonicSet;
+  oddEvenHl: boolean;
+  /** Snapshot A while the A/B toggle is on (dashed ghost), else null. */
+  ghost: HarmonicSet | null;
+  /** The synthesized model wave (parent memo — also feeds the crest bezel). */
+  modelWave: number[];
+  history: number[][];
+  observedMax: number | null;
+  waveFrames: WaveBucket[];
+  running: boolean;
+}) {
+  // Vertical split: top row (shared frequency axis) + thin waveform strip.
+  const waveH = WAVE_STRIP_H;
+  const topH = Math.max(60, h - STAGE_PAD * 2 - waveH - 4);
+
+  const [specW, setSpecW] = useState(0);
+  const [sliceW, setSliceW] = useState(0);
+  const [waveW, setWaveW] = useState(0);
+
+  // Shared axis range. LIN: 0 → 13×f0. LOG: f0/1.5 → 13.5×f0. Both tops
+  // clamp to Nyquist in live mode; the LOG bottom is guarded > 0.
+  const fLo = Math.max(1, f0 / LOG_LO_DIV);
+  const fHiLog = view === 'live' ? Math.min(LOG_MULT * f0, nyquist) : LOG_MULT * f0;
+  const fMaxLin = view === 'live' ? Math.min(AXIS_MULT * f0, nyquist) : AXIS_MULT * f0;
+  const axisTop = axis === 'log' ? fHiLog : fMaxLin;
+
+  /** Harmonic markers n×f0 on the shared axis (skipped outside the range),
+   *  each carrying its nearest-note info for the gutter + piano tint.
+   *  LOG y(f) = H·(1 − (log2 f − log2 fLo)/(log2 fHi − log2 fLo)). */
+  const markers = useMemo(() => {
+    const lo2 = Math.log2(fLo);
+    const span = Math.log2(fHiLog) - lo2;
+    const yOf =
+      axis === 'log' && span > 0
+        ? (hz: number) => topH * (1 - (Math.log2(hz) - lo2) / span)
+        : (hz: number) => topH - (hz / fMaxLin) * topH;
+    return Array.from({ length: HARMONICS }, (_, i) => i + 1)
+      .map((n) => ({ n, hz: n * f0 }))
+      .filter((m) => m.hz <= axisTop && (axis !== 'log' || m.hz >= fLo))
+      .map((m) => ({ ...m, y: yOf(m.hz), note: noteInfo(m.hz) }));
+  }, [f0, axis, fLo, fHiLog, fMaxLin, axisTop, topH]);
+
+  /** Model levels FROM THE EDITABLE SET: dB re full scale, floored at the
+   *  display range. Disabled/muted/at-floor harmonics draw nothing — they
+   *  contribute nothing (the one silence predicate, everywhere).
+   *  Recomputes on model edits only; markers/pianoSvg key on f0/axis and
+   *  never rebuild for an amplitude change. */
+  const modelLevels = useMemo(
+    () =>
+      markers
+        .map((m) => ({ ...m, h: model[m.n - 1] }))
+        .filter((m) => effectiveAmp(m.h) > AMP_FLOOR)
+        .map((m) => {
+          const db = dbcOf(m.h);
+          return { ...m, db, frac: (db - MODEL_FLOOR_DB) / -MODEL_FLOOR_DB };
+        }),
+    [markers, model],
+  );
+
+  const modelWavePath = useMemo(
+    () => (waveW <= 0 ? '' : buildWavePath(modelWave, waveW, waveH)),
+    [modelWave, waveW, waveH],
+  );
+
+  /** A/B ghost — snapshot A (a stored copy: editing B never mutates it),
+   *  drawn only while the toggle is on. Same synthesis + scaling as the
+   *  live wave, dashed so before/after reads at a glance. */
+  const ghostWavePath = useMemo(
+    () =>
+      ghost == null || waveW <= 0
+        ? ''
+        : buildWavePath(synthWaveform(ghost, WAVE_POINTS, WAVE_CYCLES), waveW, waveH),
+    [ghost, waveW, waveH],
+  );
+
+  /** Live spectrum slice — the NEWEST column as a rotated curve (level → x). */
+  const liveSlicePath = useMemo(() => {
+    if (view !== 'live' || sliceW <= 0 || history.length === 0 || observedMax == null) return '';
+    const col = history[history.length - 1];
+    const floorLevel = LIVE_CEILING_DB - LIVE_RANGE_DB; // FIXED (owner 2026-08-14)
+    const cellH = topH / ROWS;
+    let d = '';
+    for (let r = 0; r < ROWS; r++) {
+      const v = col[r];
+      // Sentinel cells registered nothing — pin to the floor, never a level.
+      const frac =
+        v <= CELL_FLOOR_DB ? 0 : Math.min(1, Math.max(0, (v - floorLevel) / LIVE_RANGE_DB));
+      d += `${r === 0 ? 'M' : 'L'}${(frac * (sliceW - 2)).toFixed(1)},${(topH - (r + 0.5) * cellH).toFixed(1)}`;
+    }
+    return d;
+  }, [view, sliceW, history, observedMax, topH]);
+
+  /** Live waveform strip — real envelope buckets (newest-first → reversed),
+   *  vertical stroke segments (WaveformScreen idiom). */
+  const liveWave = useMemo(() => {
+    if (view !== 'live' || waveW <= 0 || waveFrames.length === 0) return null;
+    // Resolution-agnostic 2 s window over the fine engine history (owner
+    // 2026-08-15) — auto-adapts to the native bucket duration.
+    const total = waveFrames.length;
+    const wantBuckets = Math.max(1, Math.round(total * (LIVE_WAVE_WINDOW_SEC / LIVE_WAVE_HISTORY_SEC)));
+    const src = waveFrames.slice(0, wantBuckets).reverse(); // oldest → newest
+    const n = src.length;
+    if (n === 0) return null;
+    let observed = 1;
+    for (const b of src) {
+      const m = Math.max(Math.abs(b.min), Math.abs(b.max));
+      if (m > observed) observed = m;
+    }
+    // Same scale rule as the Waveform Viewer: fixed full-scale for normal signal
+    // (no size pulsing, no transient-crush "outline"), expands only past 0 dBFS.
+    const scaleMax = Math.max(1.05, observed);
+    const mid = waveH / 2;
+    const usable = mid - 3;
+    const y = (v: number) => Math.min(waveH - 1, Math.max(1, mid - (v * usable) / scaleMax));
+    // MIN/MAX downsample the fine buckets to a bounded column count — keeps every
+    // peak (DAW envelope) at high resolution, one filled body (no outline), light.
+    const cols = Math.max(1, Math.min(n, Math.round(waveW), WAVE_MAX_COLS));
+    const colW = waveW / cols;
+    let top = '';
+    let bottomRev = '';
+    for (let i = 0; i < cols; i++) {
+      const b0 = Math.floor((i / cols) * n);
+      const b1 = Math.min(n, Math.max(b0 + 1, Math.floor(((i + 1) / cols) * n)));
+      let mn = Infinity;
+      let mx = -Infinity;
+      for (let k = b0; k < b1; k++) {
+        const b = src[k];
+        if (b.max > mx) mx = b.max;
+        if (b.min < mn) mn = b.min;
+      }
+      if (mx === -Infinity) {
+        mx = 0;
+        mn = 0;
+      }
+      const x = ((i + 0.5) * colW).toFixed(1);
+      let y1 = y(mx);
+      let y2 = y(mn);
+      if (y2 - y1 < 1) {
+        y1 -= 0.5;
+        y2 += 0.5;
+      }
+      const cmd = i === 0 ? 'M' : 'L';
+      top += `${cmd}${x},${y1.toFixed(1)}`;
+      bottomRev = `L${x},${y2.toFixed(1)}` + bottomRev;
+    }
+    // Level-colour axis (loudness ramp keyed to amplitude — red at ±full, deep
+    // green at the zero line), the SPL-VU standard shared across the app.
+    const fullPix = usable / scaleMax;
+    return { area: top + bottomRev + 'Z', gradY0: mid - fullPix, gradY1: mid + fullPix };
+  }, [view, waveW, waveFrames, waveH]);
+
+  /** Per-row heatmap y endpoints for THIS stage height — keyed on topH only,
+   *  so they are effectively mount-time (the glass never resizes during an
+   *  interaction). Shared by LiveHeatmap; the +0.4 px oversize kills row
+   *  seams (spectrogram idiom). */
+  const rowY = useMemo(() => {
+    const rh = topH / ROWS;
+    const top: string[] = new Array(ROWS);
+    const bot: string[] = new Array(ROWS);
+    for (let r = 0; r < ROWS; r++) {
+      top[r] = (topH - (r + 1) * rh).toFixed(1);
+      bot[r] = (topH - r * rh + 0.4).toFixed(1);
+    }
+    return { top, bot };
+  }, [topH]);
+
+  // ---- Analytic playhead sweep — Animated loop on the NATIVE driver (visual
+  // pacing only; zero setState, zero re-renders). Gated on FOCUS too: the view
+  // stays mounted on the root stack behind pushed screens, and the loop must
+  // not keep compositing forever back there (same lifecycle rule as the tone).
+  const isFocused = useIsFocused();
+  const sweep = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (view !== 'model' || !isFocused) return;
+    const anim = Animated.loop(
+      Animated.timing(sweep, {
+        toValue: 1,
+        duration: SWEEP_MS,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }),
+    );
+    anim.start();
+    return () => {
+      anim.stop();
+      sweep.setValue(0);
+    };
+  }, [view, isFocused, sweep]);
+
+  // Markers only move on f0/nyquist changes — memoized so the ~22 Hz live
+  // re-render doesn't reconcile 12 <Line>s across TWO Svg surfaces (plus the
+  // 12 gutter labels) for identical props on every poll tick.
+  const markerLines = useMemo(
+    () =>
+      markers.map((m) => (
+        <Line
+          key={m.n}
+          x1={0}
+          x2="100%"
+          y1={m.y}
+          y2={m.y}
+          stroke="rgba(55,224,95,0.20)"
+          strokeDasharray="3 5"
+        />
+      )),
+    [markers],
+  );
+
+  // "n: hz · note ±¢" — nearest equal-tempered note + signed cents. On the
+  // LOG axis high harmonics crowd (log2(12/11) of an octave apart), so
+  // labels that would collide are greedily dropped low-n-first; the marker
+  // LINES still show every harmonic.
+  const markerLabels = useMemo(() => {
+    const out: ReactElement[] = [];
+    let lastY = Number.POSITIVE_INFINITY;
+    for (const m of markers) {
+      if (lastY - m.y < MIN_LABEL_GAP) continue;
+      lastY = m.y;
+      const c = m.note.cents;
+      out.push(
+        <Text key={m.n} style={[styles.markerLabel, { top: m.y - 6 }]} numberOfLines={1}>
+          {`${m.n}: ${hzShort(m.hz)} · ${m.note.label} ${c >= 0 ? '+' : ''}${c}¢`}
+        </Text>,
+      );
+    }
+    return out;
+  }, [markers]);
+
+  /** PIANO GUTTER (LOG axis only) — one key per semitone in [fLo, fHi]; log
+   *  spacing makes every octave (and so every key) equal height, RX-style.
+   *  Light strip = white keys; short dark rects overlapping the left
+   *  boundary = black keys; hairlines at the E/F and B/C white-white
+   *  boundaries; C keys labeled; the key nearest each harmonic gets a
+   *  subtle amber tint. Display-only (no touch), memoized on
+   *  [axis, fLo, fHiLog, markers, topH] — nothing rebuilds per frame. */
+  const pianoSvg = useMemo(() => {
+    if (axis !== 'log') return null;
+    const lo2 = Math.log2(fLo);
+    const span = Math.log2(fHiLog) - lo2;
+    if (span <= 0) return null;
+    const yOf = (hz: number) => topH * (1 - (Math.log2(hz) - lo2) / span);
+    const mLo = Math.ceil(69 + 12 * Math.log2(fLo / 440));
+    const mHi = Math.floor(69 + 12 * Math.log2(fHiLog / 440));
+    const harmonicKeys = new Set(markers.map((mk) => mk.note.midi));
+    const nodes: ReactElement[] = [
+      <Rect key="bg" x={0} y={0} width={PIANO_W} height={topH} fill="#e7e8ec" />,
+    ];
+    for (let m = mLo; m <= mHi; m++) {
+      const pc = ((m % 12) + 12) % 12;
+      // Key slot = the semitone's span, mLo−½ → mLo+½ semitone in log-f.
+      const yTop = Math.max(0, yOf(midiToHz(m + 0.5)));
+      const yBot = Math.min(topH, yOf(midiToHz(m - 0.5)));
+      const kh = yBot - yTop;
+      if (kh <= 0) continue;
+      if (BLACK_PC.has(pc)) {
+        nodes.push(
+          <Rect key={`k${m}`} x={0} y={yTop} width={PIANO_W * 0.62} height={kh} fill="#131318" />,
+        );
+      } else if (pc === 4 || pc === 11) {
+        // White-white boundary above E (→F) and B (→C).
+        nodes.push(
+          <Line
+            key={`b${m}`}
+            x1={0}
+            x2={PIANO_W}
+            y1={yTop}
+            y2={yTop}
+            stroke="rgba(0,0,0,0.35)"
+            strokeWidth={0.75}
+          />,
+        );
+      }
+      if (harmonicKeys.has(m)) {
+        nodes.push(
+          <Rect key={`h${m}`} x={0} y={yTop} width={PIANO_W} height={kh} fill="rgba(255,170,0,0.4)" />,
+        );
+      }
+      if (pc === 0) {
+        nodes.push(
+          <SvgText
+            key={`c${m}`}
+            x={PIANO_W - 3}
+            y={(yTop + yBot) / 2 + 2.5}
+            fontSize={7}
+            fill="#3c3c44"
+            textAnchor="end"
+          >
+            {`C${Math.floor(m / 12) - 1}`}
+          </SvgText>,
+        );
+      }
+    }
+    return (
+      <Svg width={PIANO_W} height={topH} pointerEvents="none">
+        {nodes}
+      </Svg>
+    );
+  }, [axis, fLo, fHiLog, markers, topH]);
+
+  // Model-wave velocity-ramp axis: ±1 normalized maps to mid ∓ amp (see
+  // buildWavePath), so full scale sits at these y's — blue mid line → red peaks.
+  const modelAmpPix = waveH / 2 - 4;
+
+  return (
+    <View style={{ width: w, height: h, padding: STAGE_PAD, gap: 4 }}>
+      {/* TOP ROW — marker gutter · spectrogram · slice (live) · piano (LOG). */}
+      <View style={[styles.topRow, { height: topH }]}>
+        {/* Harmonic markers on the shared frequency axis (n: hz). */}
+        <View style={{ width: GUTTER_W, height: topH }}>{markerLabels}</View>
+
+        {/* MAIN — spectrogram (heatmap). */}
+        <View
+          style={styles.specPanel}
+          onLayout={(e) => setSpecW(Math.round(e.nativeEvent.layout.width))}
+        >
+          {specW > 0 ? (
+            view === 'model' ? (
+              <Svg width={specW} height={topH}>
+                {markerLines}
+                {modelLevels.map((m) => (
+                  <Rect
+                    key={m.n}
+                    x={0}
+                    y={m.y - BAND_H / 2}
+                    width={specW}
+                    height={BAND_H}
+                    // ODD/EVEN highlight tints the groups apart (legend by
+                    // the toggle); otherwise the MIDI ramp by level, opened up
+                    // over the practical window so loud harmonics still differ.
+                    fill={
+                      oddEvenHl
+                        ? m.n % 2 === 1
+                          ? colors.orange
+                          : colors.blue
+                        : bandColor(m.db)
+                    }
+                    opacity={0.5 + 0.5 * m.frac}
+                  />
+                ))}
+              </Svg>
+            ) : (
+              <>
+                <LiveHeatmap
+                  history={history}
+                  observedMax={observedMax}
+                  width={specW}
+                  topH={topH}
+                  rowYTop={rowY.top}
+                  rowYBot={rowY.bot}
+                />
+                <Svg width={specW} height={topH} style={StyleSheet.absoluteFill}>
+                  {markerLines}
+                </Svg>
+                {history.length === 0 ? (
+                  <Text style={[styles.awaitText, { top: topH / 2 - 9 }]}>
+                    {running ? 'waiting for spectrum frames…' : 'no capture — tap the display or press ▶'}
+                  </Text>
+                ) : null}
+              </>
+            )
+          ) : null}
+          {view === 'model' ? (
+            // Sweeping playhead — visual pacing only (native-driver loop).
+            <Animated.View
+              pointerEvents="none"
+              style={[
+                styles.playhead,
+                {
+                  transform: [
+                    {
+                      translateX: sweep.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, Math.max(0, specW - 2)],
+                      }),
+                    },
+                  ],
+                },
+              ]}
+            />
+          ) : null}
+        </View>
+
+        {/* RIGHT — spectrum slice (LIVE only). The model view no longer draws
+            horizontal level bars here: level now reads from the band/stem
+            COLOUR (MIDI ramp), so the bars were redundant and confusing
+            (owner 2026-08-05). The rotated spectrum-slice curve is a real
+            live readout, so it stays in REAL SIGNAL mode. */}
+        {view === 'live' ? (
+          <View
+            style={styles.slicePanel}
+            onLayout={(e) => setSliceW(Math.round(e.nativeEvent.layout.width))}
+          >
+            {sliceW > 0 ? (
+              <Svg width={sliceW} height={topH}>
+                {markerLines}
+                {liveSlicePath !== '' ? (
+                  <Path d={liveSlicePath} stroke={colors.greenBright} strokeWidth={1.5} fill="none" />
+                ) : null}
+              </Svg>
+            ) : null}
+          </View>
+        ) : null}
+
+        {/* FAR RIGHT — piano-key gutter (LOG axis only; display-only). */}
+        {axis === 'log' ? <View style={[styles.pianoGutter, { height: topH }]}>{pianoSvg}</View> : null}
+      </View>
+
+      {/* BOTTOM — waveform strip (full width; model playhead matches the
+          spectrogram sweep as a fraction of the panel). */}
+      <View
+        style={[styles.wavePanel, { height: waveH }]}
+        onLayout={(e) => setWaveW(Math.round(e.nativeEvent.layout.width))}
+      >
+        {waveW > 0 ? (
+          <Svg width={waveW} height={waveH}>
+            <Defs>
+              {/* Model-wave gradient (static amplitude axis). */}
+              <LinearGradient
+                id="harmModelLevel"
+                x1={0}
+                y1={waveH / 2 - modelAmpPix}
+                x2={0}
+                y2={waveH / 2 + modelAmpPix}
+                gradientUnits="userSpaceOnUse"
+              >
+                {WAVE_LEVEL_STOPS.map((s) => (
+                  <Stop key={s.offset} offset={s.offset} stopColor={s.color} />
+                ))}
+              </LinearGradient>
+              {liveWave ? (
+                <LinearGradient
+                  id="harmWaveLevel"
+                  x1={0}
+                  y1={liveWave.gradY0}
+                  x2={0}
+                  y2={liveWave.gradY1}
+                  gradientUnits="userSpaceOnUse"
+                >
+                  {WAVE_LEVEL_STOPS.map((s) => (
+                    <Stop key={s.offset} offset={s.offset} stopColor={s.color} />
+                  ))}
+                </LinearGradient>
+              ) : null}
+            </Defs>
+            <Line x1={0} x2={waveW} y1={waveH / 2} y2={waveH / 2} stroke={MIDLINE_BLUE} strokeWidth={1} />
+            {view === 'model' ? (
+              <>
+                {/* A/B ghost first so the live edit draws on top. */}
+                {ghostWavePath !== '' ? (
+                  <Path
+                    d={ghostWavePath}
+                    stroke="rgba(255,255,255,0.45)"
+                    strokeWidth={1.2}
+                    strokeDasharray="4 4"
+                    fill="none"
+                  />
+                ) : null}
+                {modelWavePath !== '' ? (
+                  <Path d={modelWavePath} stroke="url(#harmModelLevel)" strokeWidth={1.8} fill="none" />
+                ) : null}
+              </>
+            ) : liveWave ? (
+              <Path d={liveWave.area} fill="url(#harmWaveLevel)" opacity={0.9} />
+            ) : null}
+          </Svg>
+        ) : null}
+        {view === 'model' ? (
+          <Animated.View
+            pointerEvents="none"
+            style={[
+              styles.playhead,
+              {
+                transform: [
+                  {
+                    translateX: sweep.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0, Math.max(0, waveW - 2)],
+                    }),
+                  },
+                ],
+              },
+            ]}
+          />
+        ) : null}
+      </View>
+    </View>
+  );
+}
+
+/** The three parts HarmonicsView hands its host: the rack declaration for
+ *  LabShell's `rack` prop, the compact header play control, and the scroll
+ *  WELL renderer (the shell api's setScrollLocked feeds the stem editor). */
+export type HarmonicRackParts = {
+  rack: {
+    stage: RackStage;
+    params: DockParam[];
+    initialParam: string;
+    onHelp?: (helpKey?: string) => void;
+  };
+  headerAction: ReactNode;
+  renderWell: (api: LabShellExploreApi) => ReactNode;
+};
+
+export function HarmonicsView({
+  children,
+}: {
+  /** Render prop: receives the rack/header/well parts each render — the host
+   *  (HarmonicLabScreen) threads them into LabShell. */
+  children: (parts: HarmonicRackParts) => ReactElement;
 }) {
   const { requestAudioOutput } = useAudioOutputGate();
 
@@ -430,7 +984,7 @@ export function HarmonicsView({
   const [axis, setAxis] = useState<AxisMode>('log');
   const axisRef = useRef<AxisMode>('log'); // read inside the poll interval
   // THE EDITABLE MODEL (SAW default: all 12 harmonics visible — the
-  // reference image's series). Preset chips REBUILD it; the stem editor
+  // reference image's series). The PRESET tray REBUILDS it; the stem editor
   // mutates it per harmonic. presetRef = canonical source for per-stem reset.
   const [preset, setPreset] = useState<PresetKey>('saw');
   const presetRef = useRef<PresetKey>('saw');
@@ -443,8 +997,8 @@ export function HarmonicsView({
   const [snapA, setSnapA] = useState<HarmonicSet | null>(null);
   const [abOn, setAbOn] = useState(false);
   const [thdOpen, setThdOpen] = useState(false);
-  // Guided Lesson sheet (v4 MASTER §5) — long-press a labeled control (or tap
-  // ⓘ GUIDED LESSON) opens the Harmonic lab's lesson focused on that control.
+  // Guided Lesson sheet (v4 MASTER §5) — long-press a labeled control (dock
+  // key, bezel cell, or well chip) opens the lesson focused on that control.
   const [lessonKey, setLessonKey] = useState<string | undefined>(undefined);
   const [lessonOpen, setLessonOpen] = useState(false);
   const openLesson = useCallback((key?: string) => {
@@ -467,49 +1021,6 @@ export function HarmonicsView({
   const [additiveNorm, setAdditiveNorm] = useState<number | null>(null);
   const [history, setHistory] = useState<number[][]>([]);
   const [nyquist, setNyquist] = useState(24000); // refreshed from real meta
-  const [specW, setSpecW] = useState(0);
-  const [sliceW, setSliceW] = useState(0);
-  const [waveW, setWaveW] = useState(0);
-
-  // Shared axis range. LIN: 0 → 13×f0. LOG: f0/1.5 → 13.5×f0. Both tops
-  // clamp to Nyquist in live mode; the LOG bottom is guarded > 0.
-  const fLo = Math.max(1, f0 / LOG_LO_DIV);
-  const fHiLog = view === 'live' ? Math.min(LOG_MULT * f0, nyquist) : LOG_MULT * f0;
-  const fMaxLin = view === 'live' ? Math.min(AXIS_MULT * f0, nyquist) : AXIS_MULT * f0;
-  const axisTop = axis === 'log' ? fHiLog : fMaxLin;
-
-  /** Harmonic markers n×f0 on the shared axis (skipped outside the range),
-   *  each carrying its nearest-note info for the gutter + piano tint.
-   *  LOG y(f) = H·(1 − (log2 f − log2 fLo)/(log2 fHi − log2 fLo)). */
-  const markers = useMemo(() => {
-    const lo2 = Math.log2(fLo);
-    const span = Math.log2(fHiLog) - lo2;
-    const yOf =
-      axis === 'log' && span > 0
-        ? (hz: number) => TOP_H * (1 - (Math.log2(hz) - lo2) / span)
-        : (hz: number) => TOP_H - (hz / fMaxLin) * TOP_H;
-    return Array.from({ length: HARMONICS }, (_, i) => i + 1)
-      .map((n) => ({ n, hz: n * f0 }))
-      .filter((m) => m.hz <= axisTop && (axis !== 'log' || m.hz >= fLo))
-      .map((m) => ({ ...m, y: yOf(m.hz), note: noteInfo(m.hz) }));
-  }, [f0, axis, fLo, fHiLog, fMaxLin, axisTop]);
-
-  /** Model levels FROM THE EDITABLE SET: dB re full scale, floored at the
-   *  display range. Disabled/muted/at-floor harmonics draw nothing — they
-   *  contribute nothing (the one silence predicate, everywhere).
-   *  Recomputes on model edits only; markers/pianoSvg key on f0/axis and
-   *  never rebuild for an amplitude change. */
-  const modelLevels = useMemo(
-    () =>
-      markers
-        .map((m) => ({ ...m, h: model[m.n - 1] }))
-        .filter((m) => effectiveAmp(m.h) > AMP_FLOOR)
-        .map((m) => {
-          const db = dbcOf(m.h);
-          return { ...m, db, frac: (db - MODEL_FLOOR_DB) / -MODEL_FLOOR_DB };
-        }),
-    [markers, model],
-  );
 
   /** Drawn model wave — additive synthesis honoring amp/phase/enable/mute
    *  (harmonicModel.synthWaveform), recomputed only on model edits. */
@@ -520,26 +1031,15 @@ export function HarmonicsView({
   const modelCrestDb = useMemo(() => crestFactorDb(modelWave), [modelWave]);
 
   /** THD of the model — the identity card shows the selected harmonic's
-   *  per-component share now; Build B surfaces the full readout. */
+   *  per-component share; the bezel cell surfaces the full readout. */
   const modelThd = useMemo(() => thd(model), [model]);
 
   /** Gates the "audio plays a pure sine" honesty note — true whenever any
    *  overtone would sound (the shape!=='sine' rule, model-aware). */
   const modelHasOvertones = useMemo(() => hasOvertones(model), [model]);
 
-  const modelWavePath = useMemo(
-    () => (waveW <= 0 ? '' : buildWavePath(modelWave, waveW)),
-    [modelWave, waveW],
-  );
-
-  /** A/B ghost — snapshot A (a stored copy: editing B never mutates it),
-   *  drawn only while the toggle is on. Same synthesis + scaling as the
-   *  live wave, dashed so before/after reads at a glance. */
+  /** A/B ghost — snapshot A while the toggle is on (stage + stems draw it). */
   const ghost = abOn ? snapA : null;
-  const ghostWavePath = useMemo(
-    () => (ghost == null || waveW <= 0 ? '' : buildWavePath(synthWaveform(ghost, WAVE_POINTS, WAVE_CYCLES), waveW)),
-    [ghost, waveW],
-  );
 
   /** Odd/even group state derived FROM the mute flags (no shadow state):
    *  "solo odd" simply IS "every even muted, no odd muted" — so pressing
@@ -578,115 +1078,16 @@ export function HarmonicsView({
     };
   }, [model]);
 
-  /** Observed maximum across the live history — the color scale's anchor.
-   *  CELL_FLOOR_DB sentinel cells are EXCLUDED: they mean "no energy
-   *  registered", not a measured level, and anchoring the scale on them
-   *  would slide the floor below −100 and recolor the sentinels themselves
-   *  as energy (all-sentinel history → null → awaiting state, honest). */
+  /** Observed maximum across the live history — surfaced on the bezel and
+   *  gating the awaiting state. CELL_FLOOR_DB sentinel cells are EXCLUDED:
+   *  they mean "no energy registered", not a measured level, and anchoring
+   *  on them would recolor the sentinels themselves as energy (all-sentinel
+   *  history → null → awaiting state, honest). */
   const observedMax = useMemo(() => {
     let m = -Infinity;
     for (const col of history) for (const v of col) if (v > CELL_FLOOR_DB && v > m) m = v;
     return Number.isFinite(m) ? m : null;
   }, [history]);
-
-  /** Live spectrum slice — the NEWEST column as a rotated curve (level → x). */
-  const liveSlicePath = useMemo(() => {
-    if (view !== 'live' || sliceW <= 0 || history.length === 0 || observedMax == null) return '';
-    const col = history[history.length - 1];
-    const floorLevel = LIVE_CEILING_DB - LIVE_RANGE_DB; // FIXED (owner 2026-08-14)
-    const cellH = TOP_H / ROWS;
-    let d = '';
-    for (let r = 0; r < ROWS; r++) {
-      const v = col[r];
-      // Sentinel cells registered nothing — pin to the floor, never a level.
-      const frac =
-        v <= CELL_FLOOR_DB ? 0 : Math.min(1, Math.max(0, (v - floorLevel) / LIVE_RANGE_DB));
-      d += `${r === 0 ? 'M' : 'L'}${(frac * (sliceW - 2)).toFixed(1)},${(TOP_H - (r + 0.5) * cellH).toFixed(1)}`;
-    }
-    return d;
-  }, [view, sliceW, history, observedMax]);
-
-  /** Live waveform strip — real envelope buckets (newest-first → reversed),
-   *  vertical stroke segments (WaveformScreen idiom). */
-  const liveWave = useMemo(() => {
-    if (view !== 'live' || waveW <= 0 || frames.waveform.length === 0) return null;
-    // Resolution-agnostic 2 s window over the fine engine history (owner
-    // 2026-08-15) — auto-adapts to the native bucket duration.
-    const total = frames.waveform.length;
-    const wantBuckets = Math.max(1, Math.round(total * (LIVE_WAVE_WINDOW_SEC / LIVE_WAVE_HISTORY_SEC)));
-    const src = frames.waveform.slice(0, wantBuckets).reverse(); // oldest → newest
-    const n = src.length;
-    if (n === 0) return null;
-    let observed = 1;
-    for (const b of src) {
-      const m = Math.max(Math.abs(b.min), Math.abs(b.max));
-      if (m > observed) observed = m;
-    }
-    // Same scale rule as the Waveform Viewer: fixed full-scale for normal signal
-    // (no size pulsing, no transient-crush "outline"), expands only past 0 dBFS.
-    const scaleMax = Math.max(1.05, observed);
-    const mid = WAVE_H / 2;
-    const usable = mid - 3;
-    const y = (v: number) => Math.min(WAVE_H - 1, Math.max(1, mid - (v * usable) / scaleMax));
-    // MIN/MAX downsample the fine buckets to a bounded column count — keeps every
-    // peak (DAW envelope) at high resolution, one filled body (no outline), light.
-    const cols = Math.max(1, Math.min(n, Math.round(waveW), WAVE_MAX_COLS));
-    const colW = waveW / cols;
-    let top = '';
-    let bottomRev = '';
-    for (let i = 0; i < cols; i++) {
-      const b0 = Math.floor((i / cols) * n);
-      const b1 = Math.min(n, Math.max(b0 + 1, Math.floor(((i + 1) / cols) * n)));
-      let mn = Infinity;
-      let mx = -Infinity;
-      for (let k = b0; k < b1; k++) {
-        const b = src[k];
-        if (b.max > mx) mx = b.max;
-        if (b.min < mn) mn = b.min;
-      }
-      if (mx === -Infinity) {
-        mx = 0;
-        mn = 0;
-      }
-      const x = ((i + 0.5) * colW).toFixed(1);
-      let y1 = y(mx);
-      let y2 = y(mn);
-      if (y2 - y1 < 1) {
-        y1 -= 0.5;
-        y2 += 0.5;
-      }
-      const cmd = i === 0 ? 'M' : 'L';
-      top += `${cmd}${x},${y1.toFixed(1)}`;
-      bottomRev = `L${x},${y2.toFixed(1)}` + bottomRev;
-    }
-    // Level-colour axis (loudness ramp keyed to amplitude — red at ±full, deep
-    // green at the zero line), the SPL-VU standard shared across the app.
-    const fullPix = usable / scaleMax;
-    return { area: top + bottomRev + 'Z', gradY0: mid - fullPix, gradY1: mid + fullPix };
-  }, [view, waveW, frames.waveform]);
-
-  // ---- Analytic playhead sweep — Animated loop on the NATIVE driver (visual
-  // pacing only; zero setState, zero re-renders). Gated on FOCUS too: the view
-  // stays mounted on the root stack behind pushed screens, and the loop must
-  // not keep compositing forever back there (same lifecycle rule as the tone).
-  const isFocused = useIsFocused();
-  const sweep = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    if (view !== 'model' || !isFocused) return;
-    const anim = Animated.loop(
-      Animated.timing(sweep, {
-        toValue: 1,
-        duration: SWEEP_MS,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      }),
-    );
-    anim.start();
-    return () => {
-      anim.stop();
-      sweep.setValue(0);
-    };
-  }, [view, isFocused, sweep]);
 
   // Log row-bucket edges cache — rebuilt only when f0/Nyquist move the
   // range (keyed), NEVER per polled frame (high-res quality bar).
@@ -879,11 +1280,12 @@ export function HarmonicsView({
     setHistory([]);
   }, [stop]);
 
-  /** LIVE start (explicit press): mic capture always; the reference tone only
-   *  when the feedback override is on (else the interlock keeps the speaker
-   *  muted while the mic listens — owner request 2026-07-26). A capture failure
-   *  surfaces via the honest engine states below while the panels stay in their
-   *  awaiting state. The tone follows later override flips via the sync effect. */
+  /** LIVE start (explicit press / display tap): mic capture always; the
+   *  reference tone only when the feedback override is on (else the interlock
+   *  keeps the speaker muted while the mic listens — owner request
+   *  2026-07-26). A capture failure surfaces via the honest engine states in
+   *  the well while the panels stay in their awaiting state. The tone follows
+   *  later override flips via the sync effect. */
   const onLiveStart = useCallback(async () => {
     setHistory([]);
     void start();
@@ -930,11 +1332,11 @@ export function HarmonicsView({
     setHistory([]);
   };
 
-  /** Preset chips are SHORTCUTS into the model: a chip rebuilds all 12
+  /** The PRESET tray is a SHORTCUT into the model: a pick rebuilds all 12
    *  harmonics from the canonical recipe (shape chips and presets converge).
-   *  Also RESTORE's path (re-applies the active key). A preset load stops
-   *  any solo tone — the sounding harmonic may not even exist in the new
-   *  series. */
+   *  Also RESTORE's path (re-applies the active key — the tray's in-tray
+   *  reset). A preset load stops any solo tone — the sounding harmonic may
+   *  not even exist in the new series. */
   const pickPreset = (key: PresetKey) => {
     presetRef.current = key;
     setPreset(key);
@@ -988,12 +1390,12 @@ export function HarmonicsView({
    *  retune idiom) and the mixture supersedes the solo; edits while playing
    *  stream through the live funnel above. The core omits harmonics at/above
    *  Nyquist (never aliased) and peak-normalizes the sum inside the Q4 cap —
-   *  the auto-level hint below reports when the norm attenuates. */
+   *  the auto-level hint in the well reports when the norm attenuates. */
   const playModel = () => {
     if (!additiveReady) return; // v2 fallback: the button never routes here
     // A start is already in flight (genRunning stays false until it settles —
-    // the button still reads PLAY MODEL through native spin-up, so a double
-    // tap lands here): our own start would be busy-dropped, and its rollback
+    // the button still reads PLAY through native spin-up, so a double tap
+    // lands here): our own start would be busy-dropped, and its rollback
     // would strand additiveOn=false over the additive audio the FIRST start
     // is about to produce (dead live-edit funnel, sine-only pickF0 retunes
     // under an additive tone). Likewise soloN=null would unlabel an
@@ -1107,402 +1509,226 @@ export function HarmonicsView({
   const liveFlags = view === 'live' && running ? meterWarningFlags(frames.meter) : [];
   const soundOn = genRunning || running;
 
-  // Markers only move on f0/nyquist changes — memoized so the ~22 Hz live
-  // re-render doesn't reconcile 12 <Line>s across TWO Svg surfaces (plus the
-  // 12 gutter labels) for identical props on every poll tick.
-  const markerLines = useMemo(
-    () =>
-      markers.map((m) => (
-        <Line
-          key={m.n}
-          x1={0}
-          x2="100%"
-          y1={m.y}
-          y2={m.y}
-          stroke="rgba(55,224,95,0.20)"
-          strokeDasharray="3 5"
-        />
-      )),
-    [markers],
+  // ── RACK UNIT parts (APE_LAB_UX_PROPOSAL 2026-08-23, owner-approved) ──────
+  // The three panels + integrity badge pin on the stage; the model's
+  // measurements read on the bezel; F0 rides the pre-bound lane; PRESET and
+  // AXIS are sticky trays (A/B while the glass reacts IS the lesson); MODE
+  // switches MODEL/LIVE. The stem editor is a drag EDITOR, so it stays in
+  // the scroll well with its group/overlay/A-B chips.
+
+  /** Compact header play control — the old GlassButtons, moved up (the
+   *  HeaderPlayButton idiom). LIVE start = capture + (override-gated) tone. */
+  const headerAction = (
+    <HeaderPlayButton
+      playing={soundOn}
+      disabled={
+        !engineReady || (view === 'live' && !soundOn && state === 'starting')
+      }
+      onPress={() => {
+        if (view === 'live') {
+          if (soundOn) stopAll();
+          else void onLiveStart();
+        } else if (genRunning) stopTone();
+        else if (additiveReady) playModel();
+        else void startTone();
+      }}
+      label={
+        view === 'live'
+          ? soundOn
+            ? 'Stop'
+            : 'Start tone and mic'
+          : genRunning
+            ? 'Stop tone'
+            : additiveReady
+              ? 'Play model'
+              : 'Play tone'
+      }
+    />
   );
 
-  // "n: hz · note ±¢" — nearest equal-tempered note + signed cents. On the
-  // LOG axis high harmonics crowd (log2(12/11) of an octave apart), so
-  // labels that would collide are greedily dropped low-n-first; the marker
-  // LINES still show every harmonic.
-  const markerLabels = useMemo(() => {
-    const out: ReactElement[] = [];
-    let lastY = Number.POSITIVE_INFINITY;
-    for (const m of markers) {
-      if (lastY - m.y < MIN_LABEL_GAP) continue;
-      lastY = m.y;
-      const c = m.note.cents;
-      out.push(
-        <Text key={m.n} style={[styles.markerLabel, { top: m.y - 6 }]} numberOfLines={1}>
-          {`${m.n}: ${hzShort(m.hz)} · ${m.note.label} ${c >= 0 ? '+' : ''}${c}¢`}
-        </Text>,
-      );
-    }
-    return out;
-  }, [markers]);
+  /** Bezel readouts — model: the Build B measurements (tap THD for the
+   *  breakdown sheet); live: capture/tone state + the observed maximum
+   *  (a real measured figure; '—' until frames arrive). */
+  const bezel: BezelItem[] =
+    view === 'model'
+      ? [
+          { k: 'F0', v: `${f0} Hz`, helpKey: 'frequency' },
+          {
+            k: 'THD',
+            v: modelThd.pct != null ? `${modelThd.pct.toFixed(1)} %` : '—',
+            onPress: () => setThdOpen(true),
+          },
+          {
+            k: 'CREST',
+            v: modelCrestDb != null ? `${modelCrestDb.toFixed(1)} dB` : '—',
+            helpKey: 'crest',
+          },
+          {
+            k: 'SLOPE',
+            v: slopeInfo.slope != null ? slopeInfo.slope.toFixed(1) : '—',
+            helpKey: 'slope',
+          },
+        ]
+      : [
+          { k: 'F0', v: `${f0} Hz`, helpKey: 'frequency' },
+          { k: 'MIC', v: running ? 'LIVE' : state === 'starting' ? 'START…' : 'OFF', helpKey: 'view' },
+          { k: 'TONE', v: genRunning ? 'ON' : feedbackAllowed ? 'OFF' : 'MUTED' },
+          { k: 'MAX', v: observedMax != null ? `${observedMax.toFixed(0)} dB` : '—' },
+        ];
 
-  /** PIANO GUTTER (LOG axis only) — one key per semitone in [fLo, fHi]; log
-   *  spacing makes every octave (and so every key) equal height, RX-style.
-   *  Light strip = white keys; short dark rects overlapping the left
-   *  boundary = black keys; hairlines at the E/F and B/C white-white
-   *  boundaries; C keys labeled; the key nearest each harmonic gets a
-   *  subtle amber tint. Display-only (no touch), memoized on
-   *  [axis, fLo, fHiLog, markers] — nothing rebuilds per frame. */
-  const pianoSvg = useMemo(() => {
-    if (axis !== 'log') return null;
-    const lo2 = Math.log2(fLo);
-    const span = Math.log2(fHiLog) - lo2;
-    if (span <= 0) return null;
-    const yOf = (hz: number) => TOP_H * (1 - (Math.log2(hz) - lo2) / span);
-    const mLo = Math.ceil(69 + 12 * Math.log2(fLo / 440));
-    const mHi = Math.floor(69 + 12 * Math.log2(fHiLog / 440));
-    const harmonicKeys = new Set(markers.map((mk) => mk.note.midi));
-    const nodes: ReactElement[] = [
-      <Rect key="bg" x={0} y={0} width={PIANO_W} height={TOP_H} fill="#e7e8ec" />,
-    ];
-    for (let m = mLo; m <= mHi; m++) {
-      const pc = ((m % 12) + 12) % 12;
-      // Key slot = the semitone's span, mLo−½ → mLo+½ semitone in log-f.
-      const yTop = Math.max(0, yOf(midiToHz(m + 0.5)));
-      const yBot = Math.min(TOP_H, yOf(midiToHz(m - 0.5)));
-      const h = yBot - yTop;
-      if (h <= 0) continue;
-      if (BLACK_PC.has(pc)) {
-        nodes.push(
-          <Rect key={`k${m}`} x={0} y={yTop} width={PIANO_W * 0.62} height={h} fill="#131318" />,
-        );
-      } else if (pc === 4 || pc === 11) {
-        // White-white boundary above E (→F) and B (→C).
-        nodes.push(
-          <Line
-            key={`b${m}`}
-            x1={0}
-            x2={PIANO_W}
-            y1={yTop}
-            y2={yTop}
-            stroke="rgba(0,0,0,0.35)"
-            strokeWidth={0.75}
-          />,
-        );
-      }
-      if (harmonicKeys.has(m)) {
-        nodes.push(
-          <Rect key={`h${m}`} x={0} y={yTop} width={PIANO_W} height={h} fill="rgba(255,170,0,0.4)" />,
-        );
-      }
-      if (pc === 0) {
-        nodes.push(
-          <SvgText
-            key={`c${m}`}
-            x={PIANO_W - 3}
-            y={(yTop + yBot) / 2 + 2.5}
-            fontSize={7}
-            fill="#3c3c44"
-            textAnchor="end"
-          >
-            {`C${Math.floor(m / 12) - 1}`}
-          </SvgText>,
-        );
-      }
-    }
-    return (
-      <Svg width={PIANO_W} height={TOP_H} pointerEvents="none">
-        {nodes}
-      </Svg>
-    );
-  }, [axis, fLo, fHiLog, markers]);
+  /** Dock declaration. Model view adds the PRESET tray; live view keeps the
+   *  dock lean (F0 · AXIS · MODE). The F0 fader is the pre-bound teaching
+   *  parameter — sweep it and every harmonic slides together. */
+  const params: DockParam[] = [
+    {
+      kind: 'fader',
+      id: 'f0',
+      label: 'F0',
+      // LOG sweep over the old preset span 60 → 300 Hz, rounded to whole Hz.
+      value: f0Pos(f0),
+      onChange: (v) => pickF0(f0FromPos(v)),
+      format: () => `${f0} Hz`,
+      formatShort: () => `${f0}Hz`,
+      helpKey: 'frequency',
+    },
+    ...(view === 'model'
+      ? ([
+          {
+            kind: 'options',
+            id: 'preset',
+            label: 'PRESET',
+            valueLabel: PRESETS.find((p) => p.key === preset)?.label ?? '—',
+            options: PRESETS.map((p) => ({ id: p.key, label: p.label })),
+            selectedId: preset,
+            onSelect: (id: string) => pickPreset(id as PresetKey),
+            sticky: true, // A/B waveshapes while the glass redraws — the lesson
+            onReset: { label: 'RESTORE PRESET', onPress: () => pickPreset(presetRef.current) },
+            helpKey: 'wave_shape',
+          },
+        ] satisfies DockParam[])
+      : []),
+    {
+      kind: 'options',
+      id: 'axis',
+      label: 'AXIS',
+      valueLabel: axis === 'log' ? 'LOG ♪' : 'LIN',
+      options: [
+        { id: 'log', label: 'LOG ♪' },
+        { id: 'lin', label: 'LIN' },
+      ],
+      selectedId: axis,
+      onSelect: (id) => pickAxis(id as AxisMode),
+      sticky: true, // LOG vs LIN spacing while watching IS the lesson
+      helpKey: 'axis',
+    },
+    {
+      kind: 'options',
+      id: 'view',
+      label: 'MODE',
+      valueLabel: view === 'model' ? 'MODEL' : 'LIVE',
+      options: [
+        { id: 'model', label: 'ANALYTIC MODEL' },
+        { id: 'live', label: 'REAL SIGNAL' },
+      ],
+      selectedId: view,
+      onSelect: (id) => pickView(id as ViewMode),
+      // Not sticky: a mode switch stops all sound/capture — set and close.
+      helpKey: 'view',
+    },
+  ];
 
-  return (
-    <View style={styles.wrap}>
-      {/* MODE TOGGLE — analytic model vs engine-gated real signal. */}
-      <View style={styles.toggleRow}>
+  const rack: HarmonicRackParts['rack'] = {
+    initialParam: 'f0',
+    onHelp: openLesson,
+    stage: {
+      size: 'L', // the three linked panels ARE the lab — earns the tall glass
+      // INTEGRITY BADGE — permanent, per mode (TRAINING DEMO badge idiom):
+      // the model is math, never a measurement; live is honest dBFS,
+      // uncalibrated. Text preserved verbatim from the in-panel badges.
+      badge:
+        view === 'model'
+          ? 'ANALYTIC MODEL — NOT A MEASUREMENT'
+          : 'REAL SIGNAL — dBFS · UNCALIBRATED',
+      onGuide: () => openLesson('display'),
+      bezel,
+      render: (w, h) => (
+        // In LIVE mode, tapping the display toggles the mic capture START/
+        // STOP (owner 2026-07-31); model mode is inert (the header ▶ plays).
         <Pressable
-          style={[styles.toggleTab, view === 'model' && styles.toggleTabSelected]}
-          onPress={() => pickView('model')}
-          onLongPress={() => openLesson('view')}
-          delayLongPress={300}
-          accessibilityRole="button"
-          accessibilityState={{ selected: view === 'model' }}
-          accessibilityLabel="Analytic model mode"
+          onPress={
+            view === 'live'
+              ? () => {
+                  if (soundOn) stopAll();
+                  else void onLiveStart();
+                }
+              : undefined
+          }
+          accessibilityRole={view === 'live' ? 'button' : undefined}
+          accessibilityLabel={
+            view === 'live' ? (soundOn ? 'Tap to stop capture' : 'Tap to start capture') : undefined
+          }
         >
-          <Text style={[styles.toggleText, view === 'model' && styles.toggleTextSelected]}>
-            ANALYTIC MODEL
-          </Text>
+          <HarmonicStage
+            w={w}
+            h={h}
+            view={view}
+            axis={axis}
+            f0={f0}
+            nyquist={nyquist}
+            model={model}
+            oddEvenHl={oddEvenHl}
+            ghost={ghost}
+            modelWave={modelWave}
+            history={history}
+            observedMax={observedMax}
+            waveFrames={frames.waveform}
+            running={running}
+          />
         </Pressable>
-        <Pressable
-          style={[styles.toggleTab, view === 'live' && styles.toggleTabSelected]}
-          onPress={() => pickView('live')}
-          onLongPress={() => openLesson('view')}
-          delayLongPress={300}
-          accessibilityRole="button"
-          accessibilityState={{ selected: view === 'live' }}
-          accessibilityLabel="Real signal mode"
-        >
-          <Text style={[styles.toggleText, view === 'live' && styles.toggleTextSelected]}>
-            REAL SIGNAL
-          </Text>
-        </Pressable>
-      </View>
+      ),
+    },
+    params,
+  };
 
-      {/* AXIS TOGGLE — LOG (RX-style, piano gutter) vs LIN (even harmonics). */}
-      <View style={styles.chipRow}>
-        <Chip label="LOG ♪" selected={axis === 'log'} onPress={() => pickAxis('log')} onLongPress={() => openLesson('axis')} />
-        <Chip label="LIN" selected={axis === 'lin'} onPress={() => pickAxis('lin')} onLongPress={() => openLesson('axis')} />
-      </View>
-
-      {/* INTEGRITY BADGE — permanent (TRAINING DEMO badge idiom): the model
-          is math, never a measurement; live is honest dBFS, uncalibrated. */}
-      {view === 'model' ? (
-        <View style={styles.modelBadge}>
-          <Text style={styles.modelBadgeText}>ANALYTIC MODEL — NOT A MEASUREMENT</Text>
-        </View>
-      ) : (
-        <View style={styles.liveBadge}>
-          <Text style={styles.liveBadgeText}>REAL SIGNAL — dBFS · UNCALIBRATED</Text>
-        </View>
-      )}
-
-      {/* THE THREE LINKED PANELS. In LIVE mode, tapping the display toggles the
-          mic capture START/STOP (owner 2026-07-31); model mode is inert. */}
-      <Pressable
-        style={styles.vizCard}
-        onPress={
-          view === 'live'
-            ? () => {
-                if (soundOn) stopAll();
-                else void onLiveStart();
-              }
-            : undefined
-        }
-        accessibilityRole={view === 'live' ? 'button' : undefined}
-        accessibilityLabel={
-          view === 'live' ? (soundOn ? 'Tap to stop capture' : 'Tap to start capture') : undefined
-        }
-      >
-        <View style={styles.topRow}>
-          {/* Harmonic markers on the shared frequency axis (n: hz). */}
-          <View style={styles.gutter}>{markerLabels}</View>
-
-          {/* MAIN — spectrogram (heatmap). */}
-          <View
-            style={styles.specPanel}
-            onLayout={(e) => setSpecW(Math.round(e.nativeEvent.layout.width))}
-          >
-            {specW > 0 ? (
-              view === 'model' ? (
-                <Svg width={specW} height={TOP_H}>
-                  {markerLines}
-                  {modelLevels.map((m) => (
-                    <Rect
-                      key={m.n}
-                      x={0}
-                      y={m.y - BAND_H / 2}
-                      width={specW}
-                      height={BAND_H}
-                      // ODD/EVEN highlight tints the groups apart (legend by
-                      // the toggle); otherwise the MIDI ramp by level, opened up
-                      // over the practical window so loud harmonics still differ.
-                      fill={
-                        oddEvenHl
-                          ? m.n % 2 === 1
-                            ? colors.orange
-                            : colors.blue
-                          : bandColor(m.db)
-                      }
-                      opacity={0.5 + 0.5 * m.frac}
-                    />
-                  ))}
-                </Svg>
-              ) : (
-                <>
-                  <LiveHeatmap history={history} observedMax={observedMax} width={specW} />
-                  <Svg width={specW} height={TOP_H} style={StyleSheet.absoluteFill}>
-                    {markerLines}
-                  </Svg>
-                  {history.length === 0 ? (
-                    <Text style={styles.awaitText}>
-                      {running ? 'waiting for spectrum frames…' : 'no capture — press START below'}
-                    </Text>
-                  ) : null}
-                </>
-              )
-            ) : null}
-            {view === 'model' ? (
-              // Sweeping playhead — visual pacing only (native-driver loop).
-              <Animated.View
-                pointerEvents="none"
-                style={[
-                  styles.playhead,
-                  {
-                    transform: [
-                      {
-                        translateX: sweep.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [0, Math.max(0, specW - 2)],
-                        }),
-                      },
-                    ],
-                  },
-                ]}
-              />
-            ) : null}
-          </View>
-
-          {/* RIGHT — spectrum slice (LIVE only). The model view no longer draws
-              horizontal level bars here: level now reads from the band/stem
-              COLOUR (MIDI ramp), so the bars were redundant and confusing
-              (owner 2026-08-05). The rotated spectrum-slice curve is a real
-              live readout, so it stays in REAL SIGNAL mode. */}
-          {view === 'live' ? (
-            <View
-              style={styles.slicePanel}
-              onLayout={(e) => setSliceW(Math.round(e.nativeEvent.layout.width))}
-            >
-              {sliceW > 0 ? (
-                <Svg width={sliceW} height={TOP_H}>
-                  {markerLines}
-                  {liveSlicePath !== '' ? (
-                    <Path d={liveSlicePath} stroke={colors.greenBright} strokeWidth={1.5} fill="none" />
-                  ) : null}
-                </Svg>
-              ) : null}
-            </View>
-          ) : null}
-
-          {/* FAR RIGHT — piano-key gutter (LOG axis only; display-only). */}
-          {axis === 'log' ? <View style={styles.pianoGutter}>{pianoSvg}</View> : null}
-        </View>
-
-        {/* Shared-axis captions: time under the spectrogram, level under the
-            slice (flex ratios match the panels above). */}
-        <View style={styles.axisRow}>
-          <View style={{ width: GUTTER_W }} />
-          <Text style={[styles.axisText, { flex: 1.6 }]}>
-            {view === 'model'
-              ? 'time → (visual sweep)'
-              : `time → ~${trim(((HIST_COLS * SPEC_POLL_MS) / 1000).toFixed(1))} s`}
-          </Text>
-          {/* Level caption belongs to the slice panel, which model mode no
-              longer shows (owner 2026-08-05). */}
-          {view === 'live' ? (
-            <Text style={[styles.axisText, styles.axisTextRight, { flex: 1 }]}>level →</Text>
-          ) : null}
-          {axis === 'log' ? <View style={{ width: PIANO_W + 4 }} /> : null}
-        </View>
-
-        {/* BOTTOM — waveform strip (full width; model playhead matches the
-            spectrogram sweep as a fraction of the panel). */}
-        <View
-          style={styles.wavePanel}
-          onLayout={(e) => setWaveW(Math.round(e.nativeEvent.layout.width))}
-        >
-          {waveW > 0 ? (
-            <Svg width={waveW} height={WAVE_H}>
-              <Defs>
-                {/* Model-wave gradient (static amplitude axis). */}
-                <LinearGradient id="harmModelLevel" x1={0} y1={WAVE_MODEL_Y0} x2={0} y2={WAVE_MODEL_Y1} gradientUnits="userSpaceOnUse">
-                  {WAVE_LEVEL_STOPS.map((s) => (
-                    <Stop key={s.offset} offset={s.offset} stopColor={s.color} />
-                  ))}
-                </LinearGradient>
-                {liveWave ? (
-                  <LinearGradient
-                    id="harmWaveLevel"
-                    x1={0}
-                    y1={liveWave.gradY0}
-                    x2={0}
-                    y2={liveWave.gradY1}
-                    gradientUnits="userSpaceOnUse"
-                  >
-                    {WAVE_LEVEL_STOPS.map((s) => (
-                      <Stop key={s.offset} offset={s.offset} stopColor={s.color} />
-                    ))}
-                  </LinearGradient>
-                ) : null}
-              </Defs>
-              <Line x1={0} x2={waveW} y1={WAVE_H / 2} y2={WAVE_H / 2} stroke={MIDLINE_BLUE} strokeWidth={1} />
-              {view === 'model' ? (
-                <>
-                  {/* A/B ghost first so the live edit draws on top. */}
-                  {ghostWavePath !== '' ? (
-                    <Path
-                      d={ghostWavePath}
-                      stroke="rgba(255,255,255,0.45)"
-                      strokeWidth={1.2}
-                      strokeDasharray="4 4"
-                      fill="none"
-                    />
-                  ) : null}
-                  {modelWavePath !== '' ? (
-                    <Path d={modelWavePath} stroke="url(#harmModelLevel)" strokeWidth={1.8} fill="none" />
-                  ) : null}
-                </>
-              ) : liveWave ? (
-                <Path d={liveWave.area} fill="url(#harmWaveLevel)" opacity={0.9} />
-              ) : null}
-            </Svg>
-          ) : null}
-          {view === 'model' ? (
-            <Animated.View
-              pointerEvents="none"
-              style={[
-                styles.playhead,
-                {
-                  transform: [
-                    {
-                      translateX: sweep.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [0, Math.max(0, waveW - 2)],
-                      }),
-                    },
-                  ],
-                },
-              ]}
-            />
-          ) : null}
-        </View>
-        <Text style={styles.waveCaption}>
+  /** The scroll WELL: display reading aids, the stem editor + its group/
+   *  overlay/A-B chips (a drag editor stays in the well — it locks the
+   *  well's scroll through the shell api), honesty notes, advisories,
+   *  FeedbackAllowRow, errors, and the sheets. */
+  const renderWell = (api: LabShellExploreApi): ReactNode => (
+    <>
+      {/* Color legend — model: fixed range re the fundamental; live: the
+          fixed 0 dBFS scale (spectrogram honesty idiom). */}
+      <View style={styles.legendRow}>
+        {STEP_COLORS.map((c, i) => (
+          // key by index — the ramp can repeat a hex (adjacent steps quantize
+          // to the same color), so keying by value collided (owner 2026-08-11).
+          <View key={i} style={[styles.swatch, { backgroundColor: c }]} />
+        ))}
+        <Text style={styles.legendText}>
           {view === 'model'
-            ? `waveform · ${WAVE_CYCLES} cycles · 12-harmonic model${
-                modelCrestDb != null ? ` · crest ${modelCrestDb.toFixed(1)} dB` : ''
-              }${ghostWavePath !== '' ? ' · dashed = snapshot A' : ''}`
-            : 'waveform · live mic envelope · newest right'}
+            ? `${MODEL_FLOOR_DB} → 0 dB re full scale`
+            : observedMax != null
+              ? `${fmtDb(LIVE_CEILING_DB - LIVE_RANGE_DB)} → ${fmtDb(LIVE_CEILING_DB)} dBFS`
+              : '—'}
         </Text>
+      </View>
+      <Text style={styles.scaleNote}>
+        {view === 'model'
+          ? 'Levels are the editable model series, relative to model full scale (0 dB = amp 1). Spectrogram time is a visual sweep.'
+          : `Color intensity is relative to the selected scale. dBFS · uncalibrated. Spectrogram time → ~${trim(((HIST_COLS * SPEC_POLL_MS) / 1000).toFixed(1))} s, newest right.`}
+      </Text>
+      <Text style={styles.waveCaption}>
+        {view === 'model'
+          ? `waveform strip · ${WAVE_CYCLES} cycles · 12-harmonic model${ghost != null ? ' · dashed = snapshot A' : ''}`
+          : 'waveform strip · live mic envelope · newest right'}
+      </Text>
 
-        {/* Color legend — model: fixed range re the fundamental; live:
-            anchored to the observed max (spectrogram honesty idiom). */}
-        <View style={styles.legendRow}>
-          {STEP_COLORS.map((c, i) => (
-            // key by index — the ramp can repeat a hex (adjacent steps quantize
-            // to the same color), so keying by value collided (owner 2026-08-11).
-            <View key={i} style={[styles.swatch, { backgroundColor: c }]} />
-          ))}
-          <Text style={styles.legendText}>
-            {view === 'model'
-              ? `${MODEL_FLOOR_DB} → 0 dB re full scale`
-              : observedMax != null
-                ? `${fmtDb(LIVE_CEILING_DB - LIVE_RANGE_DB)} → ${fmtDb(LIVE_CEILING_DB)} dBFS`
-                : '—'}
-          </Text>
-        </View>
-        <Text style={styles.scaleNote}>
-          {view === 'model'
-            ? 'Levels are the editable model series, relative to model full scale (0 dB = amp 1).'
-            : 'Color intensity is relative to the selected scale. dBFS · uncalibrated.'}
-        </Text>
-        <DisplayGuideButton onPress={() => openLesson('display')} />
-      </Pressable>
-
-      {/* STEM EDITOR + IDENTITY CARD — analytic mode only. Edits mutate the
-          model state; the live capture path renders from history/frames and
-          is untouched by them. */}
       {view === 'model' ? (
         <>
+          {/* STEM EDITOR + IDENTITY CARD — analytic mode only. Edits mutate
+              the model state; the live capture path renders from history/
+              frames and is untouched by them. The editor's drags lock the
+              well's scroll (shell api → onDragActive), so the gesture wins. */}
           <HarmonicStems
             set={model}
             f0={f0}
@@ -1513,7 +1739,7 @@ export function HarmonicsView({
             onToggleEnabled={handleToggleEnabled}
             onToggleMuted={handleToggleMuted}
             onResetHarmonic={handleResetHarmonic}
-            onDragActive={onDragActive}
+            onDragActive={api.setScrollLocked}
             highlightOddEven={oddEvenHl}
             showEnvelope={showEnvelope}
             showSpacing={showSpacing}
@@ -1542,43 +1768,13 @@ export function HarmonicsView({
               }}
             />
           ) : null}
+          <Text style={styles.thdnDim}>
+            THD / CREST / SLOPE read on the display bezel — tap THD for the calculation. THD+N —
+            live measurement required (the model has no noise).
+          </Text>
 
-          {/* MEASUREMENTS — THD (tap for the actual calculation), crest
-              factor of the synthesized wave, envelope slope. All model math;
-              THD+N stays honestly unavailable without a live measurement. */}
-          <View style={styles.measureCard}>
-            <Pressable
-              style={styles.measureItem}
-              onPress={() => setThdOpen(true)}
-              accessibilityRole="button"
-              accessibilityLabel="Total harmonic distortion — open calculation breakdown"
-            >
-              <Text style={styles.measureLabel}>THD ▸</Text>
-              <Text style={styles.measureValue}>
-                {modelThd.pct != null ? `${modelThd.pct.toFixed(1)} %` : '—'}
-              </Text>
-              <Text style={styles.measureSub}>
-                {modelThd.db != null ? `${modelThd.db.toFixed(1)} dB` : modelThd.pct != null ? '−∞ dB' : 'H1 silent'}
-              </Text>
-            </Pressable>
-            <Pressable style={styles.measureItem} onLongPress={() => openLesson('crest')} delayLongPress={300}>
-              <Text style={styles.measureLabel}>CREST</Text>
-              <Text style={styles.measureValue}>
-                {modelCrestDb != null ? modelCrestDb.toFixed(1) : '—'}
-              </Text>
-              <Text style={styles.measureSub}>dB peak/RMS</Text>
-            </Pressable>
-            <Pressable style={styles.measureItem} onLongPress={() => openLesson('slope')} delayLongPress={300}>
-              <Text style={styles.measureLabel}>SLOPE</Text>
-              <Text style={styles.measureValue}>
-                {slopeInfo.slope != null ? slopeInfo.slope.toFixed(1) : '—'}
-              </Text>
-              <Text style={styles.measureSub}>dB/oct envelope</Text>
-            </Pressable>
-          </View>
-          <Text style={styles.thdnDim}>THD+N — live measurement required (the model has no noise)</Text>
-
-          {/* HIGHLIGHT + OVERLAY toggles. */}
+          {/* HIGHLIGHT + OVERLAY toggles — they operate ON the stem editor
+              (and tint the stage bands), so they live beside it. */}
           <Text style={styles.sectionHead}>GROUPS & OVERLAYS</Text>
           <View style={styles.chipRow}>
             <Chip label="ODD/EVEN" selected={oddEvenHl} onPress={() => setOddEvenHl((v) => !v)} onLongPress={() => openLesson('wave_shape')} />
@@ -1609,14 +1805,14 @@ export function HarmonicsView({
           ) : null}
 
           {/* GROUP ACTIONS — solo = mute the complement (H1 counts as odd);
-              pressing the active solo unsolos. */}
+              pressing the active solo unsolos. RESTORE moved into the PRESET
+              tray as its in-tray reset (reset-in-container rule). */}
           <View style={styles.chipRow}>
             <Chip label="SOLO ODD" selected={groupState.solo === 'odd'} onPress={() => soloGroup('odd')} onLongPress={() => openLesson('add_remove_harmonics')} />
             <Chip label="SOLO EVEN" selected={groupState.solo === 'even'} onPress={() => soloGroup('even')} onLongPress={() => openLesson('add_remove_harmonics')} />
             <Chip label="MUTE ODD" selected={groupState.oddAllMuted} onPress={() => muteGroup('odd')} onLongPress={() => openLesson('add_remove_harmonics')} />
             <Chip label="MUTE EVEN" selected={groupState.evenAllMuted} onPress={() => muteGroup('even')} onLongPress={() => openLesson('add_remove_harmonics')} />
             <Chip label="NORMALIZE" selected={false} onPress={normalizeModel} />
-            <Chip label="RESTORE" selected={false} onPress={() => pickPreset(presetRef.current)} />
           </View>
 
           {/* A/B BEFORE–AFTER — snapshot A as a dashed ghost over the stems
@@ -1638,12 +1834,109 @@ export function HarmonicsView({
                 ? 'A = snapshot (dashed ghost on stems + waveform) · B = the live edit. A new snapshot replaces A.'
                 : 'Snapshot A held — toggle A/B GHOST to overlay it.'}
           </Text>
+
+          <Text style={styles.caption}>
+            The PRESET key (dock) loads simplified instructional models — canonical harmonic
+            recipes, not reproductions of any real device. A pick resets all 12 stems; drag the
+            stems to edit from there.
+          </Text>
+
+          {engineReady ? (
+            <>
+              {/* v3: the header ▶ plays the full 12-harmonic mixture
+                  (additive). v2: it plays the fundamental sine — today's
+                  exact fallback. */}
+              <Text style={styles.caption}>
+                {additiveReady
+                  ? `The header ▶ plays the model — output up to ${GEN_LEVEL_DB} dBFS · uncalibrated (digital output level, not dB SPL); the harmonic sum is peak-normalized inside the level cap.`
+                  : `The header ▶ plays a tone — output up to ${GEN_LEVEL_DB} dBFS · uncalibrated (digital output level, not dB SPL).`}
+              </Text>
+              <Text style={styles.lowFreqAdvisory}>{LOW_FREQ_ADVISORY}</Text>
+              {additiveOn && additiveNorm != null && additiveNorm < 0.995 ? (
+                // Subtle auto-level hint — shown only while normalization is
+                // actually attenuating (norm < 1, from genStatus).
+                <Text style={styles.caption}>
+                  {`Output auto-leveled ×${additiveNorm.toFixed(2)} — normalization is holding the harmonic sum inside the level cap.`}
+                </Text>
+              ) : null}
+              {soloN != null ? (
+                // SOLO status — real and honest: ONE harmonic as a real sine
+                // (the one solo mechanism on every engine version).
+                <Text style={styles.honestyNote}>
+                  {`SOLO H${soloN} · ${soloN * f0} Hz sine — one harmonic alone${
+                    additiveReady
+                      ? '; the header ▶ sounds the full mixture.'
+                      : '; the full mixture needs the additive engine.'
+                  }`}
+                </Text>
+              ) : null}
+            </>
+          ) : (
+            // No engine → no sound path; the model view stays fully usable.
+            <Text style={styles.caption}>
+              Playback needs the measurement engine (see the note above) — the analytic view stays
+              fully interactive without it.
+            </Text>
+          )}
+          {additiveOn ? (
+            // HONESTY (v3, model sounding) — the audio IS the drawn model:
+            // band-limited additive synthesis of these 12 stems, live edits
+            // included; above-Nyquist harmonics are omitted, never aliased.
+            <Text style={styles.honestyNote}>
+              Audio = this 12-harmonic band-limited model — amps and phases sound as drawn;
+              harmonics above the device Nyquist are omitted, never aliased.
+            </Text>
+          ) : modelHasOvertones && !additiveReady ? (
+            // HONESTY (v2 fallback) — persistent while any overtone is
+            // displayed on a sine-only engine (model-aware: edits can
+            // silence or add overtones on any preset).
+            <Text style={styles.honestyNote}>
+              Audio plays a pure sine — the engine generates sine only; this series is an analytic
+              model.
+            </Text>
+          ) : null}
         </>
-      ) : null}
+      ) : (
+        <>
+          {!engineReady ? (
+            // The screen already shows the shared EngineGate card for
+            // absent/spike — just say why this mode is inert, simulate nothing.
+            <Text style={styles.caption}>
+              Real-signal mode needs the DSP engine (see the note above). Nothing is simulated in
+              its place.
+            </Text>
+          ) : (
+            <>
+              {/* Runtime capture failures (denied/error) — honest cards. */}
+              {state === 'denied' || state === 'error' ? (
+                <EngineGate state={state} lastError={lastError} />
+              ) : null}
+              {/* Feedback override: LIVE mode is the ONE place the app needs mic
+                  + speaker together, so the user must physically accept the
+                  feedback risk before the reference tone will sound. */}
+              <FeedbackAllowRow />
+              <Text style={styles.caption}>
+                Tap the display (or the header ▶) to start: it plays the fundamental as a sine (
+                {GEN_LEVEL_DB} dBFS) while analyzing the microphone. Real harmonic distortion from
+                the speaker, room, and mic lines up with the markers — that is the lesson.
+                {!feedbackAllowed
+                  ? ' The tone stays muted for feedback safety until you switch on the override above (use headphones, or the built-in mic will hear the speaker).'
+                  : ''}
+              </Text>
+              {liveFlags.map((f) => (
+                <Text key={f} style={styles.liveWarn}>
+                  ⚠ {WARNING_INFO[f].message} {WARNING_INFO[f].hint}
+                </Text>
+              ))}
+            </>
+          )}
+        </>
+      )}
+      {genError ? <Text style={styles.errorText}>Generator error: {genError}</Text> : null}
 
       {/* THD BREAKDOWN SHEET — the actual calculation components (spec §2.I):
           the formula, each harmonic's aₙ/a₁ contribution, and the honest
-          THD+N placeholder. */}
+          THD+N placeholder. Opened from the bezel's THD cell. */}
       {thdOpen ? (
         <Modal visible transparent animationType="fade" statusBarTranslucent onRequestClose={() => setThdOpen(false)}>
           <View style={styles.sheetBackdrop}>
@@ -1699,211 +1992,24 @@ export function HarmonicsView({
         </Modal>
       ) : null}
 
-      {/* GUIDED LESSON sheet — opened by the ⓘ entry or a control long-press. */}
+      {/* GUIDED LESSON sheet — opened by the ⓘ display guide or a dock/bezel/
+          chip long-press, focused on that control (v4 MASTER §5). The shell's
+          own lesson row opens the unfocused lesson. */}
       <GuidedLessonSheet
         visible={lessonOpen}
         lesson={getLabLesson('harmonic')}
         controlKey={lessonKey}
         onClose={() => setLessonOpen(false)}
       />
-
-      {/* CONTROLS. */}
-      {/* GUIDED LESSON entry — tap opens the lab lesson; long-press any labeled
-          control below opens it focused on that control (v4 MASTER §5). */}
-      <View style={styles.chipRow}>
-        <Chip label="ⓘ GUIDED LESSON" selected={lessonOpen} onPress={() => openLesson()} />
-      </View>
-      <Text style={styles.caption}>Long-press a labeled control for its guided lesson.</Text>
-
-      <Text style={styles.sectionHead}>FUNDAMENTAL</Text>
-      <View style={styles.chipRow}>
-        {F0_PRESETS.map((hz) => (
-          <Chip key={hz} label={`${hz} Hz`} selected={f0 === hz} onPress={() => pickF0(hz)} onLongPress={() => openLesson('frequency')} />
-        ))}
-      </View>
-
-      {view === 'model' ? (
-        <>
-          <Text style={styles.sectionHead}>PRESETS — SIMPLIFIED INSTRUCTIONAL MODELS</Text>
-          <View style={styles.chipRow}>
-            {PRESETS.map((p) => (
-              <Chip key={p.key} label={p.label} selected={preset === p.key} onPress={() => pickPreset(p.key)} onLongPress={() => openLesson('wave_shape')} />
-            ))}
-          </View>
-          <Text style={styles.caption}>
-            Simplified instructional models — canonical harmonic recipes, not reproductions of any
-            real device. A chip resets all 12 stems; drag the stems to edit from there.
-          </Text>
-
-          {engineReady ? (
-            <>
-              {/* v3: PLAY MODEL (the full 12-harmonic mixture, additive).
-                  v2: PLAY TONE (fundamental sine — today's exact fallback). */}
-              <GlassButton
-                label={genRunning ? 'STOP TONE' : additiveReady ? 'PLAY MODEL' : 'PLAY TONE'}
-                tint="green"
-                height={52}
-                fontSize={15}
-                onPress={() => {
-                  if (genRunning) stopTone();
-                  else if (additiveReady) playModel();
-                  else void startTone();
-                }}
-              />
-              <Text style={styles.caption}>
-                {additiveReady
-                  ? `Model output up to ${GEN_LEVEL_DB} dBFS · uncalibrated — digital output level, not dB SPL; the harmonic sum is peak-normalized inside the level cap.`
-                  : `Tone output up to ${GEN_LEVEL_DB} dBFS · uncalibrated — digital output level, not dB SPL.`}
-              </Text>
-              <Text style={styles.lowFreqAdvisory}>{LOW_FREQ_ADVISORY}</Text>
-              {additiveOn && additiveNorm != null && additiveNorm < 0.995 ? (
-                // Subtle auto-level hint — shown only while normalization is
-                // actually attenuating (norm < 1, from genStatus).
-                <Text style={styles.caption}>
-                  {`Output auto-leveled ×${additiveNorm.toFixed(2)} — normalization is holding the harmonic sum inside the level cap.`}
-                </Text>
-              ) : null}
-              {soloN != null ? (
-                // SOLO status — real and honest: ONE harmonic as a real sine
-                // (the one solo mechanism on every engine version).
-                <Text style={styles.honestyNote}>
-                  {`SOLO H${soloN} · ${soloN * f0} Hz sine — one harmonic alone${
-                    additiveReady
-                      ? '; PLAY MODEL sounds the full mixture.'
-                      : '; the full mixture needs the additive engine.'
-                  }`}
-                </Text>
-              ) : null}
-            </>
-          ) : (
-            // No engine → no sound path; the model view stays fully usable.
-            <Text style={styles.caption}>
-              Playback needs the measurement engine (see the note above) — the analytic view stays
-              fully interactive without it.
-            </Text>
-          )}
-          {additiveOn ? (
-            // HONESTY (v3, model sounding) — the audio IS the drawn model:
-            // band-limited additive synthesis of these 12 stems, live edits
-            // included; above-Nyquist harmonics are omitted, never aliased.
-            <Text style={styles.honestyNote}>
-              Audio = this 12-harmonic band-limited model — amps and phases sound as drawn;
-              harmonics above the device Nyquist are omitted, never aliased.
-            </Text>
-          ) : modelHasOvertones && !additiveReady ? (
-            // HONESTY (v2 fallback) — persistent while any overtone is
-            // displayed on a sine-only engine (model-aware: edits can
-            // silence or add overtones on any preset).
-            <Text style={styles.honestyNote}>
-              Audio plays a pure sine — the engine generates sine only; this series is an analytic
-              model.
-            </Text>
-          ) : null}
-        </>
-      ) : (
-        <>
-          {!engineReady ? (
-            // The Explore panel already shows the shared EngineGate card for
-            // absent/spike — just say why this mode is inert, simulate nothing.
-            <Text style={styles.caption}>
-              Real-signal mode needs the DSP engine (see the note above). Nothing is simulated in
-              its place.
-            </Text>
-          ) : (
-            <>
-              {/* Runtime capture failures (denied/error) — honest cards. */}
-              {state === 'denied' || state === 'error' ? (
-                <EngineGate state={state} lastError={lastError} />
-              ) : null}
-              {/* Feedback override: LIVE mode is the ONE place the app needs mic
-                  + speaker together, so the user must physically accept the
-                  feedback risk before the reference tone will sound. */}
-              <FeedbackAllowRow />
-              <GlassButton
-                label={soundOn ? 'STOP' : state === 'starting' ? 'STARTING…' : 'START TONE + MIC'}
-                tint="green"
-                height={52}
-                fontSize={15}
-                // STOP stays pressable mid-start: the tone is already sounding
-                // and useDspEngine.stop() is safe during 'starting' (its
-                // generation counter voids the in-flight start).
-                disabled={!soundOn && state === 'starting'}
-                onPress={() => {
-                  if (soundOn) stopAll();
-                  else void onLiveStart();
-                }}
-              />
-              <Text style={styles.caption}>
-                Plays the fundamental as a sine ({GEN_LEVEL_DB} dBFS) while analyzing the
-                microphone. Real harmonic distortion from the speaker, room, and mic lines up with
-                the markers — that is the lesson.
-                {!feedbackAllowed
-                  ? ' The tone stays muted for feedback safety until you switch on the override above (use headphones, or the built-in mic will hear the speaker).'
-                  : ''}
-              </Text>
-              {liveFlags.map((f) => (
-                <Text key={f} style={styles.liveWarn}>
-                  ⚠ {WARNING_INFO[f].message} {WARNING_INFO[f].hint}
-                </Text>
-              ))}
-            </>
-          )}
-        </>
-      )}
-      {genError ? <Text style={styles.errorText}>Generator error: {genError}</Text> : null}
-    </View>
+    </>
   );
+
+  return children({ rack, headerAction, renderWell });
 }
 
 const styles = StyleSheet.create({
-  wrap: { gap: 12 },
-
-  // Segmented mode toggle (EarLab tab idiom).
-  toggleRow: { flexDirection: 'row', gap: 8 },
-  toggleTab: {
-    flex: 1,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#131316',
-    paddingVertical: 9,
-    alignItems: 'center',
-  },
-  toggleTabSelected: { borderColor: 'rgba(55,224,95,.55)', backgroundColor: '#0e130f' },
-  toggleText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textSecondary },
-  toggleTextSelected: { color: colors.green },
-
-  // Integrity badges (ToolDemoScreen badge idiom).
-  modelBadge: {
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(255,141,122,.55)',
-    backgroundColor: '#1c0f0b',
-    paddingVertical: 8,
-    alignItems: 'center',
-  },
-  modelBadgeText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: '#ff8d7a' },
-  liveBadge: {
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(55,224,95,.45)',
-    backgroundColor: '#0e130f',
-    paddingVertical: 8,
-    alignItems: 'center',
-  },
-  liveBadgeText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: colors.green },
-
-  // The three-panel card.
-  vizCard: {
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#131316',
-    padding: 10,
-    gap: 6,
-  },
+  // Stage internals (heights are driven by the glass — set inline).
   topRow: { flexDirection: 'row' },
-  gutter: { width: GUTTER_W, height: TOP_H },
   markerLabel: {
     position: 'absolute',
     right: 4,
@@ -1916,14 +2022,12 @@ const styles = StyleSheet.create({
   // Spectral panels are pure black — the RX ramp's zero, so silence = bg.
   specPanel: {
     flex: 1.6,
-    height: TOP_H,
     backgroundColor: '#000000',
     borderRadius: 4,
     overflow: 'hidden',
   },
   slicePanel: {
     flex: 1,
-    height: TOP_H,
     backgroundColor: '#000000',
     borderRadius: 4,
     overflow: 'hidden',
@@ -1931,7 +2035,6 @@ const styles = StyleSheet.create({
   },
   pianoGutter: {
     width: PIANO_W,
-    height: TOP_H,
     marginLeft: 4,
     borderRadius: 3,
     overflow: 'hidden',
@@ -1946,7 +2049,6 @@ const styles = StyleSheet.create({
   },
   awaitText: {
     position: 'absolute',
-    top: TOP_H / 2 - 9,
     left: 0,
     right: 0,
     fontFamily: fonts.barlowRegular,
@@ -1954,15 +2056,10 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     textAlign: 'center',
   },
-  axisRow: { flexDirection: 'row', alignItems: 'center' },
-  axisText: { fontFamily: fonts.mono, fontSize: 12, color: colors.textMuted },
-  axisTextRight: { textAlign: 'right', marginLeft: 6 },
   wavePanel: {
-    height: WAVE_H,
     backgroundColor: '#0a0a0c',
     borderRadius: 4,
     overflow: 'hidden',
-    marginTop: 2,
   },
   waveCaption: { fontFamily: fonts.mono, fontSize: 12, color: colors.textMuted },
 
@@ -1971,7 +2068,7 @@ const styles = StyleSheet.create({
   legendText: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSubAlt, marginLeft: 6 },
   scaleNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSubAlt },
 
-  // Controls (SignalGen chip idiom).
+  // Controls (SignalGen chip idiom — well chips beside the stem editor).
   sectionHead: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 13,
@@ -1997,21 +2094,6 @@ const styles = StyleSheet.create({
   honestyNote: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18.5, color: colors.amber },
   liveWarn: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18.5, color: colors.amber },
   errorText: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: '#ff8d7a' },
-
-  // Build B — measurement readout row (vizCard chrome, three columns).
-  measureCard: {
-    flexDirection: 'row',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#131316',
-    paddingVertical: 8,
-    paddingHorizontal: 4,
-  },
-  measureItem: { flex: 1, alignItems: 'center', gap: 1 },
-  measureLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.amberLabel },
-  measureValue: { fontFamily: fonts.mono, fontSize: 14, color: colors.textPrimary },
-  measureSub: { fontFamily: fonts.mono, fontSize: 10.5, color: colors.textSubAlt },
   thdnDim: { fontFamily: fonts.mono, fontSize: 11, color: colors.textMuted },
 
   // Build B — THD breakdown sheet (HarmonicStems detail-sheet idiom).

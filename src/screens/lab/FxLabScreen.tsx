@@ -3,28 +3,37 @@
  * Pillar B). One structure across all 12 labs so the student's attention goes
  * to the CONCEPT, not to relearning UI.
  *
- * LAYOUT v2 (owner 2026-07-29): the lab sits on LabShell (header · mode tabs ·
- * DESCRIPTION · bottom GUIDED LESSON row) and renders its Explore content in
- * the standard collapsible order:
+ * RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23, owner-approved): the lab sits on
+ * LabShell's `rack` frame — *reading may scroll; operating may not*:
  *
- *   READOUTS  — current source + param values, and the LIVE GR meter where
- *               the effect reduces gain (REAL engine readout, never simulated)
- *   DISPLAY   — the ANIMATED signal-flow hero (fxAnim, Skia — signal traveling
- *               through the effect) above the static analytic hero, which
- *               ALWAYS renders (it is the response-curve source of truth)
- *   CONTROLS  — param chip rows (long-press = that control's lesson)
- *   ACTIONS   — source chips + audio status / honest engine notes
+ *   STAGE — the ANIMATED signal-flow hero (fxAnim, Skia — signal traveling
+ *           through the effect) pinned on the glass; pre-Skia clients pin the
+ *           static analytic hero instead. Tap the glass = play/stop (owner
+ *           2026-07-31, same gate as the header ▶).
+ *   BEZEL — the config's key values as legend cells (long-press = lesson),
+ *           plus a LIVE measured GR cell on the dynamics labs (REAL engine
+ *           readout, never simulated).
+ *   DOCK  — ONE fader (the config's continuous teaching parameter, pre-bound
+ *           to the lane so cause→effect costs zero taps) + the remaining
+ *           params as STICKY option trays (A/B while the glass reacts) + the
+ *           shared SOURCE tray. Configs with >4 params fold 2–3 interacting
+ *           ones into a single group tray so the dock stays ≤5 keys.
+ *   WELL  — teaching prose only: the static analytic hero (which ALWAYS
+ *           renders — it is the response-curve source of truth), the dynamic
+ *           caption, and the audio-path / honest engine notes.
  *
  * The primary source PLAY/STOP is the compact HeaderPlayButton at the TOP
- * RIGHT of the header (LabShell headerAction); the old top guided-lesson chip
- * is gone — LabShell's bottom row is the lesson entry.
+ * RIGHT of the header (LabShell headerAction); LabShell wraps the well in the
+ * single LAB NOTES collapsible and renders the Guided-Lesson entry row.
  *
  * HONESTY (§1.7):
  *  - static visuals: "DESIGNED RESPONSE — ANALYTIC" (same formulas as the DSP);
  *  - the animated hero is a MODEL of the signal flowing through the effect,
  *    computed from the SAME param values driving the audio and the SAME fxViz
- *    math — badged as a teaching visual, motion modeled, never a measurement;
- *  - the GR meter is measured (fxGrStatus), never simulated;
+ *    math — badged as a teaching visual, motion modeled, never a measurement
+ *    (the bezel strip may ellipsize the badge; the full text prints in the
+ *    well so the complete statement is always readable);
+ *  - the GR bezel cell is measured (fxGrStatus), never simulated;
  *  - effect AUDIO needs the v6 engine build — below v6 the visuals + lessons
  *    are fully live and an honest note replaces the audio path.
  *
@@ -43,13 +52,13 @@ import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { ApeDsp, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
-import { GuidedLessonSheet, getLabLesson, SOURCE_LESSON, DisplayGuideButton, type LabId, type LessonContent } from '../../features/lab/guidedLessons';
-import { GrMeter } from '../../features/lab/fxViz';
+import { GuidedLessonSheet, getLabLesson, SOURCE_LESSON, type LabId, type LessonContent } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
-import { CollapsibleSection, HeaderPlayButton, LabChip, LabShell } from './LabShell';
+import { HeaderPlayButton, LabChip, LabShell } from './LabShell';
 import { skiaAvailable } from './foundations/skiaGate';
+import type { BezelItem, DockParam } from './rack/rackTypes';
 import type { FxAnimModel } from './fxAnim';
 
 const GEN_LEVEL_DB = -20;
@@ -91,17 +100,42 @@ function sourceKeyForGen(gen: GenParams): string {
   }
 }
 
+/** Continuous dock-fader spec for the config's teaching parameter. The range
+ *  spans the taught chip values (nothing untested is reachable); `snap`
+ *  quantizes the mapped value so readouts/captions stay clean. */
+export type FxFaderSpec = {
+  min: number;
+  max: number;
+  /** Log taper (frequencies, time constants). Default linear. */
+  log?: boolean;
+  snap?: (v: number) => number;
+  format: (v: number) => string;
+  /** ≤7 mono chars for the dock button / bezel cell. Defaults to `format`. */
+  formatShort?: (v: number) => string;
+};
+
 export type FxParamSpec = {
-  /** Section head above the chip row. */
+  /** Section head above the chip row (trays / group sheets). */
   label: string;
+  /** SHORT dock-button label (Oswald 12, one line). Defaults to `label`. */
+  short?: string;
   paramId: number;
   /** Guided-lesson control key (content.ts) — omitted = opens the lab lesson. */
   lessonKey?: string;
   choices: { label: string; value: number }[];
   initial: number;
+  /** Present = this param docks as THE pre-bound lane fader instead of an
+   *  options tray (exactly ONE per config — the teaching parameter). Its
+   *  chips retire; the fader range spans them. */
+  fader?: FxFaderSpec;
 };
 
-export type FxSourceSpec = { label: string; gen: GenParams };
+export type FxSourceSpec = {
+  label: string;
+  /** Compact dock-button value (~7 mono chars). Defaults to `label`. */
+  short?: string;
+  gen: GenParams;
+};
 
 export type FxLabConfig = {
   labId: LabId;
@@ -115,13 +149,26 @@ export type FxLabConfig = {
   params: FxParamSpec[];
   /** Fixed params pushed on start before the user params (e.g. mod mode). */
   fixed?: { paramId: number; value: number }[];
+  /** Bezel legend cells (short ALL-CAPS keys, ≤4 — keep 3 where the LIVE GR
+   *  cell auto-appends via `pollGr`; the SOURCE reads on its dock key). */
+  bezel: { k: string; paramId: number }[];
+  /** 2–3 INTERACTING params folded into ONE group tray so the dock stays ≤5
+   *  keys. Grouped params drop their individual dock buttons. */
+  dockGroups?: {
+    id: string;
+    label: string;
+    paramIds: number[];
+    /** Compact combined value for the dock key (~7 mono chars). */
+    valueLabel: (values: Record<number, number>) => string;
+    lessonKey?: string;
+  }[];
   /** The hero teaching visual, rendered from the current param values. */
   Hero: (values: Record<number, number>) => ReactNode;
   heroBadge: string;
   heroCaption?: (values: Record<number, number>) => string;
   /** The ANIMATED signal-flow hero: maps the CURRENT param values to a fxAnim
    *  model. Optional — labs without an authored animation (or clients without
-   *  Skia) render the static Hero alone, exactly as before. */
+   *  Skia) pin the static Hero on the stage, exactly as before. */
   anim?: (values: Record<number, number>) => FxAnimModel;
   /** Poll the live GR readout while running (which field to show). */
   pollGr?: 'comp' | 'gate' | 'limiter';
@@ -129,9 +176,26 @@ export type FxLabConfig = {
   note?: string;
 };
 
-/** The currently selected choice's chip label (readout row). */
+/** The currently selected choice's chip label (bezel/valueLabel source). */
 function choiceLabel(p: FxParamSpec, v: number): string {
   return p.choices.find((c) => c.value === v)?.label ?? String(v);
+}
+
+/** Compact value for a dock key / bezel cell: a short chip label stands as-is;
+ *  a long one keeps its leading value token ('PEAK (BELL)' → 'PEAK'). */
+function shortChoice(label: string): string {
+  return label.length <= 8 ? label : label.split(' ')[0];
+}
+
+/** Fader 0..1 lane position ↔︎ param value (lin or log taper). */
+function faderPos(s: FxFaderSpec, v: number): number {
+  const p = s.log ? Math.log(v / s.min) / Math.log(s.max / s.min) : (v - s.min) / (s.max - s.min);
+  return Math.max(0, Math.min(1, p));
+}
+function faderVal(s: FxFaderSpec, pos: number): number {
+  const p = Math.max(0, Math.min(1, pos));
+  const v = s.log ? s.min * Math.pow(s.max / s.min, p) : s.min + (s.max - s.min) * p;
+  return s.snap ? s.snap(v) : v;
 }
 
 export function FxLabScreen({ config }: { config: FxLabConfig }) {
@@ -159,9 +223,19 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
   const labLesson = useMemo(() => getLabLesson(config.labId), [config.labId]);
   const openLesson = useCallback((key?: string) => setHelp({ lesson: labLesson, key }), [labLesson]);
   const openSourceHelp = useCallback((gen: GenParams) => setHelp({ lesson: SOURCE_LESSON, key: sourceKeyForGen(gen) }), []);
+  // The rack's single help router: 'src' routes to the CURRENT source's entry
+  // in the shared SOURCE lesson; everything else is a lab-lesson control key.
+  const openHelp = useCallback(
+    (key?: string) => {
+      if (key === 'src') openSourceHelp(config.sources[sourceIdx].gen);
+      else openLesson(key);
+    },
+    [config.sources, sourceIdx, openSourceHelp, openLesson],
+  );
 
   // The gated animated-hero module (null on pre-Skia clients).
   const fxAnim = useMemo(() => (config.anim ? requireFxAnim() : null), [config.anim]);
+  const animOnStage = fxAnim != null && config.anim != null;
 
   // -- Audio lifecycle (generation-guarded; chain reset on every stop) -------
   const genRef = useRef(0);
@@ -213,7 +287,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
     return () => clearInterval(id);
   }, [running]);
 
-  // Live GR polling — the REAL measured gain reduction (honest meter).
+  // Live GR polling — the REAL measured gain reduction (honest bezel cell).
   useEffect(() => {
     if (!running || !config.pollGr) return;
     const id = setInterval(() => {
@@ -242,6 +316,111 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
     }
   };
 
+  // ── RACK declaration (regenerated per render — the dock is React state) ───
+  const paramById = (id: number) => config.params.find((p) => p.paramId === id)!;
+  /** A param's compact current value (fader format or shortened chip label). */
+  const compactValue = (p: FxParamSpec) =>
+    p.fader ? (p.fader.formatShort ?? p.fader.format)(values[p.paramId]) : shortChoice(choiceLabel(p, values[p.paramId]));
+
+  const bezel: BezelItem[] = [
+    ...config.bezel.map((b) => {
+      const p = paramById(b.paramId);
+      return { k: b.k, v: compactValue(p), helpKey: p.lessonKey };
+    }),
+    // LIVE measured GR (dynamics labs) — fxGrStatus, never simulated.
+    ...(config.pollGr
+      ? [{ k: 'GR', v: running ? `${grDb.toFixed(1)} dB` : '— dB', helpKey: 'gain_reduction' }]
+      : []),
+  ];
+
+  const emittedGroups = new Set<string>();
+  const dockParams: DockParam[] = [];
+  for (const p of config.params) {
+    const g = (config.dockGroups ?? []).find((x) => x.paramIds.includes(p.paramId));
+    if (g) {
+      // The group key sits where its FIRST member sat (authored order holds).
+      if (emittedGroups.has(g.id)) continue;
+      emittedGroups.add(g.id);
+      dockParams.push({
+        kind: 'group',
+        id: g.id,
+        label: g.label,
+        valueLabel: g.valueLabel(values),
+        helpKey: g.lessonKey,
+        render: () => (
+          <View style={{ gap: 10 }}>
+            {g.paramIds.map((pid) => {
+              const gp = paramById(pid);
+              return (
+                <View key={pid} style={{ gap: 8 }}>
+                  <Text style={styles.sectionHead}>{gp.label}</Text>
+                  <View style={styles.chipRow}>
+                    {gp.choices.map((c) => (
+                      <LabChip
+                        key={c.label}
+                        label={c.label}
+                        selected={values[pid] === c.value}
+                        onPress={() => setParam(pid, c.value)}
+                        onLongPress={() => openLesson(gp.lessonKey)}
+                      />
+                    ))}
+                  </View>
+                </View>
+              );
+            })}
+          </View>
+        ),
+      });
+    } else if (p.fader) {
+      const s = p.fader;
+      dockParams.push({
+        kind: 'fader',
+        id: String(p.paramId),
+        label: p.short ?? p.label,
+        value: faderPos(s, values[p.paramId]),
+        onChange: (pos) => setParam(p.paramId, faderVal(s, pos)),
+        format: () => s.format(values[p.paramId]),
+        formatShort: s.formatShort ? () => s.formatShort!(values[p.paramId]) : undefined,
+        helpKey: p.lessonKey,
+      });
+    } else {
+      dockParams.push({
+        kind: 'options',
+        id: String(p.paramId),
+        label: p.short ?? p.label,
+        valueLabel: shortChoice(choiceLabel(p, values[p.paramId])),
+        options: p.choices.map((c) => ({
+          id: String(c.value),
+          label: c.label,
+          onLongPress: () => openLesson(p.lessonKey),
+        })),
+        selectedId: String(values[p.paramId]),
+        onSelect: (id) => setParam(p.paramId, Number(id)),
+        sticky: true, // A/B teaching values while the glass + audio react
+        helpKey: p.lessonKey,
+      });
+    }
+  }
+  // SOURCE tray last — swapping the test signal while listening IS a lesson.
+  dockParams.push({
+    kind: 'options',
+    id: 'src',
+    label: 'SOURCE',
+    valueLabel: config.sources[sourceIdx].short ?? config.sources[sourceIdx].label,
+    options: config.sources.map((s, i) => ({
+      id: String(i),
+      label: s.label,
+      onLongPress: () => openSourceHelp(s.gen),
+    })),
+    selectedId: String(sourceIdx),
+    onSelect: (id) => pickSource(Number(id)),
+    sticky: true,
+    helpKey: 'src',
+  });
+
+  const faderParam = config.params.find((p) => p.fader);
+  const AnimHero = animOnStage ? fxAnim!.FxAnimHero : null;
+
   return (
     <LabShell
       labId={config.labId}
@@ -257,117 +436,61 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
           label={running ? 'Stop the effect audio' : 'Play the source through the effect'}
         />
       }
+      rack={{
+        initialParam: faderParam ? String(faderParam.paramId) : '',
+        onHelp: openHelp,
+        stage: {
+          // The animated flow is compact (118dp); the static heroes want the
+          // taller glass. Sized once at mount — skiaAvailable is static.
+          size: animOnStage ? 'S' : 'M',
+          // Honesty badge verbatim (§1.7). The strip may ellipsize the long
+          // animated-model badge — its full text prints in the well below.
+          badge: animOnStage ? ANIM_BADGE : config.heroBadge,
+          onGuide: () => openLesson('display'),
+          bezel,
+          render: (w, h) => (
+            // Tapping the display toggles play/stop (owner 2026-07-31).
+            <Pressable
+              style={{ width: w, height: h, justifyContent: 'center' }}
+              onPress={fxReady ? () => (running ? stop() : void start()) : undefined}
+              accessibilityRole="button"
+              accessibilityLabel={running ? 'Tap to stop the effect audio' : 'Tap to play the source through the effect'}
+            >
+              {AnimHero ? (
+                <AnimHero model={config.anim!(values)} active={focused} grDb={running ? grDb : 0} />
+              ) : (
+                <View style={{ paddingHorizontal: 6 }}>{config.Hero(values)}</View>
+              )}
+            </Pressable>
+          ),
+        },
+        params: dockParams,
+      }}
     >
       {!engineReady ? <EngineGate state={gate} /> : null}
 
-      {/* Wave-Physics layout order (owner 2026-08-05): buttons → display →
-          controls → readouts, with the explanation/definitions as a collapsed
-          reveal so the interactive controls fit without scrolling. */}
-
-      {/* SOURCE — the test-signal buttons that feed the display (the "what
-          feeds it" buttons sit at the top, like the wave labs' layer chips). */}
-      <CollapsibleSection title="SOURCE">
-        <View style={styles.chipRow}>
-          {config.sources.map((s, i) => (
-            <LabChip
-              key={s.label}
-              label={s.label}
-              selected={sourceIdx === i}
-              onPress={() => pickSource(i)}
-              onLongPress={() => openSourceHelp(s.gen)}
-            />
-          ))}
-        </View>
-      </CollapsibleSection>
-
-      {/* DISPLAY — the animated signal-flow hero (Skia, gated) above the
-          static analytic hero, which ALWAYS renders (pre-Skia fallback AND
-          the response-curve source of truth). Not drag-interactive — no
-          InteractionZone needed. */}
-      <CollapsibleSection title="DISPLAY" onHelp={() => openLesson('display')}>
-        {/* Tapping the display toggles play/stop (owner 2026-07-31). */}
-        <Pressable
-          onPress={fxReady ? () => (running ? stop() : void start()) : undefined}
-          accessibilityRole="button"
-          accessibilityLabel={running ? 'Tap to stop the effect audio' : 'Tap to play the source through the effect'}
-        >
-          {fxAnim && config.anim ? (
-            <>
-              <Text style={styles.badge}>{ANIM_BADGE}</Text>
-              <fxAnim.FxAnimHero model={config.anim(values)} active={focused} grDb={running ? grDb : 0} />
-            </>
-          ) : null}
+      {/* DESIGNED RESPONSE — the static analytic hero ALWAYS renders (§1.7:
+          it is the response-curve source of truth). With Skia the animated
+          model holds the stage and the curve reads here; pre-Skia clients
+          already have it pinned above, so only the caption repeats. */}
+      {animOnStage ? (
+        <View style={{ gap: 6 }}>
+          <Text style={styles.badge}>{ANIM_BADGE}</Text>
+          <Text style={styles.sectionHead}>DESIGNED RESPONSE</Text>
           <Text style={styles.badge}>{config.heroBadge}</Text>
           {config.Hero(values)}
           {config.heroCaption ? <Text style={styles.caption}>{config.heroCaption(values)}</Text> : null}
-        </Pressable>
-        <DisplayGuideButton onPress={() => openLesson('display')} />
-      </CollapsibleSection>
-
-      {/* CONTROLS — the param chip rows (the "sliders"). */}
-      <CollapsibleSection title="CONTROLS">
-        <Text style={styles.caption}>Long-press any labeled control, source, or meter for what it does.</Text>
-        {config.params.map((p) => (
-          <View key={p.paramId} style={styles.paramBlock}>
-            <Text style={styles.sectionHead}>{p.label}</Text>
-            <View style={styles.chipRow}>
-              {p.choices.map((c) => (
-                <LabChip
-                  key={c.label}
-                  label={c.label}
-                  selected={values[p.paramId] === c.value}
-                  onPress={() => setParam(p.paramId, c.value)}
-                  onLongPress={() => openLesson(p.lessonKey)}
-                />
-              ))}
-            </View>
-          </View>
-        ))}
-      </CollapsibleSection>
-
-      {/* READOUTS — current settings at a glance + LIVE GR meter (below the
-          controls, wave-lab template). */}
-      <CollapsibleSection title="READOUTS">
-        <View style={styles.readoutRow}>
-          <Pressable
-            style={styles.readoutCell}
-            onLongPress={() => openSourceHelp(config.sources[sourceIdx].gen)}
-            delayLongPress={350}
-            accessibilityRole="button"
-            accessibilityLabel="Source — what this test signal is"
-          >
-            <Text style={styles.readoutLabel}>SOURCE</Text>
-            <Text style={styles.readoutValue}>{config.sources[sourceIdx].label}</Text>
-          </Pressable>
-          {config.params.map((p) => (
-            <Pressable
-              key={p.paramId}
-              style={styles.readoutCell}
-              onLongPress={() => openLesson(p.lessonKey)}
-              delayLongPress={350}
-              accessibilityRole="button"
-              accessibilityLabel={`${p.label} — what it does`}
-            >
-              <Text style={styles.readoutLabel}>{p.label}</Text>
-              <Text style={styles.readoutValue}>{choiceLabel(p, values[p.paramId])}</Text>
-            </Pressable>
-          ))}
         </View>
-        {config.pollGr ? (
-          <Pressable
-            onLongPress={() => openLesson('gain_reduction')}
-            delayLongPress={350}
-            accessibilityRole="button"
-            accessibilityLabel="Gain reduction meter — what it shows"
-          >
-            <GrMeter grDb={running ? grDb : 0} label="GAIN REDUCTION — LIVE (measured)" />
-          </Pressable>
-        ) : null}
-      </CollapsibleSection>
+      ) : config.heroCaption ? (
+        <View style={{ gap: 6 }}>
+          <Text style={styles.sectionHead}>WHAT YOU’RE SEEING</Text>
+          <Text style={styles.caption}>{config.heroCaption(values)}</Text>
+        </View>
+      ) : null}
 
-      {/* ABOUT — the explanation/definitions as a collapsed reveal (owner
-          2026-08-05: descriptions & explanations get expand/collapse toggles). */}
-      <CollapsibleSection title="ABOUT THIS LAB" startOpen={false}>
+      {/* THE AUDIO PATH — status + honest engine notes. */}
+      <View style={{ gap: 6 }}>
+        <Text style={styles.sectionHead}>THE AUDIO PATH</Text>
         {engineReady ? (
           fxReady ? (
             <>
@@ -384,7 +507,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
           )
         ) : null}
         {config.note ? <Text style={styles.caption}>{config.note}</Text> : null}
-      </CollapsibleSection>
+      </View>
 
       <GuidedLessonSheet
         visible={help != null}
@@ -398,22 +521,8 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
 
 const styles = StyleSheet.create({
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  paramBlock: { gap: 8 },
   sectionHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.5, color: colors.amber },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   error: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: '#ff6b5e' },
   badge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.2, color: colors.textSub },
-  readoutRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  readoutCell: {
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#131316',
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    minWidth: 86,
-    gap: 1,
-  },
-  readoutLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 8.5, letterSpacing: 1, color: colors.textSub },
-  readoutValue: { fontFamily: fonts.mono, fontSize: 12.5, color: colors.amber },
 });

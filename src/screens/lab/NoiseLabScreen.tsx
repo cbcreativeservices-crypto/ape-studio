@@ -2,10 +2,12 @@
  * NoiseLabScreen — Lab 11 "Noise" (v4 MASTER §7) on the shared LabShell.
  * The noise-color lab: hear the colors, see their spectral slopes.
  *
- * LAYOUT v2 (owner 2026-07-29): collapsible DISPLAY → CONTROLS → ACTIONS
- * sections (no numeric readouts in this lab); primary PLAY/STOP is the
- * compact HeaderPlayButton via LabShell's headerAction; the shell renders
- * the Guided-Lesson entry row itself.
+ * RACK LAYOUT (APE_LAB_UX_PROPOSAL 2026-08-23, owner-approved): the slope
+ * chart pins on the stage with COLOR/SLOPE/OUT bezel readouts; the dock holds
+ * the COLOR tray (per-colour chips, sticky — A/B colours WHILE listening is
+ * the core lesson) and the SPKR honesty key; only the teaching prose scrolls
+ * in the well. Primary PLAY/STOP stays the compact HeaderPlayButton (plus the
+ * tap-the-glass toggle, owner 2026-07-31).
  *
  * AUDIO (honest, real): white / pink / brown / blue / violet are NATIVE
  * generator modes (GEN_MODES 2–6) — every color chip plays the real thing.
@@ -39,11 +41,11 @@ import { ApeDsp, GEN_MODES } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { guardNoiseLevelForEngine, speakerGuardDb, SPEAKER_HPF_HZ } from '../../features/audio/speakerSafety';
-import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../features/lab/guidedLessons';
+import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
-import { LabShell, SpeakerOutputToggle, CollapsibleSection, HeaderPlayButton } from './LabShell';
+import { LabShell, HeaderPlayButton } from './LabShell';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -148,6 +150,10 @@ export function NoiseLabScreen() {
     }
   };
 
+  // The bezel's honest OUT readout — the level the guard actually sends
+  // (engine-aware; falls back to the raw base when the engine is absent).
+  const outDb = engineReady ? guardNoiseLevelForEngine(GEN_LEVEL_DB, color) : GEN_LEVEL_DB;
+
   return (
     <LabShell
       labId="noise"
@@ -163,85 +169,121 @@ export function NoiseLabScreen() {
           label={running ? 'Stop' : 'Play noise'}
         />
       }
+      rack={{
+        // No continuous param in this lab, so no fader binds the lane — the
+        // teaching-central param is the COLOR tray (sticky A/B while sounding).
+        initialParam: 'color',
+        onHelp: openLesson,
+        stage: {
+          size: 'M',
+          // Honesty badge tracks the view, verbatim from the pre-rack layout.
+          badge: speakerView
+            ? `PHONE SPEAKER OUTPUT — ${SPEAKER_HPF_HZ} Hz HPF ON ${selected.label}`
+            : 'IDEALIZED SPECTRAL SLOPES — ANALYTIC, NOT A MEASUREMENT',
+          onGuide: () => openLesson('display'),
+          bezel: [
+            { k: 'COLOR', v: selected.label, tint: NOISE_TINTS[color], helpKey: color },
+            {
+              k: 'SLOPE',
+              v: `${selected.slope > 0 ? '+' : ''}${selected.slope} dB/OCT`,
+              tint: NOISE_TINTS[color],
+              flex: 1.3,
+              helpKey: color,
+            },
+            { k: 'OUT', v: `${outDb} dBFS` },
+          ],
+          render: (w, h) => (
+            // Tapping the display toggles play/stop (owner 2026-07-31).
+            <Pressable
+              onPress={engineReady ? () => (running ? stopNoise() : void startNoise()) : undefined}
+              accessibilityRole="button"
+              accessibilityLabel={running ? 'Tap to stop' : 'Tap to play noise'}
+            >
+              <SlopeChart w={w} h={h} selectedKey={color} selectedSlope={selected.slope} speakerView={speakerView} />
+            </Pressable>
+          ),
+        },
+        params: [
+          {
+            kind: 'group',
+            id: 'color',
+            label: 'COLOR',
+            valueLabel: selected.label,
+            helpKey: color,
+            // A group tray (always sticky) so the owner-ruled per-colour chips
+            // (2026-08-05: pink=pink, blue=blue…) survive intact — a plain
+            // options tray would flatten them to the standard chip skin. A/B
+            // colours with the tray open while the noise plays IS the lesson.
+            render: () => (
+              <View style={styles.chipRow}>
+                {COLORS.map((c) => {
+                  const tint = NOISE_TINTS[c.key];
+                  const on = color === c.key;
+                  return (
+                    <Pressable
+                      key={c.key}
+                      style={[styles.noiseChip, { borderColor: tint }, on && { backgroundColor: tint }]}
+                      onPress={() => pickColor(c.key)}
+                      onLongPress={() => openLesson(c.key)}
+                      delayLongPress={350}
+                      accessibilityRole="button"
+                      accessibilityState={{ selected: on }}
+                      accessibilityLabel={c.label}
+                    >
+                      <Text style={[styles.noiseChipText, { color: on ? '#101014' : tint }]}>{c.label}</Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            ),
+          },
+          {
+            // HONESTY CONTROL — ideal slopes vs the speaker's low-frequency
+            // roll-off. The explanation lives in the well (SPKR section).
+            kind: 'toggle',
+            id: 'spkr',
+            label: 'SPKR',
+            value: speakerView,
+            onToggle: () => setSpeakerView((v) => !v),
+            helpKey: 'display',
+          },
+        ],
+      }}
     >
       {!engineReady ? <EngineGate state={gate} /> : null}
 
-      <CollapsibleSection title="DISPLAY">
-        {/* HONESTY CONTROL — ideal slopes vs the speaker's low-frequency roll-off. */}
-        <SpeakerOutputToggle
-          value={speakerView}
-          onChange={setSpeakerView}
-          title="PHONE SPEAKER OUTPUT (REALITY)"
-          sub={`The phone's built-in speakers cannot produce sounds below ${SPEAKER_HPF_HZ} Hz, so a high-pass filter has been applied.`}
-        />
+      <View style={{ gap: 6 }}>
+        <Text style={styles.sectionHead}>WHAT YOU’RE SEEING</Text>
+        <Text style={styles.caption}>
+          {speakerView
+            ? `Amber = ${selected.label.toLowerCase()} after the speaker high-pass; the ideal straight slopes stay dim behind it. Below ${SPEAKER_HPF_HZ} Hz the response rolls off at −12 dB/oct — that low energy never reaches the driver.`
+            : `${selected.label.charAt(0)}${selected.label.slice(1).toLowerCase()} = ${
+                selected.slope > 0 ? '+' : ''
+              }${selected.slope} dB per octave (anchored at 1 kHz). Equal energy per Hz sounds bright because every higher octave holds twice the bandwidth. The shimmering trace is a stylized live-noise hint around the exact slope.`}
+        </Text>
+      </View>
 
-        {/* SLOPE CHART — the defining mathematics; speaker view adds the HPF. */}
-        <View style={styles.panelCard}>
-          <Text style={styles.badge}>
-            {speakerView
-              ? `PHONE SPEAKER OUTPUT — ${SPEAKER_HPF_HZ} Hz HPF ON ${selected.label}`
-              : 'IDEALIZED SPECTRAL SLOPES — ANALYTIC, NOT A MEASUREMENT'}
-          </Text>
-          {/* Tapping the display toggles play/stop (owner 2026-07-31). */}
-          <Pressable
-            onPress={engineReady ? () => (running ? stopNoise() : void startNoise()) : undefined}
-            accessibilityRole="button"
-            accessibilityLabel={running ? 'Tap to stop' : 'Tap to play noise'}
-          >
-            <SlopeChart selectedKey={color} selectedSlope={selected.slope} speakerView={speakerView} />
-          </Pressable>
+      <View style={{ gap: 6 }}>
+        <Text style={styles.sectionHead}>SPKR — PHONE SPEAKER OUTPUT (REALITY)</Text>
+        <Text style={styles.caption}>
+          {`The SPKR key overlays reality on the mathematics: the phone's built-in speakers cannot produce sounds below ${SPEAKER_HPF_HZ} Hz, so a high-pass filter has been applied. Flip it on to see exactly what the filter removes from the selected color.`}
+        </Text>
+      </View>
+
+      {engineReady ? (
+        <View style={{ gap: 6 }}>
+          <Text style={styles.sectionHead}>OUTPUT LEVEL</Text>
           <Text style={styles.caption}>
-            {speakerView
-              ? `Amber = ${selected.label.toLowerCase()} after the speaker high-pass; the ideal straight slopes stay dim behind it. Below ${SPEAKER_HPF_HZ} Hz the response rolls off at −12 dB/oct — that low energy never reaches the driver.`
-              : `${selected.label.charAt(0)}${selected.label.slice(1).toLowerCase()} = ${
-                  selected.slope > 0 ? '+' : ''
-                }${selected.slope} dB per octave (anchored at 1 kHz). Equal energy per Hz sounds bright because every higher octave holds twice the bandwidth. The shimmering trace is a stylized live-noise hint around the exact slope.`}
+            {`PLAY (header ▶) outputs ${GEN_LEVEL_DB} dBFS · uncalibrated — digital output level, not dB SPL.`}
           </Text>
-          <DisplayGuideButton onPress={() => openLesson('display')} />
+          <Text style={styles.advisory}>
+            {`Brown and pink are broadband and push energy into the sub-bass, so their overall level is ` +
+              `reduced to protect the built-in speaker (${NOISE_GUARD_LABEL}). Flip the SPKR key to see ` +
+              `the ${SPEAKER_HPF_HZ} Hz roll-off the speaker imposes.`}
+          </Text>
+          {genError ? <Text style={styles.error}>{genError}</Text> : null}
         </View>
-      </CollapsibleSection>
-
-      <CollapsibleSection title="CONTROLS">
-        <Text style={styles.sectionHead}>NOISE COLOR</Text>
-        {/* Each noise chip is drawn in its OWN colour (owner 2026-08-05):
-            pink=pink, blue=blue, brown, etc. */}
-        <View style={styles.chipRow}>
-          {COLORS.map((c) => {
-            const tint = NOISE_TINTS[c.key];
-            const on = color === c.key;
-            return (
-              <Pressable
-                key={c.key}
-                style={[styles.noiseChip, { borderColor: tint }, on && { backgroundColor: tint }]}
-                onPress={() => pickColor(c.key)}
-                onLongPress={() => openLesson(c.key)}
-                delayLongPress={350}
-                accessibilityRole="button"
-                accessibilityState={{ selected: on }}
-                accessibilityLabel={c.label}
-              >
-                <Text style={[styles.noiseChipText, { color: on ? '#101014' : tint }]}>{c.label}</Text>
-              </Pressable>
-            );
-          })}
-        </View>
-      </CollapsibleSection>
-
-      <CollapsibleSection title="ACTIONS">
-        {engineReady ? (
-          <>
-            <Text style={styles.caption}>
-              {`PLAY (header ▶) outputs ${GEN_LEVEL_DB} dBFS · uncalibrated — digital output level, not dB SPL.`}
-            </Text>
-            <Text style={styles.advisory}>
-              {`Brown and pink are broadband and push energy into the sub-bass, so their overall level is ` +
-                `reduced to protect the built-in speaker (${NOISE_GUARD_LABEL}). Tick PHONE SPEAKER OUTPUT ` +
-                `(REALITY) to see the ${SPEAKER_HPF_HZ} Hz roll-off the speaker imposes.`}
-            </Text>
-            {genError ? <Text style={styles.error}>{genError}</Text> : null}
-          </>
-        ) : null}
-      </CollapsibleSection>
+      ) : null}
 
       <GuidedLessonSheet
         visible={lessonOpen}
@@ -283,18 +325,26 @@ function hash01(n: number): number {
  *  sampled curve that rolls off below the corner) so the speaker's low-end limit
  *  is visible; the ideal straight slopes stay dim behind it. A seeded-jitter
  *  SHIMMER trace (re-rolled ~14 fps while the screen is focused, tinted per
- *  color) breathes behind the exact line — live-noise styling, not data. */
+ *  color) breathes behind the exact line — live-noise styling, not data.
+ *  Rack stage sizing: `w`/`h` are the glass's inner pixels; the internal
+ *  viewBox keeps its fixed height and stretches its width to the same aspect,
+ *  so the chart fills the glass without distorting the labels. */
 function SlopeChart({
+  w,
+  h,
   selectedKey,
   selectedSlope,
   speakerView,
 }: {
+  w: number;
+  h: number;
   selectedKey: NoiseColor;
   selectedSlope: number;
   speakerView: boolean;
 }) {
-  const W = 320;
   const H = 150;
+  const VH = H + 16; // plot + the frequency-label strip
+  const W = Math.max(240, (w / Math.max(1, h)) * VH);
   const padL = 8;
   const padR = 34; // room for line labels at the right edge
   const OCT_LO = Math.log2(20 / 1000); // ≈ −5.64 octaves re 1 kHz
@@ -328,7 +378,7 @@ function SlopeChart({
     }
     return s;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tick, selectedSlope, speakerView]);
+  }, [tick, selectedSlope, speakerView, W]);
 
   // Selected color's response AFTER the speaker high-pass, sampled across the
   // axis (guard is a curve, so a straight line won't do). slope·oct + guardDb(f).
@@ -344,7 +394,7 @@ function SlopeChart({
     }
     return s;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [speakerView, selectedSlope]);
+  }, [speakerView, selectedSlope, W]);
 
   const lines = useMemo(
     () =>
@@ -356,15 +406,15 @@ function SlopeChart({
         ).toFixed(1)}`,
         endY: yAt(c.slope * OCT_HI),
       })),
-    // Geometry is constant; recompute never needed.
+    // Geometry only moves when the glass width does.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    [W],
   );
 
   const tint = NOISE_TINTS[selectedKey];
   const freqTicks = [20, 200, 1000, 2000, 20000];
   return (
-    <Svg width="100%" height={H + 16} viewBox={`0 0 ${W} ${H + 16}`}>
+    <Svg width={w} height={h} viewBox={`0 0 ${W} ${VH}`}>
       {/* GRAY plot background (owner 2026-08-05) — gives brown enough contrast. */}
       <Rect x={0} y={0} width={W} height={H} fill="#4d4d53" />
       {/* 0 dB reference + 1 kHz anchor (darker than the gray so they read) */}
@@ -431,15 +481,6 @@ const styles = StyleSheet.create({
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   advisory: { fontFamily: fonts.barlowMedium, fontSize: 12, lineHeight: 16, color: colors.amber },
   error: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: '#ff6b5e' },
-  panelCard: {
-    gap: 8,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#131316',
-    padding: 12,
-  },
-  badge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.2, color: colors.textSub },
   // Per-colour noise chip — outlined in the noise's own hue, filled when selected.
   noiseChip: {
     borderRadius: 8,

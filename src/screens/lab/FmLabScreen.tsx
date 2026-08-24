@@ -15,26 +15,26 @@
  * envelope click-free). Below v7 the visuals + lessons work fully and the
  * audio states the build requirement (§1.7).
  *
- * LAYOUT v2 (owner 2026-07-29): collapsible READOUTS → DISPLAY → CONTROLS →
- * ACTIONS sections; the PRIMARY play/stop is the compact HeaderPlayButton
- * (header ▶ strikes when idle, stops when running) — the STRIKE button stays
- * in ACTIONS as the secondary retrigger (re-striking a running voice restarts
- * the index-decay envelope, which a play/stop toggle can't express). The
- * shell renders the Guided-Lesson entry row itself.
+ * RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23, owner-approved): the Bessel
+ * spectrum pins on the stage with FC/FM/I/BW on the bezel; the INDEX — the
+ * lab's cause→effect dial, continuous in the math (J_k(I)) and ramped
+ * natively — rides the pre-bound lane; carrier / ratio / envelope open trays
+ * (ratio STICKY: A/B harmonic vs inharmonic while the sticks move IS the
+ * lesson); STRIKE is a dock key (retriggers the index-decay envelope, which
+ * the header ▶ play/stop can't express). Only the teaching prose scrolls.
  */
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Line, Rect, Text as SvgText } from 'react-native-svg';
 import { ApeDsp, GEN_MODES } from '../../../modules/ape-dsp';
-import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
-import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../features/lab/guidedLessons';
+import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
-import { LabShell, LabChip, CollapsibleSection, HeaderPlayButton } from './LabShell';
+import { LabShell, HeaderPlayButton } from './LabShell';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -49,7 +49,9 @@ const RATIOS = [
   { v: 3.5, label: '3.5 ✳' },
   { v: 7, label: '7' },
 ] as const;
-const INDICES = [0, 1, 2, 4, 8] as const;
+// INDEX range for the lane (continuous — J_k(I) is exact to I = 8 and the
+// native index ramps click-free; the old 0/1/2/4/8 chips were samples of it).
+const INDEX_MAX = 8;
 const ENVS = [
   { key: 'sustain', label: 'SUSTAIN', decaySec: 0 },
   { key: 'pluck', label: 'PLUCK', decaySec: 0.15 },
@@ -166,6 +168,9 @@ export function FmLabScreen() {
     }
   }, [carrier, ratioIdx, index, envKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // ── RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23) ────────────────────────────
+  // Spectrum + FC/FM/I/BW pin on the stage/bezel; INDEX is the pre-bound lane;
+  // carrier/ratio/envelope are trays; STRIKE keys the retrigger. Prose scrolls.
   return (
     <LabShell
       labId="fm"
@@ -181,119 +186,121 @@ export function FmLabScreen() {
           label={running ? 'Stop' : 'Strike the FM voice'}
         />
       }
+      rack={{
+        initialParam: 'index',
+        onHelp: openLesson,
+        stage: {
+          size: 'L', // the spectrum IS the lab (lockstep hero) — earns the tall glass
+          badge: 'SIDEBAND SPECTRUM — EXACT BESSEL AMPLITUDES J_k(I) · THE MATH THE VOICE PLAYS',
+          onGuide: () => openLesson('display'),
+          bezel: [
+            { k: 'FC', v: `${carrier} Hz`, helpKey: 'carrier' },
+            { k: 'FM', v: `${fm.toFixed(0)} Hz`, helpKey: 'ratio' },
+            { k: 'I', v: index.toFixed(1), helpKey: 'index' },
+            {
+              k: 'BW',
+              v: `${(carson / 1000).toFixed(1)} kHz`,
+              // Carson band past Nyquist = folding — the bezel flags it red.
+              tint: carson > NYQUIST ? '#ff6b5e' : undefined,
+              helpKey: 'display',
+            },
+          ],
+          render: (w, h) => (
+            // Tapping the display toggles play/stop (owner 2026-07-31) — same
+            // gate as the header button (needs the v7 FM engine).
+            <Pressable
+              onPress={fmReady ? () => (running ? stop() : void strike()) : undefined}
+              accessibilityRole="button"
+              accessibilityLabel={running ? 'Tap to stop' : 'Tap to strike the FM voice'}
+            >
+              <SidebandGraph fc={carrier} fm={fm} index={index} w={w} h={h} />
+            </Pressable>
+          ),
+        },
+        params: [
+          {
+            kind: 'fader',
+            id: 'index',
+            label: 'INDEX',
+            // Linear 0..8 — the Bessel series (and the goldens) cover exactly
+            // this range; one decimal keeps the readout (and genSet) calm.
+            value: index / INDEX_MAX,
+            onChange: (v) => setIndex(Math.round(v * INDEX_MAX * 10) / 10),
+            format: () => `I = ${index.toFixed(1)}`,
+            formatShort: () => index.toFixed(1),
+            helpKey: 'index',
+          },
+          {
+            kind: 'options',
+            id: 'carrier',
+            label: 'FC',
+            valueLabel: `${carrier} Hz`,
+            options: CARRIERS.map((c) => ({ id: String(c), label: `${c} Hz` })),
+            selectedId: String(carrier),
+            onSelect: (id) => setCarrier(Number(id)),
+            helpKey: 'carrier',
+          },
+          {
+            kind: 'options',
+            id: 'ratio',
+            label: 'RATIO',
+            valueLabel: RATIOS[ratioIdx].label,
+            options: RATIOS.map((r) => ({ id: r.label, label: r.label })),
+            selectedId: RATIOS[ratioIdx].label,
+            onSelect: (id) => {
+              const i = RATIOS.findIndex((r) => r.label === id);
+              if (i >= 0) setRatioIdx(i);
+            },
+            sticky: true, // A/B harmonic vs inharmonic while the sticks move — the lesson
+            helpKey: 'ratio',
+          },
+          {
+            kind: 'options',
+            id: 'env',
+            label: 'ENV',
+            valueLabel: env.label,
+            options: ENVS.map((e) => ({ id: e.key, label: e.label })),
+            selectedId: envKey,
+            onSelect: (id) => setEnvKey(id as (typeof ENVS)[number]['key']),
+            helpKey: 'index_env',
+          },
+          // STRIKE stays a real key: re-striking a running voice restarts the
+          // index-decay envelope, which the header ▶ play/stop can't express.
+          { kind: 'action', id: 'strike', label: 'STRIKE', onPress: () => void strike() },
+        ],
+      }}
     >
       {!engineReady ? <EngineGate state={gate} /> : null}
 
-      <CollapsibleSection title="READOUTS">
-        <Text style={styles.readMain}>
-          fc {carrier} Hz · fm {fm.toFixed(0)} Hz (ratio {RATIOS[ratioIdx].label.replace(' ✳', '')}) · I = {index}
+      <View style={{ gap: 6 }}>
+        <Text style={styles.sectionHead}>WHAT YOU’RE SEEING</Text>
+        <Text style={styles.caption}>
+          {index === 0
+            ? 'Index 0 — no modulation: the pure carrier alone.'
+            : `Sidebands at ${carrier} ± k·${fm.toFixed(0)} Hz, amplitudes |J_k(${index.toFixed(1)})|. ` +
+              (isInt
+                ? 'Integer ratio — sidebands land ON a harmonic series (pitched).'
+                : 'Non-integer ratio — sidebands fall BETWEEN harmonics (inharmonic: the bell/metallic family). ✳ on a RATIO marks the inharmonic ones.')}
         </Text>
         <Text style={carson > NYQUIST ? styles.advisory : styles.caption}>
           Carson bandwidth ≈ 2·fm·(I+1) = {(carson / 1000).toFixed(1)} kHz
           {carson > NYQUIST
-            ? ' — EXCEEDS Nyquist (24 kHz): the top sidebands fold back (audible aliasing — itself a lesson).'
+            ? ' — EXCEEDS Nyquist (24 kHz): the top sidebands fold back (audible aliasing — itself a lesson). The BW readout flags it red.'
             : ` of ${NYQUIST / 1000} kHz available.`}
         </Text>
-      </CollapsibleSection>
+      </View>
 
-      <CollapsibleSection title="DISPLAY">
-        {/* HERO — Bessel sideband spectrum (exact JS mirror of the voice math). */}
-        <View style={styles.panelCard}>
-          <Text style={styles.badge}>
-            SIDEBAND SPECTRUM — EXACT BESSEL AMPLITUDES J_k(I) · THE MATH THE VOICE PLAYS
-          </Text>
-          {/* Tapping the display toggles play/stop (owner 2026-07-31). */}
-          <Pressable
-            onPress={fmReady ? () => (running ? stop() : void strike()) : undefined}
-            accessibilityRole="button"
-            accessibilityLabel={running ? 'Tap to stop' : 'Tap to strike the FM voice'}
-          >
-            <SidebandGraph fc={carrier} fm={fm} index={index} />
-          </Pressable>
-          <Text style={styles.caption}>
-            {index === 0
-              ? 'Index 0 — no modulation: the pure carrier alone.'
-              : `Sidebands at ${carrier} ± k·${fm.toFixed(0)} Hz, amplitudes |J_k(${index})|. ` +
-                (isInt
-                  ? 'Integer ratio — sidebands land ON a harmonic series (pitched).'
-                  : 'Non-integer ratio — sidebands fall BETWEEN harmonics (inharmonic: the bell/metallic family).')}
-          </Text>
-          <DisplayGuideButton onPress={() => openLesson('display')} />
-        </View>
-      </CollapsibleSection>
-
-      <CollapsibleSection title="CONTROLS">
-        <Text style={styles.sectionHead}>CARRIER</Text>
-        <View style={styles.chipRow}>
-          {CARRIERS.map((c) => (
-            <LabChip
-              key={c}
-              label={`${c} Hz`}
-              selected={carrier === c}
-              onPress={() => setCarrier(c)}
-              onLongPress={() => openLesson('carrier')}
-            />
-          ))}
-        </View>
-
-        <Text style={styles.sectionHead}>RATIO — fm = ratio × carrier (✳ = inharmonic)</Text>
-        <View style={styles.chipRow}>
-          {RATIOS.map((r, i) => (
-            <LabChip
-              key={r.label}
-              label={r.label}
-              selected={ratioIdx === i}
-              onPress={() => setRatioIdx(i)}
-              onLongPress={() => openLesson('ratio')}
-            />
-          ))}
-        </View>
-
-        <Text style={styles.sectionHead}>MODULATION INDEX (I)</Text>
-        <View style={styles.chipRow}>
-          {INDICES.map((v) => (
-            <LabChip
-              key={v}
-              label={String(v)}
-              selected={index === v}
-              onPress={() => setIndex(v)}
-              onLongPress={() => openLesson('index')}
-            />
-          ))}
-        </View>
-
-        <Text style={styles.sectionHead}>INDEX ENVELOPE</Text>
-        <View style={styles.chipRow}>
-          {ENVS.map((e) => (
-            <LabChip
-              key={e.key}
-              label={e.label}
-              selected={envKey === e.key}
-              onPress={() => setEnvKey(e.key)}
-              onLongPress={() => openLesson('index_env')}
-            />
-          ))}
-        </View>
-      </CollapsibleSection>
-
-      <CollapsibleSection title="ACTIONS">
+      <View style={{ gap: 6 }}>
+        <Text style={styles.sectionHead}>THE VOICE</Text>
         {/* AUDIO — engine-gated ≥ v7, honest below. The header ▶ starts/stops;
-            STRIKE stays here as the secondary retrigger (restarts the
-            index-decay envelope on a running voice, click-free). */}
+            STRIKE on the dock is the secondary retrigger. */}
         {engineReady ? (
           fmReady ? (
             <>
-              <GlassButton
-                label={env.decaySec > 0 ? 'STRIKE' : running ? 'RETUNE' : 'PLAY'}
-                tint="green"
-                height={52}
-                fontSize={15}
-                onPress={() => void strike()}
-              />
               <Text style={styles.caption}>
                 {env.decaySec > 0
                   ? `Each STRIKE restarts the index decay (τ = ${env.decaySec}s): bright attack fading to a pure tone — the FM ${envKey}. The header ▶ strikes once and ■ stops.`
-                  : 'Sustained index — controls retarget the running voice live (index and ratio glide natively, click-free). The header ▶ starts and ■ stops.'}{' '}
+                  : 'Sustained index — controls retarget the running voice live (index and ratio glide natively, click-free). The header ▶ starts and ■ stops; STRIKE retriggers.'}{' '}
                 Output {GEN_LEVEL_DB} dBFS · uncalibrated.
               </Text>
               {genError ? <Text style={styles.error}>{genError}</Text> : null}
@@ -305,7 +312,7 @@ export function FmLabScreen() {
             </Text>
           )
         ) : null}
-      </CollapsibleSection>
+      </View>
 
       <GuidedLessonSheet
         visible={lessonOpen}
@@ -319,14 +326,15 @@ export function FmLabScreen() {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-const G_H = 190;
 const PAD = 14;
+const LEGEND_H = 18; // color-key strip inside the glass, under the plot
 
 /** The sideband stick spectrum: |J_k(I)| at fc ± k·fm, k = 0..K where K covers
  *  Carson + 2. Folds (negative frequencies / above-Nyquist) are drawn dashed
- *  at their folded position — honest about aliasing rather than hiding it. */
-function SidebandGraph({ fc, fm, index }: { fc: number; fm: number; index: number }) {
-  const [w, setW] = useState(0);
+ *  at their folded position — honest about aliasing rather than hiding it.
+ *  Sized by the stage glass (w × h) — never self-measured on the stage. */
+function SidebandGraph({ fc, fm, index, w, h }: { fc: number; fm: number; index: number; w: number; h: number }) {
+  const gh = h - LEGEND_H;
 
   const sticks = useMemo(() => {
     const K = Math.min(24, Math.ceil(index + 2) + 2);
@@ -359,41 +367,37 @@ function SidebandGraph({ fc, fm, index }: { fc: number; fm: number; index: numbe
   const fMax = Math.max(fc * 2, ...sticks.map((s) => s.f)) * 1.15;
 
   return (
-    <View onLayout={(e) => setW(Math.round(e.nativeEvent.layout.width))}>
-      {w > 0 ? (
-        <Svg width={w} height={G_H}>
-          <Rect x={0} y={0} width={w} height={G_H} fill="#0c0c0f" />
-          {/* Baseline + carrier marker. */}
-          <Line x1={PAD} y1={G_H - 22} x2={w - PAD} y2={G_H - 22} stroke="#3a3b46" strokeWidth={1.5} />
-          {sticks.map((s, i) => {
-            const x = PAD + (s.f / fMax) * (w - 2 * PAD);
-            const h = s.a * (G_H - 50);
-            const isCarrier = Math.abs(s.f - fc) < 1e-6;
-            return (
-              <Fragment key={i}>
-                <Line
-                  x1={x}
-                  y1={G_H - 22}
-                  x2={x}
-                  y2={G_H - 22 - h}
-                  stroke={s.folded ? '#ff6b5e' : isCarrier ? '#5bff85' : colors.amber}
-                  strokeWidth={isCarrier ? 3 : 2}
-                  strokeDasharray={s.folded ? '3 3' : undefined}
-                />
-              </Fragment>
-            );
-          })}
-          <SvgText x={PAD + (fc / fMax) * (w - 2 * PAD)} y={G_H - 8} fill="#5bff85" fontSize={9.5} textAnchor="middle">
-            {`fc ${fc}`}
-          </SvgText>
-          <SvgText x={w - PAD} y={G_H - 8} fill="#4a4a52" fontSize={9.5} textAnchor="end">
-            {`${(fMax / 1000).toFixed(1)} kHz`}
-          </SvgText>
-        </Svg>
-      ) : (
-        <View style={{ height: G_H }} />
-      )}
-      <Text style={styles.legend}>
+    <View style={{ width: w, height: h }}>
+      <Svg width={w} height={gh}>
+        <Rect x={0} y={0} width={w} height={gh} fill="#0c0c0f" />
+        {/* Baseline + carrier marker. */}
+        <Line x1={PAD} y1={gh - 22} x2={w - PAD} y2={gh - 22} stroke="#3a3b46" strokeWidth={1.5} />
+        {sticks.map((s, i) => {
+          const x = PAD + (s.f / fMax) * (w - 2 * PAD);
+          const sh = s.a * (gh - 50);
+          const isCarrier = Math.abs(s.f - fc) < 1e-6;
+          return (
+            <Fragment key={i}>
+              <Line
+                x1={x}
+                y1={gh - 22}
+                x2={x}
+                y2={gh - 22 - sh}
+                stroke={s.folded ? '#ff6b5e' : isCarrier ? '#5bff85' : colors.amber}
+                strokeWidth={isCarrier ? 3 : 2}
+                strokeDasharray={s.folded ? '3 3' : undefined}
+              />
+            </Fragment>
+          );
+        })}
+        <SvgText x={PAD + (fc / fMax) * (w - 2 * PAD)} y={gh - 8} fill="#5bff85" fontSize={9.5} textAnchor="middle">
+          {`fc ${fc}`}
+        </SvgText>
+        <SvgText x={w - PAD} y={gh - 8} fill="#4a4a52" fontSize={9.5} textAnchor="end">
+          {`${(fMax / 1000).toFixed(1)} kHz`}
+        </SvgText>
+      </Svg>
+      <Text style={styles.legend} numberOfLines={1}>
         green = carrier (J₀) · amber = sidebands (J_k) · red dashed = folded (aliased)
       </Text>
     </View>
@@ -401,20 +405,9 @@ function SidebandGraph({ fc, fm, index }: { fc: number; fm: number; index: numbe
 }
 
 const styles = StyleSheet.create({
-  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   sectionHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.5, color: colors.amber },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   advisory: { fontFamily: fonts.barlowMedium, fontSize: 12, lineHeight: 16, color: colors.amber },
   error: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: '#ff6b5e' },
-  readMain: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.6, color: colors.textPrimary },
-  legend: { fontFamily: fonts.barlowRegular, fontSize: 10.5, color: colors.textSub, marginTop: 4 },
-  panelCard: {
-    gap: 8,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#131316',
-    padding: 12,
-  },
-  badge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.2, color: colors.textSub },
+  legend: { fontFamily: fonts.barlowRegular, fontSize: 10.5, color: colors.textSub, textAlign: 'center', paddingTop: 2 },
 });

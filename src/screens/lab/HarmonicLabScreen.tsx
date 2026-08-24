@@ -3,31 +3,27 @@
  * harmonics centerpiece: additive synthesis, spectrum, and instructional
  * distortion. Reached from the Audio Learning Lab landing menu (EarLabScreen).
  *
- * SHELL: now the shared LabShell (v4 MASTER §4) — header + intro + the four
- * mode tabs (Learn / Explore / Practice / Test) + the on-entry audio-output
- * prompt, all owned by the shell. Explore mounts HarmonicsView, the interactive
- * centerpiece. Migrated onto LabShell 2026-07-26 (was a hand-rolled twin of it).
+ * RACK UNIT layout (APE_LAB_UX_PROPOSAL 2026-08-23, owner-approved) — the
+ * shared LabShell's `rack` mode: the three linked panels pin on the STAGE
+ * with the model measurements on the bezel; F0 / PRESET / AXIS / MODE ride
+ * the pinned DOCK; the teaching prose + the stem editor scroll in the WELL
+ * between them ("reading may scroll; operating may not"). HarmonicsView
+ * still OWNS all state, sound paths, and cleanup — it hands this screen the
+ * rack declaration, the compact HeaderPlayButton, and the well renderer via
+ * a render prop, and the screen threads them into LabShell (which also owns
+ * the header, mode tabs, and the on-entry audio-output prompt).
  *
  * Honesty (measurement-tools §1.7): no fake meters, no simulated output. The
  * shell itself produces no sound — HarmonicsView owns every sound path (behind
  * the audio-output gate, with its own noteAudioActivity keepalive). Live mode
- * needs the DSP engine; the SUBTLE engine note is rendered here inside Explore
- * (HarmonicsView relies on the Explore panel to surface it for absent/spike),
- * never a hard block — Learn/Practice/Test render without the engine.
+ * needs the DSP engine; the SUBTLE engine note renders here at the top of the
+ * well for absent/spike — never a hard block (Learn renders without the
+ * engine, and the analytic model stays fully editable).
  *
- * The stem-drag editor must win over the shell's ScrollView: the render-prop
- * child receives `setScrollLocked`, wired to HarmonicsView's onDragActive —
- * AND (layout v2, owner 2026-07-29) the whole view sits in an InteractionZone,
- * which claims the touch AT TOUCH-START so drags beat scroll from the first
- * pixel. The two compose: the zone silences the ScrollView instantly; the
- * legacy onDragActive wiring keeps it silenced for the drag's duration.
- *
- * LAYOUT v2 note: HarmonicsView is the self-contained hear-see-control
- * centerpiece — it owns its readouts, displays, controls, actions AND audio
- * lifecycle internally (off-limits to edit). It therefore does not split into
- * the standard READOUTS/DISPLAY/CONTROLS/ACTIONS sections, and its play
- * control cannot move to the header without editing it. Deliberately left
- * whole (owner order: "where pieces don't cleanly split, use judgment").
+ * The stem-drag editor must win over the well's ScrollView: the well renderer
+ * receives the shell api and wires `setScrollLocked` to HarmonicStems'
+ * onDragActive, so the RackUnit's scroller goes quiet for the drag's duration
+ * (the editor's own PanResponder claims the gesture from the first pixel).
  */
 import { useState } from 'react';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -48,7 +44,7 @@ const INTRO =
 export function HarmonicLabScreen(_props: Props) {
   // Engine gate — computed ONCE (native availability cannot change mid-session);
   // mirrors the tool screens. 'idle' = engine usable; 'absent'/'spike' render the
-  // shared honest EngineGate card as a SUBTLE note in Explore only.
+  // shared honest EngineGate card as a SUBTLE note at the top of the well.
   const [gate] = useState<EngineState>(() => {
     if (!ApeDsp.isAvailable()) return 'absent';
     return ApeDsp.engineVersion() >= 2 ? 'idle' : 'spike';
@@ -56,33 +52,29 @@ export function HarmonicLabScreen(_props: Props) {
   const engineReady = gate === 'idle';
 
   return (
-    <LabShell
-      labId="harmonic"
-      title="HARMONIC LAB"
-      subtitle="Additive Synthesis · Spectrum · Distortion"
-      intro={INTRO}
-      exploreCaption="Freely change the generator, analyzer, level, and other controls."
-    >
-      {({ setScrollLocked }) => (
-        <>
-          {/* Subtle, HONEST engine note — the interactive view needs the DSP
-              engine. Renders nothing when the engine is ready; the shell never
-              hard-blocks on it. HarmonicsView relies on this panel to surface
-              the absent/spike card. */}
-          {!engineReady ? <EngineGate state={gate} /> : null}
-
-          {/* HARMONICS / HEAR-SEE-CONTROL VIEW — the interactive centerpiece.
-              HarmonicsView owns its state, sound, cleanup, and card chrome
-              entirely. The InteractionZone claims the touch at touch-start so
-              stem drags win over scroll; onDragActive keeps the shell's scroll
-              locked for the drag's duration (they compose). */}
-          {/* No whole-view scroll-lock: it trapped the page scroll (owner
-              2026-08-14). The lock is now SCOPED to the stem plot inside
-              HarmonicStems — touching the plot locks scroll so a stem drag wins,
-              while the rest of the lab (and all of live mode) scrolls freely. */}
-          <HarmonicsView onDragActive={setScrollLocked} />
-        </>
+    <HarmonicsView>
+      {({ rack, headerAction, renderWell }) => (
+        <LabShell
+          labId="harmonic"
+          title="HARMONIC LAB"
+          subtitle="Additive Synthesis · Spectrum · Distortion"
+          intro={INTRO}
+          exploreCaption="Ride the F0 fader, A/B presets from the dock, and drag the stems below — the display and audio follow live."
+          headerAction={headerAction}
+          rack={rack}
+        >
+          {(api) => (
+            <>
+              {/* Subtle, HONEST engine note — the sound paths + live mode need
+                  the DSP engine. Renders nothing when the engine is ready; the
+                  shell never hard-blocks on it. HarmonicsView relies on this
+                  well slot to surface the absent/spike card. */}
+              {!engineReady ? <EngineGate state={gate} /> : null}
+              {renderWell(api)}
+            </>
+          )}
+        </LabShell>
       )}
-    </LabShell>
+    </HarmonicsView>
   );
 }

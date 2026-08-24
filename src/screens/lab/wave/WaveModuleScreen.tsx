@@ -39,7 +39,24 @@ export type WaveModuleProps = {
  *  WaveLayout, which renders the RackUnit frame (pinned stage + dock, its own
  *  scroll well) — the host gives them the full height, no ScrollView, and no
  *  bottom lesson row (the rack well carries its own). */
-const RACK_MODULES = new Set<WaveModuleId>(['builder']);
+const RACK_MODULES = new Set<WaveModuleId>([
+  'builder',
+  'reflection',
+  'absorption',
+  'diffusion',
+  'refraction',
+  'diffraction',
+  'interference',
+  'comb',
+  'standing',
+  'coverage',
+  'linearray',
+  'delayalign',
+  'cardioidsub',
+  'beamsteer',
+  'echo',
+  'reverb',
+]);
 
 const COMPONENTS: Record<WaveModuleId, (p: WaveModuleProps) => React.JSX.Element> = {
   builder: RoomBuilderModule,

@@ -3,10 +3,13 @@
  * shared LabShell. A 4-string fretted electric bass makes string physics
  * tangible: string division ↔︎ fractions ↔︎ intervals ↔︎ the harmonic series.
  *
- * LAYOUT v2 (owner 2026-07-29): collapsible READOUTS → DISPLAY → CONTROLS →
- * ACTIONS sections; PLAY/STOP is the compact HeaderPlayButton via LabShell's
- * headerAction; the shell renders the Guided-Lesson entry row itself. The
- * fretboard is TAP-only (no drag), so no InteractionZone is needed.
+ * LAYOUT v3 — RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23, owner-approved): the
+ * fretboard pins on the stage glass (size L — the board IS the lab) with the
+ * NOTE / FREQ / INTERVAL / LENGTH-or-NODE readouts on its bezel; the dock
+ * carries MODE + STRING trays and the FRET (or NODE) fader; only the teaching
+ * prose scrolls in the well. PLAY/STOP stays the compact HeaderPlayButton.
+ * The fretboard is TAP-only and its tap SELECTS a string+fret/node — so the
+ * glass tap is selection, not the play/stop toggle other rack labs use.
  *
  * TWO MODES:
  *  • FRETTED — tap a string+fret on the fretboard: fret n leaves 2^(−n/12) of
@@ -36,11 +39,11 @@ import { ApeDsp, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { guardAdditiveForEngine, speakerGuardDb, SPEAKER_HPF_HZ } from '../../features/audio/speakerSafety';
-import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../features/lab/guidedLessons';
+import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
-import { LabShell, LabChip, CollapsibleSection, HeaderPlayButton } from './LabShell';
+import { LabShell, HeaderPlayButton } from './LabShell';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -186,18 +189,21 @@ export function BassLabScreen() {
   }, [running, genParams]);
   useEffect(retune, [mode, stringIdx, fret, nodeIdx]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ---- Readouts --------------------------------------------------------------
-  const semis = mode === 'fretted' ? fret : null;
+  // ---- Readouts (bezel cells + well detail) ----------------------------------
   const fracInfo = mode === 'fretted' ? FRET_FRACTIONS[fret] : null;
   const airWavelen = SPEED_OF_SOUND / soundHz;
 
+  // ── RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23, owner-approved) ────────────
+  // The fretboard + its readouts pin on the stage/bezel; MODE and STRING are
+  // STICKY trays (A/B while the wave redraws + retunes); the FRET (fretted) or
+  // NODE (harmonics) fader is the pre-bound lane. Only the prose scrolls.
   return (
     <LabShell
       labId="bass"
       title="BASS GUITAR LAB"
       subtitle="Strings · Frets · Harmonics · Intervals"
       intro={INTRO}
-      exploreCaption="Tap the fretboard (or the chips) to choose a note — then read the fraction, watch the standing wave, and play it."
+      exploreCaption="Tap the fretboard (or ride the fader) to choose a note — then read the fraction, watch the standing wave, and play it."
       headerAction={
         <HeaderPlayButton
           playing={running}
@@ -206,132 +212,138 @@ export function BassLabScreen() {
           label={running ? 'Stop' : `Play ${soundHz.toFixed(1)} hertz`}
         />
       }
+      rack={{
+        initialParam: 'fret',
+        onHelp: openLesson,
+        stage: {
+          size: 'L', // the fretboard IS the lab — earns the tall glass
+          badge: 'TRUE FRET GEOMETRY — NUT → BRIDGE · DRAWN FROM THE EQUATIONS',
+          onGuide: () => openLesson('display'),
+          bezel:
+            mode === 'fretted'
+              ? [
+                  { k: 'NOTE', v: midiName(soundMidi), helpKey: 'fret' },
+                  { k: 'FREQ', v: `${soundHz.toFixed(1)} Hz`, helpKey: 'display' },
+                  { k: 'INTERVAL', v: INTERVALS[fret], flex: 1.6, helpKey: 'fret' },
+                  { k: 'LENGTH', v: `${(vibFrac * 100).toFixed(0)}%`, helpKey: 'fret' },
+                ]
+              : [
+                  { k: 'NOTE', v: midiName(soundMidi), helpKey: 'harmonic_node' },
+                  { k: 'FREQ', v: `${soundHz.toFixed(1)} Hz`, helpKey: 'display' },
+                  { k: 'INTERVAL', v: node.interval, flex: 1.8, helpKey: 'harmonic_node' },
+                  { k: 'NODE', v: `${node.frac} · H${node.n}`, tint: NODE_GREEN, helpKey: 'harmonic_node' },
+                ],
+          // The board's tap is SELECTION (string + fret/node) — play/stop stays
+          // on the header ▶, so no play toggle wraps this glass.
+          render: (w, h) => (
+            <Fretboard
+              mode={mode}
+              stringIdx={stringIdx}
+              fret={fret}
+              harmonicN={node.n}
+              width={w}
+              height={h}
+              onPick={(si, n) => {
+                setStringIdx(si);
+                if (mode === 'fretted') setFret(n);
+                else setNodeIdx(Math.max(0, NODES.findIndex((nd) => nd.n === n)));
+              }}
+            />
+          ),
+        },
+        params: [
+          {
+            kind: 'options',
+            id: 'mode',
+            label: 'MODE',
+            valueLabel: mode === 'fretted' ? 'FRETTED' : 'HARM',
+            options: [
+              { id: 'fretted', label: 'FRETTED', onLongPress: () => openLesson('fret') },
+              { id: 'harmonics', label: 'NATURAL HARMONICS', onLongPress: () => openLesson('harmonic_node') },
+            ],
+            selectedId: mode,
+            onSelect: (id) => setMode(id as Mode),
+            sticky: true, // A/B fretting vs node-touching on the same string
+            helpKey: mode === 'fretted' ? 'fret' : 'harmonic_node',
+          },
+          {
+            kind: 'options',
+            id: 'string',
+            label: 'STRING',
+            valueLabel: str.label,
+            options: STRINGS.map((s) => ({ id: s.key, label: `${s.label} · ${s.hz.toFixed(0)} Hz` })),
+            selectedId: str.key,
+            onSelect: (id) => {
+              const i = STRINGS.findIndex((s) => s.key === id);
+              if (i >= 0) setStringIdx(i);
+            },
+            sticky: true, // hop strings while the wave redraws + retunes
+            helpKey: 'string',
+          },
+          mode === 'fretted'
+            ? {
+                kind: 'fader',
+                id: 'fret',
+                label: 'FRET',
+                // 13 detents (open + 12): sweeping the lane IS the lesson —
+                // watch the vibrating length shrink by the same RATIO each step.
+                value: fret / NUM_FRETS,
+                onChange: (v) => setFret(Math.min(NUM_FRETS, Math.max(0, Math.round(v * NUM_FRETS)))),
+                format: () => (fret === 0 ? 'OPEN' : `FRET ${fret} of ${NUM_FRETS}`),
+                formatShort: () => (fret === 0 ? 'OPEN' : `${fret}/${NUM_FRETS}`),
+                helpKey: 'fret',
+              }
+            : {
+                kind: 'fader',
+                id: 'node',
+                label: 'NODE',
+                // 4 detents (½ ⅓ ¼ ⅕) — step through the touch fractions.
+                value: nodeIdx / (NODES.length - 1),
+                onChange: (v) =>
+                  setNodeIdx(Math.min(NODES.length - 1, Math.max(0, Math.round(v * (NODES.length - 1))))),
+                format: () => `${node.frac} · H${node.n}`,
+                formatShort: () => `${node.frac} H${node.n}`,
+                tint: NODE_GREEN, // matches the node markers on the board
+                helpKey: 'harmonic_node',
+              },
+        ],
+      }}
     >
       {!engineReady ? <EngineGate state={gate} /> : null}
 
-      <CollapsibleSection title="READOUTS">
-        {/* READOUT — fraction · frequency · note · interval · wavelength. */}
+      <View style={{ gap: 6 }}>
+        <Text style={styles.sectionHead}>WHAT YOU’RE SEEING</Text>
+        <Text style={styles.caption}>
+          {mode === 'fretted'
+            ? 'Frets crowd toward the bridge because each semitone is the same RATIO (2^(1/12)) — equal ratios, shrinking spacings. The wave is drawn on the vibrating length (fret → bridge).'
+            : `Touching at ${node.frac} damps every mode WITHOUT a node there — harmonic ${node.n} (and its multiples) survive. Nodes are marked; the string rings over its FULL length.`}
+        </Text>
+      </View>
+
+      <View style={{ gap: 6 }}>
+        <Text style={styles.sectionHead}>THE EXACT NUMBERS</Text>
+        {/* Fraction · interval · wavelength — the richer readout lines behind
+            the bezel cells (NOTE/FREQ/INTERVAL live up there). */}
         <Text style={styles.badge}>READOUT — EXACT VALUES FROM THE STRING MODEL</Text>
         {mode === 'fretted' ? (
-          <>
-            <Text style={styles.readMain}>
-              {str.label} string · {fret === 0 ? 'open' : `fret ${fret}`} → {midiName(soundMidi)} ·{' '}
-              {soundHz.toFixed(1)} Hz
-            </Text>
-            <Text style={styles.readRow}>
-              Vibrating length: {(vibFrac * 100).toFixed(1)}% of the string
-              {fracInfo ? `  (${fracInfo.frac} → ratio ${fracInfo.ratio})` : ''}
-            </Text>
-            <Text style={styles.readRow}>
-              Interval above the open string: {INTERVALS[semis ?? 0]} ({fret} semitone{fret === 1 ? '' : 's'})
-            </Text>
-          </>
+          <Text style={styles.readRow}>
+            Vibrating length: {(vibFrac * 100).toFixed(1)}% of the string
+            {fracInfo ? `  (${fracInfo.frac} → ratio ${fracInfo.ratio})` : ''} — {INTERVALS[fret]} above the open
+            string ({fret} semitone{fret === 1 ? '' : 's'}).
+          </Text>
         ) : (
-          <>
-            <Text style={styles.readMain}>
-              {str.label} string · node {node.frac} → harmonic {node.n} = {midiName(soundMidi)} ·{' '}
-              {soundHz.toFixed(1)} Hz
-            </Text>
-            <Text style={styles.readRow}>
-              {node.n} × {str.hz.toFixed(1)} Hz — {node.interval} above the open string
-            </Text>
-          </>
+          <Text style={styles.readRow}>
+            {node.n} × {str.hz.toFixed(1)} Hz — {node.interval} above the open string.
+          </Text>
         )}
         <Text style={styles.readRow}>
           String wave: λ = 2 × vibrating length. Sound wave in air: λ = {SPEED_OF_SOUND}/{soundHz.toFixed(0)} ≈{' '}
           {airWavelen.toFixed(2)} m
         </Text>
-        <DisplayGuideButton onPress={() => openLesson('display')} />
-      </CollapsibleSection>
+      </View>
 
-      <CollapsibleSection title="DISPLAY">
-        {/* THE FRETBOARD — true geometry, tappable. */}
-        <View style={styles.panelCard}>
-          <Text style={styles.badge}>TRUE FRET GEOMETRY — NUT → BRIDGE · DRAWN FROM THE EQUATIONS</Text>
-          <Fretboard
-            mode={mode}
-            stringIdx={stringIdx}
-            fret={fret}
-            harmonicN={node.n}
-            onPick={(si, n) => {
-              setStringIdx(si);
-              if (mode === 'fretted') setFret(n);
-              else setNodeIdx(Math.max(0, NODES.findIndex((nd) => nd.n === n)));
-            }}
-          />
-          <Text style={styles.caption}>
-            {mode === 'fretted'
-              ? 'Frets crowd toward the bridge because each semitone is the same RATIO (2^(1/12)) — equal ratios, shrinking spacings. The wave is drawn on the vibrating length (fret → bridge).'
-              : `Touching at ${node.frac} damps every mode WITHOUT a node there — harmonic ${node.n} (and its multiples) survive. Nodes are marked; the string rings over its FULL length.`}
-          </Text>
-          <DisplayGuideButton onPress={() => openLesson('display')} />
-        </View>
-      </CollapsibleSection>
-
-      <CollapsibleSection title="CONTROLS">
-        <Text style={styles.sectionHead}>MODE</Text>
-        <View style={styles.chipRow}>
-          <LabChip
-            label="FRETTED"
-            selected={mode === 'fretted'}
-            onPress={() => setMode('fretted')}
-            onLongPress={() => openLesson('fret')}
-          />
-          <LabChip
-            label="NATURAL HARMONICS"
-            selected={mode === 'harmonics'}
-            onPress={() => setMode('harmonics')}
-            onLongPress={() => openLesson('harmonic_node')}
-          />
-        </View>
-
-        <Text style={styles.sectionHead}>STRING</Text>
-        <View style={styles.chipRow}>
-          {STRINGS.map((s, i) => (
-            <LabChip
-              key={s.key}
-              label={`${s.label} · ${s.hz.toFixed(0)} Hz`}
-              selected={stringIdx === i}
-              onPress={() => setStringIdx(i)}
-              onLongPress={() => openLesson('string')}
-            />
-          ))}
-        </View>
-
-        {mode === 'fretted' ? (
-          <>
-            <Text style={styles.sectionHead}>FRET</Text>
-            <View style={styles.chipRow}>
-              {Array.from({ length: NUM_FRETS + 1 }, (_, n) => (
-                <LabChip
-                  key={n}
-                  label={n === 0 ? 'OPEN' : String(n)}
-                  selected={fret === n}
-                  onPress={() => setFret(n)}
-                  onLongPress={() => openLesson('fret')}
-                />
-              ))}
-            </View>
-          </>
-        ) : (
-          <>
-            <Text style={styles.sectionHead}>TOUCH NODE — FRACTION OF THE STRING</Text>
-            <View style={styles.chipRow}>
-              {NODES.map((nd, i) => (
-                <LabChip
-                  key={nd.n}
-                  label={`${nd.frac} · H${nd.n}`}
-                  selected={nodeIdx === i}
-                  onPress={() => setNodeIdx(i)}
-                  onLongPress={() => openLesson('harmonic_node')}
-                />
-              ))}
-            </View>
-          </>
-        )}
-      </CollapsibleSection>
-
-      <CollapsibleSection title="ACTIONS">
+      <View style={{ gap: 6 }}>
+        <Text style={styles.sectionHead}>THE NOTE, AS SOUND</Text>
         {/* PLAY lives in the header (▶) — real audio through the additive
             engine (sine fallback on v2); the honest captions stay here. */}
         {engineReady ? (
@@ -351,7 +363,7 @@ export function BassLabScreen() {
             {genError ? <Text style={styles.error}>{genError}</Text> : null}
           </>
         ) : null}
-      </CollapsibleSection>
+      </View>
 
       <GuidedLessonSheet
         visible={lessonOpen}
@@ -365,9 +377,8 @@ export function BassLabScreen() {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-const FB_H = 190;
 const STRING_GAP = 34;
-const STRING_TOP = 42;
+const LABELS_H = 20; // NUT / fractions / BRIDGE label strip under the board
 /** String rows drawn TAB-style: G on top … E on the bottom. */
 const ROW_TO_STRING = [3, 2, 1, 0] as const;
 
@@ -385,34 +396,43 @@ const BINDING = '#e8dfc8'; // cream edge binding on the body
 const STRING_STEEL = '#8d8d99';
 const STRING_SPEC = '#eceef4';
 const STRING_SEL = '#e6b84e'; // selected string — amber-tinted steel
-// Static pseudo-random grain rows (fractions of FB_H) — drawn once, cheap.
+const NODE_GREEN = '#5bff85'; // harmonic node markers — shared with the NODE fader/bezel tint
+// Static pseudo-random grain rows (fractions of svgH) — drawn once, cheap.
 const GRAIN_ROWS = [0.12, 0.27, 0.41, 0.57, 0.72, 0.88] as const;
 // The neck→body seam sits just past the 12th fret (fretPos(12) = 0.5).
 const BODY_START_FRAC = 0.52;
 
 /** The tappable fretboard: 4 strings, frets 0–12 at true positions, fret
  *  markers, and the selected string's standing wave. Tap maps to the nearest
- *  string row + (fretted) nearest fret line / (harmonics) nearest node. */
+ *  string row + (fretted) nearest fret line / (harmonics) nearest node.
+ *  Sized by the RACK STAGE (width/height = the glass's inner size); strings
+ *  center vertically in whatever height the stage hands down. */
 function Fretboard({
   mode,
   stringIdx,
   fret,
   harmonicN,
+  width,
+  height,
   onPick,
 }: {
   mode: Mode;
   stringIdx: number;
   fret: number;
   harmonicN: number;
+  width: number;
+  height: number;
   onPick: (stringIdx: number, fretOrNode: number) => void;
 }) {
-  const [w, setW] = useState(0);
+  const w = width;
+  const svgH = Math.max(80, height - LABELS_H);
+  const stringTop = Math.max(24, Math.round((svgH - 3 * STRING_GAP) / 2));
 
   const onPress = useCallback(
     (x: number, y: number) => {
       if (w <= 0) return;
       // Row → string (clamped).
-      const row = Math.min(3, Math.max(0, Math.round((y - STRING_TOP) / STRING_GAP)));
+      const row = Math.min(3, Math.max(0, Math.round((y - stringTop) / STRING_GAP)));
       const si = ROW_TO_STRING[row];
       const fx = Math.min(1, Math.max(0, x / w));
       if (mode === 'fretted') {
@@ -441,7 +461,7 @@ function Fretboard({
         onPick(si, best);
       }
     },
-    [w, mode, onPick],
+    [w, stringTop, mode, onPick],
   );
 
   // Standing wave on the selected string: FRETTED = one lobe over the vibrating
@@ -451,7 +471,7 @@ function Fretboard({
   const wave = useMemo(() => {
     if (w <= 0) return { top: '', env: '' };
     const row = ROW_TO_STRING.indexOf(stringIdx as 0 | 1 | 2 | 3);
-    const y0 = STRING_TOP + row * STRING_GAP;
+    const y0 = stringTop + row * STRING_GAP;
     const amp = 12;
     const x0 = mode === 'fretted' ? fretPos(fret) * w : 0;
     const len = w - x0;
@@ -471,28 +491,28 @@ function Fretboard({
     let env = top;
     for (let i = N; i >= 0; i--) env += `L${px[i]} ${(2 * y0 - py[i]).toFixed(1)}`;
     return { top, env: `${env}Z` };
-  }, [w, mode, stringIdx, fret, harmonicN]);
+  }, [w, stringTop, mode, stringIdx, fret, harmonicN]);
 
   const selRow = ROW_TO_STRING.indexOf(stringIdx as 0 | 1 | 2 | 3);
-  const selY = STRING_TOP + selRow * STRING_GAP;
+  const selY = stringTop + selRow * STRING_GAP;
 
   // Instrument background geometry: wood neck on the left, blue body + sound
   // hole toward the bridge (right). The hole is centered on the 4 strings so
   // they cross over it ("behind the strings").
   const bodyStart = BODY_START_FRAC * w;
   const holeCX = bodyStart + (w - bodyStart) * 0.52;
-  const holeCY = STRING_TOP + 1.5 * STRING_GAP;
+  const holeCY = stringTop + 1.5 * STRING_GAP;
   const holeR = Math.min(46, (w - bodyStart) * 0.42);
 
   return (
-    <View onLayout={(e) => setW(Math.round(e.nativeEvent.layout.width))}>
+    <View>
       {w > 0 ? (
         <Pressable
           onPress={(e) => onPress(e.nativeEvent.locationX, e.nativeEvent.locationY)}
           accessibilityRole="button"
           accessibilityLabel="Fretboard — tap a string and fret"
         >
-          <Svg width={w} height={FB_H}>
+          <Svg width={w} height={svgH}>
             <Defs>
               {/* Wood: vertical walnut gradient (light from upper-left). */}
               <LinearGradient id="fbWood" x1="0" y1="0" x2="0" y2="1">
@@ -536,36 +556,36 @@ function Fretboard({
               </LinearGradient>
             </Defs>
             {/* WOOD neck (gradient + static grain streaks) → sunburst body. */}
-            <Rect x={0} y={0} width={w} height={FB_H} fill="url(#fbWood)" />
+            <Rect x={0} y={0} width={w} height={svgH} fill="url(#fbWood)" />
             {GRAIN_ROWS.map((g, i) => (
               <Path
                 key={`grain${i}`}
-                d={`M0 ${(g * FB_H).toFixed(1)} Q ${(bodyStart * 0.5).toFixed(1)} ${(g * FB_H + (i % 2 === 0 ? -4 : 4)).toFixed(1)} ${bodyStart.toFixed(1)} ${(g * FB_H).toFixed(1)}`}
+                d={`M0 ${(g * svgH).toFixed(1)} Q ${(bodyStart * 0.5).toFixed(1)} ${(g * svgH + (i % 2 === 0 ? -4 : 4)).toFixed(1)} ${bodyStart.toFixed(1)} ${(g * svgH).toFixed(1)}`}
                 stroke={GRAIN}
                 strokeWidth={i % 2 === 0 ? 1.2 : 0.7}
                 opacity={0.4}
                 fill="none"
               />
             ))}
-            <Rect x={bodyStart} y={0} width={w - bodyStart} height={FB_H} fill="url(#fbBody)" />
+            <Rect x={bodyStart} y={0} width={w - bodyStart} height={svgH} fill="url(#fbBody)" />
             {/* Cream edge binding along the body rim + the neck→body seam. */}
             <Line x1={bodyStart} y1={1} x2={w} y2={1} stroke={BINDING} strokeWidth={2} opacity={0.55} />
-            <Line x1={bodyStart} y1={FB_H - 1} x2={w} y2={FB_H - 1} stroke={BINDING} strokeWidth={2} opacity={0.55} />
-            <Line x1={w - 1} y1={0} x2={w - 1} y2={FB_H} stroke={BINDING} strokeWidth={2} opacity={0.4} />
-            <Line x1={bodyStart} y1={0} x2={bodyStart} y2={FB_H} stroke="#0a0a0c" strokeWidth={2} />
+            <Line x1={bodyStart} y1={svgH - 1} x2={w} y2={svgH - 1} stroke={BINDING} strokeWidth={2} opacity={0.55} />
+            <Line x1={w - 1} y1={0} x2={w - 1} y2={svgH} stroke={BINDING} strokeWidth={2} opacity={0.4} />
+            <Line x1={bodyStart} y1={0} x2={bodyStart} y2={svgH} stroke="#0a0a0c" strokeWidth={2} />
             {/* Sound hole: rosette + fine pearl rings + shaded bore. */}
             <Circle cx={holeCX} cy={holeCY} r={holeR + 4} fill="none" stroke={ROSETTE} strokeWidth={5} />
             <Circle cx={holeCX} cy={holeCY} r={holeR + 6} fill="none" stroke={ROSETTE_PEARL} strokeWidth={0.8} opacity={0.65} />
             <Circle cx={holeCX} cy={holeCY} r={holeR + 1.5} fill="none" stroke={ROSETTE_PEARL} strokeWidth={0.8} opacity={0.65} />
             <Circle cx={holeCX} cy={holeCY} r={holeR} fill="url(#fbHole)" />
             {/* Bridge: ebony base, bone saddle, pearl-ringed string pins. */}
-            <Rect x={w - 13} y={STRING_TOP - 24} width={10} height={3 * STRING_GAP + 48} rx={5} fill="#150f08" />
-            <Line x1={w - 8} y1={STRING_TOP - 18} x2={w - 8} y2={STRING_TOP + 3 * STRING_GAP + 18} stroke="#e8e2d2" strokeWidth={2} />
+            <Rect x={w - 13} y={stringTop - 24} width={10} height={3 * STRING_GAP + 48} rx={5} fill="#150f08" />
+            <Line x1={w - 8} y1={stringTop - 18} x2={w - 8} y2={stringTop + 3 * STRING_GAP + 18} stroke="#e8e2d2" strokeWidth={2} />
             {ROW_TO_STRING.map((si, row) => (
               <Circle
                 key={`pin${si}`}
                 cx={w - 4}
-                cy={STRING_TOP + row * STRING_GAP}
+                cy={stringTop + row * STRING_GAP}
                 r={1.8}
                 fill="#0c0c0f"
                 stroke={ROSETTE_PEARL}
@@ -575,8 +595,8 @@ function Fretboard({
             {/* Frets: dark nickel wire + specular highlight (0 = bone nut). */}
             {Array.from({ length: NUM_FRETS + 1 }, (_, n) => {
               const x = fretPos(n) * w;
-              const y1 = STRING_TOP - 18;
-              const y2 = STRING_TOP + 3 * STRING_GAP + 18;
+              const y1 = stringTop - 18;
+              const y2 = stringTop + 3 * STRING_GAP + 18;
               return n === 0 ? (
                 <Rect key={n} x={x} y={y1} width={4.5} height={y2 - y1} fill="url(#fbNut)" />
               ) : (
@@ -589,7 +609,7 @@ function Fretboard({
             {/* Fret markers (gradient-pearl inlays at 3·5·7·9, double at 12). */}
             {[3, 5, 7, 9, 12].map((n) => {
               const x = ((fretPos(n - 1) + fretPos(n)) / 2) * w;
-              const cy = STRING_TOP + 1.5 * STRING_GAP;
+              const cy = stringTop + 1.5 * STRING_GAP;
               return n === 12 ? (
                 <Fragment key={n}>
                   <Circle cx={x} cy={cy - 22} r={4} fill="url(#fbPearl)" />
@@ -602,7 +622,7 @@ function Fretboard({
             {/* Strings (G top … E bottom): gauge grows toward the low E; each
                 gets a shadow pass + specular highlight; selection = amber glow. */}
             {ROW_TO_STRING.map((si, row) => {
-              const y = STRING_TOP + row * STRING_GAP;
+              const y = stringTop + row * STRING_GAP;
               const sel = si === stringIdx;
               const gauge = 1 + row * 0.8; // E (bottom row) is the heaviest
               return (
@@ -663,8 +683,8 @@ function Fretboard({
                   const x = ((k + 1) / harmonicN) * w;
                   return (
                     <Fragment key={k}>
-                      <Circle cx={x} cy={selY} r={9} fill="#5bff85" opacity={0.16} />
-                      <Circle cx={x} cy={selY} r={4} fill="#5bff85" opacity={0.95} />
+                      <Circle cx={x} cy={selY} r={9} fill={NODE_GREEN} opacity={0.16} />
+                      <Circle cx={x} cy={selY} r={4} fill={NODE_GREEN} opacity={0.95} />
                       <Circle cx={x - 1.2} cy={selY - 1.2} r={1.3} fill="#eafff0" opacity={0.9} />
                     </Fragment>
                   );
@@ -690,7 +710,7 @@ function Fretboard({
           </Svg>
         </Pressable>
       ) : (
-        <View style={{ height: FB_H }} />
+        <View style={{ height: svgH }} />
       )}
       {/* Nut/bridge + fraction labels under the board. */}
       <View style={styles.fbLabels}>
@@ -707,22 +727,13 @@ function Fretboard({
 }
 
 const styles = StyleSheet.create({
-  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   sectionHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.5, color: colors.amber },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   advisory: { fontFamily: fonts.barlowMedium, fontSize: 12, lineHeight: 16, color: colors.amber },
   error: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: '#ff6b5e' },
-  panelCard: {
-    gap: 8,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#131316',
-    padding: 12,
-  },
   badge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.2, color: colors.textSub },
-  readMain: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.6, color: colors.textPrimary },
   readRow: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSecondary },
-  fbLabels: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 },
+  // The label strip lives INSIDE the stage glass now — give it side breathing.
+  fbLabels: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 3, paddingHorizontal: 8 },
   fbLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1, color: colors.textSub },
 });

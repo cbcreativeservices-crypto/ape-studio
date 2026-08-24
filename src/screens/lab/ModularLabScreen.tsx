@@ -14,12 +14,14 @@
  * native modStatus (no fake meters, §1.7). Audio needs engineVersion ≥ 7 —
  * below it the diagram + lessons work and the build requirement is stated.
  *
- * LAYOUT v2 (owner 2026-07-29): collapsible DISPLAY → CONTROLS → ACTIONS
- * sections (no separate READOUTS — the lab's live readouts ARE the diagram's
- * env meter and step LEDs, which can't split out without faking them); the
- * dominant start/stop (RUN SEQUENCE / PLAY DRONE) is the compact
- * HeaderPlayButton via LabShell's headerAction; the shell renders the
- * Guided-Lesson entry row itself.
+ * RACK UNIT (2026-08-23, APE_LAB_UX_PROPOSAL): the live diagram pins on the
+ * stage — its env meter and step LEDs ARE the lab's real readouts (they can't
+ * split out without faking them, §1.7), so the bezel carries the patch STATE
+ * instead (PATCH · VCO · LFO · SEQ). The dock holds a continuous CUTOFF fader
+ * (the subtractive-synthesis teaching param, pre-bound — the discrete cutoff
+ * chips grew up into the lane; the native target ramps) plus PATCH/VCO/MOD/SEQ
+ * trays; only the prose scrolls. The dominant start/stop (RUN SEQUENCE / PLAY
+ * DRONE) stays the compact HeaderPlayButton via LabShell's headerAction.
  */
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -28,11 +30,11 @@ import Svg, { Circle, Defs, G, Line, LinearGradient, Path, RadialGradient, Rect,
 import { ApeDsp, MOD_PARAM } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
-import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../features/lab/guidedLessons';
+import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
-import { LabShell, LabChip, CollapsibleSection, HeaderPlayButton } from './LabShell';
+import { LabShell, LabChip, HeaderPlayButton } from './LabShell';
 
 const ACTIVITY_MS = 500;
 const STATUS_MS = 100; // live env/step poll while running (10 Hz)
@@ -43,7 +45,17 @@ const SHAPES = [
   { v: 2, label: 'TRI' },
   { v: 3, label: 'SINE' },
 ] as const;
-const CUTOFFS = [250, 800, 2000, 8000] as const;
+// CUTOFF is the dock's pre-bound fader (2026-08-23): a LOG sweep 250 Hz →
+// 8 kHz replacing the old discrete chips — the native cutoff target ramps, so
+// riding the lane IS the filter-sweep lesson. Presets land on exact positions.
+const CUT_MIN = 250;
+const CUT_MAX = 8000;
+const cutFromPos = (v: number) =>
+  Math.round(CUT_MIN * Math.pow(CUT_MAX / CUT_MIN, Math.max(0, Math.min(1, v))));
+const cutPosFromHz = (hz: number) =>
+  Math.log(Math.max(CUT_MIN, Math.min(CUT_MAX, hz)) / CUT_MIN) / Math.log(CUT_MAX / CUT_MIN);
+const fmtCut = (hz: number) => (hz >= 1000 ? `${(hz / 1000).toFixed(1)} kHz` : `${Math.round(hz)} Hz`);
+const fmtCutShort = (hz: number) => (hz >= 1000 ? `${(hz / 1000).toFixed(1)}k` : `${Math.round(hz)}`);
 const RESONANCES = [
   { v: 0, label: 'RES 0' },
   { v: 0.5, label: 'RES ½' },
@@ -252,6 +264,18 @@ export function ModularLabScreen() {
     update({ steps: patch.steps.map((s, k) => (k === i ? next : s)) });
   };
 
+  const env = ENV_PRESETS.find((e) => e.key === patch.envKey)!;
+  const shapeLabel = SHAPES.find((s) => s.v === patch.shape)?.label ?? '—';
+  const patchIdea = PATCH_IDEAS.find((p) => p.key === patchKey) ?? null;
+  // LFO state for the bezel/MOD key — a routing only exists with depth > 0.
+  const lfoLive = patch.lfoDepth > 0 && patch.lfoDest > 0;
+  const lfoShort = lfoLive ? ['OFF', '→PIT', '→CUT', '→AMP'][patch.lfoDest] : 'OFF';
+
+  // ── RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23) ────────────────────────────
+  // The live diagram pins on the stage (env meter + step LEDs are the REAL
+  // readouts); the bezel names the patch state; CUTOFF rides the pre-bound
+  // lane; the chip collections become STICKY trays so the cables/audio react
+  // while comparing. Only the teaching prose scrolls.
   return (
     <LabShell
       labId="modular"
@@ -267,168 +291,234 @@ export function ModularLabScreen() {
           label={running ? 'Stop' : patch.seqOn ? 'Run the sequence' : 'Play the drone'}
         />
       }
+      rack={{
+        initialParam: 'cutoff',
+        onHelp: openLesson,
+        stage: {
+          size: 'L', // the live signal path IS the lab — earns the tall glass
+          badge: 'SIGNAL FLOW — THE ACTUAL NATIVE PATH · ACTIVE ROUTINGS LIT',
+          onGuide: () => openLesson('display'),
+          bezel: [
+            {
+              k: 'PATCH',
+              v: patchIdea?.label ?? 'CUSTOM',
+              flex: 1.4,
+              helpKey: patchIdea ? `patch_${patchIdea.key}` : 'display',
+            },
+            { k: 'VCO', v: shapeLabel, helpKey: 'vco' },
+            { k: 'LFO', v: lfoShort, tint: lfoLive ? LFO_COLOR : undefined, helpKey: 'lfo' },
+            {
+              k: 'SEQ',
+              v: patch.seqOn ? `${patch.seqRate}/s` : 'OFF',
+              tint: patch.seqOn ? SEQ_COLOR : undefined,
+              helpKey: 'sequencer',
+            },
+          ],
+          render: (w, h) => (
+            <PatchDiagram
+              w={w}
+              h={h}
+              patch={patch}
+              envLevel={envLevel}
+              activeStep={activeStep}
+              running={running}
+              onBox={openLesson}
+            />
+          ),
+        },
+        params: [
+          {
+            kind: 'fader',
+            id: 'cutoff',
+            label: 'CUTOFF',
+            // Log sweep 250 Hz → 8 kHz; the native cutoff target ramps, so the
+            // lane IS the filter-sweep lesson (audible live while running).
+            value: cutPosFromHz(patch.cutoff),
+            onChange: (v) => update({ cutoff: cutFromPos(v) }),
+            format: () => fmtCut(patch.cutoff),
+            formatShort: () => fmtCutShort(patch.cutoff),
+            helpKey: 'vcf',
+          },
+          {
+            kind: 'group',
+            id: 'patch',
+            label: 'PATCH',
+            valueLabel: patchIdea?.label ?? 'CUSTOM',
+            helpKey: patchIdea ? `patch_${patchIdea.key}` : 'display',
+            // Group (not options) so the WHY stays co-visible with the chips —
+            // pick a routing, read why it makes that sound, watch cables light.
+            render: () => (
+              <View style={{ gap: 10 }}>
+                <Text style={styles.sectionHead}>PATCH IDEAS — CLASSIC ROUTINGS</Text>
+                <View style={styles.chipRow}>
+                  {PATCH_IDEAS.map((p) => (
+                    <LabChip
+                      key={p.key}
+                      label={p.label}
+                      selected={patchKey === p.key}
+                      onPress={() => update(p.patch, p.key)}
+                      onLongPress={() => openLesson(`patch_${p.key}`)}
+                    />
+                  ))}
+                </View>
+                {patchIdea ? <Text style={styles.whyText}>{patchIdea.why}</Text> : null}
+              </View>
+            ),
+          },
+          {
+            kind: 'options',
+            id: 'vco',
+            label: 'VCO',
+            valueLabel: shapeLabel,
+            options: SHAPES.map((s) => ({ id: String(s.v), label: s.label })),
+            selectedId: String(patch.shape),
+            onSelect: (id) => update({ shape: Number(id) }),
+            sticky: true, // A/B the timbres while the drone plays
+            helpKey: 'vco',
+          },
+          {
+            kind: 'group',
+            id: 'mod',
+            label: 'MOD',
+            // Env preset + live LFO routing stay visible on the key.
+            valueLabel: `${env.label.slice(0, 3)}·${lfoLive ? ['', 'PIT', 'CUT', 'AMP'][patch.lfoDest] : 'OFF'}`,
+            helpKey: 'lfo',
+            render: () => (
+              <View style={{ gap: 10 }}>
+                <Text style={styles.sectionHead}>VCF — RESONANCE</Text>
+                <View style={styles.chipRow}>
+                  {RESONANCES.map((r) => (
+                    <LabChip
+                      key={r.label}
+                      label={r.label}
+                      selected={patch.res === r.v}
+                      onPress={() => update({ res: r.v })}
+                      onLongPress={() => openLesson('vcf')}
+                    />
+                  ))}
+                </View>
+                <Text style={styles.sectionHead}>ENVELOPE (ADSR) — VCA + OPTIONAL → CUTOFF</Text>
+                <View style={styles.chipRow}>
+                  {ENV_PRESETS.map((e) => (
+                    <LabChip
+                      key={e.key}
+                      label={e.label}
+                      selected={patch.envKey === e.key}
+                      onPress={() => update({ envKey: e.key })}
+                      onLongPress={() => openLesson('envelope')}
+                    />
+                  ))}
+                  {ENV_TO_CUT.map((e) => (
+                    <LabChip
+                      key={e.label}
+                      label={e.label}
+                      selected={patch.envToCut === e.v}
+                      onPress={() => update({ envToCut: e.v })}
+                      onLongPress={() => openLesson('envelope')}
+                    />
+                  ))}
+                </View>
+                <Text style={styles.sectionHead}>LFO — ONE MODULATOR, THREE EFFECTS</Text>
+                <View style={styles.chipRow}>
+                  {LFO_RATES.map((r) => (
+                    <LabChip
+                      key={r}
+                      label={`${r} Hz`}
+                      selected={patch.lfoRate === r}
+                      onPress={() => update({ lfoRate: r })}
+                      onLongPress={() => openLesson('lfo')}
+                    />
+                  ))}
+                  {LFO_DEPTHS.map((d) => (
+                    <LabChip
+                      key={d.label}
+                      label={d.label}
+                      selected={patch.lfoDepth === d.v}
+                      onPress={() => update({ lfoDepth: d.v })}
+                      onLongPress={() => openLesson('lfo')}
+                    />
+                  ))}
+                </View>
+                <View style={styles.chipRow}>
+                  {LFO_DESTS.map((d) => (
+                    <LabChip
+                      key={d.label}
+                      label={d.label}
+                      selected={patch.lfoDest === d.v}
+                      onPress={() => update({ lfoDest: d.v })}
+                      onLongPress={() => openLesson('lfo')}
+                    />
+                  ))}
+                </View>
+              </View>
+            ),
+          },
+          {
+            kind: 'group',
+            id: 'seq',
+            label: 'SEQ',
+            valueLabel: patch.seqOn ? `${patch.seqRate}/s` : 'OFF',
+            helpKey: 'sequencer',
+            render: () => (
+              <View style={{ gap: 10 }}>
+                <Text style={styles.sectionHead}>SEQUENCER — 8 STEPS (TAP TO CYCLE · ✕ = REST)</Text>
+                <View style={styles.chipRow}>
+                  <LabChip
+                    label={patch.seqOn ? 'SEQ ON' : 'SEQ OFF'}
+                    selected={patch.seqOn}
+                    onPress={() => update({ seqOn: !patch.seqOn })}
+                    onLongPress={() => openLesson('sequencer')}
+                  />
+                  {SEQ_RATES.map((r) => (
+                    <LabChip
+                      key={r}
+                      label={`${r}/s`}
+                      selected={patch.seqRate === r}
+                      onPress={() => update({ seqRate: r })}
+                      onLongPress={() => openLesson('sequencer')}
+                    />
+                  ))}
+                </View>
+                <View style={styles.stepRow}>
+                  {patch.steps.map((s, i) => (
+                    <View key={i} style={{ flex: 1 }}>
+                      <LabChip
+                        label={s < 0 ? '✕' : `+${s}`}
+                        selected={running && patch.seqOn && activeStep === i}
+                        onPress={() => cycleStep(i)}
+                        onLongPress={() => openLesson('sequencer')}
+                      />
+                    </View>
+                  ))}
+                </View>
+                <Text style={styles.caption}>
+                  Steps are semitone offsets from {BASE_FREQ} Hz; each active step retunes the VCO
+                  and retriggers the envelope. The lit step (in the tray AND on the diagram's SEQ
+                  LEDs) is the REAL native sequencer position.
+                </Text>
+              </View>
+            ),
+          },
+        ],
+      }}
     >
       {!engineReady ? <EngineGate state={gate} /> : null}
 
-      <CollapsibleSection title="DISPLAY">
-        {/* HERO — the live patch-flow diagram (its env meter and step LEDs are
-            the lab's REAL readouts — native modStatus, §1.7). */}
-        <View style={styles.panelCard}>
-          <Text style={styles.badge}>SIGNAL FLOW — THE ACTUAL NATIVE PATH · ACTIVE ROUTINGS LIT</Text>
-          <PatchDiagram patch={patch} envLevel={envLevel} activeStep={activeStep} running={running} onBox={openLesson} />
-          <Text style={styles.caption}>
-            Audio (top row): VCO → VCF → VCA → output stage. Modulators (bottom): the envelope
-            always drives the VCA; everything else is a routing you choose. Tap any box for what it
-            does.
-          </Text>
-          <DisplayGuideButton onPress={() => openLesson('display')} />
-        </View>
-      </CollapsibleSection>
-
-      <CollapsibleSection title="CONTROLS">
-        <Text style={styles.sectionHead}>PATCH IDEAS — CLASSIC ROUTINGS</Text>
-      <View style={styles.chipRow}>
-        {PATCH_IDEAS.map((p) => (
-          <LabChip
-            key={p.key}
-            label={p.label}
-            selected={patchKey === p.key}
-            onPress={() => update(p.patch, p.key)}
-            onLongPress={() => openLesson(`patch_${p.key}`)}
-          />
-        ))}
-      </View>
-      {patchKey ? (
-        <Text style={styles.whyText}>{PATCH_IDEAS.find((p) => p.key === patchKey)!.why}</Text>
-      ) : null}
-
-      <Text style={styles.sectionHead}>VCO — OSCILLATOR</Text>
-      <View style={styles.chipRow}>
-        {SHAPES.map((s) => (
-          <LabChip
-            key={s.label}
-            label={s.label}
-            selected={patch.shape === s.v}
-            onPress={() => update({ shape: s.v })}
-            onLongPress={() => openLesson('vco')}
-          />
-        ))}
-      </View>
-
-      <Text style={styles.sectionHead}>VCF — FILTER</Text>
-      <View style={styles.chipRow}>
-        {CUTOFFS.map((c) => (
-          <LabChip
-            key={c}
-            label={c >= 1000 ? `${c / 1000}k` : `${c}`}
-            selected={patch.cutoff === c}
-            onPress={() => update({ cutoff: c })}
-            onLongPress={() => openLesson('vcf')}
-          />
-        ))}
-        {RESONANCES.map((r) => (
-          <LabChip
-            key={r.label}
-            label={r.label}
-            selected={patch.res === r.v}
-            onPress={() => update({ res: r.v })}
-            onLongPress={() => openLesson('vcf')}
-          />
-        ))}
-      </View>
-
-      <Text style={styles.sectionHead}>ENVELOPE (ADSR) — VCA + OPTIONAL → CUTOFF</Text>
-      <View style={styles.chipRow}>
-        {ENV_PRESETS.map((e) => (
-          <LabChip
-            key={e.key}
-            label={e.label}
-            selected={patch.envKey === e.key}
-            onPress={() => update({ envKey: e.key })}
-            onLongPress={() => openLesson('envelope')}
-          />
-        ))}
-        {ENV_TO_CUT.map((e) => (
-          <LabChip
-            key={e.label}
-            label={e.label}
-            selected={patch.envToCut === e.v}
-            onPress={() => update({ envToCut: e.v })}
-            onLongPress={() => openLesson('envelope')}
-          />
-        ))}
-      </View>
-
-      <Text style={styles.sectionHead}>LFO — ONE MODULATOR, THREE EFFECTS</Text>
-      <View style={styles.chipRow}>
-        {LFO_RATES.map((r) => (
-          <LabChip
-            key={r}
-            label={`${r} Hz`}
-            selected={patch.lfoRate === r}
-            onPress={() => update({ lfoRate: r })}
-            onLongPress={() => openLesson('lfo')}
-          />
-        ))}
-        {LFO_DEPTHS.map((d) => (
-          <LabChip
-            key={d.label}
-            label={d.label}
-            selected={patch.lfoDepth === d.v}
-            onPress={() => update({ lfoDepth: d.v })}
-            onLongPress={() => openLesson('lfo')}
-          />
-        ))}
-      </View>
-      <View style={styles.chipRow}>
-        {LFO_DESTS.map((d) => (
-          <LabChip
-            key={d.label}
-            label={d.label}
-            selected={patch.lfoDest === d.v}
-            onPress={() => update({ lfoDest: d.v })}
-            onLongPress={() => openLesson('lfo')}
-          />
-        ))}
-      </View>
-
-      <Text style={styles.sectionHead}>SEQUENCER — 8 STEPS (TAP TO CYCLE · ✕ = REST)</Text>
-      <View style={styles.chipRow}>
-        <LabChip
-          label={patch.seqOn ? 'SEQ ON' : 'SEQ OFF'}
-          selected={patch.seqOn}
-          onPress={() => update({ seqOn: !patch.seqOn })}
-          onLongPress={() => openLesson('sequencer')}
-        />
-        {SEQ_RATES.map((r) => (
-          <LabChip
-            key={r}
-            label={`${r}/s`}
-            selected={patch.seqRate === r}
-            onPress={() => update({ seqRate: r })}
-            onLongPress={() => openLesson('sequencer')}
-          />
-        ))}
-      </View>
-      <View style={styles.stepRow}>
-        {patch.steps.map((s, i) => (
-          <View key={i} style={{ flex: 1 }}>
-            <LabChip
-              label={s < 0 ? '✕' : `+${s}`}
-              selected={running && patch.seqOn && activeStep === i}
-              onPress={() => cycleStep(i)}
-              onLongPress={() => openLesson('sequencer')}
-            />
-          </View>
-        ))}
-      </View>
+      <View style={{ gap: 6 }}>
+        <Text style={styles.sectionHead}>READING THE DIAGRAM</Text>
         <Text style={styles.caption}>
-          Steps are semitone offsets from {BASE_FREQ} Hz; each active step retunes the VCO and
-          retriggers the envelope. The lit step is the REAL native sequencer position.
+          Audio (top row): VCO → VCF → VCA → output stage. Modulators (bottom): the envelope
+          always drives the VCA; everything else is a routing you choose. Tap any box for what it
+          does.
         </Text>
-      </CollapsibleSection>
+        <Text style={styles.caption}>
+          Every drawn cable is an ACTIVE routing — nothing decorative. The env meter in the ENV box
+          and the lit sequencer step read the real native modStatus while running.
+        </Text>
+      </View>
 
-      <CollapsibleSection title="ACTIONS">
+      <View style={{ gap: 6 }}>
+        <Text style={styles.sectionHead}>THE VOICE, AS SOUND</Text>
         {/* AUDIO — engine-gated ≥ v7, honest below. RUN/PLAY lives in the
             header (▶ = run sequence with SEQ on, play drone with it off). */}
         {engineReady ? (
@@ -448,7 +538,7 @@ export function ModularLabScreen() {
             </Text>
           )
         ) : null}
-      </CollapsibleSection>
+      </View>
 
       <GuidedLessonSheet
         visible={lessonOpen}
@@ -462,7 +552,10 @@ export function ModularLabScreen() {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-const D_H = 176;
+// Routing identity colors — shared by the cables/boxes AND the bezel tints.
+const LFO_COLOR = '#6fa8ff';
+const ENV_COLOR = '#5bff85';
+const SEQ_COLOR = '#ff8d7a';
 
 /** The live patch-flow diagram: audio boxes VCO→VCF→VCA→OUT on top, mod
  *  sources LFO · ENV · SEQ below; patch cables drawn ONLY for active routings
@@ -470,14 +563,21 @@ const D_H = 176;
  *  box doubles as the REAL env meter while running; the SEQ box carries 8 step
  *  LEDs lit from the REAL native sequencer position. 2026-07-29 visual-
  *  standards re-skin: gradient module plates with screws + engraved labels,
- *  sagging glow-stroked cables with jack plugs — same layout, taps, and state. */
+ *  sagging glow-stroked cables with jack plugs — same layout, taps, and state.
+ *  2026-08-23: sized by the stage's (w, h) instead of self-measuring — the mod
+ *  row anchors to the bottom so the cables gain sag room on the tall glass. */
 function PatchDiagram({
+  w,
+  h,
   patch,
   envLevel,
   activeStep,
   running,
   onBox,
 }: {
+  /** Stage glass inner size (RackUnit's stage.render contract). */
+  w: number;
+  h: number;
   patch: Patch;
   envLevel: number;
   /** REAL native sequencer position (−1 when idle) — lights the step LEDs. */
@@ -486,14 +586,12 @@ function PatchDiagram({
   /** Tap a box → open that section's "what it does" help. */
   onBox: (key: string) => void;
 }) {
-  const [w, setW] = useState(0);
-  if (w <= 0) {
-    return <View onLayout={(e) => setW(Math.round(e.nativeEvent.layout.width))} style={{ height: D_H }} />;
-  }
   const boxW = Math.min(74, (w - 60) / 4);
   const boxH = 34;
   const topY = 22;
-  const botY = 112;
+  // Mod row rides the bottom edge (footer strip below it); never collides with
+  // the audio row even on a hard-clamped short glass.
+  const botY = Math.max(topY + boxH + 24, h - 64);
   const xs = [0, 1, 2, 3].map((i) => 10 + i * ((w - 20 - boxW) / 3));
   const audio = ['VCO', 'VCF', 'VCA', 'OUT'];
   const audioKeys = ['vco', 'vcf', 'vca', 'out'];
@@ -552,14 +650,14 @@ function PatchDiagram({
     );
   };
 
-  const lfoColor = '#6fa8ff';
-  const envColor = '#5bff85';
-  const seqColor = '#ff8d7a';
+  const lfoColor = LFO_COLOR;
+  const envColor = ENV_COLOR;
+  const seqColor = SEQ_COLOR;
   const envW = (boxW - 4) * Math.max(0, Math.min(1, envLevel));
 
   return (
-    <View onLayout={(e) => setW(Math.round(e.nativeEvent.layout.width))}>
-      <Svg width={w} height={D_H}>
+    <View>
+      <Svg width={w} height={h}>
         <Defs>
           <LinearGradient id="mdBg" x1="0" y1="0" x2="0" y2="1">
             <Stop offset="0%" stopColor="#14141a" />
@@ -576,7 +674,7 @@ function PatchDiagram({
             <Stop offset="100%" stopColor="#52525c" />
           </RadialGradient>
         </Defs>
-        <Rect x={0} y={0} width={w} height={D_H} rx={8} fill="url(#mdBg)" />
+        <Rect x={0} y={0} width={w} height={h} rx={8} fill="url(#mdBg)" />
         {/* Audio path: glow-backed amber run with arrowheads. */}
         {[0, 1, 2].map((i) => {
           const y = topY + boxH / 2;
@@ -665,10 +763,10 @@ function PatchDiagram({
             </G>
           );
         })}
-        <SvgText x={10} y={D_H - 6} fill="#4a4a52" fontSize={9}>
+        <SvgText x={10} y={h - 6} fill="#4a4a52" fontSize={9}>
           audio path
         </SvgText>
-        <SvgText x={w - 10} y={D_H - 6} fill="#4a4a52" fontSize={9} textAnchor="end">
+        <SvgText x={w - 10} y={h - 6} fill="#4a4a52" fontSize={9} textAnchor="end">
           mod sources — cables = active routings
         </SvgText>
       </Svg>
@@ -683,13 +781,4 @@ const styles = StyleSheet.create({
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   whyText: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17, color: colors.textSecondary },
   error: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: '#ff6b5e' },
-  panelCard: {
-    gap: 8,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#131316',
-    padding: 12,
-  },
-  badge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.2, color: colors.textSub },
 });

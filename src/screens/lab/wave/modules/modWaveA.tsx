@@ -16,13 +16,20 @@
  *
  * Memo stability contract: all dragged/slid METER values snap to 0.05 m so
  * the heat-map memo key stays stable; scenes keep ≤ 2 sources.
+ *
+ * RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23): all 8 modules are converted —
+ * each declares `rack` on WaveLayout: the scene PINS on the stage glass
+ * (RoomSceneView letterboxes itself into w×h), the headline readouts print on
+ * the bezel, and every control rides the dock (faders on the lane; materials/
+ * modes as sticky option trays; layers as a group tray; polarity/diffuser as
+ * toggles; MOVE MIC as actions). Prose, full readout grids, secondary curves,
+ * mistakes and checks scroll in the well.
  */
 import { useCallback, useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
-import { DisplayGuideButton } from '../../../../features/lab/guidedLessons';
 import { ResponseCurveGraph, type ResponseCurve } from '../../../../features/lab/fxViz';
 import { LabChip } from '../../LabShell';
-import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
+import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
 import { Badge, PanelCard, ReadoutGrid, dstyles } from '../../digital/bits';
 import { useLabPhoto } from '../../labPhoto';
 import { MATERIAL_PHOTOS } from '../materialPhotos';
@@ -150,35 +157,39 @@ function RoomView({
 function BarrierView({
   viz,
   width,
+  height,
   focused,
   freq,
   barrierH01,
 }: {
   viz: WaveVizModule;
   width: number;
+  height?: number;
   focused: boolean;
   freq: number;
   barrierH01: number;
 }) {
   const phase = viz.usePhaseClock(focused, visHzFor(freq));
-  return <viz.BarrierSceneView width={width} freq={freq} barrierH01={barrierH01} phase={phase} />;
+  return <viz.BarrierSceneView width={width} height={height} freq={freq} barrierH01={barrierH01} phase={phase} />;
 }
 
 function GradientView({
   viz,
   width,
+  height,
   focused,
   gradient01,
   wind01,
 }: {
   viz: WaveVizModule;
   width: number;
+  height?: number;
   focused: boolean;
   gradient01: number;
   wind01: number;
 }) {
   const phase = viz.usePhaseClock(focused, 0.5);
-  return <viz.GradientSceneView width={width} gradient01={gradient01} wind01={wind01} phase={phase} />;
+  return <viz.GradientSceneView width={width} height={height} gradient01={gradient01} wind01={wind01} phase={phase} />;
 }
 
 /** PRESSURE / HEAT / RAYS / ARRIVALS layer chips (v4 §10.1 launch set). */
@@ -203,6 +214,11 @@ function LayerChips({
     </View>
   );
 }
+
+/** Dock LAYERS value — first letters of the active layer chips ('OFF' if none;
+ *  W = WAVE FIELD, this file's label for the heat layer). */
+const layersShort = (l: WaveLayers) =>
+  [l.pressure && 'P', l.heat && 'W', l.rays && 'R', l.arrivals && 'A'].filter(Boolean).join('·') || 'OFF';
 
 /** The spec's per-module Common Mistakes (§9) — embedded verbatim-faithful. */
 function MistakesCard({ items }: { items: string[] }) {
@@ -296,6 +312,83 @@ export function ReflectionModule(p: WaveModuleProps) {
 
   return (
     <WaveLayout
+      rack={{
+        size: 'L',
+        badge: HONESTY,
+        onHelp: p.help,
+        onGuide: () => p.help('layers'),
+        initialParam: 'freq',
+        bezel: [
+          { k: 'DIRECT', v: direct ? fmtMs(direct.t) : '—', helpKey: 'reflection' },
+          { k: '1ST REFL', v: first ? fmtMs(first.t) : '—', helpKey: 'reflection' },
+          {
+            k: 'REFL LVL',
+            v: firstRelDb != null ? `${firstRelDb <= -0.05 ? '−' : ''}${Math.abs(firstRelDb).toFixed(1)} dB` : '—',
+            helpKey: 'reflection',
+          },
+          {
+            k: 'LOSS/BNC',
+            v: alpha >= 0.999 ? 'TOTAL' : `${(-10 * Math.log10(1 - alpha)).toFixed(1)} dB`,
+            helpKey: 'materials',
+          },
+        ],
+        stage: (w, h) =>
+          viz ? (
+            <RoomView
+              viz={viz}
+              width={w}
+              height={h}
+              focused={p.focused}
+              scene={scene}
+              freq={freq}
+              layers={layers}
+              onDragSource={onDragSource}
+              onDragListener={onDragListener}
+            />
+          ) : (
+            <VizUnavailableCard />
+          ),
+        params: [
+          {
+            kind: 'fader',
+            id: 'freq',
+            label: 'FREQ',
+            value: logFrac(freq, 63, 8000),
+            onChange: (v) => setFreq(fracLog(v, 63, 8000)),
+            format: () => fmtHz(freq),
+            helpKey: 'reflection',
+          },
+          {
+            kind: 'options',
+            id: 'mat',
+            label: 'MAT',
+            valueLabel: MATERIALS[mat].label.slice(0, 5).toUpperCase(),
+            selectedId: mat,
+            onSelect: (id) => setMat(id as MaterialKey),
+            sticky: true,
+            helpKey: 'materials',
+            options: REFLECTION_MATS.map((m) => ({
+              id: m,
+              label: MATERIALS[m].label.toUpperCase(),
+              photoHint: !!MATERIAL_PHOTOS[m],
+              // foam/fiberglass long-press → their reference photo; others → the lesson.
+              onLongPress: () => {
+                const photo = MATERIAL_PHOTOS[m];
+                if (photo) openPhoto(photo.file, photo.caption);
+                else p.help('materials');
+              },
+            })),
+          },
+          {
+            kind: 'group',
+            id: 'layers',
+            label: 'LAYERS',
+            valueLabel: layersShort(layers),
+            helpKey: 'layers',
+            render: () => <LayerChips layers={layers} onChange={setLayers} help={p.help} raysKey="image_source" />,
+          },
+        ],
+      }}
       explain={
         <PanelCard>
           <Text style={dstyles.eyebrow}>ANGLE FROM THE NORMAL</Text>
@@ -312,60 +405,16 @@ export function ReflectionModule(p: WaveModuleProps) {
             level in one move — nothing behind the wall is making sound. The PATH DIFFERENCE it predicts
             is the exact time offset that carves comb filters in Module 7.
           </Text>
+          <Text style={dstyles.caption}>
+            Drag the source and the listener on the display — the rays and arrival numbers re-solve instantly.
+          </Text>
         </PanelCard>
       }
-      readouts={<ReadoutGrid items={readouts} help={p.help} helpKey="reflection" />}
-      layers={<LayerChips layers={layers} onChange={setLayers} help={p.help} raysKey="image_source" />}
-      display={
-        <>
-          {viz ? (
-            <RoomView
-              viz={viz}
-              width={p.width}
-              focused={p.focused}
-              scene={scene}
-              freq={freq}
-              layers={layers}
-              onDragSource={onDragSource}
-              onDragListener={onDragListener}
-            />
-          ) : (
-            <VizUnavailableCard />
-          )}
-          <Badge text={HONESTY} />
-          <Text style={dstyles.caption}>
-            Drag the source and the listener — the rays and arrival numbers re-solve instantly.
-          </Text>
-        </>
-      }
-      guide={<DisplayGuideButton onPress={() => p.help('layers')} />}
-      controls={
-        <>
-          <DragSlider
-            value={logFrac(freq, 63, 8000)}
-            onChange={(v) => setFreq(fracLog(v, 63, 8000))}
-            label="REFLECTED FREQUENCY"
-            readout={fmtHz(freq)}
-            onHelp={() => p.help('reflection')}
-          />
-          <View style={dstyles.chipRow}>
-            {REFLECTION_MATS.map((m) => (
-              <LabChip
-                key={m}
-                label={MATERIALS[m].label.toUpperCase()}
-                selected={mat === m}
-                photoHint={!!MATERIAL_PHOTOS[m]}
-                onPress={() => setMat(m)}
-                // foam/fiberglass long-press → their reference photo; others → the lesson.
-                onLongPress={() => {
-                  const photo = MATERIAL_PHOTOS[m];
-                  if (photo) openPhoto(photo.file, photo.caption);
-                  else p.help('materials');
-                }}
-              />
-            ))}
-          </View>
-        </>
+      readouts={
+        <PanelCard>
+          <Text style={dstyles.eyebrow}>AT THE LISTENER</Text>
+          <ReadoutGrid items={readouts} help={p.help} helpKey="reflection" />
+        </PanelCard>
       }
       mistakes={<MistakesCard items={REFLECTION_MISTAKES} />}
       check={<CheckQuestion spec={REFLECTION_CHECK} />}
@@ -434,6 +483,75 @@ export function AbsorptionModule(p: WaveModuleProps) {
 
   return (
     <WaveLayout
+      rack={{
+        size: 'L',
+        badge: HONESTY,
+        onHelp: p.help,
+        onGuide: () => p.help('layers'),
+        initialParam: 'freq',
+        bezel: [
+          { k: `α @ ${fmtHz(freq)}`, v: alpha.toFixed(2), flex: 1.2, helpKey: 'absorption' },
+          { k: '1 BOUNCE', v: `${((1 - alpha) * 100).toFixed(0)} %`, helpKey: 'absorption' },
+          { k: 'α 125 HZ', v: alphaAt(mat, 125).toFixed(2), helpKey: 'absorption' },
+          { k: 'α 4 KHZ', v: alphaAt(mat, 4000).toFixed(2), helpKey: 'absorption' },
+        ],
+        stage: (w, h) =>
+          viz ? (
+            <RoomView
+              viz={viz}
+              width={w}
+              height={h}
+              focused={p.focused}
+              scene={scene}
+              freq={freq}
+              layers={layers}
+              onDragSource={onDragSource}
+              onDragListener={onDragListener}
+            />
+          ) : (
+            <VizUnavailableCard />
+          ),
+        params: [
+          {
+            kind: 'fader',
+            id: 'freq',
+            label: 'FREQ',
+            value: logFrac(freq, 63, 8000),
+            onChange: (v) => setFreq(fracLog(v, 63, 8000)),
+            format: () => fmtHz(freq),
+            helpKey: 'absorption',
+          },
+          {
+            kind: 'options',
+            id: 'mat',
+            label: 'MAT',
+            valueLabel: MATERIALS[mat].label.slice(0, 5).toUpperCase(),
+            selectedId: mat,
+            onSelect: (id) => setMat(id as MaterialKey),
+            sticky: true,
+            helpKey: 'materials',
+            options: ABSORB_MATS.map((m) => ({
+              id: m,
+              label: MATERIALS[m].label.toUpperCase(),
+              photoHint: !!MATERIAL_PHOTOS[m],
+              // foam/fiberglass long-press → their reference photo; others → the lesson.
+              onLongPress: () => {
+                const photo = MATERIAL_PHOTOS[m];
+                if (photo) openPhoto(photo.file, photo.caption);
+                else p.help('materials');
+              },
+            })),
+          },
+          {
+            kind: 'group',
+            id: 'layers',
+            label: 'LAYERS',
+            valueLabel: layersShort(layers),
+            helpKey: 'layers',
+            render: () => <LayerChips layers={layers} onChange={setLayers} help={p.help} />,
+          },
+        ],
+      }}
       explain={
         <PanelCard>
           <Text style={dstyles.eyebrow}>WHY BASS SURVIVES</Text>
@@ -451,63 +569,15 @@ export function AbsorptionModule(p: WaveModuleProps) {
             wall is isolation — mass, decoupling and sealing — a different job entirely. A foam-lined
             room can sound dead inside and still leak like a sieve.
           </Text>
+          <Text style={dstyles.caption}>Treat the walls (MAT key) — every boundary takes the material you pick.</Text>
         </PanelCard>
       }
       readouts={
-        <>
+        <PanelCard>
+          <Text style={dstyles.eyebrow}>ABSORPTION & DECAY</Text>
           <ReadoutGrid items={readouts} help={p.help} helpKey="absorption" />
           <Badge text="SABINE RT TREATS THE 2-D ROOM AS 3 m TALL — TEXTBOOK TEACHING α VALUES, NOT ISO 354 PRODUCT DATA" />
-        </>
-      }
-      layers={<LayerChips layers={layers} onChange={setLayers} help={p.help} />}
-      display={
-        <>
-          {viz ? (
-            <RoomView
-              viz={viz}
-              width={p.width}
-              focused={p.focused}
-              scene={scene}
-              freq={freq}
-              layers={layers}
-              onDragSource={onDragSource}
-              onDragListener={onDragListener}
-            />
-          ) : (
-            <VizUnavailableCard />
-          )}
-          <Badge text={HONESTY} />
-          <Text style={dstyles.caption}>Treat the walls — every boundary takes the material you pick.</Text>
-        </>
-      }
-      guide={<DisplayGuideButton onPress={() => p.help('layers')} />}
-      controls={
-        <>
-          <DragSlider
-            value={logFrac(freq, 63, 8000)}
-            onChange={(v) => setFreq(fracLog(v, 63, 8000))}
-            label="ABSORPTION FREQUENCY"
-            readout={fmtHz(freq)}
-            onHelp={() => p.help('absorption')}
-          />
-          <View style={dstyles.chipRow}>
-            {ABSORB_MATS.map((m) => (
-              <LabChip
-                key={m}
-                label={MATERIALS[m].label.toUpperCase()}
-                selected={mat === m}
-                photoHint={!!MATERIAL_PHOTOS[m]}
-                onPress={() => setMat(m)}
-                // foam/fiberglass long-press → their reference photo; others → the lesson.
-                onLongPress={() => {
-                  const photo = MATERIAL_PHOTOS[m];
-                  if (photo) openPhoto(photo.file, photo.caption);
-                  else p.help('materials');
-                }}
-              />
-            ))}
-          </View>
-        </>
+        </PanelCard>
       }
       mistakes={<MistakesCard items={ABSORB_MISTAKES} />}
       check={<CheckQuestion spec={ABSORB_CHECK} />}
@@ -574,6 +644,75 @@ export function DiffusionModule(p: WaveModuleProps) {
 
   return (
     <WaveLayout
+      rack={{
+        size: 'L',
+        badge: HONESTY,
+        onHelp: p.help,
+        onGuide: () => p.help('diffusion'),
+        initialParam: 'depth',
+        bezel: [
+          { k: 'TOP WALL', v: diffuser ? 'DIFFUSER' : 'FLAT', helpKey: 'diffusion' },
+          { k: 'DEPTH', v: fmtM(depth), helpKey: 'diffusion_depth' },
+          { k: 'MIN ƒ', v: fmtHz(fLow), helpKey: 'diffusion_depth' },
+          {
+            k: `@ ${fmtHz(freq)}`,
+            v: !diffuser ? 'SPECULAR' : scatters ? 'SCATTERED' : 'BELOW ƒ',
+            helpKey: 'diffusion',
+          },
+        ],
+        stage: (w, h) =>
+          viz ? (
+            <RoomView
+              viz={viz}
+              width={w}
+              height={h}
+              focused={p.focused}
+              scene={scene}
+              freq={freq}
+              layers={layers}
+              onDragSource={onDragSource}
+              onDragListener={onDragListener}
+            />
+          ) : (
+            <VizUnavailableCard />
+          ),
+        params: [
+          {
+            kind: 'fader',
+            id: 'depth',
+            label: 'DEPTH',
+            value: (depth - 0.05) / 0.55,
+            onChange: (v) => setDepth(clampSnap(0.05 + v * 0.55, 0.05, 0.6)),
+            format: () => fmtM(depth),
+            helpKey: 'diffusion_depth',
+          },
+          {
+            kind: 'fader',
+            id: 'freq',
+            label: 'FREQ',
+            value: logFrac(freq, 125, 8000),
+            onChange: (v) => setFreq(fracLog(v, 125, 8000)),
+            format: () => fmtHz(freq),
+            helpKey: 'diffusion',
+          },
+          {
+            kind: 'toggle',
+            id: 'diffuser',
+            label: 'DIFFUSER',
+            value: diffuser,
+            onToggle: () => setDiffuser(!diffuser),
+            helpKey: 'diffusion',
+          },
+          {
+            kind: 'group',
+            id: 'layers',
+            label: 'LAYERS',
+            valueLabel: layersShort(layers),
+            helpKey: 'layers',
+            render: () => <LayerChips layers={layers} onChange={setLayers} help={p.help} />,
+          },
+        ],
+      }}
       explain={
         <PanelCard>
           <Text style={dstyles.eyebrow}>SCATTER ≠ REMOVE</Text>
@@ -594,54 +733,12 @@ export function DiffusionModule(p: WaveModuleProps) {
           </Text>
         </PanelCard>
       }
-      readouts={<ReadoutGrid items={readouts} help={p.help} helpKey="diffusion" />}
-      layers={<LayerChips layers={layers} onChange={setLayers} help={p.help} />}
-      display={
-        <>
-          {viz ? (
-            <RoomView
-              viz={viz}
-              width={p.width}
-              focused={p.focused}
-              scene={scene}
-              freq={freq}
-              layers={layers}
-              onDragSource={onDragSource}
-              onDragListener={onDragListener}
-            />
-          ) : (
-            <VizUnavailableCard />
-          )}
-          <Badge text={HONESTY} />
+      readouts={
+        <PanelCard>
+          <Text style={dstyles.eyebrow}>DIFFUSER STATUS</Text>
+          <ReadoutGrid items={readouts} help={p.help} helpKey="diffusion" />
           <Badge text="THE ENGINE DRAWS THE SPECULAR RAY — A DIFFUSER FANS THAT SAME ENERGY INTO MANY DIM RAYS FROM THE BOUNCE POINT: SPREAD, NOT REMOVED" />
-        </>
-      }
-      guide={<DisplayGuideButton onPress={() => p.help('diffusion')} />}
-      controls={
-        <>
-          <DragSlider
-            value={(depth - 0.05) / 0.55}
-            onChange={(v) => setDepth(clampSnap(0.05 + v * 0.55, 0.05, 0.6))}
-            label="DIFFUSER DEPTH"
-            readout={fmtM(depth)}
-            onHelp={() => p.help('diffusion_depth')}
-          />
-          <DragSlider
-            value={logFrac(freq, 125, 8000)}
-            onChange={(v) => setFreq(fracLog(v, 125, 8000))}
-            label="FREQUENCY"
-            readout={fmtHz(freq)}
-            onHelp={() => p.help('diffusion')}
-          />
-          <View style={dstyles.chipRow}>
-            <LabChip
-              label={diffuser ? 'DIFFUSER ON (TOP WALL)' : 'DIFFUSER OFF'}
-              selected={diffuser}
-              onPress={() => setDiffuser(!diffuser)}
-              onLongPress={() => p.help('diffusion')}
-            />
-          </View>
-        </>
+        </PanelCard>
       }
       mistakes={<MistakesCard items={DIFFUSION_MISTAKES} />}
       check={<CheckQuestion spec={DIFFUSION_CHECK} />}
@@ -693,8 +790,52 @@ export function RefractionModule(p: WaveModuleProps) {
     { k: 'RAY @ 150 m (FROM 2 m)', v: rayH <= 0 ? 'AT THE GROUND — HEARD' : `${rayH.toFixed(1)} m UP` },
   ];
 
+  const gradReadout = grad > 0.1 ? 'INVERSION (warm aloft)' : grad < -0.1 ? 'LAPSE (cool aloft)' : 'NEUTRAL';
+  const windReadout = wind < 0.05 ? 'CALM' : `${(wind * 12).toFixed(0)} m/s aloft`;
+
   return (
     <WaveLayout
+      rack={{
+        size: 'L',
+        badge: HONESTY,
+        onHelp: p.help,
+        onGuide: () => p.help('refraction'),
+        initialParam: 'grad',
+        bezel: [
+          { k: 'c GROUND', v: `${cGround.toFixed(1)} m/s`, helpKey: 'refraction' },
+          { k: `c ALOFT ${tempAloft.toFixed(0)}°`, v: `${cAloft.toFixed(1)} m/s`, flex: 1.15, helpKey: 'refraction' },
+          { k: 'BEND', v: grad > 0.1 ? 'DOWN' : grad < -0.1 ? 'UP' : 'STRAIGHT', helpKey: 'refraction' },
+          { k: 'RAY @150m', v: rayH <= 0 ? 'GROUND' : `${rayH.toFixed(1)} m UP`, helpKey: 'refraction' },
+        ],
+        stage: (w, h) =>
+          viz ? (
+            <GradientView viz={viz} width={w} height={h} focused={p.focused} gradient01={grad} wind01={wind} />
+          ) : (
+            <VizUnavailableCard />
+          ),
+        params: [
+          {
+            kind: 'fader',
+            id: 'grad',
+            label: 'GRAD',
+            value: (grad + 1) / 2,
+            onChange: (v) => setGrad(clampSnap(v * 2 - 1, -1, 1)),
+            format: () => gradReadout,
+            formatShort: () => (grad > 0.1 ? 'INVERS' : grad < -0.1 ? 'LAPSE' : 'NEUT'),
+            helpKey: 'refraction',
+          },
+          {
+            kind: 'fader',
+            id: 'wind',
+            label: 'WIND',
+            value: wind,
+            onChange: (v) => setWind(clampSnap(v, 0, 1)),
+            format: () => windReadout,
+            formatShort: () => (wind < 0.05 ? 'CALM' : `${(wind * 12).toFixed(0)}m/s`),
+            helpKey: 'refraction',
+          },
+        ],
+      }}
       explain={
         <PanelCard>
           <Text style={dstyles.eyebrow}>WHY SOUND CARRIES AT NIGHT AND OVER WATER</Text>
@@ -716,36 +857,12 @@ export function RefractionModule(p: WaveModuleProps) {
           </Text>
         </PanelCard>
       }
-      readouts={<ReadoutGrid items={readouts} help={p.help} helpKey="refraction" />}
-      display={
-        <>
-          {viz ? (
-            <GradientView viz={viz} width={p.width} focused={p.focused} gradient01={grad} wind01={wind} />
-          ) : (
-            <VizUnavailableCard />
-          )}
-          <Badge text={HONESTY} />
+      readouts={
+        <PanelCard>
+          <Text style={dstyles.eyebrow}>SOUND SPEED & RAY</Text>
+          <ReadoutGrid items={readouts} help={p.help} helpKey="refraction" />
           <Badge text="LINEAR-GRADIENT RAY MODEL — ALOFT ≈ ±8 °C AT HEIGHT (DISCLOSED TEACHING SCALE)" />
-        </>
-      }
-      guide={<DisplayGuideButton onPress={() => p.help('refraction')} />}
-      controls={
-        <>
-          <DragSlider
-            value={(grad + 1) / 2}
-            onChange={(v) => setGrad(clampSnap(v * 2 - 1, -1, 1))}
-            label="GRADIENT — LAPSE ↔︎ INVERSION"
-            readout={grad > 0.1 ? 'INVERSION (warm aloft)' : grad < -0.1 ? 'LAPSE (cool aloft)' : 'NEUTRAL'}
-            onHelp={() => p.help('refraction')}
-          />
-          <DragSlider
-            value={wind}
-            onChange={(v) => setWind(clampSnap(v, 0, 1))}
-            label="WIND SHEAR"
-            readout={wind < 0.05 ? 'CALM' : `${(wind * 12).toFixed(0)} m/s aloft`}
-            onHelp={() => p.help('refraction')}
-          />
-        </>
+        </PanelCard>
       }
       mistakes={<MistakesCard items={REFRACTION_MISTAKES} />}
       check={<CheckQuestion spec={REFRACTION_CHECK} />}
@@ -804,6 +921,52 @@ export function DiffractionModule(p: WaveModuleProps) {
 
   return (
     <WaveLayout
+      rack={{
+        size: 'L',
+        badge: HONESTY,
+        onHelp: p.help,
+        onGuide: () => p.help('diffraction'),
+        initialParam: 'freq',
+        bezel: [
+          { k: 'λ', v: fmtM(lambda), helpKey: 'diffraction' },
+          { k: 'BARRIER', v: fmtM(barrierH), helpKey: 'diffraction' },
+          { k: 'FRESNEL N', v: N.toFixed(2), helpKey: 'diffraction' },
+          { k: `LOSS @ ${fmtHz(freq)}`, v: `${loss.toFixed(1)} dB`, flex: 1.25, helpKey: 'diffraction' },
+        ],
+        stage: (w, h) =>
+          viz ? (
+            <BarrierView
+              viz={viz}
+              width={w}
+              height={h}
+              focused={p.focused}
+              freq={freq}
+              barrierH01={(barrierH - 2) / 6}
+            />
+          ) : (
+            <VizUnavailableCard />
+          ),
+        params: [
+          {
+            kind: 'fader',
+            id: 'freq',
+            label: 'FREQ',
+            value: logFrac(freq, 63, 8000),
+            onChange: (v) => setFreq(fracLog(v, 63, 8000)),
+            format: () => fmtHz(freq),
+            helpKey: 'diffraction',
+          },
+          {
+            kind: 'fader',
+            id: 'barrier',
+            label: 'BARRIER',
+            value: (barrierH - 2) / 6,
+            onChange: (v) => setBarrierH(clampSnap(2 + v * 6, 2, 8)),
+            format: () => fmtM(barrierH),
+            helpKey: 'diffraction',
+          },
+        ],
+      }}
       explain={
         <PanelCard>
           <Text style={dstyles.eyebrow}>LOWS WRAP, HIGHS SHADOW</Text>
@@ -823,42 +986,12 @@ export function DiffractionModule(p: WaveModuleProps) {
           </Text>
         </PanelCard>
       }
-      readouts={<ReadoutGrid items={readouts} help={p.help} helpKey="diffraction" />}
-      display={
-        <>
-          {viz ? (
-            <BarrierView
-              viz={viz}
-              width={p.width}
-              focused={p.focused}
-              freq={freq}
-              barrierH01={(barrierH - 2) / 6}
-            />
-          ) : (
-            <VizUnavailableCard />
-          )}
-          <Badge text={HONESTY} />
+      readouts={
+        <PanelCard>
+          <Text style={dstyles.eyebrow}>MAEKAWA NUMBERS</Text>
+          <ReadoutGrid items={readouts} help={p.help} helpKey="diffraction" />
           <Badge text="MAEKAWA KNIFE-EDGE · FIXED GEOMETRY: SOURCE 10 m BEFORE THE BARRIER, LISTENER 10 m BEYOND, BOTH AT 1.5 m" />
-        </>
-      }
-      guide={<DisplayGuideButton onPress={() => p.help('diffraction')} />}
-      controls={
-        <>
-          <DragSlider
-            value={(barrierH - 2) / 6}
-            onChange={(v) => setBarrierH(clampSnap(2 + v * 6, 2, 8))}
-            label="BARRIER HEIGHT"
-            readout={fmtM(barrierH)}
-            onHelp={() => p.help('diffraction')}
-          />
-          <DragSlider
-            value={logFrac(freq, 63, 8000)}
-            onChange={(v) => setFreq(fracLog(v, 63, 8000))}
-            label="FREQUENCY"
-            readout={fmtHz(freq)}
-            onHelp={() => p.help('diffraction')}
-          />
-        </>
+        </PanelCard>
       }
       mistakes={<MistakesCard items={DIFFRACTION_MISTAKES} />}
       check={<CheckQuestion spec={DIFFRACTION_CHECK} />}
@@ -947,6 +1080,71 @@ export function InterferenceModule(p: WaveModuleProps) {
 
   return (
     <WaveLayout
+      rack={{
+        size: 'L',
+        badge: HONESTY,
+        onHelp: p.help,
+        onGuide: () => p.help('layers'),
+        initialParam: 'freq',
+        bezel: [
+          { k: 'S1 PATH', v: fmtM(r1), helpKey: 'interference' },
+          { k: 'S2 PATH', v: fmtM(r2), helpKey: 'interference' },
+          { k: 'Δ PATH', v: `${((r2 - r1) / lambda).toFixed(2)} λ`, helpKey: 'interference' },
+          { k: 'LEVEL', v: fmtDb(level), helpKey: 'interference' },
+        ],
+        stage: (w, h) =>
+          viz ? (
+            <RoomView
+              viz={viz}
+              width={w}
+              height={h}
+              focused={p.focused}
+              scene={scene}
+              freq={freq}
+              layers={layers}
+              onDragSource={onDragSource}
+              onDragListener={onDragListener}
+            />
+          ) : (
+            <VizUnavailableCard />
+          ),
+        params: [
+          {
+            kind: 'fader',
+            id: 'freq',
+            label: 'FREQ',
+            value: logFrac(freq, 63, 2000),
+            onChange: (v) => setFreq(Math.max(63, Math.round(fracLog(v, 63, 2000) / 5) * 5)),
+            format: () => fmtHz(freq),
+            helpKey: 'interference',
+          },
+          {
+            kind: 'fader',
+            id: 'delay',
+            label: 'DELAY',
+            value: s2.delayMs / 10,
+            onChange: (v) => setDelay(Math.round(v * 100) / 10),
+            format: () => `${s2.delayMs.toFixed(1)} ms`,
+            helpKey: 'interference',
+          },
+          {
+            kind: 'toggle',
+            id: 'pol',
+            label: 'POL Ø S2',
+            value: s2.polarity === -1,
+            onToggle: flipPolarity,
+            helpKey: 'interference',
+          },
+          {
+            kind: 'group',
+            id: 'layers',
+            label: 'LAYERS',
+            valueLabel: layersShort(layers),
+            helpKey: 'layers',
+            render: () => <LayerChips layers={layers} onChange={setLayers} help={p.help} />,
+          },
+        ],
+      }}
       explain={
         <PanelCard>
           <Text style={dstyles.eyebrow}>NULLS ARE APPOINTMENTS — A PLACE AND A FREQUENCY</Text>
@@ -963,59 +1161,17 @@ export function InterferenceModule(p: WaveModuleProps) {
             between +6 dB and a dead null — which is exactly why system techs walk the venue instead
             of trusting one measurement position.
           </Text>
+          <Text style={dstyles.caption}>
+            Drag BOTH sources and the listener on the display. Source 2 carries the DELAY and POL Ø controls.
+          </Text>
         </PanelCard>
       }
-      readouts={<ReadoutGrid items={readouts} help={p.help} helpKey="interference" />}
-      layers={<LayerChips layers={layers} onChange={setLayers} help={p.help} />}
-      display={
-        <>
-          {viz ? (
-            <RoomView
-              viz={viz}
-              width={p.width}
-              focused={p.focused}
-              scene={scene}
-              freq={freq}
-              layers={layers}
-              onDragSource={onDragSource}
-              onDragListener={onDragListener}
-            />
-          ) : (
-            <VizUnavailableCard />
-          )}
-          <Badge text={HONESTY} />
+      readouts={
+        <PanelCard>
+          <Text style={dstyles.eyebrow}>AT THE LISTENER</Text>
+          <ReadoutGrid items={readouts} help={p.help} helpKey="interference" />
           <Badge text="BOUNDARIES SET TO OPENINGS (FREE FIELD) — ONLY THE TWO DIRECT WAVES INTERFERE · LEVEL IS dB RE ONE SOURCE AT 1 m" />
-          <Text style={dstyles.caption}>
-            Drag BOTH sources and the listener. Source 2 carries the delay and polarity controls.
-          </Text>
-        </>
-      }
-      guide={<DisplayGuideButton onPress={() => p.help('layers')} />}
-      controls={
-        <>
-          <DragSlider
-            value={s2.delayMs / 10}
-            onChange={(v) => setDelay(Math.round(v * 100) / 10)}
-            label="DELAY — S2"
-            readout={`${s2.delayMs.toFixed(1)} ms`}
-            onHelp={() => p.help('interference')}
-          />
-          <DragSlider
-            value={logFrac(freq, 63, 2000)}
-            onChange={(v) => setFreq(Math.max(63, Math.round(fracLog(v, 63, 2000) / 5) * 5))}
-            label="OUTPUT FREQUENCY — BOTH SOURCES"
-            readout={fmtHz(freq)}
-            onHelp={() => p.help('interference')}
-          />
-          <View style={dstyles.chipRow}>
-            <LabChip
-              label="POLARITY Ø — S2"
-              selected={s2.polarity === -1}
-              onPress={flipPolarity}
-              onLongPress={() => p.help('interference')}
-            />
-          </View>
-        </>
+        </PanelCard>
       }
       mistakes={<MistakesCard items={INTERFERENCE_MISTAKES} />}
       check={<CheckQuestion spec={INTERFERENCE_CHECK} />}
@@ -1102,6 +1258,55 @@ export function CombModule(p: WaveModuleProps) {
 
   return (
     <WaveLayout
+      rack={{
+        size: 'L',
+        badge: HONESTY,
+        onHelp: p.help,
+        onGuide: () => p.help('comb'),
+        initialParam: 'wall',
+        bezel: [
+          { k: 'Δt', v: dt > 0 ? `${(dt * 1000).toFixed(2)} ms` : '—', helpKey: 'comb' },
+          { k: '1ST NULL', v: firstNull > 0 ? fmtHz(firstNull) : '—', helpKey: 'comb' },
+          { k: 'SPACING', v: spacing > 0 ? fmtHz(spacing) : '—', helpKey: 'comb' },
+          { k: 'MIC→WALL', v: fmtM(scene.w - lx), helpKey: 'comb' },
+        ],
+        stage: (w, h) =>
+          viz ? (
+            <RoomView
+              viz={viz}
+              width={w}
+              height={h}
+              focused={p.focused}
+              scene={scene}
+              freq={freq}
+              layers={layers}
+              onDragListener={onDragListener}
+            />
+          ) : (
+            <VizUnavailableCard />
+          ),
+        params: [
+          {
+            kind: 'fader',
+            id: 'wall',
+            label: 'WALL',
+            value: (scene.w - 3) / 7,
+            onChange: (v) => setRoomW(clampSnap(3 + v * 7, 3, 10)),
+            format: () => fmtM(scene.w),
+            helpKey: 'comb',
+          },
+          { kind: 'action', id: 'micL', label: '← MIC', onPress: () => nudgeMic(-0.15) },
+          { kind: 'action', id: 'micR', label: 'MIC →', onPress: () => nudgeMic(0.15) },
+          {
+            kind: 'group',
+            id: 'layers',
+            label: 'LAYERS',
+            valueLabel: layersShort(layers),
+            helpKey: 'layers',
+            render: () => <LayerChips layers={layers} onChange={setLayers} help={p.help} raysKey="image_source" />,
+          },
+        ],
+      }}
       explain={
         <PanelCard>
           <Text style={dstyles.body}>
@@ -1118,51 +1323,22 @@ export function CombModule(p: WaveModuleProps) {
             bare wall. Comb filtering is delay-plus-sum, not resonance: the room stores nothing here —
             unlike the standing waves of Module 8.
           </Text>
+          <Text style={dstyles.caption}>← MIC / MIC → nudge the mic 0.15 m — six inches — per press.</Text>
         </PanelCard>
       }
-      readouts={<ReadoutGrid items={readouts} help={p.help} helpKey="comb" />}
-      layers={<LayerChips layers={layers} onChange={setLayers} help={p.help} raysKey="image_source" />}
-      display={
-        <>
-          {viz ? (
-            <RoomView
-              viz={viz}
-              width={p.width}
-              focused={p.focused}
-              scene={scene}
-              freq={freq}
-              layers={layers}
-              onDragListener={onDragListener}
-            />
-          ) : (
-            <VizUnavailableCard />
-          )}
-          <Badge text={HONESTY} />
+      readouts={
+        <PanelCard>
+          <Text style={dstyles.eyebrow}>AT THE MIC</Text>
+          <ReadoutGrid items={readouts} help={p.help} helpKey="comb" />
           <Badge text="ONE SOURCE + ONE REFLECTIVE WALL (RIGHT) — THE OTHER BOUNDARIES ARE OPENINGS" />
-        </>
+        </PanelCard>
       }
       secondary={
-        <>
+        <PanelCard>
           <Text style={dstyles.eyebrow}>RESPONSE AT THE LISTENER — 100 Hz TO 8 kHz AND BEYOND</Text>
           <ResponseCurveGraph curves={curves} dbRange={18} height={150} />
           <Badge text="COMPUTED FROM THE SCENE’S DIRECT + REFLECTED ARRIVALS (responseAt) · 0 dB = DIRECT SOUND ALONE" />
-        </>
-      }
-      guide={<DisplayGuideButton onPress={() => p.help('comb')} />}
-      controls={
-        <>
-          <DragSlider
-            value={(scene.w - 3) / 7}
-            onChange={(v) => setRoomW(clampSnap(3 + v * 7, 3, 10))}
-            label="MOVE THE WALL — ROOM WIDTH"
-            readout={fmtM(scene.w)}
-            onHelp={() => p.help('comb')}
-          />
-          <View style={dstyles.chipRow}>
-            <LabChip label="MOVE MIC ← 0.15 m" selected={false} onPress={() => nudgeMic(-0.15)} onLongPress={() => p.help('comb')} />
-            <LabChip label="MOVE MIC → 0.15 m" selected={false} onPress={() => nudgeMic(0.15)} onLongPress={() => p.help('comb')} />
-          </View>
-        </>
+        </PanelCard>
       }
       mistakes={<MistakesCard items={COMB_MISTAKES} />}
       check={<CheckQuestion spec={COMB_CHECK} />}
@@ -1238,6 +1414,74 @@ export function StandingWaveModule(p: WaveModuleProps) {
 
   return (
     <WaveLayout
+      rack={{
+        size: 'L',
+        badge: HONESTY,
+        onHelp: p.help,
+        onGuide: () => p.help('standing_wave'),
+        initialParam: 'w',
+        bezel: [
+          { k: `MODE (${nx},${ny})`, v: fmtHz(freq), flex: 1.15, helpKey: 'standing_wave' },
+          { k: 'TYPE', v: nx > 0 && ny > 0 ? 'TANGENTIAL' : 'AXIAL', helpKey: 'standing_wave' },
+          { k: 'PRESSURE', v: `${(mag * 100).toFixed(0)} %`, helpKey: 'standing_wave' },
+          {
+            k: 'VERDICT',
+            v: mag < 0.2 ? 'NODE' : mag > 0.8 ? 'ANTINODE' : 'BETWEEN',
+            helpKey: 'standing_wave',
+          },
+        ],
+        stage: (w, h) =>
+          viz ? (
+            <RoomView
+              viz={viz}
+              width={w}
+              height={h}
+              focused={p.focused}
+              scene={scene}
+              freq={freq}
+              layers={layers}
+              mode="modal"
+              modal={{ nx, ny }}
+              onDragListener={onDragListener}
+            />
+          ) : (
+            <VizUnavailableCard />
+          ),
+        params: [
+          {
+            kind: 'fader',
+            id: 'w',
+            label: 'WIDTH',
+            value: (scene.w - 2) / 8,
+            onChange: (v) => setW(clampSnap(2 + v * 8, 2, 10)),
+            format: () => fmtM(scene.w),
+            helpKey: 'room_builder',
+          },
+          {
+            kind: 'fader',
+            id: 'h',
+            label: 'DEPTH',
+            value: (scene.h - 2) / 8,
+            onChange: (v) => setH(clampSnap(2 + v * 8, 2, 10)),
+            format: () => fmtM(scene.h),
+            helpKey: 'room_builder',
+          },
+          {
+            kind: 'options',
+            id: 'mode',
+            label: 'MODE',
+            valueLabel: `(${nx},${ny})`,
+            selectedId: `${nx},${ny}`,
+            onSelect: (id) => {
+              const i = MODE_LIST.findIndex((m) => `${m.nx},${m.ny}` === id);
+              if (i >= 0) setModeIdx(i);
+            },
+            sticky: true,
+            helpKey: 'standing_wave',
+            options: MODE_LIST.map((m) => ({ id: `${m.nx},${m.ny}`, label: `(${m.nx},${m.ny})` })),
+          },
+        ],
+      }}
       explain={
         <PanelCard>
           <Text style={dstyles.eyebrow}>NODES vs ANTINODES — POSITION IS EVERYTHING</Text>
@@ -1260,59 +1504,12 @@ export function StandingWaveModule(p: WaveModuleProps) {
           </Text>
         </PanelCard>
       }
-      readouts={<ReadoutGrid items={readouts} help={p.help} helpKey="standing_wave" />}
-      layers={
-        <View style={dstyles.chipRow}>
-          {MODE_LIST.map((m, i) => (
-            <LabChip
-              key={`${m.nx}-${m.ny}`}
-              label={`(${m.nx},${m.ny})`}
-              selected={modeIdx === i}
-              onPress={() => setModeIdx(i)}
-              onLongPress={() => p.help('standing_wave')}
-            />
-          ))}
-        </View>
-      }
-      display={
-        <>
-          {viz ? (
-            <RoomView
-              viz={viz}
-              width={p.width}
-              focused={p.focused}
-              scene={scene}
-              freq={freq}
-              layers={layers}
-              mode="modal"
-              modal={{ nx, ny }}
-              onDragListener={onDragListener}
-            />
-          ) : (
-            <VizUnavailableCard />
-          )}
-          <Badge text={HONESTY} />
+      readouts={
+        <PanelCard>
+          <Text style={dstyles.eyebrow}>THIS MODE</Text>
+          <ReadoutGrid items={readouts} help={p.help} helpKey="standing_wave" />
           <Badge text="MODAL PRESSURE MAP — BRIGHT = ANTINODE (PRESSURE MAX), DARK = NODE (PRESSURE MIN) · DRAG THE LISTENER THROUGH IT" />
-        </>
-      }
-      guide={<DisplayGuideButton onPress={() => p.help('standing_wave')} />}
-      controls={
-        <>
-          <DragSlider
-            value={(scene.w - 2) / 8}
-            onChange={(v) => setW(clampSnap(2 + v * 8, 2, 10))}
-            label="ROOM WIDTH"
-            readout={fmtM(scene.w)}
-            onHelp={() => p.help('room_builder')}
-          />
-          <DragSlider
-            value={(scene.h - 2) / 8}
-            onChange={(v) => setH(clampSnap(2 + v * 8, 2, 10))}
-            label="ROOM DEPTH"
-            readout={fmtM(scene.h)}
-            onHelp={() => p.help('room_builder')}
-          />
-        </>
+        </PanelCard>
       }
       mistakes={<MistakesCard items={STANDING_MISTAKES} />}
       check={<CheckQuestion spec={STANDING_CHECK} />}

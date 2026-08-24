@@ -4,16 +4,17 @@
  * this teaches the INTERACTIONS — what each module feeds the next changes
  * what the next one does.
  *
- * Teaching design:
- *  - The CHAIN DIAGRAM is the hero: Source → EQ → Comp → Gate → Dist → Mod →
- *    Delay → Reverb → Stereo → Limiter → Out, each module a tappable pill
- *    (amber = in the chain, dim = bypassed). Tap toggles it LIVE.
- *  - SCENARIO chips light up multi-module combinations that demonstrate the
- *    signature interactions (EQ boost → comp pumping; delay feeding reverb;
- *    gate on a click; the full chain) — one tap, then tweak by toggling.
- *  - THREE live GR meters (comp/gate/limiter, real fxGrStatus) make the
- *    interactions measurable: enable the bass boost and WATCH the compressor
- *    work harder — that is EQ→comp, seen.
+ * RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23, owner-approved): the CHAIN
+ * DIAGRAM is the hero and PINS on the stage — Source → EQ → Comp → Gate →
+ * Dist → Mod → Delay → Reverb → Stereo → Limiter → Out, each module a
+ * tappable pill (amber = in the chain, dim = bypassed; tap toggles it LIVE) —
+ * with the three live GR meters (comp/gate/limiter, real fxGrStatus) in a
+ * compact row on the same glass: toggle a module and WATCH the dynamics
+ * react, nothing scrolls away. Bezel = source / chain count / scenario /
+ * transport state. Dock: SCENARIO and SOURCE as sticky trays (A/B while the
+ * chain re-lights), CLEAR CHAIN in the scenario tray (reset-in-container);
+ * PLAY/STOP is the compact HeaderPlayButton. Teaching prose scrolls in the
+ * well.
  *
  * HONESTY (§1.7): modules run their lab-default teaching parameters (each
  * module's full controls live in its own lab — stated on screen); the chain
@@ -26,16 +27,15 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { ApeDsp, FX, FX_PARAM, EQ_BAND_TYPES, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
-import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
-import { GuidedLessonSheet, getLabLesson, SOURCE_LESSON, DisplayGuideButton, type LessonContent } from '../../features/lab/guidedLessons';
+import { GuidedLessonSheet, getLabLesson, SOURCE_LESSON, type LessonContent } from '../../features/lab/guidedLessons';
 import { GrMeter } from '../../features/lab/fxViz';
 import { LabReviewButton } from '../../features/lab/LabReviewButton';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
-import { LabShell, LabChip } from './LabShell';
+import { LabShell, HeaderPlayButton } from './LabShell';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -104,34 +104,35 @@ const DEFAULTS: Record<number, FxOp[]> = {
   ],
 };
 
-/** Scenario presets — each demonstrates a signature INTERACTION. */
-const SCENARIOS: { key: string; label: string; enable: number[]; sourceIdx: number; lesson: string }[] = [
+/** Scenario presets — each demonstrates a signature INTERACTION.
+ *  `short` = the dock-button/bezel value (~7 mono chars). */
+const SCENARIOS: { key: string; label: string; short: string; enable: number[]; sourceIdx: number; lesson: string }[] = [
   {
-    key: 'bass_comp', label: 'EQ BOOST → COMP', enable: [FX.eq, FX.comp], sourceIdx: 1,
+    key: 'bass_comp', label: 'EQ BOOST → COMP', short: 'EQ→COMP', enable: [FX.eq, FX.comp], sourceIdx: 1,
     lesson: 'The +9 dB low shelf feeds the compressor MORE bass — watch its GR rise: EQ before compression changes what the compressor reacts to.',
   },
   {
-    key: 'delay_reverb', label: 'DELAY → REVERB', enable: [FX.delay, FX.reverb], sourceIdx: 0,
+    key: 'delay_reverb', label: 'DELAY → REVERB', short: 'DLY→REV', enable: [FX.delay, FX.reverb], sourceIdx: 0,
     lesson: 'Each echo excites the reverb — repeats get washed into space. Reverb→delay would echo the WASH instead: order is a creative choice.',
   },
   {
-    key: 'gate_click', label: 'GATE THE CLICK', enable: [FX.gate], sourceIdx: 0,
+    key: 'gate_click', label: 'GATE THE CLICK', short: 'GATE', enable: [FX.gate], sourceIdx: 0,
     lesson: 'The gate opens on every hit and slams shut between — watch its GR drop to zero on each click and return in the silence.',
   },
   {
-    key: 'squash', label: 'HOT INTO LIMITER', enable: [FX.eq, FX.comp, FX.limiter], sourceIdx: 1,
+    key: 'squash', label: 'HOT INTO LIMITER', short: 'SQUASH', enable: [FX.eq, FX.comp, FX.limiter], sourceIdx: 1,
     lesson: 'Boost + compression makeup run hot into the limiter, which flattens what is left — bad gain-staging squashes. Watch BOTH meters.',
   },
   {
-    key: 'full', label: 'FULL CHAIN', enable: [FX.eq, FX.comp, FX.delay, FX.reverb, FX.stereo, FX.limiter], sourceIdx: 0,
+    key: 'full', label: 'FULL CHAIN', short: 'FULL', enable: [FX.eq, FX.comp, FX.delay, FX.reverb, FX.stereo, FX.limiter], sourceIdx: 0,
     lesson: 'The whole path lit. Toggle modules one at a time — the difference between the sum and the parts IS the interaction.',
   },
 ];
 
-const SOURCES: { label: string; gen: GenParams; srcKey: string }[] = [
-  { label: 'CLICK 90', gen: { mode: GEN_MODES.click, clickBpm: 90 }, srcKey: 'click' },
-  { label: 'PINK NOISE', gen: { mode: GEN_MODES.pink }, srcKey: 'pink' },
-  { label: 'SINE 220', gen: { mode: GEN_MODES.sine, frequency: 220 }, srcKey: 'sine' },
+const SOURCES: { label: string; short: string; gen: GenParams; srcKey: string }[] = [
+  { label: 'CLICK 90', short: 'CLICK', gen: { mode: GEN_MODES.click, clickBpm: 90 }, srcKey: 'click' },
+  { label: 'PINK NOISE', short: 'PINK', gen: { mode: GEN_MODES.pink }, srcKey: 'pink' },
+  { label: 'SINE 220', short: 'SINE', gen: { mode: GEN_MODES.sine, frequency: 220 }, srcKey: 'sine' },
 ];
 
 export function SignalChainLabScreen() {
@@ -256,8 +257,20 @@ export function SignalChainLabScreen() {
     }
   };
 
+  /** Empty the chain (scenario-tray ⟲ — reset-in-container). Live = go dry. */
+  const clearChain = () => {
+    setEnabled({});
+    setScenarioKey(null);
+    if (running) {
+      pushChain({});
+      noteAudioActivity();
+    }
+  };
+
   const scenario = scenarioKey ? SCENARIOS.find((s) => s.key === scenarioKey) : null;
   const anyOn = MODULES.some((m) => enabled[m.id]);
+  const chainCount = MODULES.filter((m) => enabled[m.id]).length;
+  const anyDyn = !!(enabled[FX.comp] || enabled[FX.gate] || enabled[FX.limiter]);
 
   return (
     <LabShell
@@ -266,108 +279,140 @@ export function SignalChainLabScreen() {
       subtitle="The capstone — effects interact"
       intro={getLabLesson('chain').whatItIs}
       exploreCaption="Tap modules in or out of the chain — or start from a scenario that demonstrates a signature interaction."
+      headerAction={
+        <HeaderPlayButton
+          playing={running}
+          disabled={!fxReady}
+          onPress={() => (running ? stop() : void start())}
+          label={running ? 'Stop' : anyOn ? 'Play the chain' : 'Play (chain empty — dry)'}
+        />
+      }
+      rack={{
+        // No continuous params in this lab (modules run lab defaults — each
+        // module's fader lives in its OWN lab), so no fader binds the lane;
+        // the id is nominal and the frame hides the lane.
+        initialParam: 'scenario',
+        onHelp: openLesson,
+        stage: {
+          size: 'L', // the chain diagram IS the lab — earns the tall glass
+          badge: 'MODULES RUN LAB-DEFAULT SETTINGS — GR METERS MEASURED, LIVE',
+          onGuide: () => openLesson('display'),
+          bezel: [
+            { k: 'SRC', v: SOURCES[sourceIdx].label },
+            { k: 'CHAIN', v: `${chainCount}/9`, helpKey: 'module_toggle' },
+            { k: 'SCENE', v: scenario?.short ?? (anyOn ? 'CUSTOM' : '—'), flex: 1.4, helpKey: 'chain_order' },
+            { k: 'OUT', v: running ? 'LIVE' : 'IDLE', helpKey: 'gain_staging' },
+          ],
+          render: (_w, h) => (
+            <View style={[styles.stageInner, { height: h }]}>
+              {/* THE CHAIN — the hero. Tap a module to toggle it LIVE. */}
+              <View style={{ gap: 6 }}>
+                <Text style={styles.stageHead}>THE CHAIN — CANONICAL ORDER (tap a module to toggle it)</Text>
+                <View style={styles.chainWrap}>
+                  <Text style={styles.chainEnd}>SRC</Text>
+                  {MODULES.map((m) => (
+                    <View key={m.id} style={styles.chainSeg}>
+                      <Text style={styles.chainArrow}>→</Text>
+                      <Pressable
+                        onPress={() => toggleModule(m.id)}
+                        onLongPress={() => openLesson('module_toggle')}
+                        delayLongPress={350}
+                        style={[styles.node, enabled[m.id] && styles.nodeOn]}
+                        accessibilityRole="button"
+                        accessibilityState={{ selected: !!enabled[m.id] }}
+                        accessibilityLabel={`${m.label} ${enabled[m.id] ? 'in the chain' : 'bypassed'}`}
+                      >
+                        <Text style={[styles.nodeText, enabled[m.id] && styles.nodeTextOn]}>{m.label}</Text>
+                      </Pressable>
+                    </View>
+                  ))}
+                  <Text style={styles.chainArrow}>→</Text>
+                  <Text style={styles.chainEnd}>OUT</Text>
+                </View>
+              </View>
+              {/* LIVE GR — the interaction made measurable (real engine
+                  readout), a compact row on the same glass so a toggle and its
+                  meter reaction are co-visible. Long-press for the lesson. */}
+              {anyDyn ? (
+                <Pressable
+                  style={{ gap: 6 }}
+                  onLongPress={() => openLesson('gain_reduction')}
+                  delayLongPress={350}
+                  accessibilityRole="button"
+                  accessibilityLabel="Gain-reduction meters — what they show"
+                >
+                  <Text style={styles.stageHead}>GAIN REDUCTION — LIVE (measured per module)</Text>
+                  <View style={styles.grRow}>
+                    {enabled[FX.comp] ? (
+                      <View style={styles.grCell}><GrMeter grDb={running ? gr.comp : 0} label="COMP" /></View>
+                    ) : null}
+                    {enabled[FX.gate] ? (
+                      <View style={styles.grCell}><GrMeter grDb={running ? gr.gate : 0} maxDb={70} label="GATE" /></View>
+                    ) : null}
+                    {enabled[FX.limiter] ? (
+                      <View style={styles.grCell}><GrMeter grDb={running ? gr.limiter : 0} label="LIMIT" /></View>
+                    ) : null}
+                  </View>
+                </Pressable>
+              ) : null}
+            </View>
+          ),
+        },
+        params: [
+          {
+            kind: 'options',
+            id: 'scenario',
+            label: 'SCENARIO',
+            valueLabel: scenario?.short ?? (anyOn ? 'CUSTOM' : '—'),
+            options: SCENARIOS.map((s) => ({ id: s.key, label: s.label })),
+            selectedId: scenarioKey,
+            onSelect: applyScenario,
+            sticky: true, // A/B interactions while the chain re-lights — the lesson
+            onReset: { label: 'CLEAR CHAIN', onPress: clearChain },
+            helpKey: 'chain_order',
+          },
+          {
+            kind: 'options',
+            id: 'source',
+            label: 'SOURCE',
+            valueLabel: SOURCES[sourceIdx].short,
+            options: SOURCES.map((s) => ({
+              id: s.srcKey,
+              label: s.label,
+              // Source long-presses keep their OWN lesson book (SOURCE_LESSON).
+              onLongPress: () => openSourceHelp(s.srcKey),
+            })),
+            selectedId: SOURCES[sourceIdx].srcKey,
+            onSelect: (id) => {
+              const i = SOURCES.findIndex((s) => s.srcKey === id);
+              if (i < 0) return;
+              setSourceIdx(i);
+              if (running) {
+                ApeDsp.genSet({ levelDb: GEN_LEVEL_DB, ...SOURCES[i].gen });
+                noteAudioActivity();
+              }
+            },
+            sticky: true, // hear the SAME chain on click vs noise vs sine
+          },
+        ],
+      }}
     >
       {!engineReady ? <EngineGate state={gate} /> : null}
 
-      <View style={styles.chipRow}>
-        <LabChip label="ⓘ GUIDED LESSON" selected={lessonOpen} onPress={() => openLesson()} />
-      </View>
+      <Text style={styles.caption}>
+        Modules run their lab-default teaching settings — each module’s full controls live in its
+        own lab. The order is the fixed canonical order; WHY it matters is in the ⓘ mistakes.
+      </Text>
 
-      {/* THE CHAIN — the hero. Tap a module to toggle it. */}
-      <View style={styles.panelCard}>
-        <Text style={styles.badge}>THE CHAIN — CANONICAL ORDER (tap a module to toggle it)</Text>
-        <View style={styles.chainWrap}>
-          <Text style={styles.chainEnd}>SRC</Text>
-          {MODULES.map((m) => (
-            <View key={m.id} style={styles.chainSeg}>
-              <Text style={styles.chainArrow}>→</Text>
-              <Pressable
-                onPress={() => toggleModule(m.id)}
-                onLongPress={() => openLesson('module_toggle')}
-                delayLongPress={350}
-                style={[styles.node, enabled[m.id] && styles.nodeOn]}
-                accessibilityRole="button"
-                accessibilityState={{ selected: !!enabled[m.id] }}
-                accessibilityLabel={`${m.label} ${enabled[m.id] ? 'in the chain' : 'bypassed'}`}
-              >
-                <Text style={[styles.nodeText, enabled[m.id] && styles.nodeTextOn]}>{m.label}</Text>
-              </Pressable>
-            </View>
-          ))}
-          <Text style={styles.chainArrow}>→</Text>
-          <Text style={styles.chainEnd}>OUT</Text>
-        </View>
-        <Text style={styles.caption}>
-          Modules run their lab-default teaching settings — each module’s full controls live in its
-          own lab. The order is the fixed canonical order; WHY it matters is in the ⓘ mistakes.
-        </Text>
-        <DisplayGuideButton onPress={() => openLesson('display')} />
-      </View>
-
-      <Text style={styles.sectionHead}>SCENARIOS — SIGNATURE INTERACTIONS</Text>
-      <View style={styles.chipRow}>
-        {SCENARIOS.map((s) => (
-          <LabChip
-            key={s.key}
-            label={s.label}
-            selected={scenarioKey === s.key}
-            onPress={() => applyScenario(s.key)}
-            onLongPress={() => openLesson('chain_order')}
-          />
-        ))}
-      </View>
       {scenario ? <Text style={styles.scenarioLesson}>{scenario.lesson}</Text> : null}
-
-      <Text style={styles.sectionHead}>SOURCE</Text>
-      <View style={styles.chipRow}>
-        {SOURCES.map((s, i) => (
-          <LabChip
-            key={s.label}
-            label={s.label}
-            selected={sourceIdx === i}
-            onPress={() => {
-              setSourceIdx(i);
-              if (running) {
-                ApeDsp.genSet({ levelDb: GEN_LEVEL_DB, ...s.gen });
-                noteAudioActivity();
-              }
-            }}
-            onLongPress={() => openSourceHelp(s.srcKey)}
-          />
-        ))}
-      </View>
-
-      {/* LIVE GR — the interaction made measurable (real engine readout).
-          Long-press for what the meters show. */}
-      {enabled[FX.comp] || enabled[FX.gate] || enabled[FX.limiter] ? (
-        <Pressable
-          style={styles.panelCard}
-          onLongPress={() => openLesson('gain_reduction')}
-          delayLongPress={350}
-          accessibilityRole="button"
-          accessibilityLabel="Gain-reduction meters — what they show"
-        >
-          <Text style={styles.badge}>GAIN REDUCTION — LIVE (measured per module)</Text>
-          {enabled[FX.comp] ? <GrMeter grDb={running ? gr.comp : 0} label="COMPRESSOR" /> : null}
-          {enabled[FX.gate] ? <GrMeter grDb={running ? gr.gate : 0} maxDb={70} label="GATE" /> : null}
-          {enabled[FX.limiter] ? <GrMeter grDb={running ? gr.limiter : 0} label="LIMITER" /> : null}
-        </Pressable>
-      ) : null}
 
       {engineReady ? (
         fxReady ? (
           <>
-            <GlassButton
-              label={running ? 'STOP' : anyOn ? 'PLAY THE CHAIN' : 'PLAY (CHAIN EMPTY — DRY)'}
-              tint="green"
-              height={52}
-              fontSize={15}
-              onPress={() => (running ? stop() : void start())}
-            />
             <Text style={styles.caption}>
               {`${SOURCES[sourceIdx].label.toLowerCase()} → ${
                 MODULES.filter((m) => enabled[m.id]).map((m) => m.label.toLowerCase()).join(' → ') || '(nothing)'
-              } → output. Toggle modules while it plays.`}
+              } → output. Toggle modules while it plays (header ▶).`}
             </Text>
             {genError ? <Text style={styles.error}>{genError}</Text> : null}
           </>
@@ -393,20 +438,15 @@ export function SignalChainLabScreen() {
 }
 
 const styles = StyleSheet.create({
-  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  sectionHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.5, color: colors.amber },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   scenarioLesson: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: colors.textSecondary },
   error: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: '#ff6b5e' },
-  panelCard: {
-    gap: 10,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#131316',
-    padding: 12,
-  },
-  badge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.2, color: colors.textSub },
+
+  // Stage: chain diagram on top, GR meter row anchored below on the same glass.
+  stageInner: { padding: 10, justifyContent: 'space-between', gap: 8 },
+  stageHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.2, color: colors.textSub },
+  grRow: { flexDirection: 'row', gap: 10 },
+  grCell: { flex: 1 },
 
   chainWrap: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 4 },
   chainSeg: { flexDirection: 'row', alignItems: 'center', gap: 4 },

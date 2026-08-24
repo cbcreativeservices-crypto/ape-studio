@@ -5,9 +5,14 @@
  * deliberately OUT of tune (fixed cents offsets), and the corrected pitch
  * bends onto the grid according to CORRECTION AMOUNT and RETUNE SPEED.
  *
- * LAYOUT v2 (owner 2026-07-29): collapsible READOUTS → DISPLAY → CONTROLS →
- * ACTIONS sections; PLAY/STOP is the compact HeaderPlayButton via LabShell's
- * headerAction; the shell renders the Guided-Lesson entry row itself.
+ * RACK UNIT layout (APE_LAB_UX_PROPOSAL 2026-08-23): the cents grid pins on
+ * the stage (it IS the lab — tall glass) with AMOUNT/SPEED/NOTE/ENDS bezel
+ * readouts; the dock carries the CORRECTION AMOUNT fader (pre-bound lane —
+ * the parameter is continuous 0–100% by nature, the old 0/50/100 chips were
+ * a discrete stand-in), the RETUNE SPEED tray (sticky — A/B while the curves
+ * redraw) and the PLAY key (LED = melody running; the owner's 2026-08-05
+ * "header ▶ alone is easy to miss" visible-transport rule, dock-sized). Only
+ * the teaching prose scrolls in the well.
  *
  * GENERATOR DEMO (honest): there is NO microphone here — the "singer" is the
  * app's own tone generator, so the correction is real, audible retuning of a
@@ -18,7 +23,8 @@
  * LOCKSTEP RULE (fxViz discipline): the drawn correction curve and the audio
  * glide are THE SAME exponential — f(t) in cents = c₀·(1−amount) + c₀·amount·
  * e^(−t/τ) — sampled by SVG for the graph and by the 20 Hz update loop for the
- * generator. What you see IS what you hear.
+ * generator. What you see IS what you hear. A control change ends any running
+ * pass (the pass corrects with ONE setting), so graph and audio never diverge.
  */
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -27,12 +33,11 @@ import Svg, { Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { ApeDsp, GEN_MODES } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
-import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../features/lab/guidedLessons';
+import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
-import { GlassButton } from '../../components/GlassButton';
-import { LabShell, LabChip, CollapsibleSection, HeaderPlayButton } from './LabShell';
+import { LabShell, HeaderPlayButton } from './LabShell';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -54,16 +59,10 @@ const MELODY: { midi: number; offCents: number }[] = [
   { midi: 57, offCents: -28 }, // A3, flat
 ];
 
-const AMOUNTS = [
-  { key: 0, label: '0% — OFF' },
-  { key: 0.5, label: '50%' },
-  { key: 1, label: '100%' },
-] as const;
-
 const SPEEDS = [
-  { key: 'fast', label: 'FAST — SNAP', tau: 0.025 },
-  { key: 'med', label: 'MEDIUM', tau: 0.12 },
-  { key: 'slow', label: 'SLOW — GLIDE', tau: 0.4 },
+  { key: 'fast', label: 'FAST — SNAP', short: 'FAST', tau: 0.025 },
+  { key: 'med', label: 'MEDIUM', short: 'MEDIUM', tau: 0.12 },
+  { key: 'slow', label: 'SLOW — GLIDE', short: 'SLOW', tau: 0.4 },
 ] as const;
 
 /** THE correction curve (cents relative to the note's grid target) — shared by
@@ -79,6 +78,9 @@ function voicePayload(hz: number): number[] {
   const amps = [1, 0.35, 0.2, 0.12, 0.08, 0, 0, 0, 0, 0, 0, 0];
   return [hz, ...amps, ...new Array(12).fill(0)];
 }
+
+/** Fader readout — 0 reads "OFF" (the old "0% — OFF" chip, kept honest). */
+const fmtAmount = (amount: number) => (amount <= 0.005 ? 'OFF' : `${Math.round(amount * 100)}%`);
 
 const INTRO =
   'Every note has a target line on the cents grid — one vertical line per semitone. This ' +
@@ -96,7 +98,9 @@ export function AutotuneLabScreen() {
   const engineReady = gate === 'idle';
   const additiveReady = engineReady && ApeDsp.engineVersion() >= 3;
 
-  const [amount, setAmount] = useState<(typeof AMOUNTS)[number]['key']>(1);
+  // Correction amount is continuous 0..1 (the rack fader rides it directly —
+  // the old 0/50/100% chips were the discrete stand-in for this same value).
+  const [amount, setAmount] = useState<number>(1);
   const [speedKey, setSpeedKey] = useState<(typeof SPEEDS)[number]['key']>('med');
   const [playing, setPlaying] = useState(false);
   const [activeNote, setActiveNote] = useState(-1); // -1 = idle
@@ -109,7 +113,8 @@ export function AutotuneLabScreen() {
     setLessonOpen(true);
   }, []);
 
-  const tau = SPEEDS.find((s) => s.key === speedKey)!.tau;
+  const speed = SPEEDS.find((s) => s.key === speedKey)!;
+  const tau = speed.tau;
 
   // ---- Playback: sequence the melody, glide each note along THE curve --------
   const genRef = useRef(0);
@@ -190,7 +195,12 @@ export function AutotuneLabScreen() {
   }, [playing]);
 
   const remaining = (c0: number) => Math.round(c0 * (1 - amount));
+  const togglePlay = () => (playing ? stop() : void play());
 
+  // ── RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23) ────────────────────────────
+  // The cents grid + its state pin on the stage/bezel; AMOUNT is the pre-bound
+  // lane (drag it and every curve re-bends live — cause→effect at zero taps);
+  // SPEED is a sticky tray; PLAY is the dock transport key. Prose scrolls.
   return (
     <LabShell
       labId="autotune"
@@ -202,109 +212,122 @@ export function AutotuneLabScreen() {
         <HeaderPlayButton
           playing={playing}
           disabled={!engineReady}
-          onPress={() => (playing ? stop() : void play())}
+          onPress={togglePlay}
           label={playing ? 'Stop' : 'Play the out-of-tune melody'}
         />
       }
+      rack={{
+        initialParam: 'amount',
+        onHelp: openLesson,
+        stage: {
+          size: 'L', // the cents grid IS the lab — earns the tall glass
+          badge: 'CENTS GRID — THE DRAWN CURVE IS THE EXACT RETUNE MATH THE AUDIO FOLLOWS',
+          onGuide: () => openLesson('cents_grid'),
+          bezel: [
+            { k: 'AMOUNT', v: fmtAmount(amount), helpKey: 'correction' },
+            { k: 'SPEED', v: speed.short, helpKey: 'retune_speed' },
+            // Live transport readout: which note is being corrected right now.
+            {
+              k: 'NOTE',
+              v: activeNote >= 0 ? midiName(MELODY[activeNote].midi) : '—',
+              helpKey: 'cents_grid',
+            },
+            // The residual: where the worst note (45¢ flat) ENDS after correction.
+            { k: 'ENDS', v: `${Math.abs(remaining(MELODY[3].offCents))}¢`, helpKey: 'correction' },
+          ],
+          render: (_w, h) => (
+            // Tapping the display toggles play/stop (owner 2026-07-31) — same
+            // gate as the header button.
+            <Pressable
+              onPress={engineReady ? togglePlay : undefined}
+              accessibilityRole="button"
+              accessibilityLabel={playing ? 'Tap to stop' : 'Tap to play'}
+            >
+              <CentsGrid amount={amount} tau={tau} activeNote={activeNote} height={h} />
+            </Pressable>
+          ),
+        },
+        params: [
+          {
+            kind: 'fader',
+            id: 'amount',
+            label: 'AMOUNT',
+            // The value IS the lane position — correction amount is linear 0..1.
+            value: amount,
+            onChange: (v) => {
+              if (playing) stop(); // lockstep rule: a control change ends the pass
+              setAmount(v);
+            },
+            format: () => fmtAmount(amount),
+            helpKey: 'correction',
+          },
+          {
+            kind: 'options',
+            id: 'speed',
+            label: 'SPEED',
+            valueLabel: speed.short,
+            options: SPEEDS.map((s) => ({ id: s.key, label: s.label })),
+            selectedId: speedKey,
+            onSelect: (id) => {
+              const s = SPEEDS.find((x) => x.key === id);
+              if (!s) return;
+              if (playing) stop(); // lockstep rule
+              setSpeedKey(s.key);
+            },
+            sticky: true, // A/B snap vs glide while the curves redraw — the lesson
+            helpKey: 'retune_speed',
+          },
+          {
+            // Visible transport (owner 2026-08-05 — the header ▶ alone was easy
+            // to miss); the LED shows the melody running. Same handler as the
+            // header control and the display tap.
+            kind: 'toggle',
+            id: 'play',
+            label: playing ? 'STOP' : 'PLAY',
+            value: playing,
+            onToggle: () => {
+              if (engineReady) togglePlay();
+            },
+          },
+        ],
+      }}
     >
       {!engineReady ? <EngineGate state={gate} /> : null}
 
-      <CollapsibleSection title="DISPLAY">
-        {/* THE CENTS GRID — vertical semitone lines; notes bend onto them. */}
-        <View style={styles.panelCard}>
-          <Text style={styles.badge}>
-            CENTS GRID — THE DRAWN CURVE IS THE EXACT RETUNE MATH THE AUDIO FOLLOWS
-          </Text>
-          {/* Tapping the display toggles play/stop (owner 2026-07-31). */}
-          <Pressable
-            onPress={engineReady ? () => (playing ? stop() : void play()) : undefined}
-            accessibilityRole="button"
-            accessibilityLabel={playing ? 'Tap to stop' : 'Tap to play'}
-          >
-            <CentsGrid amount={amount} tau={tau} activeNote={activeNote} />
-          </Pressable>
-          <Text style={styles.caption}>
-            Gray = as sung (out of tune) · amber = corrected pitch over the note’s duration (time runs
-            downward within each note).
-          </Text>
-          <DisplayGuideButton onPress={() => openLesson('cents_grid')} />
-        </View>
-      </CollapsibleSection>
+      <View style={{ gap: 6 }}>
+        <Text style={styles.sectionHead}>READING THE GRID</Text>
+        <Text style={styles.caption}>
+          Gray = as sung (out of tune) · amber = corrected pitch over the note’s duration (time runs
+          downward within each note). Ride the AMOUNT fader and every curve re-bends live; switch
+          SPEED and watch snap become glide.
+        </Text>
+      </View>
 
-      <CollapsibleSection title="CONTROLS">
-        <Text style={styles.sectionHead}>CORRECTION AMOUNT</Text>
-        <View style={styles.chipRow}>
-          {AMOUNTS.map((a) => (
-            <LabChip
-              key={a.key}
-              label={a.label}
-              selected={amount === a.key}
-              // A control change ends any running pass — the pass corrects with
-              // ONE setting, so graph and audio can never diverge (lockstep rule).
-              onPress={() => {
-                if (playing) stop();
-                setAmount(a.key);
-              }}
-              onLongPress={() => openLesson('correction')}
-            />
-          ))}
-        </View>
-
-        <Text style={styles.sectionHead}>RETUNE SPEED</Text>
-        <View style={styles.chipRow}>
-          {SPEEDS.map((s) => (
-            <LabChip
-              key={s.key}
-              label={s.label}
-              selected={speedKey === s.key}
-              onPress={() => {
-                if (playing) stop();
-                setSpeedKey(s.key);
-              }}
-              onLongPress={() => openLesson('retune_speed')}
-            />
-          ))}
-        </View>
-      </CollapsibleSection>
-
-      {/* READOUTS — now BELOW the user controls (owner 2026-08-05). */}
-      <CollapsibleSection title="READOUTS">
+      <View style={{ gap: 6 }}>
+        <Text style={styles.sectionHead}>THE CORRECTION, IN NUMBERS</Text>
         <Text style={styles.readMain}>
-          {Math.round(amount * 100)}% correction · {SPEEDS.find((s) => s.key === speedKey)!.label.toLowerCase()} (τ ={' '}
-          {tau}s)
+          {fmtAmount(amount)} correction · {speed.label.toLowerCase()} (τ = {tau}s)
         </Text>
         <Text style={styles.caption}>
           At {Math.round(amount * 100)}% correction a {Math.abs(MELODY[3].offCents)}¢ error ends{' '}
           {Math.abs(remaining(MELODY[3].offCents))}¢ from the line
           {amount === 1 ? ' — exactly on pitch' : ''}.
         </Text>
-      </CollapsibleSection>
+      </View>
 
-      <CollapsibleSection title="ACTIONS">
-        {/* Visible PLAY/STOP button (owner 2026-08-05 — the header ▶ alone was
-            easy to miss). Same handler as the header control. */}
-        {engineReady ? (
-          <>
-            <GlassButton
-              label={playing ? 'STOP' : '▶  PLAY MELODY'}
-              tint="green"
-              height={52}
-              fontSize={15}
-              onPress={() => (playing ? stop() : void play())}
-            />
-            <Text style={styles.caption}>
-              GENERATOR DEMO — plays the demo melody with the app’s tone generator (no microphone), so
-              the correction you hear is real retuning of a synthesized voice.{' '}
-              {additiveReady
-                ? ''
-                : 'This build plays the voice as a pure sine. '}
-              Try FAST at 100% for the robotic hard-tune snap, then SLOW for a natural glide. Output{' '}
-              {GEN_LEVEL_DB} dBFS · uncalibrated.
-            </Text>
-            {genError ? <Text style={styles.error}>{genError}</Text> : null}
-          </>
-        ) : null}
-      </CollapsibleSection>
+      {engineReady ? (
+        <View style={{ gap: 6 }}>
+          <Text style={styles.sectionHead}>THE DEMO SINGER</Text>
+          <Text style={styles.caption}>
+            GENERATOR DEMO — plays the demo melody with the app’s tone generator (no microphone), so
+            the correction you hear is real retuning of a synthesized voice.{' '}
+            {additiveReady ? '' : 'This build plays the voice as a pure sine. '}
+            Try FAST at 100% for the robotic hard-tune snap, then SLOW for a natural glide. Output{' '}
+            {GEN_LEVEL_DB} dBFS · uncalibrated.
+          </Text>
+          {genError ? <Text style={styles.error}>{genError}</Text> : null}
+        </View>
+      ) : null}
 
       <GuidedLessonSheet
         visible={lessonOpen}
@@ -318,17 +341,29 @@ export function AutotuneLabScreen() {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-const ROW_H = 54;
 const TOP_AXIS = 26;
 const PAD_X = 16;
 
 /** The vertical cents-grid graph. X = pitch (linear in cents), one vertical
  *  gridline per semitone; each melody note is a row — the gray line is the
  *  sung (offset) pitch, the amber curve bends toward the gridline following
- *  correctedCents() with time running downward through the row. */
-function CentsGrid({ amount, tau, activeNote }: { amount: number; tau: number; activeNote: number }) {
+ *  correctedCents() with time running downward through the row. Height-driven
+ *  (rack stage contract): rows share whatever height the glass provides. */
+function CentsGrid({
+  amount,
+  tau,
+  activeNote,
+  height,
+}: {
+  amount: number;
+  tau: number;
+  activeNote: number;
+  height: number;
+}) {
   const [w, setW] = useState(0);
-  const h = TOP_AXIS + MELODY.length * ROW_H + 8;
+  const h = height;
+  const rowH = (h - TOP_AXIS - 8) / MELODY.length;
+  const padY = Math.max(4, Math.min(8, rowH * 0.18)); // row inner breathing room
 
   // Pitch range: every semitone from min−1 to max+1 of the melody.
   const midis = MELODY.map((n) => n.midi);
@@ -346,8 +381,8 @@ function CentsGrid({ amount, tau, activeNote }: { amount: number; tau: number; a
     if (w <= 0) return [];
     const noteSec = NOTE_MS / 1000;
     return MELODY.map((note, i) => {
-      const y0 = TOP_AXIS + i * ROW_H + 8;
-      const y1 = TOP_AXIS + (i + 1) * ROW_H - 8;
+      const y0 = TOP_AXIS + i * rowH + padY;
+      const y1 = TOP_AXIS + (i + 1) * rowH - padY;
       const N = 40;
       let d = '';
       for (let k = 0; k <= N; k++) {
@@ -359,7 +394,7 @@ function CentsGrid({ amount, tau, activeNote }: { amount: number; tau: number; a
       }
       return { d, y0, y1, sungX: xOf(note.midi * 100 + note.offCents), gridX: xOf(note.midi * 100) };
     });
-  }, [w, amount, tau, xOf]);
+  }, [w, rowH, padY, amount, tau, xOf]);
 
   return (
     <View onLayout={(e) => setW(Math.round(e.nativeEvent.layout.width))}>
@@ -399,9 +434,9 @@ function CentsGrid({ amount, tau, activeNote }: { amount: number; tau: number; a
               {i === activeNote ? (
                 <Rect
                   x={2}
-                  y={TOP_AXIS + i * ROW_H + 2}
+                  y={TOP_AXIS + i * rowH + 2}
                   width={w - 4}
-                  height={ROW_H - 4}
+                  height={rowH - 4}
                   fill="rgba(255,198,77,.07)"
                   stroke="rgba(255,198,77,.35)"
                   strokeWidth={1}
@@ -430,18 +465,8 @@ function CentsGrid({ amount, tau, activeNote }: { amount: number; tau: number; a
 }
 
 const styles = StyleSheet.create({
-  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   sectionHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.5, color: colors.amber },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   readMain: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.6, color: colors.textPrimary },
   error: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: '#ff6b5e' },
-  panelCard: {
-    gap: 8,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#131316',
-    padding: 12,
-  },
-  badge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.2, color: colors.textSub },
 });

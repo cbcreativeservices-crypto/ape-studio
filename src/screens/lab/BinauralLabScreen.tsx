@@ -5,36 +5,42 @@
  * the native bus (ITD + ILD + head shadow — a SIMPLIFIED spherical-head model,
  * deliberately NOT a measured HRTF; badged, per owner decision).
  *
+ * RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23): the overhead stage IS the lab,
+ * so it pins on the tall glass ('L') with OBJ / AZ / DIST / ITD readouts on
+ * the bezel. Azimuth and distance become lane faders (AZ pre-bound — the
+ * localization cue is the teaching parameter) while dragging on the glass
+ * keeps working — the two compose, both routes stream through updateSource.
+ * Object pick/enable and source type/frequency are GROUP trays composing the
+ * original LabChips (long-press lessons intact). Only the teaching prose,
+ * the headphones advisory, and the honest audio captions scroll in the well.
+ *
  * INTERACTION: drag a source around the head — azimuth comes from the angle,
- * distance from the radius. Dragging locks the shell's scroll (render-prop
- * setScrollLocked) so the gesture wins — and (layout v2, owner 2026-07-29)
- * the stage sits in an InteractionZone, which claims the touch AT TOUCH-START
- * so the grab beats scroll from the first pixel (the two compose). binSet is
- * drag-rate safe: every target is ramped natively (the ITD delay slews ≤1%
- * Doppler — physically plausible).
+ * distance from the radius. The stage is pinned OUTSIDE the scroll well, so
+ * the PanResponder owns the touch with no scroll to fight (the old
+ * InteractionZone + setScrollLocked wiring retired with the scrolling
+ * layout). binSet is drag-rate safe: every target is ramped natively (the
+ * ITD delay slews ≤1% Doppler — physically plausible).
  *
- * LAYOUT v2 (owner 2026-07-29): collapsible READOUTS → DISPLAY → CONTROLS →
- * ACTIONS sections; PLAY/STOP is the compact HeaderPlayButton via LabShell's
- * headerAction; the shell renders the Guided-Lesson entry row itself. The
- * honesty badges stay unsectioned at the top — non-negotiable visibility.
- *
- * HONESTY: HEADPHONES-REQUIRED badge (crosstalk collapses the illusion on
- * speakers — the lesson says why); "simplified model" badge; the bus norm is
- * displayed whenever the Q4 sum bound attenuates. Audio needs engineVersion ≥ 7
- * — below it the stage + lessons work and the build requirement is stated.
+ * HONESTY: the "SIMPLIFIED BINAURAL — NOT MEASURED HRTF" badge is
+ * silk-screened under the glass (per-display, non-negotiable); the
+ * HEADPHONES-REQUIRED advisory stays prominent at the top of the well
+ * (crosstalk collapses the illusion on speakers — the lesson says why); the
+ * bus norm is displayed whenever the Q4 sum bound attenuates. Audio needs
+ * engineVersion ≥ 7 — below it the stage + lessons work and the build
+ * requirement is stated.
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { PanResponder, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Circle, Line, Text as SvgText } from 'react-native-svg';
 import { ApeDsp, BIN_SRC } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
-import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../features/lab/guidedLessons';
+import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
-import { LabShell, LabChip, CollapsibleSection, HeaderPlayButton, InteractionZone } from './LabShell';
+import { LabShell, LabChip, HeaderPlayButton } from './LabShell';
 
 const ACTIVITY_MS = 500;
 const MIN_DIST = 0.5;
@@ -154,7 +160,16 @@ export function BinauralLabScreen() {
   );
 
   const sel = sources[selected];
+  const azSign = sel.azDeg >= 0 ? '+' : '';
+  const azWord = azimuthWord(sel.azDeg);
+  const typeLabel = TYPES.find((t) => t.v === sel.type)!.label;
 
+  // ── RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23) ────────────────────────────
+  // The overhead stage + its cue readouts pin on the glass/bezel; AZ and DIST
+  // ride the lane (drag-on-glass still works — same updateSource stream); the
+  // object and source pickers are group trays of the original chips. The well
+  // keeps the headphones advisory, the cue teaching, and the honest audio
+  // captions.
   return (
     <LabShell
       labId="binaural"
@@ -170,127 +185,186 @@ export function BinauralLabScreen() {
           label={running ? 'Stop' : 'Play the binaural mix'}
         />
       }
-    >
-      {({ setScrollLocked }) => (
-        <>
-          {!engineReady ? <EngineGate state={gate} /> : null}
-
-          {/* Honesty badges — both non-negotiable for this lab. */}
-          <View style={styles.badgeRow}>
-            <Text style={styles.warnBadge}>🎧 HEADPHONES REQUIRED</Text>
-            <Text style={styles.modelBadge}>SIMPLIFIED BINAURAL — NOT MEASURED HRTF</Text>
-          </View>
-
-          <CollapsibleSection title="READOUTS">
-            <Text style={styles.readout}>
-              Object {selected + 1}: azimuth {sel.azDeg >= 0 ? '+' : ''}
-              {sel.azDeg.toFixed(0)}° ({azimuthWord(sel.azDeg)}) · distance {sel.dist.toFixed(1)} m
-            </Text>
-            <Text style={styles.caption}>
-              Far-ear delay ≈ {itdUs(sel.azDeg).toFixed(0)} µs · far-ear level −
-              {ildDb(sel.azDeg).toFixed(1)} dB + head-shadow low-pass — the two cues your brain
-              triangulates with. Behind-the-head is only gently hinted (front/back needs HRTF
-              pinna cues this model deliberately doesn't fake).
-            </Text>
-          </CollapsibleSection>
-
-          <CollapsibleSection title="DISPLAY">
-            {/* THE STAGE — overhead view, draggable sources. The
-                InteractionZone claims the touch at touch-start so grabs beat
-                scroll; the Stage's own setScrollLocked wiring keeps the shell
-                locked for the drag's duration (they compose). */}
-            <View style={styles.panelCard}>
-              <Text style={styles.badge}>
-                OVERHEAD STAGE — DRAG A SOURCE · ANGLE = AZIMUTH · RADIUS = DISTANCE
-              </Text>
-              <InteractionZone>
-                <Stage
-                  sources={sources}
-                  selected={selected}
-                  onSelect={setSelected}
-                  onMove={(i, azDeg, dist) => updateSource(i, { azDeg, dist })}
-                  setScrollLocked={setScrollLocked}
-                />
-              </InteractionZone>
-              <DisplayGuideButton onPress={() => openLesson('display')} />
-            </View>
-          </CollapsibleSection>
-
-          <CollapsibleSection title="CONTROLS">
-            <Text style={styles.sectionHead}>SOUND OBJECTS</Text>
-            <View style={styles.chipRow}>
-              {sources.map((s, i) => (
-                <LabChip
-                  key={i}
-                  label={`${i + 1} ${s.on ? '●' : '○'}`}
-                  selected={selected === i}
-                  onPress={() => setSelected(i)}
-                  onLongPress={() => openLesson('objects')}
-                />
-              ))}
-              <LabChip
-                label={sel.on ? 'ON' : 'OFF'}
-                selected={sel.on}
-                onPress={() => updateSource(selected, { on: !sel.on })}
-                onLongPress={() => openLesson('objects')}
+      rack={{
+        initialParam: 'az',
+        onHelp: openLesson,
+        stage: {
+          size: 'L', // the overhead stage IS the lab — earns the tall glass
+          badge: 'SIMPLIFIED BINAURAL — NOT MEASURED HRTF',
+          onGuide: () => openLesson('display'),
+          bezel: [
+            {
+              k: 'OBJ',
+              v: `${selected + 1} ${sel.on ? 'ON' : 'OFF'}`,
+              tint: SRC_COLORS[selected],
+              helpKey: 'objects',
+            },
+            { k: 'AZ', v: `${azSign}${sel.azDeg.toFixed(0)}° ${azWord}`, flex: 1.5, helpKey: 'display' },
+            { k: 'DIST', v: `${sel.dist.toFixed(1)} m`, helpKey: 'display' },
+            { k: 'ITD', v: `${itdUs(sel.azDeg).toFixed(0)} µs`, helpKey: 'display' },
+          ],
+          render: (w, h) => (
+            // The stage is pinned outside the scroll well — the PanResponder
+            // owns the touch outright (no InteractionZone/scroll-lock needed).
+            <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center' }}>
+              <Stage
+                size={Math.min(w, h)}
+                sources={sources}
+                selected={selected}
+                onSelect={setSelected}
+                onMove={(i, azDeg, dist) => updateSource(i, { azDeg, dist })}
               />
             </View>
-            <View style={styles.chipRow}>
-              {TYPES.map((t) => (
-                <LabChip
-                  key={t.label}
-                  label={t.label}
-                  selected={sel.type === t.v}
-                  onPress={() => updateSource(selected, { type: t.v })}
-                  onLongPress={() => openLesson('source_type')}
-                />
-              ))}
-              {sel.type === BIN_SRC.sine
-                ? TONE_FREQS.map((f) => (
+          ),
+        },
+        params: [
+          {
+            kind: 'fader',
+            id: 'az',
+            label: 'AZ',
+            // Linear lane over the full circle, −180°..+180° (0 = front). The
+            // fader and the glass drag stream through the same updateSource,
+            // so either route retunes the live bus.
+            value: (sel.azDeg + 180) / 360,
+            onChange: (v) => updateSource(selected, { azDeg: Math.round(v * 360 - 180) }),
+            format: () => `${azSign}${sel.azDeg.toFixed(0)}° ${azWord}`,
+            formatShort: () => `${azSign}${sel.azDeg.toFixed(0)}°`,
+            tint: SRC_COLORS[selected],
+            helpKey: 'display',
+          },
+          {
+            kind: 'fader',
+            id: 'dist',
+            label: 'DIST',
+            value: (sel.dist - MIN_DIST) / (MAX_DIST - MIN_DIST),
+            onChange: (v) =>
+              updateSource(selected, {
+                dist: Math.round((MIN_DIST + v * (MAX_DIST - MIN_DIST)) * 10) / 10,
+              }),
+            format: () => `${sel.dist.toFixed(1)} m`,
+            tint: SRC_COLORS[selected],
+            helpKey: 'display',
+          },
+          {
+            kind: 'group',
+            id: 'obj',
+            label: 'OBJ',
+            valueLabel: `${selected + 1} ${sel.on ? '●' : '○'}`,
+            helpKey: 'objects',
+            render: () => (
+              <View style={{ gap: 10 }}>
+                <Text style={styles.sectionHead}>SOUND OBJECTS</Text>
+                <View style={styles.chipRow}>
+                  {sources.map((s, i) => (
                     <LabChip
-                      key={f}
-                      label={`${f}`}
-                      selected={sel.freq === f}
-                      onPress={() => updateSource(selected, { freq: f })}
-                      onLongPress={() => openLesson('tone_freq')}
+                      key={i}
+                      label={`${i + 1} ${s.on ? '●' : '○'}`}
+                      selected={selected === i}
+                      onPress={() => setSelected(i)}
+                      onLongPress={() => openLesson('objects')}
                     />
-                  ))
-                : null}
-            </View>
-          </CollapsibleSection>
+                  ))}
+                  <LabChip
+                    label={sel.on ? 'ON' : 'OFF'}
+                    selected={sel.on}
+                    onPress={() => updateSource(selected, { on: !sel.on })}
+                    onLongPress={() => openLesson('objects')}
+                  />
+                </View>
+              </View>
+            ),
+          },
+          {
+            kind: 'group',
+            id: 'src',
+            label: 'SRC',
+            valueLabel: `${typeLabel}${sel.type === BIN_SRC.sine ? ` ${sel.freq}` : ''}`,
+            helpKey: 'source_type',
+            render: () => (
+              <View style={{ gap: 10 }}>
+                <Text style={styles.sectionHead}>SOURCE TYPE</Text>
+                <View style={styles.chipRow}>
+                  {TYPES.map((t) => (
+                    <LabChip
+                      key={t.label}
+                      label={t.label}
+                      selected={sel.type === t.v}
+                      onPress={() => updateSource(selected, { type: t.v })}
+                      onLongPress={() => openLesson('source_type')}
+                    />
+                  ))}
+                </View>
+                {sel.type === BIN_SRC.sine ? (
+                  <>
+                    <Text style={styles.sectionHead}>TONE FREQUENCY (Hz)</Text>
+                    <View style={styles.chipRow}>
+                      {TONE_FREQS.map((f) => (
+                        <LabChip
+                          key={f}
+                          label={`${f}`}
+                          selected={sel.freq === f}
+                          onPress={() => updateSource(selected, { freq: f })}
+                          onLongPress={() => openLesson('tone_freq')}
+                        />
+                      ))}
+                    </View>
+                  </>
+                ) : null}
+              </View>
+            ),
+          },
+        ],
+      }}
+    >
+      {!engineReady ? <EngineGate state={gate} /> : null}
 
-          <CollapsibleSection title="ACTIONS">
-            {/* AUDIO — engine-gated ≥ v7, honest below. PLAY lives in the
-                header (▶); the honest level captions stay here. */}
-            {engineReady ? (
-              binReady ? (
-                <>
-                  <Text style={styles.caption}>
-                    PLAY (header ▶) mixes all enabled objects to one binaural bus at {SRC_LEVEL_DB}{' '}
-                    dBFS each · uncalibrated.
-                    {busNorm < 0.999
-                      ? ` Bus norm ${busNorm.toFixed(2)} — the peak bound is attenuating the sum (honest level).`
-                      : ''}
-                  </Text>
-                  {genError ? <Text style={styles.error}>{genError}</Text> : null}
-                </>
-              ) : (
-                <Text style={styles.caption}>
-                  Binaural audio needs the v7 engine build — this dev client predates it. The stage
-                  and lessons are fully functional; install the v7 build to hear the mix.
-                </Text>
-              )
-            ) : null}
-          </CollapsibleSection>
+      {/* Headphones advisory — non-negotiable visibility, stays at the top of
+          the well (the model badge lives on the stage faceplate). */}
+      <View style={styles.badgeRow}>
+        <Text style={styles.warnBadge}>🎧 HEADPHONES REQUIRED</Text>
+      </View>
 
-          <GuidedLessonSheet
-            visible={lessonOpen}
-            lesson={getLabLesson('binaural')}
-            controlKey={lessonKey}
-            onClose={() => setLessonOpen(false)}
-          />
-        </>
-      )}
+      <View style={{ gap: 6 }}>
+        <Text style={styles.sectionHead}>THE TWO CUES</Text>
+        <Text style={styles.caption}>
+          Object {selected + 1}: far-ear delay ≈ {itdUs(sel.azDeg).toFixed(0)} µs · far-ear level −
+          {ildDb(sel.azDeg).toFixed(1)} dB + head-shadow low-pass — the two cues your brain
+          triangulates with. Behind-the-head is only gently hinted (front/back needs HRTF
+          pinna cues this model deliberately doesn't fake).
+        </Text>
+      </View>
+
+      <View style={{ gap: 6 }}>
+        <Text style={styles.sectionHead}>THE MIX, HONESTLY</Text>
+        {/* AUDIO — engine-gated ≥ v7, honest below. PLAY lives in the
+            header (▶); the honest level captions stay here. */}
+        {engineReady ? (
+          binReady ? (
+            <>
+              <Text style={styles.caption}>
+                PLAY (header ▶) mixes all enabled objects to one binaural bus at {SRC_LEVEL_DB}{' '}
+                dBFS each · uncalibrated.
+                {busNorm < 0.999
+                  ? ` Bus norm ${busNorm.toFixed(2)} — the peak bound is attenuating the sum (honest level).`
+                  : ''}
+              </Text>
+              {genError ? <Text style={styles.error}>{genError}</Text> : null}
+            </>
+          ) : (
+            <Text style={styles.caption}>
+              Binaural audio needs the v7 engine build — this dev client predates it. The stage
+              and lessons are fully functional; install the v7 build to hear the mix.
+            </Text>
+          )
+        ) : null}
+      </View>
+
+      <GuidedLessonSheet
+        visible={lessonOpen}
+        lesson={getLabLesson('binaural')}
+        controlKey={lessonKey}
+        onClose={() => setLessonOpen(false)}
+      />
     </LabShell>
   );
 }
@@ -322,26 +396,24 @@ function azimuthWord(az: number): string {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-const STAGE = 300;
-
 /** The overhead stage: head at center (nose UP = 0° azimuth, +90° right),
  *  distance rings at 1/2/3/4 m, sources draggable. One PanResponder; the grab
- *  picks the nearest source, moves stream angle+radius, release frees scroll. */
+ *  picks the nearest source, moves stream angle+radius. Sized by the rack
+ *  glass (square of the smaller glass dimension) — pinned, so no scroll-lock
+ *  wiring remains. */
 function Stage({
+  size,
   sources,
   selected,
   onSelect,
   onMove,
-  setScrollLocked,
 }: {
+  size: number;
   sources: Source[];
   selected: number;
   onSelect: (i: number) => void;
   onMove: (i: number, azDeg: number, dist: number) => void;
-  setScrollLocked: (locked: boolean) => void;
 }) {
-  const [w, setW] = useState(0);
-  const size = Math.min(w, STAGE + 60);
   const c = size / 2;
   const rMax = c - 16; // radius of the 4 m ring
 
@@ -379,7 +451,6 @@ function Stage({
           dragIdx.current = best;
           dragBase.current = { x, y }; // this fires at touch start (dx=0)
           st.onSelect(best);
-          setScrollLocked(true);
           return true;
         }
         return false;
@@ -403,73 +474,65 @@ function Stage({
       },
       onPanResponderRelease: () => {
         dragIdx.current = -1;
-        setScrollLocked(false);
       },
       onPanResponderTerminate: () => {
         dragIdx.current = -1;
-        setScrollLocked(false);
       },
       onPanResponderTerminationRequest: () => false,
     }),
   ).current;
 
   return (
-    <View onLayout={(e) => setW(Math.round(e.nativeEvent.layout.width))} style={{ alignItems: 'center' }}>
-      {w > 0 ? (
-        <View {...pan.panHandlers}>
-          <Svg width={size} height={size}>
-            {/* Distance rings (1..4 m). */}
-            {[1, 2, 3, 4].map((m) => (
-              <Circle
-                key={m}
-                cx={c}
-                cy={c}
-                r={(m / MAX_DIST) * rMax}
-                stroke="#26262c"
-                strokeWidth={1}
-                fill="none"
-              />
-            ))}
-            <SvgText x={c + 4} y={c - rMax + 12} fill="#4a4a52" fontSize={9}>
-              4 m
-            </SvgText>
-            {/* Front axis + FRONT/BEHIND labels. */}
-            <Line x1={c} y1={c - rMax} x2={c} y2={c + rMax} stroke="#1e1e24" strokeWidth={1} />
-            <SvgText x={c} y={12} fill={colors.textSub} fontSize={9.5} textAnchor="middle">
-              FRONT 0°
-            </SvgText>
-            <SvgText x={c} y={size - 4} fill={colors.textSub} fontSize={9.5} textAnchor="middle">
-              BEHIND ±180°
-            </SvgText>
-            <SvgText x={size - 6} y={c + 3} fill={colors.textSub} fontSize={9.5} textAnchor="end">
-              +90°
-            </SvgText>
-            {/* The head (nose up). */}
-            <Circle cx={c} cy={c} r={13} fill="#2a2a31" stroke="#55555e" strokeWidth={1.5} />
-            <Circle cx={c} cy={c - 13} r={4} fill="#55555e" />
-            <Circle cx={c - 13} cy={c} r={3.5} fill="#454550" />
-            <Circle cx={c + 13} cy={c} r={3.5} fill="#454550" />
-            {/* Sources. */}
-            {sources.map((s, i) => {
-              const p = toXY(s);
-              return (
-                <Circle
-                  key={i}
-                  cx={p.x}
-                  cy={p.y}
-                  r={i === selected ? 13 : 10}
-                  fill={s.on ? SRC_COLORS[i] : 'none'}
-                  stroke={SRC_COLORS[i]}
-                  strokeWidth={2}
-                  opacity={s.on ? 0.95 : 0.55}
-                />
-              );
-            })}
-          </Svg>
-        </View>
-      ) : (
-        <View style={{ height: STAGE }} />
-      )}
+    <View {...pan.panHandlers}>
+      <Svg width={size} height={size}>
+        {/* Distance rings (1..4 m). */}
+        {[1, 2, 3, 4].map((m) => (
+          <Circle
+            key={m}
+            cx={c}
+            cy={c}
+            r={(m / MAX_DIST) * rMax}
+            stroke="#26262c"
+            strokeWidth={1}
+            fill="none"
+          />
+        ))}
+        <SvgText x={c + 4} y={c - rMax + 12} fill="#4a4a52" fontSize={9}>
+          4 m
+        </SvgText>
+        {/* Front axis + FRONT/BEHIND labels. */}
+        <Line x1={c} y1={c - rMax} x2={c} y2={c + rMax} stroke="#1e1e24" strokeWidth={1} />
+        <SvgText x={c} y={12} fill={colors.textSub} fontSize={9.5} textAnchor="middle">
+          FRONT 0°
+        </SvgText>
+        <SvgText x={c} y={size - 4} fill={colors.textSub} fontSize={9.5} textAnchor="middle">
+          BEHIND ±180°
+        </SvgText>
+        <SvgText x={size - 6} y={c + 3} fill={colors.textSub} fontSize={9.5} textAnchor="end">
+          +90°
+        </SvgText>
+        {/* The head (nose up). */}
+        <Circle cx={c} cy={c} r={13} fill="#2a2a31" stroke="#55555e" strokeWidth={1.5} />
+        <Circle cx={c} cy={c - 13} r={4} fill="#55555e" />
+        <Circle cx={c - 13} cy={c} r={3.5} fill="#454550" />
+        <Circle cx={c + 13} cy={c} r={3.5} fill="#454550" />
+        {/* Sources. */}
+        {sources.map((s, i) => {
+          const p = toXY(s);
+          return (
+            <Circle
+              key={i}
+              cx={p.x}
+              cy={p.y}
+              r={i === selected ? 13 : 10}
+              fill={s.on ? SRC_COLORS[i] : 'none'}
+              stroke={SRC_COLORS[i]}
+              strokeWidth={2}
+              opacity={s.on ? 0.95 : 0.55}
+            />
+          );
+        })}
+      </Svg>
     </View>
   );
 }
@@ -479,7 +542,6 @@ const styles = StyleSheet.create({
   badgeRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   sectionHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.5, color: colors.amber },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
-  readout: { fontFamily: fonts.oswaldSemiBold, fontSize: 13.5, letterSpacing: 0.6, color: colors.textPrimary },
   error: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: '#ff6b5e' },
   warnBadge: {
     fontFamily: fonts.oswaldSemiBold,
@@ -492,24 +554,4 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
   },
-  modelBadge: {
-    fontFamily: fonts.oswaldSemiBold,
-    fontSize: 10.5,
-    letterSpacing: 1,
-    color: colors.textSub,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    borderRadius: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  panelCard: {
-    gap: 8,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#131316',
-    padding: 12,
-  },
-  badge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.2, color: colors.textSub },
 });

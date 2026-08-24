@@ -25,6 +25,13 @@
  * The mapping hands over the SAME values that drive the DSP; the per-effect
  * transformation math lives in fxAnim (mirroring fxViz). On pre-Skia clients
  * the static heroes below render alone, exactly as before.
+ *
+ * RACK UNIT (2026-08-23): every config now also declares its faceplate —
+ * exactly ONE param carries `fader` (the continuous teaching parameter the
+ * lane pre-binds; range spans the taught chips), `bezel` names the legend
+ * cells riding the display, `short` compacts dock-key labels, and configs
+ * with >4 params fold 2–3 interacting ones into a `dockGroups` tray so the
+ * dock stays ≤5 keys.
  */
 import { FX, FX_PARAM, EQ_BAND_TYPES, GEN_MODES } from '../../../modules/ape-dsp';
 import {
@@ -44,11 +51,11 @@ import { FxLabScreen, type FxLabConfig } from './FxLabScreen';
 const P = FX_PARAM;
 const ANALYTIC = 'DESIGNED RESPONSE — ANALYTIC, NOT A MEASUREMENT';
 
-// Shared sources.
-const SRC_PINK = { label: 'PINK NOISE', gen: { mode: GEN_MODES.pink } };
-const SRC_WHITE = { label: 'WHITE NOISE', gen: { mode: GEN_MODES.white } };
-const srcSine = (hz: number) => ({ label: `SINE ${hz} Hz`, gen: { mode: GEN_MODES.sine, frequency: hz } });
-const srcClick = (bpm: number) => ({ label: `CLICK ${bpm}`, gen: { mode: GEN_MODES.click, clickBpm: bpm } });
+// Shared sources (`short` = the compact dock-key value).
+const SRC_PINK = { label: 'PINK NOISE', short: 'PINK', gen: { mode: GEN_MODES.pink } };
+const SRC_WHITE = { label: 'WHITE NOISE', short: 'WHITE', gen: { mode: GEN_MODES.white } };
+const srcSine = (hz: number) => ({ label: `SINE ${hz} Hz`, short: `${hz} Hz`, gen: { mode: GEN_MODES.sine, frequency: hz } });
+const srcClick = (bpm: number) => ({ label: `CLICK ${bpm}`, short: `${bpm} BPM`, gen: { mode: GEN_MODES.click, clickBpm: bpm } });
 
 // ─────────────────────────────────────────────────────────── LAB 1 · EQ ──
 const EQ_TYPE = P.eqBand(0, 'type');
@@ -80,7 +87,19 @@ const eqConfig: FxLabConfig = {
   sources: [SRC_PINK, srcSine(440), SRC_WHITE],
   params: [
     {
-      label: 'FILTER TYPE', paramId: EQ_TYPE, lessonKey: 'filter_type',
+      // The continuous teaching fader: sweep the bell across the spectrum and
+      // watch the curve (and the audio) move with it.
+      label: 'FREQUENCY', short: 'FREQ', paramId: EQ_FREQ, lessonKey: 'frequency',
+      choices: [100, 250, 500, 1000, 2000, 4000, 8000].map((f) => ({ label: f >= 1000 ? `${f / 1000}k` : `${f}`, value: f })),
+      initial: 1000,
+      fader: {
+        min: 100, max: 8000, log: true, snap: Math.round,
+        format: (v) => (v >= 1000 ? `${(v / 1000).toFixed(2)} kHz` : `${Math.round(v)} Hz`),
+        formatShort: (v) => (v >= 1000 ? `${(v / 1000).toFixed(1)}k` : `${Math.round(v)}`),
+      },
+    },
+    {
+      label: 'FILTER TYPE', short: 'TYPE', paramId: EQ_TYPE, lessonKey: 'filter_type',
       choices: [
         { label: 'PEAK (BELL)', value: EQ_BAND_TYPES.peak },
         { label: 'LOW SHELF', value: EQ_BAND_TYPES.lowShelf },
@@ -91,17 +110,12 @@ const eqConfig: FxLabConfig = {
       initial: EQ_BAND_TYPES.peak,
     },
     {
-      label: 'FREQUENCY', paramId: EQ_FREQ, lessonKey: 'frequency',
-      choices: [100, 250, 500, 1000, 2000, 4000, 8000].map((f) => ({ label: f >= 1000 ? `${f / 1000}k` : `${f}`, value: f })),
-      initial: 1000,
-    },
-    {
       label: 'GAIN', paramId: EQ_GAIN, lessonKey: 'gain',
       choices: [-12, -6, 0, 6, 12].map((g) => ({ label: `${g > 0 ? '+' : ''}${g} dB`, value: g })),
       initial: 6,
     },
     {
-      label: 'Q (BANDWIDTH)', paramId: EQ_Q, lessonKey: 'q',
+      label: 'Q (BANDWIDTH)', short: 'Q', paramId: EQ_Q, lessonKey: 'q',
       choices: [
         { label: '0.7 WIDE', value: 0.7 },
         { label: '1.4', value: 1.4 },
@@ -110,6 +124,12 @@ const eqConfig: FxLabConfig = {
       ],
       initial: 1.4,
     },
+  ],
+  bezel: [
+    { k: 'TYPE', paramId: EQ_TYPE },
+    { k: 'FREQ', paramId: EQ_FREQ },
+    { k: 'GAIN', paramId: EQ_GAIN },
+    { k: 'Q', paramId: EQ_Q },
   ],
   Hero: (v) => {
     const band = eqBandOf(v);
@@ -143,7 +163,7 @@ const delayConfig: FxLabConfig = {
   sources: [srcClick(90), SRC_PINK, srcSine(220)],
   params: [
     {
-      label: 'DELAY TIME', paramId: P.timeMs, lessonKey: 'delay_time',
+      label: 'DELAY TIME', short: 'TIME', paramId: P.timeMs, lessonKey: 'delay_time',
       choices: [
         { label: '80 ms SLAP', value: 80 },
         { label: '150 ms', value: 150 },
@@ -151,9 +171,11 @@ const delayConfig: FxLabConfig = {
         { label: '500 ms', value: 500 },
       ],
       initial: 375,
+      // The teaching fader: ride the time and hear/see the spacing stretch.
+      fader: { min: 80, max: 500, log: true, snap: Math.round, format: (v) => `${Math.round(v)} ms` },
     },
     {
-      label: 'FEEDBACK', paramId: P.delayFeedback, lessonKey: 'feedback',
+      label: 'FEEDBACK', short: 'FDBK', paramId: P.delayFeedback, lessonKey: 'feedback',
       choices: [0, 0.25, 0.5, 0.75].map((f) => ({ label: `${f * 100}%`, value: f })),
       initial: 0.5,
     },
@@ -182,6 +204,19 @@ const delayConfig: FxLabConfig = {
         { label: 'OFF 20k', value: 20000 },
       ],
       initial: 6000,
+    },
+  ],
+  bezel: [
+    { k: 'TIME', paramId: P.timeMs },
+    { k: 'FDBK', paramId: P.delayFeedback },
+    { k: 'MIX', paramId: P.delayMix },
+  ],
+  // Ping-pong + damping share one tray (the repeats' character) — dock ≤5.
+  dockGroups: [
+    {
+      id: 'color', label: 'COLOR', paramIds: [P.pingpong, P.dampHz], lessonKey: 'filtering',
+      valueLabel: (v) =>
+        `${v[P.pingpong] > 0.5 ? 'PP·' : ''}${v[P.dampHz] >= 20000 ? 'OFF' : `${v[P.dampHz] / 1000}k`}`,
     },
   ],
   Hero: (v) => (
@@ -214,7 +249,7 @@ const reverbConfig: FxLabConfig = {
   sources: [srcClick(60), { label: 'BURST', gen: { mode: GEN_MODES.burst } }, SRC_PINK],
   params: [
     {
-      label: 'RT60 (DECAY TIME)', paramId: P.rt60, lessonKey: 'decay',
+      label: 'RT60 (DECAY TIME)', short: 'RT60', paramId: P.rt60, lessonKey: 'decay',
       choices: [
         { label: '0.4 s BOOTH', value: 0.4 },
         { label: '0.8 s ROOM', value: 0.8 },
@@ -223,14 +258,16 @@ const reverbConfig: FxLabConfig = {
         { label: '6 s CAVERN', value: 6 },
       ],
       initial: 1.5,
+      // The teaching fader: booth → cavern on one log sweep, tail growing live.
+      fader: { min: 0.4, max: 6, log: true, snap: (v) => Math.round(v * 10) / 10, format: (v) => `${v} s` },
     },
     {
-      label: 'PRE-DELAY', paramId: P.preDelayMs, lessonKey: 'pre_delay',
+      label: 'PRE-DELAY', short: 'PRE-DLY', paramId: P.preDelayMs, lessonKey: 'pre_delay',
       choices: [0, 20, 60].map((ms) => ({ label: `${ms} ms`, value: ms })),
       initial: 20,
     },
     {
-      label: 'HF DAMPING', paramId: P.reverbDampHz, lessonKey: 'hf_damping',
+      label: 'HF DAMPING', short: 'DAMP', paramId: P.reverbDampHz, lessonKey: 'hf_damping',
       choices: [
         { label: 'DARK 2k', value: 2000 },
         { label: 'NATURAL 5.5k', value: 5500 },
@@ -247,6 +284,11 @@ const reverbConfig: FxLabConfig = {
       ],
       initial: 0.35,
     },
+  ],
+  bezel: [
+    { k: 'RT60', paramId: P.rt60 },
+    { k: 'PRE', paramId: P.preDelayMs },
+    { k: 'MIX', paramId: P.reverbMix },
   ],
   Hero: (v) => <DecayCurveGraph rt60={v[P.rt60]} preDelayMs={v[P.preDelayMs]} />,
   anim: (v) => ({ kind: 'reverb', rt60: v[P.rt60], preDelayMs: v[P.preDelayMs], mix: v[P.reverbMix] }),
@@ -296,6 +338,11 @@ const chorusConfig: FxLabConfig = {
         { label: '3 Hz SEASICK', value: 3 },
       ],
       initial: 0.25,
+      // The teaching fader: lazy shimmer → seasick on one log sweep.
+      fader: {
+        min: 0.1, max: 3, log: true, snap: (v) => Math.round(v * 100) / 100,
+        format: (v) => `${v.toFixed(2)} Hz`, formatShort: (v) => `${v.toFixed(2)}Hz`,
+      },
     },
     {
       label: 'DEPTH', paramId: P.depth, lessonKey: 'depth',
@@ -307,7 +354,7 @@ const chorusConfig: FxLabConfig = {
       initial: 0.5,
     },
     {
-      label: 'VOICE DELAY', paramId: P.centerMs, lessonKey: 'delay',
+      label: 'VOICE DELAY', short: 'DELAY', paramId: P.centerMs, lessonKey: 'delay',
       choices: [15, 20, 35].map((ms) => ({ label: `${ms} ms`, value: ms })),
       initial: 20,
     },
@@ -320,6 +367,11 @@ const chorusConfig: FxLabConfig = {
       ],
       initial: 0.5,
     },
+  ],
+  bezel: [
+    { k: 'RATE', paramId: P.rateHz },
+    { k: 'DEPTH', paramId: P.depth },
+    { k: 'MIX', paramId: P.modMix },
   ],
   Hero: (v) => combSweepHero(v[P.centerMs], 6 * v[P.depth], v[P.modMix], 0),
   anim: (v) => ({
@@ -353,6 +405,18 @@ const flangerConfig: FxLabConfig = {
   fixed: [{ paramId: P.modMode, value: 1 }],
   params: [
     {
+      // The teaching fader FIRST: dragging the center delay by hand IS the
+      // original tape flange — every notch slides together as you ride it.
+      label: 'CENTER DELAY', short: 'CENTER', paramId: P.centerMs, lessonKey: 'manual',
+      choices: [
+        { label: '0.5 ms', value: 0.5 },
+        { label: '2 ms', value: 2 },
+        { label: '5 ms', value: 5 },
+      ],
+      initial: 2,
+      fader: { min: 0.5, max: 5, log: true, snap: (v) => Math.round(v * 10) / 10, format: (v) => `${v} ms` },
+    },
+    {
       label: 'RATE', paramId: P.rateHz, lessonKey: 'rate',
       choices: [
         { label: '0.1 Hz', value: 0.1 },
@@ -372,16 +436,7 @@ const flangerConfig: FxLabConfig = {
       initial: 0.5,
     },
     {
-      label: 'CENTER DELAY', paramId: P.centerMs, lessonKey: 'manual',
-      choices: [
-        { label: '0.5 ms', value: 0.5 },
-        { label: '2 ms', value: 2 },
-        { label: '5 ms', value: 5 },
-      ],
-      initial: 2,
-    },
-    {
-      label: 'FEEDBACK', paramId: P.modFeedback, lessonKey: 'feedback',
+      label: 'FEEDBACK', short: 'FDBK', paramId: P.modFeedback, lessonKey: 'feedback',
       choices: [
         { label: '0%', value: 0 },
         { label: '40%', value: 0.4 },
@@ -397,6 +452,18 @@ const flangerConfig: FxLabConfig = {
         { label: '100%', value: 1.0 },
       ],
       initial: 0.5,
+    },
+  ],
+  bezel: [
+    { k: 'CENTER', paramId: P.centerMs },
+    { k: 'RATE', paramId: P.rateHz },
+    { k: 'FDBK', paramId: P.modFeedback },
+  ],
+  // The LFO pair shares one tray (rate × depth = the sweep) — dock ≤5.
+  dockGroups: [
+    {
+      id: 'sweep', label: 'SWEEP', paramIds: [P.rateHz, P.depth], lessonKey: 'rate',
+      valueLabel: (v) => `${v[P.rateHz]}·${Math.round(v[P.depth] * 100)}%`,
     },
   ],
   Hero: (v) => combSweepHero(v[P.centerMs], v[P.centerMs] * 0.85 * v[P.depth], v[P.modMix], v[P.modFeedback]),
@@ -431,6 +498,18 @@ const phaserConfig: FxLabConfig = {
   fixed: [{ paramId: P.modMode, value: 2 }],
   params: [
     {
+      // The teaching fader FIRST: drag the notch cluster up and down the
+      // spectrum by hand (set DEPTH to STATIC for the pure manual sweep).
+      label: 'CENTER', paramId: P.centerHz, lessonKey: 'center',
+      choices: [
+        { label: '400 Hz', value: 400 },
+        { label: '1 kHz', value: 1000 },
+        { label: '2 kHz', value: 2000 },
+      ],
+      initial: 1000,
+      fader: { min: 400, max: 2000, log: true, snap: Math.round, format: (v) => `${Math.round(v)} Hz` },
+    },
+    {
       label: 'STAGES', paramId: P.stages, lessonKey: 'stages',
       choices: [2, 4, 6, 8].map((s) => ({ label: `${s}`, value: s })),
       initial: 4,
@@ -446,15 +525,6 @@ const phaserConfig: FxLabConfig = {
       initial: 0.3,
     },
     {
-      label: 'CENTER', paramId: P.centerHz, lessonKey: 'center',
-      choices: [
-        { label: '400 Hz', value: 400 },
-        { label: '1 kHz', value: 1000 },
-        { label: '2 kHz', value: 2000 },
-      ],
-      initial: 1000,
-    },
-    {
       label: 'DEPTH (SWEEP)', paramId: P.depth, lessonKey: 'depth',
       choices: [
         { label: 'STATIC', value: 0 },
@@ -464,13 +534,25 @@ const phaserConfig: FxLabConfig = {
       initial: 0.5,
     },
     {
-      label: 'RESONANCE', paramId: P.modFeedback, lessonKey: 'feedback',
+      label: 'RESONANCE', short: 'RES', paramId: P.modFeedback, lessonKey: 'feedback',
       choices: [
         { label: '0%', value: 0 },
         { label: '30%', value: 0.3 },
         { label: '60%', value: 0.6 },
       ],
       initial: 0.3,
+    },
+  ],
+  bezel: [
+    { k: 'STAGES', paramId: P.stages },
+    { k: 'CENTER', paramId: P.centerHz },
+    { k: 'RES', paramId: P.modFeedback },
+  ],
+  // The LFO pair shares one tray (rate × depth = the sweep) — dock ≤5.
+  dockGroups: [
+    {
+      id: 'sweep', label: 'SWEEP', paramIds: [P.rateHz, P.depth], lessonKey: 'rate',
+      valueLabel: (v) => `${v[P.rateHz]}·${Math.round(v[P.depth] * 100)}%`,
     },
   ],
   Hero: (v) => (
@@ -510,9 +592,12 @@ const compConfig: FxLabConfig = {
   sources: [srcSine(440), SRC_PINK, srcClick(120)],
   params: [
     {
-      label: 'THRESHOLD', paramId: P.thresholdDb, lessonKey: 'threshold',
+      label: 'THRESHOLD', short: 'THRESH', paramId: P.thresholdDb, lessonKey: 'threshold',
       choices: [-40, -30, -20, -10].map((t) => ({ label: `${t} dB`, value: t })),
       initial: -30,
+      // The teaching fader: ride the threshold through the −20 dBFS source and
+      // watch measured GR appear on the bezel the moment you cross it.
+      fader: { min: -40, max: -10, snap: Math.round, format: (v) => `${Math.round(v)} dB` },
     },
     {
       label: 'RATIO', paramId: P.ratio, lessonKey: 'ratio',
@@ -552,6 +637,17 @@ const compConfig: FxLabConfig = {
       initial: 0,
     },
   ],
+  bezel: [
+    { k: 'THRESH', paramId: P.thresholdDb },
+    { k: 'RATIO', paramId: P.ratio },
+  ],
+  // The time constants share one tray (attack × release = the envelope).
+  dockGroups: [
+    {
+      id: 'env', label: 'ENV', paramIds: [P.attackMs, P.releaseMs], lessonKey: 'attack',
+      valueLabel: (v) => `${v[P.attackMs]}·${v[P.releaseMs]}`,
+    },
+  ],
   Hero: (v) => (
     <TransferCurveGraph mode="compressor" thresholdDb={v[P.thresholdDb]} ratio={v[P.ratio]} makeupDb={v[P.makeupDb]} />
   ),
@@ -585,12 +681,15 @@ const gateConfig: FxLabConfig = {
   sources: [srcClick(90), SRC_PINK],
   params: [
     {
-      label: 'THRESHOLD', paramId: P.thresholdDb, lessonKey: 'threshold',
+      label: 'THRESHOLD', short: 'THRESH', paramId: P.thresholdDb, lessonKey: 'threshold',
       choices: [-50, -35, -20].map((t) => ({ label: `${t} dB`, value: t })),
       initial: -35,
+      // The teaching fader: sweep the cliff past the clicks and hear the gate
+      // start opening/closing — GR live on the bezel.
+      fader: { min: -50, max: -20, snap: Math.round, format: (v) => `${Math.round(v)} dB` },
     },
     {
-      label: 'RANGE (FLOOR)', paramId: P.rangeDb, lessonKey: 'range',
+      label: 'RANGE (FLOOR)', short: 'RANGE', paramId: P.rangeDb, lessonKey: 'range',
       choices: [
         { label: '−20 GENTLE', value: -20 },
         { label: '−40', value: -40 },
@@ -604,7 +703,7 @@ const gateConfig: FxLabConfig = {
       initial: 10,
     },
     {
-      label: 'RELEASE', paramId: P.releaseMs, lessonKey: 'release',
+      label: 'RELEASE', short: 'RLS', paramId: P.releaseMs, lessonKey: 'release',
       choices: [
         { label: '20 ms CHATTER', value: 20 },
         { label: '100 ms', value: 100 },
@@ -612,6 +711,10 @@ const gateConfig: FxLabConfig = {
       ],
       initial: 100,
     },
+  ],
+  bezel: [
+    { k: 'THRESH', paramId: P.thresholdDb },
+    { k: 'RANGE', paramId: P.rangeDb },
   ],
   Hero: (v) => <TransferCurveGraph mode="gate" thresholdDb={v[P.thresholdDb]} rangeDb={v[P.rangeDb]} />,
   anim: (v) => ({
@@ -652,9 +755,12 @@ const limiterConfig: FxLabConfig = {
         { label: '−45 dB SQUASH', value: -45 },
       ],
       initial: -25,
+      // The teaching fader: push the ceiling down through the −20 dBFS source
+      // and watch constant GR climb on the bezel.
+      fader: { min: -45, max: -15, snap: Math.round, format: (v) => `${Math.round(v)} dB` },
     },
     {
-      label: 'RELEASE', paramId: P.releaseMs, lessonKey: 'release',
+      label: 'RELEASE', short: 'RLS', paramId: P.releaseMs, lessonKey: 'release',
       choices: [
         { label: '30 ms', value: 30 },
         { label: '120 ms', value: 120 },
@@ -662,6 +768,10 @@ const limiterConfig: FxLabConfig = {
       ],
       initial: 120,
     },
+  ],
+  bezel: [
+    { k: 'CEIL', paramId: P.ceilingDb },
+    { k: 'RLS', paramId: P.releaseMs },
   ],
   Hero: (v) => <TransferCurveGraph mode="limiter" thresholdDb={v[P.ceilingDb]} ceilingDb={v[P.ceilingDb]} />,
   anim: (v) => ({
@@ -697,6 +807,14 @@ const distConfig: FxLabConfig = {
   sources: [srcSine(220), SRC_PINK],
   params: [
     {
+      // The teaching fader FIRST: push the wave into the clipper and watch the
+      // flat-topping (and hear the grit) grow with every dB.
+      label: 'DRIVE', paramId: P.driveDb, lessonKey: 'saturation',
+      choices: [6, 12, 24, 36].map((d) => ({ label: `+${d} dB`, value: d })),
+      initial: 12,
+      fader: { min: 6, max: 36, snap: Math.round, format: (v) => `+${Math.round(v)} dB` },
+    },
+    {
       label: 'TYPE', paramId: P.distType, lessonKey: 'hard_clip',
       choices: [
         { label: 'HARD CLIP', value: 0 },
@@ -706,12 +824,7 @@ const distConfig: FxLabConfig = {
       initial: 0,
     },
     {
-      label: 'DRIVE', paramId: P.driveDb, lessonKey: 'saturation',
-      choices: [6, 12, 24, 36].map((d) => ({ label: `+${d} dB`, value: d })),
-      initial: 12,
-    },
-    {
-      label: 'OVERSAMPLING', paramId: P.oversample, lessonKey: 'oversampling',
+      label: 'OVERSAMPLING', short: 'OS', paramId: P.oversample, lessonKey: 'oversampling',
       choices: [
         { label: 'ON (CLEAN)', value: 1 },
         { label: 'OFF — HEAR ALIASING', value: 0 },
@@ -726,6 +839,11 @@ const distConfig: FxLabConfig = {
       ],
       initial: 1,
     },
+  ],
+  bezel: [
+    { k: 'TYPE', paramId: P.distType },
+    { k: 'DRIVE', paramId: P.driveDb },
+    { k: 'MIX', paramId: P.distMix },
   ],
   Hero: (v) => (
     <WaveshapeGraph type={v[P.distType] === 0 ? 'hard' : v[P.distType] === 1 ? 'soft' : 'tube'} driveDb={v[P.driveDb]} />
@@ -762,15 +880,9 @@ const phaseConfig: FxLabConfig = {
   fixed: [{ paramId: P.widthPct, value: 100 }],
   params: [
     {
-      label: 'POLARITY (R)', paramId: PHASE_INV, lessonKey: 'invert_polarity',
-      choices: [
-        { label: 'NORMAL', value: 0 },
-        { label: 'INVERTED Ø', value: 1 },
-      ],
-      initial: 0,
-    },
-    {
-      label: 'DELAY R (PHASE)', paramId: PHASE_DLY, lessonKey: 'delay_one_channel',
+      // The teaching fader FIRST: sweep the inter-channel delay and watch the
+      // Lissajous ellipse tumble — phase as a frequency-dependent time shift.
+      label: 'DELAY R (PHASE)', short: 'DLY R', paramId: PHASE_DLY, lessonKey: 'delay_one_channel',
       choices: [
         { label: '0 ms', value: 0 },
         { label: '0.5 ms', value: 0.5 },
@@ -778,15 +890,29 @@ const phaseConfig: FxLabConfig = {
         { label: '10 ms', value: 10 },
       ],
       initial: 0,
+      fader: { min: 0, max: 10, snap: (v) => Math.round(v * 10) / 10, format: (v) => `${v} ms` },
     },
     {
-      label: 'MONO-FOLD', paramId: P.monoFold, lessonKey: 'mono_fold',
+      label: 'POLARITY (R)', short: 'POL', paramId: PHASE_INV, lessonKey: 'invert_polarity',
+      choices: [
+        { label: 'NORMAL', value: 0 },
+        { label: 'INVERTED Ø', value: 1 },
+      ],
+      initial: 0,
+    },
+    {
+      label: 'MONO-FOLD', short: 'FOLD', paramId: P.monoFold, lessonKey: 'mono_fold',
       choices: [
         { label: 'STEREO', value: 0 },
         { label: 'MONO (L+R)', value: 1 },
       ],
       initial: 0,
     },
+  ],
+  bezel: [
+    { k: 'POL', paramId: PHASE_INV },
+    { k: 'DLY R', paramId: PHASE_DLY },
+    { k: 'FOLD', paramId: P.monoFold },
   ],
   Hero: (v) => <LissajousGraph widthPct={100} invertR={v[PHASE_INV] > 0.5} delayRms={v[PHASE_DLY]} toneHz={440} />,
   anim: (v) => ({
@@ -829,6 +955,8 @@ const stereoConfig: FxLabConfig = {
         { label: '200% OVER', value: 200 },
       ],
       initial: 100,
+      // The teaching fader: mono → over-wide on one sweep, correlation live.
+      fader: { min: 0, max: 200, snap: (v) => Math.round(v / 5) * 5, format: (v) => `${Math.round(v)}%` },
     },
     {
       label: 'PAN', paramId: P.pan, lessonKey: 'pan',
@@ -840,7 +968,7 @@ const stereoConfig: FxLabConfig = {
       initial: 0,
     },
     {
-      label: 'BASS-MONO', paramId: P.bassMonoHz, lessonKey: 'bass_mono',
+      label: 'BASS-MONO', short: 'BASS', paramId: P.bassMonoHz, lessonKey: 'bass_mono',
       choices: [
         { label: 'OFF', value: 0 },
         { label: '120 Hz', value: 120 },
@@ -848,13 +976,18 @@ const stereoConfig: FxLabConfig = {
       initial: 0,
     },
     {
-      label: 'MONO-FOLD', paramId: P.monoFold, lessonKey: 'mono_fold',
+      label: 'MONO-FOLD', short: 'FOLD', paramId: P.monoFold, lessonKey: 'mono_fold',
       choices: [
         { label: 'STEREO', value: 0 },
         { label: 'MONO CHECK', value: 1 },
       ],
       initial: 0,
     },
+  ],
+  bezel: [
+    { k: 'WIDTH', paramId: P.widthPct },
+    { k: 'PAN', paramId: P.pan },
+    { k: 'FOLD', paramId: P.monoFold },
   ],
   Hero: (v) => <LissajousGraph widthPct={v[P.widthPct]} invertR={false} delayRms={0} toneHz={440} />,
   anim: (v) => ({
