@@ -831,12 +831,15 @@ function GlossaryLoading({ count, landed }: { count: number | null; landed: bool
   // Owner 2026-08-10: the amount stays a single "#" until the TOP header count-up
   // lands on the final total — then, at that exact moment, it becomes the real
   // number here too. Never show the total before the animation reaches it.
-  const subject = landed && count != null ? `${count.toLocaleString()} terms` : '#';
+  const subject = landed && count != null ? `${count.toLocaleString()} terms` : 'the full corpus';
   return (
     <View style={styles.loadingBox}>
-      <Text style={styles.loadingTitle}>Loading glossary{dots}</Text>
+      <Text style={styles.loadingKicker}>PRO AUDIO GLOSSARY</Text>
+      <Text style={styles.loadingTitle}>Loading{dots}</Text>
       <Text style={styles.loadingSub}>
-        Fetching the full term list and definitions — {subject} can take a few seconds. Terms will appear here as soon as they arrive.
+        Fetching every term and definition — {subject}. The first open takes a little longer while
+        the whole library streams in; terms appear the moment they arrive, and it opens instantly
+        next time.
       </Text>
     </View>
   );
@@ -1608,7 +1611,11 @@ export function GlossaryScreen({ route, navigation }: Props) {
   };
 
   return (
-    <ImageBackground source={BG_GLOSSARY} style={[styles.root, { paddingTop: insets.top }]} imageStyle={styles.bgImage}>
+    <ImageBackground
+      source={loading ? BG_GLOSSARY : undefined}
+      style={[styles.root, { paddingTop: insets.top }]}
+      imageStyle={styles.bgImage}
+    >
       <View style={styles.header}>
         {/* Decorative glossary mark (owner 2026-08-05): no longer a link — just
             the icon, a touch larger. */}
@@ -2679,17 +2686,22 @@ const styles = StyleSheet.create({
   empty: { fontFamily: fonts.barlowRegular, fontSize: 14, color: colors.textSub, paddingTop: 12 },
   // Loading panel (owner 2026-08-05) — shown while the corpus pages in.
   loadingBox: {
-    marginTop: 24,
-    paddingVertical: 22,
-    paddingHorizontal: 18,
-    borderRadius: 12,
+    marginTop: 64,
+    alignSelf: 'center',
+    maxWidth: 380,
+    alignItems: 'center',
+    paddingVertical: 28,
+    paddingHorizontal: 24,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#131316',
-    gap: 8,
+    borderColor: 'rgba(255,255,255,0.10)',
+    // Translucent glass so the new background reads through the panel.
+    backgroundColor: 'rgba(12,12,15,0.62)',
+    gap: 10,
   },
-  loadingTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 0.6, color: colors.textPrimary },
-  loadingSub: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSub },
+  loadingKicker: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 2.4, color: colors.amber },
+  loadingTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 24, letterSpacing: 0.6, color: colors.textPrimary },
+  loadingSub: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 21, color: colors.textSecondary, textAlign: 'center' },
   // Result count above the list (user request 2026-07-17).
   resultCount: {
     fontFamily: fonts.oswaldSemiBold,
