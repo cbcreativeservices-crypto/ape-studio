@@ -37,7 +37,7 @@ import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { LabShell, LabChip, HeaderPlayButton } from './LabShell';
-import { HarmonographMachine, BASE_TURNS } from './HarmonographMachine';
+import { HarmonographMachine, drawTurns } from './HarmonographMachine';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -97,13 +97,15 @@ export function HarmonographLabScreen() {
   const stereoReady = engineReady && ApeDsp.engineVersion() >= 5;
 
   // Each oscillator stored as n = hz / BASE_F0 (fractional at pendulum speeds).
-  // Defaults: 1.5 Hz : 1.0 Hz — a watchable, real-machine 3:2 (the fifth).
+  // Opening defaults (owner 2026-08-23): 1.5 Hz : 1.5 Hz (1:1), φ 90°, MEDIUM
+  // damping, ROTARY, detune +1% — the classic precessing-ring rose, drawing
+  // itself the moment the lab opens.
   const [n1, setN1] = useState(1.5 / BASE_F0);
-  const [n2, setN2] = useState(1.0 / BASE_F0);
+  const [n2, setN2] = useState(1.5 / BASE_F0);
   const [phase, setPhase] = useState<(typeof PHASES)[number]>(90);
   const [dampKey, setDampKey] = useState<(typeof DAMPINGS)[number]['key']>('medium');
-  const [rotary, setRotary] = useState(false);
-  const [detune, setDetune] = useState<(typeof DETUNES)[number]['key']>(0);
+  const [rotary, setRotary] = useState(true);
+  const [detune, setDetune] = useState<(typeof DETUNES)[number]['key']>(0.01);
   const [running, setRunning] = useState(false);
   const [genError, setGenError] = useState('');
 
@@ -238,9 +240,10 @@ export function HarmonographLabScreen() {
   const hz1 = ratio.n1 * BASE_F0;
   const hz2 = ratio.n2 * BASE_F0;
   // REAL-TIME draw (owner 2026-08-23): the machine's slower arm swings at its
-  // true Hz — the full drawing spans BASE_TURNS turns of that arm.
+  // true Hz, and the drawing runs until the pen SETTLES (turn count derives
+  // from the damping — nothing is cut off mid-swing).
   const slowerHz = Math.max(OSC_F_MIN, Math.min(hz1, hz2));
-  const drawMs = (BASE_TURNS / slowerHz) * 1000;
+  const drawMs = (drawTurns(damping.endAmp) / slowerHz) * 1000;
 
   // ── RACK UNIT pilot (APE_LAB_UX_PROPOSAL 2026-08-23, owner-approved) ──────
   // The figure + its readouts pin on the stage/bezel; the oscillator sliders
