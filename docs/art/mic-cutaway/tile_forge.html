@@ -1,0 +1,335 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>TILE FORGE — bronze instrument chassis proposal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --bg:#0b0b0e; --panel0:#3a3a3e; --panel1:#46464b; --panel2:#2c2c30;
+    --amber:#ffc64d; --sub:#9a9ca3;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  body{background:var(--bg); color:#e8e8ea; font-family:'Oswald','Arial Narrow',Arial,sans-serif; padding:26px 30px 60px}
+  h1{font-size:20px; letter-spacing:3px; color:var(--amber); font-weight:600}
+  .sub{font-family:Arial,sans-serif; font-size:12.5px; color:var(--sub); margin-top:4px; max-width:920px; line-height:1.5}
+  h2{font-size:13px; letter-spacing:2.4px; color:var(--amber); margin:34px 0 10px; font-weight:600}
+  h2 small{color:var(--sub); letter-spacing:1px; font-size:11px}
+  .panel{background:linear-gradient(#3a3a3e, #46464b 42%, #2c2c30); border:1px solid #000;
+         box-shadow:0 6px 14px rgba(0,0,0,.5); padding:14px; display:flex; gap:12px; flex-wrap:wrap; position:relative; width:max-content; max-width:100%}
+  .panel::after{content:''; position:absolute; inset:0; pointer-events:none;
+    background-image:radial-gradient(rgba(255,255,255,.05) .5px, transparent .6px), radial-gradient(rgba(0,0,0,.09) .5px, transparent .6px);
+    background-size:37px 29px, 41px 31px; background-position:3px 5px, 17px 11px;}
+  .zoomwrap{display:flex; gap:34px; align-items:flex-start; flex-wrap:wrap; margin-top:8px}
+  .callouts{font-family:Arial,sans-serif; font-size:11.5px; color:#c9cbd1; line-height:1.35}
+  .callouts b{color:var(--amber); font-weight:600; font-family:'Oswald',Arial,sans-serif; letter-spacing:.6px}
+  .callouts li{margin:7px 0 7px 0; list-style:none; display:flex; gap:8px}
+  .callouts .n{color:#0b0b0e; background:var(--amber); min-width:16px; height:16px; border-radius:8px;
+    display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; margin-top:1px}
+  .note{font-family:Arial,sans-serif; font-size:11.5px; color:#84868d; margin-top:8px; max-width:900px; line-height:1.45}
+  .swatchrow{display:flex; gap:10px; margin-top:8px}
+  .swatch{width:120px; text-align:center; font-size:10px; letter-spacing:1px; color:var(--sub)}
+</style>
+</head>
+<body>
+<h1>TILE FORGE</h1>
+<div class="sub">Proposed re-materialization of the Measurement &amp; Analysis tool tiles, pitched against the bronze
+control-panel reference. Same skeleton the tiles already have (seam → frame → cavity → sinking display cap);
+new machined-bronze skin, true multi-facet bevels, a recess crevice, an engraved nameplate, and a per-tool
+hardware rail so each tile reads as its own instrument. All 1× tiles below are true phone size (165&nbsp;px wide).</div>
+
+<h2>TODAY <small>— faithful replica of the current tile</small></h2>
+<div class="panel" id="rowCurrent"></div>
+
+<h2>PROPOSED — BRONZE INSTRUMENT CHASSIS <small>— same layout law, new material + identity</small></h2>
+<div class="panel" id="rowProposed"></div>
+<div class="note">Press behavior unchanged: the glass cap still sinks 1&nbsp;px into the crevice with the haptic click and
+power-on glow. Live minis still render inside the glass. The hardware rail is decorative panel furniture (never a fake
+meter); lamps stay dark unless tied to a real state (e.g. a MIC lamp lit only while the hub engine is live).</div>
+
+<h2>CUTSHEET <small>— one chassis at 2.6×, zones annotated</small></h2>
+<div class="zoomwrap">
+  <div class="panel" id="zoomTile"></div>
+  <ul class="callouts">
+    <li><span class="n">1</span><span><b>SEAM</b> — 1px black part-line against the rack panel (kept from today).</span></li>
+    <li><span class="n">2</span><span><b>OUTER CHAMFER</b> — bright machined facet; catches the key light on top, wraps to dark on the bottom edge.</span></li>
+    <li><span class="n">3</span><span><b>FRAME FACE</b> — brushed bronze; fine horizontal grain + bead-blast grit + one faint scratch per tile (deterministic, per-tile seed).</span></li>
+    <li><span class="n">4</span><span><b>ENGRAVED NAMEPLATE</b> — the title debossed INTO the metal (dark fill, light lower edge) instead of white text floating on glass.</span></li>
+    <li><span class="n">5</span><span><b>INNER CHAMFER, INVERTED</b> — dark top / lit bottom wall: the optical signature of a true recess.</span></li>
+    <li><span class="n">6</span><span><b>AO CREVICE</b> — the shadowed gap the display cap sinks into on press.</span></li>
+    <li><span class="n">7</span><span><b>DISPLAY GLASS</b> — the live mini, unchanged, under the existing smoked sheen.</span></li>
+    <li><span class="n">8</span><span><b>HARDWARE RAIL</b> — recessed channel carrying each tool's identity furniture (knob, keycaps, toggle, lamp) with real contact shadows.</span></li>
+    <li><span class="n">9</span><span><b>SCREWS</b> — two phillips heads per chassis, slots a hair off-true (the dashboard's screw vocabulary).</span></li>
+  </ul>
+</div>
+
+<h2>COAT OPTIONS <small>— same geometry, two finishes</small></h2>
+<div class="panel" id="rowCoats"></div>
+<div class="note">Bronze is the pitch — it is the Academy's amber made physical, and it separates the TOOLS section from the
+gray dashboard hardware. Graphite shown only as the conservative fallback.</div>
+
+<script>
+/* ─────────────────────────────────────────────────────────────────────────
+   Chassis builder. Every tile is one inline SVG; ALL gradient/filter ids are
+   uid-prefixed (inline SVG ids are global in HTML — the app learned this the
+   hard way with the tool strips).
+   ────────────────────────────────────────────────────────────────────── */
+const W = 165, H = 118;
+
+/* deterministic per-tile rng (same idea as the app's GRIT_SPECKS xorshift) */
+function rng(seed){ let s = seed>>>0 || 1;
+  return () => { s^=s<<13; s^=s>>>17; s^=s<<5; return ((s>>>0)%1e6)/1e6; }; }
+
+const COATS = {
+  bronze: { c0:'#e2c395', c1:'#a8895f', face0:'#80674a', face1:'#5c4930', c4:'#33261732',
+            dark:'#33261a', crev:'#0a0603', edgeDark:'#241a10', plate0:'#6f5940', plate1:'#4e3d29',
+            engrave:'#1f150c', grainL:'rgba(255,236,200,.05)', grainD:'rgba(0,0,0,.10)' },
+  graphite:{ c0:'#b9bcc2', c1:'#71747a', face0:'#4a4c52', face1:'#323438', c4:'#1a1b1f',
+            dark:'#1d1e22', crev:'#050506', edgeDark:'#141518', plate0:'#3f4147', plate1:'#2b2d31',
+            engrave:'#101114', grainL:'rgba(255,255,255,.05)', grainD:'rgba(0,0,0,.12)' },
+};
+
+function rr(x,y,w,h,r,fill,extra=''){ return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="${fill}" ${extra}/>`; }
+
+/* ── screens (approximations of the live minis) ─────────────────────────── */
+function screenVU(u,x,y,w,h){
+  const wx=x+3, wy=y+2, ww=w-6, wh=h-4;
+  const cx=wx+ww/2, cy=wy+wh+ww*0.32, R=ww*0.52;
+  let ticks='';
+  for(let i=0;i<=10;i++){
+    const a=(-42+i*8.4)*Math.PI/180, red=i>=8;
+    ticks+=`<line x1="${cx+Math.sin(a)*(R*.86)}" y1="${cy-Math.cos(a)*(R*.86)}" x2="${cx+Math.sin(a)*R}" y2="${cy-Math.cos(a)*R}" stroke="${red?'#b3372c':'#4a3d24'}" stroke-width="${red?1.2:0.9}"/>`;
+  }
+  const na=18*Math.PI/180;
+  return `${rr(x,y,w,h,3,'#0d0a06')}
+    <clipPath id="${u}vuclip"><rect x="${wx}" y="${wy}" width="${ww}" height="${wh}" rx="2.5"/></clipPath>
+    ${rr(wx,wy,ww,wh,2.5,`url(#${u}vu)`)}
+    <g clip-path="url(#${u}vuclip)">${ticks}
+      <line x1="${cx}" y1="${cy}" x2="${cx+Math.sin(na)*R*1.02}" y2="${cy-Math.cos(na)*R*1.02}" stroke="#241708" stroke-width="1.3"/>
+      <text x="${cx}" y="${wy+wh-3.5}" text-anchor="middle" font-size="6.5" letter-spacing="2" fill="#6b5731" font-family="Oswald,Arial">VU</text>
+    </g>
+    <rect x="${wx}" y="${wy}" width="${ww}" height="${wh}" rx="2.5" fill="none" stroke="#0a0704" stroke-width="1"/>
+    <circle cx="${x+w-6.5}" cy="${y+6.5}" r="2.6" fill="#3a0d0d" stroke="#000" stroke-width=".6"/>`;
+}
+function screenSquare(u,x,y,w,h){
+  const mid=y+h/2, a=h*0.26, seg=w/6; let d=`M ${x+6} ${mid+a}`;
+  for(let i=0;i<6;i++){ const x0=x+6+i*seg*0.95; d+=` L ${x0} ${mid-a} L ${x0+seg*0.5} ${mid-a} L ${x0+seg*0.5} ${mid+a} L ${x0+seg*0.95} ${mid+a}`; }
+  return `${rr(x,y,w,h,3,'#07080b')}<line x1="${x}" y1="${mid}" x2="${x+w}" y2="${mid}" stroke="#1d2f4a" stroke-width=".7"/>
+    <path d="${d}" fill="none" stroke="url(#${u}wave)" stroke-width="1.4"/>`;
+}
+function screenTuner(u,x,y,w,h){
+  const cx=x+w/2, cy=y+h*1.35, r=h*1.1; let ticks='';
+  for(let i=-4;i<=4;i++){ const a=i*9*Math.PI/180;
+    ticks+=`<line x1="${cx+Math.sin(a)*(r*.8)}" y1="${cy-Math.cos(a)*(r*.8)}" x2="${cx+Math.sin(a)*(r*.9)}" y2="${cy-Math.cos(a)*(r*.9)}" stroke="${i===0?'#37d97b':'#3a3f49'}" stroke-width="${i===0?1.6:1}"/>`; }
+  return `${rr(x,y,w,h,3,'#07080b')}${ticks}
+    <line x1="${cx}" y1="${cy}" x2="${cx+Math.sin(0.05)*r*.92}" y2="${cy-Math.cos(0.05)*r*.92}" stroke="#e8b64c" stroke-width="1.4"/>
+    <rect x="${cx-7}" y="${y+h-9}" width="14" height="5" rx="1.5" fill="#0f2b1a" stroke="#1d5c36" stroke-width=".6"/>`;
+}
+function screenRTA(u,x,y,w,h){
+  let bars=''; const n=18, bw=(w-10)/n, r2=rng(77);
+  for(let i=0;i<n;i++){ const t=i/n, env=Math.sin(t*Math.PI)*.8+.15, bh=(h-12)*env*(0.6+r2()*0.5);
+    bars+=`<rect x="${x+5+i*bw+0.5}" y="${y+h-5-bh}" width="${bw-1.4}" height="${bh}" fill="url(#${u}rta)"/>`; }
+  return `${rr(x,y,w,h,3,'#07080b')}${bars}`;
+}
+
+/* ── hardware garnish (the identity rail) ───────────────────────────────── */
+function knob(u,cx,cy,r){
+  let knurl='';
+  for(let i=0;i<24;i++){ const a=i/24*2*Math.PI;
+    knurl+=`<line x1="${cx+Math.cos(a)*(r*.78)}" y1="${cy+Math.sin(a)*(r*.78)}" x2="${cx+Math.cos(a)*(r*.98)}" y2="${cy+Math.sin(a)*(r*.98)}" stroke="rgba(0,0,0,.55)" stroke-width=".7"/>`; }
+  return `<ellipse cx="${cx+0.8}" cy="${cy+1.6}" rx="${r*1.08}" ry="${r*.5}" fill="rgba(0,0,0,.45)"/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#${u}knob)"/>${knurl}
+    <circle cx="${cx}" cy="${cy}" r="${r*.62}" fill="url(#${u}knobTop)"/>
+    <rect x="${cx-0.7}" y="${cy-r*.6}" width="1.4" height="${r*.5}" rx=".7" fill="#e8dcc2"/>
+    <circle cx="${cx-r*.3}" cy="${cy-r*.34}" r="${r*.16}" fill="rgba(255,255,255,.5)"/>`;
+}
+function keycap(u,x,y,w,h,lit){
+  return `<rect x="${x+1}" y="${y+2}" width="${w}" height="${h}" rx="2.4" fill="rgba(0,0,0,.5)"/>
+    ${rr(x,y,w,h,2.4,`url(#${u}key${lit?'On':'Off'})`)}
+    <rect x="${x+1.4}" y="${y+1}" width="${w-2.8}" height="${h*.36}" rx="1.6" fill="rgba(255,255,255,${lit?.34:.22})"/>
+    <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2.4" fill="none" stroke="rgba(0,0,0,.55)" stroke-width=".7"/>`;
+}
+function lamp(u,cx,cy,r,color,on){
+  const glow = on?`<circle cx="${cx}" cy="${cy}" r="${r*2.6}" fill="url(#${u}glow)"/>`:'';
+  return `${glow}<circle cx="${cx}" cy="${cy}" r="${r+1.2}" fill="#101013" stroke="#000" stroke-width=".6"/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="${on?color:'#1c2b22'}"/>
+    <circle cx="${cx-r*.3}" cy="${cy-r*.35}" r="${r*.3}" fill="rgba(255,255,255,${on?.8:.25})"/>`;
+}
+function toggle(u,cx,cy){
+  return `<rect x="${cx-7}" y="${cy-3.4}" width="14" height="6.8" rx="3.4" fill="#101013" stroke="#000" stroke-width=".6"/>
+    <ellipse cx="${cx+3.4}" cy="${cy+2.6}" rx="3.4" ry="1.4" fill="rgba(0,0,0,.4)"/>
+    <circle cx="${cx+3.2}" cy="${cy}" r="3.1" fill="url(#${u}knob)"/>
+    <circle cx="${cx+2.4}" cy="${cy-1}" r=".9" fill="rgba(255,255,255,.5)"/>`;
+}
+function sliders(u,cx,cy){
+  let s=''; const hs=[-3,1,-1];
+  for(let i=0;i<3;i++){ const x=cx-11+i*11;
+    s+=`<rect x="${x-0.6}" y="${cy-5}" width="1.2" height="10" rx=".6" fill="#0c0c0f"/>
+        <rect x="${x-3.2}" y="${cy+hs[i]-1.8}" width="6.4" height="3.6" rx="1" fill="url(#${u}knob)"/>
+        <rect x="${x-3.2}" y="${cy+hs[i]-0.4}" width="6.4" height=".8" fill="rgba(255,255,255,.35)"/>`; }
+  return s;
+}
+function rotary(u,cx,cy,r){
+  let t=''; for(let i=0;i<5;i++){ const a=(-60+i*30)*Math.PI/180;
+    t+=`<line x1="${cx+Math.sin(a)*(r+2)}" y1="${cy-Math.cos(a)*(r+2)}" x2="${cx+Math.sin(a)*(r+3.6)}" y2="${cy-Math.cos(a)*(r+3.6)}" stroke="rgba(0,0,0,.5)" stroke-width=".8"/>`; }
+  return `${t}${knob(u,cx,cy,r)}`;
+}
+function screw(u,cx,cy,ang){
+  return `<g transform="rotate(${ang} ${cx} ${cy})">
+    <circle cx="${cx}" cy="${cy}" r="3.1" fill="#131416" stroke="#000" stroke-width=".6"/>
+    <circle cx="${cx}" cy="${cy}" r="2.3" fill="#1e1f22"/>
+    <circle cx="${cx-0.9}" cy="${cy-1}" r=".8" fill="rgba(255,255,255,.12)"/>
+    <rect x="${cx-2}" y="${cy-0.4}" width="4" height=".8" rx=".4" fill="#000"/>
+    <rect x="${cx-0.4}" y="${cy-2}" width=".8" height="4" rx=".4" fill="#000"/></g>`;
+}
+
+/* ── defs shared per tile ───────────────────────────────────────────────── */
+function defs(u,C){
+  return `<defs>
+    <linearGradient id="${u}outer" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="${C.c0}"/><stop offset=".18" stop-color="${C.c1}"/>
+      <stop offset=".75" stop-color="${C.face1}"/><stop offset="1" stop-color="${C.dark}"/></linearGradient>
+    <linearGradient id="${u}face" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="${C.face0}"/><stop offset="1" stop-color="${C.face1}"/></linearGradient>
+    <linearGradient id="${u}inner" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="${C.edgeDark}"/><stop offset="1" stop-color="${C.c1}"/></linearGradient>
+    <linearGradient id="${u}plate" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="${C.plate0}"/><stop offset="1" stop-color="${C.plate1}"/></linearGradient>
+    <linearGradient id="${u}rail" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="${C.edgeDark}"/><stop offset=".5" stop-color="${C.plate1}"/><stop offset="1" stop-color="${C.plate0}"/></linearGradient>
+    <linearGradient id="${u}glass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="rgba(255,255,255,.10)"/><stop offset=".45" stop-color="rgba(255,255,255,.02)"/>
+      <stop offset="1" stop-color="rgba(0,0,0,.16)"/></linearGradient>
+    <radialGradient id="${u}knob" cx=".38" cy=".3" r="1">
+      <stop offset="0" stop-color="#8a8d94"/><stop offset=".6" stop-color="#3c3e44"/><stop offset="1" stop-color="#1a1b1f"/></radialGradient>
+    <radialGradient id="${u}knobTop" cx=".4" cy=".32" r="1">
+      <stop offset="0" stop-color="#c9b389"/><stop offset=".55" stop-color="#6e5a3c"/><stop offset="1" stop-color="#332818"/></radialGradient>
+    <linearGradient id="${u}keyOff" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e88a3c"/><stop offset=".55" stop-color="#c15f1e"/><stop offset="1" stop-color="#7e3a10"/></linearGradient>
+    <linearGradient id="${u}keyOn" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffb15e"/><stop offset=".55" stop-color="#e07322"/><stop offset="1" stop-color="#8e4212"/></linearGradient>
+    <radialGradient id="${u}glow" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="rgba(64,255,140,.5)"/><stop offset="1" stop-color="rgba(64,255,140,0)"/></radialGradient>
+    <linearGradient id="${u}vu" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f7e3b2"/><stop offset=".7" stop-color="#e8c377"/><stop offset="1" stop-color="#caa055"/></linearGradient>
+    <linearGradient id="${u}wave" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#e8734c"/><stop offset="1" stop-color="#e8b64c"/></linearGradient>
+    <linearGradient id="${u}rta" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#1c6de0"/><stop offset=".7" stop-color="#39c26d"/><stop offset="1" stop-color="#ffd35e"/></linearGradient>
+  </defs>`;
+}
+
+/* ── THE PROPOSED CHASSIS ───────────────────────────────────────────────── */
+function chassis(u, title, screenFn, railFn, coat='bronze', seed=1){
+  const C = COATS[coat]; const r = rng(seed);
+  /* zones */
+  const plateY=6.5, plateH=17;
+  const dispX=10.5, dispY=27.5, dispW=W-21, dispH=57;
+  const railY=H-24.5, railH=16;
+  /* grain on the frame face: horizontal hairlines clipped to a ring */
+  let grain='';
+  for(let y=3;y<H-2;y+=2.3){ grain+=`<line x1="2.5" y1="${y}" x2="${W-2.5}" y2="${y}" stroke="${y%4.6<2.3?C.grainL:C.grainD}" stroke-width=".55"/>`; }
+  let grit='';
+  for(let i=0;i<46;i++){ grit+=`<circle cx="${2+r()*(W-4)}" cy="${2+r()*(H-4)}" r="${.3+r()*.5}" fill="${r()>.5?'rgba(255,240,210,.10)':'rgba(0,0,0,.16)'}"/>`; }
+  const scx=14+r()*(W-70), scy=H-9;
+  const scratch=`<line x1="${scx}" y1="${scy}" x2="${scx+26+r()*18}" y2="${scy-1-r()*1.6}" stroke="rgba(255,238,205,.10)" stroke-width=".5"/>`;
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="display:block">
+    ${defs(u,C)}
+    ${rr(0,0,W,H,13,'#000')}
+    ${rr(1,1,W-2,H-2,12,`url(#${u}outer)`)}
+    ${rr(3.2,3.2,W-6.4,H-6.4,10.4,`url(#${u}face)`)}
+    <clipPath id="${u}clip">${rr(3.2,3.2,W-6.4,H-6.4,10.4,'#fff')}</clipPath>
+    <g clip-path="url(#${u}clip)">${grain}${grit}${scratch}</g>
+    <defs><linearGradient id="${u}wrap" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="rgba(0,0,0,.28)"/><stop offset=".07" stop-color="rgba(0,0,0,0)"/>
+      <stop offset=".93" stop-color="rgba(0,0,0,0)"/><stop offset="1" stop-color="rgba(0,0,0,.34)"/></linearGradient></defs>
+    ${rr(1,1,W-2,H-2,12,`url(#${u}wrap)`)}
+    <line x1="8" y1="2.2" x2="${W-8}" y2="2.2" stroke="rgba(255,244,220,.5)" stroke-width=".8"/>
+
+    <!-- nameplate: engraved into the metal -->
+    ${rr(11,plateY,W-22,plateH,3,`url(#${u}plate)`)}
+    <rect x="11" y="${plateY}" width="${W-22}" height="1" rx=".5" fill="rgba(0,0,0,.4)"/>
+    <rect x="11" y="${plateY+plateH-1}" width="${W-22}" height="1" rx=".5" fill="rgba(255,240,210,.14)"/>
+    <text x="${W/2}" y="${plateY+12.4}" text-anchor="middle" font-family="Oswald,'Arial Narrow',Arial" font-weight="600"
+      font-size="10.2" letter-spacing="1.1" fill="rgba(255,242,214,.16)">${title}</text>
+    <text x="${W/2}" y="${plateY+11.7}" text-anchor="middle" font-family="Oswald,'Arial Narrow',Arial" font-weight="600"
+      font-size="10.2" letter-spacing="1.1" fill="${C.engrave}">${title}</text>
+
+    <!-- display recess: inverted inner chamfer -> AO crevice -> glass -->
+    ${rr(dispX-2.6,dispY-2.6,dispW+5.2,dispH+5.2,7.2,`url(#${u}inner)`)}
+    ${rr(dispX-1.2,dispY-1.2,dispW+2.4,dispH+2.4,6,C.crev)}
+    <rect x="${dispX-1.2}" y="${dispY-1.2}" width="${dispW+2.4}" height="5" rx="4" fill="rgba(0,0,0,.55)"/>
+    ${rr(dispX,dispY,dispW,dispH,5,'#0b0c0e')}
+    ${screenFn(u,dispX+4,dispY+4,dispW-8,dispH-8)}
+    ${rr(dispX,dispY,dispW,dispH,5,`url(#${u}glass)`)}
+    <rect x="${dispX+3}" y="${dispY+0.8}" width="${dispW-6}" height="1.1" rx=".55" fill="rgba(255,255,255,.20)"/>
+
+    <!-- hardware rail: shallow recessed channel + garnish -->
+    ${rr(11,railY,W-22,railH,4,`url(#${u}rail)`)}
+    <rect x="11" y="${railY}" width="${W-22}" height="1.4" rx=".7" fill="rgba(0,0,0,.5)"/>
+    <rect x="11" y="${railY+railH-1}" width="${W-22}" height="1" rx=".5" fill="rgba(255,240,210,.12)"/>
+    ${railFn(u, railY+railH/2)}
+
+    ${screw(u,8.4,8.4,-8+16*r())}
+    ${screw(u,W-8.4,H-8.4,4+14*r())}
+  </svg>`;
+}
+
+/* ── faithful replica of TODAY's tile ───────────────────────────────────── */
+function currentTile(u,title,screenFn){
+  const capX=7.5, capY=7.5, capW=W-15;
+  return `<svg width="${W}" height="106" viewBox="0 0 ${W} 106" style="display:block">
+    ${defs(u,COATS.graphite)}
+    <defs><linearGradient id="${u}bez" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5c6067"/><stop offset=".14" stop-color="#3e4147"/>
+      <stop offset=".62" stop-color="#2b2d32"/><stop offset="1" stop-color="#1d1f23"/></linearGradient></defs>
+    ${rr(0,0,W,106,13,'#000')}
+    ${rr(1,1,W-2,104,12,`url(#${u}bez)`)}
+    <rect x="7" y="1.6" width="${W-14}" height="1.2" fill="rgba(255,255,255,.34)"/>
+    ${rr(6,6,W-12,94,9,'#040405')}
+    ${rr(capX,capY,capW,91,8,'#0b0c0e')}
+    <text x="${W/2}" y="22" text-anchor="middle" font-family="Oswald,'Arial Narrow',Arial" font-weight="500"
+      font-size="11.5" fill="#e8e8ea">${title}</text>
+    ${screenFn(u,capX+9,29,capW-18,60)}
+    ${rr(capX,capY,capW,91,8,`url(#${u}glass)`)}
+    <rect x="${capX}" y="${capY}" width="${capW}" height="1.5" fill="rgba(255,255,255,.30)"/>
+  </svg>`;
+}
+
+/* ── rails per tool ─────────────────────────────────────────────────────── */
+const railSPL   = (u,cy)=>`${knob(u,34,cy,6.2)}${lamp(u,W-34,cy,3,'#ff5a48',false)}
+  <text x="${W-34}" y="${cy+9.5}" text-anchor="middle" font-size="5" letter-spacing=".8" fill="rgba(255,242,214,.35)" font-family="Oswald,Arial">PEAK</text>`;
+const railGEN   = (u,cy)=>`${keycap(u,26,cy-5.5,16,11,false)}${keycap(u,46,cy-5.5,16,11,true)}${lamp(u,W-32,cy,2.6,'#ffd35e',false)}`;
+const railTUNER = (u,cy)=>`${lamp(u,W/2,cy,4,'#37d97b',true)}
+  <text x="${W/2}" y="${cy+10.5}" text-anchor="middle" font-size="5" letter-spacing=".8" fill="rgba(255,242,214,.35)" font-family="Oswald,Arial">IN TUNE</text>`;
+const railRTA   = (u,cy)=>`${sliders(u,W/2-14,cy)}${lamp(u,W-30,cy,2.6,'#37d97b',false)}`;
+const railMM    = (u,cy)=>`${rotary(u,34,cy,6)}${lamp(u,W-32,cy,2.6,'#4dd0e1',false)}`;
+const railSPEC  = (u,cy)=>`${toggle(u,38,cy)}${lamp(u,W-32,cy,2.6,'#ffd35e',false)}`;
+
+/* ── stamp the rows ─────────────────────────────────────────────────────── */
+const cur = document.getElementById('rowCurrent');
+cur.innerHTML =
+  currentTile('ca','SPL Reference Meter',screenVU) +
+  currentTile('cb','Tone / Noise Generator',screenSquare) +
+  currentTile('cc','Frequency Counter & Tuner',screenTuner);
+
+const pro = document.getElementById('rowProposed');
+pro.innerHTML =
+  chassis('pa','SPL REFERENCE METER',screenVU,railSPL,'bronze',11) +
+  chassis('pb','TONE / NOISE GENERATOR',screenSquare,railGEN,'bronze',23) +
+  chassis('pc','FREQUENCY COUNTER & TUNER',screenTuner,railTUNER,'bronze',37) +
+  chassis('pd','SPECTRUM ANALYZER / RTA',screenRTA,railRTA,'bronze',51);
+
+const zoom = document.getElementById('zoomTile');
+zoom.innerHTML = `<div style="transform:scale(2.6); transform-origin:top left; width:${W*2.6}px; height:${H*2.6}px">
+  ${chassis('zz','SPL REFERENCE METER',screenVU,railSPL,'bronze',11)}</div>`;
+zoom.style.width = (W*2.6+28)+'px'; zoom.style.height=(H*2.6+28)+'px';
+
+const coats = document.getElementById('rowCoats');
+coats.innerHTML =
+  chassis('ka','PRO AUDIO MULTIMETER',screenRTA,railMM,'bronze',61) +
+  chassis('kb','PRO AUDIO MULTIMETER',screenRTA,railMM,'graphite',61) +
+  chassis('kc','SPECTROGRAM',screenRTA,railSPEC,'bronze',71);
+</script>
+</body>
+</html>
