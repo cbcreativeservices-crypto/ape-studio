@@ -4,6 +4,15 @@
  * Audio Lab: a stepped teaching progression (NOT the Learn/Explore lab shell)
  * that builds the mental model every other lesson stands on.
  *
+ * RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23, owner-approved): each module now
+ * renders the RackUnit frame — the layout law *reading may scroll; operating
+ * may not*. The module's viz PINS on the stage (height-parametric; fixed-
+ * height composites scale-to-fit); its live numbers read on the bezel; its
+ * sliders ride the dock lane, its chips live in sticky trays, and PLAY is a
+ * dock key with an LED. Prose, captions, CheckQuestion and BACK/NEXT scroll in
+ * the well. The stage badge pins each display's honesty CLASS; the full
+ * verbatim disclosure (ConceptBadge / AnalyticBadge) leads the well.
+ *
  * SHAPE (owner decisions): hybrid course — linear steps with progress dots,
  * NEXT/BACK, tap-to-jump (freely open: nothing gated, nothing graded, no
  * backend) + a persistent door to the free Playground. The answer→reveal
@@ -16,9 +25,9 @@
  * whose interactive IS the existing Playground screen.
  *
  * VISUALS: Skia (native — clients built before the Skia dependency render the
- * honest VizUnavailableCard; text + audio still work, §1.7). Animated panels
- * are the slowed CONCEPTUAL model; static panels are ANALYTIC drawings of the
- * exact math — every panel badges which it is.
+ * honest VizUnavailableCard ON THE STAGE; text + audio still work, §1.7).
+ * Animated panels are the slowed CONCEPTUAL model; static panels are ANALYTIC
+ * drawings of the exact math — every panel badges which it is.
  *
  * AUDIO: one shared voice owned by the shell (house idiom: audio-output gate →
  * genSet/genStart → keepalive → stop on step change/blur/unmount). Sine
@@ -27,10 +36,10 @@
  * below those versions get the honest "needs the newer dev build" note, never
  * a fabricated stand-in. Speaker-guarded per frequency (native route-aware
  * HPF on v4+). Engine-absent clients read and watch everything — only the
- * PLAY buttons gate out.
+ * PLAY keys gate out.
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { PanResponder, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect, useIsFocused, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -43,14 +52,16 @@ import { noteAudioActivity } from '../../../features/audio/audioOutputStore';
 import { guardAdditiveForEngine, guardToneLevelForEngine } from '../../../features/audio/speakerSafety';
 import { EngineGate } from '../../tools/EngineGate';
 import type { EngineState } from '../../../features/tools/engine/useDspEngine';
+import { levelColor } from '../../../features/tools/levelColor';
 import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
-import { LabChip, ScrollLockProvider, useScrollLock } from '../LabShell';
-import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../features/lab/guidedLessons';
+import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { markLabUnit, registerLabUnits } from '../../../features/lab/labCompletion';
-import { CheckQuestion, ConceptBadge, DragSlider, LevelMeterBar, VizUnavailableCard, type CheckSpec } from './bits';
-import { requireViz, skiaAvailable, type VizModule } from './skiaGate';
+import { RackUnit } from '../rack/RackUnit';
+import type { BezelItem, DockParam } from '../rack/rackTypes';
+import { CheckQuestion, ConceptBadge, LevelMeterBar, VizUnavailableCard, type CheckSpec } from './bits';
+import { requireViz, type VizModule } from './skiaGate';
 
 const STEP_KEY = 'ape:fosStep';
 const ACTIVITY_MS = 500;
@@ -266,176 +277,67 @@ function useCourseTone(engineReady: boolean): ToneApi {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Module panels (each mounts its viz child ONLY when Skia is available)
+// Rack plumbing shared by every module
 
-type PanelProps = { viz: VizModule | null; width: number; tone: ToneApi; focused: boolean; help: (key: string) => void };
+type ToolRoute = 'SplMeter' | 'FrequencyCounter' | 'Rta' | 'SpectrogramLive' | 'WaveformLive' | 'Rt60Live' | 'SignalGen';
 
-/** M1 — air particles alone, LOW/HIGH pitch chips. */
-function M1Panel({ viz, width, tone, focused, help }: PanelProps) {
-  const [f, setF] = useState(220);
-  const [zones, setZones] = useState(true);
-  const pick = (hz: number) => {
-    setF(hz);
-    if (tone.playing) tone.set({ freqHz: hz });
+type RackProps = {
+  viz: VizModule | null;
+  tone: ToneApi;
+  focused: boolean;
+  help: (key: string) => void;
+  /** Screen-composed reading column ABOVE the module's own captions:
+   *  engine gate + tag + title + collapsible paragraphs. */
+  wellTop: ReactNode;
+  /** Screen-composed reading column BELOW: CheckQuestion + BACK/NEXT. */
+  wellBottom: ReactNode;
+  onPlayground: () => void;
+  onTool: (r: ToolRoute) => void;
+};
+
+/** Honest stage fallback for pre-Skia clients (§1.7) — the card pins where
+ *  the animated model would be; text and audio below keep working. */
+function StageFallback({ w }: { w: number }) {
+  return (
+    <View style={{ width: w, flex: 1, justifyContent: 'center', padding: 10 }}>
+      <VizUnavailableCard />
+    </View>
+  );
+}
+
+/** Scale-to-fit wrapper for the fixed-height COMPOSITE vizzes (ThreeWindow,
+ *  DualDomain, HarmonicStacker) whose internal layout can't take a height
+ *  prop: render at width/scale, scale down so the natural height fits the
+ *  glass exactly — nothing is cropped, the drawing stays whole. */
+function FitStage({ w, h, natural, children }: { w: number; h: number; natural: number; children: (vw: number) => ReactNode }) {
+  const pad = 8;
+  const s = Math.min(1, (h - pad) / natural);
+  const vw = Math.max(1, Math.floor((w - pad) / s));
+  return (
+    <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+      <View style={{ width: vw, transform: [{ scale: s }] }}>{children(vw)}</View>
+    </View>
+  );
+}
+const THREE_WINDOW_NATURAL = 240; // label+cone row (133) + gap + label + gap + graph (84)
+const DUAL_DOMAIN_NATURAL = 206; // two 84-high canvases + two labels + gaps
+const HSTACK_NATURAL = 282; // 4 + 6×30 rows + 12 gap + 86 sum
+
+/** Shared TONE bezel cell — the voice state, printed on every audio module. */
+function toneCell(tone: ToneApi): BezelItem {
+  return { k: 'TONE', v: tone.playing ? 'LIVE' : '—', tint: tone.playing ? undefined : '#7a7f8a' };
+}
+
+/** Shared PLAY dock key (kind:'toggle', LED = sounding) — the course's inline
+ *  transport idiom moved to the dock. Callers gate on engine readiness. */
+function playKey(tone: ToneApi, onPlay: () => void): DockParam {
+  return {
+    kind: 'toggle',
+    id: 'play',
+    label: 'PLAY',
+    value: tone.playing,
+    onToggle: () => (tone.playing ? tone.stop() : onPlay()),
   };
-  return (
-    <View style={styles.panelCard}>
-      {viz ? (
-        <M1Viz viz={viz} width={width} visHz={visHzFor(f)} running={focused} showZones={zones} />
-      ) : (
-        <VizUnavailableCard />
-      )}
-      <ConceptBadge />
-      <DisplayGuideButton onPress={() => help('air')} />
-      <View style={styles.chipRow}>
-        <LabChip label="PRESSURE COLORS" selected={zones} onPress={() => setZones((v) => !v)} onLongPress={() => help('pressure_graph')} />
-      </View>
-      <View style={styles.chipRow}>
-        <LabChip label="LOW · 110 Hz" selected={f === 110} onPress={() => pick(110)} onLongPress={() => help('frequency')} />
-        <LabChip label="MID · 220 Hz" selected={f === 220} onPress={() => pick(220)} onLongPress={() => help('frequency')} />
-        <LabChip label="HIGH · 880 Hz" selected={f === 880} onPress={() => pick(880)} onLongPress={() => help('frequency')} />
-      </View>
-      {tone.engineReady ? (
-        <GlassButton
-          label={tone.playing ? 'STOP' : `PLAY THE TONE — ${f} Hz`}
-          tint="green"
-          height={46}
-          fontSize={14}
-          onPress={() => (tone.playing ? tone.stop() : tone.play(f, -24))}
-        />
-      ) : null}
-    </View>
-  );
-}
-function M1Viz({ viz, width, visHz, running, showZones }: { viz: VizModule; width: number; visHz: number; running: boolean; showZones: boolean }) {
-  const clock = viz.useVizClock(running);
-  return <viz.AirParticlesView clock={clock} width={width} visHz={visHz} amp={0.75} showEar showZones={showZones} />;
-}
-
-/** M2 — the three synchronized windows. */
-function M2Panel({ viz, width, tone, focused, help }: PanelProps) {
-  const [zones, setZones] = useState(true);
-  return (
-    <View style={styles.panelCard}>
-      {viz ? (
-        <viz.ThreeWindowView width={width} visHz={visHzFor(220)} amp={0.75} running={focused} showZones={zones} />
-      ) : (
-        <VizUnavailableCard />
-      )}
-      <ConceptBadge extra="ALL THREE WINDOWS SHOW THE SAME MOMENT" />
-      <DisplayGuideButton onPress={() => help('speaker_cone')} />
-      <View style={styles.chipRow}>
-        <LabChip label="PRESSURE COLORS" selected={zones} onPress={() => setZones((v) => !v)} onLongPress={() => help('pressure_graph')} />
-      </View>
-      {tone.engineReady ? (
-        <GlassButton
-          label={tone.playing ? 'STOP' : 'PLAY THE TONE — 220 Hz'}
-          tint="green"
-          height={46}
-          fontSize={14}
-          onPress={() => (tone.playing ? tone.stop() : tone.play(220, -24))}
-        />
-      ) : null}
-    </View>
-  );
-}
-
-/** M3 — compression/rarefaction slider (particles + pressure, no cone). */
-function M3Panel({ viz, width, tone, focused, help }: PanelProps) {
-  const [amt, setAmt] = useState(0.55);
-  const [zones, setZones] = useState(true);
-  const levelFor = (a: number) => -44 + a * 22; // −44 … −22 dBFS
-  return (
-    <View style={styles.panelCard}>
-      {viz ? <M3Viz viz={viz} width={width} amp={amt} running={focused} showZones={zones} /> : <VizUnavailableCard />}
-      <ConceptBadge />
-      <DisplayGuideButton onPress={() => help('pressure_graph')} />
-      <View style={styles.chipRow}>
-        <LabChip label="PRESSURE COLORS" selected={zones} onPress={() => setZones((v) => !v)} onLongPress={() => help('pressure_graph')} />
-      </View>
-      <DragSlider
-        value={amt}
-        onChange={(v) => {
-          setAmt(v);
-          if (tone.playing) tone.set({ levelDb: levelFor(v) });
-        }}
-        label="COMPRESSION STRENGTH"
-        readout={amt < 0.33 ? 'gentle' : amt < 0.66 ? 'medium' : 'strong'}
-        onHelp={() => help('pressure_graph')}
-        levelTint
-      />
-      <View style={styles.pressureLegend}>
-        <Text style={styles.legendPlus}>+ compression — pressure ABOVE atmospheric</Text>
-        <Text style={styles.legendZero}>0 — atmospheric pressure (the resting line)</Text>
-        <Text style={styles.legendMinus}>− rarefaction — pressure BELOW atmospheric</Text>
-      </View>
-      {tone.engineReady ? (
-        <GlassButton
-          label={tone.playing ? 'STOP' : 'HEAR IT — 165 Hz'}
-          tint="green"
-          height={46}
-          fontSize={14}
-          onPress={() => (tone.playing ? tone.stop() : tone.play(165, levelFor(amt)))}
-        />
-      ) : null}
-    </View>
-  );
-}
-function M3Viz({ viz, width, amp, running, showZones }: { viz: VizModule; width: number; amp: number; running: boolean; showZones: boolean }) {
-  const clock = viz.useVizClock(running);
-  const visHz = visHzFor(165);
-  return (
-    <View style={{ gap: 4 }}>
-      <Text style={styles.winLabel}>AIR — squeeze (compression) · stretch (rarefaction)</Text>
-      <viz.AirParticlesView clock={clock} width={width} visHz={visHz} amp={amp} showZones={showZones} />
-      <Text style={styles.winLabel}>PRESSURE — above / below atmospheric</Text>
-      <viz.PressureGraphView clock={clock} width={width} visHz={visHz} amp={amp} />
-    </View>
-  );
-}
-
-/** M4 — amplitude: one slider drives cone + air + graph + level + loudness. */
-function M4Panel({ viz, width, tone, focused, help }: PanelProps) {
-  const [amt, setAmt] = useState(0.5);
-  const [zones, setZones] = useState(true);
-  const levelFor = (a: number) => -44 + a * 24; // −44 … −20 dBFS
-  return (
-    <View style={styles.panelCard}>
-      {viz ? (
-        <viz.ThreeWindowView width={width} visHz={visHzFor(330)} amp={0.25 + amt * 0.75} running={focused} showEar={false} showZones={zones} />
-      ) : (
-        <VizUnavailableCard />
-      )}
-      <ConceptBadge />
-      <DisplayGuideButton onPress={() => help('speaker_cone')} />
-      <View style={styles.chipRow}>
-        <LabChip label="PRESSURE COLORS" selected={zones} onPress={() => setZones((v) => !v)} onLongPress={() => help('pressure_graph')} />
-      </View>
-      <DragSlider
-        value={amt}
-        onChange={(v) => {
-          setAmt(v);
-          if (tone.playing) tone.set({ levelDb: levelFor(v) });
-        }}
-        label="VIBRATION SIZE (AMPLITUDE)"
-        readout={amt < 0.33 ? 'small → quiet' : amt < 0.66 ? 'medium' : 'large → loud'}
-        onHelp={() => help('amplitude')}
-        levelTint
-      />
-      <Pressable onLongPress={() => help('amplitude')} delayLongPress={260}>
-        <LevelMeterBar levelDb={levelFor(amt)} minDb={-48} maxDb={-18} />
-      </Pressable>
-      {tone.engineReady ? (
-        <GlassButton
-          label={tone.playing ? 'STOP' : 'HEAR IT — 330 Hz'}
-          tint="green"
-          height={46}
-          fontSize={14}
-          onPress={() => (tone.playing ? tone.stop() : tone.play(330, levelFor(amt)))}
-        />
-      ) : null}
-    </View>
-  );
 }
 
 /** The static-panel disclosure twin of ConceptBadge (§1.7). */
@@ -443,189 +345,531 @@ function AnalyticBadge({ text }: { text?: string }) {
   return <Text style={styles.analyticBadge}>{text ?? 'ANALYTIC — DRAWN FROM THE MATH, NOT A MEASUREMENT'}</Text>;
 }
 
-// ─── M5 — Frequency: a fixed reference vs a frequency YOU set with a slider ──
+// Compact honesty classes pinned on the stage bezel strip (one line). The FULL
+// verbatim disclosure stays with each module, leading the well.
+const BADGE_CONCEPT = 'CONCEPTUAL MODEL — SLOWED FOR VISIBILITY';
+const BADGE_ANALYTIC = 'ANALYTIC — DRAWN FROM THE MATH, NOT A MEASUREMENT';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Module racks (each renders the RackUnit itself; viz children mount ONLY when
+// Skia is available — the stage shows the honest card otherwise)
+
+/** M1 — air particles alone, LOW/HIGH pitch chips. */
+function M1Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
+  const [f, setF] = useState(220);
+  const [zones, setZones] = useState(true);
+  const pick = (hz: number) => {
+    setF(hz);
+    if (tone.playing) tone.set({ freqHz: hz });
+  };
+  const params: DockParam[] = [
+    {
+      kind: 'options',
+      id: 'pitch',
+      label: 'PITCH',
+      valueLabel: `${f} Hz`,
+      options: [
+        { id: '110', label: 'LOW · 110 Hz' },
+        { id: '220', label: 'MID · 220 Hz' },
+        { id: '880', label: 'HIGH · 880 Hz' },
+      ],
+      selectedId: String(f),
+      onSelect: (id) => pick(Number(id)),
+      sticky: true, // A/B the pitches while the particles react
+      helpKey: 'frequency',
+    },
+    { kind: 'toggle', id: 'zones', label: 'COLORS', value: zones, onToggle: () => setZones((v) => !v), helpKey: 'pressure_graph' },
+    ...(tone.engineReady ? [playKey(tone, () => tone.play(f, -24))] : []),
+  ];
+  return (
+    <RackUnit
+      initialParam="pitch"
+      params={params}
+      onHelp={(k) => (k ? help(k) : undefined)}
+      stage={{
+        size: 'M',
+        badge: BADGE_CONCEPT,
+        onGuide: () => help('air'),
+        bezel: [
+          { k: 'FREQ', v: `${f} Hz`, helpKey: 'frequency' },
+          { k: 'MODEL', v: `${visHzFor(f).toFixed(2)} Hz`, helpKey: 'air' },
+          toneCell(tone),
+        ],
+        render: (w, h) => (viz ? <M1Stage viz={viz} w={w} h={h} f={f} zones={zones} focused={focused} /> : <StageFallback w={w} />),
+      }}
+    >
+      {wellTop}
+      <ConceptBadge />
+      {wellBottom}
+    </RackUnit>
+  );
+}
+function M1Stage({ viz, w, h, f, zones, focused }: { viz: VizModule; w: number; h: number; f: number; zones: boolean; focused: boolean }) {
+  const clock = viz.useVizClock(focused);
+  return (
+    <View style={{ width: w, height: h, justifyContent: 'center' }}>
+      <viz.AirParticlesView clock={clock} width={w} height={h} visHz={visHzFor(f)} amp={0.75} showEar showZones={zones} />
+    </View>
+  );
+}
+
+/** M2 — the three synchronized windows. */
+function M2Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
+  const [zones, setZones] = useState(true);
+  const params: DockParam[] = [
+    { kind: 'toggle', id: 'zones', label: 'COLORS', value: zones, onToggle: () => setZones((v) => !v), helpKey: 'pressure_graph' },
+    ...(tone.engineReady ? [playKey(tone, () => tone.play(220, -24))] : []),
+  ];
+  return (
+    <RackUnit
+      initialParam="zones"
+      params={params}
+      onHelp={(k) => (k ? help(k) : undefined)}
+      stage={{
+        size: 'L', // three phase-locked windows — earns the tall glass
+        badge: BADGE_CONCEPT,
+        onGuide: () => help('speaker_cone'),
+        bezel: [{ k: 'FREQ', v: '220 Hz', helpKey: 'frequency' }, toneCell(tone)],
+        render: (w, h) =>
+          viz ? (
+            <FitStage w={w} h={h} natural={THREE_WINDOW_NATURAL}>
+              {(vw) => <viz.ThreeWindowView width={vw} visHz={visHzFor(220)} amp={0.75} running={focused} showZones={zones} />}
+            </FitStage>
+          ) : (
+            <StageFallback w={w} />
+          ),
+      }}
+    >
+      {wellTop}
+      <ConceptBadge extra="ALL THREE WINDOWS SHOW THE SAME MOMENT" />
+      {wellBottom}
+    </RackUnit>
+  );
+}
+
+/** M3 — compression/rarefaction slider (particles + pressure, no cone). */
+function M3Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
+  const [amt, setAmt] = useState(0.55);
+  const [zones, setZones] = useState(true);
+  const levelFor = (a: number) => -44 + a * 22; // −44 … −22 dBFS
+  const readout = amt < 0.33 ? 'gentle' : amt < 0.66 ? 'medium' : 'strong';
+  const params: DockParam[] = [
+    {
+      kind: 'fader',
+      id: 'amt',
+      label: 'STRENGTH',
+      value: amt,
+      onChange: (v) => {
+        setAmt(v);
+        if (tone.playing) tone.set({ levelDb: levelFor(v) });
+      },
+      format: () => readout,
+      tint: levelColor(amt),
+      helpKey: 'pressure_graph',
+    },
+    { kind: 'toggle', id: 'zones', label: 'COLORS', value: zones, onToggle: () => setZones((v) => !v), helpKey: 'pressure_graph' },
+    ...(tone.engineReady ? [playKey(tone, () => tone.play(165, levelFor(amt)))] : []),
+  ];
+  return (
+    <RackUnit
+      initialParam="amt"
+      params={params}
+      onHelp={(k) => (k ? help(k) : undefined)}
+      stage={{
+        size: 'L', // two stacked windows: air + pressure
+        badge: BADGE_CONCEPT,
+        onGuide: () => help('pressure_graph'),
+        bezel: [
+          { k: 'STRENGTH', v: readout, tint: levelColor(amt), helpKey: 'pressure_graph' },
+          { k: 'LEVEL', v: `${levelFor(amt).toFixed(0)} dBFS`, helpKey: 'amplitude' },
+          toneCell(tone),
+        ],
+        render: (w, h) => (viz ? <M3Stage viz={viz} w={w} h={h} amp={amt} zones={zones} focused={focused} /> : <StageFallback w={w} />),
+      }}
+    >
+      {wellTop}
+      <ConceptBadge />
+      <View style={styles.pressureLegend}>
+        <Text style={styles.legendPlus}>+ compression — pressure ABOVE atmospheric</Text>
+        <Text style={styles.legendZero}>0 — atmospheric pressure (the resting line)</Text>
+        <Text style={styles.legendMinus}>− rarefaction — pressure BELOW atmospheric</Text>
+      </View>
+      {wellBottom}
+    </RackUnit>
+  );
+}
+function M3Stage({ viz, w, h, amp, zones, focused }: { viz: VizModule; w: number; h: number; amp: number; zones: boolean; focused: boolean }) {
+  const clock = viz.useVizClock(focused);
+  const visHz = visHzFor(165);
+  // Height split: two label rows (~12) + container gaps eat ~36; the air
+  // window gets the larger share (that's where the molecules live).
+  const avail = Math.max(60, h - 36);
+  const airH = Math.round(avail * 0.55);
+  const graphH = avail - airH;
+  return (
+    <View style={{ width: w, height: h, justifyContent: 'center', gap: 4 }}>
+      <Text style={styles.winLabel}>AIR — squeeze (compression) · stretch (rarefaction)</Text>
+      <viz.AirParticlesView clock={clock} width={w} height={airH} visHz={visHz} amp={amp} showZones={zones} />
+      <Text style={styles.winLabel}>PRESSURE — above / below atmospheric</Text>
+      <viz.PressureGraphView clock={clock} width={w} height={graphH} visHz={visHz} amp={amp} />
+    </View>
+  );
+}
+
+/** M4 — amplitude: one fader drives cone + air + graph + level + loudness. */
+function M4Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
+  const [amt, setAmt] = useState(0.5);
+  const [zones, setZones] = useState(true);
+  const levelFor = (a: number) => -44 + a * 24; // −44 … −20 dBFS
+  const readout = amt < 0.33 ? 'small → quiet' : amt < 0.66 ? 'medium' : 'large → loud';
+  const params: DockParam[] = [
+    {
+      kind: 'fader',
+      id: 'amt',
+      label: 'AMPLITUDE',
+      value: amt,
+      onChange: (v) => {
+        setAmt(v);
+        if (tone.playing) tone.set({ levelDb: levelFor(v) });
+      },
+      format: () => readout,
+      formatShort: () => `${Math.round(amt * 100)}%`,
+      tint: levelColor(amt),
+      helpKey: 'amplitude',
+    },
+    { kind: 'toggle', id: 'zones', label: 'COLORS', value: zones, onToggle: () => setZones((v) => !v), helpKey: 'pressure_graph' },
+    ...(tone.engineReady ? [playKey(tone, () => tone.play(330, levelFor(amt)))] : []),
+  ];
+  return (
+    <RackUnit
+      initialParam="amt"
+      params={params}
+      onHelp={(k) => (k ? help(k) : undefined)}
+      stage={{
+        size: 'L',
+        badge: BADGE_CONCEPT,
+        onGuide: () => help('speaker_cone'),
+        bezel: [
+          { k: 'AMP', v: readout, tint: levelColor(amt), flex: 1.4, helpKey: 'amplitude' },
+          { k: 'LEVEL', v: `${levelFor(amt).toFixed(0)} dBFS`, helpKey: 'amplitude' },
+          toneCell(tone),
+        ],
+        render: (w, h) =>
+          viz ? (
+            <FitStage w={w} h={h} natural={THREE_WINDOW_NATURAL}>
+              {(vw) => (
+                <viz.ThreeWindowView width={vw} visHz={visHzFor(330)} amp={0.25 + amt * 0.75} running={focused} showEar={false} showZones={zones} />
+              )}
+            </FitStage>
+          ) : (
+            <StageFallback w={w} />
+          ),
+      }}
+    >
+      {wellTop}
+      <ConceptBadge />
+      <Pressable onLongPress={() => help('amplitude')} delayLongPress={260}>
+        <LevelMeterBar levelDb={levelFor(amt)} minDb={-48} maxDb={-18} />
+      </Pressable>
+      {wellBottom}
+    </RackUnit>
+  );
+}
+
+// ─── M5 — Frequency: a fixed reference vs a frequency YOU set with the lane ──
 
 const M5_FIXED_A = 220; // the LEFT reference source (Hz)
 const M5_MIN = 140;
 const M5_MAX = 600;
 
-function M5Panel({ viz, width, tone, focused, help }: PanelProps) {
-  // The RIGHT display's frequency is driven by the slider (owner 2026-08-05) —
+function M5Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
+  // The RIGHT display's frequency is driven by the lane (owner 2026-08-05) —
   // it speeds up / slows down the orbit dot AND the compressions of that side.
   const [freqB, setFreqB] = useState(330);
   const active: 'a' | 'b' | 'none' = tone.playing ? 'b' : 'none';
+  const params: DockParam[] = [
+    {
+      kind: 'fader',
+      id: 'freqb',
+      label: 'FREQ B',
+      value: (freqB - M5_MIN) / (M5_MAX - M5_MIN),
+      onChange: (v) => {
+        const hz = Math.round(M5_MIN + v * (M5_MAX - M5_MIN));
+        setFreqB(hz);
+        if (tone.playing) tone.set({ freqHz: hz });
+      },
+      format: () => `${freqB} Hz`,
+      helpKey: 'rate',
+    },
+    ...(tone.engineReady ? [playKey(tone, () => tone.play(freqB, -24))] : []),
+  ];
   return (
-    <View style={styles.panelCard}>
-      {viz ? <M5Viz viz={viz} width={width} a={M5_FIXED_A} b={freqB} active={active} running={focused} /> : <VizUnavailableCard />}
+    <RackUnit
+      initialParam="freqb"
+      params={params}
+      onHelp={(k) => (k ? help(k) : undefined)}
+      stage={{
+        size: 'M',
+        badge: BADGE_CONCEPT,
+        onGuide: () => help('rate'),
+        bezel: [
+          { k: 'REF', v: `${M5_FIXED_A} Hz`, helpKey: 'rate' },
+          { k: 'YOURS', v: `${freqB} Hz`, helpKey: 'rate' },
+          toneCell(tone),
+        ],
+        render: (w, h) => (viz ? <M5Stage viz={viz} w={w} h={h} a={M5_FIXED_A} b={freqB} active={active} focused={focused} /> : <StageFallback w={w} />),
+      }}
+    >
+      {wellTop}
       <ConceptBadge extra={`LEFT = ${M5_FIXED_A} Hz reference · RIGHT = your frequency — count the orbit laps`} />
-      <DisplayGuideButton onPress={() => help('rate')} />
-      <DragSlider
-        value={(freqB - M5_MIN) / (M5_MAX - M5_MIN)}
-        onChange={(v) => {
-          const hz = Math.round(M5_MIN + v * (M5_MAX - M5_MIN));
-          setFreqB(hz);
-          if (tone.playing) tone.set({ freqHz: hz });
-        }}
-        label="RIGHT-DISPLAY FREQUENCY"
-        readout={`${freqB} Hz`}
-        onHelp={() => help('rate')}
-      />
-      {tone.engineReady ? (
-        <GlassButton
-          label={tone.playing ? 'STOP' : `HEAR ${freqB} Hz`}
-          tint="green"
-          height={46}
-          fontSize={14}
-          onPress={() => (tone.playing ? tone.stop() : tone.play(freqB, -24))}
-        />
-      ) : null}
       <Text style={styles.caption}>
-        Drag the slider ({M5_MIN}–{M5_MAX} Hz): the RIGHT display's orbit dot and its compressions
-        both speed up or slow down with the frequency — same-size vibration, different RATE. Press
-        HEAR to listen to the frequency you chose.
+        Ride the FREQ B lane ({M5_MIN}–{M5_MAX} Hz): the RIGHT display's orbit dot and its
+        compressions both speed up or slow down with the frequency — same-size vibration, different
+        RATE. Press PLAY to listen to the frequency you chose.
       </Text>
-    </View>
+      {wellBottom}
+    </RackUnit>
   );
 }
-function M5Viz({ viz, width, a, b, active, running }: { viz: VizModule; width: number; a: number; b: number; active: 'a' | 'b' | 'none'; running: boolean }) {
+function M5Stage({ viz, w, h, a, b, active, focused }: { viz: VizModule; w: number; h: number; a: number; b: number; active: 'a' | 'b' | 'none'; focused: boolean }) {
   // Phase clocks — continuous through pair switches (no t·Δω jump).
-  const phaseA = viz.usePhaseClock(running, visHzFor(a));
-  const phaseB = viz.usePhaseClock(running, visHzFor(b));
-  return <viz.RateComparatorView phaseA={phaseA} phaseB={phaseB} width={width} active={active} />;
+  const phaseA = viz.usePhaseClock(focused, visHzFor(a));
+  const phaseB = viz.usePhaseClock(focused, visHzFor(b));
+  return (
+    <View style={{ width: w, height: h, justifyContent: 'center' }}>
+      <viz.RateComparatorView phaseA={phaseA} phaseB={phaseB} width={w} height={h} active={active} />
+    </View>
+  );
 }
 
 // ─── M6 — Wavelength: the wave laid across a real 7 m room ──────────────────
 
-function M6Panel({ viz, width, focused, help }: PanelProps) {
+function M6Rack({ viz, tone: _tone, focused, help, wellTop, wellBottom }: RackProps) {
   const [oct, setOct] = useState(1); // 55 · 2^oct, 0..4 → 55..880 Hz
   const f = Math.round(55 * Math.pow(2, oct));
   const lambda = 343 / f;
-  // No sound on this screen (owner 2026-08-05) — the slider only reshapes the
+  // No sound on this screen (owner 2026-08-05) — the lane only reshapes the
   // drawn wavelength across the room.
+  const params: DockParam[] = [
+    {
+      kind: 'fader',
+      id: 'oct',
+      label: 'FREQ',
+      value: oct / 4,
+      onChange: (v) => setOct(v * 4),
+      format: () => `${f} Hz · λ = ${lambda.toFixed(2)} m`,
+      formatShort: () => `${f} Hz`,
+      helpKey: 'wavelength_room',
+    },
+  ];
   return (
-    <View style={styles.panelCard}>
-      {viz ? <M6Viz viz={viz} width={width} f={f} running={focused} /> : <VizUnavailableCard />}
+    <RackUnit
+      initialParam="oct"
+      params={params}
+      onHelp={(k) => (k ? help(k) : undefined)}
+      stage={{
+        size: 'L', // the room ruler IS the lesson
+        badge: 'CONCEPTUAL MODEL — HORIZONTAL SCALE IS REAL (7 m ROOM)',
+        onGuide: () => help('wavelength_room'),
+        bezel: [
+          { k: 'FREQ', v: `${f} Hz`, helpKey: 'wavelength_room' },
+          { k: 'λ', v: `${lambda.toFixed(2)} m`, helpKey: 'wavelength_room' },
+          { k: 'FITS', v: `${(7 / lambda).toFixed(1)}×`, helpKey: 'wavelength_room' },
+        ],
+        render: (w, h) => (viz ? <M6Stage viz={viz} w={w} h={h} f={f} focused={focused} /> : <StageFallback w={w} />),
+      }}
+    >
+      {wellTop}
       <ConceptBadge extra="HORIZONTAL SCALE IS REAL — the room is 7 m wide, ticks every 1 m" />
-      <DisplayGuideButton onPress={() => help('wavelength_room')} />
-      <DragSlider
-        value={oct / 4}
-        onChange={(v) => setOct(v * 4)}
-        label="FREQUENCY"
-        readout={`${f} Hz · λ = ${lambda.toFixed(2)} m`}
-        onHelp={() => help('wavelength_room')}
-      />
       <Text style={styles.caption}>
         λ = speed ÷ frequency = 343 ÷ {f} ≈ {lambda.toFixed(2)} m — {(7 / lambda).toFixed(1)}{' '}
         wavelength{7 / lambda >= 1.95 ? 's' : ''} fit across the room. The amber bracket IS that
         length, drawn to scale. Follow any GLINTING molecule — it only wobbles in place as the
         pattern flows past. The wave crosses the room; the air does not.
       </Text>
-    </View>
+      {wellBottom}
+    </RackUnit>
   );
 }
-function M6Viz({ viz, width, f, running }: { viz: VizModule; width: number; f: number; running: boolean }) {
-  // Phase clock — continuous while the slider drags the frequency; the seconds
+function M6Stage({ viz, w, h, f, focused }: { viz: VizModule; w: number; h: number; f: number; focused: boolean }) {
+  // Phase clock — continuous while the lane drags the frequency; the seconds
   // clock paces the sparkle-tracked molecules' hand-offs (owner 2026-08-10).
-  const phase = viz.usePhaseClock(running, visHzFor(f));
-  const clock = viz.useVizClock(running);
-  return <viz.WavelengthRulerView phase={phase} clock={clock} width={width} freqHz={f} />;
+  const phase = viz.usePhaseClock(focused, visHzFor(f));
+  const clock = viz.useVizClock(focused);
+  return (
+    <View style={{ width: w, height: h, justifyContent: 'center' }}>
+      <viz.WavelengthRulerView phase={phase} clock={clock} width={w} height={h} freqHz={f} />
+    </View>
+  );
 }
 
 // ─── M7 — Time vs space: the same wave on two rulers ────────────────────────
 
-function M7Panel({ viz, width, tone, focused, help }: PanelProps) {
+function M7Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
   const [cursor, setCursor] = useState(0.25);
   const [frozen, setFrozen] = useState(false);
   const [f, setF] = useState(220);
+  const params: DockParam[] = [
+    {
+      kind: 'fader',
+      id: 'cursor',
+      label: 'TRACE',
+      value: cursor,
+      onChange: setCursor,
+      format: () => 'same phase → same height',
+      formatShort: () => `${Math.round(cursor * 100)}%`,
+      tint: '#37e05f',
+      helpKey: 'domain_link',
+    },
+    { kind: 'toggle', id: 'freeze', label: 'FREEZE', value: frozen, onToggle: () => setFrozen((v) => !v), helpKey: 'domain_link' },
+    {
+      kind: 'options',
+      id: 'freq',
+      label: 'FREQ',
+      valueLabel: `${f} Hz`,
+      options: [
+        { id: '110', label: '110 Hz' },
+        { id: '220', label: '220 Hz' },
+      ],
+      selectedId: String(f),
+      onSelect: (id) => {
+        const hz = Number(id);
+        setF(hz);
+        if (tone.playing) tone.set({ freqHz: hz });
+      },
+      sticky: true,
+      helpKey: 'domain_link',
+    },
+    ...(tone.engineReady ? [playKey(tone, () => tone.play(f, -24))] : []),
+  ];
   return (
-    <View style={styles.panelCard}>
-      {viz ? <viz.DualDomainView width={width} visHz={visHzFor(f)} cursor={cursor} running={focused && !frozen} /> : <VizUnavailableCard />}
+    <RackUnit
+      initialParam="cursor"
+      params={params}
+      onHelp={(k) => (k ? help(k) : undefined)}
+      stage={{
+        size: 'L',
+        badge: BADGE_CONCEPT,
+        onGuide: () => help('domain_link'),
+        bezel: [
+          { k: 'FREQ', v: `${f} Hz`, helpKey: 'domain_link' },
+          { k: 'MODE', v: frozen ? 'FROZEN' : 'RUN', tint: frozen ? '#7fd4ff' : undefined, helpKey: 'domain_link' },
+          toneCell(tone),
+        ],
+        render: (w, h) =>
+          viz ? (
+            <FitStage w={w} h={h} natural={DUAL_DOMAIN_NATURAL}>
+              {(vw) => <viz.DualDomainView width={vw} visHz={visHzFor(f)} cursor={cursor} running={focused && !frozen} />}
+            </FitStage>
+          ) : (
+            <StageFallback w={w} />
+          ),
+      }}
+    >
+      {wellTop}
       <ConceptBadge extra="SAME WAVE — TWO RULERS" />
-      <DisplayGuideButton onPress={() => help('domain_link')} />
-      <DragSlider
-        value={cursor}
-        onChange={setCursor}
-        label="TRACE THE WAVE"
-        readout="same phase → same height"
-        onHelp={() => help('domain_link')}
-        tint="#37e05f"
-      />
-      <View style={styles.chipRow}>
-        <LabChip label={frozen ? 'RUN ▶' : 'FREEZE ⏸'} selected={frozen} onPress={() => setFrozen((v) => !v)} onLongPress={() => help('domain_link')} />
-        {[110, 220].map((hz) => (
-          <LabChip
-            key={hz}
-            label={`${hz} Hz`}
-            selected={f === hz}
-            onPress={() => {
-              setF(hz);
-              if (tone.playing) tone.set({ freqHz: hz });
-            }}
-            onLongPress={() => help('domain_link')}
-          />
-        ))}
-      </View>
       <Text style={styles.caption}>
         The two green dots never disagree: a moment BACK IN TIME on the top ruler is the same as a
         distance BACK ALONG THE ROOM on the bottom one. distance = speed × time — that single
         equation links the two graphs forever.
       </Text>
-      {tone.engineReady ? (
-        <GlassButton
-          label={tone.playing ? 'STOP' : `PLAY — ${f} Hz`}
-          tint="green"
-          height={46}
-          fontSize={14}
-          onPress={() => (tone.playing ? tone.stop() : tone.play(f, -24))}
-        />
-      ) : null}
-    </View>
+      {wellBottom}
+    </RackUnit>
   );
 }
 
 // ─── M8 — Pitch vs frequency: the octave spiral ─────────────────────────────
 
-function M8Panel({ viz, width, tone, focused, help }: PanelProps) {
+function M8Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
   const [f, setF] = useState(220);
-  const fRef = useRef(220);
-  const toneRef = useRef(tone);
-  toneRef.current = tone;
-  const widthRef = useRef(width);
-  widthRef.current = width;
-  const lastAngRef = useRef<number | null>(null);
-  // Rotary drag vs scroll (owner 2026-07-30): lock the host scroll for the
-  // gesture so a near-vertical swing spins the spiral instead of scrolling.
-  const ctxLock = useScrollLock();
-  const lockRef = useRef(ctxLock);
-  lockRef.current = ctxLock;
-
   const setFreq = (nf: number) => {
-    fRef.current = nf;
     setF(nf);
-    if (toneRef.current.playing) toneRef.current.set({ freqHz: Math.round(nf) });
+    if (tone.playing) tone.set({ freqHz: Math.round(nf) });
   };
-
+  const octAbove = Math.log2(f / 110);
+  const params: DockParam[] = [
+    {
+      kind: 'fader',
+      id: 'pitch',
+      label: 'PITCH',
+      // Same log mapping the spiral drag glides: 0..1 = 110 Hz → 3 octaves up.
+      value: octAbove / 3,
+      onChange: (v) => setFreq(110 * Math.pow(2, Math.max(0, Math.min(3, v * 3)))),
+      format: () => `${Math.round(f)} Hz · ${octAbove.toFixed(2)} 8ve`,
+      formatShort: () => `${Math.round(f)} Hz`,
+      helpKey: 'octave_spiral',
+    },
+    {
+      kind: 'options',
+      id: 'jump',
+      label: 'OCTAVES',
+      valueLabel: `${Math.round(f)} Hz`,
+      options: [110, 220, 440, 880].map((hz, i) => ({ id: String(hz), label: i === 0 ? `${hz} Hz` : `${hz} Hz · +${i} 8ve` })),
+      selectedId: [110, 220, 440, 880].includes(Math.round(f)) ? String(Math.round(f)) : null,
+      onSelect: (id) => setFreq(Number(id)),
+      sticky: true, // A/B the doublings — the whole lesson
+      helpKey: 'octave_spiral',
+    },
+    ...(tone.engineReady ? [playKey(tone, () => tone.play(Math.round(f), -24))] : []),
+  ];
+  return (
+    <RackUnit
+      initialParam="pitch"
+      params={params}
+      onHelp={(k) => (k ? help(k) : undefined)}
+      stage={{
+        size: 'L', // the spiral wants the round glass
+        badge: 'ANALYTIC — LOG SPIRAL DRAWN EXACTLY · ORBIT SLOWED',
+        onGuide: () => help('octave_spiral'),
+        bezel: [
+          { k: 'FREQ', v: `${Math.round(f)} Hz`, helpKey: 'octave_spiral' },
+          { k: 'ABOVE 110', v: `+${octAbove.toFixed(2)} 8ve`, flex: 1.3, helpKey: 'octave_spiral' },
+          toneCell(tone),
+        ],
+        render: (w, h) => (viz ? <M8Stage viz={viz} w={w} h={h} f={f} focused={focused} onFreq={setFreq} /> : <StageFallback w={w} />),
+      }}
+    >
+      {wellTop}
+      <AnalyticBadge text="ANALYTIC — THE SPIRAL IS HOW HEARING MAPS FREQUENCY (log), DRAWN EXACTLY · THE ORBIT LAPS ONCE PER CYCLE (SLOWED)" />
+      <Text style={styles.spiralHint}>
+        Drag AROUND the spiral to glide the pitch — one full turn is one octave. The dots on the
+        upward ray mark 110 · 220 · 440 · 880 Hz: every crossing is a DOUBLING, yet each turn feels
+        like the same size musical step.
+      </Text>
+      <Text style={styles.caption}>OCTAVES — each key in the OCTAVES tray jumps up ONE octave (a doubling, ×2).</Text>
+      {wellBottom}
+    </RackUnit>
+  );
+}
+function M8Stage({ viz, w, h, f, focused, onFreq }: { viz: VizModule; w: number; h: number; f: number; focused: boolean; onFreq: (nf: number) => void }) {
+  const fRef = useRef(f);
+  fRef.current = f;
+  const onFreqRef = useRef(onFreq);
+  onFreqRef.current = onFreq;
+  const wRef = useRef(w);
+  wRef.current = w;
+  const hRef = useRef(h);
+  hRef.current = h;
+  const lastAngRef = useRef<number | null>(null);
+  // Rotary drag on the PINNED stage (owner 2026-07-30 lesson, resolved by the
+  // rack law): the glass never scrolls, so no scroll-lock plumbing is needed —
+  // a near-vertical swing always spins the spiral.
   const pan = useRef(
     PanResponder.create({
-      // Claim the touch on the spiral IMMEDIATELY and capture it (owner
-      // 2026-08-05: dragging competed with the ScrollView). Capturing on start
-      // beats the parent scroll, and the grant locks the host scroll, so a
-      // near-vertical swing spins the spiral instead of scrolling the page.
       onStartShouldSetPanResponder: () => true,
       onStartShouldSetPanResponderCapture: () => true,
       onMoveShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponderCapture: () => true,
       onPanResponderGrant: (e) => {
-        lockRef.current?.(true);
-        const dx = e.nativeEvent.locationX - widthRef.current / 2;
-        const dy = e.nativeEvent.locationY - 105;
+        const dx = e.nativeEvent.locationX - wRef.current / 2;
+        const dy = e.nativeEvent.locationY - hRef.current / 2;
         // Hub dead-zone: near the center, angles are meaningless — a touch
         // crossing it would read as up to a half-turn (a half-octave lurch).
         lastAngRef.current = Math.hypot(dx, dy) < 25 ? null : Math.atan2(dy, dx);
       },
       onPanResponderMove: (e) => {
-        const dx = e.nativeEvent.locationX - widthRef.current / 2;
-        const dy = e.nativeEvent.locationY - 105;
+        const dx = e.nativeEvent.locationX - wRef.current / 2;
+        const dy = e.nativeEvent.locationY - hRef.current / 2;
         if (Math.hypot(dx, dy) < 25) {
           lastAngRef.current = null; // re-grab cleanly once clear of the hub
           return;
@@ -639,183 +883,217 @@ function M8Panel({ viz, width, tone, focused, help }: PanelProps) {
         if (d < -Math.PI) d += 2 * Math.PI;
         // Clockwise = up the spiral: one full turn = one octave (a doubling).
         const o = Math.max(0, Math.min(3, Math.log2(fRef.current / 110) + d / (2 * Math.PI)));
-        setFreq(110 * Math.pow(2, o));
+        onFreqRef.current(110 * Math.pow(2, o));
       },
       onPanResponderRelease: () => {
         lastAngRef.current = null;
-        lockRef.current?.(false);
       },
       onPanResponderTerminate: () => {
         lastAngRef.current = null;
-        lockRef.current?.(false);
       },
       onPanResponderTerminationRequest: () => false,
     }),
   ).current;
-
-  const octAbove = Math.log2(f / 110);
-  return (
-    <View style={styles.panelCard}>
-      <View {...pan.panHandlers}>{viz ? <M8Viz viz={viz} width={width} f={f} running={focused} /> : <VizUnavailableCard />}</View>
-      <AnalyticBadge text="ANALYTIC — THE SPIRAL IS HOW HEARING MAPS FREQUENCY (log), DRAWN EXACTLY · THE ORBIT LAPS ONCE PER CYCLE (SLOWED)" />
-      <DisplayGuideButton onPress={() => help('octave_spiral')} />
-      <Text style={styles.spiralHint}>
-        Drag AROUND the spiral to glide the pitch — one full turn is one octave. The dots on the
-        upward ray mark 110 · 220 · 440 · 880 Hz: every crossing is a DOUBLING, yet each turn feels
-        like the same size musical step.
-      </Text>
-      <Text style={styles.caption}>OCTAVES — each button jumps up ONE octave (a doubling, ×2):</Text>
-      <View style={styles.chipRow}>
-        {[110, 220, 440, 880].map((hz, i) => (
-          <LabChip
-            key={hz}
-            label={i === 0 ? `${hz} Hz` : `${hz} Hz · +${i} 8ve`}
-            selected={Math.round(f) === hz}
-            onPress={() => setFreq(hz)}
-            onLongPress={() => help('octave_spiral')}
-          />
-        ))}
-      </View>
-      <Text style={styles.sliderReadoutBig}>
-        {Math.round(f)} Hz · {octAbove.toFixed(2)} octaves above 110
-      </Text>
-      {tone.engineReady ? (
-        <GlassButton
-          label={tone.playing ? 'STOP' : 'PLAY THE SPIRAL'}
-          tint="green"
-          height={46}
-          fontSize={14}
-          onPress={() => (tone.playing ? tone.stop() : tone.play(Math.round(f), -24))}
-        />
-      ) : null}
-    </View>
-  );
-}
-function M8Viz({ viz, width, f, running }: { viz: VizModule; width: number; f: number; running: boolean }) {
   // Phase clock — the drag glides the rate; phase stays continuous (no
   // phantom satellite revolutions from t·Δω).
-  const phase = viz.usePhaseClock(running, visHzFor(f));
-  return <viz.OctaveSpiralView phase={phase} width={width} freqHz={f} />;
+  const phase = viz.usePhaseClock(focused, visHzFor(f));
+  return (
+    <View {...pan.panHandlers} style={{ width: w, height: h }}>
+      <viz.OctaveSpiralView phase={phase} width={w} height={h} freqHz={f} />
+    </View>
+  );
 }
 
 // ─── M9 — Loudness vs amplitude: the ear-sensitivity curve ──────────────────
 
-function M9Panel({ viz, width, tone, focused, help }: PanelProps) {
+function M9Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
   const [pos, setPos] = useState(Math.log(1000 / 80) / Math.log(8000 / 80)); // start at 1 kHz
   const [lvl, setLvl] = useState(0.65); // −44..−20 dBFS
   const f = Math.round(80 * Math.pow(8000 / 80, pos));
   const levelDb = -44 + lvl * 24;
   const sens = viz ? viz.earSensDb(f) : null;
+  const params: DockParam[] = [
+    {
+      kind: 'fader',
+      id: 'freq',
+      label: 'FREQ',
+      value: pos,
+      onChange: (v) => {
+        setPos(v);
+        const hz = Math.round(80 * Math.pow(8000 / 80, v));
+        if (tone.playing) tone.set({ freqHz: hz });
+      },
+      format: () => `${f} Hz`,
+      tint: '#37e05f',
+      helpKey: 'loudness_curve',
+    },
+    {
+      kind: 'fader',
+      id: 'lvl',
+      label: 'LEVEL',
+      value: lvl,
+      onChange: (v) => {
+        setLvl(v);
+        if (tone.playing) tone.set({ levelDb: -44 + v * 24 });
+      },
+      format: () => `${levelDb.toFixed(0)} dBFS`,
+      tint: levelColor(lvl),
+      helpKey: 'loudness_curve',
+    },
+    ...(tone.engineReady ? [playKey(tone, () => tone.play(f, levelDb))] : []),
+  ];
   return (
-    <View style={styles.panelCard}>
-      {viz ? <M9Viz viz={viz} width={width} f={f} lvl={lvl} running={focused} /> : <VizUnavailableCard />}
+    <RackUnit
+      initialParam="freq"
+      params={params}
+      onHelp={(k) => (k ? help(k) : undefined)}
+      stage={{
+        size: 'M',
+        badge: 'SIMPLIFIED SENSITIVITY CURVE — NOT MEASURED DATA',
+        onGuide: () => help('loudness_curve'),
+        bezel: [
+          { k: 'FREQ', v: `${f} Hz`, helpKey: 'loudness_curve' },
+          { k: 'LEVEL', v: `${levelDb.toFixed(0)} dBFS`, tint: levelColor(lvl), helpKey: 'loudness_curve' },
+          { k: 'EAR', v: sens != null ? `${sens.toFixed(0)} dB` : '—', helpKey: 'loudness_curve' },
+          toneCell(tone),
+        ],
+        render: (w, h) => (viz ? <M9Stage viz={viz} w={w} h={h} f={f} lvl={lvl} focused={focused} /> : <StageFallback w={w} />),
+      }}
+    >
+      {wellTop}
       <AnalyticBadge text="SIMPLIFIED SENSITIVITY CURVE — ILLUSTRATION INSPIRED BY EQUAL-LOUDNESS CONTOURS, NOT MEASURED DATA · BOTTOM STRIP = THE SIGNAL (FOLLOWS LEVEL ONLY, NEVER FREQUENCY · SLOWED)" />
-      <DisplayGuideButton onPress={() => help('loudness_curve')} />
-      <DragSlider
-        value={pos}
-        onChange={(v) => {
-          setPos(v);
-          const hz = Math.round(80 * Math.pow(8000 / 80, v));
-          if (tone.playing) tone.set({ freqHz: hz });
-        }}
-        label="FREQUENCY (level held constant)"
-        readout={`${f} Hz`}
-        onHelp={() => help('loudness_curve')}
-        tint="#37e05f"
-      />
-      <DragSlider
-        value={lvl}
-        onChange={(v) => {
-          setLvl(v);
-          if (tone.playing) tone.set({ levelDb: -44 + v * 24 });
-        }}
-        label="LEVEL (the actual amplitude)"
-        readout={`${levelDb.toFixed(0)} dBFS`}
-        onHelp={() => help('loudness_curve')}
-        levelTint
-      />
       {sens != null ? (
         <Text style={styles.caption}>
           Ear sensitivity at {f} Hz ≈ {sens.toFixed(0)} dB relative to 1 kHz —{' '}
           {sens < -6 ? 'the SAME amplitude sounds clearly quieter here.' : sens > 2 ? 'your ear slightly favors this region.' : 'close to the 1 kHz reference.'}
         </Text>
       ) : null}
-      {tone.engineReady ? (
-        <GlassButton
-          label={tone.playing ? 'STOP' : 'SWEEP IT YOURSELF'}
-          tint="green"
-          height={46}
-          fontSize={14}
-          onPress={() => (tone.playing ? tone.stop() : tone.play(f, levelDb))}
-        />
-      ) : null}
       <Text style={styles.caption}>
-        While playing, drag FREQUENCY with the level untouched — the dBFS number never moves, yet
-        the loudness does. (Phone speakers also physically roll off lows — headphones make the
-        effect honest.)
+        While playing, ride FREQ with the level untouched — the dBFS number never moves, yet the
+        loudness does. (Phone speakers also physically roll off lows — headphones make the effect
+        honest.)
       </Text>
-    </View>
+      {wellBottom}
+    </RackUnit>
   );
 }
-function M9Viz({ viz, width, f, lvl, running }: { viz: VizModule; width: number; f: number; lvl: number; running: boolean }) {
+function M9Stage({ viz, w, h, f, lvl, focused }: { viz: VizModule; w: number; h: number; f: number; lvl: number; focused: boolean }) {
   // Phase clock — continuous while the frequency sweep drags.
-  const phase = viz.usePhaseClock(running, visHzFor(f));
-  return <viz.EqualLoudnessView phase={phase} width={width} freqHz={f} level01={lvl} />;
+  const phase = viz.usePhaseClock(focused, visHzFor(f));
+  return (
+    <View style={{ width: w, height: h, justifyContent: 'center' }}>
+      <viz.EqualLoudnessView phase={phase} width={w} height={h} freqHz={f} level01={lvl} />
+    </View>
+  );
 }
 
 // ─── M10 — Phase: two identical waves + their sum ───────────────────────────
 
-function M10Panel({ viz, width, tone, focused, help }: PanelProps) {
+function M10Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
   const [phase, setPhase] = useState(270); // default lands at 270° (owner 2026-08-05)
+  const [stereoMode, setStereoMode] = useState<'aligned' | 'drift' | null>(null);
+  const hearSel = tone.playing && stereoMode ? stereoMode : 'off';
+  const params: DockParam[] = [
+    {
+      kind: 'fader',
+      id: 'phase',
+      label: 'PHASE',
+      value: phase / 360,
+      onChange: (v) => setPhase(Math.round(v * 360)),
+      format: () => `${phase}°${phase >= 175 && phase <= 185 ? ' — CANCELLED' : phase <= 5 || phase >= 355 ? ' — ALIGNED' : ''}`,
+      formatShort: () => `${phase}°`,
+      helpKey: 'phase_sum',
+    },
+    {
+      kind: 'options',
+      id: 'preset',
+      label: 'PRESET',
+      valueLabel: `${phase}°`,
+      options: [0, 90, 180, 270, 360].map((d) => ({ id: String(d), label: `${d}°` })),
+      selectedId: [0, 90, 180, 270, 360].includes(phase) ? String(phase) : null,
+      onSelect: (id) => setPhase(Number(id)),
+      sticky: true, // A/B aligned vs cancelled while the sum redraws
+      helpKey: 'phase_sum',
+    },
+    ...(tone.stereoReady
+      ? ([
+          {
+            kind: 'options',
+            id: 'hear',
+            label: 'HEAR',
+            valueLabel: hearSel === 'aligned' ? 'ALIGN' : hearSel === 'drift' ? 'DRIFT' : 'OFF',
+            options: [
+              { id: 'aligned', label: 'HEAR ALIGNED — 220 / 220 Hz' },
+              { id: 'drift', label: 'HEAR DRIFTING — 220 / 222 Hz' },
+              { id: 'off', label: 'STOP' },
+            ],
+            selectedId: hearSel,
+            onSelect: (id: string) => {
+              if (id === 'aligned') {
+                setStereoMode('aligned');
+                tone.playStereo(220, 220, -24);
+              } else if (id === 'drift') {
+                setStereoMode('drift');
+                tone.playStereo(220, 222, -24);
+              } else {
+                setStereoMode(null);
+                tone.stop();
+              }
+            },
+            sticky: true, // listen to the alignment breathe while comparing
+            helpKey: 'phase_sum',
+          },
+        ] as DockParam[])
+      : []),
+  ];
   return (
-    <View style={styles.panelCard}>
-      {viz ? <M10Viz viz={viz} width={width} phase={phase} running={focused} /> : <VizUnavailableCard />}
+    <RackUnit
+      initialParam="phase"
+      params={params}
+      onHelp={(k) => (k ? help(k) : undefined)}
+      stage={{
+        size: 'L',
+        badge: 'DRAWN FROM THE MATH — THE EXACT SUM (SLOWED)',
+        onGuide: () => help('phase_sum'),
+        bezel: [
+          { k: 'PHASE', v: `${phase}°`, helpKey: 'phase_sum' },
+          {
+            k: 'SUM',
+            v: phase >= 175 && phase <= 185 ? 'CANCELLED' : phase <= 5 || phase >= 355 ? 'ALIGNED' : 'PARTIAL',
+            flex: 1.3,
+            helpKey: 'phase_sum',
+          },
+          { k: 'OUT', v: tone.playing && stereoMode ? (stereoMode === 'drift' ? '220/222' : '220/220') : '—', tint: tone.playing ? undefined : '#7a7f8a' },
+        ],
+        render: (w, h) => (viz ? <M10Stage viz={viz} w={w} h={h} phase={phase} focused={focused} /> : <StageFallback w={w} />),
+      }}
+    >
+      {wellTop}
       <AnalyticBadge text="DRAWN FROM THE MATH — THE BOTTOM LINE IS THE EXACT SUM OF THE TWO TRAVELING WAVES (SLOWED)" />
-      <DisplayGuideButton onPress={() => help('phase_sum')} />
-      <DragSlider
-        value={phase / 360}
-        onChange={(v) => setPhase(Math.round(v * 360))}
-        label="PHASE OFFSET"
-        readout={`${phase}°${phase >= 175 && phase <= 185 ? ' — CANCELLED' : phase <= 5 || phase >= 355 ? ' — ALIGNED' : ''}`}
-        onHelp={() => help('phase_sum')}
-      />
-      <View style={styles.chipRow}>
-        {[0, 90, 180, 270, 360].map((d) => (
-          <LabChip key={d} label={`${d}°`} selected={phase === d} onPress={() => setPhase(d)} onLongPress={() => help('phase_sum')} />
-        ))}
-      </View>
       {tone.stereoReady ? (
-        <>
-          <View style={styles.btnRow}>
-            <View style={{ flex: 1 }}>
-              <GlassButton label="HEAR ALIGNED" tint="green" height={46} fontSize={12.5} onPress={() => tone.playStereo(220, 220, -24)} />
-            </View>
-            <View style={{ flex: 1 }}>
-              <GlassButton label="HEAR DRIFTING" tint="green" height={46} fontSize={12.5} onPress={() => tone.playStereo(220, 222, -24)} />
-            </View>
-            <View style={{ flex: 1 }}>
-              <GlassButton label="STOP" tint="steel" height={46} fontSize={12.5} onPress={() => tone.stop()} />
-            </View>
-          </View>
-          <Text style={styles.caption}>
-            Two REAL tones, hard-panned left/right. DRIFTING = 220 vs 222 Hz: through the phone
-            speaker they sum in the air, and their alignment cycles twice a second — loud (aligned)
-            … quiet (opposed) … loud. That slow breathing IS phase, audible. On headphones each ear
-            gets its own tone, so the beat becomes a softer in-head effect.
-          </Text>
-        </>
+        <Text style={styles.caption}>
+          Two REAL tones, hard-panned left/right (the HEAR key). DRIFTING = 220 vs 222 Hz: through
+          the phone speaker they sum in the air, and their alignment cycles twice a second — loud
+          (aligned) … quiet (opposed) … loud. That slow breathing IS phase, audible. On headphones
+          each ear gets its own tone, so the beat becomes a softer in-head effect.
+        </Text>
       ) : tone.engineReady ? (
         <Text style={styles.caption}>
           This engine build predates the stereo dual-oscillator — the drawn sum above stays exact;
           install the newest dev build to HEAR the drifting-phase demo.
         </Text>
       ) : null}
-    </View>
+      {wellBottom}
+    </RackUnit>
   );
 }
-function M10Viz({ viz, width, phase, running }: { viz: VizModule; width: number; phase: number; running: boolean }) {
-  const clock = viz.useVizClock(running);
-  return <viz.PhaseOverlayView clock={clock} width={width} phaseDeg={phase} visHz={visHzFor(220)} />;
+function M10Stage({ viz, w, h, phase, focused }: { viz: VizModule; w: number; h: number; phase: number; focused: boolean }) {
+  const clock = viz.useVizClock(focused);
+  return (
+    <View style={{ width: w, height: h, justifyContent: 'center' }}>
+      <viz.PhaseOverlayView clock={clock} width={w} height={h} phaseDeg={phase} visHz={visHzFor(220)} />
+    </View>
+  );
 }
 
 // ─── M11 — Harmonics: build a tone layer by layer ───────────────────────────
@@ -829,13 +1107,13 @@ function toAmps12(a6: number[]): number[] {
   return Array.from({ length: 12 }, (_, i) => (i < 6 ? Math.max(0, Math.min(1, a6[i] ?? 0)) : 0));
 }
 
-function M11Panel({ viz, width, tone, focused, help }: PanelProps) {
-  // Each harmonic has an AMPLITUDE (owner 2026-08-05). Buttons have three
-  // states — off (amp 0), on (amp > 0), and selected (the one whose slider is
-  // showing); only ONE is selected at a time and its slider sets the amplitude,
-  // which the viewer reflects live via the MIDI level colour.
+function M11Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
+  // Each harmonic has an AMPLITUDE (owner 2026-08-05). The HARMONICS tray
+  // selects one (off = amp 0, on = amp > 0, amber = selected); the LANE sets
+  // the selected harmonic's amplitude, which the viewer reflects live via the
+  // MIDI level colour. One harmonic is always selected (the lane needs a bind).
   const [amps, setAmps] = useState<number[]>([1, 0.5, 0.33, 0, 0, 0]);
-  const [selected, setSelected] = useState<number | null>(0);
+  const [selected, setSelected] = useState(0);
   const setAmp = (i: number, v: number) =>
     setAmps((prev) => {
       const next = [...prev];
@@ -843,53 +1121,79 @@ function M11Panel({ viz, width, tone, focused, help }: PanelProps) {
       if (tone.playing) tone.setAdditiveLive(M11_F0, toAmps12(next));
       return next;
     });
-  const tapButton = (i: number) => setSelected((s) => (s === i ? null : i));
+  const params: DockParam[] = [
+    {
+      kind: 'fader',
+      id: 'amp',
+      label: `H${selected + 1} AMP`,
+      value: amps[selected],
+      onChange: (v) => setAmp(selected, v),
+      format: () => `${Math.round(amps[selected] * 100)}%`,
+      tint: levelColor(amps[selected]),
+      helpKey: 'harmonic_stack',
+    },
+    {
+      kind: 'group',
+      id: 'harm',
+      label: 'HARMONICS',
+      valueLabel: `H${selected + 1}`,
+      helpKey: 'harmonic_stack',
+      render: () => (
+        <View style={{ gap: 10 }}>
+          <Text style={styles.trayHead}>HARMONICS — tap to select; the lane sets its amplitude</Text>
+          <View style={styles.chipRow}>
+            {amps.map((a, i) => {
+              const on = a > 0.02;
+              const sel = selected === i;
+              return (
+                <Pressable
+                  key={i}
+                  style={[styles.harmBtn, on && styles.harmBtnOn, sel && styles.harmBtnSel]}
+                  onPress={() => setSelected(i)}
+                  onLongPress={() => help('harmonic_stack')}
+                  delayLongPress={300}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: sel }}
+                  accessibilityLabel={`Harmonic ${i + 1}, ${sel ? 'selected' : on ? 'on' : 'off'}`}
+                >
+                  <Text style={[styles.harmBtnText, on && styles.harmBtnTextOn, sel && styles.harmBtnTextSel]}>H{i + 1}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+      ),
+    },
+    ...(tone.additiveReady ? [playKey(tone, () => tone.playAdditive(M11_F0, toAmps12(amps), -20))] : []),
+  ];
   return (
-    <View style={styles.panelCard}>
-      {viz ? <M11Viz viz={viz} width={width} amps={amps} running={focused} /> : <VizUnavailableCard />}
+    <RackUnit
+      initialParam="amp"
+      params={params}
+      onHelp={(k) => (k ? help(k) : undefined)}
+      stage={{
+        size: 'L', // six layers + the sum
+        badge: 'ANALYTIC — THE ENGINE’S EXACT RECIPE · PHASE-LOCKED, SLOWED',
+        onGuide: () => help('harmonic_stack'),
+        bezel: [
+          { k: 'F0', v: `${M11_F0} Hz`, helpKey: 'harmonic_stack' },
+          { k: 'SEL', v: `H${selected + 1}`, helpKey: 'harmonic_stack' },
+          { k: 'AMP', v: `${Math.round(amps[selected] * 100)}%`, tint: levelColor(amps[selected]), helpKey: 'harmonic_stack' },
+          toneCell(tone),
+        ],
+        render: (w, h) =>
+          viz ? (
+            <FitStage w={w} h={h} natural={HSTACK_NATURAL}>
+              {(vw) => <M11Stage viz={viz} w={vw} amps={amps} focused={focused} />}
+            </FitStage>
+          ) : (
+            <StageFallback w={w} />
+          ),
+      }}
+    >
+      {wellTop}
       <AnalyticBadge text="LAYERS AND SUM DRAWN FROM THE SAME RECIPE THE ENGINE PLAYS · PHASE-LOCKED, SLOWED · EACH ROW'S COLOUR = ITS LEVEL" />
-      <DisplayGuideButton onPress={() => help('harmonic_stack')} />
-      <View style={styles.chipRow}>
-        {amps.map((a, i) => {
-          const on = a > 0.02;
-          const sel = selected === i;
-          return (
-            <Pressable
-              key={i}
-              style={[styles.harmBtn, on && styles.harmBtnOn, sel && styles.harmBtnSel]}
-              onPress={() => tapButton(i)}
-              onLongPress={() => help('harmonic_stack')}
-              delayLongPress={300}
-              accessibilityRole="button"
-              accessibilityState={{ selected: sel }}
-              accessibilityLabel={`Harmonic ${i + 1}, ${sel ? 'selected' : on ? 'on' : 'off'}`}
-            >
-              <Text style={[styles.harmBtnText, on && styles.harmBtnTextOn, sel && styles.harmBtnTextSel]}>H{i + 1}</Text>
-            </Pressable>
-          );
-        })}
-      </View>
-      {selected != null ? (
-        <DragSlider
-          value={amps[selected]}
-          onChange={(v) => setAmp(selected, v)}
-          label={`H${selected + 1} AMPLITUDE`}
-          readout={`${Math.round(amps[selected] * 100)}%`}
-          onHelp={() => help('harmonic_stack')}
-          levelTint
-        />
-      ) : (
-        <Text style={styles.caption}>Tap a harmonic (H1–H6) to select it, then drag the slider to set its amplitude.</Text>
-      )}
-      {tone.additiveReady ? (
-        <GlassButton
-          label={tone.playing ? 'STOP' : 'PLAY THE STACK'}
-          tint="green"
-          height={46}
-          fontSize={14}
-          onPress={() => (tone.playing ? tone.stop() : tone.playAdditive(M11_F0, toAmps12(amps), -20))}
-        />
-      ) : tone.engineReady ? (
+      {!tone.additiveReady && tone.engineReady ? (
         <Text style={styles.caption}>
           This engine build predates the additive generator — the drawing stays exact; install the
           newest dev build to HEAR each harmonic enter the tone.
@@ -900,12 +1204,13 @@ function M11Panel({ viz, width, tone, focused, help }: PanelProps) {
         sine at a whole-number multiple of {M11_F0} Hz — changing a harmonic's amplitude changes the
         TIMBRE, not the pitch, and its row colour tracks the level (blue = quiet → red = loud).
       </Text>
-    </View>
+      {wellBottom}
+    </RackUnit>
   );
 }
-function M11Viz({ viz, width, amps, running }: { viz: VizModule; width: number; amps: number[]; running: boolean }) {
-  const clock = viz.useVizClock(running);
-  return <viz.HarmonicStackerView clock={clock} width={width} amps={amps} visHz={visHzFor(M11_F0)} />;
+function M11Stage({ viz, w, amps, focused }: { viz: VizModule; w: number; amps: number[]; focused: boolean }) {
+  const clock = viz.useVizClock(focused);
+  return <viz.HarmonicStackerView clock={clock} width={w} amps={amps} visHz={visHzFor(M11_F0)} />;
 }
 
 // ─── M12 — The Fourier principle: unmix a wave into its recipe ──────────────
@@ -916,61 +1221,78 @@ const M12_RECIPES: { key: string; label: string; amps: number[] }[] = [
   { key: 'bright', label: 'BRIGHT (all)', amps: m11Amps([true, true, true, true, true, true]) },
 ];
 
-function M12Panel({ viz, width, tone, focused, help }: PanelProps) {
+function M12Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
   const [recipeIdx, setRecipeIdx] = useState(2);
   const [morph, setMorph] = useState(0.67); // UNMIX defaults to 67% separated (owner 2026-08-05)
   const recipe = M12_RECIPES[recipeIdx];
+  const params: DockParam[] = [
+    {
+      kind: 'fader',
+      id: 'morph',
+      label: 'UNMIX',
+      value: morph,
+      onChange: setMorph,
+      format: () => `${Math.round(morph * 100)}% separated`,
+      formatShort: () => `${Math.round(morph * 100)}%`,
+      helpKey: 'fourier_morph',
+    },
+    {
+      kind: 'options',
+      id: 'recipe',
+      label: 'RECIPE',
+      valueLabel: recipe.label,
+      options: M12_RECIPES.map((r) => ({ id: r.key, label: r.label })),
+      selectedId: recipe.key,
+      onSelect: (id) => {
+        const i = M12_RECIPES.findIndex((r) => r.key === id);
+        if (i < 0) return;
+        setRecipeIdx(i);
+        if (tone.playing) tone.setAdditiveLive(M11_F0, M12_RECIPES[i].amps);
+      },
+      sticky: true, // A/B the recipes while the lens holds
+      helpKey: 'fourier_morph',
+    },
+    ...(tone.additiveReady ? [playKey(tone, () => tone.playAdditive(M11_F0, recipe.amps, -20))] : []),
+  ];
   return (
-    <View style={styles.panelCard}>
-      {viz ? <M12Viz viz={viz} width={width} amps={recipe.amps} morph={morph} running={focused} /> : <VizUnavailableCard />}
+    <RackUnit
+      initialParam="morph"
+      params={params}
+      onHelp={(k) => (k ? help(k) : undefined)}
+      stage={{
+        size: 'L',
+        badge: 'ANALYTIC DECOMPOSITION OF THE MODEL — SLOWED',
+        onGuide: () => help('fourier_morph'),
+        bezel: [
+          { k: 'RECIPE', v: recipe.label, flex: 1.3, helpKey: 'fourier_morph' },
+          { k: 'UNMIX', v: `${Math.round(morph * 100)}%`, helpKey: 'fourier_morph' },
+          { k: 'F0', v: `${M11_F0} Hz`, helpKey: 'fourier_morph' },
+          toneCell(tone),
+        ],
+        render: (w, h) => (viz ? <M12Stage viz={viz} w={w} h={h} amps={recipe.amps} morph={morph} focused={focused} /> : <StageFallback w={w} />),
+      }}
+    >
+      {wellTop}
       <AnalyticBadge text="ANALYTIC DECOMPOSITION OF THE MODEL — WAVE & INGREDIENTS TRAVEL (SLOWED); THE SPECTRUM HOLDS STILL. THE MEASURED VERSION LIVES IN THE RTA & SPECTROGRAM" />
-      <DisplayGuideButton onPress={() => help('fourier_morph')} />
-      <View style={styles.chipRow}>
-        {M12_RECIPES.map((r, i) => (
-          <LabChip
-            key={r.key}
-            label={r.label}
-            selected={recipeIdx === i}
-            onPress={() => {
-              setRecipeIdx(i);
-              if (tone.playing) tone.setAdditiveLive(M11_F0, M12_RECIPES[i].amps);
-            }}
-            onLongPress={() => help('fourier_morph')}
-          />
-        ))}
-      </View>
-      <DragSlider
-        value={morph}
-        onChange={setMorph}
-        label="UNMIX"
-        readout={`${Math.round(morph * 100)}% separated`}
-        onHelp={() => help('fourier_morph')}
-      />
-      {tone.additiveReady ? (
-        <GlassButton
-          label={tone.playing ? 'STOP' : 'PLAY THIS RECIPE'}
-          tint="green"
-          height={46}
-          fontSize={14}
-          onPress={() => (tone.playing ? tone.stop() : tone.playAdditive(M11_F0, recipe.amps, -20))}
-        />
-      ) : null}
       <Text style={styles.caption}>
         Fourier’s claim: ANY repeating pressure pattern — however jagged — is a stack of plain
-        sines. Slide UNMIX to pull this wave apart into its ingredient list. Every analyzer in this
+        sines. Ride UNMIX to pull this wave apart into its ingredient list. Every analyzer in this
         app does exactly that, live, on real signals.
       </Text>
+      {wellBottom}
+    </RackUnit>
+  );
+}
+function M12Stage({ viz, w, h, amps, morph, focused }: { viz: VizModule; w: number; h: number; amps: number[]; morph: number; focused: boolean }) {
+  const clock = viz.useVizClock(focused);
+  return (
+    <View style={{ width: w, height: h, justifyContent: 'center' }}>
+      <viz.FourierLensView clock={clock} width={w} height={h} amps={amps} morph={morph} visHz={visHzFor(M11_F0)} />
     </View>
   );
 }
-function M12Viz({ viz, width, amps, morph, running }: { viz: VizModule; width: number; amps: number[]; morph: number; running: boolean }) {
-  const clock = viz.useVizClock(running);
-  return <viz.FourierLensView clock={clock} width={width} amps={amps} morph={morph} visHz={visHzFor(M11_F0)} />;
-}
 
 // ─── M13 — Why measurement tools exist: concept → the REAL tool ─────────────
-
-type ToolRoute = 'SplMeter' | 'FrequencyCounter' | 'Rta' | 'SpectrogramLive' | 'WaveformLive' | 'Rt60Live' | 'SignalGen';
 
 const M13_TOOLS: { q: string; name: string; blurb: string; route: ToolRoute }[] = [
   { q: 'HOW LOUD IS IT IN THE ROOM?', name: 'SPL Meter', blurb: 'Weighted, time-averaged level from the real mic — ears estimate, meters measure.', route: 'SplMeter' },
@@ -982,16 +1304,24 @@ const M13_TOOLS: { q: string; name: string; blurb: string; route: ToolRoute }[] 
   { q: 'WHAT DO I TEST WITH?', name: 'Signal Generator', blurb: 'Known tones, noise, sweeps and clicks — because a known source exposes the system.', route: 'SignalGen' },
 ];
 
-function M13Panel({ viz, width, focused, help, onTool }: PanelProps & { onTool: (r: ToolRoute) => void }) {
+function M13Rack({ viz, focused, help, wellTop, wellBottom, onTool }: RackProps) {
   return (
-    <View style={styles.panelCard}>
-      {viz ? (
-        <>
-          <M13Viz viz={viz} width={width} running={focused} />
-          <ConceptBadge extra="SOURCE → AIR → MIC — the chain every tool below listens to" />
-        </>
-      ) : null}
-      <DisplayGuideButton onPress={() => help('tool_map')} />
+    <RackUnit
+      // Reading module: the signal chain pins as an illustrative stage; the
+      // tool cards are navigation (reading), so the dock stays empty.
+      initialParam="none"
+      params={[]}
+      onHelp={(k) => (k ? help(k) : undefined)}
+      stage={{
+        size: 'S',
+        badge: BADGE_CONCEPT,
+        onGuide: () => help('tool_map'),
+        bezel: [{ k: 'CHAIN', v: 'SOURCE → AIR → MIC', flex: 2, helpKey: 'tool_map' }],
+        render: (w, h) => (viz ? <M13Stage viz={viz} w={w} h={h} focused={focused} /> : <StageFallback w={w} />),
+      }}
+    >
+      {wellTop}
+      {viz ? <ConceptBadge extra="SOURCE → AIR → MIC — the chain every tool below listens to" /> : null}
       {/* Intro text ABOVE the list (owner 2026-08-05). */}
       <Text style={styles.caption}>
         Every card opens the REAL tool — live mic, real engine, honest units (dBFS · uncalibrated
@@ -1015,12 +1345,17 @@ function M13Panel({ viz, width, focused, help, onTool }: PanelProps & { onTool: 
           <Text style={styles.toolArrow}>›</Text>
         </Pressable>
       ))}
-    </View>
+      {wellBottom}
+    </RackUnit>
   );
 }
-function M13Viz({ viz, width, running }: { viz: VizModule; width: number; running: boolean }) {
-  const clock = viz.useVizClock(running);
-  return <viz.SignalPathView clock={clock} width={width} />;
+function M13Stage({ viz, w, h, focused }: { viz: VizModule; w: number; h: number; focused: boolean }) {
+  const clock = viz.useVizClock(focused);
+  return (
+    <View style={{ width: w, height: h, justifyContent: 'center' }}>
+      <viz.SignalPathView clock={clock} width={w} height={h} />
+    </View>
+  );
 }
 
 // ─── M14 — Graduation: the playground IS the module ─────────────────────────
@@ -1041,11 +1376,30 @@ const M14_RECAP = [
   '13 · Tools measure what ears estimate',
 ];
 
-function M14Panel({ viz, width, focused, onPlayground }: { viz: VizModule | null; width: number; focused: boolean; onPlayground: () => void }) {
+function M14Rack({ viz, focused, help, wellTop, wellBottom, onPlayground }: RackProps) {
   return (
-    <View style={styles.panelCard}>
-      {/* One last look at the centerpiece — the model you can now read. */}
-      {viz ? <viz.ThreeWindowView width={width} visHz={visHzFor(220)} amp={0.75} running={focused} /> : null}
+    <RackUnit
+      // Graduation module: one last look at the centerpiece pins on the stage;
+      // the recap reads in the well; the Playground door is the big green CTA.
+      initialParam="none"
+      params={[]}
+      onHelp={(k) => (k ? help(k) : undefined)}
+      stage={{
+        size: 'L',
+        badge: BADGE_CONCEPT,
+        onGuide: () => help('speaker_cone'),
+        bezel: [{ k: 'COURSE', v: 'COMPLETE — THE WHOLE MODEL', flex: 2 }],
+        render: (w, h) =>
+          viz ? (
+            <FitStage w={w} h={h} natural={THREE_WINDOW_NATURAL}>
+              {(vw) => <viz.ThreeWindowView width={vw} visHz={visHzFor(220)} amp={0.75} running={focused} />}
+            </FitStage>
+          ) : (
+            <StageFallback w={w} />
+          ),
+      }}
+    >
+      {wellTop}
       {viz ? <ConceptBadge extra="THE WHOLE MODEL, ONE LAST LOOK" /> : null}
       <Text style={styles.comingHead}>YOU BUILT THE WHOLE MODEL</Text>
       {M14_RECAP.map((c) => (
@@ -1059,7 +1413,8 @@ function M14Panel({ viz, width, focused, onPlayground }: { viz: VizModule | null
         answer.
       </Text>
       <GlassButton label="OPEN THE PLAYGROUND" tint="green" height={52} fontSize={14} onPress={onPlayground} />
-    </View>
+      {wellBottom}
+    </RackUnit>
   );
 }
 
@@ -1071,7 +1426,7 @@ type Step = {
   tag: string;
   title: string;
   paras: string[];
-  Panel: (p: PanelProps & { onPlayground: () => void; onTool: (r: ToolRoute) => void }) => React.JSX.Element;
+  Rack: (p: RackProps) => React.JSX.Element;
   check?: CheckSpec;
 };
 
@@ -1085,7 +1440,7 @@ const STEPS: Step[] = [
       'Air molecules repeatedly squeeze together (compression) and spread apart (rarefaction). Those pressure changes travel outward until they reach your ears.',
       'Watch the particles: each one only rocks back and forth around its home. The PATTERN of squeezes is what travels — the air itself stays put.',
     ],
-    Panel: M1Panel,
+    Rack: M1Rack,
   },
   {
     key: 'm2',
@@ -1096,7 +1451,7 @@ const STEPS: Step[] = [
       'These are three views of ONE phenomenon, at the same moment: the cone pushes, the air squeezes, the graph plots the squeeze.',
       'The wavy line is NOT the shape of the sound. It is a graph of PRESSURE over time. This one misunderstanding causes enormous confusion later — settle it now.',
     ],
-    Panel: M2Panel,
+    Rack: M2Rack,
     check: {
       question: 'Is the wavy line the shape sound makes in the air?',
       options: [
@@ -1114,11 +1469,11 @@ const STEPS: Step[] = [
     tag: 'MODULE 3',
     title: 'COMPRESSION & RAREFACTION',
     paras: [
-      'Drag the slider. A stronger vibration packs the molecules closer on every squeeze (compression) and spreads them thinner on every stretch (rarefaction).',
+      'Ride the STRENGTH lane. A stronger vibration packs the molecules closer on every squeeze (compression) and spreads them thinner on every stretch (rarefaction).',
       'Pressure above the room’s resting pressure is POSITIVE. Below it is NEGATIVE. The resting level — atmospheric pressure — is the graph’s zero line.',
       'Hold onto this picture: a microphone is just a tiny surface that rides these pressure swings. Every mic you will ever use starts here.',
     ],
-    Panel: M3Panel,
+    Rack: M3Rack,
   },
   {
     key: 'm4',
@@ -1126,10 +1481,10 @@ const STEPS: Step[] = [
     title: 'AMPLITUDE',
     paras: [
       'Small vibration → quiet sound. Large vibration → loud sound. That size is AMPLITUDE.',
-      'Drag the slider and watch everything move together: the cone travels farther, the squeezes get denser, the graph gets taller, and the level rises — four views of one number.',
+      'Ride the lane and watch everything move together: the cone travels farther, the squeezes get denser, the graph gets taller, and the level rises — four views of one number.',
       'Amplitude is the SIZE of the vibration, not its speed. Speed is a different property — that is the next module.',
     ],
-    Panel: M4Panel,
+    Rack: M4Rack,
     check: {
       question: 'To make a LOUDER sound, the speaker cone must…',
       options: [
@@ -1151,7 +1506,7 @@ const STEPS: Step[] = [
       'Both sources below are identical except for one number. Watch the orbit dials — one lap is one cycle. B simply completes its cycles more often.',
       'A faster rate packs the compressions closer together in time. Your ear reports that as HIGHER. Nothing else changed — not the size, not the distance, only the rate.',
     ],
-    Panel: M5Panel,
+    Rack: M5Rack,
     check: {
       question: 'To raise the PITCH of a sound, the source must…',
       options: [
@@ -1172,9 +1527,9 @@ const STEPS: Step[] = [
     paras: [
       'A wave is not just a rate — it takes up SPACE. While one compression travels away at 343 m/s, the next is already being made behind it. The distance between them is the wavelength, λ.',
       'λ = speed ÷ frequency. A 55 Hz bass note is over six meters long — it doesn’t fit in your bedroom. A 5 kHz sparkle is seven centimeters.',
-      'This is why bass behaves so differently: it wraps around obstacles, piles up in room corners, and needs big drivers. Drag the slider and watch real meters of air.',
+      'This is why bass behaves so differently: it wraps around obstacles, piles up in room corners, and needs big drivers. Ride the lane and watch real meters of air.',
     ],
-    Panel: M6Panel,
+    Rack: M6Rack,
     check: {
       question: 'A 55 Hz wave is ~6 m long. Your eardrum is ~6 mm. How can you hear it at all?',
       options: [
@@ -1198,7 +1553,7 @@ const STEPS: Step[] = [
       'They have the same shape because they describe the same sound wave — only the horizontal axis changes. The top axis shows the waveform over TIME; the bottom axis shows it over DISTANCE.',
       'The two are connected by one simple relationship: distance = speed × time. The sound wave is always traveling through space — one microphone experiences that motion over time, while the entire room contains the wave spread across distance.',
     ],
-    Panel: M7Panel,
+    Rack: M7Rack,
     check: {
       question: 'On a studio waveform display, the horizontal axis is…',
       options: ['Distance through the air, in meters', 'Time, in seconds', 'Frequency, low to high'],
@@ -1216,7 +1571,7 @@ const STEPS: Step[] = [
       '110→220 adds 110 Hz. 440→880 adds 440 Hz. Different amounts — yet both sound like exactly the same step: one octave, a doubling.',
       'The spiral is that fact drawn honestly: one full turn = one octave = ×2 in frequency. Equal musical steps are equal ANGLES while the Hz number accelerates. This is why every analyzer offers a log axis.',
     ],
-    Panel: M8Panel,
+    Rack: M8Rack,
     check: {
       question: '220→440 Hz and 440→880 Hz sound like the SAME size step because…',
       options: [
@@ -1238,7 +1593,7 @@ const STEPS: Step[] = [
       'The blue line is that curve (simplified): sensitivity peaks in the few-kHz region — where speech lives — and falls off steeply toward the lows.',
       'Sweep the frequency WITHOUT touching the level: the amplitude number stays fixed while the loudness visibly (audibly) changes. Amplitude is physics; loudness is perception wearing that curve.',
     ],
-    Panel: M9Panel,
+    Rack: M9Rack,
     check: {
       question: 'A tone at 80 Hz and a tone at 1 kHz have the SAME amplitude. Why does the 80 Hz tone sound quieter?',
       options: [
@@ -1258,9 +1613,9 @@ const STEPS: Step[] = [
     paras: [
       'Phase is WHERE in its cycle a wave is, measured in degrees. Alone it is inaudible. But sound is almost never alone.',
       'When two copies of the same wave meet, phase decides everything: aligned (0°) they ADD into double. Opposed (180°) they CANCEL — pressure up meets pressure down, and the air simply never moves.',
-      'Drag the slider and watch the sum. This one idea powers noise-canceling headphones, explains hollow-sounding mic pairs, comb filtering, and why subwoofer placement matters.',
+      'Ride the lane and watch the sum. This one idea powers noise-canceling headphones, explains hollow-sounding mic pairs, comb filtering, and why subwoofer placement matters.',
     ],
-    Panel: M10Panel,
+    Rack: M10Rack,
     check: {
       question: 'Two IDENTICAL waves meet at 180°. The result is…',
       options: [
@@ -1283,7 +1638,7 @@ const STEPS: Step[] = [
       'Real vibrating things don’t make one sine — they make a family: the fundamental plus whole-number multiples (2×, 3×, 4×…), each a pure sine with its own strength.',
       'Build it yourself: stack layers and listen. The pitch NEVER moves — H2 at 440 lives inside 220’s family — only the character thickens. Timbre is a recipe.',
     ],
-    Panel: M11Panel,
+    Rack: M11Rack,
     check: {
       question: 'Adding harmonics to a 220 Hz fundamental changes the sound’s…',
       options: ['Pitch — more harmonics, higher note', 'Character (timbre) — the pitch stays at 220 Hz', 'Speed through the air'],
@@ -1299,9 +1654,9 @@ const STEPS: Step[] = [
     paras: [
       'Module 11 built complex tones out of sines in harmonic relationships. Fourier’s theorem is the breathtaking reverse: any repeating pattern — however jagged — can have its harmonics taken apart into plain sines. Not approximately. Exactly.',
       'That means every sound has two complete descriptions: the waveform (pressure over time) and the SPECTRUM (which sines, how strong). Same information, two views.',
-      'Slide UNMIX to pull this wave apart into its ingredient list. Every analyzer, every EQ readout, every spectrogram in this app is doing precisely this — live, on real air.',
+      'Ride UNMIX to pull this wave apart into its ingredient list. Every analyzer, every EQ readout, every spectrogram in this app is doing precisely this — live, on real air.',
     ],
-    Panel: M12Panel,
+    Rack: M12Rack,
     check: {
       question: 'A spectrum analyzer shows tall lines at 220, 440 and 660 Hz. What is it telling you?',
       options: [
@@ -1323,7 +1678,7 @@ const STEPS: Step[] = [
       'Every question this course raised has a tool that answers it with a number. Each card below opens the real one — live mic, real engine.',
       'Tools don’t replace ears; they anchor them. The meter gives you the number, the model tells you what the number means — and now you have both.',
     ],
-    Panel: M13Panel,
+    Rack: M13Rack,
     check: {
       question: 'A level meter in this app reads −12 dBFS. What is that a measurement of?',
       options: [
@@ -1344,9 +1699,7 @@ const STEPS: Step[] = [
       'Thirteen modules, one picture: a speaker moves, air squeezes and stretches, a graph describes it, and every property — size, rate, spacing, alignment, recipe — is now a knob you understand.',
       'The final module is not a lesson. It is the whole course on one screen: every control driving every view at once. Go break things.',
     ],
-    Panel: ({ viz, width, focused, onPlayground }) => (
-      <M14Panel viz={viz} width={width} focused={focused} onPlayground={onPlayground} />
-    ),
+    Rack: M14Rack,
   },
 ];
 
@@ -1365,14 +1718,9 @@ export function FoundationsCourseScreen() {
   const { entitlement } = useEntitlement();
   const noAccountRef = useRef(entitlement === 'anonymous');
   noAccountRef.current = entitlement === 'anonymous';
-  const [width, setWidth] = useState(0);
   // Collapsible intro TEXT (owner 2026-08-05) — the paragraph block at the top
-  // of every module can be hidden; the title and the display below stay put.
+  // of every module's well can be hidden; the pinned display never moves.
   const [textOpen, setTextOpen] = useState(true);
-  // Drag-vs-scroll (owner 2026-07-30): panel drag surfaces (DragSliders, the M8
-  // octave spiral) lock this scroll during a gesture via the ScrollLockProvider
-  // below — the primitives grab the setter from context, no per-control wiring.
-  const [scrollLocked, setScrollLocked] = useState(false);
 
   const [gate] = useState<EngineState>(() => {
     if (!ApeDsp.isAvailable()) return 'absent';
@@ -1386,7 +1734,7 @@ export function FoundationsCourseScreen() {
   const focused = useIsFocused();
 
   // Per-control help (owner request 2026-07-26) — the two-tier "what it does"
-  // popup, shared with every lab.
+  // popup, shared with every lab. Bezel/dock long-presses route here too.
   const [lessonKey, setLessonKey] = useState<string | undefined>(undefined);
   const [lessonOpen, setLessonOpen] = useState(false);
   const help = useCallback((key: string) => {
@@ -1443,6 +1791,61 @@ export function FoundationsCourseScreen() {
       navigation.navigate(r);
     },
     [navigation, tone],
+  );
+
+  // The reading column the module racks wrap: gate + tag + title + collapsible
+  // paragraphs above the module's own captions…
+  const wellTop = (
+    <>
+      {!engineReady ? <EngineGate state={gate} /> : null}
+      <Text style={styles.tag}>{s.tag} · {step + 1} OF {STEPS.length}</Text>
+      <View style={styles.titleRow}>
+        <Text style={[styles.stepTitle, { flex: 1 }]}>{s.title}</Text>
+        {/* Reveal toggle for the intro TEXT only — collapse it and the dock
+            rides up under the remaining content (RackUnit well behavior). */}
+        <Pressable
+          onPress={() => setTextOpen((v) => !v)}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel={textOpen ? 'Hide the description text' : 'Show the description text'}
+        >
+          <Text style={styles.textToggle}>{textOpen ? '▾ TEXT' : '▸ TEXT'}</Text>
+        </Pressable>
+      </View>
+      {textOpen
+        ? s.paras.map((p, i) => (
+            <Text key={i} style={styles.body}>
+              {p}
+            </Text>
+          ))
+        : null}
+    </>
+  );
+  // …and the check + BACK/NEXT below them (PREV = gold, NEXT = green, matching
+  // the study-method screens — owner 2026-08-05).
+  const wellBottom = (
+    <>
+      {s.check ? <CheckQuestion key={s.key} spec={s.check} /> : null}
+      <View style={styles.navRow}>
+        <View style={{ flex: 1 }}>
+          <GlassButton
+            label="‹ BACK"
+            tint="gold"
+            disabled={step === 0}
+            onPress={() => goTo(Math.max(0, step - 1))}
+          />
+        </View>
+        <View style={{ flex: 1 }}>
+          <GlassButton
+            label={step === STEPS.length - 1 ? 'DONE ✓' : 'NEXT ›'}
+            tint="green"
+            onPress={() =>
+              step === STEPS.length - 1 ? navigation.goBack() : goTo(Math.min(STEPS.length - 1, step + 1))
+            }
+          />
+        </View>
+      </View>
+    </>
   );
 
   return (
@@ -1514,64 +1917,22 @@ export function FoundationsCourseScreen() {
         </Pressable>
       </View>
 
-      <ScrollLockProvider value={setScrollLocked}>
-      <ScrollView contentContainerStyle={styles.scroll} scrollEnabled={!scrollLocked}>
-        {!engineReady ? <EngineGate state={gate} /> : null}
-        {/* One-time honesty note for pre-Skia clients, above the fold. */}
-        {!skiaAvailable && step === 0 ? <VizUnavailableCard /> : null}
-
-        <Text style={styles.tag}>{s.tag} · {step + 1} OF {STEPS.length}</Text>
-        <View style={styles.titleRow}>
-          <Text style={[styles.stepTitle, { flex: 1 }]}>{s.title}</Text>
-          {/* Reveal toggle for the intro TEXT only — title + display stay. */}
-          <Pressable
-            onPress={() => setTextOpen((v) => !v)}
-            hitSlop={8}
-            accessibilityRole="button"
-            accessibilityLabel={textOpen ? 'Hide the description text' : 'Show the description text'}
-          >
-            <Text style={styles.textToggle}>{textOpen ? '▾ TEXT' : '▸ TEXT'}</Text>
-          </Pressable>
-        </View>
-        {textOpen
-          ? s.paras.map((p, i) => (
-              <Text key={i} style={styles.body}>
-                {p}
-              </Text>
-            ))
-          : null}
-
-        <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 24)}>
-          {width > 0 ? (
-            <s.Panel viz={viz} width={width} tone={tone} focused={focused} help={help} onPlayground={openPlayground} onTool={goTool} />
-          ) : null}
-        </View>
-
-        {s.check ? <CheckQuestion key={s.key} spec={s.check} /> : null}
-
-        {/* BACK / NEXT match the study-method screens (owner 2026-08-05):
-            PREV = gold, NEXT = green. */}
-        <View style={styles.navRow}>
-          <View style={{ flex: 1 }}>
-            <GlassButton
-              label="‹ BACK"
-              tint="gold"
-              disabled={step === 0}
-              onPress={() => goTo(Math.max(0, step - 1))}
-            />
-          </View>
-          <View style={{ flex: 1 }}>
-            <GlassButton
-              label={step === STEPS.length - 1 ? 'DONE ✓' : 'NEXT ›'}
-              tint="green"
-              onPress={() =>
-                step === STEPS.length - 1 ? navigation.goBack() : goTo(Math.min(STEPS.length - 1, step + 1))
-              }
-            />
-          </View>
-        </View>
-      </ScrollView>
-      </ScrollLockProvider>
+      {/* The current module's Rack Unit — keyed per step so each module mounts
+          fresh (its own state, its own initial lane bind), exactly as the old
+          per-step panels did. The frame owns the scroll well + dock. */}
+      <View style={styles.rackWrap}>
+        <s.Rack
+          key={s.key}
+          viz={viz}
+          tone={tone}
+          focused={focused}
+          help={help}
+          wellTop={wellTop}
+          wellBottom={wellBottom}
+          onPlayground={openPlayground}
+          onTool={goTool}
+        />
+      </View>
 
       <GuidedLessonSheet
         visible={lessonOpen}
@@ -1603,22 +1964,18 @@ const styles = StyleSheet.create({
   dotDone: { backgroundColor: 'rgba(255,198,77,.45)' },
   playgroundLink: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: '#37e05f' },
 
-  scroll: { padding: 16, paddingBottom: 30, gap: 12 },
+  // The Rack Unit needs the remaining vertical space (flex:1) — it owns the
+  // stage, the scroll well and the dock inside it.
+  rackWrap: { flex: 1 },
+
   tag: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.6, color: colors.amber },
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   stepTitle: { fontFamily: fonts.oswaldMedium, fontSize: 22, letterSpacing: 0.6, color: colors.textPrimary },
   textToggle: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, color: colors.amber },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14.5, lineHeight: 21, color: colors.textSecondary },
 
-  panelCard: {
-    gap: 10,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#131316',
-    padding: 12,
-  },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  trayHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.amber },
   // Harmonic buttons — three states: off / on / selected (owner 2026-08-05).
   harmBtn: {
     borderRadius: 8,
@@ -1647,15 +2004,12 @@ const styles = StyleSheet.create({
 
   navRow: { flexDirection: 'row', gap: 10, marginTop: 4 },
 
-  // Modules 5–14 additions
   // Display-explanation captions are WHITE like the body text (owner
   // 2026-08-05), not gray.
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSecondary },
   // Green "drag the spiral" hint — matches the green node/lines (owner 2026-08-05).
   spiralHint: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: '#37e05f' },
-  btnRow: { flexDirection: 'row', gap: 10 },
   analyticBadge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1, lineHeight: 13, color: colors.textSub },
-  sliderReadoutBig: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.6, color: colors.amber },
 
   toolCard: {
     flexDirection: 'row',
