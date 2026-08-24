@@ -18,6 +18,7 @@ import { WaveformScreen } from './src/screens/tools/WaveformScreen';
 import { RtaScreen } from './src/screens/tools/RtaScreen';
 import { ToolsHubScreen } from './src/screens/tools/ToolsHubScreen';
 import { CalcWorkspaceScreen } from './src/screens/lab/calc/CalcWorkspaceScreen';
+import { CalcLabScreen } from './src/screens/lab/calc/CalcLabScreen';
 import { navigationRef } from './src/navigation/navigationRef';
 import { LabPreviewOverlay } from './src/features/lab/LabPreviewOverlay';
 import { endLabPreview, getLabPreview } from './src/features/lab/labPreviewStore';
@@ -122,7 +123,9 @@ export default function App() {
               ? { name: 'ToolsHub', component: ToolsHubScreen as ComponentType }
               : window.location.hash === '#calcworkspacepreview'
                 ? { name: 'CalcWorkspace', component: CalcWorkspaceScreen as ComponentType, initialParams: { id: 'wave' } }
-                : null
+                : window.location.hash === '#calclabpreview'
+                  ? { name: 'CalcLab', component: CalcLabScreen as ComponentType }
+                  : null
       : null;
   if (toolPreview) {
     return (

@@ -6,6 +6,7 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, ImageBackground, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -213,13 +214,19 @@ export function CalcLabScreen() {
                   {items.map((w) => (
                     <Pressable
                       key={w.id}
-                      style={styles.tile}
+                      style={styles.tileFrame}
                       onPress={() => navigation.navigate('CalcWorkspace', { id: w.id })}
                       accessibilityRole="button"
                       accessibilityLabel={`${w.name} — ${w.tagline}`}
                     >
-                      <Text style={styles.tileName} numberOfLines={2}>{w.name}</Text>
-                      <Text style={styles.tileTag} numberOfLines={1}>{w.tagline}</Text>
+                      {/* Graphite instrument plate (owner 2026-08-23): matches the
+                          tools hub / calc-rack material — top-lit machined face on
+                          a black keyline, opaque over the screen's background. */}
+                      <LinearGradient colors={['#4a4c52', '#3a3c42', '#2b2d31']} locations={[0, 0.45, 1]} style={styles.tile}>
+                        <View pointerEvents="none" style={styles.tileTopLight} />
+                        <Text style={styles.tileName} numberOfLines={2}>{w.name}</Text>
+                        <Text style={styles.tileTag} numberOfLines={1}>{w.tagline}</Text>
+                      </LinearGradient>
                     </Pressable>
                   ))}
                 </View>
@@ -265,18 +272,23 @@ const styles = StyleSheet.create({
   // Dense two-column calculator grid (owner 2026-08-09).
   section: { gap: 6 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  tile: {
+  // Graphite instrument plate: black keyline frame wrapping a machined face.
+  tileFrame: {
     width: '48%',
-    borderRadius: 9,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#131316',
+    borderColor: '#000',
+    overflow: 'hidden',
+  },
+  tile: {
+    borderRadius: 9,
     paddingVertical: 12,
     paddingHorizontal: 12,
     gap: 3,
   },
-  tileName: { fontFamily: fonts.oswaldMedium, fontSize: 15, letterSpacing: 0.3, color: colors.textPrimary },
-  tileTag: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 16, color: colors.textSub },
+  tileTopLight: { position: 'absolute', top: 0, left: 8, right: 8, height: 1, backgroundColor: 'rgba(255,255,255,0.16)' },
+  tileName: { fontFamily: fonts.oswaldMedium, fontSize: 15, letterSpacing: 0.3, color: '#f2f3f5' },
+  tileTag: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 16, color: '#c7cace' },
   chainBanner: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17, color: '#5bff85' },
   soonWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 7 },
   soonChip: { borderRadius: 7, borderWidth: 1, borderColor: '#232329', paddingHorizontal: 9, paddingVertical: 5, backgroundColor: '#101014' },
