@@ -21,6 +21,7 @@ export function DockButton({
   selected,
   variant = 'value',
   led,
+  frameTint,
   onPress,
   onLongPress,
   a11y,
@@ -37,6 +38,10 @@ export function DockButton({
   variant?: 'value' | 'key';
   /** Key-variant toggles: LED dot state (green = on). */
   led?: boolean;
+  /** Identity-colour frame (owner 2026-08-23): a fader key whose param has an
+   *  identity tint (e.g. the Harmonograph's per-arm colours) wears it on the
+   *  border. Bound/open stays amber — the two-verb rule outranks identity. */
+  frameTint?: string;
   onPress: () => void;
   onLongPress?: () => void;
   /** Full accessibility sentence, e.g. "ROOM WIDTH: 8.4 m. Tap to adjust." */
@@ -45,7 +50,12 @@ export function DockButton({
   const isKey = variant === 'key';
   return (
     <Pressable
-      style={[styles.btn, isKey && styles.key, !isKey && selected && styles.btnSel]}
+      style={[
+        styles.btn,
+        isKey && styles.key,
+        !isKey && !selected && frameTint ? { borderColor: frameTint + '88' } : null,
+        !isKey && selected && styles.btnSel,
+      ]}
       onPress={onPress}
       onLongPress={onLongPress}
       delayLongPress={350}

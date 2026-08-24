@@ -174,6 +174,7 @@ export function RackUnit({
                     label={p.label}
                     value={(p.formatShort ?? p.format)(p.value)}
                     glyph="▪"
+                    frameTint={p.tint}
                     selected={effBoundId === p.id}
                     onPress={() => {
                       if (hapticsEnabled()) Haptics.selectionAsync().catch(() => {});

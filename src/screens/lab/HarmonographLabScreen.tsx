@@ -44,17 +44,25 @@ const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
 const BASE_F0 = 110; // Hz — harmonics n₁/n₂ of this sound the interval
 
-// Oscillator FREQUENCY range (owner 2026-08-23): each pendulum sweeps LOG from
-// 0.5 Hz to 100 Hz — real machine territory (a built harmonograph runs ~0.5–1
-// Hz). The machine always draws at the true pendulum speed; the RATIO between
-// the arms is what names the interval, and PLAY renders that ratio audibly as
-// harmonics of BASE_F0 (the pendulums themselves are below hearing).
+// Oscillator FREQUENCY range (owner 2026-08-23, tightened same day): each
+// pendulum sweeps LOG from 0.5 Hz to 10 Hz — real machine territory (a built
+// harmonograph runs ~0.5–1 Hz; past 10 the arms were just blur). The machine
+// always draws at the true pendulum speed; the RATIO between the arms names
+// the interval, and PLAY renders that ratio audibly as harmonics of BASE_F0
+// (the pendulums themselves are below hearing).
 const OSC_F_MIN = 0.5;
-const OSC_F_MAX = 100;
+const OSC_F_MAX = 10;
 const oscFreqFromPos = (v: number) =>
   OSC_F_MIN * Math.pow(OSC_F_MAX / OSC_F_MIN, Math.max(0, Math.min(1, v)));
 const oscPosFromFreq = (hz: number) =>
   Math.log(Math.max(OSC_F_MIN, hz) / OSC_F_MIN) / Math.log(OSC_F_MAX / OSC_F_MIN);
+// PLAT lane: full-left = STATIONARY (0 Hz — the platform pendulum hangs
+// centred, owner 2026-08-23), then the same log sweep.
+const PLAT_OFF_ZONE = 0.07;
+const platFreqFromPos = (v: number) =>
+  v <= PLAT_OFF_ZONE ? 0 : oscFreqFromPos((v - PLAT_OFF_ZONE) / (1 - PLAT_OFF_ZONE));
+const platPosFromFreq = (hz: number) =>
+  hz <= 0 ? 0 : PLAT_OFF_ZONE + oscPosFromFreq(hz) * (1 - PLAT_OFF_ZONE);
 const fmtHz = (hz: number) => `${hz >= 100 ? Math.round(hz) : hz >= 1 ? hz.toFixed(1) : hz.toFixed(2)} Hz`;
 
 /** Ratio-locked intervals (n₁:n₂ = harmonic numbers of BASE_F0). */
@@ -255,11 +263,27 @@ export function HarmonographLabScreen() {
   // REAL-TIME draw (owner 2026-08-23): the machine's slower pendulum swings at
   // its true Hz (the platform counts too in ROTARY), and the drawing runs
   // until the pen SETTLES (turn count derives from the damping).
-  const slowerHz = Math.max(OSC_F_MIN, rotary ? Math.min(hz1, hz2, hz3) : Math.min(hz1, hz2));
+  const slowerHz = Math.max(
+    OSC_F_MIN,
+    rotary && hz3 > 0 ? Math.min(hz1, hz2, hz3) : Math.min(hz1, hz2),
+  );
   const drawMs = (drawTurns(damping.endAmp) / slowerHz) * 1000;
   const newDrawing = () => {
     setFrozen(false);
     setEpoch((e) => e + 1);
+  };
+  // ⟲ RESET (glass corner): back to the opening defaults + a fresh sheet.
+  // Member ink stays — customization isn't a setting of the machine.
+  const resetAll = () => {
+    setN1(1.5 / BASE_F0);
+    setN2(1.0 / BASE_F0);
+    setN3(1.0 / BASE_F0);
+    setPhase(90);
+    setDampKey('medium');
+    setRotary(true);
+    setDetune(0.01);
+    if (running) stopInterval();
+    newDrawing();
   };
 
   // ── RACK UNIT pilot (APE_LAB_UX_PROPOSAL 2026-08-23, owner-approved) ──────
@@ -330,11 +354,12 @@ export function HarmonographLabScreen() {
                 inkColor={inkColor}
                 hz1Label={`OSC 1 · ${fmtHz(hz1)}`}
                 hz2Label={`OSC 2 · ${fmtHz(hz2)}`}
-                hz3Label={`PLAT · ${fmtHz(hz3)}`}
+                hz3Label={hz3 > 0 ? `PLAT · ${fmtHz(hz3)}` : 'PLAT · OFF'}
                 onFreezeFraction={(f) => {
                   freezeFracRef.current = f;
                 }}
                 onInsetPress={() => setViewerOpen(true)}
+                onResetPress={resetAll}
               />
             </Pressable>
           ),
@@ -371,9 +396,10 @@ export function HarmonographLabScreen() {
                   kind: 'fader' as const,
                   id: 'plat',
                   label: 'PLAT',
-                  value: oscPosFromFreq(hz3),
-                  onChange: (v: number) => setN3(oscFreqFromPos(v) / BASE_F0),
-                  format: () => fmtHz(hz3),
+                  value: platPosFromFreq(hz3),
+                  onChange: (v: number) => setN3(platFreqFromPos(v) / BASE_F0),
+                  format: () => (hz3 > 0 ? fmtHz(hz3) : 'OFF — platform stationary'),
+                  formatShort: () => (hz3 > 0 ? fmtHz(hz3) : 'OFF'),
                   tint: '#e0b25e',
                   helpKey: 'mode',
                 },
@@ -486,10 +512,9 @@ export function HarmonographLabScreen() {
         </Text>
         <Text style={styles.sectionHead}>REAL-TIME SWINGS</Text>
         <Text style={styles.caption}>
-          The machine runs at the true frequency you set (0.5–100 Hz): 1 Hz is one full swing per
+          The machine runs at the true frequency you set (0.5–10 Hz): 1 Hz is one full swing per
           second. Around 0.5–2 Hz you’re at real harmonograph pendulum speeds — slow enough to watch
-          every swing. Push into the tens of Hz and the arms blur; the drawing fills in almost at
-          once. In ROTARY the paper platform is a third pendulum with its own speed — the PLAT
+          every swing. Push toward 10 Hz and the arms blur; the drawing fills in fast. In ROTARY the paper platform is a third pendulum with its own speed — the PLAT
           lane; tiny platform detunes are what precess the rose.
         </Text>
       </View>

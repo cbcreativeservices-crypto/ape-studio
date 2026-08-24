@@ -123,9 +123,15 @@ function motion(phi: number, m: Mode) {
     // its own rotation speed (azr). Detune precesses the platform.
     sA = AMP * Math.sin(m.axr * phi + Math.PI / 2 - m.ph) * env;
     sB = AMP * Math.sin(m.ayr * phi + Math.PI / 2) * env;
-    const g = m.azr * phi * (1 + m.det);
-    ox = -ORB * Math.sin(g) * env;
-    oy = ORB * Math.cos(g) * env;
+    if (m.azr > 0) {
+      const g = m.azr * phi * (1 + m.det);
+      ox = -ORB * Math.sin(g) * env;
+      oy = ORB * Math.cos(g) * env;
+    } else {
+      // PLAT full-left = STATIONARY: the platform pendulum hangs centred.
+      ox = 0;
+      oy = 0;
+    }
   } else {
     sA = AMP * Math.sin(m.axr * phi + Math.PI / 2 - m.ph) * env;
     sB = AMP * Math.sin(m.ayr * phi * (1 + m.det) + Math.PI / 2) * env;
@@ -294,7 +300,10 @@ export function drawingPath(
   },
   size: number,
 ): string {
-  const mn = Math.max(1e-9, cfg.rotary ? Math.min(cfg.n1, cfg.n2, cfg.n3) : Math.min(cfg.n1, cfg.n2));
+  const mn = Math.max(
+    1e-9,
+    cfg.rotary ? Math.min(cfg.n1, cfg.n2, cfg.n3 > 0 ? cfg.n3 : Number.MAX_VALUE) : Math.min(cfg.n1, cfg.n2),
+  );
   const m: Mode = {
     axr: cfg.n1 / mn,
     ayr: cfg.n2 / mn,
@@ -337,6 +346,7 @@ export const HarmonographMachine = memo(function HarmonographMachine({
   hz3Label,
   onFreezeFraction,
   onInsetPress,
+  onResetPress,
 }: {
   n1: number;
   n2: number;
@@ -364,8 +374,11 @@ export const HarmonographMachine = memo(function HarmonographMachine({
   onFreezeFraction?: (f: number) => void;
   /** Tap on THE DRAWING inset (opens the fullscreen viewer). */
   onInsetPress?: () => void;
+  /** ⟲ RESET pill in the glass's lower-right corner (owner 2026-08-23):
+   *  restores the lab's default settings + a fresh sheet. */
+  onResetPress?: () => void;
 }) {
-  const mn = Math.max(1e-9, rotary ? Math.min(n1, n2, n3) : Math.min(n1, n2));
+  const mn = Math.max(1e-9, rotary ? Math.min(n1, n2, n3 > 0 ? n3 : Number.MAX_VALUE) : Math.min(n1, n2));
   const turns = drawTurns(endAmp);
   const thetaMax = 2 * Math.PI * turns;
   const mode: Mode = useMemo(
@@ -911,6 +924,24 @@ export const HarmonographMachine = memo(function HarmonographMachine({
         >
           THE DRAWING
         </SvgText>
+        {onResetPress ? (
+          // ⟲ RESET — in-container reset (owner rule), lower-right under the
+          // drawing column.
+          <>
+            <Rect x={IX + IW - 62} y={VBH - 28} width={62} height={19} rx={5} fill="#17171c" stroke="#2c2c33" strokeWidth={1} />
+            <SvgText
+              x={IX + IW - 31}
+              y={VBH - 15}
+              textAnchor="middle"
+              fontFamily={fonts.oswaldSemiBold}
+              fontSize={10}
+              letterSpacing={1}
+              fill="#9a9ca3"
+            >
+              ⟲ RESET
+            </SvgText>
+          </>
+        ) : null}
       </Svg>
 
       {/* THE DRAWING inset is tappable — opens the fullscreen viewer. */}
@@ -925,6 +956,21 @@ export const HarmonographMachine = memo(function HarmonographMachine({
             top: offY + IY * sc,
             width: IW * sc,
             height: (IW + 16) * sc,
+          }}
+        />
+      ) : null}
+      {onResetPress && sc > 0 ? (
+        <Pressable
+          onPress={onResetPress}
+          accessibilityRole="button"
+          accessibilityLabel="Reset the harmonograph to its default settings"
+          hitSlop={6}
+          style={{
+            position: 'absolute',
+            left: offX + (IX + IW - 62) * sc,
+            top: offY + (VBH - 28) * sc,
+            width: 62 * sc,
+            height: 19 * sc,
           }}
         />
       ) : null}
