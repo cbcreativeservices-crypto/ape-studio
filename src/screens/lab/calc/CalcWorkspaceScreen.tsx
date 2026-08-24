@@ -45,22 +45,22 @@ export function CalcWorkspaceScreen() {
   // user returns to their exact inputs/scroll on close.
   const [popupTerm, setPopupTerm] = useState<string | null>(null);
 
-  // PIN THE INPUTS ON FOCUS (owner 2026-08-07). The on-screen keyboard covers
-  // the lower half of the device, so tapping a field could leave the very
-  // numbers you're typing hidden behind it. On focus we scroll the input panel
-  // to the TOP of the screen, which puts every field (and the answer directly
-  // under them) in the clear band above the keyboard.
-  // NOTE this cannot rely on KeyboardAwareScrollView: that library is loaded
-  // through a try/catch guard and degrades to a PLAIN ScrollView on any build
-  // that predates the native module (see keyboardControllerSafe) — including
-  // the current dev client. Doing the scroll ourselves works on every build.
+  // REVEAL THE INPUTS ON FOCUS. Calc rack (owner 2026-08-23): the ANSWER is now
+  // a pinned display above the scroll, and the inputs are the FIRST content in
+  // the well — so on focus we bring the well to its TOP (y 0), which lands the
+  // "INPUTS" heading + the first field's LABEL just below the pinned stage,
+  // never scrolled up UNDER it. (The old behavior scrolled to the input panel's
+  // measured y, written for the pre-rack layout where a function picker sat
+  // above the inputs; that over-scroll tucked the focused field + its label
+  // behind the stage — the reported "covered input" bug.) On builds with the
+  // native keyboard controller, KeyboardAwareScrollView still lifts a lower
+  // field above the keyboard from here; on the plain-ScrollView fallback the
+  // inputs at least start visible.
   const scrollRef = useRef<ScrollView | null>(null);
-  const inputsYRef = useRef(0);
   const pinInputs = useCallback(() => {
-    const y = Math.max(0, inputsYRef.current - 8); // 8px breathing room
     // Wait for the keyboard to start animating in, or the scroll gets clipped
     // to the pre-keyboard content height on Android.
-    setTimeout(() => scrollRef.current?.scrollTo({ y, animated: true }), 60);
+    setTimeout(() => scrollRef.current?.scrollTo({ y: 0, animated: true }), 60);
   }, []);
   const [fnIdx, setFnIdx] = useState(0);
   const [raw, setRaw] = useState<Record<string, string>>({});
@@ -379,7 +379,7 @@ export function CalcWorkspaceScreen() {
 
         {/* INPUTS — the controls, at the TOP of the well so they stay visible
             above the keyboard with the pinned answer above them (calc rack). */}
-        <View style={styles.panel} onLayout={(e) => { inputsYRef.current = e.nativeEvent.layout.y; }}>
+        <View style={styles.panel}>
           <Text style={styles.eyebrowTight}>INPUTS</Text>
           {fields.map((f) => {
             const units = unitsFor(f.quantity, f.unitIds);
