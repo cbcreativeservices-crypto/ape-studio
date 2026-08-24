@@ -10,11 +10,28 @@
  * Accessibility: every choice is a labeled button (no color-only state, no
  * drag); verdicts are announced; targets ≥44dp.
  */
-import { useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
-import Svg, { Circle, Line, Path, Rect } from 'react-native-svg';
+import Svg, { Line, Path, Rect } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
 import { CiSection, RuleFeedback, announceComplete } from '../bits';
+import {
+  AG,
+  ALine,
+  APath,
+  Appear,
+  CI_EASE,
+  CI_MOTION,
+  Stagger,
+  cancelAnimation,
+  useAnimatedProps,
+  useCiMotion,
+  useDrawIn,
+  useSharedValue,
+  withDelay,
+  withRepeat,
+  withTiming,
+} from '../motion';
 import type { CiModuleProps } from '../registry';
 
 const CONSEQUENCES: { id: string; title: string; body: string }[] = [
@@ -63,76 +80,222 @@ const EXAMPLES: { id: ExampleId; name: string; caption: string; verdictRule: str
   },
 ];
 
-/** Tiny honest close-up per example (training visualization). */
-function ExampleArt({ id, w }: { id: ExampleId; w: number }) {
+/**
+ * Close-up per example — the MOTION tells the story (owner 2026-08-24):
+ *   A the cable draws in flawlessly straight… then each tie bites and the
+ *     jacket deformation swells under it (the flaw arrives after the beauty)
+ *   B draws in with honest curves, supports land, then the labels flip up —
+ *     calm, in the order a professional actually works
+ *   C dumps in fast and out of order — no plan, no sequence
+ *   D the loom sweeps across, then the vent behind it flushes hot and keeps
+ *     breathing — the blocked airflow is visible, not stated
+ * All primitive-prop animation (see motion.tsx's hard-won rule).
+ */
+function ExampleArt({ id, w, run }: { id: ExampleId; w: number; run: boolean }) {
   const h = 74;
   const vb = 160;
   const common = { width: w, height: h, viewBox: `0 0 ${vb} 74` } as const;
+  const m = useCiMotion();
+
   if (id === 'a') {
     return (
       <Svg {...common}>
         <Rect x={0} y={0} width={vb} height={74} rx={8} fill="#101014" />
-        {[18, 30, 42, 54].map((y) => (
-          <Path key={y} d={`M8 ${y} H152`} stroke="#4fd0e0" strokeWidth={5} strokeLinecap="round" />
+        {[18, 30, 42, 54].map((y, i) => (
+          <DrawLine key={y} d={`M8 ${y} H152`} len={148} color="#4fd0e0" width={5} run={run} delay={i * 70} />
         ))}
-        {[40, 80, 120].map((x) => (
-          <G key={x} x={x} />
-        ))}
-        {[40, 80, 120].map((x) => (
-          <Path key={x} d={`M${x} 10 v54`} stroke="#e8e8ea" strokeWidth={3} />
-        ))}
-        {/* deformation at ties */}
-        {[40, 80, 120].map((x) => (
-          <Path key={`d${x}`} d={`M${x - 7} 36 q7 -7 14 0 q-7 7 -14 0`} fill="none" stroke="#ff9b8f" strokeWidth={1.4} />
+        {/* ties bite AFTER the loom lands — beauty first, damage second */}
+        {[40, 80, 120].map((x, i) => (
+          <TieBite key={x} x={x} run={run} delay={CI_MOTION.draw * 0.55 + i * 110} />
         ))}
       </Svg>
     );
   }
+
   if (id === 'b') {
     return (
       <Svg {...common}>
         <Rect x={0} y={0} width={vb} height={74} rx={8} fill="#101014" />
-        <Path d="M10 16 H96 C118 16 118 30 118 38 v20" stroke="#4fd0e0" strokeWidth={4.5} fill="none" strokeLinecap="round" />
-        <Path d="M10 28 H88 C110 28 112 40 112 46 v12" stroke="#37d97b" strokeWidth={4.5} fill="none" strokeLinecap="round" />
-        {/* supports */}
-        {[36, 72].map((x) => (
-          <Path key={x} d={`M${x} 8 v6 a7 7 0 0 0 14 0`} stroke="#6f7378" strokeWidth={1.8} fill="none" />
+        {/* supports go in FIRST — the professional order */}
+        {[36, 72].map((x, i) => (
+          <FadeIn key={x} run={run} delay={i * 90}>
+            <Path d={`M${x} 8 v6 a7 7 0 0 0 14 0`} stroke="#6f7378" strokeWidth={1.8} fill="none" />
+          </FadeIn>
         ))}
-        {/* labels */}
-        <Rect x={120} y={40} width={14} height={7} rx={1.5} fill="#26262c" stroke="#6f7378" strokeWidth={0.8} />
-        <Rect x={114} y={52} width={14} height={7} rx={1.5} fill="#26262c" stroke="#6f7378" strokeWidth={0.8} />
+        <DrawLine d="M10 16 H96 C118 16 118 30 118 38 v20" len={150} color="#4fd0e0" width={4.5} run={run} delay={180} />
+        <DrawLine d="M10 28 H88 C110 28 112 40 112 46 v12" len={142} color="#37d97b" width={4.5} run={run} delay={260} />
+        {/* labels land last, once the run is dressed */}
+        {[
+          { x: 120, y: 40 },
+          { x: 114, y: 52 },
+        ].map((l, i) => (
+          <FadeIn key={l.y} run={run} delay={CI_MOTION.draw * 0.7 + i * 90}>
+            <Rect x={l.x} y={l.y} width={14} height={7} rx={1.5} fill="#26262c" stroke="#6f7378" strokeWidth={0.8} />
+          </FadeIn>
+        ))}
       </Svg>
     );
   }
+
   if (id === 'c') {
     return (
       <Svg {...common}>
         <Rect x={0} y={0} width={vb} height={74} rx={8} fill="#101014" />
-        <Path d="M14 60 C30 30 44 66 58 44 C70 26 84 66 98 48 C110 34 124 62 146 40" stroke="#4fd0e0" strokeWidth={4} fill="none" strokeLinecap="round" />
-        <Path d="M20 64 C40 44 52 70 70 54 C88 40 100 68 120 52 C132 44 140 58 150 52" stroke="#37d97b" strokeWidth={4} fill="none" strokeLinecap="round" />
         <Line x1={10} y1={68} x2={150} y2={68} stroke="#2c2c33" strokeWidth={2} />
+        {/* dumped, not routed: both runs arrive at once, fast and unordered */}
+        <DrawLine
+          d="M14 60 C30 30 44 66 58 44 C70 26 84 66 98 48 C110 34 124 62 146 40"
+          len={190}
+          color="#4fd0e0"
+          width={4}
+          run={run}
+          delay={0}
+          duration={m.d(430)}
+        />
+        <DrawLine
+          d="M20 64 C40 44 52 70 70 54 C88 40 100 68 120 52 C132 44 140 58 150 52"
+          len={186}
+          color="#37d97b"
+          width={4}
+          run={run}
+          delay={40}
+          duration={m.d(400)}
+        />
       </Svg>
     );
   }
+
   return (
     <Svg {...common}>
       <Rect x={0} y={0} width={vb} height={74} rx={8} fill="#101014" />
-      {/* equipment face with vent + service panel */}
       <Rect x={96} y={10} width={54} height={54} rx={4} fill="#17171c" stroke="#3a3c42" strokeWidth={1.4} />
-      {[18, 24, 30, 36].map((y) => (
-        <Line key={y} x1={104} y1={y} x2={142} y2={y} stroke="#3a3c42" strokeWidth={2} />
+      {/* vent slats keep breathing hot once the loom covers them */}
+      {[18, 24, 30, 36].map((y, i) => (
+        <VentSlat key={y} y={y} run={run} index={i} />
       ))}
       <Rect x={104} y={44} width={38} height={14} rx={2} fill="#101014" stroke="#3a3c42" strokeWidth={1} />
-      {/* neat loom straight across the vent + panel */}
-      <Path d="M8 26 H150" stroke="#ffd35e" strokeWidth={5} strokeLinecap="round" />
-      <Path d="M8 50 H150" stroke="#ffd35e" strokeWidth={5} strokeLinecap="round" />
+      <DrawLine d="M8 26 H150" len={142} color="#ffd35e" width={5} run={run} delay={120} />
+      <DrawLine d="M8 50 H150" len={142} color="#ffd35e" width={5} run={run} delay={200} />
     </Svg>
   );
 }
 
-// react-native-svg has no <G x> shorthand — placeholder to keep tree valid.
-function G(_p: { x: number }) {
-  return null;
+/** A cable that installs itself along its path. */
+function DrawLine({
+  d,
+  len,
+  color,
+  width,
+  run,
+  delay = 0,
+  duration,
+}: {
+  d: string;
+  len: number;
+  color: string;
+  width: number;
+  run: boolean;
+  delay?: number;
+  duration?: number;
+}) {
+  const { animatedProps, dashArray, restOffset } = useDrawIn(len, { run, delay, duration });
+  return (
+    <APath
+      d={d}
+      stroke={color}
+      strokeWidth={width}
+      fill="none"
+      strokeLinecap="round"
+      strokeDasharray={dashArray}
+      strokeDashoffset={restOffset}
+      animatedProps={animatedProps}
+    />
+  );
+}
+
+/** The tie bites: the strap snaps down and the jacket swells around it. */
+function TieBite({ x, run, delay }: { x: number; run: boolean; delay: number }) {
+  const m = useCiMotion();
+  const t = useSharedValue(0);
+  useEffect(() => {
+    cancelAnimation(t);
+    if (!run) {
+      t.value = 0;
+      return;
+    }
+    t.value = withDelay(m.d(delay), withTiming(1, { duration: m.d(CI_MOTION.settle), easing: CI_EASE.physical }));
+    return () => cancelAnimation(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [run, delay, m.reduce]);
+
+  const strap = useAnimatedProps(() => ({ opacity: t.value, strokeWidth: 3 * (0.6 + 0.4 * t.value) }));
+  // deformation swells as the strap tightens
+  const bulge = useAnimatedProps(() => ({ opacity: t.value, strokeWidth: 1.4 * t.value }));
+  return (
+    <>
+      <ALine x1={x} y1={10} x2={x} y2={64} stroke="#e8e8ea" strokeWidth={3} opacity={0} animatedProps={strap} />
+      <APath
+        d={`M${x - 7} 36 q7 -7 14 0 q-7 7 -14 0`}
+        fill="none"
+        stroke="#ff9b8f"
+        strokeWidth={1.4}
+        opacity={0}
+        animatedProps={bulge}
+      />
+    </>
+  );
+}
+
+/** A vent slat that flushes hot and keeps breathing while it's blocked. */
+function VentSlat({ y, run, index }: { y: number; run: boolean; index: number }) {
+  const m = useCiMotion();
+  const t = useSharedValue(0);
+  useEffect(() => {
+    cancelAnimation(t);
+    if (!run || !m.loops) {
+      t.value = 0;
+      return;
+    }
+    t.value = withDelay(
+      CI_MOTION.draw * 0.8 + index * 120,
+      withRepeat(withTiming(1, { duration: 1600, easing: CI_EASE.inOut }), -1, true),
+    );
+    return () => cancelAnimation(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [run, index, m.loops]);
+  const p = useAnimatedProps(() => ({ opacity: 0.35 + 0.65 * t.value }));
+  return (
+    <>
+      <Line x1={104} y1={y} x2={142} y2={y} stroke="#3a3c42" strokeWidth={2} />
+      <ALine x1={104} y1={y} x2={142} y2={y} stroke="#ff7a5e" strokeWidth={2} opacity={0} animatedProps={p} />
+    </>
+  );
+}
+
+/** Simple opacity entrance for static furniture inside an SVG. */
+function FadeIn({ children, run, delay = 0 }: { children: ReactNode; run: boolean; delay?: number }) {
+  const m = useCiMotion();
+  const t = useSharedValue(run && !m.reduce ? 0 : 1);
+  useEffect(() => {
+    cancelAnimation(t);
+    if (!run) {
+      t.value = 0;
+      return;
+    }
+    if (m.reduce) {
+      t.value = 1;
+      return;
+    }
+    t.value = withDelay(delay, withTiming(1, { duration: CI_MOTION.base, easing: CI_EASE.out }));
+    return () => cancelAnimation(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [run, delay, m.reduce]);
+  const p = useAnimatedProps(() => ({ opacity: t.value }));
+  return (
+    <AG opacity={run && !m.reduce ? 0 : 1} animatedProps={p}>
+      {children}
+    </AG>
+  );
 }
 
 export function WhyScene({ width, completed, onComplete, openSources }: CiModuleProps) {
@@ -142,6 +305,13 @@ export function WhyScene({ width, completed, onComplete, openSources }: CiModule
   const [fired, setFired] = useState(completed);
 
   const consequencesDone = seen.size >= CONSEQUENCES.length;
+  // Cables draw themselves in once the cards are mounted (one beat after mount
+  // so the first paint is the empty rack, then the install happens).
+  const [artRun, setArtRun] = useState(false);
+  useEffect(() => {
+    const id = setTimeout(() => setArtRun(true), 120);
+    return () => clearTimeout(id);
+  }, []);
   const artW = Math.max(120, width - 28);
 
   const choose = (id: ExampleId) => {
@@ -160,12 +330,12 @@ export function WhyScene({ width, completed, onComplete, openSources }: CiModule
     <View style={{ gap: 14 }}>
       <CiSection title="SIX THINGS RIDING ON EVERY RUN — TAP EACH">
         <View style={{ gap: 8 }}>
-          {CONSEQUENCES.map((c) => {
+          {CONSEQUENCES.map((c, ci) => {
             const isOpen = open === c.id;
             const isSeen = seen.has(c.id);
             return (
+              <Stagger key={c.id} index={ci}>
               <Pressable
-                key={c.id}
                 style={[styles.conseq, isSeen && styles.conseqSeen]}
                 onPress={() => {
                   setOpen(isOpen ? null : c.id);
@@ -181,6 +351,7 @@ export function WhyScene({ width, completed, onComplete, openSources }: CiModule
                 </Text>
                 {isOpen ? <Text style={styles.conseqBody}>{c.body}</Text> : null}
               </Pressable>
+              </Stagger>
             );
           })}
         </View>
@@ -205,15 +376,20 @@ export function WhyScene({ width, completed, onComplete, openSources }: CiModule
                   style={{ gap: 8 }}
                 >
                   <Text style={styles.exampleName}>{ex.name}</Text>
-                  <ExampleArt id={ex.id} w={artW} />
+                  <ExampleArt id={ex.id} w={artW} run={artRun} />
                   <Text style={styles.exampleCaption}>{ex.caption}</Text>
                 </Pressable>
-                {revealed ? <RuleFeedback ruleId={ex.verdictRule} verdict={ex.verdict} short={ex.short} openSources={openSources} /> : null}
+                {revealed ? (
+                  <Appear>
+                    <RuleFeedback ruleId={ex.verdictRule} verdict={ex.verdict} short={ex.short} openSources={openSources} />
+                  </Appear>
+                ) : null}
               </View>
             );
           })}
         </View>
         {pick != null ? (
+          <Appear delay={120}>
           <View style={styles.lessonCard}>
             <Text style={styles.lessonHead}>NEAT ≠ CORRECT</Text>
             <Text style={styles.lessonBody}>
@@ -225,6 +401,7 @@ export function WhyScene({ width, completed, onComplete, openSources }: CiModule
               <Text style={styles.pendingNote}>Review all six consequences above to complete this stage.</Text>
             ) : null}
           </View>
+          </Appear>
         ) : null}
         {pick != null && consequencesDone && !fired ? (
           <Pressable
