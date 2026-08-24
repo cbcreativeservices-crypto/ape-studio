@@ -15,12 +15,22 @@ import { EntitlementProvider } from '../../features/commercial/EntitlementProvid
 
 const Stack = createNativeStackNavigator();
 
-export function ToolPreview({ name, component }: { name: string; component: ComponentType }) {
+export function ToolPreview({
+  name,
+  component,
+  initialParams,
+}: {
+  name: string;
+  component: ComponentType;
+  /** Route params for screens that read useRoute().params (e.g. a calc
+   *  workspace needs { id }). */
+  initialParams?: Record<string, unknown>;
+}) {
   return (
     <EntitlementProvider>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false, animation: 'none' }}>
-          <Stack.Screen name={name} component={component} />
+          <Stack.Screen name={name} component={component} initialParams={initialParams} />
         </Stack.Navigator>
       </NavigationContainer>
     </EntitlementProvider>

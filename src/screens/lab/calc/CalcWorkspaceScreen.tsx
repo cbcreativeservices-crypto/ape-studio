@@ -8,13 +8,13 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Pressable, Share, StyleSheet, Text, View, type ScrollView } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { KeyboardAwareScrollView } from '../../../features/keyboard/keyboardControllerSafe';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
-import { LabChip } from '../LabShell';
 import { ShareIcon } from '../../../components/ShareIcon';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { CalcValues, FieldDef, OutputVal, Workspace } from './calcTypes';
@@ -222,94 +222,20 @@ export function CalcWorkspaceScreen() {
         <AccuracyNote compact variant="calc" />
       </View>
 
-      <KeyboardAwareScrollView
-        ref={scrollRef}
-        contentContainerStyle={styles.scroll}
-        keyboardShouldPersistTaps="handled"
-        bottomOffset={24}
-      >
-        {/* Intro copy — hidden once the user begins entering values (owner
-            2026-08-05: frees the upper screen for inputs). */}
-        {!started ? <Text style={styles.body}>{ws.intro}</Text> : null}
-
-        {/* Function picker now scrolls WITH the page (owner 2026-08-09). It used
-            to be a fixed bar pinned below the header, so it kept occupying the top
-            even after the user started filling — pinning the inputs just slid them
-            up UNDER these buttons. Inside the scroll, focusing a field pins the
-            inputs to the top and these "what are you trying to determine?" buttons
-            scroll up out of the way (still reachable by scrolling back up to
-            switch the calculation). */}
-        <View style={styles.fnPicker}>
-          <Text style={styles.eyebrowTight}>WHAT ARE YOU TRYING TO DETERMINE?</Text>
-          {/* Vertical radio list (owner 2026-08-09): the old wrapping all-caps
-              chips were hard to read/choose. Full-width rows with a readable name,
-              the formula as a subtitle, a radio dot, and a clear selected state. */}
-          <View style={styles.fnList}>
-            {ws.functions.map((f, i) => {
-              const sel = i === fnIdx;
-              return (
-                <Pressable
-                  key={f.key}
-                  style={[styles.fnOption, sel && styles.fnOptionSel]}
-                  onPress={() => { setFnIdx(i); setStepsOpen(false); }}
-                  accessibilityRole="radio"
-                  accessibilityState={{ selected: sel }}
-                  accessibilityLabel={f.name}
-                >
-                  <View style={[styles.fnRadio, sel && styles.fnRadioSel]}>
-                    {sel ? <View style={styles.fnRadioDot} /> : null}
-                  </View>
-                  <View style={{ flex: 1, gap: 2 }}>
-                    <Text style={[styles.fnOptName, sel && styles.fnOptNameSel]}>{f.name}</Text>
-                    <Text style={styles.fnOptFormula} numberOfLines={1}>{f.formula}</Text>
-                  </View>
-                </Pressable>
-              );
-            })}
-          </View>
-        </View>
-
-        {/* onLayout records where the input panel sits in the scroll content so
-            focusing a field can pin it to the top (owner 2026-08-07). */}
-        <View style={styles.panel} onLayout={(e) => { inputsYRef.current = e.nativeEvent.layout.y; }}>
-          {/* Inputs FIRST (owner 2026-08-05). */}
-          {fields.map((f) => {
-            const units = unitsFor(f.quantity, f.unitIds);
-            const canChain = chain && chain.quantity === f.quantity && f.quantity !== 'list';
-            // Chain USE rides the shared FieldRow's footer slot. Only rendered
-            // while a chain value is armed (footer stays undefined otherwise so
-            // the row's memo keeps skipping re-renders).
-            const footer = canChain ? (
-              <Pressable
-                style={styles.chainUse}
-                onPress={() => {
-                  const u = units[(unitIdx[f.key] ?? defaultUnitIdx(f)) % units.length];
-                  setRaw((r) => ({ ...r, [f.key]: fmt(u.fromBase(chain.baseValue), 6) }));
-                }}
-                accessibilityRole="button"
-                accessibilityLabel={`Use ${chain.label} from the calculation chain`}
-              >
-                <Text style={styles.chainUseText}>⤵ USE {chain.label}</Text>
-              </Pressable>
-            ) : undefined;
-            return (
-              <FieldRow
-                key={f.key}
-                field={f}
-                raw={raw[f.key] ?? ''}
-                unitIdx={unitIdx[f.key] ?? defaultUnitIdx(f)}
-                onText={(t) => setRaw((r) => ({ ...r, [f.key]: t }))}
-                onCycleUnit={() => setUnitIdx((u) => ({ ...u, [f.key]: ((u[f.key] ?? defaultUnitIdx(f)) + 1) % units.length }))}
-                onFocus={pinInputs}
-                footer={footer}
-              />
-            );
-          })}
-
-          {/* ANSWER — DIRECTLY under the inputs (owner 2026-08-05). Always shown:
-              a labeled destination with a placeholder until every value is
-              entered, then the live result. */}
-          <View style={styles.resultPanel}>
+      {/* ── PINNED RESULT STAGE (calc rack, owner 2026-08-23) ────────────────
+          The answer IS the instrument's display: a recessed graphite frame +
+          smoked glass, pinned above the scroll so it never leaves the screen
+          while you work the inputs below and updates live as you type. Bezel
+          under the glass: function · sig-figs (tap-cycles) · formula key. */}
+      <View style={styles.stageWrap}>
+        <LinearGradient colors={['#5a5d64', '#3a3c42', '#232429']} locations={[0, 0.42, 1]} style={styles.stageOuter}>
+          <View style={styles.stageGlass}>
+            <LinearGradient
+              pointerEvents="none"
+              colors={['rgba(255,255,255,0.09)', 'rgba(255,255,255,0.01)', 'rgba(0,0,0,0.16)']}
+              locations={[0, 0.42, 1]}
+              style={StyleSheet.absoluteFill}
+            />
             <Text style={styles.resultEyebrow}>YOUR ANSWER — {fn.name.toUpperCase()}</Text>
             {counterText ? <Text style={styles.usageCounter}>{counterText}</Text> : null}
             {mustSignIn ? (
@@ -326,7 +252,7 @@ export function CalcWorkspaceScreen() {
               </View>
             ) : !values ? (
               <Text style={styles.resultPlaceholder}>
-                Your answer appears here. Fill in the values above to calculate.
+                Your answer appears here. Fill in the values below to calculate.
               </Text>
             ) : capped && !resultUnlocked ? (
               <View style={{ gap: 8 }}>
@@ -413,17 +339,109 @@ export function CalcWorkspaceScreen() {
               </View>
             )}
           </View>
-
-          <View style={styles.sigBlock}>
-            <Text style={styles.sigLabel}>SIGNIFICANT FIGURES</Text>
-            <Text style={styles.sigHint}>
-              How many digits to show in each result — more figures means finer precision, not a more accurate answer.
-            </Text>
-            <View style={styles.sigRow}>
-              {SIGS.map((s) => (
-                <LabChip key={s} label={String(s)} selected={sig === s} onPress={() => setSig(s)} />
-              ))}
+          {/* Bezel readouts under the glass. */}
+          <View style={styles.bezel}>
+            <View style={[styles.bcell, styles.bcellWide]}>
+              <Text style={styles.bcellK}>FUNCTION</Text>
+              <Text style={styles.bcellV} numberOfLines={1}>{fn.name}</Text>
             </View>
+            <Pressable
+              style={styles.bcell}
+              onPress={() => setSig((s) => SIGS[(SIGS.indexOf(s as (typeof SIGS)[number]) + 1) % SIGS.length])}
+              accessibilityRole="button"
+              accessibilityLabel={`Significant figures: ${sig}. Tap to change.`}
+            >
+              <Text style={styles.bcellK}>SIG FIGS</Text>
+              <Text style={styles.bcellV}>{sig} ▸</Text>
+            </Pressable>
+            <Pressable
+              style={styles.bcell}
+              onPress={() => setKeyOpen(true)}
+              accessibilityRole="button"
+              accessibilityLabel="Formula key — what this formula and its symbols mean"
+            >
+              <Text style={styles.bcellK}>FORMULA</Text>
+              <Text style={styles.bcellVKey}>π KEY</Text>
+            </Pressable>
+          </View>
+        </LinearGradient>
+      </View>
+
+      <KeyboardAwareScrollView
+        ref={scrollRef}
+        contentContainerStyle={styles.scroll}
+        keyboardShouldPersistTaps="handled"
+        bottomOffset={24}
+      >
+        {/* Intro copy — hidden once the user begins entering values (owner
+            2026-08-05: frees the upper screen for inputs). */}
+        {!started ? <Text style={styles.body}>{ws.intro}</Text> : null}
+
+        {/* INPUTS — the controls, at the TOP of the well so they stay visible
+            above the keyboard with the pinned answer above them (calc rack). */}
+        <View style={styles.panel} onLayout={(e) => { inputsYRef.current = e.nativeEvent.layout.y; }}>
+          <Text style={styles.eyebrowTight}>INPUTS</Text>
+          {fields.map((f) => {
+            const units = unitsFor(f.quantity, f.unitIds);
+            const canChain = chain && chain.quantity === f.quantity && f.quantity !== 'list';
+            // Chain USE rides the shared FieldRow's footer slot. Only rendered
+            // while a chain value is armed (footer stays undefined otherwise so
+            // the row's memo keeps skipping re-renders).
+            const footer = canChain ? (
+              <Pressable
+                style={styles.chainUse}
+                onPress={() => {
+                  const u = units[(unitIdx[f.key] ?? defaultUnitIdx(f)) % units.length];
+                  setRaw((r) => ({ ...r, [f.key]: fmt(u.fromBase(chain.baseValue), 6) }));
+                }}
+                accessibilityRole="button"
+                accessibilityLabel={`Use ${chain.label} from the calculation chain`}
+              >
+                <Text style={styles.chainUseText}>⤵ USE {chain.label}</Text>
+              </Pressable>
+            ) : undefined;
+            return (
+              <FieldRow
+                key={f.key}
+                field={f}
+                raw={raw[f.key] ?? ''}
+                unitIdx={unitIdx[f.key] ?? defaultUnitIdx(f)}
+                onText={(t) => setRaw((r) => ({ ...r, [f.key]: t }))}
+                onCycleUnit={() => setUnitIdx((u) => ({ ...u, [f.key]: ((u[f.key] ?? defaultUnitIdx(f)) + 1) % units.length }))}
+                onFocus={pinInputs}
+                footer={footer}
+              />
+            );
+          })}
+        </View>
+
+        {/* Function picker — pick WHAT you're solving for. Below the inputs so
+            the default function's inputs + the pinned answer lead (owner
+            2026-08-23 calc rack); switching re-shapes the inputs above. */}
+        <View style={styles.fnPicker}>
+          <Text style={styles.eyebrowTight}>WHAT ARE YOU CALCULATING?</Text>
+          <View style={styles.fnList}>
+            {ws.functions.map((f, i) => {
+              const sel = i === fnIdx;
+              return (
+                <Pressable
+                  key={f.key}
+                  style={[styles.fnOption, sel && styles.fnOptionSel]}
+                  onPress={() => { setFnIdx(i); setStepsOpen(false); }}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: sel }}
+                  accessibilityLabel={f.name}
+                >
+                  <View style={[styles.fnRadio, sel && styles.fnRadioSel]}>
+                    {sel ? <View style={styles.fnRadioDot} /> : null}
+                  </View>
+                  <View style={{ flex: 1, gap: 2 }}>
+                    <Text style={[styles.fnOptName, sel && styles.fnOptNameSel]}>{f.name}</Text>
+                    <Text style={styles.fnOptFormula} numberOfLines={1}>{f.formula}</Text>
+                  </View>
+                </Pressable>
+              );
+            })}
           </View>
         </View>
 
@@ -518,6 +536,24 @@ const styles = StyleSheet.create({
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.2, color: colors.textPrimary },
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
   scroll: { padding: 16, paddingBottom: 34, gap: 10 },
+  // ── Calc rack: pinned answer stage (owner 2026-08-23) ──────────────────
+  stageWrap: { paddingHorizontal: 12, paddingTop: 6, paddingBottom: 2 },
+  stageOuter: { borderRadius: 13, borderWidth: 1, borderColor: '#000', padding: 2, gap: 2 },
+  stageGlass: {
+    borderRadius: 11,
+    borderWidth: 1,
+    borderColor: '#000',
+    backgroundColor: '#0b0d12',
+    overflow: 'hidden',
+    padding: 12,
+    gap: 6,
+  },
+  bezel: { flexDirection: 'row', gap: 1, borderRadius: 8, overflow: 'hidden' },
+  bcell: { flex: 1, backgroundColor: '#191a1f', paddingVertical: 5, paddingHorizontal: 8 },
+  bcellWide: { flex: 1.7 },
+  bcellK: { fontFamily: fonts.oswaldSemiBold, fontSize: 8.5, letterSpacing: 1, color: '#74767d' },
+  bcellV: { fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 0.4, color: colors.amberLabel, marginTop: 1 },
+  bcellVKey: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.6, color: colors.purple, marginTop: 1 },
   eyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.amber, marginTop: 6 },
   // Function-picker block — scrolls with the page so it clears the top once the
   // user starts filling and the inputs pin up (owner 2026-08-09).

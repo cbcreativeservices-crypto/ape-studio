@@ -16,6 +16,8 @@ import { ToolPreview } from './src/screens/tools/ToolPreview';
 import { MultiMeterScreen } from './src/screens/tools/MultiMeterScreen';
 import { WaveformScreen } from './src/screens/tools/WaveformScreen';
 import { RtaScreen } from './src/screens/tools/RtaScreen';
+import { ToolsHubScreen } from './src/screens/tools/ToolsHubScreen';
+import { CalcWorkspaceScreen } from './src/screens/lab/calc/CalcWorkspaceScreen';
 import { navigationRef } from './src/navigation/navigationRef';
 import { LabPreviewOverlay } from './src/features/lab/LabPreviewOverlay';
 import { endLabPreview, getLabPreview } from './src/features/lab/labPreviewStore';
@@ -108,7 +110,7 @@ export default function App() {
   // SVG) tool screen in a minimal navigator with the ape-dsp SIM overlay, so the
   // tool can be seen + iterated in the browser. Outside RootNavigator, so it
   // skips AmplitudeOrientation's web-Skia throw.
-  const toolPreview =
+  const toolPreview: { name: string; component: ComponentType; initialParams?: Record<string, unknown> } | null =
     __DEV__ && Platform.OS === 'web' && typeof window !== 'undefined'
       ? window.location.hash === '#multimeterpreview'
         ? { name: 'MultiMeter', component: MultiMeterScreen as ComponentType }
@@ -116,13 +118,17 @@ export default function App() {
           ? { name: 'WaveformLive', component: WaveformScreen as ComponentType }
           : window.location.hash === '#rtapreview'
             ? { name: 'Rta', component: RtaScreen as ComponentType }
-            : null
+            : window.location.hash === '#toolshubpreview'
+              ? { name: 'ToolsHub', component: ToolsHubScreen as ComponentType }
+              : window.location.hash === '#calcworkspacepreview'
+                ? { name: 'CalcWorkspace', component: CalcWorkspaceScreen as ComponentType, initialParams: { id: 'wave' } }
+                : null
       : null;
   if (toolPreview) {
     return (
       <SafeAreaProvider>
         <StatusBar style="light" />
-        <ToolPreview name={toolPreview.name} component={toolPreview.component} />
+        <ToolPreview name={toolPreview.name} component={toolPreview.component} initialParams={toolPreview.initialParams} />
       </SafeAreaProvider>
     );
   }

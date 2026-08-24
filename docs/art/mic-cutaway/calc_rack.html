@@ -1,0 +1,198 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CALC RACK — calculator workspace as an instrument</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --bg:#0b0b0e; --amber:#ffc64d; --amberdim:#e0b25e; --sub:#9a9ca3; --sub2:#c9ccd2;
+    --green:#37d97b; --purple:#c77dff;
+    --face0:#4a4c52; --face1:#323438; --plate0:#3f4147; --plate1:#2b2d31;
+    --glass0:#0d0f14; --glass1:#07080b;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  body{background:#17181c; color:#e8e8ea; font-family:'Oswald','Arial Narrow',Arial,sans-serif; padding:22px 20px 60px}
+  h1{font-size:19px; letter-spacing:3px; color:var(--amber); font-weight:600}
+  .sub{font-family:Arial,sans-serif; font-size:12px; color:var(--sub); margin:4px 0 18px; max-width:860px; line-height:1.5}
+  .rowwrap{display:flex; gap:26px; align-items:flex-start; flex-wrap:wrap}
+  .cap{font-family:Arial,sans-serif; font-size:11px; letter-spacing:1px; color:var(--sub); text-transform:uppercase; margin:0 0 8px 2px}
+
+  /* the phone frame */
+  .phone{width:375px; background:var(--bg); border-radius:24px; border:1px solid #000;
+         box-shadow:0 10px 30px rgba(0,0,0,.6); overflow:hidden; display:flex; flex-direction:column; height:760px}
+  .hdr{display:flex; align-items:center; gap:10px; padding:16px 14px 8px}
+  .hdr .sig{font-size:22px; color:var(--purple); line-height:1}
+  .hdr .t{flex:1}
+  .hdr .t b{font-family:'Oswald'; font-size:15px; letter-spacing:1px; color:#fff; display:block}
+  .hdr .t span{font-family:Arial; font-size:11px; color:var(--sub)}
+  .hdr .key{border:1px solid #4a3a6a; border-radius:8px; padding:6px 9px; font-size:11px; letter-spacing:1px; color:var(--purple)}
+
+  /* ── STAGE: the pinned answer display (recessed graphite + glass) ── */
+  .stageWrap{padding:6px 12px 0}
+  .stage{position:relative; border-radius:13px; padding:2px; background:linear-gradient(#5a5d64,#3a3c42 40%,#232429);
+         box-shadow:0 2px 5px rgba(0,0,0,.5)}
+  .glass{position:relative; border-radius:11px; overflow:hidden;
+         background:linear-gradient(160deg,#0e1015,#07080b); border:1px solid #000; padding:13px 14px 12px}
+  .glass::after{content:''; position:absolute; inset:0; pointer-events:none; border-radius:11px;
+    background:linear-gradient(rgba(255,255,255,.09),rgba(255,255,255,.01) 40%,rgba(0,0,0,.14))}
+  .glass .eb{font-size:10.5px; letter-spacing:1.5px; color:var(--amber); font-weight:600}
+  .answer{display:flex; align-items:baseline; gap:8px; margin-top:6px}
+  .answer .v{font-family:'Oswald'; font-weight:600; font-size:40px; letter-spacing:.5px; color:var(--amber); line-height:1}
+  .answer .u{font-size:15px; color:var(--amberdim); letter-spacing:.5px}
+  .answer .send{margin-left:auto; align-self:center; border:1px solid #2c2c33; background:#15161b;
+    border-radius:7px; padding:6px 9px; font-size:10.5px; letter-spacing:.8px; color:var(--sub2)}
+  .secondary{display:flex; gap:16px; margin-top:8px; flex-wrap:wrap}
+  .secondary .s{font-family:Arial; font-size:11.5px; color:var(--sub)}
+  .secondary .s b{font-family:'Oswald'; font-weight:600; font-size:14px; color:var(--sub2); letter-spacing:.3px; margin-left:5px}
+  /* bezel readouts printed under the glass */
+  .bezel{display:flex; gap:1px; margin-top:2px; border-radius:0 0 11px 11px; overflow:hidden}
+  .bcell{flex:1; background:#191a1f; padding:5px 8px}
+  .bcell .k{font-size:8.5px; letter-spacing:1px; color:#74767d}
+  .bcell .val{font-family:'Oswald'; font-size:12px; color:var(--amberdim); letter-spacing:.4px; margin-top:1px}
+  .bcell.wide{flex:1.7}
+  .bcell.tap .val{color:var(--sub2)}
+
+  /* ── WELL: scrolls (function picker, inputs, teaching) ── */
+  .well{flex:1; overflow-y:auto; padding:12px 12px 16px}
+  .well::-webkit-scrollbar{width:0}
+  .eyebrow{font-size:10.5px; letter-spacing:1.4px; color:var(--amber); font-weight:600; margin:14px 2px 7px}
+  .eyebrow:first-child{margin-top:2px}
+  /* function picker */
+  .fn{display:flex; align-items:center; gap:10px; border:1px solid #2a2a30; border-radius:10px;
+      background:#131316; padding:9px 11px; margin-bottom:6px}
+  .fn.sel{border-color:rgba(255,198,77,.6); background:#1a1409}
+  .fn .radio{width:16px; height:16px; border-radius:8px; border:1.5px solid #4a4a52}
+  .fn.sel .radio{border-color:var(--amber); display:flex; align-items:center; justify-content:center}
+  .fn.sel .radio::after{content:''; width:8px; height:8px; border-radius:4px; background:var(--amber)}
+  .fn .nm{font-size:12.5px; letter-spacing:.3px; color:var(--sub2)}
+  .fn.sel .nm{color:var(--amber)}
+  .fn .fm{font-family:'Courier New',monospace; font-size:10.5px; color:var(--sub); margin-top:2px}
+  /* input rows — the "controls" */
+  .field{margin-bottom:9px}
+  .field .lbl{font-size:10px; letter-spacing:1.1px; color:var(--sub2); font-weight:600; margin-bottom:4px}
+  .field .line{display:flex; gap:8px}
+  .field input{flex:1; border-radius:8px; border:1.5px solid #45495a; background:#22242e; color:#fff;
+    font-family:Arial; font-size:15px; padding:8px 10px}
+  .field .unit{border-radius:8px; border:1.5px solid #45495a; background:#2a2c36; padding:8px 10px;
+    font-size:11px; letter-spacing:.5px; color:var(--amber)}
+  .teach{font-family:Arial; font-size:12.5px; line-height:1.5; color:var(--sub)}
+  .mist{font-family:Arial; font-size:12px; line-height:1.45; color:var(--sub2); margin:3px 0}
+  .glossrow{display:flex; gap:6px; flex-wrap:wrap; margin-top:4px}
+  .gloss{border:1px solid #2c2c33; border-radius:7px; padding:4px 8px; font-family:Arial; font-size:11px; color:var(--sub2); background:#141419}
+  .sig{display:flex; gap:7px; align-items:center; margin-top:4px}
+  .sig .c{border:1px solid #2a2a30; border-radius:8px; padding:5px 11px; font-size:12px; color:var(--sub)}
+  .sig .c.on{border-color:rgba(255,198,77,.6); background:#1a1409; color:var(--amber)}
+
+  .callouts{font-family:Arial; font-size:12px; color:#c9cbd1; line-height:1.4; max-width:340px}
+  .callouts li{margin:9px 0; list-style:none; display:flex; gap:9px}
+  .callouts .n{color:#0b0b0e; background:var(--amber); min-width:17px; height:17px; border-radius:9px;
+    display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; margin-top:1px; font-family:'Oswald'}
+  .callouts b{color:var(--amber); font-family:'Oswald'; letter-spacing:.5px}
+  .note{font-family:Arial; font-size:11.5px; color:#84868d; line-height:1.5; max-width:340px; margin-top:14px}
+</style>
+</head>
+<body>
+<h1>CALC RACK</h1>
+<div class="sub">The calculator workspace re-cast as an instrument. The rack inverts for a typed-input tool: the
+ANSWER becomes the pinned display (the thing that must never scroll away while you work), the inputs are the
+controls, and the teaching scrolls in the well below. One screen renders all ~160 calculators, so this shape
+applies to every one. Representative calculator shown; live-result state on the left, empty state at right.</div>
+
+<div class="rowwrap">
+  <!-- LIVE STATE -->
+  <div>
+    <div class="cap">Live result — you typed the inputs, answer updates in the pinned display</div>
+    <div class="phone">
+      <div class="hdr">
+        <div class="sig">Σ</div>
+        <div class="t"><b>SPL AT DISTANCE</b><span>Inverse-square — level vs. distance</span></div>
+        <div class="key">π KEY</div>
+      </div>
+      <div class="stageWrap">
+        <div class="stage"><div class="glass">
+          <div class="eb">YOUR ANSWER — SPL AT TARGET DISTANCE</div>
+          <div class="answer">
+            <div class="v">97.0</div><div class="u">dB SPL</div>
+            <div class="send">SEND →</div>
+          </div>
+          <div class="secondary">
+            <div class="s">CHANGE<b>−9.0 dB</b></div>
+            <div class="s">RATIO<b>2.8×</b></div>
+          </div>
+        </div>
+        <div class="bezel">
+          <div class="bcell wide"><div class="k">FUNCTION</div><div class="val">SPL at distance</div></div>
+          <div class="bcell tap"><div class="k">SIG FIGS</div><div class="val">4 ▸</div></div>
+          <div class="bcell tap"><div class="k">FORMULA</div><div class="val">π KEY</div></div>
+        </div></div>
+      </div>
+      <div class="well">
+        <div class="eyebrow">INPUTS</div>
+        <div class="field"><div class="lbl">REFERENCE SPL</div><div class="line"><input value="106"><div class="unit">dB ▸</div></div></div>
+        <div class="field"><div class="lbl">REFERENCE DISTANCE</div><div class="line"><input value="1"><div class="unit">m ▸</div></div></div>
+        <div class="field"><div class="lbl">TARGET DISTANCE</div><div class="line"><input value="2.8"><div class="unit">m ▸</div></div></div>
+        <div class="sig" style="margin-top:8px">
+          <span class="lbl" style="font-size:10px;letter-spacing:1.1px;color:var(--sub2)">SIG FIGS</span>
+          <div class="c">3</div><div class="c on">4</div><div class="c">5</div>
+        </div>
+        <div class="eyebrow">▸ WHAT ARE YOU CALCULATING?</div>
+        <div class="fn sel"><div class="radio"></div><div><div class="nm">SPL at a distance</div><div class="fm">L₂ = L₁ − 20·log₁₀(d₂/d₁)</div></div></div>
+        <div class="fn"><div class="radio"></div><div><div class="nm">Distance for a target SPL</div><div class="fm">d₂ = d₁·10^((L₁−L₂)/20)</div></div></div>
+        <div class="eyebrow">▾ WHY THIS MATTERS</div>
+        <div class="teach">Every doubling of distance drops a point-source level by 6 dB. Front-row to
+        back-row math starts here — and it's why one box rarely covers a room.</div>
+        <div class="eyebrow">▸ COMMON MISTAKES</div>
+        <div class="mist">• Forgetting the 6 dB / doubling rule only holds in the free field.</div>
+        <div class="eyebrow">IN THE GLOSSARY</div>
+        <div class="glossrow"><span class="gloss">inverse-square law</span><span class="gloss">SPL</span><span class="gloss">free field</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EMPTY STATE + callouts -->
+  <div>
+    <div class="cap">Empty state — the display waits, honestly</div>
+    <div class="phone" style="height:420px">
+      <div class="hdr">
+        <div class="sig">Σ</div>
+        <div class="t"><b>SPL AT DISTANCE</b><span>Inverse-square — level vs. distance</span></div>
+        <div class="key">π KEY</div>
+      </div>
+      <div class="stageWrap">
+        <div class="stage"><div class="glass">
+          <div class="eb">YOUR ANSWER — SPL AT TARGET DISTANCE</div>
+          <div class="answer" style="margin-top:10px">
+            <div class="v" style="font-size:26px;color:#4a4c52">— —</div><div class="u" style="color:#4a4c52">dB SPL</div>
+          </div>
+          <div class="secondary"><div class="s" style="color:#5a5c62">Fill in the values below to calculate.</div></div>
+        </div>
+        <div class="bezel">
+          <div class="bcell wide"><div class="k">FUNCTION</div><div class="val">SPL at distance</div></div>
+          <div class="bcell tap"><div class="k">SIG FIGS</div><div class="val">4 ▸</div></div>
+          <div class="bcell tap"><div class="k">FORMULA</div><div class="val">π KEY</div></div>
+        </div></div>
+      </div>
+      <div class="well">
+        <div class="eyebrow">INPUTS</div>
+        <div class="field"><div class="lbl">REFERENCE SPL</div><div class="line"><input placeholder="—"><div class="unit">dB ▸</div></div></div>
+        <div class="field"><div class="lbl">REFERENCE DISTANCE</div><div class="line"><input placeholder="—"><div class="unit">m ▸</div></div></div>
+        <div class="field"><div class="lbl">TARGET DISTANCE</div><div class="line"><input placeholder="—"><div class="unit">m ▸</div></div></div>
+      </div>
+    </div>
+
+    <ul class="callouts">
+      <li><span class="n">1</span><span><b>PINNED DISPLAY</b> — the answer is the "stage": recessed graphite + glass, same instrument language as the labs and tools. It stays put while you scroll the teaching.</span></li>
+      <li><span class="n">2</span><span><b>LIVE</b> — edit any input and the readout updates in place; SEND → still feeds the calculation chain.</span></li>
+      <li><span class="n">3</span><span><b>BEZEL</b> — function · sig-figs · formula key printed under the glass (sig-figs & π KEY tap right there).</span></li>
+      <li><span class="n">4</span><span><b>CONTROLS</b> — the inputs sit at the top of the well, so with the keyboard up the answer is still visible above.</span></li>
+      <li><span class="n">5</span><span><b>WELL</b> — function picker, why/mistakes/glossary scroll below; the display never leaves.</span></li>
+    </ul>
+    <div class="note">Honesty preserved exactly: the weekly-cap CALCULATE gate (free tier), the "—" placeholder until
+    inputs parse, sig-fig control, worked steps, standards/warnings block, and SEND→ chaining all stay — they just
+    live on the stage + well instead of one long scroll. The Calc Lab MENU keeps its list, gaining the same
+    graphite panel/plate skin as the tools hub for consistency (not a stage — it's navigation).</div>
+  </div>
+</div>
+</body>
+</html>
