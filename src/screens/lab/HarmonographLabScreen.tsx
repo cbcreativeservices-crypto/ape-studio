@@ -43,13 +43,13 @@ const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
 const BASE_F0 = 110; // Hz — harmonics n₁/n₂ of this sound the interval
 
-// Oscillator FREQUENCY range (owner 2026-08-23): each arm sweeps LOG from
-// 0.1 Hz up to the 8th harmonic (880 Hz). Below ~110 Hz is real harmonograph
-// pendulum territory (sub-audio, visual only); integer harmonics 1..8 still
-// land in the range as the audible "sweet spots" and the ratio chips snap to
-// them exactly. Harmonic number n = hz / BASE_F0 (may be fractional/tiny).
-const OSC_F_MIN = 0.1;
-const OSC_F_MAX = 8 * BASE_F0; // 880 Hz
+// Oscillator FREQUENCY range (owner 2026-08-23): each pendulum sweeps LOG from
+// 0.5 Hz to 100 Hz — real machine territory (a built harmonograph runs ~0.5–1
+// Hz). The machine always draws at the true pendulum speed; the RATIO between
+// the arms is what names the interval, and PLAY renders that ratio audibly as
+// harmonics of BASE_F0 (the pendulums themselves are below hearing).
+const OSC_F_MIN = 0.5;
+const OSC_F_MAX = 100;
 const oscFreqFromPos = (v: number) =>
   OSC_F_MIN * Math.pow(OSC_F_MAX / OSC_F_MIN, Math.max(0, Math.min(1, v)));
 const oscPosFromFreq = (hz: number) =>
@@ -96,10 +96,10 @@ export function HarmonographLabScreen() {
   // to the mono additive mixture.
   const stereoReady = engineReady && ApeDsp.engineVersion() >= 5;
 
-  // Each oscillator's frequency as a harmonic number of BASE_F0 (owner
-  // 2026-08-05): the sliders drive these directly; the ratio chips are presets.
-  const [n1, setN1] = useState(3); // 3:2 — the fifth
-  const [n2, setN2] = useState(2);
+  // Each oscillator stored as n = hz / BASE_F0 (fractional at pendulum speeds).
+  // Defaults: 1.5 Hz : 1.0 Hz — a watchable, real-machine 3:2 (the fifth).
+  const [n1, setN1] = useState(1.5 / BASE_F0);
+  const [n2, setN2] = useState(1.0 / BASE_F0);
   const [phase, setPhase] = useState<(typeof PHASES)[number]>(90);
   const [dampKey, setDampKey] = useState<(typeof DAMPINGS)[number]['key']>('medium');
   const [rotary, setRotary] = useState(false);
@@ -114,28 +114,17 @@ export function HarmonographLabScreen() {
     setLessonOpen(true);
   }, []);
 
-  // Oscillator frequencies sweep CONTINUOUSLY (owner 2026-08-05); the integers
-  // 1..8 are the "sweet spots" where the figure closes and the additive audio
-  // is an exact harmonic. Between them the figure precesses like the detune
-  // lesson.
-  const nearInt = (x: number) => Math.abs(x - Math.round(x)) < 0.03;
-  const fmtN = (x: number) => (nearInt(x) ? String(Math.round(x)) : x.toFixed(2));
-  // Oscillator readout: Hz + the "×N harmonic" tag only on a real sweet spot
-  // (integer ≥ 1); otherwise the "(between)" precession cue.
-  const oscReadout = (hz: number, n: number) =>
-    `${fmtHz(hz)}${nearInt(n) && Math.round(n) >= 1 ? ` · ×${Math.round(n)}` : ' (between)'}`;
   // Match a named interval by the RATIO n1:n2 at ANY scale (owner 2026-08-23) —
-  // so a 3:2 reads as "Perfect 5th" whether it's 330:220 Hz or a slow 3:2 Hz
-  // pendulum pair. 2% relative tolerance.
-  const matched = RATIOS.find((r) => n2 > 0 && Math.abs(n1 / n2 - r.n1 / r.n2) <= (r.n1 / r.n2) * 0.02);
-  // Real, audible integer harmonics (1..) — the only state that truthfully
-  // sounds through the additive engine.
-  const bothHarmonic = nearInt(n1) && nearInt(n2) && Math.round(n1) >= 1 && Math.round(n2) >= 1;
+  // a 3:2 reads as "Perfect 5th" whether the pendulums run 1.5:1.0 Hz or
+  // 99:66 Hz. 2% relative tolerance.
+  const matchRatio = (a: number, b: number) =>
+    RATIOS.find((r) => b > 0 && Math.abs(a / b - r.n1 / r.n2) <= (r.n1 / r.n2) * 0.02);
+  const matched = matchRatio(n1, n2);
   // Figure "closes" on a clean small-integer ratio (scale-independent).
   const isExact = matched != null && detune === 0;
-  // Audio may sound only on real integer harmonics with the ratio locked —
-  // never for a sub-audio pendulum pair (honesty rule).
-  const playable = additiveReady && detune === 0 && bothHarmonic;
+  // PLAY renders the MATCHED ratio as harmonics of BASE_F0 (the pendulums are
+  // below hearing) — a clean ratio + locked detune is what can sound honestly.
+  const playable = additiveReady && detune === 0 && matched != null;
   const ratio = {
     n1,
     n2,
@@ -176,12 +165,14 @@ export function HarmonographLabScreen() {
 
   const startInterval = useCallback(async () => {
     // Only sound real integer-harmonic pairs (never a sub-audio pendulum pair).
-    if (!additiveReady || detune !== 0 || !bothHarmonic) return;
+    // PLAY = the MATCHED ratio rendered as harmonics of BASE_F0 (the pendulums
+    // themselves are below hearing); only a clean, locked ratio sounds.
+    if (!additiveReady || detune !== 0 || !matched) return;
     const gen = ++genRef.current;
     const ok = await requestAudioOutput();
     if (!ok || gen !== genRef.current) return;
     setGenError('');
-    ApeDsp.genSet(intervalGenParams(ratio.n1, ratio.n2));
+    ApeDsp.genSet(intervalGenParams(matched.n1, matched.n2));
     try {
       await ApeDsp.genStart();
       if (gen !== genRef.current) {
@@ -193,7 +184,7 @@ export function HarmonographLabScreen() {
     } catch (e) {
       if (gen === genRef.current) setGenError(e instanceof Error ? e.message : String(e));
     }
-  }, [additiveReady, detune, bothHarmonic, requestAudioOutput, intervalGenParams, ratio]);
+  }, [additiveReady, detune, matched, requestAudioOutput, intervalGenParams]);
 
   const stopInterval = useCallback(() => {
     genRef.current++;
@@ -211,13 +202,13 @@ export function HarmonographLabScreen() {
     return () => clearInterval(id);
   }, [running]);
 
-  // Retune the interval audio to a new (n1,n2), or stop it if the new pair is
-  // not a real integer-harmonic pair (never fake a tone for a slow/off-grid
-  // pendulum pair — honesty rule).
+  // Retune the interval audio to the new pair's MATCHED ratio (as harmonics of
+  // BASE_F0), or stop if the ratio is no longer clean — never fake a tone.
   const retuneOrStop = (a: number, b: number) => {
     if (!running) return;
-    if (nearInt(a) && nearInt(b) && Math.round(a) >= 1 && Math.round(b) >= 1) {
-      ApeDsp.genSet(intervalGenParams(a, b));
+    const m = matchRatio(a, b);
+    if (m && detune === 0) {
+      ApeDsp.genSet(intervalGenParams(m.n1, m.n2));
       noteAudioActivity();
     } else {
       stopInterval();
@@ -314,13 +305,12 @@ export function HarmonographLabScreen() {
             kind: 'fader',
             id: 'osc1',
             label: 'OSC 1',
-            // Log frequency sweep 0.1 Hz → 880 Hz (owner 2026-08-23).
+            // Log frequency sweep 0.5 Hz → 100 Hz (owner 2026-08-23). The
+            // ratio state on the bezel (RATIO / INTERVAL) names what the pair
+            // forms; a clean ratio reads there, "custom ratio" is the cue.
             value: oscPosFromFreq(hz1),
             onChange: (v) => setOsc(1, oscFreqFromPos(v) / BASE_F0),
-            // Lane/drag-tag get the full readout (harmonic multiple when on a
-            // sweet spot, else the "(between)" cue); the dock key gets Hz only.
-            format: () => oscReadout(hz1, n1),
-            formatShort: () => fmtHz(hz1),
+            format: () => fmtHz(hz1),
             tint: ARM_X,
             helpKey: 'ratio_lock',
           },
@@ -330,8 +320,7 @@ export function HarmonographLabScreen() {
             label: 'OSC 2',
             value: oscPosFromFreq(hz2),
             onChange: (v) => setOsc(2, oscFreqFromPos(v) / BASE_F0),
-            format: () => oscReadout(hz2, n2),
-            formatShort: () => fmtHz(hz2),
+            format: () => fmtHz(hz2),
             tint: ARM_Y,
             helpKey: 'ratio_lock',
           },
@@ -415,9 +404,7 @@ export function HarmonographLabScreen() {
         <Text style={styles.sectionHead}>WHAT YOU’RE SEEING</Text>
         <Text style={styles.caption}>
           {isExact
-            ? bothHarmonic
-              ? `Harmonics ${Math.round(n1)} and ${Math.round(n2)} of ${BASE_F0} Hz — an exact ${ratio.label} ratio; the figure closes.`
-              : `A clean ${ratio.label} ratio (${ratio.interval.toLowerCase()}) — the figure closes. Both arms sit below hearing, so it draws but doesn’t sound.`
+            ? `A clean ${ratio.label} ratio (${ratio.interval.toLowerCase()}) — the pendulums repeat together and the figure closes.`
             : detune !== 0
               ? `Detuned +${detune * 100}% — the near-miss never closes; the slow precession IS beating.`
               : `Between simple ratios — the figure precesses and never quite closes, just like a slight detune.`}
@@ -427,17 +414,17 @@ export function HarmonographLabScreen() {
       <View style={{ gap: 6 }}>
         <Text style={styles.sectionHead}>SWEET SPOTS</Text>
         <Text style={styles.caption}>
-          Integers 1–8 are the sweet spots — the figure closes and the tone is an exact harmonic.
-          Sweep OSC 1 or OSC 2 between them and the figure precesses, just like a slight detune.
-          Use the RATIO chips to snap back to an exact interval.
+          Clean small-number ratios — 1:1, 2:1, 3:2, 4:3, 5:4 — are the sweet spots: the two
+          pendulums repeat together and the figure closes. Sweep either oscillator off a ratio and
+          the figure precesses, just like a slight detune. The RATIO chips keep OSC 1 where you set
+          it and move OSC 2 to form the interval.
         </Text>
         <Text style={styles.sectionHead}>REAL-TIME SWINGS</Text>
         <Text style={styles.caption}>
-          The pen swings at the true frequency you set: 1 Hz is one full swing per second, 0.1 Hz one
-          swing every ten seconds. Down at 0.1–a-few Hz you’re in real harmonograph pendulum
-          territory — slow, watchable, and below hearing, so it draws but doesn’t sound. Up in the
-          audible range the arms swing far too fast to see, so the figure fills in at once and you
-          hear the interval instead.
+          The machine runs at the true frequency you set (0.5–100 Hz): 1 Hz is one full swing per
+          second. Around 0.5–2 Hz you’re at real harmonograph pendulum speeds — slow enough to watch
+          every swing. Push into the tens of Hz and the arms blur; the drawing fills in almost at
+          once.
         </Text>
       </View>
 
@@ -452,22 +439,23 @@ export function HarmonographLabScreen() {
                 Audio pauses under detune — the additive engine renders exact integer harmonics, so a
                 detuned ratio cannot sound truthfully. Re-lock the ratio to play the interval.
               </Text>
-            ) : !bothHarmonic ? (
+            ) : !matched ? (
               <Text style={styles.caption}>
-                Both arms are below the audio range (real harmonograph pendulum speeds), so the figure
-                draws but does not sound. Land both on integer harmonics (1–8) — a RATIO chip with
-                OSC 1 on a whole number, or the sweet spots — to hear the interval.
+                A custom ratio has no exact interval to sound. Land on a clean ratio — tap a RATIO
+                chip, or sweep an oscillator until the bezel names the interval — and PLAY renders
+                it audibly.
               </Text>
             ) : (
               <>
                 <Text style={styles.caption}>
-                  {stereoReady
-                    ? `PLAY (header ▶) is HARD-PANNED STEREO — ${Math.round(hz1)} Hz on LEFT, ${Math.round(hz2)} Hz on RIGHT (harmonics ${Math.round(n1)} & ${Math.round(n2)} of ${BASE_F0} Hz), an exact ${ratio.label} ratio. The XY figure as sound: X-drive left, Y-drive right — headphones split it cleanly.`
-                    : `PLAY (header ▶) sounds harmonics ${Math.round(n2)} and ${Math.round(n1)} of ${BASE_F0} Hz through the additive engine — an exact ${ratio.label} ratio. Output ${GEN_LEVEL_DB} dBFS · uncalibrated.`}
+                  {`The pendulums themselves are below hearing, so PLAY (header ▶) renders the ${ratio.label} ratio audibly` +
+                    (stereoReady
+                      ? ` — HARD-PANNED STEREO, ${matched.n1 * BASE_F0} Hz on LEFT and ${matched.n2 * BASE_F0} Hz on RIGHT (harmonics ${matched.n1} & ${matched.n2} of ${BASE_F0} Hz). The same ratio the machine is drawing, as sound.`
+                      : ` — harmonics ${matched.n1} and ${matched.n2} of ${BASE_F0} Hz through the additive engine (${matched.n1 * BASE_F0} & ${matched.n2 * BASE_F0} Hz). Output ${GEN_LEVEL_DB} dBFS · uncalibrated.`)}
                 </Text>
                 <Text style={styles.advisory}>
-                  {`Speaker high-pass (${SPEAKER_HPF_HZ} Hz): the ${hz2} Hz tone is attenuated ${speakerGuardDb(hz2).toFixed(1)} dB` +
-                    `${ratio.n1 !== ratio.n2 ? `, the ${hz1} Hz tone ${speakerGuardDb(hz1).toFixed(1)} dB` : ''}. ` +
+                  {`Speaker high-pass (${SPEAKER_HPF_HZ} Hz): the ${matched.n2 * BASE_F0} Hz tone is attenuated ${speakerGuardDb(matched.n2 * BASE_F0).toFixed(1)} dB` +
+                    `${matched.n1 !== matched.n2 ? `, the ${matched.n1 * BASE_F0} Hz tone ${speakerGuardDb(matched.n1 * BASE_F0).toFixed(1)} dB` : ''}. ` +
                     `Use headphones for the full interval.`}
                 </Text>
                 {genError ? <Text style={styles.error}>{genError}</Text> : null}

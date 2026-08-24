@@ -22,7 +22,7 @@
  * Real-time rate: the full trace spans BASE_TURNS turns of the slower arm and
  * `drawMs` maps that to true seconds (owner 2026-08-23 real-time ruling).
  */
-import { useEffect, useMemo } from 'react';
+import { memo, useDeferredValue, useEffect, useMemo } from 'react';
 import Svg, {
   Circle,
   Defs,
@@ -185,7 +185,10 @@ const AG = Animated.createAnimatedComponent(G);
 const COL_A = '#4fd0e0';
 const COL_B = '#b48bff';
 
-export function HarmonographMachine({
+/** memo: dock presses / tray opens re-render the screen constantly — the
+ *  machine only re-renders when ITS values change (perf: owner reported
+ *  hesitant controls; the 1.4k-point ink rebuild was riding every render). */
+export const HarmonographMachine = memo(function HarmonographMachine({
   n1,
   n2,
   phaseDeg,
@@ -221,9 +224,14 @@ export function HarmonographMachine({
   /* ink: precomputed relative path (pen − platform, in inches), projected once
      at the REST platform position; the platform group translates it live.
      Cumulative arc lengths let the reveal follow TIME, not path-fraction, so
-     the ink head stays under the nib. */
+     the ink head stays under the nib.
+     DEFERRED (perf): while the lane is being dragged, the machine parts track
+     the finger live (M uses the live mode) but this heavy rebuild runs at low
+     priority — controls stay responsive. */
+  const dMode = useDeferredValue(mode);
+  const dDrawMs = useDeferredValue(drawMs);
   const ink = useMemo(() => {
-    const N = 2200;
+    const N = 1400;
     let dP = '',
       dI = '';
     const sP = new Array<number>(N + 1);
@@ -235,7 +243,7 @@ export function HarmonographMachine({
       lix = 0,
       liy = 0;
     for (let i = 0; i <= N; i++) {
-      const m = motion((i / N) * thetaMax, mode);
+      const m = motion((i / N) * thetaMax, dMode);
       const rx = m.px - (HR[0] + m.ox),
         ry = m.py - (HR[1] + m.oy);
       const p = pj(HR[0] + rx, HR[1] + ry, PLATZ + 0.05);
@@ -257,16 +265,16 @@ export function HarmonographMachine({
       liy = q[1];
     }
     return { dP, dI, sP, sI, totP: Math.max(1, accP), totI: Math.max(1, accI), N };
-  }, [mode, thetaMax]);
+  }, [dMode, thetaMax]);
 
   /* one clock: 0 → 1 over drawMs (real time), restart on any change */
   const progress = useSharedValue(0);
   useEffect(() => {
     cancelAnimation(progress);
     progress.value = 0;
-    progress.value = withTiming(1, { duration: drawMs, easing: Easing.linear });
+    progress.value = withTiming(1, { duration: dDrawMs, easing: Easing.linear });
     return () => cancelAnimation(progress);
-  }, [ink, drawMs, progress]);
+  }, [ink, dDrawMs, progress]);
 
   /* machine state, computed ONCE per frame on the UI thread */
   const M = useDerivedValue(() => motion(progress.value * thetaMax, mode));
@@ -291,7 +299,7 @@ export function HarmonographMachine({
   const wgtA = useAnimatedProps(() => {
     const m = M.value;
     const d = dpj((m.sA * WGT) / TOP, 0);
-    return { x: d[0], y: d[1] };
+    return { translateX: d[0], translateY: d[1] };
   });
   const shaftBBelow = useAnimatedProps(() => {
     const m = M.value;
@@ -308,7 +316,7 @@ export function HarmonographMachine({
   const wgtB = useAnimatedProps(() => {
     const m = M.value;
     const d = dpj(0, (m.sB * WGT) / TOP);
-    return { x: d[0], y: d[1] };
+    return { translateX: d[0], translateY: d[1] };
   });
   // rotary pendulum: platform rides the top; weight levers opposite
   const shaftR = useAnimatedProps(() => {
@@ -320,12 +328,12 @@ export function HarmonographMachine({
   const wgtR = useAnimatedProps(() => {
     const m = M.value;
     const d = dpj((-m.ox * WGT) / TOP, (-m.oy * WGT) / TOP);
-    return { x: d[0], y: d[1] };
+    return { translateX: d[0], translateY: d[1] };
   });
   const platG = useAnimatedProps(() => {
     const m = M.value;
     const d = dpj(m.ox, m.oy);
-    return { x: d[0], y: d[1] };
+    return { translateX: d[0], translateY: d[1] };
   });
   const armA = useAnimatedProps(() => {
     const m = M.value;
@@ -342,7 +350,7 @@ export function HarmonographMachine({
   const penG = useAnimatedProps(() => {
     const m = M.value;
     const p = pj(m.px, m.py, 0);
-    return { x: p[0] - PEN_REST[0], y: p[1] - PEN_REST[1] };
+    return { translateX: p[0] - PEN_REST[0], translateY: p[1] - PEN_REST[1] };
   });
   // ink reveal — dashoffset follows the ARC LENGTH at the current time
   const HEAD = 26;
@@ -534,4 +542,4 @@ export function HarmonographMachine({
       </SvgText>
     </Svg>
   );
-}
+});
