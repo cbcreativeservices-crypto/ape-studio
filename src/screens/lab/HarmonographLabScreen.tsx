@@ -37,7 +37,8 @@ import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { LabShell, LabChip, HeaderPlayButton } from './LabShell';
-import { HarmonographMachine, drawTurns } from './HarmonographMachine';
+import { HarmonographMachine, INK_DEFAULT, drawTurns } from './HarmonographMachine';
+import { HarmonographViewer } from './HarmonographViewer';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -102,12 +103,23 @@ export function HarmonographLabScreen() {
   // itself the moment the lab opens.
   const [n1, setN1] = useState(1.5 / BASE_F0);
   const [n2, setN2] = useState(1.0 / BASE_F0);
+  // OSC 3 = the paper platform's own pendulum (owner 2026-08-23: the platform
+  // rotation is a separate control, not OSC 2's job). ROTARY only.
+  const [n3, setN3] = useState(1.0 / BASE_F0);
   const [phase, setPhase] = useState<(typeof PHASES)[number]>(90);
   const [dampKey, setDampKey] = useState<(typeof DAMPINGS)[number]['key']>('medium');
   const [rotary, setRotary] = useState(true);
   const [detune, setDetune] = useState<(typeof DETUNES)[number]['key']>(0.01);
   const [running, setRunning] = useState(false);
   const [genError, setGenError] = useState('');
+  // FREEZE holds the machine mid-draw; ⟲ NEW pulls a fresh sheet (owner
+  // 2026-08-23 — device parity with the browser mock's NEW DRAWING).
+  const [frozen, setFrozen] = useState(false);
+  const [epoch, setEpoch] = useState(0);
+  // Member ink colour (customization rule: entitlement-gated colour wheel).
+  const [inkColor, setInkColor] = useState<string | null>(null);
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const freezeFracRef = useRef(1);
 
   const [lessonKey, setLessonKey] = useState<string | undefined>(undefined);
   const [lessonOpen, setLessonOpen] = useState(false);
@@ -239,11 +251,16 @@ export function HarmonographLabScreen() {
 
   const hz1 = ratio.n1 * BASE_F0;
   const hz2 = ratio.n2 * BASE_F0;
-  // REAL-TIME draw (owner 2026-08-23): the machine's slower arm swings at its
-  // true Hz, and the drawing runs until the pen SETTLES (turn count derives
-  // from the damping — nothing is cut off mid-swing).
-  const slowerHz = Math.max(OSC_F_MIN, Math.min(hz1, hz2));
+  const hz3 = n3 * BASE_F0;
+  // REAL-TIME draw (owner 2026-08-23): the machine's slower pendulum swings at
+  // its true Hz (the platform counts too in ROTARY), and the drawing runs
+  // until the pen SETTLES (turn count derives from the damping).
+  const slowerHz = Math.max(OSC_F_MIN, rotary ? Math.min(hz1, hz2, hz3) : Math.min(hz1, hz2));
   const drawMs = (drawTurns(damping.endAmp) / slowerHz) * 1000;
+  const newDrawing = () => {
+    setFrozen(false);
+    setEpoch((e) => e + 1);
+  };
 
   // ── RACK UNIT pilot (APE_LAB_UX_PROPOSAL 2026-08-23, owner-approved) ──────
   // The figure + its readouts pin on the stage/bezel; the oscillator sliders
@@ -272,11 +289,19 @@ export function HarmonographLabScreen() {
           size: 'L', // the figure IS the lab — earns the tall glass
           badge: 'RIGID-BODY MACHINE — DRAWN FROM THE EQUATIONS',
           onGuide: () => openLesson('display'),
+          // OSC readouts now live ON the machine (each pendulum wears its own
+          // tag); the bezel gains the pen controls — FREEZE and a fresh sheet.
           bezel: [
             { k: 'RATIO', v: ratio.label, helpKey: 'ratio_lock' },
-            { k: 'INTERVAL', v: ratio.interval, flex: 1.6, helpKey: 'ratio_lock' },
-            { k: 'OSC 1', v: fmtHz(hz1), tint: ARM_X, helpKey: 'ratio_lock' },
-            { k: 'OSC 2', v: fmtHz(hz2), tint: ARM_Y, helpKey: 'ratio_lock' },
+            { k: 'INTERVAL', v: ratio.interval, flex: 1.5, helpKey: 'ratio_lock' },
+            {
+              k: 'PEN',
+              v: frozen ? 'FROZEN' : 'DRAWING',
+              tint: frozen ? '#7fd4ff' : undefined,
+              onPress: () => setFrozen((f) => !f),
+              helpKey: 'damping',
+            },
+            { k: 'PAGE', v: '⟲ NEW', onPress: newDrawing, helpKey: 'damping' },
           ],
           render: (_w, h) => (
             // Tapping the display toggles play/stop (owner 2026-07-31) — same
@@ -293,12 +318,23 @@ export function HarmonographLabScreen() {
               <HarmonographMachine
                 n1={ratio.n1}
                 n2={ratio.n2}
+                n3={n3}
                 phaseDeg={phase}
                 endAmp={damping.endAmp}
                 rotary={rotary}
                 detune={detune}
                 height={h}
                 drawMs={drawMs}
+                frozen={frozen}
+                epoch={epoch}
+                inkColor={inkColor}
+                hz1Label={`OSC 1 · ${fmtHz(hz1)}`}
+                hz2Label={`OSC 2 · ${fmtHz(hz2)}`}
+                hz3Label={`PLAT · ${fmtHz(hz3)}`}
+                onFreezeFraction={(f) => {
+                  freezeFracRef.current = f;
+                }}
+                onInsetPress={() => setViewerOpen(true)}
               />
             </Pressable>
           ),
@@ -327,19 +363,59 @@ export function HarmonographLabScreen() {
             tint: ARM_Y,
             helpKey: 'ratio_lock',
           },
+          ...(rotary
+            ? [
+                {
+                  // The paper platform's own pendulum — OSC 3 (owner
+                  // 2026-08-23: platform rotation is a separate control).
+                  kind: 'fader' as const,
+                  id: 'plat',
+                  label: 'PLAT',
+                  value: oscPosFromFreq(hz3),
+                  onChange: (v: number) => setN3(oscFreqFromPos(v) / BASE_F0),
+                  format: () => fmtHz(hz3),
+                  tint: '#e0b25e',
+                  helpKey: 'mode',
+                },
+              ]
+            : []),
           {
-            kind: 'options',
-            id: 'ratio',
-            label: 'RATIO',
-            valueLabel: ratio.label,
-            options: RATIOS.map((r) => ({ id: r.label, label: `${r.label} ${r.interval}` })),
-            selectedId: matched?.label ?? null,
-            onSelect: (id) => {
-              const i = RATIOS.findIndex((r) => r.label === id);
-              if (i >= 0) pickRatio(i);
-            },
-            sticky: true, // A/B intervals while the figure redraws — the lesson
+            // RATIO + DETUNE share one sticky tray (both are A/B-the-interval
+            // teaching collections; the tray stays open while the figure
+            // redraws). Freed a dock slot for the PLAT lane.
+            kind: 'group',
+            id: 'tune',
+            label: 'TUNE',
+            valueLabel: `${matched?.label ?? 'CUST'}${detune !== 0 ? `·+${detune * 100}%` : ''}`,
             helpKey: 'ratio_lock',
+            render: () => (
+              <View style={{ gap: 10 }}>
+                <Text style={styles.sectionHead}>RATIO — KEEPS OSC 1, SETS OSC 2</Text>
+                <View style={styles.chipRow}>
+                  {RATIOS.map((r, i) => (
+                    <LabChip
+                      key={r.label}
+                      label={`${r.label} ${r.interval}`}
+                      selected={matched?.label === r.label}
+                      onPress={() => pickRatio(i)}
+                      onLongPress={() => openLesson('ratio_lock')}
+                    />
+                  ))}
+                </View>
+                <Text style={styles.sectionHead}>DETUNE</Text>
+                <View style={styles.chipRow}>
+                  {DETUNES.map((d) => (
+                    <LabChip
+                      key={d.key}
+                      label={d.label}
+                      selected={detune === d.key}
+                      onPress={() => pickDetune(d.key)}
+                      onLongPress={() => openLesson('ratio_lock')}
+                    />
+                  ))}
+                </View>
+              </View>
+            ),
           },
           {
             kind: 'group',
@@ -384,20 +460,6 @@ export function HarmonographLabScreen() {
               </View>
             ),
           },
-          {
-            kind: 'options',
-            id: 'detune',
-            label: 'DETUNE',
-            valueLabel: detune === 0 ? 'LOCK' : `+${detune * 100}%`,
-            options: DETUNES.map((d) => ({ id: String(d.key), label: d.label })),
-            selectedId: String(detune),
-            onSelect: (id) => {
-              const d = DETUNES.find((x) => String(x.key) === id);
-              if (d) pickDetune(d.key);
-            },
-            sticky: true, // watch the precession start while comparing
-            helpKey: 'ratio_lock',
-          },
         ],
       }}
     >
@@ -419,7 +481,7 @@ export function HarmonographLabScreen() {
         <Text style={styles.caption}>
           Clean small-number ratios — 1:1, 2:1, 3:2, 4:3, 5:4 — are the sweet spots: the two
           pendulums repeat together and the figure closes. Sweep either oscillator off a ratio and
-          the figure precesses, just like a slight detune. The RATIO chips keep OSC 1 where you set
+          the figure precesses, just like a slight detune. The RATIO chips (TUNE key) keep OSC 1 where you set
           it and move OSC 2 to form the interval.
         </Text>
         <Text style={styles.sectionHead}>REAL-TIME SWINGS</Text>
@@ -427,7 +489,8 @@ export function HarmonographLabScreen() {
           The machine runs at the true frequency you set (0.5–100 Hz): 1 Hz is one full swing per
           second. Around 0.5–2 Hz you’re at real harmonograph pendulum speeds — slow enough to watch
           every swing. Push into the tens of Hz and the arms blur; the drawing fills in almost at
-          once.
+          once. In ROTARY the paper platform is a third pendulum with its own speed — the PLAT
+          lane; tiny platform detunes are what precess the rose.
         </Text>
       </View>
 
@@ -478,6 +541,30 @@ export function HarmonographLabScreen() {
         lesson={getLabLesson('harmonograph')}
         controlKey={lessonKey}
         onClose={() => setLessonOpen(false)}
+      />
+
+      {/* Fullscreen drawing viewer (tap THE DRAWING inset): share / save /
+          print with the brand card; member ink colour. Renders the artwork
+          from the same equations — frozen drawings show exactly the frozen
+          moment. */}
+      <HarmonographViewer
+        visible={viewerOpen}
+        onClose={() => setViewerOpen(false)}
+        cfg={{
+          n1: hz1,
+          n2: hz2,
+          n3: hz3,
+          phaseDeg: phase,
+          endAmp: damping.endAmp,
+          rotary,
+          detune,
+          upTo: frozen ? freezeFracRef.current : 1,
+        }}
+        ratioLabel={ratio.label}
+        intervalLabel={ratio.interval}
+        dampingLabel={damping.label}
+        inkColor={inkColor ?? INK_DEFAULT}
+        onInkColor={setInkColor}
       />
     </LabShell>
   );

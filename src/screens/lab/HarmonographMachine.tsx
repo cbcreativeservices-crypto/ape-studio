@@ -8,11 +8,11 @@
  *    surface; the shaft TOP levers OPPOSITE the weight below (fixed lengths);
  *  - two fixed-length arms pin to the lateral shaft tops and meet at the pen —
  *    the pen IS the circle–circle junction of those rigid arms, nothing else;
- *  - ROTARY: the laterals run in unison so the pen sweeps a circle/ellipse
- *    while the PAPER platform (on the gimbaled third pendulum) counter-ORBITS
- *    at the ratio'd frequency — the platform translates, it never spins; the
- *    ink is the pen-minus-paper relative path. LATERAL: classic ratio'd
- *    Lissajous through the true linkage (which adds the real machine's warp).
+ *  - ROTARY: OSC 1/OSC 2 drive the two lateral arms and the PAPER platform
+ *    (on the gimbaled third pendulum) counter-ORBITS at ITS OWN oscillator
+ *    (OSC 3) — the platform translates, it never spins; the ink is the
+ *    pen-minus-paper relative path. LATERAL: classic ratio'd Lissajous
+ *    through the true linkage (which adds the real machine's warp).
  *
  * The drawing runs until the pen SETTLES (swing ≤ ~4%), so the trace length
  * derives from the damping chip — nothing is cut off mid-swing — then holds.
@@ -34,8 +34,8 @@
  *    ARC LENGTH at the current time (head glued to the nib); a wet-ink head
  *    rides the reveal as a short bright dash window.
  */
-import { memo, useDeferredValue, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { memo, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 import Svg, {
   Circle,
   Defs,
@@ -112,16 +112,18 @@ function dpj(dx: number, dy: number): [number, number] {
 
 /* ── motion (single source of truth: JS for the ink precompute, worklet for
       the live machine) ──────────────────────────────────────────────────── */
-type Mode = { axr: number; ayr: number; ph: number; k: number; rotary: boolean; det: number };
+type Mode = { axr: number; ayr: number; azr: number; ph: number; k: number; rotary: boolean; det: number };
 function motion(phi: number, m: Mode) {
   'worklet';
   const env = Math.exp(-m.k * phi);
   let sA: number, sB: number, ox: number, oy: number;
   if (m.rotary) {
-    const u = m.axr * phi;
-    sA = AMP * Math.sin(u + Math.PI / 2 - m.ph) * env;
-    sB = AMP * Math.sin(u + Math.PI / 2) * env;
-    const g = m.ayr * phi * (1 + m.det);
+    // Owner 2026-08-23: each arm shows ITS OWN oscillator — OSC 1 → lateral A,
+    // OSC 2 → lateral B — and the paper platform is the THIRD pendulum with
+    // its own rotation speed (azr). Detune precesses the platform.
+    sA = AMP * Math.sin(m.axr * phi + Math.PI / 2 - m.ph) * env;
+    sB = AMP * Math.sin(m.ayr * phi + Math.PI / 2) * env;
+    const g = m.azr * phi * (1 + m.det);
     ox = -ORB * Math.sin(g) * env;
     oy = ORB * Math.cos(g) * env;
   } else {
@@ -223,6 +225,35 @@ const IX = 252,
   ICX = IX + IW / 2,
   ICY = IY + IW / 2;
 
+/* ── swing-vector annotations (owner 2026-08-23 screenshots): a dashed HINGE
+   axis through each lateral hole showing the plane the shaft rocks in, a
+   double-headed arrow at each weight showing its travel, and each pendulum
+   tagged with its own oscillator setting. */
+function chev(tip: [number, number], from: [number, number]): string {
+  const dx = tip[0] - from[0];
+  const dy = tip[1] - from[1];
+  const L = Math.hypot(dx, dy) || 1;
+  const ux = dx / L;
+  const uy = dy / L;
+  const px = -uy;
+  const py = ux;
+  const k = 3.4;
+  const f = (n: number) => n.toFixed(1);
+  return (
+    'M' + f(tip[0] - ux * k + px * k * 0.7) + ' ' + f(tip[1] - uy * k + py * k * 0.7) +
+    'L' + f(tip[0]) + ' ' + f(tip[1]) +
+    'L' + f(tip[0] - ux * k - px * k * 0.7) + ' ' + f(tip[1] - uy * k - py * k * 0.7)
+  );
+}
+const AXIS_A = [pj(26.5, 9, 0), pj(35.8, 9, 0)];
+const AXIS_B = [pj(9, 26.5, 0), pj(9, 35.8, 0)];
+const ARROW_A = [pj(HA[0] - 5.5, HA[1], -WGT), pj(HA[0] + 5.5, HA[1], -WGT)];
+const ARROW_B = [pj(HB[0], HB[1] - 5.5, -WGT), pj(HB[0], HB[1] + 5.5, -WGT)];
+const LBL_A = pj(HA[0], HA[1], -WGT - 6.5);
+const LBL_B = pj(HB[0], HB[1], -WGT - 6.5);
+const LBL_P = pj(HR[0], HR[1], -WGT + 3 - 6.5);
+const ROTC = pj(HR[0], HR[1], -WGT + 3);
+
 const APath = Animated.createAnimatedComponent(Path);
 const ALine = Animated.createAnimatedComponent(Line);
 const AEllipse = Animated.createAnimatedComponent(Ellipse);
@@ -230,42 +261,128 @@ const ACircle = Animated.createAnimatedComponent(Circle);
 
 const COL_A = '#4fd0e0';
 const COL_B = '#b48bff';
+const COL_P = '#e0b25e';
 const DISC_RX = 2.5 * SC * 0.62,
   DISC_RY = 2.5 * SC * 0.3;
+
+/* ── ink (member colour goes through here; classic red is the default) ────── */
+export const INK_DEFAULT = '#8e1f32';
+const INK_HEAD_DEFAULT = '#e0435a';
+function mixHex(hex: string, to: string, f: number): string {
+  const a = parseInt(hex.slice(1), 16);
+  const b = parseInt(to.slice(1), 16);
+  const ch = (sa: number, sb: number) => Math.round(sa + (sb - sa) * f);
+  const r = ch((a >> 16) & 255, (b >> 16) & 255);
+  const g = ch((a >> 8) & 255, (b >> 8) & 255);
+  const bl = ch(a & 255, b & 255);
+  return `#${((r << 16) | (g << 8) | bl).toString(16).padStart(6, '0')}`;
+}
+
+/* ── the ARTWORK as a pure function (fullscreen viewer / share card) ───────
+   Same motion() the machine runs — pen-minus-paper in the paper frame,
+   rendered into a size×size viewBox. `upTo` (0..1) renders a frozen moment. */
+export function drawingPath(
+  cfg: {
+    n1: number;
+    n2: number;
+    n3: number;
+    phaseDeg: number;
+    endAmp: number;
+    rotary: boolean;
+    detune: number;
+    upTo?: number;
+  },
+  size: number,
+): string {
+  const mn = Math.max(1e-9, cfg.rotary ? Math.min(cfg.n1, cfg.n2, cfg.n3) : Math.min(cfg.n1, cfg.n2));
+  const m: Mode = {
+    axr: cfg.n1 / mn,
+    ayr: cfg.n2 / mn,
+    azr: cfg.n3 / mn,
+    ph: (cfg.phaseDeg * Math.PI) / 180,
+    k: -Math.log(Math.min(0.9, Math.max(0.01, cfg.endAmp))) / (2 * Math.PI * TURNS_REF),
+    rotary: cfg.rotary,
+    det: cfg.detune,
+  };
+  const upTo = Math.min(1, Math.max(0.005, cfg.upTo ?? 1));
+  const thetaMax = 2 * Math.PI * drawTurns(cfg.endAmp) * upTo;
+  const N = Math.min(5200, Math.max(900, Math.round((thetaMax / (2 * Math.PI)) * 64)));
+  const k = size / (2 * PLATH * 1.06); // artwork fills the sheet with margin
+  const c = size / 2;
+  let d = '';
+  for (let i = 0; i <= N; i++) {
+    const s = motion((i / N) * thetaMax, m);
+    const x = c + (s.px - (HR[0] + s.ox)) * k;
+    const y = c + (s.py - (HR[1] + s.oy)) * k;
+    d += `${i === 0 ? 'M' : 'L'}${x.toFixed(1)} ${y.toFixed(1)}`;
+  }
+  return d;
+}
 
 export const HarmonographMachine = memo(function HarmonographMachine({
   n1,
   n2,
+  n3,
   phaseDeg,
   endAmp,
   rotary,
   detune,
   height,
   drawMs,
+  frozen = false,
+  epoch = 0,
+  inkColor,
+  hz1Label,
+  hz2Label,
+  hz3Label,
+  onFreezeFraction,
+  onInsetPress,
 }: {
   n1: number;
   n2: number;
+  /** The paper platform's own pendulum (ROTARY only). */
+  n3: number;
   phaseDeg: number;
   endAmp: number;
   rotary: boolean;
   detune: number;
   height: number;
   drawMs: number;
+  /** Freeze the machine mid-draw (pen, swings and ink all hold). */
+  frozen?: boolean;
+  /** Bump to pull a fresh sheet and restart the drawing. */
+  epoch?: number;
+  /** Member custom ink (null/undefined = the classic red). */
+  inkColor?: string | null;
+  /** On-machine oscillator tags (owner 2026-08-23): each pendulum is labeled
+   *  with its own live setting right where it swings. */
+  hz1Label?: string;
+  hz2Label?: string;
+  hz3Label?: string;
+  /** Reports how far the drawing had gotten (0..1) when frozen flips true —
+   *  the fullscreen viewer renders exactly the frozen artwork. */
+  onFreezeFraction?: (f: number) => void;
+  /** Tap on THE DRAWING inset (opens the fullscreen viewer). */
+  onInsetPress?: () => void;
 }) {
-  const mn = Math.max(1e-9, Math.min(n1, n2));
+  const mn = Math.max(1e-9, rotary ? Math.min(n1, n2, n3) : Math.min(n1, n2));
   const turns = drawTurns(endAmp);
   const thetaMax = 2 * Math.PI * turns;
   const mode: Mode = useMemo(
     () => ({
       axr: n1 / mn,
       ayr: n2 / mn,
+      azr: n3 / mn,
       ph: (phaseDeg * Math.PI) / 180,
       k: -Math.log(endAmp) / (2 * Math.PI * TURNS_REF),
       rotary,
       det: detune,
     }),
-    [n1, n2, mn, phaseDeg, endAmp, rotary, detune],
+    [n1, n2, n3, mn, phaseDeg, endAmp, rotary, detune],
   );
+
+  const inkDim = inkColor ?? INK_DEFAULT;
+  const inkHead = inkColor ? mixHex(inkColor, '#ffffff', 0.32) : INK_HEAD_DEFAULT;
 
   /* ink precompute — DEFERRED so lane drags stay responsive */
   const dMode = useDeferredValue(mode);
@@ -308,23 +425,38 @@ export const HarmonographMachine = memo(function HarmonographMachine({
     return { dP, dI, sP, sI, totP: Math.max(1, accP), totI: Math.max(1, accI), N };
   }, [dMode, dThetaMax]);
 
-  /* the one clock */
+  /* the one clock — with FREEZE (hold in place, resume where it left off) and
+     NEW DRAWING (epoch bump → fresh sheet). A settings change is a fresh
+     sheet; an unfreeze resumes the same drawing. */
   const progress = useSharedValue(0);
+  const runKeyRef = useRef<unknown[]>([]);
   useEffect(() => {
     cancelAnimation(progress);
-    progress.value = 0;
+    if (frozen) {
+      // Report the exact frozen fraction so the viewer can render THIS art.
+      onFreezeFraction?.(Math.min(1, Math.max(0, progress.value)));
+      return;
+    }
+    const key = [ink, dDrawMs, epoch];
+    const sameRun = runKeyRef.current.every((v, i) => v === key[i]) && runKeyRef.current.length === 3;
+    runKeyRef.current = key;
+    if (!sameRun) progress.value = 0;
+    const cur = Math.min(1, Math.max(0, progress.value));
     // a LIVING machine: draw at the real rate, hold the finished art ~3 s,
     // then a fresh sheet and draw again — whenever you look, it moves.
-    progress.value = withRepeat(
-      withSequence(
-        withTiming(1, { duration: dDrawMs, easing: Easing.linear }),
-        withDelay(3000, withTiming(0, { duration: 60 })),
+    progress.value = withSequence(
+      withTiming(1, { duration: (1 - cur) * dDrawMs, easing: Easing.linear }),
+      withRepeat(
+        withSequence(
+          withDelay(3000, withTiming(0, { duration: 60 })),
+          withTiming(1, { duration: dDrawMs, easing: Easing.linear }),
+        ),
+        -1,
+        false,
       ),
-      -1,
-      false,
     );
     return () => cancelAnimation(progress);
-  }, [ink, dDrawMs, progress]);
+  }, [ink, dDrawMs, progress, frozen, epoch, onFreezeFraction]);
 
   const M = useDerivedValue(() => motion(progress.value * thetaMax, mode));
 
@@ -608,6 +740,48 @@ export const HarmonographMachine = memo(function HarmonographMachine({
           strokeWidth={3}
           strokeLinecap="round"
         />
+        {/* ── swing-vector annotations (owner 2026-08-23) ─────────────────
+            Dashed hinge axes on the table show the plane each shaft rocks in;
+            double-headed arrows at the weights show their travel; each
+            pendulum wears its own oscillator setting. */}
+        <Line x1={AXIS_A[0][0]} y1={AXIS_A[0][1]} x2={AXIS_A[1][0]} y2={AXIS_A[1][1]} stroke={COL_A} strokeWidth={1.1} strokeDasharray="3 3" strokeOpacity={0.5} />
+        <Line x1={AXIS_B[0][0]} y1={AXIS_B[0][1]} x2={AXIS_B[1][0]} y2={AXIS_B[1][1]} stroke={COL_B} strokeWidth={1.1} strokeDasharray="3 3" strokeOpacity={0.5} />
+        <Line x1={ARROW_A[0][0]} y1={ARROW_A[0][1]} x2={ARROW_A[1][0]} y2={ARROW_A[1][1]} stroke={COL_A} strokeWidth={1.4} strokeOpacity={0.85} />
+        <Path d={chev(ARROW_A[0], ARROW_A[1])} stroke={COL_A} strokeWidth={1.4} fill="none" strokeOpacity={0.85} strokeLinecap="round" />
+        <Path d={chev(ARROW_A[1], ARROW_A[0])} stroke={COL_A} strokeWidth={1.4} fill="none" strokeOpacity={0.85} strokeLinecap="round" />
+        <Line x1={ARROW_B[0][0]} y1={ARROW_B[0][1]} x2={ARROW_B[1][0]} y2={ARROW_B[1][1]} stroke={COL_B} strokeWidth={1.4} strokeOpacity={0.85} />
+        <Path d={chev(ARROW_B[0], ARROW_B[1])} stroke={COL_B} strokeWidth={1.4} fill="none" strokeOpacity={0.85} strokeLinecap="round" />
+        <Path d={chev(ARROW_B[1], ARROW_B[0])} stroke={COL_B} strokeWidth={1.4} fill="none" strokeOpacity={0.85} strokeLinecap="round" />
+        {hz1Label ? (
+          <SvgText x={LBL_A[0]} y={LBL_A[1]} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={9.5} letterSpacing={0.8} fill={COL_A}>
+            {hz1Label}
+          </SvgText>
+        ) : null}
+        {hz2Label ? (
+          <SvgText x={LBL_B[0]} y={LBL_B[1]} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={9.5} letterSpacing={0.8} fill={COL_B}>
+            {hz2Label}
+          </SvgText>
+        ) : null}
+        {rotary ? (
+          // The platform pendulum orbits — a dashed ring at its weight plus
+          // its own oscillator tag (OSC 3 owns the paper's rotation).
+          <>
+            <Ellipse cx={ROTC[0]} cy={ROTC[1]} rx={DISC_RX + 5} ry={DISC_RY + 3.2} fill="none" stroke={COL_P} strokeWidth={1.1} strokeDasharray="3 3" strokeOpacity={0.6} />
+            <Path
+              d={chev([ROTC[0] + DISC_RX + 5, ROTC[1] - 1.6], [ROTC[0] + DISC_RX + 5, ROTC[1] + 2.4])}
+              stroke={COL_P}
+              strokeWidth={1.3}
+              fill="none"
+              strokeOpacity={0.8}
+              strokeLinecap="round"
+            />
+            {hz3Label ? (
+              <SvgText x={LBL_P[0]} y={LBL_P[1]} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={9.5} letterSpacing={0.8} fill={COL_P}>
+                {hz3Label}
+              </SvgText>
+            ) : null}
+          </>
+        ) : null}
       </Svg>
 
       {/* ── layer 2: orbiting platform + paper + ink (gradient id P) ─────── */}
@@ -637,7 +811,7 @@ export const HarmonographMachine = memo(function HarmonographMachine({
             <APath
               d={ink.dP}
               animatedProps={inkP}
-              stroke="#8e1f32"
+              stroke={inkDim}
               strokeWidth={1.05}
               strokeOpacity={0.62}
               fill="none"
@@ -648,7 +822,7 @@ export const HarmonographMachine = memo(function HarmonographMachine({
             <APath
               d={ink.dP}
               animatedProps={headP}
-              stroke="#e0435a"
+              stroke={inkHead}
               strokeWidth={1.5}
               strokeOpacity={0.95}
               fill="none"
@@ -700,14 +874,14 @@ export const HarmonographMachine = memo(function HarmonographMachine({
           strokeWidth={2.8}
           strokeLinecap="round"
         />
-        <ACircle animatedProps={penNib} cx={R_penTop[0]} cy={R_penTop[1]} r={1.7} fill="#e0435a" />
+        <ACircle animatedProps={penNib} cx={R_penTop[0]} cy={R_penTop[1]} r={1.7} fill={inkHead} />
         <ACircle animatedProps={penCollar} cx={R_pen[0]} cy={R_pen[1] - 1} r={1.2} fill="#c9a25e" />
         <Rect x={IX} y={IY} width={IW} height={IW} rx={8} fill="url(#hmPaperT)" stroke="#26262c" strokeWidth={1.3} />
         <Rect x={IX + 2} y={IY + 2} width={IW - 4} height={IW - 4} rx={6} fill="none" stroke="#b8ad8d" strokeWidth={0.6} strokeOpacity={0.6} />
         <APath
           d={ink.dI}
           animatedProps={inkI}
-          stroke="#8e1f32"
+          stroke={inkDim}
           strokeWidth={0.95}
           strokeOpacity={0.6}
           fill="none"
@@ -718,7 +892,7 @@ export const HarmonographMachine = memo(function HarmonographMachine({
         <APath
           d={ink.dI}
           animatedProps={headI}
-          stroke="#e0435a"
+          stroke={inkHead}
           strokeWidth={1.3}
           strokeOpacity={0.95}
           fill="none"
@@ -738,6 +912,22 @@ export const HarmonographMachine = memo(function HarmonographMachine({
           THE DRAWING
         </SvgText>
       </Svg>
+
+      {/* THE DRAWING inset is tappable — opens the fullscreen viewer. */}
+      {onInsetPress && sc > 0 ? (
+        <Pressable
+          onPress={onInsetPress}
+          accessibilityRole="button"
+          accessibilityLabel="Open the drawing fullscreen"
+          style={{
+            position: 'absolute',
+            left: offX + IX * sc,
+            top: offY + IY * sc,
+            width: IW * sc,
+            height: (IW + 16) * sc,
+          }}
+        />
+      ) : null}
     </View>
   );
 });
