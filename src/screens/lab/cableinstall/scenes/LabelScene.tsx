@@ -24,13 +24,38 @@
  * (pre-revealed). Accessibility: cables are labeled ≥44dp buttons (the SVG is
  * a described visualization), all verdicts announce.
  */
-import { useState } from 'react';
-import { AccessibilityInfo, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import Svg, { Circle, Ellipse, G, Path, Rect, Text as SvgText } from 'react-native-svg';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { AccessibilityInfo, Pressable, ScrollView, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import Svg, { Circle, G, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
 import { OptionChip, VerdictBanner } from '../../cable/lessons/bits';
 import { DragSlider } from '../../foundations/bits';
 import { CiSection, RuleFeedback, SpecCard, announceComplete } from '../bits';
+import {
+  AG,
+  APath,
+  ARect,
+  Animated,
+  Appear,
+  CI_EASE,
+  CI_MOTION,
+  CI_SPRING,
+  CI_SPRING_UI,
+  Stagger,
+  cancelAnimation,
+  mapRange,
+  useAnimatedProps,
+  useAnimatedStyle,
+  useCiMotion,
+  useDrawIn,
+  useSettle,
+  useSharedValue,
+  useVeil,
+  withDelay,
+  withSequence,
+  withSpring,
+  withTiming,
+} from '../motion';
 import { CI_CABLE_SCHEDULE, CI_LABEL_SCHEME_NOTE, CI_SLACK_SCENARIO, CI_TRACE_TARGET, type CiScheduleRow } from '../data/scenarios';
 import { clamp100 } from '../engine/score';
 import type { CiModuleProps } from '../registry';
@@ -63,9 +88,119 @@ function cablePath(i: number): string {
   const s = S_Y[PERM_C[i]];
   return `M66 ${r} H76 C86 ${r} 82 ${p} 92 ${p} H156 C176 ${p} 176 ${wy} 196 ${wy} H224 C240 ${wy} 240 ${s} 256 ${s} h8`;
 }
+/** Over-estimated run length for the trace draw (over-estimating is safe). */
+const CABLE_LEN = 280;
+
+/* ── motion helpers (WhyScene idiom — primitive props only) ─────────────── */
+/** A label flag FLIPS open (width springs) and its text settles in after. */
+function LabelFlag({
+  x,
+  y,
+  w,
+  h,
+  tint,
+  delay,
+  reduce,
+  children,
+}: {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  tint: string;
+  delay: number;
+  reduce: boolean;
+  children?: ReactNode;
+}) {
+  const k = useSharedValue(reduce ? 1 : 0);
+  useEffect(() => {
+    cancelAnimation(k);
+    if (reduce) {
+      k.value = 1;
+      return;
+    }
+    k.value = 0;
+    k.value = withDelay(delay, withSpring(1, CI_SPRING_UI));
+    return () => cancelAnimation(k);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [delay, reduce]);
+  const flag = useAnimatedProps(() => ({ width: Math.max(0.01, w * k.value), opacity: Math.min(1, k.value * 2.4) }));
+  const text = useAnimatedProps(() => ({ opacity: Math.max(0, Math.min(1, (k.value - 0.55) / 0.4)) }));
+  return (
+    <>
+      <ARect
+        x={x}
+        y={y}
+        width={reduce ? w : 0.01}
+        height={h}
+        rx={1.5}
+        fill="#26262c"
+        stroke={tint}
+        strokeWidth={1}
+        opacity={reduce ? 1 : 0}
+        animatedProps={flag}
+      />
+      {children ? (
+        <AG opacity={reduce ? 1 : 0} animatedProps={text}>
+          {children}
+        </AG>
+      ) : null}
+    </>
+  );
+}
+
+/** THE TRACE: A-012 lights along its full run while a bright beam travels
+ *  source → destination. One pass, then the run stays lit. */
+function TraceBeam({ d }: { d: string }) {
+  const m = useCiMotion();
+  const draw = useDrawIn(CABLE_LEN, { run: true, duration: m.d(720) });
+  const t = useSharedValue(m.reduce ? 1 : 0);
+  useEffect(() => {
+    cancelAnimation(t);
+    if (m.reduce) {
+      t.value = 1;
+      return;
+    }
+    t.value = 0;
+    t.value = withDelay(140, withTiming(1, { duration: 880, easing: CI_EASE.inOut }));
+    return () => cancelAnimation(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [m.reduce]);
+  const beam = useAnimatedProps(() => ({
+    strokeDashoffset: 22 - t.value * (CABLE_LEN + 44),
+    opacity: Math.max(0, Math.min(1, Math.min(t.value * 7, (1 - t.value) * 5))),
+  }));
+  return (
+    <>
+      <APath
+        d={d}
+        stroke={colors.green}
+        strokeWidth={3.2}
+        fill="none"
+        strokeLinecap="round"
+        strokeDasharray={draw.dashArray}
+        strokeDashoffset={draw.restOffset}
+        animatedProps={draw.animatedProps}
+      />
+      <APath
+        d={d}
+        stroke="#eafff1"
+        strokeWidth={4.2}
+        fill="none"
+        strokeLinecap="round"
+        strokeDasharray="22 400"
+        strokeDashoffset={22}
+        opacity={0}
+        animatedProps={beam}
+      />
+    </>
+  );
+}
 
 function SystemArt({ w, labeled, found }: { w: number; labeled: boolean; found: boolean }) {
+  const m = useCiMotion();
   const h = Math.round(w * 0.42);
+  const veil = useVeil(found, 0.74);
   return (
     <Svg
       width={w}
@@ -108,7 +243,6 @@ function SystemArt({ w, labeled, found }: { w: number; labeled: boolean; found: 
       {[0, 1, 2, 3].map((i) => (
         <Path key={i} d={cablePath(i)} stroke="#4fd0e0" strokeWidth={2.2} fill="none" />
       ))}
-      {found ? <Path d={cablePath(TARGET_CABLE)} stroke={colors.green} strokeWidth={3} fill="none" /> : null}
       {/* physical cable numbers at the rack exits */}
       {[0, 1, 2, 3].map((i) => (
         <G key={i}>
@@ -118,23 +252,38 @@ function SystemArt({ w, labeled, found }: { w: number; labeled: boolean; found: 
           </SvgText>
         </G>
       ))}
-      {/* label flags at both ends once identity is assigned */}
+      {/* label flags flip open at both ends once identity is assigned */}
       {labeled
         ? [0, 1, 2, 3].map((i) => {
             const p = P_Y[PERM_A[i]];
             const s = S_Y[PERM_C[i]];
             const isTarget = found && i === TARGET_CABLE;
+            const tint = isTarget ? colors.green : '#6f7378';
             return (
               <G key={i}>
-                <Rect x={158} y={p - 12} width={32} height={9} rx={1.5} fill="#26262c" stroke={isTarget ? colors.green : '#6f7378'} strokeWidth={1} />
-                <SvgText x={174} y={p - 5} fontSize={6} fill={isTarget ? colors.green : colors.textSecondary} textAnchor="middle">
-                  {CABLE_FLAGS[i]}
-                </SvgText>
-                <Rect x={246} y={s - 9} width={9} height={6} rx={1} fill="#26262c" stroke={isTarget ? colors.green : '#6f7378'} strokeWidth={0.9} />
+                <LabelFlag x={158} y={p - 12} w={32} h={9} tint={tint} delay={i * 80} reduce={m.reduce}>
+                  <SvgText x={174} y={p - 5} fontSize={6} fill={isTarget ? colors.green : colors.textSecondary} textAnchor="middle">
+                    {CABLE_FLAGS[i]}
+                  </SvgText>
+                </LabelFlag>
+                <LabelFlag x={246} y={s - 9} w={9} h={6} tint={tint} delay={i * 80 + 45} reduce={m.reduce} />
               </G>
             );
           })
         : null}
+      {/* TRACE MODE — everything dims, then A-012 lights along its whole run */}
+      {found ? <ARect x={2} y={4} width={356} height={144} rx={10} fill="#101014" opacity={0} animatedProps={veil.animatedProps} /> : null}
+      {found ? (
+        <>
+          <TraceBeam d={cablePath(TARGET_CABLE)} />
+          <LabelFlag x={158} y={P_Y[PERM_A[TARGET_CABLE]] - 12} w={32} h={9} tint={colors.green} delay={520} reduce={m.reduce}>
+            <SvgText x={174} y={P_Y[PERM_A[TARGET_CABLE]] - 5} fontSize={6} fill={colors.green} textAnchor="middle">
+              {CABLE_FLAGS[TARGET_CABLE]}
+            </SvgText>
+          </LabelFlag>
+          <LabelFlag x={246} y={S_Y[PERM_C[TARGET_CABLE]] - 9} w={9} h={6} tint={colors.green} delay={560} reduce={m.reduce} />
+        </>
+      ) : null}
       {/* node names */}
       <SvgText x={38} y={146} fontSize={6.5} fill="#6f7378" textAnchor="middle">
         RACK R1
@@ -162,6 +311,25 @@ const DOC_COLS: { key: keyof CiScheduleRow; label: string; w: number }[] = [
   { key: 'note', label: 'NOTE', w: 168 },
 ];
 
+/** The traced row settles into its highlight once the schedule has landed. */
+function HotFill({ delay }: { delay: number }) {
+  const m = useCiMotion();
+  const k = useSharedValue(m.reduce ? 1 : 0);
+  useEffect(() => {
+    cancelAnimation(k);
+    if (m.reduce) {
+      k.value = 1;
+      return;
+    }
+    k.value = 0;
+    k.value = withDelay(delay, withSpring(1, CI_SPRING_UI));
+    return () => cancelAnimation(k);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [delay, m.reduce]);
+  const s = useAnimatedStyle(() => ({ opacity: Math.max(0, Math.min(1, k.value)) }));
+  return <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.docRowHot, s]} />;
+}
+
 function DocTable({ highlight }: { highlight: string }) {
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator style={styles.docScroll}>
@@ -173,20 +341,22 @@ function DocTable({ highlight }: { highlight: string }) {
             </Text>
           ))}
         </View>
-        {CI_CABLE_SCHEDULE.map((r) => {
+        {CI_CABLE_SCHEDULE.map((r, ri) => {
           const hot = r.cableId === highlight;
           return (
-            <View
-              key={r.cableId}
-              style={[styles.docRow, hot && styles.docRowHot]}
-              accessibilityLabel={`${r.cableId}: ${r.source} to ${r.destination}, ${r.type}, pathway ${r.pathway}${r.note ? `, note: ${r.note}` : ''}${hot ? '. The traced cable.' : ''}`}
-            >
-              {DOC_COLS.map((c) => (
-                <Text key={c.key} style={[styles.docCell, { width: c.w }, hot && c.key === 'cableId' && { color: colors.amber }]}>
-                  {r[c.key] ?? '—'}
-                </Text>
-              ))}
-            </View>
+            <Stagger key={r.cableId} index={ri}>
+              <View
+                style={styles.docRow}
+                accessibilityLabel={`${r.cableId}: ${r.source} to ${r.destination}, ${r.type}, pathway ${r.pathway}${r.note ? `, note: ${r.note}` : ''}${hot ? '. The traced cable.' : ''}`}
+              >
+                {hot ? <HotFill delay={CI_CABLE_SCHEDULE.length * CI_MOTION.stepDelay + 140} /> : null}
+                {DOC_COLS.map((c) => (
+                  <Text key={c.key} style={[styles.docCell, { width: c.w }, hot && c.key === 'cableId' && { color: colors.amber }]}>
+                    {r[c.key] ?? '—'}
+                  </Text>
+                ))}
+              </View>
+            </Stagger>
           );
         })}
       </View>
@@ -194,12 +364,63 @@ function DocTable({ highlight }: { highlight: string }) {
   );
 }
 
-/* ── service-loop visualization (honest zones) ──────────────────────────── */
+/* ── service-loop visualization (honest zones, ONE physical system) ─────── */
+/**
+ * The loop is not swapped between three pictures — it GROWS and SHRINKS on a
+ * spring as stored slack changes: the run bows into a hanging bight, the neck
+ * strap fades in once there's a dressed loop, the termination shows strain as
+ * the run pulls taut, extra coils appear as the loop becomes an unmanaged
+ * pile, and the pathway lights when the pile reaches it.
+ * All animated props are primitive (`d`, `opacity`) — see motion.tsx's rule.
+ */
 function SlackArt({ w, v }: { w: number; v: number }) {
   const h = Math.round(w * 0.5);
   const zone = v <= CI_SLACK_SCENARIO.tooLittleMax ? 'little' : v <= CI_SLACK_SCENARIO.goodMax ? 'good' : 'much';
-  const er = 3 + v * 26; // loop radius grows with stored slack
-  const spill = 46 + 2 * er > 88; // pile reaching the pathway strip
+  /** Stored slack, with mass — it follows the slider, it never snaps. */
+  const k = useSettle(v, { spring: CI_SPRING });
+
+  /** The run itself: straight and taut at 0, a deep bight at 1. */
+  const run = useAnimatedProps(() => {
+    const kv = Math.max(0, Math.min(1, k.value));
+    const a = 2 + kv * 22;
+    const b = 44 + a * 1.9;
+    return { d: `M204 44 H150 C120 44 118 ${b} 136 ${b} C154 ${b} 152 44 122 44 H72` };
+  });
+  /** Two more coils spill out of the bight once the loop stops being managed. */
+  const coilA = useAnimatedProps(() => {
+    const kv = Math.max(0, Math.min(1, k.value));
+    const a = 2 + kv * 22;
+    const b = 40 + a * 1.75;
+    return {
+      d: `M188 46 C118 46 112 ${b} 126 ${b} C142 ${b} 140 46 118 46`,
+      opacity: 0.9 * mapRange(kv, CI_SLACK_SCENARIO.goodMax, 0.9, 0, 1),
+    };
+  });
+  const coilB = useAnimatedProps(() => {
+    const kv = Math.max(0, Math.min(1, k.value));
+    const a = 2 + kv * 22;
+    const b = 48 + a * 1.85;
+    return {
+      d: `M196 42 C132 42 128 ${b} 148 ${b} C166 ${b} 162 42 130 42`,
+      opacity: 0.9 * mapRange(kv, CI_SLACK_SCENARIO.goodMax + 0.08, 1, 0, 1),
+    };
+  });
+  /** Strain at the termination as the run is pulled taut. */
+  const strain = useAnimatedProps(() => ({
+    opacity: mapRange(Math.max(0, k.value), 0.03, CI_SLACK_SCENARIO.tooLittleMax, 1, 0),
+  }));
+  /** The neck strap exists only while there IS a dressed loop. */
+  const strap = useAnimatedProps(() => {
+    const kv = Math.max(0, Math.min(1, k.value));
+    return { opacity: Math.min(mapRange(kv, 0.16, 0.3, 0, 1), mapRange(kv, CI_SLACK_SCENARIO.goodMax + 0.05, 0.92, 1, 0)) };
+  });
+  /** The pathway lights when the pile actually reaches it. */
+  const spill = useAnimatedProps(() => {
+    const kv = Math.max(0, Math.min(1, k.value));
+    const b = 44 + (2 + kv * 22) * 1.9;
+    return { opacity: mapRange(b, 78, 90, 0, 1) };
+  });
+
   return (
     <Svg width={w} height={h} viewBox="0 0 220 110" accessibilityLabel={`Rack-end service loop visualization. ${CI_SLACK_SCENARIO.notes[zone]}`}>
       <Rect x={2} y={2} width={216} height={106} rx={8} fill="#101014" />
@@ -219,31 +440,30 @@ function SlackArt({ w, v }: { w: number; v: number }) {
       <SvgText x={146} y={98} fontSize={5.5} fill="#6f7378" textAnchor="middle">
         SERVICE PATHWAY — KEEP CLEAR
       </SvgText>
-      {zone === 'little' ? (
-        <>
-          {/* taut run, no loop — strain at the termination */}
-          <Path d={`M204 44 C160 ${44 + 4 + v * 20} 116 ${44 + 4 + v * 20} 72 44`} stroke="#4fd0e0" strokeWidth={2.4} fill="none" />
-          <Path d="M70 36 l-4 -6 M76 34 v-7 M82 36 l4 -6" stroke="#ff5a48" strokeWidth={1.4} />
-        </>
-      ) : (
-        <>
-          {/* dressed loop (strapped at the neck), growing with the slider */}
-          <Path d="M204 44 C186 44 172 45 158 46" stroke="#4fd0e0" strokeWidth={2.4} fill="none" />
-          <Path d="M114 46 C100 45 86 44 72 44" stroke="#4fd0e0" strokeWidth={2.4} fill="none" />
-          <Ellipse cx={136} cy={46 + er} rx={er * 0.72} ry={er} fill="none" stroke="#4fd0e0" strokeWidth={2.4} />
-          {zone === 'much' ? (
-            <>
-              <Ellipse cx={122} cy={44 + er * 0.9} rx={er * 0.6} ry={er * 0.85} fill="none" stroke="#4fd0e0" strokeWidth={2.2} />
-              <Ellipse cx={152} cy={48 + er} rx={er * 0.66} ry={er * 1.05} fill="none" stroke="#4fd0e0" strokeWidth={2.2} />
-            </>
-          ) : (
-            <Rect x={131} y={41} width={10} height={11} rx={2} fill="none" stroke="#e8e8ea" strokeWidth={1.2} />
-          )}
-          {spill ? (
-            <Rect x={96} y={88} width={110} height={16} rx={2} fill="#ff5a48" fillOpacity={0.12} stroke="#ff5a48" strokeOpacity={0.55} strokeWidth={1.2} strokeDasharray="4 3" />
-          ) : null}
-        </>
-      )}
+      <ARect
+        x={96}
+        y={88}
+        width={110}
+        height={16}
+        rx={2}
+        fill="#ff5a48"
+        fillOpacity={0.12}
+        stroke="#ff5a48"
+        strokeOpacity={0.55}
+        strokeWidth={1.2}
+        strokeDasharray="4 3"
+        opacity={0}
+        animatedProps={spill}
+      />
+      {/* the unmanaged extra coils (behind the main run) */}
+      <APath d="M188 46 H118" stroke="#4fd0e0" strokeWidth={2.2} fill="none" opacity={0} animatedProps={coilA} />
+      <APath d="M196 42 H130" stroke="#4fd0e0" strokeWidth={2.2} fill="none" opacity={0} animatedProps={coilB} />
+      {/* the run — one continuous cable, taut to bight */}
+      <APath d="M204 44 H72" stroke="#4fd0e0" strokeWidth={2.4} fill="none" strokeLinecap="round" animatedProps={run} />
+      {/* neck strap on the dressed loop */}
+      <ARect x={131} y={45} width={14} height={11} rx={2} fill="none" stroke="#e8e8ea" strokeWidth={1.2} opacity={0} animatedProps={strap} />
+      {/* strain at the termination when the run has no give */}
+      <APath d="M70 36 l-4 -6 M76 34 v-7 M82 36 l4 -6" stroke="#ff5a48" strokeWidth={1.4} fill="none" opacity={0} animatedProps={strain} />
     </Svg>
   );
 }
@@ -252,12 +472,66 @@ const ZONE_TINT = { little: '#ff8a6b', good: colors.green, much: '#ffb45e' } as 
 const ZONE_NAME = { little: 'TOO LITTLE', good: 'INTENTIONAL', much: 'EXCESSIVE' } as const;
 
 /* ── lesson card (WhyScene idiom) ───────────────────────────────────────── */
+/** The stage's thesis — a deliberate reveal, slower than a normal card. */
+function Reveal({ children, delay = 0, style }: { children: ReactNode; delay?: number; style?: StyleProp<ViewStyle> }) {
+  const m = useCiMotion();
+  const t = useSharedValue(m.reduce ? 1 : 0);
+  useEffect(() => {
+    cancelAnimation(t);
+    if (m.reduce) {
+      t.value = 1;
+      return;
+    }
+    t.value = 0;
+    t.value = withDelay(m.d(delay), withTiming(1, { duration: CI_MOTION.reveal, easing: CI_EASE.out }));
+    return () => cancelAnimation(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [delay, m.reduce]);
+  const s = useAnimatedStyle(() => ({
+    opacity: t.value,
+    transform: [{ translateY: (1 - t.value) * 16 }, { scale: 0.975 + 0.025 * t.value }],
+  }));
+  return <Animated.View style={[style, s]}>{children}</Animated.View>;
+}
+
+/**
+ * A DEAD response: a short, flat shake and a dull flash. Deliberately
+ * unsatisfying — the point of phase A is that nothing identifies the cable,
+ * so tapping it must feel like nothing happened. No spring, no overshoot,
+ * ~190ms total.
+ */
+function DeadShake({ tick, style, children }: { tick: number; style?: StyleProp<ViewStyle>; children: ReactNode }) {
+  const m = useCiMotion();
+  const x = useSharedValue(0);
+  const o = useSharedValue(1);
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) {
+      first.current = false;
+      return;
+    }
+    if (m.reduce) return;
+    cancelAnimation(x);
+    cancelAnimation(o);
+    x.value = withSequence(
+      withTiming(-3, { duration: 42, easing: CI_EASE.linear }),
+      withTiming(3, { duration: 52, easing: CI_EASE.linear }),
+      withTiming(-2, { duration: 46, easing: CI_EASE.linear }),
+      withTiming(0, { duration: 50, easing: CI_EASE.linear }),
+    );
+    o.value = withSequence(withTiming(0.5, { duration: 60, easing: CI_EASE.linear }), withTiming(1, { duration: 160, easing: CI_EASE.linear }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tick, m.reduce]);
+  const s = useAnimatedStyle(() => ({ opacity: o.value, transform: [{ translateX: x.value }] }));
+  return <Animated.View style={[style, s]}>{children}</Animated.View>;
+}
+
 function LessonCard({ head, body }: { head: string; body: string }) {
   return (
-    <View style={styles.lessonCard}>
+    <Reveal style={styles.lessonCard}>
       <Text style={styles.lessonHead}>{head}</Text>
       <Text style={styles.lessonBody}>{body}</Text>
-    </View>
+    </Reveal>
   );
 }
 
@@ -281,6 +555,14 @@ export function LabelScene({ width, completed, onComplete, openSources }: CiModu
   const [dWrong, setDWrong] = useState(0);
   const [dMiss, setDMiss] = useState<'little' | 'much' | null>(null);
   const [fired, setFired] = useState(completed);
+  /** Per-cable "nothing happened" shake counters (phases A and C). */
+  const [shakes, setShakes] = useState<number[]>([0, 0, 0, 0]);
+  const shake = (i: number) =>
+    setShakes((s) => {
+      const n = [...s];
+      n[i] += 1;
+      return n;
+    });
 
   const zone: 'little' | 'good' | 'much' =
     slack <= CI_SLACK_SCENARIO.tooLittleMax ? 'little' : slack <= CI_SLACK_SCENARIO.goodMax ? 'good' : 'much';
@@ -290,6 +572,7 @@ export function LabelScene({ width, completed, onComplete, openSources }: CiModu
     const next = new Set(aTapped);
     next.add(i);
     setATapped(next);
+    shake(i); // nothing identifies it — the tap gives nothing back
     AccessibilityInfo.announceForAccessibility(
       next.size >= 3
         ? 'Unlabeled cable — identical to the others. Three inspected, nothing learned. Without identity, every fault is archaeology.'
@@ -317,6 +600,7 @@ export function LabelScene({ width, completed, onComplete, openSources }: CiModu
     } else {
       setCWrong((n) => n + 1);
       setCLastWrong(i);
+      shake(i);
       AccessibilityInfo.announceForAccessibility(`That flag reads ${CABLE_FLAGS[i]} — you're looking for ${CI_TRACE_TARGET}.`);
     }
   };
@@ -363,20 +647,21 @@ export function LabelScene({ width, completed, onComplete, openSources }: CiModu
           {[0, 1, 2, 3].map((i) => {
             const tapped = aTapped.has(i);
             return (
-              <Pressable
-                key={i}
-                style={[styles.cableBtn, styles.cableBtnHalf, tapped && styles.cableBtnTapped]}
-                onPress={() => tapCableA(i)}
-                disabled={aDone || tapped}
-                accessibilityRole="button"
-                accessibilityState={{ disabled: aDone || tapped }}
-                accessibilityLabel={`Cable ${i + 1}${tapped ? '. Inspected: unlabeled, identical to the others' : aDone ? '. Identical to the rest — no point inspecting further' : '. Tap to inspect'}`}
-              >
-                <Text style={styles.cableBtnName}>CABLE {i + 1}</Text>
-                <Text style={[styles.cableBtnSub, tapped && { color: '#ff9b8f' }]}>
-                  {tapped ? '❓ unlabeled — identical to the rest' : aDone ? 'identical — no point continuing' : 'tap to inspect'}
-                </Text>
-              </Pressable>
+              <DeadShake key={i} tick={shakes[i]} style={styles.cableBtnHalf}>
+                <Pressable
+                  style={[styles.cableBtn, tapped && styles.cableBtnTapped]}
+                  onPress={() => tapCableA(i)}
+                  disabled={aDone || tapped}
+                  accessibilityRole="button"
+                  accessibilityState={{ disabled: aDone || tapped }}
+                  accessibilityLabel={`Cable ${i + 1}${tapped ? '. Inspected: unlabeled, identical to the others' : aDone ? '. Identical to the rest — no point inspecting further' : '. Tap to inspect'}`}
+                >
+                  <Text style={styles.cableBtnName}>CABLE {i + 1}</Text>
+                  <Text style={[styles.cableBtnSub, tapped && { color: '#ff9b8f' }]}>
+                    {tapped ? '❓ unlabeled — identical to the rest' : aDone ? 'identical — no point continuing' : 'tap to inspect'}
+                  </Text>
+                </Pressable>
+              </DeadShake>
             );
           })}
         </View>
@@ -390,6 +675,7 @@ export function LabelScene({ width, completed, onComplete, openSources }: CiModu
 
       {/* ── B · ASSIGN IDENTITY ─────────────────────────────────────────── */}
       {aDone ? (
+        <Appear>
         <CiSection title="B · ASSIGN IDENTITY — LABEL THE RUN">
           <SpecCard text={CI_LABEL_SCHEME_NOTE} />
           <Text style={styles.lead}>
@@ -432,22 +718,24 @@ export function LabelScene({ width, completed, onComplete, openSources }: CiModu
             </Pressable>
           ) : null}
           {bDone ? (
-            <>
+            <Appear style={{ gap: 8 }}>
               <VerdictBanner
                 verdict="correct"
                 text="Both ends of the run now carry unique, readable, durable identity that matches the records: STG-A-IN12 → R1-PP2-12, cable A-012."
               />
               <RuleFeedback ruleId="label-both-ends" verdict="good" openSources={openSources} />
               <RuleFeedback ruleId="label-scheme-consistent" verdict="info" openSources={openSources} />
-            </>
+            </Appear>
           ) : bShowMiss ? (
             <VerdictBanner verdict="wrong" text={bHint} />
           ) : null}
         </CiSection>
+        </Appear>
       ) : null}
 
       {/* ── C · TRACE TEST + THE DOCUMENTATION ──────────────────────────── */}
       {bDone ? (
+        <Appear>
         <CiSection title="C · TRACE TEST — SAME FAULT, LABELED SYSTEM">
           <Text style={styles.lead}>
             The flags are on (see the system above — both ends). Same four cables: which physical cable is{' '}
@@ -458,26 +746,29 @@ export function LabelScene({ width, completed, onComplete, openSources }: CiModu
               const isTarget = i === TARGET_CABLE;
               const missed = cLastWrong === i;
               return (
-                <Pressable
-                  key={i}
-                  style={[styles.cableBtn, cFound && isTarget && styles.cableBtnFound, missed && !cFound && styles.cableBtnMiss]}
-                  onPress={() => tapCableC(i)}
-                  disabled={cFound}
-                  accessibilityRole="button"
-                  accessibilityState={{ disabled: cFound, selected: cFound && isTarget }}
-                  accessibilityLabel={`Cable ${i + 1}, flag reads ${CABLE_FLAGS[i]}${cFound && isTarget ? '. Traced — this is the one.' : ''}`}
-                >
-                  <Text style={styles.cableBtnName}>CABLE {i + 1}</Text>
-                  <Text style={[styles.cableBtnSub, cFound && isTarget && { color: colors.green }]}>
-                    flag: {CABLE_FLAGS[i]}
-                    {cFound && isTarget ? '  ✓ traced' : missed && !cFound ? '  ✕ not it' : ''}
-                  </Text>
-                </Pressable>
+                <Stagger key={i} index={i}>
+                  <DeadShake tick={shakes[i]}>
+                    <Pressable
+                      style={[styles.cableBtn, cFound && isTarget && styles.cableBtnFound, missed && !cFound && styles.cableBtnMiss]}
+                      onPress={() => tapCableC(i)}
+                      disabled={cFound}
+                      accessibilityRole="button"
+                      accessibilityState={{ disabled: cFound, selected: cFound && isTarget }}
+                      accessibilityLabel={`Cable ${i + 1}, flag reads ${CABLE_FLAGS[i]}${cFound && isTarget ? '. Traced — this is the one.' : ''}`}
+                    >
+                      <Text style={styles.cableBtnName}>CABLE {i + 1}</Text>
+                      <Text style={[styles.cableBtnSub, cFound && isTarget && { color: colors.green }]}>
+                        flag: {CABLE_FLAGS[i]}
+                        {cFound && isTarget ? '  ✓ traced' : missed && !cFound ? '  ✕ not it' : ''}
+                      </Text>
+                    </Pressable>
+                  </DeadShake>
+                </Stagger>
               );
             })}
           </View>
           {cFound ? (
-            <>
+            <Appear style={{ gap: 8 }} delay={CI_MOTION.quick}>
               <VerdictBanner
                 verdict="correct"
                 text="Cable 3, in seconds — the flag says A-012, so it IS A-012. Yesterday this exact fault produced three guesses and nothing."
@@ -489,13 +780,15 @@ export function LabelScene({ width, completed, onComplete, openSources }: CiModu
               </Text>
               <DocTable highlight={CI_TRACE_TARGET} />
               <RuleFeedback ruleId="label-docs-match" verdict="good" openSources={openSources} />
-            </>
+            </Appear>
           ) : null}
         </CiSection>
+        </Appear>
       ) : null}
 
       {/* ── D · SERVICE LOOPS ───────────────────────────────────────────── */}
       {cFound ? (
+        <Appear delay={CI_MOTION.quick}>
         <CiSection title="D · SERVICE LOOPS — STORED SLACK">
           <SpecCard text={CI_SLACK_SCENARIO.brief} />
           <Text style={styles.lead}>
@@ -527,17 +820,18 @@ export function LabelScene({ width, completed, onComplete, openSources }: CiModu
             </Pressable>
           ) : null}
           {dDone ? (
-            <>
+            <Appear style={{ gap: 8 }}>
               <VerdictBanner
                 verdict="correct"
                 text="Dressed, reachable, sized to the service need — one full re-termination stored without blocking the pathway. Slack is a design decision, not leftovers."
               />
               <RuleFeedback ruleId="slack-intentional" verdict="good" openSources={openSources} />
-            </>
+            </Appear>
           ) : dMiss ? (
             <VerdictBanner verdict="wrong" text={CI_SLACK_SCENARIO.notes[dMiss]} />
           ) : null}
         </CiSection>
+        </Appear>
       ) : null}
     </View>
   );

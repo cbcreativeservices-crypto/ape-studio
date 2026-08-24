@@ -13,14 +13,32 @@
  * onComplete({ safety, protection, workmanship }) scored from the chosen
  * routes' evaluated dimensions plus stage-craft calls and coil quality.
  *
+ * ── MOTION (owner 2026-08-24: the lab shipped static) ──────────────────────
+ *   A  the deck installs itself on arrival, a performer crosses the webbed
+ *      lane ONCE, and every correction is a TRANSFORM: the found run retracts
+ *      toward the box, then the professional run draws in behind it. No cuts.
+ *   B/C routes draw in staggered; the pick RE-INSTALLS itself while the others
+ *      fade back; dimension bars fill and the picked card's numbers count up;
+ *      one deliberate traffic pass crosses the hazardous route, flashing at
+ *      the conflict point.
+ *   D  THE HERO: each tap draws that loop in along its arc (~250ms) and springs
+ *      to rest; the alternating lay is in the geometry; stored twist makes the
+ *      whole coil tighten and writhe (radii, tilt and spacing all animate);
+ *      the twist meter sweeps and cross-fades; a clean coil settles with one
+ *      spring and the verdict appears.
+ * Primitive props only (cx/cy/r/rx/ry/x1..y2/width/opacity/strokeWidth/
+ * strokeDashoffset/d) — never a transform on <G>, per motion.tsx.
+ *
  * Accessibility: every interaction is a labeled button ≥44dp (no drag);
  * verdicts render as glyph + words + color and are announced; the coil is
  * driven by two large buttons by design. Route/plan art is a qualitative
- * training visualization (stated in-scene); training tints only.
+ * training visualization (stated in-scene); training tints only. Reduced
+ * motion collapses every duration to 0 — identical end state, no loops.
  */
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Ellipse, G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import type { SharedValue } from 'react-native-reanimated';
 import { colors, fonts } from '../../../../theme/tokens';
 import { OptionChip } from '../../cable/lessons/bits';
 import { CiSection, RuleFeedback, announceComplete } from '../bits';
@@ -28,6 +46,29 @@ import { CI_CLASS_TINTS } from '../data/cableTypes';
 import { CI_FLOOR_SCENARIOS, CI_OVERUNDER_STEPS, type CiRouteScenario } from '../data/scenarios';
 import { evaluateRoute, rankRoutes, type CiRouteFlag } from '../engine/routeEval';
 import { CI_DIMS, CI_DIM_META } from '../engine/score';
+import {
+  ACircle,
+  AG,
+  APath,
+  Animated,
+  Appear,
+  CI_EASE,
+  CI_MOTION,
+  CI_SPRING,
+  Stagger,
+  cancelAnimation,
+  useAnimatedProps,
+  useAnimatedStyle,
+  useCiMotion,
+  useCountUp,
+  useSettle,
+  useSharedValue,
+  useTween,
+  withDelay,
+  withSequence,
+  withSpring,
+  withTiming,
+} from '../motion';
 import type { CiModuleProps } from '../registry';
 
 /* ── (A) stage-craft decisions ──────────────────────────────────────────── */
@@ -63,6 +104,239 @@ const CRAFT_DECISIONS: CraftDecision[] = [
 
 const ROUTE_TINTS = ['#ffd35e', '#4fd0e0', '#c77dff'] as const;
 const LETTERS = ['A', 'B', 'C'] as const;
+
+/* ── motion primitives shared by the plans ──────────────────────────────── */
+/** How long the found run takes to pull back before the correct one installs. */
+const RETRACT_MS = 250;
+
+/**
+ * A run that either belongs to the found state ('bad') or the professional
+ * state ('good'). One prop, `fixed`, drives the whole transform: the bad run
+ * retracts toward its origin, then the good run draws in behind it — the plan
+ * never cuts between two pictures.
+ */
+function SwapPath({
+  d,
+  len,
+  tint,
+  width,
+  mode,
+  fixed,
+  delay = 0,
+  intro = 0,
+}: {
+  d: string;
+  len: number;
+  tint: string;
+  width: number;
+  mode: 'bad' | 'good';
+  fixed: boolean;
+  delay?: number;
+  /** Mount stagger — the deck installs itself when the scene arrives. */
+  intro?: number;
+}) {
+  const m = useCiMotion();
+  const target = mode === 'bad' ? (fixed ? 0 : 1) : fixed ? 1 : 0;
+  const v = useSharedValue(mode === 'bad' && !fixed ? 0 : target);
+  const first = useRef(true);
+  const drawMs = Math.min(CI_MOTION.draw, 240 + len * 1.6);
+
+  useEffect(() => {
+    cancelAnimation(v);
+    if (first.current) {
+      first.current = false;
+      if (m.reduce || target === 0) {
+        v.value = target;
+        return;
+      }
+      v.value = 0;
+      v.value = withDelay(intro, withTiming(1, { duration: drawMs, easing: CI_EASE.out }));
+      return;
+    }
+    if (m.reduce) {
+      v.value = target;
+      return;
+    }
+    v.value =
+      mode === 'bad'
+        ? withTiming(target, { duration: RETRACT_MS, easing: CI_EASE.inOut })
+        : withDelay(RETRACT_MS + delay, withTiming(target, { duration: drawMs, easing: CI_EASE.out }));
+    return () => cancelAnimation(v);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [target, mode, m.reduce]);
+
+  const animatedProps = useAnimatedProps(() => ({
+    strokeDashoffset: len * (1 - v.value),
+    // kill the round cap's leftover dot when the run is fully retracted
+    opacity: v.value < 0.015 ? 0 : 1,
+  }));
+
+  return (
+    <APath
+      d={d}
+      stroke={tint}
+      strokeWidth={width}
+      fill="none"
+      strokeLinecap="round"
+      strokeDasharray={len}
+      strokeDashoffset={len}
+      opacity={0}
+      animatedProps={animatedProps}
+    />
+  );
+}
+
+/** A loop of slack that shrinks away, or lands at the box with mass. */
+function SwapCircle({
+  cx,
+  cy,
+  r,
+  tint,
+  width,
+  show,
+  delay = 0,
+}: {
+  cx: number;
+  cy: number;
+  r: number;
+  tint: string;
+  width: number;
+  show: boolean;
+  delay?: number;
+}) {
+  const m = useCiMotion();
+  const v = useSharedValue(show ? 1 : 0);
+  const first = useRef(true);
+  useEffect(() => {
+    cancelAnimation(v);
+    if (first.current) {
+      first.current = false;
+      v.value = show ? 1 : 0;
+      return;
+    }
+    if (m.reduce) {
+      v.value = show ? 1 : 0;
+      return;
+    }
+    v.value = show
+      ? withDelay(RETRACT_MS + delay, withSpring(1, CI_SPRING))
+      : withTiming(0, { duration: RETRACT_MS, easing: CI_EASE.inOut });
+    return () => cancelAnimation(v);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [show, m.reduce]);
+  const animatedProps = useAnimatedProps(() => ({
+    r: Math.max(0.01, r * v.value),
+    opacity: Math.min(1, v.value * 1.8),
+  }));
+  return <ACircle cx={cx} cy={cy} r={show ? r : 0.01} fill="none" stroke={tint} strokeWidth={width} opacity={show ? 1 : 0} animatedProps={animatedProps} />;
+}
+
+/** Fades a group of static furniture (risers, protectors) with the swap. */
+function SwapGroup({ show, delay = 0, children }: { show: boolean; delay?: number; children: ReactNode }) {
+  const m = useCiMotion();
+  const v = useSharedValue(show ? 1 : 0);
+  const first = useRef(true);
+  useEffect(() => {
+    cancelAnimation(v);
+    if (first.current) {
+      first.current = false;
+      v.value = show ? 1 : 0;
+      return;
+    }
+    if (m.reduce) {
+      v.value = show ? 1 : 0;
+      return;
+    }
+    v.value = show
+      ? withDelay(RETRACT_MS + delay, withTiming(1, { duration: CI_MOTION.base, easing: CI_EASE.out }))
+      : withTiming(0, { duration: CI_MOTION.quick, easing: CI_EASE.inOut });
+    return () => cancelAnimation(v);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [show, m.reduce]);
+  const animatedProps = useAnimatedProps(() => ({ opacity: v.value }));
+  return (
+    <AG opacity={show ? 1 : 0} animatedProps={animatedProps}>
+      {children}
+    </AG>
+  );
+}
+
+/**
+ * ONE deliberate pass of traffic across a run — a foot or a rolling case —
+ * with a flash at the conflict point. Never loops: it makes the point once.
+ */
+function TrafficPass({
+  x1,
+  y1,
+  x2,
+  y2,
+  run,
+  delay = 0,
+  duration = 1700,
+  tint = '#e8e8ea',
+  cart = false,
+  crossAt,
+}: {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  run: boolean;
+  delay?: number;
+  duration?: number;
+  tint?: string;
+  /** Two wheels + axle instead of a single foot marker. */
+  cart?: boolean;
+  /** Fraction along the pass where it crosses the cable (flash point). */
+  crossAt: number;
+}) {
+  const m = useCiMotion();
+  const t = useSharedValue(0);
+  useEffect(() => {
+    cancelAnimation(t);
+    if (!run || m.reduce) {
+      t.value = 0;
+      return;
+    }
+    t.value = 0;
+    t.value = withDelay(delay, withTiming(1, { duration, easing: CI_EASE.inOut }));
+    return () => cancelAnimation(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [run, delay, duration, m.reduce]);
+
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const nlen = Math.max(1, Math.hypot(dx, dy));
+  // perpendicular offset for the cart's second wheel
+  const px = (-dy / nlen) * 6;
+  const py = (dx / nlen) * 6;
+  const fx = x1 + dx * crossAt;
+  const fy = y1 + dy * crossAt;
+
+  const leadProps = useAnimatedProps(() => {
+    const p = t.value;
+    const vis = p <= 0 || p >= 1 ? 0 : Math.min(1, Math.min(p, 1 - p) * 7);
+    return { cx: x1 + dx * p, cy: y1 + dy * p, opacity: vis * 0.92 };
+  });
+  const trailProps = useAnimatedProps(() => {
+    const p = t.value;
+    const vis = p <= 0 || p >= 1 ? 0 : Math.min(1, Math.min(p, 1 - p) * 7);
+    return { cx: x1 + dx * p + px, cy: y1 + dy * p + py, opacity: vis * 0.92 };
+  });
+  const flashProps = useAnimatedProps(() => {
+    const dd = t.value - crossAt;
+    const g = t.value <= 0 ? 0 : Math.exp(-(dd * dd) / 0.0032);
+    return { r: 4 + 11 * g, opacity: 0.8 * g };
+  });
+
+  return (
+    <G>
+      <ACircle cx={fx} cy={fy} r={4} fill="none" stroke="#ff9b8f" strokeWidth={1.8} opacity={0} animatedProps={flashProps} />
+      <ACircle cx={x1} cy={y1} r={cart ? 3.4 : 4.2} fill={tint} opacity={0} animatedProps={leadProps} />
+      {cart ? <ACircle cx={x1 + px} cy={y1 + py} r={3.4} fill={tint} opacity={0} animatedProps={trailProps} /> : null}
+    </G>
+  );
+}
 
 /* ── stage plan (A) — redraws each aspect as its call is made ───────────── */
 function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFixed: boolean; slackFixed: boolean; monFixed: boolean }) {
@@ -109,57 +383,135 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
       <Rect x={318} y={146} width={30} height={20} rx={3} fill="#17171c" stroke="#6f7378" strokeWidth={1.2} />
       <SvgText x={333} y={159} fill="#a6a6ad" fontSize={7} textAnchor="middle">MON</SvgText>
 
-      {/* MIC ROUTING — bad web vs edge-routed */}
-      {routeFixed ? (
-        <G>
-          <Path d="M30 138 V36 H118 V79" stroke={mic} strokeWidth={2.4} fill="none" strokeLinecap="round" />
-          <Path d="M34 138 V40 H198 V71" stroke={mic} strokeWidth={2.4} fill="none" strokeLinecap="round" />
-          <Path d="M38 138 V44 H280 V79" stroke={mic} strokeWidth={2.4} fill="none" strokeLinecap="round" />
-        </G>
-      ) : (
-        <G>
-          <Path d="M40 140 C90 150 110 120 120 90" stroke={mic} strokeWidth={2.4} fill="none" strokeLinecap="round" />
-          <Path d="M44 146 C130 150 170 120 200 82" stroke={mic} strokeWidth={2.4} fill="none" strokeLinecap="round" />
-          <Path d="M48 150 C170 156 240 130 282 90" stroke={mic} strokeWidth={2.4} fill="none" strokeLinecap="round" />
-        </G>
-      )}
+      {/* MIC ROUTING — the web retracts, the edge route installs itself */}
+      <SwapPath d="M40 140 C90 150 110 120 120 90" len={115} tint={mic} width={2.4} mode="bad" fixed={routeFixed} intro={120} />
+      <SwapPath d="M44 146 C130 150 170 120 200 82" len={190} tint={mic} width={2.4} mode="bad" fixed={routeFixed} intro={200} />
+      <SwapPath d="M48 150 C170 156 240 130 282 90" len={260} tint={mic} width={2.4} mode="bad" fixed={routeFixed} intro={280} />
+      <SwapPath d="M30 138 V36 H118 V79" len={240} tint={mic} width={2.4} mode="good" fixed={routeFixed} delay={0} />
+      <SwapPath d="M34 138 V40 H198 V71" len={300} tint={mic} width={2.4} mode="good" fixed={routeFixed} delay={90} />
+      <SwapPath d="M38 138 V44 H280 V79" len={380} tint={mic} width={2.4} mode="good" fixed={routeFixed} delay={180} />
 
-      {/* SLACK — loose loops vs coil dressed at the box */}
-      {slackFixed ? (
-        <G>
-          <Circle cx={64} cy={150} r={7} fill="none" stroke={mic} strokeWidth={2} />
-          <Circle cx={64} cy={150} r={10.5} fill="none" stroke={mic} strokeWidth={2} />
-        </G>
-      ) : (
-        <G>
-          <Circle cx={150} cy={140} r={8} fill="none" stroke={mic} strokeWidth={2} />
-          <Circle cx={166} cy={132} r={6} fill="none" stroke={mic} strokeWidth={2} />
-          <Circle cx={140} cy={126} r={5} fill="none" stroke={mic} strokeWidth={2} />
-        </G>
-      )}
+      {/* SLACK — loose loops shrink away, the dressed coil lands at the box */}
+      <SwapCircle cx={150} cy={140} r={8} tint={mic} width={2} show={!slackFixed} />
+      <SwapCircle cx={166} cy={132} r={6} tint={mic} width={2} show={!slackFixed} />
+      <SwapCircle cx={140} cy={126} r={5} tint={mic} width={2} show={!slackFixed} />
+      <SwapCircle cx={64} cy={150} r={7} tint={mic} width={2} show={slackFixed} />
+      <SwapCircle cx={64} cy={150} r={10.5} tint={mic} width={2} show={slackFixed} delay={80} />
 
-      {/* MONITOR FEEDS — bare across the deck vs dressed edge + protector */}
-      {monFixed ? (
-        <G>
-          <Path d="M322 166 H131" stroke={spk} strokeWidth={2.6} fill="none" strokeLinecap="round" />
-          {[131, 209, 287].map((x) => (
-            <Line key={`mu${x}`} x1={x} y1={166} x2={x} y2={161} stroke={spk} strokeWidth={2.2} />
-          ))}
-          <Path d="M230 170 l6 -7 h20 l6 7 z" fill="#26262c" stroke="#6f7378" strokeWidth={1.2} />
-        </G>
-      ) : (
-        <G>
-          <Path d="M322 158 C250 128 215 150 209 155" stroke={spk} strokeWidth={2.4} fill="none" strokeLinecap="round" />
-          <Path d="M322 162 C240 136 180 150 131 157" stroke={spk} strokeWidth={2.4} fill="none" strokeLinecap="round" />
-          <Circle cx={252} cy={140} r={7} fill="none" stroke={spk} strokeWidth={2} />
-        </G>
-      )}
+      {/* MONITOR FEEDS — bare lines retract, the dressed edge draws in */}
+      <SwapPath d="M322 158 C250 128 215 150 209 155" len={130} tint={spk} width={2.4} mode="bad" fixed={monFixed} intro={360} />
+      <SwapPath d="M322 162 C240 136 180 150 131 157" len={205} tint={spk} width={2.4} mode="bad" fixed={monFixed} intro={430} />
+      <SwapCircle cx={252} cy={140} r={7} tint={spk} width={2} show={!monFixed} />
+      <SwapPath d="M322 166 H131" len={200} tint={spk} width={2.6} mode="good" fixed={monFixed} />
+      <SwapGroup show={monFixed} delay={220}>
+        {[131, 209, 287].map((x) => (
+          <Line key={`mu${x}`} x1={x} y1={166} x2={x} y2={161} stroke={spk} strokeWidth={2.2} />
+        ))}
+        <Path d="M230 170 l6 -7 h20 l6 7 z" fill="#26262c" stroke="#6f7378" strokeWidth={1.2} />
+      </SwapGroup>
+
+      {/* one performer crosses the web — the conflict, shown once */}
+      <TrafficPass x1={104} y1={126} x2={300} y2={120} run={!routeFixed} delay={780} duration={1900} crossAt={0.36} />
     </Svg>
   );
 }
 
+/* ── route drawing shared by the FOH + backstage plans ──────────────────── */
+type RoutePhase = 'idle' | 'install' | 'dim';
+
+/**
+ * A route that installs itself. On arrival each route draws in on its stagger
+ * beat; when the learner picks, the chosen route RE-INSTALLS at full weight
+ * and the rejected ones fade back. Dashed routes (overhead, above the floor)
+ * install as a solid run that dissolves into their dashed identity, so the
+ * geometry never lies about where the cable lives.
+ */
+function RoutePath({
+  d,
+  len,
+  tint,
+  width,
+  phase,
+  index,
+  dashed = false,
+}: {
+  d: string;
+  len: number;
+  tint: string;
+  width: number;
+  phase: RoutePhase;
+  index: number;
+  dashed?: boolean;
+}) {
+  const m = useCiMotion();
+  const p = useSharedValue(0);
+  const o = useSharedValue(1);
+  const first = useRef(true);
+  const drawMs = Math.min(CI_MOTION.draw, 260 + len * 1.5);
+
+  useEffect(() => {
+    cancelAnimation(p);
+    cancelAnimation(o);
+    if (m.reduce) {
+      p.value = 1;
+      o.value = phase === 'dim' ? 0.22 : 1;
+      first.current = false;
+      return;
+    }
+    if (first.current) {
+      first.current = false;
+      p.value = 0;
+      p.value = withDelay(160 + index * 170, withTiming(1, { duration: drawMs, easing: CI_EASE.out }));
+      o.value = 1;
+      return;
+    }
+    if (phase === 'install') {
+      p.value = 0;
+      p.value = withTiming(1, { duration: drawMs, easing: CI_EASE.out });
+    } else {
+      p.value = withTiming(1, { duration: CI_MOTION.quick, easing: CI_EASE.out });
+    }
+    o.value = withTiming(phase === 'dim' ? 0.22 : 1, { duration: CI_MOTION.base, easing: CI_EASE.inOut });
+    return () => {
+      cancelAnimation(p);
+      cancelAnimation(o);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, m.reduce]);
+
+  const installer = useAnimatedProps(() => ({
+    strokeDashoffset: len * (1 - p.value),
+    strokeWidth: width * (phase === 'install' ? 1.22 : 1),
+    opacity: dashed ? Math.max(0, 1 - Math.max(0, (p.value - 0.82) / 0.18)) * o.value : o.value,
+  }));
+  const settled = useAnimatedProps(() => ({
+    opacity: Math.min(1, Math.max(0, (p.value - 0.78) / 0.22)) * o.value,
+    strokeWidth: width * (phase === 'install' ? 1.22 : 1),
+  }));
+
+  return (
+    <G>
+      <APath
+        d={d}
+        stroke={tint}
+        strokeWidth={width}
+        fill="none"
+        strokeDasharray={len}
+        strokeDashoffset={len}
+        opacity={0}
+        animatedProps={installer}
+      />
+      {dashed ? (
+        <APath d={d} stroke={tint} strokeWidth={width} fill="none" strokeDasharray="7,5" opacity={0} animatedProps={settled} />
+      ) : null}
+    </G>
+  );
+}
+
+const phaseFor = (i: number, pick: number | null): RoutePhase => (pick == null ? 'idle' : pick === i ? 'install' : 'dim');
+
 /* ── FOH venue plan (B) ─────────────────────────────────────────────────── */
-function FohPlan({ w }: { w: number }) {
+function FohPlan({ w, pick }: { w: number; pick: number | null }) {
   const h = Math.round(w * (210 / 360));
   return (
     <Svg
@@ -190,18 +542,20 @@ function FohPlan({ w }: { w: number }) {
       <Rect x={58} y={200} width={26} height={6} fill="#26262c" />
       <Rect x={276} y={200} width={26} height={6} fill="#26262c" />
       {/* ROUTE A — center aisle under ramp (amber) */}
-      <Path d="M180 48 V170" stroke={ROUTE_TINTS[0]} strokeWidth={2.8} fill="none" />
+      <RoutePath d="M180 48 V170" len={130} tint={ROUTE_TINTS[0]} width={2.8} phase={phaseFor(0, pick)} index={0} />
       {[64, 80, 96, 112, 128, 144, 160].map((y) => (
         <Line key={`ramp${y}`} x1={173} y1={y} x2={187} y2={y} stroke="#6f7378" strokeWidth={1.2} />
       ))}
       {/* ROUTE B — perimeter with one protected door crossing (teal) */}
-      <Path d="M66 48 H26 V178 H150" stroke={ROUTE_TINTS[1]} strokeWidth={2.8} fill="none" />
+      <RoutePath d="M66 48 H26 V178 H150" len={300} tint={ROUTE_TINTS[1]} width={2.8} phase={phaseFor(1, pick)} index={1} />
       <Path d="M18 112 l8 -5 v22 l-8 -5 z" fill="#26262c" stroke="#6f7378" strokeWidth={1.1} />
       {/* ROUTE C — overhead hop on rated points (purple, dashed = above the floor) */}
-      <Path d="M294 48 C334 72 338 132 214 174" stroke={ROUTE_TINTS[2]} strokeWidth={2.6} fill="none" strokeDasharray="7,5" />
+      <RoutePath d="M294 48 C334 72 338 132 214 174" len={200} tint={ROUTE_TINTS[2]} width={2.6} phase={phaseFor(2, pick)} index={2} dashed />
       <Circle cx={322} cy={78} r={3.2} fill="none" stroke={ROUTE_TINTS[2]} strokeWidth={1.6} />
       <Circle cx={314} cy={140} r={3.2} fill="none" stroke={ROUTE_TINTS[2]} strokeWidth={1.6} />
       <SvgText x={252} y={70} fill="#6f7378" fontSize={7}>OVERHEAD · RATED PTS</SvgText>
+      {/* audience crosses the aisle run — once, when the verdicts land */}
+      <TrafficPass x1={146} y1={120} x2={216} y2={120} run={pick != null} delay={820} duration={1700} crossAt={0.486} />
       {/* letters */}
       <RouteLetter x={168} y={64} i={0} />
       <RouteLetter x={40} y={64} i={1} />
@@ -211,7 +565,7 @@ function FohPlan({ w }: { w: number }) {
 }
 
 /* ── backstage plan (C) ─────────────────────────────────────────────────── */
-function BackstagePlan({ w }: { w: number }) {
+function BackstagePlan({ w, pick }: { w: number; pick: number | null }) {
   const h = Math.round(w * (210 / 360));
   return (
     <Svg
@@ -247,17 +601,19 @@ function BackstagePlan({ w }: { w: number }) {
       <Rect x={296} y={168} width={52} height={30} rx={3} fill="#17171c" stroke="#6f7378" strokeWidth={1.2} />
       <SvgText x={322} y={186} fill="#a6a6ad" fontSize={7} textAnchor="middle">MON WORLD</SvgText>
       {/* ROUTE A — straight across under a mat (amber) */}
-      <Path d="M48 100 L296 178" stroke={ROUTE_TINTS[0]} strokeWidth={2.8} fill="none" />
+      <RoutePath d="M48 100 L296 178" len={270} tint={ROUTE_TINTS[0]} width={2.8} phase={phaseFor(0, pick)} index={0} />
       <Rect x={172} y={134} width={30} height={12} rx={2} fill="#1f1f24" stroke="#6f7378" strokeWidth={1.1} />
       <SvgText x={187} y={130} fill="#6f7378" fontSize={7} textAnchor="middle">MAT</SvgText>
       {/* ROUTE B — one marked, vehicle-rated crossing (teal) */}
-      <Path d="M48 106 V178 H296" stroke={ROUTE_TINTS[1]} strokeWidth={2.8} fill="none" />
+      <RoutePath d="M48 106 V178 H296" len={330} tint={ROUTE_TINTS[1]} width={2.8} phase={phaseFor(1, pick)} index={1} />
       <Path d="M206 184 l8 -9 h22 l8 9 z" fill="#26262c" stroke="#6f7378" strokeWidth={1.2} />
       <Line x1={200} y1={168} x2={200} y2={190} stroke={CI_CLASS_TINTS.speaker} strokeWidth={1.4} strokeDasharray="3,3" />
       <Line x1={248} y1={168} x2={248} y2={190} stroke={CI_CLASS_TINTS.speaker} strokeWidth={1.4} strokeDasharray="3,3" />
       <SvgText x={224} y={164} fill="#6f7378" fontSize={7} textAnchor="middle">RATED + MARKED</SvgText>
       {/* ROUTE C — long perimeter behind the cases (purple) */}
-      <Path d="M48 94 V30 H292 V172 H296" stroke={ROUTE_TINTS[2]} strokeWidth={2.6} fill="none" />
+      <RoutePath d="M48 94 V30 H292 V172 H296" len={470} tint={ROUTE_TINTS[2]} width={2.6} phase={phaseFor(2, pick)} index={2} />
+      {/* a case rolls the load-in path once — and finds the mat crossing */}
+      <TrafficPass x1={76} y1={10} x2={234} y2={204} run={pick != null} delay={900} duration={2000} cart crossAt={0.684} />
       {/* letters */}
       <RouteLetter x={120} y={126} i={0} />
       <RouteLetter x={62} y={150} i={1} />
@@ -276,21 +632,49 @@ function RouteLetter({ x, y, i }: { x: number; y: number; i: number }) {
 }
 
 /* ── per-dimension mini bars for a route verdict ────────────────────────── */
-function DimMiniBars({ dims }: { dims: Partial<Record<(typeof CI_DIMS)[number], number>> }) {
+/** One dimension: the bar FILLS to its value; the picked card's number ticks. */
+function DimRow({ dim, v, shown, tint }: { dim: (typeof CI_DIMS)[number]; v: number; shown: number; tint: string }) {
+  const m = useCiMotion();
+  const t = useSharedValue(m.reduce ? 1 : 0);
+  useEffect(() => {
+    cancelAnimation(t);
+    if (m.reduce) {
+      t.value = 1;
+      return;
+    }
+    t.value = 0;
+    t.value = withTiming(1, { duration: CI_MOTION.reveal, easing: CI_EASE.out });
+    return () => cancelAnimation(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [v, m.reduce]);
+  const fill = useAnimatedStyle(() => ({ width: `${Math.max(0, Math.min(100, v * t.value))}%` }));
+  return (
+    <View style={s.miniRow} accessibilityLabel={`${CI_DIM_META[dim].label}: ${v} out of 100`}>
+      <Text style={s.miniLabel} numberOfLines={1}>{CI_DIM_META[dim].label}</Text>
+      <View style={s.miniTrack}>
+        <Animated.View style={[s.miniFill, { backgroundColor: tint }, fill]} />
+      </View>
+      <Text style={s.miniVal}>{shown}</Text>
+    </View>
+  );
+}
+
+function CountingDimRow(props: { dim: (typeof CI_DIMS)[number]; v: number; tint: string }) {
+  const shown = useCountUp(props.v, CI_MOTION.reveal);
+  return <DimRow {...props} shown={shown} />;
+}
+
+function DimMiniBars({ dims, count }: { dims: Partial<Record<(typeof CI_DIMS)[number], number>>; count?: boolean }) {
   return (
     <View style={{ gap: 4 }}>
-      {CI_DIMS.map((d) => {
+      {CI_DIMS.map((d, i) => {
         const v = dims[d];
         if (v == null) return null;
         const tint = v >= 80 ? colors.green : v >= 55 ? colors.amber : '#ff9b8f';
         return (
-          <View key={d} style={s.miniRow} accessibilityLabel={`${CI_DIM_META[d].label}: ${v} out of 100`}>
-            <Text style={s.miniLabel} numberOfLines={1}>{CI_DIM_META[d].label}</Text>
-            <View style={s.miniTrack}>
-              <View style={[s.miniFill, { width: `${v}%`, backgroundColor: tint }]} />
-            </View>
-            <Text style={s.miniVal}>{v}</Text>
-          </View>
+          <Stagger key={d} index={i} from={6}>
+            {count ? <CountingDimRow dim={d} v={v} tint={tint} /> : <DimRow dim={d} v={v} shown={v} tint={tint} />}
+          </Stagger>
         );
       })}
     </View>
@@ -321,7 +705,7 @@ function RouteBlock({
 }: {
   scenario: CiRouteScenario;
   width: number;
-  plan: (w: number) => ReactNode;
+  plan: (w: number, pickIdx: number | null) => ReactNode;
   pick: string | null;
   onPick: (id: string) => void;
   openSources: (ids: string[]) => void;
@@ -332,27 +716,29 @@ function RouteBlock({
   const revealed = pick != null;
   const letterOf = (id: string) => LETTERS[scenario.options.findIndex((o) => o.id === id)] ?? '?';
   const tintOf = (id: string) => ROUTE_TINTS[scenario.options.findIndex((o) => o.id === id)] ?? '#6f7378';
+  const pickIdx = pick ? scenario.options.findIndex((o) => o.id === pick) : -1;
   return (
     <View style={{ gap: 10 }}>
       <Text style={s.lead}>{scenario.brief}</Text>
-      {plan(width)}
+      {plan(width, pickIdx >= 0 ? pickIdx : null)}
       <Text style={s.caption}>Route colors identify the options — not cable classes.</Text>
       {!revealed ? (
         <View style={{ gap: 8 }}>
           {scenario.options.map((o, i) => (
-            <Pressable
-              key={o.id}
-              style={s.routeCard}
-              onPress={() => onPick(o.id)}
-              accessibilityRole="button"
-              accessibilityLabel={`Route ${LETTERS[i]}: ${o.name}. ${o.path}`}
-            >
-              <View style={[s.swatch, { backgroundColor: ROUTE_TINTS[i] }]} />
-              <View style={{ flex: 1, gap: 2 }}>
-                <Text style={s.routeName}>{`ROUTE ${LETTERS[i]} — ${o.name.toUpperCase()}`}</Text>
-                <Text style={s.routePath}>{o.path}</Text>
-              </View>
-            </Pressable>
+            <Stagger key={o.id} index={i}>
+              <Pressable
+                style={s.routeCard}
+                onPress={() => onPick(o.id)}
+                accessibilityRole="button"
+                accessibilityLabel={`Route ${LETTERS[i]}: ${o.name}. ${o.path}`}
+              >
+                <View style={[s.swatch, { backgroundColor: ROUTE_TINTS[i] }]} />
+                <View style={{ flex: 1, gap: 2 }}>
+                  <Text style={s.routeName}>{`ROUTE ${LETTERS[i]} — ${o.name.toUpperCase()}`}</Text>
+                  <Text style={s.routePath}>{o.path}</Text>
+                </View>
+              </Pressable>
+            </Stagger>
           ))}
         </View>
       ) : (
@@ -360,34 +746,40 @@ function RouteBlock({
           {ranked.map(({ option, verdict, overall }, i) => {
             const isPick = option.id === pick;
             return (
-              <View key={option.id} style={[s.verdictCard, isPick && s.verdictCardPicked]}>
-                <View style={s.verdictHead}>
-                  <View style={[s.swatch, { backgroundColor: tintOf(option.id) }]} />
-                  <Text style={s.routeName} numberOfLines={2}>{`${letterOf(option.id)} — ${option.name.toUpperCase()}`}</Text>
-                  <View style={{ flex: 1 }} />
-                  {i === 0 ? <Text style={s.badgeBest}>BEST CALL</Text> : null}
-                  {isPick ? <Text style={s.badgePick}>YOUR PICK</Text> : null}
+              <Appear key={option.id} delay={i * 90}>
+                <View style={[s.verdictCard, isPick && s.verdictCardPicked]}>
+                  <View style={s.verdictHead}>
+                    <View style={[s.swatch, { backgroundColor: tintOf(option.id) }]} />
+                    <Text style={s.routeName} numberOfLines={2}>{`${letterOf(option.id)} — ${option.name.toUpperCase()}`}</Text>
+                    <View style={{ flex: 1 }} />
+                    {i === 0 ? <Text style={s.badgeBest}>BEST CALL</Text> : null}
+                    {isPick ? <Text style={s.badgePick}>YOUR PICK</Text> : null}
+                  </View>
+                  <Text style={s.overallLine}>{`OVERALL ${overall}`}</Text>
+                  <DimMiniBars dims={verdict.dims} count={isPick} />
+                  <View style={{ gap: 3 }}>
+                    {verdict.overallNotes.map((n) => (
+                      <Text key={n} style={s.noteLine}>{`• ${n}`}</Text>
+                    ))}
+                  </View>
                 </View>
-                <Text style={s.overallLine}>{`OVERALL ${overall}`}</Text>
-                <DimMiniBars dims={verdict.dims} />
-                <View style={{ gap: 3 }}>
-                  {verdict.overallNotes.map((n) => (
-                    <Text key={n} style={s.noteLine}>{`• ${n}`}</Text>
-                  ))}
-                </View>
-              </View>
+              </Appear>
             );
           })}
           {chosen
-            ? dedupeFlags(chosen.flags).map((f) => (
-                <RuleFeedback key={f.ruleId} ruleId={f.ruleId} verdict={f.positive ? 'good' : 'bad'} short={f.note} openSources={openSources} />
+            ? dedupeFlags(chosen.flags).map((f, i) => (
+                <Appear key={f.ruleId} delay={320 + i * 90}>
+                  <RuleFeedback ruleId={f.ruleId} verdict={f.positive ? 'good' : 'bad'} short={f.note} openSources={openSources} />
+                </Appear>
               ))
             : null}
           {keyPoint ? (
-            <View style={s.keyCard}>
-              <Text style={s.keyHead}>{keyPoint.head}</Text>
-              <Text style={s.keyBody}>{keyPoint.body}</Text>
-            </View>
+            <Appear delay={480}>
+              <View style={s.keyCard}>
+                <Text style={s.keyHead}>{keyPoint.head}</Text>
+                <Text style={s.keyBody}>{keyPoint.body}</Text>
+              </View>
+            </Appear>
           ) : null}
         </View>
       )}
@@ -396,9 +788,154 @@ function RouteBlock({
 }
 
 /* ── (D) over-under coil art ────────────────────────────────────────────── */
-function CoilArt({ w, signs }: { w: number; signs: number[] }) {
+const COIL_CY = 76;
+const COIL_RX = 30;
+const COIL_RY = 42;
+const COIL_STEP = 17;
+const COIL_X0 = 120;
+const COIL_CENTER = COIL_X0 + 2.5 * COIL_STEP;
+/** Over-estimate of a loop's arc length (Ramanujan ≈ 228 at rest). */
+const COIL_DASH = 262;
+
+function rx2(cx: number, x: number, y: number, c: number, sn: number) {
+  'worklet';
+  return cx + x * c - y * sn;
+}
+function ry2(cy: number, x: number, y: number, c: number, sn: number) {
+  'worklet';
+  return cy + x * sn + y * c;
+}
+
+/** A tilted ellipse as four cubic arcs — so the lay angle can actually move. */
+function loopD(cx: number, cy: number, rx: number, ry: number, rot: number) {
+  'worklet';
+  const K = 0.5522847498307936;
+  const c = Math.cos(rot);
+  const sn = Math.sin(rot);
+  const ox = rx * K;
+  const oy = ry * K;
+  return (
+    `M${rx2(cx, rx, 0, c, sn)} ${ry2(cy, rx, 0, c, sn)}` +
+    ` C${rx2(cx, rx, oy, c, sn)} ${ry2(cy, rx, oy, c, sn)} ${rx2(cx, ox, ry, c, sn)} ${ry2(cy, ox, ry, c, sn)} ${rx2(cx, 0, ry, c, sn)} ${ry2(cy, 0, ry, c, sn)}` +
+    ` C${rx2(cx, -ox, ry, c, sn)} ${ry2(cy, -ox, ry, c, sn)} ${rx2(cx, -rx, oy, c, sn)} ${ry2(cy, -rx, oy, c, sn)} ${rx2(cx, -rx, 0, c, sn)} ${ry2(cy, -rx, 0, c, sn)}` +
+    ` C${rx2(cx, -rx, -oy, c, sn)} ${ry2(cy, -rx, -oy, c, sn)} ${rx2(cx, -ox, -ry, c, sn)} ${ry2(cy, -ox, -ry, c, sn)} ${rx2(cx, 0, -ry, c, sn)} ${ry2(cy, 0, -ry, c, sn)}` +
+    ` C${rx2(cx, ox, -ry, c, sn)} ${ry2(cy, ox, -ry, c, sn)} ${rx2(cx, rx, -oy, c, sn)} ${ry2(cy, rx, -oy, c, sn)} ${rx2(cx, rx, 0, c, sn)} ${ry2(cy, rx, 0, c, sn)}`
+  );
+}
+
+/** The lay marker that rides with its loop — over arcs above, under below. */
+function layD(cx: number, cy: number, ry: number, rot: number, over: boolean) {
+  'worklet';
+  const c = Math.cos(rot);
+  const sn = Math.sin(rot);
+  const y0 = over ? -(ry + 3) : ry + 3;
+  const y1 = over ? y0 - 7 : y0 + 7;
+  return (
+    `M${rx2(cx, -8, y0, c, sn)} ${ry2(cy, -8, y0, c, sn)}` +
+    ` Q${rx2(cx, 0, y1, c, sn)} ${ry2(cy, 0, y1, c, sn)} ${rx2(cx, 8, y0, c, sn)} ${ry2(cy, 8, y0, c, sn)}`
+  );
+}
+
+/**
+ * One loop of the coil. It draws in along its own arc (hands working), springs
+ * to rest, and then answers the coil's stored twist: radii tighten, the lay
+ * angle steepens and the loops crowd together as twist accumulates.
+ */
+function CoilLoop({ i, sign, writhe, settle, newest }: { i: number; sign: number; writhe: SharedValue<number>; settle: SharedValue<number>; newest: boolean }) {
+  const m = useCiMotion();
+  const p = useSharedValue(0);
+  const e = useSharedValue(0.84);
+  const over = sign > 0;
+  const cxBase = COIL_X0 + i * COIL_STEP;
+  const lean = over ? 1 : -1;
+
+  useEffect(() => {
+    cancelAnimation(p);
+    cancelAnimation(e);
+    if (m.reduce) {
+      p.value = 1;
+      e.value = 1;
+      return;
+    }
+    p.value = 0;
+    e.value = 0.84;
+    p.value = withTiming(1, { duration: 250, easing: CI_EASE.out });
+    e.value = withSpring(1, CI_SPRING);
+    return () => {
+      cancelAnimation(p);
+      cancelAnimation(e);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [m.reduce]);
+
+  const loopProps = useAnimatedProps(() => {
+    const k = writhe.value;
+    const g = e.value * settle.value;
+    const rx = COIL_RX * (1 - 0.22 * k) * g;
+    const ry = COIL_RY * (1 + 0.13 * k) * g;
+    const cx = cxBase - (cxBase - COIL_CENTER) * 0.2 * k;
+    const rot = (lean * (10 + 16 * k) * Math.PI) / 180;
+    return { d: loopD(cx, COIL_CY, rx, ry, rot), strokeDashoffset: COIL_DASH * (1 - p.value) };
+  });
+
+  const markProps = useAnimatedProps(() => {
+    const k = writhe.value;
+    const g = e.value * settle.value;
+    const ry = COIL_RY * (1 + 0.13 * k) * g;
+    const cx = cxBase - (cxBase - COIL_CENTER) * 0.2 * k;
+    const rot = (lean * (10 + 16 * k) * Math.PI) / 180;
+    return { d: layD(cx, COIL_CY, ry, rot, over), opacity: Math.max(0, Math.min(1, (p.value - 0.55) / 0.45)) };
+  });
+
+  const restRot = (lean * 10 * Math.PI) / 180;
+  return (
+    <G>
+      <APath
+        d={loopD(cxBase, COIL_CY, COIL_RX, COIL_RY, restRot)}
+        stroke={CI_CLASS_TINTS.analog}
+        strokeWidth={3.4}
+        fill="none"
+        strokeLinecap="round"
+        opacity={newest ? 1 : 0.78}
+        strokeDasharray={COIL_DASH}
+        strokeDashoffset={m.reduce ? 0 : COIL_DASH}
+        animatedProps={loopProps}
+      />
+      <APath
+        d={layD(cxBase, COIL_CY, COIL_RY, restRot, over)}
+        stroke="#9be8f2"
+        strokeWidth={2.2}
+        fill="none"
+        strokeLinecap="round"
+        opacity={m.reduce ? 1 : 0}
+        animatedProps={markProps}
+      />
+    </G>
+  );
+}
+
+function CoilArt({ w, signs, done }: { w: number; signs: number[]; done: boolean }) {
   const h = Math.round(w * (150 / 360));
   const tint = CI_CLASS_TINTS.analog;
+  const m = useCiMotion();
+  const twist = Math.abs(signs.reduce((a, b) => a + b, 0));
+  // stored twist → how hard the coil fights: barely at all when it cancels
+  const writhe = useSettle(Math.max(0, Math.min(1, (twist - 0.5) / 3)), { spring: CI_SPRING });
+  const settle = useSharedValue(1);
+  const wasDone = useRef(done);
+
+  useEffect(() => {
+    if (done && !wasDone.current && !m.reduce) {
+      cancelAnimation(settle);
+      settle.value = withSequence(
+        withTiming(1.07, { duration: 150, easing: CI_EASE.out }),
+        withSpring(1, CI_SPRING),
+      );
+    }
+    wasDone.current = done;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [done, m.reduce]);
+
   return (
     <Svg
       width={w}
@@ -413,22 +950,9 @@ function CoilArt({ w, signs }: { w: number; signs: number[] }) {
       {signs.length === 0 ? (
         <Ellipse cx={120} cy={76} rx={30} ry={42} fill="none" stroke="#3a3c42" strokeWidth={1.6} strokeDasharray="6,5" />
       ) : null}
-      {signs.map((sign, i) => {
-        const cx = 120 + i * 17;
-        const cy = 76;
-        const over = sign > 0;
-        const newest = i === signs.length - 1;
-        return (
-          <G key={i} rotation={over ? 10 : -10} origin={`${cx}, ${cy}`}>
-            <Ellipse cx={cx} cy={cy} rx={30} ry={42} fill="none" stroke={tint} strokeWidth={3.4} opacity={newest ? 1 : 0.78} />
-            {over ? (
-              <Path d={`M${cx - 8} ${cy - 45} q8 -7 16 0`} stroke="#9be8f2" strokeWidth={2.2} fill="none" strokeLinecap="round" />
-            ) : (
-              <Path d={`M${cx - 8} ${cy + 45} q8 7 16 0`} stroke="#9be8f2" strokeWidth={2.2} fill="none" strokeLinecap="round" />
-            )}
-          </G>
-        );
-      })}
+      {signs.map((sign, i) => (
+        <CoilLoop key={i} i={i} sign={sign} writhe={writhe} settle={settle} newest={i === signs.length - 1} />
+      ))}
       <SvgText x={180} y={143} fill="#6f7378" fontSize={7.5} textAnchor="middle">
         OVER LOOPS LEAN ONE WAY — UNDER LOOPS MIRROR
       </SvgText>
@@ -472,6 +996,17 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
   const lastWrong =
     signs.length > 0 && signs.length < 6 && signs[signs.length - 1] !== expectedSign(signs.length - 1);
   const stepIdx = signs.length === 0 ? 0 : signs.length === 1 ? 1 : signs.length < 6 ? 2 : 3;
+
+  /* the twist meter SWEEPS and cross-fades — it never jumps */
+  const twistBand = twist <= 1 ? 0 : twist === 2 ? 1 : 2;
+  const twistSweep = useSettle(twistInfo.frac, { spring: CI_SPRING });
+  // the colour cross-fade is a TWEEN, not a spring: a spring would overshoot
+  // the band index and flash a colour the twist never actually reached
+  const bandT = useTween(twistBand, CI_MOTION.base);
+  const twistFillStyle = useAnimatedStyle(() => ({ width: `${Math.max(0, Math.min(100, twistSweep.value * 100))}%` }));
+  const greenStyle = useAnimatedStyle(() => ({ opacity: Math.max(0, 1 - Math.abs(bandT.value - 0)) }));
+  const amberStyle = useAnimatedStyle(() => ({ opacity: Math.max(0, 1 - Math.abs(bandT.value - 1)) }));
+  const redStyle = useAnimatedStyle(() => ({ opacity: Math.max(0, 1 - Math.abs(bandT.value - 2)) }));
 
   const addLoop = (sign: 1 | -1) => {
     if (coilDone || signs.length >= 6) return;
@@ -544,11 +1079,11 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
         <StagePlan w={artW} routeFixed={craftAnswered('route')} slackFixed={craftAnswered('slack')} monFixed={craftAnswered('mon')} />
         <Text style={s.caption}>Training visualization — qualitative plan, training colors only; field cable colors vary.</Text>
         <View style={{ gap: 12 }}>
-          {CRAFT_DECISIONS.map((d) => {
+          {CRAFT_DECISIONS.map((d, di) => {
             const answered = craftAnswered(d.id);
             const chosen = d.options.find((o) => o.id === craft[d.id]);
             return (
-              <View key={d.id} style={{ gap: 7 }}>
+              <Stagger key={d.id} index={di} style={{ gap: 7 }}>
                 <Text style={s.prompt}>{d.prompt}</Text>
                 <View style={s.chipWrap}>
                   {d.options.map((o) => (
@@ -562,9 +1097,11 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
                   ))}
                 </View>
                 {chosen ? (
-                  <RuleFeedback ruleId="floor-stage-craft" verdict={chosen.ok ? 'good' : 'bad'} short={chosen.short} openSources={openSources} />
+                  <Appear delay={RETRACT_MS}>
+                    <RuleFeedback ruleId="floor-stage-craft" verdict={chosen.ok ? 'good' : 'bad'} short={chosen.short} openSources={openSources} />
+                  </Appear>
                 ) : null}
-              </View>
+              </Stagger>
             );
           })}
         </View>
@@ -575,7 +1112,7 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
         <RouteBlock
           scenario={foh}
           width={artW}
-          plan={(w) => <FohPlan w={w} />}
+          plan={(w, p) => <FohPlan w={w} pick={p} />}
           pick={fohPick}
           onPick={(id) => pickRoute('foh', id)}
           openSources={openSources}
@@ -592,7 +1129,7 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
         <RouteBlock
           scenario={back}
           width={artW}
-          plan={(w) => <BackstagePlan w={w} />}
+          plan={(w, p) => <BackstagePlan w={w} pick={p} />}
           pick={backPick}
           onPick={(id) => pickRoute('back', id)}
           openSources={openSources}
@@ -610,7 +1147,7 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
           Coil the snake so it deploys straight tomorrow: alternate a natural OVER loop with a reversed UNDER loop, six
           loops total. Watch the coil — and the twist you are storing in the cable.
         </Text>
-        <CoilArt w={artW} signs={signs} />
+        <CoilArt w={artW} signs={signs} done={coilDone} />
         {!coilDone && !coilFullWrong ? <Text style={s.coach}>{CI_OVERUNDER_STEPS[stepIdx]}</Text> : null}
         <Text style={s.loopCount} accessibilityLiveRegion="polite">{`LOOP ${signs.length} / 6`}</Text>
         <View
@@ -620,13 +1157,19 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
         >
           <Text style={s.twistLabel}>TWIST</Text>
           <View style={s.twistTrack}>
-            <View style={[s.twistFill, { width: `${Math.round(twistInfo.frac * 100)}%`, backgroundColor: twistInfo.tint }]} />
+            <Animated.View style={[s.twistFill, { backgroundColor: colors.green }, twistFillStyle, greenStyle]} />
+            <Animated.View style={[s.twistFill, { backgroundColor: colors.amber }, twistFillStyle, amberStyle]} />
+            <Animated.View style={[s.twistFill, { backgroundColor: '#ff9b8f' }, twistFillStyle, redStyle]} />
           </View>
           <Text style={[s.twistReadout, { color: twistInfo.tint }]} numberOfLines={1}>
             {twistInfo.label}
           </Text>
         </View>
-        {lastWrong ? <Text style={s.warnLine}>⚠ Twist is building — the next loop should be the reverse lay.</Text> : null}
+        {lastWrong ? (
+          <Appear>
+            <Text style={s.warnLine}>⚠ Twist is building — the next loop should be the reverse lay.</Text>
+          </Appear>
+        ) : null}
         <View style={s.loopBtnRow}>
           <Pressable
             style={[s.loopBtn, (coilDone || signs.length >= 6) && s.loopBtnOff]}
@@ -650,15 +1193,17 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
           </Pressable>
         </View>
         {coilFullWrong ? (
-          <View style={s.coilFailCard}>
-            <Text style={s.coilFailText}>
-              ✕ This coil is storing twist — it will deploy in loops and kinks. Shake it out and start again, alternating
-              from a natural OVER loop.
-            </Text>
-            <Pressable style={s.restartBtn} onPress={restartCoil} accessibilityRole="button" accessibilityLabel="Restart the coil">
-              <Text style={s.restartText}>RESTART THE COIL</Text>
-            </Pressable>
-          </View>
+          <Appear>
+            <View style={s.coilFailCard}>
+              <Text style={s.coilFailText}>
+                ✕ This coil is storing twist — it will deploy in loops and kinks. Shake it out and start again, alternating
+                from a natural OVER loop.
+              </Text>
+              <Pressable style={s.restartBtn} onPress={restartCoil} accessibilityRole="button" accessibilityLabel="Restart the coil">
+                <Text style={s.restartText}>RESTART THE COIL</Text>
+              </Pressable>
+            </View>
+          </Appear>
         ) : null}
         {!coilDone && !coilFullWrong && signs.length > 0 ? (
           <Pressable onPress={restartCoil} hitSlop={10} accessibilityRole="button" accessibilityLabel="Restart the coil">
@@ -666,15 +1211,17 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
           </Pressable>
         ) : null}
         {coilDone ? (
-          <View style={{ gap: 8 }}>
-            <Text style={s.doneLine}>✓ Over, under, over, under — this coil pays out straight.</Text>
-            <RuleFeedback
-              ruleId="floor-overunder"
-              verdict="info"
-              short="Over-under cancels the twist each loop adds — the coil deploys straight and the cable keeps its behavior. Specialized fiber, hybrid and large feeder cable follow the manufacturer's procedure instead."
-              openSources={openSources}
-            />
-          </View>
+          <Appear delay={220}>
+            <View style={{ gap: 8 }}>
+              <Text style={s.doneLine}>✓ Over, under, over, under — this coil pays out straight.</Text>
+              <RuleFeedback
+                ruleId="floor-overunder"
+                verdict="info"
+                short="Over-under cancels the twist each loop adds — the coil deploys straight and the cable keeps its behavior. Specialized fiber, hybrid and large feeder cable follow the manufacturer's procedure instead."
+                openSources={openSources}
+              />
+            </View>
+          </Appear>
         ) : null}
       </CiSection>
 
@@ -723,9 +1270,9 @@ const s = StyleSheet.create({
   coach: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: colors.amberLabel, fontStyle: 'italic' },
   loopCount: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub },
   twistRow: { flexDirection: 'row', alignItems: 'center', gap: 9 },
-  twistLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.textSecondary },
   twistTrack: { flex: 1, height: 10, borderRadius: 5, backgroundColor: '#26262c', overflow: 'hidden' },
-  twistFill: { height: 10, borderRadius: 5 },
+  twistFill: { position: 'absolute', left: 0, top: 0, bottom: 0, borderRadius: 5 },
+  twistLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.textSecondary },
   twistReadout: { maxWidth: 150, fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 0.4 },
   warnLine: { fontFamily: fonts.barlowMedium, fontSize: 12.5, color: '#ff9b8f' },
   loopBtnRow: { flexDirection: 'row', gap: 10 },

@@ -17,13 +17,33 @@
  *       Sag draws live between anchors; spans past the limit draw strained.
  *       CHECK → RuleFeedback('sup-spacing-mfr').
  *
+ * ── MOTION (owner 2026-08-24: the lab shipped static) ─────────────────────
+ *   ROLES    the four cards deal in on a stagger.
+ *   SORT     one card at a time, dealt: the outgoing item fades out (140ms)
+ *            BEFORE the next arrives — sequencing, never a jump-cut — and the
+ *            incoming pictogram rises in behind the card. The verdict Appears.
+ *   SPACING  the money moment. The run is ONE cable sampled across the whole
+ *            span, and every toggle springs it from its current shape to the
+ *            new one: long spans drop deep, supported spans lift and — once
+ *            the spacing finally meets the supplied spec — the whole run
+ *            settles level on a bouncier spring. Strained spans carry a hot
+ *            overlay glued to the same sampled cable, so it rides the settle
+ *            and fades off it when the span is fixed. Placing a support draws
+ *            the J-hook in over its dashed ghost; the MAX SAG guide brightens
+ *            while the learner is working, then rests.
+ *
+ *   ONLY primitive SVG props are animated (d, opacity, strokeWidth, dashoffset,
+ *   cx/cy/r) — no transform/x/y anywhere (motion.tsx's hard-won rule). Every
+ *   animated element carries its rest pose statically, and `useCiMotion()`
+ *   collapses everything to identical end states under reduced motion.
+ *
  * Completion (once): sort ≥ 80% + spacing exercise passed →
  * onComplete({ routing, protection }).
  *
  * Accessibility: every interaction is a labeled button (no drag anywhere);
  * verdicts announced; state never color-only; targets ≥44dp.
  */
-import { useMemo, useRef, useState } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
@@ -32,6 +52,28 @@ import { OptionChip, VerdictBanner } from '../../cable/lessons/bits';
 import { CI_SUPPORT_ITEMS, CI_SUPPORT_SPACING_SPEC } from '../data/scenarios';
 import { CI_CLASS_TINTS } from '../data/cableTypes';
 import { clamp100 } from '../engine/score';
+import {
+  ACircle,
+  ALine,
+  APath,
+  Animated,
+  Appear,
+  CI_EASE,
+  CI_MOTION,
+  CI_SPRING,
+  Stagger,
+  cancelAnimation,
+  useAnimatedProps,
+  useAnimatedStyle,
+  useCiMotion,
+  usePulse,
+  useSharedValue,
+  useTween,
+  withDelay,
+  withSequence,
+  withSpring,
+  withTiming,
+} from '../motion';
 import type { CiModuleProps } from '../registry';
 
 const say = (s: string) => AccessibilityInfo.announceForAccessibility(s);
@@ -276,16 +318,206 @@ const SPAN_UNITS = 12;
 const SPEC_EVERY = 4; // grid units, from CI_SUPPORT_SPACING_SPEC
 const SAG_LIMIT_UNITS = 0.5;
 
-function SpanArt({ w, placed }: { w: number; placed: Set<number> }) {
+const X0 = 12;
+const UNIT = 28;
+const X1 = X0 + SPAN_UNITS * UNIT;
+const CABLE_Y = 40;
+const xOf = (u: number) => X0 + u * UNIT;
+
+/** The run is sampled as ONE cable so that adding/removing a support morphs a
+ *  single path instead of swapping a variable-length list of segments. */
+const SAMPLES = 49;
+const SAMPLE_U = SPAN_UNITS / (SAMPLES - 1); // 0.25 grid units per sample
+const SAMPLE_X = Array.from({ length: SAMPLES }, (_, s) => X0 + s * SAMPLE_U * UNIT);
+/** Once every span is inside the spec the whole run settles level — bouncier. */
+const LEVEL_SPRING = { damping: 12, stiffness: 150, mass: 1 } as const;
+const HOOK_LEN = 34; // approximate J-hook path length, for the draw-in
+
+function anchorsFor(placed: Set<number>): number[] {
+  const units = [...placed].sort((a, b) => a - b).map((i) => POS_UNITS[i] as number);
+  return [0, ...units, SPAN_UNITS];
+}
+
+/** Sag depth per span is quadratic in span length — the same curve the scene
+ *  drew statically before, now sampled so it can be interpolated. */
+function sagProfile(anchors: number[]): number[] {
+  const ys: number[] = [];
+  for (let s = 0; s < SAMPLES; s++) {
+    const u = s * SAMPLE_U;
+    let a = anchors[0];
+    let b = anchors[anchors.length - 1];
+    for (let i = 1; i < anchors.length; i++) {
+      if (u <= anchors[i] + 1e-9) {
+        a = anchors[i - 1];
+        b = anchors[i];
+        break;
+      }
+    }
+    const span = b - a;
+    const depthPx = span > 0 ? Math.min(27, SAG_LIMIT_UNITS * Math.pow(span / SPEC_EVERY, 2) * UNIT) : 0;
+    const f = span > 0 ? (u - a) / span : 0;
+    ys.push(CABLE_Y + depthPx * 4 * f * (1 - f));
+  }
+  return ys;
+}
+
+/** Sample-index ranges of the spans that exceed the documented maximum. */
+function hotRangesFor(anchors: number[]): [number, number][] {
+  const out: [number, number][] = [];
+  for (let i = 1; i < anchors.length; i++) {
+    const a = anchors[i - 1];
+    const b = anchors[i];
+    if (b - a > SPEC_EVERY + 1e-6) out.push([Math.round(a / SAMPLE_U), Math.round(b / SAMPLE_U)]);
+  }
+  return out;
+}
+
+function polyline(ys: number[]): string {
+  let d = '';
+  for (let i = 0; i < SAMPLES; i++) d += `${i === 0 ? 'M' : 'L'}${SAMPLE_X[i].toFixed(1)} ${ys[i].toFixed(1)} `;
+  return d;
+}
+
+function hotPolyline(ys: number[], ranges: [number, number][]): string {
+  let d = '';
+  for (let r = 0; r < ranges.length; r++) {
+    const a = ranges[r][0];
+    const b = ranges[r][1];
+    for (let i = a; i <= b; i++) d += `${i === a ? 'M' : 'L'}${SAMPLE_X[i].toFixed(1)} ${ys[i].toFixed(1)} `;
+  }
+  return d;
+}
+
+/** A candidate position: the J-hook draws itself in over the dashed ghost. */
+function PosMark({ u, on }: { u: number; on: boolean }) {
+  const p = useTween(on ? 1 : 0, on ? CI_MOTION.base : CI_MOTION.quick);
+  const x = xOf(u);
+  const hook = useAnimatedProps(() => ({
+    strokeDashoffset: HOOK_LEN * (1 - p.value),
+    opacity: Math.min(1, p.value * 1.5),
+  }));
+  const ghost = useAnimatedProps(() => ({
+    opacity: Math.max(0, 1 - p.value * 1.4),
+    r: 7 - 1.6 * Math.min(1, p.value),
+  }));
+  return (
+    <>
+      <ACircle
+        cx={x}
+        cy={38}
+        r={on ? 5.4 : 7}
+        fill="none"
+        stroke="#54565c"
+        strokeWidth={1.4}
+        strokeDasharray="3 3"
+        opacity={on ? 0 : 1}
+        animatedProps={ghost}
+      />
+      <APath
+        d={`M${x} 26 V33 M${x - 8} 33 a8 8 0 0 0 16 0`}
+        stroke={IC}
+        strokeWidth={2.5}
+        fill="none"
+        strokeLinecap="round"
+        strokeDasharray={HOOK_LEN}
+        strokeDashoffset={on ? 0 : HOOK_LEN}
+        opacity={on ? 1 : 0}
+        animatedProps={hook}
+      />
+    </>
+  );
+}
+
+type Morph = { from: number[]; to: number[] };
+
+const SpanArt = memo(function SpanArt({ w, placed }: { w: number; placed: Set<number> }) {
+  const m = useCiMotion();
   const h = Math.round((w * 132) / 360);
-  const X0 = 12;
-  const UNIT = 28;
-  const X1 = X0 + SPAN_UNITS * UNIT;
-  const xOf = (u: number) => X0 + u * UNIT;
-  const CABLE_Y = 40;
+
+  const anchors = useMemo(() => anchorsFor(placed), [placed]);
+  const target = useMemo(() => sagProfile(anchors), [anchors]);
+  const hotNow = useMemo(() => hotRangesFor(anchors), [anchors]);
+  const hotOn = hotNow.length > 0;
+
+  const k = useSharedValue(1); // 0 = previous shape, 1 = current shape
+  const guide = useSharedValue(0); // MAX SAG guide attention
+  const [morph, setMorph] = useState<Morph>(() => ({ from: target, to: target }));
+  const morphRef = useRef(morph);
+  morphRef.current = morph;
+  const firstRef = useRef(true);
+
+  // Keep the last non-empty strain geometry so it can fade OUT riding the
+  // cable when the learner fixes the span, instead of vanishing.
+  const [hotSpec, setHotSpec] = useState<[number, number][]>(hotNow);
+  useEffect(() => {
+    if (hotNow.length) setHotSpec(hotNow);
+  }, [hotNow]);
+
+  useEffect(() => {
+    if (firstRef.current) {
+      firstRef.current = false;
+      return;
+    }
+    const prev = morphRef.current;
+    const kv = Math.max(0, Math.min(1, k.value));
+    const cur = prev.to.map((tv, i) => prev.from[i] + (tv - prev.from[i]) * kv);
+    setMorph({ from: cur, to: target });
+    cancelAnimation(k);
+    cancelAnimation(guide);
+    if (m.reduce) {
+      k.value = 1;
+      guide.value = 0;
+      return;
+    }
+    k.value = 0;
+    k.value = withSpring(1, hotOn ? CI_SPRING : LEVEL_SPRING);
+    guide.value = withSequence(
+      withTiming(1, { duration: 140, easing: CI_EASE.out }),
+      withDelay(1000, withTiming(0, { duration: 420, easing: CI_EASE.inOut })),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [target, hotOn, m.reduce]);
+
+  const from = morph.from;
+  const to = morph.to;
+
+  const cableProps = useAnimatedProps(() => {
+    const kv = k.value;
+    let d = '';
+    for (let i = 0; i < SAMPLES; i++) {
+      const y = from[i] + (to[i] - from[i]) * kv;
+      d += `${i === 0 ? 'M' : 'L'}${SAMPLE_X[i].toFixed(1)} ${y.toFixed(1)} `;
+    }
+    return { d };
+  });
+
+  const pulse = usePulse({ run: hotOn && m.loops, period: 1300 });
+  const hotFade = useTween(hotOn ? 1 : 0, hotOn ? CI_MOTION.quick : CI_MOTION.base);
+  const hotProps = useAnimatedProps(() => {
+    const kv = k.value;
+    let d = '';
+    for (let r = 0; r < hotSpec.length; r++) {
+      const a = hotSpec[r][0];
+      const b = hotSpec[r][1];
+      for (let i = a; i <= b; i++) {
+        const y = from[i] + (to[i] - from[i]) * kv;
+        d += `${i === a ? 'M' : 'L'}${SAMPLE_X[i].toFixed(1)} ${y.toFixed(1)} `;
+      }
+    }
+    // base stays high so reduced motion (no pulse) still reads as strained
+    return { d: d === '' ? 'M0 0' : d, opacity: hotFade.value * (0.76 + 0.24 * pulse.t.value), strokeWidth: 3.5 + 1.8 * pulse.t.value };
+  });
+
+  const guideProps = useAnimatedProps(() => ({
+    opacity: 0.3 + 0.6 * guide.value,
+    strokeWidth: 1.2 + 0.7 * guide.value,
+  }));
+
   const placedUnits = [...placed].sort((a, b) => a - b).map((i) => POS_UNITS[i]);
-  const anchors = [0, ...placedUnits, SPAN_UNITS];
-  const anyStrained = anchors.some((a, i) => i > 0 && anchors[i] - anchors[i - 1] > SPEC_EVERY + 1e-6);
+  const anyStrained = hotOn;
+  const restD = polyline(to);
+  const restHotD = hotPolyline(to, hotSpec) || 'M0 0';
+
   return (
     <Svg
       width={w}
@@ -299,38 +531,56 @@ function SpanArt({ w, placed }: { w: number; placed: Set<number> }) {
       {/* end terminations — the run ends honestly at both walls */}
       <Rect x={4} y={34} width={8} height={12} rx={1.5} fill="#26262c" stroke="#6f7378" strokeWidth={1} />
       <Rect x={348} y={34} width={8} height={12} rx={1.5} fill="#26262c" stroke="#6f7378" strokeWidth={1} />
-      {/* max-sag guide from the spec (½ unit below the cable line) */}
-      <Line x1={X0} y1={CABLE_Y + SAG_LIMIT_UNITS * UNIT} x2={X1} y2={CABLE_Y + SAG_LIMIT_UNITS * UNIT} stroke="#37d97b" strokeWidth={1.2} strokeDasharray="5 5" opacity={0.35} />
-      <SvgText x={X1} y={CABLE_Y + SAG_LIMIT_UNITS * UNIT - 4} textAnchor="end" fontFamily={fonts.oswaldSemiBold} fontSize={8.5} letterSpacing={0.8} fill="#37d97b" opacity={0.8}>
+      {/* max-sag guide from the spec (½ unit below the cable line) — it steps
+          forward while the learner is placing hardware, then rests back */}
+      <ALine
+        x1={X0}
+        y1={CABLE_Y + SAG_LIMIT_UNITS * UNIT}
+        x2={X1}
+        y2={CABLE_Y + SAG_LIMIT_UNITS * UNIT}
+        stroke="#37d97b"
+        strokeWidth={1.2}
+        strokeDasharray="5 5"
+        opacity={0.3}
+        animatedProps={guideProps}
+      />
+      <SvgText
+        x={X1}
+        y={CABLE_Y + SAG_LIMIT_UNITS * UNIT - 4}
+        textAnchor="end"
+        fontFamily={fonts.oswaldSemiBold}
+        fontSize={8.5}
+        letterSpacing={0.8}
+        fill="#37d97b"
+        opacity={0.8}
+      >
         MAX SAG ½ UNIT
       </SvgText>
-      {/* cable segments, sagging by span length; strained spans draw hot */}
-      {anchors.slice(1).map((b, i) => {
-        const a = anchors[i];
-        const span = b - a;
-        const depthUnits = SAG_LIMIT_UNITS * Math.pow(span / SPEC_EVERY, 2);
-        const depthPx = Math.min(27, depthUnits * UNIT);
-        const ok = span <= SPEC_EVERY + 1e-6;
-        return (
-          <Path
-            key={`${a}-${b}`}
-            d={`M ${xOf(a)} ${CABLE_Y} Q ${(xOf(a) + xOf(b)) / 2} ${CABLE_Y + 2 * depthPx} ${xOf(b)} ${CABLE_Y}`}
-            stroke={ok ? CI_CLASS_TINTS.analog : '#ff9b8f'}
-            strokeWidth={3.5}
-            fill="none"
-            strokeLinecap="round"
-          />
-        );
-      })}
+      {/* the run itself: one sampled cable that springs between shapes */}
+      <APath
+        d={restD}
+        stroke={CI_CLASS_TINTS.analog}
+        strokeWidth={3.5}
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        animatedProps={cableProps}
+      />
+      {/* strained spans, glued to the same cable so they ride the settle */}
+      <APath
+        d={restHotD}
+        stroke="#ff9b8f"
+        strokeWidth={3.5}
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        opacity={hotOn ? 1 : 0}
+        animatedProps={hotProps}
+      />
       {/* candidate positions: placed = J-hook, empty = dashed ghost */}
-      {POS_UNITS.map((u, i) => {
-        const x = xOf(u);
-        return placed.has(i) ? (
-          <Path key={u} d={`M${x} 26 V33 M${x - 8} 33 a8 8 0 0 0 16 0`} stroke={IC} strokeWidth={2.5} fill="none" strokeLinecap="round" />
-        ) : (
-          <Circle key={u} cx={x} cy={38} r={7} fill="none" stroke="#54565c" strokeWidth={1.4} strokeDasharray="3 3" />
-        );
-      })}
+      {POS_UNITS.map((u, i) => (
+        <PosMark key={u} u={u} on={placed.has(i)} />
+      ))}
       {/* grid ruler, marked and numbered */}
       <Line x1={X0} y1={100} x2={X1} y2={100} stroke="#2c2c33" strokeWidth={1.5} />
       {Array.from({ length: SPAN_UNITS + 1 }, (_, u) => (
@@ -343,10 +593,11 @@ function SpanArt({ w, placed }: { w: number; placed: Set<number> }) {
       ))}
     </Svg>
   );
-}
+});
 
 /* ── the scene ──────────────────────────────────────────────────────────── */
 export function SupportsScene({ width, completed, onComplete, openSources }: CiModuleProps) {
+  const m = useCiMotion();
   const N = CI_SUPPORT_ITEMS.length;
   const passNeeded = Math.ceil(N * 0.8);
   const artW = Math.max(160, width - 26);
@@ -368,6 +619,7 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
     completed ? 'Supports at 4 and 8 — the documented every-4-unit design, sag inside the limit.' : '',
   );
   const [spacingPassed, setSpacingPassed] = useState(completed);
+  const [checkNonce, setCheckNonce] = useState(0);
   const wrongSpacingRef = useRef(0);
 
   const firedRef = useRef(completed);
@@ -390,6 +642,20 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
   const item = idx < N ? CI_SUPPORT_ITEMS[order[idx]] : null;
   const matched = item && pick != null ? pick === item.ok : null;
 
+  // The deck: the outgoing card fades before the next one is dealt.
+  const cardFade = useSharedValue(1);
+  const cardStyle = useAnimatedStyle(() => ({
+    opacity: cardFade.value,
+    transform: [{ translateY: (1 - cardFade.value) * 8 }],
+  }));
+  const exitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (exitTimer.current) clearTimeout(exitTimer.current);
+    },
+    [],
+  );
+
   const onPick = (saidOk: boolean) => {
     if (!item || pick != null) return;
     setPick(saidOk);
@@ -398,8 +664,9 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
     say(`${right ? 'Correct.' : 'Not quite.'} ${item.ok ? 'Approved hardware.' : 'Never hang cable on this.'} ${item.why}`);
   };
 
-  const onNextItem = () => {
-    if (!item || pick == null) return;
+  // Held in a ref so the delayed hand-off always runs the freshest closure.
+  const advanceRef = useRef(() => {});
+  advanceRef.current = () => {
     const nIdx = idx + 1;
     setIdx(nIdx);
     setPick(null);
@@ -412,6 +679,24 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
         tryFire(true, spacingPassed);
       }
     }
+    if (!m.reduce) {
+      cardFade.value = 0;
+      cardFade.value = withTiming(1, { duration: CI_MOTION.base, easing: CI_EASE.out });
+    } else {
+      cardFade.value = 1;
+    }
+  };
+
+  const onNextItem = () => {
+    if (!item || pick == null) return;
+    if (m.reduce) {
+      advanceRef.current();
+      return;
+    }
+    cancelAnimation(cardFade);
+    cardFade.value = withTiming(0, { duration: 140, easing: CI_EASE.inOut });
+    if (exitTimer.current) clearTimeout(exitTimer.current);
+    exitTimer.current = setTimeout(() => advanceRef.current(), 140);
   };
 
   const onRetrySort = () => {
@@ -420,6 +705,10 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
     setCorrect(0);
     setPick(null);
     setFinishedLive(false);
+    if (!m.reduce) {
+      cardFade.value = 0;
+      cardFade.value = withTiming(1, { duration: CI_MOTION.base, easing: CI_EASE.out });
+    }
   };
 
   /* — spacing handlers — */
@@ -433,6 +722,7 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
   };
 
   const checkSpacing = () => {
+    setCheckNonce((n) => n + 1);
     const exact = placed.size === CORRECT_POS.length && CORRECT_POS.every((i) => placed.has(i));
     if (exact) {
       setSpacingVerdict('good');
@@ -444,7 +734,7 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
       return;
     }
     wrongSpacingRef.current += 1;
-    const units = [...placed].sort((a, b) => a - b).map((i) => POS_UNITS[i]);
+    const units = [...placed].sort((a, b) => a - b).map((i) => POS_UNITS[i] as number);
     const anchors = [0, ...units, SPAN_UNITS];
     const maxGap = Math.max(...anchors.slice(1).map((b, i) => b - anchors[i]));
     const msg =
@@ -464,12 +754,14 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
       {/* ── A · ROLES ───────────────────────────────────────────────────── */}
       <CiSection title="A · FOUR JOBS — CHOOSE HARDWARE BY THE JOB">
         <View style={styles.roleGrid}>
-          {ROLE_CARDS.map((rc) => (
-            <View key={rc.key} style={[styles.roleCard, { width: (width - 8) / 2, borderColor: rc.tint + '55' }]}>
-              <SupportIcon id={rc.icon} w={56} />
-              <Text style={[styles.roleTitle, { color: rc.tint }]}>{rc.title}</Text>
-              <Text style={styles.roleBody}>{rc.body}</Text>
-            </View>
+          {ROLE_CARDS.map((rc, i) => (
+            <Stagger key={rc.key} index={i} style={{ width: (width - 8) / 2 }}>
+              <View style={[styles.roleCard, { borderColor: rc.tint + '55' }]}>
+                <SupportIcon id={rc.icon} w={56} />
+                <Text style={[styles.roleTitle, { color: rc.tint }]}>{rc.title}</Text>
+                <Text style={styles.roleBody}>{rc.body}</Text>
+              </View>
+            </Stagger>
           ))}
         </View>
         <RuleFeedback ruleId="sup-roles" verdict="info" openSources={openSources} />
@@ -486,14 +778,16 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
           {correct} correct · {Math.min(answered, N)} of {N} sorted
         </Text>
         {item ? (
-          <View style={styles.card}>
+          <Animated.View style={[styles.card, cardStyle]}>
             <Text style={styles.cardHead}>
               ITEM {idx + 1} OF {N}
             </Text>
             <Text style={styles.itemName}>{item.name}</Text>
-            <View style={{ alignItems: 'center' }}>
-              <SupportIcon id={item.id} w={Math.min(170, artW)} />
-            </View>
+            <Appear key={`pic-${idx}`} delay={70}>
+              <View style={{ alignItems: 'center' }}>
+                <SupportIcon id={item.id} w={Math.min(170, artW)} />
+              </View>
+            </Appear>
             <Text style={styles.question}>Would you hang cable on this?</Text>
             <View style={styles.pickRow}>
               <Pressable
@@ -518,34 +812,36 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
               </Pressable>
             </View>
             {pick != null ? (
-              <View style={{ gap: 8 }}>
-                <RuleFeedback
-                  ruleId={item.ruleId}
-                  verdict={matched ? 'good' : 'bad'}
-                  short={`${matched ? 'Correct — ' : 'Not quite — '}${item.ok ? 'this IS proper cable hardware. ' : 'never hang cable on this. '}${item.why}`}
-                  openSources={openSources}
-                />
-                {item.ok && item.roles ? (
-                  <View style={styles.roleChipRow}>
-                    <Text style={styles.roleChipLabel}>ROLES:</Text>
-                    {item.roles.map((r) => (
-                      <View key={r} style={[styles.roleChip, { borderColor: (ROLE_TINTS[r] ?? IC) + '77' }]}>
-                        <Text style={[styles.roleChipText, { color: ROLE_TINTS[r] ?? IC }]}>{r.toUpperCase()}</Text>
-                      </View>
-                    ))}
-                  </View>
-                ) : null}
-                <Pressable
-                  style={styles.nextBtn}
-                  onPress={onNextItem}
-                  accessibilityRole="button"
-                  accessibilityLabel={idx + 1 >= N ? 'Finish the sort' : 'Next item'}
-                >
-                  <Text style={styles.nextText}>{idx + 1 >= N ? 'FINISH SORT ›' : 'NEXT ITEM ›'}</Text>
-                </Pressable>
-              </View>
+              <Appear key={`v-${idx}`}>
+                <View style={{ gap: 8 }}>
+                  <RuleFeedback
+                    ruleId={item.ruleId}
+                    verdict={matched ? 'good' : 'bad'}
+                    short={`${matched ? 'Correct — ' : 'Not quite — '}${item.ok ? 'this IS proper cable hardware. ' : 'never hang cable on this. '}${item.why}`}
+                    openSources={openSources}
+                  />
+                  {item.ok && item.roles ? (
+                    <View style={styles.roleChipRow}>
+                      <Text style={styles.roleChipLabel}>ROLES:</Text>
+                      {item.roles.map((r) => (
+                        <View key={r} style={[styles.roleChip, { borderColor: (ROLE_TINTS[r] ?? IC) + '77' }]}>
+                          <Text style={[styles.roleChipText, { color: ROLE_TINTS[r] ?? IC }]}>{r.toUpperCase()}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  ) : null}
+                  <Pressable
+                    style={styles.nextBtn}
+                    onPress={onNextItem}
+                    accessibilityRole="button"
+                    accessibilityLabel={idx + 1 >= N ? 'Finish the sort' : 'Next item'}
+                  >
+                    <Text style={styles.nextText}>{idx + 1 >= N ? 'FINISH SORT ›' : 'NEXT ITEM ›'}</Text>
+                  </Pressable>
+                </View>
+              </Appear>
             ) : null}
-          </View>
+          </Animated.View>
         ) : (
           <View style={{ gap: 10 }}>
             {finishedLive ? (
@@ -556,7 +852,9 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
                 }`}
               />
             ) : (
-              <Text style={styles.passedLine}>✓ Sort passed — {correctAtPassRef.current} of {N} on record.</Text>
+              <Appear>
+                <Text style={styles.passedLine}>✓ Sort passed — {correctAtPassRef.current} of {N} on record.</Text>
+              </Appear>
             )}
             <OptionChip label={sortPassed ? 'RUN THE SORT AGAIN' : 'RETRY THE SORT'} onPress={onRetrySort} action />
           </View>
@@ -601,7 +899,9 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
           </Text>
         </Pressable>
         {spacingVerdict ? (
-          <RuleFeedback ruleId="sup-spacing-mfr" verdict={spacingVerdict} short={spacingMsg} openSources={openSources} />
+          <Appear key={`sp-${checkNonce}`}>
+            <RuleFeedback ruleId="sup-spacing-mfr" verdict={spacingVerdict} short={spacingMsg} openSources={openSources} />
+          </Appear>
         ) : null}
       </CiSection>
 

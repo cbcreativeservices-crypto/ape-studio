@@ -15,12 +15,34 @@
  * via VerdictBanner; the SVG is a described training visualization — all
  * interaction happens in the cards.
  */
-import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import Svg, { Circle, G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import { useEffect, useState, type ReactNode } from 'react';
+import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import Svg, { G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
 import { OptionChip, VerdictBanner } from '../../cable/lessons/bits';
 import { CiSection, RuleFeedback, SpecCard, announceComplete } from '../bits';
+import {
+  ACircle,
+  AG,
+  APath,
+  Animated,
+  Appear,
+  CI_EASE,
+  CI_MOTION,
+  CI_SPRING_UI,
+  PulseRing,
+  Stagger,
+  cancelAnimation,
+  useAnimatedProps,
+  useAnimatedStyle,
+  useCiMotion,
+  useDrawIn,
+  useSharedValue,
+  withDelay,
+  withRepeat,
+  withSpring,
+  withTiming,
+} from '../motion';
 import { CI_FIRE_SPACES } from '../data/scenarios';
 import { clamp100 } from '../engine/score';
 import type { CiModuleProps } from '../registry';
@@ -94,11 +116,169 @@ const FLOW: FlowQ[] = [
   },
 ];
 
+/* ── motion helpers (WhyScene idiom — primitive props only) ─────────────── */
+/** Spring a scalar to its target with the UI spring (the kit's useSettle is
+ *  typed to its own default spring config). */
+function useSpringTo(target: number, reduce: boolean) {
+  const v = useSharedValue(target);
+  useEffect(() => {
+    if (reduce) {
+      v.value = target;
+      return;
+    }
+    v.value = withSpring(target, CI_SPRING_UI);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [target, reduce]);
+  return v;
+}
+
+/** Opacity entrance for static furniture inside an SVG. */
+function FadeIn({ children, delay = 0, reduce }: { children: ReactNode; delay?: number; reduce: boolean }) {
+  const t = useSharedValue(reduce ? 1 : 0);
+  useEffect(() => {
+    cancelAnimation(t);
+    if (reduce) {
+      t.value = 1;
+      return;
+    }
+    t.value = 0;
+    t.value = withDelay(delay, withTiming(1, { duration: CI_MOTION.base, easing: CI_EASE.out }));
+    return () => cancelAnimation(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [delay, reduce]);
+  const p = useAnimatedProps(() => ({ opacity: t.value }));
+  return (
+    <AG opacity={reduce ? 1 : 0} animatedProps={p}>
+      {children}
+    </AG>
+  );
+}
+
+/** The stage's thesis lands slower than a normal card (CI_MOTION.reveal). */
+function Reveal({ children, delay = 0, style }: { children: ReactNode; delay?: number; style?: StyleProp<ViewStyle> }) {
+  const m = useCiMotion();
+  const t = useSharedValue(m.reduce ? 1 : 0);
+  useEffect(() => {
+    cancelAnimation(t);
+    if (m.reduce) {
+      t.value = 1;
+      return;
+    }
+    t.value = 0;
+    t.value = withDelay(m.d(delay), withTiming(1, { duration: CI_MOTION.reveal, easing: CI_EASE.out }));
+    return () => cancelAnimation(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [delay, m.reduce]);
+  const s = useAnimatedStyle(() => ({
+    opacity: t.value,
+    transform: [{ translateY: (1 - t.value) * 16 }, { scale: 0.975 + 0.025 * t.value }],
+  }));
+  return <Animated.View style={[style, s]}>{children}</Animated.View>;
+}
+
+/** The cable ROUTES toward the chosen space: a solid lead travels the route,
+ *  then settles into the dashed "proposed route" with its endpoint. Keyed by
+ *  the selection so every new choice re-routes. */
+function RouteDraw({ d, len, end }: { d: string; len: number; end: [number, number] }) {
+  const m = useCiMotion();
+  const [arrived, setArrived] = useState(false);
+  const { animatedProps, dashArray, restOffset } = useDrawIn(len, { run: true, onDone: () => setArrived(true) });
+  const r = useSpringTo(arrived ? 3.5 : 0, m.reduce);
+  const dot = useAnimatedProps(() => ({ r: r.value }));
+  return (
+    <>
+      {arrived ? (
+        <Path d={d} stroke={colors.amber} strokeWidth={2.4} fill="none" strokeDasharray="6 5" />
+      ) : (
+        <APath
+          d={d}
+          stroke={colors.amber}
+          strokeWidth={2.4}
+          fill="none"
+          strokeLinecap="round"
+          strokeDasharray={dashArray}
+          strokeDashoffset={restOffset}
+          animatedProps={animatedProps}
+        />
+      )}
+      <ACircle cx={end[0]} cy={end[1]} r={0} fill={colors.amber} animatedProps={dot} />
+    </>
+  );
+}
+
+/** Quiet danger: the rated wall's hatching breathes while it is the active
+ *  subject (the five-question flow), and rests solid otherwise. */
+function RatedHatch({ active, loops }: { active: boolean; loops: boolean }) {
+  const t = useSharedValue(0);
+  useEffect(() => {
+    cancelAnimation(t);
+    if (!active || !loops) {
+      t.value = 0;
+      return;
+    }
+    t.value = withRepeat(withTiming(1, { duration: 2200, easing: CI_EASE.inOut }), -1, true);
+    return () => cancelAnimation(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active, loops]);
+  const p = useAnimatedProps(() => ({ opacity: 0.62 + 0.38 * t.value }));
+  return (
+    <AG opacity={1} animatedProps={p}>
+      {[122, 134, 146, 158, 170, 182, 194, 206].map((y) => (
+        <Path key={y} d={`M180 ${y} L188 ${y - 8}`} stroke="#ff5a48" strokeWidth={1} strokeOpacity={0.55} />
+      ))}
+    </AG>
+  );
+}
+
+/** The sleeved opening: pulses amber while the five questions are live,
+ *  settles green once the flow is answered. */
+function SleeveMarker({ on, done, reduce }: { on: boolean; done: boolean; reduce: boolean }) {
+  const r = useSpringTo(done ? 15 : 20, reduce);
+  const ring = useAnimatedProps(() => ({ r: r.value }));
+  if (!on) return null;
+  return (
+    <>
+      <Rect
+        x={167}
+        y={165}
+        width={34}
+        height={22}
+        rx={5}
+        fill="none"
+        stroke={done ? colors.green : colors.amber}
+        strokeWidth={1.6}
+        strokeDasharray={done ? undefined : '4 3'}
+      />
+      {done ? (
+        <ACircle cx={184} cy={176} r={20} fill="none" stroke={colors.green} strokeWidth={1.4} opacity={0.75} animatedProps={ring} />
+      ) : (
+        <PulseRing cx={184} cy={176} r={15} color={colors.amber} run />
+      )}
+    </>
+  );
+}
+
+/** Numbered space marker — springs a touch larger the moment it is identified. */
+function SpaceMarker({ cx, cy, n, done, reduce }: { cx: number; cy: number; n: number; done: boolean; reduce: boolean }) {
+  const r = useSpringTo(done ? 9.2 : 8, reduce);
+  const p = useAnimatedProps(() => ({ r: r.value }));
+  const tint = done ? colors.green : colors.amber;
+  return (
+    <G>
+      <ACircle cx={cx} cy={cy} r={done ? 9.2 : 8} fill="#17171c" stroke={tint} strokeWidth={1.5} animatedProps={p} />
+      <SvgText x={cx} y={cy + 3} fontSize={8.5} fill={tint} textAnchor="middle">
+        {String(n)}
+      </SvgText>
+    </G>
+  );
+}
+
 /* ── building-section training visualization ────────────────────────────── */
 /** Section: two floors, riser shaft, lower room with a non-rated partition
  *  (tray penetration), a MARKED rated wall (conduit sleeve), suspended
  *  ceiling with a quiet cavity left of the rated wall and an air-handling
- *  space right of it. Proposed routes draw dashed from the rack. */
+ *  space right of it. The building RESPONDS to attention: choosing a space
+ *  routes the cable toward it and fades that space's highlight up. */
 function BuildingArt({
   w,
   sel,
@@ -112,11 +292,12 @@ function BuildingArt({
   flowOn: boolean;
   flowDone: boolean;
 }) {
+  const m = useCiMotion();
   const h = Math.round(w * 0.62);
-  const ROUTES: Record<string, { d: string; end: [number, number] }> = {
-    'fs-cavity': { d: 'M44 182 H60 V133 H126', end: [126, 133] },
-    'fs-plenum': { d: 'M44 194 H160 V177 H202 V134 H236', end: [236, 134] },
-    'fs-riser': { d: 'M44 198 H160 V177 H202 V196 H310 V152', end: [310, 152] },
+  const ROUTES: Record<string, { d: string; len: number; end: [number, number] }> = {
+    'fs-cavity': { d: 'M44 182 H60 V133 H126', len: 140, end: [126, 133] },
+    'fs-plenum': { d: 'M44 194 H160 V177 H202 V134 H236', len: 260, end: [236, 134] },
+    'fs-riser': { d: 'M44 198 H160 V177 H202 V196 H310 V152', len: 360, end: [310, 152] },
   };
   const HL: Record<string, [number, number, number, number]> = {
     'fs-cavity': [86, 113, 92, 41],
@@ -199,27 +380,13 @@ function BuildingArt({
 
       {/* MARKED rated wall (hatch + placard) with its conduit sleeve */}
       <Rect x={180} y={112} width={8} height={100} fill="#241416" stroke="#3a3c42" strokeWidth={1} />
-      {[122, 134, 146, 158, 170, 182, 194, 206].map((y) => (
-        <Path key={y} d={`M180 ${y} L188 ${y - 8}`} stroke="#ff5a48" strokeWidth={1} strokeOpacity={0.55} />
-      ))}
+      <RatedHatch active={flowOn && !flowDone} loops={m.loops} />
       <Rect x={118} y={158} width={68} height={11} rx={2} fill="#1a0f0f" stroke="#ff5a48" strokeWidth={1} />
       <SvgText x={152} y={166} fontSize={6} fill="#ff8a6b" textAnchor="middle">
         RATED · SEE PLANS
       </SvgText>
       <Rect x={172} y={170} width={24} height={12} rx={3} fill="#101014" stroke="#6f7378" strokeWidth={1.4} />
-      {flowOn ? (
-        <Rect
-          x={167}
-          y={165}
-          width={34}
-          height={22}
-          rx={5}
-          fill="none"
-          stroke={flowDone ? colors.green : colors.amber}
-          strokeWidth={1.6}
-          strokeDasharray={flowDone ? undefined : '4 3'}
-        />
-      ) : null}
+      <SleeveMarker on={flowOn} done={flowDone} reduce={m.reduce} />
 
       {/* origin rack in the lower room */}
       <SvgText x={29} y={165} fontSize={5.5} fill="#6f7378" textAnchor="middle">
@@ -230,53 +397,44 @@ function BuildingArt({
         <Rect key={y} x={18} y={y} width={22} height={7} rx={1.5} fill="#101014" stroke="#2c2c33" strokeWidth={0.8} />
       ))}
 
-      {/* selected-space highlight + proposed dashed route */}
-      {hl ? (
-        <Rect
-          x={hl[0]}
-          y={hl[1]}
-          width={hl[2]}
-          height={hl[3]}
-          rx={4}
-          fill={colors.amber}
-          fillOpacity={0.08}
-          stroke={colors.amber}
-          strokeOpacity={0.5}
-          strokeWidth={1.2}
-          strokeDasharray="5 4"
-        />
+      {/* the building responds to attention: the route travels toward the
+          chosen space and that space's highlight fades up behind it */}
+      {hl && sel ? (
+        <FadeIn key={`hl-${sel}`} delay={m.d(CI_MOTION.quick)} reduce={m.reduce}>
+          <Rect
+            x={hl[0]}
+            y={hl[1]}
+            width={hl[2]}
+            height={hl[3]}
+            rx={4}
+            fill={colors.amber}
+            fillOpacity={0.08}
+            stroke={colors.amber}
+            strokeOpacity={0.5}
+            strokeWidth={1.2}
+            strokeDasharray="5 4"
+          />
+        </FadeIn>
       ) : null}
-      {route ? (
-        <>
-          <Path d={route.d} stroke={colors.amber} strokeWidth={2.4} fill="none" strokeDasharray="6 5" />
-          <Circle cx={route.end[0]} cy={route.end[1]} r={3.5} fill={colors.amber} />
-        </>
-      ) : null}
+      {route && sel ? <RouteDraw key={`rt-${sel}`} d={route.d} len={route.len} end={route.end} /> : null}
 
       {/* numbered space markers (green once identified) */}
       {CI_FIRE_SPACES.map((s, i) => {
         const [mx, my] = MARK[s.id];
-        const tint = done(s.id) ? colors.green : colors.amber;
-        return (
-          <G key={s.id}>
-            <Circle cx={mx} cy={my} r={8} fill="#17171c" stroke={tint} strokeWidth={1.5} />
-            <SvgText x={mx} y={my + 3} fontSize={8.5} fill={tint} textAnchor="middle">
-              {String(i + 1)}
-            </SvgText>
-          </G>
-        );
+        return <SpaceMarker key={s.id} cx={mx} cy={my} n={i + 1} done={done(s.id)} reduce={m.reduce} />;
       })}
     </Svg>
   );
 }
 
 /* ── lesson card (WhyScene "NEAT ≠ CORRECT" idiom) ──────────────────────── */
+/** The stage's thesis — a deliberate reveal, slower than a normal card. */
 function LessonCard({ head, body }: { head: string; body: string }) {
   return (
-    <View style={styles.lessonCard}>
+    <Reveal style={styles.lessonCard}>
       <Text style={styles.lessonHead}>{head}</Text>
       <Text style={styles.lessonBody}>{body}</Text>
-    </View>
+    </Reveal>
   );
 }
 
@@ -343,7 +501,7 @@ export function FireScene({ width, completed, onComplete, openSources }: CiModul
             const answered = ans != null;
             const isSel = sel === s.id;
             return (
-              <View key={s.id} style={[styles.spaceCard, isSel && styles.spaceCardSel]}>
+              <Stagger key={s.id} index={i} style={[styles.spaceCard, isSel && styles.spaceCardSel]}>
                 <Pressable
                   onPress={() => setSel(isSel ? null : s.id)}
                   style={styles.spaceHead}
@@ -371,14 +529,14 @@ export function FireScene({ width, completed, onComplete, openSources }: CiModul
                       ))}
                     </View>
                     {answered ? (
-                      <>
+                      <Appear style={{ gap: 8 }}>
                         <VerdictBanner verdict={ans === s.correctIdx ? 'correct' : 'wrong'} text={s.reveal} />
                         <RuleFeedback ruleId={s.ruleId} verdict={ans === s.correctIdx ? 'good' : 'bad'} openSources={openSources} />
-                      </>
+                      </Appear>
                     ) : null}
                   </View>
                 ) : null}
-              </View>
+              </Stagger>
             );
           })}
         </View>
@@ -404,7 +562,7 @@ export function FireScene({ width, completed, onComplete, openSources }: CiModul
               const ans = flowAns[qi];
               const answered = ans != null;
               return (
-                <View key={q.id} style={styles.flowCard}>
+                <Appear key={q.id} style={styles.flowCard}>
                   <Text style={styles.flowNum}>
                     QUESTION {qi + 1} / {FLOW.length}
                   </Text>
@@ -421,12 +579,12 @@ export function FireScene({ width, completed, onComplete, openSources }: CiModul
                     ))}
                   </View>
                   {answered ? (
-                    <>
+                    <Appear style={{ gap: 8 }}>
                       <VerdictBanner verdict={ans === q.correctIdx ? 'correct' : 'wrong'} text={q.reveal} />
                       <RuleFeedback ruleId={q.ruleId} verdict={ans === q.correctIdx ? 'good' : 'bad'} openSources={openSources} />
-                    </>
+                    </Appear>
                   ) : null}
-                </View>
+                </Appear>
               );
             })}
             {flowDone ? (

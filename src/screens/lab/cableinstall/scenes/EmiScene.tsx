@@ -19,19 +19,55 @@
  * Completion: field explored (distance moved + balance toggled) AND a sound
  * crossing choice made → onComplete({ signal, routing }), once.
  *
+ * ── MOTION (owner 2026-08-24) ──────────────────────────────────────────────
+ * The field is LIVE: the conceptual coupling region breathes slowly — the one
+ * sanctioned perpetual loop in this lab, and it is labeled conceptual in the
+ * drawing itself. Everything else rests. The signal cable chases the slider on
+ * a spring; the exposure band cross-fades LOW→MODERATE→HIGH instead of
+ * snapping; the field riding on the cable ramps with distance (opacity +
+ * weight, never a number). Flipping to balanced SPLITS the single conductor
+ * into a pair on a spring and the exposure re-settles with it. Each crossing
+ * preview animates on selection: the parallel run couples along its whole
+ * shared length; the perpendicular crossing gets one pulse that dies at once.
+ * Primitive props only — group movement rides a MovingLayer, per motion.tsx.
+ *
  * Accessibility: chips/cards are labeled buttons ≥44dp; the slider has
  * button-step equivalents; exposure changes are announced; verdicts are
- * glyph + words + color, never color alone.
+ * glyph + words + color, never color alone. Reduced motion collapses every
+ * duration to 0 and stops the breathing — identical end state.
  */
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Defs, G, Line, Path, RadialGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
+import type { SharedValue } from 'react-native-reanimated';
 import { colors, fonts } from '../../../../theme/tokens';
 import { OptionChip } from '../../cable/lessons/bits';
 import { DragSlider } from '../../foundations/bits';
 import { CiSection, RuleFeedback, announceComplete } from '../bits';
 import { CI_CLASS_TINTS } from '../data/cableTypes';
 import { CI_EMI_CHOICES } from '../data/scenarios';
+import {
+  ACircle,
+  AG,
+  ALine,
+  Animated,
+  Appear,
+  CI_EASE,
+  CI_MOTION,
+  MovingLayer,
+  Stagger,
+  cancelAnimation,
+  useAnimatedProps,
+  useAnimatedStyle,
+  useCiMotion,
+  useDerivedValue,
+  usePulse,
+  useSharedValue,
+  useTween,
+  withDelay,
+  withSpring,
+  withTiming,
+} from '../motion';
 import type { CiModuleProps } from '../registry';
 
 /* ── the neighbors (qualitative noisiness only — no numbers anywhere) ───── */
@@ -58,67 +94,275 @@ const EMI_LEVERS: { name: string; blurb: string }[] = [
 
 type ExposureBand = { word: 'LOW' | 'MODERATE' | 'HIGH'; tint: string };
 
-function exposureFor(src: EmiSource, dist: number, balanced: boolean): ExposureBand {
+/** Qualitative coupling weight — drives ARTWORK ONLY. Never displayed. */
+function couplingFor(src: EmiSource, dist: number, balanced: boolean) {
   const raw = src.noise * (1 - 0.85 * dist);
-  const coupled = balanced ? raw * 0.4 : raw;
+  return balanced ? raw * 0.4 : raw;
+}
+
+function exposureFor(src: EmiSource, dist: number, balanced: boolean): ExposureBand {
+  const coupled = couplingFor(src, dist, balanced);
   if (coupled < 0.22) return { word: 'LOW', tint: colors.green };
   if (coupled < 0.5) return { word: 'MODERATE', tint: colors.amber };
   return { word: 'HIGH', tint: '#ff9b8f' };
 }
 
+const BAND_TINTS = [colors.green, colors.amber, '#ff9b8f'] as const;
+const bandIndex = (w: ExposureBand['word']) => (w === 'LOW' ? 0 : w === 'MODERATE' ? 1 : 2);
+
 const distWord = (d: number) => (d < 0.33 ? 'CLOSE' : d < 0.66 ? 'MID' : 'FAR');
 
+/* ── motion helpers local to this scene ─────────────────────────────────── */
+/**
+ * A value that CHASES its target on a spring — for direct manipulation, where
+ * `useSettle`'s heavier spring would lag behind the finger.
+ * (Written locally because useSettle's `spring` param is typed to one config.)
+ */
+function useChase(target: number, damping = 18, stiffness = 220, mass = 0.6) {
+  const m = useCiMotion();
+  const v = useSharedValue(target);
+  useEffect(() => {
+    if (m.reduce) {
+      v.value = target;
+      return;
+    }
+    v.value = withSpring(target, { damping, stiffness, mass });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [target, damping, stiffness, mass, m.reduce]);
+  return v;
+}
+
+/**
+ * A one-shot 0→1 that restarts whenever `nonce` changes, and sits at its END
+ * STATE (1) before anything is selected. Nothing here loops.
+ */
+function useShot(nonce: number, duration: number, delay = 0) {
+  const m = useCiMotion();
+  const p = useSharedValue(1);
+  useEffect(() => {
+    cancelAnimation(p);
+    if (nonce === 0 || m.reduce) {
+      p.value = 1;
+      return;
+    }
+    p.value = 0;
+    p.value = withDelay(delay, withTiming(1, { duration, easing: CI_EASE.out }));
+    return () => cancelAnimation(p);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nonce, duration, delay, m.reduce]);
+  return p;
+}
+
+/**
+ * A FINITE run of marching-dash cycles — sustained coupling that still comes to
+ * rest, landing exactly on a period boundary so the dash never snaps.
+ */
+function useCycles(nonce: number, cycles: number, period: number) {
+  const m = useCiMotion();
+  const c = useSharedValue(cycles);
+  useEffect(() => {
+    cancelAnimation(c);
+    if (nonce === 0 || m.reduce || !m.loops) {
+      // rest / reduced motion → sit on the END state: flow stopped, ticks lit
+      c.value = cycles;
+      return;
+    }
+    c.value = 0;
+    c.value = withTiming(cycles, { duration: period * cycles, easing: CI_EASE.linear });
+    return () => cancelAnimation(c);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nonce, cycles, period, m.reduce, m.loops]);
+  return c;
+}
+
+/** Fades a swapped-in SVG group (keyed by the caller) rather than cutting. */
+function IconFade({ children }: { children: ReactNode }) {
+  const m = useCiMotion();
+  const t = useSharedValue(m.reduce ? 1 : 0);
+  useEffect(() => {
+    cancelAnimation(t);
+    if (m.reduce) {
+      t.value = 1;
+      return;
+    }
+    t.value = 0;
+    t.value = withTiming(1, { duration: CI_MOTION.base, easing: CI_EASE.out });
+    return () => cancelAnimation(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [m.reduce]);
+  const animatedProps = useAnimatedProps(() => ({ opacity: t.value }));
+  return (
+    <AG opacity={m.reduce ? 1 : 0} animatedProps={animatedProps}>
+      {children}
+    </AG>
+  );
+}
+
+/**
+ * The exposure readout re-asserts itself when the band changes — it lifts from
+ * dim to full rather than blinking, so the live value is never unreadable
+ * mid-drag. (Keyed by the caller on the word itself.)
+ */
+function BandWord({ word, tint }: { word: string; tint: string }) {
+  const m = useCiMotion();
+  const t = useSharedValue(m.reduce ? 1 : 0);
+  useEffect(() => {
+    cancelAnimation(t);
+    if (m.reduce) {
+      t.value = 1;
+      return;
+    }
+    t.value = 0;
+    t.value = withTiming(1, { duration: CI_MOTION.base, easing: CI_EASE.out });
+    return () => cancelAnimation(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [m.reduce]);
+  const style = useAnimatedStyle(() => ({ opacity: 0.45 + 0.55 * t.value }));
+  return (
+    <Animated.View style={style}>
+      <Text style={[s.exposureWord, { color: tint }]}>{word}</Text>
+    </Animated.View>
+  );
+}
+
 /* ── the concept-field cross-section ────────────────────────────────────── */
+/** The cable rides at this x when DISTANCE is 0; the layer translates from here. */
+const SIG_X0 = 132;
+const SIG_SPAN = 196;
+
 function FieldArt({ w, src, dist, balanced, band }: { w: number; src: EmiSource; dist: number; balanced: boolean; band: ExposureBand }) {
   const h = Math.round(w * (150 / 360));
-  const cx = 132 + dist * 196;
-  const glowR = 34 + src.noise * 54;
+  const scale = w / 360;
   const sig = CI_CLASS_TINTS.analog;
+
+  /* the cable chases the slider; the layer carries the whole cross-section */
+  const cxV = useChase(SIG_X0 + dist * SIG_SPAN);
+  const txPx = useDerivedValue(() => (cxV.value - SIG_X0) * scale);
+  const tyPx = useSharedValue(0);
+
+  /* the field is LIVE — the one sanctioned loop, and labeled conceptual */
+  const { t: breath } = usePulse({ period: 3200 });
+  const glowR = useChase(34 + src.noise * 54, 15, 140, 0.9);
+
+  /* what actually reaches the cable — artwork weight only, never a number */
+  const intensity = useChase(couplingFor(src, dist, balanced), 16, 150, 0.8);
+  /* LOW → MODERATE → HIGH cross-fade (monotonic: never flashes a wrong band) */
+  const bandT = useTween(bandIndex(band.word), CI_MOTION.base);
+  /* the conductors re-form on a spring when the interconnect flips */
+  const split = useChase(balanced ? 4 : 0, 14, 160, 0.9);
+
+  const glowProps = useAnimatedProps(() => ({
+    r: glowR.value * (1 + 0.06 * breath.value),
+    opacity: 0.86 + 0.14 * breath.value,
+  }));
+  const glowRingProps = useAnimatedProps(() => ({
+    r: glowR.value * (1 + 0.06 * breath.value),
+    opacity: 0.42 + 0.22 * breath.value,
+  }));
+  const guideProps = useAnimatedProps(() => ({ x2: cxV.value - 21 }));
+
+  const sheathProps = useAnimatedProps(() => ({
+    r: 23.5 + 3.5 * intensity.value,
+    opacity: 0.1 + 0.6 * intensity.value,
+    strokeWidth: 1.2 + 3.6 * intensity.value,
+  }));
+  const lowProps = useAnimatedProps(() => ({ opacity: Math.max(0, 1 - Math.abs(bandT.value - 0)) }));
+  const modProps = useAnimatedProps(() => ({ opacity: Math.max(0, 1 - Math.abs(bandT.value - 1)) }));
+  const highProps = useAnimatedProps(() => ({ opacity: Math.max(0, 1 - Math.abs(bandT.value - 2)) }));
+
+  const condA = useAnimatedProps(() => ({ cx: SIG_X0 - split.value, r: 2.6 - 0.05 * split.value }));
+  const condB = useAnimatedProps(() => ({ cx: SIG_X0 + split.value, r: 2.6 - 0.05 * split.value }));
+
   return (
-    <Svg
-      width={w}
-      height={h}
-      viewBox="0 0 360 150"
-      accessibilityLabel={`Cross-section, conceptual visualization: ${src.label} at left with a conceptual coupling-risk field, signal cable at ${distWord(dist)} spacing, ${balanced ? 'balanced' : 'unbalanced'} interconnect. Exposure ${band.word}. Not measured values.`}
-    >
-      <Defs>
-        <RadialGradient id="ciEmiGlow" cx="50%" cy="50%" r="50%">
-          <Stop offset="0%" stopColor={src.tint} stopOpacity={0.4} />
-          <Stop offset="55%" stopColor={src.tint} stopOpacity={0.16} />
-          <Stop offset="100%" stopColor={src.tint} stopOpacity={0} />
-        </RadialGradient>
-      </Defs>
-      <Rect x={0} y={0} width={360} height={150} rx={10} fill="#0c0c10" />
-      {/* conceptual coupling-risk field */}
-      <Circle cx={64} cy={70} r={glowR} fill="url(#ciEmiGlow)" />
-      <Circle cx={64} cy={70} r={glowR} fill="none" stroke={src.tint} strokeWidth={0.8} strokeDasharray="3,5" opacity={0.55} />
-      {/* the source */}
-      <SourceIcon id={src.id} tint={src.tint} />
-      <SvgText x={64} y={124} fill="#a6a6ad" fontSize={8.5} textAnchor="middle">{src.label}</SvgText>
-      <SvgText x={64} y={135} fill="#6f7378" fontSize={6.5} textAnchor="middle">{src.role.toUpperCase()}</SvgText>
-      {/* distance guide */}
-      <Line x1={80} y1={70} x2={cx - 21} y2={70} stroke="#6f7378" strokeWidth={1} strokeDasharray="4,4" />
-      {/* the signal cable, in cross-section */}
-      <Circle cx={cx} cy={70} r={19} fill="none" stroke={band.tint} strokeWidth={2.4} />
-      <Circle cx={cx} cy={70} r={13} fill="#101014" stroke={sig} strokeWidth={2.6} />
-      <Circle cx={cx} cy={70} r={9} fill="none" stroke="#9be8f2" strokeWidth={1.3} strokeDasharray="3,2" />
-      {balanced ? (
-        <G>
-          <Circle cx={cx - 4} cy={70} r={2.4} fill="#e8e8ea" />
-          <Circle cx={cx + 4} cy={70} r={2.4} fill="#e8e8ea" />
-        </G>
-      ) : (
-        <Circle cx={cx} cy={70} r={2.6} fill="#e8e8ea" />
-      )}
-      <SvgText x={cx} y={101} fill="#a6a6ad" fontSize={8} textAnchor="middle">SIGNAL CABLE</SvgText>
-      <SvgText x={cx} y={111} fill="#6f7378" fontSize={6.5} textAnchor="middle">
-        {balanced ? 'BALANCED + SHIELD' : 'UNBALANCED + SHIELD'}
-      </SvgText>
-      {/* honesty label — required, in the drawing itself */}
-      <SvgText x={180} y={146} fill="#6f7378" fontSize={7.5} textAnchor="middle">
-        CONCEPTUAL VISUALIZATION — NOT MEASURED VALUES
-      </SvgText>
-    </Svg>
+    <View style={{ width: w, height: h }}>
+      <Svg
+        width={w}
+        height={h}
+        viewBox="0 0 360 150"
+        accessibilityLabel={`Cross-section, conceptual visualization: ${src.label} at left with a conceptual coupling-risk field, signal cable at ${distWord(dist)} spacing, ${balanced ? 'balanced' : 'unbalanced'} interconnect. Exposure ${band.word}. Not measured values.`}
+      >
+        <Defs>
+          <RadialGradient id="ciEmiFieldGlow" cx="50%" cy="50%" r="50%">
+            <Stop offset="0%" stopColor={src.tint} stopOpacity={0.4} />
+            <Stop offset="55%" stopColor={src.tint} stopOpacity={0.16} />
+            <Stop offset="100%" stopColor={src.tint} stopOpacity={0} />
+          </RadialGradient>
+        </Defs>
+        <Rect x={0} y={0} width={360} height={150} rx={10} fill="#0c0c10" />
+        {/* conceptual coupling-risk field — breathing, because it is live */}
+        <ACircle cx={64} cy={70} r={34 + src.noise * 54} fill="url(#ciEmiFieldGlow)" animatedProps={glowProps} />
+        <ACircle
+          cx={64}
+          cy={70}
+          r={34 + src.noise * 54}
+          fill="none"
+          stroke={src.tint}
+          strokeWidth={0.8}
+          strokeDasharray="3,5"
+          opacity={0.55}
+          animatedProps={glowRingProps}
+        />
+        {/* the source */}
+        <IconFade key={src.id}>
+          <SourceIcon id={src.id} tint={src.tint} />
+        </IconFade>
+        <SvgText x={64} y={124} fill="#a6a6ad" fontSize={8.5} textAnchor="middle">{src.label}</SvgText>
+        <SvgText x={64} y={135} fill="#6f7378" fontSize={6.5} textAnchor="middle">{src.role.toUpperCase()}</SvgText>
+        {/* distance guide — stretches with the cable */}
+        <ALine
+          x1={80}
+          y1={70}
+          x2={SIG_X0 + dist * SIG_SPAN - 21}
+          y2={70}
+          stroke="#6f7378"
+          strokeWidth={1}
+          strokeDasharray="4,4"
+          animatedProps={guideProps}
+        />
+        {/* honesty label — required, in the drawing itself */}
+        <SvgText x={180} y={146} fill="#6f7378" fontSize={7.5} textAnchor="middle">
+          CONCEPTUAL VISUALIZATION — NOT MEASURED VALUES
+        </SvgText>
+      </Svg>
+
+      {/* the cable itself moves as a GROUP — the only bulletproof way (motion.tsx) */}
+      <View
+        style={StyleSheet.absoluteFill}
+        pointerEvents="none"
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants"
+      >
+        <MovingLayer x={txPx} y={tyPx}>
+          <Svg width={w} height={h} viewBox="0 0 360 150">
+            {/* how much field is riding on the cable right now */}
+            <ACircle
+              cx={SIG_X0}
+              cy={70}
+              r={23.5}
+              fill="none"
+              stroke={src.tint}
+              strokeWidth={1.2}
+              strokeDasharray="2,4"
+              opacity={0.1}
+              animatedProps={sheathProps}
+            />
+            {/* exposure band — three rings cross-fading, never a snap */}
+            <ACircle cx={SIG_X0} cy={70} r={19} fill="none" stroke={BAND_TINTS[0]} strokeWidth={2.4} opacity={0} animatedProps={lowProps} />
+            <ACircle cx={SIG_X0} cy={70} r={19} fill="none" stroke={BAND_TINTS[1]} strokeWidth={2.4} opacity={0} animatedProps={modProps} />
+            <ACircle cx={SIG_X0} cy={70} r={19} fill="none" stroke={BAND_TINTS[2]} strokeWidth={2.4} opacity={0} animatedProps={highProps} />
+            <Circle cx={SIG_X0} cy={70} r={13} fill="#101014" stroke={sig} strokeWidth={2.6} />
+            <Circle cx={SIG_X0} cy={70} r={9} fill="none" stroke="#9be8f2" strokeWidth={1.3} strokeDasharray="3,2" />
+            {/* one conductor splits into a balanced pair, and merges back */}
+            <ACircle cx={SIG_X0} cy={70} r={2.6} fill="#e8e8ea" animatedProps={condA} />
+            <ACircle cx={SIG_X0} cy={70} r={2.6} fill="#e8e8ea" animatedProps={condB} />
+            <SvgText x={SIG_X0} y={101} fill="#a6a6ad" fontSize={8} textAnchor="middle">SIGNAL CABLE</SvgText>
+            <SvgText x={SIG_X0} y={111} fill="#6f7378" fontSize={6.5} textAnchor="middle">
+              {balanced ? 'BALANCED + SHIELD' : 'UNBALANCED + SHIELD'}
+            </SvgText>
+          </Svg>
+        </MovingLayer>
+      </View>
+    </View>
   );
 }
 
@@ -183,29 +427,128 @@ function SourceIcon({ id, tint }: { id: string; tint: string }) {
 }
 
 /* ── crossing-geometry previews ─────────────────────────────────────────── */
-function CrossPreview({ kind, w }: { kind: string; w: number }) {
+/**
+ * Each preview teaches its geometry THROUGH motion when it is selected:
+ *   parallel-close  coupling accumulates along the whole shared length, and
+ *                   the run keeps flowing after the ticks have lit
+ *   separated       the same direction — but the coupling barely arrives
+ *   perpendicular   one crossing pulse, dead on the next beat
+ *   other-pathway   the signal simply installs somewhere else
+ * All of it comes to rest; nothing here loops.
+ */
+/** One coupling tick between two parallel runs — lights in its turn. */
+function CouplingTick({ x, i, cyc }: { x: number; i: number; cyc: SharedValue<number> }) {
+  const animatedProps = useAnimatedProps(() => ({
+    opacity: Math.max(0, Math.min(1, cyc.value * 1.5 - i * 0.22)) * 0.85,
+  }));
+  return <ALine x1={x} y1={20.5} x2={x} y2={26.5} stroke="#ff9b8f" strokeWidth={1.6} opacity={0.85} animatedProps={animatedProps} />;
+}
+
+/** The same tick across a wide separation: it flickers, then all but vanishes. */
+function FarTick({ x, i, shot }: { x: number; i: number; shot: SharedValue<number> }) {
+  const animatedProps = useAnimatedProps(() => {
+    const d = shot.value - 0.45 - i * 0.08;
+    return { opacity: 0.12 + 0.3 * Math.exp(-((d * d) / 0.02)) };
+  });
+  return <ALine x1={x} y1={23} x2={x} y2={49} stroke="#ff9b8f" strokeWidth={1.4} opacity={0.12} animatedProps={animatedProps} />;
+}
+
+/** Envelope for the finite coupling flow: rises, sustains, dies at rest. */
+function flowEnvelope(v: number) {
+  'worklet';
+  return Math.max(0, Math.min(1, Math.min(v * 3, (4 - v) * 1.6)));
+}
+
+function CrossPreview({ kind, w, nonce }: { kind: string; w: number; nonce: number }) {
   const h = 64;
   const pow = '#ff5a48';
   const sig = CI_CLASS_TINTS.analog;
+
+  const shot = useShot(nonce, kind === 'perpendicular' ? 360 : 520, kind === 'other-pathway' ? 160 : 0);
+  const cyc = useCycles(nonce, 4, 640);
+
+  /* parallel: a finite marching flow on BOTH runs = sustained coupling */
+  const flowPow = useAnimatedProps(() => ({ strokeDashoffset: -16 * cyc.value, opacity: flowEnvelope(cyc.value) * 0.9 }));
+  const flowSig = useAnimatedProps(() => ({ strokeDashoffset: -16 * cyc.value, opacity: flowEnvelope(cyc.value) * 0.9 }));
+
+  /* the drawn signal run (all kinds but the parallel one) */
+  const sepDraw = useAnimatedProps(() => ({ strokeDashoffset: 104 * (1 - shot.value) }));
+  const perpDraw = useAnimatedProps(() => ({ strokeDashoffset: 52 * (1 - shot.value) }));
+  const trayDraw = useAnimatedProps(() => ({ strokeDashoffset: 96 * (1 - shot.value) }));
+  const trayPop = useAnimatedProps(() => ({ opacity: 0.6 + 0.4 * Math.min(1, shot.value * 2) }));
+  /* perpendicular: ONE pulse at the crossing, dead immediately after */
+  const crossPulse = useAnimatedProps(() => {
+    const d = shot.value - 0.3;
+    const g = shot.value >= 1 ? 0 : Math.exp(-((d * d) / 0.004));
+    return { r: 2.5 + 8 * g, opacity: 0.85 * g };
+  });
+  const sepArrows = useAnimatedProps(() => ({ opacity: 0.35 + 0.65 * Math.min(1, shot.value * 1.4) }));
+
   return (
     <Svg width={w} height={h} viewBox="0 0 120 64">
       <Rect x={0} y={0} width={120} height={64} rx={7} fill="#0c0c10" />
       <Line x1={8} y1={20} x2={112} y2={20} stroke={pow} strokeWidth={3.2} />
       {kind === 'parallel-close' ? (
-        <Line x1={8} y1={27} x2={112} y2={27} stroke={sig} strokeWidth={2.6} />
+        <G>
+          <Line x1={8} y1={27} x2={112} y2={27} stroke={sig} strokeWidth={2.6} />
+          {[16, 34, 52, 70, 88, 106].map((x, i) => (
+            <CouplingTick key={x} x={x} i={i} cyc={cyc} />
+          ))}
+          <ALine x1={8} y1={20} x2={112} y2={20} stroke="#ffd0c8" strokeWidth={3.2} strokeDasharray="6,10" opacity={0} animatedProps={flowPow} />
+          <ALine x1={8} y1={27} x2={112} y2={27} stroke="#9be8f2" strokeWidth={2.6} strokeDasharray="6,10" opacity={0} animatedProps={flowSig} />
+        </G>
       ) : kind === 'separated' ? (
         <G>
-          <Line x1={8} y1={52} x2={112} y2={52} stroke={sig} strokeWidth={2.6} />
-          <Line x1={60} y1={25} x2={60} y2={47} stroke="#6f7378" strokeWidth={1} />
-          <Path d="M57 28 l3 -4 l3 4" fill="none" stroke="#6f7378" strokeWidth={1} />
-          <Path d="M57 44 l3 4 l3 -4" fill="none" stroke="#6f7378" strokeWidth={1} />
+          <ALine
+            x1={8}
+            y1={52}
+            x2={112}
+            y2={52}
+            stroke={sig}
+            strokeWidth={2.6}
+            strokeDasharray={104}
+            strokeDashoffset={0}
+            animatedProps={sepDraw}
+          />
+          <FarTick x={36} i={0} shot={shot} />
+          <FarTick x={84} i={1} shot={shot} />
+          <AG opacity={1} animatedProps={sepArrows}>
+            <Line x1={60} y1={25} x2={60} y2={47} stroke="#6f7378" strokeWidth={1} />
+            <Path d="M57 28 l3 -4 l3 4" fill="none" stroke="#6f7378" strokeWidth={1} />
+            <Path d="M57 44 l3 4 l3 -4" fill="none" stroke="#6f7378" strokeWidth={1} />
+          </AG>
         </G>
       ) : kind === 'perpendicular' ? (
-        <Line x1={60} y1={6} x2={60} y2={58} stroke={sig} strokeWidth={2.6} />
+        <G>
+          <ALine
+            x1={60}
+            y1={6}
+            x2={60}
+            y2={58}
+            stroke={sig}
+            strokeWidth={2.6}
+            strokeDasharray={52}
+            strokeDashoffset={0}
+            animatedProps={perpDraw}
+          />
+          <ACircle cx={60} cy={20} r={2.5} fill="none" stroke="#ffd0c8" strokeWidth={1.6} opacity={0} animatedProps={crossPulse} />
+        </G>
       ) : (
         <G>
-          <Rect x={8} y={40} width={104} height={16} rx={2} fill="none" stroke="#6f7378" strokeWidth={1.2} />
-          <Line x1={12} y1={48} x2={108} y2={48} stroke={sig} strokeWidth={2.6} />
+          <AG opacity={1} animatedProps={trayPop}>
+            <Rect x={8} y={40} width={104} height={16} rx={2} fill="none" stroke="#6f7378" strokeWidth={1.2} />
+          </AG>
+          <ALine
+            x1={12}
+            y1={48}
+            x2={108}
+            y2={48}
+            stroke={sig}
+            strokeWidth={2.6}
+            strokeDasharray={96}
+            strokeDashoffset={0}
+            animatedProps={trayDraw}
+          />
         </G>
       )}
     </Svg>
@@ -221,6 +564,7 @@ export function EmiScene({ width, completed, onComplete, openSources }: CiModule
   const [toggled, setToggled] = useState(false);
   const [picked, setPicked] = useState<string[]>([]);
   const [lastPick, setLastPick] = useState<string | null>(null);
+  const [nonces, setNonces] = useState<Record<string, number>>({});
   const firedRef = useRef(completed);
   const mountedRef = useRef(false);
 
@@ -263,6 +607,7 @@ export function EmiScene({ width, completed, onComplete, openSources }: CiModule
     if (!c) return;
     setLastPick(id);
     setPicked((p) => (p.includes(id) ? p : [...p, id]));
+    setNonces((n) => ({ ...n, [id]: (n[id] ?? 0) + 1 }));
     AccessibilityInfo.announceForAccessibility(`${c.ok ? 'Sound choice' : 'Poor geometry'}. ${c.note}`);
   };
 
@@ -302,7 +647,7 @@ export function EmiScene({ width, completed, onComplete, openSources }: CiModule
         </Text>
         <View style={s.exposureRow} accessibilityLiveRegion="polite" accessibilityLabel={`Exposure ${band.word}. ${src.label}, ${balanced ? 'balanced' : 'unbalanced'}, ${distWord(dist)} spacing.`}>
           <Text style={s.exposureLabel}>EXPOSURE</Text>
-          <Text style={[s.exposureWord, { color: band.tint }]}>{band.word}</Text>
+          <BandWord key={band.word} word={band.word} tint={band.tint} />
           <Text style={s.exposureCtx} numberOfLines={1}>
             {`${src.label} · ${balanced ? 'BALANCED' : 'UNBALANCED'} · ${distWord(dist)}`}
           </Text>
@@ -317,11 +662,11 @@ export function EmiScene({ width, completed, onComplete, openSources }: CiModule
         </View>
         <View style={s.leverCard}>
           <Text style={s.leverHead}>THE REAL LEVERS — NOT A MAGIC NUMBER</Text>
-          {EMI_LEVERS.map((l) => (
-            <View key={l.name} style={s.leverRow}>
+          {EMI_LEVERS.map((l, i) => (
+            <Stagger key={l.name} index={i} from={6} style={s.leverRow}>
               <Text style={s.leverName}>{l.name}</Text>
               <Text style={s.leverBlurb}>{l.blurb}</Text>
-            </View>
+            </Stagger>
           ))}
         </View>
         <RuleFeedback ruleId="emi-no-universal-distance" verdict="info" openSources={openSources} />
@@ -335,47 +680,51 @@ export function EmiScene({ width, completed, onComplete, openSources }: CiModule
           verdict for each appears below.
         </Text>
         <View style={s.grid}>
-          {CI_EMI_CHOICES.map((c) => {
+          {CI_EMI_CHOICES.map((c, i) => {
             const wasPicked = picked.includes(c.id);
             const isLast = lastPick === c.id;
             return (
-              <Pressable
-                key={c.id}
-                style={[s.crossCard, { width: cardW }, isLast && s.crossCardLast]}
-                onPress={() => pickCrossing(c.id)}
-                accessibilityRole="button"
-                accessibilityState={{ selected: isLast }}
-                accessibilityLabel={`${c.label}${wasPicked ? (c.ok ? '. Judged: sound choice.' : '. Judged: poor geometry.') : ''}`}
-              >
-                <CrossPreview kind={c.id} w={cardW - 22} />
-                <Text style={s.crossLabel}>
-                  {wasPicked ? (
-                    <Text style={{ color: c.ok ? colors.green : '#ff9b8f' }}>{c.ok ? '✓ ' : '✕ '}</Text>
-                  ) : null}
-                  {c.label}
-                </Text>
-              </Pressable>
+              <Stagger key={c.id} index={i}>
+                <Pressable
+                  style={[s.crossCard, { width: cardW }, isLast && s.crossCardLast]}
+                  onPress={() => pickCrossing(c.id)}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: isLast }}
+                  accessibilityLabel={`${c.label}${wasPicked ? (c.ok ? '. Judged: sound choice.' : '. Judged: poor geometry.') : ''}`}
+                >
+                  <CrossPreview kind={c.id} w={cardW - 22} nonce={nonces[c.id] ?? 0} />
+                  <Text style={s.crossLabel}>
+                    {wasPicked ? (
+                      <Text style={{ color: c.ok ? colors.green : '#ff9b8f' }}>{c.ok ? '✓ ' : '✕ '}</Text>
+                    ) : null}
+                    {c.label}
+                  </Text>
+                </Pressable>
+              </Stagger>
             );
           })}
         </View>
         {lastChoice ? (
-          <RuleFeedback
-            key={lastChoice.id}
-            ruleId={lastChoice.ruleId}
-            verdict={lastChoice.ok ? 'good' : 'bad'}
-            short={lastChoice.note}
-            openSources={openSources}
-          />
+          <Appear key={`${lastChoice.id}-${nonces[lastChoice.id] ?? 0}`}>
+            <RuleFeedback
+              ruleId={lastChoice.ruleId}
+              verdict={lastChoice.ok ? 'good' : 'bad'}
+              short={lastChoice.note}
+              openSources={openSources}
+            />
+          </Appear>
         ) : null}
         {picked.length > 0 ? (
-          <View style={s.keyCard}>
-            <Text style={s.keyHead}>PRACTICE, NOT A CODE CLAUSE</Text>
-            <Text style={s.keyBody}>
-              “Cross near perpendicular” is engineering / professional practice — it minimizes shared length. It becomes a
-              requirement only when a standard, the project or a manufacturer specifies separation for the scenario; those
-              scenario-specific requirements govern when they exist.
-            </Text>
-          </View>
+          <Appear delay={140}>
+            <View style={s.keyCard}>
+              <Text style={s.keyHead}>PRACTICE, NOT A CODE CLAUSE</Text>
+              <Text style={s.keyBody}>
+                “Cross near perpendicular” is engineering / professional practice — it minimizes shared length. It becomes a
+                requirement only when a standard, the project or a manufacturer specifies separation for the scenario; those
+                scenario-specific requirements govern when they exist.
+              </Text>
+            </View>
+          </Appear>
         ) : null}
       </CiSection>
 

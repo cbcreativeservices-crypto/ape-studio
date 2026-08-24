@@ -15,13 +15,37 @@
  * knowledge check (10 scenario-judgment questions drawn from the 15-item
  * bank) → 'final_check' unit; both + this stage's unit = lab complete.
  */
-import { useMemo, useRef, useState } from 'react';
-import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
-import Svg, { Circle, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { AccessibilityInfo, Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import Svg, { Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { CheckQuestion } from '../../foundations/bits';
 import { markLabUnit } from '../../../../features/lab/labCompletion';
 import { colors, fonts } from '../../../../theme/tokens';
 import { CiSection, FindProgress, RuleFeedback, announceComplete } from '../bits';
+import {
+  ACircle,
+  AG,
+  ALine,
+  APath,
+  Animated,
+  Appear,
+  CI_EASE,
+  CI_MOTION,
+  CI_SPRING,
+  CI_SPRING_UI,
+  Stagger,
+  cancelAnimation,
+  useAnimatedProps,
+  useAnimatedStyle,
+  useCiMotion,
+  useCountUp,
+  useDrawIn,
+  useSharedValue,
+  withDelay,
+  withRepeat,
+  withSpring,
+  withTiming,
+} from '../motion';
 import { CI_CATEGORY_META, mistakeById, type CiMistakeCategory } from '../data/mistakes';
 import { CI_INSPECTION_DRAW, CI_INSPECTION_POOL, CI_QUIZ_BANK, CI_QUIZ_DRAW, type CiInspectionDefect } from '../data/scenarios';
 import { inspectionDimScores, type CiDimScores } from '../engine/score';
@@ -73,6 +97,201 @@ type DefectState = {
   corrected?: boolean;
 };
 
+/* ── motion helpers (WhyScene idiom — primitive props only) ─────────────── */
+/** Spring a scalar to its target (the kit's useSettle is typed to its own
+ *  default spring config, so a marker that needs the snappier UI spring
+ *  drives its own). */
+function useSpringTo(target: number, snappy: boolean, reduce: boolean) {
+  const v = useSharedValue(target);
+  useEffect(() => {
+    if (reduce) {
+      v.value = target;
+      return;
+    }
+    v.value = withSpring(target, snappy ? CI_SPRING_UI : CI_SPRING);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [target, snappy, reduce]);
+  return v;
+}
+
+/** Opacity entrance for a zone of static furniture inside the SVG. */
+function ZoneIn({ children, delay, reduce }: { children: ReactNode; delay: number; reduce: boolean }) {
+  const t = useSharedValue(reduce ? 1 : 0);
+  useEffect(() => {
+    cancelAnimation(t);
+    if (reduce) {
+      t.value = 1;
+      return;
+    }
+    t.value = 0;
+    t.value = withDelay(delay, withTiming(1, { duration: CI_MOTION.base, easing: CI_EASE.out }));
+    return () => cancelAnimation(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [delay, reduce]);
+  const p = useAnimatedProps(() => ({ opacity: t.value }));
+  return (
+    <AG opacity={reduce ? 1 : 0} animatedProps={p}>
+      {children}
+    </AG>
+  );
+}
+
+/** A representative run that installs itself as the scene assembles. */
+function RunIn({ d, len, color, delay, run }: { d: string; len: number; color: string; delay: number; run: boolean }) {
+  const { animatedProps, dashArray, restOffset } = useDrawIn(len, { run, delay });
+  return (
+    <APath
+      d={d}
+      stroke={color}
+      strokeWidth={2}
+      fill="none"
+      strokeLinecap="round"
+      strokeDasharray={dashArray}
+      strokeDashoffset={restOffset}
+      animatedProps={animatedProps}
+    />
+  );
+}
+
+/** A defect marker's whole life: it arrives, it BREATHES until it is found
+ *  (each on its own phase, so the scene never pulses in lockstep), it springs
+ *  when opened, and it settles green with a drawn check once corrected. */
+function DefectMarker({
+  cx,
+  cy,
+  n,
+  found,
+  corrected,
+  delay,
+  phase,
+  reduce,
+  loops,
+}: {
+  cx: number;
+  cy: number;
+  n: number;
+  found: boolean;
+  corrected: boolean;
+  delay: number;
+  phase: number;
+  reduce: boolean;
+  loops: boolean;
+}) {
+  // arrival
+  const t = useSharedValue(reduce ? 1 : 0);
+  useEffect(() => {
+    cancelAnimation(t);
+    if (reduce) {
+      t.value = 1;
+      return;
+    }
+    t.value = 0;
+    t.value = withDelay(delay, withTiming(1, { duration: CI_MOTION.base, easing: CI_EASE.out }));
+    return () => cancelAnimation(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [delay, reduce]);
+  // breathing ring — only while the finding is still unfound
+  const b = useSharedValue(0);
+  const breathing = !found && loops;
+  useEffect(() => {
+    cancelAnimation(b);
+    if (!breathing) {
+      b.value = 0;
+      return;
+    }
+    b.value = withDelay(delay + phase, withRepeat(withTiming(1, { duration: 1700, easing: CI_EASE.inOut }), -1, true));
+    return () => cancelAnimation(b);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [breathing, delay, phase]);
+
+  const targetR = corrected ? 9.5 : found ? 10.5 : 9;
+  const r = useSpringTo(targetR, found, reduce);
+  const check = useDrawIn(14, { run: corrected, duration: reduce ? 0 : 260 });
+
+  const body = useAnimatedProps(() => ({ r: r.value * (0.4 + 0.6 * t.value), opacity: t.value }));
+  const ring = useAnimatedProps(() => ({ r: (r.value + 3) * (1 + 0.5 * b.value), opacity: breathing ? 0.5 * (1 - b.value) * t.value : 0 }));
+  const label = useAnimatedProps(() => ({ opacity: corrected ? 0 : t.value }));
+
+  const tint = corrected ? colors.green : found ? colors.amber : '#8a4a44';
+  const fill = corrected ? 'rgba(55,224,95,0.25)' : found ? 'rgba(255,198,77,0.3)' : 'rgba(255,90,72,0.16)';
+  return (
+    <>
+      <ACircle cx={cx} cy={cy} r={0} fill="none" stroke={tint} strokeWidth={1.4} opacity={0} animatedProps={ring} />
+      <ACircle cx={cx} cy={cy} r={reduce ? targetR : 0} fill={fill} stroke={tint} strokeWidth={1.6} opacity={reduce ? 1 : 0} animatedProps={body} />
+      {corrected ? (
+        <APath
+          d={`M${cx - 4} ${cy} l3 3.4 l5.4 -7`}
+          stroke={colors.green}
+          strokeWidth={1.8}
+          fill="none"
+          strokeLinecap="round"
+          strokeDasharray={check.dashArray}
+          strokeDashoffset={check.restOffset}
+          animatedProps={check.animatedProps}
+        />
+      ) : (
+        <AG opacity={reduce ? 1 : 0} animatedProps={label}>
+          <SvgText x={cx} y={cy + 3} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={8.5} fill="#e8e8ea">
+            {n}
+          </SvgText>
+        </AG>
+      )}
+    </>
+  );
+}
+
+/** The weighted reveal — the capstone's verdicts land slower than a card. */
+function Reveal({ children, delay = 0, style }: { children: ReactNode; delay?: number; style?: StyleProp<ViewStyle> }) {
+  const m = useCiMotion();
+  const t = useSharedValue(m.reduce ? 1 : 0);
+  useEffect(() => {
+    cancelAnimation(t);
+    if (m.reduce) {
+      t.value = 1;
+      return;
+    }
+    t.value = 0;
+    t.value = withDelay(m.d(delay), withTiming(1, { duration: CI_MOTION.reveal, easing: CI_EASE.out }));
+    return () => cancelAnimation(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [delay, m.reduce]);
+  const s = useAnimatedStyle(() => ({
+    opacity: t.value,
+    transform: [{ translateY: (1 - t.value) * 16 }, { scale: 0.975 + 0.025 * t.value }],
+  }));
+  return <Animated.View style={[style, s]}>{children}</Animated.View>;
+}
+
+/** The sign-off: one green sweep travels the facility, then it is done. */
+function SignOffSweep({ run, reduce }: { run: boolean; reduce: boolean }) {
+  const t = useSharedValue(0);
+  useEffect(() => {
+    cancelAnimation(t);
+    if (!run || reduce) {
+      t.value = 0;
+      return;
+    }
+    t.value = 0;
+    t.value = withTiming(1, { duration: 900, easing: CI_EASE.inOut });
+    return () => cancelAnimation(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [run, reduce]);
+  const p = useAnimatedProps(() => ({
+    x1: t.value * 380 - 10,
+    x2: t.value * 380 - 10,
+    opacity: Math.max(0, Math.min(1, Math.min(t.value * 8, (1 - t.value) * 4))),
+  }));
+  if (!run || reduce) return null;
+  return <ALine x1={-10} y1={0} x2={-10} y2={240} stroke={colors.green} strokeWidth={3} opacity={0} animatedProps={p} />;
+}
+
+/** The find counter ticks to its value in its own leaf, so the facility does
+ *  not re-render on every animation frame. */
+function FindCounter({ found, required, total }: { found: number; required: number; total: number }) {
+  const shown = useCountUp(found);
+  return <FindProgress found={shown} required={required} total={total} />;
+}
+
 /** The combined facility — every environment of the lab in one honest
  *  section view (training visualization; defect markers number the finds). */
 function FacilityScene({
@@ -80,91 +299,101 @@ function FacilityScene({
   defects,
   states,
   onTap,
+  passed,
 }: {
   w: number;
   defects: CiInspectionDefect[];
   states: Record<string, DefectState>;
   onTap: (id: string) => void;
+  passed: boolean;
 }) {
+  const m = useCiMotion();
   const h = Math.round(w * 0.66);
+  const [assembled, setAssembled] = useState(false);
+  useEffect(() => {
+    const id = setTimeout(() => setAssembled(true), 90);
+    return () => clearTimeout(id);
+  }, []);
   return (
     <View>
       <Svg width={w} height={h} viewBox="0 0 360 240" accessibilityLabel="Facility inspection scene — use the suspect list below for accessible selection">
         <Rect x={0} y={0} width={360} height={240} rx={10} fill="#101014" />
-        {/* deck + ceiling structure */}
-        <Line x1={0} y1={8} x2={360} y2={8} stroke="#2c2c33" strokeWidth={3} />
-        {/* tray across ceiling */}
-        <Rect x={24} y={16} width={220} height={9} rx={2} fill="none" stroke="#6f7378" strokeWidth={1.5} />
-        {[44, 84, 124, 164, 204].map((x) => (
-          <Line key={x} x1={x} y1={16} x2={x} y2={25} stroke="#6f7378" strokeWidth={1} />
-        ))}
-        {/* sprinkler pipe */}
-        <Line x1={20} y1={34} x2={250} y2={34} stroke="#8a4a44" strokeWidth={2.4} />
-        {[70, 150, 230].map((x) => (
-          <Path key={x} d={`M${x} 34 v5 l-3 4 h6 l-3 -4`} stroke="#8a4a44" strokeWidth={1.2} fill="none" />
-        ))}
-        {/* duct */}
-        <Rect x={120} y={40} width={130} height={14} rx={3} fill="none" stroke="#4a4c52" strokeWidth={1.5} />
-        {/* ceiling grid */}
-        <Line x1={0} y1={62} x2={252} y2={62} stroke="#2c2c33" strokeWidth={2} />
-        {[36, 76, 116, 156, 196, 236].map((x) => (
-          <Line key={x} x1={x} y1={60} x2={x} y2={64} stroke="#3a3c42" strokeWidth={1} />
-        ))}
-        {/* equipment room + rack (right, full height) */}
-        <Line x1={256} y1={8} x2={256} y2={228} stroke="#3a3c42" strokeWidth={2.5} />
-        <SvgText x={300} y={78} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={8} letterSpacing={1} fill="#54565c">
-          EQUIP ROOM
-        </SvgText>
-        <Rect x={276} y={84} width={62} height={128} rx={4} fill="#17171c" stroke="#3a3c42" strokeWidth={1.5} />
-        {[94, 112, 130, 148, 166, 184].map((y) => (
-          <Rect key={y} x={281} y={y} width={52} height={13} rx={2} fill="#101014" stroke="#2c2c33" strokeWidth={1} />
-        ))}
-        {/* rated wall marking */}
-        <Path d="M256 100 l-6 8 M256 130 l-6 8 M256 160 l-6 8" stroke="#8a4a44" strokeWidth={1.6} />
-        {/* door in wall */}
-        <Rect x={250} y={196} width={6} height={32} fill="#101014" stroke="#6f7378" strokeWidth={1.2} />
-        {/* stage (left) */}
-        <Rect x={8} y={186} width={104} height={42} rx={3} fill="#141418" stroke="#3a3c42" strokeWidth={1.4} />
-        <Rect x={16} y={196} width={20} height={14} rx={2} fill="#101014" stroke="#6f7378" strokeWidth={1.2} />
-        <SvgText x={60} y={182} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={8} letterSpacing={1} fill="#54565c">
-          STAGE
-        </SvgText>
-        {/* audience floor + aisle */}
-        <Line x1={0} y1={228} x2={360} y2={228} stroke="#2c2c33" strokeWidth={3} />
-        <Path d="M128 228 h44" stroke="#54565c" strokeWidth={2} strokeDasharray="5 4" />
-        {/* representative runs (honest, terminating) */}
-        <Path d="M36 196 C60 196 70 210 96 210 H140" stroke="#4fd0e0" strokeWidth={2} fill="none" />
-        <Path d="M140 210 H196 C220 210 224 200 224 190" stroke="#4fd0e0" strokeWidth={2} fill="none" />
-        <Path d="M32 25 H236 C250 25 252 40 252 60" stroke="#37d97b" strokeWidth={2} fill="none" />
-        <Path d="M252 60 v40 l24 4" stroke="#37d97b" strokeWidth={2} fill="none" />
-        <Path d="M352 228 v-140 l-14 -4" stroke="#ff5a48" strokeWidth={2} fill="none" />
+        {/* the facility assembles zone by zone, then the runs install
+            themselves, then the findings arrive */}
+        <ZoneIn delay={0} reduce={m.reduce}>
+          {/* deck + ceiling structure */}
+          <Line x1={0} y1={8} x2={360} y2={8} stroke="#2c2c33" strokeWidth={3} />
+          {/* tray across ceiling */}
+          <Rect x={24} y={16} width={220} height={9} rx={2} fill="none" stroke="#6f7378" strokeWidth={1.5} />
+          {[44, 84, 124, 164, 204].map((x) => (
+            <Line key={x} x1={x} y1={16} x2={x} y2={25} stroke="#6f7378" strokeWidth={1} />
+          ))}
+          {/* sprinkler pipe */}
+          <Line x1={20} y1={34} x2={250} y2={34} stroke="#8a4a44" strokeWidth={2.4} />
+          {[70, 150, 230].map((x) => (
+            <Path key={x} d={`M${x} 34 v5 l-3 4 h6 l-3 -4`} stroke="#8a4a44" strokeWidth={1.2} fill="none" />
+          ))}
+          {/* duct */}
+          <Rect x={120} y={40} width={130} height={14} rx={3} fill="none" stroke="#4a4c52" strokeWidth={1.5} />
+          {/* ceiling grid */}
+          <Line x1={0} y1={62} x2={252} y2={62} stroke="#2c2c33" strokeWidth={2} />
+          {[36, 76, 116, 156, 196, 236].map((x) => (
+            <Line key={x} x1={x} y1={60} x2={x} y2={64} stroke="#3a3c42" strokeWidth={1} />
+          ))}
+        </ZoneIn>
+        <ZoneIn delay={90} reduce={m.reduce}>
+          {/* equipment room + rack (right, full height) */}
+          <Line x1={256} y1={8} x2={256} y2={228} stroke="#3a3c42" strokeWidth={2.5} />
+          <SvgText x={300} y={78} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={8} letterSpacing={1} fill="#54565c">
+            EQUIP ROOM
+          </SvgText>
+          <Rect x={276} y={84} width={62} height={128} rx={4} fill="#17171c" stroke="#3a3c42" strokeWidth={1.5} />
+          {[94, 112, 130, 148, 166, 184].map((y) => (
+            <Rect key={y} x={281} y={y} width={52} height={13} rx={2} fill="#101014" stroke="#2c2c33" strokeWidth={1} />
+          ))}
+          {/* rated wall marking */}
+          <Path d="M256 100 l-6 8 M256 130 l-6 8 M256 160 l-6 8" stroke="#8a4a44" strokeWidth={1.6} />
+          {/* door in wall */}
+          <Rect x={250} y={196} width={6} height={32} fill="#101014" stroke="#6f7378" strokeWidth={1.2} />
+        </ZoneIn>
+        <ZoneIn delay={175} reduce={m.reduce}>
+          {/* stage (left) */}
+          <Rect x={8} y={186} width={104} height={42} rx={3} fill="#141418" stroke="#3a3c42" strokeWidth={1.4} />
+          <Rect x={16} y={196} width={20} height={14} rx={2} fill="#101014" stroke="#6f7378" strokeWidth={1.2} />
+          <SvgText x={60} y={182} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={8} letterSpacing={1} fill="#54565c">
+            STAGE
+          </SvgText>
+        </ZoneIn>
+        <ZoneIn delay={250} reduce={m.reduce}>
+          {/* audience floor + aisle */}
+          <Line x1={0} y1={228} x2={360} y2={228} stroke="#2c2c33" strokeWidth={3} />
+          <Path d="M128 228 h44" stroke="#54565c" strokeWidth={2} strokeDasharray="5 4" />
+        </ZoneIn>
+        {/* representative runs (honest, terminating) — they install themselves */}
+        <RunIn d="M36 196 C60 196 70 210 96 210 H140" len={130} color="#4fd0e0" delay={300} run={assembled} />
+        <RunIn d="M140 210 H196 C220 210 224 200 224 190" len={110} color="#4fd0e0" delay={340} run={assembled} />
+        <RunIn d="M32 25 H236 C250 25 252 40 252 60" len={250} color="#37d97b" delay={280} run={assembled} />
+        <RunIn d="M252 60 v40 l24 4" len={70} color="#37d97b" delay={380} run={assembled} />
+        <RunIn d="M352 228 v-140 l-14 -4" len={160} color="#ff5a48" delay={360} run={assembled} />
         {/* defect markers */}
         {defects.map((d, i) => {
           const st = states[d.id];
-          const cx = (d.x / 100) * 360;
-          const cy = (d.y / 100) * 240;
-          const done = st?.corrected;
           return (
-            <Circle
+            <DefectMarker
               key={d.id}
-              cx={cx}
-              cy={cy}
-              r={9}
-              fill={done ? 'rgba(55,224,95,0.25)' : st?.found ? 'rgba(255,198,77,0.3)' : 'rgba(255,90,72,0.16)'}
-              stroke={done ? colors.green : st?.found ? colors.amber : '#8a4a44'}
-              strokeWidth={1.6}
+              cx={(d.x / 100) * 360}
+              cy={(d.y / 100) * 240}
+              n={i + 1}
+              found={!!st?.found}
+              corrected={!!st?.corrected}
+              delay={430 + Math.min(i, 8) * 28}
+              phase={(i % 5) * 320}
+              reduce={m.reduce}
+              loops={m.loops}
             />
           );
         })}
-        {defects.map((d, i) => {
-          const cx = (d.x / 100) * 360;
-          const cy = (d.y / 100) * 240;
-          return (
-            <SvgText key={`t${d.id}`} x={cx} y={cy + 3} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={8.5} fill="#e8e8ea">
-              {i + 1}
-            </SvgText>
-          );
-        })}
+        <SignOffSweep run={passed} reduce={m.reduce} />
       </Svg>
       {/* tap overlays (≥44dp) */}
       {defects.map((d, i) => {
@@ -293,8 +522,10 @@ export function InspectScene({ width, completed, onComplete, openSources }: CiMo
               Tap a numbered marker (or open the FINDINGS LIST), classify what kind of problem it is, then choose the
               correction. Pass at {required} of {defects.length} processed. Each attempt draws a different set.
             </Text>
-            {width > 40 ? <FacilityScene w={width} defects={defects} states={states} onTap={openDefect} /> : null}
-            <FindProgress found={processedCount} required={required} total={defects.length} />
+            {width > 40 ? (
+              <FacilityScene w={width} defects={defects} states={states} onTap={openDefect} passed={processedCount >= required} />
+            ) : null}
+            <FindCounter found={processedCount} required={required} total={defects.length} />
             <Pressable onPress={() => setListOpen((o) => !o)} accessibilityRole="button" accessibilityState={{ expanded: listOpen }} accessibilityLabel="Findings list — accessible alternative to tapping the drawing">
               <Text style={styles.listToggle}>{listOpen ? '▾ FINDINGS LIST' : '▸ FINDINGS LIST (accessible alternative)'}</Text>
             </Pressable>
@@ -302,24 +533,25 @@ export function InspectScene({ width, completed, onComplete, openSources }: CiMo
               ? defects.map((d, i) => {
                   const st = states[d.id];
                   return (
-                    <Pressable
-                      key={d.id}
-                      style={[styles.listRow, st?.corrected && styles.listRowDone]}
-                      onPress={() => openDefect(d.id)}
-                      accessibilityRole="button"
-                      accessibilityLabel={`Finding ${i + 1}, ${ZONE_NAMES[d.zone]}: ${d.label}${st?.corrected ? '. Corrected.' : ''}`}
-                    >
-                      <Text style={[styles.listText, st?.corrected && { color: colors.green }]}>
-                        {st?.corrected ? '✓' : `${i + 1}.`} [{ZONE_NAMES[d.zone]}] {d.label}
-                      </Text>
-                    </Pressable>
+                    <Stagger key={d.id} index={Math.min(i, 6)}>
+                      <Pressable
+                        style={[styles.listRow, st?.corrected && styles.listRowDone]}
+                        onPress={() => openDefect(d.id)}
+                        accessibilityRole="button"
+                        accessibilityLabel={`Finding ${i + 1}, ${ZONE_NAMES[d.zone]}: ${d.label}${st?.corrected ? '. Corrected.' : ''}`}
+                      >
+                        <Text style={[styles.listText, st?.corrected && { color: colors.green }]}>
+                          {st?.corrected ? '✓' : `${i + 1}.`} [{ZONE_NAMES[d.zone]}] {d.label}
+                        </Text>
+                      </Pressable>
+                    </Stagger>
                   );
                 })
               : null}
           </CiSection>
 
           {activeDefect && activeMistake ? (
-            <View style={styles.workCard}>
+            <Appear key={activeDefect.id} style={styles.workCard}>
               <Text style={styles.workHead}>
                 FINDING {defects.indexOf(activeDefect) + 1} · {ZONE_NAMES[activeDefect.zone]}
               </Text>
@@ -328,18 +560,19 @@ export function InspectScene({ width, completed, onComplete, openSources }: CiMo
                 <>
                   <Text style={styles.workStep}>1 · CLASSIFY — what kind of problem is this?</Text>
                   <View style={styles.catGrid}>
-                    {(Object.keys(CI_CATEGORY_META) as CiMistakeCategory[]).map((c) => (
-                      <Pressable
-                        key={c}
-                        style={styles.catBtn}
-                        onPress={() => classify(c)}
-                        accessibilityRole="button"
-                        accessibilityLabel={CI_CATEGORY_META[c].label}
-                      >
-                        <Text style={styles.catText}>
-                          {CI_CATEGORY_META[c].icon} {CI_CATEGORY_META[c].label}
-                        </Text>
-                      </Pressable>
+                    {(Object.keys(CI_CATEGORY_META) as CiMistakeCategory[]).map((c, ci) => (
+                      <Stagger key={c} index={ci} from={6}>
+                        <Pressable
+                          style={styles.catBtn}
+                          onPress={() => classify(c)}
+                          accessibilityRole="button"
+                          accessibilityLabel={CI_CATEGORY_META[c].label}
+                        >
+                          <Text style={styles.catText}>
+                            {CI_CATEGORY_META[c].icon} {CI_CATEGORY_META[c].label}
+                          </Text>
+                        </Pressable>
+                      </Stagger>
                     ))}
                   </View>
                 </>
@@ -354,41 +587,51 @@ export function InspectScene({ width, completed, onComplete, openSources }: CiMo
                   </Text>
                   <Text style={styles.workStep}>2 · CORRECT — what fixes it?</Text>
                   <View style={{ gap: 8 }}>
-                    {corrections.map((c) => (
-                      <Pressable key={c} style={styles.corrBtn} onPress={() => correct(c)} accessibilityRole="button" accessibilityLabel={c}>
-                        <Text style={styles.corrText}>{c}</Text>
-                      </Pressable>
+                    {corrections.map((c, cx) => (
+                      <Stagger key={c} index={cx} from={6}>
+                        <Pressable style={styles.corrBtn} onPress={() => correct(c)} accessibilityRole="button" accessibilityLabel={c}>
+                          <Text style={styles.corrText}>{c}</Text>
+                        </Pressable>
+                      </Stagger>
                     ))}
                   </View>
                 </>
               ) : (
-                <RuleFeedback ruleId={activeMistake.ruleId} verdict="good" short={`Corrected — ${activeMistake.correction}`} openSources={openSources} />
+                <Appear>
+                  <RuleFeedback ruleId={activeMistake.ruleId} verdict="good" short={`Corrected — ${activeMistake.correction}`} openSources={openSources} />
+                </Appear>
               )}
-            </View>
+            </Appear>
           ) : null}
 
           {processedCount >= required ? (
-            <Pressable style={styles.passBtn} onPress={finishInspection} accessibilityRole="button" accessibilityLabel="Sign off the inspection">
-              <Text style={styles.passText}>SIGN OFF THE INSPECTION ✓</Text>
-            </Pressable>
+            <Reveal delay={CI_MOTION.quick}>
+              <Pressable style={styles.passBtn} onPress={finishInspection} accessibilityRole="button" accessibilityLabel="Sign off the inspection">
+                <Text style={styles.passText}>SIGN OFF THE INSPECTION ✓</Text>
+              </Pressable>
+            </Reveal>
           ) : null}
         </>
       ) : null}
 
       {phase === 'quiz' ? (
+        <Appear>
         <CiSection title={`KNOWLEDGE CHECK — ${quizSolved} / ${quiz.length}`}>
           <Text style={styles.lead}>
             Scenario judgment, not trivia. Wrong options are real technician mistakes — solve all {quiz.length} to
             complete the lab.
           </Text>
-          {quiz.map((q) => (
-            <CheckQuestion key={q.id} spec={q} onSolved={onQuizSolved} />
+          {quiz.map((q, qi) => (
+            <Stagger key={q.id} index={Math.min(qi, 5)}>
+              <CheckQuestion spec={q} onSolved={onQuizSolved} />
+            </Stagger>
           ))}
         </CiSection>
+        </Appear>
       ) : null}
 
       {phase === 'done' ? (
-        <View style={styles.doneCard}>
+        <Reveal style={styles.doneCard}>
           <Text style={styles.doneHead}>FINAL INSPECTION COMPLETE</Text>
           <Text style={styles.lead}>
             Inspection signed off and knowledge check passed. Press NEXT for your mastery profile and the field-check
@@ -410,7 +653,7 @@ export function InspectScene({ width, completed, onComplete, openSources }: CiMo
           >
             <Text style={styles.retryText}>NEW INSPECTION ATTEMPT ↻</Text>
           </Pressable>
-        </View>
+        </Reveal>
       ) : null}
     </View>
   );

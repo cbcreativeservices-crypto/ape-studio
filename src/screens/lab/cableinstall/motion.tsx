@@ -85,6 +85,9 @@ export const CI_EASE = {
   linear: Easing.linear,
 } as const;
 
+/** Any spring config (CI_SPRING, CI_SPRING_UI, or a scene's own). */
+export type CiSpringConfig = { damping: number; stiffness: number; mass: number };
+
 /** Spring for things with mass (cable settling, bundles re-forming). */
 export const CI_SPRING = { damping: 15, stiffness: 140, mass: 0.9 } as const;
 /** Snappier spring for UI furniture (markers, chips). */
@@ -137,7 +140,8 @@ export function useDrawIn(
   }: { run?: boolean; duration?: number; delay?: number; onDone?: () => void } = {},
 ) {
   const m = useCiMotion();
-  const progress = useSharedValue(run ? 0 : 1);
+  // 0 = armed/hidden, 1 = fully drawn. run=false means NOT INSTALLED YET.
+  const progress = useSharedValue(0);
   const doneRef = useRef(false);
 
   useEffect(() => {
@@ -173,8 +177,9 @@ export function useDrawIn(
     /** Spread onto <APath> together with `strokeDasharray={len}`. */
     animatedProps,
     dashArray: len,
-    /** Static rest prop so the first paint is already correct. */
-    restOffset: run ? len : 0,
+    /** Static rest prop: the first paint is the UNDRAWN cable, so the draw
+     *  never flashes a finished run before installing it. */
+    restOffset: len,
   };
 }
 
@@ -243,7 +248,7 @@ export function PulseRing({
 }
 
 /* ── SETTLE: a value arrives with mass (springs), for primitive props ─────── */
-export function useSettle(target: number, { spring = CI_SPRING, immediate = false }: { spring?: typeof CI_SPRING; immediate?: boolean } = {}) {
+export function useSettle(target: number, { spring = CI_SPRING, immediate = false }: { spring?: CiSpringConfig; immediate?: boolean } = {}) {
   const m = useCiMotion();
   const v = useSharedValue(target);
   useEffect(() => {

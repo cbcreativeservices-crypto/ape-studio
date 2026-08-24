@@ -15,7 +15,7 @@
  * 'ape:ciStep'; dimension scores + shown myths at 'ape:ciState'. Anonymous
  * users neither restore nor persist (house guest rule).
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Svg, { Circle, Line, Path, Rect } from 'react-native-svg';
@@ -25,10 +25,30 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { markLabUnit, registerLabUnits, useLabCompletion } from '../../../features/lab/labCompletion';
 import { colors, fonts } from '../../../theme/tokens';
-import { Entrance } from '../cable/lessons/bits';
-import { RuleOrMythCard, ScoreBars, SourceSheet } from './bits';
+import { RuleOrMythCard, SourceSheet } from './bits';
+import {
+  AG,
+  APath,
+  Animated,
+  Appear,
+  CI_EASE,
+  CI_MOTION,
+  CI_SPRING_UI,
+  Stagger,
+  cancelAnimation,
+  useAnimatedProps,
+  useAnimatedStyle,
+  useCiMotion,
+  useCountUp,
+  useDrawIn,
+  useSharedValue,
+  withDelay,
+  withSequence,
+  withSpring,
+  withTiming,
+} from './motion';
 import { CI_MYTHS } from './data/scenarios';
-import { CI_DIM_META, mergeDims, overallScore, weakestDim, type CiDimScores } from './engine/score';
+import { CI_DIMS, CI_DIM_META, masteryBlocks, mergeDims, overallScore, weakestDim, type CiDimScores } from './engine/score';
 import {
   CI_FIELD_CHECK,
   CI_GOVERN_NOTE,
@@ -242,7 +262,7 @@ export function CableInstallLabScreen() {
                   accessibilityState={{ selected: active, disabled: !enterable }}
                   accessibilityLabel={`${m.title}${done ? ', complete' : enterable ? '' : ', locked'}`}
                 >
-                  <View style={[styles.dot, done && styles.dotDone, active && styles.dotActive, !enterable && styles.dotLocked]} />
+                  <ProgressDot done={done} active={active} enterable={enterable} />
                 </Pressable>
               );
             })}
@@ -256,9 +276,9 @@ export function CableInstallLabScreen() {
       <ScrollView ref={scrollRef} contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
         <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width))}>
           {myth ? (
-            <Entrance>
+            <Appear key={myth.id}>
               <RuleOrMythCard myth={myth} onDone={() => goTo(step + 1)} openSources={openSources} />
-            </Entrance>
+            </Appear>
           ) : step === INTRO_STEP ? (
             <IntroStage
               width={width}
@@ -292,16 +312,14 @@ export function CableInstallLabScreen() {
               />
             )
           ) : mod && Body ? (
-            <Entrance key={mod.id}>
-              <View style={{ gap: 10 }}>
-                <Text style={styles.stageTag}>{mod.tag}</Text>
-                <Text style={styles.stageTitle}>{mod.title}</Text>
-                <Text style={styles.stageIntro}>{mod.intro}</Text>
-                {width > 0 ? (
-                  <Body width={width} completed={modDone} onComplete={onModuleComplete} openSources={openSources} />
-                ) : null}
-              </View>
-            </Entrance>
+            <Appear key={mod.id} style={{ gap: 10 }}>
+              <Text style={styles.stageTag}>{mod.tag}</Text>
+              <Text style={styles.stageTitle}>{mod.title}</Text>
+              <Text style={styles.stageIntro}>{mod.intro}</Text>
+              {width > 0 ? (
+                <Body width={width} completed={modDone} onComplete={onModuleComplete} openSources={openSources} />
+              ) : null}
+            </Appear>
           ) : null}
         </View>
 
@@ -375,63 +393,226 @@ function IntroStage({
   );
 }
 
+/* ── shell motion helpers (primitive props only — see motion.tsx) ───────── */
+/** Opacity entrance for static furniture inside an SVG. */
+function FadeIn({ children, delay = 0, reduce }: { children: ReactNode; delay?: number; reduce: boolean }) {
+  const t = useSharedValue(reduce ? 1 : 0);
+  useEffect(() => {
+    cancelAnimation(t);
+    if (reduce) {
+      t.value = 1;
+      return;
+    }
+    t.value = 0;
+    t.value = withDelay(delay, withTiming(1, { duration: CI_MOTION.base, easing: CI_EASE.out }));
+    return () => cancelAnimation(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [delay, reduce]);
+  const p = useAnimatedProps(() => ({ opacity: t.value }));
+  return (
+    <AG opacity={reduce ? 1 : 0} animatedProps={p}>
+      {children}
+    </AG>
+  );
+}
+
+/** A cable that installs itself along its route. */
+function DrawLine({
+  d,
+  len,
+  color,
+  width,
+  run,
+  delay = 0,
+}: {
+  d: string;
+  len: number;
+  color: string;
+  width: number;
+  run: boolean;
+  delay?: number;
+}) {
+  const { animatedProps, dashArray, restOffset } = useDrawIn(len, { run, delay });
+  return (
+    <APath
+      d={d}
+      stroke={color}
+      strokeWidth={width}
+      fill="none"
+      strokeLinecap="round"
+      strokeDasharray={dashArray}
+      strokeDashoffset={restOffset}
+      animatedProps={animatedProps}
+    />
+  );
+}
+
+/** A progress dot: springs to green with a small pop the moment its stage is
+ *  completed, and settles a touch larger while it is the active stage. */
+function ProgressDot({ done, active, enterable }: { done: boolean; active: boolean; enterable: boolean }) {
+  const m = useCiMotion();
+  const pop = useSharedValue(1);
+  const ring = useSharedValue(active ? 1.18 : 1);
+  const wasDone = useRef(done);
+  useEffect(() => {
+    if (done && !wasDone.current && !m.reduce) {
+      cancelAnimation(pop);
+      pop.value = withSequence(withTiming(1.5, { duration: 130, easing: CI_EASE.out }), withSpring(1, CI_SPRING_UI));
+    }
+    wasDone.current = done;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [done, m.reduce]);
+  useEffect(() => {
+    if (m.reduce) {
+      ring.value = active ? 1.18 : 1;
+      return;
+    }
+    ring.value = withSpring(active ? 1.18 : 1, CI_SPRING_UI);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active, m.reduce]);
+  const s = useAnimatedStyle(() => ({ transform: [{ scale: pop.value * ring.value }] }));
+  return (
+    <Animated.View
+      style={[styles.dot, done && styles.dotDone, active && styles.dotActive, !enterable && styles.dotLocked, s]}
+    />
+  );
+}
+
 /** The opening scene — several environments in one uncluttered section:
  *  rack, tray, wall pathway, ceiling supports, stage/floor run, conduit,
- *  patch field. Training visualization, drawn honest (cables terminate). */
+ *  patch field. Training visualization, drawn honest (cables terminate).
+ *  It INSTALLS ITSELF on mount: structure first, then every run pulled in
+ *  along its route, in the order the work would actually happen. */
 function IntroScene({ w }: { w: number }) {
+  const m = useCiMotion();
   const h = Math.round(w * 0.56);
+  const [run, setRun] = useState(false);
+  useEffect(() => {
+    const id = setTimeout(() => setRun(true), 120);
+    return () => clearTimeout(id);
+  }, []);
   return (
     <Svg width={w} height={h} viewBox="0 0 360 200" accessibilityLabel="Installation scene: stage, floor run, wall pathway, ceiling tray and equipment rack">
       <Rect x={0} y={0} width={360} height={200} rx={12} fill="#101014" />
-      {/* structure */}
-      <Line x1={0} y1={26} x2={360} y2={26} stroke="#2c2c33" strokeWidth={2} />
-      <Line x1={0} y1={168} x2={360} y2={168} stroke="#2c2c33" strokeWidth={2} />
-      {/* ceiling tray */}
-      <Rect x={30} y={30} width={240} height={10} rx={2} fill="none" stroke="#6f7378" strokeWidth={1.6} />
-      {[50, 90, 130, 170, 210, 250].map((x) => (
-        <Line key={x} x1={x} y1={30} x2={x} y2={40} stroke="#6f7378" strokeWidth={1} />
-      ))}
-      {/* J-hooks after tray */}
-      {[286, 312].map((x) => (
-        <Path key={x} d={`M${x} 30 v8 a6 6 0 0 0 12 0`} stroke="#6f7378" strokeWidth={1.6} fill="none" />
-      ))}
-      {/* network + audio bundle in tray → rack */}
-      <Path d="M40 36 H268 M268 36 C300 36 292 38 292 44" stroke="#37d97b" strokeWidth={2.2} fill="none" />
-      <Path d="M40 39 H265 M265 39 C298 39 296 42 296 48" stroke="#4fd0e0" strokeWidth={2.2} fill="none" />
-      {/* rack */}
-      <Rect x={286} y={44} width={58} height={124} rx={4} fill="#17171c" stroke="#3a3c42" strokeWidth={1.5} />
-      {[54, 72, 90, 108, 126, 144].map((y) => (
-        <Rect key={y} x={291} y={y} width={48} height={12} rx={2} fill="#101014" stroke="#2c2c33" strokeWidth={1} />
-      ))}
-      {/* patch field dots */}
-      {[0, 1, 2, 3, 4, 5].map((i) => (
-        <Circle key={i} cx={297 + i * 8} cy={60} r={1.8} fill="#4fd0e0" />
-      ))}
-      {/* cable entry into rack (from tray drop) */}
-      <Path d="M292 44 v10 M296 48 v8" stroke="#37d97b" strokeWidth={2} fill="none" />
-      {/* wall plate + raceway on left wall */}
-      <Rect x={18} y={96} width={14} height={20} rx={2} fill="#101014" stroke="#6f7378" strokeWidth={1.4} />
-      <Rect x={32} y={102} width={92} height={8} rx={2} fill="none" stroke="#6f7378" strokeWidth={1.4} />
-      <Path d="M32 106 H124" stroke="#4fd0e0" strokeWidth={2} fill="none" />
-      {/* stage riser at left floor */}
-      <Rect x={14} y={140} width={90} height={28} rx={3} fill="#141418" stroke="#3a3c42" strokeWidth={1.4} />
-      <Rect x={22} y={148} width={18} height={12} rx={2} fill="#101014" stroke="#6f7378" strokeWidth={1.2} />
-      {/* stage box → floor run with protector to rack base */}
-      <Path d="M40 154 C70 154 70 164 96 164 H180" stroke="#4fd0e0" strokeWidth={2.4} fill="none" />
-      <Path d="M180 164 h34" stroke="#4fd0e0" strokeWidth={2.4} fill="none" />
-      {/* floor protector over the crossing */}
-      <Path d="M176 168 l10 -8 h24 l10 8 z" fill="#26262c" stroke="#6f7378" strokeWidth={1.2} />
-      <Path d="M214 164 H286 v-6" stroke="#4fd0e0" strokeWidth={2.4} fill="none" />
-      {/* conduit riser to tray at mid wall */}
-      <Rect x={130} y={40} width={7} height={128} rx={3} fill="none" stroke="#6f7378" strokeWidth={1.4} />
-      {/* power feed (separate, planned) */}
-      <Path d="M352 168 v-96 c0 -6 -4 -8 -8 -8 h-4" stroke="#ff5a48" strokeWidth={2.2} fill="none" />
-      <Circle cx={338} cy={64} r={2.2} fill="#ff5a48" />
+      <FadeIn reduce={m.reduce}>
+        {/* structure */}
+        <Line x1={0} y1={26} x2={360} y2={26} stroke="#2c2c33" strokeWidth={2} />
+        <Line x1={0} y1={168} x2={360} y2={168} stroke="#2c2c33" strokeWidth={2} />
+      </FadeIn>
+      <FadeIn delay={80} reduce={m.reduce}>
+        {/* ceiling tray */}
+        <Rect x={30} y={30} width={240} height={10} rx={2} fill="none" stroke="#6f7378" strokeWidth={1.6} />
+        {[50, 90, 130, 170, 210, 250].map((x) => (
+          <Line key={x} x1={x} y1={30} x2={x} y2={40} stroke="#6f7378" strokeWidth={1} />
+        ))}
+        {/* J-hooks after tray */}
+        {[286, 312].map((x) => (
+          <Path key={x} d={`M${x} 30 v8 a6 6 0 0 0 12 0`} stroke="#6f7378" strokeWidth={1.6} fill="none" />
+        ))}
+        {/* conduit riser to tray at mid wall */}
+        <Rect x={130} y={40} width={7} height={128} rx={3} fill="none" stroke="#6f7378" strokeWidth={1.4} />
+      </FadeIn>
+      <FadeIn delay={150} reduce={m.reduce}>
+        {/* rack */}
+        <Rect x={286} y={44} width={58} height={124} rx={4} fill="#17171c" stroke="#3a3c42" strokeWidth={1.5} />
+        {[54, 72, 90, 108, 126, 144].map((y) => (
+          <Rect key={y} x={291} y={y} width={48} height={12} rx={2} fill="#101014" stroke="#2c2c33" strokeWidth={1} />
+        ))}
+        {/* wall plate + raceway on left wall */}
+        <Rect x={18} y={96} width={14} height={20} rx={2} fill="#101014" stroke="#6f7378" strokeWidth={1.4} />
+        <Rect x={32} y={102} width={92} height={8} rx={2} fill="none" stroke="#6f7378" strokeWidth={1.4} />
+        {/* stage riser at left floor */}
+        <Rect x={14} y={140} width={90} height={28} rx={3} fill="#141418" stroke="#3a3c42" strokeWidth={1.4} />
+        <Rect x={22} y={148} width={18} height={12} rx={2} fill="#101014" stroke="#6f7378" strokeWidth={1.2} />
+      </FadeIn>
+      {/* network + audio bundle pulled through the tray → rack */}
+      <DrawLine d="M40 36 H268 M268 36 C300 36 292 38 292 44" len={260} color="#37d97b" width={2.2} run={run} delay={210} />
+      <DrawLine d="M40 39 H265 M265 39 C298 39 296 42 296 48" len={260} color="#4fd0e0" width={2.2} run={run} delay={280} />
+      <DrawLine d="M292 44 v10 M296 48 v8" len={20} color="#37d97b" width={2} run={run} delay={620} />
+      {/* wall raceway run */}
+      <DrawLine d="M32 106 H124" len={92} color="#4fd0e0" width={2} run={run} delay={360} />
+      {/* stage box → floor run to the rack base */}
+      <DrawLine d="M40 154 C70 154 70 164 96 164 H180" len={150} color="#4fd0e0" width={2.4} run={run} delay={430} />
+      <DrawLine d="M180 164 h34" len={34} color="#4fd0e0" width={2.4} run={run} delay={560} />
+      <DrawLine d="M214 164 H286 v-6" len={80} color="#4fd0e0" width={2.4} run={run} delay={600} />
+      {/* protection and the separate power feed land last */}
+      <FadeIn delay={700} reduce={m.reduce}>
+        {/* floor protector over the crossing */}
+        <Path d="M176 168 l10 -8 h24 l10 8 z" fill="#26262c" stroke="#6f7378" strokeWidth={1.2} />
+        {/* patch field dots */}
+        {[0, 1, 2, 3, 4, 5].map((i) => (
+          <Circle key={i} cx={297 + i * 8} cy={60} r={1.8} fill="#4fd0e0" />
+        ))}
+      </FadeIn>
+      <DrawLine d="M352 168 v-96 c0 -6 -4 -8 -8 -8 h-4" len={120} color="#ff5a48" width={2.2} run={run} delay={740} />
+      <FadeIn delay={900} reduce={m.reduce}>
+        <Circle cx={338} cy={64} r={2.2} fill="#ff5a48" />
+      </FadeIn>
     </Svg>
   );
 }
 
 /* ── completion + field check (spec §43/§44/§62) ────────────────────────── */
+/** One mastery block, lighting up in its turn. */
+function MasteryBlock({ on, delay, reduce }: { on: boolean; delay: number; reduce: boolean }) {
+  const k = useSharedValue(reduce && on ? 1 : 0);
+  useEffect(() => {
+    cancelAnimation(k);
+    if (!on) {
+      k.value = 0;
+      return;
+    }
+    if (reduce) {
+      k.value = 1;
+      return;
+    }
+    k.value = 0;
+    k.value = withDelay(delay, withSpring(1, CI_SPRING_UI));
+    return () => cancelAnimation(k);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [on, delay, reduce]);
+  const s = useAnimatedStyle(() => ({ opacity: Math.max(0, Math.min(1, k.value)), transform: [{ scale: 0.55 + 0.45 * k.value }] }));
+  return (
+    <View style={styles.dimBlock}>
+      {on ? <Animated.View style={[StyleSheet.absoluteFill, styles.dimBlockOn, s]} /> : null}
+    </View>
+  );
+}
+
+/** The mastery profile: dimensions arrive in sequence, their blocks FILL in
+ *  sequence, and the overall score counts up to its value. */
+function MasteryProfile({ dims }: { dims: CiDimScores }) {
+  const m = useCiMotion();
+  const overall = useCountUp(overallScore(dims), CI_MOTION.reveal);
+  const rows = CI_DIMS.filter((d) => dims[d] != null);
+  const worst = weakestDim(dims);
+  return (
+    <View style={styles.profileCard}>
+      <Text style={styles.profileHead}>MASTERY PROFILE · OVERALL {overall}</Text>
+      <View style={{ gap: 7 }}>
+        {rows.map((d, ri) => {
+          const v = dims[d] ?? 0;
+          const blocks = masteryBlocks(v);
+          return (
+            <Stagger key={d} index={ri} from={8}>
+              <View style={styles.dimRow} accessibilityLabel={`${CI_DIM_META[d].label}: ${v} out of 100`}>
+                <Text style={styles.dimLabel}>{CI_DIM_META[d].label}</Text>
+                <View style={styles.dimBlocks}>
+                  {[0, 1, 2, 3, 4].map((i) => (
+                    <MasteryBlock key={i} on={i < blocks} delay={ri * 90 + i * 70 + 120} reduce={m.reduce} />
+                  ))}
+                </View>
+                <Text style={styles.dimVal}>{v}</Text>
+              </View>
+            </Stagger>
+          );
+        })}
+      </View>
+      {worst ? <Text style={styles.reviewLine}>Recommended review: {CI_DIM_META[worst].label}</Text> : null}
+    </View>
+  );
+}
+
 function CompleteStage({
   dims,
   onFieldCheck,
@@ -445,7 +626,6 @@ function CompleteStage({
   onRepeat: () => void;
   onReturn: () => void;
 }) {
-  const worst = weakestDim(dims);
   return (
     <View style={{ gap: 14 }}>
       <Text style={styles.completeTitle}>CABLE DRESSING & INSTALLATION — COMPLETE</Text>
@@ -453,17 +633,13 @@ function CompleteStage({
         You demonstrated professional decision-making in cable routing, mechanical protection, pathways and supports,
         rack dressing, floor and overhead installations, identification and documentation, and final inspection.
       </Text>
-      <View style={styles.profileCard}>
-        <Text style={styles.profileHead}>MASTERY PROFILE · OVERALL {overallScore(dims)}</Text>
-        <ScoreBars dims={dims} />
-        {worst ? <Text style={styles.reviewLine}>Recommended review: {CI_DIM_META[worst].label}</Text> : null}
-      </View>
-      <View style={{ gap: 8 }}>
+      <MasteryProfile dims={dims} />
+      <Appear delay={CI_MOTION.base} style={{ gap: 8 }}>
         <GlassButton label="VIEW FIELD CHECK" tint="green" height={46} fontSize={13} onPress={onFieldCheck} />
         <GlassButton label="REVIEW RESULTS" tint="teal" height={44} fontSize={12.5} onPress={onReview} />
         <GlassButton label="REPEAT LAB" tint="gold" height={44} fontSize={12.5} onPress={onRepeat} />
         <GlassButton label="RETURN TO TRAINING" tint="teal" height={44} fontSize={12.5} onPress={onReturn} />
-      </View>
+      </Appear>
     </View>
   );
 }
@@ -475,15 +651,15 @@ function FieldCheckStage({ onBack }: { onBack: () => void }) {
       <Text style={styles.governNote}>
         A training summary — not a substitute for project documents, manufacturer requirements or applicable codes.
       </Text>
-      {CI_FIELD_CHECK.map((sec) => (
-        <View key={sec.title} style={styles.fieldSec}>
+      {CI_FIELD_CHECK.map((sec, si) => (
+        <Stagger key={sec.title} index={Math.min(si, 5)} style={styles.fieldSec}>
           <Text style={styles.fieldSecTitle}>{sec.title}</Text>
           {sec.items.map((it) => (
             <Text key={it} style={styles.fieldItem}>
               □  {it}
             </Text>
           ))}
-        </View>
+        </Stagger>
       ))}
       <GlassButton label="‹ BACK TO RESULTS" tint="teal" height={44} fontSize={12.5} onPress={onBack} />
     </View>
@@ -521,6 +697,13 @@ const styles = StyleSheet.create({
   profileCard: { gap: 10, borderRadius: 12, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 14 },
   profileHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.amber },
   reviewLine: { fontFamily: fonts.barlowMedium, fontSize: 12.5, color: colors.amberLabel },
+  // mastery rows (bits' ScoreBars markup, with the fill animated in sequence)
+  dimRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  dimLabel: { flex: 1, fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 0.4, color: colors.textSecondary },
+  dimBlocks: { flexDirection: 'row', gap: 3 },
+  dimBlock: { width: 16, height: 10, borderRadius: 2, backgroundColor: '#26262c', overflow: 'hidden' },
+  dimBlockOn: { backgroundColor: colors.amber, borderRadius: 2 },
+  dimVal: { width: 30, textAlign: 'right', fontFamily: fonts.mono, fontSize: 12, color: colors.amberLabel },
   fieldSec: { gap: 5, borderRadius: 10, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 12 },
   fieldSecTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.4, color: colors.amber },
   fieldItem: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 19, color: colors.textSecondary },

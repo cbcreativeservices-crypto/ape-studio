@@ -13,14 +13,39 @@
  * onComplete({ routing, protection }) scored from the learner's own answers
  * (identification calls → routing, risk calls → protection).
  *
+ * MOTION (owner 2026-08-24, motion.tsx kit): the workbench deals itself in on
+ * a short capped STAGGER; opening a card TERMINATES its cable end (the jacket
+ * strokes itself round, a fill washes out from the conductor) and the OPEN
+ * card alone carries its class's signature idle — fiber's core carries light,
+ * power breathes warm, network marches data round the pairs. Nothing else in
+ * the 14-card list moves. In the drill the question stack ADVANCES: each next
+ * call rises a beat after its verdict lands, so the learner's eye follows.
+ *
  * Accessibility: every choice is a labeled button (no color-only state, no
  * drag); verdicts announce via VerdictBanner; targets ≥44dp.
  */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import Svg, { Circle } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
 import { CiSection, RuleFeedback, announceComplete } from '../bits';
 import { OptionChip, VerdictBanner } from '../../cable/lessons/bits';
+import {
+  ACircle,
+  APath,
+  Appear,
+  CI_EASE,
+  CI_MOTION,
+  Stagger,
+  cancelAnimation,
+  useAnimatedProps,
+  useCiMotion,
+  useDrawIn,
+  useFlow,
+  usePulse,
+  useSharedValue,
+  withTiming,
+} from '../motion';
 import { CI_CABLE_TYPES, cableTypeById, type CiCableClass, type CiCableType } from '../data/cableTypes';
 import { CI_ID_SCENARIOS, type CiIdScenario } from '../data/scenarios';
 import { clamp100, type CiDimScores } from '../engine/score';
@@ -63,6 +88,10 @@ const DRILL_COPY: Record<string, { use: string; pathway: string; risk: string }>
   },
 };
 
+/** One beat between a verdict landing and the next call rising — short enough
+ *  that the next chip is never more than a breath away. */
+const QSTEP = 130;
+
 type DrillAnswers = { cls?: CiCableClass; use?: 'permanent' | 'temporary'; pathway?: string; risk?: string };
 
 const allAnswered = (a: Record<string, DrillAnswers>) =>
@@ -91,8 +120,108 @@ const perScenarioScore = (s: CiIdScenario, g: DrillAnswers) =>
 
 const useLabel = (u: CiCableType['use']) => (u === 'permanent' ? 'PERMANENT' : u === 'temporary' ? 'TEMPORARY' : 'PERM · TEMP');
 
+/* ── the swatch as a CABLE END (motion that identifies the class) ────────
+ * The tint chip is drawn as an honest cable cross-section: jacket ring +
+ * conductor. Opening a card TERMINATES that end — the jacket strokes itself
+ * round and a fill washes out from the core — and then the OPEN card only
+ * (never the 14-card list) carries its class's signature idle. All primitive
+ * props (cx/cy/r/opacity/strokeDashoffset) per motion.tsx's hard rule. */
+const RING_D = 'M17 10 A7 7 0 1 1 3 10 A7 7 0 1 1 17 10';
+const RING_LEN = 44;
+
+/** What each class IS, said in motion — not decoration:
+ *   light  the core carries light      (fiber, tactical fiber)
+ *   breath mains power, slow and warm  (AC cable, portable cord)
+ *   flow   data marching round the pairs (ethernet, PoE) */
+const SIGNATURE: Partial<Record<CiCableClass, 'light' | 'breath' | 'flow'>> = {
+  fiber: 'light',
+  tacfiber: 'light',
+  power: 'breath',
+  extension: 'breath',
+  network: 'flow',
+  poe: 'flow',
+};
+
+/** The jacket strokes itself round the end — a termination, not a fade. */
+function SwatchTerminate({ tint }: { tint: string }) {
+  const { animatedProps, dashArray, restOffset } = useDrawIn(RING_LEN, { duration: CI_MOTION.settle });
+  return (
+    <APath
+      d={RING_D}
+      fill="none"
+      stroke={tint}
+      strokeWidth={2.4}
+      strokeLinecap="round"
+      strokeDasharray={dashArray}
+      strokeDashoffset={restOffset}
+      animatedProps={animatedProps}
+    />
+  );
+}
+
+/** A one-shot fill washing from the conductor out to the jacket. */
+function SwatchFill({ tint }: { tint: string }) {
+  const m = useCiMotion();
+  const t = useSharedValue(0);
+  useEffect(() => {
+    cancelAnimation(t);
+    if (m.reduce) {
+      t.value = 1;
+      return;
+    }
+    t.value = withTiming(1, { duration: CI_MOTION.settle, easing: CI_EASE.out });
+    return () => cancelAnimation(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [m.reduce]);
+  const p = useAnimatedProps(() => ({ r: 2.4 + 3.8 * t.value, opacity: 0.5 * (1 - t.value) }));
+  return <ACircle cx={10} cy={10} r={2.4} opacity={0} fill={tint} animatedProps={p} />;
+}
+
+/** FIBER — the core is carrying light. */
+function SwatchLight({ tint }: { tint: string }) {
+  const { t } = usePulse({ period: 1900 });
+  const p = useAnimatedProps(() => ({ r: 2.4 + 1.6 * t.value, opacity: 0.55 * (1 - t.value) }));
+  return <ACircle cx={10} cy={10} r={2.4} opacity={0.55} fill={tint} animatedProps={p} />;
+}
+
+/** POWER — a slow warm breath around the jacket. */
+function SwatchBreath({ tint }: { tint: string }) {
+  const { t } = usePulse({ period: 2600 });
+  const p = useAnimatedProps(() => ({ r: 8 + 1.3 * t.value, opacity: 0.06 + 0.2 * t.value }));
+  return <ACircle cx={10} cy={10} r={8} opacity={0.06} fill="none" stroke={tint} strokeWidth={2} animatedProps={p} />;
+}
+
+/** NETWORK — data marching round the pairs. */
+function SwatchFlow({ tint }: { tint: string }) {
+  const { animatedProps, dashArray } = useFlow({ speed: 2400, dash: 2.6, gap: 3.2 });
+  return (
+    <APath d={RING_D} fill="none" stroke={tint} strokeWidth={1.1} strokeDasharray={dashArray} animatedProps={animatedProps} />
+  );
+}
+
+function CableSwatch({ t, open }: { t: CiCableType; open: boolean }) {
+  const m = useCiMotion();
+  const sig = SIGNATURE[t.id];
+  return (
+    <View style={styles.swatchBox} pointerEvents="none">
+      <Svg width={16} height={16} viewBox="0 0 20 20">
+        <Circle cx={10} cy={10} r={7} fill={t.tint} fillOpacity={0.18} stroke={t.tint} strokeWidth={2.2} strokeOpacity={0.8} />
+        <Circle cx={10} cy={10} r={2.4} fill={t.tint} />
+        {open ? <SwatchFill tint={t.tint} /> : null}
+        {open ? <SwatchTerminate tint={t.tint} /> : null}
+        {open && m.loops && sig === 'light' ? <SwatchLight tint={t.tint} /> : null}
+        {open && m.loops && sig === 'breath' ? <SwatchBreath tint={t.tint} /> : null}
+        {open && m.loops && sig === 'flow' ? <SwatchFlow tint={t.tint} /> : null}
+      </Svg>
+    </View>
+  );
+}
+
 /* ── workbench card ─────────────────────────────────────────────────────── */
 function TypeCard({ t, open, viewed, onPress }: { t: CiCableType; open: boolean; viewed: boolean; onPress: () => void }) {
+  /** Body rows arrive top-down so the eye reads signal → note → concerns in
+   *  the order an installer checks them. */
+  const noteRows = t.useNote ? 1 : 0;
   return (
     <Pressable
       style={[styles.typeCard, viewed && styles.typeCardSeen]}
@@ -102,7 +231,7 @@ function TypeCard({ t, open, viewed, onPress }: { t: CiCableType; open: boolean;
       accessibilityLabel={`${t.name}, ${useLabel(t.use).toLowerCase()}${viewed ? ', reviewed' : ''}`}
     >
       <View style={styles.typeHead}>
-        <View style={[styles.swatch, { backgroundColor: t.tint }]} />
+        <CableSwatch t={t} open={open} />
         <Text style={[styles.typeName, viewed && { color: colors.textPrimary }]} numberOfLines={1}>
           {viewed ? '✓ ' : ''}
           {t.name}
@@ -111,13 +240,21 @@ function TypeCard({ t, open, viewed, onPress }: { t: CiCableType; open: boolean;
       </View>
       {open ? (
         <View style={styles.typeBody}>
-          <Text style={styles.typeSignal}>{t.signal}</Text>
-          {t.useNote ? <Text style={styles.typeNote}>{t.useNote}</Text> : null}
-          <Text style={styles.concernHead}>CHECK BEFORE ROUTING</Text>
-          {t.concerns.map((c) => (
-            <Text key={c} style={styles.concern}>
-              ·  {c}
-            </Text>
+          <Stagger index={0}>
+            <Text style={styles.typeSignal}>{t.signal}</Text>
+          </Stagger>
+          {t.useNote ? (
+            <Stagger index={1}>
+              <Text style={styles.typeNote}>{t.useNote}</Text>
+            </Stagger>
+          ) : null}
+          <Stagger index={1 + noteRows}>
+            <Text style={styles.concernHead}>CHECK BEFORE ROUTING</Text>
+          </Stagger>
+          {t.concerns.map((c, ci) => (
+            <Stagger key={c} index={2 + noteRows + ci}>
+              <Text style={styles.concern}>·  {c}</Text>
+            </Stagger>
           ))}
         </View>
       ) : null}
@@ -153,17 +290,20 @@ export function KnowScene({ completed, onComplete, openSources }: CiModuleProps)
       <CiSection title={`THE CABLE WORKBENCH — ${CI_CABLE_TYPES.length} TYPES, TAP TO BROWSE`}>
         <Text style={styles.tintNote}>Training visualization colors — actual field cable colors vary.</Text>
         <View style={{ gap: 7 }}>
-          {CI_CABLE_TYPES.map((t) => (
-            <TypeCard
-              key={t.id}
-              t={t}
-              open={openId === t.id}
-              viewed={viewed.has(t.id)}
-              onPress={() => {
-                setOpenId(openId === t.id ? null : t.id);
-                setViewed((s) => new Set(s).add(t.id));
-              }}
-            />
+          {CI_CABLE_TYPES.map((t, ti) => (
+            /* 14 cards: the stagger step is short and CAPPED so nothing below
+               the fold is ever waiting on an animation to become tappable. */
+            <Stagger key={t.id} index={Math.min(ti, 7) * 0.7} from={8}>
+              <TypeCard
+                t={t}
+                open={openId === t.id}
+                viewed={viewed.has(t.id)}
+                onPress={() => {
+                  setOpenId(openId === t.id ? null : t.id);
+                  setViewed((s) => new Set(s).add(t.id));
+                }}
+              />
+            </Stagger>
           ))}
         </View>
         <Text style={styles.browseLine} accessibilityLiveRegion="polite">
@@ -181,7 +321,8 @@ export function KnowScene({ completed, onComplete, openSources }: CiModuleProps)
           const correctType = cableTypeById(s.cable);
           const order = OPT_ORDER[s.id];
           return (
-            <View key={s.id} style={styles.scnCard}>
+            <Stagger key={s.id} index={i}>
+            <View style={styles.scnCard}>
               <Text style={styles.scnTag}>INSTALLATION {i + 1} OF {CI_ID_SCENARIOS.length}</Text>
               <Text style={styles.scnPrompt}>{s.prompt}</Text>
 
@@ -205,7 +346,9 @@ export function KnowScene({ completed, onComplete, openSources }: CiModuleProps)
               ) : null}
 
               {g.cls != null ? (
-                <>
+                /* The stack advances: the next call rises a beat AFTER the
+                   verdict lands, so the learner's eye follows the drill. */
+                <Appear delay={QSTEP} style={styles.qGroup}>
                   <Text style={styles.q}>2 · TEMPORARY OR PERMANENT?</Text>
                   <View style={styles.chipWrap}>
                     {(['permanent', 'temporary'] as const).map((u) => (
@@ -224,11 +367,11 @@ export function KnowScene({ completed, onComplete, openSources }: CiModuleProps)
                       text={`${g.use === s.use ? '' : `This run is ${s.use.toUpperCase()}. `}${copy.use}`}
                     />
                   ) : null}
-                </>
+                </Appear>
               ) : null}
 
               {g.use != null ? (
-                <>
+                <Appear delay={QSTEP} style={styles.qGroup}>
                   <Text style={styles.q}>3 · THE LIKELY PATHWAY?</Text>
                   <View style={styles.chipCol}>
                     {order.pathway.map((oi) => {
@@ -250,11 +393,11 @@ export function KnowScene({ completed, onComplete, openSources }: CiModuleProps)
                       text={`${g.pathway === s.pathway ? '' : `The call: “${s.pathway}.” `}${copy.pathway}`}
                     />
                   ) : null}
-                </>
+                </Appear>
               ) : null}
 
               {g.pathway != null ? (
-                <>
+                <Appear delay={QSTEP} style={styles.qGroup}>
                   <Text style={styles.q}>4 · THE KEY RISK?</Text>
                   <View style={styles.chipCol}>
                     {order.risk.map((oi) => {
@@ -276,21 +419,22 @@ export function KnowScene({ completed, onComplete, openSources }: CiModuleProps)
                       text={`${g.risk === s.keyRisk ? '' : `The key risk: “${s.keyRisk}.” `}${copy.risk}`}
                     />
                   ) : null}
-                </>
+                </Appear>
               ) : null}
 
               {g.risk != null ? (
-                <View style={styles.docBlock}>
+                <Appear delay={QSTEP} style={styles.docBlock}>
                   <Text style={styles.docHead}>THEN THE PAPERWORK — {perScenarioScore(s, g)}/4 ON THIS ONE</Text>
                   <RuleFeedback ruleId="label-both-ends" verdict="info" short={s.doc} openSources={openSources} />
-                </View>
+                </Appear>
               ) : null}
             </View>
+            </Stagger>
           );
         })}
 
         {done && summary ? (
-          <View style={styles.lessonCard}>
+          <Appear delay={CI_MOTION.quick} style={styles.lessonCard}>
             <Text style={styles.lessonHead}>INSTALLATION METHOD FOLLOWS CABLE TYPE AND USE CASE</Text>
             <Text style={styles.lessonBody}>
               {'Identify what the cable is, what it carries, and how long it stays — the pathway, the protection and the paperwork all follow from those three answers. Same room, different cable or different duration: different installation.'}
@@ -298,7 +442,7 @@ export function KnowScene({ completed, onComplete, openSources }: CiModuleProps)
             <Text style={styles.lessonScore}>
               {summary.idc + summary.riskc} of 12 calls correct — replay any time.
             </Text>
-          </View>
+          </Appear>
         ) : null}
       </CiSection>
     </View>
@@ -313,7 +457,7 @@ const styles = StyleSheet.create({
   typeCard: { borderRadius: 10, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', paddingVertical: 12, paddingHorizontal: 12, gap: 8 },
   typeCardSeen: { borderColor: 'rgba(55,224,95,.3)' },
   typeHead: { flexDirection: 'row', alignItems: 'center', gap: 9 },
-  swatch: { width: 13, height: 13, borderRadius: 4, borderWidth: 1, borderColor: 'rgba(255,255,255,.25)' },
+  swatchBox: { width: 16, height: 16, alignItems: 'center', justifyContent: 'center' },
   typeName: { flex: 1, fontFamily: fonts.barlowMedium, fontSize: 14, color: colors.textSecondary },
   useChip: { fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 1, color: colors.textSub, borderWidth: 1, borderColor: '#2c2c33', borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2 },
   typeBody: { gap: 5, borderTopWidth: 1, borderTopColor: '#222228', paddingTop: 8 },
@@ -326,6 +470,8 @@ const styles = StyleSheet.create({
   scnTag: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.5, color: colors.amberLabel },
   scnPrompt: { fontFamily: fonts.barlowMedium, fontSize: 14.5, lineHeight: 20, color: colors.textPrimary },
   q: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textSecondary, marginTop: 2 },
+  /** Carries the scenario card's own row gap into the animated group. */
+  qGroup: { gap: 10 },
   chipWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 7 },
   chipCol: { gap: 7 },
   docBlock: { gap: 6, marginTop: 2 },
