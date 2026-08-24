@@ -97,11 +97,11 @@ export function HarmonographLabScreen() {
   const stereoReady = engineReady && ApeDsp.engineVersion() >= 5;
 
   // Each oscillator stored as n = hz / BASE_F0 (fractional at pendulum speeds).
-  // Opening defaults (owner 2026-08-23): 1.5 Hz : 1.5 Hz (1:1), φ 90°, MEDIUM
-  // damping, ROTARY, detune +1% — the classic precessing-ring rose, drawing
+  // Opening defaults (owner 2026-08-23): 1.5 Hz : 1.0 Hz (3:2 — perfect fifth),
+  // φ 90°, MEDIUM damping, ROTARY, detune +1% — a rich precessing rose drawing
   // itself the moment the lab opens.
   const [n1, setN1] = useState(1.5 / BASE_F0);
-  const [n2, setN2] = useState(1.5 / BASE_F0);
+  const [n2, setN2] = useState(1.0 / BASE_F0);
   const [phase, setPhase] = useState<(typeof PHASES)[number]>(90);
   const [dampKey, setDampKey] = useState<(typeof DAMPINGS)[number]['key']>('medium');
   const [rotary, setRotary] = useState(true);
