@@ -57,6 +57,9 @@ import Animated, {
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
+  withDelay,
+  withRepeat,
+  withSequence,
   withTiming,
 } from 'react-native-reanimated';
 import { fonts } from '../../theme/tokens';
@@ -83,8 +86,8 @@ const TOP = 12,
 const LARM = Math.hypot(HA[0] - HR[0], HA[1] - HR[1]);
 const PLATZ = 9.4,
   PLATH = 5.5;
-const AMP = 0.28 * TOP;
-const ORB = 1.9;
+const AMP = 0.26 * TOP; // pen swing kept clear of the paper edge
+const ORB = 1.7;
 
 /* ── axonometric camera (fixed viewBox 0 0 360 240) ───────────────────────── */
 const YAW = (33 * Math.PI) / 180,
@@ -200,7 +203,8 @@ const R_shaftA_below = [pj(HA[0], HA[1], -BOT), pj(HA[0], HA[1], 0)];
 const R_shaftB_below = [pj(HB[0], HB[1], -BOT), pj(HB[0], HB[1], 0)];
 const R_shaftA_above = [pj(HA[0], HA[1], 0), pj(HA[0], HA[1], TOP)];
 const R_shaftB_above = [pj(HB[0], HB[1], 0), pj(HB[0], HB[1], TOP)];
-const R_shaftR = [pj(HR[0], HR[1], -WGT + 3), pj(HR[0], HR[1], PLATZ - 0.8)];
+const R_shaftR_below = [pj(HR[0], HR[1], -WGT + 3), pj(HR[0], HR[1], 0)];
+const R_shaftR_above = [pj(HR[0], HR[1], 0), pj(HR[0], HR[1], PLATZ - 0.8)];
 const R_discA = [-1, 0, 1].map((i) => pj(HA[0], HA[1], -WGT + i * 1.15));
 const R_discB = [-1, 0, 1].map((i) => pj(HB[0], HB[1], -WGT + i * 1.15));
 const R_discR = [-1, 0, 1].map((i) => pj(HR[0], HR[1], -WGT + 3 + i * 1.15));
@@ -309,7 +313,16 @@ export const HarmonographMachine = memo(function HarmonographMachine({
   useEffect(() => {
     cancelAnimation(progress);
     progress.value = 0;
-    progress.value = withTiming(1, { duration: dDrawMs, easing: Easing.linear });
+    // a LIVING machine: draw at the real rate, hold the finished art ~3 s,
+    // then a fresh sheet and draw again — whenever you look, it moves.
+    progress.value = withRepeat(
+      withSequence(
+        withTiming(1, { duration: dDrawMs, easing: Easing.linear }),
+        withDelay(3000, withTiming(0, { duration: 60 })),
+      ),
+      -1,
+      false,
+    );
     return () => cancelAnimation(progress);
   }, [ink, dDrawMs, progress]);
 
@@ -348,9 +361,15 @@ export const HarmonographMachine = memo(function HarmonographMachine({
     const b = pj(m.tBx, m.tBy, Math.sqrt(Math.max(0, TOP * TOP - m.sB * m.sB)));
     return { x2: b[0], y2: b[1] };
   });
-  const shaftR = useAnimatedProps(() => {
+  const shaftRBelow = useAnimatedProps(() => {
     const m = M.value;
     const a = pj(HR[0] - (m.ox * WGT) / TOP, HR[1] - (m.oy * WGT) / TOP, -WGT + 3);
+    const b = pj(HR[0], HR[1], 0);
+    return { x1: a[0], y1: a[1], x2: b[0], y2: b[1] };
+  });
+  const shaftRAbove = useAnimatedProps(() => {
+    const m = M.value;
+    const a = pj(HR[0], HR[1], 0);
     const b = pj(HR[0] + m.ox, HR[1] + m.oy, PLATZ - 0.8);
     return { x1: a[0], y1: a[1], x2: b[0], y2: b[1] };
   });
@@ -509,11 +528,11 @@ export const HarmonographMachine = memo(function HarmonographMachine({
         <AEllipse animatedProps={shadA} cx={R_shadA[0]} cy={R_shadA[1]} rx={13} ry={4} fill="#000" opacity={0.32} />
         <AEllipse animatedProps={shadB} cx={R_shadB[0]} cy={R_shadB[1]} rx={13} ry={4} fill="#000" opacity={0.32} />
         <ALine
-          animatedProps={shaftR}
-          x1={R_shaftR[0][0]}
-          y1={R_shaftR[0][1]}
-          x2={R_shaftR[1][0]}
-          y2={R_shaftR[1][1]}
+          animatedProps={shaftRBelow}
+          x1={R_shaftR_below[0][0]}
+          y1={R_shaftR_below[0][1]}
+          x2={R_shaftR_below[1][0]}
+          y2={R_shaftR_below[1][1]}
           stroke="#5d4527"
           strokeWidth={3.2}
           strokeLinecap="round"
@@ -559,6 +578,16 @@ export const HarmonographMachine = memo(function HarmonographMachine({
             <Ellipse cx={h[0]} cy={h[1]} rx={2.4 * SC} ry={2.4 * SC * SP} fill="none" stroke="#a89468" strokeWidth={1} strokeOpacity={0.5} />
           </G>
         ))}
+        <ALine
+          animatedProps={shaftRAbove}
+          x1={R_shaftR_above[0][0]}
+          y1={R_shaftR_above[0][1]}
+          x2={R_shaftR_above[1][0]}
+          y2={R_shaftR_above[1][1]}
+          stroke="#6b4f2c"
+          strokeWidth={3.4}
+          strokeLinecap="round"
+        />
         <ALine
           animatedProps={shaftAAbove}
           x1={R_shaftA_above[0][0]}
