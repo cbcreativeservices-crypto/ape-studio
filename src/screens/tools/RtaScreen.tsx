@@ -42,17 +42,37 @@
  * Visual standard 2026-07-29 (rule 2 — abstract data styled, never
  * hairline-on-black): gradient-filled LED-style columns (hot top → deep base,
  * shared userSpaceOnUse gradient — ONE def, not per-bar), glow caps, bright
- * floating peak-hold dashes, plot frame + graticule weight hierarchy. The
- * honest gray slots and every §10 warning stay exactly as they were.
+ * floating peak-hold dashes, graticule weight hierarchy. The honest gray
+ * slots and every §10 warning stay exactly as they were.
+ *
+ * RACK UNIT (2026-08-23, owner-approved architecture — one of the first two
+ * tools on it): the ScrollView body is replaced by the RackUnit frame. The
+ * layout law: *reading may scroll; operating may not.*
+ *  - STAGE: the live RTA glass (LED bars + optional piano map stacked inside),
+ *    height-parametric, size L. The 2026-08-21 "inert display" workaround is
+ *    GONE — the stage sits outside any ScrollView, so a scroll-touch can no
+ *    longer read as a tap; tap-glass pause/resume (the original affordance) is
+ *    restored. Badge carries the honesty line verbatim.
+ *  - BEZEL: LEVEL (tap cycles C/A/Z weighting) · PK HOLD (tap resets; latches
+ *    red after a clip) · BANDS · MIC LIVE/PAUSED (tap pauses/resumes).
+ *  - DOCK (5 keys): BANDING sticky tray (A/B while the glass reacts) · AVG
+ *    group tray (averaging α + STD/HI-RES resolution — they interact on
+ *    response speed) · RST PK action · DISPLAY group tray (COLORS toggle,
+ *    member-gated colour wheel, PIANO toggle) · SAVE action (exact §7 flow).
+ *    No continuous param exists, so initialParam names the teaching-central
+ *    BANDING tray and the lane hides itself.
+ *  - WELL: EngineGate, library link, and every notice/advisory at the BOTTOM
+ *    (owner tools rule). Mic lifecycle unchanged: useDspEngine +
+ *    useToolAutoStart; stops still route through the hook's debounced
+ *    releaseMic — never ApeDsp.stop on handoff.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
 import Svg, { Defs, G, Line, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { ApeDsp, type BandsFrame, type EngineConfig, type MeterFrame } from '../../../modules/ape-dsp';
-import { GlassButton } from '../../components/GlassButton';
 import { meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
@@ -65,7 +85,9 @@ import { ColorWheelButton } from '../../components/ColorWheelButton';
 import { colors, fonts } from '../../theme/tokens';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { EngineGate } from './EngineGate';
-import { useToolHelp, HelpHead, DisplayGuideButton, readoutKey } from '../../features/lab/guidedLessons';
+import { useToolHelp, readoutKey } from '../../features/lab/guidedLessons';
+import { RackUnit } from '../lab/rack/RackUnit';
+import type { BezelItem, DockParam } from '../lab/rack/rackTypes';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Rta'>;
@@ -166,16 +188,13 @@ function metaFor(mode: BandMode, alpha: number, fftSize: number): string {
   }
 }
 
-// ---- Bar-panel geometry (fixed-height SVG; dBFS → pixels) -----------------
-// Taller panel (owner 2026-08-05): more vertical room = finer level detail.
-const PANEL_H = 252;
+// ---- Bar-glass geometry (height-parametric; dBFS → pixels) ----------------
+// Rack conversion 2026-08-23: the chart fills whatever glass the rack grants
+// (LiveSpectrumEq idiom) — the y mapping is computed per-render from the glass
+// height inside RtaGlass. Values above 0 dBFS climb into the headroom zone;
+// only the SVG edge (y=2) limits geometry — numbers are never clamped (F1).
 const FLOOR_DB = -90; // display floor — levels below draw no bar
 const ZERO_Y = 16; // 0 dBFS gridline; the zone above is REAL headroom (F1)
-const FLOOR_Y = 244;
-const PX_PER_DB = (FLOOR_Y - ZERO_Y) / -FLOOR_DB;
-/** dBFS → y. Values above 0 dBFS climb into the headroom zone; only the SVG
- *  edge (y=2, ≈+7.6 dBFS) limits geometry — numbers are never clamped. */
-const yForDb = (db: number) => Math.max(2, ZERO_Y - db * PX_PER_DB);
 
 const GRID_DBS = [0, -30, -60, FLOOR_DB];
 const GRID_DBS_MINOR = [-15, -45, -75];
@@ -185,7 +204,6 @@ const LABEL_TARGETS = [63, 250, 1000, 4000, 16000] as const;
 // locally from the fxViz grammar (shared idiom, not a cross-feature import).
 // Graticule lifted (owner 2026-08-05): the marks were near-invisible on black.
 const PLOT_BG = '#0c0c0f';
-const PLOT_FRAME = '#3a4150';
 const GRID = '#333846';
 const GRID_MINOR = '#262b36';
 const AXIS = '#5a6376'; // 0 dBFS reference — brighter than the graticule
@@ -230,7 +248,7 @@ const fmtDb = (v: number | undefined) =>
 // so the honest unit is dBFS(A)/dBFS(C), never bare dBA/dBC. Reads the engine's
 // Fast weighted level from the same meter frame the PEAK cells use.
 type Weighting = 'Z' | 'A' | 'C';
-const WEIGHTINGS: readonly Weighting[] = ['C', 'A', 'Z'] as const; // stacked top→bottom
+const WEIGHTINGS: readonly Weighting[] = ['C', 'A', 'Z'] as const; // bezel LEVEL cell tap-cycle order
 /** Level unit per weighting (owner rev 24: dBA/dBC, never default dBFS). Z is
  *  unweighted → plain relative dB. Honesty (uncalibrated, relative, not SPL)
  *  lives in the accuracy note + subtitle, not in a confusing dBFS unit. */
@@ -241,105 +259,10 @@ const weightedFastDb = (m: MeterFrame | null | undefined, w: Weighting): number 
   return w === 'A' ? m.aFastDb : w === 'C' ? m.cFastDb : m.zFastDb;
 };
 
-/** Top-left LEVEL cell (owner 2026-08-17): the weighted broadband level with a
- *  vertical C/A/Z unit toggle — active amber, inactive white, all three always
- *  visible. Replaces the old fixed-dBFS PEAK cell; PEAK HOLD (next cell) keeps
- *  the true broadband peak + clip latch. */
-function LevelCell({
-  meter,
-  weighting,
-  onWeighting,
-  help,
-}: {
-  meter: MeterFrame | null | undefined;
-  weighting: Weighting;
-  onWeighting: (w: Weighting) => void;
-  help?: (key: string) => void;
-}) {
-  const v = weightedFastDb(meter, weighting);
-  return (
-    <View style={styles.statCell}>
-      <Pressable
-        onLongPress={help ? () => help(readoutKey('LEVEL')) : undefined}
-        delayLongPress={350}
-        accessibilityLabel="LEVEL — what it shows"
-      >
-        <Text style={styles.statLabel}>LEVEL</Text>
-      </Pressable>
-      <View style={styles.levelRow}>
-        <Text style={[styles.statValue, v != null && Number.isFinite(v) ? { color: levelColorForDb(v) } : null]}>
-          {fmtDb(v)}
-        </Text>
-        <View style={styles.weightToggle}>
-          {WEIGHTINGS.map((w) => (
-            <Pressable
-              key={w}
-              onPress={() => onWeighting(w)}
-              hitSlop={4}
-              accessibilityRole="button"
-              accessibilityState={{ selected: weighting === w }}
-              accessibilityLabel={
-                w === 'Z' ? 'Unweighted, relative dB' : `${w}-weighted level (dB${w}), uncalibrated relative, not SPL`
-              }
-            >
-              <Text style={[styles.weightOpt, weighting === w && styles.weightOptActive]}>{weightUnit(w)}</Text>
-            </Pressable>
-          ))}
-        </View>
-      </View>
-    </View>
-  );
-}
-
-function StatCell({
-  label,
-  value,
-  unit,
-  help,
-  clipped,
-  frameRed,
-  levelDb,
-  onPress,
-}: {
-  label: string;
-  value: string;
-  unit?: string;
-  help?: (key: string) => void;
-  /** Clip latch (owner 2026-08-05): the number turns RED only once a clip has
-   *  occurred, and stays red until the user resets. */
-  clipped?: boolean;
-  /** Also paint the cell's frame red on clip (PEAK HOLD only). */
-  frameRed?: boolean;
-  /** When finite, colour the value on the amplitude ramp by this dB level
-   *  (louder = red, quieter = blue) so the number reads level (owner
-   *  2026-08-12). The frame-red clip cue is unchanged. */
-  levelDb?: number;
-  /** When set, tapping the cell fires this (PEAK HOLD → reset). The long-press
-   *  help is preserved. */
-  onPress?: () => void;
-}) {
-  return (
-    <Pressable
-      style={[styles.statCell, frameRed && styles.statCellClipped]}
-      onPress={onPress}
-      onLongPress={help ? () => help(readoutKey(label)) : undefined}
-      delayLongPress={350}
-      accessibilityRole={onPress || help ? 'button' : undefined}
-      accessibilityLabel={onPress ? `${label} — tap to reset` : help ? `${label} — what it shows` : label}
-    >
-      <Text style={styles.statLabel}>{label}</Text>
-      <Text
-        style={[
-          styles.statValue,
-          levelDb != null && Number.isFinite(levelDb) ? { color: levelColorForDb(levelDb) } : clipped && styles.statValuePeak,
-        ]}
-      >
-        {value}
-        {unit ? <Text style={styles.statUnit}> {unit}</Text> : null}
-      </Text>
-    </Pressable>
-  );
-}
+// LevelCell/StatCell (the old stat grid) are GONE (rack 2026-08-23): LEVEL,
+// PK HOLD and BANDS now read on the rack's bezel strip — LEVEL taps to cycle
+// the C/A/Z weighting, PK HOLD taps to reset (clip latch tints it red), and
+// every cell keeps its long-press guided lesson via readoutKey.
 
 function Chip({ label, active, onPress, a11yLabel }: { label: string; active: boolean; onPress: () => void; a11yLabel?: string }) {
   return (
@@ -361,15 +284,24 @@ function Chip({ label, active, onPress, a11yLabel }: { label: string; active: bo
  *  bright floating peak-hold dashes, Q2 dim-gray slots for unresolvable
  *  bands. ONE shared gradient def in userSpaceOnUse — the ramp is anchored to
  *  the dB scale (hot at 0 dBFS, deep at the floor), so every bar shares it
- *  and short bars only ever show the deep end. */
-function BandsPanel({
+ *  and short bars only ever show the deep end.
+ *  RACK 2026-08-23: height-parametric — the chart fills whatever glass the
+ *  stage grants (LiveSpectrumEq idiom), with the piano map stacked inside the
+ *  glass when toggled on. */
+function RtaGlass({
+  w,
+  h,
   bands,
   mode,
   alpha,
   fftSize,
   midiColors,
   flatColor,
+  pianoOn,
+  pitchIdx,
 }: {
+  w: number;
+  h: number;
   bands: DisplayBands | null;
   mode: BandMode;
   alpha: number;
@@ -380,25 +312,36 @@ function BandsPanel({
   /** Custom flat bar colour (Academy member, owner rule 2026-08-20) — used only
    *  when COLORS (the MIDI ramp) is OFF; null = the default blue gradient. */
   flatColor?: string | null;
+  pianoOn: boolean;
+  pitchIdx: number | null;
 }) {
-  const [chartW, setChartW] = useState(0);
+  const GUTTER = 32;
+  const HEAD_H = 18;
+  const LABEL_H = 16;
+  const PIANO_BLOCK = PIANO_H + 14; // keybed + C-octave label row
+  const chartW = Math.max(0, w - GUTTER - 8);
+  const chartH = Math.max(60, h - HEAD_H - LABEL_H - (pianoOn ? PIANO_BLOCK + 2 : 0) - 6);
+  const floorY = chartH - 8;
+  const pxPerDb = (floorY - ZERO_Y) / -FLOOR_DB;
+  /** dBFS → y. Values above 0 dBFS climb into the headroom zone; only the SVG
+   *  edge (y=2) limits geometry — numbers are never clamped (F1). */
+  const yForDb = (db: number) => Math.max(2, ZERO_Y - db * pxPerDb);
 
   const n = bands ? bands.centers.length : 0;
   const barW = n > 0 && chartW > 0 ? chartW / n : 0;
   const labels = bands ? bandLabels(bands.centers) : [];
-  const anyUnresolvable = bands != null && bands.resolvable.some((r) => !r);
   const pad = barW > 3 ? 1 : 0.5;
 
   return (
-    <View style={styles.panel}>
-      <View style={styles.panelHead}>
+    <View style={styles.glassBody}>
+      <View style={styles.glassHead}>
         <Text style={styles.panelEyebrow}>LIVE RTA</Text>
         <Text style={styles.panelSettings}>{metaFor(mode, alpha, fftSize)}</Text>
       </View>
 
       <View style={styles.chartRow}>
         {/* dB gutter — dBFS scale marks matching the gridlines. */}
-        <View style={styles.gutter}>
+        <View style={[styles.gutter, { height: chartH }]}>
           {GRID_DBS.map((db) => (
             <Text key={db} style={[styles.gutterLabel, { top: yForDb(db) - 8 }]}>
               {db}
@@ -406,12 +349,9 @@ function BandsPanel({
           ))}
         </View>
 
-        <View
-          style={styles.chartArea}
-          onLayout={(e) => setChartW(Math.round(e.nativeEvent.layout.width))}
-        >
+        <View style={{ flex: 1 }}>
           {chartW > 0 && (
-            <Svg width={chartW} height={PANEL_H}>
+            <Svg width={chartW} height={chartH}>
               <Defs>
                 {/* Shared LED ramp — one def for every bar (perf discipline). */}
                 <LinearGradient
@@ -419,7 +359,7 @@ function BandsPanel({
                   x1="0"
                   y1={ZERO_Y}
                   x2="0"
-                  y2={FLOOR_Y}
+                  y2={floorY}
                   gradientUnits="userSpaceOnUse"
                 >
                   <Stop offset="0" stopColor={BAR_HOT} />
@@ -433,7 +373,7 @@ function BandsPanel({
                   x1="0"
                   y1={ZERO_Y}
                   x2="0"
-                  y2={FLOOR_Y}
+                  y2={floorY}
                   gradientUnits="userSpaceOnUse"
                 >
                   {LOUDNESS_STOPS.map((s) => (
@@ -441,18 +381,8 @@ function BandsPanel({
                   ))}
                 </LinearGradient>
               </Defs>
-              {/* Plot frame — rounded panel + hairline (shared chart chrome). */}
-              <Rect x={0} y={0} width={chartW} height={PANEL_H} rx={8} fill={PLOT_BG} />
-              <Rect
-                x={0.5}
-                y={0.5}
-                width={chartW - 1}
-                height={PANEL_H - 1}
-                rx={7.5}
-                stroke={PLOT_FRAME}
-                strokeWidth={1}
-                fill="none"
-              />
+              {/* Plot bed — the rack's recessed glass provides the frame. */}
+              <Rect x={0} y={0} width={chartW} height={chartH} rx={8} fill={PLOT_BG} />
               {GRID_DBS_MINOR.map((db) => (
                 <Line
                   key={db}
@@ -488,7 +418,7 @@ function BandsPanel({
                         x={x}
                         y={ZERO_Y}
                         width={w}
-                        height={FLOOR_Y - ZERO_Y}
+                        height={floorY - ZERO_Y}
                         fill={SLOT_GRAY}
                         fillOpacity={0.14}
                       />
@@ -507,7 +437,7 @@ function BandsPanel({
                             x={x}
                             y={barTop}
                             width={w}
-                            height={FLOOR_Y - barTop}
+                            height={floorY - barTop}
                             fill={midiColors ? 'url(#rtaBarFillMidi)' : (flatColor ?? 'url(#rtaBarFill)')}
                             fillOpacity={0.96}
                           />
@@ -563,10 +493,10 @@ function BandsPanel({
         </View>
       </View>
 
-      <Text style={styles.unitLine}>relative dB · uncalibrated approximate</Text>
-      {anyUnresolvable && (
-        <Text style={styles.grayNote}>grayed bands: insufficient resolution at this setting</Text>
-      )}
+      {/* Piano map stacked inside the glass (owner 2026-08-05) when toggled.
+          The honesty line moved verbatim to the stage badge; the gray-band
+          note reads in the well. */}
+      {pianoOn && <PianoStrip bands={bands} highlightIdx={pitchIdx} />}
     </View>
   );
 }
@@ -1008,7 +938,14 @@ export function RtaScreen({ navigation }: Props) {
 
   const liveFlags = state === 'running' ? meterWarningFlags(frames.meter) : [];
   const meter = frames.meter;
-  const canSave = state === 'running' && frames.bands != null && frames.bands.centers.length > 0;
+  const anyUnresolvable = displayBands != null && displayBands.resolvable.some((r) => !r);
+
+  // LEVEL bezel cell: tap cycles the C/A/Z weighting (the old vertical unit
+  // stack, condensed to the bezel's one-value grammar — same order, same
+  // dBA/dBC-never-dBFS labeling via weightUnit).
+  const cycleWeighting = useCallback(() => {
+    setWeighting((w) => WEIGHTINGS[(WEIGHTINGS.indexOf(w) + 1) % WEIGHTINGS.length]);
+  }, []);
 
   // Latch the clip flag the instant peak (or its hold) reaches 0 dBFS. Stays set
   // until RESET PEAK (owner 2026-08-05); this drives the red numbers + red frame.
@@ -1018,6 +955,150 @@ export function RtaScreen({ navigation }: Props) {
     const h = meter.peakHoldDb;
     if ((Number.isFinite(p) && p >= 0) || (Number.isFinite(h) && h >= 0)) setHasClipped(true);
   }, [meter]);
+
+  // ---- Rack declarations (rebuilt every render — trays and bezel stay live) ----
+  const levelDb = weightedFastDb(meter, weighting);
+  const avgLabel = AVG_CHOICES.find((c) => c.alpha === alpha)?.label ?? `α ${alpha.toFixed(2)}`;
+
+  /** Bezel: the old stat grid, printed on the display. LEVEL taps to cycle
+   *  C/A/Z; PK HOLD taps to reset (clip latch tints it red until reset); MIC
+   *  taps to pause/resume (LiveSpectrumEq idiom). Long-press = guided lesson. */
+  const bezel: BezelItem[] = [
+    {
+      k: 'LEVEL',
+      v: `${fmtDb(levelDb)} ${weightUnit(weighting)}`,
+      tint: levelDb != null && Number.isFinite(levelDb) ? levelColorForDb(levelDb) : undefined,
+      onPress: cycleWeighting,
+      helpKey: readoutKey('LEVEL'),
+      flex: 1.25,
+    },
+    {
+      k: 'PK HOLD',
+      v: fmtDb(meter?.peakHoldDb),
+      tint: hasClipped
+        ? '#ff5a48' // clip latch (owner 2026-08-05) — red until RESET
+        : meter != null && Number.isFinite(meter.peakHoldDb)
+          ? levelColorForDb(meter.peakHoldDb)
+          : undefined,
+      onPress: onResetPeak,
+      helpKey: readoutKey('PEAK HOLD'),
+    },
+    { k: 'BANDS', v: String(mode), helpKey: readoutKey('BANDS'), flex: 0.7 },
+    {
+      k: 'MIC',
+      v: state === 'running' ? 'LIVE' : micPaused ? 'PAUSED' : '—',
+      tint: state === 'running' ? undefined : '#7a7f8a',
+      onPress: state === 'running' ? onStop : onStart,
+    },
+  ];
+
+  /** Dock (5 keys). No continuous param exists on this tool, so there is no
+   *  fader — initialParam names the teaching-central BANDING tray and the
+   *  lane hides itself. */
+  const params: DockParam[] = [
+    {
+      kind: 'options',
+      id: 'banding',
+      label: 'BANDING',
+      valueLabel: String(mode),
+      options: BAND_MODES.map((m) => ({ id: String(m), label: String(m) })),
+      selectedId: String(mode),
+      onSelect: (id) => applyMode(Number(id) as BandMode),
+      sticky: true, // teaching collection — A/B band counts while the glass reacts
+      helpKey: 'banding',
+    },
+    {
+      kind: 'group',
+      id: 'avg',
+      label: 'AVG',
+      valueLabel: `${avgLabel}${hiRes ? '·HR' : ''}`,
+      helpKey: 'averaging',
+      // AVERAGING + RESOLUTION share one tray: both trade response speed for
+      // steadiness/detail (interacting params — the group-tray graft). Exact
+      // α mapping and STD/HI-RES semantics unchanged.
+      render: () => (
+        <View style={styles.trayCol}>
+          <Text style={styles.trayHead}>AVERAGING</Text>
+          <View style={styles.trayRow}>
+            {AVG_CHOICES.map((c) => (
+              <Chip key={c.label} label={c.label} active={alpha === c.alpha} onPress={() => applyAlpha(c.alpha)} />
+            ))}
+          </View>
+          <Text style={styles.trayHead}>RESOLUTION</Text>
+          <View style={styles.trayRow}>
+            <Chip
+              label="STD"
+              active={!hiRes}
+              onPress={() => applyHiRes(false)}
+              a11yLabel="Standard resolution — faster response"
+            />
+            <Chip
+              label="HI-RES"
+              active={hiRes}
+              onPress={() => applyHiRes(true)}
+              a11yLabel="High resolution — reveals lower frequencies, slower response"
+            />
+          </View>
+          <Text style={styles.settingsNote}>
+            Changing banding, averaging, or resolution restarts the band average and peak hold (new
+            settings epoch). HI-RES doubles the FFT for finer low-frequency detail (down to ~30 Hz) at
+            a slower response.
+          </Text>
+        </View>
+      ),
+    },
+    // Peak hold has no on/off in this tool — the control is RESET (spec §10),
+    // kept as a plain action key; the PK HOLD bezel cell also taps to reset.
+    { kind: 'action', id: 'rstpeak', label: 'RST PK', onPress: onResetPeak },
+    {
+      kind: 'group',
+      id: 'display',
+      label: 'DISPLAY',
+      valueLabel: `${colorsOn ? 'MIDI' : rtaColor ? 'CUST' : 'LED'}${pianoOn ? '·♪' : ''}`,
+      render: () => (
+        <View style={styles.trayCol}>
+          <Text style={styles.trayHead}>BAR COLOURS</Text>
+          <View style={styles.trayRow}>
+            <Chip
+              label="COLORS"
+              active={colorsOn}
+              onPress={() => setColorsOn(!colorsOn)}
+              a11yLabel="Toggle MIDI level colours on the display"
+            />
+            {/* Custom bar colour — discreet wheel, member-gated (owner rule
+                2026-08-20). Gating lives inside ColorWheelButton, unchanged. */}
+            <ColorWheelButton
+              style={styles.rtaColorBtn}
+              current={rtaColor}
+              onPick={(c) => {
+                setRtaColor(c);
+                // Picking a custom colour auto-disables the level-ramp COLORS
+                // toggle so the choice actually shows (owner 2026-08-21) — the
+                // ramp otherwise overrides the flat colour.
+                if (c) setColorsOn(false);
+              }}
+              accessibilityLabel="RTA bar colour"
+              feature="the RTA bar colour"
+              pickerTitle="RTA BAR COLOUR"
+              pickerNote="Applies when COLORS (the level ramp) is off."
+              size={22}
+            />
+          </View>
+          <Text style={styles.trayHead}>PIANO MAP</Text>
+          <View style={styles.trayRow}>
+            <Chip
+              label={pianoOn ? 'PIANO ON' : 'PIANO OFF'}
+              active={pianoOn}
+              onPress={() => setPianoOn((v) => !v)}
+              a11yLabel="Toggle a piano keyboard under the display"
+            />
+          </View>
+        </View>
+      ),
+    },
+    // SAVE TRACE — exact §7 flow (onSaveTrace guards on running+bands itself).
+    { kind: 'action', id: 'save', label: justSaved ? 'SAVED ✓' : 'SAVE', onPress: onSaveTrace },
+  ];
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -1032,9 +1113,50 @@ export function RtaScreen({ navigation }: Props) {
         <AccuracyNote compact detail="This tool runs on your phone’s UNCALIBRATED microphone — read every level as RELATIVE (A/C-weighted so it reads in a familiar scale), for learning, NOT a calibrated SPL reading. For accurate, absolute measurements use a calibrated SPL meter, measurement mic, or a dedicated instrument." />
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll}>
-        {/* Honest not-ready card (absent/spike/denied/error) — renders nothing
-            when the engine is usable. */}
+      {/* RACK UNIT — the frame owns the layout law: reading may scroll;
+          operating may not. Stage+bezel+dock are pinned; only the well below
+          scrolls. */}
+      <RackUnit
+        initialParam="banding"
+        params={params}
+        onHelp={(k) => {
+          if (k) help(k);
+        }}
+        stage={{
+          size: 'L', // the spectrum IS the tool
+          // Honesty line — verbatim from the old in-panel unit line (hard rule).
+          badge: 'relative dB · uncalibrated approximate',
+          onGuide: helpAll,
+          bezel,
+          render: (w, h) => (
+            // Tap-glass = pause/resume capture. The 2026-08-21 inert-display
+            // workaround is retired: the stage sits OUTSIDE any ScrollView, so
+            // a scroll-touch can no longer read as an accidental tap — the
+            // original tap affordance is restored (LiveSpectrumEq idiom).
+            <Pressable
+              onPress={state === 'running' ? onStop : onStart}
+              accessibilityRole="button"
+              accessibilityLabel={state === 'running' ? 'Tap to stop capture' : 'Tap to start capture'}
+              style={{ width: w, height: h }}
+            >
+              <RtaGlass
+                w={w}
+                h={h}
+                bands={displayBands}
+                mode={mode}
+                alpha={alpha}
+                fftSize={fftSize}
+                midiColors={colorsOn}
+                flatColor={rtaColor}
+                pianoOn={pianoOn}
+                pitchIdx={pitchIdx}
+              />
+            </Pressable>
+          ),
+        }}
+      >
+        {/* WELL — reading only. Honest not-ready card (absent/spike/denied/
+            error) renders nothing when the engine is usable. */}
         <EngineGate state={state} lastError={lastError} />
 
         {/* Opens straight into the live tool (auto-start); a brief starting note
@@ -1043,163 +1165,34 @@ export function RtaScreen({ navigation }: Props) {
           <Text style={styles.intro}>Starting the analyzer…</Text>
         )}
 
-        {(state === 'running' || micPaused) && (
-          <>
-            {/* Numeric truth row — ABOVE the display (owner 2026-08-05). PEAK /
-                PEAK HOLD stay neutral until an actual clip, then latch red.
-                Long-press any cell for what it shows. */}
-            <View style={styles.statGrid}>
-              {/* LEVEL with a C/A/Z weighting toggle — dBA/dBC (rev 24), relative +
-                  uncalibrated, never dB SPL. PEAK HOLD is the digital peak → plain dB. */}
-              <LevelCell meter={meter} weighting={weighting} onWeighting={setWeighting} help={help} />
-              <StatCell help={help} label="PEAK HOLD" value={fmtDb(meter?.peakHoldDb)} unit="dB" clipped={hasClipped} frameRed={hasClipped} levelDb={meter?.peakHoldDb} onPress={onResetPeak} />
-              {/* BANDS reports the SELECTED band mode so it always matches the
-                  BANDING chip below (owner 2026-08-17: the readout and the chip
-                  must not disagree — e.g. show 31, not the native 30). */}
-              <StatCell help={help} label="BANDS" value={String(mode)} />
-            </View>
-
-            {/* The display is NOT tap-to-toggle anymore (owner 2026-08-21): tapping
-                the live graph was freezing the analyzer — easy to trigger by
-                accident inside the ScrollView (a scroll-touch reads as a tap) and
-                confusing on the Pixel where the restart is slow. START/STOP lives
-                on the explicit button below; the graph is now inert. */}
-            <BandsPanel bands={displayBands} mode={mode} alpha={alpha} fftSize={fftSize} midiColors={colorsOn} flatColor={rtaColor} />
-            {pianoOn && <PianoStrip bands={displayBands} highlightIdx={pitchIdx} />}
-            <DisplayGuideButton onPress={helpAll} />
-
-            {/* Display toggles (owner 2026-08-05): MIDI level colours + piano map. */}
-            <View style={styles.buttonRow}>
-              <Pressable
-                style={[styles.ctrlBtn, colorsOn && styles.ctrlBtnOnGreen]}
-                onPress={() => setColorsOn(!colorsOn)}
-                accessibilityRole="button"
-                accessibilityState={{ selected: colorsOn }}
-                accessibilityLabel="Toggle MIDI level colours on the display"
-              >
-                <Text style={[styles.ctrlText, colorsOn && styles.ctrlTextOnGreen]}>COLORS</Text>
-              </Pressable>
-              {/* Custom bar colour — discreet wheel, member-gated (owner rule 2026-08-20). */}
-              <ColorWheelButton
-                style={styles.rtaColorBtn}
-                current={rtaColor}
-                onPick={(c) => {
-                  setRtaColor(c);
-                  // Picking a custom colour auto-disables the level-ramp COLORS
-                  // toggle so the choice actually shows (owner 2026-08-21) — the
-                  // ramp otherwise overrides the flat colour.
-                  if (c) setColorsOn(false);
-                }}
-                accessibilityLabel="RTA bar colour"
-                feature="the RTA bar colour"
-                pickerTitle="RTA BAR COLOUR"
-                pickerNote="Applies when COLORS (the level ramp) is off."
-                size={22}
-              />
-              <Pressable
-                style={[styles.ctrlBtn, pianoOn && styles.ctrlBtnOnBlue]}
-                onPress={() => setPianoOn((v) => !v)}
-                accessibilityRole="button"
-                accessibilityState={{ selected: pianoOn }}
-                accessibilityLabel="Toggle a piano keyboard under the display"
-              >
-                <Text style={[styles.ctrlText, pianoOn && styles.ctrlTextOnBlue]}>PIANO</Text>
-              </Pressable>
-            </View>
-
-            {/* Controls (spec §10): banding · averaging · peak hold · save. */}
-            <View style={styles.ctrlRow}>
-              <HelpHead title="BANDING" onHelp={() => help('banding')} style={styles.ctrlLabel} />
-              {BAND_MODES.map((m) => (
-                <Chip
-                  key={m}
-                  label={String(m)}
-                  a11yLabel={
-                    m === 10
-                      ? '10 bands, one octave'
-                      : m === 31
-                        ? '31 bands, one-third octave'
-                        : m === 61
-                          ? '61 bands, one-sixth octave, derived from the FFT spectrum'
-                          : `${m} bands, grouped from one-third octave`
-                  }
-                  active={mode === m}
-                  onPress={() => applyMode(m)}
-                />
-              ))}
-            </View>
-            <View style={styles.ctrlRow}>
-              <HelpHead title="AVERAGING" onHelp={() => help('averaging')} style={styles.ctrlLabel} />
-              {AVG_CHOICES.map((c) => (
-                <Chip key={c.label} label={c.label} active={alpha === c.alpha} onPress={() => applyAlpha(c.alpha)} />
-              ))}
-            </View>
-            <View style={styles.ctrlRow}>
-              <Text style={styles.ctrlLabel}>RESOLUTION</Text>
-              <Chip label="STD" active={!hiRes} onPress={() => applyHiRes(false)} a11yLabel="Standard resolution — faster response" />
-              <Chip label="HI-RES" active={hiRes} onPress={() => applyHiRes(true)} a11yLabel="High resolution — reveals lower frequencies, slower response" />
-            </View>
-            <Text style={styles.settingsNote}>
-              Changing banding, averaging, or resolution restarts the band average and peak hold (new
-              settings epoch). HI-RES doubles the FFT for finer low-frequency detail (down to ~30 Hz) at a
-              slower response.
-            </Text>
-
-            <View style={styles.buttonRow}>
-              <Pressable
-                style={styles.ctrlBtn}
-                onPress={onResetPeak}
-                accessibilityRole="button"
-                accessibilityLabel="Reset peak hold"
-              >
-                <Text style={styles.ctrlText}>RESET PEAK</Text>
-              </Pressable>
-              <Pressable
-                style={[styles.ctrlBtn, justSaved && styles.ctrlBtnSaved, !canSave && styles.ctrlBtnDisabled]}
-                onPress={onSaveTrace}
-                disabled={!canSave}
-                accessibilityRole="button"
-                accessibilityState={{ disabled: !canSave }}
-                accessibilityLabel="Save trace"
-              >
-                <Text style={[styles.ctrlText, justSaved && styles.ctrlTextSaved]}>
-                  {justSaved ? 'SAVED ✓' : 'SAVE TRACE'}
-                </Text>
-              </Pressable>
-            </View>
-
-            <GlassButton
-              label={state === 'running' ? 'STOP' : 'START'}
-              tint="blue"
-              height={52}
-              fontSize={15}
-              onPress={state === 'running' ? onStop : onStart}
-            />
-
-            <Pressable
-              onPress={() => navigation.navigate('ToolLibrary', { toolKey: 'rta' })}
-              accessibilityRole="button"
-              accessibilityLabel="View saved measurements"
-            >
-              <Text style={styles.libraryLink}>VIEW SAVED MEASUREMENTS ›</Text>
-            </Pressable>
-
-            {/* Live quality warnings (spec §6) — moved to the very bottom
-                (owner 2026-08-05): the "input is uncalibrated…" note reads last. */}
-            {liveFlags.map((f) => (
-              <Text key={f} style={styles.liveWarn}>
-                ⚠ {WARNING_INFO[f].message} {WARNING_INFO[f].hint}
-              </Text>
-            ))}
-          </>
+        {/* Q2 honesty note for the pinned glass — reads in the well. */}
+        {anyUnresolvable && (
+          <Text style={styles.grayNote}>grayed bands: insufficient resolution at this setting</Text>
         )}
 
-        {/* Required warnings (spec §10) — always visible. */}
+        <Pressable
+          onPress={() => navigation.navigate('ToolLibrary', { toolKey: 'rta' })}
+          accessibilityRole="button"
+          accessibilityLabel="View saved measurements"
+        >
+          <Text style={styles.libraryLink}>VIEW SAVED MEASUREMENTS ›</Text>
+        </Pressable>
+
+        {/* Live quality warnings (spec §6) — notices at the very bottom of the
+            well (owner tools rule): the "input is uncalibrated…" note reads
+            last. */}
+        {liveFlags.map((f) => (
+          <Text key={f} style={styles.liveWarn}>
+            ⚠ {WARNING_INFO[f].message} {WARNING_INFO[f].hint}
+          </Text>
+        ))}
+
+        {/* Required warnings (spec §10) — always visible, bottom of the well. */}
         <Text style={styles.reminder}>
           This display shows frequency energy, not automatic EQ advice. Microphone position
           strongly affects the result.
         </Text>
-      </ScrollView>
+      </RackUnit>
       {sheet}
     </View>
   );
@@ -1211,24 +1204,22 @@ const styles = StyleSheet.create({
   back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1.4, color: colors.textPrimary },
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
-  scroll: { padding: 16, paddingBottom: 28, gap: 14 },
 
   intro: { fontFamily: fonts.barlowRegular, fontSize: 15.5, lineHeight: 23, color: colors.textSecondary },
 
-  // Live bar-graph panel.
-  panel: {
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#131316',
-    padding: 12,
-    gap: 6,
+  // Live bar-graph glass (rack stage, height-parametric).
+  glassBody: { flex: 1, paddingHorizontal: 4, paddingTop: 2 },
+  glassHead: {
+    height: 18,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 2,
   },
-  panelHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   panelEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: colors.amberLabel },
   panelSettings: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSubAlt },
   chartRow: { flexDirection: 'row' },
-  gutter: { width: 32, height: PANEL_H },
+  gutter: { width: 32 },
   gutterLabel: {
     position: 'absolute',
     right: 4,
@@ -1238,7 +1229,6 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     textAlign: 'right',
   },
-  chartArea: { flex: 1, height: PANEL_H + 16 },
   labelRow: { height: 16 },
   freqLabel: {
     position: 'absolute',
@@ -1249,51 +1239,18 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     textAlign: 'center',
   },
-  unitLine: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSubAlt },
   grayNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSubAlt },
 
-  // Numeric readout cells (fonts.mono for values — house data-readout face).
-  statGrid: { flexDirection: 'row', gap: 10 },
-  statCell: {
-    flex: 1,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#131316',
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-    gap: 4,
-  },
-  statCellClipped: { borderColor: '#ff5a48' }, // PEAK HOLD frame turns red on clip (owner 2026-08-05)
-  statLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textSub },
-  statValue: { fontFamily: fonts.mono, fontSize: 19, color: colors.textPrimary },
-  statValuePeak: { color: '#ff5a48' }, // red once a clip has occurred, until reset (owner 2026-08-05)
-  statUnit: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: '#ffffff' }, // dBFS markings white (owner 2026-08-05)
-
-  // LEVEL cell weighting toggle (owner 2026-08-17): value on the left, a vertical
-  // C/A/Z unit stack on the right — active amber, the other two white.
-  levelRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 6 },
-  weightToggle: { alignItems: 'flex-end', gap: 1 },
-  weightOpt: {
-    fontFamily: fonts.mono,
-    fontSize: 11,
-    letterSpacing: 0.3,
-    color: '#ffffff', // inactive: white (owner 2026-08-17)
-  },
-  weightOptActive: { color: colors.amber }, // active: amber
+  // The old stat-grid / LEVEL-toggle styles are gone: those readouts live on
+  // the rack bezel now (BezelReadouts owns the skin).
 
   // Live warning line (spec §6) — amber, plain language.
   liveWarn: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18.5, color: colors.amber },
 
-  // Control chips.
-  ctrlRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  ctrlLabel: {
-    width: 84,
-    fontFamily: fonts.oswaldSemiBold,
-    fontSize: 12,
-    letterSpacing: 1.4,
-    color: colors.textSub,
-  },
+  // Tray composition (AVG · DISPLAY group trays) — chips in labeled rows.
+  trayCol: { gap: 10 },
+  trayHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.amber },
+  trayRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 8 },
   chip: {
     paddingHorizontal: 12,
     height: 30,
@@ -1309,36 +1266,17 @@ const styles = StyleSheet.create({
   chipTextActive: { color: colors.amber },
   settingsNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textMuted },
 
-  // Reset / save buttons.
-  buttonRow: { flexDirection: 'row', gap: 12 },
-  ctrlBtn: {
-    flex: 1,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#3a3a3a',
-    backgroundColor: '#161616',
-    paddingVertical: 14,
-    alignItems: 'center',
-  },
-  // Discreet colour-wheel button in the control row (owner rule 2026-08-20).
+  // Discreet colour-wheel button in the DISPLAY tray (owner rule 2026-08-20).
   rtaColorBtn: {
-    borderRadius: 10,
+    height: 30,
+    borderRadius: 7,
     borderWidth: 1,
-    borderColor: '#3a3a3a',
-    backgroundColor: '#161616',
-    paddingHorizontal: 14,
+    borderColor: colors.hairline,
+    backgroundColor: '#18181c',
+    paddingHorizontal: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  ctrlBtnSaved: { borderColor: 'rgba(91,255,133,.65)', backgroundColor: '#0d1710' },
-  ctrlBtnDisabled: { opacity: 0.45 },
-  // COLORS / PIANO display toggles (owner 2026-08-05).
-  ctrlBtnOnGreen: { borderColor: colors.green, backgroundColor: '#0d1710' },
-  ctrlBtnOnBlue: { borderColor: colors.blue, backgroundColor: '#0c1622' },
-  ctrlText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.4, color: colors.textSecondary },
-  ctrlTextSaved: { color: '#5bff85' },
-  ctrlTextOnGreen: { color: colors.green },
-  ctrlTextOnBlue: { color: colors.cyanBright },
 
   // Piano map strip (owner 2026-08-05).
   pianoRow: { flexDirection: 'row', marginTop: 2 },

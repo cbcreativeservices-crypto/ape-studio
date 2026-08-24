@@ -3,6 +3,17 @@
  * APE_AUDIO_TOOLS_SPEC_2026_07_23.md Tool 6; output-cap RULING Q4 in
  * MEASUREMENT_TOOLS_RULINGS_Q1_Q5_2026_07_09_v1.md; engine build 2026-07-23).
  *
+ * RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23, owner-approved) — the first TOOL
+ * on the frame; layout law: *reading may scroll; operating may not.* The
+ * waveform preview PINS on the stage glass (height-parametric) with the dBFS
+ * honesty line as its badge; SIGNAL/FREQ/OUT/GEN read on the bezel; FREQUENCY
+ * and LEVEL ride the dock lane (FREQ pre-bound — the tool's teaching param);
+ * SIGNAL is a sticky options tray, ISO presets + the ±1-semitone fine stepper
+ * share the PRESET group tray (precision affordance kept off the scroller);
+ * START/STOP is the dock's LED key (same semantics as the old transport
+ * button). Only the legend, status diagnostics and safety notices scroll —
+ * notices at the BOTTOM of the well (owner tools rule).
+ *
  * A signal SOURCE, not a meter — it drives the ApeDsp generator directly and
  * needs NO microphone, so it deliberately skips useDspEngine. Engine gating:
  * availability + engineVersion() are computed ONCE; below the engine build the
@@ -10,42 +21,44 @@
  * control surface, no simulated output (measurement-tools §1.7).
  *
  * Q4 safety UX — the core of this screen:
- *  - level stepper −60…0 dBFS in 3 dB steps, default −20 dBFS;
+ *  - level rides the lane in 3 dB steps across −60…0 dBFS, default −20 dBFS;
  *  - the NATIVE output path hard-caps at −12 dBFS while locked (the cap lives
- *    in the engine, not in this UI — the UI merely fronts it honestly);
- *  - stepping above the cap requires the tap-through confirm ("Remove
+ *    in the engine, not in this UI — the UI merely fronts it honestly): the
+ *    LEVEL lane CLAMPS at the cap while locked;
+ *  - going above the cap requires the tap-through confirm ("Remove
  *    headphones / lower monitor level before continuing") → genUnlockCap(),
- *    which unlocks for this session only;
+ *    which unlocks for this session only — pushing the lane past the cap
+ *    raises that confirm exactly once per attempt;
  *  - the status card ALWAYS shows genStatus().effectiveLevelDb — the honest
  *    level actually leaving the output path — labeled dBFS · uncalibrated
  *    (never SPL: calibration does not exist), with a CAP badge while locked;
  *  - leaving the screen stops the generator AND re-locks the cap.
  */
-import { useEffect, useMemo, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Defs, Line, LinearGradient, Path, Stop } from 'react-native-svg';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ApeDsp, GEN_MODES, type GenModeName, type GenStatus } from '../../../modules/ape-dsp';
-import { GlassButton } from '../../components/GlassButton';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { EngineGate } from './EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
-import { MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
+import { MIDLINE_BLUE, WAVE_LEVEL_STOPS, levelColorForDb } from '../../features/tools/levelColor';
 import { isGenCapUnlockedThisSession, markGenCapUnlockedThisSession } from '../../features/tools/genCapSession';
 import { useColorModePref } from '../../features/tools/colorModePref';
 import { colors, fonts } from '../../theme/tokens';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { toolByKey } from './toolsData';
-import { DragSlider } from '../lab/foundations/bits';
 import { useToolHelp, HelpHead } from '../../features/lab/guidedLessons';
+import { RackUnit } from '../lab/rack/RackUnit';
+import type { DockParam } from '../lab/rack/rackTypes';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SignalGen'>;
 
 // ---- Q4 level constants (native is authoritative; genStatus() reports the
-// live capDb/defaultLevelDb — these are UI fallbacks + stepper geometry). ----
+// live capDb/defaultLevelDb — these are UI fallbacks + lane geometry). ----
 const LEVEL_MIN_DB = -60;
 const LEVEL_MAX_DB = 0;
 const LEVEL_STEP_DB = 3;
@@ -55,15 +68,15 @@ const FALLBACK_CAP_DB = -12; // Q4 hard cap
 const SEMITONE = 2 ** (1 / 12); // fine frequency step ×2^(1/12)
 const STATUS_POLL_MS = 500; // 2 Hz — status scalars only, far inside the ≤30 Hz bridge rule
 
-// Frequency slider (owner 2026-08-05): a continuous log sweep 63 Hz → 6 kHz.
+// Frequency lane (owner 2026-08-05): a continuous log sweep 63 Hz → 6 kHz.
 const FREQ_SLIDER_MIN = 63;
 const FREQ_SLIDER_MAX = 6000;
 const FREQ_SLIDER_RATIO = FREQ_SLIDER_MAX / FREQ_SLIDER_MIN;
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
-/** Current frequency → slider position 0..1 (log), clamped to the slider span. */
+/** Current frequency → lane position 0..1 (log), clamped to the lane span. */
 const freqToSlider = (hz: number) =>
   clamp01(Math.log(hz / FREQ_SLIDER_MIN) / Math.log(FREQ_SLIDER_RATIO));
-/** Slider position 0..1 → frequency (log), rounded to whole Hz. */
+/** Lane position 0..1 → frequency (log), rounded to whole Hz. */
 const sliderToFreq = (v: number) => Math.round(FREQ_SLIDER_MIN * Math.pow(FREQ_SLIDER_RATIO, clamp01(v)));
 
 /** Signal chips (spec Tool 6 required modes; keys must exist in GEN_MODES). */
@@ -101,6 +114,8 @@ const trim = (s: string) => (s.includes('.') ? s.replace(/\.?0+$/, '') : s);
 const fmtHz = (hz: number) =>
   hz >= 1000 ? `${trim((hz / 1000).toFixed(2))} kHz` : `${trim(hz.toFixed(1))} Hz`;
 const chipHz = (hz: number) => (hz >= 1000 ? `${trim((hz / 1000).toFixed(1))}k` : `${hz}`);
+/** Compact dock-button frequency (~7 mono chars): 1.06k / 440. */
+const shortHz = (hz: number) => (hz >= 1000 ? `${trim((hz / 1000).toFixed(2))}k` : `${Math.round(hz)}`);
 
 function Chip({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
   return (
@@ -116,15 +131,14 @@ function Chip({ label, selected, onPress }: { label: string; selected: boolean; 
   );
 }
 
-// ---- WAVEFORM DISPLAY (owner 2026-07-31) --------------------------------
+// ---- WAVEFORM DISPLAY (owner 2026-07-31; on the rack stage 2026-08-23) ----
 // A synthetic PREVIEW of the signal the controls are building — this screen is
 // a pure source with no microphone, so this is an honest illustration (shape
 // from SIGNAL, cycle count from FREQUENCY/SWEEP, click count from TEMPO, height
 // from LEVEL), NOT a captured measurement. Amplitude is drawn with the house
 // MIDI-velocity level ramp (blue at the zero line → red at full scale).
-const SCOPE_H = 96;
+// Height-parametric: the stage grants (w, h) and the plot fills the glass.
 const SCOPE_N = 260;
-const SCOPE_FS = (SCOPE_H / 2) * 0.92; // pixels representing ±full scale (0 dBFS)
 
 /** Deterministic pseudo-random value in [−1, 1] (stable per index — the noise
  *  preview shouldn't reshuffle on every re-render). */
@@ -221,6 +235,8 @@ function GenScope({
   sweepStart,
   sweepEnd,
   midiColors,
+  width,
+  height,
 }: {
   mode: GenModeName;
   freq: number;
@@ -230,82 +246,74 @@ function GenScope({
   sweepEnd: number;
   /** COLORS toggle (owner 2026-08-05): MIDI amplitude ramp vs a flat trace. */
   midiColors: boolean;
+  /** Glass inner size from the rack stage (never resized during interaction). */
+  width: number;
+  height: number;
 }) {
-  const [w, setW] = useState(0);
   // Height tracks LEVEL along the dBFS window (−60…0 → 0…1) so louder = taller
   // = redder, consistent with the meters.
   const amp = Math.max(0, Math.min(1, (levelDb - LEVEL_MIN_DB) / (LEVEL_MAX_DB - LEVEL_MIN_DB)));
-  const mid = SCOPE_H / 2;
+  const mid = height / 2;
+  const fs = (height / 2) * 0.92; // pixels representing ±full scale (0 dBFS)
   const linePath = useMemo(() => {
-    if (w <= 0) return '';
+    if (width <= 0) return '';
     const pts = unitShape(mode, freq, bpm, sweepStart, sweepEnd);
     let d = '';
     for (let i = 0; i < pts.length; i++) {
-      const x = (i / (pts.length - 1)) * w;
-      const y = mid - pts[i] * amp * SCOPE_FS;
+      const x = (i / (pts.length - 1)) * width;
+      const y = mid - pts[i] * amp * fs;
       d += `${d ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`;
     }
     return d;
-  }, [w, mode, freq, amp, bpm, sweepStart, sweepEnd, mid]);
+  }, [width, mode, freq, amp, bpm, sweepStart, sweepEnd, mid, fs]);
 
+  if (width <= 0) return <View style={{ height }} />;
   return (
-    <View style={styles.scopePanel}>
-      <View style={{ width: '100%' }} onLayout={(e) => setW(Math.round(e.nativeEvent.layout.width))}>
-        {w > 0 ? (
-          <Svg width={w} height={SCOPE_H}>
-            <Defs>
-              <LinearGradient
-                id="genWaveLevel"
-                x1={0}
-                y1={mid - SCOPE_FS}
-                x2={0}
-                y2={mid + SCOPE_FS}
-                gradientUnits="userSpaceOnUse"
-              >
-                {WAVE_LEVEL_STOPS.map((s) => (
-                  <Stop key={s.offset} offset={s.offset} stopColor={s.color} />
-                ))}
-              </LinearGradient>
-            </Defs>
-            {/* Metric marks: zero line (MIDI-0 blue) + ±½ full-scale guides. */}
-            <Line x1={0} y1={mid - SCOPE_FS / 2} x2={w} y2={mid - SCOPE_FS / 2} stroke="#33343d" strokeWidth={1} strokeDasharray="3 5" />
-            <Line x1={0} y1={mid + SCOPE_FS / 2} x2={w} y2={mid + SCOPE_FS / 2} stroke="#33343d" strokeWidth={1} strokeDasharray="3 5" />
-            <Line x1={0} y1={mid} x2={w} y2={mid} stroke={MIDLINE_BLUE} strokeWidth={1} />
-            {/* Trace: MIDI amplitude ramp, or a flat cyan trace when COLORS off. */}
-            <Path
-              d={linePath}
-              stroke={midiColors ? 'url(#genWaveLevel)' : SCOPE_OFF_COLOR}
-              strokeWidth={5}
-              fill="none"
-              opacity={0.16}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <Path
-              d={linePath}
-              stroke={midiColors ? 'url(#genWaveLevel)' : SCOPE_OFF_COLOR}
-              strokeWidth={1.8}
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </Svg>
-        ) : (
-          <View style={{ height: SCOPE_H }} />
-        )}
-      </View>
-      <Text style={styles.caption}>
-        Illustrative view of the generated signal — shape from SIGNAL, cycles from FREQUENCY/SWEEP,
-        height from LEVEL. Not a microphone capture.
-      </Text>
-    </View>
+    <Svg width={width} height={height}>
+      <Defs>
+        <LinearGradient
+          id="genWaveLevel"
+          x1={0}
+          y1={mid - fs}
+          x2={0}
+          y2={mid + fs}
+          gradientUnits="userSpaceOnUse"
+        >
+          {WAVE_LEVEL_STOPS.map((s) => (
+            <Stop key={s.offset} offset={s.offset} stopColor={s.color} />
+          ))}
+        </LinearGradient>
+      </Defs>
+      {/* Metric marks: zero line (MIDI-0 blue) + ±½ full-scale guides. */}
+      <Line x1={0} y1={mid - fs / 2} x2={width} y2={mid - fs / 2} stroke="#33343d" strokeWidth={1} strokeDasharray="3 5" />
+      <Line x1={0} y1={mid + fs / 2} x2={width} y2={mid + fs / 2} stroke="#33343d" strokeWidth={1} strokeDasharray="3 5" />
+      <Line x1={0} y1={mid} x2={width} y2={mid} stroke={MIDLINE_BLUE} strokeWidth={1} />
+      {/* Trace: MIDI amplitude ramp, or a flat cyan trace when COLORS off. */}
+      <Path
+        d={linePath}
+        stroke={midiColors ? 'url(#genWaveLevel)' : SCOPE_OFF_COLOR}
+        strokeWidth={5}
+        fill="none"
+        opacity={0.16}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Path
+        d={linePath}
+        stroke={midiColors ? 'url(#genWaveLevel)' : SCOPE_OFF_COLOR}
+        strokeWidth={1.8}
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
   );
 }
 
 export function SignalGenScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
   const tool = toolByKey('signalgen');
-  const { help, sheet } = useToolHelp('signalgen');
+  const { help, helpAll, sheet } = useToolHelp('signalgen');
   const { requestAudioOutput } = useAudioOutputGate();
 
   // Engine gate — computed ONCE (native availability cannot change mid-session).
@@ -331,7 +339,6 @@ export function SignalGenScreen({ navigation }: Props) {
   const [info, setInfo] = useState<ReturnType<typeof ApeDsp.getInfo>>(() => ApeDsp.getInfo());
   const [genError, setGenError] = useState('');
   const [colorsOn, setColorsOn] = useColorModePref(); // waveform MIDI colours, persisted (items 6/7)
-  const [scrollEnabled, setScrollEnabled] = useState(true); // released while dragging the freq slider
 
   // Push the UI defaults to the native generator once, so the params the user
   // sees are exactly the params the engine holds. If the Q4 cap was already
@@ -413,30 +420,45 @@ export function SignalGenScreen({ navigation }: Props) {
   const capDb = status?.capDb ?? FALLBACK_CAP_DB;
   const capLocked = !(status?.capUnlocked ?? false);
 
-  const stepLevel = (dir: 1 | -1) => {
-    const next = Math.min(LEVEL_MAX_DB, Math.max(LEVEL_MIN_DB, levelDb + dir * LEVEL_STEP_DB));
-    if (next === levelDb) return;
+  // ---- Q4 on the lane: the LEVEL fader moves in the SAME 3 dB steps as the
+  // old stepper. While the cap is LOCKED the lane clamps at capDb; pushing
+  // past it raises the tap-through confirm — the ONLY path above the cap,
+  // exactly once per attempt (the guard ref keeps a drag from stacking
+  // alerts). The native path stays hard-capped regardless of what this UI
+  // does — the engine, not this handler, is the safety authority. ----
+  const capPromptOpen = useRef(false);
+  const setLevelFromLane = (v: number) => {
+    const steps = Math.round((clamp01(v) * (LEVEL_MAX_DB - LEVEL_MIN_DB)) / LEVEL_STEP_DB);
+    const next = Math.min(LEVEL_MAX_DB, LEVEL_MIN_DB + steps * LEVEL_STEP_DB);
     if (next > capDb && capLocked) {
-      // Q4 tap-through confirm — the ONLY path above the cap, session-only.
-      Alert.alert(
-        'Output above the safety cap',
-        `Levels above ${capDb} dBFS can be loud. Remove headphones / lower monitor level before continuing.`,
-        [
-          { text: 'Cancel', style: 'cancel' },
-          {
-            text: 'I understand — unlock',
-            style: 'destructive',
-            onPress: () => {
-              ApeDsp.genUnlockCap();
-              markGenCapUnlockedThisSession(); // remembered for this session (owner 2026-08-05)
-              applyLevel(next);
+      // Clamp to the highest 3 dB step at/below the cap…
+      const clamped = Math.floor(capDb / LEVEL_STEP_DB) * LEVEL_STEP_DB;
+      if (clamped !== levelDb) applyLevel(clamped);
+      // …and require the Q4 confirm to go further (session-only unlock).
+      if (!capPromptOpen.current) {
+        capPromptOpen.current = true;
+        Alert.alert(
+          'Output above the safety cap',
+          `Levels above ${capDb} dBFS can be loud. Remove headphones / lower monitor level before continuing.`,
+          [
+            { text: 'Cancel', style: 'cancel', onPress: () => (capPromptOpen.current = false) },
+            {
+              text: 'I understand — unlock',
+              style: 'destructive',
+              onPress: () => {
+                capPromptOpen.current = false;
+                ApeDsp.genUnlockCap();
+                markGenCapUnlockedThisSession(); // remembered for this session (owner 2026-08-05)
+                applyLevel(next);
+              },
             },
-          },
-        ],
-      );
+          ],
+          { cancelable: true, onDismiss: () => (capPromptOpen.current = false) },
+        );
+      }
       return;
     }
-    applyLevel(next);
+    if (next !== levelDb) applyLevel(next);
   };
 
   // Explicit user START only (spec §18) — nothing sounds until this press.
@@ -471,6 +493,150 @@ export function SignalGenScreen({ navigation }: Props) {
   const isSweep = mode === 'sweepLin' || mode === 'sweepLog';
   const showFreq = mode === 'sine' || mode === 'burst';
   const isClick = mode === 'click';
+  const sigLabel = SIGNALS.find((s) => s.key === mode)?.label ?? mode.toUpperCase();
+
+  // ---- Dock declaration (≤5 keys; dynamic by mode — RackUnit reconciles a
+  // vanished fader back onto the first live one). FREQ is the pre-bound
+  // teaching param; LEVEL keeps the honest dBFS wording + level tint. ----
+  const params: DockParam[] = [];
+  if (showFreq) {
+    params.push({
+      kind: 'fader',
+      id: 'freq',
+      label: 'FREQ',
+      value: freqToSlider(freq),
+      onChange: (v) => applyFrequency(sliderToFreq(v)),
+      format: () => fmtHz(freq),
+      formatShort: () => shortHz(freq),
+      tint: colors.gold,
+      helpKey: 'frequency',
+    });
+  }
+  params.push({
+    kind: 'fader',
+    id: 'level',
+    label: 'LEVEL',
+    value: (levelDb - LEVEL_MIN_DB) / (LEVEL_MAX_DB - LEVEL_MIN_DB),
+    onChange: setLevelFromLane,
+    format: () => `${levelDb} dBFS`,
+    formatShort: () => `${levelDb}`,
+    tint: levelColorForDb(levelDb),
+    helpKey: 'output_level',
+  });
+  params.push({
+    kind: 'options',
+    id: 'signal',
+    label: 'SIGNAL',
+    valueLabel: sigLabel,
+    options: SIGNALS.map((s) => ({ id: s.key, label: s.label })),
+    selectedId: mode,
+    onSelect: (id) => pickMode(id as GenModeName),
+    sticky: true, // A/B signals while the preview redraws
+    helpKey: 'signal',
+  });
+  if (showFreq) {
+    // ISO presets + the ±1-semitone FINE stepper share one sticky group tray —
+    // the stepper's precision affordance survives OFF the scroller.
+    params.push({
+      kind: 'group',
+      id: 'preset',
+      label: 'PRESET',
+      valueLabel: shortHz(freq),
+      helpKey: 'frequency',
+      render: () => (
+        <View style={{ gap: 10 }}>
+          <Text style={styles.subHead}>FINE — ±1 SEMITONE (×2^1/12)</Text>
+          <View style={styles.stepperRow}>
+            <Pressable
+              style={styles.stepBtn}
+              onPress={() => applyFrequency(freq / SEMITONE)}
+              accessibilityRole="button"
+              accessibilityLabel="Frequency down one semitone"
+            >
+              <Text style={styles.stepBtnText}>−</Text>
+            </Pressable>
+            <Text style={styles.freqReadout}>{fmtHz(freq)}</Text>
+            <Pressable
+              style={styles.stepBtn}
+              onPress={() => applyFrequency(freq * SEMITONE)}
+              accessibilityRole="button"
+              accessibilityLabel="Frequency up one semitone"
+            >
+              <Text style={styles.stepBtnText}>+</Text>
+            </Pressable>
+          </View>
+          <Text style={styles.subHead}>ISO PRESETS</Text>
+          <View style={styles.chipRow}>
+            {ISO_PRESETS_HZ.map((hz) => (
+              <Chip key={hz} label={chipHz(hz)} selected={freq === hz} onPress={() => applyFrequency(hz)} />
+            ))}
+          </View>
+          <Text style={styles.caption}>Fader 63 Hz–6 kHz · fine steps ±1 semitone (×2^1/12) · presets to 16 kHz</Text>
+        </View>
+      ),
+    });
+  }
+  if (isSweep) {
+    // SWEEP start · end · duration · repeat co-visible (spec Tool 6).
+    params.push({
+      kind: 'group',
+      id: 'sweep',
+      label: 'SWEEP',
+      valueLabel: `${chipHz(sweepStart)}→${chipHz(sweepEnd)}`,
+      helpKey: 'sweep',
+      render: () => (
+        <View style={{ gap: 10 }}>
+          <Text style={styles.sweepSummary}>
+            {fmtHz(sweepStart)} → {fmtHz(sweepEnd)} · {sweepSec} s · {sweepRepeat ? 'repeating' : 'single pass'}
+          </Text>
+          <Text style={styles.subHead}>START</Text>
+          <View style={styles.chipRow}>
+            {SWEEP_START_PRESETS_HZ.map((hz) => (
+              <Chip key={hz} label={chipHz(hz)} selected={sweepStart === hz} onPress={() => applySweep({ startHz: hz })} />
+            ))}
+          </View>
+          <Text style={styles.subHead}>END</Text>
+          <View style={styles.chipRow}>
+            {SWEEP_END_PRESETS_HZ.map((hz) => (
+              <Chip key={hz} label={chipHz(hz)} selected={sweepEnd === hz} onPress={() => applySweep({ endHz: hz })} />
+            ))}
+          </View>
+          <Text style={styles.subHead}>DURATION</Text>
+          <View style={styles.chipRow}>
+            {SWEEP_DURATIONS_SEC.map((s) => (
+              <Chip key={s} label={`${s}s`} selected={sweepSec === s} onPress={() => applySweep({ seconds: s })} />
+            ))}
+            <Chip label="REPEAT" selected={sweepRepeat} onPress={() => applySweep({ repeat: !sweepRepeat })} />
+          </View>
+        </View>
+      ),
+    });
+  }
+  if (isClick) {
+    params.push({
+      kind: 'options',
+      id: 'tempo',
+      label: 'TEMPO',
+      valueLabel: `${bpm} BPM`,
+      options: CLICK_BPM_PRESETS.map((b) => ({ id: String(b), label: `${b} BPM` })),
+      selectedId: String(bpm),
+      onSelect: (id) => pickBpm(Number(id)),
+      sticky: true,
+      helpKey: 'click_tempo',
+    });
+  }
+  // START/STOP — the transport, exact old semantics (output gate on start;
+  // stop always allowed), as the dock's LED key.
+  params.push({
+    kind: 'toggle',
+    id: 'run',
+    label: running ? 'STOP' : 'START',
+    value: running,
+    onToggle: () => {
+      void (running ? onStop() : onStart());
+    },
+    helpKey: 'status',
+  });
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -485,241 +651,156 @@ export function SignalGenScreen({ navigation }: Props) {
         <AccuracyNote compact detail="Test tones play through your phone’s uncalibrated speaker/output — the frequency is exact, the LEVEL is not. For calibrated output use dedicated signal-generation gear." />
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll} scrollEnabled={scrollEnabled}>
-        {!ready ? (
-          // Honest not-ready card — never a dead control surface.
+      {!ready ? (
+        // Honest not-ready card — never a dead control surface (no rack frame,
+        // no dock keys, nothing that looks operable).
+        <View style={styles.gateWrap}>
           <EngineGate state={gate} />
-        ) : (
-          <>
-            {/* FREQUENCY — above the waveform (owner 2026-08-05). Applies to
-                sine/burst: stepper · sweep slider 63 Hz–6 kHz · ISO presets. */}
-            {showFreq ? (
-              <>
-                <HelpHead title="FREQUENCY" onHelp={() => help('frequency')} style={styles.sectionHead} />
-                <View style={styles.card}>
-                  <View style={styles.stepperRow}>
-                    <Pressable
-                      style={styles.stepBtn}
-                      onPress={() => applyFrequency(freq / SEMITONE)}
-                      accessibilityRole="button"
-                      accessibilityLabel="Frequency down one semitone"
-                    >
-                      <Text style={styles.stepBtnText}>−</Text>
-                    </Pressable>
-                    <Text style={styles.freqReadout}>{fmtHz(freq)}</Text>
-                    <Pressable
-                      style={styles.stepBtn}
-                      onPress={() => applyFrequency(freq * SEMITONE)}
-                      accessibilityRole="button"
-                      accessibilityLabel="Frequency up one semitone"
-                    >
-                      <Text style={styles.stepBtnText}>+</Text>
-                    </Pressable>
-                  </View>
-                  <DragSlider
-                    value={freqToSlider(freq)}
-                    onChange={(v) => applyFrequency(sliderToFreq(v))}
-                    label="SWEEP 63 Hz – 6 kHz"
-                    readout={fmtHz(freq)}
-                    tint={colors.gold}
-                    onHelp={() => help('frequency')}
-                    onDragActive={(active) => setScrollEnabled(!active)}
-                  />
-                  <View style={styles.chipRow}>
-                    {ISO_PRESETS_HZ.map((hz) => (
-                      <Chip key={hz} label={chipHz(hz)} selected={freq === hz} onPress={() => applyFrequency(hz)} />
-                    ))}
-                  </View>
-                  <Text style={styles.caption}>Slider 63 Hz–6 kHz · fine steps ±1 semitone (×2^1/12) · presets to 16 kHz</Text>
-                </View>
-              </>
-            ) : null}
+        </View>
+      ) : (
+        <RackUnit
+          initialParam="freq"
+          params={params}
+          onHelp={(k) => {
+            if (k) help(k);
+          }}
+          stage={{
+            size: 'M',
+            // Honesty line verbatim (never SPL; calibration does not exist).
+            badge: 'dBFS · uncalibrated approximate — digital output level, not dB SPL',
+            onGuide: helpAll,
+            bezel: [
+              { k: 'SIGNAL', v: sigLabel, flex: 1.2, helpKey: 'signal' },
+              isSweep
+                ? { k: 'SWEEP', v: `${chipHz(sweepStart)}→${chipHz(sweepEnd)}`, flex: 1.2, helpKey: 'sweep' }
+                : isClick
+                  ? { k: 'TEMPO', v: `${bpm} BPM`, flex: 1.2, helpKey: 'click_tempo' }
+                  : showFreq
+                    ? { k: 'FREQ', v: fmtHz(freq), flex: 1.2, helpKey: 'frequency' }
+                    : { k: 'FREQ', v: 'BROADBAND', flex: 1.2, helpKey: 'signal' },
+              {
+                k: 'OUT',
+                // The HONEST level actually leaving the output path (Q4).
+                v: status ? `${status.effectiveLevelDb.toFixed(1)} dBFS` : '—',
+                tint: levelColorForDb(status?.effectiveLevelDb),
+                flex: 1.4,
+                helpKey: 'status',
+              },
+              {
+                k: 'GEN',
+                v: running ? 'RUN' : 'STOP',
+                tint: running ? colors.greenBright : '#7a7f8a',
+                flex: 0.9,
+                helpKey: 'status',
+              },
+            ],
+            render: (w, h) => (
+              // No tap-glass action: this tool never had a tap-the-display
+              // idiom — START/STOP stays an explicit press (spec §18).
+              <GenScope
+                mode={mode}
+                freq={freq}
+                levelDb={levelDb}
+                bpm={bpm}
+                sweepStart={sweepStart}
+                sweepEnd={sweepEnd}
+                midiColors={colorsOn}
+                width={w}
+                height={h}
+              />
+            ),
+          }}
+        >
+          {/* ── WELL: reading only — legend, status diagnostics, notices. ── */}
+          <View style={styles.waveHeadRow}>
+            <HelpHead title="WAVEFORM" onHelp={() => help('signal')} style={styles.sectionHead} />
+            <Pressable
+              style={[styles.colorsBtn, colorsOn && styles.colorsBtnOn]}
+              onPress={() => setColorsOn(!colorsOn)}
+              accessibilityRole="button"
+              accessibilityState={{ selected: colorsOn }}
+              accessibilityLabel="Toggle MIDI amplitude colours on the waveform"
+            >
+              <Text style={[styles.colorsBtnText, colorsOn && styles.colorsBtnTextOn]}>COLORS</Text>
+            </Pressable>
+          </View>
+          <Text style={styles.caption}>
+            Illustrative view of the generated signal — shape from SIGNAL, cycles from FREQUENCY/SWEEP,
+            height from LEVEL. Not a microphone capture.
+          </Text>
 
-            {/* WAVEFORM — live preview of the signal the controls are building,
-                with the [COLORS] MIDI-amplitude toggle (owner 2026-08-05). */}
-            <View style={styles.waveHeadRow}>
-              <HelpHead title="WAVEFORM" onHelp={() => help('signal')} style={styles.sectionHead} />
-              <Pressable
-                style={[styles.colorsBtn, colorsOn && styles.colorsBtnOn]}
-                onPress={() => setColorsOn(!colorsOn)}
-                accessibilityRole="button"
-                accessibilityState={{ selected: colorsOn }}
-                accessibilityLabel="Toggle MIDI amplitude colours on the waveform"
-              >
-                <Text style={[styles.colorsBtnText, colorsOn && styles.colorsBtnTextOn]}>COLORS</Text>
-              </Pressable>
+          {/* Status — the HONEST output level from the native path (Q4). */}
+          <Pressable style={styles.statusCard} onLongPress={() => help('status')} delayLongPress={260}>
+            <View style={styles.statusRow}>
+              <Text style={[styles.statusState, running && styles.statusStateRunning]}>
+                {running ? 'RUNNING' : 'STOPPED'}
+              </Text>
+              {capLocked ? (
+                <View style={styles.capBadge}>
+                  <Text style={styles.capBadgeText}>CAP {capDb} dBFS</Text>
+                </View>
+              ) : null}
             </View>
-            <GenScope
-              mode={mode}
-              freq={freq}
-              levelDb={levelDb}
-              bpm={bpm}
-              sweepStart={sweepStart}
-              sweepEnd={sweepEnd}
-              midiColors={colorsOn}
-            />
-
-            {/* SIGNAL selection — below the display (owner 2026-08-05). */}
-            <HelpHead title="SIGNAL" onHelp={() => help('signal')} style={styles.sectionHead} />
-            <View style={styles.chipRow}>
-              {SIGNALS.map((s) => (
-                <Chip key={s.key} label={s.label} selected={mode === s.key} onPress={() => pickMode(s.key)} />
-              ))}
-            </View>
-
-            {/* SWEEP controls (spec Tool 6: start · end · duration · repeat). */}
-            {isSweep ? (
-              <>
-                <HelpHead title="SWEEP" onHelp={() => help('sweep')} style={styles.sectionHead} />
-                <View style={styles.card}>
-                  <Text style={styles.sweepSummary}>
-                    {fmtHz(sweepStart)} → {fmtHz(sweepEnd)} · {sweepSec} s · {sweepRepeat ? 'repeating' : 'single pass'}
-                  </Text>
-                  <Text style={styles.subHead}>START</Text>
-                  <View style={styles.chipRow}>
-                    {SWEEP_START_PRESETS_HZ.map((hz) => (
-                      <Chip key={hz} label={chipHz(hz)} selected={sweepStart === hz} onPress={() => applySweep({ startHz: hz })} />
-                    ))}
-                  </View>
-                  <Text style={styles.subHead}>END</Text>
-                  <View style={styles.chipRow}>
-                    {SWEEP_END_PRESETS_HZ.map((hz) => (
-                      <Chip key={hz} label={chipHz(hz)} selected={sweepEnd === hz} onPress={() => applySweep({ endHz: hz })} />
-                    ))}
-                  </View>
-                  <Text style={styles.subHead}>DURATION</Text>
-                  <View style={styles.chipRow}>
-                    {SWEEP_DURATIONS_SEC.map((s) => (
-                      <Chip key={s} label={`${s}s`} selected={sweepSec === s} onPress={() => applySweep({ seconds: s })} />
-                    ))}
-                    <Chip label="REPEAT" selected={sweepRepeat} onPress={() => applySweep({ repeat: !sweepRepeat })} />
-                  </View>
-                </View>
-              </>
-            ) : null}
-
-            {/* CLICK tempo (spec Tool 6: configurable BPM). */}
-            {isClick ? (
-              <>
-                <HelpHead title="CLICK TEMPO" onHelp={() => help('click_tempo')} style={styles.sectionHead} />
-                <View style={styles.card}>
-                  <View style={styles.chipRow}>
-                    {CLICK_BPM_PRESETS.map((b) => (
-                      <Chip key={b} label={`${b} BPM`} selected={bpm === b} onPress={() => pickBpm(b)} />
-                    ))}
-                  </View>
-                </View>
-              </>
-            ) : null}
-
-            {/* OUTPUT LEVEL — the Q4 safety stepper. */}
-            <HelpHead title="OUTPUT LEVEL" onHelp={() => help('output_level')} style={styles.sectionHead} />
-            <View style={styles.card}>
-              <View style={styles.stepperRow}>
-                <Pressable
-                  style={styles.stepBtn}
-                  onPress={() => stepLevel(-1)}
-                  accessibilityRole="button"
-                  accessibilityLabel="Level down 3 dB"
-                >
-                  <Text style={styles.stepBtnText}>−</Text>
-                </Pressable>
-                <View style={styles.levelMid}>
-                  <Text style={styles.levelReadout}>{levelDb} dBFS</Text>
-                  <Text style={styles.caption}>requested · uncalibrated approximate</Text>
-                </View>
-                <Pressable
-                  style={styles.stepBtn}
-                  onPress={() => stepLevel(1)}
-                  accessibilityRole="button"
-                  accessibilityLabel="Level up 3 dB"
-                >
-                  <Text style={styles.stepBtnText}>+</Text>
-                </Pressable>
-              </View>
-              <Text style={styles.caption}>
-                3 dB steps · −60…0 dBFS · default −20 · above {capDb} dBFS requires the safety confirm
+            <View style={styles.statusRow}>
+              <Text style={styles.statusLabel}>OUTPUT</Text>
+              <Text style={styles.statusValue}>
+                {status ? `${status.effectiveLevelDb.toFixed(1)} dBFS` : '—'}
               </Text>
             </View>
-
-            {/* Status — the HONEST output level from the native path (Q4). */}
-            <Pressable style={styles.statusCard} onLongPress={() => help('status')} delayLongPress={260}>
-              <View style={styles.statusRow}>
-                <Text style={[styles.statusState, running && styles.statusStateRunning]}>
-                  {running ? 'RUNNING' : 'STOPPED'}
-                </Text>
-                {capLocked ? (
-                  <View style={styles.capBadge}>
-                    <Text style={styles.capBadgeText}>CAP {capDb} dBFS</Text>
-                  </View>
-                ) : null}
-              </View>
-              <View style={styles.statusRow}>
-                <Text style={styles.statusLabel}>OUTPUT</Text>
-                <Text style={styles.statusValue}>
-                  {status ? `${status.effectiveLevelDb.toFixed(1)} dBFS` : '—'}
-                </Text>
-              </View>
-              {/* DEV output diagnostics (why is it silent?) — hidden in production. */}
-              {__DEV__ ? (
-                <>
+            {/* DEV output diagnostics (why is it silent?) — hidden in production. */}
+            {__DEV__ ? (
+              <>
+                <View style={styles.statusRow}>
+                  <Text style={styles.statusLabel}>ROUTE</Text>
+                  <Text style={styles.statusValue}>{info?.outputRoute || info?.routeName || '—'}</Text>
+                </View>
+                <View style={styles.statusRow}>
+                  <Text style={styles.statusLabel}>SESSION</Text>
+                  <Text style={styles.statusValue}>
+                    {info
+                      ? `${info.running ? 'capture ON' : 'idle'} · ${info.measurementMode ? 'MEASUREMENT' : 'default'}`
+                      : '—'}
+                  </Text>
+                </View>
+                <View style={styles.statusRow}>
+                  <Text style={styles.statusLabel}>PULLS</Text>
+                  <Text style={styles.statusValue}>{info?.genRenderPulls ?? '— (needs new build)'}</Text>
+                </View>
+                {status?.genHpfHz != null ? (
                   <View style={styles.statusRow}>
-                    <Text style={styles.statusLabel}>ROUTE</Text>
-                    <Text style={styles.statusValue}>{info?.outputRoute || info?.routeName || '—'}</Text>
-                  </View>
-                  <View style={styles.statusRow}>
-                    <Text style={styles.statusLabel}>SESSION</Text>
+                    <Text style={styles.statusLabel}>SPEAKER HPF</Text>
                     <Text style={styles.statusValue}>
-                      {info
-                        ? `${info.running ? 'capture ON' : 'idle'} · ${info.measurementMode ? 'MEASUREMENT' : 'default'}`
-                        : '—'}
+                      {status.genHpfEngaged ? `${Math.round(status.genHpfHz)} Hz` : 'off'}
                     </Text>
                   </View>
+                ) : null}
+                {info?.lastError ? (
                   <View style={styles.statusRow}>
-                    <Text style={styles.statusLabel}>PULLS</Text>
-                    <Text style={styles.statusValue}>{info?.genRenderPulls ?? '— (needs new build)'}</Text>
+                    <Text style={styles.statusLabel}>LAST ERROR</Text>
+                    <Text style={styles.statusValue}>{info.lastError}</Text>
                   </View>
-                  {status?.genHpfHz != null ? (
-                    <View style={styles.statusRow}>
-                      <Text style={styles.statusLabel}>SPEAKER HPF</Text>
-                      <Text style={styles.statusValue}>
-                        {status.genHpfEngaged ? `${Math.round(status.genHpfHz)} Hz` : 'off'}
-                      </Text>
-                    </View>
-                  ) : null}
-                  {info?.lastError ? (
-                    <View style={styles.statusRow}>
-                      <Text style={styles.statusLabel}>LAST ERROR</Text>
-                      <Text style={styles.statusValue}>{info.lastError}</Text>
-                    </View>
-                  ) : null}
-                </>
-              ) : null}
-              <Text style={styles.caption}>dBFS · uncalibrated approximate — digital output level, not dB SPL · hold for help</Text>
-              {genError ? <Text style={styles.errorText}>Generator error: {genError}</Text> : null}
-            </Pressable>
+                ) : null}
+              </>
+            ) : null}
+            <Text style={styles.caption}>dBFS · uncalibrated approximate — digital output level, not dB SPL · hold for help</Text>
+            {genError ? <Text style={styles.errorText}>Generator error: {genError}</Text> : null}
+          </Pressable>
 
-            <GlassButton
-              label={running ? 'STOP' : 'START'}
-              tint={tool.tint}
-              height={58}
-              fontSize={18}
-              onPress={() => {
-                void (running ? onStop() : onStart());
-              }}
-            />
+          <Text style={styles.caption}>
+            LEVEL moves in 3 dB steps · −60…0 dBFS · default −20 · above {capDb} dBFS requires the safety confirm
+          </Text>
 
-            {/* Required warnings (spec Tool 6) — fixed, always visible. */}
-            <HelpHead title="SAFETY" onHelp={() => help('safety')} style={styles.sectionHead} />
-            {WARNINGS.map((w) => (
-              <Text key={w} style={styles.warn}>
-                {'⚠ '}
-                {w}
-              </Text>
-            ))}
-          </>
-        )}
-      </ScrollView>
+          {/* Required warnings (spec Tool 6) — fixed, at the BOTTOM of the
+              well (owner tools rule: notices at bottom). */}
+          <HelpHead title="SAFETY" onHelp={() => help('safety')} style={styles.sectionHead} />
+          {WARNINGS.map((w) => (
+            <Text key={w} style={styles.warn}>
+              {'⚠ '}
+              {w}
+            </Text>
+          ))}
+        </RackUnit>
+      )}
       {sheet}
     </View>
   );
@@ -731,7 +812,7 @@ const styles = StyleSheet.create({
   back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1.4, color: colors.textPrimary },
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
-  scroll: { padding: 16, paddingBottom: 28, gap: 12 },
+  gateWrap: { padding: 16 },
 
   sectionHead: {
     fontFamily: fonts.oswaldSemiBold,
@@ -743,7 +824,7 @@ const styles = StyleSheet.create({
   subHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textSub, marginTop: 4 },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
 
-  // WAVEFORM header row + [COLORS] toggle (owner 2026-08-05).
+  // WAVEFORM legend row + [COLORS] toggle (owner 2026-08-05).
   waveHeadRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   colorsBtn: {
     borderRadius: 8,
@@ -757,25 +838,6 @@ const styles = StyleSheet.create({
   colorsBtnOn: { borderColor: colors.green, backgroundColor: '#0d1710' },
   colorsBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textSecondary },
   colorsBtnTextOn: { color: colors.green },
-
-  card: {
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#131316',
-    padding: 12,
-    gap: 10,
-  },
-
-  // Waveform preview panel (owner 2026-07-31) — dark plot well + caption.
-  scopePanel: {
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#0c0c0f',
-    padding: 10,
-    gap: 6,
-  },
 
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: {
@@ -803,8 +865,6 @@ const styles = StyleSheet.create({
   },
   stepBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 22, color: colors.textSecondary, marginTop: -2 },
   freqReadout: { fontFamily: fonts.mono, fontSize: 28, color: colors.gold },
-  levelMid: { flex: 1, alignItems: 'center', gap: 2 },
-  levelReadout: { fontFamily: fonts.mono, fontSize: 26, color: colors.textPrimary },
   sweepSummary: { fontFamily: fonts.mono, fontSize: 15, color: colors.textSecondary },
 
   statusCard: {
