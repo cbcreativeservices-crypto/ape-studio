@@ -233,6 +233,8 @@ export type RootStackParamList = {
    *  final system challenge + safety-gated final check. Safety-critical
    *  content area — see docs/APE_CABLE_LAB_PLAN_2026_08_15.md. */
   CableLab: undefined;
+  /** Cable Dressing & Installation — professional install-decision lab (2026-08-24). */
+  CableInstallLab: undefined;
   /** Listening Exposure Monitor (owner spec 2026-08-12) — the app-wide audio
    *  dosimeter: session/today/history, check-in settings, privacy controls.
    *  UNGATED: hearing-safety information is never locked. */

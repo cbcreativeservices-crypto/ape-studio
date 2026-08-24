@@ -89,6 +89,7 @@ import { PaywallScreen } from '../screens/commercial/PaywallScreen';
 import { AmplitudeLabScreen, withAmplitudeOrientation } from '../screens/lab/amplitude/AmplitudeOrientation';
 import { MicSelectLabScreen } from '../screens/lab/micselect/MicSelectLabScreen';
 import { CableLabScreen } from '../screens/lab/cable/CableLabScreen';
+import { CableInstallLabScreen } from '../screens/lab/cableinstall/CableInstallLabScreen';
 import { ExposureMonitorScreen } from '../screens/tools/ExposureMonitorScreen';
 import { MainTabs } from './MainTabs';
 import type { RootStackParamList } from './types';
@@ -138,6 +139,7 @@ const Gated = {
   MicLab: withAmplitudeOrientation(MicPrinciplesLabScreen),
   MicSelectLab: withAmplitudeOrientation(MicSelectLabScreen),
   CableLab: withAmplitudeOrientation(CableLabScreen),
+  CableInstallLab: withAmplitudeOrientation(CableInstallLabScreen),
   SpeakerLab: withAmplitudeOrientation(SpeakerCoverageLabScreen),
   TubeLab: withAmplitudeOrientation(VacuumTubeLabScreen),
   DigitalModule: withAmplitudeOrientation(DigitalModuleScreen),
@@ -258,6 +260,7 @@ export function RootNavigator() {
           characteristics, no audio/engine dependency. */}
       <Stack.Screen name="MicSelectLab" component={Gated.MicSelectLab} />
       <Stack.Screen name="CableLab" component={Gated.CableLab} />
+      <Stack.Screen name="CableInstallLab" component={Gated.CableInstallLab} />
       <Stack.Screen name="SpeakerLab" component={Gated.SpeakerLab} />
       <Stack.Screen name="TubeLab" component={Gated.TubeLab} />
       <Stack.Screen name="TubeReference" component={TubeReferenceScreen} options={swipe} />

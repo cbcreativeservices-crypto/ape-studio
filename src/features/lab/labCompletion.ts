@@ -32,6 +32,7 @@ import { METER_MODULES } from '../../screens/lab/meter/modules/registry';
 import { GAIN_MODULES } from '../../screens/lab/gain/modules/registry';
 // Pure data (zero React/Skia) — safe for this boot-loaded store.
 import { CABLE_UNITS } from '../../screens/lab/cable/data/lessons';
+import { CI_LAB_UNITS } from '../../screens/lab/cableinstall/registry';
 
 const STORAGE_KEY = 'ape:labProgress';
 
@@ -52,7 +53,10 @@ export type LabKey =
   | 'af_signal_chain'
   | 'af_signal_detective'
   | 'af_gain_staging'
-  | 'af_cables';
+  | 'af_cables'
+  // Cable Dressing & Installation (owner brief 2026-08-24) — queued safely
+  // until the owner runs docs/APE_CABLE_INSTALL_SEED_2026_08_24.sql.
+  | 'af_cable_install';
 
 /** The explicit-review unit (read-through / sandbox labs) and the challenge-pass
  *  unit (Signal Detective) — named so the wiring and the spec can't drift. */
@@ -80,6 +84,9 @@ export const LAB_UNITS: Partial<Record<LabKey, readonly string[]>> = {
   // per-question critical-safety units + final. STATIC entry (not only
   // registerLabUnits) so boot-time retryUnsent covers a finished-offline lab.
   af_cables: CABLE_UNITS,
+  // Cable Dressing & Installation: 13 stage units + inspection pass + final
+  // knowledge check (registry-derived; STATIC for offline retryUnsent).
+  af_cable_install: CI_LAB_UNITS,
 };
 
 // ── in-memory state (mirrors persisted blob) ────────────────────────────────
