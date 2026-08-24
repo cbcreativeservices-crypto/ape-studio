@@ -11,7 +11,7 @@
  * Search by term · empty: "No results for [filter]" · bottom nav visible.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from 'react';
-import { Alert, FlatList, Image, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type StyleProp, type TextStyle } from 'react-native';
+import { Alert, FlatList, Image, ImageBackground, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type StyleProp, type TextStyle } from 'react-native';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -50,6 +50,8 @@ import {
 } from '../../features/glossary/learningProfiles';
 import { getLabLesson } from '../../features/lab/guidedLessons';
 import type { StudyStackParamList } from '../../navigation/types';
+
+const BG_GLOSSARY = require('../../../assets/lab-backgrounds/glossary.png');
 
 // Search-field dictation button. Loaded via a GUARDED require so a dev client
 // that predates the expo-speech-recognition native module shows no mic instead
@@ -1606,7 +1608,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
   };
 
   return (
-    <View style={[styles.root, { paddingTop: insets.top }]}>
+    <ImageBackground source={BG_GLOSSARY} style={[styles.root, { paddingTop: insets.top }]} imageStyle={styles.bgImage}>
       <View style={styles.header}>
         {/* Decorative glossary mark (owner 2026-08-05): no longer a link — just
             the icon, a touch larger. */}
@@ -2501,12 +2503,13 @@ export function GlossaryScreen({ route, navigation }: Props) {
 
       {/* Glossary intro placeholder (Booth 2026-07-18). */}
       <ScreenIntroOverlay introKey="glossary" />
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg, paddingHorizontal: 16, gap: 12 },
+  bgImage: { resizeMode: 'cover' },
   header: { flexDirection: 'row', alignItems: 'center', gap: 7, paddingTop: 16 },
   // flexShrink so the GLOSSARY title yields FIRST when the row is tight — the
   // right-side "N Terms" count stays fully anchored on the right (owner 2026-08-01).
