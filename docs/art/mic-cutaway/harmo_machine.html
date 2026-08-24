@@ -1,0 +1,259 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Harmonograph — the machine</title><style>
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Barlow:wght@400;500&display=swap');
+:root{--bg:#0b0b0e;--amber:#ffc64d;--sub:#8a8b93;--txt:#f4f4f6}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:#c9ccd2;font-family:Barlow,sans-serif;display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px}
+h1{font-family:Oswald;font-weight:600;font-size:14px;letter-spacing:2px;color:var(--txt);margin:2px 0 0}
+.sub{font-size:11.5px;color:var(--sub);text-align:center;max-width:440px;line-height:15px}
+#wrap{position:relative}
+#stage{width:460px;height:520px;border-radius:14px;display:block;
+  background:
+    radial-gradient(130% 90% at 28% 12%, rgba(255,198,77,.045), transparent 55%),
+    linear-gradient(#111118 0%, #0c0c10 55%, #08080b 100%);
+  border:1px solid #26262c; box-shadow:0 20px 60px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.03)}
+#hud{position:absolute;left:12px;bottom:10px;font-family:Oswald;font-weight:500;font-size:10.5px;letter-spacing:.8px;color:#6d6f75}
+#mode{position:absolute;right:12px;top:10px;font-family:Oswald;font-weight:600;font-size:10px;letter-spacing:1.6px;color:var(--amber);opacity:.85}
+.row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center}
+button{font-family:Oswald;font-weight:600;font-size:11px;letter-spacing:1px;color:#c9ccd2;border:1px solid #2c2c33;border-radius:7px;padding:7px 11px;background:#17171c;cursor:pointer;transition:border-color .15s,color .15s}
+button:hover{border-color:#4a4a52}
+button.on{border-color:var(--amber);color:var(--amber);background:#1c1608}
+.k{font-family:Oswald;font-weight:600;font-size:9.5px;letter-spacing:1.4px;color:var(--sub)}
+</style></head><body>
+<h1>HARMONOGRAPH</h1>
+<div class="sub">A rigid-body simulation of the three-pendulum rotary machine. Fixed-length shafts rock on knife-edge fulcrums at the table; fixed-length arms pin to the shaft tops and meet at the pen; in ROTARY the paper platform orbits beneath it. Nothing stretches — the pen is wherever the linkage puts it.</div>
+<div id="wrap">
+  <svg id="stage" viewBox="0 0 460 520"></svg>
+  <div id="mode"></div>
+  <div id="hud"></div>
+</div>
+<div class="row">
+  <span class="k">MODE</span><button id="bLat">LATERAL</button><button id="bRot" class="on">ROTARY</button>
+  <span class="k" style="margin-left:8px">RATIO</span>
+  <button data-r="1,1">1:1</button><button data-r="2,1">2:1</button><button class="on" data-r="3,2">3:2</button><button data-r="4,3">4:3</button><button data-r="5,4">5:4</button>
+</div>
+<div class="row">
+  <span class="k">PHASE</span><button data-p="0">0°</button><button data-p="45">45°</button><button class="on" data-p="90">90°</button>
+  <span class="k" style="margin-left:8px">DAMPING</span><button data-d="0.030">LIGHT</button><button class="on" data-d="0.055">MEDIUM</button><button data-d="0.110">HEAVY</button>
+  <span class="k" style="margin-left:8px">SPEED</span><button data-s="1">REAL</button><button class="on" data-s="2.5">DEMO</button><button data-s="5">FAST</button>
+  <button id="bGo">⟲ NEW DRAWING</button>
+</div>
+<script>
+'use strict';
+/* ================= camera (axonometric, inches → px) ================= */
+const YAW=33*Math.PI/180, PITCH=27*Math.PI/180;
+const CY=Math.cos(YAW), SY=Math.sin(YAW), SP=Math.sin(PITCH), CP=Math.cos(PITCH);
+const SC=7.05, MX=214, MYo=306;
+function pr(x,y,z){const u=x*CY-y*SY, d=x*SY+y*CY; return [MX+u*SC, MYo-d*SP*SC-z*CP*SC];}
+const P=(a)=>a[0].toFixed(1)+','+a[1].toFixed(1);
+
+/* ================= the machine (inches, from the Sims build) ========= */
+const T=36;                          // 3'×3' table
+const HR=[9,9], HA=[33,9], HB=[9,33];// holes: rotary corner, laterals at right angles
+const TOP=12, WGT=27, BOT=34;        // shaft: +12" above fulcrum, weight at −27", tip −34"
+const LEG=37;                        // table height
+const LARM=Math.hypot(HA[0]-HR[0],HA[1]-HR[1]); // 24" arms — rest pen sits over the paper centre
+const PLATZ=9.4, PLATS=11;           // platform top height, 11"×11"
+const AMP=0.28;                      // release angle (rad) — pen swing ≈ ±3.3"
+const ORB=1.9;                       // rotary orbit radius (in)
+const FBASE=0.55;                    // real machine ≈ 0.55 Hz for the slower pendulum
+
+/* ================= state ================= */
+let n1=3,n2=2, phase=90, damp=0.055, speed=2.5, rotary=true;
+let t=0, holdT=0, fade=1, ink=[], last=performance.now();
+const bank={};
+
+function relaunch(){t=0;holdT=0;fade=1;ink=[];}
+/* LATERAL: the ratio is between the two lateral pendulums (classic Lissajous).
+   ROTARY (how the beautiful ones are actually made): the laterals are tuned to
+   UNISON so the pen sweeps a circle/ellipse, and the PAPER orbits at the
+   ratio'd frequency, counter-rotating, detuned ~4.5% so the rose precesses
+   and each pass lies beside the last. */
+function freqs(){const mn=Math.min(n1,n2);
+  return rotary
+    ? [FBASE*n1/mn, FBASE*n1/mn, FBASE*n2/mn*1.045]
+    : [FBASE*n1/mn, FBASE*n2/mn, 0];}
+
+/* pendulum swing s(t) along its aim (inches at the SHAFT TOP, lever ≈ TOP·θ) */
+function swing(f,ph,d,tt){return TOP*AMP*Math.sin(2*Math.PI*f*tt+ph)*Math.exp(-d*tt);}
+
+/* pen = true junction: circles of radius LARM about the two shaft tops (plan view) */
+function penFrom(A,B){
+  const dx=B[0]-A[0],dy=B[1]-A[1],dd=Math.hypot(dx,dy);
+  if(dd<1e-6||dd>2*LARM)return null;
+  const a=dd/2,h=Math.sqrt(Math.max(0,LARM*LARM-a*a));
+  const mx=A[0]+dx/2,my=A[1]+dy/2;
+  // of the two junctions take the one on the paper side (toward the rotary corner)
+  const s1=[mx-dy/dd*h,my+dx/dd*h],s2=[mx+dy/dd*h,my-dx/dd*h];
+  const q=(p)=>(p[0]-HR[0])*(p[0]-HR[0])+(p[1]-HR[1])*(p[1]-HR[1]);
+  return q(s1)<q(s2)?s1:s2;
+}
+
+/* ================= static scenery (built once) ================= */
+function grad(){return `<defs>
+  <linearGradient id="wood" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8a6a3e"/><stop offset=".5" stop-color="#6e5230"/><stop offset="1" stop-color="#4c3820"/></linearGradient>
+  <linearGradient id="woodE" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3c2c17"/><stop offset="1" stop-color="#241a0d"/></linearGradient>
+  <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#efe9d6"/><stop offset="1" stop-color="#d9d2bc"/></linearGradient>
+  <linearGradient id="steel" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#63666e"/><stop offset=".45" stop-color="#2e3036"/><stop offset="1" stop-color="#1c1d21"/></linearGradient>
+  <radialGradient id="floor" cx=".5" cy=".5"><stop offset="0" stop-color="#141419"/><stop offset="1" stop-color="#0a0a0d" stop-opacity="0"/></radialGradient>
+</defs>`;}
+function tableStatic(){
+  let s='';
+  // floor pool + machine shadow
+  s+=`<ellipse cx="${MX-6}" cy="${MYo+LEG*CP*SC-26}" rx="205" ry="52" fill="url(#floor)"/>`;
+  // legs (splayed, far pair first)
+  const lg=(x,y,ox,oy)=>{const a=pr(x,y,-0.4),b=pr(x+ox,y+oy,-LEG);return `<path d="M${P(a)} L${P(b)}" stroke="#3a2c18" stroke-width="4.6" stroke-linecap="round"/><path d="M${P(a)} L${P(b)}" stroke="#59452a" stroke-width="2" stroke-linecap="round"/>`;};
+  s+=lg(3,33,-3,3)+lg(33,33,3,3)+lg(3,3,-3,-3)+lg(33,3,3,-3);
+  return s;
+}
+function slab(){
+  const c=[pr(0,0,0),pr(T,0,0),pr(T,T,0),pr(0,T,0)];
+  const e=[pr(0,0,-0.8),pr(T,0,-0.8),pr(T,T,-0.8)];
+  let s=`<polygon points="${P(c[0])} ${P(c[1])} ${P(e[1])} ${P(e[0])}" fill="url(#woodE)"/>`;
+  s+=`<polygon points="${P(c[1])} ${P(c[2])} ${P(e[2])} ${P(e[1])}" fill="#1c130a"/>`;
+  s+=`<polygon points="${c.map(P).join(' ')}" fill="url(#wood)" stroke="#2a1f10" stroke-width="1"/>`;
+  // wood grain
+  for(let i=1;i<7;i++){const g1=pr(1.5,i*5,0),g2=pr(34.5,i*5+1.2,0);
+    s+=`<path d="M${P(g1)} Q ${P(pr(18,i*5-1,0))} ${P(g2)}" stroke="#00000022" stroke-width="0.8" fill="none"/>`;}
+  // holes + plates
+  for(const H of [HR,HA,HB]){const h=pr(H[0],H[1],0);
+    s+=`<ellipse cx="${h[0]}" cy="${h[1]}" rx="${1.6*SC}" ry="${1.6*SC*SP}" fill="#0c0906"/>`;
+    s+=`<ellipse cx="${h[0]}" cy="${h[1]}" rx="${2.4*SC}" ry="${2.4*SC*SP}" fill="none" stroke="#a89468" stroke-width="1" stroke-opacity=".5"/>`;}
+  return s;
+}
+
+/* ================= dynamic machine ================= */
+function pendulum(H,dirU,s,color,cls){
+  // dir = unit aim (toward the pen); shaft rocks in that vertical plane.
+  const th=Math.asin(Math.max(-1,Math.min(1,s/TOP)));       // lever angle from top offset
+  const ux=dirU[0],uy=dirU[1];
+  const top=[H[0]+Math.sin(th)*TOP*ux, H[1]+Math.sin(th)*TOP*uy, Math.cos(th)*TOP];
+  const wgt=[H[0]-Math.sin(th)*WGT*ux, H[1]-Math.sin(th)*WGT*uy, -Math.cos(th)*WGT];
+  const tip=[H[0]-Math.sin(th)*BOT*ux, H[1]-Math.sin(th)*BOT*uy, -Math.cos(th)*BOT];
+  return {top,wgt,tip,color};
+}
+function drawShaftBelow(p){
+  const a=pr(p.tip[0],p.tip[1],p.tip[2]), b=pr(...holePt(p)), w=pr(p.wgt[0],p.wgt[1],p.wgt[2]);
+  let s=`<path d="M${P(a)} L${P(b)}" stroke="#5d4527" stroke-width="3.4" stroke-linecap="round"/>`;
+  s+=`<path d="M${P(a)} L${P(b)}" stroke="#7d5f36" stroke-width="1.3" stroke-linecap="round"/>`;
+  // stacked weight discs
+  for(let i=-1;i<=1;i++){const c=pr(p.wgt[0],p.wgt[1],p.wgt[2]+i*1.15);
+    s+=`<ellipse cx="${c[0]}" cy="${c[1]}" rx="${2.5*SC*0.62}" ry="${2.5*SC*0.30}" fill="url(#steel)" stroke="#0e0f12" stroke-width=".8"/>`;}
+  const g=pr(p.wgt[0]-0.8,p.wgt[1]-0.8,p.wgt[2]+1.6);
+  s+=`<ellipse cx="${g[0]}" cy="${g[1]}" rx="3.4" ry="1.5" fill="#ffffff" opacity=".14"/>`;
+  // floor shadow rides with the weight
+  const sh=pr(p.wgt[0],p.wgt[1],-LEG+0.5);
+  s+=`<ellipse cx="${sh[0]}" cy="${sh[1]}" rx="16" ry="5" fill="#000" opacity=".35"/>`;
+  return s;
+}
+function holePt(p){ // where the shaft crosses the table plane (z=0)
+  const k=p.top[2]/(p.top[2]-p.tip[2]);
+  return [p.top[0]+(p.tip[0]-p.top[0])*k, p.top[1]+(p.tip[1]-p.top[1])*k, 0];
+}
+function drawShaftAbove(p){
+  const b=pr(...holePt(p)), a=pr(p.top[0],p.top[1],p.top[2]);
+  let s=`<path d="M${P(b)} L${P(a)}" stroke="#6b4f2c" stroke-width="3.2" stroke-linecap="round"/>`;
+  s+=`<path d="M${P(b)} L${P(a)}" stroke="#8d6c3e" stroke-width="1.2" stroke-linecap="round"/>`;
+  s+=`<circle cx="${a[0]}" cy="${a[1]}" r="2.2" fill="#c9a25e"/>`; // pin joint
+  return s;
+}
+
+function render(){
+  const [f1,f2,f3]=freqs();
+  const env=Math.exp(-damp*t);
+  // relative phase chip: 90° = circle/open figure · 45° = ellipse · 0° = line
+  const sA=swing(f1,Math.PI/2-phase*Math.PI/180,damp,t);
+  const sB=swing(f2,Math.PI/2,damp,t);
+  // aims: each lateral points at the paper corner
+  const aimA=[-1,0], aimB=[0,-1];
+  const pA=pendulum(HA,aimA,-sA,'#4fd0e0');  // top toward pen when s>0
+  const pB=pendulum(HB,aimB,-sB,'#b48bff');
+  // rotary: gimbal → the shaft leans on any axis; the PLATFORM (mounted at the
+  // top) translates in the orbit, and the weight below levers OPPOSITE by the
+  // true ratio WGT/TOP. Counter-rotating vs. the pen's sweep.
+  const ga=2*Math.PI*f3*t, ge=Math.exp(-damp*0.8*t);
+  const ox=rotary? -ORB*Math.sin(ga)*ge:0, oy=rotary? ORB*Math.cos(ga)*ge:0;
+  const pR={top:[HR[0]+ox,HR[1]+oy,TOP-2],
+            wgt:[HR[0]-ox*(WGT/TOP),HR[1]-oy*(WGT/TOP),-WGT+4],
+            tip:[HR[0]-ox*(BOT/TOP),HR[1]-oy*(BOT/TOP),-BOT+4]};
+  const plat=[HR[0]+ox, HR[1]+oy]; // the paper ORBITS (translates, never spins)
+  // pen from the two rigid arms
+  const pen=penFrom([pA.top[0],pA.top[1]],[pB.top[0],pB.top[1]])||[HR[0],HR[1]];
+  // ink recorded RELATIVE to the platform (paper frame — pure translation)
+  if(env>0.05){ink.push([pen[0]-plat[0],pen[1]-plat[1]]); if(ink.length>5200)ink.shift();}
+  else {holdT+=dt; if(holdT>2.6){fade-=dt/0.7; if(fade<=0)relaunch();}}
+
+  let s='';
+  s+=drawShaftBelow(pR)+drawShaftBelow(pA)+drawShaftBelow(pB);
+  s+=slabCache;
+  s+=drawShaftAbove(pR);
+  // platform + paper (orbiting)
+  const half=PLATS/2;
+  const pc=[[-half,-half],[half,-half],[half,half],[-half,half]].map(c=>pr(plat[0]+c[0],plat[1]+c[1],PLATZ));
+  const pe=[[-half,half],[half,half]].map(c=>pr(plat[0]+c[0],plat[1]+c[1],PLATZ-0.7));
+  s+=`<polygon points="${P(pc[3])} ${P(pc[2])} ${P(pe[1])} ${P(pe[0])}" fill="#241a0d"/>`;
+  s+=`<polygon points="${pc.map(P).join(' ')}" fill="url(#paper)" stroke="#b8ad8d" stroke-width=".8"/>`;
+  // ink (drawn on the paper, translated with it) — dry base + wet head
+  if(ink.length>1){
+    const path=(arr)=>{let d='M';for(let i=0;i<arr.length;i++){const q=pr(plat[0]+arr[i][0],plat[1]+arr[i][1],PLATZ+0.05);d+=(i?'L':'')+q[0].toFixed(1)+' '+q[1].toFixed(1);}return d;};
+    const dry=path(ink);
+    s+=`<path d="${dry}" fill="none" stroke="#8e1f32" stroke-width="1.05" stroke-opacity="${0.52*fade}" stroke-linejoin="round"/>`;
+    const wet=ink.slice(-70);
+    s+=`<path d="${path(wet)}" fill="none" stroke="#e0435a" stroke-width="1.5" stroke-opacity="${0.95*fade}" stroke-linecap="round"/>`;
+  }
+  s+=drawShaftAbove(pA)+drawShaftAbove(pB);
+  // arms: rigid links, shaft-top pin → pen junction (slight downward slope)
+  const tApr=pr(pA.top[0],pA.top[1],pA.top[2]), tBpr=pr(pB.top[0],pB.top[1],pB.top[2]);
+  const penP=pr(pen[0],pen[1],PLATZ+0.9);
+  const arm=(a,b,c1,c2)=>`<path d="M${P(a)} L${P(b)}" stroke="${c1}" stroke-width="2.6" stroke-linecap="round"/><path d="M${P(a)} L${P(b)}" stroke="${c2}" stroke-width="1" stroke-linecap="round" stroke-opacity=".8"/>`;
+  // pen shadow on the paper
+  s+=`<ellipse cx="${penP[0]+2}" cy="${penP[1]+3}" rx="5" ry="2" fill="#000" opacity=".22"/>`;
+  s+=arm(tApr,penP,'#b9a276','#e8d5a8');
+  s+=arm(tBpr,penP,'#b9a276','#e8d5a8');
+  // the pen itself (banded junction + nib)
+  const penTop=pr(pen[0],pen[1],PLATZ+3.4);
+  s+=`<path d="M${P(penP)} L${P(penTop)}" stroke="#20242c" stroke-width="3" stroke-linecap="round"/>`;
+  s+=`<path d="M${P(penP)} L${P(penTop)}" stroke="#3b414d" stroke-width="1.2" stroke-linecap="round"/>`;
+  s+=`<circle cx="${penTop[0]}" cy="${penTop[1]}" r="1.8" fill="#e0435a"/>`;
+  // rubber-band wrap holding the two arm ends together at the junction
+  s+=`<circle cx="${penP[0]}" cy="${penP[1]-1}" r="2.6" fill="none" stroke="#7d2a35" stroke-width="1.1"/>`;
+  s+=`<circle cx="${penP[0]}" cy="${penP[1]-1}" r="1.3" fill="#c9a25e"/>`;
+
+  // ── picture-in-picture: the drawing, straight-on, as it accumulates ──
+  {const IX=14,IY=16,IW=118,IH=118,K=9.6,cx=IX+IW/2,cy=IY+IH/2;
+   s+=`<rect x="${IX}" y="${IY}" width="${IW}" height="${IH}" rx="9" fill="url(#paper)" stroke="#26262c" stroke-width="1.4"/>`;
+   s+=`<rect x="${IX+2}" y="${IY+2}" width="${IW-4}" height="${IH-4}" rx="7" fill="none" stroke="#b8ad8d" stroke-width=".7" stroke-opacity=".6"/>`;
+   if(ink.length>1){
+     const flat=(arr)=>{let d='M';for(let i=0;i<arr.length;i++){d+=(i?'L':'')+(cx+arr[i][0]*K).toFixed(1)+' '+(cy+arr[i][1]*K).toFixed(1);}return d;};
+     s+=`<path d="${flat(ink)}" fill="none" stroke="#8e1f32" stroke-width="1" stroke-opacity="${0.5*fade}" stroke-linejoin="round"/>`;
+     s+=`<path d="${flat(ink.slice(-70))}" fill="none" stroke="#e0435a" stroke-width="1.4" stroke-opacity="${0.95*fade}" stroke-linecap="round"/>`;
+   }
+   s+=`<text x="${IX+IW/2}" y="${IY+IH+13}" text-anchor="middle" font-family="Oswald" font-size="8.5" letter-spacing="2" fill="#6d6f75">THE DRAWING</text>`;
+  }
+  dyn.innerHTML=s;
+  hud.textContent=rotary
+    ? `PEN ORBIT ${f1.toFixed(2)} Hz · PAPER ORBIT ${f3.toFixed(2)} Hz (counter) · swing ${(env*100)|0}% · t ${t.toFixed(1)} s`
+    : `OSC A ${f1.toFixed(2)} Hz · OSC B ${f2.toFixed(2)} Hz · swing ${(env*100)|0}% · t ${t.toFixed(1)} s`;
+  modeEl.textContent=(rotary?'ROTARY':'LATERAL')+` · ${n1}:${n2}`;
+}
+
+/* ================= boot ================= */
+const stage=document.getElementById('stage');
+stage.innerHTML=grad()+`<g id="static"></g><g id="dyn"></g>`;
+const slabCache=slab();
+document.getElementById('static').innerHTML=tableStatic();
+const dyn=document.getElementById('dyn'), hud=document.getElementById('hud'), modeEl=document.getElementById('mode');
+let dt=0.016;
+function loop(now){dt=Math.min(0.05,(now-last)/1000)*speed; last=now;
+  if(Math.exp(-damp*t)>0.05) t+=dt;
+  render(); requestAnimationFrame(loop);}
+requestAnimationFrame((n)=>{last=n;requestAnimationFrame(loop);});
+
+const sel=(q,fn)=>document.querySelectorAll(q).forEach(b=>b.onclick=()=>{document.querySelectorAll(q).forEach(x=>x.classList.remove('on'));b.classList.add('on');fn(b);});
+sel('button[data-r]',b=>{const p=b.dataset.r.split(',');n1=+p[0];n2=+p[1];relaunch();});
+sel('button[data-p]',b=>{phase=+b.dataset.p;relaunch();});
+sel('button[data-d]',b=>{damp=+b.dataset.d;relaunch();});
+sel('button[data-s]',b=>{speed=+b.dataset.s;});
+document.getElementById('bLat').onclick=()=>{rotary=false;bLat.classList.add('on');bRot.classList.remove('on');relaunch();};
+document.getElementById('bRot').onclick=()=>{rotary=true;bRot.classList.add('on');bLat.classList.remove('on');relaunch();};
+document.getElementById('bGo').onclick=relaunch;
+</script></body></html>

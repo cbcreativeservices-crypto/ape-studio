@@ -1,0 +1,81 @@
+<!doctype html><meta charset=utf8><title>Harmonograph mechanism v4</title><style>
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Barlow&display=swap');
+body{margin:0;background:#0c0c0c;color:#c9ccd2;font-family:Barlow,sans-serif;display:flex;flex-direction:column;align-items:center;gap:12px;padding:18px}
+h1{font-family:Oswald;font-weight:600;font-size:14px;letter-spacing:1.4px;color:#f4f4f6;margin:0}
+.sub{font-size:11.5px;color:#8a8b93;text-align:center;max-width:410px}
+#stage{width:400px;height:480px;border:1px solid #3a3a44;border-radius:12px;background:radial-gradient(ellipse at 50% 40%,#161a24,#0c0c0f 74%)}
+.row{display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:center}
+button{font-family:Oswald;font-weight:600;font-size:11px;letter-spacing:1px;color:#c9ccd2;border:1px solid #2c2c33;border-radius:7px;padding:7px 11px;background:#17171c;cursor:pointer}
+button.on{border-color:#ffc64d;color:#ffc64d;background:#1c1608}
+.k{font-family:Oswald;font-weight:600;font-size:10px;letter-spacing:1px;color:#8a8b93}
+.leg{display:flex;gap:12px;font-size:11px;flex-wrap:wrap;justify-content:center}
+.note{font-size:10.5px;color:#6d6f75;max-width:400px;text-align:center}
+</style>
+<h1>HARMONOGRAPH — RIGID LINKAGE (real physics)</h1>
+<div class="sub">two vertical pendulums swing RADIALLY (in toward the centre &amp; back out) at right angles &middot; fixed-length rods (the bob rides an arc) &middot; fixed-length arms meet at the pen (a real 2-bar linkage)</div>
+<svg id="stage" viewBox="0 0 400 480"></svg>
+<div class="leg"><span style="color:#4fd0e0">&#9632; pendulum A</span><span style="color:#b48bff">&#9632; pendulum B</span><span style="color:#37e05f">&#9632; rotary &rarr; paper</span><span style="color:#ffc64d">&#9632; pen &amp; ink</span></div>
+<div class="row">
+  <span class="k">MODE</span><button id="mLat" class="on">LATERAL</button><button id="mRot">ROTARY</button>
+  <span class="k" style="margin-left:6px">RATIO</span>
+  <button data-r="1,1">1:1</button><button data-r="2,1">2:1</button><button class="on" data-r="3,2">3:2</button><button data-r="4,3">4:3</button><button data-r="5,4">5:4</button>
+</div>
+<div class="row"><span class="k">SPEED</span><button data-s="0.4">slow</button><button class="on" data-s="1.1">watch</button><button data-s="2.4">fast</button><button id="reset">&#8635; RESTART</button></div>
+<div class="note">Every rod and arm is a fixed length; the pen is wherever the two rigid arms can actually meet.</div>
+<script>
+const S=document.getElementById('stage');
+const OX=200,OY=138,CA=0.87,SA=0.5;
+const proj=(u,v,w)=>[OX+(u-v)*CA, OY+(u+v)*SA - w];
+const rot=(u,v,a)=>[u*Math.cos(a)-v*Math.sin(a), u*Math.sin(a)+v*Math.cos(a)];
+const P=92, RA=96, RB=96, LARM=96, LROD=132, SW=32;
+let n1=3,n2=2,speed=1.1,t=0,hold=0,pts=[],mode='lateral';
+const K=0.12;
+function reset(){t=0;hold=0;pts=[];}
+function line(a,b,c,w,o){return '<line x1="'+a[0].toFixed(1)+'" y1="'+a[1].toFixed(1)+'" x2="'+b[0].toFixed(1)+'" y2="'+b[1].toFixed(1)+'" stroke="'+c+'" stroke-width="'+w+'"'+(o?' stroke-opacity="'+o+'"':'')+'/>';}
+function dot(p,r,fill,stroke,sw){return '<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="'+r+'" fill="'+fill+'"'+(stroke?' stroke="'+stroke+'" stroke-width="'+sw+'"':'')+'/>';}
+function penFrom(DA,DB){
+  const dx=DB[0]-DA[0], dy=DB[1]-DA[1], d=Math.hypot(dx,dy);
+  if(d<1e-6||d>2*LARM) return [0,0];
+  const a=d/2, h=Math.sqrt(Math.max(0,LARM*LARM-a*a));
+  const mx=DA[0]+a*dx/d, my=DA[1]+a*dy/d, ox=-dy/d*h, oy=dx/d*h;
+  const s1=[mx+ox,my+oy], s2=[mx-ox,my-oy];
+  return (s1[0]*s1[0]+s1[1]*s1[1] <= s2[0]*s2[0]+s2[1]*s2[1]) ? s1 : s2;
+}
+function frame(){
+  const env0=Math.exp(-K*t);
+  if(env0<0.05){hold+=0.016*speed; if(hold>2.0)reset();} else {t+=0.016*speed;}
+  const mn=Math.min(n1,n2),ax=n1/mn,ay=n2/mn,env=Math.max(env0,0.05);
+  const d1=Math.sin(ax*t+Math.PI/2)*env, d2=Math.sin(ay*t)*env;
+  const sA=SW*d1, sB=SW*d2;
+  const DA=[RA+sA,0], DB=[0,RB+sB];
+  const pen=penFrom(DA,DB);
+  const rotary=mode==='rotary';
+  const pa = rotary ? 0.55*Math.sin(0.5*mn*t)*env : 0;
+  const ptx= rotary ? 12*Math.sin(0.5*mn*t+1.1)*env : 0;
+  const pty= rotary ? 12*Math.cos(0.5*mn*t)*env : 0;
+  if(hold===0){const r=rot(pen[0]-ptx,pen[1]-pty,-pa);pts.push(r);}
+  let h='';
+  const pc=[[-P,-P],[P,-P],[P,P],[-P,P]].map(c=>{const r=rot(c[0],c[1],pa);return proj(r[0]+ptx,r[1]+pty,0);});
+  h+='<polygon points="'+pc.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')+'" fill="#12100a" stroke="'+(rotary?'#2a5a34':'#3a3320')+'" stroke-width="1.2"/>';
+  if(pts.length>1){const scr=pts.map(p=>{const r=rot(p[0],p[1],pa);return proj(r[0]+ptx,r[1]+pty,0);});
+    let d='M'+scr[0][0].toFixed(1)+' '+scr[0][1].toFixed(1);for(let i=1;i<scr.length;i++)d+='L'+scr[i][0].toFixed(1)+' '+scr[i][1].toFixed(1);
+    h+='<path d="'+d+'" fill="none" stroke="#ffc64d" stroke-width="2.6" stroke-opacity="0.12"/><path d="'+d+'" fill="none" stroke="#ffe9ad" stroke-width="0.9" stroke-opacity="0.92"/>';}
+  const penS=proj(pen[0],pen[1],0);
+  if(rotary){const piv=proj(0,0,0); const gx=18*Math.sin(0.5*mn*t+1.1)*env, gy=18*Math.cos(0.5*mn*t)*env;
+    const bob=proj(gx,gy,-(Math.sqrt(Math.max(0,LROD*LROD-gx*gx-gy*gy))+20));
+    h+=line(piv,bob,'#37e05f',2.4)+dot(piv,3,'#8a8b93')+dot(bob,11,'#0f2417','#37e05f',1.8);}
+  {const ful=proj(RA,0,0), bob=proj(RA+sA,0,-Math.sqrt(Math.max(0,LROD*LROD-sA*sA))), da=proj(DA[0],DA[1],0);
+   h+=line(ful,bob,'#4fd0e0',2.6)+line(da,penS,'#4fd0e0',2.2)+dot(ful,3,'#8a8b93')+dot(bob,10,'#123039','#4fd0e0',1.8);}
+  {const ful=proj(0,RB,0), bob=proj(0,RB+sB,-Math.sqrt(Math.max(0,LROD*LROD-sB*sB))), db=proj(DB[0],DB[1],0);
+   h+=line(ful,bob,'#b48bff',2.6)+line(db,penS,'#b48bff',2.2)+dot(ful,3,'#8a8b93')+dot(bob,10,'#241a3a','#b48bff',1.8);}
+  h+=dot(penS,4.6,'none','#fff3d8',1.4)+dot(penS,1.8,'#ff5f4e');
+  S.innerHTML=h;
+  requestAnimationFrame(frame);
+}
+document.querySelectorAll('button[data-r]').forEach(b=>b.onclick=()=>{document.querySelectorAll('button[data-r]').forEach(x=>x.classList.remove('on'));b.classList.add('on');const p=b.dataset.r.split(',');n1=+p[0];n2=+p[1];reset();});
+document.querySelectorAll('button[data-s]').forEach(b=>b.onclick=()=>{document.querySelectorAll('button[data-s]').forEach(x=>x.classList.remove('on'));b.classList.add('on');speed=+b.dataset.s;});
+document.getElementById('mLat').onclick=()=>{mode='lateral';mLat.classList.add('on');mRot.classList.remove('on');reset();};
+document.getElementById('mRot').onclick=()=>{mode='rotary';mRot.classList.add('on');mLat.classList.remove('on');reset();};
+document.getElementById('reset').onclick=reset;
+frame();
+</script>
