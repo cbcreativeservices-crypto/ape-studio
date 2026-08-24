@@ -5,7 +5,7 @@
  * IN DEVELOPMENT ("coming soon") — never presented as available.
  */
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, ImageBackground, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -17,6 +17,8 @@ import { useChainValue } from './chainStore';
 import { workflowStore } from './workflowStore';
 import type { Workflow } from './workflowModel';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
+
+const BG_CALC = require('../../../assets/lab-backgrounds/calc-lab.png');
 
 export function CalcLabScreen() {
   const insets = useSafeAreaInsets();
@@ -63,7 +65,7 @@ export function CalcLabScreen() {
   }, [navigation, loadRecent]);
 
   return (
-    <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+    <ImageBackground source={BG_CALC} style={[styles.root, { paddingTop: insets.top + 10 }]} imageStyle={styles.bgImage}>
       <View style={styles.header}>
         <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
@@ -242,12 +244,13 @@ export function CalcLabScreen() {
           </View>
         ))}
       </ScrollView>
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
+  bgImage: { resizeMode: 'cover' },
   header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 8 },
   back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
   sigma: { fontFamily: fonts.oswaldSemiBold, fontSize: 24, lineHeight: 28, color: colors.purple },
