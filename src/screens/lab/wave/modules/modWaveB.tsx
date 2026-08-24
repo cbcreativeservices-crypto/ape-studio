@@ -1218,206 +1218,278 @@ export function RoomBuilderModule(p: WaveModuleProps) {
   const lvl = scene.sources.length > 0 ? responseAt(scene, scene.listener.x, scene.listener.y, viewFreq) : null;
   const rt500 = sabineRT(scene, 500);
 
+  // RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23) — the acid test. The room
+  // PINS on the stage, so dragging a source or the listener never fights the
+  // scroll again; the listener numbers print on the bezel while you drag.
+  // FREQUENCY OF VIEW rides the dock lane; ROOM / LAYERS / WALLS / SRC are
+  // group trays (sticky — treat a wall or delay a sub WHILE the heat map and
+  // RT60 react: that is the lesson). Prose + mistakes + check scroll below.
+  const layersShort =
+    (['pressure', 'heat', 'rays', 'arrivals'] as const)
+      .filter((k) => layers[k])
+      .map((k) => k[0].toUpperCase())
+      .join('·') || 'OFF';
+  const selIdx = sel ? sources.findIndex((s) => s.id === sel.id) + 1 : 0;
+
   return (
-    <View style={{ gap: 12 }}>
-      {/* Standard wave layout order (owner 2026-08-05): explanations → readouts
-          → layers/display/guide/controls → mistakes → check. The sandbox keeps
-          its multi-card grouping because it has several control groups. */}
-      <PanelCard>
-        <Text style={dstyles.eyebrow}>WHAT TO TRY</Text>
-        <Text style={dstyles.body}>
-          • Build a cardioid: two SUBs 1.2 m apart, rear one delayed ~3.5 ms with polarity inverted — HEAT shows energy forward, silence behind.
-        </Text>
-        <Text style={dstyles.body}>
-          • Find a comb: one SPEAKER near a GLASS wall, view ~2 kHz, then drag the listener slowly across the room and watch ARRIVALS and the level readout ripple.
-        </Text>
-        <Text style={dstyles.body}>
-          • Meet your room modes: shrink the room to ~4 × 3 m, view 40–120 Hz, and watch hot/cold bands snap in — then treat two walls with FIBERGLASS and watch RT60 fall.
-        </Text>
-      </PanelCard>
-
-      <PanelCard>
-        <Text style={dstyles.eyebrow}>AT THE LISTENER</Text>
-        <ReadoutGrid
-          help={p.help}
-          helpKey="room_builder"
-          items={[
-            { k: 'ROOM', v: `${roomW.toFixed(1)} × ${roomH.toFixed(1)} m` },
-            { k: `LEVEL @ ${fmtHz(viewFreq)}`, v: lvl == null ? '—' : `${lvl.toFixed(1)} dB` },
-            { k: '1ST ARRIVAL', v: arrivals.length > 0 ? `${(arrivals[0].t * 1000).toFixed(1)} ms` : '—' },
-            { k: 'EARLY (<80 ms)', v: arrivals.length > 0 ? `${Math.max(0, early)} arrivals` : '—' },
-            { k: 'RT60 @ 500 Hz', v: `${rt500.toFixed(2)} s` },
-            { k: 'SOURCES', v: `${sources.length}/${BUILDER_MAX_SOURCES}` },
-          ]}
-        />
-        <Badge text={MODEL_BADGE} />
-      </PanelCard>
-
-      <PanelCard>
-        <LayerChips layers={layers} onLayers={setLayers} help={p.help} />
-        {viz ? (
-          <SceneHero
-            viz={viz}
-            scene={scene}
-            width={p.width}
-            focused={p.focused}
-            freq={viewFreq}
-            layers={layers}
-            selectedId={selectedId}
-            onSelect={setSelectedId}
-            onDragSource={(id, x, y) => {
-              const pt = dragPoint(scene, x, y);
-              setSources((prev) => prev.map((s) => (s.id === id ? { ...s, x: pt.x, y: pt.y } : s)));
-            }}
-            onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
-          />
-        ) : (
-          <VizUnavailableCard />
-        )}
-        <Badge text={MODEL_BADGE} />
-        {/* "What the display shows" sits BELOW the display. */}
-        <DisplayGuideButton onPress={() => p.help('room_builder')} />
-        <DragSlider value={wV} onChange={setWV} label="ROOM WIDTH" readout={`${roomW.toFixed(2)} m`} onHelp={() => p.help('room_builder')} />
-        <DragSlider value={hV} onChange={setHV} label="ROOM DEPTH" readout={`${roomH.toFixed(2)} m`} onHelp={() => p.help('room_builder')} />
-        <DragSlider
-          value={viewFreqV}
-          onChange={setViewFreqV}
-          label="FREQUENCY OF VIEW"
-          readout={fmtHz(viewFreq)}
-          onHelp={() => p.help('layers')}
-        />
-      </PanelCard>
-
-      <PanelCard>
-        <Text style={dstyles.eyebrow}>WALL MATERIALS</Text>
-        <View style={dstyles.chipRow}>
-          {WALL_NAMES.map((w, i) => (
-            <LabChip
-              key={w}
-              label={`${w} · ${MATERIALS[boundary[i]].label.toUpperCase()}`}
-              selected={selWall === i}
-              onPress={() => setSelWall(i)}
-              onLongPress={() => p.help('room_builder')}
-            />
-          ))}
-        </View>
-        <View style={dstyles.chipRow}>
-          {MATERIAL_KEYS.map((m) => (
-            <LabChip
-              key={m}
-              label={MATERIALS[m].label.toUpperCase()}
-              selected={boundary[selWall] === m}
-              photoHint={!!MATERIAL_PHOTOS[m]}
-              onPress={() =>
-                setBoundary((prev) => prev.map((b, i) => (i === selWall ? m : b)) as [MaterialKey, MaterialKey, MaterialKey, MaterialKey])
-              }
-              // foam/fiberglass long-press → their reference photo; others → the lesson.
-              onLongPress={() => {
-                const photo = MATERIAL_PHOTOS[m];
-                if (photo) openPhoto(photo.file, photo.caption);
-                else p.help('room_builder');
-              }}
-            />
-          ))}
-        </View>
-        <Badge text="TEXTBOOK-TYPICAL TEACHING α VALUES — NOT ISO 354 PRODUCT DATA" />
-      </PanelCard>
-
-      <PanelCard>
-        <Text style={dstyles.eyebrow}>SOURCES — {sources.length}/{BUILDER_MAX_SOURCES}</Text>
-        <View style={dstyles.chipRow}>
-          <LabChip label="+ POINT" selected={false} onPress={() => addSource('point')} onLongPress={() => p.help('room_builder')} />
-          <LabChip label="+ SPEAKER" selected={false} onPress={() => addSource('speaker')} onLongPress={() => p.help('room_builder')} />
-          <LabChip label="+ SUB" selected={false} onPress={() => addSource('sub')} onLongPress={() => p.help('room_builder')} />
-        </View>
-        {sources.length >= BUILDER_MAX_SOURCES ? (
-          <Text style={dstyles.caption}>Source limit reached (4) — remove one to add another.</Text>
-        ) : null}
-        <View style={dstyles.chipRow}>
-          {sources.map((s, i) => (
-            <LabChip
-              key={s.id}
-              label={`${i + 1} · ${s.kind.toUpperCase()}`}
-              selected={selectedId === s.id}
-              onPress={() => setSelectedId(selectedId === s.id ? null : s.id)}
-              onLongPress={() => p.help('room_builder')}
-            />
-          ))}
-        </View>
-        {sel ? (
-          <View style={{ gap: 10 }}>
-            <DragSlider
-              value={logPos(sel.freq, 40, 8000)}
-              onChange={(v) => patchSel({ freq: logMap(v, 40, 8000) })}
-              label="SOURCE FREQUENCY"
-              readout={fmtHz(sel.freq)}
-              onHelp={() => p.help('room_builder')}
-            />
-            <DragSlider
-              value={(sel.levelDb + 24) / 30}
-              onChange={(v) => patchSel({ levelDb: Math.round((v * 30 - 24) * 2) / 2 })}
-              label="LEVEL"
-              readout={`${sel.levelDb >= 0 ? '+' : ''}${sel.levelDb.toFixed(1)} dB`}
-              onHelp={() => p.help('room_builder')}
-              levelTint
-            />
-            <DragSlider
-              value={sel.delayMs / 20}
-              onChange={(v) => patchSel({ delayMs: Math.round(v * 20 * 10) / 10 })}
-              label="DELAY"
-              readout={`${sel.delayMs.toFixed(1)} ms`}
-              onHelp={() => p.help('delay_align')}
-            />
-            <View style={dstyles.chipRow}>
-              <LabChip
-                label="POLARITY Ø INVERT"
-                selected={sel.polarity === -1}
-                onPress={() => patchSel({ polarity: sel.polarity === -1 ? 1 : -1 })}
-                onLongPress={() => p.help('interference')}
+    <WaveLayout
+      rack={{
+        size: 'L',
+        badge: MODEL_BADGE,
+        onHelp: p.help,
+        onGuide: () => p.help('room_builder'),
+        initialParam: 'freq',
+        bezel: [
+          { k: 'ROOM', v: `${roomW.toFixed(1)}×${roomH.toFixed(1)}`, helpKey: 'room_builder' },
+          {
+            k: `LVL @ ${fmtHz(viewFreq)}`,
+            v: lvl == null ? '—' : `${lvl.toFixed(1)} dB`,
+            flex: 1.35,
+            helpKey: 'room_builder',
+          },
+          {
+            k: '1ST ARR',
+            v: arrivals.length > 0 ? `${(arrivals[0].t * 1000).toFixed(1)} ms` : '—',
+            helpKey: 'arrivals',
+          },
+          { k: 'RT60', v: `${rt500.toFixed(2)} s`, helpKey: 'reverb_field' },
+        ],
+        stage: (w, h) =>
+          viz ? (
+            <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center' }}>
+              {/* Fit the room into the glass: SceneHero derives height from
+                  width × aspect, so hand it the width that lands on h. */}
+              <SceneHero
+                viz={viz}
+                scene={scene}
+                width={Math.max(120, Math.min(w, Math.round((h * scene.w) / scene.h)))}
+                focused={p.focused}
+                freq={viewFreq}
+                layers={layers}
+                selectedId={selectedId}
+                onSelect={setSelectedId}
+                onDragSource={(id, x, y) => {
+                  const pt = dragPoint(scene, x, y);
+                  setSources((prev) => prev.map((s) => (s.id === id ? { ...s, x: pt.x, y: pt.y } : s)));
+                }}
+                onDragListener={(x, y) => setListener(dragPoint(scene, x, y))}
               />
             </View>
-            {sel.kind === 'speaker' ? (
-              <>
-                <DragSlider
-                  value={((sel.aimDeg ?? 0) + 90) / 180}
-                  onChange={(v) => patchSel({ aimDeg: Math.round(-90 + v * 180) })}
-                  label="AIM"
-                  readout={`${sel.aimDeg ?? 0}°`}
-                  onHelp={() => p.help('coverage_pattern')}
-                />
+          ) : (
+            <VizUnavailableCard />
+          ),
+        params: [
+          {
+            kind: 'fader',
+            id: 'freq',
+            label: 'FREQ',
+            value: viewFreqV,
+            onChange: setViewFreqV,
+            format: () => fmtHz(viewFreq),
+            helpKey: 'layers',
+          },
+          {
+            kind: 'group',
+            id: 'room',
+            label: 'ROOM',
+            valueLabel: `${roomW.toFixed(0)}×${roomH.toFixed(0)}m`,
+            helpKey: 'room_builder',
+            render: () => (
+              <View style={{ gap: 10 }}>
+                <DragSlider value={wV} onChange={setWV} label="ROOM WIDTH" readout={`${roomW.toFixed(2)} m`} onHelp={() => p.help('room_builder')} />
+                <DragSlider value={hV} onChange={setHV} label="ROOM DEPTH" readout={`${roomH.toFixed(2)} m`} onHelp={() => p.help('room_builder')} />
+              </View>
+            ),
+          },
+          {
+            kind: 'group',
+            id: 'layers',
+            label: 'LAYERS',
+            valueLabel: layersShort,
+            helpKey: 'layers',
+            render: () => <LayerChips layers={layers} onLayers={setLayers} help={p.help} />,
+          },
+          {
+            kind: 'group',
+            id: 'walls',
+            label: 'WALLS',
+            valueLabel: MATERIALS[boundary[selWall]].label.slice(0, 5).toUpperCase(),
+            helpKey: 'room_builder',
+            render: () => (
+              <View style={{ gap: 10 }}>
                 <View style={dstyles.chipRow}>
-                  {COVERAGE_CHIPS.map((c) => (
+                  {WALL_NAMES.map((w, i) => (
                     <LabChip
-                      key={c}
-                      label={`${c}°`}
-                      selected={(sel.coverageDeg ?? 90) === c}
-                      onPress={() => patchSel({ coverageDeg: c })}
-                      onLongPress={() => p.help('coverage_pattern')}
+                      key={w}
+                      label={`${w} · ${MATERIALS[boundary[i]].label.toUpperCase()}`}
+                      selected={selWall === i}
+                      onPress={() => setSelWall(i)}
+                      onLongPress={() => p.help('room_builder')}
                     />
                   ))}
                 </View>
-              </>
-            ) : null}
-            <GlassButton label="REMOVE SELECTED SOURCE" tint="teal" height={42} fontSize={12.5} onPress={removeSelected} />
-          </View>
-        ) : (
-          <Text style={dstyles.caption}>Tap a source (chip or in the room) to edit its frequency, level, delay, polarity and aim.</Text>
-        )}
-      </PanelCard>
-
-      <Mistakes
-        items={[
-          'Measuring reflection angles from the surface instead of the normal.',
-          'Thinking absorption and diffusion do the same job — one removes energy, the other redistributes it.',
-          'Trying to EQ away comb filtering or a modal null — both are geometry, fix position/timing.',
-          'Expecting a barrier to block bass — long wavelengths diffract around anything smaller than themselves.',
-          'Believing two sources always sum +6 dB everywhere — only where they arrive in phase.',
-          'Aligning a sub by tape measure alone — processing latency is invisible to the tape.',
-          'Treating the image source as a real loudspeaker rather than a construction that predicts reflections.',
-          'Expecting room modes to matter at 5 kHz — they dominate below the Schroeder frequency.',
-        ]}
-      />
-      <CheckQuestion spec={BUILDER_CHECK} />
-    </View>
+                <View style={dstyles.chipRow}>
+                  {MATERIAL_KEYS.map((m) => (
+                    <LabChip
+                      key={m}
+                      label={MATERIALS[m].label.toUpperCase()}
+                      selected={boundary[selWall] === m}
+                      photoHint={!!MATERIAL_PHOTOS[m]}
+                      onPress={() =>
+                        setBoundary((prev) => prev.map((b, i) => (i === selWall ? m : b)) as [MaterialKey, MaterialKey, MaterialKey, MaterialKey])
+                      }
+                      // foam/fiberglass long-press → their reference photo; others → the lesson.
+                      onLongPress={() => {
+                        const photo = MATERIAL_PHOTOS[m];
+                        if (photo) openPhoto(photo.file, photo.caption);
+                        else p.help('room_builder');
+                      }}
+                    />
+                  ))}
+                </View>
+                <Badge text="TEXTBOOK-TYPICAL TEACHING α VALUES — NOT ISO 354 PRODUCT DATA" />
+              </View>
+            ),
+          },
+          {
+            kind: 'group',
+            id: 'sources',
+            label: 'SRC',
+            valueLabel: `${sources.length}/${BUILDER_MAX_SOURCES}${selIdx ? ` · ${selIdx}` : ''}`,
+            helpKey: 'room_builder',
+            render: () => (
+              <View style={{ gap: 10 }}>
+                <View style={dstyles.chipRow}>
+                  <LabChip label="+ POINT" selected={false} onPress={() => addSource('point')} onLongPress={() => p.help('room_builder')} />
+                  <LabChip label="+ SPEAKER" selected={false} onPress={() => addSource('speaker')} onLongPress={() => p.help('room_builder')} />
+                  <LabChip label="+ SUB" selected={false} onPress={() => addSource('sub')} onLongPress={() => p.help('room_builder')} />
+                </View>
+                {sources.length >= BUILDER_MAX_SOURCES ? (
+                  <Text style={dstyles.caption}>Source limit reached (4) — remove one to add another.</Text>
+                ) : null}
+                <View style={dstyles.chipRow}>
+                  {sources.map((s, i) => (
+                    <LabChip
+                      key={s.id}
+                      label={`${i + 1} · ${s.kind.toUpperCase()}`}
+                      selected={selectedId === s.id}
+                      onPress={() => setSelectedId(selectedId === s.id ? null : s.id)}
+                      onLongPress={() => p.help('room_builder')}
+                    />
+                  ))}
+                </View>
+                {sel ? (
+                  <View style={{ gap: 10 }}>
+                    <DragSlider
+                      value={logPos(sel.freq, 40, 8000)}
+                      onChange={(v) => patchSel({ freq: logMap(v, 40, 8000) })}
+                      label="SOURCE FREQUENCY"
+                      readout={fmtHz(sel.freq)}
+                      onHelp={() => p.help('room_builder')}
+                    />
+                    <DragSlider
+                      value={(sel.levelDb + 24) / 30}
+                      onChange={(v) => patchSel({ levelDb: Math.round((v * 30 - 24) * 2) / 2 })}
+                      label="LEVEL"
+                      readout={`${sel.levelDb >= 0 ? '+' : ''}${sel.levelDb.toFixed(1)} dB`}
+                      onHelp={() => p.help('room_builder')}
+                      levelTint
+                    />
+                    <DragSlider
+                      value={sel.delayMs / 20}
+                      onChange={(v) => patchSel({ delayMs: Math.round(v * 20 * 10) / 10 })}
+                      label="DELAY"
+                      readout={`${sel.delayMs.toFixed(1)} ms`}
+                      onHelp={() => p.help('delay_align')}
+                    />
+                    <View style={dstyles.chipRow}>
+                      <LabChip
+                        label="POLARITY Ø INVERT"
+                        selected={sel.polarity === -1}
+                        onPress={() => patchSel({ polarity: sel.polarity === -1 ? 1 : -1 })}
+                        onLongPress={() => p.help('interference')}
+                      />
+                    </View>
+                    {sel.kind === 'speaker' ? (
+                      <>
+                        <DragSlider
+                          value={((sel.aimDeg ?? 0) + 90) / 180}
+                          onChange={(v) => patchSel({ aimDeg: Math.round(-90 + v * 180) })}
+                          label="AIM"
+                          readout={`${sel.aimDeg ?? 0}°`}
+                          onHelp={() => p.help('coverage_pattern')}
+                        />
+                        <View style={dstyles.chipRow}>
+                          {COVERAGE_CHIPS.map((c) => (
+                            <LabChip
+                              key={c}
+                              label={`${c}°`}
+                              selected={(sel.coverageDeg ?? 90) === c}
+                              onPress={() => patchSel({ coverageDeg: c })}
+                              onLongPress={() => p.help('coverage_pattern')}
+                            />
+                          ))}
+                        </View>
+                      </>
+                    ) : null}
+                    <GlassButton label="REMOVE SELECTED SOURCE" tint="teal" height={42} fontSize={12.5} onPress={removeSelected} />
+                  </View>
+                ) : (
+                  <Text style={dstyles.caption}>Tap a source (chip or in the room) to edit its frequency, level, delay, polarity and aim.</Text>
+                )}
+              </View>
+            ),
+          },
+        ],
+      }}
+      explain={
+        <PanelCard>
+          <Text style={dstyles.eyebrow}>WHAT TO TRY</Text>
+          <Text style={dstyles.body}>
+            • Build a cardioid: two SUBs 1.2 m apart (SRC key), rear one delayed ~3.5 ms with polarity inverted — HEAT shows energy forward, silence behind.
+          </Text>
+          <Text style={dstyles.body}>
+            • Find a comb: one SPEAKER near a GLASS wall, view ~2 kHz, then drag the listener slowly across the room and watch ARRIVALS and the bezel level ripple.
+          </Text>
+          <Text style={dstyles.body}>
+            • Meet your room modes: shrink the room to ~4 × 3 m (ROOM key), view 40–120 Hz on the lane, and watch hot/cold bands snap in — then treat two walls with FIBERGLASS and watch RT60 fall.
+          </Text>
+        </PanelCard>
+      }
+      readouts={
+        <PanelCard>
+          <Text style={dstyles.eyebrow}>AT THE LISTENER</Text>
+          <ReadoutGrid
+            help={p.help}
+            helpKey="room_builder"
+            items={[
+              { k: 'ROOM', v: `${roomW.toFixed(1)} × ${roomH.toFixed(1)} m` },
+              { k: `LEVEL @ ${fmtHz(viewFreq)}`, v: lvl == null ? '—' : `${lvl.toFixed(1)} dB` },
+              { k: '1ST ARRIVAL', v: arrivals.length > 0 ? `${(arrivals[0].t * 1000).toFixed(1)} ms` : '—' },
+              { k: 'EARLY (<80 ms)', v: arrivals.length > 0 ? `${Math.max(0, early)} arrivals` : '—' },
+              { k: 'RT60 @ 500 Hz', v: `${rt500.toFixed(2)} s` },
+              { k: 'SOURCES', v: `${sources.length}/${BUILDER_MAX_SOURCES}` },
+            ]}
+          />
+          <Badge text={MODEL_BADGE} />
+        </PanelCard>
+      }
+      mistakes={
+        <Mistakes
+          items={[
+            'Measuring reflection angles from the surface instead of the normal.',
+            'Thinking absorption and diffusion do the same job — one removes energy, the other redistributes it.',
+            'Trying to EQ away comb filtering or a modal null — both are geometry, fix position/timing.',
+            'Expecting a barrier to block bass — long wavelengths diffract around anything smaller than themselves.',
+            'Believing two sources always sum +6 dB everywhere — only where they arrive in phase.',
+            'Aligning a sub by tape measure alone — processing latency is invisible to the tape.',
+            'Treating the image source as a real loudspeaker rather than a construction that predicts reflections.',
+            'Expecting room modes to matter at 5 kHz — they dominate below the Schroeder frequency.',
+          ]}
+        />
+      }
+      check={<CheckQuestion spec={BUILDER_CHECK} />}
+    />
   );
+
 }

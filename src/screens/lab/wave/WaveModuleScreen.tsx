@@ -35,6 +35,12 @@ export type WaveModuleProps = {
   lockScroll?: (v: boolean) => void;
 };
 
+/** Rack-mode modules (APE_LAB_UX_PROPOSAL 2026-08-23): these pass `rack` to
+ *  WaveLayout, which renders the RackUnit frame (pinned stage + dock, its own
+ *  scroll well) — the host gives them the full height, no ScrollView, and no
+ *  bottom lesson row (the rack well carries its own). */
+const RACK_MODULES = new Set<WaveModuleId>(['builder']);
+
 const COMPONENTS: Record<WaveModuleId, (p: WaveModuleProps) => React.JSX.Element> = {
   builder: RoomBuilderModule,
   reflection: ReflectionModule,
@@ -113,6 +119,17 @@ export function WaveModuleScreen() {
         </Pressable>
       </View>
       <ScrollLockProvider value={setScrollLocked}>
+      {RACK_MODULES.has(meta.id) ? (
+        // Rack module: full height — WaveLayout's RackUnit pins stage + dock
+        // and owns the scroll well (incl. its own guided-lesson entry row).
+        <View style={styles.rackFill} onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
+          {width > 0 ? (
+            <LabPhotoLightbox>
+              <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} />
+            </LabPhotoLightbox>
+          ) : null}
+        </View>
+      ) : (
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" scrollEnabled={!scrollLocked}>
         <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
           {width > 0 ? (
@@ -131,6 +148,7 @@ export function WaveModuleScreen() {
           <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
         </Pressable>
       </ScrollView>
+      )}
       </ScrollLockProvider>
       <GuidedLessonSheet visible={lessonOpen} lesson={getLabLesson('wave')} controlKey={lessonKey} onClose={() => setLessonOpen(false)} />
     </View>
@@ -149,6 +167,7 @@ const styles = StyleSheet.create({
   navBtnDisabled: { color: '#45454d' },
   navPos: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, color: colors.textSub },
   scroll: { padding: 16, paddingBottom: 30, gap: 12 },
+  rackFill: { flex: 1 },
   // Bottom guided-lesson row — mirrors LabShell v2's lessonRow styling.
   lessonRow: {
     borderRadius: 9,

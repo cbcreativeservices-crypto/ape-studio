@@ -32,6 +32,11 @@ import { MatchCurveModule } from './modules/MatchCurve';
 import { FixSignalModule } from './modules/FixSignal';
 import { EqChallengesModule } from './modules/EqChallenges';
 
+/** Rack-mode modules (APE_LAB_UX_PROPOSAL 2026-08-23) render the RackUnit
+ *  frame THEMSELVES — pinned stage + dock with their own scroll well — so the
+ *  host must give them the full height and NOT wrap them in a ScrollView. */
+const RACK_MODULES = new Set<EqModuleId>(['liveEq']);
+
 const COMPONENTS: Record<EqModuleId, (p: EqModuleComponentProps) => React.JSX.Element> = {
   spectrum: SeeingFrequencyModule,
   whyEq: WhyEqModule,
@@ -96,15 +101,23 @@ export function EqModuleScreen() {
       )}
       <GlossaryLinkProvider>
         <ScrollLockProvider value={setScrollLocked}>
-          <ScrollView
-            contentContainerStyle={styles.scroll}
-            keyboardShouldPersistTaps="handled"
-            scrollEnabled={!scrollLocked}
-          >
-            <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
+          {RACK_MODULES.has(meta.id) ? (
+            // Rack module: full height, no host ScrollView — the module's own
+            // RackUnit pins stage + dock and owns the scroll well.
+            <View style={styles.rackFill} onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
               {width > 0 ? <Comp width={width} focused={focused} /> : null}
             </View>
-          </ScrollView>
+          ) : (
+            <ScrollView
+              contentContainerStyle={styles.scroll}
+              keyboardShouldPersistTaps="handled"
+              scrollEnabled={!scrollLocked}
+            >
+              <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
+                {width > 0 ? <Comp width={width} focused={focused} /> : null}
+              </View>
+            </ScrollView>
+          )}
         </ScrollLockProvider>
       </GlossaryLinkProvider>
     </View>
@@ -122,4 +135,5 @@ const styles = StyleSheet.create({
   navBtnDisabled: { color: '#45454d' },
   navPos: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, color: colors.textSub },
   scroll: { padding: 16, paddingBottom: 30, gap: 12 },
+  rackFill: { flex: 1 },
 });
