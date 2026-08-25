@@ -44,12 +44,9 @@ export type TubeRef = {
   /** Shared filename stem in the bucket, e.g. '01-12AX7' — the viewer appends
    *  `-p1.png` / `-p2.png` for the two pages. */
   stem: string;
-  /** Card pages for THIS tube (default TUBE_PAGES = 2). A temporary prop tube may
-   *  have 1. */
+  /** Card pages for THIS tube (default TUBE_PAGES = 2). Generic single/double-
+   *  page support; every current reference tube has 2. */
   pages?: 1 | 2;
-  /** Explicit page-1 filename override (bucket `tube-diagrams`), used when the file
-   *  doesn't follow `<stem>-p1.png` — e.g. a QR-free promo alias. */
-  p1File?: string;
 };
 
 /** Card pages for a tube (default TUBE_PAGES). */
@@ -127,30 +124,6 @@ export const TUBE_REFS: TubeRef[] = [
   t(38, '6FQ7', '6FQ7 / 6CG7', ['6CG7'], 'preamp', 'Noval (9-pin)', 'Dual triode — driver (6CG7 equivalent)', '38-6FQ7'),
   t(39, '7044', '7044', ['5687 family'], 'preamp', 'Noval (9-pin)', 'Dual triode — high-current / long-life driver', '39-7044'),
   t(40, '7119', '7119 / E182CC', ['E182CC'], 'preamp', 'Noval (9-pin)', 'Dual triode — high-current, low-impedance driver', '40-7119'),
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // ⚠️⚠️  TEMPORARY PROP — DELETE BEFORE LAUNCH  (added 2026-08-18, owner)  ⚠️⚠️
-  // A QR-free KT88 page-1 alias, added ONLY so the App Store / Play Store promo
-  // screenshots can show a clean tube card that passes Apple review (the real
-  // cards carry a QR code that store review flags). This is NOT a real reference
-  // tube — it is a single-page duplicate of #16 KT88 with no QR.
-  //   TO REMOVE before launch: (1) delete THIS entry, (2) delete the bucket image
-  //   `16-KT88-p1_alias.png` in `tube-diagrams`. See the delete-before-launch
-  //   reminder. Nothing else references it.
-  // ═══════════════════════════════════════════════════════════════════════════
-  {
-    id: 'kt88-promo',
-    num: 41,
-    short: 'KT88',
-    name: 'KT88',
-    alt: ['CV5220'],
-    family: 'power',
-    base: 'Octal (8-pin)',
-    role: 'Beam power tetrode — audio output',
-    stem: '16-KT88',
-    pages: 1,
-    p1File: '16-KT88-p1_alias.png',
-  },
 ];
 
 export function getTubeRef(id: string): TubeRef | undefined {
