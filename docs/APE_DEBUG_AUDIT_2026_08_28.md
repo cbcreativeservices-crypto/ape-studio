@@ -219,6 +219,67 @@ result:
 Nothing in the "verified clean" list below depends on that gap — those areas
 were traced directly.
 
+## Gap-closing pass — result (commit `1c7eafd`)
+
+The three areas above were re-run as narrow per-directory traces. **Verdict: the
+nine standalone lab screens were 8/9 clean; the meters and the cable lab were
+not.**
+
+### Fixed — live instruments (the no-fake-meters rule)
+
+- **SPL meter showed a dead mic as a live reading.** `getMeterFrame()` can
+  return null while React still thinks it is running (interruption, HAL drop,
+  route change); the loop did `if (!m) return;`, so PEAK, PEAK HOLD, Leq,
+  ELAPSED and the big number kept the last frame **indefinitely**. The warning
+  path could not save it — `flags` is derived from that same stale frame, so it
+  reported healthy. Frames are now timestamped; readouts go dark after 750 ms
+  (well above the ~50 ms native tick, so a dropped frame never flickers).
+- **Both meters inherited the previous session's peak — and saved it.** Neither
+  `startMeter` nor `onStart` reset the *native* peak-hold/Leq, and the mic
+  stream is warm-adopted across tools, so opening the SPL meter after clapping
+  in the MultiMeter showed that clap as this session's PEAK HOLD with the prior
+  ELAPSED. `onSaveLog` / `openSnapshot` write both into the Measurement Library,
+  so this was data corruption, not just display.
+- **MultiMeter kept reading after STOP:** DOMINANT (captioned "from spectrum
+  peak"), the cursor chip and SAMPLE RATE all ran off a frozen spectrum while
+  every other panel correctly went dark.
+
+### Fixed — Noise Lab (integrity)
+
+The OUTPUT advisory promised "brown −14 dB, pink −6 dB" — a protection
+`guardNoiseLevelForEngine` has **not applied** since the native high-pass landed
+(it returns the level unchanged for engine ≥ 4; shipping is 7). It also
+contradicted the OUT bezel cell one control away. The sentence is now derived
+from the same helpers as the audio path, so it cannot drift again. Also: the
+SPKR caption said "Amber =" for a line stroked in the noise colour (regression
+from `726e498`).
+
+### Fixed — Cable Install Lab (the lab awaiting your device test)
+
+- **Resume locked the whole lab.** The completed-unit mirror was never hydrated,
+  so resuming at stage 6 drew dots 2–13 locked and announced ", locked", under a
+  counter reading "5 of 15 units complete" — and the intro button reverted to
+  START LAB, throwing the user back to stage 1. The code comment had always
+  claimed this hydration existed.
+- **FireScene highlighted the correct answer instead of the learner's pick**, so
+  a wrong answer lit the *right* chip while the banner said "wrong".
+- **FloorScene redrew the stage plan "the professional way" for wrong calls** —
+  the art, and its accessibility label, rewarded the wrong answer.
+- EmiScene credited "MOVE DISTANCE" without the value changing; WhyScene
+  rendered a literal `isn\'t`.
+
+### Deferred from this pass (recipes in the agent findings)
+
+SPL: peak cells ignore the dBFS/SPL toggle and are labelled with a weighting
+they do not apply (S2/S3); the first 2 s of "5 SEC AVG" is a single sample that
+can park the gauge in RED (S5); the gauge legend claims C-weighting while the
+ring follows the selected weighting (S8); a dead `centerColor` prop (S7).
+MultiMeter: PEAK/RMS/PK HOLD carry the A/C label while being Z (M2). Cable lab:
+MechScene's verdict text rebuilds live under a frozen verdict; InspectScene's
+replay cannot reach its completion card; RackScene's phase-B latch cannot
+un-latch. **All of these are unit/label semantics or lesson-flow judgment on
+screens you have strong standing rulings about — they need your eye, not mine.**
+
 ## Verified clean (do not re-audit)
 
 - Every `JSON.parse` of AsyncStorage is inside try/catch with a default; every
