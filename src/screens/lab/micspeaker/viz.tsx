@@ -1057,9 +1057,9 @@ function GlowStroke({
  *  (same idea as the speaker lab's coverageT, tuned so on-axis near the mic
  *  glows red and the pattern nulls sit in deep navy). ILLUSTRATIVE, never a
  *  measured response. */
-function fieldT(lvl: number): number {
+function fieldT(lvl: number, minDb = -12, spanDb = 15): number {
   const db = 10 * Math.log10(Math.max(1e-4, lvl));
-  return Math.max(0, Math.min(1, (db + 12) / 15));
+  return Math.max(0, Math.min(1, (db - minDb) / spanDb));
 }
 
 /**
@@ -1350,7 +1350,15 @@ export function DistanceView({
         const offDeg = (Math.abs(Math.atan2(dy, Math.max(1e-3, dx))) * 180) / Math.PI;
         const forward = dx > 0 ? smoothEdge(offDeg, 55) : 0.12; // a mouth radiates ahead
         const lvl = forward * (refD / d) + room;
-        return Math.round(fieldT(lvl) * (JET_BUCKET_COUNT - 1));
+        // FULL AMPLITUDE RAMP (fix 2026-08-28 — owner: "it only goes to green
+        // and never blue"). Unlike the other two conceptual fields, this one
+        // adds a CONSTANT room floor (`room`), which lifts even the farthest
+        // point to ≈ −8.5 dB. Against the shared −12 dB window that floored the
+        // whole field at t ≈ 0.23 — mid-green — so the quiet end of the app's
+        // blue→red ramp was unreachable here. Anchoring this field's window at
+        // −9 dB puts the room floor at t ≈ 0.03 (deep blue) while the mouth
+        // still hits ≈ 0.97 (red), so the field now spans the whole ramp.
+        return Math.round(fieldT(lvl, -9) * (JET_BUCKET_COUNT - 1));
       });
     }
     return bucketPaths;
@@ -2238,7 +2246,18 @@ export function ShockMountView({
   // Fraction of the stand's motion that reaches the mic. IDENTICAL to the
   // host screen's "VIBRATION TRANSMITTED INTO THE MIC" meter (0.15 / 0.9).
   const damp = shockMount ? 0.15 : 0.9;
-  const AMP = 6; // stand excursion, px
+  // Stand excursion, px. RAISED 6 → 12 (owner 2026-08-28: "mic move with
+  // stand"). At 6 the rigid case moved the mic 5.4 px against the stand's 6 —
+  // and the stage then scales this 262-px scene DOWN to fit a phone, so the
+  // whole lesson was a sub-pixel shimmer: you could not see the mic travelling
+  // with the stand, nor the shock mount holding it still. At 12 the contrast is
+  // legible both ways (rigid ≈ 10.8 px together; shock ≈ 1.8 px while the stand
+  // swings 12), and the elastic bands visibly take up the difference — which is
+  // what the stage badge already promises. Everything else (readout tracks,
+  // range bars, markers) is derived from AMP, so it all scales with this.
+  // Headroom check: max ring-vs-cradle offset is AMP·(1−0.15) ≈ 10.2 px against
+  // 15 px of clearance (RING_RX 30 − INNER_RX 15), so the cradle stays inside.
+  const AMP = 12;
 
   // ── Fixed scene geometry ─────────────────────────────────────────────────
   const CAP_TRACK_Y = 18; // capsule excursion readout
