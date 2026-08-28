@@ -774,6 +774,10 @@ const WF_COOL_DARK: [number, number, number] = [16, 16, 18];
 /** Ridge-line highlight mixed INTO the level colour so the crest still reads as
  *  a bright edge without overriding what the colour is saying about level. */
 const WF_RIDGE_LIFT: [number, number, number] = [255, 250, 236];
+/** Marks the RINGING frequency (guide + label). Deliberately NOT a level
+ *  colour: it names WHICH frequency rings, and must not be mistaken for a
+ *  reading off the amplitude ramp. */
+const RING_MARK = '#c9a6ff';
 
 /** Frequency grid: 128 log-spaced points 20 Hz → 20 kHz PLUS exact feature
  *  frequencies (±0.014-decade flanks) so the engine's narrow ridges — the
@@ -913,6 +917,23 @@ export function WaterfallView(p: {
     const dyTot = h * 0.36;
     const ampH = h * 0.31;
     const tMax = waterfallTimeSpan(o); // the window, fitted to THIS room
+    // THE RINGING RIDGE - the frequency that decays slowest relative to the
+    // median of the range. Same rule the bezel's RIDGE readout uses, so the
+    // number on the bezel and the mark on the plot always agree.
+    //
+    // Marking it is the difference between a chart that SHOWS the lesson and a
+    // chart that TEACHES it. A mode can START quieter than its neighbours (cut
+    // EQ 250 and it does) yet OUTLAST all of them, because level and decay are
+    // different axes - EQ changes how loud a mode starts, never how long the
+    // room rings. Unmarked, that reads as a glitch: a thin blade sticking out
+    // of an otherwise dead surface.
+    const ringRts = WF_FREQS.map((f) => waterfallRt(o, f));
+    const sortedRt = [...ringRts].sort((x, y) => x - y);
+    const medRt = sortedRt[Math.floor(sortedRt.length / 2)] || 1;
+    let ringIdx = 0;
+    for (let i = 1; i < ringRts.length; i++) if (ringRts[i] > ringRts[ringIdx]) ringIdx = i;
+    // Only call it out when it genuinely stands apart from the range.
+    const ringF = ringRts[ringIdx] / medRt >= 1.5 ? WF_FREQS[ringIdx] : null;
     const q = 0.975; // per-slice depth step shrinks — perspective recession
     const norm = 1 - Math.pow(q, WF_SLICES - 1);
     const specRaw = WF_FREQS.map((f) => waterfallSpectrumDb(o, f));
@@ -1008,7 +1029,7 @@ export function WaterfallView(p: {
       const y = baseY - dyTot * cum;
       return { t: tSec, x0, x1: x0 + frontW * (1 - 0.2 * cum), y };
     });
-    return { slices, xL0, frontW, dxTot, dyTot, baseY, ampH, timeMarks, tMax };
+    return { slices, xL0, frontW, dxTot, dyTot, baseY, ampH, timeMarks, tMax, ringF };
   }, [o.room, o.damping01, o.eqBoostDb, o.qRing, o.reverb, w, h]);
 
   // Fine axis annotations (all static memo geometry): front-edge freq ticks +
@@ -1110,7 +1131,15 @@ export function WaterfallView(p: {
       const y = geo.baseY - ((dbV - WF_DB_FLOOR) / WF_DB_SPAN) * geo.ampH;
       dbTickYs.push({ dbV, y });
     }
-    return { floor, ticks, depthGuides, timeLines, arrow, ref, keyX, keyW, keyTop, ax0, ay0, ax1, ay1, dbTickYs };
+    // The ringing frequency's own guide, so the eye can follow the mode from
+    // its label at the front edge back to where it starts.
+    const ringGuide = Skia.Path.Make();
+    if (geo.ringF != null) {
+      const rx0 = geo.xL0 + lgFrac(geo.ringF) * geo.frontW;
+      ringGuide.moveTo(rx0, geo.baseY);
+      ringGuide.lineTo(geo.xL0 + geo.dxTot + lgFrac(geo.ringF) * geo.frontW * 0.8, geo.baseY - geo.dyTot);
+    }
+    return { floor, ticks, depthGuides, ringGuide, timeLines, arrow, ref, keyX, keyW, keyTop, ax0, ay0, ax1, ay1, dbTickYs };
   }, [geo]);
 
   // Impulse flash: the front slice flares white as each build cycle begins.
@@ -1144,6 +1173,10 @@ export function WaterfallView(p: {
             is loud, which reads as real depth instead of a grid pasted on top.
             Brightened now that most of each line is hidden. */}
         <Path path={axes.depthGuides} color="#8d93a3" style="stroke" strokeWidth={1} opacity={0.35} />
+        {/* The ringing frequency's guide, brighter than its neighbours so the
+            eye can follow the mode back from its label. Still BEHIND the
+            slices, so the range occludes it like every other guide. */}
+        <Path path={axes.ringGuide} color={RING_MARK} style="stroke" strokeWidth={1.4} opacity={0.75} />
         {/* 1-second bands — bright, Altiverb-style, so time is unmissable. */}
         {/* Chrome must never out-contrast the data: at 0.75 these floor bands
             were brighter than the decayed mountain fills they run behind. They
@@ -1182,6 +1215,27 @@ export function WaterfallView(p: {
           {d.label}
         </RNText>
       ))}
+      {/* Names the ringing mode ON THE PLOT. The bezel already prints RIDGE
+          <f> Hz, but nothing connected that number to the thin blade standing
+          out of the decayed surface -- so the most important thing the chart
+          can teach (a mode OUTLASTS its neighbours even when EQ starts it
+          quieter) looked like a rendering artefact. */}
+      {geo.ringF != null ? (
+        <RNText
+          style={{
+            position: 'absolute',
+            left: Math.max(0, Math.min(w - 62, geo.xL0 + lgFrac(geo.ringF) * geo.frontW - 31)),
+            width: 62,
+            top: geo.baseY + 22,
+            textAlign: 'center',
+            fontFamily: fonts.mono,
+            fontSize: 9,
+            color: RING_MARK,
+          }}
+        >
+          {`RINGS ${geo.ringF < 1000 ? Math.round(geo.ringF) : `${(geo.ringF / 1000).toFixed(1)}k`}`}
+        </RNText>
+      ) : null}
       {/* Hz caps the RIGHT end of the frequency strip. At the left it sat at
           x 1–27 while the "30" label clamped to x 26, so the unit and the first
           tick touched; and it read as a seventh station rather than as the
