@@ -392,9 +392,14 @@ export function TransferCurveGraph({
 export function WaveshapeGraph({
   type,
   driveDb,
+  mix = 1,
 }: {
   type: 'hard' | 'soft' | 'tube';
   driveDb: number;
+  /** 0..1 wet blend — the drawn output is the MIXED result, matching the DSP
+   *  and the animated flow (bug-class fix 2026-08-28: at 50% PARALLEL the
+   *  static hero stayed fully clipped while the animation blended). */
+  mix?: number;
 }) {
   const H = 120;
   const drive = Math.pow(10, driveDb / 20);
@@ -402,7 +407,8 @@ export function WaveshapeGraph({
     const N = 160;
     let a = '', b = '';
     // Normalize the shaped wave to its own peak so the SHAPE difference (not
-    // level) is what the student compares.
+    // level) is what the student compares — then blend against the dry sine
+    // exactly like the DSP: mix·shaped + (1−mix)·dry.
     let peak = 1e-9;
     const outs: number[] = [];
     for (let i = 0; i <= N; i++) {
@@ -411,14 +417,16 @@ export function WaveshapeGraph({
       outs.push(y);
       peak = Math.max(peak, Math.abs(y));
     }
+    const mixV = Math.max(0, Math.min(1, mix));
     for (let i = 0; i <= N; i++) {
       const px = (i / N) * W;
       const xin = 0.9 * Math.sin((2 * PI * i) / N);
+      const blended = mixV * (outs[i] / peak) + (1 - mixV) * xin;
       a += `${i === 0 ? 'M' : 'L'}${px.toFixed(1)} ${(H / 2 - xin * (H / 2 - 8)).toFixed(1)}`;
-      b += `${i === 0 ? 'M' : 'L'}${px.toFixed(1)} ${(H / 2 - (outs[i] / peak) * (H / 2 - 8)).toFixed(1)}`;
+      b += `${i === 0 ? 'M' : 'L'}${px.toFixed(1)} ${(H / 2 - blended * (H / 2 - 8)).toFixed(1)}`;
     }
     return { inPath: a, outPath: b };
-  }, [type, drive]);
+  }, [type, drive, mix]);
   const yTop = H / 2 - (H / 2 - 8); // +1.0 full scale
   const yBot = H / 2 + (H / 2 - 8); // −1.0 full scale
   return (

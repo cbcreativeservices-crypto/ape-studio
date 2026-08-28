@@ -57,10 +57,13 @@ import {
   Skia,
   vec,
 } from '@shopify/react-native-skia';
-import {
+import Animated, {
+  useAnimatedStyle,
   useDerivedValue,
   useFrameCallback,
   useSharedValue,
+  withSequence,
+  withTiming,
   type SharedValue,
 } from 'react-native-reanimated';
 import { colors, fonts } from '../../../theme/tokens';
@@ -1034,6 +1037,8 @@ export function AnalyticWaveformView({
   phasesDeg,
   level = 1,
   noise = null,
+  f0 = 1,
+  gainDbAt = null,
 }: {
   width: number;
   height?: number;
@@ -1043,6 +1048,12 @@ export function AnalyticWaveformView({
   level?: number;
   /** Noise color key overrides the recipe ('white' | 'pink' | 'brown'). */
   noise?: string | null;
+  /** Fundamental (Hz) — needed to evaluate gainDbAt per partial. */
+  f0?: number;
+  /** dB gain at a frequency (the display twin of the audio EQ) — the drawn
+   *  wave is POST-EQ, matching the spectrum pane (bug-class fix 2026-08-28:
+   *  a low-passed SAW must lose its edge here too, not only in the sticks). */
+  gainDbAt?: ((f: number) => number) | null;
 }) {
   const w = width;
   const h = height;
@@ -1070,12 +1081,16 @@ export function AnalyticWaveformView({
       let sum = 0;
       for (const v of amps) sum += v;
       const norm = 1 / (sum > 1 ? sum : 1);
+      // EQ weight per partial (1 when no EQ) — display mirrors DSP.
+      const wts = amps.map((v, n) =>
+        v > 0 && gainDbAt ? Math.pow(10, gainDbAt((n + 1) * f0) / 20) : 1,
+      );
       for (let i = 0; i <= N; i++) {
         const x01 = i / N;
         let s = 0;
         for (let n = 0; n < amps.length; n++) {
           if (amps[n] <= 0) continue;
-          s += amps[n] * Math.sin(2 * Math.PI * (n + 1) * x01 * 2.5 + (phasesDeg[n] * Math.PI) / 180);
+          s += amps[n] * wts[n] * Math.sin(2 * Math.PI * (n + 1) * x01 * 2.5 + (phasesDeg[n] * Math.PI) / 180);
         }
         ys.push(mid - a * s * norm);
       }
@@ -1090,7 +1105,7 @@ export function AnalyticWaveformView({
     u.lineTo(w, mid);
     u.close();
     return { path: p, under: u };
-  }, [w, h, amps, phasesDeg, level, noise]);
+  }, [w, h, amps, phasesDeg, level, noise, f0, gainDbAt]);
 
   return (
     <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
@@ -1118,6 +1133,7 @@ export function AnalyticSpectrumView({
   amps,
   gainDbAt = null,
   noise = null,
+  level = 1,
 }: {
   width: number;
   height?: number;
@@ -1126,11 +1142,16 @@ export function AnalyticSpectrumView({
   /** dB gain applied at a frequency (the display twin of the audio EQ). */
   gainDbAt?: ((f: number) => number) | null;
   noise?: string | null;
+  /** 0..1 visual scale (from the level slider) — the sticks ride the SAME
+   *  level as every other pane ("every control drives every view"; bug-class
+   *  fix 2026-08-28: the spectrum was deaf to LEVEL). */
+  level?: number;
 }) {
   const w = width;
   const h = height;
   const fMax = 13 * f0;
   const floorDb = -48;
+  const lvlDb = 20 * Math.log10(Math.max(1e-4, Math.min(1, level)));
 
   const { sticks, slope } = useMemo(() => {
     const stickPath = Skia.Path.Make();
@@ -1145,7 +1166,7 @@ export function AnalyticSpectrumView({
       const N = 60;
       for (let i = 0; i <= N; i++) {
         const f = 40 * Math.pow(16000 / 40, i / N);
-        let db = per * Math.log2(f / 1000);
+        let db = per * Math.log2(f / 1000) + lvlDb;
         if (gainDbAt) db += gainDbAt(f);
         const x = (i / N) * w;
         const y = yOf(db - 10);
@@ -1161,7 +1182,7 @@ export function AnalyticSpectrumView({
       const a = amps[n] * norm;
       if (a <= 0.001) continue;
       const f = (n + 1) * f0;
-      let db = 20 * Math.log10(a);
+      let db = 20 * Math.log10(a) + lvlDb;
       if (gainDbAt) db += gainDbAt(f);
       if (db <= floorDb) continue;
       const x = (f / fMax) * w;
@@ -1169,7 +1190,7 @@ export function AnalyticSpectrumView({
       stickPath.lineTo(x, yOf(db));
     }
     return { sticks: stickPath, slope: slopePath };
-  }, [w, h, f0, amps, gainDbAt, noise, fMax]);
+  }, [w, h, f0, amps, gainDbAt, noise, fMax, lvlDb]);
 
   return (
     <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
@@ -1568,194 +1589,586 @@ export function WavelengthRulerView({
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Module 7 — Time vs space: the SAME wave on two rulers. The two cursor dots
-// always sit at the SAME PHASE — equal heights is the whole lesson (d = v·t).
+// Module 7 — ONE WAVE, TWO QUESTIONS (redesign, owner-approved 2026-08-27).
+// THE ROOM (top): a camera flash — pressure at EVERY point at one instant,
+// ruler in meters. THE MIC'S OUTPUT (bottom): pressure at the mic ONLY, drawn
+// over time into a real XLR MIC INPUT on the NOW line, ruler in milliseconds.
+// A drawn cable connects the ringed mic in the room to the scope's input —
+// measurement provenance is explicit, nothing left to the imagination.
+// PHYSICS (exact): the PROBE walks DOWNSTREAM — what the mic drew τ ms ago now
+// sits 343·τ m PAST it, so room(MICX+off) ≡ scope(NOWX−off) at every offset.
 
-const DD_CYC = 2.2; // cycles across each window (identical → same pattern width)
+const DD_CYC = 2.2; // cycles across each window (identical → matched px scales)
+const DD_H = 100; // per-panel canvas height
+const DD_CON = 26; // cable-connector strip height
+
+/** FrostCorner — an ice-crystal cluster for one display corner while FROZEN:
+ *  sharp gradient shards creeping in from the corner, a tiny six-arm crystal,
+ *  and specks. Drawn for the TOP-LEFT corner; the other three are rotations. */
+function FrostCorner() {
+  const S = 40;
+  const shards = useMemo(() => {
+    const p = Skia.Path.Make();
+    // main diagonal shard + two edge shards, all rooted at the corner
+    p.moveTo(0, 0);
+    p.lineTo(24, 7);
+    p.lineTo(9, 11);
+    p.close();
+    p.moveTo(0, 0);
+    p.lineTo(7, 24);
+    p.lineTo(11, 9);
+    p.close();
+    p.moveTo(0, 0);
+    p.lineTo(17, 17);
+    p.lineTo(6, 6);
+    p.close();
+    return p;
+  }, []);
+  const flake = useMemo(() => {
+    const p = Skia.Path.Make();
+    const cx = 22;
+    const cy = 22;
+    for (let i = 0; i < 3; i++) {
+      const a = (i * Math.PI) / 3 + Math.PI / 6;
+      p.moveTo(cx - 5 * Math.cos(a), cy - 5 * Math.sin(a));
+      p.lineTo(cx + 5 * Math.cos(a), cy + 5 * Math.sin(a));
+    }
+    return p;
+  }, []);
+  return (
+    <Canvas style={{ width: S, height: S }}>
+      <Path path={shards}>
+        <LinearGradient start={vec(0, 0)} end={vec(26, 26)} colors={['#eaf6ff', '#9fd8ff', 'rgba(127,212,255,0)']} />
+      </Path>
+      <Path path={shards} color="#ffffff" style="stroke" strokeWidth={0.7} opacity={0.5} />
+      <Path path={flake} color="#cfeaff" style="stroke" strokeWidth={1} opacity={0.55} strokeCap="round" />
+      <Circle cx={28} cy={5} r={1.2} color="#cfeaff" opacity={0.7} />
+      <Circle cx={5} cy={28} r={1.2} color="#cfeaff" opacity={0.7} />
+      <Circle cx={13} cy={13} r={0.9} color="#ffffff" opacity={0.6} />
+    </Canvas>
+  );
+}
+
+/** The wavy line itself — shown INSIDE the predict-first cover so the question
+ *  is self-explanatory (the learner has seen this shape all course; no "DAW"
+ *  or "axis" vocabulary needed to answer). Static, styled to house standards. */
+export function WavyLineView({ width, height = 54 }: { width: number; height?: number }) {
+  const w = width;
+  const h = height;
+  const trace = useMemo(() => {
+    const p = Skia.Path.Make();
+    const mid = h / 2;
+    const a = h * 0.36;
+    const N = 80;
+    for (let i = 0; i <= N; i++) {
+      const x = 4 + (i / N) * (w - 8);
+      // A little musical irregularity so it reads as a recording, not a test tone.
+      const t = (i / N) * Math.PI * 2 * 2.6;
+      const y = mid - a * (0.72 * Math.sin(t) + 0.28 * Math.sin(2.7 * t + 0.9));
+      if (i === 0) p.moveTo(x, y);
+      else p.lineTo(x, y);
+    }
+    return p;
+  }, [w, h]);
+  return (
+    <Canvas style={{ width: w, height: h }}>
+      <SkLine p1={{ x: 4, y: h / 2 }} p2={{ x: w - 4, y: h / 2 }} color={ZERO_REF} strokeWidth={1} />
+      <GlowStroke path={trace} color={WAVE} width={2.2} />
+    </Canvas>
+  );
+}
 
 export function DualDomainView({
   width,
   visHz,
+  realHz,
   cursor,
   running,
+  frozen = false,
 }: {
   width: number;
   visHz: number;
-  /** 0..1 — the linked phase cursor (from the panel's slider). */
+  /** REAL frequency (Hz) — the honest numbers on the rulers and the chip. */
+  realHz: number;
+  /** 0..1 — the PROBE: how far back (in time / down the room) to read. */
   cursor: number;
   running: boolean;
+  /** FREEZE engaged: fires the camera-FLASH animation, then keeps a cyan
+   *  frozen border on the display until released (owner 2026-08-27). */
+  frozen?: boolean;
 }) {
   // Phase clock: continuous through the 110/220 chip switches.
   const phase = usePhaseClock(running, visHz);
   const w = width;
-  const h = 84;
 
-  // TOP — pressure at ONE point (the mic, right edge) plotted over TIME.
-  const timeTrace = useDerivedValue(() => {
+  // Camera flash on freeze — the room panel IS "a camera flash", so engaging
+  // FREEZE literally takes the photo: white pop that decays fast.
+  const flash = useSharedValue(0);
+  useEffect(() => {
+    if (frozen) flash.value = withSequence(withTiming(0.85, { duration: 30 }), withTiming(0, { duration: 230 }));
+  }, [frozen, flash]);
+  const flashStyle = useAnimatedStyle(() => ({ opacity: flash.value }));
+
+  // Geometry (owner 2026-08-27): SPEAKER at the right firing LEFT, the mic
+  // just downstream — and the scope's NOW line at the SAME x as the mic, so
+  // the room's mic stands directly ABOVE its own input: the cable drops
+  // straight down and the PROBE is ONE vertical line through both graphs
+  // (probe x is IDENTICAL in room and scope — exact physics, not styling).
+  // Mic well downstream of the speaker so the INCOMING stretch is visible —
+  // that stretch is literally the scope's FUTURE (aligned below as the ghost
+  // trace right of NOW). Owner 2026-08-27.
+  const MICX = w - 96;
+  const NOWX = MICX;
+  const PPX = (2 * Math.PI * DD_CYC) / w; // phase per px (same in both windows)
+  const maxOff = MICX - 16;
+  const off = cursor * maxOff;
+  const probeX = MICX - off; // same spot, same x, both graphs
+
+  // Honest numbers (REAL Hz, never the slowed visual clock).
+  const windowMs = (DD_CYC / realHz) * 1000;
+  const tMs = off * (windowMs / w);
+  const dM = (343 * tMs) / 1000;
+  const pxPerM = w / ((343 * windowMs) / 1000);
+
+  const roomMid = 46;
+  const roomAmp = 26;
+  const scopeMid = 46;
+  const scopeAmp = 27;
+
+  // ── THE ROOM: p(x) = cos(ph + k·(x − MICX)) — traveling LEFT, away from
+  // the right-hand speaker. With NOWX = MICX the scope below draws the SAME
+  // function: both traces move the SAME direction at the SAME speed, in
+  // lockstep (owner 2026-08-27 — opposite motion was the confusion).
+  const roomTrace = useDerivedValue(() => {
     const ph = phase.value;
     const p = Skia.Path.Make();
-    const mid = h / 2;
-    const a = h * 0.34;
-    const N = 90;
+    const N = 96;
     for (let i = 0; i <= N; i++) {
-      const x = (i / N) * w;
-      // Right edge = now; moving left = further into the past.
-      const y = mid - a * Math.cos(ph - ((w - x) / w) * 2 * Math.PI * DD_CYC);
+      const x = 6 + (i / N) * (w - 36);
+      const y = roomMid - roomAmp * Math.cos(ph + PPX * (x - MICX));
       if (i === 0) p.moveTo(x, y);
       else p.lineTo(x, y);
     }
     return p;
   }, [phase, w]);
-  const timeDots = useDerivedValue(() => {
+  // Compression banding — bars fatten where the air is squeezed right now.
+  const roomBands = useDerivedValue(() => {
     const ph = phase.value;
-    const mid = h / 2;
-    const a = h * 0.34;
     const p = Skia.Path.Make();
-    // The mic itself (right edge, reading "now").
-    p.addCircle(w - 6, mid - a * Math.cos(ph), 4);
-    // The linked cursor — cursor c of a cycle back in time.
-    const xc = w * (1 - cursor);
-    p.addCircle(xc, mid - a * Math.cos(ph - cursor * 2 * Math.PI * DD_CYC), 4.5);
+    for (let x = 8; x < w - 30; x += 8) {
+      const c = Math.max(0, Math.cos(ph + PPX * (x - MICX)));
+      const hw = 0.8 + 2.6 * c;
+      p.addRect(Skia.XYWHRect(x - hw, 14, hw * 2, 60));
+    }
     return p;
-  }, [phase, w, cursor]);
-
-  // BOTTOM — pressure along DISTANCE at this instant (source at the left).
-  const spaceTrace = useDerivedValue(() => {
+  }, [phase, w]);
+  const roomProbeDot = useDerivedValue(() => {
     const ph = phase.value;
     const p = Skia.Path.Make();
-    const mid = h / 2;
-    const a = h * 0.34;
-    const N = 90;
+    p.addCircle(probeX, roomMid - roomAmp * Math.cos(ph - PPX * off), 4.5);
+    return p;
+  }, [phase, probeX, off]);
+
+  // ── THE MIC'S OUTPUT: r(τ ago) — the SAME mic's history, NOW at NOWX. ──
+  const scopeTrace = useDerivedValue(() => {
+    const ph = phase.value;
+    const p = Skia.Path.Make();
+    const N = 96;
     for (let i = 0; i <= N; i++) {
-      const x = (i / N) * w;
-      const y = mid - a * Math.cos(ph - (x / w) * 2 * Math.PI * DD_CYC);
+      const x = 4 + (i / N) * (NOWX - 4);
+      const y = scopeMid - scopeAmp * Math.cos(ph - PPX * (NOWX - x));
       if (i === 0) p.moveTo(x, y);
       else p.lineTo(x, y);
     }
     return p;
   }, [phase, w]);
-  const spaceDots = useDerivedValue(() => {
-    const ph = phase.value;
-    const mid = h / 2;
-    const a = h * 0.34;
-    const p = Skia.Path.Make();
-    // Same phase as the time cursor → ALWAYS the same height. That's d = v·t.
-    const xc = w * cursor;
-    p.addCircle(xc, mid - a * Math.cos(ph - cursor * 2 * Math.PI * DD_CYC), 4.5);
-    return p;
-  }, [phase, w, cursor]);
-
-  // Gradient underfills — the SAME cos(φ − θ(x)) samples as the traces,
-  // closed back to the midline (styling only; identical trace math).
-  const timeUnder = useDerivedValue(() => {
+  const scopePen = useDerivedValue(() => {
     const ph = phase.value;
     const p = Skia.Path.Make();
-    const mid = h / 2;
-    const a = h * 0.34;
-    const N = 90;
-    p.moveTo(0, mid);
-    for (let i = 0; i <= N; i++) {
-      const x = (i / N) * w;
-      p.lineTo(x, mid - a * Math.cos(ph - ((w - x) / w) * 2 * Math.PI * DD_CYC));
-    }
-    p.lineTo(w, mid);
-    p.close();
+    p.addCircle(NOWX, scopeMid - scopeAmp * Math.cos(ph), 4.5);
     return p;
   }, [phase, w]);
-  const spaceUnder = useDerivedValue(() => {
+  const scopeProbeDot = useDerivedValue(() => {
     const ph = phase.value;
     const p = Skia.Path.Make();
-    const mid = h / 2;
-    const a = h * 0.34;
-    const N = 90;
-    p.moveTo(0, mid);
-    for (let i = 0; i <= N; i++) {
-      const x = (i / N) * w;
-      p.lineTo(x, mid - a * Math.cos(ph - (x / w) * 2 * Math.PI * DD_CYC));
+    p.addCircle(probeX, scopeMid - scopeAmp * Math.cos(ph - PPX * off), 4.5);
+    return p;
+  }, [phase, probeX, off]);
+  // NOTHING right of NOW (owner 2026-08-28): the future hasn't been recorded —
+  // the scope stays empty past the playhead.
+
+  // ONE probe line, reused by both panels (same x!) + its strip segment.
+  const probeLine = useMemo(() => {
+    const p = Skia.Path.Make();
+    p.moveTo(probeX, 10);
+    p.lineTo(probeX, 78);
+    return p;
+  }, [probeX]);
+  const probeStripLine = useMemo(() => {
+    const p = Skia.Path.Make();
+    p.moveTo(probeX, 0);
+    p.lineTo(probeX, DD_CON);
+    return p;
+  }, [probeX]);
+
+  // ── Illustrated hardware (icon-quality rule — never stick glyphs). ──
+  const micMesh = useMemo(() => {
+    const p = Skia.Path.Make();
+    const gr = 8.4;
+    for (const t of [-0.55, 0, 0.55]) {
+      const hw = gr * Math.sqrt(1 - t * t);
+      p.addOval(Skia.XYWHRect(MICX - hw, 25 + gr * t - 1.4, hw * 2, 2.8));
     }
-    p.lineTo(w, mid);
+    for (const t of [-0.5, 0.5]) {
+      const hh = gr * Math.sqrt(1 - t * t);
+      p.addOval(Skia.XYWHRect(MICX + gr * t - 1.4, 25 - hh, 2.8, hh * 2));
+    }
+    return p;
+  }, [MICX]);
+  const micBody = useMemo(() => {
+    const p = Skia.Path.Make();
+    p.moveTo(MICX - 6, 36);
+    p.lineTo(MICX + 6, 36);
+    p.lineTo(MICX + 4, 57);
+    p.lineTo(MICX - 4, 57);
     p.close();
     return p;
-  }, [phase, w]);
+  }, [MICX]);
+  const micStand = useMemo(() => {
+    const p = Skia.Path.Make();
+    p.moveTo(MICX, 71);
+    p.lineTo(MICX - 8, 79);
+    p.moveTo(MICX, 71);
+    p.lineTo(MICX + 8, 79);
+    p.moveTo(MICX, 71);
+    p.lineTo(MICX, 79);
+    return p;
+  }, [MICX]);
+  const micRing = useMemo(() => {
+    const p = Skia.Path.Make();
+    p.addCircle(MICX, 27, 13.5);
+    return p;
+  }, [MICX]);
+  // The mic's cable — drops STRAIGHT down into the scope's MIC INPUT
+  // (mic and input share the same x — that alignment IS the lesson).
+  const cablePath = useMemo(() => {
+    const p = Skia.Path.Make();
+    p.moveTo(MICX, 0);
+    p.lineTo(NOWX, DD_CON);
+    return p;
+  }, [MICX, NOWX]);
 
-  const cursorLineTop = useMemo(() => {
+  // DAW-style playhead cap riding the ruler at NOW.
+  const playheadCap = useMemo(() => {
     const p = Skia.Path.Make();
-    const x = w * (1 - cursor);
-    p.moveTo(x, 4);
-    p.lineTo(x, h - 4);
-    return p;
-  }, [w, cursor]);
-  const cursorLineBottom = useMemo(() => {
-    const p = Skia.Path.Make();
-    const x = w * cursor;
-    p.moveTo(x, 4);
-    p.lineTo(x, h - 4);
-    return p;
-  }, [w, cursor]);
-  // The source — a micro ILLUSTRATED cone (curved gradient flare + dust cap),
-  // not a bare trapezoid outline (standards rule 1).
-  const speaker = useMemo(() => {
-    const cy = h / 2;
-    const p = Skia.Path.Make();
-    p.moveTo(4, cy - 5);
-    p.quadTo(8, cy - 6.5, 12, cy - 12);
-    p.lineTo(12, cy + 12);
-    p.quadTo(8, cy + 6.5, 4, cy + 5);
+    p.moveTo(NOWX - 5, 86);
+    p.lineTo(NOWX + 5, 86);
+    p.lineTo(NOWX, 77);
     p.close();
     return p;
-  }, []);
+  }, [NOWX]);
 
-  const underGrad = [withAlpha(WAVE, 0), withAlpha(WAVE, 0.16), withAlpha(WAVE, 0)];
+  // Rulers — ALIGNED tick-for-tick (owner 2026-08-27: "same width, different
+  // amounts" read as a contradiction). Every room tick has a scope tick at the
+  // SAME x with its d = c·t equivalent: 1 m sits directly above 2.9 ms — the
+  // matched widths are now visibly THE LESSON, not a coincidence.
+  const roomTicks = useMemo(() => {
+    const out: { x: number; label: string }[] = [];
+    for (let m = 0; MICX - m * pxPerM > 8; m++) out.push({ x: MICX - m * pxPerM, label: `${m} m` });
+    return out;
+  }, [MICX, pxPerM, w]);
+  const scopeTicks = useMemo(() => {
+    const out: { x: number; label: string }[] = [];
+    for (let m = 1; MICX - m * pxPerM > 8; m++)
+      out.push({ x: MICX - m * pxPerM, label: `${((m * 1000) / 343).toFixed(1)} ms` });
+    return out;
+  }, [MICX, pxPerM]);
+  const roomRuler = useMemo(() => {
+    const p = Skia.Path.Make();
+    p.moveTo(6, 80);
+    p.lineTo(w - 6, 80);
+    for (const t of roomTicks) {
+      p.moveTo(t.x, 77);
+      p.lineTo(t.x, 83);
+    }
+    return p;
+  }, [roomTicks, w]);
+  const scopeRuler = useMemo(() => {
+    const p = Skia.Path.Make();
+    p.moveTo(6, 80);
+    p.lineTo(w - 6, 80);
+    for (const t of scopeTicks) {
+      p.moveTo(t.x, 77);
+      p.lineTo(t.x, 83);
+    }
+    p.moveTo(NOWX, 77);
+    p.lineTo(NOWX, 83);
+    return p;
+  }, [scopeTicks, NOWX, w]);
+  const scopeGrid = useMemo(() => {
+    const p = Skia.Path.Make();
+    for (const t of scopeTicks) {
+      p.moveTo(t.x, 10);
+      p.lineTo(t.x, 76);
+    }
+    return p;
+  }, [scopeTicks]);
+
   return (
-    <View style={{ gap: 4 }}>
-      <Text style={twStyles.winLabel}>OVER TIME — pressure at the mic (right edge = now)</Text>
-      <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
-        <Path path={timeUnder} opacity={0.85}>
-          <LinearGradient start={vec(0, 0)} end={vec(0, h)} colors={underGrad} />
-        </Path>
-        <SkLine p1={{ x: 0, y: h / 2 }} p2={{ x: w, y: h / 2 }} color={ZERO_REF} strokeWidth={1.2} />
-        {/* Linked cursor: soft glow + dashed core. */}
-        <Path path={cursorLineTop} color={ACCENT_GREEN} style="stroke" strokeWidth={3} opacity={0.18}>
-          <BlurMask blur={3} style="normal" />
-        </Path>
-        <Path path={cursorLineTop} color={ACCENT_GREEN} style="stroke" strokeWidth={1.1} opacity={0.6}>
-          <DashPathEffect intervals={[4, 4]} />
-        </Path>
-        <GlowStroke path={timeTrace} color={WAVE} width={2.2} />
-        <Path path={timeDots} color={ACCENT_GREEN} opacity={0.4}>
-          <BlurMask blur={5} style="normal" />
-        </Path>
-        <Path path={timeDots} color={ACCENT_GREEN} />
-      </Canvas>
-      <Text style={twStyles.winLabel}>OVER DISTANCE — pressure along the room (this instant)</Text>
-      <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
-        <Path path={spaceUnder} opacity={0.85}>
-          <LinearGradient start={vec(0, 0)} end={vec(0, h)} colors={underGrad} />
-        </Path>
-        <SkLine p1={{ x: 0, y: h / 2 }} p2={{ x: w, y: h / 2 }} color={ZERO_REF} strokeWidth={1.2} />
-        <Path path={cursorLineBottom} color={ACCENT_GREEN} style="stroke" strokeWidth={3} opacity={0.18}>
-          <BlurMask blur={3} style="normal" />
-        </Path>
-        <Path path={cursorLineBottom} color={ACCENT_GREEN} style="stroke" strokeWidth={1.1} opacity={0.6}>
-          <DashPathEffect intervals={[4, 4]} />
-        </Path>
-        {/* Micro speaker: magnet nub + gradient cone + dust cap. */}
-        <RoundedRect x={0} y={h / 2 - 6} width={4} height={12} r={1.5}>
-          <LinearGradient start={vec(0, h / 2 - 6)} end={vec(0, h / 2 + 6)} colors={[METAL_MID, METAL_LO]} />
-        </RoundedRect>
-        <Path path={speaker}>
-          <LinearGradient start={vec(4, h / 2 - 12)} end={vec(12, h / 2 + 12)} colors={[CONE_HI, CONE_MID, CONE_LO]} />
-        </Path>
-        <Circle cx={5.5} cy={h / 2} r={2.2} color="#9ba0ac" />
-        <GlowStroke path={spaceTrace} color={WAVE} width={2.2} />
-        <Path path={spaceDots} color={ACCENT_GREEN} opacity={0.4}>
-          <BlurMask blur={5} style="normal" />
-        </Path>
-        <Path path={spaceDots} color={ACCENT_GREEN} />
-      </Canvas>
+    <View style={{ gap: 3 }}>
+      <View style={ddStyles.labelRow}>
+        <Text style={twStyles.winLabel}>THE ROOM — CAMERA FLASH</Text>
+        <Text style={[ddStyles.measured, { color: '#7fd4ff' }]}>MEASURED: every point · one instant</Text>
+      </View>
+      <View style={{ width: w, height: DD_H }}>
+        <Canvas style={{ width: w, height: DD_H, backgroundColor: BG }}>
+          <Path path={roomBands} color="#7fd4ff" opacity={0.1} />
+          {/* the SAME aligned grid as the scope — matched widths are the lesson */}
+          <Path path={scopeGrid} color="#1c1c22" style="stroke" strokeWidth={1} />
+          <SkLine p1={{ x: 6, y: roomMid }} p2={{ x: w - 30, y: roomMid }} color={ZERO_REF} strokeWidth={1.1} />
+          <GlowStroke path={roomTrace} color={WAVE} width={2.2} />
+          {/* camera — this panel is a PHOTO of the whole room */}
+          <RoundedRect x={8} y={6} width={22} height={13} r={2.5}>
+            <LinearGradient start={vec(0, 6)} end={vec(0, 19)} colors={['#4a4f56', '#2b2f35', '#17191d']} />
+          </RoundedRect>
+          <RoundedRect x={11} y={3.4} width={6} height={3.4} r={1} color="#33373d" />
+          <RoundedRect x={9.6} y={8} width={2.6} height={9} r={1} color="#1b1e23" />
+          <Circle cx={19.6} cy={12.5} r={5} color="#101317" />
+          <Circle cx={19.6} cy={12.5} r={5} style="stroke" strokeWidth={1} color="#585e66" />
+          <Circle cx={19.6} cy={12.5} r={3.6}>
+            <RadialGradient c={vec(18.4, 11.2)} r={6} colors={['#9fc4e8', '#2e4a66', '#0d151d']} />
+          </Circle>
+          <Circle cx={18.4} cy={11.2} r={1} color="#dceafc" opacity={0.9} />
+          <RoundedRect x={25} y={4.2} width={3.4} height={2} r={0.7} color="#6d747c" />
+          {/* studio monitor — the source, at the RIGHT, firing left into the room */}
+          <RoundedRect x={w - 27} y={21} width={24} height={44} r={3}>
+            <LinearGradient start={vec(w - 27, 0)} end={vec(w - 3, 0)} colors={['#101215', '#26282d', '#3a3d42']} />
+          </RoundedRect>
+          <RoundedRect x={w - 25.4} y={22.6} width={20.8} height={40.8} r={2} style="stroke" strokeWidth={0.7} color="#4a4f56" opacity={0.7} />
+          <Circle cx={w - 15} cy={51} r={8.6} color="#0c0e11" />
+          <Circle cx={w - 15} cy={51} r={7.6}>
+            <RadialGradient c={vec(w - 17.4, 48.6)} r={11} colors={['#8f969e', '#4b5057', '#1c1f23', '#0a0c0f']} />
+          </Circle>
+          <Circle cx={w - 15} cy={51} r={2.9} color="#171b20" />
+          <Circle cx={w - 16.1} cy={49.8} r={0.9} color="#dfe5ea" opacity={0.6} />
+          <Circle cx={w - 15} cy={30} r={4.4} color="#0c0e11" />
+          <Circle cx={w - 15} cy={30} r={3.6}>
+            <RadialGradient c={vec(w - 16.2, 28.8)} r={5.4} colors={['#8f969e', '#4b5057', '#0f1114']} />
+          </Circle>
+          <Circle cx={w - 16.1} cy={28.9} r={0.8} color="#dfe5ea" opacity={0.7} />
+          {/* THE mic — mesh grille ball + tapered body + stand, ringed amber */}
+          <Circle cx={MICX} cy={27} r={15} color={ACCENT_GREEN} opacity={0.08}>
+            <BlurMask blur={8} style="normal" />
+          </Circle>
+          <Circle cx={MICX} cy={25} r={9}>
+            <RadialGradient c={vec(MICX - 3.4, 21.6)} r={15} colors={['#dde0e7', '#8a8c94', '#33343c']} />
+          </Circle>
+          <Path path={micMesh} color="#101116" style="stroke" strokeWidth={0.7} opacity={0.55} />
+          <Circle cx={MICX - 3.1} cy={21.5} r={2.2} color="#ffffff" opacity={0.4}>
+            <BlurMask blur={2.2} style="normal" />
+          </Circle>
+          <RoundedRect x={MICX - 6.5} y={33.6} width={13} height={2.6} r={1} color="#1e2126" />
+          <Path path={micBody}>
+            <LinearGradient start={vec(MICX - 6, 0)} end={vec(MICX + 6, 0)} colors={[METAL_HI, METAL_MID, METAL_LO]} />
+          </Path>
+          <SkLine p1={{ x: MICX - 3.4, y: 37.5 }} p2={{ x: MICX - 4.1, y: 55.5 }} color="#ffffff" strokeWidth={1} opacity={0.4} />
+          <Circle cx={MICX} cy={52} r={1.1} color={WAVE} />
+          <RoundedRect x={MICX - 1} y={57} width={2} height={14} r={1} color="#3a3f45" />
+          <Path path={micStand} color="#3a3f45" style="stroke" strokeWidth={2} strokeCap="round" />
+          <Path path={micRing} color={WAVE} style="stroke" strokeWidth={1.4}>
+            <DashPathEffect intervals={[4, 3]} />
+          </Path>
+          {/* probe */}
+          <Path path={probeLine} color={ACCENT_GREEN} style="stroke" strokeWidth={3} opacity={0.16}>
+            <BlurMask blur={3} style="normal" />
+          </Path>
+          <Path path={probeLine} color={ACCENT_GREEN} style="stroke" strokeWidth={1.1} opacity={0.6}>
+            <DashPathEffect intervals={[4, 4]} />
+          </Path>
+          <Path path={roomRuler} color={AXIS_TEXT} style="stroke" strokeWidth={1} opacity={0.7} />
+          <Path path={roomProbeDot} color={ACCENT_GREEN} opacity={0.4}>
+            <BlurMask blur={5} style="normal" />
+          </Path>
+          <Path path={roomProbeDot} color={ACCENT_GREEN} />
+        </Canvas>
+        {roomTicks.map((t) => (
+          <Text key={t.label} style={[ddStyles.tick, { left: t.x - 17, top: 84 }]}>{t.label}</Text>
+        ))}
+        <Text style={[ddStyles.micTag, { right: w - MICX + 8, top: 2 }]} numberOfLines={1}>
+          THE MIC — one point
+        </Text>
+        {/* region names — what each stretch of wave IS (owner 2026-08-27) */}
+        <Text style={[ddStyles.zoneTag, { left: MICX + 8, top: 3, color: '#7fd4ff' }]}>INCOMING</Text>
+        <Text style={[ddStyles.zoneTag, { left: 8, top: 66 }]}>← ALREADY PASSED</Text>
+        {/* the PROBE's WHERE readout — fixed home, always legible, green like
+            the line it describes (learner feedback 2026-08-27) */}
+        <View style={[ddStyles.probeTag, { left: 4, top: 22 }]}>
+          <Text style={ddStyles.probeTagTxt}>{`● PROBE — ${dM.toFixed(2)} m past the mic`}</Text>
+        </View>
+      </View>
+      {/* the cable, with the SAME-SPOT tag riding it like a cable label — and
+          the probe line passing straight through: one spot, one vertical */}
+      <View style={{ width: w, height: DD_CON }}>
+        <Canvas style={{ width: w, height: DD_CON }}>
+          <Path path={cablePath} color="#000000" style="stroke" strokeWidth={4} opacity={0.5} />
+          <Path path={cablePath} color="#a6a6ad" style="stroke" strokeWidth={2.2} />
+          <Path path={probeStripLine} color={ACCENT_GREEN} style="stroke" strokeWidth={1.1} opacity={0.5}>
+            <DashPathEffect intervals={[4, 4]} />
+          </Path>
+        </Canvas>
+        <View style={ddStyles.chipWrap} pointerEvents="none">
+          <View style={ddStyles.chip}>
+            <Text style={ddStyles.chipTxt}>{`SAME SPOT: ${tMs.toFixed(1)} ms ago = ${dM.toFixed(2)} m past`}</Text>
+          </View>
+        </View>
+      </View>
+      <View style={ddStyles.labelRow}>
+        <Text style={twStyles.winLabel}>THE MIC&#8217;S OUTPUT</Text>
+        <Text style={[ddStyles.measured, { color: WAVE }]}>MEASURED: at the mic only · over time</Text>
+      </View>
+      <View style={{ width: w, height: DD_H }}>
+        <Canvas style={{ width: w, height: DD_H, backgroundColor: BG }}>
+          <Path path={scopeGrid} color="#1c1c22" style="stroke" strokeWidth={1} />
+          <SkLine p1={{ x: 4, y: scopeMid }} p2={{ x: NOWX, y: scopeMid }} color={ZERO_REF} strokeWidth={1.1} />
+          <GlowStroke path={scopeTrace} color={WAVE} width={2.2} />
+          {/* NOW line + the real XLR MIC INPUT the cable lands in. Styled as a
+              pinned DAW playhead: this scope behaves exactly like a DAW's
+              recording view — wave slides left under the playhead (owner
+              2026-08-27: name the metaphor so the motion reads familiar). */}
+          <SkLine p1={{ x: NOWX, y: 8 }} p2={{ x: NOWX, y: 78 }} color="#ff4b3a" strokeWidth={1.4} />
+          <Path path={playheadCap} color="#ff4b3a" />
+          {/* REC lamp — this graph is recording, live */}
+          <Circle cx={NOWX - 14} cy={26} r={3} color="#ff4b3a" opacity={running ? 1 : 0.35} />
+          <Circle cx={NOWX - 14} cy={26} r={5.5} color="#ff4b3a" opacity={running ? 0.25 : 0}>
+            <BlurMask blur={3} style="normal" />
+          </Circle>
+          <SkLine p1={{ x: NOWX, y: 0 }} p2={{ x: NOWX, y: 7 }} color="#a6a6ad" strokeWidth={2.4} />
+          <Circle cx={NOWX} cy={14} r={7}>
+            <RadialGradient c={vec(NOWX - 2.4, 11.6)} r={11} colors={['#e9edf1', '#9aa1a9', '#4a4f56']} />
+          </Circle>
+          <Circle cx={NOWX} cy={14} r={4.8} color="#0c0e11" />
+          <Circle cx={NOWX} cy={14} r={4.8} style="stroke" strokeWidth={0.7} color="#33383e" />
+          <Circle cx={NOWX} cy={11.8} r={0.9} color="#c9ced4" />
+          <Circle cx={NOWX - 2} cy={15.4} r={0.9} color="#c9ced4" />
+          <Circle cx={NOWX + 2} cy={15.4} r={0.9} color="#c9ced4" />
+          <RoundedRect x={NOWX - 1} y={6.6} width={2} height={1.8} r={0.5} color="#6d747c" />
+          {/* the pen — the mic's live reading, riding the trace at NOW */}
+          <Path path={scopePen} color="#ffd35e" />
+          <Path path={scopePen} style="stroke" strokeWidth={1.4} color="#0c0c0f" />
+          {/* probe — the SAME vertical line as the room's */}
+          <Path path={probeLine} color={ACCENT_GREEN} style="stroke" strokeWidth={3} opacity={0.16}>
+            <BlurMask blur={3} style="normal" />
+          </Path>
+          <Path path={probeLine} color={ACCENT_GREEN} style="stroke" strokeWidth={1.1} opacity={0.6}>
+            <DashPathEffect intervals={[4, 4]} />
+          </Path>
+          <Path path={scopeRuler} color={AXIS_TEXT} style="stroke" strokeWidth={1} opacity={0.7} />
+          <Path path={scopeProbeDot} color={ACCENT_GREEN} opacity={0.4}>
+            <BlurMask blur={5} style="normal" />
+          </Path>
+          <Path path={scopeProbeDot} color={ACCENT_GREEN} />
+        </Canvas>
+        {scopeTicks.map((t) => (
+          <Text key={t.label} style={[ddStyles.tick, { left: t.x - 17, top: 84 }]}>{t.label}</Text>
+        ))}
+        <Text style={[ddStyles.tick, { left: NOWX - 42, top: 84, width: 34, textAlign: 'right', color: '#ff4b3a' }]}>NOW</Text>
+        <Text style={[ddStyles.inputTag, { right: w - NOWX + 12 }]}>MIC INPUT · REC — like a DAW recording</Text>
+        {/* region names — aligned with the room's zones above */}
+        <Text style={[ddStyles.zoneTag, { left: NOWX + 8, top: 40, color: '#8a8b93' }]}>NOT YET</Text>
+        <Text style={[ddStyles.zoneTag, { left: 8, top: 66 }]}>← ALREADY DRAWN</Text>
+        {/* the PROBE's WHEN readout — same fixed-home treatment as the room's */}
+        <View style={[ddStyles.probeTag, { left: 4, top: 22 }]}>
+          <Text style={ddStyles.probeTagTxt}>{`● PROBE — ${tMs.toFixed(1)} ms ago`}</Text>
+        </View>
+      </View>
+      {/* FROZEN — icy border + ice crystals creeping in from the corners,
+          until FREEZE is released */}
+      {frozen ? (
+        <>
+          <View pointerEvents="none" style={ddStyles.frozenBorderOuter} />
+          <View pointerEvents="none" style={ddStyles.frozenBorderInner} />
+          <View pointerEvents="none" style={{ position: 'absolute', top: -3, left: -3 }}>
+            <FrostCorner />
+          </View>
+          <View pointerEvents="none" style={{ position: 'absolute', top: -3, right: -3, transform: [{ rotate: '90deg' }] }}>
+            <FrostCorner />
+          </View>
+          <View pointerEvents="none" style={{ position: 'absolute', bottom: -3, right: -3, transform: [{ rotate: '180deg' }] }}>
+            <FrostCorner />
+          </View>
+          <View pointerEvents="none" style={{ position: 'absolute', bottom: -3, left: -3, transform: [{ rotate: '270deg' }] }}>
+            <FrostCorner />
+          </View>
+        </>
+      ) : null}
+      {/* the camera FLASH itself — pops on freeze, decays fast */}
+      <Animated.View pointerEvents="none" style={[ddStyles.flash, flashStyle]} />
     </View>
   );
 }
+
+const ddStyles = StyleSheet.create({
+  labelRow: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between' },
+  measured: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.8 },
+  tick: { position: 'absolute', fontFamily: fonts.mono, fontSize: 8.5, color: AXIS_TEXT, width: 34, textAlign: 'center' },
+  // SAME-SPOT tag: SOLID background so the cable passes visibly behind it —
+  // never a translucent chip fighting the cable for legibility.
+  chipWrap: { position: 'absolute', left: 0, right: 0, top: 3, alignItems: 'center' },
+  chip: {
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(55,224,95,0.55)',
+    backgroundColor: '#0c0c0f',
+    paddingVertical: 2.5,
+    paddingHorizontal: 10,
+  },
+  chipTxt: { fontFamily: fonts.mono, fontSize: 9.5, color: '#5bff85' },
+  // Per-panel PROBE readout — fixed home, solid ground, green like the probe.
+  probeTag: {
+    position: 'absolute',
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(55,224,95,0.45)',
+    backgroundColor: '#0c0c0f',
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+  },
+  probeTagTxt: { fontFamily: fonts.mono, fontSize: 8.5, color: '#5bff85' },
+  // Camera-flash overlay + the persistent frozen border (cyan = the bezel's
+  // FROZEN tint), double-ring for a lit-edge read.
+  flash: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#eaf4ff', borderRadius: 4 },
+  frozenBorderOuter: {
+    position: 'absolute',
+    top: -3,
+    left: -3,
+    right: -3,
+    bottom: -3,
+    borderWidth: 3,
+    borderColor: 'rgba(127,212,255,0.28)',
+    borderRadius: 8,
+  },
+  frozenBorderInner: {
+    position: 'absolute',
+    top: -1,
+    left: -1,
+    right: -1,
+    bottom: -1,
+    borderWidth: 1.5,
+    borderColor: 'rgba(127,212,255,0.75)',
+    borderRadius: 6,
+  },
+  micTag: { position: 'absolute', fontFamily: fonts.mono, fontSize: 8.5, color: WAVE },
+  // Region names — solid ground so they read over the traces.
+  zoneTag: {
+    position: 'absolute',
+    fontFamily: fonts.mono,
+    fontSize: 8,
+    color: '#8a8b93',
+    backgroundColor: '#0c0c0f',
+    paddingHorizontal: 3,
+  },
+  inputTag: { position: 'absolute', right: 16, top: 2, fontFamily: fonts.mono, fontSize: 8.5, color: WAVE },
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Module 8 — Octave spiral: one turn = one octave; equal musical steps are
@@ -1891,43 +2304,61 @@ export function EqualLoudnessView({
   width: number;
   height?: number;
   freqHz: number;
-  /** 0..1 from the LEVEL slider — the strip's drawn amplitude follows the
-   *  REAL commanded level (constant while you sweep FREQUENCY, which is the
-   *  module's argument; honest when you move the level itself). */
+  /** 0..1 from the LEVEL slider — sets the SEND line, the curve's colours,
+   *  and (× the ear curve) the heard-wave inset's drawn amplitude. */
   level01?: number;
 }) {
   const w = width;
   const h = height;
   const fLo = 40;
   const fHi = 16000;
-  const stripH = 34; // bottom band: the SIGNAL, amplitude constant
-  const gh = h - stripH - 8; // curve region height
-  const xOf = (f: number) => (Math.log(f / fLo) / Math.log(fHi / fLo)) * w;
-  const yOf = (db: number) => 10 + ((8 - db) / 50) * (gh - 20);
+  const gh = h - 8; // curve region: full height (strip is an inset now)
+  const AX = 30; // left gutter: the numbered dB colour scale
+  // THE SIGNAL inset (owner 2026-08-28): a compact strip in the top-right dead
+  // space instead of a full-width bottom lane.
+  const SBx0 = Math.max(AX + 10, Math.round(w * 0.44));
+  const SBx1 = w - 6;
+  const SBy0 = 4;
+  const SBy1 = 40;
+  const xOf = (f: number) => AX + (Math.log(f / fLo) / Math.log(fHi / fLo)) * (w - AX - 6);
+  // Numbered dB axis (owner 2026-08-28): 0 dBFS at the top … −60 at the bottom.
+  const yDb = (db: number) => 8 + ((0 - db) / 60) * (gh - 16);
+  const levelDb = -44 + Math.max(0, Math.min(1, level01)) * 24;
+  const p01 = (db: number) => Math.max(0, Math.min(1, (db + 60) / 60));
+  const heard = (f: number) => Math.max(-60, Math.min(0, levelDb + earSensDb(f)));
 
-  // Curve + its gradient underfill (same earSensDb samples, built once).
-  const { curve, under } = useMemo(() => {
+  // YOU SEND — a flat line: the amplitude is IDENTICAL at every frequency.
+  const ySend = yDb(levelDb);
+  // YOU HEAR — the curve at the CURRENT level, wearing the amplitude colour
+  // ramp (owner 2026-08-28: the curve now carries the colour schema keyed to
+  // the left scale); `loss` shades the gap the ear takes away.
+  const { curve, loss, stops, sendLine } = useMemo(() => {
     const c = Skia.Path.Make();
-    const u = Skia.Path.Make();
-    const N = 100;
-    u.moveTo(0, gh - 2);
+    const lo = Skia.Path.Make();
+    const N = 90;
+    lo.moveTo(AX, ySend);
     for (let i = 0; i <= N; i++) {
       const f = fLo * Math.pow(fHi / fLo, i / N);
-      const x = i === 0 ? 0 : xOf(f);
-      const y = yOf(earSensDb(f));
-      if (i === 0) c.moveTo(0, y);
+      const x = xOf(f);
+      const y = yDb(heard(f));
+      if (i === 0) c.moveTo(x, y);
       else c.lineTo(x, y);
-      u.lineTo(x, y);
+      lo.lineTo(x, y);
     }
-    u.lineTo(w, gh - 2);
-    u.close();
-    return { curve: c, under: u };
-  }, [w, gh]);
+    lo.lineTo(w - 6, ySend);
+    lo.close();
+    const st: string[] = [];
+    for (let i = 0; i <= 12; i++) st.push(levelColor(p01(heard(fLo * Math.pow(fHi / fLo, i / 12)))));
+    const s = Skia.Path.Make();
+    s.moveTo(AX, ySend);
+    s.lineTo(w - 6, ySend);
+    return { curve: c, loss: lo, stops: st, sendLine: s };
+  }, [w, gh, levelDb]);
 
   const grid = useMemo(() => {
     const p = Skia.Path.Make();
     for (const f of [100, 1000, 10000]) {
-      p.moveTo(xOf(f), 6);
+      p.moveTo(xOf(f), 8);
       p.lineTo(xOf(f), gh - 2);
     }
     return p;
@@ -1937,10 +2368,20 @@ export function EqualLoudnessView({
   // it inside a worklet; evaluate here and capture the result).
   const fC = Math.max(fLo, Math.min(fHi, freqHz));
   const dotX = xOf(fC);
-  const dotY = yOf(earSensDb(fC));
+  const heardAtDot = heard(fC);
+  const dotY = yDb(heardAtDot);
+  const dotColor = levelColor(p01(heardAtDot));
+  const earCut = earSensDb(fC);
+  // The ear's cut AT the tone — a dashed drop from SEND to HEARD.
+  const drop = useMemo(() => {
+    const p = Skia.Path.Make();
+    p.moveTo(dotX, ySend);
+    p.lineTo(dotX, dotY);
+    return p;
+  }, [dotX, ySend, dotY]);
   // The strip's drawn spatial frequency follows pitch (visual hint only).
   const stripCyc = 2 + 4 * (Math.log(fC / fLo) / Math.log(fHi / fLo));
-  const stripMid = h - stripH / 2 - 2;
+  const stripMid = (SBy0 + SBy1) / 2;
 
   const anim = useDerivedValue(() => {
     const ph = phase.value;
@@ -1950,73 +2391,87 @@ export function EqualLoudnessView({
     return p;
   }, [phase, dotX, dotY]);
 
-  // THE SIGNAL — a traveling wave whose drawn amplitude follows ONLY the
-  // level slider: it never changes while you sweep FREQUENCY (the module's
-  // whole argument), and honestly tracks the level when you move that.
-  const stripAmp = 3.5 + 7.5 * Math.max(0, Math.min(1, level01));
+  // The inset wave shows WHAT YOU HEAR (owner 2026-08-28): its drawn amplitude
+  // is the CALCULATED heard level — LEVEL × the ear curve — so sweeping FREQ
+  // visibly shrinks/grows it (3.4 kHz tall, 80 Hz tiny at the same dBFS).
+  // The dashed SEND line carries the "physics never moves" half of the lesson.
+  const stripAmp = 2 + 12 * p01(heardAtDot);
   const strip = useDerivedValue(() => {
     const ph = phase.value;
     const p = Skia.Path.Make();
-    const N = 110;
-    const k = (2 * Math.PI * stripCyc) / w;
+    const N = 64;
+    const x0 = SBx0 + 4;
+    const x1 = SBx1 - 4;
+    const k = (2 * Math.PI * stripCyc) / (x1 - x0);
     for (let i = 0; i <= N; i++) {
-      const x = (i / N) * w;
-      const y = stripMid - stripAmp * Math.sin(ph - k * x);
+      const x = x0 + (i / N) * (x1 - x0);
+      const y = stripMid - stripAmp * Math.sin(ph - k * (x - x0));
       if (i === 0) p.moveTo(x, y);
       else p.lineTo(x, y);
     }
     return p;
-  }, [phase, w, stripCyc, stripMid, stripAmp]);
+  }, [phase, w, stripCyc, stripMid, stripAmp, SBx0, SBx1]);
 
   return (
     <View style={{ width: w, height: h }}>
       <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
-        {/* Frequency grid — brighter for contrast (owner 2026-08-05). */}
-        <Path path={grid} color="#4a4c56" style="stroke" strokeWidth={1.2} />
-        {/* 1 kHz reference line (sensitivity 0 dB) — brighter reference. */}
-        <SkLine p1={{ x: 0, y: yOf(0) }} p2={{ x: w, y: yOf(0) }} color={ZERO_REF} strokeWidth={1.4} />
-        {/* Gradient underfill gives the sensitivity region a body. */}
-        <Path path={under} opacity={0.9}>
+        {/* Frequency grid. */}
+        <Path path={grid} color="#3a3c46" style="stroke" strokeWidth={1.1} />
+        {/* the ear's CUT — the shaded gap between sent and heard */}
+        <Path path={loss} opacity={0.9}>
           <LinearGradient
-            start={vec(0, 6)}
+            start={vec(0, 8)}
             end={vec(0, gh)}
-            colors={[withAlpha(ACCENT_BLUE, 0.22), withAlpha(ACCENT_BLUE, 0.02)]}
+            colors={[withAlpha(ACCENT_BLUE, 0.16), withAlpha(ACCENT_BLUE, 0.03)]}
           />
         </Path>
-        <GlowStroke path={curve} color={ACCENT_BLUE} width={2.2} />
-        {/* The signal lane: subtle panel + divider between ear and signal. */}
-        <RoundedRect x={0} y={h - stripH - 5} width={w} height={stripH + 5} r={0} color="#101117" />
-        <SkLine p1={{ x: 0, y: h - stripH - 6 }} p2={{ x: w, y: h - stripH - 6 }} color={GRID} strokeWidth={1.6} />
-        {/* THE SIGNAL waveform — coloured by AMPLITUDE via the MIDI ramp (owner
-            2026-08-05): blue at the zero line → red at the peaks. */}
+        {/* YOU SEND — flat dashed amber: identical amplitude at every Hz */}
+        <Path path={sendLine} color={WAVE} style="stroke" strokeWidth={1.6}>
+          <DashPathEffect intervals={[6, 4]} />
+        </Path>
+        {/* YOU HEAR — the curve, wearing the amplitude colour ramp */}
+        <Path path={curve} style="stroke" strokeWidth={3.6} opacity={0.35}>
+          <BlurMask blur={4} style="normal" />
+          <LinearGradient start={vec(AX, 0)} end={vec(w - 6, 0)} colors={stops} />
+        </Path>
+        <Path path={curve} style="stroke" strokeWidth={2.2}>
+          <LinearGradient start={vec(AX, 0)} end={vec(w - 6, 0)} colors={stops} />
+        </Path>
+        {/* the ear's cut AT the tone */}
+        <Path path={drop} color="#ffffff" style="stroke" strokeWidth={1} opacity={0.5}>
+          <DashPathEffect intervals={[3, 3]} />
+        </Path>
+        {/* WHAT-YOU-HEAR inset (top-right, owner 2026-08-28): compact panel;
+            the waveform is coloured via the MIDI ramp and its SIZE is the
+            calculated heard level — LEVEL × the ear curve. */}
+        <RoundedRect x={SBx0} y={SBy0} width={SBx1 - SBx0} height={SBy1 - SBy0} r={4} color="#101117" />
+        <RoundedRect x={SBx0} y={SBy0} width={SBx1 - SBx0} height={SBy1 - SBy0} r={4} style="stroke" strokeWidth={1} color="#33353d" />
         <Path path={strip} style="stroke" strokeWidth={3.4} opacity={0.3}>
           <BlurMask blur={3} style="normal" />
-          <LinearGradient start={vec(0, stripMid - 11)} end={vec(0, stripMid + 11)} colors={MIDI_STOP_COLORS} positions={MIDI_STOP_POS} />
+          <LinearGradient start={vec(0, stripMid - 14)} end={vec(0, stripMid + 14)} colors={MIDI_STOP_COLORS} positions={MIDI_STOP_POS} />
         </Path>
         <Path path={strip} style="stroke" strokeWidth={1.8}>
-          <LinearGradient start={vec(0, stripMid - 11)} end={vec(0, stripMid + 11)} colors={MIDI_STOP_COLORS} positions={MIDI_STOP_POS} />
+          <LinearGradient start={vec(0, stripMid - 14)} end={vec(0, stripMid + 14)} colors={MIDI_STOP_COLORS} positions={MIDI_STOP_POS} />
         </Path>
-        {/* The riding dot: GREEN (owner 2026-08-05) — matches the frequency
-            slider; soft halo + crisp pulsing core. */}
-        <Path path={anim} color={ACCENT_GREEN} opacity={0.4}>
+        {/* The riding dot — wears the HEARD loudness colour (the ramp). */}
+        <Path path={anim} color={dotColor} opacity={0.4}>
           <BlurMask blur={6} style="normal" />
         </Path>
-        <Path path={anim} color={ACCENT_GREEN} />
-        {/* VERTICAL VOLUME scale (MIDI colours) on the far LEFT + a level marker
-            (owner 2026-08-05): top = loud (red), bottom = quiet (blue). */}
-        <RoundedRect x={0} y={6} width={7} height={h - stripH - 14} r={2}>
-          <LinearGradient start={vec(0, 6)} end={vec(0, h - stripH - 8)} colors={MIDI_VSCALE_COLORS} positions={MIDI_VSCALE_POS} />
+        <Path path={anim} color={dotColor} />
+        {/* Numbered dB colour scale on the far LEFT — the key the curve's
+            colours are read against (owner 2026-08-28) — + the SEND marker. */}
+        <RoundedRect x={2} y={8} width={7} height={gh - 16} r={2}>
+          <LinearGradient start={vec(0, 8)} end={vec(0, gh - 8)} colors={MIDI_VSCALE_COLORS} positions={MIDI_VSCALE_POS} />
         </RoundedRect>
-        <SkLine
-          p1={{ x: 0, y: 6 + (1 - Math.max(0, Math.min(1, level01))) * (h - stripH - 14) }}
-          p2={{ x: 11, y: 6 + (1 - Math.max(0, Math.min(1, level01))) * (h - stripH - 14) }}
-          color="#ffffff"
-          strokeWidth={2}
-        />
+        <SkLine p1={{ x: 0, y: ySend }} p2={{ x: 13, y: ySend }} color="#ffffff" strokeWidth={2} />
       </Canvas>
-      {/* VOL label above the vertical scale. */}
-      <Text style={[tickText, { left: 0, top: 0, width: 22, color: '#c8ccd4' }]}>VOL</Text>
-      {/* Log-frequency tick labels (mono) — brighter for contrast. */}
+      {/* dB numbers for the colour scale. */}
+      {[0, -20, -40, -60].map((d) => (
+        <Text key={d} style={[tickText, { left: 11, top: yDb(d) - 4, width: 20, fontSize: 7.5, color: '#c8ccd4' }]}>
+          {d === 0 ? '0dB' : `${d}`}
+        </Text>
+      ))}
+      {/* Log-frequency tick labels along the bottom of the curve region. */}
       {[
         { f: 100, label: '100' },
         { f: 1000, label: '1k' },
@@ -2024,11 +2479,42 @@ export function EqualLoudnessView({
       ].map((t) => (
         <Text
           key={t.f}
-          style={[tickText, { left: Math.max(0, Math.min(w - 24, xOf(t.f) - 12)), width: 24, textAlign: 'center' as const, top: 0, color: '#c8ccd4' }]}
+          style={[tickText, { left: Math.max(0, Math.min(w - 24, xOf(t.f) - 12)), width: 24, textAlign: 'center' as const, top: gh - 12, color: '#c8ccd4' }]}
         >
           {t.label}
         </Text>
       ))}
+      <Text style={[tickText, { left: AX, top: 0, width: 30, color: '#c8ccd4' }]}>40Hz</Text>
+      {/* Named lines — SEND (amber, flat) vs HEAR (ramp-coloured curve). */}
+      <Text style={[tickText, { right: 8, top: Math.max(0, ySend - 12), color: WAVE }]} numberOfLines={1}>
+        YOU SEND — same at every Hz
+      </Text>
+      <Text style={[tickText, { left: AX + 2, top: Math.min(gh - 22, yDb(heard(fLo)) - 12), color: stops[0] }]} numberOfLines={1}>
+        YOU HEAR
+      </Text>
+      {/* The ear's cut at the tone — solid ground so it's always legible. */}
+      <View
+        style={{
+          position: 'absolute',
+          left: Math.max(AX, Math.min(dotX + 8, w - 84)),
+          top: Math.max(8, Math.min((ySend + dotY) / 2 - 8, gh - 26)),
+          backgroundColor: '#0c0c0f',
+          borderRadius: 4,
+          borderWidth: 1,
+          borderColor: '#33353d',
+          paddingHorizontal: 5,
+          paddingVertical: 1,
+        }}
+      >
+        <Text style={[tickText, { position: 'relative', left: 0, top: 0, color: '#e6e6e6' }]}>{`EAR ${earCut >= 0 ? '+' : ''}${earCut.toFixed(0)} dB`}</Text>
+      </View>
+      {/* Strip name — the physics, deliberately deaf to FREQ. */}
+      <Text
+        style={[tickText, { left: SBx0 + 6, top: SBy0 + 1, width: SBx1 - SBx0 - 10, fontSize: 7, color: '#9a9ca8' }]}
+        numberOfLines={1}
+      >
+        WHAT YOU HEAR — LEVEL × EAR CURVE
+      </Text>
     </View>
   );
 }

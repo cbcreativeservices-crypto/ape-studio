@@ -495,7 +495,8 @@ export function FoundationsPlaygroundScreen() {
           </View>
           {!fxReady && engineReady ? (
             <Text style={styles.caption}>
-              Balance / delay / EQ audio need the v6+ effects build — the drawings still respond.
+              Balance / delay / EQ audio need the v6+ effects build. EQ still shapes the drawings;
+              balance and delay have no drawn twin yet.
             </Text>
           ) : null}
         </View>
@@ -700,12 +701,21 @@ function StageViz({
           <Text style={[styles.stageLabel, { height: LABEL_H, marginTop: GAP }]} numberOfLines={1}>
             WAVEFORM — PRESSURE VS TIME
           </Text>
-          <viz.AnalyticWaveformView width={w} height={paneH} amps={amps} phasesDeg={phases} level={level} noise={noiseKind} />
+          <viz.AnalyticWaveformView
+            width={w}
+            height={paneH}
+            amps={amps}
+            phasesDeg={phases}
+            level={level}
+            noise={noiseKind}
+            f0={freq}
+            gainDbAt={gainDbAt}
+          />
           <Text style={[styles.stageLabel, { height: LABEL_H, marginTop: GAP }]} numberOfLines={1}>
             SPECTRUM — {noiseKind ? 'LOG 40 Hz–16 kHz' : `LINEAR TO ${13 * freq} Hz`}
             {gainDbAt ? ' · EQ APPLIED' : ''}
           </Text>
-          <viz.AnalyticSpectrumView width={w} height={paneH} f0={freq} amps={amps} gainDbAt={gainDbAt} noise={noiseKind} />
+          <viz.AnalyticSpectrumView width={w} height={paneH} f0={freq} amps={amps} gainDbAt={gainDbAt} noise={noiseKind} level={level} />
         </>
       )}
     </View>

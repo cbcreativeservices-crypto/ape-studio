@@ -320,7 +320,7 @@ function FitStage({ w, h, natural, children }: { w: number; h: number; natural: 
   );
 }
 const THREE_WINDOW_NATURAL = 240; // label+cone row (133) + gap + label + gap + graph (84)
-const DUAL_DOMAIN_NATURAL = 206; // two 84-high canvases + two labels + gaps
+const DUAL_DOMAIN_NATURAL = 262; // 2 labels + 2×100 panels + 26 cable strip + gaps
 const HSTACK_NATURAL = 282; // 4 + 6×30 rows + 12 gap + 86 sum
 
 /** Shared TONE bezel cell — the voice state, printed on every audio module. */
@@ -703,20 +703,26 @@ function M6Stage({ viz, w, h, f, focused }: { viz: VizModule; w: number; h: numb
   );
 }
 
-// ─── M7 — Time vs space: the same wave on two rulers ────────────────────────
+// ─── M7 — One wave, two questions (redesign, owner-approved 2026-08-27) ─────
+// Predict-first opener (owner: option C) → GOAL banner → THE ROOM / THE MIC'S
+// OUTPUT display with explicit measurement provenance → WATCH/FREEZE/DRAG.
 
 function M7Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
-  const [cursor, setCursor] = useState(0.25);
+  const [cursor, setCursor] = useState(0.69); // ≈ one wavelength/period back
   const [frozen, setFrozen] = useState(false);
   const [f, setF] = useState(220);
+  // Predict-first: the learner CALLS IT before the display reveals — a wrong
+  // prediction is the strongest known setup for the correction to stick.
+  const [predicted, setPredicted] = useState<null | 'time' | 'space'>(null);
+  const beat = !frozen ? 1 : cursor > 0.03 ? 3 : 2;
   const params: DockParam[] = [
     {
       kind: 'fader',
-      id: 'cursor',
-      label: 'TRACE',
+      id: 'probe',
+      label: 'PROBE',
       value: cursor,
       onChange: setCursor,
-      format: () => 'same phase → same height',
+      format: () => 'one spot, two rulers — read the green readouts',
       formatShort: () => `${Math.round(cursor * 100)}%`,
       tint: '#37e05f',
       helpKey: 'domain_link',
@@ -744,7 +750,7 @@ function M7Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
   ];
   return (
     <RackUnit
-      initialParam="cursor"
+      initialParam="probe"
       params={params}
       onHelp={(k) => (k ? help(k) : undefined)}
       stage={{
@@ -758,21 +764,86 @@ function M7Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
         ],
         render: (w, h) =>
           viz ? (
-            <FitStage w={w} h={h} natural={DUAL_DOMAIN_NATURAL}>
-              {(vw) => <viz.DualDomainView width={vw} visHz={visHzFor(f)} cursor={cursor} running={focused && !frozen} />}
-            </FitStage>
+            predicted == null ? (
+              // Predict-first cover: question AND answer buttons live together on
+              // the display — nothing to scroll for, nothing gating progress
+              // (owner 2026-08-27). SHOW the thing being asked about.
+              <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center', gap: 9, paddingHorizontal: 18 }}>
+                <viz.WavyLineView width={Math.min(w - 52, 300)} height={40} />
+                <Text style={styles.predictSub}>
+                  Every recording screen draws sound like this. Reading it left → right, what are
+                  you moving through?
+                </Text>
+                <View style={{ flexDirection: 'row', gap: 8, alignSelf: 'stretch' }}>
+                  <Pressable
+                    style={styles.predictBtn}
+                    onPress={() => setPredicted('time')}
+                    accessibilityRole="button"
+                    accessibilityLabel="Answer: time — earlier to later"
+                  >
+                    <Text style={styles.predictBtnTxt}>TIME</Text>
+                    <Text style={styles.predictBtnSub}>earlier → later</Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.predictBtn}
+                    onPress={() => setPredicted('space')}
+                    accessibilityRole="button"
+                    accessibilityLabel="Answer: space — one place to another"
+                  >
+                    <Text style={styles.predictBtnTxt}>SPACE</Text>
+                    <Text style={styles.predictBtnSub}>one place → another</Text>
+                  </Pressable>
+                </View>
+              </View>
+            ) : (
+              <FitStage w={w} h={h} natural={DUAL_DOMAIN_NATURAL}>
+                {(vw) => (
+                  <viz.DualDomainView width={vw} visHz={visHzFor(f)} realHz={f} cursor={cursor} running={focused && !frozen} frozen={frozen} />
+                )}
+              </FitStage>
+            )
           ) : (
             <StageFallback w={w} />
           ),
       }}
     >
       {wellTop}
-      <ConceptBadge extra="SAME WAVE — TWO RULERS" />
-      <Text style={styles.caption}>
-        The two green dots never disagree: a moment BACK IN TIME on the top ruler is the same as a
-        distance BACK ALONG THE ROOM on the bottom one. distance = speed × time — that single
-        equation links the two graphs forever.
-      </Text>
+      {/* THE GOAL — stated before anything else renders. */}
+      <View style={styles.goalCard}>
+        <Text style={styles.goalEyebrow}>THE GOAL</Text>
+        <Text style={styles.goalBody}>
+          Studio waveforms draw TIME. Sound itself travels through SPACE. Learn to flip between the
+          two views without getting lost.
+        </Text>
+      </View>
+      {predicted == null ? null : (
+        <>
+          <Text style={styles.predictResult}>
+            {predicted === 'time'
+              ? 'Called it — TIME. The wavy line is a diary: left is earlier, right is later. Watch the display prove it.'
+              : 'It is TIME — and most people guess space. Left is earlier, right is later. The display shows why.'}
+          </Text>
+          {/* Guided 3-beat sequence — the screen teaches in order. */}
+          <View style={styles.beatsRow}>
+            <View style={[styles.beatChip, beat === 1 && styles.beatChipOnAmber]}>
+              <Text style={[styles.beatTxt, beat === 1 && styles.beatTxtAmber]}>1 · WATCH</Text>
+            </View>
+            <View style={[styles.beatChip, beat === 2 && styles.beatChipOnGreen]}>
+              <Text style={[styles.beatTxt, beat === 2 && styles.beatTxtGreen]}>2 · FREEZE</Text>
+            </View>
+            <View style={[styles.beatChip, beat === 3 && styles.beatChipOnGreen]}>
+              <Text style={[styles.beatTxt, beat === 3 && styles.beatTxtGreen]}>3 · DRAG THE PROBE</Text>
+            </View>
+          </View>
+          <ConceptBadge extra="ONE WAVE — TWO QUESTIONS · where vs when" />
+          <Text style={styles.caption}>
+            The green PROBE is a bookmark on ONE spot of the wave — the dashed line and dot mark it
+            in both graphs at once. The room&#8217;s green readout says WHERE that spot is (meters
+            past the mic); the scope&#8217;s says WHEN the mic felt it (ms ago). Drag the PROBE and
+            watch the two readouts move together: distance = speed × time.
+          </Text>
+        </>
+      )}
       {wellBottom}
     </RackUnit>
   );
@@ -951,17 +1022,25 @@ function M9Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
         size: 'M',
         badge: 'SIMPLIFIED SENSITIVITY CURVE — NOT MEASURED DATA',
         onGuide: () => help('loudness_curve'),
+        // The bezel already prints FREQ live, so the floating drag tag was pure
+        // redundancy over the drawing (owner 2026-08-28). TONE dropped too: the
+        // PLAY key's LED already reports whether a real voice is sounding.
+        hideDragTag: true,
         bezel: [
-          { k: 'FREQ', v: `${f} Hz`, helpKey: 'loudness_curve' },
-          { k: 'LEVEL', v: `${levelDb.toFixed(0)} dBFS`, tint: levelColor(lvl), helpKey: 'loudness_curve' },
-          { k: 'EAR', v: sens != null ? `${sens.toFixed(0)} dB` : '—', helpKey: 'loudness_curve' },
-          toneCell(tone),
+          { k: 'FREQ', v: `${f} Hz`, tint: '#37e05f', helpKey: 'loudness_curve' },
+          { k: 'SEND', v: `${levelDb.toFixed(0)} dBFS`, tint: levelColor(lvl), helpKey: 'loudness_curve' },
+          {
+            k: 'HEARD',
+            v: sens != null ? `${(levelDb + sens).toFixed(0)} dB` : '—',
+            tint: sens != null ? levelColor(Math.max(0, Math.min(1, (levelDb + sens + 60) / 60))) : undefined,
+            helpKey: 'loudness_curve',
+          },
         ],
         render: (w, h) => (viz ? <M9Stage viz={viz} w={w} h={h} f={f} lvl={lvl} focused={focused} /> : <StageFallback w={w} />),
       }}
     >
       {wellTop}
-      <AnalyticBadge text="SIMPLIFIED SENSITIVITY CURVE — ILLUSTRATION INSPIRED BY EQUAL-LOUDNESS CONTOURS, NOT MEASURED DATA · BOTTOM STRIP = THE SIGNAL (FOLLOWS LEVEL ONLY, NEVER FREQUENCY · SLOWED)" />
+      <AnalyticBadge text="SIMPLIFIED SENSITIVITY CURVE — ILLUSTRATION INSPIRED BY EQUAL-LOUDNESS CONTOURS, NOT MEASURED DATA · TOP-RIGHT INSET = WHAT YOU HEAR (ITS SIZE = LEVEL × EAR CURVE · SLOWED)" />
       {sens != null ? (
         <Text style={styles.caption}>
           Ear sensitivity at {f} Hz ≈ {sens.toFixed(0)} dB relative to 1 kHz —{' '}
@@ -969,9 +1048,13 @@ function M9Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
         </Text>
       ) : null}
       <Text style={styles.caption}>
-        While playing, ride FREQ with the level untouched — the dBFS number never moves, yet the
-        loudness does. (Phone speakers also physically roll off lows — headphones make the effect
-        honest.)
+        Two lines, one lesson: the dashed AMBER line is what you SEND — identical at every
+        frequency. The COLOURED curve is what you HEAR — the ear pulls it down at the lows and
+        highs, and its colour is read off the loudness scale at the left. Sweep FREQ with LEVEL
+        untouched: SEND never moves, but the dot slides down the curve, its colour cools, and the
+        wave in the inset shrinks with it — that wave IS the calculated heard level. Move LEVEL:
+        the whole curve re-colours. (Headphones make it honest — phone speakers roll off lows
+        themselves.)
       </Text>
       {wellBottom}
     </RackUnit>
@@ -1545,13 +1628,12 @@ const STEPS: Step[] = [
   {
     key: 'm7',
     tag: 'MODULE 7',
-    title: 'TIME vs SPACE',
+    title: 'ONE WAVE, TWO QUESTIONS',
     paras: [
-      'At first glance, these two waveforms look identical — but they are measuring two different things.',
-      'TOP GRAPH: pressure measured by ONE microphone over TIME at one location. As the sound wave passes the mic, the pressure rises and falls and moves its element. This is the waveform you see in DAWs, oscilloscopes, and most audio software — what came out of the mic.',
-      'BOTTOM GRAPH: pressure measured across MANY locations in SPACE at one instant. Imagine pausing time at a concert and measuring the air pressure at every seat. Those measurements reveal the shape of the sound wave as it exists across the room at that moment.',
-      'They have the same shape because they describe the same sound wave — only the horizontal axis changes. The top axis shows the waveform over TIME; the bottom axis shows it over DISTANCE.',
-      'The two are connected by one simple relationship: distance = speed × time. The sound wave is always traveling through space — one microphone experiences that motion over time, while the entire room contains the wave spread across distance.',
+      'THE ROOM is measured everywhere at once: a camera flash of the air — compressions marching away from the speaker at 343 m/s. Its ruler is meters. The ringed microphone standing in it is the ONE point the lower graph listens to.',
+      'THE MIC’S OUTPUT is measured at the mic only. Follow its cable down: the mic cannot see the room — it feels pressure rise and fall at its capsule and draws it, newest at the right, into the MIC INPUT on the NOW line. Its ruler is milliseconds. This is the wavy line every recording screen shows — what pros call the DAW waveform.',
+      'Why does it slide LEFT? Because this view is RECORDING, live — exactly what your DAW does when the view follows the playhead: new sound lands at the pinned NOW line and everything older slides left. Freeze it and read it like a finished track: left = earlier, right = later.',
+      'Freeze, then drag the PROBE. The crests pair up: the crest the mic drew one period ago (4.5 ms at 220 Hz) has traveled exactly one wavelength (1.56 m) past it down the room — distance = speed × time ties the two rulers together at every point. One wave, two rulers, one equation.',
     ],
     Rack: M7Rack,
     check: {
@@ -1590,7 +1672,7 @@ const STEPS: Step[] = [
     title: 'LOUDNESS vs AMPLITUDE',
     paras: [
       'Module 4 said bigger amplitude = louder. True — for one frequency at a time. Across frequencies, the ear applies its own hidden curve.',
-      'The blue line is that curve (simplified): sensitivity peaks in the few-kHz region — where speech lives — and falls off steeply toward the lows.',
+      'The COLOURED curve is what you actually hear: it peaks in the few-kHz region — where speech lives — and falls off steeply toward the lows. Its colour is read off the loudness scale at the left, so warm = loud, cool = faint.',
       'Sweep the frequency WITHOUT touching the level: the amplitude number stays fixed while the loudness visibly (audibly) changes. Amplitude is physics; loudness is perception wearing that curve.',
     ],
     Rack: M9Rack,
@@ -2007,6 +2089,40 @@ const styles = StyleSheet.create({
   // Display-explanation captions are WHITE like the body text (owner
   // 2026-08-05), not gray.
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSecondary },
+  // ── M7 redesign (owner-approved 2026-08-27): goal banner · predict-first
+  // opener · guided-beats chips. ──
+  goalCard: {
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255,198,77,0.35)',
+    backgroundColor: 'rgba(255,198,77,0.06)',
+    paddingVertical: 9,
+    paddingHorizontal: 12,
+    gap: 3,
+  },
+  goalEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 2, color: colors.amberLabel },
+  goalBody: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSecondary },
+  predictBtn: {
+    flex: 1,
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: 'rgba(180,91,255,0.5)',
+    backgroundColor: 'rgba(180,91,255,0.07)',
+    paddingVertical: 10,
+    alignItems: 'center',
+    gap: 1,
+  },
+  predictBtnTxt: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.6, color: colors.textPrimary },
+  predictBtnSub: { fontFamily: fonts.barlowRegular, fontSize: 11.5, color: colors.textSub },
+  predictResult: { fontFamily: fonts.barlowSemiBold, fontSize: 13, lineHeight: 18, color: colors.purple },
+  predictSub: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSub, textAlign: 'center' },
+  beatsRow: { flexDirection: 'row', gap: 6 },
+  beatChip: { flex: 1, borderWidth: 1, borderColor: '#2c2c33', borderRadius: 8, paddingVertical: 5, alignItems: 'center' },
+  beatChipOnAmber: { borderColor: 'rgba(255,198,77,0.55)', backgroundColor: 'rgba(255,198,77,0.08)' },
+  beatChipOnGreen: { borderColor: 'rgba(55,224,95,0.55)', backgroundColor: 'rgba(55,224,95,0.08)' },
+  beatTxt: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 0.8, color: colors.textMutedDeep },
+  beatTxtAmber: { color: colors.amber },
+  beatTxtGreen: { color: colors.greenBright },
   // Green "drag the spiral" hint — matches the green node/lines (owner 2026-08-05).
   spiralHint: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: '#37e05f' },
   analyticBadge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1, lineHeight: 13, color: colors.textSub },

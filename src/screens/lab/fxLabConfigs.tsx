@@ -846,7 +846,11 @@ const distConfig: FxLabConfig = {
     { k: 'MIX', paramId: P.distMix },
   ],
   Hero: (v) => (
-    <WaveshapeGraph type={v[P.distType] === 0 ? 'hard' : v[P.distType] === 1 ? 'soft' : 'tube'} driveDb={v[P.driveDb]} />
+    <WaveshapeGraph
+      type={v[P.distType] === 0 ? 'hard' : v[P.distType] === 1 ? 'soft' : 'tube'}
+      driveDb={v[P.driveDb]}
+      mix={v[P.distMix]}
+    />
   ),
   anim: (v) => ({
     kind: 'distortion',

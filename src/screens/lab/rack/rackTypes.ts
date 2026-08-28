@@ -41,6 +41,10 @@ export type RackStage = {
   badge?: string;
   /** ⓘ display-guide slot on the bezel (opens the display lesson). */
   onGuide?: () => void;
+  /** Suppress the floating drag tag over the glass (owner 2026-08-28): set on
+   *  stages whose BEZEL already prints the bound parameter live, so the tag is
+   *  pure redundancy sitting on top of the drawing. */
+  hideDragTag?: boolean;
 };
 
 /** One option inside an options tray. LabChip semantics preserved

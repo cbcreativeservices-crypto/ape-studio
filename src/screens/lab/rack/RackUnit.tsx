@@ -119,7 +119,7 @@ export function RackUnit({
             locations={[0, 0.4, 0.8, 1]}
             style={StyleSheet.absoluteFill}
           />
-          {laneActive && bound ? (
+          {laneActive && bound && !stage.hideDragTag ? (
             <View style={styles.dragTag} pointerEvents="none">
               <Text style={styles.dragTagText} numberOfLines={1}>
                 {bound.label}  {bound.format(bound.value)}
@@ -263,9 +263,11 @@ const styles = StyleSheet.create({
     paddingBottom: 1,
     paddingHorizontal: 8,
   },
+  // Drag readout rides at the TOP of the glass (owner 2026-08-28) — bottom
+  // placement collided with stage content (M9's signal strip).
   dragTag: {
     position: 'absolute',
-    bottom: 8,
+    top: 8,
     alignSelf: 'center',
     backgroundColor: colors.amber,
     borderRadius: 6,
