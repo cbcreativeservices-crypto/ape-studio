@@ -63,7 +63,7 @@ RGB interpolation between the stops (`hexToRgb` → lerp → `rgbToHex`).
 | `LOUDNESS_STOPS` | `{pos,color}[]` | The canonical stop table (§2). |
 | `levelColor(l)` | `l` 0=silence…1=full scale → hex | The core lookup. `levelColor(0)===MIDLINE_BLUE`. Internally `pos = 1 − l`. |
 | `levelColorForDb(db, minDb=-60, maxDb=0)` | dB → hex | Maps a **numeric dB** onto the ramp; ≤minDb blue, ≥maxDb red. Non-finite/null → `MIDLINE_BLUE`. Default −60…0 dBFS window matches the meters. |
-| `heatColor(t01)` | `t01` 0=silence…1=loud → hex | Heat-map / spectrogram cell color. Same ramp, but the very bottom is darkened toward deep navy (`k = 0.22 + 0.78·min(1, t/0.1)`) so silence reads as background on a 2-D field, not a wall of blue. |
+| `heatColor(t01)` | `t01` 0=silence…1=loud → hex | Heat-map / spectrogram cell color. Same ramp, but the bottom 10% **fades to BLACK** (`k = min(1, t/0.1)`) so ZERO signal is genuinely dark, not a lit wall of blue. Blue re-emerges the moment there is anything to show. |
 | `WAVE_LEVEL_STOPS` | `{offset,color}[]` | Symmetric SVG gradient stops for a **zero-centred waveform**: `offset` 0 (top,+FS)=red → 0.5 (center,0)=blue → 1 (bottom,−FS)=red. Magnitude drives color: `color = levelColor(|1 − 2·offset|)`. |
 | `rampColors(level, steps=6)` | → `[base…tip]` | Gradient colors for a **level-encoding bar**: blue base climbing to `levelColor(level)` at the tip. For `expo-linear-gradient` `colors`. |
 | `rampColorsSymmetric(level, half=3)` | → `[tip…center…tip]` | Same, but for a **zero-centred (bipolar) bar**: blue at the center line, peak color at BOTH tips. |
@@ -161,8 +161,12 @@ Change these in ONE place (`levelColor.ts`) and every display follows:
 - **Mid-line / silence color** — `MIDLINE_BLUE`.
 - **Numeric window** — `levelColorForDb` defaults `minDb=-60`, `maxDb=0` (per-call
   overridable).
-- **Heat-map silence floor** — `heatColor`'s `k = 0.22 + 0.78·min(1, t/0.1)`
-  (0.22 = deep-navy floor brightness; 0.1 = fraction over which it ramps to full).
+- **Heat-map silence floor** — `heatColor`'s `k = min(1, t/0.1)` (0.1 = the
+  fraction of the ramp over which brightness climbs from black to full).
+  **Owner ruling 2026-08-28: blue fades to BLACK at zero signal.** The floor
+  used to be 0.22, i.e. silence still rendered as a lit deep navy; on a 2-D
+  field or a spectrogram that painted "no signal" as a solid blue area. Only
+  `t < 0.1` changed — every value at or above 0.1 is bit-identical.
 - **Bar resolution** — `rampColors(level, steps=6)`, `rampColorsSymmetric(level, half=3)`.
 - **Waveform stop density** — `WAVE_LEVEL_STOPS` offset array.
 

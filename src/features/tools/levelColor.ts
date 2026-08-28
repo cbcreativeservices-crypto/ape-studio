@@ -88,7 +88,14 @@ export function levelColorForDb(db: number | null | undefined, minDb = -60, maxD
 export function heatColor(t01: number): string {
   const t = Math.max(0, Math.min(1, t01));
   const [r, g, b] = hexToRgb(levelColor(t)); // blue(quiet) → red(loud)
-  const k = 0.22 + 0.78 * Math.min(1, t / 0.1); // deep-navy floor at silence → full ramp
+  // BLUE FADES TO BLACK AT ZERO SIGNAL (owner 2026-08-28). This used to floor
+  // the brightness at 0.22, so true silence still rendered as a lit deep-navy —
+  // a 2-D field or spectrogram showed a wall of blue where there was NO signal.
+  // Now the bottom 10% of the ramp fades all the way out: t=0 is black, and
+  // blue re-emerges as soon as there is anything to show. Matches how a
+  // professional spectrogram reads (black floor), and it means "dark = nothing
+  // there" is honest rather than decorative.
+  const k = Math.min(1, t / 0.1);
   return rgbToHex(r * k, g * k, b * k);
 }
 
