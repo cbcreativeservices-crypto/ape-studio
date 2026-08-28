@@ -315,6 +315,42 @@ export function waterfallSpectrumDb(opts: WaterfallOpts, f: number): number {
   return v;
 }
 
+/**
+ * The RINGING RIDGE: the slowest-decaying frequency, and how far it stands
+ * above the median of the range.
+ *
+ * ONE detector, shared by everything that points at it — the waterfall's on-plot
+ * "RINGS <f>" mark, the bezel's RIDGE readout, and the EQ fader's purple tint.
+ * They previously sampled RT60 on DIFFERENT grids (the plot on 140 points from
+ * 20 Hz–20 kHz, the bezel on 240 from 40 Hz–12 kHz) and could genuinely
+ * disagree: with CLASSROOM + Q RING the coarser grid under-resolved the 1.2 kHz
+ * filter ring and named 252 Hz while the finer one named 1214 Hz. Three UI
+ * elements pointing at two different frequencies is worse than none of them
+ * pointing at all, so the grid now lives here, once.
+ */
+export function waterfallRidge(opts: WaterfallOpts): { f: number; ratio: number } {
+  const N = 240;
+  const lgLo = Math.log10(40);
+  const lgHi = Math.log10(12000);
+  const rts: number[] = [];
+  let fMax = 40;
+  let rtMax = 0;
+  for (let i = 0; i < N; i++) {
+    const f = Math.pow(10, lgLo + ((lgHi - lgLo) * i) / (N - 1));
+    const rt = waterfallRt(opts, f);
+    rts.push(rt);
+    if (rt > rtMax) {
+      rtMax = rt;
+      fMax = f;
+    }
+  }
+  const sorted = [...rts].sort((a, b) => a - b);
+  return { f: fMax, ratio: rtMax / Math.max(0.01, sorted[Math.floor(N / 2)]) };
+}
+
+/** A ridge is only worth pointing at when it genuinely stands apart. */
+export const RIDGE_CALLOUT_RATIO = 1.5;
+
 /** Frequencies sampled when sizing the plot's time window. */
 const RT_PROBE_HZ = [31.5, 63, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
 

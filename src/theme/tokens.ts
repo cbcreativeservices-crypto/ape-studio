@@ -24,6 +24,13 @@ export const colors = {
   amberGradient: ['#ffd35e', '#f09e1a'] as const,
   amberLabel: '#d99f1f', // section eyebrow labels
 
+  /** Marks a RINGING frequency (the CSD waterfall's ridge guide + label, and
+   *  the control bound to it). Deliberately OUTSIDE the amplitude ramp: it
+   *  names WHICH frequency rings and must never be misread as a level. Lives
+   *  here rather than in vizSpectral because that module is behind the Skia
+   *  gate, and the meter lab's dock must not pull Skia in to tint a fader. */
+  ringing: '#c9a6ff',
+
   // Accent hues (per-domain, from README color table)
   orange: '#ff8a1e', // Home tab, warnings, "continue" method
   blue: '#2f9bff', // Study tab, selected answers, MIC/PA certs, flashcards

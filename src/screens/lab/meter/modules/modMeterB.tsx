@@ -48,6 +48,8 @@ import {
   type RoomKey,
   type ReverbKey,
   waterfallRt,
+  waterfallRidge,
+  RIDGE_CALLOUT_RATIO,
 } from '../meterEngine';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -83,27 +85,9 @@ function scanSpectrum(key: SpectrumKey): { peakF: number; peakDb: number; tiltDb
   return { peakF, peakDb, tiltDbOct: tilt };
 }
 
-/** Slowest-decaying frequency vs the median of the range — the ridge verdict. */
-function ridgeVerdict(opts: WaterfallOpts): { f: number; ratio: number } {
-  const N = 240;
-  const lgLo = Math.log10(40);
-  const lgHi = Math.log10(12000);
-  const rts: number[] = [];
-  let fMax = 40;
-  let rtMax = 0;
-  for (let i = 0; i < N; i++) {
-    const f = Math.pow(10, lgLo + ((lgHi - lgLo) * i) / (N - 1));
-    const rt = waterfallRt(opts, f);
-    rts.push(rt);
-    if (rt > rtMax) {
-      rtMax = rt;
-      fMax = f;
-    }
-  }
-  const sorted = [...rts].sort((a, b) => a - b);
-  const median = sorted[Math.floor(N / 2)];
-  return { f: fMax, ratio: rtMax / Math.max(0.01, median) };
-}
+/** The frequency the EQ 250 lane acts on — named once so the fader, its label
+ *  and the ringing check cannot drift apart. */
+const EQ_HZ = 250;
 
 function dampingLabel(d: number): string {
   return d < 0.25 ? 'CONCRETE' : d < 0.5 ? 'CURTAINS' : d < 0.75 ? 'CARPET' : 'PANELS';
@@ -577,13 +561,22 @@ export function WaterfallModule(p: MeterModuleProps) {
     () => ({ room, damping01, eqBoostDb, qRing, reverb }),
     [room, damping01, eqBoostDb, qRing, reverb],
   );
+  // Is the EQ lane parked on the frequency the room is ringing at? Same
+  // slowest-vs-median rule and the same 1.5x threshold the plot uses to decide
+  // whether to draw its "RINGS <f>" label, so the fader and the plot can never
+  // disagree about whether there is a ridge to point at.
+  const eqOnRinging = useMemo(() => {
+    const v = waterfallRidge(opts);
+    return v.ratio >= RIDGE_CALLOUT_RATIO && Math.abs(Math.log2(v.f / EQ_HZ)) < 0.17; // ~ +/- 1/6 octave
+  }, [opts]);
+
   const rt = useMemo(
     () => ({
       r125: waterfallRt(opts, 125),
       r250: waterfallRt(opts, 250),
       r1k: waterfallRt(opts, 1000),
       r4k: waterfallRt(opts, 4000),
-      ...ridgeVerdict(opts),
+      ...waterfallRidge(opts),
     }),
     [opts],
   );
@@ -605,10 +598,10 @@ export function WaterfallModule(p: MeterModuleProps) {
     {
       kind: 'fader',
       id: 'eq',
-      label: 'EQ 250',
+      label: `EQ ${EQ_HZ}`,
       value: (eqBoostDb + 12) / 24,
       onChange: (v) => setEqBoostDb(Math.round(-12 + v * 24)),
-      format: () => `${eqBoostDb >= 0 ? '+' : '−'}${Math.abs(eqBoostDb)} dB @ 250 Hz`,
+      format: () => `${eqBoostDb >= 0 ? '+' : '−'}${Math.abs(eqBoostDb)} dB @ ${EQ_HZ} Hz`,
       formatShort: () => `${eqBoostDb >= 0 ? '+' : '−'}${Math.abs(eqBoostDb)} dB`,
       helpKey: 'eq_ridge',
     },

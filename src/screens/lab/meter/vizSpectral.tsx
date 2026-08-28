@@ -34,6 +34,8 @@ import {
   spectrogramLevel,
   spectrumDb,
   waterfallRt,
+  waterfallRidge,
+  RIDGE_CALLOUT_RATIO,
   waterfallSpectrumDb,
   waterfallTimeDivisions,
   waterfallTimeSpan,
@@ -41,7 +43,7 @@ import {
   type SpectrumKey,
   type WaterfallOpts,
 } from './meterEngine';
-import { fonts } from '../../../theme/tokens';
+import { colors, fonts } from '../../../theme/tokens';
 import {
   heatColor as levelHeatColor,
   fieldLevelColor,
@@ -774,10 +776,9 @@ const WF_COOL_DARK: [number, number, number] = [16, 16, 18];
 /** Ridge-line highlight mixed INTO the level colour so the crest still reads as
  *  a bright edge without overriding what the colour is saying about level. */
 const WF_RIDGE_LIFT: [number, number, number] = [255, 250, 236];
-/** Marks the RINGING frequency (guide + label). Deliberately NOT a level
- *  colour: it names WHICH frequency rings, and must not be mistaken for a
- *  reading off the amplitude ramp. */
-const RING_MARK = '#c9a6ff';
+/** Marks the RINGING frequency (guide + label). Shared with the dock so the EQ
+ *  fader can wear the same colour when it is bound to the ringing frequency. */
+const RING_MARK = colors.ringing;
 
 /** Frequency grid: 128 log-spaced points 20 Hz → 20 kHz PLUS exact feature
  *  frequencies (±0.014-decade flanks) so the engine's narrow ridges — the
@@ -917,23 +918,20 @@ export function WaterfallView(p: {
     const dyTot = h * 0.36;
     const ampH = h * 0.31;
     const tMax = waterfallTimeSpan(o); // the window, fitted to THIS room
-    // THE RINGING RIDGE - the frequency that decays slowest relative to the
-    // median of the range. Same rule the bezel's RIDGE readout uses, so the
-    // number on the bezel and the mark on the plot always agree.
+    // THE RINGING RIDGE — from the SHARED detector in meterEngine, so the mark
+    // on the plot, the bezel's RIDGE readout and the EQ fader's purple tint all
+    // name the same frequency. They used to sample RT60 on different grids and
+    // could disagree outright (CLASSROOM + Q RING: 252 Hz here vs 1214 Hz on
+    // the bezel).
     //
     // Marking it is the difference between a chart that SHOWS the lesson and a
     // chart that TEACHES it. A mode can START quieter than its neighbours (cut
     // EQ 250 and it does) yet OUTLAST all of them, because level and decay are
-    // different axes - EQ changes how loud a mode starts, never how long the
+    // different axes — EQ changes how loud a mode starts, never how long the
     // room rings. Unmarked, that reads as a glitch: a thin blade sticking out
     // of an otherwise dead surface.
-    const ringRts = WF_FREQS.map((f) => waterfallRt(o, f));
-    const sortedRt = [...ringRts].sort((x, y) => x - y);
-    const medRt = sortedRt[Math.floor(sortedRt.length / 2)] || 1;
-    let ringIdx = 0;
-    for (let i = 1; i < ringRts.length; i++) if (ringRts[i] > ringRts[ringIdx]) ringIdx = i;
-    // Only call it out when it genuinely stands apart from the range.
-    const ringF = ringRts[ringIdx] / medRt >= 1.5 ? WF_FREQS[ringIdx] : null;
+    const ridge = waterfallRidge(o);
+    const ringF = ridge.ratio >= RIDGE_CALLOUT_RATIO ? ridge.f : null;
     const q = 0.975; // per-slice depth step shrinks — perspective recession
     const norm = 1 - Math.pow(q, WF_SLICES - 1);
     const specRaw = WF_FREQS.map((f) => waterfallSpectrumDb(o, f));
