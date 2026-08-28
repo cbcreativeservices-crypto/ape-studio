@@ -11,6 +11,7 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import { Image, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Canvas, Circle, Group, Line, LinearGradient, Oval, Path, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
+import { CondenserMic as SharedLdcMic, HandheldMic } from '../../../features/lab/micDrawings';
 import type { MicKind } from './micSelectData';
 import { micImageUrl } from './micImages';
 
@@ -44,53 +45,20 @@ function Mesh({ x, y, w, h, n = 4 }: { x: number; y: number; w: number; h: numbe
   );
 }
 
+// The two mic types the owner named (2026-08-28) draw from the SHARED canonical
+// art in features/lab/micDrawings.tsx, so the catalogue entry and the Mic
+// Principles scenes are the same illustration. Geometry is placed to match the
+// silhouettes these two used to have inside the 100×150 design space.
 function DynamicMic() {
-  // Ball grille + tapered body — the classic handheld silhouette.
-  const body = Skia.Path.Make();
-  body.moveTo(36, 58);
-  body.lineTo(64, 58);
-  body.lineTo(58, 142);
-  body.lineTo(42, 142);
-  body.close();
-  return (
-    <>
-      <Path path={body}>
-        <BodyGrad x={36} w={28} />
-      </Path>
-      <RoundedRect x={33} y={52} width={34} height={10} r={4}>
-        <LinearGradient start={vec(33, 52)} end={vec(67, 52)} colors={[GRILLE_HI, BODY_LO]} />
-      </RoundedRect>
-      <Circle cx={50} cy={30} r={26}>
-        <LinearGradient start={vec(28, 8)} end={vec(72, 52)} colors={[GRILLE_HI, GRILLE_LO]} />
-      </Circle>
-      {/* grille mesh arcs */}
-      {[-14, -5, 4, 13].map((dy) => (
-        <Line key={dy} p1={vec(50 - Math.sqrt(676 - dy * dy) * 0.92, 30 + dy)} p2={vec(50 + Math.sqrt(676 - dy * dy) * 0.92, 30 + dy)} color={MESH} strokeWidth={1.5} />
-      ))}
-      <Circle cx={40} cy={20} r={26} color={RIM} style="stroke" strokeWidth={1.4} opacity={0.5} />
-    </>
-  );
+  return <HandheldMic x={50} y={30} angleDeg={0} grilleR={26} bodyLen={93} />;
 }
 
 function LdcMic() {
   return (
     <>
-      {/* shock-ring hint */}
+      {/* shock-ring hint, kept: it reads as a studio mount in the catalogue. */}
       <Oval x={18} y={126} width={64} height={16} color={BODY_LO} />
-      <RoundedRect x={26} y={18} width={48} height={116} r={22}>
-        <BodyGrad x={26} w={48} />
-      </RoundedRect>
-      {/* mesh head — upper half */}
-      <RoundedRect x={30} y={22} width={40} height={52} r={18}>
-        <GrilleGrad x={30} w={40} />
-      </RoundedRect>
-      <Mesh x={33} y={24} w={34} h={48} n={6} />
-      {/* capsule shadow behind the mesh */}
-      <Circle cx={50} cy={46} r={12} color="rgba(0,0,0,0.45)" />
-      <Circle cx={50} cy={46} r={12} color={ACCENT} style="stroke" strokeWidth={1.2} opacity={0.5} />
-      {/* badge */}
-      <Circle cx={50} cy={96} r={4} color={ACCENT} opacity={0.8} />
-      <Line p1={vec(30, 22)} p2={vec(30, 120)} color={RIM} strokeWidth={1.4} opacity={0.5} />
+      <SharedLdcMic x={50} y={46} headR={24} bodyLen={62} />
     </>
   );
 }

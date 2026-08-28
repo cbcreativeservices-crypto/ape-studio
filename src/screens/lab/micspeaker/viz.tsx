@@ -58,6 +58,7 @@ import {
 import { usePhaseClock } from '../foundations/viz';
 import { fonts } from '../../../theme/tokens';
 import { heatColor } from '../../../features/tools/levelColor';
+import { CondenserMic, HandheldMic } from '../../../features/lab/micDrawings';
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 
 const PARTICLE = '#cfd2d8';
@@ -633,115 +634,9 @@ function LineBusts({ path, stroke, sw }: { path: SkPathT; stroke: string; sw: nu
   );
 }
 
-/** Handheld vocal mic parts, LOCAL coords: grille sphere centered at the
- *  origin, tapered body extending toward +y (behind the grille). */
-function buildHandheldMic(gr: number, len: number) {
-  const y0 = gr * 0.72; // neck: where the body meets the grille ball
-  const y1 = y0 + len;
-  const topW = gr * 0.68;
-  const botW = gr * 0.48;
-  const tailTop = y1 - gr * 0.55; // where the XLR tail begins
-  const body = Skia.Path.Make();
-  body.moveTo(-topW, y0);
-  body.lineTo(-botW * 1.02, tailTop);
-  body.lineTo(botW * 1.02, tailTop);
-  body.lineTo(topW, y0);
-  body.close();
-  // XLR taper at the tail: a narrower stepped collar with a rounded end.
-  const tail = Skia.Path.Make();
-  tail.addRRect(
-    Skia.RRectXY(Skia.XYWHRect(-botW * 0.82, tailTop, botW * 1.64, y1 - tailTop), gr * 0.16, gr * 0.16),
-  );
-  // Wire-mesh grille: fine crosshatch — latitude AND longitude ovals.
-  const mesh = Skia.Path.Make();
-  for (const t of [-0.72, -0.46, -0.2, 0.06, 0.32, 0.58, 0.8]) {
-    const hw = gr * Math.sqrt(1 - t * t);
-    mesh.addOval(Skia.XYWHRect(-hw, gr * t - gr * 0.12, hw * 2, gr * 0.24));
-  }
-  for (const t of [-0.62, -0.32, 0, 0.32, 0.62]) {
-    const hh = gr * Math.sqrt(1 - t * t);
-    mesh.addOval(Skia.XYWHRect(gr * t - gr * 0.11, -hh, gr * 0.22, hh * 2));
-  }
-  // Knurled ring at the grille/body joint: band + tick marks.
-  const knurlH = gr * 0.34;
-  const knurlBand = Skia.Path.Make();
-  knurlBand.addRect(Skia.XYWHRect(-topW, y0, topW * 2, knurlH));
-  const knurlTicks = Skia.Path.Make();
-  for (let tx = -topW + gr * 0.12; tx < topW - gr * 0.05; tx += gr * 0.19) {
-    knurlTicks.moveTo(tx, y0 + gr * 0.04);
-    knurlTicks.lineTo(tx, y0 + knurlH - gr * 0.04);
-  }
-  // Subtle brand band mid-body.
-  const brandBand = Skia.Path.Make();
-  const bandY = y0 + (tailTop - y0) * 0.48;
-  brandBand.addRect(Skia.XYWHRect(-botW * 1.08, bandY, botW * 2.16, gr * 0.14));
-  return { body, tail, mesh, knurlBand, knurlTicks, brandBand, y0, y1 };
-}
-
-/**
- * Recognizable handheld vocal mic: spherical mesh grille + specular highlight
- * over a tapered metal-sheen body. `x,y` = grille CENTER; `angleDeg` uses the
- * lab convention front = (sin θ, −cos θ), i.e. 0° points up.
- */
-function HandheldMic({
-  x,
-  y,
-  angleDeg,
-  grilleR,
-  bodyLen,
-}: {
-  x: number;
-  y: number;
-  angleDeg: number;
-  grilleR: number;
-  bodyLen: number;
-}) {
-  const gr = grilleR;
-  const parts = useMemo(() => buildHandheldMic(gr, bodyLen), [gr, bodyLen]);
-  return (
-    <Group transform={[{ translateX: x }, { translateY: y }, { rotate: (angleDeg * Math.PI) / 180 }]}>
-      {/* Tapered body: 3-stop metal sheen, lit from the upper-left. */}
-      <Path path={parts.body}>
-        <LinearGradient
-          start={vec(-gr, 0)}
-          end={vec(gr, 0)}
-          colors={[METAL_LO, METAL_HI, METAL_MID, METAL_LO]}
-          positions={[0, 0.28, 0.55, 1]}
-        />
-      </Path>
-      {/* Subtle brand band mid-body. */}
-      <Path path={parts.brandBand} color={WAVE} opacity={0.5} />
-      {/* XLR taper at the tail. */}
-      <Path path={parts.tail}>
-        <LinearGradient
-          start={vec(-gr * 0.5, 0)}
-          end={vec(gr * 0.5, 0)}
-          colors={['#23242b', '#585c68', '#1c1d23']}
-          positions={[0, 0.32, 1]}
-        />
-      </Path>
-      {/* Knurled ring at the grille/body joint. */}
-      <Path path={parts.knurlBand}>
-        <LinearGradient start={vec(-gr * 0.7, 0)} end={vec(gr * 0.7, 0)} colors={['#3a3c44', '#9ba0ac', '#33343c']} />
-      </Path>
-      <Path path={parts.knurlTicks} color="#15161b" style="stroke" strokeWidth={Math.max(0.5, gr * 0.05)} opacity={0.8} />
-      {/* Grille sphere + fine crosshatch mesh (both directions). */}
-      <Circle cx={0} cy={0} r={gr}>
-        <RadialGradient
-          c={vec(-gr * 0.35, -gr * 0.4)}
-          r={gr * 1.9}
-          colors={['#dde0e7', '#8a8c94', '#33343c']}
-        />
-      </Circle>
-      <Path path={parts.mesh} color="#101116" style="stroke" strokeWidth={Math.max(0.5, gr * 0.055)} opacity={0.55} />
-      {/* Specular hotspot: soft bloom + crisp core. */}
-      <Circle cx={-gr * 0.34} cy={-gr * 0.4} r={gr * 0.32} color="#ffffff" opacity={0.45}>
-        <BlurMask blur={gr * 0.3} style="normal" />
-      </Circle>
-      <Circle cx={-gr * 0.36} cy={-gr * 0.42} r={gr * 0.12} color="#ffffff" opacity={0.8} />
-    </Group>
-  );
-}
+/* HandheldMic + CondenserMic now live in features/lab/micDrawings.tsx — ONE
+ * canonical drawing per mic type, shared app-wide (owner 2026-08-28). The
+ * parametric handheld that used to be defined here moved there verbatim. */
 
 /** Slim pencil-condenser mic, LOCAL: capsule tip at origin, body toward +y. */
 function buildPencilMic(w2: number, len: number): SkPathT {
@@ -2371,60 +2266,14 @@ export function ShockMountView({
   }, [phase, cx, shockMount, damp]);
 
   // ── The mic itself: basket + body + badge, riding `damp` of the shake ─────
-  const micBody = useDerivedValue(() => {
+  // The shake, as an animated Group transform for the shared CondenserMic
+  // (owner 2026-08-28). The mic rides `damp` of the stand's excursion, exactly
+  // as the four hand-built paths it replaced did.
+  const micShake = useDerivedValue(() => {
     'worklet';
-    const m = AMP * Math.sin(phase.value * 1.9) * damp;
-    const p = Skia.Path.Make();
-    p.addRRect(
-      Skia.RRectXY(Skia.XYWHRect(cx + m - MIC_HW, BASKET_BOT - 6, MIC_HW * 2, MIC_BOT - BASKET_BOT + 6), 4, 4),
-    );
-    return p;
-  }, [phase, cx, damp]);
+    return [{ translateX: AMP * Math.sin(phase.value * 1.9) * damp }];
+  }, [phase, damp]);
 
-  const micBasket = useDerivedValue(() => {
-    'worklet';
-    const m = AMP * Math.sin(phase.value * 1.9) * damp;
-    const p = Skia.Path.Make();
-    p.addRRect(
-      Skia.RRectXY(Skia.XYWHRect(cx + m - 11, MIC_TOP, 22, BASKET_BOT - MIC_TOP), 11, 10),
-    );
-    return p;
-  }, [phase, cx, damp]);
-
-  const micMesh = useDerivedValue(() => {
-    'worklet';
-    const m = AMP * Math.sin(phase.value * 1.9) * damp;
-    const p = Skia.Path.Make();
-    const cyB = (MIC_TOP + BASKET_BOT) / 2;
-    const ry = (BASKET_BOT - MIC_TOP) / 2 - 2;
-    for (let i = -3; i <= 3; i++) {
-      const yy = cyB + (i / 3.6) * ry;
-      const hw = 9.5 * Math.sqrt(Math.max(0, 1 - Math.pow((yy - cyB) / (ry + 2), 2)));
-      p.moveTo(cx + m - hw, yy);
-      p.lineTo(cx + m + hw, yy);
-    }
-    for (let i = -2; i <= 2; i++) {
-      const xx = cx + m + (i / 2.6) * 9.5;
-      const hh = ry * Math.sqrt(Math.max(0, 1 - Math.pow((xx - cx - m) / 10.5, 2)));
-      p.moveTo(xx, cyB - hh);
-      p.lineTo(xx, cyB + hh);
-    }
-    return p;
-  }, [phase, cx, damp]);
-
-  const micBadge = useDerivedValue(() => {
-    'worklet';
-    const m = AMP * Math.sin(phase.value * 1.9) * damp;
-    const p = Skia.Path.Make();
-    p.addRect(Skia.XYWHRect(cx + m - MIC_HW, BASKET_BOT + 8, MIC_HW * 2, 3));
-    p.addRect(Skia.XYWHRect(cx + m - MIC_HW, MIC_BOT - 12, MIC_HW * 2, 2));
-    return p;
-  }, [phase, cx, damp]);
-
-  // ── TRANSMITTED-VIBRATION READOUT (replaces the green wobble halo) ────────
-  // Static: two excursion tracks with a peak-to-peak bar sized by what each
-  // point actually receives — the stand's bar is full width, the capsule's is
-  // `damp` of it. Per-frame: a live marker on each track.
   const tracks = useMemo(() => {
     const p = Skia.Path.Make();
     for (const [ty, half] of [
@@ -2523,27 +2372,20 @@ export function ShockMountView({
         <Path path={bandsPath} color={WAVE} style="stroke" strokeWidth={1.5} strokeCap="round" />
         {/* Inner cradle ring that holds the mic. */}
         <Path path={innerCradle} color="#8e93a1" style="stroke" strokeWidth={2.2} opacity={0.9} />
-        {/* The mic. */}
-        <Path path={micBody}>
-          <LinearGradient
-            start={vec(cx - MIC_HW, 0)}
-            end={vec(cx + MIC_HW, 0)}
-            colors={[METAL_LO, METAL_HI, METAL_MID, METAL_LO]}
-            positions={[0, 0.3, 0.58, 1]}
+        {/* THE MIC — the shared canonical vertical large-diaphragm condenser
+            (owner 2026-08-28). This scene used to draw its own plain basket +
+            body rects; it now composes the same art every other screen uses,
+            wrapped in a Group whose transform carries the shake so the drawing
+            itself stays pure. Head centre sits where the old basket centre was
+            so the cradle, bands and readouts line up unchanged. */}
+        <Group transform={micShake}>
+          <CondenserMic
+            x={cx}
+            y={(MIC_TOP + BASKET_BOT) / 2}
+            headR={12}
+            bodyLen={MIC_BOT - BASKET_BOT + 10}
           />
-        </Path>
-        <Path path={micBasket}>
-          <LinearGradient
-            start={vec(cx - 14, 0)}
-            end={vec(cx + 14, 0)}
-            colors={['#4a4e5a', '#a8adba', '#2a2c34']}
-            positions={[0, 0.32, 1]}
-          />
-        </Path>
-        <Path path={micMesh} color="#12131a" style="stroke" strokeWidth={0.8} opacity={0.6} />
-        <Path path={micBasket} color="#c3c8d4" style="stroke" strokeWidth={1.2} opacity={0.8} />
-        <Path path={micBadge} color={WAVE} opacity={0.55} />
-        <Path path={micBody} color="#666b78" style="stroke" strokeWidth={1} opacity={0.8} />
+        </Group>
         {/* Transmitted-vibration readout: peak-to-peak bars + live markers. */}
         <Path path={tracks} color="#4b4e58" style="stroke" strokeWidth={1.2} />
         <Path path={capBar} color={capColor} opacity={0.55} />
