@@ -652,9 +652,9 @@ export function SpectrogramPatternView(p: {
 // the build → hold loop animates ONLY which slices are present.
 //
 // Grammar per the owner's reference CSD screenshots:
-//   • frequency labels across the TOP (30 · 120 · 440 · 1.6k · 6k · 20k) with
-//     thin white posts rising from the front edge, and floor guide lines
-//     running into the depth parallel to the recession;
+//   • frequency labels along the BOTTOM front edge (30 · 120 · 440 · 1.6k ·
+//     6k · 20k) with thin white tie lines rising BEHIND the range, and floor
+//     guide lines running into the depth parallel to the recession;
 //   • labeled 1-SECOND floor division lines (1 / 2 / 3 Sec) across the 3 s
 //     span — the ridges cross them during the collapse, making time visible;
 //   • HEIGHT-GRADED LEVEL fills: the app amplitude ramp up each slice, anchored
@@ -834,8 +834,9 @@ function WfSlice({
 }
 
 // Frequency stations per the owner's reference CSD (30 · 120 · 440 · 1.6k ·
-// 6k · 20k), labeled across the TOP edge with thin white posts rising from
-// the front edge and floor guide lines running into the depth.
+// 6k · 20k), labeled along the BOTTOM / front edge with thin white tie lines
+// rising BEHIND the range and floor guide lines running into the depth
+// (owner 2026-08-28).
 const WF_FRONT_LABELS: { f: number; label: string }[] = [
   { f: 30, label: '30' },
   { f: 120, label: '120' },
@@ -844,7 +845,8 @@ const WF_FRONT_LABELS: { f: number; label: string }[] = [
   { f: 6000, label: '6k' },
   { f: 20000, label: '20k' },
 ];
-/** Top edge of the frequency posts / bottom of the top label strip. */
+/** How far up the frequency tie lines rise from the front edge. They are drawn
+ *  BEHIND the slices, so this is how much line is available to be occluded. */
 const WF_POST_TOP = 14;
 
 /** M7 ⭐ — the WATERFALL (CSD-style pseudo-3D): X=frequency, Y=amplitude,
@@ -1048,6 +1050,14 @@ export function WaterfallView(p: {
         {/* 1-second bands — bright, Altiverb-style, so time is unmissable. */}
         <Path path={axes.timeLines} color="#c6ccda" style="stroke" strokeWidth={1.3} opacity={0.75} />
         <Path path={axes.arrow} color="#4b4e58" style="stroke" strokeWidth={1.2} strokeCap="round" />
+        {/* Frequency tie lines, BEHIND the range (owner 2026-08-28: "tie lines
+            down -> behind the waterfall instead of in front of it"). Drawn
+            before the slices, so the opaque mountains occlude them: a line
+            shows through where the range is QUIET and is hidden where it is
+            loud, which reads as real depth instead of a grid pasted on top.
+            Brighter than before (0.2 → 0.4) precisely because it is now
+            mostly hidden. */}
+        <Path path={axes.posts} color="#ffffff" style="stroke" strokeWidth={1} opacity={0.4} />
         {/* The mountain range: BACK-TO-FRONT so opaque fills occlude. */}
         {Array.from({ length: WF_SLICES }, (_, k) => {
           const i = WF_SLICES - 1 - k;
@@ -1070,12 +1080,13 @@ export function WaterfallView(p: {
         <Path path={geo.slices[WF_SLICES - 1].stroke} color="#ffffff" style="stroke" strokeWidth={2.6} opacity={flashOp}>
           <BlurMask blur={5} style="normal" />
         </Path>
-        {/* Thin white frequency posts OVER the range (reference grammar). */}
-        <Path path={axes.posts} color="#ffffff" style="stroke" strokeWidth={1} opacity={0.2} />
         <Path path={axes.ticks} color={GRID} style="stroke" strokeWidth={1.2} />
       </Canvas>
-      {/* Frequency labels across the TOP edge, one per post (reference,
-          mirrored left-right: ours recedes upper-RIGHT). */}
+      {/* Frequency labels along the BOTTOM / front edge, one per tie line
+          (owner 2026-08-28: "show the freq (Hz) scale numbers ... down"). They
+          sat in the top strip, which put the scale at the far end of the
+          mountains it labels; at the front edge each number is next to the
+          frequency it names. */}
       {WF_FRONT_LABELS.map((d) => (
         <RNText
           key={`f${d.f}`}
@@ -1083,7 +1094,7 @@ export function WaterfallView(p: {
             position: 'absolute',
             left: Math.max(0, Math.min(w - 34, geo.xL0 + lgFrac(d.f) * geo.frontW - 17)),
             width: 34,
-            top: 2,
+            top: geo.baseY + 9,
             textAlign: 'center',
             ...axisText,
             fontSize: 11,
@@ -1092,7 +1103,9 @@ export function WaterfallView(p: {
           {d.label}
         </RNText>
       ))}
-      <RNText style={{ position: 'absolute', left: 1, top: 2, width: 26, textAlign: 'left', ...teachText, fontSize: 11 }}>
+      <RNText
+        style={{ position: 'absolute', left: 1, top: geo.baseY + 9, width: 26, textAlign: 'left', ...teachText, fontSize: 11 }}
+      >
         Hz
       </RNText>
       {/* 1-second division labels riding the right ends of the floor lines. */}
@@ -1128,8 +1141,10 @@ export function WaterfallView(p: {
       <RNText
         style={{
           position: 'absolute',
-          left: Math.max(0, Math.min(w - 36, axes.ax0 - 30)),
-          top: Math.min(h - 12, axes.ay0 + 3),
+          // Clear of the frequency strip that now owns the bottom edge: sits
+          // just outside the front corner, beside the range rather than under it.
+          left: Math.max(0, Math.min(w - 36, axes.ax0 + 4)),
+          top: Math.max(0, axes.ay0 - 12),
           width: 36,
           textAlign: 'center',
           fontFamily: fonts.mono,
