@@ -33,11 +33,11 @@ import type { DockParam, RackStage } from '../rack/rackTypes';
 import { requireMsViz } from './skiaGate';
 
 // Dispersion presets the screen owns (no Skia dependency for the labels).
-const DISPERSIONS: { key: string; label: string; hDeg: number; vDeg: number }[] = [
-  { key: '60x40', label: '60°×40°', hDeg: 60, vDeg: 40 },
-  { key: '90x60', label: '90°×60°', hDeg: 90, vDeg: 60 },
-  { key: '100x100', label: '100°×100°', hDeg: 100, vDeg: 100 },
-  { key: '120x60', label: '120°×60°', hDeg: 120, vDeg: 60 },
+const DISPERSIONS: { key: string; label: string; hDeg: number; vDeg: number; blurb: string }[] = [
+  { key: '60x40', label: '60°×40°', hDeg: 60, vDeg: 40, blurb: 'A tight long-throw box: narrow beam, more level at distance, little spill onto walls and ceiling. Needs careful aiming.' },
+  { key: '90x60', label: '90°×60°', hDeg: 90, vDeg: 60, blurb: 'The all-rounder — wide enough for most rooms, controlled enough to keep sound off the walls.' },
+  { key: '100x100', label: '100°×100°', hDeg: 100, vDeg: 100, blurb: 'Very wide both ways: great close-up coverage, but it sprays the ceiling and floor — reflections cost clarity.' },
+  { key: '120x60', label: '120°×60°', hDeg: 120, vDeg: 60, blurb: 'Extra-wide horizontally, controlled vertically — covers a wide shallow room from one box.' },
 ];
 
 // Honesty text — silk-screened on the faceplate under each staged display
@@ -272,7 +272,7 @@ export function SpeakerCoverageLabScreen() {
       id: 'disp',
       label: 'PATTERN',
       valueLabel: topDisp.label,
-      options: DISPERSIONS.map((d) => ({ id: d.key, label: d.label })),
+      options: DISPERSIONS.map((d) => ({ id: d.key, label: d.label, blurb: d.blurb })),
       selectedId: topDisp.key,
       onSelect: (id) => {
         const i = DISPERSIONS.findIndex((d) => d.key === id);
@@ -387,7 +387,7 @@ export function SpeakerCoverageLabScreen() {
       id: 'vdisp',
       label: 'V PAT',
       valueLabel: `${sideDisp.vDeg}°`,
-      options: DISPERSIONS.map((d) => ({ id: d.key, label: `V ${d.vDeg}°  (${d.label})` })),
+      options: DISPERSIONS.map((d) => ({ id: d.key, label: `V ${d.vDeg}°  (${d.label})`, blurb: d.blurb })),
       selectedId: sideDisp.key,
       onSelect: (id) => {
         const i = DISPERSIONS.findIndex((d) => d.key === id);

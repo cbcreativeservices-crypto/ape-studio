@@ -55,6 +55,13 @@ export type TrayOption = {
   photoHint?: boolean;
   /** Long-press override for this option (e.g. open a material photo). */
   onLongPress?: () => void;
+  /** One–two sentences: what this option IS / what picking it does (owner
+   *  2026-08-28). Shown in the open tray for the SELECTED option, so the
+   *  learner reads what they just changed WITHOUT the lab's prose — which the
+   *  tray is covering at that moment. Updates live as they A/B. Optional:
+   *  self-evident values (frequencies, on/off) don't need one, and a tray with
+   *  no blurbs renders exactly as before. */
+  blurb?: string;
 };
 
 /** The dock grammar. */

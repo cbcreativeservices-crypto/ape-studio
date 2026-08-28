@@ -60,9 +60,9 @@ const MELODY: { midi: number; offCents: number }[] = [
 ];
 
 const SPEEDS = [
-  { key: 'fast', label: 'FAST — SNAP', short: 'FAST', tau: 0.025 },
-  { key: 'med', label: 'MEDIUM', short: 'MEDIUM', tau: 0.12 },
-  { key: 'slow', label: 'SLOW — GLIDE', short: 'SLOW', tau: 0.4 },
+  { key: 'fast', label: 'FAST — SNAP', short: 'FAST', tau: 0.025, blurb: 'Correction in ~25 ms — pitch JUMPS to the grid. Audible as the hard, robotic effect; nothing natural moves this fast.' },
+  { key: 'med', label: 'MEDIUM', short: 'MEDIUM', tau: 0.12, blurb: 'Correction over ~120 ms — quick enough to catch a note, slow enough to keep some human motion.' },
+  { key: 'slow', label: 'SLOW — GLIDE', short: 'SLOW', tau: 0.4, blurb: 'Correction over ~400 ms — a gentle drift back to pitch. Vibrato and slides survive; this is "transparent" tuning.' },
 ] as const;
 
 /** THE correction curve (cents relative to the note's grid target) — shared by
@@ -266,7 +266,7 @@ export function AutotuneLabScreen() {
             id: 'speed',
             label: 'SPEED',
             valueLabel: speed.short,
-            options: SPEEDS.map((s) => ({ id: s.key, label: s.label })),
+            options: SPEEDS.map((s) => ({ id: s.key, label: s.label, blurb: s.blurb })),
             selectedId: speedKey,
             onSelect: (id) => {
               const s = SPEEDS.find((x) => x.key === id);

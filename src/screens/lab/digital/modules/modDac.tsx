@@ -136,9 +136,9 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
       label: 'MODE',
       valueLabel: mode === 'simple' ? 'SIMPLE' : mode === 'xray' ? 'X-RAY' : 'STD',
       options: [
-        { id: 'simple', label: 'SIMPLIFIED' },
-        { id: 'standard', label: 'STANDARD' },
-        { id: 'xray', label: 'X-RAY' },
+        { id: 'simple', label: 'SIMPLIFIED', blurb: 'Just the staircase and the smooth result — the story with nothing else on screen.' },
+        { id: 'standard', label: 'STANDARD', blurb: 'Adds the sample points and the reconstruction filter’s work — the honest middle view.' },
+        { id: 'xray', label: 'X-RAY', blurb: 'Everything exposed: samples, held steps, filter ringing — how the smooth wave is actually rebuilt.' },
       ],
       selectedId: mode,
       onSelect: (id) => setMode(id as ViewMode),
@@ -415,8 +415,8 @@ export function ErrorsModule({ width: _width, focused, help }: DigitalModuleProp
       label: 'MODE',
       valueLabel: jitMode === 'random' ? 'RANDOM' : 'PERIOD',
       options: [
-        { id: 'random', label: 'RANDOM' },
-        { id: 'periodic', label: 'PERIODIC' },
+        { id: 'random', label: 'RANDOM', blurb: 'Clock ticks land early or late at random — the error smears into a faint noise floor.' },
+        { id: 'periodic', label: 'PERIODIC', blurb: 'The clock wobbles in a PATTERN — the error becomes sideband TONES around the signal. Far more audible than random.' },
       ],
       selectedId: jitMode,
       onSelect: (id) => setJitMode(id as 'random' | 'periodic'),

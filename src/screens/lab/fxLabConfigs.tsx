@@ -52,10 +52,10 @@ const P = FX_PARAM;
 const ANALYTIC = 'DESIGNED RESPONSE — ANALYTIC, NOT A MEASUREMENT';
 
 // Shared sources (`short` = the compact dock-key value).
-const SRC_PINK = { label: 'PINK NOISE', short: 'PINK', gen: { mode: GEN_MODES.pink } };
-const SRC_WHITE = { label: 'WHITE NOISE', short: 'WHITE', gen: { mode: GEN_MODES.white } };
+const SRC_PINK = { label: 'PINK NOISE', short: 'PINK', gen: { mode: GEN_MODES.pink }, blurb: 'Steady broadband noise, equal energy per octave — the best source for HEARING a tone change.' };
+const SRC_WHITE = { label: 'WHITE NOISE', short: 'WHITE', gen: { mode: GEN_MODES.white }, blurb: 'Equal energy per Hz — brighter than pink. The top octaves dominate, so high-end changes leap out.' };
 const srcSine = (hz: number) => ({ label: `SINE ${hz} Hz`, short: `${hz} Hz`, gen: { mode: GEN_MODES.sine, frequency: hz } });
-const srcClick = (bpm: number) => ({ label: `CLICK ${bpm}`, short: `${bpm} BPM`, gen: { mode: GEN_MODES.click, clickBpm: bpm } });
+const srcClick = (bpm: number) => ({ label: `CLICK ${bpm}`, short: `${bpm} BPM`, gen: { mode: GEN_MODES.click, clickBpm: bpm }, blurb: 'A dry click with silence between hits — echoes, tails and pumping have nowhere to hide.' });
 
 // ─────────────────────────────────────────────────────────── LAB 1 · EQ ──
 const EQ_TYPE = P.eqBand(0, 'type');
@@ -101,11 +101,11 @@ const eqConfig: FxLabConfig = {
     {
       label: 'FILTER TYPE', short: 'TYPE', paramId: EQ_TYPE, lessonKey: 'filter_type',
       choices: [
-        { label: 'PEAK (BELL)', value: EQ_BAND_TYPES.peak },
-        { label: 'LOW SHELF', value: EQ_BAND_TYPES.lowShelf },
-        { label: 'HIGH SHELF', value: EQ_BAND_TYPES.highShelf },
-        { label: 'HIGH-PASS', value: EQ_BAND_TYPES.highPass },
-        { label: 'LOW-PASS', value: EQ_BAND_TYPES.lowPass },
+        { label: 'PEAK (BELL)', value: EQ_BAND_TYPES.peak, blurb: 'Boost or cut a BAND around the frequency, leaving both sides alone — the surgical shape.' },
+        { label: 'LOW SHELF', value: EQ_BAND_TYPES.lowShelf, blurb: 'Everything BELOW the frequency rises or falls together — a broad tilt of the low end.' },
+        { label: 'HIGH SHELF', value: EQ_BAND_TYPES.highShelf, blurb: 'Everything ABOVE the frequency rises or falls together — air and sheen live here.' },
+        { label: 'HIGH-PASS', value: EQ_BAND_TYPES.highPass, blurb: 'REMOVES everything below the frequency. Not a cut — a cliff. The rumble-and-mud eraser.' },
+        { label: 'LOW-PASS', value: EQ_BAND_TYPES.lowPass, blurb: 'REMOVES everything above the frequency — darkness on demand; also what "telephone" sounds are made of.' },
       ],
       initial: EQ_BAND_TYPES.peak,
     },

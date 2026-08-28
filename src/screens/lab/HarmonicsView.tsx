@@ -142,6 +142,7 @@ import {
   normalizeSet,
   noteInfo,
   PRESETS,
+  PRESET_BLURBS,
   synthWaveform,
   thd,
   type Harmonic,
@@ -1598,7 +1599,7 @@ export function HarmonicsView({
             id: 'preset',
             label: 'PRESET',
             valueLabel: PRESETS.find((p) => p.key === preset)?.label ?? '—',
-            options: PRESETS.map((p) => ({ id: p.key, label: p.label })),
+            options: PRESETS.map((p) => ({ id: p.key, label: p.label, blurb: PRESET_BLURBS[p.key] })),
             selectedId: preset,
             onSelect: (id: string) => pickPreset(id as PresetKey),
             sticky: true, // A/B waveshapes while the glass redraws — the lesson
@@ -1613,8 +1614,8 @@ export function HarmonicsView({
       label: 'AXIS',
       valueLabel: axis === 'log' ? 'LOG ♪' : 'LIN',
       options: [
-        { id: 'log', label: 'LOG ♪' },
-        { id: 'lin', label: 'LIN' },
+        { id: 'log', label: 'LOG ♪', blurb: 'Musical spacing: every octave gets equal width, the way pitch actually works. Harmonics crowd together to the right.' },
+        { id: 'lin', label: 'LIN', blurb: 'Equal Hz per pixel. Harmonics of one note space out EVENLY — the comb becomes obvious. Great for math, poor for music.' },
       ],
       selectedId: axis,
       onSelect: (id) => pickAxis(id as AxisMode),
@@ -1627,8 +1628,8 @@ export function HarmonicsView({
       label: 'MODE',
       valueLabel: view === 'model' ? 'MODEL' : 'LIVE',
       options: [
-        { id: 'model', label: 'ANALYTIC MODEL' },
-        { id: 'live', label: 'REAL SIGNAL' },
+        { id: 'model', label: 'ANALYTIC MODEL', blurb: 'The textbook recipe, drawn from the math — perfectly clean, nothing measured.' },
+        { id: 'live', label: 'REAL SIGNAL', blurb: 'The actual generated audio, analyzed live — the same recipe with the real world attached.' },
       ],
       selectedId: view,
       onSelect: (id) => pickView(id as ViewMode),

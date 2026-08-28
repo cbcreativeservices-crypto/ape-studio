@@ -258,8 +258,8 @@ export function BassLabScreen() {
             label: 'MODE',
             valueLabel: mode === 'fretted' ? 'FRETTED' : 'HARM',
             options: [
-              { id: 'fretted', label: 'FRETTED', onLongPress: () => openLesson('fret') },
-              { id: 'harmonics', label: 'NATURAL HARMONICS', onLongPress: () => openLesson('harmonic_node') },
+              { id: 'fretted', label: 'FRETTED', blurb: 'Press behind a fret to SHORTEN the string: the whole series shifts up together — a new fundamental, normal notes.', onLongPress: () => openLesson('fret') },
+              { id: 'harmonics', label: 'NATURAL HARMONICS', blurb: 'Touch a node lightly and the OPEN string keeps its length but only vibrates in parts — the chimey overtones, no fundamental.', onLongPress: () => openLesson('harmonic_node') },
             ],
             selectedId: mode,
             onSelect: (id) => setMode(id as Mode),

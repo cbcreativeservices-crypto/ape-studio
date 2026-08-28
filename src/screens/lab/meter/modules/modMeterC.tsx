@@ -343,7 +343,9 @@ export function StereoModule(p: MeterModuleProps) {
       onSelect: (id) => setPreset(id as StereoPreset),
       sticky: true,
       helpKey: 'stereo_width',
-      options: STEREO_PRESETS.map((s) => ({ id: s.key, label: s.label })),
+      // The preset captions already say exactly what each image means — the tray
+      // shows them so the learner reads while A/B-ing (owner 2026-08-28).
+      options: STEREO_PRESETS.map((s) => ({ id: s.key, label: s.label, blurb: s.caption })),
     },
   ];
 
@@ -412,13 +414,15 @@ export function StereoModule(p: MeterModuleProps) {
 // ═════════════════════════════════════════════════════════════════════════════
 // MODULE 10 — OSCILLOSCOPE (+ X-Y / Lissajous mode)
 
-const SCOPE_SIGNALS: { key: SignalKey; label: string }[] = [
-  { key: 'sine', label: 'SINE' },
-  { key: 'square', label: 'SQUARE' },
-  { key: 'triangle', label: 'TRIANGLE' },
-  { key: 'saw', label: 'SAW' },
-  { key: 'speech', label: 'SPEECH' },
-  { key: 'music', label: 'MUSIC' },
+// Blurbs are TRACE-focused (what the scope draws), not meter-focused — this is
+// the raw-voltage view, so describe the shape the learner is about to see.
+const SCOPE_SIGNALS: { key: SignalKey; label: string; blurb: string }[] = [
+  { key: 'sine', label: 'SINE', blurb: 'One frequency, no harmonics: a single smooth curve — the purest trace a scope can draw.' },
+  { key: 'square', label: 'SQUARE', blurb: 'Flat shelves with near-vertical edges. Those fast edges ARE the high harmonics — the scope shows you why a square sounds bright.' },
+  { key: 'triangle', label: 'TRIANGLE', blurb: 'Straight ramps meeting at points. Same odd harmonics as a square but fading fast — gentler corners, gentler sound.' },
+  { key: 'saw', label: 'SAW', blurb: 'A steady ramp up and an instant drop. Every harmonic present — the buzzy synth staple.' },
+  { key: 'speech', label: 'SPEECH', blurb: 'Irregular bursts with true silence between them. No repeating shape to lock onto — this is what real signals look like raw.' },
+  { key: 'music', label: 'MUSIC', blurb: 'A dense, ever-changing pile of everything at once. The scope shows activity, not notes — which is why other meters exist.' },
 ];
 
 const CHECK_SCOPE_SQUARE: CheckSpec = {
@@ -518,7 +522,7 @@ export function ScopeModule(p: MeterModuleProps) {
       onSelect: (id) => setSignal(id as SignalKey),
       sticky: true,
       helpKey: 'oscilloscope',
-      options: SCOPE_SIGNALS.map((s) => ({ id: s.key, label: s.label })),
+      options: SCOPE_SIGNALS.map((s) => ({ id: s.key, label: s.label, blurb: s.blurb })),
     },
     {
       kind: 'toggle',

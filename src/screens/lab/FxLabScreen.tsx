@@ -122,7 +122,9 @@ export type FxParamSpec = {
   paramId: number;
   /** Guided-lesson control key (content.ts) — omitted = opens the lab lesson. */
   lessonKey?: string;
-  choices: { label: string; value: number }[];
+  /** Per-choice tray blurb (owner 2026-08-28) — author for CONCEPTUAL choices
+   *  (filter types, modes); numeric teaching values stay label-only. */
+  choices: { label: string; value: number; blurb?: string }[];
   initial: number;
   /** Present = this param docks as THE pre-bound lane fader instead of an
    *  options tray (exactly ONE per config — the teaching parameter). Its
@@ -135,6 +137,8 @@ export type FxSourceSpec = {
   /** Compact dock-button value (~7 mono chars). Defaults to `label`. */
   short?: string;
   gen: GenParams;
+  /** Tray blurb: why you'd audition THIS effect on THIS source. */
+  blurb?: string;
 };
 
 export type FxLabConfig = {
@@ -392,6 +396,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
         options: p.choices.map((c) => ({
           id: String(c.value),
           label: c.label,
+          blurb: c.blurb,
           onLongPress: () => openLesson(p.lessonKey),
         })),
         selectedId: String(values[p.paramId]),
@@ -410,6 +415,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
     options: config.sources.map((s, i) => ({
       id: String(i),
       label: s.label,
+      blurb: s.blurb,
       onLongPress: () => openSourceHelp(s.gen),
     })),
     selectedId: String(sourceIdx),

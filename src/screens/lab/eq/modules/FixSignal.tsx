@@ -150,7 +150,9 @@ export function FixSignalModule(_p: EqModuleComponentProps) {
       id: 'scenario',
       label: 'SCEN',
       valueLabel: `${idx + 1}/${SCENARIOS.length}`,
-      options: SCENARIOS.map((s, i) => ({ id: String(i), label: `${i + 1} · ${s.name}` })),
+      // The scenario's story is its blurb — the mystery you just picked, readable
+      // in the tray (the moral stays hidden until solved).
+      options: SCENARIOS.map((s, i) => ({ id: String(i), label: `${i + 1} · ${s.name}`, blurb: s.story })),
       selectedId: String(idx),
       onSelect: (id) => goTo(Number(id)),
     },

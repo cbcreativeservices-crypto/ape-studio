@@ -121,7 +121,8 @@ export function FilterShapesModule(_p: EqModuleComponentProps) {
     id: 'shape',
     label: 'SHAPE',
     valueLabel: SHAPE_SHORT[shape],
-    options: SHAPES.map((s) => ({ id: s.key, label: s.label })),
+    // Each shape's teach line doubles as its tray blurb (owner 2026-08-28).
+    options: SHAPES.map((s) => ({ id: s.key, label: s.label, blurb: s.teach })),
     selectedId: shape,
     // Sticky: A/B-ing the six shapes while the curve reacts IS the lesson.
     sticky: true,

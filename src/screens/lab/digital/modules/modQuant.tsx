@@ -109,6 +109,18 @@ function LessonRow({ onPress }: { onPress: () => void }) {
 // MODULE 3 — QUANTIZATION & BIT DEPTH
 
 const BIT_CHOICES = [1, 2, 3, 4, 6, 8, 12, 16, 24];
+/** Tray blurbs: each depth's real-world identity (owner 2026-08-28). */
+const BIT_BLURBS: Record<number, string> = {
+  1: 'Two levels: on or off. The wave becomes a square — the most brutal quantization possible.',
+  2: 'Four levels — the staircase is unmissable and the error is louder than the music.',
+  3: 'Eight levels — still toy-grade; listen to the gritty error riding the tone.',
+  4: 'Sixteen levels — early-videogame territory. The crunch IS quantization error.',
+  6: 'Sixty-four levels — recognisable audio with an obvious hiss-crunch floor.',
+  8: 'Two hundred fifty-six levels — old samplers and telephone-grade audio. ~48 dB between signal and error.',
+  12: 'Four thousand levels — clean until things get quiet; early digital drum machines lived here.',
+  16: 'Sixty-five thousand levels — the CD standard: ~96 dB of range, error below audibility in normal listening.',
+  24: 'Sixteen million levels — the studio standard: ~144 dB of theoretical range, far below any room’s noise floor.',
+};
 
 const CHECK_BITDEPTH: CheckSpec = {
   question: 'A converter stores 8 bits per sample. How many amplitude levels does it have, and what is its THEORETICAL dynamic range (6.02·N + 1.76 dB)?',
@@ -163,7 +175,7 @@ export function QuantModule(p: DigitalModuleProps) {
       id: 'bits',
       label: 'BITS',
       valueLabel: `${bits}-BIT`,
-      options: BIT_CHOICES.map((b) => ({ id: String(b), label: `${b}-BIT` })),
+      options: BIT_CHOICES.map((b) => ({ id: String(b), label: `${b}-BIT`, blurb: BIT_BLURBS[b] })),
       selectedId: String(bits),
       onSelect: (id) => setBits(Number(id)),
       sticky: true, // A/B bit depths while the steps move on the glass

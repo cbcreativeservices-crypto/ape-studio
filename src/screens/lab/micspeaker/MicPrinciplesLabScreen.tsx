@@ -47,12 +47,12 @@ import { MicCutaway } from './MicCutaway';
 // ── Pure models the SCREEN owns (no Skia dependency — readouts must work
 //    even on pre-Skia clients showing the honest card). ─────────────────────
 
-const PATTERNS: { key: string; label: string; a: number; b: number }[] = [
-  { key: 'omni', label: 'OMNI', a: 1, b: 0 },
-  { key: 'cardioid', label: 'CARDIOID', a: 0.5, b: 0.5 },
-  { key: 'super', label: 'SUPER', a: 0.37, b: 0.63 },
-  { key: 'hyper', label: 'HYPER', a: 0.25, b: 0.75 },
-  { key: 'fig8', label: 'FIGURE-8', a: 0, b: 1 },
+const PATTERNS: { key: string; label: string; a: number; b: number; blurb: string }[] = [
+  { key: 'omni', label: 'OMNI', a: 1, b: 0, blurb: 'Hears equally in every direction — no rejection anywhere. Natural sound, zero feedback protection.' },
+  { key: 'cardioid', label: 'CARDIOID', a: 0.5, b: 0.5, blurb: 'The heart shape: full sensitivity in front, dead at the REAR. The live-vocal standard — point the null at the monitor.' },
+  { key: 'super', label: 'SUPER', a: 0.37, b: 0.63, blurb: 'Tighter in front than cardioid, but the null moves to ~127° and a small rear lobe appears — aim monitors at the null, not the tail.' },
+  { key: 'hyper', label: 'HYPER', a: 0.25, b: 0.75, blurb: 'Tighter still, with a bigger rear lobe — maximum side rejection, but it hears a little of what is directly behind.' },
+  { key: 'fig8', label: 'FIGURE-8', a: 0, b: 1, blurb: 'Front and back equally, sides completely DEAD — the ribbon-mic pattern, and one half of mid-side.' },
 ];
 
 function gainAt(a: number, b: number, deg: number): number {
@@ -386,7 +386,7 @@ function PolarSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
       id: 'pattern',
       label: 'PATTERN',
       valueLabel: pat.label,
-      options: PATTERNS.map((p) => ({ id: p.key, label: p.label })),
+      options: PATTERNS.map((p) => ({ id: p.key, label: p.label, blurb: p.blurb })),
       selectedId: pat.key,
       onSelect: (id) => {
         const i = PATTERNS.findIndex((p) => p.key === id);
@@ -587,8 +587,8 @@ function ProximitySection({ viz, focused, help, wellTop, wellBottom }: SectionPr
       label: 'MIC',
       valueLabel: directional ? 'CARDIOID' : 'OMNI',
       options: [
-        { id: 'cardioid', label: 'CARDIOID' },
-        { id: 'omni', label: 'OMNI' },
+        { id: 'cardioid', label: 'CARDIOID', blurb: 'Directional mics get their pattern from a pressure-GRADIENT design — and that design is what bass-boosts up close. Proximity effect lives here.' },
+        { id: 'omni', label: 'OMNI', blurb: 'A pure pressure design: no gradient, so NO proximity effect — the same bass at any distance. Watch the curve stay flat.' },
       ],
       selectedId: directional ? 'cardioid' : 'omni',
       onSelect: (id) => setDirectional(id === 'cardioid'),
@@ -766,7 +766,7 @@ function PopSection({ viz, focused, help, wellTop, wellBottom }: SectionProps) {
       id: 'barrier',
       label: 'BARRIER',
       valueLabel: m.label,
-      options: POP_MODES.map((p) => ({ id: p.key, label: p.label })),
+      options: POP_MODES.map((p) => ({ id: p.key, label: p.label, blurb: p.note })),
       selectedId: m.key,
       onSelect: (id) => {
         const i = POP_MODES.findIndex((p) => p.key === id);
@@ -890,7 +890,7 @@ function StereoSection({ viz, help, wellTop, wellBottom }: SectionProps) {
       id: 'tech',
       label: 'TECHNIQUE',
       valueLabel: t.label,
-      options: STEREO_TECHS.map((s) => ({ id: s.key, label: s.label })),
+      options: STEREO_TECHS.map((s) => ({ id: s.key, label: s.label, blurb: s.note })),
       selectedId: t.key,
       onSelect: (id) => {
         const i = STEREO_TECHS.findIndex((s) => s.key === id);
@@ -998,7 +998,7 @@ function HandSection({ viz, focused, help, wellTop, wellBottom }: SectionProps) 
       id: 'position',
       label: 'POSITION',
       valueLabel: zone.label,
-      options: HAND_POSITIONS.map((p) => ({ id: p.label, label: p.label })),
+      options: HAND_POSITIONS.map((p) => ({ id: p.label, label: p.label, blurb: p.note })),
       selectedId: zone.label,
       onSelect: (id) => {
         const p = HAND_POSITIONS.find((x) => x.label === id);

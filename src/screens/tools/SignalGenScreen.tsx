@@ -80,17 +80,19 @@ const freqToSlider = (hz: number) =>
 const sliderToFreq = (v: number) => Math.round(FREQ_SLIDER_MIN * Math.pow(FREQ_SLIDER_RATIO, clamp01(v)));
 
 /** Signal chips (spec Tool 6 required modes; keys must exist in GEN_MODES). */
-const SIGNALS: { key: GenModeName; label: string }[] = [
-  { key: 'sine', label: 'SINE' },
-  { key: 'white', label: 'WHITE' },
-  { key: 'pink', label: 'PINK' },
-  { key: 'brown', label: 'BROWN' },
-  { key: 'blue', label: 'BLUE' },
-  { key: 'violet', label: 'VIOLET' },
-  { key: 'sweepLin', label: 'SWEEP LIN' },
-  { key: 'sweepLog', label: 'SWEEP LOG' },
-  { key: 'click', label: 'CLICK' },
-  { key: 'burst', label: 'BURST' },
+// Tray blurbs (owner 2026-08-28): the noise COLOURS especially — nothing about
+// the words "pink" or "violet" explains itself.
+const SIGNALS: { key: GenModeName; label: string; blurb: string }[] = [
+  { key: 'sine', label: 'SINE', blurb: 'One pure frequency at the dial — the reference tone for level checks and ear training.' },
+  { key: 'white', label: 'WHITE', blurb: 'Equal energy per Hz. The top octaves dominate (each octave holds twice the frequencies) — bright, hissy.' },
+  { key: 'pink', label: 'PINK', blurb: 'Equal energy per OCTAVE — matches how hearing and RTAs divide the spectrum. THE measurement and tuning noise.' },
+  { key: 'brown', label: 'BROWN', blurb: 'Energy falling 6 dB per octave — deep rumble, like distant surf. All weight, no sizzle.' },
+  { key: 'blue', label: 'BLUE', blurb: 'Pink’s mirror: energy RISING per octave. Thin and airy — mostly a dither/testing curiosity.' },
+  { key: 'violet', label: 'VIOLET', blurb: 'White’s mirror, rising 6 dB per octave — almost pure sizzle. The extreme end of the noise family.' },
+  { key: 'sweepLin', label: 'SWEEP LIN', blurb: 'A tone gliding at constant Hz per second — it races through the bass and crawls through the highs.' },
+  { key: 'sweepLog', label: 'SWEEP LOG', blurb: 'A tone gliding at constant OCTAVES per second — equal time in every octave. The sweep that sounds even, and the one measurement uses.' },
+  { key: 'click', label: 'CLICK', blurb: 'A dry metronome tick — sharp transients with silence between, for timing, echoes and latency checks.' },
+  { key: 'burst', label: 'BURST', blurb: 'Short tone bursts with gaps — level in bursts, silence between: meter ballistics and gating made audible.' },
 ];
 
 const ISO_PRESETS_HZ = [63, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
@@ -542,7 +544,7 @@ export function SignalGenScreen({ navigation }: Props) {
     id: 'signal',
     label: 'SIGNAL',
     valueLabel: sigLabel,
-    options: SIGNALS.map((s) => ({ id: s.key, label: s.label })),
+    options: SIGNALS.map((s) => ({ id: s.key, label: s.label, blurb: s.blurb })),
     selectedId: mode,
     onSelect: (id) => pickMode(id as GenModeName),
     sticky: true, // A/B signals while the preview redraws

@@ -462,8 +462,8 @@ function HighVoltSection(p: SectionProps) {
       label: 'SUPPLY',
       valueLabel: highB ? 'B+' : 'SMALL',
       options: [
-        { id: 'small', label: 'SMALL SUPPLY' },
-        { id: 'high', label: 'HIGH-VOLTAGE SUPPLY (B+)' },
+        { id: 'small', label: 'SMALL SUPPLY', blurb: 'A modest plate voltage: the field is weak, few electrons make the crossing — a starved, dim tube.' },
+        { id: 'high', label: 'HIGH-VOLTAGE SUPPLY (B+)', blurb: 'The real thing — hundreds of volts on the plate. A strong field sweeps the electron cloud across: full current, full gain.' },
       ],
       selectedId: highB ? 'high' : 'small',
       onSelect: (id) => setHighB(id === 'high'),
@@ -567,7 +567,9 @@ function TypesSection(p: SectionProps) {
       id: 'type',
       label: 'TYPE',
       valueLabel: t.label,
-      options: TYPES.map((ty) => ({ id: ty.kind, label: `${ty.label} · ${ty.grids}` })),
+      // Each type's `strength` line doubles as the tray blurb — what this many
+      // grids buys you, readable while the cutaway rebuilds.
+      options: TYPES.map((ty) => ({ id: ty.kind, label: `${ty.label} · ${ty.grids}`, blurb: ty.strength })),
       selectedId: t.kind,
       onSelect: (id) => {
         const i = TYPES.findIndex((ty) => ty.kind === id);

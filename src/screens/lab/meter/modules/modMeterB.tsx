@@ -178,6 +178,17 @@ function WaterfallViz({ viz, width, height, opts, running }: { viz: VizSpectralM
 // MODULE 5 — SPECTRUM ANALYZER: what does this shape tell me?
 
 const SPECTRUM_KEYS = Object.keys(SPECTRUM_LABELS) as SpectrumKey[];
+/** Tray blurbs (owner 2026-08-28): what each pattern looks like on the analyzer
+ *  and why you would recognise it — readable inside the open tray. */
+const SPECTRUM_BLURBS: Record<SpectrumKey, string> = {
+  speech: 'Energy bunched between roughly 200 Hz and 3 kHz — the vocal formants — with almost nothing above 4 kHz.',
+  cymbal: 'Nearly all the energy ABOVE 2 kHz: a jagged wash of high partials with an empty low end.',
+  kick: 'A tall low bump near 60 Hz plus a small beater click around 3 kHz — weight below, definition above.',
+  guitar: 'A comb of evenly spaced spikes: the harmonics of one played note, each a multiple of the fundamental.',
+  hum: 'Thin spikes at 60 Hz and its multiples — the electrical signature. If you see this, chase grounding and cables, not EQ.',
+  feedback: 'One violently tall, narrow spike: a single frequency running away. Find it here, then pull that frequency down.',
+  pinknoise: 'Equal energy per octave — a straight downward slope on this log display. The calibration reference.',
+};
 
 const SPECTRUM_CAPTIONS: Record<SpectrumKey, string> = {
   speech:
@@ -248,7 +259,7 @@ export function SpectrumModule(p: MeterModuleProps) {
       id: 'pattern',
       label: 'PATTERN',
       valueLabel: SPECTRUM_LABELS[pattern].toUpperCase(),
-      options: SPECTRUM_KEYS.map((k) => ({ id: k, label: SPECTRUM_LABELS[k].toUpperCase() })),
+      options: SPECTRUM_KEYS.map((k) => ({ id: k, label: SPECTRUM_LABELS[k].toUpperCase(), blurb: SPECTRUM_BLURBS[k] })),
       selectedId: pattern,
       onSelect: (id) => setPattern(id as SpectrumKey),
       // Teaching collection: the tray STAYS OPEN so you A/B shapes while the
@@ -312,6 +323,14 @@ export function SpectrumModule(p: MeterModuleProps) {
 // MODULE 6 — SPECTROGRAM: the most misunderstood display, decoded
 
 const SPECTROGRAM_KEYS = Object.keys(SPECTROGRAM_LABELS) as SpectrogramKey[];
+const SPECTROGRAM_BLURBS: Record<SpectrogramKey, string> = {
+  speech: 'Syllable bursts painted as striped bands — the formants — with pitch striations underneath. The fingerprint reading of talking.',
+  birdsong: 'Short rising chirps: thin lines that sweep upward, high in the band, with silence between them.',
+  cymbal: 'A bright splash lighting the whole top of the band, then fading — decay drawn over time.',
+  feedback: 'A single horizontal line that grows hotter and hotter: one frequency building second by second. Kill it before it howls.',
+  whistle: 'One thin wavering line — a pure tone with a little vibrato. The simplest picture a spectrogram can draw.',
+  whitenoise: 'The entire band lit at once, flat and constant — energy everywhere, structure nowhere.',
+};
 
 const SPECTROGRAM_CAPTIONS: Record<SpectrogramKey, string> = {
   speech:
@@ -375,7 +394,7 @@ export function SpectrogramModule(p: MeterModuleProps) {
       id: 'pattern',
       label: 'PATTERN',
       valueLabel: SPECTROGRAM_LABELS[pattern].toUpperCase(),
-      options: SPECTROGRAM_KEYS.map((k) => ({ id: k, label: SPECTROGRAM_LABELS[k].toUpperCase() })),
+      options: SPECTROGRAM_KEYS.map((k) => ({ id: k, label: SPECTROGRAM_LABELS[k].toUpperCase(), blurb: SPECTROGRAM_BLURBS[k] })),
       selectedId: pattern,
       onSelect: (id) => setPattern(id as SpectrogramKey),
       sticky: true, // A/B how each sound PAINTS while the film keeps rolling
@@ -387,8 +406,8 @@ export function SpectrogramModule(p: MeterModuleProps) {
       label: 'VIEW',
       valueLabel: snapshot ? 'SNAP 5s' : 'ELAPSED',
       options: [
-        { id: 'scroll', label: 'ELAPSED TIME' },
-        { id: 'snapshot', label: 'SNAPSHOT — FULL 5 s' },
+        { id: 'scroll', label: 'ELAPSED TIME', blurb: 'The picture slides left as new sound arrives at the right edge — a chart recorder. NOW is always the right edge.' },
+        { id: 'snapshot', label: 'SNAPSHOT — FULL 5 s', blurb: 'The whole 5 seconds laid out at once, frozen — read it left to right like a page.' },
       ],
       selectedId: snapshot ? 'snapshot' : 'scroll',
       onSelect: (id) => setSnapshot(id === 'snapshot'),
@@ -458,6 +477,14 @@ export function SpectrogramModule(p: MeterModuleProps) {
 // MODULE 7 — WATERFALL (CSD): the mountain range that collapses
 
 const ROOM_KEYS = Object.keys(ROOM_LABELS) as RoomKey[];
+/** Blurbs match ROOM_RT: base RT60 at 1 kHz, low-end multiplier, ring mode. */
+const ROOM_BLURBS: Record<RoomKey, string> = {
+  cathedral: 'Huge stone space — RT60 near 5 s, lows even longer. Sound keeps arriving for seconds after the source stops.',
+  classroom: 'Medium room with hard parallel walls — and a strong mode near 250 Hz that keeps ringing after everything else has died. Watch the marked ridge.',
+  studio: 'A treated control room: the fastest decay here, around a third of a second. The range collapses almost at once — this is what "dry" looks like.',
+  theater: 'A large seated hall around 1.3 s — lows outlast highs, but it stays clear enough for speech.',
+  living: 'A furnished domestic room around half a second: the sofa eats the highs, but a mode near 110 Hz rings on in the low end.',
+};
 const REVERB_KEYS: ReverbKey[] = ['none', 'room', 'plate', 'hall', 'spring'];
 const REVERB_LABELS: Record<ReverbKey, string> = {
   none: 'None',
@@ -465,6 +492,14 @@ const REVERB_LABELS: Record<ReverbKey, string> = {
   plate: 'Plate',
   hall: 'Hall',
   spring: 'Spring',
+};
+/** Blurbs match REVERB_RT: rtAt1k plus the lf/hf multipliers. */
+const REVERB_BLURBS: Record<ReverbKey, string> = {
+  none: 'No added reverb — you are looking at the room itself, nothing more.',
+  room: 'A short, warm ambience (about half a second): lows linger a touch, highs are damped. Space without an obvious tail.',
+  plate: 'A vibrating metal sheet — long (near 2 s), BRIGHT, and even across the band. The classic vocal sheen.',
+  hall: 'A long concert-hall tail (over 2.5 s) whose LOWS clearly outlast the highs — big, dark, orchestral.',
+  spring: 'The guitar-amp classic: mid-forward and boingy, with both the lows and the highs rolled away.',
 };
 
 /** The field guide — each sub-section names a real-world read of the display. */
@@ -610,7 +645,7 @@ export function WaterfallModule(p: MeterModuleProps) {
       id: 'room',
       label: 'ROOM',
       valueLabel: ROOM_LABELS[room].toUpperCase(),
-      options: ROOM_KEYS.map((k) => ({ id: k, label: ROOM_LABELS[k].toUpperCase() })),
+      options: ROOM_KEYS.map((k) => ({ id: k, label: ROOM_LABELS[k].toUpperCase(), blurb: ROOM_BLURBS[k] })),
       selectedId: room,
       onSelect: (id) => setRoom(id as RoomKey),
       sticky: true, // A/B rooms while the mountain rebuilds — the lesson
@@ -621,7 +656,7 @@ export function WaterfallModule(p: MeterModuleProps) {
       id: 'reverb',
       label: 'REVERB',
       valueLabel: REVERB_LABELS[reverb].toUpperCase(),
-      options: REVERB_KEYS.map((k) => ({ id: k, label: REVERB_LABELS[k].toUpperCase() })),
+      options: REVERB_KEYS.map((k) => ({ id: k, label: REVERB_LABELS[k].toUpperCase(), blurb: REVERB_BLURBS[k] })),
       selectedId: reverb,
       onSelect: (id) => setReverb(id as ReverbKey),
       sticky: true,

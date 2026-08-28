@@ -69,6 +69,15 @@ const GEN_LEVEL_DB = -20; // Q4 default; cap stays locked
 const ACTIVITY_MS = 500; // 2 Hz keepalive (SignalGen idiom)
 
 /** The classic waves this lab generates (each = a canonical additive recipe). */
+/** Tray blurbs (owner 2026-08-28) — sound-first, since this lab PLAYS them. */
+const WAVE_BLURBS: Record<string, string> = {
+  sine: 'One pure frequency — no harmonics, nothing to filter. The reference tone.',
+  square: 'Odd harmonics at 1/n: hollow, reedy, strong. Watch the recipe bars — every even slot is empty.',
+  triangle: 'Odd harmonics fading fast (1/n²): the softest of the classic shapes, barely more than a sine.',
+  saw: 'Every harmonic at 1/n — the brightest, fullest classic wave. The go-to raw material for filtering.',
+  pulse: 'A 25% pulse: the duty cycle CANCELS every 4th harmonic. Compare it to square and hear what goes missing.',
+};
+
 const WAVES: { key: PresetKey; label: string; lessonKey: string }[] = [
   { key: 'sine', label: 'SINE', lessonKey: 'sine' },
   { key: 'square', label: 'SQUARE', lessonKey: 'square' },
@@ -259,6 +268,7 @@ export function OscillatorLabScreen() {
             options: WAVES.map((w) => ({
               id: w.key,
               label: w.label,
+              blurb: WAVE_BLURBS[w.key],
               onLongPress: () => openLesson(w.lessonKey),
             })),
             selectedId: wave,

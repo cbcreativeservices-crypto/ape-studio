@@ -129,10 +129,10 @@ const SCENARIOS: { key: string; label: string; short: string; enable: number[]; 
   },
 ];
 
-const SOURCES: { label: string; short: string; gen: GenParams; srcKey: string }[] = [
-  { label: 'CLICK 90', short: 'CLICK', gen: { mode: GEN_MODES.click, clickBpm: 90 }, srcKey: 'click' },
-  { label: 'PINK NOISE', short: 'PINK', gen: { mode: GEN_MODES.pink }, srcKey: 'pink' },
-  { label: 'SINE 220', short: 'SINE', gen: { mode: GEN_MODES.sine, frequency: 220 }, srcKey: 'sine' },
+const SOURCES: { label: string; short: string; gen: GenParams; srcKey: string; blurb: string }[] = [
+  { label: 'CLICK 90', short: 'CLICK', gen: { mode: GEN_MODES.click, clickBpm: 90 }, srcKey: 'click', blurb: 'A dry click at 90 BPM — sharp and separate, so every echo, tail and pump the chain adds is exposed.' },
+  { label: 'PINK NOISE', short: 'PINK', gen: { mode: GEN_MODES.pink }, srcKey: 'pink', blurb: 'Steady broadband noise — perfect for HEARING tone changes (EQ, damping) but it hides echoes.' },
+  { label: 'SINE 220', short: 'SINE', gen: { mode: GEN_MODES.sine, frequency: 220 }, srcKey: 'sine', blurb: 'One pure tone. Any new frequencies you hear were ADDED by the chain — distortion has nowhere to hide.' },
 ];
 
 export function SignalChainLabScreen() {
@@ -364,7 +364,9 @@ export function SignalChainLabScreen() {
             id: 'scenario',
             label: 'SCENARIO',
             valueLabel: scenario?.short ?? (anyOn ? 'CUSTOM' : '—'),
-            options: SCENARIOS.map((s) => ({ id: s.key, label: s.label })),
+            // Each scenario's lesson line doubles as its tray blurb — the learner reads
+            // WHY this chain order matters while the chain rebuilds live.
+            options: SCENARIOS.map((s) => ({ id: s.key, label: s.label, blurb: s.lesson })),
             selectedId: scenarioKey,
             onSelect: applyScenario,
             sticky: true, // A/B interactions while the chain re-lights — the lesson

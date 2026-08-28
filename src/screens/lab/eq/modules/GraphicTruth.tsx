@@ -108,8 +108,8 @@ export function GraphicTruthModule(_p: EqModuleComponentProps) {
       label: 'VIEW',
       valueLabel: view === 'mag' ? 'MAG' : 'PHASE',
       options: [
-        { id: 'mag', label: 'MAGNITUDE' },
-        { id: 'phase', label: 'PHASE' },
+        { id: 'mag', label: 'MAGNITUDE', blurb: 'How much each frequency is boosted or cut — the curve every EQ plugin shows you.' },
+        { id: 'phase', label: 'PHASE', blurb: 'How much each frequency is DELAYED in time — the curve EQs don’t show, and the hidden cost of every boost and cut.' },
       ],
       selectedId: view,
       onSelect: (id) => setView(id as 'mag' | 'phase'),

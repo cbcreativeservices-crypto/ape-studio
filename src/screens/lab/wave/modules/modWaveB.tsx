@@ -1061,11 +1061,13 @@ type EchoPreset = {
   boundary: [MaterialKey, MaterialKey, MaterialKey, MaterialKey];
 };
 
-const ECHO_PRESETS: EchoPreset[] = [
-  { key: 'canyon', label: 'CANYON 60 m', w: 60, h: 30, boundary: ['concrete', 'concrete', 'concrete', 'concrete'] },
-  { key: 'gym', label: 'GYM 24 m', w: 24, h: 15, boundary: ['concrete', 'glass', 'wood', 'concrete'] },
-  { key: 'church', label: 'CHURCH 30 m', w: 30, h: 14, boundary: ['concrete', 'glass', 'wood', 'glass'] },
-  { key: 'warehouse', label: 'WAREHOUSE 40 m', w: 40, h: 22, boundary: ['concrete', 'concrete', 'concrete', 'concrete'] },
+// Blurbs quote the round-trip time to the far wall (2·d ÷ 343 m/s): past
+// ~80–100 ms the ear stops fusing the reflection and hears a SEPARATE echo.
+const ECHO_PRESETS: (EchoPreset & { blurb: string })[] = [
+  { key: 'canyon', label: 'CANYON 60 m', w: 60, h: 30, boundary: ['concrete', 'concrete', 'concrete', 'concrete'], blurb: 'Rock 60 m away: the round trip takes ~350 ms — a full, distinct HELLO…hello. The classic echo.' },
+  { key: 'gym', label: 'GYM 24 m', w: 24, h: 15, boundary: ['concrete', 'glass', 'wood', 'concrete'], blurb: 'Hard walls 24 m apart: ~140 ms round trip — a slap-back you clearly hear as a repeat, not as space.' },
+  { key: 'church', label: 'CHURCH 30 m', w: 30, h: 14, boundary: ['concrete', 'glass', 'wood', 'glass'], blurb: 'A long stone room: ~175 ms to the far wall and back, tangled with many other paths — echo blurring into reverb.' },
+  { key: 'warehouse', label: 'WAREHOUSE 40 m', w: 40, h: 22, boundary: ['concrete', 'concrete', 'concrete', 'concrete'], blurb: 'All concrete, 40 m deep: ~230 ms repeats that keep bouncing — echoes ON echoes.' },
 ];
 const ECHO_FREQ = 800;
 
@@ -1152,7 +1154,7 @@ export function EchoModule(p: WaveModuleProps) {
             valueLabel: preset.key.toUpperCase(),
             sticky: true, // compare rooms while the timeline + verdict react
             helpKey: 'echo',
-            options: ECHO_PRESETS.map((e) => ({ id: e.key, label: e.label })),
+            options: ECHO_PRESETS.map((e) => ({ id: e.key, label: e.label, blurb: e.blurb })),
             selectedId: presetKey,
             onSelect: (id) => {
               const e = ECHO_PRESETS.find((x) => x.key === id);

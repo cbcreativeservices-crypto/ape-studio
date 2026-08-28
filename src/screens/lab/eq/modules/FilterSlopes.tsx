@@ -25,6 +25,16 @@ import type { EqModuleComponentProps } from './registry';
 
 const CUTOFF = 80;
 const SLOPES = [6, 12, 18, 24, 36, 48] as const;
+/** Tray blurbs: what each steepness is FOR. 6 dB/oct = one pole; every +6 is
+ *  another pole and a steeper wall (owner 2026-08-28). */
+const SLOPE_BLURBS: Record<number, string> = {
+  6: 'One pole — the gentlest tilt there is. Barely a filter: a tone control.',
+  12: 'Two poles — the workhorse. Enough to clean rumble without sounding processed.',
+  18: 'Three poles — noticeably firmer; the classic crossover slope of many PA systems.',
+  24: 'Four poles — a real wall. Standard for subwoofer crossovers, where overlap causes trouble.',
+  36: 'Six poles — surgical. Very steep, and the phase shift near the corner grows with it.',
+  48: 'Eight poles — a cliff. Maximum separation, maximum phase cost: nothing is free.',
+};
 type Slope = (typeof SLOPES)[number];
 
 const CHECK: CheckSpec = {
@@ -79,7 +89,7 @@ export function FilterSlopesModule(_p: EqModuleComponentProps) {
       id: 'pick',
       label: 'SLOPES',
       valueLabel: `${slope}`,
-      options: SLOPES.map((s) => ({ id: String(s), label: `${s} dB/OCT` })),
+      options: SLOPES.map((s) => ({ id: String(s), label: `${s} dB/OCT`, blurb: SLOPE_BLURBS[s] })),
       selectedId: String(slope),
       onSelect: (id) => setSlope(Number(id) as Slope),
       sticky: true, // exact console values, A/B while the family reacts

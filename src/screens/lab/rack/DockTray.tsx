@@ -105,6 +105,25 @@ export function DockTray({
           </Pressable>
         </View>
         <ScrollView bounces={false} style={styles.body} contentContainerStyle={styles.bodyContent}>
+          {/* WHAT-AM-I-CHANGING readout (owner 2026-08-28): the open tray
+              COVERS the lab's teaching prose, so the tray itself explains the
+              selected option — tap CLASSROOM and read what a classroom does to
+              the picture above, no scrolling, no memory of the lesson needed.
+              Sticky trays apply on tap, so this updates live while A/B-ing.
+              Rendered only when the selected option carries a blurb — trays of
+              self-evident values (frequencies, on/off) are unchanged. */}
+          {param.kind === 'options'
+            ? (() => {
+                const sel = param.options.find((o) => o.id === param.selectedId);
+                if (!sel?.blurb) return null;
+                return (
+                  <View style={styles.blurbBox}>
+                    <Text style={styles.blurbName}>{sel.label}</Text>
+                    <Text style={styles.blurbText}>{sel.blurb}</Text>
+                  </View>
+                );
+              })()
+            : null}
           {param.kind === 'options' ? (
             <View style={styles.grid}>
               {param.options.map((o) => (
@@ -199,4 +218,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
   },
   resetText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textSecondary },
+  // What-am-I-changing readout — quiet panel above the chips, amber-named.
+  // minHeight ≈ two body lines so the card doesn't jump height while A/B-ing
+  // between short and long blurbs.
+  blurbBox: {
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: '#26262e',
+    borderLeftWidth: 2,
+    borderLeftColor: 'rgba(255,198,77,.55)',
+    backgroundColor: '#0f0f13',
+    paddingVertical: 8,
+    paddingHorizontal: 11,
+    gap: 2,
+    minHeight: 58,
+  },
+  blurbName: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.1, color: colors.amber },
+  blurbText: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSecondary },
 });

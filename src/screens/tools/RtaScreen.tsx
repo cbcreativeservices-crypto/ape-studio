@@ -115,6 +115,14 @@ const DEFAULT_ALPHA = 0.8;
 // ---- Band-count modes (owner spec 2026-07-29) ------------------------------
 type BandMode = 7 | 10 | 15 | 31 | 61;
 const BAND_MODES: readonly BandMode[] = [7, 10, 15, 31, 61] as const;
+/** Tray blurbs: what each band count is FOR (owner 2026-08-28). */
+const BAND_BLURBS: Record<number, string> = {
+  7: 'Seven broad bands — the mixer-EQ view. Reads at a glance; hides detail.',
+  10: 'One band per octave — the classic 10-band graphic-EQ layout.',
+  15: 'Two-thirds octave — a middle ground: more shape, still calm.',
+  31: 'One-third octave — the live-sound standard, matching a 31-band graphic EQ fader for fader.',
+  61: 'Sixth-octave — analysis detail: narrow enough to isolate a single problem frequency.',
+};
 /** Engine fraction a mode needs (61 aggregates the fine spectrum instead —
  *  its native fraction stays 3 so SAVE keeps persisting real 1/3-oct bands). */
 const fractionFor = (m: BandMode): 1 | 3 => (m === 10 ? 1 : 3);
@@ -1001,7 +1009,7 @@ export function RtaScreen({ navigation }: Props) {
       id: 'banding',
       label: 'BANDING',
       valueLabel: String(mode),
-      options: BAND_MODES.map((m) => ({ id: String(m), label: String(m) })),
+      options: BAND_MODES.map((m) => ({ id: String(m), label: String(m), blurb: BAND_BLURBS[m] })),
       selectedId: String(mode),
       onSelect: (id) => applyMode(Number(id) as BandMode),
       sticky: true, // teaching collection — A/B band counts while the glass reacts

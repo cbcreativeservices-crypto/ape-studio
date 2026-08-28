@@ -50,6 +50,20 @@ export type PresetKey =
   | 'softSat'
   | 'hardClip';
 
+/** Tray blurbs (owner 2026-08-28): each recipe in one breath — which harmonics
+ *  and what that does to the sound. Read inside the open tray while A/B-ing. */
+export const PRESET_BLURBS: Record<PresetKey, string> = {
+  sine: 'H1 alone — one frequency, no harmonics at all. Every other wave here is built by ADDING to this.',
+  square: 'Odd harmonics only (1, 3, 5…), each 1/n as strong. Hollow and reedy — a clarinet-like recipe.',
+  triangle: 'Odd harmonics again, but fading as 1/n² — far gentler. Sounds like a soft, dark sine.',
+  saw: 'EVERY harmonic, each 1/n as strong — the fullest recipe. Bright and buzzy; the classic synth starting point.',
+  pulse: 'A 25% duty pulse: all harmonics EXCEPT every 4th, which the duty cycle cancels. Listen for the missing ones.',
+  symClip: 'A sine clipped the SAME on top and bottom. Symmetry adds only ODD harmonics — classic overdrive.',
+  asymClip: 'A sine clipped MORE on one side. Broken symmetry adds EVEN harmonics too — thicker, warmer distortion.',
+  softSat: 'Gentle rounding instead of flat clipping: a few low harmonics, softly — "warmth" before it becomes fuzz.',
+  hardClip: 'Slammed flat: a wall of strong high harmonics. This is what digital clipping puts into your signal.',
+};
+
 export const PRESETS: { key: PresetKey; label: string }[] = [
   { key: 'sine', label: 'SINE' },
   { key: 'square', label: 'SQUARE' },

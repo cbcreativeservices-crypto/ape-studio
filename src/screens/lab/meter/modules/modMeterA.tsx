@@ -39,6 +39,7 @@ import { RackUnit } from '../../rack/RackUnit';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
 import {
   SIGNAL_LABELS,
+  SIGNAL_BLURBS,
   crestDb,
   db,
   dcOf,
@@ -130,6 +131,7 @@ function signalParam(
     options: options.map((s) => ({
       id: s,
       label: SIGNAL_LABELS[s].toUpperCase(),
+      blurb: SIGNAL_BLURBS[s],
       onLongPress: () => help(helpKeys[s] ?? fallbackKey),
     })),
     selectedId: selected,

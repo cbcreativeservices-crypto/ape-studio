@@ -1106,9 +1106,9 @@ function M10Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
             label: 'HEAR',
             valueLabel: hearSel === 'aligned' ? 'ALIGN' : hearSel === 'drift' ? 'DRIFT' : 'OFF',
             options: [
-              { id: 'aligned', label: 'HEAR ALIGNED — 220 / 220 Hz' },
-              { id: 'drift', label: 'HEAR DRIFTING — 220 / 222 Hz' },
-              { id: 'off', label: 'STOP' },
+              { id: 'aligned', label: 'HEAR ALIGNED — 220 / 220 Hz', blurb: 'Two identical tones locked in phase: they simply add — one louder tone, perfectly steady.' },
+              { id: 'drift', label: 'HEAR DRIFTING — 220 / 222 Hz', blurb: '2 Hz apart, so their phase slips continuously: loud…quiet…loud, twice a second. That pulse is BEATING — phase made audible.' },
+              { id: 'off', label: 'STOP', blurb: 'Silence the pair.' },
             ],
             selectedId: hearSel,
             onSelect: (id: string) => {
@@ -1298,10 +1298,10 @@ function M11Stage({ viz, w, amps, focused }: { viz: VizModule; w: number; amps: 
 
 // ─── M12 — The Fourier principle: unmix a wave into its recipe ──────────────
 
-const M12_RECIPES: { key: string; label: string; amps: number[] }[] = [
-  { key: 'pure', label: 'PURE', amps: m11Amps([true, false, false, false, false, false]) },
-  { key: 'hollow', label: 'HOLLOW (odd)', amps: m11Amps([true, false, true, false, true, false]) },
-  { key: 'bright', label: 'BRIGHT (all)', amps: m11Amps([true, true, true, true, true, true]) },
+const M12_RECIPES: { key: string; label: string; amps: number[]; blurb: string }[] = [
+  { key: 'pure', label: 'PURE', amps: m11Amps([true, false, false, false, false, false]), blurb: 'The fundamental alone — one ingredient, nothing to unmix.' },
+  { key: 'hollow', label: 'HOLLOW (odd)', amps: m11Amps([true, false, true, false, true, false]), blurb: 'Fundamental + odd harmonics only — the square-wave family. Hollow, woody, clarinet-ish.' },
+  { key: 'bright', label: 'BRIGHT (all)', amps: m11Amps([true, true, true, true, true, true]), blurb: 'Every harmonic in the stack — the saw-wave family. The fullest, brightest recipe here.' },
 ];
 
 function M12Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
@@ -1324,7 +1324,7 @@ function M12Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       id: 'recipe',
       label: 'RECIPE',
       valueLabel: recipe.label,
-      options: M12_RECIPES.map((r) => ({ id: r.key, label: r.label })),
+      options: M12_RECIPES.map((r) => ({ id: r.key, label: r.label, blurb: r.blurb })),
       selectedId: recipe.key,
       onSelect: (id) => {
         const i = M12_RECIPES.findIndex((r) => r.key === id);

@@ -36,6 +36,7 @@ import { MATERIAL_PHOTOS } from '../materialPhotos';
 import { WaveLayout } from './waveLayout';
 import {
   MATERIALS,
+  MATERIAL_BLURBS,
   alphaAt,
   arrivalsAt,
   fieldAt,
@@ -370,6 +371,7 @@ export function ReflectionModule(p: WaveModuleProps) {
             options: REFLECTION_MATS.map((m) => ({
               id: m,
               label: MATERIALS[m].label.toUpperCase(),
+              blurb: MATERIAL_BLURBS[m],
               photoHint: !!MATERIAL_PHOTOS[m],
               // foam/fiberglass long-press → their reference photo; others → the lesson.
               onLongPress: () => {
@@ -533,6 +535,7 @@ export function AbsorptionModule(p: WaveModuleProps) {
             options: ABSORB_MATS.map((m) => ({
               id: m,
               label: MATERIALS[m].label.toUpperCase(),
+              blurb: MATERIAL_BLURBS[m],
               photoHint: !!MATERIAL_PHOTOS[m],
               // foam/fiberglass long-press → their reference photo; others → the lesson.
               onLongPress: () => {

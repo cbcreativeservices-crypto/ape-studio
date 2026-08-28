@@ -30,6 +30,23 @@ export const SIGNAL_LABELS: Record<SignalKey, string> = {
   square: 'Square', triangle: 'Triangle', saw: 'Sawtooth', music: 'Music mix',
 };
 
+/** Tray blurbs (owner 2026-08-28): what each signal IS and what to watch on a
+ *  meter — read inside the open tray, where the lab's prose is covered. */
+export const SIGNAL_BLURBS: Record<SignalKey, string> = {
+  speech: 'Real talking: bursts with gaps between words. Meters leap on each syllable and fall back in the silences — the average sits far below the peaks.',
+  kick: 'A low thump that hits and dies fast. Peak meters catch it; slow averages barely move — the classic peak-vs-average lesson.',
+  guitar: 'Plucked notes that ring and decay: an attack spike, then a long falling tail.',
+  whitenoise: 'Every frequency at equal energy — constant hiss. Rock-steady on every meter, and bright, because each octave up holds more frequencies.',
+  pinknoise: 'Equal energy per OCTAVE — the calibration reference. As steady as white noise but darker, and it reads flat on a log-frequency display.',
+  snare: 'A sharp crack with a short rattle: a huge peak over a tiny average — the highest crest factor of the drums.',
+  organ: 'Held, sustained chords at nearly constant level. Peak and average sit close together — the opposite of drums.',
+  sine: 'One single frequency — the purest signal there is. Peak sits exactly 3 dB above RMS.',
+  square: 'Odd harmonics stacked on a sine: flat tops and fast edges. RMS nearly equals peak — the densest waveform a meter can see.',
+  triangle: 'Odd harmonics too, but fading fast up the series — sounds soft, measures gentle.',
+  saw: 'Every harmonic in the series, falling gently — the bright, buzzy synth staple.',
+  music: 'A full mix: drums, bass and sustained parts together. Peaks ride far above the average — exactly what LUFS-vs-peak metering is about.',
+};
+
 /** Render n samples (−1..1) of a teaching signal. Deterministic per (key, seed).
  *  Time base: the buffer represents ~1.5 s (waveform module) — shapes chosen
  *  for how they READ on a meter, not for playback. */

@@ -102,13 +102,14 @@ const lessonStyles = StyleSheet.create({
 // ═════════════════════════════════════════════════════════════════════════════
 // MODULE 1 — THE ANALOG SIGNAL
 
-const WAVE_CHIP_LIST: { key: WaveKind; label: string }[] = [
-  { key: 'sine', label: 'SINE' },
-  { key: 'square', label: 'SQUARE' },
-  { key: 'triangle', label: 'TRIANGLE' },
-  { key: 'saw', label: 'SAW' },
-  { key: 'impulse', label: 'IMPULSE' },
-  { key: 'noise', label: 'WHITE NOISE' },
+// Blurbs are SAMPLING-focused — this module is about what an ADC must capture.
+const WAVE_CHIP_LIST: { key: WaveKind; label: string; blurb: string }[] = [
+  { key: 'sine', label: 'SINE', blurb: 'One frequency, perfectly smooth — the easiest thing an ADC will ever be asked to capture.' },
+  { key: 'square', label: 'SQUARE', blurb: 'Those vertical edges are high harmonics without end — a torture test for sample rate.' },
+  { key: 'triangle', label: 'TRIANGLE', blurb: 'Corners, but gentle ones: some high content, far less than a square.' },
+  { key: 'saw', label: 'SAW', blurb: 'A ramp with an instant reset — every harmonic present, edge and body at once.' },
+  { key: 'impulse', label: 'IMPULSE', blurb: 'A single infinitely-sharp spike: ALL frequencies at once, for one instant. The ultimate edge case.' },
+  { key: 'noise', label: 'WHITE NOISE', blurb: 'Random by definition — no repeating shape for the eye or the converter to lock onto.' },
 ];
 
 /** Short dock-button value per wave. */
@@ -242,7 +243,7 @@ export function AnalogModule(p: DigitalModuleProps) {
       id: 'wave',
       label: 'WAVE',
       valueLabel: WAVE_SHORT[wave],
-      options: WAVE_CHIP_LIST.map((c) => ({ id: c.key, label: c.label })),
+      options: WAVE_CHIP_LIST.map((c) => ({ id: c.key, label: c.label, blurb: c.blurb })),
       selectedId: wave,
       onSelect: (id) => setWave(id as WaveKind),
       sticky: true, // teaching collection — A/B shapes while the glass reacts

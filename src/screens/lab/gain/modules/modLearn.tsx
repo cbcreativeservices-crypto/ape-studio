@@ -307,9 +307,9 @@ export function LowHighModule(_p: GainModuleComponentProps) {
       label: 'SCENARIO',
       valueLabel: scenarioId === 'low' ? 'LOW' : scenarioId === 'high' ? 'HIGH' : scenarioId === 'bal' ? 'BAL' : '—',
       options: [
-        { id: 'low', label: 'TOO LOW EARLY' },
-        { id: 'high', label: 'TOO HIGH EARLY' },
-        { id: 'bal', label: 'BALANCED' },
+        { id: 'low', label: 'TOO LOW EARLY', blurb: 'A starved first stage: every later stage must boost, and each boost lifts the noise floor with it — hiss you can never remove.' },
+        { id: 'high', label: 'TOO HIGH EARLY', blurb: 'A slammed first stage clips immediately — and no later stage can un-clip it. Distortion is forever.' },
+        { id: 'bal', label: 'BALANCED', blurb: 'Healthy level at EVERY stage: headroom above, noise floor far below, all the way down the chain. This is the goal.' },
       ],
       selectedId: scenarioId,
       onSelect: (id) => {

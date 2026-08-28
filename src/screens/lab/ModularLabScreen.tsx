@@ -39,11 +39,13 @@ import { LabShell, LabChip, HeaderPlayButton } from './LabShell';
 const ACTIVITY_MS = 500;
 const STATUS_MS = 100; // live env/step poll while running (10 Hz)
 
+// Blurbs are FILTER-fodder-focused: in a modular patch the VCO's job is to
+// feed the filter harmonics to carve (owner 2026-08-28).
 const SHAPES = [
-  { v: 0, label: 'SAW' },
-  { v: 1, label: 'SQUARE' },
-  { v: 2, label: 'TRI' },
-  { v: 3, label: 'SINE' },
+  { v: 0, label: 'SAW', blurb: 'Every harmonic — the richest raw material. The filter has the most to carve; sweeps sound biggest here.' },
+  { v: 1, label: 'SQUARE', blurb: 'Odd harmonics only: hollow and woody. The filter still has plenty to grab.' },
+  { v: 2, label: 'TRI', blurb: 'Weak, fast-fading harmonics — the filter has little to remove, so sweeps are subtle.' },
+  { v: 3, label: 'SINE', blurb: 'No harmonics at all. The filter can only make it quieter — sweep and hear almost nothing change. That IS the lesson.' },
 ] as const;
 // CUTOFF is the dock's pre-bound fader (2026-08-23): a LOG sweep 250 Hz →
 // 8 kHz replacing the old discrete chips — the native cutoff target ramps, so
@@ -381,7 +383,7 @@ export function ModularLabScreen() {
             id: 'vco',
             label: 'VCO',
             valueLabel: shapeLabel,
-            options: SHAPES.map((s) => ({ id: String(s.v), label: s.label })),
+            options: SHAPES.map((s) => ({ id: String(s.v), label: s.label, blurb: s.blurb })),
             selectedId: String(patch.shape),
             onSelect: (id) => update({ shape: Number(id) }),
             sticky: true, // A/B the timbres while the drone plays

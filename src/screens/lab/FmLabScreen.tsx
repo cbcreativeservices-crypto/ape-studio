@@ -41,21 +41,24 @@ const ACTIVITY_MS = 500;
 const NYQUIST = 24000; // display Nyquist (48 kHz engine rate)
 
 const CARRIERS = [110, 220, 440] as const;
+// Tray blurbs (owner 2026-08-28): the WHOLE FM lesson lives in this choice —
+// integer ratios land the sidebands ON the harmonic series (pitched), while
+// irrational ones (✳) land them BETWEEN it (bells, metal).
 const RATIOS = [
-  { v: 0.5, label: '0.5' },
-  { v: 1, label: '1' },
-  { v: 1.41, label: '1.41 ✳' }, // √2 — inharmonic (bell)
-  { v: 2, label: '2' },
-  { v: 3.5, label: '3.5 ✳' },
-  { v: 7, label: '7' },
+  { v: 0.5, label: '0.5', blurb: 'Modulator at HALF the carrier: sidebands land an octave down — a sub-octave, still perfectly pitched.' },
+  { v: 1, label: '1', blurb: 'Modulator = carrier: sidebands land exactly on the harmonic series. Bright but fully pitched — the vintage FM electric-piano zone.' },
+  { v: 1.41, label: '1.41 ✳', blurb: '√2 — irrational, so the sidebands fall BETWEEN the harmonics. Nothing lines up: instant bell / metallic clang.' },
+  { v: 2, label: '2', blurb: 'One octave up: only odd-ish partials survive — hollow, square-like, still pitched.' },
+  { v: 3.5, label: '3.5 ✳', blurb: 'Another inharmonic ratio: clangorous and gong-like. Compare with 3 or 4 to hear what "in tune with itself" means.' },
+  { v: 7, label: '7', blurb: 'A high integer: sidebands spray far up the series — thin, glassy, but still harmonic.' },
 ] as const;
 // INDEX range for the lane (continuous — J_k(I) is exact to I = 8 and the
 // native index ramps click-free; the old 0/1/2/4/8 chips were samples of it).
 const INDEX_MAX = 8;
 const ENVS = [
-  { key: 'sustain', label: 'SUSTAIN', decaySec: 0 },
-  { key: 'pluck', label: 'PLUCK', decaySec: 0.15 },
-  { key: 'bell', label: 'BELL', decaySec: 0.6 },
+  { key: 'sustain', label: 'SUSTAIN', decaySec: 0, blurb: 'The index holds steady — the tone keeps its brightness for as long as it sounds.' },
+  { key: 'pluck', label: 'PLUCK', decaySec: 0.15, blurb: 'The index decays in ~150 ms: bright attack collapsing to plain — how FM fakes a plucked string.' },
+  { key: 'bell', label: 'BELL', decaySec: 0.6, blurb: 'A slow ~0.6 s index decay: a bright strike that dulls as it rings — the classic FM bell.' },
 ] as const;
 
 /** Bessel function of the first kind J_k(x) — ascending series, exact to
@@ -245,7 +248,7 @@ export function FmLabScreen() {
             id: 'ratio',
             label: 'RATIO',
             valueLabel: RATIOS[ratioIdx].label,
-            options: RATIOS.map((r) => ({ id: r.label, label: r.label })),
+            options: RATIOS.map((r) => ({ id: r.label, label: r.label, blurb: r.blurb })),
             selectedId: RATIOS[ratioIdx].label,
             onSelect: (id) => {
               const i = RATIOS.findIndex((r) => r.label === id);
@@ -259,7 +262,7 @@ export function FmLabScreen() {
             id: 'env',
             label: 'ENV',
             valueLabel: env.label,
-            options: ENVS.map((e) => ({ id: e.key, label: e.label })),
+            options: ENVS.map((e) => ({ id: e.key, label: e.label, blurb: e.blurb })),
             selectedId: envKey,
             onSelect: (id) => setEnvKey(id as (typeof ENVS)[number]['key']),
             helpKey: 'index_env',

@@ -35,6 +35,21 @@ export const MATERIALS: Record<MaterialKey, { label: string; alpha: number[]; sc
   open: { label: 'Opening', alpha: [1, 1, 1, 1, 1, 1], scatter: 0 },
 };
 
+/** Tray blurbs (owner 2026-08-28) — each material's absorption STORY, matching
+ *  the alpha table above: what it eats, what it leaves. */
+export const MATERIAL_BLURBS: Record<MaterialKey, string> = {
+  concrete: 'Reflects almost everything at every frequency — the hardest wall in the kit. Whatever hits it comes back.',
+  glass: 'Hard like concrete for mids and highs, but the pane FLEXES at low frequencies and eats a little bass.',
+  drywall: 'A light wall that vibrates: absorbs some LOWS, reflects the mids and highs — the opposite of foam.',
+  curtain: 'Soft and porous: eats mids and highs, but the lows sail straight through the fabric.',
+  carpet: 'Thin porous absorption — good above 500 Hz, useless for bass. Why a carpeted room can still boom.',
+  foam: 'The studio wedge: superb above 1 kHz, weak below 250 Hz. Treats echo and sizzle, NOT boom.',
+  fiberglass: 'The serious absorber — thick enough to eat mids AND much of the low end. What real treatment is made of.',
+  audience: 'People are excellent absorbers — soft, thick, and scattering. A full house darkens and dries the whole room.',
+  wood: 'Mostly reflective with a little low-end flex — the warm-sounding hard surface.',
+  open: 'No wall at all: everything leaves and nothing returns. Perfect absorption, by definition.',
+};
+
 export function alphaAt(mat: MaterialKey, freq: number): number {
   const bands = [125, 250, 500, 1000, 2000, 4000];
   const a = MATERIALS[mat].alpha;
