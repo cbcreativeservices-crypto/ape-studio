@@ -653,8 +653,8 @@ export function SpectrogramPatternView(p: {
 //
 // Grammar per the owner's reference CSD screenshots:
 //   • frequency labels along the BOTTOM front edge (30 · 120 · 440 · 1.6k ·
-//     6k · 20k) with thin white tie lines rising BEHIND the range, and floor
-//     guide lines running into the depth parallel to the recession;
+//     6k · 20k), each tied to the range by a guide line running INTO the depth
+//     parallel to the recession and drawn BEHIND the slices;
 //   • labeled 1-SECOND floor division lines (1 / 2 / 3 Sec) across the 3 s
 //     span — the ridges cross them during the collapse, making time visible;
 //   • HEIGHT-GRADED LEVEL fills: the app amplitude ramp up each slice, anchored
@@ -834,9 +834,9 @@ function WfSlice({
 }
 
 // Frequency stations per the owner's reference CSD (30 · 120 · 440 · 1.6k ·
-// 6k · 20k), labeled along the BOTTOM / front edge with thin white tie lines
-// rising BEHIND the range and floor guide lines running into the depth
-// (owner 2026-08-28).
+// 6k · 20k), labeled along the BOTTOM / front edge, each tied to the range by a
+// guide line running into the depth at the scene's angle, drawn BEHIND the
+// slices (owner 2026-08-28).
 const WF_FRONT_LABELS: { f: number; label: string }[] = [
   { f: 30, label: '30' },
   { f: 120, label: '120' },
@@ -845,10 +845,6 @@ const WF_FRONT_LABELS: { f: number; label: string }[] = [
   { f: 6000, label: '6k' },
   { f: 20000, label: '20k' },
 ];
-/** How far up the frequency tie lines rise from the front edge. They are drawn
- *  BEHIND the slices, so this is how much line is available to be occluded. */
-const WF_POST_TOP = 14;
-
 /** M7 ⭐ — the WATERFALL (CSD-style pseudo-3D): X=frequency, Y=amplitude,
  *  Z=time receding. Impulse → mountain range → collapse, animated on the
  *  phase clock; slices from meterEngine.waterfallSliceDb(opts, f, t). */
@@ -968,23 +964,30 @@ export function WaterfallView(p: {
   }, [o.room, o.damping01, o.eqBoostDb, o.qRing, o.reverb, w, h]);
 
   // Fine axis annotations (all static memo geometry): front-edge freq ticks +
-  // baseline, thin white POSTS rising from the front edge to the top label
-  // strip, floor GUIDE LINES running into the depth parallel to the
+  // baseline, frequency GUIDE LINES running into the depth parallel to the
   // recession, the 1-second floor DIVISION LINES, the TIME depth arrow, the
   // dB height reference.
   const axes = useMemo(() => {
     const ticks = Skia.Path.Make();
-    const posts = Skia.Path.Make();
     const depthGuides = Skia.Path.Make();
     for (const { f } of WF_FRONT_LABELS) {
       const x = geo.xL0 + lgFrac(f) * geo.frontW;
       ticks.moveTo(x, geo.baseY + 2);
       ticks.lineTo(x, geo.baseY + 6);
-      // Vertical tick post rising from the front edge (reference's thin
-      // white posts) up to the top-edge frequency labels.
-      posts.moveTo(x, geo.baseY);
-      posts.lineTo(x, WF_POST_TOP);
-      // Floor guide line running INTO the depth, parallel to the recession.
+      // THE tie line for this frequency: from its front-edge position, running
+      // INTO the depth parallel to the recession, so it stays over the SAME
+      // frequency at every slice.
+      //
+      // There used to be a second, VERTICAL post here as well, rising from the
+      // front edge to the old top label strip. On an angled chart that is
+      // simply wrong: the scene recedes to the upper right, so a frequency's x
+      // drifts 40–83 px between the front slice and the back one. A vertical
+      // line holds the FRONT x all the way up, so it arrives at the back of the
+      // scene sitting over a completely different frequency — it crossed the
+      // range diagonally while claiming to mark one station, and clashed with
+      // the depth guide for its own frequency. Owner 2026-08-28: "vertical
+      // lines that clash and since chart is at angle do not line up in front
+      // and back." Deleted; the depth guide is the only honest tie line.
       depthGuides.moveTo(x, geo.baseY);
       depthGuides.lineTo(geo.xL0 + geo.dxTot + lgFrac(f) * geo.frontW * 0.8, geo.baseY - geo.dyTot);
     }
@@ -1021,7 +1024,7 @@ export function WaterfallView(p: {
       ref.lineTo(rx, y);
       dbTickYs.push({ dbV, y });
     }
-    return { ticks, posts, depthGuides, timeLines, arrow, ref, ax0, ay0, ax1, ay1, dbTickYs };
+    return { ticks, depthGuides, timeLines, arrow, ref, ax0, ay0, ax1, ay1, dbTickYs };
   }, [geo]);
 
   // The side profile appears with the first slice of each build and holds with
@@ -1046,18 +1049,17 @@ export function WaterfallView(p: {
         <Path path={axes.ref} color={GRID} style="stroke" strokeWidth={1.1} />
         {/* Floor grammar UNDER the mountains: depth guide lines + the labeled
             1-second division lines — ridges cross them as time goes by. */}
-        <Path path={axes.depthGuides} color="#3a3e49" style="stroke" strokeWidth={1} />
+        {/* Frequency tie lines — one per labelled station, running from the
+            label's front-edge position INTO the depth at the scene's angle, so
+            each line stays over its own frequency on every slice. Drawn BEFORE
+            the slices (owner 2026-08-28), so the opaque mountains occlude them:
+            a line shows through where the range is QUIET and is hidden where it
+            is loud, which reads as real depth instead of a grid pasted on top.
+            Brightened now that most of each line is hidden. */}
+        <Path path={axes.depthGuides} color="#8d93a3" style="stroke" strokeWidth={1} opacity={0.55} />
         {/* 1-second bands — bright, Altiverb-style, so time is unmissable. */}
         <Path path={axes.timeLines} color="#c6ccda" style="stroke" strokeWidth={1.3} opacity={0.75} />
         <Path path={axes.arrow} color="#4b4e58" style="stroke" strokeWidth={1.2} strokeCap="round" />
-        {/* Frequency tie lines, BEHIND the range (owner 2026-08-28: "tie lines
-            down -> behind the waterfall instead of in front of it"). Drawn
-            before the slices, so the opaque mountains occlude them: a line
-            shows through where the range is QUIET and is hidden where it is
-            loud, which reads as real depth instead of a grid pasted on top.
-            Brighter than before (0.2 → 0.4) precisely because it is now
-            mostly hidden. */}
-        <Path path={axes.posts} color="#ffffff" style="stroke" strokeWidth={1} opacity={0.4} />
         {/* The mountain range: BACK-TO-FRONT so opaque fills occlude. */}
         {Array.from({ length: WF_SLICES }, (_, k) => {
           const i = WF_SLICES - 1 - k;
