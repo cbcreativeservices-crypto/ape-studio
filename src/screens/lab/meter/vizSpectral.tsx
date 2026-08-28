@@ -372,7 +372,7 @@ export function SpectrumPatternView(p: {
             color: levelColor((dbV - SPEC_DB_FLOOR) / SPEC_DB_SPAN),
           }}
         >
-          {dbV > 0 ? `+${dbV}` : `${dbV}`}
+          {`${dbV}`}
         </RNText>
       ))}
       {/* Frequency axis — decade labels (minor ticks drawn in Skia above). */}
@@ -660,7 +660,7 @@ export function SpectrogramPatternView(p: {
 //   • labeled 1-SECOND floor division lines (1 / 2 / 3 Sec) across the 3 s
 //     span — the ridges cross them during the collapse, making time visible;
 //   • HEIGHT-GRADED LEVEL fills: the app amplitude ramp up each slice, anchored
-//     to the full dB scale (red at the ceiling → blue at the floor), with depth
+//     to the full 60 dB scale (red at the 0 dB peak → blue at −60), with depth
 //     dimming toward a cool dark;
 //   • the front slice's spectrum re-drawn as a green 2-D silhouette standing
 //     on the outer side plane, synced to the front slice.
@@ -677,9 +677,23 @@ const WF_SLICES = 56;
 // The time span is NO LONGER a constant — it is fitted to the scene's own decay
 // by waterfallTimeSpan(opts). A fixed 3 s window showed a studio's decay in 5
 // of 56 slices while a cathedral overflowed it; see meterEngine for the why.
-const WF_DB_TOP = 12;
+// The dB axis is EXACTLY 60 dB, 0 at the top, and 0 means THE PEAK OF THE
+// IMPULSE. Every level on the plot is relative to that peak.
+//
+// It used to run +12 down to −60, with the +12 there as headroom for the ±12 dB
+// EQ boost. That put "+12" at the very top of the key with "0" just below it,
+// and neither was anchored to anything a student could name. Owner 2026-08-28:
+// "you have +12 and then 0 (which one is it going to be? because both are
+// confusing)." A dB scale that tops out at 0 and runs negative is the universal
+// convention for "relative to peak", so the headroom is gone and the slices are
+// normalised to their own peak instead.
+//
+// The payoff is that the mountain's FULL HEIGHT is now exactly the 60 dB of
+// RT60. A ridge falling from the ceiling to the floor IS one RT60 -- the
+// definition of the number this whole lab teaches, made visible as a distance.
+const WF_DB_TOP = 0;
 const WF_DB_FLOOR = -60;
-const WF_DB_SPAN = WF_DB_TOP - WF_DB_FLOOR; // 72 dB of mountain height
+const WF_DB_SPAN = WF_DB_TOP - WF_DB_FLOOR; // 60 dB — one RT60 of decay
 // Animation timeline as fractions of one phase-clock cycle.
 // The cycle is BUILD then HOLD — there is no collapse phase (owner
 // 2026-08-28). The range completes, holds for the rest of the cycle, and the
@@ -731,7 +745,7 @@ const rgbStr = (c: [number, number, number]) => `rgb(${c[0]},${c[1]},${c[2]})`;
 const WF_HEAT_STOPS: { pos: number; rgb: [number, number, number] }[] = Array.from(
   { length: 9 },
   (_, i) => {
-    const pos = i / 8; // 0 = the +12 dB ceiling … 1 = the −60 dB floor
+    const pos = i / 8; // 0 = the 0 dB ceiling (the peak) … 1 = the −60 dB floor
     const hex = fieldLevelColor(1 - pos);
     const n = parseInt(hex.slice(1), 16);
     return { pos, rgb: [(n >> 16) & 255, (n >> 8) & 255, n & 255] as [number, number, number] };
@@ -775,7 +789,7 @@ type WfSliceGeo = {
   stroke: SkPathT;
   strokeColors: string[];
   /** The level ramp (WF_HEAT_STOPS depth-dimmed for this slice), anchored
-   *  yTop (the +12 dB ceiling, red) → yBase (the −60 dB floor, blue). */
+   *  yTop (0 dB — the peak, red) → yBase (the −60 dB floor, blue). */
   fillColors: string[];
   swid: number;
   yTop: number; // top anchor of the height-heat gradient (full-amp ceiling)
@@ -890,7 +904,14 @@ export function WaterfallView(p: {
     const tMax = waterfallTimeSpan(o); // the window, fitted to THIS room
     const q = 0.975; // per-slice depth step shrinks — perspective recession
     const norm = 1 - Math.pow(q, WF_SLICES - 1);
-    const spec = WF_FREQS.map((f) => waterfallSpectrumDb(o, f));
+    const specRaw = WF_FREQS.map((f) => waterfallSpectrumDb(o, f));
+    // Normalise to the impulse's own peak so the top of the scale is 0 dB by
+    // construction and nothing can exceed it (the ±12 dB EQ boost used to push
+    // content above 0, which is why the axis carried +12 of headroom). Boosting
+    // 250 Hz still reshapes the range -- 250 holds the ceiling while the rest
+    // sits further below it -- which is how a CSD is conventionally read.
+    const specPeak = Math.max(...specRaw);
+    const spec = specRaw.map((v) => v - specPeak);
     const rt = WF_FREQS.map((f) => waterfallRt(o, f));
     const lgF = WF_FREQS.map((f) => lgFrac(f));
     const slices: WfSliceGeo[] = [];
@@ -1060,8 +1081,7 @@ export function WaterfallView(p: {
     // COLOUR is the encoding that IS correct on every slice, because each
     // slice's gradient is anchored to its own yTop/yBase — the same colour means
     // the same dB at any depth. So the key shows the ramp itself. That also
-    // gives the chart's most important encoding its first legend anywhere, and
-    // ticks +12 so the red crests aren't misread as 0 dB.
+    // gives the chart's most important encoding its first legend anywhere.
     // Key abuts the plot's left edge; the tick labels keep the full gutter to
     // its left (a "−60" at 10 pt mono needs ~24 px, so this budget is tight and
     // must not be eaten by the key).
@@ -1071,7 +1091,7 @@ export function WaterfallView(p: {
     const ref = Skia.Path.Make();
     ref.addRect(Skia.XYWHRect(keyX, keyTop, keyW, geo.ampH));
     const dbTickYs: { dbV: number; y: number }[] = [];
-    for (const dbV of [WF_DB_TOP, 0, -30, WF_DB_FLOOR]) {
+    for (const dbV of [0, -20, -40, WF_DB_FLOOR]) {
       const y = geo.baseY - ((dbV - WF_DB_FLOOR) / WF_DB_SPAN) * geo.ampH;
       dbTickYs.push({ dbV, y });
     }
