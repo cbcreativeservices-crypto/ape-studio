@@ -203,6 +203,22 @@ bounded `for` would make it safe against a future content edit.
 
 ---
 
+## Coverage note (honest scope of this audit)
+
+The stale-visual sweep disclosed its own gap: the following were **listed and
+skimmed, not traced param-by-param**, because a heuristic scan stalled on the
+4k-line viz files and was killed. A second, narrower per-directory pass was
+started to close it — see "Gap-closing pass" at the end of this doc for the
+result:
+
+- the nine standalone lab screens (Binaural, Fm, Autotune, Bass, Noise,
+  Oscillator, Modular, SignalChain, EarLab),
+- `src/screens/lab/cableinstall/scenes/*` (13 files, ~10k lines),
+- `SplMeterScreen`, `MultiMeterScreen`, `Spl3dGauge`.
+
+Nothing in the "verified clean" list below depends on that gap — those areas
+were traced directly.
+
 ## Verified clean (do not re-audit)
 
 - Every `JSON.parse` of AsyncStorage is inside try/catch with a default; every
