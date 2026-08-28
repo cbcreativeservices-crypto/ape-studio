@@ -1,6 +1,6 @@
 /**
  * meter/modMeterB — Modules 5–7 of the Visual Audio Analysis Lab (owner spec
- * 2026-07-29): Spectrum Analyzer, Spectrogram, and the ⭐ Waterfall (CSD).
+ * 2026-07-29): Spectrum Analyzer, Spectrogram, and the Waterfall (CSD).
  *
  * RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23): each module renders the RackUnit
  * frame ITSELF (MeterModuleScreen gives rack modules the full height, no host
@@ -471,7 +471,7 @@ export function SpectrogramModule(p: MeterModuleProps) {
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
-// MODULE 7 ⭐ — WATERFALL (CSD): the mountain range that collapses
+// MODULE 7 — WATERFALL (CSD): the mountain range that collapses
 
 const ROOM_KEYS = Object.keys(ROOM_LABELS) as RoomKey[];
 const REVERB_KEYS: ReverbKey[] = ['none', 'room', 'plate', 'hall', 'spring'];

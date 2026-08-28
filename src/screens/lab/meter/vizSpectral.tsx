@@ -1,6 +1,6 @@
 /**
  * Visual Audio Analysis Lab — spectral renderers (M5 spectrum · M6 spectrogram
- * · M7 ⭐ WATERFALL, the owner-starred flagship: highest resolution we can
+ * · M7 WATERFALL, the owner-starred flagship: highest resolution we can
  * sustain). Exports below are the CONTRACT the module files are written
  * against IN PARALLEL — names + prop signatures preserved from the stub.
  *
@@ -641,7 +641,7 @@ export function SpectrogramPatternView(p: {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// M7 ⭐⭐ — WaterfallView: the FLAGSHIP. CSD-style pseudo-3D mountain range:
+// M7 — WaterfallView: the FLAGSHIP. CSD-style pseudo-3D mountain range:
 // X = frequency (log), Y = amplitude, Z = TIME. ORIENTATION (owner 2026-08-05,
 // Altiverb reference screenshots): the loud start (t=0) stands TALL AT THE
 // BACK (upper-right) and each LATER instant steps down-forward toward the
@@ -873,7 +873,7 @@ const WF_FRONT_LABELS: { f: number; label: string }[] = [
   { f: 6000, label: '6k' },
   { f: 20000, label: '20k' },
 ];
-/** M7 ⭐ — the WATERFALL (CSD-style pseudo-3D): X=frequency, Y=amplitude,
+/** M7 — the WATERFALL (CSD-style pseudo-3D): X=frequency, Y=amplitude,
  *  Z=time receding. Impulse → mountain range → collapse, animated on the
  *  phase clock; slices from meterEngine.waterfallSliceDb(opts, f, t). */
 export function WaterfallView(p: {

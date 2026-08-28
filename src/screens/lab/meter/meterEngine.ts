@@ -336,8 +336,24 @@ const RT_PROBE_HZ = [31.5, 63, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
  * readable step so the floor marks land on round numbers.
  */
 export function waterfallTimeSpan(opts: WaterfallOpts): number {
+  // PINNED PER SCENE (owner 2026-08-28: "pin time axis do not make it change").
+  //
+  // The window is measured from the UNTREATED room — damping01 is forced to 0
+  // here — so the axis holds still while you actually work. DAMPING, EQ and
+  // Q RING are the live controls, and the whole point of DAMPING is to watch
+  // the decay get shorter: if the ruler shrank with it, the range would look
+  // identical at every setting and the control would appear to do nothing. A
+  // stable ruler is what makes the change visible.
+  //
+  // ROOM and REVERB do move it, because they are scene selectors, not live
+  // controls, and one global pin is not physically possible: the scenes span
+  // 0.28 s (damped studio) to 6.7 s (cathedral), 24x. Avoiding overflow needs
+  // >= 7.3 s; showing a studio's decay in more than a handful of slices needs
+  // <= 3.1 s. The bounds cross by 2.4x, so any single fixed window either
+  // buries a dead room in one slice or clips a live one off the front edge.
+  const untreated: WaterfallOpts = { ...opts, damping01: 0 };
   let maxRt = 0;
-  for (const f of RT_PROBE_HZ) maxRt = Math.max(maxRt, waterfallRt(opts, f));
+  for (const f of RT_PROBE_HZ) maxRt = Math.max(maxRt, waterfallRt(untreated, f));
   const needed = maxRt * 1.25;
   const STEPS = [0.3, 0.5, 0.75, 1, 1.5, 2, 3, 4, 6, 8, 10];
   return STEPS.find((s) => s >= needed) ?? STEPS[STEPS.length - 1];

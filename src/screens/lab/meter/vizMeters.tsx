@@ -725,7 +725,7 @@ export function PeakMeterView(p: {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// M3 ⭐ — the classic VU (the lab's flagship face)
+// M3 — the classic VU (the lab's flagship face)
 
 /** M3 — THE flagship classic VU: high-res cream face, arc scale −20..+3, red
  *  zone, physically-ballistic needle (vuStep), glass + bezel. Rendered LARGE. */
@@ -1963,7 +1963,7 @@ export function ScopeView(p: {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SplDial ⭐ — the SPL screen's circular needle meter (owner 2026-07-30)
+// SplDial — the SPL screen's circular needle meter (owner 2026-07-30)
 
 /** The "Noise'o'Meter" round dB-SPL gauge for the SPL-meter VU popup (restyled
  *  2026-07-30 — now SEPARATE from the VU: the VU is the relative hero, this is
