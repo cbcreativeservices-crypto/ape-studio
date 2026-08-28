@@ -45,3 +45,6 @@ __pycache__/
 /ios
 /android
 docs/service_key.txt
+
+# Supabase CLI local temp
+supabase/.temp/

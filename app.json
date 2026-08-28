@@ -36,6 +36,13 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
+      [
+        "expo-notifications",
+        {
+          "color": "#ffc64d",
+          "defaultChannel": "weekly-concept"
+        }
+      ],
       "expo-sqlite",
       "expo-font",
       "expo-status-bar",

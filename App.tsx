@@ -20,7 +20,13 @@ import { ToolsHubScreen } from './src/screens/tools/ToolsHubScreen';
 import { CalcWorkspaceScreen } from './src/screens/lab/calc/CalcWorkspaceScreen';
 import { CalcLabScreen } from './src/screens/lab/calc/CalcLabScreen';
 import { CableInstallLabScreen } from './src/screens/lab/cableinstall/CableInstallLabScreen';
+import { CableArtPreview } from './src/screens/lab/cableinstall/CableArtPreview';
 import { navigationRef } from './src/navigation/navigationRef';
+import {
+  attachWeeklyConceptPush,
+  flushWeeklyConceptNav,
+  queueWeeklyConcept,
+} from './src/features/notifications/push';
 import { LabPreviewOverlay } from './src/features/lab/LabPreviewOverlay';
 import { endLabPreview, getLabPreview } from './src/features/lab/labPreviewStore';
 import { EntitlementProvider } from './src/features/commercial/EntitlementProvider';
@@ -64,6 +70,17 @@ export default function App() {
   // DIFFERENT user signs in. Called before the early return to keep hook order
   // stable. Kept separate from AudioOutputGate's own onAuthStateChange.
   useAccountLocalSync();
+
+  useEffect(() => {
+    const open = (payload: Parameters<typeof queueWeeklyConcept>[0]) => {
+      if (navigationRef.isReady()) {
+        navigationRef.navigate('WeeklyConcept', payload);
+      } else {
+        queueWeeklyConcept(payload);
+      }
+    };
+    return attachWeeklyConceptPush(open);
+  }, []);
 
   // Clear a stale Training-Lab preview if the user leaves the previewed lab by
   // any route (swipe-back, etc.) — so the grayed overlay never sticks over the
@@ -128,7 +145,9 @@ export default function App() {
                   ? { name: 'CalcLab', component: CalcLabScreen as ComponentType }
                   : window.location.hash === '#cableinstallpreview'
                     ? { name: 'CableInstallLab', component: CableInstallLabScreen as ComponentType }
-                    : null
+                    : window.location.hash === '#cableartpreview'
+                      ? { name: 'CableArt', component: CableArtPreview as ComponentType }
+                      : null
       : null;
   if (toolPreview) {
     return (
@@ -172,7 +191,13 @@ export default function App() {
               return false;
             }}
           >
-            <NavigationContainer theme={navTheme} ref={navigationRef}>
+            <NavigationContainer
+              theme={navTheme}
+              ref={navigationRef}
+              onReady={() => {
+                flushWeeklyConceptNav((payload) => navigationRef.navigate('WeeklyConcept', payload));
+              }}
+            >
               <RootNavigator />
             </NavigationContainer>
             <LowLightDim />

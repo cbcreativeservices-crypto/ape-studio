@@ -18,6 +18,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { AlbumDisc } from '../../components/AlbumDisc';
 import { CredentialQr } from '../../components/CredentialQr';
+import { fetchMyCredentials, type EarnedCredentialRow } from '../../features/credentials/api';
+import {
+  exportCertificate,
+  isAvailable as certificateExportAvailable,
+} from '../../features/credentials/certificatePdf';
 import { CertIcon, type CertKey } from '../../components/CertIcon';
 import { GlassButton } from '../../components/GlassButton';
 import { Toggle } from '../../components/Toggle';
@@ -86,6 +91,12 @@ function ChoiceChips({
   );
 }
 
+function fmtCredDate(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
 export function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
@@ -99,14 +110,40 @@ export function ProfileScreen() {
   // "Terms learned" — the self-assessed KNOWN list (client-side; no server metric
   // exists while the backend is frozen).
   const known = useTermList('known');
+  // Earned credentials (runbook item 3, 2026-08-29). Read-only, RLS-scoped.
+  const [credentials, setCredentials] = useState<EarnedCredentialRow[]>([]);
+  const [exportingId, setExportingId] = useState<string | null>(null);
+  const [credMessage, setCredMessage] = useState<string | null>(null);
 
   useFocusEffect(
     useCallback(() => {
       fetchProfile()
         .then(setProfile)
         .catch(() => {});
+      // Refetched on focus so a credential earned during this session appears
+      // when the user comes back to Profile, without a manual reload.
+      fetchMyCredentials().then(setCredentials);
     }, []),
   );
+
+  const onExportCredential = useCallback(async (row: EarnedCredentialRow) => {
+    setCredMessage(null);
+    setExportingId(row.id);
+    const res = await exportCertificate({
+      credentialName: row.name,
+      awardType: row.type,
+      earnedAt: row.awardedAt,
+    });
+    setExportingId(null);
+    if (res.ok) return;
+    setCredMessage(
+      res.reason === 'needs_build'
+        ? 'Certificate download needs the next app build.'
+        : res.reason === 'no_share_target'
+          ? 'No app on this device can open a PDF.'
+          : 'Could not prepare the certificate. Try again.',
+    );
+  }, []);
 
   useEffect(() => {
     loadPublicProfile().then(setPub);
@@ -454,6 +491,47 @@ export function ProfileScreen() {
             </View>
           </View>
 
+          {/* CREDENTIALS — every non-revoked certificate/program the user holds
+              (runbook item 3). Hidden entirely when none are earned: an empty
+              trophy case on a new account reads as a failure rather than a
+              not-yet. */}
+          {credentials.length > 0 && (
+            <View style={styles.panel}>
+              <Text style={styles.panelEyebrow}>CREDENTIALS</Text>
+              {credentials.map((c) => (
+                <View key={`${c.type}:${c.id}`} style={styles.credRow}>
+                  <View style={{ flex: 1, paddingRight: 12 }}>
+                    <Text style={styles.credName}>{c.name}</Text>
+                    <Text style={styles.credMeta}>
+                      {c.type === 'program' ? 'PROGRAM' : 'CERTIFICATE'}
+                      {c.levelOrTier ? ` · ${c.levelOrTier}` : ''}
+                      {c.awardedAt ? ` · ${fmtCredDate(c.awardedAt)}` : ''}
+                    </Text>
+                  </View>
+                  {certificateExportAvailable() && (
+                    <Pressable
+                      onPress={() => onExportCredential(c)}
+                      disabled={exportingId === c.id}
+                      hitSlop={8}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Download the ${c.name} certificate`}
+                    >
+                      <Text style={styles.credAction}>
+                        {exportingId === c.id ? 'PREPARING…' : 'PDF'}
+                      </Text>
+                    </Pressable>
+                  )}
+                </View>
+              ))}
+              {!certificateExportAvailable() && (
+                <Text style={styles.fieldHint}>
+                  Certificate download needs the next app build.
+                </Text>
+              )}
+              {credMessage != null && <Text style={styles.fieldHint}>{credMessage}</Text>}
+            </View>
+          )}
+
           {/* Upgrade CTA for non-academy (free / lapsed) → Paywall. */}
           {!academy && (
             <View style={{ marginTop: 4 }}>
@@ -573,6 +651,27 @@ const styles = StyleSheet.create({
   interestChipOn: { backgroundColor: '#0d1f14', borderColor: 'rgba(55,224,95,.65)' },
   interestChipText: { fontFamily: fonts.barlowRegular, fontSize: 13, color: '#9a9a9a' },
   interestChipTextOn: { color: '#5bff85' },
+  credRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 11,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.hairlineDim,
+  },
+  credName: { fontFamily: fonts.barlowSemiBold, fontSize: 14.5, color: colors.textPrimary },
+  credMeta: {
+    fontFamily: fonts.barlowCondensedRegular,
+    fontSize: 11.5,
+    letterSpacing: 0.6,
+    color: colors.textMuted,
+    marginTop: 2,
+  },
+  credAction: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 12,
+    letterSpacing: 1.2,
+    color: colors.amber,
+  },
   consentRow: { flexDirection: 'row', alignItems: 'center', marginTop: 14 },
   // Registry participation readout — gray when off, green when active (user
   // request 2026-07-23).
