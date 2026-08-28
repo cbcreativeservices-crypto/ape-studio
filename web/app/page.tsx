@@ -1,8 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
 import { TAGLINE, KNOWLEDGE } from "@/lib/brand";
 import { AppScreen } from "@/components/AppScreen";
 import { AppScreenMarquee } from "@/components/AppScreenMarquee";
+import { Meterbridge, RoomField, Veil, Well } from "@/components/Atmosphere";
 import {
   FEATURED_SCREEN_IDS,
   HERO_SCREEN_IDS,
@@ -12,7 +12,7 @@ import {
 export default function Home() {
   return (
     <div className="relative">
-      <div className="home-atmosphere" aria-hidden />
+      <RoomField />
       <div className="relative z-[1]">
       {/* 1 — HERO */}
       <section className="relative overflow-hidden border-b border-border">
@@ -21,7 +21,7 @@ export default function Home() {
           className="pointer-events-none absolute inset-0"
           style={{
             background:
-              "radial-gradient(55% 45% at 82% 0%, rgba(47,155,255,0.056), transparent 68%), radial-gradient(40% 35% at 50% 0%, rgba(255,198,77,0.038), transparent 70%)",
+              "radial-gradient(42% 38% at 18% 0%, rgba(47,155,255,0.05), transparent 68%), radial-gradient(42% 38% at 82% 0%, rgba(47,155,255,0.05), transparent 68%), radial-gradient(40% 35% at 50% 0%, rgba(255,198,77,0.038), transparent 70%)",
           }}
         />
         <div className="relative mx-auto max-w-6xl px-4 pt-8 pb-0 text-center sm:px-6 sm:pt-10">
@@ -54,8 +54,8 @@ export default function Home() {
       </section>
 
       {/* 2 — KNOWLEDGE GAPS */}
-      <Band tint>
-        <div className="mx-auto grid max-w-5xl items-center gap-8 md:grid-cols-[1fr_auto] md:gap-12">
+      <Band tint veil="/atmospheres/chamber.png" veilOpacity={0.88} rail="ceiling" tone="amber">
+        <div className="mx-auto flex max-w-5xl flex-col items-center gap-8 md:flex-row md:gap-12">
           <div className="text-center md:text-left">
             <p className="font-mono text-xs uppercase tracking-[0.3em] text-amber">
               Knowledge
@@ -78,11 +78,13 @@ export default function Home() {
               Explore the curriculum
             </Link>
           </div>
-          <AppScreen
-            screen={getAppScreen("study")}
-            size="md"
-            className="shrink-0"
-          />
+          <Well className="shrink-0">
+            <AppScreen
+              screen={getAppScreen("study")}
+              size="md"
+              className="shrink-0"
+            />
+          </Well>
         </div>
       </Band>
 
@@ -112,24 +114,8 @@ export default function Home() {
       </Band>
 
       {/* 3 — GLOSSARY */}
-      <section className="relative overflow-hidden border-b border-border">
-        <Image
-          src="/glossary-bg.png"
-          alt=""
-          fill
-          className="object-cover object-[100%_68%]"
-          sizes="100vw"
-          aria-hidden
-        />
-        <div
-          aria-hidden
-          className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-transparent"
-        />
-        <div
-          aria-hidden
-          className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background/50"
-        />
-        <div className="relative mx-auto flex max-w-6xl flex-col items-center gap-6 px-4 py-12 sm:px-6 md:flex-row md:items-center md:justify-start md:gap-8">
+      <Band veil="/atmospheres/lexicon.png" veilOpacity={0.78} rail="ceiling" tone="blue">
+        <div className="mx-auto flex max-w-5xl flex-col items-center gap-8 md:flex-row md:gap-12">
           <div className="max-w-xl text-center md:text-left">
             <p className="font-mono text-xs uppercase tracking-[0.3em] text-amber">
               Glossary
@@ -141,26 +127,30 @@ export default function Home() {
               Glossary, technical references, diagrams, and specifications.
             </p>
           </div>
-          <AppScreen
-            screen={getAppScreen("home")}
-            size="md"
-            className="shrink-0"
-          />
+          <Well className="shrink-0">
+            <AppScreen
+              screen={getAppScreen("home")}
+              size="md"
+              className="shrink-0"
+            />
+          </Well>
         </div>
-      </section>
+      </Band>
 
       {/* 6 — APP PREVIEW */}
-      <Band tint id="in-the-app">
+      <Band tint id="in-the-app" rail="floor" tone="mix">
         <SectionHead
           eyebrow="In the app"
           title="Where the learning happens"
           lede="The mobile app is the primary learning environment — explore the curriculum, study each concept, and practice what you learn."
         />
-        <div className="mx-auto mt-5 grid max-w-4xl gap-6 sm:grid-cols-3">
-          {FEATURED_SCREEN_IDS.map((id) => (
-            <AppScreen key={id} screen={getAppScreen(id)} size="md" caption />
-          ))}
-        </div>
+        <Well>
+          <div className="mx-auto mt-5 grid max-w-4xl gap-6 sm:grid-cols-3">
+            {FEATURED_SCREEN_IDS.map((id) => (
+              <AppScreen key={id} screen={getAppScreen(id)} size="md" caption />
+            ))}
+          </div>
+        </Well>
         <p className="mx-auto mt-4 max-w-2xl text-center text-xs text-text-muted">
           Interactive studying lives in the mobile app. Create your account there,
           then sign in here to track progress and verify credentials.
@@ -309,21 +299,39 @@ function Band({
   tint,
   id,
   compact,
+  veil,
+  veilOpacity = 0.82,
+  rail,
+  tone = "blue",
 }: {
   children: React.ReactNode;
   tint?: boolean;
   id?: string;
   compact?: boolean;
+  veil?: string;
+  veilOpacity?: number;
+  rail?: "ceiling" | "floor";
+  tone?: "amber" | "blue" | "mix";
 }) {
   return (
     <section
       id={id}
-      className={`border-b border-border ${
-        tint ? "bg-[rgba(21,21,21,0.35)]" : "bg-transparent"
+      className={`relative overflow-hidden border-b border-border ${
+        tint && !veil ? "bg-[rgba(21,21,21,0.35)]" : "bg-transparent"
       }`}
     >
+      {veil ? <Veil src={veil} opacity={veilOpacity} /> : null}
+      {rail ? <Meterbridge rail={rail} tone={tone} /> : null}
       <div
-        className={`mx-auto max-w-6xl px-4 sm:px-6 ${compact ? "py-8" : "py-10"}`}
+        className={`relative z-10 mx-auto max-w-6xl px-4 sm:px-6 ${
+          compact
+            ? "py-8"
+            : rail === "ceiling"
+              ? "pb-10 pt-12 md:pt-16"
+              : rail === "floor"
+                ? "pt-10 pb-14 md:pb-16"
+                : "py-10"
+        }`}
       >
         {children}
       </div>

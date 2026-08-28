@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PageHero, Section, BrandLine, List, CTARow } from "@/components/content";
+import { PageAtmosphere } from "@/components/Atmosphere";
 import { KNOWLEDGE } from "@/lib/brand";
 
 export const metadata: Metadata = {
@@ -10,7 +11,9 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div className="pb-16">
+    <div className="relative pb-16">
+      <PageAtmosphere src="/atmospheres/field.png" tone="blue" opacity={0.78} />
+      <div className="relative z-10 pt-4 md:pt-8">
       <PageHero
         eyebrow="Curriculum Development"
         title="How the curriculum is built"
@@ -109,6 +112,7 @@ export default function Page() {
         primary={{ href: "/get", label: "Get the app" }}
         secondary={{ href: "/standards", label: "Educational standards" }}
       />
+      </div>
     </div>
   );
 }

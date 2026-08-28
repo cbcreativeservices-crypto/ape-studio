@@ -18,7 +18,7 @@ const FOOTER_SECTIONS: { heading: string; links: { href: string; label: string }
     links: [
       { href: "/verify", label: "Verify a Credential" },
       { href: "/employers", label: "For Employers" },
-      { href: "/institutions", label: "For Institutions" },
+      { href: "/institutions", label: "Institutions & Teams" },
       { href: "/tubes", label: "Tube Reference" },
     ],
   },
@@ -29,6 +29,8 @@ const FOOTER_SECTIONS: { heading: string; links: { href: string; label: string }
       { href: "/contact", label: "Contact" },
       { href: "/terms", label: "Terms of Service" },
       { href: "/privacy", label: "Privacy Policy" },
+      { href: "/ai", label: "How we use AI" },
+      { href: "/accessibility", label: "Accessibility" },
     ],
   },
 ];

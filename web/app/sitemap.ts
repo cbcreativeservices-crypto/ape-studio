@@ -22,6 +22,8 @@ const PATHS = [
   "/support",
   "/privacy",
   "/terms",
+  "/ai",
+  "/accessibility",
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

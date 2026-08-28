@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { AppScreenDef } from "@/lib/app-screens";
 
 const WIDTH = {
@@ -36,13 +36,27 @@ export function AppScreen({
   const [failed, setFailed] = useState(false);
   const [ready, setReady] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
   const planned = assetFromScreen(screen);
   const asset = failed ? null : planned;
 
+  const markReady = useCallback(() => setReady(true), []);
+  const identity = `${screen.file}:${screen.media}`;
+  const prevIdentity = useRef(identity);
+
   useEffect(() => {
+    if (prevIdentity.current === identity) return;
+    prevIdentity.current = identity;
     setFailed(false);
     setReady(false);
-  }, [screen.file, screen.media]);
+  }, [identity]);
+
+  useEffect(() => {
+    const img = imageRef.current;
+    if (img && img.complete && img.naturalWidth > 0) setReady(true);
+    const vid = videoRef.current;
+    if (vid && vid.readyState >= HTMLMediaElement.HAVE_METADATA) setReady(true);
+  }, [planned.src, failed]);
 
   useEffect(() => {
     const el = videoRef.current;
@@ -51,12 +65,16 @@ export function AppScreen({
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) return;
 
+    const tryPlay = () => {
+      void el.play().catch(() => {});
+    };
+
     const io = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) void el.play().catch(() => {});
+        if (entry.isIntersecting) tryPlay();
         else el.pause();
       },
-      { threshold: 0.35 },
+      { threshold: 0.1 },
     );
     io.observe(el);
     return () => io.disconnect();
@@ -97,15 +115,18 @@ export function AppScreen({
           {asset?.kind === "video" ? (
             <video
               ref={videoRef}
-              className={`absolute inset-0 h-full w-full object-cover transition-opacity ${
+              className={`absolute inset-0 z-[1] h-full w-full object-cover ${
                 ready ? "opacity-100" : "opacity-0"
               }`}
               muted
               loop
               playsInline
-              preload="metadata"
+              autoPlay
+              preload="auto"
               src={asset.src}
-              onLoadedData={() => setReady(true)}
+              onLoadedMetadata={markReady}
+              onLoadedData={markReady}
+              onCanPlay={markReady}
               onError={() => setFailed(true)}
               aria-hidden={decorative}
               aria-label={decorative ? undefined : label}
@@ -114,12 +135,13 @@ export function AppScreen({
           {asset?.kind === "image" ? (
             // eslint-disable-next-line @next/next/no-img-element -- optional public still
             <img
+              ref={imageRef}
               src={asset.src}
               alt={decorative ? "" : label}
-              className={`absolute inset-0 h-full w-full ${imageFit} transition-opacity ${
+              className={`absolute inset-0 z-[1] h-full w-full ${imageFit} ${
                 ready ? "opacity-100" : "opacity-0"
               }`}
-              onLoad={() => setReady(true)}
+              onLoad={markReady}
               onError={() => setFailed(true)}
             />
           ) : null}

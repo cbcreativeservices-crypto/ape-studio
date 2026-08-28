@@ -52,10 +52,33 @@ export default function Page() {
           className="rounded-lg border border-border bg-surface p-5 transition-colors hover:border-amber"
         >
           <p className="font-display text-base font-semibold uppercase tracking-wide text-foreground">
-            For Institutions
+            Institutions &amp; Teams
           </p>
           <p className="mt-1 text-sm text-text-sub">
-            Sponsor learners with redemption codes for schools and employers.
+            Bulk and multi-seat licensing for schools, studios, and industry.
+            Unique login codes are available now.
+          </p>
+        </Link>
+        <Link
+          href="/accessibility"
+          className="rounded-lg border border-border bg-surface p-5 transition-colors hover:border-amber"
+        >
+          <p className="font-display text-base font-semibold uppercase tracking-wide text-foreground">
+            Accessibility
+          </p>
+          <p className="mt-1 text-sm text-text-sub">
+            Report a barrier or ask for help using this website.
+          </p>
+        </Link>
+        <Link
+          href="/ai"
+          className="rounded-lg border border-border bg-surface p-5 transition-colors hover:border-amber"
+        >
+          <p className="font-display text-base font-semibold uppercase tracking-wide text-foreground">
+            How we use AI
+          </p>
+          <p className="mt-1 text-sm text-text-sub">
+            Internal drafting only today. Human review before anything is published.
           </p>
         </Link>
       </div>

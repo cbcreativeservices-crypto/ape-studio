@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { PageHero, Section, CTARow } from "@/components/content";
 
 export const metadata: Metadata = {
@@ -54,6 +55,22 @@ export default function Page() {
         <p>
           Education, tools, assessments, and eligible credentials are part of
           membership. Plans and prices are in the app.
+        </p>
+      </Section>
+
+      <Section title="Institutions & teams">
+        <p>
+          Educational and industry institutions get discounts on bulk/multi-seat
+          orders. Buy seats directly and we issue unique login codes — one per
+          user — to activate each account. Custom topics, certificates,
+          programs, and analytics are coming soon for the Institutional tier.
+        </p>
+        <p>
+          <Link href="/institutions">Licensing for schools, studios, and industry</Link>
+          {" · "}
+          <a href="mailto:info@proaudiotrainingacademy.com?subject=Institution%20licensing%20quote">
+            info@proaudiotrainingacademy.com
+          </a>
         </p>
       </Section>
 

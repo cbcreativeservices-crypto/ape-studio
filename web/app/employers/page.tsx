@@ -62,14 +62,14 @@ export default function Page() {
       <Section title="Sponsoring or training your team">
         <p>
           If you want to fund training for your staff rather than verify an
-          existing credential, that’s handled through licensing and custom
-          training for organizations.
+          existing credential, that’s handled through institutional and bulk
+          licensing.
         </p>
       </Section>
 
       <CTARow
         primary={{ href: "/verify", label: "Verify a Credential" }}
-        secondary={{ href: "/institutions", label: "Licensing & custom training" }}
+        secondary={{ href: "/institutions", label: "Institutions & Teams" }}
       />
     </div>
   );
