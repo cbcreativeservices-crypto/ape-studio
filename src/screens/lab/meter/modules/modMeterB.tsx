@@ -183,9 +183,10 @@ function SpectrogramViz({ viz, width, height, pattern, running, mode }: { viz: V
 }
 
 function WaterfallViz({ viz, width, height, opts, running }: { viz: VizSpectralModule; width: number; height: number; opts: WaterfallOpts; running: boolean }) {
-  // Build-then-collapse loop clock — REAL-TIME (owner 2026-08-05): the ridge
-  // crosses each 1-second floor marker at one real second.
-  const phase = viz.usePhaseClock(running, viz.WATERFALL_REALTIME_HZ);
+  // Build loop clock — REAL-TIME (owner 2026-08-05): the ridge crosses each
+  // floor marker at that many real seconds. The rate now depends on the SCENE,
+  // because the plot's time window is fitted to the room's own decay.
+  const phase = viz.usePhaseClock(running, viz.waterfallRealtimeHz(opts));
   return <viz.WaterfallView width={width} height={height} opts={opts} phase={phase} animate />;
 }
 

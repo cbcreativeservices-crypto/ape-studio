@@ -280,7 +280,13 @@ export function waterfallRt(opts: WaterfallOpts, f: number): number {
   let rt = r.base * (f < 250 ? 1 + (r.lfMult - 1) * (Math.log10(250) - lg) : f > 2000 ? Math.max(0.45, 1 - 0.28 * (lg - Math.log10(2000))) : 1);
   // Damping eats HF first, then mids, lows resist (why bass traps exist).
   const dampEff = opts.damping01 * (f > 500 ? 1 : f > 120 ? 0.7 : 0.35);
-  rt *= 1 - 0.78 * dampEff;
+  // Max reduction 0.78 -> 0.55 (owner 2026-08-28: "no room can be that short
+  // with no reverb tail"). At 0.78, full treatment drove a STUDIO to 0.08 s at
+  // 1 kHz, which is anechoic-chamber territory, not a room -- and it made the
+  // waterfall's decay vanish in a couple of slices. Treatment cannot take a
+  // real room below roughly half its untreated RT60 across the band; absorbers
+  // stop being effective long before the reverberant field disappears.
+  rt *= 1 - 0.55 * dampEff;
   if (r.ringHz) {
     const g = Math.exp(-Math.pow((lg - Math.log10(r.ringHz)) / 0.035, 2));
     rt = Math.max(rt, r.ringRt * (1 - 0.55 * opts.damping01 * 0.35) * g + rt * (1 - g));
@@ -294,7 +300,10 @@ export function waterfallRt(opts: WaterfallOpts, f: number): number {
     const mult = f < 400 ? rv.lfMult : f > 3000 ? rv.hfMult : 1;
     rt = Math.max(rt, rv.rtAt1k * mult);
   }
-  return Math.max(0.08, rt);
+  // Floor 0.08 -> 0.15 s. A heavily treated vocal booth measures ~0.15-0.25 s;
+  // below ~0.1 s you are describing an anechoic chamber, which is not one of
+  // the rooms this lab models. The floor is a REALISM clamp, not a safety one.
+  return Math.max(0.15, rt);
 }
 
 /** Initial (t=0) excitation spectrum in dB — impulse through the EQ. */
@@ -304,6 +313,44 @@ export function waterfallSpectrumDb(opts: WaterfallOpts, f: number): number {
   v += opts.eqBoostDb * Math.exp(-Math.pow((lg - Math.log10(250)) / 0.09, 2));
   if (opts.qRing) v += 7 * Math.exp(-Math.pow((lg - Math.log10(1200)) / 0.012, 2));
   return v;
+}
+
+/** Frequencies sampled when sizing the plot's time window. */
+const RT_PROBE_HZ = [31.5, 63, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
+
+/**
+ * The time window a CSD of THIS scene should span, in seconds.
+ *
+ * A fixed window cannot serve every room. Over a fixed 3 s span a studio's
+ * decay occupied 5 of 56 slices (2 % once damped) while the other 51 sat pinned
+ * at the floor, and a cathedral OVERFLOWED at 138 % — so the same plot showed
+ * a dead room as "gone instantly" and a live one as "never decays". Owner
+ * 2026-08-28: "you are showing the decay unrealistically too fast ... this
+ * needs to be realistic." Real acoustics tools fit the window to the decay for
+ * exactly this reason.
+ *
+ * Driven by the LONGEST RT60 in the band, because the window has to be long
+ * enough to show the slowest part of the room finish — that is usually the low
+ * end, and seeing the bass outlast the top IS the lesson. 1.25x gives the tail
+ * room to be visible instead of ending exactly at the front edge. Snapped to a
+ * readable step so the floor marks land on round numbers.
+ */
+export function waterfallTimeSpan(opts: WaterfallOpts): number {
+  let maxRt = 0;
+  for (const f of RT_PROBE_HZ) maxRt = Math.max(maxRt, waterfallRt(opts, f));
+  const needed = maxRt * 1.25;
+  const STEPS = [0.3, 0.5, 0.75, 1, 1.5, 2, 3, 4, 6, 8, 10];
+  return STEPS.find((s) => s >= needed) ?? STEPS[STEPS.length - 1];
+}
+
+/** Whole-number-ish floor division marks that fit inside `span`. */
+export function waterfallTimeDivisions(span: number): number[] {
+  // Aim for 2-4 marks: enough to read a duration off the floor, few enough
+  // that the chrome stays quieter than the data.
+  const step = span <= 0.5 ? 0.2 : span <= 1 ? 0.25 : span <= 2 ? 0.5 : span <= 4 ? 1 : 2;
+  const out: number[] = [];
+  for (let t = step; t < span - 1e-6; t += step) out.push(Number(t.toFixed(2)));
+  return out;
 }
 
 /** Level (dB) of the slice at time t — spectrum minus linear-in-dB decay. */

@@ -35,6 +35,8 @@ import {
   spectrumDb,
   waterfallRt,
   waterfallSpectrumDb,
+  waterfallTimeDivisions,
+  waterfallTimeSpan,
   type SpectrogramKey,
   type SpectrumKey,
   type WaterfallOpts,
@@ -665,17 +667,16 @@ export function SpectrogramPatternView(p: {
 // Math (waterfallSpectrumDb / waterfallRt), the 56×140 geometry, occlusion,
 // memoization, and the animation architecture are all unchanged.
 
+/** Second labels: sub-second windows need a decimal, whole ones must not have
+ *  one (a studio reads "0.1s", a cathedral "2s"). */
+function fmtSec(t: number): string {
+  return `${t < 1 ? t.toFixed(1).replace(/\.0$/, '') : String(t)}s`;
+}
+
 const WF_SLICES = 56;
-// 3.0 s span (owner 2026-07-29, reference CSD): a round span so the 1-second
-// floor division lines land on 1 / 2 / 3 Sec exactly. Time runs BACK (t=0,
-// the loud start) → FRONT (t=3 s, fully decayed) per the 2026-08-05 flip.
-const WF_T_MAX = 3.0; // seconds spanned back (t=0) → front
-// Floor division lines at 1 s and 2 s only. There used to be a 3 s line too,
-// but at tSec = WF_T_MAX the maths collapses to cum = 0 — i.e. exactly the
-// front baseline — so it drew a second line on the same pixel row as the axis
-// baseline and printed "3 Sec" on top of the arrow's "3 s". The front edge IS
-// t = 3 s and the arrow labels it (owner 2026-08-28: two clashing time scales).
-const WF_T_DIVISIONS = [1, 2];
+// The time span is NO LONGER a constant — it is fitted to the scene's own decay
+// by waterfallTimeSpan(opts). A fixed 3 s window showed a studio's decay in 5
+// of 56 slices while a cathedral overflowed it; see meterEngine for the why.
 const WF_DB_TOP = 12;
 const WF_DB_FLOOR = -60;
 const WF_DB_SPAN = WF_DB_TOP - WF_DB_FLOOR; // 72 dB of mountain height
@@ -686,10 +687,15 @@ const WF_DB_SPAN = WF_DB_TOP - WF_DB_FLOOR; // 72 dB of mountain height
 const WF_GROW_END = 0.4; // impulse flash + build back → front
 
 /** REAL-TIME clock rate for the waterfall (owner 2026-08-05): the GROW phase
- *  spans WF_T_MAX real seconds, so the ridge crosses each 1-second floor marker
- *  at exactly one real second — the displayed time matches wall-clock time.
- *  (grow duration = WF_GROW_END / hz = WF_T_MAX → hz = WF_GROW_END / WF_T_MAX.) */
-export const WATERFALL_REALTIME_HZ = WF_GROW_END / WF_T_MAX; // ≈ 0.133 Hz
+ *  spans the plot's whole time window in REAL seconds, so a ridge crosses each
+ *  floor marker at exactly that many real seconds and the displayed time
+ *  matches wall-clock time. Now a function of the scene, because the window is
+ *  fitted to the room — a dead studio's decay plays out over its own fraction
+ *  of a second, a cathedral's over several.
+ *  (grow duration = WF_GROW_END / hz = span → hz = WF_GROW_END / span.) */
+export function waterfallRealtimeHz(opts: WaterfallOpts): number {
+  return WF_GROW_END / waterfallTimeSpan(opts);
+}
 
 function mixRgb(
   a: [number, number, number],
@@ -881,6 +887,7 @@ export function WaterfallView(p: {
     const baseY = h - 30;
     const dyTot = h * 0.36;
     const ampH = h * 0.31;
+    const tMax = waterfallTimeSpan(o); // the window, fitted to THIS room
     const q = 0.975; // per-slice depth step shrinks — perspective recession
     const norm = 1 - Math.pow(q, WF_SLICES - 1);
     const spec = WF_FREQS.map((f) => waterfallSpectrumDb(o, f));
@@ -898,7 +905,7 @@ export function WaterfallView(p: {
       // viewer — the decay cascades toward you instead of hiding behind a
       // tall front wall. So depth cum=1 (back) is t=0 and cum=0 (front) is
       // the oldest, most-decayed slice.
-      const t = (1 - i / (WF_SLICES - 1)) * WF_T_MAX;
+      const t = (1 - i / (WF_SLICES - 1)) * tMax;
       const stroke = Skia.Path.Make();
       const fill = Skia.Path.Make();
       fill.moveTo(ox, oy);
@@ -917,7 +924,7 @@ export function WaterfallView(p: {
       // stays white-hot (Altiverb's bright crest); slices cool toward the dark
       // as they age forward toward the viewer. Perspective width (swid) still
       // follows depth.
-      const age = t / WF_T_MAX; // 0 = the loud start … 1 = fully decayed
+      const age = t / tMax; // 0 = the loud start … 1 = fully decayed
       // Dimming cut 0.62 → 0.28 (design review 2026-08-28): at 0.62 the forward
       // slices were washed so far toward the dark that the level ramp — the
       // whole lesson — stopped being readable exactly where the decay is.
@@ -958,14 +965,14 @@ export function WaterfallView(p: {
     // labeled at its right end — the ridges cross them during the decay, so
     // the viewer SEES time going by. With the time flip, t=0 lives at the
     // BACK, so each second's band steps FORWARD toward the viewer.
-    const timeMarks = WF_T_DIVISIONS.map((tSec) => {
-      const iF = (1 - tSec / WF_T_MAX) * (WF_SLICES - 1);
+    const timeMarks = waterfallTimeDivisions(tMax).map((tSec) => {
+      const iF = (1 - tSec / tMax) * (WF_SLICES - 1);
       const cum = norm > 0 ? (1 - Math.pow(q, iF)) / norm : 0;
       const x0 = xL0 + dxTot * cum;
       const y = baseY - dyTot * cum;
       return { t: tSec, x0, x1: x0 + frontW * (1 - 0.2 * cum), y };
     });
-    return { slices, xL0, frontW, dxTot, dyTot, baseY, ampH, timeMarks };
+    return { slices, xL0, frontW, dxTot, dyTot, baseY, ampH, timeMarks, tMax };
   }, [o.room, o.damping01, o.eqBoostDb, o.qRing, o.reverb, w, h]);
 
   // Fine axis annotations (all static memo geometry): front-edge freq ticks +
@@ -1178,7 +1185,7 @@ export function WaterfallView(p: {
             color: AXIS_TEXT,
           }}
         >
-          {`${m.t}s`}
+          {fmtSec(m.t)}
         </RNText>
       ))}
       {/* TIME depth arrow labels. */}
@@ -1211,7 +1218,7 @@ export function WaterfallView(p: {
           color: AXIS_TEXT,
         }}
       >
-        {`${WF_T_MAX}s`}
+        {fmtSec(geo.tMax)}
       </RNText>
       <RNText
         style={{
@@ -1250,7 +1257,10 @@ export function WaterfallView(p: {
           position: 'absolute',
           left: 0,
           width: geo.xL0 - 8,
-          top: geo.baseY - geo.ampH - 15,
+          // Clears the "+12" tick, which sits at (baseY - ampH) - 5 and is ~13
+          // px tall — at -15 the caption landed on top of it (owner 2026-08-28:
+          // "the dB marking is showing over the +12").
+          top: geo.baseY - geo.ampH - 30,
           textAlign: 'right',
           ...teachText,
           fontSize: 11,
