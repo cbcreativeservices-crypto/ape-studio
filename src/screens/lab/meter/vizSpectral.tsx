@@ -647,8 +647,9 @@ export function SpectrogramPatternView(p: {
 // instead of hiding behind a tall t=0 front wall. 56 slices × 140 log-spaced
 // frequency points; each slice is a CLOSED filled path drawn back-to-front
 // with an OPAQUE fill so nearer slices occlude farther ones — the classic
-// hidden-line CSD look. All geometry frozen in useMemo; the build → hold →
-// collapse loop animates ONLY per-slice opacity windows.
+// hidden-line CSD look -- so every slice is drawn OPAQUE and blocks the ones
+// behind it; a slice is never part-transparent. All geometry frozen in useMemo;
+// the build → hold loop animates ONLY which slices are present.
 //
 // Grammar per the owner's reference CSD screenshots:
 //   • frequency labels across the TOP (30 · 120 · 440 · 1.6k · 6k · 20k) with
@@ -660,7 +661,7 @@ export function SpectrogramPatternView(p: {
 //     to the full dB scale (red at the ceiling → blue at the floor), with depth
 //     dimming toward a cool dark;
 //   • the front slice's spectrum re-drawn as a green 2-D silhouette standing
-//     on the outer side plane, opacity-synced to the front slice.
+//     on the outer side plane, synced to the front slice.
 // Math (waterfallSpectrumDb / waterfallRt), the 56×140 geometry, occlusion,
 // memoization, and the animation architecture are all unchanged.
 
@@ -674,8 +675,10 @@ const WF_DB_TOP = 12;
 const WF_DB_FLOOR = -60;
 const WF_DB_SPAN = WF_DB_TOP - WF_DB_FLOOR; // 72 dB of mountain height
 // Animation timeline as fractions of one phase-clock cycle.
-const WF_GROW_END = 0.4; // Phase A: impulse flash + grow backward
-const WF_HOLD_END = 0.58; // Phase B: hold the full range
+// The cycle is BUILD then HOLD — there is no collapse phase (owner
+// 2026-08-28). The range completes, holds for the rest of the cycle, and the
+// loop wrap resets it instantly.
+const WF_GROW_END = 0.4; // impulse flash + build back → front
 
 /** REAL-TIME clock rate for the waterfall (owner 2026-08-05): the GROW phase
  *  spans WF_T_MAX real seconds, so the ridge crosses each 1-second floor marker
@@ -761,14 +764,14 @@ type WfSliceGeo = {
    *  yTop (the +12 dB ceiling, red) → yBase (the −60 dB floor, blue). */
   fillColors: string[];
   swid: number;
-  strokeOpacity: number;
   yTop: number; // top anchor of the height-heat gradient (full-amp ceiling)
   yBase: number; // this slice's own baseline
 };
 
-/** One slice: frozen geometry + colors, its opacity window animated in a
- *  worklet. Build and clear BOTH sweep back → front, so time only ever runs in
- *  one direction (owner 2026-08-28). */
+/** One slice: frozen geometry + colors, present-or-absent in a worklet. The
+ *  build sweeps back → front (one direction only), each slice fully OPAQUE so
+ *  it occludes the ones behind it, and the range holds until the loop resets —
+ *  no exit animation (owner 2026-08-28). */
 function WfSlice({
   slice,
   index,
@@ -787,23 +790,18 @@ function WfSlice({
     // (highest index), so the build reveals back → front — the impulse flashes
     // at the back and the decay cascades toward the viewer.
     const ri = WF_SLICES - 1 - index; // 0 = the t=0 back slice … N−1 = oldest front
-    if (u < WF_GROW_END) {
-      // Phase A: the decay cascades forward, slice by slice.
-      const g = easeInOutW(u / WF_GROW_END) * WF_SLICES;
-      return Math.max(0, Math.min(1, g - ri));
-    }
-    if (u < WF_HOLD_END) return 1; // Phase B: hold
-    // Phase C: the range clears in the SAME direction it arrived — back
-    // (t=0) first, sweeping forward past the viewer.
-    //
-    // This used to clear front-first (`WF_SLICES - ri - c`), which drained the
-    // oldest, most-decayed slices before the newest. On screen that read as the
-    // range RETREATING and the decay un-decaying — time visibly running
-    // backwards once per loop. Owner 2026-08-28: "do not rewind time by showing
-    // the waterfall in reverse - show one direction (time)." Both the build and
-    // the clear now sweep back → front, so energy only ever travels one way.
-    const c = easeInOutW((u - WF_HOLD_END) / (1 - WF_HOLD_END)) * WF_SLICES;
-    return Math.max(0, Math.min(1, 1 - (c - ri)));
+    const g = easeInOutW(Math.min(1, u / WF_GROW_END)) * WF_SLICES;
+    // OPAQUE OR ABSENT — never part-transparent (owner 2026-08-28: "each slice
+    // is in front of the next, blocking the previous slice behind it, opaque
+    // not transparent"). A slice used to FADE in over its reveal, and a
+    // half-faded slice let the slices behind it show through, which is exactly
+    // what the hidden-line CSD look depends on NOT happening.
+    if (g <= ri) return 0;
+    // NO EXIT ANIMATION (owner 2026-08-28: "it completes and then resets, the
+    // exit animation is confusing"). Past the build the range simply HOLDS for
+    // the rest of the cycle; the loop wrapping to u=0 snaps it back to empty
+    // and the next build starts. There is no collapse phase to read.
+    return 1;
   }, [phase, animate, index]);
   return (
     <Group opacity={op}>
@@ -823,7 +821,6 @@ function WfSlice({
         strokeWidth={slice.swid}
         strokeCap="round"
         strokeJoin="round"
-        opacity={slice.strokeOpacity}
       >
         <LinearGradient
           start={vec(0, slice.yTop)}
@@ -928,7 +925,6 @@ export function WaterfallView(p: {
         ),
         fillColors: WF_HEAT_STOPS.map((st) => rgbStr(mixRgb(st.rgb, WF_COOL_DARK, dim))),
         swid: 1.7 - 0.8 * cum,
-        strokeOpacity: 1 - 0.4 * age,
         yTop: oy - amp,
         yBase: oy,
       });
@@ -1026,19 +1022,13 @@ export function WaterfallView(p: {
     return { ticks, posts, depthGuides, timeLines, arrow, ref, ax0, ay0, ax1, ay1, dbTickYs };
   }, [geo]);
 
-  // The side profile is worklet-opacity-synced to the FRONT slice (index 0):
-  // it appears with the first slice of each build and melts last — it IS the
-  // live 2-D spectrum view of whatever the front slice currently shows.
+  // The side profile appears with the first slice of each build and holds with
+  // the range — it IS the live 2-D spectrum view of what the front slice shows.
   const sideOp = useDerivedValue(() => {
     if (!animate) return 1;
     const u = (((phase.value / TAU) % 1) + 1) % 1;
-    if (u < WF_GROW_END) {
-      const g = easeInOutW(u / WF_GROW_END) * WF_SLICES;
-      return Math.max(0, Math.min(1, g));
-    }
-    if (u < WF_HOLD_END) return 1;
-    const c = easeInOutW((u - WF_HOLD_END) / (1 - WF_HOLD_END)) * WF_SLICES;
-    return Math.max(0, Math.min(1, WF_SLICES - c));
+    // Opaque-or-absent and hold-to-reset, matching the slices.
+    return easeInOutW(Math.min(1, u / WF_GROW_END)) * WF_SLICES > 0 ? 1 : 0;
   }, [phase, animate]);
 
   // Impulse flash: the front slice flares white as each build cycle begins.
