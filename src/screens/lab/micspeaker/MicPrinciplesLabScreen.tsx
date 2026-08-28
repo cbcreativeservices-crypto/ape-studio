@@ -438,8 +438,22 @@ function DistanceSection({ viz, focused, help, wellTop, wellBottom }: SectionPro
   const [d01, setD01] = useState(0.3);
   const inches = Math.round(4 + d01 * 44);
   const relDb = -20 * Math.log10(inches / 4);
-  const direct = Math.min(1, 6 / inches);
-  const room = 0.32;
+  // DIRECT-to-REVERBERANT SHARE (fix 2026-08-28 — owner marked these bars "NOT
+  // WORKING"). They were `6 / inches` (a hyperbola that spent almost all its
+  // travel in the first few percent of the fader) and a hard literal `0.32`
+  // that could never move at all — so the ROOM bar AND the ROOM bezel % were
+  // frozen for every distance.
+  //
+  // Now both bars show each source's SHARE of what the mic picks up, which is
+  // the actual lesson the caption already states ("beyond that, the room starts
+  // winning"). Direct energy obeys the inverse-square law from the 4-inch
+  // reference; the room's reverberant energy really is ~constant, so the SHARE
+  // is what moves. ROOM_E is set so the two cross at ~12 in — the critical
+  // distance, matching the stated 4–12 in working range.
+  const directE = Math.pow(4 / inches, 2);
+  const ROOM_E = Math.pow(4 / 12, 2); // equal shares at 12 in
+  const direct = directE / (directE + ROOM_E);
+  const room = ROOM_E / (directE + ROOM_E);
 
   const params: DockParam[] = [
     {
@@ -474,13 +488,15 @@ function DistanceSection({ viz, focused, help, wellTop, wellBottom }: SectionPro
       }}
     >
       {wellTop}
-      <MeterBar label="DIRECT SOUND (falls with distance)" frac={direct} color="#5bff85" />
-      <MeterBar label="ROOM SOUND (stays roughly constant)" frac={room} color="#6fa8ff" />
+      <MeterBar label="DIRECT SOUND — share of what the mic hears" frac={direct} color="#5bff85" />
+      <MeterBar label="ROOM SOUND — share of what the mic hears" frac={room} color="#6fa8ff" />
       <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('distance')}>
         <Text style={styles.caption}>
-          Halving the distance gains ~6 dB of DIRECT sound while the room stays put — that ratio is
-          what “close” sounds like. Typical speech working distance: about 4–12 inches. Beyond that,
-          the room starts winning.
+          Halving the distance gains ~6 dB of DIRECT sound while the room’s reverberant energy stays
+          put — so what changes is the BALANCE, and that ratio is what “close” sounds like. The two
+          bars are each source’s share of what the mic picks up. They cross at about 12 inches (the
+          critical distance): closer than that you are recording the talker, farther than that you
+          are recording the room. Typical speech working distance: about 4–12 inches.
         </Text>
       </CollapsibleSection>
       {wellBottom}

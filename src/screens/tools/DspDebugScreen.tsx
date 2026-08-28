@@ -38,6 +38,7 @@ export function DspDebugScreen({ navigation }: Props) {
   const [startedAt, setStartedAt] = useState<number | null>(null);
   const [now, setNow] = useState(Date.now());
   const polling = useRef<ReturnType<typeof setInterval> | null>(null);
+  const genRef = useRef(0);
 
   const stopPolling = () => {
     if (polling.current) clearInterval(polling.current);
@@ -46,8 +47,17 @@ export function DspDebugScreen({ navigation }: Props) {
 
   const start = useCallback(async () => {
     setError(null);
+    // Generation guard (fix 2026-08-28): ApeDsp.start() is awaited, so backing
+    // out during it ran the unmount teardown FIRST and the interval below was
+    // then created against an unmounted tree — an unbounded leak that polled
+    // JSI forever.
+    const gen = ++genRef.current;
     try {
       const i = await ApeDsp.start();
+      if (gen !== genRef.current) {
+        void ApeDsp.stop(); // unmounted while starting
+        return;
+      }
       setInfo(i);
       setStartedAt(Date.now());
       stopPolling();
@@ -57,7 +67,7 @@ export function DspDebugScreen({ navigation }: Props) {
         setNow(Date.now());
       }, POLL_MS);
     } catch (e) {
-      setError((e as Error).message);
+      if (gen === genRef.current) setError((e as Error).message);
     }
   }, []);
 
@@ -71,6 +81,7 @@ export function DspDebugScreen({ navigation }: Props) {
 
   useEffect(() => {
     return () => {
+      genRef.current++;
       stopPolling();
       void ApeDsp.stop();
     };

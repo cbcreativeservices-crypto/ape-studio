@@ -10,7 +10,7 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { useToolsLocked } from './ToolLockUi';
 import { conceptByKey } from '../../features/tools/learn';
 import { colors, fonts } from '../../theme/tokens';
 import { ToolAcademyLock } from './ToolAcademyLock';
@@ -21,8 +21,8 @@ type Props = NativeStackScreenProps<RootStackParamList, 'ConceptModule'>;
 
 export function ConceptModuleScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
-  const { commercialMode, caps } = useEntitlement();
-  const locked = commercialMode && !caps.audioTools;
+  // Gate on REAL standing, not caps (house rule, ToolLockUi header). Aligned 2026-08-28.
+  const locked = useToolsLocked();
   const mod = conceptByKey(route.params.conceptKey);
 
   return (

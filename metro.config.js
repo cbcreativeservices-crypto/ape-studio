@@ -31,6 +31,32 @@ config.resolver = {
   ]
     .flat()
     .filter(Boolean),
+  // WEB-ONLY SKIA MUST NOT ENTER A NATIVE BUNDLE (2026-08-28).
+  //
+  // index.ts loads CanvasKit for web behind `if (Platform.OS === 'web')` with a
+  // dynamic import. That guard is a RUNTIME check — Metro still walks the
+  // import at BUILD time, so `canvaskit-wasm` joined the native graph, and it
+  // requires Node's `fs`, which React Native has no shim for:
+  //   Unable to resolve module fs from node_modules/canvaskit-wasm/bin/full/canvaskit.js
+  // The dev client hid this because it bundles LAZILY (only what runtime asks
+  // for); a full bundle — `expo export`, an EAS release build — walks the whole
+  // graph and FAILS. Verified: GET /index.bundle?platform=ios returned HTTP 500
+  // with that error before this fix, HTTP 200 after.
+  //
+  // CanvasKit is web-only by design (native Skia is linked into the binary), so
+  // on any non-web platform we resolve both the Skia web entry and canvaskit-wasm
+  // to an empty module. The guarded code never runs on native, so nothing is lost.
+  resolveRequest: (context, moduleName, platform) => {
+    if (
+      platform !== 'web' &&
+      (moduleName === 'canvaskit-wasm' ||
+        moduleName.startsWith('canvaskit-wasm/') ||
+        moduleName.startsWith('@shopify/react-native-skia/lib/module/web'))
+    ) {
+      return { type: 'empty' };
+    }
+    return context.resolveRequest(context, moduleName, platform);
+  },
 };
 
 module.exports = config;

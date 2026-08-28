@@ -217,22 +217,33 @@ export function ModularLabScreen() {
     [pushPatch, running],
   );
 
+  // Generation guard (fix 2026-08-28) — see BinauralLabScreen: backing out while
+  // modStart() was still in flight left the sequencer sounding with no stop
+  // affordance. Same pattern as BassLabScreen/AutotuneLabScreen.
+  const genRef = useRef(0);
+
   const start = useCallback(async () => {
     if (!modReady) return;
+    const gen = ++genRef.current;
     const ok = await requestAudioOutput();
-    if (!ok) return;
+    if (!ok || gen !== genRef.current) return;
     setGenError('');
     pushPatch(patch);
     try {
       await ApeDsp.modStart();
+      if (gen !== genRef.current) {
+        void ApeDsp.modStop(); // we left while the native start was in flight
+        return;
+      }
       setRunning(true);
       noteAudioActivity();
     } catch (e) {
-      setGenError(e instanceof Error ? e.message : String(e));
+      if (gen === genRef.current) setGenError(e instanceof Error ? e.message : String(e));
     }
   }, [modReady, requestAudioOutput, pushPatch, patch]);
 
   const stop = useCallback(() => {
+    genRef.current++;
     void ApeDsp.modStop();
     setRunning(false);
     setEnvLevel(0);

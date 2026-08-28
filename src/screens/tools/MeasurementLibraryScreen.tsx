@@ -14,8 +14,11 @@
  * context text and the DELETE control stay reachable to screen readers
  * (review 2026-07-23).
  *
- * Free to use (like the tools themselves) — Learn/Demo tutorials are the
- * Academy unlock, measurement usage is not (ruling 2026-07-23).
+ * ACADEMY-ONLY (owner 2026-08-05, superseding the 2026-07-23 "free to use"
+ * ruling that this header used to state): the Saved Measurements library sits
+ * with LEARN/DEMO in the Academy training layer. The tools themselves stay
+ * free. Gated here at the DESTINATION on real standing (`useToolsLocked`), so
+ * every entry point is covered — the six tool screens link straight in.
  */
 import { memo, useCallback, useMemo, useState } from 'react';
 import { Alert, FlatList, Pressable, Share, StyleSheet, Text, View } from 'react-native';
@@ -27,6 +30,7 @@ import { deleteMeasurement, useMeasurements } from '../../features/tools/measure
 import { QUALITY_COLOR, QUALITY_LABEL } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type SavedMeasurement } from '../../features/tools/measure/types';
 import { colors, fonts } from '../../theme/tokens';
+import { LockedButton, MembershipRequiredNote, useToolsLocked } from './ToolLockUi';
 import { toolByKey } from './toolsData';
 import type { RootStackParamList } from '../../navigation/types';
 
@@ -334,6 +338,7 @@ const Row = memo(function Row({
 
 export function MeasurementLibraryScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
+  const locked = useToolsLocked();
   const toolKey = route.params?.toolKey;
   const all = useMeasurements(toolKey);
   const [openId, setOpenId] = useState<string | null>(null);
@@ -404,6 +409,31 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
       ],
     );
   }, [selected]);
+
+  // ACADEMY GATE (fix 2026-08-28). The hub and the Frequency Counter already
+  // route free users to the Paywall, but SIX tool screens (SPL, RTA, RT60,
+  // MultiMeter, Spectrogram, Waveform) link straight here, and this destination
+  // had no check — so the hub's 🔒 was decorative and any free account could
+  // read the whole library. Gating at the destination covers every entry point.
+  if (locked) {
+    return (
+      <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+        <View style={styles.header}>
+          <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
+            <Text style={styles.back}>‹</Text>
+          </Pressable>
+          <View style={{ flexShrink: 1 }}>
+            <Text style={styles.title}>SAVED MEASUREMENTS</Text>
+            <Text style={styles.subtitle}>Academy membership</Text>
+          </View>
+        </View>
+        <View style={{ padding: 16, gap: 12 }}>
+          <MembershipRequiredNote what="open the saved measurement library" />
+          <LockedButton label="SEE MEMBERSHIP" onPress={() => navigation.navigate('Paywall')} height={48} />
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>

@@ -25,6 +25,7 @@ import { resetLocal as resetScenarioExempt } from '../study/scenarioExempt';
 import { resetLocal as resetHomeCardsStore } from '../home/homeCardsStore';
 import { resetLocal as resetMeasurementStore } from '../tools/measure/measurementStore';
 import { resetLocal as resetLabCompletion } from '../lab/labCompletion';
+import { resetLocal as resetExposureMonitor } from '../audio/exposureMonitor';
 import { resetLocal as resetDashboardCache } from '../dashboard/dashboardCache';
 import { clearQueuedBatches } from '../study/studyQueueStorage';
 import { clearQueuedSubmissions } from '../quiz/submissionQueueStorage';
@@ -50,11 +51,14 @@ const KEEP: ReadonlySet<string> = new Set<string>([
  * the tutorials. They must survive an account wipe, or every logout / guest entry
  * would replay every intro popup (user bug 2026-08-13). Kept BY PREFIX/SUFFIX
  * since they're an open family: `ape:intro:*` (all screen intros + app welcome +
- * the amplitude orientation) and the `…FsGuide` fullscreen-guide keys. Settings →
- * "Reset onboarding hints" is the intended way to replay them.
+ * the amplitude orientation), the `…FsGuide` fullscreen-guide keys, and
+ * `ape:coach:*` (the 0–5 retire counters for the same coach-mark idiom — added
+ * 2026-08-28: they were being swept, so a fully-retired hint came back after
+ * every logout, which is the exact bug this exception exists to prevent).
+ * Settings → "Reset onboarding hints" is the intended way to replay them.
  */
 function isOnboardingFlag(k: string): boolean {
-  return k.startsWith('ape:intro:') || k.endsWith('FsGuide');
+  return k.startsWith('ape:intro:') || k.startsWith('ape:coach:') || k.endsWith('FsGuide');
 }
 
 /**
@@ -93,6 +97,10 @@ export function resetAllLocalStores(): void {
   resetHomeCardsStore();
   resetMeasurementStore();
   resetLabCompletion();
+  // Hearing-exposure dose/sessions/limit — without this the departing user's
+  // dose stayed in memory AND was re-persisted under the next account
+  // (2026-08-28).
+  resetExposureMonitor();
   resetDashboardCache();
   resetDeckOrder();
   resetSettingsMirrors();

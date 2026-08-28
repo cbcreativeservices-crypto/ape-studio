@@ -231,6 +231,39 @@ function freshDay(date: string): DayRecord {
   };
 }
 
+/**
+ * Drop the in-memory dose state on sign-out / account switch (fix 2026-08-28).
+ *
+ * `clearLocalAccountData` already sweeps the `ape:exposure:v1:*` KEYS — this
+ * module is classified as user data — but nothing reset the MODULE state, and
+ * `hydrate()` is latched by `hydrated` so it never re-read. The departing
+ * user's dose, sessions and personal limit therefore stayed on screen for the
+ * next account, and the 15-second `persistDay()` tick then wrote that record
+ * back into the new user's freshly-wiped storage, durably attributing one
+ * person's hearing-exposure history to another. Registered in
+ * resetAllLocalStores() alongside every other persisted store.
+ */
+export function resetLocal(): void {
+  settings = { ...DEFAULT_SETTINGS };
+  day = null;
+  session = null;
+  hydrated = false; // hydrate() is latched — must clear or the re-seed no-ops
+  sounding = false;
+  soundingStreak = 0;
+  pendingSec = 0;
+  currentDb = null;
+  currentMeasured = false;
+  lastMicDropped = 0;
+  sessionHadGap = false;
+  elevatedSec = 0;
+  advisoryFiredThisSession = false;
+  approachingFiredToday = false;
+  reachedFiredToday = false;
+  lastPersistMs = 0;
+  emitState();
+  void hydrate(); // re-seed a fresh day from the (now cleared) storage
+}
+
 async function hydrate(): Promise<void> {
   if (hydrated) return;
   hydrated = true;

@@ -12,7 +12,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { TOOL_DEMOS } from '../../components/tooldemos';
-import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { useToolsLocked } from './ToolLockUi';
 import { colors, fonts } from '../../theme/tokens';
 import { ToolAcademyLock } from './ToolAcademyLock';
 import { toolByKey } from './toolsData';
@@ -23,8 +23,8 @@ type Props = NativeStackScreenProps<RootStackParamList, 'ToolDemo'>;
 export function ToolDemoScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
   const tool = toolByKey(route.params.toolKey);
-  const { commercialMode, caps } = useEntitlement();
-  const locked = commercialMode && !caps.audioTools;
+  // Gate on REAL standing, not caps (house rule, ToolLockUi header). Aligned 2026-08-28.
+  const locked = useToolsLocked();
   const Demo = TOOL_DEMOS[tool.key];
 
   return (

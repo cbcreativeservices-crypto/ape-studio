@@ -114,23 +114,35 @@ export function BinauralLabScreen() {
     [pushSource],
   );
 
+  // Generation guard (fix 2026-08-28) — start() awaits the audio-output request
+  // and the native binStart(); leaving the lab during that window fired
+  // binStop() FIRST, so the bus was left sounding with no UI path back to stop.
+  // Same pattern as BassLabScreen/AutotuneLabScreen.
+  const genRef = useRef(0);
+
   const start = useCallback(async () => {
     if (!binReady) return;
+    const gen = ++genRef.current;
     const ok = await requestAudioOutput();
-    if (!ok) return;
+    if (!ok || gen !== genRef.current) return;
     setGenError('');
     pushAll(sources);
     try {
       const st = await ApeDsp.binStart();
+      if (gen !== genRef.current) {
+        void ApeDsp.binStop(); // we left while the native start was in flight
+        return;
+      }
       setRunning(true);
       setBusNorm(st?.busNorm ?? 1);
       noteAudioActivity();
     } catch (e) {
-      setGenError(e instanceof Error ? e.message : String(e));
+      if (gen === genRef.current) setGenError(e instanceof Error ? e.message : String(e));
     }
   }, [binReady, requestAudioOutput, pushAll, sources]);
 
   const stop = useCallback(() => {
+    genRef.current++;
     void ApeDsp.binStop();
     setRunning(false);
   }, []);

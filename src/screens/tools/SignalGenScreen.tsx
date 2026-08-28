@@ -358,11 +358,19 @@ export function SignalGenScreen({ navigation }: Props) {
     setStatus(ApeDsp.genStatus());
   }, [ready]);
 
+  // Generation guard (fix 2026-08-28): onStart awaits requestAudioOutput() and
+  // the native genStart(). Leaving the screen inside that window ran the
+  // teardown's genStop() FIRST, so the generator started afterwards and a real
+  // tone kept sounding behind a closed screen — the exact thing spec §18
+  // forbids. Bumping the generation on teardown makes the late start abort.
+  const genRef = useRef(0);
+
   // Teardown: leaving the screen silences the output AND re-engages the Q4 cap
   // — the unlock is per-session (ruling Q4: "for that session only"; spec §18:
   // no DSP behind a closed screen).
   useEffect(
     () => () => {
+      genRef.current++;
       void ApeDsp.genStop();
       ApeDsp.genRelockCap();
     },
@@ -467,15 +475,21 @@ export function SignalGenScreen({ navigation }: Props) {
     // output and must stay silent unless output is enabled. Runs the enable flow
     // when muted; a decline leaves the generator stopped. (The Q4 safety cap is
     // independent and still applies once running.)
+    const gen = ++genRef.current;
     const ok = await requestAudioOutput();
-    if (!ok) return;
+    if (!ok || gen !== genRef.current) return;
     setGenError('');
     try {
       const s = await ApeDsp.genStart();
+      if (gen !== genRef.current) {
+        void ApeDsp.genStop(); // screen closed while the native start was in flight
+        return;
+      }
       setStatus(s);
       setRunning(true);
       noteAudioActivity();
     } catch (e) {
+      if (gen !== genRef.current) return;
       setGenError(e instanceof Error ? e.message : String(e));
       setRunning(false);
     }

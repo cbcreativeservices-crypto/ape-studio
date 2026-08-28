@@ -249,6 +249,15 @@ export function resetEnrollment(): void {
  *  re-render empty; the next read re-hydrates from the (cleared) storage, which
  *  re-seeds the free topics = correct new-user default. */
 export function resetLocal(): void {
+  // Cancel any armed server sync FIRST (fix 2026-08-28). The debounced callback
+  // reads module-level `list` at FIRE time and uses whatever session is current,
+  // and the failure backoff can keep it armed for up to 30 s. Sign-out →
+  // sign-in inside that window fired `sync_my_enrollments({ p_items: [] })`
+  // under the NEW user and wiped THEIR enrollment master list — which the
+  // backend gates v3 study/quiz on.
+  if (syncTimer) clearTimeout(syncTimer);
+  syncTimer = null;
+  syncRetries = 0;
   list = [];
   hydrated = false;
   hydrating = null;

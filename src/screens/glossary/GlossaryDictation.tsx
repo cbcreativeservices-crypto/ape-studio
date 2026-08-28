@@ -9,7 +9,7 @@
  * crashing the whole screen. The mic appears — and works — once a new EAS build
  * bundles the native module.
  */
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Alert, Pressable } from 'react-native';
 import Svg, { Path, Rect } from 'react-native-svg';
 import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from 'expo-speech-recognition';
@@ -40,6 +40,21 @@ export function GlossaryDictation({ onText }: { onText: (t: string) => void }) {
     const t = e.results?.[0]?.transcript;
     if (typeof t === 'string') onText(t);
   });
+
+  // Release the recognizer on unmount (fix 2026-08-28). The only stop() was the
+  // user tapping the mic again — so navigating away mid-dictation (tap a term,
+  // switch tabs) left the OS recording indicator lit and the mic held until the
+  // platform's own silence timeout, contending with the tools' DSP stream.
+  useEffect(
+    () => () => {
+      try {
+        ExpoSpeechRecognitionModule.stop();
+      } catch {
+        // already stopped / module absent — nothing to release
+      }
+    },
+    [],
+  );
 
   const toggle = useCallback(async () => {
     if (dictating) {

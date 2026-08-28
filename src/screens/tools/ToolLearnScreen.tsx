@@ -12,7 +12,7 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { useToolsLocked } from './ToolLockUi';
 import { CONCEPT_MODULES, TOOL_LEARN } from '../../features/tools/learn';
 import { colors, fonts } from '../../theme/tokens';
 import { ToolAcademyLock } from './ToolAcademyLock';
@@ -24,8 +24,10 @@ type Props = NativeStackScreenProps<RootStackParamList, 'ToolLearn'>;
 export function ToolLearnScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
   const tool = toolByKey(route.params.toolKey);
-  const { commercialMode, caps } = useEntitlement();
-  const locked = commercialMode && !caps.audioTools;
+  // Gate on REAL standing, not caps (house rule, ToolLockUi header) — caps are
+  // forced to academy by the dev bypass, so this destination used to unlock
+  // while its entry points stayed locked. Aligned 2026-08-28.
+  const locked = useToolsLocked();
   const content = TOOL_LEARN[tool.key];
   const related = content
     ? CONCEPT_MODULES.filter((m) => content.relatedConcepts.includes(m.key))
