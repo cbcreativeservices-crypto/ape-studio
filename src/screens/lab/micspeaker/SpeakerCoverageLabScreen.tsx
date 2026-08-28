@@ -27,6 +27,7 @@ import { LabChip, CollapsibleSection } from '../LabShell';
 import { markLabUnit, registerLabUnits } from '../../../features/lab/labCompletion';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../features/lab/guidedLessons';
 import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../foundations/bits';
+import { jetColor } from './viz';
 import { RackUnit } from '../rack/RackUnit';
 import type { DockParam, RackStage } from '../rack/rackTypes';
 import { requireMsViz } from './skiaGate';
@@ -46,14 +47,23 @@ const TOP_BADGE =
 const SIDE_BADGE =
   'CONCEPTUAL LEVEL MAP — illustrative model, NOT an SPL prediction; heads are tinted by whether the vertical pattern reaches them (real rooms, reflections & arrays differ)';
 
-// Heat-map legend: the continuous jet colormap, hottest → none.
+// Heat-map legend, SAMPLED FROM THE MAP'S OWN COLORMAP.
+//
+// Every swatch here used to be a hand-typed hex, and not one of the five
+// matched what the map actually paints — the "red" was #d81f1f against the
+// map's #ff5f4e, and the dead-zone swatch claimed a DEEP BLUE (#0b1c4a) for a
+// zone the map renders BLACK. A legend that disagrees with its own map is worse
+// than no legend, because the reader trusts it. Sampling jetColor at each
+// row's own level means it cannot drift again.
 function Legend() {
   const rows: { c: string; t: string }[] = [
-    { c: '#d81f1f', t: 'RED / ORANGE — hottest: too loud, or heavy overlap' },
-    { c: '#e8e13a', t: 'YELLOW — strong, upper end of the listening range' },
-    { c: '#3fd06c', t: 'GREEN — the target listening range' },
-    { c: '#19c7c2', t: 'CYAN / BLUE — quiet: pattern edge, or far away' },
-    { c: '#0b1c4a', t: 'DEEP BLUE — little to no coverage (dead zone)' },
+    { c: jetColor(1), t: 'RED / ORANGE — hottest: too loud, or heavy overlap' },
+    { c: jetColor(0.55), t: 'YELLOW — strong, upper end of the listening range' },
+    { c: jetColor(0.32), t: 'GREEN — the target listening range' },
+    { c: jetColor(0.14), t: 'CYAN / BLUE — quiet: pattern edge, or far away' },
+    // Zero coverage reads BLACK, not blue (owner 2026-08-28: blue fades to
+    // black at zero signal, so "nothing there" is honest rather than decorative).
+    { c: jetColor(0), t: 'BLACK — no coverage at all (dead zone)' },
   ];
   return (
     <View style={{ gap: 3 }}>

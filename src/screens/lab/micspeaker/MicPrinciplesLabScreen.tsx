@@ -141,16 +141,31 @@ const OFF_ANGLES = [0, 30, 60, 90, 180];
 // Vertical level ramps for the response graphs (owner 2026-08-05). PROXIMITY
 // only boosts (0…+10 dB): green at unity → red at the top. OFF-AXIS spans a
 // loss range: MIDI blue at the −25 dB floor up through warm to red on top.
+//
+// Colours DERIVED from the standard, not typed by hand: these were five
+// near-miss hexes (#37e05f where the ramp's green is #3fae52, #ff5a48 where its
+// red is #ff5f4e), so the response graphs spoke a slightly different colour
+// language than the meters beside them. levelColorForDb maps each stop's own dB
+// through the ramp, so the tint and the number can never disagree.
+//
+// These stay on the METER ramp (levelColorForDb), not heatColor: a response
+// graph's floor is the bottom of its plotted RANGE, not an absence of signal,
+// so MIDI-0 blue is right there and the fade-to-black rule does not apply.
+// PROXIMITY only ever BOOSTS (0…+12 dB), so its 0 dB is UNITY — "no boost" —
+// not silence. The window is offset to −8 so unity lands on GREEN and the top
+// on red, preserving the original green→red intent; mapping 0…12 straight onto
+// the ramp would have painted unity BLUE, i.e. "no signal", which is a
+// different claim entirely.
 const PROX_STOPS = [
-  { db: 0, color: '#37e05f' },
-  { db: 6, color: '#ffd76b' },
-  { db: 12, color: '#ff5a48' },
+  { db: 0, color: levelColorForDb(0, -8, 12) },
+  { db: 6, color: levelColorForDb(6, -8, 12) },
+  { db: 12, color: levelColorForDb(12, -8, 12) },
 ];
 const OFFAXIS_STOPS = [
-  { db: -26, color: '#2f74ff' },
-  { db: -14, color: '#37e05f' },
-  { db: -2, color: '#ffd76b' },
-  { db: 6, color: '#ff5a48' },
+  { db: -26, color: levelColorForDb(-26, -26, 6) },
+  { db: -14, color: levelColorForDb(-14, -26, 6) },
+  { db: -2, color: levelColorForDb(-2, -26, 6) },
+  { db: 6, color: levelColorForDb(6, -26, 6) },
 ];
 
 /** Illustrative proximity low-shelf boost (dB) as the mic nears the mouth —
