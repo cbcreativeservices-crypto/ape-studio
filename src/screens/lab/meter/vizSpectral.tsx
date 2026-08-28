@@ -999,9 +999,20 @@ export function WaterfallView(p: {
       timeLines.moveTo(m.x0, m.y);
       timeLines.lineTo(m.x1, m.y);
     }
+    // TIME arrow, parallel to the RIGHT edge it sits beside.
+    //
+    // The plot has PERSPECTIVE -- each slice is narrower than the one in front
+    // of it (sw = frontW * (1 - 0.2 * cum)) -- so the left and right edges are
+    // NOT parallel: the left recedes at about -49 deg and the right at about
+    // -68 deg. This arrow was built from the LEFT edge's slope (dxTot, -dyTot)
+    // but positioned on the RIGHT side, so it diverged ~19 deg from the edge
+    // running beside it and pointed at a different horizon than the chart.
+    // Owner 2026-08-28: "Why is this time line off the same horizon point as
+    // the chart?" Use the right edge's own recession instead.
+    const rdxTot = geo.dxTot - 0.2 * geo.frontW; // the RIGHT edge's x-run
     const ax0 = geo.xL0 + geo.frontW + 10;
     const ay0 = geo.baseY - 2;
-    const ax1 = ax0 + geo.dxTot * 0.9;
+    const ax1 = ax0 + rdxTot * 0.9;
     const ay1 = ay0 - geo.dyTot * 0.9;
     // Time now increases TOWARD the viewer (t=0 at the back), so the arrow
     // points down-forward: tail at the back corner, head at the front.
