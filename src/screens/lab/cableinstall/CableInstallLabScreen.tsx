@@ -15,10 +15,9 @@
  * 'ape:ciStep'; dimension scores + shown myths at 'ape:ciState'. Anonymous
  * users neither restore nor persist (house guest rule).
  */
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Svg, { Circle, Line, Path, Rect } from 'react-native-svg';
 import { useNavigation } from '@react-navigation/native';
 import { GlassButton } from '../../../components/GlassButton';
 import { AccuracyNote } from '../../../components/AccuracyNote';
@@ -26,9 +25,8 @@ import { useEntitlement } from '../../../features/commercial/EntitlementProvider
 import { markLabUnit, registerLabUnits, useLabCompletion } from '../../../features/lab/labCompletion';
 import { colors, fonts } from '../../../theme/tokens';
 import { RuleOrMythCard, SourceSheet } from './bits';
+import { IntroSceneArt } from './introSceneArt';
 import {
-  AG,
-  APath,
   Animated,
   Appear,
   CI_EASE,
@@ -36,11 +34,9 @@ import {
   CI_SPRING_UI,
   Stagger,
   cancelAnimation,
-  useAnimatedProps,
   useAnimatedStyle,
   useCiMotion,
   useCountUp,
-  useDrawIn,
   useSharedValue,
   withDelay,
   withSequence,
@@ -145,6 +141,25 @@ export function CableInstallLabScreen() {
   // trusting persisted step ordering — replay simply re-runs the module).
   const completedUnitsRef = useRef<Set<string>>(new Set());
   const [, forceTick] = useState(0);
+
+  // HYDRATE THE MIRROR ON RESUME (fix 2026-08-28). The comment above always
+  // claimed the mirror is seeded "from overall progress by trusting persisted
+  // step ordering" — but nothing ever did it, so a resumed session had an EMPTY
+  // set: `firstIncomplete` collapsed to 1, `canEnter(n)` was false for every
+  // n ≥ 2, and the user landed on stage 6 with dots 2–13 drawn locked and
+  // announced ", locked" next to a counter reading "5 of 15 units complete".
+  // The intro screen was worse — `resumeLabel` went null, so the button read
+  // START LAB and threw the user back to stage 1 under that same counter.
+  // Being ON step n means stages 1…n-1 were cleared, which is exactly the
+  // ordering the persisted step encodes. Runs once, after resume settles.
+  const hydratedRef = useRef(false);
+  useEffect(() => {
+    if (hydratedRef.current || step <= INTRO_STEP) return;
+    hydratedRef.current = true;
+    const done = Math.min(step - 1, CI_MODULES.length);
+    for (let i = 0; i < done; i++) completedUnitsRef.current.add(CI_MODULES[i].unit);
+    if (done > 0) forceTick((t) => t + 1);
+  }, [step]);
 
   const firstIncomplete = useMemo(() => {
     for (let i = 0; i < CI_MODULES.length; i++) {
@@ -393,60 +408,6 @@ function IntroStage({
   );
 }
 
-/* ── shell motion helpers (primitive props only — see motion.tsx) ───────── */
-/** Opacity entrance for static furniture inside an SVG. */
-function FadeIn({ children, delay = 0, reduce }: { children: ReactNode; delay?: number; reduce: boolean }) {
-  const t = useSharedValue(reduce ? 1 : 0);
-  useEffect(() => {
-    cancelAnimation(t);
-    if (reduce) {
-      t.value = 1;
-      return;
-    }
-    t.value = 0;
-    t.value = withDelay(delay, withTiming(1, { duration: CI_MOTION.base, easing: CI_EASE.out }));
-    return () => cancelAnimation(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [delay, reduce]);
-  const p = useAnimatedProps(() => ({ opacity: t.value }));
-  return (
-    <AG opacity={reduce ? 1 : 0} animatedProps={p}>
-      {children}
-    </AG>
-  );
-}
-
-/** A cable that installs itself along its route. */
-function DrawLine({
-  d,
-  len,
-  color,
-  width,
-  run,
-  delay = 0,
-}: {
-  d: string;
-  len: number;
-  color: string;
-  width: number;
-  run: boolean;
-  delay?: number;
-}) {
-  const { animatedProps, dashArray, restOffset } = useDrawIn(len, { run, delay });
-  return (
-    <APath
-      d={d}
-      stroke={color}
-      strokeWidth={width}
-      fill="none"
-      strokeLinecap="round"
-      strokeDasharray={dashArray}
-      strokeDashoffset={restOffset}
-      animatedProps={animatedProps}
-    />
-  );
-}
-
 /** A progress dot: springs to green with a small pop the moment its stage is
  *  completed, and settles a touch larger while it is the active stage. */
 function ProgressDot({ done, active, enterable }: { done: boolean; active: boolean; enterable: boolean }) {
@@ -485,71 +446,12 @@ function ProgressDot({ done, active, enterable }: { done: boolean; active: boole
  *  along its route, in the order the work would actually happen. */
 function IntroScene({ w }: { w: number }) {
   const m = useCiMotion();
-  const h = Math.round(w * 0.56);
   const [run, setRun] = useState(false);
   useEffect(() => {
     const id = setTimeout(() => setRun(true), 120);
     return () => clearTimeout(id);
   }, []);
-  return (
-    <Svg width={w} height={h} viewBox="0 0 360 200" accessibilityLabel="Installation scene: stage, floor run, wall pathway, ceiling tray and equipment rack">
-      <Rect x={0} y={0} width={360} height={200} rx={12} fill="#101014" />
-      <FadeIn reduce={m.reduce}>
-        {/* structure */}
-        <Line x1={0} y1={26} x2={360} y2={26} stroke="#2c2c33" strokeWidth={2} />
-        <Line x1={0} y1={168} x2={360} y2={168} stroke="#2c2c33" strokeWidth={2} />
-      </FadeIn>
-      <FadeIn delay={80} reduce={m.reduce}>
-        {/* ceiling tray */}
-        <Rect x={30} y={30} width={240} height={10} rx={2} fill="none" stroke="#6f7378" strokeWidth={1.6} />
-        {[50, 90, 130, 170, 210, 250].map((x) => (
-          <Line key={x} x1={x} y1={30} x2={x} y2={40} stroke="#6f7378" strokeWidth={1} />
-        ))}
-        {/* J-hooks after tray */}
-        {[286, 312].map((x) => (
-          <Path key={x} d={`M${x} 30 v8 a6 6 0 0 0 12 0`} stroke="#6f7378" strokeWidth={1.6} fill="none" />
-        ))}
-        {/* conduit riser to tray at mid wall */}
-        <Rect x={130} y={40} width={7} height={128} rx={3} fill="none" stroke="#6f7378" strokeWidth={1.4} />
-      </FadeIn>
-      <FadeIn delay={150} reduce={m.reduce}>
-        {/* rack */}
-        <Rect x={286} y={44} width={58} height={124} rx={4} fill="#17171c" stroke="#3a3c42" strokeWidth={1.5} />
-        {[54, 72, 90, 108, 126, 144].map((y) => (
-          <Rect key={y} x={291} y={y} width={48} height={12} rx={2} fill="#101014" stroke="#2c2c33" strokeWidth={1} />
-        ))}
-        {/* wall plate + raceway on left wall */}
-        <Rect x={18} y={96} width={14} height={20} rx={2} fill="#101014" stroke="#6f7378" strokeWidth={1.4} />
-        <Rect x={32} y={102} width={92} height={8} rx={2} fill="none" stroke="#6f7378" strokeWidth={1.4} />
-        {/* stage riser at left floor */}
-        <Rect x={14} y={140} width={90} height={28} rx={3} fill="#141418" stroke="#3a3c42" strokeWidth={1.4} />
-        <Rect x={22} y={148} width={18} height={12} rx={2} fill="#101014" stroke="#6f7378" strokeWidth={1.2} />
-      </FadeIn>
-      {/* network + audio bundle pulled through the tray → rack */}
-      <DrawLine d="M40 36 H268 M268 36 C300 36 292 38 292 44" len={260} color="#37d97b" width={2.2} run={run} delay={210} />
-      <DrawLine d="M40 39 H265 M265 39 C298 39 296 42 296 48" len={260} color="#4fd0e0" width={2.2} run={run} delay={280} />
-      <DrawLine d="M292 44 v10 M296 48 v8" len={20} color="#37d97b" width={2} run={run} delay={620} />
-      {/* wall raceway run */}
-      <DrawLine d="M32 106 H124" len={92} color="#4fd0e0" width={2} run={run} delay={360} />
-      {/* stage box → floor run to the rack base */}
-      <DrawLine d="M40 154 C70 154 70 164 96 164 H180" len={150} color="#4fd0e0" width={2.4} run={run} delay={430} />
-      <DrawLine d="M180 164 h34" len={34} color="#4fd0e0" width={2.4} run={run} delay={560} />
-      <DrawLine d="M214 164 H286 v-6" len={80} color="#4fd0e0" width={2.4} run={run} delay={600} />
-      {/* protection and the separate power feed land last */}
-      <FadeIn delay={700} reduce={m.reduce}>
-        {/* floor protector over the crossing */}
-        <Path d="M176 168 l10 -8 h24 l10 8 z" fill="#26262c" stroke="#6f7378" strokeWidth={1.2} />
-        {/* patch field dots */}
-        {[0, 1, 2, 3, 4, 5].map((i) => (
-          <Circle key={i} cx={297 + i * 8} cy={60} r={1.8} fill="#4fd0e0" />
-        ))}
-      </FadeIn>
-      <DrawLine d="M352 168 v-96 c0 -6 -4 -8 -8 -8 h-4" len={120} color="#ff5a48" width={2.2} run={run} delay={740} />
-      <FadeIn delay={900} reduce={m.reduce}>
-        <Circle cx={338} cy={64} r={2.2} fill="#ff5a48" />
-      </FadeIn>
-    </Svg>
-  );
+  return <IntroSceneArt w={w} run={run} reduce={m.reduce} />;
 }
 
 /* ── completion + field check (spec §43/§44/§62) ────────────────────────── */

@@ -359,7 +359,7 @@ export function WhyScene({ width, completed, onComplete, openSources }: CiModule
 
       <CiSection title="WHICH INSTALLATION WOULD YOU APPROVE?">
         <Text style={styles.lead}>
-          Four close-ups from the same job. Only one earns a professional sign-off — and it isn\'t the prettiest.
+          Four close-ups from the same job. Only one earns a professional sign-off — and it isn’t the prettiest.
         </Text>
         <View style={{ gap: 10 }}>
           {EXAMPLES.map((ex) => {

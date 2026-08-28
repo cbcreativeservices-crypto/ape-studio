@@ -618,8 +618,12 @@ export function MultiMeterScreen({ navigation }: Props) {
 
   // Dominant frequency: the pitch frame when voiced+confident, else the
   // spectrum's peak bin — the live source is LABELED (never conflated).
-  const dominant: { hz: number; source: 'pitch' | 'spectrum' } | null =
-    accepted && live != null
+  // `running` gate added 2026-08-28: specView is not cleared on STOP, so after
+  // stopping this panel kept rendering a frequency captioned "from spectrum
+  // peak" off a dead mic, while every other panel had correctly gone dark.
+  const dominant: { hz: number; source: 'pitch' | 'spectrum' } | null = !running
+    ? null
+    : accepted && live != null
       ? { hz: live.freq, source: 'pitch' }
       : specView?.peak != null
         ? { hz: specView.peak.hz, source: 'spectrum' }
@@ -636,13 +640,15 @@ export function MultiMeterScreen({ navigation }: Props) {
     (plotW * Math.log(hz / zoom.min)) / Math.log(zoom.max / zoom.min);
 
   const cursorInfo = useMemo(() => {
-    if (cursorX == null || plotW <= 0 || specView == null) return null;
+    // `running` gate (2026-08-28): specView survives STOP, so the cursor chip
+    // kept reading Hz/dB off a frozen envelope after the mic was off.
+    if (!running || cursorX == null || plotW <= 0 || specView == null) return null;
     const frac = Math.max(0, Math.min(1, cursorX / plotW));
     const hz = zoom.min * Math.pow(zoom.max / zoom.min, frac);
     const i = Math.max(0, Math.min(ENV_POINTS - 1, Math.round(frac * ENV_POINTS - 0.5)));
     const db = specView.env[i];
     return { hz, db: db > FLOOR_DB - 20 ? db : null };
-  }, [cursorX, plotW, specView, zoom]);
+  }, [running, cursorX, plotW, specView, zoom]);
 
   // ---- Settings changes -----------------------------------------------------
   const applySmoothing = useCallback(
@@ -681,8 +687,13 @@ export function MultiMeterScreen({ navigation }: Props) {
     setCursorX(null);
     lastGoodRef.current = null;
     everStartedRef.current = true;
+    // ...and the NATIVE accumulator too (fix 2026-08-28): everything above is
+    // JS-derived state, but peak-hold lives in the engine and survives a warm
+    // stream adoption, so a fresh run showed the previous session's peak from
+    // its first frame — and `openSnapshot` saves it into the record.
+    resetPeakHold();
     void start();
-  }, [clearEnv, start]);
+  }, [clearEnv, start, resetPeakHold]);
 
   // DEV + WEB preview only (#multimeterpreview): auto-start once so the harness
   // shows the live (sim) panels without a tap — RN-web synthetic presses on the
@@ -1416,7 +1427,7 @@ export function MultiMeterScreen({ navigation }: Props) {
               <View style={styles.sysCell}>
                 <Text style={styles.statusLabel}>SAMPLE RATE</Text>
                 <Text style={styles.sysValue}>
-                  {specView?.sampleRate != null ? `${(specView.sampleRate / 1000).toFixed(1)}k` : '—'}
+                  {running && specView?.sampleRate != null ? `${(specView.sampleRate / 1000).toFixed(1)}k` : '—'}
                 </Text>
               </View>
               <View style={styles.sysCell}>

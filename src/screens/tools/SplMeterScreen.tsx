@@ -82,6 +82,9 @@ const responseLabel = (r: ResponseMode) => (r === 'fast' ? 'FAST' : r === 'slow'
  *  refreshes every 2 s (owner 2026-08-17). */
 const AVG5_WINDOW_MS = 5000;
 const AVG5_REFRESH_MS = 2000;
+/** No native frame for this long while "running" ⇒ the readouts are stale and
+ *  must go dark rather than keep showing the last value (no-fake-meters). */
+const STALE_FRAME_MS = 750;
 
 /** The selected weighting × response reading from a real meter frame. */
 function selectedLevelDb(m: MeterFrame, w: Weighting, r: MeterResponse): number {
@@ -533,13 +536,22 @@ export function SplMeterScreen({ navigation }: Props) {
   const [micPaused, setMicPaused] = useState(false);
   const startMeter = useCallback(() => {
     wantRunning.current = true;
+    // A FRESH SESSION MUST NOT INHERIT THE LAST ONE'S PEAK (fix 2026-08-28).
+    // The mic stream is warm-adopted across tools and across a STOP→START
+    // inside the debounce, so the NATIVE peak-hold/Leq accumulators keep
+    // running. Without this, opening the SPL meter right after clapping in the
+    // MultiMeter showed that clap as this session's PEAK HOLD and the prior
+    // session's ELAPSED — and `onSaveLog` writes both into the Measurement
+    // Library, so the wrong numbers were persisted as this measurement's data.
+    resetPeakHold();
+    resetLeq();
     // Do NOT clear micPaused here (routing-flash fix 2026-07-30): if we cleared
     // it now, then during the 'starting' transition micPaused=false AND
     // running=false → the meter UI would collapse to the START/landing card for
     // a frame (the "flash" the owner saw) before 'running'. Keep the meter up by
     // leaving micPaused set; it's cleared only once we are actually running.
     void start();
-  }, [start]);
+  }, [start, resetPeakHold, resetLeq]);
   const stopMeter = useCallback(() => {
     wantRunning.current = false;
     setMicPaused(true);
@@ -902,9 +914,27 @@ export function SplMeterScreen({ navigation }: Props) {
   // re-render — which is what removes the ~1 s "slapback" lag. A slow throttle
   // (~10 Hz) mirrors the frame into `displayMeter` for the TEXT readouts only.
   const lastTextRef = useRef(0);
+  // FRAME FRESHNESS (fix 2026-08-28 — no-fake-meters). `getMeterFrame()` can
+  // return null while React still thinks we're running (audio interruption,
+  // HAL drop, route change). The old `if (!m) return;` left the LAST frame on
+  // screen forever: PEAK, PEAK HOLD, Leq, ELAPSED and the big number all kept
+  // showing a plausible level off a dead mic — and the warning path couldn't
+  // catch it, because `flags` is computed from that same stale frame. Now a
+  // gap longer than STALE_FRAME_MS clears the readouts to their honest
+  // "no data" state. The window is well above the ~50 ms native tick so a
+  // single dropped frame never flickers the display.
+  const lastFrameRef = useRef(0);
   useRafFrameLoop(running, (now) => {
     const m = ApeDsp.getMeterFrame();
-    if (!m) return;
+    if (!m) {
+      if (lastFrameRef.current && now - lastFrameRef.current > STALE_FRAME_MS) {
+        setDisplayMeter((prev) => (prev === null ? prev : null));
+        liveRmsDb.value = -120;
+        livePeakDb.value = -120;
+      }
+      return;
+    }
+    lastFrameRef.current = now;
     const w = weightingRef.current;
     const r = responseRef.current;
     // 5 SEC AVG reads the rolling ring; FAST/SLOW read the frame.

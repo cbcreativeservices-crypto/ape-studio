@@ -40,7 +40,13 @@ import Animated, {
 import { ApeDsp, GEN_MODES } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
-import { guardNoiseLevelForEngine, speakerGuardDb, SPEAKER_HPF_HZ } from '../../features/audio/speakerSafety';
+import {
+  guardNoiseLevelForEngine,
+  nativeHpfActive,
+  NOISE_GUARD_DB,
+  speakerGuardDb,
+  SPEAKER_HPF_HZ,
+} from '../../features/audio/speakerSafety';
 import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
@@ -71,8 +77,34 @@ const NOISE_TINTS: Record<NoiseColor, string> = {
   violet: '#b98aff',
 };
 
-/** Honest summary of the interim per-color level guard (see speakerSafety.ts). */
-const NOISE_GUARD_LABEL = 'brown −14 dB, pink −6 dB, white/blue/violet unchanged';
+/**
+ * Honest summary of how the speaker is actually protected RIGHT NOW.
+ *
+ * This used to be the hardcoded string "brown −14 dB, pink −6 dB,
+ * white/blue/violet unchanged" — but `guardNoiseLevelForEngine` returns the
+ * base level UNCHANGED whenever the native high-pass is active (engine ≥ 4;
+ * shipping engines are 7). So on every real build the app was claiming a
+ * per-colour cut it does not apply, and contradicting its own OUT bezel cell
+ * one control away. Derived from the same helpers as the audio path now, so it
+ * cannot drift again (fix 2026-08-28).
+ */
+function noiseGuardSentence(): string {
+  if (nativeHpfActive()) {
+    return (
+      `the engine's built-in ${SPEAKER_HPF_HZ} Hz high-pass removes that sub-bass before it ` +
+      'reaches the driver, so every colour plays at the same level'
+    );
+  }
+  const cuts = Object.entries(NOISE_GUARD_DB)
+    .filter(([, db]) => db !== 0)
+    .map(([k, db]) => `${k} ${db} dB`)
+    .join(', ');
+  const flat = Object.entries(NOISE_GUARD_DB)
+    .filter(([, db]) => db === 0)
+    .map(([k]) => k)
+    .join('/');
+  return `their overall level is reduced on this build (${cuts}; ${flat} unchanged)`;
+}
 
 const INTRO =
   'Hear the colors of noise and see the spectral slopes that define them. White is equal ' +
@@ -256,7 +288,7 @@ export function NoiseLabScreen() {
         <Text style={styles.sectionHead}>WHAT YOU’RE SEEING</Text>
         <Text style={styles.caption}>
           {speakerView
-            ? `Amber = ${selected.label.toLowerCase()} after the speaker high-pass; the ideal straight slopes stay dim behind it. Below ${SPEAKER_HPF_HZ} Hz the response rolls off at −12 dB/oct — that low energy never reaches the driver.`
+            ? `The ${selected.label.toLowerCase()} line is that noise AFTER the speaker high-pass; the ideal straight slopes stay dim behind it, and the amber marker sits at the ${SPEAKER_HPF_HZ} Hz corner. Below it the response rolls off at −12 dB/oct — that low energy never reaches the driver.`
             : `${selected.label.charAt(0)}${selected.label.slice(1).toLowerCase()} = ${
                 selected.slope > 0 ? '+' : ''
               }${selected.slope} dB per octave (anchored at 1 kHz). Equal energy per Hz sounds bright because every higher octave holds twice the bandwidth. The shimmering trace is a stylized live-noise hint around the exact slope.`}
@@ -277,9 +309,9 @@ export function NoiseLabScreen() {
             {`PLAY (header ▶) outputs ${GEN_LEVEL_DB} dBFS · uncalibrated — digital output level, not dB SPL.`}
           </Text>
           <Text style={styles.advisory}>
-            {`Brown and pink are broadband and push energy into the sub-bass, so their overall level is ` +
-              `reduced to protect the built-in speaker (${NOISE_GUARD_LABEL}). Flip the SPKR key to see ` +
-              `the ${SPEAKER_HPF_HZ} Hz roll-off the speaker imposes.`}
+            {`Brown and pink are broadband and push energy into the sub-bass. To protect the built-in ` +
+              `speaker, ${noiseGuardSentence()}. Flip the SPKR key to see the ${SPEAKER_HPF_HZ} Hz ` +
+              `roll-off the speaker imposes.`}
           </Text>
           {genError ? <Text style={styles.error}>{genError}</Text> : null}
         </View>

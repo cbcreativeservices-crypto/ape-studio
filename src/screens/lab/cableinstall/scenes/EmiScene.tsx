@@ -586,8 +586,15 @@ export function EmiScene({ width, completed, onComplete, openSources }: CiModule
     if (Math.abs(v - 0.5) > 0.05) setMoved(true);
   };
   const stepDist = (delta: number) => {
-    setDist((d) => Math.max(0, Math.min(1, d + delta)));
-    setMoved(true);
+    // Only credit "MOVE DISTANCE" when the value ACTUALLY changed and left the
+    // start point (fix 2026-08-28): this set `moved` unconditionally, so
+    // tapping ◂ CLOSER while already clamped at 0 ticked off the completion
+    // criterion without moving anything. Matches the stricter rule in onDist.
+    setDist((d) => {
+      const next = Math.max(0, Math.min(1, d + delta));
+      if (next !== d && Math.abs(next - 0.5) > 0.05) setMoved(true);
+      return next;
+    });
   };
   const setBal = (v: boolean) => {
     if (v !== balanced) setToggled(true);

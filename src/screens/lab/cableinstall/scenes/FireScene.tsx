@@ -522,7 +522,12 @@ export function FireScene({ width, completed, onComplete, openSources }: CiModul
                         <OptionChip
                           key={oi}
                           label={opt}
-                          active={answered && oi === s.correctIdx}
+                          // Show what the LEARNER picked, not the right answer
+                          // (fix 2026-08-28): this highlighted `correctIdx`, so
+                          // a wrong pick lit up the correct chip and the learner
+                          // could not see what they had actually chosen — while
+                          // the banner below told them they were wrong.
+                          active={answered && oi === spaceAns[s.id]}
                           disabled={answered}
                           onPress={() => answerSpace(s.id, oi)}
                         />
@@ -572,7 +577,8 @@ export function FireScene({ width, completed, onComplete, openSources }: CiModul
                       <OptionChip
                         key={oi}
                         label={opt}
-                        active={answered && oi === q.correctIdx}
+                        // The learner's own pick (fix 2026-08-28) — see above.
+                        active={answered && oi === flowAns[qi]}
                         disabled={answered}
                         onPress={() => answerFlow(qi, oi)}
                       />

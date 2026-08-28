@@ -977,6 +977,11 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
   /* A state */
   const craftAnswered = (id: string) => craft[id] != null;
   const craftOk = (d: CraftDecision) => d.options.find((o) => o.id === craft[d.id])?.ok === true;
+  /** Was the decision with this id answered CORRECTLY? (by id, not position) */
+  const craftOkById = (id: string) => {
+    const d = CRAFT_DECISIONS.find((x) => x.id === id);
+    return d ? craftOk(d) : false;
+  };
   const craftDone = CRAFT_DECISIONS.every((d) => craftAnswered(d.id));
   const craftCorrect = CRAFT_DECISIONS.filter((d) => craftOk(d)).length;
 
@@ -1076,7 +1081,18 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
           loops, monitor feeds bare where feet cross. Make three calls — the plan redraws each part the professional way
           as you decide it.
         </Text>
-        <StagePlan w={artW} routeFixed={craftAnswered('route')} slackFixed={craftAnswered('slack')} monFixed={craftAnswered('mon')} />
+        {/* The plan may only redraw a part "the professional way" once the call
+            was actually CORRECT (fix 2026-08-28). This was keyed on
+            `craftAnswered`, so picking the wrong option still redrew the fix —
+            the art (and its accessibility label, which asserts "edge-routed
+            clear of the performer lane") rewarded a wrong answer while the
+            feedback directly beneath it said "bad". */}
+        <StagePlan
+          w={artW}
+          routeFixed={craftOkById('route')}
+          slackFixed={craftOkById('slack')}
+          monFixed={craftOkById('mon')}
+        />
         <Text style={s.caption}>Training visualization — qualitative plan, training colors only; field cable colors vary.</Text>
         <View style={{ gap: 12 }}>
           {CRAFT_DECISIONS.map((d, di) => {
