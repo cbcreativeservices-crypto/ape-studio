@@ -30,16 +30,29 @@ anonymous caller can:
 This is new surface from the 2026-08-27/28 weekly-notifications work, so it has
 never been reviewed.
 
-**Suggested remediation (owner runs; verify names/signatures first):**
+**RESOLVED 2026-08-28** — applied and verified. Final ACL on both functions is
+`postgres=X | service_role=X`; `anon` and `authenticated` now return false for
+`has_function_privilege(..., 'EXECUTE')`.
 
 ```sql
-revoke execute on function public.get_due_concept_subscriptions(timestamptz) from anon, authenticated;
-revoke execute on function public.get_next_concept(uuid, text) from anon, authenticated;
+grant  execute on function public.get_due_concept_subscriptions(timestamptz) to service_role;
+grant  execute on function public.get_next_concept(uuid, text)               to service_role;
+revoke execute on function public.get_due_concept_subscriptions(timestamptz) from public, anon, authenticated;
+revoke execute on function public.get_next_concept(uuid, text)               from public, anon, authenticated;
 ```
 
-Both are only ever invoked by the edge function, which uses the service-role key
-and is unaffected by the revoke. Confirm the exact argument types with
-`\df get_due_concept_subscriptions` before running.
+⚠️ **Two traps — the first draft of this recipe hit both.** It said
+`revoke … from anon, authenticated`, which is a NO-OP here: the ACL was
+`=X/postgres`, i.e. **PUBLIC** held EXECUTE and both roles inherited it. The
+revoke must name `public`. And because `service_role` also had its access only
+via PUBLIC — it does **not** bypass function privileges — revoking PUBLIC
+without granting `service_role` first would have broken the `on-weekly-concept`
+edge function. Grant first, then revoke.
+
+**Lesson for the remaining items in this doc (F2, F5):** those functions are
+very likely PUBLIC-granted too. Check `proacl` before writing any revoke, and
+always re-read `has_function_privilege` afterwards — "the SQL ran without
+errors" is not evidence that access changed.
 
 ---
 
@@ -123,9 +136,8 @@ alter function public.<fn>(<args>) set search_path = public, pg_temp;
 
 ## Priority for the owner
 
-1. **F1** — revoke anon/authenticated EXECUTE on the two notification RPCs
-   (new, unreviewed, exposes a subscriber list). Do this before the
-   notifications feature ships.
+1. ~~**F1** — the two notification RPCs~~ ✅ **CLOSED 2026-08-28** (applied and
+   privilege-verified; see F1 above for the corrected recipe).
 2. **F2** — read the five write-capable anon functions; revoke where needed.
 3. **F5** — pin `search_path` (four one-line alters).
 4. **F4** — confirm the three views are intentionally reader-agnostic.
