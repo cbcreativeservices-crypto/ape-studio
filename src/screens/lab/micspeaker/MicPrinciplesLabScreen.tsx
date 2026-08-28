@@ -30,7 +30,9 @@ import { PanResponder, Pressable, ScrollView, StyleSheet, Text, View } from 'rea
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts } from '../../../theme/tokens';
+import { levelColor, levelColorForDb, rampColors } from '../../../features/tools/levelColor';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { LabChip, CollapsibleSection } from '../LabShell';
@@ -236,12 +238,29 @@ function IllustrationBadge({ text }: { text?: string }) {
 }
 
 /** A thin labeled meter bar (RN — works on every client). */
-function MeterBar({ label, frac, color }: { label: string; frac: number; color: string }) {
+/**
+ * A bar whose LENGTH encodes a level/share/amount — so per the app-wide
+ * amplitude standard it must wear the ramp, not a flat colour (owner
+ * 2026-08-28; ruling of record 2026-08-16 in levelColor.ts: "a bar whose SIZE
+ * encodes a level must show the RAMP climbing from silence (blue) up to the
+ * level's colour — the peak colour belongs only at the TIP").
+ *
+ * Every bar on this screen used to be painted one hardcoded hex (green for
+ * DIRECT, blue for ROOM, green/red for VIBRATION), which said nothing about
+ * magnitude and contradicted the standard the rest of the app follows.
+ */
+function MeterBar({ label, frac }: { label: string; frac: number }) {
+  const f = Math.max(0, Math.min(1, frac));
   return (
     <View style={{ gap: 3 }}>
       <Text style={styles.meterLabel}>{label}</Text>
       <View style={styles.meterTrack}>
-        <View style={[styles.meterFill, { width: `${Math.max(2, Math.min(100, frac * 100))}%`, backgroundColor: color }]} />
+        <LinearGradient
+          colors={rampColors(f)}
+          start={{ x: 0, y: 0.5 }}
+          end={{ x: 1, y: 0.5 }}
+          style={[styles.meterFill, { width: `${Math.max(2, Math.min(100, f * 100))}%` }]}
+        />
       </View>
     </View>
   );
@@ -479,17 +498,21 @@ function DistanceSection({ viz, focused, help, wellTop, wellBottom }: SectionPro
         onGuide: () => help('distance'),
         bezel: [
           { k: 'DIST', v: `${inches} in`, helpKey: 'distance' },
-          { k: 'LEVEL', v: `${relDb.toFixed(1)} dB`, helpKey: 'distance' },
-          { k: 'DIRECT', v: `${Math.round(direct * 100)}%`, tint: '#5bff85', helpKey: 'distance' },
-          { k: 'ROOM', v: `${Math.round(room * 100)}%`, tint: '#6fa8ff', helpKey: 'distance' },
+          // Level-bearing readouts wear the amplitude ramp (owner 2026-08-28):
+          // LEVEL is a real dB value; DIRECT/ROOM are shares of what the mic
+          // hears, so each is tinted by its own magnitude rather than by a
+          // fixed identity colour.
+          { k: 'LEVEL', v: `${relDb.toFixed(1)} dB`, tint: levelColorForDb(relDb, -24, 0), helpKey: 'distance' },
+          { k: 'DIRECT', v: `${Math.round(direct * 100)}%`, tint: levelColor(direct), helpKey: 'distance' },
+          { k: 'ROOM', v: `${Math.round(room * 100)}%`, tint: levelColor(room), helpKey: 'distance' },
         ],
         render: (w, h) =>
           viz ? <DistanceViz viz={viz} width={w} height={h} d01={d01} running={focused} /> : <VizUnavailableCard />,
       }}
     >
       {wellTop}
-      <MeterBar label="DIRECT SOUND — share of what the mic hears" frac={direct} color="#5bff85" />
-      <MeterBar label="ROOM SOUND — share of what the mic hears" frac={room} color="#6fa8ff" />
+      <MeterBar label="DIRECT SOUND — share of what the mic hears" frac={direct} />
+      <MeterBar label="ROOM SOUND — share of what the mic hears" frac={room} />
       <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('distance')}>
         <Text style={styles.caption}>
           Halving the distance gains ~6 dB of DIRECT sound while the room’s reverberant energy stays
@@ -757,7 +780,7 @@ function PopSection({ viz, focused, help, wellTop, wellBottom }: SectionProps) {
       }}
     >
       {wellTop}
-      <MeterBar label="PLOSIVE ENERGY REACHING THE CAPSULE" frac={m.pass} color={blastTint} />
+      <MeterBar label="PLOSIVE ENERGY REACHING THE CAPSULE" frac={m.pass} />
       <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('pop_filter')}>
         <Text style={styles.caption}>{m.note}</Text>
         <Text style={styles.caption}>
@@ -806,7 +829,8 @@ function ShockSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
         onGuide: () => help('shock_mount'),
         bezel: [
           { k: 'MOUNT', v: shock ? 'SHOCK' : 'RIGID', helpKey: 'shock_mount' },
-          { k: 'INTO MIC', v: shock ? '15%' : '90%', tint: shock ? '#5bff85' : '#ff6b5e', helpKey: 'shock_mount' },
+          // Magnitude, so it wears the ramp rather than a green/red state colour.
+          { k: 'INTO MIC', v: shock ? '15%' : '90%', tint: levelColor(shock ? 0.15 : 0.9), helpKey: 'shock_mount' },
         ],
         render: (w, h) => {
           if (!viz) return <VizUnavailableCard />;
@@ -822,7 +846,7 @@ function ShockSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
       }}
     >
       {wellTop}
-      <MeterBar label="VIBRATION TRANSMITTED INTO THE MIC" frac={shock ? 0.15 : 0.9} color={shock ? '#5bff85' : '#ff6b5e'} />
+      <MeterBar label="VIBRATION TRANSMITTED INTO THE MIC" frac={shock ? 0.15 : 0.9} />
       <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('shock_mount')}>
         <Text style={styles.caption}>
           Footsteps, cable tugs and stand knocks travel THROUGH solids into the capsule as
