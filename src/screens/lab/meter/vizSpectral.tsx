@@ -742,13 +742,24 @@ const rgbStr = (c: [number, number, number]) => `rgb(${c[0]},${c[1]},${c[2]})`;
 // FIELD_STOPS (via fieldLevelColor), not the meter ramp: this is a 2-D field
 // read against a scale, so the stops must be EVENLY spaced — the meter ramp's
 // wide green plateau would flatten a quarter of the mountain to one colour.
-const WF_HEAT_STOPS: { pos: number; rgb: [number, number, number] }[] = Array.from(
-  { length: 9 },
-  (_, i) => {
-    const pos = i / 8; // 0 = the 0 dB ceiling (the peak) … 1 = the −60 dB floor
-    const hex = fieldLevelColor(1 - pos);
+// Stop positions: evenly spaced down the scale, then DENSE across the bottom
+// tenth so the fade to black is smooth rather than a hard band. The bottom
+// tenth of a 60 dB axis is the last 6 dB — from −54 dB to the floor.
+const WF_HEAT_AT = [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 0.925, 0.95, 0.975, 1];
+
+const WF_HEAT_STOPS: { pos: number; rgb: [number, number, number]; level: number }[] = WF_HEAT_AT.map(
+  (pos) => {
+    const level = 1 - pos; // 0 = the −60 dB floor … 1 = the 0 dB peak
+    // levelHeatColor, NOT fieldLevelColor: heatColor carries the "BLUE FADES TO
+    // BLACK AT ZERO SIGNAL" ruling (owner 2026-08-28), and the waterfall was
+    // sampling the raw field ramp, so its floor stopped at a lit blue. A fully
+    // decayed slice sits ON that floor, so the base of the range read as a wall
+    // of blue where there is NO signal left. Owner: "at full zero the blue
+    // should be going to black so the bottom of the waterfall once zero should
+    // be black and not blue."
+    const hex = levelHeatColor(level);
     const n = parseInt(hex.slice(1), 16);
-    return { pos, rgb: [(n >> 16) & 255, (n >> 8) & 255, n & 255] as [number, number, number] };
+    return { pos, rgb: [(n >> 16) & 255, (n >> 8) & 255, n & 255] as [number, number, number], level };
   },
 );
 const WF_HEAT_POS = WF_HEAT_STOPS.map((s) => s.pos);
@@ -957,8 +968,12 @@ export function WaterfallView(p: {
         // so the crest still reads as a bright edge). It used to be one fixed
         // white-hot colour, which is what made the whole display look amber
         // regardless of how far the ridge had fallen.
+        // The white lift is scaled BY LEVEL, so a crest still reads as a bright
+        // edge but a ridge lying on the floor is not lifted out of the black —
+        // otherwise the "zero = black" floor would carry a grey line along it
+        // and still look like something is there.
         strokeColors: WF_HEAT_STOPS.map((st) =>
-          rgbStr(mixRgb(mixRgb(st.rgb, WF_RIDGE_LIFT, 0.35), WF_COOL_DARK, 0.35 * age)),
+          rgbStr(mixRgb(mixRgb(st.rgb, WF_RIDGE_LIFT, 0.35 * st.level), WF_COOL_DARK, 0.35 * age)),
         ),
         fillColors: WF_HEAT_STOPS.map((st) => rgbStr(mixRgb(st.rgb, WF_COOL_DARK, dim))),
         swid: 1.7 - 0.8 * cum,
