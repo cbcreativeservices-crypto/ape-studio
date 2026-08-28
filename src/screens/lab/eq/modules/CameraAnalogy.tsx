@@ -13,8 +13,9 @@
  * RULING: the analogy STOPS there — gain is NOT mapped (next lesson). The room
  * scene and the response graph share ONE log-frequency axis (fxViz's 320-unit
  * viewBox, padL/padR 8), so the camera's field of view sits pixel-aligned above
- * the bell it points at. Owner 2026-08-07: the pan slider works in EVERY mode —
- * in FIXED you can sweep the camera and watch the EQ refuse to move.
+ * the bell it points at. PAN is active from stage 1 onward (`panActive`); the
+ * stage-0 row is deliberately locked. (Corrected 2026-08-28 — this comment used
+ * to claim pan worked in EVERY mode, which the code has never done.)
  *
  * RACK evaluated 2026-08-23 — KEPT CLASSIC: the lesson's display is TWO
  * pixel-aligned panels (scene 168 + response 116 ≈ 284) that outgrow even the

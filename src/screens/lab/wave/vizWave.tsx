@@ -1895,7 +1895,9 @@ export function GradientSceneView(p: {
     return path;
   }, [x0px, ppm, groundY]);
 
-  const uniform = Math.abs(p.gradient01) < 0.1;
+  // "UNIFORM AIR" must account for wind shear too (fix 2026-08-28) — it was
+  // printed over a visibly bent ray fan whenever WIND alone did the bending.
+  const uniform = Math.abs(p.gradient01 + (p.wind01 ?? 0) * (0.55 / 1.2)) < 0.1;
   const topLabel = uniform ? '' : p.gradient01 > 0 ? 'WARM AIR' : 'COOL AIR';
   const botLabel = uniform ? 'UNIFORM AIR' : p.gradient01 > 0 ? 'COOL AIR' : 'WARM AIR';
 

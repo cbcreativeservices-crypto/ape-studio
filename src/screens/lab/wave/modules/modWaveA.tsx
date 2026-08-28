@@ -779,9 +779,16 @@ export function RefractionModule(p: WaveModuleProps) {
   const tempAloft = tempC + grad * 8; // disclosed teaching model: ±8 °C aloft
   const cGround = speedOfSound(tempC);
   const cAloft = speedOfSound(tempAloft);
-  const rayH = refractedRayHeight(2, 150, grad * 0.08, tempC);
+  // WIND MUST REACH THE READOUTS (fix 2026-08-28). GradientSceneView bends the
+  // drawn rays with `gradient01 * 1.2 + wind * 0.55`, but BEND and RAY @150m
+  // were computed from `grad` alone — so pushing WIND to max curved the rays
+  // onto the audience while the bezel still read "STRAIGHT", contradicting the
+  // module's own prose ("wind SHEAR … bends rays down"). Express the shear as
+  // an equivalent gradient using the SAME relative weight the drawing uses.
+  const effGrad = grad + wind * (0.55 / 1.2);
+  const rayH = refractedRayHeight(2, 150, effGrad * 0.08, tempC);
   const bend =
-    grad > 0.1 ? 'DOWN — SOUND CARRIES' : grad < -0.1 ? 'UP — LIFTS OVER HEADS' : 'STRAIGHT';
+    effGrad > 0.1 ? 'DOWN — SOUND CARRIES' : effGrad < -0.1 ? 'UP — LIFTS OVER HEADS' : 'STRAIGHT';
 
   const readouts = [
     { k: 'c @ GROUND (20 °C)', v: `${cGround.toFixed(1)} m/s` },
@@ -804,7 +811,7 @@ export function RefractionModule(p: WaveModuleProps) {
         bezel: [
           { k: 'c GROUND', v: `${cGround.toFixed(1)} m/s`, helpKey: 'refraction' },
           { k: `c ALOFT ${tempAloft.toFixed(0)}°`, v: `${cAloft.toFixed(1)} m/s`, flex: 1.15, helpKey: 'refraction' },
-          { k: 'BEND', v: grad > 0.1 ? 'DOWN' : grad < -0.1 ? 'UP' : 'STRAIGHT', helpKey: 'refraction' },
+          { k: 'BEND', v: effGrad > 0.1 ? 'DOWN' : effGrad < -0.1 ? 'UP' : 'STRAIGHT', helpKey: 'refraction' },
           { k: 'RAY @150m', v: rayH <= 0 ? 'GROUND' : `${rayH.toFixed(1)} m UP`, helpKey: 'refraction' },
         ],
         stage: (w, h) =>

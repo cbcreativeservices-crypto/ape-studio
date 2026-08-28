@@ -493,12 +493,15 @@ export function FoundationsPlaygroundScreen() {
                 ))
               : null}
           </View>
-          {!fxReady && engineReady ? (
-            <Text style={styles.caption}>
-              Balance / delay / EQ audio need the v6+ effects build. EQ still shapes the drawings;
-              balance and delay have no drawn twin yet.
-            </Text>
-          ) : null}
+          {/* UNCONDITIONAL (fix 2026-08-28): this note used to render only when
+              the v6 effects path was ABSENT — i.e. it vanished on exactly the
+              build where the user can hear balance/delay and would most expect
+              to see them drawn. */}
+          <Text style={styles.caption}>
+            EQ shapes the drawings above. BALANCE and DELAY change what you HEAR only — they have
+            no drawn twin yet.
+            {!fxReady && engineReady ? ' (Their audio needs the v6+ effects build.)' : ''}
+          </Text>
         </View>
       ),
     },
@@ -523,7 +526,9 @@ export function FoundationsPlaygroundScreen() {
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
           <Text style={styles.title}>FOUNDATIONS PLAYGROUND</Text>
-          <Text style={styles.subtitle}>Every control drives every view — experiment freely</Text>
+          {/* Was "Every control drives every view" — an overclaim: BALANCE and
+              DELAY reach the audio but have no drawn twin (fix 2026-08-28). */}
+          <Text style={styles.subtitle}>Drive the views, hear the change — experiment freely</Text>
         </View>
         <AccuracyNote compact />
       </View>
