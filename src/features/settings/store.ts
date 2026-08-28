@@ -190,6 +190,7 @@ export function resetLocal(): void {
 export type NotificationPrefs = {
   push_enabled: boolean;
   email_enabled: boolean;
+  notify_weekly_concept: boolean;
   notify_trophy: boolean;
   notify_badge: boolean;
   notify_quiz_unlock: boolean;
@@ -207,13 +208,17 @@ export const NOTIFICATION_ROWS: { key: keyof NotificationPrefs; label: string }[
 export async function fetchNotificationPrefs(): Promise<NotificationPrefs | null> {
   const { data, error } = await supabase
     .from('notification_preferences')
-    .select('push_enabled, email_enabled, notify_trophy, notify_badge, notify_quiz_unlock, notify_method_complete')
+    .select('push_enabled, email_enabled, notify_weekly_concept, notify_trophy, notify_badge, notify_quiz_unlock, notify_method_complete')
     .maybeSingle();
   if (error) {
     console.warn('[settings] prefs fetch failed:', error.message);
     return null;
   }
-  return (data as NotificationPrefs) ?? null;
+  if (!data) return null;
+  const prefs = data as NotificationPrefs;
+  // Default AFTER the spread: a spread-first default is silently discarded
+  // (TS2783). Applies when the column is absent or null on an older row.
+  return { ...prefs, notify_weekly_concept: prefs.notify_weekly_concept ?? false };
 }
 
 /** Immediate single-toggle write; returns false on failure (caller reverts). */

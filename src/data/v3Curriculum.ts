@@ -77,7 +77,10 @@ export function flattenV3(fields: V3Field[]): V3Topic[] {
 
 /** A v3 credential (program or certificate) with its member-topic gs list — the
  *  shape the enrollment browse consumes (owner 2026-08-06). */
-export type V3Credential = { slug: string; name: string; topicsGs: number[]; electivesGs?: number[] };
+/** `id` is the certificates/programs UUID — required by the Final Exam and
+ *  award RPCs (award_required_topics / start_final_exam), which key on the
+ *  award id, not the slug. */
+export type V3Credential = { id: string; slug: string; name: string; topicsGs: number[]; electivesGs?: number[] };
 
 /** Active v3 PROGRAMS with their required (non-elective) member topics, ordered. */
 export async function fetchV3Programs(): Promise<V3Credential[]> {
@@ -104,6 +107,7 @@ export async function fetchV3Programs(): Promise<V3Credential[]> {
     }
     return (progs as any[])
       .map((p) => ({
+        id: p.id as string,
         slug: p.slug as string,
         name: p.name as string,
         topicsGs: byProg.get(p.id) ?? [],
@@ -137,7 +141,7 @@ export async function fetchV3Certs(): Promise<V3Credential[]> {
       byCert.get(l.certificate_id)!.push(l.gs);
     }
     return (certs as any[])
-      .map((c) => ({ slug: c.slug as string, name: c.name as string, topicsGs: byCert.get(c.id) ?? [] }))
+      .map((c) => ({ id: c.id as string, slug: c.slug as string, name: c.name as string, topicsGs: byCert.get(c.id) ?? [] }))
       .filter((c) => c.topicsGs.length > 0);
   } catch {
     return [];

@@ -44,6 +44,7 @@ import { AccuracyNote } from '../../components/AccuracyNote';
 import { EngineGate } from './EngineGate';
 import { useToolHelp, HelpHead, DisplayGuideButton } from '../../features/lab/guidedLessons';
 import type { RootStackParamList } from '../../navigation/types';
+import { levelColor } from '../../features/tools/levelColor';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Rt60Live'>;
 
@@ -59,7 +60,9 @@ const T20_RANGE_DB = 35;
 // fxViz grammar (shared idiom, not a cross-feature import).
 const PLOT_BG = '#0c0c0f';
 const PLOT_FRAME = '#262b36';
-const DECAY_GREEN = '#5bff85'; // measured decay trace (house green)
+/** The decay trace's amplitude ramp, ordered TOP (0 dB, hot) → the plot floor
+ *  (silence, blue). See the rt60DecayRamp gradient for why. */
+const DECAY_RAMP = Array.from({ length: 7 }, (_, i) => levelColor(1 - i / 6));
 const TICK_TEXT = '#a6a6ad';
 
 /** §13 discipline lines — always visible with results (spec Required warnings). */
@@ -107,9 +110,26 @@ function DecayCurve({ curveDb, stepSec }: { curveDb: number[]; stepSec: number }
     <View style={styles.curvePanel}>
       <Svg width="100%" height={CURVE_H + 18} viewBox={`0 0 ${CURVE_W} ${CURVE_H + 18}`}>
         <Defs>
-          <LinearGradient id="rt60DecayFill" x1="0" y1="0" x2="0" y2="1">
-            <Stop offset="0" stopColor={DECAY_GREEN} stopOpacity={0.26} />
-            <Stop offset="1" stopColor={DECAY_GREEN} stopOpacity={0} />
+          {/* The decay's Y axis IS level (0 dB → the floor), so the trace and
+              its underfill ride the amplitude ramp: hot at the top where the
+              energy is, cooling to blue as the room dies away (swept
+              2026-08-28 — this was one flat green, which hid the decay in
+              colour and only showed it in height). userSpaceOnUse pins the
+              ramp to the dB axis, so a given dB is always the same colour. */}
+          <LinearGradient id="rt60DecayRamp" gradientUnits="userSpaceOnUse" x1="0" y1={0} x2="0" y2={CURVE_H}>
+            {DECAY_RAMP.map((c, i) => (
+              <Stop key={i} offset={i / (DECAY_RAMP.length - 1)} stopColor={c} />
+            ))}
+          </LinearGradient>
+          <LinearGradient id="rt60DecayFill" gradientUnits="userSpaceOnUse" x1="0" y1={0} x2="0" y2={CURVE_H}>
+            {DECAY_RAMP.map((c, i) => (
+              <Stop
+                key={i}
+                offset={i / (DECAY_RAMP.length - 1)}
+                stopColor={c}
+                stopOpacity={0.26 * (1 - i / (DECAY_RAMP.length - 1))}
+              />
+            ))}
           </LinearGradient>
         </Defs>
         {/* Plot frame — rounded panel + hairline (shared chart chrome). */}
@@ -158,7 +178,7 @@ function DecayCurve({ curveDb, stepSec }: { curveDb: number[]; stepSec: number }
             <Path
               d={linePath}
               fill="none"
-              stroke={DECAY_GREEN}
+              stroke="url(#rt60DecayRamp)"
               strokeWidth={5.5}
               strokeOpacity={0.18}
               strokeLinecap="round"
@@ -167,7 +187,7 @@ function DecayCurve({ curveDb, stepSec }: { curveDb: number[]; stepSec: number }
             <Path
               d={linePath}
               fill="none"
-              stroke={DECAY_GREEN}
+              stroke="url(#rt60DecayRamp)"
               strokeWidth={1.8}
               strokeLinecap="round"
               strokeLinejoin="round"

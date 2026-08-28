@@ -219,10 +219,19 @@ export function LevelMeterBar({ levelDb, minDb = -48, maxDb = -12 }: { levelDb: 
     <View style={{ gap: 3 }}>
       <View style={styles.sliderHead}>
         <Text style={styles.meterLabel}>LEVEL (dBFS · relative)</Text>
-        <Text style={styles.sliderReadout}>{levelDb.toFixed(0)} dBFS</Text>
+        {/* The NUMBER carries the ramp too (owner 2026-08-12): a level readout
+            speaks the same blue→red language as the bar beside it. */}
+        <Text style={[styles.sliderReadout, { color: levelColor(frac) }]}>{levelDb.toFixed(0)} dBFS</Text>
       </View>
       <View style={styles.meterTrack}>
-        <View style={[styles.meterFill, { width: `${frac * 100}%` }]} />
+        {/* A bar whose SIZE encodes level shows the ramp CLIMBING to its tip —
+            never a solid block of one colour (owner 2026-08-16). */}
+        <GradientView
+          colors={rampColors(frac)}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={[styles.meterFill, { width: `${frac * 100}%` }]}
+        />
       </View>
     </View>
   );
@@ -303,7 +312,7 @@ const styles = StyleSheet.create({
   // LevelMeterBar
   meterLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.textSecondary },
   meterTrack: { height: 10, borderRadius: 5, backgroundColor: '#1c1c22', overflow: 'hidden' },
-  meterFill: { height: 10, backgroundColor: '#37e05f', opacity: 0.85 },
+  meterFill: { height: 10, opacity: 0.85 }, // colour comes from the ramp gradient, never a fixed fill
 
   // VizUnavailableCard
   unavailCard: {

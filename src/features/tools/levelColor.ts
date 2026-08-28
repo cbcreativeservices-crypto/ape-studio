@@ -113,6 +113,21 @@ export function levelColorForDb(db: number | null | undefined, minDb = -60, maxD
 }
 
 /**
+ * Colour an ACOUSTIC level readout (dBA / dBC SPL, not dBFS) on the amplitude
+ * ramp. SPL lives on a completely different scale from the −60…0 dBFS window
+ * `levelColorForDb` defaults to, so a dBA number passed to that would peg red
+ * always. This window is anchored to HEARING SAFETY rather than to a converter:
+ * 40 dBA (a quiet room) reads blue, and the ramp is set so the 85 dBA NIOSH
+ * action level has already climbed into the hot orange/yellow band — the colour
+ * warns before the number has to be read.
+ */
+export const SPL_DBA_MIN = 40;
+export const SPL_DBA_MAX = 100;
+export function splColorForDba(db: number | null | undefined): string {
+  return levelColorForDb(db, SPL_DBA_MIN, SPL_DBA_MAX);
+}
+
+/**
  * Heat-map / spectrogram colour for a LEVEL fraction `t01` (0 = silence,
  * 1 = loudest). The single app-wide amplitude ramp — MIDI-0 blue (quiet) →
  * green → yellow → orange → red (loud) — with the very bottom darkened toward

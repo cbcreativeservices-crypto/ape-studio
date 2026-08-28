@@ -21,7 +21,7 @@ export type AwardCategory = 'specialization' | 'program';
  * separately (FOUNDATIONS_LAB_ROUTE). In the builders these show ALWAYS-checked,
  * locked, and do NOT count toward the chosen topics (user request 2026-07-18).
  */
-export const COREQ_TOPIC_GS: number[] = [3060, 3070, 3080, 4370];
+export const COREQ_TOPIC_GS: number[] = [3060, 3070, 3081, 4370];
 
 /** The 4th required requisite for EVERY certificate/program (owner 2026-07-30):
  *  the "Foundations in Audio" lab (in the Ear Training & Audio Lab). Unlike the

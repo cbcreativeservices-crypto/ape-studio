@@ -222,3 +222,69 @@ the `LedMeter` `midi` prop — don't conflate them.
   (owner 2026-08-16): bars encode level by climbing to a tip color via
   `rampColors`/`rampColorsSymmetric`; the applied/audited surface list.
 - Standing render/integrity rule recorded in assistant memory `integrity-and-governance`.
+
+---
+
+## 10. TWO RAMPS: meters vs fields (owner 2026-08-28)
+
+The owner, looking at the Mic Principles DISTANCE field: *"it takes so little
+space to go from red to green, yet then green takes the entire screen across
+just to start blue. This is not a gradient, it is skewed, it must show a
+gradient that doesn't need interpretation."*
+
+Both ramps carry the SAME hue order and the SAME meaning (blue = quiet,
+red = loud). Only the SPACING differs, because **a meter JUDGES a level while a
+field MAPS one**:
+
+| | `LOUDNESS_STOPS` → `levelColor()` | `FIELD_STOPS` → `fieldLevelColor()` |
+|---|---|---|
+| Used by | meters, bars, waveforms, readouts | 2-D heat fields, gradients (`heatColor`) |
+| Green | **deliberately WIDE** (two identical stops) so the healthy operating range dominates — the 2026-08-07 ruling, which STANDS | evenly spaced |
+| Reads | "am I in the good range?" | "how much quieter is it over there?" |
+
+Pick by asking what the surface is FOR. Never widen the field ramp's plateau to
+match the meter's, and never flatten the meter's green to match the field's.
+
+**Blue fades to BLACK at zero signal** (owner 2026-08-28). `heatColor` used to
+floor brightness at 0.22, so true silence still rendered as a lit deep navy — a
+2-D field showed a wall of blue where there was NO signal. The bottom 10% of the
+ramp now fades all the way out, so "dark = nothing there" is honest.
+
+---
+
+## 11. Sweep 2026-08-28 — where the standard does NOT apply
+
+Owner: *"look for and correct any other screens/labs where this should be
+corrected."* Corrected: Foundations `LevelMeterBar`, the digital gain-staging and
+float/fixed meters, the Oscillator's 12 harmonic bars, Foundations spectrum
+sticks, the RT60 decay trace, FREQUENCY COUNTER + EXPOSURE MONITOR level
+readouts, the Amplitude Orientation readouts, and the ToolsHub tile ramps (which
+had drifted onto near-miss hexes and are now DERIVED from `levelColor`).
+
+Four surfaces were checked and **deliberately left alone**. The standard governs
+anything whose SIZE or HEIGHT encodes AMPLITUDE. It does not govern:
+
+1. **Series identity** — `vizChain` trace colours (HELD vs CODE OUT, FLOAT vs
+   FIXED) and `SplDemo`'s PEAK/RMS/SLOW bars. These distinguish *which signal*,
+   not *how loud*; ramping them would make three traces one colour and destroy
+   the comparison that IS the lesson.
+2. **Regulatory thresholds** — the Exposure Monitor dose bar. Dose is
+   accumulated exposure against a legal limit, and its green/amber/red steps ARE
+   the 80% warning and 100% limit. A smooth ramp would erase the two boundaries
+   a listener needs to act on.
+3. **Quantities that are not levels** — `fxViz` `GrMeter`. Gain reduction is how
+   much the compressor is REMOVING; more GR means the signal got *quieter*, so
+   the amplitude ramp would be actively backwards there. Amber is correct.
+
+Each is commented in place with this reasoning, so the next sweep doesn't
+"fix" them.
+
+### OPEN — needs an owner ruling
+
+`src/screens/lab/meter/vizSpectral.tsx` `WF_HEAT_STOPS` (the CSD waterfall)
+**inverts the standard**: its base is deep red and its ridge peaks are white-hot,
+so on that one screen QUIET reads RED. It was built deliberately against an
+owner-supplied CSD reference screenshot (2026-07-29), which is why it was not
+changed in this sweep. It is a genuine conflict — a student who learns "red =
+loud" everywhere else meets the opposite here. Owner decides: keep the reference
+look, or bring the waterfall onto the app ramp.

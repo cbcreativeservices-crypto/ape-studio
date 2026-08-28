@@ -302,7 +302,9 @@ function MeterBar({ level, label, db }: { level: number; label: string; db: stri
         })}
       </View>
       <Text style={styles.meterBarLabel}>{label}</Text>
-      <Text style={styles.meterBarDb}>{db}</Text>
+      {/* The NUMBER carries the ramp too, so PEAK reads hotter than RMS in
+          colour as well as in height (owner 2026-08-12). */}
+      <Text style={[styles.meterBarDb, { color: levelColor(level) }]}>{db}</Text>
     </View>
   );
 }
@@ -341,7 +343,7 @@ function SplCard() {
       style={[styles.vizFill, { justifyContent: 'center', gap: 6 }]}
       onLayout={(e) => onW(Math.round(e.nativeEvent.layout.width))}
     >
-      <Text style={styles.splReadout}>
+      <Text style={[styles.splReadout, { color: levelColor(frac) }]}>
         {SPL_DB} <Text style={styles.splUnit}>dB SPL</Text>
       </Text>
       {/* Amplitude grows left → right, matching the horizontal SPL bar. */}

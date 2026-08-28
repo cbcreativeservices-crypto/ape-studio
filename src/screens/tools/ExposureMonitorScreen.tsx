@@ -13,6 +13,7 @@ import { Alert, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'rea
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../theme/tokens';
+import { splColorForDba } from '../../features/tools/levelColor';
 import {
   DEFAULT_SETTINGS,
   deleteExposureHistory,
@@ -33,11 +34,24 @@ import {
   type ExposureStandard,
 } from '../../features/audio/exposureMonitor';
 
-function Row({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
+function Row({
+  label,
+  value,
+  strong,
+  levelDba,
+}: {
+  label: string;
+  value: string;
+  strong?: boolean;
+  /** Pass the dBA behind the value when this row reads a LEVEL, so the number
+   *  carries the amplitude ramp (owner 2026-08-12) instead of flat amber. */
+  levelDba?: number | null;
+}) {
+  const tint = levelDba != null ? splColorForDba(levelDba) : undefined;
   return (
     <View style={styles.row}>
       <Text style={styles.rowLabel}>{label}</Text>
-      <Text style={[styles.rowValue, strong && { color: colors.amber }]}>{value}</Text>
+      <Text style={[styles.rowValue, strong && { color: colors.amber }, tint ? { color: tint } : null]}>{value}</Text>
     </View>
   );
 }
@@ -120,8 +134,13 @@ export function ExposureMonitorScreen() {
                 value={
                   snap.currentDb != null ? `${Math.round(snap.currentDb)} dBA ${snap.measured ? 'measured' : 'estimated'}` : 'quiet'
                 }
+                levelDba={snap.currentDb}
               />
-              <Row label="Session maximum" value={snap.sessionMaxDb > 0 ? `${Math.round(snap.sessionMaxDb)} dBA` : '—'} />
+              <Row
+                label="Session maximum"
+                value={snap.sessionMaxDb > 0 ? `${Math.round(snap.sessionMaxDb)} dBA` : '—'}
+                levelDba={snap.sessionMaxDb > 0 ? snap.sessionMaxDb : null}
+              />
               <Row label="Source" value={snap.routeLabel} />
               <Row label="Confidence" value={confLabel} />
             </>
@@ -135,7 +154,12 @@ export function ExposureMonitorScreen() {
         <Section title="TODAY">
           <Row label="Active listening" value={fmtDuration(snap.todayActiveSec)} strong />
           <Row label="Daily dose" value={`${dosePct}%`} strong />
-          {/* Dose bar — labeled, never color-only. */}
+          {/* Dose bar — labeled, never color-only.
+              DELIBERATELY NOT the amplitude ramp (checked 2026-08-28). That
+              standard governs displays of AMPLITUDE; dose is accumulated
+              exposure against a legal limit, and its green/amber/red steps ARE
+              the 80% warning and 100% limit thresholds. A smooth ramp would
+              erase exactly the two boundaries a listener needs to act on. */}
           <View style={styles.doseTrack} accessibilityLabel={`Daily dose ${dosePct} percent`}>
             <View
               style={[
@@ -150,8 +174,13 @@ export function ExposureMonitorScreen() {
           <Row
             label="Average level (energy)"
             value={snap.todayAvgDb != null ? `${Math.round(snap.todayAvgDb)} dBA est.` : 'no data yet'}
+            levelDba={snap.todayAvgDb}
           />
-          <Row label="Highest level" value={snap.todayMaxDb > 0 ? `${Math.round(snap.todayMaxDb)} dBA est.` : '—'} />
+          <Row
+            label="Highest level"
+            value={snap.todayMaxDb > 0 ? `${Math.round(snap.todayMaxDb)} dBA est.` : '—'}
+            levelDba={snap.todayMaxDb > 0 ? snap.todayMaxDb : null}
+          />
           <Row label="Check-ins today" value={String(snap.checkinsToday)} />
           <Row label="Time remaining" value={fmtRemaining(snap.remainingSec, snap.confidence, snap.todayDose)} />
           {snap.hadGap ? (

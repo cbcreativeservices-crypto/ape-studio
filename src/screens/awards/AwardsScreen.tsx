@@ -323,14 +323,14 @@ export function AwardsScreen({ navigation, route }: Props) {
   const specCertsAZ = useMemo(
     () =>
       v3Certs
-        .map((c) => ({ name: c.name, specializationTopics: c.topicsGs }))
+        .map((c) => ({ id: c.id, name: c.name, specializationTopics: c.topicsGs }))
         .sort((a, b) => a.name.localeCompare(b.name)),
     [v3Certs],
   );
   const programPathsAZ = useMemo(
     () =>
       v3Programs
-        .map((p) => ({ name: p.name, requiredTopics: p.topicsGs, electiveChooseOne: p.electivesGs ?? [] }))
+        .map((p) => ({ id: p.id, name: p.name, requiredTopics: p.topicsGs, electiveChooseOne: p.electivesGs ?? [] }))
         .sort((a, b) => a.name.localeCompare(b.name)),
     [v3Programs],
   );
@@ -621,6 +621,22 @@ export function AwardsScreen({ navigation, route }: Props) {
                       >
                         <Text style={styles.enrollBtnText}>ENROLL IN THIS CERTIFICATE ›</Text>
                       </Pressable>
+                      {/* Earn path (R6b/A4) — required-topic progress, Final Exam
+                          gate and the earned credential for this certificate. */}
+                      <Pressable
+                        style={styles.progressBtn}
+                        onPress={() =>
+                          navigation.navigate('AwardProgress', {
+                            awardType: 'certificate',
+                            awardId: c.id,
+                            awardName: c.name,
+                          })
+                        }
+                        accessibilityRole="button"
+                        accessibilityLabel={`View progress and Final Exam for ${c.name}`}
+                      >
+                        <Text style={styles.progressBtnText}>VIEW PROGRESS & FINAL EXAM ›</Text>
+                      </Pressable>
                     </>
                   ) : null}
                 </View>
@@ -731,6 +747,21 @@ export function AwardsScreen({ navigation, route }: Props) {
                         accessibilityLabel={`Enroll in ${p.name}`}
                       >
                         <Text style={styles.enrollBtnText}>ENROLL IN THIS PROGRAM ›</Text>
+                      </Pressable>
+                      {/* Earn path (R6b/A4) — see the certificate card above. */}
+                      <Pressable
+                        style={styles.progressBtn}
+                        onPress={() =>
+                          navigation.navigate('AwardProgress', {
+                            awardType: 'program',
+                            awardId: p.id,
+                            awardName: p.name,
+                          })
+                        }
+                        accessibilityRole="button"
+                        accessibilityLabel={`View progress and Final Exam for ${p.name}`}
+                      >
+                        <Text style={styles.progressBtnText}>VIEW PROGRESS & FINAL EXAM ›</Text>
                       </Pressable>
                     </>
                   ) : null}
@@ -975,4 +1006,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   enrollBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, color: '#37e05f' },
+  // Amber sibling of enrollBtn: green = "add these topics", amber (the Academy
+  // specialization gold) = "the earn path for this award".
+  progressBtn: {
+    marginTop: 8,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255,198,77,.7)',
+    backgroundColor: 'rgba(255,198,77,.1)',
+    borderRadius: 9,
+    paddingVertical: 11,
+    alignItems: 'center',
+  },
+  progressBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, color: AMBER },
 });

@@ -71,7 +71,38 @@ export type RootStackParamList = {
     badgeEarned: boolean;
     entrySource: TrophyEntrySource;
   };
+  /** Award earn path (R6b, A4) — required-topic checklist, Final Exam gate,
+   *  and the earned-credential panel for one certificate or program. */
+  AwardProgress: {
+    awardType: import('../features/finalExam/api').AwardType;
+    awardId: string;
+    awardName: string;
+  };
+  /** Final Exam (R6b capstone) — the award-level examination. One sitting,
+   *  10-minute limit, pass = size − 2. Bottom nav hidden; no back gesture. */
+  FinalExam: {
+    awardType: import('../features/finalExam/api').AwardType;
+    awardId: string;
+    awardName: string;
+  };
+  /** Final Exam result — renders submit_final_exam's payload verbatim. */
+  FinalExamResult: {
+    result: import('../features/finalExam/api').ExamResult;
+    awardName: string;
+  };
   Settings: undefined; // S11 — modal, bottom nav hidden
+  /** Weekly misunderstood-concept card, opened from a push tap. */
+  WeeklyConcept: {
+    concept_id: number;
+    category?: string;
+    subdomain?: string;
+    concept?: string;
+    what_it_is?: string;
+    misconception?: string;
+    correction?: string;
+    why_it_matters?: string;
+    confidence?: string;
+  };
   /** Institutional Mode parked container (user request 2026-07-17) — the
    *  academic/site-license modules, postponed until after commercial launch.
    *  Reached from the Profile screen's Institutional Mode row. */

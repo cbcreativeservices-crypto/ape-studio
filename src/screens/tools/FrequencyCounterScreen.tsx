@@ -48,6 +48,7 @@ import { useOpticalCounter } from '../../features/tools/capture/opticalCounter';
 import * as Optical from '../../../modules/ape-optical';
 import { PermissionPrompt, usePermissionFlow } from '../../features/permissions/PermissionPrompt';
 import type { RootStackParamList } from '../../navigation/types';
+import { levelColorForDb } from '../../features/tools/levelColor';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'FrequencyCounter'>;
 
@@ -133,7 +134,21 @@ const fmtHz = (hz: number) => (hz < 10 ? hz.toFixed(2) : hz.toFixed(1));
 /** Period display: a 440 Hz tone's period is 2.27 ms, so sub-10 ms needs decimals. */
 const fmtMs = (ms: number) => (ms < 10 ? ms.toFixed(2) : ms < 100 ? ms.toFixed(1) : Math.round(ms).toString());
 
-function StatCell({ label, value, unit, help }: { label: string; value: string; unit?: string; help?: (key: string) => void }) {
+function StatCell({
+  label,
+  value,
+  unit,
+  help,
+  valueColor,
+}: {
+  label: string;
+  value: string;
+  unit?: string;
+  help?: (key: string) => void;
+  /** Set ONLY for cells reading a LEVEL, so the number carries the amplitude
+   *  ramp (owner 2026-08-12) — blue when quiet, red when loud. */
+  valueColor?: string;
+}) {
   return (
     <Pressable
       style={styles.statCell}
@@ -143,7 +158,7 @@ function StatCell({ label, value, unit, help }: { label: string; value: string; 
       accessibilityLabel={help ? `${label} — what it shows` : label}
     >
       <Text style={styles.statLabel}>{label}</Text>
-      <Text style={styles.statValue}>
+      <Text style={[styles.statValue, valueColor ? { color: valueColor } : null]}>
         {value}
         {unit ? <Text style={styles.statUnit}> {unit}</Text> : null}
       </Text>
@@ -737,6 +752,7 @@ function LivePitchMode({
             label="INPUT LEVEL"
             value={live != null && Number.isFinite(live.levelDb) ? live.levelDb.toFixed(1) : '—'}
             unit="dBFS"
+            valueColor={levelColorForDb(live?.levelDb)}
           />
           <StatCell
             help={help}
@@ -757,6 +773,7 @@ function LivePitchMode({
             label="INPUT LEVEL"
             value={live != null && Number.isFinite(live.levelDb) ? live.levelDb.toFixed(1) : '—'}
             unit="dBFS"
+            valueColor={levelColorForDb(live?.levelDb)}
           />
           <StatCell help={help} label="STATUS" value={statusLabel} />
         </View>

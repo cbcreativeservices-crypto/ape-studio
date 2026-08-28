@@ -46,6 +46,16 @@ import {
 } from '../../features/settings/store';
 import { NotifyScheduleModal } from '../../features/settings/NotifyScheduleModal';
 import { DeleteAccountButton } from '../../features/settings/DeleteAccountButton';
+import { registerAndSavePushToken } from '../../features/notifications/push';
+import {
+  WEEKLY_CONCEPT_CATEGORIES,
+  deactivateAllWeeklySubscriptions,
+  dowToDayName,
+  fetchWeeklySubscriptions,
+  setWeeklyConceptPref,
+  syncWeeklySchedule,
+  timeToHhmm,
+} from '../../features/notifications/weeklyConcept';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
@@ -85,6 +95,12 @@ export function SettingsScreen({ navigation }: Props) {
     loadLocalSettings().then(setLocal);
     void hasCrowdsourceConsent().then(setContribute);
     fetchNotificationPrefs().then(setPrefs);
+    void fetchWeeklySubscriptions().then((subs) => {
+      if (!subs.length) return;
+      setWeeklyCats(subs.map((s) => s.category));
+      setWeeklyDay(dowToDayName(subs[0].day_of_week));
+      setWeeklyTime(timeToHhmm(subs[0].send_time));
+    });
     supabase
       .from('users')
       .select('ape_student_id')
@@ -118,6 +134,10 @@ export function SettingsScreen({ navigation }: Props) {
   }, []);
   // Which notification's schedule popup is open (user request 2026-07-23).
   const [picker, setPicker] = useState<CommercialNotifyKey | null>(null);
+  const [weeklyPicker, setWeeklyPicker] = useState(false);
+  const [weeklyDay, setWeeklyDay] = useState('Monday');
+  const [weeklyTime, setWeeklyTime] = useState('09:00');
+  const [weeklyCats, setWeeklyCats] = useState<string[]>(['Acoustics']);
 
   const confirmLogout = useCallback(() => {
     Alert.alert('Log out?', 'You can sign in as a different user afterward.', [
@@ -140,8 +160,60 @@ export function SettingsScreen({ navigation }: Props) {
       updateNotificationPref(key, value).then((ok) => {
         if (!ok) setPrefs((p) => (p ? { ...p, [key]: !value } : p)); // revert
       });
+      if (key === 'push_enabled' && value) {
+        void registerAndSavePushToken();
+      }
     },
     [prefs],
+  );
+
+  const persistWeeklySubs = useCallback(
+    (cats: string[], dayName: string, hhmm: string) => {
+      void syncWeeklySchedule({ categories: cats, dayName, hhmm });
+    },
+    [],
+  );
+
+  const setWeeklyOn = useCallback(
+    async (on: boolean) => {
+      if (!prefs) return;
+      setPrefs({ ...prefs, notify_weekly_concept: on, push_enabled: on ? true : prefs.push_enabled });
+      if (on) {
+        const token = await registerAndSavePushToken();
+        const prefOk = await setWeeklyConceptPref(true);
+        const cats = weeklyCats.length ? weeklyCats : ['Acoustics'];
+        setWeeklyCats(cats);
+        await persistWeeklySubs(cats, weeklyDay, weeklyTime);
+        if (!prefOk) {
+          setPrefs((p) => (p ? { ...p, notify_weekly_concept: false } : p));
+          return;
+        }
+        if (!token) {
+          Alert.alert(
+            'Notifications',
+            'Weekly concepts are saved. Push delivery needs a physical device build with notification permission allowed.',
+          );
+        }
+      } else {
+        const prefOk = await setWeeklyConceptPref(false);
+        await deactivateAllWeeklySubscriptions();
+        if (!prefOk) setPrefs((p) => (p ? { ...p, notify_weekly_concept: true } : p));
+      }
+    },
+    [prefs, persistWeeklySubs, weeklyCats, weeklyDay, weeklyTime],
+  );
+
+  const toggleWeeklyCat = useCallback(
+    (category: string) => {
+      setWeeklyCats((prev) => {
+        const has = prev.includes(category);
+        const next = has ? prev.filter((c) => c !== category) : [...prev, category];
+        const cats = next.length ? next : [category];
+        persistWeeklySubs(cats, weeklyDay, weeklyTime);
+        return cats;
+      });
+    },
+    [persistWeeklySubs, weeklyDay, weeklyTime],
   );
 
   return (
@@ -168,6 +240,50 @@ export function SettingsScreen({ navigation }: Props) {
               />
             </View>
           ))}
+          <View style={[styles.row, styles.rowBorder]}>
+            <View style={{ flex: 1, paddingRight: 10 }}>
+              <Text style={styles.rowLabel}>Weekly concept</Text>
+              {!prefs?.notify_weekly_concept ? (
+                <Text style={styles.rowHint}>One misunderstood concept a week, per category you select.</Text>
+              ) : null}
+            </View>
+            {prefs?.notify_weekly_concept ? (
+              <Pressable
+                style={styles.schedBtn}
+                onPress={() => setWeeklyPicker(true)}
+                accessibilityRole="button"
+                accessibilityLabel={`Edit weekly concept schedule, currently ${shortDay(weeklyDay)} · ${formatClock(weeklyTime)}`}
+              >
+                <Text style={styles.schedText}>{`${shortDay(weeklyDay)} · ${formatClock(weeklyTime)}`}</Text>
+              </Pressable>
+            ) : null}
+            <Toggle
+              on={prefs?.notify_weekly_concept ?? false}
+              disabled={!prefs}
+              onChange={(v) => void setWeeklyOn(v)}
+            />
+          </View>
+          {prefs?.notify_weekly_concept ? (
+            <View style={[styles.rowCol, styles.rowBorder]}>
+              <Text style={styles.rowHint}>Categories</Text>
+              <View style={styles.chipWrap}>
+                {WEEKLY_CONCEPT_CATEGORIES.map((cat) => {
+                  const on = weeklyCats.includes(cat);
+                  return (
+                    <Pressable
+                      key={cat}
+                      style={[styles.catChip, on && styles.catChipOn]}
+                      onPress={() => toggleWeeklyCat(cat)}
+                      accessibilityRole="button"
+                      accessibilityState={{ selected: on }}
+                    >
+                      <Text style={[styles.catChipText, on && styles.catChipTextOn]}>{cat}</Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </View>
+          ) : null}
           {/* The 7 commercial notifications (user request 2026-07-18). Turning
               one ON reveals its frequency editor; the toggle is the "turn off",
               the editor is the "edit". */}
@@ -460,6 +576,26 @@ export function SettingsScreen({ navigation }: Props) {
       </Modal>
 
       {/* Notification schedule popup (user request 2026-07-23). */}
+      {weeklyPicker ? (
+        <NotifyScheduleModal
+          visible
+          title="Weekly concept"
+          mode="dayTime"
+          time={weeklyTime}
+          day={weeklyDay}
+          days={3}
+          onSetTime={(hhmm) => {
+            setWeeklyTime(hhmm);
+            persistWeeklySubs(weeklyCats, weeklyDay, hhmm);
+          }}
+          onSetDay={(d) => {
+            setWeeklyDay(d);
+            persistWeeklySubs(weeklyCats, d, weeklyTime);
+          }}
+          onSetDays={() => {}}
+          onClose={() => setWeeklyPicker(false)}
+        />
+      ) : null}
       {picker ? (
         <NotifyScheduleModal
           visible
@@ -530,6 +666,18 @@ const styles = StyleSheet.create({
   rowBorder: { borderBottomWidth: 1, borderBottomColor: '#1a1a1a' },
   rowLabel: { fontFamily: fonts.barlowRegular, fontSize: 15, color: colors.textSecondary },
   rowHint: { fontFamily: fonts.barlowRegular, fontSize: 12, color: colors.textMuted, marginTop: 2 },
+  chipWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  catChip: {
+    borderWidth: 1,
+    borderColor: '#3a3a3a',
+    borderRadius: 7,
+    paddingVertical: 7,
+    paddingHorizontal: 10,
+    backgroundColor: '#141414',
+  },
+  catChipOn: { borderColor: 'rgba(255,198,77,.7)', backgroundColor: 'rgba(255,198,77,.12)' },
+  catChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.4, color: colors.textSub },
+  catChipTextOn: { color: colors.amber },
   thanks: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 13, color: colors.amber, marginTop: 10, paddingVertical: 4 },
   mono: { fontFamily: fonts.mono, fontSize: 12, color: colors.amber },
 

@@ -40,6 +40,7 @@ import {
   type SharedValue,
 } from 'react-native-reanimated';
 import { fonts } from '../../../theme/tokens';
+import { rampColors } from '../../../features/tools/levelColor';
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 
 const BG = '#0c0c0f';
@@ -53,6 +54,17 @@ const RED = '#ff6b5e';
 const PLATE_HI = '#24252d';
 const PLATE_LO = '#141419';
 const AXIS_TEXT = '#9a9ca8';
+
+/** Full-scale amplitude ramp for the LEVEL METERS in this file, ordered TOP
+ *  (full scale, red) → BOTTOM (silence, blue). The gradient axis is mapped to
+ *  the whole meter TRACK, not to the fill, so a given height always paints the
+ *  same colour and the tip colour is the true level colour.
+ *
+ *  NOTE the trace colours above (AMBER/GREEN/BLUE) are signal IDENTITY — which
+ *  stage or which path you are looking at (HELD vs CODE OUT, FLOAT vs FIXED) —
+ *  not amplitude, so the amplitude standard does not govern them. It governs
+ *  anything whose SIZE encodes a level. */
+const METER_RAMP = rampColors(1, 8).slice().reverse();
 
 type SkPathT = ReturnType<typeof Skia.Path.Make>;
 
@@ -972,11 +984,11 @@ export function GainStagingView({
         {/* Meters */}
         <RoundedRect x={mAx} y={mTop} width={meterW} height={mH} r={3} color="#17171c" />
         <RoundedRect x={mAx} y={mTop + mH * (1 - aFrac)} width={meterW} height={mH * aFrac} r={3}>
-          <LinearGradient start={vec(0, mTop)} end={vec(0, mBot)} colors={analogClip ? [RED, AMBER] : [AMBER, GREEN]} />
+          <LinearGradient start={vec(0, mTop)} end={vec(0, mBot)} colors={METER_RAMP} />
         </RoundedRect>
         <RoundedRect x={mDx} y={mTop} width={meterW} height={mH} r={3} color="#17171c" />
         <RoundedRect x={mDx} y={mTop + mH * (1 - dFrac)} width={meterW} height={mH * dFrac} r={3}>
-          <LinearGradient start={vec(0, mTop)} end={vec(0, mBot)} colors={digitalOver ? [RED, AMBER] : [GREEN, GREEN]} />
+          <LinearGradient start={vec(0, mTop)} end={vec(0, mBot)} colors={METER_RAMP} />
         </RoundedRect>
         {/* OVER lamps */}
         {analogClip ? (
@@ -1390,8 +1402,15 @@ export function FloatHeadroomView({
         {[x0, x1].map((px) => (
           <RoundedRect key={`m${px}`} x={px} y={meterY} width={paneW} height={meterH} r={3} color="#17171c" />
         ))}
-        <Path path={floatMeter} color={floatOver ? AMBER : GREEN} opacity={0.9} />
-        <Path path={fixedMeter} color={busDb > 0.01 ? RED : GREEN} opacity={0.9} />
+        {/* Amplitude ramp across each meter's full track (blue at silence →
+            red at full scale), so the fill's tip is the true level colour.
+            METER_RAMP is ordered loud→quiet, so run the axis right→left. */}
+        <Path path={floatMeter} opacity={0.9}>
+          <LinearGradient start={vec(x0 + paneW, 0)} end={vec(x0, 0)} colors={METER_RAMP} />
+        </Path>
+        <Path path={fixedMeter} opacity={0.9}>
+          <LinearGradient start={vec(x1 + paneW, 0)} end={vec(x1, 0)} colors={METER_RAMP} />
+        </Path>
         <Path path={statics.zeroMarks} color={withAlpha(RED, 0.85)} style="stroke" strokeWidth={1.2} />
       </Canvas>
       <RNText style={{ position: 'absolute', left: x0, width: paneW, top: 6, fontFamily: fonts.barlowCondensedSemiBold, fontSize: 9.5, letterSpacing: 0.6, color: trim ? GREEN : BLUE }}>

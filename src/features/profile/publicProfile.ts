@@ -7,6 +7,7 @@
  * email — name, audio interests, and a single contact-consent flag only.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { fetchMyRegistryName, saveMyRegistryName } from './api';
 
 /** Audio interest areas the user can flag for networking (multi-select). */
 export const INTEREST_TOPICS = [
@@ -68,14 +69,56 @@ export const EMPTY_PUBLIC_PROFILE: PublicProfile = {
 const KEY = 'ape:publicProfile';
 
 export async function loadPublicProfile(): Promise<PublicProfile> {
+  let local: PublicProfile = EMPTY_PUBLIC_PROFILE;
   try {
     const raw = await AsyncStorage.getItem(KEY);
-    return raw ? { ...EMPTY_PUBLIC_PROFILE, ...JSON.parse(raw) } : EMPTY_PUBLIC_PROFILE;
+    if (raw) local = { ...EMPTY_PUBLIC_PROFILE, ...JSON.parse(raw) };
   } catch {
-    return EMPTY_PUBLIC_PROFILE;
+    local = EMPTY_PUBLIC_PROFILE;
   }
+  // registryName is the ONE field that is server-backed (2026-08-29): the
+  // printed certificate and the public QR verifier must resolve to the same
+  // name, and it has to survive a reinstall. The server copy wins when present;
+  // a guest or an offline read falls back to the device value.
+  const remote = await fetchMyRegistryName();
+  noteSyncedRegistryName(remote);
+  if (remote) local = { ...local, registryName: remote };
+  return local;
+}
+
+/* --- registryName server sync (debounced) ---------------------------------
+ * ProfileScreen calls savePublicProfile on EVERY keystroke (an immediate
+ * device-local write, by design). A naive server push here would mean one
+ * UPDATE per character typed. So the server write is coalesced: it fires only
+ * after the field has been idle, and only when the value actually changed from
+ * what the server already has. AsyncStorage still writes immediately — the
+ * local copy stays the UI's source of truth.
+ */
+const REGISTRY_SYNC_IDLE_MS = 1200;
+let registrySyncTimer: ReturnType<typeof setTimeout> | null = null;
+let lastSyncedRegistryName: string | null = null;
+
+/** Call after a successful server read so an unchanged value never re-writes. */
+function noteSyncedRegistryName(v: string | null): void {
+  lastSyncedRegistryName = v;
+}
+
+function queueRegistryNameSync(name: string): void {
+  const trimmed = name.trim();
+  if (!trimmed || trimmed === lastSyncedRegistryName) return;
+  if (registrySyncTimer) clearTimeout(registrySyncTimer);
+  registrySyncTimer = setTimeout(() => {
+    registrySyncTimer = null;
+    void saveMyRegistryName(trimmed).then((ok) => {
+      if (ok) lastSyncedRegistryName = trimmed;
+    });
+  }, REGISTRY_SYNC_IDLE_MS);
 }
 
 export async function savePublicProfile(p: PublicProfile): Promise<void> {
   await AsyncStorage.setItem(KEY, JSON.stringify(p));
+  // Best-effort, debounced server sync of registryName only. Never awaited into
+  // the caller's failure path: a guest or offline user must still be able to
+  // edit their profile.
+  queueRegistryNameSync(p.registryName);
 }

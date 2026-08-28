@@ -81,6 +81,44 @@ export async function fetchMyQrToken(): Promise<string | null> {
   }
 }
 
+/** The user-chosen display name for the public Pro Registry and for printed
+ *  credentials — the Profile field "Name used in registry". Server-backed as of
+ *  2026-08-29 so the printed certificate and the QR verification page resolve to
+ *  the SAME name, and so the value survives a reinstall or a device change.
+ *
+ *  Writable via a column-scoped grant: `authenticated` holds UPDATE on
+ *  users.registry_name only, and `own_users_update` (auth_id = auth.uid())
+ *  restricts it to the caller's own row.
+ *
+ *  Both helpers swallow errors and return null/false: a signed-out guest has no
+ *  row, and the caller falls back to the device-local copy rather than failing. */
+export async function fetchMyRegistryName(): Promise<string | null> {
+  try {
+    const { data, error } = await supabase.from('users').select('registry_name').single();
+    if (error || !data) return null;
+    const v = (data as { registry_name?: string | null }).registry_name;
+    return v && v.trim() ? v : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Persist the registry name to the server. Returns false on any failure
+ *  (guest, offline, RLS) so the caller can keep the local copy and retry later. */
+export async function saveMyRegistryName(name: string): Promise<boolean> {
+  try {
+    const { data: user, error: uErr } = await supabase.from('users').select('id').single();
+    if (uErr || !user) return false;
+    const { error } = await supabase
+      .from('users')
+      .update({ registry_name: name.trim() })
+      .eq('id', (user as { id: string }).id);
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
 export type AchievementTile = {
   id: string;
   name: string;

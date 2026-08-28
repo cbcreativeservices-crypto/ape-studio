@@ -12,6 +12,7 @@ import { Platform, StyleSheet, Text, View, type LayoutChangeEvent } from 'react-
 import { LinearGradient as RnLinearGradient } from 'expo-linear-gradient';
 import { LinearGradient, Stop } from 'react-native-svg';
 import { fonts } from '../../theme/tokens';
+import { levelColor } from '../../features/tools/levelColor';
 
 /** Measured width of a preview root (the minis position RN overlays in pt
  *  space). One shared implementation — copies drift (equality guard, rounding). */
@@ -29,35 +30,42 @@ export function useMeasuredWidth(): [number, (e: LayoutChangeEvent) => void] {
 /** RN Animated native driver is unavailable on web (NavIcon caveat). */
 export const NATIVE_DRIVER = Platform.OS !== 'web';
 
-/** The strips' vertical level ramp (red top → deep blue bottom). */
-export const LVL_STOPS: ReadonlyArray<readonly [number, string]> = [
-  [0, '#e8503a'],
-  [0.14, '#f0a23c'],
-  [0.26, '#e9dc4d'],
-  [0.4, '#8ed24c'],
-  [0.56, '#34b96e'],
-  [0.72, '#2b9ad2'],
-  [0.88, '#2166c4'],
-  [1, '#143a86'],
-];
+/** The strips' vertical level ramp (loud top → silent bottom).
+ *
+ *  DERIVED from the app-wide amplitude standard (swept 2026-08-28). These used
+ *  to be eight hand-typed hexes that had drifted off it — near-misses like
+ *  #e8503a for the canonical red — so the tile minis spoke a slightly different
+ *  colour language than the tools they preview. The OFFSETS below are the ones
+ *  from the owner-approved 2026-08-19 tile pass and are unchanged; only the
+ *  colours now come from `levelColor`, so the ramp can never drift again.
+ *
+ *  The last stop is darkened past blue toward black: the bottom of a strip is
+ *  SILENCE, and silence reads as background rather than as a lit wall of blue
+ *  (owner 2026-08-28, the same ruling `heatColor` follows). */
+const LVL_OFFSETS = [0, 0.14, 0.26, 0.4, 0.56, 0.72, 0.88, 1] as const;
 
-/** Mirrored ramp for zero-centred waveforms (red at both extremes). */
+/** Mix a hex toward black. `k` 1 = untouched, 0 = black. */
+function darken(hex: string, k: number): string {
+  const n = parseInt(hex.slice(1), 16);
+  const c = (v: number) => Math.round(v * k).toString(16).padStart(2, '0');
+  return `#${c((n >> 16) & 255)}${c((n >> 8) & 255)}${c(n & 255)}`;
+}
+
+export const LVL_STOPS: ReadonlyArray<readonly [number, string]> = LVL_OFFSETS.map((o) => [
+  o,
+  // offset 0 = top of the strip = full scale, so level is the INVERSE of offset.
+  o === 1 ? darken(levelColor(0), 0.42) : levelColor(1 - o),
+]);
+
+/** Mirrored ramp for zero-centred waveforms: the SAME ramp folded about the
+ *  zero line, so amplitude MAGNITUDE drives the colour and both extremes read
+ *  red. Folding it (rather than typing a second table) is what keeps the two in
+ *  step. */
 export const MIR_STOPS: ReadonlyArray<readonly [number, string]> = [
-  [0, '#e8503a'],
-  [0.07, '#f0a23c'],
-  [0.13, '#e9dc4d'],
-  [0.2, '#8ed24c'],
-  [0.28, '#34b96e'],
-  [0.36, '#2b9ad2'],
-  [0.44, '#2166c4'],
-  [0.5, '#143a86'],
-  [0.56, '#2166c4'],
-  [0.64, '#2b9ad2'],
-  [0.72, '#34b96e'],
-  [0.8, '#8ed24c'],
-  [0.87, '#e9dc4d'],
-  [0.93, '#f0a23c'],
-  [1, '#e8503a'],
+  ...LVL_STOPS.map(([o, c]) => [o / 2, c] as const),
+  ...LVL_STOPS.slice(0, -1)
+    .reverse()
+    .map(([o, c]) => [1 - o / 2, c] as const),
 ];
 
 /** Gradient stops — ALWAYS keyed by index: the ramps carry duplicate offsets

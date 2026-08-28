@@ -12,7 +12,11 @@ import { SplashScreen } from '../screens/SplashScreen';
 import { AuthScreen } from '../screens/auth/AuthScreen';
 import { ResultsScreen } from '../screens/results/ResultsScreen';
 import { TrophyScreen } from '../screens/results/TrophyScreen';
+import { AwardProgressScreen } from '../screens/awards/AwardProgressScreen';
+import { FinalExamScreen } from '../screens/exam/FinalExamScreen';
+import { FinalExamResultScreen } from '../screens/exam/FinalExamResultScreen';
 import { SettingsScreen } from '../screens/settings/SettingsScreen';
+import { WeeklyConceptScreen } from '../screens/notifications/WeeklyConceptScreen';
 import { InstitutionalScreen } from '../screens/institutional/InstitutionalScreen';
 import { AboutScreen } from '../screens/about/AboutScreen';
 import { AwardsScreen } from '../screens/awards/AwardsScreen';
@@ -183,8 +187,13 @@ export function RootNavigator() {
       {/* Reward loop — exits are explicit buttons/auto-advance, never a back gesture. */}
       <Stack.Screen name="Results" component={ResultsScreen} options={{ gestureEnabled: false }} />
       <Stack.Screen name="Trophy" component={TrophyScreen} options={{ gestureEnabled: false }} />
+      {/* Final Exam (R6b capstone) — one sitting, no back gesture, no pause. */}
+      <Stack.Screen name="AwardProgress" component={AwardProgressScreen} options={swipe} />
+      <Stack.Screen name="FinalExam" component={FinalExamScreen} options={{ gestureEnabled: false }} />
+      <Stack.Screen name="FinalExamResult" component={FinalExamResultScreen} options={{ gestureEnabled: false }} />
       {/* S11 — modal, bottom nav hidden, exits via ✕ */}
       <Stack.Screen name="Settings" component={SettingsScreen} options={{ presentation: 'modal' }} />
+      <Stack.Screen name="WeeklyConcept" component={WeeklyConceptScreen} options={{ presentation: 'modal' }} />
       {/* Institutional Mode parked container (user request 2026-07-17). */}
       <Stack.Screen name="Institutional" component={InstitutionalScreen} options={{ presentation: 'modal' }} />
       <Stack.Screen name="About" component={AboutScreen} options={{ presentation: 'modal' }} />

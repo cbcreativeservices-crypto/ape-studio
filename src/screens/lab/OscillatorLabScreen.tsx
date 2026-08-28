@@ -63,7 +63,7 @@ import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { LabShell, HeaderPlayButton } from './LabShell';
 import { additivePayload, buildPreset, effectiveAmp, synthWaveform, type PresetKey } from './harmonicModel';
-import { MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
+import { levelColor, MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 
 const GEN_LEVEL_DB = -20; // Q4 default; cap stays locked
 const ACTIVITY_MS = 500; // 2 Hz keepalive (SignalGen idiom)
@@ -430,6 +430,16 @@ function TravelingWaveStrip({ points, height }: { points: number[]; height: numb
 /** One harmonic bar that SETTLES into its new amplitude (withTiming with a
  *  gentle back-ease overshoot — never a snap). Height/opacity are clamped in
  *  the worklet so the overshoot can't go negative. */
+/** Gradient id for the harmonic bars' shared amplitude ramp. The gradient axis
+ *  is mapped to the CHART's full height (not to each bar), so a given pixel
+ *  height is always the same colour and every bar is directly comparable. */
+const HARMONIC_RAMP_ID = 'harmonicLevelRamp';
+/** offset 0 = top of the chart (full scale, red) … 1 = the baseline (silence). */
+const HARMONIC_RAMP_STOPS = Array.from({ length: 8 }, (_, i) => {
+  const offset = i / 7;
+  return { offset, color: levelColor(1 - offset) };
+});
+
 function SettleBar({ x, width, amp, chartH }: { x: number; width: number; amp: number; chartH: number }) {
   const av = useSharedValue(amp);
   useEffect(() => {
@@ -440,7 +450,10 @@ function SettleBar({ x, width, amp, chartH }: { x: number; width: number; amp: n
     const h = a > 0.004 ? Math.max(a * (chartH - 10), 2) : 0;
     return { y: chartH - h, height: h, opacity: 0.55 + 0.45 * a };
   });
-  return <AnimatedRect x={x} width={width} fill={colors.amber} animatedProps={animatedProps} />;
+  // Filled from the shared full-height amplitude ramp (see HARMONIC_RAMP_ID):
+  // a bar's TIP lands on its own level's colour as it grows, so the twelve
+  // harmonics read loud→quiet by colour as well as by height.
+  return <AnimatedRect x={x} width={width} fill={`url(#${HARMONIC_RAMP_ID})`} animatedProps={animatedProps} />;
 }
 
 /** The 12-harmonic recipe as amber bars (relative amplitude, linear). When
@@ -471,6 +484,16 @@ function HarmonicBars({
       : '';
   return (
     <Svg width={width} height={height}>
+      {/* userSpaceOnUse is load-bearing: without it each bar would get its own
+          bounding-box gradient and every bar, loud or quiet, would look the
+          same. Mapped y=0 (full scale) → y=H (silence) instead. */}
+      <Defs>
+        <LinearGradient id={HARMONIC_RAMP_ID} gradientUnits="userSpaceOnUse" x1={0} y1={0} x2={0} y2={H}>
+          {HARMONIC_RAMP_STOPS.map((s) => (
+            <Stop key={s.offset} offset={s.offset} stopColor={s.color} />
+          ))}
+        </LinearGradient>
+      </Defs>
       <Rect x={0} y={0} width={width} height={H} fill="#0c0c0f" />
       {amps.map((a, i) => (
         <SettleBar key={i} x={pad + i * bw + 3} width={bw - 6} amp={a} chartH={H} />

@@ -69,6 +69,13 @@ import Animated, {
 import { colors, fonts } from '../../../theme/tokens';
 import { levelColor, WAVE_LEVEL_STOPS } from '../../../features/tools/levelColor';
 
+/** Amplitude ramp for SPECTRUM STICKS / recipe bars, ordered TOP (full scale,
+ *  red) → BASE (silence, blue). A stick's height already encodes amplitude, so
+ *  its colour must too — these were an amber-only gradient, which made a loud
+ *  harmonic and a quiet one the same colour (swept 2026-08-28). Map the
+ *  gradient axis to the stick FIELD, not to each stick, so heights compare. */
+const STICK_RAMP = Array.from({ length: 7 }, (_, i) => levelColor(1 - i / 6));
+
 // House palette for the model views.
 const PARTICLE = '#cfd2d8';
 const WAVE = colors.amber;
@@ -1202,7 +1209,7 @@ export function AnalyticSpectrumView({
         <BlurMask blur={5} style="normal" />
       </Path>
       <Path path={sticks} style="stroke" strokeWidth={3}>
-        <LinearGradient start={vec(0, 8)} end={vec(0, h - 14)} colors={['#ffd98a', WAVE, '#b8842a']} />
+        <LinearGradient start={vec(0, 8)} end={vec(0, h - 14)} colors={STICK_RAMP} />
       </Path>
       {/* Noise slope: glow + crisp (same idealized dB/oct line). */}
       <Path path={slope} color={WAVE} style="stroke" strokeWidth={4.5} opacity={0.22}>
@@ -2938,7 +2945,7 @@ export function FourierLensView({
         <BlurMask blur={5} style="normal" />
       </Path>
       <Path path={bars} style="stroke" strokeWidth={4} opacity={m}>
-        <LinearGradient start={vec(0, specBase - 36)} end={vec(0, specBase)} colors={['#ffd98a', WAVE, '#b8842a']} />
+        <LinearGradient start={vec(0, specBase - 36)} end={vec(0, specBase)} colors={STICK_RAMP} />
       </Path>
     </Canvas>
   );
