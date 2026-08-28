@@ -279,12 +279,33 @@ anything whose SIZE or HEIGHT encodes AMPLITUDE. It does not govern:
 Each is commented in place with this reasoning, so the next sweep doesn't
 "fix" them.
 
-### OPEN — needs an owner ruling
+### RESOLVED — the CSD waterfall (owner 2026-08-28)
 
-`src/screens/lab/meter/vizSpectral.tsx` `WF_HEAT_STOPS` (the CSD waterfall)
-**inverts the standard**: its base is deep red and its ridge peaks are white-hot,
-so on that one screen QUIET reads RED. It was built deliberately against an
-owner-supplied CSD reference screenshot (2026-07-29), which is why it was not
-changed in this sweep. It is a genuine conflict — a student who learns "red =
-loud" everywhere else meets the opposite here. Owner decides: keep the reference
-look, or bring the waterfall onto the app ramp.
+`src/screens/lab/meter/vizSpectral.tsx` `WF_HEAT_STOPS` **inverted the
+standard**: white-hot peaks → orange → deep RED base, so the quietest part of
+the display was the reddest. Because the whole ramp sat in the amber family,
+only red and yellow ever appeared and the mountains carried no level
+information. It had been built against a CSD reference screenshot (2026-07-29),
+so it was raised rather than silently converted.
+
+Owner ruled: *"the waterfall is not showing level via our colors, look at the
+scale in the same reference, if the level goes down, it color matches."*
+
+**The reference's own dB scale is the authority.** A reference look never
+outranks the level standard where the two disagree — matching a screenshot's
+palette is not a reason to teach a student that quiet is red. The waterfall now
+uses `fieldLevelColor` anchored to the full dB axis, so colour maps onto the
+scale the display already prints: +12 red · 0/−10 orange · −20 yellow · −30
+yellow-green · −40 green · −50 teal · −60 blue. The ridge stroke rides the same
+ramp (lifted 35% toward white) instead of a fixed white-hot colour, which was a
+second reason the display read amber regardless of level.
+
+**Time direction.** Owner, same ruling: *"do not rewind time by showing the
+waterfall in reverse - show one direction (time)."* The collapse phase cleared
+the range front-first, draining the oldest, most-decayed slices before the
+newest — the range retreating and the decay un-decaying, once per loop. Build
+and clear now both sweep back → front.
+
+**Rule to carry forward:** when a reference look and the level standard
+disagree, the standard wins, and any animation of a time axis runs in ONE
+direction — a loop may cut, but it may never play backwards.
