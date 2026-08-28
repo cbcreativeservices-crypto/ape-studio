@@ -670,7 +670,12 @@ const WF_SLICES = 56;
 // floor division lines land on 1 / 2 / 3 Sec exactly. Time runs BACK (t=0,
 // the loud start) → FRONT (t=3 s, fully decayed) per the 2026-08-05 flip.
 const WF_T_MAX = 3.0; // seconds spanned back (t=0) → front
-const WF_T_DIVISIONS = [1, 2, 3]; // labeled 1-second floor division lines
+// Floor division lines at 1 s and 2 s only. There used to be a 3 s line too,
+// but at tSec = WF_T_MAX the maths collapses to cum = 0 — i.e. exactly the
+// front baseline — so it drew a second line on the same pixel row as the axis
+// baseline and printed "3 Sec" on top of the arrow's "3 s". The front edge IS
+// t = 3 s and the arrow labels it (owner 2026-08-28: two clashing time scales).
+const WF_T_DIVISIONS = [1, 2];
 const WF_DB_TOP = 12;
 const WF_DB_FLOOR = -60;
 const WF_DB_SPAN = WF_DB_TOP - WF_DB_FLOOR; // 72 dB of mountain height
@@ -727,14 +732,17 @@ const WF_HEAT_STOPS: { pos: number; rgb: [number, number, number] }[] = Array.fr
   },
 );
 const WF_HEAT_POS = WF_HEAT_STOPS.map((s) => s.pos);
-/** Cool dark the depth dimming mixes toward (older = cooler + darker). */
-const WF_COOL_DARK: [number, number, number] = [15, 18, 30];
+/** NEUTRAL dark the depth dimming mixes toward (older = darker).
+ *
+ *  This was [15, 18, 30] — a BLUE dark — which collided head-on with the level
+ *  ramp: blue already means QUIET, so a forward slice went blue both because it
+ *  had decayed and because it was old, and a student could not tell which. Now
+ *  neutral, so hue carries level and level only; depth is carried by occlusion,
+ *  the perspective width taper and plain darkness. */
+const WF_COOL_DARK: [number, number, number] = [16, 16, 18];
 /** Ridge-line highlight mixed INTO the level colour so the crest still reads as
  *  a bright edge without overriding what the colour is saying about level. */
 const WF_RIDGE_LIFT: [number, number, number] = [255, 250, 236];
-/** The 2-D side-profile silhouette of the CURRENT (front) slice — the green
- *  curve of the reference, standing on the outer side plane. */
-const SIDE_GREEN = '#7dd87d';
 
 /** Frequency grid: 128 log-spaced points 20 Hz → 20 kHz PLUS exact feature
  *  frequencies (±0.014-decade flanks) so the engine's narrow ridges — the
@@ -910,7 +918,10 @@ export function WaterfallView(p: {
       // as they age forward toward the viewer. Perspective width (swid) still
       // follows depth.
       const age = t / WF_T_MAX; // 0 = the loud start … 1 = fully decayed
-      const dim = 0.62 * age;
+      // Dimming cut 0.62 → 0.28 (design review 2026-08-28): at 0.62 the forward
+      // slices were washed so far toward the dark that the level ramp — the
+      // whole lesson — stopped being readable exactly where the decay is.
+      const dim = 0.28 * age;
       slices.push({
         fill,
         stroke,
@@ -919,7 +930,7 @@ export function WaterfallView(p: {
         // white-hot colour, which is what made the whole display look amber
         // regardless of how far the ridge had fallen.
         strokeColors: WF_HEAT_STOPS.map((st) =>
-          rgbStr(mixRgb(mixRgb(st.rgb, WF_RIDGE_LIFT, 0.35), WF_COOL_DARK, 0.7 * age)),
+          rgbStr(mixRgb(mixRgb(st.rgb, WF_RIDGE_LIFT, 0.35), WF_COOL_DARK, 0.35 * age)),
         ),
         fillColors: WF_HEAT_STOPS.map((st) => rgbStr(mixRgb(st.rgb, WF_COOL_DARK, dim))),
         swid: 1.7 - 0.8 * cum,
@@ -927,27 +938,21 @@ export function WaterfallView(p: {
         yBase: oy,
       });
     }
-    // THE 2-D SIDE PROFILE (the reference's green curve): the t=0 spectrum —
-    // now the BACK slice after the time flip — re-drawn as a flat silhouette
-    // standing on the OUTER SIDE PLANE along the time axis. Frequency runs
-    // along the recession direction; height is the same a01 × (depth-shrunk)
-    // amplitude the slices use. One fill + one stroke from spec[] — cheap.
-    const xR0 = xL0 + frontW;
-    const sideFill = Skia.Path.Make();
-    const sideStroke = Skia.Path.Make();
-    sideFill.moveTo(xR0, baseY);
-    for (let k = 0; k < WF_FREQS.length; k++) {
-      const a01 = Math.max(0, Math.min(1, (spec[k] - WF_DB_FLOOR) / WF_DB_SPAN));
-      const u = lgF[k];
-      const bx = xR0 + dxTot * u;
-      const by = baseY - dyTot * u;
-      const yv = by - a01 * ampH * (1 - 0.18 * u);
-      if (k === 0) sideStroke.moveTo(bx, yv);
-      else sideStroke.lineTo(bx, yv);
-      sideFill.lineTo(bx, yv);
-    }
-    sideFill.lineTo(xR0 + dxTot, baseY - dyTot);
-    sideFill.close();
+    // THE 2-D SIDE PROFILE IS GONE (owner asked what it was for, 2026-08-28;
+    // design review agreed it should go). It drew the t=0 spectrum as a flat
+    // green silhouette on a "side plane" to the right, and it was wrong four
+    // ways at once:
+    //   • it floated 45.5 px OUTBOARD of the solid's real side face, because it
+    //     used dxTot for the recession and ignored the per-slice width shrink —
+    //     so it stood on a plane that does not exist in the scene;
+    //   • it reused the DEPTH direction to mean FREQUENCY, while everywhere
+    //     else in this chart depth means TIME;
+    //   • a flat #7dd87d curve whose HEIGHT encodes level painted a +12 dB peak
+    //     and a −60 dB valley the same "moderate" green — the exact violation
+    //     the 2026-08-28 colour ruling removed from the mountains themselves;
+    //   • it duplicated the back ridge, which is already the tallest, brightest,
+    //     unoccluded crest in the picture.
+    // Deleting it also frees the right margin the time axis needs.
     // 1-SECOND FLOOR DIVISION LINES (owner 2026-07-29 + 2026-08-05 Altiverb
     // reference): one line across the floor at every whole second, each
     // labeled at its right end — the ridges cross them during the decay, so
@@ -960,7 +965,7 @@ export function WaterfallView(p: {
       const y = baseY - dyTot * cum;
       return { t: tSec, x0, x1: x0 + frontW * (1 - 0.2 * cum), y };
     });
-    return { slices, xL0, frontW, dxTot, dyTot, baseY, ampH, sideFill, sideStroke, timeMarks };
+    return { slices, xL0, frontW, dxTot, dyTot, baseY, ampH, timeMarks };
   }, [o.room, o.damping01, o.eqBoostDb, o.qRing, o.reverb, w, h]);
 
   // Fine axis annotations (all static memo geometry): front-edge freq ticks +
@@ -968,6 +973,16 @@ export function WaterfallView(p: {
   // recession, the 1-second floor DIVISION LINES, the TIME depth arrow, the
   // dB height reference.
   const axes = useMemo(() => {
+    // The floor the range stands on. Without it the mountains float in black
+    // and the recession has to be inferred from the ridges alone. Built from
+    // the SAME four corners the slices use — front edge at baseY, back edge
+    // shrunk by the per-slice width taper — so it can't disagree with them.
+    const floor = Skia.Path.Make();
+    floor.moveTo(geo.xL0, geo.baseY);
+    floor.lineTo(geo.xL0 + geo.frontW, geo.baseY);
+    floor.lineTo(geo.xL0 + geo.dxTot + geo.frontW * 0.8, geo.baseY - geo.dyTot);
+    floor.lineTo(geo.xL0 + geo.dxTot, geo.baseY - geo.dyTot);
+    floor.close();
     const ticks = Skia.Path.Make();
     const depthGuides = Skia.Path.Make();
     for (const { f } of WF_FRONT_LABELS) {
@@ -1024,28 +1039,37 @@ export function WaterfallView(p: {
       arrow.moveTo(ax0, ay0);
       arrow.lineTo(ax0 - 6 * Math.cos(angA - s * 0.42), ay0 - 6 * Math.sin(angA - s * 0.42));
     }
+    // dB KEY — a COLOUR key, not a geometric ruler.
+    //
+    // This gutter used to be a plain vertical ruler spanning ampH from baseY,
+    // which is the FRONT slice's scale. But every slice has its own baseline
+    // (oy = baseY − dyTot·cum) and its own height (amp = ampH·(1 − 0.18·cum)):
+    // at the back the baseline is ~119 px higher and the scale ~18% shorter. So
+    // the ruler was true for exactly ONE of 56 slices — and that one was the
+    // FRONT slice, the most decayed, the one nobody is reading. Sighting across
+    // from "−30" to the back ridge was wrong by a third of the plot height. A
+    // confidently wrong anchor is worse than no anchor.
+    //
+    // COLOUR is the encoding that IS correct on every slice, because each
+    // slice's gradient is anchored to its own yTop/yBase — the same colour means
+    // the same dB at any depth. So the key shows the ramp itself. That also
+    // gives the chart's most important encoding its first legend anywhere, and
+    // ticks +12 so the red crests aren't misread as 0 dB.
+    // Key abuts the plot's left edge; the tick labels keep the full gutter to
+    // its left (a "−60" at 10 pt mono needs ~24 px, so this budget is tight and
+    // must not be eaten by the key).
+    const keyW = 7;
+    const keyX = geo.xL0 - keyW;
+    const keyTop = geo.baseY - geo.ampH;
     const ref = Skia.Path.Make();
-    const rx = geo.xL0 - 8;
-    ref.moveTo(rx, geo.baseY);
-    ref.lineTo(rx, geo.baseY - geo.ampH);
+    ref.addRect(Skia.XYWHRect(keyX, keyTop, keyW, geo.ampH));
     const dbTickYs: { dbV: number; y: number }[] = [];
-    for (const dbV of [0, -30, -60]) {
+    for (const dbV of [WF_DB_TOP, 0, -30, WF_DB_FLOOR]) {
       const y = geo.baseY - ((dbV - WF_DB_FLOOR) / WF_DB_SPAN) * geo.ampH;
-      ref.moveTo(rx - 3, y);
-      ref.lineTo(rx, y);
       dbTickYs.push({ dbV, y });
     }
-    return { ticks, depthGuides, timeLines, arrow, ref, ax0, ay0, ax1, ay1, dbTickYs };
+    return { floor, ticks, depthGuides, timeLines, arrow, ref, keyX, keyW, keyTop, ax0, ay0, ax1, ay1, dbTickYs };
   }, [geo]);
-
-  // The side profile appears with the first slice of each build and holds with
-  // the range — it IS the live 2-D spectrum view of what the front slice shows.
-  const sideOp = useDerivedValue(() => {
-    if (!animate) return 1;
-    const u = (((phase.value / TAU) % 1) + 1) % 1;
-    // Opaque-or-absent and hold-to-reset, matching the slices.
-    return easeInOutW(Math.min(1, u / WF_GROW_END)) * WF_SLICES > 0 ? 1 : 0;
-  }, [phase, animate]);
 
   // Impulse flash: the front slice flares white as each build cycle begins.
   const flashOp = useDerivedValue(() => {
@@ -1057,7 +1081,17 @@ export function WaterfallView(p: {
   return (
     <View style={{ width: w, height: h }}>
       <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
-        <Path path={axes.ref} color={GRID} style="stroke" strokeWidth={1.1} />
+        <Path path={axes.floor} color="#12131a" />
+        {/* dB colour key — the ramp itself, so the chart's main encoding has a
+            legend. Same stops and axis direction as every slice. */}
+        <Path path={axes.ref}>
+          <LinearGradient
+            start={vec(0, axes.keyTop)}
+            end={vec(0, geo.baseY)}
+            colors={WF_HEAT_STOPS.map((st) => rgbStr(st.rgb))}
+            positions={WF_HEAT_POS}
+          />
+        </Path>
         {/* Floor grammar UNDER the mountains: depth guide lines + the labeled
             1-second division lines — ridges cross them as time goes by. */}
         {/* Frequency tie lines — one per labelled station, running from the
@@ -1067,28 +1101,18 @@ export function WaterfallView(p: {
             a line shows through where the range is QUIET and is hidden where it
             is loud, which reads as real depth instead of a grid pasted on top.
             Brightened now that most of each line is hidden. */}
-        <Path path={axes.depthGuides} color="#8d93a3" style="stroke" strokeWidth={1} opacity={0.55} />
+        <Path path={axes.depthGuides} color="#8d93a3" style="stroke" strokeWidth={1} opacity={0.35} />
         {/* 1-second bands — bright, Altiverb-style, so time is unmissable. */}
-        <Path path={axes.timeLines} color="#c6ccda" style="stroke" strokeWidth={1.3} opacity={0.75} />
+        {/* Chrome must never out-contrast the data: at 0.75 these floor bands
+            were brighter than the decayed mountain fills they run behind. They
+            stay legible because they EMERGE from behind the ridges. */}
+        <Path path={axes.timeLines} color="#c6ccda" style="stroke" strokeWidth={1.3} opacity={0.45} />
         <Path path={axes.arrow} color="#4b4e58" style="stroke" strokeWidth={1.2} strokeCap="round" />
         {/* The mountain range: BACK-TO-FRONT so opaque fills occlude. */}
         {Array.from({ length: WF_SLICES }, (_, k) => {
           const i = WF_SLICES - 1 - k;
           return <WfSlice key={i} slice={geo.slices[i]} index={i} phase={phase} animate={animate} />;
         })}
-        {/* The 2-D side profile (reference's green curve): the front slice's
-            spectrum standing on the outer side plane, front-slice-synced. */}
-        <Group opacity={sideOp}>
-          <Path path={geo.sideFill} color={withAlpha(SIDE_GREEN, 0.16)} />
-          <Path
-            path={geo.sideStroke}
-            color={SIDE_GREEN}
-            style="stroke"
-            strokeWidth={1.6}
-            strokeJoin="round"
-            opacity={0.9}
-          />
-        </Group>
         {/* Phase A impulse flash on the t=0 slice — the BACK ridge. */}
         <Path path={geo.slices[WF_SLICES - 1].stroke} color="#ffffff" style="stroke" strokeWidth={2.6} opacity={flashOp}>
           <BlurMask blur={5} style="normal" />
@@ -1116,26 +1140,45 @@ export function WaterfallView(p: {
           {d.label}
         </RNText>
       ))}
+      {/* Hz caps the RIGHT end of the frequency strip. At the left it sat at
+          x 1–27 while the "30" label clamped to x 26, so the unit and the first
+          tick touched; and it read as a seventh station rather than as the
+          scale's unit. */}
       <RNText
-        style={{ position: 'absolute', left: 1, top: geo.baseY + 9, width: 26, textAlign: 'left', ...teachText, fontSize: 11 }}
+        style={{
+          position: 'absolute',
+          // The 20k label is centred in a 34 px box, so it overhangs the front
+          // corner by 17 px — Hz has to start past that, not at the corner.
+          left: Math.min(w - 24, geo.xL0 + geo.frontW + 20),
+          top: geo.baseY + 9,
+          width: 24,
+          textAlign: 'left',
+          ...teachText,
+          fontSize: 11,
+        }}
       >
         Hz
       </RNText>
-      {/* 1-second division labels riding the right ends of the floor lines. */}
+      {/* Second marks, drawn INBOARD of each floor line's right end rather than
+          outboard. Outboard they were clamped against the canvas edge and sat
+          on top of the time arrow; inboard they need no clamp and leave the
+          right margin to the axis. Short units ("1s") so they read as ticks on
+          one scale, not as three separate captions. */}
       {geo.timeMarks.map((m) => (
         <RNText
           key={`t${m.t}`}
           style={{
             position: 'absolute',
-            left: Math.max(0, Math.min(w - 40, m.x1 + 5)),
-            width: 40,
+            left: m.x1 - 32,
+            width: 30,
             top: m.y - 5,
+            textAlign: 'right',
             fontFamily: fonts.mono,
             fontSize: 10,
             color: AXIS_TEXT,
           }}
         >
-          {`${m.t} Sec`}
+          {`${m.t}s`}
         </RNText>
       ))}
       {/* TIME depth arrow labels. */}
@@ -1150,7 +1193,10 @@ export function WaterfallView(p: {
       >
         TIME
       </RNText>
-      {/* Time now ends at the FRONT (t=0 is the back ridge). */}
+      {/* The arrow's two ends carry the scale's endpoints — 0 s at the back
+          (the impulse) and 3 s at the front — so together with the 1s/2s floor
+          marks there is ONE time scale reading 0·1·2·3, not two competing
+          ones. */}
       <RNText
         style={{
           position: 'absolute',
@@ -1165,7 +1211,7 @@ export function WaterfallView(p: {
           color: AXIS_TEXT,
         }}
       >
-        {`${WF_T_MAX} s`}
+        {`${WF_T_MAX}s`}
       </RNText>
       <RNText
         style={{
@@ -1179,7 +1225,7 @@ export function WaterfallView(p: {
           color: AXIS_TEXT,
         }}
       >
-        0
+        0s
       </RNText>
       {/* dB height reference. */}
       {axes.dbTickYs.map(({ dbV, y }) => (
@@ -1188,7 +1234,7 @@ export function WaterfallView(p: {
           style={{
             position: 'absolute',
             left: 0,
-            width: geo.xL0 - 10,
+            width: axes.keyX - 2,
             top: y - 5,
             textAlign: 'right',
             fontFamily: fonts.mono,
@@ -1196,7 +1242,7 @@ export function WaterfallView(p: {
             color: AXIS_TEXT,
           }}
         >
-          {`${dbV}`}
+          {dbV > 0 ? `+${dbV}` : `${dbV}`}
         </RNText>
       ))}
       <RNText
@@ -1204,7 +1250,7 @@ export function WaterfallView(p: {
           position: 'absolute',
           left: 0,
           width: geo.xL0 - 8,
-          top: geo.baseY - geo.ampH - 14,
+          top: geo.baseY - geo.ampH - 15,
           textAlign: 'right',
           ...teachText,
           fontSize: 11,
