@@ -40,7 +40,12 @@ import {
   type WaterfallOpts,
 } from './meterEngine';
 import { fonts } from '../../../theme/tokens';
-import { heatColor as levelHeatColor, levelColor, LOUDNESS_STOPS } from '../../../features/tools/levelColor';
+import {
+  heatColor as levelHeatColor,
+  fieldLevelColor,
+  levelColor,
+  LOUDNESS_STOPS,
+} from '../../../features/tools/levelColor';
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 
 const TAU = Math.PI * 2;
@@ -651,8 +656,9 @@ export function SpectrogramPatternView(p: {
 //     running into the depth parallel to the recession;
 //   • labeled 1-SECOND floor division lines (1 / 2 / 3 Sec) across the 3 s
 //     span — the ridges cross them during the collapse, making time visible;
-//   • HEIGHT-GRADED heat fills: deep red base → orange → yellow → white-hot
-//     ridge peaks per slice, with depth dimming toward a cool dark;
+//   • HEIGHT-GRADED LEVEL fills: the app amplitude ramp up each slice, anchored
+//     to the full dB scale (red at the ceiling → blue at the floor), with depth
+//     dimming toward a cool dark;
 //   • the front slice's spectrum re-drawn as a green 2-D silhouette standing
 //     on the outer side plane, opacity-synced to the front slice.
 // Math (waterfallSpectrumDb / waterfallRt), the 56×140 geometry, occlusion,
@@ -691,25 +697,38 @@ function mixRgb(
 }
 const rgbStr = (c: [number, number, number]) => `rgb(${c[0]},${c[1]},${c[2]})`;
 
-// HEIGHT-GRADED HEAT (owner 2026-07-29, reference CSD screenshot): every
-// slice carries the same vertical amplitude ramp — deep red at the base →
-// orange → yellow → white-hot at ridge peaks. The gradient is anchored to the
-// slice's FULL amplitude range (yTop…yBase), so a ridge only reaching halfway
-// up only reaches the orange band: color = height. AGE then dims: older
-// slices mix toward a cool dark, so the t=0 back ridge is hot and the decayed
-// front cools toward the viewer (2026-08-05 time flip).
-// All stops stay OPAQUE — the hidden-line occlusion depends on opaque fills.
-const WF_HEAT_STOPS: { pos: number; rgb: [number, number, number] }[] = [
-  { pos: 0, rgb: [255, 246, 214] }, // white-hot — ridge peaks
-  { pos: 0.3, rgb: [255, 205, 66] }, // yellow
-  { pos: 0.62, rgb: [244, 116, 28] }, // orange
-  { pos: 1, rgb: [118, 16, 14] }, // deep red — the base
-];
+// HEIGHT-GRADED LEVEL COLOUR. Every slice carries the app amplitude ramp up
+// its height, and the gradient is anchored to the FULL dB scale (yTop = the
+// WF_DB_TOP ceiling … yBase = the WF_DB_FLOOR baseline), NOT to the slice's own
+// min/max — so a ridge only reaching halfway up only reaches the middle of the
+// ramp. Colour IS the dB reading: the same height is the same colour on every
+// slice, and a ridge that decays visibly cools as it falls.
+//
+// This used to be a private amber-only ramp (white-hot peaks → deep RED base)
+// copied from a CSD reference. It broke the app-wide standard in the worst
+// possible way — the base, the QUIETEST part of the display, was the reddest —
+// and in practice only red and yellow ever appeared, so the mountains carried
+// no level information at all. Owner 2026-08-28: "the waterfall is not showing
+// level via our colors ... if the level goes down, its color matches."
+//
+// FIELD_STOPS (via fieldLevelColor), not the meter ramp: this is a 2-D field
+// read against a scale, so the stops must be EVENLY spaced — the meter ramp's
+// wide green plateau would flatten a quarter of the mountain to one colour.
+const WF_HEAT_STOPS: { pos: number; rgb: [number, number, number] }[] = Array.from(
+  { length: 9 },
+  (_, i) => {
+    const pos = i / 8; // 0 = the +12 dB ceiling … 1 = the −60 dB floor
+    const hex = fieldLevelColor(1 - pos);
+    const n = parseInt(hex.slice(1), 16);
+    return { pos, rgb: [(n >> 16) & 255, (n >> 8) & 255, n & 255] as [number, number, number] };
+  },
+);
 const WF_HEAT_POS = WF_HEAT_STOPS.map((s) => s.pos);
 /** Cool dark the depth dimming mixes toward (older = cooler + darker). */
 const WF_COOL_DARK: [number, number, number] = [15, 18, 30];
-/** Ridge-line stroke base (white-hot), dimmed with depth like the fill. */
-const WF_STROKE_RGB: [number, number, number] = [255, 238, 196];
+/** Ridge-line highlight mixed INTO the level colour so the crest still reads as
+ *  a bright edge without overriding what the colour is saying about level. */
+const WF_RIDGE_LIFT: [number, number, number] = [255, 250, 236];
 /** The 2-D side-profile silhouette of the CURRENT (front) slice — the green
  *  curve of the reference, standing on the outer side plane. */
 const SIDE_GREEN = '#7dd87d';
@@ -737,9 +756,9 @@ function easeInOutW(x: number): number {
 type WfSliceGeo = {
   fill: SkPathT;
   stroke: SkPathT;
-  strokeColor: string;
-  /** The height-graded heat ramp (WF_HEAT_STOPS depth-dimmed for this slice),
-   *  anchored yTop (white-hot peaks) → yBase (deep red base). */
+  strokeColors: string[];
+  /** The level ramp (WF_HEAT_STOPS depth-dimmed for this slice), anchored
+   *  yTop (the +12 dB ceiling, red) → yBase (the −60 dB floor, blue). */
   fillColors: string[];
   swid: number;
   strokeOpacity: number;
@@ -748,7 +767,8 @@ type WfSliceGeo = {
 };
 
 /** One slice: frozen geometry + colors, its opacity window animated in a
- *  worklet (grow front→back · hold · melt back→front — energy decaying). */
+ *  worklet. Build and clear BOTH sweep back → front, so time only ever runs in
+ *  one direction (owner 2026-08-28). */
 function WfSlice({
   slice,
   index,
@@ -764,9 +784,8 @@ function WfSlice({
     if (!animate) return 1;
     const u = (((phase.value / TAU) % 1) + 1) % 1;
     // Time-flipped ordering (owner 2026-08-05): the t=0 slice is the BACK
-    // (highest index), so the build reveals back → front (the impulse flashes
-    // at the back and the decay cascades toward the viewer), and the melt
-    // removes the oldest (front) slices first.
+    // (highest index), so the build reveals back → front — the impulse flashes
+    // at the back and the decay cascades toward the viewer.
     const ri = WF_SLICES - 1 - index; // 0 = the t=0 back slice … N−1 = oldest front
     if (u < WF_GROW_END) {
       // Phase A: the decay cascades forward, slice by slice.
@@ -774,14 +793,22 @@ function WfSlice({
       return Math.max(0, Math.min(1, g - ri));
     }
     if (u < WF_HOLD_END) return 1; // Phase B: hold
-    // Phase C: the range melts oldest-first (front → back).
+    // Phase C: the range clears in the SAME direction it arrived — back
+    // (t=0) first, sweeping forward past the viewer.
+    //
+    // This used to clear front-first (`WF_SLICES - ri - c`), which drained the
+    // oldest, most-decayed slices before the newest. On screen that read as the
+    // range RETREATING and the decay un-decaying — time visibly running
+    // backwards once per loop. Owner 2026-08-28: "do not rewind time by showing
+    // the waterfall in reverse - show one direction (time)." Both the build and
+    // the clear now sweep back → front, so energy only ever travels one way.
     const c = easeInOutW((u - WF_HOLD_END) / (1 - WF_HOLD_END)) * WF_SLICES;
-    return Math.max(0, Math.min(1, WF_SLICES - ri - c));
+    return Math.max(0, Math.min(1, 1 - (c - ri)));
   }, [phase, animate, index]);
   return (
     <Group opacity={op}>
-      {/* Opaque fill = hidden-line occlusion + the height-graded heat ramp
-          (deep red base → orange → yellow → white-hot peaks, depth-dimmed). */}
+      {/* Opaque fill = hidden-line occlusion + the height-graded LEVEL ramp
+          (red at the dB ceiling → blue at the floor, depth-dimmed). */}
       <Path path={slice.fill}>
         <LinearGradient
           start={vec(0, slice.yTop)}
@@ -792,13 +819,19 @@ function WfSlice({
       </Path>
       <Path
         path={slice.stroke}
-        color={slice.strokeColor}
         style="stroke"
         strokeWidth={slice.swid}
         strokeCap="round"
         strokeJoin="round"
         opacity={slice.strokeOpacity}
-      />
+      >
+        <LinearGradient
+          start={vec(0, slice.yTop)}
+          end={vec(0, slice.yBase)}
+          colors={slice.strokeColors}
+          positions={WF_HEAT_POS}
+        />
+      </Path>
     </Group>
   );
 }
@@ -886,7 +919,13 @@ export function WaterfallView(p: {
       slices.push({
         fill,
         stroke,
-        strokeColor: rgbStr(mixRgb(WF_STROKE_RGB, WF_COOL_DARK, 0.7 * age)),
+        // The ridge line rides the SAME ramp as the fill (lifted toward white
+        // so the crest still reads as a bright edge). It used to be one fixed
+        // white-hot colour, which is what made the whole display look amber
+        // regardless of how far the ridge had fallen.
+        strokeColors: WF_HEAT_STOPS.map((st) =>
+          rgbStr(mixRgb(mixRgb(st.rgb, WF_RIDGE_LIFT, 0.35), WF_COOL_DARK, 0.7 * age)),
+        ),
         fillColors: WF_HEAT_STOPS.map((st) => rgbStr(mixRgb(st.rgb, WF_COOL_DARK, dim))),
         swid: 1.7 - 0.8 * cum,
         strokeOpacity: 1 - 0.4 * age,
