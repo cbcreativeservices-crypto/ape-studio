@@ -1236,7 +1236,14 @@ export function DistanceView({
     const cw = w / COLS;
     const ch = fieldH / ROWS;
     const refD = 42;
-    const room = 0.14; // the diffuse room level the direct field sinks into
+    // The diffuse room level the direct field sinks into. LOWERED 0.14 → 0.04
+    // (owner 2026-08-28). At 0.14 the room term dominated everything past the
+    // mid-field, so the total level stopped falling and two-thirds of the
+    // screen sat at one green — "it takes so little space to go from red to
+    // green, yet then green takes the entire screen". With a quieter room the
+    // direct sound keeps falling across the whole width, so the field walks the
+    // full ramp: red at the mouth → orange → yellow → green → blue → black.
+    const room = 0.04;
     for (let r = 0; r < ROWS; r++) {
       const dy = (r + 0.5) * ch - mid;
       addFieldRow(bucketPaths, COLS, 0, r * ch, cw, ch, (c) => {

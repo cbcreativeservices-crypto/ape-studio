@@ -34,6 +34,32 @@ export const LOUDNESS_STOPS: ReadonlyArray<{ pos: number; color: string }> = [
   { pos: 1, color: MIDLINE_BLUE }, // silence / mid line — MIDI-0 blue (wider blue floor)
 ];
 
+/**
+ * EVENLY-SPACED stops for 2-D FIELDS and gradients (owner 2026-08-28).
+ *
+ * `LOUDNESS_STOPS` is tuned for METERS: it holds a deliberately WIDE green
+ * plateau (two identical green stops) so the "healthy operating range"
+ * dominates the middle of a meter — that ruling stands and meters keep it.
+ *
+ * But a spatial field inherited that same spacing, and the result was not a
+ * gradient: red→green was crushed into the top third, then a QUARTER of the
+ * ramp was flat green with no change at all, and blue only began past 0.72 —
+ * so a distance field went red→green almost immediately and then sat green
+ * across the whole screen. Owner: "This is not a gradient, it is skewed, it
+ * must show a gradient that doesn't need interpretation."
+ *
+ * These stops are perfectly even, so equal steps in level are equal steps in
+ * colour. Same hue ORDER and the same meaning (blue = quiet, red = loud) — only
+ * the spacing differs, because a meter judges a level while a field maps one.
+ */
+export const FIELD_STOPS: ReadonlyArray<{ pos: number; color: string }> = [
+  { pos: 0, color: '#ff5f4e' }, // full scale — red
+  { pos: 0.25, color: '#e6902f' }, // orange
+  { pos: 0.5, color: '#e8c341' }, // yellow
+  { pos: 0.75, color: '#3fae52' }, // green
+  { pos: 1, color: MIDLINE_BLUE }, // silence — MIDI-0 blue
+];
+
 function hexToRgb(h: string): [number, number, number] {
   const n = parseInt(h.slice(1), 16);
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
@@ -47,9 +73,19 @@ function rgbToHex(r: number, g: number, b: number): string {
  *  interpolated along the canonical velocity ramp. `levelColor(0)` is
  *  `MIDLINE_BLUE`. */
 export function levelColor(l: number): string {
+  return sampleStops(LOUDNESS_STOPS, l);
+}
+
+/** Field/gradient colour for a loudness fraction — the EVEN ramp (FIELD_STOPS).
+ *  Use for 2-D heat fields and gradients; `levelColor` stays for meters. */
+export function fieldLevelColor(l: number): string {
+  return sampleStops(FIELD_STOPS, l);
+}
+
+/** Shared stop interpolation: `l` 0=silence … 1=full scale. */
+function sampleStops(s: ReadonlyArray<{ pos: number; color: string }>, l: number): string {
   const loud = Math.max(0, Math.min(1, l));
-  const pos = 1 - loud; // ramp is indexed by pos (0 loud … 1 silence)
-  const s = LOUDNESS_STOPS;
+  const pos = 1 - loud; // ramps are indexed by pos (0 loud … 1 silence)
   for (let i = 1; i < s.length; i++) {
     if (pos <= s[i].pos) {
       const a = s[i - 1];
@@ -87,7 +123,9 @@ export function levelColorForDb(db: number | null | undefined, minDb = -60, maxD
  */
 export function heatColor(t01: number): string {
   const t = Math.max(0, Math.min(1, t01));
-  const [r, g, b] = hexToRgb(levelColor(t)); // blue(quiet) → red(loud)
+  // EVEN ramp (FIELD_STOPS), not the meter ramp: a heat field must read as a
+  // gradient, with equal steps in level giving equal steps in colour.
+  const [r, g, b] = hexToRgb(fieldLevelColor(t)); // blue(quiet) → red(loud)
   // BLUE FADES TO BLACK AT ZERO SIGNAL (owner 2026-08-28). This used to floor
   // the brightness at 0.22, so true silence still rendered as a lit deep-navy —
   // a 2-D field or spectrogram showed a wall of blue where there was NO signal.
