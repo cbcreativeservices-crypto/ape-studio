@@ -37,17 +37,28 @@ under its own selector plus SPF on its own `send.` subdomain, so Google's
 root SPF and inbound mail are unaffected. Once verified, Resend signs DKIM
 as the company domain, which also satisfies any DMARC policy.
 
-## Owner setup — run once
+## Setup status (2026-08-30)
 
-| # | Where 📍 | What |
+| # | What | Status |
 |---|---|---|
-| 1 | 📍 https://resend.com | Create the account (free tier: 3,000 emails/month). |
-| 2 | 📍 Resend dashboard → Domains → Add Domain | Add `proaudiotrainingacademy.com`. Resend shows 2–3 DNS records (DKIM TXT + SPF for its sending subdomain). |
-| 3 | 📍 Wherever proaudiotrainingacademy.com's DNS is managed | Add those records exactly as shown. They do NOT touch MX — any existing mail receiving is unaffected. Verification usually completes in minutes. |
-| 4 | 📍 Resend dashboard → API Keys | Create a key (sending-only permission is enough). Copy it. |
-| 5 | 📍 Terminal at `C:\Users\profe\dev\ape-studio` | `npx supabase secrets set RESEND_API_KEY=<the key> --project-ref yjgolswjggmlpeowvtxr` |
-| 6 | 📍 Supabase SQL editor | `alter table public.notification_concept_deliveries add column if not exists email_status text;` |
-| 7 | 📍 Terminal at `C:\Users\profe\dev\ape-studio` | `npx supabase functions deploy on-weekly-concept --project-ref yjgolswjggmlpeowvtxr` |
+| 1 | Resend account created | ✅ owner |
+| 2–3 | `proaudiotrainingacademy.com` added + DKIM/SPF DNS records | ✅ **all three Verified**, Enable Sending ON, Enable Receiving OFF (Workspace keeps MX) |
+| 4–5 | API key → `RESEND_API_KEY` + `EMAIL_REPLY_TO` secrets | ⏳ **OWNER — the only step left** (see below) |
+| 6 | `email_status` column on `notification_concept_deliveries` | ✅ applied via migration `add_email_status_to_concept_deliveries`, verified in catalog |
+| 7 | `on-weekly-concept` deployed with the email transport | ✅ **version 2 ACTIVE** (verify_jwt unchanged) |
+
+### The remaining step (owner only — it involves a secret key)
+
+Resend dashboard → **API Keys** → create a key with **Sending access** →
+copy it, then in the Supabase dashboard → **Project Settings → Edge Functions
+→ Secrets** (or a terminal with `supabase login` done), add:
+
+```
+RESEND_API_KEY   = <the key from Resend>
+EMAIL_REPLY_TO   = info@proaudiotrainingacademy.com
+```
+
+No redeploy needed afterwards — secrets are read at invocation.
 
 Optional env overrides: `EMAIL_FROM` (default
 `AP&E Pro Audio Training <notifications@proaudiotrainingacademy.com>`) and
