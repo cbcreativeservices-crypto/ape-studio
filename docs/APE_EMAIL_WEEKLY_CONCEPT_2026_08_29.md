@@ -24,12 +24,18 @@ Provider: **Resend**. From: `notifications@proaudiotrainingacademy.com`
 `reply_to` is only attached when the `EMAIL_REPLY_TO` secret is set — set it to
 a COMPANY inbox (e.g. `info@proaudiotrainingacademy.com`) once one exists.
 
-## Recommended: a company inbox that stays private
+## Reply-to: already solved
 
-Create `info@proaudiotrainingacademy.com` at the company domain's mail host
-and set it to FORWARD to whatever inbox you actually read. Server-side
-forwarding is invisible to recipients — the public only ever sees the company
-address. Then: `npx supabase secrets set EMAIL_REPLY_TO=info@proaudiotrainingacademy.com --project-ref yjgolswjggmlpeowvtxr`
+`info@proaudiotrainingacademy.com` EXISTS (Google Workspace; routes to a
+mailbox the owner reads — that routing is server-side and invisible to
+recipients). One secret turns replies on:
+`npx supabase secrets set EMAIL_REPLY_TO=info@proaudiotrainingacademy.com --project-ref yjgolswjggmlpeowvtxr`
+
+Workspace + Resend coexist cleanly: Workspace owns the domain's MX
+(receiving), which Resend never touches; Resend's records are a DKIM TXT
+under its own selector plus SPF on its own `send.` subdomain, so Google's
+root SPF and inbound mail are unaffected. Once verified, Resend signs DKIM
+as the company domain, which also satisfies any DMARC policy.
 
 ## Owner setup — run once
 
