@@ -631,7 +631,7 @@ type DetectiveCase = {
   fix: CheckSpec;
 };
 
-const RING_OPTS: WaterfallOpts = { room: 'classroom', damping01: 0.15, eqBoostDb: 0, qRing: false, reverb: 'none' };
+const RING_OPTS: WaterfallOpts = { room: 'classroom', damping01: 0.15, eqBoostDb: 0, eqFilter: 'bell220q6', qRing: false, reverb: 'none' };
 
 const CASES: DetectiveCase[] = [
   {

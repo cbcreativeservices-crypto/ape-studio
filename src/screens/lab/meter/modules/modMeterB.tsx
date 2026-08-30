@@ -50,6 +50,9 @@ import {
   waterfallRt,
   waterfallRidge,
   RIDGE_CALLOUT_RATIO,
+  EQ_FILTERS,
+  EQ_FILTER_BY_KEY,
+  type EqFilterKey,
 } from '../meterEngine';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -85,9 +88,10 @@ function scanSpectrum(key: SpectrumKey): { peakF: number; peakDb: number; tiltDb
   return { peakF, peakDb, tiltDbOct: tilt };
 }
 
-/** The frequency the EQ 250 lane acts on — named once so the fader, its label
- *  and the ringing check cannot drift apart. */
-const EQ_HZ = 250;
+/** How close the EQ's centre must sit to the ringing ridge before the lane is
+ *  tinted — about a sixth of an octave either side. The frequency itself now
+ *  comes from the CHOSEN filter, not a constant. */
+const EQ_ON_RIDGE_OCT = 0.17;
 
 function dampingLabel(d: number): string {
   return d < 0.25 ? 'CONCRETE' : d < 0.5 ? 'CURTAINS' : d < 0.75 ? 'CARPET' : 'PANELS';
@@ -595,6 +599,9 @@ export function WaterfallModule(p: MeterModuleProps) {
   const [room, setRoom] = useState<RoomKey>('classroom');
   const [damping01, setDamping01] = useState(0.15);
   const [eqBoostDb, setEqBoostDb] = useState(0);
+  // WHICH filter the EQ lane drives (owner 2026-08-30) — the lane used to be
+  // hard-wired to a 250 Hz bell, so the lab could only teach one shape.
+  const [eqFilter, setEqFilter] = useState<EqFilterKey>('bell220q6');
   const [qRing, setQRing] = useState(false);
   // Bumping this restarts the waterfall build (REPLAY, and any scene change).
   const [replay, setReplay] = useState(0);
@@ -611,8 +618,8 @@ export function WaterfallModule(p: MeterModuleProps) {
 
 
   const opts = useMemo<WaterfallOpts>(
-    () => ({ room, damping01, eqBoostDb, qRing, reverb }),
-    [room, damping01, eqBoostDb, qRing, reverb],
+    () => ({ room, damping01, eqBoostDb, eqFilter, qRing, reverb }),
+    [room, damping01, eqBoostDb, eqFilter, qRing, reverb],
   );
   // Is the EQ lane parked on the frequency the room is ringing at? Same
   // slowest-vs-median rule and the same 1.5x threshold the plot uses to decide
@@ -620,7 +627,11 @@ export function WaterfallModule(p: MeterModuleProps) {
   // disagree about whether there is a ridge to point at.
   const eqOnRinging = useMemo(() => {
     const v = waterfallRidge(opts);
-    return v.ratio >= RIDGE_CALLOUT_RATIO && Math.abs(Math.log2(v.f / EQ_HZ)) < 0.17; // ~ +/- 1/6 octave
+    // A shelf has no centre to line up with a mode, so it never claims to be
+    // "on the ring" — only the bells can be aimed at one.
+    const spec = EQ_FILTER_BY_KEY[eqFilter];
+    if (spec.kind !== 'bell') return false;
+    return v.ratio >= RIDGE_CALLOUT_RATIO && Math.abs(Math.log2(v.f / spec.hz)) < EQ_ON_RIDGE_OCT;
   }, [opts]);
 
   const rt = useMemo(
@@ -651,11 +662,22 @@ export function WaterfallModule(p: MeterModuleProps) {
     {
       kind: 'fader',
       id: 'eq',
-      label: `EQ ${EQ_HZ}`,
+      label: 'EQ GAIN',
       value: (eqBoostDb + 12) / 24,
       onChange: (v) => setEqBoostDb(Math.round(-12 + v * 24)),
-      format: () => `${eqBoostDb >= 0 ? '+' : '−'}${Math.abs(eqBoostDb)} dB @ ${EQ_HZ} Hz`,
+      format: () =>
+        `${eqBoostDb >= 0 ? '+' : '−'}${Math.abs(eqBoostDb)} dB · ${EQ_FILTER_BY_KEY[eqFilter].label}`,
       formatShort: () => `${eqBoostDb >= 0 ? '+' : '−'}${Math.abs(eqBoostDb)} dB`,
+      helpKey: 'eq_ridge',
+    },
+    {
+      kind: 'options',
+      id: 'eqfilter',
+      label: 'EQ FILTER',
+      valueLabel: EQ_FILTER_BY_KEY[eqFilter].label.toUpperCase(),
+      selectedId: eqFilter,
+      onSelect: (id) => setEqFilter(id as EqFilterKey),
+      options: EQ_FILTERS.map((f) => ({ id: f.key, label: f.label.toUpperCase(), blurb: f.blurb })),
       helpKey: 'eq_ridge',
     },
     {
@@ -754,7 +776,7 @@ export function WaterfallModule(p: MeterModuleProps) {
         </CollapsibleSection>
 
         <Text style={dstyles.body}>
-          Build a scene, then watch it collapse: ROOM and REVERB pick the scene, the DAMPING and EQ 250
+          Build a scene, then watch it collapse: ROOM and REVERB pick the scene, the DAMPING and EQ GAIN
           lanes reshape it live, Q RING plants a ringing filter. The bezel keeps score.
         </Text>
         <ReadoutGrid

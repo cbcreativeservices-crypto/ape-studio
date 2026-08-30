@@ -270,6 +270,9 @@ export type WaterfallOpts = {
   damping01: number;
   /** EQ boost at 250 Hz, dB (−12..+12). */
   eqBoostDb: number;
+  /** Which filter the EQ lane drives (owner 2026-08-30 — was a fixed 250 Hz
+   *  bell, so the lab could only ever teach one filter shape). */
+  eqFilter: EqFilterKey;
   /** High-Q ringing filter on/off (adds a narrow long-decay ridge at 1.2 kHz). */
   qRing: boolean;
   reverb: ReverbKey;
@@ -439,11 +442,79 @@ export function waterfallRt(opts: WaterfallOpts, f: number): number {
   return Math.max(0.12, rt);
 }
 
+/**
+ * THE EQ LANE'S FILTER (owner 2026-08-30: the EQ button opens a menu).
+ *
+ * Three deliberately different shapes, so the lab can show that WHERE and HOW
+ * WIDE matter as much as how much:
+ *   220 Hz Q6    — surgical: narrow enough to sit between room modes
+ *   440 Hz Q1    — musical: nearly one and a half octaves wide
+ *   1 kHz shelf  — everything above moves together, not a bump at all
+ *
+ * Bandwidth comes from Q properly rather than by eye:
+ *   BW(octaves) = (2/ln2)·asinh(1/(2Q))
+ * and the bell is drawn as a gaussian in log10(f), whose half-power full width
+ * is 1.665σ — so σ = BW_decades / 1.665. Q6 lands at ~0.24 octaves and Q1 at
+ * ~1.39, which is what those numbers mean on a real parametric.
+ */
+export type EqFilterKey = 'bell220q6' | 'bell440q1' | 'shelf1k';
+
+export const EQ_FILTERS: {
+  key: EqFilterKey;
+  label: string;
+  hz: number;
+  kind: 'bell' | 'shelf';
+  q?: number;
+  blurb: string;
+}[] = [
+  {
+    key: 'bell220q6',
+    label: '220 Hz · Q6',
+    hz: 220,
+    kind: 'bell',
+    q: 6,
+    blurb: 'Surgical: about a quarter-octave wide. Narrow enough to cut one room mode and leave its neighbours alone — and narrow enough to miss if the mode is not exactly there.',
+  },
+  {
+    key: 'bell440q1',
+    label: '440 Hz · Q1',
+    hz: 440,
+    kind: 'bell',
+    q: 1,
+    blurb: 'Musical: nearly one and a half octaves wide. This is the shape you use to change how something FEELS; it moves everything around 440 Hz with it.',
+  },
+  {
+    key: 'shelf1k',
+    label: '1 kHz shelf',
+    hz: 1000,
+    kind: 'shelf',
+    blurb: 'Not a bump at all: everything above 1 kHz moves together, by the same amount. A tilt, not a target — the tool for "too dull" or "too bright".',
+  },
+];
+
+export const EQ_FILTER_BY_KEY: Record<EqFilterKey, (typeof EQ_FILTERS)[number]> =
+  Object.fromEntries(EQ_FILTERS.map((f) => [f.key, f])) as Record<EqFilterKey, (typeof EQ_FILTERS)[number]>;
+
+/** Gain multiplier (0..1) this filter applies at frequency f. */
+export function eqFilterShape(key: EqFilterKey, f: number): number {
+  const spec = EQ_FILTER_BY_KEY[key] ?? EQ_FILTER_BY_KEY.bell220q6;
+  const lg = Math.log10(f);
+  const c = Math.log10(spec.hz);
+  if (spec.kind === 'shelf') {
+    // Smooth high shelf: half gain at the corner, full a bit above it.
+    return 0.5 * (1 + Math.tanh((lg - c) / 0.16));
+  }
+  const q = spec.q ?? 1;
+  const bwOct = (2 / Math.LN2) * Math.asinh(1 / (2 * q));
+  const sigma = (bwOct * Math.log10(2)) / 1.665;
+  return Math.exp(-Math.pow((lg - c) / sigma, 2));
+}
+
 /** Initial (t=0) excitation spectrum in dB — impulse through the EQ. */
 export function waterfallSpectrumDb(opts: WaterfallOpts, f: number): number {
   const lg = Math.log10(f);
   let v = -4 - 5 * Math.abs(lg - Math.log10(500)) * 0.6; // gentle broadband impulse
-  v += opts.eqBoostDb * Math.exp(-Math.pow((lg - Math.log10(250)) / 0.09, 2));
+  v += opts.eqBoostDb * eqFilterShape(opts.eqFilter, f);
   if (opts.qRing) v += 7 * Math.exp(-Math.pow((lg - Math.log10(1200)) / 0.012, 2));
   return v;
 }
