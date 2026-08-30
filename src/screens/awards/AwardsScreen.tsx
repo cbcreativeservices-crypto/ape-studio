@@ -27,7 +27,6 @@ import {
   awardPage,
   AWARD_ORDER,
   COREQ_TOPIC_GS,
-  FOUNDATIONS_REQ_NAME,
   type AwardPage,
   type AwardTier,
 } from './awardsData';
@@ -573,7 +572,7 @@ export function AwardsScreen({ navigation, route }: Props) {
                 2026-07-18) instead of repeated on every award. */}
             <View style={styles.coreBanner}>
               <Text style={styles.coreBannerHead}>REQUIRED CORE · EVERY CERTIFICATE</Text>
-              <Text style={styles.coreBannerText}>{[...COREQ_TOPIC_GS.map((gs) => nameForGs(gs)), FOUNDATIONS_REQ_NAME].join('  ·  ')}</Text>
+              <Text style={styles.coreBannerText}>{COREQ_TOPIC_GS.map((gs) => nameForGs(gs)).join('  ·  ')}</Text>
             </View>
 
             {specCertsAZ.length === 0 ? (
@@ -681,7 +680,7 @@ export function AwardsScreen({ navigation, route }: Props) {
                 2026-07-18) instead of repeated on every award. */}
             <View style={styles.coreBanner}>
               <Text style={styles.coreBannerHead}>REQUIRED CORE · EVERY PROGRAM</Text>
-              <Text style={styles.coreBannerText}>{[...COREQ_TOPIC_GS.map((gs) => nameForGs(gs)), FOUNDATIONS_REQ_NAME].join('  ·  ')}</Text>
+              <Text style={styles.coreBannerText}>{COREQ_TOPIC_GS.map((gs) => nameForGs(gs)).join('  ·  ')}</Text>
             </View>
 
             {programPathsAZ.length === 0 ? (

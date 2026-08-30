@@ -91,6 +91,7 @@ import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
 import { LearningIntroSheet } from '../../features/intro/LearningIntroSheet';
 import { getCourseIntro, getTopicIntro, isIntroEmpty } from '../../features/intro/learningIntros';
 import { replayQuizSubmissions } from '../../features/quiz/api';
+import { replayExamSubmissions } from '../../features/finalExam/api';
 import { onStudyProgress } from '../../features/study/sync';
 import { isScenariosExempt, useScenarioExempt } from '../../features/study/scenarioExempt';
 import { loadAllLocalMethodStates, mergeItemStates } from '../../features/study/localProgress';
@@ -710,6 +711,14 @@ export function DashboardScreen() {
         Alert.alert(
           'Offline quiz submitted',
           `Score ${result.score}/25 — ${result.outcome.replace(/_/g, ' ')}.`,
+        );
+      }
+      const examReplayed = await replayExamSubmissions().catch(() => []);
+      for (const { result } of examReplayed) {
+        const awarded = result.credential_awarded ? ' Credential awarded.' : '';
+        Alert.alert(
+          'Offline exam submitted',
+          `Score ${result.score}/${result.size} — ${result.outcome.replace(/_/g, ' ')}.${awarded}`,
         );
       }
       // A session-less GUEST studies the FREE topics on-device only. It must NEVER

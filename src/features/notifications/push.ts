@@ -74,11 +74,6 @@ export function flushWeeklyConceptNav(nav: NavFn): void {
   nav(next);
 }
 
-async function authUserId(): Promise<string | null> {
-  const { data } = await supabase.auth.getUser();
-  return data.user?.id ?? null;
-}
-
 /**
  * TWO DIFFERENT IDENTITIES (verified in the DB 2026-08-30 — this bit me):
  *   notification_preferences.user_id            = public.users.id  (app id)

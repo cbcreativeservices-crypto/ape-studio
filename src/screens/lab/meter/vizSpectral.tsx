@@ -826,10 +826,23 @@ const RING_MARK = colors.ringing;
  *  at true height instead of falling between samples. 140 points total. */
 const WF_FREQS: number[] = (() => {
   const out: number[] = [];
-  const N = 128;
+  // 160 log-spaced points ≈ 0.019 decades apart. The narrow features below are
+  // finer than that, so each also gets its own CLUSTER — without it a room mode
+  // falls between samples and draws as a jagged spike instead of a smooth
+  // ridge, which reads as "blocky and false" (owner 2026-08-30).
+  const N = 160;
   for (let k = 0; k < N; k++) out.push(F_LO * Math.pow(F_HI / F_LO, k / (N - 1)));
-  for (const f0 of [60, 110, 250, 1200]) {
-    for (const m of [Math.pow(10, -0.014), 1, Math.pow(10, 0.014)]) out.push(f0 * m);
+  for (const f0 of [60, 110, 220, 250, 440, 1000, 1200]) {
+    // Fine near the centre, coarser on the flanks — the Q RING filter is
+    // deliberately needle-thin (that IS its lesson), so its sides need the
+    // tightest spacing of anything on the plot to draw as a clean ridge.
+    for (const d of [
+      -0.06, -0.045, -0.032, -0.024, -0.018, -0.013, -0.009, -0.006, -0.003,
+      0,
+      0.003, 0.006, 0.009, 0.013, 0.018, 0.024, 0.032, 0.045, 0.06,
+    ]) {
+      out.push(f0 * Math.pow(10, d));
+    }
   }
   out.sort((a, b) => a - b);
   return out;

@@ -14,23 +14,16 @@
 export type AwardCategory = 'specialization' | 'program';
 
 /**
- * Co-requisite topics auto-included in every award — Professional Audio Safety
- * v3 co-reqs (owner 2026-08-06): Professional Audio Safety (gs3060) + Grounding
- * & Shielding (gs3070) + Electrical Power, Distribution & Safety (gs3080) +
- * Workplace Skills (gs4370). The Foundations LAB is a 4th requisite surfaced
- * separately (FOUNDATIONS_LAB_ROUTE). In the builders these show ALWAYS-checked,
- * locked, and do NOT count toward the chosen topics (user request 2026-07-18).
+ * Co-requisite topics auto-included in every award. Owner 2026-08-30: Audio
+ * Fundamentals Lab (gs3081) replaced Electrical Power (gs3080). The four are
+ * Safety (gs3060), Grounding & Shielding (gs3070), Audio Fundamentals Lab
+ * (gs3081), Workplace Skills (gs4370). Completing every audio_fundamentals
+ * lab marks gs3081 complete. Foundations of Sound (`FoundationsCourse`) is one
+ * of those labs, not a fifth standing requirement. In the builders these show
+ * ALWAYS-checked, locked, and do NOT count toward the chosen topics
+ * (user request 2026-07-18).
  */
 export const COREQ_TOPIC_GS: number[] = [3060, 3070, 3081, 4370];
-
-/** The 4th required requisite for EVERY certificate/program (owner 2026-07-30):
- *  the "Foundations in Audio" lab (in the Ear Training & Audio Lab). Unlike the
- *  three COREQ topics it is a LAB, not a Dashboard course — so it is surfaced as
- *  its own green lab-link container in "My Enrollments" (never a Dashboard card),
- *  and listed by name in the requisite banner. Route: the 'FoundationsCourse'
- *  screen. Its progress is remembered by the lab itself. */
-export const FOUNDATIONS_REQ_NAME = 'Foundations in Audio';
-export const FOUNDATIONS_LAB_ROUTE = 'FoundationsCourse';
 
 /** A titled block of policy prose. */
 export type AwardPolicy = { title: string; paragraphs: string[] };
@@ -143,7 +136,7 @@ export const AWARD_ORDER: AwardCategory[] = ['specialization', 'program'];
 /**
  * Academy Program Certificates — the 15 full-program certificates (CCODE
  * handoff 2026-07-18). Each certificate = the shared core requisites
- * (COREQ_TOPIC_GS = gs3060 / gs3070 / gs3080 / gs4370, plus the Foundations lab,
+ * (COREQ_TOPIC_GS, plus the Foundations lab,
  * surfaced separately so they are never double-added) + its required topics + an
  * optional "choose one" elective group. Topics are referenced by gs (the
  * achievement's global_sequence) and resolved to names at render.
@@ -271,7 +264,7 @@ export const PROGRAM_PATHS: ProgramPath[] = [
 /**
  * Specialized Certificates — the 68 three-topic certificates (CCODE handoff
  * 2026-07-18; Architectural Audio added 2026-07-22). Each = the shared core
- * requisites (COREQ_TOPIC_GS = gs3060 / gs3070 / gs3080 / gs4370, plus the
+ * requisites (COREQ_TOPIC_GS, plus the
  * Foundations lab, surfaced separately) + exactly 3 specialization topics that
  * define the certificate. Topics are referenced by gs and resolved to names at
  * render.

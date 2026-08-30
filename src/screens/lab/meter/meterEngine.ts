@@ -343,7 +343,7 @@ const ROOM_PHYS: Record<RoomKey, RoomPhys> = {
     bareRt: [2.6, 2.4, 2.2, 2.0, 1.9, 1.7, 1.4, 1.1, 0.8],
     // Strong 250 Hz mode: ~1.75x the diffuse decay bare; panels DO reach 250,
     // so full damping tames it to parity.
-    ring: { hz: 250, w: 0.035, mult: (d) => Math.max(1.02, 1.75 - 0.9 * d) },
+    ring: { hz: 250, w: 0.055, mult: (d) => Math.max(1.02, 1.75 - 0.9 * d) },
   },
   // Small concrete box (a studio SHELL before treatment rings badly);
   // full PANELS = the dead control room, ~0.12-0.2 s mids, bass hanging on.
@@ -366,7 +366,7 @@ const ROOM_PHYS: Record<RoomKey, RoomPhys> = {
     bareRt: [1.4, 1.3, 1.15, 1.0, 0.95, 0.9, 0.8, 0.7, 0.6],
     // 110 Hz mode: thin domestic soft goods barely touch it — it still rings
     // ~1.1x even fully furnished. That residual is the truth, not a bug.
-    ring: { hz: 110, w: 0.045, mult: (d) => Math.max(1.05, 1.8 - 0.7 * d) },
+    ring: { hz: 110, w: 0.06, mult: (d) => Math.max(1.05, 1.8 - 0.7 * d) },
   },
 };
 
@@ -394,16 +394,51 @@ function bandInterp(table: number[], lg: number): number {
   let i = 1;
   while (WF_BAND_LG[i] < lg) i++;
   const t = (lg - WF_BAND_LG[i - 1]) / (WF_BAND_LG[i] - WF_BAND_LG[i - 1]);
-  return table[i - 1] + (table[i] - table[i - 1]) * t;
+  // Smoothstep, not linear: straight segments meet at a visible crease on a
+  // surface this large, and a decay curve has no corners in it.
+  const e = t * t * (3 - 2 * t);
+  return table[i - 1] + (table[i] - table[i - 1]) * e;
 }
 
-const REVERB_RT: Record<ReverbKey, { rtAt1k: number; lfMult: number; hfMult: number }> = {
-  none: { rtAt1k: 0, lfMult: 1, hfMult: 1 },
-  room: { rtAt1k: 0.5, lfMult: 1.3, hfMult: 0.7 },
-  plate: { rtAt1k: 1.8, lfMult: 0.9, hfMult: 1.05 },
-  hall: { rtAt1k: 2.6, lfMult: 1.5, hfMult: 0.55 },
-  spring: { rtAt1k: 1.4, lfMult: 0.7, hfMult: 0.5 },
+/**
+ * Reverb RT60 vs FREQUENCY (owner 2026-08-30: "it shows the decay of
+ * frequencies like the room had three modes ... this looks blocky and false").
+ *
+ * It was a hard three-step multiplier — `f < 400 ? lf : f > 3000 ? hf : 1` —
+ * so every reverb drew exactly three flat plateaus with vertical cliffs at
+ * 400 Hz and 3 kHz. On HALL that is 3.90 / 2.60 / 1.43 s, which is precisely
+ * the stepped surface in the report. No real reverb behaves like that: RT
+ * varies CONTINUOUSLY with frequency.
+ *
+ * Each reverb now carries a full curve over WF_BAND_HZ (a multiplier of its
+ * 1 kHz time), interpolated smoothly. The shapes are the characters these
+ * effects are known for:
+ *   room   gentle, slightly warm, a touch of HF loss
+ *   plate  bright and EVEN — the flattest curve here, which is why plates sit
+ *          so well on voices
+ *   hall   long lows falling steadily to a much shorter top (air + audience)
+ *   spring mid-forward with both ends rolled away — the guitar-amp sound
+ */
+const REVERB_RT: Record<ReverbKey, { rtAt1k: number; shape: number[] }> = {
+  //                         63    125   250   500    1k   2k    4k    8k    16k
+  none:   { rtAt1k: 0,   shape: [1, 1, 1, 1, 1, 1, 1, 1, 1] },
+  room:   { rtAt1k: 0.5, shape: [1.32, 1.28, 1.18, 1.07, 1.0, 0.90, 0.78, 0.64, 0.48] },
+  plate:  { rtAt1k: 1.8, shape: [0.84, 0.90, 0.95, 0.99, 1.0, 1.03, 1.05, 0.94, 0.78] },
+  hall:   { rtAt1k: 2.6, shape: [1.55, 1.48, 1.34, 1.14, 1.0, 0.85, 0.68, 0.50, 0.34] },
+  spring: { rtAt1k: 1.4, shape: [0.58, 0.70, 0.88, 0.99, 1.0, 0.86, 0.62, 0.42, 0.28] },
 };
+
+/**
+ * Smooth maximum — the room and the added reverb decay in PARALLEL, so the
+ * tail is governed by whichever is slower. A plain Math.max gave that a hard
+ * crease at the crossover; this rounds it while still converging on the slower
+ * of the two within a fraction of a dB.
+ */
+function softMax(a: number, b: number, k = 8): number {
+  const m = Math.max(a, b);
+  if (m <= 0) return m;
+  return m * Math.pow(Math.pow(a / m, k) + Math.pow(b / m, k), 1 / k);
+}
 
 /** RT60(f) for the configured scene — the decay half of the mountain. */
 export function waterfallRt(opts: WaterfallOpts, f: number): number {
@@ -428,14 +463,16 @@ export function waterfallRt(opts: WaterfallOpts, f: number): number {
   }
   // High-Q ringing FILTER — an electronic demonstration, not room physics.
   if (opts.qRing) {
-    const g = Math.exp(-Math.pow((lg - Math.log10(1200)) / 0.012, 2));
+    // 0.012 → 0.022 decades: a high-Q filter should look needle-thin, but
+    // below the drawing grid's resolution it aliases into a jagged spike
+    // rather than a clean narrow ridge.
+    const g = Math.exp(-Math.pow((lg - Math.log10(1200)) / 0.022, 2));
     rt = Math.max(rt, 2.8 * g + rt * (1 - g));
   }
   // Added reverb runs in parallel with the room — the slower decay wins.
   if (opts.reverb !== 'none') {
     const rv = REVERB_RT[opts.reverb];
-    const mult = f < 400 ? rv.lfMult : f > 3000 ? rv.hfMult : 1;
-    rt = Math.max(rt, rv.rtAt1k * mult);
+    rt = softMax(rt, rv.rtAt1k * bandInterp(rv.shape, lg));
   }
   // Last-resort realism clamp: a fully treated vocal booth measures ~0.12 s;
   // below that is an anechoic chamber, which is not one of these rooms.
