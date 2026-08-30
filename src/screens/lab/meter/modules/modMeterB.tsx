@@ -27,7 +27,7 @@
  *    damping/treatment shortens ring time (Z). Taller ≠ longer. DAMPING is
  *    the pre-bound lane; RT·125 vs RT·4k on the bezel shows highs die first.
  */
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { MeterModuleProps } from '../MeterModuleScreen';
@@ -166,11 +166,15 @@ function SpectrogramViz({ viz, width, height, pattern, running, mode }: { viz: V
   return <viz.SpectrogramPatternView width={width} height={height} pattern={pattern} phase={phase} mode={mode} />;
 }
 
-function WaterfallViz({ viz, width, height, opts, running }: { viz: VizSpectralModule; width: number; height: number; opts: WaterfallOpts; running: boolean }) {
-  // Build loop clock — REAL-TIME (owner 2026-08-05): the ridge crosses each
-  // floor marker at that many real seconds. The rate now depends on the SCENE,
-  // because the plot's time window is fitted to the room's own decay.
-  const phase = viz.usePhaseClock(running, viz.waterfallRealtimeHz(opts));
+function WaterfallViz({ viz, width, height, opts, running, replay }: { viz: VizSpectralModule; width: number; height: number; opts: WaterfallOpts; running: boolean; replay: number }) {
+  // Build clock — REAL-TIME (owner 2026-08-05): the ridge crosses each floor
+  // marker at that many real seconds. The rate depends on the SCENE, because
+  // the plot's time window is fitted to the room's own decay.
+  //
+  // It builds ONCE and holds (owner 2026-08-30) — `replay` restarts it, and
+  // changing the scene restarts it too, so a new room always plays from the
+  // impulse rather than appearing mid-decay.
+  const phase = viz.usePhaseClock(running, viz.waterfallRealtimeHz(opts), replay);
   return <viz.WaterfallView width={width} height={height} opts={opts} phase={phase} animate />;
 }
 
@@ -592,7 +596,19 @@ export function WaterfallModule(p: MeterModuleProps) {
   const [damping01, setDamping01] = useState(0.15);
   const [eqBoostDb, setEqBoostDb] = useState(0);
   const [qRing, setQRing] = useState(false);
+  // Bumping this restarts the waterfall build (REPLAY, and any scene change).
+  const [replay, setReplay] = useState(0);
   const [reverb, setReverb] = useState<ReverbKey>('none');
+
+  // ROOM and REVERB pick a different scene, so the range must play again from
+  // the impulse — otherwise the new room appears already-decayed, frozen at
+  // the end of the PREVIOUS one's build. DAMPING / EQ / Q RING deliberately do
+  // NOT replay: they are the live controls, and holding the finished range
+  // while you move them is exactly what makes an A/B readable.
+  useEffect(() => {
+    setReplay((n) => n + 1);
+  }, [room, reverb]);
+
 
   const opts = useMemo<WaterfallOpts>(
     () => ({ room, damping01, eqBoostDb, qRing, reverb }),
@@ -665,6 +681,12 @@ export function WaterfallModule(p: MeterModuleProps) {
       helpKey: 'reverb_tails',
     },
     {
+      kind: 'action',
+      id: 'replay',
+      label: 'REPLAY',
+      onPress: () => setReplay((n) => n + 1),
+    },
+    {
       kind: 'toggle',
       id: 'qring',
       label: 'Q RING',
@@ -704,7 +726,7 @@ export function WaterfallModule(p: MeterModuleProps) {
         ],
         render: (w, h) =>
           viz ? (
-            <WaterfallViz viz={viz} width={w} height={h} opts={opts} running={p.focused} />
+            <WaterfallViz viz={viz} width={w} height={h} opts={opts} running={p.focused} replay={replay} />
           ) : (
             <GlassFallback w={w} h={h} />
           ),

@@ -203,12 +203,21 @@ export function useVizClock(running: boolean): SharedValue<number> {
  *  the motion simply speeds up or slows down, which is the whole lesson.
  *  The rate rides a SharedValue (updated via effect) so the frame worklet
  *  always reads the latest value — no reliance on callback refresh. */
-export function usePhaseClock(running: boolean, visHz: number): SharedValue<number> {
+export function usePhaseClock(
+  running: boolean,
+  visHz: number,
+  /** Change this to restart the clock from zero (a REPLAY button). Omit for
+   *  the free-running behaviour every other lab relies on. */
+  resetToken?: number,
+): SharedValue<number> {
   const phase = useSharedValue(0);
   const rate = useSharedValue(visHz);
   useEffect(() => {
     rate.value = visHz;
   }, [visHz, rate]);
+  useEffect(() => {
+    if (resetToken !== undefined) phase.value = 0;
+  }, [resetToken, phase]);
   const cb = useFrameCallback((info) => {
     if (info.timeSincePreviousFrame != null) {
       phase.value += 2 * Math.PI * rate.value * (Math.min(info.timeSincePreviousFrame, 64) / 1000);

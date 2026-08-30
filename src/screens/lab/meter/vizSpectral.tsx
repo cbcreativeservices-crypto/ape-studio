@@ -702,6 +702,22 @@ const WF_DB_SPAN = WF_DB_TOP - WF_DB_FLOOR; // 60 dB — one RT60 of decay
 // loop wrap resets it instantly.
 const WF_GROW_END = 0.4; // impulse flash + build back → front
 
+/**
+ * The cycle position, CLAMPED at 1 rather than wrapped (owner 2026-08-30:
+ * "the animation seems buggy").
+ *
+ * It used to be `(phase/TAU) % 1`, so the range built over the first 40% of a
+ * cycle, sat dead for the other 60%, then SNAPPED back to nothing and rebuilt
+ * with no warning. On a long scene that is a ten-second build, fifteen seconds
+ * of nothing, then an abrupt restart while you are still reading it — which
+ * looks like a glitch, not a design. It now builds once and HOLDS the finished
+ * range; REPLAY restarts it deliberately.
+ */
+function wfCycle(phaseValue: number): number {
+  'worklet';
+  return Math.min(1, Math.max(0, phaseValue / TAU));
+}
+
 /** REAL-TIME clock rate for the waterfall (owner 2026-08-05): the GROW phase
  *  spans the plot's whole time window in REAL seconds, so a ridge crosses each
  *  floor marker at exactly that many real seconds and the displayed time
@@ -829,7 +845,7 @@ function WfSlice({
 }) {
   const op = useDerivedValue(() => {
     if (!animate) return 1;
-    const u = (((phase.value / TAU) % 1) + 1) % 1;
+    const u = wfCycle(phase.value);
     // Time-flipped ordering (owner 2026-08-05): the t=0 slice is the BACK
     // (highest index), so the build reveals back → front — the impulse flashes
     // at the back and the decay cascades toward the viewer.
@@ -1143,7 +1159,7 @@ export function WaterfallView(p: {
   // Impulse flash: the front slice flares white as each build cycle begins.
   const flashOp = useDerivedValue(() => {
     if (!animate) return 0;
-    const u = (((phase.value / TAU) % 1) + 1) % 1;
+    const u = wfCycle(phase.value);
     return u < WF_GROW_END ? Math.exp(-u * 26) * 0.85 : 0;
   }, [phase, animate]);
 
