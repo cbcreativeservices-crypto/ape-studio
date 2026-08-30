@@ -84,6 +84,8 @@ const CANONICAL_HOST = "www.proaudiotrainingacademy.com";
 const REDIRECT_HOSTS = new Set([
   "proaudiotrainingacademy.co",
   "www.proaudiotrainingacademy.co",
+  "proaudiotrainingacademy.online",
+  "www.proaudiotrainingacademy.online",
 ]);
 
 export function proxy(request: NextRequest) {
