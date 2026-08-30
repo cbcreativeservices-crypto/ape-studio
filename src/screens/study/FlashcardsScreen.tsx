@@ -1299,7 +1299,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
           {card ? (
             // 850ms hold to open full screen (user request 2026-07-17: +0.5s
             // over the previous 350ms) so a normal read-hold doesn't trigger it.
-            <Pressable
+            <Pressable accessibilityRole="button"
               onPress={soloReveal ? undefined : onTap}
               onLongPress={() => setFullscreen(true)}
               delayLongPress={850}
@@ -1480,7 +1480,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             <Text style={styles.modalTitle}>SHOW ON REVEAL</Text>
             <Text style={styles.modalSub}>Pick which sections appear when you reveal a card.</Text>
 
-            <Pressable style={styles.optRow} onPress={() => updateSections(new Set(ALL_LEVELS))}>
+            <Pressable accessibilityRole="button" style={styles.optRow} onPress={() => updateSections(new Set(ALL_LEVELS))}>
               <View style={[styles.checkbox, sections.size === ALL_LEVELS.length && styles.checkboxOn]}>
                 {sections.size === ALL_LEVELS.length ? <Text style={styles.checkMark}>✓</Text> : null}
               </View>
@@ -1492,7 +1492,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
               const lvl = i + 1;
               const on = sections.has(lvl);
               return (
-                <Pressable key={lbl} style={styles.optRow} onPress={() => toggleSection(lvl)}>
+                <Pressable accessibilityRole="button" key={lbl} style={styles.optRow} onPress={() => toggleSection(lvl)}>
                   <View style={[styles.checkbox, on && styles.checkboxOn]}>
                     {on ? <Text style={styles.checkMark}>✓</Text> : null}
                   </View>
@@ -1504,7 +1504,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             {/* Show/hide term images (user request 2026-07-17) — separate from
                 the reveal sections; media rides on the TERM side. */}
             <View style={styles.optDivider} />
-            <Pressable style={styles.optRow} onPress={toggleShowMedia}>
+            <Pressable accessibilityRole="button" style={styles.optRow} onPress={toggleShowMedia}>
               <View style={[styles.checkbox, showMedia && styles.checkboxOn]}>
                 {showMedia ? <Text style={styles.checkMark}>✓</Text> : null}
               </View>
@@ -1550,7 +1550,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
           </Pressable>
           {/* In Study Sheet mode tapping must NOT flip (term + sections are all
               shown at once); swipe still changes card. */}
-          <Pressable onPress={studyMode ? undefined : onTap} style={styles.fsBody}>
+          <Pressable accessibilityRole="button" onPress={studyMode ? undefined : onTap} style={styles.fsBody}>
             {card ? (
               studyMode ? (
                 // STUDY SHEET: term + every chosen section together, scrollable.
@@ -1631,7 +1631,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                 <Text style={styles.fsGuideLine}>Swipe left / right to change term</Text>
                 <Text style={styles.fsGuideLine}>Shake to mark it Known</Text>
                 <Text style={styles.fsGuideLine}>Tap ✕ (top-right) to exit</Text>
-                <Pressable style={styles.fsGuideBtn} onPress={() => setShowFsGuide(false)}>
+                <Pressable accessibilityRole="button" style={styles.fsGuideBtn} onPress={() => setShowFsGuide(false)}>
                   <Text style={styles.fsGuideBtnText}>GOT IT</Text>
                 </Pressable>
               </View>
@@ -1696,7 +1696,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             ) : (
               <Text style={styles.tlEmpty}>No terms in this set.</Text>
             )}
-            <Pressable style={styles.tlClose} onPress={() => setTermList(null)}>
+            <Pressable accessibilityRole="button" style={styles.tlClose} onPress={() => setTermList(null)}>
               <Text style={styles.tlCloseText}>CLOSE</Text>
             </Pressable>
           </View>

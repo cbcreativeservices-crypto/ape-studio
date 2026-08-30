@@ -156,7 +156,7 @@ export function GuidedLessonSheet({
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
       <View style={styles.backdrop}>
-        <Pressable style={styles.backdropTap} onPress={onClose} accessibilityLabel="Close guided lesson" />
+        <Pressable accessibilityRole="button" style={styles.backdropTap} onPress={onClose} accessibilityLabel="Close guided lesson" />
         <View style={[styles.sheet, { paddingBottom: insets.bottom + 12 }]}>
           <View style={styles.grabber} />
           <View style={styles.sheetHeader}>

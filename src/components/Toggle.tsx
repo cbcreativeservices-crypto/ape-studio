@@ -1,23 +1,39 @@
 /**
  * Toggle — settings switch (design-reference Toggle: amber when on).
  * 44×26, animated knob, immediate onChange (no Save button per S11).
+ *
+ * ACCESSIBILITY (2026-08-30 sweep): a switch with no label announces only
+ * "switch, on" — a screen-reader user hears the STATE but never learns WHAT it
+ * controls, because React Native does not associate a sibling <Text> with it.
+ * Callers pass `label`; every Settings row now does.
  */
 import { useEffect, useRef } from 'react';
 import { Animated, Pressable, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { animationsAllowed } from '../features/settings/a11y';
 
 export function Toggle({
   on,
   onChange,
   disabled = false,
+  label,
 }: {
   on: boolean;
   onChange: (next: boolean) => void;
   disabled?: boolean;
+  /** What this switch controls, e.g. "Email". Announced with the state. */
+  label?: string;
 }) {
   const knobX = useRef(new Animated.Value(on ? 20 : 2)).current;
 
   useEffect(() => {
+    // Reduce-motion (app toggle OR the phone's own setting) snaps the knob
+    // instead of sliding it — the control still shows its state, it just does
+    // not animate.
+    if (!animationsAllowed()) {
+      knobX.setValue(on ? 20 : 2);
+      return;
+    }
     Animated.timing(knobX, { toValue: on ? 20 : 2, duration: 160, useNativeDriver: true }).start();
   }, [on, knobX]);
 
@@ -26,8 +42,10 @@ export function Toggle({
       onPress={() => onChange(!on)}
       disabled={disabled}
       accessibilityRole="switch"
+      accessibilityLabel={label}
       accessibilityState={{ checked: on, disabled }}
-      hitSlop={8}
+      // 26 tall + 8 = 42, just under the 44 minimum; 10 clears it.
+      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
       style={disabled && { opacity: 0.45 }}
     >
       <LinearGradient

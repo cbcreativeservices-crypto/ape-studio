@@ -787,7 +787,7 @@ function LivePitchMode({
 
       {kind === 'tuner' && (
         <View style={styles.a4Row}>
-          <Pressable onLongPress={() => help('a4')} delayLongPress={260} hitSlop={8}>
+          <Pressable accessibilityHint="Press and hold for an explanation." onLongPress={() => help('a4')} delayLongPress={260} hitSlop={8}>
             <Text style={styles.a4Label}>A4 ⓘ</Text>
           </Pressable>
           {A4_CHOICES.map((v) => (

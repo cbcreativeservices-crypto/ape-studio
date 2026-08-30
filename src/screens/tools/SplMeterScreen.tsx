@@ -1278,7 +1278,7 @@ export function SplMeterScreen({ navigation }: Props) {
                 of PEAK HOLD. Peak may exceed 0 dBFS (F1) — the COLOUR flags
                 digital clipping, independent of the SPL estimate. */}
             <View style={styles.peakRow}>
-              <Pressable style={styles.peakCell} onLongPress={() => help('peak')} delayLongPress={260}>
+              <Pressable accessibilityHint="Press and hold for an explanation." style={styles.peakCell} onLongPress={() => help('peak')} delayLongPress={260}>
                 <Text style={styles.cellLabel}>PEAK</Text>
                 <Text style={[styles.cellValue, meter ? { color: levelColorForDb(meter.peakDb) } : styles.cellValueMax]}>
                   {meter ? estSpl(meter.peakDb) : '—'}
@@ -1333,7 +1333,7 @@ export function SplMeterScreen({ navigation }: Props) {
             {/* Session log (spec §9 View 2): Leq + elapsed + reset/save. */}
             <View style={styles.logCard}>
               <HelpHead title="SESSION LOG" onHelp={() => help('session_log')} style={styles.sectionHead} />
-              <Pressable onLongPress={() => help('session_log')} delayLongPress={260}>
+              <Pressable accessibilityHint="Press and hold for an explanation." onLongPress={() => help('session_log')} delayLongPress={260}>
               <View style={styles.logRow}>
                 <View style={styles.logCell}>
                   <Text style={styles.cellLabel}>Leq · dBA</Text>

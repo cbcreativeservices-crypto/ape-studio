@@ -403,7 +403,7 @@ export function Rt60Screen({ navigation }: Props) {
           <>
             {/* Headline — method + ITS fit's R², always labeled (spec §13).
                 House instrument readout: framed panel, mono digits, glow. */}
-            <Pressable style={styles.readout} onLongPress={() => help('rt60')} delayLongPress={260}>
+            <Pressable accessibilityHint="Press and hold for an explanation." style={styles.readout} onLongPress={() => help('rt60')} delayLongPress={260}>
               <Text style={styles.readoutEyebrow}>BROADBAND DECAY</Text>
               <Text style={[styles.readoutValue, !broadband.valid && styles.readoutInvalid]}>
                 {broadband.valid
@@ -434,7 +434,7 @@ export function Rt60Screen({ navigation }: Props) {
             {/* Octave bands (spec §13 View 3): per-band method labels, honest
                 gaps — lit cells for valid fits, dim pending cells otherwise. */}
             <HelpHead title="OCTAVE BANDS" onHelp={() => help('band')} style={styles.groupHead} />
-            <Pressable onLongPress={() => help('band')} delayLongPress={260}>
+            <Pressable accessibilityHint="Press and hold for an explanation." onLongPress={() => help('band')} delayLongPress={260}>
             <View style={styles.bandTable}>
               <View style={styles.bandRowHead}>
                 <Text style={[styles.bandCellHead, { flex: 1.2 }]}>BAND</Text>

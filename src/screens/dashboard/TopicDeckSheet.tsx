@@ -56,7 +56,7 @@ export function TopicDeckSheet({
     <Modal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
       <Pressable style={styles.backdrop} onPress={onClose} accessibilityRole="button" accessibilityLabel="Close">
         {/* Panel — swallow taps so they don't close the sheet. */}
-        <Pressable style={styles.panel} onPress={() => {}}>
+        <Pressable accessible={false} style={styles.panel} onPress={() => {}}>
           <View style={styles.head}>
             {/* Study icon to the LEFT of the title (owner 2026-08-06) — matches
                 the header button that opens this sheet. */}

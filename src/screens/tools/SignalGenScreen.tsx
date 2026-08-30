@@ -746,7 +746,7 @@ export function SignalGenScreen({ navigation }: Props) {
           </Text>
 
           {/* Status — the HONEST output level from the native path (Q4). */}
-          <Pressable style={styles.statusCard} onLongPress={() => help('status')} delayLongPress={260}>
+          <Pressable accessibilityHint="Press and hold for an explanation." style={styles.statusCard} onLongPress={() => help('status')} delayLongPress={260}>
             <View style={styles.statusRow}>
               <Text style={[styles.statusState, running && styles.statusStateRunning]}>
                 {running ? 'RUNNING' : 'STOPPED'}

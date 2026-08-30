@@ -91,7 +91,7 @@ export function StudyFsOverlay({
               <Text style={styles.guideLine}>Swipe or Next to advance</Text>
               <Text style={styles.guideLine}>Shake to go back a question</Text>
               <Text style={styles.guideLine}>Tap ✕ (top-right) to exit</Text>
-              <Pressable style={styles.guideBtn} onPress={() => setShowGuide(false)}>
+              <Pressable accessibilityRole="button" style={styles.guideBtn} onPress={() => setShowGuide(false)}>
                 <Text style={styles.guideBtnText}>GOT IT</Text>
               </Pressable>
             </View>

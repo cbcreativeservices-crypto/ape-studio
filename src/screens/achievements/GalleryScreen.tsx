@@ -57,7 +57,7 @@ export function GalleryScreen() {
 
         <View style={styles.grid}>
           {(entries ?? []).map((e) => (
-            <Pressable
+            <Pressable accessibilityRole="button"
               key={e.achievementId}
               style={[styles.card, { borderColor: `${e.color}66`, shadowColor: e.color }]}
               onPress={() =>

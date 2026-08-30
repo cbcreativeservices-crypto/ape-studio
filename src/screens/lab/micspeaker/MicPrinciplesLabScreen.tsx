@@ -1065,7 +1065,7 @@ function WhyCutaway({ viz, width, blocked, help }: { viz: MsVizModule | null; wi
     <View style={{ gap: 8 }}>
       {viz ? <CutawayViz viz={viz} width={width} blocked={blocked} /> : <VizUnavailableCard />}
       <IllustrationBadge text="CUTAWAY — diaphragm · front entry (top) · rear ports (sides). Green dots = sound reaching each entry" />
-      <Pressable onLongPress={() => help('cupping_why')} delayLongPress={300}>
+      <Pressable accessibilityHint="Press and hold for an explanation." onLongPress={() => help('cupping_why')} delayLongPress={300}>
         <Text style={styles.caption}>
           A cardioid is a PRESSURE-GRADIENT design: sound reaches the diaphragm from the front AND
           — through the rear ports — from behind, timed so rear sound cancels itself. Cover the
@@ -1100,7 +1100,7 @@ function MistakesSection({ viz, help, wellTop, wellBottom }: SectionProps) {
             <ScrollView horizontal pagingEnabled={false} snapToInterval={cardW + 10} decelerationRate="fast" showsHorizontalScrollIndicator={false}>
               <View style={{ flexDirection: 'row', gap: 10 }}>
                 {MISTAKES.map((mk) => (
-                  <Pressable key={mk.kind} style={[styles.mistakeCard, { width: cardW }]} onLongPress={() => help('mistakes')} delayLongPress={300}>
+                  <Pressable accessibilityHint="Press and hold for an explanation." key={mk.kind} style={[styles.mistakeCard, { width: cardW }]} onLongPress={() => help('mistakes')} delayLongPress={300}>
                     {viz ? <viz.MistakeIllustration width={cardW - 20} kind={mk.kind} /> : <VizUnavailableCard />}
                     <Text style={styles.mistakeTitle}>{mk.title}</Text>
                     <Text style={styles.caption}>{mk.note}</Text>

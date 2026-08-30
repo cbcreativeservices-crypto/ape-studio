@@ -1048,13 +1048,13 @@ export function MultiMeterScreen({ navigation }: Props) {
                 {meter ? fmtDb(applyRef(modeLevel(meter))) : '—'}
               </Text>
             </Pressable>
-            <Pressable style={styles.statusCell} onLongPress={() => help('peak')} delayLongPress={350}>
+            <Pressable accessibilityHint="Press and hold for an explanation." style={styles.statusCell} onLongPress={() => help('peak')} delayLongPress={350}>
               <Text style={styles.statusLabel}>PEAK</Text>
               <Text style={[styles.statusValue, meter ? { color: levelColorForDb(meter.peakDb) } : null]}>
                 {meter ? fmtDb(applyRef(meter.peakDb)) : '—'}
               </Text>
             </Pressable>
-            <Pressable style={styles.statusCell} onLongPress={() => help('rms')} delayLongPress={350}>
+            <Pressable accessibilityHint="Press and hold for an explanation." style={styles.statusCell} onLongPress={() => help('rms')} delayLongPress={350}>
               <Text style={styles.statusLabel}>RMS</Text>
               <Text style={[styles.statusValue, meter ? { color: levelColorForDb(meter.zFastDb) } : null]}>
                 {meter ? fmtDb(applyRef(meter.zFastDb)) : '—'}
@@ -1278,7 +1278,7 @@ export function MultiMeterScreen({ navigation }: Props) {
                 (item 3); the scope carries its own ×1/×2/×4 zoom (item 2). */}
             <View style={styles.lowerRow}>
               <View style={styles.miniPanel}>
-                <Pressable onLongPress={() => help('spectrogram')} delayLongPress={350}>
+                <Pressable accessibilityHint="Press and hold for an explanation." onLongPress={() => help('spectrogram')} delayLongPress={350}>
                   <Text style={styles.miniEyebrow}>SPECTROGRAM</Text>
                 </Pressable>
                 <View style={styles.sgSurface}>
@@ -1290,7 +1290,7 @@ export function MultiMeterScreen({ navigation }: Props) {
               </View>
 
               <View style={styles.miniPanel}>
-                <Pressable onLongPress={() => help('oscilloscope')} delayLongPress={350}>
+                <Pressable accessibilityHint="Press and hold for an explanation." onLongPress={() => help('oscilloscope')} delayLongPress={350}>
                   <Text style={styles.miniEyebrow}>OSCILLOSCOPE</Text>
                 </Pressable>
                 <View style={styles.scopeSurface} onLayout={(e) => setScopeW(Math.round(e.nativeEvent.layout.width))}>
@@ -1353,7 +1353,7 @@ export function MultiMeterScreen({ navigation }: Props) {
 
             {/* User controls — below the displays (owner 2026-08-05, item 6). */}
             <View style={styles.ctrlRow}>
-              <Pressable onLongPress={() => help('smoothing')} delayLongPress={350}>
+              <Pressable accessibilityHint="Press and hold for an explanation." onLongPress={() => help('smoothing')} delayLongPress={350}>
                 <Text style={styles.ctrlLabel}>SMOOTH</Text>
               </Pressable>
               {SMOOTHINGS.map((s) => (
@@ -1370,14 +1370,14 @@ export function MultiMeterScreen({ navigation }: Props) {
                 <Text style={styles.panelSettings}>A4 = {A4} Hz</Text>
               </View>
               <View style={styles.freqGrid}>
-                <Pressable style={styles.freqCell} onLongPress={() => help('dominant')} delayLongPress={350}>
+                <Pressable accessibilityHint="Press and hold for an explanation." style={styles.freqCell} onLongPress={() => help('dominant')} delayLongPress={350}>
                   <Text style={styles.statusLabel}>DOMINANT</Text>
                   <Text style={styles.freqValue}>{dominant ? fmtHz(dominant.hz) : '—'}</Text>
                   <Text style={styles.freqSource}>
                     {dominant ? (dominant.source === 'pitch' ? 'from pitch tracker' : 'from spectrum peak') : 'no source live'}
                   </Text>
                 </Pressable>
-                <Pressable style={styles.freqCell} onLongPress={() => help('note')} delayLongPress={350}>
+                <Pressable accessibilityHint="Press and hold for an explanation." style={styles.freqCell} onLongPress={() => help('note')} delayLongPress={350}>
                   <Text style={styles.statusLabel}>NOTE</Text>
                   <Text style={[styles.freqValue, isHeld && styles.dim]}>
                     {note ? `${note.name}${note.octave}` : '—'}
@@ -1386,7 +1386,7 @@ export function MultiMeterScreen({ navigation }: Props) {
                     {note ? `${note.cents >= 0 ? '+' : ''}${note.cents.toFixed(1)} cents` : 'no stable pitch'}
                   </Text>
                 </Pressable>
-                <Pressable style={styles.freqCell} onLongPress={() => help('counter')} delayLongPress={350}>
+                <Pressable accessibilityHint="Press and hold for an explanation." style={styles.freqCell} onLongPress={() => help('counter')} delayLongPress={350}>
                   <Text style={styles.statusLabel}>COUNTER</Text>
                   <Text style={[styles.freqValue, isHeld && styles.dim]}>
                     {shownPitchHz != null ? fmtHz(shownPitchHz) : '—'}
@@ -1397,7 +1397,12 @@ export function MultiMeterScreen({ navigation }: Props) {
                 </Pressable>
               </View>
               {/* Cents indicator — ±50¢ scale, ±5¢ green in-tune lock glow. */}
-              <Pressable onLongPress={() => help('cents')} delayLongPress={350}>
+              <Pressable
+                onLongPress={() => help('cents')}
+                delayLongPress={350}
+                accessibilityRole="image"
+                accessibilityLabel="Tuning indicator, plus or minus 50 cents. Press and hold for an explanation."
+              >
                 <View style={styles.centsScale}>
                   <View style={[styles.centsZoneInTune, inTune && styles.centsZoneLocked]} />
                   <View style={styles.centsZero} />
@@ -1488,7 +1493,7 @@ export function MultiMeterScreen({ navigation }: Props) {
             {/* 9 ── SMART DETECTION — pinned to the very bottom so its changing
                    height never pushes the meters/controls above it (owner rev 24). */}
             <View style={styles.panel}>
-              <Pressable onLongPress={() => help('detection')} delayLongPress={350}>
+              <Pressable accessibilityHint="Press and hold for an explanation." onLongPress={() => help('detection')} delayLongPress={350}>
                 <Text style={styles.panelEyebrow}>SMART DETECTION</Text>
               </Pressable>
               {chips.length === 0 ? (

@@ -1314,6 +1314,8 @@ export function CourseSelectionScreen() {
             __DEV__-guarded): long-press LOGO = commercialMode; long-press
             WORDMARK = cycle mock entitlement. */}
         <Pressable
+          accessibilityRole="image"
+          accessibilityLabel="Pro Audio Training Academy"
           onLongPress={() => {
             if (!__DEV__) return;
             const next = !commercialMode;

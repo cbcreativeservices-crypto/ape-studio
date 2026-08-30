@@ -90,7 +90,7 @@ export function EqLabHomeScreen() {
 
 function ToolChip({ label, onPress }: { label: string; onPress: () => void }) {
   return (
-    <Pressable style={styles.toolChip} onPress={onPress}>
+    <Pressable accessibilityRole="button" style={styles.toolChip} onPress={onPress}>
       <Text style={styles.toolText}>{label}</Text>
     </Pressable>
   );

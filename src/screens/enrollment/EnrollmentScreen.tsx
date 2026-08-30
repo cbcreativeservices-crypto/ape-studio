@@ -1656,7 +1656,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
         onRequestClose={() => setClearConfirmOpen(false)}
       >
         <View style={styles.clearBackdrop}>
-          <Pressable style={StyleSheet.absoluteFill} onPress={() => setClearConfirmOpen(false)} accessibilityLabel="Dismiss" />
+          <Pressable accessibilityRole="button" style={StyleSheet.absoluteFill} onPress={() => setClearConfirmOpen(false)} accessibilityLabel="Dismiss" />
           <View style={styles.clearCard}>
             <Text style={styles.clearTitle}>Clear enrollment list?</Text>
             <Text style={styles.clearBody}>

@@ -66,9 +66,9 @@ export function GlossaryTermPopup({
 
   return (
     <Modal visible={termName != null} transparent animationType="fade" onRequestClose={onClose}>
-      <Pressable style={styles.backdrop} onPress={onClose}>
+      <Pressable accessibilityRole="button" accessibilityLabel="Close" style={styles.backdrop} onPress={onClose}>
         {/* Inner press swallows taps so tapping the card doesn't dismiss. */}
-        <Pressable style={styles.card} onPress={() => {}}>
+        <Pressable accessible={false} style={styles.card} onPress={() => {}}>
           <View style={styles.headerRow}>
             <Text style={styles.term} accessibilityRole="header">
               {row?.term ?? termName}

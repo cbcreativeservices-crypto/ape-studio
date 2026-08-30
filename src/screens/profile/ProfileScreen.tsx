@@ -457,7 +457,11 @@ export function ProfileScreen() {
                   Let vetted employers and networking partners contact you. You can turn this off anytime.
                 </Text>
               </View>
-              <Toggle on={pub.contactConsent} onChange={(v) => setPubKey('contactConsent', v)} />
+              <Toggle
+                on={pub.contactConsent}
+                label="Contactable by employers"
+                onChange={(v) => setPubKey('contactConsent', v)}
+              />
             </View>
           </View>
 
@@ -477,6 +481,7 @@ export function ProfileScreen() {
               </View>
               <Toggle
                 on={pub.showInRegistry}
+                label="Show me in the Pro Registry"
                 onChange={(v) => setPubKey('showInRegistry', v)}
                 disabled={!profileComplete}
               />

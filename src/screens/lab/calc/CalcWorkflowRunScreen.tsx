@@ -595,7 +595,7 @@ export function CalcWorkflowRunScreen() {
                   ) : (
                     cur.result.outputs.map((o) =>
                       'value' in o ? (
-                        <Pressable key={o.label} style={styles.resultRow} onPress={() => setOutUnit((m) => ({ ...m, [`${idx}:${o.label}`]: (m[`${idx}:${o.label}`] ?? 0) + 1 }))}>
+                        <Pressable accessibilityRole="button" key={o.label} style={styles.resultRow} onPress={() => setOutUnit((m) => ({ ...m, [`${idx}:${o.label}`]: (m[`${idx}:${o.label}`] ?? 0) + 1 }))}>
                           <Text style={styles.resultLabel}>{o.label}</Text>
                           <Text style={styles.resultValue}>{formatOutput(o, 4, outUnit[`${idx}:${o.label}`] ?? 0)}</Text>
                         </Pressable>

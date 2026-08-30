@@ -131,8 +131,8 @@ export function SessionTimerModal({ timer }: { timer: SessionTimerApi }) {
   const [show, setShow] = useState(true);
   return (
     <Modal visible={timer.configOpen} transparent animationType="fade" onRequestClose={timer.closeConfig}>
-      <Pressable style={styles.backdrop} onPress={timer.closeConfig}>
-        <Pressable style={styles.sheet} onPress={() => {}}>
+      <Pressable accessibilityRole="button" accessibilityLabel="Close" style={styles.backdrop} onPress={timer.closeConfig}>
+        <Pressable accessible={false} style={styles.sheet} onPress={() => {}}>
           <Text style={styles.title}>SESSION TIMER</Text>
           <Text style={styles.sub}>A silent countdown to cap this study session.</Text>
 

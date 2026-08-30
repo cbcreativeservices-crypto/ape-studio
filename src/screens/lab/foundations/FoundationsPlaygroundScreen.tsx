@@ -573,7 +573,12 @@ export function FoundationsPlaygroundScreen() {
         {!engineReady ? <EngineGate state={gate} /> : null}
 
         {/* LEVEL (dBFS · relative) — the commanded output level, never "SPL". */}
-        <Pressable onLongPress={() => help('amplitude')} delayLongPress={260}>
+        <Pressable
+          onLongPress={() => help('amplitude')}
+          delayLongPress={260}
+          accessibilityRole="image"
+          accessibilityLabel="Output level meter. Press and hold for an explanation."
+        >
           <LevelMeterBar levelDb={levelDb} minDb={-48} maxDb={-16} />
         </Pressable>
         {genError ? <Text style={styles.error}>{genError}</Text> : null}

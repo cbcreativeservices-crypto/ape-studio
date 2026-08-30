@@ -53,10 +53,10 @@ export function MeterLabHomeScreen() {
         ))}
         <Text style={styles.sectionTitle}>USE WHAT YOU LEARNED</Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-          <Pressable style={styles.toolChip} onPress={() => navigation.navigate('ToolsHub' as never)}>
+          <Pressable accessibilityRole="button" style={styles.toolChip} onPress={() => navigation.navigate('ToolsHub' as never)}>
             <Text style={styles.toolText}>OPEN THE MEASUREMENT TOOLS ›</Text>
           </Pressable>
-          <Pressable style={styles.toolChip} onPress={() => setLessonOpen(true)}>
+          <Pressable accessibilityRole="button" style={styles.toolChip} onPress={() => setLessonOpen(true)}>
             <Text style={styles.toolText}>ⓘ GUIDED LESSON</Text>
           </Pressable>
         </View>

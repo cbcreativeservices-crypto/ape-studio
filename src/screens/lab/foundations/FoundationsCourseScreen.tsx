@@ -568,7 +568,12 @@ function M4Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
     >
       {wellTop}
       <ConceptBadge />
-      <Pressable onLongPress={() => help('amplitude')} delayLongPress={260}>
+      <Pressable
+        onLongPress={() => help('amplitude')}
+        delayLongPress={260}
+        accessibilityRole="image"
+        accessibilityLabel="Amplitude level meter. Press and hold for an explanation."
+      >
         <LevelMeterBar levelDb={levelFor(amt)} minDb={-48} maxDb={-18} />
       </Pressable>
       {wellBottom}

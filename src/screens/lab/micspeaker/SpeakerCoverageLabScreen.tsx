@@ -112,7 +112,7 @@ function ConceptsSection({ help }: { help: (k: string) => void }) {
       <DisplayGuideButton onPress={() => help('coverage_legend')} />
       <Legend />
       {rows.map((r) => (
-        <Pressable key={r.t} onLongPress={() => help('coverage_legend')} delayLongPress={300}>
+        <Pressable accessibilityHint="Press and hold for an explanation." key={r.t} onLongPress={() => help('coverage_legend')} delayLongPress={300}>
           <Text style={styles.conceptT}>{r.t}</Text>
           <Text style={styles.caption}>{r.d}</Text>
         </Pressable>

@@ -2249,7 +2249,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
             senses opens this small sheet; picking a sense opens it. */}
         {chooser ? (
           <View style={styles.chooserBackdrop}>
-            <Pressable style={{ flex: 1 }} onPress={() => setChooser(null)} accessibilityLabel="Dismiss" />
+            <Pressable accessibilityRole="button" style={{ flex: 1 }} onPress={() => setChooser(null)} accessibilityLabel="Dismiss" />
             <View style={styles.chooserSheet}>
               <Text style={styles.chooserTitle}>WHICH SENSE?</Text>
               {chooser.map((id) => {

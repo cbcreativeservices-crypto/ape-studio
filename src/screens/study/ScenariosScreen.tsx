@@ -519,7 +519,7 @@ export function ScenariosScreen({ route }: Props) {
         )}
 
         {feedback && (
-          <Pressable onPress={advance}>
+          <Pressable accessibilityRole="button" onPress={advance}>
             <View style={[styles.banner, feedback.correct ? styles.bannerOk : styles.bannerWrong]}>
               <Text style={[styles.bannerText, { color: feedback.correct ? '#7dffa1' : '#ffb3a8' }]}>
                 {feedback.correct ? '✓ Correct — ' : '✕ Not quite — '}

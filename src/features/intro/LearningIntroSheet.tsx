@@ -45,8 +45,8 @@ export function LearningIntroSheet({
     <Modal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={onBegin}>
       {/* Tapping the dimmed area dismisses (never a hard block); the card
           absorbs its own taps so content/BEGIN aren't swallowed. */}
-      <Pressable style={styles.backdrop} onPress={onBegin} accessibilityLabel="Dismiss">
-        <Pressable style={[styles.card, { maxHeight: `${88}%` }]} onPress={() => {}}>
+      <Pressable accessibilityRole="button" style={styles.backdrop} onPress={onBegin} accessibilityLabel="Dismiss">
+        <Pressable accessible={false} style={[styles.card, { maxHeight: `${88}%` }]} onPress={() => {}}>
           <View style={styles.head}>
             <Text style={styles.eyebrow}>{kind === 'course' ? 'COURSE INTRO' : 'TOPIC INTRO'}</Text>
             <Text style={styles.title}>{title}</Text>

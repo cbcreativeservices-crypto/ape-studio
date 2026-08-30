@@ -529,7 +529,7 @@ export function WaveformScreen({ navigation }: Props) {
             {/* Live readouts — ABOVE the viewer (owner 2026-07-31). Real meter
                 frame only; peak NEVER clamped (F1). */}
             <View style={styles.statGrid}>
-              <Pressable style={styles.statCell} onLongPress={() => help('peak')} delayLongPress={260}>
+              <Pressable accessibilityHint="Press and hold for an explanation." style={styles.statCell} onLongPress={() => help('peak')} delayLongPress={260}>
                 <Text style={styles.statLabel}>PEAK</Text>
                 {/* Number reads level on the amplitude ramp — louder red, quieter
                     blue (owner 2026-08-12). */}
@@ -556,7 +556,7 @@ export function WaveformScreen({ navigation }: Props) {
                     RESET CLIP button was removed). */}
                 <Text style={styles.statHint}>tap to reset</Text>
               </Pressable>
-              <Pressable style={styles.statCell} onLongPress={() => help('window')} delayLongPress={260}>
+              <Pressable accessibilityHint="Press and hold for an explanation." style={styles.statCell} onLongPress={() => help('window')} delayLongPress={260}>
                 <Text style={styles.statLabel}>WINDOW</Text>
                 <Text style={styles.statValue}>
                   {shownSec.toFixed(1)}

@@ -278,11 +278,11 @@ export function CalcWorkspaceScreen() {
                     <View key={o.label} style={styles.resultRow}>
                       <Text style={styles.resultLabel}>{o.label}</Text>
                       <View style={styles.resultRight}>
-                        <Pressable onPress={() => setOutUnit((m) => ({ ...m, [o.label]: (m[o.label] ?? 0) + 1 }))}>
+                        <Pressable accessibilityRole="button" onPress={() => setOutUnit((m) => ({ ...m, [o.label]: (m[o.label] ?? 0) + 1 }))}>
                           <Text style={styles.resultValue}>{formatOut(o, 0)}</Text>
                         </Pressable>
                         {o.chainable !== false ? (
-                          <Pressable
+                          <Pressable accessibilityRole="button"
                             style={styles.sendBtn}
                             onPress={() => setChainValue({ label: o.label, quantity: o.quantity, baseValue: o.value, fromWorkspace: ws.name })}
                           >
@@ -316,7 +316,7 @@ export function CalcWorkspaceScreen() {
                   </View>
                 ) : null}
                 {steps.length ? (
-                  <Pressable onPress={() => setStepsOpen((s) => !s)}>
+                  <Pressable accessibilityRole="button" onPress={() => setStepsOpen((s) => !s)}>
                     <Text style={styles.stepsToggle}>{stepsOpen ? '▾ WORKED STEPS' : '▸ WORKED STEPS'}</Text>
                   </Pressable>
                 ) : null}

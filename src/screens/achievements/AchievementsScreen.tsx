@@ -92,7 +92,7 @@ export function AchievementsScreen() {
             {earned} / {GRID_SLOTS}
           </Text>
           <View style={{ flex: 1 }} />
-          <Pressable onPress={() => (navigation as any).navigate('Gallery')} hitSlop={8}>
+          <Pressable accessibilityRole="button" onPress={() => (navigation as any).navigate('Gallery')} hitSlop={8}>
             <Text style={styles.galleryLink}>YOUR GALLERY ›</Text>
           </Pressable>
         </View>
@@ -111,6 +111,8 @@ export function AchievementsScreen() {
                 <Pressable
                   key={t.id}
                   onPress={() => openTrophy(t)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${t.name}${earned ? ', earned' : ', not yet earned'}`}
                   style={[
                     styles.tile,
                     earned
@@ -132,7 +134,7 @@ export function AchievementsScreen() {
             const glyph = t.status === 'complete' ? '★' : t.status === 'passed_incomplete' ? '☆' : '★';
             const glyphColor = t.status === 'unlocked' ? '#666666' : t.color;
             return (
-              <Pressable
+              <Pressable accessibilityRole="button"
                 key={t.id}
                 onPress={() => openTrophy(t)}
                 style={[

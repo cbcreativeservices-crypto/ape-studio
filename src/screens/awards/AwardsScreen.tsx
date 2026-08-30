@@ -643,7 +643,7 @@ export function AwardsScreen({ navigation, route }: Props) {
               );
             })}
           </ScrollView>
-          <Pressable style={styles.pickerDone} onPress={() => setPicker(null)}>
+          <Pressable accessibilityRole="button" style={styles.pickerDone} onPress={() => setPicker(null)}>
             <Text style={styles.pickerDoneText}>DONE</Text>
           </Pressable>
         </View>
@@ -769,7 +769,7 @@ export function AwardsScreen({ navigation, route }: Props) {
               );
             })}
           </ScrollView>
-          <Pressable style={styles.pickerDone} onPress={() => setPicker(null)}>
+          <Pressable accessibilityRole="button" style={styles.pickerDone} onPress={() => setPicker(null)}>
             <Text style={styles.pickerDoneText}>DONE</Text>
           </Pressable>
         </View>

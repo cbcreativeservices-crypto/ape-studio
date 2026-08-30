@@ -276,6 +276,7 @@ export function SettingsScreen({ navigation }: Props) {
               <Toggle
                 on={prefs?.[row.key] ?? false}
                 disabled={!prefs}
+                label={row.label}
                 onChange={(v) => setPref(row.key, v)}
               />
             </View>
@@ -300,6 +301,7 @@ export function SettingsScreen({ navigation }: Props) {
             <Toggle
               on={prefs?.notify_weekly_concept ?? false}
               disabled={!prefs}
+              label="Weekly concept"
               onChange={(v) => void setWeeklyOn(v)}
             />
           </View>
@@ -334,7 +336,11 @@ export function SettingsScreen({ navigation }: Props) {
                       <Text style={styles.schedText}>{`${shortDay(s.dayName)} · ${formatClock(s.hhmm)}`}</Text>
                       <Text style={styles.schedCaret}>›</Text>
                     </Pressable>
-                    <Toggle on={s.active} onChange={(v) => setCategory(cat, { active: v })} />
+                    <Toggle
+                      on={s.active}
+                      label={`Weekly concept: ${cat}`}
+                      onChange={(v) => setCategory(cat, { active: v })}
+                    />
                   </View>
                 );
               })
@@ -373,7 +379,7 @@ export function SettingsScreen({ navigation }: Props) {
                     <Text style={styles.schedCaret}>›</Text>
                   </Pressable>
                 ) : null}
-                <Toggle on={on} onChange={(v) => setLocalKey(row.key, v)} />
+                <Toggle on={on} label={row.label} onChange={(v) => setLocalKey(row.key, v)} />
               </View>
             );
           })}
@@ -389,7 +395,7 @@ export function SettingsScreen({ navigation }: Props) {
           <View style={[styles.row, styles.rowBorder]}>
             <Text style={styles.rowLabel}>Dark mode</Text>
             {/* Dark is the only shipped theme — value stored, control inert. */}
-            <Toggle on={local.darkMode} disabled onChange={(v) => setLocalKey('darkMode', v)} />
+            <Toggle on={local.darkMode} disabled label="Dark mode" onChange={(v) => setLocalKey('darkMode', v)} />
           </View>
 
           {/* TEXT SIZE, CONTRAST AND COLOUR NOW DEFER TO THE PHONE (owner
@@ -428,13 +434,14 @@ export function SettingsScreen({ navigation }: Props) {
             <Toggle
               on={local.reduceAnimations || osReduceMotionOn()}
               disabled={osReduceMotionOn()}
+              label="Reduce animations"
               onChange={(v) => setLocalKey('reduceAnimations', v)}
             />
           </View>
 
           <View style={styles.row}>
             <Text style={styles.rowLabel}>Haptic feedback</Text>
-            <Toggle on={local.haptics} onChange={(v) => setLocalKey('haptics', v)} />
+            <Toggle on={local.haptics} label="Haptic feedback" onChange={(v) => setLocalKey('haptics', v)} />
           </View>
         </SettingsSection>
 
@@ -448,7 +455,11 @@ export function SettingsScreen({ navigation }: Props) {
                 Stops the microphone the moment you switch away from a measurement tool, and re-starts it when you return. Turn off to keep it ready for an instant resume.
               </Text>
             </View>
-            <Toggle on={local.micReleaseOnBackground} onChange={(v) => setLocalKey('micReleaseOnBackground', v)} />
+            <Toggle
+              on={local.micReleaseOnBackground}
+              label="Release mic in the background"
+              onChange={(v) => setLocalKey('micReleaseOnBackground', v)}
+            />
           </View>
           <View style={styles.row}>
             <View style={{ flex: 1, paddingRight: 10 }}>
@@ -459,6 +470,7 @@ export function SettingsScreen({ navigation }: Props) {
             </View>
             <Toggle
               on={contribute}
+              label="Contribute anonymized calibration data"
               onChange={(v) => {
                 setContribute(v);
                 void setCrowdsourceConsent(v);
@@ -550,7 +562,7 @@ export function SettingsScreen({ navigation }: Props) {
             recovery action. (An older comment claimed this block was dev-only —
             it never had a __DEV__ guard, so the comment was simply wrong.) */}
         <SettingsSection title="ONBOARDING HINTS">
-          <Pressable
+          <Pressable accessibilityRole="button"
             style={[styles.row, styles.rowBorder]}
             onPress={() =>
               // Also replays the amplitude color-language orientation (its key is
@@ -567,7 +579,7 @@ export function SettingsScreen({ navigation }: Props) {
             <Text style={styles.rowLabel}>Replay onboarding hints</Text>
             <Text style={styles.monoAction}>RESET</Text>
           </Pressable>
-          <Pressable
+          <Pressable accessibilityRole="button"
             style={styles.row}
             onPress={() =>
               resetAskModes().then(() =>
@@ -599,8 +611,8 @@ export function SettingsScreen({ navigation }: Props) {
 
       {/* Redeem access / promo code popup (owner 2026-08-21). */}
       <Modal visible={redeemOpen} transparent animationType="fade" onRequestClose={() => setRedeemOpen(false)}>
-        <Pressable style={styles.modalBackdrop} onPress={() => !redeemBusy && setRedeemOpen(false)}>
-          <Pressable style={styles.modalCard} onPress={() => {}}>
+        <Pressable accessibilityRole="button" style={styles.modalBackdrop} onPress={() => !redeemBusy && setRedeemOpen(false)}>
+          <Pressable accessible={false} style={styles.modalCard} onPress={() => {}}>
             <Text style={styles.modalTitle}>REDEEM A CODE</Text>
             <Text style={styles.modalBody}>
               Enter an access or promo code from an event, sponsor, or the Academy. Membership codes apply
