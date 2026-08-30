@@ -2381,7 +2381,15 @@ export function GlossaryScreen({ route, navigation }: Props) {
       {/* Media viewer (user request 2026-07-18) — tap anywhere to close. */}
       <Modal accessibilityViewIsModal visible={!!mediaPopup} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setMediaPopup(null)}>
         <Pressable style={styles.mediaBackdrop} onPress={() => setMediaPopup(null)} accessibilityRole="button" accessibilityLabel="Close image">
-          {mediaPopup ? <Image source={{ uri: mediaPopup }} style={styles.mediaFull} resizeMode="contain" /> : null}
+          {mediaPopup ? (
+            <Image
+              source={{ uri: mediaPopup }}
+              style={styles.mediaFull}
+              resizeMode="contain"
+              accessibilityRole="image"
+              accessibilityLabel="Enlarged term illustration"
+            />
+          ) : null}
           <Text style={styles.mediaHint}>TAP TO CLOSE</Text>
         </Pressable>
         <LowLightDim />

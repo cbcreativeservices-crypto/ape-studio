@@ -1581,7 +1581,12 @@ export function MultiMeterScreen({ navigation }: Props) {
             {photoAvailable ? (
               photoUri ? (
                 <View style={styles.captureRow}>
-                  <Image source={{ uri: photoUri }} style={styles.captureThumb} />
+                  <Image
+                    source={{ uri: photoUri }}
+                    style={styles.captureThumb}
+                    accessibilityRole="image"
+                    accessibilityLabel="Photo attached to this measurement"
+                  />
                   <View style={styles.captureRowBody}>
                     <Text style={styles.captureLabel}>ROOM PHOTO ATTACHED</Text>
                     <View style={styles.captureActions}>
