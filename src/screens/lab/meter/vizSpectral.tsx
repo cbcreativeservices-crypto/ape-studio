@@ -696,6 +696,30 @@ const WF_SLICES = 56;
 const WF_DB_TOP = 0;
 const WF_DB_FLOOR = -60;
 const WF_DB_SPAN = WF_DB_TOP - WF_DB_FLOOR; // 60 dB — one RT60 of decay
+/**
+ * GEOMETRY-ONLY headroom above the 0 dB reference (owner 2026-08-30: "either
+ * the eq filter is changing level ... or the whole 20-20 kHz signal moves up
+ * and down around the eq filter — which is wrong").
+ *
+ * It did, and this is why. The spectrum used to be normalised to its OWN peak,
+ * so a BOOST made the boosted band the peak and pushed every other frequency
+ * down by the boost amount — the entire range appeared to move while the
+ * filter stood still. A CUT looked fine, because the peak lay elsewhere and
+ * did not change; that asymmetry is exactly what was reported.
+ *
+ * The reference is now the UN-EQ'd spectrum, so the baseline never moves and
+ * the EQ does what an EQ does: it reshapes one region and leaves the rest
+ * alone. A +12 boost then needs somewhere to go, hence this headroom — it is
+ * DRAWING space only and is never labelled, so the axis still reads
+ * 0 / −20 / −40 / −60 with no "+12 and 0" ambiguity. The heat gradient stays
+ * anchored to the 0 dB line so the amplitude ramp is untouched.
+ */
+const WF_DB_HEAD = 12;
+const WF_GEO_SPAN = WF_DB_SPAN + WF_DB_HEAD;
+/** dB → 0..1 of the plot's amplitude height (includes the headroom). */
+function wfGeo01(dbV: number): number {
+  return Math.max(0, Math.min(1, (dbV - WF_DB_FLOOR) / WF_GEO_SPAN));
+}
 // Animation timeline as fractions of one phase-clock cycle.
 // The cycle is BUILD then HOLD — there is no collapse phase (owner
 // 2026-08-28). The range completes, holds for the rest of the cycle, and the
@@ -951,12 +975,11 @@ export function WaterfallView(p: {
     const q = 0.975; // per-slice depth step shrinks — perspective recession
     const norm = 1 - Math.pow(q, WF_SLICES - 1);
     const specRaw = WF_FREQS.map((f) => waterfallSpectrumDb(o, f));
-    // Normalise to the impulse's own peak so the top of the scale is 0 dB by
-    // construction and nothing can exceed it (the ±12 dB EQ boost used to push
-    // content above 0, which is why the axis carried +12 of headroom). Boosting
-    // 250 Hz still reshapes the range -- 250 holds the ceiling while the rest
-    // sits further below it -- which is how a CSD is conventionally read.
-    const specPeak = Math.max(...specRaw);
+    // 0 dB = the peak of the room's own impulse WITHOUT any EQ or ring filter,
+    // so the reference cannot move when those controls do. Normalising to the
+    // live peak made a boost push the whole range down (see WF_DB_HEAD).
+    const flatOpts = { ...o, eqBoostDb: 0, qRing: false };
+    const specPeak = Math.max(...WF_FREQS.map((f) => waterfallSpectrumDb(flatOpts, f)));
     const spec = specRaw.map((v) => v - specPeak);
     const rt = WF_FREQS.map((f) => waterfallRt(o, f));
     const lgF = WF_FREQS.map((f) => lgFrac(f));
@@ -978,7 +1001,7 @@ export function WaterfallView(p: {
       fill.moveTo(ox, oy);
       for (let k = 0; k < WF_FREQS.length; k++) {
         const dbV = spec[k] - (60 * t) / rt[k]; // = waterfallSliceDb(o, f, t)
-        const a01 = Math.max(0, Math.min(1, (dbV - WF_DB_FLOOR) / WF_DB_SPAN));
+        const a01 = wfGeo01(dbV);
         const x = ox + lgF[k] * sw;
         const y = oy - a01 * amp;
         if (k === 0) stroke.moveTo(x, y);
@@ -1012,7 +1035,12 @@ export function WaterfallView(p: {
         ),
         fillColors: WF_HEAT_STOPS.map((st) => rgbStr(mixRgb(st.rgb, WF_COOL_DARK, dim))),
         swid: 1.7 - 0.8 * cum,
-        yTop: oy - amp,
+        // Anchored to the 0 dB LINE, not the top of the box: the drawing has
+        // headroom above 0 for EQ boosts, and letting the gradient span that
+        // too would shift every colour down and break the amplitude ramp.
+        // Anything boosted above 0 simply clamps to the hottest colour, which
+        // is correct — it is louder than the reference.
+        yTop: oy - wfGeo01(WF_DB_TOP) * amp,
         yBase: oy,
       });
     }
@@ -1142,7 +1170,7 @@ export function WaterfallView(p: {
     ref.addRect(Skia.XYWHRect(keyX, keyTop, keyW, geo.ampH));
     const dbTickYs: { dbV: number; y: number }[] = [];
     for (const dbV of [0, -20, -40, WF_DB_FLOOR]) {
-      const y = geo.baseY - ((dbV - WF_DB_FLOOR) / WF_DB_SPAN) * geo.ampH;
+      const y = geo.baseY - wfGeo01(dbV) * geo.ampH;
       dbTickYs.push({ dbV, y });
     }
     // The ringing frequency's own guide, so the eye can follow the mode from
