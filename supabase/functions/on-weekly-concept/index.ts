@@ -110,10 +110,13 @@ Deno.serve(async (req) => {
   }
 
   // Email transport config — absent key = email path off, push unaffected.
+  // COMPANY DOMAIN ONLY (owner 2026-08-29): notifications send from the
+  // academy's domain; no personal domain may ever appear here. reply_to is
+  // sent only when EMAIL_REPLY_TO is explicitly configured.
   const resendKey = Deno.env.get("RESEND_API_KEY") ?? "";
   const emailFrom = Deno.env.get("EMAIL_FROM") ??
-    "AP&E Pro Audio Training <notifications@channingbooth.com>";
-  const emailReplyTo = Deno.env.get("EMAIL_REPLY_TO") ?? "info@channingbooth.com";
+    "AP&E Pro Audio Training <notifications@proaudiotrainingacademy.com>";
+  const emailReplyTo = Deno.env.get("EMAIL_REPLY_TO") ?? "";
 
   const supabase = createClient(url, service);
   const now = new Date();
@@ -267,7 +270,7 @@ Deno.serve(async (req) => {
           body: JSON.stringify({
             from: emailFrom,
             to: [emailTo],
-            reply_to: emailReplyTo,
+            ...(emailReplyTo ? { reply_to: emailReplyTo } : {}),
             subject: `This week's concept: ${nextConcept.concept}`,
             html: conceptEmailHtml(nextConcept),
             text: conceptEmailText(nextConcept),
