@@ -210,7 +210,16 @@ export const NOTIFICATION_ROWS: { key: keyof NotificationPrefs; label: string; h
   { key: 'email_enabled', label: 'Email', hint: 'Deliver the full weekly concept card to your account email.' },
 ];
 
+/** DEV+WEB preview seam: the Settings harness has no session, so the real
+ *  fetch returns null and every control renders disabled. Setting this lets
+ *  the harness show the screen in its signed-in state. Never set in a build. */
+let devPrefsOverride: NotificationPrefs | null = null;
+export function __setDevPrefsOverride(p: NotificationPrefs | null): void {
+  if (__DEV__) devPrefsOverride = p;
+}
+
 export async function fetchNotificationPrefs(): Promise<NotificationPrefs | null> {
+  if (__DEV__ && devPrefsOverride) return devPrefsOverride;
   const { data, error } = await supabase
     .from('notification_preferences')
     .select('push_enabled, email_enabled, notify_weekly_concept, notify_trophy, notify_badge, notify_quiz_unlock, notify_method_complete')

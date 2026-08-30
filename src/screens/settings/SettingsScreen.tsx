@@ -50,12 +50,16 @@ import { registerAndSavePushToken } from '../../features/notifications/push';
 import {
   WEEKLY_CONCEPT_CATEGORIES,
   deactivateAllWeeklySubscriptions,
-  dowToDayName,
+  defaultScheduleFor,
   fetchWeeklySubscriptions,
+  saveAllCategorySchedules,
+  saveCategorySchedule,
+  scheduleMapFrom,
   setWeeklyConceptPref,
-  syncWeeklySchedule,
-  timeToHhmm,
+  shortCategory,
+  type CategorySchedule,
 } from '../../features/notifications/weeklyConcept';
+import { SettingsSection } from '../../features/settings/SettingsSection';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
@@ -95,12 +99,7 @@ export function SettingsScreen({ navigation }: Props) {
     loadLocalSettings().then(setLocal);
     void hasCrowdsourceConsent().then(setContribute);
     fetchNotificationPrefs().then(setPrefs);
-    void fetchWeeklySubscriptions().then((subs) => {
-      if (!subs.length) return;
-      setWeeklyCats(subs.map((s) => s.category));
-      setWeeklyDay(dowToDayName(subs[0].day_of_week));
-      setWeeklyTime(timeToHhmm(subs[0].send_time));
-    });
+    void fetchWeeklySubscriptions().then((subs) => setCatSched(scheduleMapFrom(subs)));
     supabase
       .from('users')
       .select('ape_student_id')
@@ -134,10 +133,14 @@ export function SettingsScreen({ navigation }: Props) {
   }, []);
   // Which notification's schedule popup is open (user request 2026-07-23).
   const [picker, setPicker] = useState<CommercialNotifyKey | null>(null);
-  const [weeklyPicker, setWeeklyPicker] = useState(false);
-  const [weeklyDay, setWeeklyDay] = useState('Monday');
-  const [weeklyTime, setWeeklyTime] = useState('09:00');
-  const [weeklyCats, setWeeklyCats] = useState<string[]>(['Acoustics']);
+  // Per-CATEGORY schedule (owner 2026-08-30): each of the 7 weekly-concept
+  // categories carries its own day AND time. `weeklyPicker` holds the category
+  // whose popup is open, or null.
+  const [weeklyPicker, setWeeklyPicker] = useState<string | null>(null);
+  const [catSched, setCatSched] = useState<Record<string, CategorySchedule>>(() =>
+    Object.fromEntries(WEEKLY_CONCEPT_CATEGORIES.map((c) => [c, defaultScheduleFor(c)])),
+  );
+  const activeCatCount = WEEKLY_CONCEPT_CATEGORIES.filter((c) => catSched[c]?.active).length;
 
   const confirmLogout = useCallback(() => {
     Alert.alert('Log out?', 'You can sign in as a different user afterward.', [
@@ -167,23 +170,36 @@ export function SettingsScreen({ navigation }: Props) {
     [prefs],
   );
 
-  const persistWeeklySubs = useCallback(
-    (cats: string[], dayName: string, hhmm: string) => {
-      void syncWeeklySchedule({ categories: cats, dayName, hhmm });
-    },
-    [],
-  );
+  /** Change ONE category (its own day, time, or on/off) and persist just it. */
+  const setCategory = useCallback((category: string, patch: Partial<CategorySchedule>) => {
+    setCatSched((prev) => {
+      const next = { ...prev[category], ...patch };
+      void saveCategorySchedule(category, next);
+      return { ...prev, [category]: next };
+    });
+  }, []);
 
   const setWeeklyOn = useCallback(
     async (on: boolean) => {
       if (!prefs) return;
       setPrefs({ ...prefs, notify_weekly_concept: on, push_enabled: on ? true : prefs.push_enabled });
       if (on) {
+        // BUG FIX (design review 2026-08-30): turning this on flipped
+        // push_enabled in local state ONLY, so the switch appeared on and was
+        // off again next time Settings opened. Persist it too.
+        if (!prefs.push_enabled) void updateNotificationPref('push_enabled', true);
         const token = await registerAndSavePushToken();
         const prefOk = await setWeeklyConceptPref(true);
-        const cats = weeklyCats.length ? weeklyCats : ['Acoustics'];
-        setWeeklyCats(cats);
-        await persistWeeklySubs(cats, weeklyDay, weeklyTime);
+        // Make sure every category has a row carrying its own schedule. If the
+        // user has never picked any, start ONE on so the switch does something
+        // — silently subscribing to all seven would be presumptuous.
+        const seeded = { ...catSched };
+        if (!WEEKLY_CONCEPT_CATEGORIES.some((c) => seeded[c]?.active)) {
+          const first = WEEKLY_CONCEPT_CATEGORIES[0];
+          seeded[first] = { ...seeded[first], active: true };
+          setCatSched(seeded);
+        }
+        await saveAllCategorySchedules(seeded);
         if (!prefOk) {
           setPrefs((p) => (p ? { ...p, notify_weekly_concept: false } : p));
           return;
@@ -197,23 +213,14 @@ export function SettingsScreen({ navigation }: Props) {
       } else {
         const prefOk = await setWeeklyConceptPref(false);
         await deactivateAllWeeklySubscriptions();
+        // Mirror the server: the rows keep their day/time, they just go quiet.
+        setCatSched((prev) =>
+          Object.fromEntries(Object.entries(prev).map(([k, v]) => [k, { ...v, active: false }])),
+        );
         if (!prefOk) setPrefs((p) => (p ? { ...p, notify_weekly_concept: true } : p));
       }
     },
-    [prefs, persistWeeklySubs, weeklyCats, weeklyDay, weeklyTime],
-  );
-
-  const toggleWeeklyCat = useCallback(
-    (category: string) => {
-      setWeeklyCats((prev) => {
-        const has = prev.includes(category);
-        const next = has ? prev.filter((c) => c !== category) : [...prev, category];
-        const cats = next.length ? next : [category];
-        persistWeeklySubs(cats, weeklyDay, weeklyTime);
-        return cats;
-      });
-    },
-    [persistWeeklySubs, weeklyDay, weeklyTime],
+    [prefs, catSched],
   );
 
   return (
@@ -228,13 +235,28 @@ export function SettingsScreen({ navigation }: Props) {
       <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 20 }]}>
         {/* NOTIFICATIONS — transport toggles (server) + the commercial content
             notifications (device-local; server prefs frozen). */}
-        <View>
-          <Text style={styles.sectionEyebrow}>NOTIFICATIONS</Text>
+        <SettingsSection
+          title="NOTIFICATIONS"
+          defaultOpen
+          summary={(() => {
+            const n =
+              (prefs?.push_enabled ? 1 : 0) +
+              (prefs?.email_enabled ? 1 : 0) +
+              (prefs?.notify_weekly_concept ? 1 : 0) +
+              COMMERCIAL_NOTIFY_ROWS.filter((r) => local[r.key]).length;
+            return n ? `${n} on` : 'all off';
+          })()}
+        >
+          <Text style={styles.groupLabel}>HOW THEY REACH YOU</Text>
           {NOTIFICATION_ROWS.map((row) => (
             <View key={row.key} style={[styles.row, styles.rowBorder]}>
               <View style={{ flex: 1, paddingRight: 10 }}>
                 <Text style={styles.rowLabel}>{row.label}</Text>
-                {!(prefs?.[row.key] ?? false) ? <Text style={styles.rowHint}>{row.hint}</Text> : null}
+                {/* ALWAYS shown. Hiding the hint when a toggle went on changed
+                    the row height mid-tap (every row below shifted under the
+                    user's finger) and removed the explanation at exactly the
+                    moment someone auditing "why am I getting this?" needs it. */}
+                <Text style={styles.rowHint}>{row.hint}</Text>
               </View>
               <Toggle
                 on={prefs?.[row.key] ?? false}
@@ -243,56 +265,65 @@ export function SettingsScreen({ navigation }: Props) {
               />
             </View>
           ))}
+          <Text style={styles.groupLabel}>WHAT YOU GET</Text>
           <View style={[styles.row, styles.rowBorder]}>
             <View style={{ flex: 1, paddingRight: 10 }}>
               <Text style={styles.rowLabel}>Weekly concept</Text>
-              {!prefs?.notify_weekly_concept ? (
-                <Text style={styles.rowHint}>One misunderstood concept a week, per category you select.</Text>
-              ) : null}
+              <Text style={styles.rowHint}>
+                {prefs?.notify_weekly_concept
+                  ? `${activeCatCount} of ${WEEKLY_CONCEPT_CATEGORIES.length} categories · each on its own day and time`
+                  : 'One misunderstood concept a week, from the categories you choose.'}
+              </Text>
             </View>
-            {prefs?.notify_weekly_concept ? (
-              <Pressable
-                style={styles.schedBtn}
-                onPress={() => setWeeklyPicker(true)}
-                accessibilityRole="button"
-                accessibilityLabel={`Edit weekly concept schedule, currently ${shortDay(weeklyDay)} · ${formatClock(weeklyTime)}`}
-              >
-                <Text style={styles.schedText}>{`${shortDay(weeklyDay)} · ${formatClock(weeklyTime)}`}</Text>
-              </Pressable>
-            ) : null}
             <Toggle
               on={prefs?.notify_weekly_concept ?? false}
               disabled={!prefs}
               onChange={(v) => void setWeeklyOn(v)}
             />
           </View>
-          {prefs?.notify_weekly_concept ? (
-            <View style={[styles.rowCol, styles.rowBorder]}>
-              <Text style={styles.rowHint}>Categories</Text>
-              <View style={styles.chipWrap}>
-                {WEEKLY_CONCEPT_CATEGORIES.map((cat) => {
-                  const on = weeklyCats.includes(cat);
-                  return (
+          {/* PER-CATEGORY schedules (owner 2026-08-30): every category carries
+              its OWN day and time, so one row each — name, its schedule pill,
+              and its own switch. Defaults are staggered across the week. */}
+          {prefs?.notify_weekly_concept
+            ? WEEKLY_CONCEPT_CATEGORIES.map((cat, i) => {
+                const s = catSched[cat] ?? defaultScheduleFor(cat);
+                return (
+                  <View
+                    key={cat}
+                    style={[
+                      styles.row,
+                      styles.catRow,
+                      i < WEEKLY_CONCEPT_CATEGORIES.length - 1 && styles.rowBorder,
+                    ]}
+                  >
+                    <Text style={[styles.catName, !s.active && styles.catNameOff]} numberOfLines={1}>
+                      {shortCategory(cat)}
+                    </Text>
+                    {/* Pill is ALWAYS rendered, dimmed when the category is
+                        off: setting a day before subscribing is harmless, and
+                        it avoids a 7-row reflow every time a switch is tapped. */}
                     <Pressable
-                      key={cat}
-                      style={[styles.catChip, on && styles.catChipOn]}
-                      onPress={() => toggleWeeklyCat(cat)}
+                      style={[styles.schedBtn, !s.active && styles.schedBtnOff]}
+                      onPress={() => setWeeklyPicker(cat)}
+                      hitSlop={{ top: 6, bottom: 6, left: 8, right: 8 }}
                       accessibilityRole="button"
-                      accessibilityState={{ selected: on }}
+                      accessibilityLabel={`Edit ${cat} schedule, currently ${shortDay(s.dayName)} at ${formatClock(s.hhmm)}`}
                     >
-                      <Text style={[styles.catChipText, on && styles.catChipTextOn]}>{cat}</Text>
+                      <Text style={styles.schedText}>{`${shortDay(s.dayName)} · ${formatClock(s.hhmm)}`}</Text>
+                      <Text style={styles.schedCaret}>›</Text>
                     </Pressable>
-                  );
-                })}
-              </View>
-            </View>
-          ) : null}
+                    <Toggle on={s.active} onChange={(v) => setCategory(cat, { active: v })} />
+                  </View>
+                );
+              })
+            : null}
           {/* The 7 commercial notifications (user request 2026-07-18). Turning
               one ON reveals its frequency editor; the toggle is the "turn off",
               the editor is the "edit". */}
           {/* Each notification is ONE line: label · (schedule button when ON) ·
               toggle. The schedule button opens a popup that picks a specific time
               (and day, for weekly / new terms) — user request 2026-07-23. */}
+          <Text style={styles.groupLabel}>REMINDERS</Text>
           {COMMERCIAL_NOTIFY_ROWS.map((row, i) => {
             const on = local[row.key];
             const freq = NOTIFY_FREQ[row.key];
@@ -306,53 +337,66 @@ export function SettingsScreen({ navigation }: Props) {
               <View key={row.key} style={[styles.row, i < COMMERCIAL_NOTIFY_ROWS.length - 1 && styles.rowBorder]}>
                 <View style={{ flex: 1, paddingRight: 10 }}>
                   <Text style={styles.rowLabel}>{row.label}</Text>
-                  {!on ? <Text style={styles.rowHint}>{row.hint}</Text> : null}
+                  <Text style={styles.rowHint}>{row.hint}</Text>
                 </View>
                 {on ? (
                   <Pressable
                     style={styles.schedBtn}
                     onPress={() => setPicker(row.key)}
+                    hitSlop={{ top: 6, bottom: 6, left: 8, right: 8 }}
                     accessibilityRole="button"
                     accessibilityLabel={`Edit ${row.label} schedule, currently ${summary}`}
                   >
                     <Text style={styles.schedText}>{summary}</Text>
+                    <Text style={styles.schedCaret}>›</Text>
                   </Pressable>
                 ) : null}
                 <Toggle on={on} onChange={(v) => setLocalKey(row.key, v)} />
               </View>
             );
           })}
-        </View>
+        </SettingsSection>
 
-        {/* DISPLAY */}
-        <View>
-          <Text style={styles.sectionEyebrow}>DISPLAY</Text>
-          <View style={styles.row}>
+        {/* DISPLAY + ACCESSIBILITY are one concern to a user ("how it looks and
+            reads"), so they live in one section rather than two one-row stubs. */}
+        <SettingsSection
+          title="DISPLAY & ACCESSIBILITY"
+          summary={`${local.fontSize}pt${local.highContrast ? ' · contrast' : ''}${local.colorBlind !== 'off' ? ' · colour' : ''}`}
+        >
+          <View style={[styles.row, styles.rowBorder]}>
             <Text style={styles.rowLabel}>Dark mode</Text>
             {/* Dark is the only shipped theme — value stored, control inert. */}
             <Toggle on={local.darkMode} disabled onChange={(v) => setLocalKey('darkMode', v)} />
           </View>
-        </View>
-
-        {/* ACCESSIBILITY */}
-        <View>
-          <Text style={styles.sectionEyebrow}>ACCESSIBILITY</Text>
 
           <View style={[styles.rowCol, styles.rowBorder]}>
             <Text style={styles.rowLabel}>Font size</Text>
+            {/* Chips show a letter AT its own size, not the px number — "13"
+                and "19" mean nothing to a reader, but the size difference IS
+                the preview. The sample line below reads at the chosen size so
+                the choice can be judged without leaving the screen. */}
             <View style={styles.chipRow}>
               {FONT_SIZES.map((fs) =>
                 local.fontSize === fs ? (
                   <LinearGradient key={fs} colors={['#ffd35e', '#f09e1a']} style={styles.sizeChipActive}>
-                    <Text style={[styles.sizeChipActiveText, { fontSize: fs }]}>{fs}</Text>
+                    <Text style={[styles.sizeChipActiveText, { fontSize: fs }]}>A</Text>
                   </LinearGradient>
                 ) : (
-                  <Pressable key={fs} style={styles.sizeChip} onPress={() => setLocalKey('fontSize', fs)}>
-                    <Text style={[styles.sizeChipText, { fontSize: fs }]}>{fs}</Text>
+                  <Pressable
+                    key={fs}
+                    style={({ pressed }) => [styles.sizeChip, pressed && styles.rowPressed]}
+                    onPress={() => setLocalKey('fontSize', fs)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Font size ${fs}`}
+                  >
+                    <Text style={[styles.sizeChipText, { fontSize: fs }]}>A</Text>
                   </Pressable>
                 ),
               )}
             </View>
+            <Text style={[styles.sizeSample, { fontSize: local.fontSize }]}>
+              Sample text at this size.
+            </Text>
           </View>
 
           <View style={[styles.row, styles.rowBorder]}>
@@ -388,12 +432,12 @@ export function SettingsScreen({ navigation }: Props) {
             <Text style={styles.rowLabel}>Haptic feedback</Text>
             <Toggle on={local.haptics} onChange={(v) => setLocalKey('haptics', v)} />
           </View>
-        </View>
+        </SettingsSection>
 
-        {/* MICROPHONE — live measurement-tool capture behaviour (rev 24). */}
-        <View>
-          <Text style={styles.sectionEyebrow}>MICROPHONE</Text>
-          <View style={styles.row}>
+        {/* Both rows answer "what does the app do with my microphone?", so they
+            belong together — they were two separate one-row sections before. */}
+        <SettingsSection title="MICROPHONE & PRIVACY">
+          <View style={[styles.row, styles.rowBorder]}>
             <View style={{ flex: 1, paddingRight: 10 }}>
               <Text style={styles.rowLabel}>Release mic in the background</Text>
               <Text style={styles.rowHint}>
@@ -402,11 +446,6 @@ export function SettingsScreen({ navigation }: Props) {
             </View>
             <Toggle on={local.micReleaseOnBackground} onChange={(v) => setLocalKey('micReleaseOnBackground', v)} />
           </View>
-        </View>
-
-        {/* COMMUNITY MIC CATALOG — anonymous, opt-in calibration contribution. */}
-        <View>
-          <Text style={styles.sectionEyebrow}>COMMUNITY MIC CATALOG</Text>
           <View style={styles.row}>
             <View style={{ flex: 1, paddingRight: 10 }}>
               <Text style={styles.rowLabel}>Contribute anonymized calibration data</Text>
@@ -422,11 +461,10 @@ export function SettingsScreen({ navigation }: Props) {
               }}
             />
           </View>
-        </View>
+        </SettingsSection>
 
         {/* FEEDBACK & SUPPORT — opens the mail composer, pre-filled. */}
-        <View>
-          <Text style={styles.sectionEyebrow}>FEEDBACK & SUPPORT</Text>
+        <SettingsSection title="FEEDBACK & SUPPORT">
           {(
             [
               ['bug', 'Report a bug'],
@@ -437,21 +475,23 @@ export function SettingsScreen({ navigation }: Props) {
           ).map(([kind, label], i, arr) => (
             <Pressable
               key={kind}
-              style={[styles.row, i < arr.length - 1 && styles.rowBorder]}
+              style={({ pressed }) => [styles.row, i < arr.length - 1 && styles.rowBorder, pressed && styles.rowPressed]}
               onPress={() => sendFeedback(kind)}
               accessibilityRole="button"
             >
               <Text style={styles.rowLabel}>{label}</Text>
-              <Text style={[styles.mono, { color: colors.amber }]}>›</Text>
+              <Text style={styles.chevron}>›</Text>
             </Pressable>
           ))}
           <Text style={styles.thanks}>Thank you for your support!</Text>
-        </View>
+        </SettingsSection>
 
         {/* MEMBERSHIP — redeem an access / promo code (owner 2026-08-21): comp
             accounts, bulk seats, event offers. Available to any signed-in user. */}
-        <View>
-          <Text style={styles.sectionEyebrow}>MEMBERSHIP</Text>
+        <SettingsSection
+          title="MEMBERSHIP"
+          summary={isMember ? 'ACADEMY' : entitlement === 'lapsed' ? 'LAPSED' : 'FREE'}
+        >
           <View style={[styles.row, styles.rowBorder]}>
             <Text style={styles.rowLabel}>Status</Text>
             <Text style={[styles.mono, { color: isMember ? colors.green : colors.textSubAlt }]}>
@@ -468,13 +508,12 @@ export function SettingsScreen({ navigation }: Props) {
             accessibilityLabel="Redeem an access or promo code"
           >
             <Text style={styles.rowLabel}>Redeem access or promo code</Text>
-            <Text style={[styles.mono, { color: colors.amber }]}>›</Text>
+            <Text style={styles.chevron}>›</Text>
           </Pressable>
-        </View>
+        </SettingsSection>
 
         {/* ACCOUNT */}
-        <View>
-          <Text style={styles.sectionEyebrow}>ACCOUNT</Text>
+        <SettingsSection title="ACCOUNT" summary={apeId || undefined}>
           <View style={[styles.row, styles.rowBorder]}>
             <Text style={styles.rowLabel}>Student ID</Text>
             <Text style={styles.mono}>{apeId}</Text>
@@ -493,21 +532,20 @@ export function SettingsScreen({ navigation }: Props) {
             accessibilityLabel="About this app"
           >
             <Text style={styles.rowLabel}>About &amp; credits</Text>
-            <Text style={[styles.mono, { color: colors.amber }]}>›</Text>
+            <Text style={styles.chevron}>›</Text>
           </Pressable>
           {/* Log out → sign out then bounce to Splash, which re-checks the
               session and routes to the login screen for the next user. */}
           <Pressable style={styles.row} onPress={confirmLogout} accessibilityRole="button" accessibilityLabel="Log out">
             <Text style={styles.rowLabel}>Log out</Text>
-            <Text style={[styles.mono, { color: colors.amber }]}>SIGN OUT ›</Text>
+            <Text style={styles.monoAction}>SIGN OUT ›</Text>
           </Pressable>
-        </View>
+        </SettingsSection>
 
-        {/* DEV — only in development builds; not shipped to students. */}
-        <View>
-          <Text style={styles.sectionEyebrow}>ONBOARDING</Text>
+        {/* Replaying hints is a rare, deliberate act — collapsed by default. */}
+        <SettingsSection title="ONBOARDING HINTS">
           <Pressable
-            style={styles.row}
+            style={[styles.row, styles.rowBorder]}
             onPress={() =>
               // Also replays the amplitude color-language orientation (its key is
               // in the ape:intro:* family; the explicit call resets the LIVE flag
@@ -521,7 +559,7 @@ export function SettingsScreen({ navigation }: Props) {
             }
           >
             <Text style={styles.rowLabel}>Reset onboarding hints</Text>
-            <Text style={[styles.mono, { color: colors.amber }]}>RESET</Text>
+            <Text style={styles.monoAction}>RESET</Text>
           </Pressable>
           <Pressable
             style={styles.row}
@@ -535,17 +573,22 @@ export function SettingsScreen({ navigation }: Props) {
             }
           >
             <Text style={styles.rowLabel}>Reset permission prompts</Text>
-            <Text style={[styles.mono, { color: colors.amber }]}>RESET</Text>
+            <Text style={styles.monoAction}>RESET</Text>
           </Pressable>
-        </View>
+        </SettingsSection>
 
         {/* DELETE ACCOUNT — permanent, at the very bottom (user request 2026-07-25).
             Hold 5s → final confirm → erase personal data via delete_my_account, then
-            sign out and bounce to Splash. */}
-        <View>
-          <Text style={styles.sectionEyebrow}>DELETE ACCOUNT</Text>
-          <DeleteAccountButton onDeleted={() => navigation.reset({ index: 0, routes: [{ name: 'Splash' }] })} />
-        </View>
+            sign out and bounce to Splash. Collapsed AND red-keyed: it should take a
+            deliberate tap to even see the control. */}
+        <SettingsSection title="DELETE ACCOUNT" danger>
+          <View style={{ paddingVertical: 10 }}>
+            <Text style={[styles.rowHint, { marginBottom: 10 }]}>
+              Permanently erases your personal data and signs you out. This cannot be undone.
+            </Text>
+            <DeleteAccountButton onDeleted={() => navigation.reset({ index: 0, routes: [{ name: 'Splash' }] })} />
+          </View>
+        </SettingsSection>
       </ScrollView>
 
       {/* Redeem access / promo code popup (owner 2026-08-21). */}
@@ -579,24 +622,20 @@ export function SettingsScreen({ navigation }: Props) {
       </Modal>
 
       {/* Notification schedule popup (user request 2026-07-23). */}
+      {/* One category at a time — the popup title names which one, so it is
+          never ambiguous whose day/time you are editing. */}
       {weeklyPicker ? (
         <NotifyScheduleModal
           visible
-          title="Weekly concept"
+          title={weeklyPicker}
           mode="dayTime"
-          time={weeklyTime}
-          day={weeklyDay}
+          time={(catSched[weeklyPicker] ?? defaultScheduleFor(weeklyPicker)).hhmm}
+          day={(catSched[weeklyPicker] ?? defaultScheduleFor(weeklyPicker)).dayName}
           days={3}
-          onSetTime={(hhmm) => {
-            setWeeklyTime(hhmm);
-            persistWeeklySubs(weeklyCats, weeklyDay, hhmm);
-          }}
-          onSetDay={(d) => {
-            setWeeklyDay(d);
-            persistWeeklySubs(weeklyCats, d, weeklyTime);
-          }}
+          onSetTime={(hhmm) => setCategory(weeklyPicker, { hhmm })}
+          onSetDay={(dayName) => setCategory(weeklyPicker, { dayName })}
           onSetDays={() => {}}
-          onClose={() => setWeeklyPicker(false)}
+          onClose={() => setWeeklyPicker(null)}
         />
       ) : null}
       {picker ? (
@@ -631,7 +670,9 @@ const styles = StyleSheet.create({
   },
   headerTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.6, color: colors.textPrimary },
   close: { fontSize: 18, color: colors.textSubAlt },
-  scroll: { padding: 16, gap: 20 },
+  // Sections are cards now, so the gap between them is tighter than the old
+  // flat list needed (20 -> 10): the border does the separating.
+  scroll: { padding: 14, gap: 10 },
 
   sectionEyebrow: {
     fontFamily: fonts.oswaldSemiBold,
@@ -639,6 +680,16 @@ const styles = StyleSheet.create({
     letterSpacing: 2.2,
     color: colors.amberLabel,
     marginBottom: 8,
+  },
+  /** Sub-heading INSIDE a section — splits NOTIFICATIONS into "how they reach
+   *  you" (transport) vs "what you get" (content) vs reminders. */
+  groupLabel: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 10,
+    letterSpacing: 1.4,
+    color: colors.textSubAlt,
+    marginTop: 12,
+    marginBottom: 2,
   },
   modalBackdrop: {
     flex: 1,
@@ -666,40 +717,49 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   rowCol: { paddingVertical: 12, gap: 10 },
-  rowBorder: { borderBottomWidth: 1, borderBottomColor: '#1a1a1a' },
-  rowLabel: { fontFamily: fonts.barlowRegular, fontSize: 15, color: colors.textSecondary },
-  rowHint: { fontFamily: fonts.barlowRegular, fontSize: 12, color: colors.textMuted, marginTop: 2 },
+  rowBorder: { borderBottomWidth: 1, borderBottomColor: '#1f1f24' },
+  // Medium, not Regular: label and hint sit only 2.5 px apart in size, so
+  // without a weight difference they read as one grey block.
+  rowLabel: { fontFamily: fonts.barlowSemiBold, fontSize: 15, color: colors.textSecondary },
+  rowHint: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textMuted, marginTop: 3 },
   chipWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  catChip: {
-    borderWidth: 1,
-    borderColor: '#3a3a3a',
-    borderRadius: 7,
-    paddingVertical: 7,
-    paddingHorizontal: 10,
-    backgroundColor: '#141414',
-  },
-  catChipOn: { borderColor: 'rgba(255,198,77,.7)', backgroundColor: 'rgba(255,198,77,.12)' },
-  catChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.4, color: colors.textSub },
-  catChipTextOn: { color: colors.amber },
+  // Per-category rows are INDENTED under "Weekly concept" so they read as its
+  // children rather than as seven more top-level notifications.
+  catRow: { paddingLeft: 12, paddingVertical: 9, gap: 8 },
+  catName: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 13.5, color: colors.textSecondary },
+  catNameOff: { color: colors.textMuted },
   thanks: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 13, color: colors.amber, marginTop: 10, paddingVertical: 4 },
-  mono: { fontFamily: fonts.mono, fontSize: 12, color: colors.amber },
+  // Amber means INTERACTIVE or ON — nothing else (design review 2026-08-30).
+  // `mono` used to default to amber, so inert data (student id, version) had to
+  // override it inline and everything looked equally tappable.
+  mono: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSubAlt },
+  monoAction: { fontFamily: fonts.mono, fontSize: 12, color: colors.amber },
+  chevron: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, color: colors.textSubAlt },
 
-  chipRow: { flexDirection: 'row', gap: 8 },
+  // flexWrap was missing: the five colour-blind chips measure ~343 px against a
+  // 328 px inner width at 360, so they overflowed off-screen (design review
+  // 2026-08-30). Wrapping + a row gap is the correct outcome, not a squeeze.
+  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, rowGap: 8 },
   sizeChip: {
     flex: 1,
+    minHeight: 44, // was ~30 — under the touch minimum
     alignItems: 'center',
-    paddingVertical: 8,
+    justifyContent: 'center',
     borderRadius: 6,
     backgroundColor: '#141414',
     borderWidth: 1,
     borderColor: '#2a2a2a',
   },
   sizeChipText: { fontFamily: fonts.barlowRegular, color: '#888888' },
-  sizeChipActive: { flex: 1, alignItems: 'center', paddingVertical: 8, borderRadius: 6 },
+  sizeChipActive: { flex: 1, minHeight: 44, alignItems: 'center', justifyContent: 'center', borderRadius: 6 },
   sizeChipActiveText: { fontFamily: fonts.barlowSemiBold, color: '#221500' },
+  /** Sample line rendered AT the chosen size — the only way to judge the
+   *  choice without leaving the screen. */
+  sizeSample: { fontFamily: fonts.barlowRegular, color: colors.textMuted, marginTop: 10 },
 
   cbChip: {
-    paddingVertical: 8,
+    minHeight: 44,
+    justifyContent: 'center',
     paddingHorizontal: 12,
     borderRadius: 6,
     backgroundColor: '#141414',
@@ -711,9 +771,27 @@ const styles = StyleSheet.create({
   cbChipTextActive: { color: colors.amber },
 
   // One-line schedule button on the right of a notification row (user request
-  // 2026-07-23) — opens the time/day popup.
-  schedBtn: { borderWidth: 1, borderColor: 'rgba(255,198,77,.55)', backgroundColor: 'rgba(255,198,77,.1)', borderRadius: 7, paddingVertical: 6, paddingHorizontal: 10, marginRight: 10 },
-  schedText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.4, color: colors.amber },
+  // 2026-07-23) — opens the time/day popup. An amber-outlined capsule around a
+  // value reads as a READOUT, so it gains a trailing caret and a real height:
+  // it was ~29 px with no hitSlop (design review 2026-08-30).
+  schedBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    minHeight: 40,
+    borderWidth: 1,
+    borderColor: 'rgba(255,198,77,.55)',
+    backgroundColor: 'rgba(255,198,77,.1)',
+    borderRadius: 7,
+    paddingHorizontal: 10,
+    marginRight: 10,
+  },
+  // mono, not Oswald: it is a data readout, and Oswald's condensed digits make
+  // a time read cramped.
+  schedText: { fontFamily: fonts.mono, fontSize: 12, color: colors.amber },
+  schedCaret: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: colors.amber, opacity: 0.75, marginLeft: 6 },
+  schedBtnOff: { opacity: 0.42 },
+  /** Pressed feedback — not one row on this screen had any. */
+  rowPressed: { backgroundColor: 'rgba(255,198,77,0.06)' },
 
   // Per-notification frequency editor (user request 2026-07-18).
   freqBlock: { paddingLeft: 12, paddingBottom: 12, paddingTop: 2, gap: 8 },

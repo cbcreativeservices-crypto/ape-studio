@@ -30,6 +30,7 @@ import {
 import { syncLocalNotificationsThrottled } from './src/features/notifications/localSchedule';
 import { loadLocalSettings } from './src/features/settings/store';
 import { NotifySchedulePreview } from './src/features/settings/NotifySchedulePreview';
+import { SettingsPreview } from './src/screens/settings/SettingsPreview';
 import { LabPreviewOverlay } from './src/features/lab/LabPreviewOverlay';
 import { endLabPreview, getLabPreview } from './src/features/lab/labPreviewStore';
 import { EntitlementProvider } from './src/features/commercial/EntitlementProvider';
@@ -163,6 +164,17 @@ export default function App() {
       <SafeAreaProvider>
         <StatusBar style="light" />
         <NotifySchedulePreview />
+      </SafeAreaProvider>
+    );
+  }
+
+  // DEV + WEB ONLY: `#settingspreview/<width>` — the Settings screen is behind
+  // login, so this is the only way to review its layout in the browser.
+  if (__DEV__ && Platform.OS === 'web' && typeof window !== 'undefined' && window.location.hash.startsWith('#settingspreview')) {
+    return (
+      <SafeAreaProvider>
+        <StatusBar style="light" />
+        <SettingsPreview />
       </SafeAreaProvider>
     );
   }
