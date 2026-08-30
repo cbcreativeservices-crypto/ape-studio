@@ -72,7 +72,30 @@ function gateHtml(error: boolean): string {
 </html>`;
 }
 
+/* ============================================================
+ *  DOMAIN CANONICALIZATION (owner 2026-08-30)
+ *  The .co is a secondary/typo domain: it must 308 to the real
+ *  site, never serve a duplicate copy of it. Handled HERE (in
+ *  code, versioned, testable) rather than as a dashboard setting
+ *  — and it runs BEFORE the gate so the redirect works whether
+ *  the site is gated or public.
+ * ============================================================ */
+const CANONICAL_HOST = "www.proaudiotrainingacademy.com";
+const REDIRECT_HOSTS = new Set([
+  "proaudiotrainingacademy.co",
+  "www.proaudiotrainingacademy.co",
+]);
+
 export function proxy(request: NextRequest) {
+  const host = (request.headers.get("host") ?? "").split(":")[0].toLowerCase();
+  if (REDIRECT_HOSTS.has(host)) {
+    const target = new URL(request.nextUrl.toString());
+    target.protocol = "https:";
+    target.host = CANONICAL_HOST;
+    target.port = "";
+    return NextResponse.redirect(target, 308);
+  }
+
   // Gate turned off (launch) -> everything public.
   if (!GATE_ENABLED) return NextResponse.next();
 
