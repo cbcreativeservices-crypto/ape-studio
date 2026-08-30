@@ -5,7 +5,7 @@
  */
 import { useEffect, type ComponentType } from 'react';
 import { useFonts } from 'expo-font';
-import { Platform, View } from 'react-native';
+import { AppState, Platform, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { DarkTheme, NavigationContainer, type Theme } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -27,6 +27,7 @@ import {
   flushWeeklyConceptNav,
   queueWeeklyConcept,
 } from './src/features/notifications/push';
+import { syncLocalNotificationsFromStorage } from './src/features/notifications/localSchedule';
 import { LabPreviewOverlay } from './src/features/lab/LabPreviewOverlay';
 import { endLabPreview, getLabPreview } from './src/features/lab/labPreviewStore';
 import { EntitlementProvider } from './src/features/commercial/EntitlementProvider';
@@ -79,7 +80,31 @@ export default function App() {
         queueWeeklyConcept(payload);
       }
     };
-    return attachWeeklyConceptPush(open);
+    const openLocal = (dest: string) => {
+      if (!navigationRef.isReady()) return;
+      if (dest === 'glossary') {
+        // Glossary lives in the Study stack inside the Main tabs.
+        navigationRef.navigate('Main', {
+          screen: 'Study',
+          params: { screen: 'Glossary', params: {} },
+        });
+      } else if (dest === 'awards') {
+        navigationRef.navigate('Awards', { category: 'curriculum' });
+      }
+    };
+    return attachWeeklyConceptPush(open, openLocal);
+  }, []);
+
+  // Local reminder upkeep (S11, wired 2026-08-29): each boot AND each return
+  // to foreground re-arms the idle one-shot, tops up the 7-day term queue, and
+  // runs the new-terms check. Throttled + guarded inside; no-op on web and on
+  // dev clients without the native module.
+  useEffect(() => {
+    void syncLocalNotificationsFromStorage();
+    const sub = AppState.addEventListener('change', (st) => {
+      if (st === 'active') void syncLocalNotificationsFromStorage();
+    });
+    return () => sub.remove();
   }, []);
 
   // Clear a stale Training-Lab preview if the user leaves the previewed lab by

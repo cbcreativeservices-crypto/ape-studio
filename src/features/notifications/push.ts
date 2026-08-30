@@ -23,7 +23,7 @@ const CHANNEL_ID = 'weekly-concept';
  */
 type NotificationsModule = typeof NotificationsTypes;
 let notifMod: NotificationsModule | null | undefined;
-function getNotifications(): NotificationsModule | null {
+export function getNotifications(): NotificationsModule | null {
   if (notifMod !== undefined) return notifMod;
   if (Platform.OS === 'web') {
     notifMod = null;
@@ -142,20 +142,43 @@ function payloadFromResponse(
   });
 }
 
-export function attachWeeklyConceptPush(nav: NavFn): () => void {
+/** Tap payload from a LOCAL reminder (localSchedule.ts) — `dest` names an
+ *  in-app destination the caller maps to a route. */
+function localDestFromResponse(
+  response: NotificationsTypes.NotificationResponse | null,
+): string | null {
+  const data = (response?.notification.request.content.data ?? {}) as Record<string, unknown>;
+  if (data.type !== 'local') return null;
+  return typeof data.dest === 'string' ? data.dest : '';
+}
+
+export function attachWeeklyConceptPush(
+  nav: NavFn,
+  onLocal?: (dest: string) => void,
+): () => void {
   const Notifications = getNotifications();
   if (!Notifications) return () => {};
 
-  const sub = Notifications.addNotificationResponseReceivedListener((response) => {
+  const route = (response: NotificationsTypes.NotificationResponse | null): boolean => {
     const payload = payloadFromResponse(response);
-    if (!payload) return;
-    nav(payload);
+    if (payload) {
+      nav(payload);
+      return true;
+    }
+    const dest = localDestFromResponse(response);
+    if (dest !== null) {
+      if (dest && onLocal) onLocal(dest);
+      return true;
+    }
+    return false;
+  };
+
+  const sub = Notifications.addNotificationResponseReceivedListener((response) => {
+    route(response);
   });
 
   void Notifications.getLastNotificationResponseAsync().then((response) => {
-    const payload = payloadFromResponse(response);
-    if (!payload) return;
-    nav(payload);
+    if (!route(response)) return;
     void Notifications.clearLastNotificationResponseAsync();
   });
 

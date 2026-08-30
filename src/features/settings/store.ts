@@ -8,6 +8,7 @@
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
+import { requestLocalNotifSync } from '../notifications/localSchedule';
 
 export type ColorBlindMode = 'off' | 'protanopia' | 'deuteranopia' | 'tritanopia' | 'monochrome';
 export const COLOR_BLIND_MODES: { key: ColorBlindMode; label: string }[] = [
@@ -35,8 +36,9 @@ export type LocalSettings = {
   micReleaseOnBackground: boolean;
   // COMMERCIAL notification set (user request 2026-07-18). Device-local intent
   // flags — notification_preferences (server) is FROZEN and has no columns for
-  // these, so they live in AsyncStorage. Actual scheduling wires with
-  // expo-notifications (not yet installed) — ROUTE TO GOVERNANCE for the jobs.
+  // these, so they live in AsyncStorage. Scheduling is LOCAL (expo-notifications,
+  // wired 2026-08-29): saveLocalSettings feeds localSchedule.ts, which owns the
+  // device-side calendar/date triggers. No server jobs needed.
   notifyDailyStudy: boolean; // 1 — daily study reminders
   notifyContinue: boolean; // 2 — "continue where you left off" after N idle days
   continueDays: number; // 2's threshold — days of no use before it triggers
@@ -174,6 +176,9 @@ export async function saveLocalSettings(s: LocalSettings): Promise<void> {
   hapticsOn = s.haptics;
   micReleaseOnBg = s.micReleaseOnBackground;
   await AsyncStorage.setItem(KEY, JSON.stringify(s));
+  // Reschedule the local reminders whenever their settings change (debounced
+  // and change-gated inside — a haptics toggle costs nothing here).
+  requestLocalNotifSync(s);
 }
 
 /** Reset the synchronous mirrors to defaults on account switch — low-level code
