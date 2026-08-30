@@ -24,10 +24,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
 import { getNotifications } from './push';
 import { dayNameToDow } from './weeklyConcept';
-import {
-  loadLocalSettings,
-  type LocalSettings,
-} from '../settings/store';
+// TYPE-ONLY — store.ts imports this module at runtime (the save funnel), so a
+// value import back would be a require cycle. App.tsx loads the settings and
+// hands them in.
+import type { LocalSettings } from '../settings/store';
 
 /** All identifiers this engine owns start with this — the sync sweep cancels
  *  ONLY these, never a notification scheduled by anything else. */
@@ -146,10 +146,9 @@ export function requestLocalNotifSync(s: LocalSettings): void {
   }, 1200);
 }
 
-/** Boot / foreground entry: loads settings itself, throttled. */
-export async function syncLocalNotificationsFromStorage(): Promise<void> {
+/** Boot / foreground entry: caller supplies the loaded settings; throttled. */
+export async function syncLocalNotificationsThrottled(s: LocalSettings): Promise<void> {
   if (Date.now() - lastFullSyncAt < FOREGROUND_THROTTLE_MS) return;
-  const s = await loadLocalSettings();
   await syncLocalNotifications(s);
 }
 

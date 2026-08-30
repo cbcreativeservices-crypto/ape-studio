@@ -27,7 +27,8 @@ import {
   flushWeeklyConceptNav,
   queueWeeklyConcept,
 } from './src/features/notifications/push';
-import { syncLocalNotificationsFromStorage } from './src/features/notifications/localSchedule';
+import { syncLocalNotificationsThrottled } from './src/features/notifications/localSchedule';
+import { loadLocalSettings } from './src/features/settings/store';
 import { LabPreviewOverlay } from './src/features/lab/LabPreviewOverlay';
 import { endLabPreview, getLabPreview } from './src/features/lab/labPreviewStore';
 import { EntitlementProvider } from './src/features/commercial/EntitlementProvider';
@@ -100,9 +101,10 @@ export default function App() {
   // runs the new-terms check. Throttled + guarded inside; no-op on web and on
   // dev clients without the native module.
   useEffect(() => {
-    void syncLocalNotificationsFromStorage();
+    const sync = () => void loadLocalSettings().then(syncLocalNotificationsThrottled);
+    sync();
     const sub = AppState.addEventListener('change', (st) => {
-      if (st === 'active') void syncLocalNotificationsFromStorage();
+      if (st === 'active') sync();
     });
     return () => sub.remove();
   }, []);
