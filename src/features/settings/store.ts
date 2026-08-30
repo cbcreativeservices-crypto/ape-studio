@@ -119,13 +119,16 @@ export const COMMERCIAL_NOTIFY_ROWS: {
   label: string;
   hint: string;
 }[] = [
-  { key: 'notifyDailyStudy', label: 'Daily study reminders', hint: 'A nudge to study each day.' },
-  { key: 'notifyContinue', label: 'Continue where you left off', hint: 'Remind me after a stretch of no use.' },
-  { key: 'notifyNewTerms', label: 'New term additions', hint: 'When new terms are added to the glossary.' },
-  { key: 'dailyTerms', label: 'Daily audio terms', hint: 'One audio term delivered each day.' },
-  { key: 'notifyDailyDefinition', label: 'Daily audio definitions', hint: 'A definition to guess the term from.' },
-  { key: 'notifyWeeklySummary', label: 'Weekly learning summaries', hint: 'A recap of your week.' },
-  { key: 'notifyCertProgress', label: 'Weekly certificate progress', hint: 'What you finished, what is next, and how far you have to go.' },
+  // Copy pass 2026-08-30: hints are third-person descriptions, one line each
+  // (they are always visible now, so length matters); "Term of the day" and
+  // "Definition of the day" read as the matched pair they actually are.
+  { key: 'notifyDailyStudy', label: 'Study reminder', hint: 'A daily nudge to open the app.' },
+  { key: 'notifyContinue', label: 'Come back reminder', hint: 'After a stretch of days without opening the app.' },
+  { key: 'notifyNewTerms', label: 'New glossary terms', hint: 'When new terms are added to the glossary.' },
+  { key: 'dailyTerms', label: 'Term of the day', hint: 'One audio term, every day.' },
+  { key: 'notifyDailyDefinition', label: 'Definition of the day', hint: 'A definition — you name the term.' },
+  { key: 'notifyWeeklySummary', label: 'Weekly recap', hint: 'What you studied this week.' },
+  { key: 'notifyCertProgress', label: 'Certificate progress', hint: 'How close you are to your next certificate.' },
 ];
 
 export type CommercialNotifyKey = (typeof COMMERCIAL_NOTIFY_ROWS)[number]['key'];
@@ -205,9 +208,12 @@ export type NotificationPrefs = {
 // Server-backed transport toggles ONLY. The event toggles (Trophy/Badge/Quiz/
 // Method) are removed from the UI — not valid in the commercial version (user
 // request 2026-07-18); their frozen columns simply go unused.
+// "Phone notifications", not "Push": it is the MASTER switch for everything
+// this device sends, including the 7 local reminders below (owner-approved
+// 2026-08-30 — the old label promised something it did not do).
 export const NOTIFICATION_ROWS: { key: keyof NotificationPrefs; label: string; hint: string }[] = [
-  { key: 'push_enabled', label: 'Push notifications', hint: 'Deliver the weekly concept as a phone notification.' },
-  { key: 'email_enabled', label: 'Email', hint: 'Deliver the full weekly concept card to your account email.' },
+  { key: 'push_enabled', label: 'Phone notifications', hint: 'Alerts on this device. Required for everything below.' },
+  { key: 'email_enabled', label: 'Email', hint: 'The full weekly concept card, to your account email.' },
 ];
 
 /** DEV+WEB preview seam: the Settings harness has no session, so the real

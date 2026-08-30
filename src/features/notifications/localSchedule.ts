@@ -34,6 +34,47 @@ import type { LocalSettings } from '../settings/store';
 const ID_PREFIX = 'ape.notif.';
 const CHANNEL_ID = 'reminders';
 
+/**
+ * Device mirror of the server's `push_enabled` (owner-approved 2026-08-30).
+ *
+ * The 7 reminders are LOCAL notifications, so they never consulted
+ * push_enabled — a user could switch "Push notifications" off, believe they
+ * had silenced the app, and keep getting all seven. The row now means what it
+ * says: it is the master switch for everything this device sends. Mirrored
+ * locally because the scheduler must decide without a network round-trip.
+ * Defaults ON so a device that has never toggled it behaves as before.
+ */
+const K_PHONE_MASTER = 'ape:notif:phoneEnabled';
+
+export async function phoneNotificationsEnabled(): Promise<boolean> {
+  try {
+    return (await AsyncStorage.getItem(K_PHONE_MASTER)) !== '0';
+  } catch {
+    return true;
+  }
+}
+
+/** Called by Settings whenever the master switch is read or changed. */
+export async function setPhoneNotificationsEnabled(on: boolean): Promise<void> {
+  try {
+    await AsyncStorage.setItem(K_PHONE_MASTER, on ? '1' : '0');
+  } catch {
+    /* best effort */
+  }
+  const s = await loadSettingsForSync();
+  if (s) await syncLocalNotifications(s);
+}
+
+/** Lazy import — avoids a store<->localSchedule require cycle at module load. */
+async function loadSettingsForSync(): Promise<LocalSettings | null> {
+  try {
+    const mod = await import('../settings/store');
+    return await mod.loadLocalSettings();
+  } catch {
+    return null;
+  }
+}
+
 const K_TERM_COUNT = 'ape:notif:lastTermCount';
 const K_TERM_BATCH = 'ape:notif:termBatch';
 const K_PENDING_NEW_TERMS = 'ape:notif:pendingNewTerms';
@@ -161,14 +202,18 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
     lastSlice = notifSlice(s);
     lastFullSyncAt = Date.now();
 
+    // The master switch gates EVERYTHING this device schedules. Off => the
+    // sweep below cancels what exists and nothing is re-booked.
+    const phoneOn = await phoneNotificationsEnabled();
     const anyOn =
-      s.notifyDailyStudy ||
-      s.notifyContinue ||
-      s.notifyNewTerms ||
-      s.dailyTerms ||
-      s.notifyDailyDefinition ||
-      s.notifyWeeklySummary ||
-      s.notifyCertProgress;
+      phoneOn &&
+      (s.notifyDailyStudy ||
+        s.notifyContinue ||
+        s.notifyNewTerms ||
+        s.dailyTerms ||
+        s.notifyDailyDefinition ||
+        s.notifyWeeklySummary ||
+        s.notifyCertProgress);
 
     // Sweep our own identifiers first — sync is a full idempotent rebuild.
     const existing = await N.getAllScheduledNotificationsAsync();

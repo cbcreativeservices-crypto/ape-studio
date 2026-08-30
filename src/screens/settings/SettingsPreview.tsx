@@ -21,12 +21,15 @@ import { colors, fonts } from '../../theme/tokens';
 // Pretend we are signed in with weekly concepts ON, so the per-category
 // schedule rows render and can be reviewed. `#settingspreview/<w>/off` shows
 // the signed-out/all-off state instead.
-const signedOut = typeof window !== 'undefined' && window.location.hash.endsWith('/off');
+const hash = typeof window !== 'undefined' ? window.location.hash : '';
+const signedOut = hash.endsWith('/off');
+// `/nopush` shows the master-switch-OFF state (dependent groups dimmed).
+const pushOff = hash.endsWith('/nopush');
 __setDevPrefsOverride(
   signedOut
     ? null
     : {
-        push_enabled: true,
+        push_enabled: !pushOff,
         email_enabled: true,
         notify_weekly_concept: true,
         notify_trophy: false,

@@ -1,12 +1,17 @@
 /**
- * S11 — Settings (LOCKED June 7; root-stack modal, bottom nav hidden, ✕
- * top-right; visuals from 18-s11-settings.dc.html).
- * Sections: NOTIFICATIONS (the 6 live toggles → notification_preferences,
- * immediate writes, revert on failure) · DISPLAY (Dark mode — dark is the
- * only shipped theme; toggle stored, disabled) · ACCESSIBILITY (font size
- * 13/16/19/24 chips, high contrast, D-1 Color-blind 5-option selector —
- * required by the locked spec though the design omits it, reduce animations,
- * haptics) · ACCOUNT (AP&E ID + app version, read-only). No Save button.
+ * S11 — Settings (root-stack modal, bottom nav hidden, ✕ top-right).
+ *
+ * Every section is a COLLAPSIBLE card (SettingsSection) whose header carries a
+ * state summary, so the whole configuration is readable while closed —
+ * owner 2026-08-30, replacing one flat scroll of ten un-grouped sections.
+ *
+ * NOTIFICATIONS · "Phone notifications" is the MASTER switch for everything
+ *   this device sends (it mirrors to localSchedule, so the 7 local reminders
+ *   really do stop); Email is an independent transport. Weekly concept lists
+ *   its 7 categories, each with its OWN day and time.
+ * DISPLAY & ACCESSIBILITY · MICROPHONE & PRIVACY · FEEDBACK & SUPPORT ·
+ * MEMBERSHIP · ACCOUNT · ONBOARDING HINTS · DELETE ACCOUNT (red, collapsed).
+ * Writes are immediate; there is no Save button.
  */
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -47,6 +52,7 @@ import {
 import { NotifyScheduleModal } from '../../features/settings/NotifyScheduleModal';
 import { DeleteAccountButton } from '../../features/settings/DeleteAccountButton';
 import { registerAndSavePushToken } from '../../features/notifications/push';
+import { setPhoneNotificationsEnabled } from '../../features/notifications/localSchedule';
 import {
   WEEKLY_CONCEPT_CATEGORIES,
   deactivateAllWeeklySubscriptions,
@@ -98,7 +104,11 @@ export function SettingsScreen({ navigation }: Props) {
   useEffect(() => {
     loadLocalSettings().then(setLocal);
     void hasCrowdsourceConsent().then(setContribute);
-    fetchNotificationPrefs().then(setPrefs);
+    fetchNotificationPrefs().then((p) => {
+      setPrefs(p);
+      // Keep the device mirror of the master switch in step with the server.
+      if (p) void setPhoneNotificationsEnabled(p.push_enabled);
+    });
     void fetchWeeklySubscriptions().then((subs) => setCatSched(scheduleMapFrom(subs)));
     supabase
       .from('users')
@@ -163,8 +173,11 @@ export function SettingsScreen({ navigation }: Props) {
       updateNotificationPref(key, value).then((ok) => {
         if (!ok) setPrefs((p) => (p ? { ...p, [key]: !value } : p)); // revert
       });
-      if (key === 'push_enabled' && value) {
-        void registerAndSavePushToken();
+      if (key === 'push_enabled') {
+        // Master switch: mirror it to the device scheduler so the 7 local
+        // reminders actually stop when it is off (owner-approved 2026-08-30).
+        void setPhoneNotificationsEnabled(value);
+        if (value) void registerAndSavePushToken();
       }
     },
     [prefs],
@@ -265,6 +278,13 @@ export function SettingsScreen({ navigation }: Props) {
               />
             </View>
           ))}
+          {!(prefs?.push_enabled ?? false) ? (
+            <Text style={styles.dependencyNote}>
+              Turn on phone notifications to use anything below.
+            </Text>
+          ) : null}
+
+          <View style={!(prefs?.push_enabled ?? false) ? styles.groupOff : undefined} pointerEvents={(prefs?.push_enabled ?? false) ? 'auto' : 'none'}>
           <Text style={styles.groupLabel}>WHAT YOU GET</Text>
           <View style={[styles.row, styles.rowBorder]}>
             <View style={{ flex: 1, paddingRight: 10 }}>
@@ -355,6 +375,7 @@ export function SettingsScreen({ navigation }: Props) {
               </View>
             );
           })}
+          </View>
         </SettingsSection>
 
         {/* DISPLAY + ACCESSIBILITY are one concern to a user ("how it looks and
@@ -542,7 +563,9 @@ export function SettingsScreen({ navigation }: Props) {
           </Pressable>
         </SettingsSection>
 
-        {/* Replaying hints is a rare, deliberate act — collapsed by default. */}
+        {/* Shipped to students on purpose: replaying the hints is a legitimate
+            recovery action. (An older comment claimed this block was dev-only —
+            it never had a __DEV__ guard, so the comment was simply wrong.) */}
         <SettingsSection title="ONBOARDING HINTS">
           <Pressable
             style={[styles.row, styles.rowBorder]}
@@ -558,7 +581,7 @@ export function SettingsScreen({ navigation }: Props) {
               )
             }
           >
-            <Text style={styles.rowLabel}>Reset onboarding hints</Text>
+            <Text style={styles.rowLabel}>Replay onboarding hints</Text>
             <Text style={styles.monoAction}>RESET</Text>
           </Pressable>
           <Pressable
@@ -572,7 +595,7 @@ export function SettingsScreen({ navigation }: Props) {
               )
             }
           >
-            <Text style={styles.rowLabel}>Reset permission prompts</Text>
+            <Text style={styles.rowLabel}>Ask about permissions again</Text>
             <Text style={styles.monoAction}>RESET</Text>
           </Pressable>
         </SettingsSection>
@@ -792,6 +815,16 @@ const styles = StyleSheet.create({
   schedBtnOff: { opacity: 0.42 },
   /** Pressed feedback — not one row on this screen had any. */
   rowPressed: { backgroundColor: 'rgba(255,198,77,0.06)' },
+  /** Everything below the master switch is inert while it is off — dimmed and
+   *  non-interactive rather than silently ignored. */
+  groupOff: { opacity: 0.4 },
+  dependencyNote: {
+    fontFamily: fonts.barlowRegular,
+    fontSize: 12.5,
+    lineHeight: 17,
+    color: colors.amberLabel,
+    marginTop: 10,
+  },
 
   // Per-notification frequency editor (user request 2026-07-18).
   freqBlock: { paddingLeft: 12, paddingBottom: 12, paddingTop: 2, gap: 8 },
