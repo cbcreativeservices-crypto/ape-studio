@@ -1400,6 +1400,7 @@ export function CourseSelectionScreen() {
             style={[styles.awardBtn, entitlement === 'academy' && styles.enrollBtnOn]}
             onPress={() => (navigation as any).navigate('Awards', { category: 'enrollment' })}
             accessibilityRole="button"
+            accessibilityState={{ selected: entitlement === 'academy' }}
             accessibilityLabel="Enrollments"
           >
             <Text

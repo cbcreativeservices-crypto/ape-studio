@@ -437,7 +437,7 @@ export function CalcWorkflowRunScreen() {
       {/* Vertical step list — the guided sequence at a glance. */}
       <View style={styles.stepStrip}>
         {workflow.steps.map((s, i) => (
-          <Pressable
+          <Pressable hitSlop={6}
             key={i}
             style={[styles.stepPip, i === 0 && styles.stepPipWide, i === idx && styles.stepPipCurrent, computed[i]?.complete && styles.stepPipDone]}
             onPress={() => goTo(i)}
@@ -447,7 +447,7 @@ export function CalcWorkflowRunScreen() {
             <Text style={[styles.stepPipText, i === idx && styles.stepPipTextCurrent]}>{i === 0 ? 'Step 1' : i + 1}</Text>
           </Pressable>
         ))}
-        <Pressable
+        <Pressable hitSlop={6}
           style={[styles.stepPip, styles.stepPipWide, idx >= n && styles.stepPipCurrent]}
           onPress={onFinish}
           accessibilityRole="button"

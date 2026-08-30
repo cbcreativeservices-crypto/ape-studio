@@ -901,7 +901,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
         <View style={styles.cardActionRow}>
           {done ? <Text style={styles.doneBadge}>COMPLETED ✓</Text> : null}
           <View style={{ flex: 1 }} />
-          <Pressable
+          <Pressable hitSlop={6}
             style={styles.bookToggle}
             onPress={() => setBundleLoad(b, !allLoaded)}
             accessibilityRole="button"
@@ -910,7 +910,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           >
             <DeckIcon color={allLoaded ? colors.blue : GRAY} fill={allLoaded ? BLUE : '#8a8a8a'} size={33} />
           </Pressable>
-          <Pressable
+          <Pressable hitSlop={6}
             style={styles.studyNavBtn}
             onPress={allLoaded ? () => goStudy() : undefined}
             disabled={!allLoaded}
@@ -987,7 +987,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
         <View style={styles.cardActionRow}>
           {done ? <Text style={styles.doneBadge}>COMPLETED ✓</Text> : null}
           <View style={{ flex: 1 }} />
-          <Pressable
+          <Pressable hitSlop={6}
             style={styles.bookToggle}
             onPress={() => setActiveMany(d.topics, !allLoaded)}
             accessibilityRole="button"
@@ -996,7 +996,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           >
             <DeckIcon color={allLoaded ? colors.blue : GRAY} fill={allLoaded ? BLUE : '#8a8a8a'} size={33} />
           </Pressable>
-          <Pressable
+          <Pressable hitSlop={6}
             style={styles.studyNavBtn}
             onPress={allLoaded ? () => goStudy() : undefined}
             disabled={!allLoaded}
@@ -1099,7 +1099,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             <Text style={styles.customSeeEdit}>SEE &amp; EDIT</Text>
           </Pressable>
           {/* Small deck toggle: show/hide the Custom List on the Dashboard. */}
-          <Pressable
+          <Pressable hitSlop={6}
             style={styles.bookToggle}
             onPress={() => setCustomOnDashboard(!customOnDash)}
             accessibilityRole="button"
@@ -1109,7 +1109,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             <DeckIcon color={customOnDash ? colors.blue : GRAY} fill={customOnDash ? BLUE : '#8a8a8a'} size={33} />
           </Pressable>
           {/* Study → only when ON (grayed + unpressable when OFF). */}
-          <Pressable
+          <Pressable hitSlop={6}
             style={styles.studyNavBtn}
             onPress={customOnDash ? () => goStudy(FLAGGED_TOPIC_ID) : undefined}
             disabled={!customOnDash}
@@ -1340,7 +1340,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                   ) : null}
                   {/* Deck-of-cards = loaded into the Dashboard deck. Green when in
                       the deck, gray when not; tap toggles (user request 2026-07-23). */}
-                  <Pressable
+                  <Pressable hitSlop={6}
                     style={styles.bookToggle}
                     onPress={coreLocked ? undefined : () => toggleActive(e.gs)}
                     disabled={coreLocked}
@@ -1355,7 +1355,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                   {/* Study icon LINKED to the deck toggle (user request 2026-07-23):
                       blue when the topic is loaded into the deck, gray when not;
                       blue = tap to open the Dashboard with it loaded. */}
-                  <Pressable
+                  <Pressable hitSlop={6}
                     style={styles.studyNavBtn}
                     onPress={showActive ? () => goStudy(e.gs) : undefined}
                     disabled={!showActive}
@@ -1575,7 +1575,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           {/* Bottom-left: a fixed SQUARE red ✕. Tapping it opens the clear-list
               confirm popup (with a press-hold to confirm) — it never grows or
               reflows the row (owner 2026-08-01). */}
-          <Pressable
+          <Pressable hitSlop={6}
             style={styles.clearSquareBtn}
             onPress={() => setClearConfirmOpen(true)}
             accessibilityRole="button"

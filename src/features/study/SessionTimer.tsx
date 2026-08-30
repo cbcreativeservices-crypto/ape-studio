@@ -93,7 +93,7 @@ function fmt(totalSec: number): string {
 /** Blue-clock button for the filter row — lit blue while a session runs. */
 export function SessionTimerButton({ active, onPress }: { active: boolean; onPress: () => void }) {
   return (
-    <Pressable
+    <Pressable hitSlop={6}
       style={[styles.btn, active && styles.btnActive]}
       onPress={onPress}
       accessibilityRole="button"

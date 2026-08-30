@@ -297,6 +297,7 @@ function PatternsStep() {
             key={r.key}
             onPress={() => setReason(r.key)}
             accessibilityRole="button"
+            accessibilityState={{ selected: reason === r.key }}
             style={[styles.reasonRow, reason === r.key && styles.reasonRowActive]}
           >
             <Text style={styles.reasonText}>{r.text}</Text>

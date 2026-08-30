@@ -390,7 +390,7 @@ export function RtaDemo() {
     <View style={styles.root}>
       <View style={styles.chipRow}>
         {SCENES.map((s, i) => (
-          <Pressable
+          <Pressable hitSlop={8}
             key={s.key}
             accessibilityRole='button'
             accessibilityLabel={`Show ${s.label} scene`}

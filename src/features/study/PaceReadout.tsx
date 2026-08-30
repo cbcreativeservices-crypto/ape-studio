@@ -203,7 +203,7 @@ export function PaceReadout({
           <>
             <Text style={[styles.fsSigned, { color: fsTint }]}>{fmtSigned(fsOffset)}</Text>
             {/* Long-press the visual line to reset the clock (user 2026-07-25). */}
-            <Pressable
+            <Pressable hitSlop={16}
               style={styles.fsTrack}
               onLongPress={onReset}
               delayLongPress={500}

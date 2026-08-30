@@ -1884,7 +1884,7 @@ export function SplMeterScreen({ navigation }: Props) {
                       obscures it: HIDE LED toggle + (members) the colour wheel. */}
                   {viz && (
                     <View style={[styles.vuFsLedRow, { left: camInset + 14 }]} pointerEvents="box-none">
-                      <Pressable
+                      <Pressable hitSlop={6}
                         style={styles.vuFsLedTogglePill}
                         onPress={() => setVuFsLedHidden((h) => !h)}
                         accessibilityRole="button"

@@ -719,7 +719,7 @@ export function WaveformScreen({ navigation }: Props) {
           landscape so the portrait flip never ghosts a squished layout. ── */}
       {waveFsOpen || waveFsClosing ? (
         <View style={styles.fsRoot}>
-          <Pressable
+          <Pressable hitSlop={6}
             style={[styles.fsClose, { right: camInset + 14, top: insets.top + 8 }]}
             onPress={() => setWaveFsClosing(true)}
             accessibilityRole="button"
@@ -743,11 +743,24 @@ export function WaveformScreen({ navigation }: Props) {
                   <Text style={styles.ctrlLabel}>WINDOW</Text>
                   <Text style={styles.ctrlValue}>{windowSec}s</Text>
                 </Pressable>
-                <Pressable style={[styles.ctrlBtn, frozen != null && styles.ctrlBtnActive]} onPress={toggleFreeze} disabled={displayBuckets.length === 0} accessibilityRole="button">
+                <Pressable
+                  style={[styles.ctrlBtn, frozen != null && styles.ctrlBtnActive]}
+                  onPress={toggleFreeze}
+                  disabled={displayBuckets.length === 0}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: frozen != null }}
+                  accessibilityLabel={frozen != null ? 'Freeze, frozen' : 'Freeze, live'}
+                >
                   <Text style={styles.ctrlLabel}>FREEZE</Text>
                   <Text style={[styles.ctrlValue, frozen != null && styles.ctrlValueActive]}>{frozen ? 'FROZEN' : 'LIVE'}</Text>
                 </Pressable>
-                <Pressable style={[styles.ctrlBtn, colorsOn && styles.ctrlBtnActive]} onPress={() => setColorsOn(!colorsOn)} accessibilityRole="button">
+                <Pressable
+                  style={[styles.ctrlBtn, colorsOn && styles.ctrlBtnActive]}
+                  onPress={() => setColorsOn(!colorsOn)}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: colorsOn }}
+                  accessibilityLabel={colorsOn ? 'Colors, on' : 'Colors, off'}
+                >
                   <Text style={styles.ctrlLabel}>COLORS</Text>
                   <Text style={[styles.ctrlValue, colorsOn && styles.ctrlValueActive]}>{colorsOn ? 'ON' : 'OFF'}</Text>
                 </Pressable>

@@ -107,7 +107,7 @@ export function StudyFsOverlay({
  *  request 2026-07-25). */
 export function FsButton({ onPress }: { onPress: () => void }) {
   return (
-    <Pressable style={styles.fsBtn} onPress={onPress} accessibilityRole="button" accessibilityLabel="Full screen">
+    <Pressable hitSlop={6} style={styles.fsBtn} onPress={onPress} accessibilityRole="button" accessibilityLabel="Full screen">
       <FullscreenIcon color={colors.green} size={20} />
     </Pressable>
   );

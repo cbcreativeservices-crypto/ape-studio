@@ -1215,7 +1215,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
               term + primary definition together (open study view). While ON it
               overrides the reveal filters, so the FILTERS chip is locked out
               until this is cleared, like a mixer solo. */}
-          <Pressable
+          <Pressable hitSlop={6}
             style={[styles.soloBtn, soloReveal && styles.soloBtnOn]}
             onPress={() => setSoloReveal((v) => !v)}
             accessibilityRole="button"
@@ -1236,7 +1236,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
           />
           {/* Full-screen mode — green icon button, right of FILTER (user request
               2026-07-24, moved back here from the card corner). */}
-          <Pressable
+          <Pressable hitSlop={6}
             style={styles.fsBtn}
             onPress={() => setFullscreen(true)}
             accessibilityRole="button"

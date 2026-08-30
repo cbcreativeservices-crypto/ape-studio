@@ -131,7 +131,7 @@ export function TopicDeckSheet({
 
 function ModeChip({ label, active, onPress }: { label: string; active: boolean; onPress: () => void }) {
   return (
-    <Pressable
+    <Pressable hitSlop={6}
       onPress={onPress}
       accessibilityRole="button"
       accessibilityState={{ selected: active }}
