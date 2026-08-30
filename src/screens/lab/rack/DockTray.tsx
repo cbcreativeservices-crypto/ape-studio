@@ -17,7 +17,9 @@
  */
 import { useEffect } from 'react';
 import { BackHandler, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { colors, fonts } from '../../../theme/tokens';
+import { hapticsEnabled } from '../../../features/settings/store';
 import type { DockParam } from './rackTypes';
 
 /** In-tray option chip — LabChip's semantics (selected state, 📷 photoHint,
@@ -38,8 +40,13 @@ function TrayChip({
 }) {
   return (
     <Pressable
-      style={[styles.opt, selected && styles.optSel]}
-      onPress={onPress}
+      style={({ pressed }) => [styles.opt, selected && styles.optSel, pressed && styles.optPressed]}
+      onPress={() => {
+        // Selecting an option is the main verb in a tray — it should be felt
+        // as well as seen (the dock keys got the same treatment).
+        if (hapticsEnabled()) void Haptics.selectionAsync();
+        onPress();
+      }}
       onLongPress={onLongPress}
       delayLongPress={350}
       accessibilityRole="button"
@@ -204,6 +211,7 @@ const styles = StyleSheet.create({
     minHeight: 44, // rapid A/B tapping is the tray's job — full-size targets
     justifyContent: 'center',
   },
+  optPressed: { backgroundColor: '#23232a', borderColor: '#3a3a44' },
   optSel: { borderColor: 'rgba(255,198,77,.7)', backgroundColor: '#1c1608' },
   optText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.7, color: colors.textSecondary },
   optTextSel: { color: colors.amber },

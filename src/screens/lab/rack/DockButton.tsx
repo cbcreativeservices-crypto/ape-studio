@@ -11,8 +11,11 @@
  * Toggles render as ON/OFF keys; actions as plain keys. Long-press = the
  * param's guided lesson (v4 §5), wired via RackUnit.
  */
+import { useCallback, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { colors, fonts } from '../../../theme/tokens';
+import { hapticsEnabled } from '../../../features/settings/store';
 
 export function DockButton({
   label,
@@ -48,15 +51,46 @@ export function DockButton({
   a11y: string;
 }) {
   const isKey = variant === 'key';
+  // Toggles and actions share the flat KEY skin; only a toggle carries an LED.
+  // A toggle already acknowledges itself by flipping that LED, so the flash is
+  // reserved for actions, whose only effect happens elsewhere on screen.
+  const isAction = isKey && led == null;
+
+  /**
+   * ACTION CONFIRMATION (owner 2026-08-30: "replay button stays gray — no
+   * action / animation / haptic or anything - thats bad design").
+   *
+   * Dock buttons had NO pressed state and NO haptic, so every key in every lab
+   * looked identical before, during and after a tap. That is worst for an
+   * ACTION: a toggle at least flips its LED, but REPLAY's only effect is
+   * out on the glass, so the key itself has to acknowledge the press. It
+   * flashes amber for a moment — long enough to see, short enough not to be
+   * mistaken for a selected state.
+   */
+  const [fired, setFired] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const handlePress = useCallback(() => {
+    if (hapticsEnabled()) void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (isAction) {
+      setFired(true);
+      if (timer.current) clearTimeout(timer.current);
+      timer.current = setTimeout(() => setFired(false), 220);
+    }
+    onPress();
+  }, [isAction, onPress]);
+
   return (
     <Pressable
-      style={[
+      style={({ pressed }) => [
         styles.btn,
         isKey && styles.key,
         !isKey && !selected && frameTint ? { borderColor: frameTint + '88' } : null,
         !isKey && selected && styles.btnSel,
+        // Every key now answers the finger.
+        pressed && styles.btnPressed,
+        fired && styles.btnFired,
       ]}
-      onPress={onPress}
+      onPress={handlePress}
       onLongPress={onLongPress}
       delayLongPress={350}
       accessibilityRole="button"
@@ -66,7 +100,7 @@ export function DockButton({
       {isKey ? (
         <View style={styles.keyRow}>
           {led != null ? <View style={[styles.ledDot, led && styles.ledDotOn]} /> : null}
-          <Text style={styles.label} numberOfLines={1}>
+          <Text style={[styles.label, fired && styles.labelSel]} numberOfLines={1}>
             {label}
           </Text>
         </View>
@@ -104,6 +138,10 @@ const styles = StyleSheet.create({
   // Selected = bound/open — the PopupOpt selected treatment, so labs and tools
   // light up identically.
   btnSel: { borderColor: 'rgba(255,198,77,.7)', backgroundColor: '#1c1608' },
+  /** Held down — a small, immediate lift so the key never feels dead. */
+  btnPressed: { backgroundColor: '#23232a', borderColor: '#3a3a44' },
+  /** An action just ran — a brief amber acknowledgement. */
+  btnFired: { borderColor: 'rgba(255,198,77,.85)', backgroundColor: '#241a06' },
   // Toggles/actions: the flat KEY skin — no value slot, no amber-selected.
   key: { backgroundColor: '#17171c', borderColor: '#2c2c33' },
   keyRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
