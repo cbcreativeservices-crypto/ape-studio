@@ -14,9 +14,8 @@
  * Writes are immediate; there is no Save button.
  */
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Constants from 'expo-constants';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Toggle } from '../../components/Toggle';
@@ -33,10 +32,8 @@ import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { supabase } from '../../lib/supabase';
 import { colors, fonts } from '../../theme/tokens';
 import {
-  COLOR_BLIND_MODES,
   COMMERCIAL_NOTIFY_ROWS,
   DEFAULT_LOCAL_SETTINGS,
-  FONT_SIZES,
   fetchNotificationPrefs,
   formatClock,
   loadLocalSettings,
@@ -66,6 +63,7 @@ import {
   type CategorySchedule,
 } from '../../features/notifications/weeklyConcept';
 import { SettingsSection } from '../../features/settings/SettingsSection';
+import { osReduceMotionOn } from '../../features/settings/a11y';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
@@ -386,7 +384,7 @@ export function SettingsScreen({ navigation }: Props) {
             reads"), so they live in one section rather than two one-row stubs. */}
         <SettingsSection
           title="DISPLAY & ACCESSIBILITY"
-          summary={`${local.fontSize}pt${local.highContrast ? ' · contrast' : ''}${local.colorBlind !== 'off' ? ' · colour' : ''}`}
+          summary={local.reduceAnimations || osReduceMotionOn() ? 'reduced motion' : undefined}
         >
           <View style={[styles.row, styles.rowBorder]}>
             <Text style={styles.rowLabel}>Dark mode</Text>
@@ -394,63 +392,44 @@ export function SettingsScreen({ navigation }: Props) {
             <Toggle on={local.darkMode} disabled onChange={(v) => setLocalKey('darkMode', v)} />
           </View>
 
+          {/* TEXT SIZE, CONTRAST AND COLOUR NOW DEFER TO THE PHONE (owner
+              2026-08-30). The in-app font-size chips were competing with
+              something that already worked: React Native scales every Text in
+              this app with the OS accessibility font setting by default
+              (allowFontScaling is nowhere disabled), so the chips changed
+              nothing and duplicated a system control. High contrast and
+              colour filters are likewise system-wide on both platforms — and
+              the amplitude colour ramp CANNOT be re-visualised for colour
+              blindness (owner ruling: the ramp carries meaning and is fixed),
+              so an in-app colour-blind remap would have been a promise we
+              cannot keep. One honest row replaces all three. */}
           <View style={[styles.rowCol, styles.rowBorder]}>
-            <Text style={styles.rowLabel}>Font size</Text>
-            {/* Chips show a letter AT its own size, not the px number — "13"
-                and "19" mean nothing to a reader, but the size difference IS
-                the preview. The sample line below reads at the chosen size so
-                the choice can be judged without leaving the screen. */}
-            <View style={styles.chipRow}>
-              {FONT_SIZES.map((fs) =>
-                local.fontSize === fs ? (
-                  <LinearGradient key={fs} colors={['#ffd35e', '#f09e1a']} style={styles.sizeChipActive}>
-                    <Text style={[styles.sizeChipActiveText, { fontSize: fs }]}>A</Text>
-                  </LinearGradient>
-                ) : (
-                  <Pressable
-                    key={fs}
-                    style={({ pressed }) => [styles.sizeChip, pressed && styles.rowPressed]}
-                    onPress={() => setLocalKey('fontSize', fs)}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Font size ${fs}`}
-                  >
-                    <Text style={[styles.sizeChipText, { fontSize: fs }]}>A</Text>
-                  </Pressable>
-                ),
-              )}
-            </View>
-            <Text style={[styles.sizeSample, { fontSize: local.fontSize }]}>
-              Sample text at this size.
+            <Text style={styles.rowLabel}>Text size, contrast &amp; colour</Text>
+            <Text style={styles.rowHint}>
+              These follow your phone&apos;s own accessibility settings and already apply
+              throughout this app — text here grows with your system text size.
+            </Text>
+            <Text style={[styles.rowHint, { marginTop: 6 }]}>
+              {Platform.OS === 'ios'
+                ? 'Settings › Accessibility › Display & Text Size'
+                : 'Settings › Accessibility › Display size and text'}
             </Text>
           </View>
 
           <View style={[styles.row, styles.rowBorder]}>
-            <Text style={styles.rowLabel}>High contrast</Text>
-            <Toggle on={local.highContrast} onChange={(v) => setLocalKey('highContrast', v)} />
-          </View>
-
-          {/* D-1: Color-blind mode — required by the locked S11 spec. */}
-          <View style={[styles.rowCol, styles.rowBorder]}>
-            <Text style={styles.rowLabel}>Color-blind mode</Text>
-            <View style={styles.chipRow}>
-              {COLOR_BLIND_MODES.map((m) => {
-                const active = local.colorBlind === m.key;
-                return (
-                  <Pressable
-                    key={m.key}
-                    style={[styles.cbChip, active && styles.cbChipActive]}
-                    onPress={() => setLocalKey('colorBlind', m.key)}
-                  >
-                    <Text style={[styles.cbChipText, active && styles.cbChipTextActive]}>{m.label}</Text>
-                  </Pressable>
-                );
-              })}
+            <View style={{ flex: 1, paddingRight: 10 }}>
+              <Text style={styles.rowLabel}>Reduce animations</Text>
+              <Text style={styles.rowHint}>
+                {osReduceMotionOn()
+                  ? 'Your phone already has reduced motion switched on, so animations are off here regardless.'
+                  : 'Turns off motion in the labs and menus.'}
+              </Text>
             </View>
-          </View>
-
-          <View style={[styles.row, styles.rowBorder]}>
-            <Text style={styles.rowLabel}>Reduce animations</Text>
-            <Toggle on={local.reduceAnimations} onChange={(v) => setLocalKey('reduceAnimations', v)} />
+            <Toggle
+              on={local.reduceAnimations || osReduceMotionOn()}
+              disabled={osReduceMotionOn()}
+              onChange={(v) => setLocalKey('reduceAnimations', v)}
+            />
           </View>
 
           <View style={styles.row}>
@@ -767,35 +746,9 @@ const styles = StyleSheet.create({
   // 328 px inner width at 360, so they overflowed off-screen (design review
   // 2026-08-30). Wrapping + a row gap is the correct outcome, not a squeeze.
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, rowGap: 8 },
-  sizeChip: {
-    flex: 1,
-    minHeight: 44, // was ~30 — under the touch minimum
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 6,
-    backgroundColor: '#141414',
-    borderWidth: 1,
-    borderColor: '#2a2a2a',
-  },
-  sizeChipText: { fontFamily: fonts.barlowRegular, color: '#888888' },
-  sizeChipActive: { flex: 1, minHeight: 44, alignItems: 'center', justifyContent: 'center', borderRadius: 6 },
-  sizeChipActiveText: { fontFamily: fonts.barlowSemiBold, color: '#221500' },
   /** Sample line rendered AT the chosen size — the only way to judge the
    *  choice without leaving the screen. */
-  sizeSample: { fontFamily: fonts.barlowRegular, color: colors.textMuted, marginTop: 10 },
 
-  cbChip: {
-    minHeight: 44,
-    justifyContent: 'center',
-    paddingHorizontal: 12,
-    borderRadius: 6,
-    backgroundColor: '#141414',
-    borderWidth: 1,
-    borderColor: '#2a2a2a',
-  },
-  cbChipActive: { backgroundColor: '#1d1607', borderColor: 'rgba(255,180,0,.65)' },
-  cbChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.9, color: '#999999' },
-  cbChipTextActive: { color: colors.amber },
 
   // One-line schedule button on the right of a notification row (user request
   // 2026-07-23) — opens the time/day popup. An amber-outlined capsule around a

@@ -16,6 +16,7 @@
  * a font SCALE, a boolean, and a colour mapper.
  */
 import { useSyncExternalStore } from 'react';
+import { AccessibilityInfo } from 'react-native';
 import type { ColorBlindMode, FontSize, LocalSettings } from './store';
 
 export type A11yState = {
@@ -100,7 +101,34 @@ export function scaleFont(size: number, scale = state.fontScale): number {
   return Math.round(size * eased * 10) / 10;
 }
 
-/** Should this animation run at all? */
+/**
+ * OS-level "reduce motion" (iOS Settings > Accessibility > Motion, Android
+ * "Remove animations"). Someone who has asked the whole PHONE to stop
+ * animating should not have to find our toggle as well, so the two are ORed:
+ * either one silences motion. Read once at boot and kept current by the OS
+ * change event.
+ */
+let osReduceMotion = false;
+void AccessibilityInfo.isReduceMotionEnabled?.()
+  .then((v) => {
+    osReduceMotion = !!v;
+    listeners.forEach((l) => l());
+  })
+  .catch(() => {
+    /* older platforms simply do not report it */
+  });
+AccessibilityInfo.addEventListener?.('reduceMotionChanged', (v: boolean) => {
+  osReduceMotion = !!v;
+  listeners.forEach((l) => l());
+});
+
+/** Should this animation run at all? Honours the app toggle AND the OS. */
 export function animationsAllowed(): boolean {
-  return !state.reduceAnimations;
+  return !state.reduceAnimations && !osReduceMotion;
+}
+
+/** True when the phone (not the app) asked for reduced motion — lets Settings
+ *  explain why the control looks forced on. */
+export function osReduceMotionOn(): boolean {
+  return osReduceMotion;
 }
