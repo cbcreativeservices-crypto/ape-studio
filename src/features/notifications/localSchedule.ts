@@ -54,24 +54,25 @@ export async function phoneNotificationsEnabled(): Promise<boolean> {
   }
 }
 
-/** Called by Settings whenever the master switch is read or changed. */
-export async function setPhoneNotificationsEnabled(on: boolean): Promise<void> {
+/**
+ * Called by Settings whenever the master switch is read or changed.
+ *
+ * Takes the settings as an ARGUMENT rather than importing the store: this
+ * module is imported BY the store (the save funnel), so reaching back for it —
+ * even via a dynamic import — puts a cycle in the boot path for no benefit.
+ * The caller already holds the settings.
+ */
+export async function setPhoneNotificationsEnabled(on: boolean, s?: LocalSettings): Promise<void> {
   try {
     await AsyncStorage.setItem(K_PHONE_MASTER, on ? '1' : '0');
   } catch {
     /* best effort */
   }
-  const s = await loadSettingsForSync();
-  if (s) await syncLocalNotifications(s);
-}
-
-/** Lazy import — avoids a store<->localSchedule require cycle at module load. */
-async function loadSettingsForSync(): Promise<LocalSettings | null> {
-  try {
-    const mod = await import('../settings/store');
-    return await mod.loadLocalSettings();
-  } catch {
-    return null;
+  // Re-run the scheduler so the change takes effect immediately: off cancels
+  // everything, on re-books whatever the user has switched on.
+  if (s) {
+    lastSlice = ''; // force through the change-gate
+    await syncLocalNotifications(s);
   }
 }
 

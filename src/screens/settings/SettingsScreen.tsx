@@ -102,13 +102,17 @@ export function SettingsScreen({ navigation }: Props) {
   }, [redeemCode, redeemBusy, refreshEntitlement]);
 
   useEffect(() => {
-    loadLocalSettings().then(setLocal);
-    void hasCrowdsourceConsent().then(setContribute);
-    fetchNotificationPrefs().then((p) => {
+    // Load the local settings FIRST, then mirror the server's master switch
+    // using those freshly-loaded values — reading `local` here would capture
+    // the defaults from this []-dep effect's closure, not what was stored.
+    void (async () => {
+      const loaded = await loadLocalSettings();
+      setLocal(loaded);
+      const p = await fetchNotificationPrefs();
       setPrefs(p);
-      // Keep the device mirror of the master switch in step with the server.
-      if (p) void setPhoneNotificationsEnabled(p.push_enabled);
-    });
+      if (p) void setPhoneNotificationsEnabled(p.push_enabled, loaded);
+    })();
+    void hasCrowdsourceConsent().then(setContribute);
     void fetchWeeklySubscriptions().then((subs) => setCatSched(scheduleMapFrom(subs)));
     supabase
       .from('users')
@@ -176,11 +180,11 @@ export function SettingsScreen({ navigation }: Props) {
       if (key === 'push_enabled') {
         // Master switch: mirror it to the device scheduler so the 7 local
         // reminders actually stop when it is off (owner-approved 2026-08-30).
-        void setPhoneNotificationsEnabled(value);
+        void setPhoneNotificationsEnabled(value, local);
         if (value) void registerAndSavePushToken();
       }
     },
-    [prefs],
+    [prefs, local],
   );
 
   /** Change ONE category (its own day, time, or on/off) and persist just it. */
