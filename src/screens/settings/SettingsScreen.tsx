@@ -232,7 +232,10 @@ export function SettingsScreen({ navigation }: Props) {
           <Text style={styles.sectionEyebrow}>NOTIFICATIONS</Text>
           {NOTIFICATION_ROWS.map((row) => (
             <View key={row.key} style={[styles.row, styles.rowBorder]}>
-              <Text style={styles.rowLabel}>{row.label}</Text>
+              <View style={{ flex: 1, paddingRight: 10 }}>
+                <Text style={styles.rowLabel}>{row.label}</Text>
+                {!(prefs?.[row.key] ?? false) ? <Text style={styles.rowHint}>{row.hint}</Text> : null}
+              </View>
               <Toggle
                 on={prefs?.[row.key] ?? false}
                 disabled={!prefs}

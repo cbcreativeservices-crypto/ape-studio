@@ -205,9 +205,9 @@ export type NotificationPrefs = {
 // Server-backed transport toggles ONLY. The event toggles (Trophy/Badge/Quiz/
 // Method) are removed from the UI — not valid in the commercial version (user
 // request 2026-07-18); their frozen columns simply go unused.
-export const NOTIFICATION_ROWS: { key: keyof NotificationPrefs; label: string }[] = [
-  { key: 'push_enabled', label: 'Push notifications' },
-  { key: 'email_enabled', label: 'Email' },
+export const NOTIFICATION_ROWS: { key: keyof NotificationPrefs; label: string; hint: string }[] = [
+  { key: 'push_enabled', label: 'Push notifications', hint: 'Deliver the weekly concept as a phone notification.' },
+  { key: 'email_enabled', label: 'Email', hint: 'Deliver the full weekly concept card to your account email.' },
 ];
 
 export async function fetchNotificationPrefs(): Promise<NotificationPrefs | null> {
