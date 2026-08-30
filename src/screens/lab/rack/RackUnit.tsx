@@ -86,10 +86,33 @@ export function RackUnit({
     if (!bound && laneActive) setLaneActive(false); // fader vanished mid-drag
   }, [bound, laneActive]);
 
+  const openParam = params.find((p) => p.id === openTrayId) ?? null;
+
+  // A fader with a `chooser` presents as an options tray. Choosing closes it
+  // and BINDS the lane, so one key does chooser-then-slider (owner 2026-08-30).
+  const chooserTray: Extract<DockParam, { kind: 'options' }> | null =
+    openParam && openParam.kind === 'fader' && openParam.chooser
+      ? {
+          kind: 'options',
+          id: openParam.id,
+          label: openParam.chooser.title ?? openParam.label,
+          valueLabel: '',
+          options: openParam.chooser.options,
+          selectedId: openParam.chooser.selectedId,
+          onSelect: (id: string) => {
+            openParam.chooser?.onSelect(id);
+            setOpenTrayId(null);
+            setBoundId(openParam.id); // hand straight back to the slider
+          },
+          helpKey: openParam.helpKey,
+        }
+      : null;
+
   const trayParam =
-    (params.find((p) => p.id === openTrayId && (p.kind === 'options' || p.kind === 'group')) as
+    chooserTray ??
+    ((params.find((p) => p.id === openTrayId && (p.kind === 'options' || p.kind === 'group')) as
       | Extract<DockParam, { kind: 'options' | 'group' }>
-      | undefined) ?? null;
+      | undefined) ?? null);
 
   const { height: winH } = useWindowDimensions();
   // Vertical budget (review 2026-08-23): the stage may never starve the dock.
@@ -173,15 +196,22 @@ export function RackUnit({
                     key={p.id}
                     label={p.label}
                     value={(p.formatShort ?? p.format)(p.value)}
-                    glyph="▪"
+                    // A chooser-fader opens a tray first, so it wears the
+                    // OPEN verb glyph, not the bind glyph (the two-verb rule).
+                    glyph={p.chooser ? '▸' : '▪'}
                     frameTint={p.tint}
-                    selected={effBoundId === p.id}
+                    selected={effBoundId === p.id || openTrayId === p.id}
                     onPress={() => {
                       if (hapticsEnabled()) Haptics.selectionAsync().catch(() => {});
-                      setBoundId(p.id);
+                      if (p.chooser) setOpenTrayId((cur) => (cur === p.id ? null : p.id));
+                      else setBoundId(p.id);
                     }}
                     onLongPress={p.helpKey ? () => onHelp?.(p.helpKey) : undefined}
-                    a11y={`${p.label}: ${p.format(p.value)}. Tap to adjust on the fader.`}
+                    a11y={
+                      p.chooser
+                        ? `${p.label}: ${p.format(p.value)}. Tap to choose, then adjust on the fader.`
+                        : `${p.label}: ${p.format(p.value)}. Tap to adjust on the fader.`
+                    }
                   />
                 );
               case 'options':
@@ -214,7 +244,17 @@ export function RackUnit({
                   />
                 );
               case 'action':
-                return <DockButton key={p.id} label={p.label} value="" variant="key" onPress={p.onPress} a11y={p.label} />;
+                return (
+                  <DockButton
+                    key={p.id}
+                    label={p.label}
+                    value=""
+                    variant="key"
+                    frameTint={p.tint}
+                    onPress={p.onPress}
+                    a11y={p.label}
+                  />
+                );
             }
           })}
         </View>

@@ -660,24 +660,23 @@ export function WaterfallModule(p: MeterModuleProps) {
       helpKey: 'damping',
     },
     {
+      // ONE key (owner 2026-08-30): tapping EQ opens the filter menu, and
+      // picking one hands straight back to the slider for that filter — two
+      // keys for a single control was redundant.
       kind: 'fader',
       id: 'eq',
-      label: 'EQ GAIN',
+      label: 'EQ',
       value: (eqBoostDb + 12) / 24,
       onChange: (v) => setEqBoostDb(Math.round(-12 + v * 24)),
       format: () =>
         `${eqBoostDb >= 0 ? '+' : '−'}${Math.abs(eqBoostDb)} dB · ${EQ_FILTER_BY_KEY[eqFilter].label}`,
       formatShort: () => `${eqBoostDb >= 0 ? '+' : '−'}${Math.abs(eqBoostDb)} dB`,
-      helpKey: 'eq_ridge',
-    },
-    {
-      kind: 'options',
-      id: 'eqfilter',
-      label: 'EQ FILTER',
-      valueLabel: EQ_FILTER_BY_KEY[eqFilter].label.toUpperCase(),
-      selectedId: eqFilter,
-      onSelect: (id) => setEqFilter(id as EqFilterKey),
-      options: EQ_FILTERS.map((f) => ({ id: f.key, label: f.label.toUpperCase(), blurb: f.blurb })),
+      chooser: {
+        title: 'EQ FILTER',
+        selectedId: eqFilter,
+        onSelect: (id) => setEqFilter(id as EqFilterKey),
+        options: EQ_FILTERS.map((f) => ({ id: f.key, label: f.label.toUpperCase(), blurb: f.blurb })),
+      },
       helpKey: 'eq_ridge',
     },
     {
@@ -707,6 +706,7 @@ export function WaterfallModule(p: MeterModuleProps) {
       id: 'replay',
       label: 'REPLAY',
       onPress: () => setReplay((n) => n + 1),
+      tint: colors.green, // green key — it re-runs the build, it changes nothing
     },
     {
       kind: 'toggle',

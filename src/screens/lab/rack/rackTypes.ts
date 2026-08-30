@@ -81,6 +81,17 @@ export type DockParam =
       formatShort?: (v: number) => string;
       /** Lane/thumb tint (default amber) — e.g. levelColor ramp. */
       tint?: string;
+      /** ONE key that is both a chooser and a slider (owner 2026-08-30 — two
+       *  keys for one control was redundant): tapping opens this menu, and
+       *  picking an option closes it and binds the lane, so the user lands on
+       *  the slider for the thing they just chose. */
+      chooser?: {
+        /** Tray heading, e.g. "EQ FILTER". Defaults to the fader's label. */
+        title?: string;
+        options: TrayOption[];
+        selectedId: string | null;
+        onSelect: (id: string) => void;
+      };
       helpKey?: string;
     }
   | {
@@ -119,4 +130,11 @@ export type DockParam =
       onToggle: () => void;
       helpKey?: string;
     }
-  | { kind: 'action'; id: string; label: string; onPress: () => void };
+  | {
+      kind: 'action';
+      id: string;
+      label: string;
+      onPress: () => void;
+      /** Border tint for the key — e.g. green for a replay/reset. */
+      tint?: string;
+    };

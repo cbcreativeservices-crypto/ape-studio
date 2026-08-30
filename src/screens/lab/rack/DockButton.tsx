@@ -84,7 +84,9 @@ export function DockButton({
       style={({ pressed }) => [
         styles.btn,
         isKey && styles.key,
-        !isKey && !selected && frameTint ? { borderColor: frameTint + '88' } : null,
+        // frameTint applies to KEY buttons as well (a green REPLAY border) —
+        // it used to be value-buttons only.
+        !selected && frameTint ? { borderColor: frameTint + (isKey ? 'aa' : '88') } : null,
         !isKey && selected && styles.btnSel,
         // Every key now answers the finger.
         pressed && styles.btnPressed,
