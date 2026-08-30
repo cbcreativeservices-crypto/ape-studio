@@ -71,9 +71,26 @@ export function timeToHhmm(raw: string): string {
   return `${String(Number(m[1])).padStart(2, '0')}:${m[2]}`;
 }
 
+/**
+ * IDENTITY MAP (verified in the DB 2026-08-30):
+ *   notification_concept_subscriptions.user_id = auth.users.id  (RLS: user_id = auth.uid())
+ *   notification_preferences.user_id           = public.users.id (RLS resolves via users.auth_id)
+ * Subscriptions use the AUTH uid; preferences use the APP id. Mixing them
+ * matches zero rows and — for updates — fails SILENTLY.
+ */
 async function authUserId(): Promise<string | null> {
   const { data } = await supabase.auth.getUser();
   return data.user?.id ?? null;
+}
+
+/** App id (public.users.id) — required for notification_preferences. */
+async function appUserId(): Promise<string | null> {
+  const { data, error } = await supabase.from('users').select('id').maybeSingle();
+  if (error) {
+    console.warn('[weekly-concept] app user lookup failed:', error.message);
+    return null;
+  }
+  return (data as { id: string } | null)?.id ?? null;
 }
 
 export async function fetchWeeklySubscriptions(): Promise<WeeklySubscription[]> {
@@ -89,13 +106,18 @@ export async function fetchWeeklySubscriptions(): Promise<WeeklySubscription[]> 
 }
 
 export async function setWeeklyConceptPref(on: boolean): Promise<boolean> {
-  const uid = await authUserId();
+  const uid = await appUserId(); // preferences key on the APP id
   if (!uid) return false;
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('notification_preferences')
     .update({ notify_weekly_concept: on, updated_at: new Date().toISOString() })
-    .eq('user_id', uid);
+    .eq('user_id', uid)
+    .select('user_id');
   if (error) console.warn('[weekly-concept] pref update failed:', error.message);
+  else if (!data?.length) {
+    console.warn('[weekly-concept] pref update matched no row for', uid);
+    return false;
+  }
   return !error;
 }
 

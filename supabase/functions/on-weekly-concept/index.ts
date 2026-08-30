@@ -147,11 +147,29 @@ Deno.serve(async (req) => {
   }> = [];
 
   for (const sub of subscriptions) {
-    // 2. Transport preferences
+    // 2. Transport preferences.
+    //
+    // TWO IDENTITIES (verified in the DB 2026-08-30 — this was silently
+    // breaking every send): subscriptions and deliveries key on the AUTH uid
+    // (their RLS reads `user_id = auth.uid()`), but notification_preferences
+    // keys on public.users.id (its RLS resolves through users.auth_id).
+    // Looking prefs up by sub.user_id therefore matched NOTHING for every
+    // user, so the loop skipped everyone and reported "sent: 0" with no error.
+    const { data: appUser, error: appUserErr } = await supabase
+      .from("users")
+      .select("id")
+      .eq("auth_id", sub.user_id)
+      .maybeSingle();
+
+    if (appUserErr || !appUser) {
+      console.warn(`No app user row for auth id ${sub.user_id}`, appUserErr);
+      continue;
+    }
+
     const { data: prefs, error: prefsErr } = await supabase
       .from("notification_preferences")
       .select("expo_push_token, push_enabled, email_enabled, notify_weekly_concept")
-      .eq("user_id", sub.user_id)
+      .eq("user_id", appUser.id)
       .maybeSingle();
 
     if (prefsErr || !prefs) {

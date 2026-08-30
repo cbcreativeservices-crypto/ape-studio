@@ -79,6 +79,24 @@ async function authUserId(): Promise<string | null> {
   return data.user?.id ?? null;
 }
 
+/**
+ * TWO DIFFERENT IDENTITIES (verified in the DB 2026-08-30 — this bit me):
+ *   notification_preferences.user_id            = public.users.id  (app id)
+ *   notification_concept_subscriptions.user_id  = auth.users.id    (auth uid)
+ * Their RLS policies encode exactly that difference. Writing the auth uid into
+ * notification_preferences matches ZERO rows — and `.update().eq()` reports NO
+ * error when it matches nothing, so the push token silently never saved.
+ * Always resolve the app id before touching notification_preferences.
+ */
+async function appUserId(): Promise<string | null> {
+  const { data, error } = await supabase.from('users').select('id').maybeSingle();
+  if (error) {
+    console.warn('[push] app user lookup failed:', error.message);
+    return null;
+  }
+  return (data as { id: string } | null)?.id ?? null;
+}
+
 export async function registerAndSavePushToken(): Promise<string | null> {
   const Notifications = getNotifications();
   if (!Notifications) return null;
@@ -115,18 +133,22 @@ export async function registerAndSavePushToken(): Promise<string | null> {
     return null;
   }
 
-  const uid = await authUserId();
+  const uid = await appUserId(); // app id — NOT the auth uid (see appUserId)
   if (!uid) return token;
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('notification_preferences')
     .update({
       expo_push_token: token,
       push_enabled: true,
       updated_at: new Date().toISOString(),
     })
-    .eq('user_id', uid);
+    .eq('user_id', uid)
+    .select('user_id');
   if (error) console.warn('[push] token save failed:', error.message);
+  // A no-match update is NOT an error — say so loudly rather than pretending
+  // the token is stored (the 2026-08-30 silent-failure lesson).
+  else if (!data?.length) console.warn('[push] token save matched no prefs row for', uid);
   return token;
 }
 
