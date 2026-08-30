@@ -24,16 +24,43 @@ function to24(h12: number, period: 'AM' | 'PM', minute: number): string {
   return `${String(h).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
 }
 
+/**
+ * FULL-WIDTH stepper row (owner 2026-08-30: "numbers are colliding, hard to
+ * click with a finger").
+ *
+ * The old layout put Hour / Min / AM-PM in three flex:1 columns. On a 393 px
+ * phone the card's inner width is 305 px, so each column got ~94 px — while a
+ * stepper needs 16 (padding) + 2 (border) + 60 (two 30 px buttons) + 16 (gaps)
+ * + 44 (value minWidth) = 138 px. Every stepper overflowed its column by ~44 px,
+ * which is what made the glyphs and the number overlap. The 30 px buttons were
+ * also under the 44 px minimum touch target.
+ *
+ * One control per row removes the constraint entirely: the buttons are now
+ * 48 px squares at opposite ends with the value floating between them, so
+ * there is nothing to collide with at any screen width.
+ */
 function Stepper({ onDown, onUp, value, label }: { onDown: () => void; onUp: () => void; value: string; label: string }) {
   return (
     <View style={styles.stepperCol}>
       <Text style={styles.stepperLabel}>{label}</Text>
       <View style={styles.stepper}>
-        <Pressable style={styles.stepBtn} onPress={onDown} accessibilityRole="button" accessibilityLabel={`${label} down`}>
+        <Pressable
+          style={styles.stepBtn}
+          onPress={onDown}
+          hitSlop={6}
+          accessibilityRole="button"
+          accessibilityLabel={`${label} down`}
+        >
           <Text style={styles.stepGlyph}>−</Text>
         </Pressable>
-        <Text style={styles.stepValue}>{value}</Text>
-        <Pressable style={styles.stepBtn} onPress={onUp} accessibilityRole="button" accessibilityLabel={`${label} up`}>
+        <Text style={styles.stepValue} numberOfLines={1}>{value}</Text>
+        <Pressable
+          style={styles.stepBtn}
+          onPress={onUp}
+          hitSlop={6}
+          accessibilityRole="button"
+          accessibilityLabel={`${label} up`}
+        >
           <Text style={styles.stepGlyph}>+</Text>
         </Pressable>
       </View>
@@ -106,18 +133,34 @@ export function NotifyScheduleModal({
               <Text style={styles.groupLabel}>TIME</Text>
               <Text style={styles.clock}>{formatClock(time)}</Text>
               <View style={styles.timeRow}>
-                <Stepper label="Hour" value={String(h12)} onDown={() => setHour(h12 - 1)} onUp={() => setHour(h12 + 1)} />
+                <Stepper label="HOUR" value={String(h12)} onDown={() => setHour(h12 - 1)} onUp={() => setHour(h12 + 1)} />
                 <Stepper
-                  label="Min"
+                  label="MINUTE"
                   value={String(minute).padStart(2, '0')}
                   onDown={() => setMinute(minute - 5)}
                   onUp={() => setMinute(minute + 5)}
                 />
                 <View style={styles.stepperCol}>
-                  <Text style={styles.stepperLabel}>AM/PM</Text>
-                  <Pressable style={styles.periodBtn} onPress={togglePeriod} accessibilityRole="button" accessibilityLabel={`Set ${period === 'AM' ? 'PM' : 'AM'}`}>
-                    <Text style={styles.periodText}>{period}</Text>
-                  </Pressable>
+                  <Text style={styles.stepperLabel}>AM / PM</Text>
+                  <View style={styles.periodRow}>
+                    {(['AM', 'PM'] as const).map((p) => {
+                      const on = p === period;
+                      return (
+                        <Pressable
+                          key={p}
+                          style={[styles.periodBtn, on && styles.periodBtnOn]}
+                          onPress={() => {
+                            if (!on) togglePeriod();
+                          }}
+                          accessibilityRole="button"
+                          accessibilityState={{ selected: on }}
+                          accessibilityLabel={`Set ${p}`}
+                        >
+                          <Text style={[styles.periodText, on && styles.periodTextOn]}>{p}</Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
                 </View>
               </View>
             </>
@@ -126,14 +169,15 @@ export function NotifyScheduleModal({
           {mode === 'idleDays' ? (
             <>
               <Text style={styles.groupLabel}>REMIND AFTER</Text>
-              <View style={{ alignSelf: 'center' }}>
-                <Stepper
-                  label="Days of no use"
-                  value={`${days} ${days === 1 ? 'day' : 'days'}`}
-                  onDown={() => onSetDays(Math.max(1, days - 1))}
-                  onUp={() => onSetDays(Math.min(30, days + 1))}
-                />
-              </View>
+              {/* Full width like the time steppers — an alignSelf:'center'
+                  wrapper here shrank the row to its content, which pinned the
+                  value against both buttons. */}
+              <Stepper
+                label="DAYS OF NO USE"
+                value={`${days} ${days === 1 ? 'day' : 'days'}`}
+                onDown={() => onSetDays(Math.max(1, days - 1))}
+                onUp={() => onSetDays(Math.min(30, days + 1))}
+              />
             </>
           ) : null}
 
@@ -153,21 +197,60 @@ const styles = StyleSheet.create({
   groupLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.6, color: colors.amberLabel, marginTop: 4 },
   clock: { fontFamily: fonts.oswaldBold, fontSize: 30, color: colors.amber, textAlign: 'center', letterSpacing: 0.5 },
 
-  dayWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  dayChip: { borderWidth: 1, borderColor: '#3a3a3a', borderRadius: 7, paddingVertical: 7, paddingHorizontal: 11, backgroundColor: '#141414' },
+  // All 7 days on ONE row, evenly divided (they used to wrap and orphan "Sun"
+  // onto a second row). flex:1 per chip means they share whatever width the
+  // card has, so this holds on any phone.
+  dayWrap: { flexDirection: 'row', gap: 4 },
+  dayChip: {
+    flex: 1,
+    minHeight: 42,
+    borderWidth: 1,
+    borderColor: '#3a3a3a',
+    borderRadius: 7,
+    paddingHorizontal: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#141414',
+  },
   dayChipOn: { borderColor: 'rgba(255,198,77,.7)', backgroundColor: 'rgba(255,198,77,.12)' },
   dayChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.6, color: colors.textSub },
   dayChipTextOn: { color: colors.amber },
 
-  timeRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 12 },
-  stepperCol: { flex: 1, alignItems: 'center', gap: 5 },
-  stepperLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1, color: colors.textSub },
-  stepper: { flexDirection: 'row', alignItems: 'center', gap: 8, borderWidth: 1, borderColor: '#333', borderRadius: 8, paddingVertical: 5, paddingHorizontal: 8, backgroundColor: '#131313' },
-  stepBtn: { width: 30, height: 30, alignItems: 'center', justifyContent: 'center', borderRadius: 6, backgroundColor: '#1e1e1e' },
-  stepGlyph: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, color: colors.textSecondary },
-  stepValue: { fontFamily: fonts.mono, fontSize: 16, color: colors.textPrimary, minWidth: 44, textAlign: 'center' },
-  periodBtn: { borderWidth: 1, borderColor: 'rgba(255,198,77,.6)', borderRadius: 8, paddingVertical: 10, paddingHorizontal: 14, backgroundColor: 'rgba(255,198,77,.1)' },
-  periodText: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1, color: colors.amber },
+  // One control per ROW (was three side-by-side columns that overflowed).
+  timeRow: { gap: 10 },
+  stepperCol: { alignSelf: 'stretch', gap: 5 },
+  stepperLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.2, color: colors.textSub },
+  stepper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: '#333',
+    borderRadius: 8,
+    padding: 5,
+    backgroundColor: '#131313',
+  },
+  // 48 px squares — comfortably over the 44 px minimum touch target, and far
+  // enough apart that a fingertip cannot land on both.
+  stepBtn: { width: 48, height: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 6, backgroundColor: '#1e1e1e' },
+  stepGlyph: { fontFamily: fonts.oswaldSemiBold, fontSize: 22, color: colors.textSecondary },
+  // flex:1 between the two buttons — the number owns all the space left over,
+  // so it can never be squeezed into a glyph.
+  stepValue: { flex: 1, fontFamily: fonts.mono, fontSize: 20, color: colors.textPrimary, textAlign: 'center' },
+  periodRow: { flexDirection: 'row', gap: 10 },
+  periodBtn: {
+    flex: 1,
+    minHeight: 48,
+    borderWidth: 1,
+    borderColor: '#3a3a3a',
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#141414',
+  },
+  periodBtnOn: { borderColor: 'rgba(255,198,77,.7)', backgroundColor: 'rgba(255,198,77,.12)' },
+  periodText: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1, color: colors.textSub },
+  periodTextOn: { color: colors.amber },
 
   doneBtn: { marginTop: 8, borderRadius: 9, backgroundColor: 'rgba(255,198,77,.14)', borderWidth: 1.5, borderColor: 'rgba(255,198,77,.7)', paddingVertical: 11, alignItems: 'center' },
   doneText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.8, color: colors.amber },

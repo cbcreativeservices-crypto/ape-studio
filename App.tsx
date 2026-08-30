@@ -29,6 +29,7 @@ import {
 } from './src/features/notifications/push';
 import { syncLocalNotificationsThrottled } from './src/features/notifications/localSchedule';
 import { loadLocalSettings } from './src/features/settings/store';
+import { NotifySchedulePreview } from './src/features/settings/NotifySchedulePreview';
 import { LabPreviewOverlay } from './src/features/lab/LabPreviewOverlay';
 import { endLabPreview, getLabPreview } from './src/features/lab/labPreviewStore';
 import { EntitlementProvider } from './src/features/commercial/EntitlementProvider';
@@ -148,6 +149,20 @@ export default function App() {
       <SafeAreaProvider>
         <StatusBar style="light" />
         <Spl3dGaugePreview />
+      </SafeAreaProvider>
+    );
+  }
+
+  // DEV + WEB ONLY: `localhost:8090/#notifyschedulepreview` renders the
+  // notification schedule modal (all three modes, at phone widths). It lives
+  // behind login inside Settings, so without this it cannot be seen in the
+  // browser — which is how a stepper layout overflow shipped unnoticed.
+  // startsWith, not equality: the harness takes `/mode/width` suffixes.
+  if (__DEV__ && Platform.OS === 'web' && typeof window !== 'undefined' && window.location.hash.startsWith('#notifyschedulepreview')) {
+    return (
+      <SafeAreaProvider>
+        <StatusBar style="light" />
+        <NotifySchedulePreview />
       </SafeAreaProvider>
     );
   }
