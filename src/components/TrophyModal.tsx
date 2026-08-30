@@ -28,7 +28,7 @@ export function TrophyModal({
   onClose: () => void;
 }) {
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+    <Modal accessibilityViewIsModal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       {/* Tap anywhere on the scrim to hide (Booth 2026-07-11). */}
       <Pressable style={styles.scrim} onPress={onClose} accessibilityRole="button" accessibilityLabel="Close trophy">
         <View

@@ -130,7 +130,7 @@ export function SessionTimerModal({ timer }: { timer: SessionTimerApi }) {
   const [minutes, setMinutes] = useState<number>(5);
   const [show, setShow] = useState(true);
   return (
-    <Modal visible={timer.configOpen} transparent animationType="fade" onRequestClose={timer.closeConfig}>
+    <Modal accessibilityViewIsModal visible={timer.configOpen} transparent animationType="fade" onRequestClose={timer.closeConfig}>
       <Pressable accessibilityRole="button" accessibilityLabel="Close" style={styles.backdrop} onPress={timer.closeConfig}>
         <Pressable accessible={false} style={styles.sheet} onPress={() => {}}>
           <Text style={styles.title}>SESSION TIMER</Text>
@@ -191,7 +191,7 @@ export function SessionTimerBanner({ timer }: { timer: SessionTimerApi }) {
   }, [expired, dismissExpired, ty]);
   if (!expired) return null;
   return (
-    <Modal visible transparent animationType="none" onRequestClose={dismissExpired}>
+    <Modal accessibilityViewIsModal visible transparent animationType="none" onRequestClose={dismissExpired}>
       <View style={styles.bannerWrap} pointerEvents="box-none">
         <Animated.View style={[styles.banner, { transform: [{ translateY: ty }] }]}>
           <TimerIcon color="#0b0b0b" size={18} />

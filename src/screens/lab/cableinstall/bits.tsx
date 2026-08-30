@@ -233,7 +233,7 @@ export function FindProgress({ found, required, total }: { found: number; requir
 export function CiSection({ title, children }: { title: string; children: ReactNode }) {
   return (
     <View style={{ gap: 8 }}>
-      <Text style={styles.sectionEyebrow}>{title}</Text>
+      <Text accessibilityRole="header" style={styles.sectionEyebrow}>{title}</Text>
       {children}
     </View>
   );

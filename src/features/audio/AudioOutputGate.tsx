@@ -123,7 +123,7 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
       {children}
 
       {/* POPUP 1 — explain the setting. */}
-      <Modal
+      <Modal accessibilityViewIsModal
         visible={phase === 'explain'}
         transparent
         animationType="fade"
@@ -163,7 +163,7 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
       </Modal>
 
       {/* POPUP 2 — the 5-second hold to enable. */}
-      <Modal
+      <Modal accessibilityViewIsModal
         visible={phase === 'hold'}
         transparent
         animationType="fade"

@@ -41,7 +41,7 @@ export function AppWelcomeOverlay() {
   if (!visible) return null;
   const copy = SCREEN_INTROS.appWelcome;
   return (
-    <Modal
+    <Modal accessibilityViewIsModal
       transparent
       animationType="fade"
       visible

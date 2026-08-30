@@ -216,7 +216,7 @@ export function HarmonographViewer(props: {
   };
 
   return (
-    <Modal
+    <Modal accessibilityViewIsModal
       visible={visible}
       animationType="fade"
       supportedOrientations={['portrait', 'landscape', 'landscape-left', 'landscape-right']}

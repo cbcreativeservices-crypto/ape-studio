@@ -132,7 +132,7 @@ export function PermissionPrompt({
 }) {
   const copy = COPY[cap];
   return (
-    <Modal transparent visible={visible} animationType="fade" statusBarTranslucent onRequestClose={onDecline}>
+    <Modal accessibilityViewIsModal transparent visible={visible} animationType="fade" statusBarTranslucent onRequestClose={onDecline}>
       <View style={styles.scrim}>
         <View style={styles.card}>
           <Text style={styles.title}>{copy.title}</Text>

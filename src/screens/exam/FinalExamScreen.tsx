@@ -346,7 +346,13 @@ export function FinalExamScreen({ navigation, route }: Props) {
 
       <ScrollView contentContainerStyle={styles.scroll}>
         {question.media_url ? (
-          <Image source={{ uri: question.media_url }} style={styles.media} resizeMode="contain" />
+          <Image
+              source={{ uri: question.media_url }}
+              style={styles.media}
+              resizeMode="contain"
+              accessibilityRole="image"
+              accessibilityLabel="Figure for this exam question"
+            />
         ) : null}
 
         <Text style={styles.questionText}>{question.question_text ?? ''}</Text>

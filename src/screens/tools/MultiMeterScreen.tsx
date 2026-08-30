@@ -1153,7 +1153,7 @@ export function MultiMeterScreen({ navigation }: Props) {
             {/* 2 ── LIVE SPECTRUM ANALYZER (the hero) */}
             <View style={styles.panel}>
               <View style={styles.panelHead}>
-                <Text style={styles.panelEyebrow}>LIVE SPECTRUM</Text>
+                <Text accessibilityRole="header" style={styles.panelEyebrow}>LIVE SPECTRUM</Text>
                 <Text style={styles.panelSettings}>
                   1/6 OCT · derived · FFT {FFT_SIZE} · α {smoothing.bandAlpha.toFixed(2)}
                 </Text>
@@ -1366,7 +1366,7 @@ export function MultiMeterScreen({ navigation }: Props) {
             {/* 5 ── DOMINANT FREQUENCY · NOTE · CENTS · COUNTER */}
             <View style={styles.panel}>
               <View style={styles.panelHead}>
-                <Text style={styles.panelEyebrow}>FREQUENCY & PITCH</Text>
+                <Text accessibilityRole="header" style={styles.panelEyebrow}>FREQUENCY & PITCH</Text>
                 <Text style={styles.panelSettings}>A4 = {A4} Hz</Text>
               </View>
               <View style={styles.freqGrid}>
@@ -1494,7 +1494,7 @@ export function MultiMeterScreen({ navigation }: Props) {
                    height never pushes the meters/controls above it (owner rev 24). */}
             <View style={styles.panel}>
               <Pressable accessibilityHint="Press and hold for an explanation." onLongPress={() => help('detection')} delayLongPress={350}>
-                <Text style={styles.panelEyebrow}>SMART DETECTION</Text>
+                <Text accessibilityRole="header" style={styles.panelEyebrow}>SMART DETECTION</Text>
               </Pressable>
               {chips.length === 0 ? (
                 <Text style={styles.detectEmpty}>no conditions detected right now</Text>
@@ -1555,7 +1555,7 @@ export function MultiMeterScreen({ navigation }: Props) {
       ) : null}
 
       {/* Snapshot confirm sheet: notes, then save (values frozen at press). */}
-      <Modal visible={draft != null} transparent animationType="fade" onRequestClose={() => setDraft(null)}>
+      <Modal accessibilityViewIsModal visible={draft != null} transparent animationType="fade" onRequestClose={() => setDraft(null)}>
         <View style={styles.sheetScrim}>
           <View style={styles.sheetCard}>
             <Text style={styles.sheetTitle}>MEASUREMENT SNAPSHOT</Text>

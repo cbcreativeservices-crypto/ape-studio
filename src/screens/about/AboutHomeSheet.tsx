@@ -66,11 +66,11 @@ const PATHWAYS: string[] = [
 export function AboutHomeSheet({ visible, onClose }: { visible: boolean; onClose: () => void }) {
   const insets = useSafeAreaInsets();
   return (
-    <Modal visible={visible} animationType="fade" transparent onRequestClose={onClose}>
+    <Modal accessibilityViewIsModal visible={visible} animationType="fade" transparent onRequestClose={onClose}>
       <View style={styles.backdrop}>
         <View style={[styles.card, { marginTop: insets.top + 24, marginBottom: insets.bottom + 24 }]}>
           <View style={styles.headerBar}>
-            <Text style={styles.headerTitle}>ABOUT</Text>
+            <Text accessibilityRole="header" style={styles.headerTitle}>ABOUT</Text>
             <Pressable onPress={onClose} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close">
               <Text style={styles.close}>✕</Text>
             </Pressable>

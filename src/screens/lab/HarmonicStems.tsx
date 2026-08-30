@@ -518,7 +518,7 @@ export function HarmonicStems({
           solo placeholder / reset. Reads the LIVE harmonic each render, so
           edits reflect immediately. */}
       {detail ? (
-        <Modal visible transparent animationType="fade" statusBarTranslucent onRequestClose={closeDetail}>
+        <Modal accessibilityViewIsModal visible transparent animationType="fade" statusBarTranslucent onRequestClose={closeDetail}>
           <View style={styles.backdrop}>
             <Pressable
               style={StyleSheet.absoluteFill}

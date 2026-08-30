@@ -247,7 +247,7 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
   );
 
   return (
-    <Modal visible={visible} transparent animationType="slide" statusBarTranslucent onRequestClose={onClose}>
+    <Modal accessibilityViewIsModal visible={visible} transparent animationType="slide" statusBarTranslucent onRequestClose={onClose}>
       <View style={[styles.root, { paddingTop: insets.top }]} onTouchStart={onAnyTap}>
         <View style={styles.head}>
           <View style={{ flex: 1 }}>

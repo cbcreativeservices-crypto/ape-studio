@@ -217,7 +217,7 @@ export function CameraAnalogyModule(_p: EqModuleComponentProps) {
 
       <View style={styles.panel}>
         <View style={styles.panelHead}>
-          <Text style={styles.panelEyebrow}>THE ROOM</Text>
+          <Text accessibilityRole="header" style={styles.panelEyebrow}>THE ROOM</Text>
           <Text style={styles.readout}>
             {stage === 0
               ? `${fmtHz(eqFreq)} — FIXED`

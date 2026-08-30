@@ -95,7 +95,7 @@ export function LowLightProductionGate() {
 
   if (!on || !showInfo) return null;
   return (
-    <Modal transparent animationType="fade" visible statusBarTranslucent onRequestClose={() => setShowInfo(false)}>
+    <Modal accessibilityViewIsModal transparent animationType="fade" visible statusBarTranslucent onRequestClose={() => setShowInfo(false)}>
       <View style={styles.gateBackdrop}>
         <View style={styles.gateCard}>
           <Text style={styles.gateEyebrow}>LOW-LIGHT PRODUCTION MODE</Text>

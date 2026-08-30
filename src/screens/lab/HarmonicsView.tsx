@@ -1939,7 +1939,7 @@ export function HarmonicsView({
           the formula, each harmonic's aₙ/a₁ contribution, and the honest
           THD+N placeholder. Opened from the bezel's THD cell. */}
       {thdOpen ? (
-        <Modal visible transparent animationType="fade" statusBarTranslucent onRequestClose={() => setThdOpen(false)}>
+        <Modal accessibilityViewIsModal visible transparent animationType="fade" statusBarTranslucent onRequestClose={() => setThdOpen(false)}>
           <View style={styles.sheetBackdrop}>
             <Pressable
               style={StyleSheet.absoluteFill}

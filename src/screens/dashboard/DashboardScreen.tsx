@@ -1712,7 +1712,7 @@ export function DashboardScreen() {
       />
 
       {/* Topic term list (Booth 2026-07-18): every term in the current topic. */}
-      <Modal
+      <Modal accessibilityViewIsModal
         visible={termsOpen}
         transparent
         animationType="slide"

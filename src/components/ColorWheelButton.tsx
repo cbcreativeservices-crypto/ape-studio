@@ -116,7 +116,7 @@ export function ColorWheelButton({
         <ColorWheel size={size} />
       </Pressable>
       {/* Built-in swatch picker (members). */}
-      <Modal visible={picker} transparent animationType="fade" onRequestClose={() => setPicker(false)}>
+      <Modal accessibilityViewIsModal visible={picker} transparent animationType="fade" onRequestClose={() => setPicker(false)}>
         <Pressable style={styles.scrim} onPress={() => setPicker(false)} accessibilityRole="button" accessibilityLabel="Close">
           <View style={styles.card}>
             <Text style={styles.pickerTitle}>{pickerTitle}</Text>
@@ -217,7 +217,7 @@ export function ColorWheelButton({
           </View>
         </Pressable>
       </Modal>
-      <Modal visible={gate} transparent animationType="fade" onRequestClose={() => setGate(false)}>
+      <Modal accessibilityViewIsModal visible={gate} transparent animationType="fade" onRequestClose={() => setGate(false)}>
         <Pressable style={styles.scrim} onPress={() => setGate(false)} accessibilityRole="button" accessibilityLabel="Close">
           <View style={styles.card}>
             <ColorWheel size={40} />

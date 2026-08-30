@@ -36,7 +36,7 @@ export function LabPhotoLightbox({ children }: { children: ReactNode }) {
   return (
     <LightboxCtx.Provider value={setTarget}>
       {children}
-      <Modal
+      <Modal accessibilityViewIsModal
         visible={!!target}
         transparent
         animationType="fade"
@@ -51,7 +51,14 @@ export function LabPhotoLightbox({ children }: { children: ReactNode }) {
         >
           <View style={styles.lbCard}>
             {target ? (
-              <Image source={{ uri: target.url }} style={styles.lbImage} resizeMode="contain" accessibilityIgnoresInvertColors />
+              <Image
+                source={{ uri: target.url }}
+                style={styles.lbImage}
+                resizeMode="contain"
+                accessibilityIgnoresInvertColors
+                accessibilityRole="image"
+                accessibilityLabel={target.caption ?? 'Lab photograph'}
+              />
             ) : null}
           </View>
           {target?.caption ? <Text style={styles.lbCaption}>{target.caption}</Text> : null}

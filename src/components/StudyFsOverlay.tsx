@@ -76,7 +76,7 @@ export function StudyFsOverlay({
   ).current;
 
   return (
-    <Modal visible={visible} animationType="fade" onRequestClose={onClose}>
+    <Modal accessibilityViewIsModal visible={visible} animationType="fade" onRequestClose={onClose}>
       <View style={styles.root} {...pan.panHandlers}>
         <Pressable style={styles.close} onPress={onClose} hitSlop={16} accessibilityRole="button" accessibilityLabel="Close full screen">
           <Text style={styles.closeText}>✕</Text>

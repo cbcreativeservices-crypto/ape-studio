@@ -53,6 +53,8 @@ export function TrophyImage({
   return (
     <View style={[box, style]}>
       <Image
+        accessible={false}
+        importantForAccessibility="no"
         source={{ uri: url }}
         style={styles.img}
         resizeMode="contain"

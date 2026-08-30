@@ -42,7 +42,7 @@ export function LearningIntroSheet({
   if (suppressed) return null;
 
   return (
-    <Modal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={onBegin}>
+    <Modal accessibilityViewIsModal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={onBegin}>
       {/* Tapping the dimmed area dismisses (never a hard block); the card
           absorbs its own taps so content/BEGIN aren't swallowed. */}
       <Pressable accessibilityRole="button" style={styles.backdrop} onPress={onBegin} accessibilityLabel="Dismiss">

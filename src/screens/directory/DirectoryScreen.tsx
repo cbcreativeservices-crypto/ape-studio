@@ -245,7 +245,7 @@ export function DirectoryScreen({ navigation }: Props) {
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <View style={styles.headerBar}>
-        <Text style={styles.headerTitle}>DIRECTORY</Text>
+        <Text accessibilityRole="header" style={styles.headerTitle}>DIRECTORY</Text>
         <Pressable onPress={() => navigation.goBack()} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close">
           <Text style={styles.close}>✕</Text>
         </Pressable>

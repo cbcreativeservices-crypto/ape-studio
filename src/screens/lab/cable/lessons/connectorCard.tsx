@@ -93,7 +93,13 @@ export function ConnectorCard({ rec }: { rec: ConnectorRecord }) {
           accessible
           accessibilityLabel={`Photograph of a ${rec.displayName} connector${active.label ? `, ${active.label.toLowerCase()} view` : ''}`}
         >
-          <Image source={{ uri: active.url }} style={styles.image} resizeMode="contain" />
+          <Image
+          source={{ uri: active.url }}
+          style={styles.image}
+          resizeMode="contain"
+          accessibilityRole="image"
+          accessibilityLabel={active.label ?? 'Connector photograph'}
+        />
         </View>
       ) : null}
       {images.length > 1 ? (

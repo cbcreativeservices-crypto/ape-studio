@@ -103,7 +103,7 @@ export function IntroSheet({
   }, [holdMs]);
 
   return (
-    <Modal
+    <Modal accessibilityViewIsModal
       transparent
       animationType="fade"
       visible

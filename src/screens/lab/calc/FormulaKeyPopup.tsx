@@ -57,7 +57,7 @@ export function FormulaKeyPopup({
   const symbols = symbolsInFormula(fn.formula, fn.keySymbols);
 
   return (
-    <Modal visible transparent animationType="slide" onRequestClose={onClose}>
+    <Modal accessibilityViewIsModal visible transparent animationType="slide" onRequestClose={onClose}>
       <View style={styles.backdrop}>
         <View style={styles.sheet}>
           <View style={styles.header}>

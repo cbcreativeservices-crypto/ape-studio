@@ -78,7 +78,7 @@ export function AccuracyNote({
         {compact ? null : <Text style={styles.chipLabel}>{chipLabel}</Text>}
       </Pressable>
 
-      <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
+      <Modal accessibilityViewIsModal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
         <Pressable accessibilityRole="button" accessibilityLabel="Close" style={styles.backdrop} onPress={() => setOpen(false)}>
           {/* Swallow taps on the card so they don't close the sheet. */}
           <Pressable accessible={false} style={styles.card} onPress={() => {}}>

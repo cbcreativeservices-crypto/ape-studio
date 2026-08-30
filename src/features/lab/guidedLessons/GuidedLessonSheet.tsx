@@ -154,7 +154,7 @@ export function GuidedLessonSheet({
     : (lesson.tagline ?? 'Guided Lesson');
 
   return (
-    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
+    <Modal accessibilityViewIsModal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
       <View style={styles.backdrop}>
         <Pressable accessibilityRole="button" style={styles.backdropTap} onPress={onClose} accessibilityLabel="Close guided lesson" />
         <View style={[styles.sheet, { paddingBottom: insets.bottom + 12 }]}>

@@ -67,7 +67,7 @@ export function WhyEqModule(_p: EqModuleComponentProps) {
 
       <View style={styles.panel}>
         <View style={styles.panelHead}>
-          <Text style={styles.panelEyebrow}>EQ RESPONSE</Text>
+          <Text accessibilityRole="header" style={styles.panelEyebrow}>EQ RESPONSE</Text>
           <Text style={[styles.readout, { color: gc }]}>
             {fmtHz(region.f)} · {gainDb >= 0 ? '+' : ''}
             {gainDb.toFixed(1)} dB

@@ -1320,7 +1320,12 @@ export function SplMeterScreen({ navigation }: Props) {
                 style={[styles.readoutCard, styles.readoutCardFlex]}
                 onPress={running ? stopMeter : startMeter}
                 accessibilityRole="button"
-                accessibilityLabel={running ? 'Tap to stop the meter' : 'Tap to start the meter'}
+                // The label REPLACES the child text for a screen reader, so it
+                // has to carry the reading itself — otherwise the one thing
+                // this screen exists to report is the one thing a blind user
+                // cannot hear. Deliberately NOT a live region: this updates
+                // many times a second and would talk over everything else.
+                accessibilityLabel={`${bigText} ${readoutHonesty}. ${running ? 'Tap to stop the meter.' : 'Tap to start the meter.'}`}
               >
                 <Text style={styles.readoutValue} numberOfLines={1}>
                   {bigText}

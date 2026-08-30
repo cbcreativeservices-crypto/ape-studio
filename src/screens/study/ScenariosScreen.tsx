@@ -468,7 +468,13 @@ export function ScenariosScreen({ route }: Props) {
 
         {item.media?.kind === 'audio' && <AudioPlayer uri={item.media.url} />}
         {item.media?.kind === 'image' && (
-          <Image source={{ uri: item.media.url }} style={styles.mediaImage} resizeMode="contain" />
+          <Image
+              source={{ uri: item.media.url }}
+              style={styles.mediaImage}
+              resizeMode="contain"
+              accessibilityRole="image"
+              accessibilityLabel="Scenario figure"
+            />
         )}
 
         <Text style={styles.prompt}>{item.prompt}</Text>

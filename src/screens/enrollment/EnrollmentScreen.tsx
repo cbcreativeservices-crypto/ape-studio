@@ -1648,7 +1648,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
 
       {/* Clear-list confirm popup — press-and-HOLD the red bar to confirm the
           reset; the ✕ square opens it (owner 2026-08-01). */}
-      <Modal
+      <Modal accessibilityViewIsModal
         visible={clearConfirmOpen}
         transparent
         animationType="fade"
@@ -1684,7 +1684,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
 
       {/* Custom-list terms popup — SEE & EDIT (user request 2026-07-24). Mirrors
           the flashcards held-filter list; TermSelectIcons edit membership inline. */}
-      <Modal visible={customListOpen} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setCustomListOpen(false)}>
+      <Modal accessibilityViewIsModal visible={customListOpen} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setCustomListOpen(false)}>
         <View style={styles.clBackdrop}>
           <Pressable
             style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}

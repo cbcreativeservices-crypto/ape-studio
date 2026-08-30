@@ -682,7 +682,9 @@ function LivePitchMode({
           style={styles.readout}
           onPress={running ? onStop : onStart}
           accessibilityRole="button"
-          accessibilityLabel={running ? 'Tap to stop capture' : 'Tap to start capture'}
+          // Carry the READING in the label: a bare "tap to stop" hides the one
+          // number this screen exists to show (same fix as the SPL meter).
+          accessibilityLabel={`${shownFreq != null ? `${fmtHz(shownFreq)} hertz` : 'No signal'}. ${running ? 'Tap to stop capture.' : 'Tap to start capture.'}`}
         >
           <Text style={[styles.readoutValue, styles.readoutValueGreen, isHeld && styles.readoutDim]}>
             {shownFreq != null ? fmtHz(shownFreq) : '—'}

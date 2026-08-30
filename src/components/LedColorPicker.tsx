@@ -39,7 +39,7 @@ export function LedColorPicker({
   const [spectrumFor, setSpectrumFor] = useState<null | 'level' | 'avg'>(null);
   const levelHex = levelPref && levelPref.startsWith('#') ? levelPref : null;
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+    <Modal accessibilityViewIsModal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <Pressable style={styles.scrim} onPress={onClose} accessibilityRole="button" accessibilityLabel="Close">
         {/* Inner card: stop the backdrop tap so picking inside never closes. */}
         <Pressable style={styles.card} onPress={() => {}} accessibilityRole="none">

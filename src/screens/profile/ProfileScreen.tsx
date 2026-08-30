@@ -269,7 +269,7 @@ export function ProfileScreen() {
             onPress={() => (navigation as any).navigate((profile?.completeCount ?? 0) > 0 ? 'Study' : 'Home')}
             accessibilityRole="button"
           >
-            <Text style={styles.panelEyebrow}>CURRENT FOCUS</Text>
+            <Text accessibilityRole="header" style={styles.panelEyebrow}>CURRENT FOCUS</Text>
             {(profile?.overallPct ?? 0) > 0 ? (
               <>
                 <Text style={styles.focusTitle}>Full Course Certification</Text>
@@ -289,7 +289,7 @@ export function ProfileScreen() {
             onPress={() => (navigation as any).navigate('Awards', { category: 'enrollment' })}
             accessibilityRole="button"
           >
-            <Text style={styles.panelEyebrow}>CERTIFICATE GOALS</Text>
+            <Text accessibilityRole="header" style={styles.panelEyebrow}>CERTIFICATE GOALS</Text>
             {certBundles.length ? (
               <>
                 {certBundles.map((b) => (
@@ -313,7 +313,7 @@ export function ProfileScreen() {
             onPress={() => (navigation as any).navigate('Awards', { category: 'enrollment' })}
             accessibilityRole="button"
           >
-            <Text style={styles.panelEyebrow}>PROGRAM GOALS</Text>
+            <Text accessibilityRole="header" style={styles.panelEyebrow}>PROGRAM GOALS</Text>
             {programBundles.length ? (
               <>
                 {programBundles.map((b) => (
@@ -333,7 +333,7 @@ export function ProfileScreen() {
 
           {/* 5 — STUDENT STATISTICS. */}
           <View style={styles.panel}>
-            <Text style={styles.panelEyebrow}>STATISTICS</Text>
+            <Text accessibilityRole="header" style={styles.panelEyebrow}>STATISTICS</Text>
             <StatRow label="Terms Learned" value={String(known.size)} />
             <StatRow label="Topics Completed" value={String(profile?.completeCount ?? 0)} />
             <StatRow label="Quizzes Passed" value="—" />
@@ -358,7 +358,7 @@ export function ProfileScreen() {
 
           {/* 6 — AUDIO INTERESTS (with a promoted PRIMARY interest). */}
           <View style={styles.panel}>
-            <Text style={styles.panelEyebrow}>AUDIO INTERESTS</Text>
+            <Text accessibilityRole="header" style={styles.panelEyebrow}>AUDIO INTERESTS</Text>
             {pub.primaryInterest ? (
               <>
                 <Text style={styles.fieldLabel}>Primary interest</Text>
@@ -380,7 +380,7 @@ export function ProfileScreen() {
 
           {/* 7 — LEARNING PREFERENCES (optional). */}
           <View style={styles.panel}>
-            <Text style={styles.panelEyebrow}>LEARNING PREFERENCES</Text>
+            <Text accessibilityRole="header" style={styles.panelEyebrow}>LEARNING PREFERENCES</Text>
             <Text style={styles.fieldLabel}>Learning goal</Text>
             <ChoiceChips
               options={LEARNING_GOALS}
@@ -393,7 +393,7 @@ export function ProfileScreen() {
 
           {/* 8 — ABOUT ME (optional, understated). */}
           <View style={styles.panel}>
-            <Text style={styles.panelEyebrow}>ABOUT ME</Text>
+            <Text accessibilityRole="header" style={styles.panelEyebrow}>ABOUT ME</Text>
             <TextInput
               style={[styles.input, styles.bioInput]}
               value={pub.bio}
@@ -408,14 +408,14 @@ export function ProfileScreen() {
 
           {/* 9 — RECENT ACTIVITY (empty state until the study-log backend lands). */}
           <View style={styles.panel}>
-            <Text style={styles.panelEyebrow}>RECENT ACTIVITY</Text>
+            <Text accessibilityRole="header" style={styles.panelEyebrow}>RECENT ACTIVITY</Text>
             <Text style={styles.emptyLine}>No recent study activity yet — your sessions will show here.</Text>
           </View>
 
           {/* Account & networking — email lives here (out of the identity focus),
               read-only display + the employer-contact consent. */}
           <View style={styles.panel}>
-            <Text style={styles.panelEyebrow}>ACCOUNT &amp; NETWORKING</Text>
+            <Text accessibilityRole="header" style={styles.panelEyebrow}>ACCOUNT &amp; NETWORKING</Text>
             <Text style={styles.fieldLabel}>Name</Text>
             <TextInput
               style={styles.input}
@@ -469,7 +469,7 @@ export function ProfileScreen() {
               enable-able once name + registry name + email are filled; must be ON
               to be listed. */}
           <View style={styles.panel}>
-            <Text style={styles.panelEyebrow}>PRO REGISTRY</Text>
+            <Text accessibilityRole="header" style={styles.panelEyebrow}>PRO REGISTRY</Text>
             <View style={styles.consentRow}>
               <View style={{ flex: 1, paddingRight: 12 }}>
                 <Text style={styles.fieldLabel}>Show me in the Pro Registry</Text>
@@ -502,7 +502,7 @@ export function ProfileScreen() {
               not-yet. */}
           {credentials.length > 0 && (
             <View style={styles.panel}>
-              <Text style={styles.panelEyebrow}>CREDENTIALS</Text>
+              <Text accessibilityRole="header" style={styles.panelEyebrow}>CREDENTIALS</Text>
               {credentials.map((c) => (
                 <View key={`${c.type}:${c.id}`} style={styles.credRow}>
                   <View style={{ flex: 1, paddingRight: 12 }}>
@@ -577,7 +577,12 @@ export function ProfileScreen() {
           <View style={[styles.pilotDot, { left: 7 }]} />
           <View style={[styles.pilotDot, { right: 7 }]} />
           {profile?.photoUrl ? (
-            <Image source={{ uri: profile.photoUrl }} style={styles.avatarImg} />
+            <Image
+              source={{ uri: profile.photoUrl }}
+              style={styles.avatarImg}
+              accessibilityRole="image"
+              accessibilityLabel="Your profile photo"
+            />
           ) : (
             <LinearGradient colors={['#ffd35e', '#f09e1a']} style={styles.avatar}>
               <Text style={styles.avatarInitials}>{profile?.initials ?? '–'}</Text>

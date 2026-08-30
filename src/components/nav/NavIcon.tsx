@@ -200,7 +200,13 @@ export function NavIcon({
           <ProgressFadersLit />
         </View>
       ) : (
-        <Image source={NAV_SOURCE[icon]} style={[styles.icon, glow]} resizeMode="contain" />
+        <Image
+          accessible={false}
+          importantForAccessibility="no"
+          source={NAV_SOURCE[icon]}
+          style={[styles.icon, glow]}
+          resizeMode="contain"
+        />
       )}
 
       {showLabel && (

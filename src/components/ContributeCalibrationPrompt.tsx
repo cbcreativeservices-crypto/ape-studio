@@ -77,7 +77,7 @@ export function ContributeCalibrationPrompt({
   };
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={close}>
+    <Modal accessibilityViewIsModal visible={visible} transparent animationType="fade" onRequestClose={close}>
       <View style={styles.scrim}>
         <View style={styles.card}>
           <Text style={styles.title}>HELP CALIBRATE YOUR PHONE MODEL</Text>

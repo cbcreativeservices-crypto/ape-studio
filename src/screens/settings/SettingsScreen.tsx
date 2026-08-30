@@ -241,7 +241,7 @@ export function SettingsScreen({ navigation }: Props) {
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <View style={styles.headerBar}>
-        <Text style={styles.headerTitle}>SETTINGS</Text>
+        <Text accessibilityRole="header" style={styles.headerTitle}>SETTINGS</Text>
         <Pressable onPress={() => navigation.goBack()} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close settings">
           <Text style={styles.close}>✕</Text>
         </Pressable>
@@ -610,7 +610,7 @@ export function SettingsScreen({ navigation }: Props) {
       </ScrollView>
 
       {/* Redeem access / promo code popup (owner 2026-08-21). */}
-      <Modal visible={redeemOpen} transparent animationType="fade" onRequestClose={() => setRedeemOpen(false)}>
+      <Modal accessibilityViewIsModal visible={redeemOpen} transparent animationType="fade" onRequestClose={() => setRedeemOpen(false)}>
         <Pressable accessibilityRole="button" style={styles.modalBackdrop} onPress={() => !redeemBusy && setRedeemOpen(false)}>
           <Pressable accessible={false} style={styles.modalCard} onPress={() => {}}>
             <Text style={styles.modalTitle}>REDEEM A CODE</Text>

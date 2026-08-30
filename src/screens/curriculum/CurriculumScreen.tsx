@@ -279,7 +279,7 @@ export function CurriculumView({
 
       {/* Academic goals — at the bottom. */}
       <View style={styles.section}>
-        <Text style={styles.sectionEyebrow}>ACADEMIC GOALS</Text>
+        <Text accessibilityRole="header" style={styles.sectionEyebrow}>ACADEMIC GOALS</Text>
         <Text style={styles.sectionIntro}>What the Pro Audio Training Academy sets out to do for every student.</Text>
         {ACADEMIC_GOALS.map((goal) => (
           <View key={goal} style={styles.goalRow}>

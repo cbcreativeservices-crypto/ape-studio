@@ -343,7 +343,7 @@ function RtaGlass({
   return (
     <View style={styles.glassBody}>
       <View style={styles.glassHead}>
-        <Text style={styles.panelEyebrow}>LIVE RTA</Text>
+        <Text accessibilityRole="header" style={styles.panelEyebrow}>LIVE RTA</Text>
         <Text style={styles.panelSettings}>{metaFor(mode, alpha, fftSize)}</Text>
       </View>
 

@@ -98,7 +98,7 @@ export function EqChallengesModule(_p: EqModuleComponentProps) {
 
       <View style={styles.panel}>
         <View style={styles.panelHead}>
-          <Text style={styles.panelEyebrow}>
+          <Text accessibilityRole="header" style={styles.panelEyebrow}>
             {strategy === 'none' ? 'THE PROBLEM' : strategy === 'cut' ? 'STRATEGY: CUT' : 'STRATEGY: BOOST AROUND'}
           </Text>
           <Text style={styles.readout}>

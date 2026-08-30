@@ -543,7 +543,7 @@ export function AwardsScreen({ navigation, route }: Props) {
       {/* LEVEL 1 — choose one of the 68 Specialized Certificates (user request
           2026-07-18): each = the 3 required core courses + 3 specialization
           topics. */}
-      <Modal visible={picker === 'specializations'} animationType="slide" transparent statusBarTranslucent onRequestClose={() => setPicker(null)}>
+      <Modal accessibilityViewIsModal visible={picker === 'specializations'} animationType="slide" transparent statusBarTranslucent onRequestClose={() => setPicker(null)}>
         <View style={[styles.pickerRoot, { paddingTop: insets.top }]}>
           <View style={styles.brandRow}>
             <BrandLogo size={30} />
@@ -651,7 +651,7 @@ export function AwardsScreen({ navigation, route }: Props) {
       </Modal>
 
       {/* LEVEL 2 — choose an established Program Path (TBD course sets). */}
-      <Modal visible={picker === 'programs'} animationType="slide" transparent statusBarTranslucent onRequestClose={() => setPicker(null)}>
+      <Modal accessibilityViewIsModal visible={picker === 'programs'} animationType="slide" transparent statusBarTranslucent onRequestClose={() => setPicker(null)}>
         <View style={[styles.pickerRoot, { paddingTop: insets.top }]}>
           <View style={styles.brandRow}>
             <BrandLogo size={30} />

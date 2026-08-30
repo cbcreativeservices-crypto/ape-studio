@@ -141,7 +141,7 @@ function TypesStep() {
     <View style={styles.stepGap}>
       <LessonBanner text={CLASS_NOTE} />
       <View style={styles.rowBetween}>
-        <Text style={styles.panelEyebrow}>TAP A MICROPHONE</Text>
+        <Text accessibilityRole="header" style={styles.panelEyebrow}>TAP A MICROPHONE</Text>
         <Chip label={compare ? 'COMPARING' : 'COMPARE'} active={compare} onPress={() => { setCompare((c) => !c); setPair([]); }} />
       </View>
       <View style={styles.micGrid}>
@@ -404,7 +404,7 @@ function SplStep() {
         ))}
       </View>
       <Text style={styles.hint}>{profile.traits}</Text>
-      <Text style={styles.panelEyebrow}>THE SOURCE SCALE — QUIET AT THE TOP. TAP A SOURCE.</Text>
+      <Text accessibilityRole="header" style={styles.panelEyebrow}>THE SOURCE SCALE — QUIET AT THE TOP. TAP A SOURCE.</Text>
       {SOURCE_TIERS.map((t) => {
         const m = SPL_MATCH[t.key][mic];
         const open = tier === t.key;
@@ -599,7 +599,7 @@ function ChallengeStep() {
         )}
       </View>
 
-      <Text style={styles.panelEyebrow}>CHOOSE THE MICROPHONE</Text>
+      <Text accessibilityRole="header" style={styles.panelEyebrow}>CHOOSE THE MICROPHONE</Text>
       {CHALLENGE_MICS.map((m) => (
         <Pressable
           key={m.key}
@@ -621,7 +621,7 @@ function ChallengeStep() {
 
       {pick != null && !variant ? (
         <>
-          <Text style={styles.panelEyebrow}>WHY? SELECT THE FACTORS THAT DROVE YOUR CHOICE</Text>
+          <Text accessibilityRole="header" style={styles.panelEyebrow}>WHY? SELECT THE FACTORS THAT DROVE YOUR CHOICE</Text>
           {CHALLENGE_FACTORS.map((f) => {
             const on = factors.has(f.key);
             return (
@@ -673,7 +673,7 @@ function ChallengeStep() {
         </View>
       ) : null}
 
-      <Text style={styles.panelEyebrow}>CHANGE ONE VARIABLE</Text>
+      <Text accessibilityRole="header" style={styles.panelEyebrow}>CHANGE ONE VARIABLE</Text>
       <View style={styles.chipWrap}>
         <Chip label="Original brief" active={scenario === 'base'} onPress={() => switchScenario('base')} />
         {CHALLENGE_VARIANTS.map((v) => (
@@ -709,8 +709,8 @@ function LockerStep() {
         {`You have ${LOCKER_SLOTS} microphone slots and ten jobs this week. Build the most VERSATILE locker you can.`}
       </Text>
       <View style={styles.rowBetween}>
-        <Text style={styles.panelEyebrow}>{`SLOTS USED: ${chosen.size}/${LOCKER_SLOTS}`}</Text>
-        <Text style={[styles.panelEyebrow, { color: covered.size >= 9 ? colors.green : colors.amber }]}>
+        <Text accessibilityRole="header" style={styles.panelEyebrow}>{`SLOTS USED: ${chosen.size}/${LOCKER_SLOTS}`}</Text>
+        <Text accessibilityRole="header" style={[styles.panelEyebrow, { color: covered.size >= 9 ? colors.green : colors.amber }]}>
           {`APPLICATIONS COVERED: ${covered.size}/${LOCKER_JOBS.length}`}
         </Text>
       </View>

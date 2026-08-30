@@ -301,11 +301,18 @@ export function MicPhotoLightbox({ children }: { children: ReactNode }) {
   return (
     <LightboxCtx.Provider value={setKind}>
       {children}
-      <Modal visible={!!url} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setKind(null)}>
+      <Modal accessibilityViewIsModal visible={!!url} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setKind(null)}>
         <Pressable style={styles.lbBackdrop} onPress={() => setKind(null)} accessibilityRole="button" accessibilityLabel="Close photo">
           <View style={styles.lbCard}>
             {url ? (
-              <Image source={{ uri: url }} style={styles.lbImage} resizeMode="contain" accessibilityIgnoresInvertColors />
+              <Image
+                source={{ uri: url }}
+                style={styles.lbImage}
+                resizeMode="contain"
+                accessibilityIgnoresInvertColors
+                accessibilityRole="image"
+                accessibilityLabel={kind ? `${kind} microphone reference image` : 'Microphone reference image'}
+              />
             ) : null}
           </View>
           <View style={styles.lbClose} pointerEvents="none">

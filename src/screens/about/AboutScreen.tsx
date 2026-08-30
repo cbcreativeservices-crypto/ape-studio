@@ -19,7 +19,7 @@ export function AboutScreen({ navigation }: Props) {
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <View style={styles.headerBar}>
-        <Text style={styles.headerTitle}>ABOUT</Text>
+        <Text accessibilityRole="header" style={styles.headerTitle}>ABOUT</Text>
         <Pressable onPress={() => navigation.goBack()} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close">
           <Text style={styles.close}>✕</Text>
         </Pressable>
@@ -36,7 +36,7 @@ export function AboutScreen({ navigation }: Props) {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionEyebrow}>ABOUT</Text>
+          <Text accessibilityRole="header" style={styles.sectionEyebrow}>ABOUT</Text>
           <Text style={styles.body}>
             Pro Audio Training Academy is a comprehensive learning platform designed to help students,
             musicians, technicians, and audio professionals build real-world knowledge of professional audio.
@@ -51,7 +51,7 @@ export function AboutScreen({ navigation }: Props) {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionEyebrow}>OUR PROMISE</Text>
+          <Text accessibilityRole="header" style={styles.sectionEyebrow}>OUR PROMISE</Text>
           <Text style={styles.body}>
             Education always comes first.
             {'\n\n'}
@@ -64,7 +64,7 @@ export function AboutScreen({ navigation }: Props) {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionEyebrow}>CREDITS</Text>
+          <Text accessibilityRole="header" style={styles.sectionEyebrow}>CREDITS</Text>
           <Text style={styles.body}>
             Developed by Pro Audio Training Academy under the direction of a college professor with over
             27 years of experience teaching audio engineering, music production, live sound, recording, and
@@ -76,7 +76,7 @@ export function AboutScreen({ navigation }: Props) {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionEyebrow}>CONTACT</Text>
+          <Text accessibilityRole="header" style={styles.sectionEyebrow}>CONTACT</Text>
           <Text style={styles.body}>
             Questions, feedback, or suggestions?
             {'\n\n'}

@@ -2047,7 +2047,13 @@ export function GlossaryScreen({ route, navigation }: Props) {
                 {/* When expanded, the term's media image sits right after the
                     term for identification (user request 2026-07-18). */}
                 {expanded && mediaUrl ? (
-                  <Image source={{ uri: mediaUrl }} style={styles.inlineMedia} resizeMode="contain" />
+                  <Image
+                    source={{ uri: mediaUrl }}
+                    style={styles.inlineMedia}
+                    resizeMode="contain"
+                    accessibilityRole="image"
+                    accessibilityLabel="Illustration for this term"
+                  />
                 ) : null}
                 {expanded ? (
                   // Feature 1: cross-links live in the EXPANDED definition
@@ -2204,7 +2210,13 @@ export function GlossaryScreen({ route, navigation }: Props) {
                       </View>
                       {/* Media image right after the term (user request 2026-07-18). */}
                       {mediaById[item.id] ? (
-                        <Image source={{ uri: mediaById[item.id] }} style={styles.inlineMedia} resizeMode="contain" />
+                        <Image
+                    source={{ uri: mediaById[item.id] }}
+                    style={styles.inlineMedia}
+                    resizeMode="contain"
+                    accessibilityRole="image"
+                    accessibilityLabel={`Illustration for ${item.term}`}
+                  />
                       ) : null}
                       {/* Tap anywhere on the definition/details → go BACK one hop;
                           tapping a term LINK navigates forward instead
@@ -2367,7 +2379,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
       <ShareTermSheet payload={sharePayload} onClose={() => setSharePayload(null)} />
 
       {/* Media viewer (user request 2026-07-18) — tap anywhere to close. */}
-      <Modal visible={!!mediaPopup} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setMediaPopup(null)}>
+      <Modal accessibilityViewIsModal visible={!!mediaPopup} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setMediaPopup(null)}>
         <Pressable style={styles.mediaBackdrop} onPress={() => setMediaPopup(null)} accessibilityRole="button" accessibilityLabel="Close image">
           {mediaPopup ? <Image source={{ uri: mediaPopup }} style={styles.mediaFull} resizeMode="contain" /> : null}
           <Text style={styles.mediaHint}>TAP TO CLOSE</Text>
@@ -2378,7 +2390,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
       {/* Held-chip term list (user request 2026-07-22) — the members of one set
           (Bookmarks / Custom / Recent). Tap a term to open it; the select icons
           re-tag it into any list. Mirrors the Flashcards held-chip list. */}
-      <Modal visible={!!termListModal} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setTermListModal(null)}>
+      <Modal accessibilityViewIsModal visible={!!termListModal} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setTermListModal(null)}>
         <View style={styles.tlBackdrop}>
           <Pressable
             style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
@@ -2430,7 +2442,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
           context's bookmarked terms up top (each re-taggable via the select
           icons), then an OTHER LISTS switcher for every other context that holds
           bookmarks. Closing confirms if terms were removed from the shown list. */}
-      <Modal visible={bmOpen} transparent animationType="fade" statusBarTranslucent onRequestClose={requestCloseBookmarkPopup}>
+      <Modal accessibilityViewIsModal visible={bmOpen} transparent animationType="fade" statusBarTranslucent onRequestClose={requestCloseBookmarkPopup}>
         <View style={styles.tlBackdrop}>
           <Pressable
             style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}

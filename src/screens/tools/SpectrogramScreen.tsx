@@ -498,7 +498,7 @@ export function SpectrogramScreen({ navigation }: Props) {
 
             <View style={styles.panel}>
               <View style={styles.panelHead}>
-                <Text style={styles.panelEyebrow}>LIVE SPECTROGRAM</Text>
+                <Text accessibilityRole="header" style={styles.panelEyebrow}>LIVE SPECTROGRAM</Text>
                 <Text style={styles.panelSettings}>
                   FFT {FFT_SIZE} · {SPECTRO_POLL_MS} ms/col · {speed}× scroll
                 </Text>

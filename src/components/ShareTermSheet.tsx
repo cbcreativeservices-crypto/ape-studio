@@ -127,7 +127,7 @@ export function ShareTermSheet({
     [staged, effSections],
   );
 
-  if (!payload) return <Modal visible={false} transparent onRequestClose={onClose} />;
+  if (!payload) return <Modal accessibilityViewIsModal visible={false} transparent onRequestClose={onClose} />;
 
   const multi = staged.length > 1;
   const isLarge = staged.length >= LARGE_SHARE_THRESHOLD;
@@ -241,7 +241,7 @@ export function ShareTermSheet({
     setStaged((prev) => (prev.length <= 1 ? prev : prev.filter((t) => t.term !== term)));
 
   return (
-    <Modal visible transparent animationType="fade" onRequestClose={onClose}>
+    <Modal accessibilityViewIsModal visible transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.backdrop}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityRole="button" accessibilityLabel="Dismiss" />
 

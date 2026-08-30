@@ -11,6 +11,8 @@ import { Image } from 'react-native';
 export function HomeIcon({ filled, size = 20 }: { color?: string; filled?: boolean; size?: number }) {
   return (
     <Image
+      accessible={false}
+      importantForAccessibility="no"
       source={require('../../assets/icons/nav/nav-home.png')}
       style={{ width: size, height: size, opacity: filled ? 1 : 0.35 }}
       resizeMode="contain"
