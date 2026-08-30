@@ -477,13 +477,15 @@ export function SpectrogramModule(p: MeterModuleProps) {
 // MODULE 7 — WATERFALL (CSD): the mountain range that collapses
 
 const ROOM_KEYS = Object.keys(ROOM_LABELS) as RoomKey[];
-/** Blurbs match ROOM_RT: base RT60 at 1 kHz, low-end multiplier, ring mode. */
+/** Blurbs match ROOM_PHYS (meterEngine): ROOM is the SHELL — bare geometry —
+ *  and the DAMPING fader is everything soft in it (CONCRETE → PANELS). Each
+ *  blurb names the bare number AND where full treatment lands. */
 const ROOM_BLURBS: Record<RoomKey, string> = {
-  cathedral: 'Huge stone space — RT60 near 5 s, lows even longer. Sound keeps arriving for seconds after the source stops.',
-  classroom: 'Medium room with hard parallel walls — and a strong mode near 250 Hz that keeps ringing after everything else has died. Watch the marked ridge.',
-  studio: 'A treated control room: the fastest decay here, around a third of a second. The range collapses almost at once — this is what "dry" looks like.',
-  theater: 'A large seated hall around 1.3 s — lows outlast highs, but it stays clear enough for speech.',
-  living: 'A furnished domestic room around half a second: the sofa eats the highs, but a mode near 110 Hz rings on in the low end.',
+  cathedral: 'A 12,000 m³ stone shell: RT60 near 7 s bare, lows near 9 s. Even full treatment leaves it over a second — you cannot kill a cathedral with panels.',
+  classroom: 'A hard-walled medium room, ~2 s bare — with a 250 Hz mode that rings ~4 s until DAMPING tames it. Watch the marked ridge come and go.',
+  studio: 'A small concrete box. BARE it rings ~1.5 s; ride DAMPING to PANELS and it becomes the dead control room (~0.15 s) — with the bass still hanging on. That gap is why bass traps exist.',
+  theater: 'A large hall shell: bare concrete it booms 5–6 s like an empty gymnasium. Around 50% DAMPING (seats + curtains) it becomes the ~1 s seated theater; 100% is cinema-dead.',
+  living: 'A domestic room, EMPTY (~1 s). DAMPING furnishes it — sofa, rugs, curtains — down to ~0.3 s, but the 110 Hz mode keeps ringing: thin soft goods cannot reach it.',
 };
 const REVERB_KEYS: ReverbKey[] = ['none', 'room', 'plate', 'hall', 'spring'];
 const REVERB_LABELS: Record<ReverbKey, string> = {
@@ -520,7 +522,7 @@ const FIELD_GUIDE: { title: string; helpKey: string; caption: string }[] = [
     title: 'DAMPING',
     helpKey: 'damping',
     caption:
-      'Ride the DAMPING lane from CONCRETE toward PANELS and watch the mountain’s tail shorten — HIGHS first (porous absorbers eat them easily), LOWS last (they need thickness). Watch RT·4k fall on the bezel while RT·125 barely moves. This is why bass traps are thick.',
+      'Ride the DAMPING lane from CONCRETE toward PANELS and watch the mountain’s tail shorten — HIGHS first (porous absorbers eat them easily), LOWS last (they need thickness). Watch RT·4k collapse on the bezel long before RT·125 follows. This is why bass traps are thick.',
   },
   {
     title: 'COMPARE ROOMS',
@@ -538,7 +540,7 @@ const FIELD_GUIDE: { title: string; helpKey: string; caption: string }[] = [
     title: 'RINGING FILTERS',
     helpKey: 'eq_ridge',
     caption:
-      'Switch Q RING on: a needle-thin ridge appears at 1.2 kHz and LINGERS far behind its neighbors. High-Q filters store energy — the filter itself rings, which is why surgical boosts can sound "resonant".',
+      'Switch Q RING on: a needle-thin ridge appears at 1.2 kHz and LINGERS far behind its neighbors. High-Q filters store energy — the filter itself rings, which is why surgical boosts can sound "resonant". Try it in the CATHEDRAL, too: the ring vanishes into the reverb — a room that decays slower than the filter MASKS it.',
   },
   {
     title: 'REVERB TAILS',
@@ -691,7 +693,10 @@ export function WaterfallModule(p: MeterModuleProps) {
             helpKey: 'room_ring',
           },
           {
-            k: 'VS MED',
+            // Ratio vs the ±1-octave NEIGHBOURHOOD, not the whole range — a
+            // treated room's normal broadband bass rise must not read as
+            // "ringing" (detector semantics in meterEngine.waterfallRidge).
+            k: 'VS NEARBY',
             v: ringing ? `${rt.ratio.toFixed(1)}×` : 'even',
             tint: ringing ? '#ff6b5e' : '#7a7f8a',
             helpKey: 'waterfall_decay',
@@ -739,13 +744,13 @@ export function WaterfallModule(p: MeterModuleProps) {
             { k: 'RT60 · 1 kHz', v: `${rt.r1k.toFixed(2)} s` },
             { k: 'RT60 · 4 kHz', v: `${rt.r4k.toFixed(2)} s` },
             { k: 'RIDGE', v: ringing ? fmtHz(rt.f) : 'none' },
-            { k: 'VS MEDIAN', v: ringing ? `${rt.ratio.toFixed(1)}× longer` : 'even decay' },
+            { k: 'VS NEIGHBORS', v: ringing ? `${rt.ratio.toFixed(1)}× longer` : 'even decay' },
           ]}
         />
         <Text style={dstyles.caption}>
           {ringing
-            ? `${fmtHz(rt.f)} decays ${rt.ratio.toFixed(1)}× slower than the median of the range — that ridge is RINGING.`
-            : 'Even decay across the range — nothing rings. Pick CLASSROOM or flip Q RING to plant a ridge.'}
+            ? `${fmtHz(rt.f)} decays ${rt.ratio.toFixed(1)}× slower than its neighbors — that narrow ridge is RINGING. (A broad bass rise is normal room physics; a ridge is a resonance.)`
+            : 'No narrow resonance stands out of the decay. Pick CLASSROOM or flip Q RING to plant one — or dry the room out: a live room can MASK a ring that decays faster than the room does.'}
         </Text>
 
         <CollapsibleSection title="FIELD GUIDE — WHAT TO TRY">

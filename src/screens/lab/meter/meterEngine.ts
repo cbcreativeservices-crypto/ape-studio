@@ -275,13 +275,125 @@ export type WaterfallOpts = {
   reverb: ReverbKey;
 };
 
-const ROOM_RT: Record<RoomKey, { base: number; lfMult: number; ringHz: number | null; ringRt: number }> = {
-  cathedral: { base: 4.6, lfMult: 1.5, ringHz: null, ringRt: 0 },
-  classroom: { base: 0.9, lfMult: 1.7, ringHz: 250, ringRt: 2.2 },
-  studio: { base: 0.28, lfMult: 1.25, ringHz: null, ringRt: 0 },
-  theater: { base: 1.3, lfMult: 1.4, ringHz: null, ringRt: 0 },
-  living: { base: 0.55, lfMult: 1.9, ringHz: 110, ringRt: 1.6 },
+/**
+ * PHYSICAL RT60 MODEL (owner 2026-08-29: "this has to be calculated and
+ * visualized correctly — every value, every setting, every combination, every
+ * physics consequence"). The previous per-room base×multiplier heuristic gave a
+ * bare concrete THEATER 1.45 s at 125 Hz — that number describes a FINISHED,
+ * seated hall, while the DAMPING fader's zero point is literally labeled
+ * CONCRETE. The semantics are now consistent:
+ *
+ *   ROOM    = the SHELL — geometry only (volume V, surface S).
+ *   DAMPING = everything soft in it (0 = bare concrete shell … 1 = maximum
+ *             treatment: the fader's CONCRETE→CURTAINS→CARPET→PANELS arc).
+ *
+ * RT60 comes from the Eyring reverberation equation with HF air absorption:
+ *
+ *   RT60(f) = 0.161·V / ( −S·ln(1 − ᾱ(f)) + 4m(f)·V )
+ *
+ * ᾱ(f) mixes the shell's bare absorption spectrum toward a porous-treatment
+ * spectrum as DAMPING rises, over the fraction of surface that can physically
+ * be treated. Every teaching consequence now EMERGES instead of being faked:
+ * treatment eats highs first and lows last (porous α collapses below 250 Hz —
+ * why bass traps are thick), big rooms ring longest (V/S), air itself kills
+ * the top octaves of large spaces, and a cathedral stays over a second even
+ * fully treated (you cannot kill a cathedral with panels).
+ *
+ * Bare-shell spectra are CALIBRATED: α_bare is derived by inverse Eyring from
+ * published RT60 profiles of comparable untreated spaces (bare concrete shell /
+ * stone church / empty domestic room), so damping 0 lands on measured reality
+ * and the formula supplies every in-between combination.
+ */
+const WF_BAND_HZ = [63, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
+const WF_BAND_LG = WF_BAND_HZ.map((f) => Math.log10(f));
+/** Air absorption 4m (1/m), ~20 °C / 50 % RH — negligible below 1 kHz, then
+ *  the reason big rooms are never bright: at 8 kHz air alone caps a 12 000 m³
+ *  space near 7 s no matter what the walls do. */
+const WF_AIR_4M = [0.00005, 0.0001, 0.0002, 0.0006, 0.0011, 0.0027, 0.008, 0.024, 0.07];
+/** Porous treatment α (panels + some corner trapping): near-total above 1 kHz,
+ *  collapsing below 250 Hz — the entire bass-trap lesson is in this row. */
+const WF_PANEL_ALPHA = [0.18, 0.25, 0.5, 0.8, 0.95, 0.98, 0.98, 0.95, 0.9];
+
+type RoomPhys = {
+  V: number; // m³
+  S: number; // m²
+  /** Fraction of S that treatment can realistically cover (walls/ceiling —
+   *  you cannot panel a cathedral's vaults or a theater's stage opening). */
+  treatable: number;
+  /** Bare-shell RT60 targets per WF_BAND_HZ — inverse-Eyring'd into α_bare. */
+  bareRt: number[];
+  /** Dominant low room mode (small/medium rooms below Schroeder): modal decay
+   *  outlasts the diffuse field, and thin treatment barely touches it. */
+  ring: { hz: number; w: number; mult: (d: number) => number } | null;
 };
+
+const ROOM_PHYS: Record<RoomKey, RoomPhys> = {
+  // Large stone church: mid-band 6-7 s bare, LF near 9 s, HF air-limited.
+  cathedral: {
+    V: 12000, S: 4800, treatable: 0.3,
+    bareRt: [9.0, 8.5, 8.0, 7.2, 6.2, 5.0, 3.2, 1.9, 1.0],
+    ring: null,
+  },
+  // Medium hard-walled room (drywall/glass/tile): ~2 s bare, treated to ~0.45.
+  classroom: {
+    V: 220, S: 250, treatable: 0.55,
+    bareRt: [2.6, 2.4, 2.2, 2.0, 1.9, 1.7, 1.4, 1.1, 0.8],
+    // Strong 250 Hz mode: ~1.75x the diffuse decay bare; panels DO reach 250,
+    // so full damping tames it to parity.
+    ring: { hz: 250, w: 0.035, mult: (d) => Math.max(1.02, 1.75 - 0.9 * d) },
+  },
+  // Small concrete box (a studio SHELL before treatment rings badly);
+  // full PANELS = the dead control room, ~0.12-0.2 s mids, bass hanging on.
+  studio: {
+    V: 85, S: 115, treatable: 0.85,
+    bareRt: [2.2, 2.0, 1.8, 1.6, 1.5, 1.4, 1.2, 1.0, 0.8],
+    ring: null,
+  },
+  // Large hall shell, bare concrete (think empty gymnasium): 5-6 s mids.
+  // At ~50 % damping (seats + curtains) it lands on the ~1 s of a real
+  // seated theater; 100 % is cinema-grade treatment (~0.45 s).
+  theater: {
+    V: 8000, S: 3400, treatable: 0.7,
+    bareRt: [7.0, 6.5, 6.0, 5.5, 5.0, 4.2, 2.9, 1.8, 1.0],
+    ring: null,
+  },
+  // Domestic room, EMPTY (bare ~1 s); furnishing it is the damping arc.
+  living: {
+    V: 60, S: 95, treatable: 0.45,
+    bareRt: [1.4, 1.3, 1.15, 1.0, 0.95, 0.9, 0.8, 0.7, 0.6],
+    // 110 Hz mode: thin domestic soft goods barely touch it — it still rings
+    // ~1.1x even fully furnished. That residual is the truth, not a bug.
+    ring: { hz: 110, w: 0.045, mult: (d) => Math.max(1.05, 1.8 - 0.7 * d) },
+  },
+};
+
+/** α_bare per band via inverse Eyring: A_target = 0.161V/RT, minus the air
+ *  term, back through ln. Precomputed once per room. */
+const ROOM_ALPHA_BARE: Record<RoomKey, number[]> = Object.fromEntries(
+  (Object.keys(ROOM_PHYS) as RoomKey[]).map((k) => {
+    const r = ROOM_PHYS[k];
+    return [
+      k,
+      r.bareRt.map((rt, i) => {
+        const aTotal = (0.161 * r.V) / rt;
+        const aSurf = Math.max(0.5, aTotal - WF_AIR_4M[i] * r.V);
+        return 1 - Math.exp(-aSurf / r.S);
+      }),
+    ];
+  }),
+) as Record<RoomKey, number[]>;
+
+/** Piecewise-linear in log-f across WF_BAND_HZ, clamped at the ends. */
+function bandInterp(table: number[], lg: number): number {
+  if (lg <= WF_BAND_LG[0]) return table[0];
+  const last = WF_BAND_LG.length - 1;
+  if (lg >= WF_BAND_LG[last]) return table[last];
+  let i = 1;
+  while (WF_BAND_LG[i] < lg) i++;
+  const t = (lg - WF_BAND_LG[i - 1]) / (WF_BAND_LG[i] - WF_BAND_LG[i - 1]);
+  return table[i - 1] + (table[i] - table[i - 1]) * t;
+}
+
 const REVERB_RT: Record<ReverbKey, { rtAt1k: number; lfMult: number; hfMult: number }> = {
   none: { rtAt1k: 0, lfMult: 1, hfMult: 1 },
   room: { rtAt1k: 0.5, lfMult: 1.3, hfMult: 0.7 },
@@ -292,35 +404,39 @@ const REVERB_RT: Record<ReverbKey, { rtAt1k: number; lfMult: number; hfMult: num
 
 /** RT60(f) for the configured scene — the decay half of the mountain. */
 export function waterfallRt(opts: WaterfallOpts, f: number): number {
-  const r = ROOM_RT[opts.room];
+  const r = ROOM_PHYS[opts.room];
   const lg = Math.log10(f);
-  let rt = r.base * (f < 250 ? 1 + (r.lfMult - 1) * (Math.log10(250) - lg) : f > 2000 ? Math.max(0.45, 1 - 0.28 * (lg - Math.log10(2000))) : 1);
-  // Damping eats HF first, then mids, lows resist (why bass traps exist).
-  const dampEff = opts.damping01 * (f > 500 ? 1 : f > 120 ? 0.7 : 0.35);
-  // Max reduction 0.78 -> 0.55 (owner 2026-08-28: "no room can be that short
-  // with no reverb tail"). At 0.78, full treatment drove a STUDIO to 0.08 s at
-  // 1 kHz, which is anechoic-chamber territory, not a room -- and it made the
-  // waterfall's decay vanish in a couple of slices. Treatment cannot take a
-  // real room below roughly half its untreated RT60 across the band; absorbers
-  // stop being effective long before the reverberant field disappears.
-  rt *= 1 - 0.55 * dampEff;
-  if (r.ringHz) {
-    const g = Math.exp(-Math.pow((lg - Math.log10(r.ringHz)) / 0.035, 2));
-    rt = Math.max(rt, r.ringRt * (1 - 0.55 * opts.damping01 * 0.35) * g + rt * (1 - g));
+
+  // Eyring + air, with ᾱ mixed bare→treated over the treatable fraction.
+  const cover = Math.min(1, Math.max(0, opts.damping01)) * r.treatable;
+  const aBare = bandInterp(ROOM_ALPHA_BARE[opts.room], lg);
+  const aPanel = bandInterp(WF_PANEL_ALPHA, lg);
+  const alpha = Math.min(0.98, aBare * (1 - cover) + aPanel * cover);
+  const air4m = bandInterp(WF_AIR_4M, lg);
+  const A = -r.S * Math.log(1 - alpha) + air4m * r.V;
+  let rt = (0.161 * r.V) / A;
+
+  // Low room mode: modal decay stands above the diffuse field, shrinking as
+  // damping rises (per-room — a 110 Hz mode resists panels, a 250 Hz one less).
+  if (r.ring) {
+    const g = Math.exp(-Math.pow((lg - Math.log10(r.ring.hz)) / r.ring.w, 2));
+    const ringRt = rt * r.ring.mult(opts.damping01);
+    rt = Math.max(rt, ringRt * g + rt * (1 - g));
   }
+  // High-Q ringing FILTER — an electronic demonstration, not room physics.
   if (opts.qRing) {
     const g = Math.exp(-Math.pow((lg - Math.log10(1200)) / 0.012, 2));
     rt = Math.max(rt, 2.8 * g + rt * (1 - g));
   }
+  // Added reverb runs in parallel with the room — the slower decay wins.
   if (opts.reverb !== 'none') {
     const rv = REVERB_RT[opts.reverb];
     const mult = f < 400 ? rv.lfMult : f > 3000 ? rv.hfMult : 1;
     rt = Math.max(rt, rv.rtAt1k * mult);
   }
-  // Floor 0.08 -> 0.15 s. A heavily treated vocal booth measures ~0.15-0.25 s;
-  // below ~0.1 s you are describing an anechoic chamber, which is not one of
-  // the rooms this lab models. The floor is a REALISM clamp, not a safety one.
-  return Math.max(0.15, rt);
+  // Last-resort realism clamp: a fully treated vocal booth measures ~0.12 s;
+  // below that is an anechoic chamber, which is not one of these rooms.
+  return Math.max(0.12, rt);
 }
 
 /** Initial (t=0) excitation spectrum in dB — impulse through the EQ. */
@@ -333,8 +449,8 @@ export function waterfallSpectrumDb(opts: WaterfallOpts, f: number): number {
 }
 
 /**
- * The RINGING RIDGE: the slowest-decaying frequency, and how far it stands
- * above the median of the range.
+ * The RINGING RIDGE: a NARROW resonance whose decay stands apart from its
+ * surroundings — a room mode or a filter ring — and how far it stands out.
  *
  * ONE detector, shared by everything that points at it — the waterfall's on-plot
  * "RINGS <f>" mark, the bezel's RIDGE readout, and the EQ fader's purple tint.
@@ -344,32 +460,50 @@ export function waterfallSpectrumDb(opts: WaterfallOpts, f: number): number {
  * filter ring and named 252 Hz while the finer one named 1214 Hz. Three UI
  * elements pointing at two different frequencies is worse than none of them
  * pointing at all, so the grid now lives here, once.
+ *
+ * PROMINENCE, not global max (2026-08-29, forced by the physical model): with
+ * honest Eyring physics EVERY treated room ends up with a broadband LF rise —
+ * bass outlasting treatment is normal acoustics, not ringing, and a global
+ * max-vs-median compare flagged that tilt as a 40 Hz "ridge" on a fully damped
+ * classroom. A callout-worthy ridge must be a LOCAL peak measured against the
+ * median of its ±1-octave neighbourhood, which stays quiet on any smooth tilt
+ * and fires hard on modes (110/250 Hz) and the Q RING filter.
  */
 export function waterfallRidge(opts: WaterfallOpts): { f: number; ratio: number } {
   const N = 240;
   const lgLo = Math.log10(40);
   const lgHi = Math.log10(12000);
+  const freq = (i: number) => Math.pow(10, lgLo + ((lgHi - lgLo) * i) / (N - 1));
   const rts: number[] = [];
-  let fMax = 40;
-  let rtMax = 0;
-  for (let i = 0; i < N; i++) {
-    const f = Math.pow(10, lgLo + ((lgHi - lgLo) * i) / (N - 1));
-    const rt = waterfallRt(opts, f);
-    rts.push(rt);
-    if (rt > rtMax) {
-      rtMax = rt;
-      fMax = f;
-    }
+  for (let i = 0; i < N; i++) rts.push(waterfallRt(opts, freq(i)));
+
+  // ~29 points per octave on this grid; the neighbourhood spans ±1 octave and
+  // the peak's own ±0.1 octave core is excluded so it can't lift its baseline.
+  const NEIGH = 29;
+  const CORE = 3;
+  let best = { f: freq(0), ratio: 1 };
+  for (let i = 1; i < N - 1; i++) {
+    if (rts[i] < rts[i - 1] || rts[i] < rts[i + 1]) continue; // local maxima only
+    const lo = Math.max(0, i - NEIGH);
+    const hi = Math.min(N - 1, i + NEIGH);
+    const neigh: number[] = [];
+    for (let j = lo; j <= hi; j++) if (Math.abs(j - i) > CORE) neigh.push(rts[j]);
+    if (!neigh.length) continue;
+    neigh.sort((a, b) => a - b);
+    const med = neigh[Math.floor(neigh.length / 2)];
+    const ratio = rts[i] / Math.max(0.01, med);
+    if (ratio > best.ratio) best = { f: freq(i), ratio };
   }
-  const sorted = [...rts].sort((a, b) => a - b);
-  return { f: fMax, ratio: rtMax / Math.max(0.01, sorted[Math.floor(N / 2)]) };
+  return best;
 }
 
 /** A ridge is only worth pointing at when it genuinely stands apart. */
 export const RIDGE_CALLOUT_RATIO = 1.5;
 
-/** Frequencies sampled when sizing the plot's time window. */
-const RT_PROBE_HZ = [31.5, 63, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
+/** Frequencies sampled when sizing the plot's time window. 110 and 1200 are
+ *  in the list because the living-room mode and the Q RING filter peak there —
+ *  a probe grid that misses the slowest ridge sizes the window too small. */
+const RT_PROBE_HZ = [31.5, 63, 110, 125, 250, 500, 1000, 1200, 2000, 4000, 8000, 16000];
 
 /**
  * The time window a CSD of THIS scene should span, in seconds.
@@ -399,16 +533,15 @@ export function waterfallTimeSpan(opts: WaterfallOpts): number {
   // stable ruler is what makes the change visible.
   //
   // ROOM and REVERB do move it, because they are scene selectors, not live
-  // controls, and one global pin is not physically possible: the scenes span
-  // 0.28 s (damped studio) to 6.7 s (cathedral), 24x. Avoiding overflow needs
-  // >= 7.3 s; showing a studio's decay in more than a handful of slices needs
-  // <= 3.1 s. The bounds cross by 2.4x, so any single fixed window either
-  // buries a dead room in one slice or clips a live one off the front edge.
+  // controls, and one global pin is not physically possible: the bare-shell
+  // scenes span ~1.3 s (living room) to ~9 s (cathedral), 7x. Any single
+  // fixed window either buries a small room's decay in a couple of slices or
+  // clips a cathedral off the front edge.
   const untreated: WaterfallOpts = { ...opts, damping01: 0 };
   let maxRt = 0;
   for (const f of RT_PROBE_HZ) maxRt = Math.max(maxRt, waterfallRt(untreated, f));
   const needed = maxRt * 1.25;
-  const STEPS = [0.3, 0.5, 0.75, 1, 1.5, 2, 3, 4, 6, 8, 10];
+  const STEPS = [0.3, 0.5, 0.75, 1, 1.5, 2, 3, 4, 6, 8, 10, 12];
   return STEPS.find((s) => s >= needed) ?? STEPS[STEPS.length - 1];
 }
 
@@ -416,7 +549,7 @@ export function waterfallTimeSpan(opts: WaterfallOpts): number {
 export function waterfallTimeDivisions(span: number): number[] {
   // Aim for 2-4 marks: enough to read a duration off the floor, few enough
   // that the chrome stays quieter than the data.
-  const step = span <= 0.5 ? 0.2 : span <= 1 ? 0.25 : span <= 2 ? 0.5 : span <= 4 ? 1 : 2;
+  const step = span <= 0.5 ? 0.2 : span <= 1 ? 0.25 : span <= 2 ? 0.5 : span <= 4 ? 1 : span <= 8 ? 2 : 3;
   const out: number[] = [];
   for (let t = step; t < span - 1e-6; t += step) out.push(Number(t.toFixed(2)));
   return out;
