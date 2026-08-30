@@ -16,6 +16,7 @@ import { useCallback, useState, type ReactNode } from 'react';
 import { LayoutAnimation, Platform, Pressable, StyleSheet, Text, UIManager, View } from 'react-native';
 import { colors, fonts } from '../../theme/tokens';
 import { hapticsEnabled } from './store';
+import { animationsAllowed } from './a11y';
 import * as Haptics from 'expo-haptics';
 
 // Old-architecture Android needs this opt-in for LayoutAnimation. Guarded —
@@ -42,9 +43,12 @@ export function SettingsSection({
   const [open, setOpen] = useState(defaultOpen);
 
   const toggle = useCallback(() => {
-    // `reduceAnimations` is honoured by skipping the layout animation entirely
-    // rather than by shortening it — a partial animation is worse than none.
-    LayoutAnimation.configureNext(LayoutAnimation.create(160, 'easeInEaseOut', 'opacity'));
+    // `reduceAnimations` is honoured by skipping the layout animation ENTIRELY
+    // rather than shortening it — a partial animation is worse than none.
+    // (This comment previously described behaviour that was not implemented.)
+    if (animationsAllowed()) {
+      LayoutAnimation.configureNext(LayoutAnimation.create(160, 'easeInEaseOut', 'opacity'));
+    }
     if (hapticsEnabled()) void Haptics.selectionAsync();
     setOpen((v) => !v);
   }, []);

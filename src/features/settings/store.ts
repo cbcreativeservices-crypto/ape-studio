@@ -9,6 +9,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
 import { requestLocalNotifSync } from '../notifications/localSchedule';
+import { applyA11yFromSettings, resetA11y } from './a11y';
 
 export type ColorBlindMode = 'off' | 'protanopia' | 'deuteranopia' | 'tritanopia' | 'monochrome';
 export const COLOR_BLIND_MODES: { key: ColorBlindMode; label: string }[] = [
@@ -169,6 +170,7 @@ export async function loadLocalSettings(): Promise<LocalSettings> {
     const merged = raw ? { ...DEFAULT_LOCAL_SETTINGS, ...JSON.parse(raw) } : DEFAULT_LOCAL_SETTINGS;
     hapticsOn = merged.haptics;
     micReleaseOnBg = merged.micReleaseOnBackground;
+    applyA11yFromSettings(merged); // font size / contrast / colour / motion
     return merged;
   } catch {
     return DEFAULT_LOCAL_SETTINGS;
@@ -178,6 +180,7 @@ export async function loadLocalSettings(): Promise<LocalSettings> {
 export async function saveLocalSettings(s: LocalSettings): Promise<void> {
   hapticsOn = s.haptics;
   micReleaseOnBg = s.micReleaseOnBackground;
+  applyA11yFromSettings(s); // live — the UI restyles as the chip is tapped
   await AsyncStorage.setItem(KEY, JSON.stringify(s));
   // Reschedule the local reminders whenever their settings change (debounced
   // and change-gated inside — a haptics toggle costs nothing here).
@@ -191,6 +194,7 @@ export async function saveLocalSettings(s: LocalSettings): Promise<void> {
 export function resetLocal(): void {
   hapticsOn = DEFAULT_LOCAL_SETTINGS.haptics;
   micReleaseOnBg = DEFAULT_LOCAL_SETTINGS.micReleaseOnBackground;
+  resetA11y();
 }
 
 /* ---- notification preferences (server row) ---- */
