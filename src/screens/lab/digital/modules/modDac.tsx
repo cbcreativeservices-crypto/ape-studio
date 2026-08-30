@@ -400,27 +400,26 @@ export function ErrorsModule({ width: _width, focused, help }: DigitalModuleProp
 
   const params: DockParam[] = [
     {
+      // ONE key (owner 2026-08-30): MODE chose WHICH KIND of jitter and JITTER
+      // set how much of it — the mode is a property of this fader, not a
+      // separate control, so it rides the same key as its chooser.
       kind: 'fader',
       id: 'jitter',
       label: 'JITTER',
       value: jitAmt,
       onChange: setJitAmt,
-      format: () => `±${peakDevNs.toFixed(1)} ns`,
+      format: () => `±${peakDevNs.toFixed(1)} ns · ${jitMode === 'random' ? 'RANDOM' : 'PERIODIC'}`,
       formatShort: () => `±${peakDevNs.toFixed(1)}ns`,
-      helpKey: 'jitter',
-    },
-    {
-      kind: 'options',
-      id: 'jmode',
-      label: 'MODE',
-      valueLabel: jitMode === 'random' ? 'RANDOM' : 'PERIOD',
-      options: [
-        { id: 'random', label: 'RANDOM', blurb: 'Clock ticks land early or late at random — the error smears into a faint noise floor.' },
-        { id: 'periodic', label: 'PERIODIC', blurb: 'The clock wobbles in a PATTERN — the error becomes sideband TONES around the signal. Far more audible than random.' },
-      ],
-      selectedId: jitMode,
-      onSelect: (id) => setJitMode(id as 'random' | 'periodic'),
-      sticky: true, // A/B the two error characters while the glass reacts
+      chooser: {
+        title: 'JITTER MODE',
+        selectedId: jitMode,
+        onSelect: (id) => setJitMode(id as 'random' | 'periodic'),
+        sticky: true, // A/B the two error characters while the glass reacts
+        options: [
+          { id: 'random', label: 'RANDOM', blurb: 'Clock ticks land early or late at random — the error smears into a faint noise floor.' },
+          { id: 'periodic', label: 'PERIODIC', blurb: 'The clock wobbles in a PATTERN — the error becomes sideband TONES around the signal. Far more audible than random.' },
+        ],
+      },
       helpKey: 'jitter',
     },
   ];

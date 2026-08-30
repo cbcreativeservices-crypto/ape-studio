@@ -91,6 +91,10 @@ export type DockParam =
         options: TrayOption[];
         selectedId: string | null;
         onSelect: (id: string) => void;
+        /** Sticky = the tray STAYS OPEN so the choices can be A/B'd while the
+         *  glass reacts; the lane binds when the tray is closed instead of on
+         *  each pick. Default = pick-and-go straight to the slider. */
+        sticky?: boolean;
       };
       helpKey?: string;
     }

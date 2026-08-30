@@ -99,10 +99,15 @@ export function RackUnit({
           valueLabel: '',
           options: openParam.chooser.options,
           selectedId: openParam.chooser.selectedId,
+          sticky: openParam.chooser.sticky,
           onSelect: (id: string) => {
             openParam.chooser?.onSelect(id);
-            setOpenTrayId(null);
-            setBoundId(openParam.id); // hand straight back to the slider
+            // A sticky chooser stays open for A/B; the lane binds when the
+            // tray closes instead (see the DockTray onClose below).
+            if (!openParam.chooser?.sticky) {
+              setOpenTrayId(null);
+              setBoundId(openParam.id); // hand straight back to the slider
+            }
           },
           helpKey: openParam.helpKey,
         }
@@ -269,7 +274,12 @@ export function RackUnit({
       <View style={[styles.trayLayer, { top: stageBlockH }]} pointerEvents="box-none">
         <DockTray
           param={trayParam}
-          onClose={() => setOpenTrayId(null)}
+          onClose={() => {
+            // Closing a chooser-fader's tray hands over to its slider — that is
+            // what makes one key do both jobs for the sticky case too.
+            if (chooserTray) setBoundId(chooserTray.id);
+            setOpenTrayId(null);
+          }}
           onHelp={onHelp}
           bottomInset={insets.bottom}
         />

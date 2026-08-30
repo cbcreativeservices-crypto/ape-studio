@@ -72,6 +72,11 @@ export function FilterSlopesModule(_p: EqModuleComponentProps) {
   const slopeIdx = SLOPES.indexOf(slope);
   const params: DockParam[] = [
     {
+      // ONE key (owner 2026-08-30). These were two keys driving the SAME
+      // value: the lane swept the family, the tray picked exact console
+      // numbers. Now the key opens the exact-value menu and the lane sweeps —
+      // sticky, so the family can still be A/B'd while the curves react, and
+      // the lane binds when the tray closes.
       kind: 'fader',
       id: 'slope',
       label: 'SLOPE',
@@ -83,16 +88,13 @@ export function FilterSlopesModule(_p: EqModuleComponentProps) {
       },
       format: () => `${slope} dB/OCT`,
       formatShort: () => `${slope}`,
-    },
-    {
-      kind: 'options',
-      id: 'pick',
-      label: 'SLOPES',
-      valueLabel: `${slope}`,
-      options: SLOPES.map((s) => ({ id: String(s), label: `${s} dB/OCT`, blurb: SLOPE_BLURBS[s] })),
-      selectedId: String(slope),
-      onSelect: (id) => setSlope(Number(id) as Slope),
-      sticky: true, // exact console values, A/B while the family reacts
+      chooser: {
+        title: 'SLOPE',
+        selectedId: String(slope),
+        onSelect: (id) => setSlope(Number(id) as Slope),
+        sticky: true, // exact console values, A/B while the family reacts
+        options: SLOPES.map((s) => ({ id: String(s), label: `${s} dB/OCT`, blurb: SLOPE_BLURBS[s] })),
+      },
     },
   ];
 
