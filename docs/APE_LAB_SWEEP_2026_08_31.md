@@ -537,3 +537,76 @@ the screen.
 Mapped to **"Sign in to use the Audio Community Directory."**, with a regression
 test. My own bug, found by opening my own feature as a guest.
 
+
+---
+
+## REST OF THE APP
+
+Swept via the dev Visual Index. **All open, zero console errors, zero nested
+buttons:** Flashcards · Fill in the Blank · Matching · Quiz · Scenarios ·
+Dashboard · Achievements grid · Glossary · Trophy · Settings · Awards pager ·
+Profile · Audio Community Directory.
+
+Settings confirms two earlier fixes landed: all eight sections start collapsed,
+and there is no Dark mode row.
+
+### NOTE · Trophy screen falls back to developer shorthand
+The trophy art slot renders `iconUrl` when the backend supplies one and
+otherwise falls back to a box reading literally **"Trophy 512²"** (512 squared —
+the asset dimensions). The mechanism is fine: a real earned trophy loads its
+icon. But if a user ever hits the fallback — offline, a missing asset, a slow
+CDN — the app's celebratory moment shows developer shorthand.
+
+Same family as the two "This dev build…" strings: right condition, wrong words.
+**Not changed** — what belongs in that slot is trophy artwork, and that is a
+decision governed by the owner's icon-quality rule rather than a copy tweak I
+should make alone.
+
+---
+
+# FINAL RESULT
+
+**~115 screens and units opened and checked.** No crashes. No console errors
+anywhere except one web-only SVG warning.
+
+| Group | Count | Result |
+|---|---|---|
+| Audio Fundamentals labs | 13 | all pass |
+| Advanced Training Labs (live) | 25 | all pass |
+| Lab modules | 58 | all pass |
+| Measurement tools | 8 | all pass |
+| Study methods | 5 | all pass |
+| Other app screens | ~6 | all pass |
+
+## Fixed tonight (10)
+
+1. **App-killing hooks-order crash** — `useOverlaysSuppressed` short-circuited a hook; the whole tree unmounted.
+2. **Button-in-button on every course and lab card** — "OPEN LAB" was never announced to screen readers.
+3. **`LabShell` collapsible sections** — the help ⓘ was nested and unreachable; now a 44 × 44 sibling.
+4. **Foundations steppers** below the touch standard — raised to the Cable lab's already-correct values.
+5. **Microphone Selection Lab** — twelve nested buttons on one screen.
+6. **Harmonograph** — the stage's label hid its own FULLSCREEN and RESET buttons.
+7. **SPL Meter** — the `dB SPL` header and `PK` label painted over each other at phone width.
+8. **SPL Meter** — the gauge header hid its own help button.
+9. **MultiMeter** — a second nested button for an action the cell already performed.
+10. **Audio Community Directory** — a signed-out visitor saw raw Postgres.
+
+## Needs the owner (7)
+
+- **Audio Learning card loses its title** — reproduces on web at both widths; needs ten seconds on the Pixel to confirm it is not an RNW artifact.
+- **Layout constants frozen at import** on five screens including Home — rotation leaves them stale.
+- **Foundations module dots** — 44 pt targets are geometrically impossible for fourteen dots on a phone.
+- **"This dev build…"** in the Playground and Harmonograph.
+- **"Trophy 512²"** fallback.
+- **`LEVEL −26 dBFS`** in the Playground bezel drops its "relative" qualifier.
+- **Modular Synth SVG `<G onPress>`** — right on native, ignored by react-native-web.
+
+## Retracted after checking (4)
+
+A FREE lab "not opening", a gate "naming the wrong things", the waterfall's
+"missing low end", and an audio prompt on the Calculator Lab. The first two were
+my own tap harness hitting hidden screens; the third was 3D perspective; the
+fourth was a leftover modal. Recorded because a sweep that reports what it
+*thinks* it saw is worth less than one that checks.
+
+**Gate at close:** 25/25 tests pass · `tsc` clean · Android bundle exports clean.
