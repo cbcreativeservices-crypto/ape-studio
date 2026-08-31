@@ -38,7 +38,8 @@ import {
   type PublicProfile,
 } from '../../features/profile/publicProfile';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
-import { LowLightRow } from '../../features/settings/LowLightLayer';
+import { LowLightDim, LowLightRow } from '../../features/settings/LowLightLayer';
+import { useLowLight } from '../../features/settings/lowLight';
 import { AudioOutputRow } from '../../features/audio/AudioOutputRow';
 import { DevVisualIndex } from '../../features/dev/DevVisualIndex';
 import { useTermList } from '../../features/flags/flaggedStore';
@@ -285,6 +286,20 @@ export function ProfileScreen() {
   const [hydrated, setHydrated] = useState(false);
   const [emailTouched, setEmailTouched] = useState(false);
   const [fullIdOpen, setFullIdOpen] = useState(false);
+  /**
+   * Low-light dims the ID along with everything else — correct, since the mode
+   * exists so nothing flashes in a dark room. But the user opened this screen
+   * precisely to have it SCANNED, and a camera reading a 50%-dimmed code in a
+   * dark venue is a coin toss. Rather than pick one, let them lift the dim for
+   * as long as the ID is open: a deliberate act instead of a surprise flash,
+   * and it puts itself back the moment the card closes.
+   */
+  const lowLight = useLowLight();
+  const [brightId, setBrightId] = useState(false);
+  const closeFullId = useCallback(() => {
+    setFullIdOpen(false);
+    setBrightId(false);
+  }, []);
   const focusField = useCallback((key: 'name' | 'registryName' | 'email') => {
     setPpSeq((n) => n + 1);
     setTimeout(() => {
@@ -374,7 +389,21 @@ export function ProfileScreen() {
             style={({ pressed }) => [styles.idCard, pressed && styles.idCardPressed]}
             onPress={() => setFullIdOpen(true)}
             accessibilityRole="button"
-            accessibilityLabel="Your Academy ID. Opens it full screen for scanning."
+            // An accessibilityLabel REPLACES the children for a screen reader,
+            // so a label naming only the action silently deletes the name,
+            // status, credential count and ID number from this card. Compose
+            // the content INTO the label, then say what tapping does.
+            accessibilityLabel={[
+              pub.registryName || pub.name || profile?.nickname || 'No name added yet',
+              statusLabel,
+              credentials.length > 0
+                ? `${credentials.length} verified credential${credentials.length === 1 ? '' : 's'}`
+                : null,
+              profile?.apeStudentId ? `ID ${profile.apeStudentId}` : null,
+            ]
+              .filter(Boolean)
+              .join('. ')}
+            accessibilityHint="Opens your ID full screen for scanning"
           >
             <View style={styles.idLeft}>
               <Text style={styles.idName} numberOfLines={2}>
@@ -407,8 +436,11 @@ export function ProfileScreen() {
               registryActive ? styles.stripOn : !profileComplete ? styles.stripTodo : styles.stripOff,
             ]}
             disabled={profileComplete}
-            onPress={() => focusField(missing[0]?.key ?? 'name')}
-            accessibilityRole={profileComplete ? 'text' : 'button'}
+            // `accessible` false + role text would still announce the Pressable's
+            // auto-merged disabled state. When there is nothing to fix this is a
+            // READOUT, so it carries no role and no hint — just its own words.
+            accessibilityRole={profileComplete ? undefined : 'button'}
+            accessibilityHint={profileComplete ? undefined : 'Opens the details you still need'}
             accessibilityLabel={
               registryActive
                 ? 'Listed. Your public page is live.'
@@ -474,7 +506,12 @@ export function ProfileScreen() {
                 (navigation as any).navigate((profile?.completeCount ?? 0) > 0 ? 'Study' : 'Home')
               }
               accessibilityRole="button"
-              accessibilityLabel="Keep studying"
+              accessibilityLabel={
+                (profile?.overallPct ?? 0) > 0
+                  ? `Full Course Certification, ${profile?.overallPct ?? 0}% done`
+                  : 'Start your first topic'
+              }
+              accessibilityHint="Opens your studies"
             >
               <View style={styles.rowMain}>
                 {(profile?.overallPct ?? 0) > 0 ? (
@@ -495,8 +532,13 @@ export function ProfileScreen() {
               onPress={() => (navigation as any).navigate('Awards', { category: 'enrollment' })}
               accessibilityRole="button"
               accessibilityLabel={
-                goalCount ? 'Manage your enrollments' : 'Browse certificates and programs'
+                goalCount
+                  ? [...certBundles, ...programBundles]
+                      .map((b) => `${b.name}, ${bundleDone(b.topics)} of ${b.topics.length} topics complete`)
+                      .join('. ')
+                  : 'Browse certificates and programs'
               }
+              accessibilityHint={goalCount ? 'Opens My Enrollments' : undefined}
             >
               <View style={styles.rowMain}>
                 {goalCount ? (
@@ -754,6 +796,7 @@ export function ProfileScreen() {
                     <Pressable
                       onPress={() => onExportCredential(c)}
                       disabled={exportingId === c.id}
+                      style={styles.credButton}
                       hitSlop={8}
                       accessibilityRole="button"
                       accessibilityLabel={`Download the ${c.name} certificate`}
@@ -779,12 +822,12 @@ export function ProfileScreen() {
             visible={fullIdOpen}
             transparent={false}
             animationType="fade"
-            onRequestClose={() => setFullIdOpen(false)}
+            onRequestClose={closeFullId}
             supportedOrientations={['portrait', 'landscape']}
           >
             <Pressable
               style={styles.fullId}
-              onPress={() => setFullIdOpen(false)}
+              onPress={closeFullId}
               accessibilityRole="button"
               accessibilityLabel="Close your ID"
             >
@@ -798,7 +841,32 @@ export function ProfileScreen() {
               {profile?.apeStudentId ? (
                 <Text style={styles.fullIdNumber}>ID {profile.apeStudentId}</Text>
               ) : null}
-              <Text style={styles.fullIdHint}>Tap anywhere to close</Text>
+              {lowLight ? (
+                <Pressable
+                  style={styles.brighten}
+                  onPress={() => setBrightId((b) => !b)}
+                  accessibilityRole="button"
+                  accessibilityLabel={
+                    brightId
+                      ? 'Dim the ID again. Low-light is paused while this card is open.'
+                      : 'Brighten to scan. Lifts low-light until you close this card.'
+                  }
+                >
+                  <Text style={styles.brightenText}>
+                    {brightId ? 'DIM AGAIN' : 'BRIGHTEN TO SCAN'}
+                  </Text>
+                </Pressable>
+              ) : null}
+              <Text style={styles.fullIdHint}>
+                {brightId ? 'Low-light resumes when you close this' : 'Tap anywhere to close'}
+              </Text>
+              {/* A Modal renders in its OWN native view hierarchy, so the root
+                  LowLightDim does not reach it — which is why ShareTermSheet,
+                  StudyFsOverlay and TrophyModal each re-mount it. Without this
+                  the ID is the one surface that ignores Low-Light Production
+                  Mode, and it opens full-bright white in a dark venue: exactly
+                  the flash the mode promises will not happen. */}
+              {brightId ? null : <LowLightDim />}
             </Pressable>
           </Modal>
 
@@ -1070,6 +1138,21 @@ const styles = StyleSheet.create({
     color: colors.textSub,
     marginTop: 20,
   },
+  brighten: {
+    minHeight: 44,
+    justifyContent: 'center',
+    paddingHorizontal: 18,
+    marginTop: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255,198,77,.5)',
+    borderRadius: 8,
+  },
+  brightenText: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 12,
+    letterSpacing: 1.6,
+    color: colors.amber,
+  },
   fullIdHint: {
     fontFamily: fonts.barlowRegular,
     fontSize: 12.5,
@@ -1116,6 +1199,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.hairlineDim,
   },
+  credButton: { minHeight: 44, minWidth: 44, alignItems: 'flex-end', justifyContent: 'center' },
   credName: { fontFamily: fonts.barlowSemiBold, fontSize: 14.5, color: colors.textPrimary },
   credMeta: {
     fontFamily: fonts.barlowCondensedRegular,
