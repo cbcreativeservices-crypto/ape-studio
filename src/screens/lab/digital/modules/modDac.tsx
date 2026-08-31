@@ -533,11 +533,15 @@ export function ErrorsModule({ width: _width, focused, help }: DigitalModuleProp
         />
         <CheckQuestion
           spec={{
-            question: 'fs = 48 kHz, no anti-aliasing filter, and a 30 kHz tone reaches the sampler. What frequency lands in the file?',
-            options: ['30 kHz', '24 kHz', '18 kHz', 'Nothing — it disappears'],
+            // Different numbers from Module 2's fold check on purpose (learning
+            // pass 2026-08-31): the same 48k/30k pair in both modules meant the
+            // second sighting tested recognition of an answer, not retrieval of
+            // the formula.
+            question: 'fs = 44.1 kHz, no anti-aliasing filter, and a 26 kHz tone reaches the sampler. What frequency lands in the file?',
+            options: ['26 kHz', '22.05 kHz', '18.1 kHz', 'Nothing — it disappears'],
             correctIdx: 2,
             reveal:
-              'Above Nyquist (24 kHz) the tone folds: alias = |30 − 48| = 18 kHz. The samples fit an 18 kHz sine exactly, and it lands in-band — permanently. That is why the anti-aliasing filter sits BEFORE the sampler.',
+              'Above Nyquist (22.05 kHz) the tone folds: alias = |26 − 44.1| = 18.1 kHz. The samples fit an 18.1 kHz sine exactly, and it lands in-band — permanently. That is why the anti-aliasing filter sits BEFORE the sampler.',
             wrongHint: 'Fold it around Nyquist: alias = |f − nearest multiple of fs|.',
           }}
         />

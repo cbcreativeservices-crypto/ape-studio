@@ -120,7 +120,9 @@ const styles = StyleSheet.create({
   cardTag: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, color: colors.amber, width: 24, textAlign: 'center' },
   cardName: { fontFamily: fonts.oswaldMedium, fontSize: 15.5, letterSpacing: 0.5, color: colors.textPrimary },
   toolWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  toolChip: { borderRadius: 8, borderWidth: 1, borderColor: '#2c2c33', paddingHorizontal: 11, paddingVertical: 8, backgroundColor: '#17171c' },
+  // 44pt tall (design pass 2026-08-31 — the chips measured 34pt, under the
+  // house touch standard).
+  toolChip: { borderRadius: 8, borderWidth: 1, borderColor: '#2c2c33', paddingHorizontal: 11, paddingVertical: 13, backgroundColor: '#17171c' },
   toolText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.9, color: colors.textSecondary },
   pathRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 4 },
   pathStep: { flexDirection: 'row', alignItems: 'center', gap: 4 },
