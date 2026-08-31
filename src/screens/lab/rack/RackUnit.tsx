@@ -333,7 +333,9 @@ const styles = StyleSheet.create({
   // when the content outgrows the space above the dock.
   wellWrap: { flexGrow: 0, flexShrink: 1 },
   wellScroll: { flexGrow: 0 },
-  well: { padding: 12, paddingBottom: 14, gap: 10 },
+  // 6px of clearance so scrolled well text never hard-clips mid-glyph
+  // against the pinned badge strip above it (design pass 2026-08-31).
+  well: { padding: 12, paddingTop: 18, paddingBottom: 14, gap: 10 },
   dock: {
     borderTopWidth: 1,
     borderTopColor: '#2c2c33',

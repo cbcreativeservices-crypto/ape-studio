@@ -43,6 +43,7 @@ import { noteAudioActivity } from '../../../features/audio/audioOutputStore';
 import { guardAdditiveForEngine, guardNoiseLevelForEngine, guardToneLevelForEngine } from '../../../features/audio/speakerSafety';
 import { eqResponseDb } from '../../../features/lab/fxViz';
 import { LabReviewButton } from '../../../features/lab/LabReviewButton';
+import { CheckQuestion } from './bits';
 import { EngineGate } from '../../tools/EngineGate';
 import type { EngineState } from '../../../features/tools/engine/useDspEngine';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
@@ -329,6 +330,24 @@ export function FoundationsPlaygroundScreen() {
       .filter(Boolean)
       .join('·') || 'OFF';
 
+  // TRY THIS — guided-exploration prompts (learning pass 2026-08-31: the
+  // sandbox graded D on scaffolding — free play with no hypotheses to test).
+  // Predict → act → where to look; the linked views are the feedback. Filtered
+  // per source so a prompt never references a control that is not on stage.
+  const TRY_THIS: { when: 'wave' | 'noise' | 'sweep' | 'any'; text: string }[] = [
+    { when: 'wave', text: 'Drop a SQUARE to FIRST 3 harmonics — predict first: do the corners get sharper or rounder? Watch WAVEFORM.' },
+    { when: 'wave', text: 'LPF 500 Hz on a SAW — count the spectrum lines that should survive before you look.' },
+    { when: 'wave', text: 'Flip POLARITY while playing. The drawing flips — the sound does not. Why not? Module 10 answers.' },
+    { when: 'wave', text: 'Double FREQ and watch the bezel: λ should halve. Does it?' },
+    { when: 'noise', text: 'Step WHITE → PINK → BROWN and watch the spectrum tilt. Which end loses energy each step?' },
+    { when: 'sweep', text: 'Listen for the moment the sweep passes the pitch of your speaking voice — then check where the level meter sits.' },
+    { when: 'any', text: 'Set LEVEL to the bottom of its range and watch all three views shrink together — same signal, three tellings.' },
+  ];
+  const [tryIdx, setTryIdx] = useState(0);
+  const prompts = TRY_THIS.filter((t) => t.when === 'any' || t.when === source);
+  const prompt = prompts[tryIdx % prompts.length];
+  const [everPlayed, setEverPlayed] = useState(false);
+
   const params: DockParam[] = [
     {
       kind: 'fader',
@@ -347,7 +366,9 @@ export function FoundationsPlaygroundScreen() {
       onChange: setLvl01,
       format: () => `${levelDb} dBFS`,
       formatShort: () => `${levelDb} dB`,
-      tint: levelColor(lvl01),
+      // No frame tint: beside the genuinely BOUND key it read as a second
+      // selected state (design pass 2026-08-31). The amplitude ramp still
+      // carries the value on the bezel cell and the meter bar.
       helpKey: 'amplitude',
     },
     {
@@ -481,17 +502,20 @@ export function FoundationsPlaygroundScreen() {
                 onLongPress={() => help('eq')}
               />
             ))}
-            {eqCut > 0
-              ? QS.map((q) => (
-                  <LabChip
-                    key={q.key}
-                    label={q.label}
-                    selected={eqQ === q.key}
-                    onPress={() => setEqQ(q.key)}
-                    onLongPress={() => help('filter_q')}
-                  />
-                ))
-              : null}
+            {QS.map((q) => (
+              // Ghosted, not unmounted, while EQ is OFF: the chips appearing
+              // out of nowhere reflowed the tray mid-read (design pass
+              // 2026-08-31), and a ghosted Q quietly teaches that Q exists and
+              // belongs to a filter.
+              <View key={q.key} style={eqCut > 0 ? null : { opacity: 0.35 }}>
+                <LabChip
+                  label={q.label}
+                  selected={eqCut > 0 && eqQ === q.key}
+                  onPress={() => (eqCut > 0 ? setEqQ(q.key) : help('filter_q'))}
+                  onLongPress={() => help('filter_q')}
+                />
+              </View>
+            ))}
           </View>
           {/* UNCONDITIONAL (fix 2026-08-28): this note used to render only when
               the v6 effects path was ABSENT — i.e. it vanished on exactly the
@@ -512,7 +536,13 @@ export function FoundationsPlaygroundScreen() {
             id: 'play',
             label: playing ? 'STOP' : 'PLAY',
             value: playing,
-            onToggle: () => (playing ? stop() : void start()),
+            onToggle: () => {
+              if (playing) stop();
+              else {
+                setEverPlayed(true);
+                void start();
+              }
+            },
           } satisfies DockParam,
         ]
       : []),
@@ -540,6 +570,11 @@ export function FoundationsPlaygroundScreen() {
           if (k) help(k);
         }}
         stage={{
+          // The floating drag tag sat OVER the air window — the exact view the
+          // captions say to watch (owner rule: no hover objects over the
+          // display). The pinned bezel cells under the glass carry the live
+          // value already; M9 set the hideDragTag precedent.
+          hideDragTag: true,
           size: 'L', // the whole playground of views — earns the tall glass
           badge: 'CONCEPTUAL MODEL — SLOWED · WAVEFORM/SPECTRUM ANALYTIC, NOT MEASURED',
           onGuide: () => help('waveform'),
@@ -571,6 +606,31 @@ export function FoundationsPlaygroundScreen() {
         }}
       >
         {!engineReady ? <EngineGate state={gate} /> : null}
+
+        {/* First-15-seconds nudge (design pass 2026-08-31): the sandbox opens
+            SILENT with the PLAY key sitting far right looking disabled — and
+            hearing the change is half this screen's premise. Never autoplay
+            (speaker-safety rules); invite. */}
+        {engineReady && !everPlayed && !playing ? (
+          <Text style={styles.playNudge}>Press PLAY — you are looking at a sound. Hear every change you make.</Text>
+        ) : null}
+
+        {/* TRY THIS — one prompt at a time; ↻ advances. The views themselves
+            are the feedback, so nothing is stored or graded. */}
+        <View style={styles.tryCard}>
+          <View style={styles.tryHead}>
+            <Text style={styles.tryEyebrow}>TRY THIS</Text>
+            <Pressable
+              onPress={() => setTryIdx((i) => i + 1)}
+              hitSlop={12}
+              accessibilityRole="button"
+              accessibilityLabel="Another suggestion"
+            >
+              <Text style={styles.tryNext}>↻ ANOTHER</Text>
+            </Pressable>
+          </View>
+          <Text style={styles.tryText}>{prompt.text}</Text>
+        </View>
 
         {/* LEVEL (dBFS · relative) — the commanded output level, never "SPL". */}
         <Pressable
@@ -623,6 +683,26 @@ export function FoundationsPlaygroundScreen() {
           ANALYTIC — DRAWN FROM THE SETTINGS, NOT A MEASUREMENT (the measurement tools do the
           real thing)
         </Text>
+
+        {/* Retrieval BEFORE the self-report (learning pass 2026-08-31): one
+            combined-context check — deliberately the null-result experiment,
+            because unexplained nothing-happened moments are where sandbox
+            learners lose trust. Not a gate (dev-stage no-gating rule); placed
+            so recall precedes the credit press. */}
+        <CheckQuestion
+          spec={{
+            question: 'You low-pass a 295 Hz sine with the cutoff at 2 kHz. What changes?',
+            options: [
+              'The tone gets duller — highs are cut',
+              'Nothing — its only partial sits far below the cutoff',
+              'The pitch drops toward the cutoff',
+            ],
+            correctIdx: 1,
+            reveal:
+              'A pure sine has ONE partial. A low-pass at 2 kHz only removes energy ABOVE 2 kHz — and there is none. Filters change a sound only when something lives on the far side of the cutoff. Try the same filter on a SAW and count what survives.',
+            wrongHint: 'Look at the spectrum pane: how many lines does a sine have, and where is yours relative to 2 kHz?',
+          }}
+        />
 
         {/* R6c: sandbox — no modules/challenge; explicit review records credit. */}
         <LabReviewButton labKey="af_sound_playground" />
@@ -677,7 +757,10 @@ function StageViz({
   const clock = viz.useVizClock(running);
   const GAP = 3;
   const LABEL_H = 12;
-  const rowH = Math.max(56, Math.round(h * 0.4));
+  // Air row 40% → 30% (design pass 2026-08-31): the two TEACHING panes were
+  // squeezed to ~59px — below the visual resolution of the effects being
+  // taught (harmonic corners, EQ tilt) — while the air row took 40%.
+  const rowH = Math.max(56, Math.round(h * 0.3));
   const paneH = Math.max(30, Math.floor((h - rowH - 2 * (LABEL_H + GAP)) / 2));
   const spkW = Math.min(110, Math.max(84, Math.round(w * 0.32)));
   const airW = Math.max(60, w - spkW - GAP);
@@ -723,6 +806,7 @@ function StageViz({
           />
           <Text style={[styles.stageLabel, { height: LABEL_H, marginTop: GAP }]} numberOfLines={1}>
             SPECTRUM — {noiseKind ? 'LOG 40 Hz–16 kHz' : `LINEAR TO ${13 * freq} Hz`}
+            {!noiseKind && amps.filter((a) => a > 0.001).length === 1 ? ' · 1 PARTIAL — PURE TONE' : ''}
             {gainDbAt ? ' · EQ APPLIED' : ''}
           </Text>
           <viz.AnalyticSpectrumView width={w} height={paneH} f0={freq} amps={amps} gainDbAt={gainDbAt} noise={noiseKind} level={level} />
@@ -752,6 +836,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   sweepPause: { justifyContent: 'center', paddingHorizontal: 16 },
+  playNudge: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 12,
+    letterSpacing: 1,
+    color: '#37e05f',
+    textAlign: 'center',
+  },
+  tryCard: {
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255,198,77,.4)',
+    backgroundColor: '#161310',
+    padding: 11,
+    gap: 6,
+  },
+  tryHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  tryEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.7, color: colors.amber },
+  tryNext: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.amberLabel },
+  tryText: { fontFamily: fonts.barlowMedium, fontSize: 13.5, lineHeight: 18, color: colors.textSecondary },
   sweepPauseText: {
     fontFamily: fonts.barlowRegular,
     fontSize: 12.5,
