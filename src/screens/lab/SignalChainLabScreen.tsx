@@ -32,6 +32,7 @@ import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { GuidedLessonSheet, getLabLesson, SOURCE_LESSON, type LessonContent } from '../../features/lab/guidedLessons';
 import { GrMeter } from '../../features/lab/fxViz';
 import { LabReviewButton } from '../../features/lab/LabReviewButton';
+import { CheckQuestion, type CheckSpec } from './foundations/bits';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
@@ -121,7 +122,7 @@ const SCENARIOS: { key: string; label: string; short: string; enable: number[]; 
   },
   {
     key: 'squash', label: 'HOT INTO LIMITER', short: 'SQUASH', enable: [FX.eq, FX.comp, FX.limiter], sourceIdx: 1,
-    lesson: 'Boost + compression makeup run hot into the limiter, which flattens what is left — bad gain-staging squashes. Watch BOTH meters.',
+    lesson: 'The +9 dB boost runs hot down the chain — watch BOTH meters share the work. If the limiter barely moves, the compressor got there first: gain-staging happening in order.',
   },
   {
     key: 'full', label: 'FULL CHAIN', short: 'FULL', enable: [FX.eq, FX.comp, FX.delay, FX.reverb, FX.stereo, FX.limiter], sourceIdx: 0,
@@ -133,6 +134,48 @@ const SOURCES: { label: string; short: string; gen: GenParams; srcKey: string; b
   { label: 'CLICK 90', short: 'CLICK', gen: { mode: GEN_MODES.click, clickBpm: 90 }, srcKey: 'click', blurb: 'A dry click at 90 BPM — sharp and separate, so every echo, tail and pump the chain adds is exposed.' },
   { label: 'PINK NOISE', short: 'PINK', gen: { mode: GEN_MODES.pink }, srcKey: 'pink', blurb: 'Steady broadband noise — perfect for HEARING tone changes (EQ, damping) but it hides echoes.' },
   { label: 'SINE 220', short: 'SINE', gen: { mode: GEN_MODES.sine, frequency: 220 }, srcKey: 'sine', blurb: 'One pure tone. Any new frequencies you hear were ADDED by the chain — distortion has nowhere to hide.' },
+];
+
+/** Recognition checks (learning pass 2026-08-31): the lab had ZERO retrieval —
+ *  completion was a self-report button. Three application questions drawn from
+ *  the lab's own Common Mistakes list. NEW COPY — owner review. */
+const CHAIN_CHECKS: CheckSpec[] = [
+  {
+    question: 'You boost the bass +9 dB BEFORE the compressor. What happens to the compressor\u2019s gain reduction?',
+    options: [
+      'Nothing — EQ and compression are independent',
+      'It rises — the compressor now reacts to the boosted bass',
+      'It falls — EQ absorbs some of the level',
+    ],
+    correctIdx: 1,
+    reveal:
+      'The compressor only knows what it is fed. Boost bass first and the compressor clamps on every bass note — the EQ\u2019s tone change becomes a dynamics change too. That is why order matters.',
+    wrongHint: 'Run EQ BOOST \u2192 COMP and watch the COMP meter as the chain lights.',
+  },
+  {
+    question: 'Where does a brickwall limiter belong in the chain?',
+    options: [
+      'First — protect everything downstream',
+      'Right after the compressor, before the effects',
+      'Last — the final safety ceiling before the output',
+    ],
+    correctIdx: 2,
+    reveal:
+      'The limiter is the output ceiling: it must see everything — every boost, echo and tail — or something can still sneak past it. Anything after the limiter can exceed the ceiling it just enforced.',
+    wrongHint: 'What could get louder AFTER the limiter if anything ran downstream of it?',
+  },
+  {
+    question: 'DELAY \u2192 REVERB and REVERB \u2192 DELAY sound different. Why?',
+    options: [
+      'They don\u2019t — both add the same two effects',
+      'Delay\u2192reverb washes each echo into the space; reverb\u2192delay echoes the wash itself',
+      'Reverb always has to come last in any chain',
+    ],
+    correctIdx: 1,
+    reveal:
+      'Each stage processes what the previous stage hands it. Echoes INTO the reverb = every repeat gets its own tail. Reverb INTO the delay = the whole wash repeats. Neither is wrong — it is a creative choice you make by ordering.',
+    wrongHint: 'Run DELAY \u2192 REVERB on the click, then imagine feeding the wash back through the delay.',
+  },
 ];
 
 export function SignalChainLabScreen() {
@@ -317,6 +360,7 @@ export function SignalChainLabScreen() {
                         onPress={() => toggleModule(m.id)}
                         onLongPress={() => openLesson('module_toggle')}
                         delayLongPress={350}
+                        hitSlop={{ top: 8, bottom: 8 }}
                         style={[styles.node, enabled[m.id] && styles.nodeOn]}
                         accessibilityRole="button"
                         accessibilityState={{ selected: !!enabled[m.id] }}
@@ -329,17 +373,26 @@ export function SignalChainLabScreen() {
                   <Text style={styles.chainArrow}>→</Text>
                   <Text style={styles.chainEnd}>OUT</Text>
                 </View>
+                {/* First-15s (design pass 2026-08-31): with nothing lit the
+                    glass was two-thirds void and nothing said pills are
+                    buttons. NEW COPY — owner review. */}
+                {chainCount === 0 ? (
+                  <Text style={styles.emptyHint}>
+                    CHAIN EMPTY — TAP A MODULE, OR START FROM A SCENARIO BELOW
+                  </Text>
+                ) : null}
               </View>
               {/* LIVE GR — the interaction made measurable (real engine
                   readout), a compact row on the same glass so a toggle and its
                   meter reaction are co-visible. Long-press for the lesson. */}
               {anyDyn ? (
                 <Pressable
+                  // No accessibilityLabel here — a label on the wrapper would
+                  // REPLACE the children for screen readers, hiding the live
+                  // GR readouts (the known lab-sweep trap).
                   style={{ gap: 6 }}
                   onLongPress={() => openLesson('gain_reduction')}
                   delayLongPress={350}
-                  accessibilityRole="button"
-                  accessibilityLabel="Gain-reduction meters — what they show"
                 >
                   <Text style={styles.stageHead}>GAIN REDUCTION — LIVE (measured per module)</Text>
                   <View style={styles.grRow}>
@@ -381,6 +434,7 @@ export function SignalChainLabScreen() {
             options: SOURCES.map((s) => ({
               id: s.srcKey,
               label: s.label,
+              blurb: s.blurb,
               // Source long-presses keep their OWN lesson book (SOURCE_LESSON).
               onLongPress: () => openSourceHelp(s.srcKey),
             })),
@@ -403,10 +457,23 @@ export function SignalChainLabScreen() {
 
       <Text style={styles.caption}>
         Modules run their lab-default teaching settings — each module’s full controls live in its
-        own lab. The order is the fixed canonical order; WHY it matters is in the ⓘ mistakes.
+        own lab. The order is the fixed canonical order; WHY it matters is in the ⓘ mistakes. One
+        honest quirk: this engine’s fixed order runs COMP before GATE, while on a real console you
+        would usually gate FIRST so compression never raises the noise floor — the mistakes list
+        explains.
       </Text>
 
-      {scenario ? <Text style={styles.scenarioLesson}>{scenario.lesson}</Text> : null}
+      {scenario ? (
+        <Text style={styles.scenarioLesson}>{scenario.lesson}</Text>
+      ) : anyOn ? (
+        // A customized chain used to lose ALL interpretive text the moment the
+        // learner made it theirs (learning pass 2026-08-31). NEW COPY — owner
+        // review.
+        <Text style={styles.scenarioLesson}>
+          Your own chain — toggle ONE module at a time and watch what the GR meters (and your ears)
+          say changed.
+        </Text>
+      ) : null}
 
       {engineReady ? (
         fxReady ? (
@@ -425,6 +492,10 @@ export function SignalChainLabScreen() {
           </Text>
         )
       ) : null}
+
+      {CHAIN_CHECKS.map((c, i) => (
+        <CheckQuestion key={i} spec={c} />
+      ))}
 
       {/* R6c: sandbox capstone — no modules/challenge; explicit review credit. */}
       <LabReviewButton labKey="af_signal_chain" />
@@ -454,6 +525,14 @@ const styles = StyleSheet.create({
   chainSeg: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   chainEnd: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, color: colors.textSub, letterSpacing: 0.5 },
   chainArrow: { fontFamily: fonts.barlowRegular, fontSize: 12, color: '#3a3a44' },
+  emptyHint: {
+    fontFamily: fonts.oswaldMedium,
+    fontSize: 11,
+    letterSpacing: 1,
+    color: colors.textSubAlt,
+    textAlign: 'center',
+    paddingVertical: 18,
+  },
   node: {
     borderRadius: 7,
     borderWidth: 1,
