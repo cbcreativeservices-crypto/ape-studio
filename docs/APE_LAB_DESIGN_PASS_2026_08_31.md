@@ -80,7 +80,7 @@ done) · `implemented` · `pushed` · `blocked: reason`
 | 17 | Compression | pushed (FX fleet) |
 | 18 | Gate / Expander | pushed (FX fleet) |
 | 19 | Limiter | pushed (FX fleet) |
-| 20 | Equalizer | pending |
+| 20 | Equalizer | pushed |
 | 21 | EQ Lab | pushed (FX fleet) |
 | 22 | Bass Guitar Physics | pushed (trio batch) |
 | 23 | Microphone Selection Lab | pending |
@@ -176,6 +176,21 @@ preserve — verified live).
 **Left:** Binaural head glyph 13px + invisible rings; Bass standing-wave
 contrast/amplitude; no root error boundary (app-wide — worth an owner
 conversation); DockTray backdrop double-tap (still open).
+
+### 20 · Equalizer (EQ hub, 15 modules) — PUSHED
+
+**Design:** hierarchy A− · density A− · affordance B+ · copy B+ · idiom A · first-15s B.
+**Learning:** sequencing A− · load A · interaction A · retrieval B− · misconceptions A−.
+
+**Shipped:** MatchCurve flat-normalized score (flat EQ scored 95% "EXCELLENT" —
+verified live); FindFrequency direction/amount verdict split; no-mic designed-
+curve fallback (SeeingFrequency + LiveSpectrumEq); hub row numbers; "unlock"→
+"build"; 2 cross-refs; tool chips 44pt; 2 new checks.
+
+**Left (owner):** Fix-the-Signal scenarios all hide boosts (train cut-only
+reflex — needs one dull-vocal boost scenario); module-1 empty-glass first-15s
+on denied mic (fallback helps but no bars is still quiet); naming collision
+"Equalizer" (hub) vs "EQUALIZER EFFECT LAB" (FX) on the labs list.
 
 ### 16–19, 21, 24–27, 30, 36, 37 · FX FLEET (12 labs, one shell) — PUSHED
 
