@@ -413,14 +413,23 @@ function FacilityScene({
   );
 }
 
-export function InspectScene({ width, completed, onComplete, openSources }: CiModuleProps) {
+export function InspectScene({ width, completed, onComplete, openSources, clearedUnits }: CiModuleProps) {
   const seedRef = useRef(Date.now());
   const [attemptSeed, setAttemptSeed] = useState(seedRef.current);
   const defects = useMemo(() => drawAttempt(attemptSeed), [attemptSeed]);
   const [states, setStates] = useState<Record<string, DefectState>>({});
+  // Visible wrong-correction feedback (design pass 2026-08-31): a miss used to
+  // fire ONLY an accessibility announcement — for sighted users the tap was
+  // completely dead. NEW COPY — owner review.
+  const [missNote, setMissNote] = useState<string | null>(null);
   const [active, setActive] = useState<string | null>(null);
+  useEffect(() => setMissNote(null), [active]);
   const [listOpen, setListOpen] = useState(false);
-  const [phase, setPhase] = useState<'inspect' | 'quiz' | 'done'>(completed ? 'done' : 'inspect');
+  // Resume (learning pass 2026-08-31): quitting mid-quiz used to restart the
+  // whole 17-defect walk even though inspect_pass was already recorded.
+  const [phase, setPhase] = useState<'inspect' | 'quiz' | 'done'>(
+    completed ? 'done' : clearedUnits?.has(CI_INSPECT_PASS_UNIT) ? 'quiz' : 'inspect',
+  );
   const [passDims, setPassDims] = useState<CiDimScores>({});
   const quizSolvedRef = useRef(0);
   const [quizSolved, setQuizSolved] = useState(0);
@@ -476,9 +485,11 @@ export function InspectScene({ width, completed, onComplete, openSources }: CiMo
     if (!active || !activeMistake) return;
     const right = text === activeMistake.correction;
     if (!right) {
+      setMissNote('✕ That correction doesn\u2019t address this finding — check the WHY.');
       AccessibilityInfo.announceForAccessibility('That correction doesn\'t address this finding — check the WHY.');
       return;
     }
+    setMissNote(null);
     setStates((s) => ({ ...s, [active]: { ...(s[active] ?? { found: true }), found: true, corrected: true } }));
     AccessibilityInfo.announceForAccessibility('Correction recorded.');
   };
@@ -517,7 +528,7 @@ export function InspectScene({ width, completed, onComplete, openSources }: CiMo
     <View style={{ gap: 14 }}>
       {phase === 'inspect' ? (
         <>
-          <CiSection title={`WALK THE FACILITY — ${defects.length} FINDINGS HIDDEN THIS ATTEMPT`}>
+          <CiSection title={`WALK THE FACILITY — ${defects.length} FINDINGS TO PROCESS THIS ATTEMPT`}>
             <Text style={styles.lead}>
               Tap a numbered marker (or open the FINDINGS LIST), classify what kind of problem it is, then choose the
               correction. Pass at {required} of {defects.length} processed. Each attempt draws a different set.
@@ -594,6 +605,7 @@ export function InspectScene({ width, completed, onComplete, openSources }: CiMo
                         </Pressable>
                       </Stagger>
                     ))}
+                    {missNote ? <Text style={styles.missNote}>{missNote}</Text> : null}
                   </View>
                 </>
               ) : (
@@ -675,6 +687,7 @@ const styles = StyleSheet.create({
   catText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.6, color: colors.textSecondary },
   corrBtn: { borderRadius: 8, borderWidth: 1, borderColor: '#2c2c33', backgroundColor: '#131316', paddingVertical: 11, paddingHorizontal: 12, minHeight: 44, justifyContent: 'center' },
   corrText: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: colors.textSecondary },
+  missNote: { fontFamily: fonts.barlowMedium, fontSize: 12.5, color: '#ff9b8f' },
   passBtn: { alignItems: 'center', borderRadius: 10, backgroundColor: colors.green, paddingVertical: 13 },
   passText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13.5, letterSpacing: 1.2, color: '#0a1a0f' },
   doneCard: { gap: 10, borderRadius: 12, borderWidth: 1, borderColor: 'rgba(55,224,95,.4)', backgroundColor: '#0d1a11', padding: 14 },

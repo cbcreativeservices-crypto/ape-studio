@@ -8,7 +8,7 @@
  * six scored dimensions. Pure functions, zero React.
  */
 import type { CiDim, CiDimScores } from './score';
-import { clamp100 } from './score';
+import { clamp100, overallScore } from './score';
 
 /** A hazard/quality condition attached to a route by the scenario author. */
 export type CiRouteFlag = {
@@ -73,21 +73,22 @@ export function evaluateRoute(option: CiRouteOption): CiRouteVerdict {
   return { dims, overallNotes: notes, ruleIds };
 }
 
-/** Rank options for the reveal (teaching order: best first). */
-export function rankRoutes(options: CiRouteOption[]): { option: CiRouteOption; verdict: CiRouteVerdict; overall: number }[] {
+/** Rank options for the reveal (teaching order: best first).
+ *
+ *  Design+learning pass 2026-08-31: this used an UNWEIGHTED mean, ignoring the
+ *  spec-§22 weights overallScore() already applies — a safety-zero route
+ *  ("across the hallway floor", copy says "this is wrong") scored 75/100, one
+ *  point behind a mediocre-but-legal pick. Now weighted, and a route carrying
+ *  a serious negative safety flag is tagged as REJECTED outright (a verdict,
+ *  not a number — stoplight per house rules). */
+export function rankRoutes(
+  options: CiRouteOption[],
+): { option: CiRouteOption; verdict: CiRouteVerdict; overall: number; safetyReject: boolean }[] {
   return options
     .map((option) => {
       const verdict = evaluateRoute(option);
-      let sum = 0;
-      let n = 0;
-      for (const d of ROUTE_DIMS) {
-        const v = verdict.dims[d];
-        if (v != null) {
-          sum += v;
-          n++;
-        }
-      }
-      return { option, verdict, overall: n ? Math.round(sum / n) : 0 };
+      const safetyReject = option.flags.some((f) => !f.positive && f.dim === 'safety' && f.cost >= 0.5);
+      return { option, verdict, overall: Math.round(overallScore(verdict.dims)), safetyReject };
     })
     .sort((a, b) => b.overall - a.overall);
 }

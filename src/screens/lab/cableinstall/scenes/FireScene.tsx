@@ -20,7 +20,7 @@ import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } fro
 import Svg, { G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
 import { OptionChip, VerdictBanner } from '../../cable/lessons/bits';
-import { CiSection, RuleFeedback, SpecCard, announceComplete } from '../bits';
+import { CiSection, RuleFeedback, SpecCard, announceComplete, stableShuffle } from '../bits';
 import {
   ACircle,
   AG,
@@ -518,7 +518,7 @@ export function FireScene({ width, completed, onComplete, openSources }: CiModul
                   <View style={{ gap: 8 }}>
                     <Text style={styles.spaceQ}>Cable routed toward this space (dashed on the section). {s.question}</Text>
                     <View style={{ gap: 7 }}>
-                      {s.options.map((opt, oi) => (
+                      {stableShuffle(s.options).map(({ item: opt, idx: oi }) => (
                         <OptionChip
                           key={oi}
                           label={opt}
@@ -573,7 +573,7 @@ export function FireScene({ width, completed, onComplete, openSources }: CiModul
                   </Text>
                   <Text style={styles.flowQ}>{q.q}</Text>
                   <View style={{ gap: 7 }}>
-                    {q.options.map((opt, oi) => (
+                    {stableShuffle(q.options).map(({ item: opt, idx: oi }) => (
                       <OptionChip
                         key={oi}
                         label={opt}

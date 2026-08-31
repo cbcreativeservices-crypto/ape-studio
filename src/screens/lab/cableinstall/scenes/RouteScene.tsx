@@ -592,6 +592,7 @@ function VerdictCard({
   color,
   mine,
   best,
+  safetyReject,
   index,
 }: {
   option: CiRouteOption;
@@ -601,6 +602,7 @@ function VerdictCard({
   color: string;
   mine: boolean;
   best: boolean;
+  safetyReject: boolean;
   index: number;
 }) {
   const base = index * CARD_STEP;
@@ -617,10 +619,13 @@ function VerdictCard({
           <Text style={styles.verdictOutOf}> /100</Text>
         </Text>
       </View>
-      {best || mine ? (
+      {best || mine || safetyReject ? (
         <Appear delay={base + CI_MOTION.base}>
           <View style={styles.tagRow}>
             {best ? <Text style={styles.tagBest}>✓ BEST CALL</Text> : null}
+            {/* A verdict, not a score: a route that violates a safety rule is
+                not "75/100", it is rejected (owner review — new tag copy). */}
+            {safetyReject ? <Text style={styles.tagReject}>✕ REJECTED — SAFETY</Text> : null}
             {mine ? <Text style={styles.tagMine}>YOUR PICK</Text> : null}
           </View>
         </Appear>
@@ -788,10 +793,11 @@ export function RouteScene({ width, completed, onComplete, openSources }: CiModu
             {picked && mineOpt ? (
               <View style={{ gap: 10 }}>
                 <Text style={styles.revealEyebrow}>THE VERDICT — ALL THREE ROUTES, SCORED</Text>
-                {rk.map(({ option, verdict, overall }, ri) => {
+                {rk.map(({ option, verdict, overall, safetyReject }, ri) => {
                   const oi = s.options.findIndex((o) => o.id === option.id);
                   return (
                     <VerdictCard
+                      safetyReject={safetyReject}
                       key={option.id}
                       option={option}
                       verdict={verdict}
@@ -874,6 +880,7 @@ const styles = StyleSheet.create({
   tagRow: { flexDirection: 'row', gap: 10 },
   tagBest: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: colors.green },
   tagMine: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: colors.amber },
+  tagReject: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1, color: '#ff8d80', borderWidth: 1, borderColor: 'rgba(255,110,95,.55)', borderRadius: 5, paddingHorizontal: 7, paddingVertical: 3, overflow: 'hidden' },
   dimRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   dimLabel: { width: 92, fontFamily: fonts.barlowCondensedMedium, fontSize: 12, color: colors.textSecondary },
   dimTrack: { flex: 1, height: 8, borderRadius: 4, backgroundColor: '#222228', overflow: 'hidden' },

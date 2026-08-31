@@ -224,7 +224,7 @@ export function FindProgress({ found, required, total }: { found: number; requir
   return (
     <Text style={[styles.findLine, done && { color: colors.green }]} accessibilityLiveRegion="polite">
       {done ? '✓ ' : ''}
-      {found} found · {required} needed to continue · {total} hidden in total
+      {found} found · {required} needed to continue · {total} to process in total
     </Text>
   );
 }
@@ -335,3 +335,24 @@ const styles = StyleSheet.create({
   findLine: { fontFamily: fonts.barlowMedium, fontSize: 12.5, color: colors.textSub },
   sectionEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.5, color: colors.amber },
 });
+
+
+/** Presentation shuffle for authored option arrays (learning pass 2026-08-31):
+ *  every authored MCQ in this lab put the correct answer FIRST and rendered in
+ *  authored order — the top chip was always right. Returns {item, idx} pairs
+ *  (idx = ORIGINAL index) in a permutation that is stable per array reference
+ *  for the app session, so re-renders never re-deal mid-question. Authored
+ *  data untouched; correctness stays judged by original index/id. */
+const SHUFFLE_CACHE = new WeakMap<readonly unknown[], number[]>();
+export function stableShuffle<T>(arr: readonly T[]): { item: T; idx: number }[] {
+  let perm = SHUFFLE_CACHE.get(arr);
+  if (!perm) {
+    perm = arr.map((_, i) => i);
+    for (let i = perm.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [perm[i], perm[j]] = [perm[j], perm[i]];
+    }
+    SHUFFLE_CACHE.set(arr, perm);
+  }
+  return perm.map((i) => ({ item: arr[i], idx: i }));
+}

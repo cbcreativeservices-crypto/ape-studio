@@ -140,6 +140,8 @@ export const CI_LAB_UNITS: readonly string[] = [
 
 /** Contract every module scene implements. */
 export type CiModuleProps = {
+  /** Cleared unit ids for this lab (optional — scenes may resume from it). */
+  clearedUnits?: ReadonlySet<string>;
   /** Content width (host-measured, CableLab idiom). */
   width: number;
   /** True once this module's unit is already cleared (replay mode). */

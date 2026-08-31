@@ -302,6 +302,10 @@ export function WhyScene({ width, completed, onComplete, openSources }: CiModule
   const [seen, setSeen] = useState<Set<string>>(() => new Set(completed ? CONSEQUENCES.map((c) => c.id) : []));
   const [open, setOpen] = useState<string | null>(null);
   const [pick, setPick] = useState<ExampleId | null>(completed ? 'b' : null);
+  // Scored on the FIRST pick; the stage now ENDS on approving the right one
+  // (learning pass 2026-08-31 — it used to say "Stage 1 complete." right after
+  // telling you your approval was wrong).
+  const [firstPick, setFirstPick] = useState<ExampleId | null>(completed ? 'b' : null);
   const [fired, setFired] = useState(completed);
 
   const consequencesDone = seen.size >= CONSEQUENCES.length;
@@ -315,14 +319,16 @@ export function WhyScene({ width, completed, onComplete, openSources }: CiModule
   const artW = Math.max(120, width - 28);
 
   const choose = (id: ExampleId) => {
-    if (pick != null) return;
+    if (pick === 'b') return; // approved — done
+    if (firstPick == null) setFirstPick(id);
     setPick(id);
     const right = id === 'b';
     AccessibilityInfo.announceForAccessibility(right ? 'Approved — correct call.' : 'Not the one a professional approves.');
-    if (consequencesDone && !fired) {
+    if (right && consequencesDone && !fired) {
+      const scoredRight = (firstPick ?? id) === 'b';
       setFired(true);
       announceComplete('Stage 1 complete.');
-      onComplete({ workmanship: right ? 100 : 60, serviceability: right ? 90 : 60 });
+      onComplete({ workmanship: scoredRight ? 100 : 60, serviceability: scoredRight ? 90 : 60 });
     }
   };
 
@@ -365,13 +371,15 @@ export function WhyScene({ width, completed, onComplete, openSources }: CiModule
           {EXAMPLES.map((ex) => {
             const picked = pick === ex.id;
             const revealed = pick != null;
+            // After a wrong reveal only the correct install stays tappable.
+            const locked = revealed && (pick === 'b' || ex.id !== 'b');
             return (
               <View key={ex.id} style={[styles.example, picked && styles.examplePicked]}>
                 <Pressable
                   onPress={() => choose(ex.id)}
-                  disabled={revealed}
+                  disabled={locked}
                   accessibilityRole="button"
-                  accessibilityState={{ selected: picked, disabled: revealed }}
+                  accessibilityState={{ selected: picked, disabled: locked }}
                   accessibilityLabel={`${ex.name}. ${ex.caption}${revealed ? (ex.verdict === 'good' ? '. This is the correct approval.' : '. Not approvable.') : ''}`}
                   style={{ gap: 8 }}
                 >
@@ -400,16 +408,19 @@ export function WhyScene({ width, completed, onComplete, openSources }: CiModule
             {!consequencesDone ? (
               <Text style={styles.pendingNote}>Review all six consequences above to complete this stage.</Text>
             ) : null}
+            {pick != null && pick !== 'b' ? (
+              <Text style={styles.pendingNote}>Now approve the one that earns sign-off.</Text>
+            ) : null}
           </View>
           </Appear>
         ) : null}
-        {pick != null && consequencesDone && !fired ? (
+        {pick === 'b' && consequencesDone && !fired ? (
           <Pressable
             style={styles.finishBtn}
             onPress={() => {
               setFired(true);
               announceComplete('Stage 1 complete.');
-              onComplete({ workmanship: pick === 'b' ? 100 : 60, serviceability: pick === 'b' ? 90 : 60 });
+              onComplete({ workmanship: firstPick === 'b' ? 100 : 60, serviceability: firstPick === 'b' ? 90 : 60 });
             }}
             accessibilityRole="button"
             accessibilityLabel="Complete stage one"

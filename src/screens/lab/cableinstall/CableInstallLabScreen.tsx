@@ -45,6 +45,7 @@ import {
 } from './motion';
 import { CI_MYTHS } from './data/scenarios';
 import { CI_DIMS, CI_DIM_META, masteryBlocks, mergeDims, overallScore, weakestDim, type CiDimScores } from './engine/score';
+import { useLabClearedUnits } from '../../../features/lab/labCompletion';
 import {
   CI_FIELD_CHECK,
   CI_GOVERN_NOTE,
@@ -86,6 +87,7 @@ export function CableInstallLabScreen() {
   const scrollRef = useRef<ScrollView | null>(null);
 
   const { complete: labComplete, cleared, total } = useLabCompletion(LAB_KEY);
+  const clearedUnits = useLabClearedUnits(LAB_KEY);
 
   useEffect(() => {
     registerLabUnits(LAB_KEY, CI_LAB_UNITS);
@@ -282,7 +284,7 @@ export function CableInstallLabScreen() {
               );
             })}
             <Text style={styles.dotsCount}>
-              {cleared}/{total}
+              {cleared}/{total} units
             </Text>
           </View>
         </>
@@ -332,7 +334,7 @@ export function CableInstallLabScreen() {
               <Text style={styles.stageTitle}>{mod.title}</Text>
               <Text style={styles.stageIntro}>{mod.intro}</Text>
               {width > 0 ? (
-                <Body width={width} completed={modDone} onComplete={onModuleComplete} openSources={openSources} />
+                <Body width={width} completed={modDone} onComplete={onModuleComplete} openSources={openSources} clearedUnits={clearedUnits} />
               ) : null}
             </Appear>
           ) : null}
@@ -340,15 +342,21 @@ export function CableInstallLabScreen() {
 
         {step > INTRO_STEP && step < COMPLETE_STEP && !myth ? (
           <View style={styles.bottomNav}>
-            <GlassButton label="‹ BACK" tint="teal" height={44} fontSize={13} onPress={prev} />
-            <GlassButton
-              label={step === CI_MODULES.length ? (labComplete ? 'FINISH ✓' : modDone ? 'FINISH ✓' : 'COMPLETE THE STAGE') : modDone ? 'NEXT ›' : 'COMPLETE THE STAGE'}
-              tint={modDone ? 'green' : 'gold'}
-              height={44}
-              fontSize={13}
-              onPress={modDone ? next : undefined}
-              disabled={!modDone}
-            />
+            {/* flex wrappers (design pass 2026-08-31): the buttons rendered
+                content-width — BACK was a ~40pt-wide chiclet. */}
+            <View style={{ flex: 1 }}>
+              <GlassButton label="‹ BACK" tint="teal" height={44} fontSize={13} onPress={prev} />
+            </View>
+            <View style={{ flex: 2 }}>
+              <GlassButton
+                label={step === CI_MODULES.length ? (labComplete ? 'FINISH ✓' : modDone ? 'FINISH ✓' : 'COMPLETE THE STAGE') : modDone ? 'NEXT ›' : 'COMPLETE THE STAGE'}
+                tint={modDone ? 'green' : 'gold'}
+                height={44}
+                fontSize={13}
+                onPress={modDone ? next : undefined}
+                disabled={!modDone}
+              />
+            </View>
           </View>
         ) : null}
       </ScrollView>

@@ -42,7 +42,7 @@ import Svg, { Circle, Line, Path, Rect, Text as SvgText } from 'react-native-svg
 import type { SharedValue } from 'react-native-reanimated';
 import { colors, fonts } from '../../../../theme/tokens';
 import { OptionChip, lessonStyles } from '../../cable/lessons/bits';
-import { CiSection, RuleFeedback, announceComplete } from '../bits';
+import { CiSection, RuleFeedback, announceComplete, stableShuffle } from '../bits';
 import { CI_WALL_TYPES } from '../data/scenarios';
 import { clamp100 } from '../engine/score';
 import {
@@ -681,7 +681,7 @@ export function WallsScene({ width, completed, onComplete, openSources }: CiModu
                   WALL {wallIdx + 1} OF {CI_WALL_TYPES.length}: {wall.label}
                 </Text>
                 <View style={{ gap: 7 }}>
-                  {wall.actions.map((a, i) => (
+                  {stableShuffle(wall.actions).map(({ item: a }, i) => (
                     <Stagger key={a} index={i}>
                       <OptionChip
                         label={a}
@@ -732,7 +732,7 @@ export function WallsScene({ width, completed, onComplete, openSources }: CiModu
             </Text>
             <Text style={styles.qLabel}>TEMPORARY — a two-day event:</Text>
             <View style={{ gap: 7 }}>
-              {S3_TEMP.map((o, i) => (
+              {stableShuffle(S3_TEMP).map(({ item: o }, i) => (
                 <Stagger key={o.id} index={i}>
                   <OptionChip label={o.label} active={tempPick === o.id} disabled={tempOk && tempPick !== o.id} onPress={() => pickTemp(o.id)} />
                 </Stagger>
@@ -745,7 +745,7 @@ export function WallsScene({ width, completed, onComplete, openSources }: CiModu
             ) : null}
             <Text style={styles.qLabel}>PERMANENT — a system that stays:</Text>
             <View style={{ gap: 7 }}>
-              {S3_PERM.map((o, i) => (
+              {stableShuffle(S3_PERM).map(({ item: o }, i) => (
                 <Stagger key={o.id} index={i}>
                   <OptionChip label={o.label} active={permPick === o.id} disabled={permOk && permPick !== o.id} onPress={() => pickPerm(o.id)} />
                 </Stagger>
@@ -769,7 +769,7 @@ export function WallsScene({ width, completed, onComplete, openSources }: CiModu
               corrects when you do.
             </Text>
             <View style={{ gap: 7 }}>
-              {S4_OPTS.map((o, i) => (
+              {stableShuffle(S4_OPTS).map(({ item: o }, i) => (
                 <Stagger key={o.id} index={i}>
                   <OptionChip label={o.label} active={edgePick === o.id} disabled={s4Done && edgePick !== o.id} onPress={() => pickEdge(o.id)} />
                 </Stagger>
