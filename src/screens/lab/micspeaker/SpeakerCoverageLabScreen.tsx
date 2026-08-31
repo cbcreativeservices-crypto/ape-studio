@@ -42,10 +42,11 @@ const DISPERSIONS: { key: string; label: string; hDeg: number; vDeg: number; blu
 
 // Honesty text — silk-screened on the faceplate under each staged display
 // (verbatim from the pre-rack IllustrationBadge, §1.7).
-const TOP_BADGE =
-  'CONCEPTUAL LEVEL MAP — ILLUSTRATIVE MODEL, NOT AN SPL PREDICTION (REAL ROOMS, REFLECTIONS & ARRAY BEHAVIOR DIFFER)';
-const SIDE_BADGE =
-  'CONCEPTUAL LEVEL MAP — illustrative model, NOT an SPL prediction; heads are tinted by whether the vertical pattern reaches them (real rooms, reflections & arrays differ)';
+// Short enough to survive two lines at 375 with no ellipsis — an honesty badge
+// truncated mid-sentence is a weakened badge (design pass 2026-08-31). The
+// caveat detail lives in the guided lesson.
+const TOP_BADGE = 'CONCEPTUAL LEVEL MAP — ILLUSTRATIVE MODEL, NOT AN SPL PREDICTION';
+const SIDE_BADGE = 'CONCEPTUAL LEVEL MAP — ILLUSTRATIVE, NOT SPL · head tint = does the vertical pattern reach them';
 
 // Heat-map legend, SAMPLED FROM THE MAP'S OWN COLORMAP.
 //
@@ -81,12 +82,38 @@ function Legend() {
   );
 }
 
+const TOP_CHECK: CheckSpec = {
+  question: 'Two mains overlap across the middle seats and the map runs HOT there. In a real room those seats hear…',
+  options: [
+    'Cleaner, louder sound — two speakers always beat one',
+    'Rough, comb-filtered sound — two arrivals of the same signal interfere',
+    'No difference — the colors only add in the drawing',
+  ],
+  correctIdx: 1,
+  reveal:
+    'Where both boxes cover the same seats, energy piles up AND the two arrival times interfere — boosting some frequencies, cancelling others (comb filtering, the Wave lab’s Module 7). Real designs minimize or carefully control overlap.',
+  wrongHint: 'Watch the ridge where the two wedges cross — then re-read WHAT’S HAPPENING.',
+};
+
+const READING_CHECK: CheckSpec = {
+  question: 'A seat painted BLACK on the coverage map is…',
+  options: [
+    'Just far away — it will still hear fine',
+    'A dead zone — the pattern never arrives; it needs a fill or a delay box',
+    'Too loud — black marks the hottest spots',
+  ],
+  correctIdx: 1,
+  reveal:
+    'BLACK means the pattern never reaches that seat at a workable level — a dead zone. Distance alone paints cool blues; black is geometry failing. The fixes are aim, fills, or a delay speaker — never just level.',
+  wrongHint: 'Check the legend: which end of the ramp is black on?',
+};
+
 const SIDE_CHECK: CheckSpec = {
   question:
     'When the rear seats have low coverage level while the front seats are at their full level, the classic fix is…',
   options: [
     'Turn the whole system up',
-    'Raise the speaker and aim the speaker to cover both the front and back more evenly.',
+    'Raise it and tilt it down — height plus aim evens out front and back',
     'Move the speaker closer to the front row',
   ],
   correctIdx: 1,
@@ -123,6 +150,7 @@ function ConceptsSection({ help }: { help: (k: string) => void }) {
           height, and pattern choice decide who stands in the beam.
         </Text>
       </CollapsibleSection>
+      <CheckQuestion spec={READING_CHECK} />
     </View>
   );
 }
@@ -510,7 +538,9 @@ export function SpeakerCoverageLabScreen() {
               </Text>
             )}
           </CollapsibleSection>
+          {sectionIdx === 0 ? <CheckQuestion spec={TOP_CHECK} /> : null}
           {sectionIdx === 1 ? <CheckQuestion spec={SIDE_CHECK} /> : null}
+
           <LessonRow onPress={() => help(undefined)} />
           <FutureAudioNote />
         </RackUnit>

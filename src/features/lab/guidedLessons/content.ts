@@ -932,10 +932,10 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     whatItIs:
       'A visual-first lab on getting sound TO people: dispersion, aiming, mounting height, ' +
       'coverage overlap, hot spots, dead zones, front fills, and the delay-speaker concept. ' +
-      'The coverage map is a conceptual teaching model (within-pattern × distance falloff in ' +
-      'four color bands) — never an SPL prediction.',
+      'The coverage map is a conceptual teaching model (within-pattern × distance falloff on ' +
+      'the continuous level ramp) — never an SPL prediction.',
     controls: [
-      { key: 'top_view', name: 'Top view (what the display shows)', definition: 'The room from above: stage strip at top, audience below, colored per seat-area — GREEN ideal, YELLOW acceptable, RED excessive (hot spot/overlap), GRAY insufficient (dead zone). Conceptual model, not SPL.' },
+      { key: 'top_view', name: 'Top view (what the display shows)', definition: 'The room from above: stage strip at top, audience below, colored per seat on the continuous level ramp — warm where the pattern lands strong, cool where it thins, BLACK where it never arrives (dead zone). Conceptual model, not SPL.' },
       { key: 'position', name: 'Speaker position', definition: 'Slides the selected cabinet along the stage line. Position decides WHERE the pattern lands — center clusters cover evenly but can leave sides gray; left/right pairs cover wide but overlap in the middle.' },
       { key: 'aim', name: 'Aim', definition: 'Rotates the cabinet. The pattern is a beam: aim it at the seats, not the walls. A few degrees moves the whole green zone — aiming is free; extra speakers are not.' },
       { key: 'dispersion', name: 'Dispersion (H° × V°)', definition: 'The nominal wedge a cabinet controls — 60°×40° throws far and narrow, 120°×60° covers wide and close. Narrower patterns need more careful aim; wider ones fall off faster with distance.' },
@@ -945,7 +945,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'height_tilt', name: 'Height & down-tilt', definition: 'The core move of system design: aim the LOUD center of the vertical pattern at the FAR seats and let the pattern edge graze the near ones — distance and pattern cancel, front and back hear alike. That is why speakers fly.' },
       { key: 'room_shape', name: 'Room shape (stage · ceiling · depth · slope)', definition: 'Stage height changes where the speaker can sit; ceiling limits how high you can fly; audience depth decides whether one box can cover at all; sloped seating lifts the rear rows INTO the pattern — the room is half the design.' },
       { key: 'delay_speaker', name: 'Delay speaker (concept)', definition: 'A second cabinet deeper in the room covering the seats the mains cannot reach. Concept only here — in practice it is time-ALIGNED to the mains so both arrivals fuse into one sound (that alignment is the “delay”).' },
-      { key: 'coverage_legend', name: 'Reading the coverage map', definition: 'GREEN = in the pattern at a workable level. YELLOW = pattern edge, getting quiet. RED = too much — point-blank seats or heavy overlap. GRAY = the pattern never arrives. The goal of every placement decision: maximum green, zero gray, minimum red.' },
+      { key: 'coverage_legend', name: 'Reading the coverage map', definition: 'The map paints the ramp itself: warm = strong direct level, green = the working target, cool blue = thinning, BLACK = the pattern never arrives (a dead zone). Point-blank seats and heavy overlap run hot. The goal of every placement decision: the audience on the green, no black, as little red as possible.' },
     ],
     commonMistakes: [
       'Aiming speakers AT the room instead of AT the audience — walls don’t buy tickets; they only reflect.',
@@ -960,7 +960,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'Design order: pick dispersion for the room shape → set height/tilt for depth → aim → then fills and delays for whatever is still gray.',
       'Walk the room in the map: check the worst seat (far corner, front edge, under-balcony) — if those are green, the middle takes care of itself.',
     ],
-    formula: 'Conceptual coverage: level ∝ (within-dispersion gain) × 1/dⁿ, classified GREEN/YELLOW/RED/GRAY. Direct level falls ~6 dB per doubling of distance — height + tilt equalize front-to-back by geometry.',
+    formula: 'Conceptual coverage: level ∝ (within-dispersion gain) × 1/dⁿ, painted on the continuous level ramp. Direct level falls ~6 dB per doubling of distance — height + tilt equalize front-to-back by geometry.',
   },
 
   // ──────────────── ELECTRONICS · Vacuum Tube Fundamentals (2026-07-29) ──

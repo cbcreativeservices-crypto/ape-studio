@@ -3912,7 +3912,10 @@ export function SideCoverageView({
       // Every box contributes its own tight beam; run-length merged into the
       // SAME ≤32 bucket paths, so the field the audience sees is the array SUM.
       for (const b of arrayBoxes) {
-        srcs.push({ x: b.x, y: b.y, axis: (b.tilt * Math.PI) / 180, half: 7, refD: w * 0.52, scale: 0.5 });
+        // Normalized ∝ 1/√N (design+learning pass 2026-08-31): each box at a
+        // fixed 0.5 made the SUM saturate the ramp — the "even coverage"
+        // solution state painted the room red, the map's own fault colour.
+        srcs.push({ x: b.x, y: b.y, axis: (b.tilt * Math.PI) / 180, half: 7, refD: w * 0.52, scale: 0.9 / Math.sqrt(arrayBoxes.length) });
       }
     } else {
       // Shorter reference distance (owner 2026-08-05): a single box falls into
@@ -3930,7 +3933,7 @@ export function SideCoverageView({
         axis: (aA + aB) / 2,
         half: (((aB - aA) / 2) * 180) / Math.PI,
         refD: w * 0.3,
-        scale: 0.7,
+        scale: 0.55,
       });
     }
     if (rearDelayOn) {
