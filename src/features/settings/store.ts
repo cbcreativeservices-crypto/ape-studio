@@ -24,7 +24,6 @@ export type FontSize = 13 | 16 | 19 | 24;
 export const FONT_SIZES: FontSize[] = [13, 16, 19, 24];
 
 export type LocalSettings = {
-  darkMode: boolean; // dark is the only shipped theme; stored for spec parity
   fontSize: FontSize;
   highContrast: boolean;
   colorBlind: ColorBlindMode;
@@ -58,7 +57,6 @@ export type LocalSettings = {
 };
 
 export const DEFAULT_LOCAL_SETTINGS: LocalSettings = {
-  darkMode: true,
   fontSize: 16,
   highContrast: false,
   colorBlind: 'off',

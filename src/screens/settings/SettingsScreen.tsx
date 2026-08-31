@@ -395,11 +395,13 @@ export function SettingsScreen({ navigation }: Props) {
           title="DISPLAY & ACCESSIBILITY"
           summary={local.reduceAnimations || osReduceMotionOn() ? 'reduced motion' : undefined}
         >
-          <View style={[styles.row, styles.rowBorder]}>
-            <Text style={styles.rowLabel}>Dark mode</Text>
-            {/* Dark is the only shipped theme — value stored, control inert. */}
-            <Toggle on={local.darkMode} disabled label="Dark mode" onChange={(v) => setLocalKey('darkMode', v)} />
-          </View>
+          {/* DARK MODE ROW REMOVED (owner 2026-08-31: "I don't want the other
+              mode — so no confusion"). It was a permanently `disabled` switch
+              wired to a field nothing read: there is no light palette, and
+              app.json pins userInterfaceStyle to dark. A control that invites a
+              tap and cannot move teaches people the settings cannot be trusted
+              — the same reason the text-size and contrast chips went on
+              2026-08-30. */}
 
           {/* TEXT SIZE, CONTRAST AND COLOUR NOW DEFER TO THE PHONE (owner
               2026-08-30). The in-app font-size chips were competing with
