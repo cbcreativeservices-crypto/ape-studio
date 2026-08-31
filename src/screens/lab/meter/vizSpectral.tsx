@@ -344,9 +344,13 @@ export function SpectrumPatternView(p: {
             scale — blue quiet at the floor → red loud at the top (owner
             2026-08-05). The top of every Hz band is therefore its level color. */}
         <Path path={bars.body}>
+          {/* pos 0 of LOUDNESS_STOPS is RED (full scale) — it must sit at the
+              TOP (PAD_T). start/end were swapped, painting the quiet floor red
+              and the loud tops blue: the exact inversion of the ramp and of
+              this comment's own promise (design pass 2026-08-31). */}
           <LinearGradient
-            start={vec(0, baseY)}
-            end={vec(0, PAD_T)}
+            start={vec(0, PAD_T)}
+            end={vec(0, baseY)}
             colors={LOUDNESS_STOPS.map((s) => s.color)}
             positions={LOUDNESS_STOPS.map((s) => s.pos)}
           />

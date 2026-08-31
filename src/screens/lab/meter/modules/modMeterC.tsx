@@ -19,10 +19,11 @@
  * HONESTY: every display is driven by deterministic SYNTHESIZED TEACHING
  * SIGNALS from meterEngine (badged). Nothing here measures real audio.
  */
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { DisplayGuideButton } from '../../../../features/lab/guidedLessons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { markLabUnit, PASS_UNIT } from '../../../../features/lab/labCompletion';
 import { LabChip, CollapsibleSection } from '../../LabShell';
 import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
@@ -633,13 +634,38 @@ type DetectiveCase = {
 
 const RING_OPTS: WaterfallOpts = { room: 'classroom', damping01: 0.15, eqGains: {}, eqFilter: 'bell220q6', qRing: false, reverb: 'none' };
 
+// -- Solved-question store (learning pass 2026-08-31) -----------------------
+// ape:* prefix means it is wiped on account switch with every other local
+// mirror (clearLocalAccountData).
+const SOLVED_KEY = 'ape:detectiveSolved';
+let solvedCache: Set<string> | null = null;
+async function hydrateSolved(): Promise<Set<string>> {
+  if (solvedCache) return solvedCache;
+  try {
+    const raw = await AsyncStorage.getItem(SOLVED_KEY);
+    const arr = raw ? (JSON.parse(raw) as unknown) : null;
+    solvedCache = new Set(Array.isArray(arr) ? arr.filter((x): x is string => typeof x === 'string') : []);
+  } catch {
+    solvedCache = new Set();
+  }
+  return solvedCache;
+}
+function persistSolved(s: Set<string>): void {
+  solvedCache = new Set(s);
+  void AsyncStorage.setItem(SOLVED_KEY, JSON.stringify([...s])).catch(() => {});
+}
+
+// Options de-cued (learning pass 2026-08-31): the correct answer was
+// systematically the LONGEST and carried its own definition -- a length cue
+// the shuffle cannot fix. Correct options now match distractor register; the
+// reveals carry the teaching. NEW COPY -- owner review.
 const CASES: DetectiveCase[] = [
   {
     kind: 'dc',
     visHz: 0.7,
     what: {
       question: 'WHAT METER IS THIS?',
-      options: ['A goniometer', 'A waveform display — amplitude vs time', 'A spectrum analyzer', 'A loudness history'],
+      options: ['A goniometer', 'A waveform display', 'A spectrum analyzer', 'A loudness history'],
       correctIdx: 1,
       reveal:
         'The DAW picture: amplitude on the vertical axis, time running left to right, with the zero line through the middle and the 0 dBFS rails at the edges.',
@@ -650,7 +676,7 @@ const CASES: DetectiveCase[] = [
       options: [
         'A wave clipping both rails',
         'Random broadband noise',
-        'A smooth wave whose CENTER rides above the zero line',
+        'A wave riding above the zero line',
         'Two channels out of phase',
       ],
       correctIdx: 2,
@@ -660,7 +686,7 @@ const CASES: DetectiveCase[] = [
     },
     problem: {
       question: 'WHAT PROBLEM DO YOU SEE?',
-      options: ['Aliasing', 'Mains hum', 'Phase cancellation', 'DC OFFSET — energy at 0 Hz shoving the waveform off center'],
+      options: ['Aliasing', 'Mains hum', 'Phase cancellation', 'DC offset'],
       correctIdx: 3,
       reveal:
         'A constant (0 Hz) component rides under the audio. It eats headroom asymmetrically — the top clips early while the bottom has room to spare — parks speaker cones off-center, and makes edits click.',
@@ -670,7 +696,7 @@ const CASES: DetectiveCase[] = [
       question: 'WHAT PROCESSOR/ACTION FIXES IT?',
       options: [
         'A compressor',
-        'A DC filter / gentle high-pass — remove 0 Hz and the subsonics, recentering the wave',
+        'A gentle high-pass / DC filter',
         'A stereo widener',
         'A de-esser',
       ],
@@ -685,7 +711,7 @@ const CASES: DetectiveCase[] = [
     visHz: 0.9,
     what: {
       question: 'WHAT METER IS THIS?',
-      options: ['A VU meter', 'A spectrogram', 'A segmented digital PEAK meter with peak-hold and an OVER lamp', 'A correlation meter'],
+      options: ['A VU meter', 'A spectrogram', 'A digital peak meter', 'A correlation meter'],
       correctIdx: 2,
       reveal:
         'A segment ladder in dBFS with a hold bar parked at the recent maximum and an OVER lamp that latches when full scale is hit — the digital recording safety meter.',
@@ -695,7 +721,7 @@ const CASES: DetectiveCase[] = [
       question: 'WHAT DOES IT SHOW?',
       options: [
         'Average loudness in LUFS',
-        'Instantaneous peaks pinned at the top — and the OVER lamp is latched',
+        'Peaks pinned at the top, OVER latched',
         'Frequency balance',
         'Stereo width',
       ],
@@ -707,7 +733,7 @@ const CASES: DetectiveCase[] = [
     problem: {
       question: 'WHAT PROBLEM DO YOU SEE?',
       options: [
-        'The channel is CLIPPING — the level is slamming 0 dBFS',
+        'The channel is clipping',
         'Too much bass',
         'Nothing — meters should look like this',
         'Feedback',
@@ -723,7 +749,7 @@ const CASES: DetectiveCase[] = [
         'EQ out the high frequencies',
         'Turn the monitor volume down',
         'Add reverb to soften it',
-        'GAIN STAGING — trim the level upstream until peaks stop reaching full scale',
+        'Trim the gain upstream',
       ],
       correctIdx: 3,
       reveal:
@@ -736,7 +762,7 @@ const CASES: DetectiveCase[] = [
     visHz: 0.6,
     what: {
       question: 'WHAT METER IS THIS?',
-      options: ['A spectrum analyzer — level vs frequency', 'A waveform display', 'A waterfall (CSD)', 'A phase meter'],
+      options: ['A spectrum analyzer', 'A waveform display', 'A waterfall (CSD)', 'A phase meter'],
       correctIdx: 0,
       reveal:
         'Level on the vertical axis, frequency on a log horizontal axis, one snapshot in time — the display that answers WHAT frequencies the signal is made of.',
@@ -747,7 +773,7 @@ const CASES: DetectiveCase[] = [
       options: [
         'Broadband pink noise',
         'One tall spike at 1.75 kHz',
-        'A comb of narrow spikes at 60 Hz and its multiples — 120, 180, 240 Hz…',
+        'Spikes at 60 Hz and its exact multiples',
         'A speech formant pattern',
       ],
       correctIdx: 2,
@@ -759,7 +785,7 @@ const CASES: DetectiveCase[] = [
       question: 'WHAT PROBLEM DO YOU SEE?',
       options: [
         'Feedback building up',
-        'MAINS HUM — a ground loop or induction leaking the power line into the audio',
+        'Mains hum',
         'DC offset',
         'Aliasing',
       ],
@@ -774,7 +800,7 @@ const CASES: DetectiveCase[] = [
         'A limiter',
         'Boost the low end to mask it',
         'A stereo widener',
-        'Fix the GROUNDING — one ground path, balanced lines — then narrow hum-removal notches for any residue',
+        'Fix the grounding, then notch the residue',
       ],
       correctIdx: 3,
       reveal:
@@ -787,7 +813,7 @@ const CASES: DetectiveCase[] = [
     visHz: 0.5,
     what: {
       question: 'WHAT METER IS THIS?',
-      options: ['An oscilloscope', 'A peak meter', 'A spectrogram — time →, frequency ↑, color = level', 'A stereo image display'],
+      options: ['An oscilloscope', 'A peak meter', 'A spectrogram', 'A stereo image display'],
       correctIdx: 2,
       reveal:
         'Time runs left to right, frequency climbs the vertical axis, and color carries level — the display that shows how the spectrum CHANGES over time.',
@@ -796,7 +822,7 @@ const CASES: DetectiveCase[] = [
     shows: {
       question: 'WHAT DOES IT SHOW?',
       options: [
-        'One horizontal line that gets hotter and hotter as time passes',
+        'One horizontal line, growing hotter',
         'Vertical stripes on every beat',
         'A broadband noise wash',
         'A falling whistle',
@@ -810,7 +836,7 @@ const CASES: DetectiveCase[] = [
       question: 'WHAT PROBLEM DO YOU SEE?',
       options: [
         'Tape hiss',
-        'FEEDBACK — one frequency ringing and growing between a microphone and a speaker',
+        'Feedback between a mic and a speaker',
         'A synthesizer pad',
         'A dropped channel',
       ],
@@ -823,7 +849,7 @@ const CASES: DetectiveCase[] = [
       question: 'WHAT PROCESSOR/ACTION FIXES IT?',
       options: [
         'Compress the mix bus',
-        'RING IT OUT — a narrow notch at the ringing frequency, plus fix the mic-speaker geometry (move, aim, distance)',
+        'Notch the ringing frequency, fix the geometry',
         'A subharmonic synthesizer',
         'More reverb',
       ],
@@ -844,7 +870,7 @@ const CASES: DetectiveCase[] = [
         'A spectrogram',
         'A loudness meter',
         'A goniometer',
-        'A WATERFALL / cumulative spectral decay — frequency × amplitude × time receding',
+        'A waterfall (CSD)',
       ],
       correctIdx: 3,
       reveal:
@@ -855,7 +881,7 @@ const CASES: DetectiveCase[] = [
       question: 'WHAT DOES IT SHOW?',
       options: [
         'All frequencies decaying at the same speed',
-        'A ridge near 250 Hz still standing long after everything around it has decayed',
+        'A ridge near 250 Hz that will not decay',
         'A peak-hold bar',
         'Two channels cancelling',
       ],
@@ -867,7 +893,7 @@ const CASES: DetectiveCase[] = [
     problem: {
       question: 'WHAT PROBLEM DO YOU SEE?',
       options: [
-        'The room RINGS at ~250 Hz — a room mode/resonance with a much longer decay than its neighbors',
+        'A room mode ringing at ~250 Hz',
         'Clipping',
         'Mains hum',
         'DC offset',
@@ -882,7 +908,7 @@ const CASES: DetectiveCase[] = [
       options: [
         'Cut 250 Hz on an EQ — problem solved',
         'A noise gate',
-        'ACOUSTIC TREATMENT — absorption/bass trapping effective at that frequency; EQ can lower the level but cannot shorten the decay',
+        'Acoustic treatment tuned to that frequency',
         'A brighter loudspeaker',
       ],
       correctIdx: 2,
@@ -898,7 +924,7 @@ const CASES: DetectiveCase[] = [
       question: 'WHAT METER IS THIS?',
       options: [
         'A VU meter',
-        'A correlation meter with its goniometer dot cloud',
+        'A correlation meter + goniometer',
         'A spectrum analyzer',
         'A waveform display',
       ],
@@ -910,7 +936,7 @@ const CASES: DetectiveCase[] = [
     shows: {
       question: 'WHAT DOES IT SHOW?',
       options: [
-        'Correlation parked near −1, the cloud stretched along the anti-phase diagonal',
+        'Correlation parked near −1',
         'Correlation at +1 — pure mono',
         'A healthy wide mix around +0.5',
         'A level imbalance toward the left channel',
@@ -926,7 +952,7 @@ const CASES: DetectiveCase[] = [
         'Too much stereo width',
         'The right channel is muted',
         'Hum',
-        'The channels are nearly OPPOSITE POLARITY — any mono sum will cancel toward silence',
+        'The channels are nearly opposite polarity',
       ],
       correctIdx: 3,
       reveal:
@@ -937,7 +963,7 @@ const CASES: DetectiveCase[] = [
       question: 'WHAT PROCESSOR/ACTION FIXES IT?',
       options: [
         'Acoustic treatment',
-        'POLARITY / PHASE FIX — flip Ø on the inverted channel, or fix the miswired cable / timing misalignment causing it',
+        'Flip Ø on the inverted channel',
         'A limiter',
         'Turn the monitors up',
       ],
@@ -955,7 +981,7 @@ const CASES: DetectiveCase[] = [
       options: [
         'A digital peak meter',
         'A loudness (LUFS) meter',
-        'A classic VU meter — with a fast peak LED beside the face',
+        'A VU meter with a peak LED',
         'A Lissajous display',
       ],
       correctIdx: 2,
@@ -967,7 +993,7 @@ const CASES: DetectiveCase[] = [
       question: 'WHAT DOES IT SHOW?',
       options: [
         'The needle pinned in the red',
-        'The needle sitting low while the peak LED flashes on every hit',
+        'Needle low, peak LED firing on every hit',
         'A steady tone parked at 0 VU',
         'DC offset',
       ],
@@ -982,7 +1008,7 @@ const CASES: DetectiveCase[] = [
         'The meter is broken — the needle and the LED disagree',
         'The channel is clipping',
         'Phase cancellation',
-        'NOTHING is wrong — snare hits have a huge crest factor: high peaks, low average. Each display reads its own truth',
+        'Nothing — high crest factor, both meters honest',
       ],
       correctIdx: 3,
       reveal:
@@ -993,7 +1019,7 @@ const CASES: DetectiveCase[] = [
       question: 'WHAT PROCESSOR/ACTION FIXES IT?',
       options: [
         'Compress until the needle and LED finally agree',
-        'NONE — it is informational. Read both: the needle for perceived level, the LED for peak safety',
+        'None — read both; they answer different questions',
         'Replace the VU with a faster needle',
         'A high-pass filter',
       ],
@@ -1039,6 +1065,19 @@ export function DetectiveModule(p: MeterModuleProps) {
   const [idx, setIdx] = useState(0);
   // One question at a time within the current case (owner 2026-08-05).
   const [step, setStep] = useState(0);
+  // Hydrate previously-solved questions once (module cache first, then disk).
+  useEffect(() => {
+    let live = true;
+    void hydrateSolved().then((set) => {
+      if (!live) return;
+      set.forEach((k) => solvedRef.current.add(k));
+      setSolvedN(solvedRef.current.size);
+    });
+    return () => {
+      live = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const n = CASES.length;
   const kase = CASES[idx];
   const specs = [kase.what, kase.shows, kase.problem, kase.fix];
@@ -1047,11 +1086,14 @@ export function DetectiveModule(p: MeterModuleProps) {
   // question of every case answered correctly at least once (the whole
   // graduation deck). CheckQuestion remounts per case+step, so aggregate here.
   // solvedN mirrors the ref as state so the bezel SOLVED cell reads live.
-  const solvedRef = useRef<Set<string>>(new Set());
-  const [solvedN, setSolvedN] = useState(0);
+  // Persisted (learning pass 2026-08-31): this used to be a bare useRef, so
+  // backing out of the module at 27/28 threw the whole run away.
+  const solvedRef = useRef<Set<string>>(new Set(solvedCache ?? []));
+  const [solvedN, setSolvedN] = useState(solvedRef.current.size);
   const onSolved = () => {
     solvedRef.current.add(`${idx}-${step}`);
     setSolvedN(solvedRef.current.size);
+    persistSolved(solvedRef.current);
     if (solvedRef.current.size >= n * qCount) markLabUnit('af_signal_detective', PASS_UNIT);
   };
   const goCase = (next: number) => {

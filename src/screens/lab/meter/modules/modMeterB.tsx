@@ -295,7 +295,7 @@ export function SpectrumModule(p: MeterModuleProps) {
         bezel: [
           { k: 'PATTERN', v: SPECTRUM_LABELS[pattern].toUpperCase(), helpKey: 'spectral_patterns', flex: 1.4 },
           { k: 'PEAK', v: fmtHz(scan.peakF), helpKey: 'spectrum_read' },
-          { k: 'LEVEL', v: `${scan.peakDb.toFixed(1)} dB rel`, helpKey: 'spectrum_read' },
+          { k: 'LEVEL', v: `${(Math.abs(scan.peakDb) < 0.05 ? 0 : scan.peakDb).toFixed(1)} dB rel`, helpKey: 'spectrum_read' },
           { k: 'TILT', v: `${scan.tiltDbOct >= 0 ? '+' : ''}${scan.tiltDbOct.toFixed(1)}/oct`, helpKey: 'spectrum_read' },
         ],
         render: (w, h) =>
@@ -548,7 +548,7 @@ const FIELD_GUIDE: { title: string; helpKey: string; caption: string }[] = [
     title: 'EQ EFFECTS',
     helpKey: 'eq_ridge',
     caption:
-      'Boost 250 Hz +12 dB: the mountain grows TALLER there — but not LONGER. Taller ≠ longer: level (Y) and decay (Z) are different axes. Now cut −12 and watch the ridge sink while keeping its length.',
+      'Boost the 220 Hz bell +12 dB: that region grows TALLER — but not LONGER. Taller ≠ longer: level (Y) and decay (Z) are different axes. Now cut −12 and watch it sink while the 250 Hz ridge keeps its length.',
   },
   {
     title: 'RINGING FILTERS',
