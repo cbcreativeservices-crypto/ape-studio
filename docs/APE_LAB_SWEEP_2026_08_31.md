@@ -369,3 +369,43 @@ reports what it *thinks* it saw is worth less than one that checks.
 Anything audible (mic input, tone output, DSP correctness), haptics,
 orientation, native modules, device performance, and any interaction riding on
 SVG `<G onPress>`. Those need the device pass.
+
+---
+
+## NEEDS A DEVICE CHECK · Audio Learning — the Fundamentals card loses its title
+
+**What you see (web preview, both 375 px and 800 px):** on the AUDIO LEARNING
+screen, the **Audio Fundamentals** card renders with **no 📘 icon and no title**
+— only a clipped sliver of the FREE TO START badge at its top edge — and a
+matching empty strip of artwork at the card's bottom. The Advanced Training Labs
+card directly below it renders perfectly. The card that says "start here" does
+not say what it is.
+
+**Measured, not eyeballed:**
+
+| | content box top | card frame top | result |
+|---|---|---|---|
+| Audio Fundamentals | 143 | 198 | content sits **55 px above its own frame**, clipped by `overflow: hidden` |
+| Advanced Training Labs | 506 | 505 | aligned |
+
+**What I ruled out:**
+- *Scroll artifact* — reproduces with the scroll container forced to 0.
+- *Viewport width* — identical at 375 px and 800 px, so not responsive.
+- *The images* — `training-labs.png` 1672×941 and `audio-fundamentals.png`
+  1677×938 are effectively the same size and aspect.
+- *Content height* — hiding the extra "Required for every Academy certificate"
+  row live changed the offset not at all (143/198 before and after).
+
+**What I could not do:** root-cause it. The two cards' markup is structurally
+identical apart from that one extra row, and nothing in the source offsets the
+content. That points at a **react-native-web `ImageBackground` layout artifact**,
+which would mean it does **not** occur on a real device — RNW lays
+`ImageBackground` out differently from native.
+
+**Deliberately NOT fixed.** Changing layout I cannot reproduce natively risks
+breaking a card that is fine on the phone. This needs ten seconds on the Pixel:
+open Audio Learning and look at whether the Fundamentals card shows its 📘 and
+its title. If it does, this is a web-preview artifact and can be closed. If it
+does not, it is a launch-blocking cosmetic bug on the app's main entry card and
+I will fix it immediately.
+
