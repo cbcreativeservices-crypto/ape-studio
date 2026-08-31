@@ -93,6 +93,12 @@ function scanSpectrum(key: SpectrumKey): { peakF: number; peakDb: number; tiltDb
  *  comes from the CHOSEN filter, not a constant. */
 const EQ_ON_RIDGE_OCT = 0.17;
 
+/** Signed dB with a true minus sign, e.g. "+6" / "−3" / "0". */
+function fmtGain(dbv: number): string {
+  if (dbv === 0) return '0';
+  return `${dbv > 0 ? '+' : '−'}${Math.abs(dbv)}`;
+}
+
 function dampingLabel(d: number): string {
   return d < 0.25 ? 'CONCRETE' : d < 0.5 ? 'CURTAINS' : d < 0.75 ? 'CARPET' : 'PANELS';
 }
@@ -598,7 +604,9 @@ export function WaterfallModule(p: MeterModuleProps) {
   const viz = useState(() => requireVizSpectral())[0];
   const [room, setRoom] = useState<RoomKey>('classroom');
   const [damping01, setDamping01] = useState(0.15);
-  const [eqBoostDb, setEqBoostDb] = useState(0);
+  // ONE GAIN PER BAND (owner 2026-08-30) — switching filters used to wipe the
+  // previous boost; now each band keeps its own and they all contribute.
+  const [eqGains, setEqGains] = useState<Partial<Record<EqFilterKey, number>>>({});
   // WHICH filter the EQ lane drives (owner 2026-08-30) — the lane used to be
   // hard-wired to a 250 Hz bell, so the lab could only teach one shape.
   const [eqFilter, setEqFilter] = useState<EqFilterKey>('bell220q6');
@@ -606,6 +614,10 @@ export function WaterfallModule(p: MeterModuleProps) {
   // Bumping this restarts the waterfall build (REPLAY, and any scene change).
   const [replay, setReplay] = useState(0);
   const [reverb, setReverb] = useState<ReverbKey>('none');
+  const eqGain = eqGains[eqFilter] ?? 0;
+  // How many OTHER bands are doing something — surfaced on the lane so a band
+  // sitting at 0 dB never looks like "the EQ is off" when another is boosted.
+  const othersOn = EQ_FILTERS.filter((f) => f.key !== eqFilter && (eqGains[f.key] ?? 0) !== 0).length;
 
   // ROOM and REVERB pick a different scene, so the range must play again from
   // the impulse — otherwise the new room appears already-decayed, frozen at
@@ -618,8 +630,8 @@ export function WaterfallModule(p: MeterModuleProps) {
 
 
   const opts = useMemo<WaterfallOpts>(
-    () => ({ room, damping01, eqBoostDb, eqFilter, qRing, reverb }),
-    [room, damping01, eqBoostDb, eqFilter, qRing, reverb],
+    () => ({ room, damping01, eqGains, eqFilter, qRing, reverb }),
+    [room, damping01, eqGains, eqFilter, qRing, reverb],
   );
   // Is the EQ lane parked on the frequency the room is ringing at? Same
   // slowest-vs-median rule and the same 1.5x threshold the plot uses to decide
@@ -666,16 +678,28 @@ export function WaterfallModule(p: MeterModuleProps) {
       kind: 'fader',
       id: 'eq',
       label: 'EQ',
-      value: (eqBoostDb + 12) / 24,
-      onChange: (v) => setEqBoostDb(Math.round(-12 + v * 24)),
-      format: () =>
-        `${eqBoostDb >= 0 ? '+' : '−'}${Math.abs(eqBoostDb)} dB · ${EQ_FILTER_BY_KEY[eqFilter].label}`,
-      formatShort: () => `${eqBoostDb >= 0 ? '+' : '−'}${Math.abs(eqBoostDb)} dB`,
+      // The lane edits the SELECTED band; the others keep their own gains.
+      value: (eqGain + 12) / 24,
+      onChange: (v) =>
+        setEqGains((g) => ({ ...g, [eqFilter]: Math.round(-12 + v * 24) })),
+      format: () => `${fmtGain(eqGain)} dB · ${EQ_FILTER_BY_KEY[eqFilter].label}${othersOn ? `  (+${othersOn} more)` : ''}`,
+      formatShort: () => `${fmtGain(eqGain)} dB`,
       chooser: {
-        title: 'EQ FILTER',
+        title: 'EQ BAND',
         selectedId: eqFilter,
         onSelect: (id) => setEqFilter(id as EqFilterKey),
-        options: EQ_FILTERS.map((f) => ({ id: f.key, label: f.label.toUpperCase(), blurb: f.blurb })),
+        // Each row shows that band's OWN gain, so it is obvious the others are
+        // still contributing rather than being replaced.
+        // Bands accumulate now, so there has to be a way back to flat.
+        onReset: { label: 'FLATTEN ALL BANDS', onPress: () => setEqGains({}) },
+        options: EQ_FILTERS.map((f) => {
+          const g = eqGains[f.key] ?? 0;
+          return {
+            id: f.key,
+            label: `${f.label.toUpperCase()}${g ? `  ${fmtGain(g)} dB` : ''}`,
+            blurb: f.blurb,
+          };
+        }),
       },
       helpKey: 'eq_ridge',
     },

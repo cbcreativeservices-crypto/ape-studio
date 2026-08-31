@@ -100,6 +100,7 @@ export function RackUnit({
           options: openParam.chooser.options,
           selectedId: openParam.chooser.selectedId,
           sticky: openParam.chooser.sticky,
+          onReset: openParam.chooser.onReset,
           onSelect: (id: string) => {
             openParam.chooser?.onSelect(id);
             // A sticky chooser stays open for A/B; the lane binds when the

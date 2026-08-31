@@ -269,9 +269,17 @@ export type WaterfallOpts = {
   /** 0 = concrete … 1 = heavy treatment (the damping slider). */
   damping01: number;
   /** EQ boost at 250 Hz, dB (−12..+12). */
-  eqBoostDb: number;
-  /** Which filter the EQ lane drives (owner 2026-08-30 — was a fixed 250 Hz
-   *  bell, so the lab could only ever teach one filter shape). */
+  /**
+   * Gain in dB for EACH EQ band (owner 2026-08-30: "switching eqs clears out
+   * the other rather than contributing"). It used to be a single shared gain,
+   * so choosing another filter simply moved that one boost somewhere else and
+   * the previous band's setting vanished. A real EQ has BANDS: every filter
+   * keeps its own gain and they sum, so you can lift 220 and cut 1 k at once
+   * and see both in the same picture.
+   */
+  eqGains: Partial<Record<EqFilterKey, number>>;
+  /** Which band the fader is currently editing (display/selection only — every
+   *  band in `eqGains` contributes regardless of which one is selected). */
   eqFilter: EqFilterKey;
   /** High-Q ringing filter on/off (adds a narrow long-decay ridge at 1.2 kHz). */
   qRing: boolean;
@@ -551,7 +559,11 @@ export function eqFilterShape(key: EqFilterKey, f: number): number {
 export function waterfallSpectrumDb(opts: WaterfallOpts, f: number): number {
   const lg = Math.log10(f);
   let v = -4 - 5 * Math.abs(lg - Math.log10(500)) * 0.6; // gentle broadband impulse
-  v += opts.eqBoostDb * eqFilterShape(opts.eqFilter, f);
+  // EVERY band contributes, not just the selected one.
+  for (const spec of EQ_FILTERS) {
+    const g = opts.eqGains[spec.key];
+    if (g) v += g * eqFilterShape(spec.key, f);
+  }
   if (opts.qRing) v += 7 * Math.exp(-Math.pow((lg - Math.log10(1200)) / 0.012, 2));
   return v;
 }

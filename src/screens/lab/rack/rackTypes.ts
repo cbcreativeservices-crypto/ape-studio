@@ -95,6 +95,9 @@ export type DockParam =
          *  glass reacts; the lane binds when the tray is closed instead of on
          *  each pick. Default = pick-and-go straight to the slider. */
         sticky?: boolean;
+        /** In-tray reset (reset-in-container rule) — e.g. "FLATTEN ALL BANDS"
+         *  when each option carries its own value. */
+        onReset?: { label: string; onPress: () => void };
       };
       helpKey?: string;
     }

@@ -1085,7 +1085,8 @@ export function WaterfallView(p: {
       return { t: tSec, x0, x1: x0 + frontW * (1 - 0.2 * cum), y };
     });
     return { slices, xL0, frontW, dxTot, dyTot, baseY, ampH, timeMarks, tMax, ringF };
-  }, [o.room, o.damping01, o.eqBoostDb, o.qRing, o.reverb, w, h]);
+    // Every band's gain feeds the surface, so key the memo on the map.
+  }, [o.room, o.damping01, o.eqGains, o.qRing, o.reverb, w, h]);
 
   // Fine axis annotations (all static memo geometry): front-edge freq ticks +
   // baseline, frequency GUIDE LINES running into the depth parallel to the
