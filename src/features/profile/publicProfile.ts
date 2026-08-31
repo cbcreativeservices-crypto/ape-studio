@@ -7,7 +7,12 @@
  * email — name, audio interests, and a single contact-consent flag only.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { fetchMyRegistryName, saveMyRegistryName } from './api';
+import {
+  fetchMyRegistryName,
+  fetchMyRegistryVisible,
+  saveMyRegistryName,
+  saveMyRegistryVisible,
+} from './api';
 
 /** Audio interest areas the user can flag for networking (multi-select). */
 export const INTEREST_TOPICS = [
@@ -83,6 +88,10 @@ export async function loadPublicProfile(): Promise<PublicProfile> {
   const remote = await fetchMyRegistryName();
   noteSyncedRegistryName(remote);
   if (remote) local = { ...local, registryName: remote };
+  // Visibility is server-truth, not a device preference: the public page's
+  // existence must not depend on which phone you last used.
+  const visible = await fetchMyRegistryVisible();
+  if (visible !== null) local = { ...local, showInRegistry: visible };
   return local;
 }
 
@@ -113,6 +122,16 @@ function queueRegistryNameSync(name: string): void {
       if (ok) lastSyncedRegistryName = trimmed;
     });
   }, REGISTRY_SYNC_IDLE_MS);
+}
+
+/**
+ * Publish / unpublish the registry page. Awaited and returns success, unlike
+ * the name sync — this one changes what the public can see, so the UI has to
+ * be able to revert the switch when the write fails rather than showing a
+ * privacy state the server does not share.
+ */
+export async function setRegistryVisible(on: boolean): Promise<boolean> {
+  return saveMyRegistryVisible(on);
 }
 
 export async function savePublicProfile(p: PublicProfile): Promise<void> {

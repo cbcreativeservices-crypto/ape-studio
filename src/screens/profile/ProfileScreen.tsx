@@ -10,8 +10,8 @@
  * 120 vs 160px). Layout ships at 120×120 with a stub pattern; encoding wires
  * after the ruling (react-native-qrcode-svg already installed).
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Alert, Image, Modal, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { KeyboardAwareScrollView } from '../../features/keyboard/keyboardControllerSafe';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -23,9 +23,9 @@ import {
   exportCertificate,
   isAvailable as certificateExportAvailable,
 } from '../../features/credentials/certificatePdf';
-import { CertIcon, type CertKey } from '../../components/CertIcon';
 import { GlassButton } from '../../components/GlassButton';
 import { Toggle } from '../../components/Toggle';
+import { Section } from '../../components/Section';
 import { albumTitleFor, colors, fonts } from '../../theme/tokens';
 import { fetchProfile, type ProfileData } from '../../features/profile/api';
 import {
@@ -34,6 +34,7 @@ import {
   LEARNING_GOALS,
   loadPublicProfile,
   savePublicProfile,
+  setRegistryVisible,
   type PublicProfile,
 } from '../../features/profile/publicProfile';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
@@ -43,9 +44,36 @@ import { DevVisualIndex } from '../../features/dev/DevVisualIndex';
 import { useTermList } from '../../features/flags/flaggedStore';
 import { useBundles } from '../../features/enrollment/enrolledBundlesStore';
 import { useEnrollmentProgress } from '../../features/enrollment/enrollmentProgress';
-import { COPY } from '../../lib/copy';
 
-const CERTS: CertKey[] = ['mic', 'rec', 'mix', 'pa'];
+
+/**
+ * react-native-web ships Alert as a literal no-op (`static alert() {}`), so a
+ * native-only Alert makes the publish confirm — and the save-failed warning —
+ * silently vanish in the browser: the privacy switch just refuses to move with
+ * no explanation. Route both through the DOM dialogs on web.
+ */
+function askPublish(title: string, body: string, onYes: () => void): void {
+  if (Platform.OS === 'web') {
+    if (typeof window === 'undefined' || window.confirm(`${title}
+
+${body}`)) onYes();
+    return;
+  }
+  Alert.alert(title, body, [
+    { text: 'Cancel', style: 'cancel' },
+    { text: 'Publish', onPress: onYes },
+  ]);
+}
+
+function warn(title: string, body: string): void {
+  if (Platform.OS === 'web') {
+    if (typeof window !== 'undefined') window.alert(`${title}
+
+${body}`);
+    return;
+  }
+  Alert.alert(title, body);
+}
 
 /** One compact statistic row with a subtle separator. */
 function StatRow({ label, value, last }: { label: string; value: string; last?: boolean }) {
@@ -63,11 +91,15 @@ function ChoiceChips({
   isOn,
   onPick,
   onLongPick,
+  starred,
 }: {
   options: readonly string[];
   isOn: (o: string) => boolean;
   onPick: (o: string) => void;
   onLongPick?: (o: string) => void;
+  /** The one option promoted as primary — marked in place with a star rather
+   *  than duplicated into a second "primary interest" card above the group. */
+  starred?: string;
 }) {
   return (
     <View style={styles.chipWrap}>
@@ -83,7 +115,10 @@ function ChoiceChips({
             accessibilityRole="button"
             accessibilityState={{ selected: on }}
           >
-            <Text style={[styles.interestChipText, on && styles.interestChipTextOn]}>{o}</Text>
+            <Text style={[styles.interestChipText, on && styles.interestChipTextOn]}>
+              {starred === o ? '\u2605 ' : ''}
+              {o}
+            </Text>
           </Pressable>
         );
       })}
@@ -146,7 +181,14 @@ export function ProfileScreen() {
   }, []);
 
   useEffect(() => {
-    loadPublicProfile().then(setPub);
+    // The load awaits a network round-trip for the server-backed fields. If the
+    // user starts typing before it resolves, applying it would overwrite their
+    // keystrokes — so a profile the user has already touched keeps what they
+    // typed (design review 2026-08-30).
+    void loadPublicProfile().then((loaded) => {
+      if (!dirtyRef.current) setPub(loaded);
+      setHydrated(true);
+    });
   }, []);
 
   // Certificate + Program goals AUTO-populate from My Enrollments (owner
@@ -165,36 +207,43 @@ export function ProfileScreen() {
     [bundleProg],
   );
 
+  /**
+   * PERSIST OUTSIDE THE UPDATER (design review 2026-08-30). These used to call
+   * savePublicProfile INSIDE setPub's updater. An updater must be pure — under
+   * StrictMode/concurrent rendering React may run it twice, which meant two
+   * AsyncStorage writes and two debounced server pushes per keystroke. The
+   * updater now only computes; a single effect persists whatever it settles on.
+   */
+  const dirtyRef = useRef(false);
+  useEffect(() => {
+    if (!dirtyRef.current) return; // never write back the value we just loaded
+    void savePublicProfile(pub);
+  }, [pub]);
+
   const setPubKey = useCallback(<K extends keyof PublicProfile>(key: K, value: PublicProfile[K]) => {
+    dirtyRef.current = true;
+    setPub((prev) => ({ ...prev, [key]: value }));
+  }, []);
+
+  const toggleInterest = useCallback((topic: string) => {
+    dirtyRef.current = true;
     setPub((prev) => {
-      const next = { ...prev, [key]: value };
-      void savePublicProfile(next); // immediate device-local write
-      return next;
+      const has = prev.interests.includes(topic);
+      const interests = has ? prev.interests.filter((t) => t !== topic) : [...prev.interests, topic];
+      // Dropping the primary interest clears the primary flag too.
+      const primaryInterest = has && prev.primaryInterest === topic ? '' : prev.primaryInterest;
+      return { ...prev, interests, primaryInterest };
     });
   }, []);
 
-  const toggleInterest = useCallback(
-    (topic: string) => {
-      setPub((prev) => {
-        const has = prev.interests.includes(topic);
-        const interests = has ? prev.interests.filter((t) => t !== topic) : [...prev.interests, topic];
-        // Dropping the primary interest clears the primary flag too.
-        const primaryInterest = has && prev.primaryInterest === topic ? '' : prev.primaryInterest;
-        const next = { ...prev, interests, primaryInterest };
-        void savePublicProfile(next);
-        return next;
-      });
-    },
-    [],
-  );
-
-  // Hold an interest to promote it to PRIMARY (adds it if not already selected).
+  /** Star an interest to make it PRIMARY (adds it if not already selected);
+   *  starring the current primary clears it. */
   const promotePrimary = useCallback((topic: string) => {
+    dirtyRef.current = true;
     setPub((prev) => {
+      if (prev.primaryInterest === topic) return { ...prev, primaryInterest: '' };
       const interests = prev.interests.includes(topic) ? prev.interests : [...prev.interests, topic];
-      const next = { ...prev, interests, primaryInterest: topic };
-      void savePublicProfile(next);
-      return next;
+      return { ...prev, interests, primaryInterest: topic };
     });
   }, []);
 
@@ -205,8 +254,77 @@ export function ProfileScreen() {
   // Registry participation gate (user request 2026-07-23): the "show in registry"
   // toggle can only be turned on once the required identity fields are filled.
   const emailValid = /\S+@\S+\.\S+/.test(pub.email.trim());
-  const profileComplete = pub.name.trim().length > 0 && pub.registryName.trim().length > 0 && emailValid;
+  /** Per-field gaps, not one boolean: a dimmed switch is not a message, so the
+   *  UI has to be able to say WHICH detail is missing and jump to it. */
+  const gaps = useMemo(() => {
+    const g: { key: 'name' | 'registryName' | 'email'; label: string; done: boolean }[] = [
+      { key: 'name', label: 'Your name', done: pub.name.trim().length > 0 },
+      { key: 'registryName', label: 'Name on your certificates', done: pub.registryName.trim().length > 0 },
+      { key: 'email', label: 'Contact email', done: emailValid },
+    ];
+    return g;
+  }, [pub.name, pub.registryName, emailValid]);
+  const missing = gaps.filter((g) => !g.done);
+  const profileComplete = missing.length === 0;
   const registryActive = pub.showInRegistry && profileComplete;
+
+  // Field refs + a remount key: the gap checklist's "ADD >" has to OPEN the
+  // section holding the field and put the cursor in it. Section owns its own
+  // open state, so bumping the key remounts it with defaultOpen — the inputs
+  // are re-created but their values live in `pub`, so nothing is lost. The
+  // KeyboardAwareScrollView scrolls the focused input into view for us.
+  const nameRef = useRef<TextInput | null>(null);
+  const registryNameRef = useRef<TextInput | null>(null);
+  const emailRef = useRef<TextInput | null>(null);
+  const [ppSeq, setPpSeq] = useState(0);
+  /** PUBLIC PROFILE opens itself only when something is actually missing — and
+   *  `pub` is EMPTY for the first frame, so deciding that before the load
+   *  resolves flings the form open on every complete profile. The section keys
+   *  on `hydrated` so it remounts exactly once, when the real values land, and
+   *  never again while the user is typing in it. */
+  const [hydrated, setHydrated] = useState(false);
+  const [emailTouched, setEmailTouched] = useState(false);
+  const [fullIdOpen, setFullIdOpen] = useState(false);
+  const focusField = useCallback((key: 'name' | 'registryName' | 'email') => {
+    setPpSeq((n) => n + 1);
+    setTimeout(() => {
+      const r = key === 'name' ? nameRef : key === 'registryName' ? registryNameRef : emailRef;
+      r.current?.focus();
+    }, 240);
+  }, []);
+
+  /**
+   * Publishing is the one switch on this screen with a consequence outside the
+   * phone, so it does not behave like the others: it CONFIRMS on the way on,
+   * writes to the server, and REVERTS itself if that write fails. A privacy
+   * switch that shows "on" while the server disagrees is worse than one that
+   * refuses to move.
+   */
+  const onRegistryToggle = useCallback(
+    (v: boolean) => {
+      const apply = () => {
+        setPubKey('showInRegistry', v);
+        void setRegistryVisible(v).then((ok) => {
+          if (ok) return;
+          setPubKey('showInRegistry', !v);
+          warn(
+            'Not saved',
+            'Your listing setting could not be saved. Check your connection and try again.',
+          );
+        });
+      };
+      if (!v) {
+        apply();
+        return;
+      }
+      askPublish(
+        'Publish your profile?',
+        'Your name and the certificates you have earned become visible to anyone with your link or QR code. Your email, progress and notes stay private.',
+        apply,
+      );
+    },
+    [setPubKey],
+  );
 
   // This product ships COMMERCIAL-only: the institutional / "MIRAMAR COLLEGE" Profile
   // variant (further below) is retired — EVERY user, including guests, gets this
@@ -219,11 +337,22 @@ export function ProfileScreen() {
     // REAL paid-member status — NOT the __DEV__-bypassed `caps` (which forces
     // academy on in dev). Drives the membership tag + upgrade CTA (fix 2026-07-26).
     const academy = entitlement === 'academy';
+    const statusLabel = academy
+      ? 'ACADEMY MEMBER'
+      : entitlement === 'lapsed'
+        ? 'MEMBERSHIP LAPSED'
+        : 'REFERENCE MODE';
+    const statusColor = academy
+      ? colors.green
+      : entitlement === 'lapsed'
+        ? colors.amber
+        : colors.textSubAlt;
+    const goalCount = certBundles.length + programBundles.length;
     return (
       <View style={[styles.root, { paddingTop: insets.top }]}>
         <KeyboardAwareScrollView contentContainerStyle={styles.bodyScroll} keyboardShouldPersistTaps="handled" bottomOffset={24}>
           <View style={styles.headerRow}>
-            <Text style={styles.college}>PRO AUDIO TRAINING ACADEMY</Text>
+            <Text accessibilityRole="header" style={styles.college}>MY PROFILE</Text>
             <Pressable
               onPress={() => (navigation as any).navigate('Settings')}
               hitSlop={8}
@@ -235,11 +364,95 @@ export function ProfileScreen() {
             </Pressable>
           </View>
 
-          {/* Low-light mode toggle at the top (user request 2026-07-18). */}
-          <LowLightRow />
+          {/* DIGITAL ID — pinned, never collapsible. Someone shows this at a
+              load-in, so it answers three questions in order: who is this, what
+              do they hold, how do I check. The QR was previously UNREACHABLE on
+              this screen (it existed only in the retired institutional branch
+              below), so the card that exists to be shown was the one thing you
+              could not show. */}
+          <Pressable
+            style={({ pressed }) => [styles.idCard, pressed && styles.idCardPressed]}
+            onPress={() => setFullIdOpen(true)}
+            accessibilityRole="button"
+            accessibilityLabel="Your Academy ID. Opens it full screen for scanning."
+          >
+            <View style={styles.idLeft}>
+              <Text style={styles.idName} numberOfLines={2}>
+                {pub.registryName || pub.name || profile?.nickname || 'Add your name'}
+              </Text>
+              <Text style={[styles.idStatus, { color: statusColor }]}>{statusLabel}</Text>
+              {credentials.length > 0 ? (
+                <Text style={styles.idHolds}>
+                  {credentials.length} verified credential{credentials.length === 1 ? '' : 's'}
+                </Text>
+              ) : null}
+              <View style={{ flex: 1 }} />
+              {profile?.apeStudentId ? (
+                <Text style={styles.idNumber}>ID {profile.apeStudentId}</Text>
+              ) : null}
+              <Text style={styles.idExpand}>SHOW FULL ID ›</Text>
+            </View>
+            <View style={styles.idRight}>
+              <CredentialQr token={profile?.qrToken} size={104} />
+              <Text style={styles.idScan}>SCAN TO VERIFY</Text>
+            </View>
+          </Pressable>
 
-          {/* Global audio-output mute + 5s hold-to-enable (owner request
-              2026-07-25). Muted by default; auto-re-mutes on idle/reopen/login. */}
+          {/* AM I PUBLIC RIGHT NOW? — the answer, readable without opening
+              anything. Amber only in the one state the user can act on, where
+              the strip is itself the button that fixes it. */}
+          <Pressable
+            style={[
+              styles.strip,
+              registryActive ? styles.stripOn : !profileComplete ? styles.stripTodo : styles.stripOff,
+            ]}
+            disabled={profileComplete}
+            onPress={() => focusField(missing[0]?.key ?? 'name')}
+            accessibilityRole={profileComplete ? 'text' : 'button'}
+            accessibilityLabel={
+              registryActive
+                ? 'Listed. Your public page is live.'
+                : !profileComplete
+                  ? `${missing.length} details needed before you can be listed. Opens the form.`
+                  : 'Private. You have no public page.'
+            }
+          >
+            <View
+              style={[
+                styles.stripDot,
+                {
+                  backgroundColor: registryActive
+                    ? colors.green
+                    : !profileComplete
+                      ? colors.amber
+                      : '#3a3a3a',
+                },
+              ]}
+            />
+            <Text
+              style={[
+                styles.stripText,
+                {
+                  color: registryActive
+                    ? colors.green
+                    : !profileComplete
+                      ? colors.amber
+                      : colors.textSubAlt,
+                },
+              ]}
+            >
+              {registryActive
+                ? 'LISTED — your public page is live'
+                : !profileComplete
+                  ? `${missing.length} detail${missing.length === 1 ? '' : 's'} needed to get listed ›`
+                  : 'PRIVATE — no public page'}
+            </Text>
+          </Pressable>
+
+          {/* Device controls stay on Profile (both were explicit owner requests)
+              but now sit BELOW the identity rather than above the user's own
+              name. Not collapsed: muting is a safety control. */}
+          <LowLightRow />
           <AudioOutputRow />
 
           {/* TEMPORARY dev tool (user request 2026-07-18) — visual index of every
@@ -250,100 +463,67 @@ export function ProfileScreen() {
               when the tool is no longer wanted. */}
           {__DEV__ ? <DevVisualIndex /> : null}
 
-          {/* 1 — STUDENT IDENTITY CARD (user request 2026-07-18): avatar (photo
-              or initials), name, membership, understated Student ID. */}
-          <View style={styles.identityCard}>
-            {/* Avatar circle REMOVED for commercial (owner 2026-08-07) — the
-                initials circle was a student-badge holdover; the name is now the
-                top of the identity card. (Academic branch keeps its avatar.) */}
-            <Text style={styles.identityName}>{pub.name || profile?.nickname || 'Add your name'}</Text>
-            <Text style={styles.planTag}>
-              {academy ? 'ACADEMY MEMBER' : entitlement === 'lapsed' ? 'MEMBERSHIP LAPSED' : 'REFERENCE MODE'}
-            </Text>
-            {profile?.apeStudentId ? <Text style={styles.identityMeta}>ID · {profile.apeStudentId}</Text> : null}
-          </View>
-
-          {/* ALBUM LEVEL card REMOVED for commercial (owner 2026-08-07) — the
-              album→tier progression is retired; may return for the academic
-              variant (still rendered in the institutional branch below). */}
-
-          {/* 3 — CURRENT LEARNING FOCUS. */}
-          <Pressable
-            style={styles.panel}
-            onPress={() => (navigation as any).navigate((profile?.completeCount ?? 0) > 0 ? 'Study' : 'Home')}
-            accessibilityRole="button"
+          {/* —— MY PROGRESS —— */}
+          <Section
+            title="MY PROGRESS"
+            summary={`${profile?.overallPct ?? 0}%${goalCount ? ` · ${goalCount} goals` : ''}`}
           >
-            <Text accessibilityRole="header" style={styles.panelEyebrow}>CURRENT FOCUS</Text>
-            {(profile?.overallPct ?? 0) > 0 ? (
-              <>
-                <Text style={styles.focusTitle}>Full Course Certification</Text>
-                <Text style={styles.focusPct}>{profile?.overallPct ?? 0}% complete</Text>
-                <Text style={styles.linkCta}>Continue →</Text>
-              </>
-            ) : (
-              <Text style={styles.emptyLine}>Choose your first topic →</Text>
-            )}
-          </Pressable>
+            <Pressable
+              style={({ pressed }) => [styles.navRow, pressed && styles.rowPressed]}
+              onPress={() =>
+                (navigation as any).navigate((profile?.completeCount ?? 0) > 0 ? 'Study' : 'Home')
+              }
+              accessibilityRole="button"
+              accessibilityLabel="Keep studying"
+            >
+              <View style={styles.rowMain}>
+                {(profile?.overallPct ?? 0) > 0 ? (
+                  <>
+                    <Text style={styles.rowLabel}>Full Course Certification</Text>
+                    <Text style={styles.rowHint}>{profile?.overallPct ?? 0}% done</Text>
+                  </>
+                ) : (
+                  <Text style={styles.rowLabel}>Start your first topic</Text>
+                )}
+              </View>
+              <Text style={styles.chevron}>›</Text>
+            </Pressable>
 
-          {/* 4a — CERTIFICATE GOALS — auto-populated from My Enrollments (owner
-              2026-08-07): every enrolled certificate, with live topic progress.
-              Tap → My Enrollments to add/remove. */}
-          <Pressable
-            style={styles.panel}
-            onPress={() => (navigation as any).navigate('Awards', { category: 'enrollment' })}
-            accessibilityRole="button"
-          >
-            <Text accessibilityRole="header" style={styles.panelEyebrow}>CERTIFICATE GOALS</Text>
-            {certBundles.length ? (
-              <>
-                {certBundles.map((b) => (
-                  <View key={b.key} style={styles.goalBundle}>
-                    <Text style={styles.goalTitle}>{b.name}</Text>
-                    <Text style={styles.goalSub}>
-                      {bundleDone(b.topics)} of {b.topics.length} topics complete
-                    </Text>
-                  </View>
-                ))}
-                <Text style={styles.linkCta}>Manage in My Enrollments ›</Text>
-              </>
-            ) : (
-              <Text style={styles.emptyLine}>Enroll in a certificate ›</Text>
-            )}
-          </Pressable>
+            <Text style={styles.groupLabel}>GOALS</Text>
+            <Pressable
+              style={({ pressed }) => [styles.navRow, pressed && styles.rowPressed]}
+              onPress={() => (navigation as any).navigate('Awards', { category: 'enrollment' })}
+              accessibilityRole="button"
+              accessibilityLabel={
+                goalCount ? 'Manage your enrollments' : 'Browse certificates and programs'
+              }
+            >
+              <View style={styles.rowMain}>
+                {goalCount ? (
+                  [...certBundles, ...programBundles].map((b) => (
+                    <View key={b.key} style={styles.goalBundle}>
+                      <Text style={styles.rowLabel}>{b.name}</Text>
+                      <Text style={styles.rowHint}>
+                        {bundleDone(b.topics)} of {b.topics.length} topics complete
+                      </Text>
+                    </View>
+                  ))
+                ) : (
+                  <Text style={styles.rowLabel}>Browse certificates and programs</Text>
+                )}
+              </View>
+              <Text style={styles.chevron}>›</Text>
+            </Pressable>
 
-          {/* 4b — PROGRAM GOALS — auto-populated from My Enrollments. */}
-          <Pressable
-            style={styles.panel}
-            onPress={() => (navigation as any).navigate('Awards', { category: 'enrollment' })}
-            accessibilityRole="button"
-          >
-            <Text accessibilityRole="header" style={styles.panelEyebrow}>PROGRAM GOALS</Text>
-            {programBundles.length ? (
-              <>
-                {programBundles.map((b) => (
-                  <View key={b.key} style={styles.goalBundle}>
-                    <Text style={styles.goalTitle}>{b.name}</Text>
-                    <Text style={styles.goalSub}>
-                      {bundleDone(b.topics)} of {b.topics.length} topics complete
-                    </Text>
-                  </View>
-                ))}
-                <Text style={styles.linkCta}>Manage in My Enrollments ›</Text>
-              </>
-            ) : (
-              <Text style={styles.emptyLine}>Enroll in a program ›</Text>
-            )}
-          </Pressable>
-
-          {/* 5 — STUDENT STATISTICS. */}
-          <View style={styles.panel}>
-            <Text accessibilityRole="header" style={styles.panelEyebrow}>STATISTICS</Text>
-            <StatRow label="Terms Learned" value={String(known.size)} />
-            <StatRow label="Topics Completed" value={String(profile?.completeCount ?? 0)} />
-            <StatRow label="Quizzes Passed" value="—" />
-            <StatRow label="Study Streak" value="—" last />
+            <Text style={styles.groupLabel}>YOUR NUMBERS</Text>
+            {/* "Quizzes passed" and "Study streak" REMOVED (design review
+                2026-08-30): both were literal em-dashes with no backend, which
+                made the two real numbers beside them look broken too. */}
+            <StatRow label="Terms learned" value={String(known.size)} />
+            <StatRow label="Topics completed" value={String(profile?.completeCount ?? 0)} last />
             {caps.completionRecords ? (
               <Pressable
+                style={({ pressed }) => [styles.navRow, pressed && styles.rowPressed]}
                 onPress={() =>
                   // Flag the origin so the grid shows a back button to Profile
                   // (owner 2026-08-07 — there was no way back before).
@@ -355,73 +535,27 @@ export function ProfileScreen() {
                 accessibilityRole="button"
                 accessibilityLabel="View trophies and records"
               >
-                <Text style={[styles.linkCta, { marginTop: 10 }]}>View trophies & records ›</Text>
+                <View style={styles.rowMain}>
+                  <Text style={styles.rowLabel}>Trophies &amp; records</Text>
+                </View>
+                <Text style={styles.chevron}>›</Text>
               </Pressable>
             ) : null}
-          </View>
+          </Section>
 
-          {/* 6 — AUDIO INTERESTS (with a promoted PRIMARY interest). */}
-          <View style={styles.panel}>
-            <Text accessibilityRole="header" style={styles.panelEyebrow}>AUDIO INTERESTS</Text>
-            {pub.primaryInterest ? (
-              <>
-                <Text style={styles.fieldLabel}>Primary interest</Text>
-                <View style={styles.primaryChip}>
-                  <Text style={styles.primaryChipText}>★ {pub.primaryInterest}</Text>
-                </View>
-              </>
-            ) : null}
-            <Text style={[styles.fieldLabel, { marginTop: pub.primaryInterest ? 12 : 0 }]}>
-              Interests · hold one to make it primary
-            </Text>
-            <ChoiceChips
-              options={INTEREST_TOPICS}
-              isOn={(o) => pub.interests.includes(o)}
-              onPick={toggleInterest}
-              onLongPick={promotePrimary}
-            />
-          </View>
+          {/* —— PUBLIC PROFILE — the fields. Opens itself while something is
+              missing, so the fix is already in front of you. —— */}
+          <Section
+            key={`public-profile-${ppSeq}-${hydrated}`}
+            title="PUBLIC PROFILE"
+            summary={profileComplete ? 'complete' : `${missing.length} to finish`}
+            defaultOpen={ppSeq > 0 || (hydrated && !profileComplete)}
+          >
+            <Text style={styles.sectionIntro}>Changes save as you type.</Text>
 
-          {/* 7 — LEARNING PREFERENCES (optional). */}
-          <View style={styles.panel}>
-            <Text accessibilityRole="header" style={styles.panelEyebrow}>LEARNING PREFERENCES</Text>
-            <Text style={styles.fieldLabel}>Learning goal</Text>
-            <ChoiceChips
-              options={LEARNING_GOALS}
-              isOn={(o) => pub.learningGoal === o}
-              onPick={(o) => setPubKey('learningGoal', pub.learningGoal === o ? '' : o)}
-            />
-            {/* "Preferred difficulty" REMOVED (owner 2026-08-07) — it changed
-                nothing, so it falsely implied an effect. */}
-          </View>
-
-          {/* 8 — ABOUT ME (optional, understated). */}
-          <View style={styles.panel}>
-            <Text accessibilityRole="header" style={styles.panelEyebrow}>ABOUT ME</Text>
+            <Text style={styles.fieldLabel}>Your name</Text>
             <TextInput
-              style={[styles.input, styles.bioInput]}
-              value={pub.bio}
-              onChangeText={(t) => setPubKey('bio', t)}
-              placeholder="A short line about you (optional) — e.g. Live sound engineer"
-              placeholderTextColor={colors.textMuted}
-              multiline
-              maxLength={160}
-              returnKeyType="done"
-            />
-          </View>
-
-          {/* 9 — RECENT ACTIVITY (empty state until the study-log backend lands). */}
-          <View style={styles.panel}>
-            <Text accessibilityRole="header" style={styles.panelEyebrow}>RECENT ACTIVITY</Text>
-            <Text style={styles.emptyLine}>No recent study activity yet — your sessions will show here.</Text>
-          </View>
-
-          {/* Account & networking — email lives here (out of the identity focus),
-              read-only display + the employer-contact consent. */}
-          <View style={styles.panel}>
-            <Text accessibilityRole="header" style={styles.panelEyebrow}>ACCOUNT &amp; NETWORKING</Text>
-            <Text style={styles.fieldLabel}>Name</Text>
-            <TextInput
+              ref={nameRef}
               style={styles.input}
               value={pub.name}
               onChangeText={(t) => setPubKey('name', t)}
@@ -429,84 +563,183 @@ export function ProfileScreen() {
               placeholderTextColor={colors.textMuted}
               autoCapitalize="words"
               returnKeyType="done"
+              accessibilityLabel="Your name"
             />
-            {/* Name shown on the public Pro Registry profile (user request
-                2026-07-22). */}
-            <Text style={[styles.fieldLabel, { marginTop: 12 }]}>Name used in registry</Text>
+            <Text style={styles.rowHint}>Private. Used to greet you in the app.</Text>
+
+            <Text style={styles.fieldLabel}>Name on your certificates</Text>
             <TextInput
+              ref={registryNameRef}
               style={styles.input}
               value={pub.registryName}
               onChangeText={(t) => setPubKey('registryName', t)}
-              placeholder="How your name appears in the Registry"
+              placeholder="e.g. Rachel A. Booth"
               placeholderTextColor={colors.textMuted}
               autoCapitalize="words"
               returnKeyType="done"
+              accessibilityLabel="Name on your certificates"
             />
-            <Text style={[styles.fieldLabel, { marginTop: 12 }]}>Email</Text>
+            <Text style={styles.rowHint}>
+              Printed on every certificate you earn, and shown when someone scans your code.
+              Spell it the way you want it on paper.
+            </Text>
+
+            <Text style={styles.fieldLabel}>Contact email</Text>
             <TextInput
+              ref={emailRef}
               style={styles.input}
               value={pub.email}
               onChangeText={(t) => setPubKey('email', t)}
+              onBlur={() => setEmailTouched(true)}
               placeholder="you@example.com"
               placeholderTextColor={colors.textMuted}
               autoCapitalize="none"
               autoCorrect={false}
               keyboardType="email-address"
               returnKeyType="done"
+              accessibilityLabel="Contact email"
             />
-            <View style={styles.consentRow}>
-              <View style={{ flex: 1, paddingRight: 12 }}>
-                <Text style={styles.fieldLabel}>Contactable by employers</Text>
-                <Text style={styles.fieldHint}>
-                  Let vetted employers and networking partners contact you. You can turn this off anytime.
-                </Text>
+            {emailTouched && pub.email.trim().length > 0 && !emailValid ? (
+              <Text style={styles.fieldError}>Add a full address, like you@studio.com</Text>
+            ) : (
+              <Text style={styles.rowHint}>
+                How employers reach you if you switch on contact below. Never shown on your
+                public page.
+              </Text>
+            )}
+
+            <Text style={styles.fieldLabel}>About you</Text>
+            <TextInput
+              style={[styles.input, styles.bioInput]}
+              value={pub.bio}
+              onChangeText={(t) => setPubKey('bio', t)}
+              placeholder="e.g. FOH engineer, 6 years, clubs and worship"
+              placeholderTextColor={colors.textMuted}
+              multiline
+              maxLength={160}
+              returnKeyType="done"
+              accessibilityLabel="About you"
+            />
+            <Text style={styles.rowHint}>
+              Only you can see this for now.{pub.bio.length > 120 ? `  ${pub.bio.length}/160` : ''}
+            </Text>
+          </Section>
+
+          {/* —— WHO CAN SEE ME — both publishing switches in ONE place, with a
+              literal manifest between them. People refuse these toggles because
+              they cannot tell what "listed" includes, not because they mind
+              being listed. —— */}
+          <Section
+            title="WHO CAN SEE ME"
+            summary={!profileComplete ? 'needs info' : registryActive ? 'LISTED' : 'private'}
+          >
+            <Text style={styles.sectionIntro}>
+              Everything here is private unless you switch it on.
+            </Text>
+
+            {!profileComplete ? (
+              <View style={styles.gapBox}>
+                <Text style={styles.groupLabel}>BEFORE YOU CAN BE LISTED</Text>
+                {gaps.map((g) => (
+                  <Pressable
+                    key={g.key}
+                    style={styles.gapRow}
+                    onPress={() => focusField(g.key)}
+                    disabled={g.done}
+                    accessibilityRole="button"
+                    accessibilityLabel={
+                      g.done ? `${g.label}, done` : `${g.label}, missing. Opens the field.`
+                    }
+                  >
+                    <Text style={[styles.gapMark, g.done && styles.gapMarkDone]}>
+                      {g.done ? '✓' : '○'}
+                    </Text>
+                    <Text style={[styles.gapLabel, g.done && styles.gapLabelDone]}>{g.label}</Text>
+                    <View style={{ flex: 1 }} />
+                    {g.done ? null : <Text style={styles.gapAction}>ADD ›</Text>}
+                  </Pressable>
+                ))}
               </View>
+            ) : null}
+
+            <View style={styles.switchRow}>
+              <Text style={styles.switchLabel}>List me in the Professional Registry</Text>
+              <Toggle
+                on={pub.showInRegistry}
+                label="List me in the Professional Registry"
+                disabled={!profileComplete}
+                onChange={onRegistryToggle}
+              />
+            </View>
+            <Text style={styles.rowHint}>
+              Publishes a page anyone with the link — or who scans your code — can open.
+            </Text>
+
+            <View style={styles.manifest}>
+              <Text style={styles.groupLabel}>ON YOUR PUBLIC PAGE</Text>
+              <Text style={styles.manifestOn}>
+                · {pub.registryName || pub.name || 'Your name'}
+              </Text>
+              <Text style={styles.manifestOn}>
+                · {credentials.length} certificate{credentials.length === 1 ? '' : 's'} you have
+                earned
+              </Text>
+              <Text style={[styles.groupLabel, { marginTop: 12 }]}>NEVER PUBLISHED</Text>
+              <Text style={styles.manifestOff}>· Your email address</Text>
+              <Text style={styles.manifestOff}>· Your progress, quiz scores and notes</Text>
+              <Text style={styles.manifestOff}>· Your interests and study goal</Text>
+            </View>
+
+            <View style={styles.switchRow}>
+              <Text style={styles.switchLabel}>Let employers contact me</Text>
               <Toggle
                 on={pub.contactConsent}
-                label="Contactable by employers"
+                label="Let employers contact me"
                 onChange={(v) => setPubKey('contactConsent', v)}
               />
             </View>
-          </View>
+            <Text style={styles.rowHint}>
+              Adds a Contact button to your page. Messages reach you through the Academy — your
+              email address is never shown.
+            </Text>
 
-          {/* PRO REGISTRY participation (user request 2026-07-23) — opt-in, only
-              enable-able once name + registry name + email are filled; must be ON
-              to be listed. */}
-          <View style={styles.panel}>
-            <Text accessibilityRole="header" style={styles.panelEyebrow}>PRO REGISTRY</Text>
-            <View style={styles.consentRow}>
-              <View style={{ flex: 1, paddingRight: 12 }}>
-                <Text style={styles.fieldLabel}>Show me in the Pro Registry</Text>
-                <Text style={styles.fieldHint}>
-                  {profileComplete
-                    ? 'This must be ON for you to appear in the public directory.'
-                    : 'Complete your name, registry name, and email to enable this.'}
-                </Text>
-              </View>
-              <Toggle
-                on={pub.showInRegistry}
-                label="Show me in the Pro Registry"
-                onChange={(v) => setPubKey('showInRegistry', v)}
-                disabled={!profileComplete}
-              />
-            </View>
-            {/* Active readout — grayed until ON, green when participating. */}
-            <View style={[styles.registryReadout, registryActive ? styles.registryReadoutOn : styles.registryReadoutOff]}>
-              <Text style={[styles.registryReadoutText, { color: registryActive ? '#37e05f' : colors.textMuted }]}>
-                {registryActive
-                  ? '● REGISTRY ACTIVE — you are shown in the directory'
-                  : '○ REGISTRY INACTIVE — not shown in the directory'}
-              </Text>
-            </View>
-          </View>
+            <Text style={[styles.rowHint, { marginTop: 12 }]}>
+              Turn the switch off and your page goes offline. Certificates you have already earned
+              stay verifiable by QR.
+            </Text>
+          </Section>
 
-          {/* CREDENTIALS — every non-revoked certificate/program the user holds
-              (runbook item 3). Hidden entirely when none are earned: an empty
-              trophy case on a new account reads as a failure rather than a
-              not-yet. */}
-          {credentials.length > 0 && (
-            <View style={styles.panel}>
-              <Text accessibilityRole="header" style={styles.panelEyebrow}>CREDENTIALS</Text>
+          {/* —— INTERESTS &amp; GOALS —— */}
+          <Section
+            title="INTERESTS & GOALS"
+            summary={pub.interests.length ? `${pub.interests.length} selected` : 'none yet'}
+          >
+            <Text style={styles.fieldLabel}>What you work in</Text>
+            <Text style={styles.rowHint}>
+              Tap to select. Press and hold one to make it your main field.
+            </Text>
+            <View style={{ height: 8 }} />
+            <ChoiceChips
+              options={INTEREST_TOPICS}
+              isOn={(o) => pub.interests.includes(o)}
+              onPick={toggleInterest}
+              onLongPick={promotePrimary}
+              starred={pub.primaryInterest}
+            />
+            <Text style={styles.fieldLabel}>Why you&apos;re studying</Text>
+            <View style={{ height: 4 }} />
+            <ChoiceChips
+              options={LEARNING_GOALS}
+              isOn={(o) => pub.learningGoal === o}
+              onPick={(o) => setPubKey('learningGoal', pub.learningGoal === o ? '' : o)}
+            />
+          </Section>
+
+          {/* —— CREDENTIALS — every non-revoked certificate/program the user
+              holds. Hidden entirely when none are earned: an empty trophy case
+              on a new account reads as a failure rather than a not-yet. —— */}
+          {credentials.length > 0 ? (
+            <Section title="CREDENTIALS" summary={String(credentials.length)}>
               {credentials.map((c) => (
                 <View key={`${c.type}:${c.id}`} style={styles.credRow}>
                   <View style={{ flex: 1, paddingRight: 12 }}>
@@ -533,13 +766,41 @@ export function ProfileScreen() {
                 </View>
               ))}
               {!certificateExportAvailable() && (
-                <Text style={styles.fieldHint}>
-                  Certificate download needs the next app build.
-                </Text>
+                <Text style={styles.rowHint}>Certificate download needs the next app build.</Text>
               )}
-              {credMessage != null && <Text style={styles.fieldHint}>{credMessage}</Text>}
-            </View>
-          )}
+              {credMessage != null && <Text style={styles.rowHint}>{credMessage}</Text>}
+            </Section>
+          ) : null}
+
+          {/* FULL-SCREEN ID — the point of a digital credential is that someone
+              else scans it, across a table, in a dark venue. The inline QR is a
+              preview; this is the one you hold up. */}
+          <Modal
+            visible={fullIdOpen}
+            transparent={false}
+            animationType="fade"
+            onRequestClose={() => setFullIdOpen(false)}
+            supportedOrientations={['portrait', 'landscape']}
+          >
+            <Pressable
+              style={styles.fullId}
+              onPress={() => setFullIdOpen(false)}
+              accessibilityRole="button"
+              accessibilityLabel="Close your ID"
+            >
+              <Text style={styles.fullIdName}>
+                {pub.registryName || pub.name || 'Add your name'}
+              </Text>
+              <Text style={[styles.idStatus, { color: statusColor, marginBottom: 22 }]}>
+                {statusLabel}
+              </Text>
+              <CredentialQr token={profile?.qrToken} size={248} />
+              {profile?.apeStudentId ? (
+                <Text style={styles.fullIdNumber}>ID {profile.apeStudentId}</Text>
+              ) : null}
+              <Text style={styles.fullIdHint}>Tap anywhere to close</Text>
+            </Pressable>
+          </Modal>
 
           {/* Upgrade CTA for non-academy (free / lapsed) → Paywall. */}
           {!academy && (
@@ -577,7 +838,7 @@ export function ProfileScreen() {
         </View>
 
         {/* Digital ID card */}
-        <View style={styles.idCard}>
+        <View style={styles.idCardLegacy}>
           <View style={[styles.pilotDot, { left: 7 }]} />
           <View style={[styles.pilotDot, { right: 7 }]} />
           {profile?.photoUrl ? (
@@ -632,6 +893,190 @@ const styles = StyleSheet.create({
   // Commercial variant scrolls (adds the networking profile form).
   bodyScroll: { padding: 14, paddingBottom: 32, gap: 12 },
 
+  // --- Restructured commercial Profile (design review 2026-08-30) ---
+  // Pinned digital ID: identity left, the scannable code right, at the size a
+  // phone camera actually resolves across a table.
+  idCard: {
+    flexDirection: 'row',
+    gap: 14,
+    backgroundColor: '#181818',
+    borderWidth: 1,
+    borderColor: colors.deepBorder,
+    borderRadius: 12,
+    padding: 14,
+  },
+  idCardPressed: { backgroundColor: '#1f1f1f' },
+  idLeft: { flex: 1, minHeight: 118 },
+  idName: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 21,
+    lineHeight: 25,
+    letterSpacing: 0.4,
+    color: colors.textPrimary,
+  },
+  idStatus: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 11,
+    letterSpacing: 1.6,
+    marginTop: 5,
+  },
+  idHolds: {
+    fontFamily: fonts.barlowRegular,
+    fontSize: 12.5,
+    color: colors.textSub,
+    marginTop: 4,
+  },
+  idNumber: {
+    fontFamily: fonts.oswaldMedium,
+    fontSize: 11.5,
+    letterSpacing: 1.2,
+    color: colors.textMutedDeep,
+  },
+  idExpand: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 11,
+    letterSpacing: 1.4,
+    color: colors.amber,
+    marginTop: 6,
+  },
+  idRight: { alignItems: 'center', gap: 6 },
+  idScan: {
+    fontFamily: fonts.oswaldMedium,
+    fontSize: 9,
+    letterSpacing: 1.3,
+    color: colors.textMutedDeep,
+  },
+
+  // Persistent "am I public right now" strip.
+  strip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 9,
+    borderWidth: 1,
+    borderRadius: 9,
+    paddingVertical: 11,
+    paddingHorizontal: 12,
+    minHeight: 44,
+  },
+  stripOn: { backgroundColor: '#0d1f14', borderColor: 'rgba(55,224,95,.45)' },
+  stripTodo: { backgroundColor: '#1e1a10', borderColor: 'rgba(255,198,77,.45)' },
+  stripOff: { backgroundColor: '#151515', borderColor: colors.hairlineAlt },
+  stripDot: { width: 8, height: 8, borderRadius: 4 },
+  stripText: { flex: 1, fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.1 },
+
+  // Rows inside a Section.
+  navRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    minHeight: 48,
+    paddingVertical: 9,
+    paddingHorizontal: 4,
+  },
+  rowPressed: { backgroundColor: '#1f1f1f', borderRadius: 8 },
+  rowMain: { flex: 1, paddingRight: 10 },
+  rowLabel: { fontFamily: fonts.barlowMedium, fontSize: 15, color: colors.textPrimary },
+  rowHint: {
+    fontFamily: fonts.barlowRegular,
+    fontSize: 12.5,
+    lineHeight: 17,
+    color: colors.textMuted,
+    paddingHorizontal: 4,
+    marginTop: 4,
+  },
+  chevron: { fontFamily: fonts.oswaldMedium, fontSize: 20, color: colors.textMutedDeep },
+  groupLabel: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 10,
+    letterSpacing: 1.8,
+    color: colors.textMutedDeep,
+    marginTop: 14,
+    marginBottom: 4,
+    paddingHorizontal: 4,
+  },
+  sectionIntro: {
+    fontFamily: fonts.barlowRegular,
+    fontSize: 12.5,
+    lineHeight: 17,
+    color: colors.textSub,
+    paddingHorizontal: 4,
+    marginBottom: 2,
+  },
+  fieldError: {
+    fontFamily: fonts.barlowRegular,
+    fontSize: 12.5,
+    lineHeight: 17,
+    color: colors.amber,
+    paddingHorizontal: 4,
+    marginTop: 4,
+  },
+
+  // Gap checklist — each unmet line is its own button into the field.
+  gapBox: {
+    backgroundColor: '#141414',
+    borderWidth: 1,
+    borderColor: 'rgba(255,198,77,.32)',
+    borderRadius: 9,
+    paddingHorizontal: 8,
+    paddingBottom: 8,
+    marginTop: 10,
+  },
+  gapRow: { flexDirection: 'row', alignItems: 'center', gap: 9, minHeight: 44, paddingHorizontal: 4 },
+  gapMark: { fontFamily: fonts.barlowMedium, fontSize: 14, color: colors.amber, width: 14 },
+  gapMarkDone: { color: colors.green },
+  gapLabel: { fontFamily: fonts.barlowMedium, fontSize: 14, color: colors.textPrimary },
+  gapLabelDone: { color: colors.textMuted },
+  gapAction: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.3, color: colors.amber },
+
+  switchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    minHeight: 48,
+    paddingHorizontal: 4,
+    marginTop: 14,
+  },
+  switchLabel: { flex: 1, fontFamily: fonts.barlowMedium, fontSize: 15, color: colors.textPrimary },
+
+  // The manifest: what publishing actually publishes, in two literal lists.
+  manifest: {
+    backgroundColor: '#141414',
+    borderWidth: 1,
+    borderColor: colors.hairlineAlt,
+    borderRadius: 9,
+    padding: 10,
+    marginTop: 12,
+  },
+  manifestOn: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 19, color: colors.textSecondary },
+  manifestOff: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 19, color: colors.textMuted },
+
+  fullId: {
+    flex: 1,
+    backgroundColor: '#0b0b0b',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+  },
+  fullIdName: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 26,
+    letterSpacing: 0.6,
+    color: colors.textPrimary,
+    textAlign: 'center',
+  },
+  fullIdNumber: {
+    fontFamily: fonts.oswaldMedium,
+    fontSize: 13,
+    letterSpacing: 1.6,
+    color: colors.textSub,
+    marginTop: 20,
+  },
+  fullIdHint: {
+    fontFamily: fonts.barlowRegular,
+    fontSize: 12.5,
+    color: colors.textMutedDeep,
+    marginTop: 28,
+  },
+
   // Networking profile form.
   fieldLabel: {
     fontFamily: fonts.oswaldSemiBold,
@@ -641,7 +1086,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
     marginBottom: 5,
   },
-  fieldHint: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16, color: colors.textMuted },
   input: {
     backgroundColor: '#101010',
     borderWidth: 1,
@@ -686,81 +1130,14 @@ const styles = StyleSheet.create({
     letterSpacing: 1.2,
     color: colors.amber,
   },
-  consentRow: { flexDirection: 'row', alignItems: 'center', marginTop: 14 },
   // Registry participation readout — gray when off, green when active (user
   // request 2026-07-23).
-  registryReadout: { marginTop: 12, borderWidth: 1, borderRadius: 8, paddingVertical: 8, paddingHorizontal: 12, alignItems: 'center' },
-  registryReadoutOff: { borderColor: '#2f2f2f', backgroundColor: '#141414' },
-  registryReadoutOn: { borderColor: 'rgba(55,224,95,.55)', backgroundColor: 'rgba(55,224,95,.1)' },
-  registryReadoutText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8 },
 
   // --- Redesigned commercial Profile (user request 2026-07-18) ---
-  identityCard: {
-    backgroundColor: '#181818',
-    borderWidth: 1,
-    borderColor: colors.deepBorder,
-    borderRadius: 12,
-    paddingVertical: 20,
-    paddingHorizontal: 16,
-    alignItems: 'center',
-    gap: 6,
-  },
-  identityName: {
-    fontFamily: fonts.oswaldSemiBold,
-    fontSize: 22,
-    letterSpacing: 0.6,
-    color: colors.textPrimary,
-    marginTop: 10,
-    textAlign: 'center',
-  },
-  identityMeta: { fontFamily: fonts.mono, fontSize: 11.5, letterSpacing: 0.4, color: colors.textSub, marginTop: 4 },
 
-  focusTitle: { fontFamily: fonts.oswaldMedium, fontSize: 17, color: colors.textPrimary, paddingLeft: 4 },
-  focusPct: { fontFamily: fonts.barlowSemiBold, fontSize: 13.5, color: colors.amber, paddingLeft: 4, marginTop: 2 },
-  linkCta: {
-    fontFamily: fonts.oswaldSemiBold,
-    fontSize: 12.5,
-    letterSpacing: 1,
-    color: colors.amber,
-    paddingLeft: 4,
-    marginTop: 8,
-  },
-  emptyLine: {
-    fontFamily: fonts.barlowRegular,
-    fontStyle: 'italic',
-    fontSize: 13.5,
-    lineHeight: 19,
-    color: colors.textSub,
-    paddingLeft: 4,
-  },
 
   // Each enrolled cert/program row inside its goals panel (owner 2026-08-07).
   goalBundle: { marginTop: 8 },
-  goalTitle: { fontFamily: fonts.oswaldMedium, fontSize: 17.5, color: colors.textPrimary, paddingLeft: 4 },
-  goalSub: { fontFamily: fonts.barlowMedium, fontSize: 13, color: colors.textSub, paddingLeft: 4, marginTop: 2 },
-  goalMapHead: {
-    fontFamily: fonts.oswaldSemiBold,
-    fontSize: 10.5,
-    letterSpacing: 1.4,
-    color: colors.amberLabel,
-    paddingLeft: 4,
-    marginTop: 12,
-    marginBottom: 3,
-  },
-  goalMapItem: {
-    fontFamily: fonts.barlowMedium,
-    fontSize: 14,
-    lineHeight: 21,
-    color: colors.textSecondary,
-    paddingLeft: 8,
-  },
-  goalCoreItem: {
-    fontFamily: fonts.barlowMedium,
-    fontSize: 14,
-    lineHeight: 21,
-    color: '#5bb0ff',
-    paddingLeft: 8,
-  },
 
   statRow: {
     flexDirection: 'row',
@@ -773,17 +1150,6 @@ const styles = StyleSheet.create({
   statLabel: { fontFamily: fonts.barlowMedium, fontSize: 15, color: colors.textSecondary },
   statValue: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, color: colors.textPrimary },
 
-  primaryChip: {
-    alignSelf: 'flex-start',
-    marginTop: 6,
-    paddingVertical: 9,
-    paddingHorizontal: 16,
-    borderRadius: 9,
-    backgroundColor: '#241d08',
-    borderWidth: 1,
-    borderColor: 'rgba(255,180,0,.7)',
-  },
-  primaryChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.5, color: colors.amber },
 
   bioInput: { minHeight: 60, textAlignVertical: 'top', paddingTop: 10 },
   headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
@@ -800,7 +1166,7 @@ const styles = StyleSheet.create({
   },
   gearGlyph: { fontSize: 15, color: colors.textSubAlt },
 
-  idCard: {
+  idCardLegacy: {
     backgroundColor: '#181818',
     borderWidth: 1,
     borderColor: colors.deepBorder,
@@ -837,30 +1203,6 @@ const styles = StyleSheet.create({
     textShadowRadius: 6,
     textShadowOffset: { width: 0, height: 0 },
   },
-  qrBox: {
-    width: 120,
-    height: 120,
-    marginTop: 8,
-    backgroundColor: '#ffffff',
-    borderRadius: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 10,
-  },
-  qrPendingTitle: {
-    fontFamily: fonts.oswaldBold,
-    fontSize: 22,
-    letterSpacing: 2,
-    color: '#c9c9c9',
-  },
-  qrPendingSub: {
-    marginTop: 6,
-    fontFamily: fonts.barlowMedium,
-    fontSize: 9.5,
-    lineHeight: 13,
-    textAlign: 'center',
-    color: '#9a9a9a',
-  },
 
   panel: {
     backgroundColor: '#181818',
@@ -870,44 +1212,11 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 12,
   },
-  panelEyebrow: {
-    fontFamily: fonts.oswaldSemiBold,
-    fontSize: 11,
-    letterSpacing: 2,
-    color: colors.amberLabel,
-    marginBottom: 10,
-    paddingLeft: 4,
-  },
-  certRow: { flexDirection: 'row', gap: 3 },
 
   // Institutional Mode row (user request 2026-07-17) — disabled switch +
   // tappable label opening the parked-modules container.
-  instRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  instTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 2, color: colors.amberLabel },
-  instHint: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textMuted, marginTop: 3 },
 
   // CM7 commercial variant.
-  planTag: {
-    fontFamily: fonts.oswaldSemiBold,
-    fontSize: 11,
-    letterSpacing: 1.8,
-    color: colors.amber,
-    marginTop: 4,
-    textShadowColor: 'rgba(255,180,0,.4)',
-    textShadowRadius: 6,
-    textShadowOffset: { width: 0, height: 0 },
-  },
-  recordRow: { flexDirection: 'row', alignItems: 'baseline', gap: 10, paddingLeft: 4 },
-  recordCount: { fontFamily: fonts.oswaldBold, fontSize: 30, color: colors.textPrimary },
-  recordLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, color: colors.amberLabel },
-  recordLocked: {
-    fontFamily: fonts.barlowRegular,
-    fontStyle: 'italic',
-    fontSize: 13.5,
-    lineHeight: 19,
-    color: colors.textSub,
-    paddingLeft: 4,
-  },
 
   albumRow: {
     flexDirection: 'row',

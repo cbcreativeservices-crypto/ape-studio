@@ -103,6 +103,38 @@ export async function fetchMyRegistryName(): Promise<string | null> {
   }
 }
 
+/**
+ * REGISTRY VISIBILITY — server-backed, because it decides whether a PUBLIC page
+ * exists (owner-approved 2026-08-30). It used to live only in AsyncStorage
+ * while `public_verify_by_token` served every token regardless, so the switch
+ * promised privacy it could not deliver. `users.show_in_registry` now gates the
+ * RPC, and this is the only thing that writes it.
+ */
+export async function fetchMyRegistryVisible(): Promise<boolean | null> {
+  try {
+    const { data, error } = await supabase.from('users').select('show_in_registry').single();
+    if (error || !data) return null;
+    return !!(data as { show_in_registry?: boolean | null }).show_in_registry;
+  } catch {
+    return null;
+  }
+}
+
+/** Returns false on any failure (guest, offline, RLS) so the UI can revert. */
+export async function saveMyRegistryVisible(on: boolean): Promise<boolean> {
+  try {
+    const { data: user, error: uErr } = await supabase.from('users').select('id').single();
+    if (uErr || !user) return false;
+    const { error } = await supabase
+      .from('users')
+      .update({ show_in_registry: on })
+      .eq('id', (user as { id: string }).id);
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
 /** Persist the registry name to the server. Returns false on any failure
  *  (guest, offline, RLS) so the caller can keep the local copy and retry later. */
 export async function saveMyRegistryName(name: string): Promise<boolean> {
