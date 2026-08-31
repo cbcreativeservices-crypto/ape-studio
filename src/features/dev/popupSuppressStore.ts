@@ -84,5 +84,13 @@ export function areOverlaysSuppressed(): boolean {
 /** Live combined view — true when popups are dev-suppressed OR low-light
  *  production mode is on. */
 export function useOverlaysSuppressed(): boolean {
-  return usePopupsSuppressed() || useLowLight();
+  // BOTH hooks must run on EVERY render. Written as
+  // `usePopupsSuppressed() || useLowLight()` this short-circuits: the moment
+  // popups are suppressed, useLowLight() is never called, the hook count
+  // changes, and React tears the whole tree down with "change in the order of
+  // Hooks" — a white screen. Found 2026-08-31 by toggling "Suppress all
+  // popups" in the dev Visual Index, which crashed the app instantly.
+  const popupsSuppressed = usePopupsSuppressed();
+  const lowLight = useLowLight();
+  return popupsSuppressed || lowLight;
 }

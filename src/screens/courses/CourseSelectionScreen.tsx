@@ -547,11 +547,11 @@ function CourseCardView({
           <Text style={[styles.cardAboveText, { color: '#c4a2ff' }]}>Professional Program Certificate</Text>
           <View style={[styles.cardAboveRule, { backgroundColor: '#c4a2ff' }]} />
         </View>
-        <Pressable
-          onPress={onStubPress}
-          accessibilityRole="button"
-          accessibilityLabel={`${item.name} — ${isMember ? 'coming soon' : 'Academy membership required'}`}
-        >
+        {/* Not announced as a button — same reason as the other cards: it
+            wrapped the "ACADEMY MODE" key's own <button>. The title above still
+            reads as text and the key still announces itself, so nothing is
+            lost and the nesting is gone. */}
+        <Pressable onPress={onStubPress} accessible={false}>
         {stubUrl ? (
           <ImageBackground
             source={{ uri: stubUrl }}
@@ -636,7 +636,15 @@ function CourseCardView({
           <Text style={[styles.cardAboveText, { color: '#5bff85' }]}>INCLUDED FOR EVERYONE</Text>
           <View style={[styles.cardAboveRule, { backgroundColor: '#5bff85' }]} />
         </View>
-        <Pressable onPress={onOpenLab} accessibilityRole="button" accessibilityLabel="Audio Fundamentals & Advanced Training Labs — open">
+        {/* Whole-card tap, but NOT announced as a button: the real button is
+            the OPEN LAB key inside. Giving this wrapper accessibilityRole
+            "button" made react-native-web render a <button> around another
+            <button> (invalid HTML, and React logs a hydration error), and its
+            accessibilityLabel REPLACED the children — so a screen reader heard
+            one vague "… — open" and never learned an OPEN LAB button existed.
+            As a plain touch target it renders a <div>, the inner key keeps its
+            own label, and the large tap area survives. */}
+        <Pressable onPress={onOpenLab} accessible={false}>
         <ImageBackground
           source={labUrl ? { uri: labUrl } : undefined}
           style={[styles.card, { borderColor: 'rgba(55,224,95,.6)' }]}
@@ -866,12 +874,19 @@ function CourseCardView({
     </View>
   );
 
-  // Whole-card tap: wrap the body so pressing anywhere fires the same action as
-  // the visible key. The inner GlassButton still works (RN routes the touch to
-  // the innermost responder, so there's no double-fire).
+  // Whole-card tap: pressing anywhere fires the same action as the visible key.
+  // The inner GlassButton still works (RN routes the touch to the innermost
+  // responder, so there is no double-fire).
+  //
+  // This wrapper is deliberately NOT a button. It used to carry
+  // accessibilityRole="button" plus a label, which nested a <button> inside the
+  // key's own <button> on web — invalid HTML, and React logged a hydration
+  // error on every card — while the label REPLACED the card's contents for a
+  // screen reader, hiding the actual key. `accessible={false}` keeps the large
+  // tap area and lets the key speak for itself.
   const pressableBody =
     onCardPress != null ? (
-      <Pressable onPress={onCardPress} accessibilityRole="button" accessibilityLabel={`${title} — open`}>
+      <Pressable onPress={onCardPress} accessible={false}>
         {cardBody}
       </Pressable>
     ) : (
