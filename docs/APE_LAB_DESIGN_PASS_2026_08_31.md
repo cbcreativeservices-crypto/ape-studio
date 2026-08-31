@@ -74,8 +74,8 @@ done) · `implemented` · `pushed` · `blocked: reason`
 
 | # | Lab | State |
 |---|---|---|
-| 14 | Audio Calculator Laboratory | pending |
-| 15 | Vacuum Tube Fundamentals | pending |
+| 14 | Audio Calculator Laboratory | pushed (light pass) |
+| 15 | Vacuum Tube Fundamentals | pushed (light pass) |
 | 16 | Distortion | pushed (FX fleet) |
 | 17 | Compression | pushed (FX fleet) |
 | 18 | Gate / Expander | pushed (FX fleet) |
@@ -89,7 +89,7 @@ done) · `implemented` · `pushed` · `blocked: reason`
 | 26 | Phaser | pushed (FX fleet) |
 | 27 | Phase | pushed (FX fleet) |
 | 28 | Autotune | pushed (trio batch) |
-| 29 | Harmonograph | pending |
+| 29 | Harmonograph | deferred (owner-gated rebuild) |
 | 30 | Stereo Imaging | pushed (FX fleet) |
 | 31 | Binaural Panner | pushed (trio batch) |
 | 32 | Oscillators | pushed (synth batch) |
@@ -206,6 +206,23 @@ variants gated behind first base answer; L4 descriptor chips; 44pt; 2 checks.
 **Left:** L2 grouping (16 flat characteristics); L6 "toggle 48V yourself"
 moment; locker "Covers:" pre-solves the set-cover puzzle; L9 asks a question
 with no way to answer; dots 8px.
+
+### 14, 15 · CALC + TUBE (light verification pass) — PUSHED
+
+Both owner-approved recently; defect-hunt only. **Calc SOLID** (chain math
+verified at full precision), **Tube SOLID** minus one contradiction.
+
+**Shipped:** Tube FLOW stage-4 caption fired at 0.60 heat while the meter/viz
+conducted at 0.70+ (aligned); tube-card auth failures said "check your
+connection" (reasoned fetch + sign-in copy); "55 Calculators" → 163 (counted
+workspaces); dBu/dBV labels + eyebrow casing; SEND/unit-tap hit slop + SR hint;
+2 tube checks de-length-cued.
+
+### 29 · Harmonograph — DEFERRED
+
+Owner-gated mechanism rebuild in progress (Karl Sims 3-pendulum machine; mock
+at docs/art/mic-cutaway/harmo_mech.html awaiting owner OK). Any pass now would
+churn work the rebuild replaces. Revisit after the RN port.
 
 ### 16–19, 21, 24–27, 30, 36, 37 · FX FLEET (12 labs, one shell) — PUSHED
 
