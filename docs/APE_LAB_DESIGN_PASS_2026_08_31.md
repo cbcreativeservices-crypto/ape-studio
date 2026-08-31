@@ -65,7 +65,7 @@ done) · `implemented` · `pushed` · `blocked: reason`
 | 7 | Digital Audio Systems | pushed |
 | 8 | Visual Audio Analysis | pushed |
 | 9 | Signal Chain Builder | pushed |
-| 10 | Signal Detective | pending |
+| 10 | Signal Detective | pushed (via lab 8) |
 | 11 | Cable & Connector Fundamentals | pending |
 | 12 | Cable Dressing & Installation | pending |
 | 13 | Gain Staging | pending |
@@ -115,6 +115,12 @@ CUSTOM-chain interpretive line.
 **Left:** makeup-gain op for SQUASH (device sound check first); scenario
 sequencing (5 equal buttons, nothing orders them); 6 of 9 modules give no
 visual feedback (meter/ear only).
+
+### 10 · Signal Detective — COVERED BY LAB 8
+
+The standalone catalog entry routes to MeterModule {id:'detective'} — the exact
+module lab 8 fixed (solved-set persistence, 28 options de-cued, −0.0 clamp).
+Driven live during the lab-8 pass. No separate work.
 
 ### 8 · Visual Audio Analysis (Meter) — PUSHED
 
