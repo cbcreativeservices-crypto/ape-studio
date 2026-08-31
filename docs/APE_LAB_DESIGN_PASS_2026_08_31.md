@@ -83,7 +83,7 @@ done) · `implemented` · `pushed` · `blocked: reason`
 | 20 | Equalizer | pushed |
 | 21 | EQ Lab | pushed (FX fleet) |
 | 22 | Bass Guitar Physics | pushed (trio batch) |
-| 23 | Microphone Selection Lab | pending |
+| 23 | Microphone Selection Lab | pushed |
 | 24 | Chorus | pushed (FX fleet) |
 | 25 | Flanger | pushed (FX fleet) |
 | 26 | Phaser | pushed (FX fleet) |
@@ -191,6 +191,21 @@ curve fallback (SeeingFrequency + LiveSpectrumEq); hub row numbers; "unlock"→
 reflex — needs one dull-vocal boost scenario); module-1 empty-glass first-15s
 on denied mic (fallback helps but no bars is still quiet); naming collision
 "Equalizer" (hub) vs "EQUALIZER EFFECT LAB" (FX) on the labs list.
+
+### 23 · Microphone Selection Lab — PUSHED
+
+**Design:** hierarchy B+ · density B · affordance C · copy A− · idiom B+ · first-15s B+.
+**Learning:** sequencing A− · load B · interaction B− · retrieval C · misconceptions A.
+
+**Shipped:** P0 unreachable-chips fix (5 of 16 characteristics off-screen);
+challenge no longer spoils the answer on a wrong pick; factor/reason lists
+mount-shuffled (top-3-clicking scored 3/3); pattern-map verdicts encode
+OUTCOME (unwanted "picked up" was green); factors clear on pick change;
+variants gated behind first base answer; L4 descriptor chips; 44pt; 2 checks.
+
+**Left:** L2 grouping (16 flat characteristics); L6 "toggle 48V yourself"
+moment; locker "Covers:" pre-solves the set-cover puzzle; L9 asks a question
+with no way to answer; dots 8px.
 
 ### 16–19, 21, 24–27, 30, 36, 37 · FX FLEET (12 labs, one shell) — PUSHED
 
