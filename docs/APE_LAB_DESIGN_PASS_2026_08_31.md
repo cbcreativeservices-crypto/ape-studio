@@ -60,7 +60,7 @@ done) · `implemented` · `pushed` · `blocked: reason`
 | 2 | Foundations of Sound | pushed |
 | 3 | Sound Playground | pushed |
 | 4 | Microphone Principles | pushed |
-| 5 | Wave Physics Laboratory | pending |
+| 5 | Wave Physics Laboratory | pushed |
 | 6 | Speaker Placement & Coverage | pending |
 | 7 | Digital Audio Systems | pending |
 | 8 | Visual Audio Analysis | pending |
@@ -101,6 +101,23 @@ done) · `implemented` · `pushed` · `blocked: reason`
 | 38 | Modular Synth | pending |
 
 ## GRADES & FINDINGS
+
+### 5 · Wave Physics Laboratory — PUSHED (the fleet's best)
+
+**Design:** Hierarchy A · Density B+ · Affordance A− · Copy A− · Idiom A ·
+First-15s A− · Cross-module A ("16/16 one instrument").
+**Learning:** sequencing A− · load B+ · interaction A · check quality B+ ·
+**interleaving C+ (the one structural miss)** · misconceptions A−.
+
+**Shipped:** Room Builder 3-check "which mechanism?" capstone (symptom →
+module); SOLO FRONT SUB chip (makes the one-sub-is-never-cardioid claim
+testable); (responseAt) out of the honesty badge; MATERIAL_SHORT codes replace
+slice(0,5) truncations; MISS → OFF BY; Builder's duplicate badge deduped.
+
+**Left:** DSP-latency chip for Delay Align (its AUTO-ALIGN models the method
+its own check refutes); per-option wrongHints (CheckSpec extension);
+drag-affordance microlabels in vizWave; Coverage moiré smoothing; check-solved
+persistence. Noted: one non-reproducible CanvasKit abort in a long web session.
 
 ### 4 · Microphone Principles — PUSHED
 
