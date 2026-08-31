@@ -38,7 +38,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GlassButton } from '../../../components/GlassButton';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
-import { TUBE_CARD_ASPECT, TUBE_FAMILY_META, TUBE_REFS, fetchTubePageUri, pageCountOf, type TubeFamily } from './tubeRefs';
+import { TUBE_CARD_ASPECT, TUBE_FAMILY_META, TUBE_REFS, fetchTubePage, fetchTubePageUri, pageCountOf, type TubeFamily } from './tubeRefs';
 
 const MAX_SCALE = 4;
 const DOUBLE_TAP_SCALE = 2.5;
@@ -64,6 +64,7 @@ export function TubeCardScreen() {
   const [page, setPage] = useState<1 | 2>(1);
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [failReason, setFailReason] = useState<'auth' | 'network'>('network');
   const [retryKey, setRetryKey] = useState(0);
   // Secured card URLs are fetched from the tube-image Edge Function (signed,
   // short-lived), so the visible page's URI resolves asynchronously.
@@ -322,11 +323,14 @@ export function TubeCardScreen() {
     setPageUri(null);
     setLoaded(false);
     setFailed(false);
-    fetchTubePageUri(tube.stem, page)
-      .then((u) => {
+    fetchTubePage(tube.stem, page)
+      .then((r) => {
         if (!alive) return;
-        if (u) setPageUri(u);
-        else setFailed(true);
+        if (r.url) setPageUri(r.url);
+        else {
+          setFailReason(r.reason === 'auth' ? 'auth' : 'network');
+          setFailed(true);
+        }
       })
       .catch(() => {
         if (alive) setFailed(true);
@@ -467,7 +471,13 @@ export function TubeCardScreen() {
         ) : null}
         {failed ? (
           <View style={styles.centerOverlay}>
-            <Text style={styles.loadText}>Couldn’t load the {tube.short} card — check your connection.</Text>
+            {/* NEW COPY — owner review (fix 2026-08-31): auth failures used to
+                say "check your connection" — advice RETRY could never satisfy. */}
+            <Text style={styles.loadText}>
+              {failReason === 'auth'
+                ? `The ${tube.short} card needs an active Academy sign-in — sign in and try again.`
+                : `Couldn’t load the ${tube.short} card — check your connection.`}
+            </Text>
             <Pressable
               style={styles.retryBtn}
               onPress={() => {

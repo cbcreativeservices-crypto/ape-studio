@@ -162,15 +162,32 @@ export function tubePageUrl(stem: string, page: 1 | 2): string {
  * the current session's access token automatically.
  */
 export async function fetchTubePageUri(stem: string, page: 1 | 2): Promise<string | null> {
+  const r = await fetchTubePage(stem, page);
+  return r.url;
+}
+
+/** Reasoned fetch (fix 2026-08-31): a signed-out/lapsed caller used to get the
+ *  same null as a network drop, so the card said "check your connection" for a
+ *  failure RETRY could never fix. */
+export async function fetchTubePage(
+  stem: string,
+  page: 1 | 2,
+): Promise<{ url: string | null; reason: 'ok' | 'auth' | 'network' }> {
+  const { data: sess } = await supabase.auth.getSession().catch(() => ({ data: { session: null } }));
+  if (!sess?.session) return { url: null, reason: 'auth' };
   try {
     const { data, error } = await supabase.functions.invoke('tube-image', {
       body: { stem, page },
     });
-    if (error) return null;
+    if (error) {
+      // The gated fn refuses non-members with a 4xx — surface it as auth.
+      const status = (error as { context?: { status?: number } }).context?.status;
+      return { url: null, reason: status != null && status >= 400 && status < 500 ? 'auth' : 'network' };
+    }
     const url = (data as { url?: string } | null)?.url;
-    return url ?? null;
+    return url ? { url, reason: 'ok' } : { url: null, reason: 'network' };
   } catch {
-    return null;
+    return { url: null, reason: 'network' };
   }
 }
 

@@ -76,7 +76,10 @@ const PHYSICS: Partial<Record<TubePart, string>> = {
 const FLOW_STAGES: { until: number; text: string }[] = [
   { until: 0.15, text: '1 · Cold: nothing moves. A tube does nothing until the heater warms up.' },
   { until: 0.35, text: '2 · The heater glows, warming the cathode sleeve around it.' },
-  { until: 0.6, text: '3 · The hot cathode boils off electrons — an invisible cloud (space charge) forms around it.' },
+  // Stage 4 fires at the SAME heat the meter/viz start conducting (fix
+  // 2026-08-31: the caption said "electrons begin streaming" while PLATE I
+  // read 0% and the drawn cloud stood still).
+  { until: 0.7, text: '3 · The hot cathode boils off electrons — an invisible cloud (space charge) forms around it.' },
   { until: 0.85, text: '4 · The positive plate attracts the cloud — electrons begin streaming across the vacuum.' },
   { until: 1.01, text: '5 · Steady current flows, cathode → plate. The tube is alive and ready to amplify.' },
 ];
@@ -292,8 +295,8 @@ function FlowSection(p: SectionProps) {
   const [heat, setHeat] = useState(0);
   const stage = FLOW_STAGES.find((s) => heat < s.until) ?? FLOW_STAGES[4];
   const stageNum = FLOW_STAGES.indexOf(stage) + 1;
-  const current = heat > 0.75 ? (heat - 0.75) / 0.25 : 0;
-  const heatWord = (v: number) => (v < 0.15 ? 'cold' : v < 0.75 ? 'warming…' : 'conducting');
+  const current = heat > 0.7 ? (heat - 0.7) / 0.3 : 0;
+  const heatWord = (v: number) => (v < 0.15 ? 'cold' : v < 0.7 ? 'warming…' : 'conducting');
 
   const params: DockParam[] = [
     {
@@ -347,7 +350,7 @@ const GRID_CHECK: CheckSpec = {
   question: 'The control grid sits between cathode and plate. How does it control the LARGE plate current?',
   options: [
     'It physically blocks electrons like a shutter',
-    'Its small NEGATIVE voltage repels electrons — a tiny voltage change gates the whole stream',
+    'Its small negative voltage repels the stream back',
     'It heats up and emits extra electrons',
   ],
   correctIdx: 1,
@@ -615,7 +618,7 @@ const BIAS_CHECK: CheckSpec = {
   question: 'A tube biased FAR too negative sits in cutoff. What does the output do?',
   options: [
     'It distorts with a bright, fizzy edge',
-    'Little or nothing — the stream is already shut off, so the signal’s wiggles can’t modulate it',
+    'Little or nothing — the stream is already shut off',
     'It gets louder, because the tube works harder',
   ],
   correctIdx: 1,

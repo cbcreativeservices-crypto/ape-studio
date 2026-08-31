@@ -334,7 +334,9 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     section: 'training',
     kind: 'hub',
     route: 'CalcLab',
-    count: WORKSPACES.length,
+    // Count the CALCULATORS, not the workspaces (fix 2026-08-31: the row
+    // said "55 Calculators" over 163 ratified functions).
+    count: WORKSPACES.reduce((a, w) => a + w.functions.length, 0),
     countLabel: (n) => `${n} Calculators`,
     hubBlurb: 'SPL, dB, speaker power, delay, wavelength, room modes, cable loss, Ohm’s law, digital audio, coverage — chained.',
   },

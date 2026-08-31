@@ -236,7 +236,11 @@ export function CalcWorkspaceScreen() {
               locations={[0, 0.42, 1]}
               style={StyleSheet.absoluteFill}
             />
-            <Text style={styles.resultEyebrow}>YOUR ANSWER — {fn.name.toUpperCase()}</Text>
+            <Text style={styles.resultEyebrow}>
+              {/* dB-family tokens keep their casing — "DBV FROM VOLTAGE" reads
+                  as a typo in the lab that teaches the difference. */}
+              YOUR ANSWER — {fn.name.toUpperCase().replace(/\bDBFS\b/g, 'dBFS').replace(/\bDBU\b/g, 'dBu').replace(/\bDBV\b/g, 'dBV').replace(/\bDB\b/g, 'dB')}
+            </Text>
             {counterText ? <Text style={styles.usageCounter}>{counterText}</Text> : null}
             {mustSignIn ? (
               <View style={{ gap: 10 }}>
@@ -278,11 +282,17 @@ export function CalcWorkspaceScreen() {
                     <View key={o.label} style={styles.resultRow}>
                       <Text style={styles.resultLabel}>{o.label}</Text>
                       <View style={styles.resultRight}>
-                        <Pressable accessibilityRole="button" onPress={() => setOutUnit((m) => ({ ...m, [o.label]: (m[o.label] ?? 0) + 1 }))}>
+                        <Pressable
+                          accessibilityRole="button"
+                          accessibilityLabel={`${o.label} ${formatOut(o, 0)} — tap to change the display unit`}
+                          hitSlop={{ top: 8, bottom: 8 }}
+                          onPress={() => setOutUnit((m) => ({ ...m, [o.label]: (m[o.label] ?? 0) + 1 }))}
+                        >
                           <Text style={styles.resultValue}>{formatOut(o, 0)}</Text>
                         </Pressable>
                         {o.chainable !== false ? (
                           <Pressable accessibilityRole="button"
+                            hitSlop={{ top: 9, bottom: 9 }}
                             style={styles.sendBtn}
                             onPress={() => setChainValue({ label: o.label, quantity: o.quantity, baseValue: o.value, fromWorkspace: ws.name })}
                           >

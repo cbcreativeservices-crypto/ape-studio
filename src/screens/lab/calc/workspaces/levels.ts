@@ -102,7 +102,7 @@ const WS_LEVEL: Workspace = {
       explain:
         'Expresses an RMS voltage on the professional dBu scale (referenced to 0.775 V). Voltage is an amplitude, so the multiplier is 20 — doubling the voltage is +6 dB.',
       keySymbols: ['·', 'log₁₀', '/'],
-      compute: (v) => [{ label: 'LEVEL', value: 20 * log10(n(v.vFromDbu) / 0.775), quantity: 'db' }],
+      compute: (v) => [{ label: 'LEVEL (dBu)', value: 20 * log10(n(v.vFromDbu) / 0.775), quantity: 'db' }],
       steps: (v) => {
         const volts = n(v.vFromDbu);
         return [
@@ -144,7 +144,7 @@ const WS_LEVEL: Workspace = {
       explain:
         'Expresses a voltage on the consumer dBV scale (referenced to 1 V), so the ratio is just the voltage itself. The 20 multiplier is because voltage is an amplitude quantity.',
       keySymbols: ['·', 'log₁₀', '/'],
-      compute: (v) => [{ label: 'LEVEL', value: 20 * log10(n(v.vFromDbv)), quantity: 'db' }],
+      compute: (v) => [{ label: 'LEVEL (dBV)', value: 20 * log10(n(v.vFromDbv)), quantity: 'db' }],
       steps: (v) => {
         const volts = n(v.vFromDbv);
         return [
