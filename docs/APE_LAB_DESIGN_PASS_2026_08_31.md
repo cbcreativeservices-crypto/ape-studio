@@ -58,7 +58,7 @@ done) · `implemented` · `pushed` · `blocked: reason`
 |---|---|---|
 | 1 | Understanding Level & Amplitude | pushed |
 | 2 | Foundations of Sound | pushed |
-| 3 | Sound Playground | pending |
+| 3 | Sound Playground | pushed |
 | 4 | Microphone Principles | pending |
 | 5 | Wave Physics Laboratory | pending |
 | 6 | Speaker Placement & Coverage | pending |
@@ -101,6 +101,17 @@ done) · `implemented` · `pushed` · `blocked: reason`
 | 38 | Modular Synth | pending |
 
 ## GRADES & FINDINGS
+
+### 3 · Sound Playground — PUSHED
+
+**Design:** hierarchy C+ · density C · affordance B− · copy B+ · idiom B · first-15s C+ · sandbox-invitation C (B− overall vs the course's A).
+**Learning:** transfer D+ · scaffolding D · feedback B− · load C+ · retention D+.
+
+**Shipped:** TRY THIS guided-exploration card (source-filtered prompts, ↻);
+null-result CheckQuestion before MARK AS REVIEWED; PLAY nudge; "1 PARTIAL —
+PURE TONE" annotation; air row 40→30% (teaching panes bigger); hideDragTag
+(occluded the air window); LEVEL key frame-tint removed (false selected state);
+Q chips ghosted not popped; RackUnit well top clearance (fleet-wide clip fix).
 
 ### 2 · Foundations of Sound — PUSHED
 
