@@ -61,7 +61,7 @@ done) · `implemented` · `pushed` · `blocked: reason`
 | 3 | Sound Playground | pushed |
 | 4 | Microphone Principles | pushed |
 | 5 | Wave Physics Laboratory | pushed |
-| 6 | Speaker Placement & Coverage | pending |
+| 6 | Speaker Placement & Coverage | pushed |
 | 7 | Digital Audio Systems | pending |
 | 8 | Visual Audio Analysis | pending |
 | 9 | Signal Chain Builder | pending |
@@ -101,6 +101,19 @@ done) · `implemented` · `pushed` · `blocked: reason`
 | 38 | Modular Synth | pending |
 
 ## GRADES & FINDINGS
+
+### 6 · Speaker Placement & Coverage — PUSHED
+
+**Design:** hierarchy A− · density B · affordance B+ · copy B− · idiom A · first-15s A−.
+**Learning:** sequencing B+ · load B · interaction B · retrieval C · misconceptions C+.
+
+**Shipped:** guided lesson's dead 4-band legend (GREEN/YELLOW/RED/GRAY) replaced
+with the live ramp semantics across 4 entries; array field normalized 1/√N so
+the SOLVED room stops painting red (its own fault colour); checks on all three
+tabs (overlap→comb, dead-zone vocab, SIDE grammar fix); both badges shortened
+to survive 375 un-truncated.
+
+**Left:** EDIT bezel tap affordance; phone value-format shortenings.
 
 ### 5 · Wave Physics Laboratory — PUSHED (the fleet's best)
 
