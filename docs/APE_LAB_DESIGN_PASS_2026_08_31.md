@@ -92,13 +92,13 @@ done) · `implemented` · `pushed` · `blocked: reason`
 | 29 | Harmonograph | pending |
 | 30 | Stereo Imaging | pushed (FX fleet) |
 | 31 | Binaural Panner | pending |
-| 32 | Oscillators | pending |
-| 33 | Noise | pending |
-| 34 | Harmonics | pending |
-| 35 | FM Synthesis | pending |
+| 32 | Oscillators | pushed (synth batch) |
+| 33 | Noise | pushed (synth batch) |
+| 34 | Harmonics | pushed (synth batch) |
+| 35 | FM Synthesis | pushed (synth batch) |
 | 36 | Delay | pushed (FX fleet) |
 | 37 | Reverb | pushed (FX fleet) |
-| 38 | Modular Synth | pending |
+| 38 | Modular Synth | pushed (synth batch) |
 
 ## GRADES & FINDINGS
 
@@ -147,6 +147,20 @@ quiz via clearedUnits; "HIDDEN"→"TO PROCESS"; weakestDim <80 threshold
 **Left:** innocent-detail findings (new content — owner); nearest-marker tap
 resolution (rack cluster overlaps); mergeDims early-mistake wash-out; myth
 global order vs stage boundaries.
+
+### 32–35, 38 · SYNTHESIS BATCH (Oscillators/Noise/Harmonics/FM/Modular) — PUSHED
+
+**Grades:** Osc A/B+ · Noise B+/B− · Harmonics A−/A− · FM B+/B+ · Modular A−/B+.
+
+**Shipped:** 9 recognition checks (all five had zero retrieval); Noise
+per-colour character copy (white's rationale rendered under every colour —
+confirmed live); FM reflected-vs-aliased split (red cried wolf at safe
+defaults) + ratio-3.5 blurb fix; Modular DEPTH-0 routing readout; LabChip
+44pt hitSlop (app-wide); 3 dead-button a11y gates.
+
+**Left:** DockTray backdrop double-tap (shared infra, owner decision); Modular
+ENV/ENV→CUT row split; Noise grey/textured "in development" disclosure only in
+lesson content; FM STRIKE silent no-op pre-v7.
 
 ### 16–19, 21, 24–27, 30, 36, 37 · FX FLEET (12 labs, one shell) — PUSHED
 
