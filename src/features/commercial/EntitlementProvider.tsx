@@ -11,6 +11,7 @@
  * runtime override persisted). Flag OFF ⇒ consumers render today's app.
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { devBypass } from '../../config/devMode';
 import { DEV_COMMERCIAL_FLAG_KEY, DEV_ENTITLEMENT_KEY, FLAG_DEFAULTS } from '../../config/flags';
@@ -148,6 +149,20 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
   // from the session for the rest of this app run (so the toggle isn't clobbered
   // by a token refresh while they inspect a tier).
   const devOverrode = useRef(false);
+  // DEV WEB ONLY (2026-08-31): the wordmark long-press persisted the dev tier
+  // but nothing ever read it back, so every web-preview reload fell to
+  // anonymous and re-paywalled the labs mid-iteration. Hydrate it here —
+  // __DEV__ + web only; release builds and devices never touch this path.
+  useEffect(() => {
+    if (!__DEV__ || Platform.OS !== 'web') return;
+    void AsyncStorage.getItem(DEV_ENTITLEMENT_KEY).then((raw) => {
+      if (raw === 'anonymous' || raw === 'free' || raw === 'academy' || raw === 'lapsed') {
+        devOverrode.current = true;
+        setEntitlementState(raw);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   // Track the signed-in user id so we can wipe the device-local study mirror
   // when the account changes (owner 2026-08-11).
   const lastUid = useRef<string | null>(null);

@@ -37,6 +37,7 @@ import { ApeDsp, BIN_SRC } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
+import { CheckQuestion } from './foundations/bits';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
@@ -306,6 +307,16 @@ export function BinauralLabScreen() {
                     />
                   ))}
                 </View>
+                {/* Standing tray-blurb pattern (2026-08-31): the lab's key
+                    discrimination — tone vs noise localizability — lived only
+                    in LEARN prose. NEW COPY — owner review. */}
+                <Text style={styles.caption}>
+                  {sel.type === BIN_SRC.sine
+                    ? sel.freq <= 440
+                      ? 'A smooth low tone is the HARDEST thing to localize — the ITD is ambiguous and the head barely shadows it. Notice how vague it feels.'
+                      : 'A higher tone gives the head shadow something to work with — level difference starts carrying the location.'
+                    : 'Broadband noise feeds BOTH cues at once — timing at the low end, shadow at the top. The easiest source to place.'}
+                </Text>
                 {sel.type === BIN_SRC.sine ? (
                   <>
                     <Text style={styles.sectionHead}>TONE FREQUENCY (Hz)</Text>
@@ -336,13 +347,18 @@ export function BinauralLabScreen() {
         <Text style={styles.warnBadge}>🎧 HEADPHONES REQUIRED</Text>
       </View>
 
+      {sources.every((src) => !src.on) ? (
+        // Every object OFF used to mean PLAY silently mixed silence (fix
+        // 2026-08-31). NEW COPY — owner review.
+        <Text style={styles.caption}>All three objects are OFF — PLAY would mix silence. Flip one ON in the OBJ tray.</Text>
+      ) : null}
       <View style={{ gap: 6 }}>
         <Text style={styles.sectionHead}>THE TWO CUES</Text>
         <Text style={styles.caption}>
-          Object {selected + 1}: far-ear delay ≈ {itdUs(sel.azDeg).toFixed(0)} µs · far-ear level −
-          {ildDb(sel.azDeg).toFixed(1)} dB + head-shadow low-pass — the two cues your brain
-          triangulates with. Behind-the-head is only gently hinted (front/back needs HRTF
-          pinna cues this model deliberately doesn't fake).
+          Object {selected + 1}: far-ear delay ≈ {itdUs(sel.azDeg).toFixed(0)} µs · far-ear level{' '}
+          {ildDb(sel.azDeg) >= 0.05 ? `−${ildDb(sel.azDeg).toFixed(1)}` : '0.0'} dB + head-shadow
+          low-pass — the two cues your brain triangulates with. Behind-the-head is only gently
+          hinted (front/back needs HRTF pinna cues this model deliberately doesn't fake).
         </Text>
       </View>
 
@@ -370,6 +386,36 @@ export function BinauralLabScreen() {
           )
         ) : null}
       </View>
+
+{/* Retrieval (learning pass 2026-08-31) — NEW COPY, owner review. */}
+      <CheckQuestion
+        spec={{
+          question: 'A studio pan-pot and this binaural panner both "move" a sound. What does the pan-pot NOT do?',
+          options: [
+            'Change the timing between the ears — it only changes level',
+            'Change the level between speakers',
+            'Work on headphones',
+          ],
+          correctIdx: 0,
+          reveal:
+            'A pan-pot is level-only. Binaural rendering adds the inter-ear TIME difference and the head-shadow filtering — the cues that make a sound sit outside your head instead of sliding along a line between your ears.',
+          wrongHint: 'THE TWO CUES panel above shows what the pan-pot leaves out.',
+        }}
+      />
+      <CheckQuestion
+        spec={{
+          question: 'Which source is EASIEST to localize with your eyes closed?',
+          options: [
+            'Broadband noise — it feeds both cues at once',
+            'A 250 Hz sine tone',
+            'They are all equal',
+          ],
+          correctIdx: 0,
+          reveal:
+            'Noise spans the spectrum: its low end carries the timing cue and its top end casts a real head shadow. A smooth low tone gives the brain almost nothing — which is why finding a humming subwoofer by ear is so hard.',
+          wrongHint: 'Flip SRC between TONE 250 and PINK while dragging the object.',
+        }}
+      />
 
       <GuidedLessonSheet
         visible={lessonOpen}

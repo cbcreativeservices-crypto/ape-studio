@@ -34,6 +34,7 @@ import { ApeDsp, GEN_MODES } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
+import { CheckQuestion } from './foundations/bits';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
@@ -194,7 +195,10 @@ export function AutotuneLabScreen() {
     return () => clearInterval(id);
   }, [playing]);
 
-  const remaining = (c0: number) => Math.round(c0 * (1 - amount));
+  // Where a note ENDS after correction — τ-aware (fix 2026-08-31): the old
+  // asymptote-only formula claimed "0¢ — exactly on pitch" at 100% + SLOW
+  // while the drawn curve (the EXACT RETUNE MATH badge) ended ~3¢ short.
+  const remaining = (c0: number) => Math.round(Math.abs(correctedCents(c0, amount, tau, NOTE_MS / 1000)));
   const togglePlay = () => (playing ? stop() : void play());
 
   // ── RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23) ────────────────────────────
@@ -233,7 +237,7 @@ export function AutotuneLabScreen() {
               helpKey: 'cents_grid',
             },
             // The residual: where the worst note (45¢ flat) ENDS after correction.
-            { k: 'ENDS', v: `${Math.abs(remaining(MELODY[3].offCents))}¢`, helpKey: 'correction' },
+            { k: 'ENDS', v: `${remaining(MELODY[3].offCents)}¢`, helpKey: 'correction' },
           ],
           render: (_w, h) => (
             // Tapping the display toggles play/stop (owner 2026-07-31) — same
@@ -310,8 +314,12 @@ export function AutotuneLabScreen() {
         </Text>
         <Text style={styles.caption}>
           At {Math.round(amount * 100)}% correction a {Math.abs(MELODY[3].offCents)}¢ error ends{' '}
-          {Math.abs(remaining(MELODY[3].offCents))}¢ from the line
-          {amount === 1 ? ' — exactly on pitch' : ''}.
+          {remaining(MELODY[3].offCents)}¢ from the line
+          {remaining(MELODY[3].offCents) === 0
+            ? ' — exactly on pitch'
+            : amount === 1
+              ? ' — the SLOW glide has not finished by the note’s end (mistake #2 in the lesson, live)'
+              : ''}.
         </Text>
       </View>
 
@@ -328,6 +336,36 @@ export function AutotuneLabScreen() {
           {genError ? <Text style={styles.error}>{genError}</Text> : null}
         </View>
       ) : null}
+
+{/* Retrieval (learning pass 2026-08-31) — NEW COPY, owner review. */}
+      <CheckQuestion
+        spec={{
+          question: 'Why does FAST retune sound robotic?',
+          options: [
+            'Pitch JUMPS to the grid faster than any natural voice can move — and vibrato flattens with it',
+            'It adds distortion to the voice',
+            'It corrects to the wrong notes',
+          ],
+          correctIdx: 0,
+          reveal:
+            'A ~25 ms snap is faster than any human pitch motion, so every scoop, slide and vibrato cycle gets ironed flat the instant it starts — that instant flatness IS the robotic sound.',
+          wrongHint: 'Play the melody on FAST, then SLOW, and watch the curve shapes.',
+        }}
+      />
+      <CheckQuestion
+        spec={{
+          question: '100% correction on SLOW still leaves a short note a few cents off. Why?',
+          options: [
+            'The glide takes time — the note ends before the correction finishes',
+            'SLOW mode caps correction at 90%',
+            'The singer moved',
+          ],
+          correctIdx: 0,
+          reveal:
+            'Retune speed is a time constant: SLOW drifts toward the grid over ~400 ms per τ. A 1.1 s note ends mid-glide — read the ENDS cell, it does the τ math live. Transparent tuning trades precision for motion.',
+          wrongHint: 'Set 100% + SLOW and read ENDS — then switch to FAST.',
+        }}
+      />
 
       <GuidedLessonSheet
         visible={lessonOpen}
@@ -444,7 +482,16 @@ function CentsGrid({
                 />
               ) : null}
               <Line x1={c.sungX} y1={c.y0} x2={c.sungX} y2={c.y1} stroke="#6a6a74" strokeWidth={2.5} opacity={0.75} />
-              <Path d={c.d} stroke={colors.amber} strokeWidth={2.2} fill="none" />
+              {/* At AMOUNT OFF the corrected curve coincides with the sung
+                  line — dash it so the gray reference stays visible and the
+                  legend keeps telling the truth (fix 2026-08-31). */}
+              <Path
+                d={c.d}
+                stroke={colors.amber}
+                strokeWidth={2.2}
+                fill="none"
+                strokeDasharray={amount === 0 ? '4 4' : undefined}
+              />
               <SvgText
                 x={c.sungX + (MELODY[i].offCents >= 0 ? 6 : -6)}
                 y={c.y0 + 10}

@@ -22,7 +22,9 @@ import {
   Text,
   View,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { devBypass } from '../../config/devMode';
+import { DEV_ENTITLEMENT_KEY } from '../../config/flags';
 import { KeyboardAwareScrollView } from '../../features/keyboard/keyboardControllerSafe';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -138,7 +140,16 @@ export function AuthScreen({ navigation }: Props) {
   useEffect(() => {
     if (Platform.OS === 'web' && devBypass('webPreviewAutoGuest') && !autoGuestFired.current) {
       autoGuestFired.current = true;
-      void enterGuest();
+      void (async () => {
+        // Preserve the dev wordmark tier across the auto-guest wipe
+        // (2026-08-31): guest entry clears every ape:* key and persists
+        // 'anonymous', which stomped the stored tier on every web reload —
+        // the browser-iterate workflow re-paywalled itself each boot. Same
+        // web + devBypass gate as the auto-guest itself.
+        const kept = await AsyncStorage.getItem(DEV_ENTITLEMENT_KEY);
+        await enterGuest();
+        if (kept === 'free' || kept === 'academy' || kept === 'lapsed') setEntitlement(kept);
+      })();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

@@ -88,10 +88,12 @@ export function ParamLane({
           { left: `${v * 100}%`, marginLeft: -THUMB_W * v, backgroundColor: c },
         ]}
       />
-      <Text pointerEvents="none" style={styles.laneLabel} numberOfLines={1}>
+      {/* Backed chips (design pass 2026-08-31): at the lane's ends the thumb
+          sat under same-hue text — the label and value vanished into it. */}
+      <Text pointerEvents="none" style={[styles.laneLabel, styles.textBacked]} numberOfLines={1}>
         {label}
       </Text>
-      <Text pointerEvents="none" style={[styles.laneValue, { color: c }]} numberOfLines={1}>
+      <Text pointerEvents="none" style={[styles.laneValue, styles.textBacked, { color: c }]} numberOfLines={1}>
         {readout}
       </Text>
     </View>
@@ -136,4 +138,5 @@ const styles = StyleSheet.create({
     fontFamily: fonts.mono,
     fontSize: 14,
   },
+  textBacked: { backgroundColor: 'rgba(15,15,18,0.72)', paddingHorizontal: 4, borderRadius: 4, overflow: 'hidden' },
 });

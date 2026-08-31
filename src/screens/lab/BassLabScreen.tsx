@@ -40,6 +40,7 @@ import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { guardAdditiveForEngine, speakerGuardDb, SPEAKER_HPF_HZ } from '../../features/audio/speakerSafety';
 import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
+import { CheckQuestion } from './foundations/bits';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
@@ -228,7 +229,7 @@ export function BassLabScreen() {
                   { k: 'LENGTH', v: `${(vibFrac * 100).toFixed(0)}%`, helpKey: 'fret' },
                 ]
               : [
-                  { k: 'NOTE', v: midiName(soundMidi), helpKey: 'harmonic_node' },
+                  { k: 'NOTE', v: node.n === 5 ? `≈${midiName(soundMidi)} −14¢` : midiName(soundMidi), helpKey: 'harmonic_node' },
                   { k: 'FREQ', v: `${soundHz.toFixed(1)} Hz`, helpKey: 'display' },
                   { k: 'INTERVAL', v: node.interval, flex: 1.8, helpKey: 'harmonic_node' },
                   { k: 'NODE', v: `${node.frac} · H${node.n}`, tint: NODE_GREEN, helpKey: 'harmonic_node' },
@@ -365,6 +366,36 @@ export function BassLabScreen() {
         ) : null}
       </View>
 
+{/* Retrieval (learning pass 2026-08-31) — NEW COPY, owner review. */}
+      <CheckQuestion
+        spec={{
+          question: 'Fretting at the 7th fret and touching the node at 1/3 both raise the pitch. What\u2019s the difference?',
+          options: [
+            'Fretting SHORTENS the string (new fundamental); the harmonic keeps full length but forces 3 lobes',
+            'Nothing — both make the same note the same way',
+            'The harmonic is just quieter',
+          ],
+          correctIdx: 0,
+          reveal:
+            'The fret moves the nut: a shorter string with its own full harmonic series. The node touch keeps the whole string ringing but kills every mode WITHOUT a node there — only H3, H6, H9 survive. Same pitch class, different physics, different tone.',
+          wrongHint: 'Switch MODE and watch the lobes: 1 big lobe vs 3 equal ones.',
+        }}
+      />
+      <CheckQuestion
+        spec={{
+          question: 'The 5th harmonic\u2019s bezel reads \u2248G\u26AF3 \u221214\u00A2. Why the \u2248?',
+          options: [
+            '5 \u00D7 the fundamental lands 14 cents flat of the equal-tempered note',
+            'The string is out of tune',
+            'The display rounds badly',
+          ],
+          correctIdx: 0,
+          reveal:
+            'Harmonics are EXACT integer multiples — it is the piano\u2019s equal-tempered grid that bends notes to fit 12 keys. H5 (a pure major third) sits 14\u00A2 flat of the tempered third: the string is honest, the keyboard compromises.',
+          wrongHint: 'Compare 5 \u00D7 41.2 = 206.0 Hz with the tempered G\u26AF3 at 207.65 Hz.',
+        }}
+      />
+
       <GuidedLessonSheet
         visible={lessonOpen}
         lesson={getLabLesson('bass')}
@@ -430,10 +461,12 @@ function Fretboard({
 
   const onPress = useCallback(
     (x: number, y: number) => {
-      if (w <= 0) return;
+      // Web preview: locationX/Y can arrive undefined → NaN row → the whole
+      // app unmounted (no root error boundary). Reproduced 2026-08-31.
+      if (w <= 0 || !Number.isFinite(x) || !Number.isFinite(y)) return;
       // Row → string (clamped).
       const row = Math.min(3, Math.max(0, Math.round((y - stringTop) / STRING_GAP)));
-      const si = ROW_TO_STRING[row];
+      const si = ROW_TO_STRING[row] ?? 0;
       const fx = Math.min(1, Math.max(0, x / w));
       if (mode === 'fretted') {
         // Snap to the nearest fret line (0..12).
@@ -508,7 +541,10 @@ function Fretboard({
     <View>
       {w > 0 ? (
         <Pressable
-          onPress={(e) => onPress(e.nativeEvent.locationX, e.nativeEvent.locationY)}
+          onPress={(e) => {
+            const ne = e.nativeEvent as { locationX?: number; locationY?: number; offsetX?: number; offsetY?: number };
+            onPress(ne.locationX ?? ne.offsetX ?? NaN, ne.locationY ?? ne.offsetY ?? NaN);
+          }}
           accessibilityRole="button"
           accessibilityLabel="Fretboard — tap a string and fret"
         >
