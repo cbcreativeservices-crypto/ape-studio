@@ -123,3 +123,133 @@ the same shape (`use…() || use…()`, `&&`, ternary) — no other instance.
 **Verified:** the toggle now works with zero console errors where it previously
 white-screened instantly.
 
+---
+
+## AUDIO FUNDAMENTALS (13 labs)
+
+### 1 · Understanding Level & Amplitude — **PASS**
+Opens instantly, zero console errors, no nested buttons on the screen. The
+blue→red ramp reads correctly (quiet = blue, loud = red), all six views draw the
+same signal, and the honesty line *"Illustrative training graphics — not live
+measurements"* is present. Owner-approved previously; nothing new to report.
+
+### 2 · Foundations of Sound — **PASS, with touch targets**
+Module 1/14 renders, zero console errors. Content and honesty badge
+(*"CONCEPTUAL MODEL — SLOWED FOR VISIBILITY"*) correct.
+
+**RISK · Header navigation is below the 44 pt touch standard.** Measured with
+`hitSlop` accounted for:
+
+| Control | Real target |
+|---|---|
+| ⏮ START | 67 × 35 |
+| ‹ PREV | 55 × 35 |
+| NEXT › | 53 × 35 |
+| module dot (×14) | **31 × 23** |
+
+The dots are the worst: fourteen of them in a row at 31 × 23 means mis-taps are
+routine, and they are the only way to jump modules. Raising the vertical
+`hitSlop` fixes START/PREV/NEXT safely; the dots need more room, which is a
+layout decision rather than a one-line change — flagged rather than altered.
+
+### 3 · Sound Playground — **PASS, one copy issue**
+Correctly gated behind the Level & Amplitude orientation (you must press
+UNDERSTOOD — CONTINUE first). The playground itself renders with zero console
+errors: waveform, spectrum, λ and period readouts all update.
+
+**NOTE · Developer language in user-facing copy.**
+> "This dev build predates the additive engine — audio falls back to a pure
+> sine; the drawings stay exact."
+
+The *condition* is right — it only shows when the native additive engine is
+absent (`!additiveReady && engineReady`), which is honest. The *words* are
+written for a developer. A student on an older app version reads "This dev
+build" and has no idea what that means. Suggest: *"This version of the app plays
+a pure sine here — the drawings are still exact."*
+
+**QUESTION · dBFS in the readout.** The bezel shows `LEVEL −26 dBFS` and the
+fader is labelled `LEVEL (dBFS · relative)`. The standing rule is never to
+default to dBFS because users read it as broken. Here it *is* qualified as
+relative, and this is a synthesis playground rather than a measurement, so it
+may be intentional — but the top bezel drops the qualifier. Owner's call.
+
+### 4 · Microphone Principles — **PASS, one bug FIXED**
+Cutaway renders correctly (the Oswald font fix from earlier holds — no label
+collisions), all ten section tabs present, zero console errors.
+
+**FIXED · `LabShell` collapsible sections nested a button in a button.** The
+section header `Pressable` (expand/collapse) *contained* the ⓘ help `Pressable`.
+Unlike the card case, here **both** are legitimate actions — they simply cannot
+be nested. On web that is invalid HTML; for a screen reader the header's label
+swallowed the ⓘ so the help action was unreachable. The header is now a plain
+row holding two sibling buttons. This is `LabShell`, so it affects most labs at
+once. Verified: nested count 1 → 0 on the live screen, and the help button is
+now a 44 × 44 target (it was smaller and unreachable).
+
+### 5 · Wave Physics Laboratory — **PASS**
+Hub of 15 modules + Room Builder. Zero errors.
+
+### 6 · Speaker Placement & Coverage — **PASS**
+Coverage map draws on the amplitude ramp; honesty badge present
+(*"CONCEPTUAL LEVEL MAP — ILLUSTRATIVE MODEL, NOT AN SPL PREDICTION"*). The
+colour legend pairs every swatch with a text label, so it survives colour
+blindness without re-visualising the ramp. Zero errors.
+
+### 7 · Digital Audio Systems — **PASS**
+Eight modules, seven secondary calculators, guided lesson. Zero errors. Good
+honesty line: *"digital audio is NOT made of stair steps."*
+
+### 8 · Visual Audio Analysis — **PASS** · 11 modules. Zero errors.
+
+### 9 · Signal Chain Builder — **PASS**
+Canonical chain renders, LEARN/EXPLORE modes present. The "Audio output is off"
+gate appears as designed. Zero errors.
+
+### 10 · Signal Detective — **PASS**
+Case 1/7, question 1/4, 0/28 solved; honesty badge *"SYNTHESIZED TEACHING SIGNAL
+— NOTHING HERE MEASURES REAL AUDIO"*. Zero errors.
+
+### 11 · Cable & Connector Fundamentals — **PASS**
+Twelve steps, interactive category picker, safety framing intact. Zero errors.
+**Notably this lab already meets the 44 pt touch standard** — its steppers use
+`hitSlop {top:14,bottom:14}` for a 45 pt target. It became the reference for the
+fix below.
+
+### 12 · Cable Dressing & Installation — **PASS**
+The Skia hero art renders correctly. Zero errors.
+
+### 13 · Gain Staging — **PASS**
+Learn / Explore / Challenge groups, related-tool links. Zero errors.
+
+---
+
+### FIXED · Foundations of Sound steppers were below the touch standard
+
+Measured with `hitSlop` included, and compared against the Cable lab which had
+already solved this:
+
+| Control | Foundations (before) | Cable lab | Foundations (now) |
+|---|---|---|---|
+| ⏮ START / ‹ PREV / NEXT › | 35 pt tall | **45 pt** | **45 pt** |
+| module dot | 31 × 23 | 44 tall | 43 tall |
+
+The steppers were 19 px of text with `hitSlop={8}`. Cable had long since used
+`{top:14,bottom:14}`. Foundations simply never got the same treatment; it does
+now.
+
+**NOT fixed — a design decision, not a bug.** The dots cannot be 44 pt *wide*:
+fourteen of them at 44 pt is 616 px and a phone is 393 px. They gain height
+only. If mis-taps matter, the strip wants to become something other than
+fourteen dots — a scrubber, or a "jump to module" sheet — which is the owner's
+call, not a mechanical fix.
+
+---
+
+## AUDIO FUNDAMENTALS — RESULT
+
+**13 of 13 labs open. Zero console errors in any of them. No crashes.**
+Two real bugs found and fixed (`LabShell` nested buttons, Foundations steppers),
+plus the two app-wide fixes from the pre-flight (card nesting, the hooks-order
+crash). Content, honesty badges and the amplitude ramp were correct everywhere
+they were checked.
+

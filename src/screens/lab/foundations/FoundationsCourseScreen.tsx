@@ -1950,11 +1950,17 @@ export function FoundationsCourseScreen() {
 
       {/* Top navigation (owner 2026-08-05): jump straight to the beginning, or
           step, without scrolling to the bottom BACK/NEXT buttons. */}
+      {/* Touch targets match the Cable lab, which already met the 44 pt
+          standard: the module steppers were 19 px of text with hitSlop 8 — a
+          35 pt target — while Cable had long since used 14 top/bottom for 45.
+          The dots are 7 px and cannot be 44 pt WIDE (fourteen of them will not
+          fit a phone), so they gain height only; jumping modules is better
+          served by PREV/NEXT. */}
       <View style={styles.topNav}>
         <Pressable
           onPress={() => goTo(0)}
           disabled={step === 0}
-          hitSlop={8}
+          hitSlop={{ top: 14, bottom: 14, left: 10, right: 10 }}
           accessibilityRole="button"
           accessibilityLabel="Go to the first module"
         >
@@ -1963,7 +1969,7 @@ export function FoundationsCourseScreen() {
         <Pressable
           onPress={() => goTo(Math.max(0, step - 1))}
           disabled={step === 0}
-          hitSlop={8}
+          hitSlop={{ top: 14, bottom: 14, left: 10, right: 10 }}
           accessibilityRole="button"
           accessibilityLabel="Previous module"
         >
@@ -1977,7 +1983,7 @@ export function FoundationsCourseScreen() {
         <Pressable
           onPress={() => goTo(Math.min(STEPS.length - 1, step + 1))}
           disabled={step === STEPS.length - 1}
-          hitSlop={8}
+          hitSlop={{ top: 14, bottom: 14, left: 10, right: 10 }}
           accessibilityRole="button"
           accessibilityLabel="Next module"
         >
@@ -1991,7 +1997,7 @@ export function FoundationsCourseScreen() {
           <Pressable
             key={st.key}
             onPress={() => goTo(i)}
-            hitSlop={8}
+            hitSlop={{ top: 18, bottom: 18, left: 4, right: 4 }}
             accessibilityRole="button"
             accessibilityLabel={`Go to ${st.title}`}
           >

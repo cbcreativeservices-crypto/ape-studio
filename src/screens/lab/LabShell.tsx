@@ -142,24 +142,37 @@ export function CollapsibleSection({
   const [open, setOpen] = useState(startOpen);
   return (
     <View style={styles.section}>
-      <Pressable
-        style={styles.sectionHead}
-        onPress={() => {
-          LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-          setOpen((o) => !o);
-        }}
-        accessibilityRole="button"
-        accessibilityState={{ expanded: open }}
-        accessibilityLabel={`${title} section, ${open ? 'expanded' : 'collapsed'}`}
-      >
-        <Text style={styles.sectionCaret}>{open ? '▾' : '▸'}</Text>
-        <Text style={styles.sectionTitle}>{title}</Text>
+      {/* Expand and help are two SEPARATE buttons side by side, not one inside
+          the other. Nesting them put a <button> inside a <button> — invalid on
+          web, and a screen reader announced "… section, expanded" as one
+          control while the ⓘ inside it was unreachable as its own action.
+          The row is a plain View; each button owns its own hit area. */}
+      <View style={styles.sectionHead}>
+        <Pressable
+          style={styles.sectionHeadMain}
+          onPress={() => {
+            LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+            setOpen((o) => !o);
+          }}
+          accessibilityRole="button"
+          accessibilityState={{ expanded: open }}
+          accessibilityLabel={`${title} section, ${open ? 'expanded' : 'collapsed'}`}
+        >
+          <Text style={styles.sectionCaret}>{open ? '▾' : '▸'}</Text>
+          <Text style={styles.sectionTitle}>{title}</Text>
+        </Pressable>
         {onHelp ? (
-          <Pressable onPress={onHelp} hitSlop={8} accessibilityRole="button" accessibilityLabel={`${title} help`}>
+          <Pressable
+            onPress={onHelp}
+            hitSlop={12}
+            style={styles.sectionHelpBtn}
+            accessibilityRole="button"
+            accessibilityLabel={`${title} help`}
+          >
             <Text style={styles.sectionHelp}>ⓘ</Text>
           </Pressable>
         ) : null}
-      </Pressable>
+      </View>
       {open ? <View style={styles.sectionBody}>{children}</View> : null}
     </View>
   );
@@ -468,7 +481,9 @@ const styles = StyleSheet.create({
   rackHidden: { display: 'none' },
 
   section: { borderRadius: 10, borderWidth: 1, borderColor: '#232329', backgroundColor: '#101014' },
-  sectionHead: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingVertical: 9 },
+  sectionHead: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12 },
+  sectionHeadMain: { flexDirection: 'row', alignItems: 'center', gap: 8, flexGrow: 1, paddingVertical: 11, minHeight: 44 },
+  sectionHelpBtn: { minWidth: 44, minHeight: 44, alignItems: 'flex-end', justifyContent: 'center' },
   sectionCaret: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: colors.amber, width: 12 },
   sectionTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.3, color: colors.textSecondary, flexGrow: 1 },
   sectionHelp: { fontFamily: fonts.barlowMedium, fontSize: 14, color: colors.textSub },
