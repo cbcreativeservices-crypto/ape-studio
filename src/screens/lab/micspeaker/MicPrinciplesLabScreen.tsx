@@ -383,6 +383,11 @@ function CapsuleSection({ focused, help, wellTop, wellBottom }: SectionProps) {
 // ── 1 · Polar patterns — the star drag surface, pinned on the stage ─────────
 
 function PolarSection({ viz, focused, help, wellTop, wellBottom }: SectionProps) {
+  // The lab's single richest interaction — dragging the source — had NO
+  // visible affordance once the badge stopped carrying it (learning pass
+  // 2026-08-31: "the #1 learning defect"). A chip on the glass invites the
+  // drag and clears the moment the first pan is granted.
+  const [dragged, setDragged] = useState(false);
   const [patIdx, setPatIdx] = useState(1);
   // The source is a FREE position in canvas px, not an angle on a fixed
   // radius. It spawns at the old 35° / near-edge spot once the stage reports
@@ -415,6 +420,7 @@ function PolarSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
       onStartShouldSetPanResponder: () => false,
       onMoveShouldSetPanResponder: (_e, gs) => Math.abs(gs.dx) > 4 || Math.abs(gs.dy) > 4,
       onPanResponderGrant: (e, gs) => {
+        setDragged(true); // clears the drag-discovery chip
         // Anchor to the gesture START (owner 2026-08-23): base = location − dx.
         posBaseRef.current = { x: e.nativeEvent.locationX - gs.dx, y: e.nativeEvent.locationY - gs.dy };
       },
@@ -455,8 +461,14 @@ function PolarSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
       onHelp={help}
       stage={{
         size: 'L', // the pickup field IS the lab — earns the tall glass
+        // De-laminated (design+learning pass 2026-08-31): the badge carries the
+        // HONESTY claim + the model's equation only. The operating instruction
+        // ("drag the speaker anywhere") lived at the badge's clamped tail and
+        // was amputated at phone width — an instruction should never ride
+        // inside a disclosure. It now lives on the glass as a chip that clears
+        // on the first drag.
         badge:
-          'CONCEPTUAL PICKUP FIELD — ILLUSTRATIVE MODEL, NOT A MEASURED POLAR RESPONSE · color = r(θ) = |A + B·cosθ| × 1/d falloff · drag the speaker anywhere — it can come right up next to the mic, but never through it',
+          'CONCEPTUAL PICKUP FIELD — ILLUSTRATIVE MODEL, NOT A MEASURED POLAR RESPONSE · color = r(θ) = |A + B·cosθ| × 1/d falloff',
         onGuide: () => help('polar_pattern'),
         bezel: [
           { k: 'PATTERN', v: pat.label, helpKey: 'polar_pattern' },
@@ -480,6 +492,11 @@ function PolarSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
             ) : viz ? null : (
               <VizUnavailableCard />
             )}
+            {!dragged ? (
+              <View pointerEvents="none" style={styles.dragChip}>
+                <Text style={styles.dragChipText}>DRAG THE SPEAKER — ANYWHERE</Text>
+              </View>
+            ) : null}
           </View>
         ),
       }}
@@ -492,6 +509,20 @@ function PolarSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
           no proximity effect, no null to aim.
         </Text>
       </CollapsibleSection>
+      <CheckQuestion
+        spec={{
+          question: 'Where does the monitor wedge go for a cardioid vocal mic?',
+          options: [
+            'In front of the mic, facing the singer',
+            'Behind the mic, in the null',
+            'Anywhere — the mic cannot hear a wedge',
+          ],
+          correctIdx: 1,
+          reveal:
+            'Cardioid’s null points straight behind the mic — that is where the wedge lives, which is why cardioid rules the stage. Cover the rear ports (HAND GRIP shows how) and that null disappears.',
+          wrongHint: 'Drag the speaker behind the mic and watch the PICKUP cell hit NULL.',
+        }}
+      />
       {wellBottom}
     </RackUnit>
   );
@@ -579,6 +610,20 @@ function DistanceSection({ viz, focused, help, wellTop, wellBottom }: SectionPro
       {wellTop}
       <MeterBar label="DIRECT SOUND — share of what the mic hears" frac={direct} />
       <MeterBar label="ROOM SOUND — share of what the mic hears" frac={room} />
+      <CheckQuestion
+        spec={{
+          question: 'You back off from 4 in to 16 in. What changes most about what the mic hears?',
+          options: [
+            'It just gets quieter — turn up the gain and nothing else changes',
+            'The balance flips — the room overtakes the direct sound',
+            'The pitch drops as distance grows',
+          ],
+          correctIdx: 1,
+          reveal:
+            'Direct sound obeys the inverse-square law; the room’s reverberant level barely changes. Past the crossover (~12 in here) the room wins — and gain cannot fix it, because turning up brings the room up with it.',
+          wrongHint: 'Ride the DISTANCE lane across 12 inches and watch which bar overtakes the other.',
+        }}
+      />
       <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('distance')}>
         <Text style={styles.caption}>
           Halving the distance gains ~6 dB of DIRECT sound while the room’s reverberant energy stays
@@ -662,7 +707,9 @@ function ProximitySection({ viz, focused, help, wellTop, wellBottom }: SectionPr
           {
             k: 'BOOST',
             v: directional ? (boostDb > 0 ? `+${boostDb} dB` : 'NONE') : 'FLAT',
-            tint: directional && boostDb >= 6 ? '#ff5a48' : directional && boostDb > 0 ? '#ffd76b' : '#37e05f',
+            // Magnitude → the ramp (same window PROX_STOPS justifies), never
+            // hand-typed stoplight hexes.
+            tint: levelColorForDb(boostDb, -8, 12),
             helpKey: 'proximity',
           },
           { k: 'MIC', v: directional ? 'CARDIOID' : 'OMNI', helpKey: 'proximity' },
@@ -799,6 +846,20 @@ function OffAxisSection({ viz, help, wellTop, wellBottom }: SectionProps) {
           off-axis behavior is a mark of a great microphone.
         </Text>
       </CollapsibleSection>
+      <CheckQuestion
+        spec={{
+          question: 'A singer drifts 60° off-mic. What does the audience notice FIRST?',
+          options: [
+            'The voice gets quieter',
+            'The voice gets duller — the highs go before the level does',
+            'Nothing, until they leave the pattern entirely',
+          ],
+          correctIdx: 1,
+          reveal:
+            'High frequencies fall off faster off-axis than lows, so tone changes before level. That is why drifting singers sound muffled first — and why smooth off-axis response is a mark of a great microphone.',
+          wrongHint: 'Compare the @100 Hz and @8 kHz bezel cells as you ride the ANGLE lane — which one collapses first?',
+        }}
+      />
       {wellBottom}
     </RackUnit>
   );
@@ -809,7 +870,8 @@ function OffAxisSection({ viz, help, wellTop, wellBottom }: SectionProps) {
 function PopSection({ viz, focused, help, wellTop, wellBottom }: SectionProps) {
   const [modeIdx, setModeIdx] = useState(0);
   const m = POP_MODES[modeIdx];
-  const blastTint = m.pass > 0.6 ? '#ff6b5e' : m.pass > 0.35 ? '#ffd76b' : '#5bff85';
+  // Magnitude wears the ramp; stoplight hexes stay for verdicts only.
+  const blastTint = levelColor(m.pass);
 
   const params: DockParam[] = [
     {
@@ -873,13 +935,31 @@ const SHOCK_H = 262;
 function ShockSection({ viz, focused, help, wellTop, wellBottom }: SectionProps) {
   const [shock, setShock] = useState(false);
 
+  // The lab's cleanest single-variable experiment (90% → 15% into the mic) hid
+  // behind its weakest control: one dim toggle reading as a caption. Six other
+  // sections trained "trays = A/B me" — this is now that idiom, with blurbs
+  // (house pattern: conceptual options ship blurbs).
   const params: DockParam[] = [
     {
-      kind: 'toggle',
+      kind: 'options',
       id: 'mount',
-      label: 'SHOCK MT',
-      value: shock,
-      onToggle: () => setShock((v) => !v),
+      label: 'MOUNT',
+      valueLabel: shock ? 'SHOCK' : 'RIGID',
+      options: [
+        {
+          id: 'rigid',
+          label: 'RIGID MOUNT',
+          blurb: 'A hard clip: the stand’s shake pours straight into the body — about 90% arrives at the capsule.',
+        },
+        {
+          id: 'shock',
+          label: 'SHOCK MOUNT',
+          blurb: 'An elastic cradle: the ring shakes with the stand while the bands soak up the difference — about 15% gets through.',
+        },
+      ],
+      selectedId: shock ? 'shock' : 'rigid',
+      onSelect: (id) => setShock(id === 'shock'),
+      sticky: true, // A/B the mounts while the shake redraws — the lesson
       helpKey: 'shock_mount',
     },
   ];
@@ -901,6 +981,7 @@ function ShockSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
         render: (w, h) => {
           if (!viz) return <VizUnavailableCard />;
           const s = Math.min(1, h / SHOCK_H);
+          /* (render body unchanged) */
           return (
             <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
               <View style={{ width: w / s, height: SHOCK_H, transform: [{ scale: s }] }}>
@@ -920,6 +1001,20 @@ function ShockSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
           stays in the stand. (The high-pass filter is the electrical version of the same idea.)
         </Text>
       </CollapsibleSection>
+      <CheckQuestion
+        spec={{
+          question: 'Footsteps thump into the recording even though the stage is quiet. How did they get in?',
+          options: [
+            'Through the air — the mic heard them',
+            'Through the floor and stand — vibration conducted through solids',
+            'Electrical interference from the lighting rig',
+          ],
+          correctIdx: 1,
+          reveal:
+            'Vibration travels through solids straight into the capsule — no air required. That is what the shock mount is for: the cradle shakes with the stand while the elastic soaks up the difference.',
+          wrongHint: 'Flip between RIGID and SHOCK and watch the INTO MIC cell: 90% versus 15% of the stand’s shake.',
+        }}
+      />
       {wellBottom}
     </RackUnit>
   );
@@ -990,6 +1085,20 @@ function StereoSection({ viz, help, wellTop, wellBottom }: SectionProps) {
           really making.
         </Text>
       </CollapsibleSection>
+      <CheckQuestion
+        spec={{
+          question: 'The venue sums your feed to mono. Which array thins out?',
+          options: [
+            'XY — coincident pairs fall apart in mono',
+            'AB — its time differences become phase cancellation',
+            'Mid-Side — the side mic cancels the mid',
+          ],
+          correctIdx: 1,
+          reveal:
+            'AB makes stereo from TIME differences, and summed to one speaker those become phase cancellation — the low end thins. XY differs only in level, so it folds down clean; MS collapses to the MID mic alone, which is why it is the one-take safety choice.',
+          wrongHint: 'Read each technique’s IN MONO line — one of the three is built entirely from arrival-time differences.',
+        }}
+      />
       {wellBottom}
     </RackUnit>
   );
@@ -1179,11 +1288,59 @@ function MistakesSection({ viz, help, wellTop, wellBottom }: SectionProps) {
                 houses of worship, and broadcast.
               </Text>
             </CollapsibleSection>
+            {/* SPOT THE MISTAKE (learning pass 2026-08-31): the field guide was
+                pure reading — a recognition goldmine never asked for
+                recognition. Three rounds: the illustration WITHOUT its title,
+                name the habit. The reveal names the section that taught the
+                principle, which doubles as cumulative review. */}
+            {viz ? <SpotTheMistake viz={viz} /> : null}
           </View>
         ) : null}
       </View>
       {wellBottom}
     </ScrollView>
+  );
+}
+
+/** Three-round recognition drill over the mistake illustrations. */
+function SpotTheMistake({ viz }: { viz: MsVizModule }) {
+  // Pick 3 distinct ❌ habits once per visit; decoys come from the same pool so
+  // every option is a plausible habit name.
+  const [rounds] = useState(() => {
+    const pool = MISTAKES.filter((m) => m.kind !== 'correct');
+    const shuffled = [...pool].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 3).map((target) => {
+      const decoys = shuffled.filter((m) => m.kind !== target.kind).slice(0, 2);
+      return { target, options: [target, ...decoys] };
+    });
+  });
+  const clean = (t: string) => t.replace(/^[✅❌]\s*/, '');
+  const ORIGIN: Record<string, string> = {
+    grille: 'the pattern-collapse lesson from HAND GRIP',
+    cup: 'the pattern-collapse lesson from HAND GRIP',
+    away: 'the tone-before-level lesson from OFF-AXIS',
+    far: 'the room-takes-over lesson from DISTANCE',
+    switch: 'plain stagecraft — mute switches live under hands',
+    antenna: 'plain stagecraft — the transmitter needs clear air',
+  };
+  return (
+    <View style={{ gap: 10 }}>
+      <Text style={styles.spotEyebrow}>SPOT THE MISTAKE — 3 ROUNDS</Text>
+      {rounds.map(({ target, options }, i) => (
+        <View key={target.kind} style={{ gap: 6 }}>
+          <viz.MistakeIllustration width={200} kind={target.kind} />
+          <CheckQuestion
+            spec={{
+              question: `Round ${i + 1} of 3 — what is going wrong in this picture?`,
+              options: options.map((o) => clean(o.title)),
+              correctIdx: 0,
+              reveal: `${clean(target.title)} — ${target.note} (${ORIGIN[target.kind] ?? 'see the field guide'}.)`,
+              wrongHint: 'Look at where the hand and the capsule are — then check the matching field-guide card.',
+            }}
+          />
+        </View>
+      ))}
+    </View>
   );
 }
 
@@ -1195,9 +1352,13 @@ const SECTIONS: { key: string; label: string; title: string; blurb: string; Comp
   { key: 'distance', label: 'DISTANCE', title: 'DISTANCE & THE ROOM', blurb: 'Move in and the direct sound wins; back off and the room takes over.', Comp: DistanceSection },
   { key: 'proximity', label: 'PROXIMITY', title: 'PROXIMITY EFFECT', blurb: 'Directional mics get bassier as you move in — a tool AND a trap.', Comp: ProximitySection },
   { key: 'offaxis', label: 'OFF-AXIS', title: 'OFF-AXIS RESPONSE', blurb: 'Turn the mic away and the sound gets quieter — and duller.', Comp: OffAxisSection },
+  // STEREO moved up beside the placement-physics arc (learning pass
+  // 2026-08-31): it was wedged mid-handheld (HANDLING→STEREO→HAND GRIP),
+  // breaking both arcs. Physics now runs POLAR…OFF-AXIS→STEREO; practice runs
+  // PLOSIVES→HANDLING→HAND GRIP→MISTAKES unbroken.
+  { key: 'stereo', label: 'STEREO', title: 'STEREO TECHNIQUES', blurb: 'XY · ORTF · AB · Mid-Side — level differences, time differences, or both.', Comp: StereoSection },
   { key: 'pop', label: 'PLOSIVES', title: 'PLOSIVES & WIND', blurb: '“P” and “B” fire moving air at the diaphragm. Barriers stop the wind, not the voice.', Comp: PopSection },
   { key: 'shock', label: 'HANDLING', title: 'HANDLING NOISE & ISOLATION', blurb: 'Vibration travels through solids into the capsule — decouple it.', Comp: ShockSection },
-  { key: 'stereo', label: 'STEREO', title: 'STEREO TECHNIQUES', blurb: 'XY · ORTF · AB · Mid-Side — level differences, time differences, or both.', Comp: StereoSection },
   { key: 'hand', label: 'HAND GRIP', title: 'HOW YOUR HAND CHANGES THE MIC', blurb: 'Everyone has seen a singer cup the mic. Here is exactly what that does.', Comp: HandSection },
   { key: 'mistakes', label: 'MISTAKES', title: 'COMMON HANDHELD MISTAKES', blurb: 'A field guide — what to do, and the six habits to unlearn.', Comp: MistakesSection },
 ];
@@ -1303,6 +1464,20 @@ const styles = StyleSheet.create({
   meterFill: { height: 9 },
   mistakeCard: { gap: 6, borderRadius: 9, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#0f0f13', padding: 10 },
   mistakeTitle: { fontFamily: fonts.oswaldMedium, fontSize: 14.5, letterSpacing: 0.4, color: colors.textPrimary },
+  // Drag-discovery chip — sits on the glass until the first pan grant.
+  dragChip: {
+    position: 'absolute',
+    bottom: 10,
+    alignSelf: 'center',
+    borderRadius: 7,
+    borderWidth: 1,
+    borderColor: 'rgba(255,198,77,.55)',
+    backgroundColor: 'rgba(12,12,12,.82)',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  dragChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.4, color: colors.amber },
+  spotEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.7, color: colors.amberLabel, marginTop: 4 },
   // Bottom guided-lesson row — mirrors LabShell v2's lessonRow styling.
   lessonRow: {
     borderRadius: 9,
