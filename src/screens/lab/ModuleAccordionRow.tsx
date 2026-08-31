@@ -17,6 +17,7 @@ export function ModuleAccordionRow({
   blurb,
   num,
   expanded,
+  done,
   onToggle,
   onOpen,
 }: {
@@ -24,6 +25,8 @@ export function ModuleAccordionRow({
   blurb: string;
   num?: number | string;
   expanded: boolean;
+  /** Optional viewed/passed tick (categorical state -> stoplight green). */
+  done?: boolean;
   onToggle: () => void;
   onOpen: () => void;
 }) {
@@ -41,6 +44,7 @@ export function ModuleAccordionRow({
         <Text style={styles.name}>{name}</Text>
         {expanded ? <Text style={styles.blurb}>{blurb}</Text> : null}
       </View>
+      {done ? <Text style={styles.done}>{'\u2713'}</Text> : null}
       {expanded ? (
         <Pressable
           onPress={onOpen}
@@ -83,4 +87,5 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   openText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.green },
+  done: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: colors.green },
 });

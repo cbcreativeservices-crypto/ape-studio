@@ -5,6 +5,7 @@
  * secondary tools → learning section.
  */
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useLabClearedUnits } from '../../../features/lab/labCompletion';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -39,6 +40,7 @@ export function DigitalLabHomeScreen() {
   const open = (id: DigitalModuleId) => navigation.navigate('DigitalModule', { id });
   // Accordion: every module collapsed by default, only one open at a time.
   const [openId, setOpenId] = useState<DigitalModuleId | null>(null);
+  const clearedUnits = useLabClearedUnits('af_digital_audio');
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -67,6 +69,7 @@ export function DigitalLabHomeScreen() {
             name={m.title}
             blurb={m.blurb}
             expanded={openId === m.id}
+            done={clearedUnits.has(m.id)}
             onToggle={() => setOpenId((cur) => (cur === m.id ? null : m.id))}
             onOpen={() => open(m.id)}
           />

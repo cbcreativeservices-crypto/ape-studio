@@ -5,6 +5,7 @@
  * overloading one stage or starving the next. Mirrors the EQ Lab home.
  */
 import { useState } from 'react';
+import { useLabClearedUnits } from '../../../features/lab/labCompletion';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -23,6 +24,7 @@ export function GainLabHomeScreen() {
   const open = (id: GainModuleId) => navigation.navigate('GainModule', { id });
   // Accordion: every module collapsed by default, only one open at a time.
   const [openId, setOpenId] = useState<GainModuleId | null>(null);
+  const clearedUnits = useLabClearedUnits('af_gain_staging');
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -65,6 +67,7 @@ export function GainLabHomeScreen() {
                   name={m.title}
                   blurb={m.blurb}
                   expanded={openId === m.id}
+                  done={clearedUnits.has(m.id)}
                   onToggle={() => setOpenId((cur) => (cur === m.id ? null : m.id))}
                   onOpen={() => open(m.id)}
                 />

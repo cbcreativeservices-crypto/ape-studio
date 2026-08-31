@@ -200,6 +200,25 @@ export function useLabDone(labKey: string): boolean {
   return v;
 }
 
+/** Reactive cleared-unit set for a lab — hub homes tick the modules a user
+ *  has already viewed/passed (design+learning pass 2026-08-31: both the
+ *  Digital and Meter reviews independently flagged "11 rows, zero memory of
+ *  which you've seen"). Returns a fresh Set per change so React re-renders. */
+export function useLabClearedUnits(labKey: string): ReadonlySet<string> {
+  const read = () => new Set(cleared[labKey] ?? []);
+  const [v, setV] = useState<ReadonlySet<string>>(read);
+  useEffect(() => {
+    const l = () => setV(read());
+    listeners.add(l);
+    void hydrate().then(l);
+    return () => {
+      listeners.delete(l);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [labKey]);
+  return v;
+}
+
 /** Reactive "Audio Fundamentals credit earned" flag (Dashboard banner). */
 export function useAudioFundamentalsComplete(): boolean {
   const [v, setV] = useState(afComplete);

@@ -4,6 +4,7 @@
  * measure — this lab interprets. 11 module cards + a pointer to the tools.
  */
 import { useState } from 'react';
+import { useLabClearedUnits } from '../../../features/lab/labCompletion';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -21,6 +22,7 @@ export function MeterLabHomeScreen() {
   const [lessonOpen, setLessonOpen] = useState(false);
   // Accordion: every module collapsed by default, only one open at a time.
   const [openId, setOpenId] = useState<string | null>(null);
+  const clearedUnits = useLabClearedUnits('af_visual_analysis');
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -47,6 +49,7 @@ export function MeterLabHomeScreen() {
             name={m.title}
             blurb={m.blurb}
             expanded={openId === m.id}
+            done={clearedUnits.has(m.id)}
             onToggle={() => setOpenId((cur) => (cur === m.id ? null : m.id))}
             onOpen={() => navigation.navigate('MeterModule', { id: m.id })}
           />

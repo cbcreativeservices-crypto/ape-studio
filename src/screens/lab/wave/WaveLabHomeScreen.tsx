@@ -4,6 +4,7 @@
  * concept the other modules isolate (owner 2026-08-01).
  */
 import { useState } from 'react';
+import { useLabClearedUnits } from '../../../features/lab/labCompletion';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -23,6 +24,7 @@ export function WaveLabHomeScreen() {
   const modules = WAVE_MODULES.filter((m) => m.id !== 'builder');
   // Accordion: every module collapsed by default, only one open at a time.
   const [openId, setOpenId] = useState<string | null>(null);
+  const clearedUnits = useLabClearedUnits('af_wave_physics');
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -59,6 +61,7 @@ export function WaveLabHomeScreen() {
             name={m.title}
             blurb={m.blurb}
             expanded={openId === m.id}
+            done={clearedUnits.has(m.id)}
             onToggle={() => setOpenId((cur) => (cur === m.id ? null : m.id))}
             onOpen={() => navigation.navigate('WaveModule', { id: m.id })}
           />
@@ -71,6 +74,7 @@ export function WaveLabHomeScreen() {
               name={builder.title}
               blurb={builder.blurb}
               expanded={openId === builder.id}
+              done={clearedUnits.has(builder.id)}
               onToggle={() => setOpenId((cur) => (cur === builder.id ? null : builder.id))}
               onOpen={() => navigation.navigate('WaveModule', { id: builder.id })}
             />
