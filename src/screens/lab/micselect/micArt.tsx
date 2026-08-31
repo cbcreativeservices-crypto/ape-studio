@@ -330,9 +330,28 @@ export function MicPhotoLightbox({ children }: { children: ReactNode }) {
  *  against the dark lab UI. TAP to enlarge in the shared lightbox (owner
  *  2026-08-18) — a ⤢ hint marks it zoomable. Falls back to the code-drawn MicArt
  *  illustration if the kind is unmapped or the image fails to load — never a blank. */
-export function MicVisual({ kind, w = 56, h = 84 }: { kind: MicKind; w?: number; h?: number }) {
+export function MicVisual({
+  kind,
+  w = 56,
+  h = 84,
+  zoomable = true,
+}: {
+  kind: MicKind;
+  w?: number;
+  h?: number;
+  /**
+   * Set false when this photo sits INSIDE another button. The tile wraps itself
+   * in its own Pressable to open the lightbox; nested inside the mic-type grid
+   * cards that produced twelve <button>-in-<button> pairs on one screen —
+   * invalid on web, and a screen reader could not reach either action cleanly.
+   * A 44×66 thumbnail is too small to hold a second target anyway; the lightbox
+   * stays reachable from the full-size photo in the detail panel.
+   */
+  zoomable?: boolean;
+}) {
   const url = micImageUrl(kind);
-  const open = useContext(LightboxCtx);
+  const ctxOpen = useContext(LightboxCtx);
+  const open = zoomable ? ctxOpen : null;
   const [failed, setFailed] = useState(false);
   if (!url || failed) return <MicArt kind={kind} w={w} h={h} />;
   const tile = (

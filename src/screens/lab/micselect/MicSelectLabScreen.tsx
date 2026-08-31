@@ -156,7 +156,7 @@ function TypesStep() {
               accessibilityLabel={m.name}
               style={[styles.micCell, active && styles.micCellActive]}
             >
-              <MicVisual kind={m.kind} w={44} h={66} />
+              <MicVisual kind={m.kind} w={44} h={66} zoomable={false} />
               <Text style={styles.micCellName} numberOfLines={2}>
                 {m.name}
               </Text>

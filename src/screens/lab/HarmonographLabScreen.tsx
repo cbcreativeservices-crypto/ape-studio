@@ -336,8 +336,13 @@ export function HarmonographLabScreen() {
                   ? () => (running ? stopInterval() : void startInterval())
                   : undefined
               }
-              accessibilityRole="button"
-              accessibilityLabel={running ? 'Tap to stop' : 'Tap to play interval'}
+              // NOT announced as a button. It wraps the machine, which draws its
+              // own FULLSCREEN and RESET buttons — so as a labelled button this
+              // nested <button> in <button> and, worse, its label REPLACED the
+              // children, hiding both of those controls from a screen reader.
+              // The play/stop action is not lost: the header key does the same
+              // thing and is announced (see the gate comment above).
+              accessible={false}
             >
               <HarmonographMachine
                 n1={ratio.n1}

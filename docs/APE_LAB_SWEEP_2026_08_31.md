@@ -253,3 +253,54 @@ plus the two app-wide fixes from the pre-flight (card nesting, the hooks-order
 crash). Content, honesty badges and the amplitude ramp were correct everywhere
 they were checked.
 
+---
+
+## ADVANCED TRAINING LABS (25 live · 12 marked PLANNED)
+
+Every live lab was opened and its structure checked. **All 25 opened. No
+crashes. Zero console errors** except the one web-only warning noted below.
+
+Opened clean: Vacuum Tube Fundamentals · Distortion · Compression ·
+Gate / Expander · Limiter · Equalizer · EQ Lab · Bass Guitar Physics ·
+Chorus · Flanger · Phaser · Phase · Autotune · Stereo Imaging ·
+Binaural Panner · Oscillators · Noise · Harmonics · FM Synthesis · Delay ·
+Reverb · Audio Calculator Laboratory.
+
+The 12 PLANNED entries (Patchbay, Amplifier Types, Smart Processors, Instrument
+Recording, Mixing Principle, Room Mode Testing, Custom Room Treatment, Tunings,
+Cymatics, Sound Envelope, Sample, Speech) are labelled as such and were not
+opened — correctly, they announce themselves as not built.
+
+### FIXED · Microphone Selection Lab — **twelve** nested buttons on one screen
+Each of the twelve mic-type cards is a button ("select this type") and contained
+a second button ("Enlarge … photo") wrapping the thumbnail. Same class as the
+`LabShell` case but twelve at once. A 44 × 66 thumbnail cannot usefully hold a
+second target anyway, so `MicVisual` gained a `zoomable` prop and the grid opts
+out; the lightbox stays reachable from the full-size photo in the detail panel.
+**Verified 12 → 0**, cards still select normally.
+
+### FIXED · Harmonograph — the stage hid its own controls
+The whole display is a `Pressable` labelled *"Tap to play interval"*, and it
+wrapped the machine's FULLSCREEN and RESET buttons. Because an
+`accessibilityLabel` replaces its children, **both of those buttons were
+invisible to a screen reader**. The stage is no longer announced as a button —
+safe here because the header key performs the same play/stop action and *is*
+announced (the code comment says so explicitly). **Verified 2 → 0**, and both
+inner buttons now appear in the accessibility tree.
+
+### NOTE · Modular Synth — six ignored handlers, web only
+React logs *"Unknown event handler property `onPress`. It will be ignored."*
+six times. `ModularLabScreen` puts `onPress` on react-native-svg `<G>` elements
+to make the patch boxes tappable. That works on native; **react-native-web
+ignores it**, so the box taps are dead in the browser preview only. Not changed
+— the native code is correct, and "fixing" it for web would mean touching a
+working native interaction.
+
+**This is also a coverage gap in this sweep:** any lab whose interactions ride
+on SVG `<G onPress>` cannot be exercised here. It needs the device pass.
+
+### NOT a bug — checked and dismissed
+The "Audio output is off" gate appeared over the Calculator Lab, which plays
+nothing. It turned out to be a leftover modal from the previously visited
+Harmonograph: on a fresh entry to the Calculator Lab it does not appear.
+
