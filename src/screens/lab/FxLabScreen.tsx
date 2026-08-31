@@ -47,7 +47,7 @@
  * stop disables the whole chain (fxReset) so no lab leaks effects into another.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { ApeDsp, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
@@ -58,6 +58,7 @@ import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { HeaderPlayButton, LabChip, LabShell } from './LabShell';
 import { skiaAvailable } from './foundations/skiaGate';
+import { CheckQuestion, type CheckSpec } from './foundations/bits';
 import type { BezelItem, DockParam } from './rack/rackTypes';
 import type { FxAnimModel } from './fxAnim';
 
@@ -178,6 +179,10 @@ export type FxLabConfig = {
   pollGr?: 'comp' | 'gate' | 'limiter';
   /** Optional honest note under the audio section. */
   note?: string;
+  /** Retrieval checks rendered after THE AUDIO PATH (learning pass
+   *  2026-08-31: the FX fleet was the app's sole zero-retrieval holdout —
+   *  35 other lab files import CheckQuestion). Auto-shuffled. */
+  checks?: CheckSpec[];
 };
 
 /** The currently selected choice's chip label (bezel/valueLabel source). */
@@ -186,9 +191,14 @@ function choiceLabel(p: FxParamSpec, v: number): string {
 }
 
 /** Compact value for a dock key / bezel cell: a short chip label stands as-is;
- *  a long one keeps its leading value token ('PEAK (BELL)' → 'PEAK'). */
+ *  a long one keeps its leading value token ('PEAK (BELL)' → 'PEAK') — but
+ *  never amputates a unit ('80 ms SLAP' → '80 ms', not '80'; design pass
+ *  2026-08-31: unitless bezel numbers were decodable only by someone who no
+ *  longer needs the lab). */
 function shortChoice(label: string): string {
-  return label.length <= 8 ? label : label.split(' ')[0];
+  if (label.length <= 8) return label;
+  const parts = label.split(' ');
+  return parts.length > 1 && /^(dB|Hz|kHz|ms|s|%)$/.test(parts[1]) ? `${parts[0]} ${parts[1]}` : parts[0];
 }
 
 /** Fader 0..1 lane position ↔︎ param value (lin or log taper). */
@@ -333,7 +343,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
     }),
     // LIVE measured GR (dynamics labs) — fxGrStatus, never simulated.
     ...(config.pollGr
-      ? [{ k: 'GR', v: running ? `${grDb.toFixed(1)} dB` : '— dB', helpKey: 'gain_reduction' }]
+      ? [{ k: 'GR', v: running ? `${grDb.toFixed(1)} dB` : fxReady ? '— dB' : 'NO ENG', helpKey: 'gain_reduction' }]
       : []),
   ];
 
@@ -507,13 +517,23 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
             </>
           ) : (
             <Text style={styles.caption}>
-              Effect AUDIO needs the v6 engine build — this dev client predates the effects path. The
-              visuals and lessons above are fully live; install the next dev build to hear it.
+              {Platform.OS === 'web'
+                ? 'This web preview runs the visual simulator — the effect audio path plays on the phone dev build. The visuals and lessons above are fully live.'
+                : 'Effect AUDIO needs the v6 engine build — this dev client predates the effects path. The visuals and lessons above are fully live; install the next dev build to hear it.'}
             </Text>
           )
         ) : null}
         {config.note ? <Text style={styles.caption}>{config.note}</Text> : null}
       </View>
+
+      {config.checks?.length ? (
+        <View style={{ gap: 10 }}>
+          <Text style={styles.sectionHead}>CHECK YOURSELF</Text>
+          {config.checks.map((c, i) => (
+            <CheckQuestion key={i} spec={c} />
+          ))}
+        </View>
+      ) : null}
 
       <GuidedLessonSheet
         visible={help != null}

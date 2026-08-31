@@ -46,6 +46,7 @@ import {
   phaserResponseDb,
   type EqBandSpec,
 } from '../../features/lab/fxViz';
+import type { CheckSpec } from './foundations/bits';
 import { FxLabScreen, type FxLabConfig } from './FxLabScreen';
 
 const P = FX_PARAM;
@@ -56,6 +57,11 @@ const SRC_PINK = { label: 'PINK NOISE', short: 'PINK', gen: { mode: GEN_MODES.pi
 const SRC_WHITE = { label: 'WHITE NOISE', short: 'WHITE', gen: { mode: GEN_MODES.white }, blurb: 'Equal energy per Hz — brighter than pink. The top octaves dominate, so high-end changes leap out.' };
 const srcSine = (hz: number) => ({ label: `SINE ${hz} Hz`, short: `${hz} Hz`, gen: { mode: GEN_MODES.sine, frequency: hz } });
 const srcClick = (bpm: number) => ({ label: `CLICK ${bpm}`, short: `${bpm} BPM`, gen: { mode: GEN_MODES.click, clickBpm: bpm }, blurb: 'A dry click with silence between hits — echoes, tails and pumping have nowhere to hide.' });
+
+// Retrieval checks (learning pass 2026-08-31): the FX fleet was the app's
+// sole zero-retrieval holdout — knobs and prose, never "prove you saw it".
+// Two checks per lab, drawn from each lab's own captions and COMMON MISTAKES.
+// All NEW COPY — owner review.
 
 // ─────────────────────────────────────────────────────────── LAB 1 · EQ ──
 const EQ_TYPE = P.eqBand(0, 'type');
@@ -144,9 +150,44 @@ const eqConfig: FxLabConfig = {
   },
   anim: (v) => ({ kind: 'eq', bands: [eqBandOf(v)] }),
   heroBadge: ANALYTIC,
-  heroCaption: (v) =>
-    `${v[EQ_GAIN] > 0 ? '+' : ''}${v[EQ_GAIN]} dB at ${v[EQ_FREQ] >= 1000 ? `${v[EQ_FREQ] / 1000} kHz` : `${v[EQ_FREQ]} Hz`}, Q ${v[EQ_Q]}. ` +
-    (v[EQ_Q] >= 4 ? 'Narrow Q is surgical — musical moves want it wide.' : 'Wide Q = a broad, musical move.'),
+  // Pass filters ignore GAIN (and HP ignores Q) — the caption used to keep
+  // printing both anyway (fix 2026-08-31). NEW COPY — owner review.
+  heroCaption: (v) => {
+    const f = v[EQ_FREQ] >= 1000 ? `${v[EQ_FREQ] / 1000} kHz` : `${v[EQ_FREQ]} Hz`;
+    if (v[EQ_TYPE] === EQ_BAND_TYPES.highPass || v[EQ_TYPE] === EQ_BAND_TYPES.lowPass) {
+      return `${v[EQ_TYPE] === EQ_BAND_TYPES.highPass ? 'High-pass' : 'Low-pass'} at ${f}. GAIN and Q don't apply to a pass filter — the slope is fixed; only the cutoff moves.`;
+    }
+    return (
+      `${v[EQ_GAIN] > 0 ? '+' : ''}${v[EQ_GAIN]} dB at ${f}, Q ${v[EQ_Q]}. ` +
+      (v[EQ_Q] >= 4 ? 'Narrow Q is surgical — musical moves want it wide.' : 'Wide Q = a broad, musical move.')
+    );
+  },
+  checks: [
+    {
+      question: 'You need to remove 60 Hz hum without touching the bass around it. Which move?',
+      options: [
+        'A narrow high-Q cut at 60 Hz',
+        'A low shelf cut at 100 Hz',
+        'A high-pass filter at 200 Hz',
+      ],
+      correctIdx: 0,
+      reveal:
+        'A narrow (high-Q) cut removes just the hum frequency and leaves the neighboring bass alone. The shelf and the high-pass both take real bass with them.',
+      wrongHint: 'Set Q to 8 NARROW and watch how little of the curve moves.',
+    },
+    {
+      question: 'A HIGH-PASS filter is set at 250 Hz. What does the GAIN control do to it?',
+      options: [
+        'Sets how deep the cut below 250 Hz is',
+        'Nothing — a pass filter has a fixed slope; only the cutoff moves',
+        'Boosts everything above 250 Hz',
+      ],
+      correctIdx: 1,
+      reveal:
+        'Pass filters REMOVE everything past the cutoff at a fixed slope — there is no amount to set. GAIN and Q belong to bells and shelves.',
+      wrongHint: 'Switch to HIGH-PASS and tap through the GAIN values — watch the curve.',
+    },
+  ],
 };
 export const EqLabScreen = () => <FxLabScreen config={eqConfig} />;
 
@@ -232,7 +273,33 @@ const delayConfig: FxLabConfig = {
   heroBadge: 'ECHO PATTERN — ANALYTIC (spacing = time · decay = feedback)',
   heroCaption: (v) =>
     `${v[P.timeMs]} ms between repeats; each repeat is ${Math.round(v[P.delayFeedback] * 100)}% of the last. ` +
-    (v[P.delayFeedback] >= 0.75 ? 'High feedback — approaching runaway.' : `Quarter-note at ${Math.round(60000 / v[P.timeMs])} BPM.`),
+    (v[P.delayFeedback] >= 0.75 ? 'High feedback — approaching runaway.' : `That spacing = a quarter-note at ${Math.round(60000 / v[P.timeMs])} BPM — match the delay to the song's tempo and repeats land ON the beat.`),
+  checks: [
+    {
+      question: 'You raise FEEDBACK from 25% to 75%. What changes?',
+      options: [
+        'The echoes get closer together',
+        'Each echo is louder relative to the last, so the trail lasts far longer',
+        'The first echo arrives sooner',
+      ],
+      correctIdx: 1,
+      reveal:
+        'Feedback re-feeds the output into the delay: each repeat is 75% of the one before, so the trail decays slowly. Spacing never changes — that is TIME, not feedback.',
+      wrongHint: 'Watch the echo heights on the timeline, not their positions.',
+    },
+    {
+      question: 'What separates a delay from a reverb?',
+      options: [
+        'Delay is distinct repeats; reverb is thousands of reflections blurred into a wash',
+        'Delay works on drums, reverb on vocals',
+        'Reverb is just a delay with more feedback',
+      ],
+      correctIdx: 0,
+      reveal:
+        'A delay hands back discrete copies you can count. Reverb is so many reflections so close together they fuse into a continuous decaying wash — related physics, different perception.',
+      wrongHint: 'Play the click here, then in the Reverb lab — count what you hear.',
+    },
+  ],
 };
 export const DelayLabScreen = () => <FxLabScreen config={delayConfig} />;
 
@@ -296,6 +363,32 @@ const reverbConfig: FxLabConfig = {
   heroCaption: (v) =>
     `${v[P.preDelayMs]} ms pre-delay separates the dry hit from the wash, then the tail falls 60 dB in ${v[P.rt60]} s.` +
     (v[P.preDelayMs] === 0 ? ' No pre-delay glues the source to the tail.' : ''),
+  checks: [
+    {
+      question: 'RT60 = 2.0 s means…',
+      options: [
+        'The reverb is twice as loud as the dry signal',
+        'The tail takes 2 seconds to fall 60 dB',
+        '2 seconds pass before the reverb starts',
+      ],
+      correctIdx: 1,
+      reveal:
+        'RT60 is a TIME: how long the wash takes to decay 60 dB. It says nothing about how loud the reverb is (that is mix) or when it starts (that is pre-delay).',
+      wrongHint: 'Look at the decay graph — RT60 is WHERE the slope crosses −60 dB.',
+    },
+    {
+      question: 'A vocal drowns in its own reverb. Which control keeps the wash but pulls the voice forward?',
+      options: [
+        'Longer RT60',
+        'PRE-DELAY — a gap before the wash starts, so the dry word lands first',
+        'More high-frequency damping',
+      ],
+      correctIdx: 1,
+      reveal:
+        'Pre-delay separates the dry sound from its reverb in time — the consonants land clean before the wash arrives. Same amount of reverb, more clarity.',
+      wrongHint: 'Raise PRE-DELAY and watch the gap open between the hit and the tail.',
+    },
+  ],
 };
 export const ReverbLabScreen = () => <FxLabScreen config={reverbConfig} />;
 
@@ -325,7 +418,7 @@ const chorusConfig: FxLabConfig = {
     'Chorus mixes you with a slightly delayed, pitch-wobbling copy of yourself — like two ' +
     'players who can never be perfectly together. The long delay makes the comb notches so ' +
     'close they blur into shimmer instead of a jet.',
-  exploreCaption: 'Solid amber = the comb right now; ghosts = where the LFO sweeps it.',
+  exploreCaption: 'Solid amber = the comb right now; ghosts = where the LFO sweeps it. Drag CENTER to sweep the comb by hand.',
   sources: [srcSine(440), SRC_PINK],
   fixed: [{ paramId: P.modMode, value: 0 }],
   params: [
@@ -388,6 +481,32 @@ const chorusConfig: FxLabConfig = {
     v[P.modMix] >= 1
       ? '100% wet removes the dry voice — nothing left to beat against: that is vibrato, not chorus.'
       : `~${v[P.centerMs]} ms voice → notches every ${Math.round(1000 / v[P.centerMs])} Hz — too fine to hear as a comb; you hear the BEATING instead.`,
+  checks: [
+    {
+      question: 'At 100% WET the chorus stops sounding like a chorus. Why?',
+      options: [
+        'The effect is bypassed at full wet',
+        'With no dry voice left to beat against, only the wobbling copy remains — that is vibrato',
+        'Full wet doubles the volume until it distorts',
+      ],
+      correctIdx: 1,
+      reveal:
+        'Chorus IS the interference between the steady dry voice and the detuned copy. Remove the dry voice and nothing is left to shimmer against — just one wobbling pitch: vibrato.',
+      wrongHint: 'Tap MIX to 100% and read the caption under the display.',
+    },
+    {
+      question: 'What actually creates the chorus effect?',
+      options: [
+        'A short delayed copy whose delay is slowly modulated, drifting against the dry signal',
+        'Two copies panned hard left and right',
+        'A bank of narrow EQ boosts',
+      ],
+      correctIdx: 0,
+      reveal:
+        'The copy sits a few tens of ms behind and its timing drifts — like two players who can never be perfectly together. The drift IS the shimmer.',
+      wrongHint: 'Watch the ghost copy slide against the dry wave on the display.',
+    },
+  ],
 };
 export const ChorusLabScreen = () => <FxLabScreen config={chorusConfig} />;
 
@@ -480,6 +599,32 @@ const flangerConfig: FxLabConfig = {
   heroCaption: (v) =>
     `Notches every ${Math.round(1 / (v[P.centerMs] / 1000))} Hz (spacing = 1/delay), sweeping between the ghosts. ` +
     (Math.abs(v[P.modFeedback]) >= 0.7 ? 'High feedback sharpens the notches into rings.' : 'Evenly spaced — compare with the phaser.'),
+  checks: [
+    {
+      question: 'What makes a flanger\u2019s notches different from a phaser\u2019s?',
+      options: [
+        'A flanger\u2019s comb is EVENLY spaced (delay-based); a phaser has a few UNEVEN notches',
+        'A flanger has fewer notches',
+        'They are the same effect at different rates',
+      ],
+      correctIdx: 0,
+      reveal:
+        'A flanger\u2019s tiny delay cancels at every odd multiple of one frequency — an even comb. A phaser\u2019s all-pass stages put a handful of notches wherever the phase crosses — sparse and uneven. That difference IS the two effects.',
+      wrongHint: 'Compare this comb with the Phaser lab\u2019s curve — count and space the notches.',
+    },
+    {
+      question: 'You push flanger FEEDBACK toward the maximum. What happens?',
+      options: [
+        'The sweep gets faster',
+        'The notches deepen and the peaks ring — the metallic jet builds toward runaway',
+        'The effect gets quieter',
+      ],
+      correctIdx: 1,
+      reveal:
+        'Feedback re-circulates the delayed copy, sharpening the comb: deeper notches, resonant peaks, the classic metallic scream at the extreme. Rate is untouched — that is the LFO\u2019s job.',
+      wrongHint: 'Step FDBK from 0% to −70% HOLLOW and watch the comb\u2019s teeth.',
+    },
+  ],
 };
 export const FlangerLabScreen = () => <FxLabScreen config={flangerConfig} />;
 
@@ -493,7 +638,7 @@ const phaserConfig: FxLabConfig = {
     'A phaser shifts PHASE, not time: all-pass stages create a few notches where the shifted ' +
     'copy cancels the dry. Compare the sparse, UNEVEN notches below with the flanger’s even ' +
     'comb — that difference is the whole lesson.',
-  exploreCaption: 'Count the notches: ≈ stages ÷ 2, unevenly spaced.',
+  exploreCaption: 'Count the notches: ≈ stages ÷ 2, unevenly spaced. For a pure manual sweep, set DEPTH to STATIC and drag CENTER yourself.',
   sources: [SRC_PINK, SRC_WHITE],
   fixed: [{ paramId: P.modMode, value: 2 }],
   params: [
@@ -576,6 +721,24 @@ const phaserConfig: FxLabConfig = {
   heroBadge: ANALYTIC,
   heroCaption: (v) =>
     `${v[P.stages]} stages ≈ ${Math.floor(v[P.stages] / 2)} notches, UNEVENLY spaced (set by phase, not by a delay time) — a phaser is not a delay.`,
+  checks: [
+    {
+      question: 'A 6-stage phaser gives you roughly how many notches?',
+      options: ['6', '3 — about stages ÷ 2', '12'],
+      correctIdx: 1,
+      reveal:
+        'Each PAIR of all-pass stages creates one notch where the shifted copy cancels the dry — so 6 stages ≈ 3 notches, unevenly spaced. More stages = a thicker sweep.',
+      wrongHint: 'Tap through STAGES and count the dips in the curve.',
+    },
+    {
+      question: 'A phaser shifts ____, while a flanger shifts ____.',
+      options: ['time · phase', 'phase · time', 'pitch · level'],
+      correctIdx: 1,
+      reveal:
+        'The phaser\u2019s all-pass stages rotate PHASE per frequency (few, uneven notches). The flanger delays in TIME (an even comb). Same family — different mechanism, different sound.',
+      wrongHint: 'The intro line of each lab names its mechanism.',
+    },
+  ],
 };
 export const PhaserLabScreen = () => <FxLabScreen config={phaserConfig} />;
 
@@ -602,20 +765,20 @@ const compConfig: FxLabConfig = {
     {
       label: 'RATIO', paramId: P.ratio, lessonKey: 'ratio',
       choices: [
-        { label: '2:1 GLUE', value: 2 },
-        { label: '4:1', value: 4 },
-        { label: '8:1', value: 8 },
-        { label: '20:1 LIMIT', value: 20 },
+        { label: '2:1 GLUE', value: 2, blurb: 'Gentle — 2 dB in over the threshold becomes 1 dB out. The transparent, mix-bus setting.' },
+        { label: '4:1', value: 4, blurb: 'The workhorse — obvious control without obvious squash. Most channel compression lives here.' },
+        { label: '8:1', value: 8, blurb: 'Heavy — the level barely rises past the threshold. You HEAR this one working.' },
+        { label: '20:1 LIMIT', value: 20, blurb: 'Effectively a ceiling — at this ratio a compressor IS a limiter.' },
       ],
       initial: 4,
     },
     {
       label: 'ATTACK', paramId: P.attackMs, lessonKey: 'attack',
       choices: [
-        { label: '0.5 ms FAST', value: 0.5 },
-        { label: '5 ms', value: 5 },
-        { label: '25 ms PUNCH', value: 25 },
-        { label: '100 ms', value: 100 },
+        { label: '0.5 ms FAST', value: 0.5, blurb: 'Clamps instantly — transients are caught, but the attack of a drum dulls.' },
+        { label: '5 ms', value: 5, blurb: 'Quick but not instant — most of the transient survives.' },
+        { label: '25 ms PUNCH', value: 25, blurb: 'The first 25 ms sneak through untouched — the hit stays, the tail is controlled. Punch.' },
+        { label: '100 ms', value: 100, blurb: 'Slow — the compressor reacts to the body of the note, not the hit.' },
       ],
       initial: 5,
     },
@@ -665,6 +828,32 @@ const compConfig: FxLabConfig = {
     `Above ${v[P.thresholdDb]} dB, every ${v[P.ratio]} dB in becomes 1 dB out. The source peaks at −20 dBFS — ` +
     (v[P.thresholdDb] < -20 ? 'over the threshold, so it compresses.' : 'below the threshold, so nothing happens (drop the threshold).'),
   pollGr: 'comp',
+  checks: [
+    {
+      question: 'The GR meter reads 0 dB while audio plays. What does that tell you?',
+      options: [
+        'The compressor is broken',
+        'The signal is below the threshold — the compressor is not working yet',
+        'The ratio is too high',
+      ],
+      correctIdx: 1,
+      reveal:
+        'No gain reduction = nothing crossed the threshold. A compressor only acts ABOVE it — drop the threshold into the signal and watch GR wake up.',
+      wrongHint: 'Ride the THRESHOLD fader down through the source\u2019s level.',
+    },
+    {
+      question: 'You want the drum\u2019s HIT to survive but its ring controlled. Which attack?',
+      options: [
+        '0.5 ms FAST — clamp everything instantly',
+        '25 ms PUNCH — let the transient through, then clamp the tail',
+        'Attack doesn\u2019t affect transients',
+      ],
+      correctIdx: 1,
+      reveal:
+        'Attack is how long the compressor waits before clamping. 25 ms lets the hit sneak through untouched — punch — while the ring after it gets controlled. Fast attack dulls the hit itself.',
+      wrongHint: 'Open the ENV tray and A/B FAST against PUNCH on the click.',
+    },
+  ],
 };
 export const CompressionLabScreen = () => <FxLabScreen config={compConfig} />;
 
@@ -691,9 +880,9 @@ const gateConfig: FxLabConfig = {
     {
       label: 'RANGE (FLOOR)', short: 'RANGE', paramId: P.rangeDb, lessonKey: 'range',
       choices: [
-        { label: '−20 GENTLE', value: -20 },
-        { label: '−40', value: -40 },
-        { label: '−70 SILENCE', value: -70 },
+        { label: '−20 GENTLE', value: -20, blurb: 'Closed = 20 dB quieter, not silent — leakage ducks instead of vanishing. Natural on drums.' },
+        { label: '−40', value: -40, blurb: 'Deep attenuation — the gate is clearly audible opening and closing.' },
+        { label: '−70 SILENCE', value: -70, blurb: 'Closed = gone. Maximum isolation, and maximum chatter risk near the threshold.' },
       ],
       initial: -40,
     },
@@ -731,6 +920,32 @@ const gateConfig: FxLabConfig = {
     `Below ${v[P.thresholdDb]} dB the output drops ${Math.abs(v[P.rangeDb])} dB toward the floor. ` +
     (v[P.rangeDb] <= -70 ? 'Full silence is abrupt — a partial floor usually sounds more natural.' : 'A partial floor keeps a little ambience.'),
   pollGr: 'gate',
+  checks: [
+    {
+      question: 'A gate and a compressor both use a threshold. What\u2019s the difference?',
+      options: [
+        'A gate attenuates BELOW the threshold; a compressor acts ABOVE it',
+        'A gate is just a faster compressor',
+        'A compressor mutes; a gate squashes',
+      ],
+      correctIdx: 0,
+      reveal:
+        'Opposite sides of the line: the compressor turns loud things down; the gate turns quiet things down (leakage, hum, spill) and lets the loud signal through untouched.',
+      wrongHint: 'Compare this transfer curve with the Compression lab\u2019s — which side bends?',
+    },
+    {
+      question: 'The gate opens and closes rapidly on a decaying note — chatter. The honest fix?',
+      options: [
+        'A longer RELEASE (or HOLD) so the gate rides through the wobble',
+        'More RANGE',
+        'A higher threshold to cut the note off sooner',
+      ],
+      correctIdx: 0,
+      reveal:
+        'Chatter is the signal hovering at the threshold. HOLD keeps the gate open a minimum time; a longer release closes it gently instead of slamming on every wobble.',
+      wrongHint: 'Set RELEASE to 20 ms CHATTER on the decaying source and listen to the name.',
+    },
+  ],
 };
 export const GateLabScreen = () => <FxLabScreen config={gateConfig} />;
 
@@ -790,6 +1005,32 @@ const limiterConfig: FxLabConfig = {
     }.`,
   pollGr: 'limiter',
   note: 'True-peak/inter-sample detection and lookahead are covered in the lesson (ⓘ) — this v1 limiter is a fast peak limiter.',
+  checks: [
+    {
+      question: 'A limiter is best described as…',
+      options: [
+        'A compressor with a very high ratio — a ceiling nothing passes',
+        'A volume control that works faster',
+        'An EQ for loud frequencies',
+      ],
+      correctIdx: 0,
+      reveal:
+        'At ∞:1 the transfer curve goes flat at the ceiling: input can rise all it wants, output stays. That is the safety-net job — which is why it sits LAST in the chain.',
+      wrongHint: 'Look at the transfer curve above the ceiling — it is horizontal.',
+    },
+    {
+      question: 'The limiter\u2019s GR meter never moves. What does that mean?',
+      options: [
+        'The limiter is faulty',
+        'Nothing is reaching the ceiling — it is doing exactly nothing, which is fine',
+        'The ceiling is too low',
+      ],
+      correctIdx: 1,
+      reveal:
+        'A limiter that shows no GR is a safety net nobody fell into. It only acts at the ceiling; a healthy mix may never touch it — that is success, not failure.',
+      wrongHint: 'Drop the ceiling into the signal and watch GR appear.',
+    },
+  ],
 };
 export const LimiterLabScreen = () => <FxLabScreen config={limiterConfig} />;
 
@@ -864,6 +1105,32 @@ const distConfig: FxLabConfig = {
       ? 'Top and bottom clip DIFFERENTLY (asymmetric) → even harmonics — the “warm” tube signature.'
       : 'Top and bottom clip the SAME (symmetric) → odd harmonics only — hollow/harsh.',
   note: 'Bitcrush and sample-rate reduction are in the engine (hear them via the lesson’s theory); their quantization visual lands with the analyzer view.',
+  checks: [
+    {
+      question: 'Distortion makes a pure sine tone sound "rich". What was added?',
+      options: [
+        'Volume',
+        'New frequencies — harmonics created by bending the waveform',
+        'Reverb tails',
+      ],
+      correctIdx: 1,
+      reveal:
+        'Clipping bends the wave shape, and a bent shape IS new harmonics — multiples of the input frequency that were not there before. Distortion is a frequency-creating effect.',
+      wrongHint: 'Play the SINE source and watch the added partials in the display.',
+    },
+    {
+      question: 'DRIVE and OUTPUT both change loudness. Why have both?',
+      options: [
+        'DRIVE sets how hard the wave hits the clipping stage (the tone); OUTPUT just compensates the level after',
+        'They are the same control duplicated',
+        'OUTPUT adds more harmonics than DRIVE',
+      ],
+      correctIdx: 0,
+      reveal:
+        'Drive is the sound: how hard you push into the curve decides how bent — how harmonic-rich — the wave gets. Output is housekeeping: bring the now-hotter signal back to a fair level so you judge tone, not loudness.',
+      wrongHint: 'Raise DRIVE, lower OUTPUT — the loudness holds, the character doesn\u2019t.',
+    },
+  ],
 };
 export const DistortionLabScreen = () => <FxLabScreen config={distConfig} />;
 
@@ -935,6 +1202,32 @@ const phaseConfig: FxLabConfig = {
       : v[PHASE_DLY] > 0
         ? `A ${v[PHASE_DLY]} ms delay shifts phase MORE at higher frequencies — in mono that combs, and no polarity flip can fix it.`
         : 'Identical channels: a vertical line, correlation +1.',
+  checks: [
+    {
+      question: 'You press INVERT (Ø) and sum to MONO — silence. Why?',
+      options: [
+        'The channels are equal and opposite — added together they cancel exactly',
+        'MONO always lowers the level',
+        'The invert button mutes one side',
+      ],
+      correctIdx: 0,
+      reveal:
+        'Ø flips every value of one channel: +1 meets −1 everywhere, and the sum is zero. Real-world versions (miswired cable, doubled mic) cancel partially — the meter warns you before the club\u2019s mono PA does.',
+      wrongHint: 'Press INVERT + MONO and watch the output flow flatline.',
+    },
+    {
+      question: 'Polarity (Ø) and phase are often confused. What\u2019s the difference?',
+      options: [
+        'Ø flips the whole wave instantly; phase shift is a TIME/frequency relationship',
+        'They are the same thing',
+        'Phase only matters above 1 kHz',
+      ],
+      correctIdx: 0,
+      reveal:
+        'The Ø button multiplies by −1 — every frequency flips at once, no time involved. Phase shift is per-frequency timing offset. The button fixes a wiring problem; it cannot fix an alignment problem.',
+      wrongHint: 'The lab\u2019s intro names the distinction — and the DELAY control is the phase side.',
+    },
+  ],
 };
 export const PhaseLabScreen = () => <FxLabScreen config={phaseConfig} />;
 
@@ -1012,5 +1305,31 @@ const stereoConfig: FxLabConfig = {
         : v[P.widthPct] === 0
           ? 'Width 0 = pure MID: a vertical line, perfectly mono-safe.'
           : 'The classic trade: width vs mono safety.',
+  checks: [
+    {
+      question: 'The correlation meter is pinned near −1. What happens on a mono system?',
+      options: [
+        'Nothing — mono ignores correlation',
+        'The sides cancel — the mix collapses toward silence',
+        'It gets louder',
+      ],
+      correctIdx: 1,
+      reveal:
+        'Near −1, whatever left does, right does the opposite — summed to mono (phone speaker, club PA, broadcast) they subtract. Impressive width on headphones can be an empty mix in mono; the meter is the early warning.',
+      wrongHint: 'Push WIDTH to maximum and watch where the needle lives.',
+    },
+    {
+      question: 'What does a stereo widener actually manipulate?',
+      options: [
+        'The MID/SIDE balance — turning up what differs between the channels',
+        'The left channel\u2019s volume',
+        'The reverb amount',
+      ],
+      correctIdx: 0,
+      reveal:
+        'Width = the ratio of SIDE (what differs between L and R) to MID (what they share). More side = wider — and less mono-safe. Every widener is walking that trade.',
+      wrongHint: 'Watch the Lissajous cloud stretch sideways as WIDTH rises.',
+    },
+  ],
 };
 export const StereoLabScreen = () => <FxLabScreen config={stereoConfig} />;

@@ -343,9 +343,12 @@ export function LabShell({
                       description + every teaching block + the lesson entry
                       collapse together, so once the text is read the well goes
                       quiet and the dock/stage own the screen. */}
+                  {/* The first-move instruction stays OUTSIDE the disclosure
+                      (house rule, design pass 2026-08-31): an instruction
+                      inside a collapsed section is an instruction unread. */}
+                  <Text style={styles.caption}>{exploreCaption}</Text>
                   <CollapsibleSection title="LAB NOTES">
                     <Text style={styles.intro}>{intro}</Text>
-                    <Text style={styles.caption}>{exploreCaption}</Text>
                     {typeof children === 'function' ? children(api) : children}
                     {/* Guided-lesson entry lives at the BOTTOM (owner 2026-07-29). */}
                     <Pressable
@@ -376,9 +379,9 @@ export function LabShell({
 
             {mode === 'explore' ? (
               <View style={styles.panel}>
+                <Text style={styles.caption}>{exploreCaption}</Text>
                 <CollapsibleSection title="DESCRIPTION">
                   <Text style={styles.intro}>{intro}</Text>
-                  <Text style={styles.caption}>{exploreCaption}</Text>
                 </CollapsibleSection>
                 {typeof children === 'function' ? children({ setScrollLocked }) : children}
               </View>
