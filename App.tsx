@@ -31,6 +31,7 @@ import { syncLocalNotificationsThrottled } from './src/features/notifications/lo
 import { loadLocalSettings } from './src/features/settings/store';
 import { NotifySchedulePreview } from './src/features/settings/NotifySchedulePreview';
 import { SettingsPreview } from './src/screens/settings/SettingsPreview';
+import { ProfilePreview } from './src/screens/profile/ProfilePreview';
 import { LabPreviewOverlay } from './src/features/lab/LabPreviewOverlay';
 import { endLabPreview, getLabPreview } from './src/features/lab/labPreviewStore';
 import { EntitlementProvider } from './src/features/commercial/EntitlementProvider';
@@ -179,6 +180,16 @@ export default function App() {
       <SafeAreaProvider>
         <StatusBar style="light" />
         <A11yPreview />
+      </SafeAreaProvider>
+    );
+  }
+
+  // DEV + WEB ONLY: `#profilepreview/<width>` — Profile is behind login too.
+  if (__DEV__ && Platform.OS === 'web' && typeof window !== 'undefined' && window.location.hash.startsWith('#profilepreview')) {
+    return (
+      <SafeAreaProvider>
+        <StatusBar style="light" />
+        <ProfilePreview />
       </SafeAreaProvider>
     );
   }
