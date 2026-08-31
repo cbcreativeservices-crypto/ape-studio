@@ -1213,7 +1213,7 @@ function M11Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
     {
       kind: 'fader',
       id: 'amp',
-      label: `H${selected + 1} AMP`,
+      label: `H${selected + 1} LEVEL`,
       value: amps[selected],
       onChange: (v) => setAmp(selected, v),
       format: () => `${Math.round(amps[selected] * 100)}%`,
@@ -1228,7 +1228,7 @@ function M11Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       helpKey: 'harmonic_stack',
       render: () => (
         <View style={{ gap: 10 }}>
-          <Text style={styles.trayHead}>HARMONICS — tap to select; the lane sets its amplitude</Text>
+          <Text style={styles.trayHead}>HARMONICS — tap to select; the lane sets its level</Text>
           <View style={styles.chipRow}>
             {amps.map((a, i) => {
               const on = a > 0.02;
@@ -1266,7 +1266,7 @@ function M11Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
         bezel: [
           { k: 'F0', v: `${M11_F0} Hz`, helpKey: 'harmonic_stack' },
           { k: 'SEL', v: `H${selected + 1}`, helpKey: 'harmonic_stack' },
-          { k: 'AMP', v: `${Math.round(amps[selected] * 100)}%`, tint: levelColor(amps[selected]), helpKey: 'harmonic_stack' },
+          { k: 'LEVEL', v: `${Math.round(amps[selected] * 100)}%`, tint: levelColor(amps[selected]), helpKey: 'harmonic_stack' },
           toneCell(tone),
         ],
         render: (w, h) =>

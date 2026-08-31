@@ -229,11 +229,62 @@ function zoneAt(pos: number): (typeof HAND_POSITIONS)[number] {
         : HAND_POSITIONS[3];
 }
 
-const STEREO_TECHS: { key: 'xy' | 'ortf' | 'ab' | 'ms'; label: string; from: string; note: string }[] = [
-  { key: 'xy', label: 'XY', from: 'LEVEL', note: 'Two cardioids COINCIDENT at ~90°. Stereo comes from level differences only — perfectly mono-compatible, modest width.' },
-  { key: 'ortf', label: 'ORTF', from: 'LVL+TIME', note: 'Two cardioids 17 cm apart at 110°. Level AND small time differences — wider, natural image; good mono behavior.' },
-  { key: 'ab', label: 'AB', from: 'TIME', note: 'Two spaced omnis facing forward. Stereo from time differences — big, open image; watch mono fold-down.' },
-  { key: 'ms', label: 'MID-SIDE', from: 'MIX', note: 'Cardioid forward + figure-8 sideways at one point. Width is a MIX decision after the fact — fully mono-safe.' },
+/**
+ * Owner device pass 2026-08-27 marked STEREO "explain better / EZ". The four
+ * notes were correct and unreadable: COINCIDENT, figure-8, mono fold-down and
+ * mono-compatible all in the first breath, with nothing saying what the
+ * technique IS or when you would reach for it. Each entry now leads with a
+ * plain sentence and a "reach for it when" line; `note` keeps the precise
+ * geometry for the reader who wants it, one layer down.
+ */
+const STEREO_TECHS: {
+  key: 'xy' | 'ortf' | 'ab' | 'ms';
+  label: string;
+  from: string;
+  /** No-jargon: what the two mics are actually doing. */
+  plain: string;
+  /** When an engineer picks this one. */
+  use: string;
+  /** What happens when the two channels are summed to one speaker. */
+  mono: string;
+  note: string;
+}[] = [
+  {
+    key: 'xy',
+    label: 'XY',
+    from: 'LEVEL',
+    plain: 'Two mics in the same spot, angled apart like a V.',
+    use: 'Reach for it when the mix might get summed to mono — a club, a broadcast feed, a phone speaker.',
+    mono: 'Safe. Nothing cancels, because both mics hear the sound at the same instant.',
+    note: 'Two cardioids COINCIDENT (capsules stacked over one point) at ~90°. The only difference between the channels is LEVEL, so the image is narrow but rock-solid.',
+  },
+  {
+    key: 'ortf',
+    label: 'ORTF',
+    from: 'LEVEL+TIME',
+    plain: 'Two mics spaced about as far apart as your ears, angled outward.',
+    use: 'The safe default for a room, a choir, an acoustic guitar — it sounds like standing there.',
+    mono: 'Good. The spacing is small enough that summing costs you width, not tone.',
+    note: 'Two cardioids 17 cm apart at 110° — deliberately ear-like. Each channel differs in LEVEL and in a fraction of a millisecond of TIME, which is exactly how your own hearing places a sound.',
+  },
+  {
+    key: 'ab',
+    label: 'AB',
+    from: 'TIME',
+    plain: 'Two mics set well apart, both aimed straight ahead.',
+    use: 'Reach for it when you want a big, wide, open room — an orchestra, a piano, an ensemble.',
+    mono: 'Risky. Wide spacing means one mic can be pushing while the other pulls, so summing can thin the low end.',
+    note: 'Two spaced omnis facing forward. The channels differ almost entirely in arrival TIME. Widest image of the four, and the least predictable when folded down.',
+  },
+  {
+    key: 'ms',
+    label: 'MID-SIDE',
+    from: 'MIX',
+    plain: 'One mic forward, one sideways — you set the width afterwards, not now.',
+    use: 'Reach for it when you cannot re-record: film, live capture, anything you only get one take of.',
+    mono: 'Perfectly safe. Turn the width down to zero and you are left with the forward mic alone.',
+    note: 'Cardioid forward (MID) + figure-8 sideways (SIDE) at one point. The pair is decoded to left/right later, so WIDTH becomes a mix decision you can still change.',
+  },
 ];
 
 const MISTAKES: { kind: 'correct' | 'grille' | 'cup' | 'away' | 'far' | 'switch' | 'antenna'; title: string; note: string }[] = [
@@ -890,7 +941,9 @@ function StereoSection({ viz, help, wellTop, wellBottom }: SectionProps) {
       id: 'tech',
       label: 'TECHNIQUE',
       valueLabel: t.label,
-      options: STEREO_TECHS.map((s) => ({ id: s.key, label: s.label, blurb: s.note })),
+      // Tray blurbs describe the SELECTED option live (house pattern), so the
+      // plain sentence goes here — the reader is choosing, not studying yet.
+      options: STEREO_TECHS.map((s) => ({ id: s.key, label: s.label, blurb: `${s.plain} ${s.use}` })),
       selectedId: t.key,
       onSelect: (id) => {
         const i = STEREO_TECHS.findIndex((s) => s.key === id);
@@ -918,11 +971,23 @@ function StereoSection({ viz, help, wellTop, wellBottom }: SectionProps) {
       }}
     >
       {wellTop}
+      {/* The plain answer sits OUTSIDE the collapsible: a learner who never
+          opens "WHAT'S HAPPENING" should still leave knowing what this
+          technique is and when to use it. */}
+      <Text style={styles.readout}>{t.plain}</Text>
+      <Text style={styles.caption}>{t.use}</Text>
       <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('stereo_pair')}>
+        <Text style={styles.caption}>
+          You have two ears, and you place a sound by the tiny differences between what each one
+          hears: which side is LOUDER, and which side it reaches FIRST. Two microphones do the same
+          thing — and every named technique below is just a different way of arranging them to
+          produce those two differences.
+        </Text>
         <Text style={styles.caption}>{t.note}</Text>
         <Text style={styles.caption}>
-          Two mics make stereo from LEVEL differences, TIME differences, or both — every named
-          technique is just a different trade between width, focus, and mono compatibility.
+          IN MONO — {t.mono} Summing to mono is not a hypothetical: club rigs, broadcast feeds and
+          phone speakers all do it, which is why it is the trade every one of these techniques is
+          really making.
         </Text>
       </CollapsibleSection>
       {wellBottom}

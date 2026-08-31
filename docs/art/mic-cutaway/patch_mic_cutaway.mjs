@@ -64,7 +64,7 @@ svg = sub(svg, '#2a2218', '#232220', 1, 'clamp wedge');
 
 /* ---------- MUST-1 + SHOULD-3: labels rebuilt + on-screen caveat ---------- */
 // Shared bits of the house label style.
-const TXT = 'fill="#a6a6ad" font-family="Oswald" font-size="9.5" letter-spacing="0.6" font-weight="500" paint-order="stroke" stroke="#0c0c0c" stroke-width="2.6" stroke-opacity="0.7"';
+const TXT = 'fill="#a6a6ad" font-family="Oswald_500Medium" font-size="9.5" letter-spacing="0.6" font-weight="500" paint-order="stroke" stroke="#0c0c0c" stroke-width="2.6" stroke-opacity="0.7"';
 const lead = (pts) =>
   `<polyline points="${pts}" fill="none" stroke="#0c0c0c" stroke-opacity="0.45" stroke-width="1.4" stroke-linejoin="round"/>\n` +
   `<polyline points="${pts}" fill="none" stroke="#8a8b93" stroke-opacity="0.7" stroke-width="0.6" stroke-linejoin="round"/>`;
@@ -98,7 +98,7 @@ ${lbl('lbl_magnet', '104,330 104,212', 104, 212, 104, 340, 'middle', 'MAGNET')}
 </g>
 </svg>`;
 function CAVEAT_TXT() {
-  return 'fill="#8a8b93" font-family="Oswald" font-size="8.8" letter-spacing="0.3" font-weight="500"';
+  return 'fill="#8a8b93" font-family="Oswald_500Medium" font-size="8.8" letter-spacing="0.3" font-weight="500"';
 }
 svg = sub(svg, /<g id="labels"[\s\S]*<\/g>\n<\/svg>\n?/g, labels + '\n', 1, 'labels block');
 

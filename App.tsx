@@ -13,6 +13,7 @@ import { KeyboardProvider } from './src/features/keyboard/keyboardControllerSafe
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { Spl3dGaugePreview } from './src/screens/tools/Spl3dGaugePreview';
 import { ToolPreview } from './src/screens/tools/ToolPreview';
+import { MicPrinciplesLabScreen } from './src/screens/lab/micspeaker/MicPrinciplesLabScreen';
 import { MultiMeterScreen } from './src/screens/tools/MultiMeterScreen';
 import { WaveformScreen } from './src/screens/tools/WaveformScreen';
 import { RtaScreen } from './src/screens/tools/RtaScreen';
@@ -227,7 +228,9 @@ export default function App() {
                     ? { name: 'CableInstallLab', component: CableInstallLabScreen as ComponentType }
                     : window.location.hash === '#cableartpreview'
                       ? { name: 'CableArt', component: CableArtPreview as ComponentType }
-                      : null
+                      : window.location.hash === '#micprinciplespreview'
+                        ? { name: 'MicPrinciples', component: MicPrinciplesLabScreen as ComponentType }
+                        : null
       : null;
   if (toolPreview) {
     return (
