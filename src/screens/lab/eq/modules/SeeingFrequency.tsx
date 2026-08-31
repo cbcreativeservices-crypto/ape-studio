@@ -37,6 +37,7 @@ import { RackUnit } from '../../rack/RackUnit';
 import type { DockParam } from '../../rack/rackTypes';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import type { EqModuleComponentProps } from './registry';
+import { CheckQuestion } from '../../foundations/bits';
 
 const FFT_SIZE = 8192;
 
@@ -65,6 +66,9 @@ const SLOT_GRAY = '#55555f';
 const CURVE_AMBER = '#ffc64d';
 
 /** Hz → fractional band index on the log-even center grid (for overlay x). */
+/** Standard 1/3-octave centers, 20 Hz … 20 kHz — the no-mic fallback grid. */
+const FALLBACK_CENTERS = Array.from({ length: 31 }, (_, k) => 20 * Math.pow(2, k / 3));
+
 function fracIndexForHz(f: number, centers: number[]): number {
   const n = centers.length;
   if (n < 2) return 0;
@@ -126,26 +130,31 @@ function SeeingGlass({
   const pxPerDb = (floorY - ZERO_Y) / -FLOOR_DB;
   const yForDb = (db: number) => Math.max(2, ZERO_Y - db * pxPerDb);
 
-  const n = bands ? bands.centers.length : 0;
+  // Fallback grid (fix 2026-08-31): with the mic denied/absent the glass drew
+  // NOTHING while the badge promised "amber = the filter's response". The
+  // DESIGNED curve now always draws on a standard 1/3-octave grid; the live
+  // bars stay honestly absent.
+  const centers = bands ? bands.centers : FALLBACK_CENTERS;
+  const n = centers.length;
   const barW = n > 0 && chartW > 0 ? chartW / n : 0;
-  const labels = bands ? bandLabels(bands.centers) : [];
+  const labels = bandLabels(centers);
   const pad = barW > 3 ? 1 : 0.5;
 
   /** X pixel for a frequency on the current band grid. */
   const xForHz = useCallback(
     (f: number) => {
-      if (!bands || barW <= 0) return 0;
-      const idx = fracIndexForHz(f, bands.centers);
+      if (barW <= 0) return 0;
+      const idx = fracIndexForHz(f, centers);
       return Math.min(chartW - 2, Math.max(2, (idx + 0.5) * barW));
     },
-    [bands, barW, chartW],
+    [centers, barW, chartW],
   );
 
   /** The analytic HPF response curve, drawn OVER the now-rolled-off bars as a
    *  reference of the filter's shape. 12 dB/oct Butterworth (mirrors the native
    *  Biquad); slope choices arrive with the Slopes module. */
   const hpfPath = useMemo(() => {
-    if (hpfHz == null || !bands || barW <= 0 || chartW <= 0) return null;
+    if (hpfHz == null || barW <= 0 || chartW <= 0) return null;
     const PTS = 96;
     let curve = '';
     for (let k = 0; k <= PTS; k++) {
@@ -156,7 +165,7 @@ function SeeingGlass({
     }
     return curve;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hpfHz, bands, barW, chartW, xForHz, floorY]);
+  }, [hpfHz, barW, chartW, xForHz, floorY]);
 
   return (
     <View style={styles.glassRow}>
@@ -228,7 +237,7 @@ function SeeingGlass({
               })}
             {/* HPF OFF: a static dashed marker frames the lesson — "look below
                 100 Hz". ON: the analytic curve takes over. */}
-            {bands != null && hpfHz == null && (
+            {hpfHz == null && (
               <Line
                 x1={xForHz(100)}
                 y1={ZERO_Y}
@@ -373,6 +382,22 @@ export function SeeingFrequencyModule(_p: EqModuleComponentProps) {
           strips. The lesson is not “low frequencies are bad”: remove UNWANTED low-frequency
           energy while preserving useful content.
         </Text>
+
+        {/* Retrieval (learning pass 2026-08-31) — NEW COPY, owner review. */}
+        <CheckQuestion
+          spec={{
+            question: 'The amber curve on the display is…',
+            options: [
+              'The filter’s DESIGNED response — what the low-cut would remove',
+              'A measurement of the room after filtering',
+              'The microphone’s frequency response',
+            ],
+            correctIdx: 0,
+            reveal:
+              'The analyzer keeps showing the room UNFILTERED while the amber curve overlays the filter’s designed shape — so you can see exactly what a cut at each frequency would take away before you take it.',
+            wrongHint: 'Read the caption above the curve — designed, not measured.',
+          }}
+        />
 
         {/* Spec ruling: the caveat is stated, but unobtrusively. */}
         <Text style={styles.caveat}>

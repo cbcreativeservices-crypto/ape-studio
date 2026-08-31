@@ -99,9 +99,21 @@ function judge(hidden: Hidden[], user: UserBand[]): Verdict {
     lines.push(
       `Target: ${fmtHz(h.f)} · Your selection: ${fmtHz(u.f)} · Difference: ${pctDiff >= 0 ? '+' : ''}${pctDiff.toFixed(1)}%`,
     );
+    // Verdict split (learning pass 2026-08-31): a correct-direction under-cut
+    // used to read "✗ wrong amount/direction" — recognition feedback must say
+    // WHICH was wrong. NEW COPY — owner review.
+    const wrongDir = u.g * h.g >= 0; // fixing a boost needs a cut (opposite signs)
     lines.push(
       `  needed ${h.g > 0 ? '−' : '+'}${Math.abs(h.g).toFixed(0)} dB · you applied ${u.g >= 0 ? '+' : ''}${u.g.toFixed(1)} dB → ${
-        freqOk && gainOk ? '✓ corrected' : !freqOk ? '✗ off-frequency' : '✗ wrong amount/direction'
+        freqOk && gainOk
+          ? '✓ corrected'
+          : !freqOk
+            ? '✗ off-frequency'
+            : wrongDir
+              ? '✗ wrong direction'
+              : Math.abs(u.g) < Math.abs(h.g)
+                ? '✗ right direction — not enough'
+                : '✗ right direction — too much'
       }`,
     );
     if (!(freqOk && gainOk)) allPass = false;

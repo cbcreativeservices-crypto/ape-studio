@@ -49,7 +49,7 @@ export function EqLabHomeScreen() {
         </View>
         <Text style={styles.body}>
           Start by seeing the real frequency content of the room you’re in — then learn to shape
-          it. Lessons unlock in a deliberate order: each one introduces only what the next needs.
+          it. Lessons build in a deliberate order: each one introduces only what the next needs.
         </Text>
 
         {EQ_SECTION_META.map((sec) => {
@@ -62,6 +62,7 @@ export function EqLabHomeScreen() {
               {live.map((m) => (
                 <ModuleAccordionRow
                   key={m.id}
+                  num={EQ_MODULES.indexOf(m) + 1}
                   name={m.title}
                   blurb={m.blurb}
                   expanded={openId === m.id}
@@ -90,7 +91,7 @@ export function EqLabHomeScreen() {
 
 function ToolChip({ label, onPress }: { label: string; onPress: () => void }) {
   return (
-    <Pressable accessibilityRole="button" style={styles.toolChip} onPress={onPress}>
+    <Pressable accessibilityRole="button" hitSlop={{ top: 8, bottom: 8 }} style={styles.toolChip} onPress={onPress}>
       <Text style={styles.toolText}>{label}</Text>
     </Pressable>
   );

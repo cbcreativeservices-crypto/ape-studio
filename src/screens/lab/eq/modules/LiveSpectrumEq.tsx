@@ -53,6 +53,9 @@ const PEAK_TICK = '#ffe8b0';
 const SLOT_GRAY = '#55555f';
 const CURVE_AMBER = '#ffc64d';
 
+/** Standard 1/3-octave centers, 20 Hz … 20 kHz — the no-mic fallback grid. */
+const FALLBACK_CENTERS = Array.from({ length: 31 }, (_, k) => 20 * Math.pow(2, k / 3));
+
 function fracIndexForHz(f: number, centers: number[]): number {
   const n = centers.length;
   if (n < 2) return 0;
@@ -125,17 +128,19 @@ function SpectrumGlass({
   const pxPerDb = (floorY - ZERO_Y) / -FLOOR_DB;
   const yForDb = (db: number) => Math.max(2, ZERO_Y - db * pxPerDb);
 
-  const n = bands ? bands.centers.length : 0;
+  // No-mic fallback grid (fix 2026-08-31) — the designed curve always draws.
+  const centers = bands ? bands.centers : FALLBACK_CENTERS;
+  const n = centers.length;
   const barW = n > 0 && chartW > 0 ? chartW / n : 0;
-  const labels = bands ? bandLabels(bands.centers) : [];
+  const labels = bandLabels(centers);
   const pad = barW > 3 ? 1 : 0.5;
 
   const xForHz = useCallback(
     (f: number) => {
-      if (!bands || barW <= 0) return 0;
-      return Math.min(chartW - 2, Math.max(2, (fracIndexForHz(f, bands.centers) + 0.5) * barW));
+      if (barW <= 0) return 0;
+      return Math.min(chartW - 2, Math.max(2, (fracIndexForHz(f, centers) + 0.5) * barW));
     },
-    [bands, barW, chartW],
+    [centers, barW, chartW],
   );
 
   /** Total designed response (dB) of the current EQ at f. */
@@ -150,7 +155,7 @@ function SpectrumGlass({
   );
 
   const eqPath = useMemo(() => {
-    if (!bands || barW <= 0 || chartW <= 0) return null;
+    if (barW <= 0 || chartW <= 0) return null;
     if (hpfHz == null && !bellOn) return null;
     const PTS = 96;
     let d = '';

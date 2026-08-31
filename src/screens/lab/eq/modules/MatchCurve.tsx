@@ -50,9 +50,14 @@ function makeTarget(): EqBandSpec[] {
 const freshBands = (n: number): UserBand[] =>
   Array.from({ length: n }, (_, i) => ({ f: i === 0 ? 300 : 3000, g: 0, q: 1 }));
 
-/** 0–100 match score: mean |target − user| over 96 log-spaced points. */
+/** 0–100 match score, normalized by the FLAT-response error (fix 2026-08-31):
+ *  the old mean-|error|×12 barely registered a narrow or small target, so a
+ *  completely flat EQ scored 95% "EXCELLENT" on a narrow notch — the trainer
+ *  rewarded doing nothing. Now: doing nothing = 0, halving the error = 50,
+ *  perfect = 100. Same 90/75 verdict thresholds. */
 function scoreMatch(target: EqBandSpec[], user: UserBand[]): number {
-  let err = 0;
+  let errUser = 0;
+  let errFlat = 0;
   const N = 96;
   for (let i = 0; i <= N; i++) {
     const f = 20 * Math.pow(1000, i / N);
@@ -61,9 +66,11 @@ function scoreMatch(target: EqBandSpec[], user: UserBand[]): number {
       (s, b) => s + (b.g !== 0 ? eqResponseDb([{ type: 'peak', freq: b.f, q: b.q, gainDb: b.g }], f) : 0),
       0,
     );
-    err += Math.abs(t - u);
+    errUser += Math.abs(t - u);
+    errFlat += Math.abs(t);
   }
-  return Math.max(0, Math.round(100 - (err / (N + 1)) * 12));
+  if (errFlat < 1e-6) return 100; // degenerate flat target
+  return Math.max(0, Math.min(100, Math.round(100 * (1 - errUser / errFlat))));
 }
 
 export function MatchCurveModule(_p: EqModuleComponentProps) {

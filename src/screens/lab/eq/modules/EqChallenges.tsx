@@ -151,8 +151,8 @@ export function EqChallengesModule(_p: EqModuleComponentProps) {
       <CheckQuestion spec={CHECK} />
 
       <Text style={styles.caption}>
-        More challenges live inside the lab: FLAT → SMOOTH → JAGGED (in “What a Graphic EQ Is
-        Really Doing”) and the five Fix-the-Signal scenarios.
+        More challenges live inside the lab: FLAT → SMOOTH → JAGGED (in “What a Graphic EQ
+        Really Does”) and the five Fix-the-Signal scenarios.
       </Text>
     </View>
   );

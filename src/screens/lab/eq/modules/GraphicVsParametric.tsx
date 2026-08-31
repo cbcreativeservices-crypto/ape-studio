@@ -132,7 +132,7 @@ export function GraphicVsParametricModule(_p: EqModuleComponentProps) {
 
         <Text style={styles.caption}>
           The line printed under the display is the honesty line: the amber curve is the ACTUAL
-          combined response of the board’s real fixed-width bells — more on that in the next lesson.
+          combined response of the board’s real fixed-width bells — more on that in “What a Graphic EQ Really Does”.
         </Text>
 
         {/* The honest comparison (owner ruling). */}

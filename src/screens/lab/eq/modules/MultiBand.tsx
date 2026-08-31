@@ -27,6 +27,7 @@ import { bwOctFromQ, fmtHz, gainColor, normFromF, fFromNorm } from './eqMath';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import { EqAuditionBar } from './eqAudition';
 import type { EqModuleComponentProps } from './registry';
+import { CheckQuestion } from '../../foundations/bits';
 
 // ---- Graph geometry (mirrors ResponseCurveGraph: viewBox 320, pad 8; the
 //      HEIGHT is now the stage's — the glass grants it at render) ------------
@@ -422,6 +423,22 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
           a boost’s skirt and they partly cancel. The combined curve — not any single band — is what
           the signal experiences.
         </Text>
+
+        {/* Retrieval (learning pass 2026-08-31) — NEW COPY, owner review. */}
+        <CheckQuestion
+          spec={{
+            question: 'Two +6 dB bells overlap at 1 kHz. What does the signal experience there?',
+            options: [
+              'More than +6 dB — the skirts add on top of each other',
+              'Exactly +6 dB — the louder band wins',
+              '+3 dB — they average',
+            ],
+            correctIdx: 0,
+            reveal:
+              'Band responses SUM. Where two boosts overlap, the composite rises above either one — which is how polite-looking bands quietly stack into an ugly bump. Read the combined curve, not the knobs.',
+            wrongHint: 'Drag two bells onto the same frequency and watch the composite line.',
+          }}
+        />
       </View>
     </RackUnit>
   );
