@@ -34,10 +34,24 @@ export type CheckSpec = {
 export function CheckQuestion({ spec, onSolved }: { spec: CheckSpec; onSolved?: () => void }) {
   const [picked, setPicked] = useState<number | null>(null);
   const [solved, setSolved] = useState(false);
-  const pick = (i: number) => {
+  // SHUFFLE ON MOUNT (learning pass 2026-08-31). Authored specs had settled the
+  // correct answer at index 1 in 10 of 11 Foundations checks — by Module 5 a
+  // student can pass every check by picking the middle option, which trains
+  // position, not the concept. The authored order stays authoritative; only the
+  // presentation order is permuted, and correctness is checked by ORIGINAL
+  // index so no spec ever needs re-authoring.
+  const [order] = useState<number[]>(() => {
+    const idx = spec.options.map((_, i) => i);
+    for (let i = idx.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [idx[i], idx[j]] = [idx[j], idx[i]];
+    }
+    return idx;
+  });
+  const pick = (orig: number) => {
     if (solved) return;
-    setPicked(i);
-    if (i === spec.correctIdx) {
+    setPicked(orig);
+    if (orig === spec.correctIdx) {
       setSolved(true);
       onSolved?.(); // optional: lets a host aggregate a "passed" state (R6c)
     }
@@ -47,7 +61,8 @@ export function CheckQuestion({ spec, onSolved }: { spec: CheckSpec; onSolved?: 
       <Text style={styles.checkEyebrow}>CHECK YOURSELF</Text>
       <Text style={styles.checkQuestion}>{spec.question}</Text>
       <View style={{ gap: 8 }}>
-        {spec.options.map((opt, i) => {
+        {order.map((i) => {
+          const opt = spec.options[i];
           const isPicked = picked === i;
           const good = solved && i === spec.correctIdx;
           const bad = isPicked && !solved && i !== spec.correctIdx;

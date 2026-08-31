@@ -162,8 +162,11 @@ export function RackUnit({
         {stage.badge ? (
           // Honesty badge: silk-screened on the FACEPLATE under the unit —
           // never floated over the glass (owner 2026-08-23: no hover objects
-          // may block the display). Still pinned with it.
-          <Text style={styles.badgeStrip} numberOfLines={1}>
+          // may block the display). Still pinned with it. Two lines + a gentle
+          // shrink floor instead of hard truncation: at 375 the M6/M11 badges
+          // were cutting mid-claim ("…7 m ROO") — and a truncated disclosure
+          // is a weakened disclosure.
+          <Text style={styles.badgeStrip} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.85}>
             {stage.badge}
           </Text>
         ) : null}
