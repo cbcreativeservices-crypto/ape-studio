@@ -23,6 +23,7 @@ import { Canvas, Line as SkLine, Path as SkPath, Skia, vec } from '@shopify/reac
 import { GlassButton } from '../../../components/GlassButton';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { colors, fonts } from '../../../theme/tokens';
+import { CheckQuestion } from '../foundations/bits';
 import { MicPhotoLightbox, MicVisual } from './micArt';
 import {
   CHALLENGE_BASE,
@@ -73,10 +74,31 @@ function LessonBanner({ text }: { text: string }) {
   );
 }
 
+/** Mount-stable presentation shuffle (learning pass 2026-08-31): the correct
+ *  challenge factors were rows 1-3 of a fixed list and the correct pattern
+ *  reason was row 1 — top-clicking scored without reading. Permutation cached
+ *  per array reference; correctness stays keyed by item, never position. */
+const PERM = new WeakMap<readonly unknown[], number[]>();
+function useShuffledRows<T>(arr: readonly T[]): T[] {
+  return useMemo(() => {
+    let idx = PERM.get(arr);
+    if (!idx) {
+      idx = arr.map((_, i) => i);
+      for (let i = idx.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [idx[i], idx[j]] = [idx[j], idx[i]];
+      }
+      PERM.set(arr, idx);
+    }
+    return idx.map((i) => arr[i]);
+  }, [arr]);
+}
+
 function Chip({ label, active, onPress, dim }: { label: string; active: boolean; onPress: () => void; dim?: boolean }) {
   return (
     <Pressable
       onPress={onPress}
+      hitSlop={{ top: 8, bottom: 8 }}
       accessibilityRole="button"
       accessibilityState={{ selected: active }}
       style={[styles.chip, active && styles.chipActive, dim && { opacity: 0.55 }]}
@@ -194,7 +216,9 @@ function CharsStep() {
       <Text style={styles.body}>{CHAR_INTRO}</Text>
       <View style={styles.charHub}>
         <MicVisual kind="condenser" w={48} h={72} />
-        <View style={styles.chipWrap}>
+        {/* flex:1 (P0 fix 2026-08-31): without it this wrap laid all 16 chips
+            on ONE unwrapped row — five rendered off-screen, unreachable. */}
+        <View style={[styles.chipWrap, { flex: 1 }]}>
           {CHARACTERISTICS.map((x) => (
             <Chip key={x.key} label={x.name} active={sel === x.key} onPress={() => setSel(x.key)} />
           ))}
@@ -241,13 +265,19 @@ function PatternsStep() {
     return p;
   }, [w, pattern, R, cx, cy]);
 
-  const verdictFor = (angleDeg: number): { v: string; c: string } => {
+  // Verdict encodes the OUTCOME, not the pickup-state (fix 2026-08-31): HVAC
+  // (unwanted) used to show "picked up" in GREEN. Wanted+picked and
+  // unwanted+rejected are the good outcomes.
+  const verdictFor = (angleDeg: number, wanted: boolean): { v: string; c: string } => {
     const rr = polarR(pattern, (angleDeg * Math.PI) / 180);
-    if (rr >= 0.6) return { v: 'picked up', c: colors.green };
-    if (rr >= 0.25) return { v: 'partial', c: colors.amber };
-    return { v: 'rejected', c: '#6f86b8' };
+    const picked = rr >= 0.6;
+    const partial = rr >= 0.25 && rr < 0.6;
+    if (partial) return { v: wanted ? '△ partial' : '△ partial', c: colors.amber };
+    if (picked) return wanted ? { v: '✓ picked up', c: colors.green } : { v: '⚠ picked up', c: '#ff8a6b' };
+    return wanted ? { v: '⚠ missed', c: '#ff8a6b' } : { v: '✓ rejected', c: colors.green };
   };
 
+  const reasonRows = useShuffledRows(PATTERN_REASONS);
   const chosenReason = PATTERN_REASONS.find((r) => r.key === reason);
   const reasonGood = chosenReason?.goodFor.includes(pattern) ?? false;
   const reasonAlt = chosenReason ? PATTERNS.find((p) => chosenReason.goodFor.includes(p.key))?.name : null;
@@ -277,10 +307,10 @@ function PatternsStep() {
               const rad = (s.angleDeg * Math.PI) / 180;
               const x = cx + s.dist * R * Math.sin(rad);
               const y = cy - s.dist * R * Math.cos(rad);
-              const vd = verdictFor(s.angleDeg);
+              const vd = verdictFor(s.angleDeg, s.wanted === true);
               return (
                 <View key={s.key} style={[styles.srcMark, { left: x - 44, top: y - 12 }]}>
-                  <Text style={[styles.srcLabel, { color: s.wanted ? colors.green : vd.c }]} numberOfLines={1}>
+                  <Text style={[styles.srcLabel, { color: s.wanted ? colors.green : '#8a8a94' }]} numberOfLines={1}>
                     {s.label}
                   </Text>
                   <Text style={[styles.srcVerdict, { color: vd.c }]}>{vd.v}</Text>
@@ -292,7 +322,7 @@ function PatternsStep() {
       </View>
       <View style={styles.detailCard}>
         <Text style={styles.detailHead}>{`WHY DID YOU CHOOSE ${PATTERNS.find((p) => p.key === pattern)!.name.toUpperCase()}?`}</Text>
-        {PATTERN_REASONS.map((r) => (
+        {reasonRows.map((r) => (
           <Pressable
             key={r.key}
             onPress={() => setReason(r.key)}
@@ -350,7 +380,7 @@ function CurvesStep() {
       </Text>
       <View style={styles.chipWrap}>
         {CURVES.map((x) => (
-          <Chip key={x.key} label={x.name.split('·')[0].trim()} active={sel === x.key} onPress={() => setSel(x.key)} />
+          <Chip key={x.key} label={(x.name.split('·')[1] ?? x.name).trim()} active={sel === x.key} onPress={() => setSel(x.key)} />
         ))}
       </View>
       <View onLayout={onLayout} style={[styles.stageBox, { height: H }]}>
@@ -373,6 +403,21 @@ function CurvesStep() {
         <Text style={styles.detailHead}>WHERE THAT IS USEFUL</Text>
         <Text style={styles.body}>{c.useful}</Text>
       </View>
+      {/* Retrieval (learning pass 2026-08-31) — NEW COPY, owner review. */}
+      <CheckQuestion
+        spec={{
+          question: 'A lectern mic keeps picking up stage rumble under the speech. Which response curve helps?',
+          options: [
+            'A low-frequency rolloff — the rumble lives below the voice',
+            'A presence peak around 5 kHz',
+            'A perfectly flat curve — flat is always best',
+          ],
+          correctIdx: 0,
+          reveal:
+            'The rumble sits below the useful voice band, so a curve that rolls off the lows removes the problem without touching the speech. Flat is not "best" — it is a CHOICE, and here it faithfully reproduces the rumble too.',
+          wrongHint: 'Look at where rumble lives on the frequency axis versus where speech does.',
+        }}
+      />
       <LessonBanner text={CURVE_LESSON} />
     </View>
   );
@@ -557,6 +602,21 @@ function JobsStep() {
         <Text style={[styles.body, { marginTop: 6 }]}>{j.note}</Text>
         <Text style={[styles.detailHead, { marginTop: 4 }]}>WHICH MICROPHONE CHARACTERISTICS SATISFY THESE REQUIREMENTS?</Text>
       </View>
+      {/* Retrieval (learning pass 2026-08-31) — NEW COPY, owner review. */}
+      <CheckQuestion
+        spec={{
+          question: 'Two mics: one labeled "vocal", one labeled "instrument". Which is right for a loud guitar cab?',
+          options: [
+            'Whichever mic’s SPECS handle the SPL and the tone — the label doesn’t decide',
+            'The "instrument" mic, because the label says so',
+            'The "vocal" mic never works on instruments',
+          ],
+          correctIdx: 0,
+          reveal:
+            'Marketing labels describe common use, not capability. The spec sheet decides: max SPL, pattern, response. Plenty of "vocal" mics are studio staples on cabs — read the numbers, not the box.',
+          wrongHint: 'The matrix above scores mics by SPEC — notice how often a mic works outside its label.',
+        }}
+      />
       <LessonBanner text={JOBS_LESSON} />
     </View>
   );
@@ -571,6 +631,9 @@ function ChallengeStep() {
   const [factors, setFactors] = useState<Set<string>>(new Set());
   const [checked, setChecked] = useState(false);
   const [variantsDone, setVariantsDone] = useState<Set<string>>(new Set());
+  // The variants stay hidden until the base brief has been answered once —
+  // they rendered before the first pick and invited skipping it (2026-08-31).
+  const [baseTried, setBaseTried] = useState(false);
 
   const variant = CHALLENGE_VARIANTS.find((v) => v.key === scenario);
   const spec = variant ?? CHALLENGE_BASE;
@@ -584,6 +647,7 @@ function ChallengeStep() {
     setChecked(false);
   };
 
+  const factorRows = useShuffledRows(CHALLENGE_FACTORS);
   const factorScore = CHALLENGE_FACTORS.filter((f) => f.correct && factors.has(f.key)).length;
   const factorWrong = CHALLENGE_FACTORS.filter((f) => !f.correct && factors.has(f.key)).length;
 
@@ -607,6 +671,7 @@ function ChallengeStep() {
           onPress={() => {
             setPick(m.key);
             setChecked(false);
+            setFactors(new Set()); // a new pick deserves fresh reasoning
           }}
           accessibilityRole="button"
           accessibilityState={{ selected: pick === m.key }}
@@ -623,7 +688,7 @@ function ChallengeStep() {
       {pick != null && !variant ? (
         <>
           <Text accessibilityRole="header" style={styles.panelEyebrow}>WHY? SELECT THE FACTORS THAT DROVE YOUR CHOICE</Text>
-          {CHALLENGE_FACTORS.map((f) => {
+          {factorRows.map((f) => {
             const on = factors.has(f.key);
             return (
               <Pressable
@@ -645,10 +710,31 @@ function ChallengeStep() {
               </Pressable>
             );
           })}
-          <GlassButton label="CHECK MY REASONING" tint="green" height={48} onPress={() => setChecked(true)} />
+          <GlassButton
+            label="CHECK MY REASONING"
+            tint="green"
+            height={48}
+            onPress={() => {
+              setChecked(true);
+              setBaseTried(true);
+            }}
+          />
         </>
       ) : null}
-      {pick != null && variant ? <GlassButton label="CHECK" tint="green" height={48} onPress={() => setChecked(true)} /> : null}
+      {pick != null && variant ? (
+        <GlassButton
+          label="CHECK"
+          tint="green"
+          height={48}
+          onPress={() => {
+            setChecked(true);
+            // Completion mark moved out of render (was a setState-during-render IIFE).
+            if (pick === spec.correct || spec.accept.includes(pick)) {
+              setVariantsDone((prev) => new Set(prev).add(variant.key));
+            }
+          }}
+        />
+      ) : null}
 
       {checked && pick != null ? (
         <View style={styles.detailCard}>
@@ -657,23 +743,23 @@ function ChallengeStep() {
               ? '✓ A defensible professional choice.'
               : acceptedPick
                 ? '△ Also defensible — see the tradeoff below.'
-                : 'Not the strongest choice here — read why below, then try again.'}
+                : '✗ Not the strongest choice — which factors does this brief actually stress? Try again.'}
           </Text>
           {!variant && (correctPick || acceptedPick) ? (
             <Text style={styles.body}>
               {`Reasoning: ${factorScore}/3 key factors selected${factorWrong > 0 ? `, ${factorWrong} that don’t bear on this job` : ''}. The ones that matter: directionality, working distance, wind protection.`}
             </Text>
           ) : null}
-          <Text style={styles.body}>{spec.explain}</Text>
-          {variant && (correctPick || acceptedPick) ? (
-            (() => {
-              if (!variantsDone.has(variant.key)) setVariantsDone(new Set(variantsDone).add(variant.key));
-              return null;
-            })()
-          ) : null}
+          {/* The full rationale names the right mic — printing it on a WRONG
+              pick spoiled the retry (learning pass 2026-08-31). It now waits
+              for a defensible answer. */}
+          {correctPick || acceptedPick ? <Text style={styles.body}>{spec.explain}</Text> : null}
+
         </View>
       ) : null}
 
+      {baseTried || variantsDone.size > 0 ? (
+        <>
       <Text accessibilityRole="header" style={styles.panelEyebrow}>CHANGE ONE VARIABLE</Text>
       <View style={styles.chipWrap}>
         <Chip label="Original brief" active={scenario === 'base'} onPress={() => switchScenario('base')} />
@@ -686,6 +772,8 @@ function ChallengeStep() {
           />
         ))}
       </View>
+        </>
+      ) : null}
       <LessonBanner text={CHALLENGE_LESSON} />
     </View>
   );
