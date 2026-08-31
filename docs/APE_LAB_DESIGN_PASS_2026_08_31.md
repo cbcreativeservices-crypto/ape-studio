@@ -56,7 +56,7 @@ done) · `implemented` · `pushed` · `blocked: reason`
 
 | # | Lab | State |
 |---|---|---|
-| 1 | Understanding Level & Amplitude | pending |
+| 1 | Understanding Level & Amplitude | pushed |
 | 2 | Foundations of Sound | pending |
 | 3 | Sound Playground | pending |
 | 4 | Microphone Principles | pending |
@@ -102,4 +102,20 @@ done) · `implemented` · `pushed` · `blocked: reason`
 
 ## GRADES & FINDINGS
 
-(appended per lab as the pass proceeds)
+### 1 · Understanding Level & Amplitude — PUSHED
+
+**Design grades:** hierarchy C+ · density B · affordance C− · copy B+ · idiom B− · first-15s B−.
+**Learning grades:** sequencing B− · load B · **interaction F** · **recognition C−** · **retention F** · misconceptions B.
+
+**Shipped:** the RAMP CHECK (3 retrieval trials gating credit: decode / transfer
+to an unfamiliar pad-grid display / spot-the-violation where the broken RTA
+draws its LOUD band blue — never quiet-as-red); single completion control that
+records orientation + af_amplitude credit in one press (closes the lost-credit
+trap); rule primed above the ramp + para 2 moved to the six cards (re-seated,
+never reworded); title2 → amber eyebrow; honesty line promoted into the
+LEARNING CONVENTION card as a badge; axis/tick contrast 8px 2.6:1 → 9.5px
+proper; 44pt back; TEST YOURSELF AGAIN replay on revisits.
+
+**Verified:** walked as a fresh student — 3 wrong answers produced their
+corrective lines, pass enabled the button, one press wrote both storage flags.
+
