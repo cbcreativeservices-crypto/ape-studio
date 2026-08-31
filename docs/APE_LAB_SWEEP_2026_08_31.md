@@ -304,3 +304,68 @@ The "Audio output is off" gate appeared over the Calculator Lab, which plays
 nothing. It turned out to be a leftover modal from the previously visited
 Harmonograph: on a fresh entry to the Calculator Lab it does not appear.
 
+---
+
+## LAB MODULES (58)
+
+Every module inside the five module hubs was opened and checked.
+**58 of 58 opened. Zero console errors. Zero nested buttons. No crashes.**
+
+| Hub | Modules | Result |
+|---|---|---|
+| EQ Lab | 15 | all pass |
+| Gain Staging | 8 | all pass |
+| Digital Audio Systems | 8 | all pass |
+| Visual Audio Analysis (Meter) | 11 | all pass |
+| Wave Physics | 16 (incl. Room Builder) | all pass |
+
+**Correction to my own earlier count.** I told the owner "72 lab modules". That
+came from `grep -c "id:"` across the five registries, which also counted nested
+`id` fields inside module *params*. The real figure is 58: the registries hold
+61 top-level entries, three of which (`LEARN`, `EXPLORE`, `CHALLENGE` in the
+gain registry) are group headers rather than modules.
+
+### Checked and dismissed — the waterfall's "missing" low end
+The Waterfall (CSD) surface appears to start near 120 Hz while its axis begins
+at 30 Hz, and the gap grows when the room gets more reverberant. That looks
+wrong. It is not: `WF_FREQS` spans `F_LO = 20 Hz` to `F_HI = 20 kHz`, and the
+front row maps `lgFrac(f)` across the full width — the apparent gap is the 3D
+perspective, where each successive time row shifts right, so a longer decay
+pushes the visible mass rightward. Settled against the source rather than the
+screenshot.
+
+*Legibility note, not a bug:* at CATHEDRAL the front (low-frequency) rows are
+squeezed into a narrow left region that reads as empty. Worth the owner's eye
+during the pending device pass.
+
+---
+
+## SWEEP TOTAL
+
+**96 units opened: 13 Audio Fundamentals labs · 25 Advanced Training Labs ·
+58 lab modules. No crashes. No console errors** beyond one web-only warning.
+
+### Fixed (6)
+1. **App-killing hooks-order crash** — `useOverlaysSuppressed` short-circuited a hook.
+2. **Button-in-button on every course and lab card** — hid "OPEN LAB" from screen readers.
+3. **`LabShell` collapsible sections** — help ⓘ nested and unreachable; now a 44 × 44 sibling.
+4. **Foundations steppers** below the touch standard — brought to the Cable lab's values.
+5. **Microphone Selection Lab** — twelve nested buttons on one screen.
+6. **Harmonograph** — the stage's label hid its own FULLSCREEN and RESET buttons.
+
+### Flagged, not changed (owner decisions)
+- Foundations module dots: 44 pt targets are geometrically impossible for 14 dots on a phone.
+- "This dev build…" copy in the Playground and Harmonograph — right condition, developer wording.
+- `LEVEL −26 dBFS` in the Playground bezel drops the "relative" qualifier.
+- Modular Synth's SVG `<G onPress>` — correct on native, ignored by react-native-web.
+
+### Three findings RETRACTED after verification
+A FREE lab "not opening", a gate "naming the wrong things", and the waterfall's
+"missing low end" were all wrong — the first two were my own tap harness hitting
+hidden screens, the third was 3D perspective. Recorded because a sweep that only
+reports what it *thinks* it saw is worth less than one that checks.
+
+### What this sweep could NOT cover
+Anything audible (mic input, tone output, DSP correctness), haptics,
+orientation, native modules, device performance, and any interaction riding on
+SVG `<G onPress>`. Those need the device pass.
