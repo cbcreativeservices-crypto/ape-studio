@@ -59,7 +59,7 @@ done) · `implemented` · `pushed` · `blocked: reason`
 | 1 | Understanding Level & Amplitude | pushed |
 | 2 | Foundations of Sound | pushed |
 | 3 | Sound Playground | pushed |
-| 4 | Microphone Principles | pending |
+| 4 | Microphone Principles | pushed |
 | 5 | Wave Physics Laboratory | pending |
 | 6 | Speaker Placement & Coverage | pending |
 | 7 | Digital Audio Systems | pending |
@@ -101,6 +101,22 @@ done) · `implemented` · `pushed` · `blocked: reason`
 | 38 | Modular Synth | pending |
 
 ## GRADES & FINDINGS
+
+### 4 · Microphone Principles — PUSHED
+
+**Design:** hierarchy A− · density B+ · affordance B− · copy A− · idiom A · first-15s B+ · cross-section A−.
+**Learning:** sequencing A− · load B+ · interaction B · **retrieval D+ (2/10)** · **retention D (credit = tab-touring)** · misconceptions B.
+
+**Shipped:** drag-discovery chip on POLAR (the #1 defect — the only drag hint
+was amputated badge tail); badges de-laminated (honesty only); SPOT THE MISTAKE
+3-round recognition drill over the field-guide art; 4 new checks (POLAR wedge /
+DISTANCE crossover / OFF-AXIS duller-first / STEREO mono) → 8/10 sections
+retrieve; HANDLING toggle → sticky RIGID/SHOCK tray + check; STEREO reordered
+into the physics arc; PROX/PLOSIVES magnitudes on the ramp; stale "green
+source" lesson copy fixed.
+
+**Left:** claves→cabinet collider swap (needs device iteration), stage
+skeleton on tab switch, lane thumb-over-label at 0 (fleet fader fix).
 
 ### 3 · Sound Playground — PUSHED
 
