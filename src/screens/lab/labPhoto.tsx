@@ -16,7 +16,8 @@
  * bucket filenames; an absent LabPhotoLightbox just makes the tile non-tappable.
  */
 import { createContext, useCallback, useContext, useState, type ReactNode } from 'react';
-import { Image, Modal, Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Modal } from '../../components/DimModal';
 import { SUPABASE_URL } from '../../lib/env';
 
 const BUCKET = `${SUPABASE_URL}/storage/v1/object/public/glossary-images`;

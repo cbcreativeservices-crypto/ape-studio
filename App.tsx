@@ -49,7 +49,6 @@ import { LowLightProductionGate } from './src/features/settings/LowLightLayer';
 import { registerLowLightTap, touchLowLight } from './src/features/settings/lowLight';
 import { useAccountLocalSync } from './src/features/account/accountLocalSync';
 import { lockPortrait } from './src/lib/screenOrientationSafe';
-import { A11yPreview } from './src/features/settings/A11yPreview';
 import { colors, fontAssets } from './src/theme/tokens';
 
 // Prime the accessibility runtime from storage at boot so anything that reads
@@ -171,16 +170,6 @@ export default function App() {
       <SafeAreaProvider>
         <StatusBar style="light" />
         <NotifySchedulePreview />
-      </SafeAreaProvider>
-    );
-  }
-
-  // DEV + WEB ONLY: proves the accessibility transform reaches ordinary text.
-  if (__DEV__ && Platform.OS === 'web' && typeof window !== 'undefined' && window.location.hash.startsWith('#a11ypreview')) {
-    return (
-      <SafeAreaProvider>
-        <StatusBar style="light" />
-        <A11yPreview />
       </SafeAreaProvider>
     );
   }

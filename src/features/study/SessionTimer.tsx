@@ -12,7 +12,8 @@
  * every second while the timer runs.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Modal } from '../../components/DimModal';
 import { TimerIcon } from '../../components/TimerIcon';
 import { colors, fonts } from '../../theme/tokens';
 

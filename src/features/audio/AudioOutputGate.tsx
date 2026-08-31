@@ -22,7 +22,8 @@
  * Popups use the app's Modal backdrop+card idiom (see PrePaywallPrompt).
  */
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { AppState, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { AppState, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Modal } from '../../components/DimModal';
 import { HoldToActivate } from '../../components/HoldToActivate';
 import { getLabPreview } from '../lab/labPreviewStore';
 import { supabase } from '../../lib/supabase';

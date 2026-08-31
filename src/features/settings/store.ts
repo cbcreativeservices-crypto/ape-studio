@@ -3,30 +3,22 @@
  *  - Device/accessibility settings → AsyncStorage (local, immediate).
  *  - Notification toggles → notification_preferences (own row, created by
  *    register_student; the 6 LIVE columns only — r7/F-6 and C-5 exclusions).
- * Immediate writes, no Save button (locked). Color-blind mode (D-1): the
- * design omits it, but the locked S11 spec requires a 5-option selector.
+ * Immediate writes, no Save button (locked).
+ *
+ * TEXT SIZE, CONTRAST AND COLOUR-BLIND MODE ARE NOT STORED HERE (owner
+ * 2026-08-30 ruling, cleanup 2026-08-31). They defer to the phone: RN already
+ * scales every Text with the OS font setting, contrast and colour filters are
+ * system-wide, and the amplitude ramp cannot be re-visualised for colour
+ * blindness because the ramp carries meaning. The S11 spec's 5-option
+ * colour-blind selector is deliberately NOT implemented — it would have been a
+ * promise we cannot keep.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
 import { requestLocalNotifSync } from '../notifications/localSchedule';
 import { applyA11yFromSettings, resetA11y } from './a11y';
 
-export type ColorBlindMode = 'off' | 'protanopia' | 'deuteranopia' | 'tritanopia' | 'monochrome';
-export const COLOR_BLIND_MODES: { key: ColorBlindMode; label: string }[] = [
-  { key: 'off', label: 'Off' },
-  { key: 'protanopia', label: 'Protan' },
-  { key: 'deuteranopia', label: 'Deutan' },
-  { key: 'tritanopia', label: 'Tritan' },
-  { key: 'monochrome', label: 'Mono' },
-];
-
-export type FontSize = 13 | 16 | 19 | 24;
-export const FONT_SIZES: FontSize[] = [13, 16, 19, 24];
-
 export type LocalSettings = {
-  fontSize: FontSize;
-  highContrast: boolean;
-  colorBlind: ColorBlindMode;
   reduceAnimations: boolean;
   haptics: boolean;
   // Release the microphone the instant the app is backgrounded while inside a
@@ -57,9 +49,6 @@ export type LocalSettings = {
 };
 
 export const DEFAULT_LOCAL_SETTINGS: LocalSettings = {
-  fontSize: 16,
-  highContrast: false,
-  colorBlind: 'off',
   reduceAnimations: false,
   haptics: true,
   micReleaseOnBackground: true,

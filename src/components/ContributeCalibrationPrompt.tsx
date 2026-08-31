@@ -11,7 +11,8 @@
  * consent-gated step. Anonymous by construction: no account/PII/audio/geo.
  */
 import { useState, type ReactNode } from 'react';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Modal } from './DimModal';
 import { ApeDsp } from '../../modules/ape-dsp';
 import {
   buildCapabilityRecord,

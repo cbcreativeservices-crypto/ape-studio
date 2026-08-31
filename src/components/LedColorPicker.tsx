@@ -10,7 +10,8 @@
  * this modal is only ever shown to members. See [[customization-member-rule]].
  */
 import { useState, type ReactNode } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Modal } from './DimModal';
 import { SchemeSwatch } from './ColorWheelButton';
 import { SpectrumColorPicker } from './SpectrumColorPicker';
 import { LED_AVG_DEFAULT, LED_SCHEMES } from '../features/tools/ledScheme';

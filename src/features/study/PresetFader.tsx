@@ -20,7 +20,8 @@
  * Self-contained (PanResponder + theme tokens); no external gesture deps.
  */
 import { useEffect, useRef, useState } from 'react';
-import { Modal, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
+import { PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
 import { PACE_PRESETS, type PacePreset } from './paceStore';
 

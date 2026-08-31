@@ -17,7 +17,8 @@
  * Self-contained (owns its open state) so any screen adds it in one line.
  */
 import { useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Modal } from './DimModal';
 import { colors, fonts } from '../theme/tokens';
 
 /** LAB / LIVE-TOOL copy (variant "tool") — exported so it stays identical

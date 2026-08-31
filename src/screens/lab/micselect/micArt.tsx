@@ -9,7 +9,8 @@
  * challenge list. Static geometry only — no animation.
  */
 import { createContext, useContext, useState, type ReactNode } from 'react';
-import { Image, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Modal } from '../../../components/DimModal';
 import { Canvas, Circle, Group, Line, LinearGradient, Oval, Path, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
 import { CondenserMic as SharedLdcMic, HandheldMic } from '../../../features/lab/micDrawings';
 import type { MicKind } from './micSelectData';

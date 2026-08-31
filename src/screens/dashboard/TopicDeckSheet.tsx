@@ -8,7 +8,8 @@
  *   • tap a topic to jump straight to it in the Dashboard.
  * Custom is never the default — the user must engage it here.
  */
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
 import { NavIcon } from '../../components/nav/NavIcon';
 import type { DeckMode } from '../../features/dashboard/deckOrderStore';

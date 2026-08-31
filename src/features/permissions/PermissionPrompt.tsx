@@ -11,7 +11,8 @@
  * expo-image-picker. All are behind optional-require gates upstream.
  */
 import { useCallback, useMemo, useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
 import { getAskMode, setAskMode, type CapabilityKey } from './permissionStore';
 

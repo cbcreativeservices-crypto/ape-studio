@@ -8,7 +8,8 @@
  *   - 'idleDays' → the "after N days of no use" stepper.
  * All edits write immediately (no Save), matching Settings elsewhere.
  */
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
 import { NOTIFY_DAYS, formatClock, shortDay, type NotifyFreqMode } from './store';
 

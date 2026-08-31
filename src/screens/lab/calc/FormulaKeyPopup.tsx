@@ -13,7 +13,8 @@
  * (2 and the lead of 3) is authored per function via `plainFormula` / `explain`.
  */
 import { useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Modal } from '../../../components/DimModal';
 import { colors, fonts } from '../../../theme/tokens';
 import type { CalcFunction, FieldDef } from './calcTypes';
 import { symbolsInFormula } from './symbolsKey';

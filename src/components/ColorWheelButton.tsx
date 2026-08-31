@@ -6,7 +6,8 @@
  * never a hard jump straight to the Paywall. Gate by ENTITLEMENT, never caps.
  */
 import { useId, useState, type ReactNode } from 'react';
-import { Modal, Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Modal } from './DimModal';
 import Svg, { Circle, Defs, LinearGradient as SvgGradient, Path, Rect, Stop } from 'react-native-svg';
 import { useEntitlement } from '../features/commercial/EntitlementProvider';
 import { SpectrumColorPicker } from './SpectrumColorPicker';

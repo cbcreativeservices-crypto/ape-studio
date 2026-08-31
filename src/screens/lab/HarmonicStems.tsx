@@ -41,7 +41,8 @@
  * no hit-math on gesture coordinates).
  */
 import { useEffect, useRef, useState } from 'react';
-import { Modal, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
+import { PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Modal } from '../../components/DimModal';
 import Svg, { Line, Path } from 'react-native-svg';
 import { colors, fonts } from '../../theme/tokens';
 import { rampColors } from '../../features/tools/levelColor';

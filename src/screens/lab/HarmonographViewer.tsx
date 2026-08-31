@@ -20,16 +20,8 @@
  * picker content in-tree instead).
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  BackHandler,
-  Modal,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  useWindowDimensions,
-  View,
-} from 'react-native';
+import { BackHandler, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Modal } from '../../components/DimModal';
 import Svg, { Path } from 'react-native-svg';
 import { ColorWheel } from '../../components/ColorWheelButton';
 import { SpectrumColorPicker } from '../../components/SpectrumColorPicker';

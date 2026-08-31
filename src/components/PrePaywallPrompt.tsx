@@ -4,7 +4,8 @@
  * create-account / see-plans link). Used by the Enrollment screen edit-gate and
  * the Awards enroll buttons to briefly explain and dismiss.
  */
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Modal } from './DimModal';
 import { colors, fonts } from '../theme/tokens';
 
 const GREEN = '#37e05f';

@@ -10,7 +10,8 @@
  * (paceRecords). Everything here is a practice aid — nothing blocks study.
  */
 import { useEffect, useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
 import { getPaceRecords, type PaceRecord } from './paceRecords';
 import {

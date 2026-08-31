@@ -15,7 +15,8 @@
  * drag uses an estimated row height (no gesture lib).
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Animated, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Text, View, type GestureResponderEvent, type LayoutChangeEvent } from 'react-native';
+import { Alert, Animated, PanResponder, Pressable, ScrollView, StyleSheet, Text, View, type GestureResponderEvent, type LayoutChangeEvent } from 'react-native';
+import { Modal } from '../../components/DimModal';
 import { HoldToActivate } from '../../components/HoldToActivate';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
