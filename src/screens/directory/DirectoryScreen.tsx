@@ -203,7 +203,11 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
             </Text>
             <Pressable
               style={styles.registryBtn}
-              onPress={() => setAcctNote(true)}
+              onPress={() =>
+                hasAccount
+                  ? (navigation as any).navigate('AudioCommunityDirectory')
+                  : setAcctNote(true)
+              }
               accessibilityRole="button"
               accessibilityLabel="Set up my profile"
             >

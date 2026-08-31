@@ -22,6 +22,7 @@ import { InstitutionalScreen } from '../screens/institutional/InstitutionalScree
 import { AboutScreen } from '../screens/about/AboutScreen';
 import { AwardsScreen } from '../screens/awards/AwardsScreen';
 import { DirectoryScreen } from '../screens/directory/DirectoryScreen';
+import { AudioCommunityDirectoryScreen } from '../screens/directory/AudioCommunityDirectoryScreen';
 import { ToolsHubScreen } from '../screens/tools/ToolsHubScreen';
 import { ToolInfoScreen } from '../screens/tools/ToolInfoScreen';
 import { ToolLearnScreen } from '../screens/tools/ToolLearnScreen';
@@ -225,6 +226,11 @@ export function RootNavigator() {
       <Stack.Screen name="Awards" component={AwardsScreen} options={NAV_FADE} />
       {/* Directory — "Get Discovered" profile info (user request 2026-07-22) — modal. */}
       <Stack.Screen name="Directory" component={DirectoryScreen} options={{ presentation: 'modal' }} />
+      {/* Audio Community Directory (spec 2026-08-31 §5). Full screen rather than
+          a modal: it has three destinations of its own and a member sheet on
+          top, and a modal-in-modal is the black-screen trap this codebase has
+          hit before. */}
+      <Stack.Screen name="AudioCommunityDirectory" component={AudioCommunityDirectoryScreen} />
       {/* Measurement & Analysis tools (Booth 2026-07-09v) — bottom nav hidden.
           The TOOLS AREA root (Dashboard ⇄ Tools) → fade; everything inside it
           pushes. */}

@@ -116,6 +116,10 @@ export type RootStackParamList = {
   /** Directory — "Get Discovered" professional-profile info (user request
    *  2026-07-22). Modal, reached from Course Selection (right of Awards). */
   Directory: undefined;
+  /** Audio Community Directory (spec 2026-08-31 §5) — Explore · My Profile ·
+   *  Requests. `Directory` above is kept as a route ALIAS so every existing
+   *  internal link and deep link still resolves. */
+  AudioCommunityDirectory: undefined;
   // Measurement & Analysis tools module (Booth 2026-07-09; MVP = hub + info
   // screens — the native DSP engine is Spike 0, a separate ruling/build).
   ToolsHub: undefined;

@@ -698,6 +698,31 @@ export function ProfileScreen() {
             </Text>
           </Section>
 
+          {/* —— AUDIO COMMUNITY DIRECTORY — a separate concept from credential
+              verification (spec 2026-08-31 §4.4). Credentials are verified by
+              their own permanent link; the community profile is an opt-in
+              professional listing that can be published, hidden or deleted
+              without touching them. —— */}
+          <Section title="AUDIO COMMUNITY DIRECTORY" summary="opt-in">
+            <Text style={styles.sectionIntro}>
+              An optional professional listing: what you work in, what you specialise in, how
+              you&apos;re involved, and what members may contact you about.
+            </Text>
+            <Pressable
+              style={({ pressed }) => [styles.navRow, pressed && styles.rowPressed]}
+              onPress={() => (navigation as any).navigate('AudioCommunityDirectory')}
+              accessibilityRole="button"
+              accessibilityLabel="Open the Audio Community Directory"
+              accessibilityHint="Explore members, edit your community profile, and see contact requests"
+            >
+              <View style={styles.rowMain}>
+                <Text style={styles.rowLabel}>Open the Directory</Text>
+                <Text style={styles.rowHint}>Explore · My Profile · Requests</Text>
+              </View>
+              <Text style={styles.chevron}>›</Text>
+            </Pressable>
+          </Section>
+
           {/* —— WHO CAN SEE ME — both publishing switches in ONE place, with a
               literal manifest between them. People refuse these toggles because
               they cannot tell what "listed" includes, not because they mind

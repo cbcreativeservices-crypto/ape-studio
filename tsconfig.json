@@ -8,6 +8,7 @@
     "web",
     "supabase",
     "shared",
-    "audio_app_archive"
+    "audio_app_archive",
+    "test"
   ]
 }
