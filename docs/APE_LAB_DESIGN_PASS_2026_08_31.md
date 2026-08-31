@@ -68,7 +68,7 @@ done) · `implemented` · `pushed` · `blocked: reason`
 | 10 | Signal Detective | pushed (via lab 8) |
 | 11 | Cable & Connector Fundamentals | pushed |
 | 12 | Cable Dressing & Installation | pushed |
-| 13 | Gain Staging | pending |
+| 13 | Gain Staging | pushed |
 
 ### Advanced Training Labs (25)
 
@@ -147,6 +147,21 @@ quiz via clearedUnits; "HIDDEN"→"TO PROCESS"; weakestDim <80 threshold
 **Left:** innocent-detail findings (new content — owner); nearest-marker tap
 resolution (rack cluster overlaps); mergeDims early-mistake wash-out; myth
 global order vs stage boundaries.
+
+### 13 · Gain Staging — PUSHED
+
+**Design:** hierarchy A− · density A− · affordance B · copy B · idiom A · first-15s A−.
+**Learning:** sequencing A · load A− · interaction B · retrieval B− · misconceptions B+.
+
+**Shipped:** cumulative noise floor in the engine + grey hiss-fill in meters +
+NOISE bezel cell (the too-low story had no visual referent — highest-leverage
+fix); M4 BALANCED-while-wrong bug (verified live); M5 fader-note gating;
+Troubleshoot red-arrow answer leak guarded; trophy reveals restored chain; new
+M4 noise check; 3 checks de-length-cued; 44pt targets.
+
+**Left:** INSPECTED-count bezel cell (reward binary search); "unity gain" never
+named (owner content call); ~300 lines dead pre-rack viz code; group-tray
+"−6·0" cryptic labels.
 
 ### 10 · Signal Detective — COVERED BY LAB 8
 
