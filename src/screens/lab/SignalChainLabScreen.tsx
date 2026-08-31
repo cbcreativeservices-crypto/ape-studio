@@ -387,9 +387,9 @@ export function SignalChainLabScreen() {
                   meter reaction are co-visible. Long-press for the lesson. */}
               {anyDyn ? (
                 <Pressable
-                  // No accessibilityLabel here — a label on the wrapper would
-                  // REPLACE the children for screen readers, hiding the live
-                  // GR readouts (the known lab-sweep trap).
+                  /* No accessibilityLabel here — a label on the wrapper would
+                     REPLACE the children for screen readers, hiding the live
+                     GR readouts (the known lab-sweep trap). */
                   style={{ gap: 6 }}
                   onLongPress={() => openLesson('gain_reduction')}
                   delayLongPress={350}

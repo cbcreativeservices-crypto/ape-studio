@@ -23,6 +23,7 @@ import {
   VerdictBanner,
   lessonStyles as s,
   type Verdict,
+  useShuffled,
 } from './bits';
 
 export function Lesson01Body() {
@@ -93,7 +94,7 @@ export function Lesson01Body() {
             <Text style={s.cardTitle}>{`${pair.from}  →  ${pair.to}`}</Text>
             <Text style={s.hint}>Pick what has to travel between them. Wrong picks stay open — keep trying.</Text>
             <View style={s.chipWrap}>
-              {pair.options.map((opt) => (
+              {useShuffled(pair.options).map((opt) => (
                 <OptionChip
                   key={opt}
                   label={carriedLabel(opt)}

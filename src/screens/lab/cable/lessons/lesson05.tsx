@@ -38,6 +38,7 @@ import {
   VerdictBanner,
   lessonStyles as s,
   type Verdict,
+  useShuffled,
 } from './bits';
 import { ConnectorCard, InkLegend, RecognitionStrip } from './connectorCard';
 
@@ -149,7 +150,7 @@ export function Lesson05Body() {
               Pick the connection type and cable that make this link. Wrong picks stay open — keep trying.
             </Text>
             <View style={s.chipWrap}>
-              {scen.options.map((opt) => (
+              {useShuffled(scen.options).map((opt) => (
                 <OptionChip
                   key={opt.id}
                   label={opt.label}

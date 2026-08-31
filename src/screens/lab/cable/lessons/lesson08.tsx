@@ -27,6 +27,7 @@ import {
   VerdictBanner,
   lessonStyles as s,
   type Verdict,
+  useShuffled,
 } from './bits';
 
 type ScenarioState = {
@@ -131,7 +132,7 @@ export function Lesson08Body() {
                 <Text style={s.body}>{step.prompt}</Text>
                 <Text style={s.hint}>Wrong picks stay open — keep trying until it is defensible.</Text>
                 <View style={s.chipWrap}>
-                  {step.options.map((opt) => (
+                  {useShuffled(step.options).map((opt) => (
                     <OptionChip
                       key={opt}
                       label={opt}

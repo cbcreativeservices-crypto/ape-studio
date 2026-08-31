@@ -38,6 +38,7 @@ import {
   VerdictBanner,
   lessonStyles as s,
   useReduceMotion,
+  useShuffled,
 } from './bits';
 
 /** Per-item cadence of the power-up cascade after a correct order (ms). */
@@ -86,13 +87,15 @@ function OnePick({ pick, last, onNext }: { pick: ConnectionPick; last: boolean; 
     [q1Solved, q2Solved],
   );
 
+  const q1Options = useShuffled(pick.q1);
+  const q2Options = useShuffled(pick.q2);
   return (
     <>
       <DetailCard>
         <Text style={s.cardTitle}>{`${pick.from}  →  ${pick.to}`}</Text>
         <Text style={s.cardHead}>{pick.q1Label}</Text>
         <View style={s.chipWrap}>
-          {pick.q1.map((o) => (
+          {q1Options.map((o) => (
             <OptionChip
               key={o.id}
               label={o.label}
@@ -106,7 +109,7 @@ function OnePick({ pick, last, onNext }: { pick: ConnectionPick; last: boolean; 
           <>
             <Text style={s.cardHead}>{pick.q2Label}</Text>
             <View style={s.chipWrap}>
-              {pick.q2.map((o) => (
+              {q2Options.map((o) => (
                 <OptionChip
                   key={o.id}
                   label={o.label}
@@ -284,6 +287,7 @@ function FaultBlock({
   );
 
   const activeFault = row != null && row.fault ? row : null;
+  const whyOptions = useShuffled(activeFault ? activeFault.why : EMPTY_WHY);
 
   return (
     <>
@@ -318,7 +322,7 @@ function FaultBlock({
             <Text style={s.cardHead}>NAME WHY IT FAILS</Text>
             <Text style={s.hint}>{activeFault.label}</Text>
             <View style={s.chipWrap}>
-              {activeFault.why.map((o) => (
+              {whyOptions.map((o) => (
                 <OptionChip
                   key={o.id}
                   label={o.label}
@@ -442,6 +446,8 @@ function ChallengeBlock({
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+
+const EMPTY_WHY: never[] = [];
 
 export function Lesson11Body() {
   const [tab, setTab] = useState<'A' | 'B'>('A');

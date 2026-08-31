@@ -121,6 +121,21 @@ function ContinuityMap({ cable, animate }: { cable: TesterCable; animate?: boole
   );
 }
 
+/** "CABLE A" → "A · XLR" — type hint derived from the verified connectorEnds
+ *  record (design pass 2026-08-31); the FAULT stays the puzzle. */
+function benchChipLabel(c: { chip: string; connectorEnds: string }): string {
+  const e = c.connectorEnds;
+  const kind = /XLR/.test(e) ? 'XLR'
+    : /TRS/.test(e) ? 'TRS'
+    : /\bTS\b/.test(e) ? 'TS'
+    : /speakON/i.test(e) ? 'SPEAKON'
+    : /8P8C/.test(e) ? 'NETWORK'
+    : /NEMA|IEC/.test(e) ? 'POWER'
+    : '';
+  const letter = c.chip.replace(/^CABLE\s+/, '');
+  return kind ? `${letter} · ${kind}` : c.chip;
+}
+
 export function Lesson10Body() {
   const [selId, setSelId] = useState<string | null>(null);
   const [connected, setConnected] = useState(false);
@@ -197,7 +212,9 @@ export function Lesson10Body() {
         {TESTER_CABLES.map((c) => (
           <OptionChip
             key={c.id}
-            label={solved.includes(c.id) ? `${c.chip} ✓` : c.chip}
+            // Chip carries the connector TYPE (derived from the verified
+            // connectorEnds — the fault, not the type, is the exercise).
+            label={`${benchChipLabel(c)}${solved.includes(c.id) ? ' ✓' : ''}`}
             active={c.id === selId}
             onPress={() => selectCable(c.id)}
           />

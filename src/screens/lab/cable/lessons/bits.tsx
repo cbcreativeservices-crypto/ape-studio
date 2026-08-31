@@ -4,7 +4,7 @@
  * identically (MicSelect pixel conventions; verdicts are glyph + words +
  * color, never color alone; accessibility state on every Pressable).
  */
-import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, useMemo } from 'react';
 import { AccessibilityInfo, Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { CableLessonId } from '../cableTypes';
@@ -86,6 +86,22 @@ export function Eyebrow({ text }: { text: string }) {
 }
 
 /** Tappable option chip (selected = amber border + tint, + accessibilityState). */
+/** Presentation-shuffled copy of an options array (learning pass 2026-08-31).
+ *  Every bespoke exercise in this lab authored its correct answer FIRST and
+ *  rendered unshuffled — the flagship's assessments could be passed by tapping
+ *  the first chip. Re-shuffles when the question (array identity) changes;
+ *  correctness still judged by id/value, so authored data is untouched. */
+export function useShuffled<T>(items: readonly T[]): T[] {
+  return useMemo(() => {
+    const out = [...items];
+    for (let i = out.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [out[i], out[j]] = [out[j], out[i]];
+    }
+    return out;
+  }, [items]);
+}
+
 export function OptionChip({
   label,
   active,
@@ -105,7 +121,7 @@ export function OptionChip({
     <Pressable
       onPress={onPress}
       disabled={disabled}
-      hitSlop={{ top: 6, bottom: 6 }}
+      hitSlop={{ top: 8, bottom: 8 }}
       accessibilityRole="button"
       accessibilityState={{ selected: action ? undefined : !!active, disabled: !!disabled }}
       accessibilityLabel={label}

@@ -117,7 +117,7 @@ export function CableLabScreen() {
           <Pressable
             key={st.id}
             onPress={() => goTo(i)}
-            hitSlop={{ top: 18, bottom: 18, left: 3, right: 3 }}
+            hitSlop={{ top: 18, bottom: 18, left: 9, right: 9 }}
             accessibilityRole="button"
             accessibilityState={{ selected: i === step }}
             accessibilityLabel={`Go to ${st.title}${i === step ? ', current lesson' : i < step ? ', visited' : ''}`}
@@ -125,7 +125,12 @@ export function CableLabScreen() {
             <View style={[styles.dot, i === step && styles.dotActive, i < step && styles.dotDone]} />
           </Pressable>
         ))}
-        {total > 0 ? <Text style={styles.progressText}>{`${cleared}/${total}`}</Text> : null}
+        {total > 0 ? (
+          <Text
+            style={styles.progressText}
+            accessibilityLabel={`${cleared} of ${total} lab units cleared`}
+          >{`${cleared}/${total} UNITS`}</Text>
+        ) : null}
       </View>
 
       <ScrollView ref={scrollRef} contentContainerStyle={styles.scroll}>
@@ -170,7 +175,7 @@ const styles = StyleSheet.create({
   navBtn: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.amber, paddingHorizontal: 6 },
   navBtnDisabled: { color: '#45454d' },
   navPos: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: colors.textSub },
-  dotsRow: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, paddingVertical: 6 },
+  dotsRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 6 },
   dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#2c2c33' },
   dotActive: { backgroundColor: colors.amber },
   dotDone: { backgroundColor: 'rgba(255,198,77,.45)' },

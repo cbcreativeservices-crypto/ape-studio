@@ -79,15 +79,6 @@ export function Lesson12Body() {
         <Eyebrow text={`LAB PROGRESS · ${completion.cleared} OF ${completion.total} UNITS CLEARED`} />
       )}
 
-      {/* §5.12 actions — visible during AND after completion; rendered only
-          when the shell provides step navigation (useCableStepNav). */}
-      {nav ? (
-        <View style={{ gap: 8 }}>
-          <GlassButton label="REVIEW CONNECTORS ›" tint="gold" onPress={() => nav('l03_analog')} />
-          <GlassButton label="RETRY FINAL CHALLENGE ›" tint="green" onPress={() => nav('l11_challenge')} />
-        </View>
-      ) : null}
-
       {/* ── BANK 1 — GENERAL ─────────────────────────────────────────────── */}
       <Eyebrow text={`GENERAL · ${generalSolved} OF ${FINAL_QUESTIONS.length} SOLVED`} />
       <Text style={s.body}>
@@ -113,6 +104,16 @@ export function Lesson12Body() {
       ))}
       {safetySolved >= SAFETY_QUESTIONS.length ? (
         <CheckDoneBanner text="Critical safety check complete — every rule answered correctly." />
+      ) : null}
+
+      {/* §5.12 actions — moved BELOW both banks (design pass 2026-08-31):
+          on a first visit they rendered above everything and read as the
+          step's primary actions before a single question was attempted. */}
+      {nav ? (
+        <View style={{ gap: 8 }}>
+          <GlassButton label="REVIEW CONNECTORS ›" tint="gold" onPress={() => nav('l03_analog')} />
+          <GlassButton label="RETRY FINAL CHALLENGE ›" tint="green" onPress={() => nav('l11_challenge')} />
+        </View>
       ) : null}
 
       <LessonBanner text={L12_LESSON} />
