@@ -197,8 +197,9 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
         <View style={styles.registryBox}>
           <View style={styles.registryLeft}>
             <Text style={styles.registryText}>
-              Ready to be discovered? Set up your public profile and add your information to the Registry so
-              employers can find you.
+              Ready to be discovered? Set up your public profile and switch on your Registry listing —
+              you get a page you can hand to an employer by link or QR, showing your name, what you
+              work in, and every certificate you have earned.
             </Text>
             <Pressable
               style={styles.registryBtn}

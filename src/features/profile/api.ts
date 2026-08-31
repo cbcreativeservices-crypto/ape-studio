@@ -110,25 +110,67 @@ export async function fetchMyRegistryName(): Promise<string | null> {
  * promised privacy it could not deliver. `users.show_in_registry` now gates the
  * RPC, and this is the only thing that writes it.
  */
-export async function fetchMyRegistryVisible(): Promise<boolean | null> {
+export type RegistryListing = {
+  listed: boolean;
+  bio: string;
+  interests: string[];
+  primaryInterest: string;
+  /** Already attested 18+ once — the prompt is not shown again. */
+  adultConfirmed: boolean;
+};
+
+export async function fetchMyRegistryListing(): Promise<RegistryListing | null> {
   try {
-    const { data, error } = await supabase.from('users').select('show_in_registry').single();
+    const { data, error } = await supabase
+      .from('users')
+      .select('show_in_registry, registry_bio, registry_interests, registry_primary_interest, registry_adult_confirmed')
+      .single();
     if (error || !data) return null;
-    return !!(data as { show_in_registry?: boolean | null }).show_in_registry;
+    const r = data as {
+      show_in_registry?: boolean | null;
+      registry_bio?: string | null;
+      registry_interests?: string[] | null;
+      registry_primary_interest?: string | null;
+      registry_adult_confirmed?: boolean | null;
+    };
+    return {
+      listed: !!r.show_in_registry,
+      bio: r.registry_bio ?? '',
+      interests: r.registry_interests ?? [],
+      primaryInterest: r.registry_primary_interest ?? '',
+      adultConfirmed: !!r.registry_adult_confirmed,
+    };
   } catch {
     return null;
   }
 }
 
-/** Returns false on any failure (guest, offline, RLS) so the UI can revert. */
-export async function saveMyRegistryVisible(on: boolean): Promise<boolean> {
+/**
+ * PUBLISH / UPDATE / UNPUBLISH — one atomic server call, never a raw column
+ * write (owner ruling 2026-08-30). The RPC is SECURITY DEFINER because three
+ * things must not be client-controlled: the 18+ gate (a client that skips the
+ * prompt still cannot create a listing), the consent timestamp, and the
+ * erasure on unpublish. Returns false on any failure so the UI can revert
+ * rather than show a privacy state the server does not share.
+ */
+export async function setRegistryListing(input: {
+  on: boolean;
+  adult?: boolean;
+  bio?: string;
+  interests?: string[];
+  primaryInterest?: string;
+  policyVersion?: string;
+}): Promise<boolean> {
   try {
-    const { data: user, error: uErr } = await supabase.from('users').select('id').single();
-    if (uErr || !user) return false;
-    const { error } = await supabase
-      .from('users')
-      .update({ show_in_registry: on })
-      .eq('id', (user as { id: string }).id);
+    const { error } = await supabase.rpc('set_registry_listing', {
+      p_on: input.on,
+      p_adult: input.adult ?? false,
+      p_bio: input.bio ?? null,
+      p_interests: input.interests ?? null,
+      p_primary: input.primaryInterest ?? null,
+      p_policy_version: input.policyVersion ?? null,
+    });
+    if (error) console.warn('[registry] listing write failed:', error.message);
     return !error;
   } catch {
     return false;

@@ -31,9 +31,9 @@ import { fetchProfile, type ProfileData } from '../../features/profile/api';
 import {
   EMPTY_PUBLIC_PROFILE,
   INTEREST_TOPICS,
-  LEARNING_GOALS,
   loadPublicProfile,
   savePublicProfile,
+  isAdultConfirmed,
   setRegistryVisible,
   type PublicProfile,
 } from '../../features/profile/publicProfile';
@@ -63,6 +63,18 @@ ${body}`)) onYes();
   Alert.alert(title, body, [
     { text: 'Cancel', style: 'cancel' },
     { text: 'Publish', onPress: onYes },
+  ]);
+}
+
+/** A plain yes/no question. Same web caveat as askPublish. */
+function askYesNo(title: string, body: string, yes: string, onYes: () => void): void {
+  if (Platform.OS === 'web') {
+    if (typeof window === 'undefined' || window.confirm(`${title}\n\n${body}`)) onYes();
+    return;
+  }
+  Alert.alert(title, body, [
+    { text: 'Not yet', style: 'cancel' },
+    { text: yes, onPress: onYes },
   ]);
 }
 
@@ -317,9 +329,9 @@ export function ProfileScreen() {
    */
   const onRegistryToggle = useCallback(
     (v: boolean) => {
-      const apply = () => {
+      const apply = (adult?: boolean) => {
         setPubKey('showInRegistry', v);
-        void setRegistryVisible(v).then((ok) => {
+        void setRegistryVisible(v, { ...pub, showInRegistry: v }, { adult }).then((ok) => {
           if (ok) return;
           setPubKey('showInRegistry', !v);
           warn(
@@ -332,13 +344,29 @@ export function ProfileScreen() {
         apply();
         return;
       }
-      askPublish(
-        'Publish your profile?',
-        'Your name and the certificates you have earned become visible to anyone with your link or QR code. Your email, progress and notes stay private.',
-        apply,
+      const consent = (adult?: boolean) =>
+        askPublish(
+          'Publish your profile?',
+          'Your name, your certificates, your work areas and your About you line become visible to anyone with your link or QR code. Your email, your progress and your notes stay private. Switching this off later removes the page and deletes what was published.',
+          () => apply(adult),
+        );
+      // AGE GATE. A public page carrying a real name and work history is a
+      // different product for a minor, so listing is 18+ (owner ruling
+      // 2026-08-30). Asked ONCE per account — the server records the
+      // attestation and refuses to create a listing without it, so a client
+      // that skips this prompt still cannot publish.
+      if (isAdultConfirmed()) {
+        consent();
+        return;
+      }
+      askYesNo(
+        'Are you 18 or older?',
+        'The public Registry listing is for adults only. Everything else in the app — your studies, your certificates and QR verification — works at any age.',
+        'Yes, I am 18+',
+        () => consent(true),
       );
     },
-    [setPubKey],
+    [setPubKey, pub],
   );
 
   // This product ships COMMERCIAL-only: the institutional / "MIRAMAR COLLEGE" Profile
@@ -663,7 +691,10 @@ export function ProfileScreen() {
               accessibilityLabel="About you"
             />
             <Text style={styles.rowHint}>
-              Only you can see this for now.{pub.bio.length > 120 ? `  ${pub.bio.length}/160` : ''}
+              {registryActive
+                ? 'Shown on your public page.'
+                : 'Private until you get listed, then shown on your public page.'}
+              {pub.bio.length > 120 ? `  ${pub.bio.length}/160` : ''}
             </Text>
           </Section>
 
@@ -726,37 +757,58 @@ export function ProfileScreen() {
                 · {credentials.length} certificate{credentials.length === 1 ? '' : 's'} you have
                 earned
               </Text>
+              <Text style={styles.manifestOn}>
+                ·{' '}
+                {pub.interests.length
+                  ? `What you work in (${pub.interests.length})`
+                  : 'What you work in — none selected yet'}
+              </Text>
+              <Text style={styles.manifestOn}>
+                · {pub.bio.trim() ? 'Your About you line' : 'Your About you line — empty'}
+              </Text>
               <Text style={[styles.groupLabel, { marginTop: 12 }]}>NEVER PUBLISHED</Text>
               <Text style={styles.manifestOff}>· Your email address</Text>
               <Text style={styles.manifestOff}>· Your progress, quiz scores and notes</Text>
-              <Text style={styles.manifestOff}>· Your interests and study goal</Text>
+              <Text style={styles.manifestOff}>· The private name you are greeted by</Text>
             </View>
 
+            {/* HONEST PRESENT TENSE: there is no Contact button and no message
+                relay yet, so this records a preference and says exactly that.
+                The old copy described a feature that did not exist. */}
             <View style={styles.switchRow}>
-              <Text style={styles.switchLabel}>Let employers contact me</Text>
+              <Text style={styles.switchLabel}>Open to being contacted about work</Text>
               <Toggle
                 on={pub.contactConsent}
-                label="Let employers contact me"
+                label="Open to being contacted about work"
                 onChange={(v) => setPubKey('contactConsent', v)}
               />
             </View>
             <Text style={styles.rowHint}>
-              Adds a Contact button to your page. Messages reach you through the Academy — your
-              email address is never shown.
+              Saved as a preference for now. There is no message button yet — nobody can contact
+              you through the Academy, and your email address is never published either way.
             </Text>
 
             <Text style={[styles.rowHint, { marginTop: 12 }]}>
-              Turn the switch off and your page goes offline. Certificates you have already earned
-              stay verifiable by QR.
+              Turn listing off and your page goes offline and what was published is deleted.
+              Certificates you have already earned stay verifiable by QR.
             </Text>
           </Section>
 
-          {/* —— INTERESTS &amp; GOALS —— */}
+          {/* —— WHAT YOU WORK IN — published when listed, so the section says
+              so rather than leaving the user to guess. "Why you're studying"
+              was REMOVED entirely (owner 2026-08-30): one of its options was
+              Church, and a study goal attached to a published name is religious
+              affiliation — special-category data under GDPR Art. 9. It earned
+              nothing that justified carrying that. —— */}
           <Section
-            title="INTERESTS & GOALS"
+            title="WHAT YOU WORK IN"
             summary={pub.interests.length ? `${pub.interests.length} selected` : 'none yet'}
           >
-            <Text style={styles.fieldLabel}>What you work in</Text>
+            <Text style={styles.sectionIntro}>
+              {registryActive
+                ? 'These appear on your public page.'
+                : 'These appear on your public page if you get listed. Private until then.'}
+            </Text>
             <Text style={styles.rowHint}>
               Tap to select. Press and hold one to make it your main field.
             </Text>
@@ -767,13 +819,6 @@ export function ProfileScreen() {
               onPick={toggleInterest}
               onLongPick={promotePrimary}
               starred={pub.primaryInterest}
-            />
-            <Text style={styles.fieldLabel}>Why you&apos;re studying</Text>
-            <View style={{ height: 4 }} />
-            <ChoiceChips
-              options={LEARNING_GOALS}
-              isOn={(o) => pub.learningGoal === o}
-              onPick={(o) => setPubKey('learningGoal', pub.learningGoal === o ? '' : o)}
             />
           </Section>
 
