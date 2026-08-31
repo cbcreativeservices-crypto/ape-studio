@@ -34,7 +34,8 @@ import { WaveLayout } from './waveLayout';
 import { requireWaveViz, type WaveVizModule } from '../skiaGate';
 import type { WaveLayers } from '../vizWave';
 import {
-  MATERIALS, arrayPositions, arrivalsAt, directivityGain, responseAt, sabineRT, speedOfSound,
+  MATERIALS,
+  MATERIAL_SHORT, arrayPositions, arrivalsAt, directivityGain, responseAt, sabineRT, speedOfSound,
   type Arrival, type MaterialKey, type WaveScene, type WaveSource,
 } from '../waveEngine';
 import type { WaveModuleProps } from '../WaveModuleScreen';
@@ -583,7 +584,9 @@ export function DelayAlignModule(p: WaveModuleProps) {
         bezel: [
           { k: 'REQ', v: `${reqDelay.toFixed(2)} ms`, helpKey: 'delay_align' },
           { k: 'SET', v: `${delayMs.toFixed(2)} ms`, helpKey: 'delay_align' },
-          { k: 'MISS', v: `${mismatch >= 0 ? '+' : ''}${mismatch.toFixed(2)} ms`, flex: 1.15, helpKey: 'delay_align' },
+          // 'MISS' answered a question the student has not learned to ask (design
+          // pass 2026-08-31) — OFF BY says what the number is.
+          { k: 'OFF BY', v: `${mismatch >= 0 ? '+' : ''}${mismatch.toFixed(2)} ms`, flex: 1.15, helpKey: 'delay_align' },
           { k: 'LVL', v: `${lvl.toFixed(1)} dB`, helpKey: 'delay_align' },
         ],
         stage: (w, h) => (
@@ -722,6 +725,10 @@ export function CardioidSubModule(p: WaveModuleProps) {
   const [freqV, setFreqV] = useState(logPos(63, 40, 120));
   const [delayV, setDelayV] = useState(0); // rear delay 0..8 ms
   const [rearInv, setRearInv] = useState(false);
+  // SOLO FRONT (learning pass 2026-08-31): the check teaches that one sub
+  // can never be cardioid, but both subs were fixed — the claim could not
+  // be tested. Muting the rear collapses the pattern to omni, live.
+  const [soloFront, setSoloFront] = useState(false);
   const [layers, setLayers] = useState<WaveLayers>({ pressure: false, heat: true, rays: false, arrivals: false });
   const [listener, setListener] = useState({ x: 7, y: 8.2 }); // the FRONT probe — drag it
 
@@ -738,13 +745,15 @@ export function CardioidSubModule(p: WaveModuleProps) {
       // the HEAT map is the pure two-source pattern.
       boundary: ['open', 'open', 'open', 'open'],
       sources: [
-        { id: 'rear', x: CSUB_REAR.x, y: CSUB_REAR.y, freq, levelDb: 0, delayMs: rearDelayMs, polarity: rearInv ? -1 : 1, kind: 'sub' },
+        ...(soloFront
+          ? []
+          : [{ id: 'rear', x: CSUB_REAR.x, y: CSUB_REAR.y, freq, levelDb: 0, delayMs: rearDelayMs, polarity: (rearInv ? -1 : 1) as 1 | -1, kind: 'sub' as const }]),
         { id: 'front', x: CSUB_FRONT.x, y: CSUB_FRONT.y, freq, levelDb: 0, delayMs: 0, polarity: 1, kind: 'sub' },
       ],
       listener,
       tempC: TEMP_C,
     }),
-    [freq, rearDelayMs, rearInv, listener],
+    [freq, rearDelayMs, rearInv, soloFront, listener],
   );
 
   const frontDb = responseAt(scene, listener.x, listener.y, freq);
@@ -819,6 +828,17 @@ export function CardioidSubModule(p: WaveModuleProps) {
                     label="REAR POLARITY Ø INVERT"
                     selected={rearInv}
                     onPress={() => setRearInv(!rearInv)}
+                    onLongPress={() => p.help('cardioid_sub')}
+                  />
+                  {/* The check teaches that ONE sub can never be cardioid —
+                      this makes that a 2-tap experiment instead of an
+                      assertion the module could not demonstrate (learning
+                      pass 2026-08-31). Mute the rear; the pattern collapses
+                      to omni before your eyes. */}
+                  <LabChip
+                    label="SOLO FRONT SUB"
+                    selected={soloFront}
+                    onPress={() => setSoloFront(!soloFront)}
                     onLongPress={() => p.help('cardioid_sub')}
                   />
                 </View>
@@ -1363,6 +1383,51 @@ const WALL_NAMES = ['TOP', 'RIGHT', 'BOTTOM', 'LEFT'] as const;
 const MATERIAL_KEYS = Object.keys(MATERIALS) as MaterialKey[];
 const BUILDER_MAX_SOURCES = 4;
 
+/** Cumulative "which mechanism explains this?" checks (learning pass
+ *  2026-08-31). The Builder sat on all fifteen modules and asked about one.
+ *  Diagnosis — symptom → mechanism — is the skill the whole lab builds. */
+const BUILDER_CAPSTONE: CheckSpec[] = [
+  {
+    question: 'Capstone 1 of 3 — the front rows sound fine, but one seat halfway back booms at 63 Hz only. Which mechanism?',
+    options: [
+      'Comb filtering — a reflection is interfering',
+      'A room mode — that seat sits on an antinode of a standing wave',
+      'Coverage — the speaker pattern misses that seat',
+      'Absorption — the walls are too dead back there',
+    ],
+    correctIdx: 1,
+    reveal:
+      'One frequency, one position, boom not dropout: a STANDING WAVE antinode (Module 8). Comb filtering would carve a whole series of notches; coverage and absorption change broad bands, not one note.',
+    wrongHint: 'Turn on the HEAT layer at 63 Hz and drag the listener down the room — watch the bright and dark bands march past.',
+  },
+  {
+    question: 'Capstone 2 of 3 — a vocal sounds hollow and phasey at ONE mic position near a wall, and fine a step away. Which mechanism?',
+    options: [
+      'Comb filtering — the wall reflection interferes with the direct sound',
+      'A room mode',
+      'Diffraction around the mic stand',
+      'Refraction from temperature layers',
+    ],
+    correctIdx: 0,
+    reveal:
+      'A single strong reflection a few milliseconds behind the direct sound carves a whole SERIES of evenly-spaced notches — comb filtering (Module 7). It moves when you move, which is the giveaway; a mode stays pinned to the room.',
+    wrongHint: 'In Module 7 the notch spacing followed 1/delay. What happens to the delay when you step away from the wall?',
+  },
+  {
+    question: 'Capstone 3 of 3 — the back half of the audience hears the highs fall off, but the lows carry fine. Which mechanism?',
+    options: [
+      'Standing waves eating the highs',
+      'Comb filtering from the ceiling',
+      'Coverage — the cabinet’s pattern narrows as frequency rises',
+      'The speed of sound slowing at a distance',
+    ],
+    correctIdx: 2,
+    reveal:
+      'A loudspeaker’s pattern NARROWS with rising frequency (Module 9): lows spill everywhere while highs beam. Aim the high-frequency pattern at the audience, not the cabinet at the room.',
+    wrongHint: 'Sweep FREQ in Module 9 and read the coverage angle — which way does it move as pitch rises?',
+  },
+];
+
 const BUILDER_CHECK: CheckSpec = {
   question: 'The HEAT map shows a deep null exactly at your listener at 63 Hz. The cheapest first fix?',
   options: [
@@ -1535,7 +1600,7 @@ export function RoomBuilderModule(p: WaveModuleProps) {
             kind: 'group',
             id: 'walls',
             label: 'WALLS',
-            valueLabel: MATERIALS[boundary[selWall]].label.slice(0, 5).toUpperCase(),
+            valueLabel: MATERIAL_SHORT[boundary[selWall]],
             helpKey: 'room_builder',
             render: () => (
               <View style={{ gap: 10 }}>
@@ -1693,7 +1758,6 @@ export function RoomBuilderModule(p: WaveModuleProps) {
               { k: 'SOURCES', v: `${sources.length}/${BUILDER_MAX_SOURCES}` },
             ]}
           />
-          <Badge text={MODEL_BADGE} />
         </PanelCard>
       }
       mistakes={
@@ -1710,7 +1774,14 @@ export function RoomBuilderModule(p: WaveModuleProps) {
           ]}
         />
       }
-      check={<CheckQuestion spec={BUILDER_CHECK} />}
+      check={
+        <View style={{ gap: 10 }}>
+          <CheckQuestion spec={BUILDER_CHECK} />
+          {BUILDER_CAPSTONE.map((c, i) => (
+            <CheckQuestion key={i} spec={c} />
+          ))}
+        </View>
+      }
     />
   );
 

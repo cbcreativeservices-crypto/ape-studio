@@ -35,6 +35,22 @@ export const MATERIALS: Record<MaterialKey, { label: string; alpha: number[]; sc
   open: { label: 'Opening', alpha: [1, 1, 1, 1, 1, 1], scatter: 0 },
 };
 
+/** Authored dock-chip short codes (design pass 2026-08-31): the chips used
+ *  `label.slice(0, 5)` which produced blind truncations — DRYWA, CONCR, CURTA —
+ *  reading as bugs rather than console tape. */
+export const MATERIAL_SHORT: Record<MaterialKey, string> = {
+  concrete: 'CONC',
+  glass: 'GLASS',
+  drywall: 'DRYWL',
+  curtain: 'CURT',
+  carpet: 'CARPT',
+  foam: 'FOAM',
+  fiberglass: 'FGLAS',
+  wood: 'WOOD',
+  audience: 'AUDNC',
+  open: 'OPEN',
+};
+
 /** Tray blurbs (owner 2026-08-28) — each material's absorption STORY, matching
  *  the alpha table above: what it eats, what it leaves. */
 export const MATERIAL_BLURBS: Record<MaterialKey, string> = {

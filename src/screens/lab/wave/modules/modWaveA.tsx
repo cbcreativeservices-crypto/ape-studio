@@ -36,6 +36,7 @@ import { MATERIAL_PHOTOS } from '../materialPhotos';
 import { WaveLayout } from './waveLayout';
 import {
   MATERIALS,
+  MATERIAL_SHORT,
   MATERIAL_BLURBS,
   alphaAt,
   arrivalsAt,
@@ -363,7 +364,7 @@ export function ReflectionModule(p: WaveModuleProps) {
             kind: 'options',
             id: 'mat',
             label: 'MAT',
-            valueLabel: MATERIALS[mat].label.slice(0, 5).toUpperCase(),
+            valueLabel: MATERIAL_SHORT[mat],
             selectedId: mat,
             onSelect: (id) => setMat(id as MaterialKey),
             sticky: true,
@@ -527,7 +528,7 @@ export function AbsorptionModule(p: WaveModuleProps) {
             kind: 'options',
             id: 'mat',
             label: 'MAT',
-            valueLabel: MATERIALS[mat].label.slice(0, 5).toUpperCase(),
+            valueLabel: MATERIAL_SHORT[mat],
             selectedId: mat,
             onSelect: (id) => setMat(id as MaterialKey),
             sticky: true,
@@ -1347,7 +1348,7 @@ export function CombModule(p: WaveModuleProps) {
         <PanelCard>
           <Text style={dstyles.eyebrow}>RESPONSE AT THE LISTENER — 100 Hz TO 8 kHz AND BEYOND</Text>
           <ResponseCurveGraph curves={curves} dbRange={18} height={150} />
-          <Badge text="COMPUTED FROM THE SCENE’S DIRECT + REFLECTED ARRIVALS (responseAt) · 0 dB = DIRECT SOUND ALONE" />
+          <Badge text="COMPUTED FROM THE SCENE’S DIRECT + REFLECTED ARRIVALS · 0 dB = DIRECT SOUND ALONE" />
         </PanelCard>
       }
       mistakes={<MistakesCard items={COMB_MISTAKES} />}
