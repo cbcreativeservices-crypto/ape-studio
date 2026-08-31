@@ -2910,6 +2910,13 @@ export function PeakAvgMeterView(p: {
   const roX = 2;
   const roW = wellX - 6;
   const roMid = wellY + wellH / 2;
+  // The PK/AVG block is four labels at FIXED offsets from roMid (−54, −42, +2,
+  // +14). On a short panel — which is what a phone gives this meter —
+  // roMid − 54 rises into the "dB SPL · A" header at y 7 and the two draw on
+  // top of each other (measured at 375 px: header x265–349 vs PK x257–300).
+  // Anchor the block to a clamped top instead: identical spacing, but it can
+  // never climb above the header.
+  const roTop = Math.max(roMid - 54, 22);
 
   // Static geometry: brushed panel, bezel well, one unlit LED stack, ticks.
   const G = useMemo(() => {
@@ -3167,7 +3174,7 @@ export function PeakAvgMeterView(p: {
           PEAK-HOLD MAX dB SPL. Labels are static; the numerals ride the shared
           values via animatedProps. */}
       {/* Order (owner 2026-07-30): WHITE PK/MAX on TOP, PURPLE AVG below it. */}
-      <Lbl x={roX} y={roMid - 54} w={roW} align="center" size={8.5} font={fonts.oswaldSemiBold} ls={1} color="#e8eaee">
+      <Lbl x={roX} y={roTop} w={roW} align="center" size={8.5} font={fonts.oswaldSemiBold} ls={1} color="#e8eaee">
         PK
       </Lbl>
       <AnimatedTextInput
@@ -3178,7 +3185,7 @@ export function PeakAvgMeterView(p: {
         style={{
           position: 'absolute',
           left: roX,
-          top: roMid - 42,
+          top: roTop + 12,
           width: roW,
           padding: 0,
           textAlign: 'center',
@@ -3192,7 +3199,7 @@ export function PeakAvgMeterView(p: {
           textShadowOffset: { width: 0, height: 1 },
         }}
       />
-      <Lbl x={roX} y={roMid + 2} w={roW} align="center" size={8.5} font={fonts.oswaldSemiBold} ls={1} color={avgInk}>
+      <Lbl x={roX} y={roTop + 56} w={roW} align="center" size={8.5} font={fonts.oswaldSemiBold} ls={1} color={avgInk}>
         AVG
       </Lbl>
       <AnimatedTextInput
@@ -3203,7 +3210,7 @@ export function PeakAvgMeterView(p: {
         style={{
           position: 'absolute',
           left: roX,
-          top: roMid + 14,
+          top: roTop + 68,
           width: roW,
           padding: 0,
           textAlign: 'center',

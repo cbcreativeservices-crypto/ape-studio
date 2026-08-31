@@ -457,3 +457,33 @@ rotation-only defect at 3am.
 on the Pixel. The other four files are simpler — none of them feeds a generated
 geometry.
 
+
+### FIXED · SPL Meter — two labels drawn on top of each other at phone width
+
+The digital readout panel's header (`dB SPL · A`) and the `PK` label were
+painted over one another, garbling both. Measured at 375 px: header at
+x 265–349, PK at x 257–300, y 80 vs 82.
+
+**Cause:** the PK/AVG block is four labels at fixed offsets from `roMid`
+(−54, −42, +2, +14). On a short panel — which is exactly what a phone gives this
+meter — `roMid − 54` climbs into the header at y 7.
+
+**Fix:** anchor the block to `roTop = Math.max(roMid − 54, 22)` and express all
+four positions relative to it. Spacing is byte-for-byte identical; the block
+simply cannot rise above the header any more.
+
+**Verified live:** label overlaps 2 → 0, and the panel now reads cleanly —
+`dB SPL · A` / `PK 83` / `AVG 64` / `HOLD 1S · MONO`.
+
+### FIXED · SPL Meter — the gauge header hid its own help button
+Same shape as `LabShell`, separate implementation: the "SPL REFERENCE GAUGE"
+expand `Pressable` contained the ⓘ. Split into siblings; the ⓘ is now a 44 × 44
+target and reachable. Verified 1 → 0 nested.
+
+### Worth knowing: the browser preview HAS microphone access
+The SPL meter read live input throughout (72 → 83 dB SPL, Leq updating, session
+timer running). Earlier I told the owner audio was untestable here — that is
+true for *output* and for DSP correctness, but live **mic capture and the
+meters driven by it do work** in this harness, which makes the measurement tools
+more testable than I first said.
+

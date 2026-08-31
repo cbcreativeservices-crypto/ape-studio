@@ -1636,26 +1636,32 @@ export function SplMeterScreen({ navigation }: Props) {
 
                 {/* 4 — The round SPL gauge — COLLAPSIBLE (owner 2026-07-30) so the
                     session log + calibration can sit higher when it's minimized. */}
-                <Pressable
-                  style={styles.gaugeToggle}
-                  onPress={() => setGaugeOpen((o) => !o)}
-                  accessibilityRole="button"
-                  accessibilityState={{ expanded: gaugeOpen }}
-                  accessibilityLabel={gaugeOpen ? 'Collapse SPL gauge' : 'Expand SPL gauge'}
-                >
-                  {/* Reveal triangle on the LEFT of the title (owner rev 14). */}
-                  <Text style={[styles.gaugeToggleChevron, styles.gaugeToggleChevronLeft]}>{gaugeOpen ? '▾' : '▸'}</Text>
-                  <Text style={styles.gaugeToggleText}>SPL REFERENCE GAUGE</Text>
-                  <View style={{ flex: 1 }} />
+                {/* Expand and help are SIBLINGS, not one inside the other. As a
+                    nested pair this rendered <button> inside <button> on web,
+                    and the header's accessibilityLabel replaced its children so
+                    the ⓘ was unreachable to a screen reader. */}
+                <View style={styles.gaugeToggle}>
+                  <Pressable
+                    style={styles.gaugeToggleMain}
+                    onPress={() => setGaugeOpen((o) => !o)}
+                    accessibilityRole="button"
+                    accessibilityState={{ expanded: gaugeOpen }}
+                    accessibilityLabel={gaugeOpen ? 'Collapse SPL gauge' : 'Expand SPL gauge'}
+                  >
+                    {/* Reveal triangle on the LEFT of the title (owner rev 14). */}
+                    <Text style={[styles.gaugeToggleChevron, styles.gaugeToggleChevronLeft]}>{gaugeOpen ? '▾' : '▸'}</Text>
+                    <Text style={styles.gaugeToggleText}>SPL REFERENCE GAUGE</Text>
+                  </Pressable>
                   <Pressable
                     onPress={() => help('gauge')}
                     hitSlop={10}
+                    style={styles.gaugeToggleInfoBtn}
                     accessibilityRole="button"
                     accessibilityLabel="About the SPL reference gauge"
                   >
                     <Text style={styles.gaugeToggleInfo}>ⓘ</Text>
                   </Pressable>
-                </Pressable>
+                </View>
                 {gaugeOpen ? (
                   <VuHero
                     dialW={dialW}
@@ -2697,6 +2703,8 @@ const styles = StyleSheet.create({
   rangeNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted },
 
   // Collapsible SPL-gauge toggle bar.
+  gaugeToggleMain: { flexDirection: 'row', alignItems: 'center', flexGrow: 1, minHeight: 44 },
+  gaugeToggleInfoBtn: { minWidth: 44, minHeight: 44, alignItems: 'flex-end', justifyContent: 'center' },
   gaugeToggle: {
     flexDirection: 'row',
     alignItems: 'center',
