@@ -1063,9 +1063,12 @@ export function MultiMeterScreen({ navigation }: Props) {
             >
               <View style={styles.statusHoldRow}>
                 <Text style={styles.statusLabel}>PK HOLD</Text>
-                <Pressable onPress={onResetPeakHold} hitSlop={8} accessibilityRole="button" accessibilityLabel="Reset peak hold">
-                  <Text style={styles.statusReset}>⟲</Text>
-                </Pressable>
+                {/* The ⟲ is the AFFORDANCE, not a second button. The whole
+                    cell already resets (that is why the tile-tap was added —
+                    "tap the readout, not just the key"), so making the glyph
+                    pressable too nested a <button> in a <button> and gave a
+                    screen reader two controls for one action. */}
+                <Text style={styles.statusReset}>⟲</Text>
               </View>
               <Text style={[styles.statusValue, meter ? { color: levelColorForDb(meter.peakHoldDb) } : null]}>
                 {meter ? fmtDb(applyRef(meter.peakHoldDb)) : '—'}

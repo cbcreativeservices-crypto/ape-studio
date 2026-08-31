@@ -487,3 +487,29 @@ true for *output* and for DSP correctness, but live **mic capture and the
 meters driven by it do work** in this harness, which makes the measurement tools
 more testable than I first said.
 
+
+### All eight tools open · zero console errors
+
+| Tool | Screen | Result |
+|---|---|---|
+| SPL Reference Meter | `SplMeter` | pass — **2 bugs fixed** |
+| Pro Audio MultiMeter | `MultiMeter` | pass — **1 bug fixed** |
+| Waveform Viewer | `WaveformLive` | pass |
+| Spectrum Analyzer / RTA | `Rta` | pass |
+| Spectrogram | `SpectrogramLive` | pass |
+| Tone / Noise Generator | `SignalGen` | pass |
+| RT60 / Reverb Decay | `Rt60Live` | pass |
+| Frequency Counter & Tuner | `FrequencyCounter` | pass |
+
+Each tool is fronted by a `ToolInfo` screen carrying **WHAT IT MEASURES**,
+**WHAT IT DOES NOT MEASURE** and **PHONE-MICROPHONE LIMITS** — the honesty
+standard is held consistently. Member-gated tools correctly route to the paywall
+when the account is not Academy.
+
+### FIXED · MultiMeter — a second button for the same action
+The PK HOLD cell is a button that resets peak hold, and it *contained* a ⟲
+button that also reset peak hold. Two controls, one action, nested. The code's
+own comment explains the cell-tap was added so users need not hit the small key
+— so the ⟲ is the affordance, not a second button. It is now plain text.
+Verified 1 → 0 nested; the cell still resets.
+
