@@ -100,6 +100,21 @@ export function toggleLowLight(): void {
   setLowLight(!on);
 }
 
+/* ---- activation notice: hold the wash until the user has read it ---------
+ * The on-enable popup explains what the mode does. Dimming the screen (and the
+ * popup) while it is still being READ makes the explanation hard to read and
+ * commits the user before they have agreed — so the wash waits for PROCEED
+ * (owner 2026-08-31). The mode itself is already ON during this window; only
+ * the visual dim is deferred, so CANCEL simply turns the mode back off.
+ */
+let gatePending = false;
+
+export function setLowLightGatePending(v: boolean): void {
+  if (gatePending === v) return;
+  gatePending = v;
+  emit();
+}
+
 // ---- 6-tap emergency cancel (owner 2026-08-01) ----------------------------
 // In Low-Light Production Mode nothing else appears on screen, so the escape
 // hatch is a gesture: tap the screen quickly SIX times in a row to cancel the
@@ -128,6 +143,26 @@ export function useLowLight(): boolean {
   const [snap, setSnap] = useState(on);
   useEffect(() => {
     const l = () => setSnap(on);
+    listeners.add(l);
+    void hydrate().then(l);
+    return () => {
+      listeners.delete(l);
+    };
+  }, []);
+  return snap;
+}
+
+/**
+ * Whether the DIM WASH should be painted right now — which is not the same
+ * question as whether the mode is on. Every LowLightDim reads this, so the
+ * activation notice is legible and the screen darkens only once the user has
+ * pressed PROCEED. The toggle row keeps using useLowLight(), so it shows ON
+ * immediately.
+ */
+export function useLowLightDim(): boolean {
+  const [snap, setSnap] = useState(on && !gatePending);
+  useEffect(() => {
+    const l = () => setSnap(on && !gatePending);
     listeners.add(l);
     void hydrate().then(l);
     return () => {

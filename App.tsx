@@ -9,7 +9,7 @@ import { AppState, Platform, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { DarkTheme, NavigationContainer, type Theme } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { KeyboardProvider } from './src/features/keyboard/keyboardControllerSafe';
+import { KeyboardProvider, KeyboardToolbar } from './src/features/keyboard/keyboardControllerSafe';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { Spl3dGaugePreview } from './src/screens/tools/Spl3dGaugePreview';
 import { ToolPreview } from './src/screens/tools/ToolPreview';
@@ -45,7 +45,7 @@ import { subscribeAudioOutput } from './src/features/audio/audioOutputStore';
 import { MicFeedbackGuard } from './src/features/audio/MicFeedbackGuard';
 import { SingleDeviceGuard } from './src/features/account/SingleDeviceGuard';
 import { ShakeToMute } from './src/features/audio/ShakeToMute';
-import { LowLightDim, LowLightProductionGate } from './src/features/settings/LowLightLayer';
+import { LowLightProductionGate } from './src/features/settings/LowLightLayer';
 import { registerLowLightTap, touchLowLight } from './src/features/settings/lowLight';
 import { useAccountLocalSync } from './src/features/account/accountLocalSync';
 import { lockPortrait } from './src/lib/screenOrientationSafe';
@@ -283,7 +283,9 @@ export default function App() {
             >
               <RootNavigator />
             </NavigationContainer>
-            <LowLightDim />
+            {/* The dim wash is applied per-SCREEN inside RootNavigator now — a
+                modal-presented screen sits above this level, so a root wash
+                missed Settings and six others (owner 2026-08-31). */}
             {/* Low-Light Production Mode's one-time on-enable notice + the
                 6-tap cancel affordance (owner 2026-08-01). */}
             <LowLightProductionGate />
@@ -312,6 +314,19 @@ export default function App() {
           </View>
         </AudioOutputGate>
       </EntitlementProvider>
+      {/* ALWAYS A WAY OUT OF THE KEYBOARD (owner 2026-08-31). Mounted once,
+          inside the provider and outside the navigator, so EVERY TextInput in
+          the app — not just the ones inside a scroll view — gets a DONE bar
+          above the keyboard. Renders nothing while the keyboard is closed, and
+          nothing at all on a build without the native module. Dark theme both
+          ways: this app is dark, and a white bar would flash in a theater. */}
+      <KeyboardToolbar
+        showArrows={false}
+        theme={{
+          light: { primary: '#ffc64d', disabled: '#5a5a5a', background: '#181818', ripple: '#2a2a2a' },
+          dark: { primary: '#ffc64d', disabled: '#5a5a5a', background: '#181818', ripple: '#2a2a2a' },
+        }}
+      />
       </KeyboardProvider>
     </SafeAreaProvider>
   );

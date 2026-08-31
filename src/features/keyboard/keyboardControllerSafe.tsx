@@ -9,7 +9,7 @@
  * build bundles the module (owner 2026-08-02).
  */
 import type { ComponentType, ReactNode, Ref } from 'react';
-import { ScrollView, type ScrollViewProps } from 'react-native';
+import { Platform, ScrollView, type ScrollViewProps } from 'react-native';
 
 type KAScrollProps = ScrollViewProps & {
   bottomOffset?: number;
@@ -22,18 +22,35 @@ type KAScrollProps = ScrollViewProps & {
 
 let KeyboardProvider: ComponentType<{ children?: ReactNode }>;
 let KeyboardAwareScrollView: ComponentType<KAScrollProps>;
+/** Sticky bar above the keyboard carrying a DONE button. Mounted ONCE at the
+ *  app root, it gives every TextInput in the app a way out — owner 2026-08-31:
+ *  "sometimes the keyboard opens and there is no way to close it". Falls back
+ *  to nothing on a build without the native module, exactly like the rest of
+ *  this file. */
+let KeyboardToolbar: ComponentType<Record<string, unknown>>;
+
+/** A SECOND way out of the keyboard, on every scroll surface: drag the content
+ *  and the keyboard goes down. Applied as a DEFAULT here rather than at ~40
+ *  call sites, and still overridable per screen. */
+const DISMISS_ON_DRAG: ScrollViewProps['keyboardDismissMode'] =
+  Platform.OS === 'ios' ? 'interactive' : 'on-drag';
 
 try {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const kc = require('react-native-keyboard-controller');
   KeyboardProvider = kc.KeyboardProvider;
-  KeyboardAwareScrollView = kc.KeyboardAwareScrollView;
+  const RealKAScroll = kc.KeyboardAwareScrollView as ComponentType<KAScrollProps>;
+  KeyboardAwareScrollView = (props: KAScrollProps) => (
+    <RealKAScroll keyboardDismissMode={DISMISS_ON_DRAG} {...props} />
+  );
+  KeyboardToolbar = kc.KeyboardToolbar;
 } catch {
   KeyboardProvider = ({ children }: { children?: ReactNode }) => <>{children}</>;
   // Drop the keyboard-controller-only prop and render a plain ScrollView.
   KeyboardAwareScrollView = ({ bottomOffset: _bottomOffset, ...rest }: KAScrollProps) => (
-    <ScrollView {...rest} />
+    <ScrollView keyboardDismissMode={DISMISS_ON_DRAG} {...rest} />
   );
+  KeyboardToolbar = () => null;
 }
 
-export { KeyboardProvider, KeyboardAwareScrollView };
+export { KeyboardProvider, KeyboardAwareScrollView, KeyboardToolbar };

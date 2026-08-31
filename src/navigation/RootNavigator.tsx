@@ -7,6 +7,7 @@
  * Settings (S11) joins in M7.
  */
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { LowLightDim } from '../features/settings/LowLightLayer';
 import { NAV_FADE, NAV_PUSH, NAV_PUSH_REDUCED, useReduceMotionNav } from './reduceMotionNav';
 import { SplashScreen } from '../screens/SplashScreen';
 import { AuthScreen } from '../screens/auth/AuthScreen';
@@ -179,6 +180,28 @@ export function RootNavigator() {
     <Stack.Navigator
       initialRouteName="Splash"
       screenOptions={{ headerShown: false, gestureEnabled: false, ...push }}
+      /*
+       * LOW-LIGHT WASH LIVES HERE, not at the app root (owner 2026-08-31:
+       * "I opened Settings in low-light and it wasn't in low-light").
+       *
+       * A `presentation: 'modal'` screen is presented in its OWN native
+       * container, ABOVE the React root's sibling views — so the root-level
+       * LowLightDim never covered Settings, WeeklyConcept, Institutional,
+       * About, Directory, ExposureMonitor or Paywall. Seven screens broke the
+       * mode's promise that "the display stays dim and steady".
+       *
+       * screenLayout wraps EVERY screen, so the wash follows the user into any
+       * screen — including ones added later, which is how this was missed in
+       * the first place. Root-level siblings need no wash: ExposureCheckin
+       * refuses to render while overlays are suppressed, and AudioBorderFrame
+       * already painted above the wash.
+       */
+      screenLayout={({ children }) => (
+        <>
+          {children}
+          <LowLightDim />
+        </>
+      )}
     >
       {/* App-entry area switches — fade-through, never a push. */}
       <Stack.Screen name="Splash" component={SplashScreen} options={NAV_FADE} />

@@ -16,15 +16,25 @@
 import { useEffect, useState } from 'react';
 import { AppState, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../theme/tokens';
-import { checkLowLightExpiry, LOW_LIGHT_DIM, onLowLightActivated, toggleLowLight, useLowLight } from './lowLight';
+import {
+  checkLowLightExpiry,
+  LOW_LIGHT_DIM,
+  onLowLightActivated,
+  setLowLight,
+  setLowLightGatePending,
+  toggleLowLight,
+  useLowLight,
+  useLowLightDim,
+} from './lowLight';
 
 // Burnt, darker, glowing orange (owner request 2026-07-26) — the low-light
 // indicator hue, deliberately distinct from the audio-output frame's red.
 const EMBER = '#c2540f';
 
-/** Dim wash + red tint — shown only when low-light is ON. */
+/** Dim wash + red tint — painted once low-light is ON *and* the activation
+ *  notice has been acknowledged (owner 2026-08-31). */
 export function LowLightDim() {
-  const on = useLowLight();
+  const on = useLowLightDim();
   // Auto-revert after 12h UNTOUCHED (owner 2026-07-30): foreground only CHECKS
   // expiry (reverts if the app was away past the window) — the clock is
   // refreshed by real user touches via the root touch-capture (App.tsx),
@@ -92,6 +102,13 @@ export function LowLightProductionGate() {
   useEffect(() => {
     if (!on) setShowInfo(false);
   }, [on]);
+  // Hold the dim wash back for exactly as long as this notice is up — and
+  // release it however the notice goes away, including an unmount or a 6-tap
+  // cancel, so the flag can never strand the app un-dimmed while the mode is on.
+  useEffect(() => {
+    setLowLightGatePending(showInfo && on);
+    return () => setLowLightGatePending(false);
+  }, [showInfo, on]);
 
   if (!on || !showInfo) return null;
   return (
@@ -109,18 +126,32 @@ export function LowLightProductionGate() {
             You can cancel it at any time: tap the screen quickly six times in a row. You can also turn
             it off from this switch in Settings.
           </Text>
-          <Pressable
-            style={styles.gateBtn}
-            onPress={() => setShowInfo(false)}
-            accessibilityRole="button"
-            accessibilityLabel="Got it"
-          >
-            <Text style={styles.gateBtnText}>GOT IT</Text>
-          </Pressable>
+          <Text style={styles.gateNote}>The screen dims when you press PROCEED.</Text>
+          <View style={styles.gateBtnRow}>
+            <Pressable
+              style={[styles.gateBtn, styles.gateBtnGhost]}
+              onPress={() => setLowLight(false)}
+              accessibilityRole="button"
+              accessibilityLabel="Cancel, do not turn on low-light mode"
+            >
+              <Text style={[styles.gateBtnText, styles.gateBtnTextGhost]}>CANCEL</Text>
+            </Pressable>
+            <Pressable
+              style={[styles.gateBtn, styles.gateBtnPrimary]}
+              onPress={() => setShowInfo(false)}
+              accessibilityRole="button"
+              accessibilityLabel="Proceed and dim the screen"
+            >
+              <Text style={styles.gateBtnText}>PROCEED</Text>
+            </Pressable>
+          </View>
         </View>
       </View>
-      {/* Keep the popup itself under the dim wash so it doesn't read bright. */}
-      <LowLightDim />
+      {/* NO LowLightDim here (owner 2026-08-31). The notice used to sit under
+          the wash "so it doesn't read bright" — but that dimmed the one thing
+          the user still has to READ, and committed them to the mode before they
+          had agreed. The wash is held back until PROCEED instead; the card is
+          already near-black on an .86 backdrop, so nothing flashes. */}
     </Modal>
   );
 }
@@ -198,15 +229,31 @@ const styles = StyleSheet.create({
   gateTitle: { fontFamily: fonts.oswaldMedium, fontSize: 22, color: colors.textPrimary },
   gateRule: { width: 44, height: 2, backgroundColor: EMBER, borderRadius: 1 },
   gateBody: { fontFamily: fonts.barlowMedium, fontSize: 15, lineHeight: 22, color: colors.textSecondary },
+  // Two choices now, so they share a row and each takes half. Both stay ember
+  // on near-black — a bright "primary" button would be the exact flash this
+  // mode exists to prevent.
+  gateBtnRow: { flexDirection: 'row', gap: 10, marginTop: 12 },
   gateBtn: {
-    alignSelf: 'center',
-    marginTop: 8,
+    flex: 1,
+    minHeight: 46,
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: 10,
-    paddingHorizontal: 28,
+    paddingHorizontal: 16,
     borderRadius: 9,
     borderWidth: 1,
     borderColor: 'rgba(194,84,15,.7)',
     backgroundColor: '#241206',
   },
+  gateBtnPrimary: { borderColor: EMBER },
+  gateBtnGhost: { borderColor: '#3a3a3a', backgroundColor: 'transparent' },
   gateBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1, color: EMBER },
+  gateBtnTextGhost: { color: '#8a8c90' },
+  gateNote: {
+    fontFamily: fonts.barlowRegular,
+    fontSize: 12,
+    lineHeight: 16,
+    color: '#8a8c90',
+    marginTop: 10,
+  },
 });

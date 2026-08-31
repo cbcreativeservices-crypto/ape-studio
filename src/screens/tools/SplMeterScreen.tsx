@@ -58,7 +58,7 @@ import { EngineGate } from './EngineGate';
 import { SkinnedVu } from './SkinnedVu';
 import { Spl3dGauge } from './Spl3dGauge';
 import { levelColorForDb } from '../../features/tools/levelColor';
-import { useLowLight, LOW_LIGHT_DIM } from '../../features/settings/lowLight';
+import { useLowLight, useLowLightDim, LOW_LIGHT_DIM } from '../../features/settings/lowLight';
 import { MIC_LIMITS, toolByKey } from './toolsData';
 import { ApeDsp, type MeterFrame } from '../../../modules/ape-dsp';
 import { useToolHelp, HelpHead, DisplayGuideButton } from '../../features/lab/guidedLessons';
@@ -581,6 +581,10 @@ export function SplMeterScreen({ navigation }: Props) {
   // Global Low-Light (Profile) — when ON it LOCKS the popup in red and hides the
   // local dimmer; turning Low-Light off restores the dimmer (owner 2026-08-17).
   const lowLightOn = useLowLight();
+  // This screen paints its OWN wash rather than mounting LowLightDim, so it
+  // needs the same "has the notice been acknowledged" answer — otherwise the
+  // meter dims while every other surface is still waiting for PROCEED.
+  const lowLightDim = useLowLightDim();
   // Popup-local brightness (1 = full bright, 0 = darkest + red mode). Persisted
   // so the fullscreen view reopens at the user's last setting; NEVER applied to
   // any other screen (the overlays live inside the fullscreen modal only).
@@ -611,8 +615,8 @@ export function SplMeterScreen({ navigation }: Props) {
   }, []);
   const fsDimOpacity = (1 - fsBright) * FS_MAX_DIM;
   // Global Low-Light overrides the local dimmer: locked dim + red, no controls.
-  const fsEffRed = lowLightOn ? true : fsRedLatched;
-  const fsBaseDim = lowLightOn ? LOW_LIGHT_DIM : fsDimOpacity;
+  const fsEffRed = lowLightDim ? true : fsRedLatched;
+  const fsBaseDim = lowLightDim ? LOW_LIGHT_DIM : fsDimOpacity;
   const fsTargetDim = fsEffRed ? FS_RED_DIM : fsBaseDim;
   const fsDimmerAvailable = !lowLightOn;
   // Hold the Animated overlays at the committed look between drags.
