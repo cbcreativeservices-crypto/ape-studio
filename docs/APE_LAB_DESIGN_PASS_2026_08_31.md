@@ -64,7 +64,7 @@ done) · `implemented` · `pushed` · `blocked: reason`
 | 6 | Speaker Placement & Coverage | pushed |
 | 7 | Digital Audio Systems | pushed |
 | 8 | Visual Audio Analysis | pushed |
-| 9 | Signal Chain Builder | pending |
+| 9 | Signal Chain Builder | pushed |
 | 10 | Signal Detective | pending |
 | 11 | Cable & Connector Fundamentals | pending |
 | 12 | Cable Dressing & Installation | pending |
@@ -101,6 +101,20 @@ done) · `implemented` · `pushed` · `blocked: reason`
 | 38 | Modular Synth | pending |
 
 ## GRADES & FINDINGS
+
+### 9 · Signal Chain Builder — PUSHED
+
+**Design:** hierarchy B · density B+ · affordance C+ · copy A− · idiom A · first-15s C+.
+**Learning:** sequencing B+ · load A− · interaction B · retrieval F · misconceptions B−.
+
+**Shipped:** 3 recognition checks (retrieval was F); GR-meter screen-reader
+label regression removed; source blurbs wired; pill hitSlop 44pt; COMP-vs-GATE
+order reconciled on screen; SQUASH lesson honesty; empty-glass invitation;
+CUSTOM-chain interpretive line.
+
+**Left:** makeup-gain op for SQUASH (device sound check first); scenario
+sequencing (5 equal buttons, nothing orders them); 6 of 9 modules give no
+visual feedback (meter/ear only).
 
 ### 8 · Visual Audio Analysis (Meter) — PUSHED
 
