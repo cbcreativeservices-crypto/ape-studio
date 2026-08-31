@@ -63,7 +63,7 @@ done) · `implemented` · `pushed` · `blocked: reason`
 | 5 | Wave Physics Laboratory | pushed |
 | 6 | Speaker Placement & Coverage | pushed |
 | 7 | Digital Audio Systems | pushed |
-| 8 | Visual Audio Analysis | pending |
+| 8 | Visual Audio Analysis | pushed |
 | 9 | Signal Chain Builder | pending |
 | 10 | Signal Detective | pending |
 | 11 | Cable & Connector Fundamentals | pending |
@@ -101,6 +101,24 @@ done) · `implemented` · `pushed` · `blocked: reason`
 | 38 | Modular Synth | pending |
 
 ## GRADES & FINDINGS
+
+### 8 · Visual Audio Analysis (Meter) — PUSHED
+
+**Design:** hierarchy A− · density B+ · affordance B · copy A− · idiom A · first-15s B+.
+**Learning:** sequencing A · load A− · interaction B+ · retrieval B+ · misconceptions A.
+
+**Shipped:** RTA bar ramp UN-inverted (quiet was painted red — house-rule
+violation, vizSpectral Layer 2 start/end swap); Detective solved-set persisted
+(ape:detectiveSolved); all 28 Detective options de-cued (length/jargon cue);
+M5 "−0.0 dB rel" clamp; M7 copy drift → 220 Hz bell (copy only, visuals
+untouched per carve-out).
+
+**Left:** hub progress ticks (recurring fleet theme — Digital wants it too);
+M2/M3 "same peak" premise not literally true at defaults (per-signal peak
+trim); M4 passive (MASTER fader + PLATFORM −14 cell); bezel tap-cells
+invisible affordance; Detective case order fixed each run; CanvasKit Aborted()
+crossing many meter modules in one web session (device-pass note, likely
+web-SIM only).
 
 ### 7 · Digital Audio Systems — PUSHED
 
