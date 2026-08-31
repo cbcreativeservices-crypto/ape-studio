@@ -31,7 +31,7 @@ import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { LabReviewButton } from '../../../features/lab/LabReviewButton';
+import { markLabReviewed } from '../../../features/lab/labCompletion';
 import { AlphaType, Canvas, ColorType, DashPathEffect, Image, LinearGradient, Path, Rect, Skia, Text as SkiaText, useFont, vec } from '@shopify/react-native-skia';
 import { LinearGradient as GradientView } from 'expo-linear-gradient';
 import {
@@ -656,38 +656,203 @@ function GradientBar() {
   );
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// RAMP CHECK — three retrieval trials between exposure and credit.
+//
+// Design + learning pass 2026-08-31: this page's whole job is RECOGNITION — a
+// student must later decode colour-as-level on meters they have never seen —
+// yet it graded F on interaction and F on retention: rich exposure, zero
+// practice, and a self-report "UNDERSTOOD" button (the classic
+// illusion-of-knowing click). Three taps (~15 s) turn the credit into evidence:
+//   Q1 DECODE     — read two swatches straight off the ramp.
+//   Q2 TRANSFER   — an UNFAMILIAR display (pad grid, deliberately not one of
+//                   the six cards) — literally the later task.
+//   Q3 VIOLATION  — spot the display that breaks the convention. The broken
+//                   RTA draws its LOUD band cool (blue). Never the reverse:
+//                   even a deliberately-wrong stimulus never paints quiet red.
+// Wrong answers cost nothing and re-show the ramp (corrective re-exposure);
+// every colour is sampled from the levelColor SSoT.
+
+const CHECK_TITLE = 'CHECK YOURSELF — THREE QUICK READS';
+const CHECK_QS = [
+  'Which shows MORE level?',
+  'Same rule, new display. Where is the signal hotter?',
+  'One of these breaks the Academy color rule. Which one?',
+] as const;
+const CHECK_WRONG = [
+  'Read it from the ramp: warmer is more.',
+  'The display changed — the rule did not. Warmer is more.',
+  'Color follows level, never frequency. A loud band is never blue, and a quiet band is never red.',
+] as const;
+const CHECK_PASSED_LINE =
+  'You just read three displays — one you had never seen. That is the skill.';
+
+/** A tappable colour swatch at a fixed ramp level (Q1). */
+function CheckSwatch({ level, label, onPress }: { level: number; label: string; onPress: () => void }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      style={[styles.checkSwatch, { backgroundColor: levelColor(level) }]}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+    >
+      <Text style={styles.checkSwatchGlyph}>?</Text>
+    </Pressable>
+  );
+}
+
+/** A 3×2 pad grid glowing around one ramp level — a display the six cards do
+ *  not include, so answering it IS transfer (Q2). */
+function CheckPads({ base, onPress, label }: { base: number; onPress: () => void; label: string }) {
+  const jit = [0.03, -0.02, 0.05, -0.04, 0.02, -0.01];
+  return (
+    <Pressable onPress={onPress} style={styles.checkPadWrap} accessibilityRole="button" accessibilityLabel={label}>
+      <View style={styles.checkPadGrid}>
+        {jit.map((j, i) => (
+          <View key={i} style={[styles.checkPad, { backgroundColor: levelColor(Math.max(0, Math.min(1, base + j))) }]} />
+        ))}
+      </View>
+    </Pressable>
+  );
+}
+
+/** A seven-bar mini RTA. `violate` draws the TALLEST bar cool (loud-as-blue),
+ *  which is the convention break the student must spot (Q3). */
+function CheckRta({ violate, onPress, label }: { violate: boolean; onPress: () => void; label: string }) {
+  const H = [0.3, 0.45, 0.92, 0.55, 0.38, 0.62, 0.28];
+  return (
+    <Pressable onPress={onPress} style={styles.checkRtaWrap} accessibilityRole="button" accessibilityLabel={label}>
+      <View style={styles.checkRtaRow}>
+        {H.map((h, i) => {
+          const isTallest = h === 0.92;
+          const color = violate && isTallest ? levelColor(0.14) : levelColor(h);
+          return <View key={i} style={[styles.checkRtaBar, { height: `${Math.round(h * 100)}%`, backgroundColor: color }]} />;
+        })}
+      </View>
+    </Pressable>
+  );
+}
+
+/** The three-trial check. Calls onPassed exactly once, when all three are
+ *  answered correctly. Free retries; wrong answers show the corrective line
+ *  plus a slim re-render of the ramp. */
+function RampCheck({ onPassed, practice = false }: { onPassed?: () => void; practice?: boolean }) {
+  const [q, setQ] = useState(0); // 0..2 active question, 3 = passed
+  const [wrong, setWrong] = useState(false);
+
+  const answer = (correct: boolean) => {
+    if (!correct) {
+      setWrong(true);
+      return;
+    }
+    setWrong(false);
+    const next = q + 1;
+    setQ(next);
+    if (next === 3) onPassed?.();
+  };
+
+  if (q >= 3) {
+    return (
+      <View style={styles.checkCard}>
+        <Text style={styles.checkPassed}>✓ {CHECK_PASSED_LINE}</Text>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.checkCard}>
+      <View style={styles.checkHead}>
+        <Text style={styles.checkTitle}>{practice ? 'TEST YOURSELF' : CHECK_TITLE}</Text>
+        <Text style={styles.checkProgress}>{q + 1}/3</Text>
+      </View>
+      <Text style={styles.checkQ}>{CHECK_QS[q]}</Text>
+
+      {q === 0 ? (
+        <View style={styles.checkRow}>
+          <CheckSwatch level={0.34} label="First color swatch" onPress={() => answer(false)} />
+          <CheckSwatch level={0.8} label="Second color swatch" onPress={() => answer(true)} />
+        </View>
+      ) : null}
+      {q === 1 ? (
+        <View style={styles.checkRow}>
+          <CheckPads base={0.72} label="Left pad grid" onPress={() => answer(true)} />
+          <CheckPads base={0.12} label="Right pad grid" onPress={() => answer(false)} />
+        </View>
+      ) : null}
+      {q === 2 ? (
+        <View style={styles.checkRow}>
+          <CheckRta violate={false} label="Display A" onPress={() => answer(false)} />
+          <CheckRta violate label="Display B" onPress={() => answer(true)} />
+        </View>
+      ) : null}
+
+      {wrong ? (
+        <View style={styles.checkWrongWrap}>
+          <Text style={styles.checkWrong}>{CHECK_WRONG[q]}</Text>
+          <GradientView
+            colors={rampColors(1, 24)}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.checkMiniRamp}
+          />
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
 /**
  * The whole educational page (header optional — the Foundations step supplies
  * its own title/paragraphs). Owns the completion CTA so Path A and Path B
- * behave identically: pressing UNDERSTOOD — CONTINUE sets the one global flag.
+ * behave identically: passing the ramp check enables the one green button.
  */
-export function AmplitudeColorBody({ showHeader = true }: { showHeader?: boolean }) {
+export function AmplitudeColorBody({
+  showHeader = true,
+  alsoReviewLab = false,
+}: {
+  showHeader?: boolean;
+  /** Standalone lab (Path A): completing here ALSO records the Audio
+   *  Fundamentals R6c credit — one button instead of the two stacked
+   *  completion controls that let students press the green one and never earn
+   *  the credit sitting a card lower (design pass 2026-08-31). */
+  alsoReviewLab?: boolean;
+}) {
   const done = useAmplitudeOrientationDone();
+  // The credit is gated on the RAMP CHECK: three retrieval trials replace the
+  // self-report tap, so "reviewed" means demonstrated rather than claimed —
+  // which STRENGTHENS the §1.7 no-fabricated-progress rule.
+  const [checkPassed, setCheckPassed] = useState(false);
+  const [practiceOpen, setPracticeOpen] = useState(false);
   return (
     <View style={styles.body}>
       {showHeader ? (
         <View style={{ gap: 2 }}>
+          {/* Two identical 19pt titles competed instead of ranking (design pass
+              2026-08-31): the methodology line is now the house amber eyebrow
+              ABOVE the title — same words, ranked — which also pulls the ramp
+              above the fold on a phone. */}
+          <Text style={styles.titleEyebrow}>{AMP_ORIENT_TITLE2}</Text>
           <Text style={styles.title}>{AMP_ORIENT_TITLE}</Text>
-          {/* Second title — same size/weight/colour as the main title (owner 2026-08-12). */}
-          <Text style={styles.title}>{AMP_ORIENT_TITLE2}</Text>
           <Text style={styles.subtitle}>{AMP_ORIENT_SUBTITLE}</Text>
         </View>
       ) : null}
 
-      {/* Core methodology explanation leads (owner 2026-08-12): the text sits
-          directly under the titles, above the low→high colour spectrum. */}
+      {/* Contiguity (learning pass 2026-08-31): only paragraph 1 leads. The
+          RULE (paragraph 3) sits directly above the ramp it describes, priming
+          the invariant the finale later echoes; paragraph 2 moved down to the
+          six cards it actually describes. All three paragraphs keep their
+          ratified wording — they were re-seated, not rewritten. */}
       <View style={styles.explain}>
-        {AMP_ORIENT_PARAS.map((p) => (
-          <Text key={p} style={styles.explainText}>
-            {p}
-          </Text>
-        ))}
+        <Text style={styles.explainText}>{AMP_ORIENT_PARAS[0]}</Text>
       </View>
+
+      <Text style={styles.ruleLine}>{AMP_ORIENT_PARAS[2]}</Text>
 
       <GradientBar />
 
       <View style={{ gap: 3 }}>
         <Text style={styles.sixViews}>SIX VIEWS · ONE SIGNAL</Text>
+        <Text style={styles.sixViewsSub}>{AMP_ORIENT_PARAS[1]}</Text>
         <Text style={styles.sixViewsSub}>
           Every card draws the SAME example signal — a strong low tone, a weaker high harmonic, and
           one short burst — in the same level colors.
@@ -739,11 +904,14 @@ export function AmplitudeColorBody({ showHeader = true }: { showHeader?: boolean
         </VizCard>
       </View>
 
-      <Text style={styles.honesty}>{HONESTY_LINE}</Text>
-
+      {/* The honesty line no longer floats as fine print between the grid and
+          the callout — it closes the LEARNING CONVENTION card as a badge line
+          (design pass 2026-08-31). Same words; more authority. One
+          consolidated epistemic block. */}
       <View style={styles.convention}>
         <Text style={styles.conventionTitle}>{CONVENTION_TITLE}</Text>
         <Text style={styles.conventionBody}>{CONVENTION_BODY}</Text>
+        <Text style={styles.honesty}>{HONESTY_LINE}</Text>
       </View>
 
       <View style={styles.finale} accessible accessibilityLabel="Blue means less. Red means more.">
@@ -752,16 +920,40 @@ export function AmplitudeColorBody({ showHeader = true }: { showHeader?: boolean
       </View>
 
       {done ? (
-        <View style={styles.doneChip}>
-          <Text style={styles.doneChipText}>✓ ORIENTATION COMPLETE</Text>
-        </View>
+        <>
+          <View style={styles.doneChip}>
+            <Text style={styles.doneChipText}>✓ ORIENTATION COMPLETE</Text>
+          </View>
+          {/* Cheap spaced retrieval: on revisits the dead chip gains a live
+              practice affordance — the only retention mechanism available to a
+              one-shot orientation page (learning pass 2026-08-31). */}
+          {practiceOpen ? (
+            <RampCheck practice />
+          ) : (
+            <Pressable
+              onPress={() => setPracticeOpen(true)}
+              style={styles.practiceBtn}
+              accessibilityRole="button"
+              accessibilityLabel="Test yourself again"
+            >
+              <Text style={styles.practiceBtnText}>TEST YOURSELF AGAIN ›</Text>
+            </Pressable>
+          )}
+        </>
       ) : (
-        <GlassButton
-          label="UNDERSTOOD — CONTINUE"
-          tint="green"
-          height={52}
-          onPress={markAmplitudeOrientationComplete}
-        />
+        <>
+          <RampCheck onPassed={() => setCheckPassed(true)} />
+          <GlassButton
+            label={alsoReviewLab ? 'UNDERSTOOD — MARK REVIEWED' : 'UNDERSTOOD — CONTINUE'}
+            tint="green"
+            height={52}
+            disabled={!checkPassed}
+            onPress={() => {
+              markAmplitudeOrientationComplete();
+              if (alsoReviewLab) markLabReviewed('af_amplitude');
+            }}
+          />
+        </>
       )}
     </View>
   );
@@ -786,6 +978,7 @@ export function AmplitudeLabScreen() {
         <Pressable
           onPress={() => navigation.goBack()}
           hitSlop={10}
+          style={styles.gateBackBtn}
           accessibilityRole="button"
           accessibilityLabel="Back"
         >
@@ -794,10 +987,13 @@ export function AmplitudeLabScreen() {
         <Text style={styles.labHeaderKicker}>AUDIO FUNDAMENTALS</Text>
       </View>
       <ScrollView contentContainerStyle={styles.gateScroll}>
-        <AmplitudeColorBody />
-        {/* R6c: this read-through has no modules/challenge — an explicit review
-            records its Audio Fundamentals credit (§1.7: no fabricated progress). */}
-        <LabReviewButton labKey="af_amplitude" />
+        {/* One completion control (design pass 2026-08-31): the old stacked
+            pair — green CTA + a separate MARK AS REVIEWED card — let students
+            press the obvious button and never earn the R6c credit below it.
+            The body's single check-gated button now records BOTH; a passed
+            retrieval check is stronger review evidence than a self-report tap,
+            so §1.7 is strengthened, not bent. */}
+        <AmplitudeColorBody alsoReviewLab />
       </ScrollView>
     </View>
   );
@@ -813,6 +1009,7 @@ export function AmplitudeOrientationGatePage() {
         <Pressable
           onPress={() => navigation.goBack()}
           hitSlop={10}
+          style={styles.gateBackBtn}
           accessibilityRole="button"
           accessibilityLabel="Back"
         >
@@ -922,11 +1119,14 @@ const styles = StyleSheet.create({
   cardViz: { height: VIZ_H + 14 },
   cardCaption: { fontFamily: fonts.barlowRegular, fontSize: 10.5, lineHeight: 13, color: colors.textSub },
   vizFill: { flex: 1 },
+  // The axis caption is the ONE thing that differs between the six cards —
+  // the discriminative feature the recognition task depends on — so it must
+  // not be the least legible text on the page (was 8px #5a5b63 ≈ 2.6:1).
   axisBottom: {
     fontFamily: fonts.oswaldSemiBold,
-    fontSize: 8,
+    fontSize: 9.5,
     letterSpacing: 0.8,
-    color: '#5a5b63',
+    color: colors.textSubAlt,
     textAlign: 'center',
     marginTop: 2,
   },
@@ -952,7 +1152,7 @@ const styles = StyleSheet.create({
   meterBarLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.8, color: colors.textSub, marginTop: 3 },
   meterBarDb: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, color: colors.textSecondary },
   meterTicks: { height: 72, justifyContent: 'space-between', paddingRight: 1 },
-  tickText: { fontFamily: fonts.oswaldSemiBold, fontSize: 8.5, letterSpacing: 0.5, color: '#5a5b63' },
+  tickText: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 0.5, color: colors.textSubAlt },
 
   // SPL
   splReadout: { fontFamily: fonts.oswaldBold, fontSize: 22, color: colors.textPrimary, textAlign: 'center' },
@@ -967,10 +1167,13 @@ const styles = StyleSheet.create({
 
   honesty: {
     fontFamily: fonts.oswaldSemiBold,
-    fontSize: 9.5,
-    letterSpacing: 1,
-    color: '#8a8b93',
-    textAlign: 'center',
+    fontSize: 10.5,
+    letterSpacing: 1.1,
+    color: colors.amberLabel,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,198,77,.25)',
+    paddingTop: 8,
+    marginTop: 2,
   },
 
   explain: { gap: 8 },
@@ -999,10 +1202,79 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   doneChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.4, color: colors.green },
+  titleEyebrow: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 11.5,
+    letterSpacing: 2,
+    color: colors.amberLabel,
+  },
+  // The rule, primed directly above the artifact it governs (ratified para 3).
+  ruleLine: {
+    fontFamily: fonts.barlowMedium,
+    fontSize: 13.5,
+    lineHeight: 18,
+    color: colors.textSecondary,
+  },
+
+  // ── RAMP CHECK ──
+  checkCard: {
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255,198,77,.4)',
+    backgroundColor: '#141210',
+    padding: 14,
+    gap: 10,
+  },
+  checkHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  checkTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.6, color: colors.amber },
+  checkProgress: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.textSub },
+  checkQ: { fontFamily: fonts.barlowMedium, fontSize: 15, lineHeight: 20, color: colors.textPrimary },
+  checkRow: { flexDirection: 'row', gap: 12 },
+  checkSwatch: {
+    flex: 1,
+    height: 64,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,.4)',
+  },
+  checkSwatchGlyph: { fontFamily: fonts.oswaldBold, fontSize: 18, color: 'rgba(0,0,0,.55)' },
+  checkPadWrap: {
+    flex: 1,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#2a2a30',
+    backgroundColor: '#0b0b0e',
+    padding: 10,
+    minHeight: 64,
+    justifyContent: 'center',
+  },
+  checkPadGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, justifyContent: 'center' },
+  checkPad: { width: 26, height: 20, borderRadius: 4 },
+  checkRtaWrap: {
+    flex: 1,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#2a2a30',
+    backgroundColor: '#0b0b0e',
+    padding: 10,
+    height: 76,
+    justifyContent: 'flex-end',
+  },
+  checkRtaRow: { flex: 1, flexDirection: 'row', alignItems: 'flex-end', gap: 3 },
+  checkRtaBar: { flex: 1, borderRadius: 2 },
+  checkWrongWrap: { gap: 6 },
+  checkWrong: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 17, color: colors.amber },
+  checkMiniRamp: { height: 8, borderRadius: 4 },
+  checkPassed: { fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 19, color: colors.green },
+  practiceBtn: { minHeight: 44, justifyContent: 'center', alignItems: 'center' },
+  practiceBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.4, color: colors.amberLabel },
 
   // Gate page
   gateHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 14, paddingBottom: 8 },
-  gateBack: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
+  gateBackBtn: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
+  gateBack: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4 },
   labHeaderKicker: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: colors.amber },
   gateIntro: {
     flex: 1,
