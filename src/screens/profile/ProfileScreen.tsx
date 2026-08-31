@@ -243,8 +243,12 @@ export function ProfileScreen() {
           <AudioOutputRow />
 
           {/* TEMPORARY dev tool (user request 2026-07-18) — visual index of every
-              screen + popup. Remove before release. */}
-          <DevVisualIndex />
+              screen + popup. Its own header says "REMOVE before release", but it
+              carried NO __DEV__ guard, so a paying student could open a master
+              index of every screen in the app from their own Profile (design
+              review 2026-08-30). Guarded now; delete the file and this block
+              when the tool is no longer wanted. */}
+          {__DEV__ ? <DevVisualIndex /> : null}
 
           {/* 1 — STUDENT IDENTITY CARD (user request 2026-07-18): avatar (photo
               or initials), name, membership, understated Student ID. */}
