@@ -34,6 +34,7 @@ import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLesson
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
+import { CheckQuestion } from './foundations/bits';
 import { LabShell, HeaderPlayButton } from './LabShell';
 
 const GEN_LEVEL_DB = -20;
@@ -49,7 +50,7 @@ const RATIOS = [
   { v: 1, label: '1', blurb: 'Modulator = carrier: sidebands land exactly on the harmonic series. Bright but fully pitched — the vintage FM electric-piano zone.' },
   { v: 1.41, label: '1.41 ✳', blurb: '√2 — irrational, so the sidebands fall BETWEEN the harmonics. Nothing lines up: instant bell / metallic clang.' },
   { v: 2, label: '2', blurb: 'One octave up: only odd-ish partials survive — hollow, square-like, still pitched.' },
-  { v: 3.5, label: '3.5 ✳', blurb: 'Another inharmonic ratio: clangorous and gong-like. Compare with 3 or 4 to hear what "in tune with itself" means.' },
+  { v: 3.5, label: '3.5 ✳', blurb: 'Another inharmonic ratio: clangorous and gong-like. Compare with 2 or 7 to hear what "in tune with itself" means.' },
   { v: 7, label: '7', blurb: 'A high integer: sidebands spray far up the series — thin, glassy, but still harmonic.' },
 ] as const;
 // INDEX range for the lane (continuous — J_k(I) is exact to I = 8 and the
@@ -213,8 +214,8 @@ export function FmLabScreen() {
             // gate as the header button (needs the v7 FM engine).
             <Pressable
               onPress={fmReady ? () => (running ? stop() : void strike()) : undefined}
-              accessibilityRole="button"
-              accessibilityLabel={running ? 'Tap to stop' : 'Tap to strike the FM voice'}
+              accessibilityRole={fmReady ? 'button' : undefined}
+              accessibilityLabel={fmReady ? (running ? 'Tap to stop' : 'Tap to strike the FM voice') : undefined}
             >
               <SidebandGraph fc={carrier} fm={fm} index={index} w={w} h={h} />
             </Pressable>
@@ -317,6 +318,32 @@ export function FmLabScreen() {
         ) : null}
       </View>
 
+{/* Retrieval (learning pass 2026-08-31) — NEW COPY, owner review. */}
+      <CheckQuestion
+        spec={{
+          question: 'You want a bell — metallic, not quite in tune with itself. Which ratio family?',
+          options: [
+            'An irrational ratio like 1.41 or 3.5',
+            'An integer ratio like 1 or 2',
+            'The highest ratio available',
+          ],
+          correctIdx: 0,
+          reveal:
+            'Integer ratios drop the sidebands ON the harmonic series — pitched, musical. Irrational ratios (√2, 3.5) drop them BETWEEN the harmonics: nothing lines up, and that inharmonic spray is the bell.',
+          wrongHint: 'A/B ratio 1 against 1.41 ✳ and watch where the sticks land.',
+        }}
+      />
+      <CheckQuestion
+        spec={{
+          question: 'The sidebands sit at equal spacing around the carrier. What sets that spacing?',
+          options: ['The modulator frequency', 'The index', 'The carrier frequency'],
+          correctIdx: 0,
+          reveal:
+            'Sidebands land at fc ± k·fm — the MODULATOR\u2019s frequency is the step size. The index decides how MANY are audible (how far the energy sprays), not where they sit.',
+          wrongHint: 'Ride the INDEX fader: the sticks multiply but never move.',
+        }}
+      />
+
       <GuidedLessonSheet
         visible={lessonOpen}
         lesson={getLabLesson('fm')}
@@ -341,23 +368,26 @@ function SidebandGraph({ fc, fm, index, w, h }: { fc: number; fm: number; index:
 
   const sticks = useMemo(() => {
     const K = Math.min(24, Math.ceil(index + 2) + 2);
-    const out: { f: number; a: number; folded: boolean }[] = [];
+    // 'reflect' = negative-frequency reflection (normal FM math, harmless);
+    // 'alias' = folded past Nyquist (a genuine digital fault). They were one
+    // red flag before — an alarm state at safe defaults (fix 2026-08-31).
+    const out: { f: number; a: number; fold: 'none' | 'reflect' | 'alias' }[] = [];
     for (let k = 0; k <= K; k++) {
       const a = Math.abs(besselJ(k, index));
       if (a < 0.004) continue;
       const push = (f: number) => {
-        let folded = false;
+        let fold: 'none' | 'reflect' | 'alias' = 'none';
         let ff = f;
         if (ff < 0) {
           ff = -ff;
-          folded = true;
+          fold = 'reflect';
         }
         if (ff > NYQUIST) {
           ff = 2 * NYQUIST - ff;
-          folded = true;
+          fold = 'alias';
         }
         if (ff < 0) return; // double-fold — out of teaching range
-        out.push({ f: ff, a, folded });
+        out.push({ f: ff, a, fold });
       };
       push(fc + k * fm);
       if (k > 0) push(fc - k * fm);
@@ -386,9 +416,10 @@ function SidebandGraph({ fc, fm, index, w, h }: { fc: number; fm: number; index:
                 y1={gh - 22}
                 x2={x}
                 y2={gh - 22 - sh}
-                stroke={s.folded ? '#ff6b5e' : isCarrier ? '#5bff85' : colors.amber}
+                stroke={s.fold === 'alias' ? '#ff6b5e' : isCarrier ? '#5bff85' : colors.amber}
                 strokeWidth={isCarrier ? 3 : 2}
-                strokeDasharray={s.folded ? '3 3' : undefined}
+                strokeDasharray={s.fold !== 'none' ? '3 3' : undefined}
+                opacity={s.fold === 'reflect' ? 0.55 : 1}
               />
             </Fragment>
           );
@@ -401,7 +432,7 @@ function SidebandGraph({ fc, fm, index, w, h }: { fc: number; fm: number; index:
         </SvgText>
       </Svg>
       <Text style={styles.legend} numberOfLines={1}>
-        green = carrier (J₀) · amber = sidebands (J_k) · red dashed = folded (aliased)
+        green = carrier · amber = sidebands · dim dashed = reflected below 0 Hz · red dashed = ALIASED past Nyquist
       </Text>
     </View>
   );

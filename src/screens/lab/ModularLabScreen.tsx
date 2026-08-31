@@ -34,6 +34,7 @@ import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLesson
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
+import { CheckQuestion } from './foundations/bits';
 import { LabShell, LabChip, HeaderPlayButton } from './LabShell';
 
 const ACTIVITY_MS = 500;
@@ -432,6 +433,14 @@ export function ModularLabScreen() {
                   ))}
                 </View>
                 <Text style={styles.sectionHead}>LFO — ONE MODULATOR, THREE EFFECTS</Text>
+                {/* Selected-routing readout (standing tray-blurb pattern,
+                    2026-08-31): the DEPTH-0 trap used to leave a highlighted
+                    destination with a vanished cable and no explanation. */}
+                <Text style={styles.caption}>
+                  {patch.lfoDepth <= 0 || patch.lfoDest === 0
+                    ? 'Routing OFF — a routing is live only with DEPTH above zero AND a destination. The lit cable on the diagram is the proof.'
+                    : `LIVE: LFO ${patch.lfoRate} Hz ${LFO_DESTS.find((d) => d.v === patch.lfoDest)?.label ?? ''} — the lit cable on the diagram confirms it.`}
+                </Text>
                 <View style={styles.chipRow}>
                   {LFO_RATES.map((r) => (
                     <LabChip
@@ -552,6 +561,28 @@ export function ModularLabScreen() {
           )
         ) : null}
       </View>
+
+{/* Retrieval (learning pass 2026-08-31) — NEW COPY, owner review. */}
+      <CheckQuestion
+        spec={{
+          question: 'The loudness pulses steadily but the pitch holds. Which routing is patched?',
+          options: ['LFO → AMP (tremolo)', 'LFO → PITCH (vibrato)', 'ENV → CUTOFF'],
+          correctIdx: 0,
+          reveal:
+            'A slow modulator into the AMPLIFIER wobbles volume — tremolo. Into PITCH it wobbles frequency — vibrato. Same LFO, different destination: the destination IS the effect.',
+          wrongHint: 'Patch LFO →AMP and watch which cable lights.',
+        }}
+      />
+      <CheckQuestion
+        spec={{
+          question: 'A note starts bright and mellows as it decays. What creates that?',
+          options: ['The envelope routed to the filter CUTOFF', 'A faster LFO', 'More resonance'],
+          correctIdx: 0,
+          reveal:
+            'ENV → CUTOFF sweeps the filter open at the attack and closes it through the decay — brightness that follows the note\u2019s shape. That one routing is most of what people mean by "synth bass".',
+          wrongHint: 'Enable ENV→CUT in the MOD tray and strike a note.',
+        }}
+      />
 
       <GuidedLessonSheet
         visible={lessonOpen}

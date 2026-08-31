@@ -51,6 +51,7 @@ import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLesson
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
+import { CheckQuestion } from './foundations/bits';
 import { LabShell, HeaderPlayButton } from './LabShell';
 
 const GEN_LEVEL_DB = -20;
@@ -66,6 +67,17 @@ const COLORS: { key: NoiseColor; label: string; mode: number; slope: number }[] 
   { key: 'blue', label: 'BLUE', mode: GEN_MODES.blue, slope: 3 },
   { key: 'violet', label: 'VIOLET', mode: GEN_MODES.violet, slope: 6 },
 ];
+
+/** One line of CHARACTER per colour (learning pass 2026-08-31): the caption
+ *  used to recite white's rationale under every colour, and the owner-priority
+ *  name-the-colour skill had nothing to hang on. NEW COPY — owner review. */
+const COLOR_CHARACTER: Record<NoiseColor, string> = {
+  white: 'Equal energy per Hz — sounds bright because every higher octave holds twice the bandwidth. The untilted reference.',
+  pink: 'Equal energy per OCTAVE — matches how we hear. The mixing and measurement reference.',
+  brown: 'Energy doubling toward the bottom — rumble, surf, distant thunder.',
+  blue: 'Energy rising toward the top — a thin, airy hiss; the sound of dither.',
+  violet: 'Steeply rising — nearly all the energy at the very top. Hiss, distilled.',
+};
 
 /** Shimmer-trace tint per color — the color's own hue, not a claim of
  *  measurement (the badge stays ANALYTIC). */
@@ -228,8 +240,8 @@ export function NoiseLabScreen() {
             // Tapping the display toggles play/stop (owner 2026-07-31).
             <Pressable
               onPress={engineReady ? () => (running ? stopNoise() : void startNoise()) : undefined}
-              accessibilityRole="button"
-              accessibilityLabel={running ? 'Tap to stop' : 'Tap to play noise'}
+              accessibilityRole={engineReady ? 'button' : undefined}
+              accessibilityLabel={engineReady ? (running ? 'Tap to stop' : 'Tap to play noise') : undefined}
             >
               <SlopeChart w={w} h={h} selectedKey={color} selectedSlope={selected.slope} speakerView={speakerView} />
             </Pressable>
@@ -266,6 +278,7 @@ export function NoiseLabScreen() {
                     </Pressable>
                   );
                 })}
+                <Text style={styles.trayBlurb}>{COLOR_CHARACTER[color]}</Text>
               </View>
             ),
           },
@@ -291,7 +304,7 @@ export function NoiseLabScreen() {
             ? `The ${selected.label.toLowerCase()} line is that noise AFTER the speaker high-pass; the ideal straight slopes stay dim behind it, and the amber marker sits at the ${SPEAKER_HPF_HZ} Hz corner. Below it the response rolls off at −12 dB/oct — that low energy never reaches the driver.`
             : `${selected.label.charAt(0)}${selected.label.slice(1).toLowerCase()} = ${
                 selected.slope > 0 ? '+' : ''
-              }${selected.slope} dB per octave (anchored at 1 kHz). Equal energy per Hz sounds bright because every higher octave holds twice the bandwidth. The shimmering trace is a stylized live-noise hint around the exact slope.`}
+              }${selected.slope} dB per octave (anchored at 1 kHz). ${COLOR_CHARACTER[color]} The shimmering trace is a stylized live-noise hint around the exact slope.`}
         </Text>
       </View>
 
@@ -316,6 +329,28 @@ export function NoiseLabScreen() {
           {genError ? <Text style={styles.error}>{genError}</Text> : null}
         </View>
       ) : null}
+
+{/* Retrieval (learning pass 2026-08-31) — NEW COPY, owner review. */}
+      <CheckQuestion
+        spec={{
+          question: 'A hiss that RISES +3 dB per octave toward the top. Which colour?',
+          options: ['Blue', 'Pink', 'Brown'],
+          correctIdx: 0,
+          reveal:
+            'Rising toward the treble = BLUE (+3 dB/oct; violet is steeper at +6). Pink and brown tilt the other way — down toward the bass.',
+          wrongHint: 'Watch which end of the slope chart lifts as you tap the colours.',
+        }}
+      />
+      <CheckQuestion
+        spec={{
+          question: 'You want the reference noise that sounds equally loud in every octave. Which colour?',
+          options: ['Pink', 'White', 'Violet'],
+          correctIdx: 0,
+          reveal:
+            'PINK holds equal energy per OCTAVE — matching how hearing divides the spectrum — which is why it is the mixing and system-tuning reference. White is equal per Hz and reads bright.',
+          wrongHint: 'The per-colour line under the chips names each one\u2019s job.',
+        }}
+      />
 
       <GuidedLessonSheet
         visible={lessonOpen}
@@ -514,10 +549,11 @@ const styles = StyleSheet.create({
   advisory: { fontFamily: fonts.barlowMedium, fontSize: 12, lineHeight: 16, color: colors.amber },
   error: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: '#ff6b5e' },
   // Per-colour noise chip — outlined in the noise's own hue, filled when selected.
+  trayBlurb: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub, width: '100%' },
   noiseChip: {
     borderRadius: 8,
     borderWidth: 1.5,
-    paddingVertical: 8,
+    paddingVertical: 11,
     paddingHorizontal: 14,
     backgroundColor: 'transparent',
   },

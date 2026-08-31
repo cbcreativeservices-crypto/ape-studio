@@ -74,6 +74,8 @@ export function LabChip({
       onPress={onPress}
       onLongPress={onLongPress}
       delayLongPress={350}
+      // 44pt effective target (design pass 2026-08-31): the chip draws ~33pt.
+      hitSlop={{ top: 6, bottom: 6 }}
       accessibilityRole="button"
       accessibilityState={{ selected }}
       accessibilityLabel={

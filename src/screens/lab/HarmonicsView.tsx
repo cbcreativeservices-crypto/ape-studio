@@ -126,6 +126,7 @@ import { WARNING_INFO } from '../../features/tools/measure/types';
 import { EngineGate } from '../tools/EngineGate';
 import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { colors, fonts } from '../../theme/tokens';
+import { CheckQuestion } from './foundations/bits';
 import { HeaderPlayButton, type LabShellExploreApi } from './LabShell';
 import type { BezelItem, DockParam, RackStage } from './rack/rackTypes';
 import {
@@ -352,6 +353,7 @@ function Chip({
       onPress={onPress}
       onLongPress={onLongPress}
       delayLongPress={350}
+      hitSlop={{ top: 6, bottom: 6 }}
       accessibilityRole="button"
       accessibilityState={{ selected }}
       accessibilityLabel={onLongPress ? `${label} — long-press for its guided lesson` : label}
@@ -1993,6 +1995,22 @@ export function HarmonicsView({
           </View>
         </Modal>
       ) : null}
+
+{/* Retrieval (learning pass 2026-08-31) — NEW COPY, owner review. */}
+      <CheckQuestion
+        spec={{
+          question: 'You mute every EVEN harmonic. Which classic wave family is left ringing?',
+          options: [
+            'The odd-only family — square and clarinet territory',
+            'A pure sine',
+            'The full sawtooth series',
+          ],
+          correctIdx: 0,
+          reveal:
+            'Odd harmonics only (1, 3, 5…) is the hollow square/clarinet family. The saw needs BOTH families; a sine is just harmonic 1 alone.',
+          wrongHint: 'Tap MUTE EVEN and read which stems stay lit.',
+        }}
+      />
 
       {/* GUIDED LESSON sheet — opened by the ⓘ display guide or a dock/bezel/
           chip long-press, focused on that control (v4 MASTER §5). The shell's

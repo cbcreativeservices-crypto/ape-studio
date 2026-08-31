@@ -61,6 +61,7 @@ import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLesson
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
+import { CheckQuestion } from './foundations/bits';
 import { LabShell, HeaderPlayButton } from './LabShell';
 import { additivePayload, buildPreset, effectiveAmp, synthWaveform, type PresetKey } from './harmonicModel';
 import { levelColor, MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
@@ -250,8 +251,10 @@ export function OscillatorLabScreen() {
               // Tapping the display toggles play/stop (owner 2026-07-31).
               <Pressable
                 onPress={engineReady ? () => (running ? stopTone() : void startTone()) : undefined}
-                accessibilityRole="button"
-                accessibilityLabel={running ? 'Tap to stop' : 'Tap to play'}
+                // Role/label only when the tap can act — a labeled dead button
+                // is a screen-reader trap (a11y pass 2026-08-31).
+                accessibilityRole={engineReady ? 'button' : undefined}
+                accessibilityLabel={engineReady ? (running ? 'Tap to stop' : 'Tap to play') : undefined}
               >
                 <TravelingWaveStrip points={waveformPts} height={stripH} />
                 <HarmonicBars amps={amps} overlay={speakerView ? guardCurve : undefined} width={w} height={h - stripH} />
@@ -349,6 +352,28 @@ export function OscillatorLabScreen() {
           Bessel amplitudes) vs one pair at fc ± fm (AM).
         </Text>
       </View>
+
+{/* Retrieval (learning pass 2026-08-31) — NEW COPY, owner review. */}
+      <CheckQuestion
+        spec={{
+          question: 'The display shows ONLY odd harmonics, dying away fast (1/n²). Which wave?',
+          options: ['Triangle', 'Square', 'Sawtooth'],
+          correctIdx: 0,
+          reveal:
+            'Odd harmonics + a steep 1/n² rolloff = TRIANGLE — smooth and flute-like. The square also skips the evens but its harmonics fall slowly (1/n), which is why it buzzes.',
+          wrongHint: 'A/B TRIANGLE and SQUARE in the WAVE tray and compare how fast the bars shrink.',
+        }}
+      />
+      <CheckQuestion
+        spec={{
+          question: 'Every harmonic present, each 1/n of the fundamental. Which wave?',
+          options: ['Sawtooth', 'Sine', 'Triangle'],
+          correctIdx: 0,
+          reveal:
+            'The full harmonic series falling 1/n is the SAWTOOTH — the buzziest and brightest of the classics, and the favorite raw material for filters. A sine has exactly one bar.',
+          wrongHint: 'Tap SAW and count the bars.',
+        }}
+      />
 
       <GuidedLessonSheet
         visible={lessonOpen}
