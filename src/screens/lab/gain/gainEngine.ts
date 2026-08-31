@@ -18,6 +18,15 @@ export const HOT_EDGE = -6;
 /** Below here the signal is TOO LOW (sinking toward the noise floor). */
 export const LOW_EDGE = -24;
 
+// Noise model (teaching values): the source arrives with its own hiss, and
+// every stage adds a little self-noise on top of amplifying what it is fed.
+const SOURCE_NOISE = -52;
+const STAGE_SELF_NOISE = -48;
+/** Power-sum of two dB values. */
+function addDb(a: number, b: number): number {
+  return 10 * Math.log10(Math.pow(10, a / 10) + Math.pow(10, b / 10));
+}
+
 // Meter scale — a touch of room above the ceiling and well below the floor.
 const METER_LO = -40;
 const METER_HI = 6;
@@ -67,6 +76,11 @@ export type ChainNode = {
   stageClipped: boolean;
   /** Distortion introduced at or upstream of this node is baked in. */
   distorted: boolean;
+  /** Cumulative noise floor at this node's output (dB rel). Every stage
+   *  amplifies the noise it is handed and injects a little of its own — the
+   *  reason gain EARLY beats gain LATE (learning pass 2026-08-31: the lab's
+   *  too-low story had no visual referent). Teaching model, not a spec. */
+  noise: number;
 };
 
 /**
@@ -87,12 +101,15 @@ export function computeChain(sourceLevel: number, stages: Stage[]): ChainNode[] 
     region: regionFor(sourceLevel),
     stageClipped: sourceLevel >= CLIP_CEIL,
     distorted,
+    noise: SOURCE_NOISE,
   });
+  let noise = SOURCE_NOISE;
   for (const st of stages) {
     const raw = level + st.gain;
     const stageClipped = raw >= CLIP_CEIL;
     if (stageClipped) distorted = true;
     level = Math.min(raw, CLIP_CEIL);
+    noise = Math.min(addDb(noise + st.gain, STAGE_SELF_NOISE), CLIP_CEIL);
     nodes.push({
       key: st.key,
       name: st.name,
@@ -101,6 +118,7 @@ export function computeChain(sourceLevel: number, stages: Stage[]): ChainNode[] 
       region: regionFor(raw),
       stageClipped,
       distorted,
+      noise,
     });
   }
   return nodes;

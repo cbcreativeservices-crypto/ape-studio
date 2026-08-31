@@ -94,7 +94,7 @@ export function GainLabHomeScreen() {
 
 function ToolChip({ label, onPress }: { label: string; onPress: () => void }) {
   return (
-    <Pressable accessibilityRole="button" style={styles.toolChip} onPress={onPress}>
+    <Pressable accessibilityRole="button" hitSlop={{ top: 8, bottom: 8 }} style={styles.toolChip} onPress={onPress}>
       <Text style={styles.toolText}>{label}</Text>
     </Pressable>
   );

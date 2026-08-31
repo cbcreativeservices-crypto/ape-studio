@@ -84,6 +84,12 @@ export function StageMeterV({ node, height = VM_H }: { node: ChainNode; height?:
         <View style={[styles.vZone, { bottom: pct(ZONE_LOW_FILL), height: pct(ZONE_HOT_FILL - ZONE_LOW_FILL), backgroundColor: '#122a17' }]} />
         <View style={[styles.vZone, { bottom: pct(ZONE_HOT_FILL), height: pct(1 - ZONE_HOT_FILL), backgroundColor: '#2a1410' }]} />
         <GradientView colors={rampColors(fill)} start={{ x: 0, y: 1 }} end={{ x: 0, y: 0 }} style={[styles.vFill, { height: pct(fill) }]} />
+        {/* Cumulative noise floor — grey hiss eating the meter from below.
+            This is the visual referent for the too-low lesson (learning pass
+            2026-08-31): pile on late gain and watch the hiss ride up. */}
+        {meterFill(node.noise) > 0.005 ? (
+          <View style={[styles.vNoise, { height: pct(meterFill(node.noise)) }]} />
+        ) : null}
         <View style={[styles.vCeil, { bottom: pct(ZONE_CLIP_FILL) }]} />
       </View>
       {node.stageClipped ? (
@@ -300,8 +306,11 @@ export function ChainStage({ w, h, cols }: { w: number; h: number; cols: StageCo
           );
           return (
             <View key={c.key} style={styles.stageColWrap}>
+              {/* Arrow tint guarded on display (fix 2026-08-31): a red arrow
+                  between HIDDEN columns pointed straight at the Troubleshoot
+                  fault. */}
               {i > 0 ? (
-                <Text style={[styles.stageArrow, c.node.distorted && { color: '#ff5f4e' }]}>▸</Text>
+                <Text style={[styles.stageArrow, c.node.distorted && display !== 'hidden' && { color: '#ff5f4e' }]}>▸</Text>
               ) : null}
               {c.onPress ? (
                 <Pressable
@@ -520,7 +529,7 @@ export function GainBtn({
   return (
     <Pressable
       onPress={onPress}
-      hitSlop={6}
+      hitSlop={10}
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityState={active != null ? { selected: active } : undefined}
@@ -545,6 +554,7 @@ const styles = StyleSheet.create({
   vZone: { position: 'absolute', left: 0, right: 0 },
   vFill: { position: 'absolute', left: 1, right: 1, bottom: 0, borderRadius: 2, opacity: 0.95 },
   vCeil: { position: 'absolute', left: -1, right: -1, height: 2, backgroundColor: '#ff5f4e' },
+  vNoise: { position: 'absolute', left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(158,158,168,0.42)' },
   vRegion: { fontFamily: fonts.oswaldSemiBold, fontSize: 8.5, letterSpacing: 0.4 },
   clipBadge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 0.8, color: '#fff', backgroundColor: '#c62f22', borderRadius: 3, paddingHorizontal: 4, paddingVertical: 1, overflow: 'hidden' },
   distBadge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.5, color: '#ff7a1e' },

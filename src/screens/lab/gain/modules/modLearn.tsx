@@ -47,7 +47,7 @@ const INTRO_CHECK: CheckSpec = {
   question: 'Gain staging is mostly about…',
   options: [
     'Making every stage as loud as possible',
-    'Keeping the signal in each stage’s healthy operating range',
+    'Keeping each stage in its healthy range',
     'Turning the final output all the way up',
   ],
   correctIdx: 1,
@@ -189,7 +189,7 @@ export function InputGainModule(_p: GainModuleComponentProps) {
 // ───────────────────────────────────────── 3 · Follow the Signal ────────────
 const FOLLOW_CHECK: CheckSpec = {
   question: 'You set the preamp too hot and it clipped. Turning the processor after it DOWN will…',
-  options: ['Fix the distortion', 'Lower the level but leave the distortion', 'Do nothing at all'],
+  options: ['Fix the distortion it caused', 'Lower the level, not the distortion', 'Do nothing at all downstream'],
   correctIdx: 1,
   reveal:
     'A later stage can only change LEVEL. Once a stage clips, the distortion is part of the signal and travels downstream — you have to fix it at the stage where it happened.',
@@ -259,6 +259,22 @@ export function FollowModule(_p: GainModuleComponentProps) {
 }
 
 // ───────────────────────────────────────── 4 · Too Low vs. Too High ─────────
+/** Retrieval for the noise-misconception module (learning pass 2026-08-31 —
+ *  it had none, and this is where the misconception lives). NEW COPY — owner
+ *  review. */
+const LOWHIGH_CHECK: CheckSpec = {
+  question: 'You compensated for a starved first stage with big gain later. The output meter now reads healthy — so what’s wrong?',
+  options: [
+    'Nothing — a healthy final level means a healthy chain',
+    'The noise floor came up with the late gain — hiss you can never remove',
+    'The signal is now out of phase',
+  ],
+  correctIdx: 1,
+  reveal:
+    'Every dB of gain lifts the noise a stage was handed along with the signal. Boost late and you boost the accumulated hiss of everything upstream — the meter reads healthy, the recording hisses. Set a healthy level EARLY instead.',
+  wrongHint: 'Run the TOO LOW scenario and watch the grey band at the bottom of the meters.',
+};
+
 const SCENARIOS: Record<string, { pre: number; out: number }> = {
   low: { pre: 2, out: 24 },
   high: { pre: 36, out: -16 },
@@ -275,7 +291,7 @@ export function LowHighModule(_p: GainModuleComponentProps) {
   const nodes = computeChain(-30, stages);
   const anyLow = nodes.slice(1).some((n) => n.region === 'low');
   const anyClip = nodes.some((n) => n.stageClipped);
-  const finalHealthyFromLow = anyLow && nodes[nodes.length - 1].region === 'healthy';
+  const anyHot = nodes.slice(1).some((n) => n.region === 'hot');
   const scenarioId =
     Object.entries(SCENARIOS).find(([, s]) => s.pre === pre && s.out === out)?.[0] ?? null;
   const params: DockParam[] = [
@@ -337,6 +353,9 @@ export function LowHighModule(_p: GainModuleComponentProps) {
         bezel: [
           { k: 'PREAMP', v: fmtLv(nodes[1].level), tint: stageTint(nodes[1]) },
           { k: 'OUTPUT', v: fmtLv(nodes[2].level), tint: stageTint(nodes[2]) },
+          // Magnitude readout for the new hiss-fill; amber only when the
+          // noise genuinely intrudes.
+          { k: 'NOISE', v: fmtLv(nodes[2].noise), tint: nodes[2].noise > -30 ? '#e8c341' : undefined },
           { k: 'STATUS', ...stageStatus(nodes[2]) },
         ],
         render: (w, h) => <ChainStage w={w} h={h} cols={cols} />,
@@ -349,15 +368,22 @@ export function LowHighModule(_p: GainModuleComponentProps) {
           of turning the output down afterward will clean it up. Try each SCENARIO, then ride the
           faders yourself.
         </GlossaryText>
+        {/* Reworked (learning pass 2026-08-31): the old logic said "BALANCED:
+            healthy level at every stage" whenever the FINAL level was healthy —
+            including the too-low-early scenario it exists to condemn. Verdict
+            now follows the whole chain; HOT line is NEW COPY — owner review. */}
         <View style={styles.note}>
           <Text style={styles.noteText}>
             {anyClip
               ? 'TOO HIGH: the preamp is clipping — the output is quieter now, but the distortion is baked in.'
-              : finalHealthyFromLow
-                ? 'TOO LOW: to make the weak signal usable you piled on gain later — which also amplifies the noise floor.'
-                : 'BALANCED: healthy level at every stage, with headroom to spare.'}
+              : anyLow
+                ? 'TOO LOW: to make the weak signal usable you piled on gain later — and the grey hiss at the bottom of the meters came up with it.'
+                : anyHot
+                  ? 'HOT: nothing is clipping yet, but a stage is riding the ceiling — one loud note and it will.'
+                  : 'BALANCED: healthy level at every stage, with headroom to spare.'}
           </Text>
         </View>
+        <CheckQuestion spec={LOWHIGH_CHECK} />
       </View>
     </RackUnit>
   );
@@ -367,9 +393,9 @@ export function LowHighModule(_p: GainModuleComponentProps) {
 const FADER_CHECK: CheckSpec = {
   question: 'The preamp clipped, then you pulled the fader down. The output is quiet but still distorted because…',
   options: [
-    'The fader is broken',
-    'The clipping already happened upstream — the fader only changes level, not the damage',
-    'You didn’t pull it down far enough',
+    'The fader is broken and no longer attenuating the signal',
+    'The clipping already happened upstream of the fader',
+    'You didn’t pull the fader down far enough to clean it up',
   ],
   correctIdx: 1,
   reveal:
@@ -444,9 +470,11 @@ export function FaderVsGainModule(_p: GainModuleComponentProps) {
         </GlossaryText>
         <View style={[styles.note, outDistorted && styles.noteBad]}>
           <Text style={styles.noteText}>
-            {outDistorted
-              ? 'The fader is down and the output is quiet — but it is STILL distorted. The fix is upstream: lower the preamp so it never clips.'
-              : 'Clean chain. Clipping has to be prevented at the input gain, not patched at the fader.'}
+            {outDistorted && fader < 0
+              ? 'The fader is down and the output is quieter — but it is STILL distorted. The fix is upstream: lower the preamp so it never clips.'
+              : outDistorted
+                ? 'The preamp is clipping. Now pull the FADER down and watch what changes — and what doesn’t.'
+                : 'Clean chain. Clipping has to be prevented at the input gain, not patched at the fader.'}
           </Text>
         </View>
         <CheckQuestion spec={FADER_CHECK} />

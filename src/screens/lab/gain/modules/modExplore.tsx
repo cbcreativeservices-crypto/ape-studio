@@ -393,7 +393,9 @@ export function TroubleshootModule(_p: GainModuleComponentProps) {
     },
     ...stages.map((st, i) => {
       const isMaster = st.key === 'out';
-      const open = isMaster || revealed === st.key;
+      // On PASS the whole restored chain is revealed (fix 2026-08-31: the
+      // trophy copy said "healthy at every stage" over four '?' columns).
+      const open = isMaster || revealed === st.key || healthy;
       return {
         key: st.key,
         name: SHORT[st.key],
