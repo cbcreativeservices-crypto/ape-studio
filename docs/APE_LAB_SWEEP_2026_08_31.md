@@ -513,3 +513,27 @@ own comment explains the cell-tap was added so users need not hit the small key
 — so the ⟲ is the affordance, not a second button. It is now plain text.
 Verified 1 → 0 nested; the cell still resets.
 
+
+---
+
+## AUDIO COMMUNITY DIRECTORY (built earlier tonight — first run in the UI)
+
+Renders correctly: the three destinations (EXPLORE · MY PROFILE · REQUESTS),
+the search field, the filter disclosure, and the self-reported disclosure line.
+MY PROFILE loads the taxonomy live from the database — all 13 areas with the
+exact labels from the seed, and the 0/3 counter working. Zero console errors,
+zero nested buttons.
+
+### FIXED · The directory showed a raw Postgres error to a signed-out visitor
+Explore displayed **"permission denied for function directory_search"**.
+
+Every directory function is granted to `authenticated` only, so PostgREST
+rejects an anonymous caller **at the grant, before the function body runs** —
+which means the friendly `'sign in to browse the directory'` guard I wrote
+inside `directory_search` is unreachable for exactly the person it was written
+for. `readableError` had no mapping for it, so the raw string went straight to
+the screen.
+
+Mapped to **"Sign in to use the Audio Community Directory."**, with a regression
+test. My own bug, found by opening my own feature as a guest.
+

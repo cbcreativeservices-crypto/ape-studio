@@ -157,6 +157,15 @@ export function slugify(label: string): string {
  */
 export function readableError(message: string | undefined): string {
   const m = (message ?? '').toLowerCase();
+  // PostgREST rejects an anon caller at the GRANT before the function body
+  // runs, so the friendly "sign in to browse" guard inside directory_search is
+  // unreachable for a signed-out visitor — they got the raw
+  // "permission denied for function directory_search" instead. Every directory
+  // function is granted to `authenticated` only, so this error means exactly
+  // one thing: no account. (Found 2026-08-31 by opening the directory as a
+  // guest during the lab sweep.)
+  if (m.includes('permission denied for function'))
+    return 'Sign in to use the Audio Community Directory.';
   if (m.includes('at most')) return message ?? 'That is more than you can select.';
   if (m.includes('needs one of its areas')) return 'Add the matching area first, or remove that specialty.';
   if (m.includes('primary area')) return 'Choose one primary area before publishing.';

@@ -169,6 +169,16 @@ describe('Server errors become something a member can act on', () => {
     );
   });
 
+  it('turns a grant rejection into "sign in", not raw Postgres', () => {
+    // A signed-out visitor is rejected by the GRANT before the function body
+    // runs, so its own friendly guard never fires. Without this mapping the
+    // directory showed "permission denied for function directory_search".
+    assert.equal(
+      readableError('permission denied for function directory_search'),
+      'Sign in to use the Audio Community Directory.',
+    );
+  });
+
   it('passes an unrecognised failure through rather than inventing a cause', () => {
     assert.equal(readableError('connection reset by peer'), 'connection reset by peer');
   });
