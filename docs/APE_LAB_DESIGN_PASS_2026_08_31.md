@@ -67,7 +67,7 @@ done) · `implemented` · `pushed` · `blocked: reason`
 | 9 | Signal Chain Builder | pushed |
 | 10 | Signal Detective | pushed (via lab 8) |
 | 11 | Cable & Connector Fundamentals | pushed |
-| 12 | Cable Dressing & Installation | pending |
+| 12 | Cable Dressing & Installation | pushed |
 | 13 | Gain Staging | pending |
 
 ### Advanced Training Labs (25)
@@ -131,6 +131,22 @@ distractors — sign-off required); PrincipleBanner cadence (placement only);
 L04 never-YES pattern; ~10 "— VERIFY"/"EXPERT REVIEW PENDING" sourceNotes
 still open pre-launch; photo-recognition never actively tested (tap names,
 never "which connector is this photo?").
+
+### 12 · Cable Dressing & Installation — PUSHED
+
+**Design:** hierarchy A− · density B+ · affordance B · copy A · idiom A− · first-15s A−.
+**Learning:** sequencing A · load B+ · interaction A− · retrieval C+ · misconceptions B+.
+
+**Shipped:** rankRoutes weighted + REJECTED—SAFETY tag (safety-zero route scored
+75/100 framed as a near-tie); stableShuffle at 6 authored-MCQ sites (correct
+answer was always index 0); visible wrong-correction feedback in inspection;
+stage 1 ends on the correct approval (first pick scored); inspection resumes at
+quiz via clearedUnits; "HIDDEN"→"TO PROCESS"; weakestDim <80 threshold
+(verified live); bottom nav flex; "n/15 units".
+
+**Left:** innocent-detail findings (new content — owner); nearest-marker tap
+resolution (rack cluster overlaps); mergeDims early-mistake wash-out; myth
+global order vs stage boundaries.
 
 ### 10 · Signal Detective — COVERED BY LAB 8
 
