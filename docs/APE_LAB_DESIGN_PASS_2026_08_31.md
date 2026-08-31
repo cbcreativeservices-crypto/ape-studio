@@ -57,7 +57,7 @@ done) · `implemented` · `pushed` · `blocked: reason`
 | # | Lab | State |
 |---|---|---|
 | 1 | Understanding Level & Amplitude | pushed |
-| 2 | Foundations of Sound | pending |
+| 2 | Foundations of Sound | pushed |
 | 3 | Sound Playground | pending |
 | 4 | Microphone Principles | pending |
 | 5 | Wave Physics Laboratory | pending |
@@ -101,6 +101,21 @@ done) · `implemented` · `pushed` · `blocked: reason`
 | 38 | Modular Synth | pending |
 
 ## GRADES & FINDINGS
+
+### 2 · Foundations of Sound — PUSHED
+
+**Design grades:** hierarchy A− · density B+ · affordance B+ · copy A− · idiom **A** · first-15s A− · cross-module A−.
+**Learning grades:** sequencing A− · load B+ · interaction A− · **retrieval B− (10/11 checks had the answer at the same index)** · retention C+ · misconceptions A− (M7 predict-first was SPOILED by its own prose) · pacing B.
+
+**Shipped:** CheckQuestion shuffles on mount (fleet-wide, bits.tsx); M7
+prediction lifted to the screen so prose/check render only post-commit; PROBE
+lane prints twin values; M1 check added; M14 recap → 3-question cumulative
+check; wrongHints on 8 checks pointing at the disproving dock experiment; dBFS
+purged before M13 (%, relative dB); M5 unified on A/B; badges wrap instead of
+truncate (RackUnit, fleet-wide); M12 drops TONE cell; PLAYGROUND ›/▸ TEXT 44pt.
+
+**Owner review queue:** new check copy (M1, M14 ×3, 8 wrongHints) — written
+under today's "implement everything" ruling; ratified-copy rule notes it here.
 
 ### 1 · Understanding Level & Amplitude — PUSHED
 
