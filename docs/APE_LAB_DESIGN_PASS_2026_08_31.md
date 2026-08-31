@@ -76,28 +76,28 @@ done) · `implemented` · `pushed` · `blocked: reason`
 |---|---|---|
 | 14 | Audio Calculator Laboratory | pending |
 | 15 | Vacuum Tube Fundamentals | pending |
-| 16 | Distortion | pending |
-| 17 | Compression | pending |
-| 18 | Gate / Expander | pending |
-| 19 | Limiter | pending |
+| 16 | Distortion | pushed (FX fleet) |
+| 17 | Compression | pushed (FX fleet) |
+| 18 | Gate / Expander | pushed (FX fleet) |
+| 19 | Limiter | pushed (FX fleet) |
 | 20 | Equalizer | pending |
-| 21 | EQ Lab | pending |
+| 21 | EQ Lab | pushed (FX fleet) |
 | 22 | Bass Guitar Physics | pending |
 | 23 | Microphone Selection Lab | pending |
-| 24 | Chorus | pending |
-| 25 | Flanger | pending |
-| 26 | Phaser | pending |
-| 27 | Phase | pending |
+| 24 | Chorus | pushed (FX fleet) |
+| 25 | Flanger | pushed (FX fleet) |
+| 26 | Phaser | pushed (FX fleet) |
+| 27 | Phase | pushed (FX fleet) |
 | 28 | Autotune | pending |
 | 29 | Harmonograph | pending |
-| 30 | Stereo Imaging | pending |
+| 30 | Stereo Imaging | pushed (FX fleet) |
 | 31 | Binaural Panner | pending |
 | 32 | Oscillators | pending |
 | 33 | Noise | pending |
 | 34 | Harmonics | pending |
 | 35 | FM Synthesis | pending |
-| 36 | Delay | pending |
-| 37 | Reverb | pending |
+| 36 | Delay | pushed (FX fleet) |
+| 37 | Reverb | pushed (FX fleet) |
 | 38 | Modular Synth | pending |
 
 ## GRADES & FINDINGS
@@ -147,6 +147,22 @@ quiz via clearedUnits; "HIDDEN"→"TO PROCESS"; weakestDim <80 threshold
 **Left:** innocent-detail findings (new content — owner); nearest-marker tap
 resolution (rack cluster overlaps); mergeDims early-mistake wash-out; myth
 global order vs stage boundaries.
+
+### 16–19, 21, 24–27, 30, 36, 37 · FX FLEET (12 labs, one shell) — PUSHED
+
+**Shell design:** hierarchy A− · density B+ · affordance A− · copy B+ · idiom A · first-15s B.
+**Shell learning:** sequencing B · load B+ · interaction A− · retrieval F · misconceptions B−.
+
+**Shipped:** `checks` slot in FxLabConfig + 24 authored questions (2/lab, keyed
+to each lab's core contrast); exploreCaption hoisted out of disclosures
+(LabShell — benefits all LabShell labs); shortChoice keeps units; web-branched
+engine-gate note; GR "NO ENG"; EQ pass-filter caption honesty; Delay tempo-sync
+line; phaser/flanger sweep tips promoted; dynamics tray blurbs.
+
+**Left:** live caption pinned at stage (RackUnit slot — "where the insight
+fires"); Stereo BASS-MONO dead-knob note; Limiter sparse (makeup/true-peak
+toggle later); suppress entry audio prompt when !fxReady (owner decision);
+per-lab suggested experiment path.
 
 ### 13 · Gain Staging — PUSHED
 
