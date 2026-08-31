@@ -409,3 +409,51 @@ its title. If it does, this is a web-preview artifact and can be closed. If it
 does not, it is a launch-blocking cosmetic bug on the app's main entry card and
 I will fix it immediately.
 
+
+---
+
+## AUDIO MEASUREMENT TOOLS
+
+The hub renders correctly at phone width: eight tiles in the 2-column rack,
+zero overflow, and every live preview strip drawing (VU, spectrum, waveform,
+spectrogram, tone generator, RT60 decay, tuner). Zero console errors.
+
+### REAL BUG · Layout constants are frozen at import — they survive rotation stale
+
+Five screens compute layout from `Dimensions.get('window')` **at module scope**,
+so the value is captured once when the file is first imported and never
+recomputed. `"orientation": "default"` is set app-wide and **no screen locks
+orientation**, so rotating the phone leaves these layouts sized for the previous
+orientation until the app is restarted.
+
+| File | Constant |
+|---|---|
+| `screens/tools/ToolsHubScreen.tsx` | `SCREEN_W` → `TILE_W` → `CHASSIS_L` (the whole rack geometry) |
+| `screens/courses/CourseSelectionScreen.tsx` | `SCREEN_W` — **the Home screen** |
+| `screens/awards/AwardsScreen.tsx` | `SCREEN_W` |
+| `screens/achievements/AchievementsScreen.tsx` | `TILE` |
+| `components/TrophyModal.tsx` | `SCREEN_W`, `SCREEN_H` |
+
+**Proven, not inferred.** With the window resized to 375 px but the module still
+holding its 1492 px value, ToolsHub drew its tiles **708 px wide inside a 345 px
+container** — half a VU meter visible. Reloading at the same 375 px, so module
+scope re-ran, produced a perfect hub with **zero elements wider than the screen**.
+Same viewport, same code; only the staleness of the constant differed. That is
+exactly what a device rotation does.
+
+**Deliberately NOT fixed, and why.** The fix is `useWindowDimensions()` inside
+each component, but in ToolsHub `TILE_W` feeds `CHASSIS_L`, which is baked into
+five `StyleSheet` entries describing the owner-approved recessed-rack geometry
+(`tileFrame`, `displayWell`, plate offsets). Making that reactive means
+recomputing an intricate, signed-off visual design per render, across five
+files, with no way to check the result on a device tonight. The risk of
+silently degrading the app's most design-sensitive screen outweighs fixing a
+rotation-only defect at 3am.
+
+**Recipe when it is done:** replace the module constant with
+`const { width } = useWindowDimensions();` in the component, derive
+`TILE_W`/`CHASSIS_L` with `useMemo(..., [width])`, convert the five affected
+`StyleSheet` entries to inline style objects, and check portrait *and* landscape
+on the Pixel. The other four files are simpler — none of them feeds a generated
+geometry.
+
