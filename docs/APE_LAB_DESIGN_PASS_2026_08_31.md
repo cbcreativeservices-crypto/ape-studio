@@ -66,7 +66,7 @@ done) · `implemented` · `pushed` · `blocked: reason`
 | 8 | Visual Audio Analysis | pushed |
 | 9 | Signal Chain Builder | pushed |
 | 10 | Signal Detective | pushed (via lab 8) |
-| 11 | Cable & Connector Fundamentals | pending |
+| 11 | Cable & Connector Fundamentals | pushed |
 | 12 | Cable Dressing & Installation | pending |
 | 13 | Gain Staging | pending |
 
@@ -115,6 +115,22 @@ CUSTOM-chain interpretive line.
 **Left:** makeup-gain op for SQUASH (device sound check first); scenario
 sequencing (5 equal buttons, nothing orders them); 6 of 9 modules give no
 visual feedback (meter/ear only).
+
+### 11 · Cable & Connector Fundamentals — PUSHED
+
+**Design:** hierarchy B+ · density B · affordance B− · copy A ("best in the app") · idiom A− · first-15s B−.
+**Learning:** sequencing A · load B · interaction A− · retrieval C+ · misconceptions A.
+
+**Shipped:** useShuffled() hook — all 6 bespoke exercise sites shuffled (answers
+were authored first + rendered unshuffled: tap-the-first-chip passed
+everything); OptionChip 44pt; "0/20 UNITS" labeled counter; dot pitch; L12
+actions below banks; tester chips "A · XLR" type hints.
+
+**Left (OWNER REVIEW):** L03/L12 length-cueing (fix = enriching safety-adjacent
+distractors — sign-off required); PrincipleBanner cadence (placement only);
+L04 never-YES pattern; ~10 "— VERIFY"/"EXPERT REVIEW PENDING" sourceNotes
+still open pre-launch; photo-recognition never actively tested (tap names,
+never "which connector is this photo?").
 
 ### 10 · Signal Detective — COVERED BY LAB 8
 
