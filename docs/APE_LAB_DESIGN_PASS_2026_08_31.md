@@ -62,7 +62,7 @@ done) · `implemented` · `pushed` · `blocked: reason`
 | 4 | Microphone Principles | pushed |
 | 5 | Wave Physics Laboratory | pushed |
 | 6 | Speaker Placement & Coverage | pushed |
-| 7 | Digital Audio Systems | pending |
+| 7 | Digital Audio Systems | pushed |
 | 8 | Visual Audio Analysis | pending |
 | 9 | Signal Chain Builder | pending |
 | 10 | Signal Detective | pending |
@@ -101,6 +101,17 @@ done) · `implemented` · `pushed` · `blocked: reason`
 | 38 | Modular Synth | pending |
 
 ## GRADES & FINDINGS
+
+### 7 · Digital Audio Systems — PUSHED
+
+**Design:** hierarchy A− · density B+ · affordance C+ · copy A · idiom A · first-15s B− (hub).
+**Learning:** sequencing A · load B+ · interaction A− · retrieval B+ (14 checks; one exact duplicate) · misconceptions A ("the crown").
+
+**Shipped:** M8's fold check de-duplicated (44.1k/26k→18.1k — retrieval, not
+recognition); hub tool chips 34→44pt.
+
+**Left:** deep-links for 5 secondary-tool chips that land at module TOP (route
+section param); hub progress ticks; audible dither A/B; signal-path banner.
 
 ### 6 · Speaker Placement & Coverage — PUSHED
 
