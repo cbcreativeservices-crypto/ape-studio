@@ -250,9 +250,12 @@ export function SettingsScreen({ navigation }: Props) {
       <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 20 }]}>
         {/* NOTIFICATIONS — transport toggles (server) + the commercial content
             notifications (device-local; server prefs frozen). */}
+        {/* Every section starts CLOSED (owner 2026-08-30): six collapsed
+            headers fit on one screen, each showing its own state on the right,
+            so the whole configuration is readable before anything is opened.
+            Auto-opening one section buried the others under its length. */}
         <SettingsSection
           title="NOTIFICATIONS"
-          defaultOpen
           summary={(() => {
             const n =
               (prefs?.push_enabled ? 1 : 0) +
