@@ -124,22 +124,6 @@ export function computeChain(sourceLevel: number, stages: Stage[]): ChainNode[] 
   return nodes;
 }
 
-/** Plain-language verdict for a node — used by the meters and the exercises. */
-export function verdictFor(node: ChainNode): string {
-  if (node.stageClipped) return 'OVERLOADED — clipping here';
-  if (node.distorted) return 'DISTORTED — clipped upstream, baked in';
-  switch (node.region) {
-    case 'low':
-      return 'TOO LOW — near the noise floor';
-    case 'hot':
-      return 'HOT — little headroom left';
-    case 'healthy':
-      return 'HEALTHY — good operating level';
-    default:
-      return 'OVERLOADED';
-  }
-}
-
 /** True when every STAGE sits in the healthy band with no distortion — the
  *  goal state for the balance exercises. The raw source is exempt: a quiet
  *  source is exactly why the chain has gain stages. */
