@@ -82,16 +82,16 @@ done) · `implemented` · `pushed` · `blocked: reason`
 | 19 | Limiter | pushed (FX fleet) |
 | 20 | Equalizer | pending |
 | 21 | EQ Lab | pushed (FX fleet) |
-| 22 | Bass Guitar Physics | pending |
+| 22 | Bass Guitar Physics | pushed (trio batch) |
 | 23 | Microphone Selection Lab | pending |
 | 24 | Chorus | pushed (FX fleet) |
 | 25 | Flanger | pushed (FX fleet) |
 | 26 | Phaser | pushed (FX fleet) |
 | 27 | Phase | pushed (FX fleet) |
-| 28 | Autotune | pending |
+| 28 | Autotune | pushed (trio batch) |
 | 29 | Harmonograph | pending |
 | 30 | Stereo Imaging | pushed (FX fleet) |
-| 31 | Binaural Panner | pending |
+| 31 | Binaural Panner | pushed (trio batch) |
 | 32 | Oscillators | pushed (synth batch) |
 | 33 | Noise | pushed (synth batch) |
 | 34 | Harmonics | pushed (synth batch) |
@@ -161,6 +161,21 @@ defaults) + ratio-3.5 blurb fix; Modular DEPTH-0 routing readout; LabChip
 **Left:** DockTray backdrop double-tap (shared infra, owner decision); Modular
 ENV/ENV→CUT row split; Noise grey/textured "in development" disclosure only in
 lesson content; FM STRIKE silent no-op pre-v7.
+
+### 22, 28, 31 · TRIO BATCH (Bass / Autotune / Binaural) — PUSHED
+
+**Grades:** Autotune A−/B · Binaural B+/B− · Bass B+/A−.
+
+**Shipped:** Bass web fretboard-tap crash guard (whole-app white screen —
+reproduced, fixed, verified); Autotune τ-aware ENDS + OFF-state dashed curve;
+Bass H5 "≈G♯3 −14¢" honesty; Binaural silence trap + SRC localizability blurbs
++ −0.0 fix; 6 checks (all three had zero); ParamLane backed labels (fleet);
+DEV: wordmark tier survives web reloads (provider hydration + auto-guest
+preserve — verified live).
+
+**Left:** Binaural head glyph 13px + invisible rings; Bass standing-wave
+contrast/amplitude; no root error boundary (app-wide — worth an owner
+conversation); DockTray backdrop double-tap (still open).
 
 ### 16–19, 21, 24–27, 30, 36, 37 · FX FLEET (12 labs, one shell) — PUSHED
 
