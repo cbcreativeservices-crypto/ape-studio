@@ -11,6 +11,7 @@ import { DarkTheme, NavigationContainer, type Theme } from '@react-navigation/na
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { KeyboardProvider, KeyboardToolbar } from './src/features/keyboard/keyboardControllerSafe';
 import { RootNavigator } from './src/navigation/RootNavigator';
+import { RootErrorBoundary } from './src/components/RootErrorBoundary';
 import { Spl3dGaugePreview } from './src/screens/tools/Spl3dGaugePreview';
 import { ToolPreview } from './src/screens/tools/ToolPreview';
 import { MicPrinciplesLabScreen } from './src/screens/lab/micspeaker/MicPrinciplesLabScreen';
@@ -231,6 +232,9 @@ export default function App() {
   }
 
   return (
+    // Last line of defence (QA night 2026-09-01): before this, ONE uncaught
+    // render error unmounted the whole app to a white screen with no way back.
+    <RootErrorBoundary>
     <SafeAreaProvider>
       {/* Global keyboard handling (owner 2026-08-01): powers KeyboardAwareScrollView
           so focused fields lift above the keyboard instead of being covered.
@@ -318,5 +322,6 @@ export default function App() {
       />
       </KeyboardProvider>
     </SafeAreaProvider>
+    </RootErrorBoundary>
   );
 }
