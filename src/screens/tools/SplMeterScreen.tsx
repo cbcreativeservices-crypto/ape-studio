@@ -1268,12 +1268,12 @@ export function SplMeterScreen({ navigation }: Props) {
           style={styles.vuOpenBtn}
           onPress={() => setView('home')}
           accessibilityRole="button"
-          accessibilityLabel="Back to the VU meter home"
+          accessibilityLabel="Back to the SPL meter home"
         >
           <View style={styles.vuOpenFrame}>
             {viz ? <viz.VuGlyph size={58} /> : <VuGlyphFallback />}
           </View>
-          <Text style={styles.vuOpenLabel}>VU HOME</Text>
+          <Text style={styles.vuOpenLabel}>SPL HOME</Text>
         </Pressable>
       </View>
 
@@ -1532,7 +1532,7 @@ export function SplMeterScreen({ navigation }: Props) {
       /* ── SPL Meter HOME (de-modalized 2026-08-19): the VU home, now an ordinary
          in-tree view (was the always-open `vuOpen` native Modal). Same state,
          same handlers — the meter keeps running; nothing here is a second copy of
-         the measurement. Reached via the header "VU HOME"; "DIGITAL ›" returns.
+         the measurement. Reached via the header "SPL HOME"; "DIGITAL ›" returns.
          Hardware BACK is handled by the BackHandler effect above. */
         <View style={[styles.vuModalRoot, { paddingTop: insets.top + 8 }]}>
           {/* SPL Meter HOME header — title + nav to the digital readout and the
