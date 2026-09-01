@@ -832,11 +832,10 @@ export function SplMeterScreen({ navigation }: Props) {
   // AUTO range (owner 2026-07-30): when on, the 0-VU reference tracks a slow EMA
   // of the measured SPL so the needle stays on-scale and visibly swinging around
   // centre. Manual chips turn it off. autoRangeDb is the rounded auto reference.
-  // Default to a FIXED range (owner 2026-08-18): AUTO kept re-referencing the
-  // 0-VU point in 5 dB steps, so the needle re-centered instead of SWINGING like
-  // a real VU. Fixed (rangeDb, 60 dB @ 0 VU) lets it swing; AUTO stays available
-  // in the Range popup.
-  const [rangeAuto, setRangeAuto] = useState(false);
+  // DEFAULT = AUTO (owner 2026-09-01, superseding the 2026-08-18 fixed-range
+  // ruling): the meter starts tracking the room so it reads sensibly with no
+  // setup; manual values stay one tap away in the Range popup.
+  const [rangeAuto, setRangeAuto] = useState(true);
   const [autoRangeDb, setAutoRangeDb] = useState(80);
   const splEmaRef = useRef<number | null>(null);
   // 3-second averaged SPL that drives the gauge ZONE COLOR only (owner
@@ -2127,10 +2126,11 @@ export function SplMeterScreen({ navigation }: Props) {
             <View style={styles.popupGrid}>
               {settingPopup === 'range' && (
                 <>
-                  <PopupOpt label="AUTO" selected={rangeAuto} onPress={() => { setRangeAuto(true); setSettingPopup(null); }} />
                   {RANGE_VALUES.map((v) => (
                     <PopupOpt key={v} label={`${v}`} selected={!rangeAuto && rangeDb === v} onPress={() => { setRangeAuto(false); setRangeDb(v); setSettingPopup(null); }} />
                   ))}
+                  {/* AUTO sits AFTER the fixed values (owner 2026-09-01). */}
+                  <PopupOpt label="AUTO" selected={rangeAuto} onPress={() => { setRangeAuto(true); setSettingPopup(null); }} />
                 </>
               )}
               {settingPopup === 'unit' && UNIT_OPTS.map((u) => (
