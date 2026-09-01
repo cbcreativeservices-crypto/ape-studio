@@ -259,9 +259,13 @@ export function ScenariosScreen({ route }: Props) {
     [item, activeRound, achievementId, advance],
   );
 
+  // Synchronous per-item guard (QA night 2026-08-31): same-tick multi-taps
+  // saw batched state and could judge one question twice.
+  const answeredItemRef = useRef<string | null>(null);
   const answerSingle = useCallback(
     (opt: string) => {
-      if (!item || picked || feedback) return;
+      if (!item || picked || feedback || answeredItemRef.current === item.id) return;
+      answeredItemRef.current = item.id;
       setPicked(opt);
       judge(opt === item.correct[0]);
     },

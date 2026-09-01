@@ -240,7 +240,11 @@ export function FillInBlankScreen({ navigation, route }: Props) {
 
   const answer = useCallback(
     (opt: string) => {
-      if (!question || picked) return;
+      // pickedRef is the SYNCHRONOUS guard (QA night 2026-08-31): a same-tick
+      // multi-tap saw batched `picked` still null and recorded 3 answers for
+      // one showing. The ref re-syncs from state every render.
+      if (!question || picked || pickedRef.current) return;
+      pickedRef.current = opt;
       const correct = opt === question.item.term;
       setPicked(opt);
       registerTrialAnswer('fill_in_blank', correct); // time trial: only correct advances pace
