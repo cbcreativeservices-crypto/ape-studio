@@ -1299,11 +1299,11 @@ export function FlashcardsScreen({ navigation, route }: Props) {
           {card ? (
             // 850ms hold to open full screen (user request 2026-07-17: +0.5s
             // over the previous 350ms) so a normal read-hold doesn't trigger it.
-            {/* No button role on the card wrapper (QA night 2026-08-31): it
-                wrapped four real buttons (bookmark/star/links/correction) —
-                invalid <button>-in-<button> on web and the outer role
-                flattened them away from screen readers. Tap-to-reveal keeps
-                working; the inner controls become reachable. */}
+            // No button role on the card wrapper (QA night 2026-08-31): it
+            // wrapped four real buttons (bookmark/star/links/correction) —
+            // invalid <button>-in-<button> on web and the outer role
+            // flattened them away from screen readers. Tap-to-reveal keeps
+            // working; the inner controls become reachable.
             <Pressable
               onPress={soloReveal ? undefined : onTap}
               onLongPress={() => setFullscreen(true)}
