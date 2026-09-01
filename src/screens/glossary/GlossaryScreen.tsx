@@ -219,6 +219,10 @@ type TermIndex = {
   exact: Map<string, string>;
   /** normalized base name (parenthetical stripped) → all sense ids */
   base: Map<string, string[]>;
+  /** normalized phrases whose TERM is a short all-caps acronym (AND, IT, OR…) —
+   *  linked only when the prose itself is upper-case, never the English word
+   *  (QA night 2026-08-31: "and"/"it"/"or" linked in nearly every definition). */
+  caseExact: Set<string>;
   maxWords: number;
 };
 
@@ -253,10 +257,12 @@ function searchRank(termLower: string, q: string): number {
 function buildTermIndex(entries: Entry[]): TermIndex {
   const exact = new Map<string, string>();
   const base = new Map<string, string[]>();
+  const caseExact = new Set<string>();
   let maxWords = 1;
   for (const e of entries) {
     const full = normPhrase(e.term);
     exact.set(full, e.id);
+    if (/^[A-Z]{2,4}$/.test(e.term.trim())) caseExact.add(full);
     const baseName = normPhrase(e.term.replace(/\s*\([^)]*\)\s*$/, ''));
     if (baseName) {
       const list = base.get(baseName);
@@ -265,7 +271,7 @@ function buildTermIndex(entries: Entry[]): TermIndex {
       maxWords = Math.max(maxWords, baseName.split(' ').length, full.split(' ').length);
     }
   }
-  return { exact, base, maxWords: Math.min(maxWords, 6) };
+  return { exact, base, caseExact, maxWords: Math.min(maxWords, 6) };
 }
 
 type LinkSeg = { text: string; ids?: string[] };
@@ -288,6 +294,9 @@ function linkSegments(text: string, index: TermIndex, selfId: string): LinkSeg[]
       const phrase = normPhrase(text.slice(start, end));
       const idsRaw = index.exact.has(phrase) ? [index.exact.get(phrase)!] : index.base.get(phrase);
       const ids = idsRaw?.filter((id) => id !== selfId);
+      // "and" must never link to AND: acronym terms need caps in the prose.
+      const raw = text.slice(start, end);
+      if (index.caseExact.has(phrase) && raw !== raw.toUpperCase()) continue;
       if (ids && ids.length > 0) {
         if (!linkedOnce.has(phrase)) hit = { ids, endTok: j, key: phrase };
         break; // longest hit decides — already-linked phrases stay plain
@@ -686,7 +695,7 @@ function TermDetails({
       {/* Suggest a correction — auto-tags the term so it's clear which one
           (Booth 2026-07-11). Opens the mail composer pre-filled. */}
       <Pressable
-        onPress={() => sendFeedback('correction', term)}
+        onPress={() => sendFeedback('correction', term, { Screen: 'Glossary', Term: term, 'Term ID': selfId })}
         accessibilityRole="button"
         accessibilityLabel="Suggest a correction"
         style={styles.suggestRow}
