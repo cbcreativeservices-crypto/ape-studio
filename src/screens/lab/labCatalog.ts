@@ -57,6 +57,10 @@ type Common = {
   countLabel?: (n: number) => string;
   /** Top-level section. */
   section: LabSection;
+  /** Exempt from its section's membership lock (owner 2026-09-01): the Audio
+   *  Calculator Laboratory is ALWAYS accessible — free users get it with the
+   *  weekly calculation cap, members without one. */
+  alwaysFree?: boolean;
   /** Standalone labs listed INLINE under the category (in addition to its
    *  families/labs, or beneath a hub). */
   extraLabs?: LabLeaf[];
@@ -332,6 +336,9 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     name: 'Audio Calculator Laboratory',
     description: 'Professional audio math — with the reasoning, not just the result.',
     section: 'training',
+    // Always open, to every tier (owner 2026-09-01) — free accounts are limited
+    // by the weekly calculation cap, not by a lock on the lab.
+    alwaysFree: true,
     kind: 'hub',
     route: 'CalcLab',
     // Count the CALCULATORS, not the workspaces (fix 2026-08-31: the row

@@ -8,6 +8,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Pressable, Share, StyleSheet, Text, View, type ScrollView } from 'react-native';
+import { confirmDialog, notify } from '../../../lib/confirm';
 import { LinearGradient } from 'expo-linear-gradient';
 import { KeyboardAwareScrollView } from '../../../features/keyboard/keyboardControllerSafe';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
@@ -29,7 +30,7 @@ import { buildReportFromCalc, reportToText } from './calcReport';
 import { GlossaryTermPopup } from '../../../features/glossary/GlossaryTermPopup';
 import { FormulaKeyPopup } from './FormulaKeyPopup';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
-import { consumeCalc, getCalcStatus, type CalcUsage } from '../../../features/lab/calcUsage';
+import { CALC_WEEKLY_LIMIT, consumeCalc, getCalcStatus, type CalcUsage } from '../../../features/lab/calcUsage';
 
 const SIGS = [3, 4, 5] as const;
 
@@ -153,32 +154,34 @@ export function CalcWorkspaceScreen() {
       setConsumedSig(inputSig);
       return;
     }
+    const seePlans = () => (navigation as unknown as { navigate: (r: string) => void }).navigate('Paywall');
     if (!u.allowed) {
-      Alert.alert(
+      confirmDialog(
         'Weekly limit reached',
         `You’ve used all ${u.limit} free calculations for this week. They reset one week after your first one. Academy membership removes the limit.`,
-        [
-          { text: 'Not now', style: 'cancel' },
-          { text: 'See membership', onPress: () => (navigation as unknown as { navigate: (r: string) => void }).navigate('Paywall') },
-        ],
+        'See membership',
+        seePlans,
+        { cancelText: 'Not now' },
       );
       return; // do NOT reveal
     }
     setConsumedSig(inputSig); // reveal this result
-    if (u.used === 5) {
-      Alert.alert(
+    // Halfway nudge scales with the allowance (owner set it to 5 on
+    // 2026-09-01): a hardcoded "5" would have collided with the last-one
+    // dialog. Fires strictly BEFORE the last credit.
+    const halfway = Math.max(1, Math.ceil(u.limit / 2));
+    if (u.used === halfway && u.used < u.limit) {
+      notify(
         'Heads up — weekly limit',
-        `That’s 5 of ${u.limit} free calculations this week. After ${u.limit} you’ll wait for the weekly reset, or Academy membership removes the limit.`,
-        [{ text: 'Got it' }],
+        `That’s ${u.used} of ${u.limit} free calculations this week. After ${u.limit} you’ll wait for the weekly reset, or Academy membership removes the limit.`,
       );
     } else if (u.used >= u.limit) {
-      Alert.alert(
+      confirmDialog(
         'Weekly limit reached',
         `That was your last free calculation this week (${u.limit} of ${u.limit}). It resets one week after your first one. Academy membership removes the limit.`,
-        [
-          { text: 'OK', style: 'cancel' },
-          { text: 'See membership', onPress: () => (navigation as unknown as { navigate: (r: string) => void }).navigate('Paywall') },
-        ],
+        'See membership',
+        seePlans,
+        { cancelText: 'OK' },
       );
     }
   };
@@ -275,7 +278,7 @@ export function CalcWorkspaceScreen() {
                   <Text style={styles.calcBtnText}>{consuming ? 'CALCULATING…' : 'CALCULATE'}</Text>
                 </Pressable>
                 <Text style={styles.resultPlaceholder}>
-                  Tap CALCULATE to reveal the answer — this uses one of your {usage?.limit ?? 10} free calculations this week.
+                  Tap CALCULATE to reveal the answer — this uses one of your {usage?.limit ?? CALC_WEEKLY_LIMIT} free calculations this week.
                 </Text>
               </View>
             ) : computeError ? (

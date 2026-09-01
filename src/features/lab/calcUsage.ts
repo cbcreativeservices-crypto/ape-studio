@@ -1,11 +1,13 @@
 /**
- * Calculator weekly-usage cap (owner 2026-08-13) — client side of the
- * server-enforced 10-per-rolling-week limit for FREE and LAPSED accounts.
+ * Calculator weekly-usage cap (owner 2026-08-13; allowance set to 5 by the
+ * owner 2026-09-01) — client side of the server-enforced per-rolling-week
+ * limit for FREE and LAPSED accounts. The lab itself is always OPEN to every
+ * tier; this cap is the only free-tier limit.
  *
  * The count lives on the server (docs/APE_CALC_WEEKLY_LIMIT_2026_08_13.sql):
  *   - calc_consume()      spends one credit when a capped user reveals a NEW
  *                         result (the CALCULATE button). Returns the post-state.
- *   - calc_usage_status() read-only, powers the "# / 10" counter.
+ *   - calc_usage_status() read-only, powers the "# / N" counter.
  *
  * FAIL-OPEN: if the RPC is missing (SQL not yet run), errors, or the network is
  * down, we return `unavailable: true` with `allowed: true` so calculators never
@@ -14,7 +16,10 @@
  */
 import { supabase } from '../../lib/supabase';
 
-export const CALC_WEEKLY_LIMIT = 10;
+// Display/fail-open fallback ONLY — the live number is whatever the server
+// returns (v_limit in calc_consume / calc_usage_status). Keep the two in step:
+// docs/APE_CALC_WEEKLY_LIMIT_5_2026_09_01.SQL sets the server to 5.
+export const CALC_WEEKLY_LIMIT = 5;
 
 export type CalcUsage = {
   used: number;

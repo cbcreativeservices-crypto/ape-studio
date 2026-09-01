@@ -80,7 +80,8 @@ export function EarLabScreen({ navigation, route }: Props) {
   };
   const openHub = (cat: LabCategory) => {
     if (cat.kind !== 'hub') return;
-    if (sectionLocked(cat.section)) startLabPreview(cat.route, cat.name);
+    // alwaysFree hubs (the Calculator Laboratory) never enter preview mode.
+    if (sectionLocked(cat.section) && !cat.alwaysFree) startLabPreview(cat.route, cat.name);
     go(cat.route, cat.params);
   };
 
@@ -136,7 +137,7 @@ export function EarLabScreen({ navigation, route }: Props) {
                   {cat.kind === 'hub' ? (
                     // A hub subject is one lab environment — a tappable header that
                     // opens its own module drill-down (e.g. the Calculator Lab).
-                    <CategoryLabel cat={cat} locked={secLocked} onPress={() => openHub(cat)} />
+                    <CategoryLabel cat={cat} locked={secLocked && !cat.alwaysFree} onPress={() => openHub(cat)} />
                   ) : (
                     <>
                       <CategoryLabel cat={cat} />
