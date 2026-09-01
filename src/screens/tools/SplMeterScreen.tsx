@@ -1554,14 +1554,6 @@ export function SplMeterScreen({ navigation }: Props) {
             >
               <Text style={styles.homeNavText}>DIGITAL ›</Text>
             </Pressable>
-            <Pressable
-              style={[styles.homeNavBtn, styles.homeNavBtnFs]}
-              onPress={() => { setVuFsClosing(false); setVuFsOpen(true); }}
-              accessibilityRole="button"
-              accessibilityLabel="Open the full VU screen in landscape"
-            >
-              <Text style={styles.homeNavTextFs}>⛶ FULL VU</Text>
-            </Pressable>
           </View>
           <ScrollView contentContainerStyle={styles.vuScroll}>
             <EngineGate state={state} lastError={lastError} />
@@ -1600,15 +1592,26 @@ export function SplMeterScreen({ navigation }: Props) {
                       // renders sideways behind the cover (owner 2026-08-21).
                       <View style={{ width: vuW, height: vuH }} />
                     ) : (
-                      <SkinnedVu
-                        width={vuW}
-                        height={vuH}
-                        live={live}
-                        live0Db={vuLive0}
-                        ref0Spl={rangeRef}
-                        running={running}
-                        fit="contain"
-                      />
+                      // Tapping the VU opens the Full VU (owner 2026-09-01) —
+                      // the green ⛶ FULL VU header button is gone; the meter is
+                      // the affordance, exactly like the SPL reference gauge
+                      // below it. Same open path, so the rotation and closing
+                      // choreography are identical.
+                      <Pressable
+                        onPress={() => { setVuFsClosing(false); setVuFsOpen(true); }}
+                        accessibilityRole="button"
+                        accessibilityLabel="Open the full VU screen in landscape"
+                      >
+                        <SkinnedVu
+                          width={vuW}
+                          height={vuH}
+                          live={live}
+                          live0Db={vuLive0}
+                          ref0Spl={rangeRef}
+                          running={running}
+                          fit="contain"
+                        />
+                      </Pressable>
                     )}
                     {/* Controls now live in the BOTTOM CONTROL BAR (owner 2026-08-18):
                         RANGE · WEIGHTING · RESPONSE · PEAK HOLD each open a popup. */}
@@ -2543,8 +2546,6 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   homeNavText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.8, color: colors.textSecondary },
-  homeNavBtnFs: { borderColor: 'rgba(55,224,95,.5)' },
-  homeNavTextFs: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.8, color: colors.green },
   // Full VU overlay — absolute-fill inside the home (not a second modal).
   vuFsRoot: {
     position: 'absolute',
