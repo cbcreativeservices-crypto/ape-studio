@@ -107,9 +107,12 @@ const CHASSIS_SEED: Partial<Record<ToolKey, number>> = {
  * block over the dark cap = the backlight) and `bloom` (a tinted flash
  * overlay). HONESTY (§1.7): only glass/backlight opacity animates — live
  * minis still gate on real frames, sims keep their DEMO tags, needles rest.
- * Stagger: 70 ms per tile in reading order ± a deterministic ±23 ms jitter
- * from CHASSIS_SEED, so the rack sequences up the same way every open —
- * research says <50 ms fuses into one gesture, >120 ms reads as lag.
+ * Stagger: 180 ms per tile in reading order ± a deterministic ±45 ms jitter
+ * from CHASSIS_SEED, so the rack sequences up the same way every open.
+ * REAL-TIME pass (owner 2026-09-01 v2: the first cut settled in ~1 s and
+ * read as nothing) — durations now sit at hardware scale: lamps warm over
+ * ~2 s, the CCFL brightens over ~2.3 s, the whole rack takes ~3.5 s to reach
+ * full readiness. Tiles are interactive the entire time.
  */
 type PowerStep = { to: number; ms: number; ease?: (v: number) => number };
 type Persona = { lit: PowerStep[]; bloom?: { color: string; steps: PowerStep[] } };
@@ -117,34 +120,34 @@ const POWER_PERSONA: Record<string, Persona> = {
   // VU lamp warm-up: strikes first, glows to full LAST — analog warms while
   // digital snaps on.
   spl: {
-    lit: [{ to: 1, ms: 620, ease: Easing.inOut(Easing.quad) }],
-    bloom: { color: 'rgba(255,190,120,1)', steps: [{ to: 0.1, ms: 300 }, { to: 0, ms: 320 }] },
+    lit: [{ to: 1, ms: 2000, ease: Easing.inOut(Easing.quad) }],
+    bloom: { color: 'rgba(255,190,120,1)', steps: [{ to: 0.1, ms: 900 }, { to: 0, ms: 1000 }] },
   },
   // DSP LCD boot: fast ramp, one-frame dip as the driver locks.
   multimeter: {
-    lit: [{ to: 0.85, ms: 140, ease: Easing.out(Easing.quad) }, { to: 0.7, ms: 50 }, { to: 1, ms: 120, ease: Easing.out(Easing.quad) }],
-    bloom: { color: 'rgba(200,225,255,1)', steps: [{ to: 0.3, ms: 40 }, { to: 0, ms: 70 }] },
+    lit: [{ to: 0.85, ms: 400, ease: Easing.out(Easing.quad) }, { to: 0.7, ms: 120 }, { to: 1, ms: 350, ease: Easing.out(Easing.quad) }],
+    bloom: { color: 'rgba(200,225,255,1)', steps: [{ to: 0.3, ms: 100 }, { to: 0, ms: 160 }] },
   },
   // CRT bloom: brightness overshoot that settles — the classic scope power-on.
   waveform: {
-    lit: [{ to: 1, ms: 320, ease: Easing.out(Easing.cubic) }],
-    bloom: { color: 'rgba(210,235,255,1)', steps: [{ to: 0.45, ms: 180, ease: Easing.out(Easing.cubic) }, { to: 0, ms: 380, ease: Easing.in(Easing.quad) }] },
+    lit: [{ to: 1, ms: 900, ease: Easing.out(Easing.cubic) }],
+    bloom: { color: 'rgba(210,235,255,1)', steps: [{ to: 0.45, ms: 500, ease: Easing.out(Easing.cubic) }, { to: 0, ms: 1100, ease: Easing.in(Easing.quad) }] },
   },
   // LED ladder strike: snappiest of the rack.
-  rta: { lit: [{ to: 1, ms: 60 }, { to: 0.55, ms: 40 }, { to: 1, ms: 80 }] },
+  rta: { lit: [{ to: 1, ms: 150 }, { to: 0.55, ms: 100 }, { to: 1, ms: 200 }] },
   // Modern TFT: one clean luminance ramp, no drama.
-  spectrogram: { lit: [{ to: 1, ms: 420, ease: Easing.inOut(Easing.sin) }] },
+  spectrogram: { lit: [{ to: 1, ms: 1200, ease: Easing.inOut(Easing.sin) }] },
   // VFD segment test: rapid all-segments blinks before data.
   signalgen: {
-    lit: [{ to: 1, ms: 50 }, { to: 0.25, ms: 70 }, { to: 1, ms: 50 }, { to: 0.35, ms: 60 }, { to: 1, ms: 110 }],
-    bloom: { color: 'rgba(140,255,230,1)', steps: [{ to: 0.08, ms: 25 }, { to: 0, ms: 35 }] },
+    lit: [{ to: 1, ms: 130 }, { to: 0.25, ms: 180 }, { to: 1, ms: 130 }, { to: 0.35, ms: 150 }, { to: 1, ms: 280 }],
+    bloom: { color: 'rgba(140,255,230,1)', steps: [{ to: 0.08, ms: 60 }, { to: 0, ms: 90 }] },
   },
   // CCFL strike + ramp: stutter, then the tube brightens.
-  rt60: { lit: [{ to: 0.6, ms: 180 }, { to: 0.5, ms: 80 }, { to: 0.75, ms: 90 }, { to: 1, ms: 280, ease: Easing.out(Easing.quad) }] },
+  rt60: { lit: [{ to: 0.6, ms: 500 }, { to: 0.5, ms: 220 }, { to: 0.75, ms: 250 }, { to: 1, ms: 1300, ease: Easing.out(Easing.quad) }] },
   // Tuner display blink.
   hzcounter: {
-    lit: [{ to: 1, ms: 70 }, { to: 0.6, ms: 50 }, { to: 1, ms: 90 }],
-    bloom: { color: 'rgba(140,255,230,1)', steps: [{ to: 0.06, ms: 15 }, { to: 0, ms: 25 }] },
+    lit: [{ to: 1, ms: 180 }, { to: 0.6, ms: 130 }, { to: 1, ms: 230 }],
+    bloom: { color: 'rgba(140,255,230,1)', steps: [{ to: 0.06, ms: 40 }, { to: 0, ms: 60 }] },
   },
 };
 const powerSeq = (v: Animated.Value, steps: PowerStep[]) =>
@@ -213,7 +216,7 @@ function ToolStrip({ tool, live, active, ready, index }: { tool: ToolKey; live: 
     }
     const persona = POWER_PERSONA[tool] ?? { lit: [{ to: 1, ms: 260, ease: Easing.out(Easing.quad) }] };
     const seed = CHASSIS_SEED[tool] ?? 1;
-    const start = Math.max(0, index * 70 + ((seed % 47) - 23));
+    const start = Math.max(0, index * 180 + ((seed % 91) - 45));
     const parts = [powerSeq(lit, persona.lit)];
     if (persona.bloom) parts.push(powerSeq(bloom, persona.bloom.steps));
     Animated.sequence([Animated.delay(start), Animated.parallel(parts)]).start();
