@@ -51,6 +51,7 @@ import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO } from '../../features/tools/measure/types';
 import { colors, fonts } from '../../theme/tokens';
 import { useSaveGate } from './ToolLockUi';
+import { LandscapeRequiredNotice, useLandscapeGrace } from '../../components/LandscapeRequiredNotice';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { EngineGate } from './EngineGate';
 import { useToolHelp, DisplayGuideButton } from '../../features/lab/guidedLessons';
@@ -212,6 +213,9 @@ export function WaveformScreen({ navigation }: Props) {
   // (fills the space right of the left control column). ONE geometry memo serves
   // whichever is showing (owner rev 24).
   const fsLandscape = waveFsOpen && !waveFsClosing && winW >= winH;
+  // Never leave an unexplained black void when the rotation never arrives
+  // (owner bug 2026-09-01, iOS) — see LandscapeRequiredNotice.
+  const fsNeedsRotate = useLandscapeGrace(waveFsOpen && !waveFsClosing, winH > winW);
   const scopeW = fsLandscape ? Math.max(120, winW - FS_CTRL_W - camInset - 44) : panelW;
   const scopeH = fsLandscape ? Math.max(120, winH - insets.top - insets.bottom - 28) : PANEL_H;
 
@@ -739,6 +743,7 @@ export function WaveformScreen({ navigation }: Props) {
           >
             <Text style={styles.fsCloseX}>✕</Text>
           </Pressable>
+          {fsNeedsRotate ? <LandscapeRequiredNotice what="fullscreen oscilloscope" onClose={() => setWaveFsClosing(true)} /> : null}
           {winW >= winH && !waveFsClosing ? (
             <View
               style={[

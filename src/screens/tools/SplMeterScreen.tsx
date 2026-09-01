@@ -54,6 +54,7 @@ import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type SplLogPayload, type WarningFlag } from '../../features/tools/measure/types';
 import { colors, fonts } from '../../theme/tokens';
 import { useSaveGate } from './ToolLockUi';
+import { LandscapeRequiredNotice, useLandscapeGrace } from '../../components/LandscapeRequiredNotice';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { EngineGate } from './EngineGate';
 import { SkinnedVu } from './SkinnedVu';
@@ -853,6 +854,12 @@ export function SplMeterScreen({ navigation }: Props) {
     const t = setTimeout(() => { setVuFsOpen(false); setVuFsClosing(false); }, 700);
     return () => clearTimeout(t);
   }, [vuFsClosing, fsPortrait]);
+
+  // A landscape-only fullscreen must never sit as an unexplained black void
+  // (owner bug 2026-09-01, iOS): if the rotation never arrives — rotation lock
+  // on, or a build without ExpoScreenOrientation — say so after a grace period.
+  const vuFsNeedsRotate = useLandscapeGrace(vuFsOpen && !vuFsClosing, winH > winW);
+  const gaugeFsNeedsRotate = useLandscapeGrace(gaugeFsOpen && !gaugeFsClosing, winH > winW);
   useEffect(() => {
     if (!gaugeFsClosing) return;
     if (fsPortrait) { setGaugeFsOpen(false); setGaugeFsClosing(false); return; }
@@ -1895,6 +1902,7 @@ export function SplMeterScreen({ navigation }: Props) {
                   Skia); only the Skia LED (+ its toggle) gate on viz. While
                   CLOSING the content is hidden so only the dark cover shows during
                   the landscape→portrait rotation. */}
+              {vuFsNeedsRotate ? <LandscapeRequiredNotice what="full VU meter" onClose={() => setVuFsClosing(true)} /> : null}
               {winW >= winH && !vuFsClosing && (
                 <>
                   {/* LED controls cluster (owner 2026-08-18/21) — top-LEFT row that
@@ -2007,6 +2015,7 @@ export function SplMeterScreen({ navigation }: Props) {
               accessibilityRole="button"
               accessibilityLabel="Close the fullscreen SPL gauge — tap to close"
             >
+              {gaugeFsNeedsRotate ? <LandscapeRequiredNotice what="fullscreen SPL gauge" onClose={() => setGaugeFsClosing(true)} /> : null}
               {winW >= winH && !gaugeFsClosing ? (
                 <>
                   <View style={[styles.vuFsClose, { right: camInset + 14 }]} pointerEvents="none">
