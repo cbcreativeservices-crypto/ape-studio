@@ -142,7 +142,9 @@ export function fmt(x: number, sig = 4): string {
   if (x === 0) return '0';
   const ax = Math.abs(x);
   if (ax >= 1e7 || ax < 1e-4) return x.toExponential(Math.max(0, sig - 1)).replace('e+', 'e');
-  const s = x.toPrecision(sig);
+  // toPrecision can also emit exponent form (13640 @ 4 sig figs →
+  // "1.364e+4") — keep the house 'e' style consistent with the branch above.
+  const s = x.toPrecision(sig).replace('e+', 'e');
   // Strip trailing zeros after a decimal point (keep integers intact).
   return s.includes('.') ? s.replace(/\.?0+$/, '') : s;
 }

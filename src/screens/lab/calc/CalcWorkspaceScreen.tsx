@@ -107,6 +107,9 @@ export function CalcWorkspaceScreen() {
   const [usage, setUsage] = useState<CalcUsage | null>(null);
   const [consumedSig, setConsumedSig] = useState<string | null>(null);
   const [consuming, setConsuming] = useState(false);
+  // Synchronous guard (QA night 2026-09-01): two same-tick taps both passed
+  // the async state check and spent two weekly credits.
+  const consumingRef = useRef(false);
   // Signature of the current calculation: function + entered values + input units.
   // Editing any input re-arms the CALCULATE button; re-tapping the SAME inputs
   // shows the already-revealed answer without spending another credit.
@@ -138,9 +141,11 @@ export function CalcWorkspaceScreen() {
     capped && usage && !usage.unavailable ? `${usage.used} / ${usage.limit} free calculations this week` : null;
 
   const runCappedCalc = async () => {
-    if (!values || consuming || consumedSig === inputSig) return;
+    if (!values || consuming || consumingRef.current || consumedSig === inputSig) return;
+    consumingRef.current = true;
     setConsuming(true);
     const u = await consumeCalc();
+    consumingRef.current = false;
     setConsuming(false);
     setUsage(u);
     if (u.unavailable) {
@@ -277,9 +282,11 @@ export function CalcWorkspaceScreen() {
               <Text style={styles.warnText}>⚠ These values don’t produce a valid result — check for zeros or reversed inputs.</Text>
             ) : (
               <View style={{ gap: 8 }}>
-                {outputs.map((o) =>
+                {outputs.map((o, oi) =>
                   'value' in o ? (
-                    <View key={o.label} style={styles.resultRow}>
+                    // Key by label+index (QA night 2026-09-01): duplicate
+                    // labels (e.g. two NEAR-COINCIDENT notes) collided.
+                    <View key={`${o.label}#${oi}`} style={styles.resultRow}>
                       <Text style={styles.resultLabel}>{o.label}</Text>
                       <View style={styles.resultRight}>
                         <Pressable
@@ -290,7 +297,7 @@ export function CalcWorkspaceScreen() {
                         >
                           <Text style={styles.resultValue}>{formatOut(o, 0)}</Text>
                         </Pressable>
-                        {o.chainable !== false ? (
+                        {o.chainable !== false && Number.isFinite(o.value) ? (
                           <Pressable accessibilityRole="button"
                             hitSlop={{ top: 9, bottom: 9 }}
                             style={styles.sendBtn}
@@ -302,7 +309,7 @@ export function CalcWorkspaceScreen() {
                       </View>
                     </View>
                   ) : (
-                    <Text key={o.label} style={styles.resultNote}>
+                    <Text key={`${o.label}#${oi}`} style={styles.resultNote}>
                       <Text style={styles.resultLabel}>{o.label}  </Text>
                       {o.text}
                     </Text>

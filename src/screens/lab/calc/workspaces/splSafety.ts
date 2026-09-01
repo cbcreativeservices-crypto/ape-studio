@@ -468,6 +468,16 @@ const WS_DOSE: Workspace = {
         let dose = 0;
         for (let i = 0; i < m; i++) dose += (ts[i]! / allowMin(ls[i]!, 85, 3)) * 100;
         return [
+          // Mismatched lists used to truncate SILENTLY (QA night 2026-09-01)
+          // — safety-adjacent, so the drop is now announced. Copy flagged.
+          ...(ls.length !== ts.length
+            ? [
+                {
+                  label: 'CHECK INPUTS',
+                  text: `You entered ${ls.length} levels but ${ts.length} durations — only the first ${m} pairs are counted.`,
+                },
+              ]
+            : []),
           { label: 'DAILY DOSE (85 dBA / 3 dB)', value: dose, quantity: 'percent', chainable: false },
           {
             label: 'READING',
@@ -528,6 +538,14 @@ const WS_DOSE: Workspace = {
         let dose = 0;
         for (let i = 0; i < m; i++) dose += (ts[i]! / allowMin(ls[i]!, 90, 5)) * 100;
         return [
+          ...(ls.length !== ts.length
+            ? [
+                {
+                  label: 'CHECK INPUTS',
+                  text: `You entered ${ls.length} levels but ${ts.length} durations — only the first ${m} pairs are counted.`,
+                },
+              ]
+            : []),
           { label: 'DAILY DOSE (90 dBA / 5 dB)', value: dose, quantity: 'percent', chainable: false },
           {
             label: 'READING',
@@ -592,6 +610,14 @@ const WS_DOSE: Workspace = {
           tt += ts[i]!;
         }
         return [
+          ...(ls.length !== ts.length
+            ? [
+                {
+                  label: 'CHECK INPUTS',
+                  text: `You entered ${ls.length} levels but ${ts.length} durations — only the first ${m} pairs are counted.`,
+                },
+              ]
+            : []),
           { label: 'Leq OVER THE INTERVALS', value: 10 * Math.log10(e / tt), quantity: 'spl' },
           { label: 'TOTAL DURATION', value: tt * 60, quantity: 'time', unit: 'min', chainable: false },
         ];

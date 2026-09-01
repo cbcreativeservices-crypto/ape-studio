@@ -240,7 +240,7 @@ const TIMECODE: Workspace = {
       compute: (v) => {
         const totS = n(v.frames) / n(v.fps);
         return [
-          { label: 'TOTAL TIME', value: totS, quantity: 'time' },
+          { label: 'TOTAL TIME', value: totS, quantity: 'time', unit: 's' },
           { label: 'WHOLE SECONDS', value: Math.floor(totS), quantity: 'time', chainable: false },
         ];
       },
@@ -282,7 +282,7 @@ const TIMECODE: Workspace = {
         const totS = n(v.hours) * 3600 + n(v.mins) * 60 + n(v.secs);
         return [
           { label: 'TOTAL FRAMES', value: Math.round(totS * n(v.fps)), quantity: 'number' },
-          { label: 'TOTAL TIME', value: totS, quantity: 'time' },
+          { label: 'TOTAL TIME', value: totS, quantity: 'time', unit: 's' },
         ];
       },
       steps: (v) => {
