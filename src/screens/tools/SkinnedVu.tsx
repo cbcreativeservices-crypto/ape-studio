@@ -166,7 +166,7 @@ export const SPL_SCALE = (() => {
 
 const NEEDLE = '#1a1206';
 
-/** A centred circle box (left/top/size/radius) for the lamp-glow overlays. */
+/** A centred circle box (left/top/size/radius) for the lit-lamp overlays. */
 function lampGlowBox(cx: number, cy: number, d: number) {
   return { left: cx - d / 2, top: cy - d / 2, width: d, height: d, borderRadius: d / 2 };
 }
@@ -214,7 +214,6 @@ export function SkinnedVu({ width, height, live, live0Db, running = true, fit = 
 
   const needleStyle = useAnimatedStyle(() => ({ transform: [{ rotate: `${vuAngle(vuVal.value)}deg` }] }));
   const lampStyle = useAnimatedStyle(() => ({ opacity: lampT.value }));
-  const lampGlowStyle = useAnimatedStyle(() => ({ opacity: lampT.value * 0.4 }));
 
   // Map the skin's 1586×992 space onto the width×height box the SAME way the
   // <Svg preserveAspectRatio> does, so RN overlays line up with the SVG.
@@ -242,10 +241,15 @@ export function SkinnedVu({ width, height, live, live0Db, running = true, fit = 
         <SvgImage href={VU_SKIN} x={0} y={0} width={1586} height={992} preserveAspectRatio="xMidYMid slice" />
         {SPL_SCALE}
       </Svg>
-      {/* PEAK lamp — illuminated clip state: a soft halo, a bright red core, and
-          a hot centre, so it reads like a real lamp glowing from inside. All
-          fade in together with the clip. */}
-      <Animated.View pointerEvents="none" style={[{ position: 'absolute', ...lampGlowBox(toX(SKIN_LAMP.x), toY(SKIN_LAMP.y), lampD * 2.1), backgroundColor: '#ff2a12' }, lampGlowStyle]} />
+      {/* PEAK lamp — illuminated clip state: a bright red core filling the lens
+          and a hot centre, so it reads like a real lamp lit from inside. Both
+          fade in together with the clip.
+
+          NO GLOW OUTSIDE THE LENS (owner 2026-09-01): this used to add a halo
+          2.1× the lens diameter bleeding onto the meter face, which read as
+          artificial next to the photoreal skin. A real panel lamp lights its
+          own lens; it does not wash the faceplate around it. Every lit layer
+          below is bounded by the lens. */}
       <Animated.View pointerEvents="none" style={[{ position: 'absolute', ...lampGlowBox(toX(SKIN_LAMP.x), toY(SKIN_LAMP.y), lampD), backgroundColor: '#ff5a34' }, lampStyle]} />
       <Animated.View pointerEvents="none" style={[{ position: 'absolute', ...lampGlowBox(toX(SKIN_LAMP.x) - 6 * scale, toY(SKIN_LAMP.y) - 6 * scale, lampD * 0.5), backgroundColor: '#ffe6ac' }, lampStyle]} />
       {/* Needle — clipped to the face window; the blade rotates about the deep

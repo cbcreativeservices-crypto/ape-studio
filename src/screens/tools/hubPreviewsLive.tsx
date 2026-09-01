@@ -176,7 +176,9 @@ const HubSplSkin: FC = memo(() => {
             clip so the lamp CHANGES brightness, matching the tool VU (rev 19). */}
         {lampGlow > 0.01 && (
           <>
-            <Circle cx={SKIN_LAMP.x} cy={SKIN_LAMP.y} r={SKIN_LAMP.r * 2.1} fill="#ff2a12" opacity={0.4 * lampGlow} />
+            {/* No glow OUTSIDE the lens (owner 2026-09-01) — matches SkinnedVu:
+                a real panel lamp lights its own lens, it does not wash the
+                faceplate around it. */}
             <Circle cx={SKIN_LAMP.x} cy={SKIN_LAMP.y} r={SKIN_LAMP.r} fill="#ff5a34" opacity={lampGlow} />
             <Circle cx={SKIN_LAMP.x - 6} cy={SKIN_LAMP.y - 6} r={SKIN_LAMP.r * 0.5} fill="#ffe6ac" opacity={lampGlow} />
           </>
