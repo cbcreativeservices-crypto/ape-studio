@@ -150,8 +150,11 @@ const POWER_PERSONA: Record<string, Persona> = {
     bloom: { color: 'rgba(140,255,230,1)', steps: [{ to: 0.06, ms: 40 }, { to: 0, ms: 60 }] },
   },
 };
+// Global tempo for the whole power-up (owner 2026-09-01: +13% slower after
+// the real-time pass). One dial: durations AND stagger both scale by it.
+const POWER_TIME_SCALE = 1.13;
 const powerSeq = (v: Animated.Value, steps: PowerStep[]) =>
-  Animated.sequence(steps.map((st) => Animated.timing(v, { toValue: st.to, duration: st.ms, easing: st.ease ?? Easing.linear, useNativeDriver: true })));
+  Animated.sequence(steps.map((st) => Animated.timing(v, { toValue: st.to, duration: Math.round(st.ms * POWER_TIME_SCALE), easing: st.ease ?? Easing.linear, useNativeDriver: true })));
 
 const TILE_ORDER: ToolKey[] = [
   'spl',
@@ -216,7 +219,7 @@ function ToolStrip({ tool, live, active, ready, index }: { tool: ToolKey; live: 
     }
     const persona = POWER_PERSONA[tool] ?? { lit: [{ to: 1, ms: 260, ease: Easing.out(Easing.quad) }] };
     const seed = CHASSIS_SEED[tool] ?? 1;
-    const start = Math.max(0, index * 180 + ((seed % 91) - 45));
+    const start = Math.round(Math.max(0, index * 180 + ((seed % 91) - 45)) * POWER_TIME_SCALE);
     const parts = [powerSeq(lit, persona.lit)];
     if (persona.bloom) parts.push(powerSeq(bloom, persona.bloom.steps));
     Animated.sequence([Animated.delay(start), Animated.parallel(parts)]).start();
