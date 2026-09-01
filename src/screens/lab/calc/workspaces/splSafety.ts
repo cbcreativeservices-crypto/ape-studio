@@ -383,7 +383,7 @@ const WS_DOSE: Workspace = {
     'workspace does not evaluate. Real protection depends on the jurisdiction’s rules, the ' +
     'measurement method (dosimetry position, A-weighting, slow response), and hearing ' +
     'conservation programs — talk to a qualified professional for anything real.',
-  glossary: ['Sound Pressure Level', 'Decibel', 'A-weighting', 'Leq', 'Exposure', 'Exchange rate'],
+  glossary: ['Sound Pressure Level', 'Decibel', 'A weighting', 'Leq', 'Exposure', 'Exchange rate'],
   fields: [
     { key: 'lex', name: 'EXPOSURE LEVEL', quantity: 'spl', placeholder: '94', help: 'The A-weighted level (dBA) the person is exposed to.' },
     { key: 'doseLevels', name: 'INTERVAL LEVELS', quantity: 'list', placeholder: '85, 94, 100', help: 'A-weighted level (dBA) of each interval, comma-separated — paired by position with the durations below.' },

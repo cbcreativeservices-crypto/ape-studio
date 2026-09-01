@@ -216,7 +216,7 @@ export const SYMBOL_GROUPS: SymbolGroup[] = [
         name: 'milliseconds per minute',
         meaning: 'Tempo math’s conversion factor: one beat in ms = 60,000 ÷ BPM.',
         example: '120 BPM → 500 ms per beat',
-        glossaryTerm: 'BPM',
+        glossaryTerm: 'BPM (Beats Per Minute)',
       },
     ],
   },

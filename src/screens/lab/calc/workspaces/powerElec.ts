@@ -226,7 +226,7 @@ const VDROP: Workspace = {
   warnings:
     'Copper at 20 °C (ρ = 1.724×10⁻⁸ Ω·m); resistance rises ~0.4%/°C when hot. Round-trip ' +
     'resistance R = ρ·2L/A; drop = I·R. AWG area from the standard geometric definition.',
-  glossary: ['Voltage', 'Resistance', 'Current', 'AWG (American Wire Gauge)', 'Power'],
+  glossary: ['Voltage', 'Resistance', 'Current', 'AWG', 'Power'],
   fields: [
     { key: 'awg', name: 'WIRE GAUGE (AWG)', quantity: 'number', placeholder: '16', help: 'American Wire Gauge — smaller number = thicker wire.' },
     { key: 'len', name: 'RUN LENGTH (one way)', quantity: 'length', placeholder: '30', help: 'One-way cable length; the calc doubles it for the return path.', warn: { test: (x) => x <= 0, msg: 'Length must be greater than zero.' } },

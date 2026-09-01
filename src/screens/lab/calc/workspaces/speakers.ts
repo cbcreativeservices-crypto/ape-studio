@@ -455,7 +455,7 @@ const WS_CABLE: Workspace = {
     'Copper values are for a single conductor at ~20 °C; resistance rises ~0.4%/°C. Connector ' +
     'and terminal resistance is not modeled. Entered gauges are rounded to the nearest listed ' +
     'size (10, 12, 14, 16, 18 AWG) — real cable comes in these sizes, so no interpolation.',
-  glossary: ['Damping Factor', 'Impedance', 'Resistance', 'AWG (American Wire Gauge)'],
+  glossary: ['Damping Factor', 'Impedance', 'Resistance', 'AWG'],
   fields: [
     {
       key: 'len',
@@ -680,7 +680,7 @@ const WS_CV70: Workspace = {
     'per speaker) is NOT modeled here — it makes real levels slightly lower than the tap math. ' +
     'Low-frequency content below a step-down transformer’s rated band can saturate it: ' +
     'high-pass distributed lines around 70–100 Hz unless the transformers are rated lower.',
-  glossary: ['Constant-voltage distribution', '70-volt system', 'Headroom', 'Transformer tap', 'Impedance'],
+  glossary: ['constant-voltage (70V / 100V) distribution', '70-volt system', 'Headroom', 'Transformer tap', 'Impedance'],
   fields: [
     {
       key: 'vline',

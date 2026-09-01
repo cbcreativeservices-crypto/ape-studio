@@ -38,7 +38,7 @@ const STEREOMIC: Workspace = {
     'Geometric time-of-arrival model: path difference = spacing·sin(angle); Δt = path/ c; first comb ' +
     'null = c/(2·path). Real polar patterns, diffraction, and room reflections shift the audible ' +
     'result; this is the direct-path geometry only.',
-  glossary: ['Stereo', 'Comb Filtering', 'Microphone', 'Phase', 'Polar Pattern'],
+  glossary: ['Stereo', 'Comb Filtering', 'Microphone (Mic)', 'Phase', 'Polar Pattern'],
   fields: [
     { key: 'spacing', name: 'MIC SPACING', quantity: 'length', defaultUnit: 'cm', placeholder: '40', help: 'Distance between the two microphone capsules.', warn: { test: (x) => x <= 0, msg: 'Spacing must be greater than zero.' } },
     { key: 'angle', name: 'SOURCE ANGLE', quantity: 'angle', placeholder: '30', help: 'Angle of the source off the array’s centre line.', warn: { test: (x) => x < 0 || x > 90, msg: 'Use 0–90° off centre.' } },
@@ -125,7 +125,7 @@ const MICSENS: Workspace = {
   warnings:
     'Definitions: dBV/Pa = 20·log₁₀(mV/Pa ÷ 1000). Pressure from SPL: p = 20µPa·10^(SPL/20); output = ' +
     'sensitivity(V/Pa)·p. dBu referenced to 0.7746 V, dBV to 1 V. Ideal, pre-loading figures.',
-  glossary: ['Sensitivity', 'Sound Pressure Level', 'Decibel', 'Microphone', 'dBu'],
+  glossary: ['Sensitivity', 'Sound Pressure Level', 'Decibel', 'Microphone (Mic)', 'dBu'],
   fields: [
     { key: 'mvpa', name: 'SENSITIVITY (mV/Pa)', quantity: 'number', placeholder: '15', help: 'Output in millivolts for a 1 Pa (94 dB SPL) input.', warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
     { key: 'dbvpa', name: 'SENSITIVITY (dBV/Pa)', quantity: 'number', placeholder: '-36.5', help: 'Output in dB relative to 1 V/Pa.' },

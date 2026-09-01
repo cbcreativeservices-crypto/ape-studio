@@ -598,7 +598,7 @@ const WS_LATENCY: Workspace = {
     'safety-buffer overhead the spec sheet may not show, so measured round trips (loopback ' +
     'test) usually exceed this total. When the number matters, measure it: record a click ' +
     'through a physical loopback and read the offset.',
-  glossary: ['Latency', 'Buffer', 'Sample Rate', 'Sample', 'Monitoring', 'A/D Conversion'],
+  glossary: ['Latency', 'Buffer', 'Sample Rate', 'Sample', 'Monitoring', 'Analog-to-digital conversion'],
   fields: [
     {
       key: 'buf',
@@ -788,7 +788,7 @@ const WS_FFT: Workspace = {
     'functions widen each bin\'s bandwidth (Hann ≈ 1.5 bins ENBW), and real analyzers overlap, ' +
     'average, and interpolate on top of it. Treat these numbers as the grid an analyzer is ' +
     'built on, not the precision of what it displays.',
-  glossary: ['FFT', 'Sample Rate', 'Frequency', 'Nyquist Frequency', 'Spectrum', 'Window (analysis)'],
+  glossary: ['FFT', 'Sample Rate', 'Frequency', 'Nyquist Frequency', 'Spectrum', 'Window function'],
   fields: [
     {
       key: 'N',

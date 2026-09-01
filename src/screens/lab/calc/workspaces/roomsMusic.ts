@@ -80,7 +80,7 @@ const WS_BPM: Workspace = {
     'Forgetting dotted vs triplet: a dotted 8th (×1.5) and a triplet quarter (×2/3 of a half) feel completely different against the same straight 8ths.',
     'Assuming the tap tempo captured the grid exactly — a few taps can land 1–2 BPM off; check against the session tempo or a longer measured interval.',
   ],
-  glossary: ['BPM'],
+  glossary: ['BPM (Beats Per Minute)'],
   fields: [
     {
       key: 'bpm',

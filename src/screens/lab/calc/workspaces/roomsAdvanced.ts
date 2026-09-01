@@ -42,7 +42,7 @@ const EYRING: Workspace = {
     'Teaching estimates. Sabine RT60 = 0.161·V/(S·ā); Eyring RT60 = 0.161·V/(−S·ln(1−ā)); ' +
     'Millington–Sette replaces S·(−ln(1−ā)) with Σ Sᵢ·(−ln(1−αᵢ)). All assume a diffuse field and ' +
     'ignore air absorption. Formal RT60 is measured per ISO 3382.',
-  glossary: ['Reverberation Time', 'RT60', 'Absorption Coefficient', 'Reverberation', 'Sabine'],
+  glossary: ['Reverberation Time', 'RT60', 'Absorption Coefficient', 'Reverberation', 'Sabine equation'],
   fields: [
     { key: 'vol', name: 'ROOM VOLUME', quantity: 'volume', placeholder: '120', help: 'Length × width × height of the room.', warn: { test: (x) => x <= 0, msg: 'Volume must be greater than zero.' } },
     { key: 'surf', name: 'TOTAL SURFACE AREA', quantity: 'area', placeholder: '160', help: 'Sum of all boundary surfaces (walls, floor, ceiling).', warn: { test: (x) => x <= 0, msg: 'Surface area must be greater than zero.' } },
