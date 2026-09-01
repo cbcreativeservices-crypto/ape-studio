@@ -1567,7 +1567,7 @@ export function DashboardScreen() {
 
                   {!powered ? (
                     // Powered off — a DEAD clear cap: no light, no colour, no nav.
-                    <SwitchButton label="" variant="clear" width={89} height={RACK_SWITCH_H} disabled />
+                    <SwitchButton label="" a11yLabel="Locked — complete the earlier study methods first" variant="clear" width={89} height={RACK_SWITCH_H} disabled />
                   ) : isApplicable ? (
                     <SwitchButton
                       // Start (blue) → Continue (amber) → Review (green), by progress.
@@ -1608,7 +1608,7 @@ export function DashboardScreen() {
                     // Inactive slots carry the SAME action button as a CLEAR,
                     // UNLIT cap (not grey) — a DEAD switch: it travels + clicks
                     // on touch but opens nothing (Booth 2026-07-11).
-                    <SwitchButton label="" variant="clear" width={89} height={RACK_SWITCH_H} disabled />
+                    <SwitchButton label="" a11yLabel="Locked — complete the earlier study methods first" variant="clear" width={89} height={RACK_SWITCH_H} disabled />
                   )}
                 </View>
               </ElevatedFrame>
@@ -1687,7 +1687,7 @@ export function DashboardScreen() {
                   </View>
                   {!quizPowered ? (
                     // Powered off — a DEAD clear cap, no light/colour/nav.
-                    <SwitchButton label="" variant="clear" width={96} height={RACK_QUIZ_SWITCH_H} disabled />
+                    <SwitchButton label="" a11yLabel="Locked — complete the earlier study methods first" variant="clear" width={96} height={RACK_QUIZ_SWITCH_H} disabled />
                   ) : (
                     <SwitchButton
                       label={quizState === 'passed' ? 'Practice' : quizState === 'partial' ? 'Retry' : 'Start'}

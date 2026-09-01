@@ -73,6 +73,7 @@ const GLASS_TINTS: Record<GlassTint, { border: string; label: string; glow: stri
 
 export function SwitchButton({
   label,
+  a11yLabel,
   variant = 'primary',
   tint = 'blue',
   width = 92,
@@ -81,6 +82,9 @@ export function SwitchButton({
   onPress,
 }: {
   label: string;
+  /** Optional screen-reader name when the visible label is empty (e.g. a
+   *  locked blank cap) — QA night 2026-08-31. */
+  a11yLabel?: string;
   variant?: SwitchVariant;
   /** Color of the clear-glass aesthetic (variant="glass" only). */
   tint?: GlassTint;
@@ -278,7 +282,7 @@ export function SwitchButton({
         animate('out');
       }}
       accessibilityRole="button"
-      accessibilityLabel={label}
+      accessibilityLabel={a11yLabel ?? label}
       accessibilityState={{ disabled }}
       hitSlop={6}
       style={{ width, height }}
