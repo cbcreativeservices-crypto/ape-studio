@@ -15,6 +15,7 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { confirmDialog, notify } from '../../lib/confirm';
 import { Modal } from '../../components/DimModal';
 import Constants from 'expo-constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -94,7 +95,7 @@ export function SettingsScreen({ navigation }: Props) {
       if (res.ok) await refreshEntitlement();
       setRedeemOpen(false);
       setRedeemCode('');
-      Alert.alert(res.ok ? 'Code applied' : 'Code not applied', res.message);
+      notify(res.ok ? 'Code applied' : 'Code not applied', res.message);
     } finally {
       setRedeemBusy(false);
     }
@@ -156,32 +157,40 @@ export function SettingsScreen({ navigation }: Props) {
   const activeCatCount = WEEKLY_CONCEPT_CATEGORIES.filter((c) => catSched[c]?.active).length;
 
   const confirmLogout = useCallback(() => {
-    Alert.alert('Log out?', 'You can sign in as a different user afterward.', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Log out',
-        style: 'destructive',
-        onPress: async () => {
-          await supabase.auth.signOut();
-          navigation.reset({ index: 0, routes: [{ name: 'Splash' }] });
-        },
-      },
-    ]);
+    // confirmDialog: Alert.alert is a no-op on RN-web — Log out was a dead
+    // button on the web preview (QA night 2026-09-01).
+    confirmDialog('Log out?', 'You can sign in as a different user afterward.', 'Log out', () => {
+      void (async () => {
+        await supabase.auth.signOut();
+        navigation.reset({ index: 0, routes: [{ name: 'Splash' }] });
+      })();
+    }, { destructive: true });
   }, [navigation]);
 
+  // The whole reminders group is inert while the master switch is off —
+  // pointerEvents only blocks pointer input; keyboard/switch access could
+  // still toggle "dimmed" switches (QA night 2026-09-01).
+  const groupLocked = !(prefs?.push_enabled ?? false);
   const setPref = useCallback(
     (key: keyof NotificationPrefs, value: boolean) => {
       if (!prefs) return;
       setPrefs({ ...prefs, [key]: value }); // optimistic
       updateNotificationPref(key, value).then((ok) => {
-        if (!ok) setPrefs((p) => (p ? { ...p, [key]: !value } : p)); // revert
+        if (!ok) {
+          setPrefs((p) => (p ? { ...p, [key]: !value } : p)); // revert
+          // Restore the scheduler mirror too (QA night 2026-09-01): committing
+          // it before the server write left the UI and the device scheduler
+          // disagreeing whenever the write failed.
+          if (key === 'push_enabled') void setPhoneNotificationsEnabled(!value, local);
+          return;
+        }
+        if (key === 'push_enabled') {
+          // Master switch: mirror it to the device scheduler so the 7 local
+          // reminders actually stop when it is off (owner-approved 2026-08-30).
+          void setPhoneNotificationsEnabled(value, local);
+          if (value) void registerAndSavePushToken();
+        }
       });
-      if (key === 'push_enabled') {
-        // Master switch: mirror it to the device scheduler so the 7 local
-        // reminders actually stop when it is off (owner-approved 2026-08-30).
-        void setPhoneNotificationsEnabled(value, local);
-        if (value) void registerAndSavePushToken();
-      }
     },
     [prefs, local],
   );
@@ -221,7 +230,7 @@ export function SettingsScreen({ navigation }: Props) {
           return;
         }
         if (!token) {
-          Alert.alert(
+          notify(
             'Notifications',
             'Weekly concepts are saved. Push delivery needs a physical device build with notification permission allowed.',
           );
@@ -304,7 +313,7 @@ export function SettingsScreen({ navigation }: Props) {
             </View>
             <Toggle
               on={prefs?.notify_weekly_concept ?? false}
-              disabled={!prefs}
+              disabled={!prefs || groupLocked}
               label="Weekly concept"
               onChange={(v) => void setWeeklyOn(v)}
             />
@@ -342,6 +351,7 @@ export function SettingsScreen({ navigation }: Props) {
                     </Pressable>
                     <Toggle
                       on={s.active}
+                      disabled={groupLocked}
                       label={`Weekly concept: ${cat}`}
                       onChange={(v) => setCategory(cat, { active: v })}
                     />
@@ -383,7 +393,7 @@ export function SettingsScreen({ navigation }: Props) {
                     <Text style={styles.schedCaret}>›</Text>
                   </Pressable>
                 ) : null}
-                <Toggle on={on} label={row.label} onChange={(v) => setLocalKey(row.key, v)} />
+                <Toggle on={on} disabled={groupLocked} label={row.label} onChange={(v) => setLocalKey(row.key, v)} />
               </View>
             );
           })}
@@ -575,7 +585,7 @@ export function SettingsScreen({ navigation }: Props) {
               // in the ape:intro:* family; the explicit call resets the LIVE flag
               // so the gate re-arms without a relaunch).
               Promise.all([resetCoachMarks(), resetScreenIntros(), resetAmplitudeOrientation()]).then(() =>
-                Alert.alert(
+                notify(
                   'Hints reset',
                   'Onboarding hints and the welcome greeting will show again on next open.',
                 ),
@@ -589,7 +599,7 @@ export function SettingsScreen({ navigation }: Props) {
             style={styles.row}
             onPress={() =>
               resetAskModes().then(() =>
-                Alert.alert(
+                notify(
                   'Permission prompts reset',
                   'The camera, location, and photo explainer popups will ask again next time — including if you had chosen “always allow.” This does not change what you’ve allowed in your device Settings.',
                 ),
@@ -617,7 +627,9 @@ export function SettingsScreen({ navigation }: Props) {
 
       {/* Redeem access / promo code popup (owner 2026-08-21). */}
       <Modal accessibilityViewIsModal visible={redeemOpen} transparent animationType="fade" onRequestClose={() => setRedeemOpen(false)}>
-        <Pressable accessibilityRole="button" style={styles.modalBackdrop} onPress={() => !redeemBusy && setRedeemOpen(false)}>
+        {/* Scrim is NOT an accessible button (QA night 2026-09-01): as one it
+            wrapped the card's real buttons — invalid nesting + SR trap. */}
+        <Pressable accessible={false} style={styles.modalBackdrop} onPress={() => !redeemBusy && setRedeemOpen(false)}>
           <Pressable accessible={false} style={styles.modalCard} onPress={() => {}}>
             <Text style={styles.modalTitle}>REDEEM A CODE</Text>
             <Text style={styles.modalBody}>

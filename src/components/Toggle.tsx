@@ -44,6 +44,9 @@ export function Toggle({
       accessibilityRole="switch"
       accessibilityLabel={label}
       accessibilityState={{ checked: on, disabled }}
+      // RN-web 0.21 no longer maps accessibilityState → ARIA; without this
+      // every switch announced with NO on/off state on web (QA 2026-09-01).
+      aria-checked={on}
       // 26 tall + 8 = 42, just under the 44 minimum; 10 clears it.
       hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
       style={disabled && { opacity: 0.45 }}

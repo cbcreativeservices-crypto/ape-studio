@@ -127,6 +127,7 @@ function ChoiceChips({
             style={[styles.interestChip, on && styles.interestChipOn]}
             accessibilityRole="button"
             accessibilityState={{ selected: on }}
+            aria-selected={on}
           >
             <Text style={[styles.interestChipText, on && styles.interestChipTextOn]}>
               {starred === o ? '\u2605 ' : ''}
@@ -473,7 +474,7 @@ export function ProfileScreen() {
               registryActive
                 ? 'Listed. Your public page is live.'
                 : !profileComplete
-                  ? `${missing.length} details needed before you can be listed. Opens the form.`
+                  ? `${missing.length} detail${missing.length === 1 ? '' : 's'} needed before you can be listed. Opens the form.`
                   : 'Private. You have no public page.'
             }
           >

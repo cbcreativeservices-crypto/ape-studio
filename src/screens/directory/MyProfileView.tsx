@@ -10,7 +10,7 @@
  * disables a control at the cap so the member sees the boundary before they hit
  * it; the server refuses regardless, which is what actually enforces it.
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Modal } from '../../components/DimModal';
 import { Section } from '../../components/Section';
@@ -75,6 +75,8 @@ function notify(title: string, body: string): void {
 export function MyProfileView() {
   const [tax, setTax] = useState<Taxonomy | null>(null);
   const [p, setP] = useState<CommunityProfile>(EMPTY_COMMUNITY_PROFILE);
+  const pRef = useRef(p);
+  pRef.current = p;
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -117,11 +119,15 @@ export function MyProfileView() {
    *  rules and the specialty/area rule are applied by the same code that will
    *  be applied at publish time. */
   const persist = useCallback(async (next: CommunityProfile) => {
+    const prev = pRef.current;
     setP(next);
     setSaving(true);
     const res = await saveCommunityProfile(next);
     setSaving(false);
     setErr(res.ok ? null : res.error);
+    // Roll back on refusal (QA night 2026-09-01): a guest's tapped chip
+    // stayed visually selected after the server said no.
+    if (!res.ok && prev) setP(prev);
     return res.ok;
   }, []);
 

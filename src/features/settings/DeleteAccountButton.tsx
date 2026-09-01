@@ -7,6 +7,7 @@
  */
 import { useRef, useState } from 'react';
 import { Alert, Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import { confirmDialog, notify } from '../../lib/confirm';
 import { supabase } from '../../lib/supabase';
 import { clearLocalAccountData, resetAllLocalStores } from '../account/clearLocalAccountData';
 import { colors, fonts } from '../../theme/tokens';
@@ -57,13 +58,12 @@ export function DeleteAccountButton({ onDeleted }: { onDeleted: () => void }) {
 
   const askFinalConfirm = () => {
     Animated.timing(progress, { toValue: 0, duration: 140, useNativeDriver: false }).start();
-    Alert.alert(
+    confirmDialog(
       'Delete account permanently?',
       'This erases your account and all personal records for good. It cannot be undone.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Delete forever', style: 'destructive', onPress: runDelete },
-      ],
+      'Delete forever',
+      runDelete,
+      { destructive: true },
     );
   };
 
@@ -82,7 +82,7 @@ export function DeleteAccountButton({ onDeleted }: { onDeleted: () => void }) {
       onDeleted();
     } catch {
       setBusy(false);
-      Alert.alert('Could not delete account', 'Something went wrong. Please check your connection and try again.');
+      notify('Could not delete account', 'Something went wrong. Please check your connection and try again.');
     }
   };
 

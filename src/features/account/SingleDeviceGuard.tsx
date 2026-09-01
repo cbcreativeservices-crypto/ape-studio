@@ -10,6 +10,7 @@
  */
 import { useEffect, useRef } from 'react';
 import { Alert, AppState, type AppStateStatus } from 'react-native';
+import { notify } from '../../lib/confirm';
 import { supabase } from '../../lib/supabase';
 import { navigationRef } from '../../navigation/navigationRef';
 import { clearLocalAccountData, resetAllLocalStores } from './clearLocalAccountData';
@@ -36,7 +37,7 @@ export function SingleDeviceGuard() {
         if (navigationRef.isReady()) {
           navigationRef.reset({ index: 0, routes: [{ name: 'Splash' as never }] });
         }
-        Alert.alert(
+        notify(
           'Signed out',
           'Your account was signed in on another device. Only one device can be signed in at a time.',
         );
