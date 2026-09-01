@@ -527,8 +527,9 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
       </View>
 
       {config.checks?.length ? (
+        // Each card now carries its own collapsible CHECK YOURSELF header
+        // (owner 2026-08-31) — a section head above them read twice.
         <View style={{ gap: 10 }}>
-          <Text style={styles.sectionHead}>CHECK YOURSELF</Text>
           {config.checks.map((c, i) => (
             <CheckQuestion key={i} spec={c} />
           ))}

@@ -15,7 +15,7 @@
  *    disclosure every animated panel carries.
  */
 import { useRef, useState } from 'react';
-import { PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
+import { LayoutAnimation, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { levelColor, rampColors } from '../../../features/tools/levelColor';
 import { LinearGradient as GradientView } from 'expo-linear-gradient';
@@ -34,6 +34,9 @@ export type CheckSpec = {
 export function CheckQuestion({ spec, onSolved }: { spec: CheckSpec; onSolved?: () => void }) {
   const [picked, setPicked] = useState<number | null>(null);
   const [solved, setSolved] = useState(false);
+  // Collapsible (owner 2026-08-31): same expand/close triangle as the
+  // WHAT'S HAPPENING sections, in the card's top-left. Starts open.
+  const [open, setOpen] = useState(true);
   // SHUFFLE ON MOUNT (learning pass 2026-08-31). Authored specs had settled the
   // correct answer at index 1 in 10 of 11 Foundations checks — by Module 5 a
   // student can pass every check by picking the middle option, which trains
@@ -58,7 +61,22 @@ export function CheckQuestion({ spec, onSolved }: { spec: CheckSpec; onSolved?: 
   };
   return (
     <View style={styles.checkCard}>
-      <Text style={styles.checkEyebrow}>CHECK YOURSELF</Text>
+      <Pressable
+        style={styles.checkHeadRow}
+        onPress={() => {
+          LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+          setOpen((o) => !o);
+        }}
+        accessibilityRole="button"
+        accessibilityState={{ expanded: open }}
+        accessibilityLabel={`Check yourself, ${open ? 'expanded' : 'collapsed'}`}
+        hitSlop={{ top: 8, bottom: 8 }}
+      >
+        <Text style={styles.checkCaret}>{open ? '▾' : '▸'}</Text>
+        <Text style={styles.checkEyebrow}>CHECK YOURSELF{solved ? '  ·  ✓' : ''}</Text>
+      </Pressable>
+      {!open ? null : (
+        <>
       <Text style={styles.checkQuestion}>{spec.question}</Text>
       <View style={{ gap: 8 }}>
         {order.map((i) => {
@@ -89,6 +107,8 @@ export function CheckQuestion({ spec, onSolved }: { spec: CheckSpec; onSolved?: 
       ) : picked != null ? (
         <Text style={styles.checkHint}>{spec.wrongHint ?? 'Not quite — try again.'}</Text>
       ) : null}
+        </>
+      )}
     </View>
   );
 }
@@ -289,6 +309,8 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   checkEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.4, color: '#c98bff' },
+  checkHeadRow: { flexDirection: 'row', alignItems: 'center', gap: 7 },
+  checkCaret: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: '#c98bff', width: 12, textAlign: 'center' },
   checkQuestion: { fontFamily: fonts.barlowMedium, fontSize: 14.5, lineHeight: 20, color: colors.textPrimary },
   checkOpt: {
     borderRadius: 8,

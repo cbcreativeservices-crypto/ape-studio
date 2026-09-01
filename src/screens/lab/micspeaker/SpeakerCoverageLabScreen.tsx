@@ -404,7 +404,7 @@ export function SpeakerCoverageLabScreen() {
     bezel: [
       { k: 'HEIGHT', v: heightWord(h01), flex: 1.2, helpKey: 'height_tilt' },
       { k: 'TILT', v: `${tilt}°`, helpKey: 'height_tilt' },
-      { k: 'V PAT', v: `${sideDisp.vDeg}°`, helpKey: 'dispersion' },
+      { k: 'V PATTERN', v: `${sideDisp.vDeg}°`, flex: 1.3, helpKey: 'dispersion' },
       {
         k: 'ROOM',
         v: `${sloped ? 'sloped' : 'flat'}${delayOn || rearDelay ? ' · dly' : ''}`,
@@ -461,8 +461,10 @@ export function SpeakerCoverageLabScreen() {
     {
       kind: 'options',
       id: 'vdisp',
-      label: 'V PAT',
+      label: 'V PATTERN',
       valueLabel: `${sideDisp.vDeg}°`,
+      // "V PATTERN" spelled out (owner 2026-08-31): the VERTICAL coverage
+      // angle — how tall the wedge of sound is, floor to ceiling.
       options: DISPERSIONS.map((d) => ({ id: d.key, label: `V ${d.vDeg}°  (${d.label})`, blurb: d.blurb })),
       selectedId: sideDisp.key,
       onSelect: (id) => {

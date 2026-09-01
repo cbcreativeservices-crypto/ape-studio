@@ -3147,6 +3147,15 @@ export function coverageT(lvl: number): number {
   return Math.max(0, Math.min(1, (db + 16) / 21));
 }
 
+/** Directivity throw factor (owner 2026-08-31): the same acoustic energy
+ *  spread across a WIDER wedge is thinner at every distance, so wide patterns
+ *  die off sooner and narrow patterns THROW. Normalized to each view's
+ *  all-rounder pattern (refHalfDeg), so the default look holds and the
+ *  40°-vs-120° consequence becomes visible. */
+export function dirGain(halfDeg: number, refHalfDeg: number): number {
+  return refHalfDeg / Math.max(14, halfDeg);
+}
+
 /** Conceptual level from one speaker to one point (top view). Banded pattern
  *  edge — the ORIGINAL model, kept verbatim (readouts/semantics unchanged).
  *  Exported so its meaning stays inspectable alongside the smooth variant. */
@@ -3203,7 +3212,10 @@ export function topLevelSmooth(
   const ay = Math.cos(th);
   const cosA = (vx * ax + vy * ay) / d;
   const ang = (Math.acos(Math.max(-1, Math.min(1, cosA))) * 180) / Math.PI;
-  return scale * smoothEdge(ang, hDeg / 2) * Math.pow(refD / d, 1.5);
+  // ^2 = true inverse-square (−6 dB per doubling under coverageT's 10·log10)
+  // — the old ^1.5 kept yellow alive across the whole room (owner 2026-08-31).
+  // `scale` carries the pattern's directivity (dirGain) where it applies.
+  return scale * smoothEdge(ang, hDeg / 2) * Math.pow(refD / d, 2);
 }
 
 /** Side-plane conceptual level (vertical pattern × distance, smooth edge).
@@ -3223,7 +3235,8 @@ export function sideLevelSmooth(
   const vy = py - sy;
   const d = Math.max(12, Math.hypot(vx, vy));
   const offDeg = (Math.abs(Math.atan2(vy, vx) - axisRad) * 180) / Math.PI;
-  return scale * smoothEdge(offDeg, halfDeg) * Math.pow(refD / d, 1.5);
+  // ^2 = true inverse-square — see topLevelSmooth.
+  return scale * smoothEdge(offDeg, halfDeg) * Math.pow(refD / d, 2);
 }
 
 // ── Wavefront rings — physically faithful concentric propagation ─────────────
@@ -3403,11 +3416,16 @@ export function TopCoverageView({
   const audH = h - audY0 - 8;
 
   const { buckets, aims, spkList, ringCenters } = useMemo(() => {
-    const refD = 0.55 * audH;
+    // 0.4·audH (owner 2026-08-31: "yellow keeps too long — never gets to
+    // green"): with the true inverse-square below, the audience now spans
+    // hot front rows → green mid-rear → cool corners instead of wall-to-wall
+    // yellow. Directivity rides on the mains' scale: narrow patterns throw.
+    const refD = 0.4 * audH;
+    const dg = dirGain(hDeg / 2, 45); // normalized to the 90° all-rounder
     const spks: { x: number; y: number; aim: number; hd: number; refD: number; scale: number; small?: boolean; tint?: string }[] = [
-      { x: spk1x01 * (w - 40) + 20, y: stageH, aim: spk1AimDeg, hd: hDeg, refD, scale: 1 },
+      { x: spk1x01 * (w - 40) + 20, y: stageH, aim: spk1AimDeg, hd: hDeg, refD, scale: dg },
     ];
-    if (spk2On) spks.push({ x: spk2x01 * (w - 40) + 20, y: stageH, aim: spk2AimDeg, hd: hDeg, refD, scale: 1, tint: ACCENT_BLUE });
+    if (spk2On) spks.push({ x: spk2x01 * (w - 40) + 20, y: stageH, aim: spk2AimDeg, hd: hDeg, refD, scale: dg, tint: ACCENT_BLUE });
     if (frontFills) {
       // Symmetric about the stage's center line, always equidistant.
       const half = 0.05 + 0.4 * Math.max(0, Math.min(1, fillSpread01));
@@ -3447,7 +3465,7 @@ export function TopCoverageView({
           const cosA = (vx * s.ax + vy * s.ay) / d;
           const ang = (Math.acos(cosA < -1 ? -1 : cosA > 1 ? 1 : cosA) * 180) / Math.PI;
           const rd = s.refD / d;
-          lvl += s.scale * smoothEdge(ang, s.half) * rd * Math.sqrt(rd);
+          lvl += s.scale * smoothEdge(ang, s.half) * rd * rd;
         }
         return Math.round(coverageT(lvl) * (JET_BUCKET_COUNT - 1));
       });
@@ -3932,7 +3950,9 @@ export function SideCoverageView({
       // Shorter reference distance (owner 2026-08-05): a single box falls into
       // the BLUE by the back of the audience — one box can't hold level over
       // depth (the teaching point). The line array / rear delay hold it.
-      srcs.push({ x: spkX, y: spkY, axis: (tiltDeg * Math.PI) / 180, half: vDeg / 2, refD: w * 0.3, scale: 1 });
+      // Directivity (owner 2026-08-31): a 40° box throws, a 100° box dies —
+      // normalized to the 60° all-rounder so the default look holds.
+      srcs.push({ x: spkX, y: spkY, axis: (tiltDeg * Math.PI) / 180, half: vDeg / 2, refD: w * 0.3, scale: dirGain(vDeg / 2, 30) });
     }
     if (delayOn) {
       // Delay box beam: mid-axis of its drawn wedge (same edges as geo).
@@ -3972,7 +3992,7 @@ export function SideCoverageView({
           if (d < 12) d = 12;
           const offDeg = (Math.abs(Math.atan2(vy, vx) - s.axis) * 180) / Math.PI;
           const rd = s.refD / d;
-          lvl += s.scale * smoothEdge(offDeg, s.half) * rd * Math.sqrt(rd);
+          lvl += s.scale * smoothEdge(offDeg, s.half) * rd * rd;
         }
         return Math.round(coverageT(lvl) * (JET_BUCKET_COUNT - 1));
       });
