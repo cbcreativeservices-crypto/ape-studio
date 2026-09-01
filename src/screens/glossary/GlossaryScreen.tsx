@@ -1942,8 +1942,13 @@ export function GlossaryScreen({ route, navigation }: Props) {
                   // (Booth 2026-07-09b). Scrolling afterward is unaffected.
                   if (willExpand) scrollTermToTop(item.id);
                 }}
-                accessibilityRole={selectMode ? 'checkbox' : 'button'}
-                accessibilityState={selectMode ? { checked: picked } : { expanded }}
+                // Demoted from a button (QA night 2026-09-01): this row wraps
+                // real buttons — the links toggle, bookmark/star holds, speak,
+                // share, media and (expanded) suggest-a-correction. As a button
+                // it was invalid nesting on web and its label swallowed those
+                // controls for screen readers. Semantics live on the term text;
+                // its tap bubbles here (the ratified accordion pattern).
+                accessible={false}
               >
                 {/* Selection overlay — sits above the row content so its own
                     action icons don't fire while picking terms to share. */}
@@ -1963,6 +1968,8 @@ export function GlossaryScreen({ route, navigation }: Props) {
                 <View style={styles.entryHeader}>
                   <View style={styles.entryTermWrap}>
                     <Text
+                      accessibilityRole={selectMode ? 'checkbox' : 'button'}
+                      accessibilityState={selectMode ? { checked: picked } : { expanded }}
                       style={[
                         styles.term,
                         { flexShrink: 1 },
