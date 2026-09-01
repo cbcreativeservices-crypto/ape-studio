@@ -32,7 +32,8 @@ import {
   type ItemStates,
 } from '../../features/study/api';
 import { StudySession } from '../../features/study/sync';
-import { saveLocalMethodStates } from '../../features/study/localProgress';
+import { loadLocalMethodStates, mergeItemStates, saveLocalMethodStates } from '../../features/study/localProgress';
+import { supabase } from '../../lib/supabase';
 import { SuggestCorrectionButton } from '../../features/study/SuggestCorrectionButton';
 import { incBrainOutput, resetBrainOutput, setRunning, usePaceSettings, useRunning } from '../../features/study/paceStore';
 import { setLastStudyLocation } from '../../features/study/lastStudyLocation';
@@ -108,13 +109,20 @@ export function FillInBlankScreen({ navigation, route }: Props) {
     let alive = true;
     (async () => {
       try {
-        const [fetched, methodState] = await Promise.all([
+        const [fetched, methodState, localStates] = await Promise.all([
           fetchTopicItems(achievementId),
           fetchMethodState(achievementId, 'fill_in_blank'),
+          // Device-mirror resume merge — SIGNED-IN only (same ruling as the
+          // flashcards fix 2026-08-17; QA night 2026-08-31 found FIB/Matching
+          // never got it, and a single answer then clobbered the mirror).
+          supabase.auth
+            .getSession()
+            .then(({ data }) => (data.session ? loadLocalMethodStates(achievementId, 'fill_in_blank') : null))
+            .catch(() => null),
         ]);
         if (!alive) return;
         setItems(shuffle(fetched));
-        setStates(methodState?.itemStates ?? {});
+        setStates(mergeItemStates(methodState?.itemStates, localStates));
       } catch {
         if (alive) setError('Could not load this topic. Check your connection.');
       }

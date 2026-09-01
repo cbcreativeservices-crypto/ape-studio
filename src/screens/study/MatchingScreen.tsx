@@ -32,7 +32,8 @@ import {
   type ItemStates,
 } from '../../features/study/api';
 import { StudySession } from '../../features/study/sync';
-import { saveLocalMethodStates } from '../../features/study/localProgress';
+import { loadLocalMethodStates, mergeItemStates, saveLocalMethodStates } from '../../features/study/localProgress';
+import { supabase } from '../../lib/supabase';
 import { SuggestCorrectionButton } from '../../features/study/SuggestCorrectionButton';
 import { incBrainOutput, resetBrainOutput, setRunning, usePaceSettings, useRunning } from '../../features/study/paceStore';
 import { setLastStudyLocation } from '../../features/study/lastStudyLocation';
@@ -124,13 +125,19 @@ export function MatchingScreen({ navigation, route }: Props) {
     let alive = true;
     (async () => {
       try {
-        const [fetched, methodState] = await Promise.all([
+        const [fetched, methodState, localStates] = await Promise.all([
           fetchTopicItems(achievementId),
           fetchMethodState(achievementId, 'matching'),
+          // Device-mirror resume merge — SIGNED-IN only (flashcards ruling
+          // 2026-08-17; ported QA night 2026-08-31).
+          supabase.auth
+            .getSession()
+            .then(({ data }) => (data.session ? loadLocalMethodStates(achievementId, 'matching') : null))
+            .catch(() => null),
         ]);
         if (!alive) return;
         // Items needing attempts first, then done items (practice), stable within session.
-        const st: ItemStates = methodState?.itemStates ?? {};
+        const st: ItemStates = mergeItemStates(methodState?.itemStates, localStates);
         const notDone = shuffle(fetched.filter((it) => (st[it.id]?.attempts ?? 0) < 2));
         const done = shuffle(fetched.filter((it) => (st[it.id]?.attempts ?? 0) >= 2));
         setItems([...notDone, ...done]);
