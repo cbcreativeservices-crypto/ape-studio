@@ -85,6 +85,10 @@ export function SettingsScreen({ navigation }: Props) {
   const [redeemCode, setRedeemCode] = useState('');
   const [redeemBusy, setRedeemBusy] = useState(false);
   const isMember = entitlement === 'academy';
+  // A no-account GUEST is not a "free account" (QA night 2026-09-01): Settings
+  // showed them FREE status, an empty Student ID, a Log out row and a DELETE
+  // ACCOUNT section for an account that does not exist.
+  const isGuest = entitlement === 'anonymous';
 
   const submitRedeem = useCallback(async () => {
     const code = redeemCode.trim();
@@ -296,7 +300,9 @@ export function SettingsScreen({ navigation }: Props) {
           ))}
           {!(prefs?.push_enabled ?? false) ? (
             <Text style={styles.dependencyNote}>
-              Turn on phone notifications to use anything below.
+              {prefs == null
+                ? 'Sign in to manage notifications — a guest session keeps nothing.'
+                : 'Turn on phone notifications to use anything below.'}
             </Text>
           ) : null}
 
@@ -522,12 +528,12 @@ export function SettingsScreen({ navigation }: Props) {
             accounts, bulk seats, event offers. Available to any signed-in user. */}
         <SettingsSection
           title="MEMBERSHIP"
-          summary={isMember ? 'ACADEMY' : entitlement === 'lapsed' ? 'LAPSED' : 'FREE'}
+          summary={isMember ? 'ACADEMY' : entitlement === 'lapsed' ? 'LAPSED' : isGuest ? 'GUEST' : 'FREE'}
         >
           <View style={[styles.row, styles.rowBorder]}>
             <Text style={styles.rowLabel}>Status</Text>
             <Text style={[styles.mono, { color: isMember ? colors.green : colors.textSubAlt }]}>
-              {isMember ? 'ACADEMY — ACTIVE' : entitlement === 'lapsed' ? 'LAPSED' : 'FREE'}
+              {isMember ? 'ACADEMY — ACTIVE' : entitlement === 'lapsed' ? 'LAPSED' : isGuest ? 'GUEST — NO ACCOUNT' : 'FREE'}
             </Text>
           </View>
           <Pressable
@@ -546,10 +552,12 @@ export function SettingsScreen({ navigation }: Props) {
 
         {/* ACCOUNT */}
         <SettingsSection title="ACCOUNT" summary={apeId || undefined}>
-          <View style={[styles.row, styles.rowBorder]}>
-            <Text style={styles.rowLabel}>Student ID</Text>
-            <Text style={styles.mono}>{apeId}</Text>
-          </View>
+          {!isGuest ? (
+            <View style={[styles.row, styles.rowBorder]}>
+              <Text style={styles.rowLabel}>Student ID</Text>
+              <Text style={styles.mono}>{apeId}</Text>
+            </View>
+          ) : null}
           <View style={[styles.row, styles.rowBorder]}>
             <Text style={styles.rowLabel}>App version</Text>
             <Text style={[styles.mono, { color: colors.textSubAlt }]}>
@@ -568,10 +576,22 @@ export function SettingsScreen({ navigation }: Props) {
           </Pressable>
           {/* Log out → sign out then bounce to Splash, which re-checks the
               session and routes to the login screen for the next user. */}
-          <Pressable style={styles.row} onPress={confirmLogout} accessibilityRole="button" accessibilityLabel="Log out">
-            <Text style={styles.rowLabel}>Log out</Text>
-            <Text style={styles.monoAction}>SIGN OUT ›</Text>
-          </Pressable>
+          {isGuest ? (
+            <Pressable
+              style={styles.row}
+              onPress={() => navigation.reset({ index: 0, routes: [{ name: 'Splash' }] })}
+              accessibilityRole="button"
+              accessibilityLabel="Sign in or create an account"
+            >
+              <Text style={styles.rowLabel}>Sign in / create account</Text>
+              <Text style={styles.monoAction}>SIGN IN ›</Text>
+            </Pressable>
+          ) : (
+            <Pressable style={styles.row} onPress={confirmLogout} accessibilityRole="button" accessibilityLabel="Log out">
+              <Text style={styles.rowLabel}>Log out</Text>
+              <Text style={styles.monoAction}>SIGN OUT ›</Text>
+            </Pressable>
+          )}
         </SettingsSection>
 
         {/* Shipped to students on purpose: replaying the hints is a legitimate
@@ -615,6 +635,7 @@ export function SettingsScreen({ navigation }: Props) {
             Hold 5s → final confirm → erase personal data via delete_my_account, then
             sign out and bounce to Splash. Collapsed AND red-keyed: it should take a
             deliberate tap to even see the control. */}
+        {isGuest ? null : (
         <SettingsSection title="DELETE ACCOUNT" danger>
           <View style={{ paddingVertical: 10 }}>
             <Text style={[styles.rowHint, { marginBottom: 10 }]}>
@@ -623,6 +644,7 @@ export function SettingsScreen({ navigation }: Props) {
             <DeleteAccountButton onDeleted={() => navigation.reset({ index: 0, routes: [{ name: 'Splash' }] })} />
           </View>
         </SettingsSection>
+        )}
       </ScrollView>
 
       {/* Redeem access / promo code popup (owner 2026-08-21). */}
