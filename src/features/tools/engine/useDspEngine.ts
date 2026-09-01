@@ -208,14 +208,33 @@ export function useToolAutoStart(state: EngineState, start: () => void, stop?: (
   useEffect(() => {
     if (done.current) return;
     if (state === 'idle') {
-      done.current = true;
       // Perf (rev 22): start AFTER the push transition finishes, not during it.
       // The landing card is already on screen, so this costs no perceived delay;
       // it lets the tool's heavy native ApeDsp.start() run once the screen has
       // painted and any in-flight hub teardown stop() has settled — instead of
       // racing it mid-transition (which serialized the audio HAL open on Android).
-      const task = InteractionManager.runAfterInteractions(() => start());
-      return () => task.cancel();
+      //
+      // QA night 2026-09-01, two hardenings:
+      //  • `done` latches only when start() actually FIRES — it used to latch
+      //    on schedule, so a cleanup that cancelled the task (state/start
+      //    identity churn in the same frame) parked the tool on "Starting…"
+      //    with start() never called.
+      //  • 1.5s fallback timer: a long-held interaction handle (the hub's
+      //    continuous Skia preview loops) can defer runAfterInteractions
+      //    indefinitely — the reproduced forever-spinner. The fallback fires
+      //    start() anyway; the transition is long over by then.
+      const fire = () => {
+        if (!done.current) {
+          done.current = true;
+          start();
+        }
+      };
+      const task = InteractionManager.runAfterInteractions(fire);
+      const fallback = setTimeout(fire, 1500);
+      return () => {
+        task.cancel();
+        clearTimeout(fallback);
+      };
     }
     return undefined;
   }, [state, start]);
