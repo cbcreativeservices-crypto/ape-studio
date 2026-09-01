@@ -48,6 +48,7 @@ import { TileChassis, chassisLayout, PLATE_Y, PLATE_H } from './TileChassis';
 // hub stays Skia-free and web-previewable.
 import { useHubPreviewEngine } from './hubPreviewEngine';
 import { HUB_LIVE_MINIS, HUB_SKIN_MINIS } from './hubPreviewsLive';
+import { animationsAllowed } from '../../features/settings/a11y';
 import { HUB_SIM_MINIS } from './hubPreviewsSim';
 import {
   fmtDuration,
@@ -97,6 +98,58 @@ const CHASSIS_SEED: Partial<Record<ToolKey, number>> = {
   spl: 11, multimeter: 23, waveform: 37, rta: 51, spectrogram: 61, signalgen: 71, rt60: 83, hzcounter: 97,
 };
 
+/**
+ * POWER-ON personas (owner 2026-09-01; spec + hardware research at
+ * docs/APE_HUB_POWERON_SPEC_2026_09_01.md). Each display powers on like the
+ * hardware its tool implies — a VU lamp warms, a CRT blooms with overshoot, an
+ * LED ladder strikes, a VFD runs its segment-test blink, a CCFL stutters then
+ * ramps. Two pure-opacity layers on the native driver: `lit` (the content
+ * block over the dark cap = the backlight) and `bloom` (a tinted flash
+ * overlay). HONESTY (§1.7): only glass/backlight opacity animates — live
+ * minis still gate on real frames, sims keep their DEMO tags, needles rest.
+ * Stagger: 70 ms per tile in reading order ± a deterministic ±23 ms jitter
+ * from CHASSIS_SEED, so the rack sequences up the same way every open —
+ * research says <50 ms fuses into one gesture, >120 ms reads as lag.
+ */
+type PowerStep = { to: number; ms: number; ease?: (v: number) => number };
+type Persona = { lit: PowerStep[]; bloom?: { color: string; steps: PowerStep[] } };
+const POWER_PERSONA: Record<string, Persona> = {
+  // VU lamp warm-up: strikes first, glows to full LAST — analog warms while
+  // digital snaps on.
+  spl: {
+    lit: [{ to: 1, ms: 620, ease: Easing.inOut(Easing.quad) }],
+    bloom: { color: 'rgba(255,190,120,1)', steps: [{ to: 0.1, ms: 300 }, { to: 0, ms: 320 }] },
+  },
+  // DSP LCD boot: fast ramp, one-frame dip as the driver locks.
+  multimeter: {
+    lit: [{ to: 0.85, ms: 140, ease: Easing.out(Easing.quad) }, { to: 0.7, ms: 50 }, { to: 1, ms: 120, ease: Easing.out(Easing.quad) }],
+    bloom: { color: 'rgba(200,225,255,1)', steps: [{ to: 0.3, ms: 40 }, { to: 0, ms: 70 }] },
+  },
+  // CRT bloom: brightness overshoot that settles — the classic scope power-on.
+  waveform: {
+    lit: [{ to: 1, ms: 320, ease: Easing.out(Easing.cubic) }],
+    bloom: { color: 'rgba(210,235,255,1)', steps: [{ to: 0.45, ms: 180, ease: Easing.out(Easing.cubic) }, { to: 0, ms: 380, ease: Easing.in(Easing.quad) }] },
+  },
+  // LED ladder strike: snappiest of the rack.
+  rta: { lit: [{ to: 1, ms: 60 }, { to: 0.55, ms: 40 }, { to: 1, ms: 80 }] },
+  // Modern TFT: one clean luminance ramp, no drama.
+  spectrogram: { lit: [{ to: 1, ms: 420, ease: Easing.inOut(Easing.sin) }] },
+  // VFD segment test: rapid all-segments blinks before data.
+  signalgen: {
+    lit: [{ to: 1, ms: 50 }, { to: 0.25, ms: 70 }, { to: 1, ms: 50 }, { to: 0.35, ms: 60 }, { to: 1, ms: 110 }],
+    bloom: { color: 'rgba(140,255,230,1)', steps: [{ to: 0.08, ms: 25 }, { to: 0, ms: 35 }] },
+  },
+  // CCFL strike + ramp: stutter, then the tube brightens.
+  rt60: { lit: [{ to: 0.6, ms: 180 }, { to: 0.5, ms: 80 }, { to: 0.75, ms: 90 }, { to: 1, ms: 280, ease: Easing.out(Easing.quad) }] },
+  // Tuner display blink.
+  hzcounter: {
+    lit: [{ to: 1, ms: 70 }, { to: 0.6, ms: 50 }, { to: 1, ms: 90 }],
+    bloom: { color: 'rgba(140,255,230,1)', steps: [{ to: 0.06, ms: 15 }, { to: 0, ms: 25 }] },
+  },
+};
+const powerSeq = (v: Animated.Value, steps: PowerStep[]) =>
+  Animated.sequence(steps.map((st) => Animated.timing(v, { toValue: st.to, duration: st.ms, easing: st.ease ?? Easing.linear, useNativeDriver: true })));
+
 const TILE_ORDER: ToolKey[] = [
   'spl',
   'multimeter',
@@ -137,20 +190,36 @@ const STRIP_LABEL: Record<ToolKey, string> = {
  *  scripted animated preview; the five mic tools render the static artwork as
  *  the resting state with the live mini fading in over it while frames flow —
  *  absent/spike/denied engines simply rest on the art (no fake meters, §1.7). */
-function ToolStrip({ tool, live, active, ready }: { tool: ToolKey; live: boolean; active: boolean; ready: boolean }) {
+function ToolStrip({ tool, live, active, ready, index }: { tool: ToolKey; live: boolean; active: boolean; ready: boolean; index: number }) {
   const Strip = TOOL_STRIP[tool];
   const Sim = HUB_SIM_MINIS[tool];
   const Live = HUB_LIVE_MINIS[tool];
   // Always-on skinned display (SPL): its own photoreal face replaces the static
   // artwork in every state (needle rests when there's no live signal).
   const Skin = HUB_SKIN_MINIS[tool];
-  // Fade the display in when it mounts, so the deferred content doesn't pop.
-  const fade = useRef(new Animated.Value(0)).current;
+  // POWER-ON (owner 2026-09-01): the deferred-ready mount becomes the rack
+  // sequencing up — see POWER_PERSONA above. `lit` is the backlight; `bloom`
+  // the strike/overshoot flash. One-shot (ran guard survives HMR re-renders);
+  // reduced motion falls back to exactly the old 260 ms fade, no stagger.
+  const lit = useRef(new Animated.Value(0)).current;
+  const bloom = useRef(new Animated.Value(0)).current;
+  const ran = useRef(false);
   useEffect(() => {
-    if (ready) {
-      Animated.timing(fade, { toValue: 1, duration: 260, easing: Easing.out(Easing.quad), useNativeDriver: true }).start();
+    if (!ready || ran.current) return;
+    ran.current = true;
+    if (!animationsAllowed()) {
+      Animated.timing(lit, { toValue: 1, duration: 260, easing: Easing.out(Easing.quad), useNativeDriver: true }).start();
+      return;
     }
-  }, [ready, fade]);
+    const persona = POWER_PERSONA[tool] ?? { lit: [{ to: 1, ms: 260, ease: Easing.out(Easing.quad) }] };
+    const seed = CHASSIS_SEED[tool] ?? 1;
+    const start = Math.max(0, index * 70 + ((seed % 47) - 23));
+    const parts = [powerSeq(lit, persona.lit)];
+    if (persona.bloom) parts.push(powerSeq(bloom, persona.bloom.steps));
+    Animated.sequence([Animated.delay(start), Animated.parallel(parts)]).start();
+  }, [ready, tool, index, lit, bloom]);
+  // Fast back-nav mid-sequence: stop cleanly on unmount only.
+  useEffect(() => () => { lit.stopAnimation(); bloom.stopAnimation(); }, [lit, bloom]);
   return (
     <View style={styles.tileStrip} pointerEvents="none">
       {/* Inner keeps the strip's true 2:1 so it's never distorted; the outer
@@ -161,7 +230,7 @@ function ToolStrip({ tool, live, active, ready }: { tool: ToolKey; live: boolean
             synchronously during navigation and stall the screen from opening.
             Until ready the tile shows its dark screen (reads as "powering on"). */}
         {ready && (
-          <Animated.View style={[StyleSheet.absoluteFill, { opacity: fade }]}>
+          <Animated.View style={[StyleSheet.absoluteFill, { opacity: lit }]}>
             {Skin ? (
               <View style={StyleSheet.absoluteFill} accessibilityRole="image" accessibilityLabel={STRIP_LABEL[tool]}>
                 <Skin />
@@ -188,6 +257,13 @@ function ToolStrip({ tool, live, active, ready }: { tool: ToolKey; live: boolean
           </Animated.View>
         )}
       </View>
+      {/* Power-on strike/overshoot flash — pure opacity, rests at 0 forever
+          after the sequence; glass sheen above stays on top (physically the
+          flash is IN the display, under the glass). */}
+      <Animated.View
+        pointerEvents="none"
+        style={[StyleSheet.absoluteFill, { backgroundColor: (POWER_PERSONA[tool]?.bloom?.color ?? 'transparent'), opacity: bloom }]}
+      />
     </View>
   );
 }
@@ -305,6 +381,7 @@ function ToolTile({
   live,
   active,
   ready,
+  index,
   onActivate,
 }: {
   tool: ToolKey;
@@ -313,6 +390,8 @@ function ToolTile({
   live: boolean;
   active: boolean;
   ready: boolean;
+  /** Reading-order position — drives the power-on stagger. */
+  index: number;
   onActivate: () => void;
 }) {
   const sink = useRef(new Animated.Value(0)).current;
@@ -383,7 +462,7 @@ function ToolTile({
         {/* Static cavity shadow the panel lip casts — revealed as the display sinks. */}
         <LinearGradient pointerEvents="none" colors={['rgba(0,0,0,0.6)', 'rgba(0,0,0,0)']} style={styles.tileCavityTop} />
         <Animated.View style={[styles.tileCap, { transform: [{ translateY }] }]}>
-          <ToolStrip tool={tool} live={live} active={active} ready={ready} />
+          <ToolStrip tool={tool} live={live} active={active} ready={ready} index={index} />
           <TileGlass />
           {/* Illumination — the screen powers on (glow ramps up) when pressed. */}
           <Animated.View pointerEvents="none" style={[styles.tileGlowLight, { opacity: glow }]} />
@@ -495,9 +574,10 @@ export function ToolsHubScreen({ navigation }: Props) {
             <View style={styles.panel}>
               <PanelFace />
               <View style={styles.grid}>
-              {TILE_ORDER.map(toolByKey).map((t) => (
+              {TILE_ORDER.map(toolByKey).map((t, i) => (
                 <ToolTile
                   key={t.key}
+                  index={i}
                   tool={t.key}
                   name={t.name}
                   planned={t.planned}
