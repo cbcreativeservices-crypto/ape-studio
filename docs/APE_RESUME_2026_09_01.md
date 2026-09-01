@@ -1,124 +1,91 @@
-# Resume point — 2026-09-01 (owner restarting the machine)
+# Session state — 2026-09-01 (post-restart)
 
-Everything below is COMMITTED AND PUSHED to `origin/audio-tools-engine`
-(head `0517cd1`). Nothing is in flight; no uncommitted work of mine exists.
-The dirty files in `git status` (app.json, web/*, supabase/*, three docs) are
-the OWNER'S own pre-existing edits from before this session — leave them.
+All owner decisions 1–7 and the whole approved "yellow" batch are **DONE,
+committed and pushed** to `origin/audio-tools-engine`. tsc clean at every
+commit. The dirty files in `git status` (app.json, web/*, supabase/*, three
+docs) are the OWNER'S own pre-existing edits — leave them.
 
-## Restart checklist (both die with the machine)
+## ⚠ ONE OWNER ACTION OUTSTANDING
 
-| Step | Where 📍 | What |
-|---|---|---|
-| 1 | 📍 terminal in `C:\Users\profe\dev\ape-studio` | Phone Metro: `npx expo start --dev-client --clear` (port 8081) — run it as a background task Claude can read |
-| 2 | 📍 same folder | Web preview: `expo-dev` from `.claude/launch.json` (port 8090) via preview_start |
-| 3 | 📍 browser | Web tier: `localStorage.setItem('ape:dev:entitlement','academy')` + reload |
-
-## ⚠ Owner action still outstanding
-
-**Run `docs/APE_CALC_WEEKLY_LIMIT_5_2026_09_01.SQL`.** The calculator weekly
-allowance is server-authoritative; the client now says 5 but the server still
-enforces 10 until this runs. Safe to re-run (create-or-replace, no data
+**Run `docs/APE_CALC_WEEKLY_LIMIT_5_2026_09_01.SQL`** — the calculator weekly
+allowance is server-authoritative. The client says 5; the server keeps
+enforcing 10 until this runs. Safe to re-run (create-or-replace, no data
 touched).
 
-## DONE this session (owner decisions 1-3 of 7)
+## Restart checklist (both servers die with the machine)
 
-- **1 + 2 RATIFIED** (`088849b`): compressor example now says **9 dB** of gain
-  reduction (with the subtraction shown so it can't drift back); RF link-budget
-  example now **−47.2 dBm → 47.8 dB**.
-- **3 DONE** (`0517cd1`): Calculator Laboratory is `alwaysFree` — opens for
-  every tier, no lock glyph, no preview overlay (it had inherited the Advanced
-  Training section's members-only lock; that, not the cap, was the real bug).
-  Free allowance 10 → **5**, halfway nudge rescaled to `ceil(limit/2)` (it was
-  hardcoded to fire at 5 and would have collided with the last-credit dialog),
-  and all three cap dialogs now route through the confirm shim so they work on
-  web. Plus the SQL above for the server side.
+| Step | What |
+|---|---|
+| 1 | Phone Metro: `npx expo start --dev-client --clear` (8081), as a background task Claude can read |
+| 2 | Web preview: `expo-dev` from `.claude/launch.json` (8090) via preview_start |
+| 3 | Web tier: `localStorage.setItem('ape:dev:entitlement','academy')` + reload |
 
-## NEXT — resume here, in this order
+## Shipped this session
 
-### Decision 4 — guest SAVE gating (owner chose: grey + 🔒 → membership)
-Half-built. `useSaveGate()` was DESIGNED but NOT yet written to
-`src/screens/tools/ToolLockUi.tsx` (grep returns 0 — start there). Shape:
-```ts
-export function useSaveGate(): { locked: boolean; label: (base: string) => string; prompt: () => void }
-// locked = useToolsLocked(); label prefixes 🔒 when locked;
-// prompt() = confirmDialog(MEMBERSHIP_REQUIRED, '…', 'See membership', → Paywall, { cancelText: 'Not now' })
-```
-Then wire 8 save controls — each has a handler to guard (early-return
-`saveGate.prompt()`) and a label of the exact shape
-`{justSaved ? 'SAVED ✓' : '<BASE>'}` → `saveGate.label('<BASE>')`:
-| File | Handler | Label base | Note |
-|---|---|---|---|
-| SplMeterScreen | `onSaveLog` | SAVE LOG | label appears **twice** (full + small layout) |
-| WaveformScreen | `onSave` | SAVE SNAPSHOT | |
-| SpectrogramScreen | `onSaveSnapshot` | SAVE SNAPSHOT | |
-| FrequencyCounterScreen | `onSave` ×2 (two scopes) | SAVE | both need the hook + guard |
-| Rt60Screen | `onSave` (plain fn, not useCallback) | SAVE | GlassButton `label=` prop |
-| RtaScreen | `onSaveTrace` | SAVE | dock action key `label:` |
-| MultiMeterScreen | `confirmSnapshot` | SAVE | sheet button `<Text>SAVE</Text>` |
+**Ratifications (`088849b`)** — compressor example now says 9 dB of gain
+reduction (with the subtraction shown so it can't drift back); RF link-budget
+example now −47.2 dBm → 47.8 dB.
 
-### Decision 5 — preview marking gate (owner chose: gate the client)
-Central fix: in `src/features/lab/labCompletion.ts` `markLabUnit()`, early-return
-when `getLabPreview().active` (from `src/features/lab/labPreviewStore.ts` — a
-synchronous read, and preview mode only happens for non-members opening a
-locked lab). `markLabReviewed` routes through `markLabUnit`, so it's covered.
-No import cycle: labPreviewStore imports only react.
+**1–3 (`0517cd1`)** — Calculator Laboratory is `alwaysFree`: it had inherited
+the Advanced Training section's members-only lock, which is what actually made
+the cap look unreachable. Free allowance 10 → 5, halfway nudge rescaled to
+`ceil(limit/2)`, cap dialogs work on web. Plus the SQL above.
 
-### Decision 6 — topic deep-linking (owner's fuller spec)
-Three behaviors:
-1. Tapping a **course/topic card** on the menu → Dashboard opens **that card's
-   topic** loaded.
-2. Bottom nav **[STUDY]** → always returns to the **last known topic** so the
-   user continues where they were.
-3. In **Enrollments**, the study icon inside a topic container → Dashboard with
-   **that container's topic** loaded (per-container link).
+**4 (`871e4cd`)** — SAVE is Academy-only: new `useSaveGate()` greys the control
+with 🔒 and routes to membership, wired through all eight save paths (SPL,
+Waveform, Spectrogram, RTA, MultiMeter, RT60, both Frequency Counter saves).
 
-Mechanism sketch: persist a pending target gs (e.g. `ape:pendingTopicGs`) at the
-tap sites (`CourseSelectionScreen.openPublicCourse/openCourse/openTopic`,
-Enrollments per-topic study icon); `DashboardScreen.load()` (~line 817, where it
-computes `orderedIds` + `getLastTopicIndex`) consumes and clears it, overriding
-the index when the gs is in the deck; STUDY tab keeps today's last-known
-behavior. Note `switchMode` (DashboardScreen ~866) is currently DEAD CODE and
-`setLastCourse`/`setLastPublicCourse` are written but never read — clean up or
-use them. Honors the 2026-07-23 ruling: the deck stays the enrollment deck; only
-the starting POSITION follows the tap.
+**5 (`0a6d4f3`)** — a previewed lab earns nothing: `markLabUnit` returns early
+while a lab preview is active, so a free account can't bank certificate credit
+by walking previews.
 
-### Decision 7 — guest = 100% wiped (owner: strict, includes ALL app settings)
-My proposed KEEP-listing of `ape:settings` is **REJECTED** — do not do it.
-Verify instead that the wipe is genuinely total for a no-account guest:
-`src/features/account/clearLocalAccountData.ts` KEEP list currently spares
-`ape:intro:*` and `ape:coach:*` (onboarding/coach-mark flags) — under the
-owner's rule ("we don't remember ANYTHING until an account exists") those should
-also be wiped for guests. `ape:deviceId` is device identity required by the
-single-device security feature — keep it, but flag it to the owner. Dev-only
-`ape:dev:entitlement` is `__DEV__`-gated and fine.
+**6 (`14fda4c`)** — topic deep-linking: card taps front their own topic (the
+`focusGs` param existed; the menu never sent one), the STUDY tab still returns
+to the last-known topic AND a deep-linked topic now becomes that last-known
+one, and Enrollments bundle icons front their bundle's first topic (per-topic
+icons already carried their gs). Deck ORDER untouched.
 
-### Yellow batch — APPROVED, not started
-FindFrequency "0 dB applied" verdict · schedule-stepper AM/PM carry · remaining
-web-dead `Alert.alert` sites → `src/lib/confirm.ts` (library/exposure deletes,
-gen-cap unlock, lapsed-card notice; AuthScreen takeover prompt LAST — its
-Cancel path has a `signOut` side effect, needs care) · **root error boundary**
-(any uncaught error currently white-screens the whole app) · guest Settings
-honesty (status GUEST not FREE; hide Log out/DELETE/Student ID when
-sessionless; "Sign in to manage notifications") · glossary term-row
-button-in-button (device responder check first) · BPM dash above ~600 in
-Sound/Tuner · Vd cm³ unit · MultiMeter catalog copy still says "Every level is
-dBFS".
+**7 (`5d31f76`)** — a guest is remembered in no way: `clearLocalAccountData`
+gained `{ total: true }`, used only on guest entry, so a guest also loses the
+onboarding/coach flags that an ACCOUNT switch still keeps (the 2026-08-13 fix
+stands for account users). KEEP list is only mic calibration, the install id
+the single-device login needs, and dev overrides.
 
-## NEW WORKSTREAM — feedback email system (owner, mid-session)
+**Yellow batch (`396347d`, `7af3125`, `6cf7a65`, `9370fa6`)** — FindFrequency
+"no correction applied" verdict · schedule steppers carry AM/PM and the hour ·
+the remaining RN-web dead dialogs routed through `src/lib/confirm.ts`
+(measurement deletes, exposure deletes, lapsed notice, coming-soon notices, and
+the signal-gen cap unlock, which also had a latch that could never re-open) ·
+**root error boundary** (one uncaught render error used to white-screen the
+whole app) · guest Settings honesty (GUEST status, no Student ID / Log out /
+DELETE ACCOUNT, "Sign in to manage notifications") · glossary term rows
+demoted, ending the button-in-button family · BPM dashes above 600 · Vd carries
+cm³ · MultiMeter catalog copy matches the tool.
 
-Not started. Owner wants:
-- App feedback goes to **info@proaudiotrainingacademy.com**.
-- Three intake aliases forwarding into it: **feedback@**, **corrections@**,
-  **suggestions@** — each carrying metadata (app screen, ids, date/time,
-  device, app version).
-- **Gmail rules** bucketing each alias into its own processing bucket
-  (all suggestions together, all corrections together).
-- Owner wants this driven with **Claude in Chrome** against his already-signed-in
-  Bluehost + Gmail (I never enter credentials; he stays logged in, I drive).
-  Creating forwarders/filters = account-settings changes → confirm as we go.
-- Code side: `src/lib/feedback.ts` line ~15 `SUPPORT_EMAIL` is currently
-  `profechano@yahoo.com`; route by `FeedbackKind` to the three aliases and
-  enrich the metadata block. Two open questions for the owner: send FROM three
-  addresses vs one tagged address, and the final subject-line convention.
+## Repair notes (the restart damaged git + memory)
 
-**IAP store setup: owner says "getting close but not yet."**
+The unclean shutdown zeroed several files that were open at the time. All
+repaired, nothing lost:
+- `.git/index`, `.git/refs/heads/audio-tools-engine`,
+  `.git/refs/remotes/origin/*` → rebuilt from origin (my last commit was
+  verified as an ancestor of origin's tip first). `git fsck` is now clean.
+- `~/.claude/.../memory/MEMORY.md` → was 22,857 null bytes; the 71 individual
+  memory files were intact, so the index was regenerated from their frontmatter
+  and grouped by type.
+
+## NEXT — the two live workstreams
+
+1. **Feedback email system** (owner brief, mid-session): app feedback →
+   `info@proaudiotrainingacademy.com`; intake aliases `feedback@`,
+   `corrections@`, `suggestions@` forwarding in, each carrying metadata (app
+   screen, ids, date/time, device, version); Gmail rules bucketing each alias
+   for batch processing. Owner wants it driven with **Claude in Chrome** against
+   his already-signed-in Bluehost + Gmail — I never enter credentials; he stays
+   logged in and I drive. Creating forwarders/filters are account-settings
+   changes, so confirm as we go. Code side: `src/lib/feedback.ts`
+   `SUPPORT_EMAIL` is still `profechano@yahoo.com`. Two open questions: send
+   FROM three addresses vs one tagged address, and the subject-line convention.
+2. **IAP store setup + sandbox test** — owner: "getting close but not yet."
+
+Deferred "green" backlog is in memory (`deferred-backlog-2026-09-01`) and in
+`docs/APE_TEST_EXPERT_NIGHT_2026_08_31.md`.
