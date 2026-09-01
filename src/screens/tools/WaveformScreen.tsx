@@ -44,6 +44,7 @@ import { MIDLINE_BLUE, WAVE_LEVEL_STOPS, levelColorForDb } from '../../features/
 import { useColorModePref } from '../../features/tools/colorModePref';
 import { useWaveColorPref, WAVE_COLOR_SWATCHES } from '../../features/tools/waveColorPref';
 import { ColorWheelButton } from '../../components/ColorWheelButton';
+import { PickerSectionHeader, WaveTraceDiagram } from '../../components/ColorTargetDiagrams';
 import { SpectrumColorPicker } from '../../components/SpectrumColorPicker';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
@@ -170,6 +171,8 @@ export function WaveformScreen({ navigation }: Props) {
   const traceColor = waveColor ?? TRACE;
   // Whether the colour popup is showing the full spectrum wheel vs the swatches.
   const [waveSpectrum, setWaveSpectrum] = useState(false);
+  // Spectrum-drag candidate — feeds only the popup's header diagram.
+  const [wavePreviewHex, setWavePreviewHex] = useState<string | null>(null);
   // Clip latch (owner 2026-08-05, item 4): the CLIP OVERRUNS readout stays
   // GREEN "0" until the first real overrun, then turns RED and holds until reset.
   const [hasClipped, setHasClipped] = useState(false);
@@ -790,9 +793,19 @@ export function WaveformScreen({ navigation }: Props) {
           accessibilityLabel="Close"
         >
           <View style={styles.popupCard}>
-            <Text style={styles.popupTitle}>
-              {wavePopup === 'zoom' ? 'VERTICAL ZOOM' : wavePopup === 'window' ? 'TIME WINDOW' : 'WAVEFORM COLOUR'}
-            </Text>
+            {wavePopup === 'color' ? (
+              /* "Show, don't label" (owner redesign 2026-09-01): the live mini
+                 trace shows exactly what this popup recolours. */
+              <PickerSectionHeader
+                diagram={<WaveTraceDiagram tint={waveSpectrum ? (wavePreviewHex ?? waveColor) : waveColor} defaultTint={WAVE_COLOR_SWATCHES[0]} />}
+                title="TRACE COLOUR"
+                subtitle="The waveform line — picking a colour turns COLORS off"
+              />
+            ) : (
+              <Text style={styles.popupTitle}>
+                {wavePopup === 'zoom' ? 'VERTICAL ZOOM' : 'TIME WINDOW'}
+              </Text>
+            )}
             <View style={styles.popupGrid}>
               {wavePopup === 'zoom' &&
                 ZOOMS.map((z) => (
@@ -836,7 +849,8 @@ export function WaveformScreen({ navigation }: Props) {
                         setWaveColor(picked);
                         // Picking a custom colour auto-disables COLORS so it shows.
                         if (picked) setColorsOn(false);
-                        setWavePopup(null);
+                        // Stays open (redesign 2026-09-01): the trace behind the
+                        // popup and the header diagram repaint on every tap.
                       }}
                       accessibilityRole="button"
                       accessibilityState={{ selected: sel }}
@@ -848,11 +862,12 @@ export function WaveformScreen({ navigation }: Props) {
             {wavePopup === 'color' && waveSpectrum ? (
               <SpectrumColorPicker
                 value={waveColor}
+                onLiveChange={setWavePreviewHex}
                 onPick={(c) => {
                   setWaveColor(c);
                   setColorsOn(false);
                   setWaveSpectrum(false);
-                  setWavePopup(null);
+                  setWavePreviewHex(null);
                 }}
               />
             ) : null}
@@ -866,9 +881,7 @@ export function WaveformScreen({ navigation }: Props) {
                 <Text style={styles.spectrumLink}>{waveSpectrum ? '‹ SWATCHES' : '＋ SPECTRUM'}</Text>
               </Pressable>
             ) : null}
-            {wavePopup === 'color' && !waveSpectrum ? (
-              <Text style={styles.popupNote}>Applies to the flat trace. Picking a colour turns the COLORS ramp off automatically.</Text>
-            ) : null}
+
           </View>
         </Pressable>
       ) : null}

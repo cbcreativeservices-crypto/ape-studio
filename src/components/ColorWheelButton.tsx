@@ -10,6 +10,7 @@ import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } fro
 import { Modal } from './DimModal';
 import Svg, { Circle, Defs, LinearGradient as SvgGradient, Path, Rect, Stop } from 'react-native-svg';
 import { useEntitlement } from '../features/commercial/EntitlementProvider';
+import { PickerSectionHeader } from './ColorTargetDiagrams';
 import { SpectrumColorPicker } from './SpectrumColorPicker';
 import { LOUDNESS_STOPS } from '../features/tools/levelColor';
 import { WAVE_COLOR_SWATCHES } from '../features/tools/waveColorPref';
@@ -72,6 +73,9 @@ export function ColorWheelButton({
   swatchesTitle,
   pickerTitle = 'CHOOSE A COLOUR',
   pickerNote,
+  renderDiagram,
+  subtitle,
+  defaultSwatchColor,
   size = 22,
   style,
   accessibilityLabel = 'Customize colours',
@@ -94,6 +98,16 @@ export function ColorWheelButton({
   swatchesTitle?: string;
   pickerTitle?: string;
   pickerNote?: string;
+  /** Colour-picker redesign 2026-09-01 ("show, don't label"): renders the live
+   *  target diagram in a PickerSectionHeader. `liveHex` is the current value
+   *  (spectrum drags feed the candidate). When set, the picker STAYS OPEN on
+   *  pick (so the diagram and ring move together) and gains a DONE button. */
+  renderDiagram?: (liveHex: string | null) => ReactNode;
+  /** One-line "what this colours" subtitle beside the diagram. */
+  subtitle?: string;
+  /** Fill for the DEF chip so it previews what "default" actually is (e.g. the
+   *  RTA teal, the tuner green) instead of a neutral well. */
+  defaultSwatchColor?: string;
   size?: number;
   style?: StyleProp<ViewStyle>;
   accessibilityLabel?: string;
@@ -104,6 +118,13 @@ export function ColorWheelButton({
   const [gate, setGate] = useState(false);
   const [picker, setPicker] = useState(false);
   const [spectrum, setSpectrum] = useState(false);
+  // Transient spectrum candidate — feeds ONLY the diagram; USE commits.
+  const [previewHex, setPreviewHex] = useState<string | null>(null);
+  // Diagrammed pickers stay open so the live diagram is worth having.
+  const stayOpen = !!renderDiagram;
+  const afterPick = () => {
+    if (!stayOpen) setPicker(false);
+  };
   const openForMember = () => (onPick ? setPicker(true) : onCustomize?.());
   return (
     <>
@@ -120,18 +141,36 @@ export function ColorWheelButton({
       <Modal accessibilityViewIsModal visible={picker} transparent animationType="fade" onRequestClose={() => setPicker(false)}>
         <Pressable style={styles.scrim} onPress={() => setPicker(false)} accessible={false}>
           <View style={styles.card}>
-            <Text style={styles.pickerTitle}>{pickerTitle}</Text>
+            {renderDiagram ? (
+              <PickerSectionHeader
+                diagram={renderDiagram(spectrum ? (previewHex ?? (typeof current === 'string' && current.startsWith('#') ? current : null)) : typeof current === 'string' && current.startsWith('#') ? current : null)}
+                title={pickerTitle}
+                subtitle={subtitle ?? ''}
+              />
+            ) : (
+              <Text style={styles.pickerTitle}>{pickerTitle}</Text>
+            )}
             {spectrum ? (
               <>
                 <SpectrumColorPicker
                   value={typeof current === 'string' ? current : null}
+                  onLiveChange={renderDiagram ? setPreviewHex : undefined}
                   onPick={(c) => {
                     onPick?.(c);
-                    setPicker(false);
                     setSpectrum(false);
+                    setPreviewHex(null);
+                    afterPick();
                   }}
                 />
-                <Pressable onPress={() => setSpectrum(false)} hitSlop={8} accessibilityRole="button" accessibilityLabel="Back to swatches">
+                <Pressable
+                  onPress={() => {
+                    setSpectrum(false);
+                    setPreviewHex(null);
+                  }}
+                  style={styles.linkBtn}
+                  accessibilityRole="button"
+                  accessibilityLabel="Back to swatches"
+                >
                   <Text style={styles.spectrumLink}>‹ SWATCHES</Text>
                 </Pressable>
               </>
@@ -144,7 +183,7 @@ export function ColorWheelButton({
                   style={[styles.schemeChip, !current && styles.schemeChipSel]}
                   onPress={() => {
                     onPick?.(null);
-                    setPicker(false);
+                    afterPick();
                   }}
                   accessibilityRole="button"
                   accessibilityState={{ selected: !current }}
@@ -161,7 +200,7 @@ export function ColorWheelButton({
                       style={[styles.schemeChip, sel && styles.schemeChipSel]}
                       onPress={() => {
                         onPick?.(s.id);
-                        setPicker(false);
+                        afterPick();
                       }}
                       accessibilityRole="button"
                       accessibilityState={{ selected: sel }}
@@ -180,10 +219,10 @@ export function ColorWheelButton({
                   already provide the default). */}
               {!(schemes && schemes.length > 0) ? (
                 <Pressable
-                  style={[styles.swatch, styles.swatchDefault, !current && styles.swatchSel]}
+                  style={[styles.swatch, styles.swatchDefault, defaultSwatchColor ? { backgroundColor: defaultSwatchColor } : null, !current && styles.swatchSel]}
                   onPress={() => {
                     onPick?.(null);
-                    setPicker(false);
+                    afterPick();
                   }}
                   accessibilityRole="button"
                   accessibilityState={{ selected: !current }}
@@ -200,7 +239,7 @@ export function ColorWheelButton({
                     style={[styles.swatch, { backgroundColor: c }, sel && styles.swatchSel]}
                     onPress={() => {
                       onPick?.(c);
-                      setPicker(false);
+                      afterPick();
                     }}
                     accessibilityRole="button"
                     accessibilityState={{ selected: sel }}
@@ -210,11 +249,16 @@ export function ColorWheelButton({
               })}
             </View>
             {pickerNote ? <Text style={styles.body}>{pickerNote}</Text> : null}
-                <Pressable onPress={() => setSpectrum(true)} hitSlop={8} accessibilityRole="button" accessibilityLabel="Open the colour spectrum wheel">
+                <Pressable onPress={() => setSpectrum(true)} style={styles.linkBtn} accessibilityRole="button" accessibilityLabel="Open the colour spectrum wheel">
                   <Text style={styles.spectrumLink}>＋ SPECTRUM</Text>
                 </Pressable>
               </>
             )}
+            {stayOpen ? (
+              <Pressable onPress={() => setPicker(false)} hitSlop={8} style={styles.doneBtn} accessibilityRole="button" accessibilityLabel="Done">
+                <Text style={styles.doneText}>DONE</Text>
+              </Pressable>
+            ) : null}
           </View>
         </Pressable>
       </Modal>
@@ -246,6 +290,20 @@ export function ColorWheelButton({
 }
 
 const styles = StyleSheet.create({
+  linkBtn: { minHeight: 44, justifyContent: 'center', alignSelf: 'center', paddingHorizontal: 8 },
+  doneBtn: {
+    marginTop: 12,
+    alignSelf: 'center',
+    minHeight: 44,
+    justifyContent: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 28,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#3a3a44',
+    backgroundColor: '#1c1c22',
+  },
+  doneText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.4, color: colors.textSecondary },
   scrim: { flex: 1, backgroundColor: 'rgba(0,0,0,0.72)', alignItems: 'center', justifyContent: 'center', padding: 26 },
   card: {
     width: '100%',

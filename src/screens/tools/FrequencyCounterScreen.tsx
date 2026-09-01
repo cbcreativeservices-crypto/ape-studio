@@ -31,6 +31,7 @@ import * as Crypto from 'expo-crypto';
 import Svg, { Line, Path, Text as SvgText } from 'react-native-svg';
 import { GlassButton } from '../../components/GlassButton';
 import { ColorWheelButton } from '../../components/ColorWheelButton';
+import { TunerDiagram } from '../../components/ColorTargetDiagrams';
 import { useToolColorPref } from '../../features/tools/waveColorPref';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { LockedButton, MembershipRequiredNote, MEMBERSHIP_REQUIRED, useSaveGate } from './ToolLockUi';
@@ -823,7 +824,9 @@ function LivePitchMode({
             accessibilityLabel="Tuner colour"
             feature="the tuner in-tune colour"
             pickerTitle="TUNER COLOUR"
-            pickerNote="Recolours the in-tune needle, marker, and glow."
+            subtitle="The in-tune needle, centre marker and glow"
+            renderDiagram={(hex) => <TunerDiagram tint={hex} defaultTint={colors.green} />}
+            defaultSwatchColor={colors.green}
             size={20}
           />
         </View>

@@ -82,6 +82,14 @@ export function fieldLevelColor(l: number): string {
   return sampleStops(FIELD_STOPS, l);
 }
 
+/** Sample a stop list in RAW stop space: `pos` 0 = loud/top … 1 = quiet/bottom.
+ *  Exposed for the colour-picker target diagrams (owner redesign 2026-09-01) so
+ *  a mini meter tints per-segment with the exact interpolation the real meters
+ *  use — never a duplicate implementation that could drift. */
+export function stopsColorAt(s: ReadonlyArray<{ pos: number; color: string }>, pos: number): string {
+  return sampleStops(s, 1 - Math.max(0, Math.min(1, pos)));
+}
+
 /** Shared stop interpolation: `l` 0=silence … 1=full scale. */
 function sampleStops(s: ReadonlyArray<{ pos: number; color: string }>, l: number): string {
   const loud = Math.max(0, Math.min(1, l));

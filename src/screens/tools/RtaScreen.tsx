@@ -79,9 +79,10 @@ import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO } from '../../features/tools/measure/types';
 import { LOUDNESS_STOPS, levelColorForDb } from '../../features/tools/levelColor';
 import { useColorModePref } from '../../features/tools/colorModePref';
-import { useToolColorPref } from '../../features/tools/waveColorPref';
+import { useToolColorPref, WAVE_COLOR_SWATCHES } from '../../features/tools/waveColorPref';
 import { deriveSixthOctave, NO_LEVEL, SIXTH_BANDS, type DisplayBands } from '../../features/tools/sixthOctave';
 import { ColorWheelButton } from '../../components/ColorWheelButton';
+import { RtaBarsDiagram } from '../../components/ColorTargetDiagrams';
 import { colors, fonts } from '../../theme/tokens';
 import { useSaveGate } from './ToolLockUi';
 import { AccuracyNote } from '../../components/AccuracyNote';
@@ -1096,7 +1097,9 @@ export function RtaScreen({ navigation }: Props) {
               accessibilityLabel="RTA bar colour"
               feature="the RTA bar colour"
               pickerTitle="RTA BAR COLOUR"
-              pickerNote="Applies when COLORS (the level ramp) is off."
+              subtitle="The spectrum bars, when COLORS is off"
+              renderDiagram={(hex) => <RtaBarsDiagram tint={hex} defaultTint={WAVE_COLOR_SWATCHES[0]} />}
+              defaultSwatchColor={WAVE_COLOR_SWATCHES[0]}
               size={22}
             />
           </View>

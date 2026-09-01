@@ -6,7 +6,7 @@
  * browser needed. Saturation is held at 100% (vivid), lightness on the slider —
  * plenty of range for a meter colour without a third control.
  */
-import { useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { PanResponder, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient as SvgGrad, Path, Rect, Stop } from 'react-native-svg';
 import { colors, fonts } from '../theme/tokens';
@@ -81,9 +81,15 @@ const ring = (() => {
 export function SpectrumColorPicker({
   value,
   onPick,
+  onLiveChange,
 }: {
   value?: string | null;
   onPick: (hex: string) => void;
+  /** Presentation-only (colour-picker redesign 2026-09-01): fires with the
+   *  CANDIDATE colour on every hue/lightness change and once on mount, so a
+   *  target diagram can preview it live BEFORE the user commits with USE.
+   *  Nothing is persisted through this callback. */
+  onLiveChange?: (hex: string) => void;
 }): ReactNode {
   const seed = useMemo(() => hexToHl(value), [value]);
   const [hue, setHue] = useState(seed.h);
@@ -91,6 +97,13 @@ export function SpectrumColorPicker({
   const barW = SIZE;
 
   const color = hslToHex(hue, 1, light);
+  const liveRef = useRef(onLiveChange);
+  liveRef.current = onLiveChange;
+  // Announce the seeded colour once, then every candidate as it changes.
+  useEffect(() => {
+    liveRef.current?.(color);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [color]);
   const thumbX = CX + MIDR * Math.cos(rad(hue));
   const thumbY = CX + MIDR * Math.sin(rad(hue));
 
