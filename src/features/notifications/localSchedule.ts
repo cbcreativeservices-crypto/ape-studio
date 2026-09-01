@@ -78,6 +78,16 @@ export async function setPhoneNotificationsEnabled(on: boolean, s?: LocalSetting
   }
 }
 
+/** The next 1st-of-the-month at the given local time — today IS eligible if
+ *  it is the 1st and the time has not passed yet (owner 2026-09-01: the
+ *  new-terms tally goes out monthly, on the 1st). */
+function nextFirstOfMonth(hour: number, minute: number): Date {
+  const now = new Date();
+  const cand = new Date(now.getFullYear(), now.getMonth(), 1, hour, minute, 0, 0);
+  if (cand.getTime() > Date.now()) return cand;
+  return new Date(now.getFullYear(), now.getMonth() + 1, 1, hour, minute, 0, 0);
+}
+
 const K_TERM_COUNT = 'ape:notif:lastTermCount';
 const K_TERM_BATCH = 'ape:notif:termBatch';
 const K_PENDING_NEW_TERMS = 'ape:notif:pendingNewTerms';
@@ -302,11 +312,13 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
 
     // 3 · New term additions — detection happens HERE (at sync, while the app
     // is open): compare the server term count to the last seen count; a rise
-    // schedules a one-shot at the user's chosen day+time. The pending one-shot
-    // is persisted so the sweep above can re-book it until it fires.
+    // schedules a one-shot for the 1ST OF THE MONTH at the user's chosen time
+    // (owner 2026-09-01 — monthly cadence, was a chosen day of week). Rises
+    // detected across the month ACCUMULATE into the same 1st-of-month shot.
+    // The pending one-shot is persisted so the sweep above can re-book it
+    // until it fires.
     if (s.notifyNewTerms) {
       const { hour, minute } = hhmm(s.notifyTime.notifyNewTerms, '09:00');
-      const dow = dayNameToDow(s.notifyFreq.notifyNewTerms ?? 'Monday');
       let pending: { n: number; fireAt: number } | null = null;
       try {
         const raw = await AsyncStorage.getItem(K_PENDING_NEW_TERMS);
@@ -322,7 +334,7 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
           const stored = Number(await AsyncStorage.getItem(K_TERM_COUNT));
           if (Number.isFinite(stored) && stored > 0 && count > stored) {
             const n = (pending?.n ?? 0) + (count - stored);
-            pending = { n, fireAt: nextOccurrence(dow, hour, minute).getTime() };
+            pending = { n, fireAt: nextFirstOfMonth(hour, minute).getTime() };
           }
           await AsyncStorage.setItem(K_TERM_COUNT, String(count));
         }

@@ -130,7 +130,8 @@ export const COMMERCIAL_NOTIFY_ROWS: {
   // "Definition of the day" read as the matched pair they actually are.
   { key: 'notifyDailyStudy', label: 'Study reminder', hint: 'A daily nudge to open the app.' },
   { key: 'notifyContinue', label: 'Come back reminder', hint: 'After a stretch of days without opening the app.' },
-  { key: 'notifyNewTerms', label: 'New glossary terms', hint: 'When new terms are added to the glossary.' },
+  // NEW COPY — owner review (monthly cadence, owner 2026-09-01).
+  { key: 'notifyNewTerms', label: 'New glossary terms', hint: 'Once a month, on the 1st: what was added.' },
   { key: 'dailyTerms', label: 'Term of the day', hint: 'One audio term, every day.' },
   { key: 'notifyDailyDefinition', label: 'Definition of the day', hint: 'A definition — you name the term.' },
   { key: 'notifyWeeklySummary', label: 'Weekly recap', hint: 'What you studied this week.' },
@@ -158,7 +159,8 @@ export type NotifyFreqMode = 'idleDays' | 'time' | 'dayTime';
 export const NOTIFY_FREQ: Record<CommercialNotifyKey, { mode: NotifyFreqMode; label: string }> = {
   notifyDailyStudy: { mode: 'time', label: 'When each day' },
   notifyContinue: { mode: 'idleDays', label: 'Remind me after this many days of no use' },
-  notifyNewTerms: { mode: 'dayTime', label: 'When delivered' },
+  // Monthly on the 1st (owner 2026-09-01) — only the TIME is choosable now.
+  notifyNewTerms: { mode: 'time', label: 'Delivery time on the 1st' },
   dailyTerms: { mode: 'time', label: 'When each day' },
   notifyDailyDefinition: { mode: 'time', label: 'When each day' },
   notifyWeeklySummary: { mode: 'dayTime', label: 'When each week' },
