@@ -57,7 +57,7 @@ const CRITICAL_DISTANCE: Workspace = {
         const dc = 0.057 * Math.sqrt((n(v.q) * n(v.vol)) / n(v.rt60));
         return [
           { label: 'CRITICAL DISTANCE Dc', value: dc, quantity: 'length' },
-          { label: 'Dc IN FEET', value: dc / 0.3048, quantity: 'length', unit: 'ft', chainable: false },
+          { label: 'Dc IN FEET', value: dc, quantity: 'length', unit: 'ft', chainable: false },
         ];
       },
       steps: (v) => {
@@ -173,7 +173,7 @@ const SCHROEDER: Workspace = {
         const vol = n(v.rt60) * Math.pow(2000 / n(v.fs), 2);
         return [
           { label: 'REQUIRED VOLUME', value: vol, quantity: 'volume' },
-          { label: 'VOLUME IN CUBIC FEET', value: vol / 0.028316846592, quantity: 'volume', unit: 'ft3', chainable: false },
+          { label: 'VOLUME IN CUBIC FEET', value: vol, quantity: 'volume', unit: 'ft3', chainable: false },
         ];
       },
       steps: (v) => {
@@ -265,7 +265,7 @@ const BOUNDARY: Workspace = {
         const d = c / (4 * n(v.fNull));
         return [
           { label: 'BOUNDARY DISTANCE', value: d, quantity: 'length' },
-          { label: 'DISTANCE IN INCHES', value: d / 0.0254, quantity: 'length', unit: 'in', chainable: false },
+          { label: 'DISTANCE IN INCHES', value: d, quantity: 'length', unit: 'in', chainable: false },
         ];
       },
       steps: (v) => {
@@ -329,7 +329,7 @@ const REFLECTION: Workspace = {
         const dt = dd / c;
         return [
           { label: 'PATH DIFFERENCE', value: dd, quantity: 'length' },
-          { label: 'ARRIVAL DELAY', value: dt * 1000, quantity: 'time', unit: 'ms' },
+          { label: 'ARRIVAL DELAY', value: dt, quantity: 'time', unit: 'ms' },
           { label: 'COMB SPACING (teeth)', value: c / dd, quantity: 'frequency', chainable: false },
           { label: 'FIRST NULL', value: c / (2 * dd), quantity: 'frequency' },
         ];
@@ -360,7 +360,7 @@ const REFLECTION: Workspace = {
         const dd = c / (2 * n(v.fNull));
         return [
           { label: 'PATH DIFFERENCE', value: dd, quantity: 'length' },
-          { label: 'ARRIVAL DELAY', value: (dd / c) * 1000, quantity: 'time', unit: 'ms', chainable: false },
+          { label: 'ARRIVAL DELAY', value: dd / c, quantity: 'time', unit: 'ms', chainable: false },
         ];
       },
       steps: (v) => {

@@ -57,7 +57,7 @@ const ALIGN: Workspace = {
         const c = speedOfSoundAir(n(v.temp));
         const d = n(v.offset) / c;
         return [
-          { label: 'DELAY TO ALIGN', value: d * 1000, quantity: 'time', unit: 'ms' },
+          { label: 'DELAY TO ALIGN', value: d, quantity: 'time', unit: 'ms' },
           { label: 'DELAY IN SAMPLES', value: d * n(v.sr), quantity: 'samples', chainable: false },
         ];
       },

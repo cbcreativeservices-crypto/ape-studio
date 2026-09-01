@@ -117,8 +117,8 @@ export const WS_WAVE: Workspace = {
         return [
           { label: 'SPEED OF SOUND', value: c, quantity: 'speed' },
           { label: 'TRAVEL PER MILLISECOND', value: c / 1000, quantity: 'length', unit: 'cm', chainable: false },
-          { label: 'DELAY PER METER', value: 1000 / c, quantity: 'time', unit: 'ms', chainable: false },
-          { label: 'DELAY PER FOOT', value: (1000 * 0.3048) / c, quantity: 'time', unit: 'ms', chainable: false },
+          { label: 'DELAY PER METER', value: 1 / c, quantity: 'time', unit: 'ms', chainable: false },
+          { label: 'DELAY PER FOOT', value: 0.3048 / c, quantity: 'time', unit: 'ms', chainable: false },
         ];
       },
       steps: (v) => {

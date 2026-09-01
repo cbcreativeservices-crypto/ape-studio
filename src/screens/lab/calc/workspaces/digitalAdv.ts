@@ -370,7 +370,7 @@ const FIRLEN: Workspace = {
         const latS = (N - 1) / 2;
         return [
           { label: 'FILTER TAPS (N)', value: N, quantity: 'number' },
-          { label: 'LATENCY', value: (latS / n(v.sr)) * 1000, quantity: 'time', unit: 'ms' },
+          { label: 'LATENCY', value: latS / n(v.sr), quantity: 'time', unit: 'ms' },
           { label: 'LATENCY IN SAMPLES', value: latS, quantity: 'samples', chainable: false },
         ];
       },
@@ -395,7 +395,7 @@ const FIRLEN: Workspace = {
       compute: (v) => {
         const latS = (n(v.taps) - 1) / 2;
         return [
-          { label: 'LATENCY', value: (latS / n(v.sr)) * 1000, quantity: 'time', unit: 'ms' },
+          { label: 'LATENCY', value: latS / n(v.sr), quantity: 'time', unit: 'ms' },
           { label: 'LATENCY IN SAMPLES', value: latS, quantity: 'samples', chainable: false },
         ];
       },
@@ -485,8 +485,8 @@ const CONVOLUTION: Workspace = {
       keySymbols: ['÷'],
       compute: (v) => {
         return [
-          { label: 'BLOCK LATENCY', value: (n(v.block) / n(v.sr)) * 1000, quantity: 'time', unit: 'ms' },
-          { label: 'ROUND-TRIP (2× BLOCK)', value: (n(v.block) / n(v.sr)) * 2000, quantity: 'time', unit: 'ms', chainable: false },
+          { label: 'BLOCK LATENCY', value: n(v.block) / n(v.sr), quantity: 'time', unit: 'ms' },
+          { label: 'ROUND-TRIP (2× BLOCK)', value: (n(v.block) / n(v.sr)) * 2, quantity: 'time', unit: 'ms', chainable: false },
         ];
       },
       steps: (v) => {

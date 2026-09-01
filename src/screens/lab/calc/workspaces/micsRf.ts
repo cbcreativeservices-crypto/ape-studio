@@ -61,7 +61,7 @@ const STEREOMIC: Workspace = {
         const path = n(v.spacing) * Math.sin(n(v.angle) * DEG);
         return [
           { label: 'PATH DIFFERENCE', value: path, quantity: 'length', unit: 'cm' },
-          { label: 'ARRIVAL DELAY Δt', value: (path / c) * 1000, quantity: 'time', unit: 'ms' },
+          { label: 'ARRIVAL DELAY Δt', value: path / c, quantity: 'time', unit: 'ms' },
           { label: 'FIRST MONO COMB NULL', value: c / (2 * path), quantity: 'frequency', chainable: false },
         ];
       },

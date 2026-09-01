@@ -81,7 +81,7 @@ const EYRING: Workspace = {
         return [
           `Sabine: 0.161 × ${fmt(V)} ÷ (${fmt(S)} × ${fmt(a)}) = ${fmt(sabine)} s.`,
           `Eyring uses −ln(1−ā) = −ln(${fmt(1 - a)}) = ${fmt(-Math.log(1 - a))} in place of ā.`,
-          `Eyring: 0.161 × ${fmt(V)} ÷ (${fmt(S)} × ${fmt(-Math.log(1 - a))}) = ${fmt(eyring)} s — ${fmt(((sabine - eyring) / eyring) * 100)}% shorter than Sabine.`,
+          `Eyring: 0.161 × ${fmt(V)} ÷ (${fmt(S)} × ${fmt(-Math.log(1 - a))}) = ${fmt(eyring)} s — ${fmt(((sabine - eyring) / sabine) * 100)}% shorter than Sabine.`,
         ];
       },
     },
@@ -287,7 +287,7 @@ const ABSORBER: Workspace = {
         const f0 = (c / (2 * Math.PI)) * Math.sqrt(P / (d * (t + 0.8 * D)));
         return [
           { label: 'RESONANT FREQUENCY', value: f0, quantity: 'frequency' },
-          { label: 'EFFECTIVE NECK LENGTH', value: (t + 0.8 * D) * 1000, quantity: 'length', unit: 'mm', chainable: false },
+          { label: 'EFFECTIVE NECK LENGTH', value: t + 0.8 * D, quantity: 'length', unit: 'mm', chainable: false },
         ];
       },
       steps: (v) => {

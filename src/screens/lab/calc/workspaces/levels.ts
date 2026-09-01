@@ -14,7 +14,7 @@ const log10 = Math.log10;
 const log2 = Math.log2;
 
 /** dBu ↔︎ dBV offset: 20·log10(0.775) ≈ −2.2185 dB (dBu reads HIGHER). */
-const DBU_DBV_OFFSET = 20 * log10(0.775);
+const DBU_DBV_OFFSET = 20 * log10(Math.sqrt(0.6)); // 0.774597 V — the EXACT dBu reference (ratified copy says −2.218)
 
 // ---------------------------------------------------------------------------
 // 1 · Audio Level Converter
