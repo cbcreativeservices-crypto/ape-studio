@@ -172,5 +172,8 @@ export function makeApeDspSim() {
     genRelockCap: () => {},
     rt60Arm: () => {},
     rt60Cancel: () => {},
+    // Honest null (QA night 2026-09-01): without this the RT60 screen threw
+    // an uncaught TypeError ~3×/s on web — the sim has no RT60 state machine.
+    getRt60Frame: () => null,
   };
 }

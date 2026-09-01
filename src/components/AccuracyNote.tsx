@@ -80,7 +80,7 @@ export function AccuracyNote({
       </Pressable>
 
       <Modal accessibilityViewIsModal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
-        <Pressable accessibilityRole="button" accessibilityLabel="Close" style={styles.backdrop} onPress={() => setOpen(false)}>
+        <Pressable accessible={false} style={styles.backdrop} onPress={() => setOpen(false)}>
           {/* Swallow taps on the card so they don't close the sheet. */}
           <Pressable accessible={false} style={styles.card} onPress={() => {}}>
             <ScrollView contentContainerStyle={styles.cardBody} showsVerticalScrollIndicator={false}>

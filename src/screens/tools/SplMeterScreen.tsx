@@ -1253,7 +1253,7 @@ export function SplMeterScreen({ navigation }: Props) {
           style={styles.vuOpenBtn}
           onPress={() => setView('home')}
           accessibilityRole="button"
-          accessibilityLabel="Open full-screen VU meter"
+          accessibilityLabel="Back to the VU meter home"
         >
           <View style={styles.vuOpenFrame}>
             {viz ? <viz.VuGlyph size={58} /> : <VuGlyphFallback />}
@@ -2043,8 +2043,10 @@ export function SplMeterScreen({ navigation }: Props) {
           Range · Weighting · Response · Peak Hold. The semi-transparent backdrop
           Pressable closes it (BackHandler covers Android back). ── */}
       {settingPopup != null && (
-        <Pressable style={[styles.popupBackdrop, styles.overlayAbs]} onPress={() => setSettingPopup(null)} accessibilityRole="button" accessibilityLabel="Close">
-          <View style={styles.popupCard}>
+        <Pressable style={[styles.popupBackdrop, styles.overlayAbs]} onPress={() => setSettingPopup(null)} accessible={false}>
+          {/* Card swallows its own taps — tapping an option label no longer
+              closes the popup through the scrim (QA night 2026-09-01). */}
+          <Pressable style={styles.popupCard} onPress={() => {}} accessible={false}>
             <Text style={styles.popupTitle}>
               {settingPopup === 'range' ? 'RANGE · dB AT 0 VU'
                 : settingPopup === 'unit' ? 'WEIGHTING'
@@ -2080,7 +2082,7 @@ export function SplMeterScreen({ navigation }: Props) {
                 <Text style={styles.popupResetText}>RESET PEAK HOLD NOW</Text>
               </Pressable>
             )}
-          </View>
+          </Pressable>
         </Pressable>
       )}
 

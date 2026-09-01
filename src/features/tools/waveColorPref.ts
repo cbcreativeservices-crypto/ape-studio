@@ -5,6 +5,7 @@
  * `useColorModePref`. Applies to the FLAT trace (COLORS/MIDI-gradient off).
  */
 import { useCallback, useEffect, useState } from 'react';
+import { useEntitlement } from '../commercial/EntitlementProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 /** Curated palette shown in the picker (first is the app default teal). */
@@ -27,6 +28,7 @@ export const WAVE_COLOR_SWATCHES = [
  *  `key`; null = the tool's default. Each tool passes its own key so colours are
  *  independent (owner rule 2026-08-20 — customization is member-gated). */
 export function useToolColorPref(key: string): [string | null, (c: string | null) => void] {
+  const { isMember } = useEntitlement();
   const [color, setColor] = useState<string | null>(null);
   useEffect(() => {
     let alive = true;
@@ -46,7 +48,10 @@ export function useToolColorPref(key: string): [string | null, (c: string | null
     },
     [key],
   );
-  return [color, set];
+  // Member-only perk (owner rule; QA night 2026-09-01): the stored choice
+  // is preserved but stops APPLYING when membership lapses — only the wheel
+  // entry was gated before.
+  return [isMember ? color : null, set];
 }
 
 /** Waveform trace colour (the first consumer). */

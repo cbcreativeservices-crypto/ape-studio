@@ -55,7 +55,7 @@ export function TopicDeckSheet({
 
   return (
     <Modal accessibilityViewIsModal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
-      <Pressable style={styles.backdrop} onPress={onClose} accessibilityRole="button" accessibilityLabel="Close">
+      <Pressable style={styles.backdrop} onPress={onClose} accessible={false}>
         {/* Panel — swallow taps so they don't close the sheet. */}
         <Pressable accessible={false} style={styles.panel} onPress={() => {}}>
           <View style={styles.head}>

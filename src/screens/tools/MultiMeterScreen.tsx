@@ -791,7 +791,10 @@ export function MultiMeterScreen({ navigation }: Props) {
       bandsHz,
       levelsDb,
       bandPeakHoldDb,
-      splDb: m.cFastDb, // dBC — matches the display default (owner rev 24)
+      // Stored AS DISPLAYED — estimated dBC SPL, not raw dBFS (owner
+      // 2026-08-12 ruling; QA night 2026-09-01 found this field labeled dBC
+      // while holding dBFS).
+      splDb: Math.max(0, m.cFastDb + splOffset),
       peakDb: m.peakDb,
       rmsDb: m.zFastDb,
       peakHoldDb: m.peakHoldDb,
@@ -828,7 +831,7 @@ export function MultiMeterScreen({ navigation }: Props) {
     setGeo(null);
     setPhotoBlocked(false);
     setLocationBlocked(false);
-  }, [state, chips, sgHistory, specView]);
+  }, [state, chips, sgHistory, specView, splOffset, calibrated]);
 
   const confirmSnapshot = useCallback(() => {
     if (!draft) return;
@@ -855,10 +858,11 @@ export function MultiMeterScreen({ navigation }: Props) {
       title: `MultiMeter snapshot — LCF ${fmtDb(draft.payload.splDb)} dBC`,
       notes: notes.trim(),
       input_device: draft.routeName.length > 0 ? draft.routeName : 'Device microphone',
-      calibration_status: 'uncalibrated',
+      calibration_status: calibrated ? 'calibrated' : 'uncalibrated',
       sample_rate: draft.sampleRate,
       measurement_settings: {
         fft_size: FFT_SIZE,
+        cal_offset_db: splOffset,
         fraction: 3,
         smoothing: smoothing.label,
         zoom: zoom.label,
@@ -1521,7 +1525,7 @@ export function MultiMeterScreen({ navigation }: Props) {
       {/* Readout-mode chooser (owner rev 24) — long-press the SPL cell opens it;
           picking a mode applies + closes. Tap outside to dismiss. */}
       {unitPopup ? (
-        <Pressable style={styles.unitPopupBackdrop} onPress={() => setUnitPopup(false)} accessibilityRole="button" accessibilityLabel="Close">
+        <Pressable style={styles.unitPopupBackdrop} onPress={() => setUnitPopup(false)} accessible={false}>
           <View style={styles.unitPopupCard}>
             <Text style={styles.unitPopupTitle}>READOUT MODE</Text>
             <View style={styles.unitPopupGrid}>

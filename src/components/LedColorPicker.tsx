@@ -41,7 +41,7 @@ export function LedColorPicker({
   const levelHex = levelPref && levelPref.startsWith('#') ? levelPref : null;
   return (
     <Modal accessibilityViewIsModal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <Pressable style={styles.scrim} onPress={onClose} accessibilityRole="button" accessibilityLabel="Close">
+      <Pressable style={styles.scrim} onPress={onClose} accessible={false}>
         {/* Inner card: stop the backdrop tap so picking inside never closes. */}
         <Pressable style={styles.card} onPress={() => {}} accessibilityRole="none">
           <Text style={styles.title}>LED METER COLOUR</Text>

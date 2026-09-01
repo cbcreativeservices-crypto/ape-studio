@@ -603,7 +603,9 @@ function LivePitchMode({
   const stats = computePitchStats(histRef.current);
   const outOfRange =
     accepted && live != null && (live.freq < PITCH_RANGE_HZ.min || live.freq > PITCH_RANGE_HZ.max);
-  const statusLabel = accepted ? 'STABLE' : lowSignal ? 'LOW SIGNAL' : 'LISTENING';
+  // MIC OFF when stopped (QA night 2026-09-01): it said LISTENING with
+  // capture off.
+  const statusLabel = !running ? 'MIC OFF' : accepted ? 'STABLE' : lowSignal ? 'LOW SIGNAL' : 'LISTENING';
 
   // Quality flags: native meter conditions (clipping / OS-processed input /
   // Bluetooth / stalled capture) via the SHARED mapping, plus this tool's own

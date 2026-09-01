@@ -226,7 +226,21 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
         // login never re-read the server). The wordmark tier toggle fires no
         // auth event, so it still persists between real sign-in/out. DEV-only —
         // setEntitlement no-ops in release, so devOverrode is never set there.
-        if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') devOverrode.current = false;
+        if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+          devOverrode.current = false;
+          // DEV WEB ONLY (QA night 2026-09-01): sibling preview tabs broadcast
+          // SIGNED_OUT on every auto-guest boot, silently dropping this tab's
+          // pinned tier mid-session. Re-apply the stored dev tier; devices and
+          // release builds keep the "real sign-out ends the override" rule.
+          if (__DEV__ && Platform.OS === 'web' && event === 'SIGNED_OUT') {
+            void AsyncStorage.getItem(DEV_ENTITLEMENT_KEY).then((raw) => {
+              if (raw === 'anonymous' || raw === 'free' || raw === 'academy' || raw === 'lapsed') {
+                devOverrode.current = true;
+                setEntitlementState(raw);
+              }
+            });
+          }
+        }
         clearLocalOnUserChange(session?.user?.id ?? null);
         void deriveAndApply(!!session);
       }

@@ -162,7 +162,7 @@ function payloadLines(m: SavedMeasurement): { label: string; value: string }[] {
   // guarantees (the payload's own contract).
   if (p.kind === 'multimeter_snapshot') {
     return [
-      { label: 'SPL (LAF)', value: `${p.splDb.toFixed(1)} dBFS` },
+      { label: 'SPL (LCF)', value: `${p.splDb.toFixed(1)} dBC est` },
       { label: 'PEAK / RMS', value: `${p.peakDb.toFixed(1)} / ${p.rmsDb.toFixed(1)} dBFS` },
       { label: 'PEAK HOLD', value: `${p.peakHoldDb.toFixed(1)} dBFS` },
       {
@@ -586,8 +586,8 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
             <Text style={styles.emptyTitle}>NO SAVED MEASUREMENTS YET</Text>
             <Text style={styles.emptyBody}>
               Measurements you save from the tools appear here with their full context — settings,
-              input, calibration status, and quality. The Frequency Counter's Tap mode can save
-              sessions now; the other tools save once the measurement engine ships.
+              input, calibration status, and quality. Every tool's SAVE control stores its
+              measurement here.
             </Text>
           </View>
         }
