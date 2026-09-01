@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "ape-studio",
+    "name": "Pro Audio",
     "slug": "ape-studio",
     "version": "1.0.0",
     "orientation": "default",
@@ -57,7 +57,8 @@
         }
       ],
       "expo-sharing",
-      "expo-audio"
+      "expo-audio",
+      "expo-asset"
     ],
     "extra": {
       "eas": {
