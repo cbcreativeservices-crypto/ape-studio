@@ -461,22 +461,30 @@ export function SpeakerCoverageLabScreen() {
       formatShort: () => `${tilt}°`,
       helpKey: 'height_tilt',
     },
-    {
-      kind: 'options',
-      id: 'vdisp',
-      label: 'V PATTERN',
-      valueLabel: `${sideDisp.vDeg}°`,
-      // "V PATTERN" spelled out (owner 2026-08-31): the VERTICAL coverage
-      // angle — how tall the wedge of sound is, floor to ceiling.
-      options: DISPERSIONS.map((d) => ({ id: d.key, label: `V ${d.vDeg}°  (${d.label})`, blurb: d.blurb })),
-      selectedId: sideDisp.key,
-      onSelect: (id) => {
-        const i = DISPERSIONS.findIndex((d) => d.key === id);
-        if (i >= 0) setSideDispIdx(i);
-      },
-      sticky: true,
-      helpKey: 'dispersion',
-    },
+    // V PATTERN leaves the dock while the array is up (owner 2026-08-31): the
+    // array's vertical behavior comes from box count + splay, so the chooser
+    // changed nothing on screen — a dead control. Same pattern as AIM
+    // stepping aside for the fills in the top view.
+    ...(lineArray && sectionIdx === 1
+      ? []
+      : ([
+          {
+            kind: 'options',
+            id: 'vdisp',
+            label: 'V PATTERN',
+            valueLabel: `${sideDisp.vDeg}°`,
+            // "V PATTERN" spelled out (owner 2026-08-31): the VERTICAL
+            // coverage angle — how tall the wedge of sound is.
+            options: DISPERSIONS.map((d) => ({ id: d.key, label: `V ${d.vDeg}°  (${d.label})`, blurb: d.blurb })),
+            selectedId: sideDisp.key,
+            onSelect: (id: string) => {
+              const i = DISPERSIONS.findIndex((d) => d.key === id);
+              if (i >= 0) setSideDispIdx(i);
+            },
+            sticky: true,
+            helpKey: 'dispersion',
+          },
+        ] as DockParam[])),
     {
       kind: 'group',
       id: 'room',
