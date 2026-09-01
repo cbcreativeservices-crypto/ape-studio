@@ -26,6 +26,7 @@ import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
 import { emitStudyProgress } from '../study/sync';
+import { getLabPreview } from './labPreviewStore';
 import { WAVE_MODULES } from '../../screens/lab/wave/modules/registry';
 import { DIGITAL_MODULES } from '../../screens/lab/digital/modules/registry';
 import { METER_MODULES } from '../../screens/lab/meter/modules/registry';
@@ -268,6 +269,13 @@ async function retryUnsent(): Promise<void> {
  * mark_lab_complete the first time the lab reaches its target.
  */
 export function markLabUnit(labKey: LabKey, unitId: string): void {
+  // PREVIEW EARNS NOTHING (owner ruling 2026-09-01). A non-member who opens a
+  // members-only lab gets the real screen behind a preview scrim — but viewing
+  // it must not bank completion units, or a free account could walk a preview
+  // to full completion and fire the certificate-credit RPC. `getLabPreview()`
+  // is a synchronous read and is only ever active for a non-member previewing
+  // a locked lab, so members and free users in FREE labs are untouched.
+  if (getLabPreview().active) return;
   void hydrate().then(() => {
     const set = cleared[labKey] ?? new Set<string>();
     if (set.has(unitId)) return; // already recorded — no-op
