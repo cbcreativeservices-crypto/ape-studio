@@ -33,7 +33,7 @@ import { GlassButton } from '../../components/GlassButton';
 import { ColorWheelButton } from '../../components/ColorWheelButton';
 import { useToolColorPref } from '../../features/tools/waveColorPref';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
-import { LockedButton, MembershipRequiredNote, MEMBERSHIP_REQUIRED } from './ToolLockUi';
+import { LockedButton, MembershipRequiredNote, MEMBERSHIP_REQUIRED, useSaveGate } from './ToolLockUi';
 import { useToolUsage } from '../../features/tools/telemetry';
 import { meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
@@ -618,7 +618,14 @@ function LivePitchMode({
   /** SAVE (Sound mode) → Saved Measurement Library, mirroring Tap's shape:
    *  the tool's shared frequency-log payload (freq/period/BPM/stability/
    *  min/max) with mode disclosed in measurement_settings. */
+  const saveGate = useSaveGate();
   const onSave = useCallback(() => {
+    // Academy-only save (owner ruling 2026-09-01): a locked user gets the
+    // membership route, never a ✓ for a record they cannot open.
+    if (saveGate.locked) {
+      saveGate.prompt();
+      return;
+    }
     const fr = state === 'running' ? frames.pitch : null;
     const s = computePitchStats(histRef.current);
     const ok =
@@ -886,7 +893,7 @@ function LivePitchMode({
               accessibilityLabel="Save measurement"
             >
               <Text style={[styles.ctrlText, justSaved && styles.ctrlTextSaved]}>
-                {justSaved ? 'SAVED ✓' : 'SAVE'}
+                {justSaved ? 'SAVED ✓' : saveGate.label('SAVE')}
               </Text>
             </Pressable>
           </View>
@@ -1086,7 +1093,14 @@ function TapMode({ onOpenLibrary, help, helpAll }: { onOpenLibrary: () => void; 
   }, [stats]);
 
   /** Save the session to the Saved Measurement Library (Phase 2, spec §7). */
+  const saveGate = useSaveGate();
   const onSave = useCallback(() => {
+    // Academy-only save (owner ruling 2026-09-01): a locked user gets the
+    // membership route, never a ✓ for a record they cannot open.
+    if (saveGate.locked) {
+      saveGate.prompt();
+      return;
+    }
     if (!stats) return;
     saveMeasurement({
       id: Crypto.randomUUID(),
@@ -1189,7 +1203,7 @@ function TapMode({ onOpenLibrary, help, helpAll }: { onOpenLibrary: () => void; 
           accessibilityLabel="Save measurement"
         >
           <Text style={[styles.ctrlText, justSaved && styles.ctrlTextSaved]}>
-            {justSaved ? 'SAVED ✓' : 'SAVE'}
+            {justSaved ? 'SAVED ✓' : saveGate.label('SAVE')}
           </Text>
         </Pressable>
       </View>

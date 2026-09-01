@@ -74,6 +74,7 @@ import * as photo from '../../features/tools/capture/photo';
 import * as location from '../../features/tools/capture/location';
 import type { GeoFix } from '../../features/tools/capture/location';
 import { colors, fonts } from '../../theme/tokens';
+import { useSaveGate } from './ToolLockUi';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { EngineGate } from './EngineGate';
 import { InteractionZone } from '../lab/LabShell';
@@ -833,7 +834,14 @@ export function MultiMeterScreen({ navigation }: Props) {
     setLocationBlocked(false);
   }, [state, chips, sgHistory, specView, splOffset, calibrated]);
 
+  const saveGate = useSaveGate();
   const confirmSnapshot = useCallback(() => {
+    // Academy-only save (owner ruling 2026-09-01): a locked user gets the
+    // membership route, never a ✓ for a record they cannot open.
+    if (saveGate.locked) {
+      saveGate.prompt();
+      return;
+    }
     if (!draft) return;
     // Fold in the optional, gated captures (additive — omitted when absent, so
     // a snapshot with neither saves exactly as before).
@@ -1648,7 +1656,7 @@ export function MultiMeterScreen({ navigation }: Props) {
                 <Text style={styles.sheetBtnText}>CANCEL</Text>
               </Pressable>
               <Pressable style={[styles.sheetBtn, styles.sheetBtnSave]} onPress={confirmSnapshot} accessibilityRole="button" accessibilityLabel="Save snapshot">
-                <Text style={[styles.sheetBtnText, styles.sheetBtnSaveText]}>SAVE</Text>
+                <Text style={[styles.sheetBtnText, styles.sheetBtnSaveText]}>{saveGate.label('SAVE')}</Text>
               </Pressable>
             </View>
           </View>

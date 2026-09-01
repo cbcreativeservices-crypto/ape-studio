@@ -50,6 +50,7 @@ import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO } from '../../features/tools/measure/types';
 import { colors, fonts } from '../../theme/tokens';
+import { useSaveGate } from './ToolLockUi';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { heatColor, levelColorForDb } from '../../features/tools/levelColor';
 import { EngineGate } from './EngineGate';
@@ -424,9 +425,17 @@ export function SpectrogramScreen({ navigation }: Props) {
     [],
   );
 
+  const saveGate = useSaveGate();
+
   /** SAVE SNAPSHOT (spec §12 View 2 → §7 library). Real polled columns only —
    *  exactly what is on screen, with the display scale recorded alongside. */
   const onSaveSnapshot = useCallback(() => {
+    // Academy-only save (owner ruling 2026-09-01): a locked user gets the
+    // membership route, never a ✓ for a record they cannot open.
+    if (saveGate.locked) {
+      saveGate.prompt();
+      return;
+    }
     if (state !== 'running' || history.length === 0) return;
     const flags = meterWarningFlags(frames.meter);
     const meta = ApeDsp.getSpectrumMeta();
@@ -598,7 +607,7 @@ export function SpectrogramScreen({ navigation }: Props) {
                 accessibilityLabel="Save snapshot"
               >
                 <Text style={[styles.ctrlText, justSaved && styles.ctrlTextSaved]}>
-                  {justSaved ? 'SAVED ✓' : 'SAVE SNAPSHOT'}
+                  {justSaved ? 'SAVED ✓' : saveGate.label('SAVE SNAPSHOT')}
                 </Text>
               </Pressable>
             </View>

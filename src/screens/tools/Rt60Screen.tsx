@@ -40,6 +40,7 @@ import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type WarningFlag } from '../../features/tools/measure/types';
 import { colors, fonts } from '../../theme/tokens';
+import { useSaveGate } from './ToolLockUi';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { EngineGate } from './EngineGate';
 import { useToolHelp, HelpHead, DisplayGuideButton } from '../../features/lab/guidedLessons';
@@ -330,9 +331,16 @@ export function Rt60Screen({ navigation }: Props) {
     return f;
   }, [windowFlags, showResults, broadband]);
 
+  const saveGate = useSaveGate();
   const headlineMethod = broadband && broadband.valid ? fitOf(broadband) : null;
 
   const onSave = () => {
+    // Academy-only save (owner ruling 2026-09-01): a locked user gets the
+    // membership route, never a ✓ for a record they cannot open.
+    if (saveGate.locked) {
+      saveGate.prompt();
+      return;
+    }
     // §13 integrity: a disavowed capture is never saved under a method label.
     if (!rt60 || !showResults || !broadband || !broadband.valid) return;
     const method = fitOf(broadband);
@@ -478,7 +486,7 @@ export function Rt60Screen({ navigation }: Props) {
               </View>
               <View style={{ flex: 1 }}>
                 <GlassButton
-                  label={justSaved ? 'SAVED ✓' : 'SAVE'}
+                  label={justSaved ? 'SAVED ✓' : saveGate.label('SAVE')}
                   tint="steel"
                   height={46}
                   fontSize={14}

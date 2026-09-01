@@ -53,6 +53,7 @@ import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type SplLogPayload, type WarningFlag } from '../../features/tools/measure/types';
 import { colors, fonts } from '../../theme/tokens';
+import { useSaveGate } from './ToolLockUi';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { EngineGate } from './EngineGate';
 import { SkinnedVu } from './SkinnedVu';
@@ -1176,8 +1177,15 @@ export function SplMeterScreen({ navigation }: Props) {
     </View>
   );
 
+  const saveGate = useSaveGate();
   /** SAVE LOG → Saved Measurement Library (spec §7; payload = SplLogPayload). */
   const onSaveLog = useCallback(() => {
+    // Academy-only save (owner ruling 2026-09-01): a locked user gets the
+    // membership route, never a ✓ for a record they cannot open.
+    if (saveGate.locked) {
+      saveGate.prompt();
+      return;
+    }
     // Read the FRESHEST frame directly at save time (no polled React state now).
     const m = state === 'running' ? ApeDsp.getMeterFrame() : null;
     if (!m) return;
@@ -1374,7 +1382,7 @@ export function SplMeterScreen({ navigation }: Props) {
                   accessibilityLabel="Save log"
                 >
                   <Text style={[styles.ctrlText, justSaved && styles.ctrlTextSaved]}>
-                    {justSaved ? 'SAVED ✓' : 'SAVE LOG'}
+                    {justSaved ? 'SAVED ✓' : saveGate.label('SAVE LOG')}
                   </Text>
                 </Pressable>
               </View>
@@ -1712,7 +1720,7 @@ export function SplMeterScreen({ navigation }: Props) {
                       accessibilityLabel="Save log"
                     >
                       <Text style={[styles.ctrlTextSm, justSaved && styles.ctrlTextSaved]}>
-                        {justSaved ? 'SAVED ✓' : 'SAVE LOG'}
+                        {justSaved ? 'SAVED ✓' : saveGate.label('SAVE LOG')}
                       </Text>
                     </Pressable>
                   </View>

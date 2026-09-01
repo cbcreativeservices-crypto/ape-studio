@@ -49,6 +49,7 @@ import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO } from '../../features/tools/measure/types';
 import { colors, fonts } from '../../theme/tokens';
+import { useSaveGate } from './ToolLockUi';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { EngineGate } from './EngineGate';
 import { useToolHelp, DisplayGuideButton } from '../../features/lab/guidedLessons';
@@ -258,9 +259,17 @@ export function WaveformScreen({ navigation }: Props) {
   // 2026-08-01).
   useToolAutoStart(state, onStart, stop);
 
+  const saveGate = useSaveGate();
+
   /** Save the on-screen envelope to the library (Phase 2, spec §7) —
    *  numbers only, never audio. */
   const onSave = useCallback(() => {
+    // Academy-only save (owner ruling 2026-09-01): a locked user gets the
+    // membership route, never a ✓ for a record they cannot open.
+    if (saveGate.locked) {
+      saveGate.prompt();
+      return;
+    }
     if (!meter || displayBuckets.length === 0) return;
     saveMeasurement({
       id: Crypto.randomUUID(),
@@ -675,7 +684,7 @@ export function WaveformScreen({ navigation }: Props) {
                 accessibilityLabel="Save snapshot"
               >
                 <Text style={[styles.saveText, justSaved && styles.saveTextSaved]}>
-                  {justSaved ? 'SAVED ✓' : 'SAVE SNAPSHOT'}
+                  {justSaved ? 'SAVED ✓' : saveGate.label('SAVE SNAPSHOT')}
                 </Text>
               </Pressable>
             </View>

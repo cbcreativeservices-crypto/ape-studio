@@ -83,6 +83,7 @@ import { useToolColorPref } from '../../features/tools/waveColorPref';
 import { deriveSixthOctave, NO_LEVEL, SIXTH_BANDS, type DisplayBands } from '../../features/tools/sixthOctave';
 import { ColorWheelButton } from '../../components/ColorWheelButton';
 import { colors, fonts } from '../../theme/tokens';
+import { useSaveGate } from './ToolLockUi';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { EngineGate } from './EngineGate';
 import { useToolHelp, readoutKey } from '../../features/lab/guidedLessons';
@@ -903,7 +904,14 @@ export function RtaScreen({ navigation }: Props) {
   /** SAVE TRACE (spec §10 View 2 → §7 library). Real polled data only — always
    *  the NATIVE frame: display-time regrouping (7/15/61) never alters the
    *  stored payload, which stays the engine's 1/1 or 1/3-octave truth. */
+  const saveGate = useSaveGate();
   const onSaveTrace = useCallback(() => {
+    // Academy-only save (owner ruling 2026-09-01): a locked user gets the
+    // membership route, never a ✓ for a record they cannot open.
+    if (saveGate.locked) {
+      saveGate.prompt();
+      return;
+    }
     const bands = frames.bands;
     if (state !== 'running' || bands == null || bands.centers.length === 0) return;
     const flags = meterWarningFlags(frames.meter);
@@ -1105,7 +1113,7 @@ export function RtaScreen({ navigation }: Props) {
       ),
     },
     // SAVE TRACE — exact §7 flow (onSaveTrace guards on running+bands itself).
-    { kind: 'action', id: 'save', label: justSaved ? 'SAVED ✓' : 'SAVE', onPress: onSaveTrace },
+    { kind: 'action', id: 'save', label: justSaved ? 'SAVED ✓' : saveGate.label('SAVE'), onPress: onSaveTrace },
   ];
 
   return (
