@@ -1156,7 +1156,11 @@ export function DashboardScreen() {
     topicId: string,
   ) =>
     key === 'scenarios' && isScenariosExempt(topicId) ? 100 : methodDisplayPct(row, itemCount, key, rpFor(key));
-  const methodPct = (key: string) => Math.round(smoothPct(rowFor(key), rackItemCount, key, topic.id));
+  // UN-rounded (QA night 2026-08-31): Math.round turned 99.5% into 100, so a
+  // method with one unstudied item showed the green ✓ and unlocked the next
+  // stage early. smoothPct returns exactly 100 only when every item has
+  // credit — the raw value IS the honest gate. Display rounding is separate.
+  const methodPct = (key: string) => smoothPct(rowFor(key), rackItemCount, key, topic.id);
   const bypassLocks = devBypass('bypassMethodLocks');
   const flashcardsSeenAll = methodPct('flashcards') >= 100;
   const coreHomeworkComplete = methodPct('fill_in_blank') >= 100 && methodPct('matching') >= 100;
@@ -1484,8 +1488,11 @@ export function DashboardScreen() {
           // smoothPct handles the required_passes fallback + the scenarios
           // exemption (an empty-scenarios topic reads 100% so its meter matches
           // the unlocked quiz — owner launch-triage E4).
-          const pct = Math.round(smoothPct(cfgRow, data.itemCountByTopic.get(topic.id) ?? 0, m.key, topic.id));
-          const complete = isApplicable && pct >= 100;
+          const rawPct = smoothPct(cfgRow, data.itemCountByTopic.get(topic.id) ?? 0, m.key, topic.id);
+          const pct = Math.round(rawPct);
+          // complete gates on the RAW value (QA night 2026-08-31): rounding
+          // made 99.6% wear the ✓ while an item was still unstudied.
+          const complete = isApplicable && rawPct >= 100;
           // Power gate: flashcards is always live; the 3 homework methods light
           // up only once flashcards has shown every term once (owner 2026-08-11).
           // Staged power: flashcards always; fill-in-blank/matching after
