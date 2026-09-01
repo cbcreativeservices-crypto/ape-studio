@@ -3330,12 +3330,16 @@ function CabinetTop({
   aimDeg,
   small,
   scale = 1,
+  tint,
 }: {
   x: number;
   y: number;
   aimDeg: number;
   small?: boolean;
   scale?: number;
+  /** Identity outline (owner 2026-08-31): speaker 2 = blue, fills = green —
+   *  matches the dock slider's tint so slider ↔ cabinet read as one thing. */
+  tint?: string;
 }) {
   const s = (small ? 0.62 : 1) * scale;
   const path = useMemo(() => {
@@ -3360,7 +3364,7 @@ function CabinetTop({
       <Path path={path}>
         <LinearGradient start={vec(-10 * s, -17 * s)} end={vec(10 * s, 0)} colors={[BODY_HI, BODY_LO]} />
       </Path>
-      <Path path={path} color="#5a5e6a" style="stroke" strokeWidth={1.1} />
+      <Path path={path} color={tint ?? '#5a5e6a'} style="stroke" strokeWidth={tint ? 1.6 : 1.1} />
       <Path path={horn} color="#101116" />
     </Group>
   );
@@ -3376,6 +3380,7 @@ export function TopCoverageView({
   spk2AimDeg,
   hDeg,
   frontFills,
+  fillSpread01 = 0.375,
 }: {
   width: number;
   height?: number;
@@ -3386,6 +3391,10 @@ export function TopCoverageView({
   spk2AimDeg: number;
   hDeg: number;
   frontFills: boolean;
+  /** Fills half-spread from the stage's CENTER LINE (owner 2026-08-31): the
+   *  pair always sits symmetric about center; 0 = tight pair, 1 = full lip.
+   *  Default reproduces the old fixed 0.3/0.7 positions. */
+  fillSpread01?: number;
 }) {
   const w = width;
   const h = height;
@@ -3395,13 +3404,15 @@ export function TopCoverageView({
 
   const { buckets, aims, spkList, ringCenters } = useMemo(() => {
     const refD = 0.55 * audH;
-    const spks: { x: number; y: number; aim: number; hd: number; refD: number; scale: number; small?: boolean }[] = [
+    const spks: { x: number; y: number; aim: number; hd: number; refD: number; scale: number; small?: boolean; tint?: string }[] = [
       { x: spk1x01 * (w - 40) + 20, y: stageH, aim: spk1AimDeg, hd: hDeg, refD, scale: 1 },
     ];
-    if (spk2On) spks.push({ x: spk2x01 * (w - 40) + 20, y: stageH, aim: spk2AimDeg, hd: hDeg, refD, scale: 1 });
+    if (spk2On) spks.push({ x: spk2x01 * (w - 40) + 20, y: stageH, aim: spk2AimDeg, hd: hDeg, refD, scale: 1, tint: ACCENT_BLUE });
     if (frontFills) {
-      for (const fx of [0.3, 0.7]) {
-        spks.push({ x: fx * w, y: stageH, aim: 0, hd: 90, refD: 0.2 * audH, scale: 0.5, small: true });
+      // Symmetric about the stage's center line, always equidistant.
+      const half = 0.05 + 0.4 * Math.max(0, Math.min(1, fillSpread01));
+      for (const fx of [0.5 - half, 0.5 + half]) {
+        spks.push({ x: fx * w, y: stageH, aim: 0, hd: 90, refD: 0.2 * audH, scale: 0.5, small: true, tint: ACCENT_GREEN });
       }
     }
     // Fine heat map: 224 × 192 cells — 4× the previous 56 × 48 linear
@@ -3460,7 +3471,7 @@ export function TopCoverageView({
       maxR: s.small ? audH * 0.42 : audH * 1.05,
     }));
     return { buckets: bucketPaths, aims: aimPath, spkList: spks, ringCenters: rings };
-  }, [w, h, audY0, audH, spk1x01, spk1AimDeg, spk2On, spk2x01, spk2AimDeg, hDeg, frontFills]);
+  }, [w, h, audY0, audH, spk1x01, spk1AimDeg, spk2On, spk2x01, spk2AimDeg, hDeg, frontFills, fillSpread01]);
 
   const ringPhase = usePhaseClock(true, 0.22);
 
@@ -3533,7 +3544,7 @@ export function TopCoverageView({
         <SkLine p1={{ x: 0, y: stageH }} p2={{ x: w, y: stageH }} color={GRID} strokeWidth={1.5} />
         <GlowStroke path={aims} color={PARTICLE} width={1.6} opacity={0.8} />
         {spkList.map((s, i) => (
-          <CabinetTop key={i} x={s.x} y={s.y} aimDeg={s.aim} small={s.small} scale={s.small ? 1 : mainCabS} />
+          <CabinetTop key={i} x={s.x} y={s.y} aimDeg={s.aim} small={s.small} scale={s.small ? 1 : mainCabS} tint={s.tint} />
         ))}
       </Group>
     </Canvas>

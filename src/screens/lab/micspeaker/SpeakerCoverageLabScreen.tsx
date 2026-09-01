@@ -184,7 +184,15 @@ const SECTIONS: { key: string; label: string; title: string; blurb: string }[] =
   { key: 'read', label: 'READING IT', title: 'READING A COVERAGE MAP', blurb: 'The heat-map colors, and the vocabulary every system tech uses.' },
 ];
 
-const posWord = (x: number) => (x < 0.35 ? 'stage left' : x > 0.65 ? 'stage right' : 'center');
+// Stage left/right are the PERFORMER'S perspective (owner 2026-08-31): the
+// top view draws the stage at the top with performers facing the audience
+// below, so the performer's LEFT is the SCREEN'S right. The old mapping was
+// the audience's view — backwards.
+const posWord = (x: number) => (x < 0.35 ? 'stage right' : x > 0.65 ? 'stage left' : 'center');
+const spreadWord = (v: number) => (v < 0.33 ? 'tight' : v > 0.66 ? 'wide' : 'mid');
+// Identity tints (match the cabinet outlines in the viz).
+const SPK2_TINT = '#6fa8ff';
+const FILLS_TINT = '#5bff85';
 const heightWord = (h: number) => (h < 0.3 ? 'low' : h > 0.7 ? 'flown high' : 'mid');
 const lowMidHigh = (v: number) => (v < 0.33 ? 'low' : v > 0.66 ? 'high' : 'mid');
 
@@ -200,9 +208,11 @@ export function SpeakerCoverageLabScreen() {
   const [fills, setFills] = useState(false);
   const [s1, setS1] = useState({ x: 0.3, aim: 0 });
   const [s2, setS2] = useState({ x: 0.7, aim: 0 });
-  /** Which speaker the POS/AIM lane edits (the tools' focus idiom — keeps the
-   *  dock at 2 faders whether one or two boxes are up). */
-  const [activeSpk, setActiveSpk] = useState<1 | 2>(1);
+  /** What the POSITION lane edits (owner 2026-08-31): speaker 1 (amber),
+   *  speaker 2 (blue) or the fill pair (green — moves them in/out from the
+   *  stage's center line, always symmetric). */
+  const [editTarget, setEditTarget] = useState<'spk1' | 'spk2' | 'fills'>('spk1');
+  const [fillSpread, setFillSpread] = useState(0.375);
 
   // ── SIDE VIEW state ───────────────────────────────────────────────────────
   const [sideDispIdx, setSideDispIdx] = useState(1);
@@ -235,7 +245,8 @@ export function SpeakerCoverageLabScreen() {
 
   const topDisp = DISPERSIONS[topDispIdx];
   const sideDisp = DISPERSIONS[sideDispIdx];
-  const spkEditable2 = twoOn && activeSpk === 2;
+  const spkEditable2 = twoOn && editTarget === 'spk2';
+  const fillsTarget = fills && editTarget === 'fills';
   const active = spkEditable2 ? s2 : s1;
   const setActive = spkEditable2 ? setS2 : setS1;
 
@@ -247,13 +258,24 @@ export function SpeakerCoverageLabScreen() {
     bezel: [
       {
         k: 'EDIT',
-        v: `SPK ${spkEditable2 ? 2 : 1}`,
+        v: fillsTarget ? 'FILLS' : `SPK ${spkEditable2 ? 2 : 1}`,
         helpKey: 'second_speaker',
-        // Tap to swap which speaker the lane edits (only meaningful with 2 up).
-        onPress: twoOn ? () => setActiveSpk((a) => (a === 1 ? 2 : 1)) : undefined,
+        // Tap to cycle the slider through whatever is on stage.
+        onPress:
+          twoOn || fills
+            ? () =>
+                setEditTarget((t) =>
+                  t === 'spk1' ? (twoOn ? 'spk2' : 'fills') : t === 'spk2' && fills ? 'fills' : 'spk1',
+                )
+            : undefined,
       },
-      { k: 'POS', v: posWord(active.x), flex: 1.2, helpKey: 'position' },
-      { k: 'AIM', v: `${active.aim}°`, helpKey: 'aim' },
+      {
+        k: 'POS',
+        v: fillsTarget ? `fills ${spreadWord(fillSpread)}` : posWord(active.x),
+        flex: 1.2,
+        helpKey: fillsTarget ? 'front_fills' : 'position',
+      },
+      { k: 'AIM', v: fillsTarget ? '—' : `${active.aim}°`, helpKey: 'aim' },
       { k: 'PATTERN', v: topDisp.label, flex: 1.2, helpKey: 'dispersion' },
     ],
     render: (w, h) =>
@@ -268,33 +290,51 @@ export function SpeakerCoverageLabScreen() {
           spk2AimDeg={s2.aim}
           hDeg={topDisp.hDeg}
           frontFills={fills}
+          fillSpread01={fillSpread}
         />
       ) : (
         <VizUnavailableCard />
       ),
   };
 
+  // Owner 2026-08-31: POS/AIM/PATTERN already read out on the bezel and the
+  // lane, so POSITION and AIM are LABEL-ONLY keys (formatShort ''), and the
+  // SPKRS tray (with its cryptic "E1/E2" = "editing speaker N") is replaced by
+  // direct SPKR 1 / SPKR 2 keys. The slider wears the target's identity:
+  // amber = speaker 1, blue = speaker 2, green = the fill pair (which the
+  // slider moves in/out from the stage's center line, always symmetric).
   const topParams: DockParam[] = [
     {
       kind: 'fader',
       id: 'pos',
-      label: 'POS',
-      value: active.x,
-      onChange: (v) => setActive({ ...active, x: v }),
-      format: () => `spk ${spkEditable2 ? 2 : 1} · ${posWord(active.x)}`,
-      formatShort: () => posWord(active.x).replace('stage ', '').toUpperCase(),
-      helpKey: 'position',
+      label: 'POSITION',
+      value: fillsTarget ? fillSpread : active.x,
+      onChange: (v) => (fillsTarget ? setFillSpread(v) : setActive({ ...active, x: v })),
+      format: () =>
+        fillsTarget
+          ? `fills · ${spreadWord(fillSpread)} — in ↔ out from center`
+          : `spk ${spkEditable2 ? 2 : 1} · ${posWord(active.x)}`,
+      formatShort: () => '',
+      tint: fillsTarget ? FILLS_TINT : spkEditable2 ? SPK2_TINT : undefined,
+      helpKey: fillsTarget ? 'front_fills' : 'position',
     },
-    {
-      kind: 'fader',
-      id: 'aim',
-      label: 'AIM',
-      value: (active.aim + 60) / 120,
-      onChange: (v) => setActive({ ...active, aim: Math.round(v * 120 - 60) }),
-      format: () => `spk ${spkEditable2 ? 2 : 1} · ${active.aim}°`,
-      formatShort: () => `${active.aim}°`,
-      helpKey: 'aim',
-    },
+    // Fills fire straight into the audience — AIM leaves the dock while the
+    // slider is theirs (RackUnit reconciles the bound lane per render).
+    ...(fillsTarget
+      ? []
+      : ([
+          {
+            kind: 'fader',
+            id: 'aim',
+            label: 'AIM',
+            value: (active.aim + 60) / 120,
+            onChange: (v: number) => setActive({ ...active, aim: Math.round(v * 120 - 60) }),
+            format: () => `spk ${spkEditable2 ? 2 : 1} · ${active.aim}°`,
+            formatShort: () => '',
+            tint: spkEditable2 ? SPK2_TINT : undefined,
+            helpKey: 'aim',
+          },
+        ] as DockParam[])),
     {
       kind: 'options',
       id: 'disp',
@@ -310,42 +350,50 @@ export function SpeakerCoverageLabScreen() {
       helpKey: 'dispersion',
     },
     {
-      kind: 'group',
-      id: 'spkrs',
-      label: 'SPKRS',
-      valueLabel: twoOn ? `2 · E${spkEditable2 ? 2 : 1}` : '1',
-      helpKey: 'second_speaker',
-      render: () => (
-        <View style={{ gap: 10 }}>
-          <Text style={styles.trayHead}>SPEAKERS</Text>
-          <View style={styles.chipRow}>
-            <LabChip
-              label={twoOn ? 'SPEAKER 2 ●' : 'ADD SPEAKER 2'}
-              selected={twoOn}
-              onPress={() => {
-                if (twoOn && activeSpk === 2) setActiveSpk(1);
-                setTwoOn((v) => !v);
-              }}
-              onLongPress={() => help('second_speaker')}
-            />
-          </View>
-          <Text style={styles.trayHead}>EDIT WITH THE FADERS</Text>
-          <View style={styles.chipRow}>
-            <LabChip label="SPEAKER 1" selected={!spkEditable2} onPress={() => setActiveSpk(1)} onLongPress={() => help('position')} />
-            <LabChip
-              label="SPEAKER 2"
-              selected={spkEditable2}
-              onPress={() => {
-                if (!twoOn) setTwoOn(true);
-                setActiveSpk(2);
-              }}
-              onLongPress={() => help('second_speaker')}
-            />
-          </View>
-        </View>
-      ),
+      kind: 'toggle',
+      id: 'spk1',
+      label: 'SPKR 1',
+      value: !spkEditable2 && !fillsTarget,
+      onToggle: () => setEditTarget('spk1'),
+      helpKey: 'position',
     },
-    { kind: 'toggle', id: 'fills', label: 'FILLS', value: fills, onToggle: () => setFills((v) => !v), helpKey: 'front_fills' },
+    {
+      kind: 'toggle',
+      id: 'spk2',
+      label: 'SPKR 2',
+      value: twoOn,
+      onToggle: () => {
+        if (!twoOn) {
+          setTwoOn(true);
+          setEditTarget('spk2');
+        } else if (editTarget !== 'spk2') {
+          setEditTarget('spk2');
+        } else {
+          // Tap while it's the slider's target = take it off the stage.
+          setTwoOn(false);
+          setEditTarget('spk1');
+        }
+      },
+      helpKey: 'second_speaker',
+    },
+    {
+      kind: 'toggle',
+      id: 'fills',
+      label: 'FILLS',
+      value: fills,
+      onToggle: () => {
+        if (!fills) {
+          setFills(true);
+          setEditTarget('fills');
+        } else if (editTarget !== 'fills') {
+          setEditTarget('fills');
+        } else {
+          setFills(false);
+          setEditTarget('spk1');
+        }
+      },
+      helpKey: 'front_fills',
+    },
   ];
 
   // ── SIDE VIEW rack declaration ────────────────────────────────────────────
