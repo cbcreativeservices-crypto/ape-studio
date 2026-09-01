@@ -434,7 +434,7 @@ function CourseCardView({
   onOpenLab: () => void;
   /** CM6: open a public course → its commercial dashboard. `isFreeTopic` marks
    *  the free-topic taster cards, which a guest may open (paid cards are gated). */
-  onOpenPublic: (order: number, isFreeTopic?: boolean) => void;
+  onOpenPublic: (order: number, isFreeTopic?: boolean, focusGs?: number) => void;
   /** CM2/CM3: academy-locked tap → the upgrade surface. */
   onLockedPress: () => void;
   /** The "+ XX other" tally card → open the full Curriculum. */
@@ -707,7 +707,7 @@ function CourseCardView({
   // primary key does. `null` = a purely-locked course (disabled "Locked" key),
   // which stays inert. Mirrors the button handlers in `inner` below exactly.
   const onCardPress: (() => void) | null = free
-    ? () => onOpenPublic(free.courseOrder, true)
+    ? () => onOpenPublic(free.courseOrder, true, free.gs)
     : isTools
       ? onOpenTools
       : isGlossary
@@ -815,7 +815,7 @@ function CourseCardView({
           {free ? (
             // Always unlocked, full color, INCLUDED FREE (Booth 2026-07-11).
             <View style={{ width: CARD_BTN_W }}>
-              <GlassButton label="INCLUDED FREE" tint="green" height={50} onPress={() => onOpenPublic(free.courseOrder, true)} />
+              <GlassButton label="INCLUDED FREE" tint="green" height={50} onPress={() => onOpenPublic(free.courseOrder, true, free.gs)} />
             </View>
           ) : isTools ? (
             // Audio Tools is ALWAYS FREE to open (Booth 2026-07-11 #4); the
@@ -1255,7 +1255,10 @@ export function CourseSelectionScreen() {
       // Expired members KEEP the free content — Pro Audio Safety + DAW (and Tools/
       // Glossary elsewhere); everything else is locked (user ruling 2026-07-23).
       if (lapsed && !isFreeEnrollGs(gs)) return membershipExpired();
-      (navigation as any).navigate('Study', { screen: 'Dashboard' });
+      // Tapping a card opens the Dashboard ON THAT CARD'S TOPIC (owner
+      // 2026-09-01) — the deck order is untouched; only the landing position
+      // follows the tap.
+      (navigation as any).navigate('Study', { screen: 'Dashboard', params: { focusGs: gs } });
     },
     [navigation, lapsed, membershipExpired],
   );
@@ -1275,7 +1278,7 @@ export function CourseSelectionScreen() {
   // CM6: open a public course → the commercial dashboard (Study tab), which
   // reads the persisted order and renders the seq-ordered topics.
   const openPublicCourse = useCallback(
-    async (order: number, isFreeTopic = false) => {
+    async (order: number, isFreeTopic = false, focusGs?: number) => {
       // A session-less GUEST may study the FREE topics only. Opening any non-free
       // (paid) topic shows a friendly sign-up prompt instead of dropping them into
       // a topic with no on-device study path (owner decision 2026-07-26).
@@ -1284,7 +1287,12 @@ export function CourseSelectionScreen() {
         return;
       }
       await setLastPublicCourse(order);
-      (navigation as any).navigate('Study', { screen: 'Dashboard' });
+      // A single-topic card fronts its own topic (owner 2026-09-01); a
+      // multi-topic course card lands on that course's last-known topic.
+      (navigation as any).navigate('Study', {
+        screen: 'Dashboard',
+        params: focusGs != null ? { focusGs } : undefined,
+      });
     },
     [navigation, isGuest],
   );

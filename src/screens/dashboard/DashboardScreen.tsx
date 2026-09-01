@@ -937,7 +937,12 @@ export function DashboardScreen() {
     const i = topics.findIndex((t) =>
       typeof focusGs === 'string' ? t.id === focusGs : t.global_sequence === focusGs,
     );
-    if (i >= 0) setTopicIdx(i);
+    if (i >= 0) {
+      setTopicIdx(i);
+      // A deep-linked topic becomes the LAST KNOWN one (owner 2026-09-01), so
+      // the STUDY tab returns the user to what they actually opened last.
+      if (dataRef.current) setLastTopicIndex(dataRef.current.currentCourse.id, i);
+    }
     navigation.setParams({ focusGs: undefined });
   }, [focusGs, topics, navigation]);
   const status = topic ? (data!.progressByTopic.get(topic.id)?.status ?? 'locked') : 'locked';

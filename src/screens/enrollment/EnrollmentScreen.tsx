@@ -921,7 +921,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           </Pressable>
           <Pressable hitSlop={6}
             style={styles.studyNavBtn}
-            onPress={allLoaded ? () => goStudy() : undefined}
+            onPress={allLoaded ? () => goStudy(b.topics[0]) : undefined}
             disabled={!allLoaded}
             accessibilityRole="button"
             accessibilityState={{ disabled: !allLoaded }}
@@ -1007,7 +1007,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           </Pressable>
           <Pressable hitSlop={6}
             style={styles.studyNavBtn}
-            onPress={allLoaded ? () => goStudy() : undefined}
+            onPress={allLoaded ? () => goStudy(d.topics[0]) : undefined}
             disabled={!allLoaded}
             accessibilityRole="button"
             accessibilityState={{ disabled: !allLoaded }}
