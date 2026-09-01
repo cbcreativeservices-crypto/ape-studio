@@ -783,6 +783,10 @@ export function SplMeterScreen({ navigation }: Props) {
   // Full VU: hide/show the right-side LED level meter (owner 2026-08-18). When
   // hidden the VU simply centers in the freed space (no zoom — owner).
   const [vuFsLedHidden, setVuFsLedHidden] = useState(false);
+  // Full-VU clean view (owner 2026-09-01): one small pill hides the whole
+  // control layer — the 4 settings buttons AND the LED meter (plus the LED's
+  // own pill + colour wheel) — leaving just the VU. The pill itself stays.
+  const [vuFsChromeHidden, setVuFsChromeHidden] = useState(false);
   // Which setting popup is open from the VU home's bottom control bar (owner
   // 2026-08-18): Range · Weighting · Response · Peak Hold.
   const [settingPopup, setSettingPopup] = useState<null | 'range' | 'unit' | 'response' | 'hold'>(null);
@@ -1954,8 +1958,21 @@ export function SplMeterScreen({ navigation }: Props) {
                   {/* LED controls cluster (owner 2026-08-18/21) — top-LEFT row that
                       stays ABOVE the vertically-centred settings column so nothing
                       obscures it: HIDE LED toggle + (members) the colour wheel. */}
-                  {viz && (
-                    <View style={[styles.vuFsLedRow, { left: camInset + 14 }]} pointerEvents="box-none">
+                  <View style={[styles.vuFsLedRow, { left: camInset + 14 }]} pointerEvents="box-none">
+                    {/* Clean-view master toggle (owner 2026-09-01): hides the
+                        settings column + LED + their pills; stays visible
+                        itself so the controls can come back. NEW COPY — owner
+                        review. */}
+                    <Pressable hitSlop={6}
+                      style={styles.vuFsLedTogglePill}
+                      onPress={() => setVuFsChromeHidden((h) => !h)}
+                      accessibilityRole="button"
+                      accessibilityState={{ selected: !vuFsChromeHidden }}
+                      accessibilityLabel={vuFsChromeHidden ? 'Show the settings and LED meter' : 'Hide the settings and LED meter'}
+                    >
+                      <Text style={styles.vuFsLedToggleText}>{vuFsChromeHidden ? 'SHOW CONTROLS' : 'HIDE CONTROLS'}</Text>
+                    </Pressable>
+                    {viz && !vuFsChromeHidden && (
                       <Pressable hitSlop={6}
                         style={styles.vuFsLedTogglePill}
                         onPress={() => setVuFsLedHidden((h) => !h)}
@@ -1965,18 +1982,18 @@ export function SplMeterScreen({ navigation }: Props) {
                       >
                         <Text style={styles.vuFsLedToggleText}>{vuFsLedHidden ? 'SHOW LED' : 'HIDE LED'}</Text>
                       </Pressable>
-                      {/* Colour customization (MEMBER, owner 2026-08-20) — only
-                          meaningful while the LED is shown. */}
-                      {!vuFsLedHidden && (
-                        <ColorWheelButton
-                          style={styles.vuFsLedWheelPill}
-                          onCustomize={() => setLedPickerOpen(true)}
-                          feature="the LED meter colours"
-                          accessibilityLabel="Customize LED colours"
-                        />
-                      )}
-                    </View>
-                  )}
+                    )}
+                    {/* Colour customization (MEMBER, owner 2026-08-20) — only
+                        meaningful while the LED is shown. */}
+                    {viz && !vuFsChromeHidden && !vuFsLedHidden && (
+                      <ColorWheelButton
+                        style={styles.vuFsLedWheelPill}
+                        onCustomize={() => setLedPickerOpen(true)}
+                        feature="the LED meter colours"
+                        accessibilityLabel="Customize LED colours"
+                      />
+                    )}
+                  </View>
 
                   {/* Stage (owner 2026-08-19): in LANDSCAPE the settings are a
                       COLUMN to the LEFT of the VU; in portrait they stay a bottom
@@ -1985,7 +2002,7 @@ export function SplMeterScreen({ navigation }: Props) {
                       (the meter row itself stays pointerEvents="none" so a Skia
                       meter can't eat the tap-to-close — owner 2026-08-18). */}
                   <View style={[styles.vuFsStage, { paddingHorizontal: camInset }]} pointerEvents="box-none">
-                    {winW >= winH && (
+                    {winW >= winH && !vuFsChromeHidden && (
                       <View style={styles.vuFsCtrlCol}>
                         {fsCtrlItems.map((b) => (
                           <Pressable
@@ -2013,7 +2030,7 @@ export function SplMeterScreen({ navigation }: Props) {
                           fit="contain"
                         />
                       </View>
-                      {!vuFsLedHidden && viz && (
+                      {!vuFsLedHidden && !vuFsChromeHidden && viz && (
                         <SideLed
                           viz={viz}
                           live={live}
