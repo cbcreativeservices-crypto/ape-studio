@@ -25,13 +25,74 @@ Pressables need full PointerEvent init or MouseEvent click.
 | Wave | Beats | State |
 |---|---|---|
 | 1 | A: Home/nav/Explore/Awards/Certs/Programs/Registry/Enrollments · B: Study Dashboard + 4 methods + quiz/homework · C: Glossary + search + feedback points | DONE — 16 fixes pushed, 9 filed |
-| 2 | A: Tools hub + tools (mic-denied paths) · B: Calculators + chain + cap · C: Profile/settings/notifications/QR/paywall | running |
-| 3 | A: Fundamentals labs adversarial · B: Advanced labs adversarial · C: cross-cutting (reload persistence, entitlement flips, deep stacks, console trawl) | pending |
+| 2 | A: Tools hub + tools · B: Calculators · C: Profile/settings | DONE — 24 fixes pushed across 4 commits (K-math, K-ux, P-batch, T-batch) |
+| 3 | A: Fundamentals labs adversarial · B: Advanced labs adversarial · C: cross-cutting | running |
 | 4+ | worst-area revisits · combination attacks · regression checks on the night's own fixes · longevity | pending |
 
 ## Findings
 
 (appended per wave: id · severity · surface · finding · FIXED commit / FILED analysis)
+
+### Wave 2 · APPLIED (all pushed)
+
+K1 14× unit-double-conversion · K2 dBu/dBV offset · K9 Eyring % · K5 SEND
+finite gate · K6 dose CHECK INPUTS · K7 dup keys · K10 cap tap race · K12
+exponent style + timecode unit · P1 confirm.ts + 7 sites (Log out/Delete/
+redeem/resets/single-device) · P2 mirror ordering · P3 aria-checked/selected ·
+P4 dim-group truly disabled · P5 redeem scrim · P7a persist rollback · P8
+plural · T1 MultiMeter snapshot AS-DISPLAYED + library label · T2 nine scrim
+demotes + SPL card swallow · T3 sim RT60 stub · T4 colour pref member gate ·
+T6/T7 labels · T9 library copy · T11/P10 dev-web tier survives cross-tab
+SIGNED_OUT (agents' own pain fixed).
+
+FILED from wave 2: K3 compressor "3 dB" ratified-copy math error (truth 9 —
+owner must ratify); K4 RF example 10 dB off (ratified); K11 parseFloat garbage;
+K13 web Share; K-F8 workflow PRIMARY RESULT; cap reachability question; T5
+guest SAVE funnel; T8 MultiMeter catalog copy; T10 BPM dash; T12 remaining web
+Alert sites (library/exposure/gen-cap); T13 chevron 31pt + overlay a11y-tree;
+P6 guest Settings honesty; P9 feedback recipient + subject; P11 stepper carry;
+AuthScreen takeover prompt still on Alert (needs the confirm.ts treatment but
+its Cancel-side signOut needs a device check) — plus 2 unattributed guest 500s.
+
+### Wave 2 · Agent B2 (Calculators) — REPORTED (all 163 fns executed via harness; ~45 hand-recomputed)
+
+- **K1 CRITICAL** 14 outputs pre-converted to display units then converted AGAIN by formatOutput → shown 1000×/35×/39× wrong ("DELAY PER METER 2914 ms"; several CHAINABLE). Exact one-liner fixes tabled (wave.ts ×2, micsRf.ts, roomsSecond.ts ×5, digitalAdv.ts ×4, roomsAdvanced.ts, wavesAdv.ts). EASY.
+- **K2 HIGH** dBu↔dBV offset computed from 0.775 (−2.214) while the ratified formula/note say −2.218 (exact √0.6 ref). Fix the constant to sqrt(0.6) — code then matches ratified text. EASY.
+- **K5 MED** SEND offered on non-finite results; USE pastes literal "—". Gate SEND on Number.isFinite. EASY.
+- **K6 MED** Dose/Leq calculators silently truncate mismatched level/duration lists (safety-adjacent). Additive CHECK INPUTS note ×3 (copy flag). EASY.
+- **K7 MED** Duplicate-label outputs share React keys (console error on Room Modes) + one unit-cycle slot. Key by label#index. EASY.
+- **K9 MED** Eyring step says "18.89% shorter than Sabine" — wrong denominator; truth 15.9% (ratified example says 15%). Fix denominator. EASY.
+- **K10 MED** Cap double-tap race: consuming guard is async state → two taps spend two credits. consumingRef. EASY. **FILED:** the whole 10/week cap may be UNREACHABLE now (CalcLab went members-only after the cap shipped — no free path to CALCULATE found; owner: confirm free entry or retire cap).
+- **K12 LOW** fmt inconsistent exponent style (1.364e+4 vs 1.678e7) — strip e+; Timecode TOTAL TIME shows 3.600e+5 ms for 6 min — default unit 's'. EASY. (Vd missing unit — FILED.)
+- **FILED:** K3 Compressor example says "3 dB of GR" where the truth (and the code) is 9 dB — flat math error in RATIFIED copy, owner must ratify "9"; K4 RF link-budget example off by 10 dB (ratified); K11 parseFloat accepts "5abc"→5 and "2,5"→2 (entry-behavior change); K13 web Share silent no-op; F8 workflow PRIMARY RESULT picks wrong output + unlabeled (report presentation — medium change, filed for care); OPEN GLOSSARY tile didn't navigate for session-less tier (out of beat — investigate wave 3).
+- Verified correct: ~80 independent recomputations across every workspace family all matched; unit/sig-fig cycling, chain round-trip, π-KEY completeness (163/163), workflow template run.
+
+### Wave 2 · Agent A2 (Tools) — REPORTED, fixes pending wave-end
+
+- **T1 MED** MultiMeter snapshot stores raw dBFS labeled "dBC" (−31.6 dBC nonsense) + hardcodes calibration_status:'uncalibrated' — violates the 2026-08-12 store-AS-DISPLAYED ruling SplMeter follows. Fix splDb=+splOffset, status from `calibrated`, add cal_offset_db. EASY (check library detail label).
+- **T2 MED** Settings-popup backdrops role=button WRAP the option buttons (hydration error observed on SPL RANGE; latent in MultiMeter readout popup, ColorWheelButton ×2, LedColorPicker, AccuracyNote, GlossaryTermPopup, SessionTimer, TopicDeckSheet). Fix scrim accessible={false} + card press-swallow. EASY (apply observed sites; sweep latent list).
+- **T3 MED(web)** Sim lacks getRt60Frame → ~3.3Hz uncaught TypeErrors on RT60 screen. Add `getRt60Frame: () => null` stub. EASY.
+- **T4 LOW-MED** Member colour customizations keep applying after membership loss (only the wheel entry is gated). Central fix in useToolColorPref: return null when !isMember (stored choice preserved). EASY.
+- **T6 LOW** "VU HOME" button announces "Open full-screen VU meter". EASY.
+- **T7 LOW** Tuner STATUS says LISTENING while stopped → MIC OFF. EASY.
+- **T9 LOW** Library empty-state claims "other tools save once the measurement engine ships" — engine shipped. One-line copy (flag). EASY.
+- **T11 DEV** = P10 (cross-tab tier drop; also wiped ape:toolMeasurements mid-run). One dev-web re-apply covers both. APPLY.
+- **FILED:** T5 un-gated SAVE for guests ("SAVED ✓" into a locked library + guest wipe destroys it — possible intentional funnel, owner call); T8 MultiMeter catalog copy still says "Every level is dBFS" (ratified copy — owner); T10 BPM 14176 for audio-rate tones (dash threshold = owner choice); T12 web-dead Alert confirms in library/exposure/gen-cap (family with P1); T13 back-chevron ~31pt + fullscreen overlays don't hide the a11y tree behind them.
+- Verified good: units house rule holds everywhere (dBA/dBC defaults, dBFS opt-in + labeled); ramp correct; notices bottom + honest; all gates/popups/flows exercised (long list in agent output).
+- Web caveat: dev-web overlays the DSP sim, so real denied/absent EngineGate states are unreachable in the browser — device pass still owns those.
+
+### Wave 2 · Agent C2 (Profile/Settings) — REPORTED, fixes pending wave-end
+
+- **P1 HIGH(web)** Alert.alert no-op: Log out, Delete confirm, redeem result, reset confirms, SingleDeviceGuard notice, AuthScreen takeover prompt all dead/silent on web. Extract ProfileScreen's askYesNo/warn into src/lib/confirm.ts + route 9 sites. EASY.
+- **P2 MED** Master notification switch: device mirror committed outside the server-write success path → failed write leaves scheduler and UI disagreeing (verified revert). Move mirror into .then(ok) + revert. EASY.
+- **P3 MED** RN-web 0.21 dropped accessibilityState→ARIA: all 15 switches render NO aria-checked; chips no aria-selected. Add aria-checked/aria-selected alongside (native keeps accessibilityState). EASY.
+- **P4 MED** Dimmed REMINDERS group keyboard-operable while master off (pointerEvents only blocks pointer); guests could genuinely schedule reminders on native (mirror defaults ON). Pass disabled to all toggles in the groupOff wrapper. EASY.
+- **P5 MED** Redeem modal backdrop role=button wraps card+buttons (button-in-button; console error). Restructure to NotifyScheduleModal's sibling-backdrop pattern. EASY.
+- **P7a LOW** MyProfileView.persist optimistic without rollback (guest chip stays selected after server refusal). Rollback on !res.ok. EASY. (Tab-gating = FILED.)
+- **P8 LOW** "1 details needed" SR label — pluralize. EASY.
+- **P10 DEV** Cross-tab SIGNED_OUT clears the dev tier (root cause confirmed: EntitlementProvider:229). Dev-web-only re-apply from DEV_ENTITLEMENT_KEY. Apply (harness ergonomics; __DEV__+web gated).
+- **FILED:** P6 guest Settings honesty (anonymous folded into FREE, Log out/DELETE shown for guests — copy/owner); P9 feedback recipient personal Yahoo + "Definition fix" subject mismatch; P11 schedule steppers wrap without carry (noon/midnight 12h surprise); 2× unattributed 500s on guest RPCs (watch); vibrate-on-web guard.
+- Verified good: toggle persistence table (guest wipe by design), profile form save/gates/focus flow, resets genuinely clear keys, no nesting traps outside redeem modal.
 
 ### Wave 1 · APPLIED (all pushed)
 
