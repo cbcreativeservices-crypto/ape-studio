@@ -102,6 +102,18 @@ export function useDspEngine(config: EngineConfig, poll: {
     if (state === 'absent' || state === 'spike') return;
     const gen = ++genRef.current;
     setState('starting');
+    // Watchdog (QA night 2026-09-01 — the launch-triage "spinner trap" class):
+    // if the permission prompt or mic open never settles, 'starting' froze
+    // forever with no TRY AGAIN. 12s clears the slow first phone opens the
+    // warm-session work documented (5-10s cold). Firing bumps the generation,
+    // so a zombie start that later resolves hands the stream back cleanly.
+    const watchdog = setTimeout(() => {
+      if (gen === genRef.current) {
+        genRef.current++;
+        setLastError('Microphone start timed out — a permission prompt may be waiting, or another app is holding the microphone.');
+        setState((s) => (s === 'starting' ? 'error' : s));
+      }
+    }, 12000);
     try {
       // Android: request RECORD_AUDIO before capture (iOS requests natively).
       if (!(await ensureMicPermission())) {
@@ -143,6 +155,8 @@ export function useDspEngine(config: EngineConfig, poll: {
       const msg = e instanceof Error ? e.message : String(e);
       setLastError(msg);
       setState(/denied|access is off/i.test(msg) ? 'denied' : 'error');
+    } finally {
+      clearTimeout(watchdog);
     }
   }, [state, stopPolling]);
 
