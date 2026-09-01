@@ -27,11 +27,33 @@ Pressables need full PointerEvent init or MouseEvent click.
 | 1 | A: Home/nav/Explore/Awards/Certs/Programs/Registry/Enrollments · B: Study Dashboard + 4 methods + quiz/homework · C: Glossary + search + feedback points | DONE — 16 fixes pushed, 9 filed |
 | 2 | A: Tools hub + tools · B: Calculators · C: Profile/settings | DONE — 24 fixes pushed across 4 commits (K-math, K-ux, P-batch, T-batch) |
 | 3 | A: Fundamentals · B: Advanced · C: cross-cutting | DONE — 12 fixes pushed (W3A/W3B/W3C commits); design-pass work HELD everywhere |
-| 4 | final verification sweep of the night's own fixes | running |
+| 4 | final verification sweep | DONE — 10/13 PASS; 3 "fails" were a stale Metro bundle (both servers restarted with --clear); 1 REAL catch (auto-start forever-spinner) fixed + verified (a186ee2) |
 
 ## Findings
 
 (appended per wave: id · severity · surface · finding · FIXED commit / FILED analysis)
+
+### Wave 4 · Final verification + closure
+
+PASS on fresh bundle: accordions clean · MatchCurve band switcher · Cable
+triple-click = 1 credit · FM histogram exact · Settings inert group +
+aria-disabled · Dashboard gates · calc values (2.914 ms / −2.218) · Room Modes
+keys · glossary stopword links gone + Term ID in mailto · Coverage identities.
+
+STALE-BUNDLE false fails (disk verified correct; both Metros restarted with
+--clear so phones get a clean graph): SPL RANGE scrim, LedColorPicker scrim,
+RT60 flood (re-verified clean live post-restart).
+
+REAL wave-4 catch, FIXED + live-verified (a186ee2): useToolAutoStart could be
+deferred forever by held interaction handles (hub Skia loops) and latched its
+once-flag at schedule time — the true root of the forever-"Starting…" spinner;
+the 12s watchdog never armed because start() never ran. Latch-on-fire + 1.5s
+fallback.
+
+STILL OPEN (informational): ape:labProgress does not survive web reloads —
+that is the auto-guest wipe working as the guest promise dictates; the dev-web
+snapshot idea stays FILED as an owner call. Glossary term-row nesting stays
+FILED (C5, device responder check).
 
 ### Wave 3 · APPLIED (all pushed)
 
