@@ -1937,7 +1937,7 @@ export function SplMeterScreen({ navigation }: Props) {
               accessibilityRole="button"
               accessibilityLabel="Close the full VU screen — tap the meter to close"
             >
-              <View style={[styles.vuFsClose, { right: camInset + 14, top: fsChromeTop }]} pointerEvents="none">
+              <View style={[styles.vuFsClose, { left: camInset + 14, top: fsChromeTop }]} pointerEvents="none">
                 <Text style={styles.vuFsCloseX}>✕</Text>
               </View>
               {/* LANDSCAPE-ONLY (owner 2026-08-19): render the Full VU content
@@ -1969,7 +1969,7 @@ export function SplMeterScreen({ navigation }: Props) {
                     </Pressable>
                   </View>
                   {viz && !vuFsChromeHidden && (
-                    <View style={[styles.vuFsPillRow, { right: camInset + 14, bottom: fsChromeBottom }]} pointerEvents="box-none">
+                    <View style={[styles.vuFsPillRow, { right: camInset + 14 + (vuFsLedHidden ? 0 : 104), bottom: fsChromeBottom }]} pointerEvents="box-none">
                       {/* Colour customization (MEMBER, owner 2026-08-20) — only
                           meaningful while the LED is shown. */}
                       {!vuFsLedHidden && (
