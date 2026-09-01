@@ -20,19 +20,34 @@ years of users will experience.
 
 ## Step 0 — the source data
 
-You need the glossary export — ALL ~26,800 rows.
+The export is DONE and verified (2026-09-01): the owner will hand you
 
-⚠ The Supabase **SQL editor's** CSV download only exports the visible results
-page (the owner's first attempt returned 100 rows). Use the **Table Editor**
-instead: Dashboard → Table Editor → `glossary` → the export/download control →
-"Export table as CSV" — that path exports every row. (If exporting via SQL is
-preferred, the query is `select id, term, definition, plain_english from
-glossary order by term;` but the download must not be the results-pane page.)
+    glossary_rows.csv   (~43.6 MB — from the owner's Downloads folder)
 
-**Sanity-check the file before starting**: it must have ~26,800 data rows and
-the header `id,term,definition,plain_english` (extra columns from a full table
-export are fine — ignore them). If it has ~100 rows, it is the truncated page
-export — stop and get the full one.
+Verified contents: **26,847 records, 26,847 unique terms, zero empty terms,
+zero empty definitions.** Columns: id, term, definition, plain_english,
+achievement_id, course_id, related_terms, category, difficulty,
+common_mistakes, scenario_contexts, purpose_function, practical_application,
+formula_symbolic, formula_words.
+
+The full-table export carries columns the minimal query would not have — USE
+them:
+
+- **`common_mistakes`** — the glossary's own record of what people get wrong
+  about a term. This is PRIMARY EVIDENCE for the MISUNDERSTOOD bucket: a term
+  with a substantive `common_mistakes` entry is a strong candidate, and the
+  body's "myth" half should be drawn from it (it is glossary content, so using
+  it satisfies the derivability rule below).
+- **`difficulty`** — useful signal both ways: low-difficulty terms are the
+  "common" pool for Bucket 1; high-difficulty terms are candidates for ODD.
+  A signal, not a verdict — the qualifiers still decide.
+- **`category`** — use for the breadth requirement (step 3) and the
+  no-two-adjacent-from-one-family ordering rule (step 5).
+- `related_terms` — helps find confusable pairs/families for Bucket 1.
+- Ignore the rest (ids, formulas, contexts) unless a body needs checking.
+
+Re-run the sanity check yourself before starting: 26,847 records, unique
+terms, no empties. If the file you were handed doesn't match, stop and say so.
 
 Work ONLY from this export. **Every fact in every body you write must be
 derivable from that row's `definition` / `plain_english` text.** You are
