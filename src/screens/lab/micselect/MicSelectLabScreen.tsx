@@ -747,7 +747,7 @@ function ChallengeStep() {
           </Text>
           {!variant && (correctPick || acceptedPick) ? (
             <Text style={styles.body}>
-              {`Reasoning: ${factorScore}/3 key factors selected${factorWrong > 0 ? `, ${factorWrong} that don’t bear on this job` : ''}. The ones that matter: directionality, working distance, wind protection.`}
+              {`Reasoning: ${factorScore}/3 key factors selected${factorWrong > 0 ? `, ${factorWrong} that ${factorWrong === 1 ? 'doesn’t' : 'don’t'} bear on this job` : ''}. The ones that matter: directionality, working distance, wind protection.`}
             </Text>
           ) : null}
           {/* The full rationale names the right mic — printing it on a WRONG

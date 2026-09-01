@@ -35,7 +35,11 @@ async function syncLocalToIdentity(identity: string): Promise<void> {
   } catch {
     prev = null;
   }
-  if (prev === identity) return; // same identity (session restore / re-auth) — never wipe
+  // A null marker and the no-account identity ('') are the SAME identity —
+  // treating them as a change caused repeat wipes after every guest entry
+  // (QA night 2026-09-01 cross-tab cascade). First real sign-in still wipes
+  // (identity is a uid, never '').
+  if ((prev ?? '') === identity) return; // same identity — never wipe
 
   await clearLocalAccountData(); // removes ape:localUserId among the rest
   resetAllLocalStores();

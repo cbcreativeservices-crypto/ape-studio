@@ -408,7 +408,9 @@ function SidebandGraph({ fc, fm, index, w, h }: { fc: number; fm: number; index:
         {sticks.map((s, i) => {
           const x = PAD + (s.f / fMax) * (w - 2 * PAD);
           const sh = s.a * (gh - 50);
-          const isCarrier = Math.abs(s.f - fc) < 1e-6;
+          // Folded sticks never wear carrier green (QA night 2026-09-01):
+          // a reflect landing exactly on fc contradicted the legend.
+          const isCarrier = s.fold === 'none' && Math.abs(s.f - fc) < 1e-6;
           return (
             <Fragment key={i}>
               <Line

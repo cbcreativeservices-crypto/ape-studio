@@ -75,7 +75,9 @@ function scoreMatch(target: EqBandSpec[], user: UserBand[]): number {
 
 export function MatchCurveModule(_p: EqModuleComponentProps) {
   const [target, setTarget] = useState<EqBandSpec[]>(() => makeTarget());
-  const [bands, setBands] = useState<UserBand[]>(() => freshBands(1));
+  // Match the FIRST target's band count too (QA night 2026-09-01: a 2-band
+  // first roll left one user band and no switcher — unwinnable by design).
+  const [bands, setBands] = useState<UserBand[]>(() => freshBands(target.length));
   const [selIdx, setSelIdx] = useState(0);
   // The score is a check-yourself TOGGLE (owner 2026-08-07): hidden until you
   // ask, so you judge the match by eye first.

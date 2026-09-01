@@ -128,6 +128,9 @@ export function AuthScreen({ navigation }: Props) {
     // account, so clearing here can't lose a returning user's data.
     await clearLocalAccountData();
     resetAllLocalStores();
+    // Write the no-account marker so the next boot's sync sees the SAME
+    // identity instead of null→'' and wiping again (QA night 2026-09-01).
+    await AsyncStorage.setItem('ape:localUserId', '');
     setBusy(false);
     setEntitlement('anonymous');
     toHome();

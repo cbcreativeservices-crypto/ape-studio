@@ -51,10 +51,16 @@ export function CheckQuestion({ spec, onSolved }: { spec: CheckSpec; onSolved?: 
     }
     return idx;
   });
+  // Synchronous guard (QA night 2026-09-01): same-frame repeat taps all saw
+  // solved===false and fired onSolved once EACH — one Cable final-check
+  // question credited "3 OF 10 SOLVED", and a counter jumping past its ===
+  // gate could lock the lab out of completing forever.
+  const solvedRef = useRef(false);
   const pick = (orig: number) => {
-    if (solved) return;
+    if (solved || solvedRef.current) return;
     setPicked(orig);
     if (orig === spec.correctIdx) {
+      solvedRef.current = true;
       setSolved(true);
       onSolved?.(); // optional: lets a host aggregate a "passed" state (R6c)
     }

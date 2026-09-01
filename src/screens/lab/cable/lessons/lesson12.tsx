@@ -45,7 +45,7 @@ export function Lesson12Body() {
     AccessibilityInfo.announceForAccessibility(
       `Correct. ${Math.min(generalRef.current, FINAL_QUESTIONS.length)} of ${FINAL_QUESTIONS.length} solved.`,
     );
-    if (generalRef.current === FINAL_QUESTIONS.length) {
+    if (generalRef.current >= FINAL_QUESTIONS.length) {
       // Genuine full solve of the general bank → the final-check unit
       // (marked here and nowhere else).
       markLabUnit('af_cables', FINAL_UNIT);
