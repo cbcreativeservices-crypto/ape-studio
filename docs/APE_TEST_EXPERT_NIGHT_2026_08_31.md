@@ -26,12 +26,56 @@ Pressables need full PointerEvent init or MouseEvent click.
 |---|---|---|
 | 1 | A: Home/nav/Explore/Awards/Certs/Programs/Registry/Enrollments · B: Study Dashboard + 4 methods + quiz/homework · C: Glossary + search + feedback points | DONE — 16 fixes pushed, 9 filed |
 | 2 | A: Tools hub + tools · B: Calculators · C: Profile/settings | DONE — 24 fixes pushed across 4 commits (K-math, K-ux, P-batch, T-batch) |
-| 3 | A: Fundamentals labs adversarial · B: Advanced labs adversarial · C: cross-cutting | running |
-| 4+ | worst-area revisits · combination attacks · regression checks on the night's own fixes · longevity | pending |
+| 3 | A: Fundamentals · B: Advanced · C: cross-cutting | DONE — 12 fixes pushed (W3A/W3B/W3C commits); design-pass work HELD everywhere |
+| 4 | final verification sweep of the night's own fixes | running |
 
 ## Findings
 
 (appended per wave: id · severity · surface · finding · FIXED commit / FILED analysis)
+
+### Wave 3 · APPLIED (all pushed)
+
+V1 MatchCurve first-deal band count · V4 FM fold-vs-carrier green · V6 plural ·
+N1+W1 wipe-cascade kill (marker + null-guard) · N2 CheckQuestion solvedRef +
+Cable >= belt · V2/N4/W2 three accordion demotes (EarLab, LabCategory,
+ModuleAccordionRow) · W3 12s mic-start watchdog (spinner-trap class).
+
+FILED from wave 3: N3 back-during-transition double-pop (mechanism choice —
+LabBackButton vs transition guard, many headers); W6 Dashboard method ROW not
+tappable (only the 28×15 START chip — wrap row in accessible={false} Pressable
+sharing START's onPress; needs care inside the owner-ruled rack markup); V5
+FindFrequency 0-dB verdict copy; N5/V3 dev-tier sessionStorage hardening; N6
+non-member preview marks units/mark_lab_complete (server-gate question); N7
+Skia warm-up blank; W1-rest guest a11y-prefs KEEP-listing (owner promise call);
+W4 glossary first-load progress hint; W5 remaining web-Alert sites; glossary
+term-row nesting (C5 — device responder check).
+
+### Wave 3 · Agent C3 (Cross-cutting) — REPORTED, fixes pending wave-end
+
+- **HELD:** dev tier survived EVERY reload; all tier-gate matrix cells sane, no crashes/stuck states in any tier; deep stacks + tab hammers clean; POP_TO_TOP = 0 (fix verified); 34+ Skia screens in one session, no Aborted().
+- **W2 MED** Nested-button siblings: LabCategoryScreen accordion + (already queued) EarLab/ModuleAccordionRow. Apply demote pattern. EASY. (Glossary term-row = wave-1 C5, stays FILED for device responder check.)
+- **W3 MED** Waveform "Starting the oscilloscope…" spinner trap — 'starting' never settles when the mic prompt never resolves; TRY AGAIN only renders on 'error' (launch-triage spinner-trap class, likely all mic tools). Watchdog → 'error' after ~12s. EASY (shared engine path — careful).
+- **W6 LOW-MED** Dashboard method rows: only a 28×15px START chip navigates; the 335×68 row is dead. Wrap row in accessible={false} Pressable with the same onPress. EASY.
+- **W1** Auto-guest wipe scope: enterGuest never rewrites ape:localUserId marker → next boot double-wipes (apply marker write, pairs with A3-N1). KEEP-listing ape:settings (guest a11y prefs reset every launch on device) = FILED owner call on the guest promise.
+- **RESOLVED, NO FIX:** OPEN GLOSSARY "dead tile" = 18s first corpus load wearing Home-like styling + an auto-guest boot race in the harness; navigation itself is correct. FILED: a first-load progress hint is a nice-to-have.
+- **FILED:** W5 web Alert polyfill (remaining sites: lapsed-card notice, paywall notices); 500s did not reproduce (recommend server-side query_logs pin — backend carve-out); responder-props-on-DOM warnings near the CSD module.
+
+### Wave 3 · Agent A3 (Fundamentals labs) — REPORTED, fixes pending wave-end
+
+- **HELD:** Detective idempotence + persistence writes, hub ticks, Speaker Coverage state machine under 12-toggle storms, Gain noise-floor coherence, Signal Chain checks, 12/13 labs stormed with ZERO interior console errors.
+- **N1 MED-HIGH** accountLocalSync cross-tab wipe cascade: `prev=null ≠ ''` treats the no-account identity as a CHANGE → repeat wipes. Guard `(prev ?? '') === identity`. EASY. (Dev-web lab-progress snapshot across auto-guest = FILED, guest-promise owner call.)
+- **N2 MED-HIGH** CheckQuestion onSolved multi-fires on same-frame repeat taps (verified: 1 question → "3 OF 10 SOLVED" in the Cable FINAL CHECK; a 9→11 jump makes `=== 10` NEVER fire → lab can never complete). Root fix: solvedRef in bits.tsx pick(); belt: lesson12 `>=` gate. EASY.
+- **N4 MED** (= B3-V2) EarLab LabRow + ModuleAccordionRow both nest OPEN inside a role=button row (the night's only fundamentals console error). Apply the ratified Enrollment demote pattern to BOTH. EASY.
+- **FILED:** N3 back-during-transition pops TWO levels (deterministic; mechanism choice across many headers — LabBackButton vs transition guard); N5 dev-tier sessionStorage hardening (sibling tabs stomp the shared key — two agents hit it); N6 non-member PREVIEW still marks units + fires mark_lab_complete (server-gate question for owner); N7 Skia first-mount blank 5-8s on web (warming placeholder).
+
+### Wave 3 · Agent B3 (Advanced labs) — REPORTED, fixes pending wave-end
+
+- **HELD UNDER ATTACK:** MatchCurve flat=0, FindFrequency 5-branch verdicts, Mic Selection spoiler gate + reachable chips, Bass NaN guard (40 rapid taps + coordinate-less click), FM alias split (0 red at defaults / 10 red forced), fold triangles, tray blurbs, dev-tier reload survival, 25-lab CanvasKit longevity with ZERO errors.
+- **V1 HIGH** MatchCurve first mount: 2-band target vs hardcoded 1 user band (50% of mounts unwinnable; copy claims "you have the same number"). freshBands(target.length). EASY.
+- **V2 MED** Advanced-labs menu LabRow: outer row role=button wraps OPEN button (hydration error ×2 per render) — same class fixed in EnrollmentScreen; mirror that fix. EASY. (= wave-1 C5's EarLab half.)
+- **V4 LOW** FM reflected sideband landing exactly on fc paints carrier-GREEN dashed (legend contradiction). isCarrier requires fold==='none'. EASY.
+- **V6 TRIVIAL** "1 that don't bear on this job" — pluralize (copy flag). EASY.
+- **FILED:** V5 FindFrequency "0 dB applied → wrong direction" (zero isn't a direction — verdict copy for owner); V3 dev-key churn hardening (sibling tabs write the shared key; re-apply in-memory latch instead — dev infra); "Unknown event handler property" React warnings on the lapsed upgrade path (unpinned).
 
 ### Wave 2 · APPLIED (all pushed)
 
