@@ -875,6 +875,7 @@ export function WaveformScreen({ navigation }: Props) {
               <Pressable
                 onPress={() => setWaveSpectrum((v) => !v)}
                 hitSlop={8}
+                style={{ minHeight: 44, justifyContent: 'center' }}
                 accessibilityRole="button"
                 accessibilityLabel={waveSpectrum ? 'Back to swatches' : 'Open the colour spectrum wheel'}
               >

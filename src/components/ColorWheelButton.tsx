@@ -123,7 +123,14 @@ export function ColorWheelButton({
   // Diagrammed pickers stay open so the live diagram is worth having.
   const stayOpen = !!renderDiagram;
   const afterPick = () => {
-    if (!stayOpen) setPicker(false);
+    if (!stayOpen) closePicker();
+  };
+  // Critique fix (design review 2026-09-01 #3): every dismissal resets the
+  // spectrum sub-view so reopening never lands on a stale candidate colour.
+  const closePicker = () => {
+    setPicker(false);
+    setSpectrum(false);
+    setPreviewHex(null);
   };
   const openForMember = () => (onPick ? setPicker(true) : onCustomize?.());
   return (
@@ -138,8 +145,8 @@ export function ColorWheelButton({
         <ColorWheel size={size} />
       </Pressable>
       {/* Built-in swatch picker (members). */}
-      <Modal accessibilityViewIsModal visible={picker} transparent animationType="fade" onRequestClose={() => setPicker(false)}>
-        <Pressable style={styles.scrim} onPress={() => setPicker(false)} accessible={false}>
+      <Modal accessibilityViewIsModal visible={picker} transparent animationType="fade" onRequestClose={closePicker}>
+        <Pressable style={styles.scrim} onPress={closePicker} accessible={false}>
           <View style={styles.card}>
             {renderDiagram ? (
               <PickerSectionHeader
@@ -255,7 +262,7 @@ export function ColorWheelButton({
               </>
             )}
             {stayOpen ? (
-              <Pressable onPress={() => setPicker(false)} hitSlop={8} style={styles.doneBtn} accessibilityRole="button" accessibilityLabel="Done">
+              <Pressable onPress={closePicker} hitSlop={8} style={styles.doneBtn} accessibilityRole="button" accessibilityLabel="Done">
                 <Text style={styles.doneText}>DONE</Text>
               </Pressable>
             ) : null}

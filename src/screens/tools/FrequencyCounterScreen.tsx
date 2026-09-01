@@ -825,8 +825,11 @@ function LivePitchMode({
             feature="the tuner in-tune colour"
             pickerTitle="TUNER COLOUR"
             subtitle="The in-tune needle, centre marker and glow"
-            renderDiagram={(hex) => <TunerDiagram tint={hex} defaultTint={colors.green} />}
-            defaultSwatchColor={colors.green}
+            // colors.greenBright = the gauge's actual default in-tune NEEDLE
+            // colour (gaugeNeedleInTune) — the diagram must match the instrument
+            // (design critique 2026-09-01 #5).
+            renderDiagram={(hex) => <TunerDiagram tint={hex} defaultTint={colors.greenBright} />}
+            defaultSwatchColor={colors.greenBright}
             size={20}
           />
         </View>

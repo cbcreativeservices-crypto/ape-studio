@@ -50,6 +50,13 @@ export function LedColorPicker({
     setSpectrumFor(null);
     setPreviewHex(null);
   };
+  // Critique fix (design review 2026-09-01 #3): every dismissal resets the
+  // spectrum sub-view too — otherwise reopening lands in the wheel with the
+  // diagram showing a never-committed candidate colour.
+  const handleClose = () => {
+    closeSpectrum();
+    onClose();
+  };
   // NEW COPY (owner review): section subtitles — the plain-language "what this
   // colours" line beside each live diagram.
   const levelHeader = (diagramPref: string | null) => (
@@ -59,8 +66,8 @@ export function LedColorPicker({
     <PickerSectionHeader diagram={<LedAvgDiagram tint={diagramTint} />} title="AVERAGE MARKER" subtitle="The average-level line and its readout" />
   );
   return (
-    <Modal accessibilityViewIsModal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <Pressable style={styles.scrim} onPress={onClose} accessible={false}>
+    <Modal accessibilityViewIsModal visible={visible} transparent animationType="fade" onRequestClose={handleClose}>
+      <Pressable style={styles.scrim} onPress={handleClose} accessible={false}>
         {/* Inner card: stop the backdrop tap so picking inside never closes. */}
         <Pressable style={styles.card} onPress={() => {}} accessibilityRole="none">
           <Text style={styles.title}>LED METER COLOUR</Text>
@@ -97,7 +104,7 @@ export function LedColorPicker({
                   accessibilityState={{ selected: !levelPref }}
                   accessibilityLabel="Loudness (default)"
                 >
-                  <SchemeSwatch stops={LOUDNESS_STOPS} w={80} h={28} />
+                  <SchemeSwatch stops={LOUDNESS_STOPS} w={68} h={26} />
                   <Text style={styles.schemeLabel}>Loudness</Text>
                   {/* NEW COPY (owner review): the governed default wears its tag. */}
                   <Text style={styles.defaultTag}>DEFAULT</Text>
@@ -113,7 +120,7 @@ export function LedColorPicker({
                       accessibilityState={{ selected: sel }}
                       accessibilityLabel={`${s.label} scheme`}
                     >
-                      <SchemeSwatch stops={s.stops} w={80} h={28} />
+                      <SchemeSwatch stops={s.stops} w={68} h={26} />
                       <Text style={styles.schemeLabel}>{s.label}</Text>
                     </Pressable>
                   );
@@ -187,9 +194,13 @@ export function LedColorPicker({
             <Text style={styles.note}>The white peak-hold cap keeps its reference colour.</Text>
           </ScrollView>
           )}
-          <Pressable onPress={onClose} hitSlop={8} style={styles.doneBtn} accessibilityRole="button" accessibilityLabel="Done">
-            <Text style={styles.doneText}>DONE</Text>
-          </Pressable>
+          {/* Critique fix #4: in spectrum view BACK is the only sensible
+              action — two identically-chromed buttons stacked read ambiguous. */}
+          {spectrumFor ? null : (
+            <Pressable onPress={handleClose} hitSlop={8} style={styles.doneBtn} accessibilityRole="button" accessibilityLabel="Done">
+              <Text style={styles.doneText}>DONE</Text>
+            </Pressable>
+          )}
         </Pressable>
       </Pressable>
     </Modal>
@@ -227,7 +238,14 @@ const styles = StyleSheet.create({
   subLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.textMuted, marginTop: 10, marginBottom: 6 },
   schemeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'flex-start' },
   schemeChip: {
-    width: 88,
+    // 76×3 + two 8pt gaps = 244 ≤ the 246pt card content width of a 360pt
+    // phone (critique fix #2 — 88pt chips wrapped 2/2/1 with a dead rail).
+    width: 76,
+    // Uniform lattice (critique fix #1): the Loudness chip is taller (DEFAULT
+    // tag), and flexWrap stretch made row 1 tall and row 2 short without this.
+    // 74 ≥ the Loudness chip's measured height, so BOTH rows land identical.
+    minHeight: 74,
+    justifyContent: 'center',
     borderRadius: 9,
     borderWidth: 2,
     borderColor: '#33333c',
@@ -237,8 +255,8 @@ const styles = StyleSheet.create({
     gap: 2,
     overflow: 'hidden',
   },
-  schemeLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 0.8, color: colors.textSecondary },
-  defaultTag: { fontFamily: fonts.oswaldSemiBold, fontSize: 8.5, letterSpacing: 1, color: colors.textMuted, paddingBottom: 2 },
+  schemeLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 0.8, color: colors.textSecondary, paddingBottom: 2 },
+  defaultTag: { fontFamily: fonts.oswaldSemiBold, fontSize: 8.5, letterSpacing: 1, color: colors.textMuted },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 9, justifyContent: 'flex-start' },
   swatch: { width: 44, height: 44, borderRadius: 22, borderWidth: 2, borderColor: '#33333c', alignItems: 'center', justifyContent: 'center' },
   chipSel: { borderColor: '#ffffff', borderWidth: 3 },
