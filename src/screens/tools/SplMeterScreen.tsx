@@ -233,6 +233,11 @@ function VuHero({
  *  RELATIVE to this reference (current SPL − RANGE), so RANGE centres the meter
  *  on the room's noise level. Default 100 dB. AUTO (below) tracks ambient. */
 const RANGE_VALUES = [40, 60, 80, 90, 100] as const;
+/** AUTO tuning (owner 2026-09-01): error beyond this = a scene change (track
+ *  fast); within it = programme dynamics (track at ~25 s so the needle rides
+ *  them). Dwell = minimum ms between 0-VU re-references. */
+const AUTO_FAST_ERR_DB = 15;
+const AUTO_DWELL_MS = 4000;
 
 // Circle-gauge zone palette (matches SplDialView's darkened arc colors) — used to
 // tint the live centre readout so the number turns the colour of the zone it sits
@@ -838,6 +843,8 @@ export function SplMeterScreen({ navigation }: Props) {
   const [rangeAuto, setRangeAuto] = useState(true);
   const [autoRangeDb, setAutoRangeDb] = useState(80);
   const splEmaRef = useRef<number | null>(null);
+  // AUTO re-reference tuning dials (owner 2026-09-01) — see the EMA feed note.
+  const lastAutoShiftRef = useRef(0);
   // 3-second averaged SPL that drives the gauge ZONE COLOR only (owner
   // 2026-08-05) — the number stays live, but its color is smoothed so it does
   // not flash when the level hovers at a color-change threshold.
@@ -960,12 +967,23 @@ export function SplMeterScreen({ navigation }: Props) {
     const lvl = r === 'avg5' ? avg5Ref.current : selectedLevelDb(m, w, r);
     liveRmsDb.value = Number.isFinite(lvl) ? lvl : -120;
     livePeakDb.value = Number.isFinite(m.peakDb) ? m.peakDb : -120;
-    // AUTO-RANGE feed: a smoothed EMA of the estimated SPL so the auto 0-VU
-    // reference tracks ambient (keeps the needle on-scale and moving).
+    // AUTO-RANGE feed (retuned, owner 2026-09-01 "fix AUTO's re-reference
+    // rate"): the old α=0.15 per ~50 ms frame gave a ~0.3 s tracker that
+    // followed programme dynamics — the reference then chased the music and
+    // the needle re-centered instead of SWINGING. Two speeds now:
+    //   • scene change (>AUTO_FAST_ERR_DB off): α=0.15 — locks on in ~1 s
+    //     when you open the tool or walk into a different room;
+    //   • otherwise: α=0.002 (~25 s time constant) — programme swings of
+    //     ±10 dB barely move the ambient estimate, so the needle rides them.
     if (Number.isFinite(lvl)) {
       const splNow = lvl + (offsetRef.current ?? NOMINAL_OFFSET);
-      splEmaRef.current =
-        splEmaRef.current == null ? splNow : splEmaRef.current + (splNow - splEmaRef.current) * 0.15;
+      const prev = splEmaRef.current;
+      if (prev == null) {
+        splEmaRef.current = splNow;
+      } else {
+        const a = Math.abs(splNow - prev) > AUTO_FAST_ERR_DB ? 0.15 : 0.002;
+        splEmaRef.current = prev + (splNow - prev) * a;
+      }
     }
     // Throttle the text-driving state to ~20 Hz (owner 2026-08-05: snappier
     // numbers — matches the native ~50 ms frame refresh, so no faster is useful).
@@ -1031,7 +1049,14 @@ export function SplMeterScreen({ navigation }: Props) {
       const ema = splEmaRef.current;
       if (ema == null) return;
       const target = Math.max(20, Math.min(130, Math.round((ema + 10) / 5) * 5));
-      setAutoRangeDb((prev) => (Math.abs(prev - target) >= 5 ? target : prev));
+      setAutoRangeDb((prev) => {
+        if (Math.abs(prev - target) < 5) return prev;
+        // Dwell (owner 2026-09-01): once re-referenced, hold for at least
+        // AUTO_DWELL_MS before moving again — no hunting across a boundary.
+        if (Date.now() - lastAutoShiftRef.current < AUTO_DWELL_MS) return prev;
+        lastAutoShiftRef.current = Date.now();
+        return target;
+      });
     }, 300);
     return () => clearInterval(id);
   }, [rangeAuto, running]);
