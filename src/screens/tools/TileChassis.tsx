@@ -34,7 +34,7 @@ import type { ToolKey } from './toolsData';
 
 /* ── coat: GRAPHITE (owner ruling 2026-08-23) ─────────────────────────────── */
 const C = {
-  c0: '#b9bcc2', // chamfer catch-light
+  c0: '#d3d6dc', // chamfer catch-light (device-scale fix 2026-09-01)
   c1: '#71747a',
   face0: '#4a4c52',
   face1: '#323438',
@@ -74,14 +74,17 @@ function rng(seed: number) {
 }
 
 /* ── panel furniture ──────────────────────────────────────────────────────── */
-function Screw({ cx, cy, ang }: { cx: number; cy: number; ang: number }) {
+function Screw({ cx, cy, ang, uid }: { cx: number; cy: number; ang: number; uid: string }) {
+  // Device-scale rebuild (2026-09-01): mid-tone turned head on a dark
+  // counterbore, 1px slots, real specular — dark-on-dark 0.8px features
+  // downsampled to a noise dot on phones.
   return (
     <G transform={`rotate(${ang} ${cx} ${cy})`}>
-      <Circle cx={cx} cy={cy} r={3.1} fill="#131416" stroke="#000" strokeWidth={0.6} />
-      <Circle cx={cx} cy={cy} r={2.3} fill="#1e1f22" />
-      <Circle cx={cx - 0.9} cy={cy - 1} r={0.8} fill="rgba(255,255,255,0.12)" />
-      <Rect x={cx - 2} y={cy - 0.4} width={4} height={0.8} rx={0.4} fill="#000" />
-      <Rect x={cx - 0.4} y={cy - 2} width={0.8} height={4} rx={0.4} fill="#000" />
+      <Circle cx={cx} cy={cy} r={3.6} fill="#0b0c0e" />
+      <Circle cx={cx} cy={cy} r={2.9} fill={`url(#${uid}screw)`} stroke="rgba(0,0,0,0.5)" strokeWidth={0.4} />
+      <Rect x={cx - 2.2} y={cy - 0.5} width={4.4} height={1} rx={0.5} fill="#08090a" />
+      <Rect x={cx - 0.5} y={cy - 2.2} width={1} height={4.4} rx={0.5} fill="#08090a" />
+      <Circle cx={cx - 1.0} cy={cy - 1.1} r={0.7} fill="rgba(255,255,255,0.35)" />
     </G>
   );
 }
@@ -130,10 +133,21 @@ export const TileChassis = memo(function TileChassis({
     <Svg width={w} height={H} viewBox={`0 0 ${w} ${H}`} pointerEvents="none">
       <Defs>
         <LinearGradient id={`${u}outer`} x1="0" y1="0" x2="0" y2="1">
+          {/* Catch-light confined to the ring's TOP hairline (device-scale fix
+              2026-09-01): a full-height bright zone read as a plastic band. */}
           <Stop offset="0" stopColor={C.c0} />
-          <Stop offset="0.18" stopColor={C.c1} />
-          <Stop offset="0.75" stopColor={C.face1} />
-          <Stop offset="1" stopColor={C.dark} />
+          <Stop offset="0.035" stopColor="#7c7f85" />
+          <Stop offset="0.45" stopColor="#3b3d42" />
+          <Stop offset="1" stopColor="#101114" />
+        </LinearGradient>
+        <LinearGradient id={`${u}glint`} x1="0" y1="0" x2="1" y2="0">
+          <Stop offset="0" stopColor="rgba(255,255,255,0)" />
+          <Stop offset="0.5" stopColor="rgba(255,255,255,0.55)" />
+          <Stop offset="1" stopColor="rgba(255,255,255,0)" />
+        </LinearGradient>
+        <LinearGradient id={`${u}screw`} x1="0" y1="0" x2="0" y2="1">
+          <Stop offset="0" stopColor="#5a5d63" />
+          <Stop offset="1" stopColor="#26282c" />
         </LinearGradient>
         <LinearGradient id={`${u}face`} x1="0" y1="0" x2="0" y2="1">
           <Stop offset="0" stopColor={C.face0} />
@@ -158,26 +172,26 @@ export const TileChassis = memo(function TileChassis({
       {/* 1 seam · 2 outer chamfer · 3 frame face (+wrap, grain, grit, scratch) */}
       <Rect x={0} y={0} width={w} height={H} rx={13} fill="#000" />
       <Rect x={1} y={1} width={w - 2} height={H - 2} rx={12} fill={`url(#${u}outer)`} />
-      <Rect x={3.2} y={3.2} width={w - 6.4} height={H - 6.4} rx={10.4} fill={`url(#${u}face)`} />
+      <Rect x={2.2} y={2.2} width={w - 4.4} height={H - 4.4} rx={10.8} fill={`url(#${u}face)`} />
       {grain}
       {grit}
       <Line x1={sx} y1={sy} x2={sx + 26 + r() * 18} y2={sy - 1 - r() * 1.6} stroke="rgba(255,255,255,0.09)" strokeWidth={0.5} />
       <Rect x={1} y={1} width={w - 2} height={H - 2} rx={12} fill={`url(#${u}wrap)`} />
-      <Line x1={8} y1={2.2} x2={w - 8} y2={2.2} stroke="rgba(255,255,255,0.42)" strokeWidth={0.8} />
+      <Line x1={14} y1={1.7} x2={w - 14} y2={1.7} stroke={`url(#${u}glint)`} strokeWidth={0.6} />
+      <Line x1={10} y1={H - 1.8} x2={w - 10} y2={H - 1.8} stroke="rgba(0,0,0,0.45)" strokeWidth={0.8} />
 
       {/* 4 engraved nameplate (title Text is laid over by the host) */}
       <Rect x={11} y={PLATE_Y} width={w - 22} height={PLATE_H} rx={3} fill={`url(#${u}plate)`} />
       <Rect x={11} y={PLATE_Y} width={w - 22} height={1} rx={0.5} fill="rgba(0,0,0,0.4)" />
-      <Rect x={11} y={PLATE_Y + PLATE_H - 1} width={w - 22} height={1} rx={0.5} fill="rgba(255,255,255,0.12)" />
 
       {/* 5 inner chamfer (inverted) · 6 AO crevice around the display rect */}
-      <Rect x={L.dispX - 2.6} y={L.dispY - 2.6} width={L.dispW + 5.2} height={L.dispH + 5.2} rx={7.2} fill={`url(#${u}inner)`} />
-      <Rect x={L.dispX - 1.2} y={L.dispY - 1.2} width={L.dispW + 2.4} height={L.dispH + 2.4} rx={6} fill={C.crev} />
-      <Rect x={L.dispX - 1.2} y={L.dispY - 1.2} width={L.dispW + 2.4} height={5} rx={4} fill="rgba(0,0,0,0.55)" />
+      <Rect x={L.dispX - 2.6} y={L.dispY - 2.6} width={L.dispW + 5.2} height={L.dispH + 5.2} rx={7.6} fill={`url(#${u}inner)`} />
+      <Rect x={L.dispX - 1.2} y={L.dispY - 1.2} width={L.dispW + 2.4} height={L.dispH + 2.4} rx={6.2} fill={C.crev} />
+      <Rect x={L.dispX - 1.2} y={L.dispY - 1.2} width={L.dispW + 2.4} height={5} rx={6.2} fill="rgba(0,0,0,0.55)" />
 
       {/* screws */}
-      <Screw cx={8.4} cy={8.4} ang={-8 + 16 * r()} />
-      <Screw cx={w - 8.4} cy={H - 8.4} ang={4 + 14 * r()} />
+      <Screw cx={8.4} cy={8.4} ang={-8 + 16 * r()} uid={u} />
+      <Screw cx={w - 8.4} cy={H - 8.4} ang={4 + 14 * r()} uid={u} />
     </Svg>
   );
 });

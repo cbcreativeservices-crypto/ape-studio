@@ -370,7 +370,6 @@ function TileGlass() {
         style={StyleSheet.absoluteFill}
       />
       <View style={styles.glassTopGlare} />
-      <View style={styles.glassBottomHighlight} />
     </View>
   );
 }
@@ -818,15 +817,17 @@ const styles = StyleSheet.create({
   },
   // Dark-gray-glass 3D display overlay parts (mirrors the dashboard GlassScreen).
   glassTint: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.05)' },
-  glassTopGlare: { position: 'absolute', top: 0, left: 0, right: 0, height: 1.5, backgroundColor: 'rgba(255,255,255,0.30)' },
-  glassBottomHighlight: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 1.5, backgroundColor: 'rgba(255,255,255,0.20)' },
+  glassTopGlare: { position: 'absolute', top: 0, left: 0, right: 0, height: 1, backgroundColor: 'rgba(255,255,255,0.22)' },
   // Strips are 2:1, but the tiles read too tall at full height, so we crop to
   // 2.5:1 — which trims only the strips' safe top/bottom margin (all plot
   // content sits inside y 104–920 of 1024), losing nothing (owner 2026-08-17).
   tileStrip: {
     width: '100%',
     aspectRatio: 2.5,
-    borderRadius: 6,
+    // Concentric with the radius-5 cap it sits 4px inside (device-scale fix
+    // 2026-09-01): inner radius = outer − inset = 1. Radius 6 made every
+    // display corner read fat/misaligned on the phone.
+    borderRadius: 1,
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
