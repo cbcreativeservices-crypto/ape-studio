@@ -39,6 +39,10 @@ export type LocalSettings = {
   notifyDailyDefinition: boolean; // 5 — daily audio definitions (guess the term)
   notifyWeeklySummary: boolean; // 6 — weekly learning summaries
   notifyCertProgress: boolean; // 7 — weekly certificate progress updates
+  // Curated daily term buckets (owner 2026-09-01) — content ships in
+  // curatedTermLists.ts; the rows hide while the lists are empty.
+  notifyMisunderstood: boolean; // 8 — commonly misunderstood term, daily
+  notifyOddTerm: boolean; // 9 — odd / uncommon audio term, daily
   // Per-notification schedule (device-local; scheduling wires later). Keyed by
   // the toggle key. `notifyFreq` now holds the DAY (for weekly/new-terms), and
   // `notifyTime` the specific delivery time as "HH:MM" 24h (user request
@@ -60,6 +64,8 @@ export const DEFAULT_LOCAL_SETTINGS: LocalSettings = {
   notifyDailyDefinition: false,
   notifyWeeklySummary: false,
   notifyCertProgress: false,
+  notifyMisunderstood: false,
+  notifyOddTerm: false,
   // Day-of-week for the day+time notifications (weekly + new terms).
   notifyFreq: {
     notifyNewTerms: 'Monday',
@@ -71,6 +77,9 @@ export const DEFAULT_LOCAL_SETTINGS: LocalSettings = {
     notifyDailyStudy: '08:00',
     dailyTerms: '08:00',
     notifyDailyDefinition: '08:00',
+    // Spread across the day so the buckets never stack on the 08:00 pair.
+    notifyMisunderstood: '12:00',
+    notifyOddTerm: '17:00',
     notifyNewTerms: '09:00',
     notifyWeeklySummary: '09:00',
     notifyCertProgress: '09:00',
@@ -103,7 +112,16 @@ export function formatClock(hhmm: string): string {
 /** The 7 commercial notification toggles (device-local), in display order.
  *  `continueDays` (the threshold for #2) is edited by its own stepper. */
 export const COMMERCIAL_NOTIFY_ROWS: {
-  key: 'notifyDailyStudy' | 'notifyContinue' | 'notifyNewTerms' | 'dailyTerms' | 'notifyDailyDefinition' | 'notifyWeeklySummary' | 'notifyCertProgress';
+  key:
+    | 'notifyDailyStudy'
+    | 'notifyContinue'
+    | 'notifyNewTerms'
+    | 'dailyTerms'
+    | 'notifyDailyDefinition'
+    | 'notifyWeeklySummary'
+    | 'notifyCertProgress'
+    | 'notifyMisunderstood'
+    | 'notifyOddTerm';
   label: string;
   hint: string;
 }[] = [
@@ -117,6 +135,16 @@ export const COMMERCIAL_NOTIFY_ROWS: {
   { key: 'notifyDailyDefinition', label: 'Definition of the day', hint: 'A definition — you name the term.' },
   { key: 'notifyWeeklySummary', label: 'Weekly recap', hint: 'What you studied this week.' },
   { key: 'notifyCertProgress', label: 'Certificate progress', hint: 'How close you are to your next certificate.' },
+  // Curated daily buckets (owner 2026-09-01) — DORMANT until the curated lists
+  // land (see curatedTermLists.ts): a toggle with no content behind it would be
+  // a dead switch, so the rows only appear once the lists have entries.
+  // NEW COPY — owner review.
+  ...(MISUNDERSTOOD_TERMS.length > 0
+    ? [{ key: 'notifyMisunderstood' as const, label: 'Misunderstood term', hint: 'A commonly misunderstood term, set straight — daily.' }]
+    : []),
+  ...(ODD_TERMS.length > 0
+    ? [{ key: 'notifyOddTerm' as const, label: 'Odd term of the day', hint: 'A rare or odd audio term you may never have met.' }]
+    : []),
 ];
 
 export type CommercialNotifyKey = (typeof COMMERCIAL_NOTIFY_ROWS)[number]['key'];
@@ -135,7 +163,12 @@ export const NOTIFY_FREQ: Record<CommercialNotifyKey, { mode: NotifyFreqMode; la
   notifyDailyDefinition: { mode: 'time', label: 'When each day' },
   notifyWeeklySummary: { mode: 'dayTime', label: 'When each week' },
   notifyCertProgress: { mode: 'dayTime', label: 'When each week' },
+  notifyMisunderstood: { mode: 'time', label: 'When each day' },
+  notifyOddTerm: { mode: 'time', label: 'When each day' },
 };
+
+// eslint-disable-next-line import/order -- leaf data module (no cycle; see localSchedule's cycle note)
+import { MISUNDERSTOOD_TERMS, ODD_TERMS } from '../notifications/curatedTermLists';
 
 const KEY = 'ape:settings';
 

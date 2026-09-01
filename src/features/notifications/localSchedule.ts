@@ -24,6 +24,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
 import { getNotifications } from './push';
 import { dayNameToDow } from './weeklyConcept';
+import { curatedEntryForDate, MISUNDERSTOOD_TERMS, ODD_TERMS, type CuratedTermEntry } from './curatedTermLists';
 // TYPE-ONLY — store.ts imports this module at runtime (the save funnel), so a
 // value import back would be a require cycle. App.tsx loads the settings and
 // hands them in.
@@ -172,6 +173,8 @@ function notifSlice(s: LocalSettings): string {
     s.notifyDailyDefinition,
     s.notifyWeeklySummary,
     s.notifyCertProgress,
+    s.notifyMisunderstood,
+    s.notifyOddTerm,
     s.notifyFreq,
     s.notifyTime,
   ]);
@@ -214,7 +217,9 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
         s.dailyTerms ||
         s.notifyDailyDefinition ||
         s.notifyWeeklySummary ||
-        s.notifyCertProgress);
+        s.notifyCertProgress ||
+        s.notifyMisunderstood ||
+        s.notifyOddTerm);
 
     // Sweep our own identifiers first — sync is a full idempotent rebuild.
     const existing = await N.getAllScheduledNotificationsAsync();
@@ -390,6 +395,41 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
         }
       }
     }
+
+    // 8+9 · Curated daily buckets (owner 2026-09-01): misunderstood + odd
+    // terms. Content is BUNDLED (curatedTermLists.ts) so this is fully offline
+    // and deterministic — the entry for a date is date-keyed (localDayIndex %
+    // list length), identical on every device and across reinstalls, ~3 years
+    // before a repeat at the target list size. Booked 7 days ahead as DATE
+    // triggers like the term/definition pair; a still-empty list books nothing
+    // (the Settings row is hidden then too).
+    const bookCurated = (
+      on: boolean,
+      key: 'notifyMisunderstood' | 'notifyOddTerm',
+      list: readonly CuratedTermEntry[],
+      idPart: string,
+      title: (e: CuratedTermEntry) => string,
+    ) => {
+      if (!on || list.length === 0) return;
+      const { hour, minute } = hhmm(s.notifyTime[key], key === 'notifyMisunderstood' ? '12:00' : '17:00');
+      const first = new Date();
+      first.setHours(hour, minute, 0, 0);
+      if (first.getTime() <= Date.now()) first.setDate(first.getDate() + 1);
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(first);
+        d.setDate(d.getDate() + i);
+        const e = curatedEntryForDate(list, d);
+        if (!e) break;
+        add(
+          `${ID_PREFIX}${idPart}.${i}`,
+          { title: title(e), body: e.body, data: { type: 'local', dest: 'glossary', term: e.term } },
+          { type: T.DATE, date: d, channelId: CHANNEL_ID },
+        );
+      }
+    };
+    // NEW COPY (owner review): the two title shapes.
+    bookCurated(s.notifyMisunderstood, 'notifyMisunderstood', MISUNDERSTOOD_TERMS, 'misTerm', (e) => `Often misunderstood: ${e.term}`);
+    bookCurated(s.notifyOddTerm, 'notifyOddTerm', ODD_TERMS, 'oddTerm', (e) => `Odd term: ${e.term}`);
 
     // 6 · Weekly learning summary — repeating weekly (weekday 1 = Sunday).
     if (s.notifyWeeklySummary) {
