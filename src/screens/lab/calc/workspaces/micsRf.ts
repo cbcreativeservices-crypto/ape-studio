@@ -216,7 +216,7 @@ const RFLINK: Workspace = {
     'antenna gain and cable loss are the levers you actually control.',
   example:
     'A 550 MHz link at 50 m: FSPL = 20·log₁₀(50) + 20·log₁₀(550e6) − 147.56 ≈ 61.2 dB. With +10 dBm ' +
-    'TX, +2 dB each antenna, and a −95 dBm receiver: Prx ≈ −37.2 dBm → ≈ 57.8 dB of margin.',
+    'TX, +2 dB each antenna, and a −95 dBm receiver: Prx ≈ −47.2 dBm → ≈ 47.8 dB of margin.',
   mistakes: [
     'Budgeting for line-of-sight only — bodies, walls, and trusses add loss the free-space number ignores; keep generous margin.',
     'Forgetting higher frequencies lose more — the same distance costs more dB at 600 MHz than at 500 MHz.',

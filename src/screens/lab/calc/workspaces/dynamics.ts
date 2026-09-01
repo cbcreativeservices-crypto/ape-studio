@@ -30,13 +30,14 @@ const WS_COMPRESSOR: Workspace = {
     'and solves backwards for the ratio or threshold you would need to hit a target.',
   whyItMatters:
     'Ratio and threshold are abstract until you can predict the number on the meter. Knowing that ' +
-    'a −8 dBFS peak, 12 dB over a −20 threshold at 4:1, lands at −17 dBFS (3 dB of gain reduction) ' +
+    'a −8 dBFS peak, 12 dB over a −20 threshold at 4:1, lands at −17 dBFS (9 dB of gain reduction) ' +
     'is what lets you set a compressor deliberately instead of by ear-and-hope — and what makes ' +
     'gain staging into and out of the processor predictable.',
   example:
     'Threshold −20 dBFS, ratio 4:1, input −8 dBFS. The signal is 12 dB above threshold, so only ' +
-    '12 ÷ 4 = 3 dB gets through above the threshold: output = −20 + 3 = −17 dBFS. That is 3 dB of ' +
-    'gain reduction — the number the GR meter would settle on once the attack has finished.',
+    '12 ÷ 4 = 3 dB gets through above the threshold: output = −20 + 3 = −17 dBFS. Only 3 of the 12 dB ' +
+    'of overshoot survived, so that is 9 dB of gain reduction — the number the GR meter would settle ' +
+    'on once the attack has finished.',
   mistakes: [
     'Applying the ratio to the WHOLE level instead of only the part ABOVE threshold — a 4:1 ratio does not make a −8 dBFS signal −2 dBFS; it acts on the 12 dB of overshoot, not the full level.',
     'Reading the settled (steady-state) gain reduction as the peak reduction — attack time means transients briefly get LESS reduction than this static math predicts; release means it lingers after the signal drops.',
