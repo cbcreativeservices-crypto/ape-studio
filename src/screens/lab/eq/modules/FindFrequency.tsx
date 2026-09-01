@@ -109,7 +109,9 @@ function judge(hidden: Hidden[], user: UserBand[]): Verdict {
           ? '✓ corrected'
           : !freqOk
             ? '✗ off-frequency'
-            : wrongDir
+            : u.g === 0
+              ? '✗ no correction applied — ride GAIN'
+              : wrongDir
               ? '✗ wrong direction'
               : Math.abs(u.g) < Math.abs(h.g)
                 ? '✗ right direction — not enough'

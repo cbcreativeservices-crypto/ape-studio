@@ -48,6 +48,7 @@ import { MIDLINE_BLUE, WAVE_LEVEL_STOPS, levelColorForDb } from '../../features/
 import { isGenCapUnlockedThisSession, markGenCapUnlockedThisSession } from '../../features/tools/genCapSession';
 import { useColorModePref } from '../../features/tools/colorModePref';
 import { colors, fonts } from '../../theme/tokens';
+import { confirmDialog } from '../../lib/confirm';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { toolByKey } from './toolsData';
 import { useToolHelp, HelpHead } from '../../features/lab/guidedLessons';
@@ -447,23 +448,21 @@ export function SignalGenScreen({ navigation }: Props) {
       // …and require the Q4 confirm to go further (session-only unlock).
       if (!capPromptOpen.current) {
         capPromptOpen.current = true;
-        Alert.alert(
+        // confirmDialog (QA night 2026-09-01): on RN-web the Alert never
+        // appeared, so the cap stayed locked AND capPromptOpen latched true
+        // forever — the prompt could then never be raised again. Both paths
+        // clear the latch.
+        confirmDialog(
           'Output above the safety cap',
           `Levels above ${capDb} dBFS can be loud. Remove headphones / lower monitor level before continuing.`,
-          [
-            { text: 'Cancel', style: 'cancel', onPress: () => (capPromptOpen.current = false) },
-            {
-              text: 'I understand — unlock',
-              style: 'destructive',
-              onPress: () => {
-                capPromptOpen.current = false;
-                ApeDsp.genUnlockCap();
-                markGenCapUnlockedThisSession(); // remembered for this session (owner 2026-08-05)
-                applyLevel(next);
-              },
-            },
-          ],
-          { cancelable: true, onDismiss: () => (capPromptOpen.current = false) },
+          'I understand — unlock',
+          () => {
+            capPromptOpen.current = false;
+            ApeDsp.genUnlockCap();
+            markGenCapUnlockedThisSession(); // remembered for this session (owner 2026-08-05)
+            applyLevel(next);
+          },
+          { destructive: true, onCancel: () => (capPromptOpen.current = false) },
         );
       }
       return;

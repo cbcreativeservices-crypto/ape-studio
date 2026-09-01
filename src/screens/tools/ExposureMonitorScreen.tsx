@@ -10,6 +10,7 @@
  */
 import { useEffect, useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import { confirmDialog } from '../../lib/confirm';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../theme/tokens';
@@ -369,10 +370,14 @@ export function ExposureMonitorScreen() {
               style={styles.chip}
               accessibilityRole="button"
               onPress={() =>
-                Alert.alert('Delete today’s exposure?', 'Today’s tracked time and dose will be cleared.', [
-                  { text: 'Cancel', style: 'cancel' },
-                  { text: 'Delete', style: 'destructive', onPress: () => void deleteExposureToday() },
-                ])
+                // Alert.alert is a no-op on RN-web (QA night 2026-09-01).
+                confirmDialog(
+                  'Delete today’s exposure?',
+                  'Today’s tracked time and dose will be cleared.',
+                  'Delete',
+                  () => void deleteExposureToday(),
+                  { destructive: true },
+                )
               }
             >
               <Text style={styles.chipText}>Delete today</Text>
@@ -381,10 +386,13 @@ export function ExposureMonitorScreen() {
               style={styles.chip}
               accessibilityRole="button"
               onPress={() =>
-                Alert.alert('Delete ALL exposure history?', 'Every stored day will be removed. This cannot be undone.', [
-                  { text: 'Cancel', style: 'cancel' },
-                  { text: 'Delete all', style: 'destructive', onPress: () => void deleteExposureHistory().then(() => setHistory([])) },
-                ])
+                confirmDialog(
+                  'Delete ALL exposure history?',
+                  'Every stored day will be removed. This cannot be undone.',
+                  'Delete all',
+                  () => void deleteExposureHistory().then(() => setHistory([])),
+                  { destructive: true },
+                )
               }
             >
               <Text style={styles.chipText}>Delete all</Text>

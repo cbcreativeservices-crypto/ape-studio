@@ -40,6 +40,7 @@ import { supabase } from '../../lib/supabase';
 import { SUPABASE_URL } from '../../lib/env';
 import { colors, fonts } from '../../theme/tokens';
 import { setLastCourse } from '../../features/dashboard/api';
+import { confirmDialog, notify } from '../../lib/confirm';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { UpgradeSheet } from '../../features/commercial/UpgradeSheet';
 import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
@@ -515,7 +516,7 @@ function CourseCardView({
     // so don't upsell them the membership they hold (owner launch-triage). Members
     // see "COMING SOON"; non-members keep the "ACADEMY MODE" → paywall path.
     const onStubPress = isMember
-      ? () => Alert.alert('Coming soon', `${item.name} is on the way — it'll appear here when it's ready.`)
+      ? () => notify('Coming soon', `${item.name} is on the way — it'll appear here when it's ready.`)
       : onLockedPress;
     const stubInner = (
       <>
@@ -714,7 +715,7 @@ function CourseCardView({
         ? onOpenGlossary
         : coming
           ? isMember
-            ? () => Alert.alert('Coming soon', `${coming.name} is on the way — it'll appear here when it's ready.`)
+            ? () => notify('Coming soon', `${coming.name} is on the way — it'll appear here when it's ready.`)
             : onLockedPress
           : pub
             ? pubOpenable
@@ -840,7 +841,7 @@ function CourseCardView({
                 fontSize={13}
                 onPress={
                   isMember
-                    ? () => Alert.alert('Coming soon', `${coming.name} is on the way — it'll appear here when it's ready.`)
+                    ? () => notify('Coming soon', `${coming.name} is on the way — it'll appear here when it's ready.`)
                     : onLockedPress
                 }
               />
@@ -1238,13 +1239,14 @@ export function CourseSelectionScreen() {
   // A lapsed member's saved Home cards stay put but can't be opened (user request
   // 2026-07-23).
   const membershipExpired = useCallback(() => {
-    Alert.alert(
+    // Alert.alert is a no-op on RN-web — a lapsed user's tap did nothing at all
+    // on the web preview (QA night 2026-09-01).
+    confirmDialog(
       'Membership Expired',
       'Your membership has expired. Renew to open your saved Home cards and continue studying.',
-      [
-        { text: 'Not now', style: 'cancel' },
-        { text: 'Renew', onPress: () => (navigation as any).navigate('Paywall') },
-      ],
+      'Renew',
+      () => (navigation as any).navigate('Paywall'),
+      { cancelText: 'Not now' },
     );
   }, [navigation]);
 

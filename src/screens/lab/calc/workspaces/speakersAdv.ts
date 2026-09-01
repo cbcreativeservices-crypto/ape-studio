@@ -283,7 +283,7 @@ const DRIVER: Workspace = {
         const spl = 20 * Math.log10(p / 2e-5);
         return [
           { label: 'MAX SPL AT DISTANCE', value: spl, quantity: 'spl' },
-          { label: 'PEAK VOLUME DISPLACEMENT (Vd)', value: n(v.sd) * n(v.xmax) * 1e6, quantity: 'number', chainable: false },
+          { label: 'PEAK VOLUME DISPLACEMENT (Vd) — cm³', value: n(v.sd) * n(v.xmax) * 1e6, quantity: 'number', chainable: false },
         ];
       },
       steps: (v) => {

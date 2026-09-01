@@ -338,7 +338,7 @@ function LightPulseMode({ blurb, help, helpAll }: { blurb: string; help: (key: s
           </View>
           <View style={styles.statGrid}>
             <StatCell label="PERIOD" value={freq != null ? fmtMs(1000 / freq) : '—'} unit="ms" help={help} />
-            <StatCell label="BPM" value={freq != null ? Math.round(freq * 60).toString() : '—'} help={help} />
+            <StatCell label="BPM" value={freq != null && freq * 60 <= BPM_MAX ? Math.round(freq * 60).toString() : '—'} help={help} />
             <StatCell label="MOD DEPTH" value={reading != null ? `${Math.round(reading.depth * 100)}` : '—'} unit="%" help={help} />
             <StatCell label="CAMERA FPS" value={reading != null ? Math.round(reading.fps).toString() : '—'} help={help} />
             <StatCell label="MAX RESOLVABLE" value={nyq > 0 ? nyq.toFixed(0) : '—'} unit="Hz" help={help} />
@@ -756,7 +756,7 @@ function LivePitchMode({
       {kind === 'sound' ? (
         <View style={styles.statGrid}>
           <StatCell help={help} label="PERIOD" value={accepted && live != null ? fmtMs(1000 / live.freq) : '—'} unit="ms" />
-          <StatCell help={help} label="BPM" value={accepted && live != null ? Math.round(60 * live.freq).toString() : '—'} />
+          <StatCell help={help} label="BPM" value={accepted && live != null && live.freq * 60 <= BPM_MAX ? Math.round(60 * live.freq).toString() : '—'} />
           <StatCell help={help} label="CONFIDENCE" value={live ? `${Math.round(live.confidence * 100)}%` : '—'} />
           <StatCell
             help={help}
@@ -1216,6 +1216,11 @@ function TapMode({ onOpenLibrary, help, helpAll }: { onOpenLibrary: () => void; 
     </>
   );
 }
+
+/** BPM only means something at musical rates (the catalog promises it
+ *  "when the rate is musical"). An audio-rate tone was printing BPM 14176
+ *  (QA night 2026-09-01) — above this it reads as a dash. */
+const BPM_MAX = 600;
 
 export function FrequencyCounterScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();

@@ -208,9 +208,9 @@ TOOLS.push({
     'with a fine FFT overlay and cursor, a scrolling spectrogram, a live oscilloscope, dominant ' +
     'frequency with musical note and cents, and smart detection of likely signal conditions ' +
     '(hum, clipping, feedback onset, rumble). One tap saves the whole state as a snapshot. ' +
-    'Every level is dBFS, uncalibrated — a seeing instrument, not a certified meter.',
+    'Levels read as estimated dB SPL (A- or C-weighted) from an uncalibrated phone microphone, with raw dBFS a tap away — a seeing instrument, not a certified meter.',
   measures: [
-    'Weighted level (A-weighted Fast), digital peak/RMS and peak hold (all dBFS)',
+    'Weighted level (A- or C-weighted Fast) as estimated dB SPL, plus digital peak/RMS and peak hold',
     'Energy per 1/3-octave band plus a fine FFT spectrum overlay with a tap/drag cursor',
     'Frequency content over time (compact scrolling spectrogram)',
     'Amplitude vs time with clipping markers (compact oscilloscope)',
@@ -218,7 +218,7 @@ TOOLS.push({
     'Likely signal conditions — mains hum family, 120 Hz harmonics, pink-noise character, clipping, possible mic overload, feedback onset, LF rumble, narrowband whistle',
   ],
   notMeasures: [
-    'True dB SPL — every level is dBFS from an uncalibrated phone microphone',
+    'Certified dB SPL — the levels are ESTIMATES from an uncalibrated phone microphone',
     'Certified or legal sound levels (not an IEC 61672 instrument)',
     'Guaranteed diagnoses — detections are likely conditions inferred from the signal, never certainties',
     'CPU load or microphone input gain — the engine does not expose them, so they are not shown',

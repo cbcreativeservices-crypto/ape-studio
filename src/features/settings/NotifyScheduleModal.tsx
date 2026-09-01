@@ -93,8 +93,28 @@ export function NotifyScheduleModal({
   onClose: () => void;
 }) {
   const { h12, minute, period } = parse(time);
-  const setHour = (next: number) => onSetTime(to24(((next + 11) % 12) + 1, period, minute));
-  const setMinute = (next: number) => onSetTime(to24(h12, period, ((next % 60) + 60) % 60));
+  // Steppers CARRY (QA night 2026-09-01): 11 PM + 1 hr used to wrap to 12 PM
+  // (noon — eleven hours earlier), and 1:00 − 1 min stayed inside the same
+  // hour. Hours flip the period on each pass through 12; minutes borrow from
+  // the hour, which flips the period in turn.
+  const setHour = (next: number) => {
+    const wrapped = ((next + 11) % 12) + 1; // 1..12
+    const crossed = next === 13 || next === 0; // stepped past 12 in either direction
+    onSetTime(to24(wrapped, crossed ? (period === 'AM' ? 'PM' : 'AM') : period, minute));
+  };
+  const setMinute = (next: number) => {
+    const m = ((next % 60) + 60) % 60;
+    if (next >= 60) setHour(h12 + 1);
+    else if (next < 0) setHour(h12 - 1);
+    else onSetTime(to24(h12, period, m));
+    if (next >= 60 || next < 0) {
+      // setHour already re-emitted the hour/period; re-emit with the new minute.
+      const wrapped = ((h12 + (next >= 60 ? 1 : -1) + 11) % 12) + 1;
+      const stepped = h12 + (next >= 60 ? 1 : -1);
+      const crossed = stepped === 13 || stepped === 0;
+      onSetTime(to24(wrapped, crossed ? (period === 'AM' ? 'PM' : 'AM') : period, m));
+    }
+  };
   const togglePeriod = () => onSetTime(to24(h12, period === 'AM' ? 'PM' : 'AM', minute));
 
   const showTime = mode === 'time' || mode === 'dayTime';

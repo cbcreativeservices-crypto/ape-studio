@@ -22,6 +22,7 @@
  */
 import { memo, useCallback, useMemo, useState } from 'react';
 import { Alert, FlatList, Pressable, Share, StyleSheet, Text, View } from 'react-native';
+import { confirmDialog } from '../../lib/confirm';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BRAND, shareFooterLines, shareHeaderLines } from '../../features/commercial/brand';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -372,10 +373,10 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
   );
 
   const onRowDelete = useCallback((m: SavedMeasurement) => {
-    Alert.alert('Delete measurement', `Delete “${m.title}”? This cannot be undone.`, [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: () => deleteMeasurement(m.id) },
-    ]);
+    // confirmDialog: Alert.alert is a no-op on RN-web (QA night 2026-09-01).
+    confirmDialog('Delete measurement', `Delete “${m.title}”? This cannot be undone.`, 'Delete', () => deleteMeasurement(m.id), {
+      destructive: true,
+    });
   }, []);
 
   const onRowShare = useCallback((m: SavedMeasurement) => {
@@ -393,20 +394,15 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
   }, [all]);
   const onDeleteSelected = useCallback(() => {
     if (selected.length === 0) return;
-    Alert.alert(
+    confirmDialog(
       'Delete measurements',
       `Delete ${selected.length} selected measurement${selected.length === 1 ? '' : 's'}? This cannot be undone.`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => {
-            selected.forEach((id) => deleteMeasurement(id));
-            setSelected([]);
-          },
-        },
-      ],
+      'Delete',
+      () => {
+        selected.forEach((id) => deleteMeasurement(id));
+        setSelected([]);
+      },
+      { destructive: true },
     );
   }, [selected]);
 
