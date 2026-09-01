@@ -32,24 +32,29 @@ export function GlossaryTermPopup({
   const [row, setRow] = useState<Row | null>(null);
   const [loading, setLoading] = useState(false);
   const [notFound, setNotFound] = useState(false);
+  // Transient server/transport failure — distinct from a genuinely absent term
+  // (QA night 2026-08-31: a 500 told the user a real term "was not found").
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     if (!termName) {
       setRow(null);
       setNotFound(false);
+      setLoadError(false);
       setLoading(false);
       return;
     }
     setLoading(true);
     setNotFound(false);
+    setLoadError(false);
     setRow(null);
     (async () => {
       // Case-insensitive exact match on the display name. `ilike` with no
       // wildcards is an exact, case-folded compare — the calculator lists and
       // the glossary rows disagree on casing ('Sound pressure level' vs
       // 'Sound Pressure Level'), so a `=` would miss.
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('glossary')
         .select('id, term, definition, plain_english')
         .ilike('term', termName)
@@ -57,6 +62,7 @@ export function GlossaryTermPopup({
       if (cancelled) return;
       const hit = (data && data[0]) as Row | undefined;
       if (hit) setRow(hit);
+      else if (error) setLoadError(true);
       else setNotFound(true);
       setLoading(false);
     })();
@@ -82,6 +88,9 @@ export function GlossaryTermPopup({
           <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent}>
             {loading ? <ActivityIndicator color={colors.amber} style={styles.spinner} /> : null}
             {notFound ? <Text style={styles.muted}>No glossary entry was found for this term.</Text> : null}
+            {loadError ? (
+              <Text style={styles.muted}>Couldn’t load this term — please check your connection and try again.</Text>
+            ) : null}
             {row?.definition?.trim() ? <Text style={styles.def}>{row.definition.trim()}</Text> : null}
             {row?.plain_english?.trim() ? (
               <>
