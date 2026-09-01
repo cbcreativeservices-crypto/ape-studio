@@ -67,11 +67,20 @@ function isOnboardingFlag(k: string): boolean {
  * library keys alone) and preserves the KEEP allowlist + onboarding flags.
  * Best-effort: a failed removal never throws.
  */
-export async function clearLocalAccountData(): Promise<void> {
+export async function clearLocalAccountData(opts?: { total?: boolean }): Promise<void> {
   try {
     const keys = await AsyncStorage.getAllKeys();
+    // `total` = a NO-ACCOUNT GUEST entry (owner ruling 2026-09-01): "a guest is
+    // always wiped 100% clean — that includes ALL app settings. Once an account
+    // is made, then we begin to remember anything about the user. We break that
+    // promise if we allow anything to be stored." So a guest also loses the
+    // onboarding/coach flags that an ACCOUNT switch deliberately keeps (the
+    // 2026-08-13 fix, which exists so signing out doesn't replay every intro —
+    // that fix still stands for account users). The KEEP allowlist survives
+    // either way: it is device hardware calibration, the install id the
+    // single-device login needs, and dev-only overrides — never user memory.
     const toRemove = keys.filter(
-      (k) => k.startsWith('ape:') && !KEEP.has(k) && !isOnboardingFlag(k),
+      (k) => k.startsWith('ape:') && !KEEP.has(k) && (opts?.total === true || !isOnboardingFlag(k)),
     );
     if (toRemove.length > 0) {
       await AsyncStorage.multiRemove(toRemove);

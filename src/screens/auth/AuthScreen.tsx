@@ -126,7 +126,10 @@ export function AuthScreen({ navigation }: Props) {
     // can't open a locked topic a prior account had enrolled). Unlike a plain
     // sign-out, entering Guest Mode is never a temporary detour back to the same
     // account, so clearing here can't lose a returning user's data.
-    await clearLocalAccountData();
+    // TOTAL wipe (owner ruling 2026-09-01): a no-account guest is remembered in
+    // NO way — app settings and the onboarding/coach flags go too. Nothing is
+    // stored about a person until they make an account.
+    await clearLocalAccountData({ total: true });
     resetAllLocalStores();
     // Write the no-account marker so the next boot's sync sees the SAME
     // identity instead of null→'' and wiping again (QA night 2026-09-01).
