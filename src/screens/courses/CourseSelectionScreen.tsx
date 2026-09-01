@@ -713,7 +713,9 @@ function CourseCardView({
       : isGlossary
         ? onOpenGlossary
         : coming
-          ? onLockedPress
+          ? isMember
+            ? () => Alert.alert('Coming soon', `${coming.name} is on the way — it'll appear here when it's ready.`)
+            : onLockedPress
           : pub
             ? pubOpenable
               ? () => onOpenPublic(pub.order)
@@ -827,9 +829,21 @@ function CourseCardView({
             </View>
           ) : coming ? (
             // Audio-field topic card — membership-locked for non-members (owner
-            // 2026-08-10): same Academy-locked key as the other paid topics.
+            // 2026-08-10). Members are NOT upsold the membership they hold
+            // (QA night 2026-08-31 — mirrors the program-stub ruling above):
+            // they see COMING SOON instead of the paywall path.
             <View style={{ width: CARD_BTN_W }}>
-              <GlassButton label="🔒 ACADEMY MODE" tint="steel" height={50} fontSize={13} onPress={onLockedPress} />
+              <GlassButton
+                label={isMember ? 'COMING SOON' : '🔒 ACADEMY MODE'}
+                tint="steel"
+                height={50}
+                fontSize={13}
+                onPress={
+                  isMember
+                    ? () => Alert.alert('Coming soon', `${coming.name} is on the way — it'll appear here when it's ready.`)
+                    : onLockedPress
+                }
+              />
             </View>
           ) : pub ? (
             <View style={{ width: CARD_BTN_W }}>

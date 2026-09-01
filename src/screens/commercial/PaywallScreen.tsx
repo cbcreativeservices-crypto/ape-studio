@@ -34,7 +34,7 @@ const PLANS: Plan[] = [
 
 export function PaywallScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
-  const { refreshEntitlement } = useEntitlement();
+  const { refreshEntitlement, isMember } = useEntitlement();
   const [selected, setSelected] = useState<Plan['id']>('annual');
   const [busy, setBusy] = useState(false);
   // Whether in-app purchasing is usable in THIS build (native module present +
@@ -69,6 +69,15 @@ export function PaywallScreen({ navigation }: Props) {
   }, [refreshEntitlement, navigation]);
 
   const onContinue = () => {
+    // A paying member must never be walked into a duplicate store purchase
+    // (QA night 2026-08-31).
+    if (isMember) {
+      Alert.alert(
+        'You’re a member',
+        'Your Academy access is already active. Manage or cancel in your app-store subscription settings.',
+      );
+      return;
+    }
     if (!available) {
       Alert.alert(
         'Purchasing unavailable',
@@ -123,7 +132,7 @@ export function PaywallScreen({ navigation }: Props) {
                 key={p.id}
                 onPress={() => setSelected(p.id)}
                 accessibilityRole="radio"
-                accessibilityState={{ selected: active }}
+                accessibilityState={{ checked: active }}
                 style={[styles.plan, active && styles.planActive]}
               >
                 <View style={styles.planHead}>
