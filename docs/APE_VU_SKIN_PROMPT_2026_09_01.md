@@ -63,7 +63,22 @@ Match these as closely as you can — my code draws at these positions:
 | Peak-lamp area — LEAVE BLANK | a clear circle of radius ≈ 45 centred at **(1258, 236)**, plus room for the word "PEAK" immediately to its left (roughly x 1050–1210, same height) |
 | Scale keep-out — MUST BE BLANK FACE | everything within **300–545 px of the dome at (795, 803)**, across the top ±55° — in practice the whole upper dial, roughly **x 330–1250, y 270–510** |
 
-**The glass — read this carefully, it is the part that usually goes wrong**
+**The glass — COPY IT FROM THE REFERENCE, do not invent it**
+
+The glass on the attached reference is exactly right. Reproduce that treatment
+unchanged: the same softness, the same brightness, the same subtle shadow under
+the bezel, the same near-invisibility. Change the housing and the face to suit
+the new style, but the pane itself should look like the one in the reference.
+
+Do not design new glass, and do not add reflections that are not in the
+reference — no mirrored room, no window or softbox reflections, no hard white
+diagonal streak, no rainbow sheen, no lens flare, no thick glossy layer. If in
+doubt, err on the side of LESS glass, not more.
+
+If you cannot reproduce it and the glass keeps coming out wrong, stop and use
+Plan B at the end of this brief instead.
+
+**Reference for what makes glass believable (only if you need it)**
 
 Photographed straight-on under diffuse light, meter glass is almost INVISIBLE.
 It is not shiny. Do not render it as a mirror. Four subtle cues sell it, and
@@ -108,7 +123,7 @@ left and far right of the arc are equally legible.
 
 ---
 
-### Plan B — if the glass still will not come out right
+### Plan B — only if copying the reference's glass keeps failing
 
 Ask for the meter **with the glass removed** — an open-faced unit, as if the
 pane had been lifted out for servicing: housing, screws, bezel, the bezel's
