@@ -63,6 +63,31 @@ Match these as closely as you can — my code draws at these positions:
 | Peak-lamp area — LEAVE BLANK | a clear circle of radius ≈ 45 centred at **(1258, 236)**, plus room for the word "PEAK" immediately to its left (roughly x 1050–1210, same height) |
 | Scale keep-out — MUST BE BLANK FACE | everything within **300–545 px of the dome at (795, 803)**, across the top ±55° — in practice the whole upper dial, roughly **x 330–1250, y 270–510** |
 
+**The glass — read this carefully, it is the part that usually goes wrong**
+
+Photographed straight-on under diffuse light, meter glass is almost INVISIBLE.
+It is not shiny. Do not render it as a mirror. Four subtle cues sell it, and
+nothing else:
+
+1. **A cast shadow from the bezel onto the face.** The glass sits a few
+   millimetres ABOVE the dial, so the bezel throws a soft, narrow shadow onto
+   the top edge of the face, fading downward. This is the single strongest cue
+   that there is a pane in front. Get this right and the rest barely matters.
+2. **A broad, very low-contrast sheen** — one soft, wide gradient across the
+   pane, no more than a few percent brighter than the face beneath it. Soft
+   enough that its edges cannot be located.
+3. **A faint edge darkening** where the pane meets the bezel all the way round,
+   plus a whisper of a vignette in the corners.
+4. **Barely-there imperfections** — a few dust specks, one faint smudge, some
+   micro-scratches catching light at a shallow angle. Sparse. If they are
+   noticeable at a glance, there are too many.
+
+Explicitly do NOT render: a mirrored room, window or softbox reflections, a
+hard white diagonal streak or light bar, a rainbow/iridescent sheen, lens
+flare, bloom, or a thick glossy "wet" layer. Those are what make it look fake.
+The face underneath must stay fully legible everywhere — the glass must not
+wash out or obscure any part of it.
+
 **Style direction (this is the part you may reinvent)**
 
 <!-- OWNER: replace this paragraph with the look you want. Examples:
@@ -80,6 +105,20 @@ will read clearly on top of it, and evenly lit enough that numbers at the far
 left and far right of the arc are equally legible.
 
 **Output:** a single 1586 × 992 PNG, no border, no caption, no mockup framing.
+
+---
+
+### Plan B — if the glass still will not come out right
+
+Ask for the meter **with the glass removed** — an open-faced unit, as if the
+pane had been lifted out for servicing: housing, screws, bezel, the bezel's
+inner lip, and the bare dial face, with NO pane, NO sheen, NO reflections and
+NO cast shadow on the face. Everything else in this brief stays the same.
+
+We then add the glass in code, as a drawn layer over the plate. That is
+usually the better outcome anyway: it is tunable in seconds, stays sharp at
+every size, and can be lit to match the lamp glow instead of being frozen into
+the artwork.
 
 ---
 
