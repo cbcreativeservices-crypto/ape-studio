@@ -1580,7 +1580,11 @@ export function GlossaryScreen({ route, navigation }: Props) {
       if (!parent) return;
       const go = () => {
         // Pop the Study stack back to its Dashboard root on ANY tab press.
-        if (nav.canGoBack?.()) nav.popToTop?.();
+        // Guard on THIS stack's own depth (QA night 2026-08-31): canGoBack()
+        // answers for the whole navigator chain, so an already-at-root stack
+        // still fired POP_TO_TOP and logged the unhandled-action warning.
+        const st = nav.getState?.();
+        if (st && typeof st.index === 'number' && st.index > 0) nav.popToTop?.();
         nav.navigate('Dashboard');
       };
       const subs = [parent.addListener('tabPress', go)];

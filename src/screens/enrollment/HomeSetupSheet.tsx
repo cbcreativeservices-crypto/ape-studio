@@ -91,7 +91,8 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
     for (const s of MATRIX_SUBJECTS) for (const t of s.topics) m.set(t.gs, { name: t.name, subject: s.name });
     return m;
   }, []);
-  const nameFor = (gs: number) => v3Index.get(gs)?.name ?? topicIndex.get(gs)?.name ?? `Topic gs${gs}`;
+  const nameFor = (gs: number) =>
+    v3Index.get(gs)?.name ?? topicIndex.get(gs)?.name ?? (gs === 3081 ? 'Audio Fundamentals Lab' : `Topic gs${gs}`);
   const subjectFor = (gs: number) => v3Index.get(gs)?.subject ?? topicIndex.get(gs)?.subject ?? '';
 
   // The user's enrolled topics, minus the required cores (those live locked in

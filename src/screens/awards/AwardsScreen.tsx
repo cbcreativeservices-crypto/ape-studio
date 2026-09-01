@@ -366,7 +366,11 @@ export function AwardsScreen({ navigation, route }: Props) {
   const topicNameByGs = useRef(
     new Map(MATRIX_SUBJECTS.flatMap((s) => s.topics.map((t) => [t.gs, t.name] as const))),
   ).current;
-  const nameForGs = (gs: number) => v3TopicNames.get(gs) ?? topicNameByGs.get(gs) ?? `Topic gs${gs}`;
+  // gs3081 is the lab-proxy topic that exists only server-side (owner
+  // 2026-08-30 core swap) — without this fallback the REQUIRED CORE banner
+  // read "Topic gs3081" (QA night 2026-08-31).
+  const nameForGs = (gs: number) =>
+    v3TopicNames.get(gs) ?? topicNameByGs.get(gs) ?? (gs === 3081 ? 'Audio Fundamentals Lab' : `Topic gs${gs}`);
 
   const summaryForTier = (tier: AwardTier): string | undefined => {
     if (tier.builder === 'specializations') return specCert ? `Certificate: ${specCert}` : undefined;
