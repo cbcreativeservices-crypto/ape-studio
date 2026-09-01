@@ -272,9 +272,11 @@ export function SettingsScreen({ navigation }: Props) {
           title="NOTIFICATIONS"
           summary={(() => {
             if (!isMember) return 'members';
+            // Count NOTIFICATION STREAMS only (owner 2026-09-01): the master
+            // "Phone notifications" and Email switches are TRANSPORTS — with
+            // only the master on, the header used to claim "1 on" while every
+            // actual notification was off.
             const n =
-              (prefs?.push_enabled ? 1 : 0) +
-              (prefs?.email_enabled ? 1 : 0) +
               (prefs?.notify_weekly_concept ? 1 : 0) +
               COMMERCIAL_NOTIFY_ROWS.filter((r) => local[r.key]).length;
             return n ? `${n} on` : 'all off';
