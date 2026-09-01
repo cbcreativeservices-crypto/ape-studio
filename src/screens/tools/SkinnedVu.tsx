@@ -179,6 +179,28 @@ export const SPL_SCALE = (() => {
 const NEEDLE = '#1a1206';
 
 /**
+ * VuSkinGlyph — a tiny, STATIC render of the real skinned VU for buttons
+ * (owner 2026-09-01: the old hand-drawn mini glyph "looks poor and it should
+ * match anyway"). The actual skin artwork + the printed scale + a resting
+ * needle, scaled down — so any future skin swap re-skins the button too.
+ * No clock, no animation: it is an icon.
+ */
+export function VuSkinGlyph({ width = 58 }: { width?: number }): ReactNode {
+  const h = Math.round((width * 992) / 1586);
+  // Resting needle: from the dome toward −20 (the meter at silence).
+  const a = (-44 * Math.PI) / 180;
+  const tipX = VU_CTR.x + VU_NEEDLE_TIP * Math.sin(a);
+  const tipY = VU_CTR.y - VU_NEEDLE_TIP * Math.cos(a);
+  return (
+    <Svg width={width} height={h} viewBox={SKIN_VB} preserveAspectRatio="xMidYMid meet">
+      <SvgImage href={VU_SKIN} x={0} y={0} width={1586} height={992} preserveAspectRatio="xMidYMid slice" />
+      {SPL_SCALE}
+      <Line x1={VU_CTR.x} y1={VU_CTR.y} x2={tipX} y2={tipY} stroke={NEEDLE} strokeWidth={10} strokeLinecap="round" />
+    </Svg>
+  );
+}
+
+/**
  * The SPL REFERENCE ROW (owner 2026-09-01): what the VU scale is actually set
  * to. 0 VU is printed with the dB SPL it represents, and −20 VU with its own
  * value (ref − 20), so the meter always declares its reference instead of

@@ -57,7 +57,7 @@ import { useSaveGate } from './ToolLockUi';
 import { LandscapeRequiredNotice, useLandscapeGrace } from '../../components/LandscapeRequiredNotice';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { EngineGate } from './EngineGate';
-import { SkinnedVu } from './SkinnedVu';
+import { SkinnedVu, VuSkinGlyph } from './SkinnedVu';
 import { Spl3dGauge } from './Spl3dGauge';
 import { levelColorForDb } from '../../features/tools/levelColor';
 import { useLowLight, useLowLightDim, LOW_LIGHT_DIM } from '../../features/settings/lowLight';
@@ -285,17 +285,6 @@ function PopupOpt({ label, selected, onPress }: { label: string; selected: boole
   );
 }
 
-/** Plain-RN mini-VU fallback for pre-Skia clients (cream face, red zone,
- *  tilted needle) — the opener must read as a tiny VU even without Skia. */
-function VuGlyphFallback() {
-  return (
-    <View style={styles.vuGlyphFace}>
-      <View style={styles.vuGlyphArc} />
-      <View style={styles.vuGlyphRed} />
-      <View style={styles.vuGlyphNeedle} />
-    </View>
-  );
-}
 
 function Chip({
   label,
@@ -791,6 +780,7 @@ export function SplMeterScreen({ navigation }: Props) {
   // line in both orientations — insets.top when it reports, a 26pt floor when
   // landscape reports 0 while iOS still draws the clock/battery row.
   const fsChromeTop = Math.max(insets.top, 26) + 6;
+  const fsChromeBottom = Math.max(insets.bottom, 12) + 10;
   // Which setting popup is open from the VU home's bottom control bar (owner
   // 2026-08-18): Range · Weighting · Response · Peak Hold.
   const [settingPopup, setSettingPopup] = useState<null | 'range' | 'unit' | 'response' | 'hold'>(null);
@@ -1311,7 +1301,7 @@ export function SplMeterScreen({ navigation }: Props) {
           accessibilityLabel="Back to the SPL meter home"
         >
           <View style={styles.vuOpenFrame}>
-            {viz ? <viz.VuGlyph size={58} /> : <VuGlyphFallback />}
+            <VuSkinGlyph width={58} />
           </View>
           <Text style={styles.vuOpenLabel}>SPL HOME</Text>
         </Pressable>
@@ -1332,10 +1322,11 @@ export function SplMeterScreen({ navigation }: Props) {
                 2026-08-17). */}
             <DisplayGuideButton onPress={helpAll} />
 
-            {/* PEAK · PEAK HOLD · FULLSCREEN (owner 2026-08-17): peak readouts on
-                top; the ⛶ fullscreen button is a standalone control to the RIGHT
-                of PEAK HOLD. Peak may exceed 0 dBFS (F1) — the COLOUR flags
-                digital clipping, independent of the SPL estimate. */}
+            {/* PEAK · PEAK HOLD · MIC (owner 2026-08-17; MIC moved here
+                2026-09-01 into the slot the removed ⛶ button held): peak
+                readouts, then START/STOP as a compact cell. Peak may exceed
+                0 dBFS (F1) — the COLOUR flags digital clipping, independent
+                of the SPL estimate. */}
             <View style={styles.peakRow}>
               <Pressable accessibilityHint="Press and hold for an explanation." style={styles.peakCell} onLongPress={() => help('peak')} delayLongPress={260}>
                 <Text style={styles.cellLabel}>PEAK</Text>
@@ -1357,6 +1348,20 @@ export function SplMeterScreen({ navigation }: Props) {
                   {meter ? estSpl(meter.peakHoldDb) : '—'}
                 </Text>
                 <Text style={styles.cellHint}>tap to reset</Text>
+              </Pressable>
+              {/* START/STOP (owner 2026-09-01) — was the full-width gold bar
+                  lower on the screen; now a compact cell beside PEAK HOLD. */}
+              <Pressable
+                style={styles.micCell}
+                onPress={running ? stopMeter : startMeter}
+                accessibilityRole="button"
+                accessibilityLabel={running ? 'Stop the meter — mic off' : 'Start the meter — mic on'}
+              >
+                <Text style={styles.cellLabel}>MIC</Text>
+                <Text style={[styles.micCellValue, running ? styles.micCellOn : styles.micCellOff]}>
+                  {running ? 'ON' : 'OFF'}
+                </Text>
+                <Text style={styles.cellHint}>{running ? 'tap to stop' : 'tap to start'}</Text>
               </Pressable>
             </View>
 
@@ -1427,14 +1432,6 @@ export function SplMeterScreen({ navigation }: Props) {
                 </Pressable>
               </View>
             </View>
-
-            {/* STOP — ABOVE calibration (owner 2026-07-30). Only turns the mic OFF
-                and STAYS in the tool; flips to START to re-arm. */}
-            {running ? (
-              <GlassButton label="STOP · MIC OFF" tint="gold" onPress={stopMeter} />
-            ) : (
-              <GlassButton label="START · MIC ON" tint="gold" onPress={startMeter} />
-            )}
 
             {/* Field calibration (ruling R1, 2026-07-23): device-local offset,
                 matched against the user's reference meter. Moved BELOW the
@@ -1955,11 +1952,12 @@ export function SplMeterScreen({ navigation }: Props) {
                   {/* LED controls cluster (owner 2026-08-18/21) — top-LEFT row that
                       stays ABOVE the vertically-centred settings column so nothing
                       obscures it: HIDE LED toggle + (members) the colour wheel. */}
-                  <View style={[styles.vuFsLedRow, { left: camInset + 14, top: fsChromeTop }]} pointerEvents="box-none">
-                    {/* Clean-view master toggle (owner 2026-09-01): hides the
-                        settings column + LED + their pills; stays visible
-                        itself so the controls can come back. NEW COPY — owner
-                        review. */}
+                  {/* Pill clusters repositioned (design spec 2026-09-01,
+                      docs/APE_FULLVU_PILLS_SPEC_2026_09_01.md): the top edge
+                      belongs to the ✕ alone. HIDE CONTROLS sits bottom-left,
+                      under the settings column it governs; the LED's own
+                      controls sit bottom-right at the foot of the LED. */}
+                  <View style={[styles.vuFsPillRow, { left: camInset + 14, bottom: fsChromeBottom }]} pointerEvents="box-none">
                     <Pressable hitSlop={6}
                       style={styles.vuFsLedTogglePill}
                       onPress={() => setVuFsChromeHidden((h) => !h)}
@@ -1969,7 +1967,19 @@ export function SplMeterScreen({ navigation }: Props) {
                     >
                       <Text style={styles.vuFsLedToggleText}>{vuFsChromeHidden ? 'SHOW CONTROLS' : 'HIDE CONTROLS'}</Text>
                     </Pressable>
-                    {viz && !vuFsChromeHidden && (
+                  </View>
+                  {viz && !vuFsChromeHidden && (
+                    <View style={[styles.vuFsPillRow, { right: camInset + 14, bottom: fsChromeBottom }]} pointerEvents="box-none">
+                      {/* Colour customization (MEMBER, owner 2026-08-20) — only
+                          meaningful while the LED is shown. */}
+                      {!vuFsLedHidden && (
+                        <ColorWheelButton
+                          style={styles.vuFsLedWheelPill}
+                          onCustomize={() => setLedPickerOpen(true)}
+                          feature="the LED meter colours"
+                          accessibilityLabel="Customize LED colours"
+                        />
+                      )}
                       <Pressable hitSlop={6}
                         style={styles.vuFsLedTogglePill}
                         onPress={() => setVuFsLedHidden((h) => !h)}
@@ -1979,18 +1989,8 @@ export function SplMeterScreen({ navigation }: Props) {
                       >
                         <Text style={styles.vuFsLedToggleText}>{vuFsLedHidden ? 'SHOW LED' : 'HIDE LED'}</Text>
                       </Pressable>
-                    )}
-                    {/* Colour customization (MEMBER, owner 2026-08-20) — only
-                        meaningful while the LED is shown. */}
-                    {viz && !vuFsChromeHidden && !vuFsLedHidden && (
-                      <ColorWheelButton
-                        style={styles.vuFsLedWheelPill}
-                        onCustomize={() => setLedPickerOpen(true)}
-                        feature="the LED meter colours"
-                        accessibilityLabel="Customize LED colours"
-                      />
-                    )}
-                  </View>
+                    </View>
+                  )}
 
                   {/* Stage (owner 2026-08-19): in LANDSCAPE the settings are a
                       COLUMN to the LEFT of the VU; in portrait they stay a bottom
@@ -2032,7 +2032,7 @@ export function SplMeterScreen({ navigation }: Props) {
                           viz={viz}
                           live={live}
                           ledW={92}
-                          ledH={winW >= winH ? Math.round(winH * 0.82) : Math.round(winH * 0.4)}
+                          ledH={winW >= winH ? Math.round(winH * 0.78) : Math.round(winH * 0.4)}
                           holdMode={holdMode}
                           splOffset={splOffset}
                           weightingLabel={weighting}
@@ -2365,6 +2365,19 @@ const styles = StyleSheet.create({
   },
   readoutEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: colors.amberLabel },
   readoutValue: { fontFamily: fonts.mono, fontSize: 54, color: colors.textPrimary, letterSpacing: 1 },
+  micCell: {
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#131316',
+    paddingHorizontal: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 2,
+  },
+  micCellValue: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, letterSpacing: 1 },
+  micCellOn: { color: colors.amber },
+  micCellOff: { color: colors.textSubAlt },
   readoutSub: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.amber, textAlign: 'center' },
 
   // Readout row: response toggle (left) · number card (center) · unit toggle
@@ -2685,7 +2698,7 @@ const styles = StyleSheet.create({
   // Full VU LED controls — a top-LEFT row (HIDE LED + colour wheel) pinned ABOVE
   // the vertically-centred settings column so neither control is ever obscured
   // (owner 2026-08-21 bug: the wheel was dropping behind the RANGE button).
-  vuFsLedRow: { position: 'absolute', top: 10, zIndex: 140, flexDirection: 'row', alignItems: 'center', gap: 8 },
+  vuFsPillRow: { position: 'absolute', zIndex: 140, flexDirection: 'row', alignItems: 'center', gap: 8 },
   vuFsLedTogglePill: {
     height: 40,
     paddingHorizontal: 14,
