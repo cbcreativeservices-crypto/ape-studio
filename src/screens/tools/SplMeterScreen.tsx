@@ -1605,6 +1605,7 @@ export function SplMeterScreen({ navigation }: Props) {
                         height={vuH}
                         live={live}
                         live0Db={vuLive0}
+                        ref0Spl={rangeRef}
                         running={running}
                         fit="contain"
                       />
@@ -1962,6 +1963,7 @@ export function SplMeterScreen({ navigation }: Props) {
                           height={winW >= winH ? Math.round(winH * 0.78) : Math.round(winH * 0.4)}
                           live={live}
                           live0Db={vuLive0}
+                          ref0Spl={rangeRef}
                           running={running}
                           fit="contain"
                         />

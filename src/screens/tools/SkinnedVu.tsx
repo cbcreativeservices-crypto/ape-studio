@@ -45,6 +45,15 @@ const R_NUM = 525; // number centres (60 clear of the major ticks)
 const ANG_END_L = -52; // the − end (11° past −20 at −41° — clear of the number)
 const ANG_END_R = 52; // the + end (9° past +5 at +43°)
 export const VU_NEEDLE_TIP = 475; // needle tip radius (reaches the tick line)
+// Secondary SPL scale (owner 2026-09-01): printed INSIDE the arc baseline, the
+// way a real dual-scale meter prints its second row — so it reads as part of
+// the face, never as an overlay on top of it.
+const R_SPL = 366; // the SPL number row
+// The caption sits in the face's LOWER-LEFT dead zone. The needle only ever
+// sweeps −48°…+46°, so at −74° nothing crosses it, and it stays clear of the
+// number row (which would otherwise read as one string with the −20 value).
+const A_SPL_CAP = -74;
+const R_SPL_CAP = 330;
 
 /** Face window (skin space) — the needle is CLIPPED to this so the blade never
  *  paints over the bezel below the glass. */
@@ -166,6 +175,59 @@ export const SPL_SCALE = (() => {
 
 const NEEDLE = '#1a1206';
 
+/**
+ * The SPL REFERENCE ROW (owner 2026-09-01): what the VU scale is actually set
+ * to. 0 VU is printed with the dB SPL it represents, and −20 VU with its own
+ * value (ref − 20), so the meter always declares its reference instead of
+ * leaving "0 VU" abstract.
+ *
+ * Marked (EST) because the SPL here is an ESTIMATE from an uncalibrated phone
+ * microphone — the numbers are a reference scale, never a calibrated reading.
+ * Returns null when there is no reference to state.
+ */
+function splRefScale(ref0: number | null | undefined): ReactNode {
+  if (ref0 == null || !Number.isFinite(ref0)) return null;
+  const els: ReactNode[] = [];
+  const mark = (db: number, value: number) => {
+    const a = vuDbAngle(db);
+    const p = skinPt(a, R_SPL);
+    els.push(
+      <SvgText
+        key={`spl${db}`}
+        x={p.x}
+        y={p.y + 14}
+        fill={INK}
+        opacity={0.62}
+        fontFamily={fonts.oswaldSemiBold}
+        fontSize={40}
+        textAnchor="middle"
+        transform={`rotate(${a.toFixed(1)} ${p.x.toFixed(1)} ${p.y.toFixed(1)})`}
+      >
+        {Math.round(value)}
+      </SvgText>,
+    );
+  };
+  mark(-20, ref0 - 20);
+  mark(0, ref0);
+  const cap = skinPt(A_SPL_CAP, R_SPL_CAP);
+  els.push(
+    <SvgText
+      key="splCap"
+      x={cap.x}
+      y={cap.y + 10}
+      fill={INK}
+      opacity={0.52}
+      fontFamily={fonts.oswaldSemiBold}
+      fontSize={26}
+      letterSpacing={2}
+      textAnchor="middle"
+    >
+      dB SPL (EST)
+    </SvgText>,
+  );
+  return <G>{els}</G>;
+}
+
 /** A centred circle box (left/top/size/radius) for the lit-lamp overlays. */
 function lampGlowBox(cx: number, cy: number, d: number) {
   return { left: cx - d / 2, top: cy - d / 2, width: d, height: d, borderRadius: d / 2 };
@@ -177,6 +239,9 @@ export type SkinnedVuProps = {
   live: LiveMeterDrive;
   /** dBFS that reads 0 VU (SPL screen: RANGE − offset). */
   live0Db: number;
+  /** ESTIMATED dB SPL that 0 VU represents (the RANGE reference). Printed on
+   *  the face as a secondary scale with its −20 VU counterpart. */
+  ref0Spl?: number | null;
   running?: boolean;
   /** 'contain' shows the whole skinned unit (border + screws); 'cover' fills. */
   fit?: 'contain' | 'cover';
@@ -186,7 +251,7 @@ export type SkinnedVuProps = {
  *  (rise tc 0.20 s, fall 0.45 s) and rotates about the DEEP scale centre via
  *  useAnimatedStyle, clipped to the face window; the PEAK lamp lights when the
  *  true peak crosses −3 dBFS. */
-export function SkinnedVu({ width, height, live, live0Db, running = true, fit = 'contain' }: SkinnedVuProps) {
+export function SkinnedVu({ width, height, live, live0Db, ref0Spl, running = true, fit = 'contain' }: SkinnedVuProps) {
   const vuVal = useSharedValue(0);
   const vuVel = useSharedValue(0);
   const lampT = useSharedValue(0);
@@ -240,6 +305,7 @@ export function SkinnedVu({ width, height, live, live0Db, running = true, fit = 
       <Svg width={width} height={height} viewBox={SKIN_VB} preserveAspectRatio={par}>
         <SvgImage href={VU_SKIN} x={0} y={0} width={1586} height={992} preserveAspectRatio="xMidYMid slice" />
         {SPL_SCALE}
+        {splRefScale(ref0Spl)}
       </Svg>
       {/* PEAK lamp — illuminated clip state: a bright red core filling the lens
           and a hot centre, so it reads like a real lamp lit from inside. Both
