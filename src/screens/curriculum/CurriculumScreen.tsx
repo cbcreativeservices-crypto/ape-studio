@@ -229,20 +229,20 @@ export function CurriculumView({
                 onPress={() => setOpen((prev) => (prev === s.order ? null : s.order))}
                 accessibilityRole="button"
                 accessibilityState={{ expanded: isOpen }}
-                accessibilityLabel={`${s.name}, ${s.topics.length} topics`}
+                accessibilityLabel={`${s.name}, ${s.topics.length} ${s.topics.length === 1 ? 'topic' : 'topics'}`}
               >
                 <Text style={styles.subjectChevron}>{isOpen ? '▾' : '▸'}</Text>
                 <Text style={styles.subjectName} numberOfLines={2}>
                   {s.name}
                 </Text>
-                <Text style={styles.subjectCount}>{s.topics.length} Topics</Text>
+                <Text style={styles.subjectCount}>{`${s.topics.length} Topic${s.topics.length === 1 ? '' : 's'}`}</Text>
               </Pressable>
 
               {isOpen ? (
                 <View style={styles.expanded}>
                   {meta.description ? <Text style={styles.desc}>{meta.description}</Text> : null}
                   <Text style={styles.metaLine}>
-                    {s.topics.length} topics · {terms != null ? `${fmt(terms)} terms` : '— terms'}
+                    {`${s.topics.length} topic${s.topics.length === 1 ? '' : 's'}`} · {terms != null ? `${fmt(terms)} terms` : '— terms'}
                   </Text>
 
                   <Text style={styles.subLabel}>TOPICS</Text>

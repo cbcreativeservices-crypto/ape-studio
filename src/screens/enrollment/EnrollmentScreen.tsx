@@ -15,7 +15,7 @@
  * drag uses an estimated row height (no gesture lib).
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Animated, PanResponder, Pressable, ScrollView, StyleSheet, Text, View, type GestureResponderEvent, type LayoutChangeEvent } from 'react-native';
+import { Alert, Animated, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, View, type GestureResponderEvent, type LayoutChangeEvent } from 'react-native';
 import { Modal } from '../../components/DimModal';
 import { HoldToActivate } from '../../components/HoldToActivate';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -560,14 +560,20 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   // first. Mirrors the topic ✕ affordance but available even while collapsed.
   const confirmRemoveWhole = (b: { kind: BundleKind; name: string; topics: number[] }) => {
     const word = b.kind === 'cert' ? 'certificate' : b.kind === 'program' ? 'program' : 'subject';
-    Alert.alert(
-      `Remove ${b.name}?`,
-      `This removes the ${word} and all ${b.topics.length} of its topics from your enrollment list.`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Remove', style: 'destructive', onPress: () => removeWhole(b.kind, b.name, b.topics) },
-      ],
-    );
+    const title = `Remove ${b.name}?`;
+    const body = `This removes the ${word} and all ${b.topics.length} of its topics from your enrollment list.`;
+    // RN-web ships Alert as a literal no-op, so the X was a dead button on the
+    // web preview (QA night 2026-08-31) -- same shim MyProfileView uses.
+    if (Platform.OS === 'web') {
+      if (typeof window === 'undefined' || window.confirm(`${title}\n\n${body}`)) {
+        removeWhole(b.kind, b.name, b.topics);
+      }
+      return;
+    }
+    Alert.alert(title, body, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Remove', style: 'destructive', onPress: () => removeWhole(b.kind, b.name, b.topics) },
+    ]);
   };
   // Loading topics into the study deck is UNGATED (user request 2026-07-23): a
   // free user with an account can set up everything; it persists so nothing
@@ -833,10 +839,14 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           {...rowLayoutProps(b.key)}
           style={liftStyle(b.key)}
         >
-        <Pressable style={[styles.bundleCard, kindCard, done && styles.bundleDone, styles.collapsedCard]} onPress={() => toggleCollapse(b.key)} accessibilityRole="button" accessibilityLabel={`Expand ${b.name}`}>
+        {/* No role on the wrapper (QA night 2026-08-31): it nested the ✕
+            remove button — invalid button-in-button on web and the outer
+            label swallowed the ✕ for screen readers. Expand semantics live on
+            the title; its tap bubbles to this wrapper's onPress. */}
+        <Pressable style={[styles.bundleCard, kindCard, done && styles.bundleDone, styles.collapsedCard]} onPress={() => toggleCollapse(b.key)} accessible={false}>
           <Text style={styles.collapseTri}>▸</Text>
           <Text style={[styles.bundleTag, { color: tint, borderColor: tint }]}>{kindLabel}</Text>
-          <Text style={styles.collapsedTitle} numberOfLines={1}>
+          <Text style={styles.collapsedTitle} numberOfLines={1} accessibilityRole="button" accessibilityLabel={`Expand ${b.name}`}>
             {b.name}
           </Text>
           <Text style={styles.cardPct}>{bundlePct}%</Text>

@@ -75,7 +75,9 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
               style={styles.item}
               accessibilityRole="tab"
               accessibilityState={{ selected: lit }}
-              accessibilityLabel={name}
+              // SR label matches the VISIBLE text -- the tab draws "PROGRESS"
+              // while the route is named Achievements (QA night 2026-08-31).
+              accessibilityLabel={name === 'Achievements' ? 'Progress' : name}
               onPress={handlePress}
             >
               <NavIcon icon={name} lit={lit} />

@@ -16,6 +16,7 @@
  * grant an exam it shouldn't.
  */
 import { useCallback, useEffect, useState } from 'react';
+import { supabase } from '../../lib/supabase';
 import {
   ActivityIndicator,
   Pressable,
@@ -58,11 +59,18 @@ export function AwardProgressScreen({ navigation, route }: Props) {
   // hooks — ABOVE the loading/error early returns — so hook order is stable.
   const [exporting, setExporting] = useState(false);
   const [certMessage, setCertMessage] = useState<string | null>(null);
+  const [noSession, setNoSession] = useState(false);
 
   const load = useCallback(async () => {
     setFailed(false);
     const p = await fetchAwardProgress(awardType, awardId);
-    if (p == null) setFailed(true);
+    if (p == null) {
+      // No account is the COMMON null here (guests 401 on the student read) --
+      // blaming "your connection" was misleading (QA night 2026-08-31).
+      const { data } = await supabase.auth.getSession().catch(() => ({ data: { session: null } }));
+      setNoSession(!data?.session);
+      setFailed(true);
+    }
     setProgress(p);
   }, [awardType, awardId]);
 
@@ -119,7 +127,9 @@ export function AwardProgressScreen({ navigation, route }: Props) {
     return (
       <View style={styles.center}>
         <Text style={styles.muted}>
-          Could not load this award's requirements right now. Pull to retry, or check your connection.
+          {noSession
+            ? 'Sign in with a free account to track award progress and sit the Final Exam.'
+            : "Could not load this award's requirements right now. Pull to retry, or check your connection."}
         </Text>
         <View style={{ width: 200 }}>
           <StudioButton label="Back" variant="secondary" small onPress={() => navigation.goBack()} />
