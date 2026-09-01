@@ -3944,7 +3944,10 @@ export function SideCoverageView({
         // Normalized ∝ 1/√N (design+learning pass 2026-08-31): each box at a
         // fixed 0.5 made the SUM saturate the ramp — the "even coverage"
         // solution state painted the room red, the map's own fault colour.
-        srcs.push({ x: b.x, y: b.y, axis: (b.tilt * Math.PI) / 180, half: 7, refD: w * 0.52, scale: 0.9 / Math.sqrt(arrayBoxes.length) });
+        // Re-normalized for the true inverse-square falloff (owner
+        // 2026-08-31 "V level doesn't show": under ^2 the old 0.9/√N sum
+        // saturated the whole room red — no gradient left to read).
+        srcs.push({ x: b.x, y: b.y, axis: (b.tilt * Math.PI) / 180, half: 7, refD: w * 0.52, scale: 0.55 / Math.sqrt(arrayBoxes.length) });
       }
     } else {
       // Shorter reference distance (owner 2026-08-05): a single box falls into

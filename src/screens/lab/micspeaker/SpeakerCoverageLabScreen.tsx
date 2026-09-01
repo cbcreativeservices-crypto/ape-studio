@@ -404,7 +404,10 @@ export function SpeakerCoverageLabScreen() {
     bezel: [
       { k: 'HEIGHT', v: heightWord(h01), flex: 1.2, helpKey: 'height_tilt' },
       { k: 'TILT', v: `${tilt}°`, helpKey: 'height_tilt' },
-      { k: 'V PATTERN', v: `${sideDisp.vDeg}°`, flex: 1.3, helpKey: 'dispersion' },
+      // In array mode the vertical behavior comes from the box count/splay,
+      // not one box's pattern — the cell says so instead of quoting a number
+      // the map is ignoring (owner 2026-08-31).
+      { k: 'V PATTERN', v: lineArray ? 'ARRAY' : `${sideDisp.vDeg}°`, flex: 1.3, helpKey: lineArray ? 'line_array' : 'dispersion' },
       {
         k: 'ROOM',
         v: `${sloped ? 'sloped' : 'flat'}${delayOn || rearDelay ? ' · dly' : ''}`,
