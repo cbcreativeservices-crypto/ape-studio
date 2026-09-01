@@ -20,11 +20,12 @@ import { View } from 'react-native';
 import Animated, { useAnimatedStyle, useFrameCallback, useSharedValue } from 'react-native-reanimated';
 import Svg, { Circle, G, Image as SvgImage, Line, Path, Text as SvgText } from 'react-native-svg';
 import { fonts } from '../../theme/tokens';
+import { SKIN_VB, VU_FACE } from './vuGeometry';
+import { VuGlass } from './VuGlass';
 import type { LiveMeterDrive } from '../lab/meter/vizMeters';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 export const VU_SKIN = require('../../../assets/tool-strips/vu_skin_spl.png');
-export const SKIN_VB = '0 0 1586 992';
 export const VU_MAX = Math.pow(10, 6 / 20); // integrator ceiling (+6 dB rel 0 VU)
 
 /* ── Scale geometry (skin space, 1586×992) ──────────────────────────── */
@@ -55,9 +56,11 @@ const R_SPL = 366; // the SPL number row
 const A_SPL_CAP = -74;
 const R_SPL_CAP = 330;
 
-/** Face window (skin space) — the needle is CLIPPED to this so the blade never
- *  paints over the bezel below the glass. */
-export const VU_FACE = { x: 250, y: 175, w: 1090, h: 638, rx: 40 };
+// SKIN_VB + VU_FACE live in the leaf module vuGeometry so VuGlass can read the
+// face rect without importing this file back (require cycle → Hermes threw
+// "Cannot access 'VU_FACE' before initialization"). Re-exported here so every
+// existing importer keeps working unchanged.
+export { SKIN_VB, VU_FACE };
 
 /* ── Deflection about the dome: voltage-linear black side, compressed red ── */
 // θ(v=0)=−48° (rest, just left of −20) … θ(v=1 / 0 VU)=+22°; red side 4.2°/dB
@@ -242,6 +245,11 @@ export type SkinnedVuProps = {
   /** ESTIMATED dB SPL that 0 VU represents (the RANGE reference). Printed on
    *  the face as a secondary scale with its −20 VU counterpart. */
   ref0Spl?: number | null;
+  /** Draw the glass pane in code, over everything (owner "Plan B"
+   *  2026-09-01). Leave OFF for a skin whose artwork already contains glass —
+   *  the current vu_skin_spl.png does — and switch ON for an open-faced plate.
+   *  See VuGlass for the tuning dials. */
+  glass?: boolean;
   running?: boolean;
   /** 'contain' shows the whole skinned unit (border + screws); 'cover' fills. */
   fit?: 'contain' | 'cover';
@@ -251,7 +259,7 @@ export type SkinnedVuProps = {
  *  (rise tc 0.20 s, fall 0.45 s) and rotates about the DEEP scale centre via
  *  useAnimatedStyle, clipped to the face window; the PEAK lamp lights when the
  *  true peak crosses −3 dBFS. */
-export function SkinnedVu({ width, height, live, live0Db, ref0Spl, running = true, fit = 'contain' }: SkinnedVuProps) {
+export function SkinnedVu({ width, height, live, live0Db, ref0Spl, glass = false, running = true, fit = 'contain' }: SkinnedVuProps) {
   const vuVal = useSharedValue(0);
   const vuVel = useSharedValue(0);
   const lampT = useSharedValue(0);
@@ -336,6 +344,10 @@ export function SkinnedVu({ width, height, live, live0Db, ref0Spl, running = tru
           <View style={{ width: '100%', height: bladeLen, borderRadius: needleW, backgroundColor: NEEDLE }} />
         </Animated.View>
       </View>
+      {/* The glass pane goes LAST — that is where a pane physically is: in
+          front of the scale, the lamp and the needle (owner "Plan B"
+          2026-09-01). Off by default; see the `glass` prop. */}
+      {glass ? <VuGlass width={width} height={height} par={par} /> : null}
     </View>
   );
 }
