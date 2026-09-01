@@ -2849,9 +2849,16 @@ export function PeakAvgMeterView(p: {
   /** MEMBER AVERAGE-marker colour override (owner 2026-08-21). Recolours the avg
    *  fill, the avg level line, and the AVG readouts. Omitted/null ⇒ default purple. */
   avgColor?: string | null;
+  /** STACK layout (owner 2026-09-01) — the portrait fullscreen LED: the bar well
+   *  occupies the middle 2/3 of the height with the PK readout centred in the
+   *  top sixth and AVG in the bottom sixth, no side column, no brushed panel
+   *  (black ground), no HOLD/MONO footer. Same engine, same shared values — the
+   *  readouts can never disagree with the home meter. Default off. */
+  stack?: boolean;
 }) {
   const w = p.width;
   const h = p.height ?? 260;
+  const stack = !!p.stack;
   const LOOP = p.loopSeconds ?? 4;
   const holdMode = p.holdMode ?? '1s';
   const splOffset = p.splOffset ?? 100;
@@ -2880,11 +2887,13 @@ export function PeakAvgMeterView(p: {
   // width (~104) so two prominent stacked numeric readouts (purple AVG, white
   // PK-hold max) sit to the LEFT of the LED bar. `readoutW` reserves that column
   // and shrinks gracefully for any narrower legacy caller (backward compatible).
-  const readoutW = Math.min(42, Math.max(0, w - 58));
+  // STACK: no side column; the well is the middle 2/3 of the height (owner
+  // 2026-09-01 fullscreen spec — 1/6 padding above and below).
+  const readoutW = stack ? 0 : Math.min(42, Math.max(0, w - 58));
   const wellX = 7 + readoutW;
-  const wellY = 28;
+  const wellY = stack ? Math.round(h / 6) : 28;
   const wellW = w - 14 - readoutW;
-  const wellH = h - wellY - 30;
+  const wellH = stack ? Math.round((h * 2) / 3) : h - wellY - 30;
   const padI = 5;
   // ONE wide bar occupying the old two-column footprint, with a right-side gutter
   // for the SPL tick numerals (they used to sit BETWEEN the two columns).
@@ -2917,6 +2926,17 @@ export function PeakAvgMeterView(p: {
   // Anchor the block to a clamped top instead: identical spacing, but it can
   // never climb above the header.
   const roTop = Math.max(roMid - 54, 22);
+  // STACK readout blocks: label + large numeral centred in each padding zone.
+  const stackPkY = Math.max(8, Math.round(wellY / 2) - 38);
+  const stackAvgY = wellY + wellH + Math.max(6, Math.round((h - wellY - wellH) / 2) - 38);
+  const roLx = stack ? 0 : roX;
+  const roLw = stack ? w : roW;
+  const pkLabelY = stack ? stackPkY : roTop;
+  const pkNumY = stack ? stackPkY + 18 : roTop + 12;
+  const avgLabelY = stack ? stackAvgY : roTop + 56;
+  const avgNumY = stack ? stackAvgY + 18 : roTop + 68;
+  const numSize = stack ? 44 : 18;
+  const labelSize = stack ? 12 : 8.5;
 
   // Static geometry: brushed panel, bezel well, one unlit LED stack, ticks.
   const G = useMemo(() => {
@@ -2936,7 +2956,7 @@ export function PeakAvgMeterView(p: {
     }
     return { unlit, well, ticks };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [w, h]);
+  }, [w, h, stack]);
 
   // ── Live ballistics: instant-attack / 62 dB-s release PEAK, ~150 ms AVERAGE,
   // floating hold governed by holdMode. dt from the phase-clock delta (the VU
@@ -3115,8 +3135,8 @@ export function PeakAvgMeterView(p: {
 
   return (
     <View style={{ width: w, height: h }}>
-      <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
-        <BrushedPanel w={w} h={h} />
+      <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: stack ? '#000000' : BG }}>
+        {stack ? null : <BrushedPanel w={w} h={h} />}
         {/* Corner screws removed (owner 2026-07-30: no screws anywhere). */}
         {/* Inset bezel well. */}
         <Path path={G.well} color="#08090b" />
@@ -3159,7 +3179,7 @@ export function PeakAvgMeterView(p: {
       </Canvas>
       {/* Item 12: the meter's gray reference text is lightened to #b6bac4 so it
           reads clearly on the dark meter background (was the dim #767a85 default). */}
-      <Lbl x={10} y={7} w={w - 20} align="left" size={8} font={fonts.oswaldSemiBold} ls={1} color="#b6bac4">
+      <Lbl x={stack ? 0 : 10} y={stack ? h - 16 : 7} w={stack ? w : w - 20} align={stack ? 'center' : 'left'} size={stack ? 9 : 8} font={fonts.oswaldSemiBold} ls={1} color="#b6bac4">
         {weightingLabel ? `dB SPL · ${weightingLabel}` : 'LEVEL · dB SPL'}
       </Lbl>
       {/* SPL scale numerals in the right-side gutter — 40 … 100 dB SPL, +1 pt
@@ -3174,7 +3194,7 @@ export function PeakAvgMeterView(p: {
           PEAK-HOLD MAX dB SPL. Labels are static; the numerals ride the shared
           values via animatedProps. */}
       {/* Order (owner 2026-07-30): WHITE PK/MAX on TOP, PURPLE AVG below it. */}
-      <Lbl x={roX} y={roTop} w={roW} align="center" size={8.5} font={fonts.oswaldSemiBold} ls={1} color="#e8eaee">
+      <Lbl x={roLx} y={pkLabelY} w={roLw} align="center" size={labelSize} font={fonts.oswaldSemiBold} ls={1} color="#e8eaee">
         PK
       </Lbl>
       <AnimatedTextInput
@@ -3184,13 +3204,13 @@ export function PeakAvgMeterView(p: {
         animatedProps={pkMaxReadoutProps}
         style={{
           position: 'absolute',
-          left: roX,
-          top: roTop + 12,
-          width: roW,
+          left: roLx,
+          top: pkNumY,
+          width: roLw,
           padding: 0,
           textAlign: 'center',
           fontFamily: fonts.oswaldSemiBold,
-          fontSize: 18,
+          fontSize: numSize,
           letterSpacing: 0.3,
           color: '#ffffff',
           includeFontPadding: false,
@@ -3199,7 +3219,7 @@ export function PeakAvgMeterView(p: {
           textShadowOffset: { width: 0, height: 1 },
         }}
       />
-      <Lbl x={roX} y={roTop + 56} w={roW} align="center" size={8.5} font={fonts.oswaldSemiBold} ls={1} color={avgInk}>
+      <Lbl x={roLx} y={avgLabelY} w={roLw} align="center" size={labelSize} font={fonts.oswaldSemiBold} ls={1} color={avgInk}>
         AVG
       </Lbl>
       <AnimatedTextInput
@@ -3209,13 +3229,13 @@ export function PeakAvgMeterView(p: {
         animatedProps={avgReadoutProps}
         style={{
           position: 'absolute',
-          left: roX,
-          top: roTop + 68,
-          width: roW,
+          left: roLx,
+          top: avgNumY,
+          width: roLw,
           padding: 0,
           textAlign: 'center',
           fontFamily: fonts.oswaldSemiBold,
-          fontSize: 18,
+          fontSize: numSize,
           letterSpacing: 0.3,
           color: avgNumInk,
           includeFontPadding: false,
@@ -3226,18 +3246,22 @@ export function PeakAvgMeterView(p: {
       />
       {/* Bottom legend — combined "PK / AVG" on one line, colour-coded: WHITE PK
           (matches the white peak readout, owner 2026-07-30), purple AVG, neutral "/". */}
-      <Lbl x={wellX} y={barBot + 5} w={wellW * 0.42} align="right" size={9.5} font={fonts.oswaldSemiBold} color="#ffffff" ls={0.6}>
-        PK
-      </Lbl>
-      <Lbl x={wellX + wellW * 0.42} y={barBot + 5} w={wellW * 0.16} align="center" size={9.5} color="#b6bac4">
-        /
-      </Lbl>
-      <Lbl x={wellX + wellW * 0.58} y={barBot + 5} w={wellW * 0.42} align="left" size={9.5} font={fonts.oswaldSemiBold} color={avgInk} ls={0.6}>
-        AVG
-      </Lbl>
-      <Lbl x={10} y={h - 14} w={w - 20} align="left" size={8.5} color="#b6bac4">
-        {`HOLD ${holdMode.toUpperCase()} · MONO`}
-      </Lbl>
+      {stack ? null : (
+        <>
+          <Lbl x={wellX} y={barBot + 5} w={wellW * 0.42} align="right" size={9.5} font={fonts.oswaldSemiBold} color="#ffffff" ls={0.6}>
+            PK
+          </Lbl>
+          <Lbl x={wellX + wellW * 0.42} y={barBot + 5} w={wellW * 0.16} align="center" size={9.5} color="#b6bac4">
+            /
+          </Lbl>
+          <Lbl x={wellX + wellW * 0.58} y={barBot + 5} w={wellW * 0.42} align="left" size={9.5} font={fonts.oswaldSemiBold} color={avgInk} ls={0.6}>
+            AVG
+          </Lbl>
+          <Lbl x={10} y={h - 14} w={w - 20} align="left" size={8.5} color="#b6bac4">
+            {`HOLD ${holdMode.toUpperCase()} · MONO`}
+          </Lbl>
+        </>
+      )}
     </View>
   );
 }

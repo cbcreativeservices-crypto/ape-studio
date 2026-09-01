@@ -128,6 +128,7 @@ function SideLed({
   weightingLabel,
   ledFill,
   avgColor,
+  stack,
 }: {
   viz: VizMetersModule;
   live: LiveMeterDrive;
@@ -140,6 +141,8 @@ function SideLed({
   ledFill?: { flat: string } | { stops: readonly { pos: number; color: string }[] } | null;
   /** MEMBER average-marker colour (null = default purple). */
   avgColor?: string | null;
+  /** Portrait-fullscreen STACK layout (owner 2026-09-01) — see PeakAvgMeterView. */
+  stack?: boolean;
 }) {
   const phase = viz.usePhaseClock(true, 1 / VU_LOOP);
   if (ledH <= 0) return <View style={{ width: ledW }} />;
@@ -155,6 +158,7 @@ function SideLed({
       weightingLabel={weightingLabel}
       ledFill={ledFill}
       avgColor={avgColor}
+      stack={stack}
     />
   );
 }
@@ -755,6 +759,9 @@ export function SplMeterScreen({ navigation }: Props) {
   // at a time. 'home' is the entry (was the always-open `vuOpen` native Modal).
   const [view, setView] = useState<'home' | 'digital'>('home');
   const [vuFsOpen, setVuFsOpen] = useState(false);
+  // Portrait LED fullscreen (owner 2026-09-01) — no rotation, so no closing
+  // phase: it opens and closes in place like a popup, black ground.
+  const [ledFsOpen, setLedFsOpen] = useState(false);
   // Fullscreen SPL reference gauge — landscape-only, same as Full VU (owner
   // 2026-08-19). Tapping the gauge opens it; both fullscreens force landscape so
   // the phone never has to be flipped.
@@ -808,6 +815,7 @@ export function SplMeterScreen({ navigation }: Props) {
     const onBack = () => {
       if (settingPopup != null) { setSettingPopup(null); return true; }
       if (gaugeFsOpen && !gaugeFsClosing) { setGaugeFsClosing(true); return true; }
+      if (ledFsOpen) { setLedFsOpen(false); return true; }
       if (vuFsOpen && !vuFsClosing) { setVuFsClosing(true); return true; }
       if (readoutFsOpen && !readoutFsClosing) { setReadoutFsClosing(true); return true; }
       if (view === 'digital') { setView('home'); return true; }
@@ -815,7 +823,7 @@ export function SplMeterScreen({ navigation }: Props) {
     };
     const sub = BackHandler.addEventListener('hardwareBackPress', onBack);
     return () => sub.remove();
-  }, [settingPopup, gaugeFsOpen, gaugeFsClosing, vuFsOpen, vuFsClosing, readoutFsOpen, readoutFsClosing, view]);
+  }, [settingPopup, gaugeFsOpen, gaugeFsClosing, vuFsOpen, vuFsClosing, readoutFsOpen, readoutFsClosing, ledFsOpen, view]);
   // User setting for the LED meter's peak-hold cap linger (owner 2026-07-30).
   const [holdMode, setHoldMode] = useState<PeakHoldMode>('1s');
   // RANGE (owner 2026-07-30): the environmental SPL that reads 0 VU. The wide VU
@@ -1616,8 +1624,18 @@ export function SplMeterScreen({ navigation }: Props) {
                     {/* Controls now live in the BOTTOM CONTROL BAR (owner 2026-08-18):
                         RANGE · WEIGHTING · RESPONSE · PEAK HOLD each open a popup. */}
                   </View>
-                  {viz && !vuFsOpen ? (
-                    <SideLed viz={viz} live={live} ledW={ledW} ledH={leftColH} holdMode={holdMode} splOffset={splOffset} weightingLabel={weighting} ledFill={ledFill} avgColor={avgPref} />
+                  {viz && !vuFsOpen && !ledFsOpen ? (
+                    // Tap the LED to open its portrait fullscreen (owner
+                    // 2026-09-01) — same gesture as the VU and the gauge.
+                    // Paused (unmounted) while its own fullscreen covers it, so
+                    // two copies of the meter engine never run at once.
+                    <Pressable
+                      onPress={() => setLedFsOpen(true)}
+                      accessibilityRole="button"
+                      accessibilityLabel="Open the fullscreen LED meter"
+                    >
+                      <SideLed viz={viz} live={live} ledW={ledW} ledH={leftColH} holdMode={holdMode} splOffset={splOffset} weightingLabel={weighting} ledFill={ledFill} avgColor={avgPref} />
+                    </Pressable>
                   ) : null}
                 </View>
 
@@ -2013,6 +2031,37 @@ export function SplMeterScreen({ navigation }: Props) {
           {/* Fullscreen SPL reference gauge — LANDSCAPE-ONLY (owner 2026-08-19).
               Content renders ONLY in landscape so the portrait orientation never
               ghosts a squished layout during the flip. Tap anywhere to close. */}
+          {/* LED METER fullscreen (owner 2026-09-01): PORTRAIT — no rotation,
+              no closing choreography. Black ground; the meter (bezel well + bar)
+              is the middle 2/3 of the height at 1/3 of the width, centred, with
+              the PK readout in the top sixth and AVG in the bottom sixth (the
+              STACK layout inside PeakAvgMeterView). Tap anywhere to close. */}
+          {ledFsOpen && viz && (
+            <Pressable
+              style={styles.ledFsRoot}
+              onPress={() => setLedFsOpen(false)}
+              accessibilityRole="button"
+              accessibilityLabel="Close the fullscreen LED meter — tap to close"
+            >
+              <View style={[styles.vuFsClose, { right: camInset + 14 }]} pointerEvents="none">
+                <Text style={styles.vuFsCloseX}>✕</Text>
+              </View>
+              <View pointerEvents="none" style={{ width: Math.round(winW / 3), height: winH }}>
+                <SideLed
+                  viz={viz}
+                  live={live}
+                  ledW={Math.round(winW / 3)}
+                  ledH={winH}
+                  holdMode={holdMode}
+                  splOffset={splOffset}
+                  weightingLabel={weighting}
+                  ledFill={ledFill}
+                  avgColor={avgPref}
+                  stack
+                />
+              </View>
+            </Pressable>
+          )}
           {(gaugeFsOpen || gaugeFsClosing) && (
             <Pressable
               style={styles.vuFsRoot}
@@ -2547,6 +2596,16 @@ const styles = StyleSheet.create({
   },
   homeNavText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.8, color: colors.textSecondary },
   // Full VU overlay — absolute-fill inside the home (not a second modal).
+  ledFsRoot: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#000000',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   vuFsRoot: {
     position: 'absolute',
     top: 0,
