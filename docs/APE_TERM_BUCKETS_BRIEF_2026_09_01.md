@@ -20,14 +20,19 @@ years of users will experience.
 
 ## Step 0 — the source data
 
-You need the glossary export. The owner produces it in the Supabase SQL
-editor (Download as CSV or JSON) with:
+You need the glossary export — ALL ~26,800 rows.
 
-```sql
-select id, term, definition, plain_english
-from glossary
-order by term;
-```
+⚠ The Supabase **SQL editor's** CSV download only exports the visible results
+page (the owner's first attempt returned 100 rows). Use the **Table Editor**
+instead: Dashboard → Table Editor → `glossary` → the export/download control →
+"Export table as CSV" — that path exports every row. (If exporting via SQL is
+preferred, the query is `select id, term, definition, plain_english from
+glossary order by term;` but the download must not be the results-pane page.)
+
+**Sanity-check the file before starting**: it must have ~26,800 data rows and
+the header `id,term,definition,plain_english` (extra columns from a full table
+export are fine — ignore them). If it has ~100 rows, it is the truncated page
+export — stop and get the full one.
 
 Work ONLY from this export. **Every fact in every body you write must be
 derivable from that row's `definition` / `plain_english` text.** You are

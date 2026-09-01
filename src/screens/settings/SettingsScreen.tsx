@@ -271,6 +271,7 @@ export function SettingsScreen({ navigation }: Props) {
         <SettingsSection
           title="NOTIFICATIONS"
           summary={(() => {
+            if (!isMember) return 'members';
             const n =
               (prefs?.push_enabled ? 1 : 0) +
               (prefs?.email_enabled ? 1 : 0) +
@@ -279,6 +280,29 @@ export function SettingsScreen({ navigation }: Props) {
             return n ? `${n} on` : 'all off';
           })()}
         >
+          {!isMember ? (
+            /* Notifications are MEMBERS ONLY (owner 2026-09-01). Non-members
+               (and guests, and lapsed) see the honest note + the way in — not
+               a wall of dead switches. The scheduler enforces the same rule
+               independently (localSchedule memberStanding gate), so nothing
+               fires either way. NEW COPY — owner review. */
+            <View style={{ paddingVertical: 10 }}>
+              <Text style={styles.rowHint}>
+                🔒 Notifications — daily terms, study reminders, weekly recaps — are an Academy member
+                feature.
+              </Text>
+              <Pressable
+                style={[styles.row, { marginTop: 6 }]}
+                onPress={() => (navigation as any).navigate('Paywall')}
+                accessibilityRole="button"
+                accessibilityLabel="See membership"
+              >
+                <Text style={styles.rowLabel}>See membership</Text>
+                <Text style={styles.chevron}>›</Text>
+              </Pressable>
+            </View>
+          ) : (
+          <>
           <Text style={styles.groupLabel}>HOW THEY REACH YOU</Text>
           {NOTIFICATION_ROWS.map((row) => (
             <View key={row.key} style={[styles.row, styles.rowBorder]}>
@@ -404,6 +428,8 @@ export function SettingsScreen({ navigation }: Props) {
             );
           })}
           </View>
+          </>
+          )}
         </SettingsSection>
 
         {/* DISPLAY + ACCESSIBILITY are one concern to a user ("how it looks and

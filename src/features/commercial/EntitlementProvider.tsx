@@ -16,6 +16,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { devBypass } from '../../config/devMode';
 import { DEV_COMMERCIAL_FLAG_KEY, DEV_ENTITLEMENT_KEY, FLAG_DEFAULTS } from '../../config/flags';
 import { supabase } from '../../lib/supabase';
+import { setMemberStanding } from './memberStanding';
+import { requestLocalNotifSync } from '../notifications/localSchedule';
+import { loadLocalSettings } from '../settings/store';
 import { clearAllLocalMethodStates } from '../study/localProgress';
 import { emitStudyProgress } from '../study/sync';
 
@@ -279,6 +282,16 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
     setCommercialModeState(on);
     void AsyncStorage.setItem(DEV_COMMERCIAL_FLAG_KEY, on ? '1' : '0');
   }, []);
+
+  // Notifications are MEMBERS ONLY (owner 2026-09-01): mirror real standing
+  // into the leaf the device scheduler reads, then re-run the scheduler so a
+  // change takes effect NOW — a lapse cancels every booked reminder, a new
+  // membership arms whatever the user had switched on. requestLocalNotifSync
+  // is change-gated (standing is part of its slice), so this is cheap.
+  useEffect(() => {
+    setMemberStanding(entitlement === 'academy');
+    void loadLocalSettings().then((s) => requestLocalNotifSync(s));
+  }, [entitlement]);
 
   const setEntitlement = useCallback((state: Entitlement) => {
     if (!__DEV__) return;

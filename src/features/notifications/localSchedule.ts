@@ -25,6 +25,7 @@ import { supabase } from '../../lib/supabase';
 import { getNotifications } from './push';
 import { dayNameToDow } from './weeklyConcept';
 import { curatedEntryForDate, MISUNDERSTOOD_TERMS, ODD_TERMS, type CuratedTermEntry } from './curatedTermLists';
+import { memberStanding } from '../commercial/memberStanding';
 // TYPE-ONLY — store.ts imports this module at runtime (the save funnel), so a
 // value import back would be a require cycle. App.tsx loads the settings and
 // hands them in.
@@ -165,6 +166,7 @@ let syncing = false;
 /** The settings that affect scheduling — used to skip no-op resyncs. */
 function notifSlice(s: LocalSettings): string {
   return JSON.stringify([
+    memberStanding(),
     s.notifyDailyStudy,
     s.notifyContinue,
     s.continueDays,
@@ -209,8 +211,14 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
     // The master switch gates EVERYTHING this device schedules. Off => the
     // sweep below cancels what exists and nothing is re-booked.
     const phoneOn = await phoneNotificationsEnabled();
+    // MEMBERS ONLY (owner 2026-09-01): a definite non-member books nothing —
+    // the sweep above the gate cancels whatever exists. 'unknown' (cold boot
+    // racing the entitlement fetch) leaves a member's books alone; the
+    // provider re-syncs the moment standing resolves.
+    const memberOk = memberStanding() !== 'nonmember';
     const anyOn =
       phoneOn &&
+      memberOk &&
       (s.notifyDailyStudy ||
         s.notifyContinue ||
         s.notifyNewTerms ||
