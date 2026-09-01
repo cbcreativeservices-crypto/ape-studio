@@ -116,17 +116,26 @@ function LabRow({
   // done (R6c). Hook called unconditionally — keyless labs pass '' (never done).
   const done = useLabDone(leaf.key ?? '');
   return (
+      // Demoted from a button (QA night 2026-09-01): the row wrapped the
+      // real OPEN button — invalid nesting on web, and the outer label
+      // swallowed it from screen readers. Semantics live on the name text;
+      // its tap bubbles to this wrapper (the ratified Enrollment pattern).
     <Pressable
       onPress={onToggle}
-      accessibilityRole="button"
-      accessibilityState={{ expanded }}
-      accessibilityLabel={`${leaf.name}${done ? ', completed' : ''}${dev ? ', planned, not open yet' : ''}, ${expanded ? 'expanded' : 'collapsed'}`}
+      accessible={false}
       style={({ pressed }) => [styles.row, dev && styles.rowDev, pressed && styles.rowPressed]}
     >
       <Text style={styles.rowCaret}>{expanded ? '▾' : '▸'}</Text>
       <View style={{ flex: 1 }}>
         <View style={styles.rowNameLine}>
-          <Text style={[styles.rowName, dev && styles.rowNameDev]}>{leaf.name}</Text>
+          <Text
+            style={[styles.rowName, dev && styles.rowNameDev]}
+            accessibilityRole="button"
+            accessibilityState={{ expanded }}
+            accessibilityLabel={`${leaf.name}${done ? ', completed' : ''}${dev ? ', planned, not open yet' : ''}, ${expanded ? 'expanded' : 'collapsed'}`}
+          >
+            {leaf.name}
+          </Text>
           {done ? <Text style={styles.doneCheck}>✓</Text> : null}
         </View>
         {expanded ? (

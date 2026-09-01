@@ -31,17 +31,26 @@ export function ModuleAccordionRow({
   onOpen: () => void;
 }) {
   return (
+      // Demoted from a button (QA night 2026-09-01): the row wrapped the
+      // real OPEN button — invalid nesting on web, and the outer label
+      // swallowed it from screen readers. Semantics live on the name text;
+      // its tap bubbles to this wrapper (the ratified Enrollment pattern).
     <Pressable
       onPress={onToggle}
-      accessibilityRole="button"
-      accessibilityState={{ expanded }}
-      accessibilityLabel={`${name}, ${expanded ? 'expanded' : 'collapsed'}`}
+      accessible={false}
       style={({ pressed }) => [styles.card, pressed && styles.pressed]}
     >
       <Text style={styles.caret}>{expanded ? '▾' : '▸'}</Text>
       {num != null ? <Text style={styles.num}>{num}</Text> : null}
       <View style={{ flex: 1, gap: 2 }}>
-        <Text style={styles.name}>{name}</Text>
+        <Text
+          style={styles.name}
+          accessibilityRole="button"
+          accessibilityState={{ expanded }}
+          accessibilityLabel={`${name}, ${expanded ? 'expanded' : 'collapsed'}`}
+        >
+          {name}
+        </Text>
         {expanded ? <Text style={styles.blurb}>{blurb}</Text> : null}
       </View>
       {done ? <Text style={styles.done}>{'\u2713'}</Text> : null}

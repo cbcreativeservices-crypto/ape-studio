@@ -228,11 +228,13 @@ function LabRow({
   const dev = leaf.status === 'development';
   const showLock = !!locked && !dev; // preview: readable + a small lock, never dimmed
   return (
+      // Demoted from a button (QA night 2026-09-01): the row wrapped the
+      // real OPEN button — invalid nesting on web, and the outer label
+      // swallowed it from screen readers. Semantics live on the name text;
+      // its tap bubbles to this wrapper (the ratified Enrollment pattern).
     <Pressable
       onPress={onToggle}
-      accessibilityRole="button"
-      accessibilityState={{ expanded }}
-      accessibilityLabel={`${leaf.name}${dev ? ', planned, not open yet' : ''}${freeIncluded ? ', included free' : ''}, ${expanded ? 'expanded' : 'collapsed'}`}
+      accessible={false}
       style={({ pressed }) => [
         styles.row,
         !expanded && styles.rowTight,
@@ -244,7 +246,14 @@ function LabRow({
     >
       <Text style={[styles.rowCaret, freeIncluded && styles.rowCaretFree]}>{expanded ? '▾' : '▸'}</Text>
       <View style={{ flex: 1 }}>
-        <Text style={[styles.rowName, dev && styles.rowNameDev]}>{leaf.name}</Text>
+        <Text
+          style={[styles.rowName, dev && styles.rowNameDev]}
+          accessibilityRole="button"
+          accessibilityState={{ expanded }}
+          accessibilityLabel={`${leaf.name}${dev ? ', planned, not open yet' : ''}${freeIncluded ? ', included free' : ''}, ${expanded ? 'expanded' : 'collapsed'}`}
+        >
+          {leaf.name}
+        </Text>
         {expanded ? (
           <>
             <Text style={styles.rowBlurb}>{leaf.blurb}</Text>
