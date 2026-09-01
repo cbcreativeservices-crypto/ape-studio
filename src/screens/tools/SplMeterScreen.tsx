@@ -787,6 +787,10 @@ export function SplMeterScreen({ navigation }: Props) {
   // control layer — the 4 settings buttons AND the LED meter (plus the LED's
   // own pill + colour wheel) — leaving just the VU. The pill itself stays.
   const [vuFsChromeHidden, setVuFsChromeHidden] = useState(false);
+  // Fullscreen chrome top offset (owner 2026-09-01): clear of the OS status
+  // line in both orientations — insets.top when it reports, a 26pt floor when
+  // landscape reports 0 while iOS still draws the clock/battery row.
+  const fsChromeTop = Math.max(insets.top, 26) + 6;
   // Which setting popup is open from the VU home's bottom control bar (owner
   // 2026-08-18): Range · Weighting · Response · Peak Hold.
   const [settingPopup, setSettingPopup] = useState<null | 'range' | 'unit' | 'response' | 'hold'>(null);
@@ -1354,33 +1358,26 @@ export function SplMeterScreen({ navigation }: Props) {
                 </Text>
                 <Text style={styles.cellHint}>tap to reset</Text>
               </Pressable>
-              <Pressable
-                style={styles.fsBtn}
-                onPress={() => { setReadoutFsClosing(false); setReadoutFsOpen(true); }}
-                accessibilityRole="button"
-                accessibilityLabel="Open the readout full screen"
-              >
-                <Text style={styles.fsBtnIcon}>⛶</Text>
-                <Text style={styles.fsBtnLabel}>FULL{'\n'}SCREEN</Text>
-              </Pressable>
             </View>
 
-            {/* Big live readout (owner 2026-08-17): RESPONSE toggle LEFT
-                (FAST · SLOW · 5 SEC AVG), number center (tap = START/STOP), UNIT
-                toggle RIGHT (dBFS · dBA · dBC · dB SPL). The toggles carry unit +
-                response, so the card shows only the honesty line (no repetition). */}
+            {/* Big live readout (owner 2026-08-17; tap retargeted 2026-09-01):
+                RESPONSE toggle LEFT (FAST · SLOW · 5 SEC AVG), number center
+                (tap = FULLSCREEN — the same tap-the-display gesture as the VU,
+                the gauge and the LED; the green ⛶ button it replaces is gone,
+                and START/STOP lives on the MIC bar below), UNIT toggle RIGHT
+                (dBFS · dBA · dBC · dB SPL). */}
             <View style={styles.readoutRow}>
               {renderResponseToggle()}
               <Pressable
                 style={[styles.readoutCard, styles.readoutCardFlex]}
-                onPress={running ? stopMeter : startMeter}
+                onPress={() => { setReadoutFsClosing(false); setReadoutFsOpen(true); }}
                 accessibilityRole="button"
                 // The label REPLACES the child text for a screen reader, so it
                 // has to carry the reading itself — otherwise the one thing
                 // this screen exists to report is the one thing a blind user
                 // cannot hear. Deliberately NOT a live region: this updates
                 // many times a second and would talk over everything else.
-                accessibilityLabel={`${bigText} ${readoutHonesty}. ${running ? 'Tap to stop the meter.' : 'Tap to start the meter.'}`}
+                accessibilityLabel={`${bigText} ${readoutHonesty}. Tap to open the readout full screen.`}
               >
                 <Text style={styles.readoutValue} numberOfLines={1}>
                   {bigText}
@@ -1943,7 +1940,7 @@ export function SplMeterScreen({ navigation }: Props) {
               accessibilityRole="button"
               accessibilityLabel="Close the full VU screen — tap the meter to close"
             >
-              <View style={[styles.vuFsClose, { right: camInset + 14 }]} pointerEvents="none">
+              <View style={[styles.vuFsClose, { right: camInset + 14, top: fsChromeTop }]} pointerEvents="none">
                 <Text style={styles.vuFsCloseX}>✕</Text>
               </View>
               {/* LANDSCAPE-ONLY (owner 2026-08-19): render the Full VU content
@@ -1958,7 +1955,7 @@ export function SplMeterScreen({ navigation }: Props) {
                   {/* LED controls cluster (owner 2026-08-18/21) — top-LEFT row that
                       stays ABOVE the vertically-centred settings column so nothing
                       obscures it: HIDE LED toggle + (members) the colour wheel. */}
-                  <View style={[styles.vuFsLedRow, { left: camInset + 14 }]} pointerEvents="box-none">
+                  <View style={[styles.vuFsLedRow, { left: camInset + 14, top: fsChromeTop }]} pointerEvents="box-none">
                     {/* Clean-view master toggle (owner 2026-09-01): hides the
                         settings column + LED + their pills; stays visible
                         itself so the controls can come back. NEW COPY — owner
@@ -2084,7 +2081,7 @@ export function SplMeterScreen({ navigation }: Props) {
               accessibilityRole="button"
               accessibilityLabel="Close the fullscreen LED meter — tap to close"
             >
-              <View style={[styles.vuFsClose, { right: camInset + 14 }]} pointerEvents="none">
+              <View style={[styles.vuFsClose, { right: camInset + 14, top: fsChromeTop }]} pointerEvents="none">
                 <Text style={styles.vuFsCloseX}>✕</Text>
               </View>
               <View pointerEvents="none" style={{ width: Math.round(winW / 3), height: winH }}>
@@ -2113,7 +2110,7 @@ export function SplMeterScreen({ navigation }: Props) {
               {gaugeFsNeedsRotate ? <LandscapeRequiredNotice what="fullscreen SPL gauge" onClose={() => setGaugeFsClosing(true)} /> : null}
               {winW >= winH && !gaugeFsClosing ? (
                 <>
-                  <View style={[styles.vuFsClose, { right: camInset + 14 }]} pointerEvents="none">
+                  <View style={[styles.vuFsClose, { right: camInset + 14, top: fsChromeTop }]} pointerEvents="none">
                     <Text style={styles.vuFsCloseX}>✕</Text>
                   </View>
                   <View style={[styles.gaugeFsStage, { paddingLeft: camInset + 16, paddingRight: camInset + 12 }]} pointerEvents="box-none">
@@ -2382,18 +2379,6 @@ const styles = StyleSheet.create({
   // Standalone FULLSCREEN button, right of PEAK HOLD. The FRAME matches the other
   // screen buttons (neutral #26262c/#131316, same as peakCell); only the CONTENTS
   // — the ⛶ icon + label — are green (owner 2026-08-18).
-  fsBtn: {
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#131316',
-    paddingHorizontal: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 2,
-  },
-  fsBtnIcon: { fontFamily: fonts.mono, fontSize: 18, color: colors.green },
-  fsBtnLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 0.8, color: colors.green, textAlign: 'center' },
 
   // Fullscreen # readout view (owner 2026-08-17): number alone, no toggles.
   // isolation:isolate makes the red MULTIPLY wash blend only against the
