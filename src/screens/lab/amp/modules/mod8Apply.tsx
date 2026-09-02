@@ -371,7 +371,7 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
                   <Pressable
                     key={oi}
                     disabled={finalSubmitted}
-                    onPress={() => setFinalAnswers({ ...finalAnswers, [c.id]: oi })}
+                    onPress={() => setFinalAnswers((prev) => ({ ...prev, [c.id]: oi }))}
                     style={[styles.opt, picked === oi && !finalSubmitted && styles.optPicked, isRight && styles.optRight, isWrongPick && styles.optWrong]}
                     accessibilityRole="button"
                     accessibilityState={{ selected: picked === oi }}
