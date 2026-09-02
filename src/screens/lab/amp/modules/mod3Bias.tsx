@@ -14,8 +14,8 @@ import { AMP_COLORS, Body, Card, ControlSlider, HonestyBadge, LearnMore, Section
 
 const ANGLES = [360, 270, 180, 90] as const;
 
-/** Magnified view around the zero crossing of one output cycle. */
-function CrossoverZoom({ out }: { out: Float32Array }) {
+/** Magnified view around the zero crossing of one output cycle (shared with Module 4). */
+export function CrossoverZoom({ out }: { out: Float32Array }) {
   const W = 340, H = 110;
   const span = 22; // samples each side of the crossing at n/2
   const c = WAVE_N / 2;
