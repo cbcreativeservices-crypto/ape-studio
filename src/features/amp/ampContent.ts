@@ -536,6 +536,102 @@ export const SPEC_SHEETS: SpecSheet[] = [
   },
 ];
 
+/* ── Module 8: waveform diagnosis ───────────────────────────────────────── */
+
+export type WaveKind =
+  | 'clean' | 'voltage-clip' | 'crossover' | 'current-limit' | 'sag'
+  | 'classd-raw' | 'classd-filtered' | 'protect';
+
+export const WAVE_KINDS: { key: WaveKind; label: string; evidence: string }[] = [
+  { key: 'clean', label: 'Clean output', evidence: 'A smooth sine that follows the input with room below the rail lines — nothing flattened, nothing missing at zero.' },
+  { key: 'voltage-clip', label: 'Voltage clipping', evidence: 'Flat tops sitting EXACTLY on the rail lines. The supply ran out of volts.' },
+  { key: 'crossover', label: 'Crossover distortion', evidence: 'A flat step or kink right at the zero crossing; the peaks are untouched. Output-stage handoff, not the rails.' },
+  { key: 'current-limit', label: 'Current limiting', evidence: 'Flat tops BELOW the rail lines with voltage to spare above them. The output stage would not pass more current.' },
+  { key: 'sag', label: 'Supply sag', evidence: 'Clipping that begins below the nominal rails because the rails themselves drooped under sustained load — the rail lines have moved inward.' },
+  { key: 'classd-raw', label: 'Class D switching (before the filter)', evidence: 'Only two levels, pulses of changing width — the audio is in the widths, not the height.' },
+  { key: 'classd-filtered', label: 'Normal filtered Class D output', evidence: 'A clean audio waveform — the switching has been averaged away. Indistinguishable from any clean output at this zoom, which is the point.' },
+  { key: 'protect', label: 'Protection / mute', evidence: 'A flat line at zero with input still present: the output relay has opened. Nothing is reaching the load.' },
+];
+
+/* ── Module 8: application selection ────────────────────────────────────── */
+
+export type AppClassChoice = 'A' | 'AB' | 'D' | 'C' | 'TUBE';
+
+export type AppScenario = {
+  id: string;
+  title: string;
+  brief: string;
+  /** Technically defensible choices (more than one is allowed). */
+  accepted: AppClassChoice[];
+  /** Why each accepted choice works, and the trade it makes. */
+  reasoning: Partial<Record<AppClassChoice, string>>;
+  /** Why the others do not fit. */
+  rejected: Partial<Record<AppClassChoice, string>>;
+};
+
+export const APP_SCENARIOS: AppScenario[] = [
+  {
+    id: 'ap-portable', title: 'Battery-powered portable speaker',
+    brief: 'Runs on a small battery for hours; must stay cool inside a sealed enclosure.',
+    accepted: ['D'],
+    reasoning: { D: 'Efficiency is the whole game on a battery: Class D wastes the least energy as heat and needs little heatsinking in a sealed box.' },
+    rejected: { A: 'Class A burns most of the battery as heat even at idle.', AB: 'Workable, but its dissipation shortens battery life and needs a heatsink the enclosure cannot spare.', C: 'Not an audio amplifier.', TUBE: 'Heater power and heat alone rule it out.' },
+  },
+  {
+    id: 'ap-sub', title: 'Touring subwoofer amplifier',
+    brief: 'Thousands of watts into low-impedance loads, night after night, in a road rack.',
+    accepted: ['D'],
+    reasoning: { D: 'At kilowatt levels, efficiency decides weight, rack heat and mains draw — modern touring amplifiers are switching designs with switch-mode supplies for exactly this reason.' },
+    rejected: { A: 'The heat would be measured in kilowatts.', AB: 'Historically used, but its heat and weight at this power are why the industry moved on.', C: 'Not an audio amplifier.', TUBE: 'Impractical at this power and impedance.' },
+  },
+  {
+    id: 'ap-monitor', title: 'Studio-monitor amplifier',
+    brief: 'Moderate power, low distortion at low levels, sits on a desk near the listener.',
+    accepted: ['AB', 'D'],
+    reasoning: { AB: 'Properly biased AB is linear at low levels, quiet, and moderate power keeps heat manageable — a classic choice.', D: 'A well-implemented Class D with a good filter and feedback is equally valid and runs cooler; implementation quality decides, not the class letter.' },
+    rejected: { A: 'Defensible in a purist design, but the heat and idle draw on a desk are a real cost for no guaranteed benefit.', C: 'Not an audio amplifier.', TUBE: 'Possible, but heat, output transformer and maintenance make it an unusual monitor choice.' },
+  },
+  {
+    id: 'ap-classroom', title: 'Educational Class A circuit',
+    brief: 'A bench circuit built to SHOW how an amplifier works — simplicity matters more than efficiency.',
+    accepted: ['A'],
+    reasoning: { A: 'One device, one operating point, full-cycle conduction: the simplest amplifier to build, probe and understand. Efficiency is irrelevant on a bench.' },
+    rejected: { AB: 'Two devices and a bias network hide the basic idea.', D: 'Modulators and filters obscure the lesson.', C: 'Cannot pass audio at all.', TUBE: 'A tube stage is also Class A — but the brief asks for the transistor circuit that students can build safely at low voltage.' },
+  },
+  {
+    id: 'ap-rf', title: 'RF transmitter output stage',
+    brief: 'One carrier frequency, high efficiency, driving an antenna through a tuned network.',
+    accepted: ['C', 'D'],
+    reasoning: { C: 'A single tuned frequency is exactly what Class C recovers — its tank rings at the carrier and the short pulses keep dissipation low.', D: 'Switching-mode RF amplifiers exist for the same efficiency reasons; defensible at some frequencies.' },
+    rejected: { A: 'Works but wastes most of the power as heat.', AB: 'Linear RF amplifiers exist, but for a constant carrier the efficiency of C wins.', TUBE: 'Tubes are used in RF — but the question is the operating class; a tube can run Class C.' },
+  },
+  {
+    id: 'ap-guitar', title: 'Tube guitar amplifier',
+    brief: 'The player wants the classic overdrive character and feel of a tube output stage.',
+    accepted: ['TUBE', 'AB', 'A'],
+    reasoning: { TUBE: 'The brief names the device: tube stages (usually push-pull AB, sometimes single-ended A) with an output transformer deliver the sought-after saturation behavior.', AB: 'Most tube guitar amplifiers run their output tubes in push-pull Class AB.', A: 'Small single-ended tube amplifiers run Class A — the low-watt classic.' },
+    rejected: { D: 'Can model the sound, but the brief asks for the tube stage itself.', C: 'Not an audio amplifier.' },
+  },
+  {
+    id: 'ap-install', title: 'Compact multichannel installation amplifier',
+    brief: 'Eight channels in one rack unit, running all day in a closed equipment closet.',
+    accepted: ['D'],
+    reasoning: { D: 'Eight channels of linear amplification would not fit the heat budget of one rack unit in a closet; switching stages make the density and the always-on duty possible.' },
+    rejected: { A: 'Heat and size are impossible here.', AB: 'Eight AB channels in 1U would thermally limit constantly.', C: 'Not an audio amplifier.', TUBE: 'Neither the size nor the maintenance fits.' },
+  },
+];
+
+export const APP_CHOICES: { key: AppClassChoice; label: string }[] = [
+  { key: 'A', label: 'Class A' }, { key: 'AB', label: 'Class AB' }, { key: 'D', label: 'Class D' }, { key: 'C', label: 'Class C' }, { key: 'TUBE', label: 'Tube stage' },
+];
+
+/* ── Module 8: myth review (the nine required statements) ───────────────── */
+
+export const MYTH_REVIEW_IDS = [
+  'd-is-digital', 'a-sounds-best', 'watts-loudness', 'always-8-ohms', 'gain-sets-watts',
+  'transformer-power', 'lower-z-better', 'common-ground', 'watt-match',
+] as const;
+
 /* ── protection-state copy (Part 3 §7) ──────────────────────────────────── */
 
 export const FAULT_COPY: Record<string, { title: string; detected: string; action: string; check: string }> = {

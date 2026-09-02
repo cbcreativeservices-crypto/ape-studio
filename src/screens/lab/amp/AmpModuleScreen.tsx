@@ -27,6 +27,7 @@ export function AmpModuleScreen() {
   const stateRef = useRef<AmpProgressState | null>(null);
   const [checksAnswered, setChecksAnswered] = useState<Record<string, boolean>>({});
   const [done, setDone] = useState(false);
+  const [finalSubmitted, setFinalSubmitted] = useState(false);
   const checks = checksForModule(mod.id);
 
   useEffect(() => {
@@ -40,6 +41,7 @@ export function AmpModuleScreen() {
       stateRef.current = s;
       setDone(m.done);
       setChecksAnswered(m.checks);
+      setFinalSubmitted(!!s.final);
       void saveAmpProgress(s);
     })();
     return () => {
@@ -60,7 +62,10 @@ export function AmpModuleScreen() {
     [mod.id],
   );
 
-  const allChecksAnswered = checks.every((c) => c.id in checksAnswered);
+  // The last module completes only after the final assessment is submitted
+  // (spec Part 3 §11); every other module after its checks.
+  const needsFinal = mod.id === 'apply' && !finalSubmitted;
+  const allChecksAnswered = checks.every((c) => c.id in checksAnswered) && !needsFinal;
 
   const complete = useCallback(() => {
     const s = stateRef.current;
@@ -92,7 +97,20 @@ export function AmpModuleScreen() {
           <Text style={styles.objectiveText}>{mod.objective}</Text>
         </View>
 
-        {Component ? <Component /> : <Text style={styles.missing}>This module is not built yet.</Text>}
+        {Component ? (
+          <Component
+            onFinalSubmitted={() => {
+              setFinalSubmitted(true);
+              // Module 8 saved the result itself; refresh our copy so the
+              // completion write below does not clobber it.
+              void loadAmpProgress().then((s) => {
+                stateRef.current = s;
+              });
+            }}
+          />
+        ) : (
+          <Text style={styles.missing}>This module is not available.</Text>
+        )}
 
         {checks.length ? (
           <>
@@ -116,7 +134,11 @@ export function AmpModuleScreen() {
           <Text style={styles.completeText}>{done ? 'CONTINUE ›' : 'MARK COMPLETE & CONTINUE ›'}</Text>
         </Pressable>
         {!allChecksAnswered ? (
-          <Text style={styles.requirement}>Answer the {checks.length} check{checks.length > 1 ? 's' : ''} above to continue — a wrong pick is fine, the explanation is the point.</Text>
+          <Text style={styles.requirement}>
+            {needsFinal
+              ? 'Submit the final assessment above to complete the lab.'
+              : `Answer the ${checks.length} check${checks.length > 1 ? 's' : ''} above to continue — a wrong pick is fine, the explanation is the point.`}
+          </Text>
         ) : null}
       </ScrollView>
     </View>
