@@ -250,7 +250,7 @@ export function reverb(x: Mono, space: ReverbSpace, decay = 1, bright = 0.5, wet
   const FB: Record<ReverbSpace, number> = { room: 0.72, hall: 0.84, plate: 0.8, chamber: 0.78, spring: 0.82 };
   const damp = 0.6 - bright * 0.45;
   const fb = Math.min(0.92, FB[space] * Math.pow(decay, 0.4));
-  let wetSum = new Float32Array(x.length);
+  let wetSum: Mono = new Float32Array(x.length);
   for (const ms of COMBS[space]) {
     const c = combFb(x, Math.max(8, Math.round((ms / 1000) * SR)), fb, damp);
     for (let i = 0; i < x.length; i++) wetSum[i] += c[i] / COMBS[space].length;
