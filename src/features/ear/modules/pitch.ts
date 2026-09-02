@@ -6,7 +6,7 @@
  */
 import { harmonicComplex, type Mono } from '../earDsp';
 import type { EarModule } from '../earTypes';
-import { rngFor, pickInt, present, type Rng } from './common';
+import { rngFor, pickInt, present } from './common';
 
 const HL_STEPS = [12, 7, 4, 2, 1]; // semitones per level
 
@@ -32,7 +32,7 @@ function deckFor(level: number) {
   return INTERVALS.filter((i) => semis.includes(i.semi));
 }
 
-function note(f0: number, rng: Rng): Mono {
+function note(f0: number): Mono {
   return present(harmonicComplex(f0, 1.0, 0.9));
 }
 
@@ -43,16 +43,18 @@ export const M11_PITCH: EarModule = {
   blurb: 'Which note is higher — down to a single semitone — then name the interval.',
   phones: 'any',
   playbackNote: 'Complex tones carry pitch on any playback.',
+  // NEW COPY
+  listenFor: 'Hum the first note, then the second — does it land above or below? For intervals, sing the two notes as one step.',
   levels: 5,
-  levelNames: ['Octave apart + 3 intervals', '7 semitones + 5 intervals', '4 semitones + 8 intervals', '2 semitones, all 12', '1 semitone, all 12'],
+  levelNames: ['Octave apart + 3 intervals', '7 semitones + 5 intervals', '4 semitones + 8 intervals', '2 semitones, every interval', '1 semitone, every interval'], // NEW COPY (L4/L5: 13 chips, unison to octave)
   makeTrial: (level, seed) => {
     const rng = rngFor(seed);
     const root = 110 * Math.pow(2, rng() * 2); // A2–A4
     if (rng() < 0.5) {
       const step = HL_STEPS[Math.min(level, 5) - 1];
       const firstHigher = rng() < 0.5;
-      const low = note(root, rng);
-      const high = note(root * Math.pow(2, step / 12), rng);
+      const low = note(root);
+      const high = note(root * Math.pow(2, step / 12));
       return {
         clips: [
           { label: 'A', buf: firstHigher ? high : low },
@@ -80,13 +82,14 @@ export const M11_PITCH: EarModule = {
         : undefined;
     return {
       clips: [
-        { label: 'A', buf: note(root, rng) },
-        { label: 'B', buf: note(root * Math.pow(2, iv.semi / 12), rng) },
+        { label: 'A', buf: note(root) },
+        { label: 'B', buf: note(root * Math.pow(2, iv.semi / 12)) },
       ],
       question: 'What interval is A up to B?',
       answers: deck.map((d) => ({ label: d.label })),
       correct: idx,
       near: near && near.length ? near : undefined,
+      ordered: { low: 'too narrow', high: 'too wide' }, // NEW COPY
       reveal: iv.truth,
       seeIt: {
         kind: 'spectrum',

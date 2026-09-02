@@ -12,7 +12,7 @@ import {
   type Mono,
 } from '../earDsp';
 import type { EarModule, EarTrial } from '../earTypes';
-import { rngFor, pickInt, drumPattern, p99, present, type Rng } from './common';
+import { rngFor, pickInt, choice, drumPattern, p99, present, type Rng } from './common';
 
 // ————————————————————————————— M7 · Loudness ——————————————————————————————
 
@@ -34,17 +34,23 @@ export const M7_LOUDNESS: EarModule = {
   blurb: 'The same sound at two levels — which is louder, and by about how much?',
   phones: 'any',
   playbackNote: 'Relative levels survive any transducer.',
+  // NEW COPY
+  listenFor: 'Trust the first impression — A or B jumps out. Then judge the size: 6 dB is "obviously", 1 dB is "I think".',
   levels: 4,
   levelNames: ['6 dB steps', '3 dB steps', '2 dB steps', '1 dB steps'],
   makeTrial: (level, seed) => {
     const rng = rngFor(seed);
-    const delta = M7_STEPS[Math.min(level, 4) - 1];
+    // The magnitude question draws from every step unlocked so far (L2: 6 or
+    // 3 · L3: 6/3/2 · L4: all four) — a fixed per-level delta made "by how
+    // much?" answerable from the level badge alone. L1 has one step, so it
+    // asks direction only.
+    const askMagnitude = level >= 2 && rng() < 0.4;
+    const delta = askMagnitude ? choice(rng, M7_STEPS.slice(0, Math.min(level, 4))) : M7_STEPS[Math.min(level, 4) - 1];
     const src = m7Source(rng);
     const base = (rng() - 0.5) * 4; // ±2 dB anti-anchoring jitter
     const firstLouder = rng() < 0.5;
     const a = gainDb(src, base + (firstLouder ? delta : 0));
     const b = gainDb(src, base + (firstLouder ? 0 : delta));
-    const askMagnitude = level <= 2 && rng() < 0.4;
     const bars = [
       { label: 'A', db: firstLouder ? 0 : -delta },
       { label: 'B', db: firstLouder ? -delta : 0 },
@@ -61,6 +67,7 @@ export const M7_LOUDNESS: EarModule = {
         answers: M7_CHIPS.map((s) => ({ label: `${s} dB` })),
         correct: idx,
         near: delta >= 3 ? [idx - 1, idx + 1].filter((i) => i >= 0 && i < M7_CHIPS.length) : undefined,
+        ordered: { low: 'too small', high: 'too big' }, // NEW COPY
         reveal,
         seeIt: {
           kind: 'levels',
@@ -123,6 +130,8 @@ export const M10_COMPRESSION: EarModule = {
   blurb: 'None, light, moderate, heavy, pumping — hear the envelope change, not the level.',
   phones: 'recommended',
   playbackNote: 'Rendered drum surrogate; headphones help on the light settings.',
+  // NEW COPY
+  listenFor: 'Same loudness, different shape: do the hits snap, or sit down flat? Does the space between hits swell back up?',
   levels: 4,
   levelNames: ['None vs heavy', 'None / moderate / heavy', 'All five', 'None vs light — the hard one'],
   makeTrial: (level, seed) => {
@@ -157,10 +166,13 @@ export const M10_COMPRESSION: EarModule = {
       question: 'How compressed is this?',
       answers: deck.map((s) => ({ label: s.label })),
       correct: idx,
+      // Spec: adjacent intensity = half credit at L2–L3; pumping and "none"
+      // are categories, not intensities, so they never earn or give near.
       near:
-        level === 3 && setting.key !== 'pumping'
+        level <= 3 && setting.key !== 'pumping' && setting.key !== 'none'
           ? [idx - 1, idx + 1].filter((i) => i >= 0 && i < deck.length && deck[i].key !== 'pumping' && deck[i].key !== 'none')
           : undefined,
+      ordered: { low: 'too light', high: 'too heavy' }, // NEW COPY
       reveal: `${setting.truth} Loudness-matched, so only the envelope gives it away.`,
       seeIt: {
         kind: 'wave',
@@ -198,6 +210,8 @@ export const M14_CLIPPING: EarModule = {
   blurb: 'Clean, mild, moderate, severe — catch flattened peaks before the client does.',
   phones: 'any',
   playbackNote: 'Phone-speaker distortion can mask mild clipping.',
+  // NEW COPY
+  listenFor: 'Clipping adds crunch or buzz on the loudest hits only — the softer material between hits stays clean.',
   levels: 4,
   levelNames: ['Clean vs severe', 'Clean / moderate / severe', 'All four severities', 'ABX on mild'],
   makeTrial: (level, seed) => {
@@ -255,7 +269,10 @@ export const M14_CLIPPING: EarModule = {
       question: 'How clipped is this?',
       answers: deck.map((s) => ({ label: s.label })),
       correct: idx,
-      near: level === 3 ? [idx - 1, idx + 1].filter((i) => i > 0 && i < deck.length) : undefined,
+      // Adjacent severity = half credit (spec: L2; kept through L3). "Clean"
+      // is never a near miss — calling clipped audio clean is the real error.
+      near: idx > 0 ? [idx - 1, idx + 1].filter((i) => i > 0 && i < deck.length) : undefined,
+      ordered: { low: 'too mild', high: 'too severe' }, // NEW COPY
       reveal: `${sev.truth} Loudness-matched after clipping.`,
       seeIt: {
         kind: 'wave',

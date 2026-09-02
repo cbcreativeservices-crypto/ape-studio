@@ -6,7 +6,7 @@
  * All copy is NEW COPY — owner review.
  */
 import {
-  pinkNoise, mixDelayed, reverb, gainDb, rmsDb, fadeEdges,
+  pinkNoise, mixDelayed, reverb, gainDb, rmsDb, fadeEdges, REVERB_RT60,
   type Mono, type ReverbSpace,
 } from '../earDsp';
 import type { EarModule, EarTrial } from '../earTypes';
@@ -24,6 +24,13 @@ function withEcho(x: Mono, delayMs: number): Mono {
   return y;
 }
 
+/** Truthful description of what withEcho() actually rendered. */
+// NEW COPY
+const echoDesc = (delayMs: number): string =>
+  delayMs >= 250
+    ? `Two repeats, ${delayMs} ms apart — the first 6 dB down, the second fainter.`
+    : `One echo, ${delayMs} ms behind each pluck, 6 dB down.`;
+
 export const M8_DELAY: EarModule = {
   id: 'delay',
   num: '8',
@@ -31,6 +38,8 @@ export const M8_DELAY: EarModule = {
   blurb: 'Hear discrete echoes and call their time — 500 ms down to the edge of fusion.',
   phones: 'any',
   playbackNote: 'Temporal, not spectral — any playback works.',
+  // NEW COPY
+  listenFor: 'Find the repeat after each pluck and feel the gap. Long gaps read as an echo; short ones blur into thickness.',
   levels: 4,
   levelNames: ['500 ms echoes', '250 ms', '100 ms', '50 ms — near the fusion edge'],
   makeTrial: (level, seed) => {
@@ -51,7 +60,7 @@ export const M8_DELAY: EarModule = {
         question: 'Which clip has a delay on it?',
         answers: [{ label: 'A' }, { label: 'B' }],
         correct: wetFirst ? 0 : 1,
-        reveal: `One echo, ${delay} ms behind each pluck, 6 dB down. Below ~30–50 ms echoes fuse with the direct sound — that story continues in Comb Filtering.`,
+        reveal: `${echoDesc(delay)} Below ~30–50 ms echoes fuse with the direct sound — that story continues in Comb Filtering.`, // NEW COPY
         seeIt: {
           kind: 'wave',
           clips: [wetFirst ? 0 : 1],
@@ -80,20 +89,25 @@ export const M8_DELAY: EarModule = {
         },
       };
     }
-    const src = pluckPattern(rng, 0.6 + delay / 500);
-    const idx = DELAY_CHIPS.indexOf(delay);
+    // "How long?" draws from the times unlocked so far (never fewer than two,
+    // so L1 still asks something) — a fixed per-level time made the chips
+    // answerable from the level badge alone.
+    const askDelay = choice(rng, DELAYS.slice(0, Math.max(2, Math.min(level, 4))));
+    const src = pluckPattern(rng, 0.6 + askDelay / 500);
+    const idx = DELAY_CHIPS.indexOf(askDelay);
     return {
-      clips: [{ label: '▶', buf: present(withEcho(src, delay)) }],
+      clips: [{ label: '▶', buf: present(withEcho(src, askDelay)) }],
       question: 'About how long is the delay?',
       answers: DELAY_CHIPS.map((d) => ({ label: `${d} ms` })),
       correct: idx,
       near: level <= 2 ? [idx - 1, idx + 1].filter((i) => i >= 0 && i < DELAY_CHIPS.length) : undefined,
-      reveal: `${delay} ms, one repeat at −6 dB.`,
+      ordered: { low: 'too short', high: 'too long' }, // NEW COPY
+      reveal: echoDesc(askDelay),
       seeIt: {
         kind: 'wave',
         clips: [0],
-        markersSec: [firstOnset, firstOnset + delay / 1000],
-        caption: `Count the ruler: ${delay} ms from direct to echo.`,
+        markersSec: [firstOnset, firstOnset + askDelay / 1000],
+        caption: `Read the ruler: ${askDelay} ms from the direct pluck to its echo.`, // NEW COPY
       },
     };
   },
@@ -110,6 +124,8 @@ export const M13_COMB: EarModule = {
   blurb: 'The phasey, hollow sound of a signal meeting a delayed copy of itself.',
   phones: 'recommended',
   playbackNote: 'Room reflections add their own combs over speakers — genuinely confusing.',
+  // NEW COPY
+  listenFor: 'Hollow, phasey, "in a tube" — the comb takes evenly spaced bites out of the tone. Ignore any change in level.',
   levels: 4,
   levelNames: ['Copy at 0 dB — deep combs', 'Copy at −3 dB', 'Copy at −6 dB', '−9 dB, ABX'],
   makeTrial: (level, seed) => {
@@ -172,6 +188,8 @@ export const M12_POLARITY: EarModule = {
   blurb: 'Two mics on one source, summed — the snare-top/snare-bottom survival skill.',
   phones: 'recommended',
   playbackNote: 'The low-end loss needs real LF; speaker-room phase is Wave lab turf.',
+  // NEW COPY
+  listenFor: 'Both clips are the same two mics summed — in one, a copy is flipped. Listen for the low end going hollow or vanishing.',
   levels: 3,
   levelNames: ['Identical copies — dramatic', '0.2 ms offset — hollow', '0.5 ms + 3 dB mismatch — subtle'],
   makeTrial: (level, seed) => {
@@ -213,7 +231,7 @@ export const M12_POLARITY: EarModule = {
         correct: inFirst ? 0 : 1,
         reveal:
           level === 1
-            ? 'One sum had a copy polarity-flipped — identical signals cancel almost completely. (Level intentionally not re-matched here: the drop IS the lesson.)'
+            ? 'One sum had a copy polarity-flipped — identical signals cancel COMPLETELY, so that clip is digital silence (not a playback fault). Level intentionally not re-matched here: the drop IS the lesson.' // NEW COPY
             : `The flipped sum loses its low end (copies ${offsetMs} ms apart${mismatchDb ? ', 3 dB mismatched' : ''}) — hollow, not silent. A lone flip on ONE signal is inaudible; the SUM is where polarity bites.`,
         seeIt: {
           kind: 'spectrum',
@@ -229,7 +247,7 @@ export const M12_POLARITY: EarModule = {
       {
         label: 'Partial cancellation',
         buf: mk(false, 1.2),
-        truth: 'In polarity but 1.2 ms late — comb notches up high, lows intact.',
+        truth: 'In polarity but 1.2 ms late — comb notches from ~400 Hz up, lows intact.', // NEW COPY
       },
     ];
     const idx = pickInt(rng, variants.length);
@@ -251,12 +269,15 @@ export const M12_POLARITY: EarModule = {
 
 // ————————————————————————————— M9 · Reverb ————————————————————————————————
 
+// Truths describe what the Schroeder render actually does (comb spacing,
+// RT60, damping, the spring's AM ripple) — no pre-delay is modelled, so none
+// is claimed. NEW COPY.
 const SPACES: { key: ReverbSpace; label: string; truth: string }[] = [
-  { key: 'room', label: 'Room (emulation)', truth: 'Room — tight early reflections, short tail.' },
-  { key: 'chamber', label: 'Chamber (emulation)', truth: 'Chamber — a real room’s cousin, denser and a touch darker.' },
-  { key: 'hall', label: 'Hall (emulation)', truth: 'Hall — long pre-delay feel, wide slow bloom.' },
-  { key: 'plate', label: 'Plate (emulation)', truth: 'Plate — instant density, bright sheen, no early "room" cues.' },
-  { key: 'spring', label: 'Spring (emulation)', truth: 'Spring — dispersive "boing"; the drip gives it away.' },
+  { key: 'room', label: 'Room (emulation)', truth: `Room — small and short: the tail is gone in about ${REVERB_RT60.room} s.` },
+  { key: 'chamber', label: 'Chamber (emulation)', truth: `Chamber — a room’s bigger cousin, about ${REVERB_RT60.chamber} s of tail and a touch darker.` },
+  { key: 'hall', label: 'Hall (emulation)', truth: `Hall — the long one: a slow, wide bloom that lasts about ${REVERB_RT60.hall} s.` },
+  { key: 'plate', label: 'Plate (emulation)', truth: `Plate — instant density and a bright sheen, about ${REVERB_RT60.plate} s, no "room" cues.` },
+  { key: 'spring', label: 'Spring (emulation)', truth: 'Spring — the wobbling "boing" ripple in the tail gives it away.' },
 ];
 
 function padTail(x: Mono, tailSec: number): Mono {
@@ -272,15 +293,20 @@ export const M9_REVERB: EarModule = {
   blurb: 'Room, chamber, hall, plate, spring — all rendered emulations, honestly labeled.',
   phones: 'recommended',
   playbackNote: 'Quiet tails vanish on phone speakers.',
+  // NEW COPY
+  listenFor: 'Ignore the notes and hear the tail: how long it lasts, how fast it blooms, and whether it wobbles.',
   levels: 5,
   levelNames: ['Dry vs wet', 'Short / medium / long', 'Room vs hall vs plate', 'All five spaces', 'Bright vs dark'],
   makeTrial: (level, seed) => {
     const rng = rngFor(seed);
     const src = pluckPattern(rng, 0.2);
     if (level <= 1) {
+      // Each space at its own true RT60 (the reveal quotes it); the tail pad
+      // grows with the RT so a hall is never cut off mid-bloom.
       const space = choice(rng, SPACES);
-      const dry = present(padTail(src, 1.2));
-      const wet = present(reverb(padTail(src, 1.2), space.key, 1, 0.5, 0.5));
+      const pad = Math.max(1.2, REVERB_RT60[space.key] * 0.8);
+      const dry = present(padTail(src, pad));
+      const wet = present(reverb(padTail(src, pad), space.key, REVERB_RT60[space.key], 0.5, 0.5));
       const wetFirst = rng() < 0.5;
       return {
         clips: [
@@ -290,7 +316,7 @@ export const M9_REVERB: EarModule = {
         question: 'Which clip has reverb on it?',
         answers: [{ label: 'A' }, { label: 'B' }],
         correct: wetFirst ? 0 : 1,
-        reveal: `${space.truth} All spaces here are offline emulations — labeled as such.`,
+        reveal: `${space.truth} All spaces here are offline emulations — labeled as such.`, // (truth already carries the RT)
         seeIt: {
           kind: 'wave',
           clips: [0, 1],
@@ -299,21 +325,24 @@ export const M9_REVERB: EarModule = {
       };
     }
     if (level === 2) {
+      // RT60 is what the render is BUILT to (earDsp.reverb solves each comb's
+      // feedback from it), so the quoted seconds are true, not decorative.
       const decays = [
-        { label: 'Short', decay: 0.45, truth: 'Short decay (≈0.5 s).' },
-        { label: 'Medium', decay: 1.1, truth: 'Medium decay (≈1.2 s).' },
-        { label: 'Long', decay: 2.3, truth: 'Long decay (≈2.5 s).' },
+        { label: 'Short', rt60: 0.5, truth: 'Short decay — RT60 ≈ 0.5 s.' }, // NEW COPY
+        { label: 'Medium', rt60: 1.2, truth: 'Medium decay — RT60 ≈ 1.2 s.' },
+        { label: 'Long', rt60: 2.5, truth: 'Long decay — RT60 ≈ 2.5 s.' },
       ];
       const idx = pickInt(rng, decays.length);
       const space = choice(rng, SPACES.slice(0, 4));
-      const wet = present(reverb(padTail(src, 2.6), space.key, decays[idx].decay, 0.5, 0.5));
+      const wet = present(reverb(padTail(src, 2.6), space.key, decays[idx].rt60, 0.5, 0.5));
       return {
         clips: [{ label: '▶', buf: wet }],
         question: 'How long is the decay?',
         answers: decays.map((d) => ({ label: d.label })),
         correct: idx,
         near: [idx - 1, idx + 1].filter((i) => i >= 0 && i < decays.length),
-        reveal: `${decays[idx].truth} ${space.truth} (emulation)`,
+        ordered: { low: 'too short', high: 'too long' }, // NEW COPY
+        reveal: `${decays[idx].truth} Rendered on the ${space.label.replace(' (emulation)', '').toLowerCase()} emulation’s comb set.`, // NEW COPY
         seeIt: {
           kind: 'wave',
           clips: [0],
@@ -330,7 +359,10 @@ export const M9_REVERB: EarModule = {
         question: `Is this ${space.label.toLowerCase()} bright or dark?`,
         answers: [{ label: 'Bright' }, { label: 'Dark' }],
         correct: brightIs ? 0 : 1,
-        reveal: `${brightIs ? 'Bright — high damping opened up (≈8 kHz).' : 'Dark — heavy damping (≈2 kHz).'} ${space.truth} (emulation)`,
+        // No corner frequency is claimed: the damping is a one-pole in each
+        // comb loop, so its tilt compounds every pass rather than sitting at
+        // one number. NEW COPY.
+        reveal: `${brightIs ? 'Bright — light damping, so the top end lives on into the tail.' : 'Dark — heavy damping, so the highs die first and the tail goes woolly.'} ${space.truth} (emulation)`,
         seeIt: {
           kind: 'spectrum',
           clips: [0],
@@ -341,10 +373,10 @@ export const M9_REVERB: EarModule = {
     const deck = level === 3 ? [SPACES[0], SPACES[2], SPACES[3]] : SPACES;
     const idx = pickInt(rng, deck.length);
     const space = deck[idx];
-    const wet = present(reverb(padTail(src, 2.2), space.key, 1.2, 0.5, 0.55));
-    // Classic confusions earn half credit: room↔chamber, hall↔plate (spec).
-    const nearKeys: Record<string, string[]> =
-      level >= 4 ? { room: ['chamber'], chamber: ['room'], hall: ['plate'], plate: ['hall'] } : {};
+    const wet = present(reverb(padTail(src, 2.2), space.key, REVERB_RT60[space.key], 0.5, 0.55));
+    // Classic confusions earn half credit at L3–L4: room↔chamber, hall↔plate
+    // (spec). findIndex → −1 filters out any pair absent from the L3 deck.
+    const nearKeys: Record<string, string[]> = { room: ['chamber'], chamber: ['room'], hall: ['plate'], plate: ['hall'] };
     const near = (nearKeys[space.key] ?? [])
       .map((k) => deck.findIndex((s) => s.key === k))
       .filter((i) => i >= 0);

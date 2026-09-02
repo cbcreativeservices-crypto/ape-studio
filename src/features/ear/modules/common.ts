@@ -38,8 +38,8 @@ export const hzLabel = (hz: number): string =>
   hz >= 1000 ? `${(hz / 1000).toString().replace(/\.0$/, '')} kHz` : `${hz} Hz`;
 
 /** Standard presentation loudness: −20 dBFS RMS + edge fades (spec §1/§5). */
-export function present(x: Mono, targetDb = -20): Mono {
-  return fadeEdges(normalizeRms(x, targetDb));
+export function present(x: Mono, targetDb = -20, fadeMs = 8): Mono {
+  return fadeEdges(normalizeRms(x, targetDb), fadeMs);
 }
 
 /**
@@ -53,8 +53,11 @@ export function lfMakeupDb(freq: number): number {
   return 6 * Math.min(1, Math.max(0, t));
 }
 
+/** Pure tones get the spec's 20 ms raised-cosine fades (an 8 ms fade is only
+ *  half a cycle at 63 Hz — audible as a soft click, which is M5's stimulus,
+ *  not M1's). */
 export function presentTone(x: Mono, freq: number): Mono {
-  return gainDb(present(x), lfMakeupDb(freq));
+  return gainDb(present(x, -20, 20), lfMakeupDb(freq));
 }
 
 /**

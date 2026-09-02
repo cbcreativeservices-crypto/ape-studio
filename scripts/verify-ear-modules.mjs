@@ -1,16 +1,36 @@
 // Node verification of the ear-training TRIAL FACTORIES: for many seeds,
 // FFT-measure the rendered clips and prove the trial's declared correct answer
-// matches what the audio actually contains. Run: npx tsx scripts/verify-ear-modules.mjs
-import {
-  powerSpectrumDb, bandDb, sumToMono, rmsDb,
-} from '../src/features/ear/earDsp.ts';
-import { M1_FREQUENCY, M2_EQ, M3_BAND, M4_NOISE, BANDS } from '../src/features/ear/modules/tone.ts';
-import { M7_LOUDNESS, M10_COMPRESSION, M14_CLIPPING } from '../src/features/ear/modules/dynamics.ts';
-import { M8_DELAY, M9_REVERB, M12_POLARITY, M13_COMB } from '../src/features/ear/modules/time.ts';
-import { M5_DEFECTS } from '../src/features/ear/modules/defects.ts';
-import { M6_STEREO } from '../src/features/ear/modules/spatial.ts';
-import { M11_PITCH } from '../src/features/ear/modules/pitch.ts';
-import { applyTrial, emptyModuleProgress } from '../src/features/ear/earProgress.ts';
+// matches what the audio actually contains.
+//
+// Run from the repo root:  node scripts/verify-ear-modules.mjs
+// (Node ≥ 22.15 strips the .ts types natively. The modules import each other
+// WITHOUT extensions — Metro/tsx guess them, Node's ESM loader does not — so a
+// resolve hook below appends ".ts" for relative specifiers. `npx tsx` still
+// works too.)
+import { registerHooks } from 'node:module';
+import { existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+
+registerHooks({
+  resolve(specifier, context, nextResolve) {
+    if (specifier.startsWith('.') && !/\.[cm]?[jt]sx?$/.test(specifier) && context.parentURL?.startsWith('file:')) {
+      const candidate = fileURLToPath(new URL(specifier, context.parentURL)) + '.ts';
+      if (existsSync(candidate)) return nextResolve(`${specifier}.ts`, context);
+    }
+    return nextResolve(specifier, context);
+  },
+});
+
+// Dynamic imports: static ones would be linked BEFORE the hook registers.
+const { powerSpectrumDb, bandDb, sumToMono, rmsDb } = await import('../src/features/ear/earDsp.ts');
+const { M1_FREQUENCY, M2_EQ, M3_BAND, M4_NOISE, BANDS } = await import('../src/features/ear/modules/tone.ts');
+const { M7_LOUDNESS, M10_COMPRESSION, M14_CLIPPING } = await import('../src/features/ear/modules/dynamics.ts');
+const { M8_DELAY, M9_REVERB, M12_POLARITY, M13_COMB } = await import('../src/features/ear/modules/time.ts');
+const { M5_DEFECTS } = await import('../src/features/ear/modules/defects.ts');
+const { M6_STEREO } = await import('../src/features/ear/modules/spatial.ts');
+const { M11_PITCH } = await import('../src/features/ear/modules/pitch.ts');
+const { EAR_MODULES } = await import('../src/features/ear/modules/registry.ts');
+const { applyTrial, emptyModuleProgress } = await import('../src/features/ear/earProgress.ts');
 
 let pass = 0, fail = 0;
 const ok = (name, cond, detail = '') => {
@@ -28,6 +48,27 @@ const parseHz = (label) =>
   label.includes('kHz') ? parseFloat(label) * 1000 : parseFloat(label);
 
 const SEEDS = Array.from({ length: 12 }, (_, i) => 1000 + i * 7919);
+
+console.log('— registry: every module carries the shell contract —');
+{
+  ok('14 modules registered', EAR_MODULES.length === 14);
+  ok('every module has a LISTEN FOR objective', EAR_MODULES.every((m) => typeof m.listenFor === 'string' && m.listenFor.length > 20));
+  ok('every module names one level per ladder rung', EAR_MODULES.every((m) => m.levelNames.length === m.levels));
+  // Every trial's correct index must point INSIDE its answers, near indices too.
+  let bad = 0, n = 0;
+  for (const m of EAR_MODULES) {
+    for (let level = 1; level <= m.levels; level++) {
+      for (const seed of SEEDS.slice(0, 4)) {
+        const t = m.makeTrial(level, seed + level * 101);
+        n++;
+        if (t.correct < 0 || t.correct >= t.answers.length) bad++;
+        if ((t.near ?? []).some((i) => i < 0 || i >= t.answers.length || i === t.correct)) bad++;
+        if (t.seeIt.kind !== 'levels' && t.seeIt.clips.some((c) => c < 0 || c >= t.clips.length)) bad++;
+      }
+    }
+  }
+  ok(`answer/near/seeIt indices in range (${n - bad}/${n})`, bad === 0);
+}
 
 console.log('— M1 Frequency: declared answer matches the spectral peak —');
 {
@@ -94,6 +135,35 @@ console.log('— M2 EQ: B really differs from A at the stated frequency, in the 
   ok(`EQ moves verified (${good}/${total})`, good === total && total > 0);
 }
 
+console.log('— M2/M7/M8: "how much / how long" chips are not answerable from the level alone —');
+{
+  const distinct = (mod, level, startsWith, tries = 60) => {
+    const set = new Set();
+    for (let i = 0; i < tries; i++) {
+      const t = mod.makeTrial(level, 5000 + i * 7919);
+      if (t.question.startsWith(startsWith)) set.add(t.answers[t.correct].label);
+    }
+    return set;
+  };
+  const eq3 = distinct(M2_EQ, 3, 'By about how much');
+  ok(`M2 L3 amount varies (${[...eq3].join(', ')})`, eq3.size >= 2);
+  const eq1 = distinct(M2_EQ, 1, 'By about how much');
+  ok('M2 L1 never asks amount (only one magnitude exists there)', eq1.size === 0);
+  const l3 = distinct(M7_LOUDNESS, 3, 'By about how much');
+  ok(`M7 L3 magnitude varies (${[...l3].join(', ')})`, l3.size >= 2);
+  const l1 = distinct(M7_LOUDNESS, 1, 'By about how much');
+  ok('M7 L1 asks direction only', l1.size === 0);
+  const d2 = distinct(M8_DELAY, 2, 'About how long');
+  ok(`M8 L2 delay-time chips vary (${[...d2].join(', ')})`, d2.size >= 2);
+  // Ladder floor kept: the AB "which is louder?" trial at L4 is still 1 dB.
+  let abOk = true;
+  for (let i = 0; i < 40; i++) {
+    const t = M7_LOUDNESS.makeTrial(4, 9000 + i * 104729);
+    if (t.question.startsWith('Which is louder') && !/ is 1 dB louder/.test(t.reveal)) abOk = false;
+  }
+  ok('M7 L4 direction trials stay at the 1 dB floor', abOk);
+}
+
 console.log('— M3 Band: the declared band moved more than any other —');
 {
   let good = 0, total = 0;
@@ -154,6 +224,14 @@ console.log('— M4 Noise/Waveform: slopes + tonality match the declared answer 
     }
   }
   ok(`noise/waveform trials verified (${good}/${total})`, good === total && total > 0);
+  // Noise trials ask the view for slope guides; tone trials must not.
+  let guideOk = true;
+  for (let i = 0; i < 40; i++) {
+    const t = M4_NOISE.makeTrial(2, 300 + i * 7919);
+    const isNoise = /noise/i.test(t.answers[t.correct].label);
+    if (Boolean(t.seeIt.slopeGuides) !== isNoise) guideOk = false;
+  }
+  ok('slope guides requested for noise trials only', guideOk);
 }
 
 console.log('— presentation loudness: all clips normalized (M1 LF makeup exempt ≤250 Hz) —');
@@ -222,6 +300,17 @@ console.log('— M10 Compression: compressed clips have flatter loud/soft envelo
   }
   ok(`heavy compression detectable by envelope, not level (${good}/${total})`, good === total && total > 0);
   ok('AB pairs loudness-matched within 1 dB', rmsBad === 0, `${rmsBad} leaked`);
+  // Near credit: L2 moderate↔heavy adjacent, never none.
+  let nearOk = true;
+  for (let i = 0; i < 40; i++) {
+    const t = M10_COMPRESSION.makeTrial(2, 400 + i * 7919);
+    const label = t.answers[t.correct].label;
+    const nearLabels = (t.near ?? []).map((k) => t.answers[k].label);
+    if (label === 'None' && nearLabels.length) nearOk = false;
+    if (label === 'Moderate' && !nearLabels.includes('Heavy')) nearOk = false;
+    if (nearLabels.includes('None')) nearOk = false;
+  }
+  ok('M10 L2 adjacent-intensity half credit (none excluded)', nearOk);
 }
 
 console.log('— M14 Clipping: severity orders the flattened-peak density; ABX honest —');
@@ -262,9 +351,6 @@ console.log('— M14 Clipping: severity orders the flattened-peak density; ABX h
 
 console.log('— M8 Delay: the declared echo really lands at the declared time —');
 {
-  // Autocorrelation-free check: the "which delay" chips trial names N ms; the
-  // clip minus the dry pluck alignment is hard without the dry, so verify by
-  // construction: the echo lifts energy at (onset + delay) vs a dry render.
   let good = 0, total = 0;
   for (const seed of SEEDS.slice(0, 8)) {
     for (let level = 1; level <= 4; level++) {
@@ -284,9 +370,12 @@ console.log('— M8 Delay: the declared echo really lands at the declared time �
       const off = Math.max(score(Math.round(lag * 0.62)), score(Math.round(lag * 1.43)));
       if (at > off) good++;
       else console.log(`    seed ${seed} L${level}: stated ${stated}ms, autocorr at=${at.toExponential(2)} off=${off.toExponential(2)}`);
+      // The see-it markers must be exactly the stated delay apart.
+      const [m0, m1] = t.seeIt.markersSec ?? [];
+      if (m1 == null || Math.abs((m1 - m0) * 1000 - stated) > 0.5) { good--; console.log(`    seed ${seed} L${level}: markers ${m0}/${m1} vs ${stated} ms`); }
     }
   }
-  ok(`delay-time trials honest (${good}/${total})`, good === total && total > 0);
+  ok(`delay-time trials honest, markers match (${good}/${total})`, good === total && total > 0);
 }
 
 console.log('— M13 Comb: the declared combed clip has the notches —');
@@ -356,34 +445,61 @@ console.log('— M12 Polarity: flipped sums lose level (L1) or low end (L2+) —
   ok(`L2 flip loses ≥6 dB of low end (${lfOk}/${lfN})`, lfN === 0 || lfOk === lfN);
 }
 
-console.log('— M9 Reverb: wet clips carry a tail the dry lacks; decay chips ordered —');
+console.log('— M9 Reverb: wet clips carry a tail the dry lacks; quoted RT60s are true —');
 {
   const tailDb = (x) => rmsDb(x.slice(Math.round(x.length * 0.8)));
+  // L1 spaces run at their TRUE RT60 (a 0.4 s room is honestly silent by
+  // the end of the clip), so probe the window right after the direct sound
+  // ends (last pluck 0.8 s + 0.4 s ring → 1.3–1.7 s).
+  const earlyTailDb = (x) => rmsDb(x.slice(Math.round(1.3 * 48000), Math.round(1.7 * 48000)));
   let abOk = 0, abN = 0;
   for (const seed of SEEDS.slice(0, 8)) {
     const t = M9_REVERB.makeTrial(1, seed + 53);
     abN++;
-    const wet = tailDb(mono(t.clips[t.correct].buf));
-    const dry = tailDb(mono(t.clips[1 - t.correct].buf));
+    const wet = earlyTailDb(mono(t.clips[t.correct].buf));
+    const dry = earlyTailDb(mono(t.clips[1 - t.correct].buf));
     if (wet - dry > 10) abOk++;
     else console.log(`    seed ${seed}: wet tail ${wet.toFixed(1)} dry ${dry.toFixed(1)}`);
   }
   ok(`dry-vs-wet honest (${abOk}/${abN})`, abOk === abN);
-  // Short vs long decay: find one of each and compare late-tail energy.
+  // Decay chips: measure the late-tail decay RATE of the render and compare
+  // with the RT60 the feedback copy claims. Direct sound is over by ~1.25 s
+  // (second pluck 0.8 s + 0.4 s ring); 100 ms RMS windows on the tail after.
+  const winDb = (x, atSec) => rmsDb(x.slice(Math.round(atSec * 48000), Math.round((atSec + 0.1) * 48000)));
   const findDecay = (want) => {
     for (let tries = 0; tries < 300; tries++) {
       const t = M9_REVERB.makeTrial(2, 70000 + tries * 7919);
-      if (t.answers[t.correct].label === want) return mono(t.clips[0].buf);
+      if (t.answers[t.correct].label === want) return { x: mono(t.clips[0].buf), reveal: t.reveal };
     }
     return null;
   };
-  const short = findDecay('Short');
-  const long = findDecay('Long');
+  const short = findDecay('Short'), medium = findDecay('Medium'), long = findDecay('Long');
   ok(
     'long decay outsustains short in the late tail',
-    short != null && long != null && tailDb(long) - tailDb(short) > 6,
-    short && long ? `${(tailDb(long) - tailDb(short)).toFixed(1)}dB` : 'not found',
+    short != null && long != null && tailDb(long.x) - tailDb(short.x) > 6,
+    short && long ? `${(tailDb(long.x) - tailDb(short.x)).toFixed(1)}dB` : 'not found',
   );
+  const rtOf = (x, t0, t1) => (60 * (t1 - t0)) / (winDb(x, t0) - winDb(x, t1));
+  const rtM = medium ? rtOf(medium.x, 1.4, 1.9) : NaN; // claimed 1.2 s
+  const rtL = long ? rtOf(long.x, 1.6, 2.6) : NaN; // claimed 2.5 s
+  const rtS = short ? rtOf(short.x, 1.3, 1.5) : NaN; // claimed 0.5 s
+  ok('Medium tail decays at RT60 ≈ 1.2 s (0.8–1.8)', rtM > 0.8 && rtM < 1.8, `measured ${rtM.toFixed(2)} s`);
+  ok('Long tail decays at RT60 ≈ 2.5 s (1.7–3.5)', rtL > 1.7 && rtL < 3.5, `measured ${rtL.toFixed(2)} s`);
+  ok('Short tail decays at RT60 ≈ 0.5 s (0.3–0.9)', rtS > 0.3 && rtS < 0.9, `measured ${rtS.toFixed(2)} s`);
+  ok('decay reveals quote the RT60', [short, medium, long].every((d) => d && /RT60 ≈ [\d.]+ s/.test(d.reveal)));
+  // Spec: room↔chamber and hall↔plate confusions earn half credit at L3–L4.
+  let hallNearPlate = false;
+  for (let i = 0; i < 60 && !hallNearPlate; i++) {
+    const t = M9_REVERB.makeTrial(3, 800 + i * 7919);
+    if (t.answers[t.correct].label.startsWith('Hall')) {
+      hallNearPlate = (t.near ?? []).some((k) => t.answers[k].label.startsWith('Plate'));
+    }
+  }
+  ok('L3 hall↔plate confusion earns half credit', hallNearPlate);
+  // Every reverb reveal carries the emulation label.
+  let emu = true;
+  for (let level = 1; level <= 5; level++) for (let i = 0; i < 6; i++) if (!/emulation/.test(M9_REVERB.makeTrial(level, 111 + i * 7919 + level).reveal)) emu = false;
+  ok('every reverb reveal says "emulation"', emu);
 }
 
 console.log('— M6 Stereo: images measure as declared (correlation / channel balance / width) —');
@@ -475,6 +591,11 @@ console.log('— M5 Defects: tonal signatures + time-domain events measure as de
         return pinned / clipBuf.length > 0.005;
       })(),
   );
+  // RF (emulation) is a 217 Hz TDMA pulse train: line at 217 Hz well above
+  // the gap halfway to the next line.
+  const rfBuf = find5('RF interference (emulation)', 2);
+  const rfLine = rfBuf ? bandDb(rfBuf, 217, 0.06) - bandDb(rfBuf, 325, 0.06) : -99;
+  ok('RF emulation pulses at 217 Hz (line ≥ 10 dB over the gap)', rfLine > 10, `${rfLine.toFixed(1)} dB`);
   // Buried level check: at L4 the defect must actually sit well below the bed.
   const t4 = M5_DEFECTS.makeTrial(4, 123457);
   ok('L4 clips still presented at −20 dBFS', Math.abs(rmsDb(mono(t4.clips[0].buf)) + 20) < 1);
@@ -517,6 +638,27 @@ console.log('— M11 Pitch: the declared higher note is higher; intervals are th
   ok(`intervals honest (${ivOk}/${ivN})`, ivOk === ivN && ivN > 0);
 }
 
+console.log('— ordered decks: "k steps low/high" feedback only where the deck really is a ladder —');
+{
+  let bad = 0, n = 0;
+  for (const m of EAR_MODULES) {
+    for (let level = 1; level <= m.levels; level++) {
+      for (let i = 0; i < 6; i++) {
+        const t = m.makeTrial(level, 2000 + i * 7919 + level * 31);
+        if (!t.ordered) continue;
+        n++;
+        // A ladder must be strictly monotonic where it is numeric.
+        const nums = t.answers.map((a) => parseFloat(a.label.replace(/[^\d.]/g, '')) * (a.label.includes('kHz') ? 1000 : 1));
+        if (nums.every(Number.isFinite)) {
+          for (let k = 1; k < nums.length; k++) if (!(nums[k] > nums[k - 1])) { bad++; console.log(`    ${m.id} L${level}: not ascending — ${t.answers.map((a) => a.label).join(', ')}`); break; }
+        }
+        if (!t.ordered.low || !t.ordered.high) bad++;
+      }
+    }
+  }
+  ok(`ordered ladders ascend (${n - bad}/${n} trials)`, bad === 0 && n > 0);
+}
+
 console.log('— determinism: same seed, same trial —');
 {
   const a = M2_EQ.makeTrial(3, 424242);
@@ -539,6 +681,16 @@ console.log('— progress rules (spec §1) —');
   ok('19 perfect trials do NOT level up yet', mid.level === 1);
   const half = applyTrial(emptyModuleProgress(), 4, 0.5).next;
   ok('near credit logs 0.5', half.totalScore === 0.5 && half.streak === 0);
+  // Ping-pong guard: promote 1→2 on 20 perfect, demote 2→1 on 20 bad, then
+  // the FIRST trial back at L1 must not re-promote off the 19 stale wins.
+  let pp = emptyModuleProgress();
+  for (let i = 0; i < 20; i++) pp = applyTrial(pp, 4, 1).next;
+  for (let i = 0; i < 20; i++) pp = applyTrial(pp, 4, 0).next;
+  const afterDown = pp.level;
+  pp = applyTrial(pp, 4, 1).next;
+  ok('step-down is not reversed by the next single trial', afterDown === 1 && pp.level === 1);
+  for (let i = 0; i < 19; i++) pp = applyTrial(pp, 4, 1).next;
+  ok('…but 20 fresh wins at L1 promote again', pp.level === 2);
 }
 
 console.log(`\n${pass} passed, ${fail} failed`);

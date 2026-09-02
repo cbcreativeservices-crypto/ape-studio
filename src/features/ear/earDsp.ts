@@ -240,9 +240,20 @@ function allpass(x: Mono, delaySamp: number, g = 0.5): Mono {
 
 export type ReverbSpace = 'room' | 'hall' | 'plate' | 'chamber' | 'spring';
 
+/** Nominal broadband RT60 (s) per space — the spec's table. Used when a
+ *  caller doesn't name a decay, and quoted in feedback copy. */
+export const REVERB_RT60: Record<ReverbSpace, number> = { room: 0.4, chamber: 1.0, hall: 2.2, plate: 1.6, spring: 1.8 };
+
 /** Schroeder reverb, parameterized per space — an EMULATION and labeled so in
- *  the UI. `decay` scales RT; `bright` (0..1) sets the damping tilt. */
-export function reverb(x: Mono, space: ReverbSpace, decay = 1, bright = 0.5, wet = 0.45): Mono {
+ *  the UI. `rt60Sec` is the broadband decay time the render is BUILT to have:
+ *  each comb's feedback is solved from its own delay (fb = 10^(−3·d/RT60)) so
+ *  every comb decays at the same rate and a quoted "≈1.2 s" is true by
+ *  construction. (Previously one shared feedback per space was scaled by a
+ *  loose "decay" factor — a "medium hall" then rang ~3 s while the copy
+ *  claimed 1.2 s, and "long" pegged the same 0.92 for every space.)
+ *  `bright` (0..1) sets the in-loop damping tilt: the HF part of the tail
+ *  dies faster than RT60 says, the LF part decays at RT60. */
+export function reverb(x: Mono, space: ReverbSpace, rt60Sec = REVERB_RT60[space], bright = 0.5, wet = 0.45): Mono {
   // Comb delays (ms) per space character; spring gets short, boingy, sparse.
   const COMBS: Record<ReverbSpace, number[]> = {
     room: [29.7, 37.1, 41.1, 43.7],
@@ -251,12 +262,14 @@ export function reverb(x: Mono, space: ReverbSpace, decay = 1, bright = 0.5, wet
     chamber: [36.0, 41.0, 47.0, 53.0],
     spring: [31.0, 33.5, 36.0],
   };
-  const FB: Record<ReverbSpace, number> = { room: 0.72, hall: 0.84, plate: 0.8, chamber: 0.78, spring: 0.82 };
   const damp = 0.6 - bright * 0.45;
-  const fb = Math.min(0.92, FB[space] * Math.pow(decay, 0.4));
+  const rt = Math.max(0.1, rt60Sec);
   let wetSum: Mono = new Float32Array(x.length);
   for (const ms of COMBS[space]) {
-    const c = combFb(x, Math.max(8, Math.round((ms / 1000) * SR)), fb, damp);
+    const d = Math.max(8, Math.round((ms / 1000) * SR));
+    // 60 dB of loss after RT60/d passes → per-pass gain 10^(−3·d/RT60).
+    const fb = Math.min(0.95, Math.pow(10, (-3 * (d / SR)) / rt));
+    const c = combFb(x, d, fb, damp);
     for (let i = 0; i < x.length; i++) wetSum[i] += c[i] / COMBS[space].length;
   }
   wetSum = allpass(wetSum, Math.round(0.005 * SR));
@@ -440,15 +453,33 @@ export function digitalGlitch(x: Mono, rng: () => number, blocks = 3): Mono {
   return out;
 }
 
-/** RF interference: a burbling AM artifact riding the program (GSM-ish). */
+/** RF interference (emulation): the GSM-handset-near-a-cable buzz. A TDMA
+ *  frame is 4.615 ms (217 Hz) and a handset transmits in one of its eight
+ *  slots (577 µs). Audio circuitry ENVELOPE-DETECTS the RF, so what reaches
+ *  the ear is the unipolar burst envelope itself — a 217 Hz pulse train
+ *  with harmonics to a few kHz (the classic "dit-dit-dit" buzz), with the
+ *  idle frame every 26th (the 8.3 Hz multiframe rhythm). A little in-burst
+ *  ripple and noise keep it buzzy rather than clean. The previous render
+ *  pulsed at 46 Hz, which is not the sound anyone knows. Mean-removed so the
+ *  unipolar pulses add no DC to the program. */
 export function rfInterference(x: Mono, rng: () => number): Mono {
-  const out = Float32Array.from(x);
-  const burst = Math.round(0.004 * SR);
-  const period = Math.round(0.0217 * SR * 10) / 10; // ~46 Hz frame buzz
-  for (let i = 0; i < out.length; i++) {
-    const inBurst = i % Math.round(period) < burst;
-    if (inBurst) out[i] += 0.18 * (rng() * 2 - 1) * Math.sin((2 * Math.PI * 1100 * i) / SR);
+  const period = SR / 217; // samples per TDMA frame (≈221)
+  const burst = Math.round(period / 8); // one slot ≈ 577 µs
+  const sig = new Float32Array(x.length);
+  let mean = 0;
+  for (let i = 0; i < sig.length; i++) {
+    const frame = Math.floor(i / period);
+    if (frame % 26 === 25) continue; // idle frame — the multiframe gap
+    const k = i - frame * period;
+    if (k >= burst) continue;
+    const env = Math.sin((Math.PI * (k + 0.5)) / burst); // half-sine slot envelope
+    const ripple = 0.7 + 0.3 * Math.sin((2 * Math.PI * 1400 * i) / SR);
+    sig[i] = 0.3 * env * ripple + 0.05 * (rng() * 2 - 1) * env;
+    mean += sig[i];
   }
+  mean /= sig.length;
+  const out = Float32Array.from(x);
+  for (let i = 0; i < out.length; i++) out[i] += sig[i] - mean;
   return out;
 }
 

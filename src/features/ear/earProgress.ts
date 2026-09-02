@@ -31,6 +31,11 @@ export type EarModuleProgress = {
   totalScore: number;
   /** Highest level ever completed at ≥80% over a full window. */
   mastered: number;
+  /** `total` at the moment of the last level change. Only trials logged
+   *  AFTER it count toward the next promotion/demotion window — without this
+   *  a step-down could be reversed by the very next trial, because the 19
+   *  old (≥80%) trials at the lower level were still in the window. */
+  levelChangedAt?: number;
 };
 
 export type EarProgressState = {
@@ -80,7 +85,13 @@ export function applyTrial(
     total: p.total + 1,
     totalScore: p.totalScore + score,
   };
-  const atLevel = trials.filter((t) => t.level === p.level).slice(-WINDOW);
+  // Window = the last 20 trials at this level, counted only since the last
+  // level change (trials is capped at KEEP, so clamp the slice to its length).
+  const sinceChange = Math.min(trials.length, next.total - (p.levelChangedAt ?? 0));
+  const atLevel = trials
+    .slice(-sinceChange)
+    .filter((t) => t.level === p.level)
+    .slice(-WINDOW);
   let leveledUp = false;
   let leveledDown = false;
   if (atLevel.length >= WINDOW) {
@@ -89,10 +100,12 @@ export function applyTrial(
       next.mastered = Math.max(next.mastered, p.level);
       if (p.level < maxLevel) {
         next.level = p.level + 1;
+        next.levelChangedAt = next.total;
         leveledUp = true;
       }
     } else if (pct < 0.5 && p.level > 1) {
       next.level = p.level - 1;
+      next.levelChangedAt = next.total;
       leveledDown = true;
     }
   }

@@ -1,10 +1,10 @@
 // Node verification of earDsp renders — FFT-proves the stimuli are honest.
-// Run from the repo root: npx tsx scripts/verify-ear-dsp.mjs
+// Run from the repo root: node scripts/verify-ear-dsp.mjs  (or npx tsx …)
 import {
   toStereo, normalizePeak,
   sine, classicWave, harmonicComplex, whiteNoise, pinkNoise, brownNoise,
   peakEq, lowShelf, highShelf, notch, applyBiquad, mixDelayed, reverb,
-  compress, clip, hum, buzz, dropout, digitalGlitch,
+  compress, clip, hum, buzz, dropout, digitalGlitch, rfInterference,
   makeRng, rmsDb, normalizeRms, fadeEdges, pan, invertChannel, sumToMono,
   decorrelate, bandDb, encodeWav, powerSpectrumDb, gainDb, rms,
 } from '../src/features/ear/earDsp.ts';
@@ -102,17 +102,32 @@ console.log('— reverb / defects —');
 {
   const dry = fadeEdges(harmonicComplex(440, 0.4));
   const padded = new Float32Array(48000 * 2.5); padded.set(dry);
-  const wet = reverb(padded, 'hall', 1, 0.5);
+  const wet = reverb(padded, 'hall', 2.2, 0.5);
   const tailStart = Math.round(48000 * 0.8);
   const tailRms = rmsDb(wet.slice(tailStart, tailStart + 24000));
   const dryTail = rmsDb(padded.slice(tailStart, tailStart + 24000));
   ok('hall reverb leaves an audible tail (dry is silent there)', tailRms - dryTail > 20, `tail=${tailRms.toFixed(0)} dry=${dryTail.toFixed(0)}`);
+  // RT60 is what the render is BUILT to: a 1.0 s hall must lose ≈30 dB over
+  // any 0.5 s of pure tail (damping steals a little extra from the highs).
+  const wet1 = reverb(padded, 'hall', 1.0, 0.5, 1);
+  const win = (at) => rmsDb(wet1.slice(Math.round(at * 48000), Math.round((at + 0.1) * 48000)));
+  const drop = win(0.7) - win(1.2);
+  ok('RT60 = 1.0 s hall drops ≈30 dB per 0.5 s of tail (22–45)', drop > 22 && drop < 45, `${drop.toFixed(1)} dB`);
+  const room = reverb(padded, 'room', 0.4, 0.5, 1);
+  const winR = (at) => rmsDb(room.slice(Math.round(at * 48000), Math.round((at + 0.05) * 48000)));
+  const dropR = winR(0.5) - winR(0.7);
+  ok('RT60 = 0.4 s room drops ≈30 dB per 0.2 s of tail (20–48)', dropR > 20 && dropR < 48, `${dropR.toFixed(1)} dB`);
   const h = hum(1, 60, 3);
   ok('60 Hz hum: fundamental dominates 180 Hz', bandDb(h, 60, 0.1) - bandDb(h, 180, 0.1) > 8);
   const bz = buzz(1, 60);
   ok('buzz: rich highs vs hum', bandDb(bz, 2000) - bandDb(h, 2000) > 20);
   const drp = dropout(normalizeRms(pinkNoise(1.5, makeRng(5))), 0.6, 120);
   ok('dropout: gap is silent', rmsDb(drp.slice(Math.round(0.63 * 48000), Math.round(0.68 * 48000))) < -60);
+  // GSM emulation: a 217 Hz TDMA pulse train → spectral line at 217 Hz that
+  // stands well above the gap halfway to the next line (325 Hz).
+  const rf = rfInterference(new Float32Array(48000), makeRng(6));
+  const rfLine = bandDb(rf, 217, 0.06) - bandDb(rf, 325, 0.06);
+  ok('RF interference pulses at 217 Hz (line ≥ 10 dB over gap)', rfLine > 10, `${rfLine.toFixed(1)} dB`);
 }
 
 console.log('— stereo / levels / wav —');

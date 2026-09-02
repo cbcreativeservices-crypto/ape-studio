@@ -161,6 +161,8 @@ export const M5_DEFECTS: EarModule = {
   blurb: 'Hum, buzz, hiss, crackle, clicks, clipping, dropouts — name the problem on the first listen.',
   phones: 'any',
   playbackNote: 'Hum fundamentals are weak on phone speakers — the harmonics carry it.',
+  // NEW COPY
+  listenFor: 'Steady or one-off? Tonal (hum, buzz, hiss) or impulsive (click, pop, dropout)? Then how rough — smooth hum versus edgy buzz.',
   levels: 4,
   levelNames: ['Six common defects, solo', 'All twelve, solo', 'Under a program bed (−20 dB)', 'Buried (−32 dB)'],
   makeTrial: (level, seed) => {

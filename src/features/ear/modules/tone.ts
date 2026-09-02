@@ -40,6 +40,7 @@ function m1NameTheBand(level: number, rng: Rng, subBassOk: boolean): EarTrial {
     answers: pool.map((f) => ({ label: hzLabel(f) })),
     correct: idx,
     near: level === 3 ? [idx - 1, idx + 1].filter((i) => i >= 0 && i < pool.length) : undefined,
+    ordered: { low: 'too low', high: 'too high' }, // NEW COPY
     reveal:
       `${hzLabel(freq)} sine, 1.5 s.` +
       (makeup > 0
@@ -111,8 +112,10 @@ export const M1_FREQUENCY: EarModule = {
   blurb: 'Name pure tones on the ISO third-octave grid — the ear-training bedrock.',
   phones: 'recommended',
   playbackNote: '63–80 Hz is genuinely absent on phone speakers.',
+  // NEW COPY
+  listenFor: 'Anchor 1 kHz in your head first. Below it tones gain weight, then boom; above it, edge, then sizzle.',
   levels: 4,
-  levelNames: ['Octave centers', 'Half-octave grid', 'Third-octave, near credit', 'Third-octave, exact'],
+  levelNames: ['Octave centers', 'Half-octave grid', 'Third-octave, neighbour = half credit', 'Third-octave, exact'], // NEW COPY (L3)
   hasSubBassTrials: true,
   makeTrial: (level, seed, opts) => {
     const rng = rngFor(seed);
@@ -135,9 +138,12 @@ function eqSource(rng: Rng, seconds = 1.6): Mono {
 
 type EqMove = { filter: Biquad; freq: number; gain: number; shape: 'peak' | 'shelf' | 'narrow' };
 
-function eqMove(level: number, rng: Rng): EqMove {
-  const amounts = [12, 9, 6, 3];
-  const gainMag = amounts[Math.min(level, 4) - 1];
+const EQ_AMOUNTS = [12, 9, 6, 3]; // dB magnitude per level (ladder order)
+
+/** `gainMag` overrides the level's magnitude — the AMOUNT question draws it
+ *  from the ladder's unlocked set, otherwise "by how much?" at level 2 is
+ *  always 9 dB and the question carries no information. */
+function eqMove(level: number, rng: Rng, gainMag = EQ_AMOUNTS[Math.min(level, 4) - 1]): EqMove {
   // Boosts before cuts at each level (cuts are measurably harder — Bech).
   const boost = level <= 1 ? true : rng() < 0.55;
   const gain = boost ? gainMag : -gainMag;
@@ -166,16 +172,23 @@ export const M2_EQ: EarModule = {
   blurb: 'A/B one EQ move on the same source — name the frequency, direction, and amount.',
   phones: 'recommended',
   playbackNote: 'Low-shelf trials need real low-frequency extension.',
+  // NEW COPY
+  listenFor: 'Play A, then B, then A again. Ask what B has MORE of (boost) or LESS of (cut) — never which is louder; they are level-matched.',
   levels: 4,
   levelNames: ['±12 dB wide boosts', '±9 dB boost + cut', '±6 dB, shelves + narrow', '±3 dB, all filter types'],
   makeTrial: (level, seed) => {
     const rng = rngFor(seed);
+    // Question first, because the AMOUNT question needs a magnitude drawn
+    // from the unlocked set (L2: 12 or 9 · L3: 12/9/6 · L4: all four). At L1
+    // only 12 dB exists, so L1 asks frequency or direction only.
+    const q = level <= 1 ? pickInt(rng, 2) : pickInt(rng, 3);
+    const rollMag = () => (q === 2 ? choice(rng, EQ_AMOUNTS.slice(0, Math.min(level, 4))) : undefined);
     // A harmonic-complex source has DISCRETE partials — an EQ centre can land
     // where the source has no energy, making the "change" inaudible. So the
     // factory MEASURES its own render and re-rolls until the stated move is
     // genuinely in the sound (≥60% of the stated dB at the centre, right sign).
     let src = eqSource(rng);
-    let move = eqMove(level, rng);
+    let move = eqMove(level, rng, rollMag());
     let dry = present(src);
     let wet = present(applyBiquad(src, move.filter));
     for (let attempt = 0; attempt < 6; attempt++) {
@@ -184,12 +197,11 @@ export const M2_EQ: EarModule = {
       if (Math.sign(delta) === Math.sign(move.gain) && Math.abs(delta) >= Math.abs(move.gain) * 0.6) break;
       // Last resort is pink noise — continuous spectrum, always verifies.
       src = attempt >= 4 ? pinkNoise(1.6, rng) : eqSource(rng);
-      move = eqMove(level, rng);
+      move = eqMove(level, rng, rollMag());
       dry = present(src);
       wet = present(applyBiquad(src, move.filter));
     }
     const reveal = `${move.gain > 0 ? '+' : ''}${move.gain} dB ${shapeName(move)} at ${hzLabel(move.freq)} — loudness re-matched so only tone changed.`;
-    const q = pickInt(rng, 3);
     const base = {
       clips: [
         { label: 'A', buf: dry },
@@ -212,6 +224,7 @@ export const M2_EQ: EarModule = {
         answers: centers.map((f) => ({ label: hzLabel(f) })),
         correct: idx,
         near: [idx - 1, idx + 1].filter((i) => i >= 0 && i < centers.length),
+        ordered: { low: 'too low', high: 'too high' }, // NEW COPY
       };
     }
     if (q === 1) {
@@ -226,10 +239,11 @@ export const M2_EQ: EarModule = {
     const idx = steps.indexOf(Math.abs(move.gain));
     return {
       ...base,
-      question: 'By about how much?',
+      question: `By about how much is B ${move.gain > 0 ? 'boosted' : 'cut'}?`, // NEW COPY (direction stated — this trial tests size only)
       answers: steps.map((s) => ({ label: `${s} dB` })),
       correct: idx,
       near: level <= 2 ? [idx - 1, idx + 1].filter((i) => i >= 0 && i < steps.length) : undefined,
+      ordered: { low: 'too small', high: 'too big' }, // NEW COPY
     };
   },
 };
@@ -255,6 +269,8 @@ export const M3_BAND: EarModule = {
   blurb: 'Hear which of the 8 named bands an EQ move landed in — mixing vocabulary.',
   phones: 'recommended',
   playbackNote: 'Sub Bass and Air trials are flagged; sub-bass toggle offered.',
+  // NEW COPY
+  listenFor: 'Name the region, not a number: boom (Bass), mud (Low Mid), honk (Mid), bite (Upper Mid), edge (Presence), sparkle (Brilliance).',
   levels: 4,
   levelNames: ['±12 dB, 4 coarse bands', '±9 dB, all 8 bands', '±6 dB, all 8', '±4 dB, exact only'],
   hasSubBassTrials: true,
@@ -301,6 +317,7 @@ export const M3_BAND: EarModule = {
         level <= 3
           ? [idx - 1, idx + 1].filter((i) => i >= 0 && i < deck.length)
           : undefined,
+      ordered: { low: 'too low', high: 'too high' }, // NEW COPY
       reveal: `${gain > 0 ? '+' : ''}${gain} dB in ${band.label} (${hzLabel(band.lo)}–${hzLabel(band.hi)}), centred near ${hzLabel(band.c)}.`,
       seeIt: {
         kind: 'spectrum',
@@ -349,6 +366,8 @@ export const M4_NOISE: EarModule = {
   blurb: 'White, pink, brown — sine, square, saw, triangle. Learn the seven basic colors of sound.',
   phones: 'any',
   playbackNote: 'Spectral slopes survive even small speakers.',
+  // NEW COPY
+  listenFor: 'Noise: how much rumble versus hiss — flat, tilted, or all rumble. Tones: hollow (square), buzzy (saw), or soft (triangle)?',
   levels: 3,
   levelNames: ['Noises vs tones, separated', 'All 7 mixed', 'Short clips + which-is-pink pairs'],
   makeTrial: (level, seed) => {
@@ -368,7 +387,8 @@ export const M4_NOISE: EarModule = {
         seeIt: {
           kind: 'spectrum',
           clips: [0, 1],
-          caption: 'Flat = white, −3 dB/oct = pink, −6 dB/oct = brown. Read the slope.',
+          slopeGuides: true,
+          caption: 'Flat = white, −3 dB/oct = pink, −6 dB/oct = brown. Read each trace against the dashed slope guides.', // NEW COPY
         },
       };
     }
@@ -389,9 +409,10 @@ export const M4_NOISE: EarModule = {
       seeIt: {
         kind: 'spectrum',
         clips: [0],
+        slopeGuides: kind === 'white' || kind === 'pink' || kind === 'brown',
         caption:
           kind === 'white' || kind === 'pink' || kind === 'brown'
-            ? 'Noise is a slope: flat / −3 / −6 dB per octave.'
+            ? 'Noise is a slope: flat / −3 / −6 dB per octave — the dashed guides show all three, the trace follows one.' // NEW COPY
             : 'Tones are harmonic stacks — the pattern of partials is the timbre.',
       },
     };

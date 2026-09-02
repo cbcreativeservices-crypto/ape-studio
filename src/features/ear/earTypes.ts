@@ -20,6 +20,10 @@ export type SeeIt =
       highlightHz?: number;
       /** Labeled band regions (Band ID module). */
       bands?: { label: string; lo: number; hi: number }[];
+      /** Draw 0 / −3 / −6 dB-per-octave reference slopes anchored to the
+       *  first trace's own 1 kHz level (noise-colour trials) — the learner
+       *  reads which guide the measured trace follows. */
+      slopeGuides?: boolean;
       caption: string;
     }
   | {
@@ -58,6 +62,11 @@ export type EarTrial = {
   correct: number;
   /** Half-credit answer indices (adjacent band/step — spec scoring rules). */
   near?: number[];
+  /** Set when `answers` is an ordered ladder (frequency grid, dB steps,
+   *  delay times, severities…). The shell then turns a miss into targeted
+   *  feedback — "2 steps too low" — using these direction words for a pick
+   *  below / above the truth. Omit for categorical decks. */
+  ordered?: { low: string; high: string };
   /** Feedback truth line, e.g. "+6 dB peak at 250 Hz (wide, Q 1.4)". */
   reveal: string;
   seeIt: SeeIt;
@@ -89,6 +98,10 @@ export type EarModule = {
   phones: PhonesNeed;
   /** One-line playback note shown in the module dock (spec §4 table). */
   playbackNote: string;
+  /** The listening objective — ONE line, always visible above the trial, so a
+   *  learner knows what to attend to before the first clip (never hidden in
+   *  a disclosure). */
+  listenFor: string;
   levels: number; // ladder height
   /** Level descriptions for the dock (index 0 = level 1). */
   levelNames: string[];
