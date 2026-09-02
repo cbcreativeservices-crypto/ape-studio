@@ -238,6 +238,11 @@ export type RootStackParamList = {
    *  engine + 15 preset modules, geometric/analytic launch path. */
   WaveLab: undefined;
   WaveModule: { id: import('../screens/lab/wave/modules/registry').WaveModuleId };
+  /** Ear Training Lab (owner brief 2026-09-02) — offline-rendered critical
+   *  listening drills; modules land in waves. Route name avoids the existing
+   *  'EarLab' (the Audio Learning landing menu). */
+  EarTrainingLab: undefined;
+  EarModule: { id: import('../features/ear/earTypes').EarModuleId };
   /** Visual Audio Analysis (Meter Interpretation) Lab (owner 2026-07-29). */
   MeterLab: undefined;
   MeterModule: { id: import('../screens/lab/meter/modules/registry').MeterModuleId };

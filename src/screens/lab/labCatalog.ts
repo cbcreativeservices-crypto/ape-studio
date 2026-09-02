@@ -331,6 +331,21 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     ],
   },
   {
+    id: 'eartraining',
+    glyph: '👂',
+    name: 'Ear Training',
+    description: 'Critical listening drills — hear a change, then see it measured.',
+    section: 'training',
+    kind: 'list',
+    labs: [
+      {
+        name: 'Ear Training Lab',
+        blurb: 'Frequencies, EQ moves, bands, noise colors and more — rendered signals, honest scoring, and the analyzer view of every answer.',
+        route: 'EarTrainingLab',
+      },
+    ],
+  },
+  {
     id: 'calculators',
     glyph: '🖩',
     name: 'Audio Calculator Laboratory',

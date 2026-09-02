@@ -82,6 +82,9 @@ import { DigitalLabHomeScreen } from '../screens/lab/digital/DigitalLabHomeScree
 import { DigitalModuleScreen } from '../screens/lab/digital/DigitalModuleScreen';
 import { WaveLabHomeScreen } from '../screens/lab/wave/WaveLabHomeScreen';
 import { WaveModuleScreen } from '../screens/lab/wave/WaveModuleScreen';
+// Ear Training Lab (owner brief 2026-09-02) — home + generic module shell.
+import { EarTrainingLabScreen } from '../screens/lab/eartraining/EarTrainingLabScreen';
+import { EarModuleScreen } from '../screens/lab/eartraining/EarModuleScreen';
 import { MeterLabHomeScreen } from '../screens/lab/meter/MeterLabHomeScreen';
 import { MeterModuleScreen } from '../screens/lab/meter/MeterModuleScreen';
 import { EqLabHomeScreen } from '../screens/lab/eq/EqLabHomeScreen';
@@ -315,6 +318,8 @@ export function RootNavigator() {
       <Stack.Screen name="DigitalModule" component={Gated.DigitalModule} />
       <Stack.Screen name="WaveLab" component={WaveLabHomeScreen} />
       <Stack.Screen name="WaveModule" component={Gated.WaveModule} />
+      <Stack.Screen name="EarTrainingLab" component={EarTrainingLabScreen} />
+      <Stack.Screen name="EarModule" component={EarModuleScreen} />
       <Stack.Screen name="MeterLab" component={MeterLabHomeScreen} />
       <Stack.Screen name="MeterModule" component={Gated.MeterModule} />
       <Stack.Screen name="EqLabHome" component={EqLabHomeScreen} />
