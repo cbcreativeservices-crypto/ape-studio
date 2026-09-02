@@ -9,14 +9,29 @@ export type PagedProgress = { completed: number[]; lastPage: number; done: boole
 
 const key = (labId: string) => `ape:${labId}:v1`;
 
+const EMPTY = (): PagedProgress => ({ completed: [], lastPage: 0, done: false });
+
+/** Only non-negative integers, each once, ascending — a damaged or hand-edited
+ *  record can never make the page dots or the n/N counter lie. */
+function cleanCompleted(raw: unknown): number[] {
+  if (!Array.isArray(raw)) return [];
+  const seen = new Set<number>();
+  for (const v of raw) if (typeof v === 'number' && Number.isInteger(v) && v >= 0) seen.add(v);
+  return [...seen].sort((a, b) => a - b);
+}
+
 export async function loadPagedProgress(labId: string): Promise<PagedProgress> {
   try {
     const raw = await AsyncStorage.getItem(key(labId));
-    if (!raw) return { completed: [], lastPage: 0, done: false };
+    if (!raw) return EMPTY();
     const p = JSON.parse(raw) as Partial<PagedProgress>;
-    return { completed: Array.isArray(p.completed) ? p.completed : [], lastPage: typeof p.lastPage === 'number' ? p.lastPage : 0, done: !!p.done };
+    return {
+      completed: cleanCompleted(p.completed),
+      lastPage: typeof p.lastPage === 'number' && Number.isInteger(p.lastPage) && p.lastPage >= 0 ? p.lastPage : 0,
+      done: !!p.done,
+    };
   } catch {
-    return { completed: [], lastPage: 0, done: false };
+    return EMPTY();
   }
 }
 

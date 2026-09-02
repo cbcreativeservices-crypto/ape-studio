@@ -7,6 +7,9 @@
  * Scope note kept deliberately: an ENVELOPE describes how a sound changes
  * over time at its source. It is not propagation (how sound travels through
  * a medium) — that is the Wave Physics lab's subject.
+ *
+ * HONESTY: every number here is a TEACHING SHAPE on a relative 0..1 level
+ * axis. Nothing is measured; the UI says so under every chart.
  */
 
 export type Adsr = {
@@ -67,9 +70,13 @@ export function adsrCurve(a: Adsr, n = 200): { t: Float32Array; v: Float32Array 
   return { t, v };
 }
 
-/** Rise time: 10% → 90% of peak during the attack, in ms. */
-export function riseTimeMs(a: Adsr): number {
-  if (a.attackMs <= 0) return 0;
+/**
+ * The two instants the rise time is measured between: when the attack first
+ * reaches 10 % and 90 % of peak (ms from the start). Exposed so a drawing can
+ * put its markers exactly where the number comes from.
+ */
+export function riseTimes(a: Adsr): { t10: number; t90: number } {
+  if (a.attackMs <= 0) return { t10: 0, t90: 0 };
   const find = (target: number) => {
     let lo = 0, hi = a.attackMs;
     for (let i = 0; i < 40; i++) {
@@ -78,7 +85,13 @@ export function riseTimeMs(a: Adsr): number {
     }
     return (lo + hi) / 2;
   };
-  return find(0.9) - find(0.1);
+  return { t10: find(0.1), t90: find(0.9) };
+}
+
+/** Rise time: 10% → 90% of peak during the attack, in ms. */
+export function riseTimeMs(a: Adsr): number {
+  const { t10, t90 } = riseTimes(a);
+  return t90 - t10;
 }
 
 /** Envelope-shaped waveform for drawing (carrier cycles are visual, not audio). */
@@ -122,39 +135,54 @@ export type SoundPreset = {
   name: string;
   adsr: Adsr;
   bullets: string[];
+  /** What to look for on the chart — one sentence, stated before the learner has to infer it. */
+  notice: string;
   kind: 'percussive' | 'sustained' | 'speech';
 };
 
+/**
+ * Percussive shapes carry sustain 0 AND release 0: once nothing is held there
+ * is nothing left to release, and a labelled "R" region sitting on the zero
+ * line taught nothing (it read as a bug). Struck-and-ringing shapes (piano,
+ * cymbal) carry hold 0 so the decay runs straight into the release — a flat
+ * plateau at 6–12 % would have said "piano has sustain", which it does not.
+ */
 export const PRESETS: SoundPreset[] = [
   {
     id: 'snare', name: 'Snare drum', kind: 'percussive',
-    adsr: { attackMs: 2, decayMs: 120, sustain: 0, releaseMs: 60, holdMs: 0, attackShape: 'exponential', decayShape: 'exponential' },
-    bullets: ['Instant attack', 'Very short decay', 'No sustain', 'Short release'],
+    adsr: { attackMs: 2, decayMs: 120, sustain: 0, releaseMs: 0, holdMs: 0, attackShape: 'exponential', decayShape: 'exponential' },
+    bullets: ['Instant attack', 'Short decay — the whole sound IS the decay', 'No sustain, so nothing is left to release'], // NEW COPY
+    notice: 'Notice there is no S or R region at all: the sound is over in about an eighth of a second, and every part of it is falling.', // NEW COPY
   },
   {
     id: 'kick', name: 'Kick drum', kind: 'percussive',
-    adsr: { attackMs: 6, decayMs: 320, sustain: 0, releaseMs: 120, holdMs: 0, attackShape: 'exponential', decayShape: 'exponential' },
+    adsr: { attackMs: 6, decayMs: 300, sustain: 0, releaseMs: 0, holdMs: 0, attackShape: 'exponential', decayShape: 'exponential' },
     bullets: ['Fast attack', 'Longer low-frequency decay', 'No sustain'],
+    notice: 'Notice the decay is more than twice the snare’s — the low-tuned shell keeps moving longer — but the shape is the same family.', // NEW COPY
   },
   {
     id: 'piano', name: 'Piano', kind: 'percussive',
-    adsr: { attackMs: 8, decayMs: 1400, sustain: 0.12, releaseMs: 500, holdMs: 400, attackShape: 'exponential', decayShape: 'exponential' },
-    bullets: ['Fast attack', 'Natural decay', 'No true sustain (unless the pedal holds it)'],
+    adsr: { attackMs: 8, decayMs: 1400, sustain: 0.12, releaseMs: 500, holdMs: 0, attackShape: 'exponential', decayShape: 'exponential' },
+    bullets: ['Fast attack (a hammer strike)', 'Long natural decay while the key is down', 'No true sustain — the pedal only lets that decay run longer', 'Release = the damper drops when the key comes up'], // NEW COPY
+    notice: 'Notice there is no flat S region: a struck string can only lose energy. What looks like sustain on a piano is just a slow decay.', // NEW COPY
   },
   {
     id: 'violin', name: 'Violin', kind: 'sustained',
     adsr: { attackMs: 180, decayMs: 120, sustain: 0.85, releaseMs: 260, holdMs: 900, attackShape: 'linear', decayShape: 'linear' },
     bullets: ['Variable attack (bow speed and pressure)', 'Long sustain', 'Controlled release'],
+    notice: 'Notice the long flat S region — the bow keeps supplying energy — and the gentle attack with no snap.', // NEW COPY
   },
   {
     id: 'trumpet', name: 'Trumpet', kind: 'sustained',
     adsr: { attackMs: 60, decayMs: 80, sustain: 0.9, releaseMs: 120, holdMs: 900, attackShape: 'linear', decayShape: 'linear' },
-    bullets: ['Medium attack', 'Continuous sustain', 'Controlled release'],
+    bullets: ['Medium attack (tongue and breath)', 'Continuous sustain', 'Controlled release'],
+    notice: 'Notice the sound sits near its peak almost the whole time: this is what makes peak and average meters agree.', // NEW COPY
   },
   {
     id: 'cymbal', name: 'Cymbal', kind: 'percussive',
-    adsr: { attackMs: 3, decayMs: 2600, sustain: 0.06, releaseMs: 1400, holdMs: 200, attackShape: 'exponential', decayShape: 'exponential' },
-    bullets: ['Fast transient', 'Very long decay', 'Long release'],
+    adsr: { attackMs: 3, decayMs: 2600, sustain: 0.06, releaseMs: 1400, holdMs: 0, attackShape: 'exponential', decayShape: 'exponential' },
+    bullets: ['Fast transient', 'Very long decay', 'Long release (the hand or a choke ends it)'], // NEW COPY
+    notice: 'Notice the attack is a hairline at the left edge — a few milliseconds against four seconds of ring.', // NEW COPY
   },
 ];
 
@@ -207,10 +235,15 @@ export const TRANSIENTS: Record<TransientKind, { name: string; adsr: Adsr; note:
 
 export type DurationCategory = 'impulse' | 'short' | 'medium' | 'long' | 'continuous';
 
+/**
+ * Kept in ASCENDING ms order (a test enforces it): the timeline numbers its
+ * markers 1…7 left to right, so order here is order on screen. The snare and
+ * kick values agree with the gallery presets' total durations.
+ */
 export const DURATION_EXAMPLES: { name: string; ms: number; category: DurationCategory }[] = [
   { name: 'Finger snap', ms: 12, category: 'impulse' },
-  { name: 'Kick drum', ms: 250, category: 'short' },
-  { name: 'Snare', ms: 180, category: 'short' },
+  { name: 'Snare', ms: 120, category: 'short' },
+  { name: 'Kick drum', ms: 300, category: 'short' },
   { name: 'Speech (a word)', ms: 600, category: 'medium' },
   { name: 'Piano note', ms: 2500, category: 'long' },
   { name: 'Organ (held)', ms: 8000, category: 'continuous' },
