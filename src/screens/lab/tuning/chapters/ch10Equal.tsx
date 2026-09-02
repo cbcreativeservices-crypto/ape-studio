@@ -42,7 +42,7 @@ export function Ch10Equal({ ctx }: ChapterProps) {
       />
       <Prompt>Build the scale one step at a time and watch the hertz increase grow.</Prompt>
       <Row>
-        <Btn label={built < 12 ? `ADD STEP ${built + 1} · ×r` : 'OCTAVE REACHED'} tone="primary" onPress={() => setBuilt(Math.min(12, built + 1))} disabled={built >= 12} />
+        <Btn label={built < 12 ? `ADD STEP ${built + 1} · ×r` : 'OCTAVE REACHED'} tone="primary" onPress={() => setBuilt((b) => Math.min(12, b + 1))} disabled={built >= 12} />
         <Btn label="RESET" onPress={() => setBuilt(0)} />
         <Btn label="AUTO" onPress={() => { setBuilt(12); ctx.markDone(); }} />
       </Row>

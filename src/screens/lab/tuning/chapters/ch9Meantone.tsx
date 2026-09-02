@@ -11,7 +11,7 @@ import {
   TUNING_SYSTEMS, MEANTONE_FIFTH, MEANTONE_TONE, PURE_FIFTH, JUST_MAJOR_THIRD, ET_FIFTH, MEANTONE_WOLF_CHAIN,
   centsToRatio, ratioToCents, frequencyFromRatio, meantoneWolf, normalizeRatioToOctave,
 } from '../../../../features/tuning/tuningMath';
-import { renderNotes } from '../../../../features/tuning/tuningAudio';
+import { renderNotes, renderSequence } from '../../../../features/tuning/tuningAudio';
 import type { ChapterProps } from '../labCtx';
 import { Body, Btn, Card, CentsRail, DeviationMeter, EquationStage, Eyebrow, Lead, MathLine, Prompt, RatioTile, Row, type RailMarker } from '../components/primitives';
 import { HarmonicComparison } from '../components/harmonicLadder';
@@ -147,7 +147,8 @@ export function Ch9Meantone({ ctx }: ChapterProps) {
           </Row>
           <Row>
             {revealed < MT.notes.length ? <Btn label={`REVEAL ${MT.notes[revealed].spelling} ›`} tone="primary" onPress={() => setRevealed(revealed + 1)} /> : <Btn label="REPLAY" onPress={() => setRevealed(1)} />}
-            <Btn label="▶ SCALE SO FAR" onPress={() => void ctx.player.play(renderNotes([root], 0.2, 'sine'), 'placeholder')} a11y="Play the scale so far" />
+            <Btn label="▶ SCALE SO FAR" onPress={() => void ctx.player.play(renderSequence(MT.notes.slice(0, revealed).map((n) => hz(n.value.numericRatio)), 0.3, 'rich'), `meantone scale, ${revealed} note${revealed > 1 ? 's' : ''}`)} a11y="Play the scale so far" />
+            <Btn label="■" tone="danger" onPress={() => ctx.player.stop()} a11y="Stop audio" />
           </Row>
           <CentsRail markers={MT.notes.slice(0, revealed).map((n, i) => ({ id: `m${i}`, cents: n.value.cents, label: n.spelling, role: i === revealed - 1 ? 'operation' : 'neutral', emphasis: i === revealed - 1, row: i % 2 }))} reduceMotion={ctx.reduceMotion} height={110} />
           <Body>Each pitch is generated from the same tempered fifth and then folded into one octave. {ctx.mathView ? `${MT.notes[revealed - 1].spelling} = ${MT.notes[revealed - 1].value.exactLabel} (${MT.notes[revealed - 1].value.constructionSource}).` : 'Switch to See the Math for the exact radical forms.'}</Body>

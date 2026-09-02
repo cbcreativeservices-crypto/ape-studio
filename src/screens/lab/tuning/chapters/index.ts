@@ -14,6 +14,9 @@ import { Ch7Just } from './ch7Just';
 import { Ch8Compare } from './ch8Compare';
 import { Ch9Meantone } from './ch9Meantone';
 import { Ch10Equal } from './ch10Equal';
+import { Ch11Systems } from './ch11Systems';
+import { Ch12Tradeoffs } from './ch12Tradeoffs';
+import { Ch13Apply } from './ch13Apply';
 
 export const CHAPTER_TITLES = [
   'Welcome and Listening Setup',
@@ -46,4 +49,7 @@ export const CHAPTERS: ChapterDef[] = [
   { index: 8, title: CHAPTER_TITLES[8], short: 'Compare', Component: Ch8Compare },
   { index: 9, title: CHAPTER_TITLES[9], short: 'Meantone', Component: Ch9Meantone },
   { index: 10, title: CHAPTER_TITLES[10], short: 'Equal', Component: Ch10Equal },
+  { index: 11, title: CHAPTER_TITLES[11], short: 'Compare', Component: Ch11Systems },
+  { index: 12, title: CHAPTER_TITLES[12], short: 'Tradeoffs', Component: Ch12Tradeoffs },
+  { index: 13, title: CHAPTER_TITLES[13], short: 'Apply', Component: Ch13Apply },
 ];
