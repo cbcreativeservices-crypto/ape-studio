@@ -243,6 +243,10 @@ export type RootStackParamList = {
    *  'EarLab' (the Audio Learning landing menu). */
   EarTrainingLab: undefined;
   EarModule: { id: import('../features/ear/earTypes').EarModuleId };
+  /** Amplifier Principles Lab (owner build spec 2026-09-02) — 8 modules on
+   *  one synchronized amplifier model. */
+  AmpLab: undefined;
+  AmpModule: { id: import('../features/amp/ampContent').AmpModuleId };
   /** Visual Audio Analysis (Meter Interpretation) Lab (owner 2026-07-29). */
   MeterLab: undefined;
   MeterModule: { id: import('../screens/lab/meter/modules/registry').MeterModuleId };
