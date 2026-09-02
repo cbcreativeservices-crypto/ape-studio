@@ -2,7 +2,7 @@
  * Shared helpers for ear-training trial factories (spec §2 preamble).
  * Pure — no React, no side effects; runs in Node for verification.
  */
-import { makeRng, normalizeRms, fadeEdges, gainDb, type Mono } from '../earDsp';
+import { makeRng, normalizeRms, fadeEdges, gainDb, SR, type Mono } from '../earDsp';
 
 export type Rng = () => number;
 
@@ -55,4 +55,52 @@ export function lfMakeupDb(freq: number): number {
 
 export function presentTone(x: Mono, freq: number): Mono {
   return gainDb(present(x), lfMakeupDb(freq));
+}
+
+/**
+ * Rendered drum-pattern surrogate (spec M10/M12/M14 source; V2: real loop —
+ * marked). 100 BPM, kick on 1 & 3 (60 Hz decaying sine + click), snare on
+ * 2 & 4 (noise burst + 200 Hz body). Fully synthesized offline — labeled a
+ * surrogate in module copy.
+ */
+export function drumPattern(bars: number, rng: Rng): Mono {
+  const beat = 60 / 100; // s
+  const out = new Float32Array(Math.round(bars * 4 * beat * SR));
+  const addKick = (at: number) => {
+    const n0 = Math.round(at * SR);
+    const len = Math.round(0.28 * SR);
+    for (let i = 0; i < len && n0 + i < out.length; i++) {
+      const t = i / SR;
+      // 60 Hz body with a fast downward pitch blip + exponential decay.
+      const f = 60 + 60 * Math.exp(-t * 60);
+      out[n0 + i] += Math.sin(2 * Math.PI * f * t) * Math.exp(-t * 14) * 0.9;
+    }
+    for (let i = 0; i < 90 && n0 + i < out.length; i++) {
+      out[n0 + i] += (rng() * 2 - 1) * Math.exp(-i / 18) * 0.5; // the click
+    }
+  };
+  const addSnare = (at: number) => {
+    const n0 = Math.round(at * SR);
+    const len = Math.round(0.11 * SR);
+    for (let i = 0; i < len && n0 + i < out.length; i++) {
+      const t = i / SR;
+      out[n0 + i] +=
+        ((rng() * 2 - 1) * 0.7 + Math.sin(2 * Math.PI * 200 * t) * 0.35) * Math.exp(-t * 34);
+    }
+  };
+  for (let b = 0; b < bars; b++) {
+    const t0 = b * 4 * beat;
+    addKick(t0);
+    addSnare(t0 + beat);
+    addKick(t0 + 2 * beat);
+    addKick(t0 + 2.5 * beat); // the off-beat push that makes pumping audible
+    addSnare(t0 + 3 * beat);
+  }
+  return out;
+}
+
+/** 99th-percentile |sample| — the honest "peaks" reference for M14. */
+export function p99(x: Mono): number {
+  const mags = Array.from(x, Math.abs).sort((a, b) => a - b);
+  return mags[Math.min(mags.length - 1, Math.floor(mags.length * 0.99))] || 1;
 }

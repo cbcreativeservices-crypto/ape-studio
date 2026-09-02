@@ -9,6 +9,7 @@
  */
 import type { EarModule, EarModuleId } from '../earTypes';
 import { M1_FREQUENCY, M2_EQ, M3_BAND, M4_NOISE } from './tone';
+import { M7_LOUDNESS, M10_COMPRESSION, M14_CLIPPING } from './dynamics';
 
 export type EarFamily = 'tone' | 'dynamics' | 'time' | 'space' | 'defect' | 'pitch';
 
@@ -19,6 +20,9 @@ export const EAR_MODULES: EarModuleEntry[] = [
   { ...M2_EQ, family: 'tone', member: true },
   { ...M3_BAND, family: 'tone', member: true },
   { ...M4_NOISE, family: 'tone', member: false },
+  { ...M7_LOUDNESS, family: 'dynamics', member: false },
+  { ...M10_COMPRESSION, family: 'dynamics', member: true },
+  { ...M14_CLIPPING, family: 'dynamics', member: true },
 ];
 
 export function earModuleById(id: EarModuleId): EarModuleEntry | undefined {

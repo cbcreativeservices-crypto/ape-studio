@@ -145,7 +145,10 @@ function LevelsSeeIt({ spec }: { spec: Extract<SeeIt, { kind: 'levels' }> }) {
               <View
                 style={[
                   styles.levelFill,
-                  { height: `${Math.round(frac * 100)}%`, backgroundColor: levelColorForDb(b.db, -24, 0) },
+                  // Bars sit in the ramp's healthy band (loudest ≈ −10 dBFS):
+                  // these are moderate playback levels, not clipping — red
+                  // would lie on the amplitude standard.
+                  { height: `${Math.round(frac * 100)}%`, backgroundColor: levelColorForDb(b.db - 10, -24, 0) },
                 ]}
               />
             </View>

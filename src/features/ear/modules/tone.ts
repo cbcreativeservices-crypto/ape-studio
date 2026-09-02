@@ -270,9 +270,25 @@ export const M3_BAND: EarModule = {
     const gain = rng() < 0.6 ? gainMag : -gainMag;
     // Q sized to band width so the move fills the named region.
     const q = Math.max(0.7, band.c / (band.hi - band.lo));
-    const src = eqSource(rng);
-    const dry = present(src);
-    const wet = present(applyBiquad(src, peakEq(Math.min(band.c, 16000), gain, q)));
+    // Self-verify (like M2): after RMS re-matching, the declared band must
+    // still be the biggest mover — a Bass cut on a fundamental-heavy harmonic
+    // complex guts the signal and the re-match lifts every OTHER band more
+    // than the target drops (caught by verify-ear-modules). Re-roll the
+    // source; pink noise (energy in every octave) always passes.
+    let src = eqSource(rng);
+    let dry = present(src);
+    let wet = present(applyBiquad(src, peakEq(Math.min(band.c, 16000), gain, q)));
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const deltas = deck.map((b) => {
+        const oct = Math.log2(Math.min(b.hi, 20000) / b.lo);
+        return Math.abs(bandDb(wet, Math.min(b.c, 16000), oct) - bandDb(dry, Math.min(b.c, 16000), oct));
+      });
+      const biggest = deltas.indexOf(Math.max(...deltas));
+      if (biggest === idx && deltas[idx] >= gainMag * 0.3) break;
+      src = attempt >= 2 ? pinkNoise(1.6, rng) : eqSource(rng);
+      dry = present(src);
+      wet = present(applyBiquad(src, peakEq(Math.min(band.c, 16000), gain, q)));
+    }
     return {
       clips: [
         { label: 'A', buf: dry },

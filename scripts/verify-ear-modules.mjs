@@ -5,6 +5,7 @@ import {
   powerSpectrumDb, bandDb, sumToMono, rmsDb,
 } from '../src/features/ear/earDsp.ts';
 import { M1_FREQUENCY, M2_EQ, M3_BAND, M4_NOISE, BANDS } from '../src/features/ear/modules/tone.ts';
+import { M7_LOUDNESS, M10_COMPRESSION, M14_CLIPPING } from '../src/features/ear/modules/dynamics.ts';
 import { applyTrial, emptyModuleProgress } from '../src/features/ear/earProgress.ts';
 
 let pass = 0, fail = 0;
@@ -165,6 +166,94 @@ console.log('— presentation loudness: all clips normalized (M1 LF makeup exemp
     }
   }
   ok(`clip RMS −20 dBFS ±1 (${checked - bad}/${checked})`, bad === 0);
+}
+
+console.log('— M7 Loudness: the declared louder clip really is, by the declared dB —');
+{
+  let good = 0, total = 0;
+  for (const seed of SEEDS) {
+    for (let level = 1; level <= 4; level++) {
+      const t = M7_LOUDNESS.makeTrial(level, seed + 11 * level);
+      total++;
+      const dA = rmsDb(mono(t.clips[0].buf));
+      const dB = rmsDb(mono(t.clips[1].buf));
+      const m = /(A|B) is (\d+(?:\.\d+)?) dB louder/.exec(t.reveal);
+      const louder = m[1] === 'A' ? dA : dB;
+      const quieter = m[1] === 'A' ? dB : dA;
+      const stated = parseFloat(m[2]);
+      const measured = louder - quieter;
+      if (Math.abs(measured - stated) < 0.2) good++;
+      else console.log(`    seed ${seed} L${level}: stated ${stated}, measured ${measured.toFixed(2)}`);
+    }
+  }
+  ok(`loudness deltas exact (${good}/${total})`, good === total && total > 0);
+}
+
+console.log('— M10 Compression: compressed clips have flatter loud/soft envelopes, matched RMS —');
+{
+  const crest = (x) => {
+    // Peak-envelope spread: dB gap between the 95th and 40th percentile of
+    // 10 ms window peaks — big for punchy dry drums, smaller when squashed.
+    const w = 480;
+    const peaks = [];
+    for (let i = 0; i + w < x.length; i += w) {
+      let p = 0;
+      for (let j = i; j < i + w; j++) p = Math.max(p, Math.abs(x[j]));
+      peaks.push(p);
+    }
+    peaks.sort((a, b) => a - b);
+    const q = (f) => 20 * Math.log10(Math.max(peaks[Math.floor(peaks.length * f)], 1e-9));
+    return q(0.95) - q(0.4);
+  };
+  let good = 0, total = 0, rmsBad = 0;
+  for (const seed of SEEDS.slice(0, 8)) {
+    const t = M10_COMPRESSION.makeTrial(1, seed + 77); // none vs heavy AB
+    total++;
+    const cA = crest(mono(t.clips[0].buf));
+    const cB = crest(mono(t.clips[1].buf));
+    const compressedIdx = cA < cB ? 0 : 1;
+    if (compressedIdx === t.correct) good++;
+    else console.log(`    seed ${seed}: crest A ${cA.toFixed(1)} B ${cB.toFixed(1)}, said ${t.correct}`);
+    if (Math.abs(rmsDb(mono(t.clips[0].buf)) - rmsDb(mono(t.clips[1].buf))) > 1) rmsBad++;
+  }
+  ok(`heavy compression detectable by envelope, not level (${good}/${total})`, good === total && total > 0);
+  ok('AB pairs loudness-matched within 1 dB', rmsBad === 0, `${rmsBad} leaked`);
+}
+
+console.log('— M14 Clipping: severity orders the flattened-peak density; ABX honest —');
+{
+  const flatness = (x) => {
+    // Fraction of samples pinned within 2% of the clip's own max.
+    let m = 0;
+    for (let i = 0; i < x.length; i++) m = Math.max(m, Math.abs(x[i]));
+    let pinned = 0;
+    for (let i = 0; i < x.length; i++) if (Math.abs(x[i]) > m * 0.98) pinned++;
+    return pinned / x.length;
+  };
+  let orderedOk = 0, abxOk = 0, n = 0;
+  for (const seed of SEEDS.slice(0, 8)) {
+    n++;
+    const bySeverity = ['Clean', 'Mild', 'Moderate', 'Severe'].map((want) => {
+      for (let tries = 0; tries < 200; tries++) {
+        const t = M14_CLIPPING.makeTrial(3, seed * 13 + tries);
+        if (t.answers[t.correct].label === want) return flatness(mono(t.clips[0].buf));
+      }
+      return null;
+    });
+    if (bySeverity.every((v) => v != null) && bySeverity[0] < bySeverity[2] && bySeverity[2] < bySeverity[3] && bySeverity[1] > bySeverity[0]) orderedOk++;
+    else console.log(`    seed ${seed}: flatness ${bySeverity.map((v) => v?.toFixed(5)).join(' ')}`);
+    const abx = M14_CLIPPING.makeTrial(4, seed + 999);
+    const x = mono(abx.clips[2].buf);
+    const same = (y) => {
+      let diff = 0;
+      for (let i = 0; i < x.length; i += 97) diff += Math.abs(x[i] - y[i]);
+      return diff < 1e-6;
+    };
+    const matches = [same(mono(abx.clips[0].buf)), same(mono(abx.clips[1].buf))];
+    if (matches[abx.correct] && !matches[1 - abx.correct]) abxOk++;
+  }
+  ok(`clipping severity orders peak flattening (${orderedOk}/${n})`, orderedOk === n);
+  ok(`ABX X really is a copy of the declared clip (${abxOk}/${n})`, abxOk === n);
 }
 
 console.log('— determinism: same seed, same trial —');

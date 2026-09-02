@@ -36,14 +36,18 @@ export const isStereo = (b: Buf): b is Stereo => !(b instanceof Float32Array);
 /* ── deterministic PRNG (xorshift32) — trials must be reproducible ───────── */
 
 export function makeRng(seed: number): () => number {
+  // mulberry32 — unlike raw xorshift32, its per-call increment + double
+  // finalizer decorrelates the FIRST draws of nearby seeds. That matters:
+  // trial factories draw the answer from the first rng() call, and
+  // consecutive seeds were rolling the same first quartile for hundreds of
+  // seeds in a row (caught by scripts/verify-ear-modules.mjs).
   let s = (seed >>> 0) || 0x9e3779b9;
   return () => {
-    s ^= s << 13;
-    s >>>= 0;
-    s ^= s >> 17;
-    s ^= s << 5;
-    s >>>= 0;
-    return s / 0xffffffff;
+    s = (s + 0x6d2b79f5) >>> 0;
+    let t = s;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
 
