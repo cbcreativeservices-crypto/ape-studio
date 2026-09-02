@@ -197,6 +197,69 @@ export function cycleRms(x: Float32Array): number {
   return Math.sqrt(s / x.length);
 }
 
+/* ── bias and conduction (Module 3 — educational) ───────────────────────── */
+
+export type BiasSim = {
+  /** AC-coupled output: what the load hears. */
+  out: Float32Array;
+  /** Device current (≥ 0, conceptual): quiescent level + signal swing. */
+  iDev: Float32Array;
+  /** Which educational region the operating point sits in. */
+  region: 'cutoff' | 'linear' | 'saturation';
+  idleCurrent: number; // conceptual 0..1
+  heat: number; // relative 0..1
+  /** True when part of the waveform is lost to cutoff or saturation. */
+  distorted: boolean;
+};
+
+/**
+ * Single active device with an adjustable operating point. bias 0..1 sets
+ * the quiescent current; the device can only conduct between 0 (cutoff) and
+ * 1 (fully driven / saturation), so too little bias clips one half of the
+ * swing and too much clips the other — with more idle current and heat.
+ */
+export function simulateSingleDeviceBias(drive: number, bias: number, n = WAVE_N): BiasSim {
+  const d = clamp(drive, 0, 1);
+  const q = clamp(bias, 0, 1);
+  const x = sineCycle(d * 0.5, n); // ±0.5 swing around the operating point
+  const iDev = new Float32Array(n);
+  const out = new Float32Array(n);
+  let lostLow = false, lostHigh = false;
+  for (let i = 0; i < n; i++) {
+    const raw = q + x[i];
+    const c = clamp(raw, 0, 1);
+    if (raw < 0) lostLow = true;
+    if (raw > 1) lostHigh = true;
+    iDev[i] = c;
+    out[i] = (c - q) * 2; // AC-coupled, back to ±1 units
+  }
+  const region = q < 0.25 ? 'cutoff' : q > 0.75 ? 'saturation' : 'linear';
+  return {
+    out, iDev, region,
+    idleCurrent: q,
+    heat: clamp(0.1 + 0.7 * q + 0.15 * d, 0, 1),
+    distorted: lostLow || lostHigh,
+  };
+}
+
+/**
+ * Device current for a stated conduction angle on a unit sine: the device
+ * conducts while sin(φ) exceeds a threshold, so 360° ↔ always, 180° ↔ the
+ * positive half, 90° ↔ only near the peak.
+ */
+export function conductionCurrent(angleDeg: number, n = WAVE_N): { iDev: Float32Array; threshold: number } {
+  const a = clamp(angleDeg, 1, 360);
+  // Conducts where sin(φ) > threshold. The arc where sin exceeds t spans
+  // 180° − 2·asin(t), so t = cos(a·π/360): 360° → −1, 180° → 0, 90° → 0.707.
+  const threshold = Math.cos((a / 360) * Math.PI);
+  const iDev = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    const s = Math.sin((2 * Math.PI * i) / n);
+    iDev[i] = Math.max(0, s - threshold);
+  }
+  return { iDev, threshold };
+}
+
 /* ── amplifier-class models (Part 3 §3 — educational, labeled so) ───────── */
 
 export type AmpClass = 'A' | 'B' | 'AB' | 'C' | 'D';

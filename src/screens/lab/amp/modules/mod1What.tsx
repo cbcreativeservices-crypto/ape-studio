@@ -19,7 +19,7 @@ const RAIL = 1.0;
 
 /** Input → Input Stage → Voltage Gain → Driver/Output → Load, supply below. */
 function SignalPathDiagram({ level, clipping }: { level: number; clipping: boolean }) {
-  const boxes = ['INPUT', 'INPUT STAGE', 'VOLTAGE GAIN', 'DRIVER / OUTPUT', 'LOAD'];
+  const boxes = ['INPUT', 'INPUT STAGE', 'VOLT. GAIN', 'DRIVER/OUTPUT', 'LOAD'];
   const bw = 60, gap = 10, x0 = 4, y = 10, bh = 28;
   return (
     <Svg width="100%" height={92} viewBox="0 0 360 92">
@@ -29,17 +29,17 @@ function SignalPathDiagram({ level, clipping }: { level: number; clipping: boole
         return (
           <Svg key={b}>
             <Rect x={x} y={y} width={bw} height={bh} rx={5} fill={isLoad ? '#1a2a1e' : '#151518'} stroke={isLoad ? AMP_COLORS.output : colors.steelBorder} strokeWidth={1} />
-            <SvgText x={x + bw / 2} y={y + 17} fontSize={7.5} fill={colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{b}</SvgText>
+            <SvgText x={x + bw / 2} y={y + 18} fontSize={8.5} fill={colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{b}</SvgText>
             {i < 4 ? <Path d={`M${x + bw + 1} ${y + bh / 2} l${gap - 2} 0`} stroke={i === 0 ? AMP_COLORS.input : AMP_COLORS.output} strokeWidth={1.5} /> : null}
           </Svg>
         );
       })}
       {/* power supply feeding the gain and output stages */}
       <Rect x={130} y={58} width={150} height={26} rx={5} fill="#1f1a0e" stroke={AMP_COLORS.supply} strokeWidth={1} />
-      <SvgText x={205} y={74} fontSize={7.5} fill={AMP_COLORS.supply} textAnchor="middle" fontFamily={fonts.oswaldMedium}>POWER SUPPLY  (+rail / −rail)</SvgText>
+      <SvgText x={205} y={75} fontSize={9} fill={AMP_COLORS.supply} textAnchor="middle" fontFamily={fonts.oswaldMedium}>POWER SUPPLY  (+rail / −rail)</SvgText>
       <Line x1={174} y1={58} x2={174} y2={y + bh + 1} stroke={AMP_COLORS.supply} strokeWidth={1.5} strokeDasharray="3,2" />
       <Line x1={244} y1={58} x2={244} y2={y + bh + 1} stroke={AMP_COLORS.supply} strokeWidth={1.5} strokeDasharray="3,2" />
-      <SvgText x={296} y={76} fontSize={7} fill={clipping ? colors.red : colors.textMuted} fontFamily={fonts.barlowMedium}>
+      <SvgText x={296} y={76} fontSize={8.5} fill={clipping ? colors.red : colors.textMuted} fontFamily={fonts.barlowMedium}>
         {clipping ? 'LIMIT REACHED' : `${Math.round(level * 100)}% drive`}
       </SvgText>
     </Svg>

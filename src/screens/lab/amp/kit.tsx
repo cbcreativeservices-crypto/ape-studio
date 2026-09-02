@@ -188,7 +188,7 @@ export function ControlSlider({
 
 /* ── segmented choice row (class selector, view toggles) ────────────────── */
 
-export function SegRow<T extends string>({
+export function SegRow<T extends string | number>({
   options, value, onChange, label,
 }: {
   options: { key: T; label: string }[];

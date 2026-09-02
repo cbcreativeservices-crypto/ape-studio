@@ -16,8 +16,41 @@ import {
   efficiency, bridge,
   sineCycle, amplify, isClipping, cycleRms, WAVE_N,
   simulateLinearClass, simulateClassC, simulateClassD,
+  simulateSingleDeviceBias, conductionCurrent,
   prioritizeFaults, evaluateRig, clamp,
 } from '../src/features/amp/ampModel.ts';
+
+describe('bias and conduction (Module 3)', () => {
+  it('too little bias clips the negative swing; too much clips the positive; mid is clean', () => {
+    const low = simulateSingleDeviceBias(1, 0.1);
+    const mid = simulateSingleDeviceBias(1, 0.5);
+    const high = simulateSingleDeviceBias(1, 0.9);
+    assert.equal(low.region, 'cutoff');
+    assert.equal(mid.region, 'linear');
+    assert.equal(high.region, 'saturation');
+    assert.equal(low.distorted, true);
+    assert.equal(mid.distorted, false);
+    assert.equal(high.distorted, true);
+    // cutoff loses the bottom (device current pinned at 0 for the trough)
+    assert.equal(low.iDev[Math.round(WAVE_N * 0.75)], 0);
+    // saturation pins the crest at full conduction
+    assert.equal(high.iDev[Math.round(WAVE_N * 0.25)], 1);
+    assert.ok(high.idleCurrent > mid.idleCurrent && mid.idleCurrent > low.idleCurrent);
+    assert.ok(high.heat > mid.heat && mid.heat > low.heat);
+  });
+  it('conduction angle: 360 always conducts, 180 the positive half, 90 only the crest', () => {
+    const count = (deg: number) => {
+      const { iDev } = conductionCurrent(deg);
+      let c = 0;
+      for (let i = 0; i < WAVE_N; i++) if (iDev[i] > 1e-9) c++;
+      return (c / WAVE_N) * 360;
+    };
+    assert.ok(count(360) > 355);
+    assert.ok(Math.abs(count(180) - 180) < 6);
+    assert.ok(Math.abs(count(270) - 270) < 6);
+    assert.ok(Math.abs(count(90) - 90) < 6);
+  });
+});
 
 describe('gain and decibels', () => {
   it('unity, double, half voltage ratios', () => {
