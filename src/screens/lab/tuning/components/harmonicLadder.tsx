@@ -1,9 +1,10 @@
 /**
  * HarmonicLadder + comparison (spec Stage 1 §8, ch.4): two stacked ladders
- * of harmonics 1–8 on a log-frequency axis, non-participating harmonics
- * muted, the two compared partials emphasized, joined when they coincide
- * and bracketed when they don't. Everything derives from the two
- * fundamentals — no separate table of harmonic frequencies exists.
+ * of harmonics 1–8 (or as many as the compared pair needs) on a
+ * log-frequency axis, non-participating harmonics muted, the two compared
+ * partials emphasized, joined when they coincide and bracketed when they
+ * don't. Everything derives from the two fundamentals — no separate table
+ * of harmonic frequencies exists.
  */
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Line, Polyline, Rect, Text as SvgText } from 'react-native-svg';
@@ -25,14 +26,19 @@ export function HarmonicComparison({
   rootLabel?: string;
   upperLabel?: string;
 }) {
+  // Draw at least 8 harmonics, and always enough to include the compared pair.
+  const maxH = Math.max(8, rootHarmonic, upperHarmonic);
   const fLo = rootHz * 0.9;
-  const fHi = rootHz * 9;
+  const fHi = rootHz * (maxH + 1);
   const x = (f: number) => 16 + ((Math.log(f) - Math.log(fLo)) / (Math.log(fHi) - Math.log(fLo))) * (W - 32);
   const pa = harmonicFrequency(rootHz, rootHarmonic);
   const pb = harmonicFrequency(upperHz, upperHarmonic);
   const diffHz = partialDifferenceHz(pb, pa);
   const diffCents = ratioToCents(pb / pa);
   const aligned = Math.abs(diffCents) < 0.05;
+  // Descriptive distance colour: gold within 8 ¢, orange beyond. Red is
+  // reserved for a failure to close (comma / wolf), never for "not 5/4".
+  const gapRole = Math.abs(diffCents) < 8 ? ROLE.near : ROLE.far;
   const rowY = [46, 108];
   const summary = `Harmonic ladders. Root ${rootLabel} harmonic ${rootHarmonic} at ${pa.toFixed(2)} hertz; ${upperLabel} harmonic ${upperHarmonic} at ${pb.toFixed(2)} hertz; ${aligned ? 'same frequency, exact alignment' : `difference ${diffHz.toFixed(2)} hertz, ${diffCents.toFixed(2)} cents`}.`;
   return (
@@ -48,7 +54,7 @@ export function HarmonicComparison({
                 {row === 0 ? rootLabel.toUpperCase() : upperLabel.toUpperCase()} · f = {f0.toFixed(2)} Hz
               </SvgText>
               <Line x1={16} y1={rowY[row]} x2={W - 16} y2={rowY[row]} stroke="rgba(255,255,255,0.12)" />
-              {Array.from({ length: 8 }, (_, k) => {
+              {Array.from({ length: maxH }, (_, k) => {
                 const n = k + 1;
                 const f = f0 * n;
                 if (f > fHi) return null;
@@ -56,7 +62,7 @@ export function HarmonicComparison({
                 return (
                   <Svg key={n}>
                     <Line x1={x(f)} y1={rowY[row] - (on ? 18 : 10)} x2={x(f)} y2={rowY[row]} stroke={on ? (aligned ? ROLE.exact : row === 0 ? ROLE.active : ROLE.operation) : colors.textMutedDeep} strokeWidth={on ? 3 : 1.2} opacity={on ? 1 : 0.5} />
-                    <SvgText x={x(f)} y={rowY[row] + 12} fontSize={8} fill={on ? colors.textPrimary : colors.textMutedDeep} textAnchor="middle">{n}</SvgText>
+                    <SvgText x={x(f)} y={rowY[row] + 12} fontSize={9} fill={on ? colors.textPrimary : colors.textMutedDeep} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{n}</SvgText>
                   </Svg>
                 );
               })}
@@ -70,10 +76,10 @@ export function HarmonicComparison({
           <>
             <Line x1={x(pa)} y1={rowY[0] + 16} x2={x(pa)} y2={rowY[1] - 22} stroke={ROLE.active} strokeDasharray="2,2" />
             <Line x1={x(pb)} y1={rowY[0] + 16} x2={x(pb)} y2={rowY[1] - 22} stroke={ROLE.operation} strokeDasharray="2,2" />
-            <Line x1={x(pa)} y1={78} x2={x(pb)} y2={78} stroke={Math.abs(diffCents) < 8 ? ROLE.near : ROLE.error} strokeWidth={2} />
+            <Line x1={x(pa)} y1={78} x2={x(pb)} y2={78} stroke={gapRole} strokeWidth={2} />
           </>
         )}
-        <SvgText x={W - 8} y={12} fontSize={8.5} fill={colors.textMuted} textAnchor="end">log-frequency axis</SvgText>
+        <SvgText x={W - 8} y={12} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={fonts.oswaldMedium}>LOG-FREQUENCY AXIS</SvgText>
       </Svg>
       <View style={styles.readout}>
         <Text style={styles.line}>
@@ -82,7 +88,7 @@ export function HarmonicComparison({
         <Text style={styles.line}>
           {upperLabel} harmonic {upperHarmonic}: <Text style={{ color: aligned ? ROLE.exact : ROLE.operation }}>{pb.toFixed(2)} Hz</Text>
         </Text>
-        <Text style={[styles.line, { color: aligned ? ROLE.exact : Math.abs(diffCents) < 8 ? ROLE.near : ROLE.error, fontFamily: fonts.oswaldMedium }]}>
+        <Text style={[styles.line, { color: aligned ? ROLE.exact : gapRole, fontFamily: fonts.oswaldMedium }]}>
           {aligned ? '● SAME FREQUENCY — 0 Hz · 0 ¢' : `Difference between compared partials: ${diffHz > 0 ? '+' : ''}${diffHz.toFixed(2)} Hz · ${diffCents > 0 ? '+' : ''}${diffCents.toFixed(2)} ¢`}
         </Text>
       </View>
@@ -109,13 +115,14 @@ export function BeatingModel({ diffHz }: { diffHz: number }) {
     env.push(`${xx.toFixed(1)},${(H2 / 2 - e * 34).toFixed(1)}`);
   }
   return (
-    <View style={{ gap: 4 }} accessible accessibilityLabel={`Beating model: ${d < 0.01 ? 'no beating, the partials coincide' : `envelope rises and falls ${d.toFixed(2)} times per second`}`}>
+    <View style={{ gap: 4 }} accessible accessibilityLabel={`Beating model, explanatory and not a measurement: ${d < 0.01 ? 'no beating, the partials coincide' : `envelope rises and falls ${d.toFixed(2)} times per second`}`}>
       <Svg width="100%" height={H2} viewBox={`0 0 ${W2} ${H2}`} preserveAspectRatio="none">
         <Rect x={0} y={0} width={W2} height={H2} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
         <Line x1={6} y1={H2 / 2} x2={W2 - 6} y2={H2 / 2} stroke="rgba(255,255,255,0.1)" />
         <Polyline points={pts1.join(' ')} fill="none" stroke={ROLE.active} strokeWidth={1} opacity={0.8} />
         <Polyline points={pts2.join(' ')} fill="none" stroke={ROLE.operation} strokeWidth={1} opacity={0.8} />
         <Polyline points={env.join(' ')} fill="none" stroke={d < 0.01 ? ROLE.exact : ROLE.near} strokeWidth={2} />
+        <SvgText x={W2 - 8} y={12} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={fonts.oswaldMedium}>EXPLANATORY MODEL · NOT A MEASUREMENT</SvgText>
       </Svg>
       <Text style={styles.note}>
         Explanatory model, not a measurement: two partials {d < 0.01 ? 'at the same frequency stay in step — a steady envelope.' : `${d.toFixed(2)} Hz apart drift in and out of step, so their sum swells and fades about ${d.toFixed(2)} times per second.`}
@@ -127,5 +134,5 @@ export function BeatingModel({ diffHz }: { diffHz: number }) {
 const styles = StyleSheet.create({
   readout: { gap: 2 },
   line: { color: colors.textSecondary, fontFamily: fonts.barlowMedium, fontSize: 13 },
-  note: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 15 },
+  note: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },
 });

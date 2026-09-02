@@ -3,16 +3,19 @@
  * (roles → theme tokens, never color alone), RatioTile, CentsRail,
  * EquationStage, DeviationMeter, AudioComparisonControls, and the text kit.
  */
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Line, Polygon, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { DisplayValue } from '../../../../features/tuning/tuningMath';
 import { fmtDecimal } from '../../../../features/tuning/tuningMath';
-import type { PlayerStatus, TuningPlayer } from '../../../../features/tuning/tuningAudio';
+import { concatWithGap, type PlayerStatus, type TuningPlayer } from '../../../../features/tuning/tuningAudio';
 import type { Mono } from '../../../../features/ear/earDsp';
 
-/** Instructional color roles (spec §7) mapped onto Academy tokens. */
+/** Instructional color roles (spec §7) mapped onto Academy tokens.
+ *  RED is reserved for a genuine failure to close (the comma, the wolf, B♯):
+ *  a note that merely sits far from equal temperament is `far` (orange), so
+ *  the comparison chapters never paint a legitimate tuning as an error. */
 export const ROLE = {
   neutral: colors.textSecondary,
   active: colors.cyanBright, // current selection / note / system
@@ -20,9 +23,50 @@ export const ROLE = {
   octave: colors.blue, // ×2 / ÷2 movement
   exact: colors.green, // exact alignment / target
   near: colors.gold, // moderate difference
+  far: colors.orange, // large difference — descriptive, not a verdict
   error: colors.red, // failure to close / wolf
   muted: colors.textMuted,
 } as const;
+
+/** Pre-built animated SVG parts — created ONCE at module level. Creating them
+ *  inside a render makes a new component type every frame, which remounts the
+ *  marker and kills its slide animation. */
+const AnimatedPolygon = Animated.createAnimatedComponent(Polygon);
+const AnimatedSvgText = Animated.createAnimatedComponent(SvgText);
+
+/* ── small hooks shared by the chapters ─────────────────────────────────── */
+
+/** Run `fn` on each rising edge of `when` (false → true) — from an effect,
+ *  never from render (a parent-state update during a child's render is a
+ *  React warning and, under concurrent rendering, may fire twice). Rising-
+ *  edge rather than once-only so a RETRY that resets the condition can
+ *  re-earn it; every caller's `fn` is idempotent. */
+export function useMarkWhen(when: boolean, fn: () => void): void {
+  const prev = useRef(false);
+  const fnRef = useRef(fn);
+  fnRef.current = fn;
+  useEffect(() => {
+    if (when && !prev.current) fnRef.current();
+    prev.current = when;
+  }, [when]);
+}
+
+/** A presentation order for `items`, shuffled once per mount and stable across
+ *  re-renders (keyed on content, not array identity, so inline literals are
+ *  fine). Callers keep judging by the ORIGINAL index. */
+export function useStableShuffle<T>(items: readonly T[], key?: string): { order: number[]; shuffled: T[] } {
+  const sig = key ?? items.map((i) => String(i)).join('');
+  const order = useMemo(() => {
+    const idx = items.map((_, i) => i);
+    for (let i = idx.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [idx[i], idx[j]] = [idx[j], idx[i]];
+    }
+    return idx;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sig]);
+  return { order, shuffled: order.map((i) => items[i]) };
+}
 
 /* ── text kit ───────────────────────────────────────────────────────────── */
 
@@ -48,15 +92,24 @@ export function Card({ children, tone }: { children: ReactNode; tone?: 'plain' |
 export function MathLine({ children, emphasis }: { children: ReactNode; emphasis?: boolean }) {
   return <Text style={[styles.mathLine, emphasis && { color: ROLE.operation }]}>{children}</Text>;
 }
-export function Btn({ label, onPress, tone = 'plain', disabled, a11y }: { label: string; onPress: () => void; tone?: 'plain' | 'primary' | 'danger'; disabled?: boolean; a11y?: string }) {
+/** Screen-reader name derived from a visual label: "▶ C3–C4" → "Play C3–C4",
+ *  "■" → "Stop audio", "■ STOP" → "Stop audio". Explicit `a11y` still wins. */
+function btnA11y(label: string): string {
+  if (/^■\s*(STOP)?$/i.test(label.trim())) return 'Stop audio';
+  if (label.startsWith('▶')) return `Play ${label.slice(1).trim()}`;
+  if (label.startsWith('♪')) return `Playing ${label.slice(1).trim()}`;
+  return label;
+}
+
+export function Btn({ label, onPress, tone = 'plain', disabled, a11y, selected }: { label: string; onPress: () => void; tone?: 'plain' | 'primary' | 'danger'; disabled?: boolean; a11y?: string; /** Marks a segmented/toggle choice for assistive tech. */ selected?: boolean }) {
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled}
       style={[styles.btn, tone === 'primary' && styles.btnPrimary, tone === 'danger' && styles.btnDanger, disabled && { opacity: 0.4 }]}
       accessibilityRole="button"
-      accessibilityLabel={a11y ?? label}
-      accessibilityState={{ disabled: !!disabled }}
+      accessibilityLabel={a11y ?? btnA11y(label)}
+      accessibilityState={{ disabled: !!disabled, ...(selected != null ? { selected } : {}) }}
     >
       <Text style={[styles.btnText, tone === 'primary' && { color: colors.green }, tone === 'danger' && { color: colors.red }]}>{label}</Text>
     </Pressable>
@@ -80,17 +133,28 @@ export function RatioTile({
   showDecimal?: boolean;
   compact?: boolean;
 }) {
-  const a11y = `${note}, ratio ${value.exactLabel}${showDecimal ? `, decimal ${value.decimalLabel}` : ''}, ${value.cents.toFixed(2)} cents${hz != null ? `, ${hz.toFixed(2)} hertz` : ''}${selected ? ', selected' : ''}${fresh ? ', new' : ''}`;
+  const a11y = `${note}, ratio ${value.exactLabel}${showDecimal ? `, decimal ${value.decimalLabel}` : ''}, ${value.cents.toFixed(2)} cents${hz != null ? `, ${hz.toFixed(2)} hertz` : ''}${fresh ? ', new' : ''}`;
   const inner = (
-    <View style={[styles.tile, compact && styles.tileCompact, selected && styles.tileSelected, fresh && styles.tileFresh]} accessible accessibilityLabel={a11y} accessibilityRole={onPress ? 'button' : 'text'} accessibilityState={{ selected: !!selected }}>
+    <>
       <Text style={[styles.tileNote, selected && { color: ROLE.active }]}>{note}{fresh ? ' ✦' : ''}</Text>
       <Text style={[styles.tileRatio, fresh && { color: ROLE.operation }]}>{value.exactLabel}</Text>
       {showDecimal ? <Text style={styles.tileSub}>≈ {value.decimalLabel}</Text> : null}
       {hz != null ? <Text style={styles.tileSub}>{hz.toFixed(2)} Hz</Text> : null}
       {!compact ? <Text style={styles.tileSub}>{value.cents.toFixed(2)} ¢</Text> : null}
+    </>
+  );
+  const tileStyle = [styles.tile, compact && styles.tileCompact, selected && styles.tileSelected, fresh && styles.tileFresh];
+  // The accessible node IS the pressable: a Pressable wrapping an accessible
+  // View produced two nested nodes and the label was read from the wrong one.
+  return onPress ? (
+    <Pressable onPress={onPress} style={tileStyle} accessibilityRole="button" accessibilityLabel={a11y} accessibilityState={{ selected: !!selected }}>
+      {inner}
+    </Pressable>
+  ) : (
+    <View style={tileStyle} accessible accessibilityRole="text" accessibilityLabel={a11y}>
+      {inner}
     </View>
   );
-  return onPress ? <Pressable onPress={onPress}>{inner}</Pressable> : inner;
 }
 
 /* ── CentsRail (logarithmic pitch axis 0–1200 ¢) ────────────────────────── */
@@ -151,7 +215,7 @@ export function CentsRail({
               <Line x1={x1} y1={y} x2={x2} y2={y} stroke={col} strokeWidth={1.5} />
               <Line x1={x1} y1={y - 4} x2={x1} y2={y + 4} stroke={col} strokeWidth={1.5} />
               <Line x1={x2} y1={y - 4} x2={x2} y2={y + 4} stroke={col} strokeWidth={1.5} />
-              <SvgText x={(x1 + x2) / 2} y={y - 5} fontSize={8.5} fill={col} textAnchor="middle" fontFamily={fonts.barlowMedium}>{b.label}</SvgText>
+              <SvgText x={(x1 + x2) / 2} y={y - 5} fontSize={9} fill={col} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{b.label}</SvgText>
             </Svg>
           );
         })}
@@ -180,8 +244,6 @@ function RailMarkerGlyph({ m, axisY, selected, onPress, reduceMotion }: { m: Rai
   const labelY = lane === 0 ? axisY - 20 - (m.row ?? 0) * 13 : axisY + 27;
   // Labels at the extremes anchor inward so they never clip the rail edge.
   const anchor = m.cents < 80 ? 'start' : m.cents > 1120 ? 'end' : 'middle';
-  const AnimatedPolygon = Animated.createAnimatedComponent(Polygon);
-  const AnimatedText = Animated.createAnimatedComponent(SvgText);
   const points = x.interpolate({
     inputRange: [0, RAIL_W],
     outputRange: [
@@ -192,9 +254,9 @@ function RailMarkerGlyph({ m, axisY, selected, onPress, reduceMotion }: { m: Rai
   return (
     <Svg onPress={onPress}>
       <AnimatedPolygon points={points as unknown as string} fill={selected || m.emphasis ? col : 'none'} stroke={col} strokeWidth={selected ? 2 : 1.4} opacity={faint ? 0.35 : 1} />
-      <AnimatedText x={x as unknown as number} y={labelY} fontSize={m.emphasis || selected ? 10 : 9} fill={col} textAnchor={anchor} fontFamily={fonts.oswaldMedium} opacity={faint ? 0.6 : 1}>
+      <AnimatedSvgText x={x as unknown as number} y={labelY} fontSize={m.emphasis || selected ? 10 : 9} fill={col} textAnchor={anchor} fontFamily={fonts.oswaldMedium} opacity={faint ? 0.6 : 1}>
         {m.label}
-      </AnimatedText>
+      </AnimatedSvgText>
     </Svg>
   );
 }
@@ -206,9 +268,14 @@ export type EqStep = { text: string; note?: string; emphasis?: boolean };
 export function EquationStage({ steps, title, reduceMotion, autoAdvance }: { steps: EqStep[]; title?: string; reduceMotion?: boolean; autoAdvance?: boolean }) {
   const [shown, setShown] = useState(autoAdvance ? steps.length : 1);
   const fade = useRef(new Animated.Value(1)).current;
+  // Reset only when the CONTENT changes. Chapters pass `steps` as an inline
+  // literal, so keying on array identity reset the stage to step 1 on every
+  // parent re-render — pressing any play button collapsed the derivation.
+  const signature = steps.map((s) => s.text).join('\n');
   useEffect(() => {
     setShown(autoAdvance ? steps.length : 1);
-  }, [steps, autoAdvance]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signature, autoAdvance]);
   const reveal = () => {
     if (shown >= steps.length) return;
     setShown(shown + 1);
@@ -241,7 +308,9 @@ export function DeviationMeter({ cents, rangeCents = 30, label }: { cents: numbe
   const w = 300, h = 40;
   const x = 150 + (Math.max(-rangeCents, Math.min(rangeCents, cents)) / rangeCents) * 140;
   const exact = Math.abs(cents) < 0.05;
-  const role = exact ? 'exact' : Math.abs(cents) < 8 ? 'near' : 'error';
+  // exact → green, within 8 ¢ → gold, beyond → orange. Never red: a wide
+  // third is a distance from the target, not a failure to close.
+  const role = exact ? 'exact' : Math.abs(cents) < 8 ? 'near' : 'far';
   const state = exact ? 'exact' : cents > 0 ? 'wider' : 'narrower';
   return (
     <View accessible accessibilityLabel={`${label ?? 'Deviation'}: ${exact ? 'exact' : `${cents > 0 ? '+' : ''}${cents.toFixed(2)} cents, ${state}`}`} style={{ gap: 3 }}>
@@ -250,9 +319,9 @@ export function DeviationMeter({ cents, rangeCents = 30, label }: { cents: numbe
         <Rect x={0} y={0} width={w} height={h} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
         <Line x1={10} y1={h / 2} x2={w - 10} y2={h / 2} stroke="rgba(255,255,255,0.15)" />
         <Line x1={150} y1={6} x2={150} y2={h - 6} stroke={colors.textSub} strokeWidth={1.5} />
-        <SvgText x={150} y={h - 3} fontSize={7.5} fill={colors.textMuted} textAnchor="middle">0</SvgText>
-        <SvgText x={12} y={h - 3} fontSize={7.5} fill={colors.textMuted}>−{rangeCents}¢ narrower</SvgText>
-        <SvgText x={w - 12} y={h - 3} fontSize={7.5} fill={colors.textMuted} textAnchor="end">wider +{rangeCents}¢</SvgText>
+        <SvgText x={150} y={h - 3} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium}>0</SvgText>
+        <SvgText x={12} y={h - 3} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium}>−{rangeCents} ¢ NARROWER</SvgText>
+        <SvgText x={w - 12} y={h - 3} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={fonts.oswaldMedium}>WIDER +{rangeCents} ¢</SvgText>
         <Polygon points={`${x},${h / 2 - 9} ${x - 6},${h / 2 + 3} ${x + 6},${h / 2 + 3}`} fill={ROLE[role]} />
       </Svg>
       <Text style={[styles.meterText, { color: ROLE[role] }]}>
@@ -283,7 +352,7 @@ export function AudioComparisonControls({
       <Row>
         <Btn label={`▶ A · ${labelA}`} onPress={() => void player.play(a(), labelA)} a11y={`Play A, ${labelA}`} />
         <Btn label={`▶ B · ${labelB}`} onPress={() => void player.play(b(), labelB)} a11y={`Play B, ${labelB}`} />
-        <Btn label="A → B" onPress={() => void player.play(concatAB(a(), b()), `${labelA} then ${labelB}`)} a11y="Play A then B" />
+        <Btn label="A → B" onPress={() => void player.play(concatWithGap(a(), b()), `${labelA} then ${labelB}`)} a11y="Play A then B" />
         {together ? <Btn label="TOGETHER" onPress={() => void player.play(together(), `${labelA} + ${labelB}`)} /> : null}
         <Btn label="■ STOP" tone="danger" onPress={() => player.stop()} a11y="Stop audio" />
       </Row>
@@ -293,14 +362,6 @@ export function AudioComparisonControls({
       </Text>
     </View>
   );
-}
-
-function concatAB(a: Mono, b: Mono): Mono {
-  const gap = Math.round(0.35 * 48000);
-  const out = new Float32Array(a.length + gap + b.length);
-  out.set(a, 0);
-  out.set(b, a.length + gap);
-  return out;
 }
 
 /** Single play/stop pair for one clip. */

@@ -51,7 +51,7 @@ export function Ch8Compare({ ctx }: ChapterProps) {
         <Eyebrow>JUST (ONE COMMON FIVE-LIMIT EXAMPLE)</Eyebrow>
         <Text style={styles.rowText}>{JU.notes.map((n) => (compared ? `${n.spelling} ${n.value.exactLabel}` : n.spelling)).join('   ')}</Text>
       </Card>
-      {!compared ? <Btn label="COMPARE" tone="primary" onPress={() => setCompared(true)} /> : null}
+      {!compared ? <Btn label="COMPARE" tone="primary" onPress={() => setCompared(true)} a11y="Compare: reveal the ratios of both scales" /> : null}
       <CentsRail
         markers={markers}
         height={compared ? 128 : 96}
@@ -64,7 +64,7 @@ export function Ch8Compare({ ctx }: ChapterProps) {
         <>
           <Body>C, D, F and G match in these selected examples. E, A and B do not: the same written scale degrees receive slightly different frequencies — the Pythagorean versions sit higher by 81/80 ({SYNTONIC_COMMA.decimalLabel}, ≈ {SYNTONIC_COMMA.cents.toFixed(2)} ¢).</Body>
           <Row>
-            {DIFFER.map((sp) => <Btn key={sp} label={sp} tone={sel === sp ? 'primary' : 'plain'} onPress={() => setSel(sp as 'E' | 'A' | 'B')} />)}
+            {DIFFER.map((sp) => <Btn key={sp} label={sp} tone={sel === sp ? 'primary' : 'plain'} selected={sel === sp} onPress={() => setSel(sp as 'E' | 'A' | 'B')} a11y={`Inspect ${sp}`} />)}
           </Row>
           <Card tone="math">
             <Eyebrow>{sel} DETAIL</Eyebrow>
@@ -75,22 +75,28 @@ export function Ch8Compare({ ctx }: ChapterProps) {
           <Prompt>Hear the same passage both ways — same root, timbre, register, duration and gain; only the ratios change.</Prompt>
           <Row>
             {(Object.keys(renders) as (keyof typeof renders)[]).map((k) => (
-              <Btn key={k} label={renders[k].name} tone={phrase === k ? 'primary' : 'plain'} onPress={() => setPhrase(k)} />
+              <Btn key={k} label={renders[k].name} tone={phrase === k ? 'primary' : 'plain'} selected={phrase === k} onPress={() => setPhrase(k)} a11y={`Choose the ${renders[k].name} example`} />
             ))}
           </Row>
           <AudioComparisonControls player={ctx.player} a={renders[phrase].a} b={renders[phrase].b} labelA={`Pythagorean · ${renders[phrase].name}`} labelB={`Just · ${renders[phrase].name}`} />
-          <Eyebrow>HARMONIC COMPARISON · C–E</Eyebrow>
-          <Row>
-            <Btn label="JUST E" tone={sel === 'E' ? 'primary' : 'plain'} onPress={() => setSel('E')} />
-          </Row>
+          {/* The lone "JUST E" toggle that sat here only re-selected E — the two
+              ladders below are always C–E, so it did nothing visible. Removed. */}
+          <Eyebrow>HARMONIC COMPARISON · C–E IN BOTH SYSTEMS</Eyebrow>
           <HarmonicComparison rootHz={root} upperHz={hzOf(JU, 'E')} rootHarmonic={5} upperHarmonic={4} rootLabel="root C" upperLabel="Just E 5/4" />
           <HarmonicComparison rootHz={root} upperHz={hzOf(PY, 'E')} rootHarmonic={5} upperHarmonic={4} rootLabel="root C" upperLabel="Pythagorean E 81/64" />
           <Body>Just: the fourth harmonic of E aligns with the fifth harmonic of C. Pythagorean: the fourth harmonic of E lies above the fifth harmonic of C. The Pythagorean scale prioritizes pure 3:2 fifths; this Just scale changes selected notes to create pure 5:4 major thirds. Neither is “correct.”</Body>
+          {/* NEW COPY — per-distractor feedback. */}
           <UnderstandingCheck
             question="Which notes differ between these selected C-major examples?"
             options={['C, D and G', 'E, A and B', 'F and G only', 'All seven']}
             correct={1}
             explain="E, A and B. The Pythagorean versions are higher by the ratio 81/80 — about 21.51 cents — because they come from stacked fifths, while the Just versions are built as pure thirds."
+            wrong={[
+              'Look at the rail: C, D and G carry ONE marker each — both systems build them from fifths alone (1, 9/8, 3/2).',
+              undefined,
+              'F (4/3) and G (3/2) are identical in both — they are the pure fourth and fifth, which every system here agrees on.',
+              'Only three degrees split on the rail. The rest are built from 2 and 3 alone, so both systems reach the same ratio.',
+            ]}
             onCorrect={ctx.markDone}
           />
           <Body>Different tuning systems can use the same note names while assigning different exact frequencies. Those changes alter both interval size and harmonic interaction.</Body>

@@ -2,29 +2,65 @@
  * UnderstandingCheck — a short concept check with explanatory feedback and
  * retry (spec Stage 1 §5). Wrong picks explain; the correct concept is
  * always revealed in the learner's own terms.
+ *
+ * Options are SHUFFLED for presentation once per mount (stable across
+ * re-renders — keyed on content, so inline `options` literals are fine) and
+ * judged by the ORIGINAL index: `correct` is still authored against the
+ * array you pass. Every lab that imports this gets the shuffle for free.
+ *
+ * `wrong` (optional, indexed by ORIGINAL option index) gives each distractor
+ * its own misconception-targeting feedback; while it is present the correct
+ * explanation stays hidden until the learner gets it right, so "try again"
+ * is real retrieval rather than copying. Without `wrong` the legacy
+ * behaviour is kept unchanged for the labs that already use this component.
  */
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { Card, Eyebrow } from './primitives';
 
+// NEW COPY — generic fallback when a distractor has no bespoke feedback.
+const GENERIC_WRONG = 'Not quite. Re-read the question — which quantity does it actually ask about?';
+
 export function UnderstandingCheck({
-  question, options, correct, explain, onCorrect,
+  question, options, correct, explain, onCorrect, wrong, eyebrow = 'UNDERSTANDING CHECK',
 }: {
   question: string;
   options: string[];
+  /** Index into `options` as authored (presentation order is shuffled). */
   correct: number;
   explain: string;
   onCorrect?: () => void;
+  /** Per-distractor feedback, indexed like `options`. Optional. */
+  wrong?: (string | undefined)[];
+  eyebrow?: string;
 }) {
-  const [picked, setPicked] = useState<number | null>(null);
+  const [picked, setPicked] = useState<number | null>(null); // ORIGINAL index
+  const signature = options.join('');
+  const order = useMemo(() => {
+    const idx = options.map((_, i) => i);
+    for (let i = idx.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [idx[i], idx[j]] = [idx[j], idx[i]];
+    }
+    return idx;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signature]);
   const right = picked === correct;
+  const feedback = picked == null
+    ? null
+    : right
+      ? `✓ ${explain}`
+      : wrong
+        ? (wrong[picked] ?? GENERIC_WRONG)
+        : `${explain} — try again with that in mind.`;
   return (
     <Card>
-      <Eyebrow>UNDERSTANDING CHECK</Eyebrow>
+      <Eyebrow>{eyebrow}</Eyebrow>
       <Text style={styles.q}>{question}</Text>
-      {options.map((o, i) => {
-        const isRight = picked != null && i === correct;
+      {order.map((i) => {
+        const o = options[i];
+        const isRight = picked != null && i === correct && right;
         const isWrong = picked === i && !right;
         return (
           <Pressable
@@ -32,21 +68,24 @@ export function UnderstandingCheck({
             disabled={right}
             onPress={() => {
               setPicked(i);
-              if (i === correct) onCorrect?.();
-              AccessibilityInfo.announceForAccessibility?.(i === correct ? 'Correct.' : 'Not quite.');
+              const ok = i === correct;
+              if (ok) onCorrect?.();
+              const said = ok ? explain : wrong ? (wrong[i] ?? GENERIC_WRONG) : explain;
+              AccessibilityInfo.announceForAccessibility?.(`${ok ? 'Correct.' : 'Not quite.'} ${said}`);
             }}
             style={[styles.opt, isRight && styles.optRight, isWrong && styles.optWrong]}
             accessibilityRole="button"
             accessibilityLabel={o}
+            accessibilityState={{ disabled: right, selected: picked === i }}
           >
             <Text style={[styles.optText, isRight && { color: colors.green }, isWrong && { color: colors.red }]}>{o}</Text>
           </Pressable>
         );
       })}
-      {picked != null ? (
-        <Text style={[styles.explain, { color: right ? colors.green : colors.gold }]}>
-          {right ? '✓ ' : ''}{explain}{!right ? ' — try again with that in mind.' : ''}
-        </Text>
+      {feedback ? (
+        <View accessibilityLiveRegion="polite">
+          <Text style={[styles.explain, { color: right ? colors.green : colors.gold }]}>{feedback}</Text>
+        </View>
       ) : null}
     </Card>
   );

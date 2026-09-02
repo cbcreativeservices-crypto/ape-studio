@@ -17,7 +17,9 @@ export function TuningKeyboard({ system, selected, onSelect, rootHz }: { system:
       {system.notes.map((n, i) => {
         const dev = deviationFromEqualCents(n);
         const pos = 50 + (Math.max(-RANGE, Math.min(RANGE, dev)) / RANGE) * 46;
-        const role = Math.abs(dev) < 0.05 ? 'exact' : Math.abs(dev) < 10 ? 'near' : 'error';
+        // Distance from equal temperament is DESCRIPTIVE: green exact, gold
+        // within 10 ¢, orange beyond. Red would brand a legitimate tuning an error.
+        const role = Math.abs(dev) < 0.05 ? 'exact' : Math.abs(dev) < 10 ? 'near' : 'far';
         const sel = i === selected;
         const hz = frequencyFromRatio(rootHz, n.value.numericRatio);
         const a11y = `${n.spelling}${i === 7 ? ' octave' : ''}, ${system.shortName}, ${n.value.cents.toFixed(2)} cents above C, ${Math.abs(dev) < 0.05 ? 'exactly equal temperament' : `${Math.abs(dev).toFixed(2)} cents ${dev > 0 ? 'above' : 'below'} equal temperament`}, ${hz.toFixed(2)} hertz at the current reference.`;
@@ -44,5 +46,5 @@ const styles = StyleSheet.create({
   track: { width: '80%', height: 26, borderRadius: 4, backgroundColor: '#0a0a0c', borderWidth: 1, borderColor: colors.hairlineDim, justifyContent: 'center', overflow: 'hidden' },
   zero: { position: 'absolute', left: '50%', top: 3, bottom: 3, width: 1, backgroundColor: colors.textMuted },
   marker: { position: 'absolute', top: 5, bottom: 5, width: 4, marginLeft: -2, borderRadius: 2 },
-  dev: { fontFamily: fonts.oswaldMedium, fontSize: 10.5 },
+  dev: { fontFamily: fonts.oswaldMedium, fontSize: 11.5 },
 });

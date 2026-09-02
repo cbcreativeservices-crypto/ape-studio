@@ -24,16 +24,19 @@ export function OctaveElevator({
   history: { op: '×2' | '÷2'; before: Frac; after: Frac }[];
   reduceMotion?: boolean;
 }) {
-  const y = useRef(new Animated.Value(regionY(regionOf(fracValue(value))))).current;
+  const v = fracValue(value);
+  const y = useRef(new Animated.Value(regionY(regionOf(v)))).current;
+  // Keyed on the NUMBER, not the Frac object: chapters rebuild the fraction
+  // every render, and re-running this on identity restarted the slide on
+  // every parent re-render (each audio status tick).
   useEffect(() => {
-    const target = regionY(regionOf(fracValue(value)));
+    const target = regionY(regionOf(v));
     if (reduceMotion) {
       y.setValue(target);
       return;
     }
     Animated.timing(y, { toValue: target, duration: 480, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }).start();
-  }, [value, reduceMotion, y]);
-  const v = fracValue(value);
+  }, [v, reduceMotion, y]);
   const inRange = v >= 1 && v < 2;
   const a11y = `Octave elevator. Current ratio ${fracLabel(value)}, ${inRange ? 'inside the comparison octave' : v >= 2 ? 'above the comparison octave' : 'below the comparison octave'}. ${history.map((h) => `${fracLabel(h.before)} ${h.op} = ${fracLabel(h.after)}`).join('; ')}`;
   return (

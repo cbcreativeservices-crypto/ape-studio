@@ -10,8 +10,12 @@ import { renderNotes } from '../../../../features/tuning/tuningAudio';
 import type { ChapterProps } from '../labCtx';
 import { Body, Btn, Card, CentsRail, Eyebrow, Lead, Prompt, RatioTile, Row } from '../components/primitives';
 import { DragRail } from '../components/dragRail';
+import { UnderstandingCheck } from '../components/check';
 
 const CARDS = LANDMARKS.filter((l) => l.value.cents > 0); // 6/5 5/4 4/3 3/2 2/1
+/** Short tile names — the full name lives in the detail card below. The full
+ *  names wrapped to three lines inside a 58-pt compact tile. */
+const SHORT: Record<string, string> = { 'Just minor third': 'minor 3rd', 'Just major third': 'major 3rd', 'Pure perfect fourth': 'fourth', 'Pure perfect fifth': 'fifth', Octave: 'octave' };
 
 export function Ch2Landmarks({ ctx }: ChapterProps) {
   const [sel, setSel] = useState<number>(3); // 3/2 by default
@@ -20,14 +24,16 @@ export function Ch2Landmarks({ ctx }: ChapterProps) {
   const [solved, setSolved] = useState(false);
   const card = CARDS[sel];
   const upperHz = frequencyFromRatio(ctx.rootHz, card.value.numericRatio);
-  const [num, den] = card.value.exactLabel.split('/').map(Number);
+  // The octave's exact label is "2" (no slash): default the denominator to 1
+  // or the whole-number preview rendered "2:NaN" with an empty lower row.
+  const [num, den = 1] = card.value.exactLabel.split('/').map(Number);
 
   return (
     <View style={{ gap: 12 }}>
       <Lead>Five simple ratios carry most of Western tuning. Hear each one before building anything with it.</Lead>
       <Row>
         {CARDS.map((c, i) => (
-          <RatioTile key={c.name} note={c.name} value={c.value} selected={i === sel} onPress={() => setSel(i)} compact />
+          <RatioTile key={c.name} note={SHORT[c.name] ?? c.name} value={c.value} selected={i === sel} onPress={() => setSel(i)} compact />
         ))}
       </Row>
       <Card>
@@ -37,7 +43,7 @@ export function Ch2Landmarks({ ctx }: ChapterProps) {
         <Text style={styles.line}>at this root: {ctx.rootHz.toFixed(2)} Hz → {upperHz.toFixed(2)} Hz</Text>
         <Row>
           <Btn label="▶ PLAY" onPress={() => void ctx.player.play(renderNotes([ctx.rootHz, upperHz], 1.6, 'rich'), card.name)} a11y={`Play ${card.name}`} />
-          <Btn label="PLACE ON RAIL" onPress={() => setPlaced(sel)} />
+          <Btn label="PLACE ON RAIL" onPress={() => setPlaced(sel)} a11y={`Place ${card.name} on the pitch rail`} />
           <Btn label="■" tone="danger" onPress={() => ctx.player.stop()} a11y="Stop audio" />
         </Row>
       </Card>
@@ -83,6 +89,20 @@ export function Ch2Landmarks({ ctx }: ChapterProps) {
       ) : (
         <Body>Aim for about 702 cents. The marker snaps gently when you are close.</Body>
       )}
+
+      {/* NEW COPY — worked example → retrieval: the ratio multiplies, it never adds. */}
+      <UnderstandingCheck
+        question="A pure perfect fifth (3:2) above 200 Hz sits at which frequency?"
+        options={['300 Hz', '201.5 Hz', '350 Hz', '400 Hz']}
+        correct={0}
+        explain="200 × 3/2 = 300 Hz. A ratio multiplies the root; it never adds to it."
+        wrong={[
+          undefined,
+          '3:2 is a multiplier, not an addition: 200 × 1.5, not 200 + 1.5.',
+          '350 Hz is 7:4 above 200 Hz (about 969 ¢) — a different, wider interval.',
+          '400 Hz is 2:1 above 200 Hz — that is the octave, not the fifth.',
+        ]}
+      />
     </View>
   );
 }

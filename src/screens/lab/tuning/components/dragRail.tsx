@@ -11,6 +11,13 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { LANDMARKS } from '../../../../features/tuning/tuningMath';
 import { Btn, CentsRail, Row, type RailMarker } from './primitives';
 
+/** Drag snap window (¢). */
+const DRAG_SNAP = 9;
+/** Step-button snap window (¢): a ±1 step that lands within a cent of a
+ *  landmark settles ON it, so the button path can reach 701.955 exactly —
+ *  but a step AWAY (1.0 ¢ off) is not pulled back. */
+const STEP_SNAP = 1;
+
 export function DragRail({
   cents, onChange, fixedMarkers = [], label, snap = true, hideLabel, showMeTarget, reduceMotion, onSettle,
 }: {
@@ -31,16 +38,21 @@ export function DragRail({
   const [dragging, setDragging] = useState(false);
 
   const snapped = useCallback(
-    (raw: number) => {
+    (raw: number, window: number) => {
       const c = Math.max(0, Math.min(1200, raw));
       if (!snap) return c;
-      for (const l of LANDMARKS) if (Math.abs(l.value.cents - c) < 9) return l.value.cents;
+      for (const l of LANDMARKS) if (Math.abs(l.value.cents - c) < window) return l.value.cents;
       return c;
     },
     [snap],
   );
 
-  const fromX = useCallback((x: number) => snapped((x / wRef.current) * 1200), [snapped]);
+  // The PanResponder is created once; it must call the LATEST callbacks.
+  // Chapters pass inline closures that read their own state (ch.2's "solved"
+  // flag, the shell's markDone), so a responder bound to first-render props
+  // would keep firing stale versions of them.
+  const latest = useRef({ onChange, onSettle, label, snapped });
+  latest.current = { onChange, onSettle, label, snapped };
 
   const pan = useRef(
     PanResponder.create({
@@ -48,21 +60,22 @@ export function DragRail({
       onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dx) > Math.abs(g.dy),
       onPanResponderGrant: (e) => {
         setDragging(true);
-        onChange(fromX(e.nativeEvent.locationX));
+        latest.current.onChange(latest.current.snapped((e.nativeEvent.locationX / wRef.current) * 1200, DRAG_SNAP));
       },
-      onPanResponderMove: (e) => onChange(fromX(e.nativeEvent.locationX)),
+      onPanResponderMove: (e) => latest.current.onChange(latest.current.snapped((e.nativeEvent.locationX / wRef.current) * 1200, DRAG_SNAP)),
       onPanResponderRelease: (e) => {
         setDragging(false);
-        const c = fromX(e.nativeEvent.locationX);
-        onChange(c);
-        onSettle?.(c);
-        AccessibilityInfo.announceForAccessibility?.(`${label} ${c.toFixed(2)} cents`);
+        const c = latest.current.snapped((e.nativeEvent.locationX / wRef.current) * 1200, DRAG_SNAP);
+        latest.current.onChange(c);
+        latest.current.onSettle?.(c);
+        AccessibilityInfo.announceForAccessibility?.(`${latest.current.label} ${c.toFixed(2)} cents`);
       },
+      onPanResponderTerminate: () => setDragging(false),
     }),
   ).current;
 
   const step = (d: number) => {
-    const c = Math.max(0, Math.min(1200, cents + d));
+    const c = snapped(cents + d, STEP_SNAP);
     onChange(c);
     onSettle?.(c);
   };
@@ -109,7 +122,7 @@ export function DragRail({
         <Btn label="−1 ¢" onPress={() => step(-1)} a11y="Lower by one cent" />
         <Btn label="+1 ¢" onPress={() => step(1)} a11y="Raise by one cent" />
         <Btn label="+10 ¢" onPress={() => step(10)} a11y="Raise by ten cents" />
-        {showMeTarget != null ? <Btn label="SHOW ME" onPress={showMe} /> : null}
+        {showMeTarget != null ? <Btn label="SHOW ME" onPress={showMe} a11y="Show me: move the marker to the answer" /> : null}
       </Row>
       <Text style={styles.hint}>Drag the marker, or use the step buttons. Nearby landmarks snap gently.</Text>
     </View>
@@ -117,5 +130,5 @@ export function DragRail({
 }
 
 const styles = StyleSheet.create({
-  hint: { color: colors.textMutedDeep, fontFamily: fonts.barlowRegular, fontSize: 11 },
+  hint: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },
 });

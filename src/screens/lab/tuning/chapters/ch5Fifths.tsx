@@ -11,6 +11,7 @@ import { renderNotes } from '../../../../features/tuning/tuningAudio';
 import type { ChapterProps } from '../labCtx';
 import { Body, Btn, Card, CentsRail, Eyebrow, Lead, MathLine, Prompt, Row, type RailMarker } from '../components/primitives';
 import { FifthPath } from '../components/fifthPath';
+import { UnderstandingCheck } from '../components/check';
 
 const CHAIN = buildPythagoreanFifthChain(frac(1, 1), 12);
 
@@ -128,8 +129,8 @@ export function Ch5Fifths({ ctx }: ChapterProps) {
       </Card>
 
       <Row>
-        <Btn label="FIFTH ORDER" tone={order === 'fifth' ? 'primary' : 'plain'} onPress={() => setOrder('fifth')} />
-        <Btn label="PITCH ORDER" tone={order === 'pitch' ? 'primary' : 'plain'} onPress={() => setOrder('pitch')} />
+        <Btn label="FIFTH ORDER" tone={order === 'fifth' ? 'primary' : 'plain'} selected={order === 'fifth'} onPress={() => setOrder('fifth')} a11y="Show the notes in generation order" />
+        <Btn label="PITCH ORDER" tone={order === 'pitch' ? 'primary' : 'plain'} selected={order === 'pitch'} onPress={() => setOrder('pitch')} a11y="Show the notes in pitch order" />
       </Row>
       <FifthPath steps={CHAIN} revealed={revealed} order={order} />
       <Body>{order === 'fifth' ? 'Generation order: each note is the previous note × 3/2, folded.' : 'We generated the notes in fifths. The pitch rail rearranges them from low to high within one octave.'}</Body>
@@ -149,6 +150,22 @@ export function Ch5Fifths({ ctx }: ChapterProps) {
       ) : (
         <Prompt>{revealed === 0 ? 'Add the first fifth: C × 3/2 = G.' : revealed === 1 ? 'Add another. Watch 3/2 × 3/2 = 9/4 need a ÷2 before it can be D.' : `Keep going — ${12 - revealed} fifth${12 - revealed > 1 ? 's' : ''} to go.`}</Prompt>
       )}
+
+      {/* NEW COPY — asked once the learner has SEEN a ÷2 happen (step 2). */}
+      {revealed >= 2 ? (
+        <UnderstandingCheck
+          question="After 3/2 × 3/2 = 9/4, why divide by 2 before naming the note D?"
+          options={['9/4 is above the octave; ÷2 keeps the pitch class inside it', 'Every fifth must be halved to remain a pure 3:2', '9/4 is not a whole number, so it must be reduced', 'Dividing by 2 turns the fifth into a fourth']}
+          correct={0}
+          explain="9/4 ≥ 2, so it sits above the comparison octave. ÷2 gives 9/8 — the same pitch class, D, inside 1 ≤ r < 2."
+          wrong={[
+            undefined,
+            'Halving never touches the fifth’s purity — each ×3/2 stays exact. ÷2 only moves octaves.',
+            'Whole numbers have nothing to do with it: 9/8 is not whole either. The rule is about the range 1 ≤ r < 2.',
+            '÷2 is an octave, not an inversion. 9/4 and 9/8 are the same pitch class, D, one octave apart.',
+          ]}
+        />
+      ) : null}
     </View>
   );
 }

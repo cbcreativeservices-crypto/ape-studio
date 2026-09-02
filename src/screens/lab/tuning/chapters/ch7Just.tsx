@@ -8,21 +8,35 @@ import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import {
-  TUNING_SYSTEMS, frac, fracDiv, fracLabel, fracValue, frequencyFromRatio, normalizeFracToOctave, ratioToCents, JUST_MAJOR_THIRD,
+  TUNING_SYSTEMS, type Frac, frac, fracDiv, fracEq, fracLabel, fracMul, fracValue, frequencyFromRatio, normalizeFracToOctave, ratioToCents,
 } from '../../../../features/tuning/tuningMath';
 import { renderNotes, renderPartials } from '../../../../features/tuning/tuningAudio';
 import type { ChapterProps } from '../labCtx';
 import { Body, Btn, Card, CentsRail, EquationStage, Eyebrow, Lead, MathLine, Prompt, RatioTile, Row, type RailMarker } from '../components/primitives';
 import { HarmonicComparison } from '../components/harmonicLadder';
+import { UnderstandingCheck } from '../components/check';
 
 const JUST = TUNING_SYSTEMS.just;
-const JUST_FRACS: Record<string, ReturnType<typeof frac>> = { C: frac(1, 1), D: frac(9, 8), E: frac(5, 4), F: frac(4, 3), G: frac(3, 2), A: frac(5, 3), B: frac(15, 8) };
+const JUST_FRACS: Record<string, Frac | undefined> = { C: frac(1, 1), D: frac(9, 8), E: frac(5, 4), F: frac(4, 3), G: frac(3, 2), A: frac(5, 3), B: frac(15, 8) };
+const jf = (sp: string): Frac => JUST_FRACS[sp] ?? frac(1, 1);
 const THIRDS: [string, string][] = [['C', 'E'], ['F', 'A'], ['G', 'B']];
+const NAMES = ['C', 'D', 'E', 'F', 'G', 'A', 'B'] as const;
+type Tonic = 'C' | 'F' | 'G' | 'D';
+/** Proper major-scale spellings. The letter alone is not enough: F major
+ *  needs B♭, G major F♯, D major F♯ and C♯ — none of which the C-major set
+ *  contains. (An earlier version spelled them B, F and C and reported
+ *  "B moved −92 ¢" — a different note, not a moved one.) */
+const SCALE_SPELLING: Record<Tonic, string[]> = {
+  C: ['C', 'D', 'E', 'F', 'G', 'A', 'B'],
+  F: ['F', 'G', 'A', 'B♭', 'C', 'D', 'E'],
+  G: ['G', 'A', 'B', 'C', 'D', 'E', 'F♯'],
+  D: ['D', 'E', 'F♯', 'G', 'A', 'B', 'C♯'],
+};
 
 export function Ch7Just({ ctx }: ChapterProps) {
   const [revealed, setRevealed] = useState(1);
   const [arcs, setArcs] = useState(0); // how many pure-third arcs shown
-  const [tonic, setTonic] = useState<'C' | 'F' | 'G' | 'D'>('C');
+  const [tonic, setTonic] = useState<Tonic>('C');
   const [mode, setMode] = useState<'keep' | 'retune'>('keep');
   const root = ctx.rootHz;
   const hz = (r: number) => frequencyFromRatio(root, r);
@@ -31,25 +45,33 @@ export function Ch7Just({ ctx }: ChapterProps) {
 
   // Key dependence: compare the fixed C-major pitches against a mapping rebuilt on the new tonic.
   const keyDemo = useMemo(() => {
-    const t = JUST_FRACS[tonic];
-    const names = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
-    // Retuned mapping: tonic × the same seven Just ratios, folded, spelled in scale order from the tonic.
-    const startIdx = names.indexOf(tonic);
-    const retuned = names.map((_, k) => {
-      const spelling = names[(startIdx + k) % 7];
-      const base = JUST_FRACS[names[k]]; // the C-major pattern's k-th degree ratio
-      const f = normalizeFracToOctave(frac(t.n * base.n, t.d * base.d)).ratio;
-      return { spelling, ratio: f };
+    const t = jf(tonic);
+    const spell = SCALE_SPELLING[tonic];
+    const idx = NAMES.indexOf(tonic);
+    // RETUNE: the same seven Just ratios rebuilt on the new tonic, folded, properly spelled.
+    const retuned = NAMES.map((deg, k) => ({ spelling: spell[k], ratio: normalizeFracToOctave(fracMul(t, jf(deg))).ratio }));
+    const moved = retuned.flatMap((r) => {
+      const was = JUST_FRACS[r.spelling];
+      return was && !fracEq(was, r.ratio) ? [{ ...r, was }] : [];
     });
-    const kept = names.map((sp) => ({ spelling: sp, ratio: JUST_FRACS[sp] }));
-    const changed = retuned.filter((r) => { const k = kept.find((x) => x.spelling === r.spelling)!; return fracValue(k.ratio) !== fracValue(r.ratio); });
-    // In "keep" mode: which simple ratios from the new tonic are no longer exact?
-    const fromTonic = (sp: string) => fracDiv(JUST_FRACS[sp], t);
-    const fifthTarget = names[(startIdx + 4) % 7];
-    const thirdTarget = names[(startIdx + 2) % 7];
-    const fifth = normalizeFracToOctave(fromTonic(fifthTarget)).ratio;
-    const third = normalizeFracToOctave(fromTonic(thirdTarget)).ratio;
-    return { retuned, changed, fifthTarget, thirdTarget, fifth, third, fifthOk: fracValue(fifth) === 1.5, thirdOk: fracValue(third) === 1.25 };
+    const added = retuned.filter((r) => !JUST_FRACS[r.spelling]); // needs a pitch the C set never had
+    // KEEP: measure the intervals the new key wants, using only the fixed C-major pitches.
+    const deg = (k: number) => ({ letter: NAMES[(idx + k) % 7] as string, spelled: spell[k] });
+    const mk = (name: string, ka: number, kb: number, want: Frac, wantLabel: string) => {
+      const a = deg(ka), b = deg(kb);
+      const missing = [a, b].filter((d) => d.letter !== d.spelled).map((d) => d.spelled);
+      const got = normalizeFracToOctave(fracDiv(jf(b.letter), jf(a.letter))).ratio;
+      const ok = missing.length === 0 && fracEq(got, want);
+      return { name, label: `${a.spelled} → ${b.spelled}`, missing, got, wantLabel, ok, offCents: ratioToCents(fracValue(got)) - ratioToCents(fracValue(want)) };
+    };
+    const checks = [
+      mk('fifth', 0, 4, frac(3, 2), '3/2'),
+      mk('major third', 0, 2, frac(5, 4), '5/4'),
+      mk('major sixth', 0, 5, frac(5, 3), '5/3'),
+      mk('fifth from the 2nd degree', 1, 5, frac(3, 2), '3/2'),
+    ];
+    const missingNotes = spell.filter((s) => !JUST_FRACS[s]);
+    return { retuned, moved, added, checks, missingNotes, allOk: checks.every((c) => c.ok) && missingNotes.length === 0 };
   }, [tonic]);
 
   return (
@@ -62,7 +84,7 @@ export function Ch7Just({ ctx }: ChapterProps) {
         ))}
       </Row>
       <Row>
-        {revealed < JUST.notes.length ? <Btn label={`REVEAL ${JUST.notes[revealed].spelling} ›`} tone="primary" onPress={() => setRevealed(revealed + 1)} /> : <Btn label="REPLAY" onPress={() => setRevealed(1)} />}
+        {revealed < JUST.notes.length ? <Btn label={`REVEAL ${JUST.notes[revealed].spelling} ›`} tone="primary" onPress={() => setRevealed(revealed + 1)} a11y={`Reveal the next note, ${JUST.notes[revealed].spelling}`} /> : <Btn label="REPLAY" onPress={() => setRevealed(1)} a11y="Replay the reveal from C" />}
         {revealed > 1 ? <Btn label={`▶ C + ${JUST.notes[revealed - 1].spelling}`} onPress={() => void ctx.player.play(renderNotes([root, hz(JUST.notes[revealed - 1].value.numericRatio)], 1.4, 'rich'), `C and ${JUST.notes[revealed - 1].spelling}`)} /> : null}
         <Btn label="■" tone="danger" onPress={() => ctx.player.stop()} a11y="Stop audio" />
       </Row>
@@ -95,20 +117,23 @@ export function Ch7Just({ ctx }: ChapterProps) {
       {revealed >= 7 ? (
         <>
           <Eyebrow>PURE MAJOR THIRDS IN THIS MAPPING</Eyebrow>
-          {THIRDS.slice(0, Math.max(1, arcs)).map(([lo, hi]) => {
-            const q = fracDiv(JUST_FRACS[hi], JUST_FRACS[lo]);
+          {/* One arc per press — the first card used to appear before the first
+              press, captioned "press SHOW NEXT ARC" while the button said FIRST. */}
+          {arcs === 0 ? <Body>Three of the major thirds in this mapping are exactly 5/4. Reveal them one at a time.</Body> : null}
+          {THIRDS.slice(0, arcs).map(([lo, hi]) => {
+            const q = fracDiv(jf(hi), jf(lo));
             return (
               <Card key={lo} tone="math">
-                <MathLine>{lo} → {hi}: ({fracLabel(JUST_FRACS[hi])}) ÷ ({fracLabel(JUST_FRACS[lo])}) = {fracLabel(q)}</MathLine>
-                <Text style={styles.sub}>{ratioToCents(fracValue(q)).toFixed(2)} ¢ · pure 5/4 major third{arcs >= 1 ? '' : ' — press SHOW NEXT ARC'}</Text>
+                <MathLine>{lo} → {hi}: ({fracLabel(jf(hi))}) ÷ ({fracLabel(jf(lo))}) = {fracLabel(q)}</MathLine>
+                <Text style={styles.sub}>{ratioToCents(fracValue(q)).toFixed(2)} ¢ · pure 5/4 major third</Text>
                 <Row>
-                  <Btn label={`▶ ${lo}–${hi}`} onPress={() => void ctx.player.play(renderNotes([hz(fracValue(JUST_FRACS[lo])), hz(fracValue(JUST_FRACS[hi]))], 1.4, 'rich'), `${lo} to ${hi}`)} />
+                  <Btn label={`▶ ${lo}–${hi}`} onPress={() => void ctx.player.play(renderNotes([hz(fracValue(jf(lo))), hz(fracValue(jf(hi)))], 1.4, 'rich'), `${lo} to ${hi}`)} />
                 </Row>
               </Card>
             );
           })}
           <Row>
-            {arcs < 3 ? <Btn label={arcs === 0 ? 'SHOW FIRST ARC' : arcs < 2 ? 'SHOW NEXT ARC' : 'SHOW ALL'} tone="primary" onPress={() => setArcs(arcs === 2 ? 3 : arcs + 1)} /> : <Btn label="REPLAY ARCS" onPress={() => setArcs(0)} />}
+            {arcs < 3 ? <Btn label={arcs === 0 ? 'SHOW FIRST ARC' : arcs === 1 ? 'SHOW NEXT ARC' : 'SHOW LAST ARC'} tone="primary" onPress={() => setArcs(arcs + 1)} /> : <Btn label="REPLAY ARCS" onPress={() => setArcs(0)} />}
           </Row>
           <HarmonicComparison rootHz={root} upperHz={hz(5 / 4)} rootHarmonic={5} upperHarmonic={4} rootLabel="root C" upperLabel="E 5/4" />
         </>
@@ -119,36 +144,67 @@ export function Ch7Just({ ctx }: ChapterProps) {
           <Prompt>Change the tonic and choose what happens to the pitches.</Prompt>
           <Row>
             {(['C', 'F', 'G', 'D'] as const).map((t) => (
-              <Btn key={t} label={`TONIC ${t}`} tone={tonic === t ? 'primary' : 'plain'} onPress={() => setTonic(t)} />
+              <Btn key={t} label={`TONIC ${t}`} tone={tonic === t ? 'primary' : 'plain'} selected={tonic === t} onPress={() => setTonic(t)} a11y={`Make ${t} the tonic`} />
             ))}
           </Row>
           <Row>
-            <Btn label="KEEP CURRENT PITCHES" tone={mode === 'keep' ? 'primary' : 'plain'} onPress={() => setMode('keep')} />
-            <Btn label="RETUNE AROUND NEW TONIC" tone={mode === 'retune' ? 'primary' : 'plain'} onPress={() => setMode('retune')} />
+            <Btn label="KEEP CURRENT PITCHES" tone={mode === 'keep' ? 'primary' : 'plain'} selected={mode === 'keep'} onPress={() => setMode('keep')} />
+            <Btn label="RETUNE AROUND NEW TONIC" tone={mode === 'retune' ? 'primary' : 'plain'} selected={mode === 'retune'} onPress={() => setMode('retune')} />
           </Row>
-          {tonic === 'C' ? (
-            <Body>With C as the tonic every relationship above is exact. Pick another tonic.</Body>
-          ) : mode === 'keep' ? (
-            <Card tone={keyDemo.fifthOk && keyDemo.thirdOk ? 'ok' : 'warn'}>
+          {/* NEW COPY throughout this block. KEEP measures four intervals the
+              new key wants — fifth, third, sixth from the tonic and the fifth
+              from the 2nd degree — and lists the notes the key needs that
+              this seven-note set does not contain. Even C fails one line:
+              D → A is 40/27, the classic five-limit impure fifth. */}
+          {mode === 'keep' ? (
+            <Card tone={keyDemo.allOk ? 'ok' : 'warn'}>
               <Eyebrow>ALL SEVEN PITCHES UNCHANGED · MEASURED FROM {tonic}</Eyebrow>
-              <MathLine>{tonic} → {keyDemo.fifthTarget} (fifth): {fracLabel(keyDemo.fifth)} = {ratioToCents(fracValue(keyDemo.fifth)).toFixed(2)} ¢ {keyDemo.fifthOk ? '✓ pure 3/2' : `✗ not 3/2 (${(ratioToCents(fracValue(keyDemo.fifth)) - 701.955).toFixed(2)} ¢ off)`}</MathLine>
-              <MathLine>{tonic} → {keyDemo.thirdTarget} (third): {fracLabel(keyDemo.third)} = {ratioToCents(fracValue(keyDemo.third)).toFixed(2)} ¢ {keyDemo.thirdOk ? '✓ pure 5/4' : `✗ not 5/4 (${(ratioToCents(fracValue(keyDemo.third)) - JUST_MAJOR_THIRD.cents).toFixed(2)} ¢ off)`}</MathLine>
-              <Body>The pitches stayed where the C-major mapping put them, so some of the simple ratios you would want from {tonic} are no longer exact.</Body>
+              {keyDemo.checks.map((c) => (
+                <MathLine key={c.name}>
+                  {c.label} ({c.name}): {c.missing.length ? `${c.missing.join(' and ')} not in this set` : `${fracLabel(c.got)} = ${ratioToCents(fracValue(c.got)).toFixed(2)} ¢ ${c.ok ? `✓ pure ${c.wantLabel}` : `✗ not ${c.wantLabel} (${c.offCents > 0 ? '+' : ''}${c.offCents.toFixed(2)} ¢)`}`}
+                </MathLine>
+              ))}
+              {keyDemo.missingNotes.length ? <MathLine emphasis>{tonic} major needs {keyDemo.missingNotes.join(' and ')} — this seven-note set has no such pitch.</MathLine> : null}
+              <Body>
+                {tonic === 'C'
+                  ? 'Even with C as the tonic, one fifth inside this set is impure: D → A is 40/27, 21.51 ¢ narrow. A single fixed set of seven pitches cannot make every fifth AND every third pure at once.'
+                  : keyDemo.checks.every((c) => c.ok)
+                    ? `Every interval measured here is exact from ${tonic} — but ${tonic} major needs ${keyDemo.missingNotes.join(' and ')}, and this seven-note set has no such pitch. The key cannot even be played from it without adding a note.`
+                    : `The pitches stayed where the C-major mapping put them, so ${tonic} major does not get all of its simple ratios${keyDemo.missingNotes.length ? ' — and is missing notes it needs' : ''}.`}
+              </Body>
             </Card>
           ) : (
             <Card tone="ok">
               <Eyebrow>REBUILT AROUND {tonic} · {tonic} STAYS FIXED</Eyebrow>
-              {keyDemo.changed.length ? (
-                keyDemo.changed.map((c) => (
-                  <MathLine key={c.spelling}>{c.spelling}: {fracLabel(JUST_FRACS[c.spelling])} → {fracLabel(c.ratio)} ({(ratioToCents(fracValue(c.ratio)) - ratioToCents(fracValue(JUST_FRACS[c.spelling]))).toFixed(2)} ¢ {ratioToCents(fracValue(c.ratio)) > ratioToCents(fracValue(JUST_FRACS[c.spelling])) ? 'higher' : 'lower'})</MathLine>
-                ))
-              ) : (
-                <MathLine>No note needs to move.</MathLine>
-              )}
-              <Body>Recomputing the mapping on the new tonic restores the simple relationships — at the cost of moving {keyDemo.changed.length} note{keyDemo.changed.length === 1 ? '' : 's'} away from where the C-major set had them.</Body>
+              {keyDemo.moved.map((c) => (
+                <MathLine key={c.spelling}>{c.spelling}: {fracLabel(c.was)} → {fracLabel(c.ratio)} ({(ratioToCents(fracValue(c.ratio)) - ratioToCents(fracValue(c.was))).toFixed(2)} ¢ {ratioToCents(fracValue(c.ratio)) > ratioToCents(fracValue(c.was)) ? 'higher' : 'lower'})</MathLine>
+              ))}
+              {keyDemo.added.map((c) => (
+                <MathLine key={c.spelling} emphasis>{c.spelling}: {fracLabel(c.ratio)} — a new pitch the C-major set never had</MathLine>
+              ))}
+              {!keyDemo.moved.length && !keyDemo.added.length ? <MathLine>No note needs to move — you are already in C.</MathLine> : null}
+              <Body>
+                {keyDemo.moved.length || keyDemo.added.length
+                  ? `Recomputing the mapping around ${tonic} restores its simple relationships — at the cost of moving ${keyDemo.moved.length} note${keyDemo.moved.length === 1 ? '' : 's'} and adding ${keyDemo.added.length} new pitch${keyDemo.added.length === 1 ? '' : 'es'}. A fixed instrument cannot do this mid-piece; a singer or string player can.`
+                  : 'Pick another tonic to see which notes would have to move.'}
+              </Body>
             </Card>
           )}
           <Body>Just relationships can be extremely pure for a chosen tonal center, but one fixed set of pitches does not preserve every simple ratio in every key. Performers may adjust pitch dynamically with harmony, melody, style and ensemble context.</Body>
+          {/* NEW COPY — targets "Just Intonation is one universal scale". */}
+          <UnderstandingCheck
+            question="You keep the C-major Just pitches fixed and the music moves to D major. What happens?"
+            options={['Nothing — the same pitches give pure intervals from D', 'Some ratios from D are impure, and D major needs missing notes', 'Every interval from D becomes exactly one comma sharp', 'The octave from D is no longer exactly 2:1']}
+            correct={1}
+            explain="Some ratios from D are no longer exact (D → A = 40/27, 21.51 ¢ narrow) and D major needs F♯ and C♯, which this seven-note set does not contain."
+            wrong={[
+              'Measure it: D → A is 40/27, not 3/2 — 21.51 ¢ narrow. Fixed pitches do not re-tune themselves.',
+              undefined,
+              'The errors are not uniform: some intervals from D stay pure (D → B = 5/3) while others miss by a comma.',
+              'Octaves are untouched — every note keeps its ×2 partner. It is the fifths and thirds that shift.',
+            ]}
+            onCorrect={ctx.markDone}
+          />
           {!ctx.isDone ? <Btn label="I’VE GOT IT ›" tone="primary" onPress={ctx.markDone} /> : null}
         </>
       ) : null}

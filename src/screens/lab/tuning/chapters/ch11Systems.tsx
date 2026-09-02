@@ -16,18 +16,27 @@ import type { ChapterProps } from '../labCtx';
 import { AudioComparisonControls, Body, Btn, Card, Eyebrow, Lead, MathLine, Prompt, ROLE, Row } from '../components/primitives';
 import { TuningKeyboard } from '../components/tuningKeyboard';
 import { HarmonicComparison } from '../components/harmonicLadder';
+import { UnderstandingCheck } from '../components/check';
 
 const IDS: TuningSystemId[] = ['pythagorean', 'just', 'meantone', 'equal'];
 const ROOTS = [{ label: 'A4 = 440 (C4 = 261.63)', hz: C4_ET }, { label: 'A4 = 442', hz: 442 * Math.pow(2, -9 / 12) }, { label: 'A4 = 432', hz: 432 * Math.pow(2, -9 / 12) }];
 
-/** Smallest harmonic pair (≤ 8) that nearly coincides for this ratio — used for the preview. */
-function bestPair(ratio: number): { rootH: number; noteH: number } {
+/** Harmonics searched for a near-coincidence, and how near counts. Up to 9
+ *  lets D 9/8 find its exact pair (D·8 = C·9); 2 % keeps the Pythagorean
+ *  third (4 vs 5, 1.25 % apart) — the comparison the lab is built on — while
+ *  refusing pairs like B 15/8, whose "best" match under 9 was 6 % apart and
+ *  drew a meaningless bracket. */
+const MAX_H = 9;
+const NEAR = 0.02;
+
+/** Lowest harmonic pair (≤ MAX_H) that nearly coincides for this ratio, or null. */
+function bestPair(ratio: number): { rootH: number; noteH: number; err: number } | null {
   let best = { rootH: 1, noteH: 1, err: Infinity };
-  for (let q = 1; q <= 8; q++) for (let p = 1; p <= 8; p++) {
+  for (let q = 1; q <= MAX_H; q++) for (let p = 1; p <= MAX_H; p++) {
     const err = Math.abs(q * ratio - p) / p;
     if (err < best.err) best = { rootH: p, noteH: q, err };
   }
-  return { rootH: best.rootH, noteH: best.noteH };
+  return best.err <= NEAR ? best : null;
 }
 
 export function Ch11Systems({ ctx }: ChapterProps) {
@@ -57,16 +66,19 @@ export function Ch11Systems({ ctx }: ChapterProps) {
   return (
     <View style={{ gap: 12 }}>
       <Lead>Every system on the same C, the same keys, the same sounds — only the ratios change.</Lead>
+      <Eyebrow>SYSTEM A</Eyebrow>
       <Row>
-        {IDS.map((id) => <Btn key={id} label={TUNING_SYSTEMS[id].shortName} tone={sysId === id ? 'primary' : 'plain'} onPress={() => setSysId(id)} />)}
+        {IDS.map((id) => <Btn key={id} label={TUNING_SYSTEMS[id].shortName} tone={sysId === id ? 'primary' : 'plain'} selected={sysId === id} onPress={() => setSysId(id)} a11y={`System A: ${TUNING_SYSTEMS[id].shortName}`} />)}
       </Row>
+      <Eyebrow>REFERENCE PITCH · APPLIES TO THE WHOLE LAB</Eyebrow>
       <Row>
-        {ROOTS.map((r) => <Btn key={r.label} label={r.label} tone={Math.abs(root - r.hz) < 0.01 ? 'primary' : 'plain'} onPress={() => ctx.setRootHz(r.hz)} a11y={`Set reference ${r.label}`} />)}
+        {ROOTS.map((r) => <Btn key={r.label} label={r.label} tone={Math.abs(root - r.hz) < 0.01 ? 'primary' : 'plain'} selected={Math.abs(root - r.hz) < 0.01} onPress={() => ctx.setRootHz(r.hz)} a11y={`Set reference ${r.label}`} />)}
       </Row>
       <Card>
         <Eyebrow>{sys.name.toUpperCase()} · C FIXED AT {root.toFixed(2)} Hz</Eyebrow>
         <TuningKeyboard system={sys} selected={sel} onSelect={setSel} rootHz={root} />
-        <Text style={styles.legend}>Keys never move. Each marker: signed cents from equal temperament (● exact · ▲ near · ▲ far).</Text>
+        {/* NEW COPY — the old legend promised ● and ▲ glyphs the keys never drew. */}
+        <Text style={styles.legend}>Keys never move. Each bar is that note’s signed distance from equal temperament — green exact · gold within 10 ¢ · orange beyond. Tap a key to inspect it.</Text>
       </Card>
       <Card tone="math">
         <Eyebrow>{note.spelling}{sel === 7 ? ' (OCTAVE)' : ''} · {sys.shortName}</Eyebrow>
@@ -76,18 +88,23 @@ export function Ch11Systems({ ctx }: ChapterProps) {
         <Text style={styles.legend}>{note.value.constructionSource}</Text>
       </Card>
       {sel > 0 && sel < 7 ? (
-        <HarmonicComparison rootHz={root} upperHz={hz(note.value.numericRatio)} rootHarmonic={pair.rootH} upperHarmonic={pair.noteH} rootLabel="root C" upperLabel={`${note.spelling} ${note.value.exactLabel}`} />
+        pair ? (
+          <HarmonicComparison rootHz={root} upperHz={hz(note.value.numericRatio)} rootHarmonic={pair.rootH} upperHarmonic={pair.noteH} rootLabel="root C" upperLabel={`${note.spelling} ${note.value.exactLabel}`} />
+        ) : (
+          // NEW COPY — honest empty state instead of a meaningless bracket.
+          <Body>No pair of harmonics up to {MAX_H} comes within 2 % for {note.spelling} {note.value.exactLabel}, so no ladder is drawn — the nearest low-harmonic alignment for this ratio lies above the display.</Body>
+        )
       ) : null}
 
       <Prompt>A/B the same example in two systems. Root, register, timbre, duration, articulation, gain, voicing and tempo are held constant.</Prompt>
       <Row>
         {([['third', 'C–E third'], ['fifth', 'C–G fifth'], ['triad', 'C–E–G triad'], ['scale', 'C-major scale'], ['melody', 'short melody']] as const).map(([k, l]) => (
-          <Btn key={k} label={l} tone={example === k ? 'primary' : 'plain'} onPress={() => setExample(k)} />
+          <Btn key={k} label={l} tone={example === k ? 'primary' : 'plain'} selected={example === k} onPress={() => setExample(k)} a11y={`Example: ${l}`} />
         ))}
       </Row>
+      <Eyebrow>SYSTEM B</Eyebrow>
       <Row>
-        <Text style={styles.legend}>B system:</Text>
-        {IDS.map((id) => <Btn key={id} label={TUNING_SYSTEMS[id].shortName} tone={bId === id ? 'primary' : 'plain'} onPress={() => setBId(id)} />)}
+        {IDS.map((id) => <Btn key={id} label={TUNING_SYSTEMS[id].shortName} tone={bId === id ? 'primary' : 'plain'} selected={bId === id} onPress={() => setBId(id)} a11y={`System B: ${TUNING_SYSTEMS[id].shortName}`} />)}
       </Row>
       <AudioComparisonControls player={ctx.player} a={() => render(sys)} b={() => render(other)} labelA={`${sys.shortName} · ${example}`} labelB={`${other.shortName} · ${example}`} />
 
@@ -111,6 +128,20 @@ export function Ch11Systems({ ctx }: ChapterProps) {
           ))}
         </Card>
       ) : null}
+      {/* NEW COPY — targets "one system is the correct one". */}
+      <UnderstandingCheck
+        question="Four systems, one C, one key called E. Which statement is true?"
+        options={['E has one true frequency; the other systems are out of tune', 'Each system assigns E its own ratio; none is the single right one', 'Equal temperament is the physically correct E', 'The four E’s differ only because the root changed']}
+        correct={1}
+        explain="Each system chooses what to preserve — pure fifths, pure thirds, equal keys — and E lands where that choice puts it. There is no privileged E; the chart shows differences from equal temperament, not errors."
+        wrong={[
+          'Tune the keyboard to Just and the Pythagorean E is “out”; tune it Pythagorean and the reverse. Neither is a reference for the other.',
+          undefined,
+          'Equal temperament is a design choice (twelve identical ratios) — convenient, not physical. Its third is 13.69 ¢ from the harmonic 5/4.',
+          'The root is FIXED at the same C for every system here. Only the ratio applied to it changes.',
+        ]}
+        onCorrect={ctx.markDone}
+      />
       {!ctx.isDone ? <Btn label="I’VE COMPARED THEM ›" tone="primary" onPress={ctx.markDone} /> : null}
     </View>
   );
@@ -125,19 +156,20 @@ function DeviationChart({ system, selected, onSelect }: { system: TuningSystem; 
       <Svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
         <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
         <Line x1={10} y1={zeroY} x2={W - 10} y2={zeroY} stroke={colors.textSub} strokeWidth={1.2} />
-        <SvgText x={12} y={zeroY - 4} fontSize={8} fill={colors.textMuted}>0 ¢ = equal temperament</SvgText>
-        <SvgText x={12} y={14} fontSize={8} fill={colors.textMuted}>+ higher</SvgText>
-        <SvgText x={12} y={zeroY + 12} fontSize={8} fill={colors.textMuted}>− lower</SvgText>
+        <SvgText x={12} y={zeroY - 4} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium}>0 ¢ = EQUAL TEMPERAMENT</SvgText>
+        <SvgText x={12} y={14} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium}>+ HIGHER</SvgText>
+        <SvgText x={12} y={zeroY + 13} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium}>− LOWER</SvgText>
         {notes.map((n, i) => {
           const dev = deviationFromEqualCents(n);
           const x = 40 + i * 38;
           const h = Math.min(50, Math.abs(dev) * scale);
-          const role = Math.abs(dev) < 0.05 ? 'exact' : Math.abs(dev) < 10 ? 'near' : 'error';
+          // Descriptive distance: green exact, gold within 10 ¢, orange beyond. Never red.
+          const role = Math.abs(dev) < 0.05 ? 'exact' : Math.abs(dev) < 10 ? 'near' : 'far';
           return (
             <Svg key={i} onPress={() => onSelect(i)}>
               <Rect x={x - 9} y={dev >= 0 ? zeroY - h : zeroY} width={18} height={Math.max(2, h)} fill={ROLE[role]} opacity={i === selected ? 1 : 0.6} stroke={i === selected ? ROLE.active : 'none'} />
               <SvgText x={x} y={H - 8} fontSize={9.5} fill={i === selected ? ROLE.active : colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{n.spelling}</SvgText>
-              <SvgText x={x} y={dev >= 0 ? zeroY - h - 4 : zeroY + h + 10} fontSize={7.5} fill={colors.textMuted} textAnchor="middle">{Math.abs(dev) < 0.05 ? '0' : `${dev > 0 ? '+' : ''}${dev.toFixed(1)}`}</SvgText>
+              <SvgText x={x} y={dev >= 0 ? zeroY - h - 4 : zeroY + h + 11} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{Math.abs(dev) < 0.05 ? '0' : `${dev > 0 ? '+' : ''}${dev.toFixed(1)}`}</SvgText>
             </Svg>
           );
         })}
@@ -147,5 +179,5 @@ function DeviationChart({ system, selected, onSelect }: { system: TuningSystem; 
 }
 
 const styles = StyleSheet.create({
-  legend: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 15 },
+  legend: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },
 });

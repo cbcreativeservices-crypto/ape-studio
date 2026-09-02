@@ -24,5 +24,7 @@ export type ChapterDef = {
   index: number;
   title: string;
   short: string;
+  /** One-line learning objective the shell states before the chapter body. */
+  objective?: string;
   Component: (props: ChapterProps) => JSX.Element;
 };

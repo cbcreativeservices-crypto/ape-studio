@@ -10,6 +10,7 @@ import { type Frac, frac, fracLabel, fracValue, normalizeFracToOctave } from '..
 import type { ChapterProps } from '../labCtx';
 import { Body, Btn, Card, Eyebrow, Lead, MathLine, Prompt, Row } from '../components/primitives';
 import { OctaveElevator } from '../components/octaveElevator';
+import { UnderstandingCheck } from '../components/check';
 
 type Hist = { op: '×2' | '÷2'; before: Frac; after: Frac }[];
 
@@ -92,8 +93,8 @@ export function Ch3Octave({ ctx }: ChapterProps) {
       <Row>
         <Btn label="×2" onPress={() => apply('×2')} disabled={inRange} a11y="Multiply by two" />
         <Btn label="÷2" onPress={() => apply('÷2')} disabled={inRange} a11y="Divide by two" />
-        <Btn label="SHOW ME" onPress={showMe} disabled={inRange} />
-        <Btn label="RESET" onPress={() => { setValue(CHALLENGES[ci]); setHist([]); }} />
+        <Btn label="SHOW ME" onPress={showMe} disabled={inRange} a11y="Show me the next operation" />
+        <Btn label="RESET" onPress={() => { setValue(CHALLENGES[ci]); setHist([]); }} a11y="Reset this ratio" />
       </Row>
       {inRange ? (
         <Card tone="ok">
@@ -113,6 +114,20 @@ export function Ch3Octave({ ctx }: ChapterProps) {
           <Body>Each step changes the ratio by exactly one octave, so the result is octave-equivalent to where you started — never “the same number,” just the same pitch class in one agreed range.</Body>
         </Card>
       ) : null}
+
+      {/* NEW COPY — targets the misconception that folding changes the note. */}
+      <UnderstandingCheck
+        question="You folded 9/4 down to 9/8. What actually changed?"
+        options={['The pitch class — it is now a different note', 'Only the octave — same pitch class, one octave lower', 'The ratio to the root became exact', 'The note moved down by a fifth']}
+        correct={1}
+        explain="Only the octave. 9/4 ÷ 2 = 9/8 is the same pitch class placed inside the 1 ≤ r < 2 range."
+        wrong={[
+          '÷2 is exactly one octave. The pitch class is unchanged — the note keeps its name.',
+          undefined,
+          'Folding does not make a ratio “exact” — 9/8 is as exact as 9/4. It only moves it into the comparison range.',
+          'A fifth is ×3/2. Folding only ever applies ×2 or ÷2 — octaves, never fifths.',
+        ]}
+      />
     </View>
   );
 }

@@ -95,24 +95,27 @@ export function TuningLabScreen() {
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Leave the lab">
+        <Pressable onPress={() => navigation.goBack()} hitSlop={8} style={styles.backBtn} accessibilityRole="button" accessibilityLabel="Leave the lab">
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text style={styles.kicker}>TUNING & TEMPERAMENT LAB · CHAPTER {chapter} OF {CHAPTER_COUNT - 1}</Text>
           <Text style={styles.title} numberOfLines={2}>{def.title}</Text>
         </View>
-        <Pressable onPress={toggleMath} style={[styles.mathBtn, mathView && styles.mathBtnOn]} accessibilityRole="switch" accessibilityState={{ checked: mathView }} accessibilityLabel="See the math">
-          <Text style={[styles.mathBtnText, mathView && { color: colors.cyanBright }]}>{mathView ? 'SEE THE MATH ✓' : 'BASIC VIEW'}</Text>
+        {/* Two-segment toggle: both states are visible, so the learner can see
+            what tapping will do (the old single label only named the current state). */}
+        <Pressable onPress={toggleMath} style={styles.mathBtn} accessibilityRole="switch" accessibilityState={{ checked: mathView }} accessibilityLabel="See the math" accessibilityHint="Shows or hides the derivations under each display">
+          <View style={[styles.seg, !mathView && styles.segOn]}><Text style={[styles.mathBtnText, !mathView && styles.segOnText]}>BASIC</Text></View>
+          <View style={[styles.seg, mathView && styles.segOnMath]}><Text style={[styles.mathBtnText, mathView && { color: colors.cyanBright }]}>MATH</Text></View>
         </Pressable>
       </View>
 
       {/* progress dots */}
-      <Pressable onPress={() => setListOpen(!listOpen)} style={styles.dots} accessibilityRole="button" accessibilityLabel={`Chapter list. ${progress?.completed.length ?? 0} of ${CHAPTER_COUNT} complete`}>
+      <Pressable onPress={() => setListOpen(!listOpen)} style={styles.dots} accessibilityRole="button" accessibilityState={{ expanded: listOpen }} accessibilityLabel={`Chapter list. ${progress?.completed.length ?? 0} of ${CHAPTER_COUNT} complete`}>
         {CHAPTER_TITLES.map((_, i) => (
           <View key={i} style={[styles.dot, progress?.completed.includes(i) && styles.dotDone, i === chapter && styles.dotNow]} />
         ))}
-        <Text style={styles.dotsText}>{progress?.completed.length ?? 0}/{CHAPTER_COUNT} ▾</Text>
+        <Text style={styles.dotsText}>{progress?.completed.length ?? 0}/{CHAPTER_COUNT} {listOpen ? '▴' : '▾'}</Text>
       </Pressable>
       {listOpen ? (
         <View style={styles.list}>
@@ -133,6 +136,12 @@ export function TuningLabScreen() {
       ) : null}
 
       <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 24 }]}>
+        {def.objective ? (
+          <View style={styles.objective} accessible accessibilityLabel={`In this chapter: ${def.objective}`}>
+            <Text style={styles.objectiveKicker}>IN THIS CHAPTER</Text>
+            <Text style={styles.objectiveText}>{def.objective}</Text>
+          </View>
+        ) : null}
         <Chapter ctx={ctx} />
       </ScrollView>
 
@@ -162,23 +171,30 @@ export function TuningLabScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
   header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 6 },
-  back: { color: colors.textPrimary, fontSize: 30, lineHeight: 32, paddingHorizontal: 4 },
+  backBtn: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
+  back: { color: colors.textPrimary, fontSize: 30, lineHeight: 32 },
   kicker: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1.5 },
   title: { color: colors.textPrimary, fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.5 },
-  mathBtn: { minHeight: 40, paddingHorizontal: 10, borderRadius: 10, borderWidth: 1, borderColor: colors.hairline, justifyContent: 'center', backgroundColor: '#131315' },
-  mathBtnOn: { borderColor: colors.cyanBright, backgroundColor: '#0f1a22' },
-  mathBtnText: { color: colors.textSecondary, fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 1.2 },
-  dots: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 16, paddingVertical: 6 },
+  mathBtn: { minHeight: 44, flexDirection: 'row', alignItems: 'center', padding: 3, gap: 2, borderRadius: 10, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#0e0e10' },
+  seg: { minHeight: 36, paddingHorizontal: 9, borderRadius: 8, justifyContent: 'center' },
+  segOn: { backgroundColor: '#1d1d21' },
+  segOnMath: { backgroundColor: '#0f1a22', borderWidth: 1, borderColor: colors.cyanBright },
+  segOnText: { color: colors.textPrimary },
+  mathBtnText: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 1.2 },
+  dots: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 16, minHeight: 44 },
   dot: { width: 12, height: 6, borderRadius: 3, backgroundColor: '#26262b' },
   dotDone: { backgroundColor: colors.green },
   dotNow: { backgroundColor: colors.cyanBright },
   dotsText: { marginLeft: 6, color: colors.textMuted, fontFamily: fonts.barlowMedium, fontSize: 11 },
   list: { marginHorizontal: 16, borderRadius: 12, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#101013', paddingVertical: 4 },
-  listRow: { minHeight: 40, justifyContent: 'center', paddingHorizontal: 12 },
+  listRow: { minHeight: 44, justifyContent: 'center', paddingHorizontal: 12 },
   listText: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 13 },
   scroll: { paddingHorizontal: 16, paddingTop: 6, gap: 10 },
+  objective: { borderLeftWidth: 2, borderLeftColor: colors.amberLabel, paddingLeft: 10, paddingVertical: 2, gap: 2 },
+  objectiveKicker: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1.5 },
+  objectiveText: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18 },
   footer: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingTop: 8, borderTopWidth: 1, borderTopColor: colors.hairlineDim, backgroundColor: colors.screenBgDeep },
-  sound: { flex: 1, color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 11 },
+  sound: { flex: 1, color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12 },
   stopBtn: { minHeight: 44, paddingHorizontal: 10, borderRadius: 10, borderWidth: 1, borderColor: '#4a2020', justifyContent: 'center', backgroundColor: '#1a0f10' },
   stopText: { color: colors.red, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1 },
   navBtn: { minHeight: 44, paddingHorizontal: 12, borderRadius: 10, borderWidth: 1, borderColor: colors.hairline, justifyContent: 'center', backgroundColor: '#131315' },

@@ -57,7 +57,8 @@ export function renderIsolatedPartials(freqsHz: number[], seconds: number): Mono
 
 /** Sum voices (interval or chord) — identical register and voicing by construction. */
 export function mixVoices(voices: Mono[]): Mono {
-  const n = Math.max(...voices.map((v) => v.length));
+  // Math.max() of nothing is -Infinity, which throws inside Float32Array.
+  const n = Math.max(0, ...voices.map((v) => v.length));
   const out = new Float32Array(n);
   for (const v of voices) for (let i = 0; i < v.length; i++) out[i] += v[i];
   return out;

@@ -97,11 +97,19 @@ export function Ch1Intervals({ ctx }: ChapterProps) {
         <Body>Intervals compare frequencies. The same interval can begin on any pitch.</Body>
       )}
 
+      {/* NEW COPY — options rebalanced to similar length (the correct one was
+          the longest by far) + per-distractor misconception feedback. */}
       <UnderstandingCheck
         question="If the lower note changes but the ratio remains 3:2, what stays the same?"
-        options={['The hertz difference between the notes', 'The interval — still a pure perfect fifth, though both frequencies change', 'The upper note’s frequency', 'Nothing — a new root means a new interval']}
+        options={['The difference in hertz between the two notes', 'The interval — still a pure perfect fifth', 'The frequency of the upper note', 'Nothing — a new root makes a new interval']}
         correct={1}
         explain="The interval remains a pure perfect fifth, although both frequencies change. A ratio is preserved; hertz differences are not."
+        wrong={[
+          'A hertz difference scales with the root: 200 → 300 Hz are 100 Hz apart, 400 → 600 Hz are 200 Hz apart — and both are 3:2.',
+          undefined,
+          'The upper note moves with the root — it is always 1.5 × the lower note, so it cannot stay put.',
+          'The interval IS the ratio, not the notes. Any two frequencies in a 3:2 relationship make the same interval.',
+        ]}
         onCorrect={ctx.markDone}
       />
     </View>
