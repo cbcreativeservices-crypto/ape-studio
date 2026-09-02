@@ -88,6 +88,8 @@ import { EarModuleScreen } from '../screens/lab/eartraining/EarModuleScreen';
 // Amplifier Principles Lab (owner build spec 2026-09-02): home + module shell.
 import { AmpLabHomeScreen } from '../screens/lab/amp/AmpLabHomeScreen';
 import { AmpModuleScreen } from '../screens/lab/amp/AmpModuleScreen';
+// Tuning & Temperament Lab (owner build spec 2026-09-02): one paced screen.
+import { TuningLabScreen } from '../screens/lab/tuning/TuningLabScreen';
 import { MeterLabHomeScreen } from '../screens/lab/meter/MeterLabHomeScreen';
 import { MeterModuleScreen } from '../screens/lab/meter/MeterModuleScreen';
 import { EqLabHomeScreen } from '../screens/lab/eq/EqLabHomeScreen';
@@ -325,6 +327,7 @@ export function RootNavigator() {
       <Stack.Screen name="EarModule" component={EarModuleScreen} />
       <Stack.Screen name="AmpLab" component={AmpLabHomeScreen} />
       <Stack.Screen name="AmpModule" component={AmpModuleScreen} />
+      <Stack.Screen name="TuningLab" component={TuningLabScreen} />
       <Stack.Screen name="MeterLab" component={MeterLabHomeScreen} />
       <Stack.Screen name="MeterModule" component={Gated.MeterModule} />
       <Stack.Screen name="EqLabHome" component={EqLabHomeScreen} />

@@ -247,6 +247,9 @@ export type RootStackParamList = {
    *  one synchronized amplifier model. */
   AmpLab: undefined;
   AmpModule: { id: import('../features/amp/ampContent').AmpModuleId };
+  /** Tuning & Temperament Lab (owner build spec 2026-09-02) — 14 paced
+   *  chapters on one screen, chapter index in lab state. */
+  TuningLab: undefined;
   /** Visual Audio Analysis (Meter Interpretation) Lab (owner 2026-07-29). */
   MeterLab: undefined;
   MeterModule: { id: import('../screens/lab/meter/modules/registry').MeterModuleId };

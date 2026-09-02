@@ -259,7 +259,9 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       // Moved here from Sound Visualization (owner 2026-08-23): it teaches
       // frequency ratios ↔ musical intervals, so it lives with Pitch & Tuning.
       { name: 'Harmonograph', blurb: 'Frequency ratios ↔︎ musical intervals, drawn as living Lissajous curves.', route: 'HarmonographLab' },
-      { name: 'Tunings Lab', blurb: 'Temperaments, reference pitches, just vs equal.', status: 'development' },
+      // LIVE (owner build spec 2026-09-02): the former 'Tunings Lab'
+      // placeholder, built as the fourteen-chapter Tuning & Temperament Lab.
+      { name: 'Tuning & Temperament Lab', blurb: 'How musical scales are built, heard, and compared — pure fifths, the comma, Just, meantone, and equal temperament.', route: 'TuningLab' },
     ],
   },
   {
