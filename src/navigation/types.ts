@@ -250,6 +250,8 @@ export type RootStackParamList = {
   /** Tuning & Temperament Lab (owner build spec 2026-09-02) — 14 paced
    *  chapters on one screen, chapter index in lab state. */
   TuningLab: undefined;
+  /** Sound Envelope & Transients Lab (owner brief 2026-09-02) — visual, paged. */
+  EnvelopeLab: undefined;
   /** Visual Audio Analysis (Meter Interpretation) Lab (owner 2026-07-29). */
   MeterLab: undefined;
   MeterModule: { id: import('../screens/lab/meter/modules/registry').MeterModuleId };

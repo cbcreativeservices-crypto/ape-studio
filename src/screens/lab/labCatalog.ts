@@ -231,7 +231,8 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       { name: 'Harmonics', blurb: 'Additive synthesis, spectrum, Fourier.', route: 'HarmonicLab' },
       { name: 'FM Synthesis', blurb: 'Carrier + modulator: ratio, index, and sidebands.', route: 'FmLab' },
       { name: 'Modular Synth', blurb: 'VCO · VCF · VCA · LFO · envelope · sequencer — signal flow and patching.', route: 'ModularLab' },
-      { name: 'Sound Envelope Lab', blurb: 'Attack, decay, sustain, release — shaping dynamics over time.', status: 'development' },
+      // LIVE (owner brief 2026-09-02): the Sound Envelope & Transients Lab.
+      { name: 'Sound Envelope & Transients Lab', blurb: 'Attack, transient, decay, sustain, release, duration — how a sound evolves over time at its source.', route: 'EnvelopeLab' },
       { name: 'Sample Lab', blurb: 'Sampling, looping, slicing, time-stretch.', status: 'development' },
     ],
   },
