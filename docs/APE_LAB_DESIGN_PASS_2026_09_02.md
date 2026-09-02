@@ -50,7 +50,7 @@ preview, and pushed one commit per lab. Grades before → after (agent-assigned)
 | Amplifier Principles | B− → A− | C+ → A− | 924dd11 |
 | Tuning & Temperament | B− → A− | C+ → A− | 3c92611 |
 | Sound Envelope (+ PagedLab) | C+ → A− | C+ → A− | 300408c |
-| Speech & Voice | C− → A− | C+ → A− | (this commit) |
+| Speech & Voice | C− → A− | C+ → A− | ba5a644 |
 | De-Esser (Smart Processors V1) | B− → A− | C+ → A− | b6d888b |
 
 Fleet-wide patterns the pass established for these labs: every check shuffles by
