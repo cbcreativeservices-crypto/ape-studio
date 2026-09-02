@@ -2,8 +2,8 @@
  * Module 4 — Amplifier Class Explorer (spec Part 2 §5): A, B, AB and C on the
  * same input, load and layout. No "best" — trade-offs, labeled honestly.
  */
-import { useMemo, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useEffect, useMemo, useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import {
   simulateLinearClass, simulateClassC, sineCycle, type AmpClass,
@@ -90,18 +90,42 @@ const FACT_ROWS: { key: keyof ClassFacts; label: string }[] = [
   { key: 'audio', label: 'Ordinary-audio suitability' },
 ];
 
-export function ClassFactsCard({ cls }: { cls: AmpClass }) {
+/** The three rows that carry the comparison; the other five open on tap. */
+const HEADLINE_ROWS = new Set<keyof ClassFacts>(['conduction', 'idle', 'efficiency']);
+
+/**
+ * Progressive disclosure: five classes × eight rows was a 40-row wall. With
+ * `onToggle` the card shows its three headline rows and opens on tap; without
+ * it (no toggle handler) it is always fully expanded.
+ */
+export function ClassFactsCard({ cls, expanded = true, onToggle }: { cls: AmpClass; expanded?: boolean; onToggle?: () => void }) {
   const f = CLASS_FACTS[cls];
-  return (
-    <Card>
-      <Text style={styles.classTitle}>CLASS {cls}</Text>
-      {FACT_ROWS.map((r) => (
+  const rows = onToggle && !expanded ? FACT_ROWS.filter((r) => HEADLINE_ROWS.has(r.key)) : FACT_ROWS;
+  const body = (
+    <>
+      <View style={styles.classHead}>
+        <Text style={styles.classTitle}>CLASS {cls}</Text>
+        {onToggle ? <Text style={styles.classMore}>{expanded ? '▾ all eight' : '▸ all eight'}</Text> : null}
+      </View>
+      {rows.map((r) => (
         <View key={r.key} style={styles.factRow}>
           <Text style={styles.factLabel}>{r.label}</Text>
           <Text style={styles.factValue}>{f[r.key]}</Text>
         </View>
       ))}
-    </Card>
+    </>
+  );
+  if (!onToggle) return <Card>{body}</Card>;
+  return (
+    <Pressable
+      onPress={onToggle}
+      accessibilityRole="button"
+      accessibilityState={{ expanded }}
+      accessibilityLabel={`Class ${cls} facts, ${expanded ? 'expanded' : 'collapsed'}`}
+      style={styles.factsPressable}
+    >
+      {body}
+    </Pressable>
   );
 }
 
@@ -111,6 +135,10 @@ export function Mod4Classes() {
   const [signalOn, setSignalOn] = useState(true);
   const [abBias, setAbBias] = useState(0);
   const [detune, setDetune] = useState(1);
+  // null = follow the explored class; 'none' = learner collapsed it.
+  const [openFacts, setOpenFacts] = useState<AmpClass | 'none' | null>(null);
+  useEffect(() => setOpenFacts(null), [cls]);
+  const openCard: AmpClass | 'none' = openFacts ?? cls;
 
   // The signal-off demonstration belongs to Class A only — it must not leak
   // into the other classes when the learner switches (caught in visual QA).
@@ -182,7 +210,9 @@ export function Mod4Classes() {
         speaker={cls !== 'C'}
         a11ySummary={
           cls === 'C'
-            ? `Class C: device conducts ${Math.round(c!.conductionDeg)} degrees in pulses. Tuned circuit ${Math.abs(detune - 1) < 0.03 ? 'is tuned — a sine is recovered' : `is mistuned to ${detune.toFixed(2)} times the signal — recovered output falls to ${Math.round((c!.resonanceGain) * 100)} percent`}.`
+            ? c!.conductionDeg === 0
+              ? 'Class C: input is below the conduction threshold — the device never turns on, there are no pulses, and the tuned circuit produces nothing.'
+              : `Class C: device conducts ${Math.round(c!.conductionDeg)} degrees in pulses. Tuned circuit ${Math.abs(detune - 1) < 0.03 ? 'is tuned — a sine is recovered' : `is mistuned to ${detune.toFixed(2)} times the signal — recovered output falls to ${Math.round((c!.resonanceGain) * 100)} percent`}.`
             : `Class ${cls}: each conducting device passes current for about ${Math.round(sim.conductionDeg)} degrees. ${lin!.crossoverNotch ? 'A crossover notch is present at zero crossing.' : 'Output is clean.'} Relative idle current ${Math.round(sim.idleCurrent * 100)} percent, relative heat ${Math.round(sim.heat * 100)} percent, illustrative efficiency ${Math.round(sim.efficiencyPct)} percent.`
         }
       />
@@ -193,7 +223,7 @@ export function Mod4Classes() {
           <Stat label="CONDUCTION" value={`${Math.round(sim.conductionDeg)}°`} />
           <Stat label="IDLE CURRENT" value={`${Math.round(sim.idleCurrent * 100)}%`} sub="relative" />
           <Stat label="EFFICIENCY" value={`${Math.round(sim.efficiencyPct)}%`} sub="illustrative, at this level" />
-          <Stat label="DISTORTION" value={lin?.crossoverNotch ? 'NOTCH' : cls === 'C' && (c?.resonanceGain ?? 1) < 0.9 ? 'MISTUNED' : 'CLEAN'} warn={!!lin?.crossoverNotch || (cls === 'C' && (c?.resonanceGain ?? 1) < 0.9)} />
+          <Stat label="DISTORTION" value={lin?.crossoverNotch ? 'NOTCH' : cls === 'C' && c?.conductionDeg === 0 ? 'NO OUTPUT' : cls === 'C' && (c?.resonanceGain ?? 1) < 0.9 ? 'MISTUNED' : 'CLEAN'} warn={!!lin?.crossoverNotch || (cls === 'C' && ((c?.resonanceGain ?? 1) < 0.9 || c?.conductionDeg === 0))} />
         </View>
         <Body>
           {cls === 'A' && !signalOn
@@ -208,9 +238,12 @@ export function Mod4Classes() {
                     : lin?.crossoverNotch
                       ? 'The overlap is growing but has not yet closed the gap — keep going.'
                       : 'Both devices now conduct around zero crossing (more than 180° each). The notch is gone; idle current and heat rose to pay for it.'
-                  : (c?.resonanceGain ?? 1) > 0.9
-                    ? 'Tuned: the short current pulses kick a resonant circuit that rings a clean sine at the tuned frequency. The device itself never produces that sine — the tank does.'
-                    : 'Mistuned: the tank no longer rings with the pulses and the recovered output collapses. There is no broadband version of this trick, which is why Class C is an RF amplifier, not an audio one.'}
+                  : c?.conductionDeg === 0
+                    ? // NEW COPY — the model no longer conjures a recovered sine from a device that never conducted.
+                      'Below the conduction threshold: the device never turns on, so there are no current pulses and the tuned circuit has nothing to ring from. Raise the input — Class C only wakes up for a signal big enough to push it past its bias.'
+                    : (c?.resonanceGain ?? 1) > 0.9
+                      ? 'Tuned: the short current pulses kick a resonant circuit that rings a clean sine at the tuned frequency. The device itself never produces that sine — the tank does. Notice the recovered level does not track the input level: Class C is built for a constant carrier, not for music that rises and falls.'
+                      : 'Mistuned: the tank no longer rings with the pulses and the recovered output collapses. There is no broadband version of this trick, which is why Class C is an RF amplifier, not an audio one.'}
         </Body>
       </Card>
 
@@ -237,8 +270,9 @@ export function Mod4Classes() {
 
       <SectionTitle>SIDE BY SIDE</SectionTitle>
       <HonestyBadge label="Efficiency figures are theoretical maxima or typical ranges — never guaranteed operating values" />
+      <Text style={styles.zoomNote}>Three headline rows per class; tap a card for all eight. The class you are exploring opens first.</Text>
       {(['A', 'B', 'AB', 'C', 'D'] as AmpClass[]).map((k) => (
-        <ClassFactsCard key={k} cls={k} />
+        <ClassFactsCard key={k} cls={k} expanded={openCard === k} onToggle={() => setOpenFacts(openCard === k ? 'none' : k)} />
       ))}
       <Text style={styles.zoomNote}>
         Class D gets Module 5 to itself — it is a switching arrangement and does not fit the conduction-angle story.
@@ -267,14 +301,17 @@ function Stat({ label, value, sub, warn }: { label: string; value: string; sub?:
 }
 
 const styles = StyleSheet.create({
+  classHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   classTitle: { color: colors.gold, fontFamily: fonts.oswaldMedium, fontSize: 13, letterSpacing: 2 },
+  classMore: { color: colors.cyanBright, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1 },
+  factsPressable: { borderRadius: 12, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#131315', padding: 12, gap: 6, minHeight: 44 },
   factRow: { gap: 1 },
-  factLabel: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1.2 },
+  factLabel: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1.2 },
   factValue: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 17 },
   statRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   stat: { minWidth: 70, flex: 1 },
-  statLabel: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1.2 },
+  statLabel: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1.2 },
   statValue: { color: colors.textPrimary, fontFamily: fonts.oswaldSemiBold, fontSize: 18 },
-  statSub: { color: colors.textMutedDeep, fontFamily: fonts.barlowRegular, fontSize: 10 },
+  statSub: { color: colors.textMutedDeep, fontFamily: fonts.barlowRegular, fontSize: 10.5 },
   zoomNote: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17 },
 });

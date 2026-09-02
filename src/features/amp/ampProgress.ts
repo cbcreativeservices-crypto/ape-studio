@@ -54,6 +54,26 @@ export async function saveAmpProgress(s: AmpProgressState): Promise<void> {
   }
 }
 
+/**
+ * Serialized read-modify-write. Every writer (module shell: visited/checks/
+ * done; Module 8: final result) once held its OWN copy loaded at mount and
+ * saved that copy back — so whichever saved last silently discarded the
+ * other's changes (answer three Module 8 checks, submit the final, and the
+ * checks were gone). Mutations now queue: each loads the CURRENT state,
+ * applies its change, saves, and resolves with the fresh state.
+ */
+let writeQueue: Promise<unknown> = Promise.resolve();
+export function updateAmpProgress(mutate: (s: AmpProgressState) => void): Promise<AmpProgressState> {
+  const run = writeQueue.then(async () => {
+    const s = await loadAmpProgress();
+    mutate(s);
+    await saveAmpProgress(s);
+    return s;
+  });
+  writeQueue = run.catch(() => undefined);
+  return run;
+}
+
 /** Reset affects ONLY this lab's key (spec: confirmation handled by the UI). */
 export async function resetAmpProgress(): Promise<void> {
   try {

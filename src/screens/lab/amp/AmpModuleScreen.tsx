@@ -2,9 +2,9 @@
  * AmpModuleScreen — the generic module shell (spec Part 2 preamble): objective
  * → the module's own explanation + interactions → knowledge checks →
  * takeaway → complete & continue. Progress (visited/done/checks) persists to
- * ape:amp:v1; nothing per-frame is ever stored.
+ * ape:amp:v1 through the serialized updater; nothing per-frame is ever stored.
  */
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,9 +12,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { AMP_MODULES, ampModuleById, checksForModule } from '../../../features/amp/ampContent';
-import {
-  emptyAmpModule, loadAmpProgress, saveAmpProgress, type AmpProgressState,
-} from '../../../features/amp/ampProgress';
+import { emptyAmpModule, updateAmpProgress } from '../../../features/amp/ampProgress';
 import { AMP_MODULE_COMPONENTS, BUILT_MODULE_IDS } from './modules';
 import { CheckCard, SectionTitle, TakeawayCard } from './kit';
 
@@ -24,26 +22,27 @@ export function AmpModuleScreen() {
   const route = useRoute<RouteProp<RootStackParamList, 'AmpModule'>>();
   const mod = ampModuleById(route.params.id);
   const Component = AMP_MODULE_COMPONENTS[mod.id];
-  const stateRef = useRef<AmpProgressState | null>(null);
   const [checksAnswered, setChecksAnswered] = useState<Record<string, boolean>>({});
   const [done, setDone] = useState(false);
   const [finalSubmitted, setFinalSubmitted] = useState(false);
-  const checks = checksForModule(mod.id);
+  // Module 8's own checks ARE its assessment (they sit in the scored final
+  // pool); repeating them as "check yourself" on the same screen showed the
+  // learner items they had just answered in the final.
+  const checks = mod.id === 'apply' ? [] : checksForModule(mod.id);
 
   useEffect(() => {
     let alive = true;
-    (async () => {
-      const s = await loadAmpProgress();
-      if (!alive) return;
+    void updateAmpProgress((s) => {
       const m = s.modules[mod.id] ?? emptyAmpModule();
       s.modules[mod.id] = { ...m, visited: true };
       s.lastModule = mod.id;
-      stateRef.current = s;
+    }).then((s) => {
+      if (!alive) return;
+      const m = s.modules[mod.id] ?? emptyAmpModule();
       setDone(m.done);
       setChecksAnswered(m.checks);
       setFinalSubmitted(!!s.final);
-      void saveAmpProgress(s);
-    })();
+    });
     return () => {
       alive = false;
     };
@@ -51,29 +50,31 @@ export function AmpModuleScreen() {
 
   const onCheck = useCallback(
     (id: string, correct: boolean) => {
-      const s = stateRef.current;
-      if (!s) return;
-      const m = s.modules[mod.id] ?? emptyAmpModule();
-      m.checks = { ...m.checks, [id]: correct };
-      s.modules[mod.id] = m;
-      setChecksAnswered(m.checks);
-      void saveAmpProgress(s);
+      setChecksAnswered((prev) => ({ ...prev, [id]: correct }));
+      void updateAmpProgress((s) => {
+        const m = s.modules[mod.id] ?? emptyAmpModule();
+        s.modules[mod.id] = { ...m, checks: { ...m.checks, [id]: correct } };
+      });
     },
     [mod.id],
   );
 
+  const onFinalSubmitted = useCallback(() => setFinalSubmitted(true), []);
+
   // The last module completes only after the final assessment is submitted
   // (spec Part 3 §11); every other module after its checks.
   const needsFinal = mod.id === 'apply' && !finalSubmitted;
-  const allChecksAnswered = checks.every((c) => c.id in checksAnswered) && !needsFinal;
+  const answeredCount = checks.filter((c) => c.id in checksAnswered).length;
+  const allChecksAnswered = answeredCount === checks.length && !needsFinal;
 
   const complete = useCallback(() => {
-    const s = stateRef.current;
-    if (!s) return;
-    const m = s.modules[mod.id] ?? emptyAmpModule();
-    s.modules[mod.id] = { ...m, done: true };
-    void saveAmpProgress(s);
     setDone(true);
+    // Queued behind every earlier write (checks, Module 8's final) — nothing
+    // is clobbered whichever order the learner did things in.
+    void updateAmpProgress((s) => {
+      const m = s.modules[mod.id] ?? emptyAmpModule();
+      s.modules[mod.id] = { ...m, done: true };
+    });
     const idx = AMP_MODULES.findIndex((x) => x.id === mod.id);
     const next = AMP_MODULES.slice(idx + 1).find((x) => BUILT_MODULE_IDS.includes(x.id));
     if (next) navigation.replace('AmpModule', { id: next.id });
@@ -83,7 +84,7 @@ export function AmpModuleScreen() {
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back to the lab home">
+        <Pressable onPress={() => navigation.goBack()} hitSlop={12} accessibilityRole="button" accessibilityLabel="Back to the lab home">
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flex: 1 }}>
@@ -98,23 +99,14 @@ export function AmpModuleScreen() {
         </View>
 
         {Component ? (
-          <Component
-            onFinalSubmitted={() => {
-              setFinalSubmitted(true);
-              // Module 8 saved the result itself; refresh our copy so the
-              // completion write below does not clobber it.
-              void loadAmpProgress().then((s) => {
-                stateRef.current = s;
-              });
-            }}
-          />
+          <Component onFinalSubmitted={onFinalSubmitted} />
         ) : (
           <Text style={styles.missing}>This module is not available.</Text>
         )}
 
         {checks.length ? (
           <>
-            <SectionTitle>CHECK YOURSELF</SectionTitle>
+            <SectionTitle>CHECK YOURSELF · {answeredCount} OF {checks.length}</SectionTitle>
             {checks.map((c) => (
               <CheckCard key={c.id} check={c} onAnswered={(ok) => onCheck(c.id, ok)} />
             ))}
@@ -129,7 +121,7 @@ export function AmpModuleScreen() {
           disabled={!allChecksAnswered}
           accessibilityRole="button"
           accessibilityState={{ disabled: !allChecksAnswered }}
-          accessibilityLabel={allChecksAnswered ? 'Mark module complete and continue' : 'Answer every check above to continue'}
+          accessibilityLabel={allChecksAnswered ? 'Mark module complete and continue' : needsFinal ? 'Submit the final assessment above to complete the lab' : 'Answer every check above to continue'}
         >
           <Text style={styles.completeText}>{done ? 'CONTINUE ›' : 'MARK COMPLETE & CONTINUE ›'}</Text>
         </Pressable>

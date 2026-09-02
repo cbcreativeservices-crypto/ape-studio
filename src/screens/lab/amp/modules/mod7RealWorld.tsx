@@ -6,7 +6,7 @@
  */
 import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import Svg, { Line, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { G, Line, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
 import {
   evaluateGainStructure, seriesImpedance, parallelImpedance, sineVrms, ohmsCurrent, resistivePower,
@@ -40,18 +40,19 @@ function GainChain({ levels, firstClip, starved }: { levels: Record<GainStage, n
         const starve = s.key === starved;
         const stroke = clip ? AMP_COLORS.fault : starve ? colors.gold : s.key === 'spk' ? AMP_COLORS.output : colors.steelBorder;
         return (
-          <Svg key={s.key}>
+          <G key={s.key}>
             <Rect x={x} y={8} width={bw} height={30} rx={5} fill={clip ? '#241012' : '#151518'} stroke={stroke} strokeWidth={clip ? 1.6 : 1} />
             <SvgText x={x + bw / 2} y={27} fontSize={8.5} fill={clip ? colors.red : colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{s.label}</SvgText>
             {i < 4 ? <Line x1={x + bw + 1} y1={23} x2={x + bw + gap - 1} y2={23} stroke={clip ? AMP_COLORS.fault : AMP_COLORS.input} strokeWidth={1.5} /> : null}
             {lvl != null ? (
               <>
                 <Rect x={x} y={50} width={bw} height={8} rx={4} fill="#0a0a0c" stroke={colors.hairline} />
+                {/* red ONLY at/over the clip point (amplitude colour standard); gold = starved */}
                 <Rect x={x + 1} y={51} width={Math.max(0, Math.min(bw - 2, (bw - 2) * Math.min(lvl, 1)))} height={6} rx={3} fill={lvl > 1 ? colors.red : lvl < 0.15 ? colors.gold : colors.green} />
-                <SvgText x={x + bw / 2} y={72} fontSize={8} fill={lvl > 1 ? colors.red : colors.textMuted} textAnchor="middle">{lvl > 1 ? 'CLIPPING' : `${Math.round(lvl * 100)}% of clip`}</SvgText>
+                <SvgText x={x + bw / 2} y={72} fontSize={8.5} fill={lvl > 1 ? colors.red : colors.textMuted} textAnchor="middle" fontFamily={fonts.barlowMedium}>{lvl > 1 ? 'CLIPPING' : `${Math.round(lvl * 100)}% of clip`}</SvgText>
               </>
             ) : null}
-          </Svg>
+          </G>
         );
       })}
     </Svg>
@@ -103,6 +104,15 @@ export function Mod7RealWorld() {
 
   const effectiveZ = zTotal;
   const belowMin = effectiveZ != null && effectiveZ < MIN_STEREO_Z;
+  const MAX_SPEAKERS = 4;
+  const atCap = speakers.length >= MAX_SPEAKERS;
+  // The complete sheet (nothing missing) is correct ONLY with nothing ticked;
+  // it used to read "YOU FOUND EVERY GAP" for a sheet that had none.
+  const specVerdict = !checked
+    ? null
+    : sheet.missing.length === 0
+      ? picked.length === 0 ? 'complete-right' : 'complete-wrong'
+      : specCorrect ? 'right' : 'wrong';
 
   return (
     <View style={{ gap: 12 }}>
@@ -157,16 +167,26 @@ export function Mod7RealWorld() {
         value={topology}
         onChange={setTopology}
       />
+      <Body>Add cabinets and watch the total. The amplifier here is rated {MIN_STEREO_Z} Ω per channel — find the point where one more cabinet takes you below it.</Body>
       <View style={styles.chipRow}>
         {[16, 8, 4].map((z) => (
-          <Pressable key={z} style={styles.addChip} onPress={() => speakers.length < 4 && setSpeakers([...speakers, z])} accessibilityRole="button" accessibilityLabel={`Add a ${z} ohm speaker`}>
-            <Text style={styles.addChipText}>+ {z} Ω</Text>
+          <Pressable
+            key={z}
+            style={[styles.addChip, atCap && styles.addChipOff]}
+            disabled={atCap}
+            onPress={() => setSpeakers([...speakers, z])}
+            accessibilityRole="button"
+            accessibilityState={{ disabled: atCap }}
+            accessibilityLabel={atCap ? `Add a ${z} ohm speaker — rack full at ${MAX_SPEAKERS}, clear first` : `Add a ${z} ohm speaker`}
+          >
+            <Text style={[styles.addChipText, atCap && { color: colors.textMuted }]}>+ {z} Ω</Text>
           </Pressable>
         ))}
         <Pressable style={styles.addChip} onPress={() => setSpeakers([])} accessibilityRole="button" accessibilityLabel="Clear all speakers">
           <Text style={styles.addChipText}>CLEAR</Text>
         </Pressable>
       </View>
+      {atCap ? <Text style={styles.note}>{MAX_SPEAKERS} cabinets per channel is the limit of this builder — CLEAR to start again.</Text> : null}
       <Card tone="accent">
         <Text style={styles.loadList}>
           {speakers.length ? speakers.map((z) => `${z} Ω`).join(topology === 'parallel' ? '  ∥  ' : '  +  ') : 'No speakers connected'}
@@ -364,10 +384,16 @@ export function Mod7RealWorld() {
       <Pressable style={styles.checkBtn} onPress={() => setChecked(true)} accessibilityRole="button" accessibilityLabel="Check my answer">
         <Text style={styles.checkBtnText}>CHECK</Text>
       </Pressable>
-      {checked ? (
+      {specVerdict ? (
         <Card tone="accent">
-          <Text style={[styles.verdict, { color: specCorrect ? colors.green : colors.gold }]}>
-            {specCorrect ? '✓ YOU FOUND EVERY GAP' : sheet.missing.length === 0 && picked.length ? 'NOTHING IS MISSING HERE' : 'NOT QUITE — COMPARE THE MARKED CONDITIONS'}
+          <Text style={[styles.verdict, { color: specVerdict === 'right' || specVerdict === 'complete-right' ? colors.green : colors.gold }]}>
+            {specVerdict === 'right'
+              ? '✓ YOU FOUND EVERY GAP'
+              : specVerdict === 'complete-right'
+                ? '✓ CORRECT — NOTHING IS MISSING'
+                : specVerdict === 'complete-wrong'
+                  ? 'NOTHING IS MISSING HERE — EVERY CONDITION IS STATED'
+                  : 'NOT QUITE — COMPARE THE MARKED CONDITIONS'}
           </Text>
           <Body>{sheet.verdict}</Body>
         </Card>
@@ -405,6 +431,7 @@ const styles = StyleSheet.create({
     minHeight: 44, minWidth: 64, paddingHorizontal: 12, borderRadius: 10, borderWidth: 1, borderColor: colors.hairline,
     alignItems: 'center', justifyContent: 'center', backgroundColor: '#131315',
   },
+  addChipOff: { opacity: 0.45 },
   addChipText: { color: colors.textSecondary, fontFamily: fonts.barlowMedium, fontSize: 13 },
   loadList: { color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 14 },
   loadTotal: { color: colors.cyanBright, fontFamily: fonts.oswaldMedium, fontSize: 16 },

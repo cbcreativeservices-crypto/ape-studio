@@ -23,6 +23,41 @@ const pos = (v: number): number | null => (isFiniteNum(v) && v > 0 ? v : null);
 export const clamp = (v: number, lo: number, hi: number): number =>
   Math.min(hi, Math.max(lo, v));
 
+/* ── presentation shuffle (answer-position hygiene) ─────────────────────── */
+
+/** FNV-1a string hash → 32-bit seed, so a stable id gives a stable deal. */
+export function hashSeed(str: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+/**
+ * Deterministic permutation of 0..n-1 for a seed (mulberry32 + Fisher-Yates).
+ * Checks are AUTHORED with the correct answer at a fixed index; the UI deals
+ * the options in this order and judges by ORIGINAL index, so option position
+ * never cues the answer. Same seed → same deal (re-renders never re-deal).
+ */
+export function shuffledIndices(n: number, seed: number): number[] {
+  const idx = Array.from({ length: Math.max(0, Math.floor(n)) }, (_, i) => i);
+  let s = (seed >>> 0) || 0x9e3779b9;
+  const rnd = () => {
+    s = (s + 0x6d2b79f5) >>> 0;
+    let t = s;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  for (let i = idx.length - 1; i > 0; i--) {
+    const j = Math.floor(rnd() * (i + 1));
+    [idx[i], idx[j]] = [idx[j], idx[i]];
+  }
+  return idx;
+}
+
 /* ── gain and decibels (Part 3 §4) ──────────────────────────────────────── */
 
 /** Voltage gain Av = Vout/Vin. Null when Vin is not a positive finite value. */
@@ -212,6 +247,12 @@ export type BiasSim = {
   distorted: boolean;
 };
 
+/** Region thresholds and the signal swing share ONE constant so "linear" means
+ *  what it says: at full drive the swing is ±BIAS_SWING, so any bias inside
+ *  [BIAS_SWING, 1 − BIAS_SWING] passes the whole wave, and the region labels
+ *  (cutoff / linear / saturation) agree with what the trace shows. */
+export const BIAS_SWING = 0.25;
+
 /**
  * Single active device with an adjustable operating point. bias 0..1 sets
  * the quiescent current; the device can only conduct between 0 (cutoff) and
@@ -221,7 +262,7 @@ export type BiasSim = {
 export function simulateSingleDeviceBias(drive: number, bias: number, n = WAVE_N): BiasSim {
   const d = clamp(drive, 0, 1);
   const q = clamp(bias, 0, 1);
-  const x = sineCycle(d * 0.5, n); // ±0.5 swing around the operating point
+  const x = sineCycle(d * BIAS_SWING, n); // swing around the operating point
   const iDev = new Float32Array(n);
   const out = new Float32Array(n);
   let lostLow = false, lostHigh = false;
@@ -231,9 +272,9 @@ export function simulateSingleDeviceBias(drive: number, bias: number, n = WAVE_N
     if (raw < 0) lostLow = true;
     if (raw > 1) lostHigh = true;
     iDev[i] = c;
-    out[i] = (c - q) * 2; // AC-coupled, back to ±1 units
+    out[i] = (c - q) / BIAS_SWING; // AC-coupled, back to ±1 units
   }
-  const region = q < 0.25 ? 'cutoff' : q > 0.75 ? 'saturation' : 'linear';
+  const region = q < BIAS_SWING ? 'cutoff' : q > 1 - BIAS_SWING ? 'saturation' : 'linear';
   return {
     out, iDev, region,
     idleCurrent: q,
@@ -341,7 +382,9 @@ export function simulateLinearClass(cls: 'A' | 'B' | 'AB', drive: number, bias: 
     else out[i] = 0;
     if (effDead > 0.005 && Math.abs(v) <= effDead && d > effDead) notch = true;
   }
-  const eff = cls === 'B' ? 60 * d : 55 * d - 8 * b * d;
+  // AB at zero bias IS the Class B condition, so the two must agree there;
+  // bias then costs a little efficiency (idle current is dissipated, not delivered).
+  const eff = cls === 'B' ? 60 * d : 60 * d - 10 * b * d;
   return {
     out, iPos, iNeg,
     conductionDeg: clamp((posConducting / n) * 360, 0, 360),
@@ -357,30 +400,48 @@ export function simulateLinearClass(cls: 'A' | 'B' | 'AB', drive: number, bias: 
  * resonant circuit that recovers a sine ONLY near its tuned frequency.
  * `detune` = fTuned/fSignal (1 = tuned). Educational resonance model.
  */
-export function simulateClassC(drive: number, detune: number, n = WAVE_N): ClassSim & { recovered: Float32Array; resonanceGain: number } {
-  const d = clamp(drive, 0, 1);
+/** The Class C device's current pulses for a drive level, plus the
+ *  fundamental (first-harmonic) amplitude of that pulse train — the only part
+ *  of it a resonant tank can ring from. */
+function classCPulses(d: number, n: number): { pulses: Float32Array; conducting: number; fundamental: number } {
   const x = sineCycle(d, n);
-  const iPos = new Float32Array(n);
-  const iNeg = new Float32Array(n);
-  const out = new Float32Array(n);
+  const pulses = new Float32Array(n);
   const threshold = 0.55 * d + 0.2; // conducts only near positive peaks
   let conducting = 0;
+  let a1 = 0;
   for (let i = 0; i < n; i++) {
     const c = x[i] > threshold ? x[i] - threshold : 0;
-    iPos[i] = c;
-    out[i] = c; // RAW pulsed output before the tank
+    pulses[i] = c;
     if (c > 0) conducting++;
+    a1 += c * Math.sin((2 * Math.PI * i) / n);
   }
+  return { pulses, conducting, fundamental: (2 / n) * a1 };
+}
+
+/** Fundamental of the full-drive pulse train — normalizes the recovered sine
+ *  so that full drive, tuned, recovers unity (input peak = 1). */
+const CLASS_C_REF_FUNDAMENTAL = classCPulses(1, WAVE_N).fundamental;
+
+export function simulateClassC(drive: number, detune: number, n = WAVE_N): ClassSim & { recovered: Float32Array; resonanceGain: number } {
+  const d = clamp(drive, 0, 1);
+  const { pulses, conducting, fundamental } = classCPulses(d, n);
+  const iPos = pulses;
+  const iNeg = new Float32Array(n);
+  const out = pulses; // RAW pulsed output before the tank
   // Resonant recovery: a simple quality-factor response around the tuned freq.
   const q = 8;
   const dt = Math.max(detune, 1e-3);
   const resonanceGain = 1 / Math.sqrt(1 + q * q * Math.pow(dt - 1 / dt, 2));
-  const recovered = sineCycle(d * resonanceGain, n);
+  // The tank rings from the pulses' FUNDAMENTAL — no pulses, nothing to ring
+  // from, no output. (Below the conduction threshold the device never turns
+  // on; that non-linearity is exactly why Class C is a carrier amplifier.)
+  const recoveredAmp = clamp(fundamental / CLASS_C_REF_FUNDAMENTAL, 0, 1) * resonanceGain;
+  const recovered = sineCycle(recoveredAmp, n);
   return {
     out, iPos, iNeg,
     conductionDeg: (conducting / n) * 360,
     idleCurrent: 0,
-    efficiencyPct: clamp(80 * resonanceGain * d, 0, 90),
+    efficiencyPct: conducting > 0 ? clamp(80 * resonanceGain * d, 0, 90) : 0,
     heat: clamp(0.1 + 0.2 * d * (1 - resonanceGain), 0, 1),
     crossoverNotch: false,
     recovered,
@@ -441,8 +502,10 @@ export function simulateClassD(drive: number, carrierRatio = 12, n = WAVE_N): Cl
     audio, carrier, pwm, recovered,
     meanDuty: high / n,
     // Illustrative: high but explicitly lossy (conduction + switching + gate
-    // drive + filter). Never fixed at 100.
-    efficiencyPct: clamp(88 - 6 * (1 - d), 60, 92),
+    // drive + filter). Never fixed at 100 — and it FALLS at low output, where
+    // the fixed switching/gate/idle losses dominate a small delivered power
+    // (0 at zero output: all loss, nothing delivered).
+    efficiencyPct: clamp((90 * d) / (d + 0.06), 0, 92),
     heat: clamp(0.08 + 0.12 * d, 0, 1),
   };
 }
@@ -538,14 +601,25 @@ export type RigVerdict = ProtectionVerdict & {
   thermal: number; // relative 0..1 — conceptual
 };
 
+/**
+ * The rig verdict is built ON the gain-structure chain (same stage maths as
+ * evaluateGainStructure) so the scored "signal" verdict and the waveform the
+ * UI draws from `levels.amp` can never disagree about which stage clips.
+ *
+ * Current demand is calibrated to the amplifier's RATED minimum load: full
+ * output into the minimum-rated load sits high but inside the limit (0.8);
+ * half that load (or bridging into it) trips overcurrent; twice it is easy.
+ */
 export function evaluateRig(s: RigState): RigVerdict {
   const faults: FaultId[] = [];
-  const upstreamDrive = s.sourceLevel * s.mixerLevel * 2.2;
-  const upstreamClips = upstreamDrive > 1;
-  const demanded = Math.min(upstreamDrive, 1) * s.ampInput * 1.6;
-  const outputClips = demanded > s.railLimit;
+  const rail = clamp(s.railLimit, 0.05, 1);
+  const gs = evaluateGainStructure(s.sourceLevel, s.mixerLevel, s.ampInput, rail);
+  const upstreamClips = gs.firstClip === 'source' || gs.firstClip === 'mixer';
+  const demanded = gs.levels.amp * rail; // fraction of full modeled output the stage is asked for
+  const outputClips = gs.levels.amp > 1;
   const effectiveLoadZ = s.bridged ? s.loadZ / 2 : s.loadZ;
-  const currentDemand = clamp((Math.min(demanded, s.railLimit) * 8) / Math.max(effectiveLoadZ, 0.5), 0, 1);
+  const minZ = Math.max(s.minLoadZ, 0.5);
+  const currentDemand = clamp(Math.min(demanded, rail) * 0.8 * (minZ / Math.max(effectiveLoadZ, 0.5)), 0, 1);
   const thermal = clamp(currentDemand * (0.5 + 0.8 * s.ventBlocked) + 0.25 * s.ventBlocked, 0, 1);
 
   if (s.shorted) faults.push('short');
@@ -556,7 +630,82 @@ export function evaluateRig(s: RigState): RigVerdict {
   else if (thermal >= 0.75) faults.push('thermal-limiting');
   if (outputClips) faults.push('output-clipping');
   if (upstreamClips) faults.push('upstream-clipping');
-  if (!upstreamClips && !outputClips && demanded > 0 && demanded < 0.15) faults.push('poor-gain-structure');
+  if (!upstreamClips && !outputClips && ((demanded > 0 && demanded < 0.15) || gs.starved != null)) faults.push('poor-gain-structure');
 
   return { ...prioritizeFaults(faults), upstreamClips, outputClips, effectiveLoadZ, currentDemand, thermal };
+}
+
+/* ── rail / current / protection limits (Module 6 — teaching example) ───── */
+
+export const RAIL_V_FULL = 40; // V peak at 100% rail — a teaching example
+export const RAIL_I_LIMIT = 9; // A rms — output-stage current limit (example)
+export const RAIL_I_PROTECT = 13; // A rms — overcurrent protection (example)
+
+export type RailLimitState = 'clean' | 'current-limit' | 'voltage-clip' | 'protect';
+
+export type RailSim = {
+  input: Float32Array;
+  /** Output in units of RAIL_V_FULL (1.0 = full nominal rail). Zero when muted. */
+  out: Float32Array;
+  railNominal: number;
+  railEff: number;
+  sagV: number;
+  vLimit: number;
+  state: RailLimitState;
+  /** Delivered values (0 when protection has muted the output). */
+  vrms: number;
+  irms: number;
+  p: number;
+  /** Current the load ASKED for at the requested swing (what protection watches). */
+  iDemand: number;
+  clipAtNorm: number;
+  nominalNorm: number;
+  iLimitNorm: number;
+  primary: FaultId | null;
+  heat: number;
+  supplyFlow: number;
+};
+
+/**
+ * Voltage clipping, current limiting, supply sag and overcurrent protection
+ * are computed SEPARATELY so each draws distinctly (spec Part 3 §2):
+ *  - sag lowers the working rail below nominal (unregulated linear supplies droop more);
+ *  - the output stage's current limit caps the peak voltage it can put across
+ *    a LOW load — a ceiling that sits below the rail;
+ *  - protection watches the current the load demands at the requested swing
+ *    (judged against the nominal rail — it acts faster than sag) and mutes.
+ */
+export function simulateRailLimits(drive: number, railFrac: number, loadZ: number, supply: 'linear' | 'smps', n = WAVE_N): RailSim {
+  const d = clamp(drive, 0, 1);
+  const rf = clamp(railFrac, 0.05, 1);
+  const Z = pos(loadZ) ?? 8;
+  const requestedPeak = d * RAIL_V_FULL * 1.25; // the amplifier would like to swing this
+  const railNominal = rf * RAIL_V_FULL;
+  const irmsIfUnclipped = (Math.min(requestedPeak, railNominal) / Math.SQRT2) / Z;
+  const sagPerAmp = supply === 'linear' ? 0.9 : 0.25;
+  const sagV = Math.min(railNominal * 0.35, sagPerAmp * irmsIfUnclipped);
+  const railEff = railNominal - sagV;
+  const iLimitPeakV = RAIL_I_LIMIT * Math.SQRT2 * Z;
+  const vLimit = Math.min(railEff, iLimitPeakV);
+  const iDemand = irmsIfUnclipped;
+  const protect = iDemand >= RAIL_I_PROTECT;
+  const currentLimited = !protect && iLimitPeakV < railEff && requestedPeak > iLimitPeakV;
+  const voltageClipped = !protect && !currentLimited && requestedPeak > railEff;
+  const x = sineCycle(requestedPeak / RAIL_V_FULL, n);
+  const out = protect ? new Float32Array(n) : amplify(x, 1, vLimit / RAIL_V_FULL);
+  const vPeakOut = protect ? 0 : Math.min(requestedPeak, vLimit);
+  const vrms = vPeakOut / Math.SQRT2;
+  const irms = vrms / Z;
+  const p = (vrms * vrms) / Z;
+  const state: RailLimitState = protect ? 'protect' : currentLimited ? 'current-limit' : voltageClipped ? 'voltage-clip' : 'clean';
+  return {
+    input: sineCycle(d, n),
+    out, railNominal, railEff, sagV, vLimit, state, vrms, irms, p, iDemand,
+    clipAtNorm: railEff / RAIL_V_FULL,
+    nominalNorm: railNominal / RAIL_V_FULL,
+    iLimitNorm: iLimitPeakV / RAIL_V_FULL,
+    primary: protect ? 'overcurrent' : voltageClipped ? 'output-clipping' : null,
+    heat: clamp(0.1 + (irms / RAIL_I_PROTECT) * 0.7 + (voltageClipped ? 0.1 : 0), 0, 1),
+    supplyFlow: clamp(irms / RAIL_I_PROTECT, 0, 1),
+  };
 }

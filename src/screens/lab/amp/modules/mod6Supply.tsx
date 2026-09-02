@@ -1,23 +1,18 @@
 /**
  * Module 6 — Power Supplies, Limits, and Clipping (spec Part 2 §7): linear
  * vs switch-mode supply views, then the rail-limit rig where voltage
- * clipping, current limiting and supply sag are computed separately and
- * drawn distinctly.
+ * clipping, current limiting, supply sag and overcurrent protection are
+ * computed separately (ampModel.simulateRailLimits — unit-tested) and drawn
+ * distinctly.
  */
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Svg, { Line, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { G, Line, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
-import {
-  sineCycle, amplify, isClipping, sineVrms, ohmsCurrent, resistivePower, cycleRms, type FaultId,
-} from '../../../../features/amp/ampModel';
+import { simulateRailLimits, RAIL_V_FULL, RAIL_I_LIMIT, RAIL_I_PROTECT } from '../../../../features/amp/ampModel';
 import { MISCONCEPTIONS, SAFETY_POINTS } from '../../../../features/amp/ampContent';
 import { AmpRig } from '../AmpRig';
 import { AMP_COLORS, Body, Card, ControlSlider, FaultBanner, FormulaCard, HonestyBadge, LearnMore, MisconceptionCard, SectionTitle, SegRow } from '../kit';
-
-const V_FULL = 40; // V peak at 100% rail — a teaching example
-const I_LIMIT = 9; // A rms — output-stage current limit (example)
-const I_PROTECT = 13; // A rms — overcurrent protection (example)
 
 function ChainDiagram({ kind }: { kind: 'linear' | 'smps' }) {
   const boxes =
@@ -33,16 +28,23 @@ function ChainDiagram({ kind }: { kind: 'linear' | 'smps' }) {
         const x = 3 + i * (bw + gap);
         const last = i === n - 1;
         return (
-          <Svg key={b}>
+          <G key={b}>
             <Rect x={x} y={10} width={bw} height={30} rx={5} fill={last ? '#1f1a0e' : '#151518'} stroke={last ? AMP_COLORS.supply : colors.steelBorder} />
-            <SvgText x={x + bw / 2} y={29} fontSize={n > 5 ? 7.5 : 8.5} fill={last ? AMP_COLORS.supply : colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{b}</SvgText>
+            <SvgText x={x + bw / 2} y={29} fontSize={8.5} fill={last ? AMP_COLORS.supply : colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{b}</SvgText>
             {!last ? <Line x1={x + bw + 1} y1={25} x2={x + bw + gap - 1} y2={25} stroke={AMP_COLORS.supply} strokeWidth={1.5} /> : null}
-          </Svg>
+          </G>
         );
       })}
     </Svg>
   );
 }
+
+const STATE_LABEL = {
+  clean: 'CLEAN',
+  'current-limit': 'CURRENT LIMITING',
+  'voltage-clip': 'VOLTAGE CLIPPING (rails)',
+  protect: 'PROTECT — OVERCURRENT (output muted)',
+} as const;
 
 export function Mod6Supply() {
   const [supply, setSupply] = useState<'linear' | 'smps'>('linear');
@@ -50,44 +52,11 @@ export function Mod6Supply() {
   const [rail, setRail] = useState(1);
   const [loadZ, setLoadZ] = useState<8 | 4 | 2>(8);
 
-  const sim = useMemo(() => {
-    const requestedPeak = drive * V_FULL * 1.25; // the amplifier would like to swing this
-    // Supply sag: an unregulated linear supply droops with sustained current;
-    // a regulated switch-mode supply holds up better. Sag is computed
-    // separately from clipping (spec Part 3 §2).
-    const railNominal = rail * V_FULL;
-    const irmsIfUnclipped = ohmsCurrent(sineVrms(Math.min(requestedPeak, railNominal))!, loadZ)!;
-    const sagPerAmp = supply === 'linear' ? 0.9 : 0.25;
-    const sagV = Math.min(railNominal * 0.35, sagPerAmp * irmsIfUnclipped);
-    const railEff = railNominal - sagV;
-    // Current limit: the output stage caps rms current, which caps the peak
-    // voltage it can put across THIS load — a ceiling that sits BELOW the rail.
-    const iLimitPeakV = I_LIMIT * Math.SQRT2 * loadZ;
-    const vLimit = Math.min(railEff, iLimitPeakV);
-    const currentLimited = iLimitPeakV < railEff && requestedPeak > iLimitPeakV;
-    const voltageClipped = !currentLimited && requestedPeak > railEff;
-    const x = sineCycle(requestedPeak / V_FULL);
-    const out = amplify(x, 1, vLimit / V_FULL);
-    const vPeakOut = Math.min(requestedPeak, vLimit);
-    const vrms = sineVrms(vPeakOut)!;
-    const irms = ohmsCurrent(vrms, loadZ)!;
-    const p = resistivePower(vrms, loadZ)!;
-    const faults: FaultId[] = [];
-    if (irms >= I_PROTECT) faults.push('overcurrent');
-    if (voltageClipped) faults.push('output-clipping');
-    return {
-      input: sineCycle(drive),
-      out, railEff, railNominal, sagV, vLimit, currentLimited, voltageClipped, vrms, irms, p,
-      clipAtNorm: railEff / V_FULL,
-      iLimitNorm: iLimitPeakV / V_FULL,
-      primary: faults[0] ?? null,
-      heat: Math.min(1, 0.1 + (irms / I_PROTECT) * 0.7 + (voltageClipped ? 0.1 : 0)),
-      supplyFlow: Math.min(1, irms / I_PROTECT),
-    };
-  }, [drive, rail, loadZ, supply]);
-
-  const state = sim.irms >= I_PROTECT ? 'PROTECT — OVERCURRENT' : sim.currentLimited ? 'CURRENT LIMITING' : sim.voltageClipped ? 'VOLTAGE CLIPPING (rails)' : 'CLEAN';
-  const stateColor = state === 'CLEAN' ? colors.green : state === 'CURRENT LIMITING' ? colors.gold : colors.red;
+  const sim = useMemo(() => simulateRailLimits(drive, rail, loadZ, supply), [drive, rail, loadZ, supply]);
+  const state = STATE_LABEL[sim.state];
+  const stateColor = sim.state === 'clean' ? colors.green : sim.state === 'current-limit' ? colors.gold : colors.red;
+  const sagged = sim.sagV > 0.5;
+  const ceiling = useMemo(() => new Float32Array(sim.out.length).fill(sim.iLimitNorm), [sim.out.length, sim.iLimitNorm]);
 
   return (
     <View style={{ gap: 12 }}>
@@ -116,8 +85,9 @@ export function Mod6Supply() {
       </Card>
 
       <SectionTitle>THE RAILS SET THE LIMIT</SectionTitle>
+      <Body>Try it in this order: raise the input at 8 Ω until the peaks flatten; switch to 2 Ω and find the limit that arrives first; then push on until protection mutes the output.</Body>
       <ControlSlider label="Input level" value={drive} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setDrive} />
-      <ControlSlider label="Available rail voltage" value={rail} min={0.3} max={1} step={0.01} format={(v) => `±${Math.round(v * V_FULL)} V`} onChange={setRail} />
+      <ControlSlider label="Available rail voltage" value={rail} min={0.3} max={1} step={0.01} format={(v) => `±${Math.round(v * RAIL_V_FULL)} V`} onChange={setRail} />
       <SegRow<8 | 4 | 2>
         label="Modeled load (resistive teaching example)"
         options={[
@@ -132,33 +102,39 @@ export function Mod6Supply() {
         input={sim.input}
         output={sim.out}
         clipAt={sim.clipAtNorm}
+        nominalRailAt={sagged ? sim.nominalNorm : undefined}
         extraOut={
-          sim.currentLimited
-            ? [{ data: new Float32Array(sim.out.length).fill(sim.iLimitNorm), color: colors.gold, dash: '2,3', width: 1, label: 'current-limit ceiling (below the rails)' }]
+          sim.state === 'current-limit'
+            ? [{ data: ceiling, color: colors.gold, dash: '2,3', width: 1, label: 'current-limit ceiling (below the rails)' }]
             : undefined
         }
         supplyFlow={sim.supplyFlow}
         heat={sim.heat}
         speaker
         faulted={sim.primary != null}
-        a11ySummary={`Rails ±${Math.round(sim.railNominal)} volts nominal, sagging to ±${Math.round(sim.railEff)} under load. State: ${state}. Output ${sim.vrms.toFixed(1)} volts rms, ${sim.irms.toFixed(1)} amps rms into ${loadZ} ohms, ${sim.p.toFixed(0)} watts.`}
+        a11ySummary={`Rails ±${Math.round(sim.railNominal)} volts nominal${sagged ? `, sagging to ±${Math.round(sim.railEff)} under load` : ''}. State: ${state}. ${sim.state === 'protect' ? `Output muted; the load demanded ${sim.iDemand.toFixed(1)} amps rms into ${loadZ} ohms.` : `Output ${sim.vrms.toFixed(1)} volts rms, ${sim.irms.toFixed(1)} amps rms into ${loadZ} ohms, ${sim.p.toFixed(0)} watts.`}`}
       />
       <Card tone="accent">
         <Text style={[styles.state, { color: stateColor }]}>{state}</Text>
         <View style={styles.readoutRow}>
-          <Readout label="RAILS" value={`±${sim.railNominal.toFixed(0)} V`} sub={sim.sagV > 0.5 ? `sag −${sim.sagV.toFixed(1)} V` : 'no sag'} />
-          <Readout label="OUTPUT" value={`${sim.vrms.toFixed(1)} Vrms`} />
-          <Readout label="CURRENT" value={`${sim.irms.toFixed(1)} A`} warn={sim.irms >= I_LIMIT} />
+          <Readout label="RAILS" value={`±${sim.railNominal.toFixed(0)} V`} sub={sagged ? `sag −${sim.sagV.toFixed(1)} V → ±${sim.railEff.toFixed(0)} V` : 'no sag'} />
+          <Readout label="OUTPUT" value={`${sim.vrms.toFixed(1)} Vrms`} sub={sim.state === 'protect' ? 'muted' : undefined} />
+          <Readout
+            label="CURRENT"
+            value={`${sim.irms.toFixed(1)} A`}
+            sub={sim.state === 'protect' ? `demand ${sim.iDemand.toFixed(1)} A` : sim.state === 'current-limit' ? `limit ${RAIL_I_LIMIT} A` : undefined}
+            tone={sim.state === 'protect' ? 'fault' : sim.irms >= RAIL_I_LIMIT - 1e-6 ? 'warn' : undefined}
+          />
           <Readout label="POWER" value={`${sim.p.toFixed(0)} W`} sub="resistive example" />
         </View>
         <Body>
-          {state === 'CLEAN'
+          {sim.state === 'clean'
             ? 'The requested swing fits inside the rails and the current stays within the output stage’s comfort. Lower the load or raise the drive and watch which limit arrives first.'
-            : state.startsWith('VOLTAGE')
-              ? `The output wants to swing further than ±${sim.railEff.toFixed(0)} V. The peaks flatten exactly at the rail — that flat top IS the supply.${sim.sagV > 1 ? ' Notice the rails sagged under load, so clipping began earlier than the nominal rail suggests.' : ''}`
-              : state === 'CURRENT LIMITING'
-                ? `Into ${loadZ} Ω the output stage hits its ${I_LIMIT} A current limit BEFORE the voltage reaches the rails. The peaks flatten below the rail line — a different limit with a different cause. Voltage was available; current was not.`
-                : `Current demand reached ${sim.irms.toFixed(1)} A — past the ${I_PROTECT} A protection threshold. A real amplifier mutes or shuts down here. This is what a too-low load does at high level.`}
+            : sim.state === 'voltage-clip'
+              ? `The output wants to swing further than ±${sim.railEff.toFixed(0)} V. The peaks flatten exactly at the rail — that flat top IS the supply.${sagged ? ' The faint outer lines are the idle rails: they sagged under load, so clipping began earlier than the nominal figure suggests.' : ''}`
+              : sim.state === 'current-limit'
+                ? `Into ${loadZ} Ω the output stage hits its ${RAIL_I_LIMIT} A current limit BEFORE the voltage reaches the rails. The peaks flatten below the rail line — a different limit with a different cause. Voltage was available; current was not.`
+                : `The load asked for ${sim.iDemand.toFixed(1)} A — past the ${RAIL_I_PROTECT} A protection threshold — so the amplifier muted its output: a flat line with the input still present. This is what a too-low load does at high level. Reduce the level or raise the load impedance, then let protection reset.`}
         </Body>
       </Card>
       <FaultBanner primary={sim.primary} />
@@ -169,12 +145,12 @@ export function Mod6Supply() {
         note={`Labeled resistive example. Lower impedance → more current for the same voltage: ${loadZ} Ω at ${sim.vrms.toFixed(1)} Vrms draws ${sim.irms.toFixed(1)} A. A real loudspeaker’s impedance varies with frequency, so its current demand does too.`}
       />
 
-      <LearnMore title="WHY THREE DIFFERENT LIMITS LOOK DIFFERENT">
+      <LearnMore title="WHY THE LIMITS LOOK DIFFERENT">
         <Body>
           Voltage clipping flattens peaks at the rail line and gets worse as the rails sag. Current limiting flattens
-          peaks BELOW the rails — the supply had voltage to give, the output stage would not pass the current. Thermal
-          limiting (Module 7) reduces level over time rather than reshaping the wave. Reading which one you are seeing
-          tells you what to fix.
+          peaks BELOW the rails — the supply had voltage to give, the output stage would not pass the current.
+          Overcurrent protection does not reshape the wave at all: it opens the output. Thermal limiting (Module 7)
+          reduces level over time. Reading which one you are seeing tells you what to fix.
         </Body>
       </LearnMore>
 
@@ -191,11 +167,11 @@ export function Mod6Supply() {
   );
 }
 
-function Readout({ label, value, sub, warn }: { label: string; value: string; sub?: string; warn?: boolean }) {
+function Readout({ label, value, sub, tone }: { label: string; value: string; sub?: string; tone?: 'warn' | 'fault' }) {
   return (
     <View style={{ minWidth: 70, flex: 1 }}>
       <Text style={styles.rLabel}>{label}</Text>
-      <Text style={[styles.rValue, warn && { color: colors.red }]}>{value}</Text>
+      <Text style={[styles.rValue, tone === 'warn' && { color: colors.gold }, tone === 'fault' && { color: colors.red }]}>{value}</Text>
       {sub ? <Text style={styles.rSub}>{sub}</Text> : null}
     </View>
   );
@@ -204,10 +180,10 @@ function Readout({ label, value, sub, warn }: { label: string; value: string; su
 const styles = StyleSheet.create({
   state: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.5 },
   readoutRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  rLabel: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1.2 },
+  rLabel: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1.2 },
   rValue: { color: colors.textPrimary, fontFamily: fonts.oswaldSemiBold, fontSize: 17 },
-  rSub: { color: colors.textMutedDeep, fontFamily: fonts.barlowRegular, fontSize: 10 },
+  rSub: { color: colors.textMutedDeep, fontFamily: fonts.barlowRegular, fontSize: 10.5 },
   safetyTitle: { color: colors.gold, fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.5 },
   safetyLine: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17 },
-  safetyNote: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 11.5 },
+  safetyNote: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12 },
 });

@@ -4,7 +4,7 @@
  */
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Svg, { Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
 import {
   sineCycle, amplify, isClipping, cycleRms, simulateLinearClass, sineVrms, resistivePower,
@@ -27,11 +27,11 @@ function SignalPathDiagram({ level, clipping }: { level: number; clipping: boole
         const x = x0 + i * (bw + gap);
         const isLoad = i === 4;
         return (
-          <Svg key={b}>
+          <G key={b}>
             <Rect x={x} y={y} width={bw} height={bh} rx={5} fill={isLoad ? '#1a2a1e' : '#151518'} stroke={isLoad ? AMP_COLORS.output : colors.steelBorder} strokeWidth={1} />
             <SvgText x={x + bw / 2} y={y + 18} fontSize={8.5} fill={colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{b}</SvgText>
             {i < 4 ? <Path d={`M${x + bw + 1} ${y + bh / 2} l${gap - 2} 0`} stroke={i === 0 ? AMP_COLORS.input : AMP_COLORS.output} strokeWidth={1.5} /> : null}
-          </Svg>
+          </G>
         );
       })}
       {/* power supply feeding the gain and output stages */}
@@ -119,18 +119,26 @@ export function Mod1What() {
       />
       <FaultBanner primary={sim.clipping ? 'output-clipping' : null} />
 
-      {crossed && prediction ? (
+      {crossed ? (
         <Card tone="accent">
           <Text style={styles.explainTitle}>WHAT HAPPENED</Text>
           <Body>
+            {/* NEW COPY: the card now appears whether or not a prediction was
+                made (it used to stay hidden if the learner skipped the
+                prediction — the explanation is the lesson, the prediction is
+                the hook) and the heat sentence no longer asserts a mechanism
+                the model does not carry. */}
             {prediction === 'flat'
               ? 'You called it. '
               : prediction === 'grow'
                 ? 'Not this time — nothing lets the output exceed its rails. '
-                : 'The input is unaffected — the limit lives at the OUTPUT. '}
+                : prediction === 'quiet'
+                  ? 'The input is unaffected — the limit lives at the OUTPUT. '
+                  : 'You skipped the prediction — commit to one next time; a guess you had to defend is what makes the answer stick. '}
             Past about {Math.round(limitLevel * 100)}% input, the requested output ({GAIN}× the input) exceeds the
             ±{RAIL} rail limit, so the peaks flatten. The output stopped following the input the moment the supply
-            could not deliver more voltage. The heat rise comes from energy the load could not take.
+            could not deliver more voltage. Supply draw is now at its ceiling, and the flattened peaks carry
+            harmonic energy the original signal never had.
           </Body>
         </Card>
       ) : null}

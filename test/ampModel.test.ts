@@ -4,7 +4,7 @@
  *
  * These verify actual numeric results and state behavior — gain/dB, RMS,
  * power, impedance, transformer, efficiency, waveform/class behavior, bridge
- * mode, and protection priority — including zero/invalid inputs.
+ * mode, rail limits, and protection priority — including zero/invalid inputs.
  */
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
@@ -17,7 +17,9 @@ import {
   sineCycle, amplify, isClipping, cycleRms, WAVE_N,
   simulateLinearClass, simulateClassC, simulateClassD,
   simulateSingleDeviceBias, conductionCurrent, evaluateGainStructure,
-  prioritizeFaults, evaluateRig, clamp,
+  prioritizeFaults, evaluateRig, clamp, BIAS_SWING,
+  simulateRailLimits, RAIL_I_LIMIT, RAIL_I_PROTECT,
+  shuffledIndices, hashSeed,
 } from '../src/features/amp/ampModel.ts';
 
 describe('gain structure (Module 7)', () => {
@@ -57,6 +59,23 @@ describe('bias and conduction (Module 3)', () => {
     assert.equal(high.iDev[Math.round(WAVE_N * 0.25)], 1);
     assert.ok(high.idleCurrent > mid.idleCurrent && mid.idleCurrent > low.idleCurrent);
     assert.ok(high.heat > mid.heat && mid.heat > low.heat);
+  });
+  it('the WHOLE labeled linear region passes the full swing — the card and the trace agree', () => {
+    // Regression: the swing used to be ±0.5 against a 0.25..0.75 "linear"
+    // band, so every bias except exactly 50% was clipped while the copy said
+    // "the whole swing fits".
+    // integer steps — accumulating 0.01 in floating point overshoots the boundary
+    for (let k = Math.round(BIAS_SWING * 100); k <= Math.round((1 - BIAS_SWING) * 100); k++) {
+      const q = k / 100;
+      const s = simulateSingleDeviceBias(1, q);
+      assert.equal(s.region, 'linear', `bias ${q.toFixed(2)} should be linear`);
+      assert.equal(s.distorted, false, `bias ${q.toFixed(2)} should be clean`);
+    }
+    assert.equal(simulateSingleDeviceBias(1, BIAS_SWING - 0.01).distorted, true);
+    assert.equal(simulateSingleDeviceBias(1, 1 - BIAS_SWING + 0.01).distorted, true);
+    // clean output is renormalized to ±1
+    const mid = simulateSingleDeviceBias(1, 0.5);
+    assert.ok(Math.abs(Math.max(...mid.out) - 1) < 0.01);
   });
   it('conduction angle: 360 always conducts, 180 the positive half, 90 only the crest', () => {
     const count = (deg: number) => {
@@ -231,6 +250,13 @@ describe('amplifier-class models (educational)', () => {
     assert.ok(high.heat > low.heat);
     assert.ok(high.conductionDeg > 180); // overlap pushes past 180°
   });
+  it('Class AB at zero bias IS the Class B condition (same efficiency, same notch)', () => {
+    const b = simulateLinearClass('B', 0.8, 0);
+    const ab0 = simulateLinearClass('AB', 0.8, 0);
+    assert.ok(Math.abs(b.efficiencyPct - ab0.efficiencyPct) < 1e-9);
+    assert.equal(ab0.crossoverNotch, true);
+    assert.equal(ab0.idleCurrent, 0);
+  });
   it('Class B efficiency ceiling stays at the labeled theoretical 78.5%', () => {
     const s = simulateLinearClass('B', 1, 0);
     assert.ok(s.efficiencyPct <= 78.5);
@@ -244,9 +270,24 @@ describe('amplifier-class models (educational)', () => {
     let zeros = 0;
     for (let i = 0; i < WAVE_N; i++) if (tuned.out[i] === 0) zeros++;
     assert.ok(zeros > WAVE_N / 2);
+    // Full drive, tuned, recovers unity.
+    assert.ok(Math.abs(Math.max(...tuned.recovered) - 1) < 0.01);
     const mistuned = simulateClassC(1, 1.6);
     assert.ok(mistuned.resonanceGain < 0.25);
     assert.ok(cycleRms(mistuned.recovered) < cycleRms(tuned.recovered) * 0.3);
+  });
+  it('Class C below its conduction threshold makes NOTHING — no pulses, no recovered sine, no efficiency', () => {
+    // Regression: the tank used to ring a sine scaled by the drive even when
+    // the device never conducted.
+    const quiet = simulateClassC(0.3, 1);
+    assert.equal(quiet.conductionDeg, 0);
+    assert.equal(cycleRms(quiet.recovered), 0);
+    assert.equal(quiet.efficiencyPct, 0);
+    // and the recovered level is NOT linear in drive (a carrier amplifier)
+    const half = simulateClassC(0.6, 1);
+    const full = simulateClassC(1, 1);
+    assert.ok(cycleRms(half.recovered) > 0);
+    assert.ok(cycleRms(half.recovered) < 0.6 * cycleRms(full.recovered));
   });
   it('Class D: duty cycle follows the audio; filtered differs from switching', () => {
     const s = simulateClassD(0.8);
@@ -264,6 +305,15 @@ describe('amplifier-class models (educational)', () => {
     assert.ok(Math.abs(simulateClassD(0).meanDuty - 0.5) < 0.02);
     assert.ok(s.efficiencyPct < 100);
     assert.ok(simulateClassD(0).efficiencyPct < 100);
+  });
+  it('Class D efficiency FALLS at low output (fixed losses dominate) and is 0 with nothing delivered', () => {
+    const hi = simulateClassD(0.9).efficiencyPct;
+    const mid = simulateClassD(0.5).efficiencyPct;
+    const lo = simulateClassD(0.1).efficiencyPct;
+    assert.ok(hi > mid && mid > lo, `${hi} > ${mid} > ${lo}`);
+    assert.ok(hi > 80 && hi < 95);
+    assert.ok(lo < 65);
+    assert.equal(simulateClassD(0).efficiencyPct, 0);
   });
 });
 
@@ -292,6 +342,45 @@ describe('protection priority', () => {
   });
 });
 
+describe('rail limits (Module 6)', () => {
+  it('8 Ω, full rail: clean at half drive, voltage clipping at full drive', () => {
+    assert.equal(simulateRailLimits(0.5, 1, 8, 'linear').state, 'clean');
+    const s = simulateRailLimits(1, 1, 8, 'linear');
+    assert.equal(s.state, 'voltage-clip');
+    assert.equal(s.primary, 'output-clipping');
+    // the flat top sits exactly at the (sagged) rail
+    assert.ok(Math.abs(Math.max(...s.out) - s.clipAtNorm) < 1e-6);
+  });
+  it('2 Ω: current limiting arrives BELOW the rails, then protection MUTES the output', () => {
+    const lim = simulateRailLimits(0.6, 1, 2, 'linear');
+    assert.equal(lim.state, 'current-limit');
+    assert.ok(lim.iLimitNorm < lim.clipAtNorm, 'ceiling below the rail');
+    assert.ok(Math.abs(lim.irms - RAIL_I_LIMIT) < 1e-6);
+    // Regression: overcurrent protection was unreachable — the current limit
+    // capped delivered current at 9 A so demand could never reach 13 A.
+    const prot = simulateRailLimits(1, 1, 2, 'linear');
+    assert.equal(prot.state, 'protect');
+    assert.equal(prot.primary, 'overcurrent');
+    assert.ok(prot.iDemand >= RAIL_I_PROTECT);
+    assert.equal(prot.irms, 0);
+    assert.equal(prot.vrms, 0);
+    for (let i = 0; i < WAVE_N; i++) assert.equal(prot.out[i], 0);
+  });
+  it('an unregulated linear supply sags more than a switch-mode supply', () => {
+    const lin = simulateRailLimits(0.8, 1, 4, 'linear');
+    const smps = simulateRailLimits(0.8, 1, 4, 'smps');
+    assert.ok(lin.sagV > smps.sagV);
+    assert.ok(lin.railEff < lin.railNominal);
+    assert.ok(lin.clipAtNorm < lin.nominalNorm);
+  });
+  it('lower rails mean an earlier clip point', () => {
+    const full = simulateRailLimits(0.7, 1, 8, 'smps');
+    const low = simulateRailLimits(0.7, 0.4, 8, 'smps');
+    assert.equal(full.state, 'clean');
+    assert.equal(low.state, 'voltage-clip');
+  });
+});
+
 describe('rig evaluation (Module 7/8 scenarios)', () => {
   const base = {
     sourceLevel: 0.5, mixerLevel: 0.5, ampInput: 0.5,
@@ -301,6 +390,28 @@ describe('rig evaluation (Module 7/8 scenarios)', () => {
   };
   it('sane defaults produce no primary fault', () => {
     assert.equal(evaluateRig(base).primary, null);
+  });
+  it('agrees with evaluateGainStructure about WHICH stage clips (the drawn waveform and the verdict share one chain)', () => {
+    const cases = [
+      { sourceLevel: 0.5, mixerLevel: 0.5, ampInput: 1 },
+      { sourceLevel: 0.8, mixerLevel: 0.5, ampInput: 0.5 },
+      { sourceLevel: 0.6, mixerLevel: 0.9, ampInput: 0.3 },
+      { sourceLevel: 0.3, mixerLevel: 0.3, ampInput: 0.3 },
+    ];
+    for (const c of cases) {
+      const rig = evaluateRig({ ...base, ...c });
+      const gs = evaluateGainStructure(c.sourceLevel, c.mixerLevel, c.ampInput, 1);
+      assert.equal(rig.upstreamClips, gs.firstClip === 'source' || gs.firstClip === 'mixer', JSON.stringify(c));
+      assert.equal(rig.outputClips, gs.firstClip === 'amp', JSON.stringify(c));
+    }
+  });
+  it('full output into the RATED minimum load is allowed; half that load trips overcurrent', () => {
+    const hot = { ...base, sourceLevel: 0.6, mixerLevel: 0.6, ampInput: 1 };
+    const rated = evaluateRig({ ...hot, loadZ: 4 });
+    assert.ok(!rated.secondary.includes('overcurrent') && rated.primary !== 'overcurrent');
+    const half = evaluateRig({ ...hot, loadZ: 2 });
+    assert.ok(half.primary === 'overcurrent' || half.secondary.includes('overcurrent') || half.primary === 'load-below-min');
+    assert.ok(half.currentDemand >= 0.98);
   });
   it('lower load raises current demand', () => {
     const hi = evaluateRig({ ...base, loadZ: 2 });
@@ -319,7 +430,7 @@ describe('rig evaluation (Module 7/8 scenarios)', () => {
   it('upstream clipping is distinguished from amplifier output clipping', () => {
     const up = evaluateRig({ ...base, sourceLevel: 1, mixerLevel: 1, ampInput: 0.2 });
     assert.equal(up.upstreamClips, true);
-    const out = evaluateRig({ ...base, sourceLevel: 0.6, mixerLevel: 0.7, ampInput: 1, railLimit: 0.4 });
+    const out = evaluateRig({ ...base, sourceLevel: 0.6, mixerLevel: 0.6, ampInput: 1, railLimit: 0.4 });
     assert.equal(out.upstreamClips, false);
     assert.equal(out.outputClips, true);
   });
@@ -333,10 +444,42 @@ describe('rig evaluation (Module 7/8 scenarios)', () => {
     const v = evaluateRig({ ...base, shorted: true, ventBlocked: 1, loadZ: 2 });
     assert.equal(v.primary, 'short');
   });
+  it('the Module 8 challenge STARTS faulted and can be fixed to a clean verdict', () => {
+    const start = evaluateRig({ ...base, sourceLevel: 0.8, mixerLevel: 0.5, ampInput: 0.5, loadZ: 2, ventBlocked: 1 });
+    assert.ok(start.primary != null);
+    assert.equal(start.upstreamClips, true);
+    const fixed = evaluateRig({ ...base, sourceLevel: 0.6, mixerLevel: 0.5, ampInput: 0.5, loadZ: 8, ventBlocked: 0 });
+    assert.equal(fixed.primary, null);
+    assert.equal(fixed.upstreamClips, false);
+    assert.equal(fixed.outputClips, false);
+    assert.ok(fixed.thermal < 0.75);
+  });
   it('conceptual meters stay in range under extremes', () => {
     const v = evaluateRig({ ...base, sourceLevel: 1, mixerLevel: 1, ampInput: 1, loadZ: 1, ventBlocked: 1 });
     assert.ok(v.currentDemand >= 0 && v.currentDemand <= 1);
     assert.ok(v.thermal >= 0 && v.thermal <= 1);
+  });
+});
+
+describe('presentation shuffle (answer-position hygiene)', () => {
+  it('is a permutation of 0..n-1, deterministic for a seed, different across seeds', () => {
+    const a = shuffledIndices(4, 12345);
+    assert.deepEqual([...a].sort(), [0, 1, 2, 3]);
+    assert.deepEqual(shuffledIndices(4, 12345), a);
+    // Across many seeds the correct answer (authored index 1) lands in every
+    // slot — position can no longer cue it.
+    const seen = new Set<number>();
+    for (let s = 1; s < 200; s++) seen.add(shuffledIndices(4, s).indexOf(1));
+    assert.deepEqual([...seen].sort(), [0, 1, 2, 3]);
+  });
+  it('degenerate sizes and seed 0 are safe', () => {
+    assert.deepEqual(shuffledIndices(0, 7), []);
+    assert.deepEqual(shuffledIndices(1, 7), [0]);
+    assert.deepEqual([...shuffledIndices(5, 0)].sort(), [0, 1, 2, 3, 4]);
+  });
+  it('hashSeed is stable and distinguishes ids', () => {
+    assert.equal(hashSeed('w-energy'), hashSeed('w-energy'));
+    assert.notEqual(hashSeed('w-energy'), hashSeed('w-lineout'));
   });
 });
 

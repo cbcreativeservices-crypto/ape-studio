@@ -4,7 +4,7 @@
  * scored across six dimensions, the final assessment drawn from the scored
  * pool, and the completion summary with links back into the modules.
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -12,13 +12,14 @@ import { colors, fonts } from '../../../../theme/tokens';
 import type { RootStackParamList } from '../../../../navigation/types';
 import {
   sineCycle, amplify, simulateLinearClass, simulateClassD, evaluateRig, evaluateGainStructure, WAVE_N,
+  shuffledIndices, hashSeed,
 } from '../../../../features/amp/ampModel';
 import {
   AMP_CHECKS, AMP_MODULES, MISCONCEPTIONS, WAVE_KINDS, APP_SCENARIOS, APP_CHOICES, MYTH_REVIEW_IDS,
-  type WaveKind, type AppClassChoice,
+  type WaveKind, type AppClassChoice, type AmpModuleId,
 } from '../../../../features/amp/ampContent';
-import { loadAmpProgress, saveAmpProgress, type AmpProgressState } from '../../../../features/amp/ampProgress';
-import { AmpRig } from '../AmpRig';
+import { loadAmpProgress, updateAmpProgress, type AmpProgressState } from '../../../../features/amp/ampProgress';
+import { AmpRig, type RigTrace } from '../AmpRig';
 import { Body, Card, ControlSlider, FaultBanner, HonestyBadge, SectionTitle, SegRow } from '../kit';
 import type { AmpModuleProps } from './index';
 
@@ -28,14 +29,17 @@ const FINAL_ITEMS = 12;
 
 /* ── waveform diagnosis renders (from the model) ────────────────────────── */
 
-function waveFor(kind: WaveKind): { out: Float32Array; clipAt?: number; extra?: { data: Float32Array; color: string; dash?: string; label: string }[] } {
+function waveFor(kind: WaveKind): { out: Float32Array; clipAt?: number; nominalRailAt?: number; extra?: RigTrace[] } {
   const x = sineCycle(1);
   switch (kind) {
     case 'clean': return { out: amplify(x, 0.7, 1), clipAt: 1 };
     case 'voltage-clip': return { out: amplify(x, 1.5, 1), clipAt: 1 };
     case 'crossover': return { out: simulateLinearClass('B', 0.8, 0).out, clipAt: 1 };
     case 'current-limit': return { out: amplify(x, 1.5, 0.7), clipAt: 1, extra: [{ data: new Float32Array(WAVE_N).fill(0.7), color: colors.gold, dash: '2,3', label: 'current-limit ceiling' }] };
-    case 'sag': return { out: amplify(x, 1.2, 0.6), clipAt: 0.6 };
+    // Sag: the rails have moved INWARD — the faint outer lines are where they
+    // idle. Without that reference this picture was identical to voltage
+    // clipping at a lower rail and could not be told apart.
+    case 'sag': return { out: amplify(x, 1.2, 0.6), clipAt: 0.6, nominalRailAt: 1 };
     case 'classd-raw': return { out: simulateClassD(0.7).pwm };
     case 'classd-filtered': return { out: simulateClassD(0.7).recovered, clipAt: 1 };
     case 'protect': return { out: new Float32Array(WAVE_N), clipAt: 1 };
@@ -43,25 +47,17 @@ function waveFor(kind: WaveKind): { out: Float32Array; clipAt?: number; extra?: 
 }
 
 const DIAG_ORDER: WaveKind[] = ['voltage-clip', 'classd-raw', 'crossover', 'protect', 'current-limit', 'clean', 'sag', 'classd-filtered'];
+const DIAG_PASS = 6;
+
+const waveKind = (k: WaveKind) => WAVE_KINDS.find((w) => w.key === k)!;
+/** Every reading that is correct for this picture (the key itself plus any it cannot be told from). */
+const acceptedFor = (k: WaveKind): WaveKind[] => [k, ...(waveKind(k).alsoAccept ?? [])];
 
 /* ── deterministic pick of final items ──────────────────────────────────── */
 
 function pickFinal(seed: number) {
   const pool = AMP_CHECKS.filter((c) => c.scored);
-  let s = seed >>> 0 || 1;
-  const rnd = () => {
-    s = (s + 0x6d2b79f5) >>> 0;
-    let t = s;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-  const arr = [...pool];
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(rnd() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr.slice(0, FINAL_ITEMS);
+  return shuffledIndices(pool.length, seed).slice(0, FINAL_ITEMS).map((i) => pool[i]);
 }
 
 /* ── final system challenge ─────────────────────────────────────────────── */
@@ -72,17 +68,19 @@ const DIM_LABEL: Record<Dim, string> = {
   thermal: 'Thermal condition', headroom: 'Headroom', mode: 'Operating mode',
 };
 
+/** The rig ARRIVES misconfigured (hot source, 2 Ω on a 4 Ω amplifier, blocked
+ *  vents): the previous defaults passed all six dimensions before the learner
+ *  touched anything, so "SCORE" was a free pass. */
+const CH_START = { source: 0.8, mixer: 0.5, amp: 0.5, mode: 'stereo' as const, supply: 'healthy' as const, load: 2 as const, vent: 'blocked' as const };
+
 export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const stateRef = useRef<AmpProgressState | null>(null);
   const [progress, setProgress] = useState<AmpProgressState | null>(null);
 
   useEffect(() => {
     let alive = true;
     void loadAmpProgress().then((s) => {
-      if (!alive) return;
-      stateRef.current = s;
-      setProgress(s);
+      if (alive) setProgress(s);
     });
     return () => {
       alive = false;
@@ -95,6 +93,9 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
   const [diagScore, setDiagScore] = useState<{ right: number; total: number }>({ right: 0, total: 0 });
   const diagKind = DIAG_ORDER[diagIdx];
   const diagWave = useMemo(() => waveFor(diagKind), [diagKind]);
+  const diagInput = useMemo(() => sineCycle(1), []);
+  const diagAccepted = acceptedFor(diagKind);
+  const diagRight = diagPick != null && diagAccepted.includes(diagPick);
 
   /* application selection */
   const [appIdx, setAppIdx] = useState(0);
@@ -107,13 +108,13 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
   const myth = MISCONCEPTIONS.find((m) => m.id === MYTH_REVIEW_IDS[mythIdx])!;
 
   /* final system challenge */
-  const [chSource, setChSource] = useState(0.5);
-  const [chMixer, setChMixer] = useState(0.5);
-  const [chAmp, setChAmp] = useState(0.5);
-  const [chMode, setChMode] = useState<'stereo' | 'bridge'>('stereo');
-  const [chSupply, setChSupply] = useState<'healthy' | 'sagging'>('healthy');
-  const [chLoad, setChLoad] = useState<8 | 4 | 2>(8);
-  const [chVent, setChVent] = useState<'clear' | 'blocked'>('clear');
+  const [chSource, setChSource] = useState(CH_START.source);
+  const [chMixer, setChMixer] = useState(CH_START.mixer);
+  const [chAmp, setChAmp] = useState(CH_START.amp);
+  const [chMode, setChMode] = useState<'stereo' | 'bridge'>(CH_START.mode);
+  const [chSupply, setChSupply] = useState<'healthy' | 'sagging'>(CH_START.supply);
+  const [chLoad, setChLoad] = useState<8 | 4 | 2>(CH_START.load);
+  const [chVent, setChVent] = useState<'clear' | 'blocked'>(CH_START.vent);
   const [chSubmitted, setChSubmitted] = useState(false);
 
   const challenge = useMemo(() => {
@@ -154,10 +155,20 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
     const passed = (Object.keys(dims) as Dim[]).filter((d) => dims[d].ok).length;
     return { rig, gs, outLevel, dims, passed, railLimit };
   }, [chSource, chMixer, chAmp, chMode, chSupply, chLoad, chVent]);
+  const chInput = useMemo(() => sineCycle(Math.min(1, challenge.gs.levels.source)), [challenge.gs.levels.source]);
+  const chOutput = useMemo(
+    () => amplify(sineCycle(1), Math.min(challenge.gs.levels.amp, 1.4) * challenge.railLimit, challenge.railLimit),
+    [challenge.gs.levels.amp, challenge.railLimit],
+  );
 
   /* final assessment */
   const [finalSeed, setFinalSeed] = useState(() => Date.now());
   const finalItems = useMemo(() => pickFinal(finalSeed), [finalSeed]);
+  // Presentation order per item — dealt once per draw, judged by authored index.
+  const finalOrder = useMemo(
+    () => Object.fromEntries(finalItems.map((c) => [c.id, c.keepOrder ? c.options.map((_, i) => i) : shuffledIndices(c.options.length, finalSeed ^ hashSeed(c.id))])) as Record<string, number[]>,
+    [finalItems, finalSeed],
+  );
   const [finalAnswers, setFinalAnswers] = useState<Record<string, number>>({});
   const [finalSubmitted, setFinalSubmitted] = useState(false);
   const finalRight = finalItems.filter((c) => finalAnswers[c.id] === c.correct).length;
@@ -165,7 +176,6 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
 
   const submitFinal = useCallback(() => {
     setFinalSubmitted(true);
-    const s = stateRef.current ?? { modules: {} };
     const result = {
       scorePct: finalPct,
       passed: finalPct >= FINAL_STRONG_PCT,
@@ -174,12 +184,13 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
         ? Object.fromEntries((Object.keys(challenge.dims) as Dim[]).map((d) => [d, challenge.dims[d].ok]))
         : undefined,
     };
-    s.final = result;
-    if (!s.bestFinal || result.scorePct > s.bestFinal.scorePct) s.bestFinal = result;
-    stateRef.current = s;
-    setProgress({ ...s });
-    void saveAmpProgress(s);
     onFinalSubmitted?.();
+    // Merged into the CURRENT stored state (not a copy loaded at mount), so
+    // the checks answered on this screen survive the final's write.
+    void updateAmpProgress((s) => {
+      s.final = result;
+      if (!s.bestFinal || result.scorePct > s.bestFinal.scorePct) s.bestFinal = result;
+    }).then((s) => setProgress({ ...s }));
   }, [finalPct, chSubmitted, challenge, onFinalSubmitted]);
 
   const retakeFinal = () => {
@@ -192,14 +203,22 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
   const summary = useMemo(() => {
     const mods = AMP_MODULES.map((m) => ({ ...m, done: !!progress?.modules[m.id]?.done }));
     const mastered: string[] = [];
-    const review: { q: string; moduleId: string }[] = [];
+    const review: { q: string; moduleId: AmpModuleId }[] = [];
     for (const c of AMP_CHECKS) {
       const r = progress?.modules[c.moduleId]?.checks[c.id];
       if (r === true) mastered.push(c.q);
       else if (r === false) review.push({ q: c.q, moduleId: c.moduleId });
     }
+    // Items missed on the final just taken belong on the review list too.
+    if (finalSubmitted) {
+      for (const c of finalItems) {
+        if (finalAnswers[c.id] !== c.correct && !review.some((r) => r.q === c.q)) review.push({ q: c.q, moduleId: c.moduleId });
+      }
+    }
     return { mods, mastered, review };
-  }, [progress]);
+  }, [progress, finalSubmitted, finalItems, finalAnswers]);
+
+  const finalDone = Object.keys(finalAnswers).length;
 
   return (
     <View style={{ gap: 12 }}>
@@ -207,30 +226,34 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
 
       {/* ── 1 waveform diagnosis ── */}
       <SectionTitle>1 · WAVEFORM DIAGNOSIS ({diagIdx + 1} of {DIAG_ORDER.length})</SectionTitle>
+      <Body>Read the output against the rail lines. One picture may have two correct readings — the evidence will say so.</Body>
       <AmpRig
-        input={sineCycle(1)}
+        input={diagInput}
         output={diagWave.out}
         clipAt={diagWave.clipAt}
+        nominalRailAt={diagWave.nominalRailAt}
         extraOut={diagPick ? diagWave.extra : undefined}
         outputTitle="OUTPUT — what is this amplifier doing?"
-        supplyFlow={0.4}
-        heat={0.3}
+        supplyFlow={0}
+        heat={0}
+        hideStatus
         a11ySummary="Diagnosis waveform. Identify the condition from the output shape relative to the rail lines."
       />
       <View style={{ gap: 6 }}>
         {WAVE_KINDS.map((k) => {
-          const isAnswer = diagPick != null && k.key === diagKind;
-          const isWrong = diagPick === k.key && k.key !== diagKind;
+          const isAnswer = diagPick != null && (k.key === diagKind || (diagRight && k.key === diagPick));
+          const isWrong = diagPick === k.key && !diagRight;
           return (
             <Pressable
               key={k.key}
               disabled={diagPick != null}
               onPress={() => {
                 setDiagPick(k.key);
-                setDiagScore((s) => ({ right: s.right + (k.key === diagKind ? 1 : 0), total: s.total + 1 }));
+                setDiagScore((s) => ({ right: s.right + (diagAccepted.includes(k.key) ? 1 : 0), total: s.total + 1 }));
               }}
               style={[styles.opt, isAnswer && styles.optRight, isWrong && styles.optWrong]}
               accessibilityRole="button"
+              accessibilityState={{ disabled: diagPick != null }}
               accessibilityLabel={k.label}
             >
               <Text style={[styles.optText, isAnswer && { color: colors.green }, isWrong && { color: colors.red }]}>{k.label}</Text>
@@ -240,16 +263,25 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
       </View>
       {diagPick ? (
         <Card tone="accent">
-          <Text style={[styles.verdict, { color: diagPick === diagKind ? colors.green : colors.gold }]}>
-            {diagPick === diagKind ? '✓ CORRECT' : `NOT QUITE — THIS IS ${WAVE_KINDS.find((k) => k.key === diagKind)!.label.toUpperCase()}`}
+          <Text style={[styles.verdict, { color: diagRight ? colors.green : colors.gold }]}>
+            {diagPick === diagKind
+              ? '✓ CORRECT'
+              : diagRight
+                ? `✓ ALSO CORRECT — ${waveKind(diagPick).label.toUpperCase()} AND ${waveKind(diagKind).label.toUpperCase()} ARE THE SAME PICTURE HERE`
+                : `NOT QUITE — THIS IS ${waveKind(diagKind).label.toUpperCase()}`}
           </Text>
-          <Body>Evidence: {WAVE_KINDS.find((k) => k.key === diagKind)!.evidence}</Body>
+          <Body>Evidence: {waveKind(diagKind).evidence}</Body>
           {diagIdx < DIAG_ORDER.length - 1 ? (
             <Pressable style={styles.nextBtn} onPress={() => { setDiagIdx(diagIdx + 1); setDiagPick(null); }} accessibilityRole="button" accessibilityLabel="Next waveform">
               <Text style={styles.nextText}>NEXT WAVEFORM ›</Text>
             </Pressable>
           ) : (
-            <Text style={styles.score}>Diagnosis round: {diagScore.right} of {diagScore.total} — {diagScore.right >= 6 ? 'you can read an amplifier.' : 'revisit Modules 3, 5 and 6 for the ones that fooled you.'}</Text>
+            <>
+              <Text style={styles.score}>Diagnosis round: {diagScore.right} of {diagScore.total} — {diagScore.right >= DIAG_PASS ? 'you can read an amplifier.' : 'revisit Modules 3, 5 and 6 for the ones that fooled you.'}</Text>
+              <Pressable style={styles.nextBtn} onPress={() => { setDiagIdx(0); setDiagPick(null); setDiagScore({ right: 0, total: 0 }); }} accessibilityRole="button" accessibilityLabel="Repeat the diagnosis round">
+                <Text style={styles.nextText}>REPEAT THE ROUND ›</Text>
+              </Pressable>
+            </>
           )}
         </Card>
       ) : null}
@@ -278,7 +310,9 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
             <Pressable style={styles.nextBtn} onPress={() => { setAppIdx(appIdx + 1); setAppPick(null); }} accessibilityRole="button" accessibilityLabel="Next scenario">
               <Text style={styles.nextText}>NEXT SCENARIO ›</Text>
             </Pressable>
-          ) : null}
+          ) : (
+            <Text style={styles.score}>Selection round complete. Notice how often more than one class was defensible — the brief decides, not the letter.</Text>
+          )}
         </Card>
       ) : null}
 
@@ -313,8 +347,9 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
       {/* ── 4 final system challenge ── */}
       <SectionTitle>4 · FINAL SYSTEM CHALLENGE</SectionTitle>
       <Body>
-        Target: a clean output between 50% and 85% of full, within load limits, no thermal or protection faults, correct
-        connections. This amplifier is rated 4 Ω per channel in stereo and 8 Ω bridged.
+        This rig arrives misconfigured. Bring it to a clean output between 50% and 85% of full, within load limits, with
+        no thermal or protection faults and correct connections. The amplifier is rated 4 Ω per channel in stereo and
+        8 Ω bridged. Score it as often as you like — every failing dimension tells you what to change.
       </Body>
       <ControlSlider label="Source level" value={chSource} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={(v) => { setChSource(v); setChSubmitted(false); }} />
       <ControlSlider label="Mixer output" value={chMixer} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={(v) => { setChMixer(v); setChSubmitted(false); }} />
@@ -324,9 +359,10 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
       <SegRow<8 | 4 | 2> label="Speaker load (nominal)" options={[{ key: 8, label: '8 Ω' }, { key: 4, label: '4 Ω' }, { key: 2, label: '2 Ω' }]} value={chLoad} onChange={(v) => { setChLoad(v); setChSubmitted(false); }} />
       <SegRow<'clear' | 'blocked'> label="Ventilation" options={[{ key: 'clear', label: 'Clear' }, { key: 'blocked', label: 'Blocked' }]} value={chVent} onChange={(v) => { setChVent(v); setChSubmitted(false); }} />
       <AmpRig
-        input={sineCycle(Math.min(1, challenge.gs.levels.source))}
-        output={amplify(sineCycle(1), Math.min(challenge.gs.levels.amp, 1.4) * challenge.railLimit, challenge.railLimit)}
+        input={chInput}
+        output={chOutput}
         clipAt={challenge.railLimit}
+        nominalRailAt={chSupply === 'sagging' ? 1 : undefined}
         supplyFlow={challenge.rig.currentDemand}
         heat={challenge.rig.thermal}
         speaker
@@ -364,7 +400,8 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
             <Text style={styles.qNum}>{i + 1}.</Text>
             <Text style={styles.q}>{c.q}</Text>
             <View style={{ gap: 6 }}>
-              {c.options.map((o, oi) => {
+              {(finalOrder[c.id] ?? c.options.map((_, oi) => oi)).map((oi) => {
+                const o = c.options[oi];
                 const isRight = finalSubmitted && oi === c.correct;
                 const isWrongPick = finalSubmitted && picked === oi && oi !== c.correct;
                 return (
@@ -374,7 +411,7 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
                     onPress={() => setFinalAnswers((prev) => ({ ...prev, [c.id]: oi }))}
                     style={[styles.opt, picked === oi && !finalSubmitted && styles.optPicked, isRight && styles.optRight, isWrongPick && styles.optWrong]}
                     accessibilityRole="button"
-                    accessibilityState={{ selected: picked === oi }}
+                    accessibilityState={{ selected: picked === oi, disabled: finalSubmitted }}
                     accessibilityLabel={o}
                   >
                     <Text style={[styles.optText, isRight && { color: colors.green }, isWrongPick && { color: colors.red }]}>{o}</Text>
@@ -389,16 +426,17 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
       {!finalSubmitted ? (
         <>
           <Pressable
-            style={[styles.checkBtn, Object.keys(finalAnswers).length < finalItems.length && { opacity: 0.45 }]}
-            disabled={Object.keys(finalAnswers).length < finalItems.length}
+            style={[styles.checkBtn, finalDone < finalItems.length && { opacity: 0.45 }]}
+            disabled={finalDone < finalItems.length}
             onPress={submitFinal}
             accessibilityRole="button"
-            accessibilityLabel={Object.keys(finalAnswers).length < finalItems.length ? 'Answer every item to submit' : 'Submit the final assessment'}
+            accessibilityState={{ disabled: finalDone < finalItems.length }}
+            accessibilityLabel={finalDone < finalItems.length ? 'Answer every item to submit' : 'Submit the final assessment'}
           >
             <Text style={styles.checkBtnText}>SUBMIT FINAL</Text>
           </Pressable>
-          {Object.keys(finalAnswers).length < finalItems.length ? (
-            <Text style={styles.note}>Answer all {finalItems.length} items to submit ({Object.keys(finalAnswers).length} done).</Text>
+          {finalDone < finalItems.length ? (
+            <Text style={styles.note}>Answer all {finalItems.length} items to submit ({finalDone} done).</Text>
           ) : null}
         </>
       ) : (
@@ -431,10 +469,10 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
         ))}
         {summary.mastered.length > 6 ? <Text style={styles.sumSmall}>…and {summary.mastered.length - 6} more</Text> : null}
         <Text style={styles.sumLabel}>NEEDS REVIEW · {summary.review.length}</Text>
-        {summary.review.length === 0 ? <Text style={styles.sumSmall}>Nothing flagged — every module check you answered was right on the latest attempt.</Text> : null}
+        {summary.review.length === 0 ? <Text style={styles.sumSmall}>Nothing flagged — every module check you answered was right on the first pick{finalSubmitted ? ', and the final was clean' : ''}.</Text> : null}
         {summary.review.map((r) => (
-          <Pressable key={r.q} onPress={() => navigation.navigate('AmpModule', { id: r.moduleId as never })} accessibilityRole="button" accessibilityLabel={`Review in module: ${r.q}`}>
-            <Text style={[styles.sumSmall, { color: colors.gold }]}>↺ {r.q}</Text>
+          <Pressable key={r.q} onPress={() => navigation.navigate('AmpModule', { id: r.moduleId })} style={styles.sumRow} accessibilityRole="button" accessibilityLabel={`Review in module: ${r.q}`}>
+            <Text style={[styles.sumSmall, { color: colors.gold, flex: 1 }]}>↺ {r.q}</Text>
           </Pressable>
         ))}
         <Text style={styles.sumLabel}>FINAL</Text>
@@ -470,7 +508,7 @@ const styles = StyleSheet.create({
   explain: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17 },
   bigScore: { fontFamily: fonts.oswaldSemiBold, fontSize: 34 },
   sumLabel: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 2, marginTop: 8 },
-  sumRow: { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 36 },
+  sumRow: { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 44 },
   sumMark: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, width: 16 },
   sumText: { flex: 1, color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 13.5 },
   sumLink: { color: colors.cyanBright, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1 },

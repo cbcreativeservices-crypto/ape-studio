@@ -39,8 +39,8 @@ function DeviceDiagram({ device, control }: { device: Device; control: number })
       {/* the device */}
       <Rect x={140} y={34} width={80} height={70} rx={8} fill="#151518" stroke={colors.steelBorder} />
       <SvgText x={180} y={56} fontSize={9.5} fill={colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{device === 'generic' ? 'ACTIVE DEVICE' : device.toUpperCase()}</SvgText>
-      <SvgText x={180} y={72} fontSize={8.5} fill={colors.textMuted} textAnchor="middle">{t.in}</SvgText>
-      <SvgText x={180} y={88} fontSize={8.5} fill={colors.textMuted} textAnchor="middle">→ {t.out}</SvgText>
+      <SvgText x={180} y={72} fontSize={8.5} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.barlowMedium}>{t.in}</SvgText>
+      <SvgText x={180} y={88} fontSize={8.5} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.barlowMedium}>→ {t.out}</SvgText>
       {/* control input */}
       <Line x1={180} y1={10} x2={180} y2={34} stroke={AMP_COLORS.input} strokeWidth={1.6} />
       <Circle cx={180} cy={10} r={4} fill={AMP_COLORS.input} />
@@ -60,23 +60,26 @@ function DeviceDiagram({ device, control }: { device: Device; control: number })
 function TransformerDiagram({ np, ns }: { np: number; ns: number }) {
   const turnsP = Math.max(2, Math.round(np / 100));
   const turnsS = Math.max(2, Math.round(ns / 100));
-  const coil = (x: number, turns: number, color: string) =>
+  // sweep 0 bulges the primary OUT to the left of the core, sweep 1 the
+  // secondary out to the right — both windings sit on the core's faces
+  // (the primary used to bulge inward and overlap the core block).
+  const coil = (x: number, turns: number, color: string, sweep: 0 | 1) =>
     Array.from({ length: turns }, (_, k) => (
-      <Path key={`${x}-${k}`} d={`M${x} ${30 + k * (80 / turns)} a10 ${40 / turns} 0 0 1 0 ${80 / turns}`} fill="none" stroke={color} strokeWidth={2} />
+      <Path key={`${x}-${k}`} d={`M${x} ${30 + k * (80 / turns)} a10 ${40 / turns} 0 0 ${sweep} 0 ${80 / turns}`} fill="none" stroke={color} strokeWidth={2} />
     ));
   return (
     <Svg width="100%" height={130} viewBox="0 0 360 130">
       <Rect x={150} y={18} width={60} height={104} rx={4} fill="#26262b" stroke={colors.steelBorder} />
-      <SvgText x={180} y={72} fontSize={9} fill={colors.textMuted} textAnchor="middle">CORE</SvgText>
-      {coil(150, turnsP, AMP_COLORS.input)}
-      {coil(210, turnsS, AMP_COLORS.output)}
+      <SvgText x={180} y={72} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium}>CORE</SvgText>
+      {coil(150, turnsP, AMP_COLORS.input, 0)}
+      {coil(210, turnsS, AMP_COLORS.output, 1)}
       <SvgText x={110} y={14} fontSize={9.5} fill={AMP_COLORS.input} textAnchor="middle" fontFamily={fonts.oswaldMedium}>PRIMARY · Np {np}</SvgText>
       <SvgText x={250} y={14} fontSize={9.5} fill={AMP_COLORS.output} textAnchor="middle" fontFamily={fonts.oswaldMedium}>SECONDARY · Ns {ns}</SvgText>
       <Path d="M30 70 q10 -20 20 0 t20 0 t20 0 t20 0" fill="none" stroke={AMP_COLORS.input} strokeWidth={1.5} />
       <Path d="M250 70 q10 -20 20 0 t20 0 t20 0 t20 0" fill="none" stroke={AMP_COLORS.output} strokeWidth={1.5} />
       <Path d="M165 60 q15 -30 30 0" fill="none" stroke={AMP_COLORS.supply} strokeDasharray="3,2" />
       <Path d="M165 90 q15 30 30 0" fill="none" stroke={AMP_COLORS.supply} strokeDasharray="3,2" />
-      <SvgText x={180} y={127} fontSize={8.5} fill={AMP_COLORS.supply} textAnchor="middle">changing magnetic field</SvgText>
+      <SvgText x={180} y={127} fontSize={8.5} fill={AMP_COLORS.supply} textAnchor="middle" fontFamily={fonts.barlowMedium}>changing magnetic field</SvgText>
     </Svg>
   );
 }

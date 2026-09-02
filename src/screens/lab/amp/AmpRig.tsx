@@ -11,7 +11,9 @@
  * Reduced motion (settings toggle OR OS): the loop is replaced by a STEP
  * control that moves the playhead a quarter cycle at a time.
  *
- * The rig is a CONCEPTUAL teaching display and says so on its face.
+ * The rig is a CONCEPTUAL teaching display and says so on its face. The
+ * output trace is the lab's green; RED appears on it ONLY where the trace is
+ * at/over the rail (clipping) — never for "loud" (amplitude colour standard).
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -23,28 +25,30 @@ import { AMP_COLORS } from './kit';
 
 const W = 340;
 const PANEL_H = 58;
+const Y_MAX = 1.15;
 
-function tracePoints(data: Float32Array, h: number, yMax = 1.15): string {
+/** y for a signal value on a panel of height h (same mapping everywhere). */
+const yFor = (v: number, h: number, yMax = Y_MAX) => h / 2 - (v / yMax) * (h / 2 - 4);
+
+function tracePoints(data: Float32Array, h: number, yMax = Y_MAX): string {
   const pts: string[] = [];
   const n = data.length;
   for (let i = 0; i < n; i++) {
     const x = (i / (n - 1)) * W;
-    const y = h / 2 - (data[i] / yMax) * (h / 2 - 4);
-    pts.push(`${x.toFixed(1)},${y.toFixed(1)}`);
+    pts.push(`${x.toFixed(1)},${yFor(data[i], h, yMax).toFixed(1)}`);
   }
   return pts.join(' ');
 }
 
 /** Contiguous |v| ≥ limit segments, drawn as the warning overlay. */
-function clippedSegments(data: Float32Array, limit: number, h: number, yMax = 1.15): string[] {
+function clippedSegments(data: Float32Array, limit: number, h: number, yMax = Y_MAX): string[] {
   const segs: string[] = [];
   let cur: string[] = [];
   const n = data.length;
   for (let i = 0; i < n; i++) {
     if (Math.abs(data[i]) >= limit * 0.999) {
       const x = (i / (n - 1)) * W;
-      const y = h / 2 - (data[i] / yMax) * (h / 2 - 4);
-      cur.push(`${x.toFixed(1)},${y.toFixed(1)}`);
+      cur.push(`${x.toFixed(1)},${yFor(data[i], h, yMax).toFixed(1)}`);
     } else if (cur.length) {
       segs.push(cur.join(' '));
       cur = [];
@@ -69,6 +73,18 @@ function WavePanel({
   );
 }
 
+/** A ± pair of horizontal reference lines (rails). */
+function RailPair({ at, stroke, dash, width = 1 }: { at: number; stroke: string; dash?: string; width?: number }) {
+  return (
+    <>
+      <Line x1={0} y1={yFor(at, PANEL_H)} x2={W} y2={yFor(at, PANEL_H)} stroke={stroke} strokeWidth={width} strokeDasharray={dash} />
+      <Line x1={0} y1={yFor(-at, PANEL_H)} x2={W} y2={yFor(-at, PANEL_H)} stroke={stroke} strokeWidth={width} strokeDasharray={dash} />
+    </>
+  );
+}
+
+export type RigTrace = { data: Float32Array; color: string; dash?: string; width?: number; label: string };
+
 export type AmpRigProps = {
   input?: Float32Array;
   /** Positive/negative device currents (gold solid / purple dashed). */
@@ -76,10 +92,14 @@ export type AmpRigProps = {
   output?: Float32Array;
   /** Output rail level (same units as output); at/above it draws warning red. */
   clipAt?: number;
+  /** Nominal (idle) rail level, drawn as a faint reference OUTSIDE `clipAt`
+   *  when the working rails have sagged below it — so "the rail lines moved
+   *  inward" is something the learner can actually see. */
+  nominalRailAt?: number;
   /** Extra overlay traces on the OUTPUT panel (carrier, PWM, recovered…). */
-  extraOut?: { data: Float32Array; color: string; dash?: string; width?: number; label: string }[];
+  extraOut?: RigTrace[];
   /** Extra overlay traces on the INPUT panel. */
-  extraIn?: { data: Float32Array; color: string; dash?: string; width?: number; label: string }[];
+  extraIn?: RigTrace[];
   /** 0..1 — conceptual supply-energy draw rate. */
   supplyFlow: number;
   /** 0..1 — relative heat (normalized teaching value). */
@@ -88,6 +108,9 @@ export type AmpRigProps = {
   efficiencyPct?: number | null;
   speaker?: boolean;
   faulted?: boolean;
+  /** Hide the supply / heat / efficiency / load row — for diagnosis pictures
+   *  where those meters would be decoys, not information. */
+  hideStatus?: boolean;
   /** One-sentence accessible summary of the current state. */
   a11ySummary: string;
   deviceTitle?: string;
@@ -118,16 +141,32 @@ export function AmpRig(p: AmpRigProps) {
   }, [motion, running, slow, phase]);
 
   const outLevel = p.output ? cycleRms(p.output) : 0;
-  const playX = motion
-    ? phase.interpolate({ inputRange: [0, 1], outputRange: [0, panelW] })
-    : new Animated.Value((stepPhase / 8) * panelW);
+  const playX = useMemo(
+    () => (motion ? phase.interpolate({ inputRange: [0, 1], outputRange: [0, panelW] }) : new Animated.Value((stepPhase / 8) * panelW)),
+    [motion, phase, panelW, stepPhase],
+  );
 
+  // Heat is NOT amplitude: blue (cool) → green → yellow → red (dangerously
+  // hot) is the kit's fault language, and the word beside it says the same.
+  const heatWord = p.heat < 0.35 ? 'cool' : p.heat < 0.6 ? 'warm' : p.heat < 0.8 ? 'hot' : 'DANGER';
   const heatColor =
     p.heat < 0.35 ? '#3f6fae' : p.heat < 0.6 ? '#3fae52' : p.heat < 0.8 ? '#e8c341' : '#ff5f4e';
 
+  const showNominal = p.clipAt != null && p.nominalRailAt != null && p.nominalRailAt > p.clipAt + 0.01;
+  const legendTraces = [...(p.extraIn ?? []), ...(p.extraOut ?? [])];
+
   return (
     <View style={styles.rig}>
-      <View onLayout={(e) => setPanelW(e.nativeEvent.layout.width)} style={{ gap: 6 }}>
+      {/* The waveform stack is ONE accessible graphic with the summary as its
+          label — a screen reader hears the state once, not three panels of
+          silent SVG plus a duplicate note. */}
+      <View
+        onLayout={(e) => setPanelW(e.nativeEvent.layout.width)}
+        style={{ gap: 6 }}
+        accessible
+        accessibilityRole="image"
+        accessibilityLabel={p.a11ySummary}
+      >
         {p.input ? (
           <WavePanel title="INPUT (signal)">
             <Polyline points={tracePoints(p.input, PANEL_H)} fill="none" stroke={AMP_COLORS.input} strokeWidth={1.4} />
@@ -144,12 +183,8 @@ export function AmpRig(p: AmpRigProps) {
         ) : null}
         {p.output ? (
           <WavePanel title={p.outputTitle ?? 'OUTPUT (to load)'}>
-            {p.clipAt != null ? (
-              <>
-                <Line x1={0} y1={PANEL_H / 2 - (p.clipAt / 1.15) * (PANEL_H / 2 - 4)} x2={W} y2={PANEL_H / 2 - (p.clipAt / 1.15) * (PANEL_H / 2 - 4)} stroke="rgba(255,75,58,0.45)" strokeDasharray="4,4" />
-                <Line x1={0} y1={PANEL_H / 2 + (p.clipAt / 1.15) * (PANEL_H / 2 - 4)} x2={W} y2={PANEL_H / 2 + (p.clipAt / 1.15) * (PANEL_H / 2 - 4)} stroke="rgba(255,75,58,0.45)" strokeDasharray="4,4" />
-              </>
-            ) : null}
+            {showNominal ? <RailPair at={p.nominalRailAt!} stroke="rgba(255,255,255,0.18)" dash="2,5" /> : null}
+            {p.clipAt != null ? <RailPair at={p.clipAt} stroke="rgba(255,75,58,0.45)" dash="4,4" /> : null}
             <Polyline points={tracePoints(p.output, PANEL_H)} fill="none" stroke={AMP_COLORS.output} strokeWidth={2} />
             {p.clipAt != null
               ? clippedSegments(p.output, p.clipAt, PANEL_H).map((s, i) => (
@@ -168,63 +203,66 @@ export function AmpRig(p: AmpRigProps) {
         />
       </View>
 
-      {p.extraOut?.length ? (
+      {legendTraces.length || showNominal || (p.clipAt != null && p.output) ? (
         <View style={styles.legendRow}>
-          {p.extraOut.map((t) => (
-            <Text key={t.label} style={[styles.legend, { color: t.color }]}>▬ {t.label}</Text>
+          {p.clipAt != null && p.output ? <Text style={[styles.legend, { color: colors.red }]}>┄ rail limit</Text> : null}
+          {showNominal ? <Text style={[styles.legend, { color: colors.textSub }]}>┄ nominal rail (idle)</Text> : null}
+          {legendTraces.map((t) => (
+            <Text key={t.label} style={[styles.legend, { color: t.color }]}>{t.dash ? '┄' : '▬'} {t.label}</Text>
           ))}
         </View>
       ) : null}
 
       {/* status row: supply energy · heat · efficiency · speaker */}
-      <View style={styles.statusRow}>
-        <View style={styles.statusCell}>
-          <Text style={styles.statusLabel}>SUPPLY ENERGY</Text>
-          <EnergyFlow flow={p.supplyFlow} motion={motion && running} />
-          <Text style={styles.statusSub}>relative draw</Text>
-        </View>
-        <View style={styles.statusCell}>
-          <Text style={styles.statusLabel}>HEAT</Text>
-          <View style={styles.barTrack}>
-            <View style={[styles.barFill, { width: `${Math.round(p.heat * 100)}%`, backgroundColor: heatColor }]} />
-          </View>
-          <Text style={styles.statusSub}>relative · normalized</Text>
-        </View>
-        {p.efficiencyPct != null ? (
+      {!p.hideStatus ? (
+        <View style={styles.statusRow}>
           <View style={styles.statusCell}>
-            <Text style={styles.statusLabel}>EFFICIENCY</Text>
-            <View style={styles.barTrack}>
-              <View style={[styles.barFill, { width: `${Math.round(Math.min(100, p.efficiencyPct))}%`, backgroundColor: colors.green }]} />
-            </View>
-            <Text style={styles.statusSub}>{Math.round(p.efficiencyPct)}% · illustrative</Text>
+            <Text style={styles.statusLabel}>SUPPLY ENERGY</Text>
+            <EnergyFlow flow={p.supplyFlow} motion={motion && running} />
+            <Text style={styles.statusSub}>relative draw</Text>
           </View>
-        ) : null}
-        {p.speaker ? <SpeakerGlyph level={outLevel} motion={motion && running} /> : null}
-      </View>
+          <View style={styles.statusCell} accessible accessibilityLabel={`Relative heat ${Math.round(p.heat * 100)} percent, ${heatWord}. Normalized teaching value, not a temperature.`}>
+            <Text style={styles.statusLabel}>HEAT</Text>
+            <View style={styles.barTrack}>
+              <View style={[styles.barFill, { width: `${Math.round(p.heat * 100)}%`, backgroundColor: heatColor }]} />
+            </View>
+            <Text style={styles.statusSub}>{heatWord} · relative</Text>
+          </View>
+          {p.efficiencyPct != null ? (
+            <View style={styles.statusCell} accessible accessibilityLabel={`Illustrative efficiency ${Math.round(p.efficiencyPct)} percent at this level.`}>
+              <Text style={styles.statusLabel}>EFFICIENCY</Text>
+              <View style={styles.barTrack}>
+                <View style={[styles.barFill, { width: `${Math.round(Math.min(100, Math.max(0, p.efficiencyPct)))}%`, backgroundColor: colors.green }]} />
+              </View>
+              <Text style={styles.statusSub}>{Math.round(p.efficiencyPct)}% · illustrative</Text>
+            </View>
+          ) : null}
+          {p.speaker ? <SpeakerGlyph level={outLevel} motion={motion && running} /> : null}
+        </View>
+      ) : null}
 
       {/* transport */}
       <View style={styles.transportRow}>
         {motion ? (
           <>
-            <Pressable style={styles.tBtn} onPress={() => setRunning(!running)} accessibilityRole="button" accessibilityLabel={running ? 'Pause animation' : 'Play animation'}>
+            <Pressable style={styles.tBtn} hitSlop={{ top: 6, bottom: 6 }} onPress={() => setRunning(!running)} accessibilityRole="button" accessibilityLabel={running ? 'Pause animation' : 'Play animation'}>
               <Text style={styles.tBtnText}>{running ? '⏸ PAUSE' : '▶ PLAY'}</Text>
             </Pressable>
-            <Pressable style={[styles.tBtn, slow && styles.tBtnOn]} onPress={() => setSlow(!slow)} accessibilityRole="button" accessibilityState={{ selected: slow }} accessibilityLabel="Slow motion">
+            <Pressable style={[styles.tBtn, slow && styles.tBtnOn]} hitSlop={{ top: 6, bottom: 6 }} onPress={() => setSlow(!slow)} accessibilityRole="button" accessibilityState={{ selected: slow }} accessibilityLabel="Slow motion">
               <Text style={[styles.tBtnText, slow && { color: colors.green }]}>SLOW</Text>
             </Pressable>
           </>
         ) : (
-          <Pressable style={styles.tBtn} onPress={() => setStepPhase((s) => (s + 2) % 9)} accessibilityRole="button" accessibilityLabel="Step through the cycle">
+          <Pressable style={styles.tBtn} hitSlop={{ top: 6, bottom: 6 }} onPress={() => setStepPhase((s) => (s + 2) % 9)} accessibilityRole="button" accessibilityLabel="Step through the cycle">
             <Text style={styles.tBtnText}>STEP ¼ CYCLE</Text>
           </Pressable>
         )}
-        {p.faulted ? <Text style={styles.faultTag}>⚠ FAULT</Text> : null}
+        {p.faulted ? <Text style={styles.faultTag} accessibilityRole="text">⚠ FAULT</Text> : null}
       </View>
 
-      <Text style={styles.conceptNote} accessibilityLabel={p.a11ySummary}>
+      <Text style={styles.conceptNote}>
         Conceptual visualization — not a component-level circuit simulation.
       </Text>
-      <Text style={styles.srOnly} accessibilityRole="text">{p.a11ySummary}</Text>
     </View>
   );
 }
@@ -247,7 +285,7 @@ function EnergyFlow({ flow, motion }: { flow: number; motion: boolean }) {
   }, [motion, flow, t]);
   const tx = t.interpolate({ inputRange: [0, 1], outputRange: [0, 14] });
   return (
-    <View style={styles.energyTrack} accessibilityLabel={`Supply energy draw ${Math.round(flow * 100)} percent, relative`}>
+    <View style={styles.energyTrack} accessible accessibilityLabel={`Supply energy draw ${Math.round(flow * 100)} percent, relative`}>
       <Animated.Text
         style={[styles.energyArrows, { opacity: 0.25 + flow * 0.75, transform: [{ translateX: motion && flow > 0.02 ? tx : 0 }] }]}
         numberOfLines={1}
@@ -273,7 +311,7 @@ function SpeakerGlyph({ level, motion }: { level: number; motion: boolean }) {
   }, [motion, level, s]);
   const scale = s.interpolate({ inputRange: [0, 1], outputRange: [1, 1 + Math.min(0.2, level * 0.35)] });
   return (
-    <View style={styles.statusCell} accessibilityLabel={`Loudspeaker output level ${Math.round(level * 141)} percent of full, relative`}>
+    <View style={styles.statusCell} accessible accessibilityLabel={`Loudspeaker output level ${Math.round(Math.min(1, level * Math.SQRT2) * 100)} percent of full, relative`}>
       <Text style={styles.statusLabel}>LOAD</Text>
       <Animated.View style={{ transform: [{ scale }], alignSelf: 'center' }}>
         <Svg width={34} height={30} viewBox="0 0 34 30">
@@ -289,14 +327,14 @@ function SpeakerGlyph({ level, motion }: { level: number; motion: boolean }) {
 const styles = StyleSheet.create({
   rig: { gap: 8, borderRadius: 14, borderWidth: 1, borderColor: colors.steelBorder, backgroundColor: '#0e0e10', padding: 10 },
   panel: { gap: 2 },
-  panelTitle: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1.2 },
+  panelTitle: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 1.2 },
   playhead: { position: 'absolute', top: 14, bottom: 0, left: 0, width: 1.5, backgroundColor: 'rgba(255,255,255,0.35)' },
   legendRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  legend: { fontFamily: fonts.barlowMedium, fontSize: 10.5 },
+  legend: { fontFamily: fonts.barlowMedium, fontSize: 11 },
   statusRow: { flexDirection: 'row', gap: 10, flexWrap: 'wrap' },
   statusCell: { flex: 1, minWidth: 72, gap: 3 },
-  statusLabel: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 9, letterSpacing: 1.2 },
-  statusSub: { color: colors.textMutedDeep, fontFamily: fonts.barlowRegular, fontSize: 9.5 },
+  statusLabel: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 1.2 },
+  statusSub: { color: colors.textMutedDeep, fontFamily: fonts.barlowRegular, fontSize: 10.5 },
   barTrack: { height: 10, borderRadius: 5, backgroundColor: '#0a0a0c', borderWidth: 1, borderColor: colors.hairline, overflow: 'hidden' },
   barFill: { height: '100%' },
   energyTrack: { height: 16, overflow: 'hidden', borderRadius: 4 },
@@ -309,6 +347,5 @@ const styles = StyleSheet.create({
   tBtnOn: { borderColor: colors.green },
   tBtnText: { color: colors.textSecondary, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1 },
   faultTag: { color: colors.red, fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, marginLeft: 'auto' },
-  conceptNote: { color: colors.textMutedDeep, fontFamily: fonts.barlowRegular, fontSize: 10 },
-  srOnly: { position: 'absolute', width: 1, height: 1, opacity: 0 },
+  conceptNote: { color: colors.textMutedDeep, fontFamily: fonts.barlowRegular, fontSize: 11 },
 });

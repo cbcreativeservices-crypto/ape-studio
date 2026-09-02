@@ -43,6 +43,10 @@ export function Mod3Bias() {
   const single = useMemo(() => simulateSingleDeviceBias(1, bias), [bias]);
   const cond = useMemo(() => conductionCurrent(angle), [angle]);
   const audio = useMemo(() => sineCycle(1), []);
+  const smallAudio = useMemo(() => sineCycle(0.5), []);
+  const noNeg = useMemo(() => new Float32Array(WAVE_N), []);
+  const singleDevices = useMemo(() => ({ iPos: single.iDev, iNeg: noNeg }), [single, noNeg]);
+  const condDevices = useMemo(() => ({ iPos: cond.iDev, iNeg: noNeg }), [cond, noNeg]);
   const pp = useMemo(() => simulateLinearClass('AB', 1, ppBias), [ppBias]);
 
   const taskSolved = !pp.crossoverNotch && pp.idleCurrent <= 0.08;
@@ -59,8 +63,8 @@ export function Mod3Bias() {
       <SectionTitle>1 · BIAS — THE OPERATING POINT</SectionTitle>
       <ControlSlider label="Bias (quiescent current)" value={bias} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setBias} />
       <AmpRig
-        input={sineCycle(0.5)}
-        devices={{ iPos: single.iDev, iNeg: new Float32Array(WAVE_N) }}
+        input={smallAudio}
+        devices={singleDevices}
         output={single.out}
         supplyFlow={Math.min(1, single.idleCurrent * 0.9 + 0.1)}
         heat={single.heat}
@@ -90,7 +94,7 @@ export function Mod3Bias() {
       />
       <AmpRig
         input={audio}
-        devices={{ iPos: cond.iDev, iNeg: new Float32Array(WAVE_N) }}
+        devices={condDevices}
         supplyFlow={angle / 360}
         heat={0.15 + (angle / 360) * 0.5}
         deviceTitle={`DEVICE CURRENT — conducts for ${angle}° of the cycle`}
@@ -115,6 +119,9 @@ export function Mod3Bias() {
         the other the <Text style={{ color: AMP_COLORS.neg }}>negative</Text>. Their currents combine across the load. Watch the
         crossing — where one stops and the other starts is where trouble lives.
       </Body>
+      {/* The task sits BEFORE the control it is done with — it used to be the
+          last line of the result card, under the display it described. */}
+      <Text style={styles.task}>YOUR TASK: raise the bias until the notch is gone — but stop before the excessive-heat region (idle current ≤ 8% relative).</Text>
       <ControlSlider label="Output-stage bias (overlap)" value={ppBias} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setPpBias} />
       <AmpRig
         input={audio}
@@ -141,7 +148,6 @@ export function Mod3Bias() {
               ? `The notch is gone, but idle current is ${Math.round(pp.idleCurrent * 100)}% relative — extra overlap now buys nothing except heat. Back the bias down until it just clears.`
               : 'Insufficient bias: each device waits for the signal to climb past its threshold, so the region around zero belongs to nobody. That gap is crossover distortion — audible at LOW levels, where it is a large fraction of the signal.'}
         </Body>
-        <Text style={styles.task}>YOUR TASK: remove the notch without entering the excessive-heat region (idle current ≤ 8% relative).</Text>
       </Card>
 
       <LearnMore>
@@ -158,5 +164,5 @@ export function Mod3Bias() {
 const styles = StyleSheet.create({
   regionTag: { fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 1.5 },
   note: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },
-  task: { color: colors.cyanBright, fontFamily: fonts.barlowMedium, fontSize: 12.5, marginTop: 4 },
+  task: { color: colors.cyanBright, fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18 },
 });

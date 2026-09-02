@@ -6,6 +6,7 @@
  *
  * ALL COPY NEW — owner review.
  */
+import type { FaultId } from './ampModel';
 
 export type AmpModuleId =
   | 'what' | 'devices' | 'bias' | 'classes' | 'classd'
@@ -165,8 +166,12 @@ export const MISCONCEPTIONS: Misconception[] = [
     detail: 'On bridged outputs and several amplifier designs, the “negative” terminal carries signal. Tying negatives together can short output stages. Follow the manufacturer’s wiring exactly.',
   },
   {
+    // NEW COPY — was "always produces exactly four times": with "always/exactly"
+    // in the statement the honest verdict is FALSE, yet the record said IT
+    // DEPENDS, so the myth review punished a correct reading. Statement now
+    // carries the claim people actually make; "it depends" is then fair.
     id: 'bridge-4x', moduleId: 'realworld', verdict: 'depends',
-    statement: 'Bridging always produces exactly four times the power.',
+    statement: 'Bridging gives you four times the power.',
     correction: 'Four times is the ideal ceiling — real bridging is limited by current, thermal, and supply capability.',
     detail: 'Bridging can double the voltage across the load, which implies ×4 power into the same impedance — IF each channel can drive what looks like half that load. Many amplifiers cannot, which is why bridged minimum-load ratings exist.',
   },
@@ -197,21 +202,28 @@ export type AmpCheck = {
   explain: string;
   /** Used by the final assessment pool. */
   scored?: boolean;
+  /** Options are an ordered scale (e.g. 16/8/4/2 Ω) — deal them in authored
+   *  order; every other check is presentation-shuffled by the UI. */
+  keepOrder?: boolean;
 };
 
+// NEW COPY (design pass 2026-09-02): distractors lengthened/qualified so the
+// correct option is no longer the longest by default (17 of 25 correct answers
+// also sat at index 1 — the UI now shuffles by presentation and judges by the
+// authored index). Question stems, correct options and explanations unchanged.
 export const AMP_CHECKS: AmpCheck[] = [
   // Module 1
   {
     id: 'w-energy', moduleId: 'what', scored: true,
     q: 'Where does the energy in an amplifier’s output actually come from?',
-    options: ['The input signal, enlarged', 'The power supply, controlled by the input', 'The loudspeaker’s magnet', 'The gain control'],
+    options: ['The input signal itself, made larger', 'The power supply, controlled by the input', 'The loudspeaker’s magnet, pulling current', 'The gain control, as it is turned up'],
     correct: 1,
     explain: 'The input signal only steers. The output stage delivers power-supply energy to the load in a form the input controls — that is what “amplify” means here.',
   },
   {
     id: 'w-lineout', moduleId: 'what', scored: true,
     q: 'Why can’t a line output drive a passive loudspeaker properly?',
-    options: ['Its voltage is the wrong shape', 'Line level is digital', 'It cannot supply the current and power the speaker needs', 'Speakers only accept amplified impedance'],
+    options: ['Its voltage has the wrong waveform shape for a cone', 'Line level is a digital format a speaker cannot decode', 'It cannot supply the current and power the speaker needs', 'Speakers only accept signals with amplified impedance'],
     correct: 2,
     explain: 'A line output is built to feed high-impedance inputs with tiny current. A loudspeaker needs real current and watts — the power amplifier’s job.',
   },
@@ -226,7 +238,7 @@ export const AMP_CHECKS: AmpCheck[] = [
   {
     id: 'd-active', moduleId: 'devices', scored: true,
     q: 'What makes a transistor an ACTIVE device in an amplifier?',
-    options: ['It stores energy in a magnetic field', 'A small control signal regulates a larger supply-fed current', 'It converts watts into volts', 'It isolates two circuits'],
+    options: ['It stores energy in a magnetic field between cycles', 'A small control signal regulates a larger supply-fed current', 'It converts watts directly into higher volts', 'It isolates two circuits from each other electrically'],
     correct: 1,
     explain: 'The transistor sits in the power path and lets the small base/gate signal control how much supply current flows to the load — control, not creation.',
   },
@@ -240,7 +252,7 @@ export const AMP_CHECKS: AmpCheck[] = [
   {
     id: 'd-70v', moduleId: 'devices',
     q: 'Why do 70 V / 100 V distributed audio systems use transformers at each speaker?',
-    options: ['To create extra watts locally', 'To step the distribution voltage down and set each speaker’s power tap', 'To convert the audio to RF', 'To ground the line'],
+    options: ['To create extra watts locally at each speaker', 'To step the distribution voltage down and set each speaker’s power tap', 'To convert the audio to radio frequency for the long run', 'To ground the line at every speaker position'],
     correct: 1,
     explain: 'The line runs at high voltage/low current so long runs lose little power; each speaker’s transformer taps down to the level that speaker should draw.',
   },
@@ -248,7 +260,7 @@ export const AMP_CHECKS: AmpCheck[] = [
   {
     id: 'b-notch', moduleId: 'bias', scored: true,
     q: 'Crossover distortion appears…',
-    options: ['At the waveform peaks', 'Around the zero crossing, during device handoff', 'Only at low frequencies', 'Only in Class A'],
+    options: ['At the waveform peaks, where the rails are', 'Around the zero crossing, during device handoff', 'Only at low frequencies, below about 100 Hz', 'Only in Class A output stages'],
     correct: 1,
     explain: 'The notch happens where one output device stops conducting before the other fully takes over — right at zero crossing. Bias overlap is the cure, at the price of idle current.',
   },
@@ -262,7 +274,7 @@ export const AMP_CHECKS: AmpCheck[] = [
   {
     id: 'b-bias', moduleId: 'bias',
     q: 'Raising output-stage bias past the point where the crossover notch disappears mainly…',
-    options: ['Increases idle current and heat', 'Raises maximum power', 'Lowers voltage gain', 'Filters the output'],
+    options: ['Increases idle current and heat', 'Raises the maximum output power', 'Lowers the voltage gain of the stage', 'Filters the switching out of the output'],
     correct: 0,
     explain: 'Once the handoff is clean, extra overlap buys little — it just burns more idle current and makes more heat. That is the AB trade you tuned.',
   },
@@ -270,21 +282,21 @@ export const AMP_CHECKS: AmpCheck[] = [
   {
     id: 'c-idle', moduleId: 'classes', scored: true,
     q: 'With no input signal, a Class A output stage…',
-    options: ['Draws almost nothing', 'Still draws substantial current and makes heat', 'Switches off', 'Oscillates'],
+    options: ['Draws almost nothing from the supply', 'Still draws substantial current and makes heat', 'Switches its output device off completely', 'Oscillates at its tuned frequency'],
     correct: 1,
     explain: 'Class A holds its device in continuous conduction, so quiescent current — and dissipation — flow even in silence. That is where its efficiency goes.',
   },
   {
     id: 'c-classc', moduleId: 'classes', scored: true,
     q: 'Why is Class C unsuitable for ordinary full-range audio?',
-    options: ['It is too efficient', 'Its short conduction pulses need a tuned circuit to recover one frequency', 'It requires vacuum tubes', 'Its gain is too low'],
+    options: ['It is too efficient to sound natural', 'Its short conduction pulses need a tuned circuit to recover one frequency', 'It requires vacuum tubes, which are now rare', 'Its voltage gain is too low for a loudspeaker'],
     correct: 1,
     explain: 'Class C conducts in brief pulses and relies on a resonant tank ringing at ONE tuned frequency. Music is broadband, so the recovery trick does not apply — Class C lives in RF.',
   },
   {
     id: 'c-eff', moduleId: 'classes',
     q: 'The 78.5% often quoted for Class B is…',
-    options: ['A guaranteed operating figure', 'The theoretical push-pull maximum at full output', 'Its efficiency at any level', 'A measurement standard'],
+    options: ['A guaranteed figure for any Class B amplifier', 'The theoretical push-pull maximum at full output', 'Its efficiency at any output level', 'A measurement standard set by regulators'],
     correct: 1,
     explain: 'It is the ideal ceiling at full drive. Real amplifiers sit below it — and every class is much less efficient at low output levels.',
   },
@@ -292,21 +304,21 @@ export const AMP_CHECKS: AmpCheck[] = [
   {
     id: 'cd-pwm', moduleId: 'classd', scored: true,
     q: 'In the PWM model, what does the comparator compare?',
-    options: ['Two audio channels', 'The audio waveform against a high-frequency carrier', 'Voltage against current', 'The output against the rails'],
+    options: ['The left and right audio channels against each other', 'The audio waveform against a high-frequency carrier', 'Output voltage against output current', 'The output waveform against the supply rails'],
     correct: 1,
     explain: 'Audio above the triangle carrier → switch high; below → switch low. The audio ends up encoded in the pulse WIDTHS, ready to be recovered by the filter.',
   },
   {
     id: 'cd-filter', moduleId: 'classd', scored: true,
     q: 'What does the Class D output filter do?',
-    options: ['Adds the missing bass', 'Averages the switching waveform back into audio', 'Converts digital to analog', 'Boosts efficiency to 100%'],
+    options: ['Adds back the bass the modulator removed', 'Averages the switching waveform back into audio', 'Converts the digital code back to analog', 'Boosts the efficiency to a full 100%'],
     correct: 1,
     explain: 'The low-pass filter keeps the slow-moving average — the audio — and rejects the fast switching. What reaches the speaker is the reconstructed waveform.',
   },
   {
     id: 'cd-digital', moduleId: 'classd',
     q: 'Is a Class D amplifier necessarily digital?',
-    options: ['Yes — D stands for digital', 'No — it is a switching topology; classic designs are fully analog', 'Yes — PWM is a digital format', 'Only above 1 kHz'],
+    options: ['Yes — the D in Class D stands for digital', 'No — it is a switching topology; classic designs are fully analog', 'Yes — pulse-width modulation is a digital format', 'Only when the carrier runs above 1 kHz'],
     correct: 1,
     explain: 'The letter D just followed C. Comparing analog audio to an analog triangle is not sampling or quantization — it is analog switching control.',
   },
@@ -314,37 +326,37 @@ export const AMP_CHECKS: AmpCheck[] = [
   {
     id: 's-rails', moduleId: 'supply', scored: true,
     q: 'An amplifier clips when…',
-    options: ['The input is digital', 'The requested output exceeds what the supply rails can deliver', 'The speaker is too sensitive', 'The gain knob is past 12 o’clock'],
+    options: ['The input signal is digital rather than analog', 'The requested output exceeds what the supply rails can deliver', 'The loudspeaker is too sensitive for the amplifier', 'The gain knob is turned past 12 o’clock'],
     correct: 1,
     explain: 'The output can never swing past its rails. Ask for more voltage than the rails hold and the peaks flatten — that flat top IS the rails.',
   },
   {
     id: 's-sag', moduleId: 'supply',
     q: 'Under heavy load, the rail voltage of an unregulated supply typically…',
-    options: ['Rises', 'Sags, lowering the clip point', 'Inverts', 'Becomes AC'],
+    options: ['Rises, raising the clip point', 'Sags, lowering the clip point', 'Inverts its polarity', 'Turns from DC back into AC'],
     correct: 1,
     explain: 'Sustained current draw pulls the reservoir down, so the amplifier clips earlier than its idle rails suggest — one reason continuous ratings differ from burst ratings.',
   },
   {
     id: 's-safety', moduleId: 'supply', scored: true,
     q: 'Why is an unplugged power amplifier still potentially dangerous inside?',
-    options: ['Residual RF', 'Capacitors can hold lethal charge after power is removed', 'The transformer keeps generating', 'It is not — unplugged is safe'],
+    options: ['Residual radio-frequency energy in the chassis', 'Capacitors can hold lethal charge after power is removed', 'The transformer keeps generating for several minutes', 'It is not — once unplugged it is safe to open'],
     correct: 1,
     explain: 'Reservoir capacitors store real energy and can retain dangerous voltage long after disconnection. Servicing is for qualified technicians.',
   },
   // Module 7
   {
-    id: 'r-parallel', moduleId: 'realworld', scored: true,
+    id: 'r-parallel', moduleId: 'realworld', scored: true, keepOrder: true,
     q: 'Two 8 Ω speakers wired in parallel present…',
     options: ['16 Ω', '8 Ω', '4 Ω', '2 Ω'],
     correct: 2,
     explain: '1/Z = 1/8 + 1/8 → 4 Ω. Parallel loads always drop below the smallest branch — and demand more current from the amplifier.',
   },
   {
-    id: 'r-bridge', moduleId: 'realworld', scored: true,
+    id: 'r-bridge', moduleId: 'realworld', scored: true, keepOrder: true,
     q: 'Bridged into an 8 Ω load, each amplifier channel effectively works into about…',
-    options: ['16 Ω', '8 Ω', '4 Ω', '2 Ω'],
-    correct: 2,
+    options: ['2 Ω', '4 Ω', '8 Ω', '16 Ω'],
+    correct: 1,
     explain: 'The channels drive opposite ends of the load, so each sees roughly half the impedance — 4 Ω here. That is why bridged minimum-load ratings are stricter.',
   },
   {
@@ -357,7 +369,7 @@ export const AMP_CHECKS: AmpCheck[] = [
   {
     id: 'r-cable', moduleId: 'realworld',
     q: 'Why is an instrument cable wrong for speaker connections?',
-    options: ['Wrong connector shape', 'Its thin conductor and shield are not built for speaker current', 'It only passes digital audio', 'It reverses polarity'],
+    options: ['The connector is the wrong shape for a speaker jack', 'Its thin conductor and shield are not built for speaker current', 'It only passes digital audio signals', 'It reverses the polarity of the signal'],
     correct: 1,
     explain: 'Instrument cable is shielded, high-capacitance, thin-core signal wire. Speaker runs need low-resistance conductors sized for amps of current.',
   },
@@ -365,21 +377,21 @@ export const AMP_CHECKS: AmpCheck[] = [
   {
     id: 'a-sens', moduleId: 'apply', scored: true,
     q: 'Input sensitivity is…',
-    options: ['The amplifier’s gain in dB', 'The input level that drives the amplifier to a specified output', 'The noise floor', 'The minimum load'],
+    options: ['The amplifier’s voltage gain expressed in dB', 'The input level that drives the amplifier to a specified output', 'The amplifier’s noise floor measured at its input', 'The minimum load impedance the input will accept'],
     correct: 1,
     explain: 'Sensitivity says “this much input produces that specified output.” Gain is the ratio between them — related, but not the same specification.',
   },
   {
     id: 'a-damping', moduleId: 'apply', scored: true,
     q: 'Damping factor is the ratio of…',
-    options: ['Output power to input power', 'Load impedance to amplifier output impedance', 'Voltage to current', 'Peak to RMS'],
+    options: ['Output power to input power', 'Load impedance to amplifier output impedance', 'Output voltage to output current', 'Peak voltage to RMS voltage'],
     correct: 1,
     explain: 'DF = Zload / Zout(amp). It varies with frequency, and speaker-cable resistance sits in series — one number is not a universal sound-quality score.',
   },
   {
     id: 'a-thermal', moduleId: 'apply', scored: true,
     q: 'An amplifier keeps dropping into thermal protection at a show. Best FIRST response?',
-    options: ['Keep resetting it', 'Check ventilation, load, and drive level, then correct the cause', 'Bridge it for headroom', 'Lower the speaker impedance'],
+    options: ['Keep resetting it until the show is over', 'Check ventilation, load, and drive level, then correct the cause', 'Bridge it to gain some headroom', 'Lower the speaker impedance to ease the load'],
     correct: 1,
     explain: 'Protection is telling you something: blocked airflow, too low a load, or sustained clipping. Resetting without fixing the cause invites failure.',
   },
@@ -542,14 +554,18 @@ export type WaveKind =
   | 'clean' | 'voltage-clip' | 'crossover' | 'current-limit' | 'sag'
   | 'classd-raw' | 'classd-filtered' | 'protect';
 
-export const WAVE_KINDS: { key: WaveKind; label: string; evidence: string }[] = [
-  { key: 'clean', label: 'Clean output', evidence: 'A smooth sine that follows the input with room below the rail lines — nothing flattened, nothing missing at zero.' },
+/** `alsoAccept`: readings that are equally correct for this picture. A filtered
+ *  Class D output IS a clean output at this zoom (the evidence text says so),
+ *  so neither answer may be scored wrong against the other — an item that
+ *  cannot be distinguished must not count against the learner. */
+export const WAVE_KINDS: { key: WaveKind; label: string; evidence: string; alsoAccept?: WaveKind[] }[] = [
+  { key: 'clean', label: 'Clean output', evidence: 'A smooth sine that follows the input with room below the rail lines — nothing flattened, nothing missing at zero.', alsoAccept: ['classd-filtered'] },
   { key: 'voltage-clip', label: 'Voltage clipping', evidence: 'Flat tops sitting EXACTLY on the rail lines. The supply ran out of volts.' },
   { key: 'crossover', label: 'Crossover distortion', evidence: 'A flat step or kink right at the zero crossing; the peaks are untouched. Output-stage handoff, not the rails.' },
   { key: 'current-limit', label: 'Current limiting', evidence: 'Flat tops BELOW the rail lines with voltage to spare above them. The output stage would not pass more current.' },
   { key: 'sag', label: 'Supply sag', evidence: 'Clipping that begins below the nominal rails because the rails themselves drooped under sustained load — the rail lines have moved inward.' },
   { key: 'classd-raw', label: 'Class D switching (before the filter)', evidence: 'Only two levels, pulses of changing width — the audio is in the widths, not the height.' },
-  { key: 'classd-filtered', label: 'Normal filtered Class D output', evidence: 'A clean audio waveform — the switching has been averaged away. Indistinguishable from any clean output at this zoom, which is the point.' },
+  { key: 'classd-filtered', label: 'Normal filtered Class D output', evidence: 'A clean audio waveform — the switching has been averaged away. Indistinguishable from any clean output at this zoom, which is the point.', alsoAccept: ['clean'] },
   { key: 'protect', label: 'Protection / mute', evidence: 'A flat line at zero with input still present: the output relay has opened. Nothing is reaching the load.' },
 ];
 
@@ -634,7 +650,7 @@ export const MYTH_REVIEW_IDS = [
 
 /* ── protection-state copy (Part 3 §7) ──────────────────────────────────── */
 
-export const FAULT_COPY: Record<string, { title: string; detected: string; action: string; check: string }> = {
+export const FAULT_COPY: Record<FaultId, { title: string; detected: string; action: string; check: string }> = {
   'short': {
     title: 'SHORT CIRCUIT',
     detected: 'The output sees a near-zero-ohm path.',

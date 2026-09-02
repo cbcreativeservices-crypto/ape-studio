@@ -5,7 +5,7 @@
  */
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Svg, { Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
 import { simulateClassD } from '../../../../features/amp/ampModel';
 import { MISCONCEPTIONS } from '../../../../features/amp/ampContent';
@@ -23,11 +23,11 @@ function SignalPath() {
         const x = x0 + i * (bw + gap);
         const last = i === 4;
         return (
-          <Svg key={b}>
+          <G key={b}>
             <Rect x={x} y={y} width={bw} height={bh} rx={5} fill={last ? '#1a2a1e' : i === 2 ? '#1f1a0e' : '#151518'} stroke={last ? AMP_COLORS.output : i === 2 ? AMP_COLORS.supply : colors.steelBorder} />
             <SvgText x={x + bw / 2} y={y + 19} fontSize={8.5} fill={colors.textSecondary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{b}</SvgText>
             {i < 4 ? <Line x1={x + bw + 1} y1={y + bh / 2} x2={x + bw + gap - 1} y2={y + bh / 2} stroke={i === 0 ? AMP_COLORS.input : i >= 3 ? AMP_COLORS.output : AMP_COLORS.supply} strokeWidth={1.5} /> : null}
-          </Svg>
+          </G>
         );
       })}
     </Svg>
@@ -51,19 +51,19 @@ function SwitchingStage({ dutyAtPeak }: { dutyAtPeak: number }) {
       <SvgText x={60} y={117} fontSize={9} fill={AMP_COLORS.neg} textAnchor="middle" fontFamily={fonts.oswaldMedium}>SIDE</SvgText>
       {/* switching node */}
       <Line x1={80} y1={75} x2={150} y2={75} stroke={colors.textSecondary} strokeWidth={1.5} />
-      <SvgText x={115} y={68} fontSize={9} fill={colors.textMuted} textAnchor="middle">switching node</SvgText>
+      <SvgText x={115} y={68} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.barlowMedium}>switching node</SvgText>
       {/* filter: inductor + capacitor */}
       <Path d="M150 75 a6 6 0 0 1 12 0 a6 6 0 0 1 12 0 a6 6 0 0 1 12 0 a6 6 0 0 1 12 0" fill="none" stroke={colors.textSecondary} strokeWidth={1.6} />
       <Line x1={198} y1={75} x2={240} y2={75} stroke={colors.textSecondary} strokeWidth={1.5} />
       <Line x1={220} y1={75} x2={220} y2={100} stroke={colors.textSecondary} strokeWidth={1.5} />
       <Line x1={210} y1={100} x2={230} y2={100} stroke={colors.textSecondary} strokeWidth={2} />
       <Line x1={210} y1={106} x2={230} y2={106} stroke={colors.textSecondary} strokeWidth={2} />
-      <SvgText x={174} y={98} fontSize={9} fill={colors.textMuted} textAnchor="middle">L  C  low-pass filter</SvgText>
+      <SvgText x={174} y={98} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.barlowMedium}>L  C  low-pass filter</SvgText>
       {/* load */}
       <Rect x={240} y={60} width={70} height={30} rx={5} fill="#1a2a1e" stroke={AMP_COLORS.output} />
       <SvgText x={275} y={79} fontSize={9.5} fill={AMP_COLORS.output} textAnchor="middle" fontFamily={fonts.oswaldMedium}>LOAD</SvgText>
-      <SvgText x={275} y={108} fontSize={9} fill={colors.textMuted} textAnchor="middle">high side on ≈{Math.round(dutyAtPeak * 100)}%</SvgText>
-      <SvgText x={275} y={121} fontSize={9} fill={colors.textMuted} textAnchor="middle">of each period at the peak</SvgText>
+      <SvgText x={275} y={108} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.barlowMedium}>high side on ≈{Math.round(dutyAtPeak * 100)}%</SvgText>
+      <SvgText x={275} y={121} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.barlowMedium}>of each period at the peak</SvgText>
     </Svg>
   );
 }
@@ -168,11 +168,12 @@ export function Mod5ClassD() {
       <Card>
         <HonestyBadge label="Illustrative loss breakdown at this level — not measured" />
         <Text style={styles.effBig}>{Math.round(sim.efficiencyPct)}% to the load · {Math.round(lossW)}% lost as heat</Text>
+        <Text style={styles.note}>Drag the input level down and watch the split move: at low output the fixed losses are most of what the supply pays for.</Text>
         {LOSSES.map((l) => (
           <View key={l.label} style={styles.lossRow}>
             <Text style={styles.lossLabel}>{l.label}</Text>
             <View style={styles.lossTrack}>
-              <View style={[styles.lossFill, { width: `${Math.round(l.share * lossW * 2.5)}%` }]} />
+              <View style={[styles.lossFill, { width: `${Math.min(100, Math.round(l.share * lossW * 2.5))}%` }]} />
             </View>
             <Text style={styles.lossPct}>{(l.share * lossW).toFixed(1)}%</Text>
           </View>

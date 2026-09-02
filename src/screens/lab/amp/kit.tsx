@@ -12,12 +12,12 @@
  *   supply energy amber · dotted arrows
  *   fault/unsafe  red   · banner + text label
  */
-import { useCallback, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, LayoutChangeEvent, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import type { AmpCheck, Misconception } from '../../../features/amp/ampContent';
 import { FAULT_COPY } from '../../../features/amp/ampContent';
-import type { FaultId } from '../../../features/amp/ampModel';
+import { hashSeed, shuffledIndices, type FaultId } from '../../../features/amp/ampModel';
 
 export const AMP_COLORS = {
   input: colors.cyan,
@@ -60,7 +60,7 @@ export function LearnMore({ title = 'LEARN MORE', children }: { title?: string; 
       >
         <Text style={styles.learnMoreTitle}>{open ? '▾' : '▸'} {title}</Text>
       </Pressable>
-      {open ? <View style={{ gap: 8 }}>{children}</View> : null}
+      {open ? <View style={{ gap: 8, paddingBottom: 8 }}>{children}</View> : null}
     </View>
   );
 }
@@ -148,12 +148,22 @@ export function ControlSlider({
     },
     [min, max, step, onChange],
   );
+  // The PanResponder is created ONCE; its handlers must read the CURRENT
+  // `set`/`disabled` through refs — the first render's closure would otherwise
+  // drive every later drag with a stale onChange/min/max/step (callers pass
+  // inline arrows that close over their own state) and a stale disabled flag.
+  const setRef = useRef(set);
+  setRef.current = set;
+  const disabledRef = useRef(!!disabled);
+  disabledRef.current = !!disabled;
   const pan = useRef(
     PanResponder.create({
-      onStartShouldSetPanResponder: () => !disabled,
-      onMoveShouldSetPanResponder: (_e, g) => !disabled && Math.abs(g.dx) > Math.abs(g.dy),
-      onPanResponderGrant: (e) => set(e.nativeEvent.locationX),
-      onPanResponderMove: (e) => set(e.nativeEvent.locationX),
+      onStartShouldSetPanResponder: () => !disabledRef.current,
+      onMoveShouldSetPanResponder: (_e, g) => !disabledRef.current && Math.abs(g.dx) > Math.abs(g.dy),
+      // Once a horizontal drag is ours, the parent ScrollView must not take it back.
+      onPanResponderTerminationRequest: () => false,
+      onPanResponderGrant: (e) => setRef.current(e.nativeEvent.locationX),
+      onPanResponderMove: (e) => setRef.current(e.nativeEvent.locationX),
     }),
   ).current;
   const frac = (value - min) / (max - min || 1);
@@ -218,35 +228,54 @@ export function SegRow<T extends string | number>({
 
 /* ── knowledge check (instructional: explain, allow retry) ──────────────── */
 
+/**
+ * Options are dealt in a presentation order (stable for this mount) and
+ * judged by AUTHORED index. Only the FIRST pick is reported to `onAnswered`
+ * (that is the mastery record); later picks are the learner applying the
+ * explanation — which is why a wrong pick shows the explanation but does NOT
+ * light up the correct option (it used to, then asked you to "pick again").
+ */
 export function CheckCard({
   check, onAnswered,
 }: {
   check: AmpCheck;
   onAnswered?: (correct: boolean) => void;
 }) {
-  const [picked, setPicked] = useState<number | null>(null);
+  const mountSeed = useRef(Math.floor(Math.random() * 0x7fffffff)).current;
+  const order = useMemo(
+    () => (check.keepOrder ? check.options.map((_, i) => i) : shuffledIndices(check.options.length, hashSeed(check.id) ^ mountSeed)),
+    [check.id, check.keepOrder, check.options.length, mountSeed],
+  );
+  const [picked, setPicked] = useState<number | null>(null); // authored index
+  const [attempts, setAttempts] = useState(0);
+  const reported = useRef(false);
   const answered = picked != null;
   const correct = picked === check.correct;
   return (
     <Card tone="accent">
       <Text style={styles.checkQ}>{check.q}</Text>
       <View style={{ gap: 6 }}>
-        {check.options.map((o, i) => {
-          const isRight = answered && i === check.correct;
+        {order.map((i) => {
+          const o = check.options[i];
+          const isRight = answered && correct && i === check.correct;
           const isWrongPick = answered && picked === i && !correct;
           return (
             <Pressable
               key={i}
               disabled={answered && correct}
               onPress={() => {
+                const ok = i === check.correct;
                 setPicked(i);
-                onAnswered?.(i === check.correct);
-                AccessibilityInfo.announceForAccessibility?.(
-                  i === check.correct ? 'Correct.' : 'Not quite — see the explanation.',
-                );
+                setAttempts((a) => a + 1);
+                if (!reported.current) {
+                  reported.current = true;
+                  onAnswered?.(ok);
+                }
+                AccessibilityInfo.announceForAccessibility?.(ok ? 'Correct.' : 'Not quite — read the explanation, then choose again.');
               }}
               style={[styles.checkOpt, isRight && styles.checkRight, isWrongPick && styles.checkWrong]}
               accessibilityRole="button"
+              accessibilityState={{ disabled: answered && correct, selected: picked === i }}
               accessibilityLabel={o}
             >
               <Text style={[styles.checkOptText, isRight && { color: colors.green }, isWrongPick && { color: colors.red }]}>
@@ -258,7 +287,9 @@ export function CheckCard({
       </View>
       {answered ? (
         <Text style={[styles.checkExplain, { color: correct ? colors.green : colors.gold }]}>
-          {correct ? '✓ ' : ''}{check.explain}{!correct ? ' — pick again with that in mind.' : ''}
+          {correct
+            ? `✓ ${check.explain}${attempts > 1 ? ' (Got there on the retry — the first pick is what the summary records.)' : ''}`
+            : `✗ Not quite. ${check.explain} — now choose the option that fits.`}
         </Text>
       ) : null}
     </Card>
@@ -272,9 +303,11 @@ const styles = StyleSheet.create({
   body: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19 },
   card: { borderRadius: 12, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#131315', padding: 12, gap: 6 },
   cardAccent: { borderColor: colors.steelBorder, backgroundColor: '#121216' },
-  honesty: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1.5 },
-  learnMore: { borderRadius: 10, borderWidth: 1, borderColor: colors.hairlineDim, padding: 10, gap: 6, backgroundColor: '#101013' },
-  learnMoreHead: { minHeight: 32, justifyContent: 'center' },
+  // Honesty labels CARRY MEANING (illustrative / relative / conceptual) — they
+  // sit at the chrome floor's top, not below it.
+  honesty: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1.5 },
+  learnMore: { borderRadius: 10, borderWidth: 1, borderColor: colors.hairlineDim, paddingHorizontal: 10, paddingVertical: 2, gap: 4, backgroundColor: '#101013' },
+  learnMoreHead: { minHeight: 44, justifyContent: 'center' }, // 44pt target
   learnMoreTitle: { color: colors.cyanBright, fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 1.5 },
   formulaTitle: { color: colors.textPrimary, fontFamily: fonts.oswaldMedium, fontSize: 13 },
   formula: { color: colors.cyanBright, fontFamily: fonts.barlowMedium, fontSize: 14.5, lineHeight: 21 },
