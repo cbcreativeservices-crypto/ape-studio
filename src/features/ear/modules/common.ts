@@ -99,6 +99,37 @@ export function drumPattern(bars: number, rng: Rng): Mono {
   return out;
 }
 
+/**
+ * Transient-rich "pluck" pattern (spec M8/M9 source): sharp-attack harmonic
+ * bursts with silence between them so echoes and tails stay audible.
+ * `tailSec` pads silence at the end (reverb/delay room).
+ */
+export function pluckPattern(rng: Rng, tailSec = 0.9): Mono {
+  const out = new Float32Array(Math.round((1.5 + tailSec) * SR));
+  const plucks = [
+    { at: 0.05, f0: 220 * Math.pow(2, rng() * 0.6) },
+    { at: 0.8, f0: 165 * Math.pow(2, rng() * 0.6) },
+  ];
+  for (const p of plucks) {
+    const n0 = Math.round(p.at * SR);
+    const len = Math.round(0.4 * SR);
+    for (let i = 0; i < len && n0 + i < out.length; i++) {
+      const t = i / SR;
+      const env = Math.exp(-t * 9) * (i < 24 ? i / 24 : 1);
+      out[n0 + i] +=
+        (Math.sin(2 * Math.PI * p.f0 * t) +
+          0.5 * Math.sin(2 * Math.PI * p.f0 * 2 * t) +
+          0.25 * Math.sin(2 * Math.PI * p.f0 * 3 * t)) *
+        env * 0.5;
+    }
+    // The pick "click" that marks each onset.
+    for (let i = 0; i < 60 && n0 + i < out.length; i++) {
+      out[n0 + i] += (rng() * 2 - 1) * Math.exp(-i / 14) * 0.35;
+    }
+  }
+  return out;
+}
+
 /** 99th-percentile |sample| — the honest "peaks" reference for M14. */
 export function p99(x: Mono): number {
   const mags = Array.from(x, Math.abs).sort((a, b) => a - b);

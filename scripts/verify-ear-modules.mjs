@@ -6,6 +6,7 @@ import {
 } from '../src/features/ear/earDsp.ts';
 import { M1_FREQUENCY, M2_EQ, M3_BAND, M4_NOISE, BANDS } from '../src/features/ear/modules/tone.ts';
 import { M7_LOUDNESS, M10_COMPRESSION, M14_CLIPPING } from '../src/features/ear/modules/dynamics.ts';
+import { M8_DELAY, M9_REVERB, M12_POLARITY, M13_COMB } from '../src/features/ear/modules/time.ts';
 import { applyTrial, emptyModuleProgress } from '../src/features/ear/earProgress.ts';
 
 let pass = 0, fail = 0;
@@ -254,6 +255,132 @@ console.log('— M14 Clipping: severity orders the flattened-peak density; ABX h
   }
   ok(`clipping severity orders peak flattening (${orderedOk}/${n})`, orderedOk === n);
   ok(`ABX X really is a copy of the declared clip (${abxOk}/${n})`, abxOk === n);
+}
+
+console.log('— M8 Delay: the declared echo really lands at the declared time —');
+{
+  // Autocorrelation-free check: the "which delay" chips trial names N ms; the
+  // clip minus the dry pluck alignment is hard without the dry, so verify by
+  // construction: the echo lifts energy at (onset + delay) vs a dry render.
+  let good = 0, total = 0;
+  for (const seed of SEEDS.slice(0, 8)) {
+    for (let level = 1; level <= 4; level++) {
+      const t = M8_DELAY.makeTrial(level, seed + 17 * level);
+      if (!t.question.startsWith('About how long')) continue;
+      total++;
+      const stated = parseInt(t.answers[t.correct].label, 10);
+      const x = mono(t.clips[0].buf);
+      // Normalized autocorrelation peak at the stated lag vs neighbours.
+      const lag = Math.round((stated / 1000) * 48000);
+      const score = (L) => {
+        let s = 0;
+        for (let i = 0; i + L < x.length; i += 3) s += x[i] * x[i + L];
+        return s;
+      };
+      const at = score(lag);
+      const off = Math.max(score(Math.round(lag * 0.62)), score(Math.round(lag * 1.43)));
+      if (at > off) good++;
+      else console.log(`    seed ${seed} L${level}: stated ${stated}ms, autocorr at=${at.toExponential(2)} off=${off.toExponential(2)}`);
+    }
+  }
+  ok(`delay-time trials honest (${good}/${total})`, good === total && total > 0);
+}
+
+console.log('— M13 Comb: the declared combed clip has the notches —');
+{
+  let good = 0, total = 0;
+  for (const seed of SEEDS.slice(0, 8)) {
+    for (let level = 1; level <= 3; level++) {
+      const t = M13_COMB.makeTrial(level, seed + 29 * level);
+      total++;
+      const m = /copy ([\d.]+) ms/.exec(t.reveal);
+      const d = parseFloat(m[1]);
+      // Construction proof, immune to sparse spectra: the combed clip must be
+      // (up to one gain) dry + g·dry[n−dSamp]. Least-squares fit; scan ±3
+      // samples because the reveal rounds the delay to 0.1 ms. A plain
+      // combed≈s·dry fit must be far worse — that's the comb factor itself.
+      const g = Math.pow(10, [0, -3, -6, -9][Math.min(level, 4) - 1] / 20);
+      const combIdx = t.correct;
+      const combed = mono(t.clips[combIdx].buf);
+      const other = mono(t.clips[1 - combIdx].buf);
+      const fitResid = (dd) => {
+        // Skip 20 ms at each edge: fadeEdges ramps each clip separately, so
+        // the linear comb model holds only in the interior.
+        let cy = 0, yy = 0, cc = 0;
+        const from = Math.max(dd, 960);
+        for (let i = from; i < combed.length - 960; i++) {
+          const y = dd < 0 ? other[i] : other[i] + g * other[i - dd];
+          cy += combed[i] * y;
+          yy += y * y;
+          cc += combed[i] * combed[i];
+        }
+        const s = cy / yy;
+        return Math.max(0, cc - 2 * s * cy + s * s * yy) / cc;
+      };
+      const dSamp0 = Math.round((d / 1000) * 48000);
+      let best = Infinity;
+      for (let dd = dSamp0 - 3; dd <= dSamp0 + 3; dd++) best = Math.min(best, fitResid(dd));
+      const plain = fitResid(-1);
+      if (best < 1e-3 && plain > best * 20) good++;
+      else console.log(`    seed ${seed} L${level}: ${d}ms comb-fit resid ${best.toExponential(1)}, plain ${plain.toExponential(1)}`);
+    }
+  }
+  ok(`comb trials honest (${good}/${total})`, good === total && total > 0);
+}
+
+console.log('— M12 Polarity: flipped sums lose level (L1) or low end (L2+) —');
+{
+  let l1ok = 0, l1n = 0, lfOk = 0, lfN = 0;
+  for (const seed of SEEDS.slice(0, 10)) {
+    const t1 = M12_POLARITY.makeTrial(1, seed + 41);
+    if (t1.question.includes('fuller')) {
+      l1n++;
+      const full = rmsDb(mono(t1.clips[t1.correct].buf));
+      const cancelled = rmsDb(mono(t1.clips[1 - t1.correct].buf));
+      if (full - cancelled > 30) l1ok++;
+      else console.log(`    L1 seed ${seed}: full ${full.toFixed(1)} vs cancelled ${cancelled.toFixed(1)}`);
+    }
+    const t2 = M12_POLARITY.makeTrial(2, seed + 43);
+    if (t2.question.includes('fuller')) {
+      lfN++;
+      const fullLf = bandDb(mono(t2.clips[t2.correct].buf), 80, 1.5);
+      const flipLf = bandDb(mono(t2.clips[1 - t2.correct].buf), 80, 1.5);
+      if (fullLf - flipLf > 6) lfOk++;
+      else console.log(`    L2 seed ${seed}: LF full ${fullLf.toFixed(1)} vs flipped ${flipLf.toFixed(1)}`);
+    }
+  }
+  ok(`L1 flip cancels ≥30 dB (${l1ok}/${l1n})`, l1n === 0 || l1ok === l1n);
+  ok(`L2 flip loses ≥6 dB of low end (${lfOk}/${lfN})`, lfN === 0 || lfOk === lfN);
+}
+
+console.log('— M9 Reverb: wet clips carry a tail the dry lacks; decay chips ordered —');
+{
+  const tailDb = (x) => rmsDb(x.slice(Math.round(x.length * 0.8)));
+  let abOk = 0, abN = 0;
+  for (const seed of SEEDS.slice(0, 8)) {
+    const t = M9_REVERB.makeTrial(1, seed + 53);
+    abN++;
+    const wet = tailDb(mono(t.clips[t.correct].buf));
+    const dry = tailDb(mono(t.clips[1 - t.correct].buf));
+    if (wet - dry > 10) abOk++;
+    else console.log(`    seed ${seed}: wet tail ${wet.toFixed(1)} dry ${dry.toFixed(1)}`);
+  }
+  ok(`dry-vs-wet honest (${abOk}/${abN})`, abOk === abN);
+  // Short vs long decay: find one of each and compare late-tail energy.
+  const findDecay = (want) => {
+    for (let tries = 0; tries < 300; tries++) {
+      const t = M9_REVERB.makeTrial(2, 70000 + tries * 7919);
+      if (t.answers[t.correct].label === want) return mono(t.clips[0].buf);
+    }
+    return null;
+  };
+  const short = findDecay('Short');
+  const long = findDecay('Long');
+  ok(
+    'long decay outsustains short in the late tail',
+    short != null && long != null && tailDb(long) - tailDb(short) > 6,
+    short && long ? `${(tailDb(long) - tailDb(short)).toFixed(1)}dB` : 'not found',
+  );
 }
 
 console.log('— determinism: same seed, same trial —');

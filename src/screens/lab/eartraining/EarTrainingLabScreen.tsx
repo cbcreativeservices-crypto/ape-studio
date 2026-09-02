@@ -77,8 +77,7 @@ export function EarTrainingLabScreen() {
           );
         })}
         <Text style={styles.coming}>
-          More modules are on the bench — defects, stereo image, delay, reverb, pitch,
-          polarity, comb filtering.
+          More modules are on the bench — defects, stereo image, pitch.
         </Text>
       </ScrollView>
     </View>
