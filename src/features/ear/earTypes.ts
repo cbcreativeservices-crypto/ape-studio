@@ -35,6 +35,13 @@ export type SeeIt =
        *  one visual allowed to wear it). */
       bars: { label: string; db: number }[];
       caption: string;
+    }
+  | {
+      kind: 'gonio';
+      /** Goniometer (Lissajous) per clip, max 2 side by side, with the
+       *  correlation value computed from the same buffer. */
+      clips: number[];
+      caption: string;
     };
 
 export type EarClip = {

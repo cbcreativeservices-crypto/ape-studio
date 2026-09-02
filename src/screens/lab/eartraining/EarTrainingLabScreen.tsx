@@ -77,7 +77,8 @@ export function EarTrainingLabScreen() {
           );
         })}
         <Text style={styles.coming}>
-          More modules are on the bench — defects, stereo image, pitch.
+          All fourteen modules are live. Emulated processors and rendered program beds are
+          labeled as such throughout.
         </Text>
       </ScrollView>
     </View>

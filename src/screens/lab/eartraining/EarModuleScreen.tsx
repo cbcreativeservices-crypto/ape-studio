@@ -225,7 +225,7 @@ export function EarModuleScreen() {
             <Text style={styles.ackTitle}>HEADPHONES REQUIRED</Text>
             <Text style={styles.body}>
               This module trains the stereo image — phone speakers collapse it, so scoring only
-              counts on headphones. {mod.playbackNote}
+              counts on headphones.
             </Text>
             <Pressable style={styles.ackBtn} onPress={() => setPhonesAcked(true)} accessibilityRole="button">
               <Text style={styles.ackBtnText}>I'M ON HEADPHONES</Text>

@@ -11,6 +11,9 @@ import type { EarModule, EarModuleId } from '../earTypes';
 import { M1_FREQUENCY, M2_EQ, M3_BAND, M4_NOISE } from './tone';
 import { M7_LOUDNESS, M10_COMPRESSION, M14_CLIPPING } from './dynamics';
 import { M8_DELAY, M9_REVERB, M12_POLARITY, M13_COMB } from './time';
+import { M5_DEFECTS } from './defects';
+import { M6_STEREO } from './spatial';
+import { M11_PITCH } from './pitch';
 
 export type EarFamily = 'tone' | 'dynamics' | 'time' | 'space' | 'defect' | 'pitch';
 
@@ -21,10 +24,13 @@ export const EAR_MODULES: EarModuleEntry[] = [
   { ...M2_EQ, family: 'tone', member: true },
   { ...M3_BAND, family: 'tone', member: true },
   { ...M4_NOISE, family: 'tone', member: false },
+  { ...M5_DEFECTS, family: 'defect', member: true },
+  { ...M6_STEREO, family: 'space', member: true },
   { ...M7_LOUDNESS, family: 'dynamics', member: false },
   { ...M8_DELAY, family: 'time', member: true },
   { ...M9_REVERB, family: 'time', member: true },
   { ...M10_COMPRESSION, family: 'dynamics', member: true },
+  { ...M11_PITCH, family: 'pitch', member: true },
   { ...M12_POLARITY, family: 'time', member: true },
   { ...M13_COMB, family: 'time', member: true },
   { ...M14_CLIPPING, family: 'dynamics', member: true },

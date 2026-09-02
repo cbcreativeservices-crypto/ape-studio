@@ -133,6 +133,55 @@ function WaveSeeIt({ spec, trial }: { spec: Extract<SeeIt, { kind: 'wave' }>; tr
   );
 }
 
+function GonioSeeIt({ spec, trial }: { spec: Extract<SeeIt, { kind: 'gonio' }>; trial: EarTrial }) {
+  const panes = useMemo(
+    () =>
+      spec.clips.slice(0, 2).map((ci) => {
+        const buf = trial.clips[ci].buf;
+        const l = isStereo(buf) ? buf.l : buf;
+        const r = isStereo(buf) ? buf.r : buf;
+        // Correlation from the same samples the ear heard.
+        let lr = 0, ll = 0, rr = 0;
+        for (let i = 0; i < l.length; i += 4) {
+          lr += l[i] * r[i];
+          ll += l[i] * l[i];
+          rr += r[i] * r[i];
+        }
+        const corr = ll > 1e-12 && rr > 1e-12 ? lr / Math.sqrt(ll * rr) : 0;
+        // Lissajous in M/S orientation: mono = vertical line, wide = cloud,
+        // out-of-phase = horizontal line.
+        const pts: string[] = [];
+        const step = Math.max(1, Math.floor(l.length / 1400));
+        for (let i = 0; i < l.length; i += step) {
+          const gx = ((l[i] - r[i]) / 2) * 3.2;
+          const gy = ((l[i] + r[i]) / 2) * 3.2;
+          pts.push(`${(70 + gx * 62).toFixed(1)},${(70 - gy * 62).toFixed(1)}`);
+        }
+        return { label: trial.clips[ci].label, corr, pts: pts.join(' ') };
+      }),
+    [spec, trial],
+  );
+  return (
+    <View style={{ flexDirection: 'row', gap: 14, justifyContent: 'center' }}>
+      {panes.map((p, i) => (
+        <View key={i} style={{ alignItems: 'center', gap: 3 }}>
+          <Svg width={140} height={140} viewBox="0 0 140 140">
+            <Rect x={0} y={0} width={140} height={140} rx={10} fill="#0a0a0c" stroke={colors.hairline} />
+            <Line x1={70} y1={8} x2={70} y2={132} stroke="rgba(255,255,255,0.10)" />
+            <Line x1={8} y1={70} x2={132} y2={70} stroke="rgba(255,255,255,0.10)" />
+            <Line x1={22} y1={22} x2={118} y2={118} stroke="rgba(255,255,255,0.06)" />
+            <Line x1={118} y1={22} x2={22} y2={118} stroke="rgba(255,255,255,0.06)" />
+            <Polyline points={p.pts} fill="none" stroke={TRACE_COLORS[i]} strokeWidth={0.7} opacity={0.85} />
+          </Svg>
+          <Text style={styles.levelDb}>
+            {p.label !== '▶' ? `${p.label} · ` : ''}corr {p.corr.toFixed(2)}
+          </Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+
 function LevelsSeeIt({ spec }: { spec: Extract<SeeIt, { kind: 'levels' }> }) {
   const min = Math.min(...spec.bars.map((b) => b.db), -12);
   return (
@@ -170,11 +219,13 @@ export function SeeItView({ trial }: { trial: EarTrial }) {
         <SpectrumSeeIt spec={spec} trial={trial} />
       ) : spec.kind === 'wave' ? (
         <WaveSeeIt spec={spec} trial={trial} />
+      ) : spec.kind === 'gonio' ? (
+        <GonioSeeIt spec={spec} trial={trial} />
       ) : (
         <LevelsSeeIt spec={spec} />
       )}
       <View style={styles.legendRow}>
-        {spec.kind !== 'levels'
+        {spec.kind !== 'levels' && spec.kind !== 'gonio'
           ? spec.clips.map((ci, i) => (
               <Text key={ci} style={[styles.legend, { color: TRACE_COLORS[i % TRACE_COLORS.length] }]}>
                 ▬ {trial.clips[ci].label === '▶' ? 'Clip' : trial.clips[ci].label}

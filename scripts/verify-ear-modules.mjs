@@ -7,6 +7,9 @@ import {
 import { M1_FREQUENCY, M2_EQ, M3_BAND, M4_NOISE, BANDS } from '../src/features/ear/modules/tone.ts';
 import { M7_LOUDNESS, M10_COMPRESSION, M14_CLIPPING } from '../src/features/ear/modules/dynamics.ts';
 import { M8_DELAY, M9_REVERB, M12_POLARITY, M13_COMB } from '../src/features/ear/modules/time.ts';
+import { M5_DEFECTS } from '../src/features/ear/modules/defects.ts';
+import { M6_STEREO } from '../src/features/ear/modules/spatial.ts';
+import { M11_PITCH } from '../src/features/ear/modules/pitch.ts';
 import { applyTrial, emptyModuleProgress } from '../src/features/ear/earProgress.ts';
 
 let pass = 0, fail = 0;
@@ -381,6 +384,137 @@ console.log('— M9 Reverb: wet clips carry a tail the dry lacks; decay chips or
     short != null && long != null && tailDb(long) - tailDb(short) > 6,
     short && long ? `${(tailDb(long) - tailDb(short)).toFixed(1)}dB` : 'not found',
   );
+}
+
+console.log('— M6 Stereo: images measure as declared (correlation / channel balance / width) —');
+{
+  const stats = (buf) => {
+    const { l, r } = buf;
+    let lr = 0, ll = 0, rr = 0;
+    for (let i = 0; i < l.length; i += 2) {
+      lr += l[i] * r[i];
+      ll += l[i] * l[i];
+      rr += r[i] * r[i];
+    }
+    return { corr: lr / Math.sqrt(ll * rr), balDb: 10 * Math.log10(ll / rr) };
+  };
+  const side = (buf) => {
+    const { l, r } = buf;
+    let s = 0, m = 0;
+    for (let i = 0; i < l.length; i += 2) {
+      s += (l[i] - r[i]) ** 2;
+      m += (l[i] + r[i]) ** 2;
+    }
+    return 10 * Math.log10(s / m);
+  };
+  let good = 0, total = 0;
+  for (const seed of SEEDS.slice(0, 8)) {
+    for (let level = 1; level <= 3; level++) {
+      const t = M6_STEREO.makeTrial(level, seed + 19 * level);
+      total++;
+      const st = stats(t.clips[0].buf);
+      const label = t.answers[t.correct].label;
+      let pass = false;
+      if (label === 'Left') pass = st.balDb > 6;
+      else if (label === 'Right') pass = st.balDb < -6;
+      else if (label.startsWith('Centered')) pass = st.corr > 0.99 && Math.abs(st.balDb) < 1;
+      else if (label === 'Out of phase') pass = st.corr < -0.99;
+      else if (label === 'Wide') pass = side(t.clips[0].buf) > -6 && st.corr < 0.9;
+      else if (label === 'Narrow') pass = side(t.clips[0].buf) < -11 && st.corr > 0.8;
+      if (pass) good++;
+      else console.log(`    seed ${seed} L${level} ${label}: corr ${st.corr.toFixed(2)} bal ${st.balDb.toFixed(1)} side ${side(t.clips[0].buf).toFixed(1)}`);
+    }
+    const t4 = M6_STEREO.makeTrial(4, seed + 91);
+    total++;
+    const wider = side(t4.clips[0].buf) > side(t4.clips[1].buf) ? 0 : 1;
+    if (wider === t4.correct) good++;
+    else console.log(`    seed ${seed} L4: side A ${side(t4.clips[0].buf).toFixed(1)} B ${side(t4.clips[1].buf).toFixed(1)}, said ${t4.correct}`);
+  }
+  ok(`stereo trials honest (${good}/${total})`, good === total && total > 0);
+}
+
+console.log('— M5 Defects: tonal signatures + time-domain events measure as declared —');
+{
+  const find5 = (want, level) => {
+    for (let tries = 0; tries < 400; tries++) {
+      const t = M5_DEFECTS.makeTrial(level, 90000 + tries * 104729);
+      if (t.answers[t.correct].label === want) return mono(t.clips[0].buf);
+    }
+    return null;
+  };
+  const humBuf = find5('Hum', 2);
+  const buzzBuf = find5('Buzz', 2);
+  ok(
+    'hum is LF-dominated, buzz is not',
+    humBuf != null && buzzBuf != null &&
+      bandDb(humBuf, 2000, 1) - bandDb(humBuf, 60, 1) < -20 &&
+      bandDb(buzzBuf, 2000, 1) - bandDb(buzzBuf, 60, 1) > bandDb(humBuf, 2000, 1) - bandDb(humBuf, 60, 1) + 15,
+  );
+  const dropBuf = find5('Dropout', 2);
+  ok(
+    'dropout has a silent hole',
+    dropBuf != null &&
+      (() => {
+        const w = 480;
+        let minDb = 0;
+        for (let i = 0; i + w * 4 < dropBuf.length; i += w) {
+          minDb = Math.min(minDb, rmsDb(dropBuf.slice(i, i + w * 4)));
+        }
+        return minDb < -55;
+      })(),
+  );
+  const clipBuf = find5('Clipping', 2);
+  ok(
+    'clipping pins samples at a ceiling',
+    clipBuf != null &&
+      (() => {
+        let m = 0;
+        for (const v of clipBuf) m = Math.max(m, Math.abs(v));
+        let pinned = 0;
+        for (const v of clipBuf) if (Math.abs(v) > m * 0.985) pinned++;
+        return pinned / clipBuf.length > 0.005;
+      })(),
+  );
+  // Buried level check: at L4 the defect must actually sit well below the bed.
+  const t4 = M5_DEFECTS.makeTrial(4, 123457);
+  ok('L4 clips still presented at −20 dBFS', Math.abs(rmsDb(mono(t4.clips[0].buf)) + 20) < 1);
+}
+
+console.log('— M11 Pitch: the declared higher note is higher; intervals are the declared ratio —');
+{
+  const f0Of = (x) => {
+    const { freqs, db } = powerSpectrumDb(x);
+    // Fundamental = lowest strong peak (within 12 dB of max below 2 kHz).
+    let max = -300;
+    for (let i = 1; i < db.length; i++) if (db[i] > max) max = db[i];
+    for (let i = 2; i < db.length - 1; i++) {
+      if (freqs[i] < 60) continue;
+      if (db[i] > max - 12 && db[i] > db[i - 1] && db[i] >= db[i + 1]) return freqs[i];
+    }
+    return 0;
+  };
+  let hlOk = 0, hlN = 0, ivOk = 0, ivN = 0;
+  for (const seed of SEEDS.slice(0, 10)) {
+    for (let level = 1; level <= 5; level++) {
+      const t = M11_PITCH.makeTrial(level, seed + 23 * level);
+      const fA = f0Of(mono(t.clips[0].buf));
+      const fB = f0Of(mono(t.clips[1].buf));
+      if (t.question.startsWith('Which note')) {
+        hlN++;
+        if ((fA > fB ? 0 : 1) === t.correct) hlOk++;
+        else console.log(`    seed ${seed} L${level}: fA ${fA.toFixed(1)} fB ${fB.toFixed(1)} said ${t.correct}`);
+      } else {
+        ivN++;
+        const semis = Math.round(12 * Math.log2(fB / fA));
+        const wantLabel = t.answers[t.correct].label;
+        const SEMI = { Unison: 0, 'Minor 2nd': 1, 'Major 2nd': 2, 'Minor 3rd': 3, 'Major 3rd': 4, 'Perfect 4th': 5, Tritone: 6, 'Perfect 5th': 7, 'Minor 6th': 8, 'Major 6th': 9, 'Minor 7th': 10, 'Major 7th': 11, Octave: 12 };
+        if (semis === SEMI[wantLabel]) ivOk++;
+        else console.log(`    seed ${seed} L${level}: measured ${semis} semis, declared ${wantLabel} (fA ${fA.toFixed(1)} fB ${fB.toFixed(1)})`);
+      }
+    }
+  }
+  ok(`higher/lower honest (${hlOk}/${hlN})`, hlOk === hlN && hlN > 0);
+  ok(`intervals honest (${ivOk}/${ivN})`, ivOk === ivN && ivN > 0);
 }
 
 console.log('— determinism: same seed, same trial —');
