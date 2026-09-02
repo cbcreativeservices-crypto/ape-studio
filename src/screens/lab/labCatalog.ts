@@ -172,7 +172,9 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       { name: 'Compression', blurb: 'Threshold, ratio, attack/release, envelope.', route: 'CompressionLab' },
       { name: 'Gate / Expander', blurb: 'Downward expansion, chatter, sidechain.', route: 'GateLab' },
       { name: 'Limiter', blurb: 'Brickwall ceiling, true-peak, loudness.', route: 'LimiterLab' },
-      { name: 'Smart Processors Lab', blurb: 'Assistive / adaptive processors — how they decide.', status: 'development' },
+      // LIVE V1 (owner brief 2026-09-02): the family hub opens with the De-Esser
+      // & Sibilance Control lab; the other processors are listed as planned.
+      { name: 'Smart Processors Lab', blurb: 'Processors that listen, decide and act — V1: the De-Esser & Sibilance Control lab.', route: 'SmartProcessorsLab' },
     ],
   },
   {
