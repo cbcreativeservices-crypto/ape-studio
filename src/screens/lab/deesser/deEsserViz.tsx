@@ -78,7 +78,8 @@ export function DetectorTrace({ processed, thresholdDb, rangeDb, title, a11y }: 
       {title ? <Title>{title}</Title> : null}
       <Svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
         <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
-        <SvgText x={12} y={11} fontSize={8} fill={colors.textMuted} fontFamily={F}>DETECTOR (hiss band level, dB) · <SvgText fill={colors.gold}>THRESHOLD {thresholdDb.toFixed(0)} dB</SvgText></SvgText>
+        <SvgText x={12} y={11} fontSize={8} fill={colors.textMuted} fontFamily={F}>DETECTOR (hiss band level, dB)</SvgText>
+        <SvgText x={10 + plotW} y={11} fontSize={8} fill={colors.gold} textAnchor="end" fontFamily={fonts.oswaldMedium}>THRESHOLD {thresholdDb.toFixed(0)} dB</SvgText>
         {[0, -10, -20, -30, -40].map((d) => (
           <G key={d}>
             <Line x1={10} y1={yA(d)} x2={10 + plotW} y2={yA(d)} stroke="rgba(255,255,255,0.06)" />
