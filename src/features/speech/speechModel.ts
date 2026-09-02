@@ -15,25 +15,41 @@
 export type AnatomyPart = {
   id: string;
   name: string;
+  /** Chip label — the full name is too long for a button row. */
+  short: string;
   role: string;
-  /** Position of the tap target / label inside the 300×320 cross-section. */
+  /** Centre of the numbered tap disc inside the 300×320 cross-section. Discs
+   *  sit OFF the structures they name (textbook leader-line convention) and
+   *  are ≥ 44 units apart so their 22-unit hit circles never overlap. */
   x: number;
   y: number;
+  /** Where the leader line lands — a point ON the structure. Equal to the
+   *  disc centre for the one structure (tongue) labelled in place. */
+  ax: number;
+  ay: number;
 };
 
+/** Numbered along the path the air takes — lungs first, lips last — with the
+ *  jaw closing the list because it frames the mouth rather than sitting in
+ *  the airway. Page 2 (the production sequence) highlights them in the same
+ *  order, so the numbering doubles as the story. */
 export const ANATOMY: AnatomyPart[] = [
-  { id: 'lungs', name: 'Lungs & diaphragm', role: 'The power supply. The diaphragm pushes air up out of the lungs — no airflow, no voice.', x: 150, y: 300 },
-  { id: 'trachea', name: 'Trachea (windpipe)', role: 'The air pipe from the lungs up to the larynx.', x: 150, y: 262 },
-  { id: 'larynx', name: 'Larynx & vocal folds', role: 'The sound source. Two folds of tissue that air blows apart and suction pulls together, hundreds of times a second — the buzz that becomes voice.', x: 150, y: 222 },
-  { id: 'pharynx', name: 'Pharynx (throat)', role: 'The first resonating chamber above the folds. Its length and width shape the buzz.', x: 172, y: 170 },
-  { id: 'velum', name: 'Soft palate (velum)', role: 'A movable flap. Raised, it seals the nose off; lowered, air flows through the nose — that is what makes M, N and NG nasal.', x: 150, y: 110 },
-  { id: 'nasal', name: 'Nasal cavity', role: 'A second resonator, used only when the soft palate lets air in. Too much of it and the voice sounds "nasal".', x: 128, y: 62 },
-  { id: 'palate', name: 'Hard palate', role: 'The roof of the mouth. The tongue presses or nearly presses against it for T, D, S, SH and Y.', x: 105, y: 96 },
-  { id: 'tongue', name: 'Tongue', role: 'The main articulator. Its height and front-back position set the vowel; its tip and body make most consonants.', x: 118, y: 150 },
-  { id: 'teeth', name: 'Teeth', role: 'The edge that air is forced past for S, Z, F and V — the source of sibilance.', x: 62, y: 118 },
-  { id: 'lips', name: 'Lips', role: 'Round for O and U, spread for E; close and burst apart for P and B — the source of plosive pops.', x: 44, y: 140 },
-  { id: 'jaw', name: 'Jaw', role: 'Opens to enlarge the mouth cavity — open vowels like AH need it low.', x: 92, y: 200 },
+  { id: 'lungs', name: 'Lungs & diaphragm', short: 'Lungs', role: 'The power supply. The diaphragm (the dome of muscle under the lungs) pushes air up and out — no airflow, no voice.', x: 276, y: 304, ax: 214, ay: 296 },
+  { id: 'trachea', name: 'Trachea (windpipe)', short: 'Trachea', role: 'The air pipe from the lungs up to the larynx, held open by rings of cartilage.', x: 276, y: 258, ax: 168, ay: 264 },
+  { id: 'larynx', name: 'Larynx & vocal folds', short: 'Larynx', role: 'The sound source. Two folds of tissue that air blows apart and suction pulls together, hundreds of times a second — the buzz that becomes voice. The leaf above them is the epiglottis, a swallowing flap, not a speech part.', x: 96, y: 258, ax: 134, ay: 240 }, // NEW COPY (epiglottis sentence)
+  { id: 'pharynx', name: 'Pharynx (throat)', short: 'Pharynx', role: 'The first resonating chamber above the folds. Its length and width shape the buzz.', x: 276, y: 166, ax: 186, ay: 178 },
+  { id: 'velum', name: 'Soft palate (velum)', short: 'Soft palate', role: 'A movable flap. Raised, it seals the nose off; lowered, air flows through the nose — that is what makes M, N and NG nasal.', x: 276, y: 118, ax: 166, ay: 154 },
+  { id: 'nasal', name: 'Nasal cavity', short: 'Nasal cavity', role: 'A second resonator, used only when the soft palate lets air in. Too much of it and the voice sounds "nasal".', x: 20, y: 96, ax: 86, ay: 112 },
+  { id: 'palate', name: 'Hard palate', short: 'Hard palate', role: 'The roof of the mouth. The tongue presses or nearly presses against it for T, D, S, SH and Y.', x: 134, y: 46, ax: 134, ay: 138 },
+  { id: 'tongue', name: 'Tongue', short: 'Tongue', role: 'The main articulator. Its height and front-back position set the vowel; its tip and body make most consonants.', x: 112, y: 178, ax: 112, ay: 178 },
+  { id: 'teeth', name: 'Teeth', short: 'Teeth', role: 'The edge that air is forced past for S, Z, F and V — the source of sibilance.', x: 20, y: 196, ax: 64, ay: 170 },
+  { id: 'lips', name: 'Lips', short: 'Lips', role: 'Round for O and U, spread for E; close and burst apart for P and B — the source of plosive pops.', x: 20, y: 150, ax: 50, ay: 152 },
+  { id: 'jaw', name: 'Jaw', short: 'Jaw', role: 'Opens to enlarge the mouth cavity — open vowels like AH need it low.', x: 44, y: 240, ax: 86, ay: 206 },
 ];
+
+/** Minimum centre-to-centre spacing between tap discs: two 22-unit hit
+ *  circles must not overlap, so a tap is never ambiguous. */
+export const ANATOMY_MIN_SPACING = 44;
 
 /* ── 2. production sequence ─────────────────────────────────────────────── */
 
@@ -259,20 +275,26 @@ export type SpeechProblem = {
   name: string;
   cause: string;
   hear: string;
+  /** What to look for on the drawing — stated so the chart teaches, not decorates. */
+  see: string;
   fix: string;
   /** Which visual the page draws. */
   visual: 'spectrum' | 'trace';
+  /** Highlighted band on the spectrum, and whether it marks energy that is
+   *  there and should not be (`excess`) or energy that is missing (`loss`). */
+  band?: { lo: number; hi: number; kind: 'excess' | 'loss'; label: string };
 };
 
+// NEW COPY: every `see` string, the sibilance fix (was "cut less treble" — which reads as the opposite of the intent), the band labels.
 export const PROBLEMS: SpeechProblem[] = [
-  { id: 'sibilance', name: 'Sibilance', cause: 'Air forced over the teeth on S, Z and SH makes intense hiss between roughly 4 and 10 kHz; bright mics, close placement and treble EQ make it worse.', hear: 'Piercing "ess" sounds that spit.', fix: 'Angle the mic slightly off-axis, back off a little, cut less treble — then a de-esser for what remains.', visual: 'spectrum' },
-  { id: 'plosives', name: 'Plosives', cause: 'The air blast from P, B, T and K hits the capsule as a pressure wave far bigger than the sound.', hear: 'Low thumps and pops on P and B.', fix: 'A pop filter or foam windscreen, mic slightly above or beside the mouth, high-pass filter for what gets through.', visual: 'trace' },
-  { id: 'clicks', name: 'Mouth clicks', cause: 'Saliva and a dry mouth make tiny ticks as the tongue and lips separate — a close mic hears every one.', hear: 'Small dry ticks between words.', fix: 'Water before the take, a slightly larger distance, then editing or a de-clicker.', visual: 'trace' },
-  { id: 'nasality', name: 'Nasality', cause: 'The soft palate lets too much of the voice resonate through the nose, or the mic sits where the nasal path is loudest.', hear: 'A honky, pinched tone around 800 Hz–1.5 kHz.', fix: 'Reposition the mic lower and closer to the mouth; a narrow EQ cut in the honk region.', visual: 'spectrum' },
-  { id: 'muffled', name: 'Muffled', cause: 'Something absorbs or blocks the highs: hand over the grille, mic behind a pop filter that is too dense, talking away from the capsule, a thick blanket over the mic.', hear: 'Dull, indistinct consonants; words blur.', fix: 'Clear the path to the capsule, aim it at the mouth, gentle presence lift only after the placement is fixed.', visual: 'spectrum' },
-  { id: 'offaxis', name: 'Off-axis', cause: 'Speaking to the side of a directional mic — the pattern rolls off the highs and the level drops.', hear: 'Thinner, duller, quieter; changes as the head moves.', fix: 'Aim the front of the capsule at the mouth and keep the head still; a wider pattern if the talker moves a lot.', visual: 'spectrum' },
-  { id: 'distance', name: 'Excessive distance', cause: 'Direct sound falls 6 dB every time distance doubles; the room and the noise floor do not.', hear: 'Roomy, distant, noisy after the gain is raised.', fix: 'Halve the distance before touching the gain; treat the room only after that.', visual: 'spectrum' },
-  { id: 'breath', name: 'Popping breath', cause: 'Fast inhales and exhales straight into the capsule, especially after long sentences.', hear: 'Gasps and whooshes between phrases.', fix: 'Turn the head slightly to breathe, mic to the side of the airflow, a windscreen; edit or gate the rest.', visual: 'trace' },
+  { id: 'sibilance', name: 'Sibilance', cause: 'Air forced over the teeth on S, Z and SH makes intense hiss between roughly 4 and 10 kHz; bright mics, close placement and treble EQ make it worse.', hear: 'Piercing "ess" sounds that spit.', see: 'The orange hump above 4 kHz — energy the clean voice (grey) does not have.', fix: 'Angle the mic slightly off-axis, back off a little, go easier on any treble boost — then a de-esser for what remains.', visual: 'spectrum', band: { lo: 4000, hi: 10000, kind: 'excess', label: 'EXCESS' } },
+  { id: 'plosives', name: 'Plosives', cause: 'The air blast from P, B, T and K hits the capsule as a pressure wave far bigger than the sound.', hear: 'Low thumps and pops on P and B.', see: 'One slow, huge swing near the start — the air blast — dwarfing the vowel wiggles that ride on it.', fix: 'A pop filter or foam windscreen, mic slightly above or beside the mouth, high-pass filter for what gets through.', visual: 'trace' },
+  { id: 'clicks', name: 'Mouth clicks', cause: 'Saliva and a dry mouth make tiny ticks as the tongue and lips separate — a close mic hears every one.', hear: 'Small dry ticks between words.', see: 'Sharp single spikes sitting on the vowel wave — not part of the voice at all.', fix: 'Water before the take, a slightly larger distance, then editing or a de-clicker.', visual: 'trace' },
+  { id: 'nasality', name: 'Nasality', cause: 'The soft palate lets too much of the voice resonate through the nose, or the mic sits where the nasal path is loudest.', hear: 'A honky, pinched tone around 800 Hz–1.5 kHz.', see: 'A bump around 1 kHz, and less energy above 2.5 kHz than the clean voice.', fix: 'Reposition the mic lower and closer to the mouth; a narrow EQ cut in the honk region.', visual: 'spectrum', band: { lo: 800, hi: 1500, kind: 'excess', label: 'HONK' } },
+  { id: 'muffled', name: 'Muffled', cause: 'Something absorbs or blocks the highs: hand over the grille, mic behind a pop filter that is too dense, talking away from the capsule, a thick blanket over the mic.', hear: 'Dull, indistinct consonants; words blur.', see: 'The right-hand side collapses: everything above about 1.5 kHz falls well below the clean voice.', fix: 'Clear the path to the capsule, aim it at the mouth, gentle presence lift only after the placement is fixed.', visual: 'spectrum', band: { lo: 2000, hi: 12000, kind: 'loss', label: 'LOST' } },
+  { id: 'offaxis', name: 'Off-axis', cause: 'Speaking to the side of a directional mic — the pattern rolls off the highs and the level drops.', hear: 'Thinner, duller, quieter; changes as the head moves.', see: 'Everything sits below the clean voice, and the top end falls away fastest.', fix: 'Aim the front of the capsule at the mouth and keep the head still; a wider pattern if the talker moves a lot.', visual: 'spectrum', band: { lo: 3000, hi: 12000, kind: 'loss', label: 'LOST' } },
+  { id: 'distance', name: 'Excessive distance', cause: 'Direct sound falls 6 dB every time distance doubles; the room and the noise floor do not.', hear: 'Roomy, distant, noisy after the gain is raised.', see: 'The voice sinks toward a flat floor of room and noise that does not sink with it.', fix: 'Halve the distance before touching the gain; treat the room only after that.', visual: 'spectrum' },
+  { id: 'breath', name: 'Popping breath', cause: 'Fast inhales and exhales straight into the capsule, especially after long sentences.', hear: 'Gasps and whooshes between phrases.', see: 'The tail of the trace fills with a shapeless rush — noise, not a pitched wave.', fix: 'Turn the head slightly to breathe, mic to the side of the airflow, a windscreen; edit or gate the rest.', visual: 'trace' },
 ];
 
 /** A clean voice spectrum on `n` bands (20 Hz – 12 kHz, log spaced), 0..1. */
@@ -337,4 +359,148 @@ export function bandMean(sp: { hz: Float64Array; mag: Float64Array }, lo: number
   let s = 0, c = 0;
   for (let i = 0; i < sp.hz.length; i++) if (sp.hz[i] >= lo && sp.hz[i] <= hi) { s += sp.mag[i]; c++; }
   return c ? s / c : 0;
+}
+
+/* ── 11. understanding checks ──────────────────────────────────────────── */
+
+export type SpeechCheck = {
+  id: string;
+  /** `consonants` and `distance` render at the foot of that page (retrieval
+   *  right after the worked example); `final` is the Check Yourself page. */
+  where: 'consonants' | 'distance' | 'final';
+  question: string;
+  options: string[];
+  /** Index into `options` as authored — presentation shuffles (see shuffleCheck). */
+  correct: number;
+  explain: string;
+};
+
+/** Authored here (not in the screen) so the copy is auditable and the test
+ *  suite can enforce: four options, one correct, and NO length cue — the
+ *  correct option is never the single longest. Distractors target the
+ *  misconceptions the pages were written against (loudness ≠ voicing, pitch ≠
+ *  vowel, mesh ≠ EQ, epiglottis ≠ velum, inverse-square ≠ proximity, a
+ *  pitch number ≠ a person). */
+// NEW COPY: all nine checks below (the four original questions were rewritten to remove the length cue).
+export const SPEECH_CHECKS: SpeechCheck[] = [
+  {
+    id: 'nasal-family', where: 'consonants',
+    question: 'M, N and NG are voiced, yet their high frequencies are weak. Why?',
+    options: [
+      'They are whispered rather than voiced',
+      'The sound leaves through the nose, which damps the highs',
+      'The tongue blocks the throat so only the lowest harmonics escape',
+      'The vocal folds vibrate more slowly for nasal sounds',
+    ],
+    correct: 1,
+    explain: 'Nasals are voiced — the folds buzz — but the mouth is sealed and the soft palate drops, so the buzz exits through the nose, whose passages absorb the highs. That is why nasals are the first sounds to vanish in a muffled recording.',
+  },
+  {
+    id: 'distance-6in', where: 'distance',
+    question: 'You halve the distance from 12 inches to 6. What happens to the direct voice and to the room sound?',
+    options: [
+      'Both rise by about 6 dB, so the balance is unchanged',
+      'The voice rises about 6 dB; the room stays about the same',
+      'The room rises more than the voice, because reflections add up',
+      'Nothing changes until you raise the gain',
+    ],
+    correct: 1,
+    explain: 'Direct sound follows the inverse-square law — about 6 dB per halving of distance. The reverberant room is roughly the same level everywhere in the room, so the direct-to-room ratio improves by about 6 dB.',
+  },
+  {
+    id: 'voicing', where: 'final',
+    question: 'S and Z use the same tongue and lip shape. What is the one difference?',
+    options: [
+      'Z is louder because the breath pushes harder',
+      'Z adds the vocal-fold buzz; S is turbulence alone',
+      'Z moves the tongue further back toward the soft palate',
+      'Z rounds the lips slightly to lower the hiss',
+    ],
+    correct: 1,
+    explain: 'Same mouth, folds off versus on. Put a finger on your throat: Z buzzes, S does not — that buzz is the only thing Z adds.',
+  },
+  {
+    id: 'vowel', where: 'final',
+    question: 'Two singers hold the same note, one on EE and one on AH. What makes them sound like different vowels?',
+    options: [
+      'The pitch — AH is always sung on a lower note than EE',
+      'The loudness — open vowels like AH carry more energy',
+      'The formants — the mouth boosts different harmonics',
+      'The length — AH is held longer than EE',
+    ],
+    correct: 2,
+    explain: 'Same pitch, same harmonics from the folds. The tongue and jaw change which harmonics the mouth boosts — those peaks are the vowel.',
+  },
+  {
+    id: 'popfilter', where: 'final',
+    question: 'A pop filter stops the thump of a P but leaves the voice intact. Why?',
+    options: [
+      'The mesh blocks low frequencies and passes the highs',
+      'The mesh breaks up the air jet; sound pressure passes through',
+      'The mesh absorbs the loudest part of every consonant',
+      'The mesh adds distance, so the inverse-square law tames the P',
+    ],
+    correct: 1,
+    explain: 'Sound is a tiny pressure ripple that passes the mesh almost untouched; the gust is moving air that the mesh disperses. It is not an EQ.',
+  },
+  {
+    id: 'velum', where: 'final',
+    question: 'Which structure decides whether the voice comes out through the nose or the mouth?',
+    options: [
+      'The tongue, by rising against the hard palate to block the mouth',
+      'The soft palate, lifting to seal the nose or dropping to open it',
+      'The epiglottis, by folding down over the top of the windpipe',
+      'The jaw, by closing far enough to force the air upward',
+    ],
+    correct: 1,
+    explain: 'The soft palate (velum) is the valve. Lifted, it seals the nasal cavity and the sound leaves by the mouth; lowered — as for M, N and NG — the buzz resonates through the nose. The epiglottis is a swallowing flap, not a speech valve.',
+  },
+  {
+    id: 'sibilance', where: 'final',
+    question: 'Why does a bright condenser mic make an "S" harsher than a duller mic does?',
+    options: [
+      'It captures the pitch of the S more accurately',
+      'Its presence lift sits right in the S band, 4–10 kHz',
+      'Condensers respond faster, so every S starts more sharply',
+      'Its proximity effect boosts the S at close range',
+    ],
+    correct: 1,
+    explain: 'An S has no pitch — it is turbulence with its energy roughly between 4 and 10 kHz, and a presence boost lifts exactly that band. Proximity effect works at the bottom of the spectrum, not the top.',
+  },
+  {
+    id: 'voices', where: 'final',
+    question: 'A speaking voice measures around 200 Hz. What can you conclude?',
+    options: [
+      'It is certainly a female voice, since 200 Hz is above the male band',
+      'It must be a child, because adult voices stay below 200 Hz',
+      'Little by itself — the typical ranges overlap around there',
+      'Its formants must also sit near 200 Hz, one per harmonic',
+    ],
+    correct: 2,
+    explain: 'The bands are typical, not fixed: a high male voice, a low female voice and a child can all speak near 200 Hz. Use the number to set a high-pass filter and gain, not to label the person.',
+  },
+  {
+    id: 'proximity', where: 'final',
+    question: 'You move a cardioid mic from 6 inches to 1 inch and the voice turns boomy. What happened?',
+    options: [
+      'The inverse-square law boosts bass more than treble as you get closer',
+      'Proximity effect: a directional mic lifts the lows up close',
+      'The room’s low-frequency modes are stronger near the mouth',
+      'Plosive air blasts are now feeding the capsule continuously',
+    ],
+    correct: 1,
+    explain: 'Inverse-square raises every frequency equally — it changes level, not tone. The bass lift is the proximity effect, a property of directional (pressure-gradient) mics that grows as the source gets close. Fix it with distance or the mic’s low-cut.',
+  },
+];
+
+/** Presentation shuffle for a check: the options are permuted and the
+ *  correct index follows its text, so no answer is ever "always the second
+ *  chip". `rng` is injectable for tests (default Math.random). */
+export function shuffleCheck(c: SpeechCheck, rng: () => number = Math.random): { options: string[]; correct: number } {
+  const idx = c.options.map((_, i) => i);
+  for (let i = idx.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [idx[i], idx[j]] = [idx[j], idx[i]];
+  }
+  return { options: idx.map((i) => c.options[i]), correct: idx.indexOf(c.correct) };
 }

@@ -1,14 +1,31 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  ANATOMY, PRODUCTION, VOICED_PAIRS, VOWELS, vowelSpectrum, CONSONANTS, plosiveTrace, distanceEffect, proximityBoostDb,
-  VOICE_RANGES, PROBLEMS, voiceSpectrum, problemSpectrum, problemTrace, bandMean,
+  ANATOMY, ANATOMY_MIN_SPACING, PRODUCTION, VOICED_PAIRS, VOWELS, vowelSpectrum, CONSONANTS, plosiveTrace, distanceEffect, proximityBoostDb,
+  VOICE_RANGES, PROBLEMS, voiceSpectrum, problemSpectrum, problemTrace, bandMean, SPEECH_CHECKS, shuffleCheck,
 } from '../src/features/speech/speechModel.ts';
 
-test('anatomy: 11 tappable structures with unique ids inside the drawing', () => {
+test('anatomy: 11 tappable structures with unique ids, chip labels and leader anchors inside the drawing', () => {
   assert.equal(ANATOMY.length, 11);
   assert.equal(new Set(ANATOMY.map((a) => a.id)).size, 11);
-  for (const a of ANATOMY) { assert.ok(a.x >= 0 && a.x <= 300 && a.y >= 0 && a.y <= 320, a.id); assert.ok(a.role.length > 20); }
+  for (const a of ANATOMY) {
+    assert.ok(a.x >= 10 && a.x <= 290 && a.y >= 10 && a.y <= 310, `${a.id} disc inside the 300×320 box with its radius`);
+    assert.ok(a.ax >= 0 && a.ax <= 300 && a.ay >= 0 && a.ay <= 320, `${a.id} anchor`);
+    assert.ok(a.role.length > 20);
+    assert.ok(a.short.length > 0 && a.short.length <= 12, `${a.id} chip label "${a.short}" fits a chip`);
+  }
+  assert.equal(ANATOMY[0].id, 'lungs');
+  assert.equal(ANATOMY[ANATOMY.length - 2].id, 'lips', 'numbered along the airflow: lungs first, lips last (jaw closes the list)');
+});
+
+test('anatomy: tap discs are far enough apart that their 22-unit hit circles never overlap', () => {
+  for (let i = 0; i < ANATOMY.length; i++) {
+    for (let j = i + 1; j < ANATOMY.length; j++) {
+      const a = ANATOMY[i], b = ANATOMY[j];
+      const d = Math.hypot(a.x - b.x, a.y - b.y);
+      assert.ok(d >= ANATOMY_MIN_SPACING, `${a.id}–${b.id} discs only ${d.toFixed(1)} apart`);
+    }
+  }
 });
 
 test('production sequence runs breath → folds → resonance → articulation → speech', () => {
@@ -79,9 +96,49 @@ test('voice ranges: male < female < child, ranges overlap-free in the typical va
   assert.ok(/Typical/.test(m.name));
 });
 
-test('problems: eight, each with cause / hear / fix', () => {
+test('problems: eight, each with cause / hear / see / fix, and loss bands only on spectrum visuals', () => {
   assert.equal(PROBLEMS.length, 8);
-  for (const p of PROBLEMS) assert.ok(p.cause.length > 20 && p.hear.length > 5 && p.fix.length > 20, p.id);
+  for (const p of PROBLEMS) {
+    assert.ok(p.cause.length > 20 && p.hear.length > 5 && p.fix.length > 20 && p.see.length > 20, p.id);
+    if (p.band) { assert.equal(p.visual, 'spectrum', p.id); assert.ok(p.band.lo < p.band.hi && p.band.label.length > 0, p.id); }
+  }
+  assert.equal(PROBLEMS.find((p) => p.id === 'muffled')!.band!.kind, 'loss');
+  assert.equal(PROBLEMS.find((p) => p.id === 'sibilance')!.band!.kind, 'excess');
+});
+
+test('checks: nine authored, four options each, correct in range, two placed mid-lab', () => {
+  assert.equal(SPEECH_CHECKS.length, 9);
+  assert.equal(new Set(SPEECH_CHECKS.map((c) => c.id)).size, 9);
+  for (const c of SPEECH_CHECKS) {
+    assert.equal(c.options.length, 4, c.id);
+    assert.ok(c.correct >= 0 && c.correct < 4, c.id);
+    assert.ok(c.explain.length > 40, `${c.id} explains, not just confirms`);
+    assert.equal(new Set(c.options).size, 4, `${c.id} options distinct`);
+  }
+  assert.deepEqual(SPEECH_CHECKS.filter((c) => c.where !== 'final').map((c) => c.where), ['consonants', 'distance']);
+});
+
+test('checks: no length cue — the correct option is never the single longest', () => {
+  for (const c of SPEECH_CHECKS) {
+    const longest = Math.max(...c.options.map((o) => o.length));
+    const holders = c.options.filter((o) => o.length === longest);
+    assert.ok(!(holders.length === 1 && c.options[c.correct].length === longest), `${c.id}: correct option is the longest`);
+  }
+});
+
+test('shuffleCheck: permutes the options and the correct index follows its text', () => {
+  const c = SPEECH_CHECKS[0];
+  // deterministic LCG so the test is reproducible
+  let seed = 7;
+  const rng = () => { seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; };
+  const seen = new Set<string>();
+  for (let k = 0; k < 40; k++) {
+    const s = shuffleCheck(c, rng);
+    assert.deepEqual([...s.options].sort(), [...c.options].sort());
+    assert.equal(s.options[s.correct], c.options[c.correct]);
+    seen.add(s.options.join('|'));
+  }
+  assert.ok(seen.size > 3, 'the order actually varies');
 });
 
 test('problemSpectrum changes the right region relative to the clean voice', () => {
