@@ -479,6 +479,34 @@ export function prioritizeFaults(active: FaultId[]): ProtectionVerdict {
   return { primary: ordered[0] ?? null, secondary: ordered.slice(1) };
 }
 
+/* ── gain structure (Module 7) ──────────────────────────────────────────── */
+
+export type GainStage = 'source' | 'mixer' | 'amp';
+
+export type GainStructure = {
+  /** Relative level leaving each stage, 1.0 = that stage's clip point. */
+  levels: Record<GainStage, number>;
+  /** The FIRST stage that clips, or null. */
+  firstClip: GainStage | null;
+  /** Stage output is unhealthily low (noise floor creeps up). */
+  starved: GainStage | null;
+};
+
+/**
+ * Three-stage chain. Each control scales its stage; a stage cannot pass more
+ * than its own clip point (1.0) downstream, so a hot source clips the SOURCE,
+ * not the amplifier — turning the amplifier down cannot fix it.
+ */
+export function evaluateGainStructure(source: number, mixer: number, ampInput: number, railLimit = 1): GainStructure {
+  const s = clamp(source, 0, 1) * 1.6;
+  const m = Math.min(s, 1) * clamp(mixer, 0, 1) * 1.6;
+  const a = (Math.min(m, 1) * clamp(ampInput, 0, 1) * 1.6) / Math.max(railLimit, 0.05);
+  const levels = { source: s, mixer: m, amp: a };
+  const firstClip = s > 1 ? 'source' : m > 1 ? 'mixer' : a > 1 ? 'amp' : null;
+  const starved = s > 0 && s < 0.15 ? 'source' : m > 0 && m < 0.15 ? 'mixer' : null;
+  return { levels, firstClip, starved };
+}
+
 /* ── operating-condition evaluation (rig/challenge scenarios) ───────────── */
 
 export type RigState = {

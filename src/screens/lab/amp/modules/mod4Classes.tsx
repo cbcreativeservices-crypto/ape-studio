@@ -112,7 +112,9 @@ export function Mod4Classes() {
   const [abBias, setAbBias] = useState(0);
   const [detune, setDetune] = useState(1);
 
-  const effDrive = signalOn ? drive : 0;
+  // The signal-off demonstration belongs to Class A only — it must not leak
+  // into the other classes when the learner switches (caught in visual QA).
+  const effDrive = cls === 'A' && !signalOn ? 0 : drive;
   const lin = useMemo(
     () => (cls === 'C' ? null : simulateLinearClass(cls, effDrive, cls === 'AB' ? abBias : 0)),
     [cls, effDrive, abBias],

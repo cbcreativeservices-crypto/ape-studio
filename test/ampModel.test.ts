@@ -16,9 +16,29 @@ import {
   efficiency, bridge,
   sineCycle, amplify, isClipping, cycleRms, WAVE_N,
   simulateLinearClass, simulateClassC, simulateClassD,
-  simulateSingleDeviceBias, conductionCurrent,
+  simulateSingleDeviceBias, conductionCurrent, evaluateGainStructure,
   prioritizeFaults, evaluateRig, clamp,
 } from '../src/features/amp/ampModel.ts';
+
+describe('gain structure (Module 7)', () => {
+  it('healthy chain clips nowhere', () => {
+    assert.equal(evaluateGainStructure(0.5, 0.5, 0.5).firstClip, null);
+  });
+  it('a hot source clips at the SOURCE, and turning the amp down cannot fix it', () => {
+    const g = evaluateGainStructure(1, 0.5, 0.1);
+    assert.equal(g.firstClip, 'source');
+    assert.ok(g.levels.amp < 1);
+  });
+  it('a hot mixer clips at the mixer before the amplifier', () => {
+    assert.equal(evaluateGainStructure(0.55, 1, 0.3).firstClip, 'mixer');
+  });
+  it('only the amplifier clips when upstream is healthy but drive exceeds the rails', () => {
+    assert.equal(evaluateGainStructure(0.5, 0.5, 1, 0.5).firstClip, 'amp');
+  });
+  it('a starved stage is flagged', () => {
+    assert.equal(evaluateGainStructure(0.05, 1, 1).starved, 'source');
+  });
+});
 
 describe('bias and conduction (Module 3)', () => {
   it('too little bias clips the negative swing; too much clips the positive; mid is clean', () => {

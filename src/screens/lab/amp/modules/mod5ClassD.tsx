@@ -43,27 +43,27 @@ function SwitchingStage({ dutyAtPeak }: { dutyAtPeak: number }) {
       <Line x1={60} y1={12} x2={60} y2={138} stroke={AMP_COLORS.supply} strokeWidth={1.2} strokeDasharray="3,2" />
       {/* high-side device */}
       <Rect x={40} y={28} width={40} height={30} rx={5} fill="#151518" stroke={AMP_COLORS.pos} />
-      <SvgText x={60} y={41} fontSize={8} fill={AMP_COLORS.pos} textAnchor="middle" fontFamily={fonts.oswaldMedium}>HIGH</SvgText>
-      <SvgText x={60} y={52} fontSize={8} fill={AMP_COLORS.pos} textAnchor="middle" fontFamily={fonts.oswaldMedium}>SIDE</SvgText>
+      <SvgText x={60} y={41} fontSize={9} fill={AMP_COLORS.pos} textAnchor="middle" fontFamily={fonts.oswaldMedium}>HIGH</SvgText>
+      <SvgText x={60} y={53} fontSize={9} fill={AMP_COLORS.pos} textAnchor="middle" fontFamily={fonts.oswaldMedium}>SIDE</SvgText>
       {/* low-side device */}
       <Rect x={40} y={92} width={40} height={30} rx={5} fill="#151518" stroke={AMP_COLORS.neg} strokeDasharray="4,2" />
-      <SvgText x={60} y={105} fontSize={8} fill={AMP_COLORS.neg} textAnchor="middle" fontFamily={fonts.oswaldMedium}>LOW</SvgText>
-      <SvgText x={60} y={116} fontSize={8} fill={AMP_COLORS.neg} textAnchor="middle" fontFamily={fonts.oswaldMedium}>SIDE</SvgText>
+      <SvgText x={60} y={105} fontSize={9} fill={AMP_COLORS.neg} textAnchor="middle" fontFamily={fonts.oswaldMedium}>LOW</SvgText>
+      <SvgText x={60} y={117} fontSize={9} fill={AMP_COLORS.neg} textAnchor="middle" fontFamily={fonts.oswaldMedium}>SIDE</SvgText>
       {/* switching node */}
       <Line x1={80} y1={75} x2={150} y2={75} stroke={colors.textSecondary} strokeWidth={1.5} />
-      <SvgText x={115} y={68} fontSize={8.5} fill={colors.textMuted} textAnchor="middle">switching node</SvgText>
+      <SvgText x={115} y={68} fontSize={9} fill={colors.textMuted} textAnchor="middle">switching node</SvgText>
       {/* filter: inductor + capacitor */}
       <Path d="M150 75 a6 6 0 0 1 12 0 a6 6 0 0 1 12 0 a6 6 0 0 1 12 0 a6 6 0 0 1 12 0" fill="none" stroke={colors.textSecondary} strokeWidth={1.6} />
       <Line x1={198} y1={75} x2={240} y2={75} stroke={colors.textSecondary} strokeWidth={1.5} />
       <Line x1={220} y1={75} x2={220} y2={100} stroke={colors.textSecondary} strokeWidth={1.5} />
       <Line x1={210} y1={100} x2={230} y2={100} stroke={colors.textSecondary} strokeWidth={2} />
       <Line x1={210} y1={106} x2={230} y2={106} stroke={colors.textSecondary} strokeWidth={2} />
-      <SvgText x={174} y={98} fontSize={8.5} fill={colors.textMuted} textAnchor="middle">L  C  low-pass filter</SvgText>
+      <SvgText x={174} y={98} fontSize={9} fill={colors.textMuted} textAnchor="middle">L  C  low-pass filter</SvgText>
       {/* load */}
       <Rect x={240} y={60} width={70} height={30} rx={5} fill="#1a2a1e" stroke={AMP_COLORS.output} />
       <SvgText x={275} y={79} fontSize={9.5} fill={AMP_COLORS.output} textAnchor="middle" fontFamily={fonts.oswaldMedium}>LOAD</SvgText>
-      <SvgText x={275} y={108} fontSize={8.5} fill={colors.textMuted} textAnchor="middle">high side on ≈{Math.round(dutyAtPeak * 100)}%</SvgText>
-      <SvgText x={275} y={120} fontSize={8.5} fill={colors.textMuted} textAnchor="middle">of each period at the peak</SvgText>
+      <SvgText x={275} y={108} fontSize={9} fill={colors.textMuted} textAnchor="middle">high side on ≈{Math.round(dutyAtPeak * 100)}%</SvgText>
+      <SvgText x={275} y={121} fontSize={9} fill={colors.textMuted} textAnchor="middle">of each period at the peak</SvgText>
     </Svg>
   );
 }

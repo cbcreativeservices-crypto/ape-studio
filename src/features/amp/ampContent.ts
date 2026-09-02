@@ -387,6 +387,155 @@ export const AMP_CHECKS: AmpCheck[] = [
 
 export const checksForModule = (id: AmpModuleId) => AMP_CHECKS.filter((c) => c.moduleId === id);
 
+/* ── safety notice (Part 3 §12) — shown before the real-world module ────── */
+
+export const SAFETY_POINTS: string[] = [
+  'Amplifiers and power supplies may contain lethal voltage.',
+  'Internal capacitors can retain charge after disconnection.',
+  'This lab is not a repair or construction guide.',
+  'Never open or service powered equipment without proper qualifications.',
+  'Confirm load and bridge-mode requirements from the manufacturer.',
+  'Never short amplifier outputs.',
+  'Never connect amplifier outputs together unless a specifically documented system supports it.',
+  'Do not assume output negative terminals are grounded.',
+  'Use proper speaker cable.',
+  'Maintain ventilation.',
+  'Reduce levels before changing connections.',
+  'Protect hearing during testing.',
+];
+
+/* ── rack inspection scenarios (Module 7) ───────────────────────────────── */
+
+export type RackFinding =
+  | 'load-below' | 'bad-bridge' | 'blocked-vent' | 'output-miswired'
+  | 'instrument-cable' | 'upstream-clip' | 'normal';
+
+export const RACK_FINDINGS: { key: RackFinding; label: string }[] = [
+  { key: 'load-below', label: 'Load below the amplifier rating' },
+  { key: 'bad-bridge', label: 'Incorrect bridge connection' },
+  { key: 'blocked-vent', label: 'Blocked ventilation' },
+  { key: 'output-miswired', label: 'Speaker output connected incorrectly' },
+  { key: 'instrument-cable', label: 'Instrument cable used as speaker cable' },
+  { key: 'upstream-clip', label: 'Existing upstream clipping' },
+  { key: 'normal', label: 'Normal, correct operation' },
+];
+
+export type RackScenario = {
+  id: string;
+  title: string;
+  /** What the learner sees on the virtual rack. */
+  readout: { label: string; value: string }[];
+  answer: RackFinding;
+  explain: string;
+};
+
+export const RACK_SCENARIOS: RackScenario[] = [
+  {
+    id: 'rk-parallel', title: 'Rack 1',
+    readout: [
+      ['Load per channel', 'three 8 Ω cabinets in parallel'], ['Mode', 'Stereo'], ['Speaker cable', '12 AWG speaker cable'],
+      ['Ventilation', 'Front and rear clear'], ['Input', '−6 dB below mixer clip'], ['Front panel', 'CLIP dark · PROTECT dark'], ['Power sequence', 'Amps last on, first off'],
+    ].map(([label, value]) => ({ label, value })),
+    answer: 'load-below',
+    explain: 'Three 8 Ω cabinets in parallel is 8 ÷ 3 ≈ 2.7 Ω — below a typical 4 Ω stereo minimum. Nothing is lit yet because the show is quiet; the first loud passage will pull current the amplifier is not rated for.',
+  },
+  {
+    id: 'rk-bridge', title: 'Rack 2',
+    readout: [
+      ['Load', 'one 8 Ω subwoofer'], ['Mode', 'Bridge — wired to CH1+ and CH2+ per the manual'], ['Speaker cable', '10 AWG speaker cable'],
+      ['Ventilation', 'Clear'], ['Input', '−10 dB below mixer clip, CH1 only'], ['Front panel', 'CLIP dark · PROTECT dark'], ['Power sequence', 'Correct'],
+    ].map(([label, value]) => ({ label, value })),
+    answer: 'normal',
+    explain: 'Everything checks out: a documented bridge wiring, an 8 Ω load that meets the usual bridged minimum, real speaker cable, clear airflow, healthy input level. Not every rack has a fault — knowing when to leave it alone is a skill.',
+  },
+  {
+    id: 'rk-vent', title: 'Rack 3',
+    readout: [
+      ['Load', '8 Ω per channel'], ['Mode', 'Stereo'], ['Speaker cable', '12 AWG speaker cable'],
+      ['Ventilation', 'Rack rear door closed, road-case foam against the intake'], ['Input', '−8 dB below mixer clip'], ['Front panel', 'THERMAL amber after 40 minutes'], ['Power sequence', 'Correct'],
+    ].map(([label, value]) => ({ label, value })),
+    answer: 'blocked-vent',
+    explain: 'The load and levels are fine; the amplifier simply cannot breathe. Heat builds until thermal limiting engages. Open the airflow path — the amber indicator is the amplifier asking for exactly that.',
+  },
+  {
+    id: 'rk-miswire', title: 'Rack 4',
+    readout: [
+      ['Load', '8 Ω per channel'], ['Mode', 'Stereo'], ['Speaker cable', '12 AWG'], ['Wiring', 'Both channels’ negative terminals tied together at the patch panel “for a common ground”'],
+      ['Ventilation', 'Clear'], ['Input', '−8 dB'], ['Front panel', 'PROTECT lit on power-up'], ['Power sequence', 'Correct'],
+    ].map(([label, value]) => ({ label, value })),
+    answer: 'output-miswired',
+    explain: 'Output negatives are not guaranteed to be ground — on many designs they carry signal. Tying them together can short output stages, which is why PROTECT lit immediately. Undo the “common ground” and wire each channel independently.',
+  },
+  {
+    id: 'rk-cable', title: 'Rack 5',
+    readout: [
+      ['Load', '8 Ω per channel'], ['Mode', 'Stereo'], ['Speaker cable', 'Shielded ¼" instrument cable, 15 m runs'],
+      ['Ventilation', 'Clear'], ['Input', '−8 dB'], ['Front panel', 'CLIP dark · PROTECT dark'], ['Symptom', 'Cable warm to the touch, weak low end'],
+    ].map(([label, value]) => ({ label, value })),
+    answer: 'instrument-cable',
+    explain: 'Instrument cable is thin shielded signal wire. Over 15 m at speaker currents it wastes power as heat in the conductor and its resistance robs damping — the warm cable and soft bass are the giveaways. Use proper speaker cable sized for the run.',
+  },
+  {
+    id: 'rk-upstream', title: 'Rack 6',
+    readout: [
+      ['Load', '8 Ω per channel'], ['Mode', 'Stereo'], ['Speaker cable', '12 AWG'], ['Ventilation', 'Clear'],
+      ['Input', 'Mixer master meters pinned red; amplifier input attenuators at −20 dB'], ['Front panel', 'CLIP dark'], ['Symptom', 'Harsh, distorted sound at modest volume'],
+    ].map(([label, value]) => ({ label, value })),
+    answer: 'upstream-clip',
+    explain: 'The amplifier’s CLIP light is dark because the amplifier is NOT clipping — it is faithfully reproducing a signal that was already clipped at the mixer. Turning the amplifier down cannot fix distortion that happened upstream; fix the mixer gain structure.',
+  },
+  {
+    id: 'rk-normal2', title: 'Rack 7',
+    readout: [
+      ['Load', '4 Ω per channel (two 8 Ω cabinets in parallel)'], ['Mode', 'Stereo, amplifier rated to 4 Ω'], ['Speaker cable', '12 AWG'],
+      ['Ventilation', 'Clear, 1U gap above'], ['Input', '−6 dB below mixer clip'], ['Front panel', 'CLIP flickers on the loudest peaks only'], ['Power sequence', 'Correct'],
+    ].map(([label, value]) => ({ label, value })),
+    answer: 'normal',
+    explain: 'A 4 Ω load on an amplifier rated for it, real cable, airflow, and a CLIP light that only flickers on the very loudest peaks: that is ordinary, healthy operation with reasonable headroom.',
+  },
+];
+
+/* ── specification decoder (Module 7) ───────────────────────────────────── */
+
+export type SpecCondition = 'load' | 'channels' | 'bandwidth' | 'thd' | 'duration';
+
+export const SPEC_CONDITIONS: { key: SpecCondition; label: string; why: string }[] = [
+  { key: 'load', label: 'Load impedance', why: 'Power into 4 Ω and into 8 Ω are different numbers for the same amplifier.' },
+  { key: 'channels', label: 'Channels driven', why: 'One channel driven flatters the supply; all channels driven is the honest case.' },
+  { key: 'bandwidth', label: 'Frequency range', why: '“1 kHz only” hides what happens at 20 Hz where the supply works hardest.' },
+  { key: 'thd', label: 'Distortion threshold', why: 'Power “at 10% THD” is a clipped, unusable rating; 0.1% or 1% is meaningful.' },
+  { key: 'duration', label: 'Continuous vs burst', why: 'Short bursts avoid heat and supply sag; continuous ratings are what you can lean on.' },
+];
+
+export type SpecSheet = {
+  id: string;
+  lines: string[];
+  /** Conditions the sheet leaves out. */
+  missing: SpecCondition[];
+  verdict: string;
+};
+
+export const SPEC_SHEETS: SpecSheet[] = [
+  {
+    id: 'sp-marketing',
+    lines: ['“1200 W PEAK POWER!”', 'Bridgeable', 'Frequency response 20 Hz – 20 kHz'],
+    missing: ['load', 'channels', 'thd', 'duration'],
+    verdict: 'A peak figure with no load, no channel count, no distortion threshold and no duration is marketing, not a rating. The frequency-response line describes bandwidth, not power test conditions.',
+  },
+  {
+    id: 'sp-proper',
+    lines: ['Continuous power: 350 W per channel into 8 Ω, both channels driven, 20 Hz – 20 kHz, < 0.1% THD', 'Continuous power: 550 W per channel into 4 Ω, both channels driven, 20 Hz – 20 kHz, < 0.1% THD'],
+    missing: [],
+    verdict: 'Every condition is stated: load, channels driven, bandwidth, distortion threshold, and “continuous.” This is a rating you can compare and rely on.',
+  },
+  {
+    id: 'sp-partial',
+    lines: ['500 W RMS', '4 Ω', 'THD 0.05% at 1 kHz'],
+    missing: ['channels', 'bandwidth', 'duration'],
+    verdict: '“RMS watts” is shorthand for continuous power under conditions — but which? No channel count, a single 1 kHz test tone instead of full bandwidth, and no statement of duration. Better than a peak claim; still not complete.',
+  },
+];
+
 /* ── protection-state copy (Part 3 §7) ──────────────────────────────────── */
 
 export const FAULT_COPY: Record<string, { title: string; detected: string; action: string; check: string }> = {
