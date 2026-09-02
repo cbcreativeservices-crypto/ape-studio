@@ -315,7 +315,8 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     description: 'The voice — formants, intelligibility, de-essing.',
     section: 'training',
     kind: 'list',
-    labs: [{ name: 'Speech Lab', blurb: 'Voice, formants, intelligibility, de-essing.', status: 'development' }],
+    // LIVE (owner brief 2026-09-02): "How Human Speech Works" — visual, paged.
+    labs: [{ name: 'Speech & Voice Lab', blurb: 'How human speech works — anatomy, voicing, vowels and formants, consonants, plosives, sibilance, distance, voices, problems.', route: 'SpeechLab' }],
   },
   {
     id: 'electronics',

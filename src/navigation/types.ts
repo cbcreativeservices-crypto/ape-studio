@@ -252,6 +252,8 @@ export type RootStackParamList = {
   TuningLab: undefined;
   /** Sound Envelope & Transients Lab (owner brief 2026-09-02) — visual, paged. */
   EnvelopeLab: undefined;
+  /** Speech & Voice Lab (owner brief 2026-09-02) — visual, paged. */
+  SpeechLab: undefined;
   /** Visual Audio Analysis (Meter Interpretation) Lab (owner 2026-07-29). */
   MeterLab: undefined;
   MeterModule: { id: import('../screens/lab/meter/modules/registry').MeterModuleId };
