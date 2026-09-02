@@ -2,7 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   PHRASE, DEFAULTS, bandpassGain, detectorDb, gainReductionDb, processPhrase, eqCut, vowelBrightnessLossDb, meanSibilantGr,
-  overStage, OVER_STAGES, FREQ_HINTS, FREQ_MIN, FREQ_MAX, sFrameSpectrum, detectorCurve, PATH_SIDECHAIN, PATH_MAIN,
+  overStage, overSettings, OVER_STAGES, OVER_THRESHOLD_SPAN_DB, FREQ_HINTS, FREQ_MIN, FREQ_MAX, sFrameSpectrum, detectorCurve,
+  PATH_SIDECHAIN, PATH_MAIN, CONNECTIONS,
 } from '../src/features/deesser/deEsserModel.ts';
 
 test('phrase: sibilant frames carry the hiss, vowels carry the body', () => {
@@ -88,4 +89,33 @@ test('S-frame spectrum peaks in the hiss region and the detector curve peaks at 
 test('detection path: sidechain is filter → detector → threshold → gain computer; main path has a gain element', () => {
   assert.deepEqual(PATH_SIDECHAIN.map((b) => b.id), ['bpf', 'det', 'thr', 'gc']);
   assert.ok(PATH_MAIN.some((b) => b.id === 'gain'));
+});
+
+test('defaults are a setting the lab would call correct: every sibilant crosses, nothing else does, stage is "controlled"', () => {
+  const out = processPhrase(PHRASE, DEFAULTS);
+  for (const p of out) assert.equal(p.grDb > 0, p.frame.sibilant, `frame ${p.frame.label}`);
+  assert.equal(overStage(meanSibilantGr(out)).id, 'controlled');
+});
+
+test('over-de-essing control walks every stage in order from 0 to 100 %', () => {
+  const seen: string[] = [];
+  let last = -1;
+  for (let a = 0; a <= 1.00001; a += 0.02) {
+    const st = overStage(meanSibilantGr(processPhrase(PHRASE, overSettings(a, 'split'))));
+    const idx = OVER_STAGES.findIndex((s) => s.id === st.id);
+    assert.ok(idx >= last, `stage went backwards at amount ${a.toFixed(2)}`);
+    if (idx !== last) seen.push(st.id);
+    last = idx;
+  }
+  assert.deepEqual(seen, OVER_STAGES.map((s) => s.id));
+  assert.equal(overSettings(0, 'broadband').thresholdDb, 0);
+  assert.equal(overSettings(1, 'broadband').thresholdDb, -OVER_THRESHOLD_SPAN_DB);
+  assert.equal(overSettings(0.5, 'broadband').mode, 'broadband');
+  assert.equal(overSettings(2, 'split').thresholdDb, -OVER_THRESHOLD_SPAN_DB);
+});
+
+test('connections: five distinct labs, each with a route and a directive', () => {
+  assert.equal(CONNECTIONS.length, 5);
+  assert.equal(new Set(CONNECTIONS.map((c) => c.route)).size, 5);
+  for (const c of CONNECTIONS) assert.ok(c.route.length > 0 && c.why.length > 0, c.name);
 });

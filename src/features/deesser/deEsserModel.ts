@@ -53,7 +53,11 @@ export type Settings = {
   mode: Mode;
 };
 
-export const DEFAULTS: Settings = { freqHz: 6500, q: 1.4, thresholdDb: -14, rangeDb: 12, ratio: 4, mode: 'split' };
+/** Threshold −10 dB: on the modelled phrase every sibilant crosses, nothing
+ *  else does, and the mean reduction lands in the "Controlled" stage — so
+ *  the lab's own defaults are a setting it would call correct. (−14 landed
+ *  in "Noticeable" by its own scale.) */
+export const DEFAULTS: Settings = { freqHz: 6500, q: 1.4, thresholdDb: -10, rangeDb: 12, ratio: 4, mode: 'split' };
 
 export const FREQ_MIN = 2000;
 export const FREQ_MAX = 10000;
@@ -147,6 +151,21 @@ export function overStage(meanGrDb: number): OverStage {
   return OVER_STAGES.find((s) => meanGrDb <= s.maxGrDb) ?? OVER_STAGES[OVER_STAGES.length - 1];
 }
 
+/** How far the over-de-essing page's single control lowers the threshold at
+ *  100 %. Chosen so the slider walks the WHOLE progression in order with the
+ *  stages spread along its travel (a 40 dB span put "dull" across the top
+ *  half of the slider). */
+export const OVER_THRESHOLD_SPAN_DB = 24;
+
+/** The over-de-essing page's rack: `amount` 0..1 lowers the threshold from
+ *  0 to −OVER_THRESHOLD_SPAN_DB with the range wide open, so the only thing
+ *  changing is how hard the de-esser is being pushed. */
+export function overSettings(amount: number, mode: Mode): Settings {
+  const a = Math.max(0, Math.min(1, amount));
+  const depth = a * OVER_THRESHOLD_SPAN_DB;
+  return { ...DEFAULTS, thresholdDb: depth === 0 ? 0 : -depth, rangeDb: 24, mode };
+}
+
 /* ── frequency hints ───────────────────────────────────────────────────── */
 
 export type FreqHint = { id: string; name: string; hz: number; note: string };
@@ -173,17 +192,20 @@ export const PATH_SIDECHAIN: Block[] = [
   { id: 'bpf', name: 'Band-pass filter', what: 'A copy of the input, filtered so only the hiss region remains. The de-esser listens here, not to the whole voice.' },
   { id: 'det', name: 'Level detector', what: 'Measures how loud the filtered copy is, moment to moment.' },
   { id: 'thr', name: 'Threshold compare', what: 'Is the hiss level above the threshold? If not, do nothing.' },
-  { id: 'gc', name: 'Gain computer', what: 'Turns the amount above threshold into a gain reduction, limited by the range.' },
+  // NEW COPY (review 2026-09-02): names the ratio, which the model has but the copy never mentioned.
+  { id: 'gc', name: 'Gain computer', what: 'Turns the amount above threshold into a gain reduction: the ratio sets what fraction of the excess is removed, and the range caps how far the gain may fall.' },
 ];
 
 /** The signal-chain screens that the connections card points at (route names
  *  are RootStackParamList keys; the screen casts them). */
+// NEW COPY (review 2026-09-02): each line now says what to DO there and which
+// page of this lab it extends, so the card is a study plan rather than a list.
 export const CONNECTIONS: { name: string; why: string; route: string }[] = [
-  { name: 'EQ Lab', why: 'why a static cut cannot do this job', route: 'EqLabHome' },
-  { name: 'Compression', why: 'the same gain computer, listening to everything', route: 'CompressionLab' },
-  { name: 'Gate / Expander', why: 'the same threshold idea, used to open instead of duck', route: 'GateLab' },
-  { name: 'Visual Audio Analysis', why: 'seeing the hiss band to choose the frequency', route: 'MeterLab' },
-  { name: 'Speech & Voice Lab', why: 'where the S comes from in the first place', route: 'SpeechLab' },
+  { name: 'EQ Lab', why: 'Build the static cut from page 2 as a real EQ band and hear why it is always on.', route: 'EqLabHome' },
+  { name: 'Compression', why: 'The same detector → threshold → gain computer, listening to the whole signal instead of a filtered copy.', route: 'CompressionLab' },
+  { name: 'Gate / Expander', why: 'The same threshold, used the other way round: opening on signal instead of ducking on hiss.', route: 'GateLab' },
+  { name: 'Visual Audio Analysis', why: 'Watch the hiss band on a live spectrum before you pick the detector frequency (page 5).', route: 'MeterLab' },
+  { name: 'Speech & Voice Lab', why: 'Where the S is made — teeth, air and turbulence — and why some voices hiss more than others.', route: 'SpeechLab' },
 ];
 
 /* ── a hiss spectrum for the frequency page ────────────────────────────── */

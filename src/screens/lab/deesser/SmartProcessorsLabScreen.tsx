@@ -46,10 +46,15 @@ export function SmartProcessorsLabScreen() {
             onPress={() => f.route && navigation.navigate(f.route as never)}
             style={[styles.row, !f.route && styles.rowPlanned]}
             accessibilityRole="button"
+            accessibilityState={{ disabled: !f.route }}
             accessibilityLabel={f.route ? `Open ${f.name}` : `${f.name}. ${DEV_NOTE}`}
           >
             <View style={{ flex: 1, gap: 3 }}>
-              <Text style={[styles.rowName, !f.route && { color: colors.textMuted }]}>{f.name}</Text>
+              <View style={styles.nameRow}>
+                <Text style={[styles.rowName, !f.route && { color: colors.textMuted }]}>{f.name}</Text>
+                {/* Open state carried by a tag as well as the border colour (not colour alone). */}
+                {f.route ? <Text style={styles.openTag}>OPEN</Text> : null}
+              </View>
               <Text style={styles.rowBlurb}>{f.blurb}</Text>
               {!f.route ? <Text style={styles.devNote}>{DEV_NOTE}</Text> : null}
             </View>
@@ -71,7 +76,9 @@ const styles = StyleSheet.create({
   lead: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, marginBottom: 4 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 14, borderRadius: 12, borderWidth: 1, borderColor: colors.green, backgroundColor: '#101512' },
   rowPlanned: { borderColor: colors.hairline, backgroundColor: '#0f0f11' },
-  rowName: { color: colors.textPrimary, fontFamily: fonts.oswaldMedium, fontSize: 14, letterSpacing: 0.4 },
+  nameRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  rowName: { color: colors.textPrimary, fontFamily: fonts.oswaldMedium, fontSize: 14, letterSpacing: 0.4, flexShrink: 1 },
+  openTag: { color: colors.green, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1.5, borderWidth: 1, borderColor: colors.green, borderRadius: 4, paddingHorizontal: 5, paddingVertical: 1 },
   rowBlurb: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17 },
   devNote: { color: colors.textMuted, fontFamily: fonts.barlowMedium, fontSize: 11, marginTop: 2 },
   chev: { color: colors.green, fontSize: 24, paddingHorizontal: 4 },
