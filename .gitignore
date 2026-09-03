@@ -48,3 +48,7 @@ docs/service_key.txt
 
 # Supabase CLI local temp
 supabase/.temp/
+
+# Agent scratch — throwaway tool output, never a deliverable.
+# Dated handoff/deliverable folders are deliberately NOT ignored.
+_bughunt_tmp/

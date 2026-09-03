@@ -1,0 +1,9 @@
+# Revisions that changed formatting only. `git blame` should look through them.
+#
+# Enable locally with:
+#   git config blame.ignoreRevsFile .git-blame-ignore-revs
+# GitHub honours this file automatically.
+
+# Line-ending renormalization, 2026-09-03. 47 .ts/.tsx files that carried CRLF
+# in the index were rewritten to LF. No content was edited.
+318410694f4b8e7322744f0428c6ba68567b7b81
