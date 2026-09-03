@@ -17,6 +17,7 @@ independently reversible by `99_ROLLBACK`.
 |---|---|---|---|
 | 1 | `00_PRECHECK.sql` | Read-only. Re-derives the split from live data, the whole FK graph, every collision count, and the sequencing state of the other two packages. | n/a |
 | 2 | `05_BACKUP.sql` | Builds `cr_v1topics_map_20260903` (the SSoT every later stage reads) and backs up all 51 achievements rows plus every row any stage can touch. Aborts unless the split is exactly 17/29/5. | n/a |
+| 2b | `15_APPLY_paywall_gate.sql` | **Paywall.** Points the Common Mistakes gate in `glossary_study_v` at the v3 free topics (3060, 3970) instead of the v1 pair (0, 36). Self-contained: own backup, own rollback in `15_ROLLBACK_paywall_gate.sql`. **Widens the free tier from 119 terms to 390** — read its header. Safe to run first. | Yes |
 | 3 | `10_APPLY_convert_repoint.sql` | **CONVERT.** Repoints glossary links and progress from the 17 v1 topics onto their v3 twins, deleting duplicates. Re-evaluates credentials. | Yes |
 | 4 | `20_APPLY_purge_v1_user_data.sql` | Deletes the 6 v1 quiz attempts (+ items) and the progress rows on the 29 RETIRE topics. Leaves BLOCKED alone. | Yes |
 | 5 | `30_APPLY_retire_mark.sql` | **RETIRE.** Clears `is_active` / `always_free` / `is_prerequisite` on the 46, and writes a dated ledger row for each. | Yes |
