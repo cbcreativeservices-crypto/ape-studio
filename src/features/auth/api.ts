@@ -40,22 +40,10 @@ export const REGISTER_ERROR_COPY: Record<RegisterErrorCode, string> = {
   internal_error: 'Something went wrong. Please try again.',
 };
 
-export async function registerStudent(
-  apeStudentId: string,
-  registrationCode: string,
-): Promise<RegisterStudentResult> {
-  const { data, error } = await supabase.rpc('register_student', {
-    p_ape_student_id: apeStudentId,
-    p_registration_code: registrationCode,
-  });
-  if (error) {
-    // Transport / unexpected failure — treat as internal_error for copy.
-    console.warn('[auth] register_student transport error:', error.message);
-    return { success: false, error_code: 'internal_error' };
-  }
-  return data as RegisterStudentResult;
-}
-
+// registerStudent() removed 2026-09-03 (owner decision "delete two dead entry
+// points"). It called the register_student RPC, the one writer that inserted an
+// enrollment row against the archived `courses` table. It was exported and never
+// imported anywhere; AuthScreen signs up through registerCommercialUser instead.
 /**
  * Ensure an authed session for the (email, password) pair.
  * - Fresh email → signUp creates the account + session.

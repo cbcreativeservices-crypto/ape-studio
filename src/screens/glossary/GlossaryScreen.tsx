@@ -428,9 +428,8 @@ function LinkedText({
     </Text>
   );
 }
-type CourseRef = { id: string; code: string; sequence: number };
 type TopicRef = { id: string; name: string; course_id: string; sequence_in_course: number };
-type Filter = 'all' | 'course' | 'topic' | 'equations' | 'favorites' | 'custom' | 'recent';
+type Filter = 'all' | 'topic' | 'equations' | 'favorites' | 'custom' | 'recent';
 
 // Flagged-terms key now lives in features/flags/flaggedStore (FLAGGED_KEY) —
 // same 'ape:glossaryFavs' storage, shared app-wide (Booth 2026-07-18).
@@ -461,11 +460,6 @@ const LINK_BLUE = '#9fbede';
 // taps feel slow/unresponsive. This turns it off. (Valid RN prop; RN 0.86's
 // type defs omit it, so it's spread untyped.)
 const NO_TOUCH_DELAY = { delaysContentTouches: false } as Record<string, unknown>;
-
-/** Booth 2026-07-07: the prerequisite course reads "SAFETY", not "SAFE". */
-function courseLabel(code: string): string {
-  return code === 'SAFE' ? 'SAFETY' : code;
-}
 
 /** One labeled category inside an expanded term (mirrors flashcard levels). */
 function DetailSection({ label, text }: { label: string; text: string | null }) {
@@ -856,10 +850,9 @@ function GlossaryLoading({ count, landed }: { count: number | null; landed: bool
 
 export function GlossaryScreen({ route, navigation }: Props) {
   const insets = useSafeAreaInsets();
-  const { courseId: presetCourseId, achievementId: presetTopicId } = route.params ?? {};
+  const { achievementId: presetTopicId } = route.params ?? {};
 
   const [entries, setEntries] = useState<Entry[]>([]);
-  const [courses, setCourses] = useState<CourseRef[]>([]);
   const [topics, setTopics] = useState<TopicRef[]>([]);
   const [loading, setLoading] = useState(true);
   // Cached total term count (owner 2026-08-02): the corpus load pages ~21k rows
@@ -1180,7 +1173,6 @@ export function GlossaryScreen({ route, navigation }: Props) {
     const y = popupTop.offset;
     requestAnimationFrame(() => popupScrollRef.current?.scrollTo({ y, animated: false }));
   }, [popupTop?.id]); // eslint-disable-line react-hooks/exhaustive-deps
-  const [selCourseId, setSelCourseId] = useState<string | null>(presetCourseId ?? null);
   const [selTopicId, setSelTopicId] = useState<string | null>(presetTopicId ?? null);
 
   useFocusEffect(
@@ -1204,8 +1196,11 @@ export function GlossaryScreen({ route, navigation }: Props) {
       });
       (async () => {
         try {
-          const [{ data: courseRows }, { data: topicRows }] = await Promise.all([
-            supabase.from('courses').select('id, code, sequence').order('sequence'),
+          // Owner 2026-09-03: the `courses` fetch is gone. It read the archived
+          // v1 college catalog on every Glossary mount to feed a filter chip that
+          // was removed in July, and a term-chooser label that was wrong for
+          // 23,187 of the 26,847 entries.
+          const [{ data: topicRows }] = await Promise.all([
             // TOPIC filter = the LIVE v3 curriculum only (owner 2026-08-06). The
             // old query pulled ALL achievements (v2 + v3 + draft), so the list was
             // a mix and many rows resolved to the wrong/empty curriculum.
@@ -1217,7 +1212,6 @@ export function GlossaryScreen({ route, navigation }: Props) {
               .order('global_sequence'),
           ]);
           if (!alive) return;
-          setCourses((courseRows ?? []) as CourseRef[]);
           setTopics(
             ((topicRows ?? []) as { id: string; name: string; global_sequence: number }[])
               .map((t) => ({ id: t.id, name: t.name, course_id: '', sequence_in_course: t.global_sequence ?? 0 }))
@@ -1242,7 +1236,6 @@ export function GlossaryScreen({ route, navigation }: Props) {
     }, []),
   );
 
-  const selCourse = courses.find((c) => c.id === selCourseId) ?? null;
   const selTopic = topics.find((t) => t.id === selTopicId) ?? null;
   // DATA ISSUE (confirmed 2026-07-18): the `achievements` table has DUPLICATE
   // rows — 28 topic names appear twice in the SAME course (2 different ids), and
@@ -1296,9 +1289,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
       ? 'Equations & Formulas'
       : filter === 'all'
       ? 'All'
-      : filter === 'course'
-        ? (selCourse?.code ?? 'Course')
-        : filter === 'topic'
+      : filter === 'topic'
           ? (selTopic?.name ?? 'Topic')
           : filter === 'favorites'
             ? 'Bookmarks'
@@ -1309,7 +1300,6 @@ export function GlossaryScreen({ route, navigation }: Props) {
   // Feature 1: the cross-link index — computed ONCE per corpus load.
   const termIndex = useMemo(() => (entries.length ? buildTermIndex(entries) : null), [entries]);
   const entryById = useMemo(() => new Map(entries.map((e) => [e.id, e])), [entries]);
-  const courseCodeById = useMemo(() => new Map(courses.map((c) => [c.id, c.code])), [courses]);
 
   // --- Sharing (owner spec 2026-08-06) --------------------------------------
   // Refs keep the async share/resolve closures reading CURRENT data even though
@@ -1440,7 +1430,6 @@ export function GlossaryScreen({ route, navigation }: Props) {
 
   const visible = useMemo(() => {
     let list = entries;
-    if (filter === 'course' && selCourseId) list = list.filter((e) => e.course_id === selCourseId);
     if (filter === 'topic' && selTopicId) {
       // Union of all ids sharing the selected topic's name (dedup — see above).
       const name = topics.find((t) => t.id === selTopicId)?.name;
@@ -1474,7 +1463,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
         .map((x) => x.e);
     }
     return list;
-  }, [entries, filter, search, selCourseId, selTopicId, bookmarks, starred, recent, topics, topicIdsByName, formulaById]);
+  }, [entries, filter, search, selTopicId, bookmarks, starred, recent, topics, topicIdsByName, formulaById]);
 
   // Rows for the held-chip term list overlay (user request 2026-07-22): the
   // members of one set (Bookmarks / Custom / Recent), independent of the main
@@ -1620,7 +1609,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
     return () => clearTimeout(t);
     // NOTE: cardView is intentionally NOT a dep — toggling views preserves the
     // focused term's position instead of resetting to the top (Booth 2026-07-09c).
-  }, [filter, selCourseId, selTopicId, search]);
+  }, [filter, selTopicId, search]);
 
   // Justify a list-mode term to the very top (just below the filters). Fires a
   // few staggered attempts so it survives a card→list layout switch, where the
@@ -1847,19 +1836,6 @@ export function GlossaryScreen({ route, navigation }: Props) {
         />
       </View>
 
-      {/* Course picker: 9 full-size chips, wrapping grid. */}
-      {!commercialMode && filter === 'course' && (
-        <View style={styles.pickerWrap}>
-          {courses.map((c) => (
-            <Chip
-              key={c.id}
-              label={courseLabel(c.code)}
-              active={selCourseId === c.id}
-              onPress={() => setSelCourseId(c.id)}
-            />
-          ))}
-        </View>
-      )}
         </>
       )}
 
@@ -2310,7 +2286,6 @@ export function GlossaryScreen({ route, navigation }: Props) {
                     <Text style={styles.chooserTerm} numberOfLines={1}>
                       {e.term}
                     </Text>
-                    <Text style={styles.chooserCode}>{courseCodeById.get(e.course_id) ?? ''}</Text>
                   </Pressable>
                 );
               })}

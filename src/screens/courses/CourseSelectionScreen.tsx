@@ -939,9 +939,17 @@ export function CourseSelectionScreen() {
       // course card is built from the catalog any more — it survives here only
       // to supply the two free tasters.
       const catalog = await getPublicCatalog();
-      // The one remaining purple card: a placeholder, not a course.
-      const AI_STUB: Card = { kind: 'programStub', id: 'prog-ai-audio', name: 'AI Audio and Emerging Production' };
-      const programCards: Card[] = [AI_STUB];
+      // OWNER RULING 2026-09-03: the carousel is a MARKETING surface, not a
+      // catalogue of everything the app holds. Only TOPIC cards belong here —
+      // no certificate, course or programme cards. That removed the purple
+      // "AI Audio and Emerging Production" programme placeholder and the
+      // far-right "N Specialization Certificates" tally card, which linked to
+      // the Certificates screen. Both of those screens are still reachable from
+      // the Certificates and Programs tabs in the header.
+      //
+      // Booth is choosing which topic cards appear; until that list arrives the
+      // deck is the three utility cards, the two free tasters, and the
+      // audio-field topic cards below.
       // Audio-field topic cards (owner 2026-08-10): each field is its own topic
       // card — course-card image, membership-locked for non-members, A–Z.
       const topicCards = FIELD_TOPICS.map((name, i) => ({
@@ -949,11 +957,6 @@ export function CourseSelectionScreen() {
         id: `field-${i}`,
         name,
       })).sort((a, b) => a.name.localeCompare(b.name));
-      // Far-right tally card = Specialization Certificates to earn (user request
-      // 2026-07-22), linking to the Certificates screen. LIVE v3 count (owner
-      // 2026-08-10: was the stale awardsData length); awardsData is the fallback
-      // if the fetch is empty. (All active v3 certs are L1 specialization certs.)
-      const otherCount = (await fetchV3Certs()).length || OTHER_CERTS_COUNT;
       setCards([
         // Ear Training & Audio Lab — pinned FAR LEFT, left of tools (owner
         // request 2026-07-26).
@@ -969,11 +972,8 @@ export function CourseSelectionScreen() {
           name: ft.gs === 0 ? 'Pro Audio Safety' : ft.name,
           courseOrder: ft.courseOrder,
         })),
-        ...programCards,
-        // A–Z topic group (live single-topic pubs + audio-field topic cards).
+        // A–Z topic group.
         ...topicCards,
-        // Far-right tally card (only when there's more to tease).
-        ...(otherCount > 0 ? [{ kind: 'more' as const, id: 'more' as const, count: otherCount }] : []),
       ]);
     };
     // COMMERCIAL-FIRST (institutional retired — owner 2026-08-06): the MENU

@@ -284,85 +284,9 @@ export async function fetchEnrollmentDashboard(gsList: number[]): Promise<Dashbo
   };
 }
 
-export async function fetchDashboard(): Promise<DashboardData> {
-  // 1. Own users row (RLS: own_user) — links auth.uid() → app user id.
-  const { data: user, error: userErr } = await supabase
-    .from('users')
-    .select('id, nickname')
-    .single();
-  if (userErr || !user) throw new Error('user_not_found');
-
-  // 2. Enrollments + course reference rows.
-  const { data: enrollments, error: enrErr } = await supabase
-    .from('enrollment')
-    .select('course_id, curriculum_version_id, courses(id, code, name, sequence, achievement_count, color_hex)')
-    .eq('user_id', user.id);
-  if (enrErr) throw enrErr;
-  const courses: Course[] = (enrollments ?? [])
-    .map((e: any) => e.courses)
-    .filter(Boolean)
-    .sort((a: Course, b: Course) => a.sequence - b.sequence);
-  if (courses.length === 0) throw new Error('not_enrolled');
-
-  // 3. Current course = last-used or first by sequence.
-  const lastCourseId = await AsyncStorage.getItem(LAST_COURSE_KEY);
-  const currentCourse = courses.find((c) => c.id === lastCourseId) ?? courses[0];
-  const cv = (enrollments ?? []).find((e: any) => e.course_id === currentCourse.id)
-    ?.curriculum_version_id as string;
-
-  // 4. Active topics for the course, in sequence.
-  const { data: topics, error: topErr } = await supabase
-    .from('achievements')
-    .select('id, course_id, sequence_in_course, name, applicable_methods, is_prerequisite, icon_url, global_sequence')
-    .eq('course_id', currentCourse.id)
-    .eq('curriculum_version_id', cv)
-    .eq('is_active', true)
-    .order('sequence_in_course');
-  if (topErr) throw topErr;
-  const topicIds = (topics ?? []).map((t) => t.id);
-  const nameById = new Map<string, string>(((topics ?? []) as Topic[]).map((t) => [t.id, t.name]));
-
-  // 5. Own per-topic + per-method progress (missing row = locked / no progress).
-  //    itemCountByTopic goes through resolveItemCounts (name-union) so the
-  //    duplicate-achievement topics don't read a 0 denominator — see the helper.
-  const [
-    { data: prog, error: progErr },
-    { data: methodRows, error: mErr },
-    { data: cfg, error: cfgErr },
-    itemCountByTopic,
-  ] = await Promise.all([
-    supabase
-      .from('student_achievement_progress')
-      .select('achievement_id, status, best_genuine_score, quiz_attempts, lockout_until, date_earned')
-      .eq('user_id', user.id)
-      .in('achievement_id', topicIds),
-    supabase
-      .from('student_method_progress')
-      .select('achievement_id, method_key, completion_pct, engagement_seconds, answered_count, correct_count, item_states')
-      .eq('user_id', user.id)
-      .in('achievement_id', topicIds),
-    supabase
-      .from('study_methods')
-      .select('key, name, sequence, min_engagement_seconds, requires_accuracy, accuracy_threshold, required_passes')
-      .order('sequence'),
-    resolveItemCounts(topicIds, nameById),
-  ]);
-  if (progErr) throw progErr;
-  if (mErr) throw mErr;
-  if (cfgErr) throw cfgErr;
-
-  const progressByTopic = new Map<string, TopicProgress>();
-  for (const p of (prog ?? []) as TopicProgress[]) progressByTopic.set(p.achievement_id, p);
-
-  return {
-    userId: user.id,
-    nickname: user.nickname ?? null,
-    courses,
-    currentCourse,
-    topics: (topics ?? []) as Topic[],
-    progressByTopic,
-    methodRows: (methodRows ?? []) as MethodProgressRow[],
-    methodConfigs: (cfg ?? []) as StudyMethodConfig[],
-    itemCountByTopic,
-  };
-}
+// fetchDashboard() removed 2026-09-03 (owner decision "delete two dead entry
+// points"). It read `enrollment` joined to the archived `courses` table and
+// keyed topics on achievements.course_id — all v1. It was already unreachable:
+// its only caller sat on the false arm of a ternary behind commercialMode,
+// which is permanently true. Removing it is what lets the enrollment table
+// and achievements.course_id be dropped.

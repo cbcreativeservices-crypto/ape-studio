@@ -65,7 +65,6 @@ import { TrophyModal } from '../../components/TrophyModal';
 import { useTopicTrophies, trophyForTopicName } from '../../features/profile/topicTrophies';
 import { colors, fonts, spacing } from '../../theme/tokens';
 import {
-  fetchDashboard,
   fetchEnrollmentDashboard,
   getLastTopicIndex,
   setLastTopicIndex,
@@ -97,7 +96,6 @@ import { onStudyProgress } from '../../features/study/sync';
 import { useScenarioExempt } from '../../features/study/scenarioExempt';
 import { loadAllLocalMethodStates, mergeItemStates } from '../../features/study/localProgress';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
-import { fetchCommercialDashboard, getLastPublicCourse } from '../../features/commercial/commercialDashboard';
 
 // Rack density (owner 2026-08-11): ONE knob scales every rack slot's height
 // together — method rows, quiz, and the section labels — so the whole stack
@@ -723,12 +721,15 @@ export function DashboardScreen() {
         d = await guestFetch();
       } else {
         try {
+          // Owner 2026-09-03: the v1 commercial-course branch is gone. It asked
+          // fetchCommercialDashboard for a public_courses course, and those are
+          // the college courses that were removed. The two arms it sat between
+          // both build from v3 enrollments, so an empty enrollment list now
+          // falls to the same free-topic view a guest sees.
           d =
             viewModeRef.current === 'enrollment' && enrolledGsRef.current.length > 0
               ? await fetchEnrollmentDashboard(enrolledGsRef.current)
-              : commercialMode
-                ? await fetchCommercialDashboard((await getLastPublicCourse()) ?? 1, caps)
-                : await fetchDashboard();
+              : await guestFetch();
         } catch (e: any) {
           // SELF-HEAL (owner 2026-08-06): a session persisted on-device whose
           // account has no student record throws user_not_found on EVERY cold
@@ -1783,9 +1784,9 @@ export function DashboardScreen() {
                   height={42}
                   onPress={() => {
                     setTermsOpen(false);
+                    // Owner 2026-09-03: the course params are gone with the
+                    // archived v1 catalog. The Glossary preselects by topic.
                     navigation.navigate('Glossary', {
-                      courseId: data.currentCourse.id,
-                      courseCode: data.currentCourse.code,
                       achievementId: topic.id,
                       topicName: topic.name,
                     });

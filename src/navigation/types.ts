@@ -16,8 +16,6 @@ export type StudyStackParamList = {
   Quiz: StudyScreenParams;
   /** S17 — optional preselect context (present when opened from a Dashboard). */
   Glossary: {
-    courseId?: string;
-    courseCode?: string;
     achievementId?: string;
     topicName?: string;
   };
