@@ -6,108 +6,12 @@
       "order": 1,
       "name": "Pro Audio Safety",
       "topics": [
-        { "seq": 1, "gs": 0, "name": "Professional Audio Safety", "placement": "P" }
-      ]
-    },
-    {
-      "order": 2,
-      "name": "Intro to Audio",
-      "topics": [
-        { "seq": 1, "gs": 0, "name": "Professional Audio Safety", "placement": "X" },
-        { "seq": 2, "gs": 1, "name": "Sound & Acoustics", "placement": "P" },
-        { "seq": 3, "gs": 2, "name": "Grounding & Electrical", "placement": "P" },
-        { "seq": 4, "gs": 3, "name": "Connectors & I/O Connections", "placement": "P" },
-        { "seq": 5, "gs": 4, "name": "Signal Path & Levels", "placement": "P" },
-        { "seq": 6, "gs": 5, "name": "Microphones", "placement": "P" },
-        { "seq": 7, "gs": 6, "name": "Amps & Loudspeakers", "placement": "P" },
-        { "seq": 8, "gs": 7, "name": "Mixers & Recorders", "placement": "P" },
-        { "seq": 9, "gs": 8, "name": "Equalization (EQ)", "placement": "P" },
-        { "seq": 10, "gs": 9, "name": "Dynamics Processing", "placement": "P" },
-        { "seq": 11, "gs": 10, "name": "Reverb & Delay", "placement": "P" }
-      ]
-    },
-    {
-      "order": 3,
-      "name": "Sound Reinforcement Systems",
-      "topics": [
-        { "seq": 1, "gs": 0, "name": "Professional Audio Safety", "placement": "X" },
-        { "seq": 2, "gs": 12, "name": "Amplifiers", "placement": "P" },
-        { "seq": 3, "gs": 13, "name": "Loudspeaker System Deployment", "placement": "P" },
-        { "seq": 4, "gs": 14, "name": "Analog Live Sound", "placement": "P" },
-        { "seq": 5, "gs": 15, "name": "Digital Live Sound", "placement": "P" },
-        { "seq": 6, "gs": 16, "name": "RF Wireless Systems", "placement": "P" },
-        { "seq": 7, "gs": 17, "name": "Assisted Listening Systems", "placement": "P" },
-        { "seq": 8, "gs": 19, "name": "Corporate AV", "placement": "P" },
-        { "seq": 9, "gs": 20, "name": "Commercial Audio Systems", "placement": "P" },
-        { "seq": 10, "gs": 21, "name": "Distributed Audio Systems", "placement": "P" },
-        { "seq": 11, "gs": 18, "name": "Consumer Audio Systems", "placement": "P" },
-        { "seq": 12, "gs": 22, "name": "Vehicle Audio", "placement": "P" }
-      ]
-    },
-    {
-      "order": 4,
-      "name": "Audio System Design and Maintenance",
-      "topics": [
-        { "seq": 1, "gs": 0, "name": "Professional Audio Safety", "placement": "X" },
-        { "seq": 2, "gs": 28, "name": "Audio Equipment & Infrastructure", "placement": "P" },
-        { "seq": 3, "gs": 29, "name": "Room Acoustics", "placement": "P" },
-        { "seq": 4, "gs": 23, "name": "Audio Measurement & Optimization", "placement": "P" },
-        { "seq": 5, "gs": 30, "name": "Audio System Design", "placement": "P" },
-        { "seq": 6, "gs": 32, "name": "Documentation & Diagrams", "placement": "P" },
-        { "seq": 7, "gs": 31, "name": "Dante Networking", "placement": "P" },
-        { "seq": 8, "gs": 34, "name": "System Maintenance", "placement": "P" },
-        { "seq": 9, "gs": 33, "name": "Soldering & Repair", "placement": "P" },
-        { "seq": 10, "gs": 35, "name": "Vacuum Tubes", "placement": "P" },
-        { "seq": 11, "gs": 11, "name": "Troubleshooting", "placement": "P" }
-      ]
-    },
-    {
-      "order": 5,
-      "name": "Recording Arts",
-      "topics": [
-        { "seq": 1, "gs": 24, "name": "Recording Arts", "placement": "P" },
-        { "seq": 2, "gs": 27, "name": "Ear Training", "placement": "P" },
-        { "seq": 3, "gs": 43, "name": "Band Recording and Production", "placement": "P" },
-        { "seq": 4, "gs": 25, "name": "Mixing", "placement": "P" },
-        { "seq": 5, "gs": 26, "name": "Mastering", "placement": "P" }
-      ]
-    },
-    {
-      "order": 6,
-      "name": "Music Production",
-      "topics": [
-        { "seq": 1, "gs": 36, "name": "DAW Skills", "placement": "P" },
-        { "seq": 2, "gs": 37, "name": "MIDI", "placement": "P" },
-        { "seq": 3, "gs": 38, "name": "Plugins & Virtual Instruments", "placement": "P" },
-        { "seq": 4, "gs": 39, "name": "Sampling", "placement": "P" },
-        { "seq": 5, "gs": 40, "name": "Synthesis", "placement": "P" },
-        { "seq": 6, "gs": 41, "name": "Project Management", "placement": "P" }
-      ]
-    },
-    {
-      "order": 7,
-      "name": "Podcasting and Broadcast",
-      "topics": [
-        { "seq": 1, "gs": 42, "name": "Podcasting & Broadcast Audio", "placement": "P" }
-      ]
-    },
-    {
-      "order": 8,
-      "name": "Film and Game",
-      "topics": [
-        { "seq": 1, "gs": 44, "name": "Film & Game Audio", "placement": "P" }
-      ]
-    },
-    {
-      "order": 9,
-      "name": "Career and Business",
-      "topics": [
-        { "seq": 1, "gs": 48, "name": "Copyright, Publishing & Licensing", "placement": "P" },
-        { "seq": 2, "gs": 45, "name": "Portfolio Development", "placement": "P" },
-        { "seq": 3, "gs": 50, "name": "Industry Foundations", "placement": "P" },
-        { "seq": 4, "gs": 46, "name": "Audio Career Exploration", "placement": "P" },
-        { "seq": 5, "gs": 47, "name": "Professional Networking", "placement": "P" },
-        { "seq": 6, "gs": 49, "name": "Music Entrepreneurship", "placement": "P" }
+        {
+          "seq": 1,
+          "gs": 0,
+          "name": "Professional Audio Safety",
+          "placement": "P"
+        }
       ]
     }
   ]

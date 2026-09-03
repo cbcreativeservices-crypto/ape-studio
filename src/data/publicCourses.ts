@@ -1,13 +1,17 @@
-import { officialTopicName } from './officialTopicNames';
 /**
- * Public course catalog — commercial-first structure (CM1, Booth 2026-07-11).
+ * Public course catalog — the Home carousel's course content.
  *
- * v2.13 LIVE (backend handoff 2026-07-16): the catalog SSoT is now the
- * anon-readable `public_courses` / `public_course_topics` tables —
- * `getPublicCatalog()` fetches them (cached per app run) and FALLS BACK to the
- * bundled seed on any error, so the carousel never blanks offline. Topic names
- * prefer the SEED's public names (Booth rule: no academic codes in public UI);
- * server rows supply the structure.
+ * OWNER RULING 2026-09-03: catalog orders 2–9 were courses at Booth's college
+ * and have no relation to this app. They are gone — from this seed, from the
+ * Home carousel, and (by the accompanying SQL package) from the database.
+ * Only order 1, the Pro Audio Safety free taster, remains.
+ *
+ * That ruling also retired the v1 `public_courses` / `public_course_topics`
+ * fetch: `getPublicCatalog()` no longer touches the database, because leaving
+ * the query in place would let the removed college courses reappear in the
+ * carousel the moment the tables answered. The bundled seed is now the only
+ * source, which is exactly what it always rendered — the two were compared
+ * row for row before the fetch was cut, and produced an identical deck.
  *
  * Placement legend:
  *   "P" = primary placement · "X" = cross-listed (shared completion — one
@@ -17,7 +21,6 @@ import { officialTopicName } from './officialTopicNames';
  * from the existing achievements query. NEVER hardcode UUIDs here.
  */
 import seed from './public_courses_seed.json';
-import { supabase } from '../lib/supabase';
 
 export type Placement = 'P' | 'X';
 
@@ -52,6 +55,25 @@ export const courseHasFreeTopic = (c: PublicCourse): boolean =>
  *  course (order) where each is PRIMARY, so a free-topic card opens the right
  *  dashboard. gs36 name = "DAW Skills" (never "DAW Fundamentals"). */
 export type FreeTopicEntry = { gs: number; name: string; courseOrder: number };
+
+/**
+ * Names for the two free tasters, held here rather than read out of the
+ * catalog. gs36's host course was Music Production — one of the college
+ * courses removed on 2026-09-03 — so the catalog can no longer supply its
+ * name, and without this the card would render the placeholder "this topic".
+ * Both names are the pre-override raw titles: the Home screen re-titles gs0 to
+ * "Pro Audio Safety", and CARD_TITLE_RENAMES re-titles gs36 to
+ * "DAW Fundamentals & Session Management". Changing either string here changes
+ * what the carousel shows.
+ */
+const FREE_TOPIC_NAME: Record<number, string> = {
+  0: 'Professional Audio Safety',
+  36: 'DAW Skills',
+};
+
+/** Every free taster opens the surviving order-1 course context. */
+const FREE_TOPIC_HOME_ORDER = 1;
+
 export const FREE_TOPICS: FreeTopicEntry[] = FREE_TOPIC_GS.map((gs) => {
   for (const c of PUBLIC_COURSES) {
     const t = c.topics.find((tt) => tt.gs === gs && tt.placement === 'P');
@@ -62,7 +84,7 @@ export const FREE_TOPICS: FreeTopicEntry[] = FREE_TOPIC_GS.map((gs) => {
     const t = c.topics.find((tt) => tt.gs === gs);
     if (t) return { gs, name: t.name, courseOrder: c.order };
   }
-  return { gs, name: officialTopicName(gs), courseOrder: 1 };
+  return { gs, name: FREE_TOPIC_NAME[gs] ?? 'this topic', courseOrder: FREE_TOPIC_HOME_ORDER };
 });
 
 /** All distinct global_sequence values referenced by the catalog. */
@@ -70,62 +92,16 @@ export const ALL_PUBLIC_TOPIC_GS: number[] = Array.from(
   new Set(PUBLIC_COURSES.flatMap((c) => c.topics.map((t) => t.gs))),
 ).sort((a, b) => a - b);
 
-// ---- v2.13 runtime catalog (backend handoff 2026-07-16) ----
-
-/** Seed public topic names by gs — override server (achievement) names so no
- *  academic naming leaks into public UI (Booth §1 rule). */
-const SEED_NAME_BY_GS = new Map<number, string>(
-  PUBLIC_COURSES.flatMap((c) => c.topics.map((t) => [t.gs, t.name] as [number, string])),
-);
-
-let catalogCache: PublicCourse[] | null = null;
-
 /**
- * The live public catalog from `public_courses` / `public_course_topics`
- * (anon-readable), shaped exactly like PUBLIC_COURSES. Cached for the app run;
- * ANY error/empty result falls back to the bundled seed (identical structure
- * as of 2026-07-16), so callers never fail on this.
+ * The public catalog. Reads the bundled seed and nothing else.
+ *
+ * This used to fetch `public_courses` / `public_course_topics` and fall back to
+ * the seed. The fetch is gone (owner 2026-09-03): those tables still hold the
+ * eight college courses, so querying them would put the removed cards straight
+ * back into the carousel. Still async so every caller is unchanged.
  */
 export async function getPublicCatalog(): Promise<PublicCourse[]> {
-  if (catalogCache) return catalogCache;
-  try {
-    const [{ data: courses, error: cErr }, { data: topics, error: tErr }, { data: ach, error: aErr }] =
-      await Promise.all([
-        supabase
-          .from('public_courses')
-          .select('id, slug, display_name, sort_order')
-          .eq('is_active', true)
-          .order('sort_order'),
-        supabase.from('public_course_topics').select('public_course_id, achievement_id, placement, seq').order('seq'),
-        supabase.from('achievements').select('id, name, global_sequence'),
-      ]);
-    if (cErr || tErr || aErr || !courses?.length || !topics?.length || !ach?.length) {
-      throw new Error(cErr?.message ?? tErr?.message ?? aErr?.message ?? 'empty catalog');
-    }
-    const achById = new Map((ach as any[]).map((a) => [a.id, a]));
-    const built: PublicCourse[] = (courses as any[]).map((c) => ({
-      order: c.sort_order,
-      name: c.display_name,
-      topics: (topics as any[])
-        .filter((t) => t.public_course_id === c.id)
-        .map((t) => {
-          const a = achById.get(t.achievement_id);
-          if (!a) return null;
-          return {
-            seq: t.seq,
-            gs: a.global_sequence,
-            name: SEED_NAME_BY_GS.get(a.global_sequence) ?? a.name,
-            placement: (t.placement === 'X' ? 'X' : 'P') as Placement,
-          };
-        })
-        .filter(Boolean) as PublicTopic[],
-    }));
-    catalogCache = built;
-    return built;
-  } catch (e) {
-    console.warn('[catalog] server catalog unavailable, using seed:', (e as Error).message);
-    return PUBLIC_COURSES;
-  }
+  return PUBLIC_COURSES;
 }
 
 /** Free-topic taster entries derived from a catalog (same rules as FREE_TOPICS). */
@@ -139,6 +115,6 @@ export function freeTopicsFrom(catalog: PublicCourse[]): FreeTopicEntry[] {
       const t = c.topics.find((tt) => tt.gs === gs);
       if (t) return { gs, name: gs === 36 ? 'DAW Skills' : t.name, courseOrder: c.order };
     }
-    return { gs, name: officialTopicName(gs), courseOrder: 1 };
+    return { gs, name: FREE_TOPIC_NAME[gs] ?? 'this topic', courseOrder: FREE_TOPIC_HOME_ORDER };
   });
 }

@@ -48,7 +48,7 @@ import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
 import { setLastPublicCourse } from '../../features/commercial/commercialDashboard';
 import { getPublicCatalog, freeTopicsFrom, courseHasFreeTopic } from '../../data/publicCourses';
 import { MATRIX_SUBJECTS } from '../../data/courseTopicMatrix';
-import { PROGRAM_PATHS, SPECIALIZED_CERTIFICATES } from '../awards/awardsData';
+import { SPECIALIZED_CERTIFICATES } from '../awards/awardsData';
 import { fetchV3Certs, fetchV3Programs } from '../../data/v3Curriculum';
 import { useDefaultHomeGs, useHomeBundles, useHomeGs } from '../../features/home/homeCardsStore';
 import { setBundleLoaded, useBundles } from '../../features/enrollment/enrolledBundlesStore';
@@ -212,21 +212,13 @@ const OTHER_CERTS_COUNT = SPECIALIZED_CERTIFICATES.length;
 // earlier "gs36 card is always DAW Skills" ruling — but ONLY the marketing card
 // label; the underlying gs36 topic name (curriculum/glossary/dashboard) is
 // unchanged.
+// Owner 2026-09-03: the college-course renames are gone with the courses they
+// renamed (Sound Reinforcement Systems, Audio System Design and Maintenance,
+// Recording Arts, Intro to Audio, and the Career and Business card that carried
+// the "+ N other programs" tally). Only the free DAW taster is still retitled.
 const CARD_TITLE_RENAMES: Record<string, string> = {
   'DAW Skills': 'DAW Fundamentals & Session Management',
-  'Sound Reinforcement Systems': 'Live Sound Production',
-  'Audio System Design and Maintenance': 'Audio Electronics, Service & Repair',
-  'Recording Arts': 'Studio Recording',
-  // Owner 2026-08-01: repurpose the Intro-to-Audio program card as the
-  // Broadcast/Podcast/Streaming program card (moved after Music Production).
-  'Intro to Audio': 'Broadcast, Podcast and Streaming Audio',
 };
-// The "Career and Business" card is retitled to "+ N other programs", where N =
-// Academy Program Certificates NOT represented by a card in the current deck
-// (user request 2026-07-22).
-const OTHER_PROGRAMS_CARD_TITLE = 'Career and Business';
-const normProgram = (s: string) => s.toLowerCase().replace(/&/g, 'and').replace(/\s+/g, ' ').trim();
-const PROGRAM_NAME_SET = new Set(PROGRAM_PATHS.map((p) => normProgram(p.name)));
 
 /** The card's title BEFORE the 2026-07-22 overrides (null for the tally card). */
 function rawCardTitle(item: Card): string | null {
@@ -248,12 +240,9 @@ function rawCardTitle(item: Card): string | null {
   }
 }
 
-/** Display title after the 2026-07-22 renames (Career card → "+ N programs"). */
-function displayCardTitle(item: Card, otherProgramsCount: number): string {
+/** Display title after the card renames. */
+function displayCardTitle(item: Card): string {
   const raw = rawCardTitle(item) ?? '';
-  if ((item.kind === 'public' || item.kind === 'course') && raw === OTHER_PROGRAMS_CARD_TITLE) {
-    return `+ ${otherProgramsCount} other programs`;
-  }
   return CARD_TITLE_RENAMES[raw] ?? raw;
 }
 
@@ -426,7 +415,6 @@ function CourseCardView({
   onOpenTopic,
   onOpenBundle,
   academy,
-  otherProgramsCount,
 }: {
   item: Card;
   onOpenCourse: (c: Extract<Card, { kind: 'course' }>) => void;
@@ -450,9 +438,6 @@ function CourseCardView({
   onOpenBundle: (key: string, topics: number[]) => void;
   /** Academy mode signal — drives the Home-Setup deck + locked-tap behavior. */
   academy: boolean;
-  /** Count for the "Career and Business" → "+ N other programs" retitle
-   *  (user request 2026-07-22). */
-  otherProgramsCount: number;
 }) {
   // CM3: the card RENDERS entitlement capabilities (server-owned once live) —
   // it never decides them. Flag OFF ⇒ everything unlocked-looking as today.
@@ -482,30 +467,6 @@ function CourseCardView({
     );
   }
 
-  // "+ N other programs" card (the retitled Career and Business card, user
-  // request 2026-07-22): no image — a simple filled tally card styled like the
-  // far-right FULL CURRICULUM card. Tapping opens the Programs page.
-  if ((item.kind === 'public' || item.kind === 'course') && rawCardTitle(item) === OTHER_PROGRAMS_CARD_TITLE) {
-    return (
-      <View style={styles.cardOuter}>
-        <View style={styles.cardAbove}>
-          <Text style={[styles.cardAboveText, { color: '#c4a2ff' }]}>Professional Program Certificate</Text>
-          <View style={[styles.cardAboveRule, { backgroundColor: '#c4a2ff' }]} />
-        </View>
-        <Pressable
-          style={[styles.card, styles.moreCard]}
-          onPress={onOpenPrograms}
-          accessibilityRole="button"
-          accessibilityLabel={`Plus ${otherProgramsCount} other professional certification programs — view programs`}
-        >
-          <Text style={styles.moreCount}>+{otherProgramsCount}</Text>
-          <Text style={styles.moreLabel}>OTHER PROFESSIONAL CERTIFICATION PROGRAMS</Text>
-          <View style={{ height: 14 }} />
-          <Text style={styles.moreCta}>VIEW PROGRAMS ›</Text>
-        </Pressable>
-      </View>
-    );
-  }
 
   // Purple PROGRAM placeholder card (owner 2026-08-01) — a finalized program
   // slot with no public course/content yet. Renders exactly like the other
@@ -781,7 +742,7 @@ function CourseCardView({
               ? 'SAFETY'
               : course!.code;
   // Title with the 2026-07-22 card renames applied (Career → "+ N programs").
-  const title = displayCardTitle(item, otherProgramsCount);
+  const title = displayCardTitle(item);
   const inner = (
     <>
       {/* Legibility gradient — light top, dark bottom (for the status/button). */}
@@ -945,22 +906,6 @@ export function CourseSelectionScreen() {
   // shows a friendly sign-up prompt (set in load(), keyed on the real session).
   const [isGuest, setIsGuest] = useState(false);
   const [guestGateOpen, setGuestGateOpen] = useState(false);
-  // LIVE v3 programs (owner 2026-08-10): the "+ N other programs" tally was based
-  // on the stale awardsData PROGRAM_PATHS (16) vs the live catalog (36). Fetch the
-  // real programs; seed with the awardsData values so the count is never empty.
-  const [v3ProgramCount, setV3ProgramCount] = useState(PROGRAM_PATHS.length);
-  const [v3ProgramNames, setV3ProgramNames] = useState<Set<string>>(PROGRAM_NAME_SET);
-  useEffect(() => {
-    let alive = true;
-    void fetchV3Programs().then((ps) => {
-      if (!alive || ps.length === 0) return;
-      setV3ProgramCount(ps.length);
-      setV3ProgramNames(new Set(ps.map((p) => normProgram(p.name))));
-    });
-    return () => {
-      alive = false;
-    };
-  }, []);
   // A LAPSED (cancelled) member keeps their Home cards as they set them up (the
   // store persists), but can no longer open them — a "Membership Expired" warning
   // fires instead (user request 2026-07-23).
@@ -988,51 +933,22 @@ export function CourseSelectionScreen() {
     // The PUBLIC-catalog builder — used for guests/commercial mode AND as the
     // self-heal fallback when an authed load fails on a broken session.
     const buildPublicCatalog = async () => {
-      // v2.13: catalog from public_courses/public_course_topics (seed fallback).
+      // The catalog now carries ONE course: order 1, Pro Audio Safety, whose
+      // single topic is already shown by the green free card below. Orders 2–9
+      // were Booth's college courses and were removed on 2026-09-03, so no
+      // course card is built from the catalog any more — it survives here only
+      // to supply the two free tasters.
       const catalog = await getPublicCatalog();
-      // Skip Pro Audio Safety (order 1) — the green free card already covers it.
-      const pubCards = catalog.filter((pc) => pc.order !== 1).map((pc) => ({
-        kind: 'public' as const,
-        id: `pub-${pc.order}`,
-        order: pc.order,
-        name: pc.name,
-        topicCount: pc.topics.length,
-        hasFreeTopic: courseHasFreeTopic(pc),
-      }));
-      // Multi-topic COURSES on the left (catalog order); ALL single-topic
-      // TOPIC cards — live pubs + audio-field topic cards — form one A-Z group on
-      // the right (Booth 2026-07-16: alphabetized; Worship Sound lands last).
-      const multiPub = pubCards.filter((c) => c.topicCount > 1).sort((a, b) => a.order - b.order);
-      // Purple PROGRAM cards in the owner's finalized order (2026-08-01):
-      //   Live Sound Production (3) · AI Audio [placeholder] · Audio Electronics (4)
-      //   · Studio Recording (5) · Music Production (6) · Broadcast/Podcast (2, the
-      //   repurposed Intro-to-Audio card) · "+ N other programs" (9).
-      // Built from the multi-topic public courses by catalog order; any not
-      // explicitly placed are appended so nothing is dropped if the catalog shifts.
+      // The one remaining purple card: a placeholder, not a course.
       const AI_STUB: Card = { kind: 'programStub', id: 'prog-ai-audio', name: 'AI Audio and Emerging Production' };
-      const byPubOrder = new Map(multiPub.map((c) => [c.order, c]));
-      const PROGRAM_LINEUP = [3, 4, 5, 6, 2, 9];
-      const placedOrders = new Set<number>();
-      const programCards: Card[] = [];
-      for (const o of PROGRAM_LINEUP) {
-        const c = byPubOrder.get(o);
-        if (c) {
-          programCards.push(c);
-          placedOrders.add(o);
-        }
-        if (o === 3) programCards.push(AI_STUB); // AI Audio between Live Sound (3) and Audio Electronics (4)
-      }
-      for (const c of multiPub) if (!placedOrders.has(c.order)) programCards.push(c);
-      const singlePub = pubCards.filter((c) => c.topicCount <= 1);
+      const programCards: Card[] = [AI_STUB];
       // Audio-field topic cards (owner 2026-08-10): each field is its own topic
-      // card — course-card image, membership-locked for non-members. Mixed A–Z
-      // with the live single-topic pubs.
-      const fieldCards = FIELD_TOPICS.map((name, i) => ({
+      // card — course-card image, membership-locked for non-members, A–Z.
+      const topicCards = FIELD_TOPICS.map((name, i) => ({
         kind: 'comingTopic' as const,
         id: `field-${i}`,
         name,
-      }));
-      const topicCards = [...singlePub, ...fieldCards].sort((a, b) => a.name.localeCompare(b.name));
+      })).sort((a, b) => a.name.localeCompare(b.name));
       // Far-right tally card = Specialization Certificates to earn (user request
       // 2026-07-22), linking to the Certificates screen. LIVE v3 count (owner
       // 2026-08-10: was the stale awardsData length); awardsData is the fallback
@@ -1129,20 +1045,6 @@ export function CourseSelectionScreen() {
     return cards;
   }, [cards, entitlement, homeGs, homeBundleKeys, bundles]);
 
-  // "+ N other programs" count for the retitled Career and Business card (user
-  // request 2026-07-22): Academy Program Certificates not represented by a
-  // program-named card currently in the deck.
-  const otherProgramsCount = useMemo(() => {
-    const deck = displayDeck ?? [];
-    let shown = 0;
-    for (const c of deck) {
-      const raw = rawCardTitle(c);
-      if (!raw || raw === OTHER_PROGRAMS_CARD_TITLE) continue;
-      const disp = CARD_TITLE_RENAMES[raw] ?? raw;
-      if (v3ProgramNames.has(normProgram(disp))) shown++;
-    }
-    return Math.max(0, v3ProgramCount - shown);
-  }, [displayDeck, v3ProgramNames, v3ProgramCount]);
 
   // Latest deck for the (stable) onViewableItemsChanged callback to read.
   const deckRef = useRef(displayDeck);
@@ -1494,7 +1396,7 @@ export function CourseSelectionScreen() {
         horizontal
         showsHorizontalScrollIndicator={false}
         keyExtractor={(c) => c.id}
-        extraData={[otherProgramsCount, activeIdx]}
+        extraData={[activeIdx]}
         snapToInterval={CARD_W + CARD_GAP}
         decelerationRate="fast"
         contentContainerStyle={{ paddingHorizontal: SIDE_PAD, gap: CARD_GAP, alignItems: 'center' }}
@@ -1516,7 +1418,6 @@ export function CourseSelectionScreen() {
               onOpenTopic={openTopic}
               onOpenBundle={openBundle}
               academy={academy}
-              otherProgramsCount={otherProgramsCount}
             />
             {/* Featured-card shimmer — overlays the CARD (bottom CARD_H of the
                 cell; the caption strip sits above), taps pass through. */}
