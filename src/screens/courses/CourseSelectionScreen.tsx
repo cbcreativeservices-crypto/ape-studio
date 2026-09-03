@@ -45,7 +45,7 @@ import { confirmDialog, notify } from '../../lib/confirm';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { UpgradeSheet } from '../../features/commercial/UpgradeSheet';
 import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
-import { getPublicCatalog, freeTopicsFrom, courseHasFreeTopic } from '../../data/publicCourses';
+import { getPublicCatalog, freeTopicsFrom } from '../../data/publicCourses';
 import { MATRIX_SUBJECTS } from '../../data/courseTopicMatrix';
 import { SPECIALIZED_CERTIFICATES } from '../awards/awardsData';
 import { fetchV3Certs, fetchV3Programs } from '../../data/v3Curriculum';
@@ -177,6 +177,12 @@ const CARD_IMAGE: Record<string, string> = {
   pub8: 'topic_film.webp',
   pub9: 'course_career-and-business.webp',
   // Free-topic taster cards (gs0 Safety · gs36 DAW Skills).
+  // Free tasters. Keyed `free<gs>`, so these moved with the topics when the
+  // tasters became v3 (owner 2026-09-03): gs0 → 3060, gs36 → 3970. The old
+  // keys are kept so the art still resolves if anything is still handing out
+  // v1 numbers; the artwork files themselves are unchanged.
+  free3060: 'free_safety.webp',
+  free3970: 'free_daw.webp',
   free0: 'free_safety.webp',
   free36: 'free_daw.webp',
   // Audio-field topic cards, keyed by DISPLAY NAME (unique).
@@ -212,9 +218,9 @@ const OTHER_CERTS_COUNT = SPECIALIZED_CERTIFICATES.length;
 // renamed (Sound Reinforcement Systems, Audio System Design and Maintenance,
 // Recording Arts, Intro to Audio, and the Career and Business card that carried
 // the "+ N other programs" tally). Only the free DAW taster is still retitled.
-const CARD_TITLE_RENAMES: Record<string, string> = {
-  'DAW Skills': 'DAW Fundamentals & Session Management',
-};
+// Empty since 2026-09-03: the last entry re-titled the v1 "DAW Skills" taster,
+// and the tasters are v3 topics now whose codified names are already correct.
+const CARD_TITLE_RENAMES: Record<string, string> = {};
 
 /** The card's title BEFORE the 2026-07-22 overrides (null for the tally card). */
 function rawCardTitle(item: Card): string | null {
@@ -964,12 +970,13 @@ export function CourseSelectionScreen() {
         { kind: 'tools', id: 'tools' },
         { kind: 'glossary', id: 'glossary' },
         // 2 free-topic taster cards, right after Glossary (Booth 2026-07-11).
-        // gs0 displays as the shortened "Pro Audio Safety".
+        // Names come straight from the v3 codified names now; the screen-side
+        // re-title the v1 pair needed is gone.
         ...freeTopicsFrom(catalog).map((ft) => ({
           kind: 'freeTopic' as const,
           id: `free-${ft.gs}`,
           gs: ft.gs,
-          name: ft.gs === 0 ? 'Pro Audio Safety' : ft.name,
+          name: ft.name,
           courseOrder: ft.courseOrder,
         })),
         // A–Z topic group.

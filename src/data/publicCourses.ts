@@ -41,51 +41,47 @@ export const PUBLIC_COURSES: PublicCourse[] = (seed.courses as PublicCourse[])
   .slice()
   .sort((a, b) => a.order - b.order);
 
-/** Free topics playable end-to-end without academy (gs0, gs36). Booth ruling:
- *  gs36 is "DAW Skills" — NEVER "DAW Fundamentals". */
-export const FREE_TOPIC_GS = [0, 36] as const;
+/** The two free tasters, playable end-to-end without academy.
+ *
+ *  Owner 2026-09-03: these are the v3 topics now, not the v1 pair [0, 36].
+ *  Everything else already agreed on v3 — the enrollment store seeds
+ *  FREE_ENROLL_GS = [3060, 3970], and the database paywall gate in
+ *  glossary_study_v names the same pair. Home was the last thing still
+ *  keyed on v1, and gs0 is being converted to 3060 by the topic package,
+ *  which would have broken these cards outright. */
+export const FREE_TOPIC_GS = [3060, 3970] as const;
 export const isFreeTopicGs = (gs: number): boolean => (FREE_TOPIC_GS as readonly number[]).includes(gs);
 
-/** Does this course contain a free topic (gs0 / gs36)? Free-tier users can
- *  open such a course; the server clamps the non-free topics inside (CM6). */
+/** Does this course contain one of the free tasters? Always false now: the
+ *  tasters are v3 topics and the surviving seed course holds only v1 gs0.
+ *  Kept because the type is exported; no live caller depends on it. */
 export const courseHasFreeTopic = (c: PublicCourse): boolean =>
   c.topics.some((t) => isFreeTopicGs(t.gs));
 
-/** The 2 free topics as standalone entries (Booth 2026-07-11): name + the
- *  course (order) where each is PRIMARY, so a free-topic card opens the right
- *  dashboard. gs36 name = "DAW Skills" (never "DAW Fundamentals"). */
+/** The 2 free topics as standalone entries (Booth 2026-07-11). `courseOrder`
+ *  is vestigial — the cards navigate by `gs` now. */
 export type FreeTopicEntry = { gs: number; name: string; courseOrder: number };
 
 /**
- * Names for the two free tasters, held here rather than read out of the
- * catalog. gs36's host course was Music Production — one of the college
- * courses removed on 2026-09-03 — so the catalog can no longer supply its
- * name, and without this the card would render the placeholder "this topic".
- * Both names are the pre-override raw titles: the Home screen re-titles gs0 to
- * "Pro Audio Safety", and CARD_TITLE_RENAMES re-titles gs36 to
- * "DAW Fundamentals & Session Management". Changing either string here changes
- * what the carousel shows.
+ * Names for the two free tasters. These are the codified v3 names and they are
+ * exactly what the carousel shows — no screen-side re-titling any more, which
+ * is what the old v1 pair needed (gs0 was re-titled by the Home screen and
+ * gs36 by CARD_TITLE_RENAMES). Change a string here and the card changes.
  */
 const FREE_TOPIC_NAME: Record<number, string> = {
-  0: 'Professional Audio Safety',
-  36: 'DAW Skills',
+  3060: 'Pro Audio Safety',
+  3970: 'DAW Fundamentals & Session Management',
 };
 
-/** Every free taster opens the surviving order-1 course context. */
+/** Legacy course context for the taster cards. The v1 catalog no longer holds
+ *  these topics, so nothing resolves through it; the cards navigate by gs. */
 const FREE_TOPIC_HOME_ORDER = 1;
 
-export const FREE_TOPICS: FreeTopicEntry[] = FREE_TOPIC_GS.map((gs) => {
-  for (const c of PUBLIC_COURSES) {
-    const t = c.topics.find((tt) => tt.gs === gs && tt.placement === 'P');
-    if (t) return { gs, name: t.name, courseOrder: c.order };
-  }
-  // Fallback: first occurrence anywhere.
-  for (const c of PUBLIC_COURSES) {
-    const t = c.topics.find((tt) => tt.gs === gs);
-    if (t) return { gs, name: t.name, courseOrder: c.order };
-  }
-  return { gs, name: FREE_TOPIC_NAME[gs] ?? 'this topic', courseOrder: FREE_TOPIC_HOME_ORDER };
-});
+export const FREE_TOPICS: FreeTopicEntry[] = FREE_TOPIC_GS.map((gs) => ({
+  gs,
+  name: FREE_TOPIC_NAME[gs] ?? 'this topic',
+  courseOrder: FREE_TOPIC_HOME_ORDER,
+}));
 
 /** All distinct global_sequence values referenced by the catalog. */
 export const ALL_PUBLIC_TOPIC_GS: number[] = Array.from(
@@ -104,17 +100,9 @@ export async function getPublicCatalog(): Promise<PublicCourse[]> {
   return PUBLIC_COURSES;
 }
 
-/** Free-topic taster entries derived from a catalog (same rules as FREE_TOPICS). */
-export function freeTopicsFrom(catalog: PublicCourse[]): FreeTopicEntry[] {
-  return FREE_TOPIC_GS.map((gs) => {
-    for (const c of catalog) {
-      const t = c.topics.find((tt) => tt.gs === gs && tt.placement === 'P');
-      if (t) return { gs, name: gs === 36 ? 'DAW Skills' : t.name, courseOrder: c.order };
-    }
-    for (const c of catalog) {
-      const t = c.topics.find((tt) => tt.gs === gs);
-      if (t) return { gs, name: gs === 36 ? 'DAW Skills' : t.name, courseOrder: c.order };
-    }
-    return { gs, name: FREE_TOPIC_NAME[gs] ?? 'this topic', courseOrder: FREE_TOPIC_HOME_ORDER };
-  });
+/** Free-topic taster entries. The catalog argument is ignored now that the
+ *  tasters are v3 topics and the v1 catalog cannot describe them; it stays on
+ *  the signature so the Home screen call site is unchanged. */
+export function freeTopicsFrom(_catalog: PublicCourse[]): FreeTopicEntry[] {
+  return FREE_TOPICS;
 }
