@@ -1,0 +1,42 @@
+# Line-ending policy — added 2026-09-03.
+#
+# Normalization lives HERE, not in each machine's core.autocrlf, because
+# several machines and agents commit to this repo. Leaving it to a per-machine
+# setting is how 47 .ts/.tsx files reached the index carrying CRLF.
+#
+# `text=auto` means: git decides text vs binary by content, stores every text
+# file with LF in the index, and converts on checkout per platform. Windows
+# working copies still get CRLF, so nothing about local editing changes and
+# the "LF will be replaced by CRLF" notices on commit are expected, not a fault.
+*                text=auto
+
+# DELIBERATELY no per-extension `text` rules. audio_app_archive/ holds ~440
+# macOS AppleDouble stubs (._MANIFEST.json, ._BRIEF_AUDIO.md and friends) that
+# are binary despite their extensions; a blanket `*.json text` would corrupt
+# them. Content detection already classifies them correctly.
+
+# Assets that can never be text, marked explicitly so a new one is never guessed.
+*.png            binary
+*.PNG            binary
+*.jpg            binary
+*.jpeg           binary
+*.webp           binary
+*.gif            binary
+*.ico            binary
+*.icns           binary
+*.ttf            binary
+*.otf            binary
+*.woff           binary
+*.woff2          binary
+*.mp3            binary
+*.wav            binary
+*.m4a            binary
+*.aac            binary
+*.mp4            binary
+*.mov            binary
+*.zip            binary
+*.pdf            binary
+*.xlsx           binary
+*.wasm           binary
+*.keystore       binary
+*.jks            binary
