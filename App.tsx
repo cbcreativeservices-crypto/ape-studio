@@ -34,7 +34,6 @@ import { loadLocalSettings } from './src/features/settings/store';
 import { NotifySchedulePreview } from './src/features/settings/NotifySchedulePreview';
 import { SettingsPreview } from './src/screens/settings/SettingsPreview';
 import { ProfilePreview } from './src/screens/profile/ProfilePreview';
-import { HomeV3Sketch } from './src/screens/courses/HomeV3Sketch';
 import { LabPreviewOverlay } from './src/features/lab/LabPreviewOverlay';
 import { endLabPreview, getLabPreview } from './src/features/lab/labPreviewStore';
 import { EntitlementProvider } from './src/features/commercial/EntitlementProvider';
@@ -181,20 +180,6 @@ export default function App() {
         <StatusBar style="light" />
         <NotifySchedulePreview />
       </SafeAreaProvider>
-    );
-  }
-
-  // DEV + WEB ONLY: `localhost:8090/#homesketch` renders three candidate Home
-  // layouts against the LIVE v3 data. Home is being repointed off the retired
-  // v1 public_courses catalog, and v3 is a far larger shape (~180 topics, 20
-  // fields, 128 certificates, 36 programs) that nine course cards cannot carry.
-  // This is a decision aid only — nothing here is wired into the real Home.
-  if (__DEV__ && Platform.OS === 'web' && typeof window !== 'undefined' && window.location.hash.startsWith('#homesketch')) {
-    return (
-      <>
-        <StatusBar style="light" />
-        <HomeV3Sketch />
-      </>
     );
   }
 
