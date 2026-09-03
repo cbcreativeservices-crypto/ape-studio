@@ -45,7 +45,6 @@ import { confirmDialog, notify } from '../../lib/confirm';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { UpgradeSheet } from '../../features/commercial/UpgradeSheet';
 import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
-import { setLastPublicCourse } from '../../features/commercial/commercialDashboard';
 import { getPublicCatalog, freeTopicsFrom, courseHasFreeTopic } from '../../data/publicCourses';
 import { MATRIX_SUBJECTS } from '../../data/courseTopicMatrix';
 import { SPECIALIZED_CERTIFICATES } from '../awards/awardsData';
@@ -134,21 +133,18 @@ let lastCenteredId: string | null = null;
 // membership (🔒 ACADEMY MODE), like every other paid topic. Owner is refining
 // each card's image/title. The 'comingTopic' kind name is legacy; the behavior
 // is a membership-locked topic card.
-const FIELD_TOPICS = [
-  'Assisted Listening Systems',
-  'Commercial 70/100V Systems',
-  'Corporate AV',
-  'DJ',
-  'Architectural Audio',
-  'Vehicle Audio',
-  'HiFi Consumer Audio',
-  'Audio Technician',
-  'Theatrical Sound',
-  'Audio Electronics',
-  'Road Crew',
-  'Live Sound',
-  'Worship Sound',
-] as const;
+/**
+ * Topic cards in the carousel, beyond the free tasters.
+ *
+ * Owner 2026-09-03: emptied. The thirteen entries that lived here rendered
+ * with a "Specialization Certificate" eyebrow, and the carousel is now topic
+ * cards only — no certificate, course or programme cards. Booth is adding
+ * topic cards back as he chooses them, and has said this is not a gate.
+ *
+ * TO ADD ONE: put its name here. It renders as a locked topic card with the
+ * shared course-card artwork.
+ */
+const FIELD_TOPICS: readonly string[] = [];
 
 /** Course-card art in the public `course-cards` bucket — STANDARDIZED WebP set
  *  (backend handoff 2026-07-16): filename = card_id with ':' -> '_' + '.webp',
@@ -737,7 +733,11 @@ function CourseCardView({
             ? 'Professional Program Certificate'
             : 'Specialization Certificate'
           : coming
-            ? 'Specialization Certificate'
+            ? // NEW COPY 2026-09-03, owner review. These cards used to read
+              // "Specialization Certificate", which the carousel rule now
+              // forbids: only topic cards belong here. They are topic cards, so
+              // they say so. Matches the "FREE TOPIC" eyebrow on the tasters.
+              'TOPIC'
             : course!.isPrereq
               ? 'SAFETY'
               : course!.code;
@@ -1180,10 +1180,11 @@ export function CourseSelectionScreen() {
     [navigation, lapsed, membershipExpired],
   );
 
-  // CM6: open a public course → the commercial dashboard (Study tab), which
-  // reads the persisted order and renders the seq-ordered topics.
+  // Open a topic card on the Study tab. The commercial dashboard module was
+  // retired 2026-09-03, so nothing persists a "last public course" any more:
+  // the Study tab builds from v3 enrollments and the focused topic alone.
   const openPublicCourse = useCallback(
-    async (order: number, isFreeTopic = false, focusGs?: number) => {
+    async (_order: number, isFreeTopic = false, focusGs?: number) => {
       // A session-less GUEST may study the FREE topics only. Opening any non-free
       // (paid) topic shows a friendly sign-up prompt instead of dropping them into
       // a topic with no on-device study path (owner decision 2026-07-26).
@@ -1191,7 +1192,6 @@ export function CourseSelectionScreen() {
         setGuestGateOpen(true);
         return;
       }
-      await setLastPublicCourse(order);
       // A single-topic card fronts its own topic (owner 2026-09-01); a
       // multi-topic course card lands on that course's last-known topic.
       (navigation as any).navigate('Study', {
