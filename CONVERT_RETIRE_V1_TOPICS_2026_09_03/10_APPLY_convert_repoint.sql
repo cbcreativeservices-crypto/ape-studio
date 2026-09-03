@@ -7,16 +7,22 @@
 --   the v3 row WINS. Where the twin already holds a row for the same
 --   (user, topic) / (user, topic, method) / (term, topic), the v1 duplicate is
 --   DELETED and the v3 row is left byte-for-byte untouched. No field merging.
---   Justification: every colliding row is pre-launch test data written by the
---   owner's 7 accounts, and the v3 row is the one the live app already reads.
---   00_PRECHECK proves the delete loses nothing (no v1 glossary link carries a
---   difficulty its v3 twin lacks, and none of them is a primary home).
+--   Justification: the colliding progress rows are disposable pre-launch data,
+--   and the v3 row is the one the live app already reads. For the glossary
+--   links - which are curated content and are NOT disposable - 00_PRECHECK
+--   proves the delete loses nothing: no v1 link is a primary home, and in zero
+--   cases does a v1 link carry a difficulty its v3 twin lacks.
+--
+-- THE FOLD RULE. All 1,978 v1 glossary links sit on 16 of these 17 topics, and
+-- this stage is what folds every one of them onto a live v3 topic. No term is
+-- deleted here: a colliding link is dropped only because the same term is
+-- ALREADY linked to the same v3 topic by the surviving row.
 --
 -- WHAT THIS STAGE DOES NOT MOVE — deliberate, see README:
 --   quiz_questions  (50 rows, all on v1 gs0)  - moving them injects unratified
 --                                               content into the live 3060 pool
---   quiz_attempts   (6 rows)                  - history; purged in Stage 20
---   badges          (0 CONVERT rows)          - none point at a CONVERT topic
+--   quiz_attempts   (6 rows)                  - purged in Stage 20 instead
+--   badges          (0 CONVERT rows)          - all 4 sit on RETIRE topics
 --   public_course_topics                      - a v1 catalog, dropped elsewhere
 --
 -- Idempotent: after a successful run there is nothing left to move, so a second

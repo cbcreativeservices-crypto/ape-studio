@@ -4,8 +4,9 @@
 -- tables. One atomic DO block. Idempotent: a stage that did not run is skipped.
 --
 -- WHAT IT RESTORES EXACTLY
---   * the 46 achievements rows and their is_active / always_free /
---     is_prerequisite flags
+--   * all 51 achievements rows and their is_active / always_free /
+--     is_prerequisite flags - including the five the owner ruled removed on
+--     2026-09-03, which come back active exactly as they were
 --   * every glossary_topics, student_achievement_progress and
 --     student_method_progress row, back on its original v1 topic, with its
 --     original id and every column value
@@ -15,8 +16,7 @@
 --   * evaluate_user_credentials(). Stage 10 recomputed credentials for the
 --     affected users, and re-inserting a 'complete' progress row fires the
 --     student_progress_award trigger again. Credential state is therefore
---     RECOMPUTED, not rewound. On 7 pre-launch accounts that is the correct
---     outcome, but be aware it is a recompute and not a byte-for-byte restore.
+--     RECOMPUTED, not rewound - a recompute, not a byte-for-byte restore.
 --   * anything you did to quiz_questions or badges by hand. This package never
 --     touched either, so it cannot put them back.
 
@@ -123,7 +123,7 @@ select stage, k, v, at from public.cr_v1topics_report_20260903 where stage='99_R
 select 'restored' as section, k, v from (values
   ('v1 topics with a course_id (expect 51)',
      (select count(*)::text from public.achievements where course_id is not null)),
-  ('active among them (expect 14)',
+  ('active among them (expect 14 = 9 CONVERT + the 5 ruled removed)',
      (select count(*)::text from public.achievements where course_id is not null and is_active)),
   ('glossary_topics on them (expect 1978)',
      (select count(*)::text from public.glossary_topics g

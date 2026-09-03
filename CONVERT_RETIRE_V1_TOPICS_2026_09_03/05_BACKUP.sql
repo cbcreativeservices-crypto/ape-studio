@@ -12,15 +12,32 @@ create table if not exists public.cr_v1topics_map_20260903 (
   v3_id        uuid,
   v3_gs        integer,
   v3_name      text,
-  class        text    not null check (class in ('CONVERT','RETIRE','BLOCKED')),
+  class        text    not null check (class in ('CONVERT','RETIRE')),
   built_at     timestamptz not null default now()
 );
+
+-- A pre-existing map from an earlier run of this package still allows the
+-- retired 'BLOCKED' value. Drop the old check so the rebuild below can class
+-- gs 1/9/17/19/21 as RETIRE per the owner ruling of 2026-09-03.
+do $$
+begin
+  if exists (select 1 from pg_constraint
+             where conrelid = 'public.cr_v1topics_map_20260903'::regclass
+               and contype='c' and pg_get_constraintdef(oid) ~ 'BLOCKED') then
+    execute (select 'alter table public.cr_v1topics_map_20260903 drop constraint ' || quote_ident(conname)
+             from pg_constraint
+             where conrelid = 'public.cr_v1topics_map_20260903'::regclass
+               and contype='c' and pg_get_constraintdef(oid) ~ 'BLOCKED' limit 1);
+    alter table public.cr_v1topics_map_20260903
+      add constraint cr_v1topics_map_20260903_class_check check (class in ('CONVERT','RETIRE'));
+  end if;
+end $$;
 
 do $$
 declare
   c_v1 constant uuid := 'c689c0c4-1d93-4a92-9159-2af019745c49';
   c_v3 constant uuid := 'a7c1f2e0-9b34-4d55-8e21-0c4f6a9b1d72';
-  v_convert int; v_retire int; v_blocked int; v_total int; v_badname int;
+  v_convert int; v_retire int; v_total int; v_badname int; v_ruled int;
 begin
   delete from public.cr_v1topics_map_20260903;
 
@@ -31,9 +48,10 @@ begin
     (32,3300),(35,3190),(37,4040),(41,4360),(46,4380),(47,4370),(49,4390),(50,4400))
   select v1.id, v1.global_sequence, v1.name, v1.is_active,
          v3.id, v3.global_sequence, v3.name,
-         case when v3.id is not null then 'CONVERT'
-              when v1.is_active     then 'BLOCKED'
-              else                       'RETIRE' end
+         -- Owner ruling 2026-09-03: there is no held-back bucket. A v1 topic
+         -- either has a v3 twin (CONVERT) or it goes (RETIRE). is_active plays
+         -- no part in the classification any more.
+         case when v3.id is not null then 'CONVERT' else 'RETIRE' end
   from public.achievements v1
   left join pairs p on p.v1_gs = v1.global_sequence
   left join public.achievements v3
@@ -43,9 +61,8 @@ begin
 
   select count(*) filter (where class='CONVERT'),
          count(*) filter (where class='RETIRE'),
-         count(*) filter (where class='BLOCKED'),
          count(*)
-    into v_convert, v_retire, v_blocked, v_total
+    into v_convert, v_retire, v_total
   from public.cr_v1topics_map_20260903;
 
   -- Every mapped topic must live in v1 and every twin in v3, or the pair list
@@ -57,8 +74,8 @@ begin
   if v_total <> 51 then
     raise exception 'BACKUP ABORTED: expected 51 v1 topics with a course_id, found %', v_total;
   end if;
-  if v_convert <> 17 or v_retire <> 29 or v_blocked <> 5 then
-    raise exception 'BACKUP ABORTED: split is %/%/% (CONVERT/RETIRE/BLOCKED), expected 17/29/5', v_convert, v_retire, v_blocked;
+  if v_convert <> 17 or v_retire <> 34 then
+    raise exception 'BACKUP ABORTED: split is %/% (CONVERT/RETIRE), expected 17/34', v_convert, v_retire;
   end if;
   if v_badname > 0 then
     raise exception 'BACKUP ABORTED: % CONVERT pair(s) no longer share a name with their v3 twin', v_badname;
@@ -68,9 +85,38 @@ begin
              where a.curriculum_version_id <> c_v1) then
     raise exception 'BACKUP ABORTED: a mapped source row is not in the v1 curriculum';
   end if;
-  if (select array_agg(v1_gs order by v1_gs) from public.cr_v1topics_map_20260903 where class='BLOCKED')
-     <> array[1,9,17,19,21] then
-    raise exception 'BACKUP ABORTED: the BLOCKED set is not exactly gs 1,9,17,19,21 - the owner ruling does not fit the data any more';
+
+  -- The owner's 2026-09-03 ruling, asserted rather than assumed: the five he
+  -- named must be present, must be the ONLY still-active rows outside the
+  -- CONVERT set, and must be classed RETIRE.
+  select count(*) into v_ruled
+  from public.cr_v1topics_map_20260903
+  where v1_gs in (1,9,17,19,21) and class='RETIRE';
+  if v_ruled <> 5 then
+    raise exception 'BACKUP ABORTED: the five topics ruled removed (gs 1,9,17,19,21) do not all resolve to RETIRE - found %', v_ruled;
+  end if;
+  if (select array_agg(v1_gs order by v1_gs) from public.cr_v1topics_map_20260903
+      where class='RETIRE' and v1_is_active) <> array[1,9,17,19,21] then
+    raise exception 'BACKUP ABORTED: the active-but-retiring set is not exactly gs 1,9,17,19,21 - the data no longer matches the ruling';
+  end if;
+
+  -- THE FOLD RULE. "Terms should fold into other existing." A term folds when
+  -- its link moves onto a live v3 topic; it is lost when its only topic goes.
+  -- Nothing in the RETIRE set may carry a term or a question, or something
+  -- would be destroyed rather than folded.
+  if exists (select 1 from public.glossary_topics g
+             join public.cr_v1topics_map_20260903 m on m.v1_id=g.achievement_id
+             where m.class='RETIRE') then
+    raise exception 'BACKUP ABORTED: a RETIRE topic carries glossary_topics links. Nothing being removed may hold a term - it would be lost, not folded.';
+  end if;
+  if exists (select 1 from public.glossary g
+             join public.cr_v1topics_map_20260903 m on m.v1_id=g.achievement_id) then
+    raise exception 'BACKUP ABORTED: a glossary row points directly at one of the 51';
+  end if;
+  if exists (select 1 from public.quiz_questions q
+             join public.cr_v1topics_map_20260903 m on m.v1_id=q.achievement_id
+             where m.class='RETIRE') then
+    raise exception 'BACKUP ABORTED: a RETIRE topic carries quiz_questions. Content on a topic being removed needs a ruling first.';
   end if;
 end $$;
 
@@ -83,7 +129,7 @@ create table if not exists public.cr_v1topics_report_20260903 (
 );
 
 -- ============================================= 3. verbatim row-level backups
--- achievements (all 51, including the 5 BLOCKED, so a rollback is total)
+-- achievements (all 51, so a rollback is total)
 create table if not exists public.cr_v1topics_achievements_20260903 as
   select a.* from public.achievements a where false;
 insert into public.cr_v1topics_achievements_20260903
@@ -164,9 +210,16 @@ create table if not exists public.cr_v1topics_badges_ref_20260903 as
 -- ============================================================ 4. what we got
 insert into public.cr_v1topics_report_20260903 (stage, k, v)
 select '05_BACKUP', k, v from (values
-  ('map_convert',      (select count(*)::text from public.cr_v1topics_map_20260903 where class='CONVERT')),
-  ('map_retire',       (select count(*)::text from public.cr_v1topics_map_20260903 where class='RETIRE')),
-  ('map_blocked',      (select count(*)::text from public.cr_v1topics_map_20260903 where class='BLOCKED')),
+  ('map_convert_expect_17', (select count(*)::text from public.cr_v1topics_map_20260903 where class='CONVERT')),
+  ('map_retire_expect_34',  (select count(*)::text from public.cr_v1topics_map_20260903 where class='RETIRE')),
+  ('map_retire_still_active_expect_5 (the owner-ruled five)',
+                       (select count(*)::text from public.cr_v1topics_map_20260903 where class='RETIRE' and v1_is_active)),
+  ('fold_rule_terms_on_RETIRE_must_be_0',
+                       (select count(*)::text from public.glossary_topics g
+                        join public.cr_v1topics_map_20260903 m on m.v1_id=g.achievement_id where m.class='RETIRE')),
+  ('fold_rule_terms_on_CONVERT_all_fold_in_stage_10',
+                       (select count(*)::text from public.glossary_topics g
+                        join public.cr_v1topics_map_20260903 m on m.v1_id=g.achievement_id where m.class='CONVERT')),
   ('bkp_achievements', (select count(*)::text from public.cr_v1topics_achievements_20260903)),
   ('bkp_glossary_topics', (select count(*)::text from public.cr_v1topics_glossary_topics_20260903)),
   ('bkp_sap',          (select count(*)::text from public.cr_v1topics_sap_20260903)),

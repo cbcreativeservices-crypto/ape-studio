@@ -10,13 +10,23 @@
 --     They are NOT repointed: an attempt is a record of sitting a v1 quiz, and
 --     rewriting it onto a v3 topic would fabricate v3 exam history that feeds
 --     mastery and certificate evaluation.
---   * student_achievement_progress and student_method_progress rows on the 29
---     RETIRE topics.
+--   * student_achievement_progress (43 rows) and student_method_progress
+--     (54 rows) on all 34 RETIRE topics.
 --
 -- WHAT STAYS
---   * progress rows on the 5 BLOCKED topics. They are the evidence of what
---     still uses those topics, and the owner has not ruled on them yet.
---   * everything on the CONVERT topics - Stage 10 already moved or merged it.
+--   * everything on the CONVERT topics - Stage 10 already folded or merged it.
+--
+-- SCOPE CHANGE 2026-09-03: this stage now covers 34 RETIRE topics, not 29. The
+-- five the owner ruled removed (gs 1, 9, 17, 19, 21) are RETIRE like the rest.
+-- Five of the 34 are still is_active = true, which the other 29 are not.
+-- NOTHING IN THIS STAGE TESTS is_active: it selects purely on the mapping
+-- table's class, and DELETE on a progress row is indifferent to whether its
+-- topic is active. Verified line by line - no assumption of inactivity exists
+-- here, and none is added.
+--
+-- These progress rows are disposable: seven pre-launch accounts, all the
+-- owner's own. Content - terms and questions - is a different matter, and none
+-- of the 34 carries any (asserted by 05_BACKUP's fold-rule guards).
 --
 -- Idempotent. Backup-guarded. Reversible from the 05_BACKUP tables.
 
@@ -26,6 +36,9 @@ declare
 begin
   if to_regclass('public.cr_v1topics_map_20260903') is null then
     raise exception 'STAGE 20 ABORTED: 05_BACKUP has not been run';
+  end if;
+  if (select count(*) from public.cr_v1topics_map_20260903 where class='RETIRE') <> 34 then
+    raise exception 'STAGE 20 ABORTED: the map does not hold 34 RETIRE topics - re-run 05_BACKUP against the current ruling';
   end if;
   if to_regclass('public.cr_v1topics_quiz_attempts_20260903') is null
      or to_regclass('public.cr_v1topics_quiz_attempt_items_20260903') is null
@@ -85,15 +98,15 @@ begin
   get diagnostics v_smp = row_count;
 
   insert into public.cr_v1topics_report_20260903 (stage, k, v) values
-    ('20_APPLY','quiz_attempts_deleted_all_classes', v_qa::text),
-    ('20_APPLY','sap_deleted_RETIRE_only',           v_sap::text),
-    ('20_APPLY','smp_deleted_RETIRE_only',           v_smp::text),
-    ('20_APPLY','sap_kept_on_BLOCKED',
+    ('20_APPLY','quiz_attempts_deleted_expect_6',       v_qa::text),
+    ('20_APPLY','sap_deleted_RETIRE_34_expect_43',      v_sap::text),
+    ('20_APPLY','smp_deleted_RETIRE_34_expect_54',      v_smp::text),
+    ('20_APPLY','sap_remaining_on_any_of_the_51_expect_0',
        (select count(*)::text from public.student_achievement_progress s
-        join public.cr_v1topics_map_20260903 m on m.v1_id=s.achievement_id and m.class='BLOCKED')),
-    ('20_APPLY','smp_kept_on_BLOCKED',
+        join public.cr_v1topics_map_20260903 m on m.v1_id=s.achievement_id)),
+    ('20_APPLY','smp_remaining_on_any_of_the_51_expect_0',
        (select count(*)::text from public.student_method_progress s
-        join public.cr_v1topics_map_20260903 m on m.v1_id=s.achievement_id and m.class='BLOCKED'));
+        join public.cr_v1topics_map_20260903 m on m.v1_id=s.achievement_id));
 end $$;
 
 select stage, k, v, at from public.cr_v1topics_report_20260903 where stage='20_APPLY' order by at desc, k;
