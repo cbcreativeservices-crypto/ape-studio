@@ -31,6 +31,9 @@ import { clearQueuedBatches } from '../study/studyQueueStorage';
 import { clearQueuedSubmissions } from '../quiz/submissionQueueStorage';
 import { resetLocal as resetDeckOrder } from '../dashboard/deckOrderStore';
 import { resetLocal as resetSettingsMirrors } from '../settings/store';
+import { resetLocal as resetPublicProfile } from '../profile/publicProfile';
+import { setChainValue } from '../../screens/lab/calc/chainStore';
+import { resetLocal as resetDetectiveSolved } from '../../screens/lab/meter/modules/modMeterC';
 
 /**
  * Keys that MUST survive an account wipe: device-hardware calibration (per
@@ -113,6 +116,16 @@ export function resetAllLocalStores(): void {
   resetDashboardCache();
   resetDeckOrder();
   resetSettingsMirrors();
+  // Registry 18+ attestation + name/listing sync markers — module-level, so
+  // the next account inherited the departing user's attestation and skipped
+  // the age gate (B-140).
+  resetPublicProfile();
+  // Calc Lab chain value (in-memory only, never persisted) and the Signal
+  // Detective solved-set cache — both are USER working state, so the next
+  // person (account switch OR guest) must not inherit an armed "CHAIN ACTIVE"
+  // banner or the departing user's SOLVED count (B-154).
+  setChainValue(null);
+  resetDetectiveSolved();
   // Offline SQLite/in-memory queues carry NO user id — if not dropped here, a
   // departing user's queued study batches / quiz submissions would replay under
   // the NEXT user's session and be credited to the wrong account. Their local

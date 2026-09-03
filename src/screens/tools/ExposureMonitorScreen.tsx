@@ -10,12 +10,13 @@
  */
 import { useEffect, useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
-import { confirmDialog } from '../../lib/confirm';
+import { confirmDialog, notify } from '../../lib/confirm';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../theme/tokens';
 import { splColorForDba } from '../../features/tools/levelColor';
 import {
+  dateKeyOf,
   DEFAULT_SETTINGS,
   deleteExposureHistory,
   deleteExposureToday,
@@ -106,7 +107,9 @@ export function ExposureMonitorScreen() {
   const s = snap.settings;
   const dosePct = Math.round(snap.todayDose * 100);
   const shownHistory = useMemo(() => history.slice(0, range), [history, range]);
-  const today = history.find((d) => d.date === new Date().toISOString().slice(0, 10));
+  // Key "today" by the store's LOCAL date (dateKeyOf), not the UTC date — a
+  // UTC key hid today's sessions/route breakdown east of UTC (B-068).
+  const today = history.find((d) => d.date === dateKeyOf(new Date()));
   const maxSessionSec = Math.max(60, ...(today?.sessions.map((x) => x.activeSec) ?? []));
 
   const confLabel = snap.confidence === 'calibrated' ? 'Calibrated reference' : 'General estimate';
@@ -361,7 +364,12 @@ export function ExposureMonitorScreen() {
               style={styles.chip}
               accessibilityRole="button"
               onPress={() => {
-                void exportExposureHistory().then((json) => Share.share({ message: json }));
+                // Share.share rejects on web ("Share is not supported") and can
+                // reject on device (no share target) — never leave it unhandled
+                // and silent (B-069).
+                void exportExposureHistory()
+                  .then((json) => Share.share({ message: json }))
+                  .catch(() => notify('Export unavailable', 'Sharing is not available on this device.'));
               }}
             >
               <Text style={styles.chipText}>Export history</Text>

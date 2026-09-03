@@ -77,6 +77,11 @@ export type QuizStartError =
   | 'unknown';
 
 /** RAISEd-error → user copy (routing table, Code brief §2.1). */
+/** Ratified quiz shape (Booth 2026-09-03): 30 questions, pass at 28. The
+ *  25-question quiz was retired ~a month earlier; do not reintroduce 25/24. */
+export const QUIZ_SIZE = 30;
+export const QUIZ_PASS = 28;
+
 export const QUIZ_START_ERROR_COPY: Record<QuizStartError, string> = {
   safety_prerequisite_incomplete: 'Complete the Safety topic quiz before starting course topics.',
   study_gate_unmet: 'Study requirements are not yet met for this topic. See the quiz block for what remains.',

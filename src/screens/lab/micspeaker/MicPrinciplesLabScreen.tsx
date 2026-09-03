@@ -59,6 +59,15 @@ function gainAt(a: number, b: number, deg: number): number {
   return Math.abs(a + b * Math.cos((deg * Math.PI) / 180));
 }
 
+/** One-decimal dB readout with negative zero normalised (B-102) — a value
+ *  just below 0 (e.g. off-axis loss at 1–9°) would otherwise print "-0.0 dB",
+ *  which reads as an impossible value on a meter. Same guard the Meter lab
+ *  uses (modMeterB.tsx). */
+function fmtDb1(v: number): string {
+  const s = v.toFixed(1);
+  return s === '-0.0' ? '0.0' : s;
+}
+
 // ── POLAR: free source positioning with a COLLISION FLOOR (owner 2026-07-29)
 // The source used to be pinned to a fixed radius and blocked from approaching
 // the mic. It is now the CLAVES icon (owner 2026-07-29), draggable ANYWHERE on
@@ -475,7 +484,7 @@ function PolarSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
           { k: 'SOURCE', v: dims ? `${angle360}°` : '—', helpKey: 'polar_pattern' },
           {
             k: 'PICKUP',
-            v: !dims ? '—' : g < 0.05 ? 'NULL ≤−30 dB' : `${(20 * Math.log10(g)).toFixed(1)} dB`,
+            v: !dims ? '—' : g < 0.05 ? 'NULL ≤−30 dB' : `${fmtDb1(20 * Math.log10(g))} dB`,
             tint: g < 0.05 ? '#ff6b5e' : undefined,
             flex: 1.3,
             helpKey: 'polar_pattern',
@@ -578,7 +587,7 @@ function DistanceSection({ viz, focused, help, wellTop, wellBottom }: SectionPro
       label: 'DISTANCE',
       value: d01,
       onChange: setD01,
-      format: () => `${inches} in · ${relDb.toFixed(1)} dB rel 4 in`,
+      format: () => `${inches} in · ${fmtDb1(relDb)} dB rel 4 in`,
       formatShort: () => `${inches} in`,
       helpKey: 'distance',
     },
@@ -599,7 +608,7 @@ function DistanceSection({ viz, focused, help, wellTop, wellBottom }: SectionPro
           // LEVEL is a real dB value; DIRECT/ROOM are shares of what the mic
           // hears, so each is tinted by its own magnitude rather than by a
           // fixed identity colour.
-          { k: 'LEVEL', v: `${relDb.toFixed(1)} dB`, tint: levelColorForDb(relDb, -24, 0), helpKey: 'distance' },
+          { k: 'LEVEL', v: `${fmtDb1(relDb)} dB`, tint: levelColorForDb(relDb, -24, 0), helpKey: 'distance' },
           { k: 'DIRECT', v: `${Math.round(direct * 100)}%`, tint: levelColor(direct), helpKey: 'distance' },
           { k: 'ROOM', v: `${Math.round(room * 100)}%`, tint: levelColor(room), helpKey: 'distance' },
         ],
@@ -816,8 +825,8 @@ function OffAxisSection({ viz, help, wellTop, wellBottom }: SectionProps) {
         onGuide: () => help('off_axis'),
         bezel: [
           { k: 'ANGLE', v: `${angle}°`, helpKey: 'off_axis' },
-          { k: '@100 Hz', v: viz ? `${viz.offAxisDb(100, angle).toFixed(1)} dB` : '—', helpKey: 'off_axis' },
-          { k: '@8 kHz', v: viz ? `${viz.offAxisDb(8000, angle).toFixed(1)} dB` : '—', tint: '#7fd4ff', helpKey: 'off_axis' },
+          { k: '@100 Hz', v: viz ? `${fmtDb1(viz.offAxisDb(100, angle))} dB` : '—', helpKey: 'off_axis' },
+          { k: '@8 kHz', v: viz ? `${fmtDb1(viz.offAxisDb(8000, angle))} dB` : '—', tint: '#7fd4ff', helpKey: 'off_axis' },
         ],
         render: (w, h) => {
           if (!viz) return <VizUnavailableCard />;

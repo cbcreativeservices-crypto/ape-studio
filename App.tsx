@@ -93,11 +93,17 @@ export default function App() {
     const openLocal = (dest: string) => {
       if (!navigationRef.isReady()) return;
       if (dest === 'glossary') {
-        // Glossary lives in the Study stack inside the Main tabs.
-        navigationRef.navigate('Main', {
-          screen: 'Study',
-          params: { screen: 'Glossary', params: {} },
-        });
+        // Glossary lives in the Study stack inside the Main tabs. `pop: true`
+        // returns to the existing Main (RN7 navigate() would otherwise push a
+        // second tab shell when a root-level screen is on top).
+        navigationRef.navigate(
+          'Main',
+          {
+            screen: 'Study',
+            params: { screen: 'Glossary', params: {} },
+          },
+          { pop: true }
+        );
       } else if (dest === 'awards') {
         navigationRef.navigate('Awards', { category: 'curriculum' });
       }
@@ -124,7 +130,9 @@ export default function App() {
   useEffect(() => {
     const unsub = navigationRef.addListener('state', () => {
       const p = getLabPreview();
-      if (p.active && navigationRef.getCurrentRoute()?.name !== p.route) endLabPreview();
+      // A deliberate leave (leaveLab) keeps its own scrim through the pop and
+      // clears it after 350ms — the safety net must not preempt that (B-066).
+      if (p.active && !p.leaving && navigationRef.getCurrentRoute()?.name !== p.route) endLabPreview();
     });
     return unsub;
   }, []);

@@ -8,12 +8,13 @@
  * write back into a project.
  */
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
 import { colors, fonts } from '../../../theme/tokens';
+import { confirmDialog, notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { QUANTITIES, fmt, type QuantityKind } from './calcUnits';
@@ -70,16 +71,20 @@ export function CalcProjectsScreen() {
 
   const guardCreate = (): boolean => {
     if (limits.savedProjects == null || projects.length < limits.savedProjects) return true;
+    // confirmDialog / notify, not Alert.alert: RN-web's Alert is a no-op, so
+    // these prompts were silent taps on the web preview (B-018/B-062).
     if (limits.savedProjects === 0) {
-      Alert.alert('Sign in to save projects', 'Saved projects need an account.', [
-        { text: 'Not now', style: 'cancel' },
-        { text: 'Sign in', onPress: () => (navigation as any).navigate('Auth') },
-      ]);
+      confirmDialog('Sign in to save projects', 'Saved projects need an account.', 'Sign in', () => (navigation as any).navigate('Auth'), {
+        cancelText: 'Not now',
+      });
     } else {
-      Alert.alert('Project limit reached', `Your account keeps up to ${limits.savedProjects} projects. Academy membership removes the limit.`, [
-        { text: 'Not now', style: 'cancel' },
-        { text: 'See membership', onPress: () => (navigation as any).navigate('Paywall') },
-      ]);
+      confirmDialog(
+        'Project limit reached',
+        `Your account keeps up to ${limits.savedProjects} projects. Academy membership removes the limit.`,
+        'See membership',
+        () => (navigation as any).navigate('Paywall'),
+        { cancelText: 'Not now' },
+      );
     }
     return false;
   };
@@ -100,16 +105,19 @@ export function CalcProjectsScreen() {
   };
 
   const removeProject = (p: Project) => {
-    Alert.alert('Delete project?', `“${p.name}” and its saved values will be removed.`, [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: () => void workflowStore.deleteProject(p.id).then(reload) },
-    ]);
+    confirmDialog(
+      'Delete project?',
+      `“${p.name}” and its saved values will be removed.`,
+      'Delete',
+      () => void workflowStore.deleteProject(p.id).then(reload),
+      { destructive: true },
+    );
   };
 
   const saveProject = async () => {
     const trimmed = name.trim();
     if (!trimmed) {
-      Alert.alert('Name the project', 'Give the project a name before saving.');
+      notify('Name the project', 'Give the project a name before saving.');
       return;
     }
     const out: Project['values'] = [];
@@ -133,7 +141,7 @@ export function CalcProjectsScreen() {
     };
     const ok = await workflowStore.saveProject(p);
     if (!ok) {
-      Alert.alert('Save failed', 'The project could not be saved. Try again.');
+      notify('Save failed', 'The project could not be saved. Try again.');
       return;
     }
     setEditing(null);

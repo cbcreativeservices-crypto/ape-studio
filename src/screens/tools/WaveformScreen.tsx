@@ -97,7 +97,7 @@ const DEFAULT_WINDOW: WindowSec = 4;
 
 /** Honest dBFS formatting — NEVER clamps; peak can exceed 0 dBFS (F1). */
 const fmtDb = (v: number | undefined | null) =>
-  v != null && Number.isFinite(v) ? `${v > 0 ? '+' : ''}${v.toFixed(1)}` : '—';
+  v != null && Number.isFinite(v) ? `${(Math.abs(v) < 0.05 ? 0 : v) > 0 ? '+' : ''}${(Math.abs(v) < 0.05 ? 0 : v).toFixed(1)}` : '—';
 
 export function WaveformScreen({ navigation }: Props) {
   const { help, helpAll, sheet } = useToolHelp('waveform');

@@ -153,7 +153,9 @@ function routeFromNative(r: string | undefined): RouteKey {
   return 'unknown';
 }
 
-const dateKeyOf = (d: Date) =>
+/** LOCAL Y-M-D key every stored day is filed under. Exported so screens key
+ *  "today" the same way the store does (a UTC key drifts a day east of UTC). */
+export const dateKeyOf = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
 // Assumed source levels (dBFS) for voices whose live level isn't exposed.

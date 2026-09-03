@@ -49,6 +49,7 @@ import { registerCommercialUser } from '../../features/commercial/commercialAuth
 import { redeemAccessCode } from '../../features/commercial/accessCode';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { AppWelcomeOverlay } from '../../features/intro/AppWelcomeOverlay';
+import { resetAmplitudeOrientation } from '../../features/lab/amplitudeOrientation';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Auth'>;
@@ -131,6 +132,11 @@ export function AuthScreen({ navigation }: Props) {
     // stored about a person until they make an account.
     await clearLocalAccountData({ total: true });
     resetAllLocalStores();
+    // The amplitude-orientation flag is a device-level onboarding flag that an
+    // ACCOUNT switch deliberately keeps, so resetAllLocalStores() leaves its
+    // in-memory `done` alone — but the total wipe above just removed its key,
+    // and a guest must see the gate NOW, not only after a relaunch (B-154).
+    resetAmplitudeOrientation();
     // Write the no-account marker so the next boot's sync sees the SAME
     // identity instead of null→'' and wiping again (QA night 2026-09-01).
     await AsyncStorage.setItem('ape:localUserId', '');

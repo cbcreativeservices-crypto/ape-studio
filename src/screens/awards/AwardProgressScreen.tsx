@@ -115,24 +115,44 @@ export function AwardProgressScreen({ navigation, route }: Props) {
     setRefreshing(false);
   }, [load]);
 
+  // Header is shared by every state (B-035): while load() is pending or has
+  // failed the user still needs the ‹ control, not a bare spinner.
+  const headerBar = (
+    <View style={styles.headerBar}>
+      <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
+        <Text style={styles.back}>‹</Text>
+      </Pressable>
+      <Text style={styles.headerKicker}>
+        {awardType === 'program' ? 'PROGRAM' : 'CERTIFICATE'}
+      </Text>
+      <View style={{ width: 14 }} />
+    </View>
+  );
+
   if (loading) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator color={colors.amber} />
+      <View style={[styles.root, { paddingTop: insets.top }]}>
+        {headerBar}
+        <View style={styles.center}>
+          <ActivityIndicator color={colors.amber} />
+        </View>
       </View>
     );
   }
 
   if (failed || !progress) {
     return (
-      <View style={styles.center}>
-        <Text style={styles.muted}>
-          {noSession
-            ? 'Sign in with a free account to track award progress and sit the Final Exam.'
-            : "Could not load this award's requirements right now. Pull to retry, or check your connection."}
-        </Text>
-        <View style={{ width: 200 }}>
-          <StudioButton label="Back" variant="secondary" small onPress={() => navigation.goBack()} />
+      <View style={[styles.root, { paddingTop: insets.top }]}>
+        {headerBar}
+        <View style={styles.center}>
+          <Text style={styles.muted}>
+            {noSession
+              ? 'Sign in with a free account to track award progress and sit the Final Exam.'
+              : "Could not load this award's requirements right now. Pull to retry, or check your connection."}
+          </Text>
+          <View style={{ width: 200 }}>
+            <StudioButton label="Back" variant="secondary" small onPress={() => navigation.goBack()} />
+          </View>
         </View>
       </View>
     );
@@ -147,15 +167,7 @@ export function AwardProgressScreen({ navigation, route }: Props) {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
-      <View style={styles.headerBar}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back}>‹</Text>
-        </Pressable>
-        <Text style={styles.headerKicker}>
-          {awardType === 'program' ? 'PROGRAM' : 'CERTIFICATE'}
-        </Text>
-        <View style={{ width: 14 }} />
-      </View>
+      {headerBar}
 
       <ScrollView
         contentContainerStyle={styles.scroll}

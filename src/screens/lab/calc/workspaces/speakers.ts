@@ -4,7 +4,7 @@
  * Follows the wave.ts exemplar (owner spec 2026-07-29).
  */
 import type { Workspace } from '../calcTypes';
-import { fmt } from '../calcUnits';
+import { fmt, fmtInt } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 const arr = (v: number | number[]) => (typeof v === 'number' ? [v] : v);
@@ -220,7 +220,7 @@ const WS_SPEAKERPOWER: Workspace = {
           { label: 'MAX SPL AT 1 m', value: sens + 10 * Math.log10(p), quantity: 'spl', chainable: false },
           {
             label: 'REALITY CHECK',
-            text: `Expect roughly ${fmt(max - 4)}–${fmt(max - 2)} dB SPL sustained once power compression (2–4 dB) sets in.`,
+            text: `Expect roughly ${Math.round(max - 4)}–${Math.round(max - 2)} dB SPL sustained once power compression (2–4 dB) sets in.`,
           },
         ];
       },
@@ -798,7 +798,7 @@ const WS_CV70: Workspace = {
             label: 'MORE SPEAKERS THAT FIT',
             text:
               more > 0
-                ? `${more} more speaker${more === 1 ? '' : 's'} at ${fmt(tapw)} W taps fit while keeping ${fmt(hr)} dB headroom (usable budget ${fmt(usable)} W, current load ${fmt(load)} W).`
+                ? `${fmtInt(more)} more speaker${more === 1 ? '' : 's'} at ${fmt(tapw)} W taps fit while keeping ${fmt(hr)} dB headroom (usable budget ${fmt(usable)} W, current load ${fmt(load)} W).`
                 : `None — the ${fmt(load)} W already tapped leaves no room under the ${fmt(usable)} W usable budget (rated ${fmt(prated)} W minus ${fmt(hr)} dB headroom). Re-tap lower or add an amplifier.`,
           },
           { label: 'USABLE BUDGET AFTER HEADROOM', value: usable, quantity: 'power', chainable: false },
@@ -815,7 +815,7 @@ const WS_CV70: Workspace = {
         return [
           `Usable budget = ${fmt(prated)} W ÷ 10^(${fmt(hr)}/10) = ${fmt(usable)} W after reserving headroom.`,
           `Room left = ${fmt(usable)} − ${fmt(load)} = ${fmt(usable - load)} W.`,
-          `At ${fmt(tapw)} W per speaker: floor(${fmt(usable - load)} ÷ ${fmt(tapw)}) = ${Math.max(0, Math.floor((usable - load) / tapw))} more speakers.`,
+          `At ${fmt(tapw)} W per speaker: floor(${fmt(usable - load)} ÷ ${fmt(tapw)}) = ${fmtInt(Math.max(0, Math.floor((usable - load) / tapw)))} more speakers.`,
         ];
       },
     },

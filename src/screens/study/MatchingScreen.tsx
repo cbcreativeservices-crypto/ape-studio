@@ -120,6 +120,9 @@ export function MatchingScreen({ navigation, route }: Props) {
   const startRef = useRef<number | null>(null);
   const elapsedRef = useRef(0);
   const recordedRef = useRef(false);
+  // Baseline of the pace window: the answered count when the timer was enabled,
+  // so the readout's session counter zeroes without touching earned progress.
+  const answeredBaseRef = useRef(0);
 
   useEffect(() => {
     let alive = true;
@@ -162,6 +165,16 @@ export function MatchingScreen({ navigation, route }: Props) {
     if (Object.keys(states).length) void saveLocalMethodStates(achievementId, 'matching', states);
   }, [states, achievementId]);
 
+  // Fresh visit = fresh pace session: the clock (startRef/elapsedRef) is
+  // per-instance and starts at 0 on mount, but the brain-output tally and the
+  // running flag live in the module-level store and would otherwise carry over
+  // from the previous visit (stale AHEAD/BEHIND offset at 0:00, or a paused
+  // readout). Zero the tally and start running so the readout is consistent (B-138).
+  useEffect(() => {
+    resetBrainOutput('matching');
+    setRunning('matching', true);
+  }, []);
+
   // Pace clock: present while ENABLED; only ticks while also RUNNING. When
   // enabled-but-paused the clock HOLDS (elapsed kept); disabling resets to 0.
   useEffect(() => {
@@ -190,13 +203,34 @@ export function MatchingScreen({ navigation, route }: Props) {
     () => Object.values(states).filter((s) => (s.attempts ?? 0) > 0).length,
     [states],
   );
+  const answeredRef = useRef(answered);
+  answeredRef.current = answered;
 
-  // STOPWATCH: on pairing every item, log the run once (encouraging records).
+  // ENABLING the timer opens a fresh pace window: pairs and brain outputs made
+  // before the clock started must not count, or a freshly added timer reads
+  // 5/5 at 0:01 and the stopwatch logs a 0 s best (B-083). Re-baselined once
+  // the topic loads too, since a persisted ON timer can hydrate before the
+  // server progress arrives.
+  useEffect(() => {
+    if (!pace.enabled) return;
+    answeredBaseRef.current = answeredRef.current;
+    startRef.current = Date.now();
+    elapsedRef.current = 0;
+    recordedRef.current = false;
+    setElapsed(0);
+    resetBrainOutput('matching');
+  }, [pace.enabled, items]);
+
+  // STOPWATCH: on pairing every item WITHIN the timed window, log the run once
+  // (encouraging records). Trivially short runs are skipped, as in AUTO TRACK.
   useEffect(() => {
     if (!pace.enabled || pace.preset !== 'stopwatch' || recordedRef.current) return;
-    if (!items || items.length === 0 || answered < items.length || startRef.current == null) return;
+    if (!items || items.length === 0 || startRef.current == null) return;
+    if (answered - answeredBaseRef.current < items.length) return;
+    const secs = (Date.now() - startRef.current) / 1000;
+    if (secs < 2) return;
     recordedRef.current = true;
-    void recordPaceSession('matching', (Date.now() - startRef.current) / 1000, items.length);
+    void recordPaceSession('matching', secs, items.length);
   }, [pace.enabled, pace.preset, answered, items]);
 
   const boards = useMemo(() => {
@@ -337,6 +371,9 @@ export function MatchingScreen({ navigation, route }: Props) {
   }
 
   const displayPct = studyDisplayPct(states, items.length, 'matching');
+  // Readout shows 0–99 until the RAW value is 100 (same rule as the Dashboard
+  // row): Math.round alone read "100%" with an item still unstudied (B-086).
+  const displayPctLabel = displayPct >= 100 ? 100 : Math.min(Math.round(displayPct), 99);
 
   const leftState = (id: string): AnswerCellState => {
     if (correctFlash === id) return 'correctGreen';
@@ -414,7 +451,7 @@ export function MatchingScreen({ navigation, route }: Props) {
           <View style={{ flex: 1 }}>
             <LedMeterWell filled={segmentsForPct(displayPct)} />
           </View>
-          <Text style={styles.ledPct}>{Math.round(displayPct)}%</Text>
+          <Text style={styles.ledPct}>{displayPctLabel}%</Text>
           <Text style={styles.counter}>
             {boardIdx + 1} / {boards.length}
           </Text>
@@ -425,7 +462,7 @@ export function MatchingScreen({ navigation, route }: Props) {
           <PaceTimerBar
             method="matching"
             preset={pace.preset}
-            answered={answered}
+            answered={Math.max(0, answered - answeredBaseRef.current)}
             total={items.length}
             elapsed={elapsed}
             enabled={pace.enabled}
@@ -485,7 +522,7 @@ export function MatchingScreen({ navigation, route }: Props) {
             <PaceTimerBar
               method="matching"
               preset={pace.preset}
-              answered={answered}
+              answered={Math.max(0, answered - answeredBaseRef.current)}
               total={items.length}
               elapsed={elapsed}
               variant="fullscreen"

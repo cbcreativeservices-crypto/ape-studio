@@ -249,7 +249,7 @@ function bandLabels(centers: number[]): { i: number; text: string }[] {
 }
 
 const fmtDb = (v: number | undefined) =>
-  v != null && Number.isFinite(v) ? `${v > 0 ? '+' : ''}${v.toFixed(1)}` : '—';
+  v != null && Number.isFinite(v) ? `${(Math.abs(v) < 0.05 ? 0 : v) > 0 ? '+' : ''}${(Math.abs(v) < 0.05 ? 0 : v).toFixed(1)}` : '—';
 
 // ---- Level weighting (owner 2026-08-17) ------------------------------------
 // The top-left readout can weight the broadband LEVEL: Z (flat), A, or C. On

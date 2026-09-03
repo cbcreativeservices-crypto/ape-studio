@@ -143,6 +143,16 @@ export function FillInBlankScreen({ navigation, route }: Props) {
     if (Object.keys(states).length) void saveLocalMethodStates(achievementId, 'fill_in_blank', states);
   }, [states, achievementId]);
 
+  // Fresh visit = fresh pace session: the clock (startRef/elapsedRef) is
+  // per-instance and starts at 0 on mount, but the brain-output tally and the
+  // running flag live in the module-level store and would otherwise carry over
+  // from the previous visit (stale AHEAD/BEHIND offset at 0:00, or a paused
+  // readout). Zero the tally and start running so the readout is consistent (B-138).
+  useEffect(() => {
+    resetBrainOutput('fill_in_blank');
+    setRunning('fill_in_blank', true);
+  }, []);
+
   // Pace clock: present while ENABLED; only ticks while also RUNNING. When
   // enabled-but-paused the clock HOLDS (elapsed kept); disabling resets to 0.
   useEffect(() => {
@@ -171,6 +181,8 @@ export function FillInBlankScreen({ navigation, route }: Props) {
     () => Object.values(states).filter((s) => (s.attempts ?? 0) > 0).length,
     [states],
   );
+  const answeredRef = useRef(answered);
+  answeredRef.current = answered;
 
   // Reset zeroes the readout's elapsed + answered session counters (a fresh
   // pace window) — earned study progress (states) is untouched.
@@ -183,12 +195,31 @@ export function FillInBlankScreen({ navigation, route }: Props) {
     resetBrainOutput('fill_in_blank');
   }, [answered]);
 
-  // STOPWATCH: on completing all items, log the run once (encouraging records).
+  // ENABLING the timer opens a fresh pace window (same as RESET): answers and
+  // brain outputs made before the clock started must not count, or a freshly
+  // added timer reads 5/5 · 300 Q/min at 0:01 and the stopwatch logs a 0 s
+  // best (B-083). Re-baselined once the topic loads too, since a persisted
+  // ON timer can hydrate before the server progress arrives.
+  useEffect(() => {
+    if (!pace.enabled) return;
+    answeredBaseRef.current = answeredRef.current;
+    startRef.current = Date.now();
+    elapsedRef.current = 0;
+    recordedRef.current = false;
+    setElapsed(0);
+    resetBrainOutput('fill_in_blank');
+  }, [pace.enabled, items]);
+
+  // STOPWATCH: on completing all items WITHIN the timed window, log the run once
+  // (encouraging records). Trivially short runs are skipped, as in AUTO TRACK.
   useEffect(() => {
     if (!pace.enabled || pace.preset !== 'stopwatch' || recordedRef.current) return;
-    if (!items || items.length === 0 || answered < items.length || startRef.current == null) return;
+    if (!items || items.length === 0 || startRef.current == null) return;
+    if (answered - answeredBaseRef.current < items.length) return;
+    const secs = (Date.now() - startRef.current) / 1000;
+    if (secs < 2) return;
     recordedRef.current = true;
-    void recordPaceSession('fill_in_blank', (Date.now() - startRef.current) / 1000, items.length);
+    void recordPaceSession('fill_in_blank', secs, items.length);
   }, [pace.enabled, pace.preset, answered, items]);
 
   // Working order: items still needing attempts first, then the rest.
@@ -300,6 +331,9 @@ export function FillInBlankScreen({ navigation, route }: Props) {
   }
 
   const displayPct = studyDisplayPct(states, items.length, 'fill_in_blank');
+  // Readout shows 0–99 until the RAW value is 100 (same rule as the Dashboard
+  // row): Math.round alone read "100%" with an item still unstudied (B-086).
+  const displayPctLabel = displayPct >= 100 ? 100 : Math.min(Math.round(displayPct), 99);
   const { pre } = blankOut(question.item.term, question.sentence);
   const cellState = (opt: string): AnswerCellState => {
     if (!picked) return 'default';
@@ -355,7 +389,7 @@ export function FillInBlankScreen({ navigation, route }: Props) {
           <View style={{ flex: 1 }}>
             <LedMeterWell filled={segmentsForPct(displayPct)} />
           </View>
-          <Text style={styles.ledPct}>{Math.round(displayPct)}%</Text>
+          <Text style={styles.ledPct}>{displayPctLabel}%</Text>
           <Text style={styles.counter}>
             {itemNumber + 1} / {order.length}
           </Text>

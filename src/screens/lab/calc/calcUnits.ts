@@ -149,6 +149,13 @@ export function fmt(x: number, sig = 4): string {
   return s.includes('.') ? s.replace(/\.?0+$/, '') : s;
 }
 
+/** Format a whole-number count for interpolation into text/steps/labels —
+ *  '—' for a non-finite value, same convention as fmt(). Use this instead of
+ *  `${Math.round(x)}` / `${x}` so a zero input never prints NaN/Infinity. */
+export function fmtInt(x: number): string {
+  return Number.isFinite(x) ? String(Math.round(x)) : '—';
+}
+
 /** Speed of sound in dry air from temperature (°C) — classroom model. */
 export function speedOfSoundAir(tempC: number): number {
   return 331.3 * Math.sqrt(1 + tempC / 273.15);

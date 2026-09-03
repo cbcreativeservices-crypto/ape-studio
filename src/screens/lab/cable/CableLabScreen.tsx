@@ -56,7 +56,7 @@ export function CableLabScreen() {
       if (navigatedRef.current || noAccountRef.current) return;
       const n = v == null ? NaN : Number(v);
       if (Number.isInteger(n) && n > 0 && n < CABLE_LESSONS.length) setStep(n);
-    });
+    }).catch(() => {});
   }, []);
 
   const goTo = useCallback((n: number) => {

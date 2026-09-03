@@ -170,7 +170,7 @@ function payloadLines(m: SavedMeasurement): { label: string; value: string }[] {
         label: 'DOMINANT',
         value:
           p.dominantHz != null
-            ? `${fmtHz(p.dominantHz)} Hz${p.note ? ` · ${p.note}${p.cents != null ? ` (${p.cents >= 0 ? '+' : ''}${p.cents.toFixed(1)}¢)` : ''}` : ''} · ${p.dominantSource ?? '—'}`
+            ? `${fmtHz(p.dominantHz)} Hz${p.note ? ` · ${p.note}${p.cents != null ? ` (${(Math.abs(p.cents) < 0.05 ? 0 : p.cents) >= 0 ? '+' : ''}${(Math.abs(p.cents) < 0.05 ? 0 : p.cents).toFixed(1)}¢)` : ''}` : ''} · ${p.dominantSource ?? '—'}`
             : '—',
       },
       { label: 'BANDS', value: `${p.bandsHz.length} × 1/3 octave` },

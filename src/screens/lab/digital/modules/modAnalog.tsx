@@ -799,7 +799,7 @@ export function SamplingModule(p: DigitalModuleProps) {
             items={[
               { k: 'CUTOFF', v: fmtHz(cutoffHz) },
               { k: 'SLOPE', v: `${slope} dB/oct` },
-              { k: 'INPUT ATTEN', v: filterOn ? `−${attenDb.toFixed(1)} dB` : '0 dB (off)' },
+              { k: 'INPUT ATTEN', v: filterOn ? `${attenDb >= 0.05 ? `−${attenDb.toFixed(1)}` : '0.0'} dB` : '0 dB (off)' },
             ]}
           />
           <Badge text="MAGNITUDE-ROLLOFF MODEL — SHOWS ROLLOFF ONLY (NOT PASSBAND RIPPLE · STOPBAND DEPTH · PHASE)" />

@@ -1,3 +1,4 @@
+import { officialTopicName } from './officialTopicNames';
 /**
  * Public course catalog — commercial-first structure (CM1, Booth 2026-07-11).
  *
@@ -61,7 +62,7 @@ export const FREE_TOPICS: FreeTopicEntry[] = FREE_TOPIC_GS.map((gs) => {
     const t = c.topics.find((tt) => tt.gs === gs);
     if (t) return { gs, name: t.name, courseOrder: c.order };
   }
-  return { gs, name: `Topic ${gs}`, courseOrder: 1 };
+  return { gs, name: officialTopicName(gs), courseOrder: 1 };
 });
 
 /** All distinct global_sequence values referenced by the catalog. */
@@ -138,6 +139,6 @@ export function freeTopicsFrom(catalog: PublicCourse[]): FreeTopicEntry[] {
       const t = c.topics.find((tt) => tt.gs === gs);
       if (t) return { gs, name: gs === 36 ? 'DAW Skills' : t.name, courseOrder: c.order };
     }
-    return { gs, name: `Topic ${gs}`, courseOrder: 1 };
+    return { gs, name: officialTopicName(gs), courseOrder: 1 };
   });
 }

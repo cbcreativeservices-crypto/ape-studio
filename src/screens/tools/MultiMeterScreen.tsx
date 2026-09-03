@@ -51,7 +51,7 @@
  *  only at its own ~6 Hz column push (React.memo keyed by history reference).
  */
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
-import { Image, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { AppState, Image, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { Modal } from '../../components/DimModal';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useIsFocused } from '@react-navigation/native';
@@ -61,6 +61,8 @@ import Svg, { Defs, G, Line, LinearGradient, Path, Rect, Stop } from 'react-nati
 import { ApeDsp, type EngineConfig } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
 import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
+import { releaseMicNow } from '../../features/tools/engine/micSession';
+import { micReleaseOnBackgroundEnabled } from '../../features/settings/store';
 import { deriveSixthOctave, NO_LEVEL, SIXTH_BANDS, SIXTH_EDGE, type DisplayBands } from '../../features/tools/sixthOctave';
 import { useSplCalibration } from '../../features/tools/measure/calibrationStore';
 import { heatColor, levelColorForDb, MIDLINE_BLUE, rampColors, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
@@ -225,7 +227,7 @@ function noteFor(freq: number): { name: string; octave: number; cents: number } 
 }
 
 const fmtDb = (v: number | null | undefined) =>
-  v != null && Number.isFinite(v) ? `${v > 0 ? '+' : ''}${v.toFixed(1)}` : '—';
+  v != null && Number.isFinite(v) ? `${(Math.abs(v) < 0.05 ? 0 : v) > 0 ? '+' : ''}${(Math.abs(v) < 0.05 ? 0 : v).toFixed(1)}` : '—';
 const fmtHz = (hz: number) => (hz < 100 ? hz.toFixed(1) : hz < 10000 ? Math.round(hz).toString() : `${(hz / 1000).toFixed(2)}k`);
 
 // ---------------------------------------------------------------------------
@@ -709,6 +711,38 @@ export function MultiMeterScreen({ navigation }: Props) {
   useEffect(() => {
     if (isFocused && everStartedRef.current && !micPaused && state === 'idle') onStart();
   }, [isFocused, micPaused, state, onStart]);
+
+  // Background release + foreground resume (B-170) — the same handler
+  // useToolAutoStart wires for the six auto-start tools, gated on the user
+  // setting "Release microphone in the background" (read AT EVENT TIME). This
+  // screen starts manually (the START card is by design), so it never opted in
+  // via useToolAutoStart and the mic stayed hot behind the Home button. Goes
+  // through onStop so micPaused is set and the on-screen resilience effect
+  // above can't silently re-arm the mic while we're in the background.
+  const stateRef = useRef(state);
+  stateRef.current = state;
+  const onStartRef = useRef(onStart);
+  onStartRef.current = onStart;
+  const onStopRef = useRef(onStop);
+  onStopRef.current = onStop;
+  const releasedForBgRef = useRef(false);
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (s) => {
+      if (!micReleaseOnBackgroundEnabled()) return; // OFF → keep the warm session
+      if (s === 'background') {
+        // 'inactive' (app-switcher peek, a permission alert) is NOT backgrounding.
+        if (stateRef.current === 'running') {
+          releasedForBgRef.current = true;
+          onStopRef.current(); // micPaused + state → idle + debounced release
+          releaseMicNow(); // hard stop now — no hot mic lingering in the background
+        }
+      } else if (s === 'active' && releasedForBgRef.current) {
+        releasedForBgRef.current = false;
+        onStartRef.current(); // resume on return — re-acquires (cold, since released)
+      }
+    });
+    return () => sub.remove();
+  }, []);
 
   // ---- Snapshot (owner spec §8): capture AT BUTTON PRESS, confirm w/ notes --
   type SnapshotDraft = {

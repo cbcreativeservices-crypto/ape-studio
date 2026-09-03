@@ -2308,6 +2308,14 @@ export function earSensDb(f: number): number {
   return Math.max(-42, Math.min(8, s));
 }
 
+/** Whole-dB readout value with negative zero normalised — `(-0.3).toFixed(0)`
+ *  prints "-0", which the EAR tag / caption / HEARD bezel must never show.
+ *  Uses toFixed's rounding so it agrees with the other `toFixed(0)` readouts. */
+export function roundDb(v: number): number {
+  const r = Number(v.toFixed(0));
+  return r === 0 ? 0 : r;
+}
+
 export function EqualLoudnessView({
   phase,
   width,
@@ -2387,7 +2395,7 @@ export function EqualLoudnessView({
   const heardAtDot = heard(fC);
   const dotY = yDb(heardAtDot);
   const dotColor = levelColor(p01(heardAtDot));
-  const earCut = earSensDb(fC);
+  const earCut = roundDb(earSensDb(fC));
   // The ear's cut AT the tone — a dashed drop from SEND to HEARD.
   const drop = useMemo(() => {
     const p = Skia.Path.Make();
@@ -2522,7 +2530,7 @@ export function EqualLoudnessView({
           paddingVertical: 1,
         }}
       >
-        <Text style={[tickText, { position: 'relative', left: 0, top: 0, color: '#e6e6e6' }]}>{`EAR ${earCut >= 0 ? '+' : ''}${earCut.toFixed(0)} dB`}</Text>
+        <Text style={[tickText, { position: 'relative', left: 0, top: 0, color: '#e6e6e6' }]}>{`EAR ${earCut > 0 ? '+' : ''}${earCut} dB`}</Text>
       </View>
       {/* Strip name — the physics, deliberately deaf to FREQ. */}
       <Text

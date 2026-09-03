@@ -19,7 +19,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   AppState,
   Image,
   Pressable,
@@ -33,6 +32,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AnswerCell, type AnswerCellState } from '../../components/AnswerCell';
 import { StudioButton } from '../../components/StudioButton';
 import { colors, fonts } from '../../theme/tokens';
+import { confirmDialog, notify } from '../../lib/confirm';
 import {
   clearQuizIntent,
   enqueueSubmission,
@@ -150,13 +150,11 @@ export function QuizScreen({ navigation, route }: Props) {
       } catch (e) {
         if (/network|fetch/i.test((e as Error).message)) {
           enqueueSubmission({ ...args, achievementId });
-          Alert.alert('Offline', 'Offline — please reconnect to submit.', [
-            { text: 'OK', onPress: () => navigation.goBack() },
-          ]);
+          // notify / confirmDialog, not Alert.alert: RN-web's Alert is a no-op,
+          // so these were silent on the web preview (B-148).
+          notify('Offline', 'Offline — please reconnect to submit.', () => navigation.goBack());
         } else {
-          Alert.alert('Submit failed', (e as Error).message, [
-            { text: 'Back to Dashboard', onPress: () => navigation.goBack() },
-          ]);
+          notify('Submit failed', (e as Error).message, () => navigation.goBack());
         }
       } finally {
         setSubmitting(false);
@@ -194,7 +192,7 @@ export function QuizScreen({ navigation, route }: Props) {
       focusLossCount.current += 1;
       focusLossDuration.current += dur;
       if (focusLossCount.current === 1) {
-        Alert.alert(
+        notify(
           'App switch detected',
           'Leaving the app during a quiz is not allowed. One more switch will VOID this attempt and lock the quiz for 15 minutes.',
         );
@@ -276,17 +274,16 @@ export function QuizScreen({ navigation, route }: Props) {
   );
 
   const confirmExit = useCallback(() => {
-    Alert.alert('Leave quiz?', 'Your answers will be wiped immediately. The quiz allows no pause or save.', [
-      { text: 'Keep going', style: 'cancel' },
-      {
-        text: 'Leave & wipe',
-        style: 'destructive',
-        onPress: () => {
-          answers.current = {};
-          navigation.goBack();
-        },
+    confirmDialog(
+      'Leave quiz?',
+      'Your answers will be wiped immediately. The quiz allows no pause or save.',
+      'Leave & wipe',
+      () => {
+        answers.current = {};
+        navigation.goBack();
       },
-    ]);
+      { cancelText: 'Keep going', destructive: true },
+    );
   }, [navigation]);
 
   /* ---- states ---- */
@@ -349,7 +346,7 @@ export function QuizScreen({ navigation, route }: Props) {
       {/* Header: counter + always-visible countdown */}
       <View style={styles.headerBar}>
         <View style={styles.headerLeft}>
-          <Pressable onPress={confirmExit} hitSlop={10} accessibilityRole="button" accessibilityLabel="Leave quiz">
+          <Pressable onPress={confirmExit} hitSlop={16} accessibilityRole="button" accessibilityLabel="Leave quiz">
             <Text style={styles.back}>‹</Text>
           </Pressable>
           <Text style={styles.headerCounter}>

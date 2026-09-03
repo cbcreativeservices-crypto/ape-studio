@@ -31,7 +31,7 @@ import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { markLabReviewed } from '../../../features/lab/labCompletion';
+import { markLabReviewed, useLabDone } from '../../../features/lab/labCompletion';
 import { AlphaType, Canvas, ColorType, DashPathEffect, Image, LinearGradient, Path, Rect, Skia, Text as SkiaText, useFont, vec } from '@shopify/react-native-skia';
 import { LinearGradient as GradientView } from 'expo-linear-gradient';
 import {
@@ -823,6 +823,10 @@ export function AmplitudeColorBody({
   // which STRENGTHENS the §1.7 no-fabricated-progress rule.
   const [checkPassed, setCheckPassed] = useState(false);
   const [practiceOpen, setPracticeOpen] = useState(false);
+  // B-152 (owner 2026-09-03, option b): when this page is reached already-done
+  // via a lab gate, the orientation flag is set but the af_amplitude lab credit
+  // is not — a VISIBLE Mark reviewed button keeps that credit reachable.
+  const labReviewed = useLabDone('af_amplitude');
   return (
     <View style={styles.body}>
       {showHeader ? (
@@ -924,6 +928,14 @@ export function AmplitudeColorBody({
           <View style={styles.doneChip}>
             <Text style={styles.doneChipText}>✓ ORIENTATION COMPLETE</Text>
           </View>
+          {alsoReviewLab && !labReviewed ? (
+            <GlassButton
+              label="MARK REVIEWED"
+              tint="green"
+              height={52}
+              onPress={() => markLabReviewed('af_amplitude')}
+            />
+          ) : null}
           {/* Cheap spaced retrieval: on revisits the dead chip gains a live
               practice affordance — the only retention mechanism available to a
               one-shot orientation page (learning pass 2026-08-31). */}

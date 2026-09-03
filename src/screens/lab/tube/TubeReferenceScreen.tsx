@@ -9,11 +9,12 @@
  * the same gate pattern as CalcLab's custom workflows.
  */
 import { useMemo, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
+import { confirmDialog } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GlassButton } from '../../../components/GlassButton';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
@@ -29,13 +30,14 @@ export function TubeReferenceScreen() {
 
   const openTube = (r: TubeRef) => {
     if (!unlocked) {
-      Alert.alert(
+      // confirmDialog, not Alert.alert: RN-web's Alert is a no-op, so locked
+      // rows were silent taps on the web preview (B-018/B-062).
+      confirmDialog(
         'Tube Reference — Academy',
         'The full-screen tube reference cards are a feature of Academy membership.',
-        [
-          { text: 'Not now', style: 'cancel' },
-          { text: 'See membership', onPress: () => navigation.navigate('Paywall') },
-        ],
+        'See membership',
+        () => navigation.navigate('Paywall'),
+        { cancelText: 'Not now' },
       );
       return;
     }

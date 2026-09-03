@@ -48,9 +48,9 @@ async function internalUserId(): Promise<string | null> {
 }
 
 /**
- * Everything the award screen needs, in three round trips. Returns null only
- * when the account isn't linked to a student record — callers render an honest
- * empty state rather than an implied "0 complete".
+ * Everything the award screen needs, in three round trips. Returns null when
+ * the account isn't linked to a student record or when any read fails —
+ * callers render an honest empty state rather than an implied "0 complete".
  */
 export async function fetchAwardProgress(
   awardType: AwardType,
@@ -72,7 +72,11 @@ export async function fetchAwardProgress(
     return { topics: [], completeCount: 0, totalCount: 0, allComplete: false, credential: null };
   }
 
-  const [{ data: achRows }, { data: progRows }, { data: credRows }] = await Promise.all([
+  const [
+    { data: achRows, error: achErr },
+    { data: progRows, error: progErr },
+    { data: credRows, error: credErr },
+  ] = await Promise.all([
     supabase.from('achievements').select('id, name, global_sequence').in('id', ids),
     supabase
       .from('student_achievement_progress')
@@ -88,6 +92,14 @@ export async function fetchAwardProgress(
       .is('revoked_at', null)
       .limit(1),
   ]);
+  // supabase-js resolves with { error } rather than throwing. A partial failure
+  // must surface as the failed state, never as an authoritative zero-progress
+  // checklist of 'Untitled topic' rows (B-174).
+  const followErr = achErr ?? progErr ?? credErr;
+  if (followErr) {
+    console.warn('[awards] award progress reads failed:', followErr.message);
+    return null;
+  }
 
   const nameById = new Map<string, { name: string; gs: number | null }>();
   for (const a of (achRows ?? []) as any[]) {

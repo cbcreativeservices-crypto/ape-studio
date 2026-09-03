@@ -7,12 +7,13 @@
  * formatted-text layout the runner shares.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
+import { confirmDialog, notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import type { SavedRunSummary } from './workflowModel';
 import { workflowStore } from './workflowStore';
@@ -39,7 +40,8 @@ export function CalcResultsScreen() {
   const shareAsImage = async () => {
     const ok = await shareImage.captureAndShare(shareRef.current, 'Workflow results');
     if (!ok) {
-      Alert.alert('Image sharing unavailable', 'Sharing as an image needs the next app build. SHARE AS TEXT works now.');
+      // notify, not Alert.alert: RN-web's Alert is a no-op (B-018/B-062).
+      notify('Image sharing unavailable', 'Sharing as an image needs the next app build. SHARE AS TEXT works now.');
     }
   };
 
@@ -49,10 +51,13 @@ export function CalcResultsScreen() {
   useEffect(reload, [reload]);
 
   const remove = (r: SavedRunSummary) => {
-    Alert.alert('Delete result?', `The saved result for “${r.workflowName}” will be removed.`, [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: () => void workflowStore.deleteResult(r.id).then(reload) },
-    ]);
+    confirmDialog(
+      'Delete result?',
+      `The saved result for “${r.workflowName}” will be removed.`,
+      'Delete',
+      () => void workflowStore.deleteResult(r.id).then(reload),
+      { destructive: true },
+    );
   };
 
   return (

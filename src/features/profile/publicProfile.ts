@@ -192,6 +192,28 @@ function queueListingSync(p: PublicProfile): void {
   }, LISTING_SYNC_IDLE_MS);
 }
 
+/**
+ * Account wipe (clearLocalAccountData / resetAllLocalStores pattern). The 18+
+ * attestation and the "already on the server" sync markers are per-ACCOUNT
+ * state held in module scope; without this the next account on the device
+ * inherited the departing user's attestation (ProfileScreen skips the age
+ * gate when isAdultConfirmed()) and a pending debounced sync could write the
+ * departing user's name/listing under the new session.
+ */
+export function resetLocal(): void {
+  adultConfirmed = false;
+  lastSyncedRegistryName = null;
+  lastSyncedListing = '';
+  if (registrySyncTimer) {
+    clearTimeout(registrySyncTimer);
+    registrySyncTimer = null;
+  }
+  if (listingSyncTimer) {
+    clearTimeout(listingSyncTimer);
+    listingSyncTimer = null;
+  }
+}
+
 export async function savePublicProfile(p: PublicProfile): Promise<void> {
   await AsyncStorage.setItem(KEY, JSON.stringify(p));
   // A LISTED profile's bio/interests are published content, so edits have to

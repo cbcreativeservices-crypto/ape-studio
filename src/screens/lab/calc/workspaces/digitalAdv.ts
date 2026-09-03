@@ -241,7 +241,7 @@ const TIMECODE: Workspace = {
         const totS = n(v.frames) / n(v.fps);
         return [
           { label: 'TOTAL TIME', value: totS, quantity: 'time', unit: 's' },
-          { label: 'WHOLE SECONDS', value: Math.floor(totS), quantity: 'time', chainable: false },
+          { label: 'WHOLE SECONDS', value: Math.floor(totS), quantity: 'time', unit: 's', chainable: false },
         ];
       },
       table: (v) => {
@@ -253,7 +253,9 @@ const TIMECODE: Workspace = {
         const m = Math.floor((totS % 3600) / 60);
         const s = totS % 60;
         const f = totFrames % fpsInt;
-        const p2 = (x: number) => String(x).padStart(2, '0');
+        // fps 0 (or one that rounds to 0) makes totS Infinity and m/s/f NaN —
+        // show '—' cells (same convention as fmt()) rather than raw Infinity/NaN.
+        const p2 = (x: number) => (Number.isFinite(x) ? String(x).padStart(2, '0') : '—');
         return {
           title: 'TIMECODE (HH:MM:SS:FF)',
           cols: ['Hours', 'Minutes', 'Seconds', 'Frames'],

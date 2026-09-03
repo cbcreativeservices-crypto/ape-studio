@@ -10,12 +10,13 @@
  * rule); hitting a limit routes to the Paywall, never a silent failure.
  */
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
 import { colors, fonts } from '../../../theme/tokens';
+import { confirmDialog } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import type { Workflow } from './workflowModel';
@@ -67,22 +68,27 @@ export function CalcWorkflowsScreen() {
    *  actually pressed, not a generic "saving" line. */
   const guardSave = (action: 'create' | 'duplicate'): boolean => {
     if (!atLimit) return true;
+    // confirmDialog, not Alert.alert: RN-web's Alert is a no-op, so these
+    // gates were silent taps on the web preview (B-018/B-062).
+    const seePlans = () => (navigation as any).navigate('Paywall');
     if (limits.savedWorkflows === 0) {
-      Alert.alert(
+      confirmDialog(
         action === 'duplicate' ? 'Customize this template?' : 'Build your own workflow?',
         action === 'duplicate'
           ? 'Duplicating a template creates your own custom calculator workflow — a feature of Academy membership. You can still run any template as-is.'
           : 'Building your own calculator workflows is a feature of Academy membership. You can still run the built-in templates.',
-        [
-          { text: 'Not now', style: 'cancel' },
-          { text: 'See membership', onPress: () => (navigation as any).navigate('Paywall') },
-        ],
+        'See membership',
+        seePlans,
+        { cancelText: 'Not now' },
       );
     } else {
-      Alert.alert('Workflow limit reached', `Your account keeps up to ${limits.savedWorkflows} workflows. Academy membership removes the limit.`, [
-        { text: 'Not now', style: 'cancel' },
-        { text: 'See membership', onPress: () => (navigation as any).navigate('Paywall') },
-      ]);
+      confirmDialog(
+        'Workflow limit reached',
+        `Your account keeps up to ${limits.savedWorkflows} workflows. Academy membership removes the limit.`,
+        'See membership',
+        seePlans,
+        { cancelText: 'Not now' },
+      );
     }
     return false;
   };
@@ -113,16 +119,15 @@ export function CalcWorkflowsScreen() {
   };
 
   const remove = (w: Workflow) => {
-    Alert.alert('Delete workflow?', `“${w.name}” will be removed. Saved results are kept.`, [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Delete',
-        style: 'destructive',
-        onPress: () => {
-          void workflowStore.deleteWorkflow(w.id).then(reload);
-        },
+    confirmDialog(
+      'Delete workflow?',
+      `“${w.name}” will be removed. Saved results are kept.`,
+      'Delete',
+      () => {
+        void workflowStore.deleteWorkflow(w.id).then(reload);
       },
-    ]);
+      { destructive: true },
+    );
   };
 
   const toggleFav = (id: string) => {

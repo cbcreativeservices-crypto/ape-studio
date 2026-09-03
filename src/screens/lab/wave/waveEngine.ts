@@ -222,6 +222,10 @@ export function arrivalsAt(scene: WaveScene, x: number, y: number, freq: number,
   for (const s of scene.sources) {
     if (s.muted) continue;
     for (const img of imageSources(scene, s, freq, maxOrder)) {
+      // An image mirrored in an OPENING (α = 1 → gain 0) returns nothing, so it
+      // is not an arrival at all — listing it would print the −120 dB floor
+      // as a phantom tick/tag over the real ones (B-104).
+      if (img.gain <= 0) continue;
       const r = Math.max(0.15, Math.hypot(x - img.x, y - img.y));
       out.push({
         t: r / c + s.delayMs / 1000,

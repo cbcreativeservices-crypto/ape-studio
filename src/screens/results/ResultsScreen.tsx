@@ -19,7 +19,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { StudioButton } from '../../components/StudioButton';
 import { colors, fonts } from '../../theme/tokens';
-import { clearQuizIntent } from '../../features/quiz/api';
+import { clearQuizIntent, QUIZ_SIZE } from '../../features/quiz/api';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Results'>;
@@ -65,18 +65,27 @@ export function ResultsScreen({ navigation, route }: Props) {
     questions.find((q) => q.slot === Number(slot))?.text ?? `Question ${slot}`;
 
   const toDashboard = useCallback(
-    () => navigation.reset({ index: 0, routes: [{ name: 'Main' }] }),
+    () => navigation.reset({ index: 0, routes: [{ name: 'Main', params: { screen: 'Study', params: { screen: 'Dashboard' } } }] }),
     [navigation],
   );
 
   const retake = useCallback(async () => {
     await clearQuizIntent(achievementId); // new attempt intent = fresh draw
+    // `initial: false` (same root fix as CourseSelectionScreen → Glossary):
+    // the fresh Study stack mounts its initialRouteName (Dashboard) as
+    // routes[0] BENEATH Quiz. Without it the stack initialises as [Quiz]
+    // alone, so the quiz's own 'Leave & wipe' goBack has no target and a tab
+    // switch cannot pop the quiz — it stays mounted and its clock later
+    // force-submits an empty attempt from a hidden screen (B-040, B-132).
     navigation.reset({
       index: 0,
       routes: [
         {
           name: 'Main',
-          params: { screen: 'Study', params: { screen: 'Quiz', params: { achievementId, topicName } } },
+          params: {
+            screen: 'Study',
+            params: { screen: 'Quiz', params: { achievementId, topicName }, initial: false },
+          },
         },
       ],
     });
@@ -117,7 +126,7 @@ export function ResultsScreen({ navigation, route }: Props) {
           <Text style={styles.resultsEyebrow}>{isPractice ? 'RESULTS · PRACTICE' : 'RESULTS'}</Text>
           <View style={styles.scoreRow}>
             <Text style={styles.scoreBig}>{result.score}</Text>
-            <Text style={styles.scoreOf}>/ 30</Text>
+            <Text style={styles.scoreOf}>/ {QUIZ_SIZE}</Text>
           </View>
           {timedOut && <Text style={styles.timedOut}>Time expired — not passed</Text>}
         </View>

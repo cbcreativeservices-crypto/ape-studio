@@ -1008,6 +1008,10 @@ function M9Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
   const f = Math.round(80 * Math.pow(8000 / 80, pos));
   const levelDb = -44 + lvl * 24;
   const sens = viz ? viz.earSensDb(f) : null;
+  // Whole-dB readouts with −0 normalised (B-101). HEARD is shown as the sum
+  // of the two ROUNDED readouts so SEND + EAR = HEARD holds on screen.
+  const sendDb = viz ? viz.roundDb(levelDb) : null;
+  const sensDb = viz && sens != null ? viz.roundDb(sens) : null;
   const params: DockParam[] = [
     {
       kind: 'fader',
@@ -1059,7 +1063,7 @@ function M9Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
           { k: 'SEND', v: `${levelDb.toFixed(0)} dB`, tint: levelColor(lvl), helpKey: 'loudness_curve' },
           {
             k: 'HEARD',
-            v: sens != null ? `${(levelDb + sens).toFixed(0)} dB` : '—',
+            v: sendDb != null && sensDb != null ? `${sendDb + sensDb} dB` : '—',
             tint: sens != null ? levelColor(Math.max(0, Math.min(1, (levelDb + sens + 60) / 60))) : undefined,
             helpKey: 'loudness_curve',
           },
@@ -1069,9 +1073,9 @@ function M9Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
     >
       {wellTop}
       <AnalyticBadge text="SIMPLIFIED SENSITIVITY CURVE — ILLUSTRATION INSPIRED BY EQUAL-LOUDNESS CONTOURS, NOT MEASURED DATA · TOP-RIGHT INSET = WHAT YOU HEAR (ITS SIZE = LEVEL × EAR CURVE · SLOWED)" />
-      {sens != null ? (
+      {sens != null && sensDb != null ? (
         <Text style={styles.caption}>
-          Ear sensitivity at {f} Hz ≈ {sens.toFixed(0)} dB relative to 1 kHz —{' '}
+          Ear sensitivity at {f} Hz ≈ {sensDb} dB relative to 1 kHz —{' '}
           {sens < -6 ? 'the SAME amplitude sounds clearly quieter here.' : sens > 2 ? 'your ear slightly favors this region.' : 'close to the 1 kHz reference.'}
         </Text>
       ) : null}
@@ -1929,7 +1933,7 @@ export function FoundationsCourseScreen() {
         tone.stop(); // never carry a step-0 tone into the resumed step
         setStep(n);
       }
-    });
+    }).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const goTo = useCallback(

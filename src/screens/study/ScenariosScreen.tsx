@@ -15,7 +15,7 @@
  * (Booth 2026-07-26).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -101,6 +101,16 @@ export function ScenariosScreen({ route }: Props) {
   const [elapsed, setElapsed] = useState(0);
   const startRef = useRef<number | null>(null);
   const elapsedRef = useRef(0);
+
+  // Fresh visit = fresh pace session: the clock (startRef/elapsedRef) is
+  // per-instance and starts at 0 on mount, but the brain-output tally and the
+  // running flag live in the module-level store and would otherwise carry over
+  // from the previous visit (stale AHEAD/BEHIND offset at 0:00, or a paused
+  // readout). Zero the tally and start running so the readout is consistent (B-138).
+  useEffect(() => {
+    resetBrainOutput('scenarios');
+    setRunning('scenarios', true);
+  }, []);
 
   // Pace clock: present while ENABLED; only ticks while also RUNNING. When
   // enabled-but-paused the clock HOLDS; disabling resets to 0.
@@ -313,7 +323,16 @@ export function ScenariosScreen({ route }: Props) {
   };
 
   /* ---- loading ---- */
-  if (view === 'loading') return <View style={[styles.center, { paddingTop: insets.top }]} />;
+  // Header + spinner (parity with fill-in-blank / matching): a bare empty View
+  // was a blank screen with no RETURN for as long as the homework RPC took (B-052).
+  if (view === 'loading') {
+    return (
+      <View style={[styles.center, { paddingTop: insets.top }]}>
+        <StudyHeader method="scenarios" title="SCENARIO" />
+        <ActivityIndicator color={colors.amber} style={{ marginTop: 40 }} />
+      </View>
+    );
+  }
 
   /* ---- no content ---- */
   if (view === 'nocontent') {
@@ -418,7 +437,8 @@ export function ScenariosScreen({ route }: Props) {
             label="Back to Dashboard"
             variant="secondary"
             small
-            onPress={() => (navigation as any).navigate('Dashboard')}
+            // popTo: RN7 navigate() would push a second Dashboard (see StudyHeader).
+            onPress={() => (navigation as any).popTo('Dashboard')}
           />
         </View>
       </View>

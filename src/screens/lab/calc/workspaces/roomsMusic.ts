@@ -4,7 +4,7 @@
  * Follows the wave.ts exemplar pattern (owner spec 2026-07-29).
  */
 import type { Workspace } from '../calcTypes';
-import { fmt, speedOfSoundAir } from '../calcUnits';
+import { fmt, fmtInt, speedOfSoundAir } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 const arr = (v: number | number[]): number[] => (typeof v === 'number' ? [v] : v);
@@ -15,6 +15,7 @@ const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 
 
 /** Note name + octave (MIDI 69 = A4, octave = floor(m/12) − 1). */
 function noteName(m: number): string {
+  if (!Number.isFinite(m)) return '—'; // f = 0 → MIDI −Infinity; never print 'C-Infinity'
   const r = Math.round(m);
   const pc = ((r % 12) + 12) % 12;
   return `${NOTE_NAMES[pc] ?? 'C'}${Math.floor(r / 12) - 1}`;
@@ -38,6 +39,7 @@ const INTERVAL_NAMES = [
 
 /** Nearest named interval for a (possibly fractional/negative) semitone count. */
 function intervalName(semitones: number): string {
+  if (!Number.isFinite(semitones)) return '—'; // a zero frequency → ±Infinity/NaN semitones
   const a = Math.abs(semitones);
   const r = Math.round(a);
   if (r <= 12) return INTERVAL_NAMES[r] ?? 'unison';
@@ -162,14 +164,14 @@ const WS_BPM: Workspace = {
         const bpm = 60000 / ms;
         return [
           { label: 'TEMPO', value: bpm, quantity: 'bpm' },
-          { label: 'NEAREST WHOLE BPM', text: `${Math.round(bpm)} BPM (exact: ${fmt(bpm)})` },
+          { label: 'NEAREST WHOLE BPM', text: `${fmtInt(bpm)} BPM (exact: ${fmt(bpm)})` },
         ];
       },
       steps: (v) => {
         const ms = n(v.interval) * 1000;
         return [
           `BPM = 60000 ÷ ${fmt(ms)} ms = ${fmt(60000 / ms)} BPM.`,
-          `Sessions run on whole (or half) BPM values — the nearest whole tempo is ${Math.round(60000 / ms)} BPM.`,
+          `Sessions run on whole (or half) BPM values — the nearest whole tempo is ${fmtInt(60000 / ms)} BPM.`,
         ];
       },
     },
@@ -327,13 +329,17 @@ const WS_PITCH: Workspace = {
         const f = n(v.f);
         const ref = n(v.ref);
         const m = 69 + 12 * Math.log2(f / ref);
+        // f ≤ 0 or A4 ≤ 0 → m is ±Infinity/NaN and every row below is meaningless
+        // (would read 'C-Infinity (MIDI -Infinity)'); throw so runCompute shows
+        // the standard "no valid result — check for zeros" state.
+        if (!Number.isFinite(m)) throw new Error('frequency out of range');
         const r = Math.round(m);
         const cents = (m - r) * 100;
         const exact = ref * Math.pow(2, (r - 69) / 12);
         const below = ref * Math.pow(2, (r - 70) / 12);
         const above = ref * Math.pow(2, (r - 68) / 12);
         return [
-          { label: 'NEAREST NOTE', text: `${noteName(r)} (MIDI ${r})` },
+          { label: 'NEAREST NOTE', text: `${noteName(r)} (MIDI ${fmtInt(r)})` },
           {
             label: 'TUNING OFFSET',
             text:
@@ -353,11 +359,12 @@ const WS_PITCH: Workspace = {
         const f = n(v.f);
         const ref = n(v.ref);
         const m = 69 + 12 * Math.log2(f / ref);
+        if (!Number.isFinite(m)) throw new Error('frequency out of range'); // same guard as compute()
         const r = Math.round(m);
         return [
           `m = 69 + 12·log₂(${fmt(f)} ÷ ${fmt(ref)}) = ${fmt(m)} — the fractional MIDI position of this frequency.`,
-          `Nearest whole note: MIDI ${r} = ${noteName(r)}, whose exact frequency is ${fmt(ref * Math.pow(2, (r - 69) / 12))} Hz.`,
-          `The leftover (${fmt(m)} − ${r}) × 100 = ${fmt((m - r) * 100, 3)} cents is how far ${cents(m, r)}.`,
+          `Nearest whole note: MIDI ${fmtInt(r)} = ${noteName(r)}, whose exact frequency is ${fmt(ref * Math.pow(2, (r - 69) / 12))} Hz.`,
+          `The leftover (${fmt(m)} − ${fmtInt(r)}) × 100 = ${fmt((m - r) * 100, 3)} cents is how far ${cents(m, r)}.`,
         ];
       },
     },
@@ -1049,7 +1056,7 @@ const WS_TREATMENT: Workspace = {
         return [
           { label: 'ABSORPTION TO ADD ΔA', value: dA, quantity: 'area' },
           { label: 'PANELS NEEDED', value: panels, quantity: 'number', chainable: false },
-          { label: `PREDICTED RT60 WITH ${panels} PANELS`, value: predicted, quantity: 'time', unit: 's' },
+          { label: `PREDICTED RT60 WITH ${fmtInt(panels)} PANELS`, value: predicted, quantity: 'time', unit: 's' },
         ];
       },
       steps: (v) => {
@@ -1066,8 +1073,8 @@ const WS_TREATMENT: Workspace = {
           `Absorption the target needs: A = 0.161 × ${fmt(V)} ÷ ${fmt(rtT)} = ${fmt(aTgt)} m².`,
           `Shortfall ΔA = ${fmt(aTgt)} − ${fmt(aCur)} = ${fmt(dA)} m².`,
           `Each panel supplies ${fmt(n(v.panelArea))} m² × α ${fmt(n(v.alpha))} = ${fmt(perPanel)} m² of absorption.`,
-          `Panels = ceil(${fmt(dA)} ÷ ${fmt(perPanel)}) = ${panels} — rounding UP, because a fraction of a panel does not exist.`,
-          `With ${panels} whole panels the room lands at RT60 = 0.161 × ${fmt(V)} ÷ ${fmt(aCur + panels * perPanel)} = ${fmt((SABINE_K * V) / (aCur + panels * perPanel))} s.`,
+          `Panels = ceil(${fmt(dA)} ÷ ${fmt(perPanel)}) = ${fmtInt(panels)} — rounding UP, because a fraction of a panel does not exist.`,
+          `With ${fmtInt(panels)} whole panels the room lands at RT60 = 0.161 × ${fmt(V)} ÷ ${fmt(aCur + panels * perPanel)} = ${fmt((SABINE_K * V) / (aCur + panels * perPanel))} s.`,
         ];
       },
     },

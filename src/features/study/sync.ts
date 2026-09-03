@@ -155,7 +155,8 @@ export class StudySession {
   private accrualTimer: ReturnType<typeof setInterval> | null = null;
   private syncTimer: ReturnType<typeof setInterval> | null = null;
   private appStateSub: { remove: () => void } | null = null;
-  private flushing = false;
+  /** The flush pass currently in flight, if any — see flush(). */
+  private inflight: Promise<void> | null = null;
 
   constructor(
     private achievementId: string,
@@ -187,41 +188,53 @@ export class StudySession {
     if (this.events.length >= MAX_EVENTS_PER_BATCH) void this.flush();
   }
 
-  /** Send accumulated state. Safe to call repeatedly; serialized internally. */
+  /**
+   * Send accumulated state. Safe to call repeatedly; serialized internally:
+   * a call that lands while a pass is in flight WAITS for it and then runs
+   * its own pass, so events/seconds recorded during a slow RPC still go out.
+   * (It used to return early instead — fatal from stop(), whose flush is the
+   * last one a session ever gets: everything recorded during an in-flight
+   * loop flush was silently dropped, neither sent nor queued.)
+   */
   async flush(): Promise<void> {
-    if (this.flushing) return;
-    this.flushing = true;
+    while (this.inflight) await this.inflight;
+    const run = this.flushOnce();
+    this.inflight = run;
     try {
-      // Drain the offline queue first so coalesced history lands in order.
-      await replayQueue();
-
-      if (this.events.length === 0 && this.seconds === 0) return;
-      const events = this.events.splice(0);
-      const seconds = this.seconds;
-      this.seconds = 0;
-      const batchId = Crypto.randomUUID();
-
-      try {
-        const snap = await callRpc(this.achievementId, this.methodKey, batchId, seconds, events);
-        this.onSnapshot(snap);
-        emitStudyProgress(); // progress committed — refresh any live dashboard
-      } catch (e) {
-        // NEVER drop the events here. The buffer was already spliced out above,
-        // so a bare `console.warn` would silently lose a study session on any
-        // non-network rejection (a transient RLS/token gap, or an RPC that
-        // hasn't been deployed yet). Persist to the durable queue instead: it
-        // survives an app restart and replays on the next flush. replayQueue()
-        // remains the SINGLE arbiter that eventually drops a genuinely poisoned
-        // batch (it drops on a non-network failure during replay), so this
-        // cannot wedge the queue — it only buys the events one durable retry.
-        enqueue(this.achievementId, this.methodKey, batchId, seconds, events);
-        if (!isNetworkError(e)) {
-          console.warn('[study-sync] batch rejected, queued for retry:', (e as Error).message);
-          this.onRejected?.((e as Error).message);
-        }
-      }
+      await run;
     } finally {
-      this.flushing = false;
+      if (this.inflight === run) this.inflight = null;
+    }
+  }
+
+  private async flushOnce(): Promise<void> {
+    // Drain the offline queue first so coalesced history lands in order.
+    await replayQueue();
+
+    if (this.events.length === 0 && this.seconds === 0) return;
+    const events = this.events.splice(0);
+    const seconds = this.seconds;
+    this.seconds = 0;
+    const batchId = Crypto.randomUUID();
+
+    try {
+      const snap = await callRpc(this.achievementId, this.methodKey, batchId, seconds, events);
+      this.onSnapshot(snap);
+      emitStudyProgress(); // progress committed — refresh any live dashboard
+    } catch (e) {
+      // NEVER drop the events here. The buffer was already spliced out above,
+      // so a bare `console.warn` would silently lose a study session on any
+      // non-network rejection (a transient RLS/token gap, or an RPC that
+      // hasn't been deployed yet). Persist to the durable queue instead: it
+      // survives an app restart and replays on the next flush. replayQueue()
+      // remains the SINGLE arbiter that eventually drops a genuinely poisoned
+      // batch (it drops on a non-network failure during replay), so this
+      // cannot wedge the queue — it only buys the events one durable retry.
+      enqueue(this.achievementId, this.methodKey, batchId, seconds, events);
+      if (!isNetworkError(e)) {
+        console.warn('[study-sync] batch rejected, queued for retry:', (e as Error).message);
+        this.onRejected?.((e as Error).message);
+      }
     }
   }
 
@@ -232,6 +245,21 @@ export class StudySession {
     this.appStateSub?.remove();
     this.accrualTimer = this.syncTimer = null;
     this.appStateSub = null;
-    await this.flush();
+    try {
+      await this.flush();
+    } finally {
+      // Last chance: if the final pass could not run (it threw before the
+      // buffer was spliced), persist whatever is left rather than losing it.
+      if (this.events.length > 0 || this.seconds > 0) {
+        const events = this.events.splice(0);
+        const seconds = this.seconds;
+        this.seconds = 0;
+        try {
+          enqueue(this.achievementId, this.methodKey, Crypto.randomUUID(), seconds, events);
+        } catch (e) {
+          console.warn('[study-sync] could not queue final batch:', (e as Error).message);
+        }
+      }
+    }
   }
 }

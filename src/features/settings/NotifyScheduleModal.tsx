@@ -95,26 +95,19 @@ export function NotifyScheduleModal({
   const { h12, minute, period } = parse(time);
   // Steppers CARRY (QA night 2026-09-01): 11 PM + 1 hr used to wrap to 12 PM
   // (noon — eleven hours earlier), and 1:00 − 1 min stayed inside the same
-  // hour. Hours flip the period on each pass through 12; minutes borrow from
-  // the hour, which flips the period in turn.
-  const setHour = (next: number) => {
-    const wrapped = ((next + 11) % 12) + 1; // 1..12
-    const crossed = next === 13 || next === 0; // stepped past 12 in either direction
-    onSetTime(to24(wrapped, crossed ? (period === 'AM' ? 'PM' : 'AM') : period, minute));
+  // hour. Stepping is done in 24-hour space (B-085): the old 12-hour "flip the
+  // period when we pass 12" test fired one step late in both directions
+  // (11 AM + 1 → 12:00 AM, 12 PM + 1 → 1:00 AM), so instead the stored HH:MM
+  // is stepped as minutes-since-midnight mod 1440 and h12 / period are
+  // re-derived from it by parse().
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const h24 = (h12 % 12) + (period === 'PM' ? 12 : 0);
+  const stepMinutes = (deltaMinutes: number) => {
+    const total = (((h24 * 60 + minute + deltaMinutes) % 1440) + 1440) % 1440;
+    onSetTime(`${pad(Math.floor(total / 60))}:${pad(total % 60)}`);
   };
-  const setMinute = (next: number) => {
-    const m = ((next % 60) + 60) % 60;
-    if (next >= 60) setHour(h12 + 1);
-    else if (next < 0) setHour(h12 - 1);
-    else onSetTime(to24(h12, period, m));
-    if (next >= 60 || next < 0) {
-      // setHour already re-emitted the hour/period; re-emit with the new minute.
-      const wrapped = ((h12 + (next >= 60 ? 1 : -1) + 11) % 12) + 1;
-      const stepped = h12 + (next >= 60 ? 1 : -1);
-      const crossed = stepped === 13 || stepped === 0;
-      onSetTime(to24(wrapped, crossed ? (period === 'AM' ? 'PM' : 'AM') : period, m));
-    }
-  };
+  const stepHour = (dir: 1 | -1) => stepMinutes(dir * 60);
+  const stepMinute = (dir: 1 | -1) => stepMinutes(dir * 5);
   const togglePeriod = () => onSetTime(to24(h12, period === 'AM' ? 'PM' : 'AM', minute));
 
   const showTime = mode === 'time' || mode === 'dayTime';
@@ -154,12 +147,12 @@ export function NotifyScheduleModal({
               <Text style={styles.groupLabel}>TIME</Text>
               <Text style={styles.clock}>{formatClock(time)}</Text>
               <View style={styles.timeRow}>
-                <Stepper label="HOUR" value={String(h12)} onDown={() => setHour(h12 - 1)} onUp={() => setHour(h12 + 1)} />
+                <Stepper label="HOUR" value={String(h12)} onDown={() => stepHour(-1)} onUp={() => stepHour(1)} />
                 <Stepper
                   label="MINUTE"
                   value={String(minute).padStart(2, '0')}
-                  onDown={() => setMinute(minute - 5)}
-                  onUp={() => setMinute(minute + 5)}
+                  onDown={() => stepMinute(-1)}
+                  onUp={() => stepMinute(1)}
                 />
                 <View style={styles.stepperCol}>
                   <Text style={styles.stepperLabel}>AM / PM</Text>

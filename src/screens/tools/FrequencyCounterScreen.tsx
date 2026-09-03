@@ -744,7 +744,7 @@ function LivePitchMode({
               ]}
             >
               {note != null && shownFreq != null
-                ? `${note.cents >= 0 ? '+' : ''}${note.cents.toFixed(1)} cents · ${fmtHz(shownFreq)} Hz`
+                ? `${(Math.abs(note.cents) < 0.05 ? 0 : note.cents) >= 0 ? '+' : ''}${(Math.abs(note.cents) < 0.05 ? 0 : note.cents).toFixed(1)} cents · ${fmtHz(shownFreq)} Hz`
                 : 'no stable pitch'}
             </Text>
           </View>
@@ -762,7 +762,7 @@ function LivePitchMode({
           <StatCell
             help={help}
             label="INPUT LEVEL"
-            value={live != null && Number.isFinite(live.levelDb) ? live.levelDb.toFixed(1) : '—'}
+            value={live != null && Number.isFinite(live.levelDb) ? (Math.abs(live.levelDb) < 0.05 ? 0 : live.levelDb).toFixed(1) : '—'}
             unit="dBFS"
             valueColor={levelColorForDb(live?.levelDb)}
           />
@@ -783,7 +783,7 @@ function LivePitchMode({
           <StatCell
             help={help}
             label="INPUT LEVEL"
-            value={live != null && Number.isFinite(live.levelDb) ? live.levelDb.toFixed(1) : '—'}
+            value={live != null && Number.isFinite(live.levelDb) ? (Math.abs(live.levelDb) < 0.05 ? 0 : live.levelDb).toFixed(1) : '—'}
             unit="dBFS"
             valueColor={levelColorForDb(live?.levelDb)}
           />

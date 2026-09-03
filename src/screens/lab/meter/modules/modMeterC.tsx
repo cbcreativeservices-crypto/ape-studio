@@ -654,6 +654,13 @@ function persistSolved(s: Set<string>): void {
   solvedCache = new Set(s);
   void AsyncStorage.setItem(SOLVED_KEY, JSON.stringify([...s])).catch(() => {});
 }
+/** Reset the in-memory solved set on account switch / guest entry (called by
+ *  resetAllLocalStores — B-154). Without this the next person's SOLVED count
+ *  started from the departing user's set until a relaunch; the store re-hydrates
+ *  from the (now-cleared) key on the next mount. */
+export function resetLocal(): void {
+  solvedCache = null;
+}
 
 // Options de-cued (learning pass 2026-08-31): the correct answer was
 // systematically the LONGEST and carried its own definition -- a length cue

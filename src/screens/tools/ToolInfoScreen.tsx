@@ -6,15 +6,16 @@
  * decorative may resemble a live meter). The real UI lands with the native
  * DSP module (Spike 0).
  */
-import { useCallback } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect, useRef } from 'react';
+import { AppState, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { GlassButton } from '../../components/GlassButton';
 import { useToolUsage } from '../../features/tools/telemetry';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
-import { holdMicWarm, releaseMic } from '../../features/tools/engine/micSession';
+import { holdMicWarm, releaseMic, releaseMicNow } from '../../features/tools/engine/micSession';
+import { micReleaseOnBackgroundEnabled } from '../../features/settings/store';
 import { colors, fonts } from '../../theme/tokens';
 import { MIC_LIMITS, toolByKey, type ToolKey } from './toolsData';
 import { LockedButton, MembershipRequiredNote } from './ToolLockUi';
@@ -67,13 +68,34 @@ export function ToolInfoScreen({ navigation, route }: Props) {
   // starts capture or prompts here; if the mic isn't warm, the tool starts it on
   // open. Release (debounced) on blur so the opened tool cancels it by adopting.
   const isInputTool = MIC_INPUT_TOOLS.has(tool.key);
+  // True while THIS screen is the focused holder of the warm session (a pushed
+  // live tool blurs us and owns the stream — and its own background handler).
+  const holdingRef = useRef(false);
   useFocusEffect(
     useCallback(() => {
       if (!isInputTool) return undefined;
       holdMicWarm();
-      return () => releaseMic();
+      holdingRef.current = true;
+      return () => {
+        holdingRef.current = false;
+        releaseMic();
+      };
     }, [isInputTool]),
   );
+  // Background release (B-170), gated on the user setting "Release microphone
+  // in the background" — read AT EVENT TIME like the tool engines do. The warm
+  // hold above cancels the debounced stop, so without this the mic stayed hot
+  // behind the Home button for the whole dwell. Only a real 'background'
+  // releases ('inactive' = app-switcher peek / permission alert); nothing to
+  // resume on return — the tool simply cold-starts on OPEN if the mic isn't warm.
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (s) => {
+      if (s !== 'background' || !holdingRef.current) return;
+      if (!micReleaseOnBackgroundEnabled()) return; // OFF → keep the warm session
+      releaseMicNow();
+    });
+    return () => sub.remove();
+  }, []);
   // OPEN TOOL is free for everyone; the LEARN/DEMO training layer is Academy-
   // only (owner 2026-08-05). Gate on real standing (isMember), not caps.
   const { isMember } = useEntitlement();

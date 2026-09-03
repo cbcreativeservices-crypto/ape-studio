@@ -18,7 +18,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   AppState,
   Image,
   Pressable,
@@ -32,6 +31,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AnswerCell, type AnswerCellState } from '../../components/AnswerCell';
 import { StudioButton } from '../../components/StudioButton';
 import { colors, fonts } from '../../theme/tokens';
+import { confirmDialog, notify } from '../../lib/confirm';
 import {
   clearExamIntent,
   enqueueExamSubmission,
@@ -126,15 +126,15 @@ export function FinalExamScreen({ navigation, route }: Props) {
       } catch (e) {
         if (/network|fetch/i.test((e as Error).message)) {
           await enqueueExamSubmission({ ...args, awardType, awardId });
-          Alert.alert(
+          // notify / confirmDialog, not Alert.alert: RN-web's Alert is a no-op,
+          // so these were silent on the web preview (B-148).
+          notify(
             'Offline',
             'Your exam is saved and will be submitted automatically when you reconnect. Your finish time is preserved.',
-            [{ text: 'OK', onPress: () => navigation.goBack() }],
+            () => navigation.goBack(),
           );
         } else {
-          Alert.alert('Submit failed', (e as Error).message, [
-            { text: 'Back', onPress: () => navigation.goBack() },
-          ]);
+          notify('Submit failed', (e as Error).message, () => navigation.goBack());
         }
       } finally {
         setSubmitting(false);
@@ -172,7 +172,7 @@ export function FinalExamScreen({ navigation, route }: Props) {
       focusLossCount.current += 1;
       focusLossDuration.current += dur;
       if (focusLossCount.current === 1) {
-        Alert.alert(
+        notify(
           'App switch detected',
           'Leaving the app during the Final Exam is not allowed. One more switch will VOID this attempt and lock the exam for 15 minutes.',
         );
@@ -250,20 +250,15 @@ export function FinalExamScreen({ navigation, route }: Props) {
   );
 
   const confirmExit = useCallback(() => {
-    Alert.alert(
+    confirmDialog(
       'Leave the Final Exam?',
       'Your answers will be wiped immediately. The exam allows no pause or save.',
-      [
-        { text: 'Keep going', style: 'cancel' },
-        {
-          text: 'Leave & wipe',
-          style: 'destructive',
-          onPress: () => {
-            answers.current = {};
-            navigation.goBack();
-          },
-        },
-      ],
+      'Leave & wipe',
+      () => {
+        answers.current = {};
+        navigation.goBack();
+      },
+      { cancelText: 'Keep going', destructive: true },
     );
   }, [navigation]);
 
@@ -324,7 +319,7 @@ export function FinalExamScreen({ navigation, route }: Props) {
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <View style={styles.headerBar}>
         <View style={styles.headerLeft}>
-          <Pressable onPress={confirmExit} hitSlop={10} accessibilityRole="button" accessibilityLabel="Leave Final Exam">
+          <Pressable onPress={confirmExit} hitSlop={16} accessibilityRole="button" accessibilityLabel="Leave Final Exam">
             <Text style={styles.back}>‹</Text>
           </Pressable>
           <Text style={styles.headerCounter}>

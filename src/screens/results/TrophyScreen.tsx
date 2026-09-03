@@ -31,7 +31,7 @@ export function TrophyScreen({ navigation, route }: Props) {
 
   const exit = () => {
     if (isQuizWin) {
-      navigation.reset({ index: 0, routes: [{ name: 'Main' }] }); // → Dashboard
+      navigation.reset({ index: 0, routes: [{ name: 'Main', params: { screen: 'Study', params: { screen: 'Dashboard' } } }] }); // → Study/Dashboard
     } else {
       navigation.goBack();
     }

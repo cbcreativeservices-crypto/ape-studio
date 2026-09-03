@@ -27,14 +27,18 @@ export function useCalcSectionOpen(): {
   useEffect(() => {
     let alive = true;
     void (async () => {
-      const rows = await AsyncStorage.multiGet([KEYS.why, KEYS.example, KEYS.mistakes]);
-      if (!alive) return;
-      const map = Object.fromEntries(rows) as Record<string, string | null>;
-      setOpen({
-        why: map[KEYS.why] !== '0',
-        example: map[KEYS.example] !== '0',
-        mistakes: map[KEYS.mistakes] !== '0',
-      });
+      try {
+        const rows = await AsyncStorage.multiGet([KEYS.why, KEYS.example, KEYS.mistakes]);
+        if (!alive) return;
+        const map = Object.fromEntries(rows) as Record<string, string | null>;
+        setOpen({
+          why: map[KEYS.why] !== '0',
+          example: map[KEYS.example] !== '0',
+          mistakes: map[KEYS.mistakes] !== '0',
+        });
+      } catch {
+        // storage unavailable (e.g. web/offline) — keep the open-by-default state
+      }
     })();
     return () => {
       alive = false;
@@ -44,7 +48,7 @@ export function useCalcSectionOpen(): {
   const toggle = useCallback((k: CalcSection) => {
     setOpen((o) => {
       const next = { ...o, [k]: !o[k] };
-      void AsyncStorage.setItem(KEYS[k], next[k] ? '1' : '0');
+      void AsyncStorage.setItem(KEYS[k], next[k] ? '1' : '0').catch(() => {});
       return next;
     });
   }, []);

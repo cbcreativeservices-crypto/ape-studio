@@ -78,7 +78,7 @@ const SPECIALIZATION: AwardPage = {
   // Cores + the training lab named inline (owner 2026-08-01).
   intro:
     'Begin by completing the three required core topics and one training lab (required only once):    ' +
-    'Professional Audio Safety, Grounding & Electrical, Workplace Skills, and the Audio Foundations Lab.\n\n' +
+    'Pro Audio Safety, Grounding & Electrical, Workplace Skills, and the Audio Fundamentals lab.\n\n' +
     'Then choose a specialization, complete its three required topics, and pass the final assessment to earn ' +
     'your certificate.',
   accent: '#ffc64d', // gold — single-topic award
@@ -87,7 +87,7 @@ const SPECIALIZATION: AwardPage = {
       level: 'Level 1',
       title: 'Academy Specialization Certificate',
       corequisite: ['Pro Audio Safety', 'Grounding & Electrical', 'Workplace Skills'],
-      requirements: ['Complete the 3 specialization topics', 'Audio Fundamentals Lab'],
+      requirements: ['Complete the 3 specialization topics', 'Audio Fundamentals'],
       // Catalog of the 68 predefined Specialized Certificates (choose one).
       builder: 'specializations',
     },
@@ -110,7 +110,7 @@ const PROGRAM: AwardPage = {
       level: 'Level 2',
       title: 'Professional Certificate Program',
       corequisite: ['Pro Audio Safety', 'Grounding & Electrical', 'Workplace Skills'],
-      requirements: ["Complete a program's topic path", 'Audio Fundamentals Lab'],
+      requirements: ["Complete a program's topic path", 'Audio Fundamentals'],
       // Interactive: pick from the established program paths.
       builder: 'programs',
       note:

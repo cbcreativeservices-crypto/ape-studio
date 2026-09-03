@@ -9,10 +9,23 @@ import { fmt, speedOfSoundAir } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 
+/** Largest prime N the QRD workspace accepts. Real diffusers use small primes
+ *  (7…199); the compute/table loop N times on EVERY keystroke, so an unbounded
+ *  N (e.g. 30 000 000) froze the JS thread and OOM-killed the app (B-058). */
+const QRD_MAX_N = 199;
+
 function isPrime(x: number): boolean {
-  if (!Number.isInteger(x) || x < 2) return false;
+  if (!Number.isInteger(x) || x < 2 || x > QRD_MAX_N) return false;
   for (let i = 2; i * i <= x; i++) if (x % i === 0) return false;
   return true;
+}
+
+/** Well count for the QRD formulas — throws (→ runCompute's "no valid result"
+ *  state) when N is out of range so the loops below are always bounded. */
+function qrdN(v: number | number[]): number {
+  const N = Math.round(n(v));
+  if (!Number.isFinite(N) || N < 2 || N > QRD_MAX_N) throw new Error('N out of range');
+  return N;
 }
 
 const EYRING: Workspace = {
@@ -149,7 +162,7 @@ const DIFFUSER: Workspace = {
     'effects; treat depths as a starting point.',
   glossary: ['Diffusion', 'Reflection', 'Wavelength', 'Comb Filtering', 'Standing wave'],
   fields: [
-    { key: 'N', name: 'PRIME N (well count)', quantity: 'number', placeholder: '7', help: 'Number of wells per period — MUST be prime (7, 11, 13, 17, 23…).', warn: { test: (x) => !isPrime(x), msg: 'N must be a prime number for a quadratic-residue diffuser.' } },
+    { key: 'N', name: 'PRIME N (well count)', quantity: 'number', placeholder: '7', help: 'Number of wells per period — MUST be prime (7, 11, 13, 17, 23…).', warn: { test: (x) => !isPrime(x), msg: 'N must be a prime number for a quadratic-residue diffuser — QRDs use small primes (7…199).' } },
     { key: 'f0', name: 'DESIGN (LOW) FREQUENCY', quantity: 'frequency', placeholder: '500', help: 'Lowest frequency you want diffused — sets the deepest well.', warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
     { key: 'w', name: 'WELL WIDTH', quantity: 'length', defaultUnit: 'cm', placeholder: '5', help: 'Width of each well — sets the high-frequency diffusion limit.', warn: { test: (x) => x <= 0, msg: 'Well width must be greater than zero.' } },
     { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', placeholder: '20', help: 'Sets the speed of sound.' },
@@ -167,7 +180,7 @@ const DIFFUSER: Workspace = {
       keySymbols: ['λ', '·', '/', 'c', 'x²', 'x₁'],
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
-        const N = Math.round(n(v.N));
+        const N = qrdN(v.N);
         const lam0 = c / n(v.f0);
         let maxRes = 0;
         for (let i = 0; i < N; i++) maxRes = Math.max(maxRes, (i * i) % N);
@@ -182,7 +195,7 @@ const DIFFUSER: Workspace = {
       },
       steps: (v) => {
         const c = speedOfSoundAir(n(v.temp));
-        const N = Math.round(n(v.N));
+        const N = qrdN(v.N);
         const lam0 = c / n(v.f0);
         return [
           `λ₀ = ${fmt(c)} ÷ ${fmt(n(v.f0))} = ${fmt(lam0)} m at ${fmt(n(v.temp))} °C.`,
@@ -192,7 +205,7 @@ const DIFFUSER: Workspace = {
       },
       table: (v) => {
         const c = speedOfSoundAir(n(v.temp));
-        const N = Math.round(n(v.N));
+        const N = qrdN(v.N);
         const lam0 = c / n(v.f0);
         const rows: string[][] = [];
         for (let i = 0; i < N; i++) {

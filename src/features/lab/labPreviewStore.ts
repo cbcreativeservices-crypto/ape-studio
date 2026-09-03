@@ -8,9 +8,9 @@
  */
 import { useEffect, useState } from 'react';
 
-type PreviewState = { active: boolean; route: string; name: string };
+type PreviewState = { active: boolean; route: string; name: string; leaving: boolean };
 
-let state: PreviewState = { active: false, route: '', name: '' };
+let state: PreviewState = { active: false, route: '', name: '', leaving: false };
 const listeners = new Set<() => void>();
 
 function emit() {
@@ -19,14 +19,24 @@ function emit() {
 
 /** Enter preview for a specific lab route (call right before navigating to it). */
 export function startLabPreview(route: string, name: string): void {
-  state = { active: true, route, name };
+  state = { active: true, route, name, leaving: false };
   emit();
 }
 
 /** Leave preview (dismiss / navigating away). Idempotent. */
 export function endLabPreview(): void {
   if (!state.active) return;
-  state = { active: false, route: '', name: '' };
+  state = { active: false, route: '', name: '', leaving: false };
+  emit();
+}
+
+/** Begin a DELIBERATE leave (NOT NOW / See plans). Keep the scrim up so it
+ *  covers the pop animation, and mark the preview as `leaving` so the root
+ *  navigation-state safety net does not tear the scrim down at the START of the
+ *  pop (B-066). endLabPreview() ends it once the pop has settled. */
+export function beginLabPreviewLeave(): void {
+  if (!state.active || state.leaving) return;
+  state = { ...state, leaving: true };
   emit();
 }
 

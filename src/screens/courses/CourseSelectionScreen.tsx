@@ -12,6 +12,7 @@
  * dot indicator. Tab bar visible (Home tab — now the app's opening tab).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { officialTopicName } from '../../data/officialTopicNames';
 import {
   AccessibilityInfo,
   ActivityIndicator,
@@ -1105,7 +1106,7 @@ export function CourseSelectionScreen() {
         kind: 'homeTopic',
         id: `home-${gs}`,
         gs,
-        name: HOME_TOPIC_INDEX.get(gs)?.name ?? `Topic gs${gs}`,
+        name: officialTopicName(gs, HOME_TOPIC_INDEX.get(gs)?.name),
         subject: HOME_TOPIC_INDEX.get(gs)?.subject ?? '',
       }));
       const byKey = new Map(bundles.map((b) => [b.key, b] as const));
@@ -1570,7 +1571,7 @@ export function CourseSelectionScreen() {
         onClose={() => setGuestGateOpen(false)}
         title="Create a free account"
         lines={[
-          'Sign up to study this topic. Your free topics — Professional Audio Safety and DAW Fundamentals — are open to explore right now.',
+          'Sign up to study this topic. Your free topics — Pro Audio Safety and DAW Fundamentals — are open to explore right now.',
         ]}
         primaryLabel="CREATE FREE ACCOUNT"
         onPrimary={() => {

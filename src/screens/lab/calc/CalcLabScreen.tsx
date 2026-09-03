@@ -5,13 +5,14 @@
  * IN DEVELOPMENT ("coming soon") — never presented as available.
  */
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, ImageBackground, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ImageBackground, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
+import { confirmDialog } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { COMING_SOON, SECTION_META, WORKSPACES } from './registry';
 import { useChainValue } from './chainStore';
@@ -33,13 +34,14 @@ export function CalcLabScreen() {
   const workflowsAllowed = !commercialMode || isMember;
   const gateWorkflow = (proceed: () => void) => {
     if (workflowsAllowed) return proceed();
-    Alert.alert(
+    // confirmDialog, not Alert.alert: RN-web's Alert is a no-op, so this gate
+    // was a silent tap on the web preview (B-018/B-062).
+    confirmDialog(
       'Workflows are an Academy feature',
       'Calculator workflows — running a guided multi-step sequence, using templates, or building your own — are part of Academy membership. Every individual calculator stays free to use.',
-      [
-        { text: 'Not now', style: 'cancel' },
-        { text: 'See membership', onPress: () => (navigation as any).navigate('Paywall') },
-      ],
+      'See membership',
+      () => (navigation as any).navigate('Paywall'),
+      { cancelText: 'Not now' },
     );
   };
   const onNewWorkflow = () => gateWorkflow(() => navigation.navigate('CalcWorkflowEdit', {}));

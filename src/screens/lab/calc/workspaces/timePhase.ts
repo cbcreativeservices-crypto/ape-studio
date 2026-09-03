@@ -4,7 +4,7 @@
  * Authored to the wave.ts exemplar (owner spec 2026-07-29).
  */
 import type { Workspace } from '../calcTypes';
-import { fmt, speedOfSoundAir } from '../calcUnits';
+import { fmt, fmtInt, speedOfSoundAir } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 
@@ -872,7 +872,7 @@ const WS_FFT: Workspace = {
         const pow2 = Math.pow(2, Math.ceil(Math.log2(Math.max(1, N))));
         return [
           { label: 'MINIMUM FFT SIZE', value: N, quantity: 'samples', chainable: false },
-          { label: 'NEXT POWER OF TWO', text: `${pow2} points` },
+          { label: 'NEXT POWER OF TWO', text: `${fmtInt(pow2)} points` },
           { label: 'ACTUAL RESOLUTION AT THAT SIZE', value: sr / pow2, quantity: 'frequency' },
           { label: 'WINDOW AT THAT SIZE', value: pow2 / sr, quantity: 'time', unit: 'ms' },
         ];
@@ -884,7 +884,7 @@ const WS_FFT: Workspace = {
         const pow2 = Math.pow(2, Math.ceil(Math.log2(Math.max(1, N))));
         return [
           `N = ${fmt(sr)} Hz ÷ ${fmt(df)} Hz = ${fmt(N)} points minimum.`,
-          `FFTs want powers of two, so round UP to ${pow2}: actual spacing = ${fmt(sr)} ÷ ${pow2} = ${fmt(sr / pow2)} Hz, with a ${fmt((pow2 / sr) * 1000)} ms window.`,
+          `FFTs want powers of two, so round UP to ${fmtInt(pow2)}: actual spacing = ${fmt(sr)} ÷ ${fmtInt(pow2)} = ${fmt(sr / pow2)} Hz, with a ${fmt((pow2 / sr) * 1000)} ms window.`,
           `Rounding up buys finer bins at the cost of a longer window — check that the sound you are analyzing lasts at least that long.`,
         ];
       },

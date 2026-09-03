@@ -128,26 +128,26 @@ function loadAllEntries(): Promise<Entry[]> {
 function loadAllGlossaryMedia(): Promise<Record<string, string>> {
   return sessionCache(() => MEDIA_CACHE, (p) => (MEDIA_CACHE = p), fetchAllGlossaryMedia);
 }
+// Rejects on a failed page (network/permission error) — non-fatal for the
+// caller, which just keeps rendering without icons — so sessionCache does NOT
+// memoize an empty offline result for the whole session (B-176).
 async function fetchAllGlossaryMedia(): Promise<Record<string, string>> {
   const out: Record<string, string> = {};
-  try {
-    const PAGE = 1000;
-    for (let from = 0; ; from += PAGE) {
-      const { data, error } = await supabase
-        .from('glossary_media')
-        .select('glossary_id, media_type, url, sort_order')
-        .order('glossary_id')
-        .order('sort_order')
-        .range(from, from + PAGE - 1);
-      if (error || !data || data.length === 0) break;
-      for (const m of data as { glossary_id: string; media_type: string | null; url: string | null }[]) {
-        if (!m.url || (m.media_type && m.media_type !== 'image')) continue;
-        if (!out[m.glossary_id]) out[m.glossary_id] = `${SUPABASE_URL}/storage/v1/object/public/${m.url}`;
-      }
-      if (data.length < PAGE) break;
+  const PAGE = 1000;
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await supabase
+      .from('glossary_media')
+      .select('glossary_id, media_type, url, sort_order')
+      .order('glossary_id')
+      .order('sort_order')
+      .range(from, from + PAGE - 1);
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+    for (const m of data as { glossary_id: string; media_type: string | null; url: string | null }[]) {
+      if (!m.url || (m.media_type && m.media_type !== 'image')) continue;
+      if (!out[m.glossary_id]) out[m.glossary_id] = `${SUPABASE_URL}/storage/v1/object/public/${m.url}`;
     }
-  } catch {
-    /* non-fatal — terms simply render without a media icon */
+    if (data.length < PAGE) break;
   }
   return out;
 }
@@ -166,26 +166,26 @@ async function fetchAllGlossaryMedia(): Promise<Record<string, string>> {
 function loadAllGlossaryFormulas(): Promise<Record<string, { symbolic: string; words: string | null }>> {
   return sessionCache(() => FORMULA_CACHE, (p) => (FORMULA_CACHE = p), fetchAllGlossaryFormulas);
 }
+// Rejects on a failed page (network error, or today's column-grant 403) — the
+// caller swallows it and the filter simply shows no terms — so sessionCache
+// does NOT memoize an empty failed result for the whole session (B-176).
 async function fetchAllGlossaryFormulas(): Promise<Record<string, { symbolic: string; words: string | null }>> {
   const out: Record<string, { symbolic: string; words: string | null }> = {};
-  try {
-    const PAGE_F = 1000;
-    for (let from = 0; ; from += PAGE_F) {
-      const { data, error } = await supabase
-        .from('glossary')
-        .select('id, formula_symbolic, formula_words')
-        .order('id')
-        .range(from, from + PAGE_F - 1);
-      if (error || !data || data.length === 0) break;
-      for (const r of data as { id: string; formula_symbolic: string | null; formula_words: string | null }[]) {
-        if (r.formula_symbolic && r.formula_symbolic.trim() !== '') {
-          out[r.id] = { symbolic: r.formula_symbolic, words: r.formula_words ?? null };
-        }
+  const PAGE_F = 1000;
+  for (let from = 0; ; from += PAGE_F) {
+    const { data, error } = await supabase
+      .from('glossary')
+      .select('id, formula_symbolic, formula_words')
+      .order('id')
+      .range(from, from + PAGE_F - 1);
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+    for (const r of data as { id: string; formula_symbolic: string | null; formula_words: string | null }[]) {
+      if (r.formula_symbolic && r.formula_symbolic.trim() !== '') {
+        out[r.id] = { symbolic: r.formula_symbolic, words: r.formula_words ?? null };
       }
-      if (data.length < PAGE_F) break;
     }
-  } catch {
-    /* non-fatal — the Equations & Formulas filter simply shows no terms */
+    if (data.length < PAGE_F) break;
   }
   return out;
 }
@@ -944,14 +944,26 @@ export function GlossaryScreen({ route, navigation }: Props) {
   const [mediaById, setMediaById] = useState<Record<string, string>>({});
   const [mediaPopup, setMediaPopup] = useState<string | null>(null); // URL shown in the tap-to-close viewer
   useEffect(() => {
-    loadAllGlossaryMedia().then(setMediaById);
+    // Non-fatal: a failed load leaves the map empty (no icons) and is NOT
+    // session-cached, so the next Glossary open retries it (B-176).
+    loadAllGlossaryMedia()
+      .then(setMediaById)
+      .catch(() => {
+        /* terms simply render without a media icon */
+      });
   }, []);
   // Equations & Formulas (user request 2026-07-26): id → symbolic/words for any
   // term that carries a formula. Loaded once, isolated + non-fatal (see
   // loadAllGlossaryFormulas) so a missing column-grant never breaks the corpus.
   const [formulaById, setFormulaById] = useState<Record<string, { symbolic: string; words: string | null }>>({});
   useEffect(() => {
-    loadAllGlossaryFormulas().then(setFormulaById);
+    // Non-fatal: a failed load (incl. the column-grant 403) leaves the map
+    // empty and is NOT session-cached, so the next Glossary open retries (B-176).
+    loadAllGlossaryFormulas()
+      .then(setFormulaById)
+      .catch(() => {
+        /* the Equations & Formulas filter simply shows no terms */
+      });
   }, []);
   // Flagged terms (Booth 2026-07-18): ONE list shared with Flashcards and the
   // custom "Flagged" dashboard topic — lives in features/flags/flaggedStore

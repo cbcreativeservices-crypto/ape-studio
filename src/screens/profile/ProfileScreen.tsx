@@ -465,6 +465,12 @@ export function ProfileScreen() {
               registryActive ? styles.stripOn : !profileComplete ? styles.stripTodo : styles.stripOff,
             ]}
             disabled={profileComplete}
+            // Same jump the gap checklist's "ADD ›" rows make: open PUBLIC
+            // PROFILE and put the cursor in the first detail still missing.
+            onPress={() => {
+              const first = missing[0];
+              if (first) focusField(first.key);
+            }}
             // `accessible` false + role text would still announce the Pressable's
             // auto-merged disabled state. When there is nothing to fix this is a
             // READOUT, so it carries no role and no hint — just its own words.
@@ -527,7 +533,7 @@ export function ProfileScreen() {
           {/* —— MY PROGRESS —— */}
           <Section
             title="MY PROGRESS"
-            summary={`${profile?.overallPct ?? 0}%${goalCount ? ` · ${goalCount} goals` : ''}`}
+            summary={`${profile?.overallPct ?? 0}%${goalCount ? ` · ${goalCount} ${goalCount === 1 ? 'goal' : 'goals'}` : ''}`}
           >
             <Pressable
               style={({ pressed }) => [styles.navRow, pressed && styles.rowPressed]}

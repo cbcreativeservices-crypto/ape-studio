@@ -188,5 +188,19 @@ export function readableError(message: string | undefined): string {
     return 'Review your public display name before appearing in search.';
   if (m.includes('about_safe') || (m.includes('check constraint') && m.includes('about')))
     return 'Remove any email address, phone number, link or @handle from About My Work.';
+  // supabase-js does not throw on a network failure — it resolves with
+  // `{ error }` whose message is the runtime's own text ("TypeError: Failed to
+  // fetch" on Chrome, "Load failed" on Safari, "Network request failed" on
+  // React Native), so the callers' `catch` branch with the friendly copy never
+  // runs. Say the same thing here that the catch says. (Found 2026-09-01:
+  // the Explore banner read "TypeError: Failed to fetch".)
+  if (
+    m.includes('failed to fetch') ||
+    m.includes('fetch failed') ||
+    m.includes('load failed') ||
+    m.includes('network request failed') ||
+    m.includes('network error')
+  )
+    return 'No connection. Try again.';
   return message ?? 'Something went wrong. Please try again.';
 }

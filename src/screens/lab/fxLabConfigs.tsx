@@ -326,7 +326,7 @@ const reverbConfig: FxLabConfig = {
       ],
       initial: 1.5,
       // The teaching fader: booth → cavern on one log sweep, tail growing live.
-      fader: { min: 0.4, max: 6, log: true, snap: (v) => Math.round(v * 10) / 10, format: (v) => `${v} s` },
+      fader: { min: 0.4, max: 6, log: true, snap: (v) => Math.round(v * 10) / 10, format: (v) => `${v.toFixed(1)} s` },
     },
     {
       label: 'PRE-DELAY', short: 'PRE-DLY', paramId: P.preDelayMs, lessonKey: 'pre_delay',

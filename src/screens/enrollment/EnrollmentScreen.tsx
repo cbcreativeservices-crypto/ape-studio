@@ -15,6 +15,7 @@
  * drag uses an estimated row height (no gesture lib).
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { officialTopicName } from '../../data/officialTopicNames';
 import { Alert, Animated, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, View, type GestureResponderEvent, type LayoutChangeEvent } from 'react-native';
 import { Modal } from '../../components/DimModal';
 import { HoldToActivate } from '../../components/HoldToActivate';
@@ -499,7 +500,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
       else removeHome(gs);
     }
   }, [hasCredential, prog]);
-  const nameFor = (gs: number) => topicIndex.get(gs)?.name ?? `Topic gs${gs}`;
+  const nameFor = (gs: number) => officialTopicName(gs, topicIndex.get(gs)?.name);
   const subjectFor = (gs: number) => topicIndex.get(gs)?.subject ?? '';
 
   const guard = (action: () => void) => {
@@ -602,8 +603,10 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
 
   // Open the Dashboard; with a focus target (topic gs, or FLAGGED_TOPIC_ID for
   // the custom list) the Dashboard fronts that topic immediately (user 2026-07-24).
+  // popTo, not navigate: under React Navigation 7 navigate('Main') PUSHES a
+  // second tab shell on top of the Awards pager; popTo returns to the existing one.
   const goStudy = (focusGs?: number | string) =>
-    navigation.navigate('Main', {
+    navigation.popTo('Main', {
       screen: 'Study',
       params: { screen: 'Dashboard', params: focusGs != null ? { focusGs } : undefined },
     });
@@ -620,11 +623,17 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
     // everyone else routes through the Dashboard, which applies the free-topic /
     // paywall gate for the resumed topic (free topics still open one tap away).
     if (lastLoc?.kind === 'method' && paid) {
-      navigation.navigate('Main', {
+      // `initial: false` (same root fix as CourseSelectionScreen → Glossary,
+      // regression #5): when the Study tab has never been mounted this launch
+      // the stack would otherwise initialise as [<method>] alone, so RETURN /
+      // back has no Dashboard beneath it. With it the stack mounts its own
+      // initialRouteName (Dashboard) as routes[0] BENEATH the method (B-054).
+      navigation.popTo('Main', {
         screen: 'Study',
         params: {
           screen: lastLoc.route,
           params: { achievementId: lastLoc.achievementId, topicName: lastLoc.topicName },
+          initial: false,
         },
       });
     } else {

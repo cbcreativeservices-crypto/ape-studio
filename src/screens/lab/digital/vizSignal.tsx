@@ -905,7 +905,7 @@ export function AAFilterView({
       <RNText style={[lbl.mono, { left: 2, top: axisY - 6 }]}>−60</RNText>
       <RNText style={[lbl.tagGreen, { left: Math.min(w - 60, xOf(nyq) + 3), top: h - 14 }]}>NYQUIST</RNText>
       <RNText style={[lbl.monoAmber, { right: padR, top: 2 }]}>
-        input −{attenDb.toFixed(1)} dB
+        input {attenDb >= 0.05 ? `−${attenDb.toFixed(1)}` : '0.0'} dB
       </RNText>
     </View>
   );

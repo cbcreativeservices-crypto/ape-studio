@@ -75,7 +75,8 @@ import {
 import { getDashboardCache, setDashboardCache } from '../../features/dashboard/dashboardCache';
 import { FREE_ENROLL_GS, isFreeEnrollGs, useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { supabase } from '../../lib/supabase';
-import { fetchGlossaryItemsByIds, fetchTopicItems, studyDisplayPct } from '../../features/study/api';
+import { fetchGlossaryItemsByIds, fetchTopicItems } from '../../features/study/api';
+import { type MethodPctRow, smoothMethodPct, topicOverallPct } from '../../features/dashboard/topicPct';
 import { setLastStudyLocation } from '../../features/study/lastStudyLocation';
 import {
   FLAGGED_TOPIC_ID,
@@ -90,10 +91,10 @@ import { devBypass } from '../../config/devMode';
 import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
 import { LearningIntroSheet } from '../../features/intro/LearningIntroSheet';
 import { getCourseIntro, getTopicIntro, isIntroEmpty } from '../../features/intro/learningIntros';
-import { replayQuizSubmissions } from '../../features/quiz/api';
+import { replayQuizSubmissions, QUIZ_SIZE, QUIZ_PASS} from '../../features/quiz/api';
 import { replayExamSubmissions } from '../../features/finalExam/api';
 import { onStudyProgress } from '../../features/study/sync';
-import { isScenariosExempt, useScenarioExempt } from '../../features/study/scenarioExempt';
+import { useScenarioExempt } from '../../features/study/scenarioExempt';
 import { loadAllLocalMethodStates, mergeItemStates } from '../../features/study/localProgress';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { fetchCommercialDashboard, getLastPublicCourse } from '../../features/commercial/commercialDashboard';
@@ -217,31 +218,11 @@ function VentHoles() {
   );
 }
 
-/** Per-method display %. Scenarios is round-based homework: its LED reflects
- *  server completion_pct (rounds ÷ 3 → 33/67/100), set by complete_scenario_round.
- *  Every other method creeps per-item from item_states via studyDisplayPct. */
+/** Per-method display % (methodDisplayPct) now lives in features/dashboard/topicPct
+ *  so the Enrollments readout computes the SAME number (bug hunt B-087). */
 /** The Audio Fundamentals Lab is a lab-proxy topic (gs3081) — progress comes from
  *  lab activities, not term study — so it is never placed in the Dashboard deck. */
 const AUDIO_FUNDAMENTALS_LAB_GS = 3081;
-
-function methodDisplayPct(
-  row: { item_states?: unknown; completion_pct?: number | null } | undefined,
-  itemCount: number,
-  key: string,
-  requiredPasses: number,
-): number {
-  if (key === 'scenarios') {
-    // Round-based server completion (record_scenario_answer / round RPCs).
-    return Math.round(row?.completion_pct ?? 0);
-  }
-  // flashcards / fill-in-blank / matching: full-set completion via studyDisplayPct.
-  return studyDisplayPct(
-    (row?.item_states ?? {}) as Parameters<typeof studyDisplayPct>[0],
-    itemCount,
-    key,
-    requiredPasses,
-  );
-}
 
 // LA-2A-inspired panel textures (owner request 2026-07-25). Pure react-native-svg
 // gradients + fine vertical striations — NO image assets. Both fill their
@@ -710,7 +691,7 @@ export function DashboardScreen() {
       for (const { result } of replayed) {
         Alert.alert(
           'Offline quiz submitted',
-          `Score ${result.score}/25 — ${result.outcome.replace(/_/g, ' ')}.`,
+          `Score ${result.score}/${QUIZ_SIZE} — ${result.outcome.replace(/_/g, ' ')}.`,
         );
       }
       const examReplayed = await replayExamSubmissions().catch(() => []);
@@ -1154,13 +1135,8 @@ export function DashboardScreen() {
   // (marked exempt by the Scenarios screen — owner launch-triage E4) reads 100%
   // for scenarios: its quiz already unlocks via the exemption, so its meter and
   // the topic's overall % must show complete too, not a stuck 0%.
-  const smoothPct = (
-    row: Parameters<typeof methodDisplayPct>[0],
-    itemCount: number,
-    key: string,
-    topicId: string,
-  ) =>
-    key === 'scenarios' && isScenariosExempt(topicId) ? 100 : methodDisplayPct(row, itemCount, key, rpFor(key));
+  const smoothPct = (row: MethodPctRow, itemCount: number, key: string, topicId: string) =>
+    smoothMethodPct(row, itemCount, key, topicId, rpFor(key));
   // UN-rounded (QA night 2026-08-31): Math.round turned 99.5% into 100, so a
   // method with one unstudied item showed the green ✓ and unlocked the next
   // stage early. smoothPct returns exactly 100 only when every item has
@@ -1189,13 +1165,7 @@ export function DashboardScreen() {
   // showed 100% (owner 2026-08-13). smoothPct handles the required_passes
   // fallback + the scenarios exemption so overall matches the per-method meters.
   const applicableKeys = METHOD_ORDER.filter((m) => applicable.has(m.key)).map((m) => m.key);
-  const overallPct =
-    applicableKeys.length > 0
-      ? Math.floor(
-          applicableKeys.reduce((s, k) => s + smoothPct(rowFor(k), topicItemCount, k, topic.id), 0) /
-            applicableKeys.length,
-        )
-      : 0;
+  const overallPct = topicOverallPct(applicableKeys, rowFor, topicItemCount, topic.id, rpFor);
 
   // ---- Jog preview: the TOP container shows dispTopic while scrolling; the
   // lower rack stays on the committed `topic` until release (owner 2026-08-01).
@@ -1203,13 +1173,9 @@ export function DashboardScreen() {
     // Every real topic has all four methods (owner 2026-08-13); only the Custom
     // List pseudo-topic has none.
     const keys = t.id === FLAGGED_TOPIC_ID ? [] : METHOD_ORDER.map((m) => m.key);
-    if (keys.length === 0) return 0;
     const rows = data.methodRows.filter((r) => r.achievement_id === t.id);
     const itemCount = data.itemCountByTopic.get(t.id) ?? 0;
-    return Math.floor(
-      keys.reduce((s, k) => s + smoothPct(rows.find((r) => r.method_key === k), itemCount, k, t.id), 0) /
-        keys.length,
-    );
+    return topicOverallPct(keys, (k) => rows.find((r) => r.method_key === k), itemCount, t.id, rpFor);
   };
   const dispIdx = jogActive ? scrollIdx : topicIdx;
   const dispTopic = topics[dispIdx] ?? topic;
@@ -1440,7 +1406,7 @@ export function DashboardScreen() {
               intros still auto-show once before beginning (when content exists). */}
           {provisional && (
             <Text style={styles.provisionalNote}>
-              Provisional access — score 24+ on the previous topic to earn its trophy and continue
+              Provisional access — score 28+ on the previous topic to earn its trophy and continue
               further.
             </Text>
           )}
@@ -1576,8 +1542,11 @@ export function DashboardScreen() {
                   ) : isApplicable ? (
                     <SwitchButton
                       // Start (blue) → Continue (amber) → Review (green), by progress.
-                      label={pct >= 100 ? 'Review' : pct <= 0 ? 'Start' : 'Continue'}
-                      variant={pct >= 100 ? 'success' : pct <= 0 ? 'outline' : 'primary'}
+                      // Review gates on `complete` (the RAW value), like the ✓ and
+                      // the 0–99 readout above — the rounded pct made 99.6% read
+                      // REVIEW while an item was still unstudied (B-086).
+                      label={complete ? 'Review' : pct <= 0 ? 'Start' : 'Continue'}
+                      variant={complete ? 'success' : pct <= 0 ? 'outline' : 'primary'}
                       width={89}
                       height={RACK_SWITCH_H}
                       onPress={() => {
@@ -1655,7 +1624,7 @@ export function DashboardScreen() {
                   : '#ff6a5e';
             const qShort =
               quizState === 'passed' || quizState === 'partial'
-                ? `${score}/25`
+                ? `${score}/${QUIZ_SIZE}`
                 : quizState === 'ready'
                   ? 'READY'
                   : 'LOCKED';
@@ -1665,8 +1634,8 @@ export function DashboardScreen() {
                 : quizState === 'ready'
                   ? 'ALL GATES MET'
                   : quizState === 'passed'
-                    ? `PASSED ${score}/25`
-                    : 'RETRY FOR 24+';
+                    ? `PASSED ${score}/${QUIZ_SIZE}`
+                    : `RETRY FOR ${QUIZ_PASS}+`;
             return (
               <>
                 <View style={styles.methodRow}>
@@ -1872,7 +1841,14 @@ export function DashboardScreen() {
         removed={removedMembers}
         onSetMode={setDeckMode}
         onReorder={setDeckOrder}
-        onRemove={removeFromDeck}
+        // Never let the deck go empty (B-041): with no topic to show this
+        // screen falls into the error branch, which has no header/deck button,
+        // so a fully-removed deck would be unrecoverable. The sheet disables ✕
+        // on the last topic; this is the belt-and-braces guard behind it.
+        onRemove={(id) => {
+          if (topics.length <= 1) return;
+          removeFromDeck(id);
+        }}
         onRestore={restoreToDeck}
         onSelect={(id) => {
           const i = topics.findIndex((t) => t.id === id);

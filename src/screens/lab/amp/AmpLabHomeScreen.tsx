@@ -4,11 +4,12 @@
  * reset that touches only this lab's progress (spec Part 3 §11).
  */
 import { useCallback, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
+import { confirmDialog } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { AMP_MODULES } from '../../../features/amp/ampContent';
@@ -40,19 +41,16 @@ export function AmpLabHomeScreen() {
       : built.find((m) => !progress?.modules[m.id]?.done)?.id) ?? built[0]?.id;
 
   const confirmReset = () => {
-    Alert.alert(
+    // confirmDialog, not Alert.alert: RN-web's Alert is a no-op, so RESET was
+    // a silent tap on the web preview (B-018/B-062).
+    confirmDialog(
       'Reset this lab?',
       'Clears your Amplifier Principles progress, checks, and final result. Nothing else in the app is affected.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Reset',
-          style: 'destructive',
-          onPress: () => {
-            void resetAmpProgress().then(() => setProgress({ modules: {} }));
-          },
-        },
-      ],
+      'Reset',
+      () => {
+        void resetAmpProgress().then(() => setProgress({ modules: {} }));
+      },
+      { destructive: true },
     );
   };
 

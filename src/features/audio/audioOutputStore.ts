@@ -3,7 +3,7 @@
  * 2026-07-25). By DEFAULT the app is TOTALLY SILENT: nothing may leave the
  * output path (playback / tone generator / text-to-speech) until the user
  * explicitly enables audio output via a deliberate 5-second hold. It re-mutes
- * automatically — on relaunch, on login, and after 10 minutes idle.
+ * automatically — on relaunch, on login, and after IDLE_MS (20 minutes) idle.
  *
  * SESSION-ONLY by design (no persistence): the store is a plain module var +
  * listeners + the useSyncExternalStore pattern, exactly like paceStore.ts's

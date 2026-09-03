@@ -7,7 +7,7 @@
  * QuantityKind for either); the compute() converts to base H/F.
  */
 import type { Workspace } from '../calcTypes';
-import { fmt } from '../calcUnits';
+import { fmt, fmtInt } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 
@@ -101,7 +101,7 @@ const TRANSFORMER: Workspace = {
         const zp = n(v.turns) * n(v.turns) * n(v.zs);
         return [
           `Zp = ${fmt(n(v.turns))}² × ${fmt(n(v.zs))} = ${fmt(zp)} Ω.`,
-          `A ${fmt(n(v.zs))} Ω load looks like ${fmt(zp)} Ω through an ${fmt(n(v.turns))}:1 transformer.`,
+          `A ${fmt(n(v.zs))} Ω load looks like ${fmt(zp)} Ω through a transformer with a turns ratio of ${fmt(n(v.turns))}:1.`,
         ];
       },
     },
@@ -297,7 +297,7 @@ const VDROP: Workspace = {
         return [
           `Allowable drop = ${fmt(n(v.pct))}% × ${fmt(n(v.vsrc))} V = ${fmt(vdMax)} V, so max resistance = ${fmt(Rmax)} Ω.`,
           `Required area = (1.724e-8 × ${fmt(2 * n(v.len))}) ÷ ${fmt(Rmax)} = ${fmt(A * 1e6)} mm².`,
-          `That is about ${fmt(awgReal)} AWG — choose ${Math.floor(awgReal)} AWG or thicker (a LOWER gauge number).`,
+          `That is about ${fmt(awgReal)} AWG — choose ${fmtInt(Math.floor(awgReal))} AWG or thicker (a LOWER gauge number).`,
         ];
       },
     },

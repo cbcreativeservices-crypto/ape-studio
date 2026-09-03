@@ -105,7 +105,16 @@ export function TopicDeckSheet({
                     <RowBtn label="↓" disabled={i === active.length - 1} onPress={() => move(t.id, 1)} a11y={`Move ${t.name} right`} />
                   </>
                 ) : null}
-                <RowBtn label="✕" tone="danger" onPress={() => onRemove(t.id)} a11y={`Remove ${t.name} from the deck`} />
+                {/* The LAST topic cannot be removed (B-041): an empty deck leaves
+                    the Dashboard with no topic to show — and no header/deck
+                    button to get back here and restore anything. */}
+                <RowBtn
+                  label="✕"
+                  tone="danger"
+                  disabled={active.length <= 1}
+                  onPress={() => onRemove(t.id)}
+                  a11y={`Remove ${t.name} from the deck`}
+                />
               </View>
             ))}
             {active.length === 0 ? <Text style={styles.empty}>No topics in the deck.</Text> : null}

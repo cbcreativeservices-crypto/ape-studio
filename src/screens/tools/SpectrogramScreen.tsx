@@ -111,7 +111,7 @@ const FREQ_LABELS = [
 const yForHz = (hz: number) => GRID_H - ((Math.log(hz) - LOG_MIN) / LOG_SPAN) * GRID_H;
 
 const fmtDb = (v: number | null | undefined) =>
-  v != null && Number.isFinite(v) ? `${v > 0 ? '+' : ''}${v.toFixed(1)}` : '—';
+  v != null && Number.isFinite(v) ? `${(Math.abs(v) < 0.05 ? 0 : v) > 0 ? '+' : ''}${(Math.abs(v) < 0.05 ? 0 : v).toFixed(1)}` : '—';
 
 /** Per-row FFT bin ranges for the current (sampleRate, fftSize) — computed
  *  once per meta change, not per column. Each display row reads the REAL bins

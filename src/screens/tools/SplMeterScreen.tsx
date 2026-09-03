@@ -1126,7 +1126,7 @@ export function SplMeterScreen({ navigation }: Props) {
   // (dBFS raw + the three weighted SPL units), a fullscreen icon, PEAK/PEAK HOLD
   // moved ABOVE. dBFS shows the true digital level with NO SPL offset.
   const readoutLevel = levelNow(meter); // weighted dB, pre-offset, or null
-  const fmtRaw = (v: number) => `${v > 0 ? '+' : ''}${v.toFixed(1)}`;
+  const fmtRaw = (v: number) => `${(Math.abs(v) < 0.05 ? 0 : v) > 0 ? '+' : ''}${(Math.abs(v) < 0.05 ? 0 : v).toFixed(1)}`;
   const bigText =
     readoutLevel == null
       ? '—'

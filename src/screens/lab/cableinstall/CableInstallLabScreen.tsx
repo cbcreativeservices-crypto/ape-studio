@@ -15,7 +15,7 @@
  * 'ape:ciStep'; dimension scores + shown myths at 'ape:ciState'. Anonymous
  * users neither restore nor persist (house guest rule).
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
@@ -127,48 +127,56 @@ export function CableInstallLabScreen() {
     ]).catch(() => {});
   }, []);
 
+  // `nextDims` lets a caller that has just reset the scores persist THOSE —
+  // the closure's `dims` is the render-time value, so `setDims({}); goTo(1)`
+  // wrote the old scores back to ape:ciState (B-164).
   const goTo = useCallback(
-    (n: number) => {
+    (n: number, nextDims?: CiDimScores) => {
       navigatedRef.current = true;
       setStep(n);
       setPendingMyth(null);
-      persist(n, dims, shownMyths);
+      persist(n, nextDims ?? dims, shownMyths);
       scrollRef.current?.scrollTo({ y: 0, animated: false });
     },
     [dims, shownMyths, persist],
   );
 
-  // Local mirror of completed units (labCompletion doesn't expose per-unit
-  // reads; we mark + mirror, and hydrate the mirror from overall progress by
-  // trusting persisted step ordering — replay simply re-runs the module).
+  // Local mirror of completed units (we mark + mirror so a stage flips to done
+  // synchronously; the mirror is hydrated from labCompletion's per-unit set —
+  // replay simply re-runs the module).
   const completedUnitsRef = useRef<Set<string>>(new Set());
   const [, forceTick] = useState(0);
 
-  // HYDRATE THE MIRROR ON RESUME (fix 2026-08-28). The comment above always
-  // claimed the mirror is seeded "from overall progress by trusting persisted
-  // step ordering" — but nothing ever did it, so a resumed session had an EMPTY
-  // set: `firstIncomplete` collapsed to 1, `canEnter(n)` was false for every
-  // n ≥ 2, and the user landed on stage 6 with dots 2–13 drawn locked and
-  // announced ", locked" next to a counter reading "5 of 15 units complete".
-  // The intro screen was worse — `resumeLabel` went null, so the button read
-  // START LAB and threw the user back to stage 1 under that same counter.
-  // Being ON step n means stages 1…n-1 were cleared, which is exactly the
-  // ordering the persisted step encodes. Runs once, after resume settles.
-  const hydratedRef = useRef(false);
+  // HYDRATE THE MIRROR ON RESUME (fix 2026-08-28, reworked B-153 2026-09-02).
+  // The 08-28 fix seeded the mirror from the persisted STEP ("being on step n
+  // means stages 1…n-1 were cleared") — but the step only records WHERE the
+  // user was, not what they cleared: tapping ‹ PREV back to stage 3 and leaving
+  // persisted step 3, so stages 4–5 came back locked while the counter read
+  // "5 of 15 units complete"; a plain resume on stage 6 had dots 2–5 drawn
+  // complete yet disabled and stage 6 announced ", locked". The per-unit set
+  // the screen already subscribes to (`clearedUnits`, ape:labProgress) is the
+  // truth, so mirror THAT. The step decides only where to land.
   useEffect(() => {
-    if (hydratedRef.current || step <= INTRO_STEP) return;
-    hydratedRef.current = true;
-    const done = Math.min(step - 1, CI_MODULES.length);
-    for (let i = 0; i < done; i++) completedUnitsRef.current.add(CI_MODULES[i].unit);
-    if (done > 0) forceTick((t) => t + 1);
-  }, [step]);
-
-  const firstIncomplete = useMemo(() => {
-    for (let i = 0; i < CI_MODULES.length; i++) {
-      if (!completedUnitsRef.current.has(CI_MODULES[i].unit)) return i + 1;
+    let added = false;
+    for (const u of clearedUnits) {
+      if (!completedUnitsRef.current.has(u)) {
+        completedUnitsRef.current.add(u);
+        added = true;
+      }
     }
-    return COMPLETE_STEP;
-  }, [cleared, step]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (added) forceTick((t) => t + 1);
+  }, [clearedUnits]);
+
+  // Computed every render (13 Set lookups) rather than memoised: a memo keyed
+  // on [cleared, step] kept the pre-hydration value 1 after the mirror was
+  // seeded, so canEnter() locked every stage ≥ 2 on resume (B-153).
+  let firstIncomplete = COMPLETE_STEP;
+  for (let i = 0; i < CI_MODULES.length; i++) {
+    if (!completedUnitsRef.current.has(CI_MODULES[i].unit)) {
+      firstIncomplete = i + 1;
+      break;
+    }
+  }
 
   const canEnter = useCallback(
     (n: number) => {
@@ -200,6 +208,13 @@ export function CableInstallLabScreen() {
   const openSources = useCallback((ids: string[]) => setSourceIds(ids), []);
 
   const next = () => {
+    // A myth interstitial is showing: NEXT › means the same as the card's own
+    // continue. Without this guard every tap swapped in the next un-shown myth
+    // (recording it as shown, never to appear again) instead of advancing (B-064).
+    if (pendingMyth) {
+      goTo(step + 1);
+      return;
+    }
     if (step === INTRO_STEP) {
       goTo(1);
       return;
@@ -323,7 +338,7 @@ export function CableInstallLabScreen() {
                 onRepeat={() => {
                   completedUnitsRef.current = new Set();
                   setDims({});
-                  goTo(1);
+                  goTo(1, {});
                 }}
                 onReturn={() => navigation.goBack()}
               />

@@ -18,6 +18,7 @@
  * Cancel discards. Non-paid users may look but every write opens the prompt.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { officialTopicName } from '../../data/officialTopicNames';
 import { Animated, PanResponder, Pressable, ScrollView, StyleSheet, Text, View, type GestureResponderEvent } from 'react-native';
 import { Modal } from '../../components/DimModal';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -92,7 +93,7 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
     return m;
   }, []);
   const nameFor = (gs: number) =>
-    v3Index.get(gs)?.name ?? topicIndex.get(gs)?.name ?? (gs === 3081 ? 'Audio Fundamentals Lab' : `Topic gs${gs}`);
+    officialTopicName(gs, v3Index.get(gs)?.name ?? topicIndex.get(gs)?.name);
   const subjectFor = (gs: number) => v3Index.get(gs)?.subject ?? topicIndex.get(gs)?.subject ?? '';
 
   // The user's enrolled topics, minus the required cores (those live locked in

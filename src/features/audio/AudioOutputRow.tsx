@@ -5,7 +5,8 @@
  *  • MUTED (default): a status line ("AUDIO OUTPUT · MUTED") plus the 5-second
  *    HoldToActivate button — holding the full 5s enables output.
  *  • ON: an "AUDIO OUTPUT · ON" row that taps to mute again, with a hint that it
- *    auto-mutes after 10 minutes idle or when the app is reopened.
+ *    auto-mutes after IDLE_MS (20 minutes, owner 2026-07-30) idle or when the
+ *    app is reopened.
  *
  * Styling follows features/settings/LowLightLayer.tsx so it sits consistently in
  * the Profile row stack.
@@ -13,7 +14,17 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { HoldToActivate } from '../../components/HoldToActivate';
 import { colors, fonts } from '../../theme/tokens';
-import { disableAudioOutput, enableAudioOutput, noteAudioActivity, useAudioOutputEnabled } from './audioOutputStore';
+import {
+  IDLE_MS,
+  disableAudioOutput,
+  enableAudioOutput,
+  noteAudioActivity,
+  useAudioOutputEnabled,
+} from './audioOutputStore';
+
+// Idle auto-mute window in minutes, derived from the store constant so this hint
+// can never drift from the real timer (matches AudioOutputGate.tsx's copy).
+const IDLE_MIN = Math.round(IDLE_MS / 60000);
 
 // ON state reads RED (owner request 2026-07-25) — a live "audio output is armed"
 // warning colour, matching the global red screen border.
@@ -36,7 +47,7 @@ export function AudioOutputRow() {
           <Text style={[styles.label, styles.labelOn]}>AUDIO OUTPUT · ON</Text>
           {/* Shake-to-mute is the immediate panic gesture (owner 2026-08-01) —
               users already know to return here to switch it off. */}
-          <Text style={styles.hint}>Shake to mute · auto-mutes after 10 min idle or on reopen</Text>
+          <Text style={styles.hint}>Shake to mute · auto-mutes after {IDLE_MIN} min idle or on reopen</Text>
         </View>
         <View style={[styles.track, styles.trackOn]}>
           <View style={[styles.thumb, styles.thumbOn]} />

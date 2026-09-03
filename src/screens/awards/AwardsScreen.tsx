@@ -6,6 +6,7 @@
  * back chevron exits.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { officialTopicName } from '../../data/officialTopicNames';
 import { Dimensions, FlatList, Modal, Pressable, ScrollView, StyleSheet, Text, View, type ViewToken } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -370,7 +371,7 @@ export function AwardsScreen({ navigation, route }: Props) {
   // 2026-08-30 core swap) — without this fallback the REQUIRED CORE banner
   // read "Topic gs3081" (QA night 2026-08-31).
   const nameForGs = (gs: number) =>
-    v3TopicNames.get(gs) ?? topicNameByGs.get(gs) ?? (gs === 3081 ? 'Audio Fundamentals Lab' : `Topic gs${gs}`);
+    officialTopicName(gs, v3TopicNames.get(gs) ?? topicNameByGs.get(gs));
 
   const summaryForTier = (tier: AwardTier): string | undefined => {
     if (tier.builder === 'specializations') return specCert ? `Certificate: ${specCert}` : undefined;
@@ -430,9 +431,11 @@ export function AwardsScreen({ navigation, route }: Props) {
             to the Home tab (CourseSelection) — NOT goBack(), which returned to
             whatever opened this screen (e.g. the Dashboard, via "My Enrollments").
             The title area below is the separate ‹ Return. Nudged in from the far
-            edge with a little padding. */}
+            edge with a little padding. popTo (not navigate): under React
+            Navigation 7 navigate('Main') PUSHES a second tab shell on top of
+            this screen; popTo returns to the one existing Main. */}
         <Pressable
-          onPress={() => navigation.navigate('Main', { screen: 'Home' })}
+          onPress={() => navigation.popTo('Main', { screen: 'Home' })}
           hitSlop={10}
           accessibilityRole="button"
           accessibilityLabel="Home"
@@ -628,13 +631,14 @@ export function AwardsScreen({ navigation, route }: Props) {
                           gate and the earned credential for this certificate. */}
                       <Pressable
                         style={styles.progressBtn}
-                        onPress={() =>
+                        onPress={() => {
+                          setPicker(null); // close the picker modal so the pushed screen is visible
                           navigation.navigate('AwardProgress', {
                             awardType: 'certificate',
                             awardId: c.id,
                             awardName: c.name,
-                          })
-                        }
+                          });
+                        }}
                         accessibilityRole="button"
                         accessibilityLabel={`View progress and Final Exam for ${c.name}`}
                       >
@@ -754,13 +758,14 @@ export function AwardsScreen({ navigation, route }: Props) {
                       {/* Earn path (R6b/A4) — see the certificate card above. */}
                       <Pressable
                         style={styles.progressBtn}
-                        onPress={() =>
+                        onPress={() => {
+                          setPicker(null); // close the picker modal so the pushed screen is visible
                           navigation.navigate('AwardProgress', {
                             awardType: 'program',
                             awardId: p.id,
                             awardName: p.name,
-                          })
-                        }
+                          });
+                        }}
                         accessibilityRole="button"
                         accessibilityLabel={`View progress and Final Exam for ${p.name}`}
                       >

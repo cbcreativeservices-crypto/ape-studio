@@ -6,12 +6,13 @@
  * list — never a node editor.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
 import { colors, fonts } from '../../../theme/tokens';
+import { confirmDialog, notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import type { Workflow, WorkflowStep } from './workflowModel';
@@ -87,8 +88,10 @@ export function CalcWorkflowEditScreen() {
     // Defense in depth (owner 2026-08-06): creating a custom workflow is
     // Academy-only — even if this screen is reached some other way, the save
     // itself refuses. Editing an already-saved workflow is unaffected.
+    // notify / confirmDialog, not Alert.alert: RN-web's Alert is a no-op, so
+    // these notices were silent on the web preview (B-018/B-062).
     if (!editingId && WORKFLOW_LIMITS[entitlement].savedWorkflows === 0) {
-      Alert.alert(
+      notify(
         'Build your own workflow?',
         'Building your own calculator workflows is a feature of Academy membership. You can still run the built-in templates.',
       );
@@ -96,11 +99,11 @@ export function CalcWorkflowEditScreen() {
     }
     const trimmed = name.trim();
     if (!trimmed) {
-      Alert.alert('Name the workflow', 'Give the workflow a name before saving.');
+      notify('Name the workflow', 'Give the workflow a name before saving.');
       return;
     }
     if (steps.length === 0) {
-      Alert.alert('Add a calculator', 'A workflow needs at least one calculator step.');
+      notify('Add a calculator', 'A workflow needs at least one calculator step.');
       return;
     }
     const now = new Date().toISOString();
@@ -114,7 +117,7 @@ export function CalcWorkflowEditScreen() {
     };
     const ok = await workflowStore.saveWorkflow(w);
     if (!ok) {
-      Alert.alert('Save failed', 'The workflow could not be saved. Try again.');
+      notify('Save failed', 'The workflow could not be saved. Try again.');
       return;
     }
     navigation.goBack();
@@ -125,10 +128,10 @@ export function CalcWorkflowEditScreen() {
       navigation.goBack();
       return;
     }
-    Alert.alert('Discard changes?', 'This workflow has unsaved changes.', [
-      { text: 'Keep editing', style: 'cancel' },
-      { text: 'Discard', style: 'destructive', onPress: () => navigation.goBack() },
-    ]);
+    confirmDialog('Discard changes?', 'This workflow has unsaved changes.', 'Discard', () => navigation.goBack(), {
+      cancelText: 'Keep editing',
+      destructive: true,
+    });
   };
 
   return (

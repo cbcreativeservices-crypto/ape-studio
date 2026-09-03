@@ -21,7 +21,7 @@
  * image arrives with the next native build (needs a view-capture module).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AccessibilityInfo, Alert, Pressable, Share, StyleSheet, Text, TextInput, View, type ScrollView as RNScrollView } from 'react-native';
+import { AccessibilityInfo, Pressable, Share, StyleSheet, Text, TextInput, View, type ScrollView as RNScrollView } from 'react-native';
 import { KeyboardAwareScrollView } from '../../../features/keyboard/keyboardControllerSafe';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -29,6 +29,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
 import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
+import { confirmDialog, notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import type { CalcFunction, FieldDef, OutputVal, Workspace } from './calcTypes';
@@ -112,18 +113,16 @@ export function CalcWorkflowRunScreen() {
       const list = await workflowStore.listWorkflows();
       const found = list.find((w) => w.id === route.params.id) ?? WORKFLOW_TEMPLATES.find((w) => w.id === route.params.id);
       if (!found) {
-        if (alive) {
-          Alert.alert('Workflow unavailable', 'This workflow could not be loaded.', [
-            { text: 'OK', onPress: () => navigation.goBack() },
-          ]);
-        }
+        // notify: Alert.alert is a no-op on RN-web — the OK→goBack exit never
+        // appeared and the screen sat on "Loading workflow…" (B-013/B-063).
+        if (alive) notify('Workflow unavailable', 'This workflow could not be loaded.', () => navigation.goBack());
         return;
       }
       const { workflow: valid, dropped } = validateWorkflow(found);
       if (!alive) return;
       setWorkflow(valid);
       if (dropped > 0) {
-        Alert.alert('Workflow repaired', `${dropped} step${dropped === 1 ? '' : 's'} referenced a calculator that no longer exists and ${dropped === 1 ? 'was' : 'were'} skipped.`);
+        notify('Workflow repaired', `${dropped} step${dropped === 1 ? '' : 's'} referenced a calculator that no longer exists and ${dropped === 1 ? 'was' : 'were'} skipped.`);
       }
       void workflowStore.touchRecent(valid.id);
 
@@ -140,10 +139,17 @@ export function CalcWorkflowRunScreen() {
       const draft = runs.find((r) => r.workflowId === valid.id && !r.completedAt);
       if (!alive) return;
       if (draft && limits.canResume && draft.steps.length === valid.steps.length) {
-        Alert.alert('Resume previous progress?', 'An unfinished run of this workflow was found.', [
-          { text: 'Start over', onPress: () => setRun(blank()) },
-          { text: 'Resume', onPress: () => setRun(draft) },
-        ]);
+        // confirmDialog: Alert.alert is a no-op on RN-web, so `run` was never
+        // set and the screen stayed on "Loading workflow…" with no exit
+        // (B-013/B-063). The cancel path ALWAYS sets a run — no dismissal
+        // leaves the runner without one.
+        confirmDialog(
+          'Resume previous progress?',
+          'An unfinished run of this workflow was found.',
+          'Resume',
+          () => setRun(draft),
+          { cancelText: 'Start over', onCancel: () => setRun(blank()) },
+        );
       } else {
         setRun(blank());
       }
@@ -385,34 +391,46 @@ export function CalcWorkflowRunScreen() {
   const shareAsImage = async () => {
     const ok = await shareImage.captureAndShare(shareRef.current, 'Workflow results');
     if (!ok) {
-      Alert.alert(
-        'Image sharing unavailable',
-        'Sharing as an image needs the next app build. SHARE AS TEXT works now.',
-      );
+      // notify, not Alert.alert: RN-web's Alert is a no-op (B-018/B-062).
+      notify('Image sharing unavailable', 'Sharing as an image needs the next app build. SHARE AS TEXT works now.');
     }
   };
 
   const saveResult = async () => {
     if (!summary) return;
     if (limits.savedResults === 0) {
-      Alert.alert('Sign in to save results', 'Saving workflow results needs an account. You can still share this result now.');
+      notify('Sign in to save results', 'Saving workflow results needs an account. You can still share this result now.');
       return;
     }
     const existing = await workflowStore.listResults();
     if (limits.savedResults != null && existing.length >= limits.savedResults && !existing.some((r) => r.id === summary.id)) {
-      Alert.alert('Result limit reached', `Free accounts keep up to ${limits.savedResults} results. Academy membership removes the limit.`);
+      notify('Result limit reached', `Free accounts keep up to ${limits.savedResults} results. Academy membership removes the limit.`);
       return;
     }
     const ok = await workflowStore.saveResult(summary);
     if (ok) setResultSaved(true);
-    else Alert.alert('Save failed', 'The result could not be saved. Try again.');
+    else notify('Save failed', 'The result could not be saved. Try again.');
   };
 
   // ---- Render ---------------------------------------------------------------
   if (!workflow || !run) {
+    // The loading state carries the same header / ‹ Back as the loaded state —
+    // gestureEnabled is false app-wide, so without it a screen waiting on the
+    // store (or on the resume prompt) had no exit (B-013/B-063).
     return (
       <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-        <Text style={styles.caption}>Loading workflow…</Text>
+        <View style={styles.header}>
+          <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
+            <Text style={styles.back}>‹</Text>
+          </Pressable>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.title}>{(workflow?.name ?? '').toUpperCase()}</Text>
+          </View>
+          <AccuracyNote compact variant="calc" />
+        </View>
+        <View style={styles.scroll}>
+          <Text style={styles.caption}>Loading workflow…</Text>
+        </View>
       </View>
     );
   }

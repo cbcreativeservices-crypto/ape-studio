@@ -38,24 +38,30 @@ export function ShakeToMute() {
         return; // sensor unavailable (older client / platform) — degrade silently
       }
       if (cancelled) return;
-      Accelerometer.setUpdateInterval(80); // ~12 Hz — plenty for a shake, light on battery
-      jolts.current = [];
-      sub = Accelerometer.addListener(({ x, y, z }) => {
-        const g = Math.sqrt(x * x + y * y + z * z);
-        if (g < SHAKE_G) return;
-        const now = Date.now();
-        jolts.current = jolts.current.filter((t) => now - t < WINDOW_MS);
-        jolts.current.push(now);
-        if (jolts.current.length >= NEED) {
-          jolts.current = [];
-          try {
-            void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-          } catch {
-            /* haptics optional */
+      try {
+        Accelerometer.setUpdateInterval(80); // ~12 Hz — plenty for a shake, light on battery
+        jolts.current = [];
+        sub = Accelerometer.addListener(({ x, y, z }) => {
+          const g = Math.sqrt(x * x + y * y + z * z);
+          if (g < SHAKE_G) return;
+          const now = Date.now();
+          jolts.current = jolts.current.filter((t) => now - t < WINDOW_MS);
+          jolts.current.push(now);
+          if (jolts.current.length >= NEED) {
+            jolts.current = [];
+            try {
+              void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+            } catch {
+              /* haptics optional */
+            }
+            panicMuteAudio();
           }
-          panicMuteAudio();
-        }
-      });
+        });
+      } catch {
+        // isAvailableAsync() can resolve true on a platform whose sensor module is
+        // present-but-broken (web: addListener throws) — degrade silently, same as above.
+        sub = null;
+      }
     })();
 
     return () => {

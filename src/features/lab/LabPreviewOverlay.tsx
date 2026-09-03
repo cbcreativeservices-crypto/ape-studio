@@ -11,7 +11,7 @@
  */
 import { UpgradeSheet } from '../commercial/UpgradeSheet';
 import { navigationRef } from '../../navigation/navigationRef';
-import { endLabPreview, useLabPreview } from './labPreviewStore';
+import { beginLabPreviewLeave, endLabPreview, useLabPreview } from './labPreviewStore';
 
 export function LabPreviewOverlay() {
   const { active } = useLabPreview();
@@ -22,6 +22,7 @@ export function LabPreviewOverlay() {
   // overlay is a root sibling above the navigator, so keeping it visible covers
   // the whole transition; clear it once the pop has settled.
   const leaveLab = () => {
+    beginLabPreviewLeave(); // hold the scrim through the pop; safety net stands down
     if (navigationRef.isReady() && navigationRef.canGoBack()) navigationRef.goBack();
     setTimeout(endLabPreview, 350);
   };

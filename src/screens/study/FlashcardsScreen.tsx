@@ -1157,7 +1157,10 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     );
   }
 
-  const displayPct = Math.round(studyDisplayPct(states, items.length, 'flashcards'));
+  const displayPct = studyDisplayPct(states, items.length, 'flashcards');
+  // Readout shows 0–99 until the RAW value is 100 (same rule as the Dashboard
+  // row): Math.round alone read "100%" beside 399 / 400 (B-086).
+  const displayPctLabel = displayPct >= 100 ? 100 : Math.min(Math.round(displayPct), 99);
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]} {...pan.panHandlers}>
@@ -1174,7 +1177,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
           <View style={{ flex: 1 }}>
             <LedMeterWell filled={segmentsForPct(displayPct)} />
           </View>
-          <Text style={styles.ledPct}>{displayPct}%</Text>
+          <Text style={styles.ledPct}>{displayPctLabel}%</Text>
           <Text style={styles.counter}>
             {deck.length === 0 ? 0 : Math.min(idx, deck.length - 1) + 1} / {deck.length}
           </Text>

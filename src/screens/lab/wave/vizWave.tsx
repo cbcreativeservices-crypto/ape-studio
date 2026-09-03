@@ -1209,11 +1209,14 @@ export function RoomSceneView(p: RoomSceneProps) {
       path.moveTo(lx + Math.cos(ang) * r0, ly - 4 + Math.sin(ang) * r0);
       path.lineTo(lx + Math.cos(ang) * r1, ly - 4 + Math.sin(ang) * r1);
       const lr = r1 + (i % 2 === 0 ? 12 : 24); // stagger so close arrivals don't collide
+      // Sign is decided on the ROUNDED magnitude so a reflection 0.05–0.5 dB
+      // under the direct reads '0 dB', never '−0 dB' (B-105).
+      const relRounded = Math.round(Math.abs(relDb));
       labels.push({
         x: lx + Math.cos(ang) * lr,
         y: ly - 4 + Math.sin(ang) * lr,
         ms: `${(a.t * 1000).toFixed(1)} ms`,
-        db: i === 0 ? 'direct' : `${relDb <= -0.05 ? '−' : ''}${Math.abs(relDb).toFixed(0)} dB`,
+        db: i === 0 ? 'direct' : `${relRounded > 0 && relDb < 0 ? '−' : ''}${relRounded} dB`,
         color,
       });
     }

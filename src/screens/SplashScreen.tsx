@@ -7,6 +7,7 @@
 import { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
+import type { PartialRoute, Route } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { BrandLogo } from '../components/BrandLogo';
 import { colors, fonts } from '../theme/tokens';
@@ -30,9 +31,25 @@ export function SplashScreen({ navigation }: Props) {
       // Boot: session → Main (Dashboard), else → the finished login screen.
       // The pre-auth commercial Landing is still WIP, so startup does NOT route
       // to it (owner 2026-08-06) — reinstate that branch when Landing is done.
+      //
+      // KEEP WHAT WAS PUSHED OVER THE SPLASH (B-047): a cold start from a
+      // push/local-notification tap navigates (WeeklyConcept / Awards / Main)
+      // within milliseconds of the container being ready — i.e. on top of this
+      // screen, before the timer fires. A bare reset threw that away, so the
+      // tapped card showed for ~2.5 s and vanished. Carry those routes over the
+      // new base instead (same keys → the mounted screens survive). Without a
+      // session, the Main shell must not be kept; anything else still closes
+      // back onto Auth.
+      const base = data.session ? 'Main' : 'Auth';
+      const pushed: PartialRoute<Route<keyof RootStackParamList>>[] = navigation
+        .getState()
+        .routes.filter((r) => r.name !== 'Splash')
+        .map((r) => ({ key: r.key, name: r.name, params: r.params }));
+      const baseRoute = pushed.find((r) => r.name === base) ?? { name: base };
+      const above = pushed.filter((r) => r !== baseRoute && (data.session || r.name !== 'Main'));
       navigation.reset({
-        index: 0,
-        routes: [{ name: data.session ? 'Main' : 'Auth' }],
+        index: above.length,
+        routes: [baseRoute, ...above],
       });
       // Hold the intro ~2.5s before advancing (Booth 2026-07-11).
     }, 2500);

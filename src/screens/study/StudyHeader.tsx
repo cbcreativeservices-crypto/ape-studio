@@ -32,8 +32,12 @@ export function StudyHeader({
   const navigation = useNavigation();
   return (
     <View style={styles.row}>
+      {/* popTo, not navigate: under React Navigation 7 navigate() PUSHES a
+          second Dashboard on top of the method screen (which then stays
+          mounted with its StudySession timers running). popTo pops back to
+          the existing Dashboard so this screen unmounts and flushes. */}
       <Pressable
-        onPress={() => (navigation as any).navigate('Dashboard')}
+        onPress={() => (navigation as any).popTo('Dashboard')}
         hitSlop={8}
         accessibilityRole="button"
         accessibilityLabel="Back to Dashboard"
@@ -63,7 +67,7 @@ export function StudyHeader({
           </Pressable>
         ) : null}
         <Pressable
-          onPress={() => (navigation as any).navigate('Dashboard')}
+          onPress={() => (navigation as any).popTo('Dashboard')}
           hitSlop={8}
           style={styles.returnBtn}
           accessibilityRole="button"

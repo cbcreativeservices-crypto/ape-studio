@@ -73,16 +73,19 @@ function DosimeterChip({ onOpen }: { onOpen: () => void }) {
   const [snap, setSnap] = useState<ExposureSnapshot>(getExposureSnapshot());
   useEffect(() => subscribeExposure(() => setSnap(getExposureSnapshot())), []);
   const pct = Math.round(snap.todayDose * 100);
+  // One rendered time for BOTH the screen-reader label and the visible chip
+  // (B-186): fmtDuration(0) is "0 s" but the chip showed "0 min" — unify.
+  const shownTime = snap.todayActiveSec > 0 ? fmtDuration(snap.todayActiveSec) : '0 min';
   return (
     <Pressable
       onPress={onOpen}
       accessibilityRole="button"
-      accessibilityLabel={`Listening exposure: dose ${pct} percent, ${fmtDuration(snap.todayActiveSec)} today. Open the monitor.`}
+      accessibilityLabel={`Listening exposure: dose ${pct} percent, ${shownTime} today. Open the monitor.`}
       style={[styles.dosiChip, pct >= 100 && { borderColor: 'rgba(255,42,42,.8)' }, pct >= 80 && pct < 100 && { borderColor: 'rgba(255,180,0,.7)' }]}
     >
       <Text style={styles.dosiLabel}>DOSIMETER</Text>
       <Text style={[styles.dosiValue, pct >= 100 && { color: '#ff6a5e' }]}>
-        {`${pct}% · ${snap.todayActiveSec > 0 ? fmtDuration(snap.todayActiveSec) : '0 min'}`}
+        {`${pct}% · ${shownTime}`}
       </Text>
       <Text style={styles.dosiOpen}>OPEN ›</Text>
     </Pressable>
@@ -524,9 +527,12 @@ export function ToolsHubScreen({ navigation }: Props) {
           <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
             <Text style={styles.back}>‹</Text>
           </Pressable>
-          {/* Tapping the logo returns to Course Select (Booth 2026-07-11). */}
+          {/* Tapping the logo returns to Course Select (Booth 2026-07-11).
+              popTo, not navigate: under React Navigation 7 navigate('Main')
+              PUSHES a second tab shell on top of the hub (leaving this hub and
+              its mic-preview engine mounted); popTo returns to the existing Main. */}
           <Pressable
-            onPress={() => navigation.navigate('Main', { screen: 'Home' } as never)}
+            onPress={() => navigation.popTo('Main', { screen: 'Home' } as never)}
             hitSlop={8}
             accessibilityRole="button"
             accessibilityLabel="Back to course selection"
@@ -548,7 +554,7 @@ export function ToolsHubScreen({ navigation }: Props) {
               height={38}
               fontSize={13}
               onPress={() =>
-                navigation.navigate('Main', { screen: 'Study', params: { screen: 'Glossary' } } as never)
+                navigation.popTo('Main', { screen: 'Study', params: { screen: 'Glossary' } } as never)
               }
             />
           </View>
@@ -669,9 +675,12 @@ export function ToolsHubScreen({ navigation }: Props) {
             <Pressable
               key={name}
               style={styles.navItem}
-              accessibilityRole="button"
-              accessibilityLabel={name}
-              onPress={() => navigation.navigate('Main', { screen: name } as never)}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: false }}
+              // SR label matches the VISIBLE text -- the tab draws "PROGRESS"
+              // while the route is named Achievements (mirror TabBar.tsx).
+              accessibilityLabel={name === 'Achievements' ? 'Progress' : name}
+              onPress={() => navigation.popTo('Main', { screen: name } as never)}
             >
               <NavIcon icon={name} lit={false} />
             </Pressable>
