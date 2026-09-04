@@ -225,8 +225,11 @@ export async function fetchNearestCredential(
     .sort(
       (a, b) =>
         b.done / Math.max(1, b.c.topicsGs.length) - a.done / Math.max(1, a.c.topicsGs.length) ||
-        b.done - a.done ||
-        a.c.name.localeCompare(b.c.name),
+        b.done - a.done,
+      // No alphabetical tiebreak: with equal progress the stable sort keeps the
+      // catalog's own `sequence` order, so a new user's NEXT UP is the first
+      // credential the catalog presents — not "Ableton Live Specialist" because
+      // it sorts first by letter (Bug+Hater night A1-05).
     );
   const top = ranked[0];
 
