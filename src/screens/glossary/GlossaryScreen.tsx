@@ -110,7 +110,7 @@ function loadAllEntries(): Promise<Entry[]> {
       for (let from = 0; ; from += PAGE_E) {
         const { data, error } = await supabase
           .from('glossary')
-          .select('id, term, definition, plain_english, course_id, achievement_id')
+          .select('id, term, definition, plain_english, achievement_id')
           .order('term')
           .range(from, from + PAGE_E - 1);
         if (error) throw error;
@@ -198,7 +198,6 @@ type Entry = {
   definition: string;
   /** Spoken by the TTS speaker (Feature 2) — falls back to definition when unauthored. */
   plain_english: string | null;
-  course_id: string;
   achievement_id: string | null;
 };
 

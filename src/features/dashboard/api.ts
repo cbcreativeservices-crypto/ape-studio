@@ -23,7 +23,6 @@ export type Course = {
 
 export type Topic = {
   id: string;
-  course_id: string;
   sequence_in_course: number;
   name: string;
   applicable_methods: string[];
@@ -227,7 +226,7 @@ export async function fetchEnrollmentDashboard(gsList: number[]): Promise<Dashbo
   // Resolve gs → achievements (cross-course). Dedupe by gs; keep enrollment order.
   const { data: achRows, error: achErr } = await supabase
     .from('achievements')
-    .select('id, course_id, sequence_in_course, name, applicable_methods, is_prerequisite, icon_url, global_sequence')
+    .select('id, sequence_in_course, name, applicable_methods, is_prerequisite, icon_url, global_sequence')
     .in('global_sequence', gsList);
   if (achErr) throw achErr;
   const byGs = new Map<number, Topic>();
@@ -235,7 +234,6 @@ export async function fetchEnrollmentDashboard(gsList: number[]): Promise<Dashbo
     if (a.global_sequence == null || byGs.has(a.global_sequence)) continue;
     byGs.set(a.global_sequence, {
       id: a.id,
-      course_id: a.course_id,
       sequence_in_course: a.sequence_in_course,
       name: a.name,
       applicable_methods: a.applicable_methods ?? [],

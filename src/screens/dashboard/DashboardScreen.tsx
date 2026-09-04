@@ -884,7 +884,6 @@ export function DashboardScreen() {
   // value (overallPct, quizState, rowsForTopic…) computes safely to 0/empty.
   const customTopic: Topic = {
     id: FLAGGED_TOPIC_ID,
-    course_id: '',
     sequence_in_course: 9999,
     name: FLAGGED_TOPIC_NAME,
     applicable_methods: [],
