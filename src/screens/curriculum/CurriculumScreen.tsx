@@ -15,6 +15,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../theme/tokens';
 import { BrandLogo } from '../../components/BrandLogo';
+import { Modal } from '../../components/DimModal';
 import { consumeDevPreview } from '../../features/dev/devPreview';
 import { fetchV3Curriculum, fetchV3Programs, fetchV3Certs, type V3Field } from '../../data/v3Curriculum';
 import { subjectMeta } from '../../data/subjectMeta';
@@ -97,9 +98,9 @@ export function CurriculumView({
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const [open, setOpen] = useState<number | null>(null);
-  // The Career Finder entry is collapsed by default (owner 2026-09-04): the
-  // reader taps to reveal the green container.
-  const [finderOpen, setFinderOpen] = useState(false);
+  // The Career Finder entry is a button beside SUBJECTS (owner 2026-09-04):
+  // tapping it opens the green container as a popup.
+  const [showFinder, setShowFinder] = useState(false);
   // The Career Finder card speaks to where THIS person is: a first pitch, a
   // "you're at question n", or their own top family (the cheapest re-entry
   // into family → topic → membership).
@@ -169,6 +170,7 @@ export function CurriculumView({
   };
 
   return (
+    <>
     <ScrollView style={{ flex: 1 }} contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 24 }]}>
       {/* White intro line above the counters (user request 2026-07-22). */}
       <Text style={styles.discoverHead}>Discover What’s Inside</Text>
@@ -221,42 +223,6 @@ export function CurriculumView({
         })}
       </View>
 
-      {/* Audio Career Finder entry — above the curriculum block (owner
-          2026-09-04). Collapsed by default: a neutral header the reader taps
-          to reveal the green container; the green treatment + blurb + open
-          button appear only when expanded. Free; the button opens the Lab. */}
-      <View style={[styles.finderCard, finderOpen && styles.finderCardOpen]}>
-        <Pressable
-          style={styles.finderHeader}
-          onPress={() => setFinderOpen((o) => !o)}
-          accessibilityRole="button"
-          accessibilityState={{ expanded: finderOpen }}
-          accessibilityLabel={finderOpen ? 'Collapse the Audio Career Finder' : `Audio Career Finder, Beta. Tap to expand. ${finder.a11y}`}
-        >
-          <View style={styles.finderText}>
-            <View style={styles.finderEyebrowRow}>
-              <Text style={styles.finderEyebrow}>CAREER DISCOVERY LAB · FREE</Text>
-              <View style={styles.finderBeta}><Text style={styles.finderBetaText}>BETA</Text></View>
-            </View>
-            <Text style={styles.finderTitle}>Audio Career Finder</Text>
-          </View>
-          <Text style={[styles.finderChevron, finderOpen && { color: colors.green }]}>{finderOpen ? '▾' : '▸'}</Text>
-        </Pressable>
-        {finderOpen ? (
-          <View style={styles.finderBody}>
-            <Text style={styles.finderBlurb}>{finder.blurb}</Text>
-            <Pressable
-              style={styles.finderPill}
-              onPress={() => (navigation as { navigate: (name: typeof finder.route) => void }).navigate(finder.route)}
-              accessibilityRole="button"
-              accessibilityLabel={finder.a11y}
-            >
-              <Text style={styles.finderPillText}>{finder.pill}</Text>
-            </Pressable>
-          </View>
-        ) : null}
-      </View>
-
       {showBrand ? (
         <View style={styles.introBlock}>
           <View style={styles.brandRow}>
@@ -275,8 +241,21 @@ export function CurriculumView({
         </View>
       )}
 
-      {/* Amber "Subjects" subtitle above the list (user request 2026-07-22). */}
-      <Text style={styles.subjectsHead}>SUBJECTS</Text>
+      {/* Amber "Subjects" subtitle above the list (user request 2026-07-22),
+          with the Audio Career Finder button to its right (owner 2026-09-04)
+          — tapping it opens the Career Discovery Lab popup. */}
+      <View style={styles.subjectsRow}>
+        <Text style={styles.subjectsHead}>SUBJECTS</Text>
+        <Pressable
+          style={styles.finderBtn}
+          onPress={() => setShowFinder(true)}
+          accessibilityRole="button"
+          accessibilityLabel={finder.a11y}
+        >
+          <Text style={styles.finderBtnText}>AUDIO CAREER FINDER</Text>
+          <View style={styles.finderBtnBeta}><Text style={styles.finderBtnBetaText}>BETA</Text></View>
+        </Pressable>
+      </View>
 
       {/* Curriculum tree — each subject expands inline. */}
       <View style={styles.tree}>
@@ -353,6 +332,35 @@ export function CurriculumView({
         ))}
       </View>
     </ScrollView>
+
+    {/* Audio Career Finder popup (owner 2026-09-04): the green container, shown
+        from the SUBJECTS-row button. The button navigates to the Lab at the
+        screen the pill names (start / continue / results). */}
+    <Modal accessibilityViewIsModal visible={showFinder} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setShowFinder(false)}>
+      <View style={styles.finderBackdrop}>
+        <Pressable style={StyleSheet.absoluteFill} onPress={() => setShowFinder(false)} accessibilityRole="button" accessibilityLabel="Dismiss" />
+        <View style={styles.finderModal}>
+          <View style={styles.finderEyebrowRow}>
+            <Text style={styles.finderEyebrow}>CAREER DISCOVERY LAB · FREE</Text>
+            <View style={styles.finderBeta}><Text style={styles.finderBetaText}>BETA</Text></View>
+          </View>
+          <Text style={styles.finderTitle}>Audio Career Finder</Text>
+          <Text style={styles.finderBlurb}>{finder.blurb}</Text>
+          <Pressable
+            style={styles.finderStart}
+            onPress={() => { setShowFinder(false); (navigation as { navigate: (name: typeof finder.route) => void }).navigate(finder.route); }}
+            accessibilityRole="button"
+            accessibilityLabel={finder.a11y}
+          >
+            <Text style={styles.finderStartText}>{finder.pill}</Text>
+          </Pressable>
+          <Pressable style={styles.finderClose} onPress={() => setShowFinder(false)} accessibilityRole="button" accessibilityLabel="Not now">
+            <Text style={styles.finderCloseText}>NOT NOW</Text>
+          </Pressable>
+        </View>
+      </View>
+    </Modal>
+    </>
   );
 }
 
@@ -387,23 +395,29 @@ const styles = StyleSheet.create({
   // Audio Career Finder entry card (owner brief 2026-09-03). Same card grammar
   // as the subject cards below, with the amber accent on the left edge so it
   // reads as a destination rather than another expandable subject.
-  // The one non-browsing action on Explore. Collapsed it reads like the
-  // subject cards below (neutral, a chevron); expanded it becomes the green
-  // container the app reserves for a primary action.
-  finderCard: { backgroundColor: '#161616', borderWidth: 1, borderColor: '#232323', borderRadius: 10, overflow: 'hidden' },
-  finderCardOpen: { backgroundColor: '#17171b', borderColor: colors.green },
-  finderHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 13, paddingLeft: 14, paddingRight: 14 },
-  finderText: { flex: 1, gap: 3 },
+  // SUBJECTS label + the Audio Career Finder button on one row (owner
+  // 2026-09-04). The negative bottom margin that tucked SUBJECTS against the
+  // tree now lives on the row.
+  subjectsRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: -10 },
+  // The green-outlined entry button — the one non-browsing action on Explore,
+  // so it takes the green the app reserves for a primary action.
+  finderBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 34, paddingHorizontal: 11, borderRadius: 8, borderWidth: 1, borderColor: colors.green, backgroundColor: '#173021' },
+  finderBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.green },
+  finderBtnBeta: { borderWidth: 1, borderColor: 'rgba(55,224,95,.6)', borderRadius: 3, paddingHorizontal: 4, paddingVertical: 1 },
+  finderBtnBetaText: { fontFamily: fonts.oswaldSemiBold, fontSize: 8, letterSpacing: 1, color: colors.greenBright },
+  // Career Finder popup — the green container, shown from the button.
+  finderBackdrop: { flex: 1, backgroundColor: 'rgba(8,8,10,0.72)', alignItems: 'center', justifyContent: 'center', padding: 26 },
+  finderModal: { width: '100%', maxWidth: 360, backgroundColor: '#17171b', borderRadius: 14, borderWidth: 1, borderColor: colors.green, padding: 18, gap: 10 },
   finderEyebrowRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   finderEyebrow: { fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 1.6, color: colors.amberLabel },
   finderBeta: { borderWidth: 1, borderColor: colors.amberLabel, borderRadius: 3, paddingHorizontal: 5, paddingVertical: 1 },
   finderBetaText: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1.4, color: colors.amber },
-  finderTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 21, color: colors.textPrimary, letterSpacing: 0.3 },
-  finderChevron: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, color: colors.textSub, width: 16, textAlign: 'center' },
-  finderBody: { paddingHorizontal: 14, paddingBottom: 14, paddingTop: 2, gap: 12 },
-  finderBlurb: { fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 20, color: colors.textSub },
-  finderPill: { alignSelf: 'flex-start', minHeight: 44, paddingHorizontal: 16, borderRadius: 10, borderWidth: 1, borderColor: colors.green, backgroundColor: '#173021', justifyContent: 'center' },
-  finderPillText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.green },
+  finderTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 22, color: colors.textPrimary, letterSpacing: 0.3 },
+  finderBlurb: { fontFamily: fonts.barlowMedium, fontSize: 14.5, lineHeight: 21, color: colors.textSecondary },
+  finderStart: { marginTop: 4, minHeight: 50, borderRadius: 10, borderWidth: 1, borderColor: colors.green, backgroundColor: '#173021', alignItems: 'center', justifyContent: 'center' },
+  finderStartText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.2, color: colors.green },
+  finderClose: { minHeight: 44, alignItems: 'center', justifyContent: 'center' },
+  finderCloseText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textSub },
 
   // Tree.
   // Amber "SUBJECTS" subtitle above the subject list (user request 2026-07-22);
