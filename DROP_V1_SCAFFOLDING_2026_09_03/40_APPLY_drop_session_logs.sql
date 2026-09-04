@@ -44,7 +44,7 @@ BEGIN
   -- No function may still read it. This is the check Postgres will not do.
   SELECT string_agg(p.proname, ', ' ORDER BY p.proname) INTO v_left
   FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace JOIN pg_language l ON l.oid=p.prolang
-  WHERE n.nspname='public' AND l.lanname IN ('plpgsql','sql') AND p.prosrc ~* '\msession_logs\M';
+  WHERE n.nspname='public' AND l.lanname IN ('plpgsql','sql') AND regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\msession_logs\M';
   IF v_left IS NOT NULL THEN
     RAISE EXCEPTION 'refusing to run: these functions still read session_logs: %. Run stage 10 first.', v_left;
   END IF;
@@ -81,7 +81,7 @@ SELECT 'session_logs dropped' AS check,
        CASE WHEN to_regclass('public.session_logs') IS NULL THEN 'PASS' ELSE 'FAIL' END AS result
 UNION ALL SELECT 'no function references session_logs',
   CASE WHEN NOT EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
-                        WHERE n.nspname='public' AND p.prosrc ~* '\msession_logs\M')
+                        WHERE n.nspname='public' AND regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\msession_logs\M')
        THEN 'PASS' ELSE 'FAIL' END
 UNION ALL SELECT 'refresh_student_metrics still present (submit_quiz calls it)',
   CASE WHEN to_regprocedure('public.refresh_student_metrics(uuid)') IS NOT NULL THEN 'PASS' ELSE 'FAIL' END

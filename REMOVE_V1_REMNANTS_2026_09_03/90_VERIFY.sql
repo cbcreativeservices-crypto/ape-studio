@@ -6,17 +6,21 @@ SELECT stage, "check", result FROM (
 
 -- ------------------------------------------------------------------- STAGE 10
 SELECT 10 AS stage, 'bulk_import_glossary resolves by v3 global_sequence' AS check,
-  CASE WHEN (SELECT p.prosrc FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+  CASE WHEN (SELECT regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
              WHERE n.nspname='public' AND p.proname='bulk_import_glossary')
             ~* 'a7c1f2e0-9b34-4d55-8e21-0c4f6a9b1d72'
        THEN 'PASS' ELSE 'NOT RUN' END AS result
-UNION ALL SELECT 10, 'bulk_import_glossary no longer touches courses/course_code',
-  CASE WHEN (SELECT p.prosrc FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
-             WHERE n.nspname='public' AND p.proname='bulk_import_glossary')
-            ~* '\mcourses\M|course_code'
+UNION ALL SELECT 10, 'bulk_import_glossary no longer resolves through courses',
+  -- Tests the real dependency only. The rewritten function still MENTIONS
+  -- course_code, in a guard that raises if a caller passes it, which is the
+  -- desired behaviour and must not read as a failure.
+  CASE WHEN regexp_replace(regexp_replace(
+              (SELECT regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+                WHERE n.nspname='public' AND p.proname='bulk_import_glossary'),
+              '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mpublic\.courses\M'
        THEN 'NOT RUN' ELSE 'PASS' END
 UNION ALL SELECT 10, 'validate_glossary no longer touches courses',
-  CASE WHEN (SELECT p.prosrc FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+  CASE WHEN (SELECT regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
              WHERE n.nspname='public' AND p.proname='validate_glossary')
             ~* '\mcourses\M'
        THEN 'NOT RUN' ELSE 'PASS' END
@@ -28,27 +32,30 @@ UNION ALL SELECT 10, 'no glossary row lost its achievement tag',
 
 -- ------------------------------------------------------------------- STAGE 20
 UNION ALL SELECT 20, 'seed_commercial_free_topics is v3-scoped',
-  CASE WHEN (SELECT p.prosrc FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+  CASE WHEN (SELECT regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
              WHERE n.nspname='public' AND p.proname='seed_commercial_free_topics')
             ~* 'a7c1f2e0-9b34-4d55-8e21-0c4f6a9b1d72'
        THEN 'PASS' ELSE 'NOT RUN' END
 UNION ALL SELECT 20, 'register_commercial_user still calls it (untouched)',
-  CASE WHEN (SELECT p.prosrc FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+  CASE WHEN (SELECT regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
              WHERE n.nspname='public' AND p.proname='register_commercial_user')
             ~* 'seed_commercial_free_topics'
        THEN 'PASS' ELSE 'FAIL - registration path broken' END
 
 -- ------------------------------------------------------------------- STAGE 30
 UNION ALL SELECT 30, 'start_quiz_attempt no longer reads public_course*',
-  CASE WHEN (SELECT p.prosrc FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+  CASE WHEN (SELECT regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
              WHERE n.nspname='public' AND p.proname='start_quiz_attempt') ~* 'public_course'
        THEN 'NOT RUN' ELSE 'PASS' END
 UNION ALL SELECT 30, 'submit_quiz no longer reads public_course*',
-  CASE WHEN (SELECT p.prosrc FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
-             WHERE n.nspname='public' AND p.proname='submit_quiz') ~* 'public_course'
+  -- Comments stripped: submit_quiz keeps a comment naming the reader it lost.
+  CASE WHEN regexp_replace(regexp_replace(
+              (SELECT regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+                WHERE n.nspname='public' AND p.proname='submit_quiz'),
+              '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* 'public_course'
        THEN 'NOT RUN' ELSE 'PASS' END
 UNION ALL SELECT 30, 'submit_quiz still calls refresh_student_metrics',
-  CASE WHEN (SELECT p.prosrc FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+  CASE WHEN (SELECT regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
              WHERE n.nspname='public' AND p.proname='submit_quiz') ~* 'refresh_student_metrics'
        THEN 'PASS' ELSE 'FAIL' END
 

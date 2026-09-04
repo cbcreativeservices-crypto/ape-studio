@@ -41,8 +41,16 @@ BEGIN
   END IF;
 
   -- Stage 30 gate.
+  -- COMMENTS ARE STRIPPED FIRST. A plain substring match on prosrc also hits
+  -- the word inside -- comments, and submit_quiz legitimately carries one
+  -- explaining that its public_course_topics reader was removed. That false
+  -- positive blocked this stage on 2026-09-03 even though the code was clean.
+  -- String literals are deliberately NOT stripped: a literal table name would
+  -- mean dynamic SQL, which IS a real dependency.
   IF EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
-             WHERE n.nspname='public' AND p.prosrc ~* 'public_course') THEN
+             WHERE n.nspname='public'
+               AND regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'),
+                                  '--[^\n]*', '', 'g') ~* 'public_course') THEN
     RAISE EXCEPTION 'refusing to run: at least one function still reads public_course* - run Stages 30 and 40 first';
   END IF;
 

@@ -59,14 +59,14 @@ BEGIN
   -- The importer must already be off course_id, or the next import re-adds it.
   IF EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
              WHERE n.nspname='public' AND p.proname='bulk_import_glossary'
-               AND p.prosrc ~* 'course_id') THEN
+               AND regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* 'course_id') THEN
     RAISE EXCEPTION 'refusing to run: bulk_import_glossary still writes course_id - run Stage 10 first';
   END IF;
 
   -- Nothing must be left that reads glossary.course_id.
   IF EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
              WHERE n.nspname='public' AND p.proname IN ('validate_glossary')
-               AND p.prosrc ~* 'course_id') THEN
+               AND regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* 'course_id') THEN
     RAISE EXCEPTION 'refusing to run: validate_glossary still references course_id - run Stage 10 first';
   END IF;
 END $guard$;

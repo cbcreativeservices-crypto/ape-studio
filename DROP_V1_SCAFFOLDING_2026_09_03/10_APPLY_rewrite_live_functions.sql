@@ -65,7 +65,7 @@ BEGIN
   -- The baseline must be REMOVE_V1_REMNANTS stage 30's output.
   IF EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
              WHERE n.nspname='public' AND p.proname IN ('start_quiz_attempt','submit_quiz')
-               AND p.prosrc ~* 'public_course') THEN
+               AND regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* 'public_course') THEN
     RAISE EXCEPTION 'refusing to run: REMOVE_V1_REMNANTS stage 30 has not run. Run it first - this file rewrites on top of its output.';
   END IF;
 
@@ -647,7 +647,7 @@ COMMIT;
 
 -- Read-back: none of the seven may still mention any of the five targets.
 SELECT p.proname,
-       CASE WHEN p.prosrc ~* '\mcourses\M|\menrollment\M|\mcourse_sections\M|\msession_logs\M|\mcourse_id\M|is_instructor_for_user'
+       CASE WHEN regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mcourses\M|\menrollment\M|\mcourse_sections\M|\msession_logs\M|\mcourse_id\M|is_instructor_for_user'
             THEN 'FAIL - still references a target object' ELSE 'PASS' END AS result
 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
 WHERE n.nspname='public'

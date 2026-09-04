@@ -73,7 +73,7 @@ BEGIN
 
   -- submit_quiz must no longer write student_badges.
   IF EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
-             WHERE n.nspname='public' AND p.proname='submit_quiz' AND p.prosrc ~* 'student_badges') THEN
+             WHERE n.nspname='public' AND p.proname='submit_quiz' AND regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* 'student_badges') THEN
     RAISE EXCEPTION 'refusing to run: submit_quiz still writes student_badges. Run stage 10 first.';
   END IF;
 END $guard$;

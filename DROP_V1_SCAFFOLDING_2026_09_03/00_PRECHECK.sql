@@ -16,13 +16,13 @@ SELECT section, "check", result FROM (
 
 -- ============================================================ PREREQUISITE PACKAGES
 SELECT 'prereq' AS section, 'REMOVE_V1_REMNANTS stage 10 has run (glossary fns off courses)' AS check,
-  CASE WHEN (SELECT bool_and(NOT (p.prosrc ~* '\mcourses\M'))
+  CASE WHEN (SELECT bool_and(NOT (regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mcourses\M'))
              FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
              WHERE n.nspname='public' AND p.proname IN ('bulk_import_glossary','validate_glossary'))
        THEN 'PASS' ELSE 'FAIL - run REMOVE_V1_REMNANTS stage 10 first' END AS result
 
 UNION ALL SELECT 'prereq', 'REMOVE_V1_REMNANTS stage 30 has run (quiz fns off public_course*)',
-  CASE WHEN (SELECT bool_and(NOT (p.prosrc ~* 'public_course'))
+  CASE WHEN (SELECT bool_and(NOT (regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* 'public_course'))
              FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
              WHERE n.nspname='public' AND p.proname IN ('start_quiz_attempt','submit_quiz'))
        THEN 'PASS' ELSE 'FAIL - run REMOVE_V1_REMNANTS stage 30 first. Stage 10 of THIS package rewrites on top of its output.' END
@@ -101,15 +101,15 @@ UNION ALL SELECT 'functions', 'functions still reading courses/enrollment/course
   (SELECT string_agg(p.proname, ', ' ORDER BY p.proname)
    FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace JOIN pg_language l ON l.oid=p.prolang
    WHERE n.nspname='public' AND l.lanname IN ('plpgsql','sql')
-     AND (p.prosrc ~* '\mcourses\M' OR p.prosrc ~* '\menrollment\M' OR p.prosrc ~* '\mcourse_sections\M'
-          OR p.prosrc ~* '\msession_logs\M' OR p.prosrc ~* '\mcourse_id\M'))
+     AND (regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mcourses\M' OR regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\menrollment\M' OR regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mcourse_sections\M'
+          OR regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\msession_logs\M' OR regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mcourse_id\M'))
 
 UNION ALL SELECT 'functions', 'count of the above',
   (SELECT count(*)::text
    FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace JOIN pg_language l ON l.oid=p.prolang
    WHERE n.nspname='public' AND l.lanname IN ('plpgsql','sql')
-     AND (p.prosrc ~* '\mcourses\M' OR p.prosrc ~* '\menrollment\M' OR p.prosrc ~* '\mcourse_sections\M'
-          OR p.prosrc ~* '\msession_logs\M' OR p.prosrc ~* '\mcourse_id\M'))
+     AND (regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mcourses\M' OR regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\menrollment\M' OR regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mcourse_sections\M'
+          OR regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\msession_logs\M' OR regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mcourse_id\M'))
 
 -- ============================================================ RLS / STRUCTURE
 UNION ALL SELECT 'structure', 'policies that depend on is_instructor_for_user (stage 20 drops these)',

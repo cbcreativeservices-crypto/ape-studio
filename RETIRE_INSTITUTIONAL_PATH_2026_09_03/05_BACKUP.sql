@@ -20,9 +20,9 @@ BEGIN
            pg_get_functiondef(p.oid)
     FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
     WHERE n.nspname = 'public'
-      AND (p.prosrc ~* '\menrollment\M' OR p.prosrc ~* '\mcourses\M'
-        OR p.prosrc ~* '\mcourse_sections\M' OR p.prosrc ~* '\msession_logs\M'
-        OR p.prosrc ~* '\mcourse_id\M');
+      AND (regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\menrollment\M' OR regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mcourses\M'
+        OR regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mcourse_sections\M' OR regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\msession_logs\M'
+        OR regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mcourse_id\M');
     RAISE NOTICE 'backed up % function definitions', (SELECT count(*) FROM public.inst_func_backup_20260903);
   ELSE RAISE NOTICE 'function backup exists - untouched'; END IF;
 

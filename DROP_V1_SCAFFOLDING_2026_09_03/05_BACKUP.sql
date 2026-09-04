@@ -24,7 +24,7 @@ BEGIN
   ------------------------------------------------------------------- precondition
   IF EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
              WHERE n.nspname='public' AND p.proname IN ('start_quiz_attempt','submit_quiz')
-               AND p.prosrc ~* 'public_course') THEN
+               AND regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* 'public_course') THEN
     RAISE EXCEPTION 'refusing to back up: REMOVE_V1_REMNANTS stage 30 has not run yet. Backing up the pre-stage-30 quiz functions would make this package''s rollback restore the wrong version.';
   END IF;
 

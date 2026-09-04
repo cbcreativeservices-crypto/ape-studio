@@ -82,7 +82,7 @@ END; $function$;
 COMMIT;
 
 SELECT 'seed_commercial_free_topics no longer hard-codes gs 0/36' AS check,
-       CASE WHEN (SELECT p.prosrc FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+       CASE WHEN (SELECT regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
                   WHERE n.nspname='public' AND p.proname='seed_commercial_free_topics')
                  ~* 'global_sequence'
             THEN 'FAIL' ELSE 'PASS' END AS result;

@@ -67,12 +67,12 @@ BEGIN
   -- Stage 10 must have run: it removes the last callers.
   IF EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
              WHERE n.nspname='public' AND p.proname='submit_quiz'
-               AND (p.prosrc ~* 'unlock_after_safety' OR p.prosrc ~* 'recompute_reachability')) THEN
+               AND (regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* 'unlock_after_safety' OR regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* 'recompute_reachability')) THEN
     RAISE EXCEPTION 'refusing to run: submit_quiz still calls unlock_after_safety / recompute_reachability. Run stage 10 first.';
   END IF;
   IF EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
              WHERE n.nspname='public' AND p.proname='lookup_student_by_qr'
-               AND p.prosrc ~* 'is_instructor_for_user') THEN
+               AND regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* 'is_instructor_for_user') THEN
     RAISE EXCEPTION 'refusing to run: lookup_student_by_qr still calls is_instructor_for_user. Run stage 10 first.';
   END IF;
 
@@ -81,9 +81,9 @@ BEGIN
              WHERE n.nspname='public' AND l.lanname IN ('plpgsql','sql')
                AND p.proname NOT IN ('register_student','unlock_after_safety','recompute_reachability',
                                      'is_instructor_for_user','seed_first_topic_on_enrollment')
-               AND (p.prosrc ~* '\mregister_student\M' OR p.prosrc ~* '\munlock_after_safety\M'
-                 OR p.prosrc ~* '\mrecompute_reachability\s*\(' OR p.prosrc ~* '\mis_instructor_for_user\M'
-                 OR p.prosrc ~* '\mseed_first_topic_on_enrollment\M')) THEN
+               AND (regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mregister_student\M' OR regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\munlock_after_safety\M'
+                 OR regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mrecompute_reachability\s*\(' OR regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mis_instructor_for_user\M'
+                 OR regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mseed_first_topic_on_enrollment\M')) THEN
     RAISE EXCEPTION 'refusing to run: another function still calls one of the five. Investigate before continuing.';
   END IF;
 END $guard$;

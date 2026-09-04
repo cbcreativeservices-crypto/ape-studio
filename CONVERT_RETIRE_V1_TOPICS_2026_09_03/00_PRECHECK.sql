@@ -218,7 +218,7 @@ select 'sequencing' as section, item, state from (values
      case when to_regclass('public.public_course_topics') is null then 'DONE' else 'NOT RUN' end),
   ('REMOVE_V1_REMNANTS Stage 30 (quiz function rewrite) - recommended before Stage 20',
      case when exists (select 1 from pg_proc p join pg_namespace n on n.oid=p.pronamespace
-                       where n.nspname='public' and p.proname='submit_quiz' and p.prosrc ~* 'public_course_topics')
+                       where n.nspname='public' and p.proname='submit_quiz' and regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* 'public_course_topics')
           then 'NOT RUN' else 'DONE' end),
   ('RETIRE_INSTITUTIONAL_PATH (drops achievements.course_id) - MUST come AFTER 05_BACKUP here',
      case when exists (select 1 from information_schema.columns

@@ -58,7 +58,7 @@ BEGIN
   SELECT string_agg(p.proname, ', ' ORDER BY p.proname) INTO v_left
   FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace JOIN pg_language l ON l.oid=p.prolang
   WHERE n.nspname='public' AND l.lanname IN ('plpgsql','sql')
-    AND (p.prosrc ~* '\mcourse_sections\M' OR p.prosrc ~* '\minstructor_sections\M');
+    AND (regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mcourse_sections\M' OR regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\minstructor_sections\M');
   IF v_left IS NOT NULL THEN
     RAISE EXCEPTION 'refusing to run: these functions still read the section tables: %. Run stages 10 and 20 first.', v_left;
   END IF;
@@ -84,7 +84,7 @@ UNION ALL SELECT 'course_sections dropped',
 UNION ALL SELECT 'no function references either',
   CASE WHEN NOT EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
                         WHERE n.nspname='public'
-                          AND (p.prosrc ~* '\mcourse_sections\M' OR p.prosrc ~* '\minstructor_sections\M'))
+                          AND (regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mcourse_sections\M' OR regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\minstructor_sections\M'))
        THEN 'PASS' ELSE 'FAIL' END
 UNION ALL SELECT 'FKs into courses remaining (expect only glossary if stage 50 of the other package has not run)',
   (SELECT COALESCE(string_agg(c.conrelid::regclass::text||'.'||c.conname, ', ' ORDER BY 1), '(none)')

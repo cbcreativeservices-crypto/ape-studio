@@ -33,14 +33,14 @@ UNION ALL SELECT 'refresh_student_metrics untouched',
 -- Remaining blockers, live. This list must be EMPTY before any table drop.
 SELECT 'REMAINING BLOCKER' AS section, p.proname AS function,
        trim(both ' ' from
-            case when p.prosrc ~* '\menrollment\M'      then 'enrollment '      else '' end ||
-            case when p.prosrc ~* '\mcourses\M'         then 'courses '         else '' end ||
-            case when p.prosrc ~* '\mcourse_sections\M' then 'course_sections ' else '' end ||
-            case when p.prosrc ~* '\msession_logs\M'    then 'session_logs '    else '' end ||
-            case when p.prosrc ~* '\mcourse_id\M'       then 'course_id'        else '' end) AS reads
+            case when regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\menrollment\M'      then 'enrollment '      else '' end ||
+            case when regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mcourses\M'         then 'courses '         else '' end ||
+            case when regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mcourse_sections\M' then 'course_sections ' else '' end ||
+            case when regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\msession_logs\M'    then 'session_logs '    else '' end ||
+            case when regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mcourse_id\M'       then 'course_id'        else '' end) AS reads
 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
 WHERE n.nspname='public'
-  AND (p.prosrc ~* '\menrollment\M' OR p.prosrc ~* '\mcourses\M'
-    OR p.prosrc ~* '\mcourse_sections\M' OR p.prosrc ~* '\msession_logs\M'
-    OR p.prosrc ~* '\mcourse_id\M')
+  AND (regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\menrollment\M' OR regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mcourses\M'
+    OR regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mcourse_sections\M' OR regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\msession_logs\M'
+    OR regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mcourse_id\M')
 ORDER BY p.proname;

@@ -186,7 +186,7 @@ COMMIT;
 
 -- Read-back: neither function should mention `courses` any more.
 SELECT p.proname,
-       CASE WHEN p.prosrc ~* '\mcourses\M' OR p.prosrc ~* 'course_code'
+       CASE WHEN regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mcourses\M' OR regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* 'course_code'
             THEN 'FAIL - still v1' ELSE 'PASS' END AS result
 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
 WHERE n.nspname = 'public' AND p.proname IN ('bulk_import_glossary','validate_glossary')

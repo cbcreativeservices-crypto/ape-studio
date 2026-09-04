@@ -297,7 +297,7 @@ COMMIT;
 
 -- Read-back: neither quiz function may still mention public_course*.
 SELECT p.proname,
-       CASE WHEN p.prosrc ~* 'public_course' THEN 'FAIL - still reads public_course*' ELSE 'PASS' END AS result
+       CASE WHEN regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* 'public_course' THEN 'FAIL - still reads public_course*' ELSE 'PASS' END AS result
 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
 WHERE n.nspname='public' AND p.proname IN ('start_quiz_attempt','submit_quiz')
 ORDER BY p.proname;

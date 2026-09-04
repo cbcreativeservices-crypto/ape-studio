@@ -34,7 +34,7 @@ BEGIN
   IF EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
              WHERE n.nspname='public'
                AND p.proname IN ('start_quiz_attempt','submit_quiz')
-               AND p.prosrc ~* 'commercial_topic_unlocked|recompute_reachability_commercial') THEN
+               AND regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* 'commercial_topic_unlocked|recompute_reachability_commercial') THEN
     RAISE EXCEPTION 'refusing to run: start_quiz_attempt/submit_quiz still call these - run Stage 30 first';
   END IF;
 
@@ -42,7 +42,7 @@ BEGIN
   IF EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
              WHERE n.nspname='public'
                AND p.proname NOT IN ('commercial_topic_unlocked','recompute_reachability_commercial')
-               AND p.prosrc ~* 'commercial_topic_unlocked|recompute_reachability_commercial') THEN
+               AND regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* 'commercial_topic_unlocked|recompute_reachability_commercial') THEN
     RAISE EXCEPTION 'refusing to run: some other function still calls one of these';
   END IF;
 END $guard$;

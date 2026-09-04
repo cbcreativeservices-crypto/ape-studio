@@ -73,8 +73,8 @@ select 'blockers' as section, item from (values
 -- --------------------------------------- 6. live dependency sweep (informational)
 -- Anything listed here still reads an object this package removes.
 select 'still_referencing' as section, p.proname as object,
-       case when p.prosrc ~* 'public_course' then 'public_course*' else '' end ||
-       case when p.prosrc ~* '\mglossary\M' and p.prosrc ~* '\mcourse_id\M' then ' glossary.course_id?' else '' end as what
+       case when regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* 'public_course' then 'public_course*' else '' end ||
+       case when regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mglossary\M' and regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mcourse_id\M' then ' glossary.course_id?' else '' end as what
 from pg_proc p join pg_namespace n on n.oid = p.pronamespace
-where n.nspname = 'public' and p.prosrc ~* 'public_course'
+where n.nspname = 'public' and regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* 'public_course'
 order by p.proname;

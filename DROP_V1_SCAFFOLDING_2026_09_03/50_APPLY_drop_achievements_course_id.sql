@@ -61,7 +61,7 @@ BEGIN
   -- No function may still read the column. Postgres will not check this.
   SELECT string_agg(p.proname, ', ' ORDER BY p.proname) INTO v_left
   FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace JOIN pg_language l ON l.oid=p.prolang
-  WHERE n.nspname='public' AND l.lanname IN ('plpgsql','sql') AND p.prosrc ~* '\mcourse_id\M';
+  WHERE n.nspname='public' AND l.lanname IN ('plpgsql','sql') AND regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mcourse_id\M';
   IF v_left IS NOT NULL THEN
     RAISE EXCEPTION 'refusing to run: these functions still reference course_id: %. Run stages 10 and 20 first.', v_left;
   END IF;

@@ -54,7 +54,7 @@ BEGIN
   -- user_bundle_enrollments do not false-positive.
   SELECT string_agg(p.proname, ', ' ORDER BY p.proname) INTO v_left
   FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace JOIN pg_language l ON l.oid=p.prolang
-  WHERE n.nspname='public' AND l.lanname IN ('plpgsql','sql') AND p.prosrc ~* '\menrollment\M';
+  WHERE n.nspname='public' AND l.lanname IN ('plpgsql','sql') AND regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\menrollment\M';
   IF v_left IS NOT NULL THEN
     RAISE EXCEPTION 'refusing to run: these functions still read enrollment: %. Run stages 10 and 20 first.', v_left;
   END IF;
@@ -76,7 +76,7 @@ SELECT 'enrollment dropped' AS check,
        CASE WHEN to_regclass('public.enrollment') IS NULL THEN 'PASS' ELSE 'FAIL' END AS result
 UNION ALL SELECT 'no function references enrollment',
   CASE WHEN NOT EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
-                        WHERE n.nspname='public' AND p.prosrc ~* '\menrollment\M')
+                        WHERE n.nspname='public' AND regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\menrollment\M')
        THEN 'PASS' ELSE 'FAIL' END
 UNION ALL SELECT 'user_topic_enrollments (the v3 gate) is untouched',
   CASE WHEN to_regclass('public.user_topic_enrollments') IS NOT NULL

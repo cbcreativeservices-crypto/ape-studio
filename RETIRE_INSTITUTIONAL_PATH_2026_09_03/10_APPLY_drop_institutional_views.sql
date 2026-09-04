@@ -49,7 +49,7 @@ BEGIN
 
   IF EXISTS (
     SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
-    WHERE n.nspname='public' AND p.prosrc ~* 'v_student_progress|v_section_cohort_stats') THEN
+    WHERE n.nspname='public' AND regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* 'v_student_progress|v_section_cohort_stats') THEN
     RAISE EXCEPTION 'refusing to run: a function still reads one of these views';
   END IF;
 END $guard$;

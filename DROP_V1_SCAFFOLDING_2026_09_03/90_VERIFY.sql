@@ -24,7 +24,7 @@ UNION ALL SELECT 5, 'table + column + badge backups present',
 
 -- ------------------------------------------------------------------- STAGE 10
 UNION ALL SELECT 10, 'refresh_student_metrics is off the legacy session table',
-  CASE WHEN (SELECT p.prosrc FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+  CASE WHEN (SELECT regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
              WHERE n.nspname='public' AND p.proname='refresh_student_metrics') ~* '\msession_logs\M'
        THEN 'NOT RUN' ELSE 'PASS' END
 UNION ALL SELECT 10, 'refresh_student_metrics still EXISTS (submit_quiz calls it every submission)',
@@ -33,14 +33,14 @@ UNION ALL SELECT 10, 'refresh_student_metrics still EXISTS (submit_quiz calls it
 UNION ALL SELECT 10, 'delete_my_account still EXISTS',
   CASE WHEN to_regprocedure('public.delete_my_account()') IS NOT NULL THEN 'PASS' ELSE 'FAIL' END
 UNION ALL SELECT 10, 'delete_my_account touches none of the dropped tables',
-  CASE WHEN (SELECT p.prosrc FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+  CASE WHEN (SELECT regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
              WHERE n.nspname='public' AND p.proname='delete_my_account')
             ~* '\menrollment\M|\msession_logs\M|\minstructor_sections\M'
        THEN 'NOT RUN' ELSE 'PASS' END
 UNION ALL SELECT 10, 'credit_time_trial still EXISTS (timeTrial.ts calls it live)',
   CASE WHEN to_regprocedure('public.credit_time_trial(uuid,text)') IS NOT NULL THEN 'PASS' ELSE 'FAIL' END
 UNION ALL SELECT 10, 'credit_time_trial has a v3 arm (the bug fix landed)',
-  CASE WHEN (SELECT p.prosrc FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+  CASE WHEN (SELECT regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
              WHERE n.nspname='public' AND p.proname='credit_time_trial')
             ~* 'user_topic_enrollments' THEN 'PASS' ELSE 'NOT RUN' END
 UNION ALL SELECT 10, 'none of the seven rewritten functions references a target object',
@@ -48,13 +48,13 @@ UNION ALL SELECT 10, 'none of the seven rewritten functions references a target 
                     WHERE n.nspname='public'
                       AND p.proname IN ('refresh_student_metrics','delete_my_account','record_study_progress',
                                         'credit_time_trial','start_quiz_attempt','submit_quiz','lookup_student_by_qr')
-                      AND p.prosrc ~* '\mcourses\M|\menrollment\M|\mcourse_sections\M|\msession_logs\M|\mcourse_id\M|is_instructor_for_user')
+                      AND regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mcourses\M|\menrollment\M|\mcourse_sections\M|\msession_logs\M|\mcourse_id\M|is_instructor_for_user')
        THEN 'NOT RUN' ELSE 'PASS' END
 UNION ALL SELECT 10, 'submit_quiz payload still carries badge_earned + next_topic (app compatibility)',
-  CASE WHEN (SELECT p.prosrc FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+  CASE WHEN (SELECT regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
              WHERE n.nspname='public' AND p.proname='submit_quiz')
             ~* 'badge_earned' AND
-       (SELECT p.prosrc FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+       (SELECT regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
              WHERE n.nspname='public' AND p.proname='submit_quiz') ~* 'next_topic'
        THEN 'PASS' ELSE 'FAIL - payload shape changed, src/features/quiz/api.ts expects both keys' END
 
@@ -152,7 +152,7 @@ UNION ALL SELECT 99, 'any function still naming a target object (expect none onc
   (SELECT COALESCE(string_agg(p.proname, ', ' ORDER BY p.proname), '(none)')
    FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace JOIN pg_language l ON l.oid=p.prolang
    WHERE n.nspname='public' AND l.lanname IN ('plpgsql','sql')
-     AND (p.prosrc ~* '\mcourses\M' OR p.prosrc ~* '\menrollment\M' OR p.prosrc ~* '\mcourse_sections\M'
-          OR p.prosrc ~* '\msession_logs\M' OR p.prosrc ~* '\mcourse_id\M'))
+     AND (regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mcourses\M' OR regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\menrollment\M' OR regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mcourse_sections\M'
+          OR regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\msession_logs\M' OR regexp_replace(regexp_replace(p.prosrc, '/\*.*?\*/', '', 'gs'), '--[^\n]*', '', 'g') ~* '\mcourse_id\M'))
 
 ) t ORDER BY stage, "check";
