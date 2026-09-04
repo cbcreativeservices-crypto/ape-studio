@@ -28,7 +28,14 @@ const Tab = createBottomTabNavigator<MainTabParamList>();
 function resetToRootOnBlur(root: string) {
   return ({ navigation, route }: { navigation: any; route: { key: string } }) => ({
     blur: () => {
-      const self = navigation.getState?.()?.routes?.find((r: { key: string }) => r.key === route.key);
+      const tabState = navigation.getState?.();
+      // A blur caused by a ROOT-stack push over MainTabs (AwardProgress, Trophy,
+      // Results…) while this tab is STILL the selected tab must NOT reset the
+      // nested stack — otherwise Back from that root screen lands on the tab's
+      // root instead of the screen the user left (Bug+Hater night A1-01). Only
+      // a real tab switch (this tab no longer selected) resets.
+      if (tabState?.routes?.[tabState.index]?.key === route.key) return;
+      const self = tabState?.routes?.find((r: { key: string }) => r.key === route.key);
       const nested = self?.state;
       if (
         nested?.key &&
