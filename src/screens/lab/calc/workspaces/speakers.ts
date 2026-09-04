@@ -443,7 +443,7 @@ const WS_CABLE: Workspace = {
     'promised you.',
   example:
     '30 m of 16 AWG into an 8 Ω box: loop resistance = 2 × 30 × 0.01318 = 0.79 Ω. Level loss = ' +
-    '20·log10(8 / 8.79) ≈ −0.83 dB, and about 10% of the amplifier’s power is dissipated in ' +
+    '20·log10(8 / 8.79) ≈ −0.83 dB, and about 9% of the amplifier’s power is dissipated in ' +
     'the cable. The cable alone limits system damping factor to about 8/0.79 ≈ 10 — no matter ' +
     'how stiff the amplifier is.',
   mistakes: [
@@ -629,7 +629,7 @@ const WS_CABLE: Workspace = {
               String(g),
               fmt(rloop, 3),
               fmt(loss, 3),
-              `${fmt((1 - frac) * 100, 3)}%`,
+              `${((1 - frac) * 100).toFixed(1)}%`,
               loss <= dB ? 'PASS' : 'FAIL',
             ];
           }),

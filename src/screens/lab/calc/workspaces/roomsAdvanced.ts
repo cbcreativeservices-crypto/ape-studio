@@ -44,7 +44,7 @@ const EYRING: Workspace = {
     'under-treat. Millington–Sette goes further, weighting each surface’s own coefficient.',
   example:
     'A 120 m³ room, 160 m² of surface, average absorption ā = 0.30: Sabine RT60 = 0.161·120/(160·0.30) ' +
-    '≈ 0.40 s; Eyring uses −ln(0.70) = 0.357, giving 0.161·120/(160·0.357) ≈ 0.34 s — 15% shorter, ' +
+    '≈ 0.40 s; Eyring uses −ln(0.70) = 0.357, giving 0.161·120/(160·0.357) ≈ 0.34 s — about 16% shorter, ' +
     'and closer to what you’d measure.',
   mistakes: [
     'Using Sabine in a dead room — above ā ≈ 0.2 it reads long; Eyring is the better estimate.',
