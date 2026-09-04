@@ -47,3 +47,32 @@ BEGIN
 END $$;
 
 COMMIT;
+
+-- Report. The RAISE NOTICE above is invisible in the Supabase SQL editor, so
+-- the outcome is re-derived here as a result set you can actually read. These
+-- are post-state facts, which is the thing worth confirming anyway.
+SELECT item, value
+FROM (
+  SELECT 1 AS ord, 'courses remaining (expect 1)' AS item,
+         (SELECT count(*)::text FROM public.public_courses) AS value
+  UNION ALL
+  SELECT 2, 'topic rows remaining (expect 1)',
+         (SELECT count(*)::text FROM public.public_course_topics)
+  UNION ALL
+  SELECT 3, 'college courses left (expect 0)',
+         (SELECT count(*)::text FROM public.public_courses
+           WHERE sort_order BETWEEN 2 AND 9)
+  UNION ALL
+  SELECT 4, 'what survived',
+         (SELECT string_agg('order ' || c.sort_order || ' · ' || c.display_name, ' | '
+                            ORDER BY c.sort_order)
+            FROM public.public_courses c)
+  UNION ALL
+  -- Presence only, never a row count: a count would name a table that may not
+  -- exist, and a clear guard message beats a name-resolution error.
+  SELECT 5, 'backup still present (rollback is possible)',
+         CASE WHEN to_regclass('public.public_courses_backup_20260903') IS NOT NULL
+               AND to_regclass('public.public_course_topics_backup_20260903') IS NOT NULL
+              THEN 'yes' ELSE 'NO — do not proceed' END
+) v
+ORDER BY ord;
