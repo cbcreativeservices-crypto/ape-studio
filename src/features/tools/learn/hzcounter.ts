@@ -56,7 +56,7 @@ export const HZCOUNTER_LEARN: ToolLearnContent = {
     {
       claim: '440 Hz is the only tuning.',
       truth:
-        'A4 = 440 Hz is a twentieth-century convention, not a law of nature. Many orchestras tune to 441–443 Hz, period ensembles use references such as 415 or 432 Hz, and this tool supports 432 through 444 plus a custom value. That is exactly why the tuner always displays its current reference — a reading only means something relative to the reference it was made against.',
+        'A4 = 440 Hz is a twentieth-century convention, not a law of nature. Many orchestras tune to 441–443 Hz, period ensembles use references such as 415 or 430 Hz, and this tool supports 432 through 444 plus a custom value. That is exactly why the tuner always displays its current reference — a reading only means something relative to the reference it was made against.',
     },
     {
       claim: 'Background noise doesn\'t matter.',

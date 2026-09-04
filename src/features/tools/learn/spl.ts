@@ -27,7 +27,7 @@ export const SPL_LEARN: ToolLearnContent = {
     {
       head: 'WEIGHTING AND RESPONSE',
       body:
-        'A-weighting filters the signal to roughly match how the ear hears at moderate levels, strongly discounting low frequencies; C-weighting is much flatter and keeps most of the bass; Z-weighting applies no filter at all. On bass-heavy program the A and C readings can differ by a large margin — neither is wrong, they answer different questions. Fast and Slow are meter ballistics: Fast (125 ms) follows short events, Slow (1 s) smooths them into a steadier trend. Changing weighting or response never changes the sound — it changes what the meter is summarizing, which is why comparisons are only valid when both settings match.',
+        'A-weighting filters the signal to roughly match how the ear hears at low listening levels (the ~40-phon contour), strongly discounting low frequencies; C-weighting is much flatter and keeps most of the bass; Z-weighting applies no filter at all. On bass-heavy program the A and C readings can differ by a large margin — neither is wrong, they answer different questions. Fast and Slow are meter ballistics: Fast (125 ms) follows short events, Slow (1 s) smooths them into a steadier trend. Changing weighting or response never changes the sound — it changes what the meter is summarizing, which is why comparisons are only valid when both settings match.',
     },
     {
       head: 'CALIBRATION AND PHONE-MIC HONESTY',
