@@ -41,7 +41,14 @@ export function TrophyModal({
   return (
     <Modal accessibilityViewIsModal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       {/* Tap anywhere on the scrim to hide (Booth 2026-07-11). */}
-      <Pressable style={styles.scrim} onPress={onClose} accessibilityRole="button" accessibilityLabel="Close trophy">
+      <Pressable
+        style={styles.scrim}
+        onPress={onClose}
+        accessibilityRole="button"
+        // The scrim is the only accessible element, so it must READ the trophy
+        // (name + earned meta), not just "Close trophy" (Bug+Hater night A1-03).
+        accessibilityLabel={`${name ?? 'Trophy'}${meta ? `, ${meta.toLowerCase()}` : ''}. Tap to close.`}
+      >
         <View
           style={[styles.frame, { width: ART, height: ART, borderColor: color, shadowColor: color }]}
           pointerEvents="none"
