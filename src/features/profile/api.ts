@@ -15,7 +15,8 @@ export const ALBUM_DENOMINATOR = 50; // locked (D-5)
 
 export type ProfileData = {
   nickname: string | null;
-  apeStudentId: string;
+  /** null for a user without a student id (my_identity() returns it nullable). */
+  apeStudentId: string | null;
   initials: string;
   photoUrl: string | null;
   /** Permanent per-user credential token → the QR / public registry lookup. */
@@ -27,11 +28,18 @@ export type ProfileData = {
 };
 
 export async function fetchProfile(): Promise<ProfileData> {
-  const { data: user, error } = await supabase
-    .from('users')
-    .select('id, nickname, ape_student_id, first_name, last_name_initial, photo_url, qr_token')
-    .single();
+  // Safe profile fields come straight from `users`; the isolated identity
+  // columns (ape_student_id, qr_token) come from the my_identity() RPC
+  // (schema-isolation Phase 1, Computer A 2026-09-04) instead of a direct read.
+  const [{ data: user, error }, { data: identity }] = await Promise.all([
+    supabase
+      .from('users')
+      .select('id, nickname, first_name, last_name_initial, photo_url')
+      .single(),
+    supabase.rpc('my_identity').single(),
+  ]);
   if (error || !user) throw new Error('user_not_found');
+  const ident = identity as { ape_student_id?: string | null; qr_token?: string | null } | null;
 
   const [{ data: badges }, { count: completeCount }] = await Promise.all([
     supabase.from('student_badges').select('badge_name_snapshot').eq('user_id', user.id),
@@ -57,10 +65,10 @@ export async function fetchProfile(): Promise<ProfileData> {
 
   return {
     nickname: user.nickname,
-    apeStudentId: user.ape_student_id,
+    apeStudentId: ident?.ape_student_id ?? null,
     initials,
     photoUrl: user.photo_url,
-    qrToken: (user as { qr_token?: string | null }).qr_token ?? null,
+    qrToken: ident?.qr_token ?? null,
     earnedCerts,
     completeCount: done,
     overallPct,
@@ -73,7 +81,9 @@ export async function fetchProfile(): Promise<ProfileData> {
  *  null when signed out or on any error — callers show the pending state. */
 export async function fetchMyQrToken(): Promise<string | null> {
   try {
-    const { data, error } = await supabase.from('users').select('qr_token').single();
+    // Via the my_identity() RPC (schema isolation) rather than a direct
+    // users.qr_token read.
+    const { data, error } = await supabase.rpc('my_identity').single();
     if (error || !data) return null;
     return (data as { qr_token?: string | null }).qr_token ?? null;
   } catch {

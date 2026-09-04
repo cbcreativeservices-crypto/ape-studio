@@ -118,11 +118,12 @@ export function SettingsScreen({ navigation }: Props) {
     })();
     void hasCrowdsourceConsent().then(setContribute);
     void fetchWeeklySubscriptions().then((subs) => setCatSched(scheduleMapFrom(subs)));
+    // ape_student_id via the my_identity() RPC (schema isolation, 2026-09-04)
+    // rather than a direct users read.
     supabase
-      .from('users')
-      .select('ape_student_id')
+      .rpc('my_identity')
       .single()
-      .then(({ data }) => setApeId(data?.ape_student_id ?? ''));
+      .then(({ data }) => setApeId((data as { ape_student_id?: string | null } | null)?.ape_student_id ?? ''));
   }, []);
 
   const setLocalKey = useCallback(<K extends keyof LocalSettings>(key: K, value: LocalSettings[K]) => {
