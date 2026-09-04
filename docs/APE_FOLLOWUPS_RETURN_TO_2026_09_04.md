@@ -47,20 +47,22 @@ add new lessons at the bottom of PREVENT. Owner tags: **Cháno** = the owner,
   source; the `skills` CLI manages them). `.claude/launch.json` + `settings.json`
   stay tracked. Files kept on disk.
 
-### Audio Career Finder (built 2026-09-04, still owner-owed)
-- [ ] Ratify `docs/APE_CAREER_FINDER_COPY_2026_09_04.md` — the 12 deviations
-  (D1–D12) and the 42 family descriptions. — Cháno
-- [ ] Decide the six proposed question rewordings + the "Neutral" label (copy
-  sheet §4; NOT applied because the brief said "exactly"). — Cháno
-- [ ] Device pass on the phone build (web preview proved bundle + logic only). — Cháno
+### Audio Career Finder (built + APPROVED 2026-09-04)
+**Owner: "I looked and the Career Finder is approved" (2026-09-04).**
+- [x] Copy sheet `docs/APE_CAREER_FINDER_COPY_2026_09_04.md` (D1–D12 + the 42
+  family descriptions) — APPROVED.
+- [x] Question wording + the "Neutral" label — APPROVED as-is (the six proposed
+  rewordings were optional; current wording stands, nothing to apply).
+- [x] Owner reviewed + approved 2026-09-04. (No deeper device QA requested; the
+  general on-device pass stays with the postponed testing batch if ever wanted.)
 - [x] **Curriculum links fixed 2026-09-04 (ccode).** The four "Professional
   Practice" families' workbook topic columns didn't resolve to v3 topics (Music
   Curation got none). Added a validated `topicGs` override map in
   `scripts/career-index-overrides.json` (build validates every gs against active
   v3) giving each family intentional links; index rebuilt. Owner may adjust the
   picks — they are recommendations, not the workbook's own choices. — Cháno (optional)
-- [ ] Governance doc `docs/APE_GOVERNANCE_DECISIONS_2026_09_04.md` R1–R7 to
-  ratify. — Cháno
+- [x] Governance doc `docs/APE_GOVERNANCE_DECISIONS_2026_09_04.md` R1–R7 —
+  APPROVED with the Career Finder 2026-09-04.
 
 ### v1 removal finish — the Achievements trophy wall
 **Owner escalated 2026-09-04; BUILT + preview-verified same day (commit

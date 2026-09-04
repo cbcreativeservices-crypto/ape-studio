@@ -12,7 +12,9 @@
 import { Linking, Platform } from 'react-native';
 import Constants from 'expo-constants';
 
-export const SUPPORT_EMAIL = 'profechano@yahoo.com';
+// The academy support inbox — NEVER a personal address (owner rule 2026-09-04).
+// Matches the web site's contact address (web/lib/connect.ts, Footer, etc.).
+export const SUPPORT_EMAIL = 'info@proaudiotrainingacademy.com';
 
 export type FeedbackKind = 'bug' | 'term' | 'definition' | 'suggestion' | 'correction';
 
