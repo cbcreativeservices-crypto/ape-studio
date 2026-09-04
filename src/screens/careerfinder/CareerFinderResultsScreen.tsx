@@ -12,6 +12,8 @@
 import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../../navigation/types';
 import { colors, fonts } from '../../theme/tokens';
 import { sendFeedback } from '../../lib/feedback';
 import { DIMENSIONS } from '../../features/careerfinder/dimensions';
@@ -20,7 +22,7 @@ import { familyFieldOf, familyMetaOf } from '../../features/careerfinder/careerI
 import { FAMILY_COUNT } from '../../features/careerfinder/families';
 import { QUESTION_COUNT } from '../../features/careerfinder/questions';
 import { LAB_FOR_DIMENSION } from '../../features/careerfinder/labsForDimension';
-import { reopenCareerFinder, resetCareerFinder, setCareerFinderFeedback, toggleSavedFamily, useCareerFinder, type FeedbackAnswer } from '../../features/careerfinder/store';
+import { resetCareerFinder, setCareerFinderFeedback, setQuestionIndex, toggleSavedFamily, useCareerFinder, type FeedbackAnswer } from '../../features/careerfinder/store';
 import { confirmReset } from './CareerFinderScreen';
 import { BetaPill, Body, Card, CountTag, CtaButton, DimChip, DimensionSpectrum, FinderShell, Lead, LinkRow, RankBadge, SectionLabel, TextLink } from './kit';
 
@@ -28,7 +30,7 @@ export const RESULTS_LEAD = 'Five audio career families lean on what you said yo
 export const RESULTS_NOTE = 'These are possibilities to explore — not limits on what you can pursue. Interests change with experience, and these will too.';
 
 export function CareerFinderResultsScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const rec = useCareerFinder();
   const result = useMemo(() => computeResult(rec.responses, familyFieldOf), [rec.responses]);
   const strongestCodes = result.strongest.map((d) => d.code);
@@ -43,8 +45,12 @@ export function CareerFinderResultsScreen() {
   const unexplored = result.ranked.find((f) => result.dims[f.family.dimensions[0]].insufficient) ?? null;
 
   const openFamily = (id: string) => navigation.navigate('CareerFamily', { id, from: 'results' });
-  const changeAnswers = () => { reopenCareerFinder(); navigation.navigate('CareerFinderQuiz'); };
-  const retake = () => confirmReset(() => { resetCareerFinder(); navigation.navigate('CareerFinderQuiz'); });
+  // Change / retake REPLACE results with the quiz (they alternate at one
+  // depth, never stacking) and rewind to Q1. Review keeps the completed state
+  // — answers save as they change, and results recompute live — so backing
+  // out of a review leaves the finished result intact; only Finish re-freezes.
+  const changeAnswers = () => { setQuestionIndex(0); navigation.replace('CareerFinderQuiz'); };
+  const retake = () => confirmReset(() => { resetCareerFinder(); setQuestionIndex(0); navigation.replace('CareerFinderQuiz'); });
 
   const feedback = (answer: FeedbackAnswer) => setCareerFinderFeedback(answer, note);
   const mailFeedback = () => {
@@ -91,7 +97,7 @@ export function CareerFinderResultsScreen() {
   const rest = result.top.filter((t) => t.rank > 2);
 
   return (
-    <FinderShell kicker="AUDIO CAREER FINDER · RESULTS" title="Your Audio Career Results" onBack={() => navigation.navigate('CareerFinder')} backLabel="Back to the Career Finder" headerRight={<BetaPill />}>
+    <FinderShell kicker="AUDIO CAREER FINDER · RESULTS" title="Your Audio Career Results" onBack={() => navigation.goBack()} backLabel="Back" headerRight={<BetaPill />}>
       <Lead>{weak ? 'Nothing stood out strongly yet, so these are the families nearest to your answers — not matches. Exploring one will teach you more than the questions did.' : RESULTS_LEAD}</Lead>
 
       <SectionLabel tone="green">{weak ? 'CLOSEST TO YOUR ANSWERS' : 'STRONGEST MATCHES'}</SectionLabel>

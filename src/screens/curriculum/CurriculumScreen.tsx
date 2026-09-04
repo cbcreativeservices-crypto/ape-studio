@@ -104,18 +104,20 @@ export function CurriculumView({
   // "you're at question n", or their own top family (the cheapest re-entry
   // into family → topic → membership).
   const finderRec = useCareerFinder();
-  const finder = useMemo(() => {
+  const finder = useMemo((): { blurb: string; pill: string; a11y: string; route: 'CareerFinder' | 'CareerFinderResults' | 'CareerFinderQuiz' } => {
     const answered = QUESTIONS.filter((q) => q.id in finderRec.responses).length;
     if (finderRec.completed && answered > 0) {
+      // Returning user: the RESULTS pill lands on their results directly (back
+      // from there returns here to Explore), not on the intro pitch.
       const top = computeResult(finderRec.responses, familyFieldOf).top[0]?.family.name;
       return top
-        ? { blurb: `Your top match: ${top} — and four more.`, pill: 'RESULTS ›', a11y: `Audio Career Finder, Beta. Your top match: ${top}. Opens your results.` }
-        : { blurb: 'Your results are ready.', pill: 'RESULTS ›', a11y: 'Audio Career Finder, Beta. Opens your results.' };
+        ? { blurb: `Your top match: ${top} — and four more.`, pill: 'RESULTS ›', a11y: `Audio Career Finder, Beta. Your top match: ${top}. Opens your results.`, route: 'CareerFinderResults' }
+        : { blurb: 'Your results are ready.', pill: 'RESULTS ›', a11y: 'Audio Career Finder, Beta. Opens your results.', route: 'CareerFinderResults' };
     }
     if (answered > 0) {
-      return { blurb: `You’re at question ${Math.min(QUESTION_COUNT, finderRec.index + 1)} of ${QUESTION_COUNT}. Your answers are saved.`, pill: 'CONTINUE ›', a11y: `Audio Career Finder, Beta. Continue at question ${finderRec.index + 1} of ${QUESTION_COUNT}.` };
+      return { blurb: `You’re at question ${Math.min(QUESTION_COUNT, finderRec.index + 1)} of ${QUESTION_COUNT}. Your answers are saved.`, pill: 'CONTINUE ›', a11y: `Audio Career Finder, Beta. Continue at question ${finderRec.index + 1} of ${QUESTION_COUNT}.`, route: 'CareerFinderQuiz' };
     }
-    return { blurb: `Which kinds of audio work would you enjoy? ${QUESTION_COUNT} questions, 42 career families, ${fmt(CAREER_COUNT)} ways to work in audio. About five minutes.`, pill: 'START ›', a11y: `Audio Career Finder, Beta. ${QUESTION_COUNT} questions, forty-two career families, ${fmt(CAREER_COUNT)} ways to work in audio. Free, about five minutes.` };
+    return { blurb: `Which kinds of audio work would you enjoy? ${QUESTION_COUNT} questions, 42 career families, ${fmt(CAREER_COUNT)} ways to work in audio. About five minutes.`, pill: 'START ›', a11y: `Audio Career Finder, Beta. ${QUESTION_COUNT} questions, forty-two career families, ${fmt(CAREER_COUNT)} ways to work in audio. Free, about five minutes.`, route: 'CareerFinder' };
   }, [finderRec]);
   // Enrollment list (user request): tapping a topic here adds/removes it, exactly
   // like the Enrollments "Browse & Add" list. Ungated — free users build a list
@@ -264,7 +266,7 @@ export function CurriculumView({
             <Text style={styles.finderBlurb}>{finder.blurb}</Text>
             <Pressable
               style={styles.finderPill}
-              onPress={() => (navigation as { navigate: (name: 'CareerFinder') => void }).navigate('CareerFinder')}
+              onPress={() => (navigation as { navigate: (name: typeof finder.route) => void }).navigate(finder.route)}
               accessibilityRole="button"
               accessibilityLabel={finder.a11y}
             >

@@ -15,7 +15,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { QUESTION_COUNT } from '../../features/careerfinder/questions';
 import { FAMILY_COUNT, familyById } from '../../features/careerfinder/families';
 import { CAREER_COUNT } from '../../features/careerfinder/careerIndex';
-import { allAnswered, answeredCount, resetCareerFinder, useCareerFinder, useCareerFinderHydrated } from '../../features/careerfinder/store';
+import { allAnswered, answeredCount, resetCareerFinder, setQuestionIndex, useCareerFinder, useCareerFinderHydrated } from '../../features/careerfinder/store';
 import { BetaPill, Body, Card, CtaButton, FinderShell, Lead, SectionLabel, TextLink } from './kit';
 
 const fmt = (n: number) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -52,6 +52,9 @@ export function CareerFinderScreen() {
 
   const start = () => navigation.navigate('CareerFinderQuiz');
   const results = () => navigation.navigate('CareerFinderResults');
+  // Change answers from the hub: rewind to Q1 for the review (answers save as
+  // they change; the finished state is kept until Finish re-freezes it).
+  const changeAnswers = () => { setQuestionIndex(0); navigation.navigate('CareerFinderQuiz'); };
 
   return (
     <FinderShell kicker="CAREER DISCOVERY LAB · FREE · NO ACCOUNT" title="Audio Career Finder" onBack={() => navigation.goBack()} backLabel="Leave the Career Finder" headerRight={<BetaPill />}>
@@ -75,7 +78,7 @@ export function CareerFinderScreen() {
       {!hydrated ? null : rec.completed ? (
         <View style={styles.actions}>
           <CtaButton label="VIEW MY RESULTS" tone="green" onPress={results} hint="Opens your five career families" />
-          <CtaButton label="CHANGE MY ANSWERS" onPress={start} hint="Reopens the questions with your answers kept" />
+          <CtaButton label="CHANGE MY ANSWERS" onPress={changeAnswers} hint="Reopens the questions from the top with your answers kept" />
         </View>
       ) : inProgress ? (
         <View style={styles.actions}>

@@ -75,7 +75,7 @@ export function CareerFamilyScreen() {
       kicker={`CAREER FAMILY · ${fam.count} TITLES`}
       title={fam.name}
       onBack={() => navigation.goBack()}
-      backLabel={params.from === 'results' ? 'Back to results' : 'Back'}
+      backLabel={params.from === 'results' ? 'Back to results' : params.from === 'browse' ? 'Back to all families' : 'Back'}
       headerRight={<SaveStar saved={saved} onPress={() => toggleSavedFamily(fam.id)} name={fam.name} />}
     >
       {rank != null && rank <= 5 ? <Text style={styles.rankLine}>RANKED #{rank} FOR YOU</Text> : rank != null && rank <= 10 ? <Text style={[styles.rankLine, { color: colors.textMuted }]}>IN YOUR TOP TEN</Text> : null}
@@ -165,7 +165,19 @@ export function CareerFamilyScreen() {
       </View>
 
       <View style={styles.after}>
-        {hasResults ? <CtaButton label="BACK TO RESULTS" tone="green" onPress={() => navigation.navigate('CareerFinderResults')} /> : <CtaButton label="TAKE THE CAREER FINDER" tone="green" onPress={() => navigation.navigate('CareerFinder')} />}
+        {/* Primary return follows where the user came from, so it mirrors the
+            header back rather than pushing a new screen: from results/list a
+            plain goBack; from elsewhere a jump to results (if any) or the
+            Finder. */}
+        {params.from === 'results' ? (
+          <CtaButton label="BACK TO RESULTS" tone="green" onPress={() => navigation.goBack()} />
+        ) : params.from === 'browse' ? (
+          <CtaButton label="BACK TO ALL FAMILIES" tone="green" onPress={() => navigation.goBack()} />
+        ) : hasResults ? (
+          <CtaButton label="SEE MY RESULTS" tone="green" onPress={() => navigation.navigate('CareerFinderResults')} />
+        ) : (
+          <CtaButton label="TAKE THE CAREER FINDER" tone="green" onPress={() => navigation.navigate('CareerFinder')} />
+        )}
         <LinkRow>
           {hasResults ? <TextLink label="Retake the Career Finder" onPress={() => navigation.navigate('CareerFinder')} muted /> : null}
           <TextLink label="Suggest a correction" onPress={correction} muted a11y="Suggest a correction. Opens your mail app with this family named." />

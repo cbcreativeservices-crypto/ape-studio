@@ -16,6 +16,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, Animated, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../../navigation/types';
 import * as Haptics from 'expo-haptics';
 import { colors, fonts } from '../../theme/tokens';
 import { animationsAllowed } from '../../features/settings/a11y';
@@ -29,7 +31,7 @@ const STEM = 'How would you feel about ';
 const MILESTONE: Record<number, string> = { 6: 'A quarter done', 13: 'Halfway — 14 to go', 20: 'Last seven' };
 
 export function CareerFinderQuizScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const rec = useCareerFinder();
   const hydrated = useCareerFinderHydrated();
   const scrollRef = useRef<ScrollView>(null);
@@ -41,11 +43,16 @@ export function CareerFinderQuizScreen() {
   const [seeded, setSeeded] = useState(false);
   useEffect(() => {
     if (!hydrated || seeded) return;
-    // Resume where the user was; if that question is answered and later ones
-    // are not, jump to the first unanswered so CONTINUE never lands on a
-    // question that is already done.
+    // Where to open: if everything is answered (a "change my answers" review),
+    // honour the stored index — the caller sets it to 0 so review starts at
+    // Q1. Otherwise resume at the stored question if it is unanswered, else at
+    // the first unanswered so CONTINUE never lands on a question already done.
     const q = QUESTIONS[rec.index];
-    const start = q && !(q.id in rec.responses) ? rec.index : rec.completed ? 0 : firstUnansweredIndex(rec);
+    const start = allAnswered(rec)
+      ? Math.min(rec.index, QUESTION_COUNT - 1)
+      : q && !(q.id in rec.responses)
+        ? rec.index
+        : firstUnansweredIndex(rec);
     setIndex(start);
     setSeeded(true);
   }, [hydrated, seeded, rec]);
@@ -71,7 +78,10 @@ export function CareerFinderQuizScreen() {
 
   const finish = useCallback(() => {
     completeCareerFinder();
-    navigation.navigate('CareerFinderResults');
+    // REPLACE, not push: the finished quiz must not sit under the results, or
+    // a swipe-back from results would land on question 28. Results and quiz
+    // alternate at the same depth, so back from either returns to the intro.
+    navigation.replace('CareerFinderResults');
   }, [navigation]);
 
   const choose = (value: Response) => {
