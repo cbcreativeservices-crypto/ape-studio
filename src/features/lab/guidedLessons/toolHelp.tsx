@@ -246,7 +246,7 @@ export const TOOL_LESSONS: Record<ToolId, LessonContent> = {
       'from the same microphone capture, so the panels always agree. Every level is dBFS ' +
       '(uncalibrated digital level) — never true dB SPL.',
     controls: [
-      { key: 'spl', name: 'SPL·LAF (readout)', definition: 'The A-weighted FAST level — the same convention the SPL Reference Meter shows as its big number. Here it is dBFS-referenced and UNCALIBRATED: read it as relative level, not true sound pressure.' },
+      { key: 'spl', name: 'SPL (readout)', definition: 'The level in whichever weighting and response this tile is set to — its label shows the mode (LCF = C-weighted FAST, LAF = A-weighted FAST; long-press the tile to change). Here it is dBFS-referenced and UNCALIBRATED: read it as relative level, not true sound pressure.' },
       { key: 'peak', name: 'Peak (readout)', definition: 'The highest instantaneous sample level right now, in dBFS. It turns red at ≥ 0 dBFS — the converter itself is clipping, regardless of how loud the room actually is.' },
       { key: 'rms', name: 'RMS (readout)', definition: 'The unweighted (Z) FAST level — the average signal energy in dBFS. The gap between RMS and PEAK is the signal’s crest factor: big gap = transient material, small gap = dense/compressed.' },
       { key: 'pk_hold', name: 'Peak hold (readout)', definition: 'The maximum peak seen since the last reset — it latches brief overloads your eye would miss. Long-press the cell (or tap ⟲) to reset it; that also resets the per-band holds on the spectrum.' },
