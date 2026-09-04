@@ -377,7 +377,10 @@ function CardShimmer({ active }: { active: boolean }) {
   return (
     <Canvas
       pointerEvents="none"
-      style={{ position: 'absolute', left: 0, bottom: 0, width: CARD_W, height: CARD_H }}
+      // style.pointerEvents too: on RN-web the Skia Canvas ignores the legacy
+      // prop, so the shimmer swallowed every tap on the CENTERED card's own
+      // button (Bug+Hater night E2-01). Native honors the prop; both are kept.
+      style={{ position: 'absolute', left: 0, bottom: 0, width: CARD_W, height: CARD_H, pointerEvents: 'none' }}
     >
       <Group opacity={glow}>
         <RoundedRect x={0.75} y={0.75} width={CARD_W - 1.5} height={CARD_H - 1.5} r={15.5} style="stroke" strokeWidth={1.6}>
