@@ -133,6 +133,8 @@ export function PaywallScreen({ navigation }: Props) {
                 onPress={() => setSelected(p.id)}
                 accessibilityRole="radio"
                 accessibilityState={{ checked: active }}
+                // Screen readers heard "radio button" ×3 with no plan/price (E2-04).
+                accessibilityLabel={`${p.name}${p.badge ? `, ${p.badge}` : ''}, ${p.price}, ${p.sub}`}
                 style={[styles.plan, active && styles.planActive]}
               >
                 <View style={styles.planHead}>
