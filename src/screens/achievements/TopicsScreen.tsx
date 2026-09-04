@@ -76,7 +76,7 @@ export function TopicsScreen() {
             {earnedTotal} / {total}
           </Text>
           <View style={styles.flex} />
-          <Pressable accessibilityRole="button" onPress={() => navigation.navigate('Gallery')} hitSlop={8}>
+          <Pressable accessibilityRole="button" accessibilityLabel="Your gallery" onPress={() => navigation.navigate('Gallery')} hitSlop={8}>
             <Text style={styles.galleryLink}>YOUR GALLERY ›</Text>
           </Pressable>
         </View>
@@ -98,6 +98,8 @@ export function TopicsScreen() {
                     onPress={() => setOpen((prev) => (prev === key ? null : key))}
                     accessibilityRole="button"
                     accessibilityState={{ expanded: isOpen }}
+                    // RN-web drops accessibilityState; aria-expanded reaches the DOM (A1-02).
+                    aria-expanded={isOpen}
                     accessibilityLabel={`${s.subject}, ${s.earnedCount} of ${s.totalCount} earned`}
                   >
                     <Text style={styles.subjectChevron}>{isOpen ? '▾' : '▸'}</Text>
