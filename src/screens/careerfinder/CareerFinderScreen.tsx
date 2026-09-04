@@ -87,7 +87,7 @@ export function CareerFinderScreen() {
         </View>
       ) : (
         <View style={styles.actions}>
-          <CtaButton label="START CAREER FINDER" tone="green" onPress={start} hint="Begins the 28 questions. Progress is saved as you go." />
+          <CtaButton label="START CAREER FINDER" tone="green" onPress={start} hint={`Begins the ${QUESTION_COUNT} questions. Progress is saved as you go.`} />
           <Text style={styles.note}>{FINDER_INTRO.trust}</Text>
         </View>
       )}

@@ -24,6 +24,7 @@ import { toggleTopic, useEnrollment } from '../../features/enrollment/enrollment
 import { useNavigation } from '@react-navigation/native';
 import { CAREER_COUNT, familyFieldOf } from '../../features/careerfinder/careerIndex';
 import { QUESTIONS, QUESTION_COUNT } from '../../features/careerfinder/questions';
+import { FAMILY_COUNT } from '../../features/careerfinder/families';
 import { computeResult } from '../../features/careerfinder/scoring';
 import { useCareerFinder } from '../../features/careerfinder/store';
 
@@ -118,7 +119,7 @@ export function CurriculumView({
     if (answered > 0) {
       return { blurb: `You’re at question ${Math.min(QUESTION_COUNT, finderRec.index + 1)} of ${QUESTION_COUNT}. Your answers are saved.`, pill: 'CONTINUE ›', a11y: `Audio Career Finder, Beta. Continue at question ${finderRec.index + 1} of ${QUESTION_COUNT}.`, route: 'CareerFinderQuiz' };
     }
-    return { blurb: `Which kinds of audio work would you enjoy? ${QUESTION_COUNT} questions, 42 career families, ${fmt(CAREER_COUNT)} ways to work in audio. About five minutes.`, pill: 'START ›', a11y: `Audio Career Finder, Beta. ${QUESTION_COUNT} questions, forty-two career families, ${fmt(CAREER_COUNT)} ways to work in audio. Free, about five minutes.`, route: 'CareerFinder' };
+    return { blurb: `Which kinds of audio work would you enjoy? ${QUESTION_COUNT} questions, ${FAMILY_COUNT} career families, ${fmt(CAREER_COUNT)} ways to work in audio. About five minutes.`, pill: 'START ›', a11y: `Audio Career Finder, Beta. ${QUESTION_COUNT} questions, ${FAMILY_COUNT} career families, ${fmt(CAREER_COUNT)} ways to work in audio. Free, about five minutes.`, route: 'CareerFinder' };
   }, [finderRec]);
   // Enrollment list (user request): tapping a topic here adds/removes it, exactly
   // like the Enrollments "Browse & Add" list. Ungated — free users build a list
