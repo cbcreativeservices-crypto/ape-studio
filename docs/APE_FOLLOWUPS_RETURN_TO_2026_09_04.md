@@ -49,11 +49,15 @@ add new lessons at the bottom of PREVENT. Owner tags: **Cháno** = the owner,
   ratify. — Cháno
 
 ### Housekeeping / backup (uncommitted at 2026-09-04)
-- [ ] Decide backup for the owner's uncommitted WIP: web `connect` feature
-  (`web/app/connect`, `web/components/connect`, `web/lib/connect.ts`,
-  `SiteChrome.tsx`, plus `layout.tsx`/`robots.ts`/`sitemap.ts`/`proxy.ts`), and
-  the untracked `TASK10_COMPUTERC_2026_09_03/` + `TOPIC_NAME_CODIFY_2026_09_03/`
-  folders. Push is the backup; ccode won't commit owner WIP unbidden. — Cháno
+- [x] **Loose artifacts backed up 2026-09-04** — `TASK10_COMPUTERC_2026_09_03/`,
+  `TOPIC_NAME_CODIFY_2026_09_03/`, and `docs/APE_CCODE_HANDOFF_2026_08_30.md`
+  committed + pushed (secret-scanned clean).
+- [ ] Still uncommitted, the owner's WIP (ccode won't commit unbidden): the web
+  `connect` feature (`web/app/connect`, `web/components/connect`,
+  `web/lib/connect.ts`, `SiteChrome.tsx`, plus edits to `layout.tsx` /
+  `robots.ts` / `sitemap.ts` / `proxy.ts`) and edits to
+  `docs/APE_BUGBOT_FOLLOWUP_2026_08_28.md` + `APE_GOVERNANCE_DECISIONS_2026_08_06.md`.
+  Commit when ready. — Cháno
 
 ---
 
