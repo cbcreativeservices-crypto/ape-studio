@@ -442,7 +442,7 @@ function SplStep() {
             accessibilityState={{ selected: mic === m.key }}
             style={[styles.profileCell, mic === m.key && styles.micCellActive]}
           >
-            <MicVisual kind={m.kind} w={36} h={54} />
+            <MicVisual kind={m.kind} w={36} h={54} zoomable={false} />
             <Text style={styles.micCellName} numberOfLines={2}>
               {m.name}
             </Text>
@@ -677,7 +677,7 @@ function ChallengeStep() {
           accessibilityState={{ selected: pick === m.key }}
           style={[styles.formRow, pick === m.key && styles.micCellActive]}
         >
-          <MicVisual kind={m.kind} w={36} h={54} />
+          <MicVisual kind={m.kind} w={36} h={54} zoomable={false} />
           <View style={{ flex: 1 }}>
             <Text style={styles.detailName}>{m.label}</Text>
             <Text style={styles.tierExamples}>{m.specs.join(' · ')}</Text>
@@ -822,7 +822,7 @@ function LockerStep() {
             accessibilityState={{ checked: on, disabled: full }}
             style={[styles.formRow, on && styles.micCellActive, full && { opacity: 0.45 }]}
           >
-            <MicVisual kind={m.kind} w={30} h={45} />
+            <MicVisual kind={m.kind} w={30} h={45} zoomable={false} />
             <View style={{ flex: 1 }}>
               <Text style={styles.detailName}>{`${on ? '☑' : '☐'}  ${m.name}`}</Text>
               <Text style={styles.tierExamples}>
