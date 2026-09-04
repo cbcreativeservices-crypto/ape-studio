@@ -34,12 +34,14 @@ function MiniTopic({ iconUrl }: { iconUrl: string | null }) {
   );
 }
 
-function RecentStrip({ children, empty }: { children: ReactNode; empty: boolean }) {
-  if (empty) {
+function RecentStrip({ children, empty, loading }: { children: ReactNode; empty: boolean; loading?: boolean }) {
+  // While loading, render the same-height placeholder row (no text) so the
+  // cards don't jump taller once the data lands (Bug+Hater night A1-04).
+  if (loading || empty) {
     return (
       <View style={styles.stripEmpty}>
         <View style={styles.miniPlaceholder} />
-        <Text style={styles.emptyText}>Nothing earned yet — tap to explore.</Text>
+        {loading ? null : <Text style={styles.emptyText}>Nothing earned yet — tap to explore.</Text>}
       </View>
     );
   }
@@ -101,7 +103,7 @@ export function AchievementsHomeScreen() {
             <View style={styles.flex} />
             <Text style={styles.chevron}>›</Text>
           </View>
-          <RecentStrip empty={!!t && t.recent.length === 0}>
+          <RecentStrip loading={!t} empty={!!t && t.recent.length === 0}>
             {(t?.recent ?? []).map((topic) => (
               <MiniTopic key={topic.achievementId} iconUrl={topic.iconUrl} />
             ))}
@@ -123,7 +125,7 @@ export function AchievementsHomeScreen() {
             <View style={styles.flex} />
             <Text style={styles.chevron}>›</Text>
           </View>
-          <RecentStrip empty={!!c && c.recent.length === 0}>
+          <RecentStrip loading={!c} empty={!!c && c.recent.length === 0}>
             {(c?.recent ?? []).map((cred) => (
               <MiniCredential key={cred.id} kind="certificate" />
             ))}
@@ -145,7 +147,7 @@ export function AchievementsHomeScreen() {
             <View style={styles.flex} />
             <Text style={styles.chevron}>›</Text>
           </View>
-          <RecentStrip empty={!!p && p.recent.length === 0}>
+          <RecentStrip loading={!p} empty={!!p && p.recent.length === 0}>
             {(p?.recent ?? []).map((cred) => (
               <MiniCredential key={cred.id} kind="program" />
             ))}
