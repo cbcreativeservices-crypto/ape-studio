@@ -66,7 +66,14 @@ export function CareerFamilyScreen() {
   const topicsToShow = allTopics ? fam.topicGs : fam.topicGs.slice(0, START_HERE);
   const studyNow = () => {
     const gs = addedHere[0] ?? fam.topicGs[0];
-    (navigation as unknown as { navigate: (name: string, params?: object) => void }).navigate('Study', { screen: 'Dashboard', params: { focusGs: gs } });
+    // popTo, not navigate: 'Study' is a tab INSIDE the root 'Main' route, so
+    // navigate('Study') from this root-stack screen is unhandled (the button was
+    // dead — Bug+Hater night B1-01), and navigate('Main') would PUSH a second tab
+    // shell under React Navigation 7. Same idiom as EnrollmentScreen's goStudy.
+    (navigation as unknown as { popTo: (name: string, params?: object) => void }).popTo('Main', {
+      screen: 'Study',
+      params: { screen: 'Dashboard', params: { focusGs: gs } },
+    });
   };
   const correction = () => sendFeedback('correction', fam.name, { Screen: 'Career family', 'Family id': fam.id, 'Index version': CAREER_INDEX_VERSION });
 
@@ -113,7 +120,7 @@ export function CareerFamilyScreen() {
               const on = enrolledGs.has(gs);
               const name = officialTopicName(gs, names.get(gs));
               return (
-                <Pressable key={gs} style={styles.topicRow} onPress={() => toggleTopic(gs)} accessibilityRole="button" accessibilityState={{ selected: on }} accessibilityLabel={on ? `Remove ${name} from your study list` : `Add ${name} to your study list`}>
+                <Pressable key={gs} style={styles.topicRow} onPress={() => toggleTopic(gs)} accessibilityRole="button" accessibilityState={{ selected: on }} aria-selected={on} accessibilityLabel={on ? `Remove ${name} from your study list` : `Add ${name} to your study list`}>
                   <Text style={[styles.topicCheck, on && { color: colors.green }]}>{on ? '✓' : '+'}</Text>
                   <Text style={[styles.topicText, on && { color: '#7dffa1' }]}>{name}</Text>
                 </Pressable>
@@ -190,7 +197,7 @@ export function CareerFamilyScreen() {
 function CareerRow({ c, open, onToggle }: { c: Career; open: boolean; onToggle: () => void }) {
   return (
     <View style={styles.careerCard}>
-      <Pressable onPress={onToggle} style={styles.careerRow} accessibilityRole="button" accessibilityState={{ expanded: open }} accessibilityLabel={`${c.title}, ${CENTRALITY[c.centrality].label}${c.regulated ? ', licensed or credentialed occupation' : ''}`}>
+      <Pressable onPress={onToggle} style={styles.careerRow} accessibilityRole="button" accessibilityState={{ expanded: open }} aria-expanded={open} accessibilityLabel={`${c.title}, ${CENTRALITY[c.centrality].label}${c.regulated ? ', licensed or credentialed occupation' : ''}`}>
         <Text style={styles.careerChevron}>{open ? '▾' : '▸'}</Text>
         <Text style={styles.careerTitle} numberOfLines={2}>{c.title}</Text>
         <View style={styles.tags}>
