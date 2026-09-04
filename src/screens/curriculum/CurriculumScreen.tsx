@@ -97,6 +97,9 @@ export function CurriculumView({
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const [open, setOpen] = useState<number | null>(null);
+  // The Career Finder entry is collapsed by default (owner 2026-09-04): the
+  // reader taps to reveal the green container.
+  const [finderOpen, setFinderOpen] = useState(false);
   // The Career Finder card speaks to where THIS person is: a first pitch, a
   // "you're at question n", or their own top family (the cheapest re-entry
   // into family → topic → membership).
@@ -235,24 +238,41 @@ export function CurriculumView({
       )}
 
       {/* Audio Career Finder entry (owner brief 2026-09-03: "where I circled" —
-          between the intro and SUBJECTS). Free for everyone; opens the
-          Career Discovery Lab. */}
-      <Pressable
-        style={styles.finderCard}
-        onPress={() => (navigation as { navigate: (name: 'CareerFinder') => void }).navigate('CareerFinder')}
-        accessibilityRole="button"
-        accessibilityLabel={finder.a11y}
-      >
-        <View style={styles.finderText}>
-          <View style={styles.finderEyebrowRow}>
-            <Text style={styles.finderEyebrow}>CAREER DISCOVERY LAB · FREE</Text>
-            <View style={styles.finderBeta}><Text style={styles.finderBetaText}>BETA</Text></View>
+          between the intro and SUBJECTS). Collapsed by default (owner
+          2026-09-04): a neutral header the reader taps to reveal the green
+          container; the green treatment + blurb + open button appear only when
+          expanded. Free for everyone; the button opens the Career Discovery Lab. */}
+      <View style={[styles.finderCard, finderOpen && styles.finderCardOpen]}>
+        <Pressable
+          style={styles.finderHeader}
+          onPress={() => setFinderOpen((o) => !o)}
+          accessibilityRole="button"
+          accessibilityState={{ expanded: finderOpen }}
+          accessibilityLabel={finderOpen ? 'Collapse the Audio Career Finder' : `Audio Career Finder, Beta. Tap to expand. ${finder.a11y}`}
+        >
+          <View style={styles.finderText}>
+            <View style={styles.finderEyebrowRow}>
+              <Text style={styles.finderEyebrow}>CAREER DISCOVERY LAB · FREE</Text>
+              <View style={styles.finderBeta}><Text style={styles.finderBetaText}>BETA</Text></View>
+            </View>
+            <Text style={styles.finderTitle}>Audio Career Finder</Text>
           </View>
-          <Text style={styles.finderTitle}>Audio Career Finder</Text>
-          <Text style={styles.finderBlurb}>{finder.blurb}</Text>
-        </View>
-        <View style={styles.finderPill}><Text style={styles.finderPillText}>{finder.pill}</Text></View>
-      </Pressable>
+          <Text style={[styles.finderChevron, finderOpen && { color: colors.green }]}>{finderOpen ? '▾' : '▸'}</Text>
+        </Pressable>
+        {finderOpen ? (
+          <View style={styles.finderBody}>
+            <Text style={styles.finderBlurb}>{finder.blurb}</Text>
+            <Pressable
+              style={styles.finderPill}
+              onPress={() => (navigation as { navigate: (name: 'CareerFinder') => void }).navigate('CareerFinder')}
+              accessibilityRole="button"
+              accessibilityLabel={finder.a11y}
+            >
+              <Text style={styles.finderPillText}>{finder.pill}</Text>
+            </Pressable>
+          </View>
+        ) : null}
+      </View>
 
       {/* Amber "Subjects" subtitle above the list (user request 2026-07-22). */}
       <Text style={styles.subjectsHead}>SUBJECTS</Text>
@@ -366,17 +386,22 @@ const styles = StyleSheet.create({
   // Audio Career Finder entry card (owner brief 2026-09-03). Same card grammar
   // as the subject cards below, with the amber accent on the left edge so it
   // reads as a destination rather than another expandable subject.
-  // The one non-browsing action on Explore, so it takes the green the app
-  // reserves for a primary action; the subject cards below stay neutral.
-  finderCard: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#17171b', borderWidth: 1, borderColor: colors.green, borderRadius: 10, paddingVertical: 16, paddingLeft: 16, paddingRight: 12 },
+  // The one non-browsing action on Explore. Collapsed it reads like the
+  // subject cards below (neutral, a chevron); expanded it becomes the green
+  // container the app reserves for a primary action.
+  finderCard: { backgroundColor: '#161616', borderWidth: 1, borderColor: '#232323', borderRadius: 10, overflow: 'hidden' },
+  finderCardOpen: { backgroundColor: '#17171b', borderColor: colors.green },
+  finderHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 13, paddingLeft: 14, paddingRight: 14 },
   finderText: { flex: 1, gap: 3 },
   finderEyebrowRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   finderEyebrow: { fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 1.6, color: colors.amberLabel },
   finderBeta: { borderWidth: 1, borderColor: colors.amberLabel, borderRadius: 3, paddingHorizontal: 5, paddingVertical: 1 },
   finderBetaText: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1.4, color: colors.amber },
   finderTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 21, color: colors.textPrimary, letterSpacing: 0.3 },
+  finderChevron: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, color: colors.textSub, width: 16, textAlign: 'center' },
+  finderBody: { paddingHorizontal: 14, paddingBottom: 14, paddingTop: 2, gap: 12 },
   finderBlurb: { fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 20, color: colors.textSub },
-  finderPill: { minHeight: 40, paddingHorizontal: 12, borderRadius: 10, borderWidth: 1, borderColor: colors.green, backgroundColor: '#173021', justifyContent: 'center' },
+  finderPill: { alignSelf: 'flex-start', minHeight: 44, paddingHorizontal: 16, borderRadius: 10, borderWidth: 1, borderColor: colors.green, backgroundColor: '#173021', justifyContent: 'center' },
   finderPillText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.green },
 
   // Tree.
