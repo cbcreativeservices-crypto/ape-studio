@@ -219,6 +219,28 @@ function ClipScene() {
             strokeWidth={1}
             strokeDasharray='4 4'
           />
+          {/* Converter ceiling — drawn in BOTH states so the CLEAN wave can be
+              seen sitting under it, as the caption claims (Bug+Hater night D1-03). */}
+          <Line
+            x1={0}
+            y1={CEIL_Y_TOP}
+            x2={VB_W}
+            y2={CEIL_Y_TOP}
+            stroke={colors.red}
+            strokeWidth={1}
+            strokeOpacity={0.35}
+            strokeDasharray='5 5'
+          />
+          <Line
+            x1={0}
+            y1={CEIL_Y_BOTTOM}
+            x2={VB_W}
+            y2={CEIL_Y_BOTTOM}
+            stroke={colors.red}
+            strokeWidth={1}
+            strokeOpacity={0.35}
+            strokeDasharray='5 5'
+          />
         </Svg>
         <Animated.View style={[StyleSheet.absoluteFill, { opacity: cleanOpacity }]}>
           <Svg width='100%' height='100%' viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio='none'>
@@ -241,26 +263,6 @@ function ClipScene() {
                 ))}
               </LinearGradient>
             </Defs>
-            <Line
-              x1={0}
-              y1={CEIL_Y_TOP}
-              x2={VB_W}
-              y2={CEIL_Y_TOP}
-              stroke={colors.red}
-              strokeWidth={1}
-              strokeOpacity={0.35}
-              strokeDasharray='5 5'
-            />
-            <Line
-              x1={0}
-              y1={CEIL_Y_BOTTOM}
-              x2={VB_W}
-              y2={CEIL_Y_BOTTOM}
-              stroke={colors.red}
-              strokeWidth={1}
-              strokeOpacity={0.35}
-              strokeDasharray='5 5'
-            />
             <Polyline points={DRIVEN_POINTS} fill='none' stroke='url(#wfClipMidiHot)' strokeWidth={2.4} />
             {CLIP_RUNS.map((r) => (
               <Line

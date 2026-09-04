@@ -437,7 +437,7 @@ const SCENES = [
     key: 'pitch',
     label: 'Hz vs PITCH',
     caption:
-      'The same event, two readings: 440 Hz is the measured frequency, A4 is its musical name. Pitch is the musical interpretation of frequency — the needle shows deviation from the reference in cents.',
+      'The same event, two readings: the Hz readout is the measured frequency, A4 is its musical name. Pitch is the musical interpretation of frequency — the needle shows deviation from the reference in cents.',
   },
 ] as const;
 
