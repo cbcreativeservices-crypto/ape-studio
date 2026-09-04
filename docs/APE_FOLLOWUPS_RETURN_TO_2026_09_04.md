@@ -22,14 +22,14 @@ add new lessons at the bottom of PREVENT. Owner tags: **Cháno** = the owner,
   `GATE_COOKIE_TOKEN` (high-entropy, not the old `audio2026` /
   `unlocked-ape-2026`). Until set, the live gate FAILS CLOSED (site locked).
   Or set `GATE_ENABLED=false` in `web/lib/gate.ts` to go public at launch. — Cháno
-- [x] **Schema-isolation Phase 1 — SHIPPED 2026-09-04.** Spec landed
+- [x] **Schema-isolation Phase 1 — SHIPPED + DEVICE-VERIFIED 2026-09-04.** Spec
   (`CCODE_APP_CHANGE_SPEC_schema_isolation_2026_09_04.md`); the 3 identity reads
-  (`profile/api.ts` ×2, `SettingsScreen.tsx` ×1) now go through `my_identity()`.
-  tsc clean, RPC confirmed live, preview boots. **NEXT (Cháno):** run
-  `10c_APPLY_REVOKE.sql` then `10a…90_VERIFY.sql`, return the CSV to Claude
-  chat. **THEN verify** Profile (QR + student id) and Settings (APE id) on a
-  logged-in device. Future phases may move `entitlements`/`credential_awards`
-  similarly — wait for each spec. — done: ccode / next: Cháno
+  (`profile/api.ts` ×2, `SettingsScreen.tsx` ×1) go through `my_identity()`.
+  tsc clean, RPC live, and the owner confirmed on device: Profile (QR + student
+  id) and Settings (APE id) render correctly with a real session. **NEXT
+  (Cháno):** tell Claude chat it's shipped + verified, then run
+  `10c_APPLY_REVOKE.sql` then `90_VERIFY.sql`, return the CSV. Future phases may
+  move `entitlements`/`credential_awards` similarly — wait for each spec.
 - [ ] **Route to Computer A for the hardening plan:** `validate-purchase` decodes
   Apple's `signedTransactionInfo` JWS WITHOUT verifying its signature (relies on
   TLS + the authenticated App Store endpoint). Common and acceptable; note it. — Computer A
