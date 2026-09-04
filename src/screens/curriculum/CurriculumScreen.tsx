@@ -221,29 +221,10 @@ export function CurriculumView({
         })}
       </View>
 
-      {showBrand ? (
-        <View style={styles.introBlock}>
-          <View style={styles.brandRow}>
-            <BrandLogo size={34} />
-            <Text style={styles.brandWordmark}>
-              PRO AUDIO <Text style={styles.brandAccent}>TRAINING ACADEMY</Text>
-            </Text>
-          </View>
-          <Text style={styles.introTitle}>{CURRICULUM_INTRO_TITLE}</Text>
-          <Text style={styles.curriculumIntro}>{CURRICULUM_INTRO}</Text>
-        </View>
-      ) : (
-        <View style={styles.introBlock}>
-          <Text style={styles.introTitle}>{CURRICULUM_INTRO_TITLE}</Text>
-          <Text style={styles.curriculumIntro}>{CURRICULUM_INTRO}</Text>
-        </View>
-      )}
-
-      {/* Audio Career Finder entry (owner brief 2026-09-03: "where I circled" —
-          between the intro and SUBJECTS). Collapsed by default (owner
-          2026-09-04): a neutral header the reader taps to reveal the green
-          container; the green treatment + blurb + open button appear only when
-          expanded. Free for everyone; the button opens the Career Discovery Lab. */}
+      {/* Audio Career Finder entry — above the curriculum block (owner
+          2026-09-04). Collapsed by default: a neutral header the reader taps
+          to reveal the green container; the green treatment + blurb + open
+          button appear only when expanded. Free; the button opens the Lab. */}
       <View style={[styles.finderCard, finderOpen && styles.finderCardOpen]}>
         <Pressable
           style={styles.finderHeader}
@@ -275,6 +256,24 @@ export function CurriculumView({
           </View>
         ) : null}
       </View>
+
+      {showBrand ? (
+        <View style={styles.introBlock}>
+          <View style={styles.brandRow}>
+            <BrandLogo size={34} />
+            <Text style={styles.brandWordmark}>
+              PRO AUDIO <Text style={styles.brandAccent}>TRAINING ACADEMY</Text>
+            </Text>
+          </View>
+          <Text style={styles.introTitle}>{CURRICULUM_INTRO_TITLE}</Text>
+          <Text style={styles.curriculumIntro}>{CURRICULUM_INTRO}</Text>
+        </View>
+      ) : (
+        <View style={styles.introBlock}>
+          <Text style={styles.introTitle}>{CURRICULUM_INTRO_TITLE}</Text>
+          <Text style={styles.curriculumIntro}>{CURRICULUM_INTRO}</Text>
+        </View>
+      )}
 
       {/* Amber "Subjects" subtitle above the list (user request 2026-07-22). */}
       <Text style={styles.subjectsHead}>SUBJECTS</Text>
