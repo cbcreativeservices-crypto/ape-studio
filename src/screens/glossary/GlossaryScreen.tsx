@@ -1711,7 +1711,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
             state so the number appears instantly; once loaded, or when a
             filter/search narrows the set, show the exact live visible.length. */}
         {!loading ? (
-          <Text style={styles.count}>{visible.length} Terms</Text>
+          <Text style={styles.count}>{`${visible.length.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} ${visible.length === 1 ? 'Term' : 'Terms'}`}</Text>
         ) : filter === 'all' && !search.trim() && (cachedCount != null || visible.length > 0) ? (
           // Still paging in: ramp the count UP from a single digit to the target
           // (cached daily total, or the live loaded count) so it grows through
