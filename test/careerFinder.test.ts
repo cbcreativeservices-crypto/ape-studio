@@ -15,7 +15,7 @@ import { DIMENSION_CODES, DIMENSIONS } from '../src/features/careerfinder/dimens
 import { QUESTIONS, QUESTION_COUNT, ANSWERS, type QuestionId, type Response } from '../src/features/careerfinder/questions.ts';
 import { FAMILIES, FAMILY_COUNT } from '../src/features/careerfinder/families.ts';
 import {
-  dimensionScores, familyScore, rankFamilies, clarity, explainFamily, computeResult, strongestDimensions, FAMILY_WEIGHTS, TOP_N, type Responses,
+  dimensionScores, familyScore, rankFamilies, clarity, clarityCopy, CLARITY_LABEL, explainFamily, computeResult, strongestDimensions, FAMILY_WEIGHTS, TOP_N, type Responses,
 } from '../src/features/careerfinder/scoring.ts';
 
 /** Answer every question with `value`, then override some. */
@@ -185,11 +185,24 @@ describe('profile clarity', () => {
     const r = profile(['SD', 'BM', 'AR', 'LO'], 4, 1);
     assert.equal(clarity(r, dimensionScores(r)), 'clear');
   });
+  it('CLEAR — two strong dimensions and the rest low is the sharpest profile there is', () => {
+    const r = profile(['CP', 'LO'], 4, 1);
+    assert.equal(clarity(r, dimensionScores(r)), 'clear');
+    assert.match(clarityCopy('clear', dimensionScores(r)), /^Two activities stood out clearly/);
+  });
   it('BROAD — everything rated the same', () => {
     const r = fill(3);
     assert.equal(clarity(r, dimensionScores(r)), 'broad');
     const r4 = fill(4); // all strong, no variation — still broad
     assert.equal(clarity(r4, dimensionScores(r4)), 'broad');
+  });
+  it('BROAD, all on the dislike side — the copy says so and asks for enjoyment-only answers', () => {
+    const r = fill(1);
+    assert.equal(clarity(r, dimensionScores(r)), 'broad');
+    assert.match(clarityCopy('broad', dimensionScores(r)), /dislike side/);
+  });
+  it('labels never use a grading word', () => {
+    for (const label of Object.values(CLARITY_LABEL)) assert.doesNotMatch(label, /developing|beginning|proficient|advanced|weak|poor/i);
   });
   it('DEVELOPING — more than 25 % "don’t know"', () => {
     const over: Partial<Record<QuestionId, Response>> = {};
@@ -204,23 +217,39 @@ describe('profile clarity', () => {
 });
 
 describe('explanations', () => {
+  const rec = FAMILIES.find((f) => f.id === 'recording-studios-and-music-production')!;
   it('10. name the family’s actual matched dimensions and the user’s actual levels', () => {
-    const dims = dimensionScores(profile(['RC', 'ER'], 4, 2)); // CP = 0.5 → "some"
-    const rec = FAMILIES.find((f) => f.id === 'recording-studios-and-music-production')!;
-    const text = explainFamily(rec, dims);
-    assert.equal(text, 'This appeared because you showed strong interest in Record & Capture and Edit & Refine activities, and some interest in Create & Perform.');
+    const dims = dimensionScores(profile(['RC', 'ER'], 4, 2)); // CP = 0.5 → NEUTRAL, never "some"
+    assert.equal(explainFamily(rec, dims), 'This appeared because you showed strong interest in Record & Capture and Edit & Refine activities, and you were neutral about Create & Perform.');
+    const some = dimensionScores({ ...profile(['RC', 'ER'], 4, 2), CP01: 3, CP02: 2 }); // 0.625 → "some"
+    assert.match(explainFamily(rec, some), /some interest in Create & Perform/);
+  });
+  it('a top-two card opens with what the family leans on', () => {
+    const dims = dimensionScores(profile(['RC', 'ER'], 4, 1));
+    assert.equal(explainFamily(rec, dims, { rank: 1 }), 'Leans on Record & Capture and Edit & Refine — your strongest interests. It also draws on Create & Perform, which you rated lower — notice how much of each family that is as you compare them.');
+  });
+  it('names the main activity when the user rated it lower', () => {
+    const dims = dimensionScores(profile(['ER', 'CP'], 4, 1)); // RC (primary) low
+    assert.match(explainFamily(rec, dims, { rank: 3 }), /^Its main activity is Record & Capture, which you rated lower\. It still appeared because/);
   });
   it('mention unexplored dimensions as unexplored, not ruled out', () => {
     const dims = dimensionScores({ ...profile(['RC', 'ER'], 4, 2), CP01: null, CP02: null });
-    const rec = FAMILIES.find((f) => f.id === 'recording-studios-and-music-production')!;
     assert.match(explainFamily(rec, dims), /did not know enough about Create & Perform yet, so that part is unexplored rather than ruled out/);
   });
-  it('never make forbidden claims', () => {
+  it('a low rating is a trade-off to notice, never a caution', () => {
+    for (const value of [0, 1, 2, 3, 4, null] as const) {
+      const dims = dimensionScores(fill(value));
+      for (const f of FAMILIES) for (const rank of [1, 3, 9]) assert.doesNotMatch(explainFamily(f, dims, { rank }), /which this family also involves|warning|avoid/i, f.id);
+    }
+  });
+  it('never make forbidden claims — explanations, descriptions and clarity copy', () => {
     const banned = /talent|qualified|will succeed|perfect|should avoid|born to|\d+\s?%/i;
     for (const value of [0, 2, 4, null] as const) {
       const dims = dimensionScores(fill(value));
-      for (const f of FAMILIES) assert.doesNotMatch(explainFamily(f, dims), banned, f.id);
+      for (const f of FAMILIES) assert.doesNotMatch(explainFamily(f, dims, { rank: 1 }), banned, f.id);
+      for (const c of ['clear', 'broad', 'developing'] as const) assert.doesNotMatch(clarityCopy(c, dims), banned, c);
     }
+    for (const f of FAMILIES) assert.doesNotMatch(f.description, banned, f.id);
   });
 });
 

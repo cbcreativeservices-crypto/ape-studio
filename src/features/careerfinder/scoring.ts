@@ -73,46 +73,55 @@ export function rankFamilies(dims: DimensionScores): FamilyScore[] {
 
 export type Clarity = 'clear' | 'broad' | 'developing';
 
-export const CLARITY_LABEL: Record<Clarity, string> = { clear: 'Clear Profile', broad: 'Broad Profile', developing: 'Developing Profile' };
+/** Display names. "Developing" is the bottom band of most school rubrics, so
+ *  the third state is shown as EARLY (learning review 2026-09-04) — the
+ *  internal key keeps the brief's name. */
+export const CLARITY_LABEL: Record<Clarity, string> = { clear: 'Clear Profile', broad: 'Broad Profile', developing: 'Early Profile' };
 
 /** Thresholds (Beta; provisional until real response data exists). */
 export const CLARITY_RULES = {
-  /** More than this share of answers were "I don’t know" → developing. */
+  /** More than this share of answers were "I don’t know" → early/developing. */
   unknownShare: 0.25,
   /** A dimension at or above this counts as a strong preference. */
   strong: 0.75,
-  /** At least this many strong dimensions … */
-  strongCount: 4,
-  /** … AND a spread of at least this between the highest and lowest dimension → clear. */
+  /** Clear = at least one strong dimension AND at least this spread between
+   *  the highest and lowest rated dimension (Holland/O*NET differentiation is
+   *  the GAP between highs and lows, not a count of highs — a two-strong,
+   *  everything-else-low profile is the sharpest profile there is). */
   spread: 0.375,
 } as const;
+
+/** Only dimensions with evidence take part in differentiation. */
+function rated(dims: DimensionScores): number[] {
+  return DIMENSION_CODES.map((k) => dims[k]).filter((d) => !d.insufficient).map((d) => d.score);
+}
 
 export function clarity(responses: Responses, dims: DimensionScores): Clarity {
   const answered = QUESTIONS.filter((q) => q.id in responses);
   const unknown = answered.filter((q) => responses[q.id] === null).length;
   if (answered.length > 0 && unknown / answered.length > CLARITY_RULES.unknownShare) return 'developing';
-  const scores = DIMENSION_CODES.map((c) => dims[c].score);
+  const scores = rated(dims);
+  if (!scores.length) return 'broad';
   const strong = scores.filter((s) => s >= CLARITY_RULES.strong).length;
   const spread = Math.max(...scores) - Math.min(...scores);
-  if (strong >= CLARITY_RULES.strongCount && spread >= CLARITY_RULES.spread) return 'clear';
+  if (strong >= 1 && spread >= CLARITY_RULES.spread) return 'clear';
   return 'broad';
 }
 
 /**
- * What the clarity label means for THIS profile. "Broad" covers two honest
- * situations — many activities rated alike, or only a few standing out — and
- * the sentence must describe the one that actually happened.
+ * What the clarity label means for THIS profile, and what to do next. Every
+ * sentence names an action; none uses a grading word.
  */
 export function clarityCopy(c: Clarity, dims: DimensionScores): string {
-  if (c === 'clear') return 'Several activities clearly stood out for you, so these directions rest on distinct preferences.';
-  if (c === 'developing') return 'Many activities were new to you. That is not a weakness — it means exposure will teach you more than more questions would. Explore a family, try a lab, and come back.';
-  const scores = DIMENSION_CODES.map((k) => dims[k]).filter((d) => !d.insufficient).map((d) => d.score);
+  const scores = rated(dims);
   const strong = scores.filter((s) => s >= CLARITY_RULES.strong).length;
-  const spread = scores.length ? Math.max(...scores) - Math.min(...scores) : 0;
-  if (strong > 0 && spread >= CLARITY_RULES.spread) {
-    return strong === 1
-      ? 'One activity stood out strongly and the rest sat lower. The families below lean on it in different ways — exploring two or three will show which setting fits.'
-      : `${strong === 2 ? 'Two' : 'Three'} activities stood out strongly and the rest sat lower. The families below combine them in different ways — exploring two or three will show which setting fits.`;
+  if (c === 'developing') return 'Many activities were new to you, so the picture is incomplete rather than wrong. Exposure will teach you more than more questions would — open one family you said you didn’t know enough about, then answer again.';
+  if (c === 'clear') {
+    const n = strong === 1 ? 'One activity' : strong === 2 ? 'Two activities' : strong === 3 ? 'Three activities' : 'Several activities';
+    return `${n} stood out clearly and the rest sat lower, so these directions rest on real preferences. Open your top two and compare what each one leans on.`;
+  }
+  if (scores.length && scores.every((s) => s < 0.5)) {
+    return 'You rated most activities on the dislike side. That usually means the activities you would enjoy are not in this set yet, or that you answered on whether you would be good at them rather than whether you would enjoy them. Browse the families, then answer again for enjoyment only.';
   }
   return 'You rated many activities similarly. That is common, and it means more than one direction could suit you — trying things is the fastest way to tell them apart.';
 }
@@ -129,7 +138,10 @@ export function strongestDimensions(dims: DimensionScores, n = 3): DimensionScor
 
 /* ── explanations (deterministic templates, never generative) ─────────── */
 
-const band = (s: number) => (s >= 0.75 ? 'strong' : s >= 0.5 ? 'some' : 'little');
+/** Interest bands. Exactly 0.5 (Neutral / Neutral) is NEUTRAL — it is never
+ *  reported back as "some interest", which would misquote the user. */
+export type Band = 'strong' | 'some' | 'neutral' | 'little';
+export const band = (s: number): Band => (s >= 0.75 ? 'strong' : s > 0.5 ? 'some' : s === 0.5 ? 'neutral' : 'little');
 
 function list(items: string[]): string {
   if (items.length <= 1) return items[0] ?? '';
@@ -137,27 +149,56 @@ function list(items: string[]): string {
 }
 
 /**
- * "This appeared because you showed strong interest in Record & Capture and
- *  Edit & Refine activities, and some interest in Create & Perform."
- * Built ONLY from the family’s three dimensions and the user’s actual scores.
- * Never claims talent, qualification, success, perfection, or that another
- * career should be avoided.
+ * Deterministic "why it appeared", built ONLY from the family’s three
+ * dimensions and the user’s actual scores. Never claims talent,
+ * qualification, success, perfection, or that another career should be
+ * avoided; a low rating is a trade-off to notice, never a caution.
+ *
+ *   rank ≤ 2 → "Leans on Record & Capture and Edit & Refine — your strongest
+ *              interests. It also draws on Create & Perform, which you rated
+ *              lower — notice how much of each family that is as you compare."
+ *   otherwise → "This appeared because you showed strong interest in … ."
+ *   primary low → "Its main activity is X, which you rated lower. It still
+ *              appeared because you showed … ."
  */
-export function explainFamily(family: CareerFamily, dims: DimensionScores): string {
-  const strong: string[] = [], some: string[] = [], little: string[] = [], none: string[] = [];
+export function explainFamily(family: CareerFamily, dims: DimensionScores, opts: { rank?: number } = {}): string {
+  const strong: string[] = [], some: string[] = [], neutral: string[] = [], little: string[] = [], none: string[] = [];
   for (const code of family.dimensions) {
     const d = dims[code];
     const label = DIMENSIONS[code].label;
     if (d.insufficient) none.push(label);
-    else if (band(d.score) === 'strong') strong.push(label);
-    else if (band(d.score) === 'some') some.push(label);
-    else little.push(label);
+    else {
+      const b = band(d.score);
+      if (b === 'strong') strong.push(label);
+      else if (b === 'some') some.push(label);
+      else if (b === 'neutral') neutral.push(label);
+      else little.push(label);
+    }
   }
+  const primary = dims[family.dimensions[0]];
+  const primaryLow = !primary.insufficient && band(primary.score) === 'little';
+  const primaryLabel = DIMENSIONS[family.dimensions[0]].label;
+
   const parts: string[] = [];
   if (strong.length) parts.push(`strong interest in ${list(strong)} activities`);
   if (some.length) parts.push(`some interest in ${list(some)}`);
-  let sentence = parts.length ? `This appeared because you showed ${parts.join(', and ')}.` : 'This appeared because it ranked highest against your answers overall.';
-  if (little.length) sentence += ` You showed little interest in ${list(little)}, which this family also involves.`;
+  if (neutral.length) parts.push(`you were neutral about ${list(neutral)}`);
+  const because = parts.length ? parts.join(', and ') : null;
+
+  let sentence: string;
+  if (primaryLow) {
+    sentence = `Its main activity is ${primaryLabel}, which you rated lower.`;
+    sentence += because ? ` It still appeared because you showed ${because}.` : ' It still appeared because it ranked highest against your answers overall.';
+  } else if ((opts.rank ?? 99) <= 2 && strong.length) {
+    sentence = `Leans on ${list(strong)} — ${strong.length === 1 ? 'your strongest interest' : 'your strongest interests'}.`;
+    if (some.length) sentence += ` You also showed some interest in ${list(some)}.`;
+    if (neutral.length) sentence += ` You were neutral about ${list(neutral)}.`;
+  } else {
+    sentence = because ? `This appeared because you showed ${because}.` : 'This appeared because it ranked highest against your answers overall.';
+  }
+  const lowOthers = little.filter((l) => l !== primaryLabel || !primaryLow);
+  if (lowOthers.length && !primaryLow) sentence += ` It also draws on ${list(lowOthers)}, which you rated lower — notice how much of each family that is as you compare them.`;
+  else if (lowOthers.length && primaryLow) sentence += ` ${list(lowOthers)} ${lowOthers.length === 1 ? 'is' : 'are'} part of this work too, rated lower as well.`;
   if (none.length) sentence += ` You said you did not know enough about ${list(none)} yet, so that part is unexplored rather than ruled out.`;
   return sentence;
 }

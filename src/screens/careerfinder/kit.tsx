@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../theme/tokens';
 import { animationsAllowed } from '../../features/settings/a11y';
 import { DIMENSION_CODES, DIMENSIONS, type DimensionCode } from '../../features/careerfinder/dimensions';
-import type { DimensionScores } from '../../features/careerfinder/scoring';
+import { band, type DimensionScores } from '../../features/careerfinder/scoring';
 import { CENTRALITY, type AudioCentrality } from '../../features/careerfinder/careerIndex';
 
 /* ── shell ─────────────────────────────────────────────────────────────── */
@@ -100,10 +100,24 @@ export function NavButton({ label, onPress, primary, disabled, a11y }: { label: 
 }
 
 /** Text link (secondary navigation: "How this works", "Browse all families"). */
-export function TextLink({ label, onPress, a11y }: { label: string; onPress: () => void; a11y?: string }) {
+export function TextLink({ label, onPress, a11y, muted }: { label: string; onPress: () => void; a11y?: string; muted?: boolean }) {
   return (
     <Pressable onPress={onPress} hitSlop={8} style={styles.link} accessibilityRole="link" accessibilityLabel={a11y ?? label}>
-      <Text style={styles.linkText}>{label} ›</Text>
+      <Text style={[styles.linkText, muted && { color: colors.textSub }]}>{label} ›</Text>
+    </Pressable>
+  );
+}
+
+/** A row of text links — the labs' compact way to offer secondary actions. */
+export function LinkRow({ children }: { children: ReactNode }) {
+  return <View style={styles.linkRow}>{children}</View>;
+}
+
+/** Header ★ save toggle (44 pt). */
+export function SaveStar({ saved, onPress, name }: { saved: boolean; onPress: () => void; name: string }) {
+  return (
+    <Pressable onPress={onPress} style={styles.star} hitSlop={6} accessibilityRole="button" accessibilityState={{ selected: saved }} accessibilityLabel={saved ? `Remove ${name} from saved families` : `Save ${name}`}>
+      <Text style={[styles.starText, saved && { color: colors.amber }]}>{saved ? '★' : '☆'}</Text>
     </Pressable>
   );
 }
@@ -128,20 +142,39 @@ export function ProgressBar({ value, label }: { value: number; label: string }) 
 
 /* ── chips ─────────────────────────────────────────────────────────────── */
 
-const strengthOf = (s: number | undefined, insufficient?: boolean) => (insufficient || s == null ? 'unknown' : s >= 0.75 ? 'strong' : s >= 0.5 ? 'some' : 'little');
+const strengthOf = (s: number | undefined, insufficient?: boolean) => (insufficient || s == null ? 'unknown' : band(s));
+const STRENGTH_WORD = { strong: 'strong', some: 'some', neutral: 'neutral', little: 'little', unknown: 'unexplored' } as const;
 
-/** A dimension chip. With `dims`, it also shows the user's level (words + fill, never colour alone). */
+/** A dimension chip. With `dims`, it also shows the user's level in words
+ *  (never colour alone); `primary` marks the family's 50 %-weight activity as
+ *  "· main" so the weight is visible. */
 export function DimChip({ code, dims, primary }: { code: DimensionCode; dims?: DimensionScores; primary?: boolean }) {
   const d = dims?.[code];
   const strength = dims ? strengthOf(d?.score, d?.insufficient) : null;
   const label = DIMENSIONS[code].label;
-  const a11y = strength ? `${label}: ${strength === 'unknown' ? 'not enough evidence' : `${strength} interest`}${primary ? ', primary' : ''}` : label;
+  const a11y = `${label}${primary ? ', main activity' : ''}${strength ? `: ${strength === 'unknown' ? 'not enough evidence' : strength === 'neutral' ? 'neutral' : `${strength} interest`}` : ''}`;
   return (
     <View style={[styles.chip, primary && styles.chipPrimary, strength === 'strong' && styles.chipStrong]} accessible accessibilityRole="text" accessibilityLabel={a11y}>
       <Text style={[styles.chipText, strength === 'strong' && { color: colors.cyanBright }]}>{label}</Text>
-      {strength ? <Text style={styles.chipSub}>{strength === 'unknown' ? '· unexplored' : strength === 'strong' ? '· strong' : strength === 'some' ? '· some' : '· little'}</Text> : null}
+      {primary ? <Text style={styles.chipMain}>· main</Text> : null}
+      {strength ? <Text style={styles.chipSub}>· {STRENGTH_WORD[strength]}</Text> : null}
     </View>
   );
+}
+
+/** Rank badge for a family card: green ring for the top two, muted otherwise. */
+export function RankBadge({ rank }: { rank: number }) {
+  const top = rank <= 2;
+  return (
+    <View style={[styles.rank, top && styles.rankTop]} accessible accessibilityRole="text" accessibilityLabel={`Rank ${rank}`}>
+      <Text style={[styles.rankText, top && { color: colors.green }]}>{rank}</Text>
+    </View>
+  );
+}
+
+/** Small right-aligned count tag ("50 titles"). */
+export function CountTag({ n, noun = 'titles' }: { n: number; noun?: string }) {
+  return <Text style={styles.countTag}>{n} {noun}</Text>;
 }
 
 export function CentralityChip({ value, count }: { value: AudioCentrality; count?: number }) {
@@ -187,12 +220,17 @@ export function DimensionSpectrum({ dims, highlight }: { dims: DimensionScores; 
           return (
             <Svg key={c}>
               <Rect x={x} y={base - h} width={bw} height={h} rx={2} fill={fill} stroke={d.insufficient ? colors.textMuted : 'none'} strokeDasharray={d.insufficient ? '3 2' : undefined} />
-              {d.insufficient ? <SvgText x={x + bw / 2} y={base - h / 2 + 3} fontSize={8} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium}>?</SvgText> : null}
-              <SvgText x={x + bw / 2} y={SPEC_H - 12} fontSize={7.5} fill={hi ? colors.cyanBright : colors.textSub} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{c}</SvgText>
+              {d.insufficient ? <SvgText x={x + bw / 2} y={base - h / 2 + 3} fontSize={10} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium}>?</SvgText> : null}
+              <SvgText x={x + bw / 2} y={SPEC_H - 11} fontSize={9.5} fill={hi ? colors.cyanBright : colors.textSub} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{c}</SvgText>
             </Svg>
           );
         })}
       </Svg>
+      {highlight?.length ? (
+        <Text style={styles.legend} accessible={false}>
+          {highlight.map((c) => `${c} ${DIMENSIONS[c].label}`).join('  ·  ')}
+        </Text>
+      ) : null}
     </View>
   );
 }
@@ -215,13 +253,13 @@ const styles = StyleSheet.create({
 
   sectionLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.8, marginTop: 4 },
   lead: { color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 16.5, lineHeight: 23 },
-  body: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20 },
-  card: { borderRadius: 12, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#131315', padding: 14, gap: 8 },
+  body: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19 },
+  card: { borderRadius: 12, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#131315', padding: 12, gap: 8 },
   cardRaised: { backgroundColor: '#17171b', borderColor: '#33333a' },
   cardOk: { borderColor: colors.green, backgroundColor: '#0f2416' },
   cardAmber: { borderColor: 'rgba(255,198,77,0.45)', backgroundColor: '#1a150b' },
 
-  cta: { minHeight: 50, borderRadius: 10, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#131315', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 16 },
+  cta: { minHeight: 46, paddingVertical: 10, borderRadius: 10, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#131315', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 16 },
   ctaGreen: { borderColor: colors.green, backgroundColor: '#173021' },
   ctaQuiet: { borderColor: 'transparent', backgroundColor: 'transparent', minHeight: 44 },
   ctaText: { color: colors.textSecondary, fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.4 },
@@ -232,6 +270,9 @@ const styles = StyleSheet.create({
 
   link: { minHeight: 36, justifyContent: 'center', alignSelf: 'flex-start' },
   linkText: { color: colors.cyanBright, fontFamily: fonts.barlowMedium, fontSize: 14 },
+  linkRow: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 18, alignItems: 'center' },
+  star: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
+  starText: { color: colors.textSub, fontSize: 22, lineHeight: 26 },
 
   barWrap: { paddingHorizontal: 16, paddingTop: 2, paddingBottom: 8 },
   barTrack: { height: 6, borderRadius: 3, backgroundColor: '#26262b', overflow: 'hidden' },
@@ -242,6 +283,12 @@ const styles = StyleSheet.create({
   chipStrong: { borderColor: 'rgba(127,212,255,0.5)', backgroundColor: '#0f1a22' },
   chipText: { color: colors.textSecondary, fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 0.4 },
   chipSub: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12 },
+  chipMain: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 0.8 },
+  rank: { width: 26, height: 26, borderRadius: 13, borderWidth: 1.5, borderColor: '#3a3a44', alignItems: 'center', justifyContent: 'center' },
+  rankTop: { borderColor: colors.green, backgroundColor: '#0f2416' },
+  rankText: { color: colors.textSub, fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, lineHeight: 15 },
+  countTag: { color: colors.textMuted, fontFamily: fonts.mono, fontSize: 11.5 },
+  legend: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12.5, marginTop: 4 },
 
   cent: { borderWidth: 1, borderColor: colors.hairline, borderRadius: 6, paddingHorizontal: 7, paddingVertical: 3, backgroundColor: '#101013' },
   centCore: { borderColor: 'rgba(255,198,77,0.45)' },

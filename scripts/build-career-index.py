@@ -78,6 +78,13 @@ def main():
     by_name = {norm(t['name']): t for t in v3}
     subjects = {(t['field'], t['subject']) for t in v3}
 
+    # sources sheet: S01 → organization name, so the app never shows a bare code
+    src_rows = list(wb['Sources & Method'].iter_rows(values_only=True))
+    source_name = {}
+    for r in src_rows:
+        if r and isinstance(r[0], str) and re.match(r'^S\d\d$', r[0]) and r[1]:
+            source_name[r[0]] = re.sub(r'(\s+-\s+|\s*[—–]\s*).*$', '', str(r[1])).strip()  # 'BLS - Audiologists' -> 'BLS'; hyphenated names survive
+
     # families sheet
     rows = list(wb['Career Families'].iter_rows(values_only=True))
     fam_rows = [r for r in rows[5:] if r and r[0]]
@@ -101,7 +108,7 @@ def main():
             'subject': subject,
             'topicGs': gs,
             'settings': [s.strip() for s in str(settings).split(';') if s.strip()],
-            'sources': [s.strip() for s in str(sources).split(';') if s.strip()],
+            'sources': list(OrderedDict.fromkeys(source_name.get(s.strip(), s.strip()) for s in str(sources).split(';') if s.strip())),
             'count': 0,
         }
     fam_ids = list(families.keys())
@@ -133,6 +140,48 @@ def main():
             'prep': str(g('Typical preparation pathway')).strip(),
             **({'reg': 1} if g('Licensure / caution note') else {}),
         })
+
+    # ── corrections on top of the workbook (scripts/career-index-overrides.json) ──
+    ov = json.load(io.open(os.path.join(ROOT, 'scripts', 'career-index-overrides.json'), encoding='utf-8'))
+    by_title = {}
+    for c in careers: by_title.setdefault(c['t'], []).append(c)
+    def each(title):
+        rows = by_title.get(title)
+        if not rows: sys.exit(f'override names a title not in the workbook: {title!r}')
+        return rows
+    for title, fam in ov['moveToFamily'].items():
+        for c in each(title):
+            families[fam_ids[c['f']]]['count'] -= 1
+            c['f'] = fam_ids.index(fam)
+            families[fam]['count'] += 1
+    for title in ov['regulated']:
+        for c in each(title): c['reg'] = 1
+    pe_fams = {fam_ids.index(f) for f in ov['professionalEngineerFamilies']}
+    for c in careers:
+        if c['f'] in pe_fams and re.search(r'(Engineer|Consultant)$', c['t']): c['pe'] = 1
+    for title, prep in ov['preparation'].items():
+        for c in each(title): c['prep'] = prep
+    DEGREE_DEFAULT = "Bachelor's degree common; portfolio/certification may supplement"
+    HANDS_ON = 'Hands-on training, certificate/associate degree, apprenticeship, or experience'
+    VARIES = "Varies: portfolio/experience, certificate, associate, or bachelor's pathway"
+    craft = {fam_ids.index(f) for f in ov['craftFamilies']}
+    for c in careers:
+        if c['f'] in craft and c['prep'] == DEGREE_DEFAULT:
+            c['prep'] = HANDS_ON if re.search(r'(Technician|Operator|Assistant|Stagehand|Tech|Crew|Hand|Roadie|Runner)\b', c['t']) else VARIES
+    for title, ori in ov['orientation'].items():
+        if title.startswith('_'): continue
+        for c in each(title): c['ori'] = code(ORIENTATION, ori, 'orientation')
+    clinical = code(ORIENTATION, 'Clinical / therapeutic', 'orientation')
+    for c in careers:
+        if 'Audiologist' in c['t']: c['ori'] = clinical
+    for title, cls in ov['titleClass'].items():
+        for c in each(title): c['cls'] = code(TITLE_CLASS, cls, 'title class')
+    demote = {RELATIONSHIP.index(r) for r in ov['demoteCoreWhenRelationshipIn']}
+    demoted = 0
+    for c in careers:
+        if c['tier'] == 0 and c['rel'] in demote:
+            c['tier'] = 1; demoted += 1
+    print(f'overrides: {len(ov["moveToFamily"])} moved, {len(ov["regulated"])} regulated, {sum(1 for c in careers if c.get("pe"))} PE-flagged, {demoted} demoted core->specialized')
 
     # preparation pathway is 14 distinct strings — table it too
     preps = sorted({c['prep'] for c in careers})

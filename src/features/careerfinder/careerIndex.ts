@@ -14,7 +14,7 @@ import raw from '../../data/careerIndex.json';
 import meta from '../../data/careerFamilies.json';
 import { FAMILIES, familyById, type CareerFamily } from './families';
 
-type RawCareer = { id: string; f: number; t: string; alt?: string[]; cls: number; st: number; rel: number; tier: number; ori: number; wm: number; prep: number; reg?: 1 };
+type RawCareer = { id: string; f: number; t: string; alt?: string[]; cls: number; st: number; rel: number; tier: number; ori: number; wm: number; prep: number; reg?: 1; pe?: 1 };
 type RawIndex = { version: string; families: string[]; enums: Record<'tier' | 'relationship' | 'orientation' | 'titleClass' | 'status' | 'workModel' | 'preparation', string[]>; careers: RawCareer[] };
 type RawFamilyMeta = { id: string; name: string; field: string; subject: string; topicGs: number[]; settings: string[]; sources: string[]; count: number };
 
@@ -24,9 +24,9 @@ const familyMeta = meta as RawFamilyMeta[];
 /** How central audio is to the role — from the workbook’s inclusion tier. */
 export type AudioCentrality = 'core' | 'specialized' | 'enabled';
 export const CENTRALITY: Record<AudioCentrality, { label: string; explain: string }> = {
-  core: { label: 'Audio-core', explain: 'Audio is the principal work product.' },
-  specialized: { label: 'Audio-specialized', explain: 'A broader profession with a recognized audio specialization.' },
-  enabled: { label: 'Audio-enabled', explain: 'Audio knowledge is a meaningful paid skill within the role.' },
+  core: { label: 'Audio-core', explain: 'Audio or acoustics is the job itself.' },
+  specialized: { label: 'Audio-specialized', explain: 'An established profession with a recognized audio or acoustics specialty.' },
+  enabled: { label: 'Audio-enabled', explain: 'A role in which audio knowledge is one required, paid skill among others.' },
 };
 const CENTRALITY_BY_TIER: AudioCentrality[] = ['core', 'specialized', 'enabled'];
 
@@ -42,8 +42,11 @@ export type Career = {
   status: string;
   workModel: string;
   preparation: string;
-  /** Licence, credential, union or safety requirements may apply — verify locally. */
+  /** Licensed, credentialed or restricted-entry occupation in many jurisdictions. */
   regulated: boolean;
+  /** Offering engineering services to the public / sealing reports commonly
+   *  needs a Professional Engineer licence (consulting acoustics). */
+  professionalEngineer: boolean;
 };
 
 export type FamilyMeta = {
@@ -76,6 +79,7 @@ function all(): Career[] {
     workModel: e.workModel[c.wm],
     preparation: e.preparation[c.prep],
     regulated: c.reg === 1,
+    professionalEngineer: c.pe === 1,
   }));
   return decoded;
 }
@@ -105,6 +109,26 @@ export function centralitySplit(familyId: string): Record<AudioCentrality, numbe
   const out: Record<AudioCentrality, number> = { core: 0, specialized: 0, enabled: 0 };
   for (const c of careersInFamily(familyId)) out[c.centrality]++;
   return out;
+}
+
+/** How much formal preparation a pathway string implies: 0 = hands-on /
+ *  portfolio / varies, 1 = degree common, 2 = graduate, clinical, legal or
+ *  military. Used to surface COMMON ENTRY POINTS in a family. */
+export function preparationLevel(prep: string): 0 | 1 | 2 {
+  if (/doctorate|graduate|clinical|law degree|military|credentialing/i.test(prep)) return 2;
+  if (/bachelor's degree common/i.test(prep)) return 1;
+  return 0;
+}
+
+/** The family's most accessible titles: lowest preparation level first, the
+ *  workbook's order (established roles first) within a level. */
+export function entryPoints(familyId: string, n = 3): Career[] {
+  return careersInFamily(familyId)
+    .map((c, i) => ({ c, i, level: preparationLevel(c.preparation) }))
+    .filter((x) => !x.c.regulated)
+    .sort((a, b) => a.level - b.level || a.i - b.i)
+    .slice(0, n)
+    .map((x) => x.c);
 }
 
 /** Case-insensitive title / alternate-title search across the whole index. */

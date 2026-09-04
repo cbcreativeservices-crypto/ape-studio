@@ -21,7 +21,10 @@ import { subjectMeta } from '../../data/subjectMeta';
 import { useCurriculumStats } from '../../features/curriculum/curriculumStats';
 import { toggleTopic, useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { useNavigation } from '@react-navigation/native';
-import { CAREER_COUNT } from '../../features/careerfinder/careerIndex';
+import { CAREER_COUNT, familyFieldOf } from '../../features/careerfinder/careerIndex';
+import { QUESTIONS, QUESTION_COUNT } from '../../features/careerfinder/questions';
+import { computeResult } from '../../features/careerfinder/scoring';
+import { useCareerFinder } from '../../features/careerfinder/store';
 
 /** Placeholder academic-goal lines — replace with the Academy's official copy. */
 const ACADEMIC_GOALS: string[] = [
@@ -94,6 +97,23 @@ export function CurriculumView({
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const [open, setOpen] = useState<number | null>(null);
+  // The Career Finder card speaks to where THIS person is: a first pitch, a
+  // "you're at question n", or their own top family (the cheapest re-entry
+  // into family → topic → membership).
+  const finderRec = useCareerFinder();
+  const finder = useMemo(() => {
+    const answered = QUESTIONS.filter((q) => q.id in finderRec.responses).length;
+    if (finderRec.completed && answered > 0) {
+      const top = computeResult(finderRec.responses, familyFieldOf).top[0]?.family.name;
+      return top
+        ? { blurb: `Your top match: ${top} — and four more.`, pill: 'RESULTS ›', a11y: `Audio Career Finder, Beta. Your top match: ${top}. Opens your results.` }
+        : { blurb: 'Your results are ready.', pill: 'RESULTS ›', a11y: 'Audio Career Finder, Beta. Opens your results.' };
+    }
+    if (answered > 0) {
+      return { blurb: `You’re at question ${Math.min(QUESTION_COUNT, finderRec.index + 1)} of ${QUESTION_COUNT}. Your answers are saved.`, pill: 'CONTINUE ›', a11y: `Audio Career Finder, Beta. Continue at question ${finderRec.index + 1} of ${QUESTION_COUNT}.` };
+    }
+    return { blurb: `Which kinds of audio work would you enjoy? ${QUESTION_COUNT} questions, 42 career families, ${fmt(CAREER_COUNT)} ways to work in audio. About five minutes.`, pill: 'START ›', a11y: `Audio Career Finder, Beta. ${QUESTION_COUNT} questions, forty-two career families, ${fmt(CAREER_COUNT)} ways to work in audio. Free, about five minutes.` };
+  }, [finderRec]);
   // Enrollment list (user request): tapping a topic here adds/removes it, exactly
   // like the Enrollments "Browse & Add" list. Ungated — free users build a list
   // too. `toggleTopic` persists + syncs (signed-in) via the shared store.
@@ -221,17 +241,17 @@ export function CurriculumView({
         style={styles.finderCard}
         onPress={() => (navigation as { navigate: (name: 'CareerFinder') => void }).navigate('CareerFinder')}
         accessibilityRole="button"
-        accessibilityLabel="Audio Career Finder, Beta. Twenty-eight questions, forty-two career families, one thousand nine hundred and two ways to work in audio. Free."
+        accessibilityLabel={finder.a11y}
       >
         <View style={styles.finderText}>
           <View style={styles.finderEyebrowRow}>
-            <Text style={styles.finderEyebrow}>CAREER DISCOVERY LAB</Text>
+            <Text style={styles.finderEyebrow}>CAREER DISCOVERY LAB · FREE</Text>
             <View style={styles.finderBeta}><Text style={styles.finderBetaText}>BETA</Text></View>
           </View>
           <Text style={styles.finderTitle}>Audio Career Finder</Text>
-          <Text style={styles.finderBlurb}>Which kinds of audio work would you enjoy? 28 questions, 42 career families, {fmt(CAREER_COUNT)} ways to work in audio. Free, about five minutes.</Text>
+          <Text style={styles.finderBlurb}>{finder.blurb}</Text>
         </View>
-        <Text style={styles.finderChevron}>›</Text>
+        <View style={styles.finderPill}><Text style={styles.finderPillText}>{finder.pill}</Text></View>
       </Pressable>
 
       {/* Amber "Subjects" subtitle above the list (user request 2026-07-22). */}
@@ -346,15 +366,18 @@ const styles = StyleSheet.create({
   // Audio Career Finder entry card (owner brief 2026-09-03). Same card grammar
   // as the subject cards below, with the amber accent on the left edge so it
   // reads as a destination rather than another expandable subject.
-  finderCard: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#161616', borderWidth: 1, borderColor: '#2a2a2a', borderLeftWidth: 3, borderLeftColor: colors.amber, borderRadius: 9, paddingVertical: 13, paddingLeft: 14, paddingRight: 12 },
+  // The one non-browsing action on Explore, so it takes the green the app
+  // reserves for a primary action; the subject cards below stay neutral.
+  finderCard: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#17171b', borderWidth: 1, borderColor: colors.green, borderRadius: 10, paddingVertical: 16, paddingLeft: 16, paddingRight: 12 },
   finderText: { flex: 1, gap: 3 },
   finderEyebrowRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   finderEyebrow: { fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 1.6, color: colors.amberLabel },
   finderBeta: { borderWidth: 1, borderColor: colors.amberLabel, borderRadius: 3, paddingHorizontal: 5, paddingVertical: 1 },
   finderBetaText: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1.4, color: colors.amber },
-  finderTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 19, color: colors.textPrimary, letterSpacing: 0.3 },
+  finderTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 21, color: colors.textPrimary, letterSpacing: 0.3 },
   finderBlurb: { fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 20, color: colors.textSub },
-  finderChevron: { fontFamily: fonts.oswaldSemiBold, fontSize: 24, color: colors.amber },
+  finderPill: { minHeight: 40, paddingHorizontal: 12, borderRadius: 10, borderWidth: 1, borderColor: colors.green, backgroundColor: '#173021', justifyContent: 'center' },
+  finderPillText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.green },
 
   // Tree.
   // Amber "SUBJECTS" subtitle above the subject list (user request 2026-07-22);

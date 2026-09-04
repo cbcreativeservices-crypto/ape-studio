@@ -1,0 +1,61 @@
+{
+  "_about": "Corrections applied by scripts/build-career-index.py ON TOP of the owner's workbook (industry accuracy review 2026-09-04). The workbook stays the source; these keep the app honest until the workbook is revised. Titles are matched exactly.",
+
+  "regulated": [
+    "Hearing Instrument Specialist", "Hearing-Aid Specialist", "Hearing-Aid Fitting Specialist",
+    "Speech-Language Pathology Assistant", "Voice Therapist",
+    "Auditory-Verbal Therapist", "Listening and Spoken Language Specialist",
+    "Neurosonographer"
+  ],
+
+  "_pe_rule": "Every title ending in 'Engineer' or 'Consultant' inside the Architectural Acoustics family: offering engineering services to the public commonly needs a PE licence.",
+  "professionalEngineerFamilies": ["Architectural Acoustics, Noise & Vibration"],
+
+  "moveToFamily": {
+    "Sonar Technician": "Defense, Sonar & Acoustic Intelligence",
+    "Sonar Systems Engineer": "Defense, Sonar & Acoustic Intelligence",
+    "Sonar Signal-Processing Engineer": "Defense, Sonar & Acoustic Intelligence"
+  },
+
+  "preparation": {
+    "Sonar Software Engineer": "Bachelor's degree common; portfolio/certification may supplement",
+    "Sonar Algorithm Engineer": "Bachelor's degree common; portfolio/certification may supplement",
+    "Sonar Simulation Engineer": "Bachelor's degree common; portfolio/certification may supplement",
+    "Sonar Test Engineer": "Bachelor's degree common; portfolio/certification may supplement",
+    "Sonar Data Scientist": "Bachelor's to doctorate, depending on research responsibility",
+    "Beat Maker": "Portfolio, credits, craft training, and professional network"
+  },
+
+  "_craft_rule": "In these craft families a degree is neither common nor expected for the working roles; the workbook's 'Bachelor's degree common' is a spreadsheet default from title class. Rows whose preparation is that default are re-tabled: technician/operator/assistant/stagehand rows to hands-on training, everything else to the 'varies' pathway.",
+  "craftFamilies": [
+    "Live Sound, Touring & Festivals",
+    "Theatre, Worship, Venues & Show Control",
+    "Recording Studios & Music Production",
+    "Manufacturing, Quality, Calibration & Repair",
+    "Stagecraft, Rigging, Power & Production Support",
+    "DJ, Club & Event Performance Technology"
+  ],
+
+  "orientation": {
+    "_rule_audiologist": "every title containing 'Audiologist' → Clinical / therapeutic",
+    "Songwriter": "Creative / performance",
+    "Arranger": "Creative / performance",
+    "Orchestrator": "Creative / performance",
+    "Audiobook Narrator": "Creative / performance",
+    "Podcast Host": "Creative / performance",
+    "Foley Walker": "Creative / performance",
+    "Audio Research Engineer": "Science / research",
+    "Postdoctoral Researcher — Acoustics": "Science / research",
+    "Acoustics Laboratory Technician": "Science / research"
+  },
+
+  "titleClass": {
+    "Headphone Repair Technician": "Operational/creative role",
+    "Headphone Acoustics Engineer": "Technical/creative specialty",
+    "Headset Acoustics Engineer": "Technical/creative specialty",
+    "Headset Voice Quality Engineer": "Technical/creative specialty"
+  },
+
+  "_tier_rule": "A row the workbook itself calls 'Closely related / supporting' or 'Audio-dependent allied work' cannot also be 'Direct audio occupation' (audio-core). Such rows are shown as audio-specialized.",
+  "demoteCoreWhenRelationshipIn": ["Closely related / supporting", "Audio-dependent allied work", "Adjacent but audio-specific"]
+}

@@ -16,8 +16,8 @@
    "remote and location sessions"
   ],
   "sources": [
-   "S01",
-   "S02"
+   "U.S. Bureau of Labor Statistics / O*NET",
+   "Audio Engineering Society"
   ],
   "count": 34
  },
@@ -38,8 +38,8 @@
    "remote services"
   ],
   "sources": [
-   "S01",
-   "S02"
+   "U.S. Bureau of Labor Statistics / O*NET",
+   "Audio Engineering Society"
   ],
   "count": 27
  },
@@ -63,8 +63,8 @@
    "art and cultural spaces"
   ],
   "sources": [
-   "S02",
-   "S25"
+   "Audio Engineering Society",
+   "U.S. Bureau of Labor Statistics"
   ],
   "count": 37
  },
@@ -90,9 +90,9 @@
    "corporate and special events"
   ],
   "sources": [
-   "S01",
-   "S02",
-   "S21"
+   "U.S. Bureau of Labor Statistics / O*NET",
+   "Audio Engineering Society",
+   "IATSE"
   ],
   "count": 47
  },
@@ -116,8 +116,8 @@
    "permanent venues"
   ],
   "sources": [
-   "S02",
-   "S21"
+   "Audio Engineering Society",
+   "IATSE"
   ],
   "count": 34
  },
@@ -141,9 +141,8 @@
    "localization studios"
   ],
   "sources": [
-   "S03",
-   "S14",
-   "S15"
+   "Motion Picture Sound Editors",
+   "Cinema Audio Society"
   ],
   "count": 76
  },
@@ -165,8 +164,8 @@
    "location-based entertainment"
   ],
   "sources": [
-   "S14",
-   "S22"
+   "Motion Picture Sound Editors",
+   "Game Audio Network Guild"
   ],
   "count": 42
  },
@@ -188,9 +187,9 @@
    "streaming platforms"
   ],
   "sources": [
-   "S01",
-   "S04",
-   "S10"
+   "U.S. Bureau of Labor Statistics / O*NET",
+   "Society of Broadcast Engineers",
+   "Society of Motion Picture and Television Engineers"
   ],
   "count": 50
  },
@@ -212,8 +211,8 @@
    "independent production"
   ],
   "sources": [
-   "S01",
-   "S23"
+   "U.S. Bureau of Labor Statistics / O*NET",
+   "Audio Publishers Association"
   ],
   "count": 35
  },
@@ -239,8 +238,8 @@
    "integrators"
   ],
   "sources": [
-   "S08",
-   "S01"
+   "AVIXA",
+   "U.S. Bureau of Labor Statistics / O*NET"
   ],
   "count": 61
  },
@@ -264,8 +263,8 @@
    "product development"
   ],
   "sources": [
-   "S05",
-   "S20"
+   "Acoustical Society of America",
+   "NIOSH"
   ],
   "count": 50
  },
@@ -290,12 +289,12 @@
    "industry"
   ],
   "sources": [
-   "S05",
-   "S11",
-   "S12",
-   "S13"
+   "Acoustical Society of America",
+   "American Society for Nondestructive Testing",
+   "NOAA",
+   "NASA"
   ],
-  "count": 64
+  "count": 61
  },
  {
   "id": "hearing-audiology-psychoacoustics-and-accessibility",
@@ -318,9 +317,9 @@
    "accessibility teams"
   ],
   "sources": [
-   "S06",
-   "S24",
-   "S05"
+   "American Speech-Language-Hearing Association",
+   "U.S. Bureau of Labor Statistics",
+   "Acoustical Society of America"
   ],
   "count": 43
  },
@@ -341,9 +340,9 @@
    "biomedical research laboratories"
   ],
   "sources": [
-   "S05",
-   "S11",
-   "S26"
+   "Acoustical Society of America",
+   "American Society for Nondestructive Testing",
+   "U.S. Bureau of Labor Statistics"
   ],
   "count": 24
  },
@@ -368,9 +367,9 @@
    "engineering consultancies"
   ],
   "sources": [
-   "S02",
-   "S07",
-   "S17"
+   "Audio Engineering Society",
+   "U.S. Bureau of Labor Statistics",
+   "Audio Engineering Society Technical Council"
   ],
   "count": 55
  },
@@ -394,9 +393,9 @@
    "game and media companies"
   ],
   "sources": [
-   "S02",
-   "S07",
-   "S18"
+   "Audio Engineering Society",
+   "U.S. Bureau of Labor Statistics",
+   "IEEE Signal Processing Society"
   ],
   "count": 69
  },
@@ -421,8 +420,7 @@
    "field-service organizations"
   ],
   "sources": [
-   "S07",
-   "S27"
+   "U.S. Bureau of Labor Statistics"
   ],
   "count": 53
  },
@@ -447,8 +445,8 @@
    "preservation vendors"
   ],
   "sources": [
-   "S09",
-   "S16"
+   "Association of Moving Image Archivists",
+   "Library of Congress"
   ],
   "count": 35
  },
@@ -472,8 +470,8 @@
    "security technology companies"
   ],
   "sources": [
-   "S05",
-   "S28"
+   "Acoustical Society of America",
+   "National Institute of Standards and Technology"
   ],
   "count": 34
  },
@@ -496,10 +494,10 @@
    "rights organizations"
   ],
   "sources": [
-   "S10",
-   "S19",
-   "S20",
-   "S29"
+   "Society of Motion Picture and Television Engineers",
+   "Federal Communications Commission",
+   "NIOSH",
+   "U.S. Copyright Office"
   ],
   "count": 41
  },
@@ -524,9 +522,8 @@
    "research laboratories"
   ],
   "sources": [
-   "S02",
-   "S05",
-   "S30"
+   "Audio Engineering Society",
+   "Acoustical Society of America"
   ],
   "count": 44
  },
@@ -552,8 +549,8 @@
    "production businesses"
   ],
   "sources": [
-   "S02",
-   "S31"
+   "Audio Engineering Society",
+   "Audio Engineering Society Career Center"
   ],
   "count": 64
  },
@@ -576,9 +573,9 @@
    "mobile-device companies"
   ],
   "sources": [
-   "S02",
-   "S07",
-   "S32"
+   "Audio Engineering Society",
+   "U.S. Bureau of Labor Statistics",
+   "Consumer Technology Association"
   ],
   "count": 41
  },
@@ -602,8 +599,8 @@
    "livestreams"
   ],
   "sources": [
-   "S25",
-   "S01"
+   "U.S. Bureau of Labor Statistics",
+   "U.S. Bureau of Labor Statistics / O*NET"
   ],
   "count": 25
  },
@@ -626,8 +623,8 @@
    "themed entertainment"
   ],
   "sources": [
-   "S02",
-   "S18"
+   "Audio Engineering Society",
+   "IEEE Signal Processing Society"
   ],
   "count": 35
  },
@@ -650,8 +647,8 @@
    "music-production studios"
   ],
   "sources": [
-   "S25",
-   "S03"
+   "U.S. Bureau of Labor Statistics",
+   "Motion Picture Sound Editors"
   ],
   "count": 31
  },
@@ -675,9 +672,9 @@
    "manufacturers"
   ],
   "sources": [
-   "S04",
-   "S08",
-   "S10"
+   "Society of Broadcast Engineers",
+   "AVIXA",
+   "Society of Motion Picture and Television Engineers"
   ],
   "count": 29
  },
@@ -701,9 +698,9 @@
    "calibration services"
   ],
   "sources": [
-   "S02",
-   "S05",
-   "S17"
+   "Audio Engineering Society",
+   "Acoustical Society of America",
+   "Audio Engineering Society Technical Council"
   ],
   "count": 29
  },
@@ -727,8 +724,8 @@
    "rental companies"
   ],
   "sources": [
-   "S20",
-   "S21"
+   "NIOSH",
+   "IATSE"
   ],
   "count": 36
  },
@@ -752,8 +749,8 @@
    "voice-production facilities"
   ],
   "sources": [
-   "S25",
-   "S02"
+   "U.S. Bureau of Labor Statistics",
+   "Audio Engineering Society"
   ],
   "count": 24
  },
@@ -779,8 +776,7 @@
    "recording sessions"
   ],
   "sources": [
-   "S25",
-   "S33"
+   "U.S. Bureau of Labor Statistics"
   ],
   "count": 104
  },
@@ -803,9 +799,9 @@
    "private service businesses"
   ],
   "sources": [
-   "S34",
-   "S35",
-   "S36"
+   "Piano Technicians Guild",
+   "National Association of Professional Band Instrument Repair Technicians",
+   "American Federation of Violin and Bow Makers"
   ],
   "count": 89
  },
@@ -829,9 +825,7 @@
    "private practice"
   ],
   "sources": [
-   "S25",
-   "S33",
-   "S45"
+   "U.S. Bureau of Labor Statistics"
   ],
   "count": 60
  },
@@ -856,9 +850,8 @@
    "research programs"
   ],
   "sources": [
-   "S37",
-   "S38",
-   "S06"
+   "Certification Board for Music Therapists",
+   "American Speech-Language-Hearing Association"
   ],
   "count": 44
  },
@@ -880,9 +873,9 @@
    "language archives"
   ],
   "sources": [
-   "S42",
-   "S18",
-   "S06"
+   "Linguistic Society of America",
+   "IEEE Signal Processing Society",
+   "American Speech-Language-Hearing Association"
   ],
   "count": 45
  },
@@ -904,9 +897,8 @@
    "public-safety communications"
   ],
   "sources": [
-   "S18",
-   "S19",
-   "S46"
+   "IEEE Signal Processing Society",
+   "Federal Communications Commission"
   ],
   "count": 43
  },
@@ -932,9 +924,9 @@
    "specialty fabrication shops"
   ],
   "sources": [
-   "S05",
-   "S20",
-   "S43"
+   "Acoustical Society of America",
+   "NIOSH",
+   "Occupational Safety and Health Administration"
   ],
   "count": 45
  },
@@ -955,9 +947,9 @@
    "film and advertising companies"
   ],
   "sources": [
-   "S29",
-   "S41",
-   "S44"
+   "U.S. Copyright Office",
+   "Music Library Association",
+   "NAMM"
   ],
   "count": 52
  },
@@ -978,11 +970,11 @@
    "government contractors"
   ],
   "sources": [
-   "S05",
-   "S12",
-   "S40"
+   "Acoustical Society of America",
+   "NOAA",
+   "U.S. Navy"
   ],
-  "count": 41
+  "count": 44
  },
  {
   "id": "accessible-media-and-audio-description",
@@ -1005,8 +997,8 @@
    "education"
   ],
   "sources": [
-   "S19",
-   "S39"
+   "Federal Communications Commission",
+   "American Council of the Blind"
   ],
   "count": 32
  },
@@ -1029,9 +1021,9 @@
    "touring suppliers"
   ],
   "sources": [
-   "S34",
-   "S35",
-   "S44"
+   "Piano Technicians Guild",
+   "National Association of Professional Band Instrument Repair Technicians",
+   "NAMM"
   ],
   "count": 45
  },
@@ -1052,10 +1044,10 @@
    "cultural heritage programs"
   ],
   "sources": [
-   "S09",
-   "S12",
-   "S16",
-   "S42"
+   "Association of Moving Image Archivists",
+   "NOAA",
+   "Library of Congress",
+   "Linguistic Society of America"
   ],
   "count": 33
  }
