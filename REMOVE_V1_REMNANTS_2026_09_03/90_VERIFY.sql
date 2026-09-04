@@ -2,7 +2,7 @@
 -- Run after each stage; every row for the stages you have run must read PASS.
 -- Stages you have not run yet will read "NOT RUN" - that is fine.
 
-SELECT stage, check, result FROM (
+SELECT stage, "check", result FROM (
 
 -- ------------------------------------------------------------------- STAGE 10
 SELECT 10 AS stage, 'bulk_import_glossary resolves by v3 global_sequence' AS check,
@@ -105,4 +105,4 @@ UNION ALL SELECT 99, 'the 51 legacy achievements rows still present',
 UNION ALL SELECT 99, 'achievements total still 468',
   CASE WHEN (SELECT count(*) FROM public.achievements) = 468 THEN 'PASS' ELSE 'INVESTIGATE' END
 
-) v ORDER BY stage, check;
+) v ORDER BY stage, "check";

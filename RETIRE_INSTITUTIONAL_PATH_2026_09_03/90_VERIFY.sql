@@ -1,6 +1,6 @@
 -- RETIRE INSTITUTIONAL PATH · 90_VERIFY · READ ONLY.
 
-SELECT check, result FROM (
+SELECT "check", result FROM (
 SELECT 'v_student_progress dropped' AS check,
        CASE WHEN to_regclass('public.v_student_progress') IS NULL THEN 'PASS' ELSE 'NOT RUN' END AS result
 UNION ALL SELECT 'v_section_cohort_stats dropped',
@@ -28,7 +28,7 @@ UNION ALL SELECT 'register_student untouched',
        CASE WHEN to_regprocedure('public.register_student(text,text)') IS NOT NULL THEN 'PASS' ELSE 'FAIL' END
 UNION ALL SELECT 'refresh_student_metrics untouched',
        CASE WHEN to_regprocedure('public.refresh_student_metrics(uuid)') IS NOT NULL THEN 'PASS' ELSE 'FAIL' END
-) v ORDER BY check;
+) v ORDER BY "check";
 
 -- Remaining blockers, live. This list must be EMPTY before any table drop.
 SELECT 'REMAINING BLOCKER' AS section, p.proname AS function,
