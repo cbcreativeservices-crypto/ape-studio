@@ -75,23 +75,17 @@ from `credential_awards`). Verified end-to-end in the 8090 web preview
 a progressed account + supply trophy art for certs/programs (drop PNGs +
 `credentialArt.ts` entries; topics use `achievements.icon_url` as today).
 
-- [ ] **(POSTPONED) Backend `DROP_V1_SCAFFOLDING` sequencing.**
-  Investigated 2026-09-04 (ccode): the old grid was NOT a mechanical column swap. The
-  `courses!inner` join in `src/features/profile/api.ts` (`fetchAchievements`,
-  `fetchGallery`) is what currently scopes the trophy grid to **v1**
-  achievements, and the whole Achievements/album system is v1-sized:
-  `GRID_SLOTS = 50` and `ALBUM_DENOMINATOR = 50` match v1's ~50 course-sequenced
-  trophies, and each tile's `position` is the raw `global_sequence`. v3 has 166
-  active topics with `global_sequence` 3000–4740, so a naive repoint indexes
-  `position − 1` (≈3000+) into a 50-slot grid and renders an EMPTY wall, and the
-  "X / 50" / full-course % math no longer means anything. Doing it right is a
-  redesign of the v3 trophy wall + album tiers (how many slots, grouped by field?
-  paginated? what replaces course code/colour — recommend `subject` + a stable
-  per-field palette), which is a design call for Cháno. **Not urgent:** nothing
-  breaks until `DROP_V1_SCAFFOLDING` runs, which is itself parked on the twelve
-  DB-function decisions ([[v1-removal-2026-09-03]]). Bundle #2 into that thread
-  and give the trophy wall a proper v3 design then, rather than guessing now. —
-  Cháno (design direction) + ccode (build)
+- [ ] **`DROP_V1_SCAFFOLDING` — DECISION SHEET READY, app fully unblocked.**
+  Decision sheet authored 2026-09-04: `docs/APE_V1_REMOVAL_DECISION_SHEET_2026_09_04.md`
+  — the twelve DB functions (7 rewrite / 5 drop) each with ccode's recommendation
+  + Agree/Change/Ask, the two 🔴 judgment calls (`refresh_student_metrics`
+  replacement number; the optional badge-rows deletion), the run order, and the
+  irreversibility note. **Both former app blockers are now RESOLVED** —
+  `profile/api.ts` (by the Achievements v3 redesign) and `dashboard/api.ts`
+  (`course_id` already gone); verified no app query hits the dropped tables and
+  no app code breaks on the rewritten RPCs, so **no app change is needed before
+  any stage, incl. 50/80.** NEXT: Cháno + Computer A ratify the twelve, then
+  Cháno runs the package (Supabase SQL editor). See [[v1-removal-2026-09-03]].
 
 ### Housekeeping / backup (uncommitted at 2026-09-04)
 - [x] **Loose artifacts backed up 2026-09-04** — `TASK10_COMPUTERC_2026_09_03/`,
