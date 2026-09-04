@@ -104,7 +104,9 @@ const tracePoints = (ys: number[]): string =>
 const RAW_POINTS = tracePoints(RAW_TRACE);
 const SMOOTH_POINTS = tracePoints(SMOOTH_TRACE);
 
-const FREQ_LABELS = ['31 Hz', '250', '2k', '16k'];
+// 15 third-octave bands starting ~31.5 Hz reach only ~800 Hz — label the axis
+// to that true span, not 16 kHz (F24).
+const FREQ_LABELS = ['31 Hz', '100', '315', '800'];
 
 const SCENES = [
   {

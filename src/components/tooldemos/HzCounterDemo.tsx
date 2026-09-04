@@ -301,6 +301,9 @@ function TunerScene({ vizW }: { vizW: number }) {
   const [stepIdx, setStepIdx] = useState(0);
   const rot = useRef(new Animated.Value(0)).current;
   const cents = CENTS_STEPS[stepIdx % CENTS_STEPS.length];
+  // The Hz readout must track the cents needle (F08): a source +12¢ from A4
+  // reads 440·2^(12/1200) ≈ 443.1 Hz, not a static 440.0.
+  const hz = 440 * Math.pow(2, cents / 1200);
 
   useEffect(() => {
     const anim = Animated.timing(rot, {
@@ -340,7 +343,7 @@ function TunerScene({ vizW }: { vizW: number }) {
   return (
     <View>
       <View style={styles.tunerHeader}>
-        <Text style={styles.tunerHz}>440.0 Hz</Text>
+        <Text style={styles.tunerHz}>{hz.toFixed(1)} Hz</Text>
         <Text style={styles.tunerArrow}>{'→'}</Text>
         <Text style={styles.tunerNote}>A4</Text>
       </View>

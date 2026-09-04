@@ -37,12 +37,14 @@ const Y_SCALE = 0.95; // headroom so strokes never kiss the frame
 const CLIP_LIMIT = 0.8; // normalized "converter ceiling" for scene 1
 const DRIVE_GAIN = 2.1; // how hard the HOT toggle pushes the clean wave
 
-/** Deterministic three-partial mix, |value| < 0.9. */
+/** Deterministic three-partial mix, |value| < 0.75 — kept under the 0.8
+ *  converter ceiling so the CLEAN wave genuinely fits beneath it (F25). */
 function sineMix(t: number): number {
   return (
-    0.52 * Math.sin(2 * Math.PI * 3 * t) +
-    0.24 * Math.sin(2 * Math.PI * 7 * t + 1.3) +
-    0.14 * Math.sin(2 * Math.PI * 13 * t + 0.7)
+    0.8 *
+    (0.52 * Math.sin(2 * Math.PI * 3 * t) +
+      0.24 * Math.sin(2 * Math.PI * 7 * t + 1.3) +
+      0.14 * Math.sin(2 * Math.PI * 13 * t + 0.7))
   );
 }
 
@@ -108,7 +110,7 @@ const TRANSIENT_VALUES: number[] = Array.from({ length: M + 1 }, (_, i) => {
 /** Scene 2 — pad: near-constant envelope, slow wobble. */
 const PAD_VALUES: number[] = Array.from({ length: M + 1 }, (_, i) => {
   const t = i / M;
-  const env = 0.55 + 0.05 * Math.sin(2 * Math.PI * 1.2 * t + 0.4);
+  const env = 0.87 + 0.05 * Math.sin(2 * Math.PI * 1.2 * t + 0.4);
   return env * Math.sin(2 * Math.PI * 16 * t);
 });
 
@@ -303,7 +305,7 @@ function ClipScene() {
             hitSlop={6}
             style={[styles.toggleBtn, hot && styles.toggleBtnHotOn]}
           >
-            <Text style={[styles.toggleValue, hot && styles.toggleValueHotOn]}>+12 dB — TOO HOT</Text>
+            <Text style={[styles.toggleValue, hot && styles.toggleValueHotOn]}>+6 dB — TOO HOT</Text>
           </Pressable>
         </View>
       </View>
@@ -404,7 +406,7 @@ function TransientScene() {
 
 const ZOOM_STEPS = [1, 2, 4, 8] as const;
 const ZP_H = 82; // each zoom-scene pane height (px)
-const CLEAN_MAX = Math.max(...CLEAN_VALUES.map((v) => Math.abs(v))); // ≈ 0.9
+const CLEAN_MAX = Math.max(...CLEAN_VALUES.map((v) => Math.abs(v))); // ≈ 0.72
 
 /** Waveform points in pixel space at vertical gain `k` px per unit amplitude. */
 function zoomPoints(w: number, level: number, k: number): string {
