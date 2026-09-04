@@ -43,7 +43,11 @@ try {
   KeyboardAwareScrollView = (props: KAScrollProps) => (
     <RealKAScroll keyboardDismissMode={DISMISS_ON_DRAG} {...props} />
   );
-  KeyboardToolbar = kc.KeyboardToolbar;
+  // Web has no keyboard events (the library's web bindings are no-ops), so its
+  // DONE bar never hides: it overflowed the document by 42 px and any tab-bar
+  // tap scrolled the whole app up by that much, pushing every screen's header
+  // off-screen (Bug+Hater night C1-01). Native keeps the real toolbar.
+  KeyboardToolbar = Platform.OS === 'web' ? () => null : kc.KeyboardToolbar;
 } catch {
   KeyboardProvider = ({ children }: { children?: ReactNode }) => <>{children}</>;
   // Drop the keyboard-controller-only prop and render a plain ScrollView.
