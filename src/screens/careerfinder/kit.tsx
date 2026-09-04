@@ -117,7 +117,7 @@ export function LinkRow({ children }: { children: ReactNode }) {
 /** Header ★ save toggle (44 pt). */
 export function SaveStar({ saved, onPress, name }: { saved: boolean; onPress: () => void; name: string }) {
   return (
-    <Pressable onPress={onPress} style={styles.star} hitSlop={6} accessibilityRole="button" accessibilityState={{ selected: saved }} accessibilityLabel={saved ? `Remove ${name} from saved families` : `Save ${name}`}>
+    <Pressable onPress={onPress} style={styles.star} hitSlop={6} accessibilityRole="button" accessibilityState={{ selected: saved }} aria-selected={saved} accessibilityLabel={saved ? `Remove ${name} from saved families` : `Save ${name}`}>
       <Text style={[styles.starText, saved && { color: colors.amber }]}>{saved ? '★' : '☆'}</Text>
     </Pressable>
   );

@@ -138,6 +138,7 @@ export function CareerFinderQuizScreen() {
                   style={({ pressed }) => [styles.answer, unknown && styles.answerUnknown, on && styles.answerOn, pressed && styles.answerPressed]}
                   accessibilityRole="radio"
                   accessibilityState={{ checked: on }}
+                  aria-checked={on}
                   accessibilityLabel={a.label}
                   accessibilityHint={unknown ? 'Not scored. Tells us this activity is new to you.' : undefined}
                 >

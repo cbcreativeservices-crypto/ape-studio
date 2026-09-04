@@ -85,7 +85,7 @@ export function CareerFinderResultsScreen() {
           <Pressable onPress={() => openFamily(f.id)} style={[styles.actBtn, styles.actExplore]} accessibilityRole="button" accessibilityLabel={`Explore ${f.name}`}>
             <Text style={[styles.actText, { color: colors.green }]}>EXPLORE FAMILY ›</Text>
           </Pressable>
-          <Pressable onPress={() => toggleSavedFamily(f.id)} style={[styles.actBtn, saved && styles.actSaved]} accessibilityRole="button" accessibilityState={{ selected: saved }} accessibilityLabel={saved ? `Remove ${f.name} from saved` : `Save ${f.name}`}>
+          <Pressable onPress={() => toggleSavedFamily(f.id)} style={[styles.actBtn, saved && styles.actSaved]} accessibilityRole="button" accessibilityState={{ selected: saved }} aria-selected={saved} accessibilityLabel={saved ? `Remove ${f.name} from saved` : `Save ${f.name}`}>
             <Text style={[styles.actText, saved && { color: colors.amber }]}>{saved ? '★ SAVED' : '☆ SAVE'}</Text>
           </Pressable>
         </View>
@@ -116,7 +116,7 @@ export function CareerFinderResultsScreen() {
             <View style={styles.chips}>{result.strongest.map((d) => <DimChip key={d.code} code={d.code} dims={result.dims} />)}</View>
           </>
         ) : null}
-        <Pressable onPress={() => setMeanings(!meanings)} hitSlop={6} style={styles.meaningsBtn} accessibilityRole="button" accessibilityState={{ expanded: meanings }} accessibilityLabel="What these activities mean">
+        <Pressable onPress={() => setMeanings(!meanings)} hitSlop={6} style={styles.meaningsBtn} accessibilityRole="button" accessibilityState={{ expanded: meanings }} aria-expanded={meanings} accessibilityLabel="What these activities mean">
           <Text style={styles.meaningsText}>WHAT THESE MEAN {meanings ? '▴' : '▾'}</Text>
         </Pressable>
         {meanings ? (
@@ -184,7 +184,7 @@ export function CareerFinderResultsScreen() {
           {([['yes', 'YES'], ['somewhat', 'SOMEWHAT'], ['no', 'NO']] as const).map(([v, l]) => {
             const on = rec.feedback?.answer === v;
             return (
-              <Pressable key={v} onPress={() => feedback(v)} style={[styles.fbBtn, on && styles.fbOn]} accessibilityRole="radio" accessibilityState={{ checked: on }} accessibilityLabel={l}>
+              <Pressable key={v} onPress={() => feedback(v)} style={[styles.fbBtn, on && styles.fbOn]} accessibilityRole="radio" accessibilityState={{ checked: on }} aria-checked={on} accessibilityLabel={l}>
                 <Text style={[styles.fbText, on && { color: colors.amber }]}>{on ? '✓ ' : ''}{l}</Text>
               </Pressable>
             );
