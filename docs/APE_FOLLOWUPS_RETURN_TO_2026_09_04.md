@@ -63,13 +63,17 @@ add new lessons at the bottom of PREVENT. Owner tags: **Cháno** = the owner,
   ratify. — Cháno
 
 ### v1 removal finish — the Achievements trophy wall
-**Owner escalated 2026-09-04:** the pure backend-sequencing repoint (below) is
-POSTPONED, but the Achievements SCREEN is being fully **redesigned for v3 now** —
-three tracked categories (topics 166 / certificates / programs), reorganized nav
-(no single 166-trophy wall), trophy art owner-supplied in a later session.
-Design-agent blueprint → build → owner device review. See assistant memory
-[[achievements-v3-redesign-2026-09-04]]. The repoint of `fetchAchievements`/
-`fetchGallery` off `courses` happens AS PART OF this redesign (v3 reads).
+**Owner escalated 2026-09-04; BUILT + preview-verified same day (commit
+`8625da4`).** The Achievements screen was fully redesigned for v3: a "Trophy
+Case" hub with three categories — Topics (Home → Field → Subject → grid, so the
+166 topics are never on one screen), Certificates, Programs (earned-only walls
+from `credential_awards`). Verified end-to-end in the 8090 web preview
+(hub → fields → subjects → grid; "0 / 166" live; empty states honest). The
+`fetchAchievements`/`fetchGallery` repoint off `courses` was done as part of it
+(new `src/features/achievements/api.ts`; old grid deleted). See assistant memory
+[[achievements-v3-redesign-2026-09-04]]. **STILL OWED (Cháno):** device pass with
+a progressed account + supply trophy art for certs/programs (drop PNGs +
+`credentialArt.ts` entries; topics use `achievements.icon_url` as today).
 
 - [ ] **(POSTPONED) Backend `DROP_V1_SCAFFOLDING` sequencing.**
   Investigated 2026-09-04 (ccode): the old grid was NOT a mechanical column swap. The
