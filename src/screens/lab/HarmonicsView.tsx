@@ -1617,7 +1617,7 @@ export function HarmonicsView({
       label: 'AXIS',
       valueLabel: axis === 'log' ? 'LOG ♪' : 'LIN',
       options: [
-        { id: 'log', label: 'LOG ♪', blurb: 'Musical spacing: every octave gets equal width, the way pitch actually works. Harmonics crowd together to the right.' },
+        { id: 'log', label: 'LOG ♪', blurb: 'Musical spacing: every octave gets equal height, the way pitch actually works. Harmonics crowd together toward the top.' },
         { id: 'lin', label: 'LIN', blurb: 'Equal Hz per pixel. Harmonics of one note space out EVENLY — the comb becomes obvious. Great for math, poor for music.' },
       ],
       selectedId: axis,

@@ -51,7 +51,7 @@ export const CLASS_FACTS: Record<AmpClass, ClassFacts> = {
     principle: 'Push-pull with just enough bias that both devices conduct around zero crossing.',
     conduction: '>180° but <360° per device',
     idle: 'Low to moderate — set by the bias',
-    efficiency: 'Below Class B’s theoretical max; roughly 50–70% at full output, far less at low levels',
+    efficiency: 'Approaches Class B’s ~78.5% at full output; markedly lower in practice and far less at low levels',
     heat: 'Moderate; rises with output and bias',
     limitation: 'Bias must be set and kept stable over temperature',
     use: 'The workhorse of analog audio power amplification',

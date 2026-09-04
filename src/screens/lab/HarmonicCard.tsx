@@ -43,7 +43,7 @@ function tendencyFor(n: number): string {
     case 2:
       return 'Even-order — one octave above the fundamental. Tends to add warmth and fullness without changing the perceived pitch.';
     case 3:
-      return 'Odd-order. Adds edge, buzz, and waveform asymmetry depending on its level and phase.';
+      return 'Odd-order. Adds edge and buzz depending on its level and phase, while keeping the wave half-wave symmetric.';
     case 4:
       return 'Even-order — two octaves up. Tends to add brightness and sheen at moderate levels.';
     case 5:

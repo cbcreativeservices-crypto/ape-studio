@@ -484,7 +484,7 @@ function PolarSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
           { k: 'SOURCE', v: dims ? `${angle360}°` : '—', helpKey: 'polar_pattern' },
           {
             k: 'PICKUP',
-            v: !dims ? '—' : g < 0.05 ? 'NULL ≤−30 dB' : `${fmtDb1(20 * Math.log10(g))} dB`,
+            v: !dims ? '—' : g < 0.05 ? 'NULL ≤−26 dB' : `${fmtDb1(20 * Math.log10(g))} dB`,
             tint: g < 0.05 ? '#ff6b5e' : undefined,
             flex: 1.3,
             helpKey: 'polar_pattern',

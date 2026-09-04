@@ -37,7 +37,7 @@ export const SIGNAL_BLURBS: Record<SignalKey, string> = {
   kick: 'A low thump that hits and dies fast. Peak meters catch it; slow averages barely move — the classic peak-vs-average lesson.',
   guitar: 'Plucked notes that ring and decay: an attack spike, then a long falling tail.',
   whitenoise: 'Every frequency at equal energy — constant hiss. Rock-steady on every meter, and bright, because each octave up holds more frequencies.',
-  pinknoise: 'Equal energy per OCTAVE — the calibration reference. As steady as white noise but darker, and it reads flat on a log-frequency display.',
+  pinknoise: 'Equal energy per OCTAVE — the calibration reference. As steady as white noise but darker; on this FFT/log-frequency analyzer it reads as a gentle -3 dB/octave downward slope (and flat only on a constant-Q / fractional-octave RTA).',
   snare: 'A sharp crack with a short rattle: a huge peak over a tiny average — the highest crest factor of the drums.',
   organ: 'Held, sustained chords at nearly constant level. Peak and average sit close together — the opposite of drums.',
   sine: 'One single frequency — the purest signal there is. Peak sits exactly 3 dB above RMS.',

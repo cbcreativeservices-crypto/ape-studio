@@ -144,7 +144,7 @@ export function PageVoicing({ ctx }: { ctx: PageCtx }) {
       <Row>
         {VOICED_PAIRS.map((q, i) => <Btn key={q.unvoiced} label={`${q.unvoiced} / ${q.voiced}`} tone={i === pair ? 'primary' : 'plain'} onPress={() => setPair(i)} a11y={`${q.unvoiced} as in ${q.example[0]}, versus ${q.voiced} as in ${q.example[1]}`} />)}
       </Row>
-      <Body>Why it matters at the microphone: unvoiced sounds are pure noise with no pitch — S, SH and F are where sibilance lives — while voiced sounds carry the pitch and most of the energy.</Body>
+      <Body>Why it matters at the microphone: unvoiced sounds are pure noise with no pitch — S and SH are where sibilance lives — while voiced sounds carry the pitch and most of the energy.</Body>
     </View>
   );
 }

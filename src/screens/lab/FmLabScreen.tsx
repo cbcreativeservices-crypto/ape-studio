@@ -114,7 +114,10 @@ export function FmLabScreen() {
   const env = ENVS.find((e) => e.key === envKey)!;
   const fm = carrier * ratio;
   const carson = 2 * fm * (index + 1);
-  const isInt = Math.abs(ratio - Math.round(ratio)) < 1e-9;
+  // Harmonicity follows the ✳ scheme, not integer-ness (F03): a simple fraction
+  // like 0.5 (=1/2) is still perfectly pitched, so the caption keys off the ✳
+  // marks (the irrational bell/metallic ratios) rather than an integer-only test.
+  const isInharmonic = RATIOS[ratioIdx].label.includes('✳');
 
   // ---- Audio (generator FM mode; strike = retrigger) -------------------------
   const genRef = useRef(0);
@@ -282,9 +285,9 @@ export function FmLabScreen() {
           {index === 0
             ? 'Index 0 — no modulation: the pure carrier alone.'
             : `Sidebands at ${carrier} ± k·${fm.toFixed(0)} Hz, amplitudes |J_k(${index.toFixed(1)})|. ` +
-              (isInt
-                ? 'Integer ratio — sidebands land ON a harmonic series (pitched).'
-                : 'Non-integer ratio — sidebands fall BETWEEN harmonics (inharmonic: the bell/metallic family). ✳ on a RATIO marks the inharmonic ones.')}
+              (isInharmonic
+                ? 'Inharmonic ratio (✳) — sidebands fall BETWEEN the harmonics: the bell/metallic family. ✳ on a RATIO marks these.'
+                : 'Simple ratio — sidebands land ON a harmonic series (pitched), even for a fraction like 0.5.')}
         </Text>
         <Text style={carson > NYQUIST ? styles.advisory : styles.caption}>
           Carson bandwidth ≈ 2·fm·(I+1) = {(carson / 1000).toFixed(1)} kHz
@@ -323,13 +326,13 @@ export function FmLabScreen() {
         spec={{
           question: 'You want a bell — metallic, not quite in tune with itself. Which ratio family?',
           options: [
-            'An irrational ratio like 1.41 or 3.5',
+            'A non-integer ratio like 1.41 or 3.5',
             'An integer ratio like 1 or 2',
             'The highest ratio available',
           ],
           correctIdx: 0,
           reveal:
-            'Integer ratios drop the sidebands ON the harmonic series — pitched, musical. Irrational ratios (√2, 3.5) drop them BETWEEN the harmonics: nothing lines up, and that inharmonic spray is the bell.',
+            'Integer ratios drop the sidebands ON the harmonic series — pitched, musical. Non-integer ratios (√2, 3.5) drop them BETWEEN the harmonics: nothing lines up, and that inharmonic spray is the bell.',
           wrongHint: 'A/B ratio 1 against 1.41 ✳ and watch where the sticks land.',
         }}
       />

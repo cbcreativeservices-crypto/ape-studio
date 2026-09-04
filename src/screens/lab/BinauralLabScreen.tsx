@@ -313,7 +313,7 @@ export function BinauralLabScreen() {
                 <Text style={styles.caption}>
                   {sel.type === BIN_SRC.sine
                     ? sel.freq <= 440
-                      ? 'A smooth low tone is the HARDEST thing to localize — the ITD is ambiguous and the head barely shadows it. Notice how vague it feels.'
+                      ? 'A smooth low tone is the HARDEST thing to localize — the head casts almost no shadow (no level difference) and there are no broadband or onset cues, so the ITD it does give, on its own, is only a weak sense of place. Notice how vague it feels.'
                       : 'A higher tone gives the head shadow something to work with — level difference starts carrying the location.'
                     : 'Broadband noise feeds BOTH cues at once — timing at the low end, shadow at the top. The easiest source to place.'}
                 </Text>

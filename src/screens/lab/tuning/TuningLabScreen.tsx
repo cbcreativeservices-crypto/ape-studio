@@ -99,7 +99,7 @@ export function TuningLabScreen() {
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flex: 1 }}>
-          <Text style={styles.kicker}>TUNING & TEMPERAMENT LAB · CHAPTER {chapter} OF {CHAPTER_COUNT - 1}</Text>
+          <Text style={styles.kicker}>TUNING & TEMPERAMENT LAB · CHAPTER {chapter + 1} OF {CHAPTER_COUNT}</Text>
           <Text style={styles.title} numberOfLines={2}>{def.title}</Text>
         </View>
         {/* Two-segment toggle: both states are visible, so the learner can see

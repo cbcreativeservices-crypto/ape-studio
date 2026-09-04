@@ -914,7 +914,7 @@ const STEER_CHECK: CheckSpec = {
   question: 'You need the sub array’s beam aimed 20° toward the far corner. What does it?',
   options: [
     'Physically tilt every cabinet 20°',
-    'Progressive per-box delays — a few hundred microseconds each',
+    'Progressive per-box delays — on the order of a couple of milliseconds each here',
     'Invert polarity on half of the boxes',
     'A high-shelf EQ on the outer boxes',
   ],

@@ -1119,16 +1119,16 @@ const distConfig: FxLabConfig = {
       wrongHint: 'Play the SINE source and watch the added partials in the display.',
     },
     {
-      question: 'DRIVE and OUTPUT both change loudness. Why have both?',
+      question: 'DRIVE and MIX both change how distorted it sounds. What does each actually do?',
       options: [
-        'DRIVE sets how hard the wave hits the clipping stage (the tone); OUTPUT just compensates the level after',
+        'DRIVE sets how hard the wave hits the clipping stage (how harmonic-rich it gets); MIX blends that distorted signal back with the clean one',
         'They are the same control duplicated',
-        'OUTPUT adds more harmonics than DRIVE',
+        'MIX adds more harmonics than DRIVE',
       ],
       correctIdx: 0,
       reveal:
-        'Drive is the sound: how hard you push into the curve decides how bent — how harmonic-rich — the wave gets. Output is housekeeping: bring the now-hotter signal back to a fair level so you judge tone, not loudness.',
-      wrongHint: 'Raise DRIVE, lower OUTPUT — the loudness holds, the character doesn\u2019t.',
+        'Drive is the sound: how hard you push into the curve decides how bent — how harmonic-rich — the wave gets. MIX is the blend: parallel distortion keeps the clean signal alongside the clipped one, so you dial in grit without losing the dry body.',
+      wrongHint: 'Raise DRIVE for more harmonics, then pull MIX toward dry — the loudness holds, the character doesn\u2019t.',
     },
   ],
 };

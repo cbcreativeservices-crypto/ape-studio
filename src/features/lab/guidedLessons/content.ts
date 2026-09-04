@@ -378,7 +378,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'A/B hard-clip vs tube on a sine and read the FFT: odd-only vs odd+even harmonic stacks.',
       'Push a high sine with oversampling OFF to show aliasing (inharmonic partials), then ON to remove it.',
     ],
-    formula: 'A nonlinearity y = f(x) expands a sine into a harmonic series; symmetric f → odd, asymmetric f → even. Any harmonic above fs/2 aliases to fs − f. THD = harmonic energy ÷ fundamental energy.',
+    formula: 'A nonlinearity y = f(x) expands a sine into a harmonic series; symmetric f → odd, asymmetric f → even. Any harmonic above fs/2 aliases to fs − f. THD = RMS of the harmonics ÷ RMS of the fundamental (an amplitude ratio).',
   },
 
   // ──────────────────────────────────────────────────────── LAB 11 · Noise ──
@@ -738,7 +738,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     ],
     proTips: [
       'Hold ratio 2 and step the index 0→1→2→4→8 while watching the sideband graph — you can SEE brightness being added pair by pair.',
-      'A/B ratio 2 vs ratio 1.41 at the same index: same bandwidth, harmonic vs bell — placement, not amount, decides the character.',
+      'A/B ratio 2 vs ratio 1.41 at the same index: same number of significant sidebands, harmonic vs bell — placement, not amount, decides the character.',
     ],
     formula: 'y(t) = sin(2π·fc·t + I·sin(2π·fm·t)), fm = ratio·fc. Sideband amplitude at fc±k·fm = J_k(I) (Bessel). Carson bandwidth ≈ 2·fm·(I+1).',
   },
@@ -768,7 +768,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     commonMistakes: [
       'Listening on speakers — binaural cues require HEADPHONES; on speakers the two channels mix in the air (crosstalk) and the illusion collapses.',
       'Expecting elevation — this model does azimuth + distance only; up/down cues come from pinna filtering (HRTF), which a time/level model cannot produce.',
-      'Testing with a low sine and hearing nothing move — ITD phase cues get ambiguous and ILD nearly vanishes at low frequencies; use noise or a higher tone to hear the effect clearly.',
+      'Testing with a low sine and hearing nothing move — ITD produces only a tiny interaural phase difference and ILD nearly vanishes at low frequencies, so a low pure tone gives weak cues; use noise or a higher tone to hear the effect clearly.',
       'Front/back confusion — time and level are (nearly) symmetric front-to-back; without personal HRTF cues the brain guesses. The gentle rear darkening here is a hint, not a solution.',
       'Confusing binaural with stereo panning — pan pots change LEVEL only; binaural adds the TIME and SHADOW cues your ears actually use.',
       'Assuming this is an HRTF renderer — it is deliberately a simplified physics model (badged); measured-HRTF localization is sharper, especially outside the front arc.',

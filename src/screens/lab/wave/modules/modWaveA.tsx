@@ -985,7 +985,7 @@ export function DiffractionModule(p: WaveModuleProps) {
             Waves bend around anything comparable to or smaller than their own wavelength. Slide the
             frequency: at 80 Hz (λ ≈ 4.3 m) the wave barely notices a 4 m wall — the detour over the
             top is a tiny fraction of a wavelength, so the loss stays small. At 8 kHz (λ ≈ 4 cm) the
-            same detour is hundreds of wavelengths and the shadow gets deep. One barrier, one
+            same detour is tens of wavelengths and the shadow gets deep. One barrier, one
             geometry — the wavelength alone decides who gets through.
           </Text>
           <Text style={dstyles.eyebrow}>A SHADOW ZONE IS NOT SILENCE</Text>
