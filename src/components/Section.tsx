@@ -67,6 +67,8 @@ export function Section({
         onPress={toggle}
         accessibilityRole="button"
         accessibilityState={{ expanded: open }}
+        // RN-web drops accessibilityState; aria-expanded reaches the DOM (C1-05).
+        aria-expanded={open}
         accessibilityLabel={`${title}${summary ? `, ${summary}` : ''}, ${open ? 'expanded' : 'collapsed'}`}
       >
         {/* Rotating caret rather than swapping two glyphs — one element, and

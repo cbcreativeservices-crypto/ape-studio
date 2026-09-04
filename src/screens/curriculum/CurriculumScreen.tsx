@@ -272,6 +272,8 @@ export function CurriculumView({
                 onPress={() => setOpen((prev) => (prev === s.order ? null : s.order))}
                 accessibilityRole="button"
                 accessibilityState={{ expanded: isOpen }}
+                // RN-web drops accessibilityState; aria-expanded reaches the DOM (C1-05).
+                aria-expanded={isOpen}
                 accessibilityLabel={`${s.name}, ${s.topics.length} ${s.topics.length === 1 ? 'topic' : 'topics'}`}
               >
                 <Text style={styles.subjectChevron}>{isOpen ? '▾' : '▸'}</Text>
