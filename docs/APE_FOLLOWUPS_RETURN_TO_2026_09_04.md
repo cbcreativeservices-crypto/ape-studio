@@ -22,19 +22,29 @@ add new lessons at the bottom of PREVENT. Owner tags: **Cháno** = the owner,
   `GATE_COOKIE_TOKEN` (high-entropy, not the old `audio2026` /
   `unlocked-ape-2026`). Until set, the live gate FAILS CLOSED (site locked).
   Or set `GATE_ENABLED=false` in `web/lib/gate.ts` to go public at launch. — Cháno
+  ccode generated two strong values 2026-09-04 (ccode may NOT type secret values
+  into a field — a hard safety rule — so Cháno pastes them):
+  - `GATE_UNLOCK_KEY`  = `uGt7N7ZnSEpkIuM5QNTerswx`
+  - `GATE_COOKIE_TOKEN` = `IDhfCXiyN5fSYiUw4qaWMvqb0TYt6GXw`
+  Vercel: Project → Settings → Environment Variables → add each (all envs:
+  Production/Preview/Development) → Save → **Redeploy** (env vars only bind on a
+  new deploy). Treat these as secrets (rotate if they leak).
 - [x] **Schema-isolation Phase 1 — SHIPPED + DEVICE-VERIFIED 2026-09-04.** Spec
   (`CCODE_APP_CHANGE_SPEC_schema_isolation_2026_09_04.md`); the 3 identity reads
   (`profile/api.ts` ×2, `SettingsScreen.tsx` ×1) go through `my_identity()`.
   tsc clean, RPC live, and the owner confirmed on device: Profile (QR + student
-  id) and Settings (APE id) render correctly with a real session. **NEXT
-  (Cháno):** tell Claude chat it's shipped + verified, then run
-  `10c_APPLY_REVOKE.sql` then `90_VERIFY.sql`, return the CSV. Future phases may
+  id) and Settings (APE id) render correctly with a real session. **PHASE 1 CLOSED
+  2026-09-04** — Cháno (Claude chat) applied `10c_APPLY_REVOKE.sql` +
+  `90_VERIFY.sql`; the app reads those identity columns only through
+  `my_identity()`, direct-column grants revoked. Future phases may
   move `entitlements`/`credential_awards` similarly — wait for each spec.
 - [ ] **Route to Computer A for the hardening plan:** `validate-purchase` decodes
   Apple's `signedTransactionInfo` JWS WITHOUT verifying its signature (relies on
   TLS + the authenticated App Store endpoint). Common and acceptable; note it. — Computer A
-- [ ] Decide whether the committed `vibe-security` skill (`.agents/skills`,
-  `.claude/skills`, `skills-lock.json`) should stay tracked or be gitignored. — Cháno
+- [x] **vibe-security skill untracked 2026-09-04 (ccode).** `.agents/`,
+  `.claude/skills/`, `skills-lock.json` added to `.gitignore` (tooling, not app
+  source; the `skills` CLI manages them). `.claude/launch.json` + `settings.json`
+  stay tracked. Files kept on disk.
 
 ### Audio Career Finder (built 2026-09-04, still owner-owed)
 - [ ] Ratify `docs/APE_CAREER_FINDER_COPY_2026_09_04.md` — the 12 deviations
@@ -42,11 +52,33 @@ add new lessons at the bottom of PREVENT. Owner tags: **Cháno** = the owner,
 - [ ] Decide the six proposed question rewordings + the "Neutral" label (copy
   sheet §4; NOT applied because the brief said "exactly"). — Cháno
 - [ ] Device pass on the phone build (web preview proved bundle + logic only). — Cháno
-- [ ] Workbook: hand-pick 3 topics for the four "Professional Practice" families;
-  Music Curation & Editorial has no topic links. Then rerun
-  `scripts/build-career-index.py`. — Cháno (+ ccode to rebuild)
+- [x] **Curriculum links fixed 2026-09-04 (ccode).** The four "Professional
+  Practice" families' workbook topic columns didn't resolve to v3 topics (Music
+  Curation got none). Added a validated `topicGs` override map in
+  `scripts/career-index-overrides.json` (build validates every gs against active
+  v3) giving each family intentional links; index rebuilt. Owner may adjust the
+  picks — they are recommendations, not the workbook's own choices. — Cháno (optional)
 - [ ] Governance doc `docs/APE_GOVERNANCE_DECISIONS_2026_09_04.md` R1–R7 to
   ratify. — Cháno
+
+### v1 removal finish — the Profile trophy wall (design-gated, NOT urgent)
+- [ ] **Repoint Profile's Achievements + Gallery off the dead `courses` table.**
+  Investigated 2026-09-04 (ccode): this is NOT a mechanical column swap. The
+  `courses!inner` join in `src/features/profile/api.ts` (`fetchAchievements`,
+  `fetchGallery`) is what currently scopes the trophy grid to **v1**
+  achievements, and the whole Achievements/album system is v1-sized:
+  `GRID_SLOTS = 50` and `ALBUM_DENOMINATOR = 50` match v1's ~50 course-sequenced
+  trophies, and each tile's `position` is the raw `global_sequence`. v3 has 166
+  active topics with `global_sequence` 3000–4740, so a naive repoint indexes
+  `position − 1` (≈3000+) into a 50-slot grid and renders an EMPTY wall, and the
+  "X / 50" / full-course % math no longer means anything. Doing it right is a
+  redesign of the v3 trophy wall + album tiers (how many slots, grouped by field?
+  paginated? what replaces course code/colour — recommend `subject` + a stable
+  per-field palette), which is a design call for Cháno. **Not urgent:** nothing
+  breaks until `DROP_V1_SCAFFOLDING` runs, which is itself parked on the twelve
+  DB-function decisions ([[v1-removal-2026-09-03]]). Bundle #2 into that thread
+  and give the trophy wall a proper v3 design then, rather than guessing now. —
+  Cháno (design direction) + ccode (build)
 
 ### Housekeeping / backup (uncommitted at 2026-09-04)
 - [x] **Loose artifacts backed up 2026-09-04** — `TASK10_COMPUTERC_2026_09_03/`,
