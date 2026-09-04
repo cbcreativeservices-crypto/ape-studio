@@ -543,7 +543,9 @@ export function SettingsScreen({ navigation }: Props) {
             <Pressable
               key={kind}
               style={({ pressed }) => [styles.row, i < arr.length - 1 && styles.rowBorder, pressed && styles.rowPressed]}
-              onPress={() => sendFeedback(kind)}
+              // Every feedback submission carries locating data (owner rule
+              // 2026-08-13): screen, tier, student id (Bug+Hater night C1-04).
+              onPress={() => sendFeedback(kind, undefined, { screen: 'Settings', tier: entitlement, studentId: apeId || undefined })}
               accessibilityRole="button"
             >
               <Text style={styles.rowLabel}>{label}</Text>
