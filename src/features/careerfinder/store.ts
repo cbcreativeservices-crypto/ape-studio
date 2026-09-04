@@ -175,10 +175,12 @@ export function reopenCareerFinder(): void {
   persist({ ...state, completed: false });
 }
 
-/** Wipe answers + results. Saved families and feedback are kept unless `everything`. */
+/** Wipe answers + results — and the Beta feedback, which described THOSE results
+ *  (a retake was opening with "✓ YES" + the old note pre-filled — Bug+Hater night
+ *  B1-03). Saved families are kept unless `everything`. */
 export function resetCareerFinder(everything = false): void {
   const fresh = EMPTY();
-  persist(everything ? fresh : { ...fresh, saved: state.saved, feedback: state.feedback });
+  persist(everything ? fresh : { ...fresh, saved: state.saved });
 }
 
 export function toggleSavedFamily(id: string): void {
