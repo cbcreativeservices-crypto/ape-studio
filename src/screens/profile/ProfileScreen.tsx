@@ -45,6 +45,7 @@ import { DevVisualIndex } from '../../features/dev/DevVisualIndex';
 import { useTermList } from '../../features/flags/flaggedStore';
 import { useBundles } from '../../features/enrollment/enrolledBundlesStore';
 import { useEnrollmentProgress } from '../../features/enrollment/enrollmentProgress';
+import { fetchV3Certs, fetchV3Programs } from '../../data/v3Curriculum';
 
 
 /**
@@ -220,6 +221,26 @@ export function ProfileScreen() {
     (topics: number[]) => topics.filter((gs) => bundleProg.get(gs)?.status === 'complete').length,
     [bundleProg],
   );
+
+  // Name → credential id, so a progress row can open the AwardProgress earn-path
+  // screen for that certificate / program (My Progress is retrospective: it
+  // links to the read-only progress view, never the Enrollments enroll page —
+  // owner 2026-09-04). The enrolled bundle only stores the name.
+  const [credIds, setCredIds] = useState<{ cert: Map<string, string>; program: Map<string, string> }>({
+    cert: new Map(),
+    program: new Map(),
+  });
+  useEffect(() => {
+    let alive = true;
+    void Promise.all([fetchV3Certs(), fetchV3Programs()]).then(([certs, programs]) => {
+      if (!alive) return;
+      setCredIds({
+        cert: new Map(certs.map((c) => [c.name, c.id] as const)),
+        program: new Map(programs.map((p) => [p.name, p.id] as const)),
+      });
+    });
+    return () => { alive = false; };
+  }, []);
 
   /**
    * PERSIST OUTSIDE THE UPDATER (design review 2026-08-30). These used to call
@@ -530,67 +551,65 @@ export function ProfileScreen() {
               when the tool is no longer wanted. */}
           {__DEV__ ? <DevVisualIndex /> : null}
 
-          {/* —— MY PROGRESS —— */}
+          {/* —— MY PROGRESS —— retrospective only (owner 2026-09-04): what the
+              user has DONE. The Full Course line is a readout; each certificate /
+              program row opens its read-only AwardProgress view (which has a ‹
+              Back to Profile). Nothing here links to the Enrollments enroll page
+              — enrolling lives in Study — so no one lands there and gets stuck. */}
           <Section
             title="MY PROGRESS"
             summary={`${profile?.overallPct ?? 0}%${goalCount ? ` · ${goalCount} ${goalCount === 1 ? 'goal' : 'goals'}` : ''}`}
           >
-            <Pressable
-              style={({ pressed }) => [styles.navRow, pressed && styles.rowPressed]}
-              onPress={() =>
-                (navigation as any).navigate((profile?.completeCount ?? 0) > 0 ? 'Study' : 'Home')
-              }
-              accessibilityRole="button"
-              accessibilityLabel={
-                (profile?.overallPct ?? 0) > 0
-                  ? `Full Course Certification, ${profile?.overallPct ?? 0}% done`
-                  : 'Start your first topic'
-              }
-              accessibilityHint="Opens your studies"
-            >
-              <View style={styles.rowMain}>
-                {(profile?.overallPct ?? 0) > 0 ? (
-                  <>
-                    <Text style={styles.rowLabel}>Full Course Certification</Text>
-                    <Text style={styles.rowHint}>{profile?.overallPct ?? 0}% done</Text>
-                  </>
-                ) : (
-                  <Text style={styles.rowLabel}>Start your first topic</Text>
-                )}
+            {/* Full Course Certification — a progress readout, not a link. */}
+            <View style={styles.readoutRow}>
+              <View style={styles.readoutHead}>
+                <Text style={styles.rowLabel}>Full Course Certification</Text>
+                <Text style={styles.rowHint}>
+                  {(profile?.overallPct ?? 0) > 0 ? `${profile?.overallPct ?? 0}% complete` : 'Not started yet'}
+                </Text>
               </View>
-              <Text style={styles.chevron}>›</Text>
-            </Pressable>
+              <View style={styles.progressTrack}>
+                <View style={[styles.progressFill, { width: `${Math.min(100, Math.max(0, profile?.overallPct ?? 0))}%` }]} />
+              </View>
+            </View>
 
-            <Text style={styles.groupLabel}>GOALS</Text>
-            <Pressable
-              style={({ pressed }) => [styles.navRow, pressed && styles.rowPressed]}
-              onPress={() => (navigation as any).navigate('Awards', { category: 'enrollment' })}
-              accessibilityRole="button"
-              accessibilityLabel={
-                goalCount
-                  ? [...certBundles, ...programBundles]
-                      .map((b) => `${b.name}, ${bundleDone(b.topics)} of ${b.topics.length} topics complete`)
-                      .join('. ')
-                  : 'Browse certificates and programs'
-              }
-              accessibilityHint={goalCount ? 'Opens My Enrollments' : undefined}
-            >
-              <View style={styles.rowMain}>
-                {goalCount ? (
-                  [...certBundles, ...programBundles].map((b) => (
-                    <View key={b.key} style={styles.goalBundle}>
-                      <Text style={styles.rowLabel}>{b.name}</Text>
-                      <Text style={styles.rowHint}>
-                        {bundleDone(b.topics)} of {b.topics.length} topics complete
-                      </Text>
-                    </View>
-                  ))
+            <Text style={styles.groupLabel}>YOUR CERTIFICATES &amp; PROGRAMS</Text>
+            {goalCount ? (
+              [...certBundles, ...programBundles].map((b) => {
+                const awardType = b.kind === 'program' ? 'program' : 'certificate';
+                const awardId = (b.kind === 'program' ? credIds.program : credIds.cert).get(b.name);
+                const done = bundleDone(b.topics);
+                const inner = (
+                  <View style={styles.rowMain}>
+                    <Text style={styles.rowLabel}>{b.name}</Text>
+                    <Text style={styles.rowHint}>
+                      {done} of {b.topics.length} topics complete
+                    </Text>
+                  </View>
+                );
+                // Tap opens the read-only earn-path progress once we've resolved
+                // the credential id (arrives with the v3 fetch); until then the
+                // row still shows progress but is not pressable.
+                return awardId ? (
+                  <Pressable
+                    key={b.key}
+                    style={({ pressed }) => [styles.navRow, pressed && styles.rowPressed]}
+                    onPress={() => (navigation as any).navigate('AwardProgress', { awardType, awardId, awardName: b.name })}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${b.name}, ${done} of ${b.topics.length} topics complete. View progress.`}
+                  >
+                    {inner}
+                    <Text style={styles.chevron}>›</Text>
+                  </Pressable>
                 ) : (
-                  <Text style={styles.rowLabel}>Browse certificates and programs</Text>
-                )}
-              </View>
-              <Text style={styles.chevron}>›</Text>
-            </Pressable>
+                  <View key={b.key} style={styles.navRow}>{inner}</View>
+                );
+              })
+            ) : (
+              <Text style={styles.rowHint}>
+                No certificates or programs started yet — your progress will appear here as you complete topics.
+              </Text>
+            )}
 
             <Text style={styles.groupLabel}>YOUR NUMBERS</Text>
             {/* "Quizzes passed" and "Study streak" REMOVED (design review
@@ -1129,6 +1148,11 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   chevron: { fontFamily: fonts.oswaldMedium, fontSize: 20, color: colors.textMutedDeep },
+  // Full Course Certification progress readout (retrospective, non-navigating).
+  readoutRow: { paddingVertical: 9, paddingHorizontal: 4 },
+  readoutHead: {},
+  progressTrack: { height: 6, borderRadius: 3, backgroundColor: '#26262b', overflow: 'hidden', marginTop: 8 },
+  progressFill: { height: 6, borderRadius: 3, backgroundColor: colors.green },
   groupLabel: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 10,
