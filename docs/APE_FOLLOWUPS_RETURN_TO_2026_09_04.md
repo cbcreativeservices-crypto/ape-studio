@@ -75,8 +75,12 @@ from `credential_awards`). Verified end-to-end in the 8090 web preview
 a progressed account + supply trophy art for certs/programs (drop PNGs +
 `credentialArt.ts` entries; topics use `achievements.icon_url` as today).
 
-- [ ] **`DROP_V1_SCAFFOLDING` — DECISION SHEET READY, app fully unblocked.**
-  Decision sheet authored 2026-09-04: `docs/APE_V1_REMOVAL_DECISION_SHEET_2026_09_04.md`
+- [ ] **`DROP_V1_SCAFFOLDING` — RATIFIED (safe defaults), app fully unblocked.**
+  Cháno chose "go with the safe defaults" 2026-09-04 → package runs as authored
+  (incl. optional stage 30 badge-rows deletion; active-day count for the hidden
+  `total_study_sessions`; `lookup_student_by_qr` kept). NEXT: Computer A
+  sanity-checks the rewrites/drops, then Cháno runs it file-by-file in Supabase.
+  Decision sheet: `docs/APE_V1_REMOVAL_DECISION_SHEET_2026_09_04.md`
   — the twelve DB functions (7 rewrite / 5 drop) each with ccode's recommendation
   + Agree/Change/Ask, the two 🔴 judgment calls (`refresh_student_metrics`
   replacement number; the optional badge-rows deletion), the run order, and the

@@ -1,5 +1,14 @@
 # v1 Removal — Decision Sheet (2026-09-04)
 
+> ✅ **RATIFIED 2026-09-04 (Cháno): "Go — use the safe defaults."** All twelve
+> functions run as authored: the 7 rewrites + 5 drops as recommended,
+> `lookup_student_by_qr` **rewritten** (kept), the hidden `total_study_sessions`
+> counter set to **active-day count** (nothing in the app displays it), and the
+> **optional stage 30 badge-rows deletion IS run** (4 dead v1 rows, 0 earned).
+> The two "separate" items (241 v2-draft rows; 51 legacy v1 rows) are NOT part
+> of this run. **Next:** Computer A sanity-checks the rewrites/drops, then Cháno
+> runs the package file-by-file in the Supabase editor. No app change needed.
+
 The last v1 package — [`DROP_V1_SCAFFOLDING_2026_09_03`](../DROP_V1_SCAFFOLDING_2026_09_03)
 — is authored, guarded, idempotent and fully reversible, but **nothing has been
 run**. It is parked on **twelve database functions** that block the five drops.
