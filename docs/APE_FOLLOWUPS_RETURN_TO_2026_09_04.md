@@ -11,10 +11,13 @@ add new lessons at the bottom of PREVENT. Owner tags: **Cháno** = the owner,
 ## RETURN TO — open actions
 
 ### Security workstream (app-layer audit, 2026-09-04)
-- [ ] **Rebuild the dev/native client** so `expo-secure-store` loads, then verify
-  the session PERSISTS across an app restart on device. Until a rebuild, the
-  stale client degrades to no-persisted-session (a one-time re-login); it does
-  not crash. — Cháno (build) + ccode (verify)
+- [ ] **Rebuild the dev/native client** to activate the encrypted keychain, then
+  verify the session PERSISTS across an app restart on device. NOTE: the app
+  now BOOTS without a rebuild — a stale client falls back to AsyncStorage
+  (it used to red-screen at import: `Cannot find native module 'ExpoSecureStore'`,
+  fixed by loading expo-secure-store through a guarded require). The rebuild is
+  only to move the session from the AsyncStorage fallback into the keychain
+  (the actual security win). — Cháno (build) + ccode (verify)
 - [ ] **Set the web-gate secrets in Vercel:** `GATE_UNLOCK_KEY` and
   `GATE_COOKIE_TOKEN` (high-entropy, not the old `audio2026` /
   `unlocked-ape-2026`). Until set, the live gate FAILS CLOSED (site locked).
