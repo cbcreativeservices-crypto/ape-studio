@@ -373,7 +373,7 @@ const MYTHS: { myth: string; reality: string }[] = [
   {
     myth: 'A 24-bit recording always has 144 dB of dynamic range.',
     reality:
-      '144 dB is the theoretical ceiling. Analog noise, converter linearity and clocking set the real usable range (ENOB) well below theory — excellent converters manage roughly 115–120 dB.',
+      '~146 dB is the theoretical ceiling (6.02·24 + 1.76; the 144 dB figure is the 6 dB/bit rounding). Analog noise, converter linearity and clocking set the real usable range (ENOB) well below theory — even excellent converters manage roughly 120 dB.',
   },
   {
     myth: 'Record as hot as possible, right up to 0 dBFS, for maximum resolution.',

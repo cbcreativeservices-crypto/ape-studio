@@ -116,10 +116,10 @@ const BIT_BLURBS: Record<number, string> = {
   3: 'Eight levels — still toy-grade; listen to the gritty error riding the tone.',
   4: 'Sixteen levels — early-videogame territory. The crunch IS quantization error.',
   6: 'Sixty-four levels — recognisable audio with an obvious hiss-crunch floor.',
-  8: 'Two hundred fifty-six levels — old samplers and telephone-grade audio. ~48 dB between signal and error.',
+  8: 'Two hundred fifty-six levels — old samplers and telephone-grade audio. ~48 dB between signal and error (6 dB/bit rule of thumb).',
   12: 'Four thousand levels — clean until things get quiet; early digital drum machines lived here.',
-  16: 'Sixty-five thousand levels — the CD standard: ~96 dB of range, error below audibility in normal listening.',
-  24: 'Sixteen million levels — the studio standard: ~144 dB of theoretical range, far below any room’s noise floor.',
+  16: 'Sixty-five thousand levels — the CD standard: ~96 dB of range (6 dB/bit rule of thumb), error below audibility in normal listening.',
+  24: 'Sixteen million levels — the studio standard: ~144 dB of theoretical range (6 dB/bit rule of thumb; 6.02·24 + 1.76 ≈ 146 dB), far below any room’s noise floor.',
 };
 
 const CHECK_BITDEPTH: CheckSpec = {
@@ -253,7 +253,7 @@ export function QuantModule(p: DigitalModuleProps) {
           <Text style={dstyles.body}>
             6.02·N + 1.76 dB is the FORMULA, not the product. Analog input noise, clock jitter and converter linearity set the
             real limit: the industry measure is ENOB (effective number of bits), and even excellent 24-bit converters deliver
-            roughly 20–21 effective bits (~120–125 dB). A nominal 24-bit converter does NOT deliver 144 dB usable.
+            roughly 20 effective bits (~120 dB). A nominal 24-bit converter does NOT deliver 144 dB usable.
           </Text>
           <MythReality
             myth="Higher bit depth means better frequency response — 24-bit sounds brighter and more detailed on top."
