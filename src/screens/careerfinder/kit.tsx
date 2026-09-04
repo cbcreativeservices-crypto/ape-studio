@@ -73,19 +73,20 @@ export function Card({ children, tone = 'plain', style }: { children: ReactNode;
   return <View style={[styles.card, tone === 'raised' && styles.cardRaised, tone === 'ok' && styles.cardOk, tone === 'amber' && styles.cardAmber, style]}>{children}</View>;
 }
 
-/** Full-width call to action. `tone` green = the one primary action on a screen. */
-export function CtaButton({ label, onPress, tone = 'plain', disabled, a11y, hint }: { label: string; onPress: () => void; tone?: 'green' | 'plain' | 'quiet'; disabled?: boolean; a11y?: string; hint?: string }) {
+/** Full-width call to action. `tone` green = the one primary action on a
+ *  screen; `danger` = a destructive action (a red-outlined reset). */
+export function CtaButton({ label, onPress, tone = 'plain', disabled, a11y, hint }: { label: string; onPress: () => void; tone?: 'green' | 'plain' | 'quiet' | 'danger'; disabled?: boolean; a11y?: string; hint?: string }) {
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled}
-      style={({ pressed }) => [styles.cta, tone === 'green' && styles.ctaGreen, tone === 'quiet' && styles.ctaQuiet, disabled && { opacity: 0.4 }, pressed && !disabled && { opacity: 0.8 }]}
+      style={({ pressed }) => [styles.cta, tone === 'green' && styles.ctaGreen, tone === 'quiet' && styles.ctaQuiet, tone === 'danger' && styles.ctaDanger, disabled && { opacity: 0.4 }, pressed && !disabled && { opacity: 0.8 }]}
       accessibilityRole="button"
       accessibilityLabel={a11y ?? label}
       accessibilityHint={hint}
       accessibilityState={{ disabled: !!disabled }}
     >
-      <Text style={[styles.ctaText, tone === 'green' && { color: colors.green }, tone === 'quiet' && { color: colors.textSub }]}>{label}</Text>
+      <Text style={[styles.ctaText, tone === 'green' && { color: colors.green }, tone === 'quiet' && { color: colors.textSub }, tone === 'danger' && { color: colors.red }]}>{label}</Text>
     </Pressable>
   );
 }
@@ -262,6 +263,7 @@ const styles = StyleSheet.create({
   cta: { minHeight: 46, paddingVertical: 10, borderRadius: 10, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#131315', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 16 },
   ctaGreen: { borderColor: colors.green, backgroundColor: '#173021' },
   ctaQuiet: { borderColor: 'transparent', backgroundColor: 'transparent', minHeight: 44 },
+  ctaDanger: { borderColor: 'rgba(255,75,58,0.6)', backgroundColor: '#1f0f0e' },
   ctaText: { color: colors.textSecondary, fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.4 },
 
   navBtn: { minHeight: 44, paddingHorizontal: 14, borderRadius: 10, borderWidth: 1, borderColor: colors.hairline, justifyContent: 'center', backgroundColor: '#131315' },

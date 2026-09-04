@@ -112,12 +112,13 @@ export function CareerFinderScreen() {
         </View>
       ) : null}
 
+      {answered > 0 || rec.completed ? (
+        <CtaButton label="RESET & START OVER" tone="danger" onPress={() => confirmReset(() => resetCareerFinder())} a11y="Reset and start over" hint="Clears your answers and results on this device. Asks first." />
+      ) : null}
+
       <View style={styles.links}>
         <TextLink label={`Browse all ${FAMILY_COUNT} career families`} onPress={() => navigation.navigate('CareerFamilyList')} />
         <TextLink label="How this works, and what it does not measure" onPress={() => navigation.navigate('CareerFinderAbout')} />
-        {answered > 0 || rec.completed ? (
-          <CtaButton label="RESET PREVIOUS ANSWERS" tone="quiet" onPress={() => confirmReset(() => resetCareerFinder())} hint="Asks before clearing" />
-        ) : null}
       </View>
     </FinderShell>
   );

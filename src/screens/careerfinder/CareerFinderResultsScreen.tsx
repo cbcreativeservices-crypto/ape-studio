@@ -24,7 +24,7 @@ import { QUESTION_COUNT } from '../../features/careerfinder/questions';
 import { LAB_FOR_DIMENSION } from '../../features/careerfinder/labsForDimension';
 import { resetCareerFinder, setCareerFinderFeedback, setQuestionIndex, toggleSavedFamily, useCareerFinder, type FeedbackAnswer } from '../../features/careerfinder/store';
 import { confirmReset } from './CareerFinderScreen';
-import { BetaPill, Body, Card, CountTag, CtaButton, DimChip, DimensionSpectrum, FinderShell, Lead, LinkRow, RankBadge, SectionLabel, TextLink } from './kit';
+import { BetaPill, Body, Card, CountTag, CtaButton, DimChip, DimensionSpectrum, FinderShell, Lead, RankBadge, SectionLabel, TextLink } from './kit';
 
 export const RESULTS_LEAD = 'Five audio career families lean on what you said you would enjoy. Start with the top one.';
 export const RESULTS_NOTE = 'These are possibilities to explore — not limits on what you can pursue. Interests change with experience, and these will too.';
@@ -168,10 +168,9 @@ export function CareerFinderResultsScreen() {
 
       <View style={styles.after}>
         <CtaButton label={`BROWSE ALL ${FAMILY_COUNT} FAMILIES`} onPress={() => navigation.navigate('CareerFamilyList')} />
-        <LinkRow>
-          <TextLink label="Change my answers" onPress={changeAnswers} a11y="Change my answers. Reopens the questions with your answers kept." />
-          <TextLink label="Retake from scratch" onPress={retake} muted a11y="Retake from scratch. Asks before clearing your answers." />
-        </LinkRow>
+        <SectionLabel>CHANGE OR START OVER</SectionLabel>
+        <CtaButton label="CHANGE MY ANSWERS" onPress={changeAnswers} hint="Reopens the questions from the top with your answers kept." />
+        <CtaButton label="RESET & START OVER" tone="danger" onPress={retake} a11y="Reset and start over" hint="Clears your answers and results, then restarts from question one. Asks first." />
         <Body muted>{RESULTS_NOTE}</Body>
       </View>
 
