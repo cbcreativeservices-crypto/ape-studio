@@ -52,3 +52,10 @@ supabase/.temp/
 # Agent scratch — throwaway tool output, never a deliverable.
 # Dated handoff/deliverable folders are deliberately NOT ignored.
 _bughunt_tmp/
+
+# Installed agent skills (owner 2026-09-04) — tooling, not app source. The
+# `skills` CLI manages these; re-add with `npx skills add …`. `.claude/skills`
+# only (launch.json / settings.json stay tracked).
+.agents/
+.claude/skills/
+skills-lock.json
