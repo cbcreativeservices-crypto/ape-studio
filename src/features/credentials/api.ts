@@ -17,6 +17,9 @@ export type EarnedCredentialRow = {
   id: string;
   type: 'certificate' | 'program';
   name: string;
+  /** certificates.slug / programs.slug — stable key for looking up bundled
+   *  trophy art (see features/credentials/credentialArt). null if unresolved. */
+  slug: string | null;
   /** certificates.level or programs.tier — whichever applies. */
   levelOrTier: string | null;
   track: string | null;
@@ -54,19 +57,19 @@ export async function fetchMyCredentials(): Promise<EarnedCredentialRow[]> {
 
     const [certRes, progRes] = await Promise.all([
       certIds.length
-        ? supabase.from('certificates').select('id, name, level, track').in('id', certIds)
+        ? supabase.from('certificates').select('id, name, level, track, slug').in('id', certIds)
         : Promise.resolve({ data: [] as unknown[] }),
       progIds.length
-        ? supabase.from('programs').select('id, name, tier, track').in('id', progIds)
+        ? supabase.from('programs').select('id, name, tier, track, slug').in('id', progIds)
         : Promise.resolve({ data: [] as unknown[] }),
     ]);
 
-    const meta = new Map<string, { name: string; levelOrTier: string | null; track: string | null }>();
-    for (const c of (certRes.data ?? []) as { id: string; name: string; level: string | null; track: string | null }[]) {
-      meta.set(c.id, { name: c.name ?? 'Certificate', levelOrTier: c.level ?? null, track: c.track ?? null });
+    const meta = new Map<string, { name: string; levelOrTier: string | null; track: string | null; slug: string | null }>();
+    for (const c of (certRes.data ?? []) as { id: string; name: string; level: string | null; track: string | null; slug: string | null }[]) {
+      meta.set(c.id, { name: c.name ?? 'Certificate', levelOrTier: c.level ?? null, track: c.track ?? null, slug: c.slug ?? null });
     }
-    for (const p of (progRes.data ?? []) as { id: string; name: string; tier: string | null; track: string | null }[]) {
-      meta.set(p.id, { name: p.name ?? 'Program', levelOrTier: p.tier ?? null, track: p.track ?? null });
+    for (const p of (progRes.data ?? []) as { id: string; name: string; tier: string | null; track: string | null; slug: string | null }[]) {
+      meta.set(p.id, { name: p.name ?? 'Program', levelOrTier: p.tier ?? null, track: p.track ?? null, slug: p.slug ?? null });
     }
 
     const out: EarnedCredentialRow[] = rows.map((r) => {
@@ -77,6 +80,7 @@ export async function fetchMyCredentials(): Promise<EarnedCredentialRow[]> {
         // A name that failed to resolve is labelled honestly rather than blank —
         // a deactivated or renamed award should still show as held.
         name: m?.name ?? (r.credential_type === 'program' ? 'Program' : 'Certificate'),
+        slug: m?.slug ?? null,
         levelOrTier: m?.levelOrTier ?? null,
         track: m?.track ?? null,
         awardedAt: r.issued_at ?? r.earned_at ?? null,

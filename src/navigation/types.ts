@@ -26,10 +26,22 @@ export type StudyStackParamList = {
 };
 
 export type AchievementsStackParamList = {
-  /** `from: 'profile'` ⇒ reached via the Profile link (not the bottom tab), so
-   *  the grid shows a back button to return to Profile (owner 2026-08-07). */
-  AchievementsGrid: { from?: 'profile' } | undefined;
+  /** The Trophy Case hub — three category cards (Topics / Certificates /
+   *  Programs). `from: 'profile'` ⇒ reached via the Profile link (not the bottom
+   *  tab), so it shows a back button to return to Profile (owner 2026-08-07). */
+  AchievementsHome: { from?: 'profile' } | undefined;
+  /** Topics category — Field list (drill: Field → Subject → grid). */
+  TopicFields: undefined;
+  /** Topics category — Subjects within one field. */
+  TopicSubjects: { field: string };
+  /** Topics category — trophy grid for ONE subject (never all 166 at once). */
+  TopicGrid: { field: string; subject: string };
+  /** Chronological "everything earned" wall. */
   Gallery: undefined;
+  /** Earned specialization certificates. */
+  Certificates: undefined;
+  /** Earned program certificates. */
+  Programs: undefined;
 };
 
 /** S7 route params — the client-held question texts back the review list. */

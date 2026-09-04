@@ -70,7 +70,7 @@ export function MainTabs() {
       <Tab.Screen
         name="Achievements"
         component={AchievementsStack}
-        listeners={resetToRootOnBlur('AchievementsGrid')}
+        listeners={resetToRootOnBlur('AchievementsHome')}
       />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>

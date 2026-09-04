@@ -4,6 +4,7 @@
  * the Achievements grid or the Dashboard topic card; tap anywhere to dismiss.
  * Presentation only — no data fetching, no navigation.
  */
+import { type ReactNode } from 'react';
 import { Dimensions, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { TrophyImage } from './TrophyImage';
 import { fonts } from '../theme/tokens';
@@ -18,13 +19,23 @@ export function TrophyModal({
   iconUrl,
   name,
   color = '#ffc233',
+  meta,
+  action,
+  children,
   onClose,
 }: {
   visible: boolean;
   iconUrl: string | null | undefined;
   name?: string | null;
-  /** Course color — used for the frame glow behind the art. */
+  /** Field/category color — used for the frame glow behind the art. */
   color?: string;
+  /** Optional line under the name (e.g. "EARNED SEP 2, 2026"). */
+  meta?: string | null;
+  /** Optional action (e.g. download the certificate PDF). Its own tap does not
+   *  dismiss — only the surrounding scrim does. */
+  action?: { label: string; onPress: () => void; busy?: boolean } | null;
+  /** Optional custom art node (used when art is a bundled asset, not a URL). */
+  children?: ReactNode;
   onClose: () => void;
 }) {
   return (
@@ -35,14 +46,23 @@ export function TrophyModal({
           style={[styles.frame, { width: ART, height: ART, borderColor: color, shadowColor: color }]}
           pointerEvents="none"
         >
-          <TrophyImage
-            iconUrl={iconUrl}
-            fill
-            radius={14}
-            fallback={<View style={styles.empty} />}
-          />
+          {children ?? (
+            <TrophyImage iconUrl={iconUrl} fill radius={14} fallback={<View style={styles.empty} />} />
+          )}
         </View>
         {name ? <Text style={styles.name}>{name.toUpperCase()}</Text> : null}
+        {meta ? <Text style={styles.meta}>{meta}</Text> : null}
+        {action ? (
+          <Pressable
+            onPress={action.onPress}
+            disabled={action.busy}
+            accessibilityRole="button"
+            accessibilityLabel={action.label}
+            style={({ pressed }) => [styles.action, { borderColor: color }, pressed && styles.actionPressed]}
+          >
+            <Text style={[styles.actionText, { color }]}>{action.busy ? 'WORKING…' : action.label}</Text>
+          </Pressable>
+        ) : null}
         <Text style={styles.hint}>TAP TO CLOSE</Text>
       </Pressable>
       <LowLightDim />
@@ -77,6 +97,23 @@ const styles = StyleSheet.create({
     color: '#f2f2f2',
     textAlign: 'center',
   },
+  meta: {
+    fontFamily: fonts.mono,
+    fontSize: 12,
+    letterSpacing: 0.5,
+    color: 'rgba(255,255,255,0.62)',
+    textAlign: 'center',
+    marginTop: -8,
+  },
+  action: {
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 22,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+  },
+  actionPressed: { opacity: 0.7 },
+  actionText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4 },
   hint: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 11,

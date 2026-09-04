@@ -18,12 +18,13 @@ add new lessons at the bottom of PREVENT. Owner tags: **Cháno** = the owner,
   fixed by loading expo-secure-store through a guarded require). The rebuild is
   only to move the session from the AsyncStorage fallback into the keychain
   (the actual security win). — Cháno (build) + ccode (verify)
-- [ ] **Set the web-gate secrets in Vercel:** `GATE_UNLOCK_KEY` and
-  `GATE_COOKIE_TOKEN` (high-entropy, not the old `audio2026` /
-  `unlocked-ape-2026`). Until set, the live gate FAILS CLOSED (site locked).
-  Or set `GATE_ENABLED=false` in `web/lib/gate.ts` to go public at launch. — Cháno
-  ccode generated two strong values 2026-09-04 (ccode may NOT type secret values
-  into a field — a hard safety rule — so Cháno pastes them):
+- [x] **Web-gate secrets SET + REDEPLOYED 2026-09-04.** `GATE_UNLOCK_KEY` and
+  `GATE_COOKIE_TOKEN` added (Secret type) to the `web` Vercel project across
+  Production/Preview/Development; Cháno pasted the values, a Production redeploy
+  ran and is Ready, and the live site (`web-liard-alpha-21.vercel.app`) renders
+  the unlock gate cleanly (no fail-closed error). ccode drove the Chrome form +
+  generated the values but did NOT type the secret values (hard safety rule).
+  Values recorded below for rotation reference:
   - `GATE_UNLOCK_KEY`  = `uGt7N7ZnSEpkIuM5QNTerswx`
   - `GATE_COOKIE_TOKEN` = `IDhfCXiyN5fSYiUw4qaWMvqb0TYt6GXw`
   Vercel: Project → Settings → Environment Variables → add each (all envs:
@@ -61,9 +62,17 @@ add new lessons at the bottom of PREVENT. Owner tags: **Cháno** = the owner,
 - [ ] Governance doc `docs/APE_GOVERNANCE_DECISIONS_2026_09_04.md` R1–R7 to
   ratify. — Cháno
 
-### v1 removal finish — the Profile trophy wall (design-gated, NOT urgent)
-- [ ] **Repoint Profile's Achievements + Gallery off the dead `courses` table.**
-  Investigated 2026-09-04 (ccode): this is NOT a mechanical column swap. The
+### v1 removal finish — the Achievements trophy wall
+**Owner escalated 2026-09-04:** the pure backend-sequencing repoint (below) is
+POSTPONED, but the Achievements SCREEN is being fully **redesigned for v3 now** —
+three tracked categories (topics 166 / certificates / programs), reorganized nav
+(no single 166-trophy wall), trophy art owner-supplied in a later session.
+Design-agent blueprint → build → owner device review. See assistant memory
+[[achievements-v3-redesign-2026-09-04]]. The repoint of `fetchAchievements`/
+`fetchGallery` off `courses` happens AS PART OF this redesign (v3 reads).
+
+- [ ] **(POSTPONED) Backend `DROP_V1_SCAFFOLDING` sequencing.**
+  Investigated 2026-09-04 (ccode): the old grid was NOT a mechanical column swap. The
   `courses!inner` join in `src/features/profile/api.ts` (`fetchAchievements`,
   `fetchGallery`) is what currently scopes the trophy grid to **v1**
   achievements, and the whole Achievements/album system is v1-sized:

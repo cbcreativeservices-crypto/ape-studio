@@ -17,7 +17,7 @@ const TAB_ORDER: NavIconName[] = ['Home', 'Study', 'Achievements', 'Profile'];
 /** Root screen of each nested-stack tab (for active-tab re-tap). */
 const TAB_ROOTS: Partial<Record<NavIconName, string>> = {
   Study: 'Dashboard',
-  Achievements: 'AchievementsGrid',
+  Achievements: 'AchievementsHome',
 };
 
 export function TabBar({ state, navigation }: BottomTabBarProps) {

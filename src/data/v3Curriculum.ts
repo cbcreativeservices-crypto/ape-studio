@@ -21,6 +21,9 @@ export type V3Topic = {
   subject: string;
   free: boolean;
   methods: string[];
+  /** achievements.icon_url — the topic's trophy art (Storage path); may be null
+   *  until art is uploaded. Consumed by the Achievements trophy grid. */
+  iconUrl: string | null;
 };
 
 export type V3Subject = { subject: string; topics: V3Topic[] };
@@ -34,7 +37,7 @@ export async function fetchV3Curriculum(): Promise<V3Field[]> {
   try {
     const { data, error } = await supabase
       .from('achievements')
-      .select('id, name, global_sequence, field, subject, always_free, applicable_methods')
+      .select('id, name, global_sequence, field, subject, always_free, applicable_methods, icon_url')
       .eq('curriculum_version_id', V3_CURRICULUM_VERSION_ID)
       .eq('is_active', true)
       .order('field')
@@ -54,6 +57,7 @@ export async function fetchV3Curriculum(): Promise<V3Field[]> {
         subject,
         free: !!r.always_free,
         methods: (r.applicable_methods as string[]) ?? [],
+        iconUrl: (r.icon_url as string | null) ?? null,
       };
       if (!byField.has(field)) byField.set(field, new Map());
       const subs = byField.get(field)!;

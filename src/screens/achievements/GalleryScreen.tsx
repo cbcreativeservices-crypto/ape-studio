@@ -12,7 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { colors, fonts } from '../../theme/tokens';
 import { TrophyImage } from '../../components/TrophyImage';
-import { fetchGallery, type GalleryEntry } from '../../features/profile/api';
+import { fetchGalleryV3, type GalleryEntry } from '../../features/achievements/api';
 
 function BadgeDisc({ color }: { color: string }) {
   // Design: radial rings — dark core, color ring, dark band, color ring, dark rim.
@@ -40,7 +40,7 @@ export function GalleryScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      fetchGallery()
+      fetchGalleryV3()
         .then(setEntries)
         .catch(() => setEntries([]));
     }, []),
@@ -49,7 +49,18 @@ export function GalleryScreen() {
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScrollView contentContainerStyle={styles.scroll}>
-        <Text style={styles.title}>YOUR GALLERY</Text>
+        <View style={styles.headerRow}>
+          <Pressable
+            onPress={() => (navigation as any).goBack()}
+            hitSlop={10}
+            accessibilityRole="button"
+            accessibilityLabel="Back"
+            style={styles.backBtn}
+          >
+            <Text style={styles.back}>‹</Text>
+          </Pressable>
+          <Text style={styles.title}>YOUR GALLERY</Text>
+        </View>
 
         {entries && entries.length === 0 && (
           <Text style={styles.empty}>Earn your first trophy to see it here.</Text>
@@ -77,7 +88,7 @@ export function GalleryScreen() {
               />
               <Text style={styles.cardName}>{e.name.toUpperCase()}</Text>
               <Text style={styles.cardMeta}>
-                {e.courseCode} · {fmtDate(e.dateEarned)}
+                {e.subject} · {fmtDate(e.dateEarned)}
               </Text>
             </Pressable>
           ))}
@@ -90,6 +101,9 @@ export function GalleryScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
   scroll: { padding: 16, gap: 14 },
+  headerRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  backBtn: { alignSelf: 'center' },
+  back: { fontFamily: fonts.oswaldSemiBold, fontSize: 28, lineHeight: 28, color: colors.textSub, marginRight: -2 },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, letterSpacing: 1.4, color: colors.textPrimary },
   empty: { fontFamily: fonts.barlowRegular, fontSize: 14, color: colors.textSub, marginTop: 8 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },

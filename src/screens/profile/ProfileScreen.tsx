@@ -624,7 +624,7 @@ export function ProfileScreen() {
                   // Flag the origin so the grid shows a back button to Profile
                   // (owner 2026-08-07 — there was no way back before).
                   (navigation as any).navigate('Achievements', {
-                    screen: 'AchievementsGrid',
+                    screen: 'AchievementsHome',
                     params: { from: 'profile' },
                   })
                 }
