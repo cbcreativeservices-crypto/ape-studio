@@ -12,7 +12,7 @@ export type CredentialKind = 'certificate' | 'program';
 
 const KIND_COLOR: Record<CredentialKind, string> = {
   certificate: colors.cyan, // #5bb0ff
-  program: colors.purple, // #b45bff
+  program: colors.programPurple, // #c4a2ff — matches Awards/Curriculum
 };
 
 export function CredentialBadge({

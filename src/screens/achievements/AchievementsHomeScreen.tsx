@@ -21,14 +21,14 @@ import { fetchAchievementsHub, type HubData } from '../../features/achievements/
 
 const MINI = 44;
 
-function MiniTopic({ iconUrl, color }: { iconUrl: string | null; color: string }) {
+function MiniTopic({ iconUrl }: { iconUrl: string | null }) {
   return (
-    <View style={[styles.mini, { borderColor: `${color}55` }]}>
+    <View style={[styles.mini, { borderColor: `${colors.amber}55` }]}>
       <TrophyImage
         iconUrl={iconUrl}
         fill
         radius={6}
-        fallback={<Text style={[styles.miniGlyph, { color }]}>★</Text>}
+        fallback={<Text style={[styles.miniGlyph, { color: colors.amber }]}>★</Text>}
       />
     </View>
   );
@@ -88,14 +88,14 @@ export function AchievementsHomeScreen() {
 
         {/* TOPICS */}
         <Pressable
-          style={({ pressed }) => [styles.card, { borderColor: `${colors.gold}44` }, pressed && styles.cardPressed]}
-          onPress={() => navigation.navigate('TopicFields')}
+          style={({ pressed }) => [styles.card, { borderColor: `${colors.amber}44` }, pressed && styles.cardPressed]}
+          onPress={() => navigation.navigate('Topics')}
           accessibilityRole="button"
           accessibilityLabel={`Topics, ${t?.earned ?? 0} of ${t?.total ?? 0} earned`}
         >
           <View style={styles.cardHead}>
             <Text style={styles.cardName}>TOPICS</Text>
-            <Text style={[styles.count, { color: colors.gold, textShadowColor: `${colors.gold}66` }]}>
+            <Text style={[styles.count, { color: colors.amber, textShadowColor: `${colors.amber}66` }]}>
               {t ? `${t.earned} / ${t.total}` : '— / —'}
             </Text>
             <View style={styles.flex} />
@@ -103,7 +103,7 @@ export function AchievementsHomeScreen() {
           </View>
           <RecentStrip empty={!!t && t.recent.length === 0}>
             {(t?.recent ?? []).map((topic) => (
-              <MiniTopic key={topic.achievementId} iconUrl={topic.iconUrl} color={topic.color} />
+              <MiniTopic key={topic.achievementId} iconUrl={topic.iconUrl} />
             ))}
           </RecentStrip>
         </Pressable>
@@ -132,14 +132,14 @@ export function AchievementsHomeScreen() {
 
         {/* PROGRAMS */}
         <Pressable
-          style={({ pressed }) => [styles.card, { borderColor: `${colors.purple}44` }, pressed && styles.cardPressed]}
+          style={({ pressed }) => [styles.card, { borderColor: `${colors.programPurple}44` }, pressed && styles.cardPressed]}
           onPress={() => navigation.navigate('Programs')}
           accessibilityRole="button"
           accessibilityLabel={`Programs, ${p?.earned ?? 0} earned`}
         >
           <View style={styles.cardHead}>
             <Text style={styles.cardName}>PROGRAMS</Text>
-            <Text style={[styles.count, { color: colors.purple, textShadowColor: `${colors.purple}66` }]}>
+            <Text style={[styles.count, { color: colors.programPurple, textShadowColor: `${colors.programPurple}66` }]}>
               {p ? `${p.earned} EARNED` : '—'}
             </Text>
             <View style={styles.flex} />

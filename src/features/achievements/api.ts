@@ -13,9 +13,9 @@
  * (which joined the retired `courses` table).
  */
 import { supabase } from '../../lib/supabase';
-import { fetchV3Curriculum, V3_CURRICULUM_VERSION_ID } from '../../data/v3Curriculum';
+import { fetchV3Curriculum, fetchV3Certs, fetchV3Programs, V3_CURRICULUM_VERSION_ID } from '../../data/v3Curriculum';
 import { fetchMyCredentials, type EarnedCredentialRow } from '../credentials/api';
-import { fieldColor } from '../../theme/fieldPalette';
+import { fetchAwardProgress } from '../awards/api';
 
 export type TopicStatus = 'complete' | 'passed_incomplete' | 'unlocked' | 'locked';
 
@@ -26,8 +26,6 @@ export type TopicAchievement = {
   field: string;
   subject: string;
   iconUrl: string | null;
-  /** Stable per-field accent (border/glow), replacing the retired course color. */
-  color: string;
   status: TopicStatus;
   dateEarned: string | null;
 };
@@ -41,7 +39,6 @@ export type SubjectGroup = {
 
 export type FieldGroup = {
   field: string;
-  color: string;
   subjects: SubjectGroup[];
   earnedCount: number;
   totalCount: number;
@@ -91,7 +88,6 @@ export async function fetchTopicAchievements(): Promise<TopicAchievementData> {
   const recentEarned: TopicAchievement[] = [];
 
   const fields: FieldGroup[] = fieldsRaw.map((f) => {
-    const color = fieldColor(f.field);
     let fieldEarned = 0;
     let fieldTotal = 0;
     const subjects: SubjectGroup[] = f.subjects.map((s) => {
@@ -107,7 +103,6 @@ export async function fetchTopicAchievements(): Promise<TopicAchievementData> {
           field: f.field,
           subject: s.subject,
           iconUrl: t.iconUrl,
-          color,
           status,
           dateEarned,
         };
@@ -123,7 +118,7 @@ export async function fetchTopicAchievements(): Promise<TopicAchievementData> {
     });
     earnedTotal += fieldEarned;
     totalCount += fieldTotal;
-    return { field: f.field, color, subjects, earnedCount: fieldEarned, totalCount: fieldTotal };
+    return { field: f.field, subjects, earnedCount: fieldEarned, totalCount: fieldTotal };
   });
 
   recentEarned.sort((a, b) => {
@@ -139,7 +134,6 @@ export type GalleryEntry = {
   achievementId: string;
   name: string;
   subject: string;
-  color: string;
   iconUrl: string | null;
   dateEarned: string;
 };
@@ -151,7 +145,7 @@ export async function fetchGalleryV3(): Promise<GalleryEntry[]> {
   if (!userId) return [];
   const { data, error } = await supabase
     .from('student_achievement_progress')
-    .select('achievement_id, date_earned, achievements!inner(name, icon_url, field, subject, curriculum_version_id)')
+    .select('achievement_id, date_earned, achievements!inner(name, icon_url, subject, curriculum_version_id)')
     .eq('user_id', userId)
     .eq('status', 'complete')
     .not('date_earned', 'is', null)
@@ -162,7 +156,6 @@ export async function fetchGalleryV3(): Promise<GalleryEntry[]> {
     achievementId: r.achievement_id,
     name: r.achievements.name,
     subject: r.achievements.subject ?? '',
-    color: fieldColor(r.achievements.field),
     iconUrl: r.achievements.icon_url ?? null,
     dateEarned: r.date_earned,
   }));
@@ -191,5 +184,59 @@ export async function fetchAchievementsHub(): Promise<HubData> {
     topics: { earned: topicData.earnedTotal, total: topicData.totalCount, recent: topicData.recentEarned.slice(0, 5) },
     certificates: { earned: certs.length, recent: certs.slice(0, 5) },
     programs: { earned: progs.length, recent: progs.slice(0, 5) },
+  };
+}
+
+/** The credential to show in the "waiting slot" at the top of a Certificates /
+ *  Programs list: the not-yet-earned credential the user is closest to
+ *  completing, or a terminal state. Composes existing frozen-backend reads only
+ *  (no new RPC surface); ranks in memory, then refines the ONE winner's numbers
+ *  with the server's exact rule (award_required_topics unions the co-reqs). */
+export type NearestCredentialResult =
+  | { kind: 'candidate'; id: string; slug: string | null; name: string; completeCount: number; totalCount: number }
+  | { kind: 'all_earned' }
+  | { kind: 'none_published' };
+
+export async function fetchNearestCredential(
+  type: 'certificate' | 'program',
+): Promise<NearestCredentialResult> {
+  const [catalog, earned, topicData] = await Promise.all([
+    type === 'certificate' ? fetchV3Certs() : fetchV3Programs(),
+    fetchMyCredentials(),
+    fetchTopicAchievements(),
+  ]);
+  if (catalog.length === 0) return { kind: 'none_published' };
+
+  const earnedIds = new Set(earned.filter((c) => c.type === type).map((c) => c.id));
+  const completedGs = new Set(
+    topicData.fields
+      .flatMap((f) => f.subjects.flatMap((s) => s.topics))
+      .filter((t) => t.status === 'complete')
+      .map((t) => t.gs),
+  );
+
+  const candidates = catalog.filter((c) => !earnedIds.has(c.id));
+  if (candidates.length === 0) return { kind: 'all_earned' };
+
+  // Rank in memory by the credential's OWN topics complete-ratio (good enough
+  // to pick the nearest); the winner's exact numbers come from the server rule.
+  const ranked = candidates
+    .map((c) => ({ c, done: c.topicsGs.filter((gs) => completedGs.has(gs)).length }))
+    .sort(
+      (a, b) =>
+        b.done / Math.max(1, b.c.topicsGs.length) - a.done / Math.max(1, a.c.topicsGs.length) ||
+        b.done - a.done ||
+        a.c.name.localeCompare(b.c.name),
+    );
+  const top = ranked[0];
+
+  const exact = await fetchAwardProgress(type, top.c.id);
+  return {
+    kind: 'candidate',
+    id: top.c.id,
+    slug: top.c.slug,
+    name: top.c.name,
+    completeCount: exact?.completeCount ?? top.done,
+    totalCount: exact?.totalCount ?? top.c.topicsGs.length,
   };
 }

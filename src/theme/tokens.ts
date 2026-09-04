@@ -39,6 +39,7 @@ export const colors = {
   green: '#37e05f', // Profile tab, success, ear-training
   greenBright: '#5bff85',
   purple: '#b45bff', // Scenarios / platinum accents
+  programPurple: '#c4a2ff', // Programs (Awards/Achievements) — softer than `purple`; matches AwardsScreen PURPLE + Curriculum PROGRAMS AVAILABLE tile
   gold: '#ffc233', // Achievements tab, fill-in-blank, gold album
   goldDeep: '#f0b429',
   red: '#ff4b3a', // Errors, REC cert, matching cable

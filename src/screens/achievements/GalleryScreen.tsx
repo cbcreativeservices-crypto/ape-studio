@@ -70,7 +70,7 @@ export function GalleryScreen() {
           {(entries ?? []).map((e) => (
             <Pressable accessibilityRole="button"
               key={e.achievementId}
-              style={[styles.card, { borderColor: `${e.color}66`, shadowColor: e.color }]}
+              style={[styles.card, { borderColor: `${colors.amber}66`, shadowColor: colors.amber }]}
               onPress={() =>
                 (navigation as any).navigate('Trophy', {
                   topicName: e.name,
@@ -84,7 +84,7 @@ export function GalleryScreen() {
                 iconUrl={e.iconUrl}
                 size={48}
                 radius={8}
-                fallback={<BadgeDisc color={e.color} />}
+                fallback={<BadgeDisc color={colors.amber} />}
               />
               <Text style={styles.cardName}>{e.name.toUpperCase()}</Text>
               <Text style={styles.cardMeta}>

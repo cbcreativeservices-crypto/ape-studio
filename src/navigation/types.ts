@@ -30,12 +30,9 @@ export type AchievementsStackParamList = {
    *  Programs). `from: 'profile'` ⇒ reached via the Profile link (not the bottom
    *  tab), so it shows a back button to return to Profile (owner 2026-08-07). */
   AchievementsHome: { from?: 'profile' } | undefined;
-  /** Topics category — Field list (drill: Field → Subject → grid). */
-  TopicFields: undefined;
-  /** Topics category — Subjects within one field. */
-  TopicSubjects: { field: string };
-  /** Topics category — trophy grid for ONE subject (never all 166 at once). */
-  TopicGrid: { field: string; subject: string };
+  /** Topics category — one flat, expandable Field→Subject list (the Explore
+   *  structure), overlaid with earned trophy state. */
+  Topics: undefined;
   /** Chronological "everything earned" wall. */
   Gallery: undefined;
   /** Earned specialization certificates. */
