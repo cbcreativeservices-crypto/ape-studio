@@ -1,0 +1,163 @@
+{
+ "note": "Task 10 scope list for Decision 1 (glossary root causes). Every Part A quiz record whose glossary_id is one of the three poisoned entries, with the severity and fix field Computer C filed. 15 items, not ~10: five CLEARED items also derive from these entries and are in scope if the choice is regenerate-from-corrected-glossary (they cleared only because their text never touched the false claim). Off-domain Part B records (Decision 3) are listed by question id only: the Part B slices carry no glossary_id field, so Computer A must resolve them to glossary rows by id.",
+ "glossary_ids": {
+  "6bf82ba6-262b-43e6-8401-f94db4751cd6": "Sample-based Track",
+  "e9c93b33-ce61-4837-931a-73ff307d18db": "HEAT",
+  "cae583a0-ae18-4feb-b146-6d6783b2bf74": "HEAT (second entry)"
+ },
+ "items": [
+  {
+   "slice": "012",
+   "id": "0f06a71b-fa60-497b-97d8-058fe754b3bc",
+   "glossary_id": "cae583a0-ae18-4feb-b146-6d6783b2bf74",
+   "glossary_term": "HEAT (second entry)",
+   "severity": "CLEARED",
+   "fix_field": null,
+   "question_text": "What does Harmonically Enhanced Algorithm Technology add to a Pro Tools mix?"
+  },
+  {
+   "slice": "012",
+   "id": "18aa913d-78b8-4b5b-aeed-239bcbf841a0",
+   "glossary_id": "6bf82ba6-262b-43e6-8401-f94db4751cd6",
+   "glossary_term": "Sample-based Track",
+   "severity": "K3",
+   "fix_field": "question_text",
+   "question_text": "What defines a Sample-based Track?"
+  },
+  {
+   "slice": "013",
+   "id": "60370455-a03f-44f9-867b-2ba3ef899b8b",
+   "glossary_id": "cae583a0-ae18-4feb-b146-6d6783b2bf74",
+   "glossary_term": "HEAT (second entry)",
+   "severity": "K3",
+   "fix_field": "question_text",
+   "question_text": "What is this technology designed to emulate?"
+  },
+  {
+   "slice": "014",
+   "id": "980c54ab-0e75-421b-944f-bfb4d76253a0",
+   "glossary_id": "e9c93b33-ce61-4837-931a-73ff307d18db",
+   "glossary_term": "HEAT",
+   "severity": "K2",
+   "fix_field": "explanation",
+   "question_text": "What two controls does an engineer typically adjust per channel when using HEAT?"
+  },
+  {
+   "slice": "014",
+   "id": "b7dea975-b7b0-4366-a2a8-f960aac45b0b",
+   "glossary_id": "e9c93b33-ce61-4837-931a-73ff307d18db",
+   "glossary_term": "HEAT",
+   "severity": "CLEARED",
+   "fix_field": null,
+   "question_text": "What does HEAT stand for?"
+  },
+  {
+   "slice": "014",
+   "id": "b9390688-6ce6-44fe-b118-dc6482d5aaf8",
+   "glossary_id": "6bf82ba6-262b-43e6-8401-f94db4751cd6",
+   "glossary_term": "Sample-based Track",
+   "severity": "K3",
+   "fix_field": "question_text",
+   "question_text": "What advantage does a Sample-based Track give a producer?"
+  },
+  {
+   "slice": "015",
+   "id": "01413678-d2da-4256-b570-054dd6106e00",
+   "glossary_id": "cae583a0-ae18-4feb-b146-6d6783b2bf74",
+   "glossary_term": "HEAT (second entry)",
+   "severity": "K3",
+   "fix_field": "question_text",
+   "question_text": "A mastering engineer is deciding whether to use this Avid mixer option and wants to understand what kind of processing it introduces before printing the final mix. What should the engineer expect it to do?"
+  },
+  {
+   "slice": "015",
+   "id": "17c618e1-16c9-4230-a70a-296a5234170f",
+   "glossary_id": "6bf82ba6-262b-43e6-8401-f94db4751cd6",
+   "glossary_term": "Sample-based Track",
+   "severity": "K2",
+   "fix_field": "question_text",
+   "question_text": "An engineer is arranging one-shot samples in a grid to build a groove rather than recording a musician playing the part live. Which track type describes this workflow?"
+  },
+  {
+   "slice": "016",
+   "id": "4be2b53c-2855-483c-863c-bc592a88a34d",
+   "glossary_id": "6bf82ba6-262b-43e6-8401-f94db4751cd6",
+   "glossary_term": "Sample-based Track",
+   "severity": "K3",
+   "fix_field": "options_json",
+   "question_text": "A producer has no access to a live string section but wants realistic string sounds for a track by triggering prerecorded string loops. Which approach fits this need?"
+  },
+  {
+   "slice": "017",
+   "id": "82c3a28d-f749-4e2d-b5f9-4f6b346b3c09",
+   "glossary_id": "cae583a0-ae18-4feb-b146-6d6783b2bf74",
+   "glossary_term": "HEAT (second entry)",
+   "severity": "CLEARED",
+   "fix_field": null,
+   "question_text": "An engineer wants to subtly color a digital mix with some analog-style harmonic saturation before printing it, applying the effect globally across the HD mixer rather than inserting a plugin on each individual channel. What should the engineer engage?"
+  },
+  {
+   "slice": "017",
+   "id": "85f8a5a6-0a83-449e-90e7-6ff9d4e64164",
+   "glossary_id": "6bf82ba6-262b-43e6-8401-f94db4751cd6",
+   "glossary_term": "Sample-based Track",
+   "severity": "K2",
+   "fix_field": "question_text",
+   "question_text": "A beatmaker wants to construct a drum part by triggering prerecorded kick, snare, and hat one-shots from a sampler instead of recording a live drummer. What kind of track are they building?"
+  },
+  {
+   "slice": "018",
+   "id": "864fe98c-8348-4bae-8e4d-62ed4c0eff95",
+   "glossary_id": "e9c93b33-ce61-4837-931a-73ff307d18db",
+   "glossary_term": "HEAT",
+   "severity": "K2",
+   "fix_field": "explanation",
+   "question_text": "A mix engineer wants to add gentle, program-dependent analog-style saturation across the whole HD mixer, rather than inserting individual saturation plugins on each channel, before printing a final mix. What Avid feature suits this?"
+  },
+  {
+   "slice": "019",
+   "id": "b816a23b-2815-4f0b-a501-445c9ea81ddf",
+   "glossary_id": "e9c93b33-ce61-4837-931a-73ff307d18db",
+   "glossary_term": "HEAT",
+   "severity": "K2",
+   "fix_field": "question_text",
+   "question_text": "An engineer using HEAT wants to lean the saturation character toward tape-style odd harmonics rather than tube-style even harmonics on a particular channel. What control should be adjusted?"
+  },
+  {
+   "slice": "019",
+   "id": "e6a9ea72-4c52-4e63-b29b-c2ecdde5b875",
+   "glossary_id": "cae583a0-ae18-4feb-b146-6d6783b2bf74",
+   "glossary_term": "HEAT (second entry)",
+   "severity": "K2",
+   "fix_field": "options_json",
+   "question_text": "A mix engineer working entirely in the box feels the mix sounds too clean and sterile compared to mixes run through analog consoles and tape. What Avid Pro Tools option could add some of that analog-style character across the mixer?"
+  },
+  {
+   "slice": "019",
+   "id": "e7997102-0129-4d30-b102-bbde672c57c7",
+   "glossary_id": "e9c93b33-ce61-4837-931a-73ff307d18db",
+   "glossary_term": "HEAT",
+   "severity": "CLEARED",
+   "fix_field": null,
+   "question_text": "A mastering engineer running a session entirely inside Pro Tools wants some of the tonal coloration associated with analog tape and tube gear without routing the mix through outboard hardware. What built-in Avid option provides this?"
+  }
+ ],
+ "offdomain_partB_question_ids": {
+  "f572fc96-c417-4188-b2bb-2476bc017840": "asteroseismology (g-mode cavity / period spacing)",
+  "e49c6600-9462-4368-92bd-444acec67f92": "seismology (volcanic tremor band)",
+  "fc740207-98dd-469a-a80d-3457bbcd5e44": "seismology (seismic arrival at speed of sound in rock)"
+ },
+ "summary": {
+  "items_total": 15,
+  "by_glossary": {
+   "HEAT (second entry)": 5,
+   "Sample-based Track": 5,
+   "HEAT": 5
+  },
+  "by_severity": {
+   "CLEARED": 4,
+   "K3": 5,
+   "K2": 6
+  }
+ }
+}
