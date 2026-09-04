@@ -110,6 +110,13 @@ import { MicSelectLabScreen } from '../screens/lab/micselect/MicSelectLabScreen'
 import { CableLabScreen } from '../screens/lab/cable/CableLabScreen';
 import { CableInstallLabScreen } from '../screens/lab/cableinstall/CableInstallLabScreen';
 import { ExposureMonitorScreen } from '../screens/tools/ExposureMonitorScreen';
+// Audio Career Finder (owner brief 2026-09-03) — Career Discovery Lab, Beta.
+import { CareerFinderScreen } from '../screens/careerfinder/CareerFinderScreen';
+import { CareerFinderQuizScreen } from '../screens/careerfinder/CareerFinderQuizScreen';
+import { CareerFinderResultsScreen } from '../screens/careerfinder/CareerFinderResultsScreen';
+import { CareerFamilyScreen } from '../screens/careerfinder/CareerFamilyScreen';
+import { CareerFamilyListScreen } from '../screens/careerfinder/CareerFamilyListScreen';
+import { CareerFinderAboutScreen } from '../screens/careerfinder/CareerFinderAboutScreen';
 import { MainTabs } from './MainTabs';
 import type { RootStackParamList } from './types';
 
@@ -351,6 +358,16 @@ export function RootNavigator() {
       {/* Foundations of Sound — the Ear Lab's first module (course + sandbox). */}
       <Stack.Screen name="FoundationsCourse" component={FoundationsCourseScreen} />
       <Stack.Screen name="FoundationsPlayground" component={Gated.FoundationsPlayground} />
+      {/* Audio Career Finder (owner brief 2026-09-03). No audio visualizer, so
+          NOT behind the amplitude orientation; read-only pages take swipe-back,
+          the questions do not (a stray swipe mid-answer is the one gesture
+          that would surprise). */}
+      <Stack.Screen name="CareerFinder" component={CareerFinderScreen} options={swipe} />
+      <Stack.Screen name="CareerFinderQuiz" component={CareerFinderQuizScreen} />
+      <Stack.Screen name="CareerFinderResults" component={CareerFinderResultsScreen} options={swipe} />
+      <Stack.Screen name="CareerFamily" component={CareerFamilyScreen} options={swipe} />
+      <Stack.Screen name="CareerFamilyList" component={CareerFamilyListScreen} options={swipe} />
+      <Stack.Screen name="CareerFinderAbout" component={CareerFinderAboutScreen} options={swipe} />
       {/* Anonymous public glossary (commercial browse path). */}
       <Stack.Screen name="PublicGlossary" component={PublicGlossaryScreen} />
       {/* CM7: academy paywall (modal; UI only). */}

@@ -34,6 +34,7 @@ import { resetLocal as resetSettingsMirrors } from '../settings/store';
 import { resetLocal as resetPublicProfile } from '../profile/publicProfile';
 import { setChainValue } from '../../screens/lab/calc/chainStore';
 import { resetLocal as resetDetectiveSolved } from '../../screens/lab/meter/modules/modMeterC';
+import { resetLocal as resetCareerFinderStore } from '../careerfinder/store';
 
 /**
  * Keys that MUST survive an account wipe: device-hardware calibration (per
@@ -126,6 +127,9 @@ export function resetAllLocalStores(): void {
   // banner or the departing user's SOLVED count (B-154).
   setChainValue(null);
   resetDetectiveSolved();
+  // Career Finder answers, results, saved families and Beta feedback are the
+  // departing user's — the next person starts the questionnaire fresh.
+  resetCareerFinderStore();
   // Offline SQLite/in-memory queues carry NO user id — if not dropped here, a
   // departing user's queued study batches / quiz submissions would replay under
   // the NEXT user's session and be credited to the wrong account. Their local

@@ -19,18 +19,23 @@ export function ToolPreview({
   name,
   component,
   initialParams,
+  screens,
 }: {
   name: string;
   component: ComponentType;
   /** Route params for screens that read useRoute().params (e.g. a calc
    *  workspace needs { id }). */
   initialParams?: Record<string, unknown>;
+  /** Extra routes for a multi-screen flow (the Career Finder navigates
+   *  between six screens); the first route is still `name`. */
+  screens?: { name: string; component: ComponentType }[];
 }) {
   return (
     <EntitlementProvider>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false, animation: 'none' }}>
           <Stack.Screen name={name} component={component} initialParams={initialParams} />
+          {screens?.map((s) => <Stack.Screen key={s.name} name={s.name} component={s.component} />)}
         </Stack.Navigator>
       </NavigationContainer>
     </EntitlementProvider>

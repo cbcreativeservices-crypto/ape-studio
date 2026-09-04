@@ -291,6 +291,17 @@ export type RootStackParamList = {
    *  dosimeter: session/today/history, check-in settings, privacy controls.
    *  UNGATED: hearing-safety information is never locked. */
   ExposureMonitor: undefined;
+  /** Audio Career Finder (owner brief 2026-09-03) — Career Discovery Lab, Beta.
+   *  28 activity questions → 14 dimensions → 42 career families over the
+   *  bundled 1,902-title index. Free for everyone, no account (owner ruling):
+   *  the record is device-local. Intro / questions / results / one family /
+   *  all families / methodology. */
+  CareerFinder: undefined;
+  CareerFinderQuiz: undefined;
+  CareerFinderResults: undefined;
+  CareerFamily: { id: string; from?: 'results' | 'browse' };
+  CareerFamilyList: undefined;
+  CareerFinderAbout: undefined;
 };
 
 declare global {

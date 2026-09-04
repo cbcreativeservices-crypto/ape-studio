@@ -20,6 +20,8 @@ import { fetchV3Curriculum, fetchV3Programs, fetchV3Certs, type V3Field } from '
 import { subjectMeta } from '../../data/subjectMeta';
 import { useCurriculumStats } from '../../features/curriculum/curriculumStats';
 import { toggleTopic, useEnrollment } from '../../features/enrollment/enrollmentStore';
+import { useNavigation } from '@react-navigation/native';
+import { CAREER_COUNT } from '../../features/careerfinder/careerIndex';
 
 /** Placeholder academic-goal lines — replace with the Academy's official copy. */
 const ACADEMIC_GOALS: string[] = [
@@ -90,6 +92,7 @@ export function CurriculumView({
   onOpenCategory?: (key: 'specialization' | 'program') => void;
 }) {
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation();
   const [open, setOpen] = useState<number | null>(null);
   // Enrollment list (user request): tapping a topic here adds/removes it, exactly
   // like the Enrollments "Browse & Add" list. Ungated — free users build a list
@@ -211,6 +214,26 @@ export function CurriculumView({
         </View>
       )}
 
+      {/* Audio Career Finder entry (owner brief 2026-09-03: "where I circled" —
+          between the intro and SUBJECTS). Free for everyone; opens the
+          Career Discovery Lab. */}
+      <Pressable
+        style={styles.finderCard}
+        onPress={() => (navigation as { navigate: (name: 'CareerFinder') => void }).navigate('CareerFinder')}
+        accessibilityRole="button"
+        accessibilityLabel="Audio Career Finder, Beta. Twenty-eight questions, forty-two career families, one thousand nine hundred and two ways to work in audio. Free."
+      >
+        <View style={styles.finderText}>
+          <View style={styles.finderEyebrowRow}>
+            <Text style={styles.finderEyebrow}>CAREER DISCOVERY LAB</Text>
+            <View style={styles.finderBeta}><Text style={styles.finderBetaText}>BETA</Text></View>
+          </View>
+          <Text style={styles.finderTitle}>Audio Career Finder</Text>
+          <Text style={styles.finderBlurb}>Which kinds of audio work would you enjoy? 28 questions, 42 career families, {fmt(CAREER_COUNT)} ways to work in audio. Free, about five minutes.</Text>
+        </View>
+        <Text style={styles.finderChevron}>›</Text>
+      </Pressable>
+
       {/* Amber "Subjects" subtitle above the list (user request 2026-07-22). */}
       <Text style={styles.subjectsHead}>SUBJECTS</Text>
 
@@ -319,6 +342,19 @@ const styles = StyleSheet.create({
   },
   statValue: { fontFamily: fonts.oswaldBold, fontSize: 20, color: colors.amber, letterSpacing: 0.2 },
   statLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, lineHeight: 11, letterSpacing: 0.4, color: colors.textSub, textAlign: 'center' },
+
+  // Audio Career Finder entry card (owner brief 2026-09-03). Same card grammar
+  // as the subject cards below, with the amber accent on the left edge so it
+  // reads as a destination rather than another expandable subject.
+  finderCard: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#161616', borderWidth: 1, borderColor: '#2a2a2a', borderLeftWidth: 3, borderLeftColor: colors.amber, borderRadius: 9, paddingVertical: 13, paddingLeft: 14, paddingRight: 12 },
+  finderText: { flex: 1, gap: 3 },
+  finderEyebrowRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  finderEyebrow: { fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 1.6, color: colors.amberLabel },
+  finderBeta: { borderWidth: 1, borderColor: colors.amberLabel, borderRadius: 3, paddingHorizontal: 5, paddingVertical: 1 },
+  finderBetaText: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1.4, color: colors.amber },
+  finderTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 19, color: colors.textPrimary, letterSpacing: 0.3 },
+  finderBlurb: { fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 20, color: colors.textSub },
+  finderChevron: { fontFamily: fonts.oswaldSemiBold, fontSize: 24, color: colors.amber },
 
   // Tree.
   // Amber "SUBJECTS" subtitle above the subject list (user request 2026-07-22);

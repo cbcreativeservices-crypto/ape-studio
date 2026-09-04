@@ -23,6 +23,14 @@ import { CalcWorkspaceScreen } from './src/screens/lab/calc/CalcWorkspaceScreen'
 import { CalcLabScreen } from './src/screens/lab/calc/CalcLabScreen';
 import { CableInstallLabScreen } from './src/screens/lab/cableinstall/CableInstallLabScreen';
 import { CableArtPreview } from './src/screens/lab/cableinstall/CableArtPreview';
+// Audio Career Finder (owner brief 2026-09-03) — `#careerfinderpreview` runs
+// the whole six-screen flow in the browser harness.
+import { CareerFinderScreen } from './src/screens/careerfinder/CareerFinderScreen';
+import { CareerFinderQuizScreen } from './src/screens/careerfinder/CareerFinderQuizScreen';
+import { CareerFinderResultsScreen } from './src/screens/careerfinder/CareerFinderResultsScreen';
+import { CareerFamilyScreen } from './src/screens/careerfinder/CareerFamilyScreen';
+import { CareerFamilyListScreen } from './src/screens/careerfinder/CareerFamilyListScreen';
+import { CareerFinderAboutScreen } from './src/screens/careerfinder/CareerFinderAboutScreen';
 import { navigationRef } from './src/navigation/navigationRef';
 import {
   attachWeeklyConceptPush,
@@ -208,9 +216,21 @@ export default function App() {
   // SVG) tool screen in a minimal navigator with the ape-dsp SIM overlay, so the
   // tool can be seen + iterated in the browser. Outside RootNavigator, so it
   // skips AmplitudeOrientation's web-Skia throw.
-  const toolPreview: { name: string; component: ComponentType; initialParams?: Record<string, unknown> } | null =
+  const toolPreview: { name: string; component: ComponentType; initialParams?: Record<string, unknown>; screens?: { name: string; component: ComponentType }[] } | null =
     __DEV__ && Platform.OS === 'web' && typeof window !== 'undefined'
-      ? window.location.hash === '#multimeterpreview'
+      ? window.location.hash === '#careerfinderpreview'
+        ? {
+            name: 'CareerFinder',
+            component: CareerFinderScreen as ComponentType,
+            screens: [
+              { name: 'CareerFinderQuiz', component: CareerFinderQuizScreen as ComponentType },
+              { name: 'CareerFinderResults', component: CareerFinderResultsScreen as ComponentType },
+              { name: 'CareerFamily', component: CareerFamilyScreen as ComponentType },
+              { name: 'CareerFamilyList', component: CareerFamilyListScreen as ComponentType },
+              { name: 'CareerFinderAbout', component: CareerFinderAboutScreen as ComponentType },
+            ],
+          }
+      : window.location.hash === '#multimeterpreview'
         ? { name: 'MultiMeter', component: MultiMeterScreen as ComponentType }
         : window.location.hash === '#waveformpreview'
           ? { name: 'WaveformLive', component: WaveformScreen as ComponentType }
@@ -234,7 +254,7 @@ export default function App() {
     return (
       <SafeAreaProvider>
         <StatusBar style="light" />
-        <ToolPreview name={toolPreview.name} component={toolPreview.component} initialParams={toolPreview.initialParams} />
+        <ToolPreview name={toolPreview.name} component={toolPreview.component} initialParams={toolPreview.initialParams} screens={toolPreview.screens} />
       </SafeAreaProvider>
     );
   }
