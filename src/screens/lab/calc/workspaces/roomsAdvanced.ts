@@ -82,7 +82,7 @@ const EYRING: Workspace = {
         return [
           { label: 'RT60 (EYRING)', value: eyring, quantity: 'time', unit: 's' },
           { label: 'RT60 (SABINE)', value: sabine, quantity: 'time', unit: 's', chainable: false },
-          { label: 'SABINE OVER-ESTIMATE', value: ((sabine - eyring) / eyring) * 100, quantity: 'percent', chainable: false },
+          { label: 'SABINE OVER-ESTIMATE', value: ((sabine - eyring) / sabine) * 100, quantity: 'percent', chainable: false },
         ];
       },
       steps: (v) => {

@@ -514,7 +514,7 @@ const WS_CABLE: Workspace = {
         const rloop = 2 * L * rpm;
         const frac = z / (z + rloop);
         const lossDb = 20 * Math.log10(frac);
-        const lostPct = (1 - frac * frac) * 100;
+        const lostPct = (1 - frac) * 100;
         return [
           { label: `LOOP RESISTANCE (${g} AWG)`, value: rloop, quantity: 'impedance' },
           { label: 'LEVEL LOSS', value: lossDb, quantity: 'db' },
@@ -539,7 +539,7 @@ const WS_CABLE: Workspace = {
         s.push(
           `Current travels out AND back: Rloop = 2 × ${fmt(L)} m × ${rpm} Ω/m = ${fmt(rloop)} Ω.`,
           `The speaker gets Z/(Z+Rloop) = ${fmt(z)}/${fmt(z + rloop)} = ${fmt(frac)} of the voltage → 20·log10(${fmt(frac)}) = ${fmt(20 * Math.log10(frac))} dB.`,
-          `Power lost = 1 − ${fmt(frac)}² = ${fmt((1 - frac * frac) * 100, 3)}% of the amplifier’s output, spent heating copper.`
+          `Power lost = 1 − ${fmt(frac)} = ${fmt((1 - frac) * 100, 3)}% of the amplifier’s output, spent heating copper.`
         );
         return s;
       },
@@ -629,7 +629,7 @@ const WS_CABLE: Workspace = {
               String(g),
               fmt(rloop, 3),
               fmt(loss, 3),
-              `${fmt((1 - frac * frac) * 100, 3)}%`,
+              `${fmt((1 - frac) * 100, 3)}%`,
               loss <= dB ? 'PASS' : 'FAIL',
             ];
           }),

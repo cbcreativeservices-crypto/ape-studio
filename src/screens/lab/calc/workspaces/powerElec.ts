@@ -216,8 +216,8 @@ const VDROP: Workspace = {
     'the wire is too thin. A supply that reads fine at the rack can arrive out of spec at the far ' +
     'end. This is how you size a gauge before the gear misbehaves.',
   example:
-    'A 30 m run of 16 AWG carrying 3 A from a 48 V supply: round-trip resistance ≈ 0.81 Ω, so the ' +
-    'drop ≈ 2.4 V (≈ 5%) and ≈ 7.3 W is lost as heat in the cable.',
+    'A 30 m run of 16 AWG carrying 3 A from a 48 V supply: round-trip resistance ≈ 0.79 Ω, so the ' +
+    'drop ≈ 2.4 V (≈ 5%) and ≈ 7.1 W is lost as heat in the cable.',
   mistakes: [
     'Counting only the one-way length — current flows OUT and BACK, so voltage drop uses TWICE the run length.',
     'Sizing by current rating alone — a wire can be "rated" for the current yet still drop far too much voltage over a long run.',
