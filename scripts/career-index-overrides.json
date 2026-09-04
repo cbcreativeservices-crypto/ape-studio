@@ -1,6 +1,14 @@
 {
   "_about": "Corrections applied by scripts/build-career-index.py ON TOP of the owner's workbook (industry accuracy review 2026-09-04). The workbook stays the source; these keep the app honest until the workbook is revised. Titles are matched exactly.",
 
+  "_topicGs_about": "Family curriculum links, by family name → explicit v3 global_sequence topics (owner 2026-09-04). The workbook's 'Key app topics' for the Professional Practice families named subjects/columns that don't resolve to v3 topics, so those families fell back to generic links and Music Curation got none. These are ccode's recommended picks from the live v3 curriculum; every gs is validated against active v3 at build. Adjust freely.",
+  "topicGs": {
+    "Music Curation, Repertoire, Libraries & Editorial": [4310, 3950, 4380, 4400],
+    "Music Retail, Rental & Instrument Services": [4400, 4370, 4390, 4360],
+    "Education, Research, Training & Technical Communication": [4380, 4400, 4370, 3300, 4360],
+    "Audio Business, Product, Sales & Operations": [4390, 4360, 4370, 4400, 4380]
+  },
+
   "regulated": [
     "Hearing Instrument Specialist", "Hearing-Aid Specialist", "Hearing-Aid Fitting Specialist",
     "Speech-Language Pathology Assistant", "Voice Therapist",

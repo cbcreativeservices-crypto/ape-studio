@@ -935,7 +935,12 @@
   "name": "Music Curation, Repertoire, Libraries & Editorial",
   "field": "Career, Business & Industry",
   "subject": "Professional Practice",
-  "topicGs": [],
+  "topicGs": [
+   4310,
+   3950,
+   4380,
+   4400
+  ],
   "settings": [
    "Record labels",
    "streaming platforms",
@@ -1008,8 +1013,10 @@
   "field": "Career, Business & Industry",
   "subject": "Professional Practice",
   "topicGs": [
-   3870,
-   4370
+   4400,
+   4370,
+   4390,
+   4360
   ],
   "settings": [
    "Music stores",

@@ -149,6 +149,14 @@ def main():
         rows = by_title.get(title)
         if not rows: sys.exit(f'override names a title not in the workbook: {title!r}')
         return rows
+    # Family curriculum-link overrides (explicit v3 gs; validated against live v3).
+    valid_gs = {t['global_sequence'] for t in v3}
+    for fam, gs_list in ov.get('topicGs', {}).items():
+        if fam.startswith('_'): continue
+        if fam not in families: sys.exit(f'topicGs override names an unknown family: {fam!r}')
+        bad = [g for g in gs_list if g not in valid_gs]
+        if bad: sys.exit(f'topicGs override for {fam!r} has non-v3 gs: {bad}')
+        families[fam]['topicGs'] = list(gs_list)
     for title, fam in ov['moveToFamily'].items():
         for c in each(title):
             families[fam_ids[c['f']]]['count'] -= 1
