@@ -38,8 +38,11 @@ Also 2026-09-05: a bound rack-dock key now wears its own colour (OSC 1 cyan)
 instead of amber; the Tools hub tiles were rebuilt to your spec — THE TILE IS
 THE SCREEN: one raised, bevelled glass per tool with the title and the display
 behind it, a thin true-black recess all round with a light touch on its lip,
-under one overhead light (no screws, no title plates, no chassis frame).
-Device check: the bevel and recess lip at 3x.
+under one overhead light (no screws, no title plates, no chassis frame), and
+every display now fills its glass edge to edge — the strip art's own bezel and
+plot-top line are cropped out of view on all eight tiles. Device check: the
+bevel and recess lip at 3x, and that the live tuner needle still sits on its
+dial (its overlay was re-mapped to the new display window).
 
 **Ruled 2026-09-05 — no competitor organisations in product copy (R1)**: AVIXA
 now appears only as neutral ANSI citations in the Cable Dressing lab's sources
