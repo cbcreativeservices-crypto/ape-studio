@@ -3,6 +3,8 @@
     "name": "Pro Audio",
     "slug": "ape-studio",
     "version": "1.0.0",
+    "description": "Pro Audio Training Academy — a 26,000-term professional audio glossary, real phone-based measurement tools (SPL, RTA, spectrogram, RT60, tuner), interactive audio labs, and certificate programs for audio engineers.",
+    "scheme": "proaudio",
     "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
@@ -10,6 +12,10 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.cbcreativeservices.apestudio",
+      "associatedDomains": [
+        "applinks:proaudiotrainingacademy.com",
+        "applinks:www.proaudiotrainingacademy.com"
+      ],
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSMicrophoneUsageDescription": "Used to measure sound levels in the measurement tools, and — only when you tap the mic — to dictate a glossary search. Audio is processed on this device and is not recorded or uploaded.",
@@ -26,6 +32,31 @@
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.cbcreativeservices.apestudio",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            { "scheme": "https", "host": "proaudiotrainingacademy.com", "pathPrefix": "/get" },
+            { "scheme": "https", "host": "proaudiotrainingacademy.com", "pathPrefix": "/tools" },
+            { "scheme": "https", "host": "proaudiotrainingacademy.com", "pathPrefix": "/learn" },
+            { "scheme": "https", "host": "proaudiotrainingacademy.com", "pathPrefix": "/labs" },
+            { "scheme": "https", "host": "proaudiotrainingacademy.com", "pathPrefix": "/glossary" },
+            { "scheme": "https", "host": "proaudiotrainingacademy.com", "pathPrefix": "/awards" },
+            { "scheme": "https", "host": "proaudiotrainingacademy.com", "pathPrefix": "/directory" },
+            { "scheme": "https", "host": "proaudiotrainingacademy.com", "pathPrefix": "/careers" },
+            { "scheme": "https", "host": "www.proaudiotrainingacademy.com", "pathPrefix": "/get" },
+            { "scheme": "https", "host": "www.proaudiotrainingacademy.com", "pathPrefix": "/tools" },
+            { "scheme": "https", "host": "www.proaudiotrainingacademy.com", "pathPrefix": "/learn" },
+            { "scheme": "https", "host": "www.proaudiotrainingacademy.com", "pathPrefix": "/labs" },
+            { "scheme": "https", "host": "www.proaudiotrainingacademy.com", "pathPrefix": "/glossary" },
+            { "scheme": "https", "host": "www.proaudiotrainingacademy.com", "pathPrefix": "/awards" },
+            { "scheme": "https", "host": "www.proaudiotrainingacademy.com", "pathPrefix": "/directory" },
+            { "scheme": "https", "host": "www.proaudiotrainingacademy.com", "pathPrefix": "/careers" }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ],
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.ACCESS_COARSE_LOCATION",

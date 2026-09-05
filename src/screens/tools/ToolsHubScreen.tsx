@@ -57,6 +57,7 @@ import { HUB_LIVE_MINIS, HUB_SKIN_MINIS } from './hubPreviewsLive';
 import { animationsAllowed } from '../../features/settings/a11y';
 import { HUB_SIM_MINIS } from './hubPreviewsSim';
 import {
+  fmtClock,
   fmtDuration,
   getExposureSnapshot,
   subscribeExposure,
@@ -95,12 +96,25 @@ function DosimeterChip({ onOpen }: { onOpen: () => void }) {
   const pct = Math.round(snap.todayDose * 100);
   // One rendered time for BOTH the screen-reader label and the visible chip
   // (B-186): fmtDuration(0) is "0 s" but the chip showed "0 min" — unify.
-  const shownTime = snap.todayActiveSec > 0 ? fmtDuration(snap.todayActiveSec) : '0 min';
+  // LIVE (owner 2026-09-05): while the monitor is tracking (mic capturing or
+  // the app sounding) the time is a ticking m:ss clock and the label says so —
+  // proof that tracking is active even when a quiet room adds no dose.
+  const live = snap.soundingNow;
+  const shownTime = live
+    ? fmtClock(snap.todayActiveSec)
+    : snap.todayActiveSec > 0
+      ? fmtDuration(snap.todayActiveSec)
+      : '0 min';
   return (
     <Pressable
-      onPress={onOpen}
+      onPress={() => {
+        markToolTap('dosimeter');
+        void Haptics.selectionAsync().catch(() => {});
+        markToolNavigate('dosimeter');
+        onOpen();
+      }}
       accessibilityRole="button"
-      accessibilityLabel={`Listening exposure: dose ${pct} percent, ${shownTime} today. Open the monitor.`}
+      accessibilityLabel={`Listening exposure: dose ${pct} percent, ${shownTime} today${live ? ', tracking now' : ''}. Open the monitor.`}
       // Warning states recolour the whole rim (a status signal, uniform on
       // purpose) — routed through litRim so the lit top edge never lingers.
       style={[
@@ -109,7 +123,7 @@ function DosimeterChip({ onOpen }: { onOpen: () => void }) {
         pct >= 80 && pct < 100 && litRim('rgba(255,180,0,.7)', 'rgba(255,180,0,.7)', 'rgba(255,180,0,.7)'),
       ]}
     >
-      <Text style={styles.dosiLabel}>DOSIMETER</Text>
+      <Text style={[styles.dosiLabel, live && { color: colors.green }]}>{live ? '● DOSIMETER · TRACKING' : 'DOSIMETER'}</Text>
       <Text style={[styles.dosiValue, pct >= 100 && { color: '#ff6a5e' }]}>
         {`${pct}% · ${shownTime}`}
       </Text>

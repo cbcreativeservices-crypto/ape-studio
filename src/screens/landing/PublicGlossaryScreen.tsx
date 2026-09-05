@@ -13,10 +13,14 @@ import { useMemo } from 'react';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { GlossaryScreen } from '../glossary/GlossaryScreen';
 import type { RootStackParamList } from '../../navigation/types';
+import { slugToQuery } from '../../navigation/linkPaths';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PublicGlossary'>;
 
-export function PublicGlossaryScreen({ navigation }: Props) {
+export function PublicGlossaryScreen({ navigation, route: rootRoute }: Props) {
+  // Deep link `/glossary/<slug>` (2026-09-05): the slug ("phantom-power") is
+  // the URL form of the term — hand the glossary the human form to search on.
+  const query = rootRoute.params?.query ? slugToQuery(rootRoute.params.query) || undefined : undefined;
   const navProxy = useMemo(
     () =>
       new Proxy(navigation as object, {
@@ -33,7 +37,10 @@ export function PublicGlossaryScreen({ navigation }: Props) {
     [navigation],
   );
 
-  const route = useMemo(() => ({ key: 'public-glossary', name: 'Glossary' as const, params: {} }), []);
+  const route = useMemo(
+    () => ({ key: 'public-glossary', name: 'Glossary' as const, params: query ? { query } : {} }),
+    [query],
+  );
 
   // Prop shapes intentionally coerced: GlossaryScreen is typed to the Study
   // stack; this adapter provides behaviorally-equivalent props.

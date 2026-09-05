@@ -35,6 +35,7 @@ import {
   type ExposureSnapshot,
   type ExposureStandard,
 } from '../../features/audio/exposureMonitor';
+import { markToolMount } from '../../features/tools/devTiming';
 
 function Row({
   label,
@@ -100,6 +101,10 @@ export function ExposureMonitorScreen() {
   const [range, setRange] = useState<7 | 30>(7);
 
   useEffect(() => subscribeExposure(() => setSnap(getExposureSnapshot())), []);
+  // Dev-only tap→mount timing (owner report 2026-09-05: a second open took 10 s+).
+  useEffect(() => {
+    markToolMount('ExposureMonitor', 'dosimeter');
+  }, []);
   useEffect(() => {
     void getExposureHistory().then(setHistory);
   }, [snap.todayActiveSec === 0]); // refresh after deletes; live today rides the snapshot

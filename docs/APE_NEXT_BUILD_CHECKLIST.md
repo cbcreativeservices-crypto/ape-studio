@@ -18,7 +18,13 @@ The installed dev client predates several native modules and engine versions. Ev
 | Keyboard controller (calc inputs) | `react-native-keyboard-controller` | ✅ | none | ready |
 | Lab audio that "predates the v3 additive engine" (Harmonograph intervals, Bass Lab, Foundations Playground/Course additive + stereo dual-osc), **v6 effects path** (FX Lab), **v7 binaural** (Binaural Lab) | `ape-dsp` native engine (source complete, see memory `audio-engine-status`) | in-tree module | n/a | ready — needs the rebuild |
 
+| **Deep links** — `proaudio://…` scheme; Universal Links / App Links for `proaudiotrainingacademy.com` (2026-09-05 discoverability pass) | `app.json` `scheme`, `ios.associatedDomains`, `android.intentFilters` (native config → needs the build); the URL→screen map is JS (`src/navigation/linking.ts`) | n/a | ✅ added 2026-09-05 | scheme works in any build after 2026-09-05; the https links stay inert until the website hosts `/.well-known/apple-app-site-association` + `assetlinks.json` (`docs/APE_WEBSITE_SEO_NOTES_2026_09_05.md` §A) |
+| Light-Pulse frequency counter (camera luma) + MultiMeter snapshot photo | camera path inside `ape-dsp` (no `expo-camera` package) | in-tree module | `NSCameraUsageDescription` + `android.permission.CAMERA` ✅ | ready |
+| Glossary / calc **copy to clipboard** | `expo-clipboard` ~57.0.1 | ✅ | none required | ready |
+
 `expo-print` and `react-native-view-shot` autolink; no plugin entry exists for them by design.
+
+**Verified 2026-09-05 (evening) before the demo builds:** every package in `package.json` with a native half has its plugin/permission above or autolinks; `tsc --noEmit` clean; 255 tests green.
 
 ## What the owner does
 

@@ -860,7 +860,7 @@ function GlossaryLoading({ count, landed }: { count: number | null; landed: bool
 
 export function GlossaryScreen({ route, navigation }: Props) {
   const insets = useSafeAreaInsets();
-  const { achievementId: presetTopicId } = route.params ?? {};
+  const { achievementId: presetTopicId, query: presetQuery } = route.params ?? {};
 
   const [entries, setEntries] = useState<Entry[]>([]);
   const [topics, setTopics] = useState<TopicRef[]>([]);
@@ -878,7 +878,8 @@ export function GlossaryScreen({ route, navigation }: Props) {
   useEffect(() => {
     if (loading) setCountLanded(false);
   }, [loading]);
-  const [search, setSearch] = useState('');
+  // A deep-linked term (`/glossary/<slug>`) arrives as the initial search text.
+  const [search, setSearch] = useState(presetQuery ?? '');
   const searchRef = useRef<TextInput>(null);
   // Search-field colour (owner 2026-08-01): the typed query goes GREEN once the
   // search has SETTLED (results shown), and reverts to WHITE while the user is

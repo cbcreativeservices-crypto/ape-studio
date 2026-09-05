@@ -171,7 +171,11 @@ const NEGLIGIBLE_DBFS = -60; // below this the output is treated as inaudible (�
 // field-calibrated) or + the nominal estimate (matches the SPL meter's own
 // uncalibrated 0 dBFS ≈ 100 dB SPL assumption).
 const INPUT_NOMINAL_OFFSET = 100;
-const INPUT_FLOOR_SPL = 45; // below this the environment is not meaningful exposure
+// TRACKING vs DOSE (owner 2026-09-05): while the mic is capturing for a tool
+// the monitor is ACTIVE — time ticks and the readout shows that tracking is
+// live — even in a quiet room. Faint levels simply contribute no dose: every
+// model's floor (65/70/80 dBA) already makes allowableSec() infinite there.
+// The old 45 dB SPL gate made a quiet room look like "not tracking at all".
 
 // ── Store state ──────────────────────────────────────────────────────────────
 
@@ -382,10 +386,8 @@ function readSources(): { active: boolean; db: number | null; rt: RouteKey; meas
       if (Number.isFinite(f.aFastDb)) {
         const cal = getSplCalibration();
         const spl = Math.round((f.aFastDb + (cal?.offsetDb ?? INPUT_NOMINAL_OFFSET)) * 10) / 10;
-        if (spl >= INPUT_FLOOR_SPL) {
-          inDb = spl;
-          inMeasured = cal != null;
-        }
+        inDb = Math.max(0, spl);
+        inMeasured = cal != null;
       }
     }
   }
@@ -655,6 +657,18 @@ export async function exportExposureHistory(): Promise<string> {
 }
 
 // ── Formatting helpers (shared by the panel, strip and screen) ───────────────
+
+/** Live clock form (m:ss / h:mm:ss) — the ticking readout while tracking is
+ *  active, so the user can SEE the seconds move (owner 2026-09-05). */
+export function fmtClock(sec: number): string {
+  const s = Math.max(0, Math.round(sec));
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const r = s % 60;
+  return h > 0
+    ? `${h}:${String(m).padStart(2, '0')}:${String(r).padStart(2, '0')}`
+    : `${m}:${String(r).padStart(2, '0')}`;
+}
 
 export function fmtDuration(sec: number): string {
   const s = Math.round(sec);

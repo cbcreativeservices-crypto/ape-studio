@@ -263,6 +263,28 @@ a progressed account + supply trophy art for certs/programs (drop PNGs +
    with a "high risk" scanner flag but docs-only contents (no scripts/network)
    are safe to run — verify the contents, don't rely on the badge.
 
+### Added 2026-09-05 (evening) — discoverability pass + dosimeter
+10. **Deep links are declared but INERT until the website hosts two files** —
+    `/.well-known/apple-app-site-association` and `/.well-known/assetlinks.json`
+    (exact contents in `docs/APE_WEBSITE_SEO_NOTES_2026_09_05.md` §A; needs the
+    Apple Team ID and the Android signing SHA-256 from `eas credentials`). The
+    custom scheme `proaudio://` works in any build made after 2026-09-05.
+11. **Glossary share links** stay at the site root on purpose: a per-term URL
+    (`glossaryTermUrl()` in `src/navigation/linking.ts`) goes into the share text
+    only once `/glossary/<slug>` pages exist on the site — a 404 in every share
+    is worse than no link. Owner ratification needed for the added line (the
+    share format is ratified copy, 2026-08-06/10).
+12. **Dosimeter "second open took 10 s+"** (owner, 2026-09-05): the phone log
+    showed NOTHING for that test — no error, no rebundle. Dev timing marks now
+    print `[tools] tap→navigate dosimeter` / `navigate→mount ExposureMonitor` on
+    every open; next repro → read the Metro task output and compare with the
+    ~0.3 s tool taps. The chip now shows `● DOSIMETER · TRACKING` + a ticking
+    m:ss clock whenever the mic is capturing (quiet rooms count as time, not
+    dose) — device pass pending.
+13. Store listing (name/subtitle/keywords/description) — drafts in
+    `docs/APE_APP_SEO_RESEARCH_2026_09_05.md` §4, to be merged with the owner's
+    own SEO research before anything is entered in App Store Connect / Play.
+
 ---
 
 *Sources: assistant memory `security-workstream-2026-09-04`,

@@ -32,6 +32,7 @@ import { CareerFamilyScreen } from './src/screens/careerfinder/CareerFamilyScree
 import { CareerFamilyListScreen } from './src/screens/careerfinder/CareerFamilyListScreen';
 import { CareerFinderAboutScreen } from './src/screens/careerfinder/CareerFinderAboutScreen';
 import { navigationRef } from './src/navigation/navigationRef';
+import { linking } from './src/navigation/linking';
 import {
   attachWeeklyConceptPush,
   flushWeeklyConceptNav,
@@ -298,6 +299,9 @@ export default function App() {
             <NavigationContainer
               theme={navTheme}
               ref={navigationRef}
+              // Deep links / universal links (2026-09-05) — the URL → screen map
+              // lives in src/navigation/linking.ts alongside the claimed paths.
+              linking={linking}
               onReady={() => {
                 flushWeeklyConceptNav((payload) => navigationRef.navigate('WeeklyConcept', payload));
               }}

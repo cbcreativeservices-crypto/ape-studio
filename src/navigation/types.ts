@@ -18,6 +18,8 @@ export type StudyStackParamList = {
   Glossary: {
     achievementId?: string;
     topicName?: string;
+    /** Search text to open on (deep link `/glossary/<slug>`, 2026-09-05). */
+    query?: string;
   };
   // S13 — Scenarios screen only for Fall (no content, not gate-relevant). The
   // S12 EarTraining study method was retired (Booth 2026-07-26, v4 MASTER §13);
@@ -63,8 +65,9 @@ export type MainTabParamList = {
 export type RootStackParamList = {
   Splash: undefined;
   Auth: undefined; // S1 two-step register + sign-in (Milestone 2)
-  /** Anonymous glossary route (commercial browse path). */
-  PublicGlossary: undefined;
+  /** Anonymous glossary route (commercial browse path). `query` = a term to
+   *  open on (deep link `/glossary/<slug>`, 2026-09-05). */
+  PublicGlossary: { query?: string } | undefined;
   /** CM7: academy upgrade paywall (UI only; store wiring pending ruling). */
   Paywall: undefined;
   Main: NavigatorScreenParams<MainTabParamList> | undefined;
