@@ -1450,6 +1450,20 @@ export function DashboardScreen() {
           </ElevatedFrame>
         ) : (
           <>
+        {/* No account = no server progress: say so up front instead of a
+            silent 0% after a fully-worked deck (Bug+Hater night F2-01). */}
+        {data.userId === 'local' ? (
+          <Pressable
+            onPress={() => (navigation as any).navigate('Auth')}
+            style={styles.guestNotice}
+            accessibilityRole="button"
+            accessibilityLabel="Progress is not saved without an account. Sign in to keep it."
+          >
+            <Text style={styles.guestNoticeText}>
+              Progress isn't saved without an account — <Text style={styles.guestNoticeLink}>sign in</Text> to keep it.
+            </Text>
+          </Pressable>
+        ) : null}
         {METHOD_ORDER.map((m, i) => {
           const isApplicable = applicable.has(m.key);
           const cfgRow = rowFor(m.key);
@@ -2295,6 +2309,18 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,
   },
+  // Guest honesty notice above the rack (F2-01) — quiet, not a rack panel.
+  guestNotice: {
+    backgroundColor: '#161616',
+    borderWidth: 1,
+    borderColor: 'rgba(255,198,77,0.35)',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginBottom: 10,
+  },
+  guestNoticeText: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: colors.textSub },
+  guestNoticeLink: { color: colors.amber, fontFamily: fonts.barlowSemiBold },
   methodRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   // A single corner-pinned mounting screw (owner 2026-08-11). Absolute so it
   // always lands at the true panel corner regardless of content-row height.
