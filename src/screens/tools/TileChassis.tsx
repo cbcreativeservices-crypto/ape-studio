@@ -29,7 +29,7 @@
  * tile-06 strip failure).
  */
 import { memo } from 'react';
-import Svg, { Circle, Defs, G, Line, LinearGradient, Rect, Stop } from 'react-native-svg';
+import Svg, { Circle, Defs, Line, LinearGradient, Rect, Stop } from 'react-native-svg';
 import type { ToolKey } from './toolsData';
 
 /* ── coat: GRAPHITE (owner ruling 2026-08-23) ─────────────────────────────── */
@@ -71,22 +71,6 @@ function rng(seed: number) {
     s ^= s << 5;
     return ((s >>> 0) % 1_000_000) / 1_000_000;
   };
-}
-
-/* ── panel furniture ──────────────────────────────────────────────────────── */
-function Screw({ cx, cy, ang, uid }: { cx: number; cy: number; ang: number; uid: string }) {
-  // Device-scale rebuild (2026-09-01): mid-tone turned head on a dark
-  // counterbore, 1px slots, real specular — dark-on-dark 0.8px features
-  // downsampled to a noise dot on phones.
-  return (
-    <G transform={`rotate(${ang} ${cx} ${cy})`}>
-      <Circle cx={cx} cy={cy} r={3.6} fill="#0b0c0e" />
-      <Circle cx={cx} cy={cy} r={2.9} fill={`url(#${uid}screw)`} stroke="rgba(0,0,0,0.5)" strokeWidth={0.4} />
-      <Rect x={cx - 2.2} y={cy - 0.5} width={4.4} height={1} rx={0.5} fill="#08090a" />
-      <Rect x={cx - 0.5} y={cy - 2.2} width={1} height={4.4} rx={0.5} fill="#08090a" />
-      <Circle cx={cx - 1.0} cy={cy - 1.1} r={0.7} fill="rgba(255,255,255,0.35)" />
-    </G>
-  );
 }
 
 /* ── the chassis ──────────────────────────────────────────────────────────── */
@@ -145,10 +129,6 @@ export const TileChassis = memo(function TileChassis({
           <Stop offset="0.5" stopColor="rgba(255,255,255,0.55)" />
           <Stop offset="1" stopColor="rgba(255,255,255,0)" />
         </LinearGradient>
-        <LinearGradient id={`${u}screw`} x1="0" y1="0" x2="0" y2="1">
-          <Stop offset="0" stopColor="#5a5d63" />
-          <Stop offset="1" stopColor="#26282c" />
-        </LinearGradient>
         <LinearGradient id={`${u}face`} x1="0" y1="0" x2="0" y2="1">
           <Stop offset="0" stopColor={C.face0} />
           <Stop offset="1" stopColor={C.face1} />
@@ -163,10 +143,6 @@ export const TileChassis = memo(function TileChassis({
           <Stop offset="0" stopColor={C.edgeDark} />
           <Stop offset="1" stopColor={C.c1} />
         </LinearGradient>
-        <LinearGradient id={`${u}plate`} x1="0" y1="0" x2="0" y2="1">
-          <Stop offset="0" stopColor={C.plate0} />
-          <Stop offset="1" stopColor={C.plate1} />
-        </LinearGradient>
       </Defs>
 
       {/* 1 seam · 2 outer chamfer · 3 frame face (+wrap, grain, grit, scratch) */}
@@ -180,18 +156,17 @@ export const TileChassis = memo(function TileChassis({
       <Line x1={14} y1={1.7} x2={w - 14} y2={1.7} stroke={`url(#${u}glint)`} strokeWidth={0.6} />
       <Line x1={10} y1={H - 1.8} x2={w - 10} y2={H - 1.8} stroke="rgba(0,0,0,0.45)" strokeWidth={0.8} />
 
-      {/* 4 engraved nameplate (title Text is laid over by the host) */}
-      <Rect x={11} y={PLATE_Y} width={w - 22} height={PLATE_H} rx={3} fill={`url(#${u}plate)`} />
-      <Rect x={11} y={PLATE_Y} width={w - 22} height={1} rx={0.5} fill="rgba(0,0,0,0.4)" />
+      {/* 4 title zone — the owner removed the recessed nameplate behind the
+          title (2026-09-05): the engraved title Text now sits directly on the
+          brushed face. PLATE_Y / PLATE_H still position that Text. */}
 
       {/* 5 inner chamfer (inverted) · 6 AO crevice around the display rect */}
       <Rect x={L.dispX - 2.6} y={L.dispY - 2.6} width={L.dispW + 5.2} height={L.dispH + 5.2} rx={7.6} fill={`url(#${u}inner)`} />
       <Rect x={L.dispX - 1.2} y={L.dispY - 1.2} width={L.dispW + 2.4} height={L.dispH + 2.4} rx={6.2} fill={C.crev} />
       <Rect x={L.dispX - 1.2} y={L.dispY - 1.2} width={L.dispW + 2.4} height={5} rx={6.2} fill="rgba(0,0,0,0.55)" />
 
-      {/* screws */}
-      <Screw cx={8.4} cy={8.4} ang={-8 + 16 * r()} uid={u} />
-      <Screw cx={w - 8.4} cy={H - 8.4} ang={4 + 14 * r()} uid={u} />
+      {/* (corner screws removed — owner 2026-09-05: "screws on the panels that
+          should not be there") */}
     </Svg>
   );
 });
