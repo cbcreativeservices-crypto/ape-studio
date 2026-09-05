@@ -42,7 +42,12 @@ under one overhead light (no screws, no title plates, no chassis frame), and
 every display now fills its glass edge to edge — the strip art's own bezel and
 plot-top line are cropped out of view on all eight tiles. Device check: the
 bevel and recess lip at 3x, and that the live tuner needle still sits on its
-dial (its overlay was re-mapped to the new display window).
+dial (its overlay was re-mapped to the new display window). Then the glass
+was polished (two-facet bevel, re-shaped reflection, lit cut-edge in the
+recess) and the panel aged with a seeded patina (blotches, scuffs, three
+hairline scratches, per-tile drop shadows). Phone check: the three WARM
+tarnish patches — tarnish or stain? (one line to remove) — and whether the two
+bevel facets read as one edge at 3x.
 
 **Ruled 2026-09-05 — no competitor organisations in product copy (R1)**: AVIXA
 now appears only as neutral ANSI citations in the Cable Dressing lab's sources
