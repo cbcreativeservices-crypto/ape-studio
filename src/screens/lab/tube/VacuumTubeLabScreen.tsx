@@ -691,6 +691,7 @@ function SaturationSection(p: SectionProps) {
       kind: 'fader',
       id: 'drive',
       label: 'DRIVE',
+      level: true,
       value: drive,
       onChange: setDrive,
       format: (x) => (x < 0.3 ? 'clean — straight-line region' : x < 0.7 ? 'warming — peaks rounding' : 'saturated — soft clipping'),

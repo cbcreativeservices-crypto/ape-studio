@@ -100,7 +100,7 @@ function PageExplorer({ ctx }: { ctx: PageCtx }) {
       <EnvelopeChart adsr={adsr} showRise sweep reduceMotion={ctx.reduceMotion} title="ENVELOPE · A / D / S / R (waveform shaped by it)" />
       <ControlSlider label="Attack" value={toLog(adsr.attackMs)} min={0} max={3.3} step={0.02} format={(v) => `${logMs(v)} ms`} onChange={(v) => set('attackMs')(logMs(v))} />
       <ControlSlider label="Decay" value={toLog(adsr.decayMs)} min={0} max={3.5} step={0.02} format={(v) => `${logMs(v)} ms`} onChange={(v) => set('decayMs')(logMs(v))} />
-      <ControlSlider label="Sustain level" value={adsr.sustain} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)} %`} onChange={set('sustain')} />
+      <ControlSlider level label="Sustain level" value={adsr.sustain} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)} %`} onChange={set('sustain')} />
       <ControlSlider label="Release" value={toLog(adsr.releaseMs)} min={0} max={3.5} step={0.02} format={(v) => `${logMs(v)} ms`} onChange={(v) => set('releaseMs')(logMs(v))} />
       <ControlSlider label="Hold (energy still supplied)" value={adsr.holdMs} min={0} max={2000} step={10} format={(v) => `${v} ms`} onChange={set('holdMs')} />
       <Row>

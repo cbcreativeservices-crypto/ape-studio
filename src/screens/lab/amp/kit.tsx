@@ -5,16 +5,23 @@
  *
  * COLOR LANGUAGE (one meaning per color, everywhere in this lab; never the
  * only channel — line style / labels / icons back every state):
- *   input signal  cyan  · thin solid line
- *   output signal green · thick solid line
+ *   input signal  cyan  · labels, legends, diagram arrows
+ *   output signal green · labels, legends, diagram arrows
  *   + device path gold  · solid
  *   − device path purple· dashed
  *   supply energy amber · dotted arrows
  *   fault/unsafe  red   · banner + text label
+ * The signal TRACES themselves and every LEVEL slider follow the app-wide
+ * amplitude colour standard (owner 2026-09-05): MIDI-0 blue at silence →
+ * green → yellow → orange → red at the rail (`features/tools/levelColor`).
  */
 import { useCallback, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, LayoutChangeEvent, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
+import Animated from 'react-native-reanimated';
+import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts } from '../../../theme/tokens';
+import { levelColor, rampColors } from '../../../features/tools/levelColor';
+import { usePulseStyle } from '../../../features/lab/attentionPulse';
 import type { AmpCheck, Misconception } from '../../../features/amp/ampContent';
 import { FAULT_COPY } from '../../../features/amp/ampContent';
 import { hashSeed, shuffledIndices, type FaultId } from '../../../features/amp/ampModel';
@@ -126,7 +133,7 @@ export function FaultBanner({ primary, secondary }: { primary: FaultId | null; s
 /* ── slider (≥44pt target, accessible, tap + drag) ──────────────────────── */
 
 export function ControlSlider({
-  label, value, min, max, step = 0.01, unit = '', onChange, format, disabled,
+  label, value, min, max, step = 0.01, unit = '', onChange, format, disabled, level,
 }: {
   label: string;
   value: number;
@@ -137,7 +144,16 @@ export function ControlSlider({
   onChange: (v: number) => void;
   format?: (v: number) => string;
   disabled?: boolean;
+  /** This slider sets a LEVEL (input level, drive, gain-staging level…): the
+   *  fill climbs the amplitude ramp from silence-blue to the level's colour and
+   *  the thumb takes that colour, so the control speaks the same colour language
+   *  as the traces it drives (owner standard 2026-09-05). Leave off for bias,
+   *  turns, rail voltage, ratios and other non-level parameters. */
+  level?: boolean;
 }) {
+  // Every slider thumb breathes (5 s: 2.5 s brighter, 2.5 s dimmer) so the
+  // control reads as interactable — owner 2026-09-05.
+  const pulseStyle = usePulseStyle(!disabled);
   const wRef = useRef(1);
   const set = useCallback(
     (x: number) => {
@@ -189,8 +205,23 @@ export function ControlSlider({
           if (e.nativeEvent.actionName === 'decrement') onChange(Math.max(min, value - d));
         }}
       >
-        <View style={[styles.sliderFill, { width: `${Math.round(frac * 100)}%` }]} />
-        <View style={[styles.sliderThumb, { left: `${Math.round(frac * 100)}%` }]} />
+        {level ? (
+          <LinearGradient
+            colors={rampColors(frac)}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={[styles.sliderFill, { width: `${Math.round(frac * 100)}%`, opacity: 0.55 }]}
+          />
+        ) : (
+          <View style={[styles.sliderFill, { width: `${Math.round(frac * 100)}%` }]} />
+        )}
+        <Animated.View
+          style={[
+            styles.sliderThumb,
+            { left: `${Math.round(frac * 100)}%`, backgroundColor: level ? levelColor(frac) : colors.green },
+            pulseStyle,
+          ]}
+        />
       </View>
     </View>
   );
@@ -336,7 +367,7 @@ const styles = StyleSheet.create({
   },
   sliderFill: { position: 'absolute', left: 0, top: 0, bottom: 0, backgroundColor: '#1d2b22' },
   sliderThumb: {
-    position: 'absolute', width: 4, top: 4, bottom: 4, marginLeft: -2, borderRadius: 2, backgroundColor: colors.green,
+    position: 'absolute', width: 5, top: 4, bottom: 4, marginLeft: -2.5, borderRadius: 2.5, backgroundColor: colors.green,
   },
   segRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   segBtn: {

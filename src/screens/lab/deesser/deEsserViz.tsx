@@ -7,16 +7,20 @@
  *
  * Colour roles, held constant across every drawing so the colour itself
  * teaches (review 2026-09-02):
- *   cyan   = the voice body and the main signal path
- *   orange = hiss-band energy, the excess above threshold, and the gain
- *            reduction that removes it — always labelled as REDUCTION, never
- *            as a level (red is reserved for clipping app-wide)
+ *   cyan   = the voice body and the main signal path (diagram, labels)
+ *   orange = hiss-band REGION highlights, the excess above threshold, and the
+ *            gain reduction that removes it — always labelled as REDUCTION,
+ *            never as a level (red is reserved for clipping app-wide)
  *   gold   = the control domain: threshold, detector band-pass, side chain
+ * Wherever a LEVEL is drawn — the detector trace and the spectrum bars — the
+ * app-wide amplitude ramp paints it (owner standard 2026-09-05): blue quiet
+ * → green → yellow → orange → red loud. Region tints sit BEHIND the bars.
  * Every SvgText carries a fontFamily; nothing below 8.5 in the 340 viewBox.
  */
 import { Text, View } from 'react-native';
-import Svg, { Circle, G, Line, Path, Polyline, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, Defs, G, Line, LinearGradient, Path, Polyline, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
+import { LOUDNESS_STOPS, levelColor } from '../../../features/tools/levelColor';
 import { PATH_MAIN, PATH_SIDECHAIN, toDb, type Frame, type Processed } from '../../../features/deesser/deEsserModel';
 
 const F = fonts.barlowMedium;
@@ -166,7 +170,13 @@ export function DetectorTrace({ processed, thresholdDb, rangeDb, title, a11y }: 
         {processed.map((p, i) => p.detectorDb > thresholdDb ? (
           <Rect key={`o${i}`} x={10 + i * slot + 2} y={yA(p.detectorDb)} width={slot - 4} height={thrY - yA(p.detectorDb)} fill={colors.orange} opacity={0.35} />
         ) : null)}
-        <Polyline points={pts} fill="none" stroke={colors.cyanBright} strokeWidth={1.8} />
+        {/* the level trace carries the amplitude ramp: 0 dB (loudest S) red at the top, −40 blue at the floor */}
+        <Defs>
+          <LinearGradient id="deesserDetRamp" gradientUnits="userSpaceOnUse" x1={0} y1={yA(hi)} x2={0} y2={yA(lo)}>
+            {LOUDNESS_STOPS.map((s) => <Stop key={s.pos} offset={s.pos} stopColor={s.color} />)}
+          </LinearGradient>
+        </Defs>
+        <Polyline points={pts} fill="none" stroke="url(#deesserDetRamp)" strokeWidth={1.8} />
         <Line x1={10} y1={thrY} x2={10 + plotW} y2={thrY} stroke={colors.gold} strokeWidth={1.5} strokeDasharray="5,3" />
         <SvgText x={10 + plotW - 2} y={thrLabelY} fontSize={8.5} fill={colors.gold} textAnchor="end" fontFamily={fonts.oswaldMedium}>THRESHOLD {thresholdDb.toFixed(0)} dB</SvgText>
         <SvgText x={12} y={topB - 6} fontSize={8.5} fill={colors.textMuted} fontFamily={F}>GAIN REDUCTION · dB, drawn downward · range {rangeDb} · conceptual</SvgText>
@@ -224,11 +234,12 @@ export function BandSpectrum({
         <Rect x={0} y={0} width={W} height={H} rx={8} fill={PANEL} stroke={colors.hairline} />
         {band ? <Rect x={x(band[0])} y={top - 4} width={Math.max(1, x(band[1]) - x(band[0]))} height={bottom - top + 8} fill={colors.orange} opacity={0.1} /> : null}
         {ghost ? Array.from(ghost, (m, i) => <Rect key={`g${i}`} x={10 + i * bw + 0.5} y={bottom - m * (bottom - top)} width={Math.max(1, bw - 1)} height={m * (bottom - top)} fill={colors.textMuted} opacity={0.35} />) : null}
-        {Array.from(mag, (m, i) => <Rect key={i} x={10 + i * bw + 0.5} y={bottom - m * (bottom - top)} width={Math.max(1, bw - 1)} height={Math.max(0.5, m * (bottom - top))} fill={hz[i] >= 2000 && hz[i] <= 10000 ? colors.orange : colors.cyanBright} opacity={0.9} />)}
+        {/* bar colour = the bar's LEVEL on the app-wide ramp; the hiss REGION is the tinted band behind */}
+        {Array.from(mag, (m, i) => <Rect key={i} x={10 + i * bw + 0.5} y={bottom - m * (bottom - top)} width={Math.max(1, bw - 1)} height={Math.max(0.5, m * (bottom - top))} fill={levelColor(m)} opacity={0.92} />)}
         {curve ? <Polyline points={curvePts} fill="none" stroke={colors.gold} strokeWidth={1.8} strokeDasharray="4,3" /> : null}
         {ticks.map((t) => <SvgText key={t} x={x(t)} y={H - 6} fontSize={8.5} fill={colors.textMuted} textAnchor="middle" fontFamily={F}>{t >= 1000 ? `${t / 1000}k` : t}</SvgText>)}
-        <SvgText x={12} y={12} fontSize={8.5} fill={colors.cyanBright} fontFamily={F}>■ voice body</SvgText>
-        <SvgText x={76} y={12} fontSize={8.5} fill={colors.orange} fontFamily={F}>■ hiss region 2–10 kHz</SvgText>
+        <SvgText x={12} y={12} fontSize={8.5} fill={colors.textMuted} fontFamily={F}>bar colour = level</SvgText>
+        <SvgText x={96} y={12} fontSize={8.5} fill={colors.orange} fontFamily={F}>▮ hiss region 2–10 kHz</SvgText>
         <SvgText x={W - 8} y={12} fontSize={8.5} fill={colors.textMuted} textAnchor="end" fontFamily={F}>relative · conceptual</SvgText>
       </Svg>
       {caption ? <Caption>{caption}</Caption> : null}

@@ -15,8 +15,10 @@
  */
 import { useRef, useState } from 'react';
 import { PanResponder, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { colors, fonts } from '../../../../theme/tokens';
 import { useScrollLock } from '../../LabShell';
+import { usePulseStyle } from '../../../../features/lab/attentionPulse';
 
 const TRACK_H = 108;
 
@@ -74,14 +76,16 @@ export function VerticalFader({
   ).current;
 
   const thumbTint = tint ?? (value !== 0.5 ? colors.amber : undefined);
+  // The thumb breathes (owner 2026-09-05) so the fader reads as interactable.
+  const pulseStyle = usePulseStyle();
   return (
     <View style={styles.faderWrap}>
       <View style={styles.track} {...pan.panHandlers}>
         <View pointerEvents="none" style={styles.trackLine} />
         <View pointerEvents="none" style={styles.centerTick} />
-        <View
+        <Animated.View
           pointerEvents="none"
-          style={[styles.thumb, { top: (1 - value) * TRACK_H - 5 }, thumbTint ? { backgroundColor: thumbTint } : null]}
+          style={[styles.thumb, { top: (1 - value) * TRACK_H - 5 }, thumbTint ? { backgroundColor: thumbTint } : null, pulseStyle]}
         />
       </View>
       <Text style={styles.faderLabel}>{label}</Text>

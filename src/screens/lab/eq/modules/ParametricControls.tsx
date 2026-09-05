@@ -69,6 +69,7 @@ export function ParametricControlsModule(_p: EqModuleComponentProps) {
       kind: 'fader',
       id: 'gain',
       label: 'GAIN',
+      level: true,
       value: (gainDb + GAIN_RANGE) / (2 * GAIN_RANGE),
       onChange: (t) => setGainDb(Math.round((t * 2 * GAIN_RANGE - GAIN_RANGE) * 2) / 2),
       format: () => `${gainDb >= 0 ? '+' : ''}${gainDb.toFixed(1)} dB`,

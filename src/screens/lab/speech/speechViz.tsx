@@ -8,14 +8,17 @@
  * versus "tissue" at a glance; selection is always cyan. Time traces (the
  * one place a level axis is drawn) use the app-wide amplitude ramp so a
  * near-full-scale plosive reads hot and the mid line is MIDI-0 blue.
- * Spectra and the folds' pulse sketch stay categorical (they are conceptual
- * shapes with no full-scale meaning).
+ * Owner standard 2026-09-05: EVERY drawn level rides that ramp — the folds'
+ * pulse sketch (unipolar, peak in the orange band), the spectrum bars and
+ * the harmonic stems (bar colour = the bar's relative level). Region tints
+ * (excess / loss bands) sit behind the bars; the mouth's filter curve is a
+ * response, not a level, and stays gold.
  */
 import { useEffect, useId, useState } from 'react';
 import { Text, View } from 'react-native';
 import Svg, { Circle, Defs, Ellipse, G, Line, LinearGradient, Path, Polyline, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
-import { MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../../features/tools/levelColor';
+import { LOUDNESS_STOPS, MIDLINE_BLUE, WAVE_LEVEL_STOPS, levelColor } from '../../../features/tools/levelColor';
 import { ANATOMY, formantEnvelope, harmonicAmplitudes, type Vowel } from '../../../features/speech/speechModel';
 
 const F = fonts.barlowMedium;
@@ -204,7 +207,14 @@ export function VocalFolds({ voiced, reduceMotion }: { voiced: boolean; reduceMo
         <SvgText x={cx} y={124} fontSize={8.5} fill={colors.textMuted} textAnchor="middle" fontFamily={F}>{voiced ? 'folds meet · gap opens and closes' : 'folds apart · open "V" for breathing'}</SvgText>
         {/* the resulting signal */}
         <SvgText x={206} y={13} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium}>WHAT COMES OUT</SvgText>
-        <Line x1={205} y1={70} x2={330} y2={70} stroke="rgba(255,255,255,0.15)" />
+        {/* unipolar pulse train on the amplitude ramp: baseline MIDI-0 blue, the
+            full pulse in the orange band (never red — a sketch does not clip) */}
+        <Defs>
+          <LinearGradient id="speechGlottalRamp" gradientUnits="userSpaceOnUse" x1={0} y1={70 - 28 / 0.82} x2={0} y2={70}>
+            {LOUDNESS_STOPS.map((s) => <Stop key={s.pos} offset={s.pos} stopColor={s.color} />)}
+          </LinearGradient>
+        </Defs>
+        <Line x1={205} y1={70} x2={330} y2={70} stroke={MIDLINE_BLUE} opacity={0.5} />
         <Polyline
           points={Array.from({ length: 80 }, (_, i) => {
             const t = i / 79;
@@ -214,8 +224,8 @@ export function VocalFolds({ voiced, reduceMotion }: { voiced: boolean; reduceMo
             return `${(205 + t * 125).toFixed(1)},${y.toFixed(1)}`;
           }).join(' ')}
           fill="none"
-          stroke={voiced ? colors.gold : colors.textSecondary}
-          strokeWidth={1.5}
+          stroke="url(#speechGlottalRamp)"
+          strokeWidth={1.6}
         />
         <SvgText x={267} y={118} fontSize={9} fill={voiced ? colors.gold : colors.textSecondary} textAnchor="middle" fontFamily={F}>{voiced ? 'pulses → pitch + harmonics' : 'turbulence → noise, no pitch'}</SvgText>
       </Svg>
@@ -260,7 +270,7 @@ export function SpectrumBars({
           ? Array.from(ghost, (m, i) => <Rect key={`g${i}`} x={10 + i * bw + 0.5} y={bottom - m * (bottom - top)} width={Math.max(1, bw - 1)} height={m * (bottom - top)} fill={colors.textMuted} opacity={0.35} />)
           : null}
         {Array.from(mag, (m, i) => (
-          <Rect key={i} x={10 + i * bw + 0.5} y={bottom - m * (bottom - top)} width={Math.max(1, bw - 1)} height={Math.max(0.5, m * (bottom - top))} fill={band && bandKind === 'excess' && hz[i] >= band[0] && hz[i] <= band[1] ? colors.orange : colors.cyanBright} opacity={0.9} />
+          <Rect key={i} x={10 + i * bw + 0.5} y={bottom - m * (bottom - top)} width={Math.max(1, bw - 1)} height={Math.max(0.5, m * (bottom - top))} fill={levelColor(m)} opacity={0.92} />
         ))}
         {ticks.map((t) => (
           <SvgText key={t} x={x(t)} y={H - 6} fontSize={8.5} fill={colors.textMuted} textAnchor="middle" fontFamily={F}>{t >= 1000 ? `${t / 1000}k` : t}</SvgText>
@@ -286,7 +296,7 @@ export function FormantChart({ v, f0 = 120, height = 140, title }: { v: Vowel; f
         <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
         <Polyline points={envPts} fill="none" stroke={colors.gold} strokeWidth={1.5} strokeDasharray="4,3" opacity={0.9} />
         {Array.from(harm.hz, (f, i) => (
-          <Line key={i} x1={x(f)} y1={bottom} x2={x(f)} y2={bottom - harm.mag[i] * (bottom - top)} stroke={colors.cyanBright} strokeWidth={2} />
+          <Line key={i} x1={x(f)} y1={bottom} x2={x(f)} y2={bottom - harm.mag[i] * (bottom - top)} stroke={levelColor(harm.mag[i])} strokeWidth={2} />
         ))}
         {[['F1', v.f1], ['F2', v.f2], ['F3', v.f3]].map(([l, f]) => (
           <G key={l as string}>

@@ -221,6 +221,7 @@ export function AnalogModule(p: DigitalModuleProps) {
       kind: 'fader',
       id: 'amp',
       label: 'AMP',
+      level: true,
       value: ampV,
       onChange: setAmpV,
       format: () => `${amp.toFixed(2)} ×FS`,

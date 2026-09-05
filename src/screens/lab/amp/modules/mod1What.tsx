@@ -100,7 +100,7 @@ export function Mod1What() {
         onChange={setPrediction}
       />
 
-      <ControlSlider label="Input level" value={level} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setLevel} />
+      <ControlSlider level label="Input level" value={level} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setLevel} />
 
       <AmpRig
         input={sim.input}

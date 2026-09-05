@@ -306,6 +306,7 @@ export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
       kind: 'fader',
       id: 'bellg',
       label: 'GAIN',
+      level: true,
       value: (bellG + 18) / 36,
       onChange: bellFader((t) => setBellG(Math.round((t * 36 - 18) * 2) / 2)),
       format: () => `${bellG >= 0 ? '+' : ''}${bellG.toFixed(1)} dB`,

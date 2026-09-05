@@ -26,7 +26,7 @@ import Svg, { Circle, Defs, G, Line, LinearGradient, Polyline, Rect, Stop, Text 
 import Animated, { Easing, cancelAnimation, interpolate, runOnJS, useAnimatedProps, useSharedValue, withTiming } from 'react-native-reanimated';
 import { colors, fonts } from '../../../theme/tokens';
 import { adsrCurve, adsrTotalMs, riseTimes, shapedWave, peakAbs, rms, type Adsr } from '../../../features/envelope/envelopeModel';
-import { MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../../features/tools/levelColor';
+import { LOUDNESS_STOPS, MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../../features/tools/levelColor';
 
 const W = 340;
 const ALine = Animated.createAnimatedComponent(Line);
@@ -148,6 +148,12 @@ export function EnvelopeChart({
             <LinearGradient id={gradId} x1={0} y1={mid - halfH / PEAK_ON_RAMP} x2={0} y2={mid + halfH / PEAK_ON_RAMP} gradientUnits="userSpaceOnUse">
               {WAVE_LEVEL_STOPS.map((s) => <Stop key={s.offset} offset={s.offset} stopColor={s.color} />)}
             </LinearGradient>
+            {/* The ENVELOPE is a level contour (0 → 1), so it carries the same
+                ramp, unipolar: silence-blue at the floor, its peak in the
+                orange band (owner standard 2026-09-05 — it was flat cyan). */}
+            <LinearGradient id={`${gradId}env`} x1={0} y1={y(1 / PEAK_ON_RAMP)} x2={0} y2={y(0)} gradientUnits="userSpaceOnUse">
+              {LOUDNESS_STOPS.map((s) => <Stop key={s.pos} offset={s.pos} stopColor={s.color} />)}
+            </LinearGradient>
           </Defs>
           <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
           {showRegions
@@ -165,7 +171,7 @@ export function EnvelopeChart({
               <Polyline points={wavePts} fill="none" stroke={`url(#${gradId})`} strokeWidth={0.9} opacity={0.85} />
             </>
           ) : null}
-          <Polyline points={env} fill="none" stroke={colors.cyanBright} strokeWidth={2.2} />
+          <Polyline points={env} fill="none" stroke={`url(#${gradId}env)`} strokeWidth={2.2} />
           {showRise ? (
             <>
               <Line x1={10} y1={y(0.1)} x2={W - 10} y2={y(0.1)} stroke={colors.gold} strokeDasharray="2,3" opacity={0.55} />

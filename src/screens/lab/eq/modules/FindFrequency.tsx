@@ -181,6 +181,7 @@ export function FindFrequencyModule(_p: EqModuleComponentProps) {
       kind: 'fader',
       id: 'gain',
       label: 'GAIN',
+      level: true,
       value: (sel.g + 18) / 36,
       onChange: (t) => setSel({ g: Math.round((t * 36 - 18) * 2) / 2 }),
       format: () => `${sel.g >= 0 ? '+' : ''}${sel.g.toFixed(1)} dB`,

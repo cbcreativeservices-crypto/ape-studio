@@ -7,6 +7,7 @@
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
+import { PulseThumb } from '../../../../features/lab/attentionPulse';
 import {
   TUNING_SYSTEMS, MEANTONE_FIFTH, MEANTONE_TONE, PURE_FIFTH, JUST_MAJOR_THIRD, ET_FIFTH, MEANTONE_WOLF_CHAIN,
   centsToRatio, ratioToCents, frequencyFromRatio, meantoneWolf, normalizeRatioToOctave,
@@ -223,7 +224,7 @@ function Track({ value, onChange }: { value: number; onChange: (v: number) => vo
         {marks.map((m) => (
           <View key={m.l} style={[styles.tick, { left: `${pct(m.c)}%`, backgroundColor: m.color }]} />
         ))}
-        <View style={[styles.thumb, { left: `${pct(value)}%` }]} />
+        <PulseThumb style={[styles.thumb, { left: `${pct(value)}%` }]} />
       </View>
       {/* Labels sit UNDER their ticks. They used to be spaced evenly across the
           row, so "equal 700" read 23 pt away from the 700 ¢ tick. */}

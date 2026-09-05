@@ -7,6 +7,7 @@
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
+import { PulseThumb } from '../../../../features/lab/attentionPulse';
 import {
   JUST_MAJOR_THIRD, ET_MAJOR_THIRD, PYTHAGOREAN_MAJOR_THIRD, centsToRatio, harmonicFrequency, partialDifferenceHz, frequencyFromRatio,
 } from '../../../../features/tuning/tuningMath';
@@ -160,7 +161,7 @@ function SliderTrack({ value, onChange }: { value: number; onChange: (v: number)
       {[386.31, 400, 407.82].map((m) => (
         <View key={m} style={[styles.tick, { left: `${((m - min) / (max - min)) * 100}%` }]} />
       ))}
-      <View style={[styles.thumb, { left: `${frac * 100}%` }]} />
+      <PulseThumb style={[styles.thumb, { left: `${frac * 100}%` }]} />
       <Text style={styles.trackLabel}>380 ¢</Text>
       <Text style={[styles.trackLabel, { right: 6, left: undefined }]}>410 ¢</Text>
     </View>

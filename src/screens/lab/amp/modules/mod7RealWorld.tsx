@@ -152,9 +152,9 @@ export function Mod7RealWorld() {
                   : 'Each stage sits comfortably below its ceiling with headroom for peaks.'}
         </Body>
       </Card>
-      <ControlSlider label="Source output" value={src} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setSrc} />
-      <ControlSlider label="Mixer / processor output" value={mix} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setMix} />
-      <ControlSlider label="Amplifier input control" value={ampIn} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setAmpIn} />
+      <ControlSlider level label="Source output" value={src} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setSrc} />
+      <ControlSlider level label="Mixer / processor output" value={mix} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setMix} />
+      <ControlSlider level label="Amplifier input control" value={ampIn} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setAmpIn} />
       <MisconceptionCard m={misc('gain-sets-watts')} />
 
       {/* ── load builder ── */}

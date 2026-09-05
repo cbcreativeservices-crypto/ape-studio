@@ -19,7 +19,9 @@ import { LayoutAnimation, PanResponder, Pressable, StyleSheet, Text, View } from
 import { colors, fonts } from '../../../theme/tokens';
 import { levelColor, rampColors } from '../../../features/tools/levelColor';
 import { LinearGradient as GradientView } from 'expo-linear-gradient';
+import Animated from 'react-native-reanimated';
 import { useScrollLock } from '../LabShell';
+import { usePulseStyle } from '../../../features/lab/attentionPulse';
 
 export type CheckSpec = {
   question: string;
@@ -157,6 +159,8 @@ export function DragSlider({
   levelTint?: boolean;
 }) {
   const accent = levelTint ? levelColor(value) : tint;
+  // Every slider thumb breathes (owner 2026-09-05) so it reads as interactable.
+  const pulseStyle = usePulseStyle();
   const [w, setW] = useState(0);
   const wRef = useRef(0);
   wRef.current = w;
@@ -241,9 +245,9 @@ export function DragSlider({
             style={[styles.sliderFill, { width: `${value * 100}%` }, accent ? { backgroundColor: accent, opacity: 0.85 } : null]}
           />
         )}
-        <View
+        <Animated.View
           pointerEvents="none"
-          style={[styles.sliderThumb, { left: Math.max(0, value * w - 9) }, accent ? { backgroundColor: accent } : null]}
+          style={[styles.sliderThumb, { left: Math.max(0, value * w - 9) }, accent ? { backgroundColor: accent } : null, pulseStyle]}
         />
       </View>
     </View>

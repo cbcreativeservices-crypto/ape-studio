@@ -9,10 +9,18 @@
  *
  * The lane lives OUTSIDE the scroll well, so scroll contention is structurally
  * gone; no scroll-lock plumbing needed here.
+ *
+ * Owner standard 2026-09-05: the thumb BREATHES (5 s loop) so the lane reads
+ * as interactable, and a LEVEL lane (`level`) shows the amplitude ramp
+ * climbing from silence-blue to the level's colour, thumb in that colour.
  */
 import { useRef } from 'react';
 import { PanResponder, StyleSheet, Text, View } from 'react-native';
+import Animated from 'react-native-reanimated';
+import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts } from '../../../theme/tokens';
+import { levelColor, rampColors } from '../../../features/tools/levelColor';
+import { usePulseStyle } from '../../../features/lab/attentionPulse';
 
 export function ParamLane({
   label,
@@ -21,6 +29,7 @@ export function ParamLane({
   onChange,
   onDragActive,
   tint,
+  level,
 }: {
   label: string;
   /** 0..1 lane position. */
@@ -32,6 +41,10 @@ export function ParamLane({
   onDragActive?: (active: boolean) => void;
   /** Thumb/fill tint (default amber). */
   tint?: string;
+  /** This lane sets a LEVEL (level, input/drive, gain, amplitude…): fill =
+   *  the amplitude ramp climbing to the level's colour, thumb + readout in
+   *  that colour. Overrides `tint`. */
+  level?: boolean;
 }) {
   const wRef = useRef(0);
   const baseRef = useRef(0);
@@ -39,6 +52,7 @@ export function ParamLane({
   onChangeRef.current = onChange;
   const onActiveRef = useRef(onDragActive);
   onActiveRef.current = onDragActive;
+  const pulseStyle = usePulseStyle();
 
   const pan = useRef(
     PanResponder.create({
@@ -63,8 +77,8 @@ export function ParamLane({
     }),
   ).current;
 
-  const c = tint ?? colors.amber;
   const v = Math.max(0, Math.min(1, value));
+  const c = level ? levelColor(v) : (tint ?? colors.amber);
 
   return (
     <View
@@ -79,13 +93,24 @@ export function ParamLane({
         onChangeRef.current(Math.max(0, Math.min(1, v + step)));
       }}
     >
-      <View pointerEvents="none" style={[styles.fill, { width: `${v * 100}%`, backgroundColor: c + '22' }]} />
-      <View
+      {level ? (
+        <LinearGradient
+          pointerEvents="none"
+          colors={rampColors(v)}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={[styles.fill, { width: `${v * 100}%`, opacity: 0.45 }]}
+        />
+      ) : (
+        <View pointerEvents="none" style={[styles.fill, { width: `${v * 100}%`, backgroundColor: c + '22' }]} />
+      )}
+      <Animated.View
         pointerEvents="none"
         style={[
           styles.thumb,
           // eslint-disable-next-line react-native/no-inline-styles
           { left: `${v * 100}%`, marginLeft: -THUMB_W * v, backgroundColor: c },
+          pulseStyle,
         ]}
       />
       {/* Backed chips (design pass 2026-08-31): at the lane's ends the thumb

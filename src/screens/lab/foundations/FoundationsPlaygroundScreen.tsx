@@ -362,6 +362,7 @@ export function FoundationsPlaygroundScreen() {
       kind: 'fader',
       id: 'level',
       label: 'LEVEL',
+      level: true,
       value: lvl01,
       onChange: setLvl01,
       format: () => `${levelDb} dBFS`,

@@ -107,7 +107,7 @@ export function Mod5ClassD() {
         below → switch low. Louder audio makes wider pulses. Pulse-width modulation is the classic example, not the
         only Class D method.
       </Body>
-      <ControlSlider label="Audio input level" value={drive} min={0} max={0.95} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setDrive} />
+      <ControlSlider level label="Audio input level" value={drive} min={0} max={0.95} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setDrive} />
       <SegRow<ViewMode>
         label="Output panel shows"
         options={[

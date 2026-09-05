@@ -11,14 +11,19 @@
  * Reduced motion (settings toggle OR OS): the loop is replaced by a STEP
  * control that moves the playhead a quarter cycle at a time.
  *
- * The rig is a CONCEPTUAL teaching display and says so on its face. The
- * output trace is the lab's green; RED appears on it ONLY where the trace is
- * at/over the rail (clipping) — never for "loud" (amplitude colour standard).
+ * The rig is a CONCEPTUAL teaching display and says so on its face. The input
+ * and output traces carry the app-wide AMPLITUDE COLOUR STANDARD (owner
+ * 2026-09-05, `features/tools/levelColor`): MIDI-0 blue at the mid line,
+ * climbing green → yellow → orange → red at ±full scale — and full scale on the
+ * output panel IS the rail, so a clipped peak is red because it is at the
+ * rail, with the heavier fault overlay on top. Cyan/green stay the lab's
+ * LABEL colours for "input"/"output" (legends, diagram arrows), not trace paint.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
-import Svg, { Line, Path, Polyline, Rect } from 'react-native-svg';
+import Svg, { Defs, Line, LinearGradient, Path, Polyline, Rect, Stop } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
+import { WAVE_LEVEL_STOPS, levelColor } from '../../../features/tools/levelColor';
 import { animationsAllowed } from '../../../features/settings/a11y';
 import { cycleRms } from '../../../features/amp/ampModel';
 import { AMP_COLORS } from './kit';
@@ -70,6 +75,23 @@ function WavePanel({
         {children}
       </Svg>
     </View>
+  );
+}
+
+/**
+ * Amplitude-ramp gradient for a zero-centred trace, mapped to ±`fullScale` in
+ * PANEL pixels (userSpaceOnUse) so the colour reads TRUE level: MIDI-0 blue at
+ * the mid line, red exactly at ±full scale — the rail, on the output panel.
+ */
+function WaveGradient({ id, fullScale, h = PANEL_H }: { id: string; fullScale: number; h?: number }) {
+  return (
+    <Defs>
+      <LinearGradient id={id} gradientUnits="userSpaceOnUse" x1={0} y1={yFor(fullScale, h)} x2={0} y2={yFor(-fullScale, h)}>
+        {WAVE_LEVEL_STOPS.map((s) => (
+          <Stop key={s.offset} offset={s.offset} stopColor={s.color} />
+        ))}
+      </LinearGradient>
+    </Defs>
   );
 }
 
@@ -141,6 +163,9 @@ export function AmpRig(p: AmpRigProps) {
   }, [motion, running, slow, phase]);
 
   const outLevel = p.output ? cycleRms(p.output) : 0;
+  // Gradient ids must be unique per rig — several rigs can share one screen
+  // (and on web every SVG shares one document), and their rails can differ.
+  const gid = useRef(`amprig${Math.floor(Math.random() * 1e9).toString(36)}`).current;
   const playX = useMemo(
     () => (motion ? phase.interpolate({ inputRange: [0, 1], outputRange: [0, panelW] }) : new Animated.Value((stepPhase / 8) * panelW)),
     [motion, phase, panelW, stepPhase],
@@ -169,7 +194,8 @@ export function AmpRig(p: AmpRigProps) {
       >
         {p.input ? (
           <WavePanel title="INPUT (signal)">
-            <Polyline points={tracePoints(p.input, PANEL_H)} fill="none" stroke={AMP_COLORS.input} strokeWidth={1.4} />
+            <WaveGradient id={`${gid}in`} fullScale={1} />
+            <Polyline points={tracePoints(p.input, PANEL_H)} fill="none" stroke={`url(#${gid}in)`} strokeWidth={1.6} />
             {p.extraIn?.map((t) => (
               <Polyline key={t.label} points={tracePoints(t.data, PANEL_H)} fill="none" stroke={t.color} strokeWidth={t.width ?? 1.2} strokeDasharray={t.dash} />
             ))}
@@ -185,7 +211,8 @@ export function AmpRig(p: AmpRigProps) {
           <WavePanel title={p.outputTitle ?? 'OUTPUT (to load)'}>
             {showNominal ? <RailPair at={p.nominalRailAt!} stroke="rgba(255,255,255,0.18)" dash="2,5" /> : null}
             {p.clipAt != null ? <RailPair at={p.clipAt} stroke="rgba(255,75,58,0.45)" dash="4,4" /> : null}
-            <Polyline points={tracePoints(p.output, PANEL_H)} fill="none" stroke={AMP_COLORS.output} strokeWidth={2} />
+            <WaveGradient id={`${gid}out`} fullScale={p.clipAt ?? 1} />
+            <Polyline points={tracePoints(p.output, PANEL_H)} fill="none" stroke={`url(#${gid}out)`} strokeWidth={2} />
             {p.clipAt != null
               ? clippedSegments(p.output, p.clipAt, PANEL_H).map((s, i) => (
                   <Polyline key={i} points={s} fill="none" stroke={AMP_COLORS.fault} strokeWidth={2.6} />
@@ -316,7 +343,8 @@ function SpeakerGlyph({ level, motion }: { level: number; motion: boolean }) {
       <Animated.View style={{ transform: [{ scale }], alignSelf: 'center' }}>
         <Svg width={34} height={30} viewBox="0 0 34 30">
           <Path d="M4 11 h8 l9 -8 v24 l-9 -8 h-8 z" fill="#26262b" stroke={colors.textMuted} strokeWidth={1.2} />
-          <Path d="M25 9 a9 9 0 0 1 0 12" fill="none" stroke={AMP_COLORS.output} strokeWidth={1.6} opacity={0.3 + level} />
+          {/* cone-motion arc takes the LEVEL's colour (amplitude standard) */}
+          <Path d="M25 9 a9 9 0 0 1 0 12" fill="none" stroke={levelColor(Math.min(1, level * Math.SQRT2))} strokeWidth={1.8} opacity={0.35 + Math.min(0.65, level)} />
         </Svg>
       </Animated.View>
       <Text style={styles.statusSub}>cone motion · relative</Text>

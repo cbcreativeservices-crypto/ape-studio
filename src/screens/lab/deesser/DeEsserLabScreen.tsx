@@ -187,7 +187,7 @@ function PageThreshold({ ctx }: { ctx: PageCtx }) {
     <View style={{ gap: 12 }}>
       <Lead>The threshold is the level the hiss must reach before anything happens. Above it, the de-esser turns down; below it, it is not even there.</Lead>
       <Prompt>Drag the threshold up until nothing crosses, then down until the gaps cross. Find the band where only orange labels sit above the line.</Prompt>
-      <ControlSlider label="Threshold" value={s.thresholdDb} min={-40} max={0} step={1} format={(v) => `${v.toFixed(0)} dB`} onChange={(v) => { set({ thresholdDb: v }); touch(ctx); }} />
+      <ControlSlider level label="Threshold" value={s.thresholdDb} min={-40} max={0} step={1} format={(v) => `${v.toFixed(0)} dB`} onChange={(v) => { set({ thresholdDb: v }); touch(ctx); }} />
       <DetectorTrace processed={out} thresholdDb={s.thresholdDb} rangeDb={s.rangeDb} a11y={`Detector trace across the phrase with the threshold at ${s.thresholdDb} dB; ${overSib} of ${SIB.length} sibilants and ${overOther} other sounds are above it and being reduced.`} />
       <Card tone={overOther > 0 ? 'warn' : over === 0 ? 'plain' : 'ok'}>
         <Text style={styles.read}>{overSib} of {SIB.length} sibilants above threshold · {overOther} other sounds crossing</Text>
@@ -278,7 +278,7 @@ function PageGr({ ctx }: { ctx: PageCtx }) {
       <Lead>The gain-reduction meter is the de-esser's one essential display: how much, and when. Read it as a question — am I working on S’s only, and by a sensible amount?</Lead>
       <Prompt>Watch two things: WHERE the bars appear (only under orange labels) and HOW TALL they get (never past the range).</Prompt>
       <ControlSlider label="Range (maximum reduction)" value={s.rangeDb} min={0} max={24} step={1} format={(v) => `${v.toFixed(0)} dB`} onChange={(v) => { set({ rangeDb: v }); touch(ctx); }} />
-      <ControlSlider label="Threshold" value={s.thresholdDb} min={-40} max={0} step={1} format={(v) => `${v.toFixed(0)} dB`} onChange={(v) => { set({ thresholdDb: v }); touch(ctx); }} />
+      <ControlSlider level label="Threshold" value={s.thresholdDb} min={-40} max={0} step={1} format={(v) => `${v.toFixed(0)} dB`} onChange={(v) => { set({ thresholdDb: v }); touch(ctx); }} />
       <DetectorTrace processed={out} thresholdDb={s.thresholdDb} rangeDb={s.rangeDb} a11y={`Gain reduction across the phrase: maximum ${max.toFixed(1)} dB, average on sibilants ${mean.toFixed(1)} dB, range ${s.rangeDb} dB.`} />
       <Card>
         <Text style={styles.read}>peak reduction {max.toFixed(1)} dB · average on S’s {mean.toFixed(1)} dB · stage: {overStage(mean).name}</Text>

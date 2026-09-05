@@ -106,6 +106,7 @@ export function WhyEqModule(_p: EqModuleComponentProps) {
         onChange={(t) => setGainDb(Math.round((t * 2 * GAIN_RANGE - GAIN_RANGE) * 2) / 2)}
         readout={`${gainDb >= 0 ? '+' : ''}${gainDb.toFixed(1)} dB`}
         tint={gc}
+        levelTint
       />
 
       <Text style={styles.caption}>

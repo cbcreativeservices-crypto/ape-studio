@@ -81,6 +81,11 @@ export type DockParam =
       formatShort?: (v: number) => string;
       /** Lane/thumb tint (default amber) — e.g. levelColor ramp. */
       tint?: string;
+      /** This fader sets a LEVEL (level, input/drive, gain, amplitude…): the
+       *  lane shows the amplitude ramp climbing from silence-blue to the
+       *  level's colour and the thumb takes that colour (owner standard
+       *  2026-09-05). Overrides `tint`. */
+      level?: boolean;
       /** ONE key that is both a chooser and a slider (owner 2026-08-30 — two
        *  keys for one control was redundant): tapping opens this menu, and
        *  picking an option closes it and binds the lane, so the user lands on

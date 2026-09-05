@@ -99,6 +99,7 @@ export function FilterShapesModule(_p: EqModuleComponentProps) {
       kind: 'fader',
       id: 'gain',
       label: 'GAIN',
+      level: true,
       value: (gainDb + 18) / 36,
       onChange: (t) => setGainDb(Math.round((t * 36 - 18) * 2) / 2),
       format: () => `${gainDb >= 0 ? '+' : ''}${gainDb.toFixed(1)} dB`,

@@ -86,7 +86,7 @@ export function Mod6Supply() {
 
       <SectionTitle>THE RAILS SET THE LIMIT</SectionTitle>
       <Body>Try it in this order: raise the input at 8 Ω until the peaks flatten; switch to 2 Ω and find the limit that arrives first; then push on until protection mutes the output.</Body>
-      <ControlSlider label="Input level" value={drive} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setDrive} />
+      <ControlSlider level label="Input level" value={drive} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setDrive} />
       <ControlSlider label="Available rail voltage" value={rail} min={0.3} max={1} step={0.01} format={(v) => `±${Math.round(v * RAIL_V_FULL)} V`} onChange={setRail} />
       <SegRow<8 | 4 | 2>
         label="Modeled load (resistive teaching example)"

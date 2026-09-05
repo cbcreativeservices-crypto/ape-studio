@@ -122,7 +122,7 @@ export function Mod2Devices() {
         <Text style={styles.region}>{region.label}</Text>
         <Body>{region.sub}</Body>
       </Card>
-      <ControlSlider label="Control signal" value={control} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setControl} />
+      <ControlSlider level label="Control signal" value={control} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setControl} />
       <Body>{terms.note}</Body>
       <LearnMore title="BJT VS MOSFET VS TUBE — THE FINE PRINT">
         <Body>

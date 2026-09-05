@@ -170,7 +170,7 @@ export function Mod4Classes() {
         value={cls}
         onChange={setCls}
       />
-      <ControlSlider label="Input level" value={drive} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setDrive} />
+      <ControlSlider level label="Input level" value={drive} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setDrive} />
 
       {cls === 'A' ? (
         <SegRow<'on' | 'off'>

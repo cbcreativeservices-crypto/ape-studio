@@ -351,9 +351,9 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
         no thermal or protection faults and correct connections. The amplifier is rated 4 Ω per channel in stereo and
         8 Ω bridged. Score it as often as you like — every failing dimension tells you what to change.
       </Body>
-      <ControlSlider label="Source level" value={chSource} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={(v) => { setChSource(v); setChSubmitted(false); }} />
-      <ControlSlider label="Mixer output" value={chMixer} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={(v) => { setChMixer(v); setChSubmitted(false); }} />
-      <ControlSlider label="Amplifier input setting" value={chAmp} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={(v) => { setChAmp(v); setChSubmitted(false); }} />
+      <ControlSlider level label="Source level" value={chSource} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={(v) => { setChSource(v); setChSubmitted(false); }} />
+      <ControlSlider level label="Mixer output" value={chMixer} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={(v) => { setChMixer(v); setChSubmitted(false); }} />
+      <ControlSlider level label="Amplifier input setting" value={chAmp} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={(v) => { setChAmp(v); setChSubmitted(false); }} />
       <SegRow<'stereo' | 'bridge'> label="Operating mode" options={[{ key: 'stereo', label: 'Stereo' }, { key: 'bridge', label: 'Bridge' }]} value={chMode} onChange={(v) => { setChMode(v); setChSubmitted(false); }} />
       <SegRow<'healthy' | 'sagging'> label="Supply condition" options={[{ key: 'healthy', label: 'Healthy' }, { key: 'sagging', label: 'Sagging (weak mains)' }]} value={chSupply} onChange={(v) => { setChSupply(v); setChSubmitted(false); }} />
       <SegRow<8 | 4 | 2> label="Speaker load (nominal)" options={[{ key: 8, label: '8 Ω' }, { key: 4, label: '4 Ω' }, { key: 2, label: '2 Ω' }]} value={chLoad} onChange={(v) => { setChLoad(v); setChSubmitted(false); }} />

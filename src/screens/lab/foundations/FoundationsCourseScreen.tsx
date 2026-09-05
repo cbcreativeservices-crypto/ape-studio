@@ -464,6 +464,7 @@ function M3Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       kind: 'fader',
       id: 'amt',
       label: 'STRENGTH',
+      level: true,
       value: amt,
       onChange: (v) => {
         setAmt(v);
@@ -535,6 +536,7 @@ function M4Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       kind: 'fader',
       id: 'amt',
       label: 'AMPLITUDE',
+      level: true,
       value: amt,
       onChange: (v) => {
         setAmt(v);
@@ -1031,6 +1033,7 @@ function M9Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       kind: 'fader',
       id: 'lvl',
       label: 'LEVEL',
+      level: true,
       value: lvl,
       onChange: (v) => {
         setLvl(v);
@@ -1241,6 +1244,7 @@ function M11Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       kind: 'fader',
       id: 'amp',
       label: `H${selected + 1} LEVEL`,
+      level: true,
       value: amps[selected],
       onChange: (v) => setAmp(selected, v),
       format: () => `${Math.round(amps[selected] * 100)}%`,

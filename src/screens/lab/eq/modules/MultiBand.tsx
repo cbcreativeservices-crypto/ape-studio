@@ -242,6 +242,7 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
           kind: 'fader',
           id: 'gain',
           label: 'GAIN',
+          level: true,
           value: (selBell.g + DB_RANGE) / (2 * DB_RANGE),
           onChange: (t) =>
             setBands((prev) => ({

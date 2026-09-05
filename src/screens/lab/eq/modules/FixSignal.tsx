@@ -130,6 +130,7 @@ export function FixSignalModule(_p: EqModuleComponentProps) {
       kind: 'fader',
       id: 'gain',
       label: 'GAIN',
+      level: true,
       value: (band.g + 18) / 36,
       onChange: (t) => setBand((b) => ({ ...b, g: Math.round((t * 36 - 18) * 2) / 2 })),
       format: () => `${band.g >= 0 ? '+' : ''}${band.g.toFixed(1)} dB`,

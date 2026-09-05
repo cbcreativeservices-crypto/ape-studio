@@ -154,6 +154,7 @@ export function AdcModule({ width, focused, help }: DigitalModuleProps) {
       kind: 'fader',
       id: 'drive',
       label: 'INPUT',
+      level: true,
       value: drive01,
       onChange: setDrive01,
       format: () => `${driveDb >= 0 ? '+' : ''}${driveDb.toFixed(1)} dB drive`,
@@ -339,6 +340,7 @@ export function ProcessingModule({ width, focused, help }: DigitalModuleProps) {
       kind: 'fader',
       id: 'gain',
       label: 'GAIN',
+      level: true,
       value: gain01,
       onChange: (v) => {
         setGain01(v);

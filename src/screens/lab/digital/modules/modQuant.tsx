@@ -164,6 +164,7 @@ export function QuantModule(p: DigitalModuleProps) {
       kind: 'fader',
       id: 'level',
       label: 'LEVEL',
+      level: true,
       value: (levelDb + 40) / 40,
       onChange: (v) => setLevelDb(Math.round(-40 + v * 40)),
       format: () => fmtDb(levelDb, 0),

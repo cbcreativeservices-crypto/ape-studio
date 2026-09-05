@@ -138,6 +138,7 @@ export function MatchCurveModule(_p: EqModuleComponentProps) {
       kind: 'fader',
       id: 'gain',
       label: 'GAIN',
+      level: true,
       value: (sel.g + 15) / 30,
       onChange: (t) => setSel({ g: Math.round((t * 30 - 15) * 2) / 2 }),
       format: () => `${sel.g >= 0 ? '+' : ''}${sel.g.toFixed(1)} dB`,

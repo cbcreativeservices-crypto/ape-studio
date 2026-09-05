@@ -97,6 +97,7 @@ export function MultiStageModule(_p: GainModuleComponentProps) {
         onChange={(t) => setGain(key, Math.round(st.min + t * (st.max - st.min)))}
         readout={fmtDb(st.gain)}
         tint={stageTint(node)}
+        levelTint
       />
     );
   };
@@ -106,6 +107,7 @@ export function MultiStageModule(_p: GainModuleComponentProps) {
       kind: 'fader',
       id: 'pre',
       label: 'PREAMP',
+      level: true,
       value: g.pre / 40,
       onChange: (t) => setGain('pre', Math.round(t * 40)),
       format: () => fmtDb(g.pre),
@@ -218,6 +220,7 @@ export function FreePlayModule(_p: GainModuleComponentProps) {
         onChange={(t) => setGain(key, Math.round(st.min + t * (st.max - st.min)))}
         readout={fmtDb(st.gain)}
         tint={stageTint(node)}
+        levelTint
       />
     );
   };
@@ -227,6 +230,7 @@ export function FreePlayModule(_p: GainModuleComponentProps) {
       kind: 'fader',
       id: 'src',
       label: 'SOURCE',
+      level: true,
       value: (source + 40) / 38,
       onChange: (t) => setSource(Math.round(-40 + t * 38)),
       format: () => `${source} dB`,
@@ -237,6 +241,7 @@ export function FreePlayModule(_p: GainModuleComponentProps) {
       kind: 'fader',
       id: 'pre',
       label: 'PREAMP',
+      level: true,
       value: g.pre / 40,
       onChange: (t) => setGain('pre', Math.round(t * 40)),
       format: () => fmtDb(g.pre),
@@ -432,6 +437,7 @@ export function TroubleshootModule(_p: GainModuleComponentProps) {
             kind: 'fader' as const,
             id: 'fix',
             label: SHORT[fixStage.key],
+            level: true,
             value: (fixStage.gain - fixStage.min) / (fixStage.max - fixStage.min),
             onChange: (t: number) => setGain(fixStage.key, Math.round(fixStage.min + t * (fixStage.max - fixStage.min))),
             format: () => fmtDb(fixStage.gain),

@@ -30,6 +30,19 @@ mechanic** observation for your device pass — tapping NEXT past an unsolved
 board carried the unmatched pairs forward (pool grew 4 → 6 → 7; two clues then
 had no match). Intended carry-over or a state bug? ccode did not touch it.
 
+**Also landed 2026-09-05 — slider pulse + amplitude-colour standard sweep**
+(from your Amp-lab screenshot): every lab slider thumb now breathes (5 s: 2.5 s
+brighter, 2.5 s dimmer); every LEVEL slider shows the MIDI ramp (blue → the
+level's colour) instead of flat green/amber; the Amp rig's input/output traces,
+the envelope contour, the de-esser detector + spectrum bars, the speech pulse +
+spectrum/harmonic stems all ride `levelColor`. Traces I deliberately LEFT
+identity-coded and want your ruling on: Amp device currents (gold +/purple −),
+Class-D carrier/recovered overlays, the Digital lab's original/reconstructed/
+error compare traces, fxAnim's dim dry-input copy, ear-training multi-clip
+spectra, noise-colour identities, FM sideband lines, tuning beat tones,
+EQ/filter response curves, the Harmonics live slice. Say "ramp them too" for
+any of these and it is a small change.
+
 In order:
 1. **Explore subject descriptions** (C1-02) — 49 of 50 subjects show no
    description/careers because `src/data/subjectMeta.ts` is keyed on retired v2
