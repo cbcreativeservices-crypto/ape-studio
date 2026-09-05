@@ -148,7 +148,7 @@ export function PagedLab({ labId, title, subtitle, pages }: { labId: string; tit
         accessibilityLabel={`Page list. ${doneCount} of ${pages.length} complete. ${listOpen ? 'Expanded' : 'Collapsed'}`}
       >
         {pages.map((_, i) => <View key={i} style={[styles.dot, progress?.completed.includes(i) && styles.dotDone, i === page && styles.dotNow]} />)}
-        <Text style={styles.dotsText}>{doneCount}/{pages.length} {listOpen ? '▴' : '▾'}</Text>
+        <Text style={styles.dotsText}>{doneCount}/{pages.length} done {listOpen ? '▴' : '▾'}</Text>
       </Pressable>
       {listOpen ? (
         <View style={styles.list}>
@@ -178,7 +178,11 @@ export function PagedLab({ labId, title, subtitle, pages }: { labId: string; tit
           onPress={() => {
             if (finishBlocked) return;
             if (!def.manualDone) markDone();
+            // FINISH on the last page used to do nothing visible — it read as a
+            // dead button (Bug+Hater night K2-01). Finishing now LEAVES the lab,
+            // which is what the label promises; progress is already persisted.
             if (!last) goTo(page + 1);
+            else navigation.goBack();
           }}
           disabled={finishBlocked}
           style={[styles.navBtn, styles.navNext, finishBlocked && { opacity: 0.45 }]}

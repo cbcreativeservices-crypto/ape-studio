@@ -125,7 +125,9 @@ const SCENARIOS: { key: string; label: string; short: string; enable: number[]; 
     lesson: 'The +9 dB boost runs hot down the chain — watch BOTH meters share the work. If the limiter barely moves, the compressor got there first: gain-staging happening in order.',
   },
   {
-    key: 'full', label: 'FULL CHAIN', short: 'FULL', enable: [FX.eq, FX.comp, FX.delay, FX.reverb, FX.stereo, FX.limiter], sourceIdx: 0,
+    // All NINE modules — the name says FULL and the lesson says "the whole path
+    // lit"; it used to light only six (Bug+Hater night I2-02).
+    key: 'full', label: 'FULL CHAIN', short: 'FULL', enable: [FX.eq, FX.comp, FX.gate, FX.dist, FX.mod, FX.delay, FX.reverb, FX.stereo, FX.limiter], sourceIdx: 0,
     lesson: 'The whole path lit. Toggle modules one at a time — the difference between the sum and the parts IS the interaction.',
   },
 ];

@@ -115,7 +115,7 @@ export function TuningLabScreen() {
         {CHAPTER_TITLES.map((_, i) => (
           <View key={i} style={[styles.dot, progress?.completed.includes(i) && styles.dotDone, i === chapter && styles.dotNow]} />
         ))}
-        <Text style={styles.dotsText}>{progress?.completed.length ?? 0}/{CHAPTER_COUNT} {listOpen ? '▴' : '▾'}</Text>
+        <Text style={styles.dotsText}>{progress?.completed.length ?? 0}/{CHAPTER_COUNT} done {listOpen ? '▴' : '▾'}</Text>
       </Pressable>
       {listOpen ? (
         <View style={styles.list}>
