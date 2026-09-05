@@ -57,6 +57,7 @@ import { IntroSheet, ScreenIntroOverlay } from '../../features/intro/ScreenIntro
 import { INTRO_STORAGE_PREFIX } from '../../features/intro/screenIntros';
 import { StudySession } from '../../features/study/sync';
 import { supabase } from '../../lib/supabase';
+import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import {
   loadLocalMethodStates,
   mergeItemStates,
@@ -146,12 +147,16 @@ function seededShuffle<T>(arr: T[], seed: number): T[] {
   return a;
 }
 
-function levelText(item: GlossaryItem, level: number): string {
+function levelText(item: GlossaryItem, level: number, member: boolean): string {
   const join = (a?: string[] | null) => (a && a.length ? a.map((s) => `• ${s}`).join('\n') : null);
   // A side with no authored content used to show the DEFINITION silently under
   // the other side's label ("MISTAKES" reading exactly like "DEFINITION" —
-  // eyes-on reader, text audit 2026-09-05). Say so, then show the definition.
+  // eyes-on reader, text audit 2026-09-05). Say why, then show the definition.
+  // `common_mistakes` is masked SERVER-SIDE for non-members (glossary_study_v
+  // via has_academy_access(), handoff 2026-07-16), so for them the honest
+  // reason is the tier, not missing content.
   const fallback = (what: string) => `(No ${what} written for this term yet — here is its definition.)\n\n${item.definition}`;
+  const memberOnly = (what: string) => `(${what} are an Academy member feature — here is the definition.)\n\n${item.definition}`;
   switch (level) {
     case 1:
       return item.definition;
@@ -162,7 +167,7 @@ function levelText(item: GlossaryItem, level: number): string {
     case 4:
       return join(item.scenario_contexts) ?? fallback('scenarios');
     case 5:
-      return join(item.common_mistakes) ?? fallback('common-mistakes note');
+      return join(item.common_mistakes) ?? (member ? fallback('common-mistakes note') : memberOnly('Common-mistakes notes'));
     case 6: {
       const parts = [
         item.related_terms?.length ? item.related_terms.map((s) => `• ${s}`).join('\n') : null,
@@ -311,6 +316,9 @@ const chipStyles = StyleSheet.create({
 });
 
 export function FlashcardsScreen({ navigation, route }: Props) {
+  // Real academy standing (not the caps bypass) — decides what the MISTAKES
+  // side says when the server-masked common_mistakes is null.
+  const { isMember } = useEntitlement();
   const { achievementId, topicName } = route.params;
   const insets = useSafeAreaInsets();
   const flaggedMode = achievementId === FLAGGED_TOPIC_ID;
@@ -1375,7 +1383,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                       showsVerticalScrollIndicator
                       nestedScrollEnabled
                     >
-                      <Text style={styles.levelBody}>{renderLinked(levelText(card, 1), card.id)}</Text>
+                      <Text style={styles.levelBody}>{renderLinked(levelText(card, 1, isMember), card.id)}</Text>
                     </ScrollView>
                   </>
                 ) : level === 0 ? (
@@ -1419,7 +1427,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                     >
                       {/* In-deck glossary terms inside the text are tappable
                           links to their full-screen definition (2026-07-18). */}
-                      <Text style={styles.levelBody}>{renderLinked(levelText(card, level), card.id)}</Text>
+                      <Text style={styles.levelBody}>{renderLinked(levelText(card, level, isMember), card.id)}</Text>
                     </ScrollView>
                     {coach.visible && (
                       <Text style={styles.hint} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
@@ -1585,7 +1593,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                   {enabledLevels.map((lvl) => (
                     <View key={lvl} style={styles.fsSheetSection}>
                       <Text style={styles.linkedEyebrow}>{LEVEL_LABELS[lvl - 1]}</Text>
-                      <Text style={styles.fsDef}>{renderLinked(levelText(card, lvl), card.id)}</Text>
+                      <Text style={styles.fsDef}>{renderLinked(levelText(card, lvl, isMember), card.id)}</Text>
                     </View>
                   ))}
                 </ScrollView>
@@ -1617,7 +1625,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                       onError={() => setBadImages((prev) => new Set(prev).add(card.id))}
                     />
                   ) : null}
-                  <Text style={styles.fsDef}>{renderLinked(levelText(card, level), card.id)}</Text>
+                  <Text style={styles.fsDef}>{renderLinked(levelText(card, level, isMember), card.id)}</Text>
                 </ScrollView>
               )
             ) : (

@@ -20,9 +20,10 @@ in the app and proven over all 166 topics (before/after table in
 `docs/APE_STUDY_TEXT_AUDIT_2026_09_05.md`). Two owner items from it, whenever
 convenient (section 4 of that doc): **5 glossary rows are duplicate terms** in
 their topic (ids listed; the app guards against them), and **the MISTAKES
-flashcard side has no data** — `glossary_study_v.common_mistakes` is NULL for
-every row and anon cannot read `glossary.common_mistakes`; the card now says so
-honestly. Hand the view/grant question to Computer A. Also from the readers:
+flashcard side** — `common_mistakes` is masked server-side for non-members
+(by design), and whether the column is populated / reaches members is
+unverified from ccode's anon-only vantage; the card now says why it shows the
+definition. Handoff for Computer A: `docs/CCODE_TO_COMPA_MISTAKES_SIDE_2026_09_05.md`. Also from the readers:
 **259 near-duplicate glossary rows** (plural/inflection twins, list in
 `docs/study_text_audit_after.json` → `nearDupPairs`), and one **Matching
 mechanic** observation for your device pass — tapping NEXT past an unsolved
