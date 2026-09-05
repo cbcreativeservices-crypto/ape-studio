@@ -37,6 +37,12 @@ const NAV_SOURCE: Record<NavIconName, number> = {
 
 type Def = { color: string; glowRgba: string; font: number; spacing: number };
 
+/** Inactive-tab LABEL dim (owner 2026-09-05, global): the text under each icon
+ *  shows in the tab's OWN colour, lightly dimmed — "subtle but noticeable" —
+ *  instead of the old flat gray "off" look. Icons are untouched; the active
+ *  tab is full colour with its glow. */
+const NAV_LABEL_DIM = 0.62;
+
 /** Label color + active-glow tint per tab (the art itself is already colored). */
 function defFor(icon: NavIconName): Def {
   switch (icon) {
@@ -210,7 +216,7 @@ export function NavIcon({
       )}
 
       {showLabel && (
-        <Text style={[styles.label, { fontSize: d.font, letterSpacing: d.spacing, color: lit ? d.color : '#8a8a8a' }, glow]}>
+        <Text style={[styles.label, { fontSize: d.font, letterSpacing: d.spacing, color: d.color, opacity: lit ? 1 : NAV_LABEL_DIM }, glow]}>
           {NAV_LABEL[icon]}
         </Text>
       )}
