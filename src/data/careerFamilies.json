@@ -238,7 +238,6 @@
    "integrators"
   ],
   "sources": [
-   "AVIXA",
    "U.S. Bureau of Labor Statistics / O*NET"
   ],
   "count": 61
@@ -673,7 +672,6 @@
   ],
   "sources": [
    "Society of Broadcast Engineers",
-   "AVIXA",
    "Society of Motion Picture and Television Engineers"
   ],
   "count": 29

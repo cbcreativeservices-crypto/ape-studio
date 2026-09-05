@@ -90,6 +90,10 @@ def main():
     fam_rows = [r for r in rows[5:] if r and r[0]]
     families = OrderedDict()
     unresolved = []
+    # Governance R1 (owner 2026-09-05): competitor organisations are never
+    # listed as a data source for our own content. Dropped here so a rebuild
+    # from the workbook cannot re-introduce them into careerFamilies.json.
+    excluded_source_orgs = {'AVIXA', 'INFOCOMM', 'CEDIA'}
     for r in fam_rows:
         name, count, field, subject, topics, settings, sources = r[0], r[1], r[2], r[3], r[4], r[5], r[6]
         # The workbook's "Primary app subject" is the v3 FIELD and its
@@ -108,7 +112,10 @@ def main():
             'subject': subject,
             'topicGs': gs,
             'settings': [s.strip() for s in str(settings).split(';') if s.strip()],
-            'sources': list(OrderedDict.fromkeys(source_name.get(s.strip(), s.strip()) for s in str(sources).split(';') if s.strip())),
+            'sources': [
+                org for org in OrderedDict.fromkeys(source_name.get(s.strip(), s.strip()) for s in str(sources).split(';') if s.strip())
+                if org.strip().upper() not in excluded_source_orgs
+            ],
             'count': 0,
         }
     fam_ids = list(families.keys())

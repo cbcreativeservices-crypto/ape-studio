@@ -9,7 +9,9 @@
  * AUTHORITY HONESTY (§3/§29 — the load-bearing rule set):
  *  - 'code' = legal requirement where adopted (labeled U.S. where applicable;
  *    the lab states local regulations always govern).
- *  - 'standard' = professional consensus standards (TIA/BICSI/AVIXA/AES/ISO).
+ *  - 'standard' = professional consensus standards (TIA/BICSI/AES/ISO and
+ *    the ANSI-accredited AV standards — governance R1 2026-09-05: no
+ *    competitor association named in copy beyond its ANSI designation).
  *  - 'manufacturer' = the installed product's documentation governs.
  *  - 'professional_practice' = widely accepted workmanship — NOT law.
  *  - 'project_specification' = imposed by the project's documents.
@@ -604,7 +606,7 @@ export const AUTHORITY_META: Record<AuthorityClass, { label: string; tint: strin
   standard: {
     label: 'INDUSTRY STANDARD',
     tint: '#4fd0e0',
-    blurb: 'Requirement or guidance from professional consensus standards (TIA, BICSI, AVIXA, AES, ISO/IEC…).',
+    blurb: 'Requirement or guidance from professional consensus standards (TIA, BICSI, AES, ISO/IEC and ANSI-accredited AV standards…).',
   },
   manufacturer: {
     label: 'MANUFACTURER REQUIREMENT',

@@ -111,30 +111,35 @@ export const CI_SOURCES: CableLabSource[] = [
     sourceType: 'professional_reference',
     notes: 'Distribution design reference (pathways, spaces, firestopping awareness).',
   },
+  // ANSI-accredited AV standards (governance R1 2026-09-05: a competitor
+  // association is named only where its document is the governing technical
+  // source, and then by its ANSI designation under an "American National
+  // Standard" header — no organisation billboard, no logo, no link, no
+  // certification mention).
   {
     id: 'avixa_f502_01',
-    organization: 'AVIXA',
-    document: 'F502.01 — Rack Building for Audiovisual Systems',
+    organization: 'American National Standard',
+    document: 'ANSI/AVIXA F502.01:2018 — Rack Building for Audiovisual Systems',
     sourceType: 'consensus_standard',
     notes: 'AV rack assembly & dressing practices.',
   },
   {
     id: 'avixa_f502_02',
-    organization: 'AVIXA',
-    document: 'F502.02 — Rack Design for Audiovisual Systems',
+    organization: 'American National Standard',
+    document: 'ANSI/AVIXA F502.02:2020 — Rack Design for Audiovisual Systems',
     sourceType: 'consensus_standard',
     notes: 'AV rack layout/thermal/power-signal planning.',
   },
   {
     id: 'avixa_f501_01',
-    organization: 'AVIXA',
-    document: 'F501.01 — Cable Labeling for Audiovisual Systems',
+    organization: 'American National Standard',
+    document: 'ANSI/INFOCOMM F501.01:2015 — Cable Labeling for Audiovisual Systems',
     sourceType: 'consensus_standard',
   },
   {
     id: 'avixa_verify',
-    organization: 'AVIXA',
-    document: 'Audiovisual performance-verification standards (e.g. A102.01)',
+    organization: 'American National Standard',
+    document: 'ANSI/INFOCOMM 10:2013 — Audiovisual Systems Performance Verification',
     sourceType: 'consensus_standard',
     notes: 'Verification checklists that a finished installation is inspected against.',
   },

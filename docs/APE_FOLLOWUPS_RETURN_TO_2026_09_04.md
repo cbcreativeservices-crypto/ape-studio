@@ -30,6 +30,13 @@ mechanic** observation for your device pass — tapping NEXT past an unsolved
 board carried the unmatched pairs forward (pool grew 4 → 6 → 7; two clues then
 had no match). Intended carry-over or a state bug? ccode did not touch it.
 
+**Ruled 2026-09-05 — no competitor organisations in product copy (R1)**: AVIXA
+now appears only as neutral ANSI citations in the Cable Dressing lab's sources
+sheet ("American National Standard" header, `ANSI/AVIXA F502.01:2018 …`), and
+was removed as a Career Finder data source and from the About paragraph (that
+paragraph is unratified Career Finder copy). Record:
+`docs/APE_GOVERNANCE_DECISIONS_2026_09_05.md`. NAMM stays (not a competitor).
+
 **Also landed 2026-09-05 — slider pulse + amplitude-colour standard sweep**
 (from your Amp-lab screenshot): every lab slider thumb now breathes (5 s: 2.5 s
 brighter, 2.5 s dimmer); every LEVEL slider shows the MIDI ramp (blue → the
