@@ -10,6 +10,30 @@ add new lessons at the bottom of PREVENT. Owner tags: **Cháno** = the owner,
 
 ## RETURN TO — open actions
 
+### 🌙 Bug + Hater Night — 2026-09-04 → 05 (ccode, unattended while Cháno was away)
+**In one line:** 12 agents crossed every screen with a bug lens and a
+1-star-review lens; **32 fixes pushed** (one commit each, tsc + 228 tests green
+every time), **37 items filed for your judgment**, all 29 of Computer A's
+accuracy fixes verified on screen, and a fresh-bundle re-attack passed 20/21
+(the 21st was fixed on the spot).
+**Read this first:** `docs/APE_BUG_HATER_NIGHT_2026_09_04.md` → "For the owner
+this morning" — five things that need you, in plain language, then the rest.
+Report page: https://claude.ai/code/artifact/485a86ea-b220-4899-b93e-0edc9f581c5e
+**Fixes you'll feel:** the Home carousel's centered card button was dead on web;
+Back from a NEXT-UP credential dumped you to the Trophy Case; a stray keyboard
+"Done" bar scrolled every header off-screen on web; the Career Finder's STUDY
+NOW button was dead; the calculator workflow could chain the wrong quantity
+into a field silently; Mic Selection tiles were unlabeled for screen readers.
+**The five for you:** (1) free/guest study progress fails silently — decide the
+pending free-tier RPC amendment + add an honesty banner; (2) 49 of 50 Explore
+subjects have no description (`subjectMeta` is keyed on old v2 names); (3) the
+glossary auto-linker sends "source" to a transistor definition; (4) Career
+Finder guest answers are wiped vs "your answers stay on this phone"; (5) the
+Enrollments core-topic trap after REMOVE ALL.
+**Coverage honesty:** no real signed-in account exists on web, so earned
+trophies/certs, the study loop past Flashcards, Tube cards, Directory publish,
+and the Auth screen are on the device-pass list in the doc.
+
 ### Security workstream (app-layer audit, 2026-09-04)
 - [ ] **Rebuild the dev/native client** to activate the encrypted keychain, then
   verify the session PERSISTS across an app restart on device. NOTE: the app
