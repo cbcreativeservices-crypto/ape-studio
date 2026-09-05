@@ -440,6 +440,7 @@ function SplStep() {
             onPress={() => setMic(m.key)}
             accessibilityRole="button"
             accessibilityState={{ selected: mic === m.key }}
+            accessibilityLabel={m.name}
             style={[styles.profileCell, mic === m.key && styles.micCellActive]}
           >
             <MicVisual kind={m.kind} w={36} h={54} zoomable={false} />
@@ -675,6 +676,7 @@ function ChallengeStep() {
           }}
           accessibilityRole="button"
           accessibilityState={{ selected: pick === m.key }}
+          accessibilityLabel={m.label}
           style={[styles.formRow, pick === m.key && styles.micCellActive]}
         >
           <MicVisual kind={m.kind} w={36} h={54} zoomable={false} />
@@ -820,6 +822,7 @@ function LockerStep() {
             }}
             accessibilityRole="checkbox"
             accessibilityState={{ checked: on, disabled: full }}
+            accessibilityLabel={m.name}
             style={[styles.formRow, on && styles.micCellActive, full && { opacity: 0.45 }]}
           >
             <MicVisual kind={m.kind} w={30} h={45} zoomable={false} />
