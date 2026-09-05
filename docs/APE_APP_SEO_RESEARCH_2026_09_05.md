@@ -37,6 +37,18 @@ Deferred deep links (install-then-land-on-the-right-screen) need an attribution 
 4. **Share links become real URLs** — every glossary share already prints the site URL; the term share now also prints its own `https://proaudiotrainingacademy.com/glossary/<slug>` line so the link opens the app (once associated) and the term page (once built). Until the page exists the link lands on the site root, which is what it does today. *(Only if the glossary share code can take it cleanly — see the commit.)*
 5. **`expo.description`** set (used by Expo tooling and as the seed for the store description). Store keyword work is metadata, not code — §4.
 
+## 3b. Platform compliance — VERIFIED from the shipped build (2026-09-05)
+
+The owner's research flagged Google Play's **API 36 requirement** (new apps and updates must target Android 16 / API level 36 from 31 August 2026) as a potential submission blocker. **We are compliant.** Read directly out of the binary `AndroidManifest.xml` inside the Android development APK built 2026-09-05 (build `fb10c2f2`, versionCode 10), fetched by HTTP range request rather than downloading all 347 MB:
+
+| Manifest value | Shipped |
+|---|---|
+| `targetSdkVersion` | **36** |
+| `compileSdkVersion` | 36 |
+| `minSdkVersion` | 24 |
+
+Not inferred from `app.json`: the Android project is generated at build time (no `expo-build-properties` override), so the levels come from Expo SDK 57's gradle plugin, whose fallback is also 36. The same manifest confirms today's deep links compiled in: both hosts, the `proaudio` scheme, `autoVerify`, `VIEW`/`BROWSABLE`, and the `/glossary`, `/tools`, `/labs`, `/awards`, `/careers` path prefixes are all present. Re-verify with the same method after any Expo SDK upgrade. Script: `scratchpad/apk-manifest.js` (reads the manifest from a remote APK without a full download).
+
 ## 4. Store listing drafts (to merge with the owner's research)
 
 **iOS App Store** (name ≤30, subtitle ≤30, keyword field ≤100 chars, promo text 170, description 4000):
