@@ -1,6 +1,6 @@
 {
   "label": "after",
-  "generatedAt": "2026-09-05T06:35:21.931Z",
+  "generatedAt": "2026-09-05T07:28:17.057Z",
   "topicCount": 166,
   "topics": [
     {
@@ -14,17 +14,19 @@
         "fc_noMistakes": 190,
         "fib_noBlankAlways": 68,
         "fib_secondaryLeakAny": 177,
-        "fib_secondaryLeakAlways": 111,
-        "fib_v2_multiBlank": 77,
+        "fib_secondaryLeakAlways": 110,
+        "fib_v2_trailingBlank": 54,
+        "fib_v2_secondaryLeak": 87,
         "m_currentLeaksV2": 114,
         "m_otherTermInClue": 169,
-        "m_v2_partialLeft": 84,
-        "m_v2_otherTermInClue": 143,
-        "fib_v2_trailingBlank": 30,
+        "m_v2_partialLeft": 43,
+        "m_v2_otherTermInClue": 142,
         "fib_noBlankSometimes": 95,
+        "m_v2_masked": 78,
+        "fib_v2_multiBlank": 26,
         "m_v2_otherOnSameBoard": 11,
         "m_fallbackMasked": 27,
-        "m_v2_masked": 28
+        "fib_v2_blanks3plus": 2
       },
       "worst": [
         [
@@ -41,7 +43,7 @@
         ],
         [
           "m_v2_otherTermInClue",
-          143
+          142
         ]
       ]
     },
@@ -56,16 +58,18 @@
         "fc_noMistakes": 177,
         "fib_noBlankSometimes": 83,
         "fib_secondaryLeakAny": 164,
-        "fib_secondaryLeakAlways": 86,
-        "fib_v2_multiBlank": 66,
-        "m_currentLeaksV2": 96,
+        "fib_secondaryLeakAlways": 85,
+        "fib_v2_multiBlank": 28,
+        "m_currentLeaksV2": 95,
         "m_otherTermInClue": 118,
-        "m_v2_partialLeft": 65,
-        "m_v2_otherTermInClue": 92,
+        "m_v2_partialLeft": 21,
+        "m_v2_otherTermInClue": 86,
+        "fib_v2_secondaryLeak": 63,
         "fib_noBlankAlways": 73,
-        "fib_v2_trailingBlank": 41,
+        "fib_v2_trailingBlank": 60,
+        "m_v2_masked": 72,
         "m_fallbackMasked": 22,
-        "m_v2_masked": 22,
+        "fib_v2_blanks3plus": 3,
         "m_clueShort": 3,
         "m_v2_otherOnSameBoard": 3
       },
@@ -84,7 +88,7 @@
         ],
         [
           "m_currentLeaksV2",
-          96
+          95
         ]
       ]
     },
@@ -101,15 +105,17 @@
         "fib_secondaryLeakAlways": 66,
         "m_currentLeaksV2": 48,
         "m_otherTermInClue": 104,
-        "m_v2_partialLeft": 35,
-        "m_v2_otherTermInClue": 99,
+        "m_v2_partialLeft": 18,
+        "m_v2_otherTermInClue": 97,
         "fib_noBlankSometimes": 46,
-        "fib_v2_multiBlank": 48,
+        "fib_v2_secondaryLeak": 36,
+        "m_v2_masked": 63,
         "fib_noBlankAlways": 42,
-        "fib_v2_trailingBlank": 19,
-        "m_v2_otherOnSameBoard": 9,
-        "m_fallbackMasked": 37,
-        "m_v2_masked": 38
+        "fib_v2_trailingBlank": 34,
+        "m_v2_otherOnSameBoard": 11,
+        "fib_v2_multiBlank": 26,
+        "fib_v2_blanks3plus": 8,
+        "m_fallbackMasked": 37
       },
       "worst": [
         [
@@ -126,7 +132,7 @@
         ],
         [
           "m_v2_otherTermInClue",
-          99
+          97
         ]
       ]
     },
@@ -141,17 +147,19 @@
         "fc_noMistakes": 143,
         "fib_secondaryLeakAny": 104,
         "fib_secondaryLeakAlways": 84,
-        "fib_v2_multiBlank": 41,
+        "fib_v2_multiBlank": 26,
         "m_fallbackMasked": 69,
         "m_otherTermInClue": 107,
-        "m_v2_masked": 69,
-        "m_v2_otherTermInClue": 99,
+        "m_v2_masked": 97,
+        "m_v2_otherTermInClue": 92,
         "fib_noBlankSometimes": 34,
         "fib_noBlankAlways": 45,
-        "fib_v2_trailingBlank": 28,
+        "fib_v2_trailingBlank": 34,
         "m_currentLeaksV2": 40,
-        "m_v2_partialLeft": 29,
-        "m_v2_otherOnSameBoard": 8,
+        "fib_v2_secondaryLeak": 21,
+        "fib_v2_blanks3plus": 8,
+        "m_v2_otherOnSameBoard": 7,
+        "m_v2_partialLeft": 3,
         "m_clueShort": 1
       },
       "worst": [
@@ -168,8 +176,8 @@
           104
         ],
         [
-          "m_v2_otherTermInClue",
-          99
+          "m_v2_masked",
+          97
         ]
       ]
     },
@@ -183,17 +191,19 @@
       "flags": {
         "fc_noMistakes": 107,
         "fib_noBlankAlways": 62,
-        "fib_secondaryLeakAny": 102,
-        "fib_v2_trailingBlank": 24,
-        "m_currentLeaksV2": 88,
+        "fib_secondaryLeakAny": 101,
+        "fib_v2_trailingBlank": 33,
+        "m_currentLeaksV2": 87,
         "m_otherTermInClue": 38,
-        "fib_secondaryLeakAlways": 68,
-        "fib_v2_multiBlank": 46,
-        "m_v2_partialLeft": 58,
+        "fib_secondaryLeakAlways": 67,
+        "fib_v2_secondaryLeak": 33,
+        "m_v2_masked": 54,
         "fib_noBlankSometimes": 38,
-        "m_v2_otherTermInClue": 19,
+        "m_v2_partialLeft": 22,
+        "fib_v2_multiBlank": 21,
+        "m_v2_otherTermInClue": 17,
         "m_fallbackMasked": 6,
-        "m_v2_masked": 10,
+        "fib_v2_blanks3plus": 4,
         "m_v2_otherOnSameBoard": 2
       },
       "worst": [
@@ -203,15 +213,15 @@
         ],
         [
           "fib_secondaryLeakAny",
-          102
+          101
         ],
         [
           "m_currentLeaksV2",
-          88
+          87
         ],
         [
           "fib_secondaryLeakAlways",
-          68
+          67
         ]
       ]
     },
@@ -224,19 +234,21 @@
       "items": 332,
       "flags": {
         "fc_noMistakes": 332,
-        "fib_secondaryLeakAny": 283,
-        "fib_secondaryLeakAlways": 148,
-        "fib_v2_multiBlank": 130,
+        "fib_secondaryLeakAny": 281,
+        "fib_secondaryLeakAlways": 147,
+        "fib_v2_multiBlank": 53,
         "m_fallbackMasked": 76,
         "m_otherTermInClue": 283,
-        "m_v2_masked": 82,
-        "m_v2_otherTermInClue": 239,
+        "m_v2_masked": 151,
+        "m_v2_otherTermInClue": 236,
         "fib_noBlankAlways": 96,
-        "fib_v2_trailingBlank": 52,
-        "m_currentLeaksV2": 146,
+        "fib_v2_trailingBlank": 79,
+        "m_currentLeaksV2": 143,
+        "m_v2_partialLeft": 31,
         "fib_noBlankSometimes": 160,
-        "m_v2_partialLeft": 83,
-        "m_v2_otherOnSameBoard": 15,
+        "fib_v2_secondaryLeak": 114,
+        "fib_v2_blanks3plus": 14,
+        "m_v2_otherOnSameBoard": 17,
         "m_clueShort": 1,
         "fc_dupTerm": 2
       },
@@ -246,16 +258,16 @@
           332
         ],
         [
-          "fib_secondaryLeakAny",
-          283
-        ],
-        [
           "m_otherTermInClue",
           283
         ],
         [
+          "fib_secondaryLeakAny",
+          281
+        ],
+        [
           "m_v2_otherTermInClue",
-          239
+          236
         ]
       ]
     },
@@ -269,17 +281,19 @@
       "flags": {
         "fc_noMistakes": 162,
         "fib_noBlankAlways": 94,
-        "fib_v2_trailingBlank": 57,
+        "fib_v2_trailingBlank": 76,
         "m_otherTermInClue": 106,
-        "m_v2_otherTermInClue": 71,
+        "m_v2_otherTermInClue": 65,
         "fib_secondaryLeakAny": 136,
         "fib_secondaryLeakAlways": 71,
         "m_currentLeaksV2": 101,
-        "m_v2_partialLeft": 64,
+        "m_v2_masked": 62,
         "fib_noBlankSometimes": 61,
-        "fib_v2_multiBlank": 42,
+        "fib_v2_secondaryLeak": 42,
+        "fib_v2_multiBlank": 27,
         "m_fallbackMasked": 7,
-        "m_v2_masked": 7,
+        "fib_v2_blanks3plus": 7,
+        "m_v2_partialLeft": 17,
         "m_v2_otherOnSameBoard": 3
       },
       "worst": [
@@ -313,16 +327,18 @@
         "fib_noBlankSometimes": 30,
         "fib_secondaryLeakAny": 56,
         "fib_secondaryLeakAlways": 40,
-        "fib_v2_multiBlank": 28,
+        "fib_v2_multiBlank": 14,
+        "fib_v2_secondaryLeak": 31,
         "m_currentLeaksV2": 42,
         "m_otherTermInClue": 56,
-        "m_v2_partialLeft": 30,
+        "m_v2_partialLeft": 25,
         "m_v2_otherTermInClue": 49,
         "fib_noBlankAlways": 27,
-        "fib_v2_trailingBlank": 14,
+        "fib_v2_trailingBlank": 23,
+        "m_v2_masked": 25,
         "m_fallbackMasked": 9,
-        "m_v2_masked": 11,
-        "m_v2_otherOnSameBoard": 5
+        "m_v2_otherOnSameBoard": 5,
+        "fib_v2_blanks3plus": 7
       },
       "worst": [
         [
@@ -354,17 +370,19 @@
         "fc_noMistakes": 169,
         "fib_secondaryLeakAny": 142,
         "fib_secondaryLeakAlways": 79,
+        "fib_v2_multiBlank": 37,
         "m_fallbackMasked": 32,
         "m_otherTermInClue": 126,
-        "m_v2_masked": 33,
+        "m_v2_masked": 69,
         "fib_noBlankSometimes": 85,
-        "fib_v2_multiBlank": 71,
         "m_currentLeaksV2": 71,
         "fib_noBlankAlways": 53,
-        "fib_v2_trailingBlank": 34,
-        "m_v2_otherTermInClue": 107,
-        "m_v2_partialLeft": 49,
-        "m_v2_otherOnSameBoard": 5
+        "fib_v2_trailingBlank": 42,
+        "m_v2_otherTermInClue": 102,
+        "fib_v2_secondaryLeak": 53,
+        "m_v2_otherOnSameBoard": 6,
+        "m_v2_partialLeft": 23,
+        "fib_v2_blanks3plus": 12
       },
       "worst": [
         [
@@ -381,7 +399,7 @@
         ],
         [
           "m_v2_otherTermInClue",
-          107
+          102
         ]
       ]
     },
@@ -397,16 +415,18 @@
         "fib_noBlankAlways": 122,
         "fib_secondaryLeakAny": 164,
         "fib_secondaryLeakAlways": 99,
-        "fib_v2_multiBlank": 67,
+        "fib_v2_multiBlank": 31,
+        "fib_v2_secondaryLeak": 76,
         "m_currentLeaksV2": 121,
         "m_otherTermInClue": 152,
-        "m_v2_partialLeft": 72,
-        "m_v2_otherTermInClue": 112,
+        "m_v2_masked": 81,
+        "m_v2_otherTermInClue": 105,
         "m_fallbackMasked": 23,
-        "m_v2_masked": 28,
-        "fib_v2_trailingBlank": 55,
+        "fib_v2_trailingBlank": 86,
+        "m_v2_partialLeft": 49,
         "fib_noBlankSometimes": 36,
         "m_v2_otherOnSameBoard": 5,
+        "fib_v2_blanks3plus": 6,
         "m_clueShort": 1
       },
       "worst": [
@@ -440,16 +460,18 @@
         "fib_noBlankSometimes": 47,
         "fib_secondaryLeakAny": 154,
         "fib_secondaryLeakAlways": 85,
-        "fib_v2_multiBlank": 62,
+        "fib_v2_secondaryLeak": 64,
         "m_currentLeaksV2": 108,
         "m_otherTermInClue": 153,
-        "m_v2_partialLeft": 64,
-        "m_v2_otherTermInClue": 125,
+        "m_v2_partialLeft": 56,
+        "m_v2_otherTermInClue": 134,
+        "fib_v2_multiBlank": 29,
         "fib_noBlankAlways": 103,
-        "fib_v2_trailingBlank": 62,
-        "m_v2_otherOnSameBoard": 5,
+        "fib_v2_trailingBlank": 83,
+        "m_v2_masked": 60,
         "m_fallbackMasked": 22,
-        "m_v2_masked": 21
+        "fib_v2_blanks3plus": 4,
+        "m_v2_otherOnSameBoard": 6
       },
       "worst": [
         [
@@ -466,7 +488,7 @@
         ],
         [
           "m_v2_otherTermInClue",
-          125
+          134
         ]
       ]
     },
@@ -482,15 +504,17 @@
         "fib_noBlankSometimes": 64,
         "fib_secondaryLeakAny": 104,
         "fib_secondaryLeakAlways": 53,
-        "fib_v2_multiBlank": 67,
+        "fib_v2_secondaryLeak": 55,
         "m_currentLeaksV2": 75,
-        "m_v2_partialLeft": 50,
+        "m_v2_masked": 35,
         "fib_noBlankAlways": 41,
         "m_otherTermInClue": 43,
-        "fib_v2_trailingBlank": 26,
-        "m_v2_otherTermInClue": 24,
-        "m_fallbackMasked": 3,
-        "m_v2_masked": 3
+        "fib_v2_multiBlank": 43,
+        "fib_v2_trailingBlank": 32,
+        "m_v2_partialLeft": 37,
+        "m_v2_otherTermInClue": 28,
+        "fib_v2_blanks3plus": 13,
+        "m_fallbackMasked": 3
       },
       "worst": [
         [
@@ -506,8 +530,8 @@
           75
         ],
         [
-          "fib_v2_multiBlank",
-          67
+          "fib_noBlankSometimes",
+          64
         ]
       ]
     },
@@ -523,15 +547,17 @@
         "fib_noBlankSometimes": 63,
         "fib_secondaryLeakAny": 158,
         "fib_secondaryLeakAlways": 112,
-        "fib_v2_multiBlank": 78,
+        "fib_v2_blanks3plus": 8,
+        "fib_v2_multiBlank": 33,
         "m_currentLeaksV2": 108,
         "m_otherTermInClue": 62,
-        "m_v2_partialLeft": 90,
-        "m_v2_otherTermInClue": 39,
+        "m_v2_masked": 99,
+        "m_v2_otherTermInClue": 37,
+        "fib_v2_secondaryLeak": 73,
         "fib_noBlankAlways": 100,
-        "fib_v2_trailingBlank": 40,
+        "m_v2_partialLeft": 25,
+        "fib_v2_trailingBlank": 69,
         "m_fallbackMasked": 24,
-        "m_v2_masked": 24,
         "m_v2_otherOnSameBoard": 2
       },
       "worst": [
@@ -564,17 +590,19 @@
         "fc_noMistakes": 281,
         "fib_noBlankSometimes": 43,
         "fib_secondaryLeakAny": 251,
-        "fib_secondaryLeakAlways": 151,
-        "fib_v2_multiBlank": 88,
+        "fib_secondaryLeakAlways": 152,
+        "fib_v2_secondaryLeak": 111,
         "m_currentLeaksV2": 209,
         "m_otherTermInClue": 133,
-        "m_v2_partialLeft": 127,
-        "m_v2_otherTermInClue": 83,
+        "m_v2_masked": 126,
         "fib_noBlankAlways": 218,
-        "fib_v2_trailingBlank": 103,
+        "fib_v2_trailingBlank": 158,
         "m_fallbackMasked": 24,
-        "m_v2_masked": 25,
-        "m_v2_otherOnSameBoard": 2
+        "m_v2_partialLeft": 63,
+        "fib_v2_multiBlank": 33,
+        "m_v2_otherTermInClue": 80,
+        "fib_v2_blanks3plus": 8,
+        "m_v2_otherOnSameBoard": 1
       },
       "worst": [
         [
@@ -606,16 +634,18 @@
         "fc_noMistakes": 202,
         "fib_noBlankSometimes": 38,
         "fib_secondaryLeakAny": 190,
-        "fib_secondaryLeakAlways": 122,
-        "fib_v2_multiBlank": 90,
-        "m_currentLeaksV2": 167,
-        "m_v2_partialLeft": 110,
+        "fib_secondaryLeakAlways": 120,
+        "fib_v2_secondaryLeak": 103,
+        "m_currentLeaksV2": 166,
+        "m_v2_masked": 100,
+        "m_v2_partialLeft": 58,
         "fib_noBlankAlways": 148,
-        "fib_v2_trailingBlank": 62,
+        "fib_v2_trailingBlank": 108,
         "m_otherTermInClue": 36,
-        "m_v2_otherTermInClue": 20,
+        "m_v2_otherTermInClue": 13,
+        "fib_v2_multiBlank": 31,
         "m_fallbackMasked": 12,
-        "m_v2_masked": 12
+        "fib_v2_blanks3plus": 6
       },
       "worst": [
         [
@@ -628,7 +658,7 @@
         ],
         [
           "m_currentLeaksV2",
-          167
+          166
         ],
         [
           "fib_noBlankAlways",
@@ -647,13 +677,16 @@
         "fc_noMistakes": 79,
         "fib_noBlankSometimes": 15,
         "fib_secondaryLeakAny": 77,
-        "fib_v2_multiBlank": 38,
+        "fib_v2_secondaryLeak": 40,
+        "fib_v2_multiBlank": 19,
         "fib_secondaryLeakAlways": 48,
         "m_currentLeaksV2": 69,
-        "m_v2_partialLeft": 48,
+        "m_v2_partialLeft": 26,
         "fib_noBlankAlways": 64,
+        "m_v2_masked": 39,
+        "fib_v2_trailingBlank": 44,
         "m_otherTermInClue": 2,
-        "fib_v2_trailingBlank": 23,
+        "fib_v2_blanks3plus": 4,
         "m_v2_otherTermInClue": 1
       },
       "worst": [
@@ -688,14 +721,16 @@
         "fib_secondaryLeakAny": 66,
         "fib_secondaryLeakAlways": 50,
         "m_currentLeaksV2": 60,
-        "m_v2_partialLeft": 48,
+        "m_v2_masked": 35,
         "fib_noBlankSometimes": 12,
-        "fib_v2_multiBlank": 35,
+        "fib_v2_multiBlank": 20,
+        "fib_v2_secondaryLeak": 30,
+        "m_v2_partialLeft": 29,
+        "fib_v2_blanks3plus": 10,
         "m_fallbackMasked": 2,
-        "m_v2_masked": 2,
-        "fib_v2_trailingBlank": 14,
+        "fib_v2_trailingBlank": 25,
         "m_otherTermInClue": 5,
-        "m_v2_otherTermInClue": 2
+        "m_v2_otherTermInClue": 4
       },
       "worst": [
         [
@@ -730,14 +765,16 @@
         "fib_secondaryLeakAlways": 65,
         "m_currentLeaksV2": 83,
         "m_otherTermInClue": 116,
-        "m_v2_partialLeft": 49,
-        "m_v2_otherTermInClue": 85,
+        "m_v2_masked": 59,
+        "m_v2_otherTermInClue": 87,
         "fib_noBlankSometimes": 69,
-        "fib_v2_multiBlank": 57,
-        "fib_v2_trailingBlank": 41,
-        "m_v2_otherOnSameBoard": 6,
-        "m_fallbackMasked": 18,
-        "m_v2_masked": 19
+        "fib_v2_multiBlank": 26,
+        "fib_v2_trailingBlank": 54,
+        "fib_v2_secondaryLeak": 51,
+        "m_v2_partialLeft": 16,
+        "m_v2_otherOnSameBoard": 8,
+        "fib_v2_blanks3plus": 6,
+        "m_fallbackMasked": 18
       },
       "worst": [
         [
@@ -754,7 +791,7 @@
         ],
         [
           "m_v2_otherTermInClue",
-          85
+          87
         ]
       ]
     },
@@ -769,17 +806,19 @@
         "fc_noMistakes": 307,
         "fib_noBlankAlways": 142,
         "fib_secondaryLeakAny": 275,
-        "fib_v2_trailingBlank": 59,
+        "fib_v2_trailingBlank": 106,
         "m_currentLeaksV2": 161,
         "m_otherTermInClue": 215,
-        "m_v2_otherTermInClue": 181,
+        "m_v2_otherTermInClue": 182,
         "fib_noBlankSometimes": 99,
         "fib_secondaryLeakAlways": 187,
-        "fib_v2_multiBlank": 143,
-        "m_v2_partialLeft": 123,
+        "fib_v2_multiBlank": 69,
+        "fib_v2_secondaryLeak": 146,
+        "m_v2_masked": 160,
+        "fib_v2_blanks3plus": 15,
+        "m_v2_partialLeft": 73,
         "m_fallbackMasked": 68,
-        "m_v2_masked": 69,
-        "m_v2_otherOnSameBoard": 6,
+        "m_v2_otherOnSameBoard": 7,
         "m_clueShort": 2,
         "fc_dupTerm": 1
       },
@@ -813,17 +852,19 @@
         "fc_noMistakes": 104,
         "fib_secondaryLeakAny": 84,
         "fib_secondaryLeakAlways": 74,
-        "fib_v2_multiBlank": 58,
+        "fib_v2_secondaryLeak": 50,
         "m_fallbackMasked": 72,
         "m_otherTermInClue": 95,
-        "m_v2_masked": 72,
-        "m_v2_otherTermInClue": 82,
+        "m_v2_masked": 79,
+        "fib_v2_multiBlank": 29,
+        "m_v2_otherTermInClue": 90,
         "fib_noBlankSometimes": 14,
-        "fib_v2_trailingBlank": 10,
+        "m_v2_partialLeft": 25,
+        "fib_v2_trailingBlank": 15,
         "fib_noBlankAlways": 18,
         "m_currentLeaksV2": 13,
-        "m_v2_partialLeft": 12,
-        "m_v2_otherOnSameBoard": 2
+        "m_v2_otherOnSameBoard": 3,
+        "fib_v2_blanks3plus": 4
       },
       "worst": [
         [
@@ -835,12 +876,12 @@
           95
         ],
         [
-          "fib_secondaryLeakAny",
-          84
+          "m_v2_otherTermInClue",
+          90
         ],
         [
-          "m_v2_otherTermInClue",
-          82
+          "fib_secondaryLeakAny",
+          84
         ]
       ]
     },
@@ -855,17 +896,18 @@
         "fc_noMistakes": 283,
         "fib_noBlankAlways": 212,
         "fib_secondaryLeakAny": 242,
-        "fib_secondaryLeakAlways": 106,
-        "fib_v2_multiBlank": 58,
+        "fib_secondaryLeakAlways": 104,
+        "fib_v2_trailingBlank": 191,
+        "fib_v2_secondaryLeak": 89,
         "m_currentLeaksV2": 208,
-        "m_v2_partialLeft": 105,
-        "fib_v2_trailingBlank": 131,
+        "m_v2_partialLeft": 50,
         "m_otherTermInClue": 140,
-        "m_v2_otherTermInClue": 95,
+        "m_v2_masked": 72,
         "fib_noBlankSometimes": 69,
+        "m_v2_otherTermInClue": 96,
+        "fib_v2_multiBlank": 12,
         "m_fallbackMasked": 3,
-        "m_v2_masked": 3,
-        "m_v2_otherOnSameBoard": 6
+        "m_v2_otherOnSameBoard": 5
       },
       "worst": [
         [
@@ -896,18 +938,19 @@
       "flags": {
         "fc_noMistakes": 190,
         "fib_noBlankSometimes": 72,
-        "fib_secondaryLeakAny": 175,
+        "fib_secondaryLeakAny": 174,
         "fib_secondaryLeakAlways": 101,
-        "fib_v2_multiBlank": 70,
+        "fib_v2_secondaryLeak": 82,
         "m_currentLeaksV2": 132,
         "m_otherTermInClue": 137,
-        "m_v2_partialLeft": 86,
-        "m_v2_otherTermInClue": 100,
+        "m_v2_masked": 76,
         "fib_noBlankAlways": 106,
-        "fib_v2_trailingBlank": 49,
-        "m_fallbackMasked": 13,
-        "m_v2_masked": 16,
-        "m_v2_otherOnSameBoard": 1
+        "fib_v2_trailingBlank": 87,
+        "m_v2_otherTermInClue": 96,
+        "m_v2_partialLeft": 46,
+        "fib_v2_blanks3plus": 4,
+        "fib_v2_multiBlank": 23,
+        "m_fallbackMasked": 13
       },
       "worst": [
         [
@@ -916,7 +959,7 @@
         ],
         [
           "fib_secondaryLeakAny",
-          175
+          174
         ],
         [
           "m_otherTermInClue",
@@ -938,18 +981,20 @@
       "flags": {
         "fc_noMistakes": 149,
         "fib_noBlankAlways": 89,
-        "fib_secondaryLeakAny": 139,
-        "fib_secondaryLeakAlways": 78,
-        "m_currentLeaksV2": 103,
+        "fib_secondaryLeakAny": 137,
+        "fib_secondaryLeakAlways": 73,
+        "fib_v2_trailingBlank": 73,
+        "fib_v2_secondaryLeak": 55,
+        "m_currentLeaksV2": 98,
         "m_otherTermInClue": 78,
-        "m_v2_partialLeft": 64,
-        "m_v2_otherTermInClue": 56,
+        "m_v2_masked": 63,
+        "m_v2_otherTermInClue": 54,
         "fib_noBlankSometimes": 48,
-        "fib_v2_multiBlank": 49,
+        "fib_v2_multiBlank": 19,
         "m_fallbackMasked": 12,
-        "m_v2_masked": 14,
-        "fib_v2_trailingBlank": 47,
-        "m_v2_otherOnSameBoard": 3,
+        "m_v2_partialLeft": 18,
+        "m_v2_otherOnSameBoard": 4,
+        "fib_v2_blanks3plus": 4,
         "m_clueShort": 1
       },
       "worst": [
@@ -959,11 +1004,11 @@
         ],
         [
           "fib_secondaryLeakAny",
-          139
+          137
         ],
         [
           "m_currentLeaksV2",
-          103
+          98
         ],
         [
           "fib_noBlankAlways",
@@ -982,14 +1027,17 @@
         "fc_noMistakes": 149,
         "fib_noBlankAlways": 93,
         "fib_secondaryLeakAny": 134,
-        "fib_v2_trailingBlank": 55,
+        "fib_v2_trailingBlank": 74,
         "m_currentLeaksV2": 111,
         "fib_noBlankSometimes": 54,
-        "fib_v2_multiBlank": 51,
+        "fib_v2_secondaryLeak": 55,
         "m_otherTermInClue": 63,
         "fib_secondaryLeakAlways": 66,
-        "m_v2_partialLeft": 66,
-        "m_v2_otherTermInClue": 43,
+        "m_v2_partialLeft": 21,
+        "m_v2_masked": 49,
+        "m_v2_otherTermInClue": 40,
+        "fib_v2_multiBlank": 16,
+        "fib_v2_blanks3plus": 4,
         "m_v2_otherOnSameBoard": 3
       },
       "worst": [
@@ -1021,18 +1069,20 @@
       "flags": {
         "fc_noMistakes": 238,
         "fib_noBlankAlways": 135,
-        "fib_v2_trailingBlank": 62,
+        "fib_v2_trailingBlank": 112,
         "m_otherTermInClue": 157,
-        "m_v2_otherTermInClue": 132,
+        "m_v2_otherTermInClue": 121,
         "fib_secondaryLeakAny": 191,
         "m_currentLeaksV2": 123,
-        "fib_secondaryLeakAlways": 133,
-        "m_v2_partialLeft": 99,
+        "fib_secondaryLeakAlways": 130,
+        "m_v2_masked": 110,
         "fib_noBlankSometimes": 70,
-        "fib_v2_multiBlank": 104,
+        "fib_v2_multiBlank": 33,
+        "fib_v2_blanks3plus": 8,
+        "fib_v2_secondaryLeak": 100,
+        "m_v2_partialLeft": 39,
         "m_fallbackMasked": 34,
-        "m_v2_masked": 37,
-        "m_v2_otherOnSameBoard": 7,
+        "m_v2_otherOnSameBoard": 8,
         "m_clueShort": 1
       },
       "worst": [
@@ -1065,16 +1115,18 @@
         "fc_noMistakes": 102,
         "fib_noBlankSometimes": 21,
         "fib_secondaryLeakAny": 93,
-        "fib_secondaryLeakAlways": 74,
-        "fib_v2_multiBlank": 51,
-        "m_currentLeaksV2": 74,
+        "fib_secondaryLeakAlways": 75,
+        "fib_v2_secondaryLeak": 56,
+        "m_currentLeaksV2": 75,
         "m_otherTermInClue": 31,
-        "m_v2_partialLeft": 54,
-        "m_v2_otherTermInClue": 18,
+        "m_v2_masked": 54,
+        "fib_v2_multiBlank": 15,
         "fib_noBlankAlways": 73,
+        "fib_v2_trailingBlank": 46,
         "m_fallbackMasked": 10,
-        "m_v2_masked": 20,
-        "fib_v2_trailingBlank": 19,
+        "m_v2_partialLeft": 32,
+        "m_v2_otherTermInClue": 15,
+        "fib_v2_blanks3plus": 5,
         "m_v2_otherOnSameBoard": 1
       },
       "worst": [
@@ -1088,11 +1140,11 @@
         ],
         [
           "fib_secondaryLeakAlways",
-          74
+          75
         ],
         [
           "m_currentLeaksV2",
-          74
+          75
         ]
       ]
     },
@@ -1108,15 +1160,17 @@
         "fib_noBlankSometimes": 48,
         "fib_secondaryLeakAny": 96,
         "fib_secondaryLeakAlways": 55,
-        "fib_v2_multiBlank": 46,
+        "fib_v2_secondaryLeak": 47,
         "m_currentLeaksV2": 74,
-        "m_v2_partialLeft": 54,
+        "m_v2_partialLeft": 24,
         "fib_noBlankAlways": 60,
-        "fib_v2_trailingBlank": 25,
+        "fib_v2_trailingBlank": 47,
         "m_otherTermInClue": 35,
-        "m_v2_otherTermInClue": 23,
+        "m_v2_otherTermInClue": 22,
+        "fib_v2_blanks3plus": 6,
+        "fib_v2_multiBlank": 19,
         "m_fallbackMasked": 4,
-        "m_v2_masked": 4,
+        "m_v2_masked": 43,
         "m_v2_otherOnSameBoard": 1
       },
       "worst": [
@@ -1150,15 +1204,17 @@
         "fib_noBlankSometimes": 117,
         "fib_secondaryLeakAny": 177,
         "fib_noBlankAlways": 75,
-        "fib_v2_trailingBlank": 42,
+        "fib_v2_trailingBlank": 56,
         "m_otherTermInClue": 100,
         "m_v2_otherTermInClue": 82,
         "m_currentLeaksV2": 81,
+        "m_v2_partialLeft": 28,
         "fib_secondaryLeakAlways": 83,
-        "m_v2_partialLeft": 57,
-        "fib_v2_multiBlank": 82,
+        "fib_v2_secondaryLeak": 67,
+        "fib_v2_multiBlank": 42,
         "m_fallbackMasked": 32,
-        "m_v2_masked": 34,
+        "m_v2_masked": 75,
+        "fib_v2_blanks3plus": 14,
         "m_clueShort": 4,
         "m_v2_otherOnSameBoard": 4
       },
@@ -1192,17 +1248,19 @@
         "fc_noMistakes": 198,
         "fib_noBlankSometimes": 89,
         "fib_secondaryLeakAny": 174,
-        "fib_v2_multiBlank": 96,
+        "fib_v2_multiBlank": 38,
         "m_otherTermInClue": 129,
-        "m_v2_otherTermInClue": 110,
+        "m_v2_otherTermInClue": 104,
         "fib_secondaryLeakAlways": 104,
         "m_currentLeaksV2": 88,
-        "m_v2_partialLeft": 67,
+        "m_v2_masked": 90,
+        "m_v2_partialLeft": 44,
+        "fib_v2_secondaryLeak": 88,
         "fib_noBlankAlways": 68,
-        "fib_v2_trailingBlank": 29,
+        "fib_v2_trailingBlank": 47,
+        "fib_v2_blanks3plus": 10,
         "m_fallbackMasked": 40,
-        "m_v2_masked": 41,
-        "m_v2_otherOnSameBoard": 5
+        "m_v2_otherOnSameBoard": 6
       },
       "worst": [
         [
@@ -1219,7 +1277,7 @@
         ],
         [
           "m_v2_otherTermInClue",
-          110
+          104
         ]
       ]
     },
@@ -1234,16 +1292,18 @@
         "fc_noMistakes": 169,
         "fib_noBlankAlways": 105,
         "fib_secondaryLeakAny": 146,
-        "fib_v2_trailingBlank": 37,
+        "fib_v2_trailingBlank": 77,
         "m_currentLeaksV2": 99,
         "m_otherTermInClue": 117,
-        "m_v2_otherTermInClue": 93,
+        "m_v2_otherTermInClue": 90,
         "fib_secondaryLeakAlways": 104,
-        "fib_v2_multiBlank": 69,
-        "m_v2_partialLeft": 80,
+        "fib_v2_secondaryLeak": 76,
+        "m_v2_partialLeft": 42,
+        "m_v2_masked": 84,
         "fib_noBlankSometimes": 41,
+        "fib_v2_multiBlank": 25,
         "m_fallbackMasked": 25,
-        "m_v2_masked": 26,
+        "fib_v2_blanks3plus": 3,
         "m_v2_otherOnSameBoard": 5,
         "m_clueShort": 1
       },
@@ -1278,15 +1338,17 @@
         "fib_noBlankSometimes": 33,
         "fib_secondaryLeakAny": 78,
         "fib_secondaryLeakAlways": 45,
-        "fib_v2_multiBlank": 39,
+        "fib_v2_blanks3plus": 11,
+        "fib_v2_multiBlank": 27,
         "m_currentLeaksV2": 53,
-        "m_v2_partialLeft": 39,
+        "m_v2_masked": 36,
         "fib_noBlankAlways": 48,
-        "fib_v2_trailingBlank": 22,
+        "fib_v2_trailingBlank": 32,
+        "fib_v2_secondaryLeak": 29,
         "m_otherTermInClue": 11,
-        "m_v2_otherTermInClue": 6,
         "m_fallbackMasked": 6,
-        "m_v2_masked": 6,
+        "m_v2_partialLeft": 16,
+        "m_v2_otherTermInClue": 3,
         "m_v2_otherOnSameBoard": 1
       },
       "worst": [
@@ -1320,16 +1382,18 @@
         "fib_noBlankAlways": 87,
         "fib_secondaryLeakAny": 177,
         "fib_secondaryLeakAlways": 105,
-        "m_currentLeaksV2": 99,
-        "m_v2_partialLeft": 74,
-        "fib_v2_multiBlank": 94,
+        "fib_v2_trailingBlank": 61,
+        "fib_v2_secondaryLeak": 84,
+        "m_currentLeaksV2": 100,
+        "m_v2_partialLeft": 26,
         "m_otherTermInClue": 124,
-        "m_v2_otherTermInClue": 103,
-        "fib_v2_trailingBlank": 39,
+        "m_v2_masked": 96,
+        "m_v2_otherTermInClue": 102,
         "fib_noBlankSometimes": 100,
+        "fib_v2_multiBlank": 48,
         "m_fallbackMasked": 38,
-        "m_v2_masked": 39,
-        "m_v2_otherOnSameBoard": 18
+        "m_v2_otherOnSameBoard": 19,
+        "fib_v2_blanks3plus": 11
       },
       "worst": [
         [
@@ -1361,17 +1425,19 @@
         "fc_noMistakes": 250,
         "fib_noBlankAlways": 107,
         "fib_secondaryLeakAny": 204,
-        "fib_v2_trailingBlank": 53,
+        "fib_v2_trailingBlank": 85,
         "m_currentLeaksV2": 116,
         "m_otherTermInClue": 184,
         "fib_noBlankSometimes": 94,
-        "fib_v2_multiBlank": 99,
-        "m_v2_otherTermInClue": 157,
-        "fib_secondaryLeakAlways": 134,
+        "fib_v2_multiBlank": 46,
+        "fib_v2_secondaryLeak": 92,
+        "m_v2_otherTermInClue": 150,
+        "fib_secondaryLeakAlways": 133,
         "m_fallbackMasked": 54,
-        "m_v2_masked": 54,
-        "m_v2_partialLeft": 91,
-        "m_v2_otherOnSameBoard": 17
+        "m_v2_masked": 111,
+        "fib_v2_blanks3plus": 14,
+        "m_v2_partialLeft": 49,
+        "m_v2_otherOnSameBoard": 19
       },
       "worst": [
         [
@@ -1388,7 +1454,7 @@
         ],
         [
           "m_v2_otherTermInClue",
-          157
+          150
         ]
       ]
     },
@@ -1404,15 +1470,17 @@
         "fib_noBlankAlways": 80,
         "fib_secondaryLeakAny": 139,
         "fib_secondaryLeakAlways": 98,
-        "fib_v2_multiBlank": 85,
+        "fib_v2_secondaryLeak": 82,
         "m_currentLeaksV2": 107,
         "m_otherTermInClue": 95,
-        "m_v2_partialLeft": 85,
-        "m_v2_otherTermInClue": 80,
-        "fib_v2_trailingBlank": 33,
+        "m_v2_masked": 76,
+        "m_v2_otherTermInClue": 76,
+        "fib_v2_trailingBlank": 55,
         "fib_noBlankSometimes": 62,
-        "m_v2_masked": 14,
+        "fib_v2_multiBlank": 29,
         "m_fallbackMasked": 14,
+        "m_v2_partialLeft": 51,
+        "fib_v2_blanks3plus": 11,
         "m_v2_otherOnSameBoard": 2
       },
       "worst": [
@@ -1444,18 +1512,20 @@
       "flags": {
         "fc_noMistakes": 336,
         "fib_noBlankAlways": 192,
-        "fib_secondaryLeakAny": 298,
-        "fib_secondaryLeakAlways": 181,
-        "fib_v2_multiBlank": 125,
-        "m_currentLeaksV2": 197,
+        "fib_secondaryLeakAny": 299,
+        "fib_secondaryLeakAlways": 180,
+        "fib_v2_trailingBlank": 150,
+        "fib_v2_secondaryLeak": 153,
+        "m_currentLeaksV2": 198,
         "m_otherTermInClue": 264,
-        "m_v2_partialLeft": 132,
-        "m_v2_otherTermInClue": 214,
+        "m_v2_masked": 140,
+        "m_v2_otherTermInClue": 211,
         "fib_noBlankSometimes": 98,
         "m_fallbackMasked": 49,
-        "m_v2_masked": 51,
-        "fib_v2_trailingBlank": 90,
-        "m_v2_otherOnSameBoard": 4,
+        "m_v2_partialLeft": 95,
+        "fib_v2_multiBlank": 42,
+        "fib_v2_blanks3plus": 10,
+        "m_v2_otherOnSameBoard": 8,
         "m_clueShort": 2
       },
       "worst": [
@@ -1465,7 +1535,7 @@
         ],
         [
           "fib_secondaryLeakAny",
-          298
+          299
         ],
         [
           "m_otherTermInClue",
@@ -1473,7 +1543,7 @@
         ],
         [
           "m_v2_otherTermInClue",
-          214
+          211
         ]
       ]
     },
@@ -1489,16 +1559,18 @@
         "fib_noBlankSometimes": 78,
         "fib_secondaryLeakAny": 196,
         "m_otherTermInClue": 157,
-        "m_v2_otherTermInClue": 133,
-        "fib_secondaryLeakAlways": 127,
-        "fib_v2_multiBlank": 92,
-        "m_currentLeaksV2": 132,
-        "m_v2_partialLeft": 93,
+        "m_v2_otherTermInClue": 122,
+        "fib_secondaryLeakAlways": 123,
+        "fib_v2_secondaryLeak": 92,
+        "m_currentLeaksV2": 130,
+        "m_v2_masked": 111,
+        "m_v2_partialLeft": 31,
         "fib_noBlankAlways": 112,
-        "m_v2_masked": 34,
+        "fib_v2_blanks3plus": 8,
+        "fib_v2_multiBlank": 27,
         "m_fallbackMasked": 28,
         "m_v2_otherOnSameBoard": 4,
-        "fib_v2_trailingBlank": 49
+        "fib_v2_trailingBlank": 84
       },
       "worst": [
         [
@@ -1514,8 +1586,8 @@
           157
         ],
         [
-          "m_v2_otherTermInClue",
-          133
+          "m_currentLeaksV2",
+          130
         ]
       ]
     },
@@ -1530,16 +1602,18 @@
         "fc_noMistakes": 119,
         "fib_noBlankSometimes": 39,
         "fib_secondaryLeakAny": 109,
-        "fib_v2_multiBlank": 52,
+        "fib_v2_secondaryLeak": 61,
         "m_otherTermInClue": 76,
-        "m_v2_otherTermInClue": 54,
+        "m_v2_otherTermInClue": 52,
         "m_fallbackMasked": 7,
-        "m_v2_masked": 7,
+        "m_v2_masked": 46,
         "fib_secondaryLeakAlways": 70,
+        "fib_v2_multiBlank": 21,
         "m_currentLeaksV2": 84,
-        "m_v2_partialLeft": 64,
         "fib_noBlankAlways": 73,
-        "fib_v2_trailingBlank": 26
+        "fib_v2_trailingBlank": 48,
+        "m_v2_partialLeft": 50,
+        "fib_v2_blanks3plus": 5
       },
       "worst": [
         [
@@ -1571,17 +1645,19 @@
         "fc_noMistakes": 94,
         "fib_noBlankSometimes": 34,
         "fib_secondaryLeakAny": 89,
-        "fib_v2_multiBlank": 45,
+        "fib_v2_secondaryLeak": 48,
         "m_otherTermInClue": 81,
-        "m_v2_otherTermInClue": 66,
+        "m_v2_otherTermInClue": 70,
         "fib_secondaryLeakAlways": 46,
         "m_currentLeaksV2": 62,
-        "m_v2_partialLeft": 40,
+        "m_v2_partialLeft": 36,
         "fib_noBlankAlways": 54,
-        "fib_v2_trailingBlank": 23,
+        "fib_v2_trailingBlank": 39,
+        "fib_v2_multiBlank": 17,
         "m_fallbackMasked": 6,
-        "m_v2_masked": 6,
-        "m_v2_otherOnSameBoard": 4
+        "m_v2_masked": 25,
+        "m_v2_otherOnSameBoard": 4,
+        "fib_v2_blanks3plus": 3
       },
       "worst": [
         [
@@ -1598,7 +1674,7 @@
         ],
         [
           "m_v2_otherTermInClue",
-          66
+          70
         ]
       ]
     },
@@ -1611,19 +1687,21 @@
       "items": 95,
       "flags": {
         "fc_noMistakes": 95,
-        "fib_secondaryLeakAny": 90,
-        "fib_secondaryLeakAlways": 59,
+        "fib_secondaryLeakAny": 89,
+        "fib_secondaryLeakAlways": 57,
         "m_fallbackMasked": 14,
-        "m_v2_masked": 14,
+        "m_v2_masked": 48,
         "fib_noBlankSometimes": 27,
-        "fib_v2_multiBlank": 36,
+        "fib_v2_multiBlank": 12,
         "m_otherTermInClue": 30,
-        "m_v2_otherTermInClue": 22,
+        "m_v2_otherTermInClue": 24,
         "fib_noBlankAlways": 54,
-        "m_currentLeaksV2": 63,
-        "m_v2_partialLeft": 46,
-        "fib_v2_trailingBlank": 20,
-        "m_v2_otherOnSameBoard": 4
+        "fib_v2_trailingBlank": 40,
+        "fib_v2_secondaryLeak": 36,
+        "m_currentLeaksV2": 62,
+        "m_v2_partialLeft": 20,
+        "m_v2_otherOnSameBoard": 4,
+        "fib_v2_blanks3plus": 2
       },
       "worst": [
         [
@@ -1632,15 +1710,15 @@
         ],
         [
           "fib_secondaryLeakAny",
-          90
+          89
         ],
         [
           "m_currentLeaksV2",
-          63
+          62
         ],
         [
           "fib_secondaryLeakAlways",
-          59
+          57
         ]
       ]
     },
@@ -1654,17 +1732,19 @@
       "flags": {
         "fc_noMistakes": 77,
         "fib_noBlankSometimes": 24,
-        "fib_secondaryLeakAny": 67,
+        "fib_secondaryLeakAny": 66,
         "fib_secondaryLeakAlways": 42,
-        "fib_v2_multiBlank": 31,
-        "m_currentLeaksV2": 57,
-        "m_v2_partialLeft": 40,
+        "fib_v2_multiBlank": 15,
+        "m_currentLeaksV2": 56,
+        "m_v2_masked": 30,
+        "fib_v2_secondaryLeak": 28,
         "fib_noBlankAlways": 50,
-        "fib_v2_trailingBlank": 23,
+        "fib_v2_trailingBlank": 34,
+        "fib_v2_blanks3plus": 6,
         "m_otherTermInClue": 21,
+        "m_v2_partialLeft": 24,
         "m_fallbackMasked": 3,
-        "m_v2_masked": 3,
-        "m_v2_otherTermInClue": 12,
+        "m_v2_otherTermInClue": 15,
         "m_v2_otherOnSameBoard": 1
       },
       "worst": [
@@ -1674,11 +1754,11 @@
         ],
         [
           "fib_secondaryLeakAny",
-          67
+          66
         ],
         [
           "m_currentLeaksV2",
-          57
+          56
         ],
         [
           "fib_noBlankAlways",
@@ -1697,17 +1777,19 @@
         "fc_noMistakes": 297,
         "fib_noBlankAlways": 61,
         "fib_secondaryLeakAny": 266,
-        "fib_secondaryLeakAlways": 106,
+        "fib_secondaryLeakAlways": 105,
+        "fib_v2_multiBlank": 56,
         "m_fallbackMasked": 40,
-        "m_v2_masked": 42,
-        "fib_v2_multiBlank": 122,
-        "m_currentLeaksV2": 119,
+        "m_v2_masked": 98,
+        "fib_v2_secondaryLeak": 88,
+        "m_currentLeaksV2": 118,
         "m_otherTermInClue": 150,
-        "m_v2_partialLeft": 70,
-        "m_v2_otherTermInClue": 96,
         "fib_noBlankSometimes": 196,
-        "fib_v2_trailingBlank": 40,
-        "m_v2_otherOnSameBoard": 6
+        "fib_v2_trailingBlank": 49,
+        "m_v2_otherTermInClue": 100,
+        "fib_v2_blanks3plus": 12,
+        "m_v2_partialLeft": 29,
+        "m_v2_otherOnSameBoard": 8
       },
       "worst": [
         [
@@ -1739,16 +1821,18 @@
         "fc_noMistakes": 260,
         "fib_noBlankAlways": 85,
         "fib_secondaryLeakAny": 229,
-        "fib_v2_trailingBlank": 39,
-        "m_currentLeaksV2": 152,
-        "fib_secondaryLeakAlways": 152,
-        "fib_v2_multiBlank": 120,
-        "m_v2_partialLeft": 122,
+        "fib_v2_trailingBlank": 65,
+        "m_currentLeaksV2": 144,
+        "m_v2_partialLeft": 35,
+        "fib_secondaryLeakAlways": 144,
+        "fib_v2_secondaryLeak": 105,
+        "m_v2_masked": 138,
         "m_otherTermInClue": 134,
-        "m_v2_otherTermInClue": 109,
+        "m_v2_otherTermInClue": 104,
         "fib_noBlankSometimes": 140,
-        "m_v2_masked": 40,
+        "fib_v2_multiBlank": 46,
         "m_fallbackMasked": 35,
+        "fib_v2_blanks3plus": 6,
         "m_clueShort": 1,
         "m_v2_otherOnSameBoard": 10
       },
@@ -1763,11 +1847,11 @@
         ],
         [
           "m_currentLeaksV2",
-          152
+          144
         ],
         [
           "fib_secondaryLeakAlways",
-          152
+          144
         ]
       ]
     },
@@ -1782,16 +1866,18 @@
         "fc_noMistakes": 269,
         "fib_noBlankAlways": 91,
         "fib_secondaryLeakAny": 261,
-        "fib_secondaryLeakAlways": 175,
-        "fib_v2_multiBlank": 167,
+        "fib_secondaryLeakAlways": 174,
+        "fib_v2_multiBlank": 79,
+        "fib_v2_secondaryLeak": 164,
         "m_currentLeaksV2": 195,
         "m_otherTermInClue": 99,
-        "m_v2_partialLeft": 167,
-        "m_v2_otherTermInClue": 81,
+        "m_v2_masked": 131,
+        "m_v2_partialLeft": 78,
+        "m_v2_otherTermInClue": 72,
         "fib_noBlankSometimes": 171,
-        "fib_v2_trailingBlank": 31,
+        "fib_v2_trailingBlank": 70,
+        "fib_v2_blanks3plus": 22,
         "m_fallbackMasked": 8,
-        "m_v2_masked": 8,
         "m_v2_otherOnSameBoard": 4
       },
       "worst": [
@@ -1809,7 +1895,7 @@
         ],
         [
           "fib_secondaryLeakAlways",
-          175
+          174
         ]
       ]
     },
@@ -1825,15 +1911,17 @@
         "fib_noBlankSometimes": 94,
         "fib_secondaryLeakAny": 168,
         "fib_secondaryLeakAlways": 104,
-        "fib_v2_multiBlank": 97,
+        "fib_v2_multiBlank": 42,
         "m_currentLeaksV2": 126,
-        "m_v2_partialLeft": 98,
+        "m_v2_masked": 88,
+        "fib_v2_secondaryLeak": 91,
         "m_otherTermInClue": 50,
-        "m_v2_otherTermInClue": 35,
+        "m_v2_partialLeft": 35,
+        "m_v2_otherTermInClue": 30,
+        "fib_v2_blanks3plus": 8,
         "fib_noBlankAlways": 81,
-        "fib_v2_trailingBlank": 38,
+        "fib_v2_trailingBlank": 60,
         "m_fallbackMasked": 6,
-        "m_v2_masked": 6,
         "m_v2_otherOnSameBoard": 2
       },
       "worst": [
@@ -1864,19 +1952,21 @@
       "items": 323,
       "flags": {
         "fc_noMistakes": 323,
-        "fib_secondaryLeakAny": 265,
+        "fib_secondaryLeakAny": 264,
         "fib_secondaryLeakAlways": 173,
         "m_fallbackMasked": 46,
-        "m_v2_masked": 46,
+        "m_v2_masked": 160,
         "fib_noBlankSometimes": 100,
-        "m_currentLeaksV2": 189,
+        "m_currentLeaksV2": 188,
         "m_otherTermInClue": 238,
         "fib_noBlankAlways": 184,
-        "fib_v2_trailingBlank": 86,
-        "m_v2_otherTermInClue": 176,
-        "m_v2_partialLeft": 135,
-        "fib_v2_multiBlank": 115,
-        "m_v2_otherOnSameBoard": 5
+        "fib_v2_trailingBlank": 142,
+        "m_v2_otherTermInClue": 171,
+        "fib_v2_secondaryLeak": 137,
+        "m_v2_partialLeft": 45,
+        "fib_v2_blanks3plus": 11,
+        "fib_v2_multiBlank": 43,
+        "m_v2_otherOnSameBoard": 6
       },
       "worst": [
         [
@@ -1885,7 +1975,7 @@
         ],
         [
           "fib_secondaryLeakAny",
-          265
+          264
         ],
         [
           "m_otherTermInClue",
@@ -1893,7 +1983,7 @@
         ],
         [
           "m_currentLeaksV2",
-          189
+          188
         ]
       ]
     },
@@ -1909,16 +1999,18 @@
         "fib_noBlankAlways": 66,
         "fib_secondaryLeakAny": 138,
         "fib_secondaryLeakAlways": 90,
+        "fib_v2_trailingBlank": 58,
+        "fib_v2_secondaryLeak": 76,
         "m_currentLeaksV2": 86,
         "m_otherTermInClue": 118,
-        "m_v2_partialLeft": 61,
-        "m_v2_otherTermInClue": 88,
-        "fib_v2_multiBlank": 73,
+        "m_v2_partialLeft": 39,
+        "m_v2_otherTermInClue": 76,
+        "fib_v2_multiBlank": 22,
+        "m_v2_masked": 74,
         "fib_noBlankSometimes": 58,
-        "fib_v2_trailingBlank": 31,
+        "fib_v2_blanks3plus": 5,
         "m_fallbackMasked": 29,
-        "m_v2_masked": 30,
-        "m_v2_otherOnSameBoard": 3
+        "m_v2_otherOnSameBoard": 4
       },
       "worst": [
         [
@@ -1949,17 +2041,19 @@
       "flags": {
         "fc_noMistakes": 89,
         "fib_noBlankAlways": 42,
-        "fib_secondaryLeakAny": 86,
-        "fib_v2_trailingBlank": 22,
-        "m_currentLeaksV2": 61,
+        "fib_v2_trailingBlank": 32,
+        "fib_secondaryLeakAny": 85,
+        "m_currentLeaksV2": 59,
         "m_otherTermInClue": 9,
-        "fib_secondaryLeakAlways": 49,
-        "fib_v2_multiBlank": 42,
+        "fib_secondaryLeakAlways": 48,
+        "fib_v2_secondaryLeak": 34,
         "m_fallbackMasked": 7,
-        "m_v2_masked": 8,
+        "m_v2_masked": 38,
+        "fib_v2_multiBlank": 25,
         "fib_noBlankSometimes": 40,
-        "m_v2_partialLeft": 41,
-        "m_v2_otherTermInClue": 6
+        "fib_v2_blanks3plus": 10,
+        "m_v2_partialLeft": 18,
+        "m_v2_otherTermInClue": 5
       },
       "worst": [
         [
@@ -1968,15 +2062,15 @@
         ],
         [
           "fib_secondaryLeakAny",
-          86
+          85
         ],
         [
           "m_currentLeaksV2",
-          61
+          59
         ],
         [
           "fib_secondaryLeakAlways",
-          49
+          48
         ]
       ]
     },
@@ -1991,16 +2085,18 @@
         "fc_noMistakes": 291,
         "fib_noBlankSometimes": 120,
         "fib_secondaryLeakAny": 256,
-        "fib_secondaryLeakAlways": 141,
-        "m_currentLeaksV2": 139,
-        "m_v2_partialLeft": 94,
-        "fib_v2_multiBlank": 105,
+        "fib_secondaryLeakAlways": 140,
+        "m_currentLeaksV2": 138,
+        "m_v2_masked": 129,
+        "fib_v2_secondaryLeak": 96,
         "m_fallbackMasked": 52,
         "m_otherTermInClue": 149,
-        "m_v2_masked": 53,
         "fib_noBlankAlways": 119,
-        "m_v2_otherTermInClue": 107,
-        "fib_v2_trailingBlank": 67,
+        "fib_v2_trailingBlank": 96,
+        "m_v2_partialLeft": 31,
+        "m_v2_otherTermInClue": 100,
+        "fib_v2_multiBlank": 42,
+        "fib_v2_blanks3plus": 7,
         "m_clueShort": 2,
         "m_v2_otherOnSameBoard": 6
       },
@@ -2019,7 +2115,7 @@
         ],
         [
           "fib_secondaryLeakAlways",
-          141
+          140
         ]
       ]
     },
@@ -2035,15 +2131,17 @@
         "fib_secondaryLeakAny": 231,
         "fib_secondaryLeakAlways": 134,
         "m_fallbackMasked": 45,
-        "m_v2_masked": 49,
+        "m_v2_masked": 120,
         "fib_noBlankSometimes": 99,
-        "fib_v2_multiBlank": 113,
+        "fib_v2_secondaryLeak": 104,
         "m_currentLeaksV2": 139,
         "m_otherTermInClue": 182,
-        "m_v2_partialLeft": 86,
-        "m_v2_otherTermInClue": 131,
+        "m_v2_otherTermInClue": 126,
         "fib_noBlankAlways": 106,
-        "fib_v2_trailingBlank": 60,
+        "fib_v2_trailingBlank": 85,
+        "fib_v2_multiBlank": 38,
+        "m_v2_partialLeft": 33,
+        "fib_v2_blanks3plus": 7,
         "m_v2_otherOnSameBoard": 2
       },
       "worst": [
@@ -2077,15 +2175,17 @@
         "fib_noBlankSometimes": 99,
         "fib_secondaryLeakAny": 174,
         "fib_noBlankAlways": 111,
-        "fib_v2_trailingBlank": 61,
+        "fib_v2_trailingBlank": 89,
         "m_currentLeaksV2": 117,
         "fib_secondaryLeakAlways": 103,
-        "m_v2_partialLeft": 90,
-        "fib_v2_multiBlank": 83,
+        "fib_v2_secondaryLeak": 78,
+        "m_v2_partialLeft": 17,
+        "m_v2_masked": 95,
         "m_otherTermInClue": 60,
-        "m_v2_otherTermInClue": 45,
-        "m_fallbackMasked": 16,
-        "m_v2_masked": 16
+        "m_v2_otherTermInClue": 41,
+        "fib_v2_blanks3plus": 11,
+        "fib_v2_multiBlank": 36,
+        "m_fallbackMasked": 16
       },
       "worst": [
         [
@@ -2118,15 +2218,17 @@
         "fib_noBlankAlways": 31,
         "fib_secondaryLeakAny": 69,
         "fib_secondaryLeakAlways": 30,
-        "fib_v2_multiBlank": 32,
-        "m_currentLeaksV2": 57,
-        "m_v2_partialLeft": 27,
-        "fib_v2_trailingBlank": 17,
+        "fib_v2_trailingBlank": 25,
+        "fib_v2_secondaryLeak": 24,
+        "m_currentLeaksV2": 56,
+        "m_v2_masked": 19,
         "fib_noBlankSometimes": 43,
+        "fib_v2_blanks3plus": 2,
+        "fib_v2_multiBlank": 16,
         "m_otherTermInClue": 17,
-        "m_v2_masked": 3,
-        "m_v2_otherTermInClue": 7,
+        "m_v2_partialLeft": 20,
         "m_fallbackMasked": 2,
+        "m_v2_otherTermInClue": 5,
         "m_v2_otherOnSameBoard": 2
       },
       "worst": [
@@ -2140,7 +2242,7 @@
         ],
         [
           "m_currentLeaksV2",
-          57
+          56
         ],
         [
           "fib_noBlankSometimes",
@@ -2159,17 +2261,19 @@
         "fc_noMistakes": 150,
         "fib_noBlankAlways": 112,
         "fib_secondaryLeakAny": 128,
-        "fib_v2_trailingBlank": 61,
+        "fib_v2_trailingBlank": 83,
         "m_currentLeaksV2": 97,
         "fib_secondaryLeakAlways": 64,
-        "m_v2_partialLeft": 55,
-        "fib_v2_multiBlank": 34,
+        "fib_v2_secondaryLeak": 39,
+        "m_v2_masked": 57,
+        "fib_v2_multiBlank": 19,
         "m_otherTermInClue": 40,
-        "m_v2_otherTermInClue": 21,
+        "m_v2_otherTermInClue": 22,
         "m_fallbackMasked": 7,
-        "m_v2_masked": 9,
         "fib_noBlankSometimes": 32,
-        "m_v2_otherOnSameBoard": 2
+        "m_v2_partialLeft": 16,
+        "m_v2_otherOnSameBoard": 2,
+        "fib_v2_blanks3plus": 4
       },
       "worst": [
         [
@@ -2201,17 +2305,18 @@
         "fc_noMistakes": 70,
         "fib_noBlankAlways": 49,
         "fib_secondaryLeakAny": 60,
-        "fib_v2_trailingBlank": 28,
+        "fib_v2_trailingBlank": 42,
         "m_currentLeaksV2": 43,
         "m_otherTermInClue": 58,
-        "m_v2_otherTermInClue": 44,
+        "m_v2_otherTermInClue": 46,
         "fib_secondaryLeakAlways": 31,
-        "m_v2_partialLeft": 25,
+        "fib_v2_secondaryLeak": 23,
+        "m_v2_masked": 24,
         "fib_noBlankSometimes": 15,
-        "fib_v2_multiBlank": 20,
+        "fib_v2_multiBlank": 6,
+        "m_v2_partialLeft": 14,
         "m_v2_otherOnSameBoard": 7,
-        "m_fallbackMasked": 6,
-        "m_v2_masked": 6
+        "m_fallbackMasked": 6
       },
       "worst": [
         [
@@ -2244,16 +2349,18 @@
         "fib_noBlankSometimes": 35,
         "fib_secondaryLeakAny": 88,
         "m_otherTermInClue": 60,
-        "m_v2_otherTermInClue": 48,
+        "m_v2_otherTermInClue": 50,
         "fib_noBlankAlways": 61,
-        "fib_secondaryLeakAlways": 51,
-        "fib_v2_multiBlank": 30,
+        "fib_secondaryLeakAlways": 52,
         "m_currentLeaksV2": 56,
-        "m_v2_partialLeft": 38,
-        "m_v2_otherOnSameBoard": 3,
-        "fib_v2_trailingBlank": 35,
+        "m_v2_masked": 51,
+        "m_v2_otherOnSameBoard": 4,
+        "fib_v2_trailingBlank": 50,
+        "fib_v2_secondaryLeak": 31,
         "m_fallbackMasked": 14,
-        "m_v2_masked": 14
+        "fib_v2_multiBlank": 19,
+        "fib_v2_blanks3plus": 4,
+        "m_v2_partialLeft": 5
       },
       "worst": [
         [
@@ -2286,16 +2393,18 @@
         "fib_noBlankSometimes": 74,
         "fib_secondaryLeakAny": 83,
         "m_otherTermInClue": 46,
-        "m_v2_otherTermInClue": 32,
+        "m_v2_otherTermInClue": 27,
         "fib_noBlankAlways": 23,
-        "fib_v2_trailingBlank": 10,
+        "fib_v2_trailingBlank": 15,
         "m_currentLeaksV2": 41,
         "fib_secondaryLeakAlways": 40,
-        "m_v2_partialLeft": 33,
-        "fib_v2_multiBlank": 32,
+        "m_v2_masked": 32,
+        "fib_v2_multiBlank": 17,
+        "fib_v2_blanks3plus": 5,
+        "fib_v2_secondaryLeak": 24,
+        "m_v2_partialLeft": 15,
         "m_fallbackMasked": 11,
-        "m_v2_masked": 11,
-        "m_v2_otherOnSameBoard": 8
+        "m_v2_otherOnSameBoard": 7
       },
       "worst": [
         [
@@ -2326,18 +2435,20 @@
       "flags": {
         "fc_noMistakes": 164,
         "fib_noBlankAlways": 118,
-        "fib_secondaryLeakAny": 142,
+        "fib_secondaryLeakAny": 141,
         "fib_secondaryLeakAlways": 85,
-        "m_currentLeaksV2": 106,
+        "fib_v2_trailingBlank": 88,
+        "fib_v2_secondaryLeak": 62,
+        "m_currentLeaksV2": 105,
         "m_otherTermInClue": 92,
-        "m_v2_partialLeft": 73,
-        "m_v2_otherTermInClue": 68,
-        "fib_v2_trailingBlank": 55,
-        "fib_v2_multiBlank": 62,
+        "m_v2_partialLeft": 35,
+        "m_v2_otherTermInClue": 64,
+        "fib_v2_blanks3plus": 6,
+        "fib_v2_multiBlank": 24,
+        "m_v2_masked": 69,
         "fib_noBlankSometimes": 34,
         "m_v2_otherOnSameBoard": 6,
-        "m_fallbackMasked": 14,
-        "m_v2_masked": 13
+        "m_fallbackMasked": 14
       },
       "worst": [
         [
@@ -2346,7 +2457,7 @@
         ],
         [
           "fib_secondaryLeakAny",
-          142
+          141
         ],
         [
           "fib_noBlankAlways",
@@ -2354,7 +2465,7 @@
         ],
         [
           "m_currentLeaksV2",
-          106
+          105
         ]
       ]
     },
@@ -2370,15 +2481,17 @@
         "fib_noBlankSometimes": 30,
         "fib_secondaryLeakAny": 67,
         "fib_secondaryLeakAlways": 41,
-        "fib_v2_multiBlank": 35,
+        "fib_v2_multiBlank": 12,
         "m_currentLeaksV2": 36,
-        "m_v2_partialLeft": 27,
+        "m_v2_masked": 39,
+        "fib_v2_blanks3plus": 3,
         "fib_noBlankAlways": 33,
         "m_otherTermInClue": 24,
+        "m_v2_otherTermInClue": 17,
         "m_fallbackMasked": 14,
-        "m_v2_masked": 14,
-        "fib_v2_trailingBlank": 19,
-        "m_v2_otherTermInClue": 16
+        "m_v2_partialLeft": 9,
+        "fib_v2_trailingBlank": 22,
+        "fib_v2_secondaryLeak": 28
       },
       "worst": [
         [
@@ -2394,8 +2507,8 @@
           41
         ],
         [
-          "m_currentLeaksV2",
-          36
+          "m_v2_masked",
+          39
         ]
       ]
     },
@@ -2411,15 +2524,17 @@
         "fib_noBlankSometimes": 55,
         "fib_secondaryLeakAny": 196,
         "fib_secondaryLeakAlways": 139,
-        "fib_v2_multiBlank": 79,
+        "fib_v2_secondaryLeak": 109,
         "m_currentLeaksV2": 146,
-        "m_v2_partialLeft": 120,
+        "m_v2_masked": 106,
         "fib_noBlankAlways": 151,
+        "fib_v2_trailingBlank": 116,
         "m_fallbackMasked": 21,
         "m_otherTermInClue": 136,
-        "m_v2_masked": 20,
-        "m_v2_otherTermInClue": 111,
-        "fib_v2_trailingBlank": 51,
+        "m_v2_otherTermInClue": 105,
+        "m_v2_partialLeft": 52,
+        "fib_v2_multiBlank": 21,
+        "fib_v2_blanks3plus": 4,
         "m_v2_otherOnSameBoard": 2
       },
       "worst": [
@@ -2453,15 +2568,17 @@
         "fib_noBlankAlways": 92,
         "fib_secondaryLeakAny": 129,
         "fib_secondaryLeakAlways": 95,
-        "fib_v2_multiBlank": 76,
+        "fib_v2_trailingBlank": 69,
+        "fib_v2_secondaryLeak": 74,
         "m_currentLeaksV2": 90,
-        "m_v2_partialLeft": 72,
+        "m_v2_masked": 87,
+        "fib_v2_multiBlank": 27,
         "m_fallbackMasked": 23,
-        "m_v2_masked": 24,
-        "fib_v2_trailingBlank": 34,
         "m_otherTermInClue": 48,
-        "m_v2_otherTermInClue": 39,
+        "m_v2_otherTermInClue": 34,
         "fib_noBlankSometimes": 35,
+        "m_v2_partialLeft": 22,
+        "fib_v2_blanks3plus": 6,
         "m_v2_otherOnSameBoard": 3
       },
       "worst": [
@@ -2493,19 +2610,21 @@
       "flags": {
         "fc_noMistakes": 117,
         "fib_noBlankAlways": 65,
-        "fib_v2_trailingBlank": 26,
+        "fib_v2_trailingBlank": 53,
         "m_otherTermInClue": 59,
         "fib_noBlankSometimes": 46,
         "fib_secondaryLeakAny": 98,
-        "fib_v2_multiBlank": 50,
-        "fib_secondaryLeakAlways": 61,
+        "fib_v2_multiBlank": 14,
+        "fib_v2_secondaryLeak": 60,
+        "fib_secondaryLeakAlways": 60,
         "m_currentLeaksV2": 68,
-        "m_v2_partialLeft": 52,
-        "m_v2_otherTermInClue": 42,
+        "m_v2_partialLeft": 29,
+        "m_v2_otherTermInClue": 43,
         "m_fallbackMasked": 8,
-        "m_v2_masked": 9,
+        "m_v2_masked": 45,
         "m_clueShort": 1,
-        "m_v2_otherOnSameBoard": 3
+        "fib_v2_blanks3plus": 5,
+        "m_v2_otherOnSameBoard": 7
       },
       "worst": [
         [
@@ -2536,17 +2655,18 @@
       "flags": {
         "fc_noMistakes": 82,
         "fib_noBlankSometimes": 13,
-        "fib_secondaryLeakAny": 47,
+        "fib_secondaryLeakAny": 46,
         "fib_noBlankAlways": 57,
-        "fib_v2_trailingBlank": 44,
-        "fib_secondaryLeakAlways": 24,
+        "fib_v2_trailingBlank": 48,
+        "fib_secondaryLeakAlways": 22,
         "m_fallbackMasked": 12,
-        "m_v2_masked": 13,
-        "m_currentLeaksV2": 27,
+        "m_v2_masked": 25,
+        "m_currentLeaksV2": 26,
         "m_otherTermInClue": 11,
         "m_v2_otherTermInClue": 6,
-        "fib_v2_multiBlank": 12,
-        "m_v2_partialLeft": 14,
+        "fib_v2_blanks3plus": 2,
+        "fib_v2_multiBlank": 7,
+        "fib_v2_secondaryLeak": 2,
         "m_v2_otherOnSameBoard": 1
       },
       "worst": [
@@ -2559,12 +2679,12 @@
           57
         ],
         [
-          "fib_secondaryLeakAny",
-          47
+          "fib_v2_trailingBlank",
+          48
         ],
         [
-          "fib_v2_trailingBlank",
-          44
+          "fib_secondaryLeakAny",
+          46
         ]
       ]
     },
@@ -2579,17 +2699,19 @@
         "fc_noMistakes": 176,
         "fib_noBlankSometimes": 49,
         "fib_secondaryLeakAny": 138,
-        "fib_v2_multiBlank": 75,
+        "fib_v2_blanks3plus": 9,
+        "fib_v2_multiBlank": 33,
         "m_otherTermInClue": 124,
-        "m_v2_otherTermInClue": 111,
+        "m_v2_otherTermInClue": 110,
         "fib_noBlankAlways": 97,
         "fib_secondaryLeakAlways": 104,
+        "fib_v2_trailingBlank": 74,
+        "fib_v2_secondaryLeak": 69,
         "m_currentLeaksV2": 85,
-        "m_v2_partialLeft": 74,
+        "m_v2_masked": 86,
+        "m_v2_partialLeft": 38,
         "m_fallbackMasked": 28,
-        "m_v2_masked": 30,
-        "fib_v2_trailingBlank": 42,
-        "m_v2_otherOnSameBoard": 2,
+        "m_v2_otherOnSameBoard": 5,
         "m_clueShort": 1
       },
       "worst": [
@@ -2607,7 +2729,7 @@
         ],
         [
           "m_v2_otherTermInClue",
-          111
+          110
         ]
       ]
     },
@@ -2621,19 +2743,21 @@
       "flags": {
         "fc_noMistakes": 267,
         "fib_noBlankAlways": 151,
-        "fib_secondaryLeakAny": 210,
-        "fib_secondaryLeakAlways": 118,
-        "m_currentLeaksV2": 121,
+        "fib_secondaryLeakAny": 208,
+        "fib_secondaryLeakAlways": 115,
+        "fib_v2_trailingBlank": 120,
+        "fib_v2_secondaryLeak": 64,
+        "m_currentLeaksV2": 118,
         "m_otherTermInClue": 217,
-        "m_v2_partialLeft": 78,
-        "m_v2_otherTermInClue": 176,
+        "m_v2_partialLeft": 31,
+        "m_v2_otherTermInClue": 180,
         "m_v2_otherOnSameBoard": 10,
-        "fib_v2_multiBlank": 84,
-        "fib_v2_trailingBlank": 83,
+        "m_v2_masked": 99,
         "fib_noBlankSometimes": 82,
+        "fib_v2_blanks3plus": 10,
+        "fib_v2_multiBlank": 42,
         "m_clueShort": 4,
         "m_fallbackMasked": 43,
-        "m_v2_masked": 46,
         "fc_placeholder": 1
       },
       "worst": [
@@ -2647,11 +2771,11 @@
         ],
         [
           "fib_secondaryLeakAny",
-          210
+          208
         ],
         [
           "m_v2_otherTermInClue",
-          176
+          180
         ]
       ]
     },
@@ -2665,18 +2789,20 @@
       "flags": {
         "fc_noMistakes": 123,
         "fib_noBlankAlways": 91,
-        "fib_v2_trailingBlank": 40,
+        "fib_v2_trailingBlank": 68,
         "fib_secondaryLeakAny": 102,
         "fib_secondaryLeakAlways": 63,
-        "fib_v2_multiBlank": 37,
+        "fib_v2_secondaryLeak": 50,
         "m_currentLeaksV2": 77,
         "m_otherTermInClue": 67,
-        "m_v2_partialLeft": 58,
-        "m_v2_otherTermInClue": 42,
+        "m_v2_masked": 49,
+        "m_v2_otherTermInClue": 48,
+        "m_v2_partialLeft": 23,
         "fib_noBlankSometimes": 27,
+        "fib_v2_multiBlank": 14,
         "m_fallbackMasked": 5,
-        "m_v2_masked": 5,
-        "m_v2_otherOnSameBoard": 3
+        "fib_v2_blanks3plus": 5,
+        "m_v2_otherOnSameBoard": 4
       },
       "worst": [
         [
@@ -2710,15 +2836,17 @@
         "fib_secondaryLeakAlways": 59,
         "m_fallbackMasked": 6,
         "m_otherTermInClue": 100,
-        "m_v2_masked": 6,
+        "m_v2_masked": 36,
+        "m_v2_otherTermInClue": 89,
         "fib_noBlankAlways": 72,
+        "fib_v2_trailingBlank": 60,
+        "fib_v2_secondaryLeak": 47,
         "m_currentLeaksV2": 72,
-        "m_v2_partialLeft": 55,
-        "m_v2_otherTermInClue": 86,
+        "m_v2_partialLeft": 31,
         "m_v2_otherOnSameBoard": 5,
         "fib_noBlankSometimes": 32,
-        "fib_v2_multiBlank": 33,
-        "fib_v2_trailingBlank": 34
+        "fib_v2_multiBlank": 10,
+        "fib_v2_blanks3plus": 3
       },
       "worst": [
         [
@@ -2731,7 +2859,7 @@
         ],
         [
           "m_v2_otherTermInClue",
-          86
+          89
         ],
         [
           "fib_secondaryLeakAny",
@@ -2751,15 +2879,17 @@
         "fib_noBlankSometimes": 26,
         "fib_secondaryLeakAny": 72,
         "fib_secondaryLeakAlways": 40,
-        "fib_v2_multiBlank": 21,
+        "fib_v2_secondaryLeak": 23,
         "m_currentLeaksV2": 47,
         "m_otherTermInClue": 39,
-        "m_v2_partialLeft": 30,
-        "m_v2_otherTermInClue": 18,
+        "m_v2_masked": 33,
         "m_fallbackMasked": 10,
-        "m_v2_masked": 10,
         "fib_noBlankAlways": 45,
-        "fib_v2_trailingBlank": 25
+        "fib_v2_trailingBlank": 40,
+        "fib_v2_multiBlank": 9,
+        "m_v2_otherTermInClue": 16,
+        "m_v2_partialLeft": 10,
+        "fib_v2_blanks3plus": 2
       },
       "worst": [
         [
@@ -2790,18 +2920,20 @@
       "flags": {
         "fc_noMistakes": 130,
         "fib_noBlankAlways": 58,
-        "fib_secondaryLeakAny": 111,
-        "fib_secondaryLeakAlways": 68,
-        "fib_v2_multiBlank": 51,
-        "m_currentLeaksV2": 65,
+        "fib_secondaryLeakAny": 109,
+        "fib_secondaryLeakAlways": 66,
+        "fib_v2_trailingBlank": 47,
+        "fib_v2_secondaryLeak": 48,
+        "m_currentLeaksV2": 63,
         "m_otherTermInClue": 85,
-        "m_v2_partialLeft": 48,
-        "m_v2_otherTermInClue": 70,
+        "m_v2_partialLeft": 20,
+        "m_v2_otherTermInClue": 66,
         "m_fallbackMasked": 19,
-        "m_v2_masked": 20,
+        "m_v2_masked": 54,
         "m_v2_otherOnSameBoard": 9,
-        "fib_v2_trailingBlank": 30,
-        "fib_noBlankSometimes": 54
+        "fib_noBlankSometimes": 54,
+        "fib_v2_multiBlank": 22,
+        "fib_v2_blanks3plus": 7
       },
       "worst": [
         [
@@ -2810,15 +2942,15 @@
         ],
         [
           "fib_secondaryLeakAny",
-          111
+          109
         ],
         [
           "m_otherTermInClue",
           85
         ],
         [
-          "m_v2_otherTermInClue",
-          70
+          "fib_secondaryLeakAlways",
+          66
         ]
       ]
     },
@@ -2834,15 +2966,17 @@
         "fib_noBlankAlways": 59,
         "fib_secondaryLeakAny": 97,
         "fib_secondaryLeakAlways": 54,
+        "fib_v2_trailingBlank": 43,
+        "fib_v2_secondaryLeak": 34,
         "m_currentLeaksV2": 72,
         "m_otherTermInClue": 75,
-        "m_v2_partialLeft": 51,
-        "m_v2_otherTermInClue": 62,
+        "m_v2_partialLeft": 24,
+        "m_v2_otherTermInClue": 64,
         "fib_noBlankSometimes": 40,
-        "fib_v2_trailingBlank": 25,
-        "fib_v2_multiBlank": 37,
+        "m_v2_masked": 41,
+        "fib_v2_blanks3plus": 4,
+        "fib_v2_multiBlank": 17,
         "m_fallbackMasked": 5,
-        "m_v2_masked": 5,
         "m_v2_otherOnSameBoard": 4
       },
       "worst": [
@@ -2874,18 +3008,20 @@
       "flags": {
         "fc_noMistakes": 206,
         "fib_noBlankSometimes": 44,
-        "fib_secondaryLeakAny": 166,
-        "fib_secondaryLeakAlways": 117,
-        "fib_v2_multiBlank": 64,
-        "m_currentLeaksV2": 134,
-        "m_v2_partialLeft": 103,
+        "fib_secondaryLeakAny": 165,
+        "fib_secondaryLeakAlways": 116,
+        "fib_v2_secondaryLeak": 79,
+        "m_currentLeaksV2": 132,
+        "m_v2_partialLeft": 38,
         "fib_noBlankAlways": 146,
         "m_otherTermInClue": 135,
-        "m_v2_otherTermInClue": 110,
-        "fib_v2_trailingBlank": 62,
+        "m_v2_masked": 100,
+        "fib_v2_trailingBlank": 111,
+        "m_v2_otherTermInClue": 106,
         "m_fallbackMasked": 17,
-        "m_v2_masked": 17,
-        "m_v2_otherOnSameBoard": 10
+        "m_v2_otherOnSameBoard": 10,
+        "fib_v2_multiBlank": 21,
+        "fib_v2_blanks3plus": 2
       },
       "worst": [
         [
@@ -2894,7 +3030,7 @@
         ],
         [
           "fib_secondaryLeakAny",
-          166
+          165
         ],
         [
           "fib_noBlankAlways",
@@ -2916,18 +3052,20 @@
       "flags": {
         "fc_noMistakes": 163,
         "fib_noBlankAlways": 141,
-        "fib_secondaryLeakAny": 142,
-        "fib_secondaryLeakAlways": 68,
-        "fib_v2_multiBlank": 32,
-        "m_currentLeaksV2": 128,
-        "m_v2_partialLeft": 65,
-        "fib_v2_trailingBlank": 82,
+        "fib_secondaryLeakAny": 139,
+        "fib_secondaryLeakAlways": 66,
+        "fib_v2_trailingBlank": 113,
+        "fib_v2_secondaryLeak": 47,
+        "m_currentLeaksV2": 125,
+        "m_v2_masked": 41,
         "m_otherTermInClue": 48,
-        "m_v2_otherTermInClue": 27,
+        "m_v2_partialLeft": 44,
+        "m_v2_otherTermInClue": 24,
         "fib_noBlankSometimes": 20,
+        "fib_v2_multiBlank": 12,
         "m_fallbackMasked": 2,
-        "m_v2_masked": 3,
-        "m_v2_otherOnSameBoard": 1
+        "fib_v2_blanks3plus": 1,
+        "m_v2_otherOnSameBoard": 2
       },
       "worst": [
         [
@@ -2935,16 +3073,16 @@
           163
         ],
         [
-          "fib_secondaryLeakAny",
-          142
-        ],
-        [
           "fib_noBlankAlways",
           141
         ],
         [
+          "fib_secondaryLeakAny",
+          139
+        ],
+        [
           "m_currentLeaksV2",
-          128
+          125
         ]
       ]
     },
@@ -2959,14 +3097,17 @@
         "fc_noMistakes": 74,
         "fib_noBlankAlways": 58,
         "fib_secondaryLeakAny": 71,
-        "fib_v2_trailingBlank": 35,
-        "m_currentLeaksV2": 64,
+        "fib_v2_trailingBlank": 50,
+        "m_currentLeaksV2": 63,
         "m_otherTermInClue": 23,
-        "fib_secondaryLeakAlways": 30,
-        "m_v2_partialLeft": 30,
+        "fib_secondaryLeakAlways": 29,
+        "fib_v2_secondaryLeak": 23,
+        "m_v2_masked": 17,
         "fib_noBlankSometimes": 16,
-        "fib_v2_multiBlank": 19,
-        "m_v2_otherTermInClue": 10,
+        "fib_v2_multiBlank": 10,
+        "m_v2_partialLeft": 26,
+        "m_v2_otherTermInClue": 8,
+        "fib_v2_blanks3plus": 1,
         "m_v2_otherOnSameBoard": 1
       },
       "worst": [
@@ -2980,7 +3121,7 @@
         ],
         [
           "m_currentLeaksV2",
-          64
+          63
         ],
         [
           "fib_noBlankAlways",
@@ -2998,18 +3139,20 @@
       "flags": {
         "fc_noMistakes": 149,
         "fib_secondaryLeakAny": 110,
-        "fib_secondaryLeakAlways": 70,
-        "fib_v2_multiBlank": 42,
+        "fib_secondaryLeakAlways": 69,
+        "fib_v2_blanks3plus": 5,
+        "fib_v2_multiBlank": 17,
         "m_fallbackMasked": 11,
-        "m_v2_masked": 13,
+        "m_v2_masked": 61,
         "fib_noBlankAlways": 105,
-        "m_currentLeaksV2": 77,
-        "m_v2_partialLeft": 59,
+        "fib_v2_secondaryLeak": 42,
+        "m_currentLeaksV2": 76,
+        "fib_v2_trailingBlank": 71,
         "m_otherTermInClue": 69,
-        "m_v2_otherTermInClue": 60,
+        "m_v2_partialLeft": 19,
+        "m_v2_otherTermInClue": 59,
         "fib_noBlankSometimes": 34,
         "m_v2_otherOnSameBoard": 6,
-        "fib_v2_trailingBlank": 53,
         "m_clueShort": 1
       },
       "worst": [
@@ -3027,7 +3170,7 @@
         ],
         [
           "m_currentLeaksV2",
-          77
+          76
         ]
       ]
     },
@@ -3041,18 +3184,20 @@
       "flags": {
         "fc_noMistakes": 206,
         "fib_noBlankSometimes": 107,
-        "fib_secondaryLeakAny": 172,
-        "m_currentLeaksV2": 79,
+        "fib_secondaryLeakAny": 171,
+        "m_currentLeaksV2": 78,
         "m_otherTermInClue": 107,
-        "m_v2_otherTermInClue": 84,
-        "fib_v2_multiBlank": 73,
+        "m_v2_otherTermInClue": 93,
+        "fib_v2_secondaryLeak": 64,
         "fib_secondaryLeakAlways": 85,
-        "m_v2_partialLeft": 59,
+        "m_v2_masked": 75,
+        "fib_v2_multiBlank": 27,
         "m_fallbackMasked": 26,
-        "m_v2_masked": 29,
+        "m_v2_partialLeft": 21,
         "fib_noBlankAlways": 73,
-        "m_v2_otherOnSameBoard": 12,
-        "fib_v2_trailingBlank": 42
+        "fib_v2_trailingBlank": 57,
+        "m_v2_otherOnSameBoard": 13,
+        "fib_v2_blanks3plus": 7
       },
       "worst": [
         [
@@ -3061,7 +3206,7 @@
         ],
         [
           "fib_secondaryLeakAny",
-          172
+          171
         ],
         [
           "fib_noBlankSometimes",
@@ -3083,17 +3228,19 @@
       "flags": {
         "fc_noMistakes": 148,
         "fib_noBlankAlways": 101,
-        "fib_secondaryLeakAny": 114,
-        "fib_secondaryLeakAlways": 66,
-        "fib_v2_multiBlank": 46,
-        "m_currentLeaksV2": 87,
-        "m_v2_partialLeft": 57,
+        "fib_secondaryLeakAny": 113,
+        "fib_secondaryLeakAlways": 65,
+        "fib_v2_trailingBlank": 72,
+        "fib_v2_secondaryLeak": 36,
+        "m_currentLeaksV2": 86,
+        "m_v2_masked": 57,
+        "m_v2_partialLeft": 14,
         "m_fallbackMasked": 8,
-        "m_v2_masked": 9,
-        "fib_v2_trailingBlank": 56,
         "m_otherTermInClue": 51,
-        "m_v2_otherTermInClue": 41,
+        "m_v2_otherTermInClue": 38,
         "fib_noBlankSometimes": 41,
+        "fib_v2_multiBlank": 25,
+        "fib_v2_blanks3plus": 4,
         "m_v2_otherOnSameBoard": 2
       },
       "worst": [
@@ -3103,7 +3250,7 @@
         ],
         [
           "fib_secondaryLeakAny",
-          114
+          113
         ],
         [
           "fib_noBlankAlways",
@@ -3111,7 +3258,7 @@
         ],
         [
           "m_currentLeaksV2",
-          87
+          86
         ]
       ]
     },
@@ -3126,17 +3273,19 @@
         "fc_noMistakes": 155,
         "fib_noBlankSometimes": 60,
         "fib_secondaryLeakAny": 140,
-        "fib_secondaryLeakAlways": 66,
-        "fib_v2_multiBlank": 50,
-        "m_currentLeaksV2": 96,
-        "m_v2_partialLeft": 58,
+        "fib_secondaryLeakAlways": 65,
+        "fib_v2_secondaryLeak": 44,
+        "m_currentLeaksV2": 95,
+        "m_v2_masked": 54,
         "fib_noBlankAlways": 88,
-        "fib_v2_trailingBlank": 48,
+        "fib_v2_trailingBlank": 67,
+        "fib_v2_multiBlank": 20,
         "m_fallbackMasked": 8,
-        "m_v2_masked": 8,
         "m_otherTermInClue": 28,
-        "m_v2_otherTermInClue": 15,
-        "m_v2_otherOnSameBoard": 2
+        "m_v2_otherTermInClue": 13,
+        "m_v2_otherOnSameBoard": 2,
+        "m_v2_partialLeft": 24,
+        "fib_v2_blanks3plus": 4
       },
       "worst": [
         [
@@ -3149,7 +3298,7 @@
         ],
         [
           "m_currentLeaksV2",
-          96
+          95
         ],
         [
           "fib_noBlankAlways",
@@ -3167,18 +3316,20 @@
       "flags": {
         "fc_noMistakes": 212,
         "fib_noBlankAlways": 138,
-        "fib_secondaryLeakAny": 179,
-        "fib_v2_trailingBlank": 96,
-        "m_currentLeaksV2": 133,
+        "fib_secondaryLeakAny": 178,
+        "fib_v2_trailingBlank": 119,
+        "m_currentLeaksV2": 132,
         "m_otherTermInClue": 163,
-        "fib_secondaryLeakAlways": 72,
-        "fib_v2_multiBlank": 41,
-        "m_v2_partialLeft": 54,
-        "m_v2_otherTermInClue": 92,
+        "fib_secondaryLeakAlways": 70,
+        "fib_v2_secondaryLeak": 46,
+        "m_v2_masked": 57,
+        "m_v2_partialLeft": 46,
+        "m_v2_otherTermInClue": 104,
         "fib_noBlankSometimes": 50,
         "m_fallbackMasked": 22,
-        "m_v2_masked": 24,
         "m_clueShort": 5,
+        "fib_v2_blanks3plus": 7,
+        "fib_v2_multiBlank": 20,
         "m_v2_otherOnSameBoard": 9
       },
       "worst": [
@@ -3188,7 +3339,7 @@
         ],
         [
           "fib_secondaryLeakAny",
-          179
+          178
         ],
         [
           "m_otherTermInClue",
@@ -3212,15 +3363,17 @@
         "fib_noBlankAlways": 35,
         "fib_secondaryLeakAny": 126,
         "fib_secondaryLeakAlways": 75,
+        "fib_v2_blanks3plus": 11,
+        "fib_v2_multiBlank": 34,
         "m_currentLeaksV2": 70,
-        "m_v2_partialLeft": 48,
+        "m_v2_masked": 63,
         "fib_noBlankSometimes": 81,
-        "fib_v2_multiBlank": 70,
+        "fib_v2_secondaryLeak": 51,
         "m_otherTermInClue": 102,
-        "m_v2_otherTermInClue": 79,
+        "m_v2_partialLeft": 23,
+        "m_v2_otherTermInClue": 75,
         "m_fallbackMasked": 29,
-        "m_v2_masked": 29,
-        "fib_v2_trailingBlank": 25,
+        "fib_v2_trailingBlank": 27,
         "m_v2_otherOnSameBoard": 2
       },
       "worst": [
@@ -3253,16 +3406,18 @@
         "fc_noMistakes": 170,
         "fib_noBlankAlways": 124,
         "fib_secondaryLeakAny": 147,
-        "fib_secondaryLeakAlways": 58,
+        "fib_secondaryLeakAlways": 59,
+        "fib_v2_trailingBlank": 111,
+        "fib_v2_secondaryLeak": 42,
         "m_currentLeaksV2": 118,
         "m_otherTermInClue": 90,
-        "m_v2_partialLeft": 43,
-        "m_v2_otherTermInClue": 54,
-        "fib_v2_multiBlank": 42,
+        "m_v2_masked": 51,
         "m_fallbackMasked": 14,
-        "m_v2_masked": 15,
+        "fib_v2_multiBlank": 17,
+        "m_v2_otherTermInClue": 49,
         "fib_noBlankSometimes": 33,
-        "fib_v2_trailingBlank": 93,
+        "m_v2_partialLeft": 16,
+        "fib_v2_blanks3plus": 1,
         "m_v2_otherOnSameBoard": 2
       },
       "worst": [
@@ -3295,17 +3450,19 @@
         "fc_noMistakes": 262,
         "fib_noBlankAlways": 179,
         "fib_secondaryLeakAny": 236,
-        "fib_v2_trailingBlank": 87,
+        "fib_v2_trailingBlank": 147,
         "m_currentLeaksV2": 193,
         "m_otherTermInClue": 138,
         "fib_secondaryLeakAlways": 139,
-        "fib_v2_multiBlank": 96,
-        "m_v2_partialLeft": 119,
-        "m_v2_otherTermInClue": 82,
+        "fib_v2_secondaryLeak": 114,
+        "m_v2_masked": 117,
+        "m_v2_partialLeft": 63,
+        "m_v2_otherTermInClue": 75,
         "fib_noBlankSometimes": 62,
         "m_fallbackMasked": 20,
-        "m_v2_masked": 23,
-        "m_v2_otherOnSameBoard": 6
+        "fib_v2_multiBlank": 32,
+        "m_v2_otherOnSameBoard": 6,
+        "fib_v2_blanks3plus": 5
       },
       "worst": [
         [
@@ -3337,17 +3494,19 @@
         "fc_noMistakes": 80,
         "fib_noBlankAlways": 59,
         "fib_secondaryLeakAny": 47,
-        "fib_v2_trailingBlank": 42,
+        "fib_v2_trailingBlank": 51,
         "m_currentLeaksV2": 38,
         "m_otherTermInClue": 46,
-        "fib_secondaryLeakAlways": 24,
-        "m_v2_partialLeft": 21,
+        "fib_secondaryLeakAlways": 23,
+        "m_v2_masked": 22,
         "fib_noBlankSometimes": 18,
-        "m_v2_otherTermInClue": 28,
-        "m_v2_otherOnSameBoard": 1,
-        "fib_v2_multiBlank": 19,
-        "m_fallbackMasked": 4,
-        "m_v2_masked": 4
+        "m_v2_otherTermInClue": 31,
+        "m_v2_otherOnSameBoard": 2,
+        "fib_v2_secondaryLeak": 12,
+        "m_v2_partialLeft": 5,
+        "fib_v2_blanks3plus": 2,
+        "fib_v2_multiBlank": 12,
+        "m_fallbackMasked": 4
       },
       "worst": [
         [
@@ -3359,12 +3518,12 @@
           59
         ],
         [
-          "fib_secondaryLeakAny",
-          47
+          "fib_v2_trailingBlank",
+          51
         ],
         [
-          "m_otherTermInClue",
-          46
+          "fib_secondaryLeakAny",
+          47
         ]
       ]
     },
@@ -3378,18 +3537,20 @@
       "flags": {
         "fc_noMistakes": 139,
         "fib_noBlankAlways": 107,
-        "fib_secondaryLeakAny": 123,
-        "fib_v2_trailingBlank": 43,
-        "m_currentLeaksV2": 109,
+        "fib_secondaryLeakAny": 122,
+        "fib_v2_trailingBlank": 81,
+        "m_currentLeaksV2": 108,
         "m_otherTermInClue": 75,
-        "m_v2_otherTermInClue": 34,
-        "fib_secondaryLeakAlways": 78,
-        "m_v2_partialLeft": 74,
-        "fib_v2_multiBlank": 44,
-        "m_v2_masked": 4,
+        "m_v2_otherTermInClue": 36,
+        "fib_secondaryLeakAlways": 77,
+        "fib_v2_secondaryLeak": 60,
+        "m_v2_masked": 55,
+        "m_v2_partialLeft": 38,
+        "fib_v2_blanks3plus": 5,
+        "fib_v2_multiBlank": 16,
+        "m_v2_otherOnSameBoard": 7,
         "fib_noBlankSometimes": 29,
-        "m_fallbackMasked": 3,
-        "m_v2_otherOnSameBoard": 6
+        "m_fallbackMasked": 3
       },
       "worst": [
         [
@@ -3398,11 +3559,11 @@
         ],
         [
           "fib_secondaryLeakAny",
-          123
+          122
         ],
         [
           "m_currentLeaksV2",
-          109
+          108
         ],
         [
           "fib_noBlankAlways",
@@ -3421,16 +3582,18 @@
         "fc_noMistakes": 94,
         "fib_noBlankAlways": 64,
         "fib_secondaryLeakAny": 77,
-        "fib_secondaryLeakAlways": 49,
+        "fib_v2_trailingBlank": 54,
         "m_currentLeaksV2": 52,
         "m_otherTermInClue": 31,
-        "m_v2_partialLeft": 30,
-        "m_v2_otherTermInClue": 15,
-        "fib_v2_multiBlank": 31,
-        "fib_v2_trailingBlank": 38,
+        "m_v2_otherTermInClue": 17,
+        "fib_secondaryLeakAlways": 48,
+        "fib_v2_secondaryLeak": 33,
+        "m_v2_masked": 44,
         "fib_noBlankSometimes": 11,
+        "fib_v2_multiBlank": 13,
+        "m_v2_partialLeft": 17,
         "m_fallbackMasked": 18,
-        "m_v2_masked": 19
+        "fib_v2_blanks3plus": 2
       },
       "worst": [
         [
@@ -3446,8 +3609,8 @@
           64
         ],
         [
-          "m_currentLeaksV2",
-          52
+          "fib_v2_trailingBlank",
+          54
         ]
       ]
     },
@@ -3463,14 +3626,16 @@
         "fib_noBlankAlways": 87,
         "fib_secondaryLeakAny": 137,
         "fib_secondaryLeakAlways": 92,
-        "fib_v2_multiBlank": 77,
+        "fib_v2_trailingBlank": 64,
+        "fib_v2_secondaryLeak": 82,
         "m_currentLeaksV2": 105,
-        "m_v2_partialLeft": 70,
+        "m_v2_masked": 71,
+        "m_v2_partialLeft": 41,
+        "fib_v2_multiBlank": 24,
         "m_otherTermInClue": 38,
-        "m_v2_otherTermInClue": 28,
-        "fib_v2_trailingBlank": 32,
+        "m_v2_otherTermInClue": 26,
+        "fib_v2_blanks3plus": 3,
         "m_fallbackMasked": 23,
-        "m_v2_masked": 23,
         "fib_noBlankSometimes": 39,
         "m_v2_otherOnSameBoard": 1
       },
@@ -3504,16 +3669,18 @@
         "fc_noMistakes": 187,
         "fib_secondaryLeakAny": 167,
         "fib_secondaryLeakAlways": 101,
-        "fib_v2_multiBlank": 59,
+        "fib_v2_multiBlank": 19,
+        "fib_v2_secondaryLeak": 77,
         "m_fallbackMasked": 30,
-        "m_v2_masked": 30,
+        "m_v2_masked": 78,
         "fib_noBlankAlways": 104,
-        "fib_v2_trailingBlank": 47,
+        "fib_v2_trailingBlank": 82,
         "m_currentLeaksV2": 107,
         "m_otherTermInClue": 102,
-        "m_v2_otherTermInClue": 79,
+        "m_v2_otherTermInClue": 71,
         "fib_noBlankSometimes": 54,
-        "m_v2_partialLeft": 71,
+        "fib_v2_blanks3plus": 5,
+        "m_v2_partialLeft": 36,
         "m_v2_otherOnSameBoard": 2,
         "m_clueShort": 1
       },
@@ -3546,19 +3713,21 @@
       "flags": {
         "fc_noMistakes": 204,
         "fib_noBlankSometimes": 39,
-        "fib_secondaryLeakAny": 184,
+        "fib_secondaryLeakAny": 182,
         "fib_secondaryLeakAlways": 146,
-        "fib_v2_multiBlank": 106,
-        "m_currentLeaksV2": 128,
-        "m_v2_partialLeft": 106,
+        "fib_v2_multiBlank": 39,
+        "m_currentLeaksV2": 126,
+        "m_v2_masked": 122,
+        "fib_v2_secondaryLeak": 113,
+        "fib_v2_blanks3plus": 15,
         "fib_noBlankAlways": 128,
+        "fib_v2_trailingBlank": 92,
         "m_otherTermInClue": 63,
-        "m_v2_otherTermInClue": 41,
-        "fib_v2_trailingBlank": 40,
         "m_clueShort": 2,
-        "m_v2_otherOnSameBoard": 5,
+        "m_v2_otherTermInClue": 41,
+        "m_v2_otherOnSameBoard": 7,
         "m_fallbackMasked": 39,
-        "m_v2_masked": 40
+        "m_v2_partialLeft": 65
       },
       "worst": [
         [
@@ -3567,14 +3736,14 @@
         ],
         [
           "fib_secondaryLeakAny",
-          184
+          182
         ],
         [
           "fib_secondaryLeakAlways",
           146
         ],
         [
-          "m_currentLeaksV2",
+          "fib_noBlankAlways",
           128
         ]
       ]
@@ -3591,15 +3760,17 @@
         "fib_noBlankSometimes": 14,
         "fib_secondaryLeakAny": 96,
         "fib_secondaryLeakAlways": 80,
-        "fib_v2_multiBlank": 60,
+        "fib_v2_blanks3plus": 4,
+        "fib_v2_multiBlank": 18,
+        "fib_v2_secondaryLeak": 66,
         "m_currentLeaksV2": 71,
-        "m_v2_partialLeft": 56,
+        "m_v2_masked": 64,
         "fib_noBlankAlways": 70,
         "m_otherTermInClue": 37,
         "m_v2_otherTermInClue": 26,
-        "fib_v2_trailingBlank": 25,
+        "fib_v2_trailingBlank": 50,
+        "m_v2_partialLeft": 44,
         "m_fallbackMasked": 24,
-        "m_v2_masked": 24,
         "m_v2_otherOnSameBoard": 4
       },
       "worst": [
@@ -3631,17 +3802,19 @@
       "flags": {
         "fc_noMistakes": 186,
         "fib_noBlankSometimes": 19,
-        "fib_secondaryLeakAny": 175,
-        "fib_secondaryLeakAlways": 142,
-        "m_currentLeaksV2": 159,
-        "m_v2_partialLeft": 133,
-        "fib_v2_multiBlank": 88,
+        "fib_secondaryLeakAny": 173,
+        "fib_secondaryLeakAlways": 140,
+        "m_currentLeaksV2": 157,
+        "m_v2_masked": 87,
+        "fib_v2_secondaryLeak": 129,
+        "m_v2_partialLeft": 101,
         "fib_noBlankAlways": 157,
-        "fib_v2_trailingBlank": 32,
+        "fib_v2_trailingBlank": 110,
         "m_otherTermInClue": 24,
+        "m_v2_otherTermInClue": 18,
+        "fib_v2_blanks3plus": 4,
+        "fib_v2_multiBlank": 16,
         "m_fallbackMasked": 10,
-        "m_v2_masked": 10,
-        "m_v2_otherTermInClue": 17,
         "m_v2_otherOnSameBoard": 2
       },
       "worst": [
@@ -3651,11 +3824,11 @@
         ],
         [
           "fib_secondaryLeakAny",
-          175
+          173
         ],
         [
           "m_currentLeaksV2",
-          159
+          157
         ],
         [
           "fib_noBlankAlways",
@@ -3675,13 +3848,15 @@
         "fib_noBlankAlways": 93,
         "fib_secondaryLeakAny": 107,
         "fib_secondaryLeakAlways": 97,
-        "fib_v2_multiBlank": 78,
+        "fib_v2_secondaryLeak": 90,
         "m_currentLeaksV2": 96,
-        "m_v2_partialLeft": 87,
+        "m_v2_masked": 70,
+        "m_v2_partialLeft": 89,
+        "fib_v2_trailingBlank": 42,
+        "fib_v2_multiBlank": 23,
         "m_fallbackMasked": 10,
-        "m_v2_masked": 10,
+        "fib_v2_blanks3plus": 7,
         "m_otherTermInClue": 1,
-        "fib_v2_trailingBlank": 10,
         "fib_noBlankSometimes": 6
       },
       "worst": [
@@ -3713,16 +3888,18 @@
       "flags": {
         "fc_noMistakes": 133,
         "fib_noBlankAlways": 132,
-        "fib_secondaryLeakAny": 130,
-        "fib_secondaryLeakAlways": 117,
-        "fib_v2_multiBlank": 84,
-        "m_currentLeaksV2": 129,
+        "fib_secondaryLeakAny": 131,
+        "fib_secondaryLeakAlways": 118,
+        "fib_v2_secondaryLeak": 111,
+        "m_currentLeaksV2": 130,
         "m_otherTermInClue": 32,
-        "m_v2_partialLeft": 116,
-        "m_v2_otherTermInClue": 24,
+        "m_v2_masked": 68,
+        "m_v2_partialLeft": 118,
+        "m_v2_otherTermInClue": 26,
         "m_fallbackMasked": 1,
-        "m_v2_masked": 1,
-        "fib_v2_trailingBlank": 16
+        "fib_v2_trailingBlank": 62,
+        "fib_v2_multiBlank": 13,
+        "fib_v2_blanks3plus": 4
       },
       "worst": [
         [
@@ -3735,11 +3912,11 @@
         ],
         [
           "fib_secondaryLeakAny",
-          130
+          131
         ],
         [
           "m_currentLeaksV2",
-          129
+          130
         ]
       ]
     },
@@ -3754,12 +3931,15 @@
         "fc_noMistakes": 124,
         "fib_noBlankAlways": 110,
         "fib_secondaryLeakAny": 117,
-        "fib_v2_trailingBlank": 20,
+        "fib_v2_trailingBlank": 72,
         "m_currentLeaksV2": 113,
-        "fib_secondaryLeakAlways": 94,
-        "m_v2_partialLeft": 94,
-        "fib_v2_multiBlank": 59,
-        "fib_noBlankSometimes": 14
+        "fib_secondaryLeakAlways": 96,
+        "m_v2_masked": 58,
+        "fib_v2_secondaryLeak": 85,
+        "m_v2_partialLeft": 69,
+        "fib_noBlankSometimes": 14,
+        "fib_v2_multiBlank": 15,
+        "fib_v2_blanks3plus": 3
       },
       "worst": [
         [
@@ -3790,17 +3970,19 @@
       "flags": {
         "fc_noMistakes": 96,
         "fib_noBlankAlways": 66,
-        "fib_secondaryLeakAny": 85,
-        "fib_v2_trailingBlank": 14,
-        "m_currentLeaksV2": 61,
-        "fib_secondaryLeakAlways": 71,
-        "m_v2_partialLeft": 57,
-        "fib_v2_multiBlank": 40,
+        "fib_secondaryLeakAny": 84,
+        "fib_v2_trailingBlank": 38,
+        "m_currentLeaksV2": 60,
+        "fib_secondaryLeakAlways": 69,
+        "fib_v2_secondaryLeak": 47,
+        "m_v2_masked": 51,
+        "fib_v2_multiBlank": 21,
         "m_fallbackMasked": 13,
         "m_otherTermInClue": 14,
-        "m_v2_masked": 14,
-        "m_v2_otherTermInClue": 8,
-        "fib_noBlankSometimes": 17
+        "m_v2_otherTermInClue": 7,
+        "fib_noBlankSometimes": 17,
+        "m_v2_partialLeft": 37,
+        "fib_v2_blanks3plus": 4
       },
       "worst": [
         [
@@ -3809,11 +3991,11 @@
         ],
         [
           "fib_secondaryLeakAny",
-          85
+          84
         ],
         [
           "fib_secondaryLeakAlways",
-          71
+          69
         ],
         [
           "fib_noBlankAlways",
@@ -3833,16 +4015,18 @@
         "fib_noBlankAlways": 78,
         "fib_secondaryLeakAny": 119,
         "fib_secondaryLeakAlways": 69,
-        "fib_v2_multiBlank": 55,
+        "fib_v2_trailingBlank": 57,
+        "fib_v2_secondaryLeak": 56,
         "m_currentLeaksV2": 84,
         "m_otherTermInClue": 81,
-        "m_v2_partialLeft": 58,
-        "m_v2_otherTermInClue": 63,
+        "m_v2_partialLeft": 30,
+        "m_v2_otherTermInClue": 58,
         "fib_noBlankSometimes": 43,
-        "fib_v2_trailingBlank": 35,
+        "m_v2_masked": 51,
+        "fib_v2_multiBlank": 12,
         "m_fallbackMasked": 9,
-        "m_v2_masked": 11,
-        "m_v2_otherOnSameBoard": 3
+        "m_v2_otherOnSameBoard": 4,
+        "fib_v2_blanks3plus": 2
       },
       "worst": [
         [
@@ -3875,15 +4059,17 @@
         "fib_noBlankAlways": 68,
         "fib_secondaryLeakAny": 85,
         "fib_secondaryLeakAlways": 57,
+        "fib_v2_trailingBlank": 47,
+        "fib_v2_secondaryLeak": 42,
         "m_currentLeaksV2": 64,
-        "m_v2_partialLeft": 48,
+        "m_v2_masked": 48,
         "fib_noBlankSometimes": 20,
         "m_otherTermInClue": 16,
-        "m_v2_otherTermInClue": 12,
-        "fib_v2_multiBlank": 41,
-        "fib_v2_trailingBlank": 27,
+        "m_v2_otherTermInClue": 10,
+        "m_v2_partialLeft": 23,
+        "fib_v2_multiBlank": 21,
         "m_fallbackMasked": 9,
-        "m_v2_masked": 9,
+        "fib_v2_blanks3plus": 4,
         "m_v2_otherOnSameBoard": 1
       },
       "worst": [
@@ -3919,14 +4105,16 @@
         "fib_secondaryLeakAlways": 85,
         "m_currentLeaksV2": 97,
         "m_otherTermInClue": 67,
-        "m_v2_partialLeft": 78,
-        "m_v2_otherTermInClue": 52,
-        "fib_v2_multiBlank": 68,
-        "fib_v2_trailingBlank": 27,
+        "m_v2_partialLeft": 34,
+        "m_v2_otherTermInClue": 49,
+        "fib_v2_trailingBlank": 66,
+        "fib_v2_secondaryLeak": 73,
         "fib_noBlankSometimes": 23,
+        "m_v2_masked": 70,
         "m_fallbackMasked": 7,
-        "m_v2_masked": 7,
-        "m_v2_otherOnSameBoard": 3
+        "fib_v2_multiBlank": 15,
+        "m_v2_otherOnSameBoard": 5,
+        "fib_v2_blanks3plus": 5
       },
       "worst": [
         [
@@ -3959,16 +4147,18 @@
         "fib_noBlankAlways": 131,
         "fib_secondaryLeakAny": 182,
         "fib_secondaryLeakAlways": 132,
-        "fib_v2_multiBlank": 107,
+        "fib_v2_trailingBlank": 96,
+        "fib_v2_secondaryLeak": 106,
         "m_currentLeaksV2": 123,
-        "m_v2_partialLeft": 98,
+        "m_v2_partialLeft": 43,
         "m_fallbackMasked": 34,
         "m_otherTermInClue": 172,
-        "m_v2_masked": 35,
-        "m_v2_otherTermInClue": 147,
+        "m_v2_masked": 106,
+        "m_v2_otherTermInClue": 142,
         "m_v2_otherOnSameBoard": 8,
-        "fib_v2_trailingBlank": 56,
-        "fib_noBlankSometimes": 65
+        "fib_v2_multiBlank": 32,
+        "fib_noBlankSometimes": 65,
+        "fib_v2_blanks3plus": 8
       },
       "worst": [
         [
@@ -3985,7 +4175,7 @@
         ],
         [
           "m_v2_otherTermInClue",
-          147
+          142
         ]
       ]
     },
@@ -4002,15 +4192,17 @@
         "fib_secondaryLeakAny": 158,
         "fib_secondaryLeakAlways": 94,
         "m_currentLeaksV2": 99,
-        "m_v2_partialLeft": 65,
+        "m_v2_masked": 82,
         "m_fallbackMasked": 29,
         "m_otherTermInClue": 90,
-        "m_v2_masked": 29,
-        "fib_v2_multiBlank": 99,
-        "fib_v2_trailingBlank": 16,
-        "m_v2_otherTermInClue": 48,
+        "m_v2_otherTermInClue": 53,
+        "fib_v2_secondaryLeak": 90,
+        "m_v2_partialLeft": 39,
+        "fib_v2_multiBlank": 43,
+        "fib_v2_trailingBlank": 33,
         "fib_noBlankSometimes": 72,
-        "m_v2_otherOnSameBoard": 3
+        "fib_v2_blanks3plus": 12,
+        "m_v2_otherOnSameBoard": 5
       },
       "worst": [
         [
@@ -4026,8 +4218,8 @@
           99
         ],
         [
-          "fib_v2_multiBlank",
-          99
+          "fib_secondaryLeakAlways",
+          94
         ]
       ]
     },
@@ -4042,17 +4234,19 @@
         "fc_noMistakes": 210,
         "fib_noBlankAlways": 118,
         "fib_secondaryLeakAny": 200,
-        "fib_v2_trailingBlank": 46,
+        "fib_v2_trailingBlank": 71,
         "m_currentLeaksV2": 136,
         "m_otherTermInClue": 79,
-        "fib_secondaryLeakAlways": 141,
-        "m_v2_partialLeft": 98,
+        "fib_secondaryLeakAlways": 139,
+        "fib_v2_secondaryLeak": 101,
+        "m_v2_partialLeft": 59,
         "fib_noBlankSometimes": 49,
-        "fib_v2_multiBlank": 109,
-        "m_v2_otherTermInClue": 44,
+        "m_v2_otherTermInClue": 46,
+        "m_v2_masked": 113,
         "m_v2_otherOnSameBoard": 2,
-        "m_fallbackMasked": 43,
-        "m_v2_masked": 43
+        "fib_v2_blanks3plus": 14,
+        "fib_v2_multiBlank": 40,
+        "m_fallbackMasked": 43
       },
       "worst": [
         [
@@ -4065,7 +4259,7 @@
         ],
         [
           "fib_secondaryLeakAlways",
-          141
+          139
         ],
         [
           "m_currentLeaksV2",
@@ -4085,16 +4279,18 @@
         "fib_noBlankAlways": 38,
         "fib_secondaryLeakAny": 121,
         "fib_secondaryLeakAlways": 62,
+        "fib_v2_trailingBlank": 23,
+        "fib_v2_secondaryLeak": 64,
         "m_currentLeaksV2": 84,
-        "m_v2_partialLeft": 54,
-        "fib_v2_trailingBlank": 15,
+        "m_v2_masked": 47,
         "m_otherTermInClue": 51,
         "fib_noBlankSometimes": 78,
-        "fib_v2_multiBlank": 72,
-        "m_v2_otherTermInClue": 33,
+        "m_v2_otherTermInClue": 31,
+        "m_v2_partialLeft": 29,
+        "fib_v2_multiBlank": 29,
+        "fib_v2_blanks3plus": 6,
         "m_v2_otherOnSameBoard": 4,
         "m_fallbackMasked": 8,
-        "m_v2_masked": 8,
         "m_clueShort": 2
       },
       "worst": [
@@ -4126,18 +4322,20 @@
       "flags": {
         "fc_noMistakes": 149,
         "fib_secondaryLeakAny": 138,
-        "fib_secondaryLeakAlways": 111,
-        "fib_v2_multiBlank": 92,
+        "fib_secondaryLeakAlways": 112,
+        "fib_v2_secondaryLeak": 85,
         "m_fallbackMasked": 54,
-        "m_v2_masked": 55,
+        "m_v2_masked": 99,
+        "m_v2_partialLeft": 49,
         "fib_noBlankAlways": 44,
-        "fib_v2_trailingBlank": 15,
-        "m_currentLeaksV2": 68,
+        "fib_v2_trailingBlank": 31,
+        "m_currentLeaksV2": 69,
         "m_otherTermInClue": 116,
-        "m_v2_partialLeft": 58,
-        "m_v2_otherTermInClue": 84,
+        "m_v2_otherTermInClue": 96,
         "fib_noBlankSometimes": 52,
-        "m_v2_otherOnSameBoard": 7,
+        "fib_v2_multiBlank": 31,
+        "m_v2_otherOnSameBoard": 9,
+        "fib_v2_blanks3plus": 11,
         "m_clueShort": 1
       },
       "worst": [
@@ -4155,7 +4353,7 @@
         ],
         [
           "fib_secondaryLeakAlways",
-          111
+          112
         ]
       ]
     },
@@ -4170,17 +4368,19 @@
         "fc_noMistakes": 178,
         "fib_noBlankSometimes": 42,
         "fib_secondaryLeakAny": 165,
-        "fib_v2_multiBlank": 99,
+        "fib_v2_secondaryLeak": 113,
         "m_otherTermInClue": 129,
-        "m_v2_otherTermInClue": 106,
+        "m_v2_otherTermInClue": 103,
         "fib_secondaryLeakAlways": 138,
         "m_fallbackMasked": 35,
-        "m_v2_masked": 38,
+        "m_v2_masked": 99,
+        "m_v2_partialLeft": 77,
+        "fib_v2_multiBlank": 37,
         "m_currentLeaksV2": 116,
-        "m_v2_partialLeft": 101,
         "fib_noBlankAlways": 102,
-        "fib_v2_trailingBlank": 24,
-        "m_v2_otherOnSameBoard": 5
+        "fib_v2_trailingBlank": 72,
+        "fib_v2_blanks3plus": 9,
+        "m_v2_otherOnSameBoard": 4
       },
       "worst": [
         [
@@ -4210,19 +4410,21 @@
       "items": 109,
       "flags": {
         "fc_noMistakes": 109,
-        "fib_secondaryLeakAny": 99,
-        "fib_secondaryLeakAlways": 67,
-        "fib_v2_multiBlank": 44,
+        "fib_secondaryLeakAny": 98,
+        "fib_secondaryLeakAlways": 66,
+        "fib_v2_secondaryLeak": 53,
         "m_fallbackMasked": 11,
-        "m_v2_masked": 11,
+        "m_v2_masked": 41,
+        "m_v2_partialLeft": 42,
         "fib_noBlankAlways": 75,
-        "m_currentLeaksV2": 75,
+        "fib_v2_trailingBlank": 57,
+        "m_currentLeaksV2": 74,
         "m_otherTermInClue": 44,
-        "m_v2_partialLeft": 56,
-        "m_v2_otherTermInClue": 27,
-        "m_v2_otherOnSameBoard": 1,
+        "m_v2_otherTermInClue": 29,
+        "m_v2_otherOnSameBoard": 2,
+        "fib_v2_multiBlank": 11,
         "fib_noBlankSometimes": 23,
-        "fib_v2_trailingBlank": 29
+        "fib_v2_blanks3plus": 2
       },
       "worst": [
         [
@@ -4231,7 +4433,7 @@
         ],
         [
           "fib_secondaryLeakAny",
-          99
+          98
         ],
         [
           "fib_noBlankAlways",
@@ -4239,7 +4441,7 @@
         ],
         [
           "m_currentLeaksV2",
-          75
+          74
         ]
       ]
     },
@@ -4253,18 +4455,20 @@
       "flags": {
         "fc_noMistakes": 236,
         "fib_noBlankSometimes": 57,
-        "fib_secondaryLeakAny": 221,
+        "fib_secondaryLeakAny": 220,
         "fib_noBlankAlways": 145,
-        "fib_secondaryLeakAlways": 168,
-        "fib_v2_multiBlank": 115,
-        "m_currentLeaksV2": 168,
-        "m_v2_partialLeft": 131,
+        "fib_secondaryLeakAlways": 167,
+        "fib_v2_multiBlank": 42,
+        "fib_v2_secondaryLeak": 130,
+        "m_currentLeaksV2": 167,
+        "m_v2_masked": 128,
+        "m_v2_partialLeft": 80,
         "m_otherTermInClue": 187,
-        "m_v2_otherTermInClue": 143,
+        "m_v2_otherTermInClue": 134,
         "m_fallbackMasked": 36,
-        "m_v2_masked": 39,
-        "fib_v2_trailingBlank": 43,
-        "m_v2_otherOnSameBoard": 8
+        "fib_v2_blanks3plus": 8,
+        "fib_v2_trailingBlank": 112,
+        "m_v2_otherOnSameBoard": 7
       },
       "worst": [
         [
@@ -4273,7 +4477,7 @@
         ],
         [
           "fib_secondaryLeakAny",
-          221
+          220
         ],
         [
           "m_otherTermInClue",
@@ -4281,7 +4485,7 @@
         ],
         [
           "fib_secondaryLeakAlways",
-          168
+          167
         ]
       ]
     },
@@ -4300,12 +4504,14 @@
         "fib_secondaryLeakAlways": 138,
         "m_currentLeaksV2": 148,
         "m_otherTermInClue": 145,
-        "m_v2_partialLeft": 116,
-        "m_v2_otherTermInClue": 117,
-        "fib_v2_trailingBlank": 54,
-        "fib_v2_multiBlank": 85,
+        "m_v2_masked": 108,
+        "m_v2_otherTermInClue": 121,
+        "fib_v2_trailingBlank": 105,
+        "fib_v2_secondaryLeak": 100,
+        "m_v2_partialLeft": 59,
+        "fib_v2_blanks3plus": 13,
+        "fib_v2_multiBlank": 33,
         "m_fallbackMasked": 25,
-        "m_v2_masked": 25,
         "m_clueShort": 1
       },
       "worst": [
@@ -4339,16 +4545,18 @@
         "fib_secondaryLeakAny": 105,
         "fib_secondaryLeakAlways": 62,
         "m_fallbackMasked": 23,
-        "m_v2_masked": 23,
+        "m_v2_masked": 60,
         "fib_noBlankAlways": 56,
-        "fib_v2_trailingBlank": 28,
+        "fib_v2_trailingBlank": 47,
         "m_currentLeaksV2": 61,
         "m_otherTermInClue": 64,
-        "m_v2_partialLeft": 45,
+        "fib_v2_secondaryLeak": 38,
         "fib_noBlankSometimes": 49,
-        "fib_v2_multiBlank": 42,
-        "m_v2_otherTermInClue": 52,
-        "m_v2_otherOnSameBoard": 11
+        "m_v2_otherTermInClue": 48,
+        "fib_v2_multiBlank": 21,
+        "fib_v2_blanks3plus": 6,
+        "m_v2_partialLeft": 21,
+        "m_v2_otherOnSameBoard": 12
       },
       "worst": [
         [
@@ -4380,14 +4588,17 @@
         "fc_noMistakes": 87,
         "fib_noBlankAlways": 78,
         "fib_secondaryLeakAny": 78,
-        "fib_v2_trailingBlank": 28,
+        "fib_v2_trailingBlank": 57,
         "m_currentLeaksV2": 73,
         "m_otherTermInClue": 23,
         "fib_secondaryLeakAlways": 54,
-        "fib_v2_multiBlank": 28,
-        "m_v2_partialLeft": 54,
+        "fib_v2_secondaryLeak": 42,
+        "m_v2_masked": 36,
         "fib_noBlankSometimes": 9,
         "m_v2_otherTermInClue": 17,
+        "m_v2_partialLeft": 32,
+        "fib_v2_multiBlank": 10,
+        "fib_v2_blanks3plus": 2,
         "m_v2_otherOnSameBoard": 1
       },
       "worst": [
@@ -4419,18 +4630,20 @@
       "flags": {
         "fc_noMistakes": 151,
         "fib_noBlankSometimes": 23,
-        "fib_secondaryLeakAny": 136,
-        "fib_secondaryLeakAlways": 92,
-        "fib_v2_multiBlank": 62,
-        "m_currentLeaksV2": 101,
+        "fib_secondaryLeakAny": 135,
+        "fib_secondaryLeakAlways": 89,
+        "fib_v2_secondaryLeak": 66,
+        "m_currentLeaksV2": 99,
         "m_otherTermInClue": 56,
-        "m_v2_partialLeft": 68,
-        "m_v2_otherTermInClue": 40,
+        "m_v2_masked": 75,
         "fib_noBlankAlways": 103,
-        "fib_v2_trailingBlank": 43,
+        "fib_v2_trailingBlank": 80,
+        "m_v2_partialLeft": 33,
+        "fib_v2_multiBlank": 22,
         "m_fallbackMasked": 25,
-        "m_v2_masked": 25,
-        "m_v2_otherOnSameBoard": 4
+        "m_v2_otherTermInClue": 36,
+        "m_v2_otherOnSameBoard": 5,
+        "fib_v2_blanks3plus": 2
       },
       "worst": [
         [
@@ -4439,7 +4652,7 @@
         ],
         [
           "fib_secondaryLeakAny",
-          136
+          135
         ],
         [
           "fib_noBlankAlways",
@@ -4447,7 +4660,7 @@
         ],
         [
           "m_currentLeaksV2",
-          101
+          99
         ]
       ]
     },
@@ -4462,17 +4675,19 @@
         "fc_noMistakes": 72,
         "fib_secondaryLeakAny": 63,
         "fib_secondaryLeakAlways": 52,
-        "fib_v2_multiBlank": 34,
+        "fib_v2_secondaryLeak": 43,
         "m_fallbackMasked": 5,
-        "m_v2_masked": 5,
+        "m_v2_masked": 39,
         "m_otherTermInClue": 28,
-        "m_v2_otherTermInClue": 22,
+        "m_v2_otherTermInClue": 20,
         "m_v2_otherOnSameBoard": 6,
         "fib_noBlankSometimes": 10,
         "fib_noBlankAlways": 58,
+        "fib_v2_trailingBlank": 41,
         "m_currentLeaksV2": 56,
-        "m_v2_partialLeft": 47,
-        "fib_v2_trailingBlank": 17
+        "m_v2_partialLeft": 28,
+        "fib_v2_multiBlank": 9,
+        "fib_v2_blanks3plus": 3
       },
       "worst": [
         [
@@ -4505,16 +4720,18 @@
         "fib_noBlankSometimes": 35,
         "fib_secondaryLeakAny": 134,
         "fib_secondaryLeakAlways": 86,
-        "fib_v2_multiBlank": 61,
+        "fib_v2_secondaryLeak": 68,
         "m_currentLeaksV2": 106,
-        "m_v2_partialLeft": 76,
+        "m_v2_masked": 60,
         "fib_noBlankAlways": 95,
+        "fib_v2_trailingBlank": 68,
+        "fib_v2_blanks3plus": 10,
+        "fib_v2_multiBlank": 25,
         "m_fallbackMasked": 12,
         "m_otherTermInClue": 57,
-        "m_v2_masked": 12,
-        "m_v2_otherTermInClue": 46,
-        "fib_v2_trailingBlank": 36,
+        "m_v2_otherTermInClue": 47,
         "m_clueShort": 1,
+        "m_v2_partialLeft": 44,
         "m_v2_otherOnSameBoard": 2
       },
       "worst": [
@@ -4548,15 +4765,16 @@
         "fib_noBlankAlways": 163,
         "fib_secondaryLeakAny": 144,
         "fib_secondaryLeakAlways": 111,
-        "fib_v2_multiBlank": 64,
+        "fib_v2_secondaryLeak": 90,
         "m_currentLeaksV2": 139,
-        "m_v2_partialLeft": 109,
+        "m_v2_masked": 84,
+        "fib_v2_trailingBlank": 120,
         "m_otherTermInClue": 37,
-        "m_v2_otherTermInClue": 30,
-        "fib_v2_trailingBlank": 55,
+        "m_v2_otherTermInClue": 29,
+        "fib_v2_multiBlank": 8,
+        "m_v2_partialLeft": 48,
         "fib_noBlankSometimes": 4,
         "m_fallbackMasked": 3,
-        "m_v2_masked": 3,
         "fc_placeholder": 3
       },
       "worst": [
@@ -4587,19 +4805,21 @@
       "items": 97,
       "flags": {
         "fc_noMistakes": 97,
-        "fib_secondaryLeakAny": 71,
-        "fib_secondaryLeakAlways": 58,
-        "fib_v2_multiBlank": 24,
+        "fib_secondaryLeakAny": 70,
+        "fib_secondaryLeakAlways": 57,
+        "fib_v2_blanks3plus": 5,
+        "fib_v2_multiBlank": 10,
         "m_fallbackMasked": 3,
         "m_otherTermInClue": 74,
-        "m_v2_masked": 4,
+        "m_v2_masked": 48,
         "fib_noBlankAlways": 88,
-        "fib_v2_trailingBlank": 35,
+        "fib_v2_trailingBlank": 61,
         "m_v2_otherTermInClue": 64,
-        "m_currentLeaksV2": 67,
-        "m_v2_partialLeft": 55,
+        "m_currentLeaksV2": 66,
+        "fib_v2_secondaryLeak": 35,
         "m_v2_otherOnSameBoard": 4,
-        "fib_noBlankSometimes": 4
+        "fib_noBlankSometimes": 4,
+        "m_v2_partialLeft": 11
       },
       "worst": [
         [
@@ -4616,7 +4836,7 @@
         ],
         [
           "fib_secondaryLeakAny",
-          71
+          70
         ]
       ]
     },
@@ -4629,18 +4849,20 @@
       "items": 235,
       "flags": {
         "fc_noMistakes": 235,
-        "fib_secondaryLeakAny": 228,
-        "fib_secondaryLeakAlways": 217,
+        "fib_secondaryLeakAny": 229,
+        "fib_secondaryLeakAlways": 219,
         "m_fallbackMasked": 28,
-        "m_v2_masked": 28,
+        "m_v2_masked": 140,
         "fib_noBlankAlways": 200,
-        "fib_v2_multiBlank": 115,
-        "m_currentLeaksV2": 198,
+        "fib_v2_blanks3plus": 9,
+        "fib_v2_multiBlank": 37,
+        "fib_v2_secondaryLeak": 188,
+        "m_currentLeaksV2": 199,
         "m_otherTermInClue": 217,
-        "m_v2_partialLeft": 189,
-        "m_v2_otherTermInClue": 205,
+        "m_v2_partialLeft": 151,
+        "m_v2_otherTermInClue": 207,
         "m_v2_otherOnSameBoard": 4,
-        "fib_v2_trailingBlank": 16,
+        "fib_v2_trailingBlank": 124,
         "fib_noBlankSometimes": 6
       },
       "worst": [
@@ -4650,11 +4872,11 @@
         ],
         [
           "fib_secondaryLeakAny",
-          228
+          229
         ],
         [
           "fib_secondaryLeakAlways",
-          217
+          219
         ],
         [
           "m_otherTermInClue",
@@ -4672,18 +4894,20 @@
       "flags": {
         "fc_noMistakes": 126,
         "fib_noBlankAlways": 91,
-        "fib_secondaryLeakAny": 102,
-        "fib_v2_trailingBlank": 48,
-        "m_currentLeaksV2": 80,
+        "fib_secondaryLeakAny": 101,
+        "fib_v2_trailingBlank": 62,
+        "m_currentLeaksV2": 78,
         "m_otherTermInClue": 28,
-        "fib_secondaryLeakAlways": 56,
-        "m_v2_partialLeft": 47,
-        "fib_v2_multiBlank": 37,
+        "m_v2_partialLeft": 14,
+        "fib_secondaryLeakAlways": 55,
+        "m_v2_masked": 53,
+        "fib_v2_secondaryLeak": 35,
+        "fib_v2_blanks3plus": 4,
+        "fib_v2_multiBlank": 17,
         "fib_noBlankSometimes": 23,
         "m_fallbackMasked": 12,
-        "m_v2_masked": 12,
-        "m_v2_otherTermInClue": 19,
-        "m_v2_otherOnSameBoard": 1
+        "m_v2_otherTermInClue": 21,
+        "m_v2_otherOnSameBoard": 2
       },
       "worst": [
         [
@@ -4692,7 +4916,7 @@
         ],
         [
           "fib_secondaryLeakAny",
-          102
+          101
         ],
         [
           "fib_noBlankAlways",
@@ -4700,7 +4924,7 @@
         ],
         [
           "m_currentLeaksV2",
-          80
+          78
         ]
       ]
     },
@@ -4715,16 +4939,19 @@
         "fc_noMistakes": 169,
         "fib_noBlankAlways": 110,
         "fib_secondaryLeakAny": 145,
-        "fib_v2_trailingBlank": 50,
+        "fib_v2_trailingBlank": 81,
         "m_currentLeaksV2": 102,
         "m_otherTermInClue": 95,
         "fib_noBlankSometimes": 34,
-        "fib_v2_multiBlank": 39,
+        "fib_v2_multiBlank": 19,
         "fib_secondaryLeakAlways": 97,
-        "m_v2_partialLeft": 73,
-        "m_v2_otherTermInClue": 74,
+        "fib_v2_blanks3plus": 7,
+        "fib_v2_secondaryLeak": 50,
+        "m_v2_masked": 91,
+        "m_v2_otherTermInClue": 70,
         "m_fallbackMasked": 24,
-        "m_v2_masked": 25
+        "m_v2_partialLeft": 15,
+        "m_v2_otherOnSameBoard": 1
       },
       "worst": [
         [
@@ -4755,18 +4982,20 @@
       "flags": {
         "fc_noMistakes": 73,
         "fib_noBlankAlways": 66,
-        "fib_secondaryLeakAny": 67,
-        "fib_v2_trailingBlank": 19,
-        "m_currentLeaksV2": 62,
+        "fib_secondaryLeakAny": 66,
+        "fib_v2_trailingBlank": 50,
+        "m_currentLeaksV2": 61,
         "fib_noBlankSometimes": 4,
-        "fib_v2_multiBlank": 32,
-        "fib_secondaryLeakAlways": 53,
-        "m_v2_partialLeft": 49,
+        "fib_v2_secondaryLeak": 44,
+        "fib_secondaryLeakAlways": 52,
+        "fib_v2_multiBlank": 7,
         "m_fallbackMasked": 4,
-        "m_v2_masked": 4,
+        "m_v2_masked": 30,
+        "m_v2_partialLeft": 35,
         "m_otherTermInClue": 13,
         "m_v2_otherTermInClue": 8,
-        "m_v2_otherOnSameBoard": 2
+        "m_v2_otherOnSameBoard": 3,
+        "fib_v2_blanks3plus": 2
       },
       "worst": [
         [
@@ -4774,16 +5003,16 @@
           73
         ],
         [
-          "fib_secondaryLeakAny",
-          67
-        ],
-        [
           "fib_noBlankAlways",
           66
         ],
         [
+          "fib_secondaryLeakAny",
+          66
+        ],
+        [
           "m_currentLeaksV2",
-          62
+          61
         ]
       ]
     },
@@ -4798,16 +5027,18 @@
         "fc_noMistakes": 98,
         "fib_noBlankAlways": 81,
         "fib_secondaryLeakAny": 93,
-        "fib_v2_trailingBlank": 20,
-        "m_currentLeaksV2": 85,
-        "fib_secondaryLeakAlways": 74,
-        "fib_v2_multiBlank": 44,
+        "fib_v2_trailingBlank": 52,
+        "m_currentLeaksV2": 84,
+        "fib_secondaryLeakAlways": 73,
+        "fib_v2_secondaryLeak": 64,
         "m_otherTermInClue": 28,
-        "m_v2_partialLeft": 70,
-        "m_v2_otherTermInClue": 13,
+        "m_v2_partialLeft": 56,
+        "m_v2_otherTermInClue": 18,
+        "m_v2_masked": 44,
         "fib_noBlankSometimes": 13,
+        "fib_v2_multiBlank": 15,
         "m_fallbackMasked": 4,
-        "m_v2_masked": 4,
+        "fib_v2_blanks3plus": 4,
         "m_v2_otherOnSameBoard": 2
       },
       "worst": [
@@ -4821,7 +5052,7 @@
         ],
         [
           "m_currentLeaksV2",
-          85
+          84
         ],
         [
           "fib_noBlankAlways",
@@ -4841,15 +5072,17 @@
         "fib_noBlankAlways": 191,
         "fib_secondaryLeakAny": 176,
         "fib_secondaryLeakAlways": 128,
-        "fib_v2_multiBlank": 66,
+        "fib_v2_secondaryLeak": 113,
         "m_currentLeaksV2": 172,
         "m_otherTermInClue": 45,
-        "m_v2_partialLeft": 127,
-        "m_v2_otherTermInClue": 29,
-        "fib_v2_trailingBlank": 65,
-        "m_v2_otherOnSameBoard": 4,
+        "m_v2_masked": 90,
+        "m_v2_partialLeft": 74,
+        "m_v2_otherTermInClue": 28,
+        "fib_v2_trailingBlank": 141,
         "fib_noBlankSometimes": 6,
-        "m_v2_masked": 1
+        "m_v2_otherOnSameBoard": 4,
+        "fib_v2_multiBlank": 17,
+        "fib_v2_blanks3plus": 3
       },
       "worst": [
         [
@@ -4882,14 +5115,15 @@
         "fib_noBlankAlways": 132,
         "fib_secondaryLeakAny": 115,
         "fib_secondaryLeakAlways": 67,
-        "fib_v2_multiBlank": 22,
+        "fib_v2_secondaryLeak": 49,
         "m_currentLeaksV2": 113,
         "m_otherTermInClue": 80,
-        "m_v2_partialLeft": 66,
-        "m_v2_otherTermInClue": 55,
-        "fib_v2_trailingBlank": 67,
-        "m_v2_otherOnSameBoard": 2,
-        "m_v2_masked": 1,
+        "m_v2_masked": 41,
+        "m_v2_otherTermInClue": 52,
+        "fib_v2_trailingBlank": 109,
+        "m_v2_partialLeft": 41,
+        "m_v2_otherOnSameBoard": 3,
+        "fib_v2_multiBlank": 7,
         "fib_noBlankSometimes": 4
       },
       "worst": [
@@ -4920,19 +5154,21 @@
       "items": 217,
       "flags": {
         "fc_noMistakes": 217,
-        "fib_secondaryLeakAny": 194,
-        "fib_secondaryLeakAlways": 131,
+        "fib_secondaryLeakAny": 195,
+        "fib_secondaryLeakAlways": 130,
         "m_fallbackMasked": 38,
         "m_otherTermInClue": 121,
-        "m_v2_masked": 38,
-        "m_v2_otherTermInClue": 104,
+        "m_v2_masked": 116,
+        "m_v2_otherTermInClue": 101,
         "fib_noBlankSometimes": 65,
-        "fib_v2_multiBlank": 80,
+        "fib_v2_secondaryLeak": 85,
         "m_currentLeaksV2": 116,
-        "m_v2_partialLeft": 93,
+        "m_v2_partialLeft": 33,
         "fib_noBlankAlways": 118,
-        "fib_v2_trailingBlank": 45,
+        "fib_v2_trailingBlank": 87,
+        "fib_v2_multiBlank": 27,
         "m_clueShort": 1,
+        "fib_v2_blanks3plus": 3,
         "m_v2_otherOnSameBoard": 1
       },
       "worst": [
@@ -4942,11 +5178,11 @@
         ],
         [
           "fib_secondaryLeakAny",
-          194
+          195
         ],
         [
           "fib_secondaryLeakAlways",
-          131
+          130
         ],
         [
           "m_otherTermInClue",
@@ -4965,17 +5201,19 @@
         "fc_noMistakes": 227,
         "fib_secondaryLeakAny": 200,
         "fib_secondaryLeakAlways": 125,
-        "fib_v2_multiBlank": 92,
         "m_fallbackMasked": 27,
         "m_otherTermInClue": 146,
-        "m_v2_masked": 28,
-        "m_v2_otherTermInClue": 107,
+        "m_v2_masked": 90,
+        "m_v2_otherTermInClue": 101,
         "m_v2_otherOnSameBoard": 4,
         "fib_noBlankSometimes": 54,
+        "fib_v2_multiBlank": 33,
+        "fib_v2_secondaryLeak": 102,
         "m_currentLeaksV2": 157,
-        "m_v2_partialLeft": 104,
         "fib_noBlankAlways": 147,
-        "fib_v2_trailingBlank": 57
+        "fib_v2_trailingBlank": 111,
+        "m_v2_partialLeft": 73,
+        "fib_v2_blanks3plus": 10
       },
       "worst": [
         [
@@ -5007,17 +5245,18 @@
         "fc_noMistakes": 106,
         "fib_noBlankAlways": 66,
         "fib_secondaryLeakAny": 87,
-        "fib_v2_trailingBlank": 47,
-        "m_currentLeaksV2": 66,
+        "fib_v2_trailingBlank": 54,
+        "m_currentLeaksV2": 67,
         "m_otherTermInClue": 66,
-        "m_v2_otherTermInClue": 35,
         "fib_noBlankSometimes": 39,
-        "fib_v2_multiBlank": 27,
-        "fib_secondaryLeakAlways": 29,
-        "m_v2_partialLeft": 27,
+        "fib_v2_multiBlank": 14,
+        "m_v2_otherTermInClue": 38,
+        "fib_secondaryLeakAlways": 30,
+        "fib_v2_secondaryLeak": 23,
+        "m_v2_masked": 20,
         "m_fallbackMasked": 2,
-        "m_v2_masked": 2,
-        "m_v2_otherOnSameBoard": 3
+        "m_v2_otherOnSameBoard": 4,
+        "m_v2_partialLeft": 16
       },
       "worst": [
         [
@@ -5029,11 +5268,11 @@
           87
         ],
         [
-          "fib_noBlankAlways",
-          66
+          "m_currentLeaksV2",
+          67
         ],
         [
-          "m_currentLeaksV2",
+          "fib_noBlankAlways",
           66
         ]
       ]
@@ -5049,17 +5288,19 @@
         "fc_noMistakes": 312,
         "fib_noBlankAlways": 165,
         "fib_secondaryLeakAny": 276,
-        "fib_v2_trailingBlank": 106,
-        "m_currentLeaksV2": 193,
+        "fib_v2_trailingBlank": 141,
+        "m_currentLeaksV2": 194,
         "fib_secondaryLeakAlways": 131,
-        "m_v2_partialLeft": 106,
-        "fib_v2_multiBlank": 95,
+        "m_v2_masked": 106,
+        "fib_v2_multiBlank": 27,
         "m_fallbackMasked": 25,
         "m_otherTermInClue": 181,
-        "m_v2_masked": 27,
-        "m_v2_otherTermInClue": 134,
+        "m_v2_otherTermInClue": 121,
+        "fib_v2_secondaryLeak": 94,
         "fib_noBlankSometimes": 121,
-        "m_v2_otherOnSameBoard": 8
+        "fib_v2_blanks3plus": 7,
+        "m_v2_otherOnSameBoard": 8,
+        "m_v2_partialLeft": 47
       },
       "worst": [
         [
@@ -5072,7 +5313,7 @@
         ],
         [
           "m_currentLeaksV2",
-          193
+          194
         ],
         [
           "m_otherTermInClue",
@@ -5092,16 +5333,18 @@
         "fib_noBlankAlways": 46,
         "fib_secondaryLeakAny": 135,
         "fib_secondaryLeakAlways": 68,
-        "fib_v2_multiBlank": 61,
-        "m_currentLeaksV2": 110,
+        "fib_v2_blanks3plus": 7,
+        "fib_v2_multiBlank": 30,
+        "m_currentLeaksV2": 111,
         "m_otherTermInClue": 88,
-        "m_v2_partialLeft": 65,
-        "m_v2_otherTermInClue": 49,
+        "m_v2_masked": 37,
+        "m_v2_otherTermInClue": 55,
         "fib_noBlankSometimes": 89,
         "m_fallbackMasked": 5,
-        "m_v2_masked": 5,
-        "fib_v2_trailingBlank": 24,
-        "m_v2_otherOnSameBoard": 3,
+        "fib_v2_secondaryLeak": 54,
+        "fib_v2_trailingBlank": 35,
+        "m_v2_partialLeft": 51,
+        "m_v2_otherOnSameBoard": 2,
         "fc_dupTerm": 1
       },
       "worst": [
@@ -5115,7 +5358,7 @@
         ],
         [
           "m_currentLeaksV2",
-          110
+          111
         ],
         [
           "fib_noBlankSometimes",
@@ -5133,18 +5376,20 @@
       "flags": {
         "fc_noMistakes": 264,
         "fib_noBlankAlways": 170,
-        "fib_secondaryLeakAny": 222,
-        "fib_v2_trailingBlank": 100,
-        "m_currentLeaksV2": 180,
+        "fib_secondaryLeakAny": 221,
+        "fib_v2_trailingBlank": 141,
+        "m_currentLeaksV2": 179,
         "m_otherTermInClue": 202,
         "m_fallbackMasked": 18,
-        "m_v2_masked": 19,
-        "m_v2_otherTermInClue": 134,
-        "fib_secondaryLeakAlways": 122,
-        "m_v2_partialLeft": 105,
+        "m_v2_masked": 93,
+        "m_v2_otherTermInClue": 145,
+        "fib_secondaryLeakAlways": 121,
+        "fib_v2_secondaryLeak": 83,
         "fib_noBlankSometimes": 77,
-        "fib_v2_multiBlank": 77,
-        "m_v2_otherOnSameBoard": 7,
+        "fib_v2_multiBlank": 32,
+        "m_v2_otherOnSameBoard": 10,
+        "fib_v2_blanks3plus": 9,
+        "m_v2_partialLeft": 52,
         "fc_dupTerm": 1
       },
       "worst": [
@@ -5154,7 +5399,7 @@
         ],
         [
           "fib_secondaryLeakAny",
-          222
+          221
         ],
         [
           "m_otherTermInClue",
@@ -5162,7 +5407,7 @@
         ],
         [
           "m_currentLeaksV2",
-          180
+          179
         ]
       ]
     },
@@ -5176,18 +5421,20 @@
       "flags": {
         "fc_noMistakes": 200,
         "fib_noBlankAlways": 158,
-        "fib_v2_trailingBlank": 131,
+        "fib_v2_trailingBlank": 140,
         "m_otherTermInClue": 158,
-        "m_v2_otherTermInClue": 143,
-        "fib_secondaryLeakAny": 82,
-        "fib_secondaryLeakAlways": 44,
-        "fib_v2_multiBlank": 13,
-        "m_currentLeaksV2": 49,
-        "m_v2_partialLeft": 19,
+        "m_v2_otherTermInClue": 144,
+        "fib_secondaryLeakAny": 80,
+        "fib_secondaryLeakAlways": 42,
+        "fib_v2_secondaryLeak": 12,
+        "m_currentLeaksV2": 47,
+        "m_v2_masked": 38,
         "m_fallbackMasked": 12,
-        "m_v2_masked": 26,
         "fib_noBlankSometimes": 28,
-        "m_v2_otherOnSameBoard": 2
+        "m_v2_partialLeft": 8,
+        "m_v2_otherOnSameBoard": 2,
+        "fib_v2_multiBlank": 5,
+        "fib_v2_blanks3plus": 1
       },
       "worst": [
         [
@@ -5204,7 +5451,7 @@
         ],
         [
           "m_v2_otherTermInClue",
-          143
+          144
         ]
       ]
     },
@@ -5219,17 +5466,19 @@
         "fc_noMistakes": 119,
         "fib_noBlankAlways": 75,
         "fib_secondaryLeakAny": 91,
-        "fib_secondaryLeakAlways": 54,
-        "fib_v2_multiBlank": 36,
+        "fib_secondaryLeakAlways": 55,
+        "fib_v2_trailingBlank": 57,
+        "fib_v2_secondaryLeak": 35,
         "m_currentLeaksV2": 65,
         "m_otherTermInClue": 42,
-        "m_v2_partialLeft": 47,
-        "m_v2_otherTermInClue": 34,
-        "fib_v2_trailingBlank": 40,
+        "m_v2_partialLeft": 16,
+        "m_v2_otherTermInClue": 30,
         "fib_noBlankSometimes": 35,
         "m_v2_otherOnSameBoard": 1,
+        "m_v2_masked": 45,
         "m_fallbackMasked": 7,
-        "m_v2_masked": 8
+        "fib_v2_multiBlank": 18,
+        "fib_v2_blanks3plus": 4
       },
       "worst": [
         [
@@ -5262,15 +5511,17 @@
         "fib_noBlankSometimes": 12,
         "fib_secondaryLeakAny": 184,
         "fib_secondaryLeakAlways": 142,
-        "fib_v2_multiBlank": 75,
+        "fib_v2_multiBlank": 24,
         "m_currentLeaksV2": 169,
-        "m_v2_partialLeft": 133,
+        "m_v2_masked": 120,
         "fib_noBlankAlways": 201,
-        "fib_v2_trailingBlank": 64,
+        "fib_v2_trailingBlank": 120,
+        "fib_v2_secondaryLeak": 98,
+        "fib_v2_blanks3plus": 5,
         "m_otherTermInClue": 50,
-        "m_v2_otherTermInClue": 34,
+        "m_v2_otherTermInClue": 28,
         "m_fallbackMasked": 6,
-        "m_v2_masked": 9
+        "m_v2_partialLeft": 54
       },
       "worst": [
         [
@@ -5302,17 +5553,19 @@
         "fc_noMistakes": 186,
         "fib_noBlankAlways": 165,
         "fib_secondaryLeakAny": 154,
-        "fib_v2_trailingBlank": 81,
+        "fib_v2_trailingBlank": 123,
         "m_currentLeaksV2": 128,
         "fib_secondaryLeakAlways": 99,
-        "m_v2_partialLeft": 82,
+        "m_v2_masked": 79,
         "m_otherTermInClue": 35,
-        "fib_v2_multiBlank": 48,
+        "fib_v2_multiBlank": 19,
+        "fib_v2_secondaryLeak": 60,
         "m_fallbackMasked": 17,
-        "m_v2_masked": 18,
-        "m_v2_otherTermInClue": 17,
+        "m_v2_partialLeft": 41,
+        "m_v2_otherTermInClue": 14,
         "fib_noBlankSometimes": 15,
-        "m_v2_otherOnSameBoard": 1
+        "m_v2_otherOnSameBoard": 1,
+        "fib_v2_blanks3plus": 4
       },
       "worst": [
         [
@@ -5345,15 +5598,17 @@
         "fib_noBlankAlways": 111,
         "fib_secondaryLeakAny": 115,
         "fib_secondaryLeakAlways": 83,
-        "fib_v2_multiBlank": 54,
+        "fib_v2_trailingBlank": 61,
+        "fib_v2_secondaryLeak": 54,
         "m_currentLeaksV2": 95,
-        "m_v2_partialLeft": 73,
+        "m_v2_masked": 70,
+        "fib_v2_multiBlank": 19,
         "m_otherTermInClue": 25,
+        "fib_v2_blanks3plus": 5,
+        "m_v2_partialLeft": 26,
         "fib_noBlankSometimes": 16,
         "m_fallbackMasked": 6,
-        "m_v2_masked": 10,
-        "m_v2_otherTermInClue": 15,
-        "fib_v2_trailingBlank": 34,
+        "m_v2_otherTermInClue": 14,
         "m_clueShort": 1,
         "m_v2_otherOnSameBoard": 2
       },
@@ -5386,18 +5641,20 @@
       "flags": {
         "fc_noMistakes": 156,
         "fib_noBlankSometimes": 65,
-        "fib_secondaryLeakAny": 131,
+        "fib_secondaryLeakAny": 130,
         "fib_noBlankAlways": 71,
-        "fib_secondaryLeakAlways": 67,
-        "m_currentLeaksV2": 63,
+        "fib_secondaryLeakAlways": 65,
+        "fib_v2_multiBlank": 24,
+        "m_currentLeaksV2": 61,
         "m_otherTermInClue": 53,
-        "m_v2_partialLeft": 49,
-        "m_v2_otherTermInClue": 38,
-        "fib_v2_trailingBlank": 35,
-        "fib_v2_multiBlank": 45,
-        "m_fallbackMasked": 20,
-        "m_v2_masked": 20,
-        "m_v2_otherOnSameBoard": 2
+        "m_v2_partialLeft": 13,
+        "m_v2_otherTermInClue": 40,
+        "m_v2_otherOnSameBoard": 3,
+        "fib_v2_trailingBlank": 49,
+        "m_v2_masked": 57,
+        "fib_v2_secondaryLeak": 34,
+        "fib_v2_blanks3plus": 4,
+        "m_fallbackMasked": 20
       },
       "worst": [
         [
@@ -5406,15 +5663,15 @@
         ],
         [
           "fib_secondaryLeakAny",
-          131
+          130
         ],
         [
           "fib_noBlankAlways",
           71
         ],
         [
-          "fib_secondaryLeakAlways",
-          67
+          "fib_noBlankSometimes",
+          65
         ]
       ]
     },
@@ -5435,10 +5692,11 @@
         "m_currentLeaksV2": 3,
         "fib_secondaryLeakAlways": 59,
         "m_fallbackMasked": 57,
-        "m_v2_masked": 57,
+        "m_v2_masked": 59,
         "fib_noBlankSometimes": 4,
-        "m_v2_partialLeft": 2,
-        "fib_v2_multiBlank": 9,
+        "fib_v2_multiBlank": 3,
+        "fib_v2_secondaryLeak": 6,
+        "m_v2_partialLeft": 1,
         "m_v2_otherOnSameBoard": 2
       },
       "worst": [
@@ -5455,8 +5713,8 @@
           59
         ],
         [
-          "m_fallbackMasked",
-          57
+          "m_v2_masked",
+          59
         ]
       ]
     },
@@ -5470,17 +5728,19 @@
       "flags": {
         "fc_noMistakes": 267,
         "fib_noBlankAlways": 83,
-        "fib_v2_trailingBlank": 18,
-        "fib_secondaryLeakAny": 250,
-        "fib_secondaryLeakAlways": 202,
+        "fib_v2_trailingBlank": 53,
+        "fib_secondaryLeakAny": 249,
+        "fib_secondaryLeakAlways": 200,
         "m_fallbackMasked": 109,
-        "m_v2_masked": 111,
+        "m_v2_masked": 172,
         "m_otherTermInClue": 107,
-        "m_v2_otherTermInClue": 89,
-        "m_v2_otherOnSameBoard": 9,
-        "m_currentLeaksV2": 98,
-        "m_v2_partialLeft": 93,
-        "fib_v2_multiBlank": 122,
+        "m_v2_otherTermInClue": 76,
+        "m_v2_otherOnSameBoard": 11,
+        "m_currentLeaksV2": 97,
+        "fib_v2_secondaryLeak": 99,
+        "m_v2_partialLeft": 50,
+        "fib_v2_multiBlank": 53,
+        "fib_v2_blanks3plus": 13,
         "fib_noBlankSometimes": 77
       },
       "worst": [
@@ -5490,15 +5750,15 @@
         ],
         [
           "fib_secondaryLeakAny",
-          250
+          249
         ],
         [
           "fib_secondaryLeakAlways",
-          202
+          200
         ],
         [
-          "fib_v2_multiBlank",
-          122
+          "m_v2_masked",
+          172
         ]
       ]
     },
@@ -5514,16 +5774,18 @@
         "fib_noBlankAlways": 66,
         "fib_secondaryLeakAny": 209,
         "fib_secondaryLeakAlways": 179,
+        "fib_v2_trailingBlank": 52,
+        "fib_v2_secondaryLeak": 103,
         "m_currentLeaksV2": 67,
-        "m_v2_partialLeft": 62,
-        "fib_v2_multiBlank": 99,
+        "m_v2_masked": 163,
         "m_otherTermInClue": 106,
-        "m_v2_otherTermInClue": 92,
+        "m_v2_partialLeft": 43,
+        "m_v2_otherTermInClue": 89,
+        "fib_v2_blanks3plus": 8,
+        "fib_v2_multiBlank": 37,
         "m_fallbackMasked": 118,
-        "m_v2_masked": 119,
-        "fib_v2_trailingBlank": 19,
         "fib_noBlankSometimes": 42,
-        "m_v2_otherOnSameBoard": 8
+        "m_v2_otherOnSameBoard": 11
       },
       "worst": [
         [
@@ -5540,7 +5802,7 @@
         ],
         [
           "m_v2_masked",
-          119
+          163
         ]
       ]
     },
@@ -5556,17 +5818,19 @@
         "fib_secondaryLeakAny": 139,
         "fib_secondaryLeakAlways": 77,
         "m_fallbackMasked": 71,
-        "m_v2_masked": 73,
+        "m_v2_masked": 84,
         "fib_noBlankSometimes": 63,
         "m_currentLeaksV2": 29,
-        "m_v2_partialLeft": 15,
         "fib_noBlankAlways": 51,
-        "fib_v2_trailingBlank": 35,
+        "fib_v2_trailingBlank": 37,
         "m_otherTermInClue": 61,
-        "m_v2_otherTermInClue": 52,
-        "fib_v2_multiBlank": 59,
+        "m_v2_otherTermInClue": 49,
+        "fib_v2_blanks3plus": 8,
+        "fib_v2_multiBlank": 45,
         "m_clueShort": 3,
-        "m_v2_otherOnSameBoard": 9
+        "m_v2_partialLeft": 7,
+        "fib_v2_secondaryLeak": 15,
+        "m_v2_otherOnSameBoard": 10
       },
       "worst": [
         [
@@ -5578,12 +5842,12 @@
           139
         ],
         [
-          "fib_secondaryLeakAlways",
-          77
+          "m_v2_masked",
+          84
         ],
         [
-          "m_v2_masked",
-          73
+          "fib_secondaryLeakAlways",
+          77
         ]
       ]
     },
@@ -5599,15 +5863,17 @@
         "fib_secondaryLeakAny": 245,
         "fib_secondaryLeakAlways": 130,
         "m_fallbackMasked": 41,
-        "m_v2_masked": 40,
+        "m_v2_masked": 118,
         "fib_noBlankSometimes": 98,
-        "fib_v2_multiBlank": 83,
+        "fib_v2_multiBlank": 37,
         "m_otherTermInClue": 112,
-        "m_v2_otherTermInClue": 84,
+        "m_v2_otherTermInClue": 79,
+        "fib_v2_secondaryLeak": 82,
         "m_currentLeaksV2": 149,
-        "m_v2_partialLeft": 93,
+        "m_v2_partialLeft": 23,
+        "fib_v2_blanks3plus": 8,
         "fib_noBlankAlways": 143,
-        "fib_v2_trailingBlank": 82,
+        "fib_v2_trailingBlank": 116,
         "m_v2_otherOnSameBoard": 6
       },
       "worst": [
@@ -5640,17 +5906,19 @@
         "fc_noMistakes": 136,
         "fib_noBlankAlways": 103,
         "fib_secondaryLeakAny": 116,
-        "fib_v2_trailingBlank": 49,
+        "fib_v2_trailingBlank": 72,
         "m_currentLeaksV2": 97,
-        "fib_secondaryLeakAlways": 73,
-        "fib_v2_multiBlank": 49,
+        "m_v2_partialLeft": 18,
+        "fib_secondaryLeakAlways": 72,
+        "fib_v2_secondaryLeak": 45,
         "m_otherTermInClue": 36,
-        "m_v2_partialLeft": 64,
-        "m_v2_otherTermInClue": 22,
+        "m_v2_masked": 68,
+        "m_v2_otherTermInClue": 20,
+        "fib_v2_blanks3plus": 10,
+        "fib_v2_multiBlank": 22,
         "fib_noBlankSometimes": 23,
         "m_fallbackMasked": 10,
-        "m_v2_masked": 11,
-        "m_v2_otherOnSameBoard": 2
+        "m_v2_otherOnSameBoard": 3
       },
       "worst": [
         [
@@ -5681,18 +5949,20 @@
       "flags": {
         "fc_noMistakes": 136,
         "fib_noBlankSometimes": 31,
-        "fib_secondaryLeakAny": 118,
+        "fib_secondaryLeakAny": 117,
         "fib_secondaryLeakAlways": 75,
-        "fib_v2_multiBlank": 59,
-        "m_currentLeaksV2": 93,
-        "m_v2_partialLeft": 63,
+        "fib_v2_blanks3plus": 7,
+        "fib_v2_multiBlank": 23,
+        "m_currentLeaksV2": 92,
+        "m_v2_masked": 58,
+        "fib_v2_secondaryLeak": 55,
         "m_otherTermInClue": 36,
-        "m_v2_otherTermInClue": 22,
+        "m_v2_otherTermInClue": 21,
+        "m_v2_partialLeft": 31,
         "fib_noBlankAlways": 94,
-        "fib_v2_trailingBlank": 45,
+        "fib_v2_trailingBlank": 68,
         "m_fallbackMasked": 12,
-        "m_v2_masked": 13,
-        "m_v2_otherOnSameBoard": 4
+        "m_v2_otherOnSameBoard": 2
       },
       "worst": [
         [
@@ -5701,7 +5971,7 @@
         ],
         [
           "fib_secondaryLeakAny",
-          118
+          117
         ],
         [
           "fib_noBlankAlways",
@@ -5709,7 +5979,7 @@
         ],
         [
           "m_currentLeaksV2",
-          93
+          92
         ]
       ]
     },
@@ -5724,17 +5994,19 @@
         "fc_noMistakes": 165,
         "fib_noBlankSometimes": 38,
         "fib_secondaryLeakAny": 154,
-        "fib_secondaryLeakAlways": 114,
-        "fib_v2_multiBlank": 73,
+        "fib_secondaryLeakAlways": 113,
+        "fib_v2_secondaryLeak": 87,
         "m_currentLeaksV2": 141,
-        "m_v2_partialLeft": 107,
+        "m_v2_partialLeft": 57,
+        "fib_v2_blanks3plus": 7,
+        "fib_v2_multiBlank": 25,
         "fib_noBlankAlways": 118,
+        "fib_v2_trailingBlank": 92,
         "m_otherTermInClue": 104,
-        "m_v2_otherTermInClue": 75,
-        "fib_v2_trailingBlank": 43,
-        "m_v2_otherOnSameBoard": 7,
+        "m_v2_masked": 88,
+        "m_v2_otherTermInClue": 65,
         "m_fallbackMasked": 8,
-        "m_v2_masked": 8
+        "m_v2_otherOnSameBoard": 3
       },
       "worst": [
         [
@@ -5769,14 +6041,16 @@
         "fib_secondaryLeakAlways": 91,
         "m_currentLeaksV2": 120,
         "m_otherTermInClue": 78,
-        "m_v2_partialLeft": 83,
-        "fib_v2_trailingBlank": 44,
-        "fib_v2_multiBlank": 64,
-        "m_v2_otherTermInClue": 39,
+        "m_v2_masked": 70,
+        "fib_v2_trailingBlank": 89,
+        "fib_v2_secondaryLeak": 75,
+        "m_v2_partialLeft": 50,
+        "m_v2_otherTermInClue": 42,
+        "fib_v2_multiBlank": 24,
         "fib_noBlankSometimes": 20,
-        "m_v2_otherOnSameBoard": 1,
-        "m_fallbackMasked": 8,
-        "m_v2_masked": 8
+        "fib_v2_blanks3plus": 9,
+        "m_v2_otherOnSameBoard": 3,
+        "m_fallbackMasked": 8
       },
       "worst": [
         [
@@ -5807,16 +6081,19 @@
       "flags": {
         "fc_noMistakes": 180,
         "fib_noBlankAlways": 155,
-        "fib_secondaryLeakAny": 169,
+        "fib_secondaryLeakAny": 168,
         "fib_secondaryLeakAlways": 113,
-        "fib_v2_multiBlank": 69,
-        "m_currentLeaksV2": 164,
-        "m_v2_partialLeft": 113,
+        "fib_v2_secondaryLeak": 90,
+        "m_currentLeaksV2": 163,
+        "m_v2_masked": 85,
+        "m_v2_partialLeft": 46,
+        "fib_v2_trailingBlank": 116,
         "m_otherTermInClue": 43,
-        "m_v2_otherTermInClue": 26,
-        "fib_v2_trailingBlank": 53,
+        "m_v2_otherTermInClue": 21,
+        "fib_v2_multiBlank": 22,
         "fib_noBlankSometimes": 25,
-        "m_v2_otherOnSameBoard": 2
+        "m_v2_otherOnSameBoard": 2,
+        "fib_v2_blanks3plus": 4
       },
       "worst": [
         [
@@ -5825,11 +6102,11 @@
         ],
         [
           "fib_secondaryLeakAny",
-          169
+          168
         ],
         [
           "m_currentLeaksV2",
-          164
+          163
         ],
         [
           "fib_noBlankAlways",
@@ -5848,16 +6125,18 @@
         "fc_noMistakes": 139,
         "fib_secondaryLeakAny": 126,
         "fib_secondaryLeakAlways": 79,
+        "fib_v2_secondaryLeak": 63,
         "m_fallbackMasked": 3,
-        "m_v2_masked": 4,
+        "m_v2_masked": 42,
         "fib_noBlankAlways": 117,
-        "fib_v2_trailingBlank": 55,
+        "fib_v2_trailingBlank": 99,
         "m_currentLeaksV2": 119,
-        "m_v2_partialLeft": 75,
         "fib_noBlankSometimes": 19,
         "m_otherTermInClue": 74,
-        "m_v2_otherTermInClue": 50,
-        "fib_v2_multiBlank": 31,
+        "m_v2_otherTermInClue": 46,
+        "fib_v2_blanks3plus": 2,
+        "fib_v2_multiBlank": 9,
+        "m_v2_partialLeft": 51,
         "m_v2_otherOnSameBoard": 2
       },
       "worst": [
@@ -5890,16 +6169,18 @@
         "fc_noMistakes": 208,
         "fib_noBlankAlways": 154,
         "fib_secondaryLeakAny": 186,
-        "fib_secondaryLeakAlways": 125,
+        "fib_secondaryLeakAlways": 124,
         "m_currentLeaksV2": 158,
-        "m_v2_partialLeft": 116,
-        "fib_v2_multiBlank": 83,
+        "m_v2_masked": 100,
+        "fib_v2_secondaryLeak": 94,
+        "fib_v2_trailingBlank": 113,
         "m_otherTermInClue": 60,
-        "m_v2_otherTermInClue": 37,
-        "fib_v2_trailingBlank": 63,
+        "m_v2_otherTermInClue": 33,
+        "m_v2_partialLeft": 47,
+        "fib_v2_multiBlank": 21,
         "m_fallbackMasked": 9,
-        "m_v2_masked": 9,
         "fib_noBlankSometimes": 45,
+        "fib_v2_blanks3plus": 3,
         "m_v2_otherOnSameBoard": 3
       },
       "worst": [
@@ -5931,19 +6212,21 @@
       "flags": {
         "fc_noMistakes": 402,
         "fib_noBlankAlways": 146,
-        "fib_v2_trailingBlank": 91,
+        "fib_v2_trailingBlank": 121,
         "m_otherTermInClue": 374,
-        "m_v2_otherTermInClue": 356,
+        "m_v2_otherTermInClue": 355,
         "m_v2_otherOnSameBoard": 17,
         "fib_noBlankSometimes": 156,
         "m_fallbackMasked": 99,
-        "m_v2_masked": 103,
+        "m_v2_masked": 184,
         "fib_secondaryLeakAny": 308,
-        "fib_secondaryLeakAlways": 182,
-        "fib_v2_multiBlank": 145,
-        "m_currentLeaksV2": 141,
-        "m_v2_partialLeft": 102,
-        "m_clueShort": 3
+        "fib_secondaryLeakAlways": 181,
+        "fib_v2_multiBlank": 74,
+        "m_currentLeaksV2": 140,
+        "m_clueShort": 3,
+        "fib_v2_blanks3plus": 18,
+        "fib_v2_secondaryLeak": 117,
+        "m_v2_partialLeft": 42
       },
       "worst": [
         [
@@ -5956,7 +6239,7 @@
         ],
         [
           "m_v2_otherTermInClue",
-          356
+          355
         ],
         [
           "fib_secondaryLeakAny",
@@ -5974,19 +6257,21 @@
       "flags": {
         "fc_noMistakes": 294,
         "fib_noBlankAlways": 108,
-        "fib_v2_trailingBlank": 92,
+        "fib_v2_trailingBlank": 99,
         "m_otherTermInClue": 180,
         "m_v2_otherTermInClue": 162,
         "fib_secondaryLeakAny": 184,
-        "m_currentLeaksV2": 57,
-        "fib_secondaryLeakAlways": 104,
+        "m_currentLeaksV2": 56,
+        "fib_secondaryLeakAlways": 102,
         "m_fallbackMasked": 84,
-        "m_v2_masked": 85,
+        "m_v2_masked": 121,
         "fib_noBlankSometimes": 100,
-        "fib_v2_multiBlank": 74,
+        "fib_v2_secondaryLeak": 40,
         "m_clueShort": 3,
-        "m_v2_partialLeft": 40,
-        "m_v2_otherOnSameBoard": 18
+        "fib_v2_multiBlank": 53,
+        "fib_v2_blanks3plus": 14,
+        "m_v2_otherOnSameBoard": 18,
+        "m_v2_partialLeft": 11
       },
       "worst": [
         [
@@ -6018,16 +6303,18 @@
         "fc_noMistakes": 132,
         "fib_noBlankAlways": 24,
         "fib_secondaryLeakAny": 127,
-        "fib_v2_trailingBlank": 9,
-        "m_currentLeaksV2": 79,
-        "fib_secondaryLeakAlways": 75,
+        "fib_v2_trailingBlank": 17,
+        "m_currentLeaksV2": 78,
+        "fib_secondaryLeakAlways": 74,
         "m_fallbackMasked": 7,
         "m_otherTermInClue": 28,
-        "m_v2_masked": 7,
+        "m_v2_masked": 58,
         "m_v2_otherTermInClue": 28,
         "m_v2_otherOnSameBoard": 2,
-        "fib_v2_multiBlank": 83,
-        "m_v2_partialLeft": 71,
+        "fib_v2_blanks3plus": 11,
+        "fib_v2_multiBlank": 33,
+        "fib_v2_secondaryLeak": 66,
+        "m_v2_partialLeft": 31,
         "fib_noBlankSometimes": 103
       },
       "worst": [
@@ -6044,8 +6331,8 @@
           103
         ],
         [
-          "fib_v2_multiBlank",
-          83
+          "m_currentLeaksV2",
+          78
         ]
       ]
     },
@@ -6059,17 +6346,19 @@
       "flags": {
         "fc_noMistakes": 79,
         "fib_noBlankAlways": 30,
-        "fib_v2_trailingBlank": 16,
+        "fib_v2_trailingBlank": 20,
         "fib_secondaryLeakAny": 71,
         "m_currentLeaksV2": 50,
         "fib_secondaryLeakAlways": 43,
-        "m_v2_partialLeft": 41,
+        "fib_v2_secondaryLeak": 36,
+        "m_v2_masked": 34,
         "m_otherTermInClue": 10,
         "fib_noBlankSometimes": 47,
-        "fib_v2_multiBlank": 45,
-        "m_v2_otherTermInClue": 8,
-        "m_fallbackMasked": 2,
-        "m_v2_masked": 2
+        "fib_v2_multiBlank": 18,
+        "m_v2_partialLeft": 16,
+        "m_v2_otherTermInClue": 5,
+        "fib_v2_blanks3plus": 5,
+        "m_fallbackMasked": 2
       },
       "worst": [
         [
@@ -6102,16 +6391,17 @@
         "fib_noBlankSometimes": 83,
         "fib_secondaryLeakAny": 124,
         "fib_secondaryLeakAlways": 39,
-        "fib_v2_multiBlank": 47,
+        "fib_v2_multiBlank": 22,
+        "fib_v2_secondaryLeak": 48,
         "m_currentLeaksV2": 104,
         "m_otherTermInClue": 73,
-        "m_v2_partialLeft": 38,
-        "m_v2_otherTermInClue": 23,
+        "m_v2_masked": 26,
+        "m_v2_otherTermInClue": 22,
+        "m_v2_partialLeft": 20,
         "fib_noBlankAlways": 59,
-        "fib_v2_trailingBlank": 35,
-        "m_v2_otherOnSameBoard": 1,
+        "fib_v2_trailingBlank": 50,
         "m_fallbackMasked": 1,
-        "m_v2_masked": 1
+        "fib_v2_blanks3plus": 5
       },
       "worst": [
         [
@@ -6143,15 +6433,18 @@
         "fc_noMistakes": 145,
         "fib_noBlankSometimes": 37,
         "fib_noBlankAlways": 108,
-        "fib_secondaryLeakAny": 133,
-        "fib_v2_trailingBlank": 64,
-        "m_currentLeaksV2": 127,
-        "fib_secondaryLeakAlways": 51,
+        "fib_secondaryLeakAny": 132,
+        "fib_v2_trailingBlank": 90,
+        "m_currentLeaksV2": 126,
+        "m_v2_partialLeft": 32,
+        "fib_secondaryLeakAlways": 49,
+        "fib_v2_secondaryLeak": 32,
         "m_otherTermInClue": 58,
-        "m_v2_partialLeft": 51,
+        "m_v2_masked": 30,
         "m_v2_otherTermInClue": 24,
-        "fib_v2_multiBlank": 36,
-        "m_v2_otherOnSameBoard": 1
+        "fib_v2_multiBlank": 18,
+        "m_v2_otherOnSameBoard": 2,
+        "fib_v2_blanks3plus": 2
       },
       "worst": [
         [
@@ -6160,11 +6453,11 @@
         ],
         [
           "fib_secondaryLeakAny",
-          133
+          132
         ],
         [
           "m_currentLeaksV2",
-          127
+          126
         ],
         [
           "fib_noBlankAlways",
@@ -6184,15 +6477,17 @@
         "fib_noBlankSometimes": 48,
         "fib_secondaryLeakAny": 94,
         "m_otherTermInClue": 45,
-        "m_v2_otherTermInClue": 19,
+        "m_v2_otherTermInClue": 22,
         "fib_noBlankAlways": 51,
-        "fib_v2_trailingBlank": 30,
+        "fib_v2_trailingBlank": 37,
         "m_currentLeaksV2": 66,
         "fib_secondaryLeakAlways": 29,
         "m_fallbackMasked": 2,
-        "m_v2_masked": 2,
-        "fib_v2_multiBlank": 34,
-        "m_v2_partialLeft": 27
+        "m_v2_masked": 24,
+        "fib_v2_secondaryLeak": 24,
+        "m_v2_partialLeft": 11,
+        "fib_v2_multiBlank": 18,
+        "fib_v2_blanks3plus": 6
       },
       "worst": [
         [
@@ -6224,16 +6519,18 @@
         "fc_noMistakes": 241,
         "fib_noBlankSometimes": 88,
         "fib_secondaryLeakAny": 231,
-        "fib_secondaryLeakAlways": 116,
+        "fib_secondaryLeakAlways": 114,
         "m_currentLeaksV2": 197,
-        "m_v2_partialLeft": 110,
-        "fib_v2_multiBlank": 97,
+        "m_v2_masked": 93,
+        "fib_v2_multiBlank": 39,
         "m_fallbackMasked": 6,
         "m_otherTermInClue": 54,
-        "m_v2_masked": 6,
-        "m_v2_otherTermInClue": 32,
+        "fib_v2_secondaryLeak": 87,
         "fib_noBlankAlways": 147,
-        "fib_v2_trailingBlank": 72,
+        "fib_v2_trailingBlank": 109,
+        "m_v2_otherTermInClue": 24,
+        "m_v2_partialLeft": 44,
+        "fib_v2_blanks3plus": 12,
         "m_v2_otherOnSameBoard": 3
       },
       "worst": [
@@ -6265,17 +6562,19 @@
       "flags": {
         "fc_noMistakes": 215,
         "fib_noBlankAlways": 158,
-        "fib_v2_trailingBlank": 74,
+        "fib_v2_trailingBlank": 116,
         "m_otherTermInClue": 128,
+        "m_v2_otherTermInClue": 84,
         "fib_secondaryLeakAny": 202,
-        "fib_secondaryLeakAlways": 109,
+        "fib_secondaryLeakAlways": 108,
+        "fib_v2_secondaryLeak": 84,
         "m_currentLeaksV2": 175,
-        "m_v2_partialLeft": 105,
-        "m_v2_otherTermInClue": 73,
+        "m_v2_masked": 76,
         "fib_noBlankSometimes": 53,
-        "fib_v2_multiBlank": 69,
-        "m_v2_masked": 5,
-        "m_v2_otherOnSameBoard": 10,
+        "m_v2_partialLeft": 67,
+        "fib_v2_blanks3plus": 7,
+        "fib_v2_multiBlank": 20,
+        "m_v2_otherOnSameBoard": 11,
         "m_fallbackMasked": 4
       },
       "worst": [
@@ -6309,16 +6608,18 @@
         "fib_noBlankSometimes": 62,
         "fib_secondaryLeakAny": 87,
         "fib_secondaryLeakAlways": 47,
-        "fib_v2_multiBlank": 27,
+        "fib_v2_multiBlank": 21,
+        "fib_v2_secondaryLeak": 9,
         "m_currentLeaksV2": 44,
         "m_otherTermInClue": 31,
-        "m_v2_partialLeft": 35,
+        "m_v2_partialLeft": 12,
         "m_v2_otherTermInClue": 21,
-        "m_v2_otherOnSameBoard": 3,
+        "m_v2_otherOnSameBoard": 4,
         "m_fallbackMasked": 12,
-        "m_v2_masked": 12,
+        "m_v2_masked": 39,
+        "fib_v2_blanks3plus": 10,
         "fib_noBlankAlways": 16,
-        "fib_v2_trailingBlank": 12
+        "fib_v2_trailingBlank": 14
       },
       "worst": [
         [
@@ -6350,17 +6651,19 @@
         "fc_noMistakes": 414,
         "fib_noBlankAlways": 213,
         "fib_secondaryLeakAny": 383,
-        "fib_v2_trailingBlank": 111,
-        "m_currentLeaksV2": 270,
+        "fib_v2_trailingBlank": 172,
+        "m_currentLeaksV2": 266,
         "m_otherTermInClue": 158,
-        "m_v2_otherTermInClue": 99,
-        "fib_secondaryLeakAlways": 199,
-        "m_v2_partialLeft": 181,
+        "m_v2_otherTermInClue": 88,
+        "fib_secondaryLeakAlways": 195,
+        "fib_v2_secondaryLeak": 155,
+        "m_v2_partialLeft": 71,
+        "fib_v2_multiBlank": 57,
+        "m_v2_masked": 152,
         "fib_noBlankSometimes": 185,
-        "fib_v2_multiBlank": 164,
+        "fib_v2_blanks3plus": 10,
         "m_fallbackMasked": 16,
-        "m_v2_masked": 18,
-        "m_v2_otherOnSameBoard": 6
+        "m_v2_otherOnSameBoard": 5
       },
       "worst": [
         [
@@ -6373,7 +6676,7 @@
         ],
         [
           "m_currentLeaksV2",
-          270
+          266
         ],
         [
           "fib_noBlankAlways",
@@ -6393,16 +6696,18 @@
         "fib_noBlankAlways": 134,
         "fib_secondaryLeakAny": 239,
         "fib_secondaryLeakAlways": 128,
-        "fib_v2_multiBlank": 103,
+        "fib_v2_trailingBlank": 108,
+        "fib_v2_secondaryLeak": 91,
         "m_currentLeaksV2": 155,
-        "m_v2_partialLeft": 98,
+        "m_v2_partialLeft": 43,
         "m_otherTermInClue": 132,
-        "m_v2_otherTermInClue": 82,
+        "m_v2_masked": 104,
         "fib_noBlankSometimes": 105,
-        "fib_v2_trailingBlank": 76,
+        "fib_v2_multiBlank": 37,
+        "m_v2_otherTermInClue": 79,
         "m_fallbackMasked": 34,
-        "m_v2_masked": 34,
-        "m_v2_otherOnSameBoard": 6
+        "m_v2_otherOnSameBoard": 6,
+        "fib_v2_blanks3plus": 11
       },
       "worst": [
         [
@@ -6435,16 +6740,18 @@
         "fib_noBlankAlways": 91,
         "fib_secondaryLeakAny": 177,
         "fib_secondaryLeakAlways": 90,
+        "fib_v2_multiBlank": 35,
         "m_currentLeaksV2": 114,
-        "m_v2_partialLeft": 73,
+        "m_v2_masked": 80,
         "m_otherTermInClue": 80,
-        "fib_v2_trailingBlank": 55,
+        "fib_v2_trailingBlank": 80,
         "fib_noBlankSometimes": 87,
-        "m_v2_otherTermInClue": 53,
+        "m_v2_otherTermInClue": 51,
         "m_v2_otherOnSameBoard": 3,
         "m_fallbackMasked": 17,
-        "m_v2_masked": 18,
-        "fib_v2_multiBlank": 72
+        "fib_v2_secondaryLeak": 71,
+        "m_v2_partialLeft": 20,
+        "fib_v2_blanks3plus": 5
       },
       "worst": [
         [
@@ -6477,16 +6784,18 @@
         "fib_noBlankSometimes": 27,
         "fib_secondaryLeakAny": 103,
         "fib_secondaryLeakAlways": 56,
-        "fib_v2_multiBlank": 29,
+        "fib_v2_multiBlank": 19,
         "m_currentLeaksV2": 82,
-        "m_v2_partialLeft": 46,
+        "m_v2_masked": 51,
         "fib_noBlankAlways": 72,
-        "fib_v2_trailingBlank": 42,
+        "fib_v2_trailingBlank": 49,
+        "fib_v2_secondaryLeak": 29,
         "m_fallbackMasked": 11,
         "m_otherTermInClue": 38,
-        "m_v2_masked": 11,
-        "m_v2_otherTermInClue": 22,
-        "m_v2_otherOnSameBoard": 5
+        "m_v2_otherTermInClue": 24,
+        "m_v2_otherOnSameBoard": 4,
+        "m_v2_partialLeft": 23,
+        "fib_v2_blanks3plus": 4
       },
       "worst": [
         [
@@ -6519,14 +6828,17 @@
         "fib_noBlankSometimes": 36,
         "fib_secondaryLeakAny": 71,
         "fib_noBlankAlways": 44,
-        "fib_v2_trailingBlank": 24,
-        "m_currentLeaksV2": 54,
+        "fib_v2_trailingBlank": 34,
+        "m_currentLeaksV2": 53,
         "m_otherTermInClue": 27,
-        "m_v2_otherTermInClue": 22,
-        "fib_v2_multiBlank": 22,
+        "m_v2_otherTermInClue": 20,
+        "fib_v2_multiBlank": 9,
+        "fib_v2_secondaryLeak": 20,
+        "m_v2_partialLeft": 12,
         "m_v2_otherOnSameBoard": 5,
-        "fib_secondaryLeakAlways": 37,
-        "m_v2_partialLeft": 37
+        "fib_secondaryLeakAlways": 36,
+        "m_v2_masked": 28,
+        "fib_v2_blanks3plus": 1
       },
       "worst": [
         [
@@ -6539,7 +6851,7 @@
         ],
         [
           "m_currentLeaksV2",
-          54
+          53
         ],
         [
           "fib_noBlankAlways",
@@ -6559,16 +6871,18 @@
         "fib_secondaryLeakAny": 96,
         "fib_secondaryLeakAlways": 46,
         "m_fallbackMasked": 4,
-        "m_v2_masked": 4,
+        "m_v2_masked": 31,
         "m_otherTermInClue": 24,
-        "m_v2_otherTermInClue": 13,
-        "m_v2_otherOnSameBoard": 6,
-        "fib_v2_multiBlank": 22,
+        "m_v2_otherTermInClue": 10,
+        "m_v2_otherOnSameBoard": 5,
+        "fib_v2_secondaryLeak": 21,
         "fib_noBlankSometimes": 21,
         "fib_noBlankAlways": 82,
-        "fib_v2_trailingBlank": 48,
+        "fib_v2_trailingBlank": 60,
         "m_currentLeaksV2": 81,
-        "m_v2_partialLeft": 42
+        "fib_v2_blanks3plus": 3,
+        "fib_v2_multiBlank": 9,
+        "m_v2_partialLeft": 24
       },
       "worst": [
         [
@@ -6600,17 +6914,19 @@
         "fc_noMistakes": 92,
         "fib_noBlankSometimes": 48,
         "fib_secondaryLeakAny": 82,
-        "fib_v2_multiBlank": 32,
+        "fib_v2_multiBlank": 19,
         "m_otherTermInClue": 45,
+        "m_v2_otherTermInClue": 18,
         "fib_noBlankAlways": 43,
         "fib_secondaryLeakAlways": 34,
         "m_currentLeaksV2": 63,
-        "m_v2_partialLeft": 34,
-        "m_v2_otherTermInClue": 19,
-        "m_v2_otherOnSameBoard": 3,
+        "m_v2_partialLeft": 18,
+        "fib_v2_secondaryLeak": 23,
+        "fib_v2_blanks3plus": 3,
+        "m_v2_masked": 28,
+        "m_v2_otherOnSameBoard": 4,
         "m_fallbackMasked": 1,
-        "m_v2_masked": 1,
-        "fib_v2_trailingBlank": 25
+        "fib_v2_trailingBlank": 29
       },
       "worst": [
         [
@@ -6643,16 +6959,18 @@
         "fib_noBlankAlways": 107,
         "fib_secondaryLeakAny": 86,
         "fib_secondaryLeakAlways": 36,
+        "fib_v2_trailingBlank": 95,
+        "fib_v2_secondaryLeak": 23,
         "m_currentLeaksV2": 81,
-        "m_v2_partialLeft": 35,
-        "fib_v2_trailingBlank": 75,
+        "m_v2_masked": 23,
         "m_otherTermInClue": 48,
-        "m_v2_otherTermInClue": 16,
-        "m_v2_otherOnSameBoard": 3,
+        "m_v2_partialLeft": 26,
+        "m_v2_otherTermInClue": 15,
         "m_fallbackMasked": 1,
-        "m_v2_masked": 1,
         "fib_noBlankSometimes": 8,
-        "fib_v2_multiBlank": 11
+        "fib_v2_multiBlank": 4,
+        "m_v2_otherOnSameBoard": 2,
+        "fib_v2_blanks3plus": 2
       },
       "worst": [
         [
@@ -6664,12 +6982,12 @@
           107
         ],
         [
-          "fib_secondaryLeakAny",
-          86
+          "fib_v2_trailingBlank",
+          95
         ],
         [
-          "m_currentLeaksV2",
-          81
+          "fib_secondaryLeakAny",
+          86
         ]
       ]
     },
@@ -6683,18 +7001,20 @@
       "flags": {
         "fc_noMistakes": 105,
         "fib_noBlankAlways": 91,
-        "fib_secondaryLeakAny": 86,
-        "fib_v2_trailingBlank": 45,
-        "m_currentLeaksV2": 76,
+        "fib_secondaryLeakAny": 85,
+        "fib_v2_trailingBlank": 76,
+        "m_currentLeaksV2": 75,
         "fib_noBlankSometimes": 11,
-        "fib_secondaryLeakAlways": 53,
-        "m_v2_partialLeft": 50,
+        "fib_secondaryLeakAlways": 52,
+        "fib_v2_secondaryLeak": 38,
+        "m_v2_masked": 35,
         "m_fallbackMasked": 3,
-        "m_v2_masked": 3,
-        "fib_v2_multiBlank": 26,
         "m_otherTermInClue": 24,
+        "m_v2_partialLeft": 23,
         "m_v2_otherTermInClue": 10,
-        "m_v2_otherOnSameBoard": 4
+        "m_v2_otherOnSameBoard": 5,
+        "fib_v2_multiBlank": 8,
+        "fib_v2_blanks3plus": 1
       },
       "worst": [
         [
@@ -6707,10 +7027,10 @@
         ],
         [
           "fib_secondaryLeakAny",
-          86
+          85
         ],
         [
-          "m_currentLeaksV2",
+          "fib_v2_trailingBlank",
           76
         ]
       ]
@@ -6726,17 +7046,19 @@
         "fc_noMistakes": 75,
         "fib_secondaryLeakAny": 69,
         "fib_secondaryLeakAlways": 24,
-        "fib_v2_multiBlank": 7,
+        "fib_v2_blanks3plus": 1,
+        "fib_v2_multiBlank": 2,
         "m_fallbackMasked": 2,
-        "m_v2_masked": 2,
+        "m_v2_masked": 18,
         "fib_noBlankAlways": 64,
+        "fib_v2_trailingBlank": 57,
+        "fib_v2_secondaryLeak": 14,
         "m_currentLeaksV2": 63,
-        "m_v2_partialLeft": 22,
-        "fib_v2_trailingBlank": 44,
         "m_otherTermInClue": 10,
-        "m_v2_otherTermInClue": 6,
-        "m_v2_otherOnSameBoard": 2,
-        "fib_noBlankSometimes": 9
+        "m_v2_partialLeft": 15,
+        "fib_noBlankSometimes": 9,
+        "m_v2_otherTermInClue": 4,
+        "m_v2_otherOnSameBoard": 1
       },
       "worst": [
         [
@@ -6769,15 +7091,17 @@
         "fib_noBlankSometimes": 58,
         "fib_secondaryLeakAny": 99,
         "fib_secondaryLeakAlways": 31,
-        "fib_v2_multiBlank": 34,
+        "fib_v2_secondaryLeak": 33,
         "m_currentLeaksV2": 73,
-        "m_v2_partialLeft": 30,
+        "m_v2_masked": 20,
         "fib_noBlankAlways": 64,
-        "fib_v2_trailingBlank": 45,
+        "fib_v2_trailingBlank": 59,
         "m_fallbackMasked": 1,
-        "m_v2_masked": 1,
         "m_otherTermInClue": 33,
-        "m_v2_otherTermInClue": 17
+        "m_v2_otherTermInClue": 15,
+        "m_v2_partialLeft": 23,
+        "fib_v2_multiBlank": 13,
+        "fib_v2_blanks3plus": 2
       },
       "worst": [
         [
@@ -6809,17 +7133,19 @@
         "fc_noMistakes": 197,
         "fib_noBlankSometimes": 48,
         "fib_secondaryLeakAny": 170,
-        "fib_v2_multiBlank": 45,
+        "fib_v2_multiBlank": 20,
+        "fib_v2_secondaryLeak": 51,
         "fib_noBlankAlways": 131,
-        "fib_v2_trailingBlank": 79,
+        "fib_v2_trailingBlank": 103,
         "m_currentLeaksV2": 124,
         "m_otherTermInClue": 61,
-        "m_v2_otherTermInClue": 33,
         "fib_secondaryLeakAlways": 87,
-        "m_v2_partialLeft": 71,
+        "m_v2_partialLeft": 28,
+        "m_v2_otherTermInClue": 35,
+        "m_v2_masked": 77,
         "m_v2_otherOnSameBoard": 4,
         "m_fallbackMasked": 18,
-        "m_v2_masked": 18
+        "fib_v2_blanks3plus": 2
       },
       "worst": [
         [
@@ -6851,17 +7177,19 @@
         "fc_noMistakes": 88,
         "fib_noBlankAlways": 44,
         "fib_secondaryLeakAny": 75,
-        "fib_v2_trailingBlank": 24,
+        "fib_v2_trailingBlank": 34,
         "m_currentLeaksV2": 50,
         "m_otherTermInClue": 68,
         "fib_noBlankSometimes": 35,
         "fib_secondaryLeakAlways": 43,
-        "m_v2_partialLeft": 33,
+        "m_v2_masked": 38,
         "m_v2_otherTermInClue": 49,
-        "fib_v2_multiBlank": 33,
+        "fib_v2_secondaryLeak": 28,
+        "m_v2_partialLeft": 17,
         "m_v2_otherOnSameBoard": 7,
+        "fib_v2_multiBlank": 16,
         "m_fallbackMasked": 11,
-        "m_v2_masked": 12
+        "fib_v2_blanks3plus": 3
       },
       "worst": [
         [
@@ -6893,16 +7221,18 @@
         "fc_noMistakes": 114,
         "fib_noBlankSometimes": 51,
         "fib_secondaryLeakAny": 104,
-        "fib_v2_multiBlank": 56,
+        "fib_v2_secondaryLeak": 49,
+        "fib_v2_multiBlank": 28,
         "fib_noBlankAlways": 61,
-        "fib_v2_trailingBlank": 32,
+        "fib_v2_trailingBlank": 45,
         "m_currentLeaksV2": 84,
         "fib_secondaryLeakAlways": 60,
-        "m_v2_partialLeft": 58,
+        "m_v2_partialLeft": 15,
+        "fib_v2_blanks3plus": 11,
+        "m_v2_masked": 49,
         "m_otherTermInClue": 31,
         "m_fallbackMasked": 2,
-        "m_v2_masked": 2,
-        "m_v2_otherTermInClue": 19,
+        "m_v2_otherTermInClue": 18,
         "m_v2_otherOnSameBoard": 1
       },
       "worst": [
@@ -6935,16 +7265,18 @@
         "fc_noMistakes": 86,
         "fib_noBlankSometimes": 26,
         "fib_secondaryLeakAny": 83,
-        "fib_v2_multiBlank": 37,
+        "fib_v2_secondaryLeak": 40,
         "fib_noBlankAlways": 58,
         "fib_secondaryLeakAlways": 56,
+        "fib_v2_blanks3plus": 4,
+        "fib_v2_multiBlank": 12,
         "m_currentLeaksV2": 70,
-        "m_v2_partialLeft": 50,
-        "fib_v2_trailingBlank": 20,
+        "m_v2_masked": 52,
+        "fib_v2_trailingBlank": 40,
+        "m_v2_partialLeft": 14,
         "m_otherTermInClue": 33,
-        "m_v2_otherTermInClue": 18,
         "m_fallbackMasked": 4,
-        "m_v2_masked": 6
+        "m_v2_otherTermInClue": 18
       },
       "worst": [
         [
@@ -6976,23 +7308,26 @@
     "fc_noPlainEnglish": 0,
     "fc_noScenarios": 0,
     "fc_noMistakes": 27201,
-    "fib_v2_multiBlank": 10372,
+    "fib_v2_multiBlank": 4136,
+    "fib_v2_blanks3plus": 1016,
+    "fib_v2_distractorNamed": 0,
     "fib_v2_BUG_trailingPlusInline": 0,
+    "fib_v2_UNSHARED_LEAK": 0,
     "fib_noBlankAlways": 15662,
     "fib_noBlankSometimes": 8435,
-    "fib_secondaryLeakAny": 23718,
-    "fib_secondaryLeakAlways": 14597,
-    "fib_v2_trailingBlank": 7274,
-    "fib_v2_secondaryLeak": 0,
-    "m_currentLeaksV2": 16745,
+    "fib_secondaryLeakAny": 23678,
+    "fib_secondaryLeakAlways": 14512,
+    "fib_v2_trailingBlank": 11818,
+    "fib_v2_secondaryLeak": 10691,
+    "m_currentLeaksV2": 16674,
     "m_fallbackMasked": 3223,
     "m_clueShort": 51,
     "m_otherTermInClue": 13884,
-    "m_v2_masked": 3377,
+    "m_v2_masked": 11817,
     "m_v2_hardLeak": 0,
-    "m_v2_partialLeft": 11535,
-    "m_v2_otherTermInClue": 10331,
-    "m_v2_otherOnSameBoard": 649,
+    "m_v2_partialLeft": 5829,
+    "m_v2_otherTermInClue": 10089,
+    "m_v2_otherOnSameBoard": 701,
     "corpus_unrescuable": 0
   },
   "examples": {

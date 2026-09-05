@@ -93,14 +93,36 @@ const PARTIAL_STOPWORDS = new Set([
 ]);
 
 /** A conservative root for inflection matching: strip one common suffix when
- *  what remains is still ≥ 3 letters ("bouncing"→"bounc", "phases"→"phas",
- *  "mixing"→"mix", "bus" stays "bus"). */
+ *  what remains is still ≥ 4 letters ("bouncing"→"bounc", "phases"→"phas",
+ *  "note" stays "note" — a 3-letter root like "not" matched the word "not",
+ *  which put a blank over "not" in a Ghost-Note question, reader 2026-09-05). */
 export function wordRoot(word: string): string {
   const w = word.toLowerCase();
   for (const suf of ['ations', 'ation', 'izing', 'ising', 'ings', 'ing', 'ied', 'ies', 'ors', 'or', 'ers', 'er', 'ed', 'es', 's', 'ly', 'al', 'y', 'e']) {
-    if (w.endsWith(suf) && w.length - suf.length >= 3) return w.slice(0, -suf.length);
+    if (w.endsWith(suf) && w.length - suf.length >= 4) return w.slice(0, -suf.length);
   }
   return w;
+}
+
+/** The words of a term that can give it away on their own (≥ 4 letters, not a
+ *  generic audio word), as roots. Shared roots between two options mean the
+ *  word does NOT tell them apart. */
+export function significantRoots(term: string): Set<string> {
+  const base = term.replace(/\s*\([^)]*\)\s*$/, '').trim();
+  const words = base.split(/[\s-]+/).filter((w) => /^[A-Za-z][A-Za-z'’]*$/.test(w));
+  return new Set(words.filter((w) => w.length >= 4 && !PARTIAL_STOPWORDS.has(w.toLowerCase())).map(wordRoot));
+}
+
+const PRONOUN_START = /^(it|its|this|these|those|their|they|the term|such)\b/i;
+const baseOf = (t: string) => t.replace(/\s*\([^)]*\)\s*$/, '').trim();
+const namedIn = (t: string, s: string) => baseOf(t).length >= 3 && new RegExp(`\\b${escapeRe(baseOf(t))}\\b`, 'i').test(s);
+function shuffleArr<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 }
 
 /** Inflections a root may carry and still be "the same word". */
@@ -156,15 +178,47 @@ export function findSecondaryLeaks(term: string, sentence: string): LeakHit[] {
 
 export const BLANK = '______';
 
-/** Mask every leak (exact, abbreviation, variant, partial) as a blank. */
-export function maskLeaks(term: string, sentence: string, mask: string = BLANK): string {
+/**
+ * Mask the leaks that would give the answer away AMONG THE OPTIONS ON SCREEN
+ * (reader finding 2026-09-05): the exact term, its abbreviation and its word
+ * variants always; a PARTIAL word of a multi-word answer only when no other
+ * option shares that word — "drum" on a board of drum terms tells the learner
+ * nothing, so it stays readable; "reverb" for "Snare Reverb Send" next to
+ * three non-reverb terms is the answer, so it is blanked.
+ */
+export function maskLeaksFor(term: string, sentence: string, otherTerms: string[] = [], mask: string = BLANK): string {
+  const shared = new Set<string>();
+  for (const t of otherTerms) for (const r of significantRoots(t)) shared.add(r);
   let s = sentence;
   for (const p of leakPatternsV2(term)) {
+    if (p.kind === 'partial' && shared.has(wordRoot(p.word))) continue;
     p.re.lastIndex = 0;
     s = s.replace(p.re, mask);
   }
   // Collapse runs of adjacent blanks ("______ ______") into one.
   return s.replace(new RegExp(`(${escapeRe(mask)})(\\s+${escapeRe(mask)})+`, 'g'), '$1');
+}
+
+/** Mask every leak (exact, abbreviation, variant, partial) as a blank. */
+export function maskLeaks(term: string, sentence: string, mask: string = BLANK): string {
+  return maskLeaksFor(term, sentence, [], mask);
+}
+
+/**
+ * Distractors for a fill-in-the-blank question. Preference: terms that SHARE
+ * a word with the answer (so a visible "tape" no longer singles the answer
+ * out), then unrelated terms, and only as a last resort a term that is named
+ * verbatim in the sentence. Never the same text as the answer (duplicate rows).
+ */
+export function pickDistractors(term: string, candidates: string[], sentence: string, n: number = 3): string[] {
+  const tl = term.trim().toLowerCase();
+  const roots = significantRoots(term);
+  const uniq = [...new Set(candidates.map((c) => c.trim()))].filter((c) => c && c.toLowerCase() !== tl);
+  const shares = (c: string) => [...significantRoots(c)].some((r) => roots.has(r));
+  const kin = shuffleArr(uniq.filter((c) => !namedIn(c, sentence) && shares(c)));
+  const rest = shuffleArr(uniq.filter((c) => !namedIn(c, sentence) && !shares(c)));
+  const named = shuffleArr(uniq.filter((c) => namedIn(c, sentence)));
+  return [...kin, ...rest, ...named].slice(0, n);
 }
 
 /**
@@ -178,25 +232,31 @@ export function maskLeaks(term: string, sentence: string, mask: string = BLANK):
  *      ("… describes ______") instead of showing a blank-less question.
  * Returns the ORIGINAL sentence too, for the screen's own rendering.
  */
-export function fibSentence(term: string, definition: string): { sentence: string; masked: string; hasBlank: boolean } {
+export type FibQuestion = { sentence: string; masked: string; hasBlank: boolean; distractors: string[] };
+
+/** Sentence + distractors + masking for one question. `candidates` = the other
+ *  terms of the topic (the screen and the audit harness pass the same thing).
+ *  Within a tier, the sentence with the FEWEST distinct answer-words to hide
+ *  wins, then one that does not open with a dangling "It / This / The term".
+ *  hasBlank:false = no blank in the masked text → the screen appends one. */
+export function fibSentence(term: string, definition: string, candidates: string[] = [], n: number = 3): FibQuestion {
   const parts = splitSentences(definition);
   const exactRe = leakPatternsV2(term).find((p) => p.kind === 'exact')?.re;
   const withTerm = exactRe ? parts.filter((p) => ((exactRe.lastIndex = 0), exactRe.test(p))) : [];
   const pick = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
-  if (withTerm.length > 0) {
-    const clean = withTerm.filter((p) => findSecondaryLeaks(term, p).length === 0);
-    const chosen = pick(clean.length > 0 ? clean : withTerm);
-    return { sentence: chosen, masked: maskLeaks(term, chosen), hasBlank: true };
-  }
-  // No sentence names the term: prefer one with no leak at all (the screen
-  // appends a trailing blank). If every sentence carries a variant/partial,
-  // mask the shortest — its blanks ARE the answer's words, so hasBlank is
-  // true and NO trailing blank is added ("…effects ______. ______" was the
-  // garble the eyes-on reader caught, 2026-09-05).
-  const noLeak = parts.filter((p) => findLeaks(term, p).length === 0);
-  const chosen = pick(noLeak.length > 0 ? noLeak : [[...parts].sort((a, b) => a.length - b.length)[0] ?? definition]);
-  const masked = maskLeaks(term, chosen);
-  return { sentence: chosen, masked, hasBlank: masked.includes(BLANK) };
+  const rank = (arr: string[]) => {
+    const scored = arr.map((s) => ({
+      s,
+      k: new Set(findLeaks(term, s).filter((h) => h.kind !== 'exact').map((h) => wordRoot(h.word))).size,
+      p: PRONOUN_START.test(s.trim()) ? 1 : 0,
+    }));
+    scored.sort((a, b) => a.k - b.k || a.p - b.p);
+    return pick(scored.filter((x) => x.k === scored[0].k && x.p === scored[0].p).map((x) => x.s));
+  };
+  const chosen = withTerm.length > 0 ? rank(withTerm) : rank(parts.length > 0 ? parts : [definition]);
+  const distractors = pickDistractors(term, candidates, chosen, n);
+  const masked = maskLeaksFor(term, chosen, distractors);
+  return { sentence: chosen, masked, hasBlank: masked.includes(BLANK), distractors };
 }
 
 export type MatchingClue = { clue: string; masked: boolean; partialsLeft: number; othersLeft: number };
@@ -211,31 +271,33 @@ export type MatchingClue = { clue: string; masked: boolean; partialsLeft: number
  *      clue that names a different pair's answer misleads;
  *   4. only if EVERY sentence has a hard leak: the best one, masked as "___".
  */
-export function matchingClueV2(term: string, definition: string, avoidTerms: string[] = []): MatchingClue {
+export function matchingClueV2(term: string, definition: string, boardTerms: string[] = []): MatchingClue {
   const parts = splitSentences(definition);
-  const tl = term.toLowerCase();
-  const others = avoidTerms
-    .map((t) => t.replace(/\s*\([^)]*\)\s*$/, '').trim())
-    .filter((t) => t.length >= 3 && t.toLowerCase() !== tl)
-    .map((t) => new RegExp(`\\b${escapeRe(t)}\\b`, 'i'));
+  const tl = term.trim().toLowerCase();
+  const others = boardTerms.filter((t) => t.trim().toLowerCase() !== tl);
+  const shared = new Set<string>();
+  for (const t of others) for (const r of significantRoots(t)) shared.add(r);
   const scored = parts.map((s) => {
     const leaks = findLeaks(term, s);
     return {
       s,
       hard: leaks.filter((h) => h.kind !== 'partial').length,
-      partial: leaks.filter((h) => h.kind === 'partial').length,
-      others: others.filter((re) => re.test(s)).length,
+      // distinct answer-words that would single this pair out on THIS board
+      unshared: new Set(leaks.filter((h) => h.kind === 'partial' && !shared.has(wordRoot(h.word))).map((h) => wordRoot(h.word))).size,
+      others: others.filter((o) => namedIn(o, s)).length,
+      p: PRONOUN_START.test(s.trim()) ? 1 : 0,
     };
   });
-  const noHard = scored.filter((x) => x.hard === 0);
-  const pool = noHard.length > 0 ? noHard : scored;
-  const minP = Math.min(...pool.map((x) => x.partial));
-  const p1 = pool.filter((x) => x.partial === minP);
-  const minO = Math.min(...p1.map((x) => x.others));
-  const p2 = p1.filter((x) => x.others === minO);
-  const chosen = p2[Math.floor(Math.random() * p2.length)] ?? { s: definition, hard: 1, partial: 0, others: 0 };
-  if (chosen.hard > 0) return { clue: maskLeaks(term, chosen.s, '___'), masked: true, partialsLeft: 0, othersLeft: chosen.others };
-  return { clue: chosen.s, masked: false, partialsLeft: chosen.partial, othersLeft: chosen.others };
+  if (scored.length === 0) return { clue: definition, masked: false, partialsLeft: 0, othersLeft: 0 };
+  scored.sort((a, b) => (a.hard > 0 ? 1 : 0) - (b.hard > 0 ? 1 : 0) || a.unshared - b.unshared || a.others - b.others || a.p - b.p);
+  const top = scored[0];
+  const ties = scored.filter((x) => (x.hard > 0) === (top.hard > 0) && x.unshared === top.unshared && x.others === top.others && x.p === top.p);
+  const chosen = ties[Math.floor(Math.random() * ties.length)];
+  // Mask what gives the pair away on this board: hard leaks + unshared partial
+  // words. Words shared with other board terms stay (they tell nothing apart).
+  const clue = maskLeaksFor(term, chosen.s, others, '___');
+  const partialsLeft = findLeaks(term, clue).filter((h) => h.kind === 'partial').length;
+  return { clue, masked: clue !== chosen.s, partialsLeft, othersLeft: chosen.others };
 }
 
 export function matchingSentenceV2(term: string, definition: string, avoidTerms: string[] = []): string {

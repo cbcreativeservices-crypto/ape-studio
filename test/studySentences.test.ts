@@ -17,12 +17,37 @@ import {
   BLANK,
 } from '../src/features/study/sentences.ts';
 
-test('wordRoot strips one common suffix but keeps ≥3 letters', () => {
+test('wordRoot strips one common suffix but keeps ≥4 letters', () => {
   assert.equal(wordRoot('bouncing'), 'bounc');
   assert.equal(wordRoot('phases'), 'phas');
-  assert.equal(wordRoot('mixing'), 'mix');
+  assert.equal(wordRoot('mixing'), 'mixing'); // 'mix' would be 3 letters
   assert.equal(wordRoot('bus'), 'bus');
-  assert.equal(wordRoot('power'), 'pow'); // 'er' stripped; 'pow' + inflections still matches power/powered
+  assert.equal(wordRoot('note'), 'note'); // 'not' would have matched the word "not"
+});
+
+test('a short root never blanks an ordinary word ("not" for Ghost-Note)', () => {
+  const hits = findLeaks('Ghost-Note Detail', 'Gating that does not remove them keeps the feel.');
+  assert.equal(hits.length, 0, JSON.stringify(hits));
+});
+
+test('fibSentence blanks only the words that single the answer out among the options', () => {
+  const def = 'The repair of broken joints in magnetic tape by trimming the ends and rejoining the tape on a splicing block.';
+  const r = fibSentence('Tape splice repair', def, ['Tape splice', 'Splice block', 'Flat transfer', 'Dolby lineup']);
+  assert.ok(!/repair/i.test(r.masked), r.masked); // only the answer has "repair"
+  assert.ok(/\btape\b/i.test(r.masked), r.masked); // "tape" is shared with a distractor → stays readable
+  assert.ok((r.masked.match(/______/g) ?? []).length <= 2, r.masked);
+  assert.ok(r.distractors.some((d) => /tape|splice/i.test(d)), 'distractors share a word with the answer');
+  assert.equal(r.hasBlank, true);
+});
+
+test('matchingClueV2 keeps a word shared by the board but blanks a distinctive one', () => {
+  const board = ['Snare Reverb Send', 'Drum Gating', 'Drum-bus glue', 'Kick clipping'];
+  const def = 'An auxiliary send from the snare drum channel feeding a reverb so the snare gets space.';
+  for (let i = 0; i < 10; i++) {
+    const clue = matchingSentenceV2('Snare Reverb Send', def, board);
+    assert.ok(!/reverb|send/i.test(clue), clue); // only this pair has them
+    assert.ok(/\bdrum\b/i.test(clue), clue); // every board term is about drums → not a giveaway
+  }
 });
 
 test('a word VARIANT of a single-word term is a leak', () => {

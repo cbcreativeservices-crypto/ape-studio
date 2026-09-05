@@ -26,6 +26,8 @@ import {
   findSecondaryLeaks,
   matchingClueV2,
   fibSentence,
+  significantRoots,
+  wordRoot,
 } from '../src/features/study/sentences.ts';
 
 const V3 = 'a7c1f2e0-9b34-4d55-8e21-0c4f6a9b1d72';
@@ -61,6 +63,7 @@ const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const blankOutHits = (term, sentence) => new RegExp(escapeRe(term), 'i').test(sentence);
 const currentMatchingLeaks = (term, s) => termLeakPatterns(term).some((re) => ((re.lastIndex = 0), re.test(s)));
 const words = (s) => s.trim().split(/\s+/).filter(Boolean).length;
+const namedInSentence = (t, s) => { const b = t.replace(/\s*\([^)]*\)\s*$/, '').trim(); return b.length >= 3 && new RegExp(`\\b${escapeRe(b)}\\b`, 'i').test(s); };
 const PLACEHOLDER = /\b(tbd|todo|lorem|placeholder|coming soon|to be (written|added))\b|^\s*[-–—.]*\s*$/i;
 
 // ---- seeded random (reproducible topic picks) ------------------------------
@@ -82,7 +85,7 @@ const totals = {
   items: 0, topicsWithRows: 0,
   fc_emptyDef: 0, fc_placeholder: 0, fc_defIsTerm: 0, fc_dupTerm: 0,
   fc_noPlainEnglish: 0, fc_noScenarios: 0, fc_noMistakes: 0,
-  fib_v2_multiBlank: 0, fib_v2_BUG_trailingPlusInline: 0,
+  fib_v2_multiBlank: 0, fib_v2_blanks3plus: 0, fib_v2_distractorNamed: 0, fib_v2_BUG_trailingPlusInline: 0, fib_v2_UNSHARED_LEAK: 0,
   fib_noBlankAlways: 0, fib_noBlankSometimes: 0, fib_secondaryLeakAny: 0, fib_secondaryLeakAlways: 0,
   fib_v2_trailingBlank: 0, fib_v2_secondaryLeak: 0,
   m_currentLeaksV2: 0, m_fallbackMasked: 0, m_clueShort: 0, m_otherTermInClue: 0,
@@ -143,7 +146,13 @@ for (const t of topics) {
     if (secondary.every((h) => h.length > 0)) f('fib_secondaryLeakAlways');
 
     // ---- fill-in-the-blank, IMPROVED rule (fibSentence) ----
-    const fb = fibSentence(term, definition);
+    const fb = fibSentence(term, definition, items.filter((o) => o.id !== it.id).map((o) => o.term));
+    if ((fb.masked.match(/______/g) ?? []).length >= 3) f('fib_v2_blanks3plus');
+    if (fb.distractors.some((d) => namedInSentence(d, fb.masked))) f('fib_v2_distractorNamed');
+    // A leak that is NOT shared with any option on screen would give the
+    // answer away — must be zero. (Shared words stay visible by design.)
+    const sharedFib = new Set(fb.distractors.flatMap((d) => [...significantRoots(d)]));
+    if (findLeaks(term, fb.masked).some((h) => h.kind !== 'partial' || !sharedFib.has(wordRoot(h.word)))) f('fib_v2_UNSHARED_LEAK');
     // hasBlank:false = the sentence DESCRIBES the answer without naming it; the
     // screen appends a trailing blank, so a blank is always visible.
     if (!fb.hasBlank) f('fib_v2_trailingBlank');

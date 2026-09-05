@@ -241,20 +241,12 @@ export function FillInBlankScreen({ navigation, route }: Props) {
     // One randomly-chosen sentence per showing (Booth 2026-07-08) — the same
     // term can present a different facet of its definition each time. The
     // sentence arrives with the answer (and its variants) already masked.
-    const fb = fibSentence(item.term, item.definition);
-    // A distractor that is VISIBLE in the sentence misleads (text audit
-    // 2026-09-05: 51% of clues named another topic term) — skip those.
-    const visible = (t: string) => {
-      const base = t.replace(/\s*\([^)]*\)\s*$/, '').trim();
-      return base.length >= 3 && new RegExp(`\\b${base.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i').test(fb.masked);
-    };
-    // Same-text duplicates (5 rows in the corpus) would be a second "correct"
-    // cell — never offer one as a distractor.
-    const others = order.filter((o) => o.id !== item.id && o.term.trim().toLowerCase() !== item.term.trim().toLowerCase());
-    const pool = others.filter((o) => !visible(o.term)).map((o) => o.term);
-    const fallback = others.filter((o) => visible(o.term)).map((o) => o.term);
-    const distractors = [...shuffle(pool), ...shuffle(fallback)].slice(0, 3);
-    return { item, sentence: fb.masked, hasBlank: fb.hasBlank, options: shuffle([item.term, ...distractors]) };
+    // Distractors prefer terms that share a word with the answer, and only the
+    // words that would single the answer out among the four options are
+    // blanked (reader finding 2026-09-05: masking every repeat of "tape" made
+    // six blanks in one sentence; leaving "reverb" visible gave the pair away).
+    const fb = fibSentence(item.term, item.definition, order.filter((o) => o.id !== item.id).map((o) => o.term));
+    return { item, sentence: fb.masked, hasBlank: fb.hasBlank, options: shuffle([item.term, ...fb.distractors]) };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [order, qIdx]);
 
