@@ -89,7 +89,8 @@ const totals = {
   fib_noBlankAlways: 0, fib_noBlankSometimes: 0, fib_secondaryLeakAny: 0, fib_secondaryLeakAlways: 0,
   fib_v2_trailingBlank: 0, fib_v2_secondaryLeak: 0,
   m_currentLeaksV2: 0, m_fallbackMasked: 0, m_clueShort: 0, m_otherTermInClue: 0,
-  m_v2_masked: 0, m_v2_hardLeak: 0, m_v2_partialLeft: 0, m_v2_otherTermInClue: 0, m_v2_otherOnSameBoard: 0,
+  m_v2_masked: 0, m_v2_hardLeak: 0, m_v2_partialLeft: 0, m_v2_gaps3plus: 0, m_v2_otherTermInClue: 0, m_v2_otherOnSameBoard: 0,
+  fib_v2_BUG_twoAnswerBlanks: 0, fib_v2_BUG_hyphenGlued: 0,
 };
 const examples = { fib_noBlank: [], fib_secondary: [], m_currentLeaksV2: [], m_otherTerm: [], unrescuable: [] };
 const pushEx = (arr, ex) => { if (arr.length < 40) arr.push(ex); };
@@ -147,7 +148,9 @@ for (const t of topics) {
 
     // ---- fill-in-the-blank, IMPROVED rule (fibSentence) ----
     const fb = fibSentence(term, definition, items.filter((o) => o.id !== it.id).map((o) => o.term));
-    if ((fb.masked.match(/______/g) ?? []).length >= 3) f('fib_v2_blanks3plus');
+    if ((fb.masked.match(/______|…/g) ?? []).length >= 3) f('fib_v2_blanks3plus');
+    if ((fb.masked.match(/______/g) ?? []).length >= 2) f('fib_v2_BUG_twoAnswerBlanks');
+    if (/-(______|…)|(______|…)-/.test(fb.masked)) f('fib_v2_BUG_hyphenGlued');
     if (fb.distractors.some((d) => namedInSentence(d, fb.masked))) f('fib_v2_distractorNamed');
     // A leak that is NOT shared with any option on screen would give the
     // answer away — must be zero. (Shared words stay visible by design.)
@@ -156,7 +159,7 @@ for (const t of topics) {
     // hasBlank:false = the sentence DESCRIBES the answer without naming it; the
     // screen appends a trailing blank, so a blank is always visible.
     if (!fb.hasBlank) f('fib_v2_trailingBlank');
-    if ((fb.masked.match(/______/g) ?? []).length >= 2) f('fib_v2_multiBlank');
+    if ((fb.masked.match(/______|…/g) ?? []).length >= 2) f('fib_v2_multiBlank');
     if (!fb.hasBlank && fb.masked.includes('______')) f('fib_v2_BUG_trailingPlusInline');
     if (findSecondaryLeaks(term, fb.masked).length > 0) f('fib_v2_secondaryLeak');
 
@@ -179,6 +182,7 @@ for (const t of topics) {
     const v2 = matchingClueV2(term, definition, items.slice(Math.floor(idx / 4) * 4, Math.floor(idx / 4) * 4 + 4).map((i) => i.term));
     if (v2.masked) f('m_v2_masked');
     if (v2.partialsLeft > 0) f('m_v2_partialLeft');
+    if ((v2.clue.match(/___|…/g) ?? []).length >= 3) f('m_v2_gaps3plus');
     if (findLeaks(term, v2.clue).some((h) => h.kind !== 'partial')) f('m_v2_hardLeak');
     if (otherTermRes.some((re, j) => j !== idx && termsLower[j] !== tl && re.test(v2.clue))) f('m_v2_otherTermInClue');
     // Only a term on the SAME 4-pair board can actually be mis-matched

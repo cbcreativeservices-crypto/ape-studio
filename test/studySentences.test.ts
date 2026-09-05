@@ -14,7 +14,10 @@ import {
   maskLeaks,
   fibSentence,
   matchingSentenceV2,
+  maskLeaksFor,
+  pickDistractors,
   BLANK,
+  GAP,
 } from '../src/features/study/sentences.ts';
 
 test('wordRoot strips one common suffix but keeps ≥4 letters', () => {
@@ -105,6 +108,43 @@ test('matchingSentenceV2 never returns a clue that leaks the term or a variant',
     const clue = matchingSentenceV2('Phase', def);
     assert.equal(findLeaks('Phase', clue).length, 0, clue);
   }
+});
+
+test('an "A / B" term hides both names, and a parenthetical glued to the blank goes too', () => {
+  const r = fibSentence('Lip Sync / AV Sync', 'Lip sync (AV sync): the correct timing alignment between mouth movement and dialogue.', ['Sync Transient', 'Utility sound technician', 'Recording media swap']);
+  assert.ok(!/lip sync|av sync/i.test(r.masked), r.masked);
+  assert.ok(r.masked.startsWith(BLANK), r.masked);
+  assert.ok(!/\(AV/i.test(r.masked), r.masked);
+});
+
+test('an abbreviation in parentheses right after the blank is dropped', () => {
+  const out = maskLeaksFor('Saturation magnetization', 'Saturation magnetization (Ms) is the maximum magnetization a magnetic material can attain.', ['Coercivity', 'Remanence', 'Curie point']);
+  assert.ok(!/\(Ms\)/.test(out), out);
+  assert.ok(!/magnetiz/i.test(out), out);
+  assert.equal((out.match(/______/g) ?? []).length, 1, out);
+});
+
+test('a hyphenated compound is hidden whole, never "DC-______"', () => {
+  const out = maskLeaksFor('Bulk-erased noise', 'The noise of a DC-saturated (DC-erased) tape is higher than bulk-erased tape.', ['Tape noise floor', 'Asperity noise', 'Bias noise']);
+  assert.ok(!/erased/i.test(out), out);
+  assert.ok(!/-(______|…)/.test(out), out);
+});
+
+test('a 3-letter answer word still counts ("dipping" gives away "Boom dip")', () => {
+  const hits = findLeaks('Boom dip', 'In boom operating, briefly lowering (dipping) the boom-mounted microphone.');
+  assert.ok(hits.some((h) => h.word === 'dip'), JSON.stringify(hits));
+});
+
+test('a distractor named in the text minus its last word is avoided', () => {
+  const picks = pickDistractors('Track-and-hold circuit', ['Sample-and-hold circuit', 'Clock jitter', 'Converter linearity', 'Apollo'], 'It is functionally the same as a sample-and-hold, the name stressing that its output follows the input.');
+  assert.ok(!picks.includes('Sample-and-hold circuit'), picks.join(', '));
+});
+
+test('only the first hidden span is the answer blank; repeats become an ellipsis', () => {
+  const r = fibSentence('Take', 'Take: a single recorded performance of a part; multiple takes are captured and compared.', ['Comp', 'Overdub', 'Punch-in']);
+  assert.equal((r.masked.match(/______/g) ?? []).length, 1, r.masked);
+  assert.ok(r.masked.includes(GAP), r.masked);
+  assert.ok(!/take/i.test(r.masked), r.masked);
 });
 
 test('splitSentences keeps decimals and citations intact', () => {
