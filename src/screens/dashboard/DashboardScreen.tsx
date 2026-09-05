@@ -556,6 +556,9 @@ export function DashboardScreen() {
   useEffect(() => () => { mountedRef.current = false; }, []);
   const [error, setError] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<string | null>(null);
+  /** No Supabase session at all (Guest Mode). Drives the red "progress isn't
+   *  saved" notice; false for EVERY saved account, member or not. */
+  const [guest, setGuest] = useState(false);
   // A persisted session with no student record: self-healed to the guest view,
   // with a non-blocking banner offering to finish registration or sign out.
   const [strandedSession, setStrandedSession] = useState(false);
@@ -710,6 +713,11 @@ export function DashboardScreen() {
       // since returning authed users also default to the mock 'anonymous' state.
       const { data: sessData } = await supabase.auth.getSession();
       const isGuest = !sessData.session;
+      // The "progress isn't saved" notice keys on THIS (no session at all), never
+      // on the users-row lookup: any saved account — member or not — must not see
+      // it, even when its student record is missing or a fetch fails (owner
+      // 2026-09-05).
+      setGuest(isGuest);
       // A guest also sees all their ACTIVE topics (locked included) so the paywall
       // is reachable; a guest with nothing enrolled falls back to the free topics.
       const guestFetch = () =>
@@ -1451,8 +1459,10 @@ export function DashboardScreen() {
         ) : (
           <>
         {/* No account = no server progress: say so up front instead of a
-            silent 0% after a fully-worked deck (Bug+Hater night F2-01). */}
-        {data.userId === 'local' ? (
+            silent 0% after a fully-worked deck (Bug+Hater night F2-01). Keyed
+            on the SESSION (owner 2026-09-05): gone the moment any account —
+            member or not — is signed in; red because it is a warning. */}
+        {guest ? (
           <Pressable
             onPress={() => (navigation as any).navigate('Auth')}
             style={styles.guestNotice}
@@ -2310,17 +2320,19 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 10,
   },
   // Guest honesty notice above the rack (F2-01) — quiet, not a rack panel.
+  // RED — it is a warning (owner 2026-09-05): a deep red panel with a red rim,
+  // light text so it reads at a glance, the sign-in link in full white.
   guestNotice: {
-    backgroundColor: '#161616',
+    backgroundColor: '#3a0c0c',
     borderWidth: 1,
-    borderColor: 'rgba(255,198,77,0.35)',
+    borderColor: 'rgba(255,72,72,0.75)',
     borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 12,
     marginBottom: 10,
   },
-  guestNoticeText: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: colors.textSub },
-  guestNoticeLink: { color: colors.amber, fontFamily: fonts.barlowSemiBold },
+  guestNoticeText: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: '#ffd6d6' },
+  guestNoticeLink: { color: '#ffffff', fontFamily: fonts.barlowSemiBold, textDecorationLine: 'underline' },
   methodRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   // A single corner-pinned mounting screw (owner 2026-08-11). Absolute so it
   // always lands at the true panel corner regardless of content-row height.
