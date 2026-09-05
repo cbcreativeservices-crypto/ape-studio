@@ -542,7 +542,10 @@ export function CalcWorkflowRunScreen() {
                   if (f.quantity !== 'list') {
                     for (let k = 0; k < idx; k++) {
                       for (const o of computed[k]?.result.outputs ?? []) {
-                        if ('value' in o && o.quantity === f.quantity) sources.push({ fromStep: k, label: o.label });
+                        // Honor `chainable: false` (Bug+Hater night J2-01): outputs like TRAVEL PER
+        // MILLISECOND share a quantity with DISTANCE but are the wrong physical
+        // thing to chain into it — they produced a silently bogus downstream result.
+        if ('value' in o && o.quantity === f.quantity && o.chainable !== false) sources.push({ fromStep: k, label: o.label });
                       }
                     }
                   }
