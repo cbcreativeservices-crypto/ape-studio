@@ -253,6 +253,15 @@ function searchRank(termLower: string, q: string): number {
   return 99;
 }
 
+/** Everyday English words that are ALSO single-word glossary entries with a
+ *  technical sense (Source = a FET terminal, Current, Return, Form, Common…).
+ *  In prose their everyday sense dominates, so they link only inside a longer
+ *  phrase ("common-source stage"), never on their own (Bug+Hater night E2-02). */
+const GENERIC_SINGLE_WORDS = new Set([
+  'source', 'current', 'return', 'form', 'common', 'load', 'run', 'key', 'tap', 'feed',
+  'path', 'lead', 'field', 'range', 'note', 'stage', 'line', 'ring', 'drop', 'head', 'tail', 'sink',
+]);
+
 function buildTermIndex(entries: Entry[]): TermIndex {
   const exact = new Map<string, string>();
   const base = new Map<string, string[]>();
@@ -296,6 +305,8 @@ function linkSegments(text: string, index: TermIndex, selfId: string): LinkSeg[]
       // "and" must never link to AND: acronym terms need caps in the prose.
       const raw = text.slice(start, end);
       if (index.caseExact.has(phrase) && raw !== raw.toUpperCase()) continue;
+      // A generic everyday word links only as part of a longer phrase (E2-02).
+      if (!phrase.includes(' ') && GENERIC_SINGLE_WORDS.has(phrase)) continue;
       if (ids && ids.length > 0) {
         if (!linkedOnce.has(phrase)) hit = { ids, endTok: j, key: phrase };
         break; // longest hit decides — already-linked phrases stay plain
