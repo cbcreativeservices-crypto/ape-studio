@@ -10,6 +10,30 @@ add new lessons at the bottom of PREVENT. Owner tags: **Cháno** = the owner,
 
 ## RETURN TO — open actions
 
+### ☀️ TOMORROW — pick up here with a clear head (parked 2026-09-05 at Cháno's request)
+Nothing below is urgent or blocking; the app is green and pushed. In order:
+1. **Explore subject descriptions** (C1-02) — 49 of 50 subjects show no
+   description/careers because `src/data/subjectMeta.ts` is keyed on retired v2
+   names. Your words: author the 50 v3-keyed lines (or say "soften the intro"
+   and ccode will).
+2. **Free-tier study progress** (F2-01, server half) — approve the pending
+   free-tier RPC amendment so free/guest study writes land (the app now shows
+   the honesty notice meanwhile).
+3. **Lab-menu counts** (D1-10) — should "3 Labs" include planned labs? Say
+   yes/no and ccode applies it.
+4. **Directory 500** (K2-02) — hand to Computer A (server logs) to identify the
+   endpoint.
+5. **Small design nits, all filed with a recommendation** in
+   `docs/APE_BUG_HATER_NIGHT_2026_09_04.md` → "Left as filed": Finder
+   review-mode exit (B1-07), "you may not have considered" copy (B1-08),
+   family-list rank label/sort (B1-09), Explore stat tiles (C1-07), Tuning
+   ch.1 duplicate STOP (D1-08), flashcards 1% / empty-deck buttons / blank
+   trophy square (F2-02/03/04), EQ GAIN/Q dimming (I2-03), Directory sign-in
+   cue (K2-04). Say "do them" and ccode takes the defaults.
+6. **Device pass** (whenever): earned trophies/certs, the study loop past
+   Flashcards, Tube cards, Directory end-to-end, the Auth screen — list in the
+   night doc.
+
 ### 🌙 Bug + Hater Night — 2026-09-04 → 05 (ccode, unattended while Cháno was away)
 **In one line:** 12 agents crossed every screen with a bug lens and a
 1-star-review lens; **32 fixes pushed** (one commit each, tsc + 228 tests green
