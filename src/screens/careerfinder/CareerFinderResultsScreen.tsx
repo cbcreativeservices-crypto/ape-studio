@@ -39,7 +39,9 @@ export function CareerFinderResultsScreen() {
 
   // "Match" is a fit claim the answers may not support: when nothing stood
   // out strongly the headings describe proximity instead.
-  const weak = !result.strongest.length || result.strongest[0].score < 0.75 || result.top[0].score < 0.5;
+  // A BROAD profile ("Like" on nearly everything) has no standout interests, so
+  // it takes the softer heading too — not "STRONGEST MATCHES" (Bug+Hater B1-04).
+  const weak = !result.strongest.length || result.strongest[0].score < 0.75 || result.top[0].score < 0.5 || result.clarity === 'broad';
   const lead = result.strongest[0];
   const lab = lead ? LAB_FOR_DIMENSION[lead.code] : null;
   const unexplored = result.ranked.find((f) => result.dims[f.family.dimensions[0]].insufficient) ?? null;

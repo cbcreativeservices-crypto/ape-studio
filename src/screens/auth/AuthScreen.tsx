@@ -130,8 +130,15 @@ export function AuthScreen({ navigation }: Props) {
     // TOTAL wipe (owner ruling 2026-09-01): a no-account guest is remembered in
     // NO way — app settings and the onboarding/coach flags go too. Nothing is
     // stored about a person until they make an account.
+    // ONE exception (owner brief 2026-09-03, more specific and more recent than
+    // the total-wipe ruling): the Audio Career Finder is a free, NO-ACCOUNT,
+    // device-local lab whose copy promises "Your answers stay on this phone" —
+    // so its record survives a guest re-entry. An ACCOUNT switch still starts
+    // the next person fresh (this is the guest path only). Bug+Hater night B1-02.
+    const finderRecord = await AsyncStorage.getItem('ape:careerfinder:v1');
     await clearLocalAccountData({ total: true });
     resetAllLocalStores();
+    if (finderRecord) await AsyncStorage.setItem('ape:careerfinder:v1', finderRecord);
     // The amplitude-orientation flag is a device-level onboarding flag that an
     // ACCOUNT switch deliberately keeps, so resetAllLocalStores() leaves its
     // in-memory `done` alone — but the total wipe above just removed its key,
