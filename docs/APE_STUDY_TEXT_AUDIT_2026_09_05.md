@@ -18,8 +18,11 @@ The problem was real and much bigger than a few bad rows — it was the sentence
 | Matching clue **gives away its own answer** (exact term / abbreviation / word variant) | **61.6%** of the clues the old filter accepted | **0%** |
 | Matching clue had to be **masked with "___"** because no clean sentence existed | 11.8% (old rule) / would be 54.8% if every partial word were masked | **12.4%** — tiered rule keeps clues readable |
 | Matching clue **names another term on the same 4-pair board** | not measured before | 2.4% residual (the rule prefers the sentence with the fewest) |
+| Fill-in-the-Blank question with **two blanks** (multi-word answer masked word by word) | — | 38.1% (readable; the blanks are the answer's words) |
+| Fill-in-the-Blank sentence that *describes* the answer, so the blank sits at the **end** | — | 26.7% |
 | Broken glossary rows (empty / placeholder / self-referential) | 0 real ones (4 "placeholder" hits are legitimate uses of the word, e.g. *Scratch DX*) | — |
 | **Duplicate term inside one topic** (owner list, §4) | **5 rows** | client guard so a duplicate is never its own distractor |
+| **Flashcards MISTAKES side** — the study view returns *no* common-mistakes text for **any** of the 27,201 rows, so that side silently showed the definition under the MISTAKES label (eyes-on reader caught it on "ADR Taker") | **100%** of cards | the card now says "(No common-mistakes note written for this term yet — here is its definition.)" — the data itself is an owner item (§4) |
 
 Numbers come from running the app's **real** sentence code over every active v3 glossary row (`scripts/study-text-audit.mjs`, read-only, publishable key). Both JSON reports are in `docs/study_text_audit_baseline.json` and `docs/study_text_audit_after.json`.
 
@@ -55,13 +58,19 @@ Five terms appear **twice** in their topic (two glossary rows, same term). Until
 
 Nothing else in the corpus needs a row edit: `corpus_unrescuable = 0` (every item now yields a clean FIB sentence and a non-leaking Matching clue).
 
+**The MISTAKES flashcard side has no data (owner / Computer A).** `glossary_study_v.common_mistakes` is NULL for all 27,201 rows, and the anon role has no SELECT on `glossary.common_mistakes` (PostgREST answers `42501 … GRANT SELECT ON public.glossary`), so the app cannot see whatever the term-buckets export holds. Until the view exposes it, the side shows the honest fallback line plus the definition. `plain_english` and `scenario_contexts` are present on every row. No SQL was run by ccode.
+
+**Flashcards fallback copy (non-ratified, new 2026-09-05, flagged for your review):** "(No common-mistakes note written for this term yet — here is its definition.)" — same shape for plain-English / purpose & application / scenarios / related-terms sides when those are ever empty.
+
 ## 5. Eyes-on pass — 15 seeded-random topics (seed 20260905)
 
 gs 4460 Audio Restoration & Archival · 3840 Recording Fundamentals & Signal Chain · 3210 Enclosure, Horn & Radiation Engineering · 3890 Instrument Mixing – Drums & Percussion · 3540 Repair · 4130 Post Workflow, Spotting & Sessions · 3850 Session Workflow, Takes & Documentation · 4450 Tape Recording, Formats & Formulations · 3860 Band Tracking Workflow & Arrangement · 3830 Preamp & Converter Engineering · 4210 Film Scoring – Technology & MIDI Mockups · 4200 Film Scoring – Composition & Orchestration · 3670 Stage Geography & Backstage · 4060 Sample Editing & Beat Programming · 4170 ADR & Looping
 
-Three reader agents (academy tier, web preview, bypass on) read 12 flashcards, 20 FIB questions and 5 matching boards per topic on the **fixed** build.
+Reader agents (academy tier, web preview, bypass on) read 12 flashcards, 20 FIB questions and 5 matching boards per topic on the **fixed** build, **one reader at a time**.
 
-_(results appended below when the readers finish)_
+*Harness lesson (cost one wasted run):* three readers in parallel share the preview's origin storage, so every reload's guest wipe erased the other readers' enrollments and the app appeared to "reset itself" every few actions. That first run still caught two real defects — the trailing blank being appended after partial-word blanks ("…effects ______. ______", fixed in `fibSentence`) and the MISTAKES flashcard side showing the definition (§4).
+
+_(per-topic results appended below when the sequential readers finish)_
 
 ## 6. Restore checklist
 

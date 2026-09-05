@@ -17,9 +17,12 @@ Nothing below is urgent or blocking; the app is green and pushed.
 the "answer already in the question / no way to know the question" problem in
 Fill-in-the-Blank and Matching was the sentence RULES, not the glossary — fixed
 in the app and proven over all 166 topics (before/after table in
-`docs/APE_STUDY_TEXT_AUDIT_2026_09_05.md`). One owner item from it, whenever
-convenient: **5 glossary rows are duplicate terms** in their topic (list with
-ids in that doc, section 4). Not urgent — the app guards against them.
+`docs/APE_STUDY_TEXT_AUDIT_2026_09_05.md`). Two owner items from it, whenever
+convenient (section 4 of that doc): **5 glossary rows are duplicate terms** in
+their topic (ids listed; the app guards against them), and **the MISTAKES
+flashcard side has no data** — `glossary_study_v.common_mistakes` is NULL for
+every row and anon cannot read `glossary.common_mistakes`; the card now says so
+honestly. Hand the view/grant question to Computer A.
 
 In order:
 1. **Explore subject descriptions** (C1-02) — 49 of 50 subjects show no

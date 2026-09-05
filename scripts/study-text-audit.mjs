@@ -81,6 +81,8 @@ const report = { label, generatedAt: new Date().toISOString(), topicCount: topic
 const totals = {
   items: 0, topicsWithRows: 0,
   fc_emptyDef: 0, fc_placeholder: 0, fc_defIsTerm: 0, fc_dupTerm: 0,
+  fc_noPlainEnglish: 0, fc_noScenarios: 0, fc_noMistakes: 0,
+  fib_v2_multiBlank: 0, fib_v2_BUG_trailingPlusInline: 0,
   fib_noBlankAlways: 0, fib_noBlankSometimes: 0, fib_secondaryLeakAny: 0, fib_secondaryLeakAlways: 0,
   fib_v2_trailingBlank: 0, fib_v2_secondaryLeak: 0,
   m_currentLeaksV2: 0, m_fallbackMasked: 0, m_clueShort: 0, m_otherTermInClue: 0,
@@ -94,9 +96,12 @@ totals.corpus_unrescuable = 0;
 
 for (const t of topics) {
   const rows = await rest(
-    `glossary_study_v?select=glossary_id,term,definition,plain_english&achievement_id=eq.${t.id}&limit=5000`,
+    `glossary_study_v?select=glossary_id,term,definition,plain_english,scenario_contexts,common_mistakes&achievement_id=eq.${t.id}&limit=5000`,
   );
-  const items = rows.map((r) => ({ id: r.glossary_id, term: (r.term ?? '').trim(), definition: (r.definition ?? '').trim() }));
+  const items = rows.map((r) => ({
+    id: r.glossary_id, term: (r.term ?? '').trim(), definition: (r.definition ?? '').trim(),
+    noPlain: !r.plain_english, noScen: !(r.scenario_contexts && r.scenario_contexts.length), noMist: !(r.common_mistakes && r.common_mistakes.length),
+  }));
   const tr = { id: t.id, gs: t.global_sequence, name: t.name, field: t.field, subject: t.subject, items: items.length, flags: {}, worst: [] };
   if (items.length === 0) { report.topics.push(tr); continue; }
   totals.topicsWithRows++;
@@ -115,6 +120,11 @@ for (const t of topics) {
     if (definition && definition.toLowerCase() === term.toLowerCase()) { f('fc_defIsTerm'); row('definition is just the term', definition); }
     const tl = term.toLowerCase();
     if (seen.has(tl)) { f('fc_dupTerm'); row('duplicate term in topic', definition.slice(0, 100)); } else seen.set(tl, true);
+    // Flashcard sides that have NO authored content (the screen now says so
+    // instead of silently showing the definition under the other label).
+    if (it.noPlain) f('fc_noPlainEnglish');
+    if (it.noScen) f('fc_noScenarios');
+    if (it.noMist) f('fc_noMistakes');
 
     const sentences = splitSentences(definition);
     if (sentences.length === 0) return;
@@ -137,6 +147,8 @@ for (const t of topics) {
     // hasBlank:false = the sentence DESCRIBES the answer without naming it; the
     // screen appends a trailing blank, so a blank is always visible.
     if (!fb.hasBlank) f('fib_v2_trailingBlank');
+    if ((fb.masked.match(/______/g) ?? []).length >= 2) f('fib_v2_multiBlank');
+    if (!fb.hasBlank && fb.masked.includes('______')) f('fib_v2_BUG_trailingPlusInline');
     if (findSecondaryLeaks(term, fb.masked).length > 0) f('fib_v2_secondaryLeak');
 
     // ---- matching, CURRENT rule ----

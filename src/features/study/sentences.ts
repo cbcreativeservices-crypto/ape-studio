@@ -188,9 +188,15 @@ export function fibSentence(term: string, definition: string): { sentence: strin
     const chosen = pick(clean.length > 0 ? clean : withTerm);
     return { sentence: chosen, masked: maskLeaks(term, chosen), hasBlank: true };
   }
+  // No sentence names the term: prefer one with no leak at all (the screen
+  // appends a trailing blank). If every sentence carries a variant/partial,
+  // mask the shortest — its blanks ARE the answer's words, so hasBlank is
+  // true and NO trailing blank is added ("…effects ______. ______" was the
+  // garble the eyes-on reader caught, 2026-09-05).
   const noLeak = parts.filter((p) => findLeaks(term, p).length === 0);
   const chosen = pick(noLeak.length > 0 ? noLeak : [[...parts].sort((a, b) => a.length - b.length)[0] ?? definition]);
-  return { sentence: chosen, masked: maskLeaks(term, chosen), hasBlank: false };
+  const masked = maskLeaks(term, chosen);
+  return { sentence: chosen, masked, hasBlank: masked.includes(BLANK) };
 }
 
 export type MatchingClue = { clue: string; masked: boolean; partialsLeft: number; othersLeft: number };

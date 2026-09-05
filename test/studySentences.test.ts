@@ -66,6 +66,14 @@ test('fibSentence reports hasBlank:false when no sentence contains the term', ()
   assert.equal(findLeaks('High-Pass Filter', r.masked).length, 0);
 });
 
+test('fibSentence: when only partial words can be masked, those blanks count — no trailing blank', () => {
+  const def = 'It carries the score music separately from the dialogue and effects stems.';
+  const r = fibSentence('Score Stem', def);
+  assert.equal(r.hasBlank, true, 'partial-word blanks are the blank');
+  assert.ok(r.masked.includes(BLANK));
+  assert.ok(!/score|stem/i.test(r.masked), r.masked);
+});
+
 test('matchingSentenceV2 never returns a clue that leaks the term or a variant', () => {
   const def = 'Phasing occurs when two copies arrive at different times. The result is a comb-filter sound. Phase problems are common with two mics.';
   for (let i = 0; i < 20; i++) {

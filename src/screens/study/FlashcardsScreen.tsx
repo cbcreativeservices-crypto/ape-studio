@@ -148,24 +148,28 @@ function seededShuffle<T>(arr: T[], seed: number): T[] {
 
 function levelText(item: GlossaryItem, level: number): string {
   const join = (a?: string[] | null) => (a && a.length ? a.map((s) => `• ${s}`).join('\n') : null);
+  // A side with no authored content used to show the DEFINITION silently under
+  // the other side's label ("MISTAKES" reading exactly like "DEFINITION" —
+  // eyes-on reader, text audit 2026-09-05). Say so, then show the definition.
+  const fallback = (what: string) => `(No ${what} written for this term yet — here is its definition.)\n\n${item.definition}`;
   switch (level) {
     case 1:
       return item.definition;
     case 2:
-      return item.plain_english ?? item.definition;
+      return item.plain_english ?? fallback('plain-English version');
     case 3:
-      return [item.purpose_function, item.practical_application].filter(Boolean).join('\n\n') || item.definition;
+      return [item.purpose_function, item.practical_application].filter(Boolean).join('\n\n') || fallback('purpose & application note');
     case 4:
-      return join(item.scenario_contexts) ?? item.definition;
+      return join(item.scenario_contexts) ?? fallback('scenarios');
     case 5:
-      return join(item.common_mistakes) ?? item.definition;
+      return join(item.common_mistakes) ?? fallback('common-mistakes note');
     case 6: {
       const parts = [
         item.related_terms?.length ? item.related_terms.map((s) => `• ${s}`).join('\n') : null,
         // difficulty (beg/int/adv) deliberately NOT shown (Booth 2026-07-08)
         item.category || null,
       ].filter(Boolean);
-      return parts.join('\n\n') || item.definition;
+      return parts.join('\n\n') || fallback('related-terms list');
     }
     default:
       return item.definition;
