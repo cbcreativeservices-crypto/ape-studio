@@ -41,7 +41,10 @@ import { CONCEPT_MODULES } from '../../features/tools/learn';
 import { colors, fonts } from '../../theme/tokens';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { toolByKey, type ToolKey } from './toolsData';
-import { TileChassis, chassisLayout, PLATE_Y, PLATE_H } from './TileChassis';
+// HUB_LIGHT — the hub's ONE light (overhead softbox key + low ambient) and its
+// intensity ladder; every lit surface on this screen reads its rungs from it.
+// The model itself is written up at the top of TileChassis.tsx.
+import { TileChassis, chassisLayout, HUB_LIGHT, PLATE_Y, PLATE_H } from './TileChassis';
 // Live tile previews (owner order 2026-08-19): the hub owns ONE shared mic/DSP
 // session + tick (hubPreviewEngine); five tiles redraw their strip artwork from
 // live frames, three run labeled scripted demos. All react-native-svg — the
@@ -64,6 +67,20 @@ const { width: SCREEN_W } = Dimensions.get('window');
 const TILE_W = Math.floor((SCREEN_W - 14 * 2 - (1 + 12) * 2 - 12) / 2);
 const NAV_TABS: NavIconName[] = ['Home', 'Study', 'Achievements', 'Profile'];
 
+/** A card/chip/row RIM under the hub's overhead key (HUB_LIGHT, TileChassis):
+ *  the up-facing top edge catches (rung 3), the sides sit in ambient, the
+ *  down-facing bottom edge falls into shadow (rung 5). All four sides are set
+ *  explicitly so a later `borderColor` override can never leave a stale lit
+ *  edge behind — a state that recolours a rim passes all three through here. */
+const litRim = (top: string, side: string, bottom: string) => ({
+  borderTopColor: top,
+  borderLeftColor: side,
+  borderRightColor: side,
+  borderBottomColor: bottom,
+});
+/** The dark #121214 cards (hero, training rows) under that key. */
+const CARD_RIM = litRim('#3b3c43', '#26262c', '#1b1b1f');
+
 type Props = NativeStackScreenProps<RootStackParamList, 'ToolsHub'>;
 
 /** Live dosimeter readout + the ONE entry into the Listening Exposure Monitor
@@ -81,7 +98,13 @@ function DosimeterChip({ onOpen }: { onOpen: () => void }) {
       onPress={onOpen}
       accessibilityRole="button"
       accessibilityLabel={`Listening exposure: dose ${pct} percent, ${shownTime} today. Open the monitor.`}
-      style={[styles.dosiChip, pct >= 100 && { borderColor: 'rgba(255,42,42,.8)' }, pct >= 80 && pct < 100 && { borderColor: 'rgba(255,180,0,.7)' }]}
+      // Warning states recolour the whole rim (a status signal, uniform on
+      // purpose) — routed through litRim so the lit top edge never lingers.
+      style={[
+        styles.dosiChip,
+        pct >= 100 && litRim('rgba(255,42,42,.8)', 'rgba(255,42,42,.8)', 'rgba(255,42,42,.8)'),
+        pct >= 80 && pct < 100 && litRim('rgba(255,180,0,.7)', 'rgba(255,180,0,.7)', 'rgba(255,180,0,.7)'),
+      ]}
     >
       <Text style={styles.dosiLabel}>DOSIMETER</Text>
       <Text style={[styles.dosiValue, pct >= 100 && { color: '#ff6a5e' }]}>
@@ -339,37 +362,36 @@ function PanelFace() {
               fill={g.light ? `rgba(255,255,255,${g.a})` : `rgba(0,0,0,${g.a + 0.03})`}
             />
           ))}
-          {/* Top lit lip + bottom shadow so the panel reads as its own mounted blank. */}
-          <Line x1={0} y1={0.6} x2={size.w} y2={0.6} stroke="rgba(255,255,255,0.16)" strokeWidth={0.7} />
-          <Line x1={0} y1={size.h - 0.6} x2={size.w} y2={size.h - 0.6} stroke="rgba(0,0,0,0.4)" strokeWidth={0.9} />
+          {/* The blank's up-facing top lip catches the overhead key (rung 3);
+              its down-facing bottom edge falls into shadow (rung 5). Full 1px
+              strokes on half-pixel centres so they stay crisp on the phone. */}
+          <Line x1={0} y1={0.5} x2={size.w} y2={0.5} stroke={HUB_LIGHT.lip} strokeWidth={1} />
+          <Line x1={0} y1={size.h - 0.5} x2={size.w} y2={size.h - 0.5} stroke={HUB_LIGHT.lipShadow} strokeWidth={1} />
         </Svg>
       ) : null}
     </View>
   );
 }
 
-/** Dark-gray-glass 3D display overlay — the dashboard GlassScreen look
- *  (smoked tint · vertical sheen→dim · top-left specular · edge glares) applied
- *  over each tool tile (owner 2026-08-17). Decorative; never blocks touches.
- *  Gradient lightened per owner 2026-08-17 — the dim was too heavy. */
+/** Smoked-glass display overlay over each tool tile (owner 2026-08-17).
+ *  Re-lit 2026-09-05 under the hub's ONE overhead key (HUB_LIGHT, TileChassis):
+ *  the softbox reflects in the glass as a soft horizontal band across its top
+ *  — the same band, in the same place, on every tile — with one 1px edge
+ *  specular where the glass meets the lip. The old diagonal top-left sweep
+ *  (the dashboard GlassScreen's corner light) was the one surface on the hub
+ *  lit from somewhere else; it is gone. Decorative; never blocks touches.
+ *  Bottom dim held at 0.12 (owner 2026-08-17: the dim was too heavy). */
 function TileGlass() {
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill}>
       <View style={styles.glassTint} />
-      {/* Vertical sheen → dim: catches light up top, darkens gently toward the bottom. */}
+      {/* The ONE reflection: softbox band up top with a soft lower edge at
+          ~45%, then the glass falls into its own dim toward the bottom. */}
       <LinearGradient
-        colors={['rgba(255,255,255,0.12)', 'rgba(255,255,255,0.03)', 'rgba(0,0,0,0.05)', 'rgba(0,0,0,0.12)']}
-        locations={[0, 0.5, 0.8, 1]}
+        colors={['rgba(255,255,255,0.14)', 'rgba(255,255,255,0.09)', 'rgba(255,255,255,0)', 'rgba(0,0,0,0.05)', 'rgba(0,0,0,0.12)']}
+        locations={[0, 0.28, 0.46, 0.76, 1]}
         start={{ x: 0.5, y: 0 }}
         end={{ x: 0.5, y: 1 }}
-        style={StyleSheet.absoluteFill}
-      />
-      {/* Ambient specular highlight sweeping from the top-left corner. */}
-      <LinearGradient
-        colors={['rgba(255,255,255,0.16)', 'rgba(255,255,255,0.04)', 'rgba(255,255,255,0)']}
-        locations={[0, 0.35, 0.7]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0.75, y: 0.9 }}
         style={StyleSheet.absoluteFill}
       />
       <View style={styles.glassTopGlare} />
@@ -455,20 +477,37 @@ function ToolTile({
       style={styles.tileFrame}
     >
       {/* GRAPHITE INSTRUMENT CHASSIS (owner-approved 2026-08-23, Tile Forge):
-          machined chamfers, brushed face with per-tile wear, engraved
-          nameplate, recess crevice, per-tool hardware rail, corner screws.
-          The chassis never moves — only the display cap sinks on press. */}
+          machined chamfers, brushed face with per-tile wear, recess crevice
+          (nameplate + screws cut by the owner 2026-09-05). The chassis never
+          moves — only the display cap sinks on press. */}
       <TileChassis tool={tool} w={TILE_W} seed={CHASSIS_SEED[tool] ?? 1} />
-      {/* Engraved title — paint-filled into the nameplate (light matte fill,
-          dark top shadow); still auto-shrinks to one line. */}
+      {/* Engraved title, cut straight into the brushed face under the overhead
+          key: the trough's down-facing top wall is in shadow (dark shadow
+          ABOVE the paint fill) and its up-facing bottom wall catches (a lit
+          hairline BELOW it). RN Text carries one shadow, so the lit wall is a
+          second, identical Text 1px lower underneath — same props, so
+          adjustsFontSizeToFit shrinks both alike. Hidden from the reader. */}
+      <Text
+        style={[styles.plateTitle, styles.plateTitleLitWall]}
+        numberOfLines={1}
+        adjustsFontSizeToFit
+        minimumFontScale={0.62}
+        accessible={false}
+        importantForAccessibility="no-hide-descendants"
+        aria-hidden
+      >
+        {name.toUpperCase()}
+      </Text>
       <Text style={styles.plateTitle} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.62}>
         {name.toUpperCase()}
       </Text>
       {/* The display opening — the RN glass sits exactly on the chassis's
           cut rect; the cap sinks into the SVG-drawn crevice on press. */}
       <View style={styles.displayWell}>
-        {/* Static cavity shadow the panel lip casts — revealed as the display sinks. */}
-        <LinearGradient pointerEvents="none" colors={['rgba(0,0,0,0.6)', 'rgba(0,0,0,0)']} style={styles.tileCavityTop} />
+        {/* Static cavity shadow the lip casts down into the recess (rung 6) —
+            under the overhead key it lives ONLY at the top; revealed as the
+            display sinks. */}
+        <LinearGradient pointerEvents="none" colors={[HUB_LIGHT.crevice, 'rgba(0,0,0,0)']} style={styles.tileCavityTop} />
         <Animated.View style={[styles.tileCap, { transform: [{ translateY }] }]}>
           <ToolStrip tool={tool} live={live} active={active} ready={ready} index={index} />
           <TileGlass />
@@ -563,6 +602,16 @@ export function ToolsHubScreen({ navigation }: Props) {
         <ScrollView contentContainerStyle={styles.scroll}>
           {/* Hero — the module masthead (art can layer in later). */}
           <View style={styles.hero}>
+            {/* The hero's diffuse face under the overhead key (rung 4): a hair
+                lighter at the top, falling toward the bottom — the same
+                falloff the tile faces and the panel show. */}
+            <LinearGradient
+              pointerEvents="none"
+              colors={['#17171a', '#111113']}
+              start={{ x: 0.5, y: 0 }}
+              end={{ x: 0.5, y: 1 }}
+              style={StyleSheet.absoluteFill}
+            />
             {/* Accuracy ⓘ — top-right corner of the hero, above the dosimeter
                 (owner 2026-08-17; moved out of the screen header). */}
             <AccuracyNote compact style={styles.heroAccuracy} />
@@ -719,11 +768,15 @@ const styles = StyleSheet.create({
 
   // Compact hero (Booth 2026-07-11); tightened after the tool count was removed
   // (owner 2026-08-17).
+  // Lit 2026-09-05 under the hub's overhead key: lit top rim, shadowed bottom
+  // rim (CARD_RIM), a top→bottom diffuse face (the LinearGradient child —
+  // hence overflow hidden; the ⓘ opens a Modal, so nothing here is clipped).
   hero: {
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#26262c',
+    ...CARD_RIM,
     backgroundColor: '#121214',
+    overflow: 'hidden',
     paddingHorizontal: 14,
     paddingTop: 12,
     paddingBottom: 11,
@@ -734,10 +787,11 @@ const styles = StyleSheet.create({
   heroTitle: { fontFamily: fonts.oswaldMedium, fontSize: 22, lineHeight: 26, color: colors.textPrimary },
   heroTitleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
   // Dosimeter readout chip (owner 2026-08-12) — right of the hero title.
+  // Same overhead key as the hero it sits in: lit top rim, shadowed bottom.
   dosiChip: {
     borderRadius: 9,
     borderWidth: 1,
-    borderColor: '#2c2c33',
+    ...litRim('#41424a', '#2c2c33', '#1e1e23'),
     backgroundColor: '#131316',
     paddingVertical: 6,
     paddingHorizontal: 10,
@@ -767,8 +821,10 @@ const styles = StyleSheet.create({
     width: TILE_W,
     height: CHASSIS_L.totalH,
   },
-  // Engraved nameplate title — paint-filled engraving (light matte fill, dark
-  // top shadow) over the chassis plate. Auto-shrinks to one line.
+  // Engraved title cut straight into the brushed face (nameplate gone, owner
+  // 2026-09-05): paint-filled matte letters; under the overhead key the
+  // trough's top wall shadows the fill from above (dark shadow, offset −1).
+  // Auto-shrinks to one line.
   plateTitle: {
     position: 'absolute',
     top: PLATE_Y + (PLATE_H - 14) / 2,
@@ -783,6 +839,15 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(0,0,0,0.85)',
     textShadowOffset: { width: 0, height: -1 },
     textShadowRadius: 0.5,
+  },
+  // The trough's up-facing bottom wall catching the key: the identical Text,
+  // 1px lower, in a faint light — only its bottom hairline shows past the
+  // paint fill. Without it the letters float; with it they sit IN the metal.
+  plateTitleLitWall: {
+    top: PLATE_Y + (PLATE_H - 14) / 2 + 1,
+    color: 'rgba(236,240,246,0.20)',
+    textShadowColor: 'transparent',
+    textShadowRadius: 0,
   },
   // The display opening — positioned exactly on the chassis's cut rect; its
   // dark cavity shows as the cap sinks.
@@ -824,9 +889,10 @@ const styles = StyleSheet.create({
       default: {},
     }),
   },
-  // Dark-gray-glass 3D display overlay parts (mirrors the dashboard GlassScreen).
+  // Smoked-glass display overlay parts (re-lit 2026-09-05 — see TileGlass).
   glassTint: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.05)' },
-  glassTopGlare: { position: 'absolute', top: 0, left: 0, right: 0, height: 1, backgroundColor: 'rgba(255,255,255,0.22)' },
+  // The glass's own top edge, a recessed rung-1 specular right under the lip.
+  glassTopGlare: { position: 'absolute', top: 0, left: 0, right: 0, height: 1, backgroundColor: HUB_LIGHT.glassEdge },
   // Strips are 2:1, but the tiles read too tall at full height, so we crop to
   // 2.5:1 — which trims only the strips' safe top/bottom margin (all plot
   // content sits inside y 104–920 of 1024), losing nothing (owner 2026-08-17).
@@ -857,13 +923,15 @@ const styles = StyleSheet.create({
   },
   comingChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1.4, color: '#d7e0ea' },
   // Saved-measurement library row (Phase 2).
+  // Its cyan rim sits under the same overhead key: the top edge catches a
+  // lighter cyan, the bottom edge falls off (2026-09-05).
   libraryRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: 'rgba(77,208,225,.45)',
+    ...litRim('rgba(128,230,242,.68)', 'rgba(77,208,225,.45)', 'rgba(77,208,225,.28)'),
     backgroundColor: '#0d1517',
     paddingVertical: 12,
     paddingHorizontal: 12,
@@ -884,7 +952,7 @@ const styles = StyleSheet.create({
     gap: 10,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#26262c',
+    ...CARD_RIM,
     backgroundColor: '#131316',
     paddingVertical: 11,
     paddingHorizontal: 12,
@@ -897,7 +965,8 @@ const styles = StyleSheet.create({
   navRow: { flexDirection: 'row', height: 60 },
   navItem: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   // Academy-locked container/row treatment — grayed steel, muted text.
-  lockedRow: { borderColor: '#3a3a3a', backgroundColor: '#141414', opacity: 0.6 },
+  // (rim through litRim so the locked steel is still lit from above)
+  lockedRow: { ...litRim('#474747', '#3a3a3a', '#2d2d2d'), backgroundColor: '#141414', opacity: 0.6 },
   lockedText: { color: colors.textSub },
   lockedNote: {
     fontFamily: fonts.barlowRegular,

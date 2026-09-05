@@ -30,6 +30,14 @@ mechanic** observation for your device pass — tapping NEXT past an unsolved
 board carried the unmatched pairs forward (pool grew 4 → 6 → 7; two clues then
 had no match). Intended carry-over or a state bug? ccode did not touch it.
 
+**Next native build — everything gated on it is now one lookup:**
+`docs/APE_NEXT_BUILD_CHECKLIST.md` (Harmonograph share/save/print, image share,
+certificate PDF, engine audio paths). The one config gap — no Photos permission
+text for SAVE — is fixed in app.json; cut the dev build whenever you're ready.
+Also 2026-09-05: a bound rack-dock key now wears its own colour (OSC 1 cyan)
+instead of amber; the Tools hub lost its screws and title plates, and the
+lighting pass on that screen is in review.
+
 **Ruled 2026-09-05 — no competitor organisations in product copy (R1)**: AVIXA
 now appears only as neutral ANSI citations in the Cable Dressing lab's sources
 sheet ("American National Standard" header, `ANSI/AVIXA F502.01:2018 …`), and
