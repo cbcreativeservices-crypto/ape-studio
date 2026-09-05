@@ -15,6 +15,7 @@ import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-nati
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { colors, fonts } from '../../theme/tokens';
+import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { CredentialBadge, type CredentialKind } from '../../components/CredentialBadge';
 import { ProgressRing } from '../../components/ProgressRing';
 import { TrophyModal } from '../../components/TrophyModal';
@@ -39,6 +40,10 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
   const navigation = useNavigation<any>();
   const accent = KIND_ACCENT[kind];
   const noun = kind === 'certificate' ? 'certificate' : 'program';
+  // A guest can't earn credentials (no account): the waiting slot says so
+  // inline instead of hopping to a sign-in dead end (Bug+Hater night A1-08).
+  const { entitlement } = useEntitlement();
+  const guest = entitlement === 'anonymous';
   const [rows, setRows] = useState<EarnedCredentialRow[] | null>(null);
   const [nearest, setNearest] = useState<NearestCredentialResult | null>(null);
   const [open, setOpen] = useState<EarnedCredentialRow | null>(null);
@@ -82,7 +87,7 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
         {message ? <Text style={styles.message}>{message}</Text> : null}
 
         {/* The leading "waiting slot" — always first. */}
-        <WaitingSlot kind={kind} noun={noun} accent={accent} result={nearest} navigation={navigation} />
+        <WaitingSlot kind={kind} noun={noun} accent={accent} result={nearest} navigation={navigation} guest={guest} />
 
         {/* Earned credentials — newest first. Image only appears here. */}
         {(rows ?? []).map((c) => {
@@ -144,12 +149,14 @@ function WaitingSlot({
   accent,
   result,
   navigation,
+  guest,
 }: {
   kind: CredentialKind;
   noun: string;
   accent: string;
   result: NearestCredentialResult | null;
   navigation: any;
+  guest: boolean;
 }) {
   // Loading — a quiet placeholder slot so the layout doesn't jump.
   if (!result) {
@@ -180,7 +187,7 @@ function WaitingSlot({
             {result.name}
           </Text>
           <Text style={styles.waitingMeta}>
-            {result.completeCount} of {result.totalCount} topics complete
+            {guest ? 'Sign in with a free account to track this' : `${result.completeCount} of ${result.totalCount} topics complete`}
           </Text>
         </View>
         <Text style={styles.chevron}>›</Text>

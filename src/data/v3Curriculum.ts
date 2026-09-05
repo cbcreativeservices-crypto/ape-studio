@@ -33,7 +33,22 @@ export type V3Field = { field: string; subjects: V3Subject[] };
  * Fetch the whole v3 curriculum grouped Field → Subject → Topic. Falls back to an
  * empty list on error (callers render an honest empty state rather than crash).
  */
-export async function fetchV3Curriculum(): Promise<V3Field[]> {
+// Session memo (Bug+Hater night A1-07): every Achievements screen + Explore +
+// Enrollments refetched the full 166-row curriculum on focus (3–4 s fills).
+// The catalog is static for a session, so the first fetch is shared; an empty
+// (failed) result is NOT cached so a transient error retries next time.
+let curriculumPromise: Promise<V3Field[]> | null = null;
+export function fetchV3Curriculum(): Promise<V3Field[]> {
+  if (!curriculumPromise) {
+    curriculumPromise = loadV3Curriculum().then((fields) => {
+      if (fields.length === 0) curriculumPromise = null;
+      return fields;
+    });
+  }
+  return curriculumPromise;
+}
+
+async function loadV3Curriculum(): Promise<V3Field[]> {
   try {
     const { data, error } = await supabase
       .from('achievements')
