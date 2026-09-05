@@ -389,11 +389,11 @@ const HubRt60Sim: FC<{ active: boolean }> = memo(({ active }) => {
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="none">
       {/* The RT60 curve starts at the plot's left edge (x 124); owner 2026-09-05
-          asked for "a little more left margin… to balance it", so this sim's
-          window sits 24 canvas units further left — the decay gets a breath
-          of dark margin on the left, the flat floor gives up 24 units on the
-          right. Same window height, so nothing else shifts. */}
-      <Svg width="100%" height="100%" viewBox={`${STRIP_WINDOW.x - 24} ${STRIP_WINDOW.y} ${STRIP_WINDOW.w} ${STRIP_WINDOW.h}`}>
+          asked for more left margin ("still too snug", second pass), so this
+          sim's window sits 64 canvas units further left — the decay starts a
+          clear margin in from the glass edge, the flat floor gives up 64
+          units on the right. Same window height, so nothing else shifts. */}
+      <Svg width="100%" height="100%" viewBox={`${STRIP_WINDOW.x - 64} ${STRIP_WINDOW.y} ${STRIP_WINDOW.w} ${STRIP_WINDOW.h}`}>
         <Defs>
           <LvlGrad id="hpLvlRt" y1={104} y2={920} />
           <LinearGradient id="hpFillRt" gradientUnits="userSpaceOnUse" x1="0" y1={104} x2="0" y2={920}>

@@ -407,12 +407,14 @@ function buildPatina(w: number, h: number): Patina {
   // 1 · Oxidation / uneven anodising: big soft ellipses of tone. Chalky light
   //     haze favours the upper half, handling darkness the lower half, plus a
   //     few faintly WARM patches — real tarnish on gray anodising yellows.
+  //     Owner 2026-09-05 (second pass, "add more patina"): 26 blotches (was 14),
+  //     larger, so the tone varies everywhere the metal shows.
   const blotches: Blotch[] = [];
-  for (let i = 0; i < 14; i++) {
-    const kind: Blotch['kind'] = i < 3 ? 'warm' : i < 8 ? 'dark' : 'light';
+  for (let i = 0; i < 26; i++) {
+    const kind: Blotch['kind'] = i < 5 ? 'warm' : i < 15 ? 'dark' : 'light';
     const upper = kind === 'light' ? rnd() < 0.7 : rnd() < 0.3;
     const cy = upper ? rnd() * h * 0.5 : h * 0.5 + rnd() * h * 0.5;
-    const rx = Math.min(w * 0.32, 26 + rnd() * 70);
+    const rx = Math.min(w * 0.34, 30 + rnd() * 90);
     blotches.push({ cx: rnd() * w, cy, rx, ry: rx * (0.45 + rnd() * 0.5), rot: rnd() * 180, kind });
   }
 
@@ -420,12 +422,14 @@ function buildPatina(w: number, h: number): Patina {
   //     (rack-rail and fingertip drag), heavier low and beside the displays.
   //     Mostly DARK (a light 1px stroke on mid-gray reads as debris at 2-3x),
   //     within ±15° of horizontal, few enough to stay wear rather than noise.
+  //     Second pass (owner: "add more patina"): 34 scuffs (was 18), a touch
+  //     longer and darker — still near-horizontal, still mostly dark.
   const scuffs: Mark[] = [];
-  for (let i = 0; i < 18; i++) {
+  for (let i = 0; i < 34; i++) {
     const p = pointInExposed();
     const light = rnd() < 0.25;
     const deg = (rnd() - 0.5) * 30;
-    scuffs.push({ ...seg(p.x, p.y, 4 + rnd() * 12, deg), a: light ? 0.08 + rnd() * 0.02 : 0.1 + rnd() * 0.05, light });
+    scuffs.push({ ...seg(p.x, p.y, 5 + rnd() * 16, deg), a: light ? 0.09 + rnd() * 0.03 : 0.13 + rnd() * 0.07, light });
   }
 
   // 3 · Three hairline scratches (a rail rub along the bottom margin, a
@@ -440,13 +444,19 @@ function buildPatina(w: number, h: number): Patina {
     const gy = PANEL_PAD + (rows - 1) * (th + GRID_GAP) - GRID_GAP / 2 + (rnd() - 0.5) * 6;
     scratches.push({ ...seg(PANEL_PAD + rnd() * w * 0.45, gy, 50 + rnd() * 60, (rnd() - 0.5) * 6), a: 0.14, light: true });
   }
+  // Second pass (owner: "add more patina"): two more — a rub along the top
+  // margin where the blank meets the rail above it, and a short slip down the
+  // right margin.
+  scratches.push({ ...seg(w * (0.45 + rnd() * 0.25), 3 + rnd() * 5, w * (0.12 + rnd() * 0.18), (rnd() - 0.5) * 2), a: 0.14, light: true });
+  scratches.push({ ...seg(w - PANEL_PAD / 2 + (rnd() - 0.5) * 4, h * (0.55 + rnd() * 0.25), 24 + rnd() * 36, 90 + (rnd() - 0.5) * 10), a: 0.14, light: true });
 
   // 4 · Finer bead-blast in the exposed metal (the 130 shared specks mostly
   //     land under the tiles).
+  //     Second pass (owner: "add more patina"): 160 (was 80), a shade stronger.
   const specks: Speck[] = [];
-  for (let i = 0; i < 80; i++) {
+  for (let i = 0; i < 160; i++) {
     const p = pointInExposed();
-    specks.push({ cx: p.x, cy: p.y, r: 0.5 + rnd() * 0.45, a: 0.08 + rnd() * 0.04, light: rnd() > 0.5 });
+    specks.push({ cx: p.x, cy: p.y, r: 0.5 + rnd() * 0.5, a: 0.09 + rnd() * 0.06, light: rnd() > 0.5 });
   }
   return { tiles, blotches, scuffs, scratches, specks };
 }
@@ -505,17 +515,17 @@ function PanelFace() {
               <Stop offset="1" stopColor="#fff" stopOpacity={0} />
             </SvgRadialGradient>
             <SvgRadialGradient id="apeToolsPatDark" cx="50%" cy="50%" r="50%">
-              <Stop offset="0" stopColor="#000" stopOpacity={0.14} />
-              <Stop offset="0.55" stopColor="#000" stopOpacity={0.06} />
+              <Stop offset="0" stopColor="#000" stopOpacity={0.2} />
+              <Stop offset="0.55" stopColor="#000" stopOpacity={0.08} />
               <Stop offset="1" stopColor="#000" stopOpacity={0} />
             </SvgRadialGradient>
             <SvgRadialGradient id="apeToolsPatLight" cx="50%" cy="50%" r="50%">
-              <Stop offset="0" stopColor="#fff" stopOpacity={0.12} />
-              <Stop offset="0.55" stopColor="#fff" stopOpacity={0.05} />
+              <Stop offset="0" stopColor="#fff" stopOpacity={0.16} />
+              <Stop offset="0.55" stopColor="#fff" stopOpacity={0.07} />
               <Stop offset="1" stopColor="#fff" stopOpacity={0} />
             </SvgRadialGradient>
             <SvgRadialGradient id="apeToolsPatWarm" cx="50%" cy="50%" r="50%">
-              <Stop offset="0" stopColor="#9a7d52" stopOpacity={0.13} />
+              <Stop offset="0" stopColor="#9a7d52" stopOpacity={0.18} />
               <Stop offset="1" stopColor="#9a7d52" stopOpacity={0} />
             </SvgRadialGradient>
             <SvgLinearGradient id="apeToolsTileDrop" x1="0" y1="0" x2="0" y2="1">
