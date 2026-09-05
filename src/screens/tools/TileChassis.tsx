@@ -39,7 +39,12 @@
  *   3 lip catch — an up-facing painted/anodised edge (panel, cards, recess lip)
  *   4 diffuse face — a vertical gradient, lighter at the top
  *   5 down-facing edge in shadow (glass bottom bevel, card bottom rim)
+ *     · 5-bounce: the same edge where the lit lip under it throws light back
  *   6 AO crevice — where the glass meets its recess
+ * PANEL PATINA (owner 2026-09-05, "tarnish and add patina … almost 3D real")
+ * lives in ToolsHubScreen.PanelFace and obeys the same light: every hairline
+ * scratch is a lit lower wall over a shadowed upper wall, every tile casts
+ * its soft shadow DOWN onto the panel, blotches/scuffs are tone only.
  * Device-scale rules (2026-09-01) still bind: nothing thinner than 1px,
  * nothing fainter than ~0.08 alpha, everything static.
  */
@@ -55,6 +60,13 @@ export const HUB_LIGHT = {
   lip: 'rgba(255,255,255,0.14)',
   /** rung 5 — a down-facing edge in the key's shadow */
   lipShadow: 'rgba(0,0,0,0.45)',
+  /** rung 5, bounced — a down-facing edge the key never reaches, lit only by
+   *  what the lit lip BELOW it throws back (the glass's bottom bevel over the
+   *  recess's lit cut-edge). Still the same one light; just its second hop. */
+  bounce: 'rgba(255,255,255,0.08)',
+  /** rung 3, in the recess — the up-facing cut-edge of the panel at the bottom
+   *  of a hole, seen down the gap beside the glass (a graded wall, not a line). */
+  wall: 'rgba(255,255,255,0.11)',
   /** rung 6 — the crevice a lip casts into a recess */
   crevice: 'rgba(0,0,0,0.60)',
 } as const;

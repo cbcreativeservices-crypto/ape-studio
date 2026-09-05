@@ -5,7 +5,7 @@
  * measurement tools with per-tool colored glass keys; each opens its
  * educational info screen (the live engine is Spike 0 — see toolsData notes).
  */
-import { useEffect, useRef, useState, type FC } from 'react';
+import { useEffect, useMemo, useRef, useState, type FC } from 'react';
 import { Animated, Dimensions, Easing, InteractionManager, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
@@ -14,8 +14,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, {
   Circle,
   Defs,
+  Ellipse,
   Line,
   LinearGradient as SvgLinearGradient,
+  RadialGradient as SvgRadialGradient,
   Rect,
   Stop,
   type SvgProps,
@@ -319,11 +321,142 @@ const GRIT_SPECKS = (() => {
   return out;
 })();
 
+/* ───────────────────────── PANEL PATINA (owner 2026-09-05) ─────────────────
+ * "Tarnish and add patina to the surround gray panel … like the user has it in
+ * front of them." The blank is the dashboard's gray (same coat, same 130-speck
+ * grit) but it has LIVED IN A RACK: uneven anodising, chalky oxidation haze up
+ * top, darker handling near the displays and across the lower half, a few
+ * scuffs, three hairline scratches, finer bead-blast in the exposed metal — and
+ * every raised glass casts its soft shadow DOWN onto the panel under the hub's
+ * one overhead key (TileChassis HUB_LIGHT). Everything is generated ONCE per
+ * panel size from a fixed xorshift seed, so the wear never shifts between
+ * launches, and it is painted only into the metal that actually shows (the
+ * outer margin and the gutters between tiles) so the node count stays low.
+ * Device-scale rules: nothing under 1px, no mark under ~0.08 alpha; soft
+ * gradients may fade to 0 (they are tone, not marks). */
+const PANEL_PAD = 12; // styles.panel padding
+const GRID_GAP = 12; // styles.grid gap
+const TILE_RADIUS = 10; // styles.tileFrame borderRadius
+const TILE_DROP_H = 6; // px the glass's shadow falls onto the panel below it
+
+type PRect = { x: number; y: number; w: number; h: number };
+type Blotch = { cx: number; cy: number; rx: number; ry: number; rot: number; kind: 'dark' | 'light' | 'warm' };
+type Mark = { x1: number; y1: number; x2: number; y2: number; a: number; light: boolean };
+type Speck = { cx: number; cy: number; r: number; a: number; light: boolean };
+type Patina = { tiles: PRect[]; blotches: Blotch[]; scuffs: Mark[]; scratches: Mark[]; specks: Speck[] };
+
+/** Same xorshift the grit uses, on its own seed — the wear is its own cloud. */
+function seededRnd(seed: number) {
+  let s = seed >>> 0;
+  return () => {
+    s ^= s << 13;
+    s ^= s >>> 17;
+    s ^= s << 5;
+    return ((s >>> 0) % 1_000_000) / 1_000_000;
+  };
+}
+
+function buildPatina(w: number, h: number): Patina {
+  const rnd = seededRnd(0x9e3779b9);
+  const tw = TILE_W;
+  const th = TILE_L.totalH;
+  // Where the tiles sit (mirrors styles.grid: flex-wrap, gap 12, inside pad 12).
+  const cols = Math.max(1, Math.floor((w - 2 * PANEL_PAD + GRID_GAP) / (tw + GRID_GAP)));
+  const rows = Math.ceil(TILE_ORDER.length / cols);
+  const tiles: PRect[] = TILE_ORDER.map((_, i) => ({
+    x: PANEL_PAD + (i % cols) * (tw + GRID_GAP),
+    y: PANEL_PAD + Math.floor(i / cols) * (th + GRID_GAP),
+    w: tw,
+    h: th,
+  }));
+  const gridRight = PANEL_PAD + cols * tw + (cols - 1) * GRID_GAP;
+  const gridBottom = PANEL_PAD + rows * th + (rows - 1) * GRID_GAP;
+  // The metal that shows: the margin ring + the gutters between tiles.
+  const exposed: PRect[] = [
+    { x: 0, y: 0, w, h: PANEL_PAD },
+    { x: 0, y: gridBottom, w, h: Math.max(1, h - gridBottom) },
+    { x: 0, y: PANEL_PAD, w: PANEL_PAD, h: gridBottom - PANEL_PAD },
+    { x: gridRight, y: PANEL_PAD, w: Math.max(1, w - gridRight), h: gridBottom - PANEL_PAD },
+  ];
+  for (let c = 1; c < cols; c++) exposed.push({ x: PANEL_PAD + c * (tw + GRID_GAP) - GRID_GAP, y: PANEL_PAD, w: GRID_GAP, h: gridBottom - PANEL_PAD });
+  for (let r = 1; r < rows; r++) exposed.push({ x: PANEL_PAD, y: PANEL_PAD + r * (th + GRID_GAP) - GRID_GAP, w: gridRight - PANEL_PAD, h: GRID_GAP });
+  const area = exposed.reduce((s, r) => s + r.w * r.h, 0);
+  // A point in the exposed metal, weighted toward the lower half (hands).
+  const pointInExposed = () => {
+    let pt = { x: 0, y: 0 };
+    for (let tries = 0; tries < 4; tries++) {
+      let t = rnd() * area;
+      let rect = exposed[exposed.length - 1];
+      for (const r of exposed) {
+        if (t < r.w * r.h) {
+          rect = r;
+          break;
+        }
+        t -= r.w * r.h;
+      }
+      pt = { x: rect.x + rnd() * rect.w, y: rect.y + rnd() * rect.h };
+      if (rnd() < 0.4 + 0.6 * (pt.y / h)) break;
+    }
+    return pt;
+  };
+  const seg = (x: number, y: number, len: number, deg: number) => {
+    const a = (deg * Math.PI) / 180;
+    return { x1: x, y1: y, x2: x + Math.cos(a) * len, y2: y + Math.sin(a) * len };
+  };
+
+  // 1 · Oxidation / uneven anodising: big soft ellipses of tone. Chalky light
+  //     haze favours the upper half, handling darkness the lower half, plus a
+  //     few faintly WARM patches — real tarnish on gray anodising yellows.
+  const blotches: Blotch[] = [];
+  for (let i = 0; i < 14; i++) {
+    const kind: Blotch['kind'] = i < 3 ? 'warm' : i < 8 ? 'dark' : 'light';
+    const upper = kind === 'light' ? rnd() < 0.7 : rnd() < 0.3;
+    const cy = upper ? rnd() * h * 0.5 : h * 0.5 + rnd() * h * 0.5;
+    const rx = Math.min(w * 0.32, 26 + rnd() * 70);
+    blotches.push({ cx: rnd() * w, cy, rx, ry: rx * (0.45 + rnd() * 0.5), rot: rnd() * 180, kind });
+  }
+
+  // 2 · Scuffs: short strokes in the exposed metal, most of them near-horizontal
+  //     (rack-rail and fingertip drag), heavier low and beside the displays.
+  //     Mostly DARK (a light 1px stroke on mid-gray reads as debris at 2-3x),
+  //     within ±15° of horizontal, few enough to stay wear rather than noise.
+  const scuffs: Mark[] = [];
+  for (let i = 0; i < 18; i++) {
+    const p = pointInExposed();
+    const light = rnd() < 0.25;
+    const deg = (rnd() - 0.5) * 30;
+    scuffs.push({ ...seg(p.x, p.y, 4 + rnd() * 12, deg), a: light ? 0.08 + rnd() * 0.02 : 0.1 + rnd() * 0.05, light });
+  }
+
+  // 3 · Three hairline scratches (a rail rub along the bottom margin, a
+  //     screwdriver slip down the centre gutter, a drag across a lower gutter).
+  const scratches: Mark[] = [];
+  scratches.push({ ...seg(w * (0.12 + rnd() * 0.2), h - 4 - rnd() * 5, w * (0.25 + rnd() * 0.25), (rnd() - 0.5) * 2.5), a: 0.14, light: true });
+  if (cols > 1) {
+    const gx = PANEL_PAD + tw + GRID_GAP / 2 + (rnd() - 0.5) * 6;
+    scratches.push({ ...seg(gx, h * (0.3 + rnd() * 0.3), 40 + rnd() * 50, 90 + (rnd() - 0.5) * 8), a: 0.14, light: true });
+  }
+  if (rows > 1) {
+    const gy = PANEL_PAD + (rows - 1) * (th + GRID_GAP) - GRID_GAP / 2 + (rnd() - 0.5) * 6;
+    scratches.push({ ...seg(PANEL_PAD + rnd() * w * 0.45, gy, 50 + rnd() * 60, (rnd() - 0.5) * 6), a: 0.14, light: true });
+  }
+
+  // 4 · Finer bead-blast in the exposed metal (the 130 shared specks mostly
+  //     land under the tiles).
+  const specks: Speck[] = [];
+  for (let i = 0; i < 80; i++) {
+    const p = pointInExposed();
+    specks.push({ cx: p.x, cy: p.y, r: 0.5 + rnd() * 0.45, a: 0.08 + rnd() * 0.04, light: rnd() > 0.5 });
+  }
+  return { tiles, blotches, scuffs, scratches, specks };
+}
+
 /** PanelFace — the GRAY textured rack-blank the tool cutouts are mounted in.
- *  A faithful copy of the dashboard study-method panel face (BlackFaceBg,
- *  default method gray): a medium-gray vertical gradient + bead-blasted grit +
- *  a lit top lip and a shadowed bottom edge, drawn in measured PIXEL space so
- *  the specks are round dots. Decorative; never blocks touches. */
+ *  The dashboard study-method panel face (BlackFaceBg, default method gray):
+ *  a medium-gray vertical gradient + bead-blasted grit + a lit top lip and a
+ *  shadowed bottom edge, drawn in measured PIXEL space so the specks are round
+ *  dots — now AGED (owner 2026-09-05, see PANEL PATINA above) and carrying the
+ *  soft shadow each raised glass throws onto it. Decorative; never blocks touches. */
 function PanelFace() {
   const [size, setSize] = useState({ w: 0, h: 0 });
   // The dashboard study-method panel coat, exactly (owner 2026-08-23 —
@@ -333,6 +466,22 @@ function PanelFace() {
     { o: 0.42, c: '#46464b' },
     { o: 1, c: '#2c2c30' },
   ];
+  const patina = useMemo(() => (size.w > 0 && size.h > 0 ? buildPatina(size.w, size.h) : null), [size.w, size.h]);
+  // The glass's shadow on the panel: a rounded rect the tile's own size, shifted
+  // down TILE_DROP_H, whose only visible part is the strip below the tile —
+  // dark where it meets the cut edge, gone TILE_DROP_H later. Bounding-box
+  // gradient, so one def serves every tile.
+  // The shadow ramps in from TILE_RADIUS above the tile's bottom edge (hidden
+  // under the tile everywhere but the rounded corners, where it wraps the arc
+  // instead of leaving a pale wedge), peaks at the edge, and is gone
+  // TILE_DROP_H below it.
+  const dropRamp = String(Math.max(0, (TILE_L.totalH - TILE_DROP_H - TILE_RADIUS) / TILE_L.totalH));
+  const dropKnee = String(Math.max(0, (TILE_L.totalH - TILE_DROP_H) / TILE_L.totalH));
+  const blotchFill: Record<Blotch['kind'], string> = {
+    dark: 'url(#apeToolsPatDark)',
+    light: 'url(#apeToolsPatLight)',
+    warm: 'url(#apeToolsPatWarm)',
+  };
   return (
     <View
       pointerEvents="none"
@@ -342,7 +491,7 @@ function PanelFace() {
         setSize((p) => (p.w === Math.round(width) && p.h === Math.round(height) ? p : { w: Math.round(width), h: Math.round(height) }));
       }}
     >
-      {size.w > 0 && size.h > 0 ? (
+      {size.w > 0 && size.h > 0 && patina ? (
         <Svg width={size.w} height={size.h}>
           <Defs>
             <SvgLinearGradient id="apeToolsPanelFace" x1="0" y1="0" x2="0" y2="1">
@@ -350,9 +499,47 @@ function PanelFace() {
                 <Stop key={st.o} offset={String(st.o)} stopColor={st.c} />
               ))}
             </SvgLinearGradient>
+            {/* The softbox blooming in satin metal — one wide, soft lift high on the face. */}
+            <SvgRadialGradient id="apeToolsSheen" cx="50%" cy="50%" r="50%">
+              <Stop offset="0" stopColor="#fff" stopOpacity={0.08} />
+              <Stop offset="1" stopColor="#fff" stopOpacity={0} />
+            </SvgRadialGradient>
+            <SvgRadialGradient id="apeToolsPatDark" cx="50%" cy="50%" r="50%">
+              <Stop offset="0" stopColor="#000" stopOpacity={0.14} />
+              <Stop offset="0.55" stopColor="#000" stopOpacity={0.06} />
+              <Stop offset="1" stopColor="#000" stopOpacity={0} />
+            </SvgRadialGradient>
+            <SvgRadialGradient id="apeToolsPatLight" cx="50%" cy="50%" r="50%">
+              <Stop offset="0" stopColor="#fff" stopOpacity={0.12} />
+              <Stop offset="0.55" stopColor="#fff" stopOpacity={0.05} />
+              <Stop offset="1" stopColor="#fff" stopOpacity={0} />
+            </SvgRadialGradient>
+            <SvgRadialGradient id="apeToolsPatWarm" cx="50%" cy="50%" r="50%">
+              <Stop offset="0" stopColor="#9a7d52" stopOpacity={0.13} />
+              <Stop offset="1" stopColor="#9a7d52" stopOpacity={0} />
+            </SvgRadialGradient>
+            <SvgLinearGradient id="apeToolsTileDrop" x1="0" y1="0" x2="0" y2="1">
+              <Stop offset="0" stopColor="#000" stopOpacity={0} />
+              <Stop offset={dropRamp} stopColor="#000" stopOpacity={0} />
+              <Stop offset={dropKnee} stopColor="#000" stopOpacity={0.3} />
+              <Stop offset="1" stopColor="#000" stopOpacity={0} />
+            </SvgLinearGradient>
           </Defs>
           <Rect x={0} y={0} width={size.w} height={size.h} fill="url(#apeToolsPanelFace)" />
-          {/* Random particulate specks — round dots at pixel radius. */}
+          <Ellipse cx={size.w / 2} cy={size.h * 0.18} rx={size.w * 0.6} ry={size.h * 0.45} fill="url(#apeToolsSheen)" />
+          {/* Oxidation / uneven anodising — tone only. */}
+          {patina.blotches.map((b, i) => (
+            <Ellipse
+              key={`b${i}`}
+              cx={b.cx}
+              cy={b.cy}
+              rx={b.rx}
+              ry={b.ry}
+              transform={`rotate(${b.rot.toFixed(1)} ${b.cx.toFixed(1)} ${b.cy.toFixed(1)})`}
+              fill={blotchFill[b.kind]}
+            />
+          ))}
+          {/* Random particulate specks — round dots at pixel radius (dashboard's cloud). */}
           {GRIT_SPECKS.map((g, i) => (
             <Circle
               key={i}
@@ -361,6 +548,41 @@ function PanelFace() {
               r={g.r}
               fill={g.light ? `rgba(255,255,255,${g.a})` : `rgba(0,0,0,${g.a + 0.03})`}
             />
+          ))}
+          {/* Finer bead-blast in the exposed metal. */}
+          {patina.specks.map((g, i) => (
+            <Circle key={`s${i}`} cx={g.cx} cy={g.cy} r={g.r} fill={g.light ? `rgba(255,255,255,${g.a.toFixed(3)})` : `rgba(0,0,0,${g.a.toFixed(3)})`} />
+          ))}
+          {/* Scuffs. */}
+          {patina.scuffs.map((m, i) => (
+            <Line
+              key={`m${i}`}
+              x1={m.x1}
+              y1={m.y1}
+              x2={m.x2}
+              y2={m.y2}
+              stroke={m.light ? `rgba(255,255,255,${m.a.toFixed(3)})` : `rgba(0,0,0,${m.a.toFixed(3)})`}
+              strokeWidth={1}
+              strokeLinecap="round"
+            />
+          ))}
+          {/* Hairline scratches under the overhead key: the groove's up-facing
+              lower wall catches (bright line), its upper wall shadows (dark
+              line 1px above) — the same physics as every lip on this screen. */}
+          {patina.scratches.map((m, i) => (
+            <Line key={`sc${i}`} x1={m.x1} y1={m.y1 - 1} x2={m.x2} y2={m.y2 - 1} stroke="rgba(0,0,0,0.16)" strokeWidth={1} strokeLinecap="round" />
+          ))}
+          {patina.scratches.map((m, i) => (
+            <Line key={`sl${i}`} x1={m.x1} y1={m.y1} x2={m.x2} y2={m.y2} stroke={`rgba(255,255,255,${m.a})`} strokeWidth={1} strokeLinecap="round" />
+          ))}
+          {/* Each raised glass sits proud of the panel: a soft shadow falls onto
+              the metal below it (the key is above and slightly in front), and a
+              1px contact occlusion hugs the whole cut (ambient, all round). */}
+          {patina.tiles.map((t, i) => (
+            <Rect key={`d${i}`} x={t.x} y={t.y + TILE_DROP_H} width={t.w} height={t.h} rx={TILE_RADIUS} fill="url(#apeToolsTileDrop)" />
+          ))}
+          {patina.tiles.map((t, i) => (
+            <Rect key={`o${i}`} x={t.x} y={t.y} width={t.w} height={t.h} rx={TILE_RADIUS} fill="none" stroke="rgba(0,0,0,0.12)" strokeWidth={2} />
           ))}
           {/* The blank's up-facing top lip catches the overhead key (rung 3);
               its down-facing bottom edge falls into shadow (rung 5). Full 1px
@@ -385,15 +607,33 @@ function TileGlass() {
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill}>
       <View style={styles.glassTint} />
-      {/* The ONE reflection: softbox band up top with a soft lower edge at
-          ~45%, then the glass falls into its own dim toward the bottom. */}
+      {/* The ONE reflection: the softbox as a band across the top of the slab —
+          near-flat while the softbox's face fills the glass, then its diffused
+          lower edge rolls off between ~28% and 48% — and below it the smoked
+          glass falls into its own dim toward the bottom (polish pass
+          2026-09-05: brighter core, a real shoulder instead of a straight ramp). */}
       <LinearGradient
-        colors={['rgba(255,255,255,0.14)', 'rgba(255,255,255,0.09)', 'rgba(255,255,255,0)', 'rgba(0,0,0,0.05)', 'rgba(0,0,0,0.12)']}
-        locations={[0, 0.28, 0.46, 0.76, 1]}
+        colors={[
+          'rgba(255,255,255,0.18)',
+          'rgba(255,255,255,0.155)',
+          'rgba(255,255,255,0.09)',
+          'rgba(255,255,255,0.025)',
+          'rgba(255,255,255,0)',
+          'rgba(0,0,0,0.04)',
+          'rgba(0,0,0,0.13)',
+        ]}
+        locations={[0, 0.1, 0.28, 0.42, 0.5, 0.74, 1]}
         start={{ x: 0.5, y: 0 }}
         end={{ x: 0.5, y: 1 }}
         style={StyleSheet.absoluteFill}
       />
+      {/* The bevel's second step: a real ground facet is not one line — just
+          inside the specular top edge the glass's thickness catches the key
+          again, fainter (rung 1 recessed); at the bottom its thickness reads
+          as a hair of shadow inside the edge. Both live in the bevel, not the
+          display. */}
+      <View style={styles.glassFacetTop} />
+      <View style={styles.glassFacetBottom} />
     </View>
   );
 }
@@ -481,9 +721,14 @@ function ToolTile({
           overhead key). Inside it, ONE raised, bevelled GLASS holds the title
           band and the animated display behind the same surface; it is the
           only part that sinks on press. */}
-      {/* Cavity shadow the lip casts down into the recess (rung 6) — under the
-          overhead key it lives only at the top; revealed as the glass sinks. */}
+      {/* The cut has thickness. Under the overhead key the hole's top wall
+          faces down — the crevice the lip casts into the recess (rung 6),
+          seen down the top gap and a hair more as the glass sinks — while its
+          bottom wall faces UP and catches the key down the bottom gap (rung 3,
+          graded: brightest at the lip, gone by the glass). Both sit UNDER the
+          glass so the slab's own bevel is never darkened. */}
       <LinearGradient pointerEvents="none" colors={[HUB_LIGHT.crevice, 'rgba(0,0,0,0)']} style={styles.tileCavityTop} />
+      <LinearGradient pointerEvents="none" colors={['rgba(255,255,255,0)', HUB_LIGHT.wall]} style={styles.tileCavityBottom} />
       <Animated.View style={[styles.glass, { transform: [{ translateY }] }]}>
         {/* Title band — part of the display, behind the glass, above the art. */}
         <View style={styles.glassTitleBand}>
@@ -801,24 +1046,30 @@ const styles = StyleSheet.create({
   tileFrame: {
     width: TILE_W,
     height: TILE_L.totalH,
-    borderRadius: 10,
+    borderRadius: TILE_RADIUS,
     borderWidth: 1,
-    ...litRim('rgba(0,0,0,0.55)', 'rgba(255,255,255,0.05)', HUB_LIGHT.lip),
+    // Sides at the alpha floor (0.05 downsampled to nothing on the phone).
+    ...litRim('rgba(0,0,0,0.55)', 'rgba(255,255,255,0.08)', HUB_LIGHT.lip),
     backgroundColor: '#000',
     padding: TILE_L.gap - 1,
     overflow: 'hidden',
   },
   // The raised, bevelled GLASS — title band + display behind one surface; the
   // only part that sinks on press. Bevel under the overhead key: top edge is
-  // the rung-1 specular, sides mid, bottom edge in shadow.
+  // the rung-1 specular, sides mid, bottom edge lit only by the bounce off the
+  // recess's lit cut-edge beneath it (rung 5-bounce — a shadowed edge that
+  // still reads as an edge against the black gap, instead of vanishing into it).
   glass: {
     flex: 1,
     borderRadius: 6,
     borderWidth: 1.5,
-    ...litRim(HUB_LIGHT.specular, HUB_LIGHT.lip, HUB_LIGHT.lipShadow),
+    ...litRim(HUB_LIGHT.specular, HUB_LIGHT.lip, HUB_LIGHT.bounce),
     backgroundColor: '#0b0c0e',
     overflow: 'hidden',
   },
+  // The bevel's inner facet steps (see TileGlass) — 1px each, in the bevel.
+  glassFacetTop: { position: 'absolute', top: 0, left: 0, right: 0, height: 1, backgroundColor: HUB_LIGHT.glassEdge },
+  glassFacetBottom: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 1, backgroundColor: 'rgba(0,0,0,0.30)' },
   // Title band — the top of the display, behind the glass (not a plate on a frame).
   glassTitleBand: {
     height: TILE_TITLE_H,
@@ -838,8 +1089,12 @@ const styles = StyleSheet.create({
   // margin, no "screen within the tile" (owner 2026-09-05: "black borders
   // bookshelving the display… need to be removed").
   stripWrap: { paddingHorizontal: 0, paddingBottom: 0 },
-  // Shadow the recess lip casts into the cavity top, seen when the glass sinks.
-  tileCavityTop: { position: 'absolute', top: 0, left: 0, right: 0, height: 8, zIndex: 1 },
+  // The recess's two walls, painted UNDER the glass (no zIndex — the old
+  // zIndex 1 laid the crevice over the glass's top bevel and killed its
+  // specular): the shadowed top wall, seen down the top gap and revealed a
+  // hair more as the glass sinks; the lit bottom wall, filling the bottom gap.
+  tileCavityTop: { position: 'absolute', top: 0, left: 0, right: 0, height: 8 },
+  tileCavityBottom: { position: 'absolute', bottom: 0, left: 0, right: 0, height: TILE_L.gap - 1 },
   // Power-on illumination that ramps up on press (lightens/glows the screen).
   // Peak brightness reduced 39% (0.24 → 0.146) per owner 2026-08-17.
   tileGlowLight: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(165,200,255,0.146)' },
