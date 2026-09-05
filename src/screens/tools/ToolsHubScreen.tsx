@@ -699,8 +699,10 @@ const ToolTile = memo(function ToolTile({
 
   const onIn = () => {
     if (busy.current) return;
-    // Tactile "click" on touch-down — the exact call the dashboard switches use.
-    if (hapticsEnabled()) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid).catch(() => {});
+    // (The touch-down "Rigid" impact used here since 2026-08-17 was not felt
+    // on the owner's iPhone — 2026-09-05: "it should have the haptic tick like
+    // the others… I did not feel it." The tick now fires on the confirmed
+    // press in activate(), the way the tool keys do; touch-down only sinks.)
     animateIn();
   };
   // On a real tap onPress sets busy + navigates; a cancelled press just reverts.
@@ -713,6 +715,10 @@ const ToolTile = memo(function ToolTile({
     if (busy.current) return;
     busy.current = true;
     markToolTap(tool);
+    // The haptic TICK every tool key gives on selection (owner 2026-09-05) —
+    // on the confirmed press, so it lands even when a touch-down impact would
+    // not (iOS). Same call as the rack dock keys and the Section headers.
+    if (hapticsEnabled()) Haptics.selectionAsync().catch(() => {});
     // Hold the sunk + illuminated state a beat so the "power on" reads, then exit.
     // Perf (rev 22): trimmed 190→90 ms — still reads as a power-on tap but halves
     // the fixed latency before navigation starts.
