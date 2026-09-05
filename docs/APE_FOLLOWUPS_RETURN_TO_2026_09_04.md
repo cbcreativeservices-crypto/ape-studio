@@ -35,8 +35,11 @@ had no match). Intended carry-over or a state bug? ccode did not touch it.
 certificate PDF, engine audio paths). The one config gap — no Photos permission
 text for SAVE — is fixed in app.json; cut the dev build whenever you're ready.
 Also 2026-09-05: a bound rack-dock key now wears its own colour (OSC 1 cyan)
-instead of amber; the Tools hub lost its screws and title plates, and the
-lighting pass on that screen is in review.
+instead of amber; the Tools hub tiles were rebuilt to your spec — THE TILE IS
+THE SCREEN: one raised, bevelled glass per tool with the title and the display
+behind it, a thin true-black recess all round with a light touch on its lip,
+under one overhead light (no screws, no title plates, no chassis frame).
+Device check: the bevel and recess lip at 3x.
 
 **Ruled 2026-09-05 — no competitor organisations in product copy (R1)**: AVIXA
 now appears only as neutral ANSI citations in the Cable Dressing lab's sources

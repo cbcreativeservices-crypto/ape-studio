@@ -44,7 +44,7 @@ import { toolByKey, type ToolKey } from './toolsData';
 // HUB_LIGHT — the hub's ONE light (overhead softbox key + low ambient) and its
 // intensity ladder; every lit surface on this screen reads its rungs from it.
 // The model itself is written up at the top of TileChassis.tsx.
-import { TileChassis, chassisLayout, HUB_LIGHT, PLATE_Y, PLATE_H } from './TileChassis';
+import { HUB_LIGHT, TILE_STRIP_PAD, TILE_TITLE_H, tileLayout } from './TileChassis';
 // Live tile previews (owner order 2026-08-19): the hub owns ONE shared mic/DSP
 // session + tick (hubPreviewEngine); five tiles redraw their strip artwork from
 // live frames, three run labeled scripted demos. All react-native-svg — the
@@ -119,7 +119,7 @@ function DosimeterChip({ onOpen }: { onOpen: () => void }) {
  *  SPL · MultiMeter / Waveform · RTA / Spectrogram · Noise Gen / RT60 · Freq. */
 /* Tile Forge (owner 2026-08-23): chassis geometry shared with TileChassis;
    per-tile wear seeds are stable so each tile's grit/scratch never shift. */
-const CHASSIS_L = chassisLayout(TILE_W);
+const TILE_L = tileLayout(TILE_W);
 const CHASSIS_SEED: Partial<Record<ToolKey, number>> = {
   spl: 11, multimeter: 23, waveform: 37, rta: 51, spectrogram: 61, signalgen: 71, rt60: 83, hzcounter: 97,
 };
@@ -394,7 +394,6 @@ function TileGlass() {
         end={{ x: 0.5, y: 1 }}
         style={StyleSheet.absoluteFill}
       />
-      <View style={styles.glassTopGlare} />
     </View>
   );
 }
@@ -476,50 +475,34 @@ function ToolTile({
       accessibilityLabel={name}
       style={styles.tileFrame}
     >
-      {/* GRAPHITE INSTRUMENT CHASSIS (owner-approved 2026-08-23, Tile Forge):
-          machined chamfers, brushed face with per-tile wear, recess crevice
-          (nameplate + screws cut by the owner 2026-09-05). The chassis never
-          moves — only the display cap sinks on press. */}
-      <TileChassis tool={tool} w={TILE_W} seed={CHASSIS_SEED[tool] ?? 1} />
-      {/* Engraved title, cut straight into the brushed face under the overhead
-          key: the trough's down-facing top wall is in shadow (dark shadow
-          ABOVE the paint fill) and its up-facing bottom wall catches (a lit
-          hairline BELOW it). RN Text carries one shadow, so the lit wall is a
-          second, identical Text 1px lower underneath — same props, so
-          adjustsFontSizeToFit shrinks both alike. Hidden from the reader. */}
-      <Text
-        style={[styles.plateTitle, styles.plateTitleLitWall]}
-        numberOfLines={1}
-        adjustsFontSizeToFit
-        minimumFontScale={0.62}
-        accessible={false}
-        importantForAccessibility="no-hide-descendants"
-        aria-hidden
-      >
-        {name.toUpperCase()}
-      </Text>
-      <Text style={styles.plateTitle} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.62}>
-        {name.toUpperCase()}
-      </Text>
-      {/* The display opening — the RN glass sits exactly on the chassis's
-          cut rect; the cap sinks into the SVG-drawn crevice on press. */}
-      <View style={styles.displayWell}>
-        {/* Static cavity shadow the lip casts down into the recess (rung 6) —
-            under the overhead key it lives ONLY at the top; revealed as the
-            display sinks. */}
-        <LinearGradient pointerEvents="none" colors={[HUB_LIGHT.crevice, 'rgba(0,0,0,0)']} style={styles.tileCavityTop} />
-        <Animated.View style={[styles.tileCap, { transform: [{ translateY }] }]}>
+      {/* THE TILE IS THE SCREEN (owner 2026-09-05, see TileChassis.tsx): the
+          Pressable is the true-black RECESS cut into the panel (its 1px rim is
+          the panel's lip — bottom edge lit, top edge in shadow, under the
+          overhead key). Inside it, ONE raised, bevelled GLASS holds the title
+          band and the animated display behind the same surface; it is the
+          only part that sinks on press. */}
+      {/* Cavity shadow the lip casts down into the recess (rung 6) — under the
+          overhead key it lives only at the top; revealed as the glass sinks. */}
+      <LinearGradient pointerEvents="none" colors={[HUB_LIGHT.crevice, 'rgba(0,0,0,0)']} style={styles.tileCavityTop} />
+      <Animated.View style={[styles.glass, { transform: [{ translateY }] }]}>
+        {/* Title band — part of the display, behind the glass, above the art. */}
+        <View style={styles.glassTitleBand}>
+          <Text style={styles.glassTitle} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.62}>
+            {name.toUpperCase()}
+          </Text>
+        </View>
+        <View style={styles.stripWrap}>
           <ToolStrip tool={tool} live={live} active={active} ready={ready} index={index} />
-          <TileGlass />
-          {/* Illumination — the screen powers on (glow ramps up) when pressed. */}
-          <Animated.View pointerEvents="none" style={[styles.tileGlowLight, { opacity: glow }]} />
-          {planned && (
-            <View style={styles.comingChip}>
-              <Text style={styles.comingChipText}>COMING</Text>
-            </View>
-          )}
-        </Animated.View>
-      </View>
+        </View>
+        <TileGlass />
+        {/* Illumination — the screen powers on (glow ramps up) when pressed. */}
+        <Animated.View pointerEvents="none" style={[styles.tileGlowLight, { opacity: glow }]} />
+        {planned && (
+          <View style={styles.comingChip}>
+            <Text style={styles.comingChipText}>COMING</Text>
+          </View>
+        )}
+      </Animated.View>
     </Pressable>
   );
 }
@@ -809,62 +792,52 @@ const styles = StyleSheet.create({
   // Tile height is now content-driven: a full-width 2:1 strip + the title
   // (Booth 2026-08-17, ruling D-1). This grows each tile ~40% vs the old fixed
   // 104 — approved; the grid now scrolls.
-  // Each tile is a CUTOUT in the gray panel (owner 2026-08-17): black cut-edges
-  // (thicker top/left shadow, thin bottom line) give the opening real depth. The
-  // dark cavity (#040405) shows at the top as the display 'cap' sinks on press.
-  // Mirrors the dashboard cutoutMount + SwitchButton cutout.
-  // Outer FRAME (owner 2026-08-19, reference image): a 1px black keyline that
-  // separates each module from the rack panel, wrapping the metallic bezel.
-  // Tile Forge chassis (owner 2026-08-23): the Pressable is a fixed frame the
-  // chassis SVG fills; title + display are absolutely placed on its geometry.
+  // THE TILE IS THE SCREEN (owner 2026-09-05). The Pressable is the true-black
+  // RECESS the glass sits in — the gap the old tiles showed at the bottom, now
+  // all the way round (TILE_GAP). Its 1px rim is the panel's cut lip under the
+  // overhead key: the up-facing bottom edge catches (rung 3), the sides sit in
+  // ambient, the down-facing top edge is the shadow the panel casts (rung 5) —
+  // the light touch that shows the darkness is a hole, not a border.
   tileFrame: {
     width: TILE_W,
-    height: CHASSIS_L.totalH,
+    height: TILE_L.totalH,
+    borderRadius: 10,
+    borderWidth: 1,
+    ...litRim('rgba(0,0,0,0.55)', 'rgba(255,255,255,0.05)', HUB_LIGHT.lip),
+    backgroundColor: '#000',
+    padding: TILE_L.gap - 1,
+    overflow: 'hidden',
   },
-  // Engraved title cut straight into the brushed face (nameplate gone, owner
-  // 2026-09-05): paint-filled matte letters; under the overhead key the
-  // trough's top wall shadows the fill from above (dark shadow, offset −1).
-  // Auto-shrinks to one line.
-  plateTitle: {
-    position: 'absolute',
-    top: PLATE_Y + (PLATE_H - 14) / 2,
-    left: 16,
-    right: 16,
+  // The raised, bevelled GLASS — title band + display behind one surface; the
+  // only part that sinks on press. Bevel under the overhead key: top edge is
+  // the rung-1 specular, sides mid, bottom edge in shadow.
+  glass: {
+    flex: 1,
+    borderRadius: 6,
+    borderWidth: 1.5,
+    ...litRim(HUB_LIGHT.specular, HUB_LIGHT.lip, HUB_LIGHT.lipShadow),
+    backgroundColor: '#0b0c0e',
+    overflow: 'hidden',
+  },
+  // Title band — the top of the display, behind the glass (not a plate on a frame).
+  glassTitleBand: {
+    height: TILE_TITLE_H,
+    justifyContent: 'center',
+    paddingHorizontal: 10,
+    backgroundColor: '#0e1014',
+  },
+  glassTitle: {
     textAlign: 'center',
     fontFamily: fonts.oswaldMedium,
     fontSize: 12,
     lineHeight: 14,
     letterSpacing: 1.1,
-    color: '#c9ccd2',
-    textShadowColor: 'rgba(0,0,0,0.85)',
-    textShadowOffset: { width: 0, height: -1 },
-    textShadowRadius: 0.5,
+    color: '#d5d9e0',
   },
-  // The trough's up-facing bottom wall catching the key: the identical Text,
-  // 1px lower, in a faint light — only its bottom hairline shows past the
-  // paint fill. Without it the letters float; with it they sit IN the metal.
-  plateTitleLitWall: {
-    top: PLATE_Y + (PLATE_H - 14) / 2 + 1,
-    color: 'rgba(236,240,246,0.20)',
-    textShadowColor: 'transparent',
-    textShadowRadius: 0,
-  },
-  // The display opening — positioned exactly on the chassis's cut rect; its
-  // dark cavity shows as the cap sinks.
-  displayWell: {
-    position: 'absolute',
-    left: CHASSIS_L.dispX,
-    top: CHASSIS_L.dispY,
-    width: CHASSIS_L.dispW,
-    height: CHASSIS_L.dispH,
-    borderRadius: 5,
-    backgroundColor: '#040405',
-    overflow: 'hidden',
-  },
-  // The DISPLAY 'cap' — the tool's screen; the only part that travels on press.
-  tileCap: { flex: 1, backgroundColor: '#0b0c0e', borderRadius: 5, overflow: 'hidden', padding: 4 },
-  // Shadow the panel lip casts into the cavity top, seen when the cap sinks.
-  tileCavityTop: { position: 'absolute', top: 0, left: 0, right: 0, height: 8 },
+  // The display art sits inside the glass with a small dark margin.
+  stripWrap: { paddingHorizontal: TILE_STRIP_PAD, paddingBottom: TILE_STRIP_PAD },
+  // Shadow the recess lip casts into the cavity top, seen when the glass sinks.
+  tileCavityTop: { position: 'absolute', top: 0, left: 0, right: 0, height: 8, zIndex: 1 },
   // Power-on illumination that ramps up on press (lightens/glows the screen).
   // Peak brightness reduced 39% (0.24 → 0.146) per owner 2026-08-17.
   tileGlowLight: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(165,200,255,0.146)' },
@@ -891,8 +864,7 @@ const styles = StyleSheet.create({
   },
   // Smoked-glass display overlay parts (re-lit 2026-09-05 — see TileGlass).
   glassTint: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.05)' },
-  // The glass's own top edge, a recessed rung-1 specular right under the lip.
-  glassTopGlare: { position: 'absolute', top: 0, left: 0, right: 0, height: 1, backgroundColor: HUB_LIGHT.glassEdge },
+  // (The 1px top glare is gone — the glass's own bevel is the top specular now.)
   // Strips are 2:1, but the tiles read too tall at full height, so we crop to
   // 2.5:1 — which trims only the strips' safe top/bottom margin (all plot
   // content sits inside y 104–920 of 1024), losing nothing (owner 2026-08-17).
@@ -913,7 +885,7 @@ const styles = StyleSheet.create({
   // so two-up rows stay aligned regardless of title wrap.
   comingChip: {
     position: 'absolute',
-    top: 8,
+    bottom: 8,
     right: 8,
     borderRadius: 4,
     borderWidth: 1,
