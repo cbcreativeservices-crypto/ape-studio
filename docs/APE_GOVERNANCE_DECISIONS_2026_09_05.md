@@ -25,3 +25,13 @@ Decisions of record made by the owner on 2026-09-05. Where this document and mem
 **Not changed, for the owner's awareness:** "NAMM" appears as a source in two career families (music-products trade association — not judged a competitor). No other association that could be read as a training competitor (CEDIA, SynAudCon, Full Sail, Berklee, SAE…) appears in `src/`.
 
 **How future work applies it:** any new lab source registry or Career Finder data pass runs `grep -riw "avixa\|infocomm\|cedia" src/` before commit; a hit outside a neutral ANSI citation is a defect. Internal code identifiers (`avixa_f502_01` in the Cable lab registry) are not copy and are fine. The Career Finder builder (`scripts/build-career-index.py`) now drops these organisations from family `sources` at build time, so a rebuild from the workbook cannot re-introduce them; the workbook's "Sources & Method" sheet itself is the owner's and was not touched.
+
+## R2 — Builds are started only on the owner's explicit, same-moment go (STANDING RULE)
+
+**Ruling (owner, 2026-09-05):** no assistant or agent starts an EAS build (`eas build`, any profile, any platform) — or any other billed or externally visible action: `eas submit`, credential changes, store metadata, purchases, publishing — without the owner saying **yes at that moment**, in their own words, to a one-line ask that names the profile, the platforms and what the build carries.
+
+**What does not count as authorization:** a "then build new versions" line in an earlier brief or task list; a previous day's approval; the fact that the tree is green; a demo deadline. Those are plans. The go is given when the work reaches the build step, not before.
+
+**Why:** builds are billed, consume version numbers and produce artifacts the owner then has to manage and install; the owner decides profile and timing at that moment. On 2026-09-05 two development builds (iOS build 14, Android versionCode 10) were started from the morning brief's closing line without a fresh go — the owner kept them but ruled this must never recur.
+
+**How future work applies it:** when a task chain reaches "build", stop, post the one-line ask, and wait. A build the owner started is never cancelled or restarted by an assistant. Recorded in assistant memory as `never-build-without-explicit-go`.
