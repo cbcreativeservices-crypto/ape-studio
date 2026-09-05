@@ -419,6 +419,21 @@ waiting on your call — nothing here blocks the app):
 | 4 | "The Career Finder said my answers stay on this phone — they were gone next time I opened it." (guest) | Your guest-wipe ruling vs the Finder brief. **Pick:** exempt the Finder record from the guest wipe (patch drafted, guest path only), or change the copy to say results vanish when the app closes. | B1-02 · `AuthScreen.tsx` |
 | 5 | "I removed the certificate but three 'Required 🔒' topics are stuck in my list forever." | The core-course rule: should cores drop when no certificate/program remains? (patch drafted) | C1-03 · `EnrollmentScreen.tsx` |
 
+**Follow-up batch (owner: "fix what is needed", 2026-09-05) — 11 more FIXED on my
+recommended defaults:** F2-01 client side `deb1632` (Dashboard guest honesty
+notice; the server-side free-tier RPC amendment is still yours) · E2-02
+`6cf29f8` (generic-word linker guard) · B1-02 + B1-04 `36cc07c` (Finder record
+survives a guest re-entry; BROAD profiles get the softer heading) · C1-03
+`8f5b1e5` (cores drop with the last credential) · A1-07 + A1-08 `9c4a485`
+(curriculum memoized per session; guest NEXT UP says "sign in to track" inline)
+· I2-02 + K2-01 + D1-09 `facd7bb` (FULL CHAIN lights all nine; FINISH leaves the
+lab; "n/m done" counters) · C1-06 `29f6f6d` (guest profile copy).
+**Still yours (content / product / backend — not something to invent):** C1-02 the
+50 v3-keyed subject descriptions; D1-10 whether lab-menu counts include planned
+labs; K2-02 the Directory 500 (Computer A); the free-tier RPC amendment.
+**Left as filed (small design nits):** B1-07, B1-08/09, C1-07, D1-08, F2-02/03/04,
+I2-03, K2-04, and the low/web-only trio.
+
 **Also on your list — design/copy calls (each a few minutes, none urgent):**
 - A1-08 guest tapping NEXT UP lands on a sign-in dead end → inline hint instead.
 - A1-07 every Progress screen refetches the 166-row curriculum (3–4 s fills) → memoize `fetchV3Curriculum` per session.

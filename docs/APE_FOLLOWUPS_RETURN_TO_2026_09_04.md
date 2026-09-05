@@ -33,6 +33,14 @@ Enrollments core-topic trap after REMOVE ALL.
 **Coverage honesty:** no real signed-in account exists on web, so earned
 trophies/certs, the study loop past Flashcards, Tube cards, Directory publish,
 and the Auth screen are on the device-pass list in the doc.
+**Follow-up (Cháno 2026-09-05: "fix what is needed"):** 11 more fixed on my
+recommended defaults (`deb1632`…`29f6f6d`) — the Dashboard now tells guests
+progress isn't saved; the glossary no longer links "source" to a transistor;
+the Career Finder's answers survive a guest re-entry; cores drop with the last
+credential; the curriculum is fetched once per session; FULL CHAIN lights all
+nine; FINISH leaves the lab. **Still yours:** the 50 v3 subject descriptions
+(C1-02), lab-menu planned-lab counts (D1-10), the Directory 500 (Computer A),
+and the free-tier RPC amendment (backend).
 
 ### Security workstream (app-layer audit, 2026-09-04)
 - [ ] **Rebuild the dev/native client** to activate the encrypted keychain, then
