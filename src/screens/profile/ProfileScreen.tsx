@@ -647,7 +647,11 @@ export function ProfileScreen() {
             summary={profileComplete ? 'complete' : `${missing.length} to finish`}
             defaultOpen={ppSeq > 0 || (hydrated && !profileComplete)}
           >
-            <Text style={styles.sectionIntro}>Changes save as you type.</Text>
+            <Text style={styles.sectionIntro}>
+              {entitlement === 'anonymous'
+                ? 'Guest changes stay on this device only until the app closes — create an account to keep them.'
+                : 'Changes save as you type.'}
+            </Text>
 
             <Text style={styles.fieldLabel}>Your name</Text>
             <TextInput
