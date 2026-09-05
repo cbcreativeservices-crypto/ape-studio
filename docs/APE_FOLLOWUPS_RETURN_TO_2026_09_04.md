@@ -11,7 +11,17 @@ add new lessons at the bottom of PREVENT. Owner tags: **Cháno** = the owner,
 ## RETURN TO — open actions
 
 ### ☀️ TOMORROW — pick up here with a clear head (parked 2026-09-05 at Cháno's request)
-Nothing below is urgent or blocking; the app is green and pushed. In order:
+Nothing below is urgent or blocking; the app is green and pushed.
+
+**Landed after this list was written (2026-09-05, study-method text audit):**
+the "answer already in the question / no way to know the question" problem in
+Fill-in-the-Blank and Matching was the sentence RULES, not the glossary — fixed
+in the app and proven over all 166 topics (before/after table in
+`docs/APE_STUDY_TEXT_AUDIT_2026_09_05.md`). One owner item from it, whenever
+convenient: **5 glossary rows are duplicate terms** in their topic (list with
+ids in that doc, section 4). Not urgent — the app guards against them.
+
+In order:
 1. **Explore subject descriptions** (C1-02) — 49 of 50 subjects show no
    description/careers because `src/data/subjectMeta.ts` is keyed on retired v2
    names. Your words: author the 50 v3-keyed lines (or say "soften the intro"

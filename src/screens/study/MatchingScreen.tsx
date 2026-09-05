@@ -26,11 +26,11 @@ import { colors, fonts } from '../../theme/tokens';
 import {
   fetchMethodState,
   fetchTopicItems,
-  matchingSentence,
   studyDisplayPct,
   type GlossaryItem,
   type ItemStates,
 } from '../../features/study/api';
+import { matchingSentenceV2 } from '../../features/study/sentences';
 import { StudySession } from '../../features/study/sync';
 import { loadLocalMethodStates, mergeItemStates, saveLocalMethodStates } from '../../features/study/localProgress';
 import { supabase } from '../../lib/supabase';
@@ -252,7 +252,10 @@ export function MatchingScreen({ navigation, route }: Props) {
   // visit, and that sentence never contains its own term/abbreviation (Booth
   // 2026-07-16 — a leaked term made pairs trivially solvable).
   const leftPrompts = useMemo(
-    () => (board ? board.map((it) => ({ it, text: matchingSentence(it.term, it.definition) })) : []),
+    // Tiered clue (text audit 2026-09-05): never the term or a word variant of
+    // it; fewest partial words of a multi-word answer; fewest OTHER topic
+    // terms named in the clue (a wrong pair's answer in the clue misleads).
+    () => (board ? board.map((it) => ({ it, text: matchingSentenceV2(it.term, it.definition, board.map((x) => x.term)) })) : []),
     [board],
   );
   // Right column: shuffled term options — the answer for each left definition.

@@ -26,11 +26,11 @@ import { colors, fonts } from '../../theme/tokens';
 import {
   fetchMethodState,
   fetchTopicItems,
-  randomSentence,
   studyDisplayPct,
   type GlossaryItem,
   type ItemStates,
 } from '../../features/study/api';
+import { BLANK, fibSentence } from '../../features/study/sentences';
 import { StudySession } from '../../features/study/sync';
 import { loadLocalMethodStates, mergeItemStates, saveLocalMethodStates } from '../../features/study/localProgress';
 import { supabase } from '../../lib/supabase';
@@ -57,14 +57,17 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-/** Blank the term out of a sentence (all occurrences, case-insensitive). */
-function blankOut(term: string, sentence: string): { pre: string[] } {
-  const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const re = new RegExp(escaped, 'gi');
-  if (re.test(sentence)) {
-    return { pre: sentence.split(re) };
-  }
-  return { pre: [sentence] };
+/**
+ * Split an already-masked sentence into the chunks around its blanks. The
+ * masking itself (term, word variants, partial words, abbreviation) is done
+ * once by `fibSentence` (study-method text audit 2026-09-05). When no
+ * sentence of the definition names the term at all — 57% of the corpus —
+ * the sentence DESCRIBES the answer, so a trailing blank is appended: the
+ * learner always has somewhere to put the answer instead of a bare sentence.
+ */
+function blankOut(sentence: string, hasBlank: boolean): { pre: string[] } {
+  if (!hasBlank) return { pre: [`${sentence} `, ''] };
+  return { pre: sentence.split(BLANK) };
 }
 
 export function FillInBlankScreen({ navigation, route }: Props) {
@@ -235,10 +238,23 @@ export function FillInBlankScreen({ navigation, route }: Props) {
   const question = useMemo(() => {
     if (order.length === 0) return null;
     const item = order[((qIdx % order.length) + order.length) % order.length];
-    const distractors = shuffle(order.filter((o) => o.id !== item.id).map((o) => o.term)).slice(0, 3);
     // One randomly-chosen sentence per showing (Booth 2026-07-08) — the same
-    // term can present a different facet of its definition each time.
-    return { item, sentence: randomSentence(item.definition), options: shuffle([item.term, ...distractors]) };
+    // term can present a different facet of its definition each time. The
+    // sentence arrives with the answer (and its variants) already masked.
+    const fb = fibSentence(item.term, item.definition);
+    // A distractor that is VISIBLE in the sentence misleads (text audit
+    // 2026-09-05: 51% of clues named another topic term) — skip those.
+    const visible = (t: string) => {
+      const base = t.replace(/\s*\([^)]*\)\s*$/, '').trim();
+      return base.length >= 3 && new RegExp(`\\b${base.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i').test(fb.masked);
+    };
+    // Same-text duplicates (5 rows in the corpus) would be a second "correct"
+    // cell — never offer one as a distractor.
+    const others = order.filter((o) => o.id !== item.id && o.term.trim().toLowerCase() !== item.term.trim().toLowerCase());
+    const pool = others.filter((o) => !visible(o.term)).map((o) => o.term);
+    const fallback = others.filter((o) => visible(o.term)).map((o) => o.term);
+    const distractors = [...shuffle(pool), ...shuffle(fallback)].slice(0, 3);
+    return { item, sentence: fb.masked, hasBlank: fb.hasBlank, options: shuffle([item.term, ...distractors]) };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [order, qIdx]);
 
@@ -334,7 +350,7 @@ export function FillInBlankScreen({ navigation, route }: Props) {
   // Readout shows 0–99 until the RAW value is 100 (same rule as the Dashboard
   // row): Math.round alone read "100%" with an item still unstudied (B-086).
   const displayPctLabel = displayPct >= 100 ? 100 : Math.min(Math.round(displayPct), 99);
-  const { pre } = blankOut(question.item.term, question.sentence);
+  const { pre } = blankOut(question.sentence, question.hasBlank);
   const cellState = (opt: string): AnswerCellState => {
     if (!picked) return 'default';
     // After answering: the correct term is always shown GREEN; a wrong pick

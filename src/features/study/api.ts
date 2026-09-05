@@ -306,77 +306,10 @@ export function studyDisplayPct(
   return Math.min(100, (credit / totalItems) * 100);
 }
 
-/**
- * Sentence tools (Booth 2026-07-08): practice methods (fill-in-blank,
- * matching) present ONE randomly-chosen sentence of a definition per showing,
- * so students learn to spot meaning anywhere in a definition instead of
- * pattern-matching the first sentence. Flashcards still show everything.
- * (Quiz stems are server-authored and rendered verbatim — single-sentence
- * stems there are a question-bank change, flagged for the backend session.)
- */
-export function splitSentences(text: string): string[] {
-  if (!text) return [];
-  // Protect periods that are NOT sentence enders, then split. Without this,
-  // periods inside citations (1910.28, 1926.501), decimals/constants (16.61),
-  // and abbreviations (OSHA 1910.95) shattered definitions into fragments like
-  // "28) and 6 feet in construction (1926." (Booth 2026-08-21).
-  const DOT = '@@D@@'; // sentinel for a protected (non-ending) period
-  let t = text;
-  // digit.digit — decimals & regulatory citations
-  for (let i = 0; i < 4; i++) t = t.replace(/(\d)\.(\d)/g, `$1${DOT}$2`);
-  // known abbreviations that carry a trailing period
-  t = t.replace(
-    /\b(U\.S|e\.g|i\.e|No|vs|approx|Inc|Fig|Eq|Ch|Sec|cf|al|Dr|Mr|Ms|St)\./gi,
-    (m) => m.replace(/\./g, DOT),
-  );
-  const parts = t
-    // ender + whitespace + capital/quote/paren, OR a missing-space join
-    // ("...ends.Next..."). Never breaks inside a number, citation, or abbrev.
-    .split(/(?<=[.!?])\s+(?=[A-Z0-9("'])|(?<=[a-z][.!?])(?=[A-Z])/)
-    .map((s) => s.split(DOT).join('.').trim())
-    .filter(Boolean)
-    // Guardrail: drop shattered fragments (too short, or starting mid-token).
-    .filter((s) => s.length >= 15 && /^[A-Z0-9"'(]/.test(s));
-  return parts.length > 0 ? parts : [text.trim()];
-}
-
-export function randomSentence(text: string): string {
-  const parts = splitSentences(text);
-  return parts[Math.floor(Math.random() * parts.length)];
-}
-
-/** Regexes that detect the term leaking into its own definition text: the base
- *  name (parenthetical stripped, space/hyphen tolerant, optional plural) and
- *  any parenthetical abbreviation (e.g. "(XLR)"). */
-function termLeakPatterns(term: string): RegExp[] {
-  const out: RegExp[] = [];
-  const add = (phrase: string) => {
-    const p = phrase.trim();
-    if (p.length < 2) return;
-    const esc = p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/[\s-]+/g, '[\\s-]+');
-    out.push(new RegExp(`\\b${esc}(s|es)?\\b`, 'gi'));
-  };
-  add(term.replace(/\s*\([^)]*\)\s*$/, '')); // base name
-  const paren = term.match(/\(([^)]+)\)\s*$/);
-  if (paren) add(paren[1]); // abbreviation
-  return out;
-}
-
-/**
- * Sentence choice for MATCHING (Booth 2026-07-16): exactly ONE sentence, and
- * it must NOT contain the term it pairs with — same word, abbreviation, or
- * spelling (a leaked term made boards trivially solvable). Preference:
- * a random non-leaking sentence; if every sentence leaks, the shortest one is
- * used with the term masked out as "___".
- */
-export function matchingSentence(term: string, definition: string): string {
-  const parts = splitSentences(definition);
-  const pats = termLeakPatterns(term);
-  const clean = parts.filter((p) => !pats.some((re) => (re.lastIndex = 0) || re.test(p)));
-  if (clean.length > 0) return clean[Math.floor(Math.random() * clean.length)];
-  const shortest = [...parts].sort((a, b) => a.length - b.length)[0] ?? definition;
-  return pats.reduce((s, re) => ((re.lastIndex = 0), s.replace(re, '___')), shortest);
-}
+// Sentence tools moved to `./sentences` (dependency-free, shared with the Node
+// audit harness + tests — study-method text audit 2026-09-05). Re-exported so
+// existing importers keep working.
+export { splitSentences, randomSentence, matchingSentence } from './sentences';
 
 /** Seed local mirrors from the server row (missing row = fresh method). */
 export async function fetchMethodState(
