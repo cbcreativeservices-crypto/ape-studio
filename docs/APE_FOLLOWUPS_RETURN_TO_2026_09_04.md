@@ -22,7 +22,12 @@ convenient (section 4 of that doc): **5 glossary rows are duplicate terms** in
 their topic (ids listed; the app guards against them), and **the MISTAKES
 flashcard side has no data** — `glossary_study_v.common_mistakes` is NULL for
 every row and anon cannot read `glossary.common_mistakes`; the card now says so
-honestly. Hand the view/grant question to Computer A.
+honestly. Hand the view/grant question to Computer A. Also from the readers:
+**259 near-duplicate glossary rows** (plural/inflection twins, list in
+`docs/study_text_audit_after.json` → `nearDupPairs`), and one **Matching
+mechanic** observation for your device pass — tapping NEXT past an unsolved
+board carried the unmatched pairs forward (pool grew 4 → 6 → 7; two clues then
+had no match). Intended carry-over or a state bug? ccode did not touch it.
 
 In order:
 1. **Explore subject descriptions** (C1-02) — 49 of 50 subjects show no

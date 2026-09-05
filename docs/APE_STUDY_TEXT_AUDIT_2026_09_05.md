@@ -17,11 +17,15 @@ The problem was real and much bigger than a few bad rows — it was the sentence
 | Fill-in-the-Blank offers a **wrong option that is visibly in the sentence** | common (51% of clue sentences named another topic term) | filtered out (a distractor is only used if it is *not* in the sentence) |
 | Matching clue **gives away its own answer** (exact term / abbreviation / word variant) | **61.6%** of the clues the old filter accepted | **0%** |
 | Matching clue shows a word of its answer that **no other term on the board has** (the giveaway reader 1 found) | ~60 of 100 sampled clues | **0%** — blanked as "___"; words shared with other board terms stay readable (21.4% of clues) |
-| Matching clue had **something masked** ("___") | 11.8% | 43.4% (only the giveaway words) |
-| Matching clue **names another term on the same 4-pair board** | not measured before | 2.6% residual (the rule prefers the sentence with the fewest) |
-| Fill-in-the-Blank question with **three or more blanks** | — | 3.7% (was 8% in reader 1's sample before round 3); two blanks 15.2% |
-| Fill-in-the-Blank shows a word of the answer that **none of the other 3 options has** | — | **0%** (words shared with a distractor stay visible on purpose: 39.3%) |
-| Fill-in-the-Blank sentence that *describes* the answer, so the blank sits at the **end** | — | 43.4% |
+| Matching clue had **something hidden** ("___" / "…") | 11.8% | 47.5% (only the giveaway words and other pairs' names) |
+| Matching clue **names another term on the same 4-pair board** | not measured before | **0.1%** (the name is hidden as "…") |
+| Matching clue with **three or more hidden words** | — | 5.6% |
+| Fill-in-the-Blank with **more than one answer blank** ("______ … ______", the fragmentation both readers flagged) | common | **0%** — exactly one answer blank, and only ever on the exact term; a hidden *word* of the answer is an ellipsis "…" |
+| Fill-in-the-Blank question with **three or more hidden words** | — | 1.9% (was 8% in reader 1's sample); two hidden words 9.1% |
+| Fill-in-the-Blank hides **half a hyphenated compound** ("DC-______") | — | **0%** (the whole compound is hidden) |
+| Fill-in-the-Blank shows a word of the answer that **none of the other 3 options has** (incl. a visible prefix like "in alt" for *in altissimo*) | — | **0%** (words shared with a distractor stay visible on purpose: 47.2%) |
+| Fill-in-the-Blank sentence that *describes* the answer, so the blank sits at the **end** | — | 63.3% |
+| A near-duplicate row offered as its own distractor ("Overtones" for *Overtone*) | possible | **never** (client guard; 259 such pairs listed for the owner, §4) |
 | Broken glossary rows (empty / placeholder / self-referential) | 0 real ones (4 "placeholder" hits are legitimate uses of the word, e.g. *Scratch DX*) | — |
 | **Duplicate term inside one topic** (owner list, §4) | **5 rows** | client guard so a duplicate is never its own distractor |
 | **Flashcards MISTAKES side** — the study view returns *no* common-mistakes text for **any** of the 27,201 rows, so that side silently showed the definition under the MISTAKES label (eyes-on reader caught it on "ADR Taker") | **100%** of cards | the card now says "(No common-mistakes note written for this term yet — here is its definition.)" — the data itself is an owner item (§4) |
@@ -38,7 +42,7 @@ Numbers come from running the app's **real** sentence code over every active v3 
 
 | File | Change |
 |---|---|
-| `src/features/study/sentences.ts` (new, dependency-free) | Shared sentence rules for the app **and** the audit harness: `wordRoot` stemmer (roots ≥ 4 letters), `leakPatternsV2` (exact / abbreviation / variant / partial), `findLeaks`, `maskLeaksFor` (**discriminative**: a partial word is blanked only when no other option on screen shares it), `pickDistractors` (prefers terms sharing a word with the answer; never one named in the sentence; never a same-text duplicate), `fibSentence`, `matchingClueV2`. The original `splitSentences` / `randomSentence` / `matchingSentence` live here unchanged and are re-exported from `study/api.ts`. |
+| `src/features/study/sentences.ts` (new, dependency-free) | Shared sentence rules for the app **and** the audit harness: `wordRoot` stemmer (roots ≥ 4 letters), `leakPatternsV2` (each "A / B" alias exact / abbreviation / variant / partial, words ≥ 3 letters), `findLeaks`, `leakSpans` + `maskLeaksFor` (**discriminative**: a partial word is hidden only when no other option on screen shares it; the exact term or first leak is the one answer blank "______", further hidden words and other options' names are "…"; a parenthetical glued to a hidden span is dropped; hyphenated compounds are hidden whole), `pickDistractors` (prefers terms sharing a word with the answer; never one named in the text; never a same-text duplicate), `fibSentence` (ranks sentences by extra gaps needed), `matchingClueV2` (no hard leak → fewest gaps → fewest other board terms → no pronoun opener; "___" then "…"). The original `splitSentences` / `randomSentence` / `matchingSentence` live here unchanged and are re-exported from `study/api.ts`. |
 | `src/screens/study/FillInBlankScreen.tsx` | One call to `fibSentence` with the topic's other terms: sentence that names the term preferred (fewest answer-words to hide, no dangling "It…" opener), masked against the four options actually shown; if no sentence names the term, the describing sentence gets a **trailing blank** so there is always somewhere to put the answer. |
 | `src/screens/study/MatchingScreen.tsx` | `matchingSentenceV2` with the board's four terms: never an exact/abbreviation/variant leak → fewest board-distinctive answer words → fewest other board terms → no pronoun opener; the distinctive words are masked "___", shared ones stay readable. |
 | `test/studySentences.test.ts` | 9 rule tests (237 total pass). |
@@ -58,7 +62,11 @@ Five terms appear **twice** in their topic (two glossary rows, same term). Until
 | 4290 Loudness & Listening Environments | Categorical Loudness Scaling | `4c5b5a80-473a-4ef4-9b5b-0df33a9519d7` |
 | 4300 Speech & Voice Perception | Diagnostic Rhyme Test | `cd95d1e6-d6bf-4fd9-8592-41dba70ae59d` |
 
-Nothing else in the corpus needs a row edit: `corpus_unrescuable = 0` (every item now yields a clean FIB sentence and a non-leaking Matching clue).
+Nothing else in the corpus *blocks* a clean question: `corpus_unrescuable = 1` (a one-line definition, "Opposite of high-pass filter." for *Low-Pass Filter*).
+
+**Near-duplicate rows (259 pairs, 1% of the corpus — owner, whenever convenient).** Two glossary rows with the same words in the same order, differing only by plural / inflection / case / parenthetical: "Overtone" ↔ "Overtones", "Wind effect" ↔ "Wind effects", "Decibel (dB)" ↔ "Decibel", "Cylindrical waves" ↔ "Cylindrical Wave" … The full list is `nearDupPairs` in `docs/study_text_audit_after.json`. The app never offers one as the other's distractor now, but each pair still produces two near-identical flashcards/questions. Spelling-variant rows the key cannot catch were also seen by the readers: "Automated Dialogue Replacement" ↔ "Automatic dialog replacement" (topic 4170), "Overdub" ↔ "Overdubbing", "Bench test" ↔ "Bench testing", "Tom gate" ↔ "Tom gating".
+
+**Other corpus notes from the readers (no rule can fix these):** lowercase term rows ("jump cut", "rhythm", "ursatz", "in altissimo", "music performance anxiety"); fragment definitions ("Tape marks locating set pieces, stands, or performers' positions." for *Spike Mark*); definitions that differ only by the answer itself (*Second wing* / *Third wing*; *Wild pickup* / *Tail pickup* / *Mid-sentence pickup* — the question is unanswerable by design); "Downstage center" defined as generic downstage; "Deck" ↔ "Stage deck" defined alike; "Aluminum boom pole … Carbon fiber is also electrically conductive" (non sequitur); one weak clue for *Technical workbench* (about ESD practice).
 
 **The MISTAKES flashcard side has no data (owner / Computer A).** `glossary_study_v.common_mistakes` is NULL for all 27,201 rows, and the anon role has no SELECT on `glossary.common_mistakes` (PostgREST answers `42501 … GRANT SELECT ON public.glossary`), so the app cannot see whatever the term-buckets export holds. Until the view exposes it, the side shows the honest fallback line plus the definition. `plain_english` and `scenario_contexts` are present on every row. No SQL was run by ccode.
 
@@ -83,10 +91,29 @@ Reader agents (academy tier, web preview, bypass on) read 12 flashcards, 20 FIB 
 
 **Round 3 fix (from this reader):** a partial word only gives the answer away if it *discriminates among the options on screen*. FIB distractors now prefer terms that share a word with the answer, and both methods blank only the words that appear in the answer and in **none** of the other options/board terms; short roots (≤3 letters) are no longer stemmed; sentences opening with a dangling pronoun are chosen last. Re-scan of all 27,201 items after round 3: hard leaks 0, unshared-word leaks 0, FIB questions with 3+ blanks 3.8% (from 8% in the reader's sample), distractor named in its sentence 0.
 
-### Readers 2 and 3 (final build)
+### Reader 2 (topics 4130, 3850, 4450, 3860, 3830 — on the round-3 rules)
 
-_(appended when they finish)_
+50 flashcards, 80 FIB questions, 20 matching boards (80 clues) read. Flashcards clean; every FIB question had a blank; no crashes, no reload.
+
+* **Fragmentation was the dominant defect** (~30 instances): a definition that repeats the answer's words produced 2–5 blanks for one answer ("A ___ is a storage ___, typically on networked or ___-access storage, that holds a ___'s media" for *Shared project volume*; "multiple Take are captured" when the plural was blanked).
+* **Blanks glued to hyphens**: "DC-______", "long-______, double-______, triple-______", "front-of-______".
+* **Alias / abbreviation leaks**: "Lip sync (AV sync): …" for *Lip Sync / AV Sync*; "______ (also called production sound)"; "(Ms)" beside the blank for *Saturation magnetization*; "(nWb/m)" for *nanoweber*; "(ARM)" for *ARM-Enabled Track*; "(dipping)" for *Boom dip* (3-letter word was below my threshold).
+* **Distractor visible**: "A clapperboard with a built-in timecode generator" with the option *Clapperboard / Slate*; "the same as a sample-and-hold" with *Sample-and-hold circuit*; the clue for *Register change* mentioning "chorus" with *Chorus section* on the board.
+* Corpus notes for the owner: near-synonym option sets ("Live Tracking / Live Capture / Live Off the Floor"; "Hidden microphone placement" vs "Microphone concealment"); lowercase term "jump cut"; one definition non sequitur ("Aluminum boom pole … Carbon fiber is also electrically conductive").
+* Interaction note (not text): in Matching a pair sometimes needed a second click after the panel grew — buttons shift as content reflows.
+
+**Round 4 fix (from this reader):** hidden text is now computed as spans — the exact term (or first leak) is the *one* answer blank, every further hidden word is an ellipsis "…", a parenthetical glued to a hidden span is dropped, spans widen across hyphens so a compound is hidden whole; sentences are ranked by how many extra gaps they would need; "A / B" terms match each alias; 3-letter words count ("dip" → "dipping"); an option is "named" by any alias or by the head of a 3-word name, and other options named in the text are hidden as "…".
+
+### Reader 3 (topics 4210, 4200, 3670, 4060, 4170 + spot re-check of 3850 / 4450 — on the round-4 rules)
+
+40 flashcards, 80 FIB questions, ~17 matching boards read, plus the re-check. No crashes, no reload.
+
+* **Flashcards clean** (40/40). **Every FIB question had exactly one blank.** The "…" gaps "mostly still read cleanly"; one clue with four gaps (*Step resolution*, every gap the word "step") was hard to parse.
+* **Spot re-check: the multi-gap garbling and the "(Ms)" / "nWb" abbreviation leaks are gone** ("nanowebers per meter (nWb/m)" now appears only where it is spelled out and not adjacent to the blank).
+* Remaining rule findings → **round 5**: a hidden *word* of the answer was promoted to the answer blank mid-sentence ("so it fits the ______," for *Music editing*; "and ______ the grain's tonal character" for *Grain shape*) — the blank now sits only on the exact term, otherwise it trails; a visible prefix leaked ("in alt" for *in altissimo*) — prefixes of long answer words are now hidden; near-duplicate rows could be their own distractor — guarded.
+* Corpus findings → §4 (lowercase rows, fragment definitions, twins that differ only by the answer, spelling-variant duplicates).
+* **App-mechanics finding, filed (not text):** in Matching, tapping NEXT past an unsolved board carried the unmatched pairs forward, so the pool grew 4 → 6 → 7, and on one board two clues could not be matched to any remaining term; the page text also lagged the last match until an explicit wait. This needs a device pass — it may be the intended carry-over, or a state bug.
 
 ## 6. Restore checklist
 
-- [ ] `src/config/devMode.ts` → `bypassMethodLocks: false` (flipped `true` for this audit only).
+- [x] `src/config/devMode.ts` → `bypassMethodLocks: false` — restored 2026-09-05 after reader 3 (the flip never entered git history).

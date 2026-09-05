@@ -36,11 +36,11 @@ test('a short root never blanks an ordinary word ("not" for Ghost-Note)', () => 
 test('fibSentence blanks only the words that single the answer out among the options', () => {
   const def = 'The repair of broken joints in magnetic tape by trimming the ends and rejoining the tape on a splicing block.';
   const r = fibSentence('Tape splice repair', def, ['Tape splice', 'Splice block', 'Flat transfer', 'Dolby lineup']);
-  assert.ok(!/repair/i.test(r.masked), r.masked); // only the answer has "repair"
+  assert.ok(!/repair/i.test(r.masked), r.masked); // only the answer has "repair" → hidden as "…"
   assert.ok(/\btape\b/i.test(r.masked), r.masked); // "tape" is shared with a distractor → stays readable
-  assert.ok((r.masked.match(/______/g) ?? []).length <= 2, r.masked);
+  assert.ok(!r.masked.includes(BLANK), r.masked); // no exact term → the screen appends the trailing blank
   assert.ok(r.distractors.some((d) => /tape|splice/i.test(d)), 'distractors share a word with the answer');
-  assert.equal(r.hasBlank, true);
+  assert.equal(r.hasBlank, false);
 });
 
 test('matchingClueV2 keeps a word shared by the board but blanks a distinctive one', () => {
@@ -94,12 +94,19 @@ test('fibSentence reports hasBlank:false when no sentence contains the term', ()
   assert.equal(findLeaks('High-Pass Filter', r.masked).length, 0);
 });
 
-test('fibSentence: when only partial words can be masked, those blanks count — no trailing blank', () => {
+test('fibSentence: hidden WORDS of the answer are ellipses, never the answer blank (trailing blank instead)', () => {
   const def = 'It carries the score music separately from the dialogue and effects stems.';
   const r = fibSentence('Score Stem', def);
-  assert.equal(r.hasBlank, true, 'partial-word blanks are the blank');
-  assert.ok(r.masked.includes(BLANK));
+  assert.equal(r.hasBlank, false, 'no exact term → the screen appends the trailing blank');
+  assert.ok(r.masked.includes(GAP), r.masked);
+  assert.ok(!r.masked.includes(BLANK), r.masked);
   assert.ok(!/score|stem/i.test(r.masked), r.masked);
+});
+
+test('a visible prefix of a long answer word is hidden ("in alt" for "in altissimo")', () => {
+  const r = fibSentence('in altissimo', 'In altissimo is a musical term denoting notes in the octave above the in alt range.', ['Orchestration preparation', 'Expandable module', 'Textural leitmotif']);
+  assert.ok(!/\balt\b/i.test(r.masked), r.masked);
+  assert.ok(r.masked.startsWith(BLANK), r.masked);
 });
 
 test('matchingSentenceV2 never returns a clue that leaks the term or a variant', () => {
@@ -138,6 +145,19 @@ test('a 3-letter answer word still counts ("dipping" gives away "Boom dip")', ()
 test('a distractor named in the text minus its last word is avoided', () => {
   const picks = pickDistractors('Track-and-hold circuit', ['Sample-and-hold circuit', 'Clock jitter', 'Converter linearity', 'Apollo'], 'It is functionally the same as a sample-and-hold, the name stressing that its output follows the input.');
   assert.ok(!picks.includes('Sample-and-hold circuit'), picks.join(', '));
+});
+
+test('the answer blank sits on the exact term only; a hidden word mid-sentence is an ellipsis', () => {
+  const r = fibSentence('Music editing', 'The craft of shaping music so it fits the edit, supports the story and meets deliverable requirements.', ['Music conform', 'Music cue assembly', 'Music reconform']);
+  assert.ok(!r.masked.includes(BLANK), r.masked);
+  assert.ok(/fits the …/.test(r.masked), r.masked);
+  assert.equal(r.hasBlank, false);
+});
+
+test('a near-duplicate row ("Overtones" for "Overtone") is never a distractor', () => {
+  const picks = pickDistractors('Overtone', ['Overtones', 'Harmonic', 'Partial', 'Fundamental'], 'A component above the fundamental.');
+  assert.ok(!picks.includes('Overtones'), picks.join(', '));
+  assert.equal(picks.length, 3);
 });
 
 test('only the first hidden span is the answer blank; repeats become an ellipsis', () => {

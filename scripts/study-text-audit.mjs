@@ -96,7 +96,9 @@ const examples = { fib_noBlank: [], fib_secondary: [], m_currentLeaksV2: [], m_o
 const pushEx = (arr, ex) => { if (arr.length < 40) arr.push(ex); };
 /** Rows only the owner can fix (DB is frozen) — kept UNCAPPED so the list is complete. */
 const corpusRows = [];
+const nearDupPairs = [];
 totals.corpus_unrescuable = 0;
+totals.fc_nearDupTerm = 0;
 
 for (const t of topics) {
   const rows = await rest(
@@ -110,6 +112,18 @@ for (const t of topics) {
   if (items.length === 0) { report.topics.push(tr); continue; }
   totals.topicsWithRows++;
   const termsLower = items.map((i) => i.term.toLowerCase());
+  // Near-duplicate terms (same significant word roots: "Overdub"/"Overdubbing",
+  // "Automated Dialogue Replacement"/"Automatic dialog replacement") make an
+  // option set guesswork — owner list (reader 3 2026-09-05).
+  const byKey = new Map();
+  for (const i of items) {
+    // Same words in the same order, ignoring inflection/case/punctuation
+    // ("Wind effect"/"Wind effects", "Overdub"/"Overdubbing") — NOT a bag of
+    // roots ("In phase"/"Out of phase" are different terms).
+    const key = i.term.replace(/\s*\([^)]*\)\s*$/, '').toLowerCase().split(/[^a-z0-9]+/).filter(Boolean).map(wordRoot).join(' ');
+    if (!key) continue;
+    if (byKey.has(key)) { totals.fc_nearDupTerm++; nearDupPairs.push({ topic: `${t.global_sequence} ${t.name}`, a: byKey.get(key), b: i.term }); } else byKey.set(key, i.term);
+  }
   const seen = new Map();
   const otherTermRes = items.map((i) => new RegExp(`\\b${escapeRe(i.term.replace(/\s*\([^)]*\)\s*$/, ''))}\\b`, 'i'));
   const f = (k) => { tr.flags[k] = (tr.flags[k] ?? 0) + 1; totals[k]++; };
@@ -205,6 +219,7 @@ for (const t of topics) {
 report.totals = totals;
 report.examples = examples;
 report.corpusRows = corpusRows;
+report.nearDupPairs = nearDupPairs;
 if (wantPick) {
   const rnd = mulberry32(20260905);
   const pool = report.topics.filter((x) => x.items > 0);
@@ -221,6 +236,10 @@ console.log(`# Study text audit — ${label} (${topics.length} topics, ${totals.
 console.log('| Pattern | Items | Share |\n|---|---|---|');
 for (const [k, v] of Object.entries(totals)) if (!['items', 'topicsWithRows'].includes(k)) console.log(`| ${k} | ${v} | ${pct(v)} |`);
 console.log(`\nJSON: ${out}`);
+if (nearDupPairs.length) {
+  console.log(`\n## Near-duplicate term pairs (${nearDupPairs.length}; first 40 — full list in the JSON)`);
+  for (const p of nearDupPairs.slice(0, 40)) console.log(`- ${p.topic} · "${p.a}" ↔ "${p.b}"`);
+}
 if (corpusRows.length) {
   console.log(`\n## Corpus rows for the owner (${corpusRows.length})`);
   for (const r of corpusRows) console.log(`- ${r.topic} · "${r.term}" · ${r.issue} · ${r.glossaryId}${r.text ? ` · "${r.text}"` : ''}`);

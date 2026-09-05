@@ -163,6 +163,16 @@ export function leakPatternsV2(term: string): LeakPattern[] {
     // term this is the whole story; for a multi-word term it also catches
     // "powered" for "phantom power".
     out.push({ re: new RegExp(`\\b${escapeRe(root)}${dbl}${INFLECTIONS}\\b`, 'gi'), kind: singleWord ? 'variant' : 'partial', word: w });
+    // A visible PREFIX of a long answer word gives it away too ("in alt" for
+    // "in altissimo", reader 3 2026-09-05): prefixes of 3 … len-4 letters.
+    if (w.length >= 7) {
+      const prefixes: string[] = [];
+      for (let len = w.length - 4; len >= 3; len--) {
+        const pre = w.slice(0, len).toLowerCase();
+        if (!PARTIAL_STOPWORDS.has(pre)) prefixes.push(escapeRe(pre));
+      }
+      if (prefixes.length) out.push({ re: new RegExp(`\\b(?:${prefixes.join('|')})\\b`, 'gi'), kind: singleWord ? 'variant' : 'partial', word: w });
+    }
   }
   return out;
 }
@@ -286,11 +296,15 @@ export function leakSpans(term: string, sentence: string, otherTerms: string[] =
  *  first leak) as `first`, everything else as `rest`; then drop a parenthetical
  *  glued to a hidden span ("______ (Ms)", "______ (also called …)" restate
  *  the answer) and collapse runs of hidden spans. */
-function applySpans(sentence: string, spans: Span[], first: string, rest: string): string {
+function applySpans(sentence: string, spans: Span[], first: string, rest: string, answerOnlyExact: boolean = false): string {
   if (spans.length === 0) return sentence;
   const exactIdx = spans.findIndex((s) => s.kind === 'exact');
   const leakIdx = spans.findIndex((s) => s.kind !== 'other');
-  const firstIdx = exactIdx >= 0 ? exactIdx : leakIdx;
+  // FIB (answerOnlyExact): the answer blank sits ONLY on the exact term. A
+  // hidden WORD of the answer promoted to the blank read as if one word were
+  // wanted ("so it fits the ______," for "Music editing", reader 3) — those
+  // stay "…" and the screen appends the trailing blank instead.
+  const firstIdx = exactIdx >= 0 ? exactIdx : answerOnlyExact ? -1 : leakIdx;
   let out = '';
   let pos = 0;
   spans.forEach((s, i) => {
@@ -307,8 +321,8 @@ function applySpans(sentence: string, spans: Span[], first: string, rest: string
 
 /** Hide what gives `term` away among `otherTerms`: answer span as `mask`,
  *  further hidden words as `rest`. */
-export function maskLeaksFor(term: string, sentence: string, otherTerms: string[] = [], mask: string = BLANK, rest: string = GAP): string {
-  return applySpans(sentence, leakSpans(term, sentence, otherTerms), mask, rest);
+export function maskLeaksFor(term: string, sentence: string, otherTerms: string[] = [], mask: string = BLANK, rest: string = GAP, answerOnlyExact: boolean = false): string {
+  return applySpans(sentence, leakSpans(term, sentence, otherTerms), mask, rest, answerOnlyExact);
 }
 
 /** Mask every leak (exact, abbreviation, variant, partial) — no options known. */
@@ -322,10 +336,18 @@ export function maskLeaks(term: string, sentence: string, mask: string = BLANK):
  * out), then unrelated terms, and only as a last resort a term that is named
  * in the text. Never the same text as the answer (duplicate rows).
  */
+/** "Overtone" and "Overtones" are the same answer: same words in the same
+ *  order, ignoring inflection, case and punctuation (259 such pairs in the
+ *  corpus, reader 3 2026-09-05). */
+export function termKey(term: string): string {
+  return term.replace(/\s*\([^)]*\)\s*$/, '').toLowerCase().split(/[^a-z0-9]+/).filter(Boolean).map(wordRoot).join(' ');
+}
+
 export function pickDistractors(term: string, candidates: string[], text: string, n: number = 3): string[] {
   const tl = term.trim().toLowerCase();
+  const tk = termKey(term);
   const roots = significantRoots(term);
-  const uniq = [...new Set(candidates.map((c) => c.trim()))].filter((c) => c && c.toLowerCase() !== tl);
+  const uniq = [...new Set(candidates.map((c) => c.trim()))].filter((c) => c && c.toLowerCase() !== tl && termKey(c) !== tk);
   const shares = (c: string) => [...significantRoots(c)].some((r) => roots.has(r));
   const kin = shuffleArr(uniq.filter((c) => !isNamedIn(c, text) && shares(c)));
   const rest = shuffleArr(uniq.filter((c) => !isNamedIn(c, text) && !shares(c)));
@@ -358,7 +380,7 @@ export function fibSentence(term: string, definition: string, candidates: string
   const top = scored[0];
   const ties = scored.filter((x) => x.extra === top.extra && x.exact === top.exact && x.p === top.p);
   const chosen = ties[Math.floor(Math.random() * ties.length)].s;
-  const masked = maskLeaksFor(term, chosen, distractors);
+  const masked = maskLeaksFor(term, chosen, distractors, BLANK, GAP, true);
   return { sentence: chosen, masked, hasBlank: masked.includes(BLANK), distractors };
 }
 
