@@ -5,7 +5,8 @@
  * measurement tools with per-tool colored glass keys; each opens its
  * educational info screen (the live engine is Spike 0 — see toolsData notes).
  */
-import { useEffect, useMemo, useRef, useState, type FC } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState, type FC } from 'react';
+import { markToolNavigate, markToolTap } from '../../features/tools/devTiming';
 import { Animated, Dimensions, Easing, InteractionManager, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
@@ -467,7 +468,11 @@ function buildPatina(w: number, h: number): Patina {
  *  shadowed bottom edge, drawn in measured PIXEL space so the specks are round
  *  dots — now AGED (owner 2026-09-05, see PANEL PATINA above) and carrying the
  *  soft shadow each raised glass throws onto it. Decorative; never blocks touches. */
-function PanelFace() {
+// memo (perf 2026-09-05): the face is ~400 static SVG nodes; it must never
+// re-render with the screen (entitlement / engine-state / displaysReady
+// changes) — it has no props, so React.memo makes it paint exactly once per
+// panel size.
+const PanelFace = memo(function PanelFace() {
   const [size, setSize] = useState({ w: 0, h: 0 });
   // The dashboard study-method panel coat, exactly (owner 2026-08-23 —
   // supersedes the 2026-08-17 darkening): BlackFaceBg's default method gray.
@@ -603,7 +608,7 @@ function PanelFace() {
       ) : null}
     </View>
   );
-}
+});
 
 /** Smoked-glass display overlay over each tool tile (owner 2026-08-17).
  *  Re-lit 2026-09-05 under the hub's ONE overhead key (HUB_LIGHT, TileChassis):
@@ -653,7 +658,11 @@ const TILE_SINK = 1; // px the display sinks when pressed (a subtle recess, owne
 /** One tool tile as a pressable panel display — sinks into its recess with a
  *  haptic click, lights up (powers on) on press, then exits after a beat, the
  *  same hardware feel as the dashboard SwitchButtons (owner 2026-08-17). */
-function ToolTile({
+// memo (perf 2026-09-05): eight tiles, each with a Pressable, two Animated
+// values, a gradient overlay and a live/sim display — a hub re-render must not
+// re-render them. `onActivate` is a stable callback (useCallback in the hub)
+// so the memo actually holds.
+const ToolTile = memo(function ToolTile({
   tool,
   name,
   planned,
@@ -671,7 +680,7 @@ function ToolTile({
   ready: boolean;
   /** Reading-order position — drives the power-on stagger. */
   index: number;
-  onActivate: () => void;
+  onActivate: (tool: ToolKey) => void;
 }) {
   const sink = useRef(new Animated.Value(0)).current;
   const glow = useRef(new Animated.Value(0)).current;
@@ -703,11 +712,13 @@ function ToolTile({
   const activate = () => {
     if (busy.current) return;
     busy.current = true;
+    markToolTap(tool);
     // Hold the sunk + illuminated state a beat so the "power on" reads, then exit.
     // Perf (rev 22): trimmed 190→90 ms — still reads as a power-on tap but halves
     // the fixed latency before navigation starts.
     setTimeout(() => {
-      onActivate();
+      markToolNavigate(tool);
+      onActivate(tool);
       sink.setValue(0);
       glow.setValue(0);
       busy.current = false;
@@ -760,7 +771,7 @@ function ToolTile({
       </Animated.View>
     </Pressable>
   );
-}
+});
 
 export function ToolsHubScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
@@ -770,6 +781,23 @@ export function ToolsHubScreen({ navigation }: Props) {
   // force-stops on blur/background, resumes on return; 'denied' rests the live
   // tiles on their static artwork without re-prompting.
   const hubPreview = useHubPreviewEngine();
+  // ONE stable open handler for all eight tiles (so the memoised tiles never
+  // re-render on a hub re-render). The Frequency Counter and the MultiMeter
+  // have their own full live screens (each owns its useToolUsage telemetry);
+  // the rest open their educational info screen (Booth 2026-07-18; MultiMeter
+  // owner spec 2026-07-29). The hub's preview mic is released BEFORE
+  // navigating so the tool's own engine session never races the hub teardown
+  // (single native session, no refcount — hubPreviewEngine header).
+  const { stopForNavigation } = hubPreview;
+  const openTool = useCallback(
+    (key: ToolKey) => {
+      stopForNavigation();
+      if (key === 'hzcounter') navigation.navigate('FrequencyCounter');
+      else if (key === 'multimeter') navigation.navigate('MultiMeter');
+      else navigation.navigate('ToolInfo', { toolKey: key });
+    },
+    [stopForNavigation, navigation],
+  );
   // Defer the tile displays until the open transition finishes so the heavy SVG
   // art / skin PNG / minis never render synchronously during navigation (owner
   // 2026-08-19: the screen was slow to open). The frame + titles paint instantly;
@@ -882,19 +910,7 @@ export function ToolsHubScreen({ navigation }: Props) {
                   live={hubPreview.engineLive}
                   active={hubPreview.active}
                   ready={displaysReady}
-                  // The Frequency Counter and the MultiMeter have their own full
-                  // live screens (each owns its useToolUsage telemetry); the rest
-                  // open their educational info screen (Booth 2026-07-18;
-                  // MultiMeter owner spec 2026-07-29). The hub's preview mic is
-                  // released BEFORE navigating so the tool's own engine session
-                  // never races the hub teardown (single native session, no
-                  // refcount — hubPreviewEngine header).
-                  onActivate={() => {
-                    hubPreview.stopForNavigation();
-                    if (t.key === 'hzcounter') navigation.navigate('FrequencyCounter');
-                    else if (t.key === 'multimeter') navigation.navigate('MultiMeter');
-                    else navigation.navigate('ToolInfo', { toolKey: t.key });
-                  }}
+                  onActivate={openTool}
                 />
               ))}
               </View>

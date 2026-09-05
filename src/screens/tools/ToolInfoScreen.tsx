@@ -13,6 +13,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { GlassButton } from '../../components/GlassButton';
 import { useToolUsage } from '../../features/tools/telemetry';
+import { markToolMount } from '../../features/tools/devTiming';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { holdMicWarm, releaseMic, releaseMicNow } from '../../features/tools/engine/micSession';
 import { micReleaseOnBackgroundEnabled } from '../../features/settings/store';
@@ -62,6 +63,11 @@ export function ToolInfoScreen({ navigation, route }: Props) {
   // T-1 telemetry: this screen owns the tool session (stays mounted while the
   // live screen is pushed on top), so its lifetime ≈ time spent in the tool.
   useToolUsage(tool.key);
+  // Dev timing (owner 2026-09-05, "15 s to open a tool's start screen"): how
+  // long from the hub tile tap to this screen's first mount — prints to Metro.
+  useEffect(() => {
+    markToolMount('ToolInfo', tool.key);
+  }, [tool.key]);
   // Hold the warm mic session across this info screen for input tools, so the
   // tool the user opens ADOPTS it instead of cold-starting (rev 22 warm handoff).
   // holdMicWarm only PRESERVES an already-open stream (from the hub) — it never

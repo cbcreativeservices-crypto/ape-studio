@@ -26,6 +26,7 @@ import {
 } from '../../../../modules/ape-dsp';
 import { micReleaseOnBackgroundEnabled } from '../../settings/store';
 import { acquireMic, releaseMic, releaseMicNow } from './micSession';
+import { markMicAcquire } from '../devTiming';
 import type { WarningFlag } from '../measure/types';
 
 /** Android runtime mic-permission request (iOS requests it natively inside the
@@ -125,7 +126,11 @@ export function useDspEngine(config: EngineConfig, poll: {
       // open (instant — no HAL re-open), otherwise it starts once. setMicActive
       // is owned by the session coordinator so the interlock tracks the REAL
       // capture state across the debounced handoff.
+      // Dev timing (owner 2026-09-05): warm adopt should be ~0 ms; a cold HAL
+      // open is the documented 5-10 s — the Metro line says which one happened.
+      const acquireAt = Date.now();
       await acquireMic(configRef.current, freshStartRef.current);
+      markMicAcquire(freshStartRef.current ? 'hub (fresh start)' : 'tool (adopt or start)', acquireAt, 'capture live');
       if (gen !== genRef.current) {
         // Torn down while starting — hand the stream back (debounced, so a fast
         // re-acquire by the next screen keeps it warm).
