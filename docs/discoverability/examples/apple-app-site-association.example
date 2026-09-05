@@ -1,0 +1,82 @@
+EXAMPLE FILE — NOT LIVE. Rename to `apple-app-site-association` (no extension)
+and deploy to https://proaudiotrainingacademy.com/.well-known/ when the website
+is ready. Everything below is filled in with the project's REAL values except
+where marked. Delete this header before deploying; the deployed file must be
+valid JSON with nothing before the opening brace.
+
+VERIFIED VALUES (2026-09-05)
+  Apple Team ID     XAQQN594RH   (from `eas build` credentials output; the team
+                                  is "Channing Booth (Individual)")
+  Bundle identifier com.cbcreativeservices.apestudio   (app.json ios.bundleIdentifier)
+  => appID          XAQQN594RH.com.cbcreativeservices.apestudio
+
+DEPLOYMENT REQUIREMENTS (all are hard requirements; each one silently breaks
+universal links if wrong)
+  - Served over HTTPS with a valid certificate.
+  - Content-Type: application/json
+  - NO redirect. Apple does not follow one. On Vercel make sure no trailing-slash
+    or canonical-host rule rewrites /.well-known/*.
+  - No authentication. NOTE: the site is currently behind the gate flag
+    (web/lib/gate.ts GATE_ENABLED). The gate must not cover /.well-known/*.
+  - Under 128 KB.
+  - The file has no extension.
+
+THE APP SIDE IS NOT YET ENABLED FOR iOS. `ios.associatedDomains` was removed
+from app.json on 2026-09-05 because the stored Ad Hoc provisioning profile has
+no Associated Domains capability and a --non-interactive EAS build cannot add
+it. After this file is live: add
+
+    "associatedDomains": ["applinks:proaudiotrainingacademy.com",
+                          "applinks:www.proaudiotrainingacademy.com"]
+
+under expo.ios, then run `eas build --profile development --platform ios` ONCE
+interactively so EAS can sign in to Apple and regenerate the profile.
+
+PATHS mirror docs/discoverability/URL_ROUTE_CONTRACT.md. The NOT entries are
+listed FIRST because Apple evaluates in order and first match wins — credential
+and account pages must stay in the browser.
+
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "XAQQN594RH.com.cbcreativeservices.apestudio",
+        "paths": [
+          "NOT /verify/*",
+          "NOT /registry/*",
+          "NOT /u/*",
+          "NOT /login",
+          "NOT /reset-password",
+          "NOT /dashboard/*",
+          "NOT /api/*",
+          "/get",
+          "/glossary",
+          "/glossary/*",
+          "/topics/*",
+          "/tools",
+          "/tools/*",
+          "/learn",
+          "/labs",
+          "/labs/*",
+          "/awards/*",
+          "/directory",
+          "/careers"
+        ]
+      }
+    ]
+  }
+}
+
+NOT INCLUDED ON PURPOSE
+  /subjects/*   the app cannot focus a subject yet, so the website keeps these
+                links. See URL_ROUTE_CONTRACT.md §3.
+
+AFTER DEPLOYING, verify:
+  curl -sI https://proaudiotrainingacademy.com/.well-known/apple-app-site-association
+      expect 200, content-type application/json, no Location header
+  curl -s  https://proaudiotrainingacademy.com/.well-known/apple-app-site-association | jq .
+      expect valid JSON
+  Then on a device with a build made AFTER associatedDomains is restored, tap a
+  link from Notes or Messages (Safari's address bar does not trigger universal
+  links). Apple's CDN caches this file, so allow time or reinstall the app.

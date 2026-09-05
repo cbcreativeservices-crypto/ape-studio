@@ -1,0 +1,63 @@
+EXAMPLE FILE — NOT LIVE. Rename to `assetlinks.json` and deploy to
+https://proaudiotrainingacademy.com/.well-known/ . One value is still MISSING
+and is marked below; do not deploy with the placeholder in place.
+
+VERIFIED VALUES (2026-09-05)
+  Android package   com.cbcreativeservices.apestudio   (app.json android.package)
+  Intent filters    ALREADY IN THE SHIPPED BUILD. Confirmed by reading the
+                    binary AndroidManifest.xml out of the 2026-09-05 dev APK
+                    (build fb10c2f2, versionCode 10): both hosts, autoVerify,
+                    VIEW + BROWSABLE + DEFAULT, and the /get /tools /learn /labs
+                    /glossary /awards /directory /careers prefixes are present.
+                    So Android app links start working the moment this file is
+                    live and a build from 2026-09-05 or later is installed.
+
+MISSING VALUE — the SHA-256 certificate fingerprint
+  This must be the fingerprint of the certificate that signs the app AS
+  INSTALLED ON USERS' DEVICES. Getting this wrong is the single most common
+  reason app links silently fail to verify.
+
+  - If Play App Signing is enabled (it is, for any app distributed through
+    Play), the correct fingerprint is the PLAY APP SIGNING key, which you read
+    from Play Console → your app → Test and release → Setup → App signing.
+    It is NOT your upload key.
+  - The EAS build credential (`eas credentials -p android`) is the UPLOAD key.
+    Useful for verifying internal-distribution APKs like the current dev
+    builds, but wrong for anything installed from Play.
+  - You may legitimately list BOTH: the Play app-signing fingerprint so Play
+    installs verify, and the upload/dev fingerprint so internally distributed
+    builds verify too. Both entries below are the same shape; add or remove as
+    needed and keep a comment in your deployment notes saying which is which.
+
+  The app is not on Play yet, so only the second is obtainable today:
+      eas credentials -p android      → Keystore → SHA-256 Fingerprint
+
+DEPLOYMENT REQUIREMENTS
+  - HTTPS, Content-Type: application/json, no redirect, no authentication.
+  - The gate (web/lib/gate.ts GATE_ENABLED) must not cover /.well-known/*.
+  - Fingerprints are UPPERCASE hex, colon-separated.
+
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.cbcreativeservices.apestudio",
+      "sha256_cert_fingerprints": [
+        "REPLACE_WITH_PLAY_APP_SIGNING_SHA256_FROM_PLAY_CONSOLE",
+        "REPLACE_WITH_EAS_UPLOAD_SHA256_FROM_eas_credentials_-p_android"
+      ]
+    }
+  }
+]
+
+AFTER DEPLOYING, verify:
+  curl -s https://proaudiotrainingacademy.com/.well-known/assetlinks.json | jq .
+  Google's tester:
+    https://digitalassetlinks.googleapis.com/v1/statements:list?source.web.site=https://proaudiotrainingacademy.com&relation=delegate_permission/common.handle_all_urls
+  On device (verification runs at install time, so reinstall after deploying):
+    adb shell pm get-app-links com.cbcreativeservices.apestudio
+        expect: proaudiotrainingacademy.com  verified
+    adb shell am start -a android.intent.action.VIEW \
+        -d "https://proaudiotrainingacademy.com/glossary/phantom-power"
+  Play Console also reports this under Grow → Deep links once the app is uploaded.
