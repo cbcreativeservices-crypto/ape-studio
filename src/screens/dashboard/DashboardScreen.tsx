@@ -37,6 +37,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { StudyStackParamList } from '../../navigation/types';
+import { slugify } from '../../navigation/linkPaths';
 import Svg, { Circle, Rect, Defs, LinearGradient as SvgLinearGradient, Stop, Line } from 'react-native-svg';
 import { AppHeader } from '../../components/AppHeader';
 import { NavIcon } from '../../components/nav/NavIcon';
@@ -921,19 +922,30 @@ export function DashboardScreen() {
   // `focusGs` (a topic global_sequence, or FLAGGED_TOPIC_ID for the custom list),
   // front that topic immediately once its data is loaded, then clear the param.
   const focusGs = route.params?.focusGs;
+  // `/topics/<slug>` deep link (2026-09-05): the PUBLIC address of a topic is
+  // its slugified name, never a database id, so the website and the app can
+  // share one URL. Resolved here because the v3 curriculum is fetched at
+  // runtime — the linking config cannot do an async lookup.
+  const topicSlug = route.params?.topicSlug;
   useEffect(() => {
-    if (focusGs == null || topics.length === 0) return;
-    const i = topics.findIndex((t) =>
-      typeof focusGs === 'string' ? t.id === focusGs : t.global_sequence === focusGs,
-    );
+    if ((focusGs == null && !topicSlug) || topics.length === 0) return;
+    const i =
+      focusGs != null
+        ? topics.findIndex((t) =>
+            typeof focusGs === 'string' ? t.id === focusGs : t.global_sequence === focusGs,
+          )
+        : topics.findIndex((t) => slugify(t.name) === topicSlug);
     if (i >= 0) {
       setTopicIdx(i);
       // A deep-linked topic becomes the LAST KNOWN one (owner 2026-09-01), so
       // the STUDY tab returns the user to what they actually opened last.
       if (dataRef.current) setLastTopicIndex(dataRef.current.currentCourse.id, i);
     }
-    navigation.setParams({ focusGs: undefined });
-  }, [focusGs, topics, navigation]);
+    // An unresolved slug leaves the Dashboard on its normal topic rather than
+    // erroring: the term may have been renamed, or belong to a course this
+    // account is not enrolled in. The website's page is the fallback.
+    navigation.setParams({ focusGs: undefined, topicSlug: undefined });
+  }, [focusGs, topicSlug, topics, navigation]);
   const status = topic ? (data!.progressByTopic.get(topic.id)?.status ?? 'locked') : 'locked';
   const lastTopicIdx = Math.max(0, topics.length - 1);
 

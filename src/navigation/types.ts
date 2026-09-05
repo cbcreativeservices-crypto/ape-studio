@@ -9,7 +9,10 @@ import type { NavigatorScreenParams } from '@react-navigation/native';
 export type StudyScreenParams = { achievementId: string; topicName: string };
 
 export type StudyStackParamList = {
-  Dashboard: { focusGs?: number | string } | undefined;
+  /** `focusGs` fronts a topic by global_sequence (in-app links). `topicSlug`
+   *  is the PUBLIC form used by `/topics/<slug>` deep links — resolved against
+   *  the loaded topic names, so the URL never leaks a database id. */
+  Dashboard: { focusGs?: number | string; topicSlug?: string } | undefined;
   Flashcards: StudyScreenParams;
   FillInBlank: StudyScreenParams;
   Matching: StudyScreenParams;

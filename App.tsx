@@ -33,6 +33,7 @@ import { CareerFamilyListScreen } from './src/screens/careerfinder/CareerFamilyL
 import { CareerFinderAboutScreen } from './src/screens/careerfinder/CareerFinderAboutScreen';
 import { navigationRef } from './src/navigation/navigationRef';
 import { linking } from './src/navigation/linking';
+import { attachLinkCapture } from './src/navigation/pendingLink';
 import {
   attachWeeklyConceptPush,
   flushWeeklyConceptNav,
@@ -132,6 +133,15 @@ export default function App() {
     });
     return () => sub.remove();
   }, []);
+
+  // DEEP-LINK DESTINATION CAPTURE (2026-09-05). React Navigation's linking
+  // handles a URL only once a navigator can receive it; a launch with no
+  // session goes Splash → Auth, and the reset throws the destination away. So
+  // remember it here and let AuthScreen resume it after sign-in. setPendingLink
+  // validates against the same contract the linking filter uses, so a hostile
+  // or unknown URL is never stored. Splash clears it when a session already
+  // exists (linking will have handled it directly).
+  useEffect(() => attachLinkCapture(), []);
 
   // Clear a stale Training-Lab preview if the user leaves the previewed lab by
   // any route (swipe-back, etc.) — so the grayed overlay never sticks over the

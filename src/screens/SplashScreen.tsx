@@ -13,6 +13,7 @@ import { BrandLogo } from '../components/BrandLogo';
 import { colors, fonts } from '../theme/tokens';
 import { supabase } from '../lib/supabase';
 import type { RootStackParamList } from '../navigation/types';
+import { clearPendingLink } from '../navigation/pendingLink';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Splash'>;
 
@@ -40,6 +41,11 @@ export function SplashScreen({ navigation }: Props) {
       // new base instead (same keys → the mounted screens survive). Without a
       // session, the Main shell must not be kept; anything else still closes
       // back onto Auth.
+      // A signed-in user needs no resume: React Navigation's linking already
+      // pushed the deep-linked screen over this one, and the carry-over below
+      // keeps it. Drop the remembered destination so a later sign-out →
+      // sign-in in the same launch cannot replay a stale link (2026-09-05).
+      if (data.session) clearPendingLink();
       const base = data.session ? 'Main' : 'Auth';
       const pushed: PartialRoute<Route<keyof RootStackParamList>>[] = navigation
         .getState()

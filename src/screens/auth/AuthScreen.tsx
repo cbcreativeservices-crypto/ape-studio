@@ -51,6 +51,8 @@ import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { AppWelcomeOverlay } from '../../features/intro/AppWelcomeOverlay';
 import { resetAmplitudeOrientation } from '../../features/lab/amplitudeOrientation';
 import type { RootStackParamList } from '../../navigation/types';
+import { consumePendingLink } from '../../navigation/pendingLink';
+import { navigateToPath } from '../../navigation/linking';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Auth'>;
 
@@ -73,8 +75,22 @@ export function AuthScreen({ navigation }: Props) {
   const [info, setInfo] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const toHome = () => navigation.reset({ index: 0, routes: [{ name: 'Main', params: { screen: 'Home' } }] });
-  const toMain = () => navigation.reset({ index: 0, routes: [{ name: 'Main' }] });
+  /* A deep link the user followed BEFORE signing in is resumed here (owner SEO
+   * brief §3: preserve the requested destination through login/registration).
+   * The normal reset always runs first, so if the resume fails for any reason
+   * the user still lands on a correct screen — never a blank or a dead end. */
+  const resume = () => {
+    const path = consumePendingLink();
+    if (path) navigateToPath(path);
+  };
+  const toHome = () => {
+    navigation.reset({ index: 0, routes: [{ name: 'Main', params: { screen: 'Home' } }] });
+    resume();
+  };
+  const toMain = () => {
+    navigation.reset({ index: 0, routes: [{ name: 'Main' }] });
+    resume();
+  };
 
   /* SINGLE-DEVICE LOGIN (owner 2026-08-21): claim this device as the account's
    * active one, prompting first if another device already holds it. On confirm
