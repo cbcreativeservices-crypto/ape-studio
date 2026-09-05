@@ -57,6 +57,15 @@
         }
       ],
       "expo-sharing",
+      [
+        "expo-media-library",
+        {
+          "savePhotosPermission": "Used only when you tap SAVE on a lab drawing or a measurement snapshot, to add that image to your Photos. Nothing is read from your library.",
+          "photosPermission": "Used only when you tap SAVE on a lab drawing or a measurement snapshot, to add that image to your Photos. Nothing is uploaded.",
+          "isAccessMediaLocationEnabled": false,
+          "granularPermissions": ["photo"]
+        }
+      ],
       "expo-audio",
       "expo-asset",
       "expo-secure-store"

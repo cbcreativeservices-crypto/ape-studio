@@ -71,7 +71,10 @@ export async function saveToPhotos(ref: unknown): Promise<SaveResult> {
   if (!vs || !ml || ref == null) return 'unavailable';
   try {
     const uri = await vs.captureRef(ref, { format: 'png', quality: 1, result: 'tmpfile' });
-    const perm = await ml.requestPermissionsAsync();
+    // ADD-ONLY access (writeOnly): saving a drawing never needs to read the
+    // library, so iOS asks the narrower "add to Photos" question — matches the
+    // savePhotosPermission text in app.json (build checklist 2026-09-05).
+    const perm = await ml.requestPermissionsAsync(true);
     if (!perm.granted) return 'denied';
     await ml.saveToLibraryAsync(asFileUri(uri));
     return 'saved';
