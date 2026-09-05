@@ -41,7 +41,12 @@ type Def = { color: string; glowRgba: string; font: number; spacing: number };
  *  shows in the tab's OWN colour, lightly dimmed — "subtle but noticeable" —
  *  instead of the old flat gray "off" look. Icons are untouched; the active
  *  tab is full colour with its glow. */
-const NAV_LABEL_DIM = 0.62;
+const NAV_LABEL_DIM = 0.42;
+/** Inactive-tab ICON opacity — unchanged from the original nav (the 0.4 that
+ *  used to sit on the whole tab). The icon is NOT part of the label rule:
+ *  "don't do this to their icon… the icon should remain as it has been in the
+ *  not-selected state" (owner 2026-09-05). */
+const NAV_ICON_OFF = 0.4;
 
 /** Label color + active-glow tint per tab (the art itself is already colored). */
 function defFor(icon: NavIconName): Def {
@@ -200,7 +205,10 @@ export function NavIcon({
   const animatedProgress = icon === 'Achievements' && lit;
 
   return (
-    <View style={[styles.wrap, { opacity: lit ? 1 : 0.4 }]}>
+    // The inactive dim used to sit on this whole wrap (icon + label at 0.4);
+    // it now sits on the ICON only, so the label's own dim is not multiplied
+    // under it. The icon looks exactly as it always has when not selected.
+    <View style={styles.wrap}>
       {animatedProgress ? (
         <View style={[styles.icon, glow]}>
           <ProgressFadersLit />
@@ -210,7 +218,7 @@ export function NavIcon({
           accessible={false}
           importantForAccessibility="no"
           source={NAV_SOURCE[icon]}
-          style={[styles.icon, glow]}
+          style={[styles.icon, { opacity: lit ? 1 : NAV_ICON_OFF }, glow]}
           resizeMode="contain"
         />
       )}
