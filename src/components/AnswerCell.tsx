@@ -56,13 +56,21 @@ export function AnswerCell({
   const s = STATE_STYLES[state];
   const showCheck = check !== 'none';
   const checked = check === 'checked';
+  // A11Y (2026-09-05): every state above is expressed ONLY as background,
+  // border and text COLOUR, so a screen reader read a picked option and an
+  // untouched one identically, and a colour-blind user got no verdict at all.
+  // The judgement now rides in the spoken label, and selection in the state.
+  const verdict =
+    state === 'correctGreen' ? ', correct' : state === 'wrongRed' ? ', incorrect' : '';
+  const isSelected = state === 'selectedBlue' || state === 'selectedOrange';
 
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled || !onPress}
       accessibilityRole="button"
-      accessibilityLabel={label}
+      accessibilityLabel={`${label}${verdict}`}
+      accessibilityState={{ selected: isSelected, disabled: !!disabled || !onPress }}
       // Self-sizing (minHeight-driven), stretching to the parent's width.
       // flex:1 here collapsed to zero height outside scroll containers.
       style={{ alignSelf: 'stretch' }}

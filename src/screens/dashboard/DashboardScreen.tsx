@@ -38,6 +38,7 @@ import { useFocusEffect, useNavigation, useRoute, type RouteProp } from '@react-
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { StudyStackParamList } from '../../navigation/types';
 import { slugify } from '../../navigation/linkPaths';
+import { animationsAllowed } from '../../features/settings/a11y';
 import Svg, { Circle, Rect, Defs, LinearGradient as SvgLinearGradient, Stop, Line } from 'react-native-svg';
 import { AppHeader } from '../../components/AppHeader';
 import { NavIcon } from '../../components/nav/NavIcon';
@@ -876,7 +877,15 @@ export function DashboardScreen() {
   }, [enrolledKey]);
 
   // Quiz-block glow pulse (quizPulse 2.4s ease-in-out infinite).
+  // REDUCE MOTION (2026-09-05): this is the app's most visible looping
+  // animation and it ignored the setting. Read on every render, not once at
+  // mount — the OS flag hydrates after first paint (the attentionPulse lesson).
+  const motionOk = animationsAllowed();
   useEffect(() => {
+    if (!motionOk) {
+      pulse.setValue(1); // hold at full glow; the block still reads as active
+      return;
+    }
     const loop = Animated.loop(
       Animated.sequence([
         Animated.timing(pulse, { toValue: 1, duration: 1200, useNativeDriver: true }),
@@ -885,7 +894,7 @@ export function DashboardScreen() {
     );
     loop.start();
     return () => loop.stop();
-  }, [pulse]);
+  }, [pulse, motionOk]);
 
   // Derived per-render (cheap; small arrays). When the user has opted in, a
   // synthetic "My Custom List" topic is appended LAST so it rides the same

@@ -13,7 +13,7 @@
  * leap-prone completion_pct; gates still read server fields.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, PanResponder, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, ActivityIndicator, PanResponder, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -286,6 +286,13 @@ export function FillInBlankScreen({ navigation, route }: Props) {
       pickedRef.current = opt;
       const correct = opt === question.item.term;
       setPicked(opt);
+      // A11Y (2026-09-05): the verdict was conveyed ONLY by cell colour for
+      // FEEDBACK_MS and then the screen auto-advanced, so a screen-reader user
+      // never learned whether they were right. Say it, and name the answer on
+      // a miss — the correct cell is on screen but never announced.
+      AccessibilityInfo.announceForAccessibility(
+        correct ? 'Correct.' : `Not quite. The answer is ${question.item.term}.`,
+      );
       registerTrialAnswer('fill_in_blank', correct); // time trial: only correct advances pace
       if (correct) incBrainOutput('fill_in_blank'); // one brain output per correct answer press
       session.current?.addEvent({ item: question.item.id, kind: 'answer', correct });

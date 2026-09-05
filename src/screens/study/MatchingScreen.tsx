@@ -12,7 +12,7 @@
  * answer{correct:true}; wrong pick → red flash on both + answer{correct:false}.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, PanResponder, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, ActivityIndicator, PanResponder, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeOut, LinearTransition } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
@@ -43,6 +43,7 @@ import { PaceTimerModal } from '../../features/study/PaceTimerModal';
 import { registerTrialAnswer, useTimeTrial } from '../../features/study/timeTrial';
 import { StudyHeader } from './StudyHeader';
 import type { StudyStackParamList } from '../../navigation/types';
+import { animationsAllowed } from '../../features/settings/a11y';
 
 type Props = NativeStackScreenProps<StudyStackParamList, 'Matching'>;
 
@@ -113,6 +114,9 @@ export function MatchingScreen({ navigation, route }: Props) {
   // Pace timer (practice aid — device-local settings, never blocks study).
   const { settings: pace, setEnabled, setPreset } = usePaceSettings('matching');
   const running = useRunning('matching');
+  // REDUCE MOTION (2026-09-05): the matched-pair collapse ran unconditionally.
+  // Read every render — the OS flag hydrates after first paint.
+  const motionOk = animationsAllowed();
   // Time trial (opt-in 15:00 challenge) — the readout switches to its HUD while live.
   const trial = useTimeTrial('matching');
   const [timerOpen, setTimerOpen] = useState(false);
@@ -317,6 +321,21 @@ export function MatchingScreen({ navigation, route }: Props) {
         },
       }));
 
+      // A11Y (2026-09-05): match and miss were colour-only flashes, and a
+      // matched pair then simply vanished from the board with no announcement.
+      // Say the verdict and how many pairs are left, so the board's state is
+      // knowable without seeing it.
+      if (correct) {
+        const remaining = board.length - (locked.size + 1);
+        AccessibilityInfo.announceForAccessibility(
+          remaining > 0
+            ? `Matched. ${remaining} ${remaining === 1 ? 'pair' : 'pairs'} left.`
+            : 'Matched. Board complete.',
+        );
+      } else {
+        AccessibilityInfo.announceForAccessibility('Not a match.');
+      }
+
       if (correct) {
         const next = new Set(locked).add(selectedLeft);
         setLocked(next);
@@ -409,7 +428,7 @@ export function MatchingScreen({ navigation, route }: Props) {
         {leftPrompts
           .filter(({ it }) => !locked.has(it.id) || correctFlash === it.id)
           .map(({ it, text }) => (
-            <Animated.View key={it.id} layout={LinearTransition.duration(COLLAPSE_MS)} exiting={FadeOut.duration(COLLAPSE_MS)}>
+            <Animated.View key={it.id} layout={motionOk ? LinearTransition.duration(COLLAPSE_MS) : undefined} exiting={motionOk ? FadeOut.duration(COLLAPSE_MS) : undefined}>
               <AnswerCell
                 label={text}
                 state={leftState(it.id)}
@@ -425,7 +444,7 @@ export function MatchingScreen({ navigation, route }: Props) {
         {rightOrder
           .filter((it) => !locked.has(it.id) || correctFlash === it.id)
           .map((it) => (
-            <Animated.View key={it.id} layout={LinearTransition.duration(COLLAPSE_MS)} exiting={FadeOut.duration(COLLAPSE_MS)}>
+            <Animated.View key={it.id} layout={motionOk ? LinearTransition.duration(COLLAPSE_MS) : undefined} exiting={motionOk ? FadeOut.duration(COLLAPSE_MS) : undefined}>
               <AnswerCell
                 label={it.term}
                 state={rightState(it.id)}

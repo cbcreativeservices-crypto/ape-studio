@@ -94,7 +94,10 @@ const styles = StyleSheet.create({
   inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: 48,
+    // minHeight, not height: a fixed 48 clipped the 15pt input at large system
+    // font sizes (2026-09-05). Nothing here is absolutely positioned, so the
+    // row is free to grow.
+    minHeight: 48,
     backgroundColor: '#121212',
     borderWidth: 1,
     borderColor: colors.hairline,

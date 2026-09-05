@@ -10,8 +10,8 @@
  *    entry preselects its course/topic.
  * Search by term · empty: "No results for [filter]" · bottom nav visible.
  */
-import { useCallback, useEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from 'react';
-import { Alert, FlatList, Image, ImageBackground, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type StyleProp, type TextStyle } from 'react-native';
+import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from 'react';
+import { Alert, AppState, FlatList, Image, ImageBackground, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type StyleProp, type TextStyle } from 'react-native';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -86,6 +86,36 @@ function MediaGlyph({ color = '#7fbfff', size = 17 }: { color?: string; size?: n
 let ENTRIES_CACHE: Promise<Entry[]> | null = null;
 let MEDIA_CACHE: Promise<Record<string, string>> | null = null;
 let FORMULA_CACHE: Promise<Record<string, { symbolic: string; words: string | null }>> | null = null;
+
+/**
+ * MEMORY RELEASE VALVE (2026-09-05). The three caches above hold the whole
+ * 26,847-row corpus plus its derived indexes for the entire process once the
+ * Glossary has been opened even briefly, and nothing ever dropped them. That is
+ * multi-MB of resident JS heap on a screen the user may have left an hour ago,
+ * which is exactly what gets an app OOM-killed on a 2–3 GB device — and a kill
+ * counts against the user-perceived crash rate that Play uses for visibility.
+ *
+ * Freeing on a SUSTAINED background only: a quick app switch (checking a
+ * message, answering a call) must not cost the user a corpus reload, so the
+ * timer has to elapse first. Coming back to the foreground cancels it. The
+ * loaders already handle a cold start with their own progress UI, and a failed
+ * load is not cached, so re-entry after a release is the normal cold path.
+ */
+const CACHE_RELEASE_MS = 60000;
+let releaseTimer: ReturnType<typeof setTimeout> | null = null;
+AppState.addEventListener('change', (st) => {
+  if (releaseTimer) {
+    clearTimeout(releaseTimer);
+    releaseTimer = null;
+  }
+  if (st !== 'background') return;
+  releaseTimer = setTimeout(() => {
+    releaseTimer = null;
+    ENTRIES_CACHE = null;
+    MEDIA_CACHE = null;
+    FORMULA_CACHE = null;
+  }, CACHE_RELEASE_MS);
+});
 
 /** Memoize a loader's Promise for the session; drop the cache if it rejects. */
 function sessionCache<T>(slot: () => Promise<T> | null, set: (p: Promise<T> | null) => void, run: () => Promise<T>): Promise<T> {
@@ -1439,6 +1469,12 @@ export function GlossaryScreen({ route, navigation }: Props) {
     [resolveShareTerms, exitSelectMode],
   );
 
+  // PERF (2026-09-05): this memo filters and sorts all 26,847 entries, and it
+  // ran synchronously on EVERY keystroke — the only debounce in this screen is
+  // the cosmetic one that turns the field green. Deferring the search term lets
+  // React keep the typed character responsive and re-run the scan when the JS
+  // thread is free. `search` still drives the input; only the scan lags.
+  const deferredSearch = useDeferredValue(search);
   const visible = useMemo(() => {
     let list = entries;
     if (filter === 'topic' && selTopicId) {
@@ -1462,7 +1498,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
         .filter((e) => order.has(e.id))
         .sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0)); // newest first
     }
-    const q = search.trim().toLowerCase();
+    const q = deferredSearch.trim().toLowerCase();
     if (q) {
       // Relevance ranking (not raw substring order): exact → prefix → word-prefix
       // → substring, ties A–Z. Keeps the L-word you typed at the top instead of
@@ -1474,7 +1510,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
         .map((x) => x.e);
     }
     return list;
-  }, [entries, filter, search, selTopicId, bookmarks, starred, recent, topics, topicIdsByName, formulaById]);
+  }, [entries, filter, deferredSearch, selTopicId, bookmarks, starred, recent, topics, topicIdsByName, formulaById]);
 
   // Rows for the held-chip term list overlay (user request 2026-07-22): the
   // members of one set (Bookmarks / Custom / Recent), independent of the main

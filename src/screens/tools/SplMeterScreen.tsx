@@ -26,7 +26,13 @@
  *    on unmount (§18: no DSP behind a closed screen).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, BackHandler, Pressable, ScrollView, StatusBar, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { AccessibilityInfo, Animated, BackHandler, Pressable, ScrollView, StatusBar, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { animationsAllowed } from '../../features/settings/a11y';
+
+/** Digital clipping — a sample at or within a whisker of full scale. Kept as a
+ *  named predicate so the CLIP token, the spoken label and the readout colour
+ *  can never disagree about what "clipping" means (2026-09-05). */
+const isClipping = (db: number | null | undefined) => db != null && Number.isFinite(db) && db >= -0.1;
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../../features/settings/store';
@@ -370,9 +376,13 @@ function LiveWarnings({ flags }: { flags: WarningFlag[] }) {
   }, []);
 
   // Pulse the flash opacity while any warning is in its 5 s window.
+  // REDUCE MOTION (2026-09-05): a strobing hearing-safety warning is exactly
+  // the animation a motion-sensitive user must be able to turn off. The ⚠ and
+  // its text carry the whole message, so holding at full opacity loses nothing.
   const flashing0 = flashing.size > 0;
+  const motionOk = animationsAllowed();
   useEffect(() => {
-    if (!flashing0) {
+    if (!flashing0 || !motionOk) {
       flash.setValue(1);
       return;
     }
@@ -384,13 +394,26 @@ function LiveWarnings({ flags }: { flags: WarningFlag[] }) {
     );
     loop.start();
     return () => loop.stop();
-  }, [flashing0, flash]);
+  }, [flashing0, flash, motionOk]);
+
+  // A11Y (2026-09-05): a hearing-safety warning appeared and vanished with no
+  // announcement at all, so a screen-reader user was never told. Announce each
+  // new warning once, and mark the region assertive for anything we miss.
+  const activeKey = [...flashing].sort().join('|');
+  useEffect(() => {
+    if (!activeKey) return;
+    const said = activeKey
+      .split('|')
+      .map((f) => `${WARNING_INFO[f as WarningFlag].message} ${WARNING_INFO[f as WarningFlag].hint}`)
+      .join('. ');
+    AccessibilityInfo.announceForAccessibility(said);
+  }, [activeKey]);
 
   if (seen.length === 0) return null;
   const active = seen.filter((f) => flashing.has(f));
   const steady = seen.filter((f) => !flashing.has(f));
   return (
-    <View style={styles.warnArea}>
+    <View style={styles.warnArea} accessibilityLiveRegion="assertive">
       {active.map((f) => (
         <Animated.Text key={f} style={[styles.warnFlash, { opacity: flash }]}>
           ⚠ {WARNING_INFO[f].message} {WARNING_INFO[f].hint}
@@ -1328,11 +1351,23 @@ export function SplMeterScreen({ navigation }: Props) {
                 0 dBFS (F1) — the COLOUR flags digital clipping, independent
                 of the SPL estimate. */}
             <View style={styles.peakRow}>
-              <Pressable accessibilityHint="Press and hold for an explanation." style={styles.peakCell} onLongPress={() => help('peak')} delayLongPress={260}>
+              {/* A11Y (2026-09-05): the hint was dropped because there was no
+                  role/label, and digital clipping was signalled by COLOUR
+                  ALONE — invisible in greyscale and silent to a screen reader.
+                  CLIP is now a text token beside the number. */}
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`Peak ${meter ? estSpl(meter.peakDb) : 'no reading'}${meter && isClipping(meter.peakDb) ? ', clipping' : ''}`}
+                accessibilityHint="Press and hold for an explanation."
+                style={styles.peakCell}
+                onLongPress={() => help('peak')}
+                delayLongPress={260}
+              >
                 <Text style={styles.cellLabel}>PEAK</Text>
                 <Text style={[styles.cellValue, meter ? { color: levelColorForDb(meter.peakDb) } : styles.cellValueMax]}>
                   {meter ? estSpl(meter.peakDb) : '—'}
                 </Text>
+                {meter && isClipping(meter.peakDb) ? <Text style={styles.clipTag}>CLIP</Text> : null}
               </Pressable>
               {/* Tap the PEAK HOLD readout itself to reset. Long-press = help. */}
               <Pressable
@@ -1341,12 +1376,13 @@ export function SplMeterScreen({ navigation }: Props) {
                 onLongPress={() => help('peak_hold')}
                 delayLongPress={260}
                 accessibilityRole="button"
-                accessibilityLabel="Peak hold — tap to reset"
+                accessibilityLabel={`Peak hold ${meter ? estSpl(meter.peakHoldDb) : 'no reading'}${meter && isClipping(meter.peakHoldDb) ? ', clipping' : ''} — tap to reset`}
               >
                 <Text style={styles.cellLabel}>PEAK HOLD</Text>
                 <Text style={[styles.cellValue, meter ? { color: levelColorForDb(meter.peakHoldDb) } : styles.cellValueMax]}>
                   {meter ? estSpl(meter.peakHoldDb) : '—'}
                 </Text>
+                {meter && isClipping(meter.peakHoldDb) ? <Text style={styles.clipTag}>CLIP</Text> : null}
                 <Text style={styles.cellHint}>tap to reset</Text>
               </Pressable>
               {/* START/STOP (owner 2026-09-01) — was the full-width gold bar
@@ -2467,6 +2503,15 @@ const styles = StyleSheet.create({
   cellValueMax: { color: '#e0362b' },
   // Small in-cell instruction under the PEAK HOLD value (owner 2026-08-17).
   cellHint: { fontFamily: fonts.barlowRegular, fontSize: 11, color: colors.textMuted, marginTop: 1 },
+  // Digital-clip token (2026-09-05) — the judgement must survive greyscale and
+  // a screen reader, not live only in the readout's colour.
+  clipTag: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 9,
+    letterSpacing: 1.2,
+    color: '#ff6a5e',
+    marginTop: 1,
+  },
 
   // Session log card.
   logCard: {

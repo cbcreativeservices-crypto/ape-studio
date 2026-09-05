@@ -100,6 +100,9 @@ export function GlassButton({
       disabled={disabled}
       onPressIn={pressIn}
       onPressOut={pressOut}
+      // The `small` StudioButton cap is only 36pt tall (StudioButton.tsx) — the
+      // slop lifts every glass key to the 44pt minimum touch target (2026-09-05).
+      hitSlop={8}
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityState={{ disabled }}

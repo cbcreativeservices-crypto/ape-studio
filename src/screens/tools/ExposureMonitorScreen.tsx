@@ -169,7 +169,15 @@ export function ExposureMonitorScreen() {
               exposure against a legal limit, and its green/amber/red steps ARE
               the 80% warning and 100% limit thresholds. A smooth ramp would
               erase exactly the two boundaries a listener needs to act on. */}
-          <View style={styles.doseTrack} accessibilityLabel={`Daily dose ${dosePct} percent`}>
+          {/* accessible + progressbar: the label alone sat on a bare View, so
+              screen readers never stopped on the bar at all (2026-09-05). */}
+          <View
+            style={styles.doseTrack}
+            accessible
+            accessibilityRole="progressbar"
+            accessibilityLabel={`Daily dose ${dosePct} percent`}
+            accessibilityValue={{ min: 0, max: 100, now: dosePct }}
+          >
             <View
               style={[
                 styles.doseFill,
@@ -247,6 +255,7 @@ export function ExposureMonitorScreen() {
               <Pressable
                 key={r}
                 onPress={() => setRange(r)}
+                hitSlop={10}
                 accessibilityRole="button"
                 accessibilityState={{ selected: range === r }}
                 style={[styles.chip, range === r && styles.chipActive]}
@@ -291,6 +300,7 @@ export function ExposureMonitorScreen() {
               <Pressable
                 key={iv.label}
                 onPress={() => updateExposureSettings({ checkinMinutes: iv.v })}
+                hitSlop={10}
                 accessibilityRole="button"
                 accessibilityState={{ selected: s.checkinMinutes === iv.v }}
                 style={[styles.chip, s.checkinMinutes === iv.v && styles.chipActive]}
@@ -316,7 +326,9 @@ export function ExposureMonitorScreen() {
               style={styles.row}
               onPress={() => updateExposureSettings({ standard: st })}
               accessibilityRole="radio"
-              accessibilityState={{ selected: s.standard === st }}
+              // A radio announces "checked", not "selected" (2026-09-05) — the
+              // selected state was silently dropped by screen readers.
+              accessibilityState={{ checked: s.standard === st }}
             >
               <Text style={[styles.rowLabel, s.standard === st && { color: colors.amber }]}>
                 {s.standard === st ? '●' : '○'} {STANDARD_LABELS[st]}
@@ -336,7 +348,10 @@ export function ExposureMonitorScreen() {
                     refCalibrated: true,
                   })
                 }
+                hitSlop={10}
                 accessibilityRole="button"
+                // "+3 dB" alone named no object to adjust (2026-09-05).
+                accessibilityLabel={`Adjust reference ${d > 0 ? 'up' : 'down'} ${Math.abs(d)} dB`}
                 style={styles.chip}
               >
                 <Text style={styles.chipText}>{d > 0 ? `+${d}` : d} dB</Text>
@@ -344,6 +359,7 @@ export function ExposureMonitorScreen() {
             ))}
             <Pressable
               onPress={() => updateExposureSettings({ refSplAt0Dbfs: DEFAULT_SETTINGS.refSplAt0Dbfs, refCalibrated: false })}
+              hitSlop={10}
               accessibilityRole="button"
               style={styles.chip}
             >
@@ -367,6 +383,7 @@ export function ExposureMonitorScreen() {
           <View style={styles.chipRow}>
             <Pressable
               style={styles.chip}
+              hitSlop={10}
               accessibilityRole="button"
               onPress={() => {
                 // Share.share rejects on web ("Share is not supported") and can
@@ -381,6 +398,7 @@ export function ExposureMonitorScreen() {
             </Pressable>
             <Pressable
               style={styles.chip}
+              hitSlop={10}
               accessibilityRole="button"
               onPress={() =>
                 // Alert.alert is a no-op on RN-web (QA night 2026-09-01).
@@ -397,6 +415,7 @@ export function ExposureMonitorScreen() {
             </Pressable>
             <Pressable
               style={styles.chip}
+              hitSlop={10}
               accessibilityRole="button"
               onPress={() =>
                 confirmDialog(
@@ -461,6 +480,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#131316',
     paddingVertical: 7,
     paddingHorizontal: 10,
+    // 7pt padding on 11pt text left the chip ~27pt tall; minHeight + the
+    // per-chip hitSlop bring it to a reachable target (2026-09-05).
+    minHeight: 36,
+    justifyContent: 'center',
   },
   chipActive: { borderColor: 'rgba(255,198,77,.65)', backgroundColor: '#1a1409' },
   chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.7, color: colors.textSecondary },

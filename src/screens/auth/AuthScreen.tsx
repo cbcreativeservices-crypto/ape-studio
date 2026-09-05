@@ -389,8 +389,19 @@ export function AuthScreen({ navigation }: Props) {
             />
             <TextField label="New password" value={newPassword} onChangeText={setNewPassword} password />
 
-            {error && <Text style={styles.error}>{error}</Text>}
-            {info && <Text style={styles.info}>{info}</Text>}
+            {error && (
+              // A11Y (2026-09-05): every sign-in failure rendered as a plain Text,
+              // so a screen reader never announced it. Assertive: the user is
+              // blocked until they act on it.
+              <Text style={styles.error} accessibilityLiveRegion="assertive" accessibilityRole="alert">
+                {error}
+              </Text>
+            )}
+            {info && (
+              <Text style={styles.info} accessibilityLiveRegion="polite">
+                {info}
+              </Text>
+            )}
 
             {busy ? (
               <View style={styles.busyWrap}>
@@ -422,8 +433,19 @@ export function AuthScreen({ navigation }: Props) {
             </Text>
 
             {/* Error / info */}
-            {error && <Text style={styles.error}>{error}</Text>}
-            {info && <Text style={styles.info}>{info}</Text>}
+            {error && (
+              // A11Y (2026-09-05): every sign-in failure rendered as a plain Text,
+              // so a screen reader never announced it. Assertive: the user is
+              // blocked until they act on it.
+              <Text style={styles.error} accessibilityLiveRegion="assertive" accessibilityRole="alert">
+                {error}
+              </Text>
+            )}
+            {info && (
+              <Text style={styles.info} accessibilityLiveRegion="polite">
+                {info}
+              </Text>
+            )}
 
             {/* Actions */}
             {busy ? (
