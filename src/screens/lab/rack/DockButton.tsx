@@ -88,6 +88,12 @@ export function DockButton({
         // it used to be value-buttons only.
         !selected && frameTint ? { borderColor: frameTint + (isKey ? 'aa' : '88') } : null,
         !isKey && selected && styles.btnSel,
+        // A param with an IDENTITY colour (OSC 1 cyan, OSC 2 purple, an EQ
+        // band…) shows its bound/open state in THAT colour, not amber — the
+        // key must match the lane and the readout it drives (owner 2026-09-05:
+        // "the OSC 1 button container should match the blue"). Untinted params
+        // keep the amber selected skin.
+        !isKey && selected && frameTint ? { borderColor: frameTint + 'b3', backgroundColor: frameTint + '1f' } : null,
         // Every key now answers the finger.
         pressed && styles.btnPressed,
         fired && styles.btnFired,
@@ -108,12 +114,12 @@ export function DockButton({
         </View>
       ) : (
         <>
-          <Text style={[styles.label, selected && styles.labelSel]} numberOfLines={1}>
+          <Text style={[styles.label, selected && styles.labelSel, selected && frameTint ? { color: frameTint } : null]} numberOfLines={1}>
             {label}
-            {glyph ? <Text style={[styles.glyph, selected && styles.labelSel]}> {glyph}</Text> : null}
+            {glyph ? <Text style={[styles.glyph, selected && styles.labelSel, selected && frameTint ? { color: frameTint } : null]}> {glyph}</Text> : null}
           </Text>
           {value ? (
-            <Text style={styles.value} numberOfLines={1}>
+            <Text style={[styles.value, selected && frameTint ? { color: frameTint } : null]} numberOfLines={1}>
               {value}
             </Text>
           ) : null}
