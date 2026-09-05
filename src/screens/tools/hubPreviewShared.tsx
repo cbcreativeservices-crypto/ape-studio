@@ -124,9 +124,9 @@ const tagStyles = StyleSheet.create({
   wrap: {
     position: 'absolute',
     right: 4,
-    // The tile crops the strip's 2:1 inner to 2.5:1 — the bottom 10% of this
-    // view is NOT visible. 13% keeps the tag inside the visible band.
-    bottom: '13%',
+    // The display is shown uncropped now (owner 2026-09-05) — the tag sits
+    // just off the plot floor.
+    bottom: '5%',
     borderRadius: 3,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: 'rgba(122,130,148,0.55)',

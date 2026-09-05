@@ -23,11 +23,23 @@ import { memo, useEffect, useRef, useState, type FC } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Defs, G, Line, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 import { DemoTag, LvlGrad, MirGrad, NATIVE_DRIVER, useMeasuredWidth, Vignette } from './hubPreviewShared';
+import { STRIP_VIEWBOX, STRIP_WINDOW } from './TileChassis';
 import type { ToolKey } from './toolsData';
 
-const VB = '0 0 2048 1024';
+// The tile shows the art's PLOT WINDOW, not the full 2048×1024 canvas (owner
+// 2026-09-05 — no bezel, no plot-top highlight); the minis draw in the same
+// canvas coordinates and share that window so they land on the art exactly.
+const VB = STRIP_VIEWBOX;
 /** Plot region shared by strips 05/06 (panel x 90..1958, plot x 124..1924, y 104..920). */
-const PLOT = { x: 124 / 2048, y: 104 / 1024, w: 1800 / 2048, h: 816 / 1024 };
+// Plot rect (canvas x 124–1924, y 104–920) as FRACTIONS OF THE DISPLAY WINDOW
+// (STRIP_WINDOW: x 124, y 107, 1800×813) — the window starts 3 units below the
+// plot's top edge, so the plot overhangs it by that much.
+const PLOT = {
+  x: (124 - STRIP_WINDOW.x) / STRIP_WINDOW.w,
+  y: (104 - STRIP_WINDOW.y) / STRIP_WINDOW.h,
+  w: 1800 / STRIP_WINDOW.w,
+  h: 816 / STRIP_WINDOW.h,
+};
 
 /** Deterministic LCG (the SignalGenDemo constants). Seeded once per mount so
  *  sibling cards drift apart naturally; visuals stay reproducible per seed. */

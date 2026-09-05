@@ -51,9 +51,13 @@ import {
   type HubSpectroCol,
 } from './hubPreviewEngine';
 import { LvlGrad, MirGrad, NATIVE_DRIVER, rampStops, useMeasuredWidth, Vignette } from './hubPreviewShared';
+import { STRIP_VIEWBOX, STRIP_WINDOW } from './TileChassis';
 import type { ToolKey } from './toolsData';
 
-const VB = '0 0 2048 1024';
+// The tile shows the art's PLOT WINDOW, not the full 2048×1024 canvas (owner
+// 2026-09-05 — no bezel, no plot-top highlight); the minis draw in the same
+// canvas coordinates and share that window so they land on the art exactly.
+const VB = STRIP_VIEWBOX;
 const TICK_SEC = HUB_TICK_MS / 1000;
 
 function useHubData(): HubPreviewData {
@@ -660,7 +664,11 @@ const HubTunerLive: FC = memo(() => {
     }).start();
   }
 
-  const s = w / 2048;
+  // RN overlays are placed in CANVAS units mapped into the display window
+  // (STRIP_WINDOW): scale by the window width, offset by its origin.
+  const s = w / STRIP_WINDOW.w;
+  const ox = STRIP_WINDOW.x;
+  const oy = STRIP_WINDOW.y;
   const rotate = cents.interpolate({
     inputRange: [-50, 50],
     outputRange: [`-${50 * TUNER_DEG_PER_CENT}deg`, `${50 * TUNER_DEG_PER_CENT}deg`],
@@ -684,8 +692,8 @@ const HubTunerLive: FC = memo(() => {
               pointerEvents="none"
               style={{
                 position: 'absolute',
-                left: TUNER_CX * s - 21 * s,
-                top: (TUNER_CY - TUNER_TIP_LEN) * s,
+                left: (TUNER_CX - ox) * s - 21 * s,
+                top: (TUNER_CY - TUNER_TIP_LEN - oy) * s,
                 width: 42 * s,
                 height: TUNER_TIP_LEN * 2 * s,
                 transform: [{ rotate }],
@@ -709,7 +717,7 @@ const HubTunerLive: FC = memo(() => {
             <View
               pointerEvents="none"
               style={{
-                position: 'absolute', left: (TUNER_CX - 46) * s, top: (TUNER_CY - 46) * s,
+                position: 'absolute', left: (TUNER_CX - 46 - ox) * s, top: (TUNER_CY - 46 - oy) * s,
                 width: 92 * s, height: 92 * s, borderRadius: 46 * s,
                 backgroundColor: '#151a22', borderWidth: Math.max(1, 6 * s), borderColor: '#3a4354',
               }}
@@ -717,14 +725,14 @@ const HubTunerLive: FC = memo(() => {
             <View
               pointerEvents="none"
               style={{
-                position: 'absolute', left: (TUNER_CX - 18) * s, top: (TUNER_CY - 18) * s,
+                position: 'absolute', left: (TUNER_CX - 18 - ox) * s, top: (TUNER_CY - 18 - oy) * s,
                 width: 36 * s, height: 36 * s, borderRadius: 18 * s, backgroundColor: '#f5b942',
               }}
             />
             <Animated.View
               pointerEvents="none"
               style={{
-                position: 'absolute', left: (TUNER_CX - 40) * s, top: 806 * s,
+                position: 'absolute', left: (TUNER_CX - 40 - ox) * s, top: (806 - oy) * s,
                 width: 80 * s, height: 164 * s, transform: [{ translateX: cursorX }],
               }}
             >

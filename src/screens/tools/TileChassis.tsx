@@ -64,15 +64,33 @@ export const HUB_LIGHT = {
 export const TILE_GAP = 4;
 /** Title band inside the glass (the title sits BEHIND the glass, above the display). */
 export const TILE_TITLE_H = 22;
-/** Padding between the glass's edge and the animated display (sides + bottom). */
-export const TILE_STRIP_PAD = 4;
+/** Padding between the glass's edge and the animated display. ZERO (owner
+ *  2026-09-05): the display fills the glass edge to edge below the title band —
+ *  no margin, no "screen within the tile". Kept as a named constant so a
+ *  future margin is one change. */
+export const TILE_STRIP_PAD = 0;
+
+/**
+ * THE DISPLAY WINDOW of the tool-strip art (owner 2026-09-05: "black borders
+ * bookshelving the display… no sense of a screen within the tile… no highlight
+ * across the top edge"). Every strip in assets/tool-strips is authored on a
+ * 2048×1024 canvas that INCLUDES its own bezel (a stroked frame at x 90–1958)
+ * and a lit plot-top line at y=104. The tile now shows only the PLOT AREA —
+ * x 124–1924, from just below that top line (y 107) to the plot floor (y 920)
+ * — edge to edge, uncropped. The static strips carry this viewBox in the .svg
+ * files; the live/sim minis draw in the same 2048×1024 space and use the same
+ * window so their bars, needles and traces land on the art exactly as before.
+ */
+export const STRIP_WINDOW = { x: 124, y: 107, w: 1800, h: 813 } as const;
+export const STRIP_VIEWBOX = `${STRIP_WINDOW.x} ${STRIP_WINDOW.y} ${STRIP_WINDOW.w} ${STRIP_WINDOW.h}`;
+export const STRIP_ASPECT = STRIP_WINDOW.w / STRIP_WINDOW.h; // ≈ 2.214
 
 /** Geometry of one tile, parametric in its width. The glass fills the tile
- *  minus the recess gap; inside it, the title band then the 2.5:1 display. */
+ *  minus the recess gap; inside it, the title band then the display window. */
 export function tileLayout(w: number) {
   const glassW = w - 2 * TILE_GAP;
   const stripW = glassW - 2 * TILE_STRIP_PAD;
-  const stripH = Math.round((stripW / 2.5) * 10) / 10;
+  const stripH = Math.round((stripW / STRIP_ASPECT) * 10) / 10;
   const glassH = Math.round((TILE_TITLE_H + stripH + TILE_STRIP_PAD) * 10) / 10;
   const totalH = Math.round((glassH + 2 * TILE_GAP) * 10) / 10;
   return { gap: TILE_GAP, glassW, glassH, stripW, stripH, totalH };

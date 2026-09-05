@@ -44,7 +44,7 @@ import { toolByKey, type ToolKey } from './toolsData';
 // HUB_LIGHT — the hub's ONE light (overhead softbox key + low ambient) and its
 // intensity ladder; every lit surface on this screen reads its rungs from it.
 // The model itself is written up at the top of TileChassis.tsx.
-import { HUB_LIGHT, TILE_STRIP_PAD, TILE_TITLE_H, tileLayout } from './TileChassis';
+import { HUB_LIGHT, STRIP_ASPECT, TILE_STRIP_PAD, TILE_TITLE_H, tileLayout } from './TileChassis';
 // Live tile previews (owner order 2026-08-19): the hub owns ONE shared mic/DSP
 // session + tick (hubPreviewEngine); five tiles redraw their strip artwork from
 // live frames, three run labeled scripted demos. All react-native-svg — the
@@ -834,8 +834,10 @@ const styles = StyleSheet.create({
     letterSpacing: 1.1,
     color: '#d5d9e0',
   },
-  // The display art sits inside the glass with a small dark margin.
-  stripWrap: { paddingHorizontal: TILE_STRIP_PAD, paddingBottom: TILE_STRIP_PAD },
+  // The display art fills the glass edge to edge below the title band — no
+  // margin, no "screen within the tile" (owner 2026-09-05: "black borders
+  // bookshelving the display… need to be removed").
+  stripWrap: { paddingHorizontal: 0, paddingBottom: 0 },
   // Shadow the recess lip casts into the cavity top, seen when the glass sinks.
   tileCavityTop: { position: 'absolute', top: 0, left: 0, right: 0, height: 8, zIndex: 1 },
   // Power-on illumination that ramps up on press (lightens/glows the screen).
@@ -865,21 +867,19 @@ const styles = StyleSheet.create({
   // Smoked-glass display overlay parts (re-lit 2026-09-05 — see TileGlass).
   glassTint: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.05)' },
   // (The 1px top glare is gone — the glass's own bevel is the top specular now.)
-  // Strips are 2:1, but the tiles read too tall at full height, so we crop to
-  // 2.5:1 — which trims only the strips' safe top/bottom margin (all plot
-  // content sits inside y 104–920 of 1024), losing nothing (owner 2026-08-17).
+  // The display is the strip art's PLOT WINDOW (STRIP_VIEWBOX — inside the
+  // art's own bezel, below its lit top line), shown edge to edge at its true
+  // aspect. No crop any more: the 2.5:1 crop of the old 2:1 canvas was what
+  // exposed the bezel's side walls as "black borders" and the plot-top line as
+  // a highlight (owner 2026-09-05).
   tileStrip: {
     width: '100%',
-    aspectRatio: 2.5,
-    // Concentric with the radius-5 cap it sits 4px inside (device-scale fix
-    // 2026-09-01): inner radius = outer − inset = 1. Radius 6 made every
-    // display corner read fat/misaligned on the phone.
-    borderRadius: 1,
+    aspectRatio: STRIP_ASPECT,
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  tileStripInner: { width: '100%', aspectRatio: 2 },
+  tileStripInner: { width: '100%', aspectRatio: STRIP_ASPECT },
   // Same typeface as the hero "Measurement & Analysis" title (Oswald Medium),
   // just smaller so tiles can be shorter (owner 2026-08-17). Two lines reserved
   // so two-up rows stay aligned regardless of title wrap.
