@@ -19,11 +19,11 @@ Fill-in-the-Blank and Matching was the sentence RULES, not the glossary — fixe
 in the app and proven over all 166 topics (before/after table in
 `docs/APE_STUDY_TEXT_AUDIT_2026_09_05.md`). Two owner items from it, whenever
 convenient (section 4 of that doc): **5 glossary rows are duplicate terms** in
-their topic (ids listed; the app guards against them), and **the MISTAKES
-flashcard side** — `common_mistakes` is masked server-side for non-members
-(by design), and whether the column is populated / reaches members is
-unverified from ccode's anon-only vantage; the card now says why it shows the
-definition. Handoff for Computer A: `docs/CCODE_TO_COMPA_MISTAKES_SIDE_2026_09_05.md`. Also from the readers:
+their topic (ids listed; the app guards against them). **The MISTAKES flashcard
+side is CLOSED** — Computer A verified live (`docs/APE_COMMON_MISTAKES_VERIFICATION_2026_09_05.md`):
+all 26,847 base rows populated, members receive the arrays, non-members get
+the mask except gs3060/gs3970. No DB change. The card's non-member line is the
+one that fires; its wording is yours to ratify. Also from the readers:
 **259 near-duplicate glossary rows** (plural/inflection twins, list in
 `docs/study_text_audit_after.json` → `nearDupPairs`), and one **Matching
 mechanic** observation for your device pass — tapping NEXT past an unsolved

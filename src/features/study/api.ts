@@ -166,10 +166,11 @@ export async function fetchTopicItems(achievementId: string): Promise<GlossaryIt
   const byId = new Map<string, GlossaryItem>(items.map((it) => [it.id, it]));
 
   // 3) common_mistakes from the academy-gated view — NON-FATAL. The view's mask
-  //    calls has_academy_access(), which anon/free roles cannot EXECUTE yet
-  //    (backend grant pending), so this query 403s for them. That must NOT break
-  //    study loading — on any failure common_mistakes stays null (falls back to
-  //    the definition), exactly what non-academy users see anyway (Booth 2026-07-11).
+  //    calls has_academy_access(); Computer A verified 2026-09-05 that EXECUTE
+  //    is granted to authenticated AND anon, every base row is populated, and
+  //    members receive the arrays (non-members get NULL except the two free
+  //    topics gs3060/gs3970). Still guarded: on any failure common_mistakes
+  //    stays null and the Flashcards MISTAKES side says why (tier-aware line).
   try {
     const { data: masked, error: mErr } = await supabase
       .from('glossary_full_v')
