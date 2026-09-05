@@ -550,6 +550,16 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
     topics.forEach((gs) => {
       if (!isFreeEnrollGs(gs)) removeTopic(gs);
     });
+    // The core co-requisites were auto-enrolled (and locked) FOR a certificate
+    // or program. Once no cert/program bundle remains, they are no longer
+    // required — drop them too, or they sit as permanently un-removable
+    // "Required 🔒" rows (Bug+Hater night C1-03). The mandatory free topics stay.
+    const stillCredentialed = bundles.some((b) => b.key !== key && (b.kind === 'cert' || b.kind === 'program'));
+    if (!stillCredentialed) {
+      COREQ_TOPIC_GS.forEach((gs) => {
+        if (!isFreeEnrollGs(gs)) removeTopic(gs);
+      });
+    }
   };
   const removeBundleEntry = (key: string) => {
     removeBundle(key);
