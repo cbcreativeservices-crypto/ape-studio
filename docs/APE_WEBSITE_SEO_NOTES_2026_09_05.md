@@ -9,7 +9,13 @@ Owner: today is app-side only; anything for the website goes here. Everything be
        "paths": [ "/get", "/tools", "/tools/*", "/learn", "/labs", "/labs/*", "/glossary", "/glossary/*", "/awards/*", "/directory", "/careers",
                   "NOT /verify/*", "NOT /registry/*", "NOT /u/*" ] } ] } }
    ```
-   `<TEAMID>` = the Apple Developer Team ID (App Store Connect → Membership). Vercel: add a header rule so the path serves `Content-Type: application/json`.
+   `<TEAMID>` = `XAQQN594RH` (the Apple Team on the EAS credentials, 2026-09-05), so the appID is `XAQQN594RH.com.cbcreativeservices.apestudio`. Vercel: add a header rule so the path serves `Content-Type: application/json`.
+
+   **iOS re-enable step (deliberately deferred 2026-09-05):** `ios.associatedDomains` was taken OUT of `app.json` before the demo builds — the stored Ad Hoc provisioning profile has no Associated Domains capability, and a `--non-interactive` EAS build cannot sync capabilities with Apple (the log said "Skipping Provisioning Profile validation … because we aren't authenticated"), so the iOS build would have failed at signing. When the AASA file is live: put back
+   ```json
+   "associatedDomains": ["applinks:proaudiotrainingacademy.com", "applinks:www.proaudiotrainingacademy.com"]
+   ```
+   under `expo.ios`, then run `eas build --profile development --platform ios` ONCE interactively (Apple login) so EAS adds the capability and regenerates the profile. Android needs nothing extra — its intent filters are already in the build.
 2. `web/public/.well-known/assetlinks.json`:
    ```json
    [ { "relation": ["delegate_permission/common.handle_all_urls"],

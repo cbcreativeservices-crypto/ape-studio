@@ -27,7 +27,7 @@ Deferred deep links (install-then-land-on-the-right-screen) need an attribution 
 ## 3. App-side plan (done today unless marked)
 
 1. **Custom scheme** `proaudio://` — required for any deep link and by every OS share/return path.
-2. **Universal Links / App Links declared**: `ios.associatedDomains: ["applinks:proaudiotrainingacademy.com"]` and Android `intentFilters` (autoVerify, https, host `proaudiotrainingacademy.com` + `www.`, pathPrefixes for the routes below). EAS Build registers the iOS capability automatically. Until the website hosts the two verification files (§6) these are inert: iOS simply doesn't intercept, Android opens the browser. No risk to tonight's demo.
+2. **App Links declared (Android)**: `intentFilters` (autoVerify, https, host `proaudiotrainingacademy.com` + `www.`, pathPrefixes for the routes below). **iOS `associatedDomains` DEFERRED** — the stored provisioning profile lacks the capability and a non-interactive EAS build cannot add it, so it would have failed the demo build; the exact re-enable step is in the website notes §A. Until the website hosts the two verification files (§6) the https links are inert on both platforms anyway (Android opens the browser); the `proaudio://` scheme works now.
 3. **URL → screen map** (`linking` on `NavigationContainer`), same paths the website will use:
    - `/get` → Home · `/tools` → Measurement hub · `/tools/<key>` → tool info (spl, rta, waveform, spectrogram, rt60, signalgen; `multimeter`, `frequency-counter` go straight to their live screens)
    - `/learn` → Audio Learning fork · `/labs` → lab menu · `/labs/<category>` → a lab category · `/labs/harmonograph` etc. for the named labs
