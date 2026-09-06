@@ -34,6 +34,7 @@ import { GAIN_MODULES } from '../../screens/lab/gain/modules/registry';
 // Pure data (zero React/Skia) — safe for this boot-loaded store.
 import { CABLE_UNITS } from '../../screens/lab/cable/data/lessons';
 import { CI_LAB_UNITS } from '../../screens/lab/cableinstall/registry';
+import { noteHighValueEvent } from '../review/reviewPrompt';
 
 const STORAGE_KEY = 'ape:labProgress';
 
@@ -283,7 +284,12 @@ export function markLabUnit(labKey: LabKey, unitId: string): void {
     cleared[labKey] = set;
     persist();
     emit();
-    if (isLabComplete(labKey)) void fireComplete(labKey);
+    if (isLabComplete(labKey)) {
+      void fireComplete(labKey);
+      // Store-review eligibility (launch readiness, 2026-09-06): a completed
+      // lab is one of the genuine successes that may lead to a prompt.
+      void noteHighValueEvent('lab_completed');
+    }
   });
 }
 

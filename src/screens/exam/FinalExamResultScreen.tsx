@@ -8,7 +8,8 @@
  *   timed_out → past the 602-second grace
  *   voided    → 2+ app switches; lockout_until carries the 15-minute release
  */
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
+import { noteHighValueEvent } from '../../features/review/reviewPrompt';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -55,6 +56,13 @@ export function FinalExamResultScreen({ navigation, route }: Props) {
   const copy = COPY[result.outcome] ?? COPY.no_pass;
   const lockout = useMemo(() => fmtLockout(result.lockout_until), [result.lockout_until]);
   const graded = result.outcome === 'pass' || result.outcome === 'no_pass';
+
+  // A newly issued credential is the strongest success moment in the app —
+  // store-review eligibility counter (launch readiness, 2026-09-06). It only
+  // ever asks once the thresholds in reviewEligibility.ts are met.
+  useEffect(() => {
+    if (result.credential_awarded) void noteHighValueEvent('certificate_earned');
+  }, [result.credential_awarded]);
 
   const toneColor =
     copy.tone === 'good' ? colors.green : copy.tone === 'bad' ? colors.red : colors.amber;

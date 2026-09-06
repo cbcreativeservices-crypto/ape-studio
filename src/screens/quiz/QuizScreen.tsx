@@ -28,6 +28,7 @@ import {
   View,
 } from 'react-native';
 import { AccessibilityInfo } from 'react-native';
+import { noteHighValueEvent } from '../../features/review/reviewPrompt';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AnswerCell, type AnswerCellState } from '../../components/AnswerCell';
@@ -131,6 +132,9 @@ export function QuizScreen({ navigation, route }: Props) {
         // unhandled-action redbox (Booth 2026-07-09p).
         if (navigation.canGoBack()) navigation.popToTop();
         if (result.outcome === 'full_pass' && !payload.is_practice) {
+          // A passed quiz is a genuine success — the store-review eligibility
+          // counter (launch readiness, 2026-09-06). Never prompts by itself.
+          void noteHighValueEvent('quiz_passed');
           // Straight to the Trophy result — the animated reveal (TrophyAnim) is
           // removed; no award animation is used (user request 2026-07-18).
           (navigation as any).navigate('Trophy', {

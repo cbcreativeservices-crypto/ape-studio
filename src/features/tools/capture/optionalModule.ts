@@ -31,6 +31,13 @@ const LOADERS: Record<string, () => unknown> = {
   'expo-print': () => require('expo-print'),
   'expo-sharing': () => require('expo-sharing'),
   'expo-clipboard': () => require('expo-clipboard'),
+  // Launch readiness (owner 2026-09-06): the native store-review prompt and the
+  // installed app version it is keyed on.
+  'expo-store-review': () => require('expo-store-review'),
+  'expo-application': () => require('expo-application'),
+  // In-app purchases (OpenIAP). Installed 2026-09-06; the paywall's lazy loader
+  // in features/commercial/purchase.ts resolves it through here.
+  'expo-iap': () => require('expo-iap'),
 };
 /* eslint-enable @typescript-eslint/no-var-requires */
 

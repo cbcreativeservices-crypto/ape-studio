@@ -34,6 +34,7 @@ import { CareerFinderAboutScreen } from './src/screens/careerfinder/CareerFinder
 import { navigationRef } from './src/navigation/navigationRef';
 import { linking } from './src/navigation/linking';
 import { attachLinkCapture } from './src/navigation/pendingLink';
+import { recordAppSession } from './src/features/review/reviewPrompt';
 import {
   attachWeeklyConceptPush,
   flushWeeklyConceptNav,
@@ -142,6 +143,13 @@ export default function App() {
   // or unknown URL is never stored. Splash clears it when a session already
   // exists (linking will have handled it directly).
   useEffect(() => attachLinkCapture(), []);
+
+  // Store-review eligibility (launch readiness, 2026-09-06): count this launch
+  // as a session. The prompt itself is only ever requested after a genuine
+  // success, and only once the thresholds in reviewEligibility.ts are met.
+  useEffect(() => {
+    void recordAppSession();
+  }, []);
 
   // Clear a stale Training-Lab preview if the user leaves the previewed lab by
   // any route (swipe-back, etc.) — so the grayed overlay never sticks over the

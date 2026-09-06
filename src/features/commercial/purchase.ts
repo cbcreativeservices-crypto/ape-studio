@@ -16,6 +16,7 @@
  * crashes, and nothing is fake-granted. Rebuild the dev/preview app to enable IAP.
  */
 import { supabase } from '../../lib/supabase';
+import { optionalModule } from '../tools/capture/optionalModule';
 import {
   INAPP_SKUS,
   PLANS,
@@ -53,21 +54,20 @@ export type PurchaseHandlers = {
 
 /** Lazily load expo-iap. Returns null (never throws) when the native module
  *  isn't in this build — callers then report "unavailable". */
+let iapTried = false;
+let iapMod: IapApi | null = null;
 function getIap(): IapApi | null {
-  // TEMPORARILY DISABLED (2026-08-21): keep expo-iap OUT of the JS bundle entirely
-  // while isolating a launch crash on the current (pre-expo-iap) dev builds.
-  // Purchases report "unavailable"; nothing is granted. Re-enable by uncommenting
-  // the require below AND making a new build that bundles expo-iap.
-  return null;
-  // if (iapTried) return iapMod;
-  // iapTried = true;
-  // try {
-  //   iapMod = require('expo-iap') as IapApi;
-  // } catch (e) {
-  //   console.warn('[iap] expo-iap unavailable (rebuild needed to enable IAP):', (e as Error).message);
-  //   iapMod = null;
-  // }
-  // return iapMod;
+  // RE-ENABLED 2026-09-06 (launch readiness): expo-iap is installed and loads
+  // through optionalModule's LOADERS table — a literal require Metro bundles,
+  // inside a try/catch. On a client built before expo-iap's native half this
+  // resolves to null and purchases report "unavailable" exactly as before; on
+  // the next build the real store connection is live. (The 2026-08-21 disable
+  // isolated a launch crash on pre-expo-iap clients; the loader is the guard.)
+  if (iapTried) return iapMod;
+  iapTried = true;
+  iapMod = optionalModule<IapApi>('expo-iap');
+  if (!iapMod) console.warn('[iap] expo-iap unavailable in this build — purchases report unavailable');
+  return iapMod;
 }
 
 let connected = false;
