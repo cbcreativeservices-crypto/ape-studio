@@ -30,6 +30,10 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
 import Svg, { Line, Path, Text as SvgText } from 'react-native-svg';
 import { GlassButton } from '../../components/GlassButton';
+import * as Haptics from 'expo-haptics';
+import { hapticsEnabled } from '../../features/settings/store';
+import { openCenterLock, publishTunerFrame, useCenterLockOpen } from '../../features/tools/tuner/tunerFrameStore';
+import { CenterLockTuner } from './CenterLockTuner';
 import { ColorWheelButton } from '../../components/ColorWheelButton';
 import { TunerDiagram } from '../../components/ColorTargetDiagrams';
 import { useToolColorPref } from '../../features/tools/waveColorPref';
@@ -598,6 +602,17 @@ function LivePitchMode({
       : 'no stable pitch';
 
   const note = shownFreq != null ? noteFor(shownFreq, a4) : null;
+  // CenterLock (2026-09-06): publish the live reading for the fullscreen
+  // overlay the screen root renders. Cheap: the store dedupes identical frames.
+  useEffect(() => {
+    publishTunerFrame({
+      freq: shownFreq,
+      accepted,
+      confidence: live?.confidence ?? 0,
+      levelDb: live?.levelDb ?? -120,
+      a4,
+    });
+  }, [shownFreq, accepted, live?.confidence, live?.levelDb, a4]);
   // In tune within ±1 cent (owner 2026-08-05) — LIVE only (a held/stale reading
   // must never light the container green).
   const tunerInTune = kind === 'tuner' && accepted && note != null && Math.abs(note.cents) < 1;
@@ -797,6 +812,22 @@ function LivePitchMode({
       </Text>
       <DisplayGuideButton onPress={helpAll} />
 
+      {kind === 'tuner' && (
+        <View style={styles.centerLockRow}>
+          {/* CENTERLOCK (owner 2026-09-06): the one fullscreen stage display —
+              opened here, rendered at the screen root, closed with its ✕. */}
+          <GlassButton
+            label="CENTERLOCK · FULLSCREEN"
+            tint="green"
+            height={48}
+            fontSize={13}
+            onPress={() => {
+              if (hapticsEnabled()) Haptics.selectionAsync().catch(() => {});
+              openCenterLock();
+            }}
+          />
+        </View>
+      )}
       {kind === 'tuner' && (
         <View style={styles.a4Row}>
           <Pressable accessibilityHint="Press and hold for an explanation." onLongPress={() => help('a4')} delayLongPress={260} hitSlop={8}>
@@ -1233,6 +1264,7 @@ export function FrequencyCounterScreen({ navigation }: Props) {
   const { help, helpAll, sheet } = useToolHelp('freqcounter');
   const [mode, setMode] = useState<Mode | null>(null);
   useToolUsage('hzcounter'); // T-1 telemetry (this tool skips ToolInfo)
+  const centerLockOpen = useCenterLockOpen();
   // Academy-gated extras (owner 2026-08-05): Light Pulse, LEARN/DEMO, and the
   // Saved Measurements library. Free accounts see them locked → Paywall.
   const { isMember } = useEntitlement();
@@ -1278,6 +1310,9 @@ export function FrequencyCounterScreen({ navigation }: Props) {
         )}
       </ScrollView>
       {sheet}
+      {/* CenterLock stage tuner — the ONE fullscreen display, an absolute-fill
+          overlay at the screen root (never a Modal: SPL lessons 2026-08). */}
+      {centerLockOpen ? <CenterLockTuner /> : null}
     </View>
   );
 }
@@ -1491,6 +1526,7 @@ const styles = StyleSheet.create({
   // Honest range/unit footnote under the stat grid.
   gridNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted },
   a4Row: { flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' },
+  centerLockRow: { alignItems: 'center', marginBottom: 6 },
   tunerWheel: { marginLeft: 4, padding: 2 },
   // Variable detection-band controls (low-cut / high-cut) — tuner only.
   bandControls: { gap: 8 },
