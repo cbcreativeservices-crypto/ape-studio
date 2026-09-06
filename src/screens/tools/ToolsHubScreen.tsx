@@ -823,6 +823,33 @@ export function ToolsHubScreen({ navigation }: Props) {
   // 2026-08-19: the screen was slow to open). The frame + titles paint instantly;
   // the displays fill a beat later.
   const [displaysReady, setDisplaysReady] = useState(false);
+
+  // VIEWPORT GATING (perf audit 2026-09-05, done 2026-09-06): every tile used
+  // to receive the same hub-wide `active` flag, so the four tiles scrolled off
+  // the bottom kept their preview loops running (one re-rendering at 14 Hz).
+  // Each tile now animates only while it is inside the ScrollView viewport
+  // (plus half a tile of margin so nothing pops in late). Geometry, not
+  // measurement: tiles are 2-across at TILE_L.totalH + the grid gap, offset by
+  // the panel's and grid's measured tops. State changes ONLY when the set of
+  // visible tiles changes, so scrolling within a page costs no re-render.
+  const viewRef = useRef({ y: 0, h: 0, panelY: 0, gridY: 0 });
+  const visMaskRef = useRef('');
+  const [visMask, setVisMask] = useState('');
+  const recomputeVisible = useCallback(() => {
+    const v = viewRef.current;
+    const rowH = TILE_L.totalH + 12; // grid gap
+    const margin = TILE_L.totalH * 0.5;
+    const mask = TILE_ORDER.map((_, i) => {
+      if (v.h === 0) return '1'; // unmeasured: everything animates (old behaviour)
+      const top = v.panelY + v.gridY + Math.floor(i / 2) * rowH;
+      return top < v.y + v.h + margin && top + TILE_L.totalH > v.y - margin ? '1' : '0';
+    }).join('');
+    if (mask !== visMaskRef.current) {
+      visMaskRef.current = mask;
+      setVisMask(mask);
+    }
+  }, []);
+  const tileVisible = (i: number) => visMask === '' || visMask[i] !== '0';
   useEffect(() => {
     let done = false;
     const finish = () => {
@@ -885,7 +912,18 @@ export function ToolsHubScreen({ navigation }: Props) {
           </View>
         </View>
 
-        <ScrollView contentContainerStyle={styles.scroll}>
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          scrollEventThrottle={100}
+          onLayout={(e) => {
+            viewRef.current.h = e.nativeEvent.layout.height;
+            recomputeVisible();
+          }}
+          onScroll={(e) => {
+            viewRef.current.y = e.nativeEvent.contentOffset.y;
+            recomputeVisible();
+          }}
+        >
           {/* Hero — the module masthead (art can layer in later). */}
           <View style={styles.hero}>
             {/* The hero's diffuse face under the overhead key (rung 4): a hair
@@ -916,10 +954,22 @@ export function ToolsHubScreen({ navigation }: Props) {
               2026-08-17): the panel's gray metal shows in the gaps between tiles
               and around the grid, and each tile's black cut-edge + glass makes it
               read as a display poking through from behind. */}
-          <View style={styles.panelShadow}>
+          <View
+            style={styles.panelShadow}
+            onLayout={(e) => {
+              viewRef.current.panelY = e.nativeEvent.layout.y;
+              recomputeVisible();
+            }}
+          >
             <View style={styles.panel}>
               <PanelFace />
-              <View style={styles.grid}>
+              <View
+                style={styles.grid}
+                onLayout={(e) => {
+                  viewRef.current.gridY = e.nativeEvent.layout.y;
+                  recomputeVisible();
+                }}
+              >
               {TILE_ORDER.map(toolByKey).map((t, i) => (
                 <ToolTile
                   key={t.key}
@@ -928,7 +978,7 @@ export function ToolsHubScreen({ navigation }: Props) {
                   name={t.name}
                   planned={t.planned}
                   live={hubPreview.engineLive}
-                  active={hubPreview.active}
+                  active={hubPreview.active && tileVisible(i)}
                   ready={displaysReady}
                   onActivate={openTool}
                 />

@@ -17,6 +17,8 @@ import { GlassButton } from '../../components/GlassButton';
 import { COPY } from '../../lib/copy';
 import { colors, fonts } from '../../theme/tokens';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { consumePendingLink } from '../../navigation/pendingLink';
+import { navigateToPath } from '../../navigation/linking';
 import { buyPlan, initPurchases, restorePurchases, teardownPurchases } from '../../features/commercial/purchase';
 import type { PlanId } from '../../features/commercial/iapProducts';
 import type { RootStackParamList } from '../../navigation/types';
@@ -50,7 +52,16 @@ export function PaywallScreen({ navigation }: Props) {
           if (!alive) return;
           setBusy(false);
           Alert.alert('Welcome to Academy', 'Your Academy access is active. Enjoy!', [
-            { text: 'Great', onPress: () => navigation.goBack() },
+            {
+              text: 'Great',
+              // DESTINATION THROUGH PURCHASE (2026-09-06): a deep link the user
+              // followed into locked content is resumed once they have paid,
+              // instead of dropping them back wherever the paywall opened.
+              onPress: () => {
+                const pending = consumePendingLink();
+                if (!(pending && navigateToPath(pending))) navigation.goBack();
+              },
+            },
           ]);
         });
       },
