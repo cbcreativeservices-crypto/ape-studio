@@ -16,7 +16,7 @@ import type { StyleProp, ViewStyle } from 'react-native';
 import Animated, { Easing, cancelAnimation, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
 import { animationsAllowed } from '../settings/a11y';
 
-export const ATTENTION_PULSE_MS = 5000;
+export const ATTENTION_PULSE_MS = 4000; // owner 2026-09-05: was 5 s, sped up to 4 s
 
 /** Opacity range for a pulsing thumb: never fully gone, clearly brighter at the peak. */
 export const PULSE_OPACITY: [number, number] = [0.42, 1];
