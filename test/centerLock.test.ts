@@ -8,6 +8,8 @@ import {
   courses,
   dampCents,
   directionText,
+  displayNote,
+  EMPTY_TARGETS,
   FAMILY_ORDER,
   fifthsHz,
   fmtCents,
@@ -23,6 +25,7 @@ import {
   magnitudeColor,
   nearestTarget,
   noteHz,
+  noteMidi,
   pianoKeyNumber,
   pianoRangeHint,
   pianoStretchCents,
@@ -30,7 +33,10 @@ import {
   readAgainstPartials,
   RETARGET_MS,
   steadinessText,
+  stepPianoKey,
   STRETCH_LEVELS,
+  stringNumber,
+  wrongKeyText,
   stepChromatic,
   stepHold,
   stepLock,
@@ -133,7 +139,7 @@ test('direction words, colours and formatting', () => {
   assert.equal(directionText(null, false), 'PLAY A STRING');
   assert.equal(directionText(-8, false), 'FLAT · RAISE PITCH');
   assert.equal(directionText(8, false), 'SHARP · LOWER PITCH');
-  assert.equal(directionText(1, false), 'HOLD…');
+  assert.equal(directionText(1, false), 'ALMOST…');
   assert.equal(directionText(1, true), 'IN TUNE');
   assert.equal(directionText(1200, false), 'OCTAVE HIGH');
   assert.equal(magnitudeColor(0), '#37e05f');
@@ -142,6 +148,44 @@ test('direction words, colours and formatting', () => {
   assert.equal(fmtCents(-7.24), '−7.2¢');
   assert.equal(fmtCents(0.02), '0.0¢');
   assert.equal(fmtCents(null), '—');
+  assert.equal(fmtCents(-317.8), '−318¢', 'whole cents beyond ±10');
+  assert.equal(fmtCents(12.34), '+12¢');
+  assert.equal(displayNote('C#4'), 'C♯4');
+  assert.equal(displayNote('E2'), 'E2');
+  assert.equal(wrongKeyText(-317.8), 'WRONG KEY · −3 SEMI');
+  assert.equal(wrongKeyText(104), 'WRONG KEY · +1 SEMI');
+  assert.equal(wrongKeyText(3900), 'WRONG KEY · +3 OCT');
+  assert.equal(wrongKeyText(40), null);
+});
+
+test('players count strings from the top: string 1 is the highest course', () => {
+  const g = buildTargets('guitar6', 'standard', 440);
+  assert.equal(stringNumber(g[0], g), 6, 'low E is string 6');
+  assert.equal(stringNumber(g[5], g), 1, 'high E is string 1');
+  const g12 = buildTargets('guitar12', 'standard', 440);
+  assert.equal(stringNumber(g12[0], g12), 6, 'the low E course is course 6');
+  assert.equal(stringNumber(g12[1], g12), 6, 'its octave partner shares the number');
+  const b5 = buildTargets('bass5', 'standard', 440);
+  assert.equal(stringNumber(b5[0], b5), 5);
+  assert.equal(stringNumber(b5[4], b5), 1);
+});
+
+test('no-string modes share one frozen target array', () => {
+  assert.equal(buildTargets('piano', 'standard', 440), buildTargets('piano', 'standard', 442));
+  assert.equal(buildTargets('chromatic', 'standard', 440), EMPTY_TARGETS);
+  for (const k of INSTRUMENT_KEYS) assert.ok(INSTRUMENTS[k].short.length > 0, `${k} short name`);
+});
+
+test('AUTO piano key uses the stretched scale near a boundary', () => {
+  // A0 stretched −30 ¢: a tone 40 ¢ below equal-tempered A♯0 is still nearer
+  // stretched A♯0 (−30 ¢ from its ET pitch) than stretched A0.
+  const hz = noteHz('A#0') * Math.pow(2, -40 / 1200);
+  assert.equal(stepPianoKey(null, hz, 440, 1), noteMidi('A#0'));
+  // Without stretch the same tone rounds to A♯0 as well; with stretch OFF a tone 55 ¢ below rounds to A0.
+  assert.equal(stepPianoKey(null, noteHz('A#0') * Math.pow(2, -55 / 1200), 440, 0), noteMidi('A0'));
+  // Hysteresis: once on A4, 55 ¢ sharp still reads A4.
+  assert.equal(stepPianoKey(69, 440 * Math.pow(2, 55 / 1200), 440, 1), 69);
+  assert.equal(stepPianoKey(69, 440 * Math.pow(2, 70 / 1200), 440, 1), 70);
 });
 
 test('low-string coaching appears only for low targets after sustained instability', () => {
@@ -230,6 +274,10 @@ test('chromatic mode holds the note across the half-way point and writes transpo
   assert.equal(stepChromatic(null, noteHz('C4'), 440, eb.semis).target.note, 'A4');
   const f = TRANSPOSITIONS.find((t) => t.key === 'F')!;
   assert.equal(stepChromatic(null, noteHz('C4'), 440, f.semis).target.note, 'G4');
+  const tenor = TRANSPOSITIONS.find((t) => t.key === 'BbLow')!;
+  assert.equal(stepChromatic(null, noteHz('C4'), 440, tenor.semis).target.note, 'D5', 'tenor sax writes an octave above trumpet');
+  const bari = TRANSPOSITIONS.find((t) => t.key === 'EbLow')!;
+  assert.equal(stepChromatic(null, noteHz('C4'), 440, bari.semis).target.note, 'A5', 'bari sax: written A5 for concert C4');
 });
 
 test('piano stretch is zero at A4, flat in the bass, sharp in the treble, scaled by amount', () => {
@@ -273,17 +321,28 @@ test('a locked piano key reads the 2nd partial when that is what the mic hears',
   assert.equal(STRETCH_LEVELS.find((s) => s.key === 'typical')?.amount, 1);
 });
 
-test('hold readout needs a sustained note and reports mean and spread', () => {
+test('hold readout judges the last 1.5 s, skips the attack, and reports mean and spread', () => {
   let h = INITIAL_HOLD;
   for (let i = 0; i < 5; i++) h = stepHold(h, 'A4', 3 + (i % 2), i * 50);
   assert.equal(holdSummary(h, 250), null, 'too few samples / too short');
   for (let i = 5; i < 30; i++) h = stepHold(h, 'A4', 3 + (i % 2), i * 50);
   const s = holdSummary(h, HOLD_MIN_MS + 1000)!;
   assert.ok(s);
-  near(s.avg, 3.5, 0.05);
+  near(s.avg, 3.5, 0.1);
   assert.ok(s.spread < 1);
   assert.equal(steadinessText(s.spread), 'ROCK STEADY');
-  assert.equal(stepHold(h, 'B4', 0, 9999).n, 1, 'a new note restarts');
+  // A wild attack in the first 150 ms does not colour the readout.
+  let a = stepHold(INITIAL_HOLD, 'A4', 80, 0);
+  a = stepHold(a, 'A4', 60, 50);
+  a = stepHold(a, 'A4', 40, 100);
+  for (let t = 200; t <= 1400; t += 50) a = stepHold(a, 'A4', 2, t);
+  near(holdSummary(a, 1400)!.avg, 2, 0.01);
+  // Only the trailing window counts: an early drift ages out.
+  let w = INITIAL_HOLD;
+  for (let t = 0; t <= 1000; t += 50) w = stepHold(w, 'A4', 20, t);
+  for (let t = 1050; t <= 3000; t += 50) w = stepHold(w, 'A4', 0, t);
+  near(holdSummary(w, 3000)!.avg, 0, 0.01);
+  assert.equal(stepHold(h, 'B4', 0, 9999).samples.length, 1, 'a new note restarts');
   assert.equal(stepHold(h, null, null, 9999).note, null, 'silence resets');
   assert.equal(steadinessText(12), 'UNSTEADY');
 });

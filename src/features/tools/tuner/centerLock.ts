@@ -45,6 +45,8 @@ export type Tuning = { key: string; name: string; semitoneOffsets: number[] };
 
 export type InstrumentDef = {
   name: string;
+  /** Short name for the recents chips. */
+  short: string;
   family: Family;
   /** Open strings low → high (one entry per COURSE), sounding pitch. */
   strings: string[];
@@ -100,10 +102,11 @@ export function centsBetween(hz: number, targetHz: number): number {
  */
 const INSTRUMENT_DEFS = {
   // ── Guitar ──
-  guitar6: { name: 'Guitar · 6-string', family: 'Guitar', strings: ['E2', 'A2', 'D3', 'G3', 'B3', 'E4'], labels: ['LOW E', 'A', 'D', 'G', 'B', 'HIGH E'], numbered: true, capo: true, blurb: 'E2 A2 D3 G3 B3 E4' },
-  guitar7: { name: 'Guitar · 7-string', family: 'Guitar', strings: ['B1', 'E2', 'A2', 'D3', 'G3', 'B3', 'E4'], labels: ['LOW B', 'E', 'A', 'D', 'G', 'B', 'HIGH E'], numbered: true, capo: true, blurb: 'B1 E2 A2 D3 G3 B3 E4' },
+  guitar6: { name: 'Guitar · 6-string', short: 'GUITAR', family: 'Guitar', strings: ['E2', 'A2', 'D3', 'G3', 'B3', 'E4'], labels: ['LOW E', 'A', 'D', 'G', 'B', 'HIGH E'], numbered: true, capo: true, blurb: 'E2 A2 D3 G3 B3 E4' },
+  guitar7: { name: 'Guitar · 7-string', short: '7-STRING', family: 'Guitar', strings: ['B1', 'E2', 'A2', 'D3', 'G3', 'B3', 'E4'], labels: ['LOW B', 'E', 'A', 'D', 'G', 'B', 'HIGH E'], numbered: true, capo: true, blurb: 'B1 E2 A2 D3 G3 B3 E4' },
   guitar12: {
     name: 'Guitar · 12-string',
+    short: '12-STRING',
     family: 'Guitar',
     strings: ['E2', 'A2', 'D3', 'G3', 'B3', 'E4'],
     labels: ['LOW E', 'A', 'D', 'G', 'B', 'HIGH E'],
@@ -114,30 +117,32 @@ const INSTRUMENT_DEFS = {
     blurb: 'Six courses · octave pairs on the low four',
   },
   // ── Bass ──
-  bass4: { name: 'Bass · 4-string', family: 'Bass', strings: ['E1', 'A1', 'D2', 'G2'], labels: ['E', 'A', 'D', 'G'], numbered: true, capo: true, blurb: 'E1 A1 D2 G2' },
-  bass5: { name: 'Bass · 5-string', family: 'Bass', strings: ['B0', 'E1', 'A1', 'D2', 'G2'], labels: ['LOW B', 'E', 'A', 'D', 'G'], numbered: true, capo: true, blurb: 'B0 E1 A1 D2 G2' },
-  bass6: { name: 'Bass · 6-string', family: 'Bass', strings: ['B0', 'E1', 'A1', 'D2', 'G2', 'C3'], labels: ['LOW B', 'E', 'A', 'D', 'G', 'C'], numbered: true, capo: true, blurb: 'B0 E1 A1 D2 G2 C3' },
-  doubleBass: { name: 'Double bass', family: 'Bass', strings: ['E1', 'A1', 'D2', 'G2'], labels: ['E', 'A', 'D', 'G'], numbered: true, blurb: 'E1 A1 D2 G2 · orchestral / upright' },
+  bass4: { name: 'Bass · 4-string', short: 'BASS', family: 'Bass', strings: ['E1', 'A1', 'D2', 'G2'], labels: ['E', 'A', 'D', 'G'], numbered: true, capo: true, blurb: 'E1 A1 D2 G2' },
+  bass5: { name: 'Bass · 5-string', short: 'BASS 5', family: 'Bass', strings: ['B0', 'E1', 'A1', 'D2', 'G2'], labels: ['LOW B', 'E', 'A', 'D', 'G'], numbered: true, capo: true, blurb: 'B0 E1 A1 D2 G2' },
+  bass6: { name: 'Bass · 6-string', short: 'BASS 6', family: 'Bass', strings: ['B0', 'E1', 'A1', 'D2', 'G2', 'C3'], labels: ['LOW B', 'E', 'A', 'D', 'G', 'C'], numbered: true, capo: true, blurb: 'B0 E1 A1 D2 G2 C3' },
+  doubleBass: { name: 'Double bass', short: 'DOUBLE BASS', family: 'Bass', strings: ['E1', 'A1', 'D2', 'G2'], labels: ['E', 'A', 'D', 'G'], numbered: true, blurb: 'E1 A1 D2 G2 · orchestral / upright' },
   // ── Bowed ──
-  violin: { name: 'Violin', family: 'Bowed', strings: ['G3', 'D4', 'A4', 'E5'], labels: ['G', 'D', 'A', 'E'], fifths: true, blurb: 'G3 D4 A4 E5 · perfect fifths from A' },
-  viola: { name: 'Viola', family: 'Bowed', strings: ['C3', 'G3', 'D4', 'A4'], labels: ['C', 'G', 'D', 'A'], fifths: true, blurb: 'C3 G3 D4 A4 · perfect fifths from A' },
-  cello: { name: 'Cello', family: 'Bowed', strings: ['C2', 'G2', 'D3', 'A3'], labels: ['C', 'G', 'D', 'A'], fifths: true, blurb: 'C2 G2 D3 A3 · perfect fifths from A' },
-  erhu: { name: 'Erhu', family: 'Bowed', strings: ['D4', 'A4'], labels: ['INNER D', 'OUTER A'], blurb: 'D4 A4 · Chinese two-string fiddle' },
+  violin: { name: 'Violin', short: 'VIOLIN', family: 'Bowed', strings: ['G3', 'D4', 'A4', 'E5'], labels: ['G', 'D', 'A', 'E'], fifths: true, blurb: 'G3 D4 A4 E5 · perfect fifths from A' },
+  viola: { name: 'Viola', short: 'VIOLA', family: 'Bowed', strings: ['C3', 'G3', 'D4', 'A4'], labels: ['C', 'G', 'D', 'A'], fifths: true, blurb: 'C3 G3 D4 A4 · perfect fifths from A' },
+  cello: { name: 'Cello', short: 'CELLO', family: 'Bowed', strings: ['C2', 'G2', 'D3', 'A3'], labels: ['C', 'G', 'D', 'A'], fifths: true, blurb: 'C2 G2 D3 A3 · perfect fifths from A' },
+  erhu: { name: 'Erhu', short: 'ERHU', family: 'Bowed', strings: ['D4', 'A4'], labels: ['INNER D', 'OUTER A'], blurb: 'D4 A4 · Chinese two-string fiddle' },
   // ── Folk ──
-  ukuleleHighG: { name: 'Ukulele · high G', family: 'Folk', strings: ['G4', 'C4', 'E4', 'A4'], labels: ['G', 'C', 'E', 'A'], blurb: 'G4 C4 E4 A4 · re-entrant' },
-  ukuleleLowG: { name: 'Ukulele · low G', family: 'Folk', strings: ['G3', 'C4', 'E4', 'A4'], labels: ['G', 'C', 'E', 'A'], blurb: 'G3 C4 E4 A4 · linear' },
-  ukuleleBaritone: { name: 'Ukulele · baritone', family: 'Folk', strings: ['D3', 'G3', 'B3', 'E4'], labels: ['D', 'G', 'B', 'E'], blurb: 'D3 G3 B3 E4' },
-  mandolin: { name: 'Mandolin', family: 'Folk', strings: ['G3', 'D4', 'A4', 'E5'], labels: ['G', 'D', 'A', 'E'], doubled: true, fifths: true, blurb: 'G3 D4 A4 E5 · four unison pairs' },
+  ukuleleHighG: { name: 'Ukulele · high G', short: 'UKE HIGH G', family: 'Folk', strings: ['G4', 'C4', 'E4', 'A4'], labels: ['G', 'C', 'E', 'A'], blurb: 'G4 C4 E4 A4 · re-entrant' },
+  ukuleleLowG: { name: 'Ukulele · low G', short: 'UKE LOW G', family: 'Folk', strings: ['G3', 'C4', 'E4', 'A4'], labels: ['G', 'C', 'E', 'A'], blurb: 'G3 C4 E4 A4 · linear' },
+  ukuleleBaritone: { name: 'Ukulele · baritone', short: 'BARITONE UKE', family: 'Folk', strings: ['D3', 'G3', 'B3', 'E4'], labels: ['D', 'G', 'B', 'E'], blurb: 'D3 G3 B3 E4' },
+  mandolin: { name: 'Mandolin', short: 'MANDOLIN', family: 'Folk', strings: ['G3', 'D4', 'A4', 'E5'], labels: ['G', 'D', 'A', 'E'], doubled: true, fifths: true, blurb: 'G3 D4 A4 E5 · four unison pairs' },
   banjo5: {
     name: 'Banjo · 5-string',
+    short: 'BANJO',
     family: 'Folk',
     strings: ['D3', 'G3', 'B3', 'D4', 'G4'],
     labels: ['4TH D', '3RD G', '2ND B', '1ST D', '5TH G'],
     blurb: 'Open G · D3 G3 B3 D4 + G4 drone',
   },
-  dulcimer: { name: 'Appalachian dulcimer', family: 'Folk', strings: ['D3', 'A3', 'D4'], labels: ['BASS', 'MIDDLE', 'MELODY'], blurb: 'DAD · DAA in the tuning row' },
+  dulcimer: { name: 'Appalachian dulcimer', short: 'DULCIMER', family: 'Folk', strings: ['D3', 'A3', 'D4'], labels: ['BASS', 'MIDDLE', 'MELODY'], blurb: 'DAD · DAA in the tuning row' },
   bouzoukiIrish: {
     name: 'Bouzouki · Irish',
+    short: 'IRISH BOUZOUKI',
     family: 'Folk',
     strings: ['G2', 'D3', 'A3', 'D4'],
     labels: ['G', 'D', 'A', 'D'],
@@ -145,9 +150,10 @@ const INSTRUMENT_DEFS = {
     doubled: true,
     blurb: 'G2 D3 A3 D4 · octave pairs on the low two',
   },
-  balalaikaPrima: { name: 'Balalaika · prima', family: 'Folk', strings: ['E4', 'A4'], labels: ['E ×2', 'A'], blurb: 'E4 E4 A4 · two E strings in unison' },
+  balalaikaPrima: { name: 'Balalaika · prima', short: 'BALALAIKA', family: 'Folk', strings: ['E4', 'A4'], labels: ['E ×2', 'A'], blurb: 'E4 E4 A4 · two E strings in unison' },
   charango: {
     name: 'Charango',
+    short: 'CHARANGO',
     family: 'Folk',
     strings: ['G4', 'C5', 'E4', 'A4', 'E5'],
     labels: ['G', 'C', 'E', 'A', 'E'],
@@ -158,6 +164,7 @@ const INSTRUMENT_DEFS = {
   // ── World ──
   oudArabic: {
     name: 'Oud · Arabic',
+    short: 'ARABIC OUD',
     family: 'World',
     strings: ['C2', 'F2', 'A2', 'D3', 'G3', 'C4'],
     labels: ['C', 'F', 'A', 'D', 'G', 'C'],
@@ -166,15 +173,17 @@ const INSTRUMENT_DEFS = {
   },
   oudTurkish: {
     name: 'Oud · Turkish',
+    short: 'TURKISH OUD',
     family: 'World',
     strings: ['C#2', 'F#2', 'B2', 'E3', 'A3', 'D4'],
-    labels: ['C#', 'F#', 'B', 'E', 'A', 'D'],
+    labels: ['C♯', 'F♯', 'B', 'E', 'A', 'D'],
     doubled: true,
-    blurb: 'C#2 F#2 B2 E3 A3 D4 · a step above Arabic',
+    blurb: 'C♯2 F♯2 B2 E3 A3 D4 · a step above Arabic',
   },
-  pipa: { name: 'Pipa', family: 'World', strings: ['A2', 'D3', 'E3', 'A3'], labels: ['A', 'D', 'E', 'A'], blurb: 'A2 D3 E3 A3 · Chinese lute' },
+  pipa: { name: 'Pipa', short: 'PIPA', family: 'World', strings: ['A2', 'D3', 'E3', 'A3'], labels: ['A', 'D', 'E', 'A'], blurb: 'A2 D3 E3 A3 · Chinese lute' },
   bouzoukiGreek3: {
     name: 'Bouzouki · Greek 3-course',
+    short: 'GREEK 3-COURSE',
     family: 'World',
     strings: ['D3', 'A3', 'D4'],
     labels: ['D', 'A', 'D'],
@@ -184,6 +193,7 @@ const INSTRUMENT_DEFS = {
   },
   bouzoukiGreek4: {
     name: 'Bouzouki · Greek 4-course',
+    short: 'GREEK 4-COURSE',
     family: 'World',
     strings: ['C3', 'F3', 'A3', 'D4'],
     labels: ['C', 'F', 'A', 'D'],
@@ -192,10 +202,25 @@ const INSTRUMENT_DEFS = {
     blurb: 'C3 F3 A3 D4 · tetrachordo, octave low pairs',
   },
   // ── Piano ──
-  piano: { name: 'Piano · 88 keys', family: 'Piano', strings: [], labels: [], chromatic: true, piano: true, blurb: 'Stretch curve · key lock · reads the 2nd partial on bass strings' },
+  piano: { name: 'Piano · 88 keys', short: 'PIANO', family: 'Piano', strings: [], labels: [], chromatic: true, piano: true, blurb: 'Stretch curve · key lock · reads the 2nd partial on bass strings' },
   // ── Chromatic ──
-  chromatic: { name: 'Chromatic · winds & brass', family: 'Chromatic', strings: [], labels: [], chromatic: true, blurb: 'Any note · written pitch for B♭, E♭, F · hold readout' },
+  chromatic: { name: 'Chromatic · winds & brass', short: 'CHROMATIC', family: 'Chromatic', strings: [], labels: [], chromatic: true, blurb: 'Any note · written pitch for B♭, E♭, F · hold readout' },
 } satisfies Record<string, InstrumentDef>;
+
+/** No-string modes share ONE frozen array so a preset chip (A4, stretch,
+ *  transposition) never looks like a new instrument to the readout. */
+export const EMPTY_TARGETS: readonly StringTarget[] = Object.freeze([]);
+
+/** Note names for the display: ♯ instead of the ASCII # the maths uses. */
+export function displayNote(note: string): string {
+  return note.replace('#', '♯');
+}
+
+/** Players count from the top: string 1 is the highest course. */
+export function stringNumber(target: StringTarget, targets: readonly StringTarget[]): number {
+  const courseCount = new Set(targets.map((t) => t.course)).size;
+  return courseCount - target.course;
+}
 
 export type InstrumentKey = keyof typeof INSTRUMENT_DEFS;
 export const INSTRUMENTS: Record<InstrumentKey, InstrumentDef> = INSTRUMENT_DEFS;
@@ -207,12 +232,16 @@ export function instrumentsByFamily(): { family: Family; keys: InstrumentKey[] }
 }
 
 /** Written-pitch transpositions for the chromatic (winds & brass) mode:
- *  written = concert + semis. */
+ *  written = concert + semis. The octave matters (usability review
+ *  2026-09-06): tenor sax and bass clarinet write an octave above trumpet
+ *  and clarinet, baritone sax two octaves above alto's pitch class. */
 export const TRANSPOSITIONS = [
   { key: 'C', name: 'C · CONCERT', semis: 0 },
-  { key: 'Bb', name: 'B♭ INST', semis: 2 },
-  { key: 'Eb', name: 'E♭ INST', semis: 9 },
-  { key: 'F', name: 'F INST', semis: 7 },
+  { key: 'Bb', name: 'B♭ TPT · CLAR', semis: 2 },
+  { key: 'BbLow', name: 'B♭ TENOR · BASS CL', semis: 14 },
+  { key: 'Eb', name: 'E♭ ALTO', semis: 9 },
+  { key: 'EbLow', name: 'E♭ BARI', semis: 21 },
+  { key: 'F', name: 'F HORN', semis: 7 },
 ] as const;
 export type TranspositionKey = (typeof TRANSPOSITIONS)[number]['key'];
 
@@ -323,7 +352,7 @@ export function buildTargets(
   temperament: Temperament = INSTRUMENTS[instrument].fifths ? 'fifths' : 'equal',
 ): StringTarget[] {
   const inst = INSTRUMENTS[instrument];
-  if (inst.chromatic) return [];
+  if (inst.chromatic) return EMPTY_TARGETS as StringTarget[];
   const tuning = TUNINGS[instrument].find((t) => t.key === tuningKey) ?? TUNINGS[instrument][0];
   const shift = (i: number) => (tuning?.semitoneOffsets[i] ?? 0) + (inst.capo ? capo : 0);
   const hzOf = (note: string) => (inst.fifths && temperament === 'fifths' ? fifthsHz(note, a4) : noteHz(note, a4));
@@ -351,11 +380,12 @@ export function courses(targets: StringTarget[]): StringTarget[][] {
   return [...map.values()];
 }
 
-/** Coaching for a double course with an octave partner. */
-export function courseHint(target: StringTarget, targets: StringTarget[]): string | null {
+/** Coaching for a double course with an octave partner — payload first, so a
+ *  one-line landscape hint still says which string to mute. */
+export function courseHint(target: StringTarget, targets: readonly StringTarget[]): string | null {
   const mates = targets.filter((t) => t.course === target.course && t !== target);
   if (mates.length === 0) return null;
-  return `Octave pair: tune one string at a time, mute its partner (${mates[0].note})`;
+  return `Mute ${displayNote(mates[0].note)} · tune one string of the pair at a time`;
 }
 
 /**
@@ -377,23 +407,33 @@ export function stepChromatic(prevMidi: number | null, hz: number, a4: number, t
 }
 
 /**
- * Sustained-tone readout for winds: mean cents and spread since the note
- * began. Resets whenever the note changes or the tone stops.
+ * Sustained-tone readout for winds and piano: mean cents and spread over the
+ * LAST HOLD_WINDOW_MS, ignoring the first HOLD_SKIP_MS (the attack), so a long
+ * tone is judged on how it sits now, not on how it started. Resets whenever
+ * the note changes or the tone stops.
  */
-export type HoldState = { note: string | null; since: number; n: number; sum: number; sumSq: number };
-export const INITIAL_HOLD: HoldState = { note: null, since: 0, n: 0, sum: 0, sumSq: 0 };
+export type HoldState = { note: string | null; since: number; samples: { t: number; c: number }[] };
+export const INITIAL_HOLD: HoldState = { note: null, since: 0, samples: [] };
 export const HOLD_MIN_MS = 600;
+export const HOLD_WINDOW_MS = 1500;
+export const HOLD_SKIP_MS = 150;
 
 export function stepHold(state: HoldState, note: string | null, cents: number | null, nowMs: number): HoldState {
   if (note == null || cents == null) return INITIAL_HOLD;
-  if (state.note !== note) return { note, since: nowMs, n: 1, sum: cents, sumSq: cents * cents };
-  return { note, since: state.since, n: state.n + 1, sum: state.sum + cents, sumSq: state.sumSq + cents * cents };
+  if (state.note !== note) return { note, since: nowMs, samples: [{ t: nowMs, c: cents }] };
+  const cutoff = nowMs - HOLD_WINDOW_MS;
+  const samples = state.samples.filter((s) => s.t >= cutoff);
+  samples.push({ t: nowMs, c: cents });
+  return { note, since: state.since, samples };
 }
 
 export function holdSummary(state: HoldState, nowMs: number): { avg: number; spread: number; ms: number } | null {
-  if (state.note == null || state.n < 6 || nowMs - state.since < HOLD_MIN_MS) return null;
-  const avg = state.sum / state.n;
-  const variance = Math.max(0, state.sumSq / state.n - avg * avg);
+  if (state.note == null || nowMs - state.since < HOLD_MIN_MS) return null;
+  const cutoff = nowMs - HOLD_WINDOW_MS;
+  const used = state.samples.filter((s) => s.t >= cutoff && s.t - state.since >= HOLD_SKIP_MS);
+  if (used.length < 6) return null;
+  const avg = used.reduce((a, s) => a + s.c, 0) / used.length;
+  const variance = used.reduce((a, s) => a + (s.c - avg) * (s.c - avg), 0) / used.length;
   return { avg, spread: Math.sqrt(variance), ms: nowMs - state.since };
 }
 
@@ -411,9 +451,9 @@ export function holdSummary(state: HoldState, nowMs: number): { avg: number; spr
 // ─────────────────────────────────────────────────────────────────────────────
 export const STRETCH_LEVELS = [
   { key: 'none', name: 'NO STRETCH', amount: 0 },
-  { key: 'light', name: 'LIGHT', amount: 0.5 },
-  { key: 'typical', name: 'TYPICAL', amount: 1 },
-  { key: 'full', name: 'FULL', amount: 1.5 },
+  { key: 'light', name: 'LIGHT ±15¢', amount: 0.5 },
+  { key: 'typical', name: 'TYPICAL ±30¢', amount: 1 },
+  { key: 'full', name: 'FULL ±45¢', amount: 1.5 },
 ] as const;
 export type StretchKey = (typeof STRETCH_LEVELS)[number]['key'];
 
@@ -450,6 +490,39 @@ export function pianoTarget(midi: number, a4: number, amount = 1): StringTarget 
   const stretch = pianoStretchCents(m, amount);
   const key = pianoKeyNumber(m);
   return { index: key, label: `KEY ${key}`, note, hz: noteHz(note, a4) * Math.pow(2, stretch / 1200), course: 0, stretch, key };
+}
+
+/**
+ * AUTO piano key with the STRETCHED scale: the nearest key is judged against
+ * stretched targets (equal-temperament rounding could pick the wrong key
+ * near a boundary where the stretch is 30 ¢), with the same 60 ¢ hold as the
+ * chromatic mode so the display does not flip at the half-way point.
+ */
+export function stepPianoKey(prevMidi: number | null, hz: number, a4: number, amount = 1): number {
+  if (prevMidi != null) {
+    const prev = pianoTarget(prevMidi, a4, amount);
+    if (Math.abs(centsBetween(hz, prev.hz)) <= 60) return prevMidi;
+  }
+  const guess = Math.max(PIANO_LOW_MIDI, Math.min(PIANO_HIGH_MIDI, Math.round(hzToMidi(hz, a4))));
+  let best = guess;
+  let bestAbs = Infinity;
+  for (const m of [guess - 1, guess, guess + 1]) {
+    if (m < PIANO_LOW_MIDI || m > PIANO_HIGH_MIDI) continue;
+    const c = Math.abs(centsBetween(hz, pianoTarget(m, a4, amount).hz));
+    if (c < bestAbs) {
+      bestAbs = c;
+      best = m;
+    }
+  }
+  return best;
+}
+
+/** Locked-key honesty beyond a semitone: the key is probably wrong. */
+export function wrongKeyText(cents: number): string | null {
+  if (Math.abs(cents) < 100) return null;
+  const sign = cents < 0 ? '−' : '+';
+  if (Math.abs(cents) >= OCTAVE_CENTS) return `WRONG KEY · ${sign}${Math.max(1, Math.round(Math.abs(cents) / 1200))} OCT`;
+  return `WRONG KEY · ${sign}${Math.round(Math.abs(cents) / 100)} SEMI`;
 }
 
 /**
@@ -548,7 +621,7 @@ export function directionText(cents: number | null, confirmed: boolean): string 
   if (cents == null) return 'PLAY A STRING';
   if (Math.abs(cents) >= OCTAVE_CENTS) return cents > 0 ? 'OCTAVE HIGH' : 'OCTAVE LOW';
   if (confirmed) return 'IN TUNE';
-  if (Math.abs(cents) <= IN_TUNE_CENTS) return 'HOLD…';
+  if (Math.abs(cents) <= IN_TUNE_CENTS) return 'ALMOST…';
   return cents < 0 ? 'FLAT · RAISE PITCH' : 'SHARP · LOWER PITCH';
 }
 
@@ -568,11 +641,13 @@ export function magnitudeColor(cents: number | null): string {
   return '#c94bd6';
 }
 
-/** Format a signed cents value for the big readout. */
+/** Format a signed cents value for the big readout: one decimal inside
+ *  ±10 ¢ where it matters, whole cents beyond. */
 export function fmtCents(cents: number | null): string {
   if (cents == null) return '—';
   const v = Math.abs(cents) < 0.05 ? 0 : cents;
-  return `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(1)}¢`;
+  const digits = Math.abs(v) < 10 ? 1 : 0;
+  return `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(digits)}¢`;
 }
 
 /** Low-string coaching: below ~65 Hz the fundamental is slow and weak. */
