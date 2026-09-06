@@ -20,7 +20,6 @@ import {
   Dimensions,
   FlatList,
   Image,
-  ImageBackground,
   Pressable,
   StyleSheet,
   Text,
@@ -35,6 +34,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { BrandLogo } from '../../components/BrandLogo';
 import { GlassButton } from '../../components/GlassButton';
+import { CardArt } from '../../components/CardArt';
 import { StudioButton } from '../../components/StudioButton';
 import { SwitchButton } from '../../components/SwitchButton';
 import { supabase } from '../../lib/supabase';
@@ -274,6 +274,9 @@ function dotColorFor(card: Card): string {
   }
 }
 
+/** The Audio Fundamentals lab-proxy achievement (mirrors DashboardScreen). */
+const LAB_PROXY_GS = 3081;
+
 function cardImageUrl(key: string): string | null {
   const f = CARD_IMAGE[key];
   return f ? `${SUPABASE_URL}/storage/v1/object/public/course-cards/${encodeURIComponent(f)}` : null;
@@ -282,17 +285,31 @@ function cardImageUrl(key: string): string | null {
 // Warm the image cache once, up front, so cards paint fast on the carousel
 // instead of streaming in as you swipe (Booth 2026-07-11). Distinct filenames
 // only (many keys reuse the same art).
+// STAGGERED (owner report 2026-09-05, cards showing a placeholder): this used
+// to fire all 26 downloads (3.2 MB) at once at boot, and on iOS the bucket's
+// `Cache-Control: no-cache` meant they were re-fetched EVERY launch — so the
+// visible cards' own requests queued behind the storm on a weak connection and
+// sat on their dark fallback. Now: the five cards the carousel opens on (lab,
+// tools, glossary, the two free tasters) warm immediately; everything else
+// warms 3 s later, one request every 250 ms, so it never competes with what is
+// on screen. CardArt's force-cache keeps a warmed image usable across launches.
 let cardArtWarmed = false;
+const WARM_FIRST_KEYS = ['lab', 'tools', 'glossary'];
 function warmCardArt() {
   if (cardArtWarmed) return;
   cardArtWarmed = true;
-  const urls = new Set<string>();
+  const first: string[] = [];
+  const rest: string[] = [];
+  const seen = new Set<string>();
   for (const k of Object.keys(CARD_IMAGE)) {
     const u = cardImageUrl(k);
-    if (u) urls.add(u);
+    if (!u || seen.has(u)) continue;
+    seen.add(u);
+    (WARM_FIRST_KEYS.includes(k) || k.startsWith('free') ? first : rest).push(u);
   }
-  urls.forEach((u) => {
-    Image.prefetch(u).catch(() => {});
+  first.forEach((u) => Image.prefetch(u).catch(() => {}));
+  rest.forEach((u, i) => {
+    setTimeout(() => Image.prefetch(u).catch(() => {}), 3000 + i * 250);
   });
 }
 
@@ -521,13 +538,13 @@ function CourseCardView({
             lost and the nesting is gone. */}
         <Pressable onPress={onStubPress} accessible={false}>
         {stubUrl ? (
-          <ImageBackground
-            source={{ uri: stubUrl }}
+          <CardArt
+            uri={stubUrl}
             style={[styles.card, { borderColor: 'rgba(196,162,255,.65)' }]}
             imageStyle={[styles.cardImg, { opacity: 0.7 }]}
           >
             {stubInner}
-          </ImageBackground>
+          </CardArt>
         ) : (
           <View style={[styles.card, styles.cardNoImg, { borderColor: 'rgba(196,162,255,.65)' }]}>{stubInner}</View>
         )}
@@ -613,8 +630,8 @@ function CourseCardView({
             As a plain touch target it renders a <div>, the inner key keeps its
             own label, and the large tap area survives. */}
         <Pressable onPress={onOpenLab} accessible={false}>
-        <ImageBackground
-          source={labUrl ? { uri: labUrl } : undefined}
+        <CardArt
+          uri={labUrl}
           style={[styles.card, { borderColor: 'rgba(55,224,95,.6)' }]}
           imageStyle={styles.cardImg}
         >
@@ -631,7 +648,7 @@ function CourseCardView({
               <GlassButton label="OPEN LAB" tint="green" height={50} onPress={onOpenLab} />
             </View>
           </View>
-        </ImageBackground>
+        </CardArt>
         </Pressable>
       </View>
     );
@@ -844,8 +861,8 @@ function CourseCardView({
   );
 
   const cardBody = url ? (
-    <ImageBackground
-      source={{ uri: url }}
+    <CardArt
+      uri={url}
       style={[styles.card, { borderColor: accent }]}
       // Locked: no color wash — show the art but clearly grayed-out: image dimmed
       // 30% + a neutral gray overlay (below). Purple stays on the frame only
@@ -853,7 +870,7 @@ function CourseCardView({
       imageStyle={[styles.cardImg, locked && { opacity: 0.7 }]}
     >
       {inner}
-    </ImageBackground>
+    </CardArt>
   ) : (
     <View style={[styles.card, styles.cardNoImg, { borderColor: accent }, locked && { opacity: 0.55 }]}>
       {inner}
@@ -1028,7 +1045,11 @@ export function CourseSelectionScreen() {
       // Pinned head cards survive the custom deck: Lab (far left, owner request
       // 2026-07-26) + Tools + Glossary, in deck order.
       const fixed = cards.filter((c) => c.kind === 'lab' || c.kind === 'tools' || c.kind === 'glossary');
-      const topicCards: Card[] = homeGs.map((gs) => ({
+      // gs3081 "Audio Fundamentals" is the LAB-PROXY topic: it exists only so
+      // finishing every Audio Fundamentals lab can mark one achievement complete
+      // for the certificate core. It is not a study topic and must never be a
+      // clickable card (owner 2026-09-05) — the OPEN LAB card is its real face.
+      const topicCards: Card[] = homeGs.filter((gs) => gs !== LAB_PROXY_GS).map((gs) => ({
         kind: 'homeTopic',
         id: `home-${gs}`,
         gs,
