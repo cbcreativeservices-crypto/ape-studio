@@ -1346,7 +1346,9 @@ export function DashboardScreen() {
                   accessibilityLabel={isCustom ? `List terms in ${topic.name}` : `List all terms in ${topic.name}`}
                 >
                   <Text style={styles.topicEyebrow}>{dispTopicInactive ? 'CURRENT TOPIC · INACTIVE' : 'CURRENT TOPIC'}</Text>
-                  <Text style={[styles.topicName, dispTopicInactive && styles.topicNameDim]}>{dispTopic.name}</Text>
+                  <Text style={[styles.topicName, dispTopicInactive && styles.topicNameDim]} numberOfLines={2}>
+                    {dispTopic.name}
+                  </Text>
                   <Text style={styles.topicMeta}>
                     {dispIsCustom
                       ? `${starred.size} TERM${starred.size === 1 ? '' : 'S'}`
@@ -2164,6 +2166,13 @@ const styles = StyleSheet.create({
   topicName: {
     fontFamily: fonts.oswaldMedium,
     fontSize: 18,
+    // TWO LINES ARE ALWAYS RESERVED (owner 2026-09-05): a one-line title used
+    // to leave the second line unallocated, so turning the jog wheel between a
+    // short and a long topic name added and removed a line under the knob and
+    // the whole Dashboard jumped. Fixed line height × 2 as the minimum keeps
+    // the container the same height whether the title wraps or not.
+    lineHeight: 22,
+    minHeight: 44,
     letterSpacing: 0.4,
     color: colors.textPrimary,
     marginTop: 4,
