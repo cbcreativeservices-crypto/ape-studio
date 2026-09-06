@@ -68,6 +68,12 @@ const subscribe = (cb: () => void) => {
   };
 };
 
+/** One-off read without subscribing (initial values for a parent that must
+ *  NOT re-render at frame rate). */
+export function readTunerFrame(): TunerFrame {
+  return state.frame;
+}
+
 export function useTunerFrame(): TunerFrame {
   return useSyncExternalStore(subscribe, () => state.frame, () => state.frame);
 }

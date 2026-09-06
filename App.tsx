@@ -16,6 +16,7 @@ import { Spl3dGaugePreview } from './src/screens/tools/Spl3dGaugePreview';
 import { ToolPreview } from './src/screens/tools/ToolPreview';
 import { MicPrinciplesLabScreen } from './src/screens/lab/micspeaker/MicPrinciplesLabScreen';
 import { MultiMeterScreen } from './src/screens/tools/MultiMeterScreen';
+import { FrequencyCounterScreen } from './src/screens/tools/FrequencyCounterScreen';
 import { WaveformScreen } from './src/screens/tools/WaveformScreen';
 import { RtaScreen } from './src/screens/tools/RtaScreen';
 import { ToolsHubScreen } from './src/screens/tools/ToolsHubScreen';
@@ -251,6 +252,8 @@ export default function App() {
           }
       : window.location.hash === '#multimeterpreview'
         ? { name: 'MultiMeter', component: MultiMeterScreen as ComponentType }
+        : window.location.hash === '#hzcounterpreview'
+          ? { name: 'FrequencyCounter', component: FrequencyCounterScreen as ComponentType }
         : window.location.hash === '#waveformpreview'
           ? { name: 'WaveformLive', component: WaveformScreen as ComponentType }
           : window.location.hash === '#rtapreview'
