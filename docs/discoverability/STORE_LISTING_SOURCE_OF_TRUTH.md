@@ -8,7 +8,7 @@ Drafted from the owner's SEO research (2026-09-05), corrected against the live d
 
 | Field | Controlled by | Current value |
 |---|---|---|
-| Installed app name (home screen) | `app.json` → `expo.name` | **"Pro Audio"** — conflicts with the target name, see §3 |
+| Installed app name (home screen) | `app.json` → `expo.name` | **"Pro Audio"** — decided, see §3 |
 | Bundle id / package | `app.json` | `com.cbcreativeservices.apestudio` (both platforms) |
 | Version / build number | EAS, `appVersionSource: remote` | 1.0.0 · iOS build 14 · Android versionCode 10 |
 | App Store name, subtitle, keywords, description, promo text, category | **App Store Connect only** | not yet entered |
@@ -36,7 +36,7 @@ Measured 2026-09-05, not estimated.
 - *"Look Up 10,000+ Audio Terms"* understates the corpus by more than half. Use **26,000+**, which is both true and a far stronger claim.
 - *"Build Skills Across 26 Subjects"* is **wrong**. 26 is the subject count of the **retired v2 curriculum** (`src/data/course_topic_matrix_v2.json`), which three screens still import even though v3 is live. The live figure is **50 subjects across 20 fields**.
 
-## 3. Open decision: the app's display name
+## 3. The app's display name (decided)
 
 The brief requires the name to be exactly `Pro Audio Training Academy` (26 characters, inside both stores' 30-character limit). The installed app is currently named `Pro Audio`.
 

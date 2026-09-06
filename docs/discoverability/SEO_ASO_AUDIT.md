@@ -55,7 +55,7 @@ Every row says what was actually observed, in which file, and whether it was imp
 | P1 | Listing source of truth | Nothing entered in either console | store consoles | | `STORE_LISTING_SOURCE_OF_TRUTH.md` written, all lengths verified (name 26, subtitle 28, Play short 75, keywords 94 bytes) | ✅ doc |
 | P1 | **"10,000+ terms" understates** | Corpus is **26,847** | `glossary` table; matches the app's Explore readout | Weaker claim than the truth | Use 26,000+ | ✅ corrected in doc |
 | P1 | **"26 Subjects" is wrong** | Live v3 curriculum has **50 subjects across 20 fields**, 166 topics. 26 is the **retired v2** matrix, still imported by three screens | live query; `src/data/course_topic_matrix_v2.json`; `src/data/v3Curriculum.ts` | A false number in a store screenshot | Use 50 subjects | ✅ corrected in doc |
-| P1 | App display name | `expo.name` is `Pro Audio`; brief requires `Pro Audio Training Academy` | `app.json` | Changing it changes every home screen | Store name = full name; installed name is the **owner's decision** | ⬜ owner decision |
+| P1 | App display name | `expo.name` is `Pro Audio`; brief requires `Pro Audio Training Academy` | `app.json` | Changing it changes every home screen | Store name = full name; device name stays `Pro Audio` (abbreviated on purpose, never truncated) | ✅ decided 2026-09-06 |
 | P2 | Custom product pages | None | — | Up to 70, keyword-targetable, deep-linkable on iOS 18+ | Three-variant plan written; only after the default page is proven | ⬜ plan |
 
 ### Website boundary
