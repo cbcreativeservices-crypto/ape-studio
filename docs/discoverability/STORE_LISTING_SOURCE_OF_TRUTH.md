@@ -45,7 +45,7 @@ This is the owner's call, not a silent edit, because it changes what appears und
 - **Store listing name** should be `Pro Audio Training Academy` regardless. That is the searchable field and the strongest ranking signal.
 - **Installed name** (`expo.name`) is a separate trade-off. iOS truncates around 12 characters under the icon, so the full name would render as something like "Pro Audio Tr…". Keeping `Pro Audio` on the home screen while the store listing carries the full name is a normal, defensible split.
 
-Recommendation: set the store name to the full name, leave `expo.name` as `Pro Audio`, and revisit only if the owner wants the longer form on the device.
+**Decided (owner, 2026-09-06):** the store name is the full `Pro Audio Training Academy`; the installed name stays `Pro Audio` — abbreviated on purpose rather than truncated by the OS.
 
 ## 4. Apple App Store
 
