@@ -42,3 +42,6 @@ NEVER run `eas build` (any profile, any platform), `eas submit`, or any other bi
 
 
 **Built 2026-09-05 evening on the owner's explicit go:** iOS build 16 · Android versionCode 12, from commit 783a0a9. Every row above ships in these builds. Next build gates: `expo-store-review` (not installed), iOS `associatedDomains` (needs one interactive build once the AASA is live).
+
+## Rule for optional modules (2026-09-06)
+A package behind `optionalModule()` is only usable if it has a LITERAL `require` in the `LOADERS` table in `src/features/tools/capture/optionalModule.ts`. The old eval-only path hid packages from Metro so their JavaScript was never bundled, and the Harmonograph SAVE/SHARE/PRINT keys said "next app build" even on the build that carried them. Install → LOADERS line → checklist row, always together.
