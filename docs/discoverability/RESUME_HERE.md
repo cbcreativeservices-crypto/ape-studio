@@ -92,9 +92,9 @@ After the AASA file is live:
 
 Currently unclaimed on purpose. To claim it: give `CourseSelectionScreen` a `subjectSlug` param that expands and scrolls to the matching subject, then add `subjects` to `isClaimedPath`, to `app.json` intent filters, and to the AASA `paths` — all three together.
 
-### 3.4 Destination through a purchase
+### 3.4 Destination through a purchase — DONE 2026-09-06
 
-A deep link is preserved through sign-in but not through a completed membership purchase. Carry the pending path through the paywall.
+The paywall resumes a pending deep link after a successful purchase (`PaywallScreen.tsx`).
 
 ### 3.5 Performance — measure before changing anything
 
@@ -107,7 +107,7 @@ The audit's biggest item is the startup module graph: `RootNavigator.tsx` has 95
 
 Record a baseline first. Do not do both at once.
 
-Still open and cited in the audit: remote images load full-size objects with no CDN transform even though the pattern and a measured 4–5× win already exist at `tubeRefs.ts:153`; `vu_skin_spl.png` is 2.81 MB and resident on the longest-dwell screen; hub tiles animate while scrolled out of view.
+Still open and cited in the audit: remote images load full-size objects with no CDN transform even though the pattern and a measured 4–5× win already exist at `tubeRefs.ts:153`; `vu_skin_spl.png` is 2.81 MB and resident on the longest-dwell screen; hub tiles now animate only while on screen (done 2026-09-06).
 
 ### 3.6 Accessibility — what remains
 
