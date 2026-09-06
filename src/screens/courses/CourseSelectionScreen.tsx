@@ -71,6 +71,10 @@ type Card =
    *  a real audio-field TOPIC with its own course-card image. Membership-locked
    *  for non-members — shown but gated, never labeled "coming soon". */
   | { kind: 'comingTopic'; id: string; name: string }
+  /** SHOWCASE card (owner 2026-09-05): an ADVERTISEMENT for an area a member
+   *  could study — art + an area name ("Worship Audio", "DJ Production"), NOT a
+   *  topic or certificate name. Tap opens the curriculum browser. */
+  | { kind: 'showcase'; id: string; name: string }
   /** Front-end-only PURPLE program placeholder card (owner 2026-08-01) — a
    *  finalized program slot with no public course/content yet (art supplied
    *  later). Renders locked; tapping raises the membership prompt. */
@@ -145,6 +149,30 @@ let lastCenteredId: string | null = null;
  * shared course-card artwork.
  */
 const FIELD_TOPICS: readonly string[] = [];
+/** Showcase cards, carousel order (owner 2026-09-05): broad, tempting areas
+ *  first. Each name is a CARD_IMAGE key; a name without art is skipped. */
+const SHOWCASE_CARDS: readonly string[] = [
+  'Live Sound Engineering',
+  'Music Production',
+  'Recording Arts',
+  'Worship Audio',
+  'DJ Production',
+  'Theatrical Sound Design',
+  'Podcasting & Broadcast',
+  'Sound for Film & Games',
+  'Sound Reinforcement Systems',
+  'System Design & Maintenance',
+  'Corporate & Event AV',
+  'Architectural Acoustics',
+  'Commercial 70V Systems',
+  'Assisted Listening',
+  'Vehicle Audio',
+  'HiFi & Consumer Audio',
+  'Audio Electronics',
+  'Audio Technician',
+  'Road Crew & Touring',
+  'Career & Business',
+];
 
 /** Course-card art in the public `course-cards` bucket — STANDARDIZED WebP set
  *  (backend handoff 2026-07-16): filename = card_id with ':' -> '_' + '.webp',
@@ -199,6 +227,25 @@ const CARD_IMAGE: Record<string, string> = {
   'Road Crew': 'topic_road-crew.webp',
   'Live Sound': 'topic_live-sound.webp',
   'Worship Sound': 'topic_worship.webp',
+  // SHOWCASE cards (owner 2026-09-05) — study AREAS, deliberately not topic or
+  // certificate names, over the art already in the course-cards bucket.
+  'Worship Audio': 'topic_worship.webp',
+  'DJ Production': 'topic_dj.webp',
+  'Live Sound Engineering': 'topic_live-sound.webp',
+  'Theatrical Sound Design': 'topic_theatrical.webp',
+  'Music Production': 'course_music-production.webp',
+  'Recording Arts': 'course_recording-arts.webp',
+  'Podcasting & Broadcast': 'topic_podcast.webp',
+  'Sound for Film & Games': 'topic_film.webp',
+  'Sound Reinforcement Systems': 'course_sound-reinforcement-systems.webp',
+  'System Design & Maintenance': 'course_audio-system-design-and-maintenance.webp',
+  'Corporate & Event AV': 'topic_corporate.webp',
+  'Architectural Acoustics': 'topic_architectural.webp',
+  'Commercial 70V Systems': 'topic_commercial.webp',
+  'Assisted Listening': 'topic_assist.webp',
+  'HiFi & Consumer Audio': 'topic_hifi.webp',
+  'Road Crew & Touring': 'topic_road-crew.webp',
+  'Career & Business': 'course_career-and-business.webp',
 };
 /** Scroll-dot color by card TYPE (Booth 2026-07-15): free = green, course =
  *  purple, topic = amber — so the dot row reads as a color-coded map of the
@@ -234,6 +281,7 @@ function rawCardTitle(item: Card): string | null {
     case 'freeTopic':
     case 'public':
     case 'comingTopic':
+    case 'showcase':
     case 'programStub':
     case 'course':
       return item.name;
@@ -256,7 +304,8 @@ function dotColorFor(card: Card): string {
     case 'freeTopic':
       return colors.green; // free / included
     case 'comingTopic':
-      return colors.amber; // standalone topic
+    case 'showcase':
+      return colors.amber; // standalone topic / study-area showcase
     case 'public':
       return card.topicCount > 1 ? colors.purple : colors.amber; // course vs single topic
     case 'programStub':
@@ -434,6 +483,7 @@ function CourseCardView({
   onLockedPress,
   onOpenMore,
   onOpenPrograms,
+  onOpenShowcase,
   onOpenTopic,
   onOpenBundle,
   academy,
@@ -454,6 +504,8 @@ function CourseCardView({
   /** The "+ N other programs" card → open the Programs page (user request
    *  2026-07-22). */
   onOpenPrograms: () => void;
+  /** Showcase card key → the curriculum browser. */
+  onOpenShowcase: () => void;
   /** A user-placed Home topic card → open study for that topic gs (2026-07-22). */
   onOpenTopic: (gs: number) => void;
   /** A user-placed Home bundle card → load its topics + study (2026-07-22). */
@@ -660,6 +712,37 @@ function CourseCardView({
             </View>
           </View>
         </CardArt>
+        </Pressable>
+      </View>
+    );
+  }
+  // SHOWCASE (owner 2026-09-05): an advertisement for an area of study, in
+  // full colour for everyone — it tempts, it does not gate. The key opens the
+  // curriculum browser where the real topics live.
+  if (item.kind === 'showcase') {
+    const showUrl = cardImageUrl(item.name);
+    return (
+      <View style={styles.cardOuter}>
+        <View style={styles.cardAbove}>
+          <Text style={[styles.cardAboveText, { color: '#ffc64d' }]}>STUDY AREA</Text>
+          <View style={[styles.cardAboveRule, { backgroundColor: '#ffc64d' }]} />
+        </View>
+        <Pressable onPress={onOpenShowcase} accessible={false}>
+          <CardArt uri={showUrl} style={[styles.card, { borderColor: 'rgba(255,198,77,.55)' }]} imageStyle={styles.cardImg}>
+            <LinearGradient
+              colors={['rgba(8,8,10,0.55)', 'rgba(8,8,10,0)', 'rgba(8,8,10,0.45)', 'rgba(8,8,10,0.95)']}
+              locations={[0, 0.3, 0.58, 1]}
+              style={StyleSheet.absoluteFill}
+            />
+            <View>
+              <Text style={styles.cardTitle}>{item.name}</Text>
+            </View>
+            <View style={{ alignItems: 'center' }}>
+              <View style={{ width: CARD_BTN_W }}>
+                <GlassButton label="EXPLORE ›" tint="gold" height={50} fontSize={13} onPress={onOpenShowcase} />
+              </View>
+            </View>
+          </CardArt>
         </Pressable>
       </View>
     );
@@ -1007,15 +1090,20 @@ export function CourseSelectionScreen() {
         // 2 free-topic taster cards, right after Glossary (Booth 2026-07-11).
         // Names come straight from the v3 codified names now; the screen-side
         // re-title the v1 pair needed is gone.
-        ...freeTopicsFrom(catalog).map((ft) => ({
+        // Only Pro Audio Safety from the prerequisites (owner 2026-09-05); the
+        // DAW taster stays enrolled and studyable, just not on the carousel.
+        ...freeTopicsFrom(catalog).filter((ft) => ft.gs === 3060).map((ft) => ({
           kind: 'freeTopic' as const,
           id: `free-${ft.gs}`,
           gs: ft.gs,
           name: ft.name,
           courseOrder: ft.courseOrder,
         })),
-        // A–Z topic group.
+        // A–Z topic group (empty since 2026-09-03).
         ...topicCards,
+        // SHOWCASE run to the right (owner 2026-09-05): advertisements for
+        // areas of study, over the art already in the bucket.
+        ...SHOWCASE_CARDS.filter((name) => !!CARD_IMAGE[name]).map((name, i) => ({ kind: 'showcase' as const, id: `show-${i}`, name })),
       ]);
     };
     // COMMERCIAL-FIRST (institutional retired — owner 2026-08-06): the MENU
@@ -1461,6 +1549,7 @@ export function CourseSelectionScreen() {
               onLockedPress={() => setUpgradeOpen(true)}
               onOpenMore={openMore}
               onOpenPrograms={openPrograms}
+              onOpenShowcase={() => (navigation as any).navigate('Awards', { category: 'curriculum' })}
               onOpenTopic={openTopic}
               onOpenBundle={openBundle}
               academy={academy}
