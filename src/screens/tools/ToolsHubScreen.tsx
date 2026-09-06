@@ -832,16 +832,20 @@ export function ToolsHubScreen({ navigation }: Props) {
   // measurement: tiles are 2-across at TILE_L.totalH + the grid gap, offset by
   // the panel's and grid's measured tops. State changes ONLY when the set of
   // visible tiles changes, so scrolling within a page costs no re-render.
-  const viewRef = useRef({ y: 0, h: 0, panelY: 0, gridY: 0 });
+  const viewRef = useRef({ y: 0, h: 0, panelY: 0, gridY: 0, gridW: 0 });
   const visMaskRef = useRef('');
   const [visMask, setVisMask] = useState('');
   const recomputeVisible = useCallback(() => {
     const v = viewRef.current;
-    const rowH = TILE_L.totalH + 12; // grid gap
+    const gap = 12; // styles.grid gap
+    const rowH = TILE_L.totalH + gap;
     const margin = TILE_L.totalH * 0.5;
+    // Columns from the MEASURED grid width (one column on a phone, two on a
+    // wide pane) — never assume the row count.
+    const cols = Math.max(1, Math.floor((v.gridW + gap) / (TILE_W + gap)));
     const mask = TILE_ORDER.map((_, i) => {
-      if (v.h === 0) return '1'; // unmeasured: everything animates (old behaviour)
-      const top = v.panelY + v.gridY + Math.floor(i / 2) * rowH;
+      if (v.h === 0 || v.gridW === 0) return '1'; // unmeasured: everything animates (old behaviour)
+      const top = v.panelY + v.gridY + Math.floor(i / cols) * rowH;
       return top < v.y + v.h + margin && top + TILE_L.totalH > v.y - margin ? '1' : '0';
     }).join('');
     if (mask !== visMaskRef.current) {
@@ -967,6 +971,7 @@ export function ToolsHubScreen({ navigation }: Props) {
                 style={styles.grid}
                 onLayout={(e) => {
                   viewRef.current.gridY = e.nativeEvent.layout.y;
+                  viewRef.current.gridW = e.nativeEvent.layout.width;
                   recomputeVisible();
                 }}
               >
