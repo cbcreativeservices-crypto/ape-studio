@@ -81,7 +81,8 @@ import {
   type TranspositionKey,
 } from '../../features/tools/tuner/centerLock';
 
-const PIANO_WORKFLOW_HINT = 'Set the temperament F3–F4 first, then tune outward in octaves · stretch is a typical average, the final beat rates are yours';
+const PIANO_WORKFLOW_HINT = 'Set F3–F4 first, then tune outward by octaves · stretch is an average';
+const PIANO_UNISON_HINT = 'A waver in the hold readout hints at unison beats · the final beat rates are yours';
 
 const A4_CHOICES = [415, 432, 435, 438, 440, 441, 442, 443, 444];
 const CONTROLS_FADE_MS = 2000;
@@ -240,9 +241,11 @@ export function CenterLockTuner() {
     </>
   );
 
+  const padTop = Math.max(insets.top, landscape ? 8 : 24) + 6;
+  const padBottom = Math.max(insets.bottom, 10) + 6;
   return (
     <Pressable
-      style={[styles.root, { paddingTop: Math.max(insets.top, landscape ? 8 : 24) + 6, paddingBottom: Math.max(insets.bottom, 10) + 6, paddingLeft: insets.left, paddingRight: insets.right }]}
+      style={[styles.root, { paddingTop: padTop, paddingBottom: padBottom, paddingLeft: insets.left, paddingRight: insets.right }]}
       onPress={touch}
       accessible={false}
     >
@@ -277,6 +280,8 @@ export function CenterLockTuner() {
         landscape={landscape}
         width={width}
         height={height}
+        padTop={padTop}
+        padBottom={padBottom}
         controlsShown={controlsShown}
         onPickString={pickString}
       />
@@ -358,6 +363,9 @@ type LiveReadoutProps = {
   landscape: boolean;
   width: number;
   height: number;
+  /** Root paddings (safe area) so the note can be sized from the space left. */
+  padTop: number;
+  padBottom: number;
   controlsShown: boolean;
   onPickString: (i: number, current: boolean) => void;
 };
@@ -381,6 +389,8 @@ const LiveReadout = memo(function LiveReadout({
   landscape,
   width,
   height,
+  padTop,
+  padBottom,
   controlsShown,
   onPickString,
 }: LiveReadoutProps) {
@@ -393,6 +403,10 @@ const LiveReadout = memo(function LiveReadout({
   // octave shows as such. Lives here because only this subtree needs it.
   const [lockedMidi, setLockedMidi] = useState<number | null>(null);
   const [partial, setPartial] = useState(1);
+  // Portrait: the measured height of the main region sizes the note, so the
+  // piano stack and a two-line hint never push the readout under the chips
+  // (design review 2026-09-06: SE 375×667 and landscape piano overflowed).
+  const [mainH, setMainH] = useState(0);
   const targetRef = useRef<TargetState>({ target: 0, candidate: null, candidateSince: null });
   const lockRef = useRef<LockState>(INITIAL_LOCK);
   const holdRef = useRef<HoldState>(INITIAL_HOLD);
@@ -527,7 +541,9 @@ const LiveReadout = memo(function LiveReadout({
   const unstableMs = Date.now() - lastAcceptedAt.current;
   const lowHint = piano ? null : lowStringHint(target.hz, frame.accepted ? 0 : unstableMs);
   const hint = piano
-    ? (lockedMidi != null ? pianoRangeHint(target.hz, partial) : null) ?? PIANO_WORKFLOW_HINT
+    ? lockedMidi != null
+      ? pianoRangeHint(target.hz, partial) ?? PIANO_UNISON_HINT
+      : PIANO_WORKFLOW_HINT
     : lowHint ?? (chromatic ? null : courseHint(target, targets));
   const noteName = target.note.replace(/\d/g, '');
   const octave = target.note.replace(/\D/g, '');
@@ -543,8 +559,21 @@ const LiveReadout = memo(function LiveReadout({
   // strip and input bar stack in the right column (visual pass 2026-09-06 —
   // a single centred row overflowed and clipped the note off the left edge).
   const NOTE_COL_W = 280;
-  const bigSize = Math.round(landscape ? height * 0.5 : Math.min(width * 0.48, height * 0.26));
-  const meterW = landscape ? Math.min(Math.max(240, width - NOTE_COL_W - 76), 720) : Math.min(width - 32, 720);
+  // 215 = identity 24 + direction 34 + main gap 18 + meter block 139.
+  const FIXED_ABOVE_NOTE = 215;
+  // Space left for the note block in portrait: measured when the platform
+  // reports it, otherwise the arithmetic of the fixed chrome (bar 78, foot
+  // 32, the strip/stepper/hold box, INPUT row and hint) — react-native-web
+  // did not deliver onLayout for this view in the preview.
+  const stripH = piano ? 92 : chromatic ? 68 : 74;
+  const inputH = 23 + (hint ? 44 : 0);
+  const estimatedMainH = height - padTop - padBottom - 78 - 32 - stripH - inputH;
+  const mainAvail = mainH > 0 ? mainH : estimatedMainH;
+  const bigSize = Math.round(
+    landscape ? height * 0.5 : Math.max(96, Math.min(180, Math.min(width * 0.48, (mainAvail - FIXED_ABOVE_NOTE) / 1.05))),
+  );
+  // One gutter: meter, keys, hold box and INPUT share the same width.
+  const meterW = landscape ? Math.min(Math.max(240, width - NOTE_COL_W - 76), 720) : Math.min(width - 24, 720);
   const pointerX = (view.shownCents / METER_RANGE) * (meterW / 2);
   const zoneW = (IN_TUNE_CENTS / METER_RANGE) * (meterW / 2);
   const closeW = (CLOSE_CENTS / METER_RANGE) * (meterW / 2);
@@ -555,12 +584,18 @@ const LiveReadout = memo(function LiveReadout({
   const keyW = groups.length ? Math.min(60, Math.floor((stripW - (groups.length - 1) * 6) / groups.length)) : 0;
 
   const holdBox = (
-    <View style={[styles.holdWrap, { width: stripW }, piano && styles.holdWrapPiano]} accessibilityLiveRegion="polite">
+    <View style={[styles.holdWrap, { width: landscape ? meterW : stripW }, piano && styles.holdWrapPiano]} accessibilityLiveRegion="polite">
       {view.hold ? (
-        <>
-          <Text style={[styles.holdMain, { color: magnitudeColor(view.hold.avg) }]}>{`HOLD ${(view.hold.ms / 1000).toFixed(1)} s · AVG ${fmtCents(view.hold.avg)}`}</Text>
-          <Text style={styles.holdSub}>{`${steadinessText(view.hold.spread)} · SPREAD ±${view.hold.spread.toFixed(1)}¢${piano ? ' · A WAVER HINTS AT UNISON BEATS' : ''}`}</Text>
-        </>
+        piano ? (
+          <Text style={[styles.holdLine, { color: magnitudeColor(view.hold.avg) }]} numberOfLines={1}>
+            {`HOLD ${(view.hold.ms / 1000).toFixed(1)} s · AVG ${fmtCents(view.hold.avg)} · ${steadinessText(view.hold.spread)} · SPREAD ±${view.hold.spread.toFixed(0)}¢`}
+          </Text>
+        ) : (
+          <>
+            <Text style={[styles.holdMain, { color: magnitudeColor(view.hold.avg) }]}>{`HOLD ${(view.hold.ms / 1000).toFixed(1)} s · AVG ${fmtCents(view.hold.avg)}`}</Text>
+            <Text style={styles.holdSub}>{`${steadinessText(view.hold.spread)} · SPREAD ±${view.hold.spread.toFixed(1)}¢`}</Text>
+          </>
+        )
       ) : (
         <Text style={styles.holdIdle}>{piano ? 'HOLD A KEY FOR THE STEADINESS READOUT' : 'SUSTAIN A NOTE FOR THE HOLD READOUT'}</Text>
       )}
@@ -616,15 +651,15 @@ const LiveReadout = memo(function LiveReadout({
     </View>
   );
   const input = (
-    <View style={[styles.confWrap, { opacity: controlsShown ? 1 : 0.35 }]}>
+    <View style={[styles.confWrap, landscape && styles.confWrapLandscape, { opacity: controlsShown ? 1 : 0.35 }]}>
       <View style={styles.confRow}>
         <Text style={styles.footLabel}>INPUT</Text>
         <View style={styles.confTrack}>
           <View style={[styles.confFill, { width: `${confidencePct}%`, backgroundColor: confidencePct > 60 ? '#37e05f' : confidencePct > 30 ? colors.amber : '#f0603a' }]} />
         </View>
-        <Text style={styles.footLabel}>{`${confidencePct}%`}</Text>
+        <Text style={styles.confPct}>{`${confidencePct}%`}</Text>
       </View>
-      {hint ? <Text style={styles.hint} numberOfLines={2}>{hint}</Text> : null}
+      {hint ? <Text style={styles.hint} numberOfLines={landscape ? 1 : 2}>{hint}</Text> : null}
     </View>
   );
 
@@ -667,13 +702,15 @@ const LiveReadout = memo(function LiveReadout({
           </>
         ) : null}
       </View>
-      <View style={[styles.scaleRow, { width: meterW }]}>
-        <Text style={styles.scaleText}>−50 FLAT</Text>
-        <Text style={styles.scaleText}>0</Text>
-        <Text style={styles.scaleText}>SHARP +50</Text>
-      </View>
+      {strobe && landscape ? null : (
+        <View style={[styles.scaleRow, { width: meterW }]}>
+          <Text style={styles.scaleText}>−50 FLAT</Text>
+          <Text style={styles.scaleText}>0</Text>
+          <Text style={styles.scaleText}>SHARP +50</Text>
+        </View>
+      )}
       {strobe ? <StrobeBand cents={octaveOff ? null : cents} width={meterW} tint={tint} /> : null}
-      <Text style={[styles.cents, { color: tint }]}>{octaveOff ? (cents! > 0 ? '+1 OCT' : '−1 OCT') : fmtCents(cents)}</Text>
+      <Text style={[styles.cents, landscape && styles.centsLandscape, { color: tint }]}>{octaveOff ? (cents! > 0 ? '+1 OCT' : '−1 OCT') : fmtCents(cents)}</Text>
     </View>
   );
 
@@ -692,7 +729,7 @@ const LiveReadout = memo(function LiveReadout({
 
   return (
     <>
-      <View style={styles.main}>
+      <View style={styles.main} onLayout={(e) => setMainH(Math.round(e.nativeEvent.layout.height))}>
         {noteBlock}
         {meter}
       </View>
@@ -810,16 +847,18 @@ const styles = StyleSheet.create({
   closeKey: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center', backgroundColor: '#111214', borderWidth: 1, borderColor: '#2a2b31' },
   closeX: { fontSize: 17, color: '#e8ecf2', fontWeight: '600' },
 
-  main: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 18 },
-  mainLandscape: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 24, paddingHorizontal: 16 },
+  // minHeight 0: on web a flex:1 box will not shrink below its content, which
+  // made the measured height feed the note size in a loop and overflow the SE.
+  main: { flex: 1, minHeight: 0, justifyContent: 'center', alignItems: 'center', gap: 18 },
+  mainLandscape: { flex: 1, minHeight: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 24, paddingHorizontal: 16 },
   rightCol: { alignItems: 'center', justifyContent: 'center', gap: 2 },
   noteBlock: { alignItems: 'center', minWidth: 200 },
   identityRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   identity: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 2.2 },
-  noteRow: { flexDirection: 'row', alignItems: 'flex-end' },
+  noteRow: { flexDirection: 'row', alignItems: 'flex-end', marginTop: -8 },
   note: { fontFamily: fonts.oswaldBold, letterSpacing: -2 },
   octave: { fontFamily: fonts.oswaldMedium, marginLeft: 6 },
-  direction: { fontFamily: fonts.oswaldSemiBold, fontSize: 22, letterSpacing: 2.4, marginTop: 2, textAlign: 'center' },
+  direction: { fontFamily: fonts.oswaldSemiBold, fontSize: 22, letterSpacing: 2.4, marginTop: 4, textAlign: 'center' },
   directionLandscape: { fontSize: 19, letterSpacing: 1.8 },
 
   meterBlock: { alignItems: 'center', gap: 6 },
@@ -836,49 +875,53 @@ const styles = StyleSheet.create({
   pointer: { position: 'absolute', top: 6, width: 6, height: 44, borderRadius: 3 },
   scaleRow: { flexDirection: 'row', justifyContent: 'space-between' },
   scaleText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.4, color: '#6b6f7a' },
-  cents: { fontFamily: fonts.oswaldSemiBold, fontSize: 40, letterSpacing: 1, marginTop: 4 },
+  cents: { fontFamily: fonts.oswaldSemiBold, fontSize: 46, lineHeight: 52, letterSpacing: 1, marginTop: 4 },
+  centsLandscape: { fontSize: 40, lineHeight: 46 },
   strobe: { height: 22, overflow: 'hidden', borderRadius: 4, backgroundColor: '#101116', marginTop: 6 },
   stripe: { position: 'absolute', top: 0, bottom: 0, width: STRIPE_PERIOD / 2, opacity: 0.85 },
 
-  strip: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: 6, alignSelf: 'center', paddingVertical: 8 },
-  stringKey: { paddingVertical: 8, paddingHorizontal: 3, borderRadius: 10, borderWidth: 1.5, borderColor: '#2a2b31', backgroundColor: '#101116', alignItems: 'center', minHeight: 52, justifyContent: 'center' },
+  strip: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: 6, alignSelf: 'center', paddingTop: 6, paddingBottom: 12 },
+  stringKey: { height: 56, paddingHorizontal: 3, borderRadius: 10, borderWidth: 1.5, borderColor: '#2a2b31', backgroundColor: '#101116', alignItems: 'center', justifyContent: 'center' },
   stringKeyOn: { backgroundColor: '#141a16' },
-  stringNote: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, color: colors.textSecondary },
-  stringNotePair: { fontSize: 13, letterSpacing: 0.2 },
-  stringLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.2, color: '#6b6f7a', marginTop: 1 },
+  stringNote: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, lineHeight: 24, color: colors.textSecondary },
+  stringNotePair: { fontSize: 14, letterSpacing: 0.2 },
+  stringLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, lineHeight: 13, letterSpacing: 1.2, color: '#6b6f7a', marginTop: 1 },
   modeTag: { paddingHorizontal: 7, paddingVertical: 3, borderRadius: 6, borderWidth: 1, borderColor: '#2a2b31' },
   modeText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.4, color: '#8a8b93' },
-  holdWrap: { alignSelf: 'center', alignItems: 'center', justifyContent: 'center', minHeight: 68, gap: 4, paddingVertical: 8, borderRadius: 12, borderWidth: 1, borderColor: '#1f2026', backgroundColor: '#0c0d11' },
-  holdMain: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, letterSpacing: 1.6 },
-  holdSub: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: '#8a8b93' },
-  holdIdle: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: '#6b6f7a' },
-  holdWrapPiano: { minHeight: 52, paddingVertical: 5, width: '100%' },
-  pianoBlock: { alignSelf: 'center', gap: 6, paddingVertical: 4 },
+  holdWrap: { alignSelf: 'center', alignItems: 'center', justifyContent: 'center', minHeight: 68, gap: 4, paddingVertical: 8, paddingHorizontal: 10, borderRadius: 12, borderWidth: 1, borderColor: '#1f2026', backgroundColor: '#0c0d11' },
+  holdMain: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, letterSpacing: 1.6, textAlign: 'center' },
+  holdSub: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.0, color: '#8a8b93', textAlign: 'center' },
+  holdIdle: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: '#6b6f7a', textAlign: 'center' },
+  holdLine: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.0, textAlign: 'center' },
+  holdWrapPiano: { minHeight: 0, paddingVertical: 8, width: '100%' },
+  pianoBlock: { alignSelf: 'center', gap: 6, paddingTop: 2, paddingBottom: 4 },
   keyRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  keyStep: { width: 48, height: 52, borderRadius: 10, borderWidth: 1.5, borderColor: '#2a2b31', backgroundColor: '#101116', alignItems: 'center', justifyContent: 'center' },
+  keyStep: { width: 48, height: 48, borderRadius: 10, borderWidth: 1.5, borderColor: '#2a2b31', backgroundColor: '#101116', alignItems: 'center', justifyContent: 'center' },
   keyStepText: { fontSize: 16, color: colors.textSecondary },
-  keyLock: { flex: 1, minHeight: 52, borderRadius: 10, borderWidth: 1.5, borderColor: '#2a2b31', backgroundColor: '#101116', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8, gap: 2 },
+  keyLock: { flex: 1, minHeight: 48, borderRadius: 10, borderWidth: 1.5, borderColor: '#2a2b31', backgroundColor: '#101116', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8, gap: 1 },
   keyLockOn: { borderColor: colors.amber, backgroundColor: '#1d1708' },
   keyLockMain: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1.2, color: colors.textPrimary },
-  keyLockSub: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.3, color: '#6b6f7a' },
+  keyLockSub: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.3, color: '#6b6f7a' },
 
-  foot: { paddingHorizontal: 16, gap: 6, alignItems: 'center' },
-  confWrap: { alignSelf: 'stretch', paddingHorizontal: 16, gap: 6, alignItems: 'center', paddingBottom: 6 },
-  confRow: { flexDirection: 'row', alignItems: 'center', gap: 8, width: '100%', maxWidth: 520 },
+  foot: { paddingHorizontal: 16, paddingTop: 4, gap: 6, alignItems: 'center' },
+  confWrap: { alignSelf: 'stretch', paddingHorizontal: 12, gap: 8, alignItems: 'center', paddingBottom: 8 },
+  confWrapLandscape: { paddingHorizontal: 0 },
+  confRow: { flexDirection: 'row', alignItems: 'center', gap: 8, width: '100%', maxWidth: 720 },
   confTrack: { flex: 1, height: 6, borderRadius: 3, backgroundColor: '#17181d', overflow: 'hidden' },
   confFill: { height: '100%', borderRadius: 3 },
   footLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.4, color: '#6b6f7a', minWidth: 36 },
+  confPct: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: '#8a8b93', minWidth: 36, textAlign: 'right' },
   hint: { fontFamily: fonts.barlowMedium, fontSize: 13, color: colors.amber, textAlign: 'center' },
-  honesty: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 0.8, color: '#6b6f7a', textAlign: 'center', lineHeight: 14 },
+  honesty: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 0.4, color: '#6b6f7a', textAlign: 'center', lineHeight: 14 },
 
   pickerScrim: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 90, backgroundColor: 'rgba(0,0,0,0.72)', alignItems: 'center', justifyContent: 'center', padding: 16 },
   pickerPanel: { width: '100%', maxWidth: 560, maxHeight: '88%', borderRadius: 16, borderWidth: 1, borderColor: '#2a2b31', backgroundColor: '#0e0f13', overflow: 'hidden' },
-  pickerHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#1f2026' },
+  pickerHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#1f2026' },
   pickerTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 2.4, color: colors.amber },
-  pickerClose: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center', backgroundColor: '#15161b' },
+  pickerClose: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center', backgroundColor: '#15161b' },
   pickerScroll: { flexGrow: 0 },
-  pickerContent: { paddingHorizontal: 12, paddingVertical: 10, gap: 14 },
-  pickerSection: { gap: 6 },
+  pickerContent: { paddingHorizontal: 12, paddingVertical: 12, gap: 20 },
+  pickerSection: { gap: 8 },
   pickerFamily: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 2, color: '#6b6f7a', paddingHorizontal: 4 },
   recentRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, paddingHorizontal: 4 },
   pickerRow: { paddingVertical: 9, paddingHorizontal: 12, borderRadius: 10, borderWidth: 1, borderColor: '#1f2026', backgroundColor: '#121318', minHeight: 48, justifyContent: 'center' },
