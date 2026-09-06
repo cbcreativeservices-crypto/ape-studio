@@ -4,18 +4,33 @@ import {
   buildTargets,
   centsBetween,
   CONFIRM_MS,
+  courseHint,
+  courses,
   dampCents,
   directionText,
+  FAMILY_ORDER,
+  fifthsHz,
   fmtCents,
+  HOLD_MIN_MS,
+  holdSummary,
   IN_TUNE_CENTS,
+  INITIAL_HOLD,
   INITIAL_LOCK,
+  INSTRUMENT_KEYS,
+  INSTRUMENTS,
+  instrumentsByFamily,
   lowStringHint,
   magnitudeColor,
   nearestTarget,
   noteHz,
   RETARGET_MS,
+  steadinessText,
+  stepChromatic,
+  stepHold,
   stepLock,
   stepTarget,
+  TRANSPOSITIONS,
+  TUNINGS,
 } from '../src/features/tools/tuner/centerLock.ts';
 
 const near = (a: number, b: number, tol = 0.01) => assert.ok(Math.abs(a - b) <= tol, `${a} ≠ ${b}`);
@@ -127,4 +142,101 @@ test('low-string coaching appears only for low targets after sustained instabili
   assert.equal(lowStringHint(41.2, 500), null);
   assert.ok(lowStringHint(41.2, 2000));
   assert.equal(lowStringHint(110, 5000), null);
+});
+
+test('every preset is well-formed and every family is represented', () => {
+  for (const k of INSTRUMENT_KEYS) {
+    const inst = INSTRUMENTS[k];
+    assert.equal(inst.labels.length, inst.strings.length, `${k} labels`);
+    if (inst.partners) assert.equal(inst.partners.length, inst.strings.length, `${k} partners`);
+    for (const t of TUNINGS[k]) assert.equal(t.semitoneOffsets.length, inst.strings.length, `${k}/${t.key} offsets`);
+    if (!inst.chromatic) {
+      assert.ok(TUNINGS[k].length >= 1, `${k} has a tuning`);
+      const targets = buildTargets(k, 'standard', 440);
+      assert.ok(targets.length >= inst.strings.length);
+      for (const t of targets) assert.ok(t.hz > 25 && t.hz < 1400, `${k} ${t.note} in the mic range`);
+    }
+  }
+  const grouped = instrumentsByFamily();
+  assert.deepEqual(grouped.map((g) => g.family), FAMILY_ORDER);
+  for (const g of grouped) assert.ok(g.keys.length >= 1, `${g.family} has presets`);
+  assert.equal(grouped.reduce((n, g) => n + g.keys.length, 0), INSTRUMENT_KEYS.length);
+});
+
+test('the world presets carry the sounding pitches from the brief', () => {
+  const notes = (k: Parameters<typeof buildTargets>[0]) => buildTargets(k, 'standard', 440).map((t) => t.note);
+  assert.deepEqual(notes('pipa'), ['A2', 'D3', 'E3', 'A3']);
+  assert.deepEqual(notes('erhu'), ['D4', 'A4']);
+  assert.deepEqual(notes('oudArabic'), ['C2', 'F2', 'A2', 'D3', 'G3', 'C4']);
+  assert.deepEqual(notes('oudTurkish'), ['C#2', 'F#2', 'B2', 'E3', 'A3', 'D4']);
+  assert.deepEqual(notes('ukuleleHighG'), ['G4', 'C4', 'E4', 'A4']);
+  assert.deepEqual(notes('viola'), ['C3', 'G3', 'D4', 'A4']);
+  assert.deepEqual(notes('cello'), ['C2', 'G2', 'D3', 'A3']);
+  assert.deepEqual(notes('banjo5'), ['D3', 'G3', 'B3', 'D4', 'G4']);
+  assert.deepEqual(buildTargets('dulcimer', 'daa', 440).map((t) => t.note), ['D3', 'A3', 'A3']);
+});
+
+test('double courses with an octave partner give two targets per course', () => {
+  const g12 = buildTargets('guitar12', 'standard', 440);
+  assert.equal(g12.length, 10, 'four octave pairs + two unison courses');
+  const byCourse = courses(g12);
+  assert.equal(byCourse.length, 6);
+  assert.deepEqual(byCourse[0].map((t) => t.note), ['E2', 'E3']);
+  assert.equal(byCourse[0][1].partner, true);
+  assert.deepEqual(byCourse[5].map((t) => t.note), ['E4']);
+  // Playing the octave string of the low course targets that string, not OCTAVE HIGH.
+  const near = nearestTarget(noteHz('E3') * Math.pow(2, 3 / 1200), g12);
+  assert.equal(g12[near.i].note, 'E3');
+  assert.equal(g12[near.i].course, 0);
+  assert.ok(courseHint(g12[0], g12)?.includes('E3'));
+  assert.equal(courseHint(g12[8], g12), null, 'unison course needs no octave coaching');
+  // Tuning shifts the partner with its course.
+  const eb = buildTargets('guitar12', 'eb', 440);
+  assert.deepEqual(courses(eb)[0].map((t) => t.note), ['D#2', 'D#3']);
+});
+
+test('perfect fifths reach viola and cello through octaves, and stay pure', () => {
+  near(fifthsHz('A4'), 440);
+  near(fifthsHz('D4'), 440 / 1.5);
+  near(fifthsHz('A3'), 220);
+  near(fifthsHz('C2'), 220 / Math.pow(1.5, 3), 0.001);
+  const cello = buildTargets('cello', 'standard', 440);
+  near(cello[3].hz, 220);
+  near(cello[0].hz, 65.19, 0.01);
+  assert.ok(Math.abs(centsBetween(cello[0].hz, noteHz('C2'))) > 5, 'pure C2 differs from ET by several cents');
+  const et = buildTargets('cello', 'standard', 440, 0, 'equal');
+  near(et[0].hz, noteHz('C2'));
+});
+
+test('chromatic mode holds the note across the half-way point and writes transposed pitch', () => {
+  const a = stepChromatic(null, 440 * Math.pow(2, 45 / 1200), 440);
+  assert.equal(a.target.note, 'A4');
+  const b = stepChromatic(a.midi, 440 * Math.pow(2, 55 / 1200), 440);
+  assert.equal(b.target.note, 'A4', '55 ¢ sharp still reads as A4 once held');
+  const c = stepChromatic(a.midi, 440 * Math.pow(2, 70 / 1200), 440);
+  assert.equal(c.target.note, 'A#4', 'beyond 60 ¢ it moves on');
+  const bb = TRANSPOSITIONS.find((t) => t.key === 'Bb')!;
+  const t = stepChromatic(null, 440, 440, bb.semis);
+  assert.equal(t.target.note, 'B4', 'concert A reads as written B for a B♭ instrument');
+  near(t.target.hz, 440, 0.001, );
+  assert.equal(t.target.label, 'SOUNDS A4');
+  const eb = TRANSPOSITIONS.find((t) => t.key === 'Eb')!;
+  assert.equal(stepChromatic(null, noteHz('C4'), 440, eb.semis).target.note, 'A4');
+  const f = TRANSPOSITIONS.find((t) => t.key === 'F')!;
+  assert.equal(stepChromatic(null, noteHz('C4'), 440, f.semis).target.note, 'G4');
+});
+
+test('hold readout needs a sustained note and reports mean and spread', () => {
+  let h = INITIAL_HOLD;
+  for (let i = 0; i < 5; i++) h = stepHold(h, 'A4', 3 + (i % 2), i * 50);
+  assert.equal(holdSummary(h, 250), null, 'too few samples / too short');
+  for (let i = 5; i < 30; i++) h = stepHold(h, 'A4', 3 + (i % 2), i * 50);
+  const s = holdSummary(h, HOLD_MIN_MS + 1000)!;
+  assert.ok(s);
+  near(s.avg, 3.5, 0.05);
+  assert.ok(s.spread < 1);
+  assert.equal(steadinessText(s.spread), 'ROCK STEADY');
+  assert.equal(stepHold(h, 'B4', 0, 9999).n, 1, 'a new note restarts');
+  assert.equal(stepHold(h, null, null, 9999).note, null, 'silence resets');
+  assert.equal(steadinessText(12), 'UNSTEADY');
 });

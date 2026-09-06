@@ -13,10 +13,15 @@
  *  • fast acquisition, heavier damping near centre;
  *  • IN TUNE only after 350 ms stable inside ±2 ¢, one haptic, no repeat until
  *    the pitch leaves the zone and returns;
- *  • string strip with per-string status; tap a string to lock it (MANUAL),
+ *  • string strip with per-course status; tap a course to lock it (MANUAL),
  *    tap again for AUTO; AUTO re-targets only after a stable candidate;
- *  • presets one tap deep: instrument (guitar 6/7, bass 4/5/6, violin in
- *    perfect fifths or equal temperament), tuning, capo, A4;
+ *  • presets one tap deep: an instrument picker grouped by family with the
+ *    three most recent on top (25 presets, owner brief 2026-09-06), tuning,
+ *    capo, A4, perfect fifths / equal for the bowed family;
+ *  • double courses: an octave pair is two targets on one key, with coaching
+ *    to tune one string at a time;
+ *  • chromatic / winds & brass: nearest note with hysteresis, written pitch
+ *    for B♭, E♭ and F instruments, a sustained-tone hold readout;
  *  • low-string honesty: octave always visible, a coaching hint when a low
  *    target stays unstable; an input confidence bar; the microphone line;
  *  • silent by default; keeps the screen awake; portrait and landscape;
@@ -26,6 +31,7 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View, AccessibilityInfo } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import { colors, fonts } from '../../theme/tokens';
 import { hapticsEnabled } from '../../features/settings/store';
@@ -36,31 +42,47 @@ import {
   buildTargets,
   centsBetween,
   CLOSE_CENTS,
+  courseHint,
+  courses,
   dampCents,
   directionText,
   fmtCents,
+  holdSummary,
   IN_TUNE_CENTS,
+  INITIAL_HOLD,
   INITIAL_LOCK,
+  INSTRUMENT_KEYS,
   INSTRUMENTS,
+  instrumentsByFamily,
   lowStringHint,
   magnitudeColor,
   nearestTarget,
   OCTAVE_CENTS,
+  steadinessText,
+  stepChromatic,
+  stepHold,
   stepLock,
   stepTarget,
+  TRANSPOSITIONS,
   TUNINGS,
+  type HoldState,
   type InstrumentKey,
   type LockState,
+  type StringTarget,
   type TargetState,
   type Temperament,
+  type TranspositionKey,
 } from '../../features/tools/tuner/centerLock';
 
 const A4_CHOICES = [415, 432, 435, 438, 440, 441, 442, 443, 444];
-const INSTRUMENT_ORDER: InstrumentKey[] = ['guitar6', 'guitar7', 'bass4', 'bass5', 'bass6', 'violin'];
 const CONTROLS_FADE_MS = 2000;
 const METER_RANGE = 50; // ±50 ¢ fixed scale
+const RECENTS_KEY = 'ape:centerlock:v1';
+const RECENTS_MAX = 3;
 
 type KeepAwakeLib = { activateKeepAwakeAsync?: (tag?: string) => Promise<void>; deactivateKeepAwake?: (tag?: string) => Promise<void> | void };
+
+const isKey = (k: unknown): k is InstrumentKey => typeof k === 'string' && (INSTRUMENT_KEYS as string[]).includes(k);
 
 export function CenterLockTuner() {
   const { width, height } = useWindowDimensions();
@@ -73,11 +95,44 @@ export function CenterLockTuner() {
   const [capo, setCapo] = useState(0);
   const [a4, setA4] = useState(() => readTunerFrame().a4 || 440);
   const [temperament, setTemperament] = useState<Temperament>('fifths');
+  const [transpose, setTranspose] = useState<TranspositionKey>('C');
   const [strobe, setStrobe] = useState(false);
-  const targets = useMemo(
-    () => buildTargets(instrument, tuningKey, a4, capo, instrument === 'violin' ? temperament : 'equal'),
-    [instrument, tuningKey, a4, capo, temperament],
-  );
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [recents, setRecents] = useState<InstrumentKey[]>([]);
+  const inst = INSTRUMENTS[instrument];
+  const targets = useMemo(() => buildTargets(instrument, tuningKey, a4, capo, temperament), [instrument, tuningKey, a4, capo, temperament]);
+  const transposeSemis = TRANSPOSITIONS.find((t) => t.key === transpose)?.semis ?? 0;
+
+  // Recents: the last instrument comes back on the next open.
+  const chosen = useRef(false);
+  useEffect(() => {
+    let alive = true;
+    AsyncStorage.getItem(RECENTS_KEY)
+      .then((raw) => {
+        if (!alive || !raw) return;
+        const parsed = JSON.parse(raw) as { recents?: unknown[] };
+        const list = (parsed.recents ?? []).filter(isKey).slice(0, RECENTS_MAX);
+        setRecents(list);
+        if (list[0] && !chosen.current) setInstrument(list[0]);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
+  const choose = useCallback((k: InstrumentKey) => {
+    chosen.current = true;
+    setInstrument(k);
+    setTuningKey('standard');
+    setCapo(0);
+    setManual(false);
+    setPickerOpen(false);
+    setRecents((r) => {
+      const next = [k, ...r.filter((x) => x !== k)].slice(0, RECENTS_MAX);
+      AsyncStorage.setItem(RECENTS_KEY, JSON.stringify({ recents: next })).catch(() => {});
+      return next;
+    });
+  }, []);
 
   // The per-frame machinery lives in <LiveReadout/> below, which subscribes to
   // the pitch store ITSELF — so this parent (preset chips, close key, foot)
@@ -127,20 +182,16 @@ export function CenterLockTuner() {
   // strobe) so far less hides off-screen; landscape has the width for one.
   // A4 is one cycling chip (415…444) — nine separate keys buried CAPO and
   // STROBE a full screen-width to the right on a phone.
-  const instrumentChips = INSTRUMENT_ORDER.map((k) => (
-    <Chip
-      key={k}
-      label={INSTRUMENTS[k].name.toUpperCase()}
-      on={instrument === k}
-      onPress={() => {
-        touch();
-        setInstrument(k);
-        setTuningKey('standard');
-        setCapo(0);
-        setManual(false);
-      }}
-    />
-  ));
+  const instrumentChips = (
+    <>
+      <Chip label={`${inst.name.toUpperCase()}  ▾`} on onPress={() => { touch(); setPickerOpen(true); }} accessibilityHint="Opens the instrument picker" />
+      {recents
+        .filter((k) => k !== instrument)
+        .map((k) => (
+          <Chip key={k} label={INSTRUMENTS[k].name.toUpperCase()} on={false} onPress={() => { touch(); choose(k); }} />
+        ))}
+    </>
+  );
   const cycleA4 = () => {
     touch();
     setA4((v) => {
@@ -148,20 +199,26 @@ export function CenterLockTuner() {
       return A4_CHOICES[(i < 0 ? A4_CHOICES.indexOf(440) : i + 1) % A4_CHOICES.length];
     });
   };
+  const tunings = TUNINGS[instrument];
   const setupChips = (
     <>
-      {TUNINGS[instrument].map((t) => (
-        <Chip key={t.key} label={t.name.toUpperCase()} on={tuningKey === t.key} onPress={() => { touch(); setTuningKey(t.key); }} />
-      ))}
-      <View style={styles.chipGap} />
-      {instrument === 'violin' ? (
+      {inst.chromatic
+        ? TRANSPOSITIONS.map((t) => (
+            <Chip key={t.key} label={t.name} on={transpose === t.key} onPress={() => { touch(); setTranspose(t.key); }} />
+          ))
+        : null}
+      {tunings.length > 1
+        ? tunings.map((t) => (
+            <Chip key={t.key} label={t.name.toUpperCase()} on={tuningKey === t.key} onPress={() => { touch(); setTuningKey(t.key); }} />
+          ))
+        : null}
+      {inst.fifths ? (
         <>
           <Chip label="PERFECT FIFTHS" on={temperament === 'fifths'} onPress={() => { touch(); setTemperament('fifths'); }} />
           <Chip label="EQUAL / PIANO" on={temperament === 'equal'} onPress={() => { touch(); setTemperament('equal'); }} />
         </>
-      ) : (
-        <Chip label={`CAPO ${capo}`} on={capo > 0} onPress={() => { touch(); setCapo((c) => (c + 1) % 8); }} />
-      )}
+      ) : null}
+      {inst.capo ? <Chip label={`CAPO ${capo}`} on={capo > 0} onPress={() => { touch(); setCapo((c) => (c + 1) % 8); }} /> : null}
       <View style={styles.chipGap} />
       <Chip label={`A4 ${a4}`} on={a4 !== 440} onPress={cycleA4} small accessibilityHint="Cycles the reference pitch" />
       <Chip label={strobe ? 'STROBE ±0.1¢' : 'STROBE'} on={strobe} onPress={() => { touch(); setStrobe((s) => !s); }} small />
@@ -194,7 +251,10 @@ export function CenterLockTuner() {
       </View>
 
       <LiveReadout
+        instrument={instrument}
         targets={targets}
+        a4={a4}
+        transposeSemis={transposeSemis}
         manual={manual}
         targetOverride={targetOverride}
         strobe={strobe}
@@ -210,14 +270,71 @@ export function CenterLockTuner() {
           Phone microphone · it listens to the room, not a pedal · needle ±1¢ · strobe view ±0.1¢ (estimate) · silent by design
         </Text>
       </View>
+
+      {pickerOpen ? <InstrumentPicker current={instrument} recents={recents} onPick={choose} onClose={() => setPickerOpen(false)} /> : null}
     </Pressable>
   );
 }
 
+/** The instrument picker: recents on top, then every preset by family. */
+function InstrumentPicker({ current, recents, onPick, onClose }: { current: InstrumentKey; recents: InstrumentKey[]; onPick: (k: InstrumentKey) => void; onClose: () => void }) {
+  const groups = useMemo(() => instrumentsByFamily(), []);
+  return (
+    <View style={styles.pickerScrim} accessibilityViewIsModal>
+      <Pressable style={StyleSheet.absoluteFill as object} onPress={onClose} accessibilityRole="button" accessibilityLabel="Close the instrument picker" />
+      <View style={styles.pickerPanel}>
+        <View style={styles.pickerHead}>
+          <Text style={styles.pickerTitle}>INSTRUMENT</Text>
+          <Pressable onPress={onClose} hitSlop={12} style={styles.pickerClose} accessibilityRole="button" accessibilityLabel="Close">
+            <Text style={styles.closeX}>✕</Text>
+          </Pressable>
+        </View>
+        <ScrollView style={styles.pickerScroll} contentContainerStyle={styles.pickerContent} keyboardShouldPersistTaps="handled">
+          {recents.length > 0 ? (
+            <View style={styles.pickerSection}>
+              <Text style={styles.pickerFamily}>RECENT</Text>
+              <View style={styles.recentRow}>
+                {recents.map((k) => (
+                  <Chip key={k} label={INSTRUMENTS[k].name.toUpperCase()} on={k === current} onPress={() => onPick(k)} />
+                ))}
+              </View>
+            </View>
+          ) : null}
+          {groups.map((g) => (
+            <View key={g.family} style={styles.pickerSection}>
+              <Text style={styles.pickerFamily}>{g.family.toUpperCase()}</Text>
+              {g.keys.map((k) => {
+                const d = INSTRUMENTS[k];
+                const on = k === current;
+                return (
+                  <Pressable
+                    key={k}
+                    onPress={() => onPick(k)}
+                    style={[styles.pickerRow, on && styles.pickerRowOn]}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: on }}
+                    accessibilityLabel={`${d.name}, ${d.blurb}`}
+                  >
+                    <Text style={[styles.pickerName, on && { color: colors.amber }]}>{d.name}</Text>
+                    <Text style={styles.pickerBlurb}>{d.blurb}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          ))}
+        </ScrollView>
+      </View>
+    </View>
+  );
+}
+
 type LiveReadoutProps = {
-  targets: ReturnType<typeof buildTargets>;
+  instrument: InstrumentKey;
+  targets: StringTarget[];
+  a4: number;
+  transposeSemis: number;
   manual: boolean;
-  /** A string index the user tapped; consumed on the next frame. */
+  /** A target index the user tapped; consumed on the next frame. */
   targetOverride: React.MutableRefObject<number | null>;
   strobe: boolean;
   landscape: boolean;
@@ -227,13 +344,18 @@ type LiveReadoutProps = {
   onPickString: (i: number, current: boolean) => void;
 };
 
+const NO_TARGET: StringTarget = { index: 0, label: 'CONCERT', note: 'A4', hz: 440, course: 0 };
+
 /**
  * Everything that moves at frame rate: the note, meter, cents, string strip
  * and confidence bar. It subscribes to the pitch store itself and holds the
  * pure state machines in refs, so a frame re-renders THIS subtree only.
  */
 const LiveReadout = memo(function LiveReadout({
+  instrument,
   targets,
+  a4,
+  transposeSemis,
   manual,
   targetOverride,
   strobe,
@@ -244,25 +366,33 @@ const LiveReadout = memo(function LiveReadout({
   onPickString,
 }: LiveReadoutProps) {
   const frame = useTunerFrame();
+  const inst = INSTRUMENTS[instrument];
+  const chromatic = !!inst.chromatic;
   const targetRef = useRef<TargetState>({ target: 0, candidate: null, candidateSince: null });
   const lockRef = useRef<LockState>(INITIAL_LOCK);
+  const holdRef = useRef<HoldState>(INITIAL_HOLD);
+  const chromMidi = useRef<number | null>(null);
   const shownRef = useRef(0);
   const lastFrameAt = useRef(0);
   const lastAcceptedAt = useRef(Date.now());
-  const [view, setView] = useState<{ targetIdx: number; rawCents: number | null; shownCents: number; confirmed: boolean }>({
+  const [view, setView] = useState<{ target: StringTarget; targetIdx: number; rawCents: number | null; shownCents: number; confirmed: boolean; hold: ReturnType<typeof holdSummary> }>({
+    target: targets[0] ?? NO_TARGET,
     targetIdx: 0,
     rawCents: null,
     shownCents: 0,
     confirmed: false,
+    hold: null,
   });
   const [tuned, setTuned] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     // Preset changed — the old target index means nothing now.
-    targetRef.current = { target: Math.min(targetRef.current.target, targets.length - 1), candidate: null, candidateSince: null };
+    targetRef.current = { target: Math.max(0, Math.min(targetRef.current.target, targets.length - 1)), candidate: null, candidateSince: null };
     lockRef.current = INITIAL_LOCK;
+    holdRef.current = INITIAL_HOLD;
+    chromMidi.current = null;
     setTuned(new Set());
-  }, [targets]);
+  }, [targets, transposeSemis]);
 
   useEffect(() => {
     const now = Date.now();
@@ -277,34 +407,72 @@ const LiveReadout = memo(function LiveReadout({
     if (hz != null) lastAcceptedAt.current = now;
 
     let rawCents: number | null = null;
+    let target: StringTarget = chromatic ? view.target : (targets[targetRef.current.target] ?? NO_TARGET);
     if (hz != null && hz > 0) {
-      const near = nearestTarget(hz, targets);
-      targetRef.current = stepTarget(targetRef.current, near.i, now, manual);
-      rawCents = centsBetween(hz, targets[targetRef.current.target].hz);
+      if (chromatic) {
+        const step = stepChromatic(chromMidi.current, hz, a4, transposeSemis);
+        if (step.midi !== chromMidi.current) lockRef.current = INITIAL_LOCK;
+        chromMidi.current = step.midi;
+        target = step.target;
+        rawCents = centsBetween(hz, target.hz);
+      } else {
+        if (manual) {
+          // MANUAL locks a COURSE: either string of an octave pair may be tuned.
+          const lockedCourse = targets[targetRef.current.target]?.course ?? 0;
+          let best = targetRef.current.target;
+          let bestAbs = Infinity;
+          targets.forEach((t, i) => {
+            if (t.course !== lockedCourse) return;
+            const c = Math.abs(centsBetween(hz, t.hz));
+            if (c < bestAbs) {
+              bestAbs = c;
+              best = i;
+            }
+          });
+          targetRef.current = { target: best, candidate: null, candidateSince: null };
+        } else {
+          const near = nearestTarget(hz, targets);
+          targetRef.current = stepTarget(targetRef.current, near.i, now, false);
+        }
+        target = targets[targetRef.current.target] ?? NO_TARGET;
+        rawCents = centsBetween(hz, target.hz);
+      }
     }
     const lockInput = rawCents != null && Math.abs(rawCents) < OCTAVE_CENTS ? rawCents : null;
     const lock = stepLock(lockRef.current, lockInput, now);
     lockRef.current = { inZoneSince: lock.inZoneSince, confirmed: lock.confirmed };
     if (lock.justConfirmed) {
       if (hapticsEnabled()) Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
-      AccessibilityInfo.announceForAccessibility(`${targets[targetRef.current.target].note} in tune`);
-      const idx = targetRef.current.target;
-      setTuned((s) => (s.has(idx) ? s : new Set(s).add(idx)));
+      AccessibilityInfo.announceForAccessibility(`${target.note} in tune`);
+      if (!chromatic) {
+        const idx = targetRef.current.target;
+        setTuned((s) => (s.has(idx) ? s : new Set(s).add(idx)));
+      }
     }
     if (rawCents != null) shownRef.current = dampCents(shownRef.current, Math.max(-METER_RANGE, Math.min(METER_RANGE, rawCents)), dt);
-    setView({ targetIdx: targetRef.current.target, rawCents, shownCents: shownRef.current, confirmed: lock.confirmed });
+    holdRef.current = chromatic ? stepHold(holdRef.current, hz != null ? target.note : null, lockInput, now) : INITIAL_HOLD;
+    setView({
+      target,
+      targetIdx: targetRef.current.target,
+      rawCents,
+      shownCents: shownRef.current,
+      confirmed: lock.confirmed,
+      hold: chromatic ? holdSummary(holdRef.current, now) : null,
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [frame.freq, frame.accepted, targets, manual]);
+  }, [frame.freq, frame.accepted, targets, manual, chromatic, a4, transposeSemis]);
 
-  const target = targets[Math.min(view.targetIdx, targets.length - 1)];
+  const target = view.target;
   const cents = view.rawCents;
   const octaveOff = cents != null && Math.abs(cents) >= OCTAVE_CENTS;
   const tint = magnitudeColor(octaveOff ? null : cents);
   const direction = directionText(cents, view.confirmed);
   const unstableMs = Date.now() - lastAcceptedAt.current;
-  const hint = lowStringHint(target.hz, frame.accepted ? 0 : unstableMs);
+  const lowHint = lowStringHint(target.hz, frame.accepted ? 0 : unstableMs);
+  const hint = lowHint ?? (chromatic ? null : courseHint(target, targets));
   const noteName = target.note.replace(/\d/g, '');
   const octave = target.note.replace(/\D/g, '');
+  const identity = chromatic ? target.label : inst.numbered ? `STRING ${target.index} · ${target.label}` : target.label;
   // Portrait: the note is the display — half the screen width. Landscape: the
   // note owns the left column at half the height; the meter, cents, string
   // strip and input bar stack in the right column (visual pass 2026-09-06 —
@@ -316,26 +484,42 @@ const LiveReadout = memo(function LiveReadout({
   const zoneW = (IN_TUNE_CENTS / METER_RANGE) * (meterW / 2);
   const closeW = (CLOSE_CENTS / METER_RANGE) * (meterW / 2);
   const confidencePct = Math.round(Math.max(0, Math.min(1, frame.confidence)) * 100);
-  const isViolin = targets.length === 4 && targets[0].note === 'G3';
-  // String keys share one row: 6 keys on a 375-wide phone, 7 for the 7-string.
+  // One key per COURSE, sized to share a single row (7 keys on a 375 phone).
+  const groups = useMemo(() => courses(targets), [targets]);
   const stripW = (landscape ? meterW : width) - 24;
-  const keyW = Math.min(58, Math.floor((stripW - (targets.length - 1) * 6) / targets.length));
+  const keyW = groups.length ? Math.min(60, Math.floor((stripW - (groups.length - 1) * 6) / groups.length)) : 0;
 
-  const strip = (
+  const strip = chromatic ? (
+    <View style={[styles.holdWrap, { width: stripW }]} accessibilityLiveRegion="polite">
+      {view.hold ? (
+        <>
+          <Text style={[styles.holdMain, { color: magnitudeColor(view.hold.avg) }]}>{`HOLD ${(view.hold.ms / 1000).toFixed(1)} s · AVG ${fmtCents(view.hold.avg)}`}</Text>
+          <Text style={styles.holdSub}>{`${steadinessText(view.hold.spread)} · SPREAD ±${view.hold.spread.toFixed(1)}¢`}</Text>
+        </>
+      ) : (
+        <Text style={styles.holdIdle}>SUSTAIN A NOTE FOR THE HOLD READOUT</Text>
+      )}
+    </View>
+  ) : (
     <View style={[styles.strip, { width: stripW }]}>
-      {targets.map((t, i) => {
-        const current = i === view.targetIdx;
+      {groups.map((g) => {
+        const first = targets.indexOf(g[0]);
+        const current = g.some((t) => targets.indexOf(t) === view.targetIdx);
+        const done = g.every((t) => tuned.has(targets.indexOf(t)));
+        const pair = g.length > 1;
         return (
           <Pressable
-            key={t.index}
-            onPress={() => onPickString(i, current)}
+            key={g[0].index}
+            onPress={() => onPickString(first, current)}
             style={[styles.stringKey, { width: keyW }, current && styles.stringKeyOn, current && { borderColor: tint }]}
             accessibilityRole="button"
             accessibilityState={{ selected: current }}
-            accessibilityLabel={`${t.label} ${t.note}${tuned.has(i) ? ', in tune' : ''}${current && manual ? ', locked' : ''}`}
+            accessibilityLabel={`${g[0].label} ${g.map((t) => t.note).join(' and ')}${done ? ', in tune' : ''}${current && manual ? ', locked' : ''}`}
           >
-            <Text style={[styles.stringNote, current && { color: tint }]}>{t.note}</Text>
-            <Text style={styles.stringLabel}>{tuned.has(i) ? '✓' : t.label}</Text>
+            <Text style={[styles.stringNote, pair && styles.stringNotePair, current && { color: tint }]} numberOfLines={1}>
+              {pair ? `${g[0].note}·${g[1].note}` : g[0].note}
+            </Text>
+            <Text style={styles.stringLabel} numberOfLines={1}>{done ? '✓' : g[0].label}</Text>
           </Pressable>
         );
       })}
@@ -350,24 +534,26 @@ const LiveReadout = memo(function LiveReadout({
         </View>
         <Text style={styles.footLabel}>{`${confidencePct}%`}</Text>
       </View>
-      {hint ? <Text style={styles.hint}>{hint}</Text> : null}
+      {hint ? <Text style={styles.hint} numberOfLines={2}>{hint}</Text> : null}
     </View>
   );
 
   const noteBlock = (
     <View style={[styles.noteBlock, landscape && { width: NOTE_COL_W }]} accessible accessibilityRole="text" accessibilityLabel={`${target.note}, ${direction}, ${fmtCents(cents)}`}>
       <View style={styles.identityRow}>
-        <Text style={[styles.identity, { color: tint }]}>{`${isViolin ? '' : `STRING ${target.index} · `}${target.label}`}</Text>
-        <View style={[styles.modeTag, manual && { borderColor: colors.amber }]}>
-          <Text style={[styles.modeText, manual && { color: colors.amber }]}>{manual ? 'MANUAL' : 'AUTO'}</Text>
-        </View>
+        <Text style={[styles.identity, { color: tint }]} numberOfLines={1}>{identity}</Text>
+        {chromatic ? null : (
+          <View style={[styles.modeTag, manual && { borderColor: colors.amber }]}>
+            <Text style={[styles.modeText, manual && { color: colors.amber }]}>{manual ? 'MANUAL' : 'AUTO'}</Text>
+          </View>
+        )}
       </View>
       <View style={styles.noteRow}>
         <Text style={[styles.note, { fontSize: bigSize, lineHeight: bigSize * 1.05, color: view.confirmed ? '#37e05f' : colors.textPrimary }]}>{noteName}</Text>
         <Text style={[styles.octave, { fontSize: Math.round(bigSize * 0.42), marginBottom: Math.round(bigSize * 0.08), color: view.confirmed ? '#37e05f' : colors.textSecondary }]}>{octave}</Text>
       </View>
       <Text style={[styles.direction, landscape && styles.directionLandscape, { color: tint }]} accessibilityLiveRegion="polite" numberOfLines={1} adjustsFontSizeToFit>
-        {direction}
+        {chromatic && cents == null ? 'PLAY A NOTE' : direction}
       </Text>
     </View>
   );
@@ -376,28 +562,28 @@ const LiveReadout = memo(function LiveReadout({
   // would remount the meter (and kill the strobe's animation loop) every frame.
   const meter = (
     <View style={styles.meterBlock}>
-        <View style={[styles.meter, { width: meterW }]} accessible accessibilityRole="adjustable" accessibilityLabel="Tuning meter" accessibilityValue={{ min: -50, max: 50, now: Math.round(view.shownCents) }}>
-          <View style={styles.meterTrack} />
-          <View style={[styles.closeBand, { width: closeW * 2, left: meterW / 2 - closeW }]} />
-          <View style={[styles.zone, { width: zoneW * 2, left: meterW / 2 - zoneW }, view.confirmed && styles.zoneLocked]} />
-          {[-50, -25, 0, 25, 50].map((t) => (
-            <View key={t} style={[styles.tick, { left: meterW / 2 + (t / METER_RANGE) * (meterW / 2) - 1 }, t === 0 && styles.tickZero]} />
-          ))}
-          {cents != null && !octaveOff ? (
-            <>
-              <View style={[styles.wedge, styles.wedgeLeft, { backgroundColor: tint, left: meterW / 2 - Math.abs(pointerX) - 14 }]} />
-              <View style={[styles.wedge, styles.wedgeRight, { backgroundColor: tint, left: meterW / 2 + Math.abs(pointerX) }]} />
-              <View style={[styles.pointer, { backgroundColor: tint, left: meterW / 2 + pointerX - 3 }]} />
-            </>
-          ) : null}
-        </View>
-        <View style={[styles.scaleRow, { width: meterW }]}>
-          <Text style={styles.scaleText}>−50 FLAT</Text>
-          <Text style={styles.scaleText}>0</Text>
-          <Text style={styles.scaleText}>SHARP +50</Text>
-        </View>
-        {strobe ? <StrobeBand cents={octaveOff ? null : cents} width={meterW} tint={tint} /> : null}
-        <Text style={[styles.cents, { color: tint }]}>{octaveOff ? (cents! > 0 ? '+1 OCT' : '−1 OCT') : fmtCents(cents)}</Text>
+      <View style={[styles.meter, { width: meterW }]} accessible accessibilityRole="adjustable" accessibilityLabel="Tuning meter" accessibilityValue={{ min: -50, max: 50, now: Math.round(view.shownCents) }}>
+        <View style={styles.meterTrack} />
+        <View style={[styles.closeBand, { width: closeW * 2, left: meterW / 2 - closeW }]} />
+        <View style={[styles.zone, { width: zoneW * 2, left: meterW / 2 - zoneW }, view.confirmed && styles.zoneLocked]} />
+        {[-50, -25, 0, 25, 50].map((t) => (
+          <View key={t} style={[styles.tick, { left: meterW / 2 + (t / METER_RANGE) * (meterW / 2) - 1 }, t === 0 && styles.tickZero]} />
+        ))}
+        {cents != null && !octaveOff ? (
+          <>
+            <View style={[styles.wedge, styles.wedgeLeft, { backgroundColor: tint, left: meterW / 2 - Math.abs(pointerX) - 14 }]} />
+            <View style={[styles.wedge, styles.wedgeRight, { backgroundColor: tint, left: meterW / 2 + Math.abs(pointerX) }]} />
+            <View style={[styles.pointer, { backgroundColor: tint, left: meterW / 2 + pointerX - 3 }]} />
+          </>
+        ) : null}
+      </View>
+      <View style={[styles.scaleRow, { width: meterW }]}>
+        <Text style={styles.scaleText}>−50 FLAT</Text>
+        <Text style={styles.scaleText}>0</Text>
+        <Text style={styles.scaleText}>SHARP +50</Text>
+      </View>
+      {strobe ? <StrobeBand cents={octaveOff ? null : cents} width={meterW} tint={tint} /> : null}
+      <Text style={[styles.cents, { color: tint }]}>{octaveOff ? (cents! > 0 ? '+1 OCT' : '−1 OCT') : fmtCents(cents)}</Text>
     </View>
   );
 
@@ -565,12 +751,17 @@ const styles = StyleSheet.create({
   stripe: { position: 'absolute', top: 0, bottom: 0, width: STRIPE_PERIOD / 2, opacity: 0.85 },
 
   strip: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: 6, alignSelf: 'center', paddingVertical: 8 },
-  stringKey: { paddingVertical: 8, paddingHorizontal: 4, borderRadius: 10, borderWidth: 1.5, borderColor: '#2a2b31', backgroundColor: '#101116', alignItems: 'center' },
+  stringKey: { paddingVertical: 8, paddingHorizontal: 3, borderRadius: 10, borderWidth: 1.5, borderColor: '#2a2b31', backgroundColor: '#101116', alignItems: 'center', minHeight: 52, justifyContent: 'center' },
   stringKeyOn: { backgroundColor: '#141a16' },
   stringNote: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, color: colors.textSecondary },
+  stringNotePair: { fontSize: 13, letterSpacing: 0.2 },
   stringLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.2, color: '#6b6f7a', marginTop: 1 },
   modeTag: { paddingHorizontal: 7, paddingVertical: 3, borderRadius: 6, borderWidth: 1, borderColor: '#2a2b31' },
   modeText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.4, color: '#8a8b93' },
+  holdWrap: { alignSelf: 'center', alignItems: 'center', justifyContent: 'center', minHeight: 68, gap: 4, paddingVertical: 8, borderRadius: 12, borderWidth: 1, borderColor: '#1f2026', backgroundColor: '#0c0d11' },
+  holdMain: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, letterSpacing: 1.6 },
+  holdSub: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: '#8a8b93' },
+  holdIdle: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: '#6b6f7a' },
 
   foot: { paddingHorizontal: 16, gap: 6, alignItems: 'center' },
   confWrap: { alignSelf: 'stretch', paddingHorizontal: 16, gap: 6, alignItems: 'center', paddingBottom: 6 },
@@ -580,4 +771,19 @@ const styles = StyleSheet.create({
   footLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.4, color: '#6b6f7a', minWidth: 36 },
   hint: { fontFamily: fonts.barlowMedium, fontSize: 13, color: colors.amber, textAlign: 'center' },
   honesty: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 0.8, color: '#6b6f7a', textAlign: 'center', lineHeight: 14 },
+
+  pickerScrim: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 90, backgroundColor: 'rgba(0,0,0,0.72)', alignItems: 'center', justifyContent: 'center', padding: 16 },
+  pickerPanel: { width: '100%', maxWidth: 560, maxHeight: '88%', borderRadius: 16, borderWidth: 1, borderColor: '#2a2b31', backgroundColor: '#0e0f13', overflow: 'hidden' },
+  pickerHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#1f2026' },
+  pickerTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 2.4, color: colors.amber },
+  pickerClose: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center', backgroundColor: '#15161b' },
+  pickerScroll: { flexGrow: 0 },
+  pickerContent: { paddingHorizontal: 12, paddingVertical: 10, gap: 14 },
+  pickerSection: { gap: 6 },
+  pickerFamily: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 2, color: '#6b6f7a', paddingHorizontal: 4 },
+  recentRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, paddingHorizontal: 4 },
+  pickerRow: { paddingVertical: 9, paddingHorizontal: 12, borderRadius: 10, borderWidth: 1, borderColor: '#1f2026', backgroundColor: '#121318', minHeight: 48, justifyContent: 'center' },
+  pickerRowOn: { borderColor: colors.amber, backgroundColor: '#1d1708' },
+  pickerName: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.6, color: colors.textPrimary },
+  pickerBlurb: { fontFamily: fonts.barlowMedium, fontSize: 12, color: '#8a8b93', marginTop: 1 },
 });
