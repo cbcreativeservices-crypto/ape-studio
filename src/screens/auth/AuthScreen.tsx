@@ -404,8 +404,8 @@ export function AuthScreen({ navigation }: Props) {
             )}
 
             {busy ? (
-              <View style={styles.busyWrap}>
-                <ActivityIndicator color={colors.amber} />
+              <View style={styles.busyWrap} accessibilityLiveRegion="polite">
+                <ActivityIndicator color={colors.amber} accessibilityLabel="Working, please wait" />
               </View>
             ) : (
               <View style={styles.btnStack}>
@@ -449,8 +449,8 @@ export function AuthScreen({ navigation }: Props) {
 
             {/* Actions */}
             {busy ? (
-              <View style={styles.busyWrap}>
-                <ActivityIndicator color={colors.amber} />
+              <View style={styles.busyWrap} accessibilityLiveRegion="polite">
+                <ActivityIndicator color={colors.amber} accessibilityLabel="Working, please wait" />
               </View>
             ) : (
               <View style={styles.btnStack}>
@@ -461,12 +461,20 @@ export function AuthScreen({ navigation }: Props) {
             )}
 
             {/* Footer — password reset */}
-            <Text style={styles.footerText}>
-              Forgot password?{' '}
-              <Text style={styles.footerLink} onPress={busy ? undefined : onResetPassword}>
-                Reset via email
-              </Text>
-            </Text>
+            {/* A11Y (2026-09-06): the reset link was a nested Text tap with no
+                role and a ~19 pt target. A real Pressable with hitSlop now. */}
+            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
+              <Text style={styles.footerText}>Forgot password? </Text>
+              <Pressable
+                onPress={busy ? undefined : onResetPassword}
+                disabled={busy}
+                hitSlop={12}
+                accessibilityRole="link"
+                accessibilityLabel="Reset password via email"
+              >
+                <Text style={[styles.footerText, styles.footerLink]}>Reset via email</Text>
+              </Pressable>
+            </View>
             <Text style={styles.guestNote}>Guest Mode is free — but your progress isn’t saved without an account.</Text>
           </>
         )}

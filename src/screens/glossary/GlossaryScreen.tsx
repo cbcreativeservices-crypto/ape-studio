@@ -767,8 +767,12 @@ function Chip({
       onPress={onPress}
       onLongPress={onLongPress}
       delayLongPress={350}
+      // A11Y (2026-09-06): 40 pt chips reach the 44 pt target, and the
+      // long-press-only lists (Bookmarks / Custom / Recent) are now discoverable.
+      hitSlop={6}
       accessibilityRole="button"
       accessibilityLabel={label}
+      accessibilityHint={onLongPress ? 'Double tap and hold to open the list' : undefined}
       accessibilityState={{ selected: active }}
     >
       <LinearGradient
@@ -2025,7 +2029,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
                     {mediaUrl ? (
                       <Pressable
                         onPress={() => setMediaPopup(mediaUrl)}
-                        hitSlop={10}
+                        hitSlop={14}
                         accessibilityRole="button"
                         accessibilityLabel={`View ${item.term} image`}
                       >
@@ -2058,7 +2062,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
                         familiar box-with-up-arrow share glyph. */}
                     <Pressable
                       onPress={() => void shareTerm(item)}
-                      hitSlop={10}
+                      hitSlop={14}
                       accessibilityRole="button"
                       accessibilityLabel={`Share ${item.term}`}
                     >
@@ -2203,7 +2207,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
                       {prev ? (
                         <Pressable
                           onPress={popupBack}
-                          hitSlop={10}
+                          hitSlop={14}
                           accessibilityRole="button"
                           accessibilityLabel={`Back to ${prev.term}`}
                           style={styles.popupBackPill}
@@ -2254,7 +2258,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
                         {mediaById[item.id] ? (
                           <Pressable
                             onPress={() => setMediaPopup(mediaById[item.id])}
-                            hitSlop={10}
+                            hitSlop={14}
                             accessibilityRole="button"
                             accessibilityLabel={`View ${item.term} image`}
                           >

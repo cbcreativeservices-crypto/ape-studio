@@ -168,7 +168,7 @@ export function PaywallScreen({ navigation }: Props) {
 
         {busy ? (
           <View style={styles.busyWrap}>
-            <ActivityIndicator color={colors.amber} />
+            <ActivityIndicator color={colors.amber} accessibilityLabel="Working, please wait" />
           </View>
         ) : (
           <GlassButton

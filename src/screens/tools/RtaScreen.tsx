@@ -298,6 +298,24 @@ function Chip({ label, active, onPress, a11yLabel }: { label: string; active: bo
  *  RACK 2026-08-23: height-parametric — the chart fills whatever glass the
  *  stage grants (LiveSpectrumEq idiom), with the piano map stacked inside the
  *  glass when toggled on. */
+/** Spoken summary of the spectrum for screen readers (2026-09-06). */
+function spectrumA11yLabel(bands: DisplayBands | null): string {
+  if (!bands) return `Real-time spectrum, ${SIXTH_BANDS} bands, no signal`;
+  let best = -1;
+  let bestDb = -Infinity;
+  for (let i = 0; i < bands.levelsDb.length; i++) {
+    const db = bands.levelsDb[i];
+    if (bands.resolvable[i] && Number.isFinite(db) && db > bestDb) {
+      bestDb = db;
+      best = i;
+    }
+  }
+  if (best < 0) return `Real-time spectrum, ${SIXTH_BANDS} bands, no signal`;
+  const hz = bands.centers[best];
+  const hzText = hz >= 1000 ? `${(hz / 1000).toFixed(1)} kilohertz` : `${Math.round(hz)} hertz`;
+  return `Real-time spectrum, ${SIXTH_BANDS} bands. Loudest band ${hzText} at ${Math.round(bestDb)} dB`;
+}
+
 function RtaGlass({
   w,
   h,
@@ -359,7 +377,10 @@ function RtaGlass({
           ))}
         </View>
 
-        <View style={{ flex: 1 }}>
+        {/* A11Y (2026-09-06): the 61-band spectrum had no accessibility surface
+            at all. One spoken summary — the loudest resolvable band — is the
+            honest equivalent of what a sighted user reads off the chart. */}
+        <View style={{ flex: 1 }} accessible accessibilityRole="image" accessibilityLabel={spectrumA11yLabel(bands)}>
           {chartW > 0 && (
             <Svg width={chartW} height={chartH}>
               <Defs>

@@ -27,6 +27,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import { AccessibilityInfo } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AnswerCell, type AnswerCellState } from '../../components/AnswerCell';
@@ -213,8 +214,21 @@ export function QuizScreen({ navigation, route }: Props) {
     setPairs([]);
     if (!payload) return;
     if (qIdx + 1 >= payload.questions.length) void doSubmit();
-    else setQIdx((i) => i + 1);
+    else {
+      setQIdx((i) => i + 1);
+      // A11Y (2026-09-06): the counter changed silently — say where we are.
+      AccessibilityInfo.announceForAccessibility(`Question ${qIdx + 2} of ${payload.questions.length}`);
+    }
   }, [payload, qIdx, doSubmit]);
+
+  // A11Y (2026-09-06): the last minute was a colour change on the timer only.
+  const minuteWarnedRef = useRef(false);
+  useEffect(() => {
+    if (msLeft < 60_000 && msLeft > 0 && !minuteWarnedRef.current) {
+      minuteWarnedRef.current = true;
+      AccessibilityInfo.announceForAccessibility('One minute left');
+    }
+  }, [msLeft]);
 
   const recordAndAdvance = useCallback(
     (slot: number, value: AnswerValue) => {

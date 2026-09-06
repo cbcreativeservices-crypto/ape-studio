@@ -64,7 +64,8 @@ export function TrophyModal({
             onPress={action.onPress}
             disabled={action.busy}
             accessibilityRole="button"
-            accessibilityLabel={action.label}
+            accessibilityLabel={action.busy ? 'Working, please wait' : action.label}
+            accessibilityState={{ disabled: !!action.busy, busy: !!action.busy }}
             style={({ pressed }) => [styles.action, { borderColor: color }, pressed && styles.actionPressed]}
           >
             <Text style={[styles.actionText, { color }]}>{action.busy ? 'WORKING…' : action.label}</Text>

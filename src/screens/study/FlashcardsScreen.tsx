@@ -1402,7 +1402,19 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                           }
                         />
                       ) : null}
-                      <Text style={styles.term}>{card.term}</Text>
+                      {/* A11Y (2026-09-06): the card wrapper cannot carry a
+                          button role (it wraps four real buttons), so the
+                          TERM itself is the screen reader's tap-to-reveal
+                          control — the same pattern the Glossary row uses. */}
+                      <Text
+                        style={styles.term}
+                        accessibilityRole="button"
+                        accessibilityLabel={card.term}
+                        accessibilityHint={soloReveal ? undefined : 'Reveals the definition'}
+                        onPress={soloReveal ? undefined : onTap}
+                      >
+                        {card.term}
+                      </Text>
                     </View>
                     {coach.visible && (
                       <Text style={styles.hint} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
