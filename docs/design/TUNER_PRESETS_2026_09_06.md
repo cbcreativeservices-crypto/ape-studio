@@ -1,4 +1,9 @@
-# CenterLock Stage Tuner — instrument presets (2026-09-06)
+# Tuner FULL SCREEN (code name CenterLock) — instrument presets (2026-09-06)
+
+> Naming (owner 2026-09-06): the user never sees "CenterLock". The key inside the tuner mode reads
+> **FULL SCREEN** and the overlay has no title. CenterLock stays the internal/code name only.
+> Direction is shown three ways: words, the meter position, and animated chevrons that flow UP when
+> flat (raise the pitch) and DOWN when sharp.
 
 Owner brief: the world & folk preset list (ChatGPT report, 2026-09-06) — "build all of it".
 Source of truth in code: `src/features/tools/tuner/centerLock.ts` (`INSTRUMENT_DEFS`, `TUNINGS`,
