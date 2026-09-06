@@ -33,8 +33,10 @@ import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View, Acc
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
+import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming, type SharedValue } from 'react-native-reanimated';
 import { colors, fonts } from '../../theme/tokens';
 import { hapticsEnabled } from '../../features/settings/store';
+import { animationsAllowed } from '../../features/settings/a11y';
 import { optionalModule } from '../../features/tools/capture/optionalModule';
 import { lockPortrait, unlockOrientation } from '../../lib/screenOrientationSafe';
 import { closeCenterLock, readTunerFrame, useTunerFrame } from '../../features/tools/tuner/tunerFrameStore';
@@ -263,7 +265,7 @@ export function CenterLockTuner() {
             <ChipRow>{setupChips}</ChipRow>
           </View>
         )}
-        <Pressable onPress={closeCenterLock} hitSlop={16} style={styles.closeKey} accessibilityRole="button" accessibilityLabel="Close CenterLock">
+        <Pressable onPress={closeCenterLock} hitSlop={16} style={styles.closeKey} accessibilityRole="button" accessibilityLabel="Close full screen">
           <Text style={styles.closeX}>✕</Text>
         </Pressable>
       </View>
@@ -547,6 +549,10 @@ const LiveReadout = memo(function LiveReadout({
     : lowHint ?? (chromatic ? null : courseHint(target, targets));
   const noteName = target.note.replace(/\d/g, '');
   const octave = target.note.replace(/\D/g, '');
+  // Animated arrows (owner 2026-09-06: "which direction the user should be
+  // tuning is not clear"): flat → arrows flow UP (raise the pitch), sharp →
+  // DOWN. None inside the ±2 ¢ zone or with no pitch.
+  const arrowDir: -1 | 0 | 1 = cents == null || view.confirmed || Math.abs(cents) <= IN_TUNE_CENTS ? 0 : cents < 0 ? 1 : -1;
   const identity = piano
     ? `${target.label} · ${target.note}${partial > 1 ? ` · ${partial === 2 ? '2ND' : '3RD'} PARTIAL` : ''}`
     : chromatic
@@ -559,8 +565,8 @@ const LiveReadout = memo(function LiveReadout({
   // strip and input bar stack in the right column (visual pass 2026-09-06 —
   // a single centred row overflowed and clipped the note off the left edge).
   const NOTE_COL_W = 280;
-  // 215 = identity 24 + direction 34 + main gap 18 + meter block 139.
-  const FIXED_ABOVE_NOTE = 215;
+  // 229 = identity 24 + direction row 48 + main gap 18 + meter block 139.
+  const FIXED_ABOVE_NOTE = 229;
   // Space left for the note block in portrait: measured when the platform
   // reports it, otherwise the arithmetic of the fixed chrome (bar 78, foot
   // 32, the strip/stepper/hold box, INPUT row and hint) — react-native-web
@@ -677,9 +683,13 @@ const LiveReadout = memo(function LiveReadout({
         <Text style={[styles.note, { fontSize: bigSize, lineHeight: bigSize * 1.05, color: view.confirmed ? '#37e05f' : colors.textPrimary }]}>{noteName}</Text>
         <Text style={[styles.octave, { fontSize: Math.round(bigSize * 0.42), marginBottom: Math.round(bigSize * 0.08), color: view.confirmed ? '#37e05f' : colors.textSecondary }]}>{octave}</Text>
       </View>
-      <Text style={[styles.direction, landscape && styles.directionLandscape, { color: tint }]} accessibilityLiveRegion="polite" numberOfLines={1} adjustsFontSizeToFit>
-        {chromatic && cents == null ? 'PLAY A NOTE' : direction}
-      </Text>
+      <View style={styles.directionRow}>
+        {arrowDir ? <TuneArrows dir={arrowDir} tint={tint} /> : <View style={styles.arrowSpacer} />}
+        <Text style={[styles.direction, landscape && styles.directionLandscape, { color: tint }]} accessibilityLiveRegion="polite" numberOfLines={1} adjustsFontSizeToFit>
+          {chromatic && cents == null ? 'PLAY A NOTE' : direction}
+        </Text>
+        {arrowDir ? <TuneArrows dir={arrowDir} tint={tint} /> : <View style={styles.arrowSpacer} />}
+      </View>
     </View>
   );
 
@@ -779,6 +789,48 @@ function ChipRow({ children }: { children: React.ReactNode }) {
   );
 }
 
+/**
+ * Three chevrons flowing in the direction the pitch must move: up to raise,
+ * down to lower. Colour is the magnitude tint; the words carry the meaning,
+ * so the arrows are decorative for assistive tech. Reduce-motion shows a
+ * still stack.
+ */
+const ARROW_SIZE = 18;
+const ARROW_TRAVEL = 16;
+function TuneArrows({ dir, tint }: { dir: -1 | 1; tint: string }) {
+  const progress = useSharedValue(0);
+  const allowed = animationsAllowed();
+  useEffect(() => {
+    if (!allowed) {
+      progress.value = 0;
+      return;
+    }
+    progress.value = 0;
+    progress.value = withRepeat(withTiming(1, { duration: 1100, easing: Easing.linear }), -1, false);
+    return () => cancelAnimation(progress);
+  }, [allowed, progress]);
+  return (
+    <View style={styles.arrows} accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+      {[0, 1, 2].map((i) => (
+        <Chevron key={i} i={i} dir={dir} tint={tint} progress={progress} allowed={allowed} />
+      ))}
+    </View>
+  );
+}
+
+function Chevron({ i, dir, tint, progress, allowed }: { i: number; dir: -1 | 1; tint: string; progress: SharedValue<number>; allowed: boolean }) {
+  const style = useAnimatedStyle(() => {
+    if (!allowed) {
+      // Still stack: three chevrons spaced along the direction, fading away.
+      return { opacity: 1 - i * 0.3, transform: [{ translateY: -dir * (i - 1) * ARROW_SIZE * 0.75 }, { rotate: dir > 0 ? '45deg' : '225deg' }] };
+    }
+    const phase = (progress.value + i / 3) % 1;
+    const y = dir * (ARROW_TRAVEL - 2 * ARROW_TRAVEL * phase);
+    return { opacity: Math.sin(phase * Math.PI), transform: [{ translateY: y }, { rotate: dir > 0 ? '45deg' : '225deg' }] };
+  }, [allowed, dir, i]);
+  return <Animated.View style={[styles.chevron, { borderColor: tint }, style]} />;
+}
+
 /** Expert strobe view: stripes drift left when flat, right when sharp, and
  *  stand still in tune. Rate is proportional to cents; no engine changes. */
 function StrobeBand({ cents, width, tint }: { cents: number | null; width: number; tint: string }) {
@@ -858,8 +910,12 @@ const styles = StyleSheet.create({
   noteRow: { flexDirection: 'row', alignItems: 'flex-end', marginTop: -8 },
   note: { fontFamily: fonts.oswaldBold, letterSpacing: -2 },
   octave: { fontFamily: fonts.oswaldMedium, marginLeft: 6 },
-  direction: { fontFamily: fonts.oswaldSemiBold, fontSize: 22, letterSpacing: 2.4, marginTop: 4, textAlign: 'center' },
+  directionRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, height: 48, marginTop: 2 },
+  direction: { fontFamily: fonts.oswaldSemiBold, fontSize: 22, letterSpacing: 2.4, textAlign: 'center', flexShrink: 1 },
   directionLandscape: { fontSize: 19, letterSpacing: 1.8 },
+  arrows: { width: ARROW_SIZE + 10, height: 48, alignItems: 'center', justifyContent: 'center' },
+  arrowSpacer: { width: ARROW_SIZE + 10, height: 48 },
+  chevron: { position: 'absolute', width: ARROW_SIZE, height: ARROW_SIZE, borderTopWidth: 4, borderLeftWidth: 4, borderColor: '#fff', borderTopLeftRadius: 2 },
 
   meterBlock: { alignItems: 'center', gap: 6 },
   meter: { height: 56, justifyContent: 'center' },

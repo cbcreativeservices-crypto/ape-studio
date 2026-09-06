@@ -817,7 +817,7 @@ function LivePitchMode({
           {/* CENTERLOCK (owner 2026-09-06): the one fullscreen stage display —
               opened here, rendered at the screen root, closed with its ✕. */}
           <GlassButton
-            label="CENTERLOCK · FULLSCREEN"
+            label="FULL SCREEN"
             tint="green"
             height={48}
             fontSize={13}
