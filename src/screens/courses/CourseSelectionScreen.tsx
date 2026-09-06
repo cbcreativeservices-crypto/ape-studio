@@ -556,23 +556,34 @@ function CourseCardView({
   // User-placed HOME topic card (paid Home customizer, user request 2026-07-22)
   // — a simple filled card with the book icon; tap opens study for that topic.
   if (item.kind === 'homeTopic') {
+    // ART (owner 2026-09-05): this card used to be a plain filled tile with a
+    // book icon — on the member Home deck, "Pro Audio Safety" and "DAW Skills"
+    // therefore looked like broken image placeholders next to the image-backed
+    // Lab / Tools / Glossary cards. It now carries real art like every other
+    // card: the topic's own taster art where it exists (free3060 / free3970),
+    // otherwise the generic course art, so no topic card is ever bare.
+    const topicArt = cardImageUrl(`free${item.gs}`) ?? cardImageUrl('MUSI190');
     return (
       <View style={styles.cardOuter}>
         <View style={styles.cardAbove}>
           <Text style={[styles.cardAboveText, { color: '#c4a2ff' }]}>MY TOPIC</Text>
           <View style={[styles.cardAboveRule, { backgroundColor: '#c4a2ff' }]} />
         </View>
-        <Pressable
-          style={[styles.card, styles.homeTopicCard]}
-          onPress={() => onOpenTopic(item.gs)}
-          accessibilityRole="button"
-          accessibilityLabel={`Study ${item.name}`}
-        >
-          <BookIcon color="#c4a2ff" filled size={54} />
-          <Text style={styles.homeTopicName}>{item.name}</Text>
-          {item.subject ? <Text style={styles.homeTopicSubject}>{item.subject}</Text> : null}
-          <View style={{ height: 12 }} />
-          <Text style={styles.homeTopicCta}>STUDY ›</Text>
+        <Pressable onPress={() => onOpenTopic(item.gs)} accessibilityRole="button" accessibilityLabel={`Study ${item.name}`}>
+          <CardArt uri={topicArt} style={[styles.card, { borderColor: 'rgba(196,162,255,.65)' }]} imageStyle={styles.cardImg}>
+            <LinearGradient
+              colors={['rgba(8,8,10,0.55)', 'rgba(8,8,10,0)', 'rgba(8,8,10,0.45)', 'rgba(8,8,10,0.95)']}
+              locations={[0, 0.3, 0.58, 1]}
+              style={StyleSheet.absoluteFill}
+            />
+            <View>
+              <Text style={styles.cardTitle}>{item.name}</Text>
+              {item.subject ? <Text style={styles.homeTopicSubject}>{item.subject}</Text> : null}
+            </View>
+            <View style={{ alignItems: 'center' }}>
+              <Text style={styles.homeTopicCta}>STUDY ›</Text>
+            </View>
+          </CardArt>
         </Pressable>
       </View>
     );
@@ -671,6 +682,10 @@ function CourseCardView({
             ? coming.name
             : course!.code;
   const url = cardImageUrl(key);
+  // Dev diagnostic (owner report 2026-09-05: topic cards on a placeholder) —
+  // a card with NO art url never even requests an image, so CardArt's own
+  // load log stays silent. Name the key here so the Metro log shows the gap.
+  if (__DEV__ && !url) console.log(`[cardart] NO URL for card key="${key}" (kind=${item.kind})`);
   // Free-tier nuance (§3): a SINGLE-topic taster card containing a free topic is
   // OPENABLE for free/lapsed users. Any other public card — multi-topic
   // Professional Program Certificates AND single-topic non-free cards like
