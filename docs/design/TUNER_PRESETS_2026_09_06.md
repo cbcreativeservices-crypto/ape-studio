@@ -76,6 +76,19 @@ Railsback average). What the mode does:
 - **Honesty.** The stretch is an average, not a measurement: inharmonicity differs per piano and the
   phone hears one fundamental, so it cannot compute the instrument's own curve.
 
+## Bug + usability pass (2026-09-06, three reviewers)
+
+Fixed: tick-driven lock clock (steady tones confirm), preset chips no longer reset a locked piano
+key or the hold readout, immediate re-lock, prefs race, stretched AUTO key choice, strings numbered
+from the top, centre-to-reading meter fill, dimmed chips do not take taps, A4/CAPO long-press reset
+and A4 shown in the identity line, tuning/capo/A4 remembered, LOCKED key styling, self-clearing
+tuned mark, ♯ glyphs, six transpositions with correct octaves, piano octave keys + hold-to-repeat,
+WRONG KEY text, honest unison copy, trailing-window hold, ALMOST…/SIGNAL copy, landscape cents by
+the note, iOS identity/note collision.
+
+Deferred (design calls, not defects): moving A4 and STROBE into the picker sheet; writing A4 back to
+the tuner mode on close; a note+octave picker for piano; two chip rows in landscape.
+
 ## What was deliberately left out
 
 - Sitar, sarod, saz/bağlama, shamisen, koto, guzheng — wait for a tonic (Sa) / key system. One
