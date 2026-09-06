@@ -33,24 +33,91 @@
           "action": "VIEW",
           "autoVerify": true,
           "data": [
-            { "scheme": "https", "host": "proaudiotrainingacademy.com", "pathPrefix": "/get" },
-            { "scheme": "https", "host": "proaudiotrainingacademy.com", "pathPrefix": "/tools" },
-            { "scheme": "https", "host": "proaudiotrainingacademy.com", "pathPrefix": "/learn" },
-            { "scheme": "https", "host": "proaudiotrainingacademy.com", "pathPrefix": "/labs" },
-            { "scheme": "https", "host": "proaudiotrainingacademy.com", "pathPrefix": "/glossary" },
-            { "scheme": "https", "host": "proaudiotrainingacademy.com", "pathPrefix": "/awards" },
-            { "scheme": "https", "host": "proaudiotrainingacademy.com", "pathPrefix": "/directory" },
-            { "scheme": "https", "host": "proaudiotrainingacademy.com", "pathPrefix": "/careers" },
-            { "scheme": "https", "host": "www.proaudiotrainingacademy.com", "pathPrefix": "/get" },
-            { "scheme": "https", "host": "www.proaudiotrainingacademy.com", "pathPrefix": "/tools" },
-            { "scheme": "https", "host": "www.proaudiotrainingacademy.com", "pathPrefix": "/learn" },
-            { "scheme": "https", "host": "www.proaudiotrainingacademy.com", "pathPrefix": "/labs" },
-            { "scheme": "https", "host": "www.proaudiotrainingacademy.com", "pathPrefix": "/glossary" },
-            { "scheme": "https", "host": "www.proaudiotrainingacademy.com", "pathPrefix": "/awards" },
-            { "scheme": "https", "host": "www.proaudiotrainingacademy.com", "pathPrefix": "/directory" },
-            { "scheme": "https", "host": "www.proaudiotrainingacademy.com", "pathPrefix": "/careers" }
+            {
+              "scheme": "https",
+              "host": "proaudiotrainingacademy.com",
+              "pathPrefix": "/get"
+            },
+            {
+              "scheme": "https",
+              "host": "proaudiotrainingacademy.com",
+              "pathPrefix": "/tools"
+            },
+            {
+              "scheme": "https",
+              "host": "proaudiotrainingacademy.com",
+              "pathPrefix": "/learn"
+            },
+            {
+              "scheme": "https",
+              "host": "proaudiotrainingacademy.com",
+              "pathPrefix": "/labs"
+            },
+            {
+              "scheme": "https",
+              "host": "proaudiotrainingacademy.com",
+              "pathPrefix": "/glossary"
+            },
+            {
+              "scheme": "https",
+              "host": "proaudiotrainingacademy.com",
+              "pathPrefix": "/awards"
+            },
+            {
+              "scheme": "https",
+              "host": "proaudiotrainingacademy.com",
+              "pathPrefix": "/directory"
+            },
+            {
+              "scheme": "https",
+              "host": "proaudiotrainingacademy.com",
+              "pathPrefix": "/careers"
+            },
+            {
+              "scheme": "https",
+              "host": "www.proaudiotrainingacademy.com",
+              "pathPrefix": "/get"
+            },
+            {
+              "scheme": "https",
+              "host": "www.proaudiotrainingacademy.com",
+              "pathPrefix": "/tools"
+            },
+            {
+              "scheme": "https",
+              "host": "www.proaudiotrainingacademy.com",
+              "pathPrefix": "/learn"
+            },
+            {
+              "scheme": "https",
+              "host": "www.proaudiotrainingacademy.com",
+              "pathPrefix": "/labs"
+            },
+            {
+              "scheme": "https",
+              "host": "www.proaudiotrainingacademy.com",
+              "pathPrefix": "/glossary"
+            },
+            {
+              "scheme": "https",
+              "host": "www.proaudiotrainingacademy.com",
+              "pathPrefix": "/awards"
+            },
+            {
+              "scheme": "https",
+              "host": "www.proaudiotrainingacademy.com",
+              "pathPrefix": "/directory"
+            },
+            {
+              "scheme": "https",
+              "host": "www.proaudiotrainingacademy.com",
+              "pathPrefix": "/careers"
+            }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ],
       "permissions": [
@@ -90,12 +157,15 @@
           "savePhotosPermission": "Used only when you tap SAVE on a lab drawing or a measurement snapshot, to add that image to your Photos. Nothing is read from your library.",
           "photosPermission": "Used only when you tap SAVE on a lab drawing or a measurement snapshot, to add that image to your Photos. Nothing is uploaded.",
           "isAccessMediaLocationEnabled": false,
-          "granularPermissions": ["photo"]
+          "granularPermissions": [
+            "photo"
+          ]
         }
       ],
       "expo-audio",
       "expo-asset",
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-image"
     ],
     "extra": {
       "eas": {

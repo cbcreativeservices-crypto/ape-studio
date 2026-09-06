@@ -1,33 +1,63 @@
 /**
- * CardArt — a resilient ImageBackground for the Home carousel art (owner report
+ * CardArt — the Home carousel's card art, made reliable (owner report
  * 2026-09-05: "both phones are not always showing their menu-screen carousel
  * image card — instead they show an image placeholder").
  *
- * ROOT CAUSES found:
- *  1. The course-cards bucket serves every object with `Cache-Control: no-cache`
- *     (verified with a HEAD request). On iOS the default request policy then
- *     REVALIDATES on every render — so every FlatList recycle and every launch
- *     re-fetched the art over the network, and on a weak connection the card
- *     sat on its dark fallback. `Image.prefetch` warming was defeated the same
- *     way. `cache: 'force-cache'` (iOS) returns the stored bytes regardless of
- *     that header once the first load has succeeded. Android's Fresco keys its
- *     disk cache by URI and already ignores the header.
- *  2. A single failed request (timeout, flaky Wi-Fi) left the RN Image BLANK for
- *     good — there was no onError, so nothing ever retried until the card was
- *     recycled. This component retries with backoff; the final attempt adds a
- *     cache-busting query so a poisoned cache entry cannot win three times.
- *  3. Boot fired 26 parallel prefetches (3.2 MB) that queued AHEAD of the
- *     visible cards' own requests; see CourseSelectionScreen.warmCardArt.
+ * ROOT CAUSE (verified with a HEAD request): the course-cards bucket serves
+ * every object with `Cache-Control: no-cache`. React Native's iOS image loader
+ * then revalidates on every render and every launch, `Image.prefetch` warming is
+ * defeated the same way, and a single failed request left the RN Image BLANK
+ * for good because nothing retried.
  *
- * Behaviour: renders the same ImageBackground the cards always used, plus
- * retry. No layout change, no new dependency. fadeDuration 0 on Android so a
- * cached hit paints immediately instead of fading in like a fresh load.
+ * TWO PATHS, chosen at runtime:
+ *  1. `expo-image` (installed 2026-09-05, ships in the NEXT native build): its
+ *     own memory + disk cache keys on the URL and ignores that header, decodes
+ *     off the JS thread, and reports errors. Used whenever its native module is
+ *     present.
+ *  2. React Native `ImageBackground` fallback for the dev clients built before
+ *     expo-image was added: iOS `force-cache` (stored bytes win over the header
+ *     once loaded), fadeDuration 0, and a retry with backoff whose last attempt
+ *     cache-busts so a poisoned entry cannot win three times.
+ *
+ * In __DEV__ every load/failure is logged as `[cardart] …` so the phone's Metro
+ * output says exactly which file failed and why.
  */
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from 'react';
 import { ImageBackground, type ImageStyle, type StyleProp, type ViewStyle } from 'react-native';
+import { requireOptionalNativeModule } from 'expo-modules-core';
+
+type ExpoImageBackground = ComponentType<{
+  source?: { uri: string };
+  style?: StyleProp<ViewStyle>;
+  imageStyle?: StyleProp<ImageStyle>;
+  contentFit?: 'cover' | 'contain';
+  cachePolicy?: 'none' | 'disk' | 'memory' | 'memory-disk';
+  transition?: number;
+  recyclingKey?: string;
+  onLoad?: () => void;
+  onError?: (e: { error: string }) => void;
+  children?: ReactNode;
+}>;
+
+/** expo-image's ImageBackground when its native module is in this binary, else
+ *  null. Gated on the NATIVE module first so a dev client built before the
+ *  package was added never evaluates expo-image's JS (which would throw). The
+ *  require is a literal string so Metro bundles the module for the build. */
+const EXPO_IMAGE_BG: ExpoImageBackground | null = (() => {
+  try {
+    if (!requireOptionalNativeModule('ExpoImage')) return null;
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const lib = require('expo-image') as { ImageBackground?: ExpoImageBackground };
+    return lib.ImageBackground ?? null;
+  } catch {
+    return null;
+  }
+})();
 
 const MAX_ATTEMPTS = 3;
 const RETRY_MS = [700, 1600]; // backoff before attempt 2 and attempt 3
+
+const tag = (uri: string | null | undefined) => uri?.split('/').pop() ?? '(none)';
 
 export function CardArt({
   uri,
@@ -49,26 +79,58 @@ export function CardArt({
     };
   }, [uri]);
 
-  const source = useMemo(() => {
-    if (!uri) return undefined;
-    // Only the LAST attempt busts the cache — the first retry may simply have
-    // hit a transient network error, and the cached copy is what we want.
-    const u = attempt >= MAX_ATTEMPTS - 1 ? `${uri}${uri.includes('?') ? '&' : '?'}r=${attempt}` : uri;
-    return { uri: u, cache: 'force-cache' as const };
+  const retry = () => {
+    if (attempt >= MAX_ATTEMPTS - 1 || timer.current) return;
+    timer.current = setTimeout(() => {
+      timer.current = null;
+      setAttempt((a) => a + 1);
+    }, RETRY_MS[attempt] ?? 1600);
+  };
+
+  // Only the LAST attempt busts the cache — the first retry may simply have hit
+  // a transient network error, and the cached copy is what we want.
+  const bustedUri = useMemo(() => {
+    if (!uri) return null;
+    return attempt >= MAX_ATTEMPTS - 1 ? `${uri}${uri.includes('?') ? '&' : '?'}r=${attempt}` : uri;
   }, [uri, attempt]);
 
+  if (EXPO_IMAGE_BG && bustedUri) {
+    const ExpoBg = EXPO_IMAGE_BG;
+    return (
+      <ExpoBg
+        source={{ uri: bustedUri }}
+        style={style}
+        imageStyle={imageStyle}
+        contentFit="cover"
+        cachePolicy="memory-disk"
+        transition={0}
+        recyclingKey={uri ?? undefined}
+        onLoad={() => {
+          if (__DEV__) console.log(`[cardart] ok  (expo-image) attempt=${attempt} ${tag(uri)}`);
+        }}
+        onError={(e) => {
+          if (__DEV__) console.log(`[cardart] ERR (expo-image) attempt=${attempt} ${tag(uri)} :: ${e?.error ?? 'unknown'}`);
+          retry();
+        }}
+      >
+        {children}
+      </ExpoBg>
+    );
+  }
+
+  const source = bustedUri ? { uri: bustedUri, cache: 'force-cache' as const } : undefined;
   return (
     <ImageBackground
       source={source}
       style={style}
       imageStyle={imageStyle}
       fadeDuration={0}
-      onError={() => {
-        if (attempt >= MAX_ATTEMPTS - 1 || timer.current) return;
-        timer.current = setTimeout(() => {
-          timer.current = null;
-          setAttempt((a) => a + 1);
-        }, RETRY_MS[attempt] ?? 1600);
+      onLoad={() => {
+        if (__DEV__) console.log(`[cardart] ok  (rn) attempt=${attempt} ${tag(uri)}`);
+      }}
+      onError={(e) => {
+        if (__DEV__) console.log(`[cardart] ERR (rn) attempt=${attempt} ${tag(uri)} :: ${String(e?.nativeEvent?.error ?? 'unknown')}`);
+        retry();
       }}
     >
       {children}
