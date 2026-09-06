@@ -58,21 +58,30 @@ import {
   magnitudeColor,
   nearestTarget,
   OCTAVE_CENTS,
+  PIANO_HIGH_MIDI,
+  PIANO_LOW_MIDI,
+  pianoRangeHint,
+  pianoTarget,
+  readAgainstPartials,
   steadinessText,
   stepChromatic,
   stepHold,
   stepLock,
   stepTarget,
+  STRETCH_LEVELS,
   TRANSPOSITIONS,
   TUNINGS,
   type HoldState,
   type InstrumentKey,
   type LockState,
+  type StretchKey,
   type StringTarget,
   type TargetState,
   type Temperament,
   type TranspositionKey,
 } from '../../features/tools/tuner/centerLock';
+
+const PIANO_WORKFLOW_HINT = 'Set the temperament F3–F4 first, then tune outward in octaves · stretch is a typical average, the final beat rates are yours';
 
 const A4_CHOICES = [415, 432, 435, 438, 440, 441, 442, 443, 444];
 const CONTROLS_FADE_MS = 2000;
@@ -96,12 +105,14 @@ export function CenterLockTuner() {
   const [a4, setA4] = useState(() => readTunerFrame().a4 || 440);
   const [temperament, setTemperament] = useState<Temperament>('fifths');
   const [transpose, setTranspose] = useState<TranspositionKey>('C');
+  const [stretch, setStretch] = useState<StretchKey>('typical');
   const [strobe, setStrobe] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [recents, setRecents] = useState<InstrumentKey[]>([]);
   const inst = INSTRUMENTS[instrument];
   const targets = useMemo(() => buildTargets(instrument, tuningKey, a4, capo, temperament), [instrument, tuningKey, a4, capo, temperament]);
-  const transposeSemis = TRANSPOSITIONS.find((t) => t.key === transpose)?.semis ?? 0;
+  const transposeSemis = inst.piano ? 0 : TRANSPOSITIONS.find((t) => t.key === transpose)?.semis ?? 0;
+  const stretchAmount = STRETCH_LEVELS.find((s) => s.key === stretch)?.amount ?? 1;
 
   // Recents: the last instrument comes back on the next open.
   const chosen = useRef(false);
@@ -202,11 +213,15 @@ export function CenterLockTuner() {
   const tunings = TUNINGS[instrument];
   const setupChips = (
     <>
-      {inst.chromatic
-        ? TRANSPOSITIONS.map((t) => (
-            <Chip key={t.key} label={t.name} on={transpose === t.key} onPress={() => { touch(); setTranspose(t.key); }} />
+      {inst.piano
+        ? STRETCH_LEVELS.map((s) => (
+            <Chip key={s.key} label={s.name} on={stretch === s.key} onPress={() => { touch(); setStretch(s.key); }} accessibilityHint="Sets how far the bass runs flat and the treble sharp" />
           ))
-        : null}
+        : inst.chromatic
+          ? TRANSPOSITIONS.map((t) => (
+              <Chip key={t.key} label={t.name} on={transpose === t.key} onPress={() => { touch(); setTranspose(t.key); }} />
+            ))
+          : null}
       {tunings.length > 1
         ? tunings.map((t) => (
             <Chip key={t.key} label={t.name.toUpperCase()} on={tuningKey === t.key} onPress={() => { touch(); setTuningKey(t.key); }} />
@@ -255,6 +270,7 @@ export function CenterLockTuner() {
         targets={targets}
         a4={a4}
         transposeSemis={transposeSemis}
+        stretchAmount={stretchAmount}
         manual={manual}
         targetOverride={targetOverride}
         strobe={strobe}
@@ -333,6 +349,8 @@ type LiveReadoutProps = {
   targets: StringTarget[];
   a4: number;
   transposeSemis: number;
+  /** Piano stretch curve scale: 0 = equal temperament, 1 = typical. */
+  stretchAmount: number;
   manual: boolean;
   /** A target index the user tapped; consumed on the next frame. */
   targetOverride: React.MutableRefObject<number | null>;
@@ -356,6 +374,7 @@ const LiveReadout = memo(function LiveReadout({
   targets,
   a4,
   transposeSemis,
+  stretchAmount,
   manual,
   targetOverride,
   strobe,
@@ -368,6 +387,12 @@ const LiveReadout = memo(function LiveReadout({
   const frame = useTunerFrame();
   const inst = INSTRUMENTS[instrument];
   const chromatic = !!inst.chromatic;
+  const piano = !!inst.piano;
+  // Piano: the key being tuned. null = AUTO (nearest key); a number LOCKS the
+  // key so bass strings can be read against their partials and a wrong
+  // octave shows as such. Lives here because only this subtree needs it.
+  const [lockedMidi, setLockedMidi] = useState<number | null>(null);
+  const [partial, setPartial] = useState(1);
   const targetRef = useRef<TargetState>({ target: 0, candidate: null, candidateSince: null });
   const lockRef = useRef<LockState>(INITIAL_LOCK);
   const holdRef = useRef<HoldState>(INITIAL_HOLD);
@@ -392,7 +417,9 @@ const LiveReadout = memo(function LiveReadout({
     holdRef.current = INITIAL_HOLD;
     chromMidi.current = null;
     setTuned(new Set());
-  }, [targets, transposeSemis]);
+    setLockedMidi(null);
+    setPartial(1);
+  }, [targets, transposeSemis, instrument]);
 
   useEffect(() => {
     const now = Date.now();
@@ -408,8 +435,25 @@ const LiveReadout = memo(function LiveReadout({
 
     let rawCents: number | null = null;
     let target: StringTarget = chromatic ? view.target : (targets[targetRef.current.target] ?? NO_TARGET);
-    if (hz != null && hz > 0) {
-      if (chromatic) {
+    let readPartial = 1;
+    if (piano && lockedMidi != null) {
+      // Locked key: the stretched target stands; read the mic against the
+      // fundamental or, on bass strings, the partial it actually hears.
+      target = pianoTarget(lockedMidi, a4, stretchAmount);
+      chromMidi.current = lockedMidi;
+      if (hz != null && hz > 0) {
+        const r = readAgainstPartials(hz, target.hz, target.hz < 80 ? 3 : 2);
+        rawCents = r.cents;
+        readPartial = r.partial;
+      }
+    } else if (hz != null && hz > 0) {
+      if (piano) {
+        const step = stepChromatic(chromMidi.current, hz, a4, 0);
+        if (step.midi !== chromMidi.current) lockRef.current = INITIAL_LOCK;
+        chromMidi.current = step.midi;
+        target = pianoTarget(step.midi, a4, stretchAmount);
+        rawCents = centsBetween(hz, target.hz);
+      } else if (chromatic) {
         const step = stepChromatic(chromMidi.current, hz, a4, transposeSemis);
         if (step.midi !== chromMidi.current) lockRef.current = INITIAL_LOCK;
         chromMidi.current = step.midi;
@@ -451,6 +495,7 @@ const LiveReadout = memo(function LiveReadout({
     }
     if (rawCents != null) shownRef.current = dampCents(shownRef.current, Math.max(-METER_RANGE, Math.min(METER_RANGE, rawCents)), dt);
     holdRef.current = chromatic ? stepHold(holdRef.current, hz != null ? target.note : null, lockInput, now) : INITIAL_HOLD;
+    setPartial(readPartial);
     setView({
       target,
       targetIdx: targetRef.current.target,
@@ -460,7 +505,19 @@ const LiveReadout = memo(function LiveReadout({
       hold: chromatic ? holdSummary(holdRef.current, now) : null,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [frame.freq, frame.accepted, targets, manual, chromatic, a4, transposeSemis]);
+  }, [frame.freq, frame.accepted, targets, manual, chromatic, piano, a4, transposeSemis, stretchAmount, lockedMidi]);
+
+  const stepKey = (delta: number) => {
+    setLockedMidi((m) => {
+      const base = m ?? chromMidi.current ?? 69;
+      return Math.max(PIANO_LOW_MIDI, Math.min(PIANO_HIGH_MIDI, base + delta));
+    });
+    lockRef.current = INITIAL_LOCK;
+  };
+  const toggleKeyLock = () => {
+    setLockedMidi((m) => (m == null ? (chromMidi.current ?? 69) : null));
+    lockRef.current = INITIAL_LOCK;
+  };
 
   const target = view.target;
   const cents = view.rawCents;
@@ -468,11 +525,19 @@ const LiveReadout = memo(function LiveReadout({
   const tint = magnitudeColor(octaveOff ? null : cents);
   const direction = directionText(cents, view.confirmed);
   const unstableMs = Date.now() - lastAcceptedAt.current;
-  const lowHint = lowStringHint(target.hz, frame.accepted ? 0 : unstableMs);
-  const hint = lowHint ?? (chromatic ? null : courseHint(target, targets));
+  const lowHint = piano ? null : lowStringHint(target.hz, frame.accepted ? 0 : unstableMs);
+  const hint = piano
+    ? (lockedMidi != null ? pianoRangeHint(target.hz, partial) : null) ?? PIANO_WORKFLOW_HINT
+    : lowHint ?? (chromatic ? null : courseHint(target, targets));
   const noteName = target.note.replace(/\d/g, '');
   const octave = target.note.replace(/\D/g, '');
-  const identity = chromatic ? target.label : inst.numbered ? `STRING ${target.index} · ${target.label}` : target.label;
+  const identity = piano
+    ? `${target.label} · ${target.note}${partial > 1 ? ` · ${partial === 2 ? '2ND' : '3RD'} PARTIAL` : ''}`
+    : chromatic
+      ? target.label
+      : inst.numbered
+        ? `STRING ${target.index} · ${target.label}`
+        : target.label;
   // Portrait: the note is the display — half the screen width. Landscape: the
   // note owns the left column at half the height; the meter, cents, string
   // strip and input bar stack in the right column (visual pass 2026-09-06 —
@@ -489,17 +554,42 @@ const LiveReadout = memo(function LiveReadout({
   const stripW = (landscape ? meterW : width) - 24;
   const keyW = groups.length ? Math.min(60, Math.floor((stripW - (groups.length - 1) * 6) / groups.length)) : 0;
 
-  const strip = chromatic ? (
-    <View style={[styles.holdWrap, { width: stripW }]} accessibilityLiveRegion="polite">
+  const holdBox = (
+    <View style={[styles.holdWrap, { width: stripW }, piano && styles.holdWrapPiano]} accessibilityLiveRegion="polite">
       {view.hold ? (
         <>
           <Text style={[styles.holdMain, { color: magnitudeColor(view.hold.avg) }]}>{`HOLD ${(view.hold.ms / 1000).toFixed(1)} s · AVG ${fmtCents(view.hold.avg)}`}</Text>
-          <Text style={styles.holdSub}>{`${steadinessText(view.hold.spread)} · SPREAD ±${view.hold.spread.toFixed(1)}¢`}</Text>
+          <Text style={styles.holdSub}>{`${steadinessText(view.hold.spread)} · SPREAD ±${view.hold.spread.toFixed(1)}¢${piano ? ' · A WAVER HINTS AT UNISON BEATS' : ''}`}</Text>
         </>
       ) : (
-        <Text style={styles.holdIdle}>SUSTAIN A NOTE FOR THE HOLD READOUT</Text>
+        <Text style={styles.holdIdle}>{piano ? 'HOLD A KEY FOR THE STEADINESS READOUT' : 'SUSTAIN A NOTE FOR THE HOLD READOUT'}</Text>
       )}
     </View>
+  );
+  const strip = piano ? (
+    <View style={[styles.pianoBlock, { width: stripW }]}>
+      <View style={styles.keyRow}>
+        <Pressable onPress={() => stepKey(-1)} hitSlop={8} style={styles.keyStep} accessibilityRole="button" accessibilityLabel="Previous key">
+          <Text style={styles.keyStepText}>◀</Text>
+        </Pressable>
+        <Pressable
+          onPress={toggleKeyLock}
+          style={[styles.keyLock, lockedMidi != null && styles.keyLockOn]}
+          accessibilityRole="button"
+          accessibilityState={{ selected: lockedMidi != null }}
+          accessibilityLabel={lockedMidi != null ? `Key ${target.index} ${target.note} locked, tap for auto` : 'Auto key, tap to lock the key being tuned'}
+        >
+          <Text style={[styles.keyLockMain, lockedMidi != null && { color: colors.amber }]}>{`${target.label} · ${target.note}`}</Text>
+          <Text style={styles.keyLockSub}>{lockedMidi != null ? `LOCKED · STRETCH ${fmtCents((target as { stretch?: number }).stretch ?? 0)}` : 'AUTO · TAP TO LOCK THE KEY'}</Text>
+        </Pressable>
+        <Pressable onPress={() => stepKey(1)} hitSlop={8} style={styles.keyStep} accessibilityRole="button" accessibilityLabel="Next key">
+          <Text style={styles.keyStepText}>▶</Text>
+        </Pressable>
+      </View>
+      {holdBox}
+    </View>
+  ) : chromatic ? (
+    holdBox
   ) : (
     <View style={[styles.strip, { width: stripW }]}>
       {groups.map((g) => {
@@ -762,6 +852,15 @@ const styles = StyleSheet.create({
   holdMain: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, letterSpacing: 1.6 },
   holdSub: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: '#8a8b93' },
   holdIdle: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: '#6b6f7a' },
+  holdWrapPiano: { minHeight: 52, paddingVertical: 5, width: '100%' },
+  pianoBlock: { alignSelf: 'center', gap: 6, paddingVertical: 4 },
+  keyRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  keyStep: { width: 48, height: 52, borderRadius: 10, borderWidth: 1.5, borderColor: '#2a2b31', backgroundColor: '#101116', alignItems: 'center', justifyContent: 'center' },
+  keyStepText: { fontSize: 16, color: colors.textSecondary },
+  keyLock: { flex: 1, minHeight: 52, borderRadius: 10, borderWidth: 1.5, borderColor: '#2a2b31', backgroundColor: '#101116', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8, gap: 2 },
+  keyLockOn: { borderColor: colors.amber, backgroundColor: '#1d1708' },
+  keyLockMain: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1.2, color: colors.textPrimary },
+  keyLockSub: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.3, color: '#6b6f7a' },
 
   foot: { paddingHorizontal: 16, gap: 6, alignItems: 'center' },
   confWrap: { alignSelf: 'stretch', paddingHorizontal: 16, gap: 6, alignItems: 'center', paddingBottom: 6 },

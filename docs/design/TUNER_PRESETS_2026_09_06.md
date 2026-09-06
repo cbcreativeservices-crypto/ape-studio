@@ -39,6 +39,7 @@ open (AsyncStorage `ape:centerlock:v1`). Recents also sit in the chip row beside
 | World | Pipa | A2 D3 E3 A3 | |
 | World | Bouzouki · Greek 3-course | D3 A3 D4 | trichordo, octave low D |
 | World | Bouzouki · Greek 4-course | C3 F3 A3 D4 | tetrachordo, octave low C and F |
+| Piano | Piano · 88 keys | A0–C8 | stretch curve, key lock, partial reading — see below |
 | Chromatic | Chromatic · winds & brass | any note | see below |
 
 **Double courses.** An octave pair is two targets on one key (`E2·E3`). AUTO targets whichever string
@@ -50,11 +51,31 @@ half-way point). Transposition chips relabel the note as WRITTEN pitch: C (conce
 F (+7); the identity line says what it SOUNDS. A sustained-tone hold readout replaces the string
 strip: hold time, average cents, spread and a steadiness word after 600 ms / 6 samples.
 
+**Piano (owner 2026-09-06: "add a piano preset — optimize it for piano tuning").** A piano is not
+tuned to equal-temperament frequencies: string stiffness makes partials sharp, so octaves are set
+wider than 2:1 and the scale stretches — bass flat, treble sharp, about ±30 ¢ at the ends (the
+Railsback average). What the mode does:
+
+- **Stretch chips** NO STRETCH · LIGHT · TYPICAL · FULL scale a typical average curve
+  (`pianoStretchCents`: 0 at A4, about −4 ¢ at C3, −15 ¢ at A1, −30 ¢ at A0; +4 ¢ at C6, +13 ¢ at C7,
+  +30 ¢ at C8). The key readout shows the stretch applied to the locked key.
+- **Key lock and stepper** ◀ KEY 49 · A4 ▶. AUTO follows the nearest key; tapping the key locks it so
+  a wrong octave shows as OCTAVE HIGH/LOW instead of silently retargeting, and the technician can
+  step outward key by key.
+- **Partial reading.** The app's tracker floor is 40 Hz and bass fundamentals are weak, so a locked
+  key is read against its 2nd (or, below 80 Hz, 3rd) partial when that is what the mic hears; the
+  identity line says "2ND PARTIAL" and the hint notes that real strings run partials a cent or two
+  sharp. Above ~C7 the 50 ms window resolves pitch poorly; the hint says to tune by octave from below.
+- **Steadiness readout** (the chromatic hold box): a waver in a held key hints at unison beats. The
+  phone cannot hear beat rates; the hint line says the final beats are the tuner's.
+- **Honesty.** The stretch is an average, not a measurement: inharmonicity differs per piano and the
+  phone hears one fundamental, so it cannot compute the instrument's own curve.
+
 ## What was deliberately left out
 
 - Sitar, sarod, saz/bağlama, shamisen, koto, guzheng — wait for a tonic (Sa) / key system. One
   absolute Western preset would mislead.
-- Piano — stretched octaves and inharmonicity; a string tuner is the wrong tool.
+- Measured (per-piano) stretch — would need partial analysis the engine does not expose.
 - Custom per-string tunings and search/favourites — recents plus 25 presets cover launch; revisit
   after device feedback.
 - 5-string double bass (low B0/C1) — the 5-string bass preset covers B0 tuning if needed.

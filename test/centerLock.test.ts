@@ -23,8 +23,14 @@ import {
   magnitudeColor,
   nearestTarget,
   noteHz,
+  pianoKeyNumber,
+  pianoRangeHint,
+  pianoStretchCents,
+  pianoTarget,
+  readAgainstPartials,
   RETARGET_MS,
   steadinessText,
+  STRETCH_LEVELS,
   stepChromatic,
   stepHold,
   stepLock,
@@ -224,6 +230,47 @@ test('chromatic mode holds the note across the half-way point and writes transpo
   assert.equal(stepChromatic(null, noteHz('C4'), 440, eb.semis).target.note, 'A4');
   const f = TRANSPOSITIONS.find((t) => t.key === 'F')!;
   assert.equal(stepChromatic(null, noteHz('C4'), 440, f.semis).target.note, 'G4');
+});
+
+test('piano stretch is zero at A4, flat in the bass, sharp in the treble, scaled by amount', () => {
+  assert.equal(pianoStretchCents(69), 0);
+  near(pianoStretchCents(108), 30, 0.01, );
+  near(pianoStretchCents(21), -30, 0.01);
+  assert.ok(pianoStretchCents(96) > 8 && pianoStretchCents(96) < 18, 'C7 roughly +10…15 ¢ like the Railsback average');
+  assert.ok(pianoStretchCents(84) > 2 && pianoStretchCents(84) < 6, 'C6 a few cents sharp');
+  assert.ok(pianoStretchCents(48) < -2 && pianoStretchCents(48) > -6, 'C3 a few cents flat');
+  for (let m = 22; m <= 108; m++) assert.ok(pianoStretchCents(m) >= pianoStretchCents(m - 1), 'monotonic');
+  near(pianoStretchCents(108, 0.5), 15, 0.01);
+  assert.equal(pianoStretchCents(21, 0), 0);
+  assert.equal(pianoKeyNumber(21), 1);
+  assert.equal(pianoKeyNumber(69), 49);
+  assert.equal(pianoKeyNumber(108), 88);
+  const a4 = pianoTarget(69, 440);
+  near(a4.hz, 440);
+  assert.equal(a4.key, 49);
+  const c8 = pianoTarget(108, 440);
+  near(centsBetween(c8.hz, noteHz('C8')), 30, 0.01);
+  assert.equal(pianoTarget(5, 440).note, 'A0', 'clamped to the keyboard');
+  const p = INSTRUMENTS.piano;
+  assert.ok(p.chromatic && p.piano && p.family === 'Piano');
+});
+
+test('a locked piano key reads the 2nd partial when that is what the mic hears', () => {
+  const a0 = pianoTarget(21, 440, 0); // 27.5 Hz, under the tracker floor
+  const heard = a0.hz * 2 * Math.pow(2, 4 / 1200); // 2nd partial, 4 ¢ sharp
+  const r = readAgainstPartials(heard, a0.hz, 3);
+  assert.equal(r.partial, 2);
+  near(r.cents, 4, 0.01);
+  const f = readAgainstPartials(a0.hz * Math.pow(2, -3 / 1200), a0.hz, 3);
+  assert.equal(f.partial, 1, 'the fundamental wins when it fits');
+  const wild = readAgainstPartials(a0.hz * 2.7, a0.hz, 2);
+  assert.equal(wild.partial, 1, 'nothing fits → honest fundamental reading');
+  assert.ok(Math.abs(wild.cents) > 1000);
+  assert.ok(pianoRangeHint(27.5, 1)?.includes('2nd partial'));
+  assert.ok(pianoRangeHint(27.5, 2)?.includes('sharp'));
+  assert.ok(pianoRangeHint(3000, 1)?.includes('Treble'));
+  assert.equal(pianoRangeHint(440, 1), null);
+  assert.equal(STRETCH_LEVELS.find((s) => s.key === 'typical')?.amount, 1);
 });
 
 test('hold readout needs a sustained note and reports mean and spread', () => {

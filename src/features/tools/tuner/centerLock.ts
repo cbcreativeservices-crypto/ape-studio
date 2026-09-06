@@ -26,8 +26,8 @@ export const RETARGET_MS = 250;
 export const OCTAVE_CENTS = 700;
 
 export type Temperament = 'equal' | 'fifths';
-export type Family = 'Guitar' | 'Bass' | 'Bowed' | 'Folk' | 'World' | 'Chromatic';
-export const FAMILY_ORDER: Family[] = ['Guitar', 'Bass', 'Bowed', 'Folk', 'World', 'Chromatic'];
+export type Family = 'Guitar' | 'Bass' | 'Bowed' | 'Folk' | 'World' | 'Piano' | 'Chromatic';
+export const FAMILY_ORDER: Family[] = ['Guitar', 'Bass', 'Bowed', 'Folk', 'World', 'Piano', 'Chromatic'];
 
 export type StringTarget = {
   /** 1 = lowest string/course, as players count them. */
@@ -62,6 +62,8 @@ export type InstrumentDef = {
   capo?: boolean;
   /** Chromatic mode: no strings, nearest note, transposition, hold stats. */
   chromatic?: boolean;
+  /** Piano mode: chromatic with a stretch curve, key lock and partial reading. */
+  piano?: boolean;
   /** One line under the name in the picker. */
   blurb: string;
 };
@@ -189,6 +191,8 @@ const INSTRUMENT_DEFS = {
     doubled: true,
     blurb: 'C3 F3 A3 D4 · tetrachordo, octave low pairs',
   },
+  // ── Piano ──
+  piano: { name: 'Piano · 88 keys', family: 'Piano', strings: [], labels: [], chromatic: true, piano: true, blurb: 'Stretch curve · key lock · reads the 2nd partial on bass strings' },
   // ── Chromatic ──
   chromatic: { name: 'Chromatic · winds & brass', family: 'Chromatic', strings: [], labels: [], chromatic: true, blurb: 'Any note · written pitch for B♭, E♭, F · hold readout' },
 } satisfies Record<string, InstrumentDef>;
@@ -251,6 +255,7 @@ export const TUNINGS: Record<InstrumentKey, Tuning[]> = {
   pipa: [STD(4)],
   bouzoukiGreek3: [STD(3)],
   bouzoukiGreek4: [STD(4)],
+  piano: [],
   chromatic: [],
   guitar6: [
     { key: 'standard', name: 'Standard', semitoneOffsets: [0, 0, 0, 0, 0, 0] },
@@ -390,6 +395,83 @@ export function holdSummary(state: HoldState, nowMs: number): { avg: number; spr
   const avg = state.sum / state.n;
   const variance = Math.max(0, state.sumSq / state.n - avg * avg);
   return { avg, spread: Math.sqrt(variance), ms: nowMs - state.since };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Piano mode (owner 2026-09-06: "add a piano preset — optimize it for piano
+// tuning"). A piano is NOT tuned to equal temperament frequencies: string
+// stiffness makes partials sharp (inharmonicity), so octaves are tuned wider
+// than 2:1 and the whole scale "stretches" — bass flat, treble sharp, by
+// roughly 30 ¢ at the ends (the Railsback curve). Technicians set the stretch
+// per instrument by listening to beat rates; the phone hears one fundamental
+// and cannot measure inharmonicity, so this mode offers a typical average
+// curve in four amounts and says so. Bass fundamentals sit under the tracker
+// floor (40 Hz) and are weak on real strings, so a LOCKED key is read against
+// its 2nd (or 3rd) partial when that is what the microphone hears.
+// ─────────────────────────────────────────────────────────────────────────────
+export const STRETCH_LEVELS = [
+  { key: 'none', name: 'NO STRETCH', amount: 0 },
+  { key: 'light', name: 'LIGHT', amount: 0.5 },
+  { key: 'typical', name: 'TYPICAL', amount: 1 },
+  { key: 'full', name: 'FULL', amount: 1.5 },
+] as const;
+export type StretchKey = (typeof STRETCH_LEVELS)[number]['key'];
+
+export const PIANO_LOW_MIDI = 21; // A0
+export const PIANO_HIGH_MIDI = 108; // C8
+/** Below this the app's pitch tracker cannot follow a fundamental. */
+export const TRACKER_FLOOR_HZ = 40;
+/** Above this the 50 ms analysis window resolves pitch poorly. */
+export const TRACKER_TREBLE_HZ = 2100;
+
+/**
+ * Typical stretch (cents) for a MIDI note: 0 near A4, about −30 ¢ at A0 and
+ * +30 ¢ at C8, growing faster toward the ends like the measured average of
+ * well-tuned pianos. `amount` scales the whole curve (0 = equal temperament).
+ */
+export function pianoStretchCents(midi: number, amount = 1): number {
+  const n = midi - 69;
+  if (n === 0) return 0;
+  const cents = n > 0 ? 30 * Math.pow(Math.min(n, 39) / 39, 2.2) : -30 * Math.pow(Math.min(-n, 48) / 48, 2.5);
+  const v = cents * amount;
+  return v === 0 ? 0 : v; // never −0
+
+}
+
+/** Piano key number 1…88 for a MIDI note (A0 = 1, A4 = 49, C8 = 88). */
+export function pianoKeyNumber(midi: number): number {
+  return midi - PIANO_LOW_MIDI + 1;
+}
+
+/** The stretched target for a piano key. */
+export function pianoTarget(midi: number, a4: number, amount = 1): StringTarget & { stretch: number; key: number } {
+  const m = Math.max(PIANO_LOW_MIDI, Math.min(PIANO_HIGH_MIDI, midi));
+  const note = midiToNote(m);
+  const stretch = pianoStretchCents(m, amount);
+  const key = pianoKeyNumber(m);
+  return { index: key, label: `KEY ${key}`, note, hz: noteHz(note, a4) * Math.pow(2, stretch / 1200), course: 0, stretch, key };
+}
+
+/**
+ * Read a frequency against a LOCKED target allowing for the microphone
+ * hearing a partial instead of the fundamental: returns the lowest partial
+ * (1, 2 or 3) within ±60 ¢ of what was heard, or the fundamental reading when
+ * none fits (which the octave-off display then reports honestly).
+ */
+export function readAgainstPartials(hz: number, targetHz: number, maxPartial = 2): { partial: number; cents: number } {
+  for (let n = 1; n <= maxPartial; n++) {
+    const c = centsBetween(hz, targetHz * n);
+    if (Math.abs(c) <= 60) return { partial: n, cents: c };
+  }
+  return { partial: 1, cents: centsBetween(hz, targetHz) };
+}
+
+/** Honesty line for the current piano key. */
+export function pianoRangeHint(targetHz: number, partial: number): string | null {
+  if (targetHz < TRACKER_FLOOR_HZ) return partial > 1 ? `Reading the ${partial === 2 ? '2nd' : '3rd'} partial · real strings run it a cent or two sharp` : 'Below the tracker floor: play the key and the display follows its 2nd partial';
+  if (targetHz > TRACKER_TREBLE_HZ) return 'Treble: the phone resolves fundamentals poorly up here — tune by octave from the key below';
+  if (partial > 1) return `Reading the ${partial === 2 ? '2nd' : '3rd'} partial · real strings run it a cent or two sharp`;
+  return null;
 }
 
 /** Words for the spread: how steady the sustained tone is. */
