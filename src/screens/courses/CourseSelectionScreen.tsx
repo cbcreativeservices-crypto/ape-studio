@@ -325,6 +325,10 @@ function dotColorFor(card: Card): string {
 
 /** The Audio Fundamentals lab-proxy achievement (mirrors DashboardScreen). */
 const LAB_PROXY_GS = 3081;
+/** Prerequisite topics kept OFF the carousel (owner 2026-09-05: "only include
+ *  Pro Audio Safety from the prereqs"): the DAW taster and the other core
+ *  co-requisites stay enrolled and studyable, just not advertised here. */
+const CAROUSEL_HIDDEN_PREREQ_GS: readonly number[] = [3970, 3070, 4370];
 
 function cardImageUrl(key: string): string | null {
   const f = CARD_IMAGE[key];
@@ -1152,7 +1156,9 @@ export function CourseSelectionScreen() {
       // finishing every Audio Fundamentals lab can mark one achievement complete
       // for the certificate core. It is not a study topic and must never be a
       // clickable card (owner 2026-09-05) — the OPEN LAB card is its real face.
-      const topicCards: Card[] = homeGs.filter((gs) => gs !== LAB_PROXY_GS).map((gs) => ({
+      const topicCards: Card[] = homeGs
+        .filter((gs) => gs !== LAB_PROXY_GS && !CAROUSEL_HIDDEN_PREREQ_GS.includes(gs))
+        .map((gs) => ({
         kind: 'homeTopic',
         id: `home-${gs}`,
         gs,
@@ -1171,7 +1177,10 @@ export function CourseSelectionScreen() {
           name: b.name,
           topics: b.topics,
         }));
-      return [...fixed, ...bundleCards, ...topicCards];
+      // The showcase run (owner 2026-09-05) follows on the member deck as well:
+      // it is advertising, and it belongs to the right of the member's own cards.
+      const showcase = cards.filter((c) => c.kind === 'showcase');
+      return [...fixed, ...bundleCards, ...topicCards, ...showcase];
     }
     // No Home-Setup cards placed → the default deck from load(). The legacy
     // per-card "my courses" star deck was removed (user request 2026-07-24);
