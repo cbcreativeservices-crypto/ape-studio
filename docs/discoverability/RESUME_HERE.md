@@ -135,3 +135,7 @@ The worst defects are fixed. The ranked remainder is in `SEO_ASO_AUDIT.md`, with
 - **`.easignore` replaces `.gitignore` for the EAS upload**, so every new ignore entry must be mirrored there. An unmirrored symlink under `.agents/skills/` broke an upload on Windows.
 - **The retired v2 curriculum is still imported** by `AwardsScreen`, `CourseSelectionScreen` and `HomeSetupSheet`, which is where the wrong "26 subjects" figure comes from. The live v3 numbers are 20 fields, 50 subjects, 166 topics.
 - **`common_mistakes` reads as null over the anon key** because it is masked per entitlement. That is the mask, not missing data.
+
+## BUILD RULE (owner, 2026-09-05, after two violations — "I ALWAYS WILL TELL YOU EXPLICITLY WHEN I WANT TO START A BUILD")
+NEVER run `eas build` (any profile, any platform), `eas submit`, or any other billed/external action on my own reading of a message. "We need to build", "then build new versions", a task list, a deadline, a demo — NONE of these are the cue. The ONLY cue is the owner saying, in that moment, in their own words, to start the build now. When work reaches the build step: ask ONE line, then WAIT. Written in nine places at the owner's instruction so it is never missed.
+

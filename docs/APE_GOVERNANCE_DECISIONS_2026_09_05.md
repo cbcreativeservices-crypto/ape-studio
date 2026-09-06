@@ -35,3 +35,7 @@ Decisions of record made by the owner on 2026-09-05. Where this document and mem
 **Why:** builds are billed, consume version numbers and produce artifacts the owner then has to manage and install; the owner decides profile and timing at that moment. On 2026-09-05 two development builds (iOS build 14, Android versionCode 10) were started from the morning brief's closing line without a fresh go — the owner kept them but ruled this must never recur.
 
 **How future work applies it:** when a task chain reaches "build", stop, post the one-line ask, and wait. A build the owner started is never cancelled or restarted by an assistant. Recorded in assistant memory as `never-build-without-explicit-go`.
+
+## BUILD RULE (owner, 2026-09-05, after two violations — "I ALWAYS WILL TELL YOU EXPLICITLY WHEN I WANT TO START A BUILD")
+NEVER run `eas build` (any profile, any platform), `eas submit`, or any other billed/external action on my own reading of a message. "We need to build", "then build new versions", a task list, a deadline, a demo — NONE of these are the cue. The ONLY cue is the owner saying, in that moment, in their own words, to start the build now. When work reaches the build step: ask ONE line, then WAIT. Written in nine places at the owner's instruction so it is never missed.
+
