@@ -42,9 +42,13 @@ export function useScreenIntro(key: IntroKey, sessionOnly = false) {
   useEffect(() => {
     let alive = true;
     if (devBypass('alwaysShowIntros')) {
-      setVisible(true); // every entry = first time (dev)
+      setVisible(true); // every entry = first time (dev, incl. placeholders so they can be felt)
       return;
     }
+    // Never show an UNFINISHED (placeholder) intro to real users — its copy
+    // isn't final and it carries a PLACEHOLDER badge. It reappears the moment
+    // its copy is finalized (placeholder:false). Launch sweep 2026-09-07.
+    if (SCREEN_INTROS[key].placeholder !== false) return;
     if (sessionOnly) {
       // Once per app session: mark shown on first entry so it can't reappear
       // later this session; the flag clears on relaunch, so it returns next time.
