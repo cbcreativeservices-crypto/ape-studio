@@ -85,12 +85,13 @@ async function authorize(req: Request, passphrase: string): Promise<Actor | Resp
 
 Deno.serve(async (req) => {
   const url = new URL(req.url);
-  const parts = url.pathname.split('/').filter(Boolean); // [functions, v1, admin-codes, <slug?>]
-  const tail = parts.slice(3).join('/');
+  const parts = url.pathname.split('/').filter(Boolean); // e.g. [functions,v1,admin-codes,<slug>] OR [admin-codes,<slug>]
 
   // ── serve the console page (GET, secret path only) ──
+  // Match the slug ANYWHERE in the path: Supabase may or may not include the
+  // /functions/v1/ prefix or the function name, so we don't assume a fixed index.
   if (req.method === 'GET') {
-    if (!SLUG || tail !== SLUG) return notFound();
+    if (!SLUG || !parts.includes(SLUG)) return notFound();
     const html = PAGE.replace(/%%URL%%/g, SUPABASE_URL).replace(/%%ANON%%/g, ANON);
     return new Response(html, {
       headers: { 'Content-Type': 'text/html; charset=utf-8', 'X-Robots-Tag': 'noindex, nofollow', 'Cache-Control': 'no-store' },
