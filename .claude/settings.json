@@ -1,5 +1,19 @@
 {
   "enabledPlugins": {
     "expo@claude-plugins-official": true
+  },
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "bash",
+            "command": "cat \"$CLAUDE_PROJECT_DIR/.claude/PROTOCOL_CHECK.md\" 2>/dev/null || cat .claude/PROTOCOL_CHECK.md 2>/dev/null || true",
+            "statusMessage": "Protocol check"
+          }
+        ]
+      }
+    ]
   }
 }
