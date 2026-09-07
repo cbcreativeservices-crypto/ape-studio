@@ -25,9 +25,12 @@ and the subscription group's localization. Google needs the merchant account lin
 
 ## 2. Purchase path — what is NOT live yet (run-list item 2)
 
-**Finding 2026-09-07: the `validate-purchase` edge function exists only in the repo. It is NOT deployed**
-(deployed functions today: `tube-image`, `on-weekly-concept`). Without it every purchase is refused with
-"We couldn't verify that purchase" and nothing is granted — fail-safe, but no revenue.
+**Status 2026-09-07: DEPLOYED and verified against the live schema.** The function is now ACTIVE
+(`verify_jwt` on) with two bugs fixed that would have hit the first paying customer — see the commit
+`f7974a8` (the `entitlements.source` value did not match the DB CHECK constraint, and the grant write
+was never error-checked so a failed write still returned success). Two audits found nothing else. Until
+the secrets below are set the function correctly refuses every purchase ("not verified") and grants
+nothing, so it is safe to have live. **The one remaining backend step is the owner setting the secrets.**
 
 Owner steps, in order, from `C:\Users\profe\dev\ape-studio`:
 
@@ -50,13 +53,13 @@ Owner steps, in order, from `C:\Users\profe\dev\ape-studio`:
    subscriptions" on the app in Play Console, with the Play Developer API enabled on its Google Cloud
    project.
 
-2. Deploy:
+2. Deploy: **already done 2026-09-07** (redeploying after a code change is the same command):
 
    ```bash
    npx supabase functions deploy validate-purchase --project-ref yjgolswjggmlpeowvtxr
    ```
 
-3. Patched in the repo today: the function now tries Apple production first and falls back to the
+3. Fixed and deployed today: the function now tries Apple production first and falls back to the
    SANDBOX on a 404. **App Review buys in the sandbox against the production build**; without this
    fallback the reviewer's purchase fails and the app is rejected. It also refuses an Apple subscription
    transaction whose expiry is already in the past.
