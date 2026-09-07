@@ -197,7 +197,10 @@ Deno.serve(async (req) => {
   const plan = PLAN_SKUS[sku];
   if (!plan) return json({ ok: false, error: 'unknown_product' }, 400);
 
-  const isApple = (body.platform ?? '').toLowerCase().includes('ios');
+  // Route by platform; if the client didn't send one, infer from which
+  // credential is present (Apple = transaction id, Google = purchase token).
+  const plat = (body.platform ?? '').toLowerCase();
+  const isApple = plat.includes('ios') || (!body.purchaseToken && !!body.transactionId);
   const kind: 'subs' | 'in-app' = plan === 'lifetime' ? 'in-app' : 'subs';
   const verified = isApple
     ? await verifyApple(body.transactionId ?? '', sku, kind)
@@ -211,28 +214,35 @@ Deno.serve(async (req) => {
   const userId = (userRow as { id?: string } | null)?.id;
   if (!userId) return json({ ok: false, error: 'no_user_row' });
 
-  const expires_at = expiresAtFor(plan, verified);
-  const source = isApple ? 'appstore' : 'playstore';
+  const computed = expiresAtFor(plan, verified);
+  // MUST match the entitlements_source_check constraint (app_store / play_store).
+  const source = isApple ? 'app_store' : 'play_store';
   const store_ref = body.transactionId || body.purchaseToken || sku;
 
+  // There is a UNIQUE (user_id, product); read the one row if it exists.
   const { data: existing } = await admin
     .from('entitlements')
     .select('id, expires_at')
     .eq('user_id', userId)
     .eq('product', ACADEMY_PRODUCT)
-    .order('expires_at', { ascending: false })
-    .limit(1)
     .maybeSingle();
 
-  if (existing) {
-    await admin
-      .from('entitlements')
-      .update({ status: 'active', source, store_ref, expires_at, updated_at: new Date().toISOString() })
-      .eq('id', (existing as { id: string }).id);
-  } else {
-    await admin
-      .from('entitlements')
-      .insert({ user_id: userId, product: ACADEMY_PRODUCT, status: 'active', source, store_ref, expires_at });
+  // Never SHORTEN access a user already has (e.g. a lifetime comp who also
+  // buys a month): keep the later expiry.
+  const priorMs = existing?.expires_at ? Date.parse((existing as { expires_at: string }).expires_at) : 0;
+  const computedMs = Date.parse(computed);
+  const expires_at = priorMs > computedMs ? (existing as { expires_at: string }).expires_at : computed;
+
+  const row = { status: 'active', source, store_ref, expires_at, updated_at: new Date().toISOString() };
+  const write = existing
+    ? await admin.from('entitlements').update(row).eq('id', (existing as { id: string }).id)
+    : await admin.from('entitlements').insert({ user_id: userId, product: ACADEMY_PRODUCT, ...row });
+
+  // The receipt verified but the grant did not land — do NOT tell the client
+  // it succeeded, or it will finishTransaction and the paid user gets nothing.
+  if (write.error) {
+    console.error('[validate-purchase] entitlement write failed:', write.error.message);
+    return json({ ok: false, error: 'grant_failed' });
   }
 
   return json({ ok: true, tier: 'academy', expires_at });

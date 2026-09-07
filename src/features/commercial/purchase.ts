@@ -6,7 +6,7 @@
  * `validate-purchase` Supabase edge function → on server-verified success we
  * finishTransaction, refresh the entitlement, and tell the UI. Entitlement is
  * NEVER granted client-side; the server verifies the receipt and writes the
- * entitlements row (source 'appstore'/'playstore', store_ref = transaction id).
+ * entitlements row (source 'app_store'/'play_store', store_ref = transaction id).
  *
  * expo-iap is LAZY-LOADED (require on first use, not a top-level import): the
  * native module only exists in a build made AFTER expo-iap was added, so a
