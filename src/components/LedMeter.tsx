@@ -34,6 +34,7 @@ export function LedMeter({
   vertical = false,
   flat = false,
   midi = false,
+  a11yLabel,
 }: {
   filled: number;
   /** Fixed per-segment width → the meter self-sizes (compact panel mode). */
@@ -57,11 +58,20 @@ export function LedMeter({
    *  screens (via LedMeterWell). Also used by the Total Progress vertical column,
    *  which its call site still flags as an experimental comparison. */
   midi?: boolean;
+  /** Opt-in screen-reader semantics (A11Y 2026-09-07): when set, the meter is
+   *  exposed as a progressbar with this label and its percent value. Left unset
+   *  for fast audio meters, which would spam a screen reader every frame. */
+  a11yLabel?: string;
 }) {
   const f = Math.max(0, Math.min(SEG_COUNT, Math.round(filled)));
   const segColor = midi ? midiColorFor : colorFor;
+  const pct = Math.round((f / SEG_COUNT) * 100);
+  const a11y = a11yLabel
+    ? ({ accessible: true, accessibilityRole: 'progressbar' as const, accessibilityLabel: a11yLabel, accessibilityValue: { min: 0, max: 100, now: pct } })
+    : {};
   return (
     <View
+      {...a11y}
       style={[
         styles.housing,
         vertical && styles.housingVert,
@@ -112,12 +122,14 @@ export function LedMeter({
 /** The meter mounted in the SAME recessed panel well as the Dashboard study
  *  method containers (Booth 2026-07-11) — so every screen's meter matches.
  *  Always shows at least 1 lit green segment (owner 2026-08-06). */
-export function LedMeterWell({ filled }: { filled: number }) {
+export function LedMeterWell({ filled, label = 'Progress' }: { filled: number; label?: string }) {
+  // Screen-reader value from the TRUE fill (not the min-1 display floor).
+  const pct = Math.round((Math.max(0, Math.min(SEG_COUNT, filled)) / SEG_COUNT) * 100);
   return (
     <View style={styles.well}>
       {/* Study-method progress meters (flashcards + homework) ride the MIDI
        *  blue→red velocity ramp — start blue, climb to red (owner 2026-08-13). */}
-      <LedMeter filled={Math.max(1, filled)} fullWidth midi />
+      <LedMeter filled={Math.max(1, filled)} fullWidth midi a11yLabel={`${label}, ${pct}% complete`} />
     </View>
   );
 }

@@ -469,7 +469,7 @@ export function ScenariosScreen({ route }: Props) {
           hideTimerButton={!!(pace.enabled || trial.active || trial.result)}
         />
         <View style={{ alignSelf: 'stretch' }}>
-          <LedMeterWell filled={Math.round((answeredInRound / Math.max(1, total)) * 21)} />
+          <LedMeterWell filled={Math.round((answeredInRound / Math.max(1, total)) * 21)} label="Scenario progress" />
         </View>
 
         {pace.enabled || trial.active || trial.result ? (
