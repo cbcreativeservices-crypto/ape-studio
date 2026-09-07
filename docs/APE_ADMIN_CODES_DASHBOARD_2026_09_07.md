@@ -48,18 +48,27 @@ in Step 4, enable it here: Authentication → Sign In / Providers → Multi-Fact
 You need a normal Supabase account (email + password, email confirmed) whose email you put in
 `ADMIN_EMAILS`. Use your existing account or create one for admin.
 
-### Step 4 — open the dashboard and finish
+### Step 4 — open the console (a local page) and finish
 
-Your private URL (swap in your slug):
-`https://yjgolswjggmlpeowvtxr.supabase.co/functions/v1/admin-codes/7q4me8hkyuxsdj3phyo1ev15`
+Supabase's functions domain refuses to render HTML (it force-serves plain text to
+stop phishing on their host), so the console is a LOCAL page you open in your
+browser rather than a hosted URL. It is more private this way — the page lives
+only on your machine — and it still calls the hardened server for everything.
 
-1. Sign in with the admin account.
-2. First time only: scan the QR with your authenticator app (Google Authenticator, Authy, 1Password…),
-   then enter the 6-digit code → Verify.
-3. Enter your passphrase (kept only in that tab).
-4. Generate codes.
+Open (and bookmark) this file:
+`C:Usersprofedevape-studioadmin-consolepro-audio-access-codes.html`
+(as a browser address: `file:///C:/Users/profe/dev/ape-studio/admin-console/pro-audio-access-codes.html`)
 
-Bookmark the URL privately. It is unlisted and not linked anywhere.
+1. It opens to the dark "Access Codes" sign-in.
+2. Sign in with the account whose email is in `ADMIN_EMAILS` (must have a password).
+3. First time only: scan the QR with your authenticator app, enter the 6-digit code, Verify.
+4. Enter your passphrase and Generate a code to test.
+
+Note: with the local page, the `ADMIN_URL_SLUG` secret is no longer needed (it only
+gated the disabled hosted page). You can leave it set; it is harmless.
+
+Prefer a real hosted URL instead of a local file? Tell me and I'll move the page to
+Supabase Storage (a private, same-origin URL that renders) — a couple of dashboard clicks.
 
 ## Using it
 
