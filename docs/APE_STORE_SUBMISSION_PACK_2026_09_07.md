@@ -163,6 +163,8 @@ The tuner FULL SCREEN with a string locked green is a strong optional seventh sh
 
 ## 6. Security functions (run-list item 8) — verified in the database 2026-09-07, read-only
 
+> The revoke SQL below is also bundled, with the access-code fixes, in `docs/APE_OWNER_SQL_2026_09_07.sql` (section 3) — run that one file.
+
 | Function | Definer | anon | authenticated | Verdict |
 |---|---|---|---|---|
 | `award_complete` | yes | no | no | closed (postgres only) |
