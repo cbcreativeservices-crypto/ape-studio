@@ -61,7 +61,13 @@ export function AppWelcomeOverlay() {
             <Pressable style={styles.btn} onPress={dismiss} accessibilityRole="button" accessibilityLabel="Let's get started">
               <Text style={styles.btnText}>LET’S GET STARTED</Text>
             </Pressable>
-          ) : null}
+          ) : (
+            // M5 (2026-09-07): show the dwell state so the 9 s wait doesn't read
+            // as a frozen screen with no button.
+            <Text style={styles.wait} accessibilityLiveRegion="polite">
+              ONE MOMENT…
+            </Text>
+          )}
         </View>
       </View>
       <LowLightDim />

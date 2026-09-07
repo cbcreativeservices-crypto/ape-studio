@@ -8,18 +8,19 @@
  * - Renders served_options per type (Code brief §3): mc/fill = 6 strings pick
  *   1 · multi_select = 6 strings + Confirm · matching = K lefts ↔︎ K rights.
  * - 🔴 F4: answers recorded as the served VALUE strings keyed by slot_index.
+ *   Selection is tracked by OPTION INDEX (C1, 2026-09-07) so duplicate display
+ *   strings stay independent; the VALUE is what gets submitted.
  * - App-switch: 2s grace; 1st loss = warning, 2nd = immediate submit → server
- *   voids + 15-min lockout. (Timer/warning/lockout UI is [TBD-DESIGN] — the
- *   warning uses a system alert for now.)
- * - One sitting: [‹] back = confirm → wipe local answers immediately (the
- *   attempt stays open server-side; re-entry resumes the same payload).
+ *   voids + 15-min lockout.
+ * - One sitting: [‹] back OR Android hardware-back = confirm → wipe local
+ *   answers immediately (the attempt stays open server-side; re-entry resumes).
  * - Offline submit → queued + "Offline — please reconnect to submit."
- * - Result routing lands on a placeholder panel until S7 builds in M6.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   AppState,
+  BackHandler,
   Image,
   Pressable,
   ScrollView,
@@ -67,10 +68,12 @@ export function QuizScreen({ navigation, route }: Props) {
   const [startError, setStartError] = useState<string | null>(null);
   const [qIdx, setQIdx] = useState(0);
   const [msLeft, setMsLeft] = useState<number>(600_000);
-  const [picked, setPicked] = useState<string | null>(null); // mc/fill transient highlight
-  const [multiSel, setMultiSel] = useState<Set<string>>(new Set());
-  const [leftSel, setLeftSel] = useState<string | null>(null);
-  const [pairs, setPairs] = useState<[string, string][]>([]);
+  // Selection is tracked by OPTION INDEX, never by the value string (C1): two
+  // options with the same display text must remain independently selectable.
+  const [selIdx, setSelIdx] = useState<number | null>(null); // mc/fill transient highlight
+  const [multiSel, setMultiSel] = useState<Set<number>>(new Set());
+  const [leftSel, setLeftSel] = useState<number | null>(null);
+  const [pairs, setPairs] = useState<[number, number][]>([]); // [leftIndex, rightIndex]
   const [submitting, setSubmitting] = useState(false);
 
   const answers = useRef<Record<string, AnswerValue>>({});
@@ -212,7 +215,7 @@ export function QuizScreen({ navigation, route }: Props) {
   const question: ServedQuestion | null = payload?.questions[qIdx] ?? null;
 
   const advance = useCallback(() => {
-    setPicked(null);
+    setSelIdx(null);
     setMultiSel(new Set());
     setLeftSel(null);
     setPairs([]);
@@ -224,6 +227,20 @@ export function QuizScreen({ navigation, route }: Props) {
       AccessibilityInfo.announceForAccessibility(`Question ${qIdx + 2} of ${payload.questions.length}`);
     }
   }, [payload, qIdx, doSubmit]);
+
+  /* ---- Android hardware-back routes through the exit confirm (M2, 2026-09-07).
+     Without this, gestureEnabled:false only blocks the iOS swipe and hardware-
+     back drops the learner out of a live timed attempt with no confirm. ---- */
+  useEffect(() => {
+    if (!payload || submitting) return;
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (submitted.current) return false;
+      confirmExit();
+      return true; // we handled it
+    });
+    return () => sub.remove();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [payload, submitting]);
 
   // A11Y (2026-09-06): the last minute was a colour change on the timer only.
   const minuteWarnedRef = useRef(false);
@@ -244,49 +261,57 @@ export function QuizScreen({ navigation, route }: Props) {
   );
 
   const pickSingle = useCallback(
-    (opt: string) => {
-      if (!question || picked) return;
-      setPicked(opt);
-      recordAndAdvance(question.slot_index, opt); // the served string itself
+    (idx: number, value: string) => {
+      if (!question || selIdx !== null) return;
+      setSelIdx(idx);
+      recordAndAdvance(question.slot_index, value); // submit the served string
     },
-    [question, picked, recordAndAdvance],
+    [question, selIdx, recordAndAdvance],
   );
 
-  const toggleMulti = useCallback((opt: string) => {
+  const toggleMulti = useCallback((idx: number) => {
     setMultiSel((cur) => {
       const next = new Set(cur);
-      if (next.has(opt)) next.delete(opt);
-      else next.add(opt);
+      if (next.has(idx)) next.delete(idx);
+      else next.add(idx);
       return next;
     });
   }, []);
 
   const confirmMulti = useCallback(() => {
     if (!question || multiSel.size === 0) return;
-    // Preserve served order for determinism (grading is set-based server-side).
+    // Preserve served order for determinism (grading is set-based server-side);
+    // map the selected INDICES back to their value strings.
     const opts = Array.isArray(question.options) ? (question.options as string[]) : [];
     recordAndAdvance(
       question.slot_index,
-      opts.filter((o) => multiSel.has(o)),
+      opts.filter((_, i) => multiSel.has(i)),
     );
   }, [question, multiSel, recordAndAdvance]);
 
   const pickMatch = useCallback(
-    (side: 'left' | 'right', value: string) => {
+    (side: 'left' | 'right', idx: number) => {
       if (!question) return;
-      const paired = (v: string, idx: 0 | 1) => pairs.some((p) => p[idx] === v);
+      const pairedLeft = (i: number) => pairs.some((p) => p[0] === i);
+      const pairedRight = (i: number) => pairs.some((p) => p[1] === i);
       if (side === 'left') {
-        if (paired(value, 0)) return;
-        setLeftSel((cur) => (cur === value ? null : value));
+        if (pairedLeft(idx)) return;
+        setLeftSel((cur) => (cur === idx ? null : idx));
         return;
       }
-      if (!leftSel || paired(value, 1)) return;
-      const nextPairs: [string, string][] = [...pairs, [leftSel, value]];
+      if (leftSel === null || pairedRight(idx)) return;
+      const nextPairs: [number, number][] = [...pairs, [leftSel, idx]];
       setPairs(nextPairs);
       setLeftSel(null);
-      const lefts = (question.options as MatchingOptions)?.lefts;
-      const k = Array.isArray(lefts) ? lefts.length : 0;
-      if (k > 0 && nextPairs.length === k) recordAndAdvance(question.slot_index, nextPairs);
+      const opts = question.options as MatchingOptions;
+      const lefts = Array.isArray(opts?.lefts) ? opts.lefts : [];
+      const rights = Array.isArray(opts?.rights) ? opts.rights : [];
+      const k = lefts.length;
+      if (k > 0 && nextPairs.length === k) {
+        // F4: submit VALUE tuples, resolved from the index pairs.
+        const valuePairs = nextPairs.map(([li, ri]) => [lefts[li], rights[ri]] as [string, string]);
+        recordAndAdvance(question.slot_index, valuePairs);
+      }
     },
     [question, leftSel, pairs, recordAndAdvance],
   );
@@ -303,6 +328,15 @@ export function QuizScreen({ navigation, route }: Props) {
       { cancelText: 'Keep going', destructive: true },
     );
   }, [navigation]);
+
+  // M3 (2026-09-07): a malformed options payload renders no controls; record an
+  // empty answer for the slot and move on rather than stranding the learner
+  // until the 10-minute force-submit.
+  const skipQuestion = useCallback(() => {
+    if (!question) return;
+    answers.current[String(question.slot_index)] = '';
+    advance();
+  }, [question, advance]);
 
   /* ---- states ---- */
   if (startError) {
@@ -353,11 +387,13 @@ export function QuizScreen({ navigation, route }: Props) {
       : null;
   const singleOpts: string[] = !isMatching && Array.isArray(rawOpts) ? (rawOpts as string[]) : [];
   const isMulti = question.question_type === 'multi_select';
+  // Whether ANY answerable control will render — drives the M3 Skip fallback.
+  const answerable = isMatching ? !!matching : singleOpts.length > 0;
 
-  const singleState = (opt: string): AnswerCellState => (picked === opt ? 'selectedBlue' : picked ? 'dimmed' : 'default');
-  const leftState = (v: string): AnswerCellState =>
-    pairs.some((p) => p[0] === v) ? 'dimmed' : leftSel === v ? 'selectedBlue' : 'default';
-  const rightState = (v: string): AnswerCellState => (pairs.some((p) => p[1] === v) ? 'dimmed' : 'default');
+  const singleState = (i: number): AnswerCellState => (selIdx === i ? 'selectedBlue' : selIdx !== null ? 'dimmed' : 'default');
+  const leftState = (i: number): AnswerCellState =>
+    pairs.some((p) => p[0] === i) ? 'dimmed' : leftSel === i ? 'selectedBlue' : 'default';
+  const rightState = (i: number): AnswerCellState => (pairs.some((p) => p[1] === i) ? 'dimmed' : 'default');
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
@@ -376,6 +412,13 @@ export function QuizScreen({ navigation, route }: Props) {
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll}>
+        {/* M1 (2026-09-07): this quiz auto-advances on selection and cannot go
+            back — say so plainly rather than leave the learner hunting for a
+            Previous control. */}
+        <Text style={styles.finalNote}>
+          Each answer locks when you move on — you can’t return to a question.
+        </Text>
+
         {question.media_url ? (
           <Image
               source={{ uri: question.media_url }}
@@ -393,23 +436,23 @@ export function QuizScreen({ navigation, route }: Props) {
 
         {!isMatching && (
           <View style={styles.optionList}>
-            {singleOpts.map((opt) => (
+            {singleOpts.map((opt, i) => (
               <AnswerCell
-                key={opt}
+                key={i}
                 label={opt}
                 minHeight={48}
                 state={
-                  isMulti ? (multiSel.has(opt) ? 'selectedOrange' : 'default') : singleState(opt)
+                  isMulti ? (multiSel.has(i) ? 'selectedOrange' : 'default') : singleState(i)
                 }
-                check={isMulti ? (multiSel.has(opt) ? 'checked' : 'unchecked') : 'none'}
-                onPress={() => (isMulti ? toggleMulti(opt) : pickSingle(opt))}
-                disabled={!isMulti && !!picked}
+                check={isMulti ? (multiSel.has(i) ? 'checked' : 'unchecked') : 'none'}
+                onPress={() => (isMulti ? toggleMulti(i) : pickSingle(i, opt))}
+                disabled={!isMulti && selIdx !== null}
               />
             ))}
           </View>
         )}
 
-        {isMulti && (
+        {isMulti && answerable && (
           <StudioButton label="Confirm" variant="success" disabled={multiSel.size === 0} onPress={confirmMulti} />
         )}
 
@@ -417,30 +460,30 @@ export function QuizScreen({ navigation, route }: Props) {
           <>
             <View style={styles.matchColumns}>
               <View style={styles.matchColumn}>
-                {matching.lefts.map((v) => (
+                {matching.lefts.map((v, i) => (
                   <AnswerCell
-                    key={v}
+                    key={i}
                     label={v}
                     fontSize={14}
                     borderWidth={1.5}
                     minHeight={48}
                     numberOfLines={3}
-                    state={leftState(v)}
-                    onPress={() => pickMatch('left', v)}
+                    state={leftState(i)}
+                    onPress={() => pickMatch('left', i)}
                   />
                 ))}
               </View>
               <View style={styles.matchColumn}>
-                {matching.rights.map((v) => (
+                {matching.rights.map((v, i) => (
                   <AnswerCell
-                    key={v}
+                    key={i}
                     label={v}
                     fontSize={13}
                     borderWidth={1.5}
                     minHeight={48}
                     numberOfLines={3}
-                    state={rightState(v)}
-                    onPress={() => pickMatch('right', v)}
+                    state={rightState(i)}
+                    onPress={() => pickMatch('right', i)}
                   />
                 ))}
               </View>
@@ -449,6 +492,15 @@ export function QuizScreen({ navigation, route }: Props) {
               PAIR EVERY TERM · {pairs.length} / {matching.lefts.length}
             </Text>
           </>
+        )}
+
+        {!answerable && (
+          <View style={styles.skipWrap}>
+            <Text style={styles.errorText}>
+              This question couldn’t be displayed. You can skip it and keep going.
+            </Text>
+            <StudioButton label="Skip question" variant="secondary" onPress={skipQuestion} />
+          </View>
         )}
       </ScrollView>
     </View>
@@ -494,6 +546,7 @@ const styles = StyleSheet.create({
   },
   timerLow: { color: colors.red, textShadowColor: 'rgba(255,75,58,.6)' },
   scroll: { padding: 16, gap: 12 },
+  finalNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textSubAlt, fontStyle: 'italic' },
   media: { width: '80%', aspectRatio: 4 / 3, alignSelf: 'center', borderRadius: 6 },
   questionText: { fontFamily: fonts.barlowRegular, fontSize: 16, lineHeight: 26, color: colors.textPrimary },
   stem: { fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 24, color: colors.textSecondary },
@@ -501,4 +554,5 @@ const styles = StyleSheet.create({
   matchColumns: { flexDirection: 'row', gap: 12, marginTop: 4 },
   matchColumn: { flex: 1, gap: 10 },
   matchHint: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSubAlt, textAlign: 'center' },
+  skipWrap: { gap: 12, marginTop: 8 },
 });

@@ -132,6 +132,11 @@ export function AuthScreen({ navigation }: Props) {
    * load-error retry loop forever. */
   const enterGuest = async () => {
     setBusy(true);
+    setError(null);
+    // M4 (2026-09-07): the whole flow is guarded. Previously only signOut was
+    // in a try; if any AsyncStorage/store reset below threw, setBusy(false) and
+    // toHome() never ran — a permanent spinner on the primary no-account entry.
+    try {
     try {
       await supabase.auth.signOut();
     } catch {
@@ -163,9 +168,13 @@ export function AuthScreen({ navigation }: Props) {
     // Write the no-account marker so the next boot's sync sees the SAME
     // identity instead of null→'' and wiping again (QA night 2026-09-01).
     await AsyncStorage.setItem('ape:localUserId', '');
-    setBusy(false);
     setEntitlement('anonymous');
     toHome();
+    } catch {
+      setError('Could not start Guest Mode. Please try again.');
+    } finally {
+      setBusy(false);
+    }
   };
 
   // WEB PREVIEW ONLY (dev): auto-enter Guest Mode once so the browser preview

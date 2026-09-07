@@ -130,6 +130,10 @@ type EntitlementContextValue = {
    * Use `caps` for ladder content; use `isMember` for member-only extras.
    */
   isMember: boolean;
+  /** FALSE until the first server entitlement read has resolved. First paint
+   *  must stay neutral rather than showing the 'anonymous' rung to a member
+   *  (M6, 2026-09-07). */
+  resolved: boolean;
   /** DEV-ONLY overrides (persisted). No-ops outside __DEV__. */
   setCommercialMode: (on: boolean) => void;
   setEntitlement: (state: Entitlement) => void;
@@ -148,6 +152,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
   // dead institutional path for inspection.
   const [commercialMode, setCommercialModeState] = useState<boolean>(FLAG_DEFAULTS.commercialMode);
   const [entitlement, setEntitlementState] = useState<Entitlement>('anonymous');
+  const [resolved, setResolved] = useState(false);
   // Once the owner force-picks a tier via the dev toggle, stop auto-deriving
   // from the session for the rest of this app run (so the toggle isn't clobbered
   // by a token refresh while they inspect a tier).
@@ -215,9 +220,10 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
       lastUid.current = uid;
       uidSeeded.current = true;
     };
-    void supabase.auth.getSession().then(({ data }) => {
+    void supabase.auth.getSession().then(async ({ data }) => {
       clearLocalOnUserChange(data.session?.user?.id ?? null);
-      deriveAndApply(!!data.session);
+      await deriveAndApply(!!data.session);
+      if (alive) setResolved(true); // first read is in — first paint can trust the tier
     });
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'INITIAL_SESSION') {
@@ -317,11 +323,12 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
       // Real standing (see the doc on isMember above) — deliberately NOT
       // bypass-aware, so member-perk gates stay testable-as-free.
       isMember: entitlement === 'academy',
+      resolved,
       setCommercialMode,
       setEntitlement,
       refreshEntitlement,
     }),
-    [commercialMode, entitlement, setCommercialMode, setEntitlement, refreshEntitlement],
+    [commercialMode, entitlement, resolved, setCommercialMode, setEntitlement, refreshEntitlement],
   );
 
   return <EntitlementContext.Provider value={value}>{children}</EntitlementContext.Provider>;
