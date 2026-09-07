@@ -15,7 +15,8 @@ The app and the edge function only recognise these three IDs (`src/features/comm
 | `academy_annual` | Auto-renewing subscription, 1 year | 59.99 | Same group "Academy" (so upgrades and downgrades work) | Subscriptions → product `academy_annual` → base plan yearly |
 | `academy_lifetime` | Non-consumable (Apple) / one-time product (Google) | 99.99 | In-App Purchases → Non-Consumable | Monetize → In-app products → `academy_lifetime` |
 
-Display names the store shows (owner copy, ratify): "Academy Monthly", "Academy Annual", "Academy Lifetime".
+Display names the store shows — the paywall's own names (`src/screens/commercial/PaywallScreen.tsx`):
+"Monthly", "Annual", "Lifetime Academy".
 Both consoles need a localized description; suggested: "Full access to every course, lab, tool and
 certificate in the Pro Audio Training Academy."
 
@@ -110,14 +111,16 @@ What the app actually does, verified in source 2026-09-07:
 | Diagnostics | No | — | — | — |
 | Device ID, advertising data | No | — | — | — |
 
-"Data used to track you": none. Privacy policy URL: required — see run-list item 7.
+"Data used to track you": none. Privacy policy URL: `https://www.proaudiotrainingacademy.com/privacy`
+(page exists in `web/app/privacy`; terms at `/terms`, support at `/support`). The site's gate must let
+these three pages through unauthenticated before submission — run-list item 7.
 
 ### Google Play Data safety
 
 - Collects user data: yes. Shares user data: no.
-- Encrypted in transit: yes (HTTPS to Supabase). Deletion request: answer yes only if an
-  account-deletion path exists in the app or on the website — **owner: confirm one exists**. Apple also
-  requires in-app account deletion for apps with account creation.
+- Encrypted in transit: yes (HTTPS to Supabase). Deletion request: **yes** — the app has an in-app
+  DELETE ACCOUNT (Settings, hold five seconds, irreversible; `src/features/settings/DeleteAccountButton.tsx`,
+  owner-approved 2026-07-25), which also satisfies Apple's account-deletion requirement.
 - Personal info: email (required, account management); name and phone (optional, registry listing).
 - Financial info: purchase history (required, app functionality). Payment details stay with Google.
 - App activity: in-app actions and other user-generated content (progress, registry bio) — app functionality.
@@ -146,26 +149,14 @@ password in App Store Connect → App Review Information → Sign-in required, w
 the credentials above; membership is pre-activated. Microphone permission is needed for the audio tools;
 a quiet room is enough." Google: Play Console → App content → App access → same.
 
-## 5. Screenshot shot list (run-list item 5)
+## 5. Screenshots (run-list item 5)
 
-Shoot on device in dark mode with a clean status bar (full battery, no notifications). Apple sizes: the
-iPhone 6.9" set (1320×2868, iPhone 16 Pro Max or 15 Pro Max) covers the smaller sets if those are left
-empty. Keep iPad unchecked as a supported device. Google: phone 1080×1920 minimum, 2 to 8 shots, plus a
-1024×500 feature graphic.
-
-| # | Screen | Set up | Caption (30 chars or fewer, ratify) |
-|---|---|---|---|
-| 1 | Home carousel with the course cards loaded | member account, cards warmed | Learn pro audio for real |
-| 2 | Dashboard, a topic mid-progress, jog knob visible | any topic at 2 of 4 methods | Four ways to study every topic |
-| 3 | SPL Meter Home (VU) reading a real level | play music in the room | Real meters, honest numbers |
-| 4 | RTA or Spectrogram live | same source | See the sound |
-| 5 | Tuner FULL SCREEN, a string just locked green | guitar, low E in tune | Stage tuner, 25 instruments |
-| 6 | A lab mid-interaction (Harmonograph or Mic Principles capsule) | member | Labs that behave like the gear |
-| 7 | Glossary term page | for example Phantom Power | 26,000+ terms explained |
-| 8 | Awards or certificate wall with one credential | reviewer or test account | Earn certificates that verify |
-
-Feature graphic (Google): the SPL VU face or the tuner full screen on the dark rack background with the
-full name "Pro Audio Training Academy". No walls of text, no device frames required.
+The capture plan is already ratified in `docs/discoverability/STORE_LISTING_SOURCE_OF_TRUTH.md` §7 —
+six shots in this order: Glossary (26,000+ terms), Tools hub with live previews, a lab mid-interaction,
+Explore with fields expanded (50 subjects), a study method or the Dashboard rack, a certificate view on a
+demo account. Use that list; the captions there carry the verified numbers. Sizes: iPhone 6.9"
+(1320×2868) covers the smaller Apple sets; Google phone 1080×1920 minimum plus a 1024×500 feature graphic.
+The tuner FULL SCREEN with a string locked green is a strong optional seventh shot.
 
 ## 6. Security functions (run-list item 8) — verified in the database 2026-09-07, read-only
 
@@ -198,8 +189,10 @@ so the anon revoke cannot break the guest experience.
 - `SUPPORT_EMAIL` is `info@proaudiotrainingacademy.com`.
 - Export-compliance flag set; mic, camera and location usage strings present in `app.json`.
 
-## Open questions for the owner
+## Answers found in the project (no owner questions)
 
-1. Account deletion: is there an in-app or website path? Apple requires it for apps with sign-up.
-2. Privacy policy and terms URLs (run-list item 7). Both consoles block submission without them.
-3. Ratify the product display names, descriptions and screenshot captions above.
+1. Account deletion: in-app, Settings → DELETE ACCOUNT, hold to confirm (`DeleteAccountButton.tsx`).
+2. Privacy and terms: `web/app/privacy` and `web/app/terms` (plus `/support`), i.e.
+   `https://www.proaudiotrainingacademy.com/privacy` and `/terms` once the site gate lets them through.
+3. Copy: plan names come from the paywall; screenshot captions and the support/privacy URLs come from
+   `STORE_LISTING_SOURCE_OF_TRUTH.md`. The only new strings here are the product descriptions in §1.
