@@ -73,26 +73,38 @@ async function appleAccessJwt(): Promise<string | null> {
   return `${signingInput}.${bytesToB64url(sig)}`;
 }
 
-async function verifyApple(transactionId: string, expectedSku: string): Promise<VerifyResult> {
-  const jwt = await appleAccessJwt();
-  if (!jwt || !transactionId) return { valid: false, expiresAtMs: null };
-  const env = (Deno.env.get('APPLE_ENV') ?? 'production').toLowerCase();
-  const host = env === 'sandbox' ? 'https://api.storekit-sandbox.itunes.apple.com' : 'https://api.storekit.itunes.apple.com';
+const APPLE_PROD = 'https://api.storekit.itunes.apple.com';
+const APPLE_SANDBOX = 'https://api.storekit-sandbox.itunes.apple.com';
+
+async function appleLookup(host: string, jwt: string, transactionId: string): Promise<{ status: number; signed: string | null }> {
   const res = await fetch(`${host}/inApps/v1/transactions/${transactionId}`, {
     headers: { Authorization: `Bearer ${jwt}` },
   });
-  if (!res.ok) return { valid: false, expiresAtMs: null };
+  if (!res.ok) return { status: res.status, signed: null };
   const body = (await res.json()) as { signedTransactionInfo?: string };
-  if (!body.signedTransactionInfo) return { valid: false, expiresAtMs: null };
+  return { status: res.status, signed: body.signedTransactionInfo ?? null };
+}
+
+async function verifyApple(transactionId: string, expectedSku: string, kind: 'subs' | 'in-app'): Promise<VerifyResult> {
+  const jwt = await appleAccessJwt();
+  if (!jwt || !transactionId) return { valid: false, expiresAtMs: null };
+  // Production first, then sandbox on "not found" — Apple's own guidance, and
+  // what App Review needs: reviewers buy in the SANDBOX against the production
+  // build. APPLE_ENV=sandbox forces sandbox only (local testing).
+  const env = (Deno.env.get('APPLE_ENV') ?? 'production').toLowerCase();
+  let hit = await appleLookup(env === 'sandbox' ? APPLE_SANDBOX : APPLE_PROD, jwt, transactionId);
+  if (!hit.signed && env !== 'sandbox' && hit.status === 404) hit = await appleLookup(APPLE_SANDBOX, jwt, transactionId);
+  if (!hit.signed) return { valid: false, expiresAtMs: null };
   // signedTransactionInfo is a JWS from Apple's authenticated endpoint — decode
   // its payload (transport already authenticated by our TLS + bearer JWT).
-  const tx = decodeJwtPayload<{ productId?: string; bundleId?: string; expiresDate?: number; revocationDate?: number }>(
-    body.signedTransactionInfo,
-  );
+  const tx = decodeJwtPayload<{ productId?: string; bundleId?: string; expiresDate?: number; revocationDate?: number }>(hit.signed);
   const bundleOk = tx.bundleId === Deno.env.get('APPLE_BUNDLE_ID');
   const skuOk = tx.productId === expectedSku;
   const notRevoked = !tx.revocationDate;
-  return { valid: !!(bundleOk && skuOk && notRevoked), expiresAtMs: tx.expiresDate ?? null };
+  // A subscription transaction is only good while its expiry is in the future;
+  // a lifetime (non-consumable) purchase has no expiry.
+  const current = kind === 'in-app' ? true : !!tx.expiresDate && tx.expiresDate > Date.now();
+  return { valid: !!(bundleOk && skuOk && notRevoked && current), expiresAtMs: tx.expiresDate ?? null };
 }
 
 // ── Google: Play Developer API (OAuth2 service account) ──────────────────────
@@ -188,7 +200,7 @@ Deno.serve(async (req) => {
   const isApple = (body.platform ?? '').toLowerCase().includes('ios');
   const kind: 'subs' | 'in-app' = plan === 'lifetime' ? 'in-app' : 'subs';
   const verified = isApple
-    ? await verifyApple(body.transactionId ?? '', sku)
+    ? await verifyApple(body.transactionId ?? '', sku, kind)
     : await verifyGoogle(body.purchaseToken ?? '', sku, kind);
 
   if (!verified.valid) return json({ ok: false, error: 'not_verified' });
