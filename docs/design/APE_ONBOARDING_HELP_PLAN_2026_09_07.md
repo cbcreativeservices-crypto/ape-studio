@@ -271,10 +271,11 @@ Level & Amplitude" screen is NOT part of the walkthrough — users meet it later
 tool/lab and it triggers then. (Already hushed during sampling.) Because the earlier "Sound Fundamentals"
 stop routed to `AmplitudeLab`, which IS that screen, that stop is **dropped** from the flow.
 
-**Proposed linear order (existing screens only):** Decibel (glossary) → Distance & SPL (`spldist` calc) →
-Acoustics / Wave (`WaveLab`) → SPL Meter (`SplMeter`) → Career Finder — i.e. **Look it up → Understand →
-Calculate → See it → Measure → Apply**. (Owner to confirm order + whether any other existing screen
-should stand in for "what sound is" now that the amplitude screen is out.)
+**Linear order (owner confirmed 2026-09-07):** Foundations of Sound — Module 1 (canned interactive) →
+Decibel (canned glossary demo) → Distance & SPL (`spldist` calc, real) → Acoustics / Wave (`WaveLab`,
+real) → SPL Meter (`SplMeter`, real) → Career Finder (real). The opener is a CANNED interactive
+Foundations Module 1 (custom buttons) — NOT the real amplitude/orientation screen, which stays out of
+onboarding. Arc: **See what sound is → Look it up → Calculate → See it in a room → Measure → Apply.**
 
 **PRELOAD — no lag at any stop (owner requirement 2026-09-07):** each destination must be cached and
 ready BEFORE the user reaches it in the sequence, so there is no load spinner mid-flow.
@@ -334,14 +335,18 @@ user onto the real screen. Consequences:
   §2.4's preload work: canned steps need no corpus prefetch at all; only real-landing screens may warrant
   a warm.
 
-**Per-stop: real landing vs canned demo — proposed (owner to confirm):**
-| Stop | Treatment |
-|---|---|
-| Decibel (dB) | **Canned** scripted glossary demo (type → highlight → single card, BEG, Common Mistakes shown) |
-| Distance & SPL calc | **Real landing** — user enters a value in the live calculator |
-| Acoustics / Wave | Real landing (or canned peek) — owner to choose |
-| SPL Meter | **Real landing** — measure the user's actual room |
-| Career Finder | Real landing (or canned peek) — owner to choose |
+**Per-stop: real landing vs canned demo (owner confirmed 2026-09-07):**
+| # | Stop | Treatment |
+|---|---|---|
+| 1 | **Foundations of Sound — Module 1** | **Canned interactive demo** — a bespoke look-real render with CUSTOM interactive buttons authored for the intro (NOT the real gated Foundations course; avoids the amplitude-orientation pre-req). The opener that shows "what sound is." |
+| 2 | Decibel (dB) | **Canned** scripted glossary demo (type → highlight → single card, BEG, Common Mistakes shown) |
+| 3 | Distance & SPL calc | **Real landing** — user enters a value in the live calculator |
+| 4 | Acoustics / Wave | **Real landing** (owner: real) |
+| 5 | SPL Meter | **Real landing** — measure the user's actual room |
+| 6 | Career Finder | **Real landing** (owner: real) |
+
+Real-landing screens all get the persistent "‹ Back to the walkthrough / Skip intro" escape bar (added
+2026-09-07) so no destination can strand the user.
 
 ## 3. Pillar B — Tutorials & feature reveals
 
