@@ -1,35 +1,33 @@
 /**
- * FirstRunCoordinator — drives the first-launch connected path (plan §2.1–§2.3)
- * as a root overlay beside the navigator (same pattern as LabPreviewOverlay).
+ * FirstRunCoordinator — drives the first-launch GUIDED LINEAR walkthrough
+ * (plan §2.1–§2.6) as a root overlay beside the navigator.
  *
- * How it works without fighting the navigator:
- *  - It shows the sampler overlay ONLY while the root stack is sitting on "Main"
- *    (the Home area) and onboarding isn't complete. Picking a stop navigates to
- *    that existing screen — the root route is no longer "Main", so the overlay
- *    hides itself and the real screen is fully usable. When the user comes back
- *    to Main (any back path), the overlay reappears in its CONTEXTUAL mode,
- *    recapping the last stop and recommending the connected next steps.
- *  - While a stop is open, sampling is ACTIVE, which hushes that screen's
- *    educational overlays (intros/coach-marks/amplitude gate) — never its
- *    permission/safety/entitlement gates.
- *  - "Take me to Home" (or Skip) marks onboarding complete permanently.
+ * The user is walked through the stops IN ORDER (no skip-ahead):
+ *   lead(step i) → open the stop → [real: leave the overlay, show a persistent
+ *   escape bar; canned: show the demo] → complete(step i) recap → Next →
+ *   lead(step i+1) → … → after the last step, the END menu (revisit any) →
+ *   "Enter Pro Audio Training Academy" (marks onboarding complete, lands Home).
  *
- * Renders nothing once onboarding is complete. Web preview of the screen itself
- * lives at #samplerpreview (SamplerPreview); this is the on-device wiring.
+ * Real stops navigate to their existing screen with educational overlays hushed
+ * (sampling); canned stops render a self-contained look-real demo (built in a
+ * later step — for now they advance straight to their recap). A "Skip intro"
+ * escape is always available. Renders nothing once onboarding is complete.
  */
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../theme/tokens';
 import { navigationRef } from '../../navigation/navigationRef';
-import { FirstRunSampler } from './FirstRunSampler';
-import { getStop, type StopId } from './samplerStops';
+import { FirstRunSampler, type FlowPhase } from './FirstRunSampler';
+import { SAMPLER_STOPS, getStop, type StopId } from './samplerStops';
 import { markChoiceVisited, setOnboardingComplete, useOnboardingFlow } from './onboardingFlow';
 import { setSamplingActive } from './onboardingSampling';
 
-/** Root-stack route name that means "the user is in the Home tabs", i.e. at a
- *  menu moment rather than inside a sampled destination. */
 const HOME_ROUTE = 'Main';
+const LAST_INDEX = SAMPLER_STOPS.length - 1;
+
+/** Internal phase: the visible FlowPhase plus 'sampling' (a real stop is open). */
+type Phase = FlowPhase | 'sampling';
 
 function rootTopRouteName(): string | undefined {
   if (!navigationRef.isReady()) return undefined;
@@ -42,60 +40,69 @@ export function FirstRunCoordinator() {
   const insets = useSafeAreaInsets();
   const [onMain, setOnMain] = useState(false);
   const [armed, setArmed] = useState(false);
-  const [lastStop, setLastStop] = useState<StopId | undefined>(undefined);
-  const [forceMenu, setForceMenu] = useState(false);
+  const [stepIndex, setStepIndex] = useState(0);
+  const [phase, setPhase] = useState<Phase>('lead');
+  const phaseRef = useRef<Phase>('lead');
+  const revisitingRef = useRef(false);
   const wasMainRef = useRef(false);
+  phaseRef.current = phase;
 
-  // Small arming delay so the app-welcome / commitment overlays lead, and so we
-  // don't probe the navigator before it's ready.
   useEffect(() => {
     const t = setTimeout(() => setArmed(true), 500);
     return () => clearTimeout(t);
   }, []);
 
-  // Poll the ROOT route so we know whether we're at the Home area (menu moment)
-  // or inside a sampled destination. Polling (not just a state listener) keeps
-  // this robust across the navigator becoming ready after mount. Stops once
-  // onboarding is complete.
+  // Poll the root route. On return to Home from a REAL stop (phase 'sampling'),
+  // advance to the step-complete recap (or back to the end menu if revisiting).
   useEffect(() => {
     if (complete) return;
     const tick = () => {
       const nowMain = rootTopRouteName() === HOME_ROUTE;
       setOnMain(nowMain);
-      // Just returned to the Home area from a sampled destination → leave
-      // sampling mode so educational overlays behave normally again.
-      if (nowMain && !wasMainRef.current) setSamplingActive(false);
+      if (nowMain && !wasMainRef.current && phaseRef.current === 'sampling') {
+        setSamplingActive(false);
+        const backToEnd = revisitingRef.current;
+        revisitingRef.current = false;
+        setPhase(backToEnd ? 'end' : 'complete');
+      }
       wasMainRef.current = nowMain;
     };
     tick();
-    const id = setInterval(tick, 300);
+    const id = setInterval(tick, 250);
     return () => clearInterval(id);
   }, [complete]);
 
-  const mode: 'initial' | 'recommend' | 'menu' = forceMenu
-    ? 'menu'
-    : lastStop
-      ? 'recommend'
-      : 'initial';
-
-  const onSelect = (id: StopId) => {
+  const openStop = (id: StopId, revisit: boolean) => {
     markChoiceVisited(id);
-    setLastStop(id);
-    setForceMenu(false);
+    const stop = getStop(id);
+    if (stop.canned) {
+      // Canned demo not yet built (plan §2.6, build #2/#3) → for now, count it
+      // seen and go straight to its recap (or back to the end menu on revisit).
+      setPhase(revisit ? 'end' : 'complete');
+      return;
+    }
+    revisitingRef.current = revisit;
     setSamplingActive(true);
-    const { route } = getStop(id);
-    // Cast: the coordinator lives outside the typed navigator.
-    (navigationRef.navigate as (name: string, params?: object) => void)(route.name, route.params);
+    setPhase('sampling');
+    (navigationRef.navigate as (name: string, params?: object) => void)(stop.route.name, stop.route.params);
   };
 
-  const onHome = () => {
+  const onStart = () => openStop(SAMPLER_STOPS[stepIndex].id, false);
+
+  const onNext = () => {
+    if (stepIndex < LAST_INDEX) {
+      setStepIndex((i) => i + 1);
+      setPhase('lead');
+    } else {
+      setPhase('end');
+    }
+  };
+
+  const finish = () => {
     setSamplingActive(false);
     setOnboardingComplete();
   };
 
-  // Return from a sampled destination to the walkthrough (the continuation
-  // screen). Uses the navigator's own back; falls back to Main if the stack
-  // can't pop — so the user is NEVER stranded on a screen with no back control.
   const backToGuide = () => {
     if (navigationRef.isReady() && navigationRef.canGoBack()) navigationRef.goBack();
     else (navigationRef.navigate as (name: string) => void)('Main');
@@ -103,33 +110,16 @@ export function FirstRunCoordinator() {
 
   if (!hydrated || complete || !armed) return null;
 
-  // At the Home area → the walkthrough menu / recap overlay.
-  if (onMain) {
-    return (
-      <View style={StyleSheet.absoluteFill} pointerEvents="auto">
-        <FirstRunSampler
-          mode={mode}
-          lastStop={lastStop}
-          visited={visited}
-          onSelect={onSelect}
-          onChooseDifferent={() => setForceMenu(true)}
-          onHome={onHome}
-        />
-      </View>
-    );
-  }
-
-  // A stop is open (we sent them there) → a persistent floating escape so they
-  // can always get back to the walkthrough or leave onboarding, even on a screen
-  // with no back button of its own (the glossary stranding bug, 2026-09-07).
-  if (lastStop) {
+  // A real stop is open → persistent escape so the user is never stranded.
+  if (!onMain) {
+    if (phase !== 'sampling') return null;
     return (
       <View style={[styles.escapeWrap, { paddingBottom: insets.bottom + 10 }]} pointerEvents="box-none">
         <View style={styles.escapeBar}>
           <Pressable onPress={backToGuide} accessibilityRole="button" accessibilityLabel="Back to the walkthrough" style={styles.escapeBack}>
             <Text style={styles.escapeBackText}>‹ Back to the walkthrough</Text>
           </Pressable>
-          <Pressable onPress={onHome} accessibilityRole="button" accessibilityLabel="Skip the intro" style={styles.escapeSkip}>
+          <Pressable onPress={finish} accessibilityRole="button" accessibilityLabel="Skip the intro" style={styles.escapeSkip}>
             <Text style={styles.escapeSkipText}>Skip intro</Text>
           </Pressable>
         </View>
@@ -137,7 +127,30 @@ export function FirstRunCoordinator() {
     );
   }
 
-  return null;
+  // At Home and mid-transition from a stop → wait a tick for the poll to flip
+  // 'sampling' to its recap (avoids a one-frame flash of the wrong panel).
+  if (phase === 'sampling') return null;
+
+  const currentId = SAMPLER_STOPS[stepIndex].id;
+  const nextStop: StopId | undefined = stepIndex < LAST_INDEX ? SAMPLER_STOPS[stepIndex + 1].id : undefined;
+
+  return (
+    <View style={StyleSheet.absoluteFill} pointerEvents="auto">
+      <FirstRunSampler
+        phase={phase}
+        stop={currentId}
+        stepIndex={stepIndex}
+        stepCount={SAMPLER_STOPS.length}
+        nextStop={nextStop}
+        visited={visited}
+        onStart={onStart}
+        onNext={onNext}
+        onEnter={finish}
+        onSelect={(id) => openStop(id, true)}
+        onSkip={finish}
+      />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

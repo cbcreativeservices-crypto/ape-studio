@@ -22,24 +22,29 @@ export type SamplerStop = {
   blurb: string;
   /** On-brand accent (token hex). */
   accent: string;
-  /** Which existing screen to open. Cast at the navigate call site. */
+  /** Which existing screen to open (real landings). Cast at the navigate call
+   *  site. Ignored for `canned` stops (they don't navigate — they render a
+   *  self-contained look-real demo instead; plan §2.6). */
   route: { name: string; params?: Record<string, unknown> };
-  /** Shown on the contextual continuation after this stop was sampled. */
+  /** Shown on the step-complete panel after this stop (plan §2.4). */
   recap: string;
-  /** Recommended next stops, in order (the connected path). */
+  /** Recommended next stops (kept for the end-menu / future use). */
   next: StopId[];
+  /** A canned demo stop (no backend, no real navigation) vs a real landing. */
+  canned?: boolean;
 };
 
 /** Ordered — this is the recommended learning path; the user may start anywhere. */
 export const SAMPLER_STOPS: SamplerStop[] = [
   {
     id: 'fundamentals',
-    label: 'What sound actually is',
+    label: 'Foundations of Sound',
     blurb: 'See vibration become air pressure — and why bigger movement means a higher level.',
     accent: colors.blue,
-    route: { name: 'AmplitudeLab' },
+    route: { name: 'FoundationsCourse' }, // real screen exists, but this stop is CANNED (custom demo)
     recap: 'You’ve seen how bigger vibrations make a louder sound. Ready to put a number on “loud”?',
     next: ['decibel', 'calc', 'splmeter'],
+    canned: true,
   },
   {
     id: 'decibel',
@@ -49,6 +54,7 @@ export const SAMPLER_STOPS: SamplerStop[] = [
     route: { name: 'PublicGlossary', params: { query: 'Decibel' } },
     recap: 'Now you know what a decibel represents. Want to use it?',
     next: ['calc', 'splmeter', 'acoustics'],
+    canned: true,
   },
   {
     id: 'calc',

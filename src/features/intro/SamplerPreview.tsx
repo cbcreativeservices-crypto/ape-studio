@@ -1,21 +1,22 @@
 /**
- * DEV + WEB harness for the first-run connected-path screen
+ * DEV + WEB harness for the first-run GUIDED LINEAR walkthrough
  * (`localhost:8090/#samplerpreview`).
  *
- * Drives FirstRunSampler with local state so the whole connected loop can be
- * clicked in the browser: initial → pick a stop → contextual recommendation
- * (recap + next steps) → pick another or "choose something different" (full
- * menu) → Home. Reset restores the start. Web+dev only; never mounts on device.
+ * Drives FirstRunSampler's phases locally so the whole walkthrough can be
+ * clicked in the browser: lead(step i) → "See it / Open it" → step-complete
+ * recap → Next → … → end menu → Enter the app. (Real navigation is stubbed
+ * here; the on-device flow is wired in FirstRunCoordinator.) Web+dev only.
  */
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../theme/tokens';
-import { FirstRunSampler } from './FirstRunSampler';
+import { FirstRunSampler, type FlowPhase } from './FirstRunSampler';
 import { SAMPLER_STOPS, type StopId } from './samplerStops';
 import type { OnboardingChoice } from './onboardingFlow';
 
 const WIDTHS = [360, 393, 412];
+const LAST = SAMPLER_STOPS.length - 1;
 
 function widthFromHash(): number {
   const parts = (typeof window !== 'undefined' ? window.location.hash : '').split('/');
@@ -23,41 +24,35 @@ function widthFromHash(): number {
   return WIDTHS.includes(w) ? w : 393;
 }
 
-type Mode = 'initial' | 'recommend' | 'menu';
-
 export function SamplerPreview() {
   const width = widthFromHash();
+  const [stepIndex, setStepIndex] = useState(0);
+  const [phase, setPhase] = useState<FlowPhase>('lead');
   const [visited, setVisited] = useState<OnboardingChoice[]>([]);
-  const [mode, setMode] = useState<Mode>('initial');
-  const [lastStop, setLastStop] = useState<StopId | undefined>(undefined);
   const [done, setDone] = useState(false);
 
   const reset = () => {
+    setStepIndex(0);
+    setPhase('lead');
     setVisited([]);
-    setMode('initial');
-    setLastStop(undefined);
     setDone(false);
   };
 
-  const sample = (id: StopId) => {
-    // Simulate opening the destination, then returning to the contextual recap.
-    setVisited((v) => (v.includes(id) ? v : [...v, id]));
-    setLastStop(id);
-    setMode('recommend');
-  };
+  const markVisited = (id: StopId) => setVisited((v) => (v.includes(id) ? v : [...v, id]));
+
+  const currentId = SAMPLER_STOPS[stepIndex].id;
+  const nextStop: StopId | undefined = stepIndex < LAST ? SAMPLER_STOPS[stepIndex + 1].id : undefined;
 
   return (
     <SafeAreaProvider>
       <View style={styles.root}>
-        <Text style={styles.bar}>{`FIRST-RUN PATH @ ${width}px  ·  #samplerpreview/<360|393|412>`}</Text>
+        <Text style={styles.bar}>{`FIRST-RUN WALKTHROUGH @ ${width}px  ·  #samplerpreview/<360|393|412>`}</Text>
         <View style={styles.controls}>
           <Pressable style={styles.ctl} onPress={reset}>
             <Text style={styles.ctlText}>RESET</Text>
           </Pressable>
           <Text style={styles.state}>
-            {done
-              ? 'state: HOME (complete)'
-              : `mode: ${mode}${lastStop ? ` · last: ${lastStop}` : ''} · explored: ${visited.length}/${SAMPLER_STOPS.length}`}
+            {done ? 'state: HOME (complete)' : `phase: ${phase} · step ${stepIndex + 1}/${SAMPLER_STOPS.length} · seen ${visited.length}`}
           </Text>
         </View>
         <View style={[styles.phone, { width }]}>
@@ -68,12 +63,28 @@ export function SamplerPreview() {
             </View>
           ) : (
             <FirstRunSampler
-              mode={mode}
-              lastStop={lastStop}
+              phase={phase}
+              stop={currentId}
+              stepIndex={stepIndex}
+              stepCount={SAMPLER_STOPS.length}
+              nextStop={nextStop}
               visited={visited}
-              onSelect={sample}
-              onChooseDifferent={() => setMode('menu')}
-              onHome={() => setDone(true)}
+              onStart={() => {
+                // Stub the destination: mark seen and jump to the recap.
+                markVisited(currentId);
+                setPhase('complete');
+              }}
+              onNext={() => {
+                if (stepIndex < LAST) {
+                  setStepIndex((i) => i + 1);
+                  setPhase('lead');
+                } else {
+                  setPhase('end');
+                }
+              }}
+              onEnter={() => setDone(true)}
+              onSelect={(id) => markVisited(id)}
+              onSkip={() => setDone(true)}
             />
           )}
         </View>
