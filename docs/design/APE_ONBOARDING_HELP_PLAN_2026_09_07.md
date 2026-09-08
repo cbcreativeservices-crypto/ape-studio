@@ -248,6 +248,101 @@ existing screen, return detected from nav state, ✓ Explored marks, end permane
 continuation is now CONTEXTUAL (keyed to the last stop) instead of a flat menu. `OnboardingChoice` becomes
 the stop ids `fundamentals | decibel | calc | acoustics | splmeter | career`.
 
+### 2.4 Guided LINEAR flow (owner feedback, 2026-09-07) — supersedes the menu model
+
+The first run is a **guided walkthrough**, not a pick-any menu. The user is walked from start to finish
+IN ORDER (no jumping/skipping ahead); only at the END do they get the menu to go back/revisit, then exit
+into the app.
+
+**Shape:**
+1. **Intro video** (§2.0, owner-supplied) leads.
+2. **Linear walkthrough** — the stops in a fixed order. For each: a short lead-in (optionally a video
+   interlude, owner-supplied) → open the existing screen → on return, a **step-complete** panel that
+   recaps and offers a single **"Next"** forward action (the connected recap copy from §2.3 becomes the
+   bridge to the next step). No skip-ahead, no mid-flow menu.
+3. **End** — after the final stop, present the **menu** of all stops (✓ Explored) so the user can **go
+   back / revisit** any, plus **"Enter Pro Audio Training Academy"** to exit into the app (marks
+   onboarding complete permanently, lands on Home).
+4. An unobtrusive **"Skip onboarding"** escape stays available throughout (accessibility / user-control
+   per the research report §21) — the walkthrough is linear, not a trap.
+
+**SKIP the amplitude orientation in onboarding (owner ruling 2026-09-07):** the required "Understanding
+Level & Amplitude" screen is NOT part of the walkthrough — users meet it later when they open a gated
+tool/lab and it triggers then. (Already hushed during sampling.) Because the earlier "Sound Fundamentals"
+stop routed to `AmplitudeLab`, which IS that screen, that stop is **dropped** from the flow.
+
+**Proposed linear order (existing screens only):** Decibel (glossary) → Distance & SPL (`spldist` calc) →
+Acoustics / Wave (`WaveLab`) → SPL Meter (`SplMeter`) → Career Finder — i.e. **Look it up → Understand →
+Calculate → See it → Measure → Apply**. (Owner to confirm order + whether any other existing screen
+should stand in for "what sound is" now that the amplitude screen is out.)
+
+**PRELOAD — no lag at any stop (owner requirement 2026-09-07):** each destination must be cached and
+ready BEFORE the user reaches it in the sequence, so there is no load spinner mid-flow.
+- **Glossary / Decibel (the big one):** `GlossaryScreen` already session-caches the corpus via a memoized
+  loader (GlossaryScreen.tsx §"Session cache", ~26.8k rows, ~3s cold). Export a `prefetchGlossary()` that
+  kicks that same memoized loader, and call it in the BACKGROUND when onboarding starts (during the intro
+  video). By the time the glossary step opens, the promise is resolved → the Decibel entry is instant.
+  (Beware the "MEMORY RELEASE VALVE" that drops the cache on background — prefetch is best kicked near the
+  step, and the memoized promise survives normal foreground use.)
+- **Supabase-backed labs/data:** warm any remote data the upcoming stop needs the same way (a small
+  per-stop `prefetch()` the coordinator calls one step ahead).
+- **Purely local/bundled screens (Calc `spldist`, WaveLab, Career Finder index):** already instant in a
+  production build (JS is resident); no network warm needed. The SPL Meter's LIVE signal can't be
+  "cached" (it's real-time mic), but its screen is light — prefetch nothing there.
+- Implementation: a tiny `samplerPrefetch` map (stop id → optional async warm fn) the coordinator fires
+  for the NEXT stop as the user advances, plus a kick of the glossary prefetch at flow start.
+
+**Reuse:** the committed coordinator (root overlay + nav-return detection + hushing + persistence +
+completion) and stores stay. What changes: `FirstRunSampler` gains a linear "step-complete → Next" mode
+and an "end menu → Enter app" mode; the coordinator tracks a linear index instead of free choice. The
+in-definition links found live (the Decibel entry has a "calculator" link; a "Open the Audio Calculator
+Laboratory" button) can reinforce the same thread.
+
+### 2.5 Scripted Decibel glossary step (owner spec, 2026-09-07)
+
+The Decibel stop is a guided, scripted demo inside the real `GlossaryScreen`, gated behind an
+"onboarding demo mode" flag (route param or the sampling flag + target term). Behavior, in order:
+1. **Auto-type animation:** the search field types `decibel` one letter at a time (`search`/`setSearch`
+   + `searchRef`, GlossaryScreen.tsx:916-917) → results settle (the field's green "settled" state).
+2. **Highlight the card:** a pulsing highlight ring animates around the Decibel card in the list,
+   prompting the tap.
+3. **On tap → CARDS view, single card:** open the Decibel term in **card view** (`cardView`,
+   GlossaryScreen.tsx:960 + `openPopupRoot(id)`) so no other definitions show after it.
+4. **Beginner (plain-English) mode forced ON** — plain-English at the top (BEG; `begFirst` path,
+   GlossaryScreen.tsx:592-596).
+5. **View + scroll only:** the demo restricts interaction — no filters/mode toggles/other cards; the user
+   can read and scroll, tap the one highlighted card, and continue.
+6. **Common Mistakes shown for dB this once — even though locked:** to show the user what exists (not just
+   that it's locked). After onboarding the lock returns; **dB-only, onboarding-only.**
+   ✅ **RESOLVED (owner 2026-09-07): CANNED.** The Common-Mistakes shown here are demo/authored content
+   (owner ratifies) — NOT a real unlock. No server change, no `has_academy_access()` toggling.
+
+### 2.6 Canned-demo principle (owner ruling 2026-09-07)
+
+The onboarding is a **pre-cached, self-contained DEMO that looks real** — it does NOT have to function
+against the live backend or flip real privileges, EXCEPT at the "key landing points" where it drops the
+user onto the real screen. Consequences:
+- **No backend wait / fully pre-cachable:** scripted moments (the "decibel" search-typing, the term
+  results, the Common-Mistakes reveal, a member-only lab peek, bypassing the amplitude orientation) are
+  canned/animated — they don't fetch or gate, so there's nothing to wait on and everything can be bundled.
+- **No privilege on/off switching:** the demo never grants or revokes academy access, never unlocks gated
+  content for real. It SHOWS what exists (e.g. Common Mistakes, member labs) as demo content; the real
+  locks stay exactly as they are outside onboarding.
+- **Key landing points are real:** at chosen stops the user genuinely lands on the live screen (e.g. the
+  SPL Meter to measure their real room, the calculator to enter a value). Those are the real handoffs.
+- This SUPERSEDES the earlier need for an ungated fetch or a `mistakesReadable` real-unlock, and softens
+  §2.4's preload work: canned steps need no corpus prefetch at all; only real-landing screens may warrant
+  a warm.
+
+**Per-stop: real landing vs canned demo — proposed (owner to confirm):**
+| Stop | Treatment |
+|---|---|
+| Decibel (dB) | **Canned** scripted glossary demo (type → highlight → single card, BEG, Common Mistakes shown) |
+| Distance & SPL calc | **Real landing** — user enters a value in the live calculator |
+| Acoustics / Wave | Real landing (or canned peek) — owner to choose |
+| SPL Meter | **Real landing** — measure the user's actual room |
+| Career Finder | Real landing (or canned peek) — owner to choose |
+
 ## 3. Pillar B — Tutorials & feature reveals
 
 **Goal:** teach each screen and feature the moment it's first used, briefly, once, skippable — never a
