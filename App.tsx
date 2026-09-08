@@ -46,6 +46,7 @@ import { loadLocalSettings } from './src/features/settings/store';
 import { NotifySchedulePreview } from './src/features/settings/NotifySchedulePreview';
 import { SettingsPreview } from './src/screens/settings/SettingsPreview';
 import { SamplerPreview } from './src/features/intro/SamplerPreview';
+import { FirstRunCoordinator } from './src/features/intro/FirstRunCoordinator';
 import { ProfilePreview } from './src/screens/profile/ProfilePreview';
 import { LabPreviewOverlay } from './src/features/lab/LabPreviewOverlay';
 import { endLabPreview, getLabPreview } from './src/features/lab/labPreviewStore';
@@ -370,6 +371,12 @@ export default function App() {
             {/* Free-user Training-Lab preview: grayed, non-interactive scrim +
                 Academy upgrade sheet over the live lab (owner 2026-08-02). */}
             <LabPreviewOverlay />
+            {/* First-launch connected-path onboarding (plan §2.1–§2.3): a root
+                overlay that appears over Home for brand-new users, opens each
+                existing stop (glossary/calc/labs/meter/career), recaps + recommends
+                the next connected step on return, and ends permanently at Home.
+                Renders nothing once onboarding is complete. */}
+            <FirstRunCoordinator />
           </View>
         </AudioOutputGate>
       </EntitlementProvider>
