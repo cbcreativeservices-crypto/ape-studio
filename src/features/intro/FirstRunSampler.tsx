@@ -1,62 +1,72 @@
 /**
- * FirstRunSampler — the first-launch guided-exploration screen (plan §2.1).
+ * FirstRunSampler — the first-launch connected-path screen (plan §2.1 + §2.3).
  *
- * One presentational component, two modes:
- *  - `initial`     → "What would you like to do first?"  + Skip for now
- *  - `continuation`→ "What would you like to explore next?" + the reflective
- *                    "Was that helpful?" micro-question + "take me to Home"
+ * Three modes:
+ *  - `initial`  → "What would you like to do first?" (the full path, start anywhere)
+ *  - `recommend`→ contextual: recaps the last stop and RECOMMENDS the connected
+ *                 next stops (e.g. after Decibel → Calculate / Measure / Room),
+ *                 plus "Choose something different" and "Take me to Home"
+ *  - `menu`     → generic "What would you like to explore next?" (full path again)
  *
- * Choices already sampled show a green ✓ Explored chip and read "Revisit".
- * Purely presentational: the coordinator owns navigation, the visited set, and
- * completion; this renders state and reports taps via callbacks. The preview
- * harness (`#samplerpreview`) drives it with local state.
+ * Sampled stops show a green ✓ Explored chip and stay selectable (Revisit).
+ * Purely presentational: the coordinator owns navigation, the visited set, the
+ * last stop, and completion. The `#samplerpreview` harness drives it locally.
  */
-import { useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
+import { useEffect, useMemo, useRef, type ReactElement } from 'react';
 import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle, Line, Path, Rect } from 'react-native-svg';
 import { colors, fonts } from '../../theme/tokens';
 import { animationsAllowed } from '../settings/a11y';
 import type { OnboardingChoice } from './onboardingFlow';
+import { SAMPLER_STOPS, getStop, type StopId } from './samplerStops';
 
-type Mode = 'initial' | 'continuation';
+type Mode = 'initial' | 'recommend' | 'menu';
 
-export type SamplerChoiceMeta = {
-  id: OnboardingChoice;
-  title: string;
-  blurb: string;
-  accent: string;
-  Icon: (props: { color: string; size: number }) => ReactElement;
-};
-
-// ---- Clean line glyphs (accent-tinted), one per starting choice -------------
-function MagnifierIcon({ color, size }: { color: string; size: number }) {
+// ---- Clean line glyphs, one per stop ----------------------------------------
+function WaveIcon({ color, size }: { color: string; size: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Circle cx={10.5} cy={10.5} r={6.5} stroke={color} strokeWidth={1.8} />
-      <Line x1={15.4} y1={15.4} x2={20} y2={20} stroke={color} strokeWidth={1.8} strokeLinecap="round" />
-      <Line x1={8} y1={10.5} x2={13} y2={10.5} stroke={color} strokeWidth={1.6} strokeLinecap="round" />
+      <Path
+        d="M2 12c2 0 2-7 4-7s2 14 4 14 2-11 4-11 2 8 4 8 2-4 4-4"
+        stroke={color}
+        strokeWidth={1.8}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </Svg>
   );
 }
-function BookIcon({ color, size }: { color: string; size: number }) {
+function DecibelIcon({ color, size }: { color: string; size: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Path
-        d="M12 6.2C10.4 5 8.2 4.6 5.5 4.9C4.7 5 4 5.7 4 6.5V17c0 .9.8 1.6 1.7 1.5C8 18.2 10.3 18.6 12 19.8"
-        stroke={color}
-        strokeWidth={1.7}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <Path
-        d="M12 6.2C13.6 5 15.8 4.6 18.5 4.9C19.3 5 20 5.7 20 6.5V17c0 .9-.8 1.6-1.7 1.5C16 18.2 13.7 18.6 12 19.8"
-        stroke={color}
-        strokeWidth={1.7}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <Line x1={12} y1={6.2} x2={12} y2={19.8} stroke={color} strokeWidth={1.4} />
+      <Rect x={3} y={13} width={3.4} height={7} rx={1} fill={color} opacity={0.55} />
+      <Rect x={8.3} y={9} width={3.4} height={11} rx={1} fill={color} opacity={0.75} />
+      <Rect x={13.6} y={5} width={3.4} height={15} rx={1} fill={color} />
+      <Line x1={3} y1={20} x2={21} y2={20} stroke={color} strokeWidth={1.4} strokeLinecap="round" />
+    </Svg>
+  );
+}
+function CalcIcon({ color, size }: { color: string; size: number }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Rect x={5} y={3} width={14} height={18} rx={2.4} stroke={color} strokeWidth={1.7} />
+      <Rect x={7.8} y={5.6} width={8.4} height={3.2} rx={1} fill={color} opacity={0.5} />
+      <Circle cx={9} cy={13} r={1.1} fill={color} />
+      <Circle cx={12} cy={13} r={1.1} fill={color} />
+      <Circle cx={15} cy={13} r={1.1} fill={color} />
+      <Circle cx={9} cy={16.6} r={1.1} fill={color} />
+      <Circle cx={12} cy={16.6} r={1.1} fill={color} />
+      <Circle cx={15} cy={16.6} r={1.1} fill={color} />
+    </Svg>
+  );
+}
+function RoomIcon({ color, size }: { color: string; size: number }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Rect x={3.5} y={5} width={17} height={14} rx={1.6} stroke={color} strokeWidth={1.7} />
+      <Circle cx={8} cy={12} r={1.6} fill={color} />
+      <Path d="M9.6 12H12M12 12l4 -3.2M12 12l4 3.2" stroke={color} strokeWidth={1.5} strokeLinecap="round" />
     </Svg>
   );
 }
@@ -70,31 +80,23 @@ function MeterIcon({ color, size }: { color: string; size: number }) {
     </Svg>
   );
 }
+function CompassIcon({ color, size }: { color: string; size: number }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Circle cx={12} cy={12} r={8.5} stroke={color} strokeWidth={1.7} />
+      <Path d="M15.2 8.8l-1.8 4.6-4.6 1.8 1.8-4.6z" stroke={color} strokeWidth={1.5} strokeLinejoin="round" fill={color} fillOpacity={0.25} />
+    </Svg>
+  );
+}
 
-/** The three starting choices, in order, with on-brand accents. */
-export const SAMPLER_CHOICES: SamplerChoiceMeta[] = [
-  {
-    id: 'glossary',
-    title: 'Search the glossary',
-    blurb: 'Look up a professional audio term — no account needed.',
-    accent: colors.cyanBright,
-    Icon: MagnifierIcon,
-  },
-  {
-    id: 'learn',
-    title: 'Learn a topic',
-    blurb: 'Browse subjects and structured lessons.',
-    accent: colors.blue,
-    Icon: BookIcon,
-  },
-  {
-    id: 'tools',
-    title: 'Use an audio tool',
-    blurb: 'Explore the live meters and measurement tools.',
-    accent: colors.amber,
-    Icon: MeterIcon,
-  },
-];
+const STOP_ICON: Record<StopId, (p: { color: string; size: number }) => ReactElement> = {
+  fundamentals: WaveIcon,
+  decibel: DecibelIcon,
+  calc: CalcIcon,
+  acoustics: RoomIcon,
+  splmeter: MeterIcon,
+  career: CompassIcon,
+};
 
 function CheckIcon({ color, size }: { color: string; size: number }) {
   return (
@@ -111,33 +113,23 @@ function ChevronIcon({ color, size }: { color: string; size: number }) {
   );
 }
 
-function ChoiceCard({
-  meta,
-  visited,
-  onPress,
-}: {
-  meta: SamplerChoiceMeta;
-  visited: boolean;
-  onPress: () => void;
-}) {
-  const { Icon, accent, title, blurb } = meta;
+function StopCard({ id, visited, onPress }: { id: StopId; visited: boolean; onPress: () => void }) {
+  const stop = getStop(id);
+  const Icon = STOP_ICON[id];
+  const { accent, label, blurb } = stop;
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
-      accessibilityLabel={visited ? `${title}. Explored. Revisit.` : title}
+      accessibilityLabel={visited ? `${label}. Explored. Revisit.` : label}
       accessibilityHint={blurb}
-      style={({ pressed }) => [
-        styles.card,
-        { borderColor: hexA(accent, 0.4) },
-        pressed && styles.cardPressed,
-      ]}
+      style={({ pressed }) => [styles.card, { borderColor: hexA(accent, 0.4) }, pressed && styles.cardPressed]}
     >
       <View style={[styles.iconTile, { backgroundColor: hexA(accent, 0.12), borderColor: hexA(accent, 0.35) }]}>
         <Icon color={accent} size={26} />
       </View>
       <View style={styles.cardText}>
-        <Text style={styles.cardTitle}>{title}</Text>
+        <Text style={styles.cardTitle}>{label}</Text>
         <Text style={styles.cardBlurb}>{blurb}</Text>
       </View>
       {visited ? (
@@ -154,38 +146,59 @@ function ChoiceCard({
 
 export function FirstRunSampler({
   mode,
+  lastStop,
   visited,
   onSelect,
+  onChooseDifferent,
   onHome,
 }: {
   mode: Mode;
+  /** The stop just sampled — drives the recap + recommendations in `recommend`. */
+  lastStop?: StopId;
   visited: OnboardingChoice[];
-  onSelect: (choice: OnboardingChoice) => void;
-  /** Leave onboarding for the Home screen (Skip on initial, "take me to Home"
-   *  on continuation). The coordinator marks onboarding complete. */
+  onSelect: (id: StopId) => void;
+  /** `recommend` → open the full menu of every stop. */
+  onChooseDifferent: () => void;
+  /** Leave onboarding for Home (Skip on initial, "take me to Home" elsewhere). */
   onHome: () => void;
 }) {
   const insets = useSafeAreaInsets();
   const visitedSet = useMemo(() => new Set(visited), [visited]);
-  const allExplored = visitedSet.size >= SAMPLER_CHOICES.length;
 
-  // Gentle entrance; skipped entirely under Reduce Motion.
   const anim = useRef(new Animated.Value(animationsAllowed() ? 0 : 1)).current;
-  const [helpful, setHelpful] = useState<null | 'yes' | 'no'>(null);
   useEffect(() => {
     if (animationsAllowed()) {
-      Animated.timing(anim, { toValue: 1, duration: 340, useNativeDriver: true }).start();
+      Animated.timing(anim, { toValue: 1, duration: 320, useNativeDriver: true }).start();
+    } else {
+      anim.setValue(1);
     }
-  }, [anim]);
+    // Re-run the entrance each time the mode/stop changes so a returning user
+    // feels the new screen arrive.
+  }, [anim, mode, lastStop]);
 
-  const isInitial = mode === 'initial';
+  const recapStop = mode === 'recommend' && lastStop ? getStop(lastStop) : null;
+  const cardIds: StopId[] = recapStop
+    ? recapStop.next
+    : SAMPLER_STOPS.map((s) => s.id);
+
+  const eyebrow = mode === 'initial' ? 'WELCOME' : mode === 'recommend' ? 'NICE WORK' : 'KEEP EXPLORING';
+  const title =
+    mode === 'initial'
+      ? 'What would you like to do first?'
+      : mode === 'recommend' && recapStop
+        ? recapStop.recap
+        : 'What would you like to explore next?';
+  const sub =
+    mode === 'initial'
+      ? 'Start anywhere — each step connects to the next.'
+      : mode === 'recommend'
+        ? 'Here’s where this leads — or pick your own way.'
+        : 'Pick any part of the Academy, or head to your Home screen.';
+
   return (
     <View style={styles.root}>
       <ScrollView
-        contentContainerStyle={[
-          styles.scroll,
-          { paddingTop: insets.top + 28, paddingBottom: insets.bottom + 24 },
-        ]}
+        contentContainerStyle={[styles.scroll, { paddingTop: insets.top + 28, paddingBottom: insets.bottom + 24 }]}
         showsVerticalScrollIndicator={false}
       >
         <Animated.View
@@ -194,68 +207,36 @@ export function FirstRunSampler({
             transform: [{ translateY: anim.interpolate({ inputRange: [0, 1], outputRange: [14, 0] }) }],
           }}
         >
-          <Text style={styles.eyebrow}>{isInitial ? 'WELCOME' : 'NICE WORK'}</Text>
-          <Text style={styles.title}>
-            {isInitial ? 'What would you like to do first?' : 'What would you like to explore next?'}
-          </Text>
+          <Text style={styles.eyebrow}>{eyebrow}</Text>
+          <Text style={styles.title}>{title}</Text>
           <View style={styles.rule} />
-          <Text style={styles.sub}>
-            {isInitial
-              ? 'Pick a starting point — you can come back and try the others.'
-              : 'Visit another part of Pro Audio Training Academy, or continue to your Home screen.'}
-          </Text>
-
-          {/* Reflective micro-question — continuation only, optional, one-tap. */}
-          {!isInitial ? (
-            <View style={styles.helpfulBar}>
-              <Text style={styles.helpfulQ}>Was that helpful?</Text>
-              {helpful == null ? (
-                <View style={styles.helpfulBtns}>
-                  <Pressable
-                    onPress={() => setHelpful('yes')}
-                    accessibilityRole="button"
-                    accessibilityLabel="Yes, that was helpful"
-                    style={styles.helpfulBtn}
-                  >
-                    <Text style={styles.helpfulBtnText}>Yes</Text>
-                  </Pressable>
-                  <Pressable
-                    onPress={() => setHelpful('no')}
-                    accessibilityRole="button"
-                    accessibilityLabel="Not really"
-                    style={styles.helpfulBtn}
-                  >
-                    <Text style={styles.helpfulBtnText}>Not really</Text>
-                  </Pressable>
-                </View>
-              ) : (
-                <Text style={styles.helpfulThanks}>Thanks — noted.</Text>
-              )}
-            </View>
-          ) : null}
+          <Text style={styles.sub}>{sub}</Text>
 
           <View style={styles.cards}>
-            {SAMPLER_CHOICES.map((meta) => (
-              <ChoiceCard
-                key={meta.id}
-                meta={meta}
-                visited={visitedSet.has(meta.id)}
-                onPress={() => onSelect(meta.id)}
-              />
+            {cardIds.map((id) => (
+              <StopCard key={id} id={id} visited={visitedSet.has(id)} onPress={() => onSelect(id)} />
             ))}
           </View>
+
+          {mode === 'recommend' ? (
+            <Pressable
+              onPress={onChooseDifferent}
+              accessibilityRole="button"
+              accessibilityLabel="Choose something different"
+              style={({ pressed }) => [styles.secondaryBtn, pressed && { opacity: 0.7 }]}
+            >
+              <Text style={styles.secondaryText}>Choose something different</Text>
+            </Pressable>
+          ) : null}
 
           <Pressable
             onPress={onHome}
             accessibilityRole="button"
-            accessibilityLabel={isInitial ? 'Skip for now, go to Home' : "I'm ready — take me to the Home screen"}
-            style={({ pressed }) => [
-              isInitial ? styles.skipBtn : styles.homeBtn,
-              pressed && { opacity: 0.75 },
-            ]}
+            accessibilityLabel={mode === 'initial' ? 'Skip for now, go to Home' : 'Take me to the Home screen'}
+            style={({ pressed }) => [mode === 'initial' ? styles.skipBtn : styles.homeBtn, pressed && { opacity: 0.75 }]}
           >
-            <Text style={isInitial ? styles.skipText : styles.homeText}>
-              {isInitial ? 'Skip for now' : allExplored ? 'Take me to the Home screen' : "I’m ready — take me to the Home screen"}
+            <Text style={mode === 'initial' ? styles.skipText : styles.homeText}>
+              {mode === 'initial' ? 'Skip for now' : 'Take me to the Home screen'}
             </Text>
           </Pressable>
         </Animated.View>
@@ -276,44 +257,12 @@ function hexA(hex: string, a: number): string {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBgDeep },
   scroll: { paddingHorizontal: 22, maxWidth: 480, width: '100%', alignSelf: 'center' },
-  eyebrow: {
-    fontFamily: fonts.oswaldSemiBold,
-    fontSize: 11,
-    letterSpacing: 3,
-    color: colors.amberLabel,
-    marginBottom: 8,
-  },
-  title: { fontFamily: fonts.oswaldMedium, fontSize: 27, lineHeight: 32, color: colors.textPrimary },
+  eyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 3, color: colors.amberLabel, marginBottom: 8 },
+  title: { fontFamily: fonts.oswaldMedium, fontSize: 26, lineHeight: 31, color: colors.textPrimary },
   rule: { width: 46, height: 2, backgroundColor: colors.amber, borderRadius: 1, marginTop: 12, marginBottom: 12 },
   sub: { fontFamily: fonts.barlowMedium, fontSize: 14.5, lineHeight: 21, color: colors.textSub, marginBottom: 22 },
 
-  helpfulBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-    borderRadius: 11,
-    borderWidth: 1,
-    borderColor: colors.hairline,
-    backgroundColor: 'rgba(255,255,255,0.02)',
-    marginBottom: 20,
-  },
-  helpfulQ: { fontFamily: fonts.barlowSemiBold, fontSize: 14, color: colors.textSecondary },
-  helpfulBtns: { flexDirection: 'row', gap: 8 },
-  helpfulBtn: {
-    paddingVertical: 6,
-    paddingHorizontal: 14,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: hexA('#37e05f', 0.5),
-    backgroundColor: hexA('#37e05f', 0.08),
-  },
-  helpfulBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 0.5, color: colors.green },
-  helpfulThanks: { fontFamily: fonts.barlowMedium, fontSize: 13, color: colors.textSub },
-
-  cards: { gap: 12, marginBottom: 26 },
+  cards: { gap: 12, marginBottom: 20 },
   card: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -324,14 +273,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#141310',
   },
   cardPressed: { backgroundColor: '#1b1a16' },
-  iconTile: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  iconTile: { width: 48, height: 48, borderRadius: 12, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
   cardText: { flex: 1, gap: 3 },
   cardTitle: { fontFamily: fonts.oswaldMedium, fontSize: 17.5, color: colors.textPrimary },
   cardBlurb: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSub },
@@ -347,6 +289,9 @@ const styles = StyleSheet.create({
     backgroundColor: hexA('#37e05f', 0.1),
   },
   exploredText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1, color: colors.green },
+
+  secondaryBtn: { alignSelf: 'center', paddingVertical: 10, paddingHorizontal: 18, marginBottom: 6 },
+  secondaryText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.8, color: colors.textSub },
 
   skipBtn: { alignSelf: 'center', paddingVertical: 12, paddingHorizontal: 20 },
   skipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13.5, letterSpacing: 1, color: colors.textSub },

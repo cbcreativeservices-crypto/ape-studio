@@ -16,8 +16,24 @@
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-/** The three first-run starting choices (plan §2.1 / START-CHOICE-01). */
-export type OnboardingChoice = 'glossary' | 'learn' | 'tools';
+/** The first-run connected-path stops (plan §2.3). Each maps to an EXISTING
+ *  screen; the sampler threads them around one concept (sound level / dB). */
+export type OnboardingChoice =
+  | 'fundamentals'
+  | 'decibel'
+  | 'calc'
+  | 'acoustics'
+  | 'splmeter'
+  | 'career';
+
+const ALL_CHOICES: readonly OnboardingChoice[] = [
+  'fundamentals',
+  'decibel',
+  'calc',
+  'acoustics',
+  'splmeter',
+  'career',
+];
 
 const COMPLETE_KEY = 'ape:onboarding:complete';
 const VISITED_KEY = 'ape:onboarding:visited';
@@ -54,7 +70,7 @@ function hydrate(): Promise<void> {
 }
 
 function isChoice(x: unknown): x is OnboardingChoice {
-  return x === 'glossary' || x === 'learn' || x === 'tools';
+  return typeof x === 'string' && (ALL_CHOICES as readonly string[]).includes(x);
 }
 
 // Warm the store on first import so first-run gating can read it early.

@@ -1,18 +1,18 @@
 /**
- * DEV + WEB harness for the first-run sampler screen
+ * DEV + WEB harness for the first-run connected-path screen
  * (`localhost:8090/#samplerpreview`).
  *
- * The sampler runs only on a brand-new first launch, so it can't be reviewed in
- * the normal app flow. This drives FirstRunSampler with local state: tap a card
- * to "sample" it (marks ✓ Explored and flips to the continuation mode); tap Home
- * to see the finished state. Reset restores the initial screen. Web+dev only —
- * this never mounts on device.
+ * Drives FirstRunSampler with local state so the whole connected loop can be
+ * clicked in the browser: initial → pick a stop → contextual recommendation
+ * (recap + next steps) → pick another or "choose something different" (full
+ * menu) → Home. Reset restores the start. Web+dev only; never mounts on device.
  */
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../theme/tokens';
-import { FirstRunSampler, SAMPLER_CHOICES } from './FirstRunSampler';
+import { FirstRunSampler } from './FirstRunSampler';
+import { SAMPLER_STOPS, type StopId } from './samplerStops';
 import type { OnboardingChoice } from './onboardingFlow';
 
 const WIDTHS = [360, 393, 412];
@@ -23,30 +23,41 @@ function widthFromHash(): number {
   return WIDTHS.includes(w) ? w : 393;
 }
 
+type Mode = 'initial' | 'recommend' | 'menu';
+
 export function SamplerPreview() {
   const width = widthFromHash();
   const [visited, setVisited] = useState<OnboardingChoice[]>([]);
-  const [mode, setMode] = useState<'initial' | 'continuation'>('initial');
+  const [mode, setMode] = useState<Mode>('initial');
+  const [lastStop, setLastStop] = useState<StopId | undefined>(undefined);
   const [done, setDone] = useState(false);
 
   const reset = () => {
     setVisited([]);
     setMode('initial');
+    setLastStop(undefined);
     setDone(false);
+  };
+
+  const sample = (id: StopId) => {
+    // Simulate opening the destination, then returning to the contextual recap.
+    setVisited((v) => (v.includes(id) ? v : [...v, id]));
+    setLastStop(id);
+    setMode('recommend');
   };
 
   return (
     <SafeAreaProvider>
       <View style={styles.root}>
-        <Text style={styles.bar}>
-          {`FIRST-RUN SAMPLER @ ${width}px  ·  #samplerpreview/<360|393|412>`}
-        </Text>
+        <Text style={styles.bar}>{`FIRST-RUN PATH @ ${width}px  ·  #samplerpreview/<360|393|412>`}</Text>
         <View style={styles.controls}>
           <Pressable style={styles.ctl} onPress={reset}>
             <Text style={styles.ctlText}>RESET</Text>
           </Pressable>
           <Text style={styles.state}>
-            {done ? 'state: HOME (complete)' : `mode: ${mode}  ·  explored: ${visited.length}/${SAMPLER_CHOICES.length}`}
+            {done
+              ? 'state: HOME (complete)'
+              : `mode: ${mode}${lastStop ? ` · last: ${lastStop}` : ''} · explored: ${visited.length}/${SAMPLER_STOPS.length}`}
           </Text>
         </View>
         <View style={[styles.phone, { width }]}>
@@ -58,13 +69,10 @@ export function SamplerPreview() {
           ) : (
             <FirstRunSampler
               mode={mode}
+              lastStop={lastStop}
               visited={visited}
-              onSelect={(c) => {
-                // Simulate: open the destination (stubbed), sample it, return to
-                // the continuation screen with it marked ✓ Explored.
-                setVisited((v) => (v.includes(c) ? v : [...v, c]));
-                setMode('continuation');
-              }}
+              onSelect={sample}
+              onChooseDifferent={() => setMode('menu')}
               onHome={() => setDone(true)}
             />
           )}
@@ -78,14 +86,7 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#0a0a0c', alignItems: 'center' },
   bar: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, color: colors.amber, paddingVertical: 8 },
   controls: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingBottom: 8 },
-  ctl: {
-    paddingVertical: 5,
-    paddingHorizontal: 12,
-    borderRadius: 7,
-    borderWidth: 1,
-    borderColor: colors.steelBorder,
-    backgroundColor: '#161616',
-  },
+  ctl: { paddingVertical: 5, paddingHorizontal: 12, borderRadius: 7, borderWidth: 1, borderColor: colors.steelBorder, backgroundColor: '#161616' },
   ctlText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, color: colors.textSub },
   state: { fontFamily: fonts.mono, fontSize: 11, color: colors.textMuted },
   phone: { flex: 1, borderWidth: 1, borderColor: '#2a2a2a', overflow: 'hidden' },

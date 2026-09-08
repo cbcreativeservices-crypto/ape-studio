@@ -191,16 +191,62 @@ curated choices and their exact destinations:
 | **Sound fundamentals** | "How Sound Travels" | Speaker cone → alternating compression/rarefaction → the familiar waveform; user adjusts **frequency** (pitch), **amplitude** (level), **wavelength** (cycle distance) | ⚠️ NOT built — new interactive (adapt Foundations/Amplitude viz) |
 | **Acoustics** | "Why Rooms Change Sound" | A room with speaker + listener + surfaces animating **direct sound, early + late reflections, absorption, diffusion**; user swaps a wall (concrete → absorption) and watches reflected energy + decay change | ⚠️ NOT built — new interactive (room calculators exist, no animated room) |
 
-**Build reality:** #1 and #2 are wireable to existing content now. #3 and #4 are the animated payoffs the
-idea depends on and are **net-new interactive visualizers** (each a real build; both are audio-education
-"labs" and would sit behind the amplitude orientation normally, but are HUSHED during sampling per §2.1).
-Pointing #3/#4 at a generic menu would defeat the "instant payoff" principle — so either build the two
-visualizers, or launch the sampler with #1/#2 live and #3/#4 added when built. Owner to choose (see the
-open item logged with this spec).
+**HARD RULING (owner 2026-09-07): NO NEW SCREENS — the first-run journey uses ONLY existing labs and
+screens.** So the two net-new visualizers (#3 "How Sound Travels", #4 "Why Rooms Change Sound") are OUT
+as new builds; the "sound fundamentals" and "acoustics" payoffs must map to the closest EXISTING screen
+(e.g. an existing Foundations/Amplitude lab; an existing room/reverb lab or room calculator). #1
+Distance-to-Delay and #2 Decibel already exist. Connective handoffs must reuse existing navigation; at
+most a small in-screen link/button may be added (that is not a new screen), and any such addition is
+flagged for owner review.
+
+**Connected-journey direction (owner 2026-09-07):** the stops should RELATE, not sit as isolated samples
+— each existing destination hands off to a related next one (e.g. Career Finder ↔ Decibel term ↔ its
+calculator ↔ Distance-to-Delay calc ↔ a related existing lab). Career Finder placement (start vs end) and
+the exact ordering are being designed by an expert agent against the real existing content graph; §2.2's
+four choices reconcile with the §2.1 loop (✓ Explored / continuation / end at Home).
 
 These four replace the glossary/learn/tools triad in `FirstRunSampler` (`OnboardingChoice` becomes
 `'calc' | 'fundamentals' | 'acoustics' | 'glossary'`); the loop mechanics (§2.1), hushing, visited/✓
 Explored, and completion are unchanged.
+
+### 2.3 The connected path — one concept, several ways (owner spec, 2026-09-07)
+
+This supersedes the isolated four-choice model in §2.2. The first run threads ONE concept — **sound
+level / decibels** — through several EXISTING screens, and after each stop the continuation screen
+RECOMMENDS the next connected experience (contextual, not a static menu). Shared example carried
+throughout: *"A loudspeaker measures 90 dB SPL at 1 m — what happens as that sound travels through a room?"*
+
+**The stops (all existing screens — NO new screens):**
+
+| Stop | Payoff | Existing route |
+|---|---|---|
+| Sound Fundamentals | amplitude → sound level | `AmplitudeLab` |
+| Decibel (dB) | what 90 dB represents (ratio, log, 0 dB ≠ silence) | `PublicGlossary` `{query:'Decibel'}` |
+| Distance & SPL calc | predict level at distance (~84 dB @2 m, ~78 dB @4 m, free field) | `CalcWorkspace` `{id:'spldist'}` |
+| Acoustics / Wave Physics | why a real room differs (reflections/absorption/diffusion) | `WaveLab` |
+| SPL Meter | measure the user's actual environment | `SplMeter` |
+| Career Finder | careers using these concepts | `CareerFinder` |
+
+**Recommended order (but the user may begin anywhere):** Fundamentals → Decibel → Distance/SPL calc →
+Acoustics/Wave → SPL Meter → Career Finder (or curriculum). The app just RECOMMENDS the next connected
+step after each return.
+
+**Contextual continuation (the key change to §2.1's loop):** the return screen recaps what was just
+learned and offers the connected next steps + "Choose something different" + "Take me to the Home screen".
+Owner's example copy (voice to match; owner ratifies):
+- After **Decibel**: *"Now you know what a decibel represents. Want to use it?"* → Calculate how level
+  changes with distance · Measure the sound around you · See how a room changes sound · Choose something
+  different · Home.
+- After **Calculator**: *"That calculation assumes no room reflections. Want to see what changes inside a
+  real room?"* → Open the Acoustics Lab · Measure sound around me · Choose something different · Home.
+
+The tagline this proves: **Look it up. Understand it. Calculate it. See it in action. Measure it. Apply
+it.** — features stop feeling like separate collections and become one interconnected system.
+
+**Reconciles with §2.1:** same loop shell — enter sampling (educational overlays hushed), open the
+existing screen, return detected from nav state, ✓ Explored marks, end permanently at Home. The
+continuation is now CONTEXTUAL (keyed to the last stop) instead of a flat menu. `OnboardingChoice` becomes
+the stop ids `fundamentals | decibel | calc | acoustics | splmeter | career`.
 
 ## 3. Pillar B — Tutorials & feature reveals
 
