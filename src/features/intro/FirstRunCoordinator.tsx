@@ -98,6 +98,17 @@ export function FirstRunCoordinator() {
     }
   };
 
+  // Step backward: from a recap back to this step's lead; from a lead back to
+  // the previous step's lead. (End menu has its own navigation.)
+  const onBack = () => {
+    if (phase === 'complete') setPhase('lead');
+    else if (phase === 'lead' && stepIndex > 0) {
+      setStepIndex((i) => i - 1);
+      setPhase('lead');
+    }
+  };
+  const canBack = phase === 'complete' || (phase === 'lead' && stepIndex > 0);
+
   const finish = () => {
     setSamplingActive(false);
     setOnboardingComplete();
@@ -148,6 +159,7 @@ export function FirstRunCoordinator() {
         onEnter={finish}
         onSelect={(id) => openStop(id, true)}
         onSkip={finish}
+        onBack={canBack ? onBack : undefined}
       />
     </View>
   );

@@ -158,6 +158,7 @@ export function FirstRunSampler({
   onEnter,
   onSelect,
   onSkip,
+  onBack,
 }: {
   phase: FlowPhase;
   /** Current stop (lead/complete phases). */
@@ -172,6 +173,8 @@ export function FirstRunSampler({
   onEnter: () => void;
   onSelect: (id: StopId) => void;
   onSkip: () => void;
+  /** Step back one (lead/complete phases). Omitted when there's nowhere back. */
+  onBack?: () => void;
 }) {
   const insets = useSafeAreaInsets();
   const visitedSet = useMemo(() => new Set(visited), [visited]);
@@ -217,18 +220,17 @@ export function FirstRunSampler({
           <View style={styles.rule} />
           <Text style={styles.sub}>{sub}</Text>
 
-          {/* LEAD — show the upcoming stop, then Start it. */}
+          {/* LEAD — show the upcoming stop (display only), then Start it. The
+              card is NOT tappable — only the explicit button advances. */}
           {phase === 'lead' && current ? (
             <>
               <View style={styles.cards}>
-                <StopCard id={current.id} visited={visitedSet.has(current.id)} onPress={onStart} />
+                <StopCard id={current.id} visited={visitedSet.has(current.id)} />
               </View>
               <Pressable onPress={onStart} accessibilityRole="button" accessibilityLabel={`Start: ${current.label}`} style={({ pressed }) => [styles.primaryBtn, pressed && { opacity: 0.8 }]}>
                 <Text style={styles.primaryText}>{current.canned ? 'See it' : 'Open it'}</Text>
               </Pressable>
-              <Pressable onPress={onSkip} accessibilityRole="button" accessibilityLabel="Skip the intro" style={styles.skipBtn}>
-                <Text style={styles.skipText}>Skip intro</Text>
-              </Pressable>
+              <FooterRow onBack={onBack} onSkip={onSkip} />
             </>
           ) : null}
 
@@ -238,9 +240,7 @@ export function FirstRunSampler({
               <Pressable onPress={onNext} accessibilityRole="button" accessibilityLabel={nextStop ? `Next: ${getStop(nextStop).label}` : 'Finish the walkthrough'} style={({ pressed }) => [styles.primaryBtn, pressed && { opacity: 0.8 }]}>
                 <Text style={styles.primaryText}>{nextStop ? `Next: ${getStop(nextStop).label}` : 'Finish'}</Text>
               </Pressable>
-              <Pressable onPress={onSkip} accessibilityRole="button" accessibilityLabel="Skip the rest of the intro" style={styles.skipBtn}>
-                <Text style={styles.skipText}>Skip intro</Text>
-              </Pressable>
+              <FooterRow onBack={onBack} onSkip={onSkip} />
             </>
           ) : null}
 
@@ -259,6 +259,22 @@ export function FirstRunSampler({
           ) : null}
         </Animated.View>
       </ScrollView>
+    </View>
+  );
+}
+
+/** Back (optional) + Skip, shown under the primary action on lead/complete. */
+function FooterRow({ onBack, onSkip }: { onBack?: () => void; onSkip: () => void }) {
+  return (
+    <View style={styles.footerRow}>
+      {onBack ? (
+        <Pressable onPress={onBack} accessibilityRole="button" accessibilityLabel="Go back a step" style={styles.footerBtn}>
+          <Text style={styles.footerBackText}>‹ Back</Text>
+        </Pressable>
+      ) : null}
+      <Pressable onPress={onSkip} accessibilityRole="button" accessibilityLabel="Skip the intro" style={styles.footerBtn}>
+        <Text style={styles.footerSkipText}>Skip intro</Text>
+      </Pressable>
     </View>
   );
 }
@@ -296,4 +312,8 @@ const styles = StyleSheet.create({
   enterText: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.5, color: colors.green },
   skipBtn: { alignSelf: 'center', paddingVertical: 12, paddingHorizontal: 20, marginTop: 4 },
   skipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, color: colors.textSub },
+  footerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 18, marginTop: 6 },
+  footerBtn: { paddingVertical: 11, paddingHorizontal: 16 },
+  footerBackText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.6, color: colors.amber },
+  footerSkipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, color: colors.textSub },
 });

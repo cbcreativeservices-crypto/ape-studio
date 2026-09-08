@@ -85,6 +85,17 @@ export function SamplerPreview() {
               onEnter={() => setDone(true)}
               onSelect={(id) => markVisited(id)}
               onSkip={() => setDone(true)}
+              onBack={
+                phase === 'complete' || (phase === 'lead' && stepIndex > 0)
+                  ? () => {
+                      if (phase === 'complete') setPhase('lead');
+                      else {
+                        setStepIndex((i) => i - 1);
+                        setPhase('lead');
+                      }
+                    }
+                  : undefined
+              }
             />
           )}
         </View>

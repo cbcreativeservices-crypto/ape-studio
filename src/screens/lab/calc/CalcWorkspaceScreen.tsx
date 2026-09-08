@@ -30,6 +30,7 @@ import { buildReportFromCalc, reportToText } from './calcReport';
 import { GlossaryTermPopup } from '../../../features/glossary/GlossaryTermPopup';
 import { FormulaKeyPopup } from './FormulaKeyPopup';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
+import { useSamplingActive } from '../../../features/intro/onboardingSampling';
 import { CALC_WEEKLY_LIMIT, consumeCalc, getCalcStatus, type CalcUsage } from '../../../features/lab/calcUsage';
 
 const SIGS = [3, 4, 5] as const;
@@ -102,9 +103,14 @@ export function CalcWorkspaceScreen() {
   // Academy is unlimited; anonymous guests must sign in. The result is hidden
   // behind a CALCULATE button so there is one countable trigger per calculation.
   const { entitlement, commercialMode } = useEntitlement();
+  // During the first-run onboarding demo the calc is a canned "looks real"
+  // landing focused on UX, not the upsell (owner 2026-09-07): no sign-in gate
+  // and no weekly-cap prompt — the answer just computes locally. Real gating
+  // returns the moment onboarding ends. Both hooks run every render.
+  const onboardingSampling = useSamplingActive();
   // Caps only bite in commercial mode; institutional/dev mode grants full access.
-  const capped = commercialMode && (entitlement === 'free' || entitlement === 'lapsed');
-  const mustSignIn = commercialMode && entitlement === 'anonymous';
+  const capped = commercialMode && (entitlement === 'free' || entitlement === 'lapsed') && !onboardingSampling;
+  const mustSignIn = commercialMode && entitlement === 'anonymous' && !onboardingSampling;
   const [usage, setUsage] = useState<CalcUsage | null>(null);
   const [consumedSig, setConsumedSig] = useState<string | null>(null);
   const [consuming, setConsuming] = useState(false);
