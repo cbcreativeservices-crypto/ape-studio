@@ -178,6 +178,30 @@ needed. (`MIC-RATIONALE-01`, `TOOL-CAL-01`, safety, and the paywall/entitlement 
 another part of Pro Audio Training Academy or continue to your Home screen."* Visited choices read
 **✓ Explored**.
 
+### 2.2 Curated "immediate payoff" destinations (owner spec, 2026-09-07)
+
+The strongest first-run choices land the user on an *interesting result almost immediately*, not on a
+menu. This supersedes the earlier broad routing (glossary→hub, learn→dashboard, tools→hub). The four
+curated choices and their exact destinations:
+
+| Choice | Destination | Immediate payoff | In app today |
+|---|---|---|---|
+| **Audio calculation** | Distance-to-Delay calculator | Enter a distance → see sound's travel time (10 ft ≈ 8.9 ms · 25 ft ≈ 22.2 ms · 50 ft ≈ 44.4 ms); why it matters: aligning speakers, mics, video, distributed systems | ✅ Calc Lab `distdelay` / `distToDelay` |
+| **Glossary** | Decibel (dB) term | "A decibel is not a fixed amount — 0 dB does not always mean silence" (ratio, logarithmic, dB SPL vs dBFS vs dBu, dB don't add numerically) | ✅ PublicGlossary opens on a query ("Decibel") |
+| **Sound fundamentals** | "How Sound Travels" | Speaker cone → alternating compression/rarefaction → the familiar waveform; user adjusts **frequency** (pitch), **amplitude** (level), **wavelength** (cycle distance) | ⚠️ NOT built — new interactive (adapt Foundations/Amplitude viz) |
+| **Acoustics** | "Why Rooms Change Sound" | A room with speaker + listener + surfaces animating **direct sound, early + late reflections, absorption, diffusion**; user swaps a wall (concrete → absorption) and watches reflected energy + decay change | ⚠️ NOT built — new interactive (room calculators exist, no animated room) |
+
+**Build reality:** #1 and #2 are wireable to existing content now. #3 and #4 are the animated payoffs the
+idea depends on and are **net-new interactive visualizers** (each a real build; both are audio-education
+"labs" and would sit behind the amplitude orientation normally, but are HUSHED during sampling per §2.1).
+Pointing #3/#4 at a generic menu would defeat the "instant payoff" principle — so either build the two
+visualizers, or launch the sampler with #1/#2 live and #3/#4 added when built. Owner to choose (see the
+open item logged with this spec).
+
+These four replace the glossary/learn/tools triad in `FirstRunSampler` (`OnboardingChoice` becomes
+`'calc' | 'fundamentals' | 'acoustics' | 'glossary'`); the loop mechanics (§2.1), hushing, visited/✓
+Explored, and completion are unchanged.
+
 ## 3. Pillar B — Tutorials & feature reveals
 
 **Goal:** teach each screen and feature the moment it's first used, briefly, once, skippable — never a
