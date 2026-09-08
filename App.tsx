@@ -45,6 +45,7 @@ import { syncLocalNotificationsThrottled } from './src/features/notifications/lo
 import { loadLocalSettings } from './src/features/settings/store';
 import { NotifySchedulePreview } from './src/features/settings/NotifySchedulePreview';
 import { SettingsPreview } from './src/screens/settings/SettingsPreview';
+import { SamplerPreview } from './src/features/intro/SamplerPreview';
 import { ProfilePreview } from './src/screens/profile/ProfilePreview';
 import { LabPreviewOverlay } from './src/features/lab/LabPreviewOverlay';
 import { endLabPreview, getLabPreview } from './src/features/lab/labPreviewStore';
@@ -229,6 +230,18 @@ export default function App() {
         <StatusBar style="light" />
         <SettingsPreview />
       </SafeAreaProvider>
+    );
+  }
+
+  // DEV + WEB ONLY: `#samplerpreview/<width>` — the first-run sampler screen
+  // (plan §2.1) only runs on a brand-new first launch, so this is the only way
+  // to review it in the browser. SamplerPreview brings its own SafeAreaProvider.
+  if (__DEV__ && Platform.OS === 'web' && typeof window !== 'undefined' && window.location.hash.startsWith('#samplerpreview')) {
+    return (
+      <>
+        <StatusBar style="light" />
+        <SamplerPreview />
+      </>
     );
   }
 
