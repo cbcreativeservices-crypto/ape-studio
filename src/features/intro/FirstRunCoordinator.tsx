@@ -26,6 +26,12 @@ import { setSamplingActive } from './onboardingSampling';
 const HOME_ROUTE = 'Main';
 const LAST_INDEX = SAMPLER_STOPS.length - 1;
 
+// ⏸ PARKED (owner 2026-09-08): the first-run walkthrough is set aside until it's
+// finished — the app must NOT show it on entry. Flip back to `true` to re-enable.
+// The `#samplerpreview` web harness (SamplerPreview) still renders the screen for
+// continued development, so this only disables the on-device first-run trigger.
+const FIRST_RUN_ENABLED = false;
+
 /** Internal phase: the visible FlowPhase plus 'sampling' (a real stop is open). */
 type Phase = FlowPhase | 'sampling';
 
@@ -36,6 +42,9 @@ function rootTopRouteName(): string | undefined {
 }
 
 export function FirstRunCoordinator() {
+  // Parked — never mount the first-run walkthrough on entry (owner 2026-09-08).
+  // Constant every render, so hook order stays consistent.
+  if (!FIRST_RUN_ENABLED) return null;
   const { complete, visited, hydrated } = useOnboardingFlow();
   const insets = useSafeAreaInsets();
   const [onMain, setOnMain] = useState(false);
