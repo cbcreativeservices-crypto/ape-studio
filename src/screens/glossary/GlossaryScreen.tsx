@@ -30,6 +30,7 @@ import { LowLightDim } from '../../features/settings/LowLightLayer';
 import { BookmarkIcon, HoldHintPressable, TermSelectIcons } from '../../features/flags/TermSelectIcons';
 import { SpeakButton, stopAllSpeech } from '../../components/SpeakButton';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { HelpDot, useScreenHelp } from '../../features/help/ScreenHelpSheet';
 import { getBookmarks, listBookmarkContexts, toggleBookmark, toggleTermList, useBookmarks, useTermList } from '../../features/flags/flaggedStore';
 import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
 import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
@@ -1675,12 +1676,27 @@ export function GlossaryScreen({ route, navigation }: Props) {
     setTimeout(go, 320);
   };
 
+  // Help for this screen (internal-help pass, owner 2026-09-08).
+  const glossaryHelp = useScreenHelp({
+    title: 'Using the Glossary',
+    intro:
+      'Every professional-audio term in one place — search it, switch how definitions read, and save the ones you want to keep.',
+    sections: [
+      { heading: 'SEARCH', body: 'Type any term in the search box. Results rank by the closest match, and the letters you typed are highlighted.' },
+      { heading: 'BEG / ADV', body: 'Tap BEG or ADV in the header to switch a definition between plain English (BEG) and the official, technical wording (ADV).' },
+      { heading: 'LIST / CARDS', body: 'CARDS focuses one term at a time; LIST shows the full scrollable list. Tap a term to expand its definition and learning levels.' },
+      { heading: 'SAVE & FILTER', body: 'Bookmark a term or add it to a custom list, then use the ALL · Topic · Bookmarks · Custom · Recent chips to filter to just those.' },
+    ],
+    links: [{ label: 'Open the Audio Calculator Laboratory', onPress: () => (navigation as any).navigate('CalcLab') }],
+  });
+
   return (
     <ImageBackground
       source={loading ? BG_GLOSSARY : undefined}
       style={[styles.root, { paddingTop: insets.top }]}
       imageStyle={styles.bgImage}
     >
+      {glossaryHelp.sheet}
       <View style={styles.header}>
         {/* Decorative glossary mark (owner 2026-08-05): no longer a link — just
             the icon, a touch larger. */}
@@ -1773,6 +1789,8 @@ export function GlossaryScreen({ route, navigation }: Props) {
           // No cached total and nothing loaded yet — animate dots so it isn't frozen.
           <LoadingCount />
         )}
+        <View style={{ width: 10 }} />
+        <HelpDot onPress={glossaryHelp.open} label="Help — using the glossary" />
       </View>
 
       <View style={styles.searchBox}>
