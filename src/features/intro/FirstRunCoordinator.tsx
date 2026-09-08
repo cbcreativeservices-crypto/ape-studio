@@ -18,7 +18,9 @@
  * lives at #samplerpreview (SamplerPreview); this is the on-device wiring.
  */
 import { useEffect, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { colors, fonts } from '../../theme/tokens';
 import { navigationRef } from '../../navigation/navigationRef';
 import { FirstRunSampler } from './FirstRunSampler';
 import { getStop, type StopId } from './samplerStops';
@@ -37,6 +39,7 @@ function rootTopRouteName(): string | undefined {
 
 export function FirstRunCoordinator() {
   const { complete, visited, hydrated } = useOnboardingFlow();
+  const insets = useSafeAreaInsets();
   const [onMain, setOnMain] = useState(false);
   const [armed, setArmed] = useState(false);
   const [lastStop, setLastStop] = useState<StopId | undefined>(undefined);
@@ -69,8 +72,6 @@ export function FirstRunCoordinator() {
     return () => clearInterval(id);
   }, [complete]);
 
-  if (!hydrated || complete || !armed || !onMain) return null;
-
   const mode: 'initial' | 'recommend' | 'menu' = forceMenu
     ? 'menu'
     : lastStop
@@ -92,16 +93,75 @@ export function FirstRunCoordinator() {
     setOnboardingComplete();
   };
 
-  return (
-    <View style={StyleSheet.absoluteFill} pointerEvents="auto">
-      <FirstRunSampler
-        mode={mode}
-        lastStop={lastStop}
-        visited={visited}
-        onSelect={onSelect}
-        onChooseDifferent={() => setForceMenu(true)}
-        onHome={onHome}
-      />
-    </View>
-  );
+  // Return from a sampled destination to the walkthrough (the continuation
+  // screen). Uses the navigator's own back; falls back to Main if the stack
+  // can't pop — so the user is NEVER stranded on a screen with no back control.
+  const backToGuide = () => {
+    if (navigationRef.isReady() && navigationRef.canGoBack()) navigationRef.goBack();
+    else (navigationRef.navigate as (name: string) => void)('Main');
+  };
+
+  if (!hydrated || complete || !armed) return null;
+
+  // At the Home area → the walkthrough menu / recap overlay.
+  if (onMain) {
+    return (
+      <View style={StyleSheet.absoluteFill} pointerEvents="auto">
+        <FirstRunSampler
+          mode={mode}
+          lastStop={lastStop}
+          visited={visited}
+          onSelect={onSelect}
+          onChooseDifferent={() => setForceMenu(true)}
+          onHome={onHome}
+        />
+      </View>
+    );
+  }
+
+  // A stop is open (we sent them there) → a persistent floating escape so they
+  // can always get back to the walkthrough or leave onboarding, even on a screen
+  // with no back button of its own (the glossary stranding bug, 2026-09-07).
+  if (lastStop) {
+    return (
+      <View style={[styles.escapeWrap, { paddingBottom: insets.bottom + 10 }]} pointerEvents="box-none">
+        <View style={styles.escapeBar}>
+          <Pressable onPress={backToGuide} accessibilityRole="button" accessibilityLabel="Back to the walkthrough" style={styles.escapeBack}>
+            <Text style={styles.escapeBackText}>‹ Back to the walkthrough</Text>
+          </Pressable>
+          <Pressable onPress={onHome} accessibilityRole="button" accessibilityLabel="Skip the intro" style={styles.escapeSkip}>
+            <Text style={styles.escapeSkipText}>Skip intro</Text>
+          </Pressable>
+        </View>
+      </View>
+    );
+  }
+
+  return null;
 }
+
+const styles = StyleSheet.create({
+  escapeWrap: { position: 'absolute', left: 0, right: 0, bottom: 0, alignItems: 'center' },
+  escapeBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 26,
+    borderWidth: 1,
+    borderColor: 'rgba(255,198,77,.5)',
+    backgroundColor: 'rgba(10,10,12,.92)',
+  },
+  escapeBack: {
+    paddingVertical: 9,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255,198,77,.7)',
+    backgroundColor: 'rgba(255,198,77,.12)',
+  },
+  escapeBackText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13.5, letterSpacing: 0.4, color: colors.amber },
+  escapeSkip: { paddingVertical: 9, paddingHorizontal: 12 },
+  escapeSkipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 0.5, color: colors.textSub },
+});
