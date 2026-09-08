@@ -25,6 +25,7 @@ import { TextField } from '../../components/TextField';
 import { StudioButton } from '../../components/StudioButton';
 import { resetCoachMarks } from '../../lib/coachMark';
 import { resetScreenIntros } from '../../features/intro/screenIntros';
+import { resetOnboarding } from '../../features/intro/onboardingFlow';
 import { resetAmplitudeOrientation } from '../../features/lab/amplitudeOrientation';
 import { resetAskModes } from '../../features/permissions/permissionStore';
 import { hasCrowdsourceConsent, setCrowdsourceConsent } from '../../features/tools/measure/deviceProfile';
@@ -635,7 +636,7 @@ export function SettingsScreen({ navigation }: Props) {
               // Also replays the amplitude color-language orientation (its key is
               // in the ape:intro:* family; the explicit call resets the LIVE flag
               // so the gate re-arms without a relaunch).
-              Promise.all([resetCoachMarks(), resetScreenIntros(), resetAmplitudeOrientation()]).then(() =>
+              Promise.all([resetCoachMarks(), resetScreenIntros(), resetAmplitudeOrientation(), resetOnboarding()]).then(() =>
                 notify(
                   'Hints reset',
                   'Onboarding hints and the welcome greeting will show again on next open.',

@@ -48,6 +48,7 @@ import {
   useAmplitudeOrientationDone,
 } from '../../../features/lab/amplitudeOrientation';
 import { useOverlaysSuppressed } from '../../../features/dev/popupSuppressStore';
+import { useSamplingActive } from '../../../features/intro/onboardingSampling';
 import { GlassButton } from '../../../components/GlassButton';
 import { colors, fonts } from '../../../theme/tokens';
 
@@ -1051,9 +1052,12 @@ export function withAmplitudeOrientation<P extends object>(
 ): React.ComponentType<P> {
   function Gated(props: P) {
     const done = useAmplitudeOrientationDone();
-    const suppressed = useOverlaysSuppressed();
+    const overlaysSuppressed = useOverlaysSuppressed();
+    // First-run sampler loop (§2.1): while sampling, this educational-prerequisite
+    // gate is bypassed so the sample is clean. Both hooks run every render.
+    const sampling = useSamplingActive();
     if (done === null) return null; // hydration beat (ms at boot) — no flash either way
-    if (done || suppressed) return <Screen {...props} />;
+    if (done || overlaysSuppressed || sampling) return <Screen {...props} />;
     return <AmplitudeOrientationGatePage />;
   }
   Gated.displayName = `WithAmplitudeOrientation(${Screen.displayName ?? Screen.name ?? 'Screen'})`;

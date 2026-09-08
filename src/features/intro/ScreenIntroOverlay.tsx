@@ -14,6 +14,7 @@ import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { devBypass } from '../../config/devMode';
 import { useOverlaysSuppressed } from '../dev/popupSuppressStore';
+import { useSamplingActive } from './onboardingSampling';
 import { colors, fonts } from '../../theme/tokens';
 import { LowLightDim } from '../settings/LowLightLayer';
 import { INTRO_STORAGE_PREFIX, SCREEN_INTROS, type IntroKey } from './screenIntros';
@@ -32,7 +33,11 @@ export function useScreenIntro(key: IntroKey, sessionOnly = false) {
   const [visible, setVisible] = useState(false);
   // Suppression: NOTHING shows when the dev kill-switch is on OR Low-Light
   // Production Mode is engaged — this wins even over DEV_BYPASS.alwaysShowIntros.
-  const suppressed = useOverlaysSuppressed();
+  // The first-run sampler loop (§2.1) also hushes screen intros while sampling,
+  // so a sampled destination opens clean. Both hooks run every render.
+  const overlaysSuppressed = useOverlaysSuppressed();
+  const sampling = useSamplingActive();
+  const suppressed = overlaysSuppressed || sampling;
   // An intro must only show while its host screen is actually FOCUSED — never
   // when the screen is merely mounted underneath another (e.g. the Dashboard is
   // the Study stack's initial route, so it mounts under the Glossary; without

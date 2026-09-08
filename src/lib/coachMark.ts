@@ -18,6 +18,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { devBypass } from '../config/devMode';
 import { useOverlaysSuppressed } from '../features/dev/popupSuppressStore';
+import { useSamplingActive } from '../features/intro/onboardingSampling';
 
 export const MAX_OPENS = 5;
 
@@ -39,7 +40,12 @@ export function useCoachMark(storageKey: string, dismissAfter: number) {
   const started = useRef(false);
   // Suppression: never enter the visible state when the dev kill-switch is on
   // OR Low-Light Production Mode is engaged — wins over DEV_BYPASS.alwaysShowIntros.
-  const suppressed = useOverlaysSuppressed();
+  // The first-run sampler loop also hushes coach marks while sampling (§2.1).
+  // BOTH hooks must run every render — assign separately, never `a() || b()`
+  // (short-circuit skips the 2nd hook and tears the tree; see popupSuppressStore).
+  const overlaysSuppressed = useOverlaysSuppressed();
+  const sampling = useSamplingActive();
+  const suppressed = overlaysSuppressed || sampling;
 
   useEffect(() => {
     if (started.current) return; // once per mount

@@ -10,6 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../theme/tokens';
 import { LowLightDim } from '../settings/LowLightLayer';
 import { useOverlaysSuppressed } from '../dev/popupSuppressStore';
+import { useSamplingActive } from './onboardingSampling';
 import { isIntroEmpty, type LearningIntro } from './learningIntros';
 
 const SECTIONS: { head: string; get: (i: LearningIntro) => string | undefined }[] = [
@@ -37,9 +38,11 @@ export function LearningIntroSheet({
   const insets = useSafeAreaInsets();
   const empty = isIntroEmpty(intro);
   // Suppression wins over the caller's `visible` — dev kill-switch OR Low-Light
-  // Production Mode.
-  const suppressed = useOverlaysSuppressed();
-  if (suppressed) return null;
+  // Production Mode, and the first-run sampler loop (§2.1) hushes it while
+  // sampling. Both hooks run every render (no short-circuit) to keep hook order.
+  const overlaysSuppressed = useOverlaysSuppressed();
+  const sampling = useSamplingActive();
+  if (overlaysSuppressed || sampling) return null;
 
   return (
     <Modal accessibilityViewIsModal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={onBegin}>
