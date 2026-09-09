@@ -108,3 +108,58 @@ listeners across the app are correctly torn down.
 - Other lows (bounded/acceptable): TopicsScreen/CredentialWall ScrollView `.map` (bounded), per-context `bookmarkStores` map (~171 max), ~2–3× table paging on cold glossary load.
 
 _(Wave 3 part 2 — offline / empty / error states — still running; results appended when it lands.)_
+
+---
+
+## Wave 3 (part 2) — offline / empty / error states — COMPLETE 2026-09-09
+Findings: `docs/audit/wave3_offline-empty-errors.md` (12: offline 6, empty 2,
+error 4 · 2 high / 5 med / 5 low). **Positive:** the newer subsystems (tools
+EngineGate/useDspEngine watchdog; Dashboard self-heal + Retry/Back-to-Login) are
+exemplary. Recurring anti-pattern in OLDER content-fetch screens:
+`.catch(() => setState(empty))` makes an offline blip look like "nothing here."
+
+### Fix applied
+- ✅ **Feedback links no longer fail silently** without a mail app — `feedback.ts`
+  now shows the support address on failure (540b8d2).
+
+### Filed for owner review — offline/empty/error (mostly additive error states; verify happy path)
+- **[High] Glossary: fetch failure looks identical to "No results"** — `GlossaryScreen.tsx:1272,1967`. Distinguish offline (message + retry) from a genuine empty result.
+- **[High] Achievements hub: fetch failure → permanent loading skeleton** (`.catch(()=>setHub(null))`) with no error/retry — `AchievementsHomeScreen.tsx:60`.
+- **[Med] CredentialWall: failed fetch → "COMING SOON — No certificates"** — `CredentialWall.tsx:55`.
+- **[Med] Auth shows raw Supabase error.message** ("Network request failed") + generic fallback — `auth/api.ts:39,72,77,98,107,113`. Map to plain, actionable copy.
+- Remaining lows in the report file.
+
+---
+
+# END-OF-DAY SUMMARY — 2026-09-09 autonomous launch audit
+
+Four waves across the owner's focus (bugs, navigation, load/ready times, button
+latency) plus cold-start, memory/long-session, offline/empty/error,
+accessibility, entitlement, and honesty. **Headline: the app is in strong,
+well-hardened shape.** No crash-on-normal-use defect, no paid-content leak, a
+strong a11y baseline, disciplined teardown, and the ratified-copy math already
+correct. The real risks were a handful of boot/edge hangs and a few older
+content-fetch screens — the boot hangs and the launch-blocking items are fixed.
+
+## Fixes applied & committed (12, each tsc + 296 tests green)
+- Final Exam Android hardware-back guard (launch blocker) — e3c8632
+- Splash session fetch parallelized with the 2.5 s hold — ed2c497
+- Boot-hang guards: font-load error + Splash session rejection — c77b8ec
+- TrophyScreen dev placeholder → ★ + guarded param; harmonicModel denominator — 035fdf5
+- TrophyImage cache hardening (protects all topic tiles) — 0403df1
+- Feedback links don't fail silently without a mail app — 540b8d2
+(+ report/scaffold commits)
+
+## Prioritized punch-list for the owner (highest launch value first)
+1. **Oversized bundled images → sized WebP** (biggest load win): glossary 2.5 MB, SPL skin 2.8 MB, AudioLearning ~5.3 MB, logo 1.6 MB, calc 2.2 MB. I can script the PIL re-encode on your go — takes effect only after a **native rebuild** (build rule: your call).
+2. **GalleryScreen virtualization** (OOM risk with many trophies) — FlatList/FlashList grid; verify layout on device.
+3. **Final Exam: port QuizScreen C1 (index-based selection) + M3 (skip-unanswerable)** — capstone can mis-select / soft-lock / strand on a duplicate-text or malformed question.
+4. **Distinguish offline from empty** on Glossary + Achievements (+ CredentialWall) — add an error/retry state.
+5. **Wire `EntitlementProvider.resolved`** into first paint so members don't see locks/upsells flash on cold start.
+6. **Glossary/Dashboard render perf** (stable extraData, memoized rows, deck useMemo) — smoother typing/scroll.
+7. Copy: `subjectMeta` placeholder rendering live; re-ratify the (now-correct) compressor & RF copy. Nav polish: Final-Exam-result → Dashboard (not Splash), dead `Directory` route, deep-link `labs/eq`. SpectrumColorPicker a11y. calc weekly-cap SQL confirm.
+
+All findings with file:line + fixes are in `docs/audit/wave1_*.md`, `wave2_*.md`,
+`wave3_*.md`. Guardrails held: no builds, no publishing, no backend/DB changes,
+no secrets. Auto-applied only low-risk/high-confidence fixes; everything above is
+filed for your judgment + device verification.
