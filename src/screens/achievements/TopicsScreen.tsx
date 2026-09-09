@@ -148,19 +148,9 @@ export function TopicsScreen() {
 
 function TopicRow({ topic, onOpen }: { topic: TopicAchievement; onOpen: (t: TopicAchievement) => void }) {
   const earned = topic.status === 'complete';
-  // Locked topics aren't interactive (mirrors the old grid's locked-tile rule).
-  if (topic.status === 'locked') {
-    return (
-      <View style={styles.topicRow}>
-        <View style={styles.topicIcon}>
-          <Text style={styles.lockGlyph}>·</Text>
-        </View>
-        <Text style={styles.topicNameLocked} numberOfLines={2}>
-          {topic.name}
-        </Text>
-      </View>
-    );
-  }
+  // Every topic (incl. locked) is now openable and shows its image — grayscale
+  // + dimmed until earned (owner 2026-09-09). The old non-interactive locked
+  // tile rule was dropped.
 
   const glyph = earned ? '★' : '☆';
   const glyphColor = topic.status === 'unlocked' ? '#666666' : colors.amber;
