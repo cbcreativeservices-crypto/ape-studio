@@ -1744,7 +1744,7 @@ export function DashboardScreen() {
 
       <TrophyModal
         visible={trophyOpen}
-        iconUrl={trophyForTopicName(trophies, topic.name) ?? topic.icon_url}
+        iconUrl={topicImagePath(topic.global_sequence) ?? trophyForTopicName(trophies, topic.name) ?? topic.icon_url}
         name={topic.name}
         onClose={() => setTrophyOpen(false)}
       />
