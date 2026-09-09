@@ -19,6 +19,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   AppState,
+  BackHandler,
   Image,
   Pressable,
   ScrollView,
@@ -261,6 +262,22 @@ export function FinalExamScreen({ navigation, route }: Props) {
       { cancelText: 'Keep going', destructive: true },
     );
   }, [navigation]);
+
+  /* ---- Android hardware-back routes through the exit confirm (launch audit
+     2026-09-09; ported from QuizScreen). Without this, gestureEnabled:false only
+     blocks the iOS swipe, so a hardware BACK during the timed capstone pops the
+     screen instantly — abandoning the sitting with no "answers will be wiped"
+     confirm. ---- */
+  useEffect(() => {
+    if (!payload || submitting) return;
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (submitted.current) return false;
+      confirmExit();
+      return true; // handled
+    });
+    return () => sub.remove();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [payload, submitting]);
 
   /* ---- states ---- */
   if (startError) {
