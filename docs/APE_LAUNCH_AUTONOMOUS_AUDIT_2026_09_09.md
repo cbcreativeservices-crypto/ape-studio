@@ -89,3 +89,22 @@ already compute correctly (only copy-sheet re-ratification remains).
 - **exposureMonitor** ~1 s/session daily-total undercount (dose math — left for
   owner review rather than auto-editing hearing-safety accounting).
 - **EarModuleScreen** playback setTimeout not cleared (latent no-op on RN19).
+
+---
+
+## Wave 3 (part 1) — memory / list / long-session perf — COMPLETE 2026-09-09
+Findings: `docs/audit/wave3_memory-perf.md` (12: 1 high / 5 med / 6 low).
+**Positive:** the Glossary corpus "release valve" IS wired (caches dropped after
+60 s backgrounded, timer cancelled on foreground) — not a leak; timers/loops/
+listeners across the app are correctly torn down.
+
+### Filed for owner review — perf refactors on hot screens (NOT auto-applied — need careful impl + device/layout verify)
+- **[HIGH · should-fix pre-launch] GalleryScreen OOM risk** — `achievements/GalleryScreen.tsx:70` renders all 166+ earned trophies via `ScrollView` + `.map`, every remote image mounting/decoding at once. Refactor to FlatList/FlashList grid with windowing (match the current column layout; verify on device).
+- **[Med] Glossary FlatList `extraData` is a fresh array literal every render** — `GlossaryScreen.tsx:1970` → reference compare always fails, every visible row re-renders on any state change. Give it a stable/memoized value with the right deps.
+- **[Med] Glossary `renderItem` inline + rows not memoized** — `GlossaryScreen.tsx:1971` → whole visible window re-renders per keystroke. Extract a `React.memo` row + stable renderItem.
+- **[Med] Glossary `visible` memo maps+sorts all 26,847 entries per settled search** — `GlossaryScreen.tsx:1483-1518` (per-row array alloc in `searchRank`); already partly mitigated by `useDeferredValue`. Optimize the ranking pass.
+- **[Med] Dashboard rebuilds deck arrays + `orderDeckIds()` every render** — `DashboardScreen.tsx:917-928`; wrap in `useMemo` (careful with deps).
+- **[Low] tool-demo Animated loops ignore reduce-motion** — gate on `animationsAllowed()` (CPU/battery, not memory).
+- Other lows (bounded/acceptable): TopicsScreen/CredentialWall ScrollView `.map` (bounded), per-context `bookmarkStores` map (~171 max), ~2–3× table paging on cold glossary load.
+
+_(Wave 3 part 2 — offline / empty / error states — still running; results appended when it lands.)_
