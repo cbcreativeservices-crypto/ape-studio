@@ -16,6 +16,7 @@ import { supabase } from '../../lib/supabase';
 import { fetchV3Curriculum, fetchV3Certs, fetchV3Programs, V3_CURRICULUM_VERSION_ID } from '../../data/v3Curriculum';
 import { fetchMyCredentials, type EarnedCredentialRow } from '../credentials/api';
 import { fetchAwardProgress } from '../awards/api';
+import { topicImagePath } from '../../data/topicImages';
 
 export type TopicStatus = 'complete' | 'passed_incomplete' | 'unlocked' | 'locked';
 
@@ -102,7 +103,9 @@ export async function fetchTopicAchievements(): Promise<TopicAchievementData> {
           name: t.name,
           field: f.field,
           subject: s.subject,
-          iconUrl: t.iconUrl,
+          // Per-topic tile image (topic-tiles bucket) replaces the old trophy
+          // icon; falls back to any legacy icon_url until the object exists.
+          iconUrl: topicImagePath(t.gs) ?? t.iconUrl,
           status,
           dateEarned,
         };
@@ -145,7 +148,7 @@ export async function fetchGalleryV3(): Promise<GalleryEntry[]> {
   if (!userId) return [];
   const { data, error } = await supabase
     .from('student_achievement_progress')
-    .select('achievement_id, date_earned, achievements!inner(name, icon_url, subject, curriculum_version_id)')
+    .select('achievement_id, date_earned, achievements!inner(name, icon_url, subject, global_sequence, curriculum_version_id)')
     .eq('user_id', userId)
     .eq('status', 'complete')
     .not('date_earned', 'is', null)
@@ -156,7 +159,8 @@ export async function fetchGalleryV3(): Promise<GalleryEntry[]> {
     achievementId: r.achievement_id,
     name: r.achievements.name,
     subject: r.achievements.subject ?? '',
-    iconUrl: r.achievements.icon_url ?? null,
+    // Per-topic tile image (topic-tiles bucket); legacy icon_url is the fallback.
+    iconUrl: topicImagePath(r.achievements.global_sequence) ?? r.achievements.icon_url ?? null,
     dateEarned: r.date_earned,
   }));
 }

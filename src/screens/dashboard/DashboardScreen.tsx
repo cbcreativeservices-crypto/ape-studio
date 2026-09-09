@@ -62,6 +62,7 @@ import { MethodIcon, METHOD_COLORS, type MethodKey } from '../../components/Meth
 import { StudioButton } from '../../components/StudioButton';
 import { SwitchButton } from '../../components/SwitchButton';
 import { TrophyImage } from '../../components/TrophyImage';
+import { topicImagePath } from '../../data/topicImages';
 import { JogDial, JogOverlay } from '../../components/JogWheel';
 import { TrophyModal } from '../../components/TrophyModal';
 import { useTopicTrophies, trophyForTopicName } from '../../features/profile/topicTrophies';
@@ -1399,7 +1400,7 @@ export function DashboardScreen() {
                 {/* Image 92 inside the 2+2 bevel keeps the 100px footprint —
                     the card height doesn't grow (owner 2026-08-06). */}
                 <TrophyImage
-                  iconUrl={trophyForTopicName(trophies, dispTopic.name) ?? dispTopic.icon_url}
+                  iconUrl={topicImagePath(dispTopic.global_sequence) ?? trophyForTopicName(trophies, dispTopic.name) ?? dispTopic.icon_url}
                   size={92}
                   radius={10}
                   fallback={<View style={styles.topicTrophyEmpty} />}
