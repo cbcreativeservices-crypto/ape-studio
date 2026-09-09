@@ -11,6 +11,7 @@
  */
 import { Linking, Platform } from 'react-native';
 import Constants from 'expo-constants';
+import { notify } from './confirm';
 
 // The academy support inbox — NEVER a personal address (owner rule 2026-09-04).
 // Matches the web site's contact address (web/lib/connect.ts, Footer, etc.).
@@ -53,5 +54,9 @@ export function sendFeedback(kind: FeedbackKind, tag?: string, context?: Feedbac
     details +
     '\n\nThank you for your support!';
   const url = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  Linking.openURL(url).catch(() => {});
+  // Don't fail silently if there's no mail app (offline audit 2026-09-09) — tell
+  // the user the address so they can still reach support instead of nothing.
+  Linking.openURL(url).catch(() => {
+    notify('Couldn’t open your mail app', `Please email us at ${SUPPORT_EMAIL} and we’ll help.`);
+  });
 }
