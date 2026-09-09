@@ -89,7 +89,9 @@ const navTheme: Theme = {
 };
 
 export default function App() {
-  const [fontsLoaded] = useFonts(fontAssets);
+  // Capture the error tuple: a font-load failure must NOT hang the app forever on
+  // the dark surface — fall through to render with system fonts (bug audit 2026-09-09).
+  const [fontsLoaded, fontError] = useFonts(fontAssets);
 
   // Account-switch guard (user bug 2026-07-26): wipe device-local data whenever a
   // DIFFERENT user signs in. Called before the early return to keep hook order
@@ -181,8 +183,10 @@ export default function App() {
     }
   }, []);
 
-  // Hold on a dark surface until fonts resolve (avoids a white flash + FOUT).
-  if (!fontsLoaded) {
+  // Hold on a dark surface until fonts resolve (avoids a white flash + FOUT) —
+  // but a font-load ERROR falls through so a failed asset renders with system
+  // fonts instead of hanging on a blank screen forever (bug audit 2026-09-09).
+  if (!fontsLoaded && !fontError) {
     return <View style={{ flex: 1, backgroundColor: colors.splashBg }} />;
   }
 

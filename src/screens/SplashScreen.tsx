@@ -29,7 +29,11 @@ export function SplashScreen({ navigation }: Props) {
     // Kick the session read off IMMEDIATELY so it resolves DURING the 2.5 s intro
     // hold instead of adding its latency AFTER it (load-audit 2026-09-09). Routing
     // at the timer is then instant on a warm session; the intentional hold is kept.
-    const sessionP = supabase.auth.getSession();
+    // `.catch` at creation: getSession() can REJECT (the native secure-store
+    // adapter can fail on device), which would throw in the timer and leave the
+    // app stuck on Splash forever. Default to the signed-out route instead
+    // (bug audit 2026-09-09).
+    const sessionP = supabase.auth.getSession().catch(() => ({ data: { session: null } }));
     const timer = setTimeout(async () => {
       const { data } = await sessionP;
       if (cancelled) return;
