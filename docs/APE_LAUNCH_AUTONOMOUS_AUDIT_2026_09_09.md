@@ -50,3 +50,42 @@ is shown.
 - **Career JSON** (237 KB) parsed at Curriculum/CareerFinder module load — optional metadata-module split.
 - **Native-stack has no lazy loading** — consider React.lazy for heavy off-boot labs/tools; measure first (architectural).
 - **Nav (low):** dead route `Directory` (registered, no callers); Settings→About/Paywall modal-over-modal (needs a device check for the black-screen trap); deep-link `labs/eq` resolves to the audible lab not `EqLabHome`, several flagship labs not deep-linkable, unmapped `labs/*` dead-end on LabCategory empty state.
+
+---
+
+## Wave 2 — COMPLETE 2026-09-09
+Findings: `docs/audit/wave2_bugs.md` (8: 0 high / 4 med / 4 low) and
+`docs/audit/wave2_a11y-entitlement-honesty.md` (12: a11y 4, entitlement 4, honesty 4).
+Codebase is exceptionally hardened — no crash-on-normal-use defect; strong a11y
+baseline; **no paid-content leak**; the two known ratified-copy math errors
+already compute correctly (only copy-sheet re-ratification remains).
+
+### Fixes applied — wave 2 (committed)
+- ✅ Boot-hang guards: App.tsx font-load error + Splash getSession rejection (c77b8ec).
+- ✅ Defensive: TrophyScreen dev "Trophy 512²" placeholder → clean ★ + guarded
+  topicName param; harmonicModel (points-1) denominator (035fdf5).
+
+### Filed for owner review — wave 2
+- **Final Exam is missing two later QuizScreen fixes (med, high-stakes capstone):**
+  C1 index-based selection (dup option text → dup keys / mis-submit / matching
+  soft-lock) and M3 skip-unanswerable fallback (malformed question strands the
+  learner until the 10-min force-submit). Recommend porting both from QuizScreen;
+  bigger refactor — not auto-applied.
+- **`EntitlementProvider.resolved` is consumed by nothing (med):** the M6 first-
+  paint guard exists but no screen holds paint on it, so a real member sees
+  anonymous/free locks + upsells flash on every cold start. Wire `resolved` into
+  CourseSelection/Dashboard first-paint.
+- **`subjectMeta.ts` is self-declared PLACEHOLDER copy rendering live** in the
+  Curriculum tree (and keyed to the retired v2 matrix) — author or suppress.
+- **TrophyScreen results art**: now falls back to ★ because it still uses the old
+  icon_url (trophy-icons deleted). Wire it to `topicImagePath` (needs the topic
+  gs/achievementId in the Trophy nav params) so the earned screen shows the tile.
+- **SpectrumColorPicker a11y (med):** hue wheel + lightness slider are invisible
+  to assistive tech (bare View + panHandlers) — add role/label/value.
+- **Capability ladder mostly vestigial (med):** only `caps.allTopics` +
+  `caps.completionRecords` are read; gating is scattered (raw entitlement vs caps).
+- **calc weekly cap fails OPEN by design** — confirm the 5/week `calc_usage` SQL
+  is deployed on the backend, or the cap is silently absent.
+- **exposureMonitor** ~1 s/session daily-total undercount (dose math — left for
+  owner review rather than auto-editing hearing-safety accounting).
+- **EarModuleScreen** playback setTimeout not cleared (latent no-op on RN19).
