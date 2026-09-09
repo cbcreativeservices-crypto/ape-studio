@@ -185,8 +185,9 @@ export function dbcOf(h: Harmonic): number {
 export function synthWaveform(set: HarmonicSet, points: number, cycles: number): number[] {
   const pts = new Array<number>(points).fill(0);
   let peak = 0;
+  const denom = Math.max(1, points - 1); // guard points===1 → no Infinity/NaN (bug audit 2026-09-09)
   for (let i = 0; i < points; i++) {
-    const t = (i / (points - 1)) * cycles;
+    const t = (i / denom) * cycles;
     let v = 0;
     for (const h of set) {
       const a = effectiveAmp(h);

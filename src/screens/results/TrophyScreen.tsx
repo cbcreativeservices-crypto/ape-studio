@@ -77,12 +77,14 @@ export function TrophyScreen({ navigation, route }: Props) {
         style={styles.trophyImg}
         fallback={
           <View style={styles.trophySlot}>
-            <Text style={styles.trophyPlaceholder}>Trophy 512²</Text>
+            {/* Clean neutral mark, never the dev "Trophy 512²" placeholder text
+                shown to real users on completion (honesty audit 2026-09-09). */}
+            <Text style={styles.trophyPlaceholder}>★</Text>
           </View>
         }
       />
 
-      <Text style={styles.title}>{topicName.toUpperCase()}</Text>
+      <Text style={styles.title}>{(topicName ?? '').toUpperCase()}</Text>
 
       {badgeEarned && (
         <View style={styles.badgeCallout}>
