@@ -28,6 +28,7 @@ export function TrophyImage({
   fill = false,
   style,
   fallback,
+  grayed = false,
 }: {
   iconUrl: string | null | undefined;
   /** Fixed square size; ignored when `fill` (fills the parent instead). */
@@ -38,6 +39,9 @@ export function TrophyImage({
   style?: StyleProp<ViewStyle>;
   /** Rendered when there's no URL or the image errors (e.g. the placeholder). */
   fallback: ReactNode;
+  /** Not-yet-earned state: desaturate to grayscale + dim to 85% brightness
+   *  (owner 2026-09-09). Uses the RN 0.86 native `filter` style (New Arch). */
+  grayed?: boolean;
 }) {
   const [failed, setFailed] = useState(false);
   const url = trophyIconUrl(iconUrl);
@@ -51,7 +55,7 @@ export function TrophyImage({
     : { width: size, height: size, borderRadius: radius, overflow: 'hidden' };
 
   return (
-    <View style={[box, style]}>
+    <View style={[box, style, grayed && styles.grayed]}>
       <Image
         accessible={false}
         importantForAccessibility="no"
@@ -67,4 +71,7 @@ export function TrophyImage({
 
 const styles = StyleSheet.create({
   img: { width: '100%', height: '100%' },
+  // Not-yet-earned: full grayscale + 85% brightness (owner 2026-09-09). Native
+  // `filter` (RN 0.86 New Arch) — also maps to CSS filter on web.
+  grayed: { filter: [{ grayscale: 1 }, { brightness: 0.85 }] },
 });

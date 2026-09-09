@@ -128,6 +128,7 @@ export function TopicsScreen() {
       <TrophyModal
         visible={!!modalTopic}
         iconUrl={modalTopic?.iconUrl}
+        grayed={modalTopic?.status !== 'complete'}
         name={modalTopic?.name}
         color={colors.amber}
         meta={
@@ -172,8 +173,10 @@ function TopicRow({ topic, onOpen }: { topic: TopicAchievement; onOpen: (t: Topi
       accessibilityLabel={`${topic.name}${earned ? ', earned' : ', not yet earned'}`}
     >
       <View style={styles.topicIcon}>
-        {earned && topic.iconUrl ? (
-          <TrophyImage iconUrl={topic.iconUrl} fill radius={6} fallback={<Text style={[styles.glyph, { color: glyphColor }]}>{glyph}</Text>} />
+        {topic.iconUrl ? (
+          // Earned = full colour; not-yet-earned = grayscale + 85% brightness
+          // (owner 2026-09-09). Still tappable to view full-size either way.
+          <TrophyImage iconUrl={topic.iconUrl} grayed={!earned} fill radius={6} fallback={<Text style={[styles.glyph, { color: glyphColor }]}>{glyph}</Text>} />
         ) : (
           <Text style={[styles.glyph, { color: glyphColor }]}>{glyph}</Text>
         )}

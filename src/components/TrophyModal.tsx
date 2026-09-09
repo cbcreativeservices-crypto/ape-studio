@@ -22,11 +22,14 @@ export function TrophyModal({
   meta,
   action,
   children,
+  grayed = false,
   onClose,
 }: {
   visible: boolean;
   iconUrl: string | null | undefined;
   name?: string | null;
+  /** Show the art grayscale + dimmed (topic not yet earned, owner 2026-09-09). */
+  grayed?: boolean;
   /** Field/category color — used for the frame glow behind the art. */
   color?: string;
   /** Optional line under the name (e.g. "EARNED SEP 2, 2026"). */
@@ -54,7 +57,7 @@ export function TrophyModal({
           pointerEvents="none"
         >
           {children ?? (
-            <TrophyImage iconUrl={iconUrl} fill radius={14} fallback={<View style={styles.empty} />} />
+            <TrophyImage iconUrl={iconUrl} grayed={grayed} fill radius={14} fallback={<View style={styles.empty} />} />
           )}
         </View>
         {name ? <Text style={styles.name}>{name.toUpperCase()}</Text> : null}
