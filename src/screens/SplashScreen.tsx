@@ -26,8 +26,12 @@ export function SplashScreen({ navigation }: Props) {
     Animated.timing(textOpacity, { toValue: 1, duration: 1600, useNativeDriver: true }).start();
 
     let cancelled = false;
+    // Kick the session read off IMMEDIATELY so it resolves DURING the 2.5 s intro
+    // hold instead of adding its latency AFTER it (load-audit 2026-09-09). Routing
+    // at the timer is then instant on a warm session; the intentional hold is kept.
+    const sessionP = supabase.auth.getSession();
     const timer = setTimeout(async () => {
-      const { data } = await supabase.auth.getSession();
+      const { data } = await sessionP;
       if (cancelled) return;
       // Boot: session → Main (Dashboard), else → the finished login screen.
       // The pre-auth commercial Landing is still WIP, so startup does NOT route
