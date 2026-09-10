@@ -1712,6 +1712,18 @@ export function GlossaryScreen({ route, navigation }: Props) {
     links: [{ label: 'Open the Audio Calculator Laboratory', onPress: () => (navigation as any).navigate('CalcLab') }],
   });
 
+  // Stable FlatList extraData (launch audit 2026-09-09): this was a fresh array
+  // literal every render, which FlatList compares by reference — so any parent
+  // state change (popup trail, media viewer, coach marks, scroll) forced a
+  // re-render of every mounted row. Memoizing restores the bail-out. IMPORTANT:
+  // it must list EVERY reactive value the row reads — bookmarks, starred and
+  // isMember included (they drive the star/bookmark glyphs and the Common-
+  // Mistakes body), which the old always-new array silently covered.
+  const rowExtraData = useMemo(
+    () => [expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, selectMode, selectedIds, linksOn, bookmarks, starred, isMember],
+    [expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, selectMode, selectedIds, linksOn, bookmarks, starred, isMember],
+  );
+
   return (
     <ImageBackground
       source={loading ? BG_GLOSSARY : undefined}
@@ -2000,7 +2012,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
               <Text style={styles.empty}>No results for {search.trim() || filterLabel}</Text>
             )
           }
-          extraData={[expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, selectMode, selectedIds, linksOn]}
+          extraData={rowExtraData}
           renderItem={({ item }) => {
             // List view expands INLINE; card view stays compact and opens the
             // popup overlay instead (below).

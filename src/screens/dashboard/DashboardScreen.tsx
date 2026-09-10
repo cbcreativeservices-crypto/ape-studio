@@ -15,7 +15,7 @@
  * - Topic "overall progress" = mean of the applicable methods' server
  *   completion_pct (display aggregation of server truth — flagged in review).
  */
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -897,34 +897,42 @@ export function DashboardScreen() {
     return () => loop.stop();
   }, [pulse, motionOk]);
 
-  // Derived per-render (cheap; small arrays). When the user has opted in, a
-  // synthetic "My Custom List" topic is appended LAST so it rides the same
-  // current-topic carousel. It carries applicable_methods=[] so every derived
-  // value (overallPct, quizState, rowsForTopic…) computes safely to 0/empty.
-  const customTopic: Topic = {
-    id: FLAGGED_TOPIC_ID,
-    sequence_in_course: 9999,
-    name: FLAGGED_TOPIC_NAME,
-    applicable_methods: [],
-    is_prerequisite: false,
-    icon_url: null,
-    global_sequence: null,
-  };
+  // Memoized on [data, customOnDashboard, deckPrefs] (launch audit 2026-09-09):
+  // these arrays + the Map + orderDeckIds() used to rebuild on EVERY render of a
+  // long-lived, animation-heavy screen (jog dial, pulse loop, pan responder).
+  // Bounded by enrolled-topic count, so it was GC churn rather than a leak — but
+  // it ran far more often than the inputs change.
+  //
+  // When the user has opted in, a synthetic "My Custom List" topic is appended so
+  // it rides the same current-topic carousel. It carries applicable_methods=[] so
+  // every derived value (overallPct, quizState, rowsForTopic…) computes to 0/empty.
   // Scroll order (owner 2026-08-01): resolved from the deck prefs — ALPHABETICAL
   // by default (★ Custom List pinned first), or the user's CUSTOM order; removed
   // topics are excluded. data.topics keeps its course order for the progress/
   // frontier logic; only this carousel is reordered.
-  const deckMembers: Topic[] = data ? (customOnDashboard ? [customTopic, ...data.topics] : [...data.topics]) : [];
-  const deckById = new Map(deckMembers.map((t) => [t.id, t] as const));
-  const orderedIds = orderDeckIds(
-    deckMembers.map((t) => ({ id: t.id, name: t.name })),
-    deckPrefs,
-    customOnDashboard ? FLAGGED_TOPIC_ID : undefined,
-  );
-  const topics = orderedIds.map((id) => deckById.get(id)).filter((t): t is Topic => t != null);
-  const removedMembers = deckMembers
-    .filter((t) => deckPrefs.removed.includes(t.id))
-    .map((t) => ({ id: t.id, name: t.name }));
+  const { topics, removedMembers } = useMemo(() => {
+    const customTopic: Topic = {
+      id: FLAGGED_TOPIC_ID,
+      sequence_in_course: 9999,
+      name: FLAGGED_TOPIC_NAME,
+      applicable_methods: [],
+      is_prerequisite: false,
+      icon_url: null,
+      global_sequence: null,
+    };
+    const members: Topic[] = data ? (customOnDashboard ? [customTopic, ...data.topics] : [...data.topics]) : [];
+    const byId = new Map(members.map((t) => [t.id, t] as const));
+    const orderedIds = orderDeckIds(
+      members.map((t) => ({ id: t.id, name: t.name })),
+      deckPrefs,
+      customOnDashboard ? FLAGGED_TOPIC_ID : undefined,
+    );
+    const ordered = orderedIds.map((id) => byId.get(id)).filter((t): t is Topic => t != null);
+    const removed = members
+      .filter((t) => deckPrefs.removed.includes(t.id))
+      .map((t) => ({ id: t.id, name: t.name }));
+    return { topics: ordered, removedMembers: removed };
+  }, [data, customOnDashboard, deckPrefs]);
   const topic = topics[topicIdx];
   const isCustom = topic?.id === FLAGGED_TOPIC_ID;
 
