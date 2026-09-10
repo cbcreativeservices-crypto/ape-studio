@@ -477,6 +477,14 @@ export function AuthScreen({ navigation }: Props) {
                 <StudioButton label="Create Account" variant="primary" onPress={onCreateAccount} />
                 <StudioButton label="Login" variant="secondary" onPress={onLogin} />
                 <StudioButton label="Guest Mode (Free)" variant="secondary" onPress={enterGuest} />
+                {/* [6]/[13] (2026-09-07): the welcome copy promises "browse the
+                    glossary immediately — no account required", but the only entry
+                    to PublicGlossary was a dev screen. Give it a real button. */}
+                <StudioButton
+                  label="Browse the Glossary"
+                  variant="secondary"
+                  onPress={() => (navigation as unknown as { navigate: (r: string) => void }).navigate('PublicGlossary')}
+                />
               </View>
             )}
 

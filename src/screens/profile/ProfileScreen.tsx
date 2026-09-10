@@ -151,6 +151,9 @@ export function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const [profile, setProfile] = useState<ProfileData | null>(null);
+  // [39] (2026-09-07): a transient profile-read failure must not silently render
+  // as a blank ID (no number, pending QR) — track it and offer a retry.
+  const [profileError, setProfileError] = useState(false);
   // CM7 (Booth 2026-07-11): commercial variant — nickname · Album · trophies ·
   // completion records; HIDE the student-ID card (QR, AP&E ID) + MIC/PA/REC/MIX
   // certs. Institutional users keep Screen 10 exactly.
@@ -165,16 +168,25 @@ export function ProfileScreen() {
   const [exportingId, setExportingId] = useState<string | null>(null);
   const [credMessage, setCredMessage] = useState<string | null>(null);
 
+  const loadProfile = useCallback(() => {
+    setProfileError(false);
+    fetchProfile()
+      .then((p) => {
+        setProfile(p);
+        // [39]: a null result for a signed-in member is a load problem, not a
+        // real empty profile — surface it so the ID card can offer a retry.
+        if (!p) setProfileError(true);
+      })
+      .catch(() => setProfileError(true));
+  }, []);
   useFocusEffect(
     useCallback(() => {
-      fetchProfile()
-        .then(setProfile)
-        .catch(() => {});
+      loadProfile();
       // Refetched on focus so a credential earned during this session appears
       // when the user comes back to Profile, without a manual reload.
       // [38] (2026-09-07): guard the rejection like fetchProfile beside it.
       fetchMyCredentials().then(setCredentials, () => {});
-    }, []),
+    }, [loadProfile]),
   );
 
   const onExportCredential = useCallback(async (row: EarnedCredentialRow) => {
@@ -477,6 +489,21 @@ export function ProfileScreen() {
               <Text style={styles.idScan}>SCAN TO VERIFY</Text>
             </View>
           </Pressable>
+
+          {/* [39] (2026-09-07): the ID card renders blank (no ID, pending QR) when
+              the profile read fails — say so and offer a retry instead of a
+              silent empty card. */}
+          {profileError ? (
+            <Pressable
+              style={styles.profileErrorRow}
+              onPress={loadProfile}
+              accessibilityRole="button"
+              accessibilityLabel="Couldn’t load your ID — retry"
+            >
+              <Text style={styles.profileErrorText}>Couldn’t load your ID — check your connection.</Text>
+              <Text style={styles.profileErrorRetry}>RETRY</Text>
+            </Pressable>
+          ) : null}
 
           {/* AM I PUBLIC RIGHT NOW? — the answer, readable without opening
               anything. Amber only in the one state the user can act on, where
@@ -1115,6 +1142,23 @@ const styles = StyleSheet.create({
     letterSpacing: 1.3,
     color: colors.textMutedDeep,
   },
+
+  // [39] ID-card load-error row.
+  profileErrorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+    marginTop: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255,180,0,.4)',
+    backgroundColor: 'rgba(255,180,0,.08)',
+  },
+  profileErrorText: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSecondary },
+  profileErrorRetry: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.amber },
 
   // Persistent "am I public right now" strip.
   strip: {
