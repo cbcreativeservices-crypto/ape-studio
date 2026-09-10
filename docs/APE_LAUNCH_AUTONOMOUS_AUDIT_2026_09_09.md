@@ -152,8 +152,8 @@ content-fetch screens — the boot hangs and the launch-blocking items are fixed
 
 ## Prioritized punch-list for the owner (highest launch value first)
 1. **Oversized bundled images → sized WebP** (biggest load win): glossary 2.5 MB, SPL skin 2.8 MB, AudioLearning ~5.3 MB, logo 1.6 MB, calc 2.2 MB. I can script the PIL re-encode on your go — takes effect only after a **native rebuild** (build rule: your call).
-2. **GalleryScreen virtualization** (OOM risk with many trophies) — FlatList/FlashList grid; verify layout on device.
-3. **Final Exam: port QuizScreen C1 (index-based selection) + M3 (skip-unanswerable)** — capstone can mis-select / soft-lock / strand on a duplicate-text or malformed question.
+2. ✅ DONE (commit 26a2514): **GalleryScreen virtualization** — ScrollView+.map → windowed 2-column FlatList (initialNumToRender/maxToRenderPerBatch 10, windowSize 7, removeClippedSubviews); layout preserved (16/14/12 px spacing, half-width cards, odd-row spacer). Device-verify the grid once a session is available.
+3. ✅ DONE (commit be84706): **Final Exam C1 + M3 ported** — selection now keyed by option INDEX (duplicate-text options stay independent; values still submitted per F4); `answerable` + "Skip question" fallback prevents strand on a malformed question. tsc + 296 tests green.
 4. **Distinguish offline from empty** on Glossary + Achievements (+ CredentialWall) — add an error/retry state.
 5. **Wire `EntitlementProvider.resolved`** into first paint so members don't see locks/upsells flash on cold start.
 6. **Glossary/Dashboard render perf** (stable extraData, memoized rows, deck useMemo) — smoother typing/scroll.
