@@ -1,11 +1,12 @@
 # Wave F — Release-Readiness Report & Verdict (2026-09-10)
 
-> **UPDATE 2026-09-10:** the A-1/A-2 CRITICAL/HIGH RLS blocker has been **RESOLVED**
-> — owner applied the write-lockdown migration; all four `own_*` policies verified
-> live as `SELECT`. The original verdict below was NOT RELEASE READY *because of
-> A-1*; with A-1 closed, the remaining gate is **E-3** (confirm EAS production env
-> vars) plus a device re-verify of the credential journey, after which this moves to
-> **RELEASE READY WITH ACCEPTED RISKS** (the rest are should-fix/defer, no CRITICAL).
+> **UPDATE 2026-09-10:** the A-1/A-2 CRITICAL/HIGH RLS blocker is **FULLY CLOSED** —
+> owner applied the write-lockdown migration, all four `own_*` policies verified live
+> as `SELECT`, AND the legit study→quiz→credential journey was device-verified to
+> still award normally. The original verdict below was NOT RELEASE READY *because of
+> A-1*. The **only remaining release-gate is E-3** (confirm `EXPO_PUBLIC_SUPABASE_*`
+> are set as EAS production env vars). With E-3 confirmed, this is **RELEASE READY
+> WITH ACCEPTED RISKS** — no CRITICAL remains; everything else is should-fix/defer.
 
 Synthesis of Waves A–E (this overnight run) against the plan
 `docs/APE_RELEASE_READINESS_QA_PLAN_2026_09_10.md`, reconciled to what ape-studio

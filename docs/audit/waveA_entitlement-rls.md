@@ -17,9 +17,9 @@ code's actual usage, which is conclusive for the issues raised.
 The owner applied `docs/APE_RLS_PROGRESS_WRITE_LOCKDOWN_2026_09_10.SQL`. Verified
 live: `own_achievement_progress`, `own_method_progress`, `own_badges`,
 `own_quiz_attempts` are now **`FOR SELECT`** (was `ALL`). Direct-write forge vector
-closed; writes flow only through the SECURITY-DEFINER RPCs. Remaining to fully
-close: a device re-verify that the legit study→quiz→credential journey still awards
-normally (owner-side). The findings below are retained for the record.
+closed; writes flow only through the SECURITY-DEFINER RPCs. Owner device-verified
+2026-09-10 that the legit study→quiz→credential journey still awards normally — so
+A-1/A-2 are **fully closed**. The findings below are retained for the record.
 
 ## Headline
 
