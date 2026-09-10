@@ -8,8 +8,10 @@
  */
 import { supabase } from '../../lib/supabase';
 import { albumTierFor, type AlbumTierName } from '../../theme/tokens';
+import { V3_CURRICULUM_VERSION_ID } from '../../data/v3Curriculum';
 
-export const ALBUM_DENOMINATOR = 50; // locked (D-5)
+export const ALBUM_DENOMINATOR = 50; // locked (D-5) — legacy album scale; NOT the
+// overall-% denominator anymore (that is the live v3 topic count; see fetchProfile).
 
 /* ---- fetches ---- */
 
@@ -41,13 +43,20 @@ export async function fetchProfile(): Promise<ProfileData> {
   if (error || !user) throw new Error('user_not_found');
   const ident = identity as { ape_student_id?: string | null; qr_token?: string | null } | null;
 
-  const [{ data: badges }, { count: completeCount }] = await Promise.all([
+  const [{ data: badges }, { count: completeCount }, { count: totalTopics }] = await Promise.all([
     supabase.from('student_badges').select('badge_name_snapshot').eq('user_id', user.id),
     supabase
       .from('student_achievement_progress')
       .select('id', { count: 'exact', head: true })
       .eq('user_id', user.id)
       .eq('status', 'complete'),
+    // Overall % denominator = the LIVE v3 topic count, not the retired 50-slot
+    // album scale (QA Wave B 2026-09-10: /50 against 166 topics rendered >100%).
+    supabase
+      .from('achievements')
+      .select('id', { count: 'exact', head: true })
+      .eq('curriculum_version_id', V3_CURRICULUM_VERSION_ID)
+      .eq('is_active', true),
   ]);
 
   const earnedCerts = new Set<'mic' | 'rec' | 'mix' | 'pa'>();
@@ -57,7 +66,10 @@ export async function fetchProfile(): Promise<ProfileData> {
   }
 
   const done = completeCount ?? 0;
-  const overallPct = Math.floor((done / ALBUM_DENOMINATOR) * 100);
+  // Clamp to 100: the denominator is the curriculum size, and `done` is not yet
+  // v3-scoped, so a stray non-v3 complete row can't push the headline over 100%.
+  const total = totalTopics ?? 0;
+  const overallPct = total > 0 ? Math.min(100, Math.floor((done / total) * 100)) : 0;
   const tier = albumTierFor(overallPct);
 
   const initials =
