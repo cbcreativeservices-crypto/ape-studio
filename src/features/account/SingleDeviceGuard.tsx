@@ -17,6 +17,10 @@ import { clearLocalAccountData, resetAllLocalStores } from './clearLocalAccountD
 import { isDisplaced } from './singleDevice';
 import { markIntentionalSignOut } from '../auth/intentionalSignOut';
 
+/** Foreground displacement-poll interval. ~8s is near-real-time without hammering
+ *  the server; lower it for snappier kicks, raise it to reduce RPC traffic. */
+const POLL_MS = 8000;
+
 export function SingleDeviceGuard() {
   const handling = useRef(false);
 
@@ -50,12 +54,38 @@ export function SingleDeviceGuard() {
       }
     };
 
+    // Near-real-time enforcement (owner 2026-09-10): while the app is in the
+    // FOREGROUND, poll every POLL_MS so a displaced device signs out within a few
+    // seconds of the account being claimed elsewhere — not only on the next
+    // foreground. Polling stops in the background (no battery/network drain; iOS
+    // suspends timers there anyway) and resumes + checks immediately on return.
+    // (TRUE instant push would need a Supabase Realtime subscription on
+    // active_device + an own-row SELECT RLS policy — deferred, backend-frozen.)
+    let poll: ReturnType<typeof setInterval> | undefined;
+    const startPolling = () => {
+      if (poll) return;
+      poll = setInterval(() => void check(), POLL_MS);
+    };
+    const stopPolling = () => {
+      if (poll) {
+        clearInterval(poll);
+        poll = undefined;
+      }
+    };
+
     void check();
+    startPolling();
     const sub = AppState.addEventListener('change', (s: AppStateStatus) => {
-      if (s === 'active') void check();
+      if (s === 'active') {
+        void check();
+        startPolling();
+      } else {
+        stopPolling();
+      }
     });
     return () => {
       alive = false;
+      stopPolling();
       sub.remove();
     };
   }, []);
