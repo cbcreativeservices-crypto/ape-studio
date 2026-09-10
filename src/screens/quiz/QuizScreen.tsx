@@ -1,9 +1,11 @@
 /**
  * S6 — Topic Quiz (RE-LOCKED v3.7, MASTER; visuals from 06-s6-quiz.dc.html).
  *
- * - "QUESTION n OF 25" + always-visible 10:00 countdown (deadline-based off
- *   the server's started_at — never pauses) → force-submit at 0:00 (server
- *   grades timed_out past 602s).
+ * - "QUESTION n OF <served count>" ([43], 2026-09-07: the size is server-driven —
+ *   QUIZ_SIZE=30 / QUIZ_PASS=28 per api.ts; the counter renders payload length,
+ *   never a hardcoded 25) + always-visible countdown from payload.time_limit_seconds
+ *   (deadline-based off the server's started_at — never pauses) → force-submit at
+ *   0:00 (server grades timed_out past the grace).
  * - One question at a time; tap select → 350ms highlight → auto-advance.
  * - Renders served_options per type (Code brief §3): mc/fill = 6 strings pick
  *   1 · multi_select = 6 strings + Confirm · matching = K lefts ↔︎ K rights.

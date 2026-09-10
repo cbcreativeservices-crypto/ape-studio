@@ -282,6 +282,8 @@ export function MatchingScreen({ navigation, route }: Props) {
 
   const goBoardRef = useRef(goBoard);
   goBoardRef.current = goBoard;
+  // [53] (2026-09-07): live mirror of displayPct for the auto-advance guard.
+  const displayPctRef = useRef(0);
 
   // Swipe strip below the cards (Booth 2026-07-15): swiping there scrolls
   // between boards WITHOUT counting as study time — a pure bypass.
@@ -348,7 +350,12 @@ export function MatchingScreen({ navigation, route }: Props) {
           setCorrectFlash((c) => (c === answeredId ? null : c));
         }, CORRECT_FLASH_MS);
         if (next.size === board.length) {
-          scheduleFlash(() => goBoardRef.current(1), ADVANCE_MS);
+          // [53] (2026-09-07): at 100% stop auto-advancing to the next board so a
+          // completed topic doesn't keep cycling; the learner moves on manually.
+          scheduleFlash(() => {
+            if (displayPctRef.current >= 100) return;
+            goBoardRef.current(1);
+          }, ADVANCE_MS);
         }
       } else {
         setWrongPair({ left: selectedLeft, right: rightId });
@@ -393,6 +400,7 @@ export function MatchingScreen({ navigation, route }: Props) {
   }
 
   const displayPct = studyDisplayPct(states, items.length, 'matching');
+  displayPctRef.current = displayPct; // [53]: keep the ref current for the auto-advance guard
   // Readout shows 0–99 until the RAW value is 100 (same rule as the Dashboard
   // row): Math.round alone read "100%" with an item still unstudied (B-086).
   const displayPctLabel = displayPct >= 100 ? 100 : Math.min(Math.round(displayPct), 99);

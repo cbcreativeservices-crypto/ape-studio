@@ -55,7 +55,10 @@ function useLockoutCountdown(lockoutUntil?: string) {
 
 export function ResultsScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
-  const { result, topicName, achievementId, isPractice, questions } = route.params;
+  const { result, topicName, achievementId, isPractice } = route.params;
+  // [45] (2026-09-07): default questions so .find() can't crash if the route is
+  // ever entered without them (wrong_answers is already coalesced below).
+  const questions = route.params.questions ?? [];
   const { msLeft, clock } = useLockoutCountdown(result.lockout_until);
 
   const wrongSlots = Object.entries(result.wrong_answers ?? {}).sort(

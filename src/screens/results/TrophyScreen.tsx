@@ -1,6 +1,7 @@
 /**
  * S8 — Trophy (visuals from 14-s8-trophy.dc.html): amber radial ground,
- * confetti 3s + haptic, trophy image slot (512² placeholder until artwork
+ * success haptic only ([48], 2026-09-07: confetti/award animation was removed
+ * per owner 2026-07-18), trophy image slot (512² placeholder until artwork
  * ships), achievement title, badge callout when earned ("You earned [Badge]
  * — View on Profile", notification only, no routing button).
  * Exit by entry_source: quiz_win → [Next] + auto-advance 5s; gallery /
@@ -43,10 +44,14 @@ export function TrophyScreen({ navigation, route }: Props) {
       .select('badge_trigger, icon_url')
       .eq('id', achievementId)
       .single()
-      .then(({ data }) => {
-        setIconUrl(data?.icon_url ?? null);
-        if (badgeEarned) setBadgeName(data?.badge_trigger?.toUpperCase() ?? null);
-      });
+      .then(
+        ({ data }) => {
+          setIconUrl(data?.icon_url ?? null);
+          if (badgeEarned) setBadgeName(data?.badge_trigger?.toUpperCase() ?? null);
+        },
+        // [47] (2026-09-07): guard the rejection — leave the fallback badge/icon.
+        () => {},
+      );
   }, [badgeEarned, achievementId]);
 
   useEffect(() => {

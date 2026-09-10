@@ -1168,6 +1168,18 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       </View>
     );
   }
+  // [55] (2026-09-07): a topic that genuinely loaded zero cards gets its own
+  // message + Back, distinct from the filter-hidden "No cards match" state.
+  if (items.length === 0) {
+    return (
+      <View style={styles.center}>
+        <Text style={styles.errorText}>This topic has no flashcards yet.</Text>
+        <View style={{ width: 180 }}>
+          <StudioButton label="Back" variant="secondary" small onPress={() => navigation.goBack()} />
+        </View>
+      </View>
+    );
+  }
 
   const displayPct = studyDisplayPct(states, items.length, 'flashcards');
   // Readout shows 0–99 until the RAW value is 100 (same rule as the Dashboard

@@ -1179,7 +1179,10 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           <View>
             <Text style={styles.sectionHead}>MY ENROLLMENT</Text>
             <Text style={styles.listCount}>
-              {activeCount} of {enrolled.length} Enrolled
+              {/* [28] (2026-09-07): name the two figures so it doesn't read as
+                  "X of Y are enrolled" (all Y are); completed topics live in MY
+                  RECORD, so the visible list is a subset. */}
+              {activeCount} active · {enrolled.length} enrolled
             </Text>
           </View>
           <View style={{ flex: 1 }} />

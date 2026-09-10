@@ -43,16 +43,23 @@ export function TopicsScreen() {
   const [total, setTotal] = useState(0);
   const [open, setOpen] = useState<string | null>(null);
   const [modalTopic, setModalTopic] = useState<TopicAchievement | null>(null);
+  // [11] (2026-09-07): track a load error separately from a loaded-empty result
+  // so a failed fetch shows an error, not a silent empty subject list.
+  const [loadError, setLoadError] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
+      setLoadError(false);
       fetchTopicAchievements()
         .then(({ fields, earnedTotal, totalCount }) => {
           setFields(fields);
           setEarnedTotal(earnedTotal);
           setTotal(totalCount);
         })
-        .catch(() => setFields([]));
+        .catch(() => {
+          setFields([]);
+          setLoadError(true);
+        });
     }, []),
   );
 
@@ -82,6 +89,16 @@ export function TopicsScreen() {
         </View>
 
         <Text style={styles.subjectsHead}>SUBJECTS</Text>
+
+        {/* [11] (2026-09-07): distinguish load error vs genuinely-empty; the old
+            code rendered only the header + "0 / 0" for both. */}
+        {fields !== null && subjects.length === 0 ? (
+          <Text style={styles.emptyNote}>
+            {loadError
+              ? 'Couldn’t load topics — check your connection and try again.'
+              : 'No topics available yet.'}
+          </Text>
+        ) : null}
 
         <View style={styles.tree}>
           {subjects.map((s, i) => {
@@ -199,6 +216,7 @@ const styles = StyleSheet.create({
   subjectsHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 2.2, color: colors.amber, marginBottom: -4 },
   fieldHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.6, color: colors.textSub, marginTop: 10, marginBottom: 6 },
   tree: { gap: 8 },
+  emptyNote: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 21, color: colors.textSub, textAlign: 'center', marginTop: 16 },
   subjectCard: { backgroundColor: '#161616', borderWidth: 1, borderColor: '#232323', borderRadius: 9, overflow: 'hidden' },
   subjectRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 12, paddingHorizontal: 13 },
   subjectChevron: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: colors.textSub, width: 14 },

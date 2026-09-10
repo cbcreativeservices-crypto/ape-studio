@@ -76,6 +76,10 @@ export function SettingsScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
   const [local, setLocal] = useState<LocalSettings>(DEFAULT_LOCAL_SETTINGS);
   const [prefs, setPrefs] = useState<NotificationPrefs | null>(null);
+  // M12 (2026-09-07): a transient prefs-fetch failure must NOT read as "guest".
+  // Track it separately so a signed-in member sees an error + Retry, not the
+  // guest copy, and keeps the member wording.
+  const [prefsFailed, setPrefsFailed] = useState(false);
   const [apeId, setApeId] = useState('');
   // Community mic-catalog contribution consent (device-local, opt-in, default off).
   const [contribute, setContribute] = useState(false);
@@ -107,26 +111,36 @@ export function SettingsScreen({ navigation }: Props) {
     }
   }, [redeemCode, redeemBusy, refreshEntitlement]);
 
-  useEffect(() => {
-    // Load the local settings FIRST, then mirror the server's master switch
-    // using those freshly-loaded values — reading `local` here would capture
-    // the defaults from this []-dep effect's closure, not what was stored.
-    void (async () => {
+  // M12 (2026-09-07): prefs load, retryable and error-aware.
+  const reloadPrefs = useCallback(async () => {
+    setPrefsFailed(false);
+    try {
       const loaded = await loadLocalSettings();
       setLocal(loaded);
       const p = await fetchNotificationPrefs();
       setPrefs(p);
       if (p) void setPhoneNotificationsEnabled(p.push_enabled, loaded);
-    })();
-    void hasCrowdsourceConsent().then(setContribute);
-    void fetchWeeklySubscriptions().then((subs) => setCatSched(scheduleMapFrom(subs)));
+    } catch {
+      setPrefsFailed(true);
+    }
+  }, []);
+  useEffect(() => {
+    void reloadPrefs();
+    // [50] (2026-09-07): guard these against unhandled rejection (offline / RLS).
+    void hasCrowdsourceConsent().then(setContribute, () => {});
+    void fetchWeeklySubscriptions()
+      .then((subs) => setCatSched(scheduleMapFrom(subs)))
+      .catch(() => {});
     // ape_student_id via the my_identity() RPC (schema isolation, 2026-09-04)
     // rather than a direct users read.
     supabase
       .rpc('my_identity')
       .single()
-      .then(({ data }) => setApeId((data as { ape_student_id?: string | null } | null)?.ape_student_id ?? ''));
-  }, []);
+      .then(
+        ({ data }) => setApeId((data as { ape_student_id?: string | null } | null)?.ape_student_id ?? ''),
+        () => {},
+      );
+  }, [reloadPrefs]);
 
   const setLocalKey = useCallback(<K extends keyof LocalSettings>(key: K, value: LocalSettings[K]) => {
     setLocal((prev) => {
@@ -217,10 +231,10 @@ export function SettingsScreen({ navigation }: Props) {
       if (!prefs) return;
       setPrefs({ ...prefs, notify_weekly_concept: on, push_enabled: on ? true : prefs.push_enabled });
       if (on) {
-        // BUG FIX (design review 2026-08-30): turning this on flipped
-        // push_enabled in local state ONLY, so the switch appeared on and was
-        // off again next time Settings opened. Persist it too.
-        if (!prefs.push_enabled) void updateNotificationPref('push_enabled', true);
+        // [49] (2026-09-07): the old `if (!prefs.push_enabled) …persist push on`
+        // branch was unreachable — the Weekly toggle is disabled whenever push is
+        // off (groupLocked), so setWeeklyOn never runs with push_enabled false.
+        // Removed. (If push is ever allowed off here, re-add the persist.)
         const token = await registerAndSavePushToken();
         const prefOk = await setWeeklyConceptPref(true);
         // Make sure every category has a row carrying its own schedule. If the
@@ -329,11 +343,30 @@ export function SettingsScreen({ navigation }: Props) {
             </View>
           ))}
           {!(prefs?.push_enabled ?? false) ? (
-            <Text style={styles.dependencyNote}>
-              {prefs == null
-                ? 'Sign in to manage notifications — a guest session keeps nothing.'
-                : 'Turn on phone notifications to use anything below.'}
-            </Text>
+            prefs == null && resolved && !isGuest ? (
+              // M12 (2026-09-07): a signed-in member whose prefs failed to load —
+              // error + Retry, NOT the guest wording, and toggles aren't "your"
+              // settings gone.
+              <View style={styles.prefsErrorRow}>
+                <Text style={styles.dependencyNote}>
+                  Couldn’t load your notification settings — check your connection.
+                </Text>
+                <Pressable
+                  onPress={() => void reloadPrefs()}
+                  hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityLabel="Retry loading notification settings"
+                >
+                  <Text style={styles.prefsRetry}>RETRY</Text>
+                </Pressable>
+              </View>
+            ) : (
+              <Text style={styles.dependencyNote}>
+                {prefs == null
+                  ? 'Sign in to manage notifications — a guest session keeps nothing.'
+                  : 'Turn on phone notifications to use anything below.'}
+              </Text>
+            )
           ) : null}
 
           <View style={!(prefs?.push_enabled ?? false) ? styles.groupOff : undefined} pointerEvents={(prefs?.push_enabled ?? false) ? 'auto' : 'none'}>
@@ -871,6 +904,8 @@ const styles = StyleSheet.create({
     color: colors.amberLabel,
     marginTop: 10,
   },
+  prefsErrorRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: 10 },
+  prefsRetry: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textSecondary },
 
   // Per-notification frequency editor (user request 2026-07-18).
   freqBlock: { paddingLeft: 12, paddingBottom: 12, paddingTop: 2, gap: 8 },

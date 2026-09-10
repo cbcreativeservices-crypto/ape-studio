@@ -172,7 +172,8 @@ export function ProfileScreen() {
         .catch(() => {});
       // Refetched on focus so a credential earned during this session appears
       // when the user comes back to Profile, without a manual reload.
-      fetchMyCredentials().then(setCredentials);
+      // [38] (2026-09-07): guard the rejection like fetchProfile beside it.
+      fetchMyCredentials().then(setCredentials, () => {});
     }, []),
   );
 
@@ -238,7 +239,7 @@ export function ProfileScreen() {
         cert: new Map(certs.map((c) => [c.name, c.id] as const)),
         program: new Map(programs.map((p) => [p.name, p.id] as const)),
       });
-    });
+    }, () => {}); // [38] (2026-09-07): guard the rejection (was unhandled)
     return () => { alive = false; };
   }, []);
 

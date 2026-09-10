@@ -132,7 +132,12 @@ export function ToolInfoScreen({ navigation, route }: Props) {
             tint="green"
             height={52}
             fontSize={15}
-            onPress={() => (navigation as any).navigate(OPEN_TOOL_ROUTE[tool.key])}
+            onPress={() => {
+              // [57] (2026-09-07): keep the route name type-checked
+              // (keyof RootStackParamList) instead of casting navigation to any.
+              const r = OPEN_TOOL_ROUTE[tool.key];
+              if (r) (navigation.navigate as (name: string) => void)(r);
+            }}
           />
         )}
 

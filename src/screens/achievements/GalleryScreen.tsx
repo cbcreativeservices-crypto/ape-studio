@@ -31,6 +31,8 @@ function BadgeDisc({ color }: { color: string }) {
 
 function fmtDate(iso: string): string {
   const d = new Date(iso);
+  // [10] (2026-09-07): guard a bad/missing date (matches Topics/AwardProgress).
+  if (Number.isNaN(d.getTime())) return '';
   return d
     .toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
     .toUpperCase();
@@ -70,7 +72,9 @@ export function GalleryScreen() {
           (navigation as any).navigate('Trophy', {
             topicName: e.name,
             achievementId: e.achievementId,
-            badgeEarned: false,
+            // [9] (2026-09-07): every gallery entry is an EARNED trophy
+            // (fetchGalleryV3 filters status='complete'), so this is true.
+            badgeEarned: true,
             entrySource: 'gallery',
           })
         }

@@ -93,6 +93,9 @@ export function FillInBlankScreen({ navigation, route }: Props) {
   // unmount if the user leaves during the feedback hold). Owner debug audit.
   const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => () => { if (advanceTimer.current) clearTimeout(advanceTimer.current); }, []);
+  // [53] (2026-09-07): live mirror of displayPct so the auto-advance timer can
+  // read the current completion without re-subscribing.
+  const displayPctRef = useRef(0);
 
   // Pace timer (practice aid — device-local settings, never blocks study).
   const { settings: pace, setEnabled, setPreset } = usePaceSettings('fill_in_blank');
@@ -309,6 +312,9 @@ export function FillInBlankScreen({ navigation, route }: Props) {
       if (advanceTimer.current) clearTimeout(advanceTimer.current);
       advanceTimer.current = setTimeout(() => {
         setPicked(null);
+        // [53] (2026-09-07): at 100% stop auto-advancing (header: '100% → manual')
+        // so a completed topic doesn't keep cycling cards on every tap.
+        if (displayPctRef.current >= 100) return;
         setQIdx((i) => i + 1);
       }, FEEDBACK_MS);
     },
@@ -346,6 +352,7 @@ export function FillInBlankScreen({ navigation, route }: Props) {
   }
 
   const displayPct = studyDisplayPct(states, items.length, 'fill_in_blank');
+  displayPctRef.current = displayPct; // [53]: keep the ref current for the timer
   // Readout shows 0–99 until the RAW value is 100 (same rule as the Dashboard
   // row): Math.round alone read "100%" with an item still unstudied (B-086).
   const displayPctLabel = displayPct >= 100 ? 100 : Math.min(Math.round(displayPct), 99);

@@ -78,6 +78,8 @@ export function FinalExamScreen({ navigation, route }: Props) {
   const focusLossDuration = useRef(0);
   const blurStartedAt = useRef<number | null>(null);
   const submitted = useRef(false);
+  const mountedRef = useRef(true);
+  useEffect(() => () => { mountedRef.current = false; }, []);
   const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => () => { if (advanceTimer.current) clearTimeout(advanceTimer.current); }, []);
 
@@ -143,10 +145,15 @@ export function FinalExamScreen({ navigation, route }: Props) {
             () => navigation.goBack(),
           );
         } else {
+          // [31] (2026-09-07): release the double-submit latch on a non-network
+          // failure so the attempt can be retried (offline path stays queued).
+          submitted.current = false;
           notify('Submit failed', (e as Error).message, () => navigation.goBack());
         }
       } finally {
-        setSubmitting(false);
+        // [32] (2026-09-07): the success path replace()s (unmounts) this screen,
+        // so guard the state set against a post-unmount update.
+        if (mountedRef.current) setSubmitting(false);
       }
     },
     [payload, awardType, awardId, awardName, navigation],

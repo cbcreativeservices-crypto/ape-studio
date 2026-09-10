@@ -1673,7 +1673,9 @@ export function DashboardScreen() {
           {/* Same anatomy as the method rows so every object aligns (#4):
               screw · icon square · title+status LED column · switch · screw. */}
           {(() => {
-            const score = topicProg?.best_genuine_score ?? '';
+            // [24] (2026-09-07): '—' not '' so a null score never renders a
+            // leading-empty numerator like "/30" (0 is preserved by ??).
+            const score = topicProg?.best_genuine_score ?? '—';
             // Powered on iff not locked (quizState is locked until the homework
             // methods are complete — see rawQuizState above).
             const quizPowered = quizState !== 'locked';

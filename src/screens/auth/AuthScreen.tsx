@@ -116,14 +116,20 @@ export function AuthScreen({ navigation }: Props) {
           {
             text: 'Continue',
             onPress: () => {
-              void claimThisDevice().then(proceed);
+              // [16] (2026-09-07): proceed even if the claim fails (fails open per
+              // the comment above) rather than a silent no-op with no .catch.
+              void claimThisDevice().then(proceed, proceed);
             },
           },
         ],
       );
       return;
     }
-    await claimThisDevice();
+    try {
+      await claimThisDevice();
+    } catch {
+      /* fails open — proceed to the app regardless */
+    }
     proceed();
   };
 
@@ -268,7 +274,7 @@ export function AuthScreen({ navigation }: Props) {
         setError(err);
         return;
       }
-      await claimAndProceed(toMain); // Study tab = Dashboard (single-device claim)
+      await claimAndProceed(toMain); // [12] 2026-09-07: toMain lands on Home (MainTabs initialRoute = Course Selection), same as create-account
     } finally {
       setBusy(false);
     }

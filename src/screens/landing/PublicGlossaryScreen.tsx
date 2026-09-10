@@ -26,10 +26,17 @@ export function PublicGlossaryScreen({ navigation, route: rootRoute }: Props) {
       new Proxy(navigation as object, {
         get(target, prop, receiver) {
           if (prop === 'navigate') {
-            return (name: string, params?: unknown) =>
-              name === 'Dashboard'
-                ? (target as Props['navigation']).goBack()
-                : (target as unknown as { navigate: (n: string, p?: unknown) => void }).navigate(name, params);
+            return (name: string, params?: unknown) => {
+              const t = target as Props['navigation'];
+              if (name === 'Dashboard') {
+                // [36] (2026-09-07): if PublicGlossary is the entry route (no back
+                // history), goBack() is a no-op — fall back to a concrete route.
+                if (t.canGoBack()) t.goBack();
+                else (t as unknown as { navigate: (n: string) => void }).navigate('Main');
+                return;
+              }
+              (target as unknown as { navigate: (n: string, p?: unknown) => void }).navigate(name, params);
+            };
           }
           return Reflect.get(target, prop, receiver);
         },

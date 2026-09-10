@@ -237,7 +237,9 @@ export function AwardProgressScreen({ navigation, route }: Props) {
           </View>
         )}
 
-        {!earned && (
+        {/* [17] (2026-09-07): with no requirements published, don't show the
+            locked Final Exam gate — the "not available yet" line above stands alone. */}
+        {!earned && totalCount > 0 && (
           <View style={styles.actions}>
             {allComplete ? (
               <StudioButton

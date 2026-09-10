@@ -111,7 +111,14 @@ export function MyProfileView() {
   }, []);
 
   const label = useCallback(
-    (kind: keyof Taxonomy, slug: string) => tax?.[kind].find((x) => x.slug === slug)?.label ?? slug,
+    // [26] (2026-09-07): on taxonomy drift (a removed/renamed slug still stored on
+    // the profile), humanize the slug ("foh-mixing" → "Foh Mixing") instead of
+    // showing the raw machine slug to the user.
+    (kind: keyof Taxonomy, slug: string) => {
+      const hit = tax?.[kind].find((x) => x.slug === slug)?.label;
+      if (hit) return hit;
+      return slug.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+    },
     [tax],
   );
 

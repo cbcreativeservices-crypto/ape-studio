@@ -47,7 +47,9 @@ export function WeeklyConceptScreen({ navigation, route }: Props) {
         <View style={styles.center}>
           <ActivityIndicator color={colors.amber} />
         </View>
-      ) : !card ? (
+      ) : !card || !card.concept ? (
+        // [37] (2026-09-07): a fetched row with an empty concept is unavailable,
+        // not a blank title.
         <View style={styles.center}>
           <Text style={styles.empty}>This concept is not available.</Text>
         </View>

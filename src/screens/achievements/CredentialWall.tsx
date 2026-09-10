@@ -21,7 +21,7 @@ import { ProgressRing } from '../../components/ProgressRing';
 import { StudioButton } from '../../components/StudioButton';
 import { TrophyModal } from '../../components/TrophyModal';
 import { credentialArtFor } from '../../features/credentials/credentialArt';
-import { exportCertificate } from '../../features/credentials/certificatePdf';
+import { exportCertificate, isAvailable as certificateExportAvailable } from '../../features/credentials/certificatePdf';
 import { fetchEarnedCredentialsByType, fetchNearestCredential, type NearestCredentialResult } from '../../features/achievements/api';
 import type { EarnedCredentialRow } from '../../features/credentials/api';
 
@@ -147,7 +147,11 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
         name={open?.name}
         color={accent}
         meta={open ? fmtEarned(open.awardedAt) : null}
-        action={{ label: 'DOWNLOAD CERTIFICATE', onPress: download, busy }}
+        action={
+          // [8] (2026-09-07): only offer the download when the native print/share
+          // module is in the build (matches AwardProgressScreen's honest gate).
+          certificateExportAvailable() ? { label: 'DOWNLOAD CERTIFICATE', onPress: download, busy } : null
+        }
         onClose={() => setOpen(null)}
       >
         {open && credentialArtFor(open.slug) ? (
@@ -164,6 +168,10 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
             <CredentialBadge kind={kind} size={180} />
           </View>
         )}
+        {/* [8] (2026-09-07): honest note when the download isn't in this build. */}
+        {!certificateExportAvailable() ? (
+          <Text style={styles.exportNote}>Certificate download needs the next app build.</Text>
+        ) : null}
       </TrophyModal>
     </View>
   );
@@ -286,4 +294,5 @@ const styles = StyleSheet.create({
   waitingMeta: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub },
   chevron: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, color: colors.textSub },
   modalBadge: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  exportNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub, textAlign: 'center', marginTop: 10 },
 });

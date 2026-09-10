@@ -115,11 +115,16 @@ export function FinalExamResultScreen({ navigation, route }: Props) {
               onPress={() => (navigation as any).replace('FinalExam', { awardType, awardId, awardName })}
             />
           )}
-          <StudioButton
-            label="Done"
-            variant={result.outcome === 'pass' ? 'success' : 'secondary'}
-            onPress={() => navigation.goBack()}
-          />
+          {result.outcome === 'pass' && (
+            // [30] (2026-09-07): the pass copy says the credential is viewable on
+            // the profile — give a direct path there (Profile is a Main tab).
+            <StudioButton
+              label="View on Profile"
+              variant="success"
+              onPress={() => (navigation as any).navigate('Main', { screen: 'Profile' })}
+            />
+          )}
+          <StudioButton label="Done" variant="secondary" onPress={() => navigation.goBack()} />
         </View>
       </ScrollView>
     </View>

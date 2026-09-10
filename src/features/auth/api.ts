@@ -20,6 +20,20 @@ function friendlyAuthError(error: { message?: string } | null | undefined): stri
   if (/network request failed|failed to fetch|network error|timed out|timeout|unable to (resolve|connect)|offline|enotfound|econnrefused|socket hang/i.test(m)) {
     return 'You appear to be offline — reconnect and try again.';
   }
+  // [1] (2026-09-07): map the common Supabase auth errors to friendly copy
+  // instead of relaying the raw error.message to the user.
+  if (/invalid login credentials|invalid.*(email|password)/i.test(m)) {
+    return 'Email or password is incorrect.';
+  }
+  if (/email not confirmed/i.test(m)) {
+    return 'Please confirm your email, then sign in.';
+  }
+  if (/rate limit|too many/i.test(m)) {
+    return 'Too many attempts — wait a moment and try again.';
+  }
+  if (/user already registered|already been registered/i.test(m)) {
+    return 'That email already has an account — sign in instead.';
+  }
   return m || 'Something went wrong. Please try again.';
 }
 
