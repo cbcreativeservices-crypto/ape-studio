@@ -163,7 +163,8 @@ content-fetch screens — the boot hangs and the launch-blocking items are fixed
    - ✅ DONE (owner GO 2026-09-09): calc weekly-cap SQL APPLIED — migration `calc_weekly_limit_5` ran `docs/APE_CALC_WEEKLY_LIMIT_5_2026_09_01.SQL`; both `calc_consume`/`calc_usage_status` now declare `v_limit := 5` (verified live), matching the client constant. Idempotent; no `calc_usage` rows disturbed. Server was previously enforcing 10.
    - ✅ RATIFIED (owner 2026-09-09, governance RC1): compressor & RF calculator copy — both math-correct, re-ratified; re-ratification item closed.
    - ✅ DONE (f2e0804 + d1a3777): `subjectMeta` HIDDEN behind `SUBJECT_META_RATIFIED` (false) AND re-keyed to the live v3 subject names — all 50 v3 subjects now have first-pass copy keyed to the exact `achievements.subject` strings (verified 50/50 match the DB). Still gated: renders nothing until the owner reviews the copy and flips the flag to true (which would then light up every v3 subject).
-   - ⏳ OWNER/CONTRACT (not touched): dead `Directory` route (harmless alias — delete or document); `labs/eq` deep-link ambiguity + uneven lab coverage (cross-repo AASA decision).
+   - ✅ DONE (commit 51bd060): dead `Directory` route REMOVED (registration + type + unreachable DirectoryScreen wrapper + orphaned imports/styles). DirectoryView kept (live in the Awards pager). tsc + 296 tests green.
+   - ⏳ OWNER/CONTRACT (not touched): `labs/eq` deep-link ambiguity + uneven lab coverage (cross-repo AASA decision — needs canonical slug→lab mapping).
 
 All findings with file:line + fixes are in `docs/audit/wave1_*.md`, `wave2_*.md`,
 `wave3_*.md`. Guardrails held: no builds, no publishing, no backend/DB changes,
