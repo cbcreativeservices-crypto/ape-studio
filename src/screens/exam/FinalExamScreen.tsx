@@ -124,8 +124,14 @@ export function FinalExamScreen({ navigation, route }: Props) {
       try {
         const result = await submitFinalExam(args);
         await clearExamIntent(awardType, awardId);
-        if (navigation.canGoBack()) navigation.popToTop();
-        (navigation as any).navigate('FinalExamResult', { result, awardName });
+        // REPLACE the exam with its result rather than popToTop()+navigate
+        // (launch audit 2026-09-09). FinalExam/FinalExamResult live on the ROOT
+        // stack whose first route is Splash, so popToTop() popped to Splash and
+        // pushed the result above it — a hardware back then re-ran Splash's
+        // session hand-off. Replacing swaps the just-finished exam for the
+        // result, leaving the originating AwardProgress beneath, so Done / back
+        // returns there (the award's progress, now showing the credential).
+        (navigation as any).replace('FinalExamResult', { result, awardName });
       } catch (e) {
         if (/network|fetch/i.test((e as Error).message)) {
           await enqueueExamSubmission({ ...args, awardType, awardId });
