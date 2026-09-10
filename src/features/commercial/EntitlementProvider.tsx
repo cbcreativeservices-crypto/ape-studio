@@ -220,11 +220,21 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
       lastUid.current = uid;
       uidSeeded.current = true;
     };
-    void supabase.auth.getSession().then(async ({ data }) => {
-      clearLocalOnUserChange(data.session?.user?.id ?? null);
-      await deriveAndApply(!!data.session);
-      if (alive) setResolved(true); // first read is in — first paint can trust the tier
-    });
+    void supabase.auth
+      .getSession()
+      .then(async ({ data }) => {
+        clearLocalOnUserChange(data.session?.user?.id ?? null);
+        await deriveAndApply(!!data.session);
+      })
+      .catch(() => {
+        // getSession rejecting (e.g. a secure-store read error) or a throw in the
+        // callback must NOT leave `resolved` false forever — CourseSelection gates
+        // first paint on it and would hang on an infinite spinner (QA Wave C/D
+        // 2026-09-10). Fall through to the neutral/default tier instead.
+      })
+      .finally(() => {
+        if (alive) setResolved(true); // first read attempted — first paint can proceed
+      });
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'INITIAL_SESSION') {
         // A REAL sign-in OR sign-out ends any dev tier override (owner
