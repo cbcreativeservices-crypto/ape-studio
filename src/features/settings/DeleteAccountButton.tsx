@@ -9,6 +9,7 @@ import { useRef, useState } from 'react';
 import { Alert, Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { confirmDialog, notify } from '../../lib/confirm';
 import { supabase } from '../../lib/supabase';
+import { markIntentionalSignOut } from '../auth/intentionalSignOut';
 import { clearLocalAccountData, resetAllLocalStores } from '../account/clearLocalAccountData';
 import { colors, fonts } from '../../theme/tokens';
 
@@ -72,6 +73,7 @@ export function DeleteAccountButton({ onDeleted }: { onDeleted: () => void }) {
     try {
       const { error } = await supabase.rpc('delete_my_account');
       if (error) throw error;
+      markIntentionalSignOut();
       await supabase.auth.signOut();
       // Backend is gone; now wipe the device-local user data + reset the
       // in-memory store caches so no stale academic state survives to the next

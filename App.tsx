@@ -59,6 +59,7 @@ import { initExposureMonitor } from './src/features/audio/exposureMonitor';
 import { subscribeAudioOutput } from './src/features/audio/audioOutputStore';
 import { MicFeedbackGuard } from './src/features/audio/MicFeedbackGuard';
 import { SingleDeviceGuard } from './src/features/account/SingleDeviceGuard';
+import { SessionExpiryGuard } from './src/features/account/SessionExpiryGuard';
 import { ShakeToMute } from './src/features/audio/ShakeToMute';
 import { LowLightProductionGate } from './src/features/settings/LowLightLayer';
 import { registerLowLightTap, touchLowLight } from './src/features/settings/lowLight';
@@ -368,6 +369,11 @@ export default function App() {
                 by a newer device, this one signs out on next foreground. Renders
                 nothing; fails open until the backend migration is run. */}
             <SingleDeviceGuard />
+            {/* Silent session-loss rescue (QA Wave D, D-1): on an UNEXPECTED
+                SIGNED_OUT (token expired/revoked) resets to Auth so the user
+                isn't stranded on a protected screen. Skips app-initiated
+                sign-outs (they navigate themselves). Renders nothing. */}
+            <SessionExpiryGuard />
             {/* Shake-to-panic-mute (owner request 2026-07-26): while audio can
                 sound, a decisive shake instantly silences everything and
                 re-locks the app to silent. Renders nothing. */}

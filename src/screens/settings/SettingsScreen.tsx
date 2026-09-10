@@ -33,6 +33,7 @@ import { sendFeedback } from '../../lib/feedback';
 import { redeemAccessCode } from '../../features/commercial/accessCode';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { supabase } from '../../lib/supabase';
+import { markIntentionalSignOut } from '../../features/auth/intentionalSignOut';
 import { colors, fonts } from '../../theme/tokens';
 import {
   COMMERCIAL_NOTIFY_ROWS,
@@ -167,6 +168,7 @@ export function SettingsScreen({ navigation }: Props) {
     // button on the web preview (QA night 2026-09-01).
     confirmDialog('Log out?', 'You can sign in as a different user afterward.', 'Log out', () => {
       void (async () => {
+        markIntentionalSignOut();
         await supabase.auth.signOut();
         navigation.reset({ index: 0, routes: [{ name: 'Splash' }] });
       })();

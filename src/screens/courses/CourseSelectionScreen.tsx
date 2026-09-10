@@ -38,6 +38,7 @@ import { CardArt } from '../../components/CardArt';
 import { StudioButton } from '../../components/StudioButton';
 import { SwitchButton } from '../../components/SwitchButton';
 import { supabase } from '../../lib/supabase';
+import { markIntentionalSignOut } from '../../features/auth/intentionalSignOut';
 import { SUPABASE_URL } from '../../lib/env';
 import { colors, fonts } from '../../theme/tokens';
 import { setLastCourse } from '../../features/dashboard/api';
@@ -1528,6 +1529,7 @@ export function CourseSelectionScreen() {
               variant="secondary"
               small
               onPress={() => {
+                markIntentionalSignOut();
                 void supabase.auth
                   .signOut()
                   .catch(() => {})

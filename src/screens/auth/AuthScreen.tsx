@@ -44,6 +44,7 @@ import {
   verifyRecoveryOtp,
 } from '../../features/auth/api';
 import { supabase } from '../../lib/supabase';
+import { markIntentionalSignOut } from '../../features/auth/intentionalSignOut';
 import { COPY } from '../../lib/copy';
 import { registerCommercialUser } from '../../features/commercial/commercialAuth';
 import { redeemAccessCode } from '../../features/commercial/accessCode';
@@ -108,6 +109,7 @@ export function AuthScreen({ navigation }: Props) {
             text: 'Cancel',
             style: 'cancel',
             onPress: () => {
+              markIntentionalSignOut();
               void supabase.auth.signOut().catch(() => {});
             },
           },
@@ -138,6 +140,9 @@ export function AuthScreen({ navigation }: Props) {
     // toHome() never ran — a permanent spinner on the primary no-account entry.
     try {
     try {
+      // Guest entry signs out to establish the anon session — NOT a session loss.
+      // Mark it so SessionExpiryGuard doesn't bounce the guest back to login.
+      markIntentionalSignOut();
       await supabase.auth.signOut();
     } catch {
       // Offline sign-out failure is fine — local session is still cleared.

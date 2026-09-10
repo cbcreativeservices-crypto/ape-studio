@@ -15,6 +15,7 @@ import { supabase } from '../../lib/supabase';
 import { navigationRef } from '../../navigation/navigationRef';
 import { clearLocalAccountData, resetAllLocalStores } from './clearLocalAccountData';
 import { isDisplaced } from './singleDevice';
+import { markIntentionalSignOut } from '../auth/intentionalSignOut';
 
 export function SingleDeviceGuard() {
   const handling = useRef(false);
@@ -31,6 +32,9 @@ export function SingleDeviceGuard() {
       if (!alive || handling.current) return;
       handling.current = true;
       try {
+        // This guard handles its own navigation (reset to Splash below), so mark
+        // the sign-out intentional — SessionExpiryGuard must not also reset.
+        markIntentionalSignOut();
         await supabase.auth.signOut().catch(() => {});
         await clearLocalAccountData();
         resetAllLocalStores();

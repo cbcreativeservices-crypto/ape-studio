@@ -77,6 +77,7 @@ import {
 import { getDashboardCache, setDashboardCache } from '../../features/dashboard/dashboardCache';
 import { FREE_ENROLL_GS, isFreeEnrollGs, useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { supabase } from '../../lib/supabase';
+import { markIntentionalSignOut } from '../../features/auth/intentionalSignOut';
 import { fetchGlossaryItemsByIds, fetchTopicItems } from '../../features/study/api';
 import { type MethodPctRow, smoothMethodPct, topicOverallPct } from '../../features/dashboard/topicPct';
 import { setLastStudyLocation } from '../../features/study/lastStudyLocation';
@@ -1126,6 +1127,7 @@ export function DashboardScreen() {
             variant={errorCode === 'user_not_found' ? 'secondary' : 'primary'}
             small
             onPress={() => {
+              markIntentionalSignOut();
               void supabase.auth
                 .signOut()
                 .catch(() => {})
@@ -1308,6 +1310,7 @@ export function DashboardScreen() {
                 variant="secondary"
                 small
                 onPress={() => {
+                  markIntentionalSignOut();
                   void supabase.auth
                     .signOut()
                     .catch(() => {})
