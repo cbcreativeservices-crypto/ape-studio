@@ -1026,7 +1026,7 @@ export function CourseSelectionScreen() {
   const [activeIdx, setActiveIdx] = useState(0);
   const listRef = useRef<FlatList<Card>>(null);
   // CM2 — commercial mode + entitlement (mock provider; server truth later).
-  const { commercialMode, entitlement, caps, setCommercialMode, setEntitlement } = useEntitlement();
+  const { commercialMode, entitlement, caps, resolved, setCommercialMode, setEntitlement } = useEntitlement();
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   // Top-left "About" text button → the About popup (owner 2026-08-12).
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -1355,7 +1355,12 @@ export function CourseSelectionScreen() {
       </View>
     );
   }
-  if (!cards) {
+  // Hold first paint until BOTH the cards and the first entitlement read land:
+  // painting before `resolved` would render a real member at the 'anonymous'
+  // rung (topic locks, upsell deck) for a frame, then snap to unlocked (M6
+  // first-paint guard; launch audit 2026-09-09). The entitlement read is
+  // typically faster than the card fetch, so this adds no perceptible delay.
+  if (!cards || !resolved) {
     return (
       <View style={styles.center}>
         <ActivityIndicator color={colors.amber} />

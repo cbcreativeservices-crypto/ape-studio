@@ -45,7 +45,13 @@ const TRAIN_DESC =
 
 export function AudioLearningScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
-  const { isMember } = useEntitlement();
+  const { isMember, resolved } = useEntitlement();
+  // Until the first entitlement read lands, don't assert non-membership: a real
+  // member would otherwise see the 🔒 / "PREVIEW" framing flash for a frame
+  // before snapping to the unlocked "EXPLORE" view (M6 first-paint guard; launch
+  // audit 2026-09-09). The card is tappable by everyone either way (EarLab
+  // enforces the per-lab lock), so the neutral pre-resolve view is the member one.
+  const locked = resolved && !isMember;
 
   const goFundamentals = () => navigation.navigate('EarLab', { section: 'fundamentals' });
   const goTraining = () => navigation.navigate('EarLab', { section: 'training' });
@@ -113,7 +119,7 @@ export function AudioLearningScreen({ navigation }: Props) {
           onPress={goTraining}
           accessibilityRole="button"
           accessibilityLabel={
-            isMember
+            !locked
               ? 'Advanced Training Labs. Academy membership. Explore the advanced training labs.'
               : 'Advanced Training Labs. Requires Academy membership. Preview advanced training labs.'
           }
@@ -139,18 +145,18 @@ export function AudioLearningScreen({ navigation }: Props) {
                 <Text style={styles.cardTitle}>Advanced Training Labs</Text>
                 <View style={[styles.badge, styles.badgeMember]}>
                   <Text style={styles.badgeMemberText}>
-                    {isMember ? 'ACADEMY MEMBERSHIP' : '🔒 ACADEMY MEMBERSHIP'}
+                    {!locked ? 'ACADEMY MEMBERSHIP' : '🔒 ACADEMY MEMBERSHIP'}
                   </Text>
                 </View>
               </View>
             </View>
             <Text style={styles.cardDesc}>{TRAIN_DESC}</Text>
             {/* Free users PREVIEW → green (they can look); Academy members OPEN → purple (matches the card). */}
-            <View style={[styles.cta, isMember ? styles.ctaMember : styles.ctaFree]}>
-              <Text style={[styles.ctaText, isMember ? styles.ctaTextMember : styles.ctaTextFree]}>
-                {isMember ? 'EXPLORE ADVANCED LABS' : 'PREVIEW ADVANCED LABS'}
+            <View style={[styles.cta, !locked ? styles.ctaMember : styles.ctaFree]}>
+              <Text style={[styles.ctaText, !locked ? styles.ctaTextMember : styles.ctaTextFree]}>
+                {!locked ? 'EXPLORE ADVANCED LABS' : 'PREVIEW ADVANCED LABS'}
               </Text>
-              <Text style={[styles.ctaChevron, isMember ? styles.ctaTextMember : styles.ctaTextFree]}>›</Text>
+              <Text style={[styles.ctaChevron, !locked ? styles.ctaTextMember : styles.ctaTextFree]}>›</Text>
             </View>
           </ImageBackground>
         </Pressable>

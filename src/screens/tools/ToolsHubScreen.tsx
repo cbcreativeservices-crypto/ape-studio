@@ -795,7 +795,7 @@ const ToolTile = memo(function ToolTile({
 
 export function ToolsHubScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
-  const { isMember } = useEntitlement();
+  const { isMember, resolved } = useEntitlement();
   // ONE shared mic/DSP session + tick for the live tile previews (owner
   // 2026-08-19). Auto-starts on entry (OS permission prompt on first visit),
   // force-stops on blur/background, resumes on return; 'denied' rests the live
@@ -992,6 +992,12 @@ export function ToolsHubScreen({ navigation }: Props) {
             </View>
           </View>
 
+          {/* Member-gated block — held until `resolved` so a real member never
+              sees the 🔒 locked rows flash before the first entitlement read
+              lands (M6 first-paint guard; launch audit 2026-09-09). It pops in a
+              beat later with the correct lock state rather than mis-gating. */}
+          {resolved && (
+          <>
           {/* Saved Measurement Library — Academy-only (owner 2026-08-05). Free
               accounts see it grayed + locked; a tap routes to the Paywall. */}
           <Pressable
@@ -1038,6 +1044,8 @@ export function ToolsHubScreen({ navigation }: Props) {
               </View>
               {!isMember && <Text style={styles.lockedNote}>🔒 Academy membership required.</Text>}
             </>
+          )}
+          </>
           )}
         </ScrollView>
       </View>
