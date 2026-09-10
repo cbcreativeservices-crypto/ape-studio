@@ -3,10 +3,16 @@
 > **UPDATE 2026-09-10:** the A-1/A-2 CRITICAL/HIGH RLS blocker is **FULLY CLOSED** —
 > owner applied the write-lockdown migration, all four `own_*` policies verified live
 > as `SELECT`, AND the legit study→quiz→credential journey was device-verified to
-> still award normally. The original verdict below was NOT RELEASE READY *because of
-> A-1*. The **only remaining release-gate is E-3** (confirm `EXPO_PUBLIC_SUPABASE_*`
-> are set as EAS production env vars). With E-3 confirmed, this is **RELEASE READY
-> WITH ACCEPTED RISKS** — no CRITICAL remains; everything else is should-fix/defer.
+> still award normally. **E-3 is also cleared** — `eas env:list --environment
+> production` confirms `EXPO_PUBLIC_SUPABASE_URL` + `EXPO_PUBLIC_SUPABASE_ANON_KEY`
+> are set for the production build.
+>
+> **REVISED VERDICT: RELEASE READY WITH ACCEPTED RISKS.** No CRITICAL or release-gate
+> remains. The should-fix MEDs (A-3 get_scenario_items anon, E-1/E-2 deep-link reach,
+> B-2 program-electives, D-1 re-auth nav, D-2 splash hang, D-3 offline error copy,
+> D-6 reset-email template) and the LOWs are accepted risks to triage post-launch or
+> in the next pass — none blocks release. The original NOT-RELEASE-READY verdict
+> below stands only as the pre-fix record.
 
 Synthesis of Waves A–E (this overnight run) against the plan
 `docs/APE_RELEASE_READINESS_QA_PLAN_2026_09_10.md`, reconciled to what ape-studio

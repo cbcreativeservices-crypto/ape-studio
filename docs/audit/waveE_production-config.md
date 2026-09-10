@@ -26,6 +26,12 @@ and no associatedDomains (iOS), a `…/topics/<slug>` link opens the app on **ne
 platform. **Action:** add a `/topics` pathPrefix to the Android intent filters (and
 include `/topics` in the iOS AASA) — fold into the deep-link task.
 
+### E-3 ✅ VERIFIED 2026-09-10 — production EAS env vars ARE set
+`eas env:list --environment production` (as cbcreativeservices) confirms BOTH
+`EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_ANON_KEY` (the `sb_publishable_`
+anon key) are set for the production environment — a cloud production build will
+reach Supabase. Release-gate CLEARED. (Original finding retained below.)
+
 ### E-3 [MED · verify][build] Production EAS build env vars not visible in-repo
 `eas.json` production profile has **no `env` block**, and `.env` is git-ignored
 (Wave A). `EXPO_PUBLIC_SUPABASE_URL` / `EXPO_PUBLIC_SUPABASE_ANON_KEY` are inlined
