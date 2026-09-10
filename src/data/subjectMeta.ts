@@ -115,6 +115,21 @@ export const SUBJECT_META: Record<string, SubjectMeta> = {
   },
 };
 
+const EMPTY: SubjectMeta = { description: '', careers: '' };
+
+/**
+ * Ratification gate (owner 2026-09-09). The copy in SUBJECT_META is first-pass
+ * PLACEHOLDER text keyed to the RETIRED v2 subject names, so it must not be
+ * shown to users until the owner ratifies it (ratified-copy rule). While this
+ * is false, `subjectMeta()` returns empty strings and the Curriculum tree —
+ * which already null-guards both rows — shows no description/careers at all.
+ *
+ * To turn it back on: review/replace the copy, re-key the map to the LIVE v3
+ * subject names (so every v3 subject matches), then set this to true.
+ */
+export const SUBJECT_META_RATIFIED = false;
+
 export function subjectMeta(name: string): SubjectMeta {
-  return SUBJECT_META[name] ?? { description: '', careers: '' };
+  if (!SUBJECT_META_RATIFIED) return EMPTY;
+  return SUBJECT_META[name] ?? EMPTY;
 }
