@@ -54,13 +54,11 @@ export function SingleDeviceGuard() {
       }
     };
 
-    // Near-real-time enforcement (owner 2026-09-10): while the app is in the
-    // FOREGROUND, poll every POLL_MS so a displaced device signs out within a few
-    // seconds of the account being claimed elsewhere — not only on the next
-    // foreground. Polling stops in the background (no battery/network drain; iOS
-    // suspends timers there anyway) and resumes + checks immediately on return.
-    // (TRUE instant push would need a Supabase Realtime subscription on
-    // active_device + an own-row SELECT RLS policy — deferred, backend-frozen.)
+    // FALLBACK poll (owner 2026-09-10): while FOREGROUNDED, poll every POLL_MS so
+    // a displaced device still signs out even if realtime is unavailable/dropped.
+    // Realtime (below) carries the instant case; this is the backstop. Polling
+    // stops in the background (no battery/network drain; iOS suspends timers there
+    // anyway) and resumes + checks immediately on return.
     let poll: ReturnType<typeof setInterval> | undefined;
     const startPolling = () => {
       if (poll) return;
@@ -83,10 +81,26 @@ export function SingleDeviceGuard() {
         stopPolling();
       }
     });
+
+    // TRUE REALTIME (owner 2026-09-10; APE_ACTIVE_DEVICE_REALTIME_2026_09_10.SQL
+    // applied): subscribe to our OWN active_device row (RLS-scoped delivery). Any
+    // change means another device may have claimed → re-run the same vetted
+    // check() so a displaced device signs out within ~1s instead of waiting for
+    // the poll. Reuses check() so realtime + poll share one sign-out path.
+    const channel = supabase
+      .channel('active_device_watch')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'active_device' },
+        () => void check(),
+      )
+      .subscribe();
+
     return () => {
       alive = false;
       stopPolling();
       sub.remove();
+      void supabase.removeChannel(channel);
     };
   }, []);
 
