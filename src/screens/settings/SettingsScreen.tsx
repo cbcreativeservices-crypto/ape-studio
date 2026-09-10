@@ -82,7 +82,7 @@ export function SettingsScreen({ navigation }: Props) {
 
   // Access / promo code redemption (owner 2026-08-21) — for users who already
   // have an account (e.g. an influencer comped after signing up free).
-  const { entitlement, refreshEntitlement } = useEntitlement();
+  const { entitlement, refreshEntitlement, resolved } = useEntitlement();
   const [redeemOpen, setRedeemOpen] = useState(false);
   const [redeemCode, setRedeemCode] = useState('');
   const [redeemBusy, setRedeemBusy] = useState(false);
@@ -560,14 +560,17 @@ export function SettingsScreen({ navigation }: Props) {
 
         {/* MEMBERSHIP — redeem an access / promo code (owner 2026-08-21): comp
             accounts, bulk seats, event offers. Available to any signed-in user. */}
+        {/* M6 (2026-09-07): keep the first paint NEUTRAL until the server
+            entitlement read resolves — otherwise a signed-in member briefly saw
+            "GUEST — NO ACCOUNT" on every launch. */}
         <SettingsSection
           title="MEMBERSHIP"
-          summary={isMember ? 'ACADEMY' : entitlement === 'lapsed' ? 'LAPSED' : isGuest ? 'GUEST' : 'FREE'}
+          summary={!resolved ? '…' : isMember ? 'ACADEMY' : entitlement === 'lapsed' ? 'LAPSED' : isGuest ? 'GUEST' : 'FREE'}
         >
           <View style={[styles.row, styles.rowBorder]}>
             <Text style={styles.rowLabel}>Status</Text>
             <Text style={[styles.mono, { color: isMember ? colors.green : colors.textSubAlt }]}>
-              {isMember ? 'ACADEMY — ACTIVE' : entitlement === 'lapsed' ? 'LAPSED' : isGuest ? 'GUEST — NO ACCOUNT' : 'FREE'}
+              {!resolved ? 'CHECKING…' : isMember ? 'ACADEMY — ACTIVE' : entitlement === 'lapsed' ? 'LAPSED' : isGuest ? 'GUEST — NO ACCOUNT' : 'FREE'}
             </Text>
           </View>
           <Pressable

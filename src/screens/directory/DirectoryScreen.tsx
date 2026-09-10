@@ -187,6 +187,17 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
               Your verification QR appears here once your account finishes setting up.
             </Text>
           )}
+          {/* M18 (2026-09-07): registered users had NO way into the community
+              directory (the only CTA was dead in the guest branch). Give them a
+              working button here. */}
+          <Pressable
+            style={styles.registryBtn}
+            onPress={() => (navigation as any).navigate('AudioCommunityDirectory')}
+            accessibilityRole="button"
+            accessibilityLabel="Set up my community directory profile"
+          >
+            <Text style={styles.registryBtnText}>SET UP MY PROFILE ›</Text>
+          </Pressable>
         </View>
       ) : (
         // NOT REGISTERED — CTA + button on the left, QR square on the right.
@@ -197,13 +208,13 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
               you get a page you can hand to an employer by link or QR, showing your name, what you
               work in, and every certificate you have earned.
             </Text>
+            {/* M18 (2026-09-07): this branch only renders when !hasAccount, so the
+                old `hasAccount ? navigate : setAcctNote` ternary was always the
+                second arm — a guest sets the account note; the registered CTA
+                lives in the registryBoxCol branch below. */}
             <Pressable
               style={styles.registryBtn}
-              onPress={() =>
-                hasAccount
-                  ? (navigation as any).navigate('AudioCommunityDirectory')
-                  : setAcctNote(true)
-              }
+              onPress={() => setAcctNote(true)}
               accessibilityRole="button"
               accessibilityLabel="Set up my profile"
             >

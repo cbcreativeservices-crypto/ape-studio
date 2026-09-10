@@ -50,12 +50,17 @@ function fmtLockout(iso: string | null): string | null {
 }
 
 export function FinalExamResultScreen({ navigation, route }: Props) {
-  const { result, awardName } = route.params;
+  const { result, awardName, awardType, awardId } = route.params;
   const insets = useSafeAreaInsets();
 
   const copy = COPY[result.outcome] ?? COPY.no_pass;
   const lockout = useMemo(() => fmtLockout(result.lockout_until), [result.lockout_until]);
   const graded = result.outcome === 'pass' || result.outcome === 'no_pass';
+  // M13 (2026-09-07): no_pass / timed_out invite a retake in the copy, but the
+  // only control was Done. Offer an explicit Retake that relaunches the exam
+  // (voided stays lockout-gated; pass has nothing to retake). Replaces the
+  // result so the finished attempt doesn't linger beneath the fresh one.
+  const canRetake = result.outcome === 'no_pass' || result.outcome === 'timed_out';
 
   // A newly issued credential is the strongest success moment in the app —
   // store-review eligibility counter (launch readiness, 2026-09-06). It only
@@ -103,6 +108,13 @@ export function FinalExamResultScreen({ navigation, route }: Props) {
         )}
 
         <View style={styles.actions}>
+          {canRetake && (
+            <StudioButton
+              label="Retake Final Exam"
+              variant="success"
+              onPress={() => (navigation as any).replace('FinalExam', { awardType, awardId, awardName })}
+            />
+          )}
           <StudioButton
             label="Done"
             variant={result.outcome === 'pass' ? 'success' : 'secondary'}
@@ -172,5 +184,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   lockout: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSubAlt, marginTop: 4 },
-  actions: { width: 220, marginTop: 18 },
+  actions: { width: 220, marginTop: 18, gap: 12 },
 });

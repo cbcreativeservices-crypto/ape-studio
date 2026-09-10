@@ -98,10 +98,14 @@ export type RootStackParamList = {
     awardId: string;
     awardName: string;
   };
-  /** Final Exam result — renders submit_final_exam's payload verbatim. */
+  /** Final Exam result — renders submit_final_exam's payload verbatim.
+   *  Carries the award identity so a no_pass/timed_out result can offer an
+   *  immediate Retake back into FinalExam (M13, 2026-09-07). */
   FinalExamResult: {
     result: import('../features/finalExam/api').ExamResult;
     awardName: string;
+    awardType: import('../features/finalExam/api').AwardType;
+    awardId: string;
   };
   Settings: undefined; // S11 — modal, bottom nav hidden
   /** Weekly misunderstood-concept card, opened from a push tap. */

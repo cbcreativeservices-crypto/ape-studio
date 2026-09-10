@@ -90,6 +90,11 @@ export function AudioCommunityDirectoryScreen() {
 function MemberSheet({ token, onClose }: { token: string | null; onClose: () => void }) {
   const [data, setData] = useState<{ profile: PublicProfile; credentials: PublicCredential[] } | null>(null);
   const [busy, setBusy] = useState(false);
+  // M19 (2026-09-07): distinguish "loaded but null" (not-found / error) from
+  // "still loading" — fetchPublicProfile resolves null on both, so the old
+  // `busy || !p` guard span "Loading profile…" forever on a failed/missing load.
+  const [settled, setSettled] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
   const [err, setErr] = useState<string | null>(null);
   const [contactOpen, setContactOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
@@ -103,18 +108,21 @@ function MemberSheet({ token, onClose }: { token: string | null; onClose: () => 
       setData(null);
       setSent(false);
       setErr(null);
+      setSettled(false);
       return;
     }
     setBusy(true);
+    setSettled(false);
     void fetchPublicProfile(token).then((d) => {
       if (!alive) return;
       setData(d);
       setBusy(false);
+      setSettled(true);
     });
     return () => {
       alive = false;
     };
-  }, [token]);
+  }, [token, reloadKey]);
 
   if (!token) return null;
 
@@ -138,8 +146,13 @@ function MemberSheet({ token, onClose }: { token: string | null; onClose: () => 
             </Pressable>
           </View>
 
-          {busy || !p ? (
+          {busy || !settled ? (
             <Loading label="Loading profile…" />
+          ) : !p ? (
+            <View style={{ gap: 14, paddingVertical: 8 }}>
+              <Banner tone="warn">This profile couldn’t be loaded. It may have been removed, or your connection dropped.</Banner>
+              <PrimaryButton label="Retry" onPress={() => setReloadKey((k) => k + 1)} />
+            </View>
           ) : (
             <>
               {err ? <Banner tone="warn">{err}</Banner> : null}

@@ -131,7 +131,7 @@ export function FinalExamScreen({ navigation, route }: Props) {
         // session hand-off. Replacing swaps the just-finished exam for the
         // result, leaving the originating AwardProgress beneath, so Done / back
         // returns there (the award's progress, now showing the credential).
-        (navigation as any).replace('FinalExamResult', { result, awardName });
+        (navigation as any).replace('FinalExamResult', { result, awardName, awardType, awardId });
       } catch (e) {
         if (/network|fetch/i.test((e as Error).message)) {
           await enqueueExamSubmission({ ...args, awardType, awardId });

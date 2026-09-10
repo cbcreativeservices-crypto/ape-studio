@@ -38,7 +38,6 @@ import { CardArt } from '../../components/CardArt';
 import { StudioButton } from '../../components/StudioButton';
 import { SwitchButton } from '../../components/SwitchButton';
 import { supabase } from '../../lib/supabase';
-import { markIntentionalSignOut } from '../../features/auth/intentionalSignOut';
 import { SUPABASE_URL } from '../../lib/env';
 import { colors, fonts } from '../../theme/tokens';
 import { setLastCourse } from '../../features/dashboard/api';
@@ -46,10 +45,8 @@ import { confirmDialog, notify } from '../../lib/confirm';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { UpgradeSheet } from '../../features/commercial/UpgradeSheet';
 import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
-import { getPublicCatalog, freeTopicsFrom } from '../../data/publicCourses';
-import { MATRIX_SUBJECTS } from '../../data/courseTopicMatrix';
 import { SPECIALIZED_CERTIFICATES } from '../awards/awardsData';
-import { fetchV3Certs, fetchV3Programs } from '../../data/v3Curriculum';
+import { fetchV3Certs, fetchV3Curriculum, fetchV3Programs } from '../../data/v3Curriculum';
 import { useDefaultHomeGs, useHomeBundles, useHomeGs } from '../../features/home/homeCardsStore';
 import { setBundleLoaded, useBundles } from '../../features/enrollment/enrolledBundlesStore';
 import { isFreeEnrollGs, setActiveMany } from '../../features/enrollment/enrollmentStore';
@@ -100,14 +97,6 @@ type Card =
       isPrereq: boolean;
       completed: boolean;
     };
-
-/** gs → { name, subject } for user-placed Home topic cards (user request
- *  2026-07-22). */
-const HOME_TOPIC_INDEX: Map<number, { name: string; subject: string }> = (() => {
-  const m = new Map<number, { name: string; subject: string }>();
-  for (const s of MATRIX_SUBJECTS) for (const t of s.topics) m.set(t.gs, { name: t.name, subject: s.name });
-  return m;
-})();
 
 const { width: SCREEN_W } = Dimensions.get('window');
 // Cards shrunk 7% (Booth 2026-07-15) to give the carousel vertical room — the
@@ -1021,9 +1010,14 @@ export function CourseSelectionScreen() {
   const navigation = useNavigation();
   const [cards, setCards] = useState<Card[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // M7 (2026-09-07): gs → { name, subject } from the LIVE v3 curriculum, so a
+  // member's custom Home cards show their real topic name/subject. Replaces the
+  // retired v2 MATRIX_SUBJECTS index (which returned 'this topic' + a blank
+  // subject for any v3 gs it didn't carry). officialTopicName(gs, liveName) stays
+  // the final fallback in displayDeck.
+  const [v3NameIndex, setV3NameIndex] = useState<Map<number, { name: string; subject: string }>>(new Map());
   // A persisted session with no student record / no enrollment: self-healed to
   // the public catalog, with a non-blocking banner (register or sign out).
-  const [strandedSession, setStrandedSession] = useState(false);
   const [activeIdx, setActiveIdx] = useState(0);
   const listRef = useRef<FlatList<Card>>(null);
   // CM2 — commercial mode + entitlement (mock provider; server truth later).
@@ -1047,8 +1041,15 @@ export function CourseSelectionScreen() {
 
   const load = useCallback(async () => {
     setError(null);
-    setStrandedSession(false);
     warmCardArt(); // prefetch card art up front
+    // M7 (2026-09-07): build the gs → {name, subject} index from the LIVE v3
+    // curriculum for the member Home deck. Non-fatal — a failed fetch leaves the
+    // index empty and displayDeck falls back to officialTopicName(gs).
+    void fetchV3Curriculum().then((fields) => {
+      const m = new Map<number, { name: string; subject: string }>();
+      for (const f of fields) for (const s of f.subjects) for (const t of s.topics) m.set(t.gs, { name: t.name, subject: s.subject });
+      setV3NameIndex(m);
+    });
     // A GUEST (no auth session) OR commercialMode seeds the carousel from the
     // PUBLIC catalog — [Audio Tools] [Glossary] [Lab] + free topics + courses —
     // with NO user/enrollment/progress queries. Those would throw 'user_not_found'
@@ -1062,12 +1063,11 @@ export function CourseSelectionScreen() {
     // The PUBLIC-catalog builder — used for guests/commercial mode AND as the
     // self-heal fallback when an authed load fails on a broken session.
     const buildPublicCatalog = async () => {
-      // The catalog now carries ONE course: order 1, Pro Audio Safety, whose
-      // single topic is already shown by the green free card below. Orders 2–9
-      // were Booth's college courses and were removed on 2026-09-03, so no
-      // course card is built from the catalog any more — it survives here only
-      // to supply the two free tasters.
-      const catalog = await getPublicCatalog();
+      // M7 Fix B (2026-09-07): the v1 getPublicCatalog()/freeTopicsFrom() call
+      // was vestigial — freeTopicsFrom ignored its argument and returned the
+      // fixed v3 tasters. The one taster the carousel shows (Pro Audio Safety,
+      // gs 3060) is now built directly from officialTopicName(3060), so the whole
+      // v1 publicCourses module is gone.
       // OWNER RULING 2026-09-03: the carousel is a MARKETING surface, not a
       // catalogue of everything the app holds. Only TOPIC cards belong here —
       // no certificate, course or programme cards. That removed the purple
@@ -1097,13 +1097,13 @@ export function CourseSelectionScreen() {
         // re-title the v1 pair needed is gone.
         // Only Pro Audio Safety from the prerequisites (owner 2026-09-05); the
         // DAW taster stays enrolled and studyable, just not on the carousel.
-        ...freeTopicsFrom(catalog).filter((ft) => ft.gs === 3060).map((ft) => ({
+        {
           kind: 'freeTopic' as const,
-          id: `free-${ft.gs}`,
-          gs: ft.gs,
-          name: ft.name,
-          courseOrder: ft.courseOrder,
-        })),
+          id: 'free-3060',
+          gs: 3060,
+          name: officialTopicName(3060),
+          courseOrder: 1,
+        },
         // A–Z topic group (empty since 2026-09-03).
         ...topicCards,
         // SHOWCASE run to the right (owner 2026-09-05): advertisements for
@@ -1115,8 +1115,8 @@ export function CourseSelectionScreen() {
     // ALWAYS builds the PUBLIC (commercial) catalog now, for guests AND signed-in
     // users, regardless of the `commercialMode` boot flag. The old authed
     // `courses` deck rendered ACADEMIC course codes/names (the reverted-names bug)
-    // and is removed. getPublicCatalog already falls back to the bundled seed on
-    // any error, so this can't blank the carousel.
+    // and is removed. buildPublicCatalog only assembles static card descriptors
+    // now (no network), so this can't blank the carousel.
     try {
       await buildPublicCatalog();
     } catch {
@@ -1163,8 +1163,8 @@ export function CourseSelectionScreen() {
         kind: 'homeTopic',
         id: `home-${gs}`,
         gs,
-        name: officialTopicName(gs, HOME_TOPIC_INDEX.get(gs)?.name),
-        subject: HOME_TOPIC_INDEX.get(gs)?.subject ?? '',
+        name: officialTopicName(gs, v3NameIndex.get(gs)?.name),
+        subject: v3NameIndex.get(gs)?.subject ?? '',
       }));
       const byKey = new Map(bundles.map((b) => [b.key, b] as const));
       const bundleCards: Card[] = homeBundleKeys
@@ -1187,7 +1187,7 @@ export function CourseSelectionScreen() {
     // per-card "my courses" star deck was removed (user request 2026-07-24);
     // Home Setup now owns course selection + default position.
     return cards;
-  }, [cards, entitlement, homeGs, homeBundleKeys, bundles]);
+  }, [cards, entitlement, homeGs, homeBundleKeys, bundles, v3NameIndex]);
 
 
   // Latest deck for the (stable) onViewableItemsChanged callback to read.
@@ -1508,37 +1508,11 @@ export function CourseSelectionScreen() {
 
       <Text style={styles.academyTitle}>Start Learning</Text>
 
-      {/* Stranded-session banner (owner 2026-08-06): shown when a persisted
-          session had no student record / no enrollment and we self-healed to
-          the public catalog. Non-blocking — the catalog is usable below. */}
-      {strandedSession ? (
-        <View style={styles.strandedBanner}>
-          <Text style={styles.strandedText}>
-            You’re signed in, but this account isn’t set up for study yet — showing the public catalog.
-            Finish registration to save progress, or sign out to switch accounts.
-          </Text>
-          <View style={styles.strandedRow}>
-            <StudioButton
-              label="Complete Registration"
-              variant="primary"
-              small
-              onPress={() => (navigation as any).navigate('Auth')}
-            />
-            <StudioButton
-              label="Sign Out"
-              variant="secondary"
-              small
-              onPress={() => {
-                markIntentionalSignOut();
-                void supabase.auth
-                  .signOut()
-                  .catch(() => {})
-                  .then(() => (navigation as any).navigate('Auth'));
-              }}
-            />
-          </View>
-        </View>
-      ) : null}
+      {/* M8 (2026-09-07): the "stranded session" recovery banner was dead code
+          (setStrandedSession was only ever called with false) and REMOVED — a
+          saved account with a missing student record must NOT be told it's
+          stranded (owner ruling 2026-09-05, see DashboardScreen); it self-heals
+          to the usable public catalog below, which is the intended behaviour. */}
 
       <FlatList
         ref={listRef}
@@ -1656,19 +1630,6 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   errorText: { fontFamily: fonts.barlowRegular, fontSize: 14, color: colors.textSub, textAlign: 'center' },
-  // Stranded-session self-heal banner.
-  strandedBanner: {
-    marginHorizontal: 16,
-    marginBottom: 6,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(255,180,0,.5)',
-    backgroundColor: 'rgba(255,180,0,.08)',
-    padding: 12,
-    gap: 10,
-  },
-  strandedText: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 19, color: colors.textSecondary },
-  strandedRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center' },
   hero: { alignItems: 'center', gap: 8, marginTop: 6, paddingHorizontal: 24 },
   // Top-left About text button — absolute so it sits in the corner without
   // pushing the centered hero down (owner 2026-08-12).

@@ -970,7 +970,10 @@ export function GlossaryScreen({ route, navigation }: Props) {
     if (settleTimer.current) clearTimeout(settleTimer.current);
   }, []);
 
-  const [filter, setFilter] = useState<Filter>('all');
+  // M16 (2026-09-07): a preset topic (opened from a Dashboard topic) must
+  // actually narrow the list — start on the 'topic' filter, not 'all', so the
+  // ~3,300-term corpus isn't shown with the Topic chip unchecked.
+  const [filter, setFilter] = useState<Filter>(presetTopicId ? 'topic' : 'all');
   const [topicPickerOpen, setTopicPickerOpen] = useState(false);
   // Member gate for the topic filter (user request 2026-07-25): free/lapsed/
   // anonymous commercial users may VIEW the topic list but not activate a topic;

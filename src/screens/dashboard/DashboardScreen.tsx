@@ -18,7 +18,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Animated,
   FlatList,
   InteractionManager,
@@ -77,6 +76,7 @@ import {
 import { getDashboardCache, setDashboardCache } from '../../features/dashboard/dashboardCache';
 import { FREE_ENROLL_GS, isFreeEnrollGs, useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { supabase } from '../../lib/supabase';
+import { notify } from '../../lib/confirm';
 import { markIntentionalSignOut } from '../../features/auth/intentionalSignOut';
 import { fetchGlossaryItemsByIds, fetchTopicItems } from '../../features/study/api';
 import { type MethodPctRow, smoothMethodPct, topicOverallPct } from '../../features/dashboard/topicPct';
@@ -692,9 +692,11 @@ export function DashboardScreen() {
     try {
       // Reconnect path (Code brief §6): flush any offline quiz submissions
       // first so the fetched progress reflects the finalized attempt.
+      // M14 (2026-09-07): notify(), not Alert.alert — RN-web's Alert is a no-op,
+      // so an offline-submitted quiz/exam result was silently lost on web.
       const replayed = await replayQuizSubmissions().catch(() => []);
       for (const { result } of replayed) {
-        Alert.alert(
+        notify(
           'Offline quiz submitted',
           `Score ${result.score}/${QUIZ_SIZE} — ${result.outcome.replace(/_/g, ' ')}.`,
         );
@@ -702,7 +704,7 @@ export function DashboardScreen() {
       const examReplayed = await replayExamSubmissions().catch(() => []);
       for (const { result } of examReplayed) {
         const awarded = result.credential_awarded ? ' Credential awarded.' : '';
-        Alert.alert(
+        notify(
           'Offline exam submitted',
           `Score ${result.score}/${result.size} — ${result.outcome.replace(/_/g, ' ')}.${awarded}`,
         );

@@ -10,8 +10,8 @@
  *
  * Rendered ONLY as page 1 of the Awards swipe pager.
  */
-import { useEffect, useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../theme/tokens';
 import { BrandLogo } from '../../components/BrandLogo';
@@ -130,23 +130,35 @@ export function CurriculumView({
   // LIVE v3 curriculum (owner 2026-08-06) — replaces the retired v2 matrix.
   const [v3Subjects, setV3Subjects] = useState<{ order: number; name: string; field: string; topics: { gs: number; name: string }[] }[]>([]);
   const [credCounts, setCredCounts] = useState<{ programs: number; certs: number }>({ programs: 0, certs: 0 });
-  useEffect(() => {
-    let alive = true;
-    void fetchV3Curriculum().then((fields: V3Field[]) => {
-      if (!alive) return;
+  // M15 (2026-09-07): distinguish a failed load from a real empty. fetchV3Curriculum
+  // swallows errors and returns [], and a real v3 curriculum is NEVER empty (171
+  // topics), so an empty result reliably means offline/failed — surface a Retry
+  // instead of a blank subject tree that reads as "nothing here".
+  const [curriculumState, setCurriculumState] = useState<'loading' | 'ready' | 'error'>('loading');
+  const loadCurriculum = useCallback(async () => {
+    setCurriculumState('loading');
+    try {
+      const fields: V3Field[] = await fetchV3Curriculum();
       let order = 0;
       const flat = fields.flatMap((f) =>
         f.subjects.map((s) => ({ order: order++, name: s.subject, field: f.field, topics: s.topics.map((t) => ({ gs: t.gs, name: t.name })) })),
       );
       setV3Subjects(flat);
-    });
+      setCurriculumState(flat.length > 0 ? 'ready' : 'error');
+    } catch {
+      setCurriculumState('error');
+    }
+  }, []);
+  useEffect(() => {
+    let alive = true;
+    void loadCurriculum();
     void Promise.all([fetchV3Programs(), fetchV3Certs()]).then(([p, c]) => {
       if (alive) setCredCounts({ programs: p.length, certs: c.length });
     });
     return () => {
       alive = false;
     };
-  }, []);
+  }, [loadCurriculum]);
 
   const allGs = useMemo(() => v3Subjects.flatMap((s) => s.topics.map((t) => t.gs)), [v3Subjects]);
   const stats = useCurriculumStats(allGs);
@@ -257,6 +269,29 @@ export function CurriculumView({
           <View style={styles.finderBtnBeta}><Text style={styles.finderBtnBetaText}>BETA</Text></View>
         </Pressable>
       </View>
+
+      {/* M15 (2026-09-07): loading / error states, distinct from a real (never-
+          occurring) empty, so a failed load offers Retry instead of a blank tree. */}
+      {curriculumState === 'loading' && subjectsAZ.length === 0 ? (
+        <View style={styles.treeStatus}>
+          <ActivityIndicator color={colors.amber} />
+          <Text style={styles.treeStatusText}>Loading the curriculum…</Text>
+        </View>
+      ) : curriculumState === 'error' ? (
+        <View style={styles.treeStatus}>
+          <Text style={styles.treeStatusText}>
+            Couldn’t load the curriculum — check your connection.
+          </Text>
+          <Pressable
+            style={styles.treeRetry}
+            onPress={() => void loadCurriculum()}
+            accessibilityRole="button"
+            accessibilityLabel="Retry loading the curriculum"
+          >
+            <Text style={styles.treeRetryText}>RETRY</Text>
+          </Pressable>
+        </View>
+      ) : null}
 
       {/* Curriculum tree — each subject expands inline. */}
       <View style={styles.tree}>
@@ -429,6 +464,10 @@ const styles = StyleSheet.create({
   // Field group header in the v3 curriculum tree (owner 2026-08-06).
   fieldHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.6, color: colors.textSub, marginTop: 10, marginBottom: 4 },
   tree: { gap: 8 },
+  treeStatus: { alignItems: 'center', gap: 12, paddingVertical: 28, paddingHorizontal: 16 },
+  treeStatusText: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 21, color: colors.textSub, textAlign: 'center' },
+  treeRetry: { borderWidth: 1, borderColor: colors.steelBorder, borderRadius: 9, paddingVertical: 10, paddingHorizontal: 28, backgroundColor: '#141414' },
+  treeRetryText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, color: colors.textSecondary },
   subjectCard: { backgroundColor: '#161616', borderWidth: 1, borderColor: '#232323', borderRadius: 9, overflow: 'hidden' },
   subjectRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 12, paddingHorizontal: 13 },
   subjectChevron: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: colors.textSub, width: 14 },

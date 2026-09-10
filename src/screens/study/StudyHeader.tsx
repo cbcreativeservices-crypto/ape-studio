@@ -16,6 +16,7 @@ export function StudyHeader({
   subtitle,
   onOpenTimer,
   hideTimerButton,
+  onBack,
 }: {
   method: MethodKey;
   title: string;
@@ -28,8 +29,13 @@ export function StudyHeader({
    *  CONTAINER (readout) is already showing, so the top icon would be a
    *  redundant second entry point (2026-07-25). */
   hideTimerButton?: boolean;
+  /** Back handler override (M10, 2026-09-07). Defaults to popTo('Dashboard');
+   *  a caller reached from a navigator with no Dashboard route (e.g. a public/
+   *  landing context) passes navigation.goBack() so RETURN isn't a no-op. */
+  onBack?: () => void;
 }) {
   const navigation = useNavigation();
+  const goBack = onBack ?? (() => (navigation as any).popTo('Dashboard'));
   return (
     <View style={styles.row}>
       {/* popTo, not navigate: under React Navigation 7 navigate() PUSHES a
@@ -37,7 +43,7 @@ export function StudyHeader({
           mounted with its StudySession timers running). popTo pops back to
           the existing Dashboard so this screen unmounts and flushes. */}
       <Pressable
-        onPress={() => (navigation as any).popTo('Dashboard')}
+        onPress={goBack}
         hitSlop={8}
         accessibilityRole="button"
         accessibilityLabel="Back to Dashboard"
@@ -67,7 +73,7 @@ export function StudyHeader({
           </Pressable>
         ) : null}
         <Pressable
-          onPress={() => (navigation as any).popTo('Dashboard')}
+          onPress={goBack}
           hitSlop={8}
           style={styles.returnBtn}
           accessibilityRole="button"
