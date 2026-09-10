@@ -80,9 +80,9 @@ friendly copy.
 ## Filed items → owner
 | ID | Sev | Action |
 | --- | --- | --- |
-| D-1 | MED | Root listener → reset to Auth on unexpected SIGNED_OUT (labs/tools have no escape today) |
-| D-2 | MED | Add a hang timeout to Splash getSession (device-verify) |
-| D-3 | MED | Shared offline-error mapper for the 5 raw `error.message` sites |
+| D-1 | MED | OPEN — root listener → reset to Auth on *unexpected* SIGNED_OUT. CAUTION: `enterGuest()` calls signOut() to establish the anon session, so the listener must skip intentional sign-outs (logout/delete/guest) via a flag, and needs a device pass across all auth flows. Not blind-applied. |
+| D-2 | MED | ✅ FIXED (f552962) — splash getSession hang guard (5s race → signed-out) |
+| D-3 | MED | ✅ FIXED (f552962) — `friendlyAuthError()` maps offline at all 5 sites |
 | D-4 | LOW | Message when create-account joins an existing account |
 | D-5 | LOW | (optional) skip the 2.5s splash replay on logout |
 | D-6 | LOW·verify | Confirm Supabase reset email template carries `{{ .Token }}` |

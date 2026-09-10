@@ -75,8 +75,8 @@ required for release.
 
 | ID | Sev | Action |
 | --- | --- | --- |
-| E-1 | MED | Add iOS `associatedDomains` (+ host AASA) if Universal Links intended — fold into deep-link task |
-| E-2 | MED | Add `/topics` to Android intent filters (+ iOS AASA) — fold into deep-link task |
+| E-1 | MED | ✅ DONE (cc1f6c8) — iOS `associatedDomains` added (apex + www). Still needs the website to host the AASA file to go live. |
+| E-2 | MED | ✅ DONE (cc1f6c8) — `/topics` added to Android intent filters (both hosts). Still needs website assetlinks.json to verify. |
 | E-3 | MED·verify | Confirm `EXPO_PUBLIC_SUPABASE_*` set as EAS env vars for the production profile — **release-gate** |
 | E-4 | LOW | (optional) wrap DspDebug/Institutional route registrations in `__DEV__` |
 
