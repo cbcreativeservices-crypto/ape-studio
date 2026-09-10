@@ -80,7 +80,8 @@ friendly copy.
 ## Filed items → owner
 | ID | Sev | Action |
 | --- | --- | --- |
-| D-1 | MED | OPEN — root listener → reset to Auth on *unexpected* SIGNED_OUT. CAUTION: `enterGuest()` calls signOut() to establish the anon session, so the listener must skip intentional sign-outs (logout/delete/guest) via a flag, and needs a device pass across all auth flows. Not blind-applied. |
+| D-1 | MED | ✅ FIXED (2e4824c) — `SessionExpiryGuard` resets to Auth on *unexpected* SIGNED_OUT; all 8 intentional sign-outs flag themselves (`intentionalSignOut.ts`) so they're skipped. Device-verified 2026-09-10: guest entry (#1), logout (#2), delete (#3) all PASS (guest still lands in-app — the key risk). |
+| — | enhancement | Single-device made near-real-time: SingleDeviceGuard now polls `get_active_device` every ~8s while foregrounded, so a displaced device signs out within seconds (was next-foreground only). True instant push deferred (needs active_device Realtime + own-row SELECT RLS; backend-frozen). |
 | D-2 | MED | ✅ FIXED (f552962) — splash getSession hang guard (5s race → signed-out) |
 | D-3 | MED | ✅ FIXED (f552962) — `friendlyAuthError()` maps offline at all 5 sites |
 | D-4 | LOW | Message when create-account joins an existing account |
