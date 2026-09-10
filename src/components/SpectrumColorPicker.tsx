@@ -134,10 +134,29 @@ export function SpectrumColorPicker({
   }
 
   const lThumb = ((light - L_MIN) / (L_MAX - L_MIN)) * barW;
+  const lightPct = Math.round(((light - L_MIN) / (L_MAX - L_MIN)) * 100);
+  const hueDeg = Math.round(hue);
+
+  // Screen-reader stepping (launch audit 2026-09-09): the wheel + slider were
+  // bare gesture Views with no role/label/value, so a non-sighted member could
+  // commit only the seed colour. `adjustable` + increment/decrement mirror the
+  // JogWheel pattern — hue steps 15°, lightness 5% of its range.
+  const stepHue = (dir: 1 | -1) => setHue((h) => (h + dir * 15 + 360) % 360);
+  const stepLight = (dir: 1 | -1) =>
+    setLight((l) => clamp(l + dir * (L_MAX - L_MIN) * 0.05, L_MIN, L_MAX));
 
   return (
     <View style={styles.wrap}>
-      <View style={{ width: SIZE, height: SIZE }} {...wheelPan.panHandlers}>
+      <View
+        style={{ width: SIZE, height: SIZE }}
+        {...wheelPan.panHandlers}
+        accessible
+        accessibilityRole="adjustable"
+        accessibilityLabel="Hue"
+        accessibilityValue={{ min: 0, max: 360, now: hueDeg, text: `${hueDeg} degrees` }}
+        accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
+        onAccessibilityAction={(e) => stepHue(e.nativeEvent.actionName === 'decrement' ? -1 : 1)}
+      >
         <Svg width={SIZE} height={SIZE}>
           {ring.map((p, i) => (
             <Path key={i} d={p.d} fill={p.fill} />
@@ -150,7 +169,16 @@ export function SpectrumColorPicker({
       </View>
 
       {/* Lightness slider: dark → pure hue → light. */}
-      <View style={{ width: barW, height: 26, marginTop: 12 }} {...barPan.panHandlers}>
+      <View
+        style={{ width: barW, height: 26, marginTop: 12 }}
+        {...barPan.panHandlers}
+        accessible
+        accessibilityRole="adjustable"
+        accessibilityLabel="Lightness"
+        accessibilityValue={{ min: 0, max: 100, now: lightPct, text: `${lightPct} percent` }}
+        accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
+        onAccessibilityAction={(e) => stepLight(e.nativeEvent.actionName === 'decrement' ? -1 : 1)}
+      >
         <Svg width={barW} height={26}>
           <Defs>
             <SvgGrad id="lgrad" x1="0" y1="0" x2="1" y2="0">

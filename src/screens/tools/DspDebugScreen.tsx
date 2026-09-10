@@ -95,7 +95,7 @@ export function DspDebugScreen({ navigation }: Props) {
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={10}>
+        <Pressable onPress={() => navigation.goBack()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹ BACK</Text>
         </Pressable>
         <Text style={styles.title}>APE-DSP · DEBUG</Text>
@@ -110,13 +110,13 @@ export function DspDebugScreen({ navigation }: Props) {
         ) : (
           <>
             <View style={styles.btnRow}>
-              <Pressable style={styles.btn} onPress={start}>
+              <Pressable style={styles.btn} onPress={start} accessibilityRole="button" accessibilityLabel="Start">
                 <Text style={styles.btnText}>START</Text>
               </Pressable>
-              <Pressable style={styles.btn} onPress={stop}>
+              <Pressable style={styles.btn} onPress={stop} accessibilityRole="button" accessibilityLabel="Stop">
                 <Text style={styles.btnText}>STOP</Text>
               </Pressable>
-              <Pressable style={styles.btn} onPress={() => ApeDsp.resetPeakHold()}>
+              <Pressable style={styles.btn} onPress={() => ApeDsp.resetPeakHold()} accessibilityRole="button" accessibilityLabel="Reset peak">
                 <Text style={styles.btnText}>RESET PEAK</Text>
               </Pressable>
             </View>

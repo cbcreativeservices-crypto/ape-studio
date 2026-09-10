@@ -151,7 +151,14 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
         onClose={() => setOpen(null)}
       >
         {open && credentialArtFor(open.slug) ? (
-          <Image source={credentialArtFor(open.slug)!} style={styles.artImg} resizeMode="contain" accessibilityIgnoresInvertColors />
+          <Image
+            source={credentialArtFor(open.slug)!}
+            style={styles.artImg}
+            resizeMode="contain"
+            accessibilityRole="image"
+            accessibilityLabel={open.name}
+            accessibilityIgnoresInvertColors
+          />
         ) : (
           <View style={styles.modalBadge}>
             <CredentialBadge kind={kind} size={180} />
