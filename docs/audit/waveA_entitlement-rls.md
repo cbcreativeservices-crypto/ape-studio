@@ -108,7 +108,18 @@ RPCs. Bundle with A-1 as one RLS patch.
 
 ## MEDIUM
 
-### A-3 [MED][content-exposure] `get_scenario_items` is anon-executable
+### A-3 [ACCEPTED RISK — owner ruling 2026-09-10][content-exposure] `get_scenario_items` is anon-executable
+**OWNER RULING 2026-09-10: scenarios are NOT member-only.** Free users can fully
+complete the free topics (Pro Audio Safety + DAW) and must reach those topics'
+scenarios, so scenario access stays open — no revoke. Accepted risk: the function
+has no per-topic entitlement check, so an anon/free caller can also pull a
+paid-topic's scenario practice items (incl. the shown answer/explanation). Low
+sensitivity (practice content, not the graded exam; answers are shown in the
+exercise anyway). NOT fixed. If ever desired, the proper hardening is a per-topic
+entitlement gate inside the function (free topics open to all; paid topics require
+membership) — NOT a blanket revoke, which would break free/guest access to the
+free-topic scenarios. Original analysis retained:
+
 `get_scenario_items(p_achievement_id uuid)` is SECURITY DEFINER and granted
 EXECUTE to `anon`, so a non-authenticated caller can fetch scenario-homework items
 for any topic id. If scenario content is intended members-only, this leaks paid

@@ -38,7 +38,14 @@ was clamped). **Fix (commit baa7efb):** denominator is now the live v3 topic cou
 
 ## FILED — owner / server
 
-### B-2 [MED][client/server divergence] Program-with-electives progress under-reports
+### B-2 [LOW — latent, not live 2026-09-10][client/server divergence] Program-with-electives progress under-reports
+**UPDATE 2026-09-10: downgraded to LATENT.** Verified all 37 active programs have
+**zero** elective topics, so `award_complete`'s "all topics" rule currently equals
+the elective rule — no live divergence. Drafted + verified the aligning SQL
+(`docs/APE_B2_AWARD_COMPLETE_ELECTIVES_2026_09_10.SQL`, a CREATE OR REPLACE of
+`award_complete` only — no signature change, no client change needed). Hold it
+until a program is actually given electives. Original analysis retained:
+
 `award_required_topics(program, id)` returns **all** `program_topics` (electives
 included) + standing co-reqs (verified: the program arm has no `is_elective`
 filter). The client's `allComplete = completeCount === totalCount`
