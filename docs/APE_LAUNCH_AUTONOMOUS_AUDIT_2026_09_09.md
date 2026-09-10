@@ -160,7 +160,7 @@ content-fetch screens — the boot hangs and the launch-blocking items are fixed
 7. ◑ PARTIAL — CODE FIXES DONE, OWNER ITEMS OUTSTANDING:
    - ✅ DONE (588d88e): FinalExam result no longer strands on Splash — `replace` instead of `popToTop`; Done/back returns to the originating AwardProgress.
    - ✅ DONE (c49d983): SpectrumColorPicker a11y (hue wheel + lightness slider now `adjustable` w/ label/value/step actions — fixes ColorWheelButton/LedColorPicker/waveform popup too); + DspDebug button roles + CredentialWall cert-image label.
-   - ✅ VERIFIED: calc weekly-cap SQL — `calc_consume`/`calc_usage_status` + `calc_usage` table ARE deployed, BUT server `v_limit := 10`, while the client constant + `docs/APE_CALC_WEEKLY_LIMIT_5_2026_09_01.SQL` intend **5**. The 5/week migration was NOT applied → OWNER: apply it (or accept 10 and update `CALC_WEEKLY_LIMIT`).
+   - ✅ DONE (owner GO 2026-09-09): calc weekly-cap SQL APPLIED — migration `calc_weekly_limit_5` ran `docs/APE_CALC_WEEKLY_LIMIT_5_2026_09_01.SQL`; both `calc_consume`/`calc_usage_status` now declare `v_limit := 5` (verified live), matching the client constant. Idempotent; no `calc_usage` rows disturbed. Server was previously enforcing 10.
    - ✅ RATIFIED (owner 2026-09-09, governance RC1): compressor & RF calculator copy — both math-correct, re-ratified; re-ratification item closed.
    - ⏳ OWNER: `subjectMeta` is PLACEHOLDER + v2-keyed copy (render already null-guards unmatched subjects, so no blank-row bug) — ratify real v3-keyed copy, or ask me to hide behind a flag.
    - ⏳ OWNER/CONTRACT (not touched): dead `Directory` route (harmless alias — delete or document); `labs/eq` deep-link ambiguity + uneven lab coverage (cross-repo AASA decision).
