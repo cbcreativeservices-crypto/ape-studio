@@ -32,6 +32,15 @@ export function SingleDeviceGuard() {
       // Only meaningful for a signed-in account.
       const { data } = await supabase.auth.getSession();
       if (!data.session) return;
+      // Do NOT enforce while on the login/boot screens. A device that just signed
+      // in on the Auth screen but hasn't pressed "Continue" yet has NOT claimed
+      // itself, so it reads as "displaced" (the other device is still active) —
+      // enforcing here raced the claim popup and signed the device out before it
+      // could take over, locking the account out of a 2nd-device login (owner bug
+      // 2026-09-10). The Auth flow (claimAndProceed) owns the claim/cancel choice;
+      // the guard only enforces once the user is actually inside the app.
+      const route = navigationRef.isReady() ? navigationRef.getCurrentRoute()?.name : undefined;
+      if (!route || route === 'Auth' || route === 'Splash') return;
       if (!(await isDisplaced())) return;
       if (!alive || handling.current) return;
       handling.current = true;
