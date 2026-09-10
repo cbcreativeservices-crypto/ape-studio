@@ -12,6 +12,10 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.cbcreativeservices.apestudio",
+      "associatedDomains": [
+        "applinks:proaudiotrainingacademy.com",
+        "applinks:www.proaudiotrainingacademy.com"
+      ],
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSMicrophoneUsageDescription": "Used to measure sound levels in the measurement tools, and — only when you tap the mic — to dictate a glossary search. Audio is processed on this device and is not recorded or uploaded.",
@@ -37,6 +41,11 @@
               "scheme": "https",
               "host": "proaudiotrainingacademy.com",
               "pathPrefix": "/get"
+            },
+            {
+              "scheme": "https",
+              "host": "proaudiotrainingacademy.com",
+              "pathPrefix": "/topics"
             },
             {
               "scheme": "https",
@@ -77,6 +86,11 @@
               "scheme": "https",
               "host": "www.proaudiotrainingacademy.com",
               "pathPrefix": "/get"
+            },
+            {
+              "scheme": "https",
+              "host": "www.proaudiotrainingacademy.com",
+              "pathPrefix": "/topics"
             },
             {
               "scheme": "https",
