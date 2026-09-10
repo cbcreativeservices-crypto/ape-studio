@@ -162,7 +162,7 @@ content-fetch screens — the boot hangs and the launch-blocking items are fixed
    - ✅ DONE (c49d983): SpectrumColorPicker a11y (hue wheel + lightness slider now `adjustable` w/ label/value/step actions — fixes ColorWheelButton/LedColorPicker/waveform popup too); + DspDebug button roles + CredentialWall cert-image label.
    - ✅ DONE (owner GO 2026-09-09): calc weekly-cap SQL APPLIED — migration `calc_weekly_limit_5` ran `docs/APE_CALC_WEEKLY_LIMIT_5_2026_09_01.SQL`; both `calc_consume`/`calc_usage_status` now declare `v_limit := 5` (verified live), matching the client constant. Idempotent; no `calc_usage` rows disturbed. Server was previously enforcing 10.
    - ✅ RATIFIED (owner 2026-09-09, governance RC1): compressor & RF calculator copy — both math-correct, re-ratified; re-ratification item closed.
-   - ⏳ OWNER: `subjectMeta` is PLACEHOLDER + v2-keyed copy (render already null-guards unmatched subjects, so no blank-row bug) — ratify real v3-keyed copy, or ask me to hide behind a flag.
+   - ✅ DONE (commit f2e0804): `subjectMeta` placeholder copy now HIDDEN behind `SUBJECT_META_RATIFIED` (default false) — the Curriculum tree shows no description/careers until the owner reviews/replaces the copy, re-keys the map to v3 subject names, and flips the flag to true. Authored text retained in `src/data/subjectMeta.ts` for that pass.
    - ⏳ OWNER/CONTRACT (not touched): dead `Directory` route (harmless alias — delete or document); `labs/eq` deep-link ambiguity + uneven lab coverage (cross-repo AASA decision).
 
 All findings with file:line + fixes are in `docs/audit/wave1_*.md`, `wave2_*.md`,
