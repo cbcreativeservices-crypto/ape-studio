@@ -13,6 +13,14 @@ code's actual usage, which is conclusive for the issues raised.
 
 ---
 
+## ✅ UPDATE 2026-09-10 — A-1 + A-2 RESOLVED
+The owner applied `docs/APE_RLS_PROGRESS_WRITE_LOCKDOWN_2026_09_10.SQL`. Verified
+live: `own_achievement_progress`, `own_method_progress`, `own_badges`,
+`own_quiz_attempts` are now **`FOR SELECT`** (was `ALL`). Direct-write forge vector
+closed; writes flow only through the SECURITY-DEFINER RPCs. Remaining to fully
+close: a device re-verify that the legit study→quiz→credential journey still awards
+normally (owner-side). The findings below are retained for the record.
+
 ## Headline
 
 One **CRITICAL** release-blocker: an authenticated user can **forge any
