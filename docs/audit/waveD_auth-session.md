@@ -81,7 +81,7 @@ friendly copy.
 | ID | Sev | Action |
 | --- | --- | --- |
 | D-1 | MED | ✅ FIXED (2e4824c) — `SessionExpiryGuard` resets to Auth on *unexpected* SIGNED_OUT; all 8 intentional sign-outs flag themselves (`intentionalSignOut.ts`) so they're skipped. Device-verified 2026-09-10: guest entry (#1), logout (#2), delete (#3) all PASS (guest still lands in-app — the key risk). |
-| — | enhancement | Single-device made near-real-time: SingleDeviceGuard now polls `get_active_device` every ~8s while foregrounded, so a displaced device signs out within seconds (was next-foreground only). True instant push deferred (needs active_device Realtime + own-row SELECT RLS; backend-frozen). |
+| — | enhancement | Single-device is now TRUE REALTIME (device-verified 2026-09-10): owner applied `docs/APE_ACTIVE_DEVICE_REALTIME_2026_09_10.SQL` (own-row SELECT RLS + active_device in supabase_realtime publication, both verified live); SingleDeviceGuard subscribes to postgres_changes on its row → displaced device signs out within ~1s. An 8s foreground poll remains the fallback. |
 | D-2 | MED | ✅ FIXED (f552962) — splash getSession hang guard (5s race → signed-out) |
 | D-3 | MED | ✅ FIXED (f552962) — `friendlyAuthError()` maps offline at all 5 sites |
 | D-4 | LOW | Message when create-account joins an existing account |
