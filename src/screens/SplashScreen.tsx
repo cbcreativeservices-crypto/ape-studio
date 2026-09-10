@@ -34,8 +34,19 @@ export function SplashScreen({ navigation }: Props) {
     // app stuck on Splash forever. Default to the signed-out route instead
     // (bug audit 2026-09-09).
     const sessionP = supabase.auth.getSession().catch(() => ({ data: { session: null } }));
+    // The `.catch` handles getSession() REJECTING, but not it HANGING (never
+    // settling) — a stalled native secure-store read would leave `await sessionP`
+    // pending forever and freeze the app on Splash. Race it against a fallback so
+    // a stall defaults to the signed-out route (QA Wave D, D-2 2026-09-10).
+    let hangTimer: ReturnType<typeof setTimeout> | undefined;
+    const sessionSafe = Promise.race([
+      sessionP,
+      new Promise<{ data: { session: null } }>((resolve) => {
+        hangTimer = setTimeout(() => resolve({ data: { session: null } }), 5000);
+      }),
+    ]);
     const timer = setTimeout(async () => {
-      const { data } = await sessionP;
+      const { data } = await sessionSafe;
       if (cancelled) return;
       // Boot: session → Main (Dashboard), else → the finished login screen.
       // The pre-auth commercial Landing is still WIP, so startup does NOT route
@@ -71,6 +82,7 @@ export function SplashScreen({ navigation }: Props) {
     return () => {
       cancelled = true;
       clearTimeout(timer);
+      if (hangTimer) clearTimeout(hangTimer);
     };
   }, [navigation, logoOpacity, textOpacity]);
 

@@ -8,6 +8,21 @@
  */
 import { supabase } from '../../lib/supabase';
 
+/**
+ * Map a Supabase/JS auth error to user-facing copy (QA Wave D, D-3 2026-09-10).
+ * Offline used to surface the raw developer string "Network request failed";
+ * detect network failures and show an actionable line, pass everything else
+ * through (Supabase's own messages are already user-legible for bad creds etc.).
+ */
+function friendlyAuthError(error: { message?: string } | null | undefined): string | null {
+  if (!error) return null;
+  const m = error.message ?? '';
+  if (/network request failed|failed to fetch|network error|timed out|timeout|unable to (resolve|connect)|offline|enotfound|econnrefused|socket hang/i.test(m)) {
+    return 'You appear to be offline — reconnect and try again.';
+  }
+  return m || 'Something went wrong. Please try again.';
+}
+
 export type EnrolledCourse = {
   course_id: string;
   course_code: string;
@@ -69,12 +84,14 @@ export async function ensureSession(email: string, password: string): Promise<st
   // Email already registered → try signing in with the provided credentials.
   const signIn = await supabase.auth.signInWithPassword({ email, password });
   if (!signIn.error) return null;
-  return error.message;
+  // Surface the SIGN-IN failure (the operative one — e.g. wrong password), mapped
+  // to offline copy when it's a network error, rather than the stale signUp error.
+  return friendlyAuthError(signIn.error);
 }
 
 export async function signIn(email: string, password: string): Promise<string | null> {
   const { error } = await supabase.auth.signInWithPassword({ email, password });
-  return error ? error.message : null;
+  return friendlyAuthError(error);
 }
 
 /**
@@ -95,7 +112,7 @@ export async function signIn(email: string, password: string): Promise<string | 
  */
 export async function requestPasswordReset(email: string): Promise<string | null> {
   const { error } = await supabase.auth.resetPasswordForEmail(email);
-  return error ? error.message : null;
+  return friendlyAuthError(error);
 }
 
 /** Back-compat alias (older call sites). */
@@ -104,13 +121,13 @@ export const resetPassword = requestPasswordReset;
 /** Verify the 6-digit recovery code → recovery session. Returns error or null. */
 export async function verifyRecoveryOtp(email: string, token: string): Promise<string | null> {
   const { error } = await supabase.auth.verifyOtp({ email, token: token.trim(), type: 'recovery' });
-  return error ? error.message : null;
+  return friendlyAuthError(error);
 }
 
 /** Set a new password on the active (recovery) session. Returns error or null. */
 export async function updatePassword(newPassword: string): Promise<string | null> {
   const { error } = await supabase.auth.updateUser({ password: newPassword });
-  return error ? error.message : null;
+  return friendlyAuthError(error);
 }
 
 /** Locked validation rules (seed brief §3 S1). */
