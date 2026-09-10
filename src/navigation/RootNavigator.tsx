@@ -21,7 +21,6 @@ import { WeeklyConceptScreen } from '../screens/notifications/WeeklyConceptScree
 import { InstitutionalScreen } from '../screens/institutional/InstitutionalScreen';
 import { AboutScreen } from '../screens/about/AboutScreen';
 import { AwardsScreen } from '../screens/awards/AwardsScreen';
-import { DirectoryScreen } from '../screens/directory/DirectoryScreen';
 import { AudioCommunityDirectoryScreen } from '../screens/directory/AudioCommunityDirectoryScreen';
 import { ToolsHubScreen } from '../screens/tools/ToolsHubScreen';
 import { ToolInfoScreen } from '../screens/tools/ToolInfoScreen';
@@ -244,8 +243,9 @@ export function RootNavigator() {
       {/* Awards (Booth 2026-07-15) — Certificates/Diplomas/Hall of Fame, bottom
           nav hidden. An AREA-level destination (Dashboard ⇄ Certificates) → fade. */}
       <Stack.Screen name="Awards" component={AwardsScreen} options={NAV_FADE} />
-      {/* Directory — "Get Discovered" profile info (user request 2026-07-22) — modal. */}
-      <Stack.Screen name="Directory" component={DirectoryScreen} options={{ presentation: 'modal' }} />
+      {/* "Get Discovered" registry info is no longer a standalone route — it
+          lives as the DirectoryView page inside the Awards pager. The old
+          `Directory` modal route was unreachable and was removed 2026-09-10. */}
       {/* Audio Community Directory (spec 2026-08-31 §5). Full screen rather than
           a modal: it has three destinations of its own and a member sheet on
           top, and a modal-in-modal is the black-screen trap this codebase has

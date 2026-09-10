@@ -6,15 +6,14 @@
  * specialization certificates, verification IDs + QR codes, and a permanent,
  * shareable record for employers.
  *
- * DirectoryView is the scrollable body (embedded in the Awards pager with
- * showBrand=false, which already shows the logo up top); DirectoryScreen is the
- * standalone modal wrapper (✕ to close).
+ * DirectoryView is the scrollable body, embedded in the Awards pager with
+ * showBrand=false (the pager already shows the logo up top). The old standalone
+ * `Directory` modal route that wrapped it was unreachable and removed 2026-09-10.
  */
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../theme/tokens';
 import { BrandLogo } from '../../components/BrandLogo';
 import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
@@ -25,9 +24,6 @@ import { REGISTRY_BASE_URL } from '../../features/profile/registry';
 import { CredentialQr } from '../../components/CredentialQr';
 import { useBundles } from '../../features/enrollment/enrolledBundlesStore';
 import { useEnrollmentProgress } from '../../features/enrollment/enrollmentProgress';
-import type { RootStackParamList } from '../../navigation/types';
-
-type Props = NativeStackScreenProps<RootStackParamList, 'Directory'>;
 
 const DIRECTORY_INTRO_TITLE = 'Get Discovered';
 
@@ -82,7 +78,7 @@ function QrArt() {
 /**
  * DirectoryView — the scrollable "Get Discovered" body WITHOUT a screen header.
  * Embedded as the 4th page of the Awards pager (showBrand off — the pager shows
- * the logo up top) and by the standalone DirectoryScreen.
+ * the logo up top). `showBrand` is kept for a header-less host that needs it.
  */
 export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
   const insets = useSafeAreaInsets();
@@ -244,36 +240,7 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
   );
 }
 
-/** Standalone modal wrapper (kept for the direct route) — header + body. */
-export function DirectoryScreen({ navigation }: Props) {
-  const insets = useSafeAreaInsets();
-  return (
-    <View style={[styles.root, { paddingTop: insets.top }]}>
-      <View style={styles.headerBar}>
-        <Text accessibilityRole="header" style={styles.headerTitle}>DIRECTORY</Text>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close">
-          <Text style={styles.close}>✕</Text>
-        </Pressable>
-      </View>
-      <DirectoryView showBrand />
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.screenBg },
-  headerBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.hairlineDim,
-    backgroundColor: '#121212',
-  },
-  headerTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.4, color: colors.textPrimary },
-  close: { fontSize: 18, color: colors.textSubAlt },
   scroll: { padding: 20, gap: 16 },
 
   brandRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 4 },
