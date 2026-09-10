@@ -5,14 +5,17 @@
  * Tap → Trophy (entry=gallery). Empty: "Earn your first trophy to see it
  * here." Bottom nav visible (nested in the Achievements tab stack).
  */
-import { useCallback, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useMemo, useState } from 'react';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { colors, fonts } from '../../theme/tokens';
 import { TrophyImage } from '../../components/TrophyImage';
 import { fetchGalleryV3, type GalleryEntry } from '../../features/achievements/api';
+
+// A row item is either a trophy entry or the odd-row-padding spacer sentinel.
+type GalleryRow = GalleryEntry | '__spacer__';
 
 function BadgeDisc({ color }: { color: string }) {
   // Design: radial rings — dark core, color ring, dark band, color ring, dark rim.
@@ -46,54 +49,82 @@ export function GalleryScreen() {
     }, []),
   );
 
+  // Pad to an even length so a lone trailing card keeps its half-width (flex:1
+  // would otherwise stretch it across the row). The spacer renders nothing.
+  const SPACER = '__spacer__';
+  const data = useMemo<GalleryRow[]>(() => {
+    const list: GalleryRow[] = entries ?? [];
+    if (list.length % 2 === 1) return [...list, SPACER];
+    return list;
+  }, [entries]);
+
+  const renderItem = useCallback(
+    ({ item }: { item: GalleryRow }) => {
+      if (item === SPACER) return <View style={styles.spacer} />;
+      const e = item;
+      return (
+      <Pressable
+        accessibilityRole="button"
+        style={[styles.card, { borderColor: `${colors.amber}66`, shadowColor: colors.amber }]}
+        onPress={() =>
+          (navigation as any).navigate('Trophy', {
+            topicName: e.name,
+            achievementId: e.achievementId,
+            badgeEarned: false,
+            entrySource: 'gallery',
+          })
+        }
+      >
+        <TrophyImage
+          iconUrl={e.iconUrl}
+          size={48}
+          radius={8}
+          fallback={<BadgeDisc color={colors.amber} />}
+        />
+        <Text style={styles.cardName}>{e.name.toUpperCase()}</Text>
+        <Text style={styles.cardMeta}>
+          {e.subject} · {fmtDate(e.dateEarned)}
+        </Text>
+      </Pressable>
+      );
+    },
+    [navigation],
+  );
+
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
-      <ScrollView contentContainerStyle={styles.scroll}>
-        <View style={styles.headerRow}>
-          <Pressable
-            onPress={() => (navigation as any).goBack()}
-            hitSlop={10}
-            accessibilityRole="button"
-            accessibilityLabel="Back"
-            style={styles.backBtn}
-          >
-            <Text style={styles.back}>‹</Text>
-          </Pressable>
-          <Text style={styles.title}>YOUR GALLERY</Text>
-        </View>
-
-        {entries && entries.length === 0 && (
-          <Text style={styles.empty}>Earn your first trophy to see it here.</Text>
-        )}
-
-        <View style={styles.grid}>
-          {(entries ?? []).map((e) => (
-            <Pressable accessibilityRole="button"
-              key={e.achievementId}
-              style={[styles.card, { borderColor: `${colors.amber}66`, shadowColor: colors.amber }]}
-              onPress={() =>
-                (navigation as any).navigate('Trophy', {
-                  topicName: e.name,
-                  achievementId: e.achievementId,
-                  badgeEarned: false,
-                  entrySource: 'gallery',
-                })
-              }
+      <FlatList
+        data={data}
+        keyExtractor={(item, i) => (item === SPACER ? `spacer-${i}` : item.achievementId)}
+        renderItem={renderItem}
+        numColumns={2}
+        columnWrapperStyle={styles.row}
+        contentContainerStyle={styles.scroll}
+        // Windowing: keep memory bounded when a user has earned many trophies.
+        initialNumToRender={10}
+        maxToRenderPerBatch={10}
+        windowSize={7}
+        removeClippedSubviews
+        ListHeaderComponent={
+          <View style={styles.headerRow}>
+            <Pressable
+              onPress={() => (navigation as any).goBack()}
+              hitSlop={10}
+              accessibilityRole="button"
+              accessibilityLabel="Back"
+              style={styles.backBtn}
             >
-              <TrophyImage
-                iconUrl={e.iconUrl}
-                size={48}
-                radius={8}
-                fallback={<BadgeDisc color={colors.amber} />}
-              />
-              <Text style={styles.cardName}>{e.name.toUpperCase()}</Text>
-              <Text style={styles.cardMeta}>
-                {e.subject} · {fmtDate(e.dateEarned)}
-              </Text>
+              <Text style={styles.back}>‹</Text>
             </Pressable>
-          ))}
-        </View>
-      </ScrollView>
+            <Text style={styles.title}>YOUR GALLERY</Text>
+          </View>
+        }
+        ListEmptyComponent={
+          entries && entries.length === 0 ? (
+            <Text style={styles.empty}>Earn your first trophy to see it here.</Text>
+          ) : null
+        }
+      />
     </View>
   );
 }
@@ -106,9 +137,10 @@ const styles = StyleSheet.create({
   back: { fontFamily: fonts.oswaldSemiBold, fontSize: 28, lineHeight: 28, color: colors.textSub, marginRight: -2 },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, letterSpacing: 1.4, color: colors.textPrimary },
   empty: { fontFamily: fonts.barlowRegular, fontSize: 14, color: colors.textSub, marginTop: 8 },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+  row: { gap: 12 },
+  spacer: { flex: 1 },
   card: {
-    width: '48%',
+    flex: 1,
     backgroundColor: '#181818',
     borderWidth: 1,
     borderRadius: 10,
