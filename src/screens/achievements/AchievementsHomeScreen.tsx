@@ -16,6 +16,7 @@ import { useFocusEffect, useNavigation, useRoute, type RouteProp } from '@react-
 import type { AchievementsStackParamList } from '../../navigation/types';
 import { colors, fonts } from '../../theme/tokens';
 import { TrophyImage } from '../../components/TrophyImage';
+import { StudioButton } from '../../components/StudioButton';
 import { CredentialBadge, type CredentialKind } from '../../components/CredentialBadge';
 import { fetchAchievementsHub, type HubData } from '../../features/achievements/api';
 
@@ -54,14 +55,19 @@ export function AchievementsHomeScreen() {
   const route = useRoute<RouteProp<AchievementsStackParamList, 'AchievementsHome'>>();
   const cameFromProfile = route.params?.from === 'profile';
   const [hub, setHub] = useState<HubData | null>(null);
+  // Distinguish a failed fetch (offline/blip) from a genuinely empty trophy
+  // case: a rejection used to leave all three strips in a permanent skeleton
+  // with no error and no retry (launch audit 2026-09-09).
+  const [error, setError] = useState(false);
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchAchievementsHub()
-        .then(setHub)
-        .catch(() => setHub(null));
-    }, []),
-  );
+  const load = useCallback(() => {
+    setError(false);
+    fetchAchievementsHub()
+      .then(setHub)
+      .catch(() => setError(true)); // keep any hub already on screen; surface the error only when there's none
+  }, []);
+
+  useFocusEffect(useCallback(() => load(), [load]));
 
   const t = hub?.topics;
   const c = hub?.certificates;
@@ -88,6 +94,17 @@ export function AchievementsHomeScreen() {
           <Text style={styles.title}>TROPHY CASE</Text>
         </View>
 
+        {error && !hub ? (
+          <View style={styles.errorCard}>
+            <Text style={styles.errorText}>
+              Couldn’t load your trophies — check your connection.
+            </Text>
+            <View style={{ width: 180 }}>
+              <StudioButton label="Retry" variant="secondary" small onPress={load} />
+            </View>
+          </View>
+        ) : (
+        <>
         {/* TOPICS */}
         <Pressable
           style={({ pressed }) => [styles.card, { borderColor: `${colors.amber}44` }, pressed && styles.cardPressed]}
@@ -153,6 +170,8 @@ export function AchievementsHomeScreen() {
             ))}
           </RecentStrip>
         </Pressable>
+        </>
+        )}
       </ScrollView>
     </View>
   );
@@ -215,4 +234,14 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   emptyText: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.textSub, flex: 1 },
+  errorCard: {
+    backgroundColor: '#161616',
+    borderWidth: 1,
+    borderColor: colors.hairlineDim,
+    borderRadius: 12,
+    padding: 20,
+    gap: 14,
+    alignItems: 'center',
+  },
+  errorText: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 21, color: colors.textSub, textAlign: 'center' },
 });

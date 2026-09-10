@@ -18,6 +18,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { CredentialBadge, type CredentialKind } from '../../components/CredentialBadge';
 import { ProgressRing } from '../../components/ProgressRing';
+import { StudioButton } from '../../components/StudioButton';
 import { TrophyModal } from '../../components/TrophyModal';
 import { credentialArtFor } from '../../features/credentials/credentialArt';
 import { exportCertificate } from '../../features/credentials/certificatePdf';
@@ -49,13 +50,18 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
   const [open, setOpen] = useState<EarnedCredentialRow | null>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  // Distinguish a failed fetch from a genuinely empty wall: a rejection used to
+  // collapse into "COMING SOON — none available yet" / a stuck waiting slot,
+  // reporting "you're offline" as "these don't exist" (launch audit 2026-09-09).
+  const [failed, setFailed] = useState(false);
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchEarnedCredentialsByType(kind).then(setRows).catch(() => setRows([]));
-      fetchNearestCredential(kind).then(setNearest).catch(() => setNearest(null));
-    }, [kind]),
-  );
+  const load = useCallback(() => {
+    setFailed(false);
+    fetchEarnedCredentialsByType(kind).then(setRows).catch(() => setFailed(true));
+    fetchNearestCredential(kind).then(setNearest).catch(() => setFailed(true));
+  }, [kind]);
+
+  useFocusEffect(useCallback(() => load(), [load]));
 
   const download = useCallback(async () => {
     if (!open) return;
@@ -86,11 +92,22 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
 
         {message ? <Text style={styles.message}>{message}</Text> : null}
 
-        {/* The leading "waiting slot" — always first. */}
-        <WaitingSlot kind={kind} noun={noun} accent={accent} result={nearest} navigation={navigation} guest={guest} />
+        {failed && (!rows || rows.length === 0) ? (
+          <View style={styles.errorCard}>
+            <Text style={styles.errorText}>
+              Couldn’t load your {noun}s — check your connection.
+            </Text>
+            <View style={{ width: 180 }}>
+              <StudioButton label="Retry" variant="secondary" small onPress={load} />
+            </View>
+          </View>
+        ) : (
+          <>
+            {/* The leading "waiting slot" — always first. */}
+            <WaitingSlot kind={kind} noun={noun} accent={accent} result={nearest} navigation={navigation} guest={guest} />
 
-        {/* Earned credentials — newest first. Image only appears here. */}
-        {(rows ?? []).map((c) => {
+            {/* Earned credentials — newest first. Image only appears here. */}
+            {(rows ?? []).map((c) => {
           const art = credentialArtFor(c.slug);
           return (
             <Pressable
@@ -119,7 +136,9 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
               <Text style={styles.chevron}>›</Text>
             </Pressable>
           );
-        })}
+            })}
+          </>
+        )}
       </ScrollView>
 
       <TrophyModal
@@ -229,6 +248,16 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   counter: { fontFamily: fonts.mono, fontSize: 13, textShadowRadius: 6, textShadowOffset: { width: 0, height: 0 } },
   message: { fontFamily: fonts.barlowMedium, fontSize: 13, color: colors.amber },
+  errorCard: {
+    backgroundColor: '#161616',
+    borderWidth: 1,
+    borderColor: colors.hairlineDim,
+    borderRadius: 12,
+    padding: 20,
+    gap: 14,
+    alignItems: 'center',
+  },
+  errorText: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 21, color: colors.textSub, textAlign: 'center' },
   row: {
     flexDirection: 'row',
     alignItems: 'center',

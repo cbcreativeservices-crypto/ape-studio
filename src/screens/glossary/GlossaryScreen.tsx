@@ -29,6 +29,7 @@ import type { GlossaryShareTerm } from '../../features/glossary/glossaryShare';
 import { LowLightDim } from '../../features/settings/LowLightLayer';
 import { BookmarkIcon, HoldHintPressable, TermSelectIcons } from '../../features/flags/TermSelectIcons';
 import { SpeakButton, stopAllSpeech } from '../../components/SpeakButton';
+import { StudioButton } from '../../components/StudioButton';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { HelpDot, useScreenHelp } from '../../features/help/ScreenHelpSheet';
 import { getBookmarks, listBookmarkContexts, toggleBookmark, toggleTermList, useBookmarks, useTermList } from '../../features/flags/flaggedStore';
@@ -900,6 +901,10 @@ export function GlossaryScreen({ route, navigation }: Props) {
   const [entries, setEntries] = useState<Entry[]>([]);
   const [topics, setTopics] = useState<TopicRef[]>([]);
   const [loading, setLoading] = useState(true);
+  // Distinguish a failed corpus fetch from an empty glossary: offline on the
+  // first open of a session used to render as "No results" with a blank count,
+  // indistinguishable from a 0-term glossary (launch audit 2026-09-09).
+  const [loadError, setLoadError] = useState(false);
   // Cached total term count (owner 2026-08-02): the corpus load pages ~21k rows
   // before visible.length can show a number, so the "N Terms" header lagged. A
   // nightly DB job (get_glossary_term_count RPC, refreshed ~1:30 AM PT) gives an
@@ -1242,6 +1247,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
       });
       (async () => {
         try {
+          if (alive) setLoadError(false);
           // Owner 2026-09-03: the `courses` fetch is gone. It read the archived
           // v1 college catalog on every Glossary mount to feed a filter chip that
           // was removed in July, and a term-chooser label that was wrong for
@@ -1271,6 +1277,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
           if (alive) setEntries(all);
         } catch (e) {
           console.warn('[glossary] load failed:', (e as Error).message);
+          if (alive) setLoadError(true);
         } finally {
           if (alive) setLoading(false);
         }
@@ -1281,6 +1288,21 @@ export function GlossaryScreen({ route, navigation }: Props) {
       };
     }, []),
   );
+
+  // Retry for the offline empty-state card. loadAllEntries() does NOT cache a
+  // rejection, so re-running it after reconnecting genuinely re-fetches.
+  const reloadCorpus = useCallback(async () => {
+    setLoadError(false);
+    setLoading(true);
+    try {
+      const all = await loadAllEntries();
+      setEntries(all);
+    } catch {
+      setLoadError(true);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   const selTopic = topics.find((t) => t.id === selTopicId) ?? null;
   // DATA ISSUE (confirmed 2026-07-18): the `achievements` table has DUPLICATE
@@ -1965,7 +1987,18 @@ export function GlossaryScreen({ route, navigation }: Props) {
             )
           }
           ListEmptyComponent={
-            loading ? null : <Text style={styles.empty}>No results for {search.trim() || filterLabel}</Text>
+            loading ? null : loadError && entries.length === 0 ? (
+              <View style={styles.offlineCard}>
+                <Text style={styles.offlineText}>
+                  Couldn’t load the glossary — check your connection.
+                </Text>
+                <View style={{ width: 180 }}>
+                  <StudioButton label="Retry" variant="secondary" small onPress={reloadCorpus} />
+                </View>
+              </View>
+            ) : (
+              <Text style={styles.empty}>No results for {search.trim() || filterLabel}</Text>
+            )
           }
           extraData={[expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, selectMode, selectedIds, linksOn]}
           renderItem={({ item }) => {
@@ -2780,6 +2813,8 @@ const styles = StyleSheet.create({
   chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1 },
   list: { paddingBottom: 16 },
   empty: { fontFamily: fonts.barlowRegular, fontSize: 14, color: colors.textSub, paddingTop: 12 },
+  offlineCard: { alignItems: 'center', gap: 14, paddingTop: 28, paddingHorizontal: 16 },
+  offlineText: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 21, color: colors.textSub, textAlign: 'center' },
   // Loading panel (owner 2026-08-05) — shown while the corpus pages in.
   loadingBox: {
     marginTop: 64,
