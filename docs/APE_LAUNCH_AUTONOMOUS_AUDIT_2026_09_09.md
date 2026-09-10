@@ -163,3 +163,11 @@ All findings with file:line + fixes are in `docs/audit/wave1_*.md`, `wave2_*.md`
 `wave3_*.md`. Guardrails held: no builds, no publishing, no backend/DB changes,
 no secrets. Auto-applied only low-risk/high-confidence fixes; everything above is
 filed for your judgment + device verification.
+
+---
+
+## Punch-list #1 — DONE (owner GO 2026-09-09, commit ed74948)
+Re-encoded the 6 oversized bundled PNGs to sized WebP: **14.21 MB → 0.50 MB**
+(saved 13.7 MB), quality preserved, logo alpha kept. Rewired the require() sites;
+original PNGs kept as unreferenced masters (not bundled). Verified in web preview;
+tsc + 296 tests green. Takes full effect in production after the next native build.
