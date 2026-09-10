@@ -17,9 +17,10 @@ import { clearLocalAccountData, resetAllLocalStores } from './clearLocalAccountD
 import { isDisplaced } from './singleDevice';
 import { markIntentionalSignOut } from '../auth/intentionalSignOut';
 
-/** Foreground displacement-poll interval. ~8s is near-real-time without hammering
- *  the server; lower it for snappier kicks, raise it to reduce RPC traffic. */
-const POLL_MS = 8000;
+/** Foreground displacement-poll interval — now just a BACKSTOP to the realtime
+ *  subscription (which carries the instant case), so it runs slowly to reduce RPC
+ *  traffic. Raised 8s→30s once realtime went live (owner 2026-09-10). */
+const POLL_MS = 30000;
 
 export function SingleDeviceGuard() {
   const handling = useRef(false);
