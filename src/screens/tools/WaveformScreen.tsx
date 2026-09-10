@@ -50,7 +50,7 @@ import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO } from '../../features/tools/measure/types';
 import { colors, fonts } from '../../theme/tokens';
-import { useSaveGate } from './ToolLockUi';
+import { useFullScreenGate, useSaveGate } from './ToolLockUi';
 import { LandscapeRequiredNotice, useLandscapeGrace } from '../../components/LandscapeRequiredNotice';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { EngineGate } from './EngineGate';
@@ -267,6 +267,7 @@ export function WaveformScreen({ navigation }: Props) {
   useToolAutoStart(state, onStart, stop);
 
   const saveGate = useSaveGate();
+  const fsGate = useFullScreenGate();
 
   /** Save the on-screen envelope to the library (Phase 2, spec §7) —
    *  numbers only, never audio. */
@@ -660,7 +661,7 @@ export function WaveformScreen({ navigation }: Props) {
               {/* Fullscreen — to the RIGHT of the colour button (owner rev 24). */}
               <Pressable
                 style={[styles.chip, styles.chipWide]}
-                onPress={() => { setWaveFsClosing(false); setWaveFsOpen(true); }}
+                onPress={() => fsGate.gate(() => { setWaveFsClosing(false); setWaveFsOpen(true); })}
                 disabled={displayBuckets.length === 0}
                 accessibilityRole="button"
                 accessibilityLabel="Open fullscreen (landscape)"

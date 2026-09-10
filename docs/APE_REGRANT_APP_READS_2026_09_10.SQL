@@ -59,6 +59,7 @@ grant select on
   public.student_badges,
   public.student_lab_progress,
   public.calc_usage,
+  public.glossary_usage,
   public.tool_usage_log,
   public.session_logs,
   public.performance_metrics,

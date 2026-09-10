@@ -49,6 +49,34 @@ export function useSaveGate(): { locked: boolean; label: (base: string) => strin
   };
 }
 
+/** FULL-SCREEN gate (owner 2026-09-10): the immersive full-screen tool views
+ *  (Full VU, Full Gauge, fullscreen waveform, the CenterLock tuner/counter stage)
+ *  are Academy-only. A free user who taps a full-screen control gets a popup they
+ *  can dismiss (Not now) or use to go to membership (See membership → Paywall) —
+ *  they never enter the full-screen view. Gate on REAL standing (`isMember`), not
+ *  caps (house rule above). Usage: `const fs = useFullScreenGate(); ... onPress={()
+ *  => fs.gate(() => setFullOpen(true))}` — members proceed straight through. */
+export function useFullScreenGate(): { locked: boolean; gate: (proceed: () => void) => void } {
+  const locked = useToolsLocked();
+  const navigation = useNavigation();
+  return {
+    locked,
+    gate: (proceed: () => void) => {
+      if (!locked) {
+        proceed();
+        return;
+      }
+      confirmDialog(
+        MEMBERSHIP_REQUIRED,
+        'The full-screen meters and displays are an Academy feature. Membership unlocks the immersive full-screen view across every audio tool.',
+        'See membership',
+        () => (navigation as unknown as { navigate: (r: string) => void }).navigate('Paywall'),
+        { cancelText: 'Not now' },
+      );
+    },
+  };
+}
+
 /** A grayed, locked stand-in for a tool button. Looks disabled (steel/lock) but
  *  is tappable so it can route to the Paywall — matching the app's other 🔒
  *  academy controls. */

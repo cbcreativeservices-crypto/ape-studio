@@ -59,7 +59,7 @@ import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { evaluateQuality } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type SplLogPayload, type WarningFlag } from '../../features/tools/measure/types';
 import { colors, fonts } from '../../theme/tokens';
-import { useSaveGate } from './ToolLockUi';
+import { useFullScreenGate, useSaveGate } from './ToolLockUi';
 import { LandscapeRequiredNotice, useLandscapeGrace } from '../../components/LandscapeRequiredNotice';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { EngineGate } from './EngineGate';
@@ -1238,6 +1238,7 @@ export function SplMeterScreen({ navigation }: Props) {
   );
 
   const saveGate = useSaveGate();
+  const fsGate = useFullScreenGate();
   /** SAVE LOG → Saved Measurement Library (spec §7; payload = SplLogPayload). */
   const onSaveLog = useCallback(() => {
     // Academy-only save (owner ruling 2026-09-01): a locked user gets the
@@ -1411,7 +1412,7 @@ export function SplMeterScreen({ navigation }: Props) {
               {renderResponseToggle()}
               <Pressable
                 style={[styles.readoutCard, styles.readoutCardFlex]}
-                onPress={() => { setReadoutFsClosing(false); setReadoutFsOpen(true); }}
+                onPress={() => fsGate.gate(() => { setReadoutFsClosing(false); setReadoutFsOpen(true); })}
                 accessibilityRole="button"
                 // The label REPLACES the child text for a screen reader, so it
                 // has to carry the reading itself — otherwise the one thing
@@ -1664,7 +1665,7 @@ export function SplMeterScreen({ navigation }: Props) {
                       // below it. Same open path, so the rotation and closing
                       // choreography are identical.
                       <Pressable
-                        onPress={() => { setVuFsClosing(false); setVuFsOpen(true); }}
+                        onPress={() => fsGate.gate(() => { setVuFsClosing(false); setVuFsOpen(true); })}
                         accessibilityRole="button"
                         accessibilityLabel="Open the full VU screen in landscape"
                       >
@@ -1688,7 +1689,7 @@ export function SplMeterScreen({ navigation }: Props) {
                     // Paused (unmounted) while its own fullscreen covers it, so
                     // two copies of the meter engine never run at once.
                     <Pressable
-                      onPress={() => setLedFsOpen(true)}
+                      onPress={() => fsGate.gate(() => setLedFsOpen(true))}
                       accessibilityRole="button"
                       accessibilityLabel="Open the fullscreen LED meter"
                     >
@@ -1767,7 +1768,7 @@ export function SplMeterScreen({ navigation }: Props) {
                     onModeHelp={() => help('mode')}
                     centerText={gaugeText}
                     centerColor={dialCenterColor}
-                    onOpenFullscreen={() => { setGaugeFsClosing(false); setGaugeFsOpen(true); }}
+                    onOpenFullscreen={() => fsGate.gate(() => { setGaugeFsClosing(false); setGaugeFsOpen(true); })}
                   />
                 ) : null}
 

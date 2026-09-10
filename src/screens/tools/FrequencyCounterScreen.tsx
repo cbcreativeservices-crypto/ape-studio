@@ -38,7 +38,7 @@ import { ColorWheelButton } from '../../components/ColorWheelButton';
 import { TunerDiagram } from '../../components/ColorTargetDiagrams';
 import { useToolColorPref } from '../../features/tools/waveColorPref';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
-import { LockedButton, MembershipRequiredNote, MEMBERSHIP_REQUIRED, useSaveGate } from './ToolLockUi';
+import { LockedButton, MembershipRequiredNote, MEMBERSHIP_REQUIRED, useFullScreenGate, useSaveGate } from './ToolLockUi';
 import { useToolUsage } from '../../features/tools/telemetry';
 import { meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
@@ -498,6 +498,7 @@ function LivePitchMode({
     { meter: true, pitch: true },
   );
   const [a4, setA4] = useState(440);
+  const fsGate = useFullScreenGate();
   // MEMBER custom in-tune colour for the tuner gauge (owner 2026-08-21).
   const [tunerColor, setTunerColor] = useToolColorPref('ape:tools:tunerColor');
   // Tuner-only variable detection band (high-pass low-cut + low-pass high-cut).
@@ -821,10 +822,12 @@ function LivePitchMode({
             tint="green"
             height={48}
             fontSize={13}
-            onPress={() => {
-              if (hapticsEnabled()) Haptics.selectionAsync().catch(() => {});
-              openCenterLock();
-            }}
+            onPress={() =>
+              fsGate.gate(() => {
+                if (hapticsEnabled()) Haptics.selectionAsync().catch(() => {});
+                openCenterLock();
+              })
+            }
           />
         </View>
       )}

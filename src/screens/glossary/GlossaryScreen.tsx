@@ -38,6 +38,15 @@ import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 import { COPY } from '../../lib/copy';
 import { useCoachMark } from '../../lib/coachMark';
 import { sendFeedback } from '../../lib/feedback';
+import { notify } from '../../lib/confirm';
+import {
+  GLOSSARY_WARN_AT_USED,
+  GLOSSARY_WEEK_MS,
+  consumeGlossary,
+  getGlossaryStatus,
+  type CapMode,
+} from '../../features/glossary/glossaryCap';
+import { GlossaryLockView } from '../../features/glossary/GlossaryLockView';
 import { isHazardTerm } from '../../lib/hazard';
 import { CautionBadge } from '../../components/CautionBadge';
 import { supabase } from '../../lib/supabase';
@@ -477,6 +486,10 @@ type Filter = 'all' | 'topic' | 'equations' | 'favorites' | 'custom' | 'recent';
 // same 'ape:glossaryFavs' storage, shared app-wide (Booth 2026-07-18).
 const RECENT_KEY = 'ape:glossaryRecent';
 const RECENT_CAP = 30;
+// Set when a locked user taps "Get membership" from the lock view; read once
+// after they return as a member, to reopen the term they were last on, then
+// cleared (owner 2026-09-10).
+const RETURN_TERM_KEY = 'ape:glossaryReturnTerm';
 
 /** Full record behind an expanded term (lazy-fetched on first tap). */
 type EntryDetail = {
@@ -973,10 +986,75 @@ export function GlossaryScreen({ route, navigation }: Props) {
   const [linksOn, setLinksOn] = useGlossaryLinksPref();
   // CM4: commercial rendering — Common Mistakes gating + no academic course
   // filter in public UI (§1 naming rule). Server owns entitlement; we render.
-  const { commercialMode, isMember } = useEntitlement();
+  const { commercialMode, isMember, entitlement, resolved } = useEntitlement();
   // Real membership: gate the mistakes veil + topic-filter links on true
   // standing (provider isMember), never on caps (dev-bypassed) — that regression
   // hid both selling points. See the isMember doc in EntitlementProvider.
+
+  // ---- GLOSSARY WEEKLY LOOKUP CAP (owner 2026-09-10) ----
+  // Free / lapsed / guest get 14 definition OPENS per rolling week; academy is
+  // unlimited. Gate on REAL standing (isMember), never caps — same rule as the
+  // mistakes veil above. Signed-in free/lapsed count on the SERVER
+  // (glossary_consume); anonymous guests count DEVICE-LOCAL. Waits for the first
+  // entitlement read (`resolved`) so we never charge a member on first paint.
+  const capped = commercialMode && resolved && !isMember;
+  const capMode: CapMode = entitlement === 'anonymous' ? 'local' : 'server';
+  // Terms already charged this SESSION — re-opening one is free (owner: a term
+  // you already looked up this session doesn't cost again).
+  const consumedRef = useRef<Set<string>>(new Set());
+  // Blocks a same-tick double-consume (two taps racing the async RPC).
+  const gateOpeningRef = useRef(false);
+  // HARD LOCK (owner 2026-09-10): once a capped user is out of weekly lookups the
+  // glossary locks — the body is replaced by GlossaryLockView (no scroll/search/
+  // lists), the only ways out are exit or membership. `resetAt` drives the
+  // countdown. `lastViewedTermRef` = the term to reopen after they upgrade.
+  const [locked, setLocked] = useState(false);
+  const [resetAt, setResetAt] = useState<number | null>(null);
+  const lastViewedTermRef = useRef<string | null>(null);
+
+  /** Charge one lookup before revealing a definition. Returns false when a
+   *  capped user is out of lookups — the glossary LOCKS and the caller does NOT
+   *  open the term. Members / dev / pre-resolve always pass free. */
+  const gateDefinitionOpen = useCallback(
+    async (id: string): Promise<boolean> => {
+      if (!capped) return true;
+      if (consumedRef.current.has(id)) return true; // already looked up this session
+      if (gateOpeningRef.current) return false; // a consume is in flight — ignore the double-tap
+      gateOpeningRef.current = true;
+      const u = await consumeGlossary(capMode);
+      gateOpeningRef.current = false;
+      if (u.unavailable) {
+        // Server/store unreachable or SQL not yet deployed → fail open: allow,
+        // and don't re-hit it for this term again this session.
+        consumedRef.current.add(id);
+        lastViewedTermRef.current = id;
+        return true;
+      }
+      if (!u.allowed) {
+        // Out of lookups → LOCK the glossary (owner 2026-09-10). Don't open.
+        setResetAt(u.windowStart != null ? u.windowStart + GLOSSARY_WEEK_MS : null);
+        setLocked(true);
+        return false;
+      }
+      consumedRef.current.add(id);
+      lastViewedTermRef.current = id; // where they were last located (for post-upgrade return)
+      // Halfway heads-up (Option A, owner 2026-09-10): at 7 used → 7 left.
+      if (u.used === GLOSSARY_WARN_AT_USED && u.used < u.limit) {
+        notify(
+          'Heads up — weekly glossary limit',
+          `That’s ${u.used} of ${u.limit} free lookups this week — ${u.limit - u.used} left for the rest of your week. Academy membership makes the glossary unlimited.`,
+        );
+      } else if (u.used >= u.limit) {
+        notify(
+          'Weekly glossary limit',
+          `That was your last free glossary lookup this week (${u.limit} of ${u.limit}). It resets one week after your first one. Academy membership makes the glossary unlimited.`,
+        );
+      }
+      return true;
+    },
+    [capped, capMode],
+  );
+
   const listRef = useRef<FlatList<Entry>>(null);
   // Multiple simultaneous expansions in list view (user request 2026-07-18);
   // `focusedId` = the most-recently opened term (drives scroll + view-toggle).
@@ -1103,25 +1181,32 @@ export function GlossaryScreen({ route, navigation }: Props) {
   const expandedIdsRef = useRef(expandedIds);
   expandedIdsRef.current = expandedIds;
   const toggleExpand = useCallback(
-    (id: string) => {
+    async (id: string) => {
       const isOpen = expandedIdsRef.current.has(id);
+      if (isOpen) {
+        // Collapsing is always free; others stay open.
+        setExpandedIds((prev) => {
+          const next = new Set(prev);
+          next.delete(id);
+          return next;
+        });
+        if (focusedId === id) setFocusedId(null);
+        return;
+      }
+      // Opening = a lookup. A capped user out of lookups is stopped here.
+      if (!(await gateDefinitionOpen(id))) return;
       setExpandedIds((prev) => {
         const next = new Set(prev);
-        if (isOpen) next.delete(id); // collapse this one; others stay open
-        else next.add(id);
+        next.add(id);
         return next;
       });
-      if (!isOpen) {
-        setFocusedId(id);
-        recordRecent(id); // opening a term counts as "viewed"
-        coach.registerAction(); // each expand advances the "expand ×2" hint
-        void fetchDetails(id);
-      } else if (focusedId === id) {
-        setFocusedId(null);
-      }
+      setFocusedId(id);
+      recordRecent(id); // opening a term counts as "viewed"
+      coach.registerAction(); // each expand advances the "expand ×2" hint
+      void fetchDetails(id);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [focusedId, recordRecent, fetchDetails],
+    [focusedId, recordRecent, fetchDetails, gateDefinitionOpen],
   );
 
   // ---- FEATURE 1 (Booth kickoff 2026-07-10): in-definition cross-links ----
@@ -1141,19 +1226,23 @@ export function GlossaryScreen({ route, navigation }: Props) {
 
   /** Open a term in the popup as the trail ROOT (card tap / list-link first hop). */
   const openPopupRoot = useCallback(
-    (id: string) => {
+    async (id: string) => {
+      if (!(await gateDefinitionOpen(id))) return; // opening = a lookup
       recordRecent(id);
       coach.registerAction();
       void fetchDetails(id);
       popupScrollY.current = 0;
       setPopupTrail([{ id, offset: 0 }]);
     },
-    [recordRecent, coach, fetchDetails],
+    [recordRecent, coach, fetchDetails, gateDefinitionOpen],
   );
 
-  /** Follow a cross-link: remember where we are, then hop to the new term. */
+  /** Follow a cross-link: remember where we are, then hop to the new term.
+   *  Cross-links are FREE — they don't spend a weekly lookup (owner 2026-09-10);
+   *  they DO update "last viewed" so a post-upgrade return lands on this term. */
   const openLinked = useCallback(
     (id: string) => {
+      lastViewedTermRef.current = id;
       setChooser(null);
       recordRecent(id);
       void fetchDetails(id);
@@ -1248,6 +1337,22 @@ export function GlossaryScreen({ route, navigation }: Props) {
       (async () => {
         try {
           if (alive) setLoadError(false);
+          // GLOSSARY LOCK (owner 2026-09-10): detect whether a capped user is out
+          // of weekly lookups → show the lock card. The corpus STILL loads so the
+          // lock sits over a real, dimmed glossary ("full screen lock over a
+          // dimmed glossary"). Re-entering from a menu while locked lands here too.
+          if (capped) {
+            const st = await getGlossaryStatus(capMode);
+            if (!alive) return;
+            if (!st.unavailable && !st.allowed) {
+              setResetAt(st.windowStart != null ? st.windowStart + GLOSSARY_WEEK_MS : null);
+              setLocked(true);
+            } else {
+              setLocked(false);
+            }
+          } else {
+            setLocked(false); // member / dev / pre-resolve is never locked
+          }
           // Owner 2026-09-03: the `courses` fetch is gone. It read the archived
           // v1 college catalog on every Glossary mount to feed a filter chip that
           // was removed in July, and a term-chooser label that was wrong for
@@ -1286,8 +1391,26 @@ export function GlossaryScreen({ route, navigation }: Props) {
         alive = false;
         stopAllSpeech(); // leaving the glossary silences any TTS in progress
       };
-    }, []),
+    }, [capped, capMode]),
   );
+
+  // After a locked user upgrades and returns as a member, reopen the term they
+  // were last on (owner 2026-09-10). The key is written only when they leave via
+  // the lock view's membership button, and cleared here on the single reopen.
+  useEffect(() => {
+    if (capped) return;
+    let alive = true;
+    AsyncStorage.getItem(RETURN_TERM_KEY)
+      .then((id) => {
+        if (!alive || !id) return;
+        void AsyncStorage.removeItem(RETURN_TERM_KEY);
+        void openPopupRoot(id);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [capped, openPopupRoot]);
 
   // Retry for the offline empty-state card. loadAllEntries() does NOT cache a
   // rejection, so re-running it after reconnecting genuinely re-fetches.
@@ -1722,6 +1845,35 @@ export function GlossaryScreen({ route, navigation }: Props) {
   const rowExtraData = useMemo(
     () => [expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, selectMode, selectedIds, linksOn, bookmarks, starred, isMember],
     [expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, selectMode, selectedIds, linksOn, bookmarks, starred, isMember],
+  );
+
+  // GLOSSARY LOCK (owner 2026-09-10): a full-screen lock card over the DIMMED
+  // glossary. Rendered as a Modal (below, just before </ImageBackground>) so it
+  // sits above everything and captures all touches — no scroll / search / lists
+  // — while the glossary stays mounted and dimmed behind it. The reopen-after-
+  // upgrade effect returns the user to their last term after they buy in.
+  const lockOverlay = (
+    <GlossaryLockView
+      visible={locked}
+      resetAt={resetAt}
+      onExit={() => navigation.goBack()}
+      onMembership={() => {
+        if (lastViewedTermRef.current) {
+          void AsyncStorage.setItem(RETURN_TERM_KEY, lastViewedTermRef.current);
+        }
+        (navigation as unknown as { navigate: (r: string) => void }).navigate('Paywall');
+      }}
+      onExpired={() => {
+        // Window elapsed while sitting on the lock → re-check; if the user now
+        // has lookups, lift the lock AND ensure the corpus is loaded.
+        void getGlossaryStatus(capMode).then((u) => {
+          if (!u.unavailable && u.allowed) {
+            setLocked(false);
+            if (entries.length === 0) void reloadCorpus();
+          }
+        });
+      }}
+    />
   );
 
   return (
@@ -2651,6 +2803,8 @@ export function GlossaryScreen({ route, navigation }: Props) {
 
       {/* Glossary intro placeholder (Booth 2026-07-18). */}
       <ScreenIntroOverlay introKey="glossary" />
+      {/* Weekly-lookup HARD LOCK over the dimmed glossary (owner 2026-09-10). */}
+      {lockOverlay}
     </ImageBackground>
   );
 }
