@@ -24,8 +24,8 @@ import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 // carries a LinearGradient scrim so the frame's text and CTA stay legible over
 // the art (same treatment as the CourseSelection lab card). A null source just
 // renders the card's solid background (graceful until the file is dropped in).
-const BG_TRAINING = require('../../../assets/lab-backgrounds/training-labs.png');
-const BG_FUNDAMENTALS: number | null = require('../../../assets/lab-backgrounds/audio-fundamentals.png');
+const BG_TRAINING = require('../../../assets/lab-backgrounds/training-labs.webp');
+const BG_FUNDAMENTALS: number | null = require('../../../assets/lab-backgrounds/audio-fundamentals.webp');
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AudioLearning'>;
 

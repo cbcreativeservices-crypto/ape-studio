@@ -25,7 +25,7 @@ import { VuGlass } from './VuGlass';
 import type { LiveMeterDrive } from '../lab/meter/vizMeters';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-export const VU_SKIN = require('../../../assets/tool-strips/vu_skin_spl.png');
+export const VU_SKIN = require('../../../assets/tool-strips/vu_skin_spl.webp');
 export const VU_MAX = Math.pow(10, 6 / 20); // integrator ceiling (+6 dB rel 0 VU)
 
 /* ── Scale geometry (skin space, 1586×992) ──────────────────────────── */

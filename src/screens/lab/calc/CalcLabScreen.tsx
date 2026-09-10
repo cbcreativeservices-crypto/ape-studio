@@ -20,7 +20,7 @@ import { workflowStore } from './workflowStore';
 import type { Workflow } from './workflowModel';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 
-const BG_CALC = require('../../../../assets/lab-backgrounds/calc-lab.png');
+const BG_CALC = require('../../../../assets/lab-backgrounds/calc-lab.webp');
 
 export function CalcLabScreen() {
   const insets = useSafeAreaInsets();

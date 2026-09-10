@@ -52,7 +52,7 @@ import {
 import { getLabLesson } from '../../features/lab/guidedLessons';
 import type { StudyStackParamList } from '../../navigation/types';
 
-const BG_GLOSSARY = require('../../../assets/lab-backgrounds/glossary.png');
+const BG_GLOSSARY = require('../../../assets/lab-backgrounds/glossary.webp');
 
 // Search-field dictation button. Loaded via a GUARDED require so a dev client
 // that predates the expo-speech-recognition native module shows no mic instead
