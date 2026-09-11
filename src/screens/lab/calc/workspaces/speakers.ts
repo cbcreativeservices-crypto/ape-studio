@@ -220,7 +220,10 @@ const WS_SPEAKERPOWER: Workspace = {
           { label: 'MAX SPL AT 1 m', value: sens + 10 * Math.log10(p), quantity: 'spl', chainable: false },
           {
             label: 'REALITY CHECK',
-            text: `Expect roughly ${Math.round(max - 4)}–${Math.round(max - 2)} dB SPL sustained once power compression (2–4 dB) sets in.`,
+            // fmtInt, not `${Math.round()}` (edge-case QA 2026-09-11): a 0 W
+            // amp or a 0 m distance makes `max` non-finite, and Math.round(NaN)
+            // printed the literal "Expect roughly NaN–NaN dB SPL" at a student.
+            text: `Expect roughly ${fmtInt(max - 4)}–${fmtInt(max - 2)} dB SPL sustained once power compression (2–4 dB) sets in.`,
           },
         ];
       },
@@ -629,8 +632,14 @@ const WS_CABLE: Workspace = {
               String(g),
               fmt(rloop, 3),
               fmt(loss, 3),
-              `${((1 - frac) * 100).toFixed(1)}%`,
-              loss <= dB ? 'PASS' : 'FAIL',
+              // Finite-guarded (edge-case QA 2026-09-11): a 0 Ω load with a 0 m
+              // run makes `frac` 0/0 = NaN, and this cell printed "NaN%".
+              // Every other numeric cell in this table already reads '—' there.
+              Number.isFinite(frac) ? `${((1 - frac) * 100).toFixed(1)}%` : '—',
+              // An UNKNOWN loss is not a failure (edge-case QA 2026-09-11):
+              // NaN <= dB is false, so a 0 Ω / 0 m row asserted a confident
+              // "FAIL" beside four '—' cells. Say '—' instead of a wrong answer.
+              Number.isFinite(loss) ? (loss <= dB ? 'PASS' : 'FAIL') : '—',
             ];
           }),
         };

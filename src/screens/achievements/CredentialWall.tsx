@@ -33,6 +33,10 @@ const KIND_ACCENT: Record<CredentialKind, string> = {
 function fmtEarned(iso: string | null): string {
   if (!iso) return 'EARNED';
   const d = new Date(iso);
+  // An unparseable stamp falls back to the bare "EARNED" the missing-date case
+  // already uses (edge-case QA 2026-09-11) — it previously read
+  // "EARNED INVALID DATE" on a credential the member had genuinely earned.
+  if (Number.isNaN(d.getTime())) return 'EARNED';
   return 'EARNED ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase();
 }
 

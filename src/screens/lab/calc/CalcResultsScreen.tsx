@@ -25,6 +25,14 @@ type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 /** The shared formatted-text layout — now the professional report (owner spec
  *  2026-08-06). Kept as `summaryToText` so the runner's call site is unchanged. */
+/** A saved run's date, or the house unknown glyph when the stored stamp will
+ *  not parse (edge-case QA 2026-09-11) — both the visible date and the screen
+ *  reader previously read the literal "Invalid Date". */
+function fmtRunDate(iso: string): string {
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? '—' : d.toLocaleDateString();
+}
+
 export function summaryToText(s: SavedRunSummary): string {
   return reportToText(buildReportFromSummary(s));
 }
@@ -88,11 +96,11 @@ export function CalcResultsScreen() {
                   accessibilityRole="button"
                   accessibilityState={{ expanded: open }}
                   aria-expanded={open}
-                  accessibilityLabel={`${r.workflowName}, ${new Date(r.completedAt).toLocaleDateString()}`}
+                  accessibilityLabel={`${r.workflowName}, ${fmtRunDate(r.completedAt)}`}
                 >
                   <View style={styles.cardHead}>
                     <Text style={styles.cardName}>{open ? '▾ ' : '▸ '}{r.workflowName}</Text>
-                    <Text style={styles.cardDate}>{new Date(r.completedAt).toLocaleDateString()}</Text>
+                    <Text style={styles.cardDate}>{fmtRunDate(r.completedAt)}</Text>
                   </View>
                   {r.projectName ? <Text style={styles.caption}>Project: {r.projectName}</Text> : null}
                 </Pressable>

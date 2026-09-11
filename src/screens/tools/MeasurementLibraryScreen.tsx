@@ -40,6 +40,10 @@ type Props = NativeStackScreenProps<RootStackParamList, 'ToolLibrary'>;
 const fmtHz = (hz: number) => (hz < 10 ? hz.toFixed(2) : hz.toFixed(1));
 const fmtWhen = (iso: string) => {
   const d = new Date(iso);
+  // A corrupt stored stamp reads as the house unknown glyph, not the literal
+  // "Invalid Date Invalid Date" (edge-case QA 2026-09-11) — this string also
+  // goes into the share/export text, so it must never carry a JS error word.
+  if (Number.isNaN(d.getTime())) return '—';
   return `${d.toLocaleDateString()} ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
 };
 

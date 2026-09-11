@@ -32,7 +32,12 @@ function flatten(fields: FieldGroup[]): FlatSubject[] {
 
 function fmtDate(iso: string | null): string {
   if (!iso) return '';
-  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase();
+  const d = new Date(iso);
+  // An unparseable stamp is treated exactly like a missing one (edge-case QA
+  // 2026-09-11) — the same guard AwardProgressScreen/GalleryScreen already use.
+  // Without it the topic card printed the literal "INVALID DATE".
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase();
 }
 
 export function TopicsScreen() {

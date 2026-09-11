@@ -117,7 +117,11 @@ const WS_DISTDELAY: Workspace = {
         const rows = [44100, 48000, 96000].map((sr) => [
           `${sr / 1000} kHz`,
           fmt(t * sr),
-          `${Math.round(t * sr)}`,
+          // fmtInt, not `${Math.round()}` (edge-case QA 2026-09-11): a
+          // temperature below absolute zero makes c NaN, and the NEAREST WHOLE
+          // column printed "NaN" beside an EXACT SAMPLES column already
+          // reading '—'.
+          fmtInt(t * sr),
         ]);
         return { title: 'Samples at common rates', cols: ['SAMPLE RATE', 'EXACT SAMPLES', 'NEAREST WHOLE'], rows };
       },

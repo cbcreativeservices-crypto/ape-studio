@@ -452,7 +452,15 @@ function LinkedText({
         // losing the definition path.)
         const calc = onOpenCalc ? calcLinkForTerm(s.text) : null;
         if (calc) {
-          const mid = Math.ceil(s.text.length / 2);
+          // Split by CODE POINTS, not code units (edge-case QA 2026-09-11):
+          // s.text.slice(len/2) cut an astral character in half and rendered a
+          // replacement glyph (�) in the middle of the linked term. Identical
+          // output for the all-BMP terms we ship — this only changes the
+          // outcome for text that would otherwise break.
+          const chars = Array.from(s.text);
+          const mid = Math.ceil(chars.length / 2);
+          const head = chars.slice(0, mid).join('');
+          const tail = chars.slice(mid).join('');
           return (
             <Text key={i}>
               <Text
@@ -461,7 +469,7 @@ function LinkedText({
                 accessibilityLabel={`${s.text} — open the glossary definition`}
                 onPress={() => onLink(s.ids!)}
               >
-                {s.text.slice(0, mid)}
+                {head}
               </Text>
               <Text
                 style={styles.termLinkCalc}
@@ -469,7 +477,7 @@ function LinkedText({
                 accessibilityLabel={`${s.text} — open in the calculator`}
                 onPress={() => onOpenCalc!(calc.workspaceId)}
               >
-                {s.text.slice(mid)}
+                {tail}
               </Text>
             </Text>
           );

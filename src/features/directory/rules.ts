@@ -156,6 +156,10 @@ export function slugify(label: string): string {
  * friendly lie about a failure we did not anticipate.
  */
 export function readableError(message: string | undefined): string {
+  // An EMPTY message is as useless to a member as a missing one (edge-case QA
+  // 2026-09-11): `message ?? fallback` let '' through, so a driver that
+  // surfaced a blank error string painted an empty red banner with no text.
+  if (message !== undefined && message.trim().length === 0) message = undefined;
   const m = (message ?? '').toLowerCase();
   // PostgREST rejects an anon caller at the GRANT before the function body
   // runs, so the friendly "sign in to browse" guard inside directory_search is
