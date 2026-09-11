@@ -204,6 +204,69 @@ boot-loaded and must stay React-free) and reference them statically.
   that make numeric claims — the same shape as the "14 calculator outputs
   1000× wrong" bug from the 2026-09-01 QA night.
 
+## Round 4 — untested math, the `resolved` gate, and web screen-reader state
+
+### The test suite went from 397 to 724
+327 new tests over the 8 pure-logic modules that had **none**. Every formula
+was checked against first principles rather than against itself. **One real
+bug**: `meterEngine.waterfallTimeSpan()` pinned the CSD time axis by
+re-measuring with damping forced off, but forgot to also force Q RING off —
+so in 8 of the 25 room×reverb scenes, pressing **Q RING jumped the time axis
+from 3 s to 4 s** and the room appeared to decay faster the instant you
+enabled a filter that only adds a narrow 1.2 kHz ridge. The function's own
+comment already listed Q RING among the controls that must not move it, and
+it is exactly the moving ruler the 2026-08-28 "pin the time axis" ruling
+exists to prevent.
+
+Everything else verified correct against closed-form references — the dB
+ladder, VU ballistics, pink noise at exactly −3.01 dB/oct, Q measured back
+out of the EQ curves as 5.999/0.9999, harmonic presets against closed-form
+Fourier (THD to 1e-9), speed of sound and wavelength, free field at exactly
+−6.02 dB per doubling, Butterworth corners, Eyring RT60 round-trips.
+
+**Two behaviour questions left for you** (both are teaching models, so the
+"right" answer is a design call, not a bug fix):
+- `stereoPair()` correlation is **non-monotonic in the PHASE fader** — at the
+  module's default width, 45° reads HIGHER (+0.99) than 0° (+0.91), and at
+  full width a badly phase-rotated image reads as near-perfect mono.
+  Textbook expectation is +1 / 0 / −1 at 0° / 90° / 180°.
+- A **unity-gain** stage downstream of a clip is itself labelled
+  "OVERLOADED — clipping here", blaming an innocent stage.
+
+### The `resolved` gate was far bigger than the 12 reported sites
+The worst was silent: **every cold boot cancelled a paying member's booked
+notifications.** `memberStanding` is deliberately tri-state and its own
+docblock says `'unknown'` at boot must not cancel anything — but the effect
+ran on the first render with the `'anonymous'` default and wrote a definite
+`'nonmember'`. If the entitlement read then failed through its retries, they
+stayed cancelled for the whole run.
+
+Also: one central fix in `ToolLockUi` covered **all 7 tool screens plus 6
+more files**; four labs (Cable, Cable Install, Foundations, Mic Select) read
+a signed-in member as a guest at mount and **dumped them back to lesson 1**;
+the calculators hid a member's SAVE key and ignored their saved draft.
+
+**27 of 33** `useEntitlement()` sites now gate on `resolved`; the other 6 are
+individually justified. Every change moved the pre-resolve state toward
+UNLOCKED — nothing added a gate. The two spots where guessing "member" would
+GRANT rather than withhold (Enrollment's deep-resume shortcut, Directory's QR
+token RPC) were deliberately kept strict.
+
+### ⚠️ ARIA mapping needs re-ratifying before launch
+266 `aria-*` props were added across 114 files so the web build stops
+announcing every stateful control as plain and unselected. But: **221 of the
+253 sites carry `accessibilityRole="button"`, and `aria-selected` is not a
+valid ARIA attribute on `role="button"`** — it is defined for
+option/tab/row/gridcell/treeitem. The correct twin for a two-state button is
+`aria-pressed`. The sweep followed the ratified in-repo mapping (`AnswerCell`,
+`careerfinder/kit`) so it is internally consistent, and the `aria-disabled`
+(60), `aria-expanded` (40) and `aria-checked` (18) additions are all valid
+and load-bearing — but **the 147 `aria-selected` additions on buttons may be
+ignored by screen readers.** Deliberately NOT mass-changed: that would alter
+a ratified house pattern across 147 sites, unattended, with no way to test
+against a real screen reader tonight. Re-ratify the mapping rather than
+assume those sites are covered.
+
 ## Harness notes for next time
 
 - The web preview's console **accumulates across navigations**, so a stale
@@ -214,3 +277,17 @@ boot-loaded and must stay React-free) and reference them statically.
 - Agents were told **not to commit**; the main session reviewed every diff and
   committed in logical batches. With six agents on one index that is the only
   safe arrangement.
+- **Metro on Windows caches TRANSFORM ERRORS.** A `TransformError` from the
+  moment an agent had a file half-written kept replaying in the browser
+  console long after the file was valid — `tsc` clean, tests green, app
+  booting, and the error still there. `preview_logs` showed no server-side
+  error, and a `--clear` restart of the 8090 preview cleared it for good.
+  Do not chase one of these without restarting first.
+- Partition agents by **file ownership** and name the forbidden paths
+  explicitly. Where two agents had to share files (the entitlement and aria
+  sweeps), telling each to touch only its own KIND of prop kept the edits
+  from colliding — verified afterwards by stripping all `aria-*` from the
+  tree and byte-comparing against a pre-sweep snapshot.
+- Tell agents plainly that **"I attacked X and found nothing" is a valuable
+  result.** It stops the padding that makes a report unreadable, and it is
+  the only way to know which areas are actually solid.
