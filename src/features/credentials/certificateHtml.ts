@@ -1,5 +1,6 @@
+import { sha256 } from 'js-sha256';
 import { optionalModule } from '../tools/capture/optionalModule';
-import { FONT_CSS, WIDTHS_500, WIDTHS_600, SEAL_SVG_BODY } from './certificateAssets';
+import { FONT_CSS, WIDTHS_500, WIDTHS_600, SEAL_SVG_BODY, WM_DEFS, PANTOGRAPH_DATAURI } from './certificateAssets';
 
 // Pro Audio Training Academy | APPROVED: option 2, Modern Professional
 // All brand colours live here. QR paper is intentionally always pure white.
@@ -131,6 +132,42 @@ function awardDate(earnedAt: string | null): string | null {
   return `${months[date.getUTCMonth()]} ${date.getUTCDate()}, ${date.getUTCFullYear()}`;
 }
 
+// ── Covert security layers (Computer A handoff 2026-09-11; secured design of
+// 2026-09-05). Layer 0 (registry QR → Supabase UUID) is unchanged and remains
+// the ONLY cryptographic anchor; these are deterrents + by-eye checks. ──────
+
+/** Layer 1: microprint hairline — the lower rule becomes ~2 pt repeating text
+ *  carrying the credential ID + registry URL. textLength stretches one built
+ *  string to the rule width; legible only under a loupe / >400% zoom. */
+function microprintLine(shortId: string): string {
+  const unit =
+    `PRO AUDIO TRAINING ACADEMY · REGISTERED CREDENTIAL ${shortId} ` +
+    `· VERIFY AT PROAUDIOTRAININGACADEMY.COM/REGISTRY · `;
+  return unit.repeat(7); // repeat count is cosmetic; textLength fits it
+}
+
+/** Layer 3: ID-glyph derived from the credential UUID. SHA-256(uuid): first
+ *  24 bits → 24 ticks (tall=1 / short=0); next 3 hex digits → 3 dot radii.
+ *  Deterministic per credential — a swapped name/ID won't reproduce it.
+ *  Purely a by-eye offline check. */
+function idGlyphSvg(uuid: string, cx = 648, baseline = 372, n = 24, step = 1.9): string {
+  const hx = sha256(uuid); // 64 hex chars
+  const bits = parseInt(hx.slice(0, 6), 16).toString(2).padStart(24, '0');
+  const x0 = cx - ((n - 1) * step) / 2;
+  let out = '';
+  for (let i = 0; i < n; i++) {
+    const x = (x0 + i * step).toFixed(2);
+    const top = (baseline - (bits[i] === '1' ? 3.1 : 1.6)).toFixed(2);
+    out += `<line x1="${x}" y1="${baseline}" x2="${x}" y2="${top}" stroke="${GOLD}" stroke-width="0.5" opacity="0.62"/>`;
+  }
+  for (let j = 0; j < 3; j++) {
+    const r = (0.5 + (parseInt(hx[6 + j], 16) / 15) * 0.7).toFixed(2);
+    const dx = (cx - 3.8 + j * 3.8).toFixed(2);
+    out += `<circle cx="${dx}" cy="${(baseline + 2.2).toFixed(2)}" r="${r}" fill="${GOLD}" opacity="0.62"/>`;
+  }
+  return out;
+}
+
 function verifiedUrl(fields: CertificateFields): string | null {
   // Fail closed: a link/QR must agree with the token and expected registry host.
   if (!fields.verifyUrl || !fields.qrToken || !UUID.test(fields.qrToken)) return null;
@@ -177,6 +214,11 @@ export function buildCertificateHtml(fields: CertificateFields, options: Certifi
   const date = awardDate(fields.earnedAt);
   const shortId = fields.qrToken && UUID.test(fields.qrToken) ? fields.qrToken.slice(0, 8).toUpperCase() : null;
   const url = verifiedUrl(fields);
+  // Covert layers draw only with a valid credential token — fail-closed like
+  // the QR: no token → no microprint, no glyph (handoff §4.5).
+  const uuid = fields.qrToken && UUID.test(fields.qrToken) ? fields.qrToken : null;
+  const microHtml = shortId ? `<text x="75" y="456.6" textLength="642" lengthAdjust="spacing" font-family="Barlow,Arial,sans-serif" font-weight="500" font-size="2.0" letter-spacing="0.15" fill="${escapeHtml(INK_SOFT)}" opacity="0.6" style="text-transform:uppercase">${escapeHtml(microprintLine(shortId))}</text>` : '';
+  const glyphHtml = uuid ? idGlyphSvg(uuid) : '';
   const lib = qrLib();
   const factory = options.createQrMatrix
     ?? (lib ? (payload: string) => lib.create(payload, {errorCorrectionLevel: 'M'}).modules : null);
@@ -243,19 +285,24 @@ a { color: inherit; text-decoration: none; }
 .qr-fallback { height: 81pt; }
 
 </style></head><body><main class="sheet">
-<svg class="decor " xmlns="http://www.w3.org/2000/svg" viewBox="0 0 792 612" width="792pt" height="612pt" aria-hidden="true">
+<svg class="decor wm" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 792 612" width="792pt" height="612pt" aria-hidden="true" preserveAspectRatio="xMidYMid slice"><defs>${WM_DEFS}</defs>
+<rect x="0" y="0" width="792" height="612" fill="url(#wmB)" opacity="0.13"/><rect x="0" y="0" width="792" height="612" fill="url(#wmB2)" opacity="0.13"/>
+<image href="${PANTOGRAPH_DATAURI}" x="70" y="300" width="440" height="165" opacity="0.17" preserveAspectRatio="none"/></svg>
+<svg class="decor frame" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 792 612" width="792pt" height="612pt" aria-hidden="true">
 <rect x="42" y="43" width="708" height="80" fill="${escapeHtml(INK)}"/>
 <path d="M42 43V569 M42 43H750 M42 569H750" stroke="${escapeHtml(RULE)}" stroke-width=".6" fill="none"/>
 <path d="M42 43H117 M42 43V118" stroke="${escapeHtml(GOLD)}" stroke-width="3" fill="none"/>
-<path d="M75 123H717 M75 456H717" stroke="${escapeHtml(RULE)}" stroke-width=".6" fill="none"/>
+<path d="M75 123H717" stroke="${escapeHtml(RULE)}" stroke-width=".6" fill="none"/>
+${microHtml}
 <svg x="553" y="169.5" width="190" height="190" viewBox="0 0 220 220" overflow="visible">${SEAL_SVG_BODY}</svg>
+${glyphHtml}
 <path d="M63 451H87" stroke="${escapeHtml(GOLD)}" stroke-width="1.5"/>
 <path d="M75 439V463" stroke="${escapeHtml(GOLD)}" stroke-width="1.5"/>
 </svg>
 <header class="masthead"><span>Pro Audio</span><span>Training Academy</span></header>
 <p class="header-note">Professional audio<br>Education &amp; training</p>
 <div class="kicker">${escapeHtml(kicker)}</div>
-<h1 class="document-heading">Certificate of achievement</h1>
+<h1 class="document-heading">Certificate of Achievement</h1>
 <p class="lede">This certifies that</p>
 <h2 class="holder">${linesHtml(holderLayout.lines)}</h2>
 <p class="statement">has satisfied every requirement and is hereby awarded the</p>
