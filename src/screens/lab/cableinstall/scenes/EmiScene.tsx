@@ -697,6 +697,7 @@ export function EmiScene({ width, completed, onComplete, openSources }: CiModule
                   onPress={() => pickCrossing(c.id)}
                   accessibilityRole="button"
                   accessibilityState={{ selected: isLast }}
+                  aria-selected={isLast}
                   accessibilityLabel={`${c.label}${wasPicked ? (c.ok ? '. Judged: sound choice.' : '. Judged: poor geometry.') : ''}`}
                 >
                   <CrossPreview kind={c.id} w={cardW - 22} nonce={nonces[c.id] ?? 0} />

@@ -24,7 +24,7 @@ export function TuningKeyboard({ system, selected, onSelect, rootHz }: { system:
         const hz = frequencyFromRatio(rootHz, n.value.numericRatio);
         const a11y = `${n.spelling}${i === 7 ? ' octave' : ''}, ${system.shortName}, ${n.value.cents.toFixed(2)} cents above C, ${Math.abs(dev) < 0.05 ? 'exactly equal temperament' : `${Math.abs(dev).toFixed(2)} cents ${dev > 0 ? 'above' : 'below'} equal temperament`}, ${hz.toFixed(2)} hertz at the current reference.`;
         return (
-          <Pressable key={i} onPress={() => onSelect(i)} style={[styles.key, sel && styles.keySel]} accessibilityRole="tab" accessibilityState={{ selected: sel }} accessibilityLabel={a11y}>
+          <Pressable key={i} onPress={() => onSelect(i)} style={[styles.key, sel && styles.keySel]} accessibilityRole="tab" accessibilityState={{ selected: sel }} aria-selected={sel} accessibilityLabel={a11y}>
             <Text style={[styles.spelling, sel && { color: ROLE.active }]}>{n.spelling}</Text>
             <View style={styles.track}>
               <View style={styles.zero} />

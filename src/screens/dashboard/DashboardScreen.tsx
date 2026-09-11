@@ -584,7 +584,7 @@ export function DashboardScreen() {
   const [jogActive, setJogActive] = useState(false);
   // CM6 (Booth 2026-07-11): commercialMode renders a PUBLIC course (seq order
   // from the seed) through this same screen; institutional path unchanged.
-  const { commercialMode, caps, entitlement } = useEntitlement();
+  const { commercialMode, caps, entitlement, resolved } = useEntitlement();
   // Membership gate (user request 2026-08-12): a free user may LOAD a locked/paid
   // topic into the Dashboard, but studying it raises the Academy upgrade sheet.
   const [upgradeOpen, setUpgradeOpen] = useState(false);
@@ -1245,7 +1245,15 @@ export function DashboardScreen() {
   // while the carousel previews another topic opened the WRONG one and bypassed
   // the gate (user bug 2026-08-13: an Astronomical Acoustics card opened DAW's
   // flashcards). In steady state dispTopic === topic, so this only matters mid-jog.
+  // `resolved` FIRST (entitlement gate roll-out 2026-09-11): the provider starts
+  // at 'anonymous' and only learns the real tier after the server read, so
+  // before it lands this read said "not a member" about EVERY user. A member who
+  // tapped a study method or the quiz inside that window was shown the upgrade
+  // sheet for the membership they already pay for. Hold the member-favouring
+  // (unlocked) state until the tier is known; the study/quiz screens still gate
+  // on the server, so this can only delay a lock — never grant access.
   const actMembershipLocked =
+    resolved &&
     entitlement !== 'academy' &&
     !dispIsCustom &&
     !(dispTopic.global_sequence != null && isFreeEnrollGs(dispTopic.global_sequence));

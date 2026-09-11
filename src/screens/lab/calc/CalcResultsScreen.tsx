@@ -87,6 +87,7 @@ export function CalcResultsScreen() {
                   onPress={() => setOpenId(open ? null : r.id)}
                   accessibilityRole="button"
                   accessibilityState={{ expanded: open }}
+                  aria-expanded={open}
                   accessibilityLabel={`${r.workflowName}, ${new Date(r.completedAt).toLocaleDateString()}`}
                 >
                   <View style={styles.cardHead}>

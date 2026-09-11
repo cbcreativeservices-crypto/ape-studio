@@ -46,6 +46,8 @@ export function Chip({
         style={s.chipBody}
         accessibilityRole="button"
         accessibilityState={{ selected: !!on, disabled: !!disabled }}
+        aria-selected={!!on}
+        aria-disabled={!!disabled}
         accessibilityLabel={label}
         accessibilityHint={
           disabled ? 'You have reached the limit for this section' : on ? 'Selected. Tap to remove.' : undefined
@@ -64,6 +66,7 @@ export function Chip({
           accessibilityRole="button"
           accessibilityLabel={starred ? `${label} is your primary area` : `Set ${label} as your primary area`}
           accessibilityState={{ selected: !!starred }}
+          aria-selected={!!starred}
         >
           <Text style={[s.chipActionText, starred && s.chipActionOn]}>{starred ? '★' : '☆'}</Text>
         </Pressable>
@@ -154,6 +157,7 @@ export function PrimaryButton({
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityState={{ disabled: !!disabled }}
+      aria-disabled={!!disabled}
     >
       <Text
         style={[

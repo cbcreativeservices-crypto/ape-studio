@@ -223,6 +223,8 @@ function FilterChip({
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityState={{ selected: active, disabled }}
+      aria-selected={active}
+      aria-disabled={disabled}
       style={disabled ? { opacity: 0.4 } : undefined}
     >
       <LinearGradient
@@ -319,7 +321,12 @@ const chipStyles = StyleSheet.create({
 export function FlashcardsScreen({ navigation, route }: Props) {
   // Real academy standing (not the caps bypass) — decides what the MISTAKES
   // side says when the server-masked common_mistakes is null.
-  const { isMember } = useEntitlement();
+  // `resolved` hold (entitlement roll-out 2026-09-11): the provider boots at
+  // 'anonymous', so level 5 on a card with no authored mistakes told a paying
+  // member "Common-mistakes notes are an Academy member feature" until the
+  // server read landed. Unknown ⇒ read as a member.
+  const { isMember: memberStanding, resolved: entResolved } = useEntitlement();
+  const isMember = !entResolved || memberStanding;
   const { achievementId, topicName } = route.params;
   const insets = useSafeAreaInsets();
   const flaggedMode = achievementId === FLAGGED_TOPIC_ID;
@@ -1253,6 +1260,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             onPress={() => setSoloReveal((v) => !v)}
             accessibilityRole="button"
             accessibilityState={{ selected: soloReveal }}
+            aria-selected={soloReveal}
             accessibilityLabel={soloReveal ? 'Close study view' : 'Open study view (show definition)'}
           >
             {/* Lit red only when active; neutral grey when off (user request 2026-07-18). */}

@@ -291,6 +291,8 @@ const Row = memo(function Row({
         onPress={() => onPress(m)}
         accessibilityRole="button"
         accessibilityState={pickMode ? { selected: isPicked } : { expanded: isOpen }}
+        aria-selected={pickMode ? isPicked : undefined}
+        aria-expanded={pickMode ? undefined : isOpen}
         accessibilityLabel={m.title}
       >
         {pickMode && (
@@ -453,6 +455,7 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
             }}
             accessibilityRole="button"
             accessibilityState={{ selected: compareMode }}
+            aria-selected={compareMode}
             accessibilityLabel="Compare measurements"
           >
             <Text style={[styles.compareBtnText, compareMode && styles.compareBtnTextOn]}>
@@ -471,6 +474,7 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
             }}
             accessibilityRole="button"
             accessibilityState={{ selected: selectMode }}
+            aria-selected={selectMode}
             accessibilityLabel="Select measurements"
           >
             <Text style={[styles.selectBtnText, selectMode && styles.selectBtnTextOn]}>

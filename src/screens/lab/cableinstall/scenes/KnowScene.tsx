@@ -228,6 +228,7 @@ function TypeCard({ t, open, viewed, onPress }: { t: CiCableType; open: boolean;
       onPress={onPress}
       accessibilityRole="button"
       accessibilityState={{ expanded: open }}
+      aria-expanded={open}
       accessibilityLabel={`${t.name}, ${useLabel(t.use).toLowerCase()}${viewed ? ', reviewed' : ''}`}
     >
       <View style={styles.typeHead}>

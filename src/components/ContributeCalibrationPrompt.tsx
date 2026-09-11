@@ -103,6 +103,7 @@ export function ContributeCalibrationPrompt({
                   onPress={() => setRef(r.key)}
                   accessibilityRole="button"
                   accessibilityState={{ selected: sel }}
+                  aria-selected={sel}
                   accessibilityLabel={`${r.label} — ${r.sub}`}
                 >
                   <Text style={[styles.optLabel, sel && styles.optLabelSel]}>{r.label}</Text>

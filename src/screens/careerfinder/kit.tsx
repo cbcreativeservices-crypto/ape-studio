@@ -85,6 +85,7 @@ export function CtaButton({ label, onPress, tone = 'plain', disabled, a11y, hint
       accessibilityLabel={a11y ?? label}
       accessibilityHint={hint}
       accessibilityState={{ disabled: !!disabled }}
+      aria-disabled={!!disabled}
     >
       <Text style={[styles.ctaText, tone === 'green' && { color: colors.green }, tone === 'quiet' && { color: colors.textSub }, tone === 'danger' && { color: colors.red }]}>{label}</Text>
     </Pressable>
@@ -94,7 +95,7 @@ export function CtaButton({ label, onPress, tone = 'plain', disabled, a11y, hint
 /** Compact footer button (the paged-lab BACK / CONTINUE idiom). */
 export function NavButton({ label, onPress, primary, disabled, a11y }: { label: string; onPress: () => void; primary?: boolean; disabled?: boolean; a11y?: string }) {
   return (
-    <Pressable onPress={onPress} disabled={disabled} style={[styles.navBtn, primary && styles.navNext, disabled && { opacity: 0.35 }]} accessibilityRole="button" accessibilityState={{ disabled: !!disabled }} accessibilityLabel={a11y ?? label}>
+    <Pressable onPress={onPress} disabled={disabled} style={[styles.navBtn, primary && styles.navNext, disabled && { opacity: 0.35 }]} accessibilityRole="button" accessibilityState={{ disabled: !!disabled }} aria-disabled={!!disabled} accessibilityLabel={a11y ?? label}>
       <Text style={[styles.navText, primary && { color: colors.green }]}>{label}</Text>
     </Pressable>
   );

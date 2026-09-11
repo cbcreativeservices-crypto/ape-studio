@@ -349,6 +349,7 @@ export function WhyScene({ width, completed, onComplete, openSources }: CiModule
                 }}
                 accessibilityRole="button"
                 accessibilityState={{ expanded: isOpen }}
+                aria-expanded={isOpen}
                 accessibilityLabel={`${c.title}${isSeen ? ', reviewed' : ''}`}
               >
                 <Text style={[styles.conseqTitle, isSeen && { color: colors.green }]}>
@@ -380,6 +381,8 @@ export function WhyScene({ width, completed, onComplete, openSources }: CiModule
                   disabled={locked}
                   accessibilityRole="button"
                   accessibilityState={{ selected: picked, disabled: locked }}
+                  aria-selected={picked}
+                  aria-disabled={locked}
                   accessibilityLabel={`${ex.name}. ${ex.caption}${revealed ? (ex.verdict === 'good' ? '. This is the correct approval.' : '. Not approvable.') : ''}`}
                   style={{ gap: 8 }}
                 >

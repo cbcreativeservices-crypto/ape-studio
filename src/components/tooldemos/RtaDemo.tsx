@@ -142,6 +142,7 @@ function DemoChip({ label, active, onPress }: { label: string; active: boolean; 
       accessibilityRole='button'
       accessibilityLabel={label}
       accessibilityState={{ selected: active }}
+      aria-selected={active}
       onPress={onPress}
       hitSlop={6}
       style={[styles.innerChip, active && styles.innerChipActive]}
@@ -397,6 +398,7 @@ export function RtaDemo() {
             accessibilityRole='button'
             accessibilityLabel={`Show ${s.label} scene`}
             accessibilityState={{ selected: scene === i }}
+            aria-selected={scene === i}
             onPress={() => setScene(i)}
             style={[styles.chip, scene === i && styles.chipActive]}
           >

@@ -20,7 +20,7 @@ import { confirmDialog } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import type { Workflow } from './workflowModel';
-import { WORKFLOW_LIMITS } from './workflowModel';
+import { workflowLimitsFor } from './workflowModel';
 import { workflowStore } from './workflowStore';
 import { WORKFLOW_TEMPLATES, resolveStep, validateWorkflow } from './workflowCatalog';
 
@@ -29,8 +29,10 @@ type Nav = NativeStackNavigationProp<RootStackParamList>;
 export function CalcWorkflowsScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<Nav>();
-  const { entitlement } = useEntitlement();
-  const limits = WORKFLOW_LIMITS[entitlement];
+  const { entitlement, resolved } = useEntitlement();
+  // workflowLimitsFor, not WORKFLOW_LIMITS[entitlement] — hold the academy row
+  // until the entitlement read lands (roll-out 2026-09-11); see the helper.
+  const limits = workflowLimitsFor(entitlement, resolved);
 
   const [mine, setMine] = useState<Workflow[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
@@ -148,6 +150,7 @@ export function CalcWorkflowsScreen() {
               hitSlop={4}
               accessibilityRole="button"
               accessibilityState={{ disabled: index === 0 }}
+              aria-disabled={index === 0}
               accessibilityLabel={`Move ${w.name} up`}
             >
               <Text style={styles.orderBtnText}>▲</Text>
@@ -159,6 +162,7 @@ export function CalcWorkflowsScreen() {
               hitSlop={4}
               accessibilityRole="button"
               accessibilityState={{ disabled: index === count - 1 }}
+              aria-disabled={index === count - 1}
               accessibilityLabel={`Move ${w.name} down`}
             >
               <Text style={styles.orderBtnText}>▼</Text>
@@ -170,6 +174,7 @@ export function CalcWorkflowsScreen() {
           hitSlop={8}
           accessibilityRole="button"
           accessibilityState={{ selected: favorites.includes(w.id) }}
+          aria-selected={favorites.includes(w.id)}
           accessibilityLabel={favorites.includes(w.id) ? 'Remove favorite' : 'Favorite'}
         >
           <Text style={[styles.favStar, favorites.includes(w.id) && styles.favStarOn]}>★</Text>

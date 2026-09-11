@@ -75,6 +75,7 @@ function Toggle({ label, value, onChange }: { label: string; value: boolean; onC
       onPress={() => onChange(!value)}
       accessibilityRole="switch"
       accessibilityState={{ checked: value }}
+      aria-checked={value}
       accessibilityLabel={label}
     >
       <Text style={styles.rowLabel}>{label}</Text>
@@ -258,6 +259,7 @@ export function ExposureMonitorScreen() {
                 hitSlop={10}
                 accessibilityRole="button"
                 accessibilityState={{ selected: range === r }}
+                aria-selected={range === r}
                 style={[styles.chip, range === r && styles.chipActive]}
               >
                 <Text style={[styles.chipText, range === r && { color: colors.amber }]}>{`${r} days`}</Text>
@@ -303,6 +305,7 @@ export function ExposureMonitorScreen() {
                 hitSlop={10}
                 accessibilityRole="button"
                 accessibilityState={{ selected: s.checkinMinutes === iv.v }}
+                aria-selected={s.checkinMinutes === iv.v}
                 style={[styles.chip, s.checkinMinutes === iv.v && styles.chipActive]}
               >
                 <Text style={[styles.chipText, s.checkinMinutes === iv.v && { color: colors.amber }]}>{iv.label}</Text>
@@ -329,6 +332,7 @@ export function ExposureMonitorScreen() {
               // A radio announces "checked", not "selected" (2026-09-05) — the
               // selected state was silently dropped by screen readers.
               accessibilityState={{ checked: s.standard === st }}
+              aria-checked={s.standard === st}
             >
               <Text style={[styles.rowLabel, s.standard === st && { color: colors.amber }]}>
                 {s.standard === st ? '●' : '○'} {STANDARD_LABELS[st]}

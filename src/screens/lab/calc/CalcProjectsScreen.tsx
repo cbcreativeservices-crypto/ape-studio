@@ -19,7 +19,7 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { QUANTITIES, fmt, type QuantityKind } from './calcUnits';
 import type { Project } from './workflowModel';
-import { WORKFLOW_LIMITS } from './workflowModel';
+import { workflowLimitsFor } from './workflowModel';
 import { workflowStore } from './workflowStore';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
@@ -54,8 +54,10 @@ function toDraft(p: Project): DraftValue[] {
 export function CalcProjectsScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<Nav>();
-  const { entitlement } = useEntitlement();
-  const limits = WORKFLOW_LIMITS[entitlement];
+  const { entitlement, resolved } = useEntitlement();
+  // workflowLimitsFor, not WORKFLOW_LIMITS[entitlement] — hold the academy row
+  // until the entitlement read lands (roll-out 2026-09-11); see the helper.
+  const limits = workflowLimitsFor(entitlement, resolved);
 
   const [projects, setProjects] = useState<Project[]>([]);
   // Inline editor: null = list view; {id: null} = creating new.

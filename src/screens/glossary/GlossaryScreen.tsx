@@ -789,6 +789,7 @@ function Chip({
       accessibilityLabel={label}
       accessibilityHint={onLongPress ? 'Double tap and hold to open the list' : undefined}
       accessibilityState={{ selected: active }}
+      aria-selected={active}
     >
       <LinearGradient
         colors={active ? activeBg : ['#222222', '#161616']}
@@ -1506,7 +1507,11 @@ export function GlossaryScreen({ route, navigation }: Props) {
   // only ACTIVATING a topic filter is member-gated. Gate on real entitlement
   // so free/lapsed/anonymous users see the readable A–Z list with 🔒 MEMBERS
   // per row (a membership sell point), independent of the commercialMode flag.
-  const topicLinksLocked = !isMember;
+  // `resolved` guard (entitlement gate roll-out 2026-09-11) — same rule as
+  // `capped` above: the provider boots at 'anonymous', so without it a member
+  // opening the topic picker in the pre-resolve window got the view-only list
+  // with a 🔒 MEMBERS row lock and an upgrade hint for the membership they hold.
+  const topicLinksLocked = resolved && !isMember;
 
   // "Equations & Formulas" pseudo-topic (user request 2026-07-26): the count of
   // corpus terms that carry a symbolic formula. DELIBERATELY NOT member-gated —
@@ -2259,6 +2264,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
                     onPress={() => toggleSelected(item.id)}
                     accessibilityRole="checkbox"
                     accessibilityState={{ checked: picked }}
+                    aria-checked={picked}
                     accessibilityLabel={`Select ${item.term}`}
                   >
                     <View style={[styles.selBox, picked && styles.selBoxOn]}>
@@ -2271,6 +2277,8 @@ export function GlossaryScreen({ route, navigation }: Props) {
                     <Text
                       accessibilityRole={selectMode ? 'checkbox' : 'button'}
                       accessibilityState={selectMode ? { checked: picked } : { expanded }}
+                      aria-checked={selectMode ? picked : undefined}
+                      aria-expanded={selectMode ? undefined : expanded}
                       style={[
                         styles.term,
                         { flexShrink: 1 },
@@ -2706,6 +2714,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
                       }}
                       accessibilityRole="button"
                       accessibilityState={{ selected: active }}
+                      aria-selected={active}
                     >
                       <Text style={[styles.topicRowText, active && { color: colors.amber }]}>{t.name}</Text>
                     </Pressable>

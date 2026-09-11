@@ -28,7 +28,7 @@ export const WAVE_COLOR_SWATCHES = [
  *  `key`; null = the tool's default. Each tool passes its own key so colours are
  *  independent (owner rule 2026-08-20 — customization is member-gated). */
 export function useToolColorPref(key: string): [string | null, (c: string | null) => void] {
-  const { isMember } = useEntitlement();
+  const { isMember, resolved } = useEntitlement();
   const [color, setColor] = useState<string | null>(null);
   useEffect(() => {
     let alive = true;
@@ -51,7 +51,12 @@ export function useToolColorPref(key: string): [string | null, (c: string | null
   // Member-only perk (owner rule; QA night 2026-09-01): the stored choice
   // is preserved but stops APPLYING when membership lapses — only the wheel
   // entry was gated before.
-  return [isMember ? color : null, set];
+  // `!resolved` counts as a member (entitlement roll-out 2026-09-11): the
+  // provider boots at 'anonymous', so a member's saved trace colour was thrown
+  // away on the first paint of every tool and snapped back once the server read
+  // landed. Unknown ⇒ honour the stored choice; it drops out a beat later for
+  // anyone whose membership has actually lapsed.
+  return [!resolved || isMember ? color : null, set];
 }
 
 /** Waveform trace colour (the first consumer). */

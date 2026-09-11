@@ -106,6 +106,7 @@ export function GlassButton({
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityState={{ disabled }}
+      aria-disabled={disabled}
       style={disabled && { opacity: 0.45 }}
     >
       {/* Key travel: the whole cap depresses; the seat's shadow shortens. */}

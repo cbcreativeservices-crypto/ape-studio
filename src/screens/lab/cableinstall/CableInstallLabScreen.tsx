@@ -71,9 +71,14 @@ const COMPLETE_STEP = CI_MODULES.length + 1;
 
 export function CableInstallLabScreen() {
   const navigation = useNavigation();
-  const { entitlement } = useEntitlement();
-  const noAccountRef = useRef(entitlement === 'anonymous');
-  noAccountRef.current = entitlement === 'anonymous';
+  const { entitlement, resolved } = useEntitlement();
+  // `resolved` REQUIRED (entitlement roll-out 2026-09-11): the provider boots
+  // at 'anonymous', and the restore effect below runs on MOUNT — so without it
+  // a signed-in user reopening this lab was treated as a guest and dumped back
+  // on the first lesson instead of the page they left off on. Unknown ⇒ not a
+  // guest; the real guest rule applies the moment the tier is known.
+  const noAccountRef = useRef(resolved && entitlement === 'anonymous');
+  noAccountRef.current = resolved && entitlement === 'anonymous';
 
   const [step, setStep] = useState(INTRO_STEP);
   const [dims, setDims] = useState<CiDimScores>({});
@@ -292,6 +297,8 @@ export function CableInstallLabScreen() {
                   hitSlop={6}
                   accessibilityRole="button"
                   accessibilityState={{ selected: active, disabled: !enterable }}
+                  aria-selected={active}
+                  aria-disabled={!enterable}
                   accessibilityLabel={`${m.title}${done ? ', complete' : enterable ? '' : ', locked'}`}
                 >
                   <ProgressDot done={done} active={active} enterable={enterable} />

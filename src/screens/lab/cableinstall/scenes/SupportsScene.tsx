@@ -796,6 +796,8 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
                 disabled={pick != null}
                 accessibilityRole="button"
                 accessibilityState={{ selected: pick === true, disabled: pick != null }}
+                aria-selected={pick === true}
+                aria-disabled={pick != null}
                 accessibilityLabel={`Approve — yes, hang cable on ${item.name}`}
               >
                 <Text style={[styles.pickText, { color: colors.green }]}>APPROVE</Text>
@@ -806,6 +808,8 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
                 disabled={pick != null}
                 accessibilityRole="button"
                 accessibilityState={{ selected: pick === false, disabled: pick != null }}
+                aria-selected={pick === false}
+                aria-disabled={pick != null}
                 accessibilityLabel={`Reject — do not hang cable on ${item.name}`}
               >
                 <Text style={[styles.pickText, { color: '#ff9b8f' }]}>REJECT</Text>

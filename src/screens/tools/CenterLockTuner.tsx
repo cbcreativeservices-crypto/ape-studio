@@ -430,6 +430,7 @@ function InstrumentPicker({ current, recents, onPick, onClose }: { current: Inst
                     style={[styles.pickerRow, on && styles.pickerRowOn]}
                     accessibilityRole="button"
                     accessibilityState={{ selected: on }}
+                    aria-selected={on}
                     accessibilityLabel={`${d.name}, ${d.blurb}`}
                   >
                     <Text style={[styles.pickerName, on && { color: colors.amber }]}>{d.name}</Text>
@@ -808,6 +809,7 @@ const LiveReadout = memo(function LiveReadout({
           style={[styles.keyLock, lockedMidi != null && styles.keyLockOn]}
           accessibilityRole="button"
           accessibilityState={{ selected: lockedMidi != null }}
+          aria-selected={lockedMidi != null}
           accessibilityLabel={lockedMidi != null ? `Key ${target.index} ${displayNote(target.note)} locked, tap for auto` : 'Auto key, tap to lock the key being tuned'}
         >
           <Text style={[styles.keyLockMain, lockedMidi != null && { color: colors.amber }]}>{`${target.label} · ${displayNote(target.note)}`}</Text>
@@ -835,6 +837,7 @@ const LiveReadout = memo(function LiveReadout({
             style={[styles.stringKey, { width: keyW }, current && styles.stringKeyOn, current && { borderColor: currentBorder }, locked && styles.stringKeyLocked]}
             accessibilityRole="button"
             accessibilityState={{ selected: current }}
+            aria-selected={current}
             accessibilityLabel={`${g[0].label} ${g.map((t) => displayNote(t.note)).join(' and ')}${done ? ', in tune' : ''}${locked ? ', locked' : ''}`}
             accessibilityHint={locked ? 'Tap to release' : 'Tap to lock this string'}
           >
@@ -981,6 +984,7 @@ function RepeatKey({ label, onStep, disabled, accessibilityLabel, narrow }: { la
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       accessibilityState={{ disabled }}
+      aria-disabled={disabled}
       accessibilityHint="Hold to repeat"
     >
       <Text style={[styles.keyStepText, narrow && styles.keyStepTextNarrow]}>{label}</Text>
@@ -1138,6 +1142,7 @@ function Chip({
       style={[styles.chip, on && styles.chipOn, small && styles.chipSmall, caret && styles.chipWithCaret]}
       accessibilityRole="button"
       accessibilityState={{ selected: on }}
+      aria-selected={on}
       accessibilityLabel={label}
       accessibilityHint={accessibilityHint}
     >

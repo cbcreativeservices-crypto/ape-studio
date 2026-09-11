@@ -147,6 +147,7 @@ export function ExploreView({
           style={st.filterBtn}
           accessibilityRole="button"
           accessibilityState={{ expanded: showFilters }}
+          aria-expanded={showFilters}
           accessibilityLabel={`Filters${activeCount ? `, ${activeCount} active` : ''}`}
         >
           <Text style={st.filterBtnText}>

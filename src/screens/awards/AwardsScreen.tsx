@@ -208,6 +208,7 @@ function TierBlock({
             onPress={() => setPolicyOpen((v) => !v)}
             accessibilityRole="button"
             accessibilityState={{ expanded: policyOpen }}
+            aria-expanded={policyOpen}
             accessibilityLabel={tier.policy.title}
           >
             <Text style={[styles.policyTitle, { color: accent }]}>{tier.policy.title.toUpperCase()}</Text>
@@ -481,6 +482,7 @@ export function AwardsScreen({ navigation, route }: Props) {
               style={[styles.tabBtn, active && { borderColor: tint, backgroundColor: '#1a1a1a' }]}
               accessibilityRole="button"
               accessibilityState={{ selected: active }}
+              aria-selected={active}
               accessibilityLabel={pageHeadline(c)}
             >
               {/* 5 tabs now (Directory + Enrollment added 2026-07-22) —
@@ -606,6 +608,7 @@ export function AwardsScreen({ navigation, route }: Props) {
                     onPress={() => toggleCert(c.name)}
                     accessibilityRole="button"
                     accessibilityState={{ expanded: open }}
+                    aria-expanded={open}
                     accessibilityLabel={c.name}
                   >
                     <Text style={[styles.cardChevron, open && { color: '#ffc64d' }]}>{open ? '▾' : '▸'}</Text>
@@ -716,6 +719,7 @@ export function AwardsScreen({ navigation, route }: Props) {
                     onPress={() => toggleProg(p.name)}
                     accessibilityRole="button"
                     accessibilityState={{ expanded: open }}
+                    aria-expanded={open}
                     accessibilityLabel={p.name}
                   >
                     <Text style={[styles.cardChevron, open && { color: '#c4a2ff' }]}>{open ? '▾' : '▸'}</Text>

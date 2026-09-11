@@ -67,7 +67,7 @@ export function Ch12Tradeoffs({ ctx }: ChapterProps) {
       {/* NEW COPY — instruction stated up front, not hidden inside the cards. */}
       <Body>Nine claims people make about tuning. Decide whether each is true before you open it — then tap to read the correction. Open at least {MIN_OPENED} to finish this chapter.</Body>
       {MYTHS.map((m, i) => (
-        <Pressable key={i} onPress={() => toggle(i)} style={[styles.myth, opened.has(i) && styles.mythSeen]} accessibilityRole="button" accessibilityState={{ expanded: open === i }} accessibilityLabel={`Misconception: ${m.statement}`} accessibilityHint={open === i ? 'Collapses the correction' : 'Reveals the correction'}>
+        <Pressable key={i} onPress={() => toggle(i)} style={[styles.myth, opened.has(i) && styles.mythSeen]} accessibilityRole="button" accessibilityState={{ expanded: open === i }} aria-expanded={open === i} accessibilityLabel={`Misconception: ${m.statement}`} accessibilityHint={open === i ? 'Collapses the correction' : 'Reveals the correction'}>
           <Text style={styles.mythStatement}>“{m.statement}”</Text>
           {open === i ? <Text style={styles.mythFix}>{m.correction}</Text> : <Text style={styles.tap}>{opened.has(i) ? 'seen · tap to reread ▸' : 'tap for the correction ▸'}</Text>}
         </Pressable>

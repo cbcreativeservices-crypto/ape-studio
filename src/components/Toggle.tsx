@@ -44,6 +44,7 @@ export function Toggle({
       accessibilityRole="switch"
       accessibilityLabel={label}
       accessibilityState={{ checked: on, disabled }}
+      aria-disabled={disabled}
       // RN-web 0.21 no longer maps accessibilityState → ARIA; without this
       // every switch announced with NO on/off state on web (QA 2026-09-01).
       aria-checked={on}

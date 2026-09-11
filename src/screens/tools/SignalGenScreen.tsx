@@ -127,6 +127,7 @@ function Chip({ label, selected, onPress }: { label: string; selected: boolean; 
       onPress={onPress}
       accessibilityRole="button"
       accessibilityState={{ selected }}
+      aria-selected={selected}
       accessibilityLabel={label}
     >
       <Text style={[styles.chipText, selected && styles.chipTextSelected]}>{label}</Text>
@@ -734,6 +735,7 @@ export function SignalGenScreen({ navigation }: Props) {
               onPress={() => setColorsOn(!colorsOn)}
               accessibilityRole="button"
               accessibilityState={{ selected: colorsOn }}
+              aria-selected={colorsOn}
               accessibilityLabel="Toggle MIDI amplitude colours on the waveform"
             >
               <Text style={[styles.colorsBtnText, colorsOn && styles.colorsBtnTextOn]}>COLORS</Text>

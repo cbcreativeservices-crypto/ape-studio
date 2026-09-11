@@ -71,7 +71,11 @@ export function HarmonographViewer(props: {
 }) {
   const { visible, onClose, cfg, ratioLabel, intervalLabel, dampingLabel, inkColor, onInkColor } =
     props;
-  const { isMember } = useEntitlement();
+  // `resolved` gate (entitlement roll-out 2026-09-11): unknown tier ⇒ treat as
+  // a member, so the ink-colour wheel never raises the membership gate at
+  // someone who already pays for it while the server read is still in flight.
+  const { isMember: memberStanding, resolved: entResolved } = useEntitlement();
+  const isMember = !entResolved || memberStanding;
   const { width: ww, height: wh } = useWindowDimensions();
 
   const cardRef = useRef<View>(null);
@@ -349,6 +353,7 @@ export function HarmonographViewer(props: {
                       accessibilityState={{
                         selected: inkColor.toLowerCase() === INK_DEFAULT.toLowerCase(),
                       }}
+                      aria-selected={inkColor.toLowerCase() === INK_DEFAULT.toLowerCase()}
                       accessibilityLabel="Classic red (default)"
                     >
                       <Text style={styles.swatchDefaultText}>DEF</Text>
@@ -362,6 +367,7 @@ export function HarmonographViewer(props: {
                           onPress={() => pickInk(c)}
                           accessibilityRole="button"
                           accessibilityState={{ selected: sel }}
+                          aria-selected={sel}
                           accessibilityLabel={`Colour ${c}`}
                         />
                       );

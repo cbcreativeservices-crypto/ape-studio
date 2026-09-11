@@ -68,6 +68,7 @@ export function LowLightRow() {
       onPress={toggleLowLight}
       accessibilityRole="switch"
       accessibilityState={{ checked: on }}
+      aria-checked={on}
       accessibilityLabel="Low-Light Production Mode"
       accessibilityHint="Dims the whole app and stops anything from appearing on screen. Tap the screen quickly six times to cancel it."
       style={[styles.row, on && styles.rowOn]}

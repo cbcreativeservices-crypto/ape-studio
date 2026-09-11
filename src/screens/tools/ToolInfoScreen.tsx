@@ -14,12 +14,11 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { GlassButton } from '../../components/GlassButton';
 import { useToolUsage } from '../../features/tools/telemetry';
 import { markToolMount } from '../../features/tools/devTiming';
-import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { holdMicWarm, releaseMic, releaseMicNow } from '../../features/tools/engine/micSession';
 import { micReleaseOnBackgroundEnabled } from '../../features/settings/store';
 import { colors, fonts } from '../../theme/tokens';
 import { MIC_LIMITS, toolByKey, type ToolKey } from './toolsData';
-import { LockedButton, MembershipRequiredNote } from './ToolLockUi';
+import { LockedButton, MembershipRequiredNote, useToolsLocked } from './ToolLockUi';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ToolInfo'>;
@@ -104,7 +103,11 @@ export function ToolInfoScreen({ navigation, route }: Props) {
   }, []);
   // OPEN TOOL is free for everyone; the LEARN/DEMO training layer is Academy-
   // only (owner 2026-08-05). Gate on real standing (isMember), not caps.
-  const { isMember } = useEntitlement();
+  // Via useToolsLocked so the `resolved` hold lives in ONE place (entitlement
+  // roll-out 2026-09-11): reading isMember directly first-painted greyed
+  // 🔒 LEARN / DEMO buttons and the "membership required" note at a member,
+  // because the provider boots at 'anonymous' until the server read lands.
+  const isMember = !useToolsLocked();
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>

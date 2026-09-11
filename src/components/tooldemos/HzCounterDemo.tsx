@@ -461,6 +461,7 @@ export function HzCounterDemo() {
               accessibilityRole="button"
               accessibilityLabel={`Scene: ${s.label}`}
               accessibilityState={{ selected: active }}
+              aria-selected={active}
               style={[styles.chip, active && styles.chipActive]}
             >
               <Text style={[styles.chipText, active && styles.chipTextActive]}>{s.label}</Text>

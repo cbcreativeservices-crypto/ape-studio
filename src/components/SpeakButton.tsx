@@ -91,6 +91,7 @@ export function SpeakButton({
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       accessibilityState={{ selected: playing }}
+      aria-selected={playing}
       style={playing && Platform.OS === 'ios' ? styles.glow : null}
     >
       <Svg width={size} height={size} viewBox="0 0 24 24">

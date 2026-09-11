@@ -99,6 +99,7 @@ export function SessionTimerButton({ active, onPress }: { active: boolean; onPre
       onPress={onPress}
       accessibilityRole="button"
       accessibilityState={{ selected: active }}
+      aria-selected={active}
       accessibilityLabel="Session timer"
     >
       <TimerIcon color={active ? colors.blue : '#8a8c90'} size={18} />
@@ -146,13 +147,14 @@ export function SessionTimerModal({ timer }: { timer: SessionTimerApi }) {
                 onPress={() => setMinutes(m)}
                 accessibilityRole="button"
                 accessibilityState={{ selected: minutes === m }}
+                aria-selected={minutes === m}
               >
                 <Text style={[styles.presetText, minutes === m && styles.presetTextOn]}>{m} min</Text>
               </Pressable>
             ))}
           </View>
 
-          <Pressable style={styles.toggleRow} onPress={() => setShow((v) => !v)} accessibilityRole="checkbox" accessibilityState={{ checked: show }}>
+          <Pressable style={styles.toggleRow} onPress={() => setShow((v) => !v)} accessibilityRole="checkbox" accessibilityState={{ checked: show }} aria-checked={show}>
             <View style={[styles.checkbox, show && styles.checkboxOn]}>{show ? <Text style={styles.checkMark}>✓</Text> : null}</View>
             <Text style={styles.toggleText}>Show the timer on screen</Text>
           </Pressable>

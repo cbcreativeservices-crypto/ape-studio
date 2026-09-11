@@ -654,6 +654,7 @@ export function LabelScene({ width, completed, onComplete, openSources }: CiModu
                   disabled={aDone || tapped}
                   accessibilityRole="button"
                   accessibilityState={{ disabled: aDone || tapped }}
+                  aria-disabled={aDone || tapped}
                   accessibilityLabel={`Cable ${i + 1}${tapped ? '. Inspected: unlabeled, identical to the others' : aDone ? '. Identical to the rest — no point inspecting further' : '. Tap to inspect'}`}
                 >
                   <Text style={styles.cableBtnName}>CABLE {i + 1}</Text>
@@ -712,6 +713,7 @@ export function LabelScene({ width, completed, onComplete, openSources }: CiModu
               disabled={bPicks.some((p) => p == null)}
               accessibilityRole="button"
               accessibilityState={{ disabled: bPicks.some((p) => p == null) }}
+              aria-disabled={bPicks.some((p) => p == null)}
               accessibilityLabel="Apply labels to both ends"
             >
               <Text style={styles.applyText}>APPLY LABELS — BOTH ENDS</Text>
@@ -754,6 +756,8 @@ export function LabelScene({ width, completed, onComplete, openSources }: CiModu
                       disabled={cFound}
                       accessibilityRole="button"
                       accessibilityState={{ disabled: cFound, selected: cFound && isTarget }}
+                      aria-disabled={cFound}
+                      aria-selected={cFound && isTarget}
                       accessibilityLabel={`Cable ${i + 1}, flag reads ${CABLE_FLAGS[i]}${cFound && isTarget ? '. Traced — this is the one.' : ''}`}
                     >
                       <Text style={styles.cableBtnName}>CABLE {i + 1}</Text>

@@ -156,6 +156,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone }: {
         hitSlop={{ top: 12, bottom: 12 }}
         accessibilityRole="button"
         accessibilityState={{ expanded: listOpen }}
+        aria-expanded={listOpen}
         accessibilityLabel={`Page list. ${doneCount} of ${pages.length} complete. ${listOpen ? 'Expanded' : 'Collapsed'}`}
       >
         {pages.map((_, i) => <View key={i} style={[styles.dot, progress?.completed.includes(i) && styles.dotDone, i === page && styles.dotNow]} />)}
@@ -166,7 +167,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone }: {
           {pages.map((p, i) => {
             const done = !!progress?.completed.includes(i);
             return (
-              <Pressable key={i} onPress={() => goTo(i)} style={styles.listRow} accessibilityRole="button" accessibilityState={{ selected: i === page }} accessibilityLabel={`Page ${i + 1}, ${p.title}${done ? ', complete' : ''}${i === page ? ', current' : ''}`}>
+              <Pressable key={i} onPress={() => goTo(i)} style={styles.listRow} accessibilityRole="button" accessibilityState={{ selected: i === page }} aria-selected={i === page} accessibilityLabel={`Page ${i + 1}, ${p.title}${done ? ', complete' : ''}${i === page ? ', current' : ''}`}>
                 <Text style={[styles.listText, i === page && { color: colors.cyanBright }, done && i !== page && { color: colors.textPrimary }]}>{done ? '✓' : '○'} {i + 1}. {p.title}</Text>
               </Pressable>
             );
@@ -181,7 +182,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone }: {
         <Page ctx={ctx} />
       </ScrollView>
       <View style={[styles.footer, { paddingBottom: insets.bottom + 8 }]}>
-        <Pressable onPress={() => page > 0 && goTo(page - 1)} disabled={page === 0} style={[styles.navBtn, page === 0 && { opacity: 0.35 }]} accessibilityRole="button" accessibilityState={{ disabled: page === 0 }} accessibilityLabel="Back one page">
+        <Pressable onPress={() => page > 0 && goTo(page - 1)} disabled={page === 0} style={[styles.navBtn, page === 0 && { opacity: 0.35 }]} accessibilityRole="button" accessibilityState={{ disabled: page === 0 }} aria-disabled={page === 0} accessibilityLabel="Back one page">
           <Text style={styles.navText}>‹ BACK</Text>
         </Pressable>
         <View style={{ flex: 1 }} />
@@ -199,6 +200,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone }: {
           style={[styles.navBtn, styles.navNext, finishBlocked && { opacity: 0.45 }]}
           accessibilityRole="button"
           accessibilityState={{ disabled: finishBlocked }}
+          aria-disabled={finishBlocked}
           accessibilityLabel={!last ? 'Continue to the next page' : finishBlocked ? 'Finish the lab — complete this page first' : 'Finish the lab'}
         >
           <Text style={[styles.navText, { color: colors.green }]}>{!last ? 'CONTINUE ›' : progress?.done ? 'COMPLETE ✓' : 'FINISH ›'}</Text>

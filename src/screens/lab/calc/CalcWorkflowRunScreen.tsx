@@ -36,7 +36,7 @@ import type { CalcFunction, FieldDef, OutputVal, Workspace } from './calcTypes';
 import { fmt, unitsFor } from './calcUnits';
 import { FieldRow, buildValues, defaultUnitIdx, formatOutput, runCompute, type ComputeResult } from './calcPanel';
 import type { BoundInput, Project, SavedRunSummary, ValueSource, Workflow, WorkflowRun } from './workflowModel';
-import { WORKFLOW_LIMITS } from './workflowModel';
+import { workflowLimitsFor } from './workflowModel';
 import { workflowStore } from './workflowStore';
 import { WORKFLOW_TEMPLATES, resolveStep, validateWorkflow } from './workflowCatalog';
 import { summaryToText } from './CalcResultsScreen';
@@ -76,7 +76,7 @@ export function CalcWorkflowRunScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<Nav>();
   const route = useRoute<RouteProp<RootStackParamList, 'CalcWorkflowRun'>>();
-  const { entitlement } = useEntitlement();
+  const { entitlement, resolved } = useEntitlement();
   // PIN THE INPUTS ON FOCUS (owner 2026-08-07) — see CalcWorkspaceScreen: the
   // keyboard would otherwise cover the fields being typed into, and the shared
   // KeyboardAwareScrollView degrades to a plain ScrollView on builds without
@@ -87,7 +87,10 @@ export function CalcWorkflowRunScreen() {
     const y = Math.max(0, inputsYRef.current - 8);
     setTimeout(() => scrollRef.current?.scrollTo({ y, animated: true }), 60);
   }, []);
-  const limits = WORKFLOW_LIMITS[entitlement];
+  // workflowLimitsFor, not WORKFLOW_LIMITS[entitlement] — the 'anonymous' boot
+  // row has canResume FALSE, which hid the SAVE key and discarded a member's
+  // in-progress draft on first paint (roll-out 2026-09-11).
+  const limits = workflowLimitsFor(entitlement, resolved);
 
   const [workflow, setWorkflow] = useState<Workflow | null>(null);
   const [run, setRun] = useState<WorkflowRun | null>(null);
@@ -505,6 +508,7 @@ export function CalcWorkflowRunScreen() {
                       onPress={() => setProjectPickerOpen((v) => !v)}
                       accessibilityRole="button"
                       accessibilityState={{ expanded: projectPickerOpen }}
+                      aria-expanded={projectPickerOpen}
                       accessibilityLabel="Use a saved project"
                     >
                       <Text style={styles.projectBtnText}>⛭ USE A SAVED PROJECT</Text>
@@ -703,6 +707,7 @@ function NavBtn({ label, onPress, disabled, primary }: { label: string; onPress:
       disabled={disabled}
       accessibilityRole="button"
       accessibilityState={{ disabled: !!disabled }}
+      aria-disabled={!!disabled}
       accessibilityLabel={label}
     >
       <Text style={[styles.navBtnText, primary && styles.navBtnTextPrimary]}>{label}</Text>

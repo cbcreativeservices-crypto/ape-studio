@@ -63,6 +63,7 @@ export function LearnMore({ title = 'LEARN MORE', children }: { title?: string; 
         onPress={() => setOpen(!open)}
         accessibilityRole="button"
         accessibilityState={{ expanded: open }}
+        aria-expanded={open}
         style={styles.learnMoreHead}
       >
         <Text style={styles.learnMoreTitle}>{open ? '▾' : '▸'} {title}</Text>
@@ -101,6 +102,7 @@ export function MisconceptionCard({ m }: { m: Misconception }) {
       style={styles.miscon}
       accessibilityRole="button"
       accessibilityState={{ expanded: open }}
+      aria-expanded={open}
       accessibilityLabel={`Misconception: ${m.statement}`}
     >
       <Text style={styles.misconVerdict}>{m.verdict === 'false' ? 'MYTH' : 'IT DEPENDS'}</Text>
@@ -248,6 +250,7 @@ export function SegRow<T extends string | number>({
             style={[styles.segBtn, value === o.key && styles.segBtnOn]}
             accessibilityRole="tab"
             accessibilityState={{ selected: value === o.key }}
+            aria-selected={value === o.key}
           >
             <Text style={[styles.segText, value === o.key && styles.segTextOn]}>{o.label}</Text>
           </Pressable>
@@ -307,6 +310,8 @@ export function CheckCard({
               style={[styles.checkOpt, isRight && styles.checkRight, isWrongPick && styles.checkWrong]}
               accessibilityRole="button"
               accessibilityState={{ disabled: answered && correct, selected: picked === i }}
+              aria-disabled={answered && correct}
+              aria-selected={picked === i}
               accessibilityLabel={o}
             >
               <Text style={[styles.checkOptText, isRight && { color: colors.green }, isWrongPick && { color: colors.red }]}>

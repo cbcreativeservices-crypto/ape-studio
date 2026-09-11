@@ -37,8 +37,7 @@ import { CenterLockTuner } from './CenterLockTuner';
 import { ColorWheelButton } from '../../components/ColorWheelButton';
 import { TunerDiagram } from '../../components/ColorTargetDiagrams';
 import { useToolColorPref } from '../../features/tools/waveColorPref';
-import { useEntitlement } from '../../features/commercial/EntitlementProvider';
-import { LockedButton, MembershipRequiredNote, MEMBERSHIP_REQUIRED, useFullScreenGate, useSaveGate } from './ToolLockUi';
+import { LockedButton, MembershipRequiredNote, MEMBERSHIP_REQUIRED, useFullScreenGate, useSaveGate, useToolsLocked } from './ToolLockUi';
 import { useToolUsage } from '../../features/tools/telemetry';
 import { meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
@@ -757,6 +756,7 @@ function LivePitchMode({
               delayLongPress={260}
               accessibilityRole="button"
               accessibilityState={{ expanded: cfgOpen === 'a4' }}
+              aria-expanded={cfgOpen === 'a4'}
               accessibilityLabel={`Tuning standard, currently A4 ${a4} hertz. Opens choices.`}
               accessibilityHint="Press and hold for an explanation."
             >
@@ -768,6 +768,7 @@ function LivePitchMode({
               onPress={() => setCfgOpen(cfgOpen === 'low' ? null : 'low')}
               accessibilityRole="button"
               accessibilityState={{ expanded: cfgOpen === 'low' }}
+              aria-expanded={cfgOpen === 'low'}
               accessibilityLabel={`Low cut, currently ${fmtCut(lowCut)} high-pass. Opens choices.`}
             >
               <Text style={styles.cfgLabel}>LOW-CUT</Text>
@@ -778,6 +779,7 @@ function LivePitchMode({
               onPress={() => setCfgOpen(cfgOpen === 'high' ? null : 'high')}
               accessibilityRole="button"
               accessibilityState={{ expanded: cfgOpen === 'high' }}
+              aria-expanded={cfgOpen === 'high'}
               accessibilityLabel={`High cut, currently ${fmtCut(highCut)} low-pass. Opens choices.`}
             >
               <Text style={styles.cfgLabel}>HIGH-CUT</Text>
@@ -798,6 +800,7 @@ function LivePitchMode({
                   delayLongPress={260}
                   accessibilityRole="button"
                   accessibilityState={{ selected: a4 === v }}
+                  aria-selected={a4 === v}
                   accessibilityLabel={`A4 ${v} hertz`}
                 >
                   <Text style={[styles.a4ChipText, a4 === v && styles.a4ChipTextOn]}>{v}</Text>
@@ -817,6 +820,7 @@ function LivePitchMode({
                   }}
                   accessibilityRole="button"
                   accessibilityState={{ selected: lowCut === v }}
+                  aria-selected={lowCut === v}
                   accessibilityLabel={`Low cut ${v} hertz high-pass`}
                 >
                   <Text style={[styles.a4ChipText, lowCut === v && styles.a4ChipTextOn]}>{v}</Text>
@@ -836,6 +840,7 @@ function LivePitchMode({
                   }}
                   accessibilityRole="button"
                   accessibilityState={{ selected: highCut === v }}
+                  aria-selected={highCut === v}
                   accessibilityLabel={`High cut ${v} hertz low-pass`}
                 >
                   <Text style={[styles.a4ChipText, highCut === v && styles.a4ChipTextOn]}>
@@ -878,6 +883,7 @@ function LivePitchMode({
               disabled={!accepted || stats == null}
               accessibilityRole="button"
               accessibilityState={{ disabled: !accepted || stats == null }}
+              aria-disabled={!accepted || stats == null}
               accessibilityLabel="Save measurement"
             >
               <Text style={[styles.ctrlText, justSaved && styles.ctrlTextSaved]}>
@@ -1177,6 +1183,7 @@ function TapMode({ onOpenLibrary, help, helpAll }: { onOpenLibrary: () => void; 
           onPress={() => setHeld((h) => !h)}
           accessibilityRole="button"
           accessibilityState={{ selected: held }}
+          aria-selected={held}
           accessibilityLabel={held ? 'Release hold' : 'Hold'}
         >
           <Text style={[styles.ctrlText, held && styles.ctrlTextActive]}>{held ? 'HOLD ●' : 'HOLD'}</Text>
@@ -1188,6 +1195,7 @@ function TapMode({ onOpenLibrary, help, helpAll }: { onOpenLibrary: () => void; 
           disabled={!stats}
           accessibilityRole="button"
           accessibilityState={{ disabled: !stats }}
+          aria-disabled={!stats}
           accessibilityLabel="Save measurement"
         >
           <Text style={[styles.ctrlText, justSaved && styles.ctrlTextSaved]}>
@@ -1219,7 +1227,12 @@ export function FrequencyCounterScreen({ navigation }: Props) {
   const vuTunerOpen = useVuTunerOpen();
   // Academy-gated extras (owner 2026-08-05): Light Pulse, LEARN/DEMO, and the
   // Saved Measurements library. Free accounts see them locked → Paywall.
-  const { isMember } = useEntitlement();
+  // Via useToolsLocked so the `resolved` hold lives in ONE place (entitlement
+  // roll-out 2026-09-11): read straight off isMember, this first-painted the
+  // 🔒 Light Pulse row, greyed LEARN/DEMO and the membership note at a paying
+  // member — and a Saved-Measurements tap in that window dumped them on the
+  // Paywall for the membership they already own.
+  const isMember = !useToolsLocked();
 
   const goBack = () => (mode ? setMode(null) : navigation.goBack());
   const modeMeta = MODES.find((m) => m.key === mode) ?? null;

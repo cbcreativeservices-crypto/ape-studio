@@ -76,6 +76,7 @@ function SectionToggle({
       onPress={onToggle}
       accessibilityRole="checkbox"
       accessibilityState={{ checked: on }}
+      aria-checked={on}
       accessibilityLabel={label}
       hitSlop={6}
     >
@@ -411,6 +412,7 @@ export function ShareTermSheet({
                       onPress={() => toggleSelected(r.id)}
                       accessibilityRole="checkbox"
                       accessibilityState={{ checked: on }}
+                      aria-checked={on}
                       accessibilityLabel={r.term}
                     >
                       <View style={[styles.box, on && styles.boxOn]}>{on ? <Text style={styles.check}>✓</Text> : null}</View>

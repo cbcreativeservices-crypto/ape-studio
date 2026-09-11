@@ -339,9 +339,20 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
   // membership arms whatever the user had switched on. requestLocalNotifSync
   // is change-gated (standing is part of its slice), so this is cheap.
   useEffect(() => {
+    // WAIT for `resolved` (entitlement gate roll-out 2026-09-11). memberStanding
+    // is deliberately TRI-state — 'unknown' at boot so a cold start racing the
+    // entitlement fetch does NOT sweep a member's booked reminders — but this
+    // effect ran on the very first render, when `entitlement` is still the
+    // 'anonymous' default, and wrote a definite 'nonmember'. That threw the
+    // tri-state away: every cold boot cancelled a paying member's notifications
+    // and only re-booked them once the server read landed — and if that read
+    // failed all the way through its retries, they stayed cancelled for the
+    // whole app run. Holding at 'unknown' until the tier is known is exactly
+    // what memberStanding.ts documents.
+    if (!resolved) return;
     setMemberStanding(entitlement === 'academy');
     void loadLocalSettings().then((s) => requestLocalNotifSync(s));
-  }, [entitlement]);
+  }, [entitlement, resolved]);
 
   const setEntitlement = useCallback((state: Entitlement) => {
     if (!__DEV__) return;

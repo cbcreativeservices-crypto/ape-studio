@@ -254,6 +254,7 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
               style={[styles.opt, isAnswer && styles.optRight, isWrong && styles.optWrong]}
               accessibilityRole="button"
               accessibilityState={{ disabled: diagPick != null }}
+              aria-disabled={diagPick != null}
               accessibilityLabel={k.label}
             >
               <Text style={[styles.optText, isAnswer && { color: colors.green }, isWrong && { color: colors.red }]}>{k.label}</Text>
@@ -412,6 +413,8 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
                     style={[styles.opt, picked === oi && !finalSubmitted && styles.optPicked, isRight && styles.optRight, isWrongPick && styles.optWrong]}
                     accessibilityRole="button"
                     accessibilityState={{ selected: picked === oi, disabled: finalSubmitted }}
+                    aria-selected={picked === oi}
+                    aria-disabled={finalSubmitted}
                     accessibilityLabel={o}
                   >
                     <Text style={[styles.optText, isRight && { color: colors.green }, isWrongPick && { color: colors.red }]}>{o}</Text>
@@ -431,6 +434,7 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
             onPress={submitFinal}
             accessibilityRole="button"
             accessibilityState={{ disabled: finalDone < finalItems.length }}
+            aria-disabled={finalDone < finalItems.length}
             accessibilityLabel={finalDone < finalItems.length ? 'Answer every item to submit' : 'Submit the final assessment'}
           >
             <Text style={styles.checkBtnText}>SUBMIT FINAL</Text>

@@ -77,6 +77,7 @@ export function CheckQuestion({ spec, onSolved }: { spec: CheckSpec; onSolved?: 
         }}
         accessibilityRole="button"
         accessibilityState={{ expanded: open }}
+        aria-expanded={open}
         accessibilityLabel={`Check yourself, ${open ? 'expanded' : 'collapsed'}`}
         hitSlop={{ top: 8, bottom: 8 }}
       >
@@ -99,6 +100,7 @@ export function CheckQuestion({ spec, onSolved }: { spec: CheckSpec; onSolved?: 
               onPress={() => pick(i)}
               accessibilityRole="button"
               accessibilityState={{ selected: isPicked }}
+              aria-selected={isPicked}
               accessibilityLabel={opt}
             >
               <Text

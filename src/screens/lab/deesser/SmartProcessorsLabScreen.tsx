@@ -47,6 +47,7 @@ export function SmartProcessorsLabScreen() {
             style={[styles.row, !f.route && styles.rowPlanned]}
             accessibilityRole="button"
             accessibilityState={{ disabled: !f.route }}
+            aria-disabled={!f.route}
             accessibilityLabel={f.route ? `Open ${f.name}` : `${f.name}. ${DEV_NOTE}`}
           >
             <View style={{ flex: 1, gap: 3 }}>

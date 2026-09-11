@@ -453,6 +453,7 @@ export function SpectrogramDemo() {
               key={s.key}
               accessibilityRole='button'
               accessibilityState={{ selected: active }}
+              aria-selected={active}
               accessibilityLabel={`Show ${s.a11y} scene`}
               onPress={() => setScene(i)}
               style={[styles.chip, active && styles.chipActive]}

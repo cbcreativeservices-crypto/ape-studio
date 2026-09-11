@@ -39,6 +39,7 @@ export function AudioOutputRow() {
         onPress={disableAudioOutput}
         accessibilityRole="switch"
         accessibilityState={{ checked: true }}
+        aria-checked={true}
         accessibilityLabel="Audio output is on. Shake the phone to mute immediately, or tap here to mute."
         style={[styles.row, styles.rowOn]}
       >

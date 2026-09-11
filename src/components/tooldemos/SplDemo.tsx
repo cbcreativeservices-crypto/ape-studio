@@ -510,6 +510,7 @@ export function SplDemo() {
             onPress={() => setScene(i)}
             accessibilityRole='button'
             accessibilityState={{ selected: i === scene }}
+            aria-selected={i === scene}
             accessibilityLabel={s.title}
             hitSlop={4}
             style={[styles.chip, i === scene && styles.chipActive]}

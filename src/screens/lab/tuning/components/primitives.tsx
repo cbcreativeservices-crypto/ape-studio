@@ -112,6 +112,8 @@ export function Btn({ label, onPress, tone = 'plain', disabled, a11y, selected }
       accessibilityRole="button"
       accessibilityLabel={a11y ?? btnA11y(label)}
       accessibilityState={{ disabled: !!disabled, ...(selected != null ? { selected } : {}) }}
+      aria-disabled={!!disabled}
+      aria-selected={selected ?? undefined}
     >
       <Text style={[styles.btnText, tone === 'primary' && { color: colors.green }, tone === 'danger' && { color: colors.red }]}>{label}</Text>
     </Pressable>
@@ -149,7 +151,7 @@ export function RatioTile({
   // The accessible node IS the pressable: a Pressable wrapping an accessible
   // View produced two nested nodes and the label was read from the wrong one.
   return onPress ? (
-    <Pressable onPress={onPress} style={tileStyle} accessibilityRole="button" accessibilityLabel={a11y} accessibilityState={{ selected: !!selected }}>
+    <Pressable onPress={onPress} style={tileStyle} accessibilityRole="button" accessibilityLabel={a11y} accessibilityState={{ selected: !!selected }} aria-selected={!!selected}>
       {inner}
     </Pressable>
   ) : (

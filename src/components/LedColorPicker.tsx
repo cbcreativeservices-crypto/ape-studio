@@ -102,6 +102,7 @@ export function LedColorPicker({
                   onPress={() => onLevelPick(null)}
                   accessibilityRole="button"
                   accessibilityState={{ selected: !levelPref }}
+                  aria-selected={!levelPref}
                   accessibilityLabel="Loudness (default)"
                 >
                   <SchemeSwatch stops={LOUDNESS_STOPS} w={68} h={26} />
@@ -118,6 +119,7 @@ export function LedColorPicker({
                       onPress={() => onLevelPick(s.id)}
                       accessibilityRole="button"
                       accessibilityState={{ selected: sel }}
+                      aria-selected={sel}
                       accessibilityLabel={`${s.label} scheme`}
                     >
                       <SchemeSwatch stops={s.stops} w={68} h={26} />
@@ -139,6 +141,7 @@ export function LedColorPicker({
                       onPress={() => onLevelPick(c)}
                       accessibilityRole="button"
                       accessibilityState={{ selected: sel }}
+                      aria-selected={sel}
                       accessibilityLabel={`Level colour ${c}`}
                     />
                   );
@@ -163,6 +166,7 @@ export function LedColorPicker({
                   onPress={() => onAvgPick(null)}
                   accessibilityRole="button"
                   accessibilityState={{ selected: !avgPref }}
+                  aria-selected={!avgPref}
                   accessibilityLabel="Default average colour (purple)"
                 >
                   <Text style={styles.defText}>DEF</Text>
@@ -176,6 +180,7 @@ export function LedColorPicker({
                       onPress={() => onAvgPick(c)}
                       accessibilityRole="button"
                       accessibilityState={{ selected: sel }}
+                      aria-selected={sel}
                       accessibilityLabel={`Average colour ${c}`}
                     />
                   );

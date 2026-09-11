@@ -358,6 +358,7 @@ function BitCell({
       onPress={onFlip}
       accessibilityRole="switch"
       accessibilityState={{ checked: on }}
+      aria-checked={on}
       accessibilityLabel={`${isSign ? 'Sign bit' : 'Bit'} worth ${fmtGroup(weight)}`}
       style={({ pressed }) => [styles.bitCell, { width: cellW }, on && styles.bitCellOn, pressed && styles.bitCellPressed]}
     >

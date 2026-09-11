@@ -48,7 +48,14 @@ const TRAINING_INTRO_FREE =
 
 export function EarLabScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
-  const { isMember } = useEntitlement();
+  // `resolved` gate (entitlement roll-out 2026-09-11): the provider boots at
+  // 'anonymous', so reading isMember alone first-painted the WHOLE Training Labs
+  // section locked — grey rows, "Preview — included with Academy membership" —
+  // at a paying member, and tapping a row in that window started the preview
+  // overlay + upgrade sheet. Treat "not yet known" as a member until the server
+  // read lands; the locks re-apply a beat later for anyone who isn't one.
+  const { isMember: memberStanding, resolved } = useEntitlement();
+  const isMember = !resolved || memberStanding;
   const section = route.params?.section; // undefined = the full combined list
   // Accordion (owner 2026-08-07): every lab row loads COLLAPSED (name + reveal
   // triangle); at most ONE row is expanded at a time, and the expanded row
@@ -251,6 +258,7 @@ function LabRow({
           style={[styles.rowName, dev && styles.rowNameDev]}
           accessibilityRole="button"
           accessibilityState={{ expanded }}
+          aria-expanded={expanded}
           accessibilityLabel={`${leaf.name}${dev ? ', planned, not open yet' : ''}${freeIncluded ? ', included free' : ''}, ${expanded ? 'expanded' : 'collapsed'}`}
         >
           {leaf.name}

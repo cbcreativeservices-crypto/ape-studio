@@ -18,9 +18,19 @@ import { colors, fonts } from '../../theme/tokens';
 
 export const MEMBERSHIP_REQUIRED = 'Academy membership required';
 
-/** True when the current user may NOT use the Academy tool extras. */
+/** True when the current user may NOT use the Academy tool extras.
+ *
+ *  Gates on `resolved` (entitlement gate roll-out 2026-09-11): the provider
+ *  boots at 'anonymous' and only learns the real tier once the server read
+ *  lands, so without this every tool screen first-painted its LOCKED state —
+ *  "🔒 SAVE LOG", greyed LEARN/DEMO — at a paying member, and a tap inside that
+ *  window popped the membership gate for a membership they already hold. One
+ *  central fix: every consumer of useToolsLocked / useSaveGate /
+ *  useFullScreenGate now holds the member-favouring (unlocked) state until the
+ *  tier is known. */
 export function useToolsLocked(): boolean {
-  return !useEntitlement().isMember;
+  const { isMember, resolved } = useEntitlement();
+  return resolved && !isMember;
 }
 
 /** SAVE gate (owner ruling 2026-09-01): saving a measurement is an Academy

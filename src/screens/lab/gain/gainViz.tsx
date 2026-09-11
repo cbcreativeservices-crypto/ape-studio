@@ -533,6 +533,7 @@ export function GainBtn({
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityState={active != null ? { selected: active } : undefined}
+      aria-selected={active ?? undefined}
       style={[styles.btn, active && styles.btnActive, danger && styles.btnDanger, good && styles.btnGood]}
     >
       <Text

@@ -537,7 +537,7 @@ export function InspectScene({ width, completed, onComplete, openSources, cleare
               <FacilityScene w={width} defects={defects} states={states} onTap={openDefect} passed={processedCount >= required} />
             ) : null}
             <FindCounter found={processedCount} required={required} total={defects.length} />
-            <Pressable onPress={() => setListOpen((o) => !o)} accessibilityRole="button" accessibilityState={{ expanded: listOpen }} accessibilityLabel="Findings list — accessible alternative to tapping the drawing">
+            <Pressable onPress={() => setListOpen((o) => !o)} accessibilityRole="button" accessibilityState={{ expanded: listOpen }} aria-expanded={listOpen} accessibilityLabel="Findings list — accessible alternative to tapping the drawing">
               <Text style={styles.listToggle}>{listOpen ? '▾ FINDINGS LIST' : '▸ FINDINGS LIST (accessible alternative)'}</Text>
             </Pressable>
             {listOpen

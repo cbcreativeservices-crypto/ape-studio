@@ -366,6 +366,7 @@ export function SignalChainLabScreen() {
                         style={[styles.node, enabled[m.id] && styles.nodeOn]}
                         accessibilityRole="button"
                         accessibilityState={{ selected: !!enabled[m.id] }}
+                        aria-selected={!!enabled[m.id]}
                         accessibilityLabel={`${m.label} ${enabled[m.id] ? 'in the chain' : 'bypassed'}`}
                       >
                         <Text style={[styles.nodeText, enabled[m.id] && styles.nodeTextOn]}>{m.label}</Text>

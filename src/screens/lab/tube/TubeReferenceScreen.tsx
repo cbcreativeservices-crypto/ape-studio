@@ -23,7 +23,13 @@ import { TUBE_FAMILY_META, searchTubes, type TubeRef } from './tubeRefs';
 export function TubeReferenceScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { isMember: unlocked } = useEntitlement();
+  // Unknown tier ⇒ render the UNLOCKED index (entitlement roll-out
+  // 2026-09-11): the provider boots at 'anonymous', so a member first-saw every
+  // row greyed with an "ACADEMY" chevron and the membership note on top. The
+  // rows themselves are public either way — TubeCardScreen is the real gate —
+  // so holding the member-favouring state here leaks nothing.
+  const { isMember: memberStanding, resolved: entResolved } = useEntitlement();
+  const unlocked = !entResolved || memberStanding;
   const [query, setQuery] = useState('');
 
   const hits = useMemo(() => searchTubes(query), [query]);

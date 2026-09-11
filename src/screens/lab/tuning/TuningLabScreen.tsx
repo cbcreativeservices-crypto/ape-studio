@@ -104,14 +104,14 @@ export function TuningLabScreen() {
         </View>
         {/* Two-segment toggle: both states are visible, so the learner can see
             what tapping will do (the old single label only named the current state). */}
-        <Pressable onPress={toggleMath} style={styles.mathBtn} accessibilityRole="switch" accessibilityState={{ checked: mathView }} accessibilityLabel="See the math" accessibilityHint="Shows or hides the derivations under each display">
+        <Pressable onPress={toggleMath} style={styles.mathBtn} accessibilityRole="switch" accessibilityState={{ checked: mathView }} aria-checked={mathView} accessibilityLabel="See the math" accessibilityHint="Shows or hides the derivations under each display">
           <View style={[styles.seg, !mathView && styles.segOn]}><Text style={[styles.mathBtnText, !mathView && styles.segOnText]}>BASIC</Text></View>
           <View style={[styles.seg, mathView && styles.segOnMath]}><Text style={[styles.mathBtnText, mathView && { color: colors.cyanBright }]}>MATH</Text></View>
         </Pressable>
       </View>
 
       {/* progress dots */}
-      <Pressable onPress={() => setListOpen(!listOpen)} style={styles.dots} accessibilityRole="button" accessibilityState={{ expanded: listOpen }} accessibilityLabel={`Chapter list. ${progress?.completed.length ?? 0} of ${CHAPTER_COUNT} complete`}>
+      <Pressable onPress={() => setListOpen(!listOpen)} style={styles.dots} accessibilityRole="button" accessibilityState={{ expanded: listOpen }} aria-expanded={listOpen} accessibilityLabel={`Chapter list. ${progress?.completed.length ?? 0} of ${CHAPTER_COUNT} complete`}>
         {CHAPTER_TITLES.map((_, i) => (
           <View key={i} style={[styles.dot, progress?.completed.includes(i) && styles.dotDone, i === chapter && styles.dotNow]} />
         ))}

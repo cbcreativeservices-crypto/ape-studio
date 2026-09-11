@@ -51,6 +51,7 @@ function TrayChip({
       delayLongPress={350}
       accessibilityRole="button"
       accessibilityState={{ selected }}
+      aria-selected={selected}
       accessibilityLabel={
         photoHint ? `${label} — long-press to see a photo` : onLongPress ? `${label} — long-press for its guided lesson` : label
       }

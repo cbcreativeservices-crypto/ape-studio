@@ -133,6 +133,7 @@ export function NotifyScheduleModal({
                       onPress={() => onSetDay(d)}
                       accessibilityRole="button"
                       accessibilityState={{ selected: on }}
+                      aria-selected={on}
                     >
                       <Text style={[styles.dayChipText, on && styles.dayChipTextOn]}>{shortDay(d)}</Text>
                     </Pressable>
@@ -168,6 +169,7 @@ export function NotifyScheduleModal({
                           }}
                           accessibilityRole="button"
                           accessibilityState={{ selected: on }}
+                          aria-selected={on}
                           accessibilityLabel={`Set ${p}`}
                         >
                           <Text style={[styles.periodText, on && styles.periodTextOn]}>{p}</Text>

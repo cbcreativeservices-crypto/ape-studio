@@ -31,6 +31,7 @@ function Section({ title, children, startOpen }: { title: string; children: Reac
         hitSlop={{ top: 7, bottom: 7 }}
         accessibilityRole="button"
         accessibilityState={{ expanded: open }}
+        aria-expanded={open}
         accessibilityLabel={`${title} section`}
         style={styles.sectionHead}
       >
@@ -111,6 +112,7 @@ export function ConnectorCard({ rec }: { rec: ConnectorRecord }) {
               hitSlop={{ top: 6, bottom: 6 }}
               accessibilityRole="button"
               accessibilityState={{ selected: i === imgIdx }}
+              aria-selected={i === imgIdx}
               accessibilityLabel={`${im.label} view`}
               style={[styles.galleryChip, i === imgIdx && styles.galleryChipActive]}
             >
@@ -215,6 +217,7 @@ export function RecognitionStrip({ rec, title }: { rec: ConnectorRecord[]; title
             hitSlop={{ top: 6, bottom: 6 }}
             accessibilityRole="button"
             accessibilityState={{ selected: r.id === sel }}
+            aria-selected={r.id === sel}
             accessibilityLabel={r.displayName}
             style={[styles.recogChip, r.id === sel && styles.recogChipActive]}
           >

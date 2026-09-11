@@ -16,7 +16,7 @@ import { confirmDialog, notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import type { Workflow, WorkflowStep } from './workflowModel';
-import { WORKFLOW_LIMITS } from './workflowModel';
+import { workflowLimitsFor } from './workflowModel';
 import { workflowStore } from './workflowStore';
 import { listCalculators, resolveStep, type CatalogEntry } from './workflowCatalog';
 
@@ -27,7 +27,7 @@ export function CalcWorkflowEditScreen() {
   const navigation = useNavigation<Nav>();
   const route = useRoute<RouteProp<RootStackParamList, 'CalcWorkflowEdit'>>();
   const editingId = route.params?.id;
-  const { entitlement } = useEntitlement();
+  const { entitlement, resolved } = useEntitlement();
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -90,7 +90,9 @@ export function CalcWorkflowEditScreen() {
     // itself refuses. Editing an already-saved workflow is unaffected.
     // notify / confirmDialog, not Alert.alert: RN-web's Alert is a no-op, so
     // these notices were silent on the web preview (B-018/B-062).
-    if (!editingId && WORKFLOW_LIMITS[entitlement].savedWorkflows === 0) {
+    // workflowLimitsFor: the 'anonymous' boot row would refuse a member's save
+    // until the entitlement read landed (roll-out 2026-09-11).
+    if (!editingId && workflowLimitsFor(entitlement, resolved).savedWorkflows === 0) {
       notify(
         'Build your own workflow?',
         'Building your own calculator workflows is a feature of Academy membership. You can still run the built-in templates.',
@@ -121,7 +123,7 @@ export function CalcWorkflowEditScreen() {
       return;
     }
     navigation.goBack();
-  }, [name, description, steps, editingId, createdAt, navigation, entitlement]);
+  }, [name, description, steps, editingId, createdAt, navigation, entitlement, resolved]);
 
   const onBack = () => {
     if (!dirty) {
@@ -213,6 +215,7 @@ export function CalcWorkflowEditScreen() {
           onPress={() => setPickerOpen((v) => !v)}
           accessibilityRole="button"
           accessibilityState={{ expanded: pickerOpen }}
+          aria-expanded={pickerOpen}
           accessibilityLabel="Add calculator"
         >
           <Text style={styles.addBtnText}>{pickerOpen ? '▾ ADD CALCULATOR' : '＋ ADD CALCULATOR'}</Text>
@@ -258,6 +261,7 @@ function StepBtn({ label, a11y, onPress, disabled, danger }: { label: string; a1
       hitSlop={4}
       accessibilityRole="button"
       accessibilityState={{ disabled: !!disabled }}
+      aria-disabled={!!disabled}
       accessibilityLabel={a11y}
     >
       <Text style={[styles.stepBtnText, danger && styles.stepBtnTextDanger]}>{label}</Text>

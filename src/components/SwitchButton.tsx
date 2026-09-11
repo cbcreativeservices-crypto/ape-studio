@@ -284,6 +284,7 @@ export function SwitchButton({
       accessibilityRole="button"
       accessibilityLabel={a11yLabel ?? label}
       accessibilityState={{ disabled }}
+      aria-disabled={disabled}
       hitSlop={6}
       style={{ width, height }}
     >

@@ -114,7 +114,12 @@ export function ColorWheelButton({
   /** Phrase for the membership popup: "…is a member feature." */
   feature?: string;
 }): ReactNode {
-  const { isMember } = useEntitlement();
+  // `resolved` gate (entitlement roll-out 2026-09-11): the provider boots at
+  // 'anonymous', so a member who tapped the colour wheel before the server read
+  // landed got the "members only" gate for the membership they already hold.
+  // Unknown ⇒ treat as a member; the gate re-arms once the tier is known.
+  const { isMember: memberStanding, resolved } = useEntitlement();
+  const isMember = !resolved || memberStanding;
   const [gate, setGate] = useState(false);
   const [picker, setPicker] = useState(false);
   const [spectrum, setSpectrum] = useState(false);
@@ -194,6 +199,7 @@ export function ColorWheelButton({
                   }}
                   accessibilityRole="button"
                   accessibilityState={{ selected: !current }}
+                  aria-selected={!current}
                   accessibilityLabel={`${defaultLabel} (default)`}
                 >
                   <SchemeSwatch stops={DEFAULT_RAMP} />
@@ -211,6 +217,7 @@ export function ColorWheelButton({
                       }}
                       accessibilityRole="button"
                       accessibilityState={{ selected: sel }}
+                      aria-selected={sel}
                       accessibilityLabel={`${s.label} scheme`}
                     >
                       <SchemeSwatch stops={s.stops} />
@@ -233,6 +240,7 @@ export function ColorWheelButton({
                   }}
                   accessibilityRole="button"
                   accessibilityState={{ selected: !current }}
+                  aria-selected={!current}
                   accessibilityLabel="Default colour"
                 >
                   <Text style={styles.swatchDefaultText}>DEF</Text>
@@ -250,6 +258,7 @@ export function ColorWheelButton({
                     }}
                     accessibilityRole="button"
                     accessibilityState={{ selected: sel }}
+                    aria-selected={sel}
                     accessibilityLabel={`Colour ${c}`}
                   />
                 );

@@ -1491,6 +1491,7 @@ export function CourseSelectionScreen() {
             onPress={() => (navigation as any).navigate('Awards', { category: 'enrollment' })}
             accessibilityRole="button"
             accessibilityState={{ selected: entitlement === 'academy' }}
+            aria-selected={entitlement === 'academy'}
             accessibilityLabel="Enrollments"
           >
             <Text

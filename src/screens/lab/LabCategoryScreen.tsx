@@ -132,6 +132,7 @@ function LabRow({
             style={[styles.rowName, dev && styles.rowNameDev]}
             accessibilityRole="button"
             accessibilityState={{ expanded }}
+            aria-expanded={expanded}
             accessibilityLabel={`${leaf.name}${done ? ', completed' : ''}${dev ? ', planned, not open yet' : ''}, ${expanded ? 'expanded' : 'collapsed'}`}
           >
             {leaf.name}

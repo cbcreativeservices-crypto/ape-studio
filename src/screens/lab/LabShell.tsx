@@ -78,6 +78,7 @@ export function LabChip({
       hitSlop={{ top: 6, bottom: 6 }}
       accessibilityRole="button"
       accessibilityState={{ selected }}
+      aria-selected={selected}
       accessibilityLabel={
         photoHint
           ? `${label} — long-press to see a photo`
@@ -117,6 +118,7 @@ export function HeaderPlayButton({
       hitSlop={8}
       accessibilityRole="button"
       accessibilityState={{ disabled: !!disabled }}
+      aria-disabled={!!disabled}
       accessibilityLabel={label ?? (playing ? 'Stop' : 'Play')}
     >
       <Text style={[styles.headerPlayGlyph, playing && styles.headerPlayGlyphOn]}>
@@ -158,6 +160,7 @@ export function CollapsibleSection({
           }}
           accessibilityRole="button"
           accessibilityState={{ expanded: open }}
+          aria-expanded={open}
           accessibilityLabel={`${title} section, ${open ? 'expanded' : 'collapsed'}`}
         >
           <Text style={styles.sectionCaret}>{open ? '▾' : '▸'}</Text>
@@ -307,6 +310,7 @@ export function LabShell({
               }}
               accessibilityRole="button"
               accessibilityState={{ selected }}
+              aria-selected={selected}
               accessibilityLabel={`${m.label} mode`}
             >
               <Text style={[styles.tabText, { color: c, opacity: selected ? 1 : 0.72 }]}>{m.label}</Text>
@@ -429,6 +433,7 @@ export function SpeakerOutputToggle({
       onPress={() => onChange(!value)}
       accessibilityRole="checkbox"
       accessibilityState={{ checked: value }}
+      aria-checked={value}
       accessibilityLabel={title}
     >
       <View style={[styles.spkBox, value && styles.spkBoxOn]}>

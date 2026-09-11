@@ -56,7 +56,7 @@ export function TubeCardScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'TubeCard'>>();
-  const { isMember: unlocked } = useEntitlement();
+  const { isMember: unlocked, resolved: entResolved } = useEntitlement();
 
   const startIdx = Math.max(0, TUBE_REFS.findIndex((r) => r.id === route.params.id));
   const [idx, setIdx] = useState(startIdx);
@@ -359,6 +359,15 @@ export function TubeCardScreen() {
     };
   }, [idx, tube.stem]);
 
+  // Hold a NEUTRAL screen until the entitlement read lands (roll-out
+  // 2026-09-11). The provider boots at 'anonymous', so this full-screen gate
+  // used to greet every member with "Academy membership required" for the
+  // card they had just opened. Blank-for-a-beat is neutral: it neither
+  // false-locks a member nor shows the cards to a non-member.
+  if (!entResolved) {
+    return <View style={[styles.root, { paddingTop: insets.top + 10, paddingHorizontal: 16 }]} />;
+  }
+
   // Non-members never reach the cards (deep-link safe).
   if (!unlocked) {
     return (
@@ -432,6 +441,7 @@ export function TubeCardScreen() {
                 style={[styles.pageTab, page === p && styles.pageTabOn]}
                 accessibilityRole="button"
                 accessibilityState={{ selected: page === p }}
+                aria-selected={page === p}
                 accessibilityLabel={`Show page ${p} of ${pageCount}`}
               >
                 <Text style={[styles.pageTabText, page === p && styles.pageTabTextOn]}>PAGE {p}</Text>

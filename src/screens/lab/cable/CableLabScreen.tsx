@@ -46,9 +46,14 @@ export function CableLabScreen() {
 
   // Guest rule (owner 2026-08-12): anonymous users neither restore nor persist
   // their place — every open starts at the first lesson.
-  const { entitlement } = useEntitlement();
-  const noAccountRef = useRef(entitlement === 'anonymous');
-  noAccountRef.current = entitlement === 'anonymous';
+  const { entitlement, resolved } = useEntitlement();
+  // `resolved` REQUIRED (entitlement roll-out 2026-09-11): the provider boots
+  // at 'anonymous', and the restore effect below runs on MOUNT — so without it
+  // a signed-in user reopening this lab was treated as a guest and dumped back
+  // on the first lesson instead of the page they left off on. Unknown ⇒ not a
+  // guest; the real guest rule applies the moment the tier is known.
+  const noAccountRef = useRef(resolved && entitlement === 'anonymous');
+  noAccountRef.current = resolved && entitlement === 'anonymous';
   const navigatedRef = useRef(false);
 
   useEffect(() => {
@@ -120,6 +125,7 @@ export function CableLabScreen() {
             hitSlop={{ top: 18, bottom: 18, left: 9, right: 9 }}
             accessibilityRole="button"
             accessibilityState={{ selected: i === step }}
+            aria-selected={i === step}
             accessibilityLabel={`Go to ${st.title}${i === step ? ', current lesson' : i < step ? ', visited' : ''}`}
           >
             <View style={[styles.dot, i === step && styles.dotActive, i < step && styles.dotDone]} />

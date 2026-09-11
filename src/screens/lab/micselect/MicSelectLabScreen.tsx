@@ -101,6 +101,7 @@ function Chip({ label, active, onPress, dim }: { label: string; active: boolean;
       hitSlop={{ top: 8, bottom: 8 }}
       accessibilityRole="button"
       accessibilityState={{ selected: active }}
+      aria-selected={active}
       style={[styles.chip, active && styles.chipActive, dim && { opacity: 0.55 }]}
     >
       <Text style={[styles.chipText, active && styles.chipTextActive]}>{label}</Text>
@@ -175,6 +176,7 @@ function TypesStep() {
               onPress={() => tap(m.key)}
               accessibilityRole="button"
               accessibilityState={{ selected: active }}
+              aria-selected={active}
               accessibilityLabel={m.name}
               style={[styles.micCell, active && styles.micCellActive]}
             >
@@ -328,6 +330,7 @@ function PatternsStep() {
             onPress={() => setReason(r.key)}
             accessibilityRole="button"
             accessibilityState={{ selected: reason === r.key }}
+            aria-selected={reason === r.key}
             style={[styles.reasonRow, reason === r.key && styles.reasonRowActive]}
           >
             <Text style={styles.reasonText}>{r.text}</Text>
@@ -440,6 +443,7 @@ function SplStep() {
             onPress={() => setMic(m.key)}
             accessibilityRole="button"
             accessibilityState={{ selected: mic === m.key }}
+            aria-selected={mic === m.key}
             accessibilityLabel={m.name}
             style={[styles.profileCell, mic === m.key && styles.micCellActive]}
           >
@@ -676,6 +680,7 @@ function ChallengeStep() {
           }}
           accessibilityRole="button"
           accessibilityState={{ selected: pick === m.key }}
+          aria-selected={pick === m.key}
           accessibilityLabel={m.label}
           style={[styles.formRow, pick === m.key && styles.micCellActive]}
         >
@@ -706,6 +711,7 @@ function ChallengeStep() {
                 }}
                 accessibilityRole="checkbox"
                 accessibilityState={{ checked: on }}
+                aria-checked={on}
                 style={[styles.reasonRow, on && styles.reasonRowActive]}
               >
                 <Text style={styles.reasonText}>{`${on ? '☑' : '☐'}  ${f.label}`}</Text>
@@ -822,6 +828,8 @@ function LockerStep() {
             }}
             accessibilityRole="checkbox"
             accessibilityState={{ checked: on, disabled: full }}
+            aria-checked={on}
+            aria-disabled={full}
             accessibilityLabel={m.name}
             style={[styles.formRow, on && styles.micCellActive, full && { opacity: 0.45 }]}
           >
@@ -944,9 +952,14 @@ export function MicSelectLabScreen() {
 
   // Guest rule (owner 2026-08-12): anonymous users neither restore nor persist
   // their place — every open starts at the first lesson.
-  const { entitlement } = useEntitlement();
-  const noAccountRef = useRef(entitlement === 'anonymous');
-  noAccountRef.current = entitlement === 'anonymous';
+  const { entitlement, resolved } = useEntitlement();
+  // `resolved` REQUIRED (entitlement roll-out 2026-09-11): the provider boots
+  // at 'anonymous', and the restore effect below runs on MOUNT — so without it
+  // a signed-in user reopening this lab was treated as a guest and dumped back
+  // on the first lesson instead of the page they left off on. Unknown ⇒ not a
+  // guest; the real guest rule applies the moment the tier is known.
+  const noAccountRef = useRef(resolved && entitlement === 'anonymous');
+  noAccountRef.current = resolved && entitlement === 'anonymous';
   const navigatedRef = useRef(false);
 
   useEffect(() => {

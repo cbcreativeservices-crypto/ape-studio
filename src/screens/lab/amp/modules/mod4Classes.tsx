@@ -121,6 +121,7 @@ export function ClassFactsCard({ cls, expanded = true, onToggle }: { cls: AmpCla
       onPress={onToggle}
       accessibilityRole="button"
       accessibilityState={{ expanded }}
+      aria-expanded={expanded}
       accessibilityLabel={`Class ${cls} facts, ${expanded ? 'expanded' : 'collapsed'}`}
       style={styles.factsPressable}
     >

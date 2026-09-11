@@ -102,7 +102,7 @@ export function CalcWorkspaceScreen() {
   // calculation OUTPUTS per rolling week (server-enforced via calc_consume).
   // Academy is unlimited; anonymous guests must sign in. The result is hidden
   // behind a CALCULATE button so there is one countable trigger per calculation.
-  const { entitlement, commercialMode } = useEntitlement();
+  const { entitlement, commercialMode, resolved } = useEntitlement();
   // During the first-run onboarding demo the calc is a canned "looks real"
   // landing focused on UX, not the upsell (owner 2026-09-07): no sign-in gate
   // and no weekly-cap prompt — the answer just computes locally. Real gating
@@ -110,7 +110,13 @@ export function CalcWorkspaceScreen() {
   const onboardingSampling = useSamplingActive();
   // Caps only bite in commercial mode; institutional/dev mode grants full access.
   const capped = commercialMode && (entitlement === 'free' || entitlement === 'lapsed') && !onboardingSampling;
-  const mustSignIn = commercialMode && entitlement === 'anonymous' && !onboardingSampling;
+  // `resolved` REQUIRED here (entitlement roll-out 2026-09-11): the provider
+  // boots at 'anonymous', so without it every user — signed-in members included
+  // — opened a calculator to "Create a free account (or sign in) to run
+  // calculations" with the answer withheld, until the server read landed.
+  // (`capped` needs no guard: 'anonymous' is neither 'free' nor 'lapsed', so it
+  // is already false pre-resolve.)
+  const mustSignIn = commercialMode && resolved && entitlement === 'anonymous' && !onboardingSampling;
   const [usage, setUsage] = useState<CalcUsage | null>(null);
   const [consumedSig, setConsumedSig] = useState<string | null>(null);
   const [consuming, setConsuming] = useState(false);
@@ -456,6 +462,7 @@ export function CalcWorkspaceScreen() {
                   onPress={() => { setFnIdx(i); setStepsOpen(false); }}
                   accessibilityRole="radio"
                   accessibilityState={{ selected: sel }}
+                  aria-selected={sel}
                   accessibilityLabel={f.name}
                 >
                   <View style={[styles.fnRadio, sel && styles.fnRadioSel]}>
@@ -494,17 +501,17 @@ export function CalcWorkspaceScreen() {
 
         {/* Explanation sections — collapsible, default open, remembered per user
             (owner 2026-08-05). Tap a heading to collapse/expand. */}
-        <Pressable onPress={() => toggleSec('why')} accessibilityRole="button" accessibilityState={{ expanded: secOpen.why }} accessibilityLabel="Why this matters">
+        <Pressable onPress={() => toggleSec('why')} accessibilityRole="button" accessibilityState={{ expanded: secOpen.why }} aria-expanded={secOpen.why} accessibilityLabel="Why this matters">
           <Text style={styles.eyebrow}>{secOpen.why ? '▾' : '▸'} WHY THIS MATTERS</Text>
         </Pressable>
         {secOpen.why ? <Text style={styles.body}>{ws.whyItMatters}</Text> : null}
 
-        <Pressable onPress={() => toggleSec('example')} accessibilityRole="button" accessibilityState={{ expanded: secOpen.example }} accessibilityLabel="Practical example">
+        <Pressable onPress={() => toggleSec('example')} accessibilityRole="button" accessibilityState={{ expanded: secOpen.example }} aria-expanded={secOpen.example} accessibilityLabel="Practical example">
           <Text style={styles.eyebrow}>{secOpen.example ? '▾' : '▸'} PRACTICAL EXAMPLE</Text>
         </Pressable>
         {secOpen.example ? <Text style={styles.body}>{ws.example}</Text> : null}
 
-        <Pressable onPress={() => toggleSec('mistakes')} accessibilityRole="button" accessibilityState={{ expanded: secOpen.mistakes }} accessibilityLabel="Common mistakes">
+        <Pressable onPress={() => toggleSec('mistakes')} accessibilityRole="button" accessibilityState={{ expanded: secOpen.mistakes }} aria-expanded={secOpen.mistakes} accessibilityLabel="Common mistakes">
           <Text style={styles.eyebrow}>{secOpen.mistakes ? '▾' : '▸'} COMMON MISTAKES</Text>
         </Pressable>
         {secOpen.mistakes

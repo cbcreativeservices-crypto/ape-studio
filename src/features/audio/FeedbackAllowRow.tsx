@@ -32,6 +32,7 @@ export function FeedbackAllowRow() {
       onPress={() => setFeedbackAllowed(!allowed)}
       accessibilityRole="checkbox"
       accessibilityState={{ checked: allowed }}
+      aria-checked={allowed}
       accessibilityLabel="Allow speaker output while the microphone is on"
     >
       <View style={[styles.box, allowed && styles.boxOn]}>

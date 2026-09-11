@@ -77,6 +77,8 @@ export function UnderstandingCheck({
             accessibilityRole="button"
             accessibilityLabel={o}
             accessibilityState={{ disabled: right, selected: picked === i }}
+            aria-disabled={right}
+            aria-selected={picked === i}
           >
             <Text style={[styles.optText, isRight && { color: colors.green }, isWrong && { color: colors.red }]}>{o}</Text>
           </Pressable>

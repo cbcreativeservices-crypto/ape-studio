@@ -126,6 +126,7 @@ export function PresetFader({
                     style={[styles.labelBtn, { top: CAP_H / 2 + i * STEP - LABEL_H / 2 }]}
                     accessibilityRole="button"
                     accessibilityState={{ selected: active }}
+                    aria-selected={active}
                     accessibilityLabel={`${p.label}, ${p.hint}`}
                   >
                     <Text style={[styles.labelText, active && styles.labelTextActive]} numberOfLines={1}>

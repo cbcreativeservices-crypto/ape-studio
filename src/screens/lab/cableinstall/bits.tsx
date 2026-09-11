@@ -75,6 +75,7 @@ export function RuleFeedback({
           hitSlop={8}
           accessibilityRole="button"
           accessibilityState={{ expanded: whyOpen }}
+          aria-expanded={whyOpen}
           accessibilityLabel={`Why? ${rule.title}`}
         >
           <Text style={styles.whyBtn}>{whyOpen ? '▾ WHY' : '▸ WHY?'}</Text>
@@ -168,6 +169,7 @@ export function RuleOrMythCard({ myth, onDone, openSources }: { myth: CiMyth; on
               disabled={picked != null}
               accessibilityRole="button"
               accessibilityState={{ selected: sel }}
+              aria-selected={sel}
               accessibilityLabel={v ? 'True' : 'False'}
             >
               <Text style={[styles.mythBtnText, (sel || isAnswer) && { color: colors.textPrimary }]}>{v ? 'TRUE' : 'FALSE'}</Text>

@@ -177,6 +177,7 @@ export function Mod7RealWorld() {
             onPress={() => setSpeakers([...speakers, z])}
             accessibilityRole="button"
             accessibilityState={{ disabled: atCap }}
+            aria-disabled={atCap}
             accessibilityLabel={atCap ? `Add a ${z} ohm speaker — rack full at ${MAX_SPEAKERS}, clear first` : `Add a ${z} ohm speaker`}
           >
             <Text style={[styles.addChipText, atCap && { color: colors.textMuted }]}>+ {z} Ω</Text>
@@ -373,6 +374,7 @@ export function Mod7RealWorld() {
               style={[styles.findingBtn, on && styles.findingOn, checked && shouldBe && styles.findingRight, checked && on && !shouldBe && styles.findingWrong]}
               accessibilityRole="checkbox"
               accessibilityState={{ checked: on }}
+              aria-checked={on}
               accessibilityLabel={`Missing: ${c.label}`}
             >
               <Text style={styles.findingText}>{on ? '☑' : '☐'}  {c.label}</Text>

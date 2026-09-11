@@ -370,6 +370,7 @@ function Chip({ label, active, onPress, a11yLabel }: { label: string; active: bo
       accessibilityRole="button"
       accessibilityLabel={a11yLabel ?? label}
       accessibilityState={{ selected: active }}
+      aria-selected={active}
       style={[styles.chip, active && styles.chipActive]}
     >
       <Text style={[styles.chipText, active && styles.chipTextActive]}>{label}</Text>
@@ -1377,6 +1378,7 @@ export function MultiMeterScreen({ navigation }: Props) {
                       hitSlop={4}
                       accessibilityRole="button"
                       accessibilityState={{ selected: scopeZoom === z }}
+                      aria-selected={scopeZoom === z}
                       accessibilityLabel={`Oscilloscope zoom ${z} times`}
                       style={[styles.scopeZoomChip, scopeZoom === z && styles.scopeZoomChipOn]}
                     >

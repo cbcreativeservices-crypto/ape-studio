@@ -292,6 +292,7 @@ export function Rt60Demo() {
               accessibilityRole='button'
               accessibilityLabel={`Show scene: ${s.title}`}
               accessibilityState={{ selected: on }}
+              aria-selected={on}
               hitSlop={4}
               style={[styles.chip, on && styles.chipOn]}
             >

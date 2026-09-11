@@ -26,12 +26,16 @@ export function CalcLabScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const chain = useChainValue();
-  const { isMember, commercialMode } = useEntitlement();
+  const { isMember, commercialMode, resolved } = useEntitlement();
 
   // ALL workflows are ACADEMY-ONLY (owner 2026-08-13): running a guided
   // multi-step sequence, using templates, AND building your own. Individual
   // calculators stay open to everyone. Caps only bite in commercial mode.
-  const workflowsAllowed = !commercialMode || isMember;
+  // `!resolved` counts as allowed (entitlement roll-out 2026-09-11): the
+  // provider boots at 'anonymous', so a member who opened a workflow before the
+  // server read landed got the "Workflows are an Academy feature" sell for the
+  // membership they already hold.
+  const workflowsAllowed = !commercialMode || !resolved || isMember;
   const gateWorkflow = (proceed: () => void) => {
     if (workflowsAllowed) return proceed();
     // confirmDialog, not Alert.alert: RN-web's Alert is a no-op, so this gate
@@ -105,6 +109,7 @@ export function CalcLabScreen() {
             onPress={() => setWfOpen((o) => !o)}
             accessibilityRole="button"
             accessibilityState={{ expanded: wfOpen }}
+            aria-expanded={wfOpen}
             accessibilityLabel="Calculator workflows section"
           >
             <Text style={[styles.sectionTitle, { color: colors.green }]}>{wfOpen ? '▾' : '▸'}  CUSTOM CALCULATOR WORKFLOWS</Text>
@@ -181,6 +186,7 @@ export function CalcLabScreen() {
             onPress={() => setDescOpen((o) => !o)}
             accessibilityRole="button"
             accessibilityState={{ expanded: descOpen }}
+            aria-expanded={descOpen}
             accessibilityLabel="About this lab"
           >
             <Text style={[styles.sectionTitle, { color: colors.blue }]}>{descOpen ? '▾' : '▸'}  ABOUT THIS LAB</Text>
@@ -207,6 +213,7 @@ export function CalcLabScreen() {
                 onPress={() => setOpenSecs((m) => (m[sec.id] ? {} : { [sec.id]: true }))}
                 accessibilityRole="button"
                 accessibilityState={{ expanded: open }}
+                aria-expanded={open}
                 accessibilityLabel={`${sec.title} calculators`}
               >
                 <Text style={styles.sectionTitle}>{open ? '▾' : '▸'}  {sec.title}</Text>

@@ -240,6 +240,7 @@ function InsideSection(p: SectionProps) {
                   delayLongPress={350}
                   accessibilityRole="button"
                   accessibilityState={{ selected: on }}
+                  aria-selected={on}
                   accessibilityLabel={`${part.label} — ${on ? 'shown, tap to hide' : 'hidden, tap to show'}`}
                 >
                   <Text style={[styles.partChipText, { color: ink }, !on && { opacity: 0.38 }]}>{part.label}</Text>

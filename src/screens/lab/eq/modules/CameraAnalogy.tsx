@@ -208,6 +208,7 @@ export function CameraAnalogyModule(_p: EqModuleComponentProps) {
             accessibilityRole="button"
             accessibilityLabel={`${s.label} stage`}
             accessibilityState={{ selected: stage === i }}
+            aria-selected={stage === i}
             style={[styles.chip, stage === i && styles.chipActive]}
           >
             <Text style={[styles.chipText, stage === i && styles.chipTextActive]}>{s.label}</Text>

@@ -1273,6 +1273,7 @@ function M11Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
                   delayLongPress={300}
                   accessibilityRole="button"
                   accessibilityState={{ selected: sel }}
+                  aria-selected={sel}
                   accessibilityLabel={`Harmonic ${i + 1}, ${sel ? 'selected' : on ? 'on' : 'off'}`}
                 >
                   <Text style={[styles.harmBtnText, on && styles.harmBtnTextOn, sel && styles.harmBtnTextSel]}>H{i + 1}</Text>
@@ -1897,9 +1898,14 @@ export function FoundationsCourseScreen() {
   // resumes as before. Ref so the async restore/persist below reads the CURRENT
   // tier, never a stale closure. (Gate on entitlement, not caps — the dev
   // academy-lock bypass forces caps only, so this stays correct in dev.)
-  const { entitlement } = useEntitlement();
-  const noAccountRef = useRef(entitlement === 'anonymous');
-  noAccountRef.current = entitlement === 'anonymous';
+  const { entitlement, resolved } = useEntitlement();
+  // `resolved` REQUIRED (entitlement roll-out 2026-09-11): the provider boots
+  // at 'anonymous', and the restore effect below runs on MOUNT — so without it
+  // a signed-in user reopening this lab was treated as a guest and dumped back
+  // on the first lesson instead of the page they left off on. Unknown ⇒ not a
+  // guest; the real guest rule applies the moment the tier is known.
+  const noAccountRef = useRef(resolved && entitlement === 'anonymous');
+  noAccountRef.current = resolved && entitlement === 'anonymous';
   // Collapsible intro TEXT (owner 2026-08-05) — the paragraph block at the top
   // of every module's well can be hidden; the pinned display never moves.
   const [textOpen, setTextOpen] = useState(true);

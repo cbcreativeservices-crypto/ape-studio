@@ -47,6 +47,7 @@ export function ModuleAccordionRow({
           style={styles.name}
           accessibilityRole="button"
           accessibilityState={{ expanded }}
+          aria-expanded={expanded}
           accessibilityLabel={`${name}, ${expanded ? 'expanded' : 'collapsed'}`}
         >
           {name}

@@ -121,6 +121,7 @@ export function AmpModuleScreen() {
           disabled={!allChecksAnswered}
           accessibilityRole="button"
           accessibilityState={{ disabled: !allChecksAnswered }}
+          aria-disabled={!allChecksAnswered}
           accessibilityLabel={allChecksAnswered ? 'Mark module complete and continue' : needsFinal ? 'Submit the final assessment above to complete the lab' : 'Answer every check above to continue'}
         >
           <Text style={styles.completeText}>{done ? 'CONTINUE ›' : 'MARK COMPLETE & CONTINUE ›'}</Text>

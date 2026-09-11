@@ -93,6 +93,7 @@ export function WhyEqModule(_p: EqModuleComponentProps) {
             accessibilityRole="button"
             accessibilityLabel={`${r.key} region`}
             accessibilityState={{ selected: region.key === r.key }}
+            aria-selected={region.key === r.key}
             style={[styles.chip, region.key === r.key && styles.chipActive]}
           >
             <Text style={[styles.chipText, region.key === r.key && styles.chipTextActive]}>{r.key}</Text>

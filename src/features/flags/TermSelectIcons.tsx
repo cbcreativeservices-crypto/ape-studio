@@ -98,6 +98,7 @@ export function HoldHintPressable({
         hitSlop={10}
         accessibilityRole="button"
         accessibilityState={selected == null ? undefined : { selected }}
+        aria-selected={selected ?? undefined}
         accessibilityLabel={accessibilityLabel}
       >
         {children}
@@ -134,6 +135,7 @@ function IconToggle({
       hitSlop={8}
       accessibilityRole="button"
       accessibilityState={{ selected: on }}
+      aria-selected={on}
       accessibilityLabel={label}
     >
       {renderGlyph ? (

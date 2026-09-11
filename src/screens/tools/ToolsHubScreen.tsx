@@ -1063,6 +1063,7 @@ export function ToolsHubScreen({ navigation }: Props) {
               style={styles.navItem}
               accessibilityRole="tab"
               accessibilityState={{ selected: false }}
+              aria-selected={false}
               // SR label matches the VISIBLE text -- the tab draws "PROGRESS"
               // while the route is named Achievements (mirror TabBar.tsx).
               accessibilityLabel={name === 'Achievements' ? 'Progress' : name}

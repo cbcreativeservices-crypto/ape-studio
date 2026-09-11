@@ -73,6 +73,7 @@ export function AudioCommunityDirectoryScreen() {
             style={[st.tab, tab === t.key && st.tabOn]}
             accessibilityRole="tab"
             accessibilityState={{ selected: tab === t.key }}
+            aria-selected={tab === t.key}
             accessibilityLabel={t.label}
           >
             <Text style={[st.tabText, tab === t.key && st.tabTextOn]}>{t.label}</Text>

@@ -896,6 +896,7 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
                   disabled={isFound}
                   accessibilityRole="button"
                   accessibilityState={{ disabled: isFound }}
+                  aria-disabled={isFound}
                   accessibilityLabel={isFound ? `Found: ${d.label}` : `Suspect detail ${i + 1} of ${CI_CEILING_DEFECTS.length}`}
                   style={{
                     position: 'absolute',
@@ -946,6 +947,7 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
                     disabled={isFound}
                     accessibilityRole="button"
                     accessibilityState={{ disabled: isFound }}
+                    aria-disabled={isFound}
                     accessibilityLabel={`${d.label}${isFound ? ', found' : ''}`}
                     style={[styles.suspectRow, isFound && styles.suspectRowFound]}
                   >

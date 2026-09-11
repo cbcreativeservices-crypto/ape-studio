@@ -138,7 +138,7 @@ export function PermissionPrompt({
         <View style={styles.card}>
           <Text style={styles.title}>{copy.title}</Text>
           <Text style={styles.body}>{copy.body}</Text>
-          <Pressable style={styles.remember} onPress={onToggleAlways} accessibilityRole="checkbox" accessibilityState={{ checked: always }}>
+          <Pressable style={styles.remember} onPress={onToggleAlways} accessibilityRole="checkbox" accessibilityState={{ checked: always }} aria-checked={always}>
             <View style={[styles.box, always && styles.boxOn]}>{always ? <Text style={styles.check}>✓</Text> : null}</View>
             <Text style={styles.rememberText}>Always allow — don’t ask me again</Text>
           </Pressable>

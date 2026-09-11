@@ -403,6 +403,7 @@ function BendCard({
           disabled={done}
           accessibilityRole="button"
           accessibilityState={{ disabled: done }}
+          aria-disabled={done}
           accessibilityLabel={done ? `${ex.cableName}: bend meets its specification` : `Check the ${ex.cableName} bend against its specification`}
         >
           <Text style={[styles.checkText, done && { color: '#0a1a0f' }]}>{done ? 'MEETS SPEC ✓' : 'CHECK BEND'}</Text>

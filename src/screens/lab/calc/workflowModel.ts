@@ -133,3 +133,24 @@ export const WORKFLOW_LIMITS: Record<'anonymous' | 'free' | 'academy' | 'lapsed'
   academy: { savedWorkflows: null, savedProjects: null, savedResults: null, templates: 'all', canResume: true },
   lapsed: { savedWorkflows: 0, savedProjects: 3, savedResults: 10, templates: 'selected', canResume: true },
 };
+
+/**
+ * Limits for the reported tier, holding the MOST PERMISSIVE (academy) set until
+ * the entitlement read has resolved (roll-out 2026-09-11).
+ *
+ * EntitlementProvider boots at 'anonymous' — the harshest row in the table
+ * (savedWorkflows/Projects/Results all 0, canResume FALSE) — so reading
+ * `WORKFLOW_LIMITS[entitlement]` directly told a paying member, for the first
+ * frames of every workflow screen, that they could keep nothing and could not
+ * even resume the run they had in progress (the SAVE key was hidden and the
+ * saved draft was ignored). Everything these limits guard is stored on the
+ * DEVICE, so guessing generous for a beat cannot leak paid server content; it
+ * only avoids withholding what the user has already paid for. Pass the
+ * provider's `resolved` straight through.
+ */
+export function workflowLimitsFor(
+  entitlement: 'anonymous' | 'free' | 'academy' | 'lapsed',
+  resolved: boolean,
+): WorkflowLimits {
+  return WORKFLOW_LIMITS[resolved ? entitlement : 'academy'];
+}

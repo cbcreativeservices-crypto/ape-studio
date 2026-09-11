@@ -145,6 +145,7 @@ function ModeChip({ label, active, onPress }: { label: string; active: boolean; 
       onPress={onPress}
       accessibilityRole="button"
       accessibilityState={{ selected: active }}
+      aria-selected={active}
       style={[styles.modeChip, active && styles.modeChipOn]}
     >
       <Text style={[styles.modeChipText, active && styles.modeChipTextOn]}>{label}</Text>

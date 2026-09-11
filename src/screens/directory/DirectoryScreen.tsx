@@ -85,8 +85,15 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
   const navigation = useNavigation<any>();
   // Only registered users (any account, paid or not) can set up a profile
   // (user request 2026-07-22).
-  const { entitlement } = useEntitlement();
-  const hasAccount = entitlement !== 'anonymous';
+  const { entitlement, resolved } = useEntitlement();
+  // `resolved` hold (entitlement roll-out 2026-09-11): the provider boots at
+  // 'anonymous', so until the server read landed this screen greeted every
+  // signed-in user — members included — with the "Get registered." guest
+  // call-to-action instead of their Registry block. Unknown ⇒ render as though
+  // they have an account. `accountConfirmed` stays STRICT so the QR-token RPC
+  // never fires for a genuine guest.
+  const hasAccount = !resolved || entitlement !== 'anonymous';
+  const accountConfirmed = resolved && entitlement !== 'anonymous';
   const [acctNote, setAcctNote] = useState(false);
   // The name the user chose for the Registry (set in Profile) — shown on the
   // confirmation once registered (user request 2026-07-22).
@@ -105,7 +112,7 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
     void loadPublicProfile()
       .then((p) => setRegistryName(p.registryName || p.name || ''))
       .catch(() => {});
-    if (hasAccount) {
+    if (accountConfirmed) {
       setQrFailed(false);
       void fetchMyQrToken().then(
         (t) => {
@@ -115,7 +122,7 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
         () => setQrFailed(true),
       );
     }
-  }, [hasAccount]);
+  }, [accountConfirmed]);
   // A member is listed as "User" until they earn their first certificate or
   // program, then "Graduate" (user request 2026-07-22). Proxy: any enrolled
   // cert/program bundle with all topics complete.
