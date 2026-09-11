@@ -16,6 +16,17 @@
  * The reset button re-mounts the tree by clearing the error state. If the fault
  * is in a screen the user can leave, that is enough; if it re-throws, the same
  * honest screen comes back rather than a blank one.
+ *
+ * SCOPE — this is the ONLY error boundary in the app (verified 2026-09-11), and
+ * it sits above SafeAreaProvider / EntitlementProvider / AudioOutputGate /
+ * NavigationContainer. So a render error in ANY single screen tears down the
+ * whole tree, and TRY AGAIN restarts at the initial route rather than returning
+ * the user to what they were doing. That is a deliberate trade (a tiny,
+ * dependency-free boundary cannot rely on the things it may be catching), but
+ * per-screen boundaries inside RootNavigator would contain the damage to one
+ * screen and keep the rest of the session alive. Filed for the owner rather
+ * than done unattended: wrapping every screen is a structural change to the
+ * navigator and interacts with transitions and gestures.
  */
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -31,7 +42,13 @@ export class RootErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: ErrorInfo): void {
-    // Dev console keeps the full trace; release builds stay quiet but recover.
+    // CORRECTION (security pass 2026-09-11): this used to claim "release builds
+    // stay quiet". They do NOT — there is no babel.config.js, so
+    // transform-remove-console is not applied and this line runs in the shipped
+    // binary, writing to logcat / os_log. It stays because a render-crash trace
+    // is the only breadcrumb we have (no crash reporter is installed), but be
+    // aware any thrown message that embeds user text is logged with it.
+    // Readable only with physical/ADB access, not by other apps.
     console.error('[app] uncaught render error:', error, info.componentStack);
   }
 
@@ -41,9 +58,15 @@ export class RootErrorBoundary extends Component<Props, State> {
     return (
       <View style={styles.root}>
         <Text style={styles.title}>SOMETHING WENT WRONG</Text>
+        {/* HONEST COPY (2026-09-11): this used to say it "stopped that screen
+            so nothing else was affected". It is the ROOT boundary and the only
+            one in the app, so it unmounts the entire tree — providers, audio
+            gate and navigator included — and TRY AGAIN remounts from the
+            start. Saying otherwise told the user their place was kept when it
+            was not. NEW USER-FACING COPY — owner review. */}
         <Text style={styles.body}>
-          The app hit an unexpected error and stopped that screen so nothing else was affected. Your
-          saved work is untouched.
+          The app hit an unexpected error and had to stop. Your saved work is untouched — tap below
+          to start again from the home screen.
         </Text>
         <Pressable
           style={styles.btn}

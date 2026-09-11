@@ -170,7 +170,9 @@ export async function setWeeklyConceptPref(on: boolean): Promise<boolean> {
     .select('user_id');
   if (error) console.warn('[weekly-concept] pref update failed:', error.message);
   else if (!data?.length) {
-    console.warn('[weekly-concept] pref update matched no row for', uid);
+    // uid deliberately not logged — see push.ts (console.* survives release
+    // builds, so this would put the account's user UUID in the device log).
+    console.warn('[weekly-concept] pref update matched no row for the current user');
     return false;
   }
   return !error;

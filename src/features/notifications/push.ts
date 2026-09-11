@@ -162,7 +162,10 @@ export async function registerAndSavePushToken(): Promise<string | null> {
   if (error) console.warn('[push] token save failed:', error.message);
   // A no-match update is NOT an error — say so loudly rather than pretending
   // the token is stored (the 2026-08-30 silent-failure lesson).
-  else if (!data?.length) console.warn('[push] token save matched no prefs row for', uid);
+  // The uid is deliberately NOT logged (security pass 2026-09-11): console.*
+  // is not stripped in release builds, so this line would write the account's
+  // user UUID to logcat/os_log. The message alone is enough to diagnose.
+  else if (!data?.length) console.warn('[push] token save matched no prefs row for the current user');
   return token;
 }
 

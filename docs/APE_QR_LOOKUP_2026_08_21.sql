@@ -15,6 +15,25 @@
 -- Profile + Directory encodes the /registry URL.
 -- ============================================================================
 
+-- ⚠️ THIS FILE IS BEHIND PRODUCTION — verified against the live DB 2026-09-11.
+-- The body below is the ORIGINAL 2026-08-21 version and is missing TWO things
+-- the live function has. A security review tonight read this file, reasonably
+-- concluded the QR lookup was ungated, and escalated it as a privacy exposure;
+-- the live definition disproved it. A stale doc that misrepresents production
+-- is how that happens, so the live shape is recorded here:
+--
+--   1. IT IS GATED:  `and u.show_in_registry = true`  -- opt-in really is
+--      enforced server-side; scanning a non-listed member's QR returns NOTHING.
+--   2. holder_label prefers `u.registry_name` ahead of nickname/first+initial.
+--
+-- Re-check any time with:
+--   select pg_get_functiondef(p.oid) from pg_proc p
+--     join pg_namespace n on n.oid = p.pronamespace
+--    where n.nspname='public' and p.proname='public_verify_by_token';
+--
+-- Do NOT re-run the statement below as-is: it would REPLACE the live function
+-- and REMOVE the opt-in gate.
+
 create or replace function public.public_verify_by_token(p_token uuid)
  returns table(
    holder_label text,

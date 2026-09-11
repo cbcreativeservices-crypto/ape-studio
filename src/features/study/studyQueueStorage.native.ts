@@ -45,8 +45,15 @@ export function getQueuedBatches(): StudyQueueRow[] {
 }
 
 export function deleteQueuedBatches(ids: number[]): void {
-  if (ids.length === 0) return; // empty IN () is invalid SQL — guard it
-  db.runSync(`DELETE FROM study_queue WHERE id IN (${ids.join(',')})`);
+  // This is the one place the codebase interpolates into SQL rather than
+  // binding. The ids are internal (SQLite INTEGER PRIMARY KEY values read back
+  // from this same table), so they are not attacker-controlled — but the
+  // `number[]` type is erased at runtime, so filter to real integers before
+  // building the statement. Defence in depth, no behaviour change for valid
+  // input (security pass 2026-09-11).
+  const safe = ids.filter((id) => Number.isInteger(id));
+  if (safe.length === 0) return; // empty IN () is invalid SQL — guard it
+  db.runSync(`DELETE FROM study_queue WHERE id IN (${safe.join(',')})`);
 }
 
 /** Drop the entire queue — called on account switch so one user's un-synced
