@@ -154,7 +154,14 @@ export default function App() {
   // runs the new-terms check. Throttled + guarded inside; no-op on web and on
   // dev clients without the native module.
   useEffect(() => {
-    const sync = () => void loadLocalSettings().then(syncLocalNotificationsThrottled);
+    // .catch is NOT optional here: this runs on the boot path and again on every
+    // foreground, so a single rejection (a corrupt settings blob, a dev client
+    // without the native notifications module) became an unhandled rejection at
+    // launch. Reminders are best-effort upkeep — failing quietly is correct.
+    const sync = () =>
+      void loadLocalSettings()
+        .then(syncLocalNotificationsThrottled)
+        .catch(() => {});
     sync();
     const sub = AppState.addEventListener('change', (st) => {
       if (st === 'active') sync();
