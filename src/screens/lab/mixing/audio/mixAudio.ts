@@ -244,18 +244,24 @@ function synthBgv(): Mono {
  *  accumulates, so an LRU or byte cap would have nothing to evict — the bound
  *  is structural.
  *
- *  It is, however, resident for the life of the process once either mixing lab
- *  has played anything, and that is DELIBERATE. Rebuilding it is not cheap:
- *  measured cold sessionStems() ≈ 8 s of blocked JS on desktop V8 with a warm
- *  JIT (renderMix() off the warm cache is ~25 ms by comparison), because
- *  earDsp.classicWave is naive additive synthesis — a 65 Hz bass root sums ~369
- *  harmonics across 480 k samples, and synthBass/synthGtr/synthKeys call it 8×
- *  per bar. Hermes has no JIT at all. Wiring a release to screen unmount or to
- *  app background would therefore turn every RE-entry into the same long
- *  "RENDERING…" wait as the first — a user-visible regression far worse than
- *  the 15 MB. releaseSessionStems() below is provided, and is verified safe,
- *  but is left for the owner to wire (or for a future cheap-synthesis rework)
- *  rather than switched on blind. */
+ *  It is resident for the life of the process once either mixing lab has played
+ *  anything. That used to be forced rather than chosen: cold sessionStems()
+ *  measured ~7.1 s of blocked JS, because earDsp.classicWave summed every
+ *  partial for every sample — a 65 Hz bass root is 366 of them across 480 k
+ *  samples — so releasing on unmount would have turned every RE-entry into the
+ *  same long "RENDERING…" wait as the first.
+ *
+ *  That reason is GONE (2026-09-11): classicWave now reads a phase wavetable
+ *  and the same cold render measures ~350 ms on desktop V8 (renderMix() off the
+ *  warm cache is ~25 ms for comparison). Hermes has no JIT, so budget several
+ *  times that on the phone — still under a second, against a first-entry wait
+ *  the lab already shows a rendering state for.
+ *
+ *  So the trade is now a real choice rather than a forced hand: hold ~15.4 MB
+ *  for the session, or pay a sub-second re-render each time a mixing lab is
+ *  re-entered. releaseSessionStems() below is provided and verified safe, and
+ *  is still left UNWIRED — switching it on is a user-visible behaviour change
+ *  and the owner's call, not a side effect of a synthesis rewrite. */
 let stemsCache: Record<TrackId, Mono> | null = null;
 
 /** Render (once) and return the eight session stems, RMS-aligned to −20 dB so
