@@ -244,24 +244,21 @@ function synthBgv(): Mono {
  *  accumulates, so an LRU or byte cap would have nothing to evict — the bound
  *  is structural.
  *
- *  It is resident for the life of the process once either mixing lab has played
- *  anything. That used to be forced rather than chosen: cold sessionStems()
- *  measured ~7.1 s of blocked JS, because earDsp.classicWave summed every
- *  partial for every sample — a 65 Hz bass root is 366 of them across 480 k
- *  samples — so releasing on unmount would have turned every RE-entry into the
- *  same long "RENDERING…" wait as the first.
+ *  It lives for as long as a mixing lab is on screen and is dropped when the
+ *  last one leaves (owner ruling 2026-09-11) — see retainSessionStems below,
+ *  which both lab screens hold.
  *
- *  That reason is GONE (2026-09-11): classicWave now reads a phase wavetable
- *  and the same cold render measures ~350 ms on desktop V8 (renderMix() off the
- *  warm cache is ~25 ms for comparison). Hermes has no JIT, so budget several
- *  times that on the phone — still under a second, against a first-entry wait
- *  the lab already shows a rendering state for.
- *
- *  So the trade is now a real choice rather than a forced hand: hold ~15.4 MB
- *  for the session, or pay a sub-second re-render each time a mixing lab is
- *  re-entered. releaseSessionStems() below is provided and verified safe, and
- *  is still left UNWIRED — switching it on is a user-visible behaviour change
- *  and the owner's call, not a side effect of a synthesis rewrite. */
+ *  It used to be resident for the life of the process, and that was forced
+ *  rather than chosen: cold sessionStems() measured 7.1 s of blocked JS,
+ *  because earDsp.classicWave summed every partial for every sample — a 65 Hz
+ *  bass root is 366 of them across 480 k samples — so releasing on unmount
+ *  would have turned every RE-entry into the same long "RENDERING…" wait as the
+ *  first. The wavetable rewrite of classicWave brought the same cold render to
+ *  ~350 ms on desktop V8 (renderMix() off the warm cache is ~25 ms for
+ *  comparison). Hermes has no JIT, so budget several times that on the phone —
+ *  still well inside the rendering state the lab already shows, and it is paid
+ *  on the next PLAY rather than on entry, because nothing synthesizes until the
+ *  learner presses something. */
 let stemsCache: Record<TrackId, Mono> | null = null;
 
 /** Render (once) and return the eight session stems, RMS-aligned to −20 dB so
@@ -293,11 +290,12 @@ export function sessionStems(): Record<TrackId, Mono> {
   return raw;
 }
 
-/** Drop the memoized stems (~15.4 MB of Float32Array). NOT wired to any screen
- *  lifecycle — see the cache comment above for why (≈8 s re-synthesis). It is
- *  the audited release valve, ready for the owner's call and for the test
- *  suite. Safe to call at ANY time, because nothing outside this module ever
- *  retains a stem buffer:
+/** Drop the memoized stems (~15.4 MB of Float32Array). Wired to the mixing lab
+ *  screens through retainSessionStems() below — call this directly only from a
+ *  test or a deliberate one-off.
+ *
+ *  Safe to call at ANY time, because nothing outside this module ever retains a
+ *  stem buffer:
  *   • renderMix() is the only consumer. It reads `stems[id]` (or a
  *     `.subarray(0, n)` VIEW of it) inside one synchronous pass and sums the
  *     samples into freshly allocated L/R arrays; `RenderedMix.stereo` is always
@@ -311,6 +309,51 @@ export function sessionStems(): Record<TrackId, Mono> {
  *  test suite pins changes — only the timing of the (one-off) synthesis. */
 export function releaseSessionStems(): void {
   stemsCache = null;
+}
+
+/** How many mixing-lab screens are currently mounted. See retainSessionStems. */
+let stemHolders = 0;
+
+/**
+ * Hold the stems for as long as a mixing lab is on screen, and drop them when
+ * the last one leaves. Call on mount, call the returned function on unmount:
+ *
+ *     useEffect(retainSessionStems, []);
+ *
+ * WHY A COUNT AND NOT JUST A RELEASE ON UNMOUNT. There is ONE cache and TWO
+ * screens (Beginning and Advanced). A bare release would let either screen's
+ * exit throw away stems the OTHER one is still using, so leaving one lab would
+ * silently cost the other a full re-render on its next play. That is only
+ * reachable if both are on the stack at once, which today's navigation does not
+ * do — but the failure would be a mystery stall in a screen the user never
+ * left, and the counter costs eight lines.
+ *
+ * SAFE AGAINST AN IN-FLIGHT RENDER, and this is the part worth checking before
+ * trusting it: the lab's renderAll() is async and breathes between variants, so
+ * a release genuinely CAN land mid-render. It cannot do damage, on two counts.
+ * Every await in that loop is followed immediately by its liveness guard, so a
+ * resumption after an unmount returns before it can reach renderMix() again.
+ * And renderMix() itself is synchronous and copies what it needs into freshly
+ * allocated output, so even a release between two renders only means the next
+ * sessionStems() re-synthesizes — never that a live render loses its buffers.
+ *
+ * The re-render is byte-identical (sessionStems re-seeds makeRng(20260911) on
+ * every call) and cost ~350 ms on desktop V8 after the 2026-09-11 wavetable
+ * rewrite of earDsp.classicWave. Before that it was 7.1 s, which is why this
+ * was not wired until the owner asked for it.
+ */
+export function retainSessionStems(): () => void {
+  stemHolders++;
+  let released = false;
+  return () => {
+    // Idempotent: React may run a cleanup more than once (StrictMode's
+    // mount/unmount/mount in development), and a double decrement would drop
+    // the count below the number of live screens.
+    if (released) return;
+    released = true;
+    stemHolders = Math.max(0, stemHolders - 1);
+    if (stemHolders === 0) releaseSessionStems();
+  };
 }
 
 /* ── the mix renderer ────────────────────────────────────────────────────── */

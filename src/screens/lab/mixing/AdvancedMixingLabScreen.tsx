@@ -12,7 +12,9 @@
  * stages (sidechain, parallel blend, linked bus comp, drive, M/S width) and
  * the advanced engine (phase math, LUFS/true-peak ESTIMATES, stem null test).
  */
+import { useEffect } from 'react';
 import { PagedLab } from '../kit/PagedLab';
+import { retainSessionStems } from './audio/mixAudio';
 import { MIX_MANTRA } from './kit';
 import { MIXING_ADV_PAGES_A } from './pagesAdvA';
 import { MIXING_ADV_PAGES_B } from './pagesAdvB';
@@ -21,8 +23,10 @@ import { MIXING_ADV_PAGES_D } from './pagesAdvD';
 
 const PAGES = [...MIXING_ADV_PAGES_A, ...MIXING_ADV_PAGES_B, ...MIXING_ADV_PAGES_C, ...MIXING_ADV_PAGES_D];
 
-// NOTE (resource hygiene 2026-09-11): the stems cache is deliberately NOT
-// released on unmount — same reasoning as BeginningMixingLabScreen.
 export function AdvancedMixingLabScreen() {
+  // Same release valve as the Beginning lab, and deliberately the same COUNTED
+  // one: the two labs share a single stems cache, so neither may drop it while
+  // the other is still on screen. See retainSessionStems in audio/mixAudio.ts.
+  useEffect(retainSessionStems, []);
   return <PagedLab labId="mixing-adv" title="Advanced Mixing" subtitle={MIX_MANTRA} pages={PAGES} />;
 }
