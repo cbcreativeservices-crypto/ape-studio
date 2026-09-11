@@ -93,8 +93,9 @@ preserve, no mail, no verification records. This is why it is the canary.
 | 0d | Bluehost DNS → `.com` | ✅ **DONE 2026-09-11.** Deleted the `mail` and `autodiscover` A records (both were → `162.241.216.17`). Verified in the panel: MX `smtp.google.com`, apex A, `www` and the DKIM TXT all intact. Public resolvers still served the old answers immediately after (TTLs were 1h and 4h; the panel warns 24–48h), so re-check before assuming it propagated. **`.co` done too** — same two records deleted from that zone, apex/`www` intact. ⚠️ Side effect to close later: the `.co` still has `MX @ → mail.proaudiotrainingacademy.co`, which is now a DANGLING pointer. Harmless (no mail runs on `.co`, and bouncing is honest) but both `.co` MX records are already on the DROP list for the migration. |
 | 1 | Vercel → Domains (team `pro-audio-training-academy`) | ✅ **DONE 2026-09-11.** All three academy domains are on **Vercel DNS**. Nameservers as displayed by Vercel: `ns1.vercel-dns.com` / `ns2.vercel-dns.com` (identical for all three). Each panel says *"This domain is registered with a third party — nameserver changes must be made with your domain's registrar"*, which is the expected state until step 3. |
 | 2 | Vercel → DNS records | ✅ **DONE 2026-09-11 — `.com` zone built and verified row by row.** 12 rows: the 7 hand-entered KEEP records (`MX @ smtp.google.com` pri 1 · `TXT @` google-site-verification · `TXT _dmarc` · `TXT google._domainkey` 408 chars · `TXT resend._domainkey` 218 chars · `CNAME send` · `CNAME rsend`), all TTL 60, plus **5 Vercel auto-managed rows nobody typed**: 3 × `CAA @` (pki.goog, sectigo.com, letsencrypt.org) and 2 × ALIAS (`@` and `*`). Both DKIM keys were length- **and** checksum-verified against the Bluehost originals before submit (Google 408 chars, Resend 218 chars — both MATCH). `.co` and `.online` need **no records at all** (redirect-only); each shows the same 3 auto CAA and nothing else. ⚠️ The Vercel record table **paginates at 3 rows behind a "Load More" button** — a glance at that panel shows a third of the zone and reads as data loss. Always expand before judging. |
-| 3 | Bluehost → `.online` → Nameservers | **Canary. NOT YET DONE — this is where the owner picks the work back up.** Switch `.online` only. Two records, redirect-only, no mail — a failure here costs nothing. Expect resolvers to take up to ~48h to all move across; that is the registry delegation TTL, not a fault. ⚠️ **The one thing the canary is really testing:** `.com` carries auto-managed `ALIAS @` and `ALIAS *` rows, but `.co` and `.online` carry **only CAA** — no apex record of any kind. Vercel is expected to answer a connected redirect-domain's apex from its nameservers without a visible row, but that is **unverified**, and if it is wrong the apex goes NXDOMAIN the moment the delegation moves. Verify `.online` resolves and redirects before touching `.co`, and never run steps 3–6 in one sitting. |
-| 4 | Terminal | Verify the canary (below). Do not proceed until it passes. |
+| 3 | Bluehost → `.online` → Nameservers | ✅ **DONE 2026-09-11 — canary switched.** `NS1/NS2.BLUEHOST.COM` → `ns1.vercel-dns.com` / `ns2.vercel-dns.com`. Bluehost confirmed *"You successfully saved your Nameservers"*; the badge now reads **not using default nameservers** and a **REVERT TO DEFAULTS** button has appeared next to it — that button is the entire rollback for this step, one click, no retyping. ⚠️ **Two traps in the Bluehost UI, both live:** (1) the domain list renders all three academy domains truncated to `proaudiotrainingacade…`, so `.com`, `.co` and `.online` are visually identical — the full name is in the DOM and in the details-page URL (`?domain=…`), and the URL is what to confirm against before touching anything; (2) the domain details page carries a **pre-ticked "ADD 3 & CHECKOUT" upsell** (~$36/yr of `.net`/`.org`/`.store`) sitting directly below the working area. Do not click near it. |
+| 3a | — | ✅ **The ALIAS question from step 2 is ANSWERED, and the answer is good.** Asking `ns1.vercel-dns.com` *directly* — which needs no propagation — Vercel serves both names despite showing no ALIAS row in the panel: apex → `216.150.1.1` / `216.150.16.1`, `www` → `216.150.16.129` / `216.150.1.193`. So a redirect-only domain's apex IS answered implicitly by Vercel's nameservers. This also pre-clears `.co`, which has the identical CAA-only zone. `nslookup <host> ns1.vercel-dns.com` is the general trick: it reads the destination zone before the world can see it. |
+| 4 | Terminal | ⏳ **WAITING ON PROPAGATION — this is the current step.** At the moment of the switch, `8.8.8.8` still returned `ns1/ns2.bluehost.com` and the apex still resolved to `216.198.79.1`, with both hostnames still `308 → https://www.proaudiotrainingacademy.com/`. That is **correct, not a failure**: the registry delegation takes up to 24–48h, and until it moves the Bluehost zone keeps serving — which is exactly why the two zones were made equivalent first. The canary PASSES when NS reads Vercel **and** the redirect still answers 308. Command below. Do not proceed to step 5 until it passes. |
 | 5 | Bluehost → `.co` → Nameservers | Switch `.co`. Verify. |
 | 6 | Bluehost → `.com` → Nameservers | Switch **last** — this one carries the mail, the DKIM and the live site. |
 | 7 | Terminal + mail | Verify all three. **Send a test email to `info@proaudiotrainingacademy.com` from an outside address and confirm it arrives.** If Resend is live, send one through it too. |
@@ -102,6 +103,27 @@ preserve, no mail, no verification records. This is why it is the canary.
 | 9 | Bluehost | After the window, remove the stale academy zones. **Never remove the domains themselves** — registration stays at Bluehost. |
 
 ## Verification
+
+### Canary check — run this until it passes (step 4)
+
+    nslookup -type=NS proaudiotrainingacademy.online 8.8.8.8
+    curl -sS -o /dev/null -w "%{http_code} -> %{redirect_url}\n" https://proaudiotrainingacademy.online/
+
+PASS = NS reads `ns1.vercel-dns.com` / `ns2.vercel-dns.com` **and** the curl
+still prints `308 -> https://www.proaudiotrainingacademy.com/`. Seeing Bluehost
+nameservers is not a failure before ~48h have passed; seeing Vercel nameservers
+with a **dead** redirect is, and the fix is REVERT TO DEFAULTS on the Bluehost
+Nameservers tab.
+
+### Read a zone before the world can see it
+
+    nslookup proaudiotrainingacademy.co ns1.vercel-dns.com
+
+Asking the destination nameserver directly skips propagation entirely. This is
+how step 3a proved the apex would answer, and it is the cheapest pre-flight
+check before every remaining cutover.
+
+### Full verification (step 7)
 
     nslookup -type=NS  proaudiotrainingacademy.com 8.8.8.8
     nslookup -type=MX  proaudiotrainingacademy.com 8.8.8.8
