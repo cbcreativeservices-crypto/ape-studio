@@ -89,6 +89,11 @@ export function EarModuleScreen() {
   const player = () => (playerRef.current ??= new EarClipPlayer());
   const stateRef = useRef<EarProgressState | null>(null);
   const nextTrialRef = useRef<EarTrial | null>(null);
+  /** Bumped whenever a pre-render becomes stale (a new trial started, or the
+   *  sub-bass setting changed). The pre-render now spans several ticks, so a
+   *  fast NEXT can outrun it; without this it could file a trial drawn for the
+   *  OLD level/setting after the new trial had already begun. */
+  const prerenderToken = useRef(0);
   const lastKeyRef = useRef<string | null>(null);
   const busyRef = useRef(false);
   const seedRef = useRef((Date.now() ^ 0x5f3759df) >>> 0);
@@ -112,12 +117,22 @@ export function EarModuleScreen() {
 
   const nextSeed = () => (seedRef.current = (seedRef.current * 1664525 + 1013904223) >>> 0);
 
-  /** A trial that does not repeat the previous one's parameters. */
+  /** A trial that does not repeat the previous one's parameters.
+   *
+   *  ONE makeTrial is already a big synchronous DSP burst — measured in Node
+   *  at 76 ms for `defect`, 54 ms for `clipping`, 47 ms for `band`. Running
+   *  the no-repeat retries back-to-back in one tick measured 421 ms (worst
+   *  496 ms) for `defect`, which on a phone's JS thread is seconds of a
+   *  completely frozen app — no scroll, no BACK. Breathe between attempts so
+   *  only ONE render is ever in flight per tick. The retries are rare, so the
+   *  common path is unchanged; the trial produced is identical either way
+   *  (the seed sequence and the key test are untouched). */
   const makeFresh = useCallback(
-    (lvl: number, subOk: boolean): EarTrial | null => {
+    async (lvl: number, subOk: boolean): Promise<EarTrial | null> => {
       if (!mod) return null;
       let t = mod.makeTrial(lvl, nextSeed(), { subBassOk: subOk });
       for (let i = 0; i < NO_REPEAT_TRIES && trialKey(t) === lastKeyRef.current; i++) {
+        await new Promise<void>((r) => setTimeout(r, 0));
         t = mod.makeTrial(lvl, nextSeed(), { subBassOk: subOk });
       }
       return t;
@@ -142,7 +157,10 @@ export function EarModuleScreen() {
         // 2026-09-11). The pre-rendered path — the common answer→NEXT case,
         // already warmed in onAnswer — skips the yield and stays instant.
         if (!prerendered) await new Promise<void>((r) => setTimeout(r, 0));
-        const t = prerendered ?? makeFresh(lvl, subOk);
+        // Any pre-render still in flight is for the trial AFTER this one and
+        // was drawn before this level/setting — discard it (see onAnswer).
+        prerenderToken.current++;
+        const t = prerendered ?? (await makeFresh(lvl, subOk));
         nextTrialRef.current = null;
         if (!t) return;
         lastKeyRef.current = trialKey(t);
@@ -246,12 +264,16 @@ export function EarModuleScreen() {
       // Pre-render the next trial while the learner reads the feedback.
       const lvl = next.level;
       const subOk = s.subBassOk;
+      const my = ++prerenderToken.current;
       setTimeout(() => {
-        try {
-          nextTrialRef.current = makeFresh(lvl, subOk);
-        } catch {
-          nextTrialRef.current = null;
-        }
+        void (async () => {
+          try {
+            const t = await makeFresh(lvl, subOk);
+            if (my === prerenderToken.current) nextTrialRef.current = t;
+          } catch {
+            if (my === prerenderToken.current) nextTrialRef.current = null;
+          }
+        })();
       }, 50);
     },
     [mod, trial, phase, makeFresh],
@@ -273,7 +295,9 @@ export function EarModuleScreen() {
     if (!s) return;
     s.subBassOk = !s.subBassOk;
     setSubBassOk(s.subBassOk);
-    // The pre-rendered next trial was drawn under the old setting.
+    // The pre-rendered next trial was drawn under the old setting — and so is
+    // any pre-render still in flight.
+    prerenderToken.current++;
     nextTrialRef.current = null;
     void saveEarProgress(s);
   }, []);

@@ -85,7 +85,7 @@ export function Ch7Just({ ctx }: ChapterProps) {
       </Row>
       <Row>
         {revealed < JUST.notes.length ? <Btn label={`REVEAL ${JUST.notes[revealed].spelling} ›`} tone="primary" onPress={() => setRevealed(revealed + 1)} a11y={`Reveal the next note, ${JUST.notes[revealed].spelling}`} /> : <Btn label="REPLAY" onPress={() => setRevealed(1)} a11y="Replay the reveal from C" />}
-        {revealed > 1 ? <Btn label={`▶ C + ${JUST.notes[revealed - 1].spelling}`} onPress={() => void ctx.player.play(renderNotes([root, hz(JUST.notes[revealed - 1].value.numericRatio)], 1.4, 'rich'), `C and ${JUST.notes[revealed - 1].spelling}`)} /> : null}
+        {revealed > 1 ? <Btn label={`▶ C + ${JUST.notes[revealed - 1].spelling}`} onPress={() => void ctx.player.renderAndPlay(() => renderNotes([root, hz(JUST.notes[revealed - 1].value.numericRatio)], 1.4, 'rich'), `C and ${JUST.notes[revealed - 1].spelling}`)} /> : null}
         <Btn label="■" tone="danger" onPress={() => ctx.player.stop()} a11y="Stop audio" />
       </Row>
       <CentsRail markers={markers} reduceMotion={ctx.reduceMotion} height={110} />
@@ -105,11 +105,11 @@ export function Ch7Just({ ctx }: ChapterProps) {
           />
           <Body>The C-major triad can be expressed as the simple whole-number relationship 4:5:6 — a ratio between the three notes, not harmonic numbers of one displayed fundamental (that reading only holds if all three are built on a shared reference two octaves below C).</Body>
           <Row>
-            <Btn label="▶ C" onPress={() => void ctx.player.play(renderNotes([root], 1, 'rich'), 'C')} />
-            <Btn label="▶ E" onPress={() => void ctx.player.play(renderNotes([hz(5 / 4)], 1, 'rich'), 'E 5/4')} />
-            <Btn label="▶ G" onPress={() => void ctx.player.play(renderNotes([hz(3 / 2)], 1, 'rich'), 'G 3/2')} />
-            <Btn label="▶ CHORD" onPress={() => void ctx.player.play(renderNotes([root, hz(5 / 4), hz(3 / 2)], 2.2, 'rich'), 'C major triad 4:5:6')} />
-            <Btn label="▶ ALIGNED PARTIALS" onPress={() => void ctx.player.play(renderPartials([root * 5, hz(5 / 4) * 4], 2), 'isolated: C harmonic 5 and E harmonic 4')} a11y="Play the isolated aligned partials" />
+            <Btn label="▶ C" onPress={() => void ctx.player.renderAndPlay(() => renderNotes([root], 1, 'rich'), 'C')} />
+            <Btn label="▶ E" onPress={() => void ctx.player.renderAndPlay(() => renderNotes([hz(5 / 4)], 1, 'rich'), 'E 5/4')} />
+            <Btn label="▶ G" onPress={() => void ctx.player.renderAndPlay(() => renderNotes([hz(3 / 2)], 1, 'rich'), 'G 3/2')} />
+            <Btn label="▶ CHORD" onPress={() => void ctx.player.renderAndPlay(() => renderNotes([root, hz(5 / 4), hz(3 / 2)], 2.2, 'rich'), 'C major triad 4:5:6')} />
+            <Btn label="▶ ALIGNED PARTIALS" onPress={() => void ctx.player.renderAndPlay(() => renderPartials([root * 5, hz(5 / 4) * 4], 2), 'isolated: C harmonic 5 and E harmonic 4')} a11y="Play the isolated aligned partials" />
           </Row>
         </>
       ) : null}
@@ -127,7 +127,7 @@ export function Ch7Just({ ctx }: ChapterProps) {
                 <MathLine>{lo} → {hi}: ({fracLabel(jf(hi))}) ÷ ({fracLabel(jf(lo))}) = {fracLabel(q)}</MathLine>
                 <Text style={styles.sub}>{ratioToCents(fracValue(q)).toFixed(2)} ¢ · pure 5/4 major third</Text>
                 <Row>
-                  <Btn label={`▶ ${lo}–${hi}`} onPress={() => void ctx.player.play(renderNotes([hz(fracValue(jf(lo))), hz(fracValue(jf(hi)))], 1.4, 'rich'), `${lo} to ${hi}`)} />
+                  <Btn label={`▶ ${lo}–${hi}`} onPress={() => void ctx.player.renderAndPlay(() => renderNotes([hz(fracValue(jf(lo))), hz(fracValue(jf(hi)))], 1.4, 'rich'), `${lo} to ${hi}`)} />
                 </Row>
               </Card>
             );

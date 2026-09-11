@@ -33,10 +33,10 @@ export function Ch0Welcome({ ctx }: ChapterProps) {
   const hearRoot = () => {
     clearTimers();
     setStage(1);
-    void ctx.player.play(renderNotes([ctx.rootHz], 1.2, 'rich'), 'root');
+    void ctx.player.renderAndPlay(() => renderNotes([ctx.rootHz], 1.2, 'rich'), 'root');
     timers.current.push(setTimeout(() => {
       setStage(2);
-      void ctx.player.play(renderNotes([ctx.rootHz * 2], 1.2, 'rich'), 'octave');
+      void ctx.player.renderAndPlay(() => renderNotes([ctx.rootHz * 2], 1.2, 'rich'), 'octave');
       timers.current.push(setTimeout(() => setStage(3), 1300));
     }, 1400));
   };

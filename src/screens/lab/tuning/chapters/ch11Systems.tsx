@@ -112,7 +112,7 @@ export function Ch11Systems({ ctx }: ChapterProps) {
       <Row>
         {(['just', 'equal', 'pythagorean'] as TuningSystemId[]).map((id) => {
           const e = TUNING_SYSTEMS[id].notes[2];
-          return <Btn key={id} label={`▶ ${TUNING_SYSTEMS[id].shortName} E · ${e.value.cents.toFixed(2)} ¢`} onPress={() => void ctx.player.play(renderNotes([root, hz(e.value.numericRatio)], 1.4, 'rich'), `C and ${TUNING_SYSTEMS[id].shortName} E`)} />;
+          return <Btn key={id} label={`▶ ${TUNING_SYSTEMS[id].shortName} E · ${e.value.cents.toFixed(2)} ¢`} onPress={() => void ctx.player.renderAndPlay(() => renderNotes([root, hz(e.value.numericRatio)], 1.4, 'rich'), `C and ${TUNING_SYSTEMS[id].shortName} E`)} />;
         })}
         <Btn label="■" tone="danger" onPress={() => ctx.player.stop()} a11y="Stop audio" />
       </Row>

@@ -16,19 +16,39 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from 'expo-audio';
 import { encodeWav, type Buf } from './earDsp';
 
-/** RN lacks btoa on some engines — tiny local base64 for Uint8Array. */
+/** RN lacks btoa on some engines — tiny local base64 for Uint8Array.
+ *
+ *  Sliced, with a breath between slices. The mixing lab's clip is a 10 s
+ *  STEREO loop: 1.92 MB of WAV → ~2.56 M base64 characters, which measured
+ *  76 ms in Node as one uninterrupted block — several times that on a phone's
+ *  JS thread, and multiplied by the two-to-four variants a page loads at once
+ *  (177 ms in Node for two). That block sat AFTER the mixing lab's carefully
+ *  staged renders, so it was the last place the whole app still froze on a
+ *  tap (the 2026-09-11 device-freeze class). The returned string is
+ *  byte-identical to the single-pass version: the slice length is a multiple
+ *  of 3, so no 3-byte group is ever split and only the true final group can
+ *  take padding. Only WHEN the work happens changed. */
 const B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-function toBase64(bytes: Uint8Array): string {
-  let out = '';
-  for (let i = 0; i < bytes.length; i += 3) {
-    const a = bytes[i];
-    const b = i + 1 < bytes.length ? bytes[i + 1] : 0;
-    const c = i + 2 < bytes.length ? bytes[i + 2] : 0;
-    out += B64[a >> 2] + B64[((a & 3) << 4) | (b >> 4)];
-    out += i + 1 < bytes.length ? B64[((b & 15) << 2) | (c >> 6)] : '=';
-    out += i + 2 < bytes.length ? B64[c & 63] : '=';
+/** Bytes encoded per breath. MUST stay a multiple of 3. ~7 ms per slice in
+ *  Node, so roughly one frame's worth on a phone. */
+const B64_SLICE = 196608;
+async function toBase64(bytes: Uint8Array): Promise<string> {
+  const parts: string[] = [];
+  for (let start = 0; start < bytes.length; start += B64_SLICE) {
+    const end = Math.min(start + B64_SLICE, bytes.length);
+    let out = '';
+    for (let i = start; i < end; i += 3) {
+      const a = bytes[i];
+      const b = i + 1 < bytes.length ? bytes[i + 1] : 0;
+      const c = i + 2 < bytes.length ? bytes[i + 2] : 0;
+      out += B64[a >> 2] + B64[((a & 3) << 4) | (b >> 4)];
+      out += i + 1 < bytes.length ? B64[((b & 15) << 2) | (c >> 6)] : '=';
+      out += i + 2 < bytes.length ? B64[c & 63] : '=';
+    }
+    parts.push(out);
+    if (end < bytes.length) await new Promise<void>((r) => setTimeout(r, 0));
   }
-  return out;
+  return parts.join('');
 }
 
 let fileNonce = 0;
@@ -47,7 +67,7 @@ export async function bufToWavFile(buf: Buf): Promise<string> {
     return URL.createObjectURL(new Blob([copy.buffer], { type: 'audio/wav' }));
   }
   const uri = `${FileSystem.cacheDirectory}ear_${Date.now().toString(36)}_${fileNonce++}.wav`;
-  await FileSystem.writeAsStringAsync(uri, toBase64(wav), { encoding: FileSystem.EncodingType.Base64 });
+  await FileSystem.writeAsStringAsync(uri, await toBase64(wav), { encoding: FileSystem.EncodingType.Base64 });
   return uri;
 }
 
@@ -77,7 +97,13 @@ export class EarClipPlayer {
     // Playback category: play even with the iOS silent switch on — a training
     // clip the learner explicitly started is content, not a notification.
     await setAudioModeAsync({ playsInSilentMode: true }).catch(() => {});
-    const uris = await Promise.all(bufs.map((b) => bufToWavFile(b)));
+    // ONE CLIP AT A TIME, not Promise.all: the WAV encode and base64 pass are
+    // synchronous, so mapping them eagerly ran every clip's encode back-to-back
+    // in a single tick (two 10 s stereo mixing-lab variants measured 177 ms in
+    // Node, and pages load up to four). Sequential + the breaths inside
+    // toBase64 keep the JS thread free between clips. Same files, same order.
+    const uris: string[] = [];
+    for (const b of bufs) uris.push(await bufToWavFile(b));
     this.files = uris;
     uris.forEach((uri, i) => {
       const existing = this.players.get(i);

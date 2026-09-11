@@ -42,7 +42,7 @@ export function Ch2Landmarks({ ctx }: ChapterProps) {
         <Text style={styles.line}>decimal ≈ {card.value.decimalLabel} · {card.value.cents.toFixed(2)} ¢</Text>
         <Text style={styles.line}>at this root: {ctx.rootHz.toFixed(2)} Hz → {upperHz.toFixed(2)} Hz</Text>
         <Row>
-          <Btn label="▶ PLAY" onPress={() => void ctx.player.play(renderNotes([ctx.rootHz, upperHz], 1.6, 'rich'), card.name)} a11y={`Play ${card.name}`} />
+          <Btn label="▶ PLAY" onPress={() => void ctx.player.renderAndPlay(() => renderNotes([ctx.rootHz, upperHz], 1.6, 'rich'), card.name)} a11y={`Play ${card.name}`} />
           <Btn label="PLACE ON RAIL" onPress={() => setPlaced(sel)} a11y={`Place ${card.name} on the pitch rail`} />
           <Btn label="■" tone="danger" onPress={() => ctx.player.stop()} a11y="Stop audio" />
         </Row>
@@ -83,7 +83,7 @@ export function Ch2Landmarks({ ctx }: ChapterProps) {
         <Card tone="ok">
           <Text style={styles.ok}>✓ 3:2 — PURE PERFECT FIFTH · 701.96 ¢</Text>
           <Row>
-            <Btn label="▶ HEAR IT" onPress={() => void ctx.player.play(renderNotes([ctx.rootHz, ctx.rootHz * 1.5], 1.6, 'rich'), 'pure perfect fifth')} />
+            <Btn label="▶ HEAR IT" onPress={() => void ctx.player.renderAndPlay(() => renderNotes([ctx.rootHz, ctx.rootHz * 1.5], 1.6, 'rich'), 'pure perfect fifth')} />
           </Row>
         </Card>
       ) : (

@@ -147,7 +147,9 @@ export function TuningLabScreen() {
 
       {/* sound status + navigation */}
       <View style={[styles.footer, { paddingBottom: insets.bottom + 8 }]}>
-        <Text style={styles.sound} accessibilityLiveRegion="polite">{status.playing ? `♪ ${status.label}` : 'Sound: stopped'}</Text>
+        <Text style={styles.sound} accessibilityLiveRegion="polite">
+          {status.rendering ? `Rendering: ${status.rendering}…` : status.playing ? `♪ ${status.label}` : 'Sound: stopped'}
+        </Text>
         <Pressable onPress={() => player.stop()} style={styles.stopBtn} accessibilityRole="button" accessibilityLabel="Stop all audio">
           <Text style={styles.stopText}>■ STOP</Text>
         </Pressable>

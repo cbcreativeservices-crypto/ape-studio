@@ -42,8 +42,8 @@ export function Ch4Harmonics({ ctx }: ChapterProps) {
   // Completion: the learner aligned the slider (not just pressed a preset).
   useMarkWhen(aligned && useSlider, ctx.markDone);
 
-  const playFull = () => void ctx.player.play(renderNotes([f, thirdHz], 2.2, 'rich'), `full tones · ${useSlider ? `${cents.toFixed(1)} ¢` : THIRDS[third].label}`);
-  const playPartials = () => void ctx.player.play(renderPartials([p5, p4], 2.2), `isolated partials · ${p5.toFixed(1)} + ${p4.toFixed(1)} Hz`);
+  const playFull = () => void ctx.player.renderAndPlay(() => renderNotes([f, thirdHz], 2.2, 'rich'), `full tones · ${useSlider ? `${cents.toFixed(1)} ¢` : THIRDS[third].label}`);
+  const playPartials = () => void ctx.player.renderAndPlay(() => renderPartials([p5, p4], 2.2), `isolated partials · ${p5.toFixed(1)} + ${p4.toFixed(1)} Hz`);
 
   const step = (d: number) => {
     setUseSlider(true);

@@ -82,7 +82,7 @@ export function Ch5Fifths({ ctx }: ChapterProps) {
 
   const playNewest = () => {
     const s = CHAIN[revealed];
-    void ctx.player.play(renderNotes([ctx.rootHz, frequencyFromRatio(ctx.rootHz, fracValue(s.normalized))], 1.4, 'rich'), `C and ${s.spelling}`);
+    void ctx.player.renderAndPlay(() => renderNotes([ctx.rootHz, frequencyFromRatio(ctx.rootHz, fracValue(s.normalized))], 1.4, 'rich'), `C and ${s.spelling}`);
   };
 
   return (

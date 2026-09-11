@@ -139,7 +139,7 @@ export function Ch13Apply({ ctx }: ChapterProps) {
       <Row>
         {[['Just', TUNING_SYSTEMS.just], ['Equal', TUNING_SYSTEMS.equal], ['Pythagorean', TUNING_SYSTEMS.pythagorean]].map(([l, s]) => {
           const e = (s as typeof TUNING_SYSTEMS.just).notes[2];
-          return <Btn key={l as string} label={`▶ E ${e.value.cents.toFixed(2)} ¢`} onPress={() => void ctx.player.play(renderNotes([root, frequencyFromRatio(root, e.value.numericRatio)], 1.4, 'rich'), `${l} E`)} a11y={`Play C with ${l} E`} />;
+          return <Btn key={l as string} label={`▶ E ${e.value.cents.toFixed(2)} ¢`} onPress={() => void ctx.player.renderAndPlay(() => renderNotes([root, frequencyFromRatio(root, e.value.numericRatio)], 1.4, 'rich'), `${l} E`)} a11y={`Play C with ${l} E`} />;
         })}
         <Btn label="■" tone="danger" onPress={() => ctx.player.stop()} a11y="Stop audio" />
       </Row>

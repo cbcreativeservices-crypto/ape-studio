@@ -29,9 +29,9 @@ export function Ch1Intervals({ ctx }: ChapterProps) {
   };
 
   const timbre = 'rich' as const;
-  const playRoot = () => void ctx.player.play(renderNotes([ctx.rootHz], 1.2, timbre), 'root');
-  const playUpper = () => void ctx.player.play(renderNotes([upperHz], 1.2, timbre), 'upper note');
-  const playBoth = () => void ctx.player.play(renderNotes([ctx.rootHz, upperHz], 1.6, timbre), 'both notes');
+  const playRoot = () => void ctx.player.renderAndPlay(() => renderNotes([ctx.rootHz], 1.2, timbre), 'root');
+  const playUpper = () => void ctx.player.renderAndPlay(() => renderNotes([upperHz], 1.2, timbre), 'upper note');
+  const playBoth = () => void ctx.player.renderAndPlay(() => renderNotes([ctx.rootHz, upperHz], 1.6, timbre), 'both notes');
 
   const octaveInfo = useMemo(
     () => ({
@@ -80,8 +80,8 @@ export function Ch1Intervals({ ctx }: ChapterProps) {
           <Text style={styles.line}>C4 → C5: {ctx.rootHz.toFixed(2)} → {(ctx.rootHz * 2).toFixed(2)} Hz · ratio 2:1 · 1200 ¢ · difference {octaveInfo.highDiff.toFixed(2)} Hz</Text>
           <Body>The hertz difference changes with register, but the interval ratio remains 2:1.</Body>
           <Row>
-            <Btn label="▶ C3–C4" onPress={() => void ctx.player.play(renderNotes([rootLow, ctx.rootHz], 1.4, timbre), 'C3 and C4')} />
-            <Btn label="▶ C4–C5" onPress={() => void ctx.player.play(renderNotes([ctx.rootHz, ctx.rootHz * 2], 1.4, timbre), 'C4 and C5')} />
+            <Btn label="▶ C3–C4" onPress={() => void ctx.player.renderAndPlay(() => renderNotes([rootLow, ctx.rootHz], 1.4, timbre), 'C3 and C4')} />
+            <Btn label="▶ C4–C5" onPress={() => void ctx.player.renderAndPlay(() => renderNotes([ctx.rootHz, ctx.rootHz * 2], 1.4, timbre), 'C4 and C5')} />
           </Row>
         </Card>
       ) : null}

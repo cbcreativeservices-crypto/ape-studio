@@ -114,8 +114,8 @@ export function Ch9Meantone({ ctx }: ChapterProps) {
             ) : null}
           </Card>
           <Row>
-            <Btn label="▶ PURE FIFTH" onPress={() => void ctx.player.play(renderNotes([root, root * 1.5], 1.4, 'rich'), 'pure fifth 3/2')} />
-            <Btn label="▶ MEANTONE FIFTH" onPress={() => void ctx.player.play(renderNotes([root, root * MEANTONE_FIFTH.numericRatio], 1.4, 'rich'), 'meantone fifth')} />
+            <Btn label="▶ PURE FIFTH" onPress={() => void ctx.player.renderAndPlay(() => renderNotes([root, root * 1.5], 1.4, 'rich'), 'pure fifth 3/2')} />
+            <Btn label="▶ MEANTONE FIFTH" onPress={() => void ctx.player.renderAndPlay(() => renderNotes([root, root * MEANTONE_FIFTH.numericRatio], 1.4, 'rich'), 'meantone fifth')} />
             <Btn label="■" tone="danger" onPress={() => ctx.player.stop()} a11y="Stop audio" />
           </Row>
           {nextBtn}
@@ -143,7 +143,7 @@ export function Ch9Meantone({ ctx }: ChapterProps) {
           <DeviationMeter cents={slider.err} rangeCents={25} label="Major-third distance from 5/4" />
           <HarmonicComparison rootHz={root} upperHz={hz(slider.third)} rootHarmonic={5} upperHarmonic={4} rootLabel="root C" upperLabel="E from four fifths" />
           <Row>
-            <Btn label="▶ C–E–G AT THIS FIFTH" onPress={() => void ctx.player.play(renderNotes([root, hz(slider.third), hz(slider.g)], 2.2, 'rich'), `triad with fifth ${fifthCents.toFixed(2)} ¢`)} />
+            <Btn label="▶ C–E–G AT THIS FIFTH" onPress={() => void ctx.player.renderAndPlay(() => renderNotes([root, hz(slider.third), hz(slider.g)], 2.2, 'rich'), `triad with fifth ${fifthCents.toFixed(2)} ¢`)} />
             <Btn label="■" tone="danger" onPress={() => ctx.player.stop()} a11y="Stop audio" />
           </Row>
           {nextBtn}
@@ -160,7 +160,7 @@ export function Ch9Meantone({ ctx }: ChapterProps) {
           </Row>
           <Row>
             {revealed < MT.notes.length ? <Btn label={`REVEAL ${MT.notes[revealed].spelling} ›`} tone="primary" onPress={() => setRevealed(revealed + 1)} a11y={`Reveal the next note, ${MT.notes[revealed].spelling}`} /> : <Btn label="REPLAY" onPress={() => setRevealed(1)} a11y="Replay the reveal from C" />}
-            <Btn label="▶ SCALE SO FAR" onPress={() => void ctx.player.play(renderSequence(MT.notes.slice(0, revealed).map((n) => hz(n.value.numericRatio)), 0.3, 'rich'), `meantone scale, ${revealed} note${revealed > 1 ? 's' : ''}`)} a11y="Play the scale so far" />
+            <Btn label="▶ SCALE SO FAR" onPress={() => void ctx.player.renderAndPlay(() => renderSequence(MT.notes.slice(0, revealed).map((n) => hz(n.value.numericRatio)), 0.3, 'rich'), `meantone scale, ${revealed} note${revealed > 1 ? 's' : ''}`)} a11y="Play the scale so far" />
             <Btn label="■" tone="danger" onPress={() => ctx.player.stop()} a11y="Stop audio" />
           </Row>
           <CentsRail markers={MT.notes.slice(0, revealed).map((n, i) => ({ id: `m${i}`, cents: n.value.cents, label: n.spelling, role: i === revealed - 1 ? 'operation' : 'neutral', emphasis: i === revealed - 1, row: i % 2 }))} reduceMotion={ctx.reduceMotion} height={110} />
@@ -182,8 +182,8 @@ export function Ch9Meantone({ ctx }: ChapterProps) {
             <Text style={styles.wolf}>WOLF · {wolf.wolfCents.toFixed(2)} ¢ · {wolf.widerThanNormalBy.toFixed(2)} ¢ wider than a normal fifth · {(wolf.wolfCents - PURE_FIFTH.cents).toFixed(2)} ¢ wider than pure</Text>
             <Body>Normal meantone fifth ≈ {wolf.normalFifthCents.toFixed(2)} ¢ · pure fifth ≈ {PURE_FIFTH.cents.toFixed(2)} ¢ · this closing interval ≈ {wolf.wolfCents.toFixed(2)} ¢, spelled G♯ up to E♭.</Body>
             <Row>
-              <Btn label="▶ NORMAL FIFTH (G♯–D♯)" onPress={() => void ctx.player.play(renderNotes([gSharp, normalFifthFrom(gSharp)], 1.6, 'rich'), 'normal meantone fifth')} />
-              <Btn label="▶ WOLF (G♯–E♭)" tone="danger" onPress={() => void ctx.player.play(renderNotes([gSharp, eFlatAbove], 1.6, 'rich'), 'wolf fifth')} />
+              <Btn label="▶ NORMAL FIFTH (G♯–D♯)" onPress={() => void ctx.player.renderAndPlay(() => renderNotes([gSharp, normalFifthFrom(gSharp)], 1.6, 'rich'), 'normal meantone fifth')} />
+              <Btn label="▶ WOLF (G♯–E♭)" tone="danger" onPress={() => void ctx.player.renderAndPlay(() => renderNotes([gSharp, eFlatAbove], 1.6, 'rich'), 'wolf fifth')} />
               <Btn label="■" tone="danger" onPress={() => ctx.player.stop()} a11y="Stop audio" />
             </Row>
           </Card>
