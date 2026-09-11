@@ -103,6 +103,52 @@ the rest deliberately skipped as owner decisions (recorded below).
 - `MainTabs.tsx` docblock still says "Default tab = Study" while
   `initialRouteName="Home"`.
 
+## Round 3 — mechanical / static analysis (a different approach on purpose)
+
+Agent review is one lens; these are checks a human reading code would never
+do by hand. **Most came back clean, which is itself the launch signal we
+want.**
+
+| Check | Result |
+|---|---|
+| Duplicate ids in every lab registry (runtime, not regex) | **Clean** — 20 categories, 54 leaves, 47 route+param combos, 15 credit keys, all 5 module registries. The `mixing` collision fixed earlier was the only one |
+| Every `navigate()` / `replace()` / `popTo()` target vs registered routes | **Clean** — 62 distinct targets, all 121 screens registered, **0 unknown** |
+| Registered screens never referenced anywhere (the M20 "dead screen" class) | **Clean** — 0 orphans |
+| `TODO` / `FIXME` / `HACK` markers | **0 in `src/`** |
+| Committed secrets (`service_role`, `sk_live`, private keys) | **None**; only `.env.example` is tracked |
+| Catalog credit keys vs `LabKey` union | **Match exactly** (15 = 15) |
+
+### One real gap found this way
+
+**`af_foundations`, `af_mic_principles`, `af_speaker_coverage` have no STATIC
+`LAB_UNITS` entry.** I first read this as a launch blocker — those three are
+seeded `is_active = true`, and the server needs every active fundamentals lab
+for the gs3081 credit that gates all certificates. **It is not a blocker:**
+`unitsFor()` falls back to `dynamicUnits`, and all three screens do call
+`registerLabUnits(...)` on mount, which re-checks and fires completion.
+
+The genuine residual: `retryUnsent()` runs at boot *before* any lab screen
+mounts, so for these three it finds no unit set and cannot retry. A user who
+finishes one of them **offline** and never reopens it never gets the
+completion sent. Self-healing on any revisit. The clean fix is the pattern
+already used by Patchbay and Connector Select — extract the step/section id
+lists into React-free `units.ts` modules (the completion store is
+boot-loaded and must stay React-free) and reference them statically.
+
+### Gaps worth knowing
+
+- **There is no lint tooling at all** — no ESLint config, no lint script, no
+  lint dependency. Rules like `react-hooks/exhaustive-deps` are referenced in
+  suppression comments throughout the code but nothing enforces them.
+- **8 pure-logic modules have no test**, led by
+  `src/screens/lab/meter/meterEngine.ts` (34 KB),
+  `src/screens/lab/harmonicModel.ts` (14 KB),
+  `src/screens/lab/wave/waveEngine.ts` (13 KB),
+  `src/screens/lab/eq/modules/eqMath.ts` (7 KB),
+  `src/screens/lab/gain/gainEngine.ts` (5 KB). These back member-facing labs
+  that make numeric claims — the same shape as the "14 calculator outputs
+  1000× wrong" bug from the 2026-09-01 QA night.
+
 ## Harness notes for next time
 
 - The web preview's console **accumulates across navigations**, so a stale
