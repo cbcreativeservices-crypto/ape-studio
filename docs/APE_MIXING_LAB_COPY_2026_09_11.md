@@ -1,13 +1,17 @@
-# Beginning Mixing Lab — copy sheet
+# Mixing Labs (Beginning + Advanced) — copy sheet
 
-**Status: ⏳ PENDING OWNER RATIFICATION** (built overnight 2026-09-11 on the
-owner's GO; expert design + cognition passes applied). All copy is NEW. Any
-copy change re-opens here first once ratified.
+**Status: ⏳ PENDING OWNER RATIFICATION** (both labs built overnight
+2026-09-11 on the owner's GO; TWO rounds of expert design + cognition passes
+applied — the round-2 cognition agent measured every audio claim against the
+running engine). All copy is NEW. Any copy change re-opens here first once
+ratified.
 
 Full text lives in the source (single source of truth):
-- `src/screens/lab/mixing/pagesA.tsx` (pages 1–4) · `pagesB.tsx` (5–7)
-- `src/screens/lab/mixing/pagesC.tsx` (8–12: EQ, compression, space, the six
-  terms, pre/post) · `pagesD.tsx` (13–16: automation, finishing, export, final)
+- Beginning (16 pages): `src/screens/lab/mixing/pagesA.tsx` (1–4) ·
+  `pagesB.tsx` (5–7) · `pagesC.tsx` (8–12) · `pagesD.tsx` (13–16)
+- Advanced (20 pages): `pagesAdvA.tsx` (gate–aux) · `pagesAdvB.tsx`
+  (parallel–depth) · `pagesAdvC.tsx` (harmonic–mix bus) · `pagesAdvD.tsx`
+  (translation–final repair)
 - `src/screens/lab/mixing/kit.tsx` (the mantra, console strings, player notes)
 - `src/screens/lab/mixing/engine/mixModel.ts` + `engine/routing.ts`
   (dimension/track/term definitions the pages print)
@@ -58,14 +62,38 @@ all executable in `engine/` + `audio/` and pinned by
 `test/mixingEngine.test.ts` (25 assertions). Copy that contradicts the
 console fails the suite.
 
+## Advanced-lab load-bearing sentences (additional)
+
+13. **The boundary rule** (AML gate): Beginning = "can you make a clear,
+    balanced stereo mix?" · Advanced = "can you manage, refine, troubleshoot
+    and DELIVER a complex one?"
+14. **Glue, defined by audio** (AML p4): a compressor across a summed kit
+    shares ONE envelope — "the kick's hit pulls the hat down with it"; per-
+    track clones "controlled, but never glued". (Rendered, not asserted.)
+15. **The parallel invoice** (p6): "Every parallel path is a level
+    commitment" — dry PLUS wet raises the bus.
+16. **Polarity is not delay** (p9): "no polarity flip un-delays a signal."
+17. **Width's invoice** (p12): "Width added by side-scaling is energy mono
+    cannot keep." Centre is the skeleton; width is jewellery.
+18. **The mastering border** (p14): "The moment your bus chain chases a LUFS
+    number, you have started mastering with a mix engineer's hands."
+19. **Measurement honesty** (p15): LUFS/true-peak shown as BS.1770-STYLE
+    ESTIMATES; "on normalized playback, platforms turn loud masters DOWN…
+    what survives is the mix, not the number."
+20. **The stem contract** (p17, measured live): linear stems null (≈ −163 dB
+    residue); one nonlinear bus stage breaks reconstruction (≈ −27 dB).
+
 ## Deferred owner decisions (worked around, not blocking)
 
-- **Ratification of this sheet** (all copy new).
-- **Device pass** of the full 15-page lab.
+- **Ratification of this sheet** (all copy new, both labs).
+- **Device pass** of both labs (Beginning 16 pages, Advanced 20 pages) —
+  Labs → Training → Mixing, or web hashes `#mixinglabpreview` /
+  `#advmixingpreview`.
 - **Catalog placement fine-tuning**: Mixing category currently leads the
   TRAINING section, member-only (the approved recommendation) — reorder at
   will.
 - **Real stems**: the session is honest synthesis; the swap-in manifest is
   `docs/APE_MIXING_LAB_ASSETS_2026_09_11.md`.
-- **Advanced Mixing Lab**: prerequisite gate (soft, device-local, with a
-  knowledge-check skip) to be wired when AML ships.
+- **AML gate policy**: shipped SOFT (page order never blocked; only lab
+  COMPLETION requires the gate goal, auto-met from a finished Beginning lab
+  or by the three knowledge checks). Confirm or harden.
