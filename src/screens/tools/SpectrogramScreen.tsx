@@ -53,6 +53,20 @@ import { colors, fonts } from '../../theme/tokens';
 import { useSaveGate } from './ToolLockUi';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { heatColor, levelColorForDb } from '../../features/tools/levelColor';
+// The raster maths, the colour ramp and the log frequency axis live in ONE
+// place so a SAVED snapshot redraws as the same picture this screen shows —
+// see the module docblock.
+import {
+  buildRasterImage,
+  CELL_CENTERS_HZ,
+  CELL_FLOOR_DB,
+  FIXED_ANCHOR_DB,
+  FREQ_LABELS,
+  freqFraction,
+  LOG_MIN,
+  LOG_SPAN,
+  ROWS,
+} from '../../features/tools/measure/spectrogramRaster';
 import { EngineGate } from './EngineGate';
 import { useToolHelp, HelpHead, DisplayGuideButton, readoutKey } from '../../features/lab/guidedLessons';
 import type { RootStackParamList } from '../../navigation/types';
@@ -62,53 +76,14 @@ type Props = NativeStackScreenProps<RootStackParamList, 'SpectrogramLive'>;
 const FFT_SIZE = 4096;
 const FFT_PRESET = 'hann-4096'; // engine analysis window preset (payload/settings id)
 const SPECTRO_POLL_MS = 125; // 8 Hz column cadence — deliberately NOT the meter poll
-const ROWS = 128; // log-spaced frequency rows per column (hi-res raster)
 const HISTORY_COLS = 160; // rolling columns → 160 × 0.125 s = 20 s
-const F_MIN = 50;
-const F_MAX = 16000;
-/** Row floor: a row whose bins all sit at/below this renders as background
- *  and is stored as this value — a stated display floor, never fabricated. */
-const CELL_FLOOR_DB = -120;
-
-const LOG_MIN = Math.log(F_MIN);
-const LOG_SPAN = Math.log(F_MAX) - LOG_MIN;
-/** Geometric row centers, precomputed once — also the saved bandsHz. */
-const CELL_CENTERS_HZ: number[] = Array.from({ length: ROWS }, (_, i) =>
-  Math.round(Math.exp(LOG_MIN + (LOG_SPAN * (i + 0.5)) / ROWS)),
-);
-
 /** Dynamic-range chips — dB below the color anchor (display scale only;
  *  no engine setting changes, no settings epoch). */
 const DYN_RANGES = [40, 60, 80] as const;
 
-// The live raster draws as ONE fine SkImage (owner 2026-08-12): a full
-// colour-depth per-pixel colormap — the app-wide amplitude ramp (red = loud,
-// blue = quiet, via heatColor) — bilinear-scaled to the chart, replacing the
-// old ≤32-bucket per-column SVG strokes. Same real cells / floor / scale as
-// before; only the drawing is smoother. heatColor is sampled to an RGB LUT once.
-const RASTER_N = 256;
-const RASTER_LUT: ReadonlyArray<readonly [number, number, number]> = Array.from(
-  { length: RASTER_N },
-  (_, i) => {
-    const v = parseInt(heatColor(i / (RASTER_N - 1)).slice(1), 16);
-    return [(v >> 16) & 255, (v >> 8) & 255, v & 255] as const;
-  },
-);
-
-/** FIXED colour anchor (owner 2026-08-14): the top of the colormap is a
- *  constant 0 dBFS, the selected dynamic range below it. A cell's colour is
- *  therefore permanent — a later loud event never recolours history. OBS MAX
- *  still prints the true observed maximum as a NUMBER. */
-const FIXED_ANCHOR_DB = 0;
-
 const GRID_H = 256; // grid pixel height; each of the 128 rows is 2 px tall
-const FREQ_LABELS = [
-  { hz: 100, text: '100' },
-  { hz: 1000, text: '1k' },
-  { hz: 10000, text: '10k' },
-] as const;
 /** Frequency → y within the grid (log axis, low frequencies at the bottom). */
-const yForHz = (hz: number) => GRID_H - ((Math.log(hz) - LOG_MIN) / LOG_SPAN) * GRID_H;
+const yForHz = (hz: number) => freqFraction(hz) * GRID_H;
 
 const fmtDb = (v: number | null | undefined) =>
   v != null && Number.isFinite(v) ? `${(Math.abs(v) < 0.05 ? 0 : v) > 0 ? '+' : ''}${(Math.abs(v) < 0.05 ? 0 : v).toFixed(1)}` : '—';
@@ -214,54 +189,6 @@ function Chip({ label, active, onPress, a11yLabel }: { label: string; active: bo
   );
 }
 
-/** Build the current history into ONE fine SkImage: `n` columns × ROWS rows,
- *  each pixel the full-resolution amplitude colour of a REAL measured cell —
- *  the SAME cells, floor and scale as the readouts (no fabrication). Cells
- *  at/below the scale floor are TRANSPARENT so the grid background shows
- *  through. Row 0 (low freq) maps to the bottom; the newest column is the
- *  rightmost pixel. Drawn scaled to the chart with bilinear filtering →
- *  smooth in time AND frequency. */
-function buildRasterImage(history: SpectroColumnData[], anchor: number, dynRange: number) {
-  const n = history.length;
-  if (n === 0) return null;
-  const floor = anchor - dynRange;
-  const inv = 1 / dynRange;
-  const last = RASTER_N - 1;
-  const buf = new Uint8Array(n * ROWS * 4); // zero-filled = transparent background
-  for (let px = 0; px < n; px++) {
-    const cells = history[px].cells;
-    for (let py = 0; py < ROWS; py++) {
-      const v = cells[ROWS - 1 - py]; // py 0 = top = high freq; row 0 = low freq → bottom
-      if (v > floor) {
-        let t = (v - floor) * inv;
-        if (t > 1) t = 1;
-        const [r, g, b] = RASTER_LUT[(t * last) | 0];
-        const o = (py * n + px) * 4;
-        buf[o] = r;
-        buf[o + 1] = g;
-        buf[o + 2] = b;
-        buf[o + 3] = 255;
-      }
-    }
-  }
-  const data = Skia.Data.fromBytes(buf);
-  const img = Skia.Image.MakeImage(
-    { width: n, height: ROWS, colorType: ColorType.RGBA_8888, alphaType: AlphaType.Unpremul },
-    data,
-    n * 4,
-  );
-  // Release the SkData WRAPPER now (resource hygiene 2026-09-11). Native
-  // fromBytes does SkData::MakeWithCopy and MakeImage does
-  // SkImages::RasterFromData, which takes its OWN sk_sp ref on that same
-  // SkData — so dispose() here is a refcount decrement, never a free, and the
-  // image's pixels stay valid. (On the web build the wrapper's ref is the
-  // plain Uint8Array, which has no delete(), so dispose() is a no-op there.)
-  // Without this, every 125 ms column left a second host object holding a
-  // duplicate claim on the same ~80 KB for the GC to find later.
-  data.dispose();
-  return img;
-}
-
 /** The 128×160 raster. React.memo keyed by the history REFERENCE: the 15 Hz
  *  meter poll re-renders the parent but props are unchanged, so this SVG only
  *  reconciles when a new column lands (8 Hz) or the scale/anchor changes —
@@ -282,7 +209,7 @@ const SpectrogramGrid = memo(function SpectrogramGrid({
   // The whole history is one image; it rebuilds only when a new column lands
   // (8 Hz) or the dynamic range changes — never on the 15 Hz meter poll (memo).
   const img = useMemo(
-    () => (history.length === 0 ? null : buildRasterImage(history, anchor, dynRange)),
+    () => (history.length === 0 ? null : buildRasterImage(history.map((c) => c.cells), anchor, dynRange)),
     [history, anchor, dynRange],
   );
   // An SkImage is NATIVE memory behind a JS handle; at 8 columns/s this screen

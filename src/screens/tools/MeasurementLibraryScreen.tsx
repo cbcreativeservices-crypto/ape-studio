@@ -21,12 +21,14 @@
  * every entry point is covered — the six tool screens link straight in.
  */
 import { memo, useCallback, useMemo, useState } from 'react';
-import { Alert, FlatList, Pressable, Share, StyleSheet, Text, View } from 'react-native';
+import { Alert, FlatList, Modal, Pressable, Share, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { confirmDialog } from '../../lib/confirm';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BRAND, shareFooterLines, shareHeaderLines } from '../../features/commercial/brand';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { compareCompatibility } from '../../features/tools/measure/compare';
+import { MeasurementPreview } from '../../features/tools/measure/previews/MeasurementPreview';
+import { PREVIEW_FULL_MIN_H } from '../../features/tools/measure/previews/previewKit';
 import { deleteMeasurement, useMeasurements } from '../../features/tools/measure/measurementStore';
 import { QUALITY_COLOR, QUALITY_LABEL } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type SavedMeasurement } from '../../features/tools/measure/types';
@@ -199,10 +201,16 @@ function payloadLines(m: SavedMeasurement): { label: string; value: string }[] {
   return [{ label: 'DATA', value: (p as { kind: string }).kind.replace(/_/g, ' ') }];
 }
 
-function ContextBlock({ m }: { m: SavedMeasurement }) {
+function ContextBlock({ m, onEnlarge }: { m: SavedMeasurement; onEnlarge: (m: SavedMeasurement) => void }) {
   const settings = Object.entries(m.measurement_settings);
   return (
     <View style={styles.ctx}>
+      {/* THE MEASUREMENT ITSELF, first (owner, device pass 2026-09-11: "the
+          whole idea of capturing the spectrogram"). Every payload that has a
+          shape already carried the numbers to draw it; this library was showing
+          descriptions of measurements instead. The summary rows stay below it,
+          so nothing depends on reading a small chart. */}
+      <MeasurementPreview measurement={m} onPress={() => onEnlarge(m)} />
       {/* Quality / caution lives ONLY inside the expanded view now (owner
           2026-07-30) — the collapsed list stays clean. */}
       <View style={styles.ctxRow}>
@@ -277,6 +285,7 @@ const Row = memo(function Row({
   onPress,
   onDelete,
   onShare,
+  onEnlarge,
 }: {
   m: SavedMeasurement;
   showTool: boolean;
@@ -287,6 +296,7 @@ const Row = memo(function Row({
   onPress: (m: SavedMeasurement) => void;
   onDelete: (m: SavedMeasurement) => void;
   onShare: (m: SavedMeasurement) => void;
+  onEnlarge: (m: SavedMeasurement) => void;
 }) {
   return (
     <View style={[styles.row, isPicked && styles.rowPicked]}>
@@ -318,7 +328,7 @@ const Row = memo(function Row({
       </Pressable>
       {isOpen && !pickMode && (
         <>
-          <ContextBlock m={m} />
+          <ContextBlock m={m} onEnlarge={onEnlarge} />
           <View style={styles.rowActions}>
             <Pressable
               style={styles.shareBtn}
@@ -349,6 +359,16 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
   const toolKey = route.params?.toolKey;
   const all = useMeasurements(toolKey);
   const [openId, setOpenId] = useState<string | null>(null);
+  /** The measurement being viewed full screen, or null. A thumbnail in a list
+   *  row can show the SHAPE of a capture but not its detail — a 160-column
+   *  waterfall in a list-width strip is a postage stamp — so the picture opens,
+   *  the same gesture the live tools already use for their own displays. */
+  const [enlarged, setEnlarged] = useState<SavedMeasurement | null>(null);
+  // Give the picture the room the screen actually has, less the header and the
+  // readout rows under it — a fixed height would crop on a small phone and
+  // strand space on a large one.
+  const { height: winH } = useWindowDimensions();
+  const fsHeight = Math.max(PREVIEW_FULL_MIN_H, Math.round(winH * 0.52));
   const [compareMode, setCompareMode] = useState(false);
   const [picked, setPicked] = useState<string[]>([]);
   // Multi-select (owner 2026-07-30): a second pick mode for bulk share/delete,
@@ -531,6 +551,7 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
             onPress={onRowPress}
             onDelete={onRowDelete}
             onShare={onRowShare}
+            onEnlarge={setEnlarged}
           />
         )}
         ListHeaderComponent={
@@ -596,12 +617,71 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
           </View>
         }
       />
+
+      {/* FULL-SCREEN VIEW. Deliberately a Modal over the library rather than a
+          new route: the picture is a closer look at the row you already opened,
+          not a place in the history you can get lost in, and BACK should return
+          you to the list scrolled where you left it. */}
+      <Modal
+        visible={enlarged != null}
+        transparent
+        animationType="fade"
+        statusBarTranslucent
+        accessibilityViewIsModal
+        onRequestClose={() => setEnlarged(null)}
+      >
+        <View style={[styles.fsBackdrop, { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 14 }]}>
+          {enlarged ? (
+            <>
+              <View style={styles.fsHead}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.fsTitle} numberOfLines={2}>{enlarged.title}</Text>
+                  <Text style={styles.fsMeta}>
+                    {toolByKey(enlarged.tool_type).name} · {fmtWhen(enlarged.created_at)}
+                  </Text>
+                </View>
+                <Pressable
+                  onPress={() => setEnlarged(null)}
+                  hitSlop={12}
+                  accessibilityRole="button"
+                  accessibilityLabel="Close"
+                >
+                  <Text style={styles.fsClose}>✕</Text>
+                </Pressable>
+              </View>
+              {/* No onPress here — it is already as large as it gets, and a
+                  tappable image with nothing to do is a dead control. */}
+              <MeasurementPreview measurement={enlarged} height={fsHeight} />
+              {/* The numbers stay with the picture. A chart is a shape; the
+                  reading is what the measurement actually asserts. */}
+              <View style={styles.fsRows}>
+                {payloadLines(enlarged).map((l) => (
+                  <View key={l.label} style={styles.ctxRow}>
+                    <Text style={styles.ctxKey}>{l.label}</Text>
+                    <Text style={styles.ctxVal}>{l.value}</Text>
+                  </View>
+                ))}
+              </View>
+            </>
+          ) : null}
+        </View>
+      </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
+  // OPAQUE, not a scrim. At 96% the library rows and the SELECT button ghost
+  // through behind the capture, which reads as a rendering fault rather than a
+  // layer — and a measurement is the one thing on this screen that should have
+  // nothing behind it.
+  fsBackdrop: { flex: 1, backgroundColor: '#06060a', paddingHorizontal: 14, gap: 12 },
+  fsHead: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
+  fsTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 0.8, color: colors.textPrimary },
+  fsMeta: { fontFamily: fonts.mono, fontSize: 11, color: colors.textMuted, marginTop: 2 },
+  fsClose: { fontFamily: fonts.oswaldSemiBold, fontSize: 22, color: colors.textSub, lineHeight: 26 },
+  fsRows: { gap: 4 },
   header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 10 },
   back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1.4, color: colors.textPrimary },
