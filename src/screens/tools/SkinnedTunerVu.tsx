@@ -189,8 +189,10 @@ function PrintedScale({ s, tuneInk }: { s: number; tuneInk: string }) {
           ]}
         />
       ))}
-      {/* numbers — unsigned (the ♭ / ♯ ends carry the polarity, VU-style),
-          foreshortened toward the ends as the drum turns away */}
+      {/* numbers — the OUTERMOST pair is signed (−30 / +30) and carries the
+          range, replacing the old ±30¢ corner badge (owner 2026-09-11);
+          inner numbers stay unsigned. Foreshortened toward the ends as the
+          drum turns away. */}
       {[-30, -20, -10, 0, 10, 20, 30].map((c) => (
         <Text
           key={c}
@@ -205,7 +207,7 @@ function PrintedScale({ s, tuneInk }: { s: number; tuneInk: string }) {
             },
           ]}
         >
-          {Math.abs(c)}
+          {c === -30 ? '−30' : c === 30 ? '+30' : Math.abs(c)}
         </Text>
       ))}
       <Text style={[st.legend, { left: (CX - 200) * s, top: (LEGEND_Y - 38) * s, width: 400 * s, fontSize: 38 * s, letterSpacing: 6 * s }]}>CENTS</Text>
@@ -214,12 +216,10 @@ function PrintedScale({ s, tuneInk }: { s: number; tuneInk: string }) {
       {(() => {
         const flatXf = drumAtX(MARGIN_X + 35 - CX);
         const sharpXf = drumAtX(VB.w - MARGIN_X - 35 - CX);
-        const badgeXf = drumAtX(MARGIN_X + 10 + 65 - CX);
         return (
           <>
             <Text style={[st.endGlyph, { left: MARGIN_X * s, top: (306 - 62 + flatXf.rise) * s, width: 70 * s, fontSize: 62 * s, transform: flatXf.transform }]}>♭</Text>
             <Text style={[st.endGlyph, { left: (VB.w - MARGIN_X - 70) * s, top: (306 - 62 + sharpXf.rise) * s, width: 70 * s, fontSize: 62 * s, transform: sharpXf.transform }]}>♯</Text>
-            <Text style={[st.badge, { left: (MARGIN_X + 10) * s, top: (410 - 44 + badgeXf.rise) * s, width: 130 * s, fontSize: 44 * s, transform: badgeXf.transform }]}>±30¢</Text>
           </>
         );
       })()}
@@ -553,9 +553,6 @@ const st = StyleSheet.create({
   num: { position: 'absolute', textAlign: 'center', fontFamily: fonts.oswaldSemiBold, color: INK },
   legend: { position: 'absolute', textAlign: 'center', fontFamily: fonts.oswaldSemiBold, color: INK_SOFT },
   endGlyph: { position: 'absolute', textAlign: 'center', fontFamily: fonts.barlowSemiBold, color: INK },
-  // Printed voice like its neighbors, full ink — mono is the app's DIGITAL
-  // readout voice and was unreadable in the glow.
-  badge: { position: 'absolute', fontFamily: fonts.oswaldSemiBold, color: INK },
 });
 
 const styles = StyleSheet.create({

@@ -635,6 +635,23 @@ function LivePitchMode({
           {/* Current display — compact; the ENTIRE container turns green when in
               tune within ±1 cent (owner 2026-08-05). */}
           <View style={[styles.tunerCurrent, tunerInTune && styles.tunerCurrentInTune]}>
+            {/* MEMBER in-tune colour (owner 2026-08-21; moved to the note
+                card's top-right corner 2026-09-11) — discreet wheel. */}
+            <ColorWheelButton
+              style={styles.tunerWheel}
+              current={tunerColor}
+              onPick={setTunerColor}
+              accessibilityLabel="Tuner colour"
+              feature="the tuner in-tune colour"
+              pickerTitle="TUNER COLOUR"
+              subtitle="The in-tune needle, centre marker and glow"
+              // colors.greenBright = the meter's actual default in-tune NEEDLE
+              // colour — the diagram must match the instrument (design
+              // critique 2026-09-01 #5).
+              renderDiagram={(hex) => <TunerDiagram tint={hex} defaultTint={colors.greenBright} />}
+              defaultSwatchColor={colors.greenBright}
+              size={20}
+            />
             <Pressable
               style={styles.tunerNoteRow}
               onPress={running ? onStop : onStart}
@@ -726,11 +743,6 @@ function LivePitchMode({
           </View>
         </View>
       )}
-      {/* Honest range + unit conventions (§1.4/§1.7 + spec Tool 7 warnings). */}
-      <Text style={styles.gridNote}>
-        Reads ONE steady tone, roughly {PITCH_RANGE_HZ.min} Hz – {PITCH_RANGE_HZ.max / 1000} kHz
-        (approximate). Input level is dBFS · uncalibrated — digital level, never SPL.
-      </Text>
       {/* Tuner setup (owner 2026-09-10): ONE horizontal row — TUNING STANDARD ·
           LOW-CUT · HIGH-CUT — each button opening its compact choice tray
           just below (one at a time; in-tree, never a Modal — SPL lessons).
@@ -771,22 +783,6 @@ function LivePitchMode({
               <Text style={styles.cfgLabel}>HIGH-CUT</Text>
               <Text style={styles.cfgValue}>{fmtCut(highCut)}</Text>
             </Pressable>
-            {/* MEMBER in-tune colour (owner 2026-08-21) — discreet wheel. */}
-            <ColorWheelButton
-              style={styles.tunerWheel}
-              current={tunerColor}
-              onPick={setTunerColor}
-              accessibilityLabel="Tuner colour"
-              feature="the tuner in-tune colour"
-              pickerTitle="TUNER COLOUR"
-              subtitle="The in-tune needle, centre marker and glow"
-              // colors.greenBright = the meter's actual default in-tune NEEDLE
-              // colour — the diagram must match the instrument (design
-              // critique 2026-09-01 #5).
-              renderDiagram={(hex) => <TunerDiagram tint={hex} defaultTint={colors.greenBright} />}
-              defaultSwatchColor={colors.greenBright}
-              size={20}
-            />
           </View>
           {cfgOpen === 'a4' && (
             <View style={styles.cfgTray}>
@@ -858,7 +854,13 @@ function LivePitchMode({
           </Text>
         </>
       )}
-      {/* Below the tuner setup row (owner 2026-09-10: setup lives ABOVE this). */}
+      {/* Honest range + unit conventions (§1.4/§1.7 + spec Tool 7 warnings) —
+          below the tuner setup containers (owner 2026-09-11); in Sound mode
+          the setup block renders nothing, so it still follows the stat grid. */}
+      <Text style={styles.gridNote}>
+        Reads ONE steady tone, roughly {PITCH_RANGE_HZ.min} Hz – {PITCH_RANGE_HZ.max / 1000} kHz
+        (approximate). Input level is dBFS · uncalibrated — digital level, never SPL.
+      </Text>
       <DisplayGuideButton onPress={helpAll} />
 
       {/* SAVE (Sound mode only) — enabled once a live, confident pitch has held
@@ -1414,7 +1416,9 @@ const styles = StyleSheet.create({
   // Honest range/unit footnote under the stat grid.
   gridNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted },
   centerLockRow: { alignItems: 'center', marginBottom: 6 },
-  tunerWheel: { marginLeft: 4, padding: 2 },
+  // Top-right corner of the note card (owner 2026-09-11); 44pt effective
+  // target via padding + the wheel's own hit slop.
+  tunerWheel: { position: 'absolute', top: 8, right: 10, zIndex: 2, padding: 6 },
   // Tuner setup row (owner 2026-09-10): TUNING STANDARD · LOW-CUT · HIGH-CUT
   // buttons, each opening its compact choice tray below.
   cfgRow: { flexDirection: 'row', alignItems: 'stretch', gap: 8 },
