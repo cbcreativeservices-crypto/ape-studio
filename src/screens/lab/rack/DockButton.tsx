@@ -103,7 +103,7 @@ export function DockButton({
       delayLongPress={350}
       accessibilityRole="button"
       accessibilityState={{ selected: !!selected || !!led }}
-      aria-selected={!!selected || !!led}
+      aria-pressed={!!selected || !!led}
       accessibilityLabel={a11y}
     >
       {isKey ? (

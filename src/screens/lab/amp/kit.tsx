@@ -317,7 +317,7 @@ export function CheckCard({
               accessibilityRole="button"
               accessibilityState={{ disabled: answered && correct, selected: picked === i }}
               aria-disabled={answered && correct}
-              aria-selected={picked === i}
+              aria-pressed={picked === i}
               accessibilityLabel={o}
             >
               <Text style={[styles.checkOptText, isRight && { color: colors.green }, isWrongPick && { color: colors.red }]}>

@@ -124,7 +124,7 @@ export function OptionChip({
       hitSlop={{ top: 8, bottom: 8 }}
       accessibilityRole="button"
       accessibilityState={{ selected: action ? undefined : !!active, disabled: !!disabled }}
-      aria-selected={action ? undefined : !!active}
+      aria-pressed={action ? undefined : !!active}
       aria-disabled={!!disabled}
       accessibilityLabel={label}
       style={[styles.chip, active && styles.chipActive, disabled && { opacity: 0.5 }]}

@@ -613,7 +613,7 @@ export function AdcChainView({
           onLongPress={onHelp}
           accessibilityRole="button"
           accessibilityState={{ selected: selected === t.key }}
-          aria-selected={selected === t.key}
+          aria-pressed={selected === t.key}
           accessibilityLabel={`${t.label} block`}
         />
       ))}

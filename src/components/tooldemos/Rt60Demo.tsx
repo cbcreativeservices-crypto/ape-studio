@@ -282,14 +282,14 @@ export function Rt60Demo() {
 
   return (
     <View style={styles.panel}>
-      <View style={styles.chipRow}>
+      <View style={styles.chipRow} accessibilityRole='tablist'>
         {SCENES.map((s, i) => {
           const on = i === scene;
           return (
             <Pressable
               key={s.chip}
               onPress={() => setScene(i)}
-              accessibilityRole='button'
+              accessibilityRole='tab'
               accessibilityLabel={`Show scene: ${s.title}`}
               accessibilityState={{ selected: on }}
               aria-selected={on}

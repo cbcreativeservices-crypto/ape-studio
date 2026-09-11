@@ -174,7 +174,7 @@ export function CalcWorkflowsScreen() {
           hitSlop={8}
           accessibilityRole="button"
           accessibilityState={{ selected: favorites.includes(w.id) }}
-          aria-selected={favorites.includes(w.id)}
+          aria-pressed={favorites.includes(w.id)}
           accessibilityLabel={favorites.includes(w.id) ? 'Remove favorite' : 'Favorite'}
         >
           <Text style={[styles.favStar, favorites.includes(w.id) && styles.favStarOn]}>★</Text>

@@ -317,10 +317,10 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
                     hitSlop={8}
                     accessibilityRole="button"
                     accessibilityState={{ selected: on }}
-                    // Twin of accessibilityState (RNW 0.21 drops the object). Inert on
-                    // role=button — the on/off state is carried by accessibilityLabel,
-                    // which is what actually announces on web.
-                    aria-selected={on}
+                    // Twin of accessibilityState (RNW 0.21 drops the object). On
+                    // role=button the correct web attribute is aria-pressed; the
+                    // on/off state is also carried by accessibilityLabel.
+                    aria-pressed={on}
                     accessibilityLabel={on ? `Remove ${nameFor(gs)} from Home` : `Add ${nameFor(gs)} to Home`}
                   >
                     <HomeIcon color={on ? AMBER : GRAY} filled={on} size={22} />
@@ -340,9 +340,10 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
                       onPress={() => guard(() => setDefaultDraft((d) => (d === gs ? null : gs)))}
                       accessibilityRole="button"
                       accessibilityState={{ selected: defaultDraft === gs }}
-                      // Twin of accessibilityState (RNW 0.21 drops the object). Inert on
-                      // role=button — the state is carried by accessibilityLabel.
-                      aria-selected={defaultDraft === gs}
+                      // Twin of accessibilityState (RNW 0.21 drops the object). On
+                      // role=button the correct web attribute is aria-pressed; the
+                      // state is also carried by accessibilityLabel.
+                      aria-pressed={defaultDraft === gs}
                       accessibilityLabel={defaultDraft === gs ? `${nameFor(gs)} is the default opening card` : `Set ${nameFor(gs)} as the default opening card`}
                     >
                       <Text style={[styles.defaultText, defaultDraft === gs && styles.defaultTextOn]}>

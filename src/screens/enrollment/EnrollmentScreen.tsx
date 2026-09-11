@@ -811,7 +811,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           onPress={() => toggleTopic(gs)}
           accessibilityRole="button"
           accessibilityState={{ selected: on }}
-          aria-selected={on}
+          aria-pressed={on}
           accessibilityLabel={on ? `Remove ${label ?? nameFor(gs)}` : `Add ${label ?? nameFor(gs)}`}
         >
           <Text style={[styles.topicCheck, on && styles.topicCheckOn]}>{on ? '✓' : '+'}</Text>
@@ -909,7 +909,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           {/* Subjects are organizational — no awards/exam and NOT placeable on
               Home, so they get no Home icon (user request 2026-07-23). */}
           {b.kind !== 'subject' ? (
-            <Pressable style={styles.homeToggle} onPress={() => toggleBundleHome(b.key)} accessibilityRole="button" accessibilityState={{ selected: onHome }} aria-selected={onHome} accessibilityLabel={onHome ? 'Remove bundle from Home' : 'Add bundle to Home'}>
+            <Pressable style={styles.homeToggle} onPress={() => toggleBundleHome(b.key)} accessibilityRole="button" accessibilityState={{ selected: onHome }} aria-pressed={onHome} accessibilityLabel={onHome ? 'Remove bundle from Home' : 'Add bundle to Home'}>
               <HomeIcon color={onHome ? colors.amber : GRAY} filled={onHome} size={20} />
             </Pressable>
           ) : null}
@@ -951,7 +951,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             onPress={() => setBundleLoad(b, !allLoaded)}
             accessibilityRole="button"
             accessibilityState={{ selected: allLoaded }}
-            aria-selected={allLoaded}
+            aria-pressed={allLoaded}
             accessibilityLabel={allLoaded ? 'Remove all topics from the study deck' : 'Load all topics into the study deck'}
           >
             <DeckIcon color={allLoaded ? colors.blue : GRAY} fill={allLoaded ? BLUE : '#8a8a8a'} size={33} />
@@ -1039,7 +1039,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             onPress={() => setActiveMany(d.topics, !allLoaded)}
             accessibilityRole="button"
             accessibilityState={{ selected: allLoaded }}
-            aria-selected={allLoaded}
+            aria-pressed={allLoaded}
             accessibilityLabel={allLoaded ? 'Remove all topics from the study deck' : 'Load all topics into the study deck'}
           >
             <DeckIcon color={allLoaded ? colors.blue : GRAY} fill={allLoaded ? BLUE : '#8a8a8a'} size={33} />
@@ -1075,7 +1075,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
 
   // Shared BROWSE & ADD tab row — used both in-flow and in the pinned overlay.
   const renderBrowseTabs = () => (
-    <View style={styles.browseTabs}>
+    <View style={styles.browseTabs} accessibilityRole="tablist">
       {([['cert', 'Certificates', BLUE], ['program', 'Programs', PURPLE], ['subject', 'Subjects', colors.amber], ['field', 'Fields', colors.green], ['topic', 'Topics', colors.textPrimary]] as const).map(([k, label, tint]) => {
         const on = browseTab === k;
         return (
@@ -1089,7 +1089,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
               setOpenItem(null);
               setBrowseOpen(true); // clicking a filter auto-reveals the list (user request 2026-07-24)
             }}
-            accessibilityRole="button"
+            accessibilityRole="tab"
             accessibilityState={{ selected: on }}
             aria-selected={on}
           >
@@ -1154,7 +1154,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             onPress={() => setCustomOnDashboard(!customOnDash)}
             accessibilityRole="button"
             accessibilityState={{ selected: customOnDash }}
-            aria-selected={customOnDash}
+            aria-pressed={customOnDash}
             accessibilityLabel={customOnDash ? 'Remove my custom list from the dashboard' : 'Show my custom list on the dashboard'}
           >
             <DeckIcon color={customOnDash ? colors.blue : GRAY} fill={customOnDash ? BLUE : '#8a8a8a'} size={33} />
@@ -1238,7 +1238,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                 onPress={() => toggleFilter(c.key)}
                 accessibilityRole="button"
                 accessibilityState={{ selected: on }}
-                aria-selected={on}
+                aria-pressed={on}
                 accessibilityLabel={c.label}
               >
                 <Text style={[styles.chipText, on && styles.chipTextOn]}>{c.label}</Text>
@@ -1298,7 +1298,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                     accessibilityRole="button"
                     accessibilityState={{ disabled: coreLocked, selected: showActive }}
                     aria-disabled={coreLocked}
-                    aria-selected={showActive}
+                    aria-pressed={showActive}
                     accessibilityLabel={coreLocked ? 'Locked in your study deck' : showActive ? 'Remove from study deck' : 'Add to study deck'}
                   >
                     <DeckIcon color={showActive ? colors.blue : GRAY} fill={showActive ? BLUE : '#8a8a8a'} size={22} />
@@ -1377,7 +1377,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                     accessibilityRole="button"
                     accessibilityState={{ disabled: coreLocked, selected: showActive }}
                     aria-disabled={coreLocked}
-                    aria-selected={showActive}
+                    aria-pressed={showActive}
                     accessibilityLabel={
                       coreLocked ? 'Locked in your study deck until completed' : showActive ? 'Remove from study deck' : 'Add to study deck'
                     }
@@ -1414,7 +1414,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                       onPress={() => toggleOnHome(e.gs)}
                       accessibilityRole="button"
                       accessibilityState={{ selected: homeSet.has(e.gs) }}
-                      aria-selected={homeSet.has(e.gs)}
+                      aria-pressed={homeSet.has(e.gs)}
                       accessibilityLabel={homeSet.has(e.gs) ? 'Remove from Home screen' : 'Add to Home screen'}
                     >
                       <HomeIcon color={homeSet.has(e.gs) ? colors.amber : GRAY} filled={homeSet.has(e.gs)} size={20} />

@@ -774,7 +774,7 @@ export function RouteScene({ width, completed, onComplete, openSources }: CiModu
                     onPress={() => select(s.id, o.id)}
                     accessibilityRole="button"
                     accessibilityState={{ selected: isPicked, disabled: picked != null }}
-                    aria-selected={isPicked}
+                    aria-pressed={isPicked}
                     aria-disabled={picked != null}
                     accessibilityLabel={`Route ${LETTERS[i]}: ${o.name}. ${o.path} Relative length ${o.relLength.toFixed(1)} times the shortest.`}
                   >

@@ -800,7 +800,7 @@ function LivePitchMode({
                   delayLongPress={260}
                   accessibilityRole="button"
                   accessibilityState={{ selected: a4 === v }}
-                  aria-selected={a4 === v}
+                  aria-pressed={a4 === v}
                   accessibilityLabel={`A4 ${v} hertz`}
                 >
                   <Text style={[styles.a4ChipText, a4 === v && styles.a4ChipTextOn]}>{v}</Text>
@@ -820,7 +820,7 @@ function LivePitchMode({
                   }}
                   accessibilityRole="button"
                   accessibilityState={{ selected: lowCut === v }}
-                  aria-selected={lowCut === v}
+                  aria-pressed={lowCut === v}
                   accessibilityLabel={`Low cut ${v} hertz high-pass`}
                 >
                   <Text style={[styles.a4ChipText, lowCut === v && styles.a4ChipTextOn]}>{v}</Text>
@@ -840,7 +840,7 @@ function LivePitchMode({
                   }}
                   accessibilityRole="button"
                   accessibilityState={{ selected: highCut === v }}
-                  aria-selected={highCut === v}
+                  aria-pressed={highCut === v}
                   accessibilityLabel={`High cut ${v} hertz low-pass`}
                 >
                   <Text style={[styles.a4ChipText, highCut === v && styles.a4ChipTextOn]}>
@@ -1183,7 +1183,7 @@ function TapMode({ onOpenLibrary, help, helpAll }: { onOpenLibrary: () => void; 
           onPress={() => setHeld((h) => !h)}
           accessibilityRole="button"
           accessibilityState={{ selected: held }}
-          aria-selected={held}
+          aria-pressed={held}
           accessibilityLabel={held ? 'Release hold' : 'Hold'}
         >
           <Text style={[styles.ctrlText, held && styles.ctrlTextActive]}>{held ? 'HOLD ●' : 'HOLD'}</Text>

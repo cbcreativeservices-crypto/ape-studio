@@ -507,7 +507,7 @@ export function FireScene({ width, completed, onComplete, openSources }: CiModul
                   style={styles.spaceHead}
                   accessibilityRole="button"
                   accessibilityState={{ selected: isSel, expanded: isSel }}
-                  aria-selected={isSel}
+                  aria-pressed={isSel}
                   aria-expanded={isSel}
                   accessibilityLabel={`Space ${i + 1}. ${s.label}${answered ? ', identified' : ''}`}
                 >

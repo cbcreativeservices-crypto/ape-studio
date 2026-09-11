@@ -297,7 +297,7 @@ export function CableInstallLabScreen() {
                   hitSlop={6}
                   accessibilityRole="button"
                   accessibilityState={{ selected: active, disabled: !enterable }}
-                  aria-selected={active}
+                  aria-pressed={active}
                   aria-disabled={!enterable}
                   accessibilityLabel={`${m.title}${done ? ', complete' : enterable ? '' : ', locked'}`}
                 >

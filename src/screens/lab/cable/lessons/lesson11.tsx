@@ -206,7 +206,7 @@ function OrderBlock({ stage, onDone }: { stage: OrderStage; onDone: () => void }
               disabled={result === 'ok'}
               accessibilityRole="button"
               accessibilityState={{ selected: inOrder, disabled: result === 'ok' }}
-              aria-selected={inOrder}
+              aria-pressed={inOrder}
               aria-disabled={result === 'ok'}
               accessibilityLabel={`${item.label}${inOrder ? `, position ${pos + 1}` : ', not yet ordered'}`}
               style={[
@@ -304,7 +304,7 @@ function FaultBlock({
               disabled={isFound}
               accessibilityRole="button"
               accessibilityState={{ selected: row?.id === r.id, disabled: isFound }}
-              aria-selected={row?.id === r.id}
+              aria-pressed={row?.id === r.id}
               aria-disabled={isFound}
               accessibilityLabel={isFound && r.fault ? `${r.label}. Fault found: ${r.faultName}` : r.label}
               style={[styles.row, row?.id === r.id && !isFound && styles.rowActive, isFound && styles.rowFound]}

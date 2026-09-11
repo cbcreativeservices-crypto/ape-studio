@@ -307,7 +307,7 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
                   accessibilityRole="button"
                   accessibilityLabel={`${m.label} band${on ? '' : ', off'}`}
                   accessibilityState={{ selected }}
-                  aria-selected={selected}
+                  aria-pressed={selected}
                   style={[
                     styles.chip,
                     { borderColor: selected ? m.color : '#2c2c33' },

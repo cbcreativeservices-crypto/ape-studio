@@ -413,7 +413,7 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
                     style={[styles.opt, picked === oi && !finalSubmitted && styles.optPicked, isRight && styles.optRight, isWrongPick && styles.optWrong]}
                     accessibilityRole="button"
                     accessibilityState={{ selected: picked === oi, disabled: finalSubmitted }}
-                    aria-selected={picked === oi}
+                    aria-pressed={picked === oi}
                     aria-disabled={finalSubmitted}
                     accessibilityLabel={o}
                   >

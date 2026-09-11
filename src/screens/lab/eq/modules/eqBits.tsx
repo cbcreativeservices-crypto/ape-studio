@@ -146,7 +146,7 @@ export function MiniBtn({ label, active, onPress }: { label: string; active?: bo
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityState={active != null ? { selected: active } : undefined}
-      aria-selected={active ?? undefined}
+      aria-pressed={active ?? undefined}
       style={[styles.miniBtn, active && styles.miniBtnActive]}
     >
       <Text style={[styles.miniBtnText, active && styles.miniBtnTextActive]}>{label}</Text>

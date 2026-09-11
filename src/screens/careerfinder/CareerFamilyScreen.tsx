@@ -120,7 +120,7 @@ export function CareerFamilyScreen() {
               const on = enrolledGs.has(gs);
               const name = officialTopicName(gs, names.get(gs));
               return (
-                <Pressable key={gs} style={styles.topicRow} onPress={() => toggleTopic(gs)} accessibilityRole="button" accessibilityState={{ selected: on }} aria-selected={on} accessibilityLabel={on ? `Remove ${name} from your study list` : `Add ${name} to your study list`}>
+                <Pressable key={gs} style={styles.topicRow} onPress={() => toggleTopic(gs)} accessibilityRole="button" accessibilityState={{ selected: on }} aria-pressed={on} accessibilityLabel={on ? `Remove ${name} from your study list` : `Add ${name} to your study list`}>
                   <Text style={[styles.topicCheck, on && { color: colors.green }]}>{on ? '✓' : '+'}</Text>
                   <Text style={[styles.topicText, on && { color: '#7dffa1' }]}>{name}</Text>
                 </Pressable>

@@ -757,7 +757,7 @@ export function LabelScene({ width, completed, onComplete, openSources }: CiModu
                       accessibilityRole="button"
                       accessibilityState={{ disabled: cFound, selected: cFound && isTarget }}
                       aria-disabled={cFound}
-                      aria-selected={cFound && isTarget}
+                      aria-pressed={cFound && isTarget}
                       accessibilityLabel={`Cable ${i + 1}, flag reads ${CABLE_FLAGS[i]}${cFound && isTarget ? '. Traced — this is the one.' : ''}`}
                     >
                       <Text style={styles.cableBtnName}>CABLE {i + 1}</Text>

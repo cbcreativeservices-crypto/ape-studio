@@ -1274,7 +1274,7 @@ function M11Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
                   delayLongPress={300}
                   accessibilityRole="button"
                   accessibilityState={{ selected: sel }}
-                  aria-selected={sel}
+                  aria-pressed={sel}
                   accessibilityLabel={`Harmonic ${i + 1}, ${sel ? 'selected' : on ? 'on' : 'off'}`}
                 >
                   <Text style={[styles.harmBtnText, on && styles.harmBtnTextOn, sel && styles.harmBtnTextSel]}>H{i + 1}</Text>

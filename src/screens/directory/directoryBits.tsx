@@ -46,7 +46,7 @@ export function Chip({
         style={s.chipBody}
         accessibilityRole="button"
         accessibilityState={{ selected: !!on, disabled: !!disabled }}
-        aria-selected={!!on}
+        aria-pressed={!!on}
         aria-disabled={!!disabled}
         accessibilityLabel={label}
         accessibilityHint={
@@ -66,7 +66,7 @@ export function Chip({
           accessibilityRole="button"
           accessibilityLabel={starred ? `${label} is your primary area` : `Set ${label} as your primary area`}
           accessibilityState={{ selected: !!starred }}
-          aria-selected={!!starred}
+          aria-pressed={!!starred}
         >
           <Text style={[s.chipActionText, starred && s.chipActionOn]}>{starred ? '★' : '☆'}</Text>
         </Pressable>

@@ -95,7 +95,7 @@ function SheetChip({
       disabled={disabled}
       accessibilityRole="button"
       accessibilityState={{ selected: !!selected, disabled: !!disabled }}
-      aria-selected={!!selected}
+      aria-pressed={!!selected}
       aria-disabled={!!disabled}
       accessibilityLabel={label}
     >

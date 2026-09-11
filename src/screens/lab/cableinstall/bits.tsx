@@ -169,7 +169,7 @@ export function RuleOrMythCard({ myth, onDone, openSources }: { myth: CiMyth; on
               disabled={picked != null}
               accessibilityRole="button"
               accessibilityState={{ selected: sel }}
-              aria-selected={sel}
+              aria-pressed={sel}
               accessibilityLabel={v ? 'True' : 'False'}
             >
               <Text style={[styles.mythBtnText, (sel || isAnswer) && { color: colors.textPrimary }]}>{v ? 'TRUE' : 'FALSE'}</Text>

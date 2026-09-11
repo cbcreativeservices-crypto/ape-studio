@@ -83,7 +83,7 @@ export function AnswerCell({
           : { selected: isSelected, disabled: isDisabled }
       }
       aria-checked={showCheck ? checked : undefined}
-      aria-selected={showCheck ? undefined : isSelected}
+      aria-pressed={showCheck ? undefined : isSelected}
       aria-disabled={isDisabled}
       // Self-sizing (minHeight-driven), stretching to the parent's width.
       // flex:1 here collapsed to zero height outside scroll containers.

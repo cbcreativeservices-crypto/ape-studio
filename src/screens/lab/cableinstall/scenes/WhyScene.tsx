@@ -381,7 +381,7 @@ export function WhyScene({ width, completed, onComplete, openSources }: CiModule
                   disabled={locked}
                   accessibilityRole="button"
                   accessibilityState={{ selected: picked, disabled: locked }}
-                  aria-selected={picked}
+                  aria-pressed={picked}
                   aria-disabled={locked}
                   accessibilityLabel={`${ex.name}. ${ex.caption}${revealed ? (ex.verdict === 'good' ? '. This is the correct approval.' : '. Not approvable.') : ''}`}
                   style={{ gap: 8 }}

@@ -275,7 +275,7 @@ export function AmpRig(p: AmpRigProps) {
             <Pressable style={styles.tBtn} hitSlop={{ top: 6, bottom: 6 }} onPress={() => setRunning(!running)} accessibilityRole="button" accessibilityLabel={running ? 'Pause animation' : 'Play animation'}>
               <Text style={styles.tBtnText}>{running ? '⏸ PAUSE' : '▶ PLAY'}</Text>
             </Pressable>
-            <Pressable style={[styles.tBtn, slow && styles.tBtnOn]} hitSlop={{ top: 6, bottom: 6 }} onPress={() => setSlow(!slow)} accessibilityRole="button" accessibilityState={{ selected: slow }} aria-selected={slow} accessibilityLabel="Slow motion">
+            <Pressable style={[styles.tBtn, slow && styles.tBtnOn]} hitSlop={{ top: 6, bottom: 6 }} onPress={() => setSlow(!slow)} accessibilityRole="button" accessibilityState={{ selected: slow }} aria-pressed={slow} accessibilityLabel="Slow motion">
               <Text style={[styles.tBtnText, slow && { color: colors.green }]}>SLOW</Text>
             </Pressable>
           </>

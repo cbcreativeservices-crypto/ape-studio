@@ -253,12 +253,12 @@ export function SignalGenDemo() {
 
   return (
     <View style={styles.root}>
-      <View style={styles.chipRow}>
+      <View style={styles.chipRow} accessibilityRole="tablist">
         {SCENES.map(({ key, label }) => (
           <Pressable
             key={key}
             onPress={() => setScene(key)}
-            accessibilityRole="button"
+            accessibilityRole="tab"
             accessibilityLabel={`${label} scene`}
             accessibilityState={{ selected: scene === key }}
             aria-selected={scene === key}
@@ -280,7 +280,7 @@ export function SignalGenDemo() {
                   accessibilityRole="button"
                   accessibilityLabel={`${label} waveform`}
                   accessibilityState={{ selected: wave === key }}
-                  aria-selected={wave === key}
+                  aria-pressed={wave === key}
                   style={[styles.waveChip, wave === key && { borderColor: WAVE_COLOR[key] }]}
                 >
                   <Text style={[styles.waveChipText, wave === key && { color: WAVE_COLOR[key] }]}>{label}</Text>

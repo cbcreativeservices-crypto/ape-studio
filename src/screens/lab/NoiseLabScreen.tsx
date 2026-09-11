@@ -272,7 +272,7 @@ export function NoiseLabScreen() {
                       delayLongPress={350}
                       accessibilityRole="button"
                       accessibilityState={{ selected: on }}
-                      aria-selected={on}
+                      aria-pressed={on}
                       accessibilityLabel={c.label}
                     >
                       <Text style={[styles.noiseChipText, { color: on ? '#101014' : tint }]}>{c.label}</Text>

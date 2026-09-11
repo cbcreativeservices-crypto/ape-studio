@@ -469,10 +469,10 @@ export function EarModuleScreen() {
                         // DOM value comes from the `disabled` prop above (RNW's Pressable
                         // emits its own after spreading props); both say the same thing.
                         // Correctness/your-pick is also carried in accessibilityLabel, which
-                        // is what actually announces on web — aria-selected is inert on
-                        // role=button (house pattern, pending the owner's ruling).
+                        // is what actually announces on web. The chosen/not-chosen state uses
+                        // aria-pressed: aria-selected is invalid (and inert) on role=button.
                         aria-disabled={phase !== 'answering'}
-                        aria-selected={picked === i}
+                        aria-pressed={picked === i}
                       >
                         <Text
                           style={[

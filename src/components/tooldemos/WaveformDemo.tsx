@@ -293,7 +293,7 @@ function ClipScene() {
             onPress={() => setDrive(false)}
             accessibilityRole='button'
             accessibilityState={{ selected: !hot }}
-            aria-selected={!hot}
+            aria-pressed={!hot}
             accessibilityLabel='Clean — 0 dB'
             hitSlop={6}
             style={[styles.toggleBtn, !hot && styles.toggleBtnCleanOn]}
@@ -304,7 +304,7 @@ function ClipScene() {
             onPress={() => setDrive(true)}
             accessibilityRole='button'
             accessibilityState={{ selected: hot }}
-            aria-selected={hot}
+            aria-pressed={hot}
             accessibilityLabel='Too hot — plus 12 dB'
             hitSlop={6}
             style={[styles.toggleBtn, hot && styles.toggleBtnHotOn]}
@@ -492,7 +492,7 @@ function ZoomScene() {
             onPress={() => setZoom(z)}
             accessibilityRole='button'
             accessibilityState={{ selected: zoom === z }}
-            aria-selected={zoom === z}
+            aria-pressed={zoom === z}
             accessibilityLabel={`Zoom ${z} times`}
             style={[styles.zoomChip, zoom === z && styles.zoomChipOn]}
           >
@@ -517,12 +517,12 @@ export function WaveformDemo() {
 
   return (
     <View style={styles.panel}>
-      <View style={styles.chipRow}>
+      <View style={styles.chipRow} accessibilityRole='tablist'>
         {SCENES.map((s, i) => (
           <Pressable
             key={s.key}
             onPress={() => setScene(i)}
-            accessibilityRole='button'
+            accessibilityRole='tab'
             accessibilityState={{ selected: i === scene }}
             aria-selected={i === scene}
             accessibilityLabel={s.title}

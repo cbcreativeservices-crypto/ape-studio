@@ -451,14 +451,14 @@ export function HzCounterDemo() {
 
   return (
     <View style={styles.root} onLayout={onLayout}>
-      <View style={styles.chipRow}>
+      <View style={styles.chipRow} accessibilityRole="tablist">
         {SCENES.map((s, i) => {
           const active = i === scene;
           return (
             <Pressable
               key={s.key}
               onPress={() => setScene(i)}
-              accessibilityRole="button"
+              accessibilityRole="tab"
               accessibilityLabel={`Scene: ${s.label}`}
               accessibilityState={{ selected: active }}
               aria-selected={active}

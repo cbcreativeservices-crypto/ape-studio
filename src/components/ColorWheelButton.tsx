@@ -199,7 +199,7 @@ export function ColorWheelButton({
                   }}
                   accessibilityRole="button"
                   accessibilityState={{ selected: !current }}
-                  aria-selected={!current}
+                  aria-pressed={!current}
                   accessibilityLabel={`${defaultLabel} (default)`}
                 >
                   <SchemeSwatch stops={DEFAULT_RAMP} />
@@ -217,7 +217,7 @@ export function ColorWheelButton({
                       }}
                       accessibilityRole="button"
                       accessibilityState={{ selected: sel }}
-                      aria-selected={sel}
+                      aria-pressed={sel}
                       accessibilityLabel={`${s.label} scheme`}
                     >
                       <SchemeSwatch stops={s.stops} />
@@ -240,7 +240,7 @@ export function ColorWheelButton({
                   }}
                   accessibilityRole="button"
                   accessibilityState={{ selected: !current }}
-                  aria-selected={!current}
+                  aria-pressed={!current}
                   accessibilityLabel="Default colour"
                 >
                   <Text style={styles.swatchDefaultText}>DEF</Text>
@@ -258,7 +258,7 @@ export function ColorWheelButton({
                     }}
                     accessibilityRole="button"
                     accessibilityState={{ selected: sel }}
-                    aria-selected={sel}
+                    aria-pressed={sel}
                     accessibilityLabel={`Colour ${c}`}
                   />
                 );

@@ -112,7 +112,7 @@ export function ConnectorCard({ rec }: { rec: ConnectorRecord }) {
               hitSlop={{ top: 6, bottom: 6 }}
               accessibilityRole="button"
               accessibilityState={{ selected: i === imgIdx }}
-              aria-selected={i === imgIdx}
+              aria-pressed={i === imgIdx}
               accessibilityLabel={`${im.label} view`}
               style={[styles.galleryChip, i === imgIdx && styles.galleryChipActive]}
             >
@@ -217,7 +217,7 @@ export function RecognitionStrip({ rec, title }: { rec: ConnectorRecord[]; title
             hitSlop={{ top: 6, bottom: 6 }}
             accessibilityRole="button"
             accessibilityState={{ selected: r.id === sel }}
-            aria-selected={r.id === sel}
+            aria-pressed={r.id === sel}
             accessibilityLabel={r.displayName}
             style={[styles.recogChip, r.id === sel && styles.recogChipActive]}
           >

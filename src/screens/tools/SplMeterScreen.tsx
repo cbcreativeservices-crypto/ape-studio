@@ -211,7 +211,7 @@ function VuHero({
             delayLongPress={260}
             accessibilityRole="button"
             accessibilityState={{ selected: dialMode === m }}
-            aria-selected={dialMode === m}
+            aria-pressed={dialMode === m}
             accessibilityLabel={
               m === 'studio' ? 'Studio labels' : m === 'spl' ? 'SPL reference labels' : 'Optimal reference listening labels'
             }
@@ -285,7 +285,7 @@ function PopupOpt({ label, selected, onPress }: { label: string; selected: boole
       onPress={onPress}
       accessibilityRole="button"
       accessibilityState={{ selected }}
-      aria-selected={selected}
+      aria-pressed={selected}
       accessibilityLabel={label}
     >
       <Text style={[styles.popupOptText, selected && styles.popupOptTextSel]}>{label}</Text>
@@ -324,7 +324,7 @@ function Chip({
       onPress={onPress}
       accessibilityRole="button"
       accessibilityState={{ selected }}
-      aria-selected={selected}
+      aria-pressed={selected}
       accessibilityLabel={accessibilityLabel ?? label}
     >
       <Text
@@ -1216,7 +1216,7 @@ export function SplMeterScreen({ navigation }: Props) {
           hitSlop={4}
           accessibilityRole="button"
           accessibilityState={{ selected: response === r }}
-          aria-selected={response === r}
+          aria-pressed={response === r}
           accessibilityLabel={`${responseLabel(r)} response`}
         >
           <Text style={[styles.sideOpt, response === r && styles.sideOptActive]}>{responseLabel(r)}</Text>
@@ -1233,7 +1233,7 @@ export function SplMeterScreen({ navigation }: Props) {
           hitSlop={4}
           accessibilityRole="button"
           accessibilityState={{ selected: activeUnit === u.key }}
-          aria-selected={activeUnit === u.key}
+          aria-pressed={activeUnit === u.key}
           accessibilityLabel={u.key === 'dBFS' ? 'dBFS — raw digital level, uncalibrated' : `${u.key} weighted level`}
         >
           <Text style={[styles.sideOpt, activeUnit === u.key && styles.sideOptActive]}>{u.key}</Text>
@@ -2022,7 +2022,7 @@ export function SplMeterScreen({ navigation }: Props) {
                       onPress={() => setVuFsChromeHidden((h) => !h)}
                       accessibilityRole="button"
                       accessibilityState={{ selected: !vuFsChromeHidden }}
-                      aria-selected={!vuFsChromeHidden}
+                      aria-pressed={!vuFsChromeHidden}
                       accessibilityLabel={vuFsChromeHidden ? 'Show the settings and LED meter' : 'Hide the settings and LED meter'}
                     >
                       <Text style={styles.vuFsLedToggleText}>{vuFsChromeHidden ? 'SHOW CONTROLS' : 'HIDE CONTROLS'}</Text>
@@ -2045,7 +2045,7 @@ export function SplMeterScreen({ navigation }: Props) {
                         onPress={() => setVuFsLedHidden((h) => !h)}
                         accessibilityRole="button"
                         accessibilityState={{ selected: !vuFsLedHidden }}
-                        aria-selected={!vuFsLedHidden}
+                        aria-pressed={!vuFsLedHidden}
                         accessibilityLabel={vuFsLedHidden ? 'Show the LED level meter' : 'Hide the LED level meter'}
                       >
                         <Text style={styles.vuFsLedToggleText}>{vuFsLedHidden ? 'SHOW LED' : 'HIDE LED'}</Text>
@@ -2185,7 +2185,7 @@ export function SplMeterScreen({ navigation }: Props) {
                           delayLongPress={260}
                           accessibilityRole="button"
                           accessibilityState={{ selected: dialMode === m }}
-                          aria-selected={dialMode === m}
+                          aria-pressed={dialMode === m}
                         >
                           <Text style={[styles.dialModeChipText, dialMode === m && styles.chipTextSelected]}>{m.toUpperCase()}</Text>
                         </Pressable>

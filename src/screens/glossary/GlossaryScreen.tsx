@@ -801,7 +801,7 @@ function Chip({
       accessibilityLabel={label}
       accessibilityHint={onLongPress ? 'Double tap and hold to open the list' : undefined}
       accessibilityState={{ selected: active }}
-      aria-selected={active}
+      aria-pressed={active}
     >
       <LinearGradient
         colors={active ? activeBg : ['#222222', '#161616']}
@@ -2884,7 +2884,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
                       }}
                       accessibilityRole="button"
                       accessibilityState={{ selected: active }}
-                      aria-selected={active}
+                      aria-pressed={active}
                     >
                       <Text style={[styles.topicRowText, active && { color: colors.amber }]}>{t.name}</Text>
                     </Pressable>

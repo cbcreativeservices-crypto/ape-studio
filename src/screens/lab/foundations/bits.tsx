@@ -100,7 +100,7 @@ export function CheckQuestion({ spec, onSolved }: { spec: CheckSpec; onSolved?: 
               onPress={() => pick(i)}
               accessibilityRole="button"
               accessibilityState={{ selected: isPicked }}
-              aria-selected={isPicked}
+              aria-pressed={isPicked}
               accessibilityLabel={opt}
             >
               <Text

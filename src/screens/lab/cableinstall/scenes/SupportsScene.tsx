@@ -796,7 +796,7 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
                 disabled={pick != null}
                 accessibilityRole="button"
                 accessibilityState={{ selected: pick === true, disabled: pick != null }}
-                aria-selected={pick === true}
+                aria-pressed={pick === true}
                 aria-disabled={pick != null}
                 accessibilityLabel={`Approve — yes, hang cable on ${item.name}`}
               >
@@ -808,7 +808,7 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
                 disabled={pick != null}
                 accessibilityRole="button"
                 accessibilityState={{ selected: pick === false, disabled: pick != null }}
-                aria-selected={pick === false}
+                aria-pressed={pick === false}
                 aria-disabled={pick != null}
                 accessibilityLabel={`Reject — do not hang cable on ${item.name}`}
               >
@@ -884,9 +884,10 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
                 onPress={() => togglePos(i)}
                 accessibilityRole="button"
                 accessibilityState={{ selected: on }}
-                // Twin of accessibilityState (RNW 0.21 drops the object). Inert on
-                // role=button — the placed/empty state is carried by accessibilityLabel.
-                aria-selected={on}
+                // Twin of accessibilityState (RNW 0.21 drops the object). aria-pressed
+                // is the valid two-state attribute on role=button; the placed/empty
+                // state is also spelled out in accessibilityLabel.
+                aria-pressed={on}
                 accessibilityLabel={`Position ${i + 1}, at ${u} units, ${on ? 'support placed' : 'empty'}`}
               >
                 <Text style={[styles.posText, on && { color: colors.amber }]}>P{i + 1}</Text>

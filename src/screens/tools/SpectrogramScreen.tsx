@@ -206,7 +206,7 @@ function Chip({ label, active, onPress, a11yLabel }: { label: string; active: bo
       accessibilityRole="button"
       accessibilityLabel={a11yLabel ?? label}
       accessibilityState={{ selected: active }}
-      aria-selected={active}
+      aria-pressed={active}
       style={[styles.chip, active && styles.chipActive]}
     >
       <Text style={[styles.chipText, active && styles.chipTextActive]}>{label}</Text>
@@ -633,7 +633,7 @@ export function SpectrogramScreen({ navigation }: Props) {
                 accessibilityRole="button"
                 accessibilityLabel={frozen ? 'Resume scrolling' : 'Freeze display'}
                 accessibilityState={{ selected: frozen }}
-                aria-selected={frozen}
+                aria-pressed={frozen}
               >
                 <Text style={[styles.ctrlText, frozen && styles.ctrlTextFrozen]}>
                   {frozen ? 'RESUME' : 'FREEZE'}

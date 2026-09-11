@@ -101,7 +101,7 @@ function Chip({ label, active, onPress, dim }: { label: string; active: boolean;
       hitSlop={{ top: 8, bottom: 8 }}
       accessibilityRole="button"
       accessibilityState={{ selected: active }}
-      aria-selected={active}
+      aria-pressed={active}
       style={[styles.chip, active && styles.chipActive, dim && { opacity: 0.55 }]}
     >
       <Text style={[styles.chipText, active && styles.chipTextActive]}>{label}</Text>
@@ -176,7 +176,7 @@ function TypesStep() {
               onPress={() => tap(m.key)}
               accessibilityRole="button"
               accessibilityState={{ selected: active }}
-              aria-selected={active}
+              aria-pressed={active}
               accessibilityLabel={m.name}
               style={[styles.micCell, active && styles.micCellActive]}
             >
@@ -330,7 +330,7 @@ function PatternsStep() {
             onPress={() => setReason(r.key)}
             accessibilityRole="button"
             accessibilityState={{ selected: reason === r.key }}
-            aria-selected={reason === r.key}
+            aria-pressed={reason === r.key}
             style={[styles.reasonRow, reason === r.key && styles.reasonRowActive]}
           >
             <Text style={styles.reasonText}>{r.text}</Text>
@@ -443,7 +443,7 @@ function SplStep() {
             onPress={() => setMic(m.key)}
             accessibilityRole="button"
             accessibilityState={{ selected: mic === m.key }}
-            aria-selected={mic === m.key}
+            aria-pressed={mic === m.key}
             accessibilityLabel={m.name}
             style={[styles.profileCell, mic === m.key && styles.micCellActive]}
           >
@@ -680,7 +680,7 @@ function ChallengeStep() {
           }}
           accessibilityRole="button"
           accessibilityState={{ selected: pick === m.key }}
-          aria-selected={pick === m.key}
+          aria-pressed={pick === m.key}
           accessibilityLabel={m.label}
           style={[styles.formRow, pick === m.key && styles.micCellActive]}
         >

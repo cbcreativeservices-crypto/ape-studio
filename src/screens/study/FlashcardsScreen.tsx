@@ -227,7 +227,7 @@ function FilterChip({
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityState={{ selected: active, disabled }}
-      aria-selected={active}
+      aria-pressed={active}
       aria-disabled={disabled}
       style={disabled ? { opacity: 0.4 } : undefined}
     >
@@ -1264,7 +1264,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             onPress={() => setSoloReveal((v) => !v)}
             accessibilityRole="button"
             accessibilityState={{ selected: soloReveal }}
-            aria-selected={soloReveal}
+            aria-pressed={soloReveal}
             accessibilityLabel={soloReveal ? 'Close study view' : 'Open study view (show definition)'}
           >
             {/* Lit red only when active; neutral grey when off (user request 2026-07-18). */}

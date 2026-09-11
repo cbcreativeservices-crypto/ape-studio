@@ -633,7 +633,7 @@ export function WaveformScreen({ navigation }: Props) {
                 disabled={displayBuckets.length === 0}
                 accessibilityRole="button"
                 accessibilityState={{ selected: frozen != null, disabled: displayBuckets.length === 0 }}
-                aria-selected={frozen != null}
+                aria-pressed={frozen != null}
                 aria-disabled={displayBuckets.length === 0}
                 accessibilityLabel={frozen ? 'Unfreeze display' : 'Freeze display'}
               >
@@ -649,7 +649,7 @@ export function WaveformScreen({ navigation }: Props) {
                 onPress={() => setColorsOn(!colorsOn)}
                 accessibilityRole="button"
                 accessibilityState={{ selected: colorsOn }}
-                aria-selected={colorsOn}
+                aria-pressed={colorsOn}
                 accessibilityLabel="Toggle MIDI level colours on the waveform"
               >
                 <Text style={[styles.chipText, colorsOn && styles.chipTextGreen]}>COLORS</Text>
@@ -771,7 +771,7 @@ export function WaveformScreen({ navigation }: Props) {
                   disabled={displayBuckets.length === 0}
                   accessibilityRole="button"
                   accessibilityState={{ selected: frozen != null }}
-                  aria-selected={frozen != null}
+                  aria-pressed={frozen != null}
                   accessibilityLabel={frozen != null ? 'Freeze, frozen' : 'Freeze, live'}
                 >
                   <Text style={styles.ctrlLabel}>FREEZE</Text>
@@ -782,7 +782,7 @@ export function WaveformScreen({ navigation }: Props) {
                   onPress={() => setColorsOn(!colorsOn)}
                   accessibilityRole="button"
                   accessibilityState={{ selected: colorsOn }}
-                  aria-selected={colorsOn}
+                  aria-pressed={colorsOn}
                   accessibilityLabel={colorsOn ? 'Colors, on' : 'Colors, off'}
                 >
                   <Text style={styles.ctrlLabel}>COLORS</Text>
@@ -830,7 +830,7 @@ export function WaveformScreen({ navigation }: Props) {
                     }}
                     accessibilityRole="button"
                     accessibilityState={{ selected: zoom === z }}
-                    aria-selected={zoom === z}
+                    aria-pressed={zoom === z}
                   >
                     <Text style={[styles.popupOptText, zoom === z && styles.popupOptTextSel]}>×{z}</Text>
                   </Pressable>
@@ -846,7 +846,7 @@ export function WaveformScreen({ navigation }: Props) {
                     }}
                     accessibilityRole="button"
                     accessibilityState={{ selected: windowSec === w }}
-                    aria-selected={windowSec === w}
+                    aria-pressed={windowSec === w}
                   >
                     <Text style={[styles.popupOptText, windowSec === w && styles.popupOptTextSel]}>{w}s</Text>
                   </Pressable>
@@ -868,7 +868,7 @@ export function WaveformScreen({ navigation }: Props) {
                       }}
                       accessibilityRole="button"
                       accessibilityState={{ selected: sel }}
-                      aria-selected={sel}
+                      aria-pressed={sel}
                       accessibilityLabel={`Waveform colour ${c}${c === WAVE_COLOR_SWATCHES[0] ? ' (default)' : ''}`}
                     />
                   );

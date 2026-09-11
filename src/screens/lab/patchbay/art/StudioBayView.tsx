@@ -96,7 +96,7 @@ export function StudioBayView({
                 accessibilityRole="button"
                 accessibilityLabel={`Select pair ${p.n}: ${p.sourceLabel} over ${p.destLabel}`}
                 accessibilityState={{ selected: selected === p.n }}
-                aria-selected={selected === p.n}
+                aria-pressed={selected === p.n}
               />
             ))}
           </View>

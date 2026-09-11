@@ -1292,7 +1292,7 @@ function PhaseChip({
       onPress={onPress}
       accessibilityRole="button"
       accessibilityState={{ selected: active, disabled: !open }}
-      aria-selected={active}
+      aria-pressed={active}
       aria-disabled={!open}
       accessibilityLabel={`Phase ${tag}: ${name}${done ? ', complete' : open ? '' : ', locked'}`}
     >
@@ -1333,7 +1333,7 @@ function ApproachCard({
         disabled={disabled}
         accessibilityRole="button"
         accessibilityState={{ selected: picked, disabled }}
-        aria-selected={picked}
+        aria-pressed={picked}
         aria-disabled={disabled}
         accessibilityLabel={`${title}. ${body}`}
       >
@@ -1605,7 +1605,7 @@ export function RackScene({ width, completed, onComplete, openSources }: CiModul
                   style={{ position: 'absolute', left, top, width: rw, height: rh }}
                   accessibilityRole="button"
                   accessibilityState={{ selected: lastFound === iss.id }}
-                  aria-selected={lastFound === iss.id}
+                  aria-pressed={lastFound === iss.id}
                   accessibilityLabel={`${hit.where}${isFound ? `. Flagged: ${iss.label}` : ''}`}
                 />
               );
@@ -1703,7 +1703,7 @@ export function RackScene({ width, completed, onComplete, openSources }: CiModul
                     onPress={() => setActiveGroup(active ? null : g.id)}
                     accessibilityRole="button"
                     accessibilityState={{ selected: active }}
-                    aria-selected={active}
+                    aria-pressed={active}
                     accessibilityLabel={`${g.name}${zone ? `, dressed to ${zoneById(zone)?.name ?? zone}` : ', not yet assigned'}${
                       verdict ? (verdict === 'good' ? ', matches the plan' : ', off the plan') : ''
                     }`}
@@ -1823,7 +1823,7 @@ export function RackScene({ width, completed, onComplete, openSources }: CiModul
                     onPress={() => pickJack(n)}
                     accessibilityRole="button"
                     accessibilityState={{ selected: sel }}
-                    aria-selected={sel}
+                    aria-pressed={sel}
                     accessibilityLabel={`DSP input ${n}`}
                   >
                     <Text style={[styles.jackBtnText, sel && { color: colors.textPrimary }]}>{n}</Text>

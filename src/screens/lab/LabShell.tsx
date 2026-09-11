@@ -78,7 +78,7 @@ export function LabChip({
       hitSlop={{ top: 6, bottom: 6 }}
       accessibilityRole="button"
       accessibilityState={{ selected }}
-      aria-selected={selected}
+      aria-pressed={selected}
       accessibilityLabel={
         photoHint
           ? `${label} — long-press to see a photo`
@@ -293,7 +293,7 @@ export function LabShell({
       </View>
 
       {/* Mode tabs directly under the header (owner 2026-07-29 order). */}
-      <View style={styles.tabRow}>
+      <View style={styles.tabRow} accessibilityRole="tablist">
         {MODES.map((m) => {
           const selected = mode === m.key;
           const c = MODE_COLORS[m.key];
@@ -308,7 +308,7 @@ export function LabShell({
                 setScrollLocked(false);
                 setMode(m.key);
               }}
-              accessibilityRole="button"
+              accessibilityRole="tab"
               accessibilityState={{ selected }}
               aria-selected={selected}
               accessibilityLabel={`${m.label} mode`}

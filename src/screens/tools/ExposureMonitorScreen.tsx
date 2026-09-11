@@ -281,7 +281,7 @@ export function ExposureMonitorScreen() {
                 hitSlop={10}
                 accessibilityRole="button"
                 accessibilityState={{ selected: range === r }}
-                aria-selected={range === r}
+                aria-pressed={range === r}
                 style={[styles.chip, range === r && styles.chipActive]}
               >
                 <Text style={[styles.chipText, range === r && { color: colors.amber }]}>{`${r} days`}</Text>
@@ -327,7 +327,7 @@ export function ExposureMonitorScreen() {
                 hitSlop={10}
                 accessibilityRole="button"
                 accessibilityState={{ selected: s.checkinMinutes === iv.v }}
-                aria-selected={s.checkinMinutes === iv.v}
+                aria-pressed={s.checkinMinutes === iv.v}
                 style={[styles.chip, s.checkinMinutes === iv.v && styles.chipActive]}
               >
                 <Text style={[styles.chipText, s.checkinMinutes === iv.v && { color: colors.amber }]}>{iv.label}</Text>

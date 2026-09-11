@@ -433,13 +433,13 @@ export function TubeCardScreen() {
       <View style={styles.pageRow}>
         <Text style={styles.pageCat} numberOfLines={1}>{catTitle}</Text>
         {pageCount > 1 ? (
-          <View style={styles.pageTabs}>
+          <View style={styles.pageTabs} accessibilityRole="tablist">
             {Array.from({ length: pageCount }, (_, k) => (k + 1) as 1 | 2).map((p) => (
               <Pressable
                 key={p}
                 onPress={() => goPage(p)}
                 style={[styles.pageTab, page === p && styles.pageTabOn]}
-                accessibilityRole="button"
+                accessibilityRole="tab"
                 accessibilityState={{ selected: page === p }}
                 aria-selected={page === p}
                 accessibilityLabel={`Show page ${p} of ${pageCount}`}

@@ -353,7 +353,7 @@ export function HarmonographViewer(props: {
                       accessibilityState={{
                         selected: inkColor.toLowerCase() === INK_DEFAULT.toLowerCase(),
                       }}
-                      aria-selected={inkColor.toLowerCase() === INK_DEFAULT.toLowerCase()}
+                      aria-pressed={inkColor.toLowerCase() === INK_DEFAULT.toLowerCase()}
                       accessibilityLabel="Classic red (default)"
                     >
                       <Text style={styles.swatchDefaultText}>DEF</Text>
@@ -367,7 +367,7 @@ export function HarmonographViewer(props: {
                           onPress={() => pickInk(c)}
                           accessibilityRole="button"
                           accessibilityState={{ selected: sel }}
-                          aria-selected={sel}
+                          aria-pressed={sel}
                           accessibilityLabel={`Colour ${c}`}
                         />
                       );

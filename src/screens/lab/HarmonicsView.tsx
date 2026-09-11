@@ -356,7 +356,7 @@ function Chip({
       hitSlop={{ top: 6, bottom: 6 }}
       accessibilityRole="button"
       accessibilityState={{ selected }}
-      aria-selected={selected}
+      aria-pressed={selected}
       accessibilityLabel={onLongPress ? `${label} — long-press for its guided lesson` : label}
     >
       <Text style={[styles.chipText, selected && styles.chipTextSelected]}>{label}</Text>

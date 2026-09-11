@@ -445,13 +445,13 @@ export function SpectrogramDemo() {
 
   return (
     <View style={styles.panel}>
-      <View style={styles.chipRow}>
+      <View style={styles.chipRow} accessibilityRole='tablist'>
         {SCENES.map((s, i) => {
           const active = i === scene;
           return (
             <Pressable
               key={s.key}
-              accessibilityRole='button'
+              accessibilityRole='tab'
               accessibilityState={{ selected: active }}
               aria-selected={active}
               accessibilityLabel={`Show ${s.a11y} scene`}

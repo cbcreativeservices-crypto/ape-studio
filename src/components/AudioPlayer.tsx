@@ -112,7 +112,7 @@ function PlayerShell({
           accessibilityRole="button"
           accessibilityState={{ disabled: !enabled, selected: playing }}
           aria-disabled={!enabled}
-          aria-selected={playing}
+          aria-pressed={playing}
           accessibilityLabel={playing ? 'Pause' : 'Play'}
         >
           <LinearGradient colors={['#3a3a3a', '#2a2a2a']} style={styles.playCap}>

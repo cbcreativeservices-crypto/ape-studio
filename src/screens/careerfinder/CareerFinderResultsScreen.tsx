@@ -87,7 +87,7 @@ export function CareerFinderResultsScreen() {
           <Pressable onPress={() => openFamily(f.id)} style={[styles.actBtn, styles.actExplore]} accessibilityRole="button" accessibilityLabel={`Explore ${f.name}`}>
             <Text style={[styles.actText, { color: colors.green }]}>EXPLORE FAMILY ›</Text>
           </Pressable>
-          <Pressable onPress={() => toggleSavedFamily(f.id)} style={[styles.actBtn, saved && styles.actSaved]} accessibilityRole="button" accessibilityState={{ selected: saved }} aria-selected={saved} accessibilityLabel={saved ? `Remove ${f.name} from saved` : `Save ${f.name}`}>
+          <Pressable onPress={() => toggleSavedFamily(f.id)} style={[styles.actBtn, saved && styles.actSaved]} accessibilityRole="button" accessibilityState={{ selected: saved }} aria-pressed={saved} accessibilityLabel={saved ? `Remove ${f.name} from saved` : `Save ${f.name}`}>
             <Text style={[styles.actText, saved && { color: colors.amber }]}>{saved ? '★ SAVED' : '☆ SAVE'}</Text>
           </Pressable>
         </View>

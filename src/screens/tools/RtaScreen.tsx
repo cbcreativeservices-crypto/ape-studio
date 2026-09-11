@@ -282,7 +282,7 @@ function Chip({ label, active, onPress, a11yLabel }: { label: string; active: bo
       accessibilityRole="button"
       accessibilityLabel={a11yLabel ?? label}
       accessibilityState={{ selected: active }}
-      aria-selected={active}
+      aria-pressed={active}
       style={[styles.chip, active && styles.chipActive]}
     >
       <Text style={[styles.chipText, active && styles.chipTextActive]}>{label}</Text>

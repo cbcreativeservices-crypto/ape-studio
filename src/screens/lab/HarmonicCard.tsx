@@ -120,7 +120,7 @@ export function HarmonicCard({
             accessibilityRole="button"
             accessibilityState={{ disabled: !canSolo, selected: soloActive }}
             aria-disabled={!canSolo}
-            aria-selected={soloActive}
+            aria-pressed={soloActive}
             accessibilityLabel={soloActive ? `Stop solo of harmonic ${n}` : `Solo harmonic ${n} as a sine tone`}
           >
             <Text style={[styles.solo, soloActive && styles.soloOn, !canSolo && styles.soloOff]}>

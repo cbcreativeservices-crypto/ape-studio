@@ -370,7 +370,7 @@ function Chip({ label, active, onPress, a11yLabel }: { label: string; active: bo
       accessibilityRole="button"
       accessibilityLabel={a11yLabel ?? label}
       accessibilityState={{ selected: active }}
-      aria-selected={active}
+      aria-pressed={active}
       style={[styles.chip, active && styles.chipActive]}
     >
       <Text style={[styles.chipText, active && styles.chipTextActive]}>{label}</Text>
@@ -1378,7 +1378,7 @@ export function MultiMeterScreen({ navigation }: Props) {
                       hitSlop={4}
                       accessibilityRole="button"
                       accessibilityState={{ selected: scopeZoom === z }}
-                      aria-selected={scopeZoom === z}
+                      aria-pressed={scopeZoom === z}
                       accessibilityLabel={`Oscilloscope zoom ${z} times`}
                       style={[styles.scopeZoomChip, scopeZoom === z && styles.scopeZoomChipOn]}
                     >
@@ -1583,12 +1583,13 @@ export function MultiMeterScreen({ navigation }: Props) {
                   }}
                   accessibilityRole="button"
                   accessibilityState={{ selected: unitMode === m }}
-                  // Twin of accessibilityState (RNW 0.21 drops the object); inert on
-                  // role=button. Unlike the other selected-state buttons, this one had
+                  // Twin of accessibilityState (RNW 0.21 drops the object) — aria-pressed,
+                  // because aria-selected is invalid on role=button and was therefore
+                  // ignored outright. Unlike the other selected-state buttons, this one had
                   // NO accessibilityLabel — the active mode was conveyed by text colour
                   // ALONE, so on web nothing announced which unit was chosen. The label
                   // carries it on both platforms (cf. the SwitchButton label route).
-                  aria-selected={unitMode === m}
+                  aria-pressed={unitMode === m}
                   accessibilityLabel={`${MODE_UNIT[m]}${unitMode === m ? ', selected' : ''}`}
                 >
                   <Text style={[styles.unitPopupOptText, unitMode === m && styles.unitPopupOptTextSel]}>{MODE_UNIT[m]}</Text>

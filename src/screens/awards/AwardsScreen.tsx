@@ -484,7 +484,7 @@ export function AwardsScreen({ navigation, route }: Props) {
 
       {/* Category buttons (user request 2026-07-18): CURRICULUM · SPECIALIZATION
           · PROGRAM — tap to switch between the three side-by-side pages. */}
-      <View style={styles.tabRow}>
+      <View style={styles.tabRow} accessibilityRole="tablist">
         {PAGE_ORDER.map((c, i) => {
           const active = i === idx;
           const tint = pageTint(c);
@@ -500,7 +500,7 @@ export function AwardsScreen({ navigation, route }: Props) {
                 listRef.current?.scrollToIndex({ index: i, animated: false });
               }}
               style={[styles.tabBtn, active && { borderColor: tint, backgroundColor: '#1a1a1a' }]}
-              accessibilityRole="button"
+              accessibilityRole="tab"
               accessibilityState={{ selected: active }}
               aria-selected={active}
               accessibilityLabel={pageHeadline(c)}

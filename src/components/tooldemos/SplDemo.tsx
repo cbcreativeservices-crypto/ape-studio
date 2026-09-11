@@ -503,12 +503,12 @@ export function SplDemo() {
 
   return (
     <View style={styles.panel}>
-      <View style={styles.chipRow}>
+      <View style={styles.chipRow} accessibilityRole='tablist'>
         {SCENES.map((s, i) => (
           <Pressable
             key={s.key}
             onPress={() => setScene(i)}
-            accessibilityRole='button'
+            accessibilityRole='tab'
             accessibilityState={{ selected: i === scene }}
             aria-selected={i === scene}
             accessibilityLabel={s.title}

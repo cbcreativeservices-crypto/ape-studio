@@ -130,7 +130,7 @@ function ChoiceChips({
             style={[styles.interestChip, on && styles.interestChipOn]}
             accessibilityRole="button"
             accessibilityState={{ selected: on }}
-            aria-selected={on}
+            aria-pressed={on}
           >
             <Text style={[styles.interestChipText, on && styles.interestChipTextOn]}>
               {starred === o ? '\u2605 ' : ''}

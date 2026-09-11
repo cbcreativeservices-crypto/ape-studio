@@ -337,7 +337,7 @@ export function CurriculumView({
                         onPress={() => toggleTopic(t.gs)}
                         accessibilityRole="button"
                         accessibilityState={{ selected: on }}
-                        aria-selected={on}
+                        aria-pressed={on}
                         accessibilityLabel={on ? `Remove ${t.name} from enrollments` : `Add ${t.name} to enrollments`}
                       >
                         <Text style={[styles.topicCheck, on && styles.topicCheckOn]}>{on ? '✓' : '+'}</Text>

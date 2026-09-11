@@ -125,7 +125,7 @@ export function CableLabScreen() {
             hitSlop={{ top: 18, bottom: 18, left: 9, right: 9 }}
             accessibilityRole="button"
             accessibilityState={{ selected: i === step }}
-            aria-selected={i === step}
+            aria-pressed={i === step}
             accessibilityLabel={`Go to ${st.title}${i === step ? ', current lesson' : i < step ? ', visited' : ''}`}
           >
             <View style={[styles.dot, i === step && styles.dotActive, i < step && styles.dotDone]} />
