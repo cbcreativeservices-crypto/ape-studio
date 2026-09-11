@@ -390,7 +390,13 @@ export function QuizScreen({ navigation, route }: Props) {
   const singleOpts: string[] = !isMatching && Array.isArray(rawOpts) ? (rawOpts as string[]) : [];
   const isMulti = question.question_type === 'multi_select';
   // Whether ANY answerable control will render — drives the M3 Skip fallback.
-  const answerable = isMatching ? !!matching : singleOpts.length > 0;
+  // A matching payload whose arrays are present but EMPTY (or with fewer rights
+  // than lefts) passes the shape guard yet renders nothing pairable and can
+  // never reach `nextPairs.length === k`, so it strands the learner exactly the
+  // way M3 describes. Served contract is K lefts ↔ K rights.
+  const answerable = isMatching
+    ? !!matching && matching.lefts.length > 0 && matching.rights.length >= matching.lefts.length
+    : singleOpts.length > 0;
 
   const singleState = (i: number): AnswerCellState => (selIdx === i ? 'selectedBlue' : selIdx !== null ? 'dimmed' : 'default');
   const leftState = (i: number): AnswerCellState =>
@@ -458,7 +464,7 @@ export function QuizScreen({ navigation, route }: Props) {
           <StudioButton label="Confirm" variant="success" disabled={multiSel.size === 0} onPress={confirmMulti} />
         )}
 
-        {isMatching && matching && (
+        {isMatching && matching && answerable && (
           <>
             <View style={styles.matchColumns}>
               <View style={styles.matchColumn}>
