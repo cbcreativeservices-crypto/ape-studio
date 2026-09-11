@@ -58,10 +58,14 @@ export function useCoachMark(storageKey: string, dismissAfter: number) {
       setVisible(true);
       return;
     }
-    (async () => {
-      const raw = await AsyncStorage.getItem(storageKey);
-      opens.current = raw ? Number(raw) || 0 : 0;
-      if (opens.current < MAX_OPENS) setVisible(true); // else: retired
+    void (async () => {
+      try {
+        const raw = await AsyncStorage.getItem(storageKey);
+        opens.current = raw ? Number(raw) || 0 : 0;
+        if (opens.current < MAX_OPENS) setVisible(true); // else: retired
+      } catch {
+        /* unreadable storage → treat the hint as retired rather than reject */
+      }
     })();
   }, [storageKey, suppressed]);
 

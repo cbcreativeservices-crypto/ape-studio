@@ -94,9 +94,27 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
   // Permanent credential token → the real QR + public verification URL (owner
   // 2026-08-21). null until loaded / for guests → the QR shows its pending state.
   const [qrToken, setQrToken] = useState<string | null>(null);
+  // Network audit 2026-09-11: fetchMyQrToken() resolves null on a dropped
+  // request just as it does for a token that genuinely isn't issued yet, and the
+  // pending copy below then told a paid-up member their account was "still
+  // setting up". Track the two apart and say which one it is.
+  const [qrFailed, setQrFailed] = useState(false);
   useEffect(() => {
-    loadPublicProfile().then((p) => setRegistryName(p.registryName || p.name || ''));
-    if (hasAccount) void fetchMyQrToken().then(setQrToken);
+    // Neither promise carried a .catch — an AsyncStorage or RPC throw here was an
+    // unhandled rejection that also froze the name at its empty default.
+    void loadPublicProfile()
+      .then((p) => setRegistryName(p.registryName || p.name || ''))
+      .catch(() => {});
+    if (hasAccount) {
+      setQrFailed(false);
+      void fetchMyQrToken().then(
+        (t) => {
+          setQrToken(t);
+          setQrFailed(t == null);
+        },
+        () => setQrFailed(true),
+      );
+    }
   }, [hasAccount]);
   // A member is listed as "User" until they earn their first certificate or
   // program, then "Graduate" (user request 2026-07-22). Proxy: any enrolled
@@ -181,6 +199,11 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
           {qrToken ? (
             <Text style={styles.registryLink} numberOfLines={1}>
               Scan to verify · {REGISTRY_BASE_URL.replace(/^https?:\/\//, '')}/registry
+            </Text>
+          ) : qrFailed ? (
+            <Text style={styles.registryPending}>
+              Couldn’t load your verification QR — check your connection. Your credentials are
+              unaffected.
             </Text>
           ) : (
             <Text style={styles.registryPending}>

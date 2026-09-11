@@ -80,6 +80,15 @@ export function MyProfileView() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  // A FAILED first load is its own state (network audit 2026-09-11). It must
+  // never fall through to the editor: the editor's default is an EMPTY profile,
+  // so a published member on a dropped connection saw their profile as blank and
+  // unpublished, the legacy-migration offer fired at them as if they had no
+  // profile, and the very first thing they typed was persisted over the real
+  // server-side profile. Error + Retry instead — nothing is editable until we
+  // actually know what the server holds.
+  const [loadErr, setLoadErr] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
   const [creds, setCreds] = useState<EarnedCredentialRow[]>([]);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -88,27 +97,51 @@ export function MyProfileView() {
   useEffect(() => {
     let alive = true;
     void (async () => {
-      const [t, mine, c, migrated] = await Promise.all([
-        fetchTaxonomy(),
-        fetchMyCommunityProfile(),
-        fetchMyCredentials().catch(() => []),
-        alreadyMigrated(),
-      ]);
-      if (!alive) return;
-      setTax(t);
-      setCreds(c);
-      if (mine) setP(mine);
-      // Only offer to carry the old profile over when there is no new one yet —
-      // never overwrite something the member has already built here.
-      if (!migrated && (!mine || (!mine.displayName && !mine.areas.length))) {
-        setLegacy(await buildLegacyDraft());
+      // Every await sits inside the try and setLoading(false) inside the finally:
+      // the old shape reached setLoading(false) only on the success path, so a
+      // throw (buildLegacyDraft / alreadyMigrated / a rejected credentials read)
+      // left "Loading your community profile…" spinning with no way out.
+      try {
+        setLoading(true);
+        setLoadErr(null);
+        const [t, mine, c, migrated] = await Promise.all([
+          fetchTaxonomy(),
+          fetchMyCommunityProfile(),
+          fetchMyCredentials().catch(() => []),
+          alreadyMigrated().catch(() => false),
+        ]);
+        if (!alive) return;
+        if (mine.status === 'error') {
+          setLoadErr(mine.error);
+          return;
+        }
+        if (!t) {
+          setLoadErr('Couldn’t load the directory options. Check your connection and try again.');
+          return;
+        }
+        setTax(t);
+        setCreds(c);
+        if (mine.status === 'ok') setP(mine.profile);
+        // Only offer to carry the old profile over when there is genuinely no new
+        // one yet — never overwrite something the member has already built here,
+        // and never on the strength of a request that failed (handled above).
+        const blank =
+          mine.status === 'none' ||
+          (!mine.profile.displayName && !mine.profile.areas.length);
+        if (!migrated && blank) {
+          const draft = await buildLegacyDraft().catch(() => null);
+          if (alive) setLegacy(draft);
+        }
+      } catch {
+        if (alive) setLoadErr('Couldn’t load your community profile. Check your connection and try again.');
+      } finally {
+        if (alive) setLoading(false);
       }
-      setLoading(false);
     })();
     return () => {
       alive = false;
     };
-  }, []);
+  }, [reloadKey]);
 
   const label = useCallback(
     // [26] (2026-09-07): on taxonomy drift (a removed/renamed slug still stored on
@@ -209,7 +242,10 @@ export function MyProfileView() {
 
   const refresh = useCallback(async () => {
     const mine = await fetchMyCommunityProfile();
-    if (mine) setP(mine);
+    if (mine.status === 'ok') setP(mine.profile);
+    // A failed re-read after a successful publish/toggle leaves the switches
+    // showing what we last knew — say so rather than let a stale row look live.
+    else if (mine.status === 'error') setErr(mine.error);
   }, []);
 
   const applyLegacy = () => {
@@ -231,7 +267,19 @@ export function MyProfileView() {
     })();
   };
 
-  if (loading || !tax) return <Loading label="Loading your community profile…" />;
+  if (loading) return <Loading label="Loading your community profile…" />;
+
+  // Error + Retry, never the blank editor — see the loadErr note above.
+  if (loadErr || !tax) {
+    return (
+      <ScrollView contentContainerStyle={st.body}>
+        <Banner tone="warn">
+          {loadErr ?? 'Couldn’t load your community profile. Check your connection and try again.'}
+        </Banner>
+        <PrimaryButton label="RETRY" onPress={() => setReloadKey((k) => k + 1)} />
+      </ScrollView>
+    );
+  }
 
   const specialtyPool = tax.specialties.filter((s) => s.areas.some((a) => p.areas.includes(a)));
 

@@ -30,12 +30,18 @@ export type Taxonomy = {
   openTo: TaxonomyItem[];
 };
 
-const EMPTY_TAXONOMY: Taxonomy = { areas: [], specialties: [], roles: [], openTo: [] };
-
 /** Reference data, fetched once per launch. Labels may change; slugs may not. */
 let taxonomyCache: Taxonomy | null = null;
 
-export async function fetchTaxonomy(): Promise<Taxonomy> {
+/**
+ * The whole chip vocabulary. Returns NULL when the fetch failed — NOT an empty
+ * taxonomy (network audit 2026-09-11): every caller renders the taxonomy as chip
+ * rows, so handing back EMPTY_TAXONOMY on a dropped connection drew a profile
+ * editor and a filter panel with every section silently blank, which reads as
+ * "there is nothing to choose here" rather than "this didn't load". A failure is
+ * never cached, so the next call genuinely refetches.
+ */
+export async function fetchTaxonomy(): Promise<Taxonomy | null> {
   if (taxonomyCache) return taxonomyCache;
   try {
     const [areas, specs, maps, roles, openTo] = await Promise.all([
@@ -45,7 +51,7 @@ export async function fetchTaxonomy(): Promise<Taxonomy> {
       supabase.from('directory_roles').select('slug,label,sort_order').order('sort_order'),
       supabase.from('directory_open_to').select('slug,label,sort_order').order('sort_order'),
     ]);
-    if (areas.error || specs.error || maps.error || roles.error || openTo.error) return EMPTY_TAXONOMY;
+    if (areas.error || specs.error || maps.error || roles.error || openTo.error) return null;
 
     const byArea = new Map<string, string[]>();
     for (const m of (maps.data ?? []) as { specialty_slug: string; area_slug: string }[]) {
@@ -66,7 +72,7 @@ export async function fetchTaxonomy(): Promise<Taxonomy> {
     };
     return taxonomyCache;
   } catch {
-    return EMPTY_TAXONOMY;
+    return null;
   }
 }
 
@@ -122,14 +128,27 @@ export const EMPTY_COMMUNITY_PROFILE: CommunityProfile = {
   featuredCredentialIds: [],
 };
 
-export async function fetchMyCommunityProfile(): Promise<CommunityProfile | null> {
+/**
+ * The three outcomes must stay apart (network audit 2026-09-11). The old
+ * `CommunityProfile | null` collapsed "you have no community profile yet" into
+ * "the request failed", and the editor treated both as "start a blank one" — so
+ * a published member on a bad connection was shown an EMPTY, unpublished profile
+ * and the first thing they typed was saved over their real server-side one. A
+ * failed load must never become an editable blank draft.
+ */
+export type MyProfileLoad =
+  | { status: 'ok'; profile: CommunityProfile }
+  | { status: 'none' }
+  | { status: 'error'; error: string };
+
+export async function fetchMyCommunityProfile(): Promise<MyProfileLoad> {
   try {
     const { data, error } = await supabase.rpc('community_profile_mine');
-    if (error) return null;
+    if (error) return { status: 'error', error: readableError(error.message) };
     const r = (data as Record<string, unknown>[] | null)?.[0];
-    if (!r) return null;
+    if (!r) return { status: 'none' };
     const arr = (v: unknown): string[] => (Array.isArray(v) ? (v as string[]) : []);
-    return {
+    const profile: CommunityProfile = {
       displayName: (r.display_name as string) ?? '',
       about: (r.about as string) ?? '',
       countryCode: (r.country_code as string) ?? '',
@@ -149,8 +168,12 @@ export async function fetchMyCommunityProfile(): Promise<CommunityProfile | null
       languages: arr(r.languages),
       featuredCredentialIds: arr(r.featured_credential_ids),
     };
+    return { status: 'ok', profile };
   } catch {
-    return null;
+    return {
+      status: 'error',
+      error: 'Couldn’t load your community profile. Check your connection and try again.',
+    };
   }
 }
 

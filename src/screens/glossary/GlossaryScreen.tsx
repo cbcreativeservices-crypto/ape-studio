@@ -958,9 +958,13 @@ export function GlossaryScreen({ route, navigation }: Props) {
   // fails, the header just waits for visible.length like before.
   useEffect(() => {
     let alive = true;
-    (async () => {
-      const { data, error } = await supabase.rpc('get_glossary_term_count');
-      if (alive && !error && typeof data === 'number') setCachedCount(data);
+    void (async () => {
+      try {
+        const { data, error } = await supabase.rpc('get_glossary_term_count');
+        if (alive && !error && typeof data === 'number') setCachedCount(data);
+      } catch {
+        /* non-fatal: the header waits for the live visible.length instead */
+      }
     })();
     return () => {
       alive = false;
@@ -1024,8 +1028,16 @@ export function GlossaryScreen({ route, navigation }: Props) {
       if (consumedRef.current.has(id)) return true; // already looked up this session
       if (gateOpeningRef.current) return false; // a consume is in flight — ignore the double-tap
       gateOpeningRef.current = true;
-      const u = await consumeGlossary(capMode);
-      gateOpeningRef.current = false;
+      // The reset must be unconditional (network audit 2026-09-11). consumeGlossary
+      // fails open today, but if it ever threw, this flag stayed true and EVERY
+      // later tap returned false — the glossary would silently stop opening terms
+      // for the rest of the session with no error anywhere.
+      let u: Awaited<ReturnType<typeof consumeGlossary>>;
+      try {
+        u = await consumeGlossary(capMode);
+      } finally {
+        gateOpeningRef.current = false;
+      }
       if (u.unavailable) {
         // Server/store unreachable or SQL not yet deployed → fail open: allow,
         // and don't re-hit it for this term again this session.
@@ -1362,9 +1374,13 @@ export function GlossaryScreen({ route, navigation }: Props) {
           }
         })
         .catch(() => {});
-      AsyncStorage.getItem(TTS_MODE_KEY).then((v) => {
-        if (alive && v != null) setTtsBeg(v === '1');
-      });
+      AsyncStorage.getItem(TTS_MODE_KEY)
+        .then((v) => {
+          if (alive && v != null) setTtsBeg(v === '1');
+        })
+        .catch(() => {
+          /* TTS mode just stays at its default */
+        });
       (async () => {
         try {
           if (alive) setLoadError(false);

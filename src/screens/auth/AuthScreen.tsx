@@ -256,6 +256,12 @@ export function AuthScreen({ navigation }: Props) {
       // refreshEntitlement above, so only default to 'free' when nothing granted.
       if (!granted) setEntitlement('free');
       await claimAndProceed(toHome); // brand-new account → claims silently
+    } catch {
+      // Network audit 2026-09-11: a `finally` with no `catch` cleared the spinner
+      // and said NOTHING. On a flaky connection the primary button flashed once
+      // and the user was left staring at an unchanged screen with no idea whether
+      // the account had been created.
+      setError('Couldn’t reach the Academy — check your connection and try again.');
     } finally {
       setBusy(false);
     }
@@ -277,6 +283,8 @@ export function AuthScreen({ navigation }: Props) {
         return;
       }
       await claimAndProceed(toMain); // [12] 2026-09-07: toMain lands on Home (MainTabs initialRoute = Course Selection), same as create-account
+    } catch {
+      setError('Couldn’t reach the Academy — check your connection and try again.');
     } finally {
       setBusy(false);
     }
@@ -302,6 +310,8 @@ export function AuthScreen({ navigation }: Props) {
       setNewPassword('');
       setMode('recovery');
       setInfo(`We emailed a 6-digit code to ${email.trim()}. Enter it below with your new password.`);
+    } catch {
+      setError('Couldn’t send the reset email — check your connection and try again.');
     } finally {
       setBusy(false);
     }
@@ -336,6 +346,8 @@ export function AuthScreen({ navigation }: Props) {
       // verifyOtp left an active session; the password is now updated → go in.
       setMode('main');
       await claimAndProceed(toMain); // single-device claim on recovery sign-in
+    } catch {
+      setError('Couldn’t reach the Academy — check your connection and try again.');
     } finally {
       setBusy(false);
     }

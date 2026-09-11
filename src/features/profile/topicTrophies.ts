@@ -28,21 +28,31 @@ async function load(): Promise<Map<string, string>> {
   if (!inflight) {
     inflight = (async () => {
       const m = new Map<string, string>();
+      // A FAILED fetch must not be cached (network audit 2026-09-11; the same
+      // rule fetchV3Curriculum already follows). The old shape assigned `cache`
+      // unconditionally, so one dropped request at app start pinned an EMPTY map
+      // for the whole session: every topic tile fell back to the grey placeholder
+      // until the app was force-quit, and nothing ever retried.
+      let ok = false;
       try {
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from('achievements')
           .select('name, icon_url')
           .not('icon_url', 'is', null);
-        for (const r of (data ?? []) as { name: string | null; icon_url: string | null }[]) {
-          if (r.name && r.icon_url) {
-            const k = norm(r.name);
-            if (!m.has(k)) m.set(k, r.icon_url); // first art for a name wins
+        if (!error) {
+          ok = true;
+          for (const r of (data ?? []) as { name: string | null; icon_url: string | null }[]) {
+            if (r.name && r.icon_url) {
+              const k = norm(r.name);
+              if (!m.has(k)) m.set(k, r.icon_url); // first art for a name wins
+            }
           }
         }
       } catch {
         // leave empty — the dashboard falls back to its placeholder
       }
-      cache = m;
+      if (ok) cache = m;
+      inflight = null; // a failure retries on the next mount; a success hits `cache`
       return m;
     })();
   }

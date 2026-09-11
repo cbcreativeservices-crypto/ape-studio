@@ -14,7 +14,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { colors, fonts } from '../../theme/tokens';
-import { Banner, Chip, ChipWrap, EmptyState, Eyebrow, Helper, Loading, SelfReportedNote } from './directoryBits';
+import { Banner, Chip, ChipWrap, EmptyState, Eyebrow, Helper, Loading, PrimaryButton, SelfReportedNote } from './directoryBits';
 import {
   fetchTaxonomy,
   searchDirectory,
@@ -50,9 +50,20 @@ export function ExploreView({
   const [err, setErr] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
 
-  useEffect(() => {
-    void fetchTaxonomy().then(setTax);
+  // fetchTaxonomy resolves NULL on failure and caches only successes, so this
+  // re-runs with the search: a filter panel with every chip row silently blank
+  // looked like "there is nothing to filter by" rather than a dropped request
+  // (network audit 2026-09-11).
+  const [taxErr, setTaxErr] = useState(false);
+  const loadTax = useCallback(async () => {
+    const t = await fetchTaxonomy();
+    setTax(t);
+    setTaxErr(t == null);
   }, []);
+
+  useEffect(() => {
+    void loadTax();
+  }, [loadTax]);
 
   const run = useCallback(async (filters: DirectoryFilters) => {
     setBusy(true);
@@ -157,6 +168,13 @@ export function ExploreView({
         ) : null}
       </View>
 
+      {showFilters && taxErr ? (
+        <View>
+          <Banner tone="warn">Couldn’t load the filter options — check your connection.</Banner>
+          <PrimaryButton label="RETRY" onPress={() => void loadTax()} />
+        </View>
+      ) : null}
+
       {showFilters && tax ? (
         <View>
           <Eyebrow>AREA</Eyebrow>
@@ -217,7 +235,14 @@ export function ExploreView({
         </View>
       ) : null}
 
-      {err ? <Banner tone="warn">{err}</Banner> : null}
+      {/* A failed search needs a way BACK, not just a notice: the only other way
+          to re-run one was to change a filter (network audit 2026-09-11). */}
+      {err ? (
+        <>
+          <Banner tone="warn">{err}</Banner>
+          <PrimaryButton label="RETRY" onPress={() => void run(f)} />
+        </>
+      ) : null}
 
       {busy ? (
         <Loading label="Searching the directory…" />

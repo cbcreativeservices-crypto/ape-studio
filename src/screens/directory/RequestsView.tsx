@@ -271,6 +271,17 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
     setMsgs(r.rows);
   }, [thread]);
 
+  // Clear the previous conversation BEFORE fetching the next one (network audit
+  // 2026-09-11). This sheet stays mounted across opens, and a failed fetch keeps
+  // whatever `msgs` already held — so opening a second conversation offline
+  // displayed the FIRST member's messages under the second member's name.
+  const threadId = thread?.id ?? null;
+  useEffect(() => {
+    setMsgs([]);
+    setErr(null);
+    setBody('');
+  }, [threadId]);
+
   useEffect(() => {
     void load();
   }, [load]);

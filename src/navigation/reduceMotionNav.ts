@@ -10,13 +10,21 @@ export function useReduceMotionNav(): boolean {
   const [rm, setRm] = useState(false);
   useEffect(() => {
     let live = true;
-    void AccessibilityInfo.isReduceMotionEnabled().then((v) => {
-      if (live) setRm(v);
-    });
-    const sub = AccessibilityInfo.addEventListener('reduceMotionChanged', setRm);
+    // Guarded the way PagedLab's useOsReduceMotion already is: older
+    // platforms do not implement this call, and an unhandled rejection here
+    // happens at NAVIGATOR mount — i.e. during app boot. Defaulting to
+    // "motion allowed" on failure matches the existing behaviour.
+    void AccessibilityInfo.isReduceMotionEnabled?.()
+      .then((v) => {
+        if (live) setRm(!!v);
+      })
+      .catch(() => {
+        /* platform does not report it — keep the default */
+      });
+    const sub = AccessibilityInfo.addEventListener?.('reduceMotionChanged', setRm);
     return () => {
       live = false;
-      sub.remove();
+      sub?.remove?.();
     };
   }, []);
   return rm;
