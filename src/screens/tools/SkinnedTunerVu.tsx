@@ -88,10 +88,11 @@ const R_FACE = HALF_SPAN / Math.sin(PHI_MAX); // ≈ 668 — so x(±30¢) = ±47
 // ~16.5 px, green-zone sagitta ~1 px.
 const R_VIS = 6750;
 const riseAtX = (x: number) => -(R_VIS - Math.sqrt(R_VIS * R_VIS - x * x)); // ≤ 0
-// The needle ASSEMBLY rides a gentler arc than the print (owner 2026-09-10:
-// the full strip rise swung the blade too far up at the pegs). Print keeps
-// riseAtX; the blade/arm/shadow climb only this fraction of it.
-const NEEDLE_RISE_K = 0.6;
+// The needle rides EXACTLY the printed arc (owner 2026-09-11: a damped 0.6
+// climb — added when the curve was steeper — read as the blade moving on a
+// DIFFERENT curve than the scale behind it; with the loosened R_VIS the full
+// rise is modest, so blade and print now share one surface).
+const NEEDLE_RISE_K = 1;
 const phiFor = (cents: number) => (cents / TUNER_MAX_CENTS) * PHI_MAX;
 const xArc = (cents: number) => R_FACE * Math.sin(phiFor(cents));
 const yArc = (cents: number) => riseAtX(xArc(cents));
@@ -325,10 +326,9 @@ export function SkinnedTunerVu({
   const rimY = (GLASS.y + GLASS.h - NEEDLE_TIP_Y) * s;
   const rodLen = 190 * s;
   // Connection point (owner 2026-09-10): buried so the hardware reveal tops
-  // out around 8 px at the pegs — present, never showy. Re-tuned with each
-  // arc loosening (needle end rise now ~10 px): collar 2 below the rim,
-  // anchor 8.
-  const rodAnchorY = rimY + 8 * s;
+  // out around 8 px at the pegs — present, never showy. Re-tuned for the
+  // full-arc blade (end rise ~16.5 px): collar 8 below the rim, anchor 14.
+  const rodAnchorY = rimY + 14 * s;
   const rodStyle = useAnimatedStyle(() => {
     const phi = (cv.value / TUNER_MAX_CENTS) * PHI_MAX;
     return { transform: [{ rotate: `${Math.atan((R_FACE * Math.sin(phi)) / ARM_DEPTH)}rad` }] };
@@ -380,7 +380,7 @@ export function SkinnedTunerVu({
                     <View style={[styles.armRodStripe, { width: 8 * s }]} />
                   </View>
                 </Animated.View>
-                <View style={[styles.armCollar, { top: rimY + 2 * s, width: 34 * s, height: 60 * s, borderRadius: 3 * s }]}>
+                <View style={[styles.armCollar, { top: rimY + 8 * s, width: 34 * s, height: 60 * s, borderRadius: 3 * s }]}>
                   <View style={[styles.armCollarEdge, { height: 4 * s }]} />
                 </View>
                 <View

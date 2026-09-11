@@ -26,7 +26,7 @@
  */
 import { memo, useEffect, useMemo, useRef, useState, useSyncExternalStore, type FC, type ReactNode } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
-import Svg, { Circle, ClipPath, Defs, G, Image as SvgImage, Line, LinearGradient, Path, Polygon, Rect } from 'react-native-svg';
+import Svg, { Circle, ClipPath, Defs, G, Image as SvgImage, Line, LinearGradient, Path, Polygon, Rect, Text as SvgText } from 'react-native-svg';
 import { heatColor } from '../../features/tools/levelColor';
 import {
   SKIN_LAMP,
@@ -575,67 +575,89 @@ function HGrad({ id }: { id: string }) {
 // cursor track the live YIN pitch from the mic (whistle, sing, or tune a real
 // instrument in front of the phone). Chrome ported verbatim from tool_07.
 
-const TUNER_CX = 1024;
-const TUNER_CY = 706;
-const TUNER_DEG_PER_CENT = 56 / 50; // ±50¢ → ±56° of needle travel
-const TUNER_PX_PER_CENT = 13.04; // cents cursor travel on the bottom ruler
-const TUNER_TIP_LEN = 320;
-const TUNER_TAIL_LEN = 58;
+// ── Mini edgewise VU face (matches the redesigned tool, owner 2026-09-11):
+// amber drum face, curved baseline bar with the green ±5¢ zone, signed
+// −30/+30 ends, and a VERTICAL blade translating on the arc. SVG chrome +
+// RN-view blade, same recipe as before — no image decode in the hub.
+const TUNER_MAX_C = 30; // ±30¢, matching the tool's scale
+const TVU_CX = 1024;
+const TVU_HALF = 600; // px at ±30¢ → 20 px/cent
+const TVU_BAR = 560; // baseline bar y at center
+const TVU_RISE = 34; // ends rise (drum curve), parabola approx
+const TVU_FACE = { x: 190, y: 170, w: 1668, h: 688, r: 34 } as const;
+const TVU_INK = '#33200e';
+const TVU_INK_SOFT = 'rgba(51,32,14,0.65)';
+const tvuX = (c: number) => TVU_CX + (c / TUNER_MAX_C) * TVU_HALF;
+const tvuRise = (c: number) => -TVU_RISE * Math.pow(c / TUNER_MAX_C, 2);
 
-const TUNER_MINOR_TICKS: ReadonlyArray<readonly [number, number, number, number]> = [
-  [754.3, 482.9, 777.4, 502], [777.4, 457.7, 798.5, 478.9], [802.8, 434.8, 821.8, 458],
-  [830.3, 414.5, 846.9, 439.5], [890.6, 382.4, 902.1, 410.1], [922.8, 370.9, 931.5, 399.7],
-  [956, 362.7, 961.8, 392.1], [989.8, 357.7, 992.8, 387.5], [1058.2, 357.7, 1055.2, 387.5],
-  [1092, 362.7, 1086.2, 392.1], [1125.2, 370.9, 1116.5, 399.7], [1157.4, 382.4, 1145.9, 410.1],
-  [1217.7, 414.5, 1201.1, 439.5], [1245.2, 434.8, 1226.2, 458], [1270.6, 457.7, 1249.5, 478.9],
-  [1293.7, 482.9, 1270.6, 502],
-];
-const TUNER_MAJOR_TICKS: ReadonlyArray<readonly [number, number, number, number]> = [
-  [733.8, 510.3, 786.9, 546.1], [859.7, 397, 889.7, 453.5], [1024, 356, 1024, 420],
-  [1188.3, 397, 1158.3, 453.5], [1314.2, 510.3, 1261.1, 546.1],
-];
-const TUNER_RULER_MAJOR_X = [372, 698, 1024, 1350, 1676];
-const TUNER_RULER_MINOR_X = [453.5, 535, 616.5, 779.5, 861, 942.5, 1105.5, 1187, 1268.5, 1431.5, 1513, 1594.5];
+function tvuBarPath(from: number, to: number): string {
+  const pts: string[] = [];
+  for (let c = from; c <= to; c += 2.5) pts.push(`${pts.length ? 'L' : 'M'}${tvuX(c).toFixed(1)},${(TVU_BAR + tvuRise(c)).toFixed(1)}`);
+  return pts.join(' ');
+}
+
+const TVU_TICKS = (() => {
+  const out: { x: number; y0: number; y1: number; w: number; soft: boolean }[] = [];
+  for (let c = -TUNER_MAX_C; c <= TUNER_MAX_C; c += 5) {
+    const major = c % 10 === 0;
+    const h = c === 0 ? 92 : major ? 64 : 42;
+    const y = TVU_BAR + tvuRise(c);
+    out.push({ x: tvuX(c), y0: y - 4, y1: y - h, w: c === 0 ? 10 : major ? 8 : 6, soft: !major });
+  }
+  return out;
+})();
 
 const TUNER_CHROME = (
   <G>
-    <Rect x={90} y={78} width={1868} height={874} rx={18} fill="#0c1016" stroke="#243046" strokeWidth={5} />
-    <Path d="M715.6,498A372,372 0 0 1 1332.4,498" fill="none" stroke="#28303d" strokeWidth={46} strokeLinecap="round" />
-    <Path d="M715.6,498A372,372 0 0 1 1332.4,498" fill="none" stroke="#7d8798" strokeWidth={9} />
-    <Path d="M984.1,336.1A372,372 0 0 1 1063.9,336.1" fill="none" stroke="#34b96e" strokeWidth={46} />
-    <Path d="M984.1,336.1A372,372 0 0 1 1063.9,336.1" fill="none" stroke="#7ce8a6" strokeWidth={9} />
-    <G stroke="#aeb9cb" strokeWidth={6} opacity={0.75}>
-      {TUNER_MINOR_TICKS.map(([x1, y1, x2, y2], i) => (
-        <Line key={i} x1={x1} y1={y1} x2={x2} y2={y2} />
-      ))}
-    </G>
-    <G stroke="#eef3fa" strokeWidth={12}>
-      {TUNER_MAJOR_TICKS.map(([x1, y1, x2, y2], i) => (
-        <Line key={i} x1={x1} y1={y1} x2={x2} y2={y2} />
-      ))}
-    </G>
-    <Line x1={1024} y1={304} x2={1024} y2={260} stroke="#f5b942" strokeWidth={16} strokeLinecap="round" />
-    <Rect x={372} y={852} width={1304} height={124} rx={18} fill="#0a0e15" stroke="#2e3a50" strokeWidth={5} />
-    <Rect x={928} y={862} width={192} height={104} rx={12} fill="#34b96e" opacity={0.16} />
-    <Rect x={928} y={862} width={192} height={104} rx={12} fill="#0f2b1b" stroke="#34b96e" strokeWidth={7} />
-    <Line x1={1024} y1={874} x2={1024} y2={954} stroke="#7ce8a6" strokeWidth={7} />
-    {TUNER_RULER_MAJOR_X.map((x) => (
-      <Line key={x} x1={x} y1={962} x2={x} y2={932} stroke="#6b7688" strokeWidth={7} opacity={0.85} />
+    <Defs>
+      <LinearGradient id="tvuFace" x1="0" y1="0" x2="0" y2="1">
+        {rampStops([
+          [0, '#f1e4cd'], [0.4, '#eccfa0'], [0.62, '#e9b269'], [0.82, '#f0942c'], [1, '#d1720e'],
+        ])}
+      </LinearGradient>
+      <LinearGradient id="tvuGlow" x1="0" y1="1" x2="0" y2="0">
+        {rampStops([
+          [0, '#ffb63f'], [0.5, 'rgba(255,182,63,0.35)'], [1, 'rgba(255,182,63,0)'],
+        ])}
+      </LinearGradient>
+    </Defs>
+    {/* bezel + glass face + bottom lamp glow */}
+    <Rect x={140} y={125} width={1768} height={778} rx={26} fill="#16110c" stroke="#3a2c1c" strokeWidth={6} />
+    <Rect x={TVU_FACE.x} y={TVU_FACE.y} width={TVU_FACE.w} height={TVU_FACE.h} rx={TVU_FACE.r} fill="url(#tvuFace)" />
+    <Rect x={TVU_FACE.x} y={620} width={TVU_FACE.w} height={238} rx={TVU_FACE.r} fill="url(#tvuGlow)" opacity={0.75} />
+    {/* printed scale: curved bar, green zone, ticks */}
+    <Path d={tvuBarPath(-TUNER_MAX_C, TUNER_MAX_C)} stroke={TVU_INK} strokeWidth={12} fill="none" strokeLinecap="round" />
+    <Path d={tvuBarPath(-5, 5)} stroke="#2fbf5a" strokeWidth={12} fill="none" />
+    {TVU_TICKS.map((t) => (
+      <Line key={t.x} x1={t.x} y1={t.y0} x2={t.x} y2={t.y1} stroke={t.soft ? TVU_INK_SOFT : TVU_INK} strokeWidth={t.w} />
     ))}
-    {TUNER_RULER_MINOR_X.map((x) => (
-      <Line key={x} x1={x} y1={962} x2={x} y2={944} stroke="#6b7688" strokeWidth={5} opacity={0.5} />
-    ))}
+    {/* legend + signed ends + accidentals, the tool's printed voice */}
+    <SvgText x={TVU_CX} y={296} fill={TVU_INK_SOFT} fontSize={46} fontWeight="600" letterSpacing={10} textAnchor="middle" fontFamily="sans-serif">CENTS</SvgText>
+    <SvgText x={tvuX(-30)} y={TVU_BAR + tvuRise(-30) - 130} fill={TVU_INK} fontSize={64} fontWeight="600" textAnchor="middle" fontFamily="sans-serif">−30</SvgText>
+    <SvgText x={TVU_CX} y={TVU_BAR - 158} fill={TVU_INK} fontSize={64} fontWeight="600" textAnchor="middle" fontFamily="sans-serif">0</SvgText>
+    <SvgText x={tvuX(30)} y={TVU_BAR + tvuRise(30) - 130} fill={TVU_INK} fontSize={64} fontWeight="600" textAnchor="middle" fontFamily="sans-serif">+30</SvgText>
+    <SvgText x={286} y={TVU_BAR + tvuRise(-30) + 8} fill={TVU_INK} fontSize={84} textAnchor="middle" fontFamily="serif">♭</SvgText>
+    <SvgText x={1762} y={TVU_BAR + tvuRise(30) + 8} fill={TVU_INK} fontSize={84} textAnchor="middle" fontFamily="serif">♯</SvgText>
   </G>
 );
 
-/** Cents off the nearest equal-tempered note (A4=440), clamped to the ±50¢
- *  dial. null when the frequency is out of a sane instrument range. */
+/** Cents off the nearest equal-tempered note (A4=440), clamped to the ±30¢
+ *  face — the tool's scale. null when out of a sane instrument range. */
 function centsOf(freq: number): number | null {
   if (!(freq > 0)) return null;
   const midi = Math.round(12 * Math.log2(freq / 440) + 69);
   if (midi < 12 || midi > 120) return null; // ~C0…C9
   const fNote = 440 * Math.pow(2, (midi - 69) / 12);
-  return clamp(1200 * Math.log2(freq / fNote), -50, 50);
+  return clamp(1200 * Math.log2(freq / fNote), -TUNER_MAX_C, TUNER_MAX_C);
+}
+
+/** Nearest note name for the corner readout (same range gate as centsOf). */
+const TVU_NAMES = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
+function tvuNoteName(freq: number): string | null {
+  if (!(freq > 0)) return null;
+  const midi = Math.round(12 * Math.log2(freq / 440) + 69);
+  if (midi < 12 || midi > 120) return null;
+  return `${TVU_NAMES[((midi % 12) + 12) % 12]}${Math.floor(midi / 12) - 1}`;
 }
 
 const HubTunerLive: FC = memo(() => {
@@ -643,22 +665,31 @@ const HubTunerLive: FC = memo(() => {
   const [w, onLayout] = useMeasuredWidth();
   const [inTune, setInTune] = useState(false);
   const cents = useRef(new Animated.Value(0)).current;
+  const alive = useRef(new Animated.Value(0)).current;
   const lastTickRef = useRef(-1);
 
-  // Chase the live cents each tick (honesty gate matches the Frequency Counter
-  // tool: voiced + confident + above the noise floor). When silent the needle
-  // eases back to centre so the dial rests instead of freezing on a stale note.
+  // Chase the live cents each tick (honesty gate matches the Frequency
+  // Counter tool: voiced + confident + above the noise floor). No stable
+  // pitch → the blade FADES OUT (owner ruling 2026-09-10: hidden, never a
+  // parked ghost that could read as in-tune).
   if (lastTickRef.current !== d.tick) {
     lastTickRef.current = d.tick;
     const p = d.pitch;
     const voiced = !!p && p.voiced && p.confidence >= 0.5 && p.levelDb >= -60;
     const c = voiced ? centsOf(p!.freq) : null;
-    const target = c == null ? 0 : c;
     const nowInTune = c != null && Math.abs(c) < 5;
     if (nowInTune !== inTune) setInTune(nowInTune);
-    Animated.timing(cents, {
-      toValue: target,
-      duration: HUB_TICK_MS + 50,
+    if (c != null) {
+      Animated.timing(cents, {
+        toValue: c,
+        duration: HUB_TICK_MS + 50,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: NATIVE_DRIVER,
+      }).start();
+    }
+    Animated.timing(alive, {
+      toValue: c != null ? 1 : 0,
+      duration: 200,
       easing: Easing.out(Easing.quad),
       useNativeDriver: NATIVE_DRIVER,
     }).start();
@@ -669,15 +700,23 @@ const HubTunerLive: FC = memo(() => {
   const s = w / STRIP_WINDOW.w;
   const ox = STRIP_WINDOW.x;
   const oy = STRIP_WINDOW.y;
-  const rotate = cents.interpolate({
-    inputRange: [-50, 50],
-    outputRange: [`-${50 * TUNER_DEG_PER_CENT}deg`, `${50 * TUNER_DEG_PER_CENT}deg`],
+  const bladeX = cents.interpolate({
+    inputRange: [-TUNER_MAX_C, TUNER_MAX_C],
+    outputRange: [-TVU_HALF * s, TVU_HALF * s],
   });
-  const cursorX = cents.interpolate({
-    inputRange: [-50, 50],
-    outputRange: [-50 * TUNER_PX_PER_CENT * s, 50 * TUNER_PX_PER_CENT * s],
+  // The blade's climb samples the SAME parabola as the printed scale (owner
+  // 2026-09-11: a coarse 3-point ramp visibly left the printed curve mid-scale).
+  const bladeY = cents.interpolate({
+    inputRange: [-30, -20, -10, 0, 10, 20, 30],
+    outputRange: [tvuRise(-30) * s, tvuRise(-20) * s, tvuRise(-10) * s, 0, tvuRise(10) * s, tvuRise(20) * s, tvuRise(30) * s],
   });
-  const needleColor = inTune ? '#7ce8a6' : '#ffcf6a';
+  const needleColor = inTune ? '#2fbf5a' : '#1d1208';
+  // Corner readouts (owner 2026-09-11): pitch lower-left, Hz lower-right.
+  // Same honesty gate as the blade — silence shows a dimmed em-dash.
+  const p = d.pitch;
+  const cornerVoiced = !!p && p.voiced && p.confidence >= 0.5 && p.levelDb >= -60;
+  const cornerNote = cornerVoiced ? tvuNoteName(p!.freq) : null;
+  const cornerHz = cornerVoiced && cornerNote != null ? `${p!.freq < 100 ? p!.freq.toFixed(1) : Math.round(p!.freq)} Hz` : null;
 
   return (
     <LiveShell>
@@ -685,68 +724,40 @@ const HubTunerLive: FC = memo(() => {
         <Svg width="100%" height="100%" viewBox={VB}>
           <Rect width={2048} height={1024} fill="#060608" />
           {TUNER_CHROME}
+          <SvgText x={252} y={812} fill={TVU_INK} fontSize={58} fontWeight="600" textAnchor="start" fontFamily="sans-serif" opacity={cornerNote ? 0.9 : 0.4}>
+            {cornerNote ?? '—'}
+          </SvgText>
+          <SvgText x={1796} y={812} fill={TVU_INK} fontSize={58} fontWeight="600" textAnchor="end" fontFamily="sans-serif" opacity={cornerHz ? 0.9 : 0.4}>
+            {cornerHz ?? '— Hz'}
+          </SvgText>
         </Svg>
         {s > 0 && (
-          <>
+          <View
+            pointerEvents="none"
+            style={{
+              position: 'absolute',
+              left: (TVU_FACE.x - ox) * s,
+              top: (TVU_FACE.y - oy) * s,
+              width: TVU_FACE.w * s,
+              height: TVU_FACE.h * s,
+              borderRadius: TVU_FACE.r * s,
+              overflow: 'hidden',
+            }}
+          >
             <Animated.View
-              pointerEvents="none"
               style={{
                 position: 'absolute',
-                left: (TUNER_CX - ox) * s - 21 * s,
-                top: (TUNER_CY - TUNER_TIP_LEN - oy) * s,
-                width: 42 * s,
-                height: TUNER_TIP_LEN * 2 * s,
-                transform: [{ rotate }],
-              }}
-            >
-              <View
-                style={{
-                  position: 'absolute', top: 0, left: 0,
-                  width: 42 * s, height: (TUNER_TIP_LEN + TUNER_TAIL_LEN) * s,
-                  borderRadius: 21 * s, backgroundColor: needleColor, opacity: 0.16,
-                }}
-              />
-              <View
-                style={{
-                  position: 'absolute', top: 0, left: 12.5 * s,
-                  width: 17 * s, height: (TUNER_TIP_LEN + TUNER_TAIL_LEN) * s,
-                  borderRadius: 8.5 * s, backgroundColor: needleColor,
-                }}
-              />
-            </Animated.View>
-            <View
-              pointerEvents="none"
-              style={{
-                position: 'absolute', left: (TUNER_CX - 46 - ox) * s, top: (TUNER_CY - 46 - oy) * s,
-                width: 92 * s, height: 92 * s, borderRadius: 46 * s,
-                backgroundColor: '#151a22', borderWidth: Math.max(1, 6 * s), borderColor: '#3a4354',
+                left: (TVU_CX - TVU_FACE.x) * s - 11 * s,
+                top: (392 - TVU_FACE.y) * s,
+                width: 22 * s,
+                height: (TVU_FACE.y + TVU_FACE.h - 392 + 40) * s,
+                borderRadius: 11 * s,
+                backgroundColor: needleColor,
+                opacity: alive,
+                transform: [{ translateX: bladeX }, { translateY: bladeY }],
               }}
             />
-            <View
-              pointerEvents="none"
-              style={{
-                position: 'absolute', left: (TUNER_CX - 18 - ox) * s, top: (TUNER_CY - 18 - oy) * s,
-                width: 36 * s, height: 36 * s, borderRadius: 18 * s, backgroundColor: '#f5b942',
-              }}
-            />
-            <Animated.View
-              pointerEvents="none"
-              style={{
-                position: 'absolute', left: (TUNER_CX - 40 - ox) * s, top: (806 - oy) * s,
-                width: 80 * s, height: 164 * s, transform: [{ translateX: cursorX }],
-              }}
-            >
-              <Svg width={80 * s} height={42 * s} viewBox="0 0 80 42">
-                <Polygon points="0,0 80,0 40,42" fill={needleColor} />
-              </Svg>
-              <View
-                style={{
-                  position: 'absolute', left: 26.5 * s, top: 52 * s,
-                  width: 27 * s, height: 112 * s, borderRadius: 13 * s, backgroundColor: needleColor,
-                }}
-              />
-            </Animated.View>
-          </>
+          </View>
         )}
         <Vignette />
       </View>
