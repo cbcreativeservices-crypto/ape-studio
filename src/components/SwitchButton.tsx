@@ -282,7 +282,13 @@ export function SwitchButton({
         animate('out');
       }}
       accessibilityRole="button"
-      accessibilityLabel={a11yLabel ?? label}
+      // The state rides in the LABEL, not only in accessibilityState/aria:
+      // this Pressable is deliberately never `disabled` (inactive keys must
+      // still travel and click — Booth 2026-07-11 #4), and RNW's Pressable
+      // overwrites a caller's aria-disabled with its own `disabled` prop, so
+      // on web the greyed state was announced as enabled. The label works on
+      // both platforms without touching the press behaviour.
+      accessibilityLabel={`${a11yLabel ?? label}${disabled ? ', unavailable' : ''}`}
       accessibilityState={{ disabled }}
       aria-disabled={disabled}
       hitSlop={6}

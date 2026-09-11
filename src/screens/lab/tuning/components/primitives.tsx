@@ -343,28 +343,21 @@ export function DeviationMeter({ cents, rangeCents = 30, label }: { cents: numbe
  * a phone. Calling `make()` inline as an argument to `player.play(make(), …)`
  * ran the synthesis in the same tick as the tap, so the JS thread blocked with
  * no sign the button had registered (the class that froze the mixing lab's
- * null test on device, 2026-09-11). Yield once so the RENDERING state paints,
- * then synthesise. A ref guard keeps a double-tap from stacking two bursts.
+ * null test on device, 2026-09-11).
+ *
+ * CONSOLIDATED 2026-09-11 (adversarial review): this file briefly carried its
+ * OWN `useRenderedPlay` hook while `TuningPlayer.renderAndPlay` solved the
+ * same problem for the 27 chapter call sites. Two implementations meant two
+ * independent busy latches — so a chapter tap and a comparison tap could each
+ * fire a ~106–180 ms burst back to back, the very freeze this exists to
+ * prevent — and the local hook had no token check, so a STOP landing inside
+ * the yield window was ignored and audio started anyway. Everything now goes
+ * through the player, which owns the single latch, the STOP token and the
+ * `rendering` status the labels read.
  */
-function useRenderedPlay(player: TuningPlayer) {
-  const [rendering, setRendering] = useState<string | null>(null);
-  const busy = useRef(false);
-  const run = (make: () => Mono, label: string) => {
-    if (busy.current) return;
-    busy.current = true;
-    setRendering(label);
-    void (async () => {
-      try {
-        await new Promise<void>((r) => setTimeout(r, 0));
-        await player.play(make(), label);
-      } finally {
-        busy.current = false;
-        setRendering(null);
-      }
-    })();
-  };
-  return { rendering, run };
-}
+const renderThenPlay = (player: TuningPlayer, make: () => Mono, label: string) => {
+  void player.renderAndPlay(make, label);
+};
 
 /* ── AudioComparisonControls (A / B / Alternate / Together / Stop) ───────── */
 
@@ -382,7 +375,8 @@ export function AudioComparisonControls({
 }) {
   const [status, setStatus] = useState<PlayerStatus>({ playing: false, label: null });
   useEffect(() => player.subscribe(setStatus), [player]);
-  const { rendering, run } = useRenderedPlay(player);
+  const rendering = status.rendering ?? null;
+  const run = (make: () => Mono, l: string) => renderThenPlay(player, make, l);
   const abLabel = `${labelA} then ${labelB}`;
   const togLabel = `${labelA} + ${labelB}`;
   const mark = (own: string, text: string) => (rendering === own ? `… ${text}` : text);
@@ -407,7 +401,8 @@ export function AudioComparisonControls({
 export function PlayStop({ player, render, label }: { player: TuningPlayer; render: () => Mono; label: string }) {
   const [status, setStatus] = useState<PlayerStatus>({ playing: false, label: null });
   useEffect(() => player.subscribe(setStatus), [player]);
-  const { rendering, run } = useRenderedPlay(player);
+  const rendering = status.rendering ?? null;
+  const run = (make: () => Mono, l: string) => renderThenPlay(player, make, l);
   const mine = status.playing && status.label === label;
   return (
     <Row>

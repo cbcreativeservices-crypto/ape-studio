@@ -153,6 +153,14 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
   const [commercialMode, setCommercialModeState] = useState<boolean>(FLAG_DEFAULTS.commercialMode);
   const [entitlement, setEntitlementState] = useState<Entitlement>('anonymous');
   const [resolved, setResolved] = useState(false);
+  /** DIFFERENT from `resolved`. `resolved` means "the first attempt finished,
+   *  first paint may proceed" — it flips in a .finally() even when the read
+   *  FAILED. `tierKnown` means "a read actually produced a tier, or there is
+   *  definitively no session". Anything that must not act on a guessed tier
+   *  (currently: the memberStanding mirror that arms/cancels notifications)
+   *  gates on THIS, not on `resolved`. Internal to the provider on purpose —
+   *  the UI wants `resolved` so it never hangs. */
+  const [tierKnown, setTierKnown] = useState(false);
   // Once the owner force-picks a tier via the dev toggle, stop auto-deriving
   // from the session for the rest of this app run (so the toggle isn't clobbered
   // by a token refresh while they inspect a tier).
@@ -227,14 +235,23 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
      *  further attempts run detached, behind the already-painted screen. */
     const deriveWithRetry = async (hasSession: boolean): Promise<void> => {
       const mine = ++generation;
-      if (await deriveAndApply(hasSession)) return;
+      const markKnown = () => {
+        if (alive && generation === mine) setTierKnown(true);
+      };
+      if (await deriveAndApply(hasSession)) {
+        markKnown();
+        return;
+      }
       void (async () => {
         for (const delay of RETRY_DELAYS_MS) {
           await new Promise((r) => setTimeout(r, delay));
           // A newer sign-in/sign-out supersedes this retry — never let a stale
           // read re-apply a tier the user has since left.
           if (!alive || generation !== mine || devOverrode.current) return;
-          if (await deriveAndApply(hasSession)) return;
+          if (await deriveAndApply(hasSession)) {
+            markKnown();
+            return;
+          }
         }
         console.warn('[entitlement] read still failing after retries; tier left unchanged');
       })();
@@ -345,14 +362,20 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
     // effect ran on the very first render, when `entitlement` is still the
     // 'anonymous' default, and wrote a definite 'nonmember'. That threw the
     // tri-state away: every cold boot cancelled a paying member's notifications
-    // and only re-booked them once the server read landed — and if that read
-    // failed all the way through its retries, they stayed cancelled for the
-    // whole app run. Holding at 'unknown' until the tier is known is exactly
-    // what memberStanding.ts documents.
-    if (!resolved) return;
+    // and only re-booked them once the server read landed.
+    //
+    // GATE ON `tierKnown`, NOT `resolved` (adversarial review 2026-09-11):
+    // `resolved` flips in a .finally(), i.e. after the first ATTEMPT whether it
+    // succeeded or FAILED — it means "first paint may proceed", not "we know
+    // the tier". Gating this effect on it still wrote a definite 'nonmember'
+    // for a member whose boot read failed. `tierKnown` is set only when a read
+    // actually produced a tier (or there is definitively no session), so a
+    // failed read now leaves memberStanding at 'unknown' — which
+    // memberStanding.ts documents as "does NOT cancel anything".
+    if (!tierKnown) return;
     setMemberStanding(entitlement === 'academy');
     void loadLocalSettings().then((s) => requestLocalNotifSync(s));
-  }, [entitlement, resolved]);
+  }, [entitlement, tierKnown]);
 
   const setEntitlement = useCallback((state: Entitlement) => {
     if (!__DEV__) return;

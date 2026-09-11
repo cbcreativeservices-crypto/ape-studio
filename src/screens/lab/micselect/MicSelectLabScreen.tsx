@@ -826,6 +826,14 @@ function LockerStep() {
                 return n;
               });
             }}
+            // `disabled` (not just the early return in onPress) so the state
+            // actually reaches the web build: RNW's Pressable emits its OWN
+            // aria-disabled AFTER spreading props, overwriting a caller's value
+            // — so an unselectable row announced as available. Behaviourally
+            // identical, since onPress already returns early when full, and
+            // `full` is false whenever this row is the one selected, so
+            // DESELECTING at capacity still works.
+            disabled={full}
             accessibilityRole="checkbox"
             accessibilityState={{ checked: on, disabled: full }}
             aria-checked={on}

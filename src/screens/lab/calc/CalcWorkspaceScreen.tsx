@@ -461,8 +461,11 @@ export function CalcWorkspaceScreen() {
                   style={[styles.fnOption, sel && styles.fnOptionSel]}
                   onPress={() => { setFnIdx(i); setStepsOpen(false); }}
                   accessibilityRole="radio"
-                  accessibilityState={{ selected: sel }}
-                  aria-selected={sel}
+                  // `checked`, not `selected`: role="radio" takes aria-checked,
+                  // so every calculator function announced as an unchecked
+                  // radio and the user could not tell which one was active.
+                  accessibilityState={{ checked: sel }}
+                  aria-checked={sel}
                   accessibilityLabel={f.name}
                 >
                   <View style={[styles.fnRadio, sel && styles.fnRadioSel]}>
