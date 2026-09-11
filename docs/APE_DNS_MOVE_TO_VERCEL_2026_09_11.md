@@ -80,7 +80,7 @@ preserve, no mail, no verification records. This is why it is the canary.
 | 0a | Supabase Dashboard → Authentication → Emails → SMTP | **Settle the Resend question first.** If custom SMTP points at Resend, the `send`/`rsend`/`resend._domainkey` records are load-bearing. If it is Supabase's built-in sender, they are dead and get dropped. |
 | 0b | Bluehost → each academy domain → DNS | Zone exports already captured (2026-09-11 screenshots). Re-export if anything changes before the move. |
 | 0c | Bluehost DNS | Drop every TTL to **300s**, then wait out the OLD TTL (up to 4h here; the panel warns 24–48h) before step 3. |
-| 0d | Bluehost DNS → `.com` | **Quick win, no cutover:** delete the `mail` and `autodiscover` A records now. Removes two live academy→personal-box links today. |
+| 0d | Bluehost DNS → `.com` | ✅ **DONE 2026-09-11.** Deleted the `mail` and `autodiscover` A records (both were → `162.241.216.17`). Verified in the panel: MX `smtp.google.com`, apex A, `www` and the DKIM TXT all intact. Public resolvers still served the old answers immediately after (TTLs were 1h and 4h; the panel warns 24–48h), so re-check before assuming it propagated. **`.co` still has the same two records** — not yet touched. |
 | 1 | Vercel → Domains (team `pro-audio-training-academy`) | Set each academy domain to use **Vercel DNS**. Use the nameserver pair **Vercel displays** — do not assume it. |
 | 2 | Vercel → DNS records | Create the KEEP table above **before** touching nameservers. MX first. Verify the DKIM string pasted without truncation or added whitespace. |
 | 3 | Bluehost → `.online` → Nameservers | **Canary.** Switch `.online` only. Two records, redirect-only, no mail — a failure here costs nothing. |
