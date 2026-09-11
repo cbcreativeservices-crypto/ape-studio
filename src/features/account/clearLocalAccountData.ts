@@ -23,7 +23,10 @@ import { resetLocal as resetPaceStore } from '../study/paceStore';
 import { resetLocal as resetLastStudyLocation } from '../study/lastStudyLocation';
 import { resetLocal as resetScenarioExempt } from '../study/scenarioExempt';
 import { resetLocal as resetHomeCardsStore } from '../home/homeCardsStore';
-import { resetLocal as resetMeasurementStore } from '../tools/measure/measurementStore';
+import {
+  clearStoredMeasurements,
+  resetLocal as resetMeasurementStore,
+} from '../tools/measure/measurementStore';
 import { resetLocal as resetLabCompletion } from '../lab/labCompletion';
 import { resetLocal as resetExposureMonitor } from '../audio/exposureMonitor';
 import { resetLocal as resetDashboardCache } from '../dashboard/dashboardCache';
@@ -92,6 +95,12 @@ export async function clearLocalAccountData(opts?: { total?: boolean }): Promise
   } catch {
     // best-effort — a storage failure must not block sign-out / account switch
   }
+  // The saved measurement library is NOT an `ape:*` key any more (2026-09-11 —
+  // it moved to SQLite when spectrogram grids filled AsyncStorage's shared 6 MB
+  // Android database). The sweep above cannot see a table, so it is wiped by
+  // name; miss this and the next account signing in on this device inherits the
+  // previous one's measurements.
+  await clearStoredMeasurements();
 }
 
 /**
