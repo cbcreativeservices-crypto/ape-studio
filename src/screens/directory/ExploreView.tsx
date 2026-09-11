@@ -15,6 +15,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { colors, fonts } from '../../theme/tokens';
 import { Banner, Chip, ChipWrap, EmptyState, Eyebrow, Helper, Loading, PrimaryButton, SelfReportedNote } from './directoryBits';
+// The country filter has to normalise a typed code exactly the way the profile
+// editor normalises a stored one, or the filter searches for something no
+// profile can hold — so both ends use the editor's single normaliser.
+import { COUNTRY_CODE_LENGTH, toCountryCode } from './MyProfileView';
 import {
   fetchTaxonomy,
   searchDirectory,
@@ -216,11 +220,11 @@ export function ExploreView({
           <TextInput
             style={st.input}
             value={f.country ?? ''}
-            onChangeText={(t) => setF({ ...f, country: t.toUpperCase().slice(0, 2) || undefined })}
+            onChangeText={(t) => setF({ ...f, country: toCountryCode(t) || undefined })}
             placeholder="Country code, e.g. US"
             placeholderTextColor={colors.textMuted}
             autoCapitalize="characters"
-            maxLength={2}
+            maxLength={COUNTRY_CODE_LENGTH}
             accessibilityLabel="Filter by country code"
           />
           <ChipWrap>

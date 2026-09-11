@@ -51,6 +51,51 @@ const WORK_PREFS: { key: WorkPref; label: string }[] = [
   { key: 'either', label: 'Either' },
 ];
 
+/**
+ * The public display name is the one free-text field on this screen the
+ * database does NOT bound, so it is deliberately not in `LIMITS`: that object
+ * mirrors server rules, and filing this next to them would claim an enforcement
+ * that does not exist. `community_profiles.display_name` is plain `text` with no
+ * length constraint, and `community_profile_save` only trims it (read off the
+ * live schema 2026-09-11) — the client is the only thing bounding this value,
+ * which is exactly why it needs a bound.
+ *
+ * 30 is what the narrowest place the name is drawn can actually hold. The public
+ * profile sheet header (AudioCommunityDirectoryScreen) draws it UPPERCASED at
+ * 13pt Oswald SemiBold with 2 of letter-spacing, in a space-between row it
+ * shares with the close control and which gives it neither `flex` nor
+ * `numberOfLines` — about 270 of title width on a 320-wide phone at about 9 per
+ * uppercase character. Past that the name starts shoving the ✕ off the row.
+ */
+const DISPLAY_NAME_MAX = 30;
+
+/** ISO 3166-1 alpha-2. Two letters is the whole definition of the format. */
+export const COUNTRY_CODE_LENGTH = 2;
+
+/**
+ * A country code, or nothing — never a fragment of something else.
+ *
+ * Splitting by CODE POINTS is the load-bearing part, and it is the same
+ * `Array.from` split GlossaryScreen uses for its two-tone terms and
+ * test/hostileInput.test.ts pins as the rule: an emoji flag is a PAIR of astral
+ * regional-indicator characters, and the old code-unit `slice(0, 2)` cut one of
+ * them in half the moment anything preceded it ("a🇺🇸" → "A\uD83C") — a lone
+ * surrogate then sat in the field, in the saved profile and in the search
+ * filter, drawing as a replacement glyph wherever it landed. Keeping only A–Z
+ * means a surrogate can never be emitted, half or whole, and that non-letter
+ * input is refused where a country code is expected rather than stored and sent
+ * to `directory_search` as one.
+ *
+ * It lives here, in the editor that WRITES the field, because Explore only
+ * filters on one — a second copy over there is how the two ends drift apart.
+ */
+export function toCountryCode(raw: string): string {
+  return Array.from(raw.toUpperCase())
+    .filter((c) => c >= 'A' && c <= 'Z')
+    .slice(0, COUNTRY_CODE_LENGTH)
+    .join('');
+}
+
 /** Confirm dialogs must work on web too — react-native-web ships Alert as a
  *  literal no-op, which would make Publish silently do nothing in a browser. */
 function confirmThen(title: string, body: string, yes: string, onYes: () => void): void {
@@ -332,8 +377,12 @@ export function MyProfileView() {
         placeholder="e.g. Alex R."
         placeholderTextColor={colors.textMuted}
         autoCapitalize="words"
+        maxLength={DISPLAY_NAME_MAX}
         accessibilityLabel="Public display name"
       />
+      <Text style={st.hintRow}>
+        {p.displayName.length}/{DISPLAY_NAME_MAX}
+      </Text>
 
       <Eyebrow>MY AREAS OF AUDIO &amp; ACOUSTICS</Eyebrow>
       <Helper>
@@ -446,12 +495,12 @@ export function MyProfileView() {
         <TextInput
           style={st.input}
           value={p.countryCode}
-          onChangeText={(t) => setP({ ...p, countryCode: t.toUpperCase().slice(0, 2) })}
+          onChangeText={(t) => setP({ ...p, countryCode: toCountryCode(t) })}
           onBlur={() => void persist(p)}
           placeholder="Country code, e.g. US"
           placeholderTextColor={colors.textMuted}
           autoCapitalize="characters"
-          maxLength={2}
+          maxLength={COUNTRY_CODE_LENGTH}
           accessibilityLabel="Country code"
         />
         <TextInput
