@@ -21,6 +21,12 @@ import { MIXING_PAGES_D } from './pagesD';
 
 const PAGES = [...MIXING_PAGES_A, ...MIXING_PAGES_B, ...MIXING_PAGES_C, ...MIXING_PAGES_D];
 
+// NOTE (resource hygiene 2026-09-11): the ~15.4 MB of synthesized stems that
+// audio/mixAudio.ts memoizes is deliberately NOT released when this screen
+// unmounts. releaseSessionStems() exists and is safe to call, but re-synthesis
+// measured ~8 s of blocked JS on a desktop V8 (and Hermes has no JIT), so an
+// unmount release would turn every RE-entry into the same long "RENDERING…"
+// wait as the first. See the cache comment in audio/mixAudio.ts.
 export function BeginningMixingLabScreen() {
   return <PagedLab labId="mixing-beg" title="Beginning Mixing" subtitle={MIX_MANTRA} pages={PAGES} />;
 }

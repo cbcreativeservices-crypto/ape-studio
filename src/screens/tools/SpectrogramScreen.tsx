@@ -244,11 +244,22 @@ function buildRasterImage(history: SpectroColumnData[], anchor: number, dynRange
       }
     }
   }
-  return Skia.Image.MakeImage(
+  const data = Skia.Data.fromBytes(buf);
+  const img = Skia.Image.MakeImage(
     { width: n, height: ROWS, colorType: ColorType.RGBA_8888, alphaType: AlphaType.Unpremul },
-    Skia.Data.fromBytes(buf),
+    data,
     n * 4,
   );
+  // Release the SkData WRAPPER now (resource hygiene 2026-09-11). Native
+  // fromBytes does SkData::MakeWithCopy and MakeImage does
+  // SkImages::RasterFromData, which takes its OWN sk_sp ref on that same
+  // SkData — so dispose() here is a refcount decrement, never a free, and the
+  // image's pixels stay valid. (On the web build the wrapper's ref is the
+  // plain Uint8Array, which has no delete(), so dispose() is a no-op there.)
+  // Without this, every 125 ms column left a second host object holding a
+  // duplicate claim on the same ~80 KB for the GC to find later.
+  data.dispose();
+  return img;
 }
 
 /** The 128×160 raster. React.memo keyed by the history REFERENCE: the 15 Hz
@@ -274,6 +285,34 @@ const SpectrogramGrid = memo(function SpectrogramGrid({
     () => (history.length === 0 ? null : buildRasterImage(history, anchor, dynRange)),
     [history, anchor, dynRange],
   );
+  // An SkImage is NATIVE memory behind a JS handle; at 8 columns/s this screen
+  // was minting a fresh ~80 KB raster every 125 ms and leaving every one of them
+  // for the GC. Release each one explicitly as soon as it is superseded, and on
+  // unmount.
+  //
+  // WHY THIS IS SAFE TO DISPOSE (verified against @shopify/react-native-skia
+  // 2.6.2 in node_modules, not from memory):
+  //  • dispose() on an SkImage is JsiSkWrappingSkPtrHostObject::releaseResources
+  //    → setObject(nullptr): it drops THIS handle's sk_sp ref only. The recorded
+  //    SkPicture the native view is drawing holds its own sk_sp, and
+  //    RNSkPictureRenderer::performDraw copies that sk_sp before handing it to
+  //    the render thread — so a draw already in flight cannot be pulled out from
+  //    under. Disposal here is a refcount decrement, never a free.
+  //  • The only way a disposed image bites is JS-side: a LATER replay reading it
+  //    out of the scene-graph props would hit validateObject()'s "Attempted to
+  //    access a disposed object". That cannot happen for the image this cleanup
+  //    releases. Skia's HostConfig calls container.redraw() from
+  //    resetAfterCommit — synchronously inside the Canvas's own useLayoutEffect
+  //    — so by the time this PASSIVE effect's cleanup runs, the commit that
+  //    replaced `img` has already re-recorded the picture from the NEW image,
+  //    and the old handle is unreachable from the tree.
+  //  • On unmount the Canvas's effect calls root.unmount(), which reconciles the
+  //    children away; the final redraw records an empty tree and reads no image.
+  //  • This is narrower than the jogRaster.ts cache, which is deliberately left
+  //    undisposed: those images are handed out to callers this module cannot
+  //    see, so it cannot prove nobody will read them again. Here the image never
+  //    leaves this component.
+  useEffect(() => () => img?.dispose(), [img]);
   if (width <= 0 || history.length === 0) return null;
   // Each column is `speed`× wider → the waterfall scrolls `speed`× faster and
   // shows ~HISTORY_COLS/speed columns; the rest scroll off the (clipped) left.

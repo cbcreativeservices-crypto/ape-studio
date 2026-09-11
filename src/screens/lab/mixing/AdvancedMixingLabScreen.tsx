@@ -21,6 +21,8 @@ import { MIXING_ADV_PAGES_D } from './pagesAdvD';
 
 const PAGES = [...MIXING_ADV_PAGES_A, ...MIXING_ADV_PAGES_B, ...MIXING_ADV_PAGES_C, ...MIXING_ADV_PAGES_D];
 
+// NOTE (resource hygiene 2026-09-11): the stems cache is deliberately NOT
+// released on unmount — same reasoning as BeginningMixingLabScreen.
 export function AdvancedMixingLabScreen() {
   return <PagedLab labId="mixing-adv" title="Advanced Mixing" subtitle={MIX_MANTRA} pages={PAGES} />;
 }

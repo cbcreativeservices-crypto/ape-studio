@@ -236,6 +236,26 @@ function synthBgv(): Mono {
 
 /* ── stem cache ──────────────────────────────────────────────────────────── */
 
+/** The eight rendered stems, memoized.
+ *
+ *  NOT a growing cache (memory review 2026-09-11): the key space is the eight
+ *  fixed TRACK_IDS, so the high-water mark is a CONSTANT
+ *  8 × LOOP_S × SR × 4 B = 8 × 10 s × 48 kHz × 4 B ≈ 15.4 MB. Nothing
+ *  accumulates, so an LRU or byte cap would have nothing to evict — the bound
+ *  is structural.
+ *
+ *  It is, however, resident for the life of the process once either mixing lab
+ *  has played anything, and that is DELIBERATE. Rebuilding it is not cheap:
+ *  measured cold sessionStems() ≈ 8 s of blocked JS on desktop V8 with a warm
+ *  JIT (renderMix() off the warm cache is ~25 ms by comparison), because
+ *  earDsp.classicWave is naive additive synthesis — a 65 Hz bass root sums ~369
+ *  harmonics across 480 k samples, and synthBass/synthGtr/synthKeys call it 8×
+ *  per bar. Hermes has no JIT at all. Wiring a release to screen unmount or to
+ *  app background would therefore turn every RE-entry into the same long
+ *  "RENDERING…" wait as the first — a user-visible regression far worse than
+ *  the 15 MB. releaseSessionStems() below is provided, and is verified safe,
+ *  but is left for the owner to wire (or for a future cheap-synthesis rework)
+ *  rather than switched on blind. */
 let stemsCache: Record<TrackId, Mono> | null = null;
 
 /** Render (once) and return the eight session stems, RMS-aligned to −20 dB so
@@ -265,6 +285,26 @@ export function sessionStems(): Record<TrackId, Mono> {
   }
   stemsCache = raw;
   return raw;
+}
+
+/** Drop the memoized stems (~15.4 MB of Float32Array). NOT wired to any screen
+ *  lifecycle — see the cache comment above for why (≈8 s re-synthesis). It is
+ *  the audited release valve, ready for the owner's call and for the test
+ *  suite. Safe to call at ANY time, because nothing outside this module ever
+ *  retains a stem buffer:
+ *   • renderMix() is the only consumer. It reads `stems[id]` (or a
+ *     `.subarray(0, n)` VIEW of it) inside one synchronous pass and sums the
+ *     samples into freshly allocated L/R arrays; `RenderedMix.stereo` is always
+ *     those new arrays, never the cached buffer or a view of it.
+ *   • renderMix() is synchronous end to end, so a release can never interleave
+ *     with a render in progress on JS's single thread.
+ *   • The playback chain downstream (EarClipPlayer.load) receives
+ *     `mix.stereo`, i.e. the rendered sum — it never sees a stem.
+ *  Re-synthesis after a release is byte-identical: sessionStems() seeds its own
+ *  makeRng(20260911) on every call, so nothing the learner hears or that the
+ *  test suite pins changes — only the timing of the (one-off) synthesis. */
+export function releaseSessionStems(): void {
+  stemsCache = null;
 }
 
 /* ── the mix renderer ────────────────────────────────────────────────────── */
