@@ -521,13 +521,24 @@ distinction does not quietly get lost:
 | Change | Status | What a device pass would actually test |
 |---|---|---|
 | `classicWave` wavetable + stems release | **DEVICE-PASSED** | — |
-| Skia image dispose (SpectrogramScreen) | reasoned from the package's C++ | Start, run, change dynamic range, freeze/resume, save a snapshot, back out. A wrong dispose is a NATIVE crash, so this is the highest-value one left. |
+| Skia image dispose (SpectrogramScreen) | **DEVICE-PASSED 2026-09-11** (owner: "device pass all good") — owner-observed only; see note | — |
 | Per-screen error boundaries | reasoned from React Navigation source | Push/pop through a lab, swipe-back, tab switches — that transitions and gestures are untouched. |
 | Virtualized lists (Glossary popups, Requests) | reasoned | Open the bookmark popups; watch for a one-frame card resize on open (`initialNumToRender` is the dial). |
 | ARIA sweep (149 sites + 11 tab strips) | reasoned from the RN role mapping | VoiceOver/TalkBack: a selected segment should say "pressed", a real tab "tab, 1 of 5". |
 | Certificate name validation | Node-tested only | Type a 27-character unbroken name in the registry field and confirm the refusal reads sensibly. |
 | `measurementStore` SQLite risk | **CONFIRMED on device, then FIXED**, and the fix device-passed (snapshots survive a restart) | — |
-| Saved-measurement previews | browser-verified at desktop + 375×812; **not yet device-passed** | Open a saved spectrogram, tap to enlarge; check the other four kinds have something to draw |
+| Saved-measurement previews | **DEVICE-PASSED 2026-09-11** as part of the same Spectrogram pass — owner-observed only; see note | — |
+
+⚠️ **Note on that pass — it was NOT log-corroborated.** Metro was running and
+readable, and the point of that was to catch warnings the owner would not see on
+screen. It caught nothing, because the log recorded **zero** `[tools]` /
+spectrogram / `[measurements]` lines during the pass — only the app boot. Either
+the run was genuinely silent, or the phone's console was not attached to that
+Metro instance. **The pass rests on the owner's own observation, which is the
+authority here — but the second pair of eyes did not actually work.** Worth
+confirming the console link (expect `[tools] tap→navigate spectrogram` lines) at
+the start of the next device session, before relying on Metro to catch anything.
+
 
 ## Still open — and why
 
