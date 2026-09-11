@@ -492,13 +492,42 @@ distinction does not quietly get lost:
 | Virtualized lists (Glossary popups, Requests) | reasoned | Open the bookmark popups; watch for a one-frame card resize on open (`initialNumToRender` is the dial). |
 | ARIA sweep (149 sites + 11 tab strips) | reasoned from the RN role mapping | VoiceOver/TalkBack: a selected segment should say "pressed", a real tab "tab, 1 of 5". |
 | Certificate name validation | Node-tested only | Type a 27-character unbroken name in the registry field and confirm the refusal reads sensibly. |
-| `measurementStore` SQLite risk | **untested, and it is a data-loss risk** | Save ~20 spectrogram snapshots, force-quit, reopen, see whether the library survives. |
+| `measurementStore` SQLite risk | **CONFIRMED on device, then FIXED** — see below | — |
 
 ## Still open — and why
 
-- **`measurementStore` SQLite split.** Unchanged from Round 6: the documented
-  precondition is now violated and the fix needs a device test to confirm the
-  risk first. Save ~20 spectrogram snapshots, force-quit, reopen.
+- ~~`measurementStore` SQLite split~~ — **CONFIRMED AND FIXED 2026-09-11.**
+  Saving ~20 spectrogram snapshots produced `SQLITE_FULL` on device and the
+  snapshots were gone after a restart.
+
+  **The finding is bigger than the library.** The ceiling is not this feature's:
+  on Android, AsyncStorage is ONE SQLite database capped at build time
+  (`AsyncStorage_db_size_in_MB`, default 6, which this app does not override),
+  and that 6 MB is the budget for **all ~102 `ape:` keys across 70 files** —
+  progress, enrollments, bookmarks, pace records, settings, entitlement cache.
+  A tool writing megabytes does not merely lose its own data, it stops **every
+  other feature** from persisting anything. That is what the device showed:
+  several unrelated writes rejected at once, surfacing as uncaught rejections
+  from whichever caller lacked a `.catch`.
+
+  Rows moved to the app's own SQLite database behind the house native/web split.
+  The migration carries the old library across and then **deletes the legacy
+  key**, which is what gives the space back — so an affected phone heals itself
+  on the next launch rather than needing its app data cleared. Two details were
+  got wrong on the first pass and are worth remembering: READ and REMOVE must be
+  separate steps (the device this rescues is the one whose old value is too big
+  to *read*, and a shared try/catch skipped the removal on exactly that device),
+  and the original is only dropped once its contents are safely re-homed.
+
+  **A leak this nearly introduced**, caught by reading the account path rather
+  than by a test: `clearLocalAccountData()` wipes by removing every `ape:*`
+  AsyncStorage key, and a SQLite table is invisible to that sweep — so the next
+  account on a device would have inherited the previous one's measurements. The
+  wipe is now explicit and awaited.
+
+  Still open, deliberately: ~119 KB per snapshot is JSON decimal numbers, and
+  `MAX_SAVED = 200` still allows ~23 MB that hydrate loads at once. That is now
+  a **memory** question, not a data-loss one.
 - **Rack honesty-badge truncation.** Fixing it means trimming owner-written
   disclosure copy or letting the faceplate grow. Neither is mine to decide, and
   the code's own comment says "a truncated disclosure is a weakened disclosure".
