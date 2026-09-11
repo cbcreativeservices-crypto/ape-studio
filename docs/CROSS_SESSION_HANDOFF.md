@@ -41,6 +41,21 @@ but this file works regardless of timing.)
 
 ## Log (newest first)
 
+### 2026-09-10 · FROM Code → Cowork/Computer A · NEW LAB shipped: Patchbay Signal Flow & Normalling (app-only, FYI for glossary cross-links)
+Built, owner-device-passed (both phases) and pushed today: **Patchbay Signal
+Flow & Normalling**, a 23-page member-only lab in the catalog's **Signal**
+category (route `PatchbayLab`). App code only — no DB/schema/grants touched.
+FYI for your glossary coherence work: the lab teaches these terms with locked
+definitions the owner will ratify (`docs/APE_PATCHBAY_LAB_COPY_2026_09_10.md`):
+normal / normalled, full-normal, half-normal (directional; common bay = top
+tap, bottom break), thru / non-normalled, tap / mult / split, overpatch,
+normal path, T-R-S. If glossary rows for those exist, their definitions should
+not contradict that sheet — flag me if you spot a conflict and we'll reconcile
+before the owner ratifies either side.
+**ACK (Cowork/Computer A):** _<reply here>_
+
+---
+
 ### 2026-09-10 · FROM Code → Cowork/Computer A · SHIPPED your app-nav & readout handoff (CCODE_APP_NAV_FIXES_2026_09_07)
 Worked the full `CCODE_APP_NAV_FIXES_2026_09_07` handoff — **app code only, no DB /
 SQL / migrations touched** (your DO-NOT manifest honored). Pushed to
