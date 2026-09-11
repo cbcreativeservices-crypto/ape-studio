@@ -18,9 +18,11 @@
  *   average recovers by the end — so the live HUD shows the current average vs
  *   target and a projection, and NEVER fails the run on a momentary dip.
  *
- * On PASS: credit ONE study-method completion via recordTimeTrialPass() — a
- * SAFE NO-OP placeholder (see bottom of file). On FAIL: a friendly result and a
- * restart offer, no penalty. Nothing here ever blocks study.
+ * On PASS: credit ONE study-method completion via recordTimeTrialPass(), which
+ * calls the `credit_time_trial` RPC (this was a no-op placeholder when the file
+ * was written; the comment saying so outlived it and is corrected here
+ * 2026-09-11). On FAIL: a friendly result and a restart offer, no penalty.
+ * Nothing here ever blocks study.
  *
  * External-store pattern (module map + listeners + useSyncExternalStore), the
  * same shape as paceStore.ts. Snapshots are cached per method so getSnapshot
