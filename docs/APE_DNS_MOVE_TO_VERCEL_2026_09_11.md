@@ -24,7 +24,7 @@ external query — are authoritative. Every record below came from them.
 | Dependency | Evidence | Consequence if lost |
 |---|---|---|
 | **Google Workspace email** | `MX → smtp.google.com` (priority 1) | `info@proaudiotrainingacademy.com` is the app's own support/feedback address (`sendFeedback`). Incoming mail bounces. |
-| **Resend (outbound email)** | `CNAME send → send.forge.rmta.net`, `CNAME rsend → rsend.forge.rmta.net`, `TXT resend._domainkey` | **VERIFY BEFORE DROPPING.** Resend appears nowhere in the live tree (`src/`, `web/`, `supabase/`, `package.json`) — only in ARCHIVED governance docs marked "Not started". **But a Supabase Auth custom-SMTP setting lives in the dashboard, not in code**, so absence from the repo does not prove it is unused. If Supabase Auth sends through Resend, dropping these breaks signup confirmation and password reset. Check: Supabase Dashboard → Authentication → Emails → SMTP Settings. |
+| **Resend (outbound email)** | `CNAME send → send.forge.rmta.net`, `CNAME rsend → rsend.forge.rmta.net`, `TXT resend._domainkey` | ✅ **RESOLVED 2026-09-11 — Resend IS LIVE. KEEP ALL THREE.** The `on-weekly-concept` edge function calls the Resend API directly (`https://api.resend.com/emails`, `RESEND_API_KEY`) and sends **from `notifications@proaudiotrainingacademy.com`**. Dropping these breaks the weekly-concept email. Note it is NOT Supabase Auth SMTP, which is where this doc originally said to look — the answer was in the edge function source. |
 | **Google site verification** | `TXT @ google-site-verification=…` | Search Console ownership lost. |
 
 ## Records to KEEP — proaudiotrainingacademy.com
@@ -37,16 +37,18 @@ external query — are authoritative. Every record below came from them.
 | TXT | `@` | `google-site-verification=AoQOlne1VxOLcSE-42v125d5-3tViCMtAe0TtUbW4Vs` |
 | TXT | `_dmarc` | `v=DMARC1; p=none` |
 | TXT | `google._domainkey` | the `v=DKIM1;k=rsa;p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8A…` key — **copy from the Bluehost panel, never retype** |
-| CNAME | `send` | `send.forge.rmta.net` — **only if Resend is in use** |
-| CNAME | `rsend` | `rsend.forge.rmta.net` — **only if Resend is in use** |
-| TXT | `resend._domainkey` | `p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADC…` — **only if Resend is in use**; copy from the panel |
+| CNAME | `send` | `send.forge.rmta.net` — **REQUIRED (Resend is live)** |
+| CNAME | `rsend` | `rsend.forge.rmta.net` — **REQUIRED (Resend is live)** |
+| TXT | `resend._domainkey` | `p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADC…` — **REQUIRED (Resend is live)**; copy from the panel, do not retype |
 
 **ADD (currently missing):** `TXT` `@` → `v=spf1 include:_spf.google.com ~all`
 
-There is **no SPF record at all** today — Google is sending unauthenticated and
-DMARC `p=none` enforces nothing. If Resend turns out to be live, re-verify the
-domain in the Resend dashboard after the move and let it state its own records
-rather than guessing at the include.
+There is **no SPF record at all** today — and that now matters more, because
+**two** senders use this domain: Google Workspace and Resend
+(`notifications@proaudiotrainingacademy.com`). DMARC `p=none` enforces nothing,
+so nothing is broken today, but any move toward enforcement needs SPF first.
+After the nameserver move, **re-verify the domain in the Resend dashboard** and
+let Resend state its own records rather than guessing at the include.
 
 ## Records to DROP — Bluehost service cruft, none of it used
 
@@ -77,7 +79,7 @@ preserve, no mail, no verification records. This is why it is the canary.
 
 | # | Where | What |
 |---|---|---|
-| 0a | Supabase Dashboard → Authentication → Emails → SMTP | **Settle the Resend question first.** If custom SMTP points at Resend, the `send`/`rsend`/`resend._domainkey` records are load-bearing. If it is Supabase's built-in sender, they are dead and get dropped. |
+| 0a | — | ✅ **DONE 2026-09-11. Resend is LIVE and all three records are load-bearing.** Evidence: the `on-weekly-concept` edge function POSTs to `https://api.resend.com/emails` with `RESEND_API_KEY`, sending from `notifications@proaudiotrainingacademy.com`. No dashboard check needed. |
 | 0b | Bluehost → each academy domain → DNS | Zone exports already captured (2026-09-11 screenshots). Re-export if anything changes before the move. |
 | 0c | Bluehost DNS | Drop every TTL to **300s**, then wait out the OLD TTL (up to 4h here; the panel warns 24–48h) before step 3. |
 | 0d | Bluehost DNS → `.com` | ✅ **DONE 2026-09-11.** Deleted the `mail` and `autodiscover` A records (both were → `162.241.216.17`). Verified in the panel: MX `smtp.google.com`, apex A, `www` and the DKIM TXT all intact. Public resolvers still served the old answers immediately after (TTLs were 1h and 4h; the panel warns 24–48h), so re-check before assuming it propagated. **`.co` done too** — same two records deleted from that zone, apex/`www` intact. ⚠️ Side effect to close later: the `.co` still has `MX @ → mail.proaudiotrainingacademy.co`, which is now a DANGLING pointer. Harmless (no mail runs on `.co`, and bouncing is honest) but both `.co` MX records are already on the DROP list for the migration. |
@@ -118,6 +120,6 @@ rule from true-by-configuration into true-by-structure.
 
 - Do not remove the academy domains from Bluehost **registration**.
 - Do not switch nameservers before the Vercel zone is populated — mail bounces.
-- Do not drop the Resend records until step 0a has answered the question.
+- **Do not drop the Resend records at all** — step 0a proved they are live.
 - Do not retype the DKIM keys by hand; copy them.
 - Do not touch the personal domains on the same account.
