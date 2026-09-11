@@ -16,6 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { devBypass } from '../../config/devMode';
 import { DEV_COMMERCIAL_FLAG_KEY, DEV_ENTITLEMENT_KEY, FLAG_DEFAULTS } from '../../config/flags';
 import { supabase } from '../../lib/supabase';
+import { classifyExpiry, verdictKeepsAccess } from './entitlementExpiry';
 import { setMemberStanding } from './memberStanding';
 import { requestLocalNotifSync } from '../notifications/localSchedule';
 import { loadLocalSettings } from '../settings/store';
@@ -104,9 +105,37 @@ export function capsFor(state: Entitlement): Caps {
 type EntRow = { status?: string; expires_at?: string | null };
 function academyTierFromRows(rows: EntRow[]): Entitlement {
   const now = Date.now();
-  const active = rows.some(
-    (r) => r.status === 'active' && (!r.expires_at || new Date(r.expires_at).getTime() > now),
-  );
+  let unreadable = 0;
+  let active = false;
+  for (const r of rows) {
+    if (r.status !== 'active') continue;
+    // UNREADABLE EXPIRY ⇒ FAIL OPEN (owner ruling 2026-09-11).
+    // This guard used to be `new Date(r.expires_at).getTime() > now`, which
+    // leans on the comparison to do the checking — and `NaN > now` is FALSE.
+    // So a row whose `expires_at` was present but unparseable (schema drift, a
+    // malformed backfill, a non-ISO string, a number) read as ALREADY EXPIRED
+    // and silently dropped a PAYING member to 'lapsed'. The ruling is that a
+    // member whose row WE failed to parse must not lose access on the strength
+    // of our own parse failure: classifyExpiry checks explicitly with
+    // Number.isFinite(Date.parse(...)) and an unreadable value KEEPS ACCESS.
+    // Direction of the error is deliberate — wrongly granting a few days to
+    // someone whose row we cannot read is a far smaller harm than locking out
+    // a paying member, and it is self-limiting: a REAL expiry still parses and
+    // still expires normally, and the server remains the source of truth. A
+    // genuinely absent/null expiry keeps its old meaning (no end date).
+    const verdict = classifyExpiry(r.expires_at, now);
+    if (verdict === 'unreadable') unreadable += 1;
+    if (verdictKeepsAccess(verdict)) active = true;
+  }
+  if (unreadable > 0) {
+    // Make the anomaly visible rather than silent — this is a security-adjacent
+    // fail-open, so it must be observable. COUNT ONLY: never log the account
+    // UUID or the row's contents. Same `[entitlement]` console.warn convention
+    // as the read-failure paths below.
+    console.warn(
+      `[entitlement] ${unreadable} active row(s) with an UNPARSEABLE expires_at — failing OPEN, access kept`,
+    );
+  }
   return active ? 'academy' : rows.length > 0 ? 'lapsed' : 'free';
 }
 
