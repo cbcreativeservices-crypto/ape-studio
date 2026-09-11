@@ -14,7 +14,7 @@
  *    entry preselects its course/topic.
  * Search by term · empty: "No results for [filter]" · bottom nav visible.
  */
-import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from 'react';
+import { memo, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from 'react';
 import { Alert, AppState, FlatList, Image, ImageBackground, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type StyleProp, type TextStyle } from 'react-native';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -920,6 +920,83 @@ function GlossaryLoading({ count, landed }: { count: number | null; landed: bool
   );
 }
 
+/**
+ * One term row of the held-chip term list / single-bookmark popups.
+ *
+ * Virtualization (2026-09-11): both popups used to render EVERY row eagerly
+ * inside a ScrollView, so a member with hundreds of bookmarks paid the whole
+ * mount cost (each row carries a TermSelectIcons with four store subscriptions)
+ * every time the popup opened. They are FlatLists now — this row lives at module
+ * scope and is memoized so cell reuse isn't defeated by a fresh component
+ * identity on each parent render. Markup is byte-for-byte what it was.
+ */
+const TermPopupRow = memo(function TermPopupRow({
+  id,
+  term,
+  color,
+  bookmarkCtx,
+  onOpen,
+}: {
+  id: string;
+  term: string;
+  /** Optional tlItem colour override (bookmark purple / custom-list blue). */
+  color?: string;
+  bookmarkCtx: string;
+  onOpen: (id: string) => void;
+}) {
+  return (
+    <View style={styles.tlRow}>
+      <Pressable
+        style={{ flex: 1 }}
+        onPress={() => onOpen(id)}
+        accessibilityRole="button"
+        accessibilityLabel={`Open ${term}`}
+      >
+        <Text style={[styles.tlItem, color ? { color } : null]} numberOfLines={1}>
+          {term} ›
+        </Text>
+      </Pressable>
+      <TermSelectIcons id={id} bookmarkCtx={bookmarkCtx} hideKnown />
+    </View>
+  );
+});
+
+/** One "OTHER LISTS" switcher row of the single-bookmark popup. */
+const BmSwitchRow = memo(function BmSwitchRow({
+  ctx,
+  count,
+  name,
+  onSwitch,
+}: {
+  ctx: string;
+  count: number;
+  name: string;
+  onSwitch: (ctx: string) => void;
+}) {
+  return (
+    <Pressable
+      style={styles.tlRow}
+      onPress={() => onSwitch(ctx)}
+      accessibilityRole="button"
+      accessibilityLabel={`Switch to ${name}, ${count} bookmark${count === 1 ? '' : 's'}`}
+    >
+      <Text style={[styles.tlItem, { color: '#b45bff', flex: 1 }]} numberOfLines={1}>
+        {name} ›
+      </Text>
+      <Text style={styles.tlCount}>{count}</Text>
+    </Pressable>
+  );
+});
+
+/** Flattened row model for the single-bookmark popup's one FlatList: the
+ *  selected context's terms, then the OTHER LISTS section (its header carries
+ *  the bmOtherWrap rule/spacing the wrapping View used to draw). */
+type BmPopupRow =
+  | { kind: 'term'; entry: Entry }
+  | { kind: 'empty' }
+  | { kind: 'otherHeader' }
+  | { kind: 'switch'; ctx: string; count: number };
+
 export function GlossaryScreen({ route, navigation }: Props) {
   const insets = useSafeAreaInsets();
   const { achievementId: presetTopicId, query: presetQuery } = route.params ?? {};
@@ -1805,6 +1882,85 @@ export function GlossaryScreen({ route, navigation }: Props) {
     bmBaseline.current = new Set(getBookmarks(ctx));
     setBmCtx(ctx);
   }, []);
+
+  // ── Virtualized popup lists (2026-09-11) ────────────────────────────────
+  // The held-chip term list and the single-bookmark popup are FlatLists now
+  // (they were ScrollView + .map()). Keys/renderers are memoized so cells can
+  // actually be reused; the row components themselves live at module scope.
+  const termListColor =
+    termListModal?.kind === 'bookmark'
+      ? '#b45bff'
+      : termListModal?.kind === 'starred'
+        ? '#2f9bff'
+        : undefined;
+  const termListCtx = termListModal?.bookmarkCtx ?? 'glossary';
+  const termListKey = useCallback((e: Entry) => e.id, []);
+  const renderTermListRow = useCallback(
+    ({ item }: { item: Entry }) => (
+      <TermPopupRow
+        id={item.id}
+        term={item.term}
+        color={termListColor}
+        bookmarkCtx={termListCtx}
+        onOpen={openTermFromList}
+      />
+    ),
+    [termListColor, termListCtx, openTermFromList],
+  );
+
+  // One flat row list for the bookmark popup: the selected context's terms (or
+  // the empty line), then the OTHER LISTS section. Both used to share a single
+  // ScrollView, so folding them into one FlatList keeps the scroll behaviour
+  // identical AND virtualizes the ~167-row switcher too.
+  const bmPopupRows = useMemo<BmPopupRow[]>(() => {
+    const rows: BmPopupRow[] =
+      bmRows.length > 0 ? bmRows.map((e) => ({ kind: 'term' as const, entry: e })) : [{ kind: 'empty' }];
+    if (bmSwitcherRows.length > 0) {
+      rows.push({ kind: 'otherHeader' });
+      for (const b of bmSwitcherRows) rows.push({ kind: 'switch', ctx: b.ctx, count: b.count });
+    }
+    return rows;
+  }, [bmRows, bmSwitcherRows]);
+
+  const bmPopupKey = useCallback(
+    (r: BmPopupRow) =>
+      r.kind === 'term' ? `t:${r.entry.id}` : r.kind === 'switch' ? `s:${r.ctx}` : r.kind,
+    [],
+  );
+  const renderBmPopupRow = useCallback(
+    ({ item }: { item: BmPopupRow }) => {
+      if (item.kind === 'term') {
+        return (
+          <TermPopupRow
+            id={item.entry.id}
+            term={item.entry.term}
+            color="#b45bff"
+            bookmarkCtx={bmCtx}
+            onOpen={openTermFromBm}
+          />
+        );
+      }
+      if (item.kind === 'empty') {
+        return <Text style={styles.tlEmpty}>No bookmarks in this list yet.</Text>;
+      }
+      if (item.kind === 'otherHeader') {
+        // OTHER LISTS — EVERY selectable list (Glossary + all topics), even empty
+        // ones, plus any other non-empty context; tap to switch the terms shown
+        // above. Empty lists read count 0 (user request 2026-07-25). This row
+        // carries the rule + spacing the bmOtherWrap container drew.
+        return (
+          <View style={styles.bmOtherWrap}>
+            <Text style={styles.bmOtherLabel}>OTHER LISTS</Text>
+          </View>
+        );
+      }
+      return <BmSwitchRow ctx={item.ctx} count={item.count} name={ctxName(item.ctx)} onSwitch={switchBmCtx} />;
+    },
+    // ctxName is a plain per-render closure over topicsById; it is covered by
+    // bmSwitcherRows/topicsById upstream, so it is deliberately not a dep.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [bmCtx, openTermFromBm, switchBmCtx, topicsById],
+  );
 
   // Confirm-on-close (task 4): if ≥1 term was removed from the currently-shown
   // list since it was opened/selected, ask before closing. A fresh read via
@@ -2779,34 +2935,28 @@ export function GlossaryScreen({ route, navigation }: Props) {
             <Text style={styles.tlTitle}>
               {(termListModal?.title ?? '').toUpperCase()} · {termListRows.length}
             </Text>
-            <ScrollView style={{ flexGrow: 0 }} showsVerticalScrollIndicator {...NO_TOUCH_DELAY}>
-              {termListRows.length > 0 ? (
-                termListRows.map((r) => (
-                  <View key={r.id} style={styles.tlRow}>
-                    <Pressable
-                      style={{ flex: 1 }}
-                      onPress={() => openTermFromList(r.id)}
-                      accessibilityRole="button"
-                      accessibilityLabel={`Open ${r.term}`}
-                    >
-                      <Text
-                        style={[
-                          styles.tlItem,
-                          termListModal?.kind === 'bookmark' && { color: '#b45bff' },
-                          termListModal?.kind === 'starred' && { color: '#2f9bff' },
-                        ]}
-                        numberOfLines={1}
-                      >
-                        {r.term} ›
-                      </Text>
-                    </Pressable>
-                    <TermSelectIcons id={r.id} bookmarkCtx={termListModal?.bookmarkCtx ?? 'glossary'} hideKnown />
-                  </View>
-                ))
-              ) : (
-                <Text style={styles.tlEmpty}>No terms in this set.</Text>
-              )}
-            </ScrollView>
+            {/* Virtualized 2026-09-11: this set can hold hundreds of terms (the
+                corpus is ~21k), and every row was mounted on open. Nothing
+                nests it — the popup card is a plain View inside the Modal — so
+                the FlatList simply replaces the ScrollView; same style,
+                scrollbar, touch-delay and empty copy. */}
+            <FlatList
+              data={termListRows}
+              keyExtractor={termListKey}
+              renderItem={renderTermListRow}
+              extraData={termListModal}
+              style={{ flexGrow: 0 }}
+              showsVerticalScrollIndicator
+              // The card is height-capped (tlCard maxHeight 78%) and the list is
+              // flexGrow:0, so its viewport is content-driven: render enough on
+              // the first pass to overflow that cap, or the card would size to a
+              // short first batch and then visibly grow. ~24 rows ≈ 740pt.
+              initialNumToRender={24}
+              maxToRenderPerBatch={12}
+              windowSize={7}
+              ListEmptyComponent={<Text style={styles.tlEmpty}>No terms in this set.</Text>}
+              {...NO_TOUCH_DELAY}
+            />
             <Pressable style={styles.tlClose} onPress={() => setTermListModal(null)} accessibilityRole="button" accessibilityLabel="Close list">
               <Text style={styles.tlCloseText}>CLOSE</Text>
             </Pressable>
@@ -2829,51 +2979,26 @@ export function GlossaryScreen({ route, navigation }: Props) {
           />
           <View style={styles.tlCard}>
             <Text style={styles.tlTitle}>{ctxName(bmCtx).toUpperCase()} · {bmRows.length}</Text>
-            <ScrollView style={{ flexGrow: 0 }} showsVerticalScrollIndicator {...NO_TOUCH_DELAY}>
-              {bmRows.length > 0 ? (
-                bmRows.map((r) => (
-                  <View key={r.id} style={styles.tlRow}>
-                    <Pressable
-                      style={{ flex: 1 }}
-                      onPress={() => openTermFromBm(r.id)}
-                      accessibilityRole="button"
-                      accessibilityLabel={`Open ${r.term}`}
-                    >
-                      <Text style={[styles.tlItem, { color: '#b45bff' }]} numberOfLines={1}>
-                        {r.term} ›
-                      </Text>
-                    </Pressable>
-                    <TermSelectIcons id={r.id} bookmarkCtx={bmCtx} hideKnown />
-                  </View>
-                ))
-              ) : (
-                <Text style={styles.tlEmpty}>No bookmarks in this list yet.</Text>
-              )}
-
-              {/* OTHER LISTS — EVERY selectable list (Glossary + all topics),
-                  even empty ones, plus any other non-empty context; tap to switch
-                  the terms shown above. Empty lists read count 0 (user request
-                  2026-07-25). */}
-              {bmSwitcherRows.length > 0 ? (
-                <View style={styles.bmOtherWrap}>
-                  <Text style={styles.bmOtherLabel}>OTHER LISTS</Text>
-                  {bmSwitcherRows.map((b) => (
-                    <Pressable
-                      key={b.ctx}
-                      style={styles.tlRow}
-                      onPress={() => switchBmCtx(b.ctx)}
-                      accessibilityRole="button"
-                      accessibilityLabel={`Switch to ${ctxName(b.ctx)}, ${b.count} bookmark${b.count === 1 ? '' : 's'}`}
-                    >
-                      <Text style={[styles.tlItem, { color: '#b45bff', flex: 1 }]} numberOfLines={1}>
-                        {ctxName(b.ctx)} ›
-                      </Text>
-                      <Text style={styles.tlCount}>{b.count}</Text>
-                    </Pressable>
-                  ))}
-                </View>
-              ) : null}
-            </ScrollView>
+            {/* Virtualized 2026-09-11. The OTHER LISTS switcher scrolls in the
+                SAME scroller as the bookmarks (it always did), and it alone is
+                ~167 rows — Glossary + every topic — so it is folded into the one
+                FlatList as flattened rows rather than left as a non-virtualized
+                footer. The 'otherHeader' row draws the rule/spacing the wrapping
+                bmOtherWrap View used to draw, so the layout is unchanged. */}
+            <FlatList
+              data={bmPopupRows}
+              keyExtractor={bmPopupKey}
+              renderItem={renderBmPopupRow}
+              extraData={bmCtx}
+              style={{ flexGrow: 0 }}
+              showsVerticalScrollIndicator
+              // See the held-chip list above: enough on the first pass to fill
+              // the height-capped card, so it never sizes short and then grows.
+              initialNumToRender={24}
+              maxToRenderPerBatch={12}
+              windowSize={7}
+              {...NO_TOUCH_DELAY}
+            />
             <Pressable style={styles.tlClose} onPress={requestCloseBookmarkPopup} accessibilityRole="button" accessibilityLabel="Close list">
               <Text style={styles.tlCloseText}>CLOSE</Text>
             </Pressable>

@@ -6,8 +6,8 @@
  * and a short message. Nothing is a conversation until the recipient accepts.
  * No email address appears anywhere in this screen, in either direction.
  */
-import { useCallback, useEffect, useState } from 'react';
-import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { Alert, FlatList, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
 import { Banner, Chip, ChipWrap, EmptyState, Eyebrow, Helper, Loading, PrimaryButton } from './directoryBits';
@@ -50,6 +50,102 @@ const STATUS_LABEL: Record<ContactThread['status'], string> = {
   blocked: 'Closed',
 };
 
+type ThreadAction = 'accept' | 'decline' | 'withdraw';
+
+/** One flattened row of the requests list: a section eyebrow or a request card.
+ *  INCOMING and SENT always shared one scroller, so they share one FlatList. */
+type RequestRow =
+  | { kind: 'eyebrow'; key: string; label: string }
+  | { kind: 'incoming'; key: string; thread: ContactThread }
+  | { kind: 'outgoing'; key: string; thread: ContactThread };
+
+/**
+ * An incoming request card. Extracted to module scope and memoized
+ * (virtualization pass 2026-09-11): every card carries its own ReportLink —
+ * which holds state AND mounts a Modal — so rendering the whole inbox eagerly
+ * inside a ScrollView cost one hidden sheet per request. Markup is unchanged.
+ */
+const IncomingCard = memo(function IncomingCard({
+  t,
+  onAct,
+  onOpen,
+  onReload,
+  onError,
+}: {
+  t: ContactThread;
+  onAct: (t: ContactThread, action: ThreadAction) => void;
+  onOpen: (t: ContactThread) => void;
+  onReload: () => Promise<void>;
+  onError: (e: string) => void;
+}) {
+  return (
+    <View style={st.card}>
+      <Text style={st.name}>{t.otherDisplayName}</Text>
+      <Text style={st.purpose}>{t.purposeLabel}</Text>
+      <Text style={st.msg}>{t.message}</Text>
+      <Text style={st.status}>{STATUS_LABEL[t.status]}</Text>
+      {t.status === 'pending' ? (
+        <View style={st.row}>
+          <PrimaryButton label="ACCEPT" tone="green" onPress={() => onAct(t, 'accept')} />
+          <View style={{ width: 8 }} />
+          <PrimaryButton label="DECLINE" onPress={() => onAct(t, 'decline')} />
+        </View>
+      ) : null}
+      {t.status === 'accepted' ? (
+        <PrimaryButton label={`OPEN CONVERSATION (${t.messageCount})`} onPress={() => onOpen(t)} />
+      ) : null}
+      <View style={st.row}>
+        <Pressable
+          onPress={() =>
+            confirmThen(
+              `Block ${t.otherDisplayName}?`,
+              'They will not be able to contact you again, and neither of you will see the other in the directory. Any open conversation closes.',
+              'Block',
+              () =>
+                void blockMember(t.otherToken ?? '', true).then((r) =>
+                  r.ok ? onReload() : onError(r.error),
+                ),
+            )
+          }
+          hitSlop={6}
+          style={st.link}
+          accessibilityRole="button"
+          accessibilityLabel={`Block ${t.otherDisplayName}`}
+        >
+          <Text style={st.linkText}>BLOCK</Text>
+        </Pressable>
+        <ReportLink thread={t} onDone={onReload} onError={onError} />
+      </View>
+    </View>
+  );
+});
+
+/** A sent (outgoing) request card. */
+const OutgoingCard = memo(function OutgoingCard({
+  t,
+  onAct,
+  onOpen,
+}: {
+  t: ContactThread;
+  onAct: (t: ContactThread, action: ThreadAction) => void;
+  onOpen: (t: ContactThread) => void;
+}) {
+  return (
+    <View style={st.card}>
+      <Text style={st.name}>{t.otherDisplayName}</Text>
+      <Text style={st.purpose}>{t.purposeLabel}</Text>
+      <Text style={st.msg}>{t.message}</Text>
+      <Text style={st.status}>{STATUS_LABEL[t.status]}</Text>
+      {t.status === 'pending' ? (
+        <PrimaryButton label="WITHDRAW" onPress={() => onAct(t, 'withdraw')} />
+      ) : null}
+      {t.status === 'accepted' ? (
+        <PrimaryButton label={`OPEN CONVERSATION (${t.messageCount})`} onPress={() => onOpen(t)} />
+      ) : null}
+    </View>
+  );
+});
+
 export function RequestsView() {
   const [threads, setThreads] = useState<ContactThread[] | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -73,12 +169,52 @@ export function RequestsView() {
     void load();
   }, [load]);
 
-  const act = async (t: ContactThread, action: 'accept' | 'decline' | 'withdraw') => {
-    const r = await respondToRequest(t.id, action);
-    if (!r.ok) return setErr(r.error);
-    setErr(null);
-    await load();
-  };
+  const act = useCallback(
+    (t: ContactThread, action: ThreadAction) => {
+      void respondToRequest(t.id, action).then(async (r) => {
+        if (!r.ok) return setErr(r.error);
+        setErr(null);
+        await load();
+      });
+    },
+    [load],
+  );
+
+  const openThread = useCallback((t: ContactThread) => setOpen(t), []);
+
+  // INCOMING then SENT, each behind its eyebrow — the exact order and spacing
+  // the ScrollView rendered, flattened so ONE FlatList virtualizes both.
+  const rows = useMemo<RequestRow[]>(() => {
+    if (!threads) return [];
+    const incoming = threads.filter((t) => t.direction === 'incoming');
+    const outgoing = threads.filter((t) => t.direction === 'outgoing');
+    const out: RequestRow[] = [];
+    if (incoming.length) out.push({ kind: 'eyebrow', key: 'eb:in', label: 'INCOMING' });
+    for (const t of incoming) out.push({ kind: 'incoming', key: `in:${t.id}`, thread: t });
+    if (outgoing.length) out.push({ kind: 'eyebrow', key: 'eb:out', label: 'SENT' });
+    for (const t of outgoing) out.push({ kind: 'outgoing', key: `out:${t.id}`, thread: t });
+    return out;
+  }, [threads]);
+
+  const keyExtractor = useCallback((r: RequestRow) => r.key, []);
+  const renderRow = useCallback(
+    ({ item }: { item: RequestRow }) => {
+      if (item.kind === 'eyebrow') return <Eyebrow>{item.label}</Eyebrow>;
+      if (item.kind === 'incoming') {
+        return (
+          <IncomingCard
+            t={item.thread}
+            onAct={act}
+            onOpen={openThread}
+            onReload={load}
+            onError={setErr}
+          />
+        );
+      }
+      return <OutgoingCard t={item.thread} onAct={act} onOpen={openThread} />;
+    },
+    [act, openThread, load],
+  );
 
   // Never loaded and the fetch failed → say so and offer a retry (not "none").
   if (threads === null && loadErr) {
@@ -91,92 +227,53 @@ export function RequestsView() {
   }
   if (threads === null) return <Loading label="Loading your requests…" />;
 
-  const incoming = threads.filter((t) => t.direction === 'incoming');
-  const outgoing = threads.filter((t) => t.direction === 'outgoing');
-
   return (
-    <ScrollView contentContainerStyle={st.body}>
-      {err ? <Banner tone="warn">{err}</Banner> : null}
-      {/* A REFRESH that failed after a good first load: the list below is stale,
-          so say so rather than letting it look current. */}
-      {loadErr ? <Banner tone="warn">{`${loadErr} Showing the last list that loaded.`}</Banner> : null}
+    <>
+      {/* Virtualized 2026-09-11: this was a ScrollView that mounted every
+          request card (and every card's hidden report Modal) up front. It is
+          the page's own scroller — the Directory screen wraps the tabs in a
+          plain View — so the FlatList replaces it outright, with the banners /
+          empty state as the header and the privacy note as the footer. */}
+      <FlatList
+        data={rows}
+        keyExtractor={keyExtractor}
+        renderItem={renderRow}
+        contentContainerStyle={st.body}
+        initialNumToRender={6}
+        maxToRenderPerBatch={6}
+        windowSize={7}
+        ListHeaderComponent={
+          <>
+            {err ? <Banner tone="warn">{err}</Banner> : null}
+            {/* A REFRESH that failed after a good first load: the list below is
+                stale, so say so rather than letting it look current. */}
+            {loadErr ? (
+              <Banner tone="warn">{`${loadErr} Showing the last list that loaded.`}</Banner>
+            ) : null}
+            {threads.length === 0 ? (
+              <EmptyState
+                title="No contact requests yet"
+                lines={[
+                  'Requests you send and receive appear here.',
+                  'Members can only contact you about the things you chose under “Open To”.',
+                ]}
+              />
+            ) : null}
+          </>
+        }
+        ListFooterComponent={
+          <Helper>
+            Messages reach members through Pro Audio Training Academy. Email addresses are never
+            shown to either side, and both members remain identifiable to the Academy so that
+            reports can be acted on.
+          </Helper>
+        }
+      />
 
-      {threads.length === 0 ? (
-        <EmptyState
-          title="No contact requests yet"
-          lines={[
-            'Requests you send and receive appear here.',
-            'Members can only contact you about the things you chose under “Open To”.',
-          ]}
-        />
-      ) : null}
-
-      {incoming.length ? <Eyebrow>INCOMING</Eyebrow> : null}
-      {incoming.map((t) => (
-        <View key={t.id} style={st.card}>
-          <Text style={st.name}>{t.otherDisplayName}</Text>
-          <Text style={st.purpose}>{t.purposeLabel}</Text>
-          <Text style={st.msg}>{t.message}</Text>
-          <Text style={st.status}>{STATUS_LABEL[t.status]}</Text>
-          {t.status === 'pending' ? (
-            <View style={st.row}>
-              <PrimaryButton label="ACCEPT" tone="green" onPress={() => void act(t, 'accept')} />
-              <View style={{ width: 8 }} />
-              <PrimaryButton label="DECLINE" onPress={() => void act(t, 'decline')} />
-            </View>
-          ) : null}
-          {t.status === 'accepted' ? (
-            <PrimaryButton label={`OPEN CONVERSATION (${t.messageCount})`} onPress={() => setOpen(t)} />
-          ) : null}
-          <View style={st.row}>
-            <Pressable
-              onPress={() =>
-                confirmThen(
-                  `Block ${t.otherDisplayName}?`,
-                  'They will not be able to contact you again, and neither of you will see the other in the directory. Any open conversation closes.',
-                  'Block',
-                  () =>
-                    void blockMember(t.otherToken ?? '', true).then((r) =>
-                      r.ok ? load() : setErr(r.error),
-                    ),
-                )
-              }
-              hitSlop={6}
-              style={st.link}
-              accessibilityRole="button"
-              accessibilityLabel={`Block ${t.otherDisplayName}`}
-            >
-              <Text style={st.linkText}>BLOCK</Text>
-            </Pressable>
-            <ReportLink thread={t} onDone={load} onError={setErr} />
-          </View>
-        </View>
-      ))}
-
-      {outgoing.length ? <Eyebrow>SENT</Eyebrow> : null}
-      {outgoing.map((t) => (
-        <View key={t.id} style={st.card}>
-          <Text style={st.name}>{t.otherDisplayName}</Text>
-          <Text style={st.purpose}>{t.purposeLabel}</Text>
-          <Text style={st.msg}>{t.message}</Text>
-          <Text style={st.status}>{STATUS_LABEL[t.status]}</Text>
-          {t.status === 'pending' ? (
-            <PrimaryButton label="WITHDRAW" onPress={() => void act(t, 'withdraw')} />
-          ) : null}
-          {t.status === 'accepted' ? (
-            <PrimaryButton label={`OPEN CONVERSATION (${t.messageCount})`} onPress={() => setOpen(t)} />
-          ) : null}
-        </View>
-      ))}
-
-      <Helper>
-        Messages reach members through Pro Audio Training Academy. Email addresses are never shown to
-        either side, and both members remain identifiable to the Academy so that reports can be acted
-        on.
-      </Helper>
-
+      {/* Outside the list: a Modal renders as an overlay regardless of where it
+          sits in the tree, and this keeps it mounted across cell recycling. */}
       <ThreadSheet thread={open} onClose={() => setOpen(null)} />
-    </ScrollView>
+    </>
   );
 }
 
@@ -253,6 +350,19 @@ function ReportLink({
   );
 }
 
+/** One conversation bubble. Module-level + memoized so the message FlatList can
+ *  reuse cells (virtualization pass 2026-09-11); markup is unchanged. */
+const Bubble = memo(function Bubble({ m }: { m: ThreadMessage }) {
+  return (
+    <View style={[st.bubble, m.mine && st.bubbleMine]}>
+      <Text style={st.bubbleText}>{m.body}</Text>
+    </View>
+  );
+});
+
+const bubbleKey = (m: ThreadMessage) => m.id;
+const renderBubble = ({ item }: { item: ThreadMessage }) => <Bubble m={item} />;
+
 function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClose: () => void }) {
   const [msgs, setMsgs] = useState<ThreadMessage[]>([]);
   const [body, setBody] = useState('');
@@ -300,15 +410,26 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
             </Pressable>
           </View>
           {err ? <Banner tone="warn">{err}</Banner> : null}
-          <ScrollView style={{ flex: 1 }}>
-            <Text style={st.purpose}>{thread.purposeLabel}</Text>
-            <Text style={st.msg}>{thread.message}</Text>
-            {msgs.map((m) => (
-              <View key={m.id} style={[st.bubble, m.mine && st.bubbleMine]}>
-                <Text style={st.bubbleText}>{m.body}</Text>
-              </View>
-            ))}
-          </ScrollView>
+          {/* Virtualized 2026-09-11: a conversation grows without bound, and
+              every bubble was mounted on open. The sheet body is a plain View,
+              so nothing of the same orientation nests this list; the request's
+              purpose + opening message stay pinned above as the list header,
+              exactly where the ScrollView put them. */}
+          <FlatList
+            style={{ flex: 1 }}
+            data={msgs}
+            keyExtractor={bubbleKey}
+            renderItem={renderBubble}
+            initialNumToRender={12}
+            maxToRenderPerBatch={12}
+            windowSize={7}
+            ListHeaderComponent={
+              <>
+                <Text style={st.purpose}>{thread.purposeLabel}</Text>
+                <Text style={st.msg}>{thread.message}</Text>
+              </>
+            }
+          />
           <TextInput
             style={st.input}
             value={body}
