@@ -137,7 +137,9 @@ export function brownNoise(seconds: number, rng: () => number): Mono {
 
 export type Biquad = { b0: number; b1: number; b2: number; a1: number; a2: number };
 
-function rbj(freq: number, q: number, gainDb: number, type: 'peak' | 'lowshelf' | 'highshelf' | 'notch' | 'lowpass' | 'highpass'): Biquad {
+// Exported 2026-09-11 (mixing lab's K-weighting needs raw shelf/HP Qs the
+// wrappers below don't expose) — ADDITIVE, wrappers unchanged.
+export function rbj(freq: number, q: number, gainDb: number, type: 'peak' | 'lowshelf' | 'highshelf' | 'notch' | 'lowpass' | 'highpass'): Biquad {
   const A = Math.pow(10, gainDb / 40);
   const w0 = (2 * Math.PI * freq) / SR;
   const cw = Math.cos(w0);

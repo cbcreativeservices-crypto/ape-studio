@@ -65,6 +65,11 @@ export class EarClipPlayer {
   private players = new Map<number, AudioPlayer>();
   private files: string[] = [];
   private activeIdx: number | null = null;
+  private subs = new Map<number, { remove: () => void }>();
+  /** ADDITIVE (2026-09-11, mixing lab): called when clip `i` finishes playing
+   *  naturally, so a UI's ▶/■ state can stop claiming "playing" over silence.
+   *  Optional — the ear lab's existing behaviour is unchanged when unset. */
+  onEnded: ((i: number) => void) | null = null;
 
   /** Load a trial's clips (index-addressed). Previous files are deleted. */
   async load(bufs: Buf[]): Promise<void> {
@@ -77,11 +82,28 @@ export class EarClipPlayer {
     uris.forEach((uri, i) => {
       const existing = this.players.get(i);
       if (existing) existing.replace({ uri });
-      else this.players.set(i, createAudioPlayer({ uri }));
+      else {
+        const p = createAudioPlayer({ uri });
+        this.players.set(i, p);
+        try {
+          const sub = p.addListener('playbackStatusUpdate', (st: { didJustFinish?: boolean }) => {
+            if (st?.didJustFinish && this.activeIdx === i) {
+              this.activeIdx = null;
+              this.onEnded?.(i);
+            }
+          });
+          this.subs.set(i, sub);
+        } catch {
+          // Older expo-audio without the event: the callback simply never
+          // fires; callers must not depend on it for correctness.
+        }
+      }
     });
     // Drop any leftover players beyond this trial's clip count.
     for (const [i, p] of [...this.players]) {
       if (i >= uris.length) {
+        this.subs.get(i)?.remove();
+        this.subs.delete(i);
         p.remove();
         this.players.delete(i);
       }
@@ -115,6 +137,8 @@ export class EarClipPlayer {
   }
 
   dispose(): void {
+    for (const [, s] of this.subs) s.remove();
+    this.subs.clear();
     for (const [, p] of this.players) p.remove();
     this.players.clear();
     void this.unloadFiles();

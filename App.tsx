@@ -14,6 +14,7 @@ import { RootNavigator } from './src/navigation/RootNavigator';
 import { RootErrorBoundary } from './src/components/RootErrorBoundary';
 import { Spl3dGaugePreview } from './src/screens/tools/Spl3dGaugePreview';
 import { PatchbayPreview } from './src/screens/lab/patchbay/PatchbayPreview';
+import { BeginningMixingLabScreen } from './src/screens/lab/mixing/BeginningMixingLabScreen';
 import { ToolPreview } from './src/screens/tools/ToolPreview';
 import { MicPrinciplesLabScreen } from './src/screens/lab/micspeaker/MicPrinciplesLabScreen';
 import { MultiMeterScreen } from './src/screens/tools/MultiMeterScreen';
@@ -287,6 +288,8 @@ export default function App() {
         ? { name: 'MultiMeter', component: MultiMeterScreen as ComponentType }
         : window.location.hash === '#hzcounterpreview'
           ? { name: 'FrequencyCounter', component: FrequencyCounterScreen as ComponentType }
+        : window.location.hash === '#mixinglabpreview'
+          ? { name: 'BeginningMixingLab', component: BeginningMixingLabScreen as ComponentType }
         : window.location.hash === '#waveformpreview'
           ? { name: 'WaveformLive', component: WaveformScreen as ComponentType }
           : window.location.hash === '#rtapreview'

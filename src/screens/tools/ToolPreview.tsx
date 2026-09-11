@@ -12,6 +12,9 @@ import type { ComponentType } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { EntitlementProvider } from '../../features/commercial/EntitlementProvider';
+// Audio-output gate so previewed screens that PLAY audio (ear lab, mixing
+// lab) can mount their playback hooks (2026-09-11) — inert until requested.
+import { AudioOutputGate } from '../../features/audio/AudioOutputGate';
 
 const Stack = createNativeStackNavigator();
 
@@ -32,12 +35,14 @@ export function ToolPreview({
 }) {
   return (
     <EntitlementProvider>
-      <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false, animation: 'none' }}>
-          <Stack.Screen name={name} component={component} initialParams={initialParams} />
-          {screens?.map((s) => <Stack.Screen key={s.name} name={s.name} component={s.component} />)}
-        </Stack.Navigator>
-      </NavigationContainer>
+      <AudioOutputGate>
+        <NavigationContainer>
+          <Stack.Navigator screenOptions={{ headerShown: false, animation: 'none' }}>
+            <Stack.Screen name={name} component={component} initialParams={initialParams} />
+            {screens?.map((s) => <Stack.Screen key={s.name} name={s.name} component={s.component} />)}
+          </Stack.Navigator>
+        </NavigationContainer>
+      </AudioOutputGate>
     </EntitlementProvider>
   );
 }

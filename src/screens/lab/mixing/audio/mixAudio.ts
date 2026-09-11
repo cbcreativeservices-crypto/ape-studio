@@ -1,0 +1,404 @@
+/**
+ * Mixing lab — SESSION SYNTHESIS + OFFLINE MIX RENDERER (owner GO 2026-09-11).
+ *
+ * The house audio pattern (Ear Training precedent): render real PCM offline
+ * in JS from earDsp primitives, encode WAV, play via expo-audio. Nothing is
+ * faked — the learner's fader/pan/mute/polarity decisions are applied as real
+ * gain math and the SUM is what they hear. Live-while-playing faders would
+ * need native work; "decide → render → listen → compare" is the deliberate
+ * listening loop the lab teaches anyway.
+ *
+ * The session is an HONEST synthesized 8-track groove (A-minor, 96 BPM,
+ * 4 bars ≈ 10 s): the LEAD and BGV parts are synth stand-ins for vocals and
+ * are labeled as such on-screen (no fake vocals). Real rights-cleared stems
+ * drop in later as a pure asset swap — manifest in
+ * docs/APE_MIXING_LAB_ASSETS_2026_09_11.md.
+ *
+ * All synthesis is DETERMINISTIC (seeded) so every learner hears the same
+ * session and the test suite can pin measurements.
+ */
+import {
+  SR,
+  applyBiquad,
+  classicWave,
+  compress,
+  fadeEdges,
+  gainDb as dspGainDb,
+  highpass,
+  lowpass,
+  makeRng,
+  peakEq,
+  reverb,
+  rmsDb,
+  sine,
+  whiteNoise,
+  type Mono,
+  type ReverbSpace,
+  type Stereo,
+} from '../../../../features/ear/earDsp.ts'; // explicit .ts: node test runner (careerfinder/scoring precedent)
+import { TRACK_IDS, type TrackId } from '../engine/mixModel.ts';
+
+export const BPM = 96;
+export const BARS = 4;
+export const BEAT_S = 60 / BPM;
+export const LOOP_S = BARS * 4 * BEAT_S; // = 10 s
+const N = Math.round(LOOP_S * SR);
+
+/* ── tiny sequencing helpers ─────────────────────────────────────────────── */
+
+const zeros = () => new Float32Array(N);
+
+/** Add `clip` into `out` starting at `atSec` (clipped to the loop). */
+function place(out: Mono, clip: Mono, atSec: number, gain = 1): void {
+  const start = Math.round(atSec * SR);
+  const n = Math.min(clip.length, out.length - start);
+  for (let i = 0; i < n; i++) out[start + i] += clip[i] * gain;
+}
+
+/** Exponential decay envelope applied in place. */
+function decay(x: Mono, tau: number): Mono {
+  for (let i = 0; i < x.length; i++) x[i] *= Math.exp(-i / (tau * SR));
+  return x;
+}
+
+/** Linear attack (seconds) applied in place. */
+function attack(x: Mono, sec: number): Mono {
+  const n = Math.min(x.length, Math.round(sec * SR));
+  for (let i = 0; i < n; i++) x[i] *= i / n;
+  return x;
+}
+
+const NOTE: Record<string, number> = {
+  C2: 65.41, E2: 82.41, F2: 87.31, G2: 98.0, A2: 110.0,
+  C3: 130.81, E3: 164.81, F3: 174.61, G3: 196.0, A3: 220.0, B3: 246.94,
+  C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.0, A4: 440.0, B4: 493.88,
+  C5: 523.25,
+};
+
+/** A-minor progression, one chord per bar: Am → F → C → G. */
+const CHORDS: { root: string; triad: string[] }[] = [
+  { root: 'A2', triad: ['A3', 'C4', 'E4'] },
+  { root: 'F2', triad: ['F3', 'A3', 'C4'] },
+  { root: 'C2', triad: ['C3', 'E3', 'G3'] },
+  { root: 'G2', triad: ['G3', 'B3', 'D4'] },
+];
+
+/* ── the eight stems ─────────────────────────────────────────────────────── */
+
+function synthKick(): Mono {
+  const out = zeros();
+  // Pitch-swept sine thump: 90 → 45 Hz, 180 ms.
+  const hit = (() => {
+    const n = Math.round(0.18 * SR);
+    const x = new Float32Array(n);
+    let phase = 0;
+    for (let i = 0; i < n; i++) {
+      const f = 90 - (45 * i) / n;
+      phase += (2 * Math.PI * f) / SR;
+      x[i] = Math.sin(phase);
+    }
+    return decay(x, 0.06);
+  })();
+  for (let bar = 0; bar < BARS; bar++) {
+    const t0 = bar * 4 * BEAT_S;
+    place(out, hit, t0);
+    place(out, hit, t0 + 2 * BEAT_S);
+    if (bar % 2 === 1) place(out, hit, t0 + 3.5 * BEAT_S, 0.7); // pickup
+  }
+  return out;
+}
+
+function synthSnare(rng: () => number): Mono {
+  const out = zeros();
+  const hit = (() => {
+    const body = decay(sine(190, 0.12), 0.03);
+    const rattle = decay(applyBiquad(whiteNoise(0.16, rng), highpass(1800, 0.8)), 0.045);
+    const x = new Float32Array(Math.round(0.16 * SR));
+    for (let i = 0; i < x.length; i++) x[i] = (body[i] ?? 0) * 0.7 + rattle[i] * 0.8;
+    return x;
+  })();
+  for (let bar = 0; bar < BARS; bar++) {
+    const t0 = bar * 4 * BEAT_S;
+    place(out, hit, t0 + BEAT_S);
+    place(out, hit, t0 + 3 * BEAT_S);
+  }
+  return out;
+}
+
+function synthPerc(rng: () => number): Mono {
+  const out = zeros();
+  const tick = decay(applyBiquad(whiteNoise(0.05, rng), highpass(6000, 0.7)), 0.012);
+  const open = decay(applyBiquad(whiteNoise(0.12, rng), highpass(5000, 0.7)), 0.05);
+  for (let bar = 0; bar < BARS; bar++) {
+    const t0 = bar * 4 * BEAT_S;
+    for (let e = 0; e < 8; e++) place(out, e === 7 ? open : tick, t0 + e * (BEAT_S / 2), e % 2 === 0 ? 0.9 : 0.55);
+  }
+  return out;
+}
+
+function synthBass(): Mono {
+  const out = zeros();
+  for (let bar = 0; bar < BARS; bar++) {
+    const f = NOTE[CHORDS[bar].root];
+    const t0 = bar * 4 * BEAT_S;
+    // Root on 1 and 3, octave push on 2&: a simple pocket line.
+    for (const [at, freq, len] of [
+      [0, f, 0.9], [1.5 * BEAT_S, f, 0.4], [2 * BEAT_S, f, 0.9], [3 * BEAT_S, f * 2, 0.45],
+    ] as const) {
+      const note = attack(decay(applyBiquad(classicWave('saw', freq, len), lowpass(500, 0.9)), 0.5), 0.008);
+      place(out, fadeEdges(note, 6), t0 + at, 0.9);
+    }
+  }
+  return out;
+}
+
+function synthGtr(): Mono {
+  const out = zeros();
+  for (let bar = 0; bar < BARS; bar++) {
+    const t0 = bar * 4 * BEAT_S;
+    const triad = CHORDS[bar].triad.map((n) => NOTE[n] ?? NOTE.A3);
+    // Off-beat plucked comp stabs (skank feel): the 8ths between beats.
+    for (let e = 1; e < 8; e += 2) {
+      const stab = zeros0(Math.round(0.22 * SR));
+      for (const f of triad) {
+        const s = attack(decay(classicWave('saw', f * 2, 0.22), 0.05), 0.003);
+        for (let i = 0; i < stab.length; i++) stab[i] += s[i] / triad.length;
+      }
+      place(out, fadeEdges(applyBiquad(stab, peakEq(2200, 3, 1.2)), 4), t0 + e * (BEAT_S / 2), 0.8);
+    }
+  }
+  return applyBiquad(applyBiquad(out, highpass(160, 0.7)), lowpass(4200, 0.8));
+}
+
+function zeros0(n: number): Float32Array {
+  return new Float32Array(n);
+}
+
+function synthKeys(): Mono {
+  const out = zeros();
+  for (let bar = 0; bar < BARS; bar++) {
+    const t0 = bar * 4 * BEAT_S;
+    const chord = zeros0(Math.round(4 * BEAT_S * SR));
+    for (const n of CHORDS[bar].triad) {
+      const f = NOTE[n] ?? NOTE.A3;
+      const v = classicWave('saw', f, 4 * BEAT_S);
+      const v2 = classicWave('saw', f * 1.005, 4 * BEAT_S); // slow detune shimmer
+      for (let i = 0; i < chord.length; i++) chord[i] += (v[i] + v2[i]) / (2 * CHORDS[bar].triad.length);
+    }
+    place(out, fadeEdges(attack(applyBiquad(chord, lowpass(1800, 0.7)), 0.12), 20), t0, 0.8);
+  }
+  return out;
+}
+
+/** Lead line — the vocal's synth stand-in (labeled honestly on-screen). */
+function synthLead(): Mono {
+  const out = zeros();
+  // One phrase per bar, call-and-answer: A C B A | F A G F | E G E C | G B A G
+  const phrases = [
+    ['A4', 'C5', 'B4', 'A4'], ['F4', 'A4', 'G4', 'F4'], ['E4', 'G4', 'E4', 'C4'], ['G4', 'B4', 'A4', 'G4'],
+  ];
+  for (let bar = 0; bar < BARS; bar++) {
+    const t0 = bar * 4 * BEAT_S;
+    phrases[bar].forEach((n, i) => {
+      const f = NOTE[n];
+      const len = i === 3 ? 1.4 * BEAT_S : 0.75 * BEAT_S;
+      const nSamp = Math.round(len * SR);
+      const x = new Float32Array(nSamp);
+      let phase = 0;
+      for (let s = 0; s < nSamp; s++) {
+        const vib = 1 + 0.006 * Math.sin((2 * Math.PI * 5.2 * s) / SR); // gentle vibrato
+        phase += (2 * Math.PI * f * vib) / SR;
+        x[s] = Math.sin(phase) * 0.7 + Math.sin(2 * phase) * 0.22 + Math.sin(3 * phase) * 0.08;
+      }
+      place(out, fadeEdges(attack(decay(x, len * 0.9), 0.02), 8), t0 + i * BEAT_S, 0.85);
+    });
+  }
+  return applyBiquad(out, peakEq(2600, 2.5, 1.1)); // presence
+}
+
+/** Backing pad — stand-in for backing vocals: soft sustained thirds. */
+function synthBgv(): Mono {
+  const out = zeros();
+  for (let bar = 0; bar < BARS; bar++) {
+    const t0 = bar * 4 * BEAT_S;
+    const [a, b] = [CHORDS[bar].triad[1], CHORDS[bar].triad[2]];
+    const chord = zeros0(Math.round(4 * BEAT_S * SR));
+    for (const n of [a, b]) {
+      const f = NOTE[n] ?? NOTE.C4;
+      const v = sine(f, 4 * BEAT_S);
+      const v2 = sine(f * 1.007, 4 * BEAT_S);
+      for (let i = 0; i < chord.length; i++) chord[i] += (v[i] * 0.6 + v2[i] * 0.4) / 2;
+    }
+    place(out, fadeEdges(attack(applyBiquad(chord, lowpass(2400, 0.7)), 0.25), 30), t0, 0.55);
+  }
+  return out;
+}
+
+/* ── stem cache ──────────────────────────────────────────────────────────── */
+
+let stemsCache: Record<TrackId, Mono> | null = null;
+
+/** Render (once) and return the eight session stems, RMS-aligned to −20 dB so
+ *  "every fader at 0" is the honest unmixed wall the static-mix page starts
+ *  from. Deterministic: same on every device, pinned by the test suite. */
+export function sessionStems(): Record<TrackId, Mono> {
+  if (stemsCache) return stemsCache;
+  const rng = makeRng(20260911);
+  const raw: Record<TrackId, Mono> = {
+    kick: synthKick(),
+    snare: synthSnare(rng),
+    perc: synthPerc(rng),
+    bass: synthBass(),
+    gtr: synthGtr(),
+    keys: synthKeys(),
+    lead: synthLead(),
+    bgv: synthBgv(),
+  };
+  for (const id of TRACK_IDS) {
+    let x = dspGainDb(raw[id], -20 - rmsDb(raw[id]));
+    // Peak-safe: spiky stems (snare crest factor) may exceed unity at −20 dB
+    // RMS — cap the peak at 0.95 and accept the lower loudness honestly.
+    let peak = 0;
+    for (let i = 0; i < x.length; i++) if (Math.abs(x[i]) > peak) peak = Math.abs(x[i]);
+    if (peak > 0.95) x = dspGainDb(x, 20 * Math.log10(0.95 / peak));
+    raw[id] = x;
+  }
+  stemsCache = raw;
+  return raw;
+}
+
+/* ── the mix renderer ────────────────────────────────────────────────────── */
+
+export interface TrackSettings {
+  faderDb: number; // −60…+12; −60 treated as −∞
+  pan: number; // −100…+100
+  mute: boolean;
+  polarity: boolean; // true = inverted (Ø)
+  clipGainDb: number;
+  /** Optional high-pass (sections 6/8): 0/undefined = off. */
+  hpHz?: number;
+  /** Optional corrective peak cut/boost (section 8): one band. */
+  eq?: { hz: number; gainDb: number; q?: number };
+  /** Optional insert compressor (section 9) — earDsp's envelope model. */
+  comp?: { thresholdDb: number; ratio: number; attackMs: number; releaseMs: number; makeupDb?: number };
+  /** Send level (dB) into the SHARED reverb return (section 10); undefined =
+   *  no send. Post-fader, like a default DAW send. */
+  verbSendDb?: number;
+  /** Verse→chorus volume ride (section 12): dB offsets for each half of the
+   *  loop (bars 1–2 = "verse", bars 3–4 = "chorus"), 60 ms crossfade. */
+  auto?: { verseDb: number; chorusDb: number };
+}
+
+/** The shared ambience return (section 10): one reverb everyone sends into. */
+export interface SharedVerb {
+  space: ReverbSpace;
+  returnDb: number;
+}
+
+export type MixSettings = Partial<Record<TrackId, Partial<TrackSettings>>>;
+
+export const FLAT: TrackSettings = { faderDb: 0, pan: 0, mute: false, polarity: false, clipGainDb: 0 };
+
+const db2lin = (db: number) => Math.pow(10, db / 20);
+
+export interface RenderedMix {
+  stereo: Stereo;
+  peakDb: number;
+  rmsDb: number;
+}
+
+/** The verse→chorus ride curve: bars 1–2 at verseDb, bars 3–4 at chorusDb,
+ *  60 ms crossfade at the boundary. Applied in place. */
+function applyRide(x: Mono, verseDb: number, chorusDb: number): Mono {
+  const split = Math.round((LOOP_S / 2) * SR);
+  const fade = Math.round(0.06 * SR);
+  const gv = db2lin(verseDb);
+  const gc = db2lin(chorusDb);
+  const out = new Float32Array(x.length);
+  for (let i = 0; i < x.length; i++) {
+    const t = i < split - fade ? 0 : i >= split ? 1 : (i - (split - fade)) / fade;
+    out[i] = x[i] * (gv + (gc - gv) * t);
+  }
+  return out;
+}
+
+/** Sum the session through the learner's settings — REAL gain math, the same
+ *  channel model the routing engine describes. The signal order per channel is
+ *  the lab's own lesson: clip gain → inserts (HP → EQ → comp) → fader ride →
+ *  pan → sum; post-fader sends feed ONE shared reverb return (section 10).
+ *  `masterDb` trims the mix bus. */
+export function renderMix(
+  settings: MixSettings,
+  masterDb = 0,
+  opts?: { mono?: boolean; sharedVerb?: SharedVerb },
+): RenderedMix {
+  const stems = sessionStems();
+  const L = new Float32Array(N);
+  const R = new Float32Array(N);
+  const verbBus = opts?.sharedVerb ? new Float32Array(N) : null;
+  for (const id of TRACK_IDS) {
+    const s = { ...FLAT, ...(settings[id] ?? {}) };
+    if (s.mute || s.faderDb <= -60) continue;
+    let x = stems[id];
+    // Inserts, in channel order.
+    if (s.clipGainDb) x = dspGainDb(x, s.clipGainDb);
+    if (s.hpHz && s.hpHz > 0) x = applyBiquad(x, highpass(s.hpHz, 0.71));
+    if (s.eq) x = applyBiquad(x, peakEq(s.eq.hz, s.eq.gainDb, s.eq.q ?? 1.4));
+    if (s.comp) {
+      x = compress(x, s.comp.ratio, s.comp.thresholdDb, s.comp.attackMs, s.comp.releaseMs);
+      if (s.comp.makeupDb) x = dspGainDb(x, s.comp.makeupDb);
+    }
+    // Fader (+ ride), then the post-fader world: pan and sends.
+    if (s.auto) x = applyRide(x, s.auto.verseDb, s.auto.chorusDb);
+    const g = db2lin(s.faderDb) * (s.polarity ? -1 : 1);
+    const p = Math.max(-100, Math.min(100, s.pan)) / 100;
+    const a = ((p + 1) / 2) * (Math.PI / 2);
+    const gl = Math.cos(a) * Math.SQRT2 * 0.5 * g;
+    const gr = Math.sin(a) * Math.SQRT2 * 0.5 * g;
+    for (let i = 0; i < N; i++) {
+      L[i] += x[i] * gl;
+      R[i] += x[i] * gr;
+    }
+    if (verbBus && s.verbSendDb != null) {
+      const sg = db2lin(s.faderDb + s.verbSendDb) * (s.polarity ? -1 : 1);
+      for (let i = 0; i < N; i++) verbBus[i] += x[i] * sg;
+    }
+  }
+  if (verbBus && opts?.sharedVerb) {
+    // ONE shared ambience: everyone's sends through the same space — the
+    // "one room glues the band" lesson. 100% wet on the return.
+    const wet = dspGainDb(reverb(verbBus, opts.sharedVerb.space, undefined, 0.5, 1), opts.sharedVerb.returnDb);
+    for (let i = 0; i < N; i++) {
+      L[i] += wet[i] * 0.5;
+      R[i] += wet[i] * 0.5;
+    }
+  }
+  const mg = db2lin(masterDb);
+  let peak = 0;
+  let sum = 0;
+  for (let i = 0; i < N; i++) {
+    L[i] *= mg;
+    R[i] *= mg;
+    if (opts?.mono) {
+      const m = (L[i] + R[i]) / 2;
+      L[i] = m;
+      R[i] = m;
+    }
+    const aL = Math.abs(L[i]);
+    const aR = Math.abs(R[i]);
+    if (aL > peak) peak = aL;
+    if (aR > peak) peak = aR;
+    sum += L[i] * L[i] + R[i] * R[i];
+  }
+  return {
+    stereo: { l: L, r: R },
+    peakDb: 20 * Math.log10(Math.max(peak, 1e-9)),
+    rmsDb: 10 * Math.log10(Math.max(sum / (2 * N), 1e-18)),
+  };
+}
+
+/** Gain (dB) to apply to B so it plays at A's loudness — the level-matched
+ *  comparison rule (§ honesty: never A/B at different loudness). */
+export function matchGainDb(a: RenderedMix, b: RenderedMix): number {
+  return a.rmsDb - b.rmsDb;
+}

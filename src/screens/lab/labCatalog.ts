@@ -154,6 +154,21 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
   },
 
   // ── TRAINING LAB ─────────────────────────────────────────────────────
+  // Mixing leads the training section (owner GO 2026-09-11): the workflow
+  // umbrella the EQ/dynamics/effects labs plug into. Member-only (owner
+  // recommendation-approved). Advanced Mixing joins when built.
+  {
+    id: 'mixing',
+    glyph: '🎛',
+    name: 'Mixing',
+    description: 'Balance, clarity, depth, movement and focus — the listening decisions that make a mix.',
+    section: 'training',
+    kind: 'list',
+    labs: [
+      // BML-A LIVE (sections 1–7); 8–14 + the guided final follow in BML-B.
+      { name: 'Beginning Mixing', blurb: 'A repeatable process from session prep to a clear, balanced stereo mix — faders first, plugins later.', route: 'BeginningMixingLab', member: true },
+    ],
+  },
   {
     id: 'equalization',
     glyph: '🎚',

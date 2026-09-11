@@ -82,9 +82,11 @@ export function Eyebrow({ children }: { children: ReactNode }) {
 export function Prompt({ children }: { children: ReactNode }) {
   return <Text style={styles.prompt}>▸ {children}</Text>;
 }
-export function Card({ children, tone }: { children: ReactNode; tone?: 'plain' | 'math' | 'ok' | 'warn' }) {
+export function Card({ children, tone }: { children: ReactNode; tone?: 'plain' | 'math' | 'ok' | 'warn' | 'note' }) {
+  // 'note' (ADDITIVE 2026-09-11, mixing lab design pass): amber ADVICE tone —
+  // best-habit callouts that were burning the red 'warn' treatment.
   return (
-    <View style={[styles.card, tone === 'math' && styles.cardMath, tone === 'ok' && styles.cardOk, tone === 'warn' && styles.cardWarn]}>
+    <View style={[styles.card, tone === 'math' && styles.cardMath, tone === 'ok' && styles.cardOk, tone === 'warn' && styles.cardWarn, tone === 'note' && styles.cardNote]}>
       {children}
     </View>
   );
@@ -391,6 +393,7 @@ const styles = StyleSheet.create({
   cardMath: { borderColor: '#2a2f3a', backgroundColor: '#0f1116' },
   cardOk: { borderColor: colors.green, backgroundColor: '#0f2416' },
   cardWarn: { borderColor: colors.red, backgroundColor: '#241012' },
+  cardNote: { borderColor: 'rgba(255,198,77,.4)', backgroundColor: 'rgba(255,198,77,.06)' },
   mathLine: { color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 16, lineHeight: 24 },
   mathNote: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },
   btn: { minHeight: 44, paddingHorizontal: 12, borderRadius: 10, borderWidth: 1, borderColor: colors.hairline, alignItems: 'center', justifyContent: 'center', backgroundColor: '#131315' },
