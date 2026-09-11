@@ -38,7 +38,13 @@ function leafTipY(insertion: number): number {
   return 104 - lift * 20;
 }
 
-export function JackCutaway({ insertion, reduceMotion }: { insertion: number; reduceMotion: boolean }) {
+export function JackCutaway({ insertion, reduceMotion, showConductors }: {
+  insertion: number;
+  reduceMotion: boolean;
+  /** §23 (Phase B): label the plug's TIP / RING / SLEEVE bands — the reveal
+   *  that "one line" has been a balanced circuit all along. */
+  showConductors?: boolean;
+}) {
   const open = contactsOpen(insertion);
   const tipX = 26 + insertion * 122; // plug tip travel; max 148 — wedges under the leaf mid-span
   const leafY = leafTipY(insertion);
@@ -102,6 +108,16 @@ export function JackCutaway({ insertion, reduceMotion }: { insertion: number; re
             <Rect x={Math.max(-6, tipX - 36)} y={92} width={14} height={22} fill="#c8a24a" />
             <Rect x={Math.max(-6, tipX - 22)} y={92} width={4} height={22} fill="#141518" />
             <Path d={`M ${tipX - 18} 92 L ${tipX} 98 Q ${tipX + 6} 103 ${tipX} 108 L ${tipX - 18} 114 Z`} fill={PB.cord} />
+            {showConductors && insertion > 0.3 ? (
+              <G>
+                <SvgText x={tipX - 9} y={128} fontSize={9} fill={PB.cord} textAnchor="middle" fontFamily={fonts.oswaldMedium}>T</SvgText>
+                <Line x1={tipX - 9} y1={116} x2={tipX - 9} y2={120} stroke={PB.cord} strokeWidth={1} />
+                <SvgText x={tipX - 29} y={128} fontSize={9} fill="#c8a24a" textAnchor="middle" fontFamily={fonts.oswaldMedium}>R</SvgText>
+                <Line x1={tipX - 29} y1={116} x2={tipX - 29} y2={120} stroke="#c8a24a" strokeWidth={1} />
+                <SvgText x={Math.max(24, tipX - 60)} y={128} fontSize={9} fill="#9a9ca4" textAnchor="middle" fontFamily={fonts.oswaldMedium}>S</SvgText>
+                <Line x1={Math.max(24, tipX - 60)} y1={116} x2={Math.max(24, tipX - 60)} y2={120} stroke="#9a9ca4" strokeWidth={1} />
+              </G>
+            ) : null}
           </G>
         ) : (
           <SvgText x={10} y={106} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={1}>← PLUG OUT</SvgText>

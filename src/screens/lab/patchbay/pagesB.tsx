@@ -257,11 +257,12 @@ function PageWrap(_: { ctx: PageCtx }) {
         </Body>
       </Card>
       <Card>
-        <Eyebrow>COMING IN PART TWO</Eyebrow>
+        <Eyebrow>PART TWO STARTS ON THE NEXT PAGE</Eyebrow>
         <Body>
-          A full 8-pair studio bay to route · why a well-normalled studio runs with ZERO front cables · overpatching · the
-          processor insert-and-bypass chain · broken-patch troubleshooting · the X-ray jack at every insertion depth · the
-          top-breaking half-normal variant · phantom-power safety · and designing your own bay.
+          From one pair to the whole studio: the 8-pair bay · why a well-normalled studio runs with ZERO front cables ·
+          overpatching · the processor insert-and-bypass chain · broken-patch service calls · the top-breaking half-normal
+          variant · what your “one line” really carries (T·R·S) · phantom-power safety · designing your own bay · and the
+          final proficiency check.
         </Body>
       </Card>
     </View>

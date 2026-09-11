@@ -188,14 +188,20 @@ export type PatchPairViewProps = {
   hideFaceplate?: boolean;
   /** Extra caption line under the status (e.g. a page-specific hint). */
   caption?: string;
+  /** The pair's OWN rear source is producing signal (default true). A bypassed
+   *  processor's OUT has no input — drawing marching dashes from it would be
+   *  the fake-meter dishonesty the app bans (design pass 2026-09-10). When
+   *  false, connected paths render dim (possible, inactive) and the status
+   *  says the source is idle. */
+  sourceLive?: boolean;
 };
 
 export function PatchPairView({
   state, sourceLabel, destLabel, topPatchLabel = 'PATCH DESTINATION', bottomPatchLabel = 'ALTERNATE SOURCE',
-  onToggleJack, reduceMotion, hideFaceplate, caption,
+  onToggleJack, reduceMotion, hideFaceplate, caption, sourceLive = true,
 }: PatchPairViewProps) {
   const flow = resolvePair(state);
-  const anythingFlowing = flow.normalActive || flow.topFeedsPatch || flow.bottomFeedsDestination;
+  const anythingFlowing = ((flow.normalActive || flow.topFeedsPatch) && sourceLive) || flow.bottomFeedsDestination;
   const phase = useFlowPhase(anythingFlowing, reduceMotion);
 
   // Breathing affordance on the untouched jacks (house standard) — stops per
@@ -219,27 +225,33 @@ export function PatchPairView({
   };
 
   // The break is descriptive orange; RED only for the genuine hazard: a normal
-  // broken AND the destination left silent (see the color doctrine above).
-  const hazard = flow.normalBroken && flow.destinationHears === 'nothing';
+  // broken AND the destination left silent (see the color doctrine above). A
+  // silent-anyway source can't be silenced — no hazard when it's idle.
+  const hazard = flow.normalBroken && flow.destinationHears === 'nothing' && sourceLive;
   const breakColor = hazard ? PB.hazard : PB.break;
 
   const midY = (TOP_Y + BOT_Y) / 2;
   // Status line — factual, derived from the resolved flow (the four questions).
-  const status = flow.isSplit
-    ? `SPLIT — ${sourceLabel} feeds ${destLabel} AND the patch cord`
-    : flow.isMerge
-      ? `PARALLEL — ${destLabel} receives the normal AND the patch`
-      : flow.normalActive
-        ? `NORMAL INTACT — ${sourceLabel} → ${destLabel}, no cord required`
-        : flow.normalBroken
-          ? flow.destinationHears === 'patch'
-            ? `NORMAL BROKEN — the patch now feeds ${destLabel}`
-            : `NORMAL BROKEN — ${destLabel} hears nothing`
-          : flow.destinationHears === 'patch'
-            ? `PATCHED — the cord feeds ${destLabel}`
-            : flow.topFeedsPatch
-              ? `PATCHED — ${sourceLabel} goes only into the cord`
-              : `NO CONNECTION — thru pair, nothing patched`;
+  // An idle source gets an honest status: connections may exist, signal doesn't.
+  const status = !sourceLive
+    ? flow.bottomFeedsDestination
+      ? `PATCHED — the cord feeds ${destLabel}; ${sourceLabel} itself is idle`
+      : `${flow.normalActive ? 'NORMAL CONNECTED' : flow.normalBroken ? 'NORMAL BROKEN' : 'NO CONNECTION'} — ${sourceLabel} is idle, nothing flows`
+    : flow.isSplit
+      ? `SPLIT — ${sourceLabel} feeds ${destLabel} AND the patch cord`
+      : flow.isMerge
+        ? `PARALLEL — ${destLabel} receives the normal AND the patch`
+        : flow.normalActive
+          ? `NORMAL INTACT — ${sourceLabel} → ${destLabel}, no cord required`
+          : flow.normalBroken
+            ? flow.destinationHears === 'patch'
+              ? `NORMAL BROKEN — the patch now feeds ${destLabel}`
+              : `NORMAL BROKEN — ${destLabel} hears nothing`
+            : flow.destinationHears === 'patch'
+              ? `PATCHED — the cord feeds ${destLabel}`
+              : flow.topFeedsPatch
+                ? `PATCHED — ${sourceLabel} goes only into the cord`
+                : `NO CONNECTION — thru pair, nothing patched`;
 
   const a11y =
     `Patch pair, ${state.config === 'thru' ? 'thru' : state.config === 'full' ? 'full normal' : 'half normal'} configuration. ` +
@@ -255,7 +267,7 @@ export function PatchPairView({
         <Svg accessible accessibilityRole="image" accessibilityLabel={a11y} width="100%" height={undefined} viewBox={`0 0 ${W} ${H}`} style={{ aspectRatio: W / H }}>
           {/* SOURCE device and its permanent rear wiring down to the TOP jack */}
           <DeviceBox y={10} label={sourceLabel} sub="SOURCE · OUTPUT" accent={PB.source} />
-          <FlowPath d={`M ${CX} 44 L ${CX} ${TOP_Y - 11}`} flowing phase={phase} reduceMotion={reduceMotion} />
+          <FlowPath d={`M ${CX} 44 L ${CX} ${TOP_Y - 11}`} flowing={sourceLive} phase={phase} reduceMotion={reduceMotion} />
 
           {/* The internal normal zone between the jacks */}
           {state.config === 'thru' ? (
@@ -265,8 +277,8 @@ export function PatchPairView({
             </G>
           ) : flow.normalActive ? (
             <G>
-              <FlowPath d={`M ${CX} ${TOP_Y + 11} L ${CX} ${BOT_Y - 11}`} flowing phase={phase} reduceMotion={reduceMotion} />
-              <SvgText x={CX + 16} y={midY + 3} fontSize={9} fill={PB.flow} fontFamily={fonts.oswaldMedium} letterSpacing={1}>NORMAL</SvgText>
+              <FlowPath d={`M ${CX} ${TOP_Y + 11} L ${CX} ${BOT_Y - 11}`} flowing={sourceLive} phase={phase} reduceMotion={reduceMotion} />
+              <SvgText x={CX + 16} y={midY + 3} fontSize={9} fill={sourceLive ? PB.flow : colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={1}>NORMAL</SvgText>
             </G>
           ) : (
             <G>
@@ -297,7 +309,7 @@ export function PatchPairView({
             <G>
               <FlowPath
                 d={`M ${CX + 11} ${TOP_Y} C ${CX + 60} ${TOP_Y - 4}, ${W - 130} ${TOP_Y - 26}, ${W - 118} ${TOP_Y - 28}`}
-                flowing={flow.topFeedsPatch}
+                flowing={flow.topFeedsPatch && sourceLive}
                 phase={phase}
                 reduceMotion={reduceMotion}
                 color={PB.cord}
@@ -327,7 +339,11 @@ export function PatchPairView({
           {/* DESTINATION device fed (or not) from the BOTTOM jack's rear */}
           <FlowPath
             d={`M ${CX} ${BOT_Y + 11} L ${CX} ${H - 46}`}
-            flowing={flow.destinationHears !== 'nothing'}
+            flowing={
+              flow.destinationHears === 'patch' || flow.destinationHears === 'both'
+                ? true // an external patched-in source has its own life
+                : flow.destinationHears === 'normal' && sourceLive
+            }
             phase={phase}
             reduceMotion={reduceMotion}
             color={flow.destinationHears === 'patch' ? PB.cord : PB.flow}

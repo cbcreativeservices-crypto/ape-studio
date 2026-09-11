@@ -229,6 +229,67 @@ describe('authored scenarios are engine-true (the copy cannot rot)', () => {
   });
 });
 
+describe('Phase B data is engine-true and leak-proof', () => {
+  const checkMcq = (id: string, options: string[], correct: number, wrong: (string | undefined)[]) => {
+    assert.ok(correct >= 0 && correct < options.length, id);
+    assert.equal(wrong.length, options.length, `${id}: one feedback slot per option`);
+    assert.equal(wrong[correct], undefined, `${id}: the correct option must not carry wrong-feedback`);
+    wrong.forEach((w, i) => {
+      if (i !== correct) assert.ok(w, `${id}: distractor ${i} needs feedback (else the shared check prints the answer)`);
+    });
+  };
+  it('wrong-patch cases: rendered claims hold; feedback is leak-proof', async () => {
+    const { WRONG_PATCH_CASES } = await import('../src/screens/lab/patchbay/engine/scenariosB.ts');
+    for (const c of WRONG_PATCH_CASES) {
+      checkMcq(c.id, c.options, c.correct, c.wrong);
+      if (c.render) {
+        const f = resolvePair(c.render.state) as unknown as Record<string, unknown>;
+        for (const [k, v] of Object.entries(c.render.expected)) assert.deepEqual(f[k], v, `${c.id} → ${k}`);
+      }
+    }
+  });
+  it('the feedback-loop case really is a live loop: the comp pair normal is ACTIVE with zero cords', async () => {
+    const { WRONG_PATCH_CASES } = await import('../src/screens/lab/patchbay/engine/scenariosB.ts');
+    const w1 = WRONG_PATCH_CASES.find((c) => c.id === 'w1-feedback');
+    assert.ok(w1?.render);
+    assert.equal(resolvePair(w1.render.state).normalActive, true);
+  });
+  it('design rows: every row solvable, notes present, and the hard rules hold', async () => {
+    const { DESIGN_ROWS } = await import('../src/screens/lab/patchbay/engine/scenariosB.ts');
+    for (const r of DESIGN_ROWS) {
+      const kinds = Object.keys(r.verdicts) as Array<keyof typeof r.verdicts>;
+      assert.equal(kinds.length, 3, r.id);
+      assert.ok(kinds.some((k) => r.verdicts[k].ok), `${r.id}: at least one acceptable configuration`);
+      kinds.forEach((k) => assert.ok(r.verdicts[k].note.length > 0, `${r.id}.${k}: note required either way`));
+    }
+    const loop = DESIGN_ROWS.find((r) => r.id === 'g3');
+    assert.ok(loop, 'the processor-loop row must exist');
+    assert.equal(loop.verdicts.thru.ok, true, 'processor loop: thru is the only safe wiring');
+    assert.equal(loop.verdicts.full.ok, false, 'processor loop: full-normal must be rejected');
+    assert.equal(loop.verdicts.half.ok, false, 'processor loop: half-normal must be rejected');
+  });
+  it('assessment: 10 items, leak-proof, rendered claims engine-true', async () => {
+    const { ASSESSMENT_ITEMS } = await import('../src/screens/lab/patchbay/engine/scenariosB.ts');
+    assert.equal(ASSESSMENT_ITEMS.length, 10);
+    for (const a of ASSESSMENT_ITEMS) {
+      checkMcq(a.id, a.options, a.correct, a.wrong);
+      if (a.render) {
+        const f = resolvePair(a.render.state) as unknown as Record<string, unknown>;
+        for (const [k, v] of Object.entries(a.render.expected)) assert.deepEqual(f[k], v, `${a.id} → ${k}`);
+      }
+    }
+  });
+  it('the studio bay: 8 pairs, processors thru, defaults half-bottom', async () => {
+    const { STUDIO_PAIRS } = await import('../src/screens/lab/patchbay/engine/scenariosB.ts');
+    assert.equal(STUDIO_PAIRS.length, 8);
+    for (const p of STUDIO_PAIRS.slice(0, 6)) {
+      assert.equal(p.config, 'half', `pair ${p.n}`);
+      assert.equal(p.breakSide, 'bottom', `pair ${p.n}`);
+    }
+    for (const p of STUDIO_PAIRS.slice(6)) assert.equal(p.config, 'thru', `pair ${p.n} (processor pairs must never normal into themselves)`);
+  });
+});
+
 describe('detective mode deducer (spec §15)', () => {
   it('the canonical case: keyboard reaches mixer with no cords, AND still does with a top tap → half-normal, uniquely', () => {
     const verdict = consistentConfigs([
