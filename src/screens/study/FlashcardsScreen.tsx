@@ -14,7 +14,8 @@
  *  - Controls pinned to the bottom; card flexes to fill.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactElement, type ReactNode } from 'react';
-import { ActivityIndicator, Alert, FlatList, Image, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Image, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { confirmDialog } from '../../lib/confirm';
 import Svg, { Circle, Ellipse, Path } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -583,13 +584,15 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     void AsyncStorage.multiGet([
       INTRO_STORAGE_PREFIX + 'flashcardsCustomize',
       INTRO_STORAGE_PREFIX + 'flashcardsPower',
-    ]).then((pairs) => {
-      for (const [k, v] of pairs) {
-        if (v == null) continue;
-        if (k.endsWith('flashcardsPower')) t3Done.current = true;
-        else t2Done.current = true;
-      }
-    });
+    ])
+      .then((pairs) => {
+        for (const [k, v] of pairs) {
+          if (v == null) continue;
+          if (k.endsWith('flashcardsPower')) t3Done.current = true;
+          else t2Done.current = true;
+        }
+      })
+      .catch(() => {}); // a failed read just re-offers the tutorials
   }, []);
 
   const showTutorial = useCallback(
@@ -1101,31 +1104,34 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       resetToStart();
       return;
     }
-    Alert.alert(
+    // confirmDialog, not Alert.alert: RN-web ships Alert as a literal no-op, so
+    // on the web build RESET DECK did nothing at all whenever the deck actually
+    // had something to reset — the only path that reached a visible result was
+    // the empty-deck early return above.
+    confirmDialog(
       'Reset deck?',
       `Returns ${hidden.size} known card${hidden.size === 1 ? '' : 's'} and clears ${deckFlagIds.length} flag${deckFlagIds.length === 1 ? '' : 's'} from this topic. Progress already earned is kept.`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Reset',
-          style: 'destructive',
-          onPress: () => {
-            const empty = new Set<string>();
-            setHidden(empty);
-            persistHidden(empty);
-            removeBookmarks(achievementId, deckFlagIds);
-            resetToStart();
-          },
-        },
-      ],
+      'Reset',
+      () => {
+        const empty = new Set<string>();
+        setHidden(empty);
+        persistHidden(empty);
+        removeBookmarks(achievementId, deckFlagIds);
+        resetToStart();
+      },
+      { destructive: true },
     );
   }, [hidden, bookmarked, items, persistHidden, resetToStart]);
 
   // ---- Full-screen guide + shake-to-known (Booth 2026-07-11) ----
   useEffect(() => {
-    AsyncStorage.getItem('ape:fcFsGuide').then((v) => {
-      if (v) fsGuideCount.current = Number(v) || 0;
-    });
+    // .catch: an AsyncStorage read CAN reject — unguarded that was an unhandled
+    // rejection. A failed read leaves the count at 0 (guide shows again).
+    AsyncStorage.getItem('ape:fcFsGuide')
+      .then((v) => {
+        if (v) fsGuideCount.current = Number(v) || 0;
+      })
+      .catch(() => {});
   }, []);
   useEffect(() => {
     if (fullscreen) fsReviewed.current = 0;

@@ -19,7 +19,8 @@
  * capture reuses the calc shareImage chain. Definitions are never rewritten.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Modal, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import { Modal, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import { confirmDialog, notify } from '../lib/confirm';
 import { GlassButton } from './GlassButton';
 import { StudioButton } from './StudioButton';
 import { ShareIcon } from './ShareIcon';
@@ -141,19 +142,23 @@ export function ShareTermSheet({
 
   const confirmLargeThen = (run: () => void) => {
     if (!isLarge) return run();
-    Alert.alert(
+    // confirmDialog, not Alert.alert: RN-web ships Alert as a literal no-op, so
+    // on the web build every share/copy of a LARGE selection swallowed the tap
+    // — the dialog never appeared and `run` was never reached, making SHARE AS
+    // TEXT / Share as image / Copy dead buttons past the threshold.
+    confirmDialog(
       'Long message',
       `You're sharing ${staged.length} terms — this will create a very long message. Continue?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Share', onPress: run },
-      ],
+      'Share',
+      run,
     );
   };
 
   const doShareText = () =>
     confirmLargeThen(() => {
-      void Share.share({ message }).finally(onClose);
+      // .catch: a rejected share sheet (cancel on some platforms) must not
+      // surface as an unhandled rejection; onClose still runs.
+      void Share.share({ message }).catch(() => {}).finally(onClose);
     });
 
   const doShareImage = () =>
@@ -163,24 +168,35 @@ export function ShareTermSheet({
         .captureAndShare(captureRef.current, multi ? 'Glossary terms' : 'Glossary term')
         .then((ok) => {
           if (!ok) {
-            Alert.alert(
+            // notify(), not Alert.alert (no-op on RN-web): the text-share
+            // fallback rode on the alert's OK handler, so on web the image
+            // path ended in silence — no image, no text, no message.
+            notify(
               'Image share unavailable',
               'Sharing as an image needs the next app build. Sharing as text instead.',
-              [{ text: 'OK', onPress: () => void Share.share({ message }).finally(onClose) }],
+              () => void Share.share({ message }).catch(() => {}).finally(onClose),
             );
           } else {
             onClose();
           }
         })
+        // Without this a rejected capture was an unhandled rejection AND left
+        // the sheet open with no explanation.
+        .catch(() => notify('Share failed', 'The image could not be prepared. Try sharing as text.'))
         .finally(() => setBusy(false));
     });
 
   const doCopy = () =>
     confirmLargeThen(() => {
-      void copyText(message).then((ok) => {
-        Alert.alert(ok ? 'Copied' : 'Copy unavailable', ok ? 'Share text copied to clipboard.' : 'Copying needs the next app build.');
-        if (ok) onClose();
-      });
+      void copyText(message)
+        .then((ok) => {
+          notify(
+            ok ? 'Copied' : 'Copy unavailable',
+            ok ? 'Share text copied to clipboard.' : 'Copying needs the next app build.',
+          );
+          if (ok) onClose();
+        })
+        .catch(() => notify('Copy unavailable', 'The share text could not be copied.'));
     });
 
   const openPicker = (key: SourceKey, rows: NamedTerm[]) => {
@@ -230,6 +246,10 @@ export function ShareTermSheet({
           });
         }
       })
+      // A rejected resolve() was an unhandled rejection; the sheet still
+      // returns to the main view via .finally, so say nothing more than that
+      // the extra terms did not load.
+      .catch(() => notify('Could not add terms', 'Those terms could not be loaded right now.'))
       .finally(() => {
         setBusy(false);
         setView('main');

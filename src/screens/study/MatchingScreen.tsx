@@ -285,6 +285,21 @@ export function MatchingScreen({ navigation, route }: Props) {
   // [53] (2026-09-07): live mirror of displayPct for the auto-advance guard.
   const displayPctRef = useRef(0);
 
+  // SYNCHRONOUS double-tap guards. pickRight() gated on `selectedLeft` /
+  // `locked` / `wrongPair` STATE only, so a same-tick multi-tap on one right
+  // cell saw all three still batched and judged the same pair twice: two
+  // addEvent('answer') writes and attempts +2 / correct +2 for ONE decision,
+  // which mis-scores the topic's accuracy and over-fills the LED. Same defect
+  // and same remedy as fill-in-blank's `pickedRef` (QA night 2026-08-31) and
+  // scenarios' `answeredItemRef`. Each ref re-syncs from state every render, so
+  // a genuine second tap (which always follows a re-render) is never dropped.
+  const selectedLeftRef = useRef(selectedLeft);
+  selectedLeftRef.current = selectedLeft;
+  const lockedRef = useRef(locked);
+  lockedRef.current = locked;
+  const wrongPairRef = useRef(wrongPair);
+  wrongPairRef.current = wrongPair;
+
   // Swipe strip below the cards (Booth 2026-07-15): swiping there scrolls
   // between boards WITHOUT counting as study time — a pure bypass.
   const pan = useRef(
@@ -299,8 +314,9 @@ export function MatchingScreen({ navigation, route }: Props) {
 
   const pickLeft = useCallback(
     (id: string) => {
-      if (locked.has(id) || wrongPair) return;
+      if (locked.has(id) || lockedRef.current.has(id) || wrongPair || wrongPairRef.current) return;
       session.current?.touch();
+      selectedLeftRef.current = selectedLeftRef.current === id ? null : id;
       setSelectedLeft((cur) => (cur === id ? null : id));
     },
     [locked, wrongPair],
@@ -308,7 +324,11 @@ export function MatchingScreen({ navigation, route }: Props) {
 
   const pickRight = useCallback(
     (rightId: string) => {
-      if (!board || !selectedLeft || locked.has(rightId) || wrongPair) return;
+      // The ref half of each test is what actually stops a same-tick double tap;
+      // the state half keeps the original behaviour when refs and state agree.
+      if (!board || !selectedLeft || !selectedLeftRef.current) return;
+      if (locked.has(rightId) || lockedRef.current.has(rightId)) return;
+      if (wrongPair || wrongPairRef.current) return;
       const correct = rightId === selectedLeft;
       registerTrialAnswer('matching', correct); // time trial: only correct advances pace
       if (correct) incBrainOutput('matching'); // one brain output per correct PAIR match (not per board)
@@ -340,6 +360,10 @@ export function MatchingScreen({ navigation, route }: Props) {
 
       if (correct) {
         const next = new Set(locked).add(selectedLeft);
+        // Refs first: they must reject a second tap that lands before React has
+        // committed the state below.
+        lockedRef.current = next;
+        selectedLeftRef.current = null;
         setLocked(next);
         setSelectedLeft(null);
         setCorrectFlash(answeredId); // green flash, then the pair animates out
@@ -358,6 +382,7 @@ export function MatchingScreen({ navigation, route }: Props) {
           }, ADVANCE_MS);
         }
       } else {
+        wrongPairRef.current = { left: selectedLeft, right: rightId }; // ref first (see above)
         setWrongPair({ left: selectedLeft, right: rightId });
         scheduleFlash(() => {
           setWrongPair(null);

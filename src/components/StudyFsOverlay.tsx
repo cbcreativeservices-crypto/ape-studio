@@ -43,9 +43,13 @@ export function StudyFsOverlay({
   const wasVisible = useRef(false);
 
   useEffect(() => {
-    AsyncStorage.getItem(guideKey).then((v) => {
-      if (v) guideCount.current = Number(v) || 0;
-    });
+    // .catch: an AsyncStorage read CAN reject; unguarded it was an unhandled
+    // rejection. A failed read just leaves the count at 0 (guide shows again).
+    AsyncStorage.getItem(guideKey)
+      .then((v) => {
+        if (v) guideCount.current = Number(v) || 0;
+      })
+      .catch(() => {});
   }, [guideKey]);
 
   useEffect(() => {

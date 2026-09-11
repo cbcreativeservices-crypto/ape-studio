@@ -91,6 +91,16 @@ export function ScenariosScreen({ route }: Props) {
   // server round-based completion_pct — this mirror is inert there.
   const scenarioStatesRef = useRef<ItemStates>({});
   const initedRef = useRef(false);
+  // Synchronous per-item guard (QA night 2026-08-31): same-tick multi-taps
+  // saw batched state and could judge one question twice. Declared here (with
+  // the other refs) so clearInteraction() can release it — see below.
+  const answeredItemRef = useRef<string | null>(null);
+  // Synchronous latch for "Start a fresh set". `busy` is useState, so a
+  // same-tick double tap read it still false and fired start_scenario_cycle
+  // twice — two re-shuffles, and whichever plan lost the race was discarded
+  // under the learner. The ref is set BEFORE the first await and released on
+  // every exit path (including the failure one, or the button stays dead).
+  const freshCycleRef = useRef(false);
 
   // Pace timer (practice aid — device-local, never blocks study). Available on
   // the 3 HOMEWORK methods, Scenarios included (owner 2026-08-13).
@@ -145,6 +155,12 @@ export function ScenariosScreen({ route }: Props) {
   const clearInteraction = () => {
     if (advanceTimer.current) clearTimeout(advanceTimer.current);
     advanceTimer.current = null;
+    // Release the per-item answer latch. It was only ever SET, so a question id
+    // served again after "Start a fresh set" re-shuffled the same pool stayed
+    // permanently un-answerable: taps did nothing and the round could not be
+    // finished. Every transition point (advance / enterRound / finishRound)
+    // runs through here, and the item is always changing at those points.
+    answeredItemRef.current = null;
     setPicked(null);
     setMultiSel(new Set());
     setSequence([]);
@@ -269,9 +285,6 @@ export function ScenariosScreen({ route }: Props) {
     [item, activeRound, achievementId, advance],
   );
 
-  // Synchronous per-item guard (QA night 2026-08-31): same-tick multi-taps
-  // saw batched state and could judge one question twice.
-  const answeredItemRef = useRef<string | null>(null);
   const answerSingle = useCallback(
     (opt: string) => {
       if (!item || picked || feedback || answeredItemRef.current === item.id) return;
@@ -283,7 +296,12 @@ export function ScenariosScreen({ route }: Props) {
   );
 
   const confirmMulti = useCallback(() => {
-    if (!item || multiSel.size === 0 || feedback) return;
+    // answeredItemRef, not `feedback`: only the single-choice path had the
+    // synchronous latch, so a double tap on CONFIRM judged a multi-select
+    // question twice — two record_scenario_answer writes, attempts +2 and two
+    // time-trial ticks for one decision.
+    if (!item || multiSel.size === 0 || feedback || answeredItemRef.current === item.id) return;
+    answeredItemRef.current = item.id;
     const sel = [...multiSel].sort();
     const correct = sel.length === item.correct.length && sel.every((s) => item.correct.includes(s));
     judge(correct);
@@ -298,7 +316,9 @@ export function ScenariosScreen({ route }: Props) {
   );
 
   const confirmSequence = useCallback(() => {
-    if (!item || sequence.length !== item.options.length || feedback) return;
+    // Same synchronous latch as confirmMulti — see there.
+    if (!item || sequence.length !== item.options.length || feedback || answeredItemRef.current === item.id) return;
+    answeredItemRef.current = item.id;
     judge(sequence.every((s, i) => s === item.correct[i]));
   }, [item, sequence, feedback, judge]);
 
@@ -311,15 +331,22 @@ export function ScenariosScreen({ route }: Props) {
   };
 
   const onStartFreshCycle = async () => {
-    if (busy) return;
+    if (busy || freshCycleRef.current) return;
+    freshCycleRef.current = true; // set BEFORE the await — `busy` lands too late
     setBusy(true);
-    const fresh = await startScenarioCycle(achievementId);
-    setBusy(false);
-    if (!fresh) return;
-    answersRef.current = { ...fresh.answers };
-    setHw(fresh);
-    setReport(null);
-    enterRound(fresh.rounds[0] ?? [], 1);
+    try {
+      const fresh = await startScenarioCycle(achievementId);
+      if (!fresh) return;
+      answersRef.current = { ...fresh.answers };
+      setHw(fresh);
+      setReport(null);
+      enterRound(fresh.rounds[0] ?? [], 1);
+    } finally {
+      // Always release, on the null/failure path too, or "Start a fresh set"
+      // stays disabled forever with no way back to it but leaving the screen.
+      freshCycleRef.current = false;
+      setBusy(false);
+    }
   };
 
   /* ---- loading ---- */

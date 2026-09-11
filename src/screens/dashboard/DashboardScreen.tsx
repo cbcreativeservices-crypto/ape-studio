@@ -625,6 +625,9 @@ export function DashboardScreen() {
   // Rows carry ids so each row's select icons (⚑ ♥ ★ ✓ ✗) can tag the term.
   const [termsOpen, setTermsOpen] = useState(false);
   const [termList, setTermList] = useState<{ id: string; term: string }[] | null>(null);
+  // Distinguishes "the fetch failed" from "this list is genuinely empty" —
+  // loading / error+Retry / empty are three different states (house rule).
+  const [termsError, setTermsError] = useState(false);
   // The same sheet also serves the user's Custom List card.
   const [termsSource, setTermsSource] = useState<'topic' | 'flagged'>('topic');
   // The user's ★ CUSTOM LIST (starred) — built via the ★ icon in the Glossary /
@@ -1019,33 +1022,48 @@ export function DashboardScreen() {
   // Topic card tap → all terms in the topic (Booth 2026-07-18). Lazy-fetched
   // per open; list is display-only with a jump-off into the Glossary.
   const topicIdForTerms = topic?.id;
+  // Monotonic request token. Both openers are fire-and-forget async with no
+  // cancellation, so a slow fetch for topic A could resolve AFTER the user had
+  // closed the sheet, swiped to topic B and reopened it — and A's terms were
+  // then painted under B's heading. Only the newest request may write.
+  const termsReqRef = useRef(0);
   const openTerms = useCallback(async () => {
     if (!topicIdForTerms) return;
+    const req = ++termsReqRef.current;
     setTermsSource('topic');
     setTermsOpen(true);
+    setTermsError(false);
     setTermList(null);
     try {
       const items = await fetchTopicItems(topicIdForTerms);
+      if (termsReqRef.current !== req) return;
       setTermList(
         items
           .map((i) => ({ id: i.id, term: i.term }))
           .sort((a, b) => a.term.localeCompare(b.term)),
       );
     } catch {
-      setTermList([]);
+      // Was `setTermList([])`, which rendered a failed fetch as "0 terms" —
+      // a populated topic looked empty and offered no way to retry.
+      if (termsReqRef.current !== req) return;
+      setTermsError(true);
     }
   }, [topicIdForTerms]);
 
   // Flagged topic card tap → the user's own flagged terms in the same sheet.
   const openFlaggedTerms = useCallback(async () => {
+    const req = ++termsReqRef.current;
     setTermsSource('flagged');
     setTermsOpen(true);
+    setTermsError(false);
     setTermList(null);
     try {
       const items = await fetchGlossaryItemsByIds([...starred]);
+      if (termsReqRef.current !== req) return;
       setTermList(items.map((i) => ({ id: i.id, term: i.term }))); // API pre-sorts by term
     } catch {
-      setTermList([]);
+      if (termsReqRef.current !== req) return;
+      setTermsError(true); // see openTerms — never a silent empty list
     }
   }, [starred]);
 
@@ -1792,7 +1810,19 @@ export function DashboardScreen() {
                 <Text style={styles.termsClose}>✕</Text>
               </Pressable>
             </View>
-            {termList == null ? (
+            {termsError ? (
+              <View style={{ paddingVertical: 24, gap: 12, alignItems: 'center' }}>
+                <Text style={styles.termsCount}>Could not load these terms. Check your connection.</Text>
+                <View style={{ width: 160 }}>
+                  <StudioButton
+                    label="Retry"
+                    variant="secondary"
+                    small
+                    onPress={() => void (termsSource === 'flagged' ? openFlaggedTerms() : openTerms())}
+                  />
+                </View>
+              </View>
+            ) : termList == null ? (
               <View style={{ paddingVertical: 32 }}>
                 <ActivityIndicator color={colors.amber} />
               </View>

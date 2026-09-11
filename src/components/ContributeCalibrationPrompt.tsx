@@ -10,7 +10,7 @@
  * here — queueContribution only stores locally; upload is a separate, reviewed,
  * consent-gated step. Anonymous by construction: no account/PII/audio/geo.
  */
-import { useState, type ReactNode } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Modal } from './DimModal';
 import { ApeDsp } from '../../modules/ape-dsp';
@@ -44,15 +44,21 @@ export function ContributeCalibrationPrompt({
 }): ReactNode {
   const [ref, setRef] = useState<ReferenceQuality | null>(null);
   const [busy, setBusy] = useState(false);
+  // Synchronous latch: `busy` is state, so a same-tick double tap on CONTRIBUTE
+  // read it still false and queued the SAME calibration twice into the
+  // crowdsourced set. Released in close(), which every exit path runs.
+  const sendingRef = useRef(false);
 
   const close = () => {
+    sendingRef.current = false;
     setRef(null);
     setBusy(false);
     onClose();
   };
 
   const contribute = async () => {
-    if (ref == null || busy) return;
+    if (ref == null || busy || sendingRef.current) return;
+    sendingRef.current = true; // before the first await
     setBusy(true);
     try {
       await setCrowdsourceConsent(true); // opting in

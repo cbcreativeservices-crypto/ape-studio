@@ -1241,7 +1241,11 @@ export function CourseSelectionScreen() {
 
   const openCourse = useCallback(
     async (course: Extract<Card, { kind: 'course' }>) => {
-      await setLastCourse(course.id);
+      // setLastCourse is a bare AsyncStorage.setItem and CAN reject (a full or
+      // unavailable store). Unguarded, that rejection skipped the navigate
+      // below: tapping the course card did nothing at all, with no error. The
+      // remembered course is a convenience; opening the card is the intent.
+      await setLastCourse(course.id).catch(() => {});
       (navigation as any).navigate('Study', { screen: 'Dashboard' });
     },
     [navigation],

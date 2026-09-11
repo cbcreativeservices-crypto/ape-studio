@@ -42,6 +42,7 @@ import {
   submitFinalExam,
   type AnswerValue,
   type ExamItem,
+  type ExamStartError,
   type ExamPayload,
   type MatchingOptions,
 } from '../../features/finalExam/api';
@@ -63,6 +64,11 @@ export function FinalExamScreen({ navigation, route }: Props) {
 
   const [payload, setPayload] = useState<ExamPayload | null>(null);
   const [startError, setStartError] = useState<string | null>(null);
+  // Port of the quiz twin's [47]: the CODE decides whether an in-place retry is
+  // offered. Start is an idempotent resume, so retrying a transient failure
+  // cannot burn or duplicate an attempt.
+  const [startErrorCode, setStartErrorCode] = useState<ExamStartError | null>(null);
+  const [startNonce, setStartNonce] = useState(0);
   const [qIdx, setQIdx] = useState(0);
   const [msLeft, setMsLeft] = useState<number>(600_000);
   // Selection is tracked by OPTION INDEX, never by the value string (C1): two
@@ -94,12 +100,13 @@ export function FinalExamScreen({ navigation, route }: Props) {
         if (!alive) return;
         const code = e instanceof ExamStartFailure ? e.code : 'unknown';
         setStartError(EXAM_START_ERROR_COPY[code]);
+        setStartErrorCode(code);
       }
     })();
     return () => {
       alive = false;
     };
-  }, [awardType, awardId]);
+  }, [awardType, awardId, startNonce]);
 
   const deadline = useMemo(
     () =>
@@ -162,6 +169,12 @@ export function FinalExamScreen({ navigation, route }: Props) {
   /* ---- countdown (never pauses; force-submit at 0:00) ---- */
   useEffect(() => {
     if (!deadline) return;
+    // Port of the quiz twin's [43] (2026-09-11): sync the clock the moment the
+    // deadline is known. msLeft is seeded with a placeholder 600_000 (the
+    // screen cannot know the server's time limit before the payload lands), so
+    // without this the header showed a hardcoded 10:00 until the first 250 ms
+    // tick — misleading on any exam whose real limit is not ten minutes.
+    setMsLeft(deadline - Date.now());
     const t = setInterval(() => {
       const left = deadline - Date.now();
       setMsLeft(left);
@@ -317,10 +330,26 @@ export function FinalExamScreen({ navigation, route }: Props) {
 
   /* ---- states ---- */
   if (startError) {
+    // Only the transient codes get a retry. A lockout, an already-earned
+    // credential or an incomplete award are STATES, not failures — offering
+    // "Try again" on those would promise something that cannot happen.
+    const canRetryStart = startErrorCode === 'offline' || startErrorCode === 'unknown';
     return (
       <View style={styles.center}>
         <Text style={styles.errorText}>{startError}</Text>
-        <View style={{ width: 200 }}>
+        <View style={{ width: 200, gap: 10 }}>
+          {canRetryStart && (
+            <StudioButton
+              label="Try again"
+              variant="primary"
+              small
+              onPress={() => {
+                setStartError(null);
+                setStartErrorCode(null);
+                setStartNonce((n) => n + 1);
+              }}
+            />
+          )}
           <StudioButton label="Back" variant="secondary" small onPress={() => navigation.goBack()} />
         </View>
       </View>
