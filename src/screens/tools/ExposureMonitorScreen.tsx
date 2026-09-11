@@ -172,17 +172,34 @@ export function ExposureMonitorScreen() {
               erase exactly the two boundaries a listener needs to act on. */}
           {/* accessible + progressbar: the label alone sat on a bare View, so
               screen readers never stopped on the bar at all (2026-09-05). */}
+          {/* DOSE HAS NO CEILING (2026-09-11). The declared max of 100 was the
+              wrong half of the pair, not the value: dose is an unbounded
+              accumulator (exposureMonitor tick — `d.dose += dt / allow`, never
+              clamped) and EXCEEDING 100% is the whole finding this tool exists
+              to report. The visible row above already reads e.g. "340%", and
+              fmtRemaining() switches to "Recommended dose reached" past 1.0. So
+              a screen reader was announcing a real 340 against a declared
+              ceiling of 100. The spoken percentage now rides the VALUE TEXT
+              (accessibilityValue.text on the phone, aria-valuetext on web —
+              house pattern from src/screens/lab/amp/kit.tsx and
+              src/screens/tools/CenterLockTuner.tsx); the numeric bounds exist
+              only to keep role=progressbar determinate in the DOM, so the max
+              tracks the value rather than capping it. Only the bar's WIDTH
+              clamps at 100% — that is the visual design, unchanged. */}
           <View
             style={styles.doseTrack}
             accessible
             accessibilityRole="progressbar"
-            accessibilityLabel={`Daily dose ${dosePct} percent`}
-            accessibilityValue={{ min: 0, max: 100, now: dosePct }}
+            // The number belongs to the VALUE, not the label: carrying it in
+            // both made the percentage announce twice once value text was added.
+            accessibilityLabel="Daily dose"
+            accessibilityValue={{ text: `${dosePct} percent` }}
             // RNW 0.21 drops the accessibilityValue object — without these the
             // dose progressbar announced with no percentage on web.
             aria-valuemin={0}
-            aria-valuemax={100}
+            aria-valuemax={Math.max(100, dosePct)}
             aria-valuenow={dosePct}
+            aria-valuetext={`${dosePct} percent`}
           >
             <View
               style={[

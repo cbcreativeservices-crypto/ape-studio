@@ -1426,7 +1426,21 @@ export function SplMeterScreen({ navigation }: Props) {
                 // many times a second and would talk over everything else.
                 accessibilityLabel={`${bigText} ${readoutHonesty}. Tap to open the readout full screen.`}
               >
-                <Text style={styles.readoutValue} numberOfLines={1}>
+                {/* adjustsFontSizeToFit is not polish here, it is correctness.
+                    At a large system text size this 54pt number no longer fits
+                    the card, and `numberOfLines={1}` alone resolves that by
+                    CLIPPING — "100.4" renders as "100". The spoken label above
+                    still carries the true reading, so it was precisely the
+                    large-print SIGHTED user, the one who cannot cross-check,
+                    who was handed a wrong level by a measurement tool. Shrinking
+                    to fit keeps every digit; the phone still owns the text size,
+                    and at 1.0x nothing about this display changes. */}
+                <Text
+                  style={styles.readoutValue}
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.5}
+                >
                   {bigText}
                 </Text>
                 <Text style={styles.readoutSub}>{readoutHonesty}</Text>
