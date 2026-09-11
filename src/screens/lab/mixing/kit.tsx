@@ -207,6 +207,20 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
   const idsRef = useRef<string[]>([]);
   const pendingRef = useRef<string | null>(null);
   const aliveRef = useRef(true);
+  /** In-flight render bookkeeping — SYNCHRONOUS refs, set before the first
+   *  await, because `status` cannot close this window: play() awaits the audio
+   *  gate first, so a second tap arrives hundreds of ms later still holding the
+   *  PRE-render `status` from its own closure. Both taps then ran a full
+   *  renderAll; the loser still reached EarClipPlayer.load(), which overwrites
+   *  its `files` list — stranding that render's temp WAVs (up to ~2 MB each)
+   *  in the cache dir with nothing left to delete them.
+   *  • renderingSigRef — the variant signature currently rendering; a second
+   *    call for the SAME set returns immediately.
+   *  • renderSeqRef — generation counter, so a render superseded by a genuine
+   *    variant change (the repair page's console edits) aborts at its next
+   *    await instead of racing the new one to load(). */
+  const renderingSigRef = useRef<string | null>(null);
+  const renderSeqRef = useRef(0);
 
   const signature = useMemo(() => JSON.stringify(variants), [variants]);
 
@@ -229,67 +243,112 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
     setHeard([]);
     idsRef.current = [];
     pendingRef.current = null;
+    // Retire any render still in flight for the OLD set: bumping the generation
+    // makes it abort at its next await (so it can't reach load() and publish
+    // stale ids as 'ready'), and clearing the in-flight signature keeps the
+    // double-tap guard from blocking a set the user edits back to a previous
+    // value.
+    renderSeqRef.current++;
+    renderingSigRef.current = null;
   }, [signature]);
 
   const renderAll = useCallback(async () => {
-    setStatus('rendering');
-    AccessibilityInfo.announceForAccessibility?.('Rendering the mix.');
-    // Yield a frame so the RENDERING state paints before the DSP burst.
-    await new Promise((r) => setTimeout(r, 30));
-    const out: { id: string; mix: RenderedMix }[] = [];
-    const byId: Record<string, RenderedMix> = {};
-    for (const v of variants) {
-      let master = v.masterDb ?? 0;
-      const ropts = { mono: v.mono, sharedVerb: v.sharedVerb, busComp: v.busComp, busDriveDb: v.busDriveDb, masterWidth: v.masterWidth };
-      let mix = renderMix(v.settings, master, ropts);
-      if (v.matchTo && byId[v.matchTo]) {
-        master += matchGainDb(byId[v.matchTo], mix);
-        // Breathe between the probe render and the matched re-render — two
-        // full renders in one tick is the freeze class the null-test page
-        // hit on device (2026-09-11).
-        await new Promise((r) => setTimeout(r, 0));
-        if (!aliveRef.current) return;
-        mix = renderMix(v.settings, master, ropts);
+    // Synchronous double-tap guard (see the ref declarations above). MUST run
+    // before the first await, and MUST be a ref — a useState flag is not
+    // visible to the second tap until React has re-rendered.
+    if (renderingSigRef.current === signature) return;
+    renderingSigRef.current = signature;
+    const my = ++renderSeqRef.current;
+    /** Still the render this screen wants? (mounted AND not superseded) */
+    const current = () => aliveRef.current && my === renderSeqRef.current;
+    try {
+      setStatus('rendering');
+      AccessibilityInfo.announceForAccessibility?.('Rendering the mix.');
+      // Yield a frame so the RENDERING state paints before the DSP burst.
+      await new Promise((r) => setTimeout(r, 30));
+      if (!current()) return;
+      const out: { id: string; mix: RenderedMix }[] = [];
+      const byId: Record<string, RenderedMix> = {};
+      for (const v of variants) {
+        let master = v.masterDb ?? 0;
+        const ropts = { mono: v.mono, sharedVerb: v.sharedVerb, busComp: v.busComp, busDriveDb: v.busDriveDb, masterWidth: v.masterWidth };
+        let mix = renderMix(v.settings, master, ropts);
+        if (v.matchTo && byId[v.matchTo]) {
+          master += matchGainDb(byId[v.matchTo], mix);
+          // Breathe between the probe render and the matched re-render — two
+          // full renders in one tick is the freeze class the null-test page
+          // hit on device (2026-09-11).
+          await new Promise((r) => setTimeout(r, 0));
+          if (!current()) return;
+          mix = renderMix(v.settings, master, ropts);
+        }
+        byId[v.id] = mix;
+        out.push({ id: v.id, mix });
+        await new Promise((r) => setTimeout(r, 0)); // keep the UI thread breathing
+        if (!current()) return;
       }
-      byId[v.id] = mix;
-      out.push({ id: v.id, mix });
-      await new Promise((r) => setTimeout(r, 0)); // keep the UI thread breathing
-      if (!aliveRef.current) return;
-    }
-    if (!playerRef.current) {
-      playerRef.current = new EarClipPlayer();
-      // Natural end of a clip → the ▶/■ state stops claiming "playing" over
-      // silence (design pass 2).
-      playerRef.current.onEnded = () => {
-        if (aliveRef.current) setActive(null);
-      };
-    }
-    await playerRef.current.load(out.map((o) => o.mix.stereo));
-    if (!aliveRef.current) return;
-    idsRef.current = out.map((o) => o.id);
-    setMeasured(Object.fromEntries(out.map((o) => [o.id, { peakDb: o.mix.peakDb, rmsDb: o.mix.rmsDb }])));
-    setStatus('ready');
-    const want = pendingRef.current;
-    pendingRef.current = null;
-    setPending(null);
-    if (want) {
-      const i = idsRef.current.indexOf(want);
-      if (i >= 0) {
-        playerRef.current.play(i);
-        setActive(want);
-        setHeard((h) => (h.includes(want) ? h : [...h, want]));
+      if (!playerRef.current) {
+        playerRef.current = new EarClipPlayer();
+        // Natural end of a clip → the ▶/■ state stops claiming "playing" over
+        // silence (design pass 2).
+        playerRef.current.onEnded = () => {
+          if (aliveRef.current) setActive(null);
+        };
       }
+      // The superseded-render check sits BEFORE load() on purpose: load() is
+      // what writes the temp WAVs, so a loser never creates files to strand.
+      const player = playerRef.current;
+      await player.load(out.map((o) => o.mix.stereo));
+      if (!current()) {
+        // UNMOUNTED DURING load() (perf audit 2026-09-11). load() is the slow
+        // part — WAV encode + base64 + file write, ~0.5–2 s on device for up to
+        // four 10 s stereo variants — and the last liveness check before it sits
+        // at the end of the render loop. Leaving the screen inside that window
+        // runs the unmount cleanup (dispose + playerRef = null) BEFORE load()
+        // resolves, so the instance it just populated is orphaned: its
+        // expo-audio players are never .remove()d and its temp WAVs (~2 MB each)
+        // are never deleted. Nothing else holds a reference to do it.
+        // `playerRef.current !== player` is exactly the unmounted case — a
+        // merely SUPERSEDED render on a live screen leaves the ref pointing at
+        // this same instance, which the winning render reuses (load() unloads
+        // the old files itself), so that path is untouched.
+        if (playerRef.current !== player) player.dispose();
+        return;
+      }
+      idsRef.current = out.map((o) => o.id);
+      setMeasured(Object.fromEntries(out.map((o) => [o.id, { peakDb: o.mix.peakDb, rmsDb: o.mix.rmsDb }])));
+      setStatus('ready');
+      const want = pendingRef.current;
+      pendingRef.current = null;
+      setPending(null);
+      if (want) {
+        const i = idsRef.current.indexOf(want);
+        if (i >= 0) {
+          playerRef.current.play(i);
+          setActive(want);
+          setHeard((h) => (h.includes(want) ? h : [...h, want]));
+        }
+      }
+    } finally {
+      // Only the generation that still owns the slot may release it.
+      if (my === renderSeqRef.current) renderingSigRef.current = null;
     }
-  }, [variants]);
+  }, [signature, variants]);
 
   const play = useCallback(
     (id: string) => {
       void (async () => {
         if (!(await requestAudioOutput())) return;
-        if (status !== 'ready' || idsRef.current.length === 0) {
+        if (!aliveRef.current) return;
+        // REFS, not `status`: the gate above is an await, and this closure's
+        // `status` is the value from the render that created it. idsRef is set
+        // and cleared in lockstep with status ('ready' ⇔ non-empty), so it is
+        // the same test read from live state; renderAll's own synchronous
+        // guard collapses a double tap instead of a stale `!== 'rendering'`.
+        if (idsRef.current.length === 0) {
           pendingRef.current = id;
           setPending(id);
-          if (status !== 'rendering') void renderAll();
+          void renderAll();
           return;
         }
         const i = idsRef.current.indexOf(id);
@@ -299,7 +358,7 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
         setHeard((h) => (h.includes(id) ? h : [...h, id]));
       })();
     },
-    [renderAll, requestAudioOutput, status],
+    [renderAll, requestAudioOutput],
   );
 
   const stop = useCallback(() => {

@@ -86,6 +86,16 @@ export class EarClipPlayer {
   private files: string[] = [];
   private activeIdx: number | null = null;
   private subs = new Map<number, { remove: () => void }>();
+  /** Terminal once dispose() has run. load() spans many ticks (one WAV encode
+   *  + base64 + file write per clip, with breaths inside toBase64), so a screen
+   *  torn down mid-load used to let the rest of the load run against a disposed
+   *  instance: it re-populated `this.files` AFTER unloadFiles() had emptied it
+   *  and created fresh expo-audio players + listeners that nothing would ever
+   *  remove — leaked native players and ~2 MB temp WAVs per occurrence, orphaned
+   *  because the caller has already dropped its reference (perf audit
+   *  2026-09-11). dispose() is terminal at every call site, so bailing out is
+   *  behaviour-preserving on every live path. */
+  private disposed = false;
   /** ADDITIVE (2026-09-11, mixing lab): called when clip `i` finishes playing
    *  naturally, so a UI's ▶/■ state can stop claiming "playing" over silence.
    *  Optional — the ear lab's existing behaviour is unchanged when unset. */
@@ -93,6 +103,7 @@ export class EarClipPlayer {
 
   /** Load a trial's clips (index-addressed). Previous files are deleted. */
   async load(bufs: Buf[]): Promise<void> {
+    if (this.disposed) return;
     await this.unloadFiles();
     // Playback category: play even with the iOS silent switch on — a training
     // clip the learner explicitly started is content, not a notification.
@@ -102,8 +113,18 @@ export class EarClipPlayer {
     // in a single tick (two 10 s stereo mixing-lab variants measured 177 ms in
     // Node, and pages load up to four). Sequential + the breaths inside
     // toBase64 keep the JS thread free between clips. Same files, same order.
+    if (this.disposed) return;
     const uris: string[] = [];
-    for (const b of bufs) uris.push(await bufToWavFile(b));
+    for (const b of bufs) {
+      const uri = await bufToWavFile(b);
+      uris.push(uri);
+      // Torn down mid-load: delete what we have already written and stop before
+      // any player is created. Nothing else holds these paths.
+      if (this.disposed) {
+        await Promise.all(uris.map((u) => freeWavUri(u)));
+        return;
+      }
+    }
     this.files = uris;
     uris.forEach((uri, i) => {
       const existing = this.players.get(i);
@@ -163,6 +184,7 @@ export class EarClipPlayer {
   }
 
   dispose(): void {
+    this.disposed = true;
     for (const [, s] of this.subs) s.remove();
     this.subs.clear();
     for (const [, p] of this.players) p.remove();

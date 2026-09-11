@@ -36,6 +36,8 @@ import { CABLE_UNITS } from '../../screens/lab/cable/data/lessons';
 import { CI_LAB_UNITS } from '../../screens/lab/cableinstall/registry';
 import { PATCHBAY_UNITS } from '../../screens/lab/patchbay/units';
 import { CONNECTOR_SELECT_UNITS } from '../../screens/lab/connectorselect/units';
+import { FOUNDATIONS_UNITS } from '../../screens/lab/foundations/units';
+import { MIC_PRINCIPLES_UNITS, SPEAKER_COVERAGE_UNITS } from '../../screens/lab/micspeaker/units';
 import { noteHighValueEvent } from '../review/reviewPrompt';
 
 const STORAGE_KEY = 'ape:labProgress';
@@ -106,6 +108,16 @@ export const LAB_UNITS: Partial<Record<LabKey, readonly string[]>> = {
   // Audio Connectors & Cable Selection: one unit per PagedLab page, p1..p16
   // (STATIC for offline retryUnsent; same dev-check in the screen).
   af_connector_select: CONNECTOR_SELECT_UNITS,
+  // Foundations course steps + the Mic/Speaker sections. These three registered
+  // their units ONLY at runtime (registerLabUnits on mount), which left
+  // retryUnsent() — which runs at BOOT, before any lab screen mounts — with
+  // nothing to check: a lab finished offline or signed-out was never retried
+  // until the learner reopened it. Same React-free units.ts pattern as above;
+  // the ids are unchanged (Foundations = step INDEX as a string, Mic/Speaker =
+  // section key), so progress already banked on device still counts.
+  af_foundations: FOUNDATIONS_UNITS,
+  af_mic_principles: MIC_PRINCIPLES_UNITS,
+  af_speaker_coverage: SPEAKER_COVERAGE_UNITS,
 };
 
 // ── in-memory state (mirrors persisted blob) ────────────────────────────────

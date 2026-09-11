@@ -219,6 +219,9 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
             onPress={() => setBypassTimer((v) => !v)}
             accessibilityRole="checkbox"
             accessibilityState={{ checked: bypassTimer }}
+            // RNW 0.21 drops the accessibilityState object; aria-checked is what
+            // reaches the DOM, and it is valid (and required) on role=checkbox.
+            aria-checked={bypassTimer}
             accessibilityLabel="Keep audio on and defeat the auto-off timer for this session"
           >
             <View style={[styles.checkbox, bypassTimer && styles.checkboxOn]}>

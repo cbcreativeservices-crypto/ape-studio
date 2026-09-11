@@ -112,6 +112,12 @@ export function DragRail({
         accessibilityRole="adjustable"
         accessibilityLabel={label}
         accessibilityValue={{ text: `${cents.toFixed(2)} cents` }}
+        // RNW 0.21 drops the accessibilityValue object; aria-valuenow is required
+        // on role=slider. 0–1200 ¢ is the CentsRail's own domain (primitives.tsx).
+        aria-valuemin={0}
+        aria-valuemax={1200}
+        aria-valuenow={cents}
+        aria-valuetext={`${cents.toFixed(2)} cents`}
         accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
         onAccessibilityAction={(e) => step(e.nativeEvent.actionName === 'increment' ? 10 : -10)}
       >

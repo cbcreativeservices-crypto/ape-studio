@@ -215,7 +215,16 @@ export function resetLocal(): void {
 }
 
 export async function savePublicProfile(p: PublicProfile): Promise<void> {
-  await AsyncStorage.setItem(KEY, JSON.stringify(p));
+  // ProfileScreen calls this on EVERY keystroke as `void savePublicProfile(pub)`,
+  // so a rejecting write (storage full, a locked DB on Android) became an
+  // unhandled rejection per character typed. The device write is best-effort:
+  // swallow it here and still run the server syncs below, which is what the
+  // durable copy depends on anyway.
+  try {
+    await AsyncStorage.setItem(KEY, JSON.stringify(p));
+  } catch {
+    // keep going — the in-memory profile is still the UI's source of truth
+  }
   // A LISTED profile's bio/interests are published content, so edits have to
   // reach the public page — debounced the same way, and only while listed.
   // An unlisted profile pushes nothing: the server never holds a draft.

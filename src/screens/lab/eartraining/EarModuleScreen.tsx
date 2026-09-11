@@ -86,7 +86,17 @@ export function EarModuleScreen() {
   const { requestAudioOutput } = useAudioOutputGate();
 
   const playerRef = useRef<EarClipPlayer | null>(null);
-  const player = () => (playerRef.current ??= new EarClipPlayer());
+  /** FALSE once the screen has torn down. beginTrial now spans several ticks
+   *  (the yield before synthesis, makeFresh's retries, the sliced base64 inside
+   *  load) — so leaving a module mid-render used to let an in-flight beginTrial
+   *  reach `player()` AFTER the boot effect's cleanup had disposed and nulled
+   *  the ref. `??=` then RE-CREATED an EarClipPlayer that nothing ever disposes:
+   *  a leaked expo-audio player per clip plus its cache WAVs, every time. The
+   *  accessor now hands back null after teardown, and every await in beginTrial
+   *  re-checks this flag (same shape as the file's prerenderToken guard). */
+  const aliveRef = useRef(true);
+  const player = (): EarClipPlayer | null =>
+    aliveRef.current ? (playerRef.current ??= new EarClipPlayer()) : null;
   const stateRef = useRef<EarProgressState | null>(null);
   const nextTrialRef = useRef<EarTrial | null>(null);
   /** Bumped whenever a pre-render becomes stale (a new trial started, or the
@@ -157,20 +167,25 @@ export function EarModuleScreen() {
         // 2026-09-11). The pre-rendered path — the common answer→NEXT case,
         // already warmed in onAnswer — skips the yield and stays instant.
         if (!prerendered) await new Promise<void>((r) => setTimeout(r, 0));
+        // The screen may have been left during that yield (and during every
+        // await below) — a dead screen must never touch the player again.
+        if (!aliveRef.current) return;
         // Any pre-render still in flight is for the trial AFTER this one and
         // was drawn before this level/setting — discard it (see onAnswer).
         prerenderToken.current++;
         const t = prerendered ?? (await makeFresh(lvl, subOk));
+        if (!aliveRef.current) return;
         nextTrialRef.current = null;
         if (!t) return;
         lastKeyRef.current = trialKey(t);
         setPlays(t.clips.map(() => 0));
         try {
-          await player().load(t.clips.map((c) => c.buf));
+          await player()?.load(t.clips.map((c) => c.buf));
         } catch {
           // A failed load must never wedge the screen — the trial still shows;
           // the play chips will retry the pipeline on the next trial.
         }
+        if (!aliveRef.current) return;
         setTrial(t);
         setPhase('answering');
       } finally {
@@ -182,6 +197,7 @@ export function EarModuleScreen() {
 
   // Boot: progress + first trial.
   useEffect(() => {
+    aliveRef.current = true;
     let alive = true;
     (async () => {
       const s = await loadEarProgress();
@@ -197,6 +213,7 @@ export function EarModuleScreen() {
     })();
     return () => {
       alive = false;
+      aliveRef.current = false;
       playerRef.current?.dispose();
       playerRef.current = null;
     };
@@ -218,14 +235,15 @@ export function EarModuleScreen() {
       if (!trial) return;
       // The ■ chip means STOP — tapping the clip that is playing stops it.
       if (playing === i) {
-        player().stop();
+        player()?.stop();
         setPlaying(null);
         return;
       }
       if (phase === 'answering' && plays[i] >= replayCap) return;
       const okOut = await requestAudioOutput();
-      if (!okOut) return;
-      player().play(i);
+      // The gate is an await — the learner can leave while it is open.
+      if (!okOut || !aliveRef.current) return;
+      player()?.play(i);
       setPlaying(i);
       if (phase === 'answering') setPlays((p) => p.map((n, j) => (j === i ? n + 1 : n)));
       const buf = trial.clips[i].buf;
@@ -238,7 +256,7 @@ export function EarModuleScreen() {
   const onAnswer = useCallback(
     (i: number) => {
       if (!mod || !trial || phase !== 'answering') return;
-      player().stop();
+      player()?.stop();
       setPlaying(null);
       setPicked(i);
       setPhase('feedback');
@@ -266,6 +284,11 @@ export function EarModuleScreen() {
       const subOk = s.subBassOk;
       const my = ++prerenderToken.current;
       setTimeout(() => {
+        // The learner can leave during these 50 ms. makeFresh is a 47-110 ms
+        // SYNCHRONOUS DSP burst (measured, see makeFresh) — running it for a
+        // dead screen just steals the JS thread during the back transition
+        // (perf audit 2026-09-11).
+        if (!aliveRef.current) return;
         void (async () => {
           try {
             const t = await makeFresh(lvl, subOk);
@@ -369,6 +392,9 @@ export function EarModuleScreen() {
                 style={styles.subBassRow}
                 accessibilityRole="switch"
                 accessibilityState={{ checked: !subBassOk }}
+                // RNW 0.21 drops the accessibilityState object; aria-checked is what
+                // reaches the DOM, and it is valid (and required) on role=switch.
+                aria-checked={!subBassOk}
                 accessibilityLabel="My playback can't reproduce sub-bass — skip trials at or below 80 hertz"
               >
                 <Text style={[styles.subBassBox, !subBassOk && styles.subBassBoxOn]} importantForAccessibility="no">{!subBassOk ? '✓' : ''}</Text>
@@ -403,6 +429,11 @@ export function EarModuleScreen() {
                         accessibilityLabel={playing === i ? `Stop ${name}` : `Play ${name}`}
                         accessibilityHint={capped ? 'No replays left at this level' : undefined}
                         accessibilityState={{ disabled: capped }}
+                        // Twin of accessibilityState, which RNW 0.21 drops. The value
+                        // the DOM actually gets comes from the `disabled` prop above
+                        // (RNW's Pressable emits its own aria-disabled after spreading
+                        // props); both say `capped`, so the two agree.
+                        aria-disabled={capped}
                       >
                         <Text style={[styles.clipText, playing === i && styles.clipTextActive]}>
                           {playing === i ? '■' : '▶'} {c.label !== '▶' ? c.label : ''}
@@ -434,6 +465,14 @@ export function EarModuleScreen() {
                         accessibilityRole="button"
                         accessibilityLabel={`${a.label}${isCorrect ? ', correct answer' : isWrongPick ? ', your pick, not correct' : ''}`}
                         accessibilityState={{ disabled: phase !== 'answering', selected: picked === i }}
+                        // Twin of accessibilityState, which RNW 0.21 drops. aria-disabled's
+                        // DOM value comes from the `disabled` prop above (RNW's Pressable
+                        // emits its own after spreading props); both say the same thing.
+                        // Correctness/your-pick is also carried in accessibilityLabel, which
+                        // is what actually announces on web — aria-selected is inert on
+                        // role=button (house pattern, pending the owner's ruling).
+                        aria-disabled={phase !== 'answering'}
+                        aria-selected={picked === i}
                       >
                         <Text
                           style={[

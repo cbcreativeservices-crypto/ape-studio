@@ -43,8 +43,14 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
   const noun = kind === 'certificate' ? 'certificate' : 'program';
   // A guest can't earn credentials (no account): the waiting slot says so
   // inline instead of hopping to a sign-in dead end (Bug+Hater night A1-08).
-  const { entitlement } = useEntitlement();
-  const guest = entitlement === 'anonymous';
+  // `resolved` REQUIRED (entitlement roll-out 2026-09-11): the provider boots at
+  // 'anonymous' and only flips once the server read lands, so an ungated read
+  // flashed "Sign in with a free account to track this" at signed-in members
+  // before showing their real progress. Holding the guest line until the tier is
+  // known costs a guest nothing — the waiting slot simply shows its counts a
+  // moment later.
+  const { entitlement, resolved } = useEntitlement();
+  const guest = resolved && entitlement === 'anonymous';
   const [rows, setRows] = useState<EarnedCredentialRow[] | null>(null);
   const [nearest, setNearest] = useState<NearestCredentialResult | null>(null);
   const [open, setOpen] = useState<EarnedCredentialRow | null>(null);

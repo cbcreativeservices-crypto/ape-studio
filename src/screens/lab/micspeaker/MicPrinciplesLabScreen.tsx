@@ -37,6 +37,7 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { LabChip, CollapsibleSection } from '../LabShell';
 import { markLabUnit, registerLabUnits } from '../../../features/lab/labCompletion';
+import { MIC_PRINCIPLES_LAB_KEY, MIC_PRINCIPLES_UNITS } from './units';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../features/lab/guidedLessons';
 import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../foundations/bits';
 import { RackUnit } from '../rack/RackUnit';
@@ -1372,6 +1373,16 @@ const SECTIONS: { key: string; label: string; title: string; blurb: string; Comp
   { key: 'mistakes', label: 'MISTAKES', title: 'COMMON HANDHELD MISTAKES', blurb: 'A field guide — what to do, and the six habits to unlearn.', Comp: MistakesSection },
 ];
 
+if (__DEV__ && SECTIONS.map((x) => x.key).join(',') !== MIC_PRINCIPLES_UNITS.join(',')) {
+  // units.ts can't import SECTIONS (it feeds the boot-loaded completion store,
+  // which must stay React-free) — this keeps the two lists honest.
+  throw new Error(
+    `Mic Principles section keys drifted: SECTIONS has [${SECTIONS.map((x) => x.key).join(', ')}], ` +
+      `units.ts says [${MIC_PRINCIPLES_UNITS.join(', ')}]. ` +
+      'Update MIC_PRINCIPLES_UNITS in src/screens/lab/micspeaker/units.ts.',
+  );
+}
+
 export function MicPrinciplesLabScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -1387,12 +1398,15 @@ export function MicPrinciplesLabScreen() {
   };
 
   // R6c: mark each section viewed → the Microphone Principles lab completes once
-  // all sections have been seen.
+  // all sections have been seen. The unit set is ALSO declared statically in
+  // units.ts (which the boot-loaded store reads, so a completion banked offline
+  // is retried at launch); this call keeps the runtime registration for the
+  // in-lab re-check. The dev guard above keeps the two lists honest.
   useEffect(() => {
-    registerLabUnits('af_mic_principles', SECTIONS.map((x) => x.key));
+    registerLabUnits(MIC_PRINCIPLES_LAB_KEY, MIC_PRINCIPLES_UNITS);
   }, []);
   useEffect(() => {
-    markLabUnit('af_mic_principles', SECTIONS[sectionIdx].key);
+    markLabUnit(MIC_PRINCIPLES_LAB_KEY, SECTIONS[sectionIdx].key);
   }, [sectionIdx]);
 
   const s = SECTIONS[sectionIdx];

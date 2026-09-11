@@ -154,6 +154,13 @@ export function SpectrumColorPicker({
         accessibilityRole="adjustable"
         accessibilityLabel="Hue"
         accessibilityValue={{ min: 0, max: 360, now: hueDeg, text: `${hueDeg} degrees` }}
+        // RNW 0.21 drops the accessibilityValue OBJECT (same reason it drops
+        // accessibilityState), so role=slider announced with no value on web.
+        // These carry it; accessibilityValue still carries it on the phone.
+        aria-valuemin={0}
+        aria-valuemax={360}
+        aria-valuenow={hueDeg}
+        aria-valuetext={`${hueDeg} degrees`}
         accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
         onAccessibilityAction={(e) => stepHue(e.nativeEvent.actionName === 'decrement' ? -1 : 1)}
       >
@@ -176,6 +183,10 @@ export function SpectrumColorPicker({
         accessibilityRole="adjustable"
         accessibilityLabel="Lightness"
         accessibilityValue={{ min: 0, max: 100, now: lightPct, text: `${lightPct} percent` }}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={lightPct}
+        aria-valuetext={`${lightPct} percent`}
         accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
         onAccessibilityAction={(e) => stepLight(e.nativeEvent.actionName === 'decrement' ? -1 : 1)}
       >

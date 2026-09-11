@@ -58,6 +58,7 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { markLabUnit, registerLabUnits } from '../../../features/lab/labCompletion';
+import { FOUNDATIONS_LAB_KEY, FOUNDATIONS_STEP_COUNT, FOUNDATIONS_UNITS } from './units';
 import { RackUnit } from '../rack/RackUnit';
 import type { BezelItem, DockParam } from '../rack/rackTypes';
 import { CheckQuestion, ConceptBadge, LevelMeterBar, VizUnavailableCard, type CheckSpec } from './bits';
@@ -1886,6 +1887,15 @@ const STEPS: Step[] = [
   },
 ];
 
+if (__DEV__ && STEPS.length !== FOUNDATIONS_STEP_COUNT) {
+  // units.ts can't import STEPS (it feeds the boot-loaded completion store,
+  // which must stay React-free) — this keeps the two counts honest.
+  throw new Error(
+    `Foundations step count drifted: STEPS has ${STEPS.length}, units.ts says ${FOUNDATIONS_STEP_COUNT}. ` +
+      'Update FOUNDATIONS_STEP_COUNT in src/screens/lab/foundations/units.ts.',
+  );
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function FoundationsCourseScreen() {
@@ -1958,13 +1968,15 @@ export function FoundationsCourseScreen() {
   );
 
   // R6c: mark each course step viewed → the Foundations of Sound lab completes
-  // once all modules have been seen. Register the unit set (step indices) on
-  // mount so the boot-loaded store never imports this heavy screen.
+  // once all modules have been seen. The unit set is ALSO declared statically in
+  // units.ts (which the boot-loaded store reads, so an offline completion is
+  // retried at launch); this call keeps the runtime registration for the in-lab
+  // re-check. The dev guard above keeps the two counts honest.
   useEffect(() => {
-    registerLabUnits('af_foundations', STEPS.map((_, i) => String(i)));
+    registerLabUnits(FOUNDATIONS_LAB_KEY, FOUNDATIONS_UNITS);
   }, []);
   useEffect(() => {
-    markLabUnit('af_foundations', String(step));
+    markLabUnit(FOUNDATIONS_LAB_KEY, String(step));
   }, [step]);
 
   const s = STEPS[step];

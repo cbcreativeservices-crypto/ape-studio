@@ -884,6 +884,9 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
                 onPress={() => togglePos(i)}
                 accessibilityRole="button"
                 accessibilityState={{ selected: on }}
+                // Twin of accessibilityState (RNW 0.21 drops the object). Inert on
+                // role=button — the placed/empty state is carried by accessibilityLabel.
+                aria-selected={on}
                 accessibilityLabel={`Position ${i + 1}, at ${u} units, ${on ? 'support placed' : 'empty'}`}
               >
                 <Text style={[styles.posText, on && { color: colors.amber }]}>P{i + 1}</Text>

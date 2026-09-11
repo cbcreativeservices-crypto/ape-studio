@@ -859,7 +859,9 @@ const LiveReadout = memo(function LiveReadout({
     <View style={[styles.confWrap, landscape && styles.confWrapLandscape]}>
       <View style={styles.confRow}>
         <Text style={styles.footLabel}>SIGNAL</Text>
-        <View style={styles.confTrack} accessible accessibilityRole="progressbar" accessibilityLabel="Pitch signal confidence" accessibilityValue={{ min: 0, max: 100, now: signalPct }}>
+        <View style={styles.confTrack} accessible accessibilityRole="progressbar" accessibilityLabel="Pitch signal confidence" accessibilityValue={{ min: 0, max: 100, now: signalPct }}
+        // RNW 0.21 drops the accessibilityValue object — these carry it to the DOM.
+        aria-valuemin={0} aria-valuemax={100} aria-valuenow={signalPct}>
           <View style={[styles.confFill, { width: `${signalPct}%`, backgroundColor: signalPct > 60 ? '#37e05f' : signalPct > 30 ? colors.amber : '#f0603a' }]} />
         </View>
         <Text style={styles.confPct}>{`${signalPct}%`}</Text>
@@ -905,7 +907,12 @@ const LiveReadout = memo(function LiveReadout({
   const fillW = Math.abs(pointerX);
   const meter = (
     <View style={styles.meterBlock}>
-      <View style={[styles.meter, { width: meterW }]} accessible accessibilityRole="adjustable" accessibilityLabel="Tuning meter" accessibilityValue={{ min: -50, max: 50, now: Math.round(view.shownCents) }}>
+      <View style={[styles.meter, { width: meterW }]} accessible accessibilityRole="adjustable" accessibilityLabel="Tuning meter" accessibilityValue={{ min: -50, max: 50, now: Math.round(view.shownCents) }}
+      // RNW 0.21 drops the accessibilityValue object, so this role=slider meter
+      // announced with NO cents reading on web. aria-valuetext gives the sign a
+      // voice ("12 cents sharp") — a bare -12 is easy to mishear as a range end.
+      aria-valuemin={-50} aria-valuemax={50} aria-valuenow={Math.round(view.shownCents)}
+      aria-valuetext={`${Math.abs(Math.round(view.shownCents))} cents ${Math.round(view.shownCents) === 0 ? 'in tune' : Math.round(view.shownCents) > 0 ? 'sharp' : 'flat'}`}>
         <View style={styles.meterTrack} />
         <View style={[styles.closeBand, { width: closeW * 2, left: meterW / 2 - closeW }]} />
         {cents != null && !octaveOff ? (

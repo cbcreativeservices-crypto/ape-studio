@@ -29,8 +29,31 @@ const listeners = new Set<() => void>();
 function emit() {
   listeners.forEach((l) => l());
 }
+/** Largest blob we are willing to push into ONE AsyncStorage value before
+ *  saying so. Android backs AsyncStorage with SQLite, whose CursorWindow is
+ *  ~2 MB — past that a value can fail to READ BACK, which would lose the whole
+ *  library silently on the next launch. */
+const SIZE_WARN_BYTES = 1_500_000;
+
 function persist() {
-  void AsyncStorage.setItem(KEY, JSON.stringify(list));
+  const blob = JSON.stringify(list);
+  // The write used to be fire-and-forget: a failure (quota, CursorWindow, disk)
+  // vanished, and the user kept a library that was never stored. At minimum it
+  // must be audible in the logs (perf/memory audit 2026-09-11).
+  void AsyncStorage.setItem(KEY, blob).catch((e: unknown) => {
+    console.warn('[measurements] save FAILED — the library on screen is not persisted:', e);
+  });
+  if (__DEV__ && blob.length > SIZE_WARN_BYTES) {
+    // Not a throttle, a tripwire: this file's own docblock says big grids
+    // (spectrogram) must move to the SQLite split, and the Spectrogram and
+    // MultiMeter tools now ship exactly those. One snapshot is ~119 KB, so the
+    // MAX_SAVED = 200 cap allows ~23 MB in a single key.
+    console.warn(
+      `[measurements] blob is ${(blob.length / 1_000_000).toFixed(1)} MB in ONE AsyncStorage key ` +
+        `(${list.length} records). Past ~2 MB Android may fail to read it back and the whole ` +
+        'library is lost on relaunch — migrate grid payloads to the SQLite split.',
+    );
+  }
 }
 
 async function hydrate(): Promise<void> {

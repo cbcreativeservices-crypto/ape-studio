@@ -25,6 +25,7 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { LabChip, CollapsibleSection } from '../LabShell';
 import { markLabUnit, registerLabUnits } from '../../../features/lab/labCompletion';
+import { SPEAKER_COVERAGE_LAB_KEY, SPEAKER_COVERAGE_UNITS } from './units';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../features/lab/guidedLessons';
 import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../foundations/bits';
 import { jetColor } from './viz';
@@ -184,6 +185,16 @@ const SECTIONS: { key: string; label: string; title: string; blurb: string }[] =
   { key: 'read', label: 'READING IT', title: 'READING A COVERAGE MAP', blurb: 'The heat-map colors, and the vocabulary every system tech uses.' },
 ];
 
+if (__DEV__ && SECTIONS.map((x) => x.key).join(',') !== SPEAKER_COVERAGE_UNITS.join(',')) {
+  // units.ts can't import SECTIONS (it feeds the boot-loaded completion store,
+  // which must stay React-free) — this keeps the two lists honest.
+  throw new Error(
+    `Speaker Coverage section keys drifted: SECTIONS has [${SECTIONS.map((x) => x.key).join(', ')}], ` +
+      `units.ts says [${SPEAKER_COVERAGE_UNITS.join(', ')}]. ` +
+      'Update SPEAKER_COVERAGE_UNITS in src/screens/lab/micspeaker/units.ts.',
+  );
+}
+
 // Stage left/right are the PERFORMER'S perspective (owner 2026-08-31): the
 // top view draws the stage at the top with performers facing the audience
 // below, so the performer's LEFT is the SCREEN'S right. The old mapping was
@@ -235,12 +246,16 @@ export function SpeakerCoverageLabScreen() {
   };
 
   // R6c: mark each section viewed → the Speaker Placement & Coverage lab
-  // completes once all sections have been seen.
+  // completes once all sections have been seen. The unit set is ALSO declared
+  // statically in units.ts (which the boot-loaded store reads, so a completion
+  // banked offline is retried at launch); this call keeps the runtime
+  // registration for the in-lab re-check. The dev guard above keeps the two
+  // lists honest.
   useEffect(() => {
-    registerLabUnits('af_speaker_coverage', SECTIONS.map((x) => x.key));
+    registerLabUnits(SPEAKER_COVERAGE_LAB_KEY, SPEAKER_COVERAGE_UNITS);
   }, []);
   useEffect(() => {
-    markLabUnit('af_speaker_coverage', SECTIONS[sectionIdx].key);
+    markLabUnit(SPEAKER_COVERAGE_LAB_KEY, SECTIONS[sectionIdx].key);
   }, [sectionIdx]);
 
   const topDisp = DISPERSIONS[topDispIdx];

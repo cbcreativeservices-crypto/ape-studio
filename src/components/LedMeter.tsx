@@ -67,7 +67,18 @@ export function LedMeter({
   const segColor = midi ? midiColorFor : colorFor;
   const pct = Math.round((f / SEG_COUNT) * 100);
   const a11y = a11yLabel
-    ? ({ accessible: true, accessibilityRole: 'progressbar' as const, accessibilityLabel: a11yLabel, accessibilityValue: { min: 0, max: 100, now: pct } })
+    // RNW 0.21 drops the accessibilityValue OBJECT, so on web the meter announced
+    // as a progressbar with no reading at all. The aria- trio carries the percent
+    // there; accessibilityValue still carries it on the phone (2026-09-11).
+    ? ({
+        accessible: true,
+        accessibilityRole: 'progressbar' as const,
+        accessibilityLabel: a11yLabel,
+        accessibilityValue: { min: 0, max: 100, now: pct },
+        'aria-valuemin': 0,
+        'aria-valuemax': 100,
+        'aria-valuenow': pct,
+      })
     : {};
   return (
     <View

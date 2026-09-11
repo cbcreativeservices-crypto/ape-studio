@@ -178,6 +178,11 @@ export function ExposureMonitorScreen() {
             accessibilityRole="progressbar"
             accessibilityLabel={`Daily dose ${dosePct} percent`}
             accessibilityValue={{ min: 0, max: 100, now: dosePct }}
+            // RNW 0.21 drops the accessibilityValue object — without these the
+            // dose progressbar announced with no percentage on web.
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={dosePct}
           >
             <View
               style={[

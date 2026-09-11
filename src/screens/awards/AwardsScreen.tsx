@@ -278,8 +278,15 @@ export function AwardsScreen({ navigation, route }: Props) {
   const listRef = useRef<FlatList<PageKey>>(null);
 
   // Account signal — anonymous = no account (selections won't be saved).
-  const { entitlement } = useEntitlement();
-  const hasAccount = entitlement !== 'anonymous';
+  // GATED ON `resolved` (entitlement roll-out 2026-09-11): the provider boots at
+  // 'anonymous' and only flips once the server read lands, so an ungated read
+  // meant a signed-in member who picked in that window wrote nothing — and, if
+  // the read then failed, never wrote at all. We deliberately do NOT write
+  // optimistically: a guest must leave no local preference behind (no-tracking
+  // promise). Instead the pick is re-persisted by the effect below the moment
+  // the tier resolves to a real account.
+  const { entitlement, resolved } = useEntitlement();
+  const hasAccount = resolved && entitlement !== 'anonymous';
 
   // Builder selections (user request 2026-07-18): a Specialized Certificate
   // (Level 1) + an Academy Program Certificate (Level 2) — each chosen from its
@@ -348,6 +355,19 @@ export function AwardsScreen({ navigation, route }: Props) {
     else if (consumeDevPreview('awards:programPicker')) setPicker('programs');
   }, []);
 
+  // RE-PERSIST ONCE THE TIER RESOLVES. A pick made while the entitlement read
+  // was still in flight was silently dropped (the write is account-gated, and
+  // the provider reads 'anonymous' until the server answers). Writing
+  // optimistically would leave a local preference behind for someone who turns
+  // out to be a guest, so the write is simply repeated the moment the account
+  // is confirmed. Idempotent: AsyncStorage.setItem with the value already
+  // stored is a no-op, so the common case re-writes what is already there.
+  useEffect(() => {
+    if (!hasAccount) return;
+    if (specCert) void AsyncStorage.setItem(SPEC_CERT_KEY, specCert).catch(() => {});
+    if (programPath) void AsyncStorage.setItem(PROGRAM_PATH_KEY, programPath).catch(() => {});
+  }, [hasAccount, specCert, programPath]);
+
   // Tapping an award name toggles its topics open/closed AND records it as the
   // current selection.
   // Click open / click close (user request 2026-07-22 — reverses the earlier
@@ -355,12 +375,12 @@ export function AwardsScreen({ navigation, route }: Props) {
   const toggleCert = (name: string) => {
     setExpandedCert((prev) => (prev === name ? null : name));
     setSpecCert(name);
-    if (hasAccount) void AsyncStorage.setItem(SPEC_CERT_KEY, name);
+    if (hasAccount) void AsyncStorage.setItem(SPEC_CERT_KEY, name).catch(() => {});
   };
   const toggleProg = (name: string) => {
     setExpandedProg((prev) => (prev === name ? null : name));
     setProgramPath(name);
-    if (hasAccount) void AsyncStorage.setItem(PROGRAM_PATH_KEY, name);
+    if (hasAccount) void AsyncStorage.setItem(PROGRAM_PATH_KEY, name).catch(() => {});
   };
 
   // Topic name lookup: v3 curriculum first (the award tables use v3 gs), then

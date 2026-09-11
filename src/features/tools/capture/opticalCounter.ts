@@ -116,7 +116,14 @@ export function useOpticalCounter(active: boolean): { state: OpticalState; readi
     setState('starting');
     Optical.start()
       .then(() => {
-        if (cancelled) return;
+        if (cancelled) {
+          // Left the tool while the camera was still opening: the cleanup's
+          // Optical.stop() was issued against a session that did not exist yet,
+          // so the session start() has now opened has no owner and nothing will
+          // ever close it. Close it here (perf audit 2026-09-11).
+          void Optical.stop();
+          return;
+        }
         setState('running');
         poll = setInterval(() => {
           const batch = Optical.getSamples(seqRef.current);

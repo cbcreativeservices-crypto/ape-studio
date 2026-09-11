@@ -36,6 +36,18 @@ type StreamState = 'stopped' | 'starting' | 'open';
 let streamState: StreamState = 'stopped';
 let releaseTimer: ReturnType<typeof setTimeout> | null = null;
 let startInFlight: Promise<void> | null = null;
+/** Generation token for in-flight starts (the guard useDspEngine already uses
+ *  as `genRef`). A cold HAL open costs 5-10 s on Android, while releaseMic()
+ *  fires doStop() after 1500 ms — so leaving the section during a cold start
+ *  used to let ApeDsp.start() resolve AFTER the stop and unconditionally set
+ *  `streamState = 'open'` + setMicActive(true). That left a capture stream with
+ *  no owner: nothing would ever release it, the OS mic indicator stayed lit,
+ *  isSpeakerFeedbackMuted() silenced app audio app-wide, and exposureMonitor's
+ *  1 Hz poller kept integrating against a dead stream (perf audit 2026-09-11).
+ *  Bumping the token on every stop makes a superseded start close the stream it
+ *  just opened instead of claiming it. Behaviour on every un-interrupted path is
+ *  unchanged (the token still matches). */
+let startGen = 0;
 
 function cancelPendingRelease(): void {
   if (releaseTimer) {
@@ -46,6 +58,7 @@ function cancelPendingRelease(): void {
 
 function doStop(): void {
   cancelPendingRelease();
+  startGen++; // any start still opening the HAL is now orphaned — disown it
   if (streamState === 'stopped') return;
   streamState = 'stopped';
   setMicActive(false); // mic released → the feedback interlock disarms
@@ -97,9 +110,17 @@ export async function acquireMic(cfg: EngineConfig, forceRestart = false): Promi
   }
   if (streamState === 'starting') return startInFlight ?? Promise.resolve();
   streamState = 'starting';
+  const myGen = ++startGen;
   startInFlight = (async () => {
     try {
       await ApeDsp.start();
+      if (myGen !== startGen) {
+        // A stop landed while the HAL was still opening. The owner is gone, so
+        // close the stream we just opened rather than flagging it open — see
+        // the startGen docblock.
+        void ApeDsp.stop();
+        return;
+      }
       streamState = 'open';
       setMicActive(true); // mic now capturing → the interlock arms
     } catch (e) {

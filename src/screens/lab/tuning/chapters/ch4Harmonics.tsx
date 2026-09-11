@@ -153,6 +153,9 @@ function SliderTrack({ value, onChange }: { value: number; onChange: (v: number)
     <View style={styles.track}
       onLayout={(e) => setW(e.nativeEvent.layout.width)}
       accessible accessibilityRole="adjustable" accessibilityLabel="Major third size" accessibilityValue={{ text: `${value.toFixed(2)} cents` }}
+      // RNW 0.21 drops the accessibilityValue object; aria-valuenow is required
+      // on role=slider. Bounds are this track's own 380–410 ¢ range.
+      aria-valuemin={min} aria-valuemax={max} aria-valuenow={value} aria-valuetext={`${value.toFixed(2)} cents`}
       onStartShouldSetResponder={() => true}
       onMoveShouldSetResponder={() => true}
       onResponderGrant={(e) => onChange(fromX(e.nativeEvent.locationX))}

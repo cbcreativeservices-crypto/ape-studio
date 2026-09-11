@@ -134,7 +134,11 @@ export function ProgressBar({ value, label }: { value: number; label: string }) 
     Animated.timing(width, { toValue: v, duration: 260, useNativeDriver: false }).start();
   }, [v, width]);
   return (
-    <View accessible accessibilityRole="progressbar" accessibilityLabel={label} accessibilityValue={{ min: 0, max: 100, now: Math.round(v * 100) }} style={styles.barWrap}>
+    <View accessible accessibilityRole="progressbar" accessibilityLabel={label} accessibilityValue={{ min: 0, max: 100, now: Math.round(v * 100) }}
+      // RNW 0.21 drops the accessibilityValue object — these carry the percent
+      // to the DOM so the progressbar does not announce as valueless on web.
+      aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(v * 100)}
+      style={styles.barWrap}>
       <View style={styles.barTrack}>
         <Animated.View style={[styles.barFill, { width: width.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] }) }]} />
       </View>

@@ -72,7 +72,11 @@ export function SpeakButton({
         }
       },
       onStopped: () => {
-        if (mine.current) reset();
+        if (mine.current) {
+          reset();
+          activeReset = null; // parity with onDone/onError — don't strand a
+          // setState closure for an unmounted row in the global slot
+        }
       },
       onError: () => {
         if (mine.current) {

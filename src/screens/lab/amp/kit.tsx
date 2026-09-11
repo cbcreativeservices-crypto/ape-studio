@@ -200,6 +200,12 @@ export function ControlSlider({
         accessibilityRole="adjustable"
         accessibilityLabel={label}
         accessibilityValue={{ text: shown }}
+        // RNW 0.21 drops the accessibilityValue object. aria-valuenow is REQUIRED
+        // on role=slider, so the numeric bounds ride alongside the formatted text.
+        aria-valuemin={min}
+        aria-valuemax={max}
+        aria-valuenow={value}
+        aria-valuetext={shown}
         accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
         onAccessibilityAction={(e) => {
           const d = (max - min) / 10;
