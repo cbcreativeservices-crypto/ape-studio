@@ -138,12 +138,22 @@ and the free-tier RPC amendment (backend).
   ran and is Ready, and the live site (`web-liard-alpha-21.vercel.app`) renders
   the unlock gate cleanly (no fail-closed error). ccode drove the Chrome form +
   generated the values but did NOT type the secret values (hard safety rule).
-  Values recorded below for rotation reference:
-  - `GATE_UNLOCK_KEY`  = `uGt7N7ZnSEpkIuM5QNTerswx`
-  - `GATE_COOKIE_TOKEN` = `IDhfCXiyN5fSYiUw4qaWMvqb0TYt6GXw`
+  ⚠️ **The two values used to be written out here in plaintext. They were
+  removed and ROTATED 2026-09-11.** `gate.ts`'s own docblock is explicit that a
+  key readable from source defeats the gate — recording them "for rotation
+  reference" did exactly that. The live values now exist ONLY in the Vercel env
+  (Secret type); they are not in this repo and must never be written back into
+  it. To see them, read them in Vercel.
+
+  Note for whoever reads the history: scrubbing this file does NOT remove the
+  OLD values from git history (they entered at `df1391f3`). That is fine
+  precisely because they were rotated — the exposed pair is dead. It would NOT
+  have been fine to scrub without rotating.
+
   Vercel: Project → Settings → Environment Variables → add each (all envs:
   Production/Preview/Development) → Save → **Redeploy** (env vars only bind on a
-  new deploy). Treat these as secrets (rotate if they leak).
+  new deploy). The owner pastes the secret values; ccode drives the form but
+  never types a secret (hard safety rule, as on 2026-09-04).
 - [x] **Schema-isolation Phase 1 — SHIPPED + DEVICE-VERIFIED 2026-09-04.** Spec
   (`CCODE_APP_CHANGE_SPEC_schema_isolation_2026_09_04.md`); the 3 identity reads
   (`profile/api.ts` ×2, `SettingsScreen.tsx` ×1) go through `my_identity()`.
