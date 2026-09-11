@@ -86,9 +86,8 @@ console fails the suite.
 ## Deferred owner decisions (worked around, not blocking)
 
 - **Ratification of this sheet** (all copy new, both labs).
-- **Device pass** of both labs (Beginning 16 pages, Advanced 20 pages) —
-  Labs → Training → Mixing, or web hashes `#mixinglabpreview` /
-  `#advmixingpreview`.
+- ~~Device pass~~ ✅ **DEVICE PASS DONE 2026-09-11** — owner passed both labs
+  on device ("device pass all good on both").
 - **Catalog placement fine-tuning**: Mixing category currently leads the
   TRAINING section, member-only (the approved recommendation) — reorder at
   will.
