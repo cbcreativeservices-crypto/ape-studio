@@ -41,11 +41,10 @@ external query — are authoritative. Every record below came from them.
 | CNAME | `rsend` | `rsend.forge.rmta.net` — **REQUIRED (Resend is live)** |
 | TXT | `resend._domainkey` | `p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC9T702d5o6ggkcMlpajjWjGyrHVLCENAvUnkbL2fffGOZCuD8ABu+aZkGuQrc0MIGO3qmZFy0awvEEbBThN8yCwUnqxYp8bctxQO+c37zncLuuKVZQNsAe9K0r30oUAbUarQy1ZKGWaRkasTsrGDaTtQ9n9LzD6mLd6Tij8U5KLQIDAQAB` — **REQUIRED (Resend is live)** |
 
-**SPF — DEFERRED to AFTER the move, deliberately.** There is still no SPF record
-at all. It was originally listed as an ADD during the migration; on reflection
-that mixes two changes and muddies the rollback, so the cutover stays
-like-for-like (minus dead cruft) and SPF lands as its own deliberate step
-afterwards, verified against Resend's dashboard.
+**SPF — ✅ ADDED 2026-09-11, after the move, as its own step (see run-list 10).**
+Deferring it was the right call: keeping the cutover like-for-like meant that
+if anything had broken, DNS was the only variable. `v=spf1
+include:_spf.google.com ~all` now sits at the apex.
 
 When it does land, `v=spf1 include:_spf.google.com ~all` at the apex is the
 right shape: Resend aligns via the `send` CNAME, whose target carries Resend's
@@ -103,7 +102,7 @@ preserve, no mail, no verification records. This is why it is the canary.
 | 7a | — | ⚠️ **CORRECTION — "propagated on both resolvers" was overstated for `.com`, and the reason is worth keeping.** An earlier check caught Google `8.8.8.8` returning the Vercel pair, which was a true answer from ONE anycast PoP, not a stable global state. Re-querying **three times each across four resolvers** gives the real picture: Cloudflare `1.1.1.1`, Quad9 `9.9.9.9` and OpenDNS `208.67.222.222` are fully across with the clean single MX; **Google is consistently still on the Bluehost cache, 3/3.** ✅ `.co` and `.online` are across everywhere. **Lesson: never call a delegation propagated from a single query to a single anycast resolver — query several, more than once.** No risk attaches here, because Google's stale view still carries `pref 1 → smtp.google.com`, so mail reaches Workspace from either side of the cache — which the arriving test message confirms. |
 | 8 | — | ⏳ **ROLLBACK WINDOW OPEN: 2026-09-11 → 2026-09-18.** Leave the Bluehost zones **intact** until then. Rollback is **REVERT TO DEFAULTS** on that domain's Bluehost Nameservers tab — one click, per domain, no retyping. Do not touch the Bluehost zones during the window even though they now serve nothing, because reverting is only instant while they still hold the records. |
 | 9 | Bluehost | ⏳ **ON OR AFTER 2026-09-18**, and only if nothing has gone wrong, remove the stale academy zones. ⚠️ **Never remove the domains themselves** — registration stays at Bluehost, and pulling a registration is not the same button as pulling a zone. |
-| 10 | Vercel → DNS (`.com`) | ⏳ **SPF — the deliberately deferred step, now due.** There is still **no SPF record at all** (the apex TXT holds only the google-site-verification string, re-confirmed 2026-09-11). Two senders use this domain — Google Workspace and Resend — so this matters more than it did. Add `v=spf1 include:_spf.google.com ~all` at the apex; Resend aligns via the `send` CNAME, whose target carries Resend's own SPF. Do it as its OWN change with its own verification, not folded into anything else. |
+| 10 | Vercel → DNS (`.com`) | ✅ **DONE 2026-09-11 — SPF added at the apex: `v=spf1 include:_spf.google.com ~all`, TTL 60.** The doc's reasoning was **verified before typing, not assumed**: `send.proaudiotrainingacademy.com` CNAMEs to `send.forge.rmta.net`, which publishes Resend's OWN SPF (`ip4:52.3.252.119 ip4:44.222.39.36 ip4:199.249.231.0/24 ~all`) plus a bounce MX — i.e. Resend uses a **custom Return-Path on that subdomain**, SPF is evaluated *there*, and the apex therefore only has to authorise Google. Post-checks: exactly **one** `v=spf1` record at the apex (two would be a permerror, not a redundancy), the google-site-verification TXT still intact beside it, the Resend subdomain SPF untouched, and the lookup budget is **1 of 10** (`_spf.google.com` expands to ip4/ip6 literals only). Live on Cloudflare and Quad9 immediately; Google still shows nothing for it, being the one resolver still on the stale Bluehost cache per 7a. |
 | 11 | Resend dashboard | ⏳ Re-verify `proaudiotrainingacademy.com` now its DNS is served from Vercel, and let Resend state its own required records rather than guessing at the include. |
 | 12 | — | ⏳ **The original leak is not fully closed until the hosting is dealt with.** The academy names no longer resolve anywhere near `162.241.216.17`, so the catch-all is unreachable — but it still exists while that shared plan does, and a stale cache remains its only route in. Re-check any time with `curl -sS -o /dev/null -w "%{http_code}" -H "Host: proaudiotrainingacademy.com" http://162.241.216.17/`. |
 
