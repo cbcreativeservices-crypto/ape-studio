@@ -74,6 +74,25 @@ export function flushWeeklyConceptNav(nav: NavFn): void {
   nav(next);
 }
 
+/** Same contract as the weekly payload above, for the 7 LOCAL reminders.
+ *  A cold-start tap resolves through getLastNotificationResponseAsync while
+ *  App is still rendering its font-loading placeholder, so NavigationContainer
+ *  is not mounted yet and the destination used to be dropped on the floor —
+ *  the reminder opened the app at Home instead of Glossary/Awards. Park it
+ *  here and drain from NavigationContainer's onReady. */
+let pendingLocalDest: string | null = null;
+
+export function queueLocalDest(dest: string): void {
+  pendingLocalDest = dest;
+}
+
+export function flushLocalDestNav(go: (dest: string) => void): void {
+  if (!pendingLocalDest) return;
+  const next = pendingLocalDest;
+  pendingLocalDest = null;
+  go(next);
+}
+
 /**
  * TWO DIFFERENT IDENTITIES (verified in the DB 2026-08-30 — this bit me):
  *   notification_preferences.user_id            = public.users.id  (app id)
@@ -194,10 +213,16 @@ export function attachWeeklyConceptPush(
     route(response);
   });
 
-  void Notifications.getLastNotificationResponseAsync().then((response) => {
-    if (!route(response)) return;
-    void Notifications.clearLastNotificationResponseAsync();
-  });
+  // Fail-soft like the rest of this module: a rejection here must not become
+  // an unhandled rejection at boot.
+  void Notifications.getLastNotificationResponseAsync()
+    .then((response) => {
+      if (!route(response)) return;
+      void Notifications.clearLastNotificationResponseAsync();
+    })
+    .catch(() => {
+      /* no cold-start payload available — nothing to route */
+    });
 
   return () => sub.remove();
 }

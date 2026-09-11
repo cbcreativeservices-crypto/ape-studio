@@ -19,20 +19,36 @@ export function WeeklyConceptScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
   const [card, setCard] = useState<WeeklyConceptPayload | null>(fromRoute(route.params));
   const [loading, setLoading] = useState(!hasBody(fromRoute(route.params)) && !!route.params.concept_id);
+  // A failed fetch must not read as "this concept is not available" — that
+  // sends the reader away believing the card is gone when the network simply
+  // dropped. Tracked separately so the error state can offer a retry.
+  const [loadError, setLoadError] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     const initial = fromRoute(route.params);
     if (hasBody(initial) || !route.params.concept_id) return;
     let cancelled = false;
-    void fetchConceptById(route.params.concept_id).then((row) => {
-      if (cancelled) return;
-      setCard(row);
-      setLoading(false);
-    });
+    setLoading(true);
+    setLoadError(false);
+    // .catch is load-bearing: a THROW here (not a null resolve) used to leave
+    // setLoading(false) unreached — a permanent spinner with no way out.
+    void fetchConceptById(route.params.concept_id)
+      .then((row) => {
+        if (cancelled) return;
+        setCard(row);
+        if (!row) setLoadError(true);
+      })
+      .catch(() => {
+        if (!cancelled) setLoadError(true);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
     return () => {
       cancelled = true;
     };
-  }, [route.params]);
+  }, [route.params, reloadKey]);
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
@@ -46,6 +62,20 @@ export function WeeklyConceptScreen({ navigation, route }: Props) {
       {loading ? (
         <View style={styles.center}>
           <ActivityIndicator color={colors.amber} />
+        </View>
+      ) : loadError ? (
+        // Distinct from "unavailable": the request failed, so offer a retry
+        // instead of telling the reader the concept does not exist.
+        <View style={styles.center}>
+          <Text style={styles.empty}>Couldn’t load this concept — check your connection.</Text>
+          <Pressable
+            onPress={() => setReloadKey((k) => k + 1)}
+            style={styles.retry}
+            accessibilityRole="button"
+            accessibilityLabel="Retry loading this concept"
+          >
+            <Text style={styles.retryText}>RETRY</Text>
+          </Pressable>
         </View>
       ) : !card || !card.concept ? (
         // [37] (2026-09-07): a fetched row with an empty concept is unavailable,
@@ -130,6 +160,8 @@ const styles = StyleSheet.create({
   close: { fontSize: 18, color: colors.textSubAlt },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
   empty: { fontFamily: fonts.barlowRegular, fontSize: 15, color: colors.textMuted, textAlign: 'center' },
+  retry: { marginTop: 14, minHeight: 44, justifyContent: 'center', paddingHorizontal: 22, borderRadius: 10, borderWidth: 1, borderColor: colors.amber },
+  retryText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.2, color: colors.amber },
   scroll: { padding: 16, gap: 16 },
   eyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.amberLabel },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 22, color: colors.textPrimary, lineHeight: 28 },

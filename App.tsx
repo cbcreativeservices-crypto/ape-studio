@@ -42,7 +42,9 @@ import { attachLinkCapture } from './src/navigation/pendingLink';
 import { recordAppSession } from './src/features/review/reviewPrompt';
 import {
   attachWeeklyConceptPush,
+  flushLocalDestNav,
   flushWeeklyConceptNav,
+  queueLocalDest,
   queueWeeklyConcept,
 } from './src/features/notifications/push';
 import { syncLocalNotificationsThrottled } from './src/features/notifications/localSchedule';
@@ -94,6 +96,27 @@ const navTheme: Theme = {
   },
 };
 
+/** Route a LOCAL reminder's `dest` to its screen. Module scope so both the
+ *  live listener and NavigationContainer's cold-start drain share one map —
+ *  the two paths silently diverging is how the cold-start tap got lost. */
+function routeLocalDest(dest: string): void {
+  if (dest === 'glossary') {
+    // Glossary lives in the Study stack inside the Main tabs. `pop: true`
+    // returns to the existing Main (RN7 navigate() would otherwise push a
+    // second tab shell when a root-level screen is on top).
+    navigationRef.navigate(
+      'Main',
+      {
+        screen: 'Study',
+        params: { screen: 'Glossary', params: {} },
+      },
+      { pop: true }
+    );
+  } else if (dest === 'awards') {
+    navigationRef.navigate('Awards', { category: 'curriculum' });
+  }
+}
+
 export default function App() {
   // Capture the error tuple: a font-load failure must NOT hang the app forever on
   // the dark surface — fall through to render with system fonts (bug audit 2026-09-09).
@@ -113,22 +136,15 @@ export default function App() {
       }
     };
     const openLocal = (dest: string) => {
-      if (!navigationRef.isReady()) return;
-      if (dest === 'glossary') {
-        // Glossary lives in the Study stack inside the Main tabs. `pop: true`
-        // returns to the existing Main (RN7 navigate() would otherwise push a
-        // second tab shell when a root-level screen is on top).
-        navigationRef.navigate(
-          'Main',
-          {
-            screen: 'Study',
-            params: { screen: 'Glossary', params: {} },
-          },
-          { pop: true }
-        );
-      } else if (dest === 'awards') {
-        navigationRef.navigate('Awards', { category: 'curriculum' });
+      // A cold-start tap arrives before NavigationContainer mounts (App is
+      // still on its font-loading placeholder) — park it and let onReady
+      // drain it, exactly as the weekly-concept payload does. Without this
+      // the reminder opened the app at Home and the destination was lost.
+      if (!navigationRef.isReady()) {
+        queueLocalDest(dest);
+        return;
       }
+      routeLocalDest(dest);
     };
     return attachWeeklyConceptPush(open, openLocal);
   }, []);
@@ -367,6 +383,8 @@ export default function App() {
               linking={linking}
               onReady={() => {
                 flushWeeklyConceptNav((payload) => navigationRef.navigate('WeeklyConcept', payload));
+                // Drain a cold-start LOCAL reminder tap too — same contract.
+                flushLocalDestNav(routeLocalDest);
               }}
             >
               <RootNavigator />
