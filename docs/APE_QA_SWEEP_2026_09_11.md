@@ -476,6 +476,40 @@ by its liveness guard, and `renderMix()` copies into freshly allocated output.
 +5 tests, including that re-synthesis after a release is byte-identical across
 all eight stems — the backing track cannot change between visits.
 
+## The Saved Measurement Library became pictures
+
+Owner, mid device pass: *"snapshots are not images… the whole idea of capturing
+the spectrogram"*. Correct, and it generalised: the library stored measurements
+and displayed DESCRIPTIONS of them. **Five of six payload kinds already carried
+a drawable curve or image** and every one rendered as label/value rows.
+
+A **redraw, not a screenshot** — and the better of the two. The colour anchor is
+a fixed constant (2026-08-14 ruling: history never recolours) and the stored
+grid IS the raster input, so with the record's own dynamic range the picture
+returns pixel for pixel; it stays real data that can be re-ranged later.
+**The live tool and the library now share ONE `buildRasterImage`**
+(`features/tools/measure/spectrogramRaster.ts`) — a saved view that could drift
+from the live one is the no-fake-meters violation this guards against.
+
+Verified in the browser, not just typechecked: a seeded capture with known
+structure (rising sweep, two steady tones, a quiet transient) put the sweep
+low-left to high-right with the newest column right, and the amplitude ramp read
+correctly. **Three fixes came from looking rather than reasoning** — a clipped
+10 kHz tick, a 96%-opacity backdrop that let the library ghost through, and the
+RTA/SPL previews needing the record's calibration status passed in.
+
+### ⚠️ Open from this work
+
+- **`SplMeterScreen` saves `timeline: []` and `timelineStepSec: 0`** ("timeline
+  capture ships with a later engine pass"), so **every SPL record saved today**
+  takes the preview's empty path and shows an honest note instead of a curve.
+  The chart is ready; the data is not.
+- **The preview captions and spoken labels are extensive NEW COPY** and have not
+  been through a ratification pass. They are in
+  `src/features/tools/measure/previews/` — five chart kinds, each with a caption
+  template and an accessibility label. This is the largest unratified copy block
+  outstanding.
+
 ## What this round has and has NOT been on a device
 
 The mixing labs were device-passed on 2026-09-11 ("both labs play fine now"),
@@ -492,7 +526,8 @@ distinction does not quietly get lost:
 | Virtualized lists (Glossary popups, Requests) | reasoned | Open the bookmark popups; watch for a one-frame card resize on open (`initialNumToRender` is the dial). |
 | ARIA sweep (149 sites + 11 tab strips) | reasoned from the RN role mapping | VoiceOver/TalkBack: a selected segment should say "pressed", a real tab "tab, 1 of 5". |
 | Certificate name validation | Node-tested only | Type a 27-character unbroken name in the registry field and confirm the refusal reads sensibly. |
-| `measurementStore` SQLite risk | **CONFIRMED on device, then FIXED** — see below | — |
+| `measurementStore` SQLite risk | **CONFIRMED on device, then FIXED**, and the fix device-passed (snapshots survive a restart) | — |
+| Saved-measurement previews | browser-verified at desktop + 375×812; **not yet device-passed** | Open a saved spectrogram, tap to enlarge; check the other four kinds have something to draw |
 
 ## Still open — and why
 
