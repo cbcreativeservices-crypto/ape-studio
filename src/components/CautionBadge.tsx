@@ -24,7 +24,14 @@ export function CautionBadge({ compact = false, iconOnly = false }: { compact?: 
   return (
     <View style={[styles.badge, compact && styles.compact]}>
       <Text style={styles.icon}>⚠</Text>
-      <Text style={[styles.text, compact && styles.textCompact]} numberOfLines={2}>
+      {/* No numberOfLines (2026-09-11 layout pass): this is a SAFETY
+          instruction, and a two-line clamp is exactly what drops the
+          instruction half. 87 chars of 12.5px Barlow SemiBold needs ~512px;
+          the text box on a 360pt phone is ~282px, so it takes 1.8 lines at the
+          design text size and 2.4 lines at a 1.3x OS text size — at which
+          point "Follow safety practices." was silently gone. The badge has no
+          fixed height, so it simply grows. */}
+      <Text style={[styles.text, compact && styles.textCompact]}>
         CAUTION — can be dangerous to touch (shock / burn / chemical). Follow safety practices.
       </Text>
     </View>

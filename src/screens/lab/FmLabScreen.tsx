@@ -436,7 +436,13 @@ function SidebandGraph({ fc, fm, index, w, h }: { fc: number; fm: number; index:
           {`${(fMax / 1000).toFixed(1)} kHz`}
         </SvgText>
       </Svg>
-      <Text style={styles.legend} numberOfLines={1}>
+      {/* No numberOfLines (2026-09-11 layout pass): this is a 106-character
+          sentence — ~530px of 10.5px Barlow in a ~328px card, so a one-line
+          clamp cut it at roughly "dim dashed = re…" and the reader never saw
+          "red dashed = ALIASED past Nyquist", the only thing that explains the
+          red trace. It was truncating at the DESIGN text size, not just a
+          large one. It wraps now. */}
+      <Text style={styles.legend}>
         green = carrier · amber = sidebands · dim dashed = reflected below 0 Hz · red dashed = ALIASED past Nyquist
       </Text>
     </View>

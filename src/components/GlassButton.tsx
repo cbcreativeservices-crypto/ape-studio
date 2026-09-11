@@ -113,7 +113,16 @@ export function GlassButton({
       <Animated.View
         style={[
           styles.rim,
-          { height, transform: [{ translateY: travel }] },
+          // minHeight, not height (2026-09-11 layout pass): the cap is a FIXED
+          // size at the design text size, but `glass` clips (overflow:'hidden')
+          // and the label has no numberOfLines — so at a large OS text size a
+          // long legend ("UNDERSTOOD — MARK REVIEWED", 16px Oswald: ~260px at
+          // 1.0x, ~329px at 1.3x, wider than a 360pt phone's ~304px content
+          // box) wrapped to two lines and had both of them sliced through the
+          // middle. minHeight keeps every key identical at the design size and
+          // lets only the wrapped ones grow. The OS owns text size (ratified
+          // accessibility model); the cap follows it.
+          { minHeight: height, transform: [{ translateY: travel }] },
           pressed && styles.rimPressed,
         ]}
       >

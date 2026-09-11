@@ -783,7 +783,15 @@ const LiveReadout = memo(function LiveReadout({
     <View style={[styles.holdWrap, { width: landscape ? meterW : stripW }, piano && styles.holdWrapPiano]} accessibilityLiveRegion="polite">
       {view.hold ? (
         piano ? (
-          <Text style={[styles.holdLine, { color: magnitudeColor(view.hold.avg) }]} numberOfLines={1}>
+          /* No numberOfLines (2026-09-11 layout pass): ~48 chars of 13px
+             Oswald at letterSpacing 1 is ~348px, and the piano strip is only
+             `stripW` - 20 wide — 316px on a 360pt phone. The clamp was cutting
+             "· SPREAD ±N¢", the UNCERTAINTY qualifier on the average, at the
+             design text size on any phone narrower than ~393pt. Wrapping
+             matches what the non-piano branch below already does (it splits
+             the same content over two Texts), and holdWrapPiano sets
+             minHeight: 0 so the box grows. */
+          <Text style={[styles.holdLine, { color: magnitudeColor(view.hold.avg) }]}>
             {`LAST 1.5 s · AVG ${fmtCents(view.hold.avg)} · ${steadinessText(view.hold.spread)} · SPREAD ±${view.hold.spread.toFixed(0)}¢`}
           </Text>
         ) : (

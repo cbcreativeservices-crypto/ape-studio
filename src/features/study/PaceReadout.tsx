@@ -423,14 +423,23 @@ export function PaceReadout({
           <View style={styles.metricsLabelRow}>
             {/* Questions/min readout pulled UP next to CURRENT PACE (user
                 2026-07-25). answered/total stays a right-aligned count chip. */}
-            <Text style={styles.metricsLabel} numberOfLines={1}>
+            {/* No numberOfLines (2026-09-11 layout pass): the UNIT is the tail
+                of this string, so a one-line clamp is exactly what an ellipsis
+                eats. "CURRENT PACE  3.4 Questions/min" measures ~176px at the
+                design text size and ~225px at a 1.3x OS text size, in a
+                ~234px column that also has to hold the answered count — so it
+                wraps now instead of dropping "Questions/min". */}
+            <Text style={styles.metricsLabel}>
               CURRENT PACE{'  '}
               <Text style={styles.metricNum}>{hasRate ? qpm.toFixed(1) : '—'}</Text>
               <Text style={styles.metricUnit}> Questions/min</Text>
             </Text>
             <Text style={styles.answeredCount}>{answered}/{total}</Text>
           </View>
-          <Text style={styles.metricMeta} numberOfLines={1}>
+          {/* Same reason: ~231px of 11px mono in a ~234px column at the design
+              text size — already truncating on a 320pt phone, and cutting the
+              "Hz"/per-minute units first. Wraps instead. */}
+          <Text style={styles.metricMeta}>
             {isStopwatch ? '' : `${pmStr} · `}
             {hz.toFixed(3)} Hz · {bpm} BrainoutputsPM
           </Text>
@@ -669,7 +678,10 @@ const styles = StyleSheet.create({
   metricsCol: { flex: 1 },
   // "CURRENT PACE" label + the answered/total count chip pushed to the right.
   metricsLabelRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  metricsLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1, color: colors.amberLabel },
+  // flexShrink: 1 (2026-09-11 layout pass) — RN defaults flexShrink to 0, so
+  // inside metricsLabelRow this label refused to yield and pushed the
+  // answered/total count off the card's right edge at a large OS text size.
+  metricsLabel: { flexShrink: 1, fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1, color: colors.amberLabel },
   // Amber pace-setting label parked at the CENTER of the track (shown only when
   // the dot is ≥1 step out, so it never sits behind the dot — see
   // `showTrackPace`; the threshold dropped from 3 to 1 on 2026-07-25).

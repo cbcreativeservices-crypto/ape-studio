@@ -1251,7 +1251,12 @@ const styles = StyleSheet.create({
   // Live bar-graph glass (rack stage, height-parametric).
   glassBody: { flex: 1, paddingHorizontal: 4, paddingTop: 2 },
   glassHead: {
-    height: 18,
+    // minHeight, not height (2026-09-11 layout pass): both children are 12px
+    // with zero vertical padding, and Oswald's own line box at 12px is already
+    // ~17.8px — the band had 0.2px of headroom at the design text size and
+    // needed ~23px at a 1.3x OS text size, so the eyebrow and the settings
+    // string bled down into the chart. It grows now instead.
+    minHeight: 18,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
