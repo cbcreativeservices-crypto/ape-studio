@@ -165,8 +165,9 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     section: 'training',
     kind: 'list',
     labs: [
-      // BML-A LIVE (sections 1–7); 8–14 + the guided final follow in BML-B.
+      // Both labs LIVE (overnight build 2026-09-11; owner ratification pending).
       { name: 'Beginning Mixing', blurb: 'A repeatable process from session prep to a clear, balanced stereo mix — faders first, plugins later.', route: 'BeginningMixingLab', member: true },
+      { name: 'Advanced Mixing', blurb: 'Complex routing, parallel paths, phase, translation, stems and professional delivery — repair and ship real mixes.', route: 'AdvancedMixingLab', member: true },
     ],
   },
   {

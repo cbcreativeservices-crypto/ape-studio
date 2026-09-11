@@ -6,6 +6,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { SR, sine, type Stereo } from '../src/features/ear/earDsp.ts';
+import { renderMix } from '../src/screens/lab/mixing/audio/mixAudio.ts';
 import {
   combNotchesHz,
   combPeaksHz,
@@ -86,6 +87,33 @@ describe('loudness estimates (labeled ESTIMATES, BS.1770-style)', () => {
     for (let i = 0; i < n; i++) samplePeak = Math.max(samplePeak, Math.abs(x[i]));
     const tp = truePeakDbEstimate(stereoOf(x, x));
     assert.ok(tp > 20 * Math.log10(samplePeak) + 1, `true peak ${tp.toFixed(2)} must exceed sample peak ${(20 * Math.log10(samplePeak)).toFixed(2)}`);
+  });
+});
+
+describe('AML renderer extensions', () => {
+  const BEDS = { snare: { mute: true as const }, perc: { mute: true as const }, gtr: { mute: true as const }, keys: { mute: true as const }, lead: { mute: true as const }, bgv: { mute: true as const } };
+  it('sidechain: the kick keys the bass down — quieter than un-ducked, and NOT loudness-matched (the dip is the point)', () => {
+    const plain = renderMix({ ...BEDS, kick: { mute: true } });
+    const ducked = renderMix({ ...BEDS, kick: { mute: true }, bass: { comp: { thresholdDb: -26, ratio: 8, attackMs: 2, releaseMs: 120, sidechainFrom: 'kick' } } });
+    assert.ok(plain.rmsDb - ducked.rmsDb > 0.5, `ducking must audibly lower the bass (Δ ${(plain.rmsDb - ducked.rmsDb).toFixed(2)} dB)`);
+  });
+  it('parallel blend sits between dry and fully replaced', () => {
+    const dry = renderMix({ ...BEDS, kick: { mute: true } });
+    const par = renderMix({ ...BEDS, kick: { mute: true }, bass: { comp: { thresholdDb: -30, ratio: 8, attackMs: 1, releaseMs: 90, parallelBlendDb: -6 } } });
+    assert.ok(par.rmsDb > dry.rmsDb, 'parallel adds the squashed copy under the dry path');
+  });
+  it('bus compression really engages (linked gain reduction); soft drive colours without raising the peak', () => {
+    const dry = renderMix({});
+    const bus = renderMix({}, 0, { busComp: { thresholdDb: -18, ratio: 4, attackMs: 10, releaseMs: 150 } });
+    assert.ok(dry.rmsDb - bus.rmsDb > 0.5, `bus comp must reduce level pre-makeup (Δ ${(dry.rmsDb - bus.rmsDb).toFixed(2)} dB)`);
+    assert.ok(bus.peakDb <= dry.peakDb + 0.01, 'compression cannot raise peaks');
+    const driven = renderMix({}, 0, { busDriveDb: 9 });
+    assert.ok(Math.abs(driven.rmsDb - dry.rmsDb) < 3, 'drive is colour, roughly level-preserving');
+    assert.ok(driven.peakDb < dry.peakDb + 0.1, 'soft clip cannot raise the peak');
+  });
+  it('masterWidth 0 collapses the summed bus to mono', () => {
+    const m = renderMix({ gtr: { pan: -80 }, keys: { pan: 80 } }, 0, { masterWidth: 0 });
+    for (let i = 0; i < 2000; i++) assert.ok(Math.abs(m.stereo.l[i] - m.stereo.r[i]) < 1e-7);
   });
 });
 

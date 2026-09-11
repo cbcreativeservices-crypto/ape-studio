@@ -66,6 +66,44 @@ export function useFocalChoice(): [string | null, (id: string) => void] {
   return [focalCurrent, set];
 }
 
+/* ── the AML mix-priorities commitment (page 2 → echoed at the final) ────── */
+
+const PRIORITIES_KEY = 'ape:mixing:priorities';
+let prioritiesCurrent: string[] = [];
+const prioritiesListeners = new Set<() => void>();
+void AsyncStorage.getItem(PRIORITIES_KEY).then((v) => {
+  if (v) {
+    try {
+      prioritiesCurrent = JSON.parse(v) as string[];
+      prioritiesListeners.forEach((l) => l());
+    } catch {
+      /* corrupt value: start empty */
+    }
+  }
+});
+
+/** The learner's three declared mix priorities — a commitment, not an answer. */
+export function useMixPriorities(): [readonly string[], (id: string) => void] {
+  const [, force] = useState(0);
+  useEffect(() => {
+    const l = () => force((n) => n + 1);
+    prioritiesListeners.add(l);
+    return () => {
+      prioritiesListeners.delete(l);
+    };
+  }, []);
+  const toggle = useCallback((id: string) => {
+    prioritiesCurrent = prioritiesCurrent.includes(id)
+      ? prioritiesCurrent.filter((x) => x !== id)
+      : prioritiesCurrent.length >= 3
+        ? prioritiesCurrent
+        : [...prioritiesCurrent, id];
+    prioritiesListeners.forEach((l) => l());
+    void AsyncStorage.setItem(PRIORITIES_KEY, JSON.stringify(prioritiesCurrent)).catch(() => {});
+  }, []);
+  return [prioritiesCurrent, toggle];
+}
+
 /** The lab's central lesson (owner brief, verbatim) — repeated on purpose. */
 export const MIX_MANTRA =
   'Mixing is a sequence of listening decisions used to create balance, clarity, depth, movement, and emotional focus.';
@@ -130,6 +168,10 @@ export interface MixVariant {
    *  this, sends are silently ignored — cognition audit P1-1 (2026-09-11)
    *  caught page 10 playing three identical renders. */
   sharedVerb?: SharedVerb;
+  /** AML bus stages, passed straight to the renderer. */
+  busComp?: { thresholdDb: number; ratio: number; attackMs: number; releaseMs: number };
+  busDriveDb?: number;
+  masterWidth?: number;
   /** Level-match this variant to another variant's measured RMS before it is
    *  ever heard (§honesty: loudness-changed comparisons must be matched). */
   matchTo?: string;
@@ -198,10 +240,11 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
     const byId: Record<string, RenderedMix> = {};
     for (const v of variants) {
       let master = v.masterDb ?? 0;
-      let mix = renderMix(v.settings, master, { mono: v.mono, sharedVerb: v.sharedVerb });
+      const ropts = { mono: v.mono, sharedVerb: v.sharedVerb, busComp: v.busComp, busDriveDb: v.busDriveDb, masterWidth: v.masterWidth };
+      let mix = renderMix(v.settings, master, ropts);
       if (v.matchTo && byId[v.matchTo]) {
         master += matchGainDb(byId[v.matchTo], mix);
-        mix = renderMix(v.settings, master, { mono: v.mono, sharedVerb: v.sharedVerb });
+        mix = renderMix(v.settings, master, ropts);
       }
       byId[v.id] = mix;
       out.push({ id: v.id, mix });

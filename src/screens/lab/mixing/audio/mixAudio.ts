@@ -279,8 +279,20 @@ export interface TrackSettings {
   hpHz?: number;
   /** Optional corrective peak cut/boost (section 8): one band. */
   eq?: { hz: number; gainDb: number; q?: number };
-  /** Optional insert compressor (section 9) — earDsp's envelope model. */
-  comp?: { thresholdDb: number; ratio: number; attackMs: number; releaseMs: number; makeupDb?: number };
+  /** Optional insert compressor (section 9) — earDsp's envelope model.
+   *  AML extensions (2026-09-11): `sidechainFrom` keys the envelope from
+   *  ANOTHER track's audio (ducking — deliberately NOT loudness-matched, the
+   *  dip is the point); `parallelBlendDb` mixes the compressed copy under
+   *  the untouched dry path (New-York style) instead of replacing it. */
+  comp?: {
+    thresholdDb: number;
+    ratio: number;
+    attackMs: number;
+    releaseMs: number;
+    makeupDb?: number;
+    sidechainFrom?: TrackId;
+    parallelBlendDb?: number;
+  };
   /** Send level (dB) into the SHARED reverb return (section 10); undefined =
    *  no send. Post-fader, like a default DAW send. */
   verbSendDb?: number;
@@ -307,6 +319,26 @@ export interface RenderedMix {
   rmsDb: number;
 }
 
+/** Sidechain compressor: earDsp's envelope model, but the gain computer
+ *  listens to `key` while the gain applies to `x`. NO loudness matching —
+ *  ducking's audible dip is the lesson (unlike the insert compressor, which
+ *  earDsp deliberately RMS-matches). */
+function compressKeyed(x: Mono, key: Mono, ratio: number, thresholdDb: number, attackMs: number, releaseMs: number): Mono {
+  const out = new Float32Array(x.length);
+  const atk = Math.exp(-1 / ((attackMs / 1000) * SR));
+  const rel = Math.exp(-1 / ((releaseMs / 1000) * SR));
+  let env = 0;
+  for (let i = 0; i < x.length; i++) {
+    const a = Math.abs(key[i] ?? 0);
+    env = a > env ? atk * env + (1 - atk) * a : rel * env + (1 - rel) * a;
+    const envDb = 20 * Math.log10(Math.max(env, 1e-9));
+    const over = envDb - thresholdDb;
+    const g = over > 0 ? Math.pow(10, (-over * (1 - 1 / ratio)) / 20) : 1;
+    out[i] = x[i] * g;
+  }
+  return out;
+}
+
 /** The verse→chorus ride curve: bars 1–2 at verseDb, bars 3–4 at chorusDb,
  *  60 ms crossfade at the boundary. Applied in place. */
 function applyRide(x: Mono, verseDb: number, chorusDb: number): Mono {
@@ -330,7 +362,19 @@ function applyRide(x: Mono, verseDb: number, chorusDb: number): Mono {
 export function renderMix(
   settings: MixSettings,
   masterDb = 0,
-  opts?: { mono?: boolean; sharedVerb?: SharedVerb },
+  opts?: {
+    mono?: boolean;
+    sharedVerb?: SharedVerb;
+    /** Post-sum M/S width: 0 = mono, 1 = as mixed, >1 = wider (AML imaging). */
+    masterWidth?: number;
+    /** Stereo-LINKED bus compressor on the summed mix (AML): one gain
+     *  computer fed by max(|L|,|R|) drives both channels — the shared
+     *  envelope that makes bus compression "glue" (and that per-track
+     *  compression cannot reproduce). No auto-matching; use matchTo. */
+    busComp?: { thresholdDb: number; ratio: number; attackMs: number; releaseMs: number };
+    /** Soft saturation on the summed mix (AML harmonic pages), drive in dB. */
+    busDriveDb?: number;
+  },
 ): RenderedMix {
   const stems = sessionStems();
   const L = new Float32Array(N);
@@ -345,8 +389,20 @@ export function renderMix(
     if (s.hpHz && s.hpHz > 0) x = applyBiquad(x, highpass(s.hpHz, 0.71));
     if (s.eq) x = applyBiquad(x, peakEq(s.eq.hz, s.eq.gainDb, s.eq.q ?? 1.4));
     if (s.comp) {
-      x = compress(x, s.comp.ratio, s.comp.thresholdDb, s.comp.attackMs, s.comp.releaseMs);
+      const dry = s.comp.parallelBlendDb != null ? x : null;
+      if (s.comp.sidechainFrom) {
+        x = compressKeyed(x, stems[s.comp.sidechainFrom], s.comp.ratio, s.comp.thresholdDb, s.comp.attackMs, s.comp.releaseMs);
+      } else {
+        x = compress(x, s.comp.ratio, s.comp.thresholdDb, s.comp.attackMs, s.comp.releaseMs);
+      }
       if (s.comp.makeupDb) x = dspGainDb(x, s.comp.makeupDb);
+      if (dry) {
+        // Parallel: dry stays whole; the squashed copy rides underneath.
+        const wet = dspGainDb(x, s.comp.parallelBlendDb!);
+        const mixed = new Float32Array(dry.length);
+        for (let i = 0; i < dry.length; i++) mixed[i] = dry[i] + wet[i];
+        x = mixed;
+      }
     }
     // Fader (+ ride), then the post-fader world: pan and sends.
     if (s.auto) x = applyRide(x, s.auto.verseDb, s.auto.chorusDb);
@@ -371,6 +427,41 @@ export function renderMix(
     for (let i = 0; i < N; i++) {
       L[i] += wet[i] * 0.5;
       R[i] += wet[i] * 0.5;
+    }
+  }
+  if (opts?.busComp) {
+    const { thresholdDb, ratio, attackMs, releaseMs } = opts.busComp;
+    const atk = Math.exp(-1 / ((attackMs / 1000) * SR));
+    const rel = Math.exp(-1 / ((releaseMs / 1000) * SR));
+    let env = 0;
+    for (let i = 0; i < N; i++) {
+      const a = Math.max(Math.abs(L[i]), Math.abs(R[i]));
+      env = a > env ? atk * env + (1 - atk) * a : rel * env + (1 - rel) * a;
+      const envDb = 20 * Math.log10(Math.max(env, 1e-9));
+      const over = envDb - thresholdDb;
+      const g = over > 0 ? Math.pow(10, (-over * (1 - 1 / ratio)) / 20) : 1;
+      L[i] *= g;
+      R[i] *= g;
+    }
+  }
+  if (opts?.busDriveDb != null && opts.busDriveDb !== 0) {
+    // tanh soft clip with drive, unity small-signal gain (÷d) — colour and
+    // peak taming, not a level change.
+    const d = db2lin(opts.busDriveDb);
+    for (let i = 0; i < N; i++) {
+      L[i] = Math.tanh(L[i] * d) / d;
+      R[i] = Math.tanh(R[i] * d) / d;
+    }
+  }
+  if (opts?.masterWidth != null && opts.masterWidth !== 1) {
+    // M/S width on the summed bus: S scaled, M untouched — the imaging pages'
+    // truth (width 0 collapses to mono; wide S dies in a mono fold).
+    const w = Math.max(0, opts.masterWidth);
+    for (let i = 0; i < N; i++) {
+      const m = (L[i] + R[i]) / 2;
+      const sd = ((L[i] - R[i]) / 2) * w;
+      L[i] = m + sd;
+      R[i] = m - sd;
     }
   }
   const mg = db2lin(masterDb);

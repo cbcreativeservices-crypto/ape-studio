@@ -93,6 +93,7 @@ import { TuningLabScreen } from '../screens/lab/tuning/TuningLabScreen';
 import { EnvelopeLabScreen } from '../screens/lab/envelope/EnvelopeLabScreen';
 import { PatchbayLabScreen } from '../screens/lab/patchbay/PatchbayLabScreen';
 import { BeginningMixingLabScreen } from '../screens/lab/mixing/BeginningMixingLabScreen';
+import { AdvancedMixingLabScreen } from '../screens/lab/mixing/AdvancedMixingLabScreen';
 import { SpeechLabScreen } from '../screens/lab/speech/SpeechLabScreen';
 import { SmartProcessorsLabScreen } from '../screens/lab/deesser/SmartProcessorsLabScreen';
 import { DeEsserLabScreen } from '../screens/lab/deesser/DeEsserLabScreen';
@@ -345,6 +346,7 @@ export function RootNavigator() {
       <Stack.Screen name="EnvelopeLab" component={EnvelopeLabScreen} />
       <Stack.Screen name="PatchbayLab" component={PatchbayLabScreen} />
       <Stack.Screen name="BeginningMixingLab" component={BeginningMixingLabScreen} />
+      <Stack.Screen name="AdvancedMixingLab" component={AdvancedMixingLabScreen} />
       <Stack.Screen name="SpeechLab" component={SpeechLabScreen} />
       <Stack.Screen name="SmartProcessorsLab" component={SmartProcessorsLabScreen} />
       <Stack.Screen name="DeEsserLab" component={DeEsserLabScreen} />
