@@ -1,8 +1,8 @@
 /**
  * Patchbay Signal Flow & Normalling — pages 8–13 (Phase A). Why "half",
  * the tap in practice, the §12 comparison table, predict-before-patching,
- * detective mode, and the Phase A wrap. ALL COPY NEW (ratification pending;
- * sheet: docs/APE_PATCHBAY_LAB_COPY_2026_09_10.md).
+ * detective mode, and the Phase A wrap. ALL COPY RATIFIED by the owner
+ * 2026-09-10 (sheet: docs/APE_PATCHBAY_LAB_COPY_2026_09_10.md).
  */
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';

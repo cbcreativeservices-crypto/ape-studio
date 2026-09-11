@@ -1,6 +1,6 @@
 /**
  * Patchbay lab — small shared page bits. ALL COPY IN THIS LAB IS NEW
- * (owner ratification pending; copy sheet: docs/APE_PATCHBAY_LAB_COPY_2026_09_10.md).
+ * (RATIFIED by the owner 2026-09-10; copy sheet: docs/APE_PATCHBAY_LAB_COPY_2026_09_10.md).
  */
 import { useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';

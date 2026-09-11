@@ -2,7 +2,7 @@
  * Patchbay Signal Flow & Normalling — pages 1–7 (Phase A, owner brief
  * 2026-09-10). Teaching order per the brief: direction → thru → what
  * "normal" means → the physical contact → full-normal's four states →
- * the half-normal surprise. ALL COPY NEW (ratification pending; sheet:
+ * the half-normal surprise. ALL COPY RATIFIED by the owner 2026-09-10 (sheet:
  * docs/APE_PATCHBAY_LAB_COPY_2026_09_10.md).
  *
  * Sources behind the teaching claims (cited in-app on the wrap page):

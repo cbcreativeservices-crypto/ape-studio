@@ -2,7 +2,7 @@
  * Patchbay Signal Flow & Normalling — pages 14–18 (Phase B, owner go
  * 2026-09-10): the 8-pair studio bay, the zero-cables studio + the invisible
  * normals, overpatching, the processor insert chain with bypass, and
- * what's-wrong-with-this-patch. ALL COPY NEW (ratification pending; sheet:
+ * what's-wrong-with-this-patch. ALL COPY RATIFIED by the owner 2026-09-10 (sheet:
  * docs/APE_PATCHBAY_LAB_COPY_2026_09_10.md).
  */
 import { useRef, useState } from 'react';

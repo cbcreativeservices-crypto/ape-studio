@@ -10,8 +10,8 @@
  *
  * Every routing claim resolves through engine/patchbay.ts, whose complete
  * truth table (and every authored exercise in scenarios.ts + scenariosB.ts)
- * is pinned by test/patchbayEngine.test.ts. ALL COPY NEW — owner ratification
- * pending (docs/APE_PATCHBAY_LAB_COPY_2026_09_10.md).
+ * is pinned by test/patchbayEngine.test.ts. ALL COPY RATIFIED by the owner
+ * 2026-09-10 (docs/APE_PATCHBAY_LAB_COPY_2026_09_10.md).
  */
 import { PagedLab } from '../kit/PagedLab';
 import { PATCHBAY_PAGES_A } from './pagesA';

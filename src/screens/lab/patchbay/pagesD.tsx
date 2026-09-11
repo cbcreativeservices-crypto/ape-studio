@@ -2,7 +2,7 @@
  * Patchbay Signal Flow & Normalling — pages 19–23 (Phase B): the directional
  * half-normal variant, the T/R/S conductor reveal, phantom-power safety,
  * design-your-own-bay, and the final proficiency assessment. ALL COPY NEW
- * (ratification pending; sheet: docs/APE_PATCHBAY_LAB_COPY_2026_09_10.md).
+ * (RATIFIED by the owner 2026-09-10; sheet: docs/APE_PATCHBAY_LAB_COPY_2026_09_10.md).
  *
  * Safety framing (§24, per Neutrik guidance): the phantom page teaches
  * "requires proper system design", never a blanket "never patch microphones" —

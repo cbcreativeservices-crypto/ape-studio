@@ -1,9 +1,9 @@
-# Patchbay Signal Flow & Normalling — copy sheet (owner ratification)
+# Patchbay Signal Flow & Normalling — copy sheet (RATIFIED)
 
-**Status: ALL COPY NEW — pending owner ratification.** Phase A built + device-
-passed 2026-09-10; Phase B built 2026-09-10 (23 pages total). The lab is live in
-the catalog (Signal category, member-only); ratify or edit here, and I'll fold
-changes back.
+**Status: ✅ RATIFIED BY THE OWNER 2026-09-10 — approved as written.** Both
+phases built + device-passed 2026-09-10 (23 pages). The lab is live in the
+catalog (Signal category, member-only). This sheet is now the copy of record:
+any future copy change to this lab re-opens ratification here first.
 
 Full text lives in the source (single source of truth):
 - `src/screens/lab/patchbay/pagesA.tsx` (pages 1–7)
@@ -82,4 +82,3 @@ multi-acceptable with tradeoff notes) · the 10-item proficiency assessment.
 - **Fundamentals credit**: the catalog leaf ships WITHOUT an `af_*` key (that
   key list is immutable / backend-bridged). Decide whether Patchbay should join
   the Audio Fundamentals lab-credit set — needs a backend key addition.
-- Ratify / edit the copy above, then flip this sheet's status line.
