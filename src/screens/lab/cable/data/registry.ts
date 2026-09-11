@@ -8,11 +8,11 @@
  * (docs/APE_CABLE_LAB_PLAN_2026_08_15.md §9) confirms or corrects them.
  */
 import type { ConnectorId, ConnectorRecord, LearningTier } from '../cableTypes';
-import { CONNECTORS_ANALOG } from './connectors.analog';
-import { CONNECTORS_SPEAKER } from './connectors.speaker';
-import { CONNECTORS_DIGITAL } from './connectors.digital';
-import { CONNECTORS_POWER } from './connectors.power';
-import { CONNECTORS_RECOGNITION } from './connectors.recognition';
+import { CONNECTORS_ANALOG } from './connectors.analog.ts';
+import { CONNECTORS_SPEAKER } from './connectors.speaker.ts';
+import { CONNECTORS_DIGITAL } from './connectors.digital.ts';
+import { CONNECTORS_POWER } from './connectors.power.ts';
+import { CONNECTORS_RECOGNITION } from './connectors.recognition.ts';
 
 export const CONNECTORS: ConnectorRecord[] = [
   ...CONNECTORS_ANALOG,

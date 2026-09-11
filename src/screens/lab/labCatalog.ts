@@ -139,6 +139,11 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       // Placed after the signal-flow labs, before Gain Staging (owner ruling).
       // Owner 2026-08-23: now member-only along with the rest of Signal.
       { name: 'Cable & Connector Fundamentals', blurb: 'Identify it. Understand it. Connect it safely — what every connector carries, what’s inside the cable, and what happens when the wrong one is used.', route: 'CableLab', key: 'af_cables', member: true },
+      // Audio Connectors & Cable Selection (owner brief 2026-09-11): the
+      // selection-and-diagnosis companion to the fundamentals lab — same
+      // verified connector records, new stations (same-connector/different-job
+      // matrix, build-the-system scenarios, fault finder, job-final).
+      { name: 'Audio Connectors & Cable Selection', blurb: 'The shape never tells you the signal — pick the right cable for real systems, refuse the unsafe ones, and find the fault when it hides.', route: 'ConnectorSelectLab', key: 'af_connector_select', member: true },
       // Professional installation practice — the decision lab that follows the
       // connector fundamentals (owner brief 2026-08-24).
       { name: 'Cable Dressing & Installation', blurb: 'Route it. Support it. Protect it. Make it serviceable — professional installation decisions from plan to final inspection.', route: 'CableInstallLab', key: 'af_cable_install', member: true },

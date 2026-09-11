@@ -15,7 +15,7 @@
  * absent from this map still render no image (never a placeholder) — the
  * Partial type keeps that contract if a new ConnectorId is ever added.
  */
-import { SUPABASE_URL } from '../../../lib/env';
+import { SUPABASE_URL } from '../../../lib/env.ts';
 import type { ConnectorId } from './cableTypes';
 
 /** Bucket filenames in `glossary-images`, all VERIFIED live 2026-08-16

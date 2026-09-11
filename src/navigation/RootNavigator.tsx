@@ -92,6 +92,7 @@ import { TuningLabScreen } from '../screens/lab/tuning/TuningLabScreen';
 // Sound Envelope & Transients Lab (owner brief 2026-09-02): visual, paged.
 import { EnvelopeLabScreen } from '../screens/lab/envelope/EnvelopeLabScreen';
 import { PatchbayLabScreen } from '../screens/lab/patchbay/PatchbayLabScreen';
+import { ConnectorSelectLabScreen } from '../screens/lab/connectorselect/ConnectorSelectLabScreen';
 import { BeginningMixingLabScreen } from '../screens/lab/mixing/BeginningMixingLabScreen';
 import { AdvancedMixingLabScreen } from '../screens/lab/mixing/AdvancedMixingLabScreen';
 import { SpeechLabScreen } from '../screens/lab/speech/SpeechLabScreen';
@@ -345,6 +346,7 @@ export function RootNavigator() {
       <Stack.Screen name="TuningLab" component={TuningLabScreen} />
       <Stack.Screen name="EnvelopeLab" component={EnvelopeLabScreen} />
       <Stack.Screen name="PatchbayLab" component={PatchbayLabScreen} />
+      <Stack.Screen name="ConnectorSelectLab" component={ConnectorSelectLabScreen} />
       <Stack.Screen name="BeginningMixingLab" component={BeginningMixingLabScreen} />
       <Stack.Screen name="AdvancedMixingLab" component={AdvancedMixingLabScreen} />
       <Stack.Screen name="SpeechLab" component={SpeechLabScreen} />

@@ -35,6 +35,7 @@ import { GAIN_MODULES } from '../../screens/lab/gain/modules/registry';
 import { CABLE_UNITS } from '../../screens/lab/cable/data/lessons';
 import { CI_LAB_UNITS } from '../../screens/lab/cableinstall/registry';
 import { PATCHBAY_UNITS } from '../../screens/lab/patchbay/units';
+import { CONNECTOR_SELECT_UNITS } from '../../screens/lab/connectorselect/units';
 import { noteHighValueEvent } from '../review/reviewPrompt';
 
 const STORAGE_KEY = 'ape:labProgress';
@@ -64,7 +65,11 @@ export type LabKey =
   // the Audio Fundamentals container is part of the fundamentals requisite) —
   // queued safely until the owner runs docs/APE_PATCHBAY_LAB_SEED_2026_09_10.sql
   // (the lab_not_found guard keeps the completion unsent + retried until then).
-  | 'af_patchbay';
+  | 'af_patchbay'
+  // Audio Connectors & Cable Selection (owner brief 2026-09-11; same
+  // fundamentals-container ruling) — queued safely until the owner runs
+  // docs/APE_CONNECTOR_SELECT_SEED_2026_09_11.sql.
+  | 'af_connector_select';
 
 /** The explicit-review unit (read-through / sandbox labs) and the challenge-pass
  *  unit (Signal Detective) — named so the wiring and the spec can't drift. */
@@ -98,6 +103,9 @@ export const LAB_UNITS: Partial<Record<LabKey, readonly string[]>> = {
   // Patchbay: one unit per PagedLab page, p1..p23 (STATIC for offline
   // retryUnsent; the screen dev-checks this count against its real page array).
   af_patchbay: PATCHBAY_UNITS,
+  // Audio Connectors & Cable Selection: one unit per PagedLab page, p1..p16
+  // (STATIC for offline retryUnsent; same dev-check in the screen).
+  af_connector_select: CONNECTOR_SELECT_UNITS,
 };
 
 // ── in-memory state (mirrors persisted blob) ────────────────────────────────

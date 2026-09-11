@@ -270,6 +270,9 @@ export type RootStackParamList = {
   /** Patchbay Signal Flow & Normalling (owner brief 2026-09-10) — paged
    *  visual lab; member-only via the catalog leaf. */
   PatchbayLab: undefined;
+  /** Audio Connectors & Cable Selection (owner brief 2026-09-11) — paged
+   *  visual lab; member-only via the catalog leaf. */
+  ConnectorSelectLab: undefined;
   BeginningMixingLab: undefined;
   AdvancedMixingLab: undefined;
   /** Speech & Voice Lab (owner brief 2026-09-02) — visual, paged. */
