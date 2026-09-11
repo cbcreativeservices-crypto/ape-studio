@@ -157,7 +157,7 @@ export function ProfileScreen() {
   // CM7 (Booth 2026-07-11): commercial variant — nickname · Album · trophies ·
   // completion records; HIDE the student-ID card (QR, AP&E ID) + MIC/PA/REC/MIX
   // certs. Institutional users keep Screen 10 exactly.
-  const { commercialMode, caps, entitlement } = useEntitlement();
+  const { commercialMode, caps, entitlement, resolved } = useEntitlement();
   // Public / networking profile (device-local for now — backend frozen).
   const [pub, setPub] = useState<PublicProfile>(EMPTY_PUBLIC_PROFILE);
   // "Terms learned" — the self-assessed KNOWN list (client-side; no server metric
@@ -415,16 +415,27 @@ export function ProfileScreen() {
     // REAL paid-member status — NOT the __DEV__-bypassed `caps` (which forces
     // academy on in dev). Drives the membership tag + upgrade CTA (fix 2026-07-26).
     const academy = entitlement === 'academy';
-    const statusLabel = academy
-      ? 'ACADEMY MEMBER'
-      : entitlement === 'lapsed'
-        ? 'MEMBERSHIP LAPSED'
-        : 'REFERENCE MODE';
-    const statusColor = academy
-      ? colors.green
-      : entitlement === 'lapsed'
-        ? colors.amber
-        : colors.textSubAlt;
+    // FIRST-PAINT GUARD (M6 idiom, entitlement audit 2026-09-11). The provider
+    // defaults to 'anonymous' and only settles after the server read, so until
+    // `resolved` this screen asserted nothing-yet-known as fact: a PAYING member
+    // opened Profile, read "REFERENCE MODE", was told guest edits evaporate, and
+    // was offered "UPGRADE TO ACADEMY" — their own membership sold back to them
+    // for a frame. Settings already does exactly this (`!resolved ? 'CHECKING…'`);
+    // Profile is its parent screen and must not contradict it.
+    const statusLabel = !resolved
+      ? 'CHECKING…'
+      : academy
+        ? 'ACADEMY MEMBER'
+        : entitlement === 'lapsed'
+          ? 'MEMBERSHIP LAPSED'
+          : 'REFERENCE MODE';
+    const statusColor = !resolved
+      ? colors.textSubAlt
+      : academy
+        ? colors.green
+        : entitlement === 'lapsed'
+          ? colors.amber
+          : colors.textSubAlt;
     const goalCount = certBundles.length + programBundles.length;
     return (
       <View style={[styles.root, { paddingTop: insets.top }]}>
@@ -650,7 +661,12 @@ export function ProfileScreen() {
                 'free' (albumAchievements: true) and which the bottom tab already
                 opens for them — keying it on completionRecords (false for free)
                 hid the shortcut to a screen they are entitled to. */}
-            {caps.albumAchievements ? (
+            {/* `!resolved ||` — pre-resolve the neutral view is the MEMBER one
+                (AudioLearningScreen's M6 rule). The row only opens the
+                Achievements tab, which the tab bar already gives everyone, so
+                showing it a frame early costs nothing while hiding it from a
+                member who is entitled to it costs trust. */}
+            {!resolved || caps.albumAchievements ? (
               <Pressable
                 style={({ pressed }) => [styles.navRow, pressed && styles.rowPressed]}
                 onPress={() =>
@@ -681,7 +697,7 @@ export function ProfileScreen() {
             defaultOpen={ppSeq > 0 || (hydrated && !profileComplete)}
           >
             <Text style={styles.sectionIntro}>
-              {entitlement === 'anonymous'
+              {resolved && entitlement === 'anonymous'
                 ? 'Guest changes stay on this device only until the app closes — create an account to keep them.'
                 : 'Changes save as you type.'}
             </Text>
@@ -1003,8 +1019,11 @@ export function ProfileScreen() {
             </Pressable>
           </Modal>
 
-          {/* Upgrade CTA for non-academy (free / lapsed) → Paywall. */}
-          {!academy && (
+          {/* Upgrade CTA for non-academy (free / lapsed) → Paywall. Held back
+              until `resolved`: offering a member a purchase they already own is
+              the upsell-honesty failure, and it is cheaper to show the button a
+              beat late than to show it wrongly (entitlement audit 2026-09-11). */}
+          {resolved && !academy && (
             <View style={{ marginTop: 4 }}>
               <GlassButton
                 label={entitlement === 'lapsed' ? 'RENEW ACADEMY' : 'UPGRADE TO ACADEMY'}

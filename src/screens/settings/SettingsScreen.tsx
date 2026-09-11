@@ -291,6 +291,11 @@ export function SettingsScreen({ navigation }: Props) {
         <SettingsSection
           title="NOTIFICATIONS"
           summary={(() => {
+            // FIRST-PAINT GUARD (entitlement audit 2026-09-11). MEMBERSHIP below
+            // already shows '…' until `resolved`; this header did not, so the same
+            // screen simultaneously said "ACADEMY — ACTIVE" and "members" (i.e.
+            // you are not one). Neither claim is knowable before the read lands.
+            if (!resolved) return '…';
             if (!isMember) return 'members';
             // Count NOTIFICATION STREAMS only (owner 2026-09-01): the master
             // "Phone notifications" and Email switches are TRANSPORTS — with
@@ -302,7 +307,15 @@ export function SettingsScreen({ navigation }: Props) {
             return n ? `${n} on` : 'all off';
           })()}
         >
-          {!isMember ? (
+          {!resolved ? (
+            /* Pre-resolve: assert NEITHER direction. Showing the 🔒 upsell would
+               sell a member their own membership; showing the live switches would
+               flash member UI at a guest. A neutral line costs one beat and lies
+               to nobody (entitlement audit 2026-09-11). */
+            <View style={{ paddingVertical: 10 }}>
+              <Text style={styles.rowHint}>Checking your membership…</Text>
+            </View>
+          ) : !isMember ? (
             /* Notifications are MEMBERS ONLY (owner 2026-09-01). Non-members
                (and guests, and lapsed) see the honest note + the way in — not
                a wall of dead switches. The scheduler enforces the same rule
@@ -648,7 +661,14 @@ export function SettingsScreen({ navigation }: Props) {
           </Pressable>
           {/* Log out → sign out then bounce to Splash, which re-checks the
               session and routes to the login screen for the next user. */}
-          {isGuest ? (
+          {/* `resolved &&` — pre-resolve `isGuest` is true for EVERYONE (the
+              provider boots at 'anonymous'), so a signed-in member opening this
+              section early was offered "Sign in / create account": told they have
+              no account, seconds after the header said ACADEMY. The member view
+              is the safe neutral — for an actual guest the log-out path is a
+              no-op signOut followed by the same bounce to Splash that the sign-in
+              row performs (entitlement audit 2026-09-11). */}
+          {resolved && isGuest ? (
             <Pressable
               style={styles.row}
               onPress={() => navigation.reset({ index: 0, routes: [{ name: 'Splash' }] })}

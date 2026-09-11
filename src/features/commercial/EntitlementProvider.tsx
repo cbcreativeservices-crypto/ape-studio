@@ -185,11 +185,16 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
   // always wins once used.
   useEffect(() => {
     let alive = true;
-    const deriveAndApply = async (hasSession: boolean) => {
-      if (!alive || devOverrode.current) return;
+    // Generation counter so a newer auth event cancels any retry still pending
+    // from the previous one (a SIGNED_OUT must never be overwritten seconds
+    // later by a retry belonging to the signed-OUT user's read).
+    let generation = 0;
+    /** @returns true when a DEFINITIVE tier was obtained (or the read was moot). */
+    const deriveAndApply = async (hasSession: boolean): Promise<boolean> => {
+      if (!alive || devOverrode.current) return true;
       if (!hasSession) {
         setEntitlementState('anonymous');
-        return;
+        return true;
       }
       const { data, error } = await supabase
         .from('entitlements')
@@ -200,10 +205,39 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
         // must NOT silently downgrade a paying member to free. Keep the current
         // tier and let a later auth event / refreshEntitlement re-derive.
         console.warn('[entitlement] read failed, keeping current tier:', error.message);
-        return;
+        return false;
       }
       const tier = academyTierFromRows((data ?? []) as EntRow[]);
       if (alive && !devOverrode.current) setEntitlementState(tier);
+      return true;
+    };
+    // BOUNDED RETRY for a failed read (entitlement audit 2026-09-11).
+    // "Keep the current tier" is the right call mid-session, but at BOOT the
+    // current tier is 'anonymous' — so one flaky read downgraded a paying member
+    // to guest for the entire app run: every tool, lab, paid topic and
+    // notification re-locked, Profile reading "REFERENCE MODE", and no way back
+    // short of killing the app (refreshEntitlement is only reachable by
+    // redeeming a code). Retrying can only ever RAISE the tier — the server
+    // still decides who is a member — so it cannot leak access, only stop
+    // wrongly withholding it. `resolved` still flips on the FIRST attempt so
+    // CourseSelection's paint gate never hangs (QA Wave C/D 2026-09-10); the
+    // retry lands quietly behind the already-painted screen.
+    const RETRY_DELAYS_MS = [1500, 4000, 10000];
+    /** First attempt awaited by the caller (so `resolved` stays accurate); any
+     *  further attempts run detached, behind the already-painted screen. */
+    const deriveWithRetry = async (hasSession: boolean): Promise<void> => {
+      const mine = ++generation;
+      if (await deriveAndApply(hasSession)) return;
+      void (async () => {
+        for (const delay of RETRY_DELAYS_MS) {
+          await new Promise((r) => setTimeout(r, delay));
+          // A newer sign-in/sign-out supersedes this retry — never let a stale
+          // read re-apply a tier the user has since left.
+          if (!alive || generation !== mine || devOverrode.current) return;
+          if (await deriveAndApply(hasSession)) return;
+        }
+        console.warn('[entitlement] read still failing after retries; tier left unchanged');
+      })();
     };
     // Wipe the device's local study-progress mirror whenever the signed-in user
     // CHANGES (sign-out, or sign-in as a different account) so progress never
@@ -224,7 +258,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
       .getSession()
       .then(async ({ data }) => {
         clearLocalOnUserChange(data.session?.user?.id ?? null);
-        await deriveAndApply(!!data.session);
+        await deriveWithRetry(!!data.session);
       })
       .catch(() => {
         // getSession rejecting (e.g. a secure-store read error) or a throw in the
@@ -261,7 +295,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
           }
         }
         clearLocalOnUserChange(session?.user?.id ?? null);
-        void deriveAndApply(!!session);
+        void deriveWithRetry(!!session);
       }
     });
     return () => {
