@@ -86,8 +86,15 @@ export async function loadPublicProfile(): Promise<PublicProfile> {
   // existence — and its contents — must not depend on which phone you last
   // used. When a listing exists the server copy IS the published text, so it
   // wins; when there is none, the device draft stands.
-  const listing = await fetchMyRegistryListing();
-  if (listing) {
+  //
+  // A FAILED read is not "not listed". When the server cannot be reached the
+  // device draft still stands — there is nothing better to show — but the
+  // switch's position is then a guess, and the screen has to be able to say so
+  // rather than assert a privacy state it did not verify.
+  const read = await fetchMyRegistryListing();
+  registryStateKnown = read.state !== 'unavailable';
+  if (read.state === 'listing') {
+    const listing = read.listing;
     adultConfirmed = listing.adultConfirmed;
     local = { ...local, showInRegistry: listing.listed };
     if (listing.listed) {
@@ -99,6 +106,13 @@ export async function loadPublicProfile(): Promise<PublicProfile> {
       };
     }
   }
+  // 'none' (no session) deliberately leaves the device draft ALONE, exactly as
+  // before. Forcing the switch off here looked tempting — a guest has no public
+  // page — but getSession() can read null for a heartbeat during a cold boot,
+  // and a boot-time write that silently flips a member's own privacy setting is
+  // the same failure class as the boot entitlement downgrade. The draft is
+  // harmless: publishing needs a session, so an on-looking switch on a guest
+  // device has never published anything.
   return local;
 }
 
@@ -106,6 +120,16 @@ export async function loadPublicProfile(): Promise<PublicProfile> {
 let adultConfirmed = false;
 export function isAdultConfirmed(): boolean {
   return adultConfirmed;
+}
+
+/** FALSE when the last listing read failed, so the registry switch on screen is
+ *  showing the device draft rather than a verified server state. Module-level
+ *  like `adultConfirmed` above, for the same reason: it is a property of the
+ *  last load, not of the profile object. Optimistic before the first load —
+ *  there is nothing to be unsure about yet. */
+let registryStateKnown = true;
+export function isRegistryStateKnown(): boolean {
+  return registryStateKnown;
 }
 
 /** Recorded against every consent event so we can show WHAT was agreed to.

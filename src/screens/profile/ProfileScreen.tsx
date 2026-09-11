@@ -23,6 +23,7 @@ import {
   exportCertificate,
   isAvailable as certificateExportAvailable,
 } from '../../features/credentials/certificatePdf';
+import { certificateNameFits } from '../../features/credentials/certificateHtml';
 import { GlassButton } from '../../components/GlassButton';
 import { Toggle } from '../../components/Toggle';
 import { Section } from '../../components/Section';
@@ -34,6 +35,7 @@ import {
   loadPublicProfile,
   savePublicProfile,
   isAdultConfirmed,
+  isRegistryStateKnown,
   setRegistryVisible,
   type PublicProfile,
 } from '../../features/profile/publicProfile';
@@ -215,6 +217,7 @@ export function ProfileScreen() {
     // typed (design review 2026-08-30).
     void loadPublicProfile().then((loaded) => {
       if (!dirtyRef.current) setPub(loaded);
+      setRegistryVerified(isRegistryStateKnown());
       setHydrated(true);
     });
   }, []);
@@ -302,16 +305,28 @@ export function ProfileScreen() {
   // Registry participation gate (user request 2026-07-23): the "show in registry"
   // toggle can only be turned on once the required identity fields are filled.
   const emailValid = /\S+@\S+\.\S+/.test(pub.email.trim());
+  /** The certificate fitter refuses to truncate a name it cannot lay out — it
+   *  throws at DOWNLOAD instead. Measured here with the very same function, so
+   *  an unengravable name is caught while the person is still holding the
+   *  keyboard rather than at the moment they've earned something. */
+  const registryNameFits = useMemo(
+    () => certificateNameFits(pub.registryName),
+    [pub.registryName],
+  );
   /** Per-field gaps, not one boolean: a dimmed switch is not a message, so the
    *  UI has to be able to say WHICH detail is missing and jump to it. */
   const gaps = useMemo(() => {
     const g: { key: 'name' | 'registryName' | 'email'; label: string; done: boolean }[] = [
       { key: 'name', label: 'Your name', done: pub.name.trim().length > 0 },
-      { key: 'registryName', label: 'Name on your certificates', done: pub.registryName.trim().length > 0 },
+      {
+        key: 'registryName',
+        label: 'Name on your certificates',
+        done: pub.registryName.trim().length > 0 && registryNameFits,
+      },
       { key: 'email', label: 'Contact email', done: emailValid },
     ];
     return g;
-  }, [pub.name, pub.registryName, emailValid]);
+  }, [pub.name, pub.registryName, registryNameFits, emailValid]);
   const missing = gaps.filter((g) => !g.done);
   const profileComplete = missing.length === 0;
   const registryActive = pub.showInRegistry && profileComplete;
@@ -331,6 +346,10 @@ export function ProfileScreen() {
    *  on `hydrated` so it remounts exactly once, when the real values land, and
    *  never again while the user is typing in it. */
   const [hydrated, setHydrated] = useState(false);
+  /** FALSE when the listing read failed, so the registry switch below is showing
+   *  this device's draft rather than the server's answer. A privacy control must
+   *  not assert a state it did not verify. */
+  const [registryVerified, setRegistryVerified] = useState(true);
   const [emailTouched, setEmailTouched] = useState(false);
   const [fullIdOpen, setFullIdOpen] = useState(false);
   /**
@@ -728,10 +747,17 @@ export function ProfileScreen() {
               returnKeyType="done"
               accessibilityLabel="Name on your certificates"
             />
-            <Text style={styles.rowHint}>
-              Printed on every certificate you earn, and shown when someone scans your code.
-              Spell it the way you want it on paper.
-            </Text>
+            {pub.registryName.trim().length > 0 && !registryNameFits ? (
+              <Text style={styles.fieldError}>
+                This is too long to print on a certificate. Shorten it, or put a space in it
+                so it can run over two lines.
+              </Text>
+            ) : (
+              <Text style={styles.rowHint}>
+                Printed on every certificate you earn, and shown when someone scans your code.
+                Spell it the way you want it on paper.
+              </Text>
+            )}
 
             <Text style={styles.fieldLabel}>Contact email</Text>
             <TextInput
@@ -848,6 +874,13 @@ export function ProfileScreen() {
                 onChange={onRegistryToggle}
               />
             </View>
+            {hydrated && !registryVerified ? (
+              <Text style={styles.fieldError}>
+                We couldn't check this with the server just now, so the switch above is
+                showing what this phone last saved. Reopen this screen when you're back
+                online to confirm it.
+              </Text>
+            ) : null}
             <Text style={styles.rowHint}>
               Publishes a page anyone with the link — or who scans your code — can open.
             </Text>

@@ -178,6 +178,39 @@ function verifiedUrl(fields: CertificateFields): string | null {
 /** Trusted markup is constructed only from a validated numeric QR matrix.
  * Never pass user HTML/SVG here. If anything fails, the caller gets no QR.
  */
+/** The holder-name slot, shared by the renderer and the entry-time check so
+ *  the two can never disagree about what fits. */
+const HOLDER_SLOT: TextSlot = {
+  width: 450, height: 56, maxPt: 45, minPt: 20, lineHeight: 1.1, trackingEm: -0.05, metrics: WIDTHS_500,
+};
+
+/**
+ * Can this name be engraved on a certificate?
+ *
+ * WHY THIS EXISTS: the fitter deliberately refuses to truncate — no ellipses,
+ * no invented hyphens — and throws instead. That is the right call for a
+ * credential, but the registry-name field had no validation, so a name the
+ * layout cannot take (a single unbroken word past ~26 characters; spaced names
+ * run far longer because they can split across two lines) was accepted
+ * silently and only failed at DOWNLOAD, with an error inviting a retry that
+ * could never succeed. The certificate was permanently un-downloadable.
+ *
+ * Callers validate at ENTRY with this, using the very same measurement, so the
+ * person is told while they can still fix it.
+ */
+export function certificateNameFits(value: string): boolean {
+  // normalizeText, not trim: the export normalizes before measuring, so anything
+  // less here would disagree with it on doubled spaces or decomposed accents.
+  const holder = normalizeText(value);
+  if (!holder) return true; // empty falls back to a generated label, never engraved as-is
+  try {
+    fitText(holder, HOLDER_SLOT);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function buildQrSvg(url: string, createMatrix: (url: string) => QrMatrix): string {
   try {
     const matrix = createMatrix(url);
@@ -208,7 +241,7 @@ export function buildCertificateHtml(fields: CertificateFields, options: Certifi
   const credential = normalizeText(fields.credentialName);
   if (!credential) throw new TypeError('A credential title is required before export.');
   if (fields.awardType !== 'certificate' && fields.awardType !== 'program') throw new TypeError('Unsupported award type.');
-  const holderLayout = fitText(holder, {width: 450, height: 56, maxPt: 45, minPt: 20, lineHeight: 1.1, trackingEm: -0.05, metrics: WIDTHS_500});
+  const holderLayout = fitText(holder, HOLDER_SLOT);
   const credentialLayout = fitText(credential, {width: 450, height: 64, maxPt: 25.5, minPt: 15, lineHeight: 1.17, trackingEm: -0.02, metrics: WIDTHS_600, preferredSingleLineWidth: 300});
   const kicker = fields.awardType === 'program' ? 'Professional program' : 'Specialization';
   const date = awardDate(fields.earnedAt);

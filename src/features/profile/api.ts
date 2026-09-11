@@ -141,13 +141,35 @@ export type RegistryListing = {
   adultConfirmed: boolean;
 };
 
-export async function fetchMyRegistryListing(): Promise<RegistryListing | null> {
+/**
+ * The THREE answers this read can give, kept apart on purpose.
+ *
+ * `null` used to mean both "this account has no listing" and "we could not
+ * reach the server", and the caller could only do one thing with it: fall back
+ * to the device draft. So an offline phone showed the registry switch in
+ * whatever position it was last left in, with no hint that the position was a
+ * guess — a privacy control silently reporting an unverified state. Splitting
+ * the two lets the UI say it does not know, instead of asserting.
+ */
+export type RegistryListingRead =
+  | { state: 'listing'; listing: RegistryListing }
+  /** Signed out, or signed in with no listing. Authoritative: there is no page. */
+  | { state: 'none' }
+  /** The read FAILED. We know nothing — never present this as "not listed". */
+  | { state: 'unavailable' };
+
+export async function fetchMyRegistryListing(): Promise<RegistryListingRead> {
   try {
+    // A guest genuinely has no listing, and asking would fail on RLS and look
+    // like an outage. Settle that before the read rather than after it.
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (!sessionData?.session) return { state: 'none' };
+
     const { data, error } = await supabase
       .from('users')
       .select('show_in_registry, registry_bio, registry_interests, registry_primary_interest, registry_adult_confirmed')
       .single();
-    if (error || !data) return null;
+    if (error || !data) return { state: 'unavailable' };
     const r = data as {
       show_in_registry?: boolean | null;
       registry_bio?: string | null;
@@ -156,14 +178,17 @@ export async function fetchMyRegistryListing(): Promise<RegistryListing | null> 
       registry_adult_confirmed?: boolean | null;
     };
     return {
-      listed: !!r.show_in_registry,
-      bio: r.registry_bio ?? '',
-      interests: r.registry_interests ?? [],
-      primaryInterest: r.registry_primary_interest ?? '',
-      adultConfirmed: !!r.registry_adult_confirmed,
+      state: 'listing',
+      listing: {
+        listed: !!r.show_in_registry,
+        bio: r.registry_bio ?? '',
+        interests: r.registry_interests ?? [],
+        primaryInterest: r.registry_primary_interest ?? '',
+        adultConfirmed: !!r.registry_adult_confirmed,
+      },
     };
   } catch {
-    return null;
+    return { state: 'unavailable' };
   }
 }
 

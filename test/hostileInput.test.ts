@@ -39,7 +39,7 @@ registerHooks({
   },
 });
 
-const { buildCertificateHtml, escapeHtml } =
+const { buildCertificateHtml, escapeHtml, certificateNameFits } =
   await import('../src/features/credentials/certificateHtml.ts');
 
 // ── Some strings that break naive code ──────────────────────────────────────
@@ -120,6 +120,44 @@ describe('certificate — the two-line layout is a HARD limit, not a truncation'
       () => buildCertificateHtml({ ...CERT, credentialName: 'Verylongsingleword'.repeat(6) }),
       RangeError,
     );
+  });
+});
+
+describe('certificate — entry-time validation can never disagree with export', () => {
+  // The profile screen rejects an unengravable registry name while the person
+  // is still typing. If certificateNameFits ever said yes where the export says
+  // no, we would be back to the original defect: a certificate that is earned
+  // and permanently un-downloadable. Both sides must measure identically.
+  const exportAccepts = (name: string) => {
+    try { buildWithName(name); return true; } catch { return false; }
+  };
+
+  const CASES = [
+    '', '   ', 'A', 'Rachel A. Booth', 'María José Fernández-Ortiz', RTL,
+    `Anna ${EMOJI} Lee`, 'W'.repeat(25), 'W'.repeat(26), 'W'.repeat(27), 'W'.repeat(40),
+    'W'.repeat(60), 'Willia '.repeat(18).trim(), 'Willia '.repeat(30).trim(),
+    '  Rachel   A.   Booth  ', 'Jean-Baptiste Emmanuel Zorg the Considerably Extended',
+    'Kátia Wu', // decomposed accent — NFC-normalised before measuring
+  ];
+
+  for (const name of CASES) {
+    it(`agrees with the export for ${JSON.stringify(name.slice(0, 34))}`, () => {
+      assert.equal(
+        certificateNameFits(name),
+        exportAccepts(name),
+        'the entry check and the export disagree — one of them would strand a member',
+      );
+    });
+  }
+
+  it('an empty name is allowed through (the export falls back to a generated label)', () => {
+    assert.equal(certificateNameFits(''), true);
+    assert.equal(certificateNameFits('   '), true);
+  });
+
+  it('still pins the 26/27 single-word boundary from the entry side', () => {
+    assert.equal(certificateNameFits('W'.repeat(26)), true);
+    assert.equal(certificateNameFits('W'.repeat(27)), false);
   });
 });
 
