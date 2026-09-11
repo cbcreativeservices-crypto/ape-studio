@@ -133,6 +133,15 @@ export function EarModuleScreen() {
         setPhase('rendering');
         setPicked(null);
         setPlaying(null);
+        // Trial synthesis is a synchronous DSP burst — measured up to ~110 ms
+        // per trial in Node (several times that on a phone), and makeFresh
+        // retries up to NO_REPEAT_TRIES times when the key repeats. Without a
+        // yield it runs in the SAME tick as setPhase('rendering'), so that
+        // state can never paint and module entry reads as a frozen screen
+        // (the class that froze the mixing lab's null test on device,
+        // 2026-09-11). The pre-rendered path — the common answer→NEXT case,
+        // already warmed in onAnswer — skips the yield and stays instant.
+        if (!prerendered) await new Promise<void>((r) => setTimeout(r, 0));
         const t = prerendered ?? makeFresh(lvl, subOk);
         nextTrialRef.current = null;
         if (!t) return;

@@ -333,6 +333,37 @@ export function DeviationMeter({ cents, rangeCents = 30, label }: { cents: numbe
   );
 }
 
+/* ── render-then-play ────────────────────────────────────────────────────── */
+
+/**
+ * The render thunks below are SYNCHRONOUS DSP bursts: a two-clip A→B concat
+ * measures ~106 ms in Node and a 7-note chord ~180 ms — several times that on
+ * a phone. Calling `make()` inline as an argument to `player.play(make(), …)`
+ * ran the synthesis in the same tick as the tap, so the JS thread blocked with
+ * no sign the button had registered (the class that froze the mixing lab's
+ * null test on device, 2026-09-11). Yield once so the RENDERING state paints,
+ * then synthesise. A ref guard keeps a double-tap from stacking two bursts.
+ */
+function useRenderedPlay(player: TuningPlayer) {
+  const [rendering, setRendering] = useState<string | null>(null);
+  const busy = useRef(false);
+  const run = (make: () => Mono, label: string) => {
+    if (busy.current) return;
+    busy.current = true;
+    setRendering(label);
+    void (async () => {
+      try {
+        await new Promise<void>((r) => setTimeout(r, 0));
+        await player.play(make(), label);
+      } finally {
+        busy.current = false;
+        setRendering(null);
+      }
+    })();
+  };
+  return { rendering, run };
+}
+
 /* ── AudioComparisonControls (A / B / Alternate / Together / Stop) ───────── */
 
 export function AudioComparisonControls({
@@ -349,17 +380,21 @@ export function AudioComparisonControls({
 }) {
   const [status, setStatus] = useState<PlayerStatus>({ playing: false, label: null });
   useEffect(() => player.subscribe(setStatus), [player]);
+  const { rendering, run } = useRenderedPlay(player);
+  const abLabel = `${labelA} then ${labelB}`;
+  const togLabel = `${labelA} + ${labelB}`;
+  const mark = (own: string, text: string) => (rendering === own ? `… ${text}` : text);
   return (
     <View style={{ gap: 6 }}>
       <Row>
-        <Btn label={`▶ A · ${labelA}`} onPress={() => void player.play(a(), labelA)} a11y={`Play A, ${labelA}`} />
-        <Btn label={`▶ B · ${labelB}`} onPress={() => void player.play(b(), labelB)} a11y={`Play B, ${labelB}`} />
-        <Btn label="A → B" onPress={() => void player.play(concatWithGap(a(), b()), `${labelA} then ${labelB}`)} a11y="Play A then B" />
-        {together ? <Btn label="TOGETHER" onPress={() => void player.play(together(), `${labelA} + ${labelB}`)} /> : null}
+        <Btn label={mark(labelA, `▶ A · ${labelA}`)} onPress={() => run(a, labelA)} a11y={`Play A, ${labelA}`} />
+        <Btn label={mark(labelB, `▶ B · ${labelB}`)} onPress={() => run(b, labelB)} a11y={`Play B, ${labelB}`} />
+        <Btn label={mark(abLabel, 'A → B')} onPress={() => run(() => concatWithGap(a(), b()), abLabel)} a11y="Play A then B" />
+        {together ? <Btn label={mark(togLabel, 'TOGETHER')} onPress={() => run(together, togLabel)} a11y={`Play ${labelA} and ${labelB} together`} /> : null}
         <Btn label="■ STOP" tone="danger" onPress={() => player.stop()} a11y="Stop audio" />
       </Row>
       <Text style={styles.status} accessibilityLiveRegion="polite">
-        {status.playing ? `♪ Playing: ${status.label}` : 'Sound: stopped'}
+        {rendering ? `Rendering: ${rendering}…` : status.playing ? `♪ Playing: ${status.label}` : 'Sound: stopped'}
         {note ? ` · ${note}` : ''}
       </Text>
     </View>
@@ -370,10 +405,11 @@ export function AudioComparisonControls({
 export function PlayStop({ player, render, label }: { player: TuningPlayer; render: () => Mono; label: string }) {
   const [status, setStatus] = useState<PlayerStatus>({ playing: false, label: null });
   useEffect(() => player.subscribe(setStatus), [player]);
+  const { rendering, run } = useRenderedPlay(player);
   const mine = status.playing && status.label === label;
   return (
     <Row>
-      <Btn label={mine ? `♪ ${label}` : `▶ ${label}`} onPress={() => void player.play(render(), label)} a11y={`Play ${label}`} />
+      <Btn label={rendering === label ? `… ${label}` : mine ? `♪ ${label}` : `▶ ${label}`} onPress={() => run(render, label)} a11y={`Play ${label}`} />
       <Btn label="■" tone="danger" onPress={() => player.stop()} a11y="Stop audio" />
     </Row>
   );
