@@ -1,10 +1,11 @@
 # Mixing Labs (Beginning + Advanced) — copy sheet
 
-**Status: ⏳ PENDING OWNER RATIFICATION** (both labs built overnight
-2026-09-11 on the owner's GO; TWO rounds of expert design + cognition passes
-applied — the round-2 cognition agent measured every audio claim against the
-running engine). All copy is NEW. Any copy change re-opens here first once
-ratified.
+**Status: ✅ RATIFIED by the owner 2026-09-11 — "all approved as written."**
+(Both labs built overnight 2026-09-11 on the owner's GO; TWO rounds of
+expert design + cognition passes applied — the round-2 cognition agent
+measured every audio claim against the running engine; owner device-passed
+both labs the same day.) This copy is now governed: any wording change to
+either Mixing lab re-opens HERE first, then flows to source.
 
 Full text lives in the source (single source of truth):
 - Beginning (16 pages): `src/screens/lab/mixing/pagesA.tsx` (1–4) ·
@@ -85,7 +86,7 @@ console fails the suite.
 
 ## Deferred owner decisions (worked around, not blocking)
 
-- **Ratification of this sheet** (all copy new, both labs).
+- ~~Ratification~~ ✅ **RATIFIED 2026-09-11** — "all approved as written."
 - ~~Device pass~~ ✅ **DEVICE PASS DONE 2026-09-11** — owner passed both labs
   on device ("device pass all good on both").
 - **Catalog placement fine-tuning**: Mixing category currently leads the
