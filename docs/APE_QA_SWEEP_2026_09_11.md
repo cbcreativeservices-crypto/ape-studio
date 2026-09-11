@@ -424,7 +424,8 @@ warm cache. Releasing on unmount would turn every re-entry into that wait.
 `releaseSessionStems()` is added, audited and exported but **deliberately not
 wired**.
 
-**The first-play stall was the bigger news — and it is now FIXED.** Owner
+**The first-play stall was the bigger news — now FIXED and DEVICE-PASSED**
+("device pass all good - both labs play fine now", owner, 2026-09-11). Owner
 ruling: *"fix classicWave with a wavetable."* Done. Cold `sessionStems()`
 measured **7128.9 ms → 349.7 ms**; one 2-second 65 Hz note **406.9 ms →
 2.6 ms**. The node test suite dropped from ~11 s to ~2.8 s as a side effect,
@@ -474,6 +475,24 @@ by its liveness guard, and `renderMix()` copies into freshly allocated output.
 `renderMix` is also, by grep, the only consumer of `sessionStems` in the tree.
 +5 tests, including that re-synthesis after a release is byte-identical across
 all eight stems — the backing track cannot change between visits.
+
+## What this round has and has NOT been on a device
+
+The mixing labs were device-passed on 2026-09-11 ("both labs play fine now"),
+which covers the `classicWave` wavetable and the counted stems release. Nothing
+else from Round 8 has been on hardware, and several of those changes were
+reasoned from library source rather than observed — they are listed here so the
+distinction does not quietly get lost:
+
+| Change | Status | What a device pass would actually test |
+|---|---|---|
+| `classicWave` wavetable + stems release | **DEVICE-PASSED** | — |
+| Skia image dispose (SpectrogramScreen) | reasoned from the package's C++ | Start, run, change dynamic range, freeze/resume, save a snapshot, back out. A wrong dispose is a NATIVE crash, so this is the highest-value one left. |
+| Per-screen error boundaries | reasoned from React Navigation source | Push/pop through a lab, swipe-back, tab switches — that transitions and gestures are untouched. |
+| Virtualized lists (Glossary popups, Requests) | reasoned | Open the bookmark popups; watch for a one-frame card resize on open (`initialNumToRender` is the dial). |
+| ARIA sweep (149 sites + 11 tab strips) | reasoned from the RN role mapping | VoiceOver/TalkBack: a selected segment should say "pressed", a real tab "tab, 1 of 5". |
+| Certificate name validation | Node-tested only | Type a 27-character unbroken name in the registry field and confirm the refusal reads sensibly. |
+| `measurementStore` SQLite risk | **untested, and it is a data-loss risk** | Save ~20 spectrogram snapshots, force-quit, reopen, see whether the library survives. |
 
 ## Still open — and why
 
