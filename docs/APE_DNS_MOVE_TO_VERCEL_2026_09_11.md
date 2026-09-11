@@ -36,12 +36,20 @@ external query — are authoritative. Every record below came from them.
 | MX | `@` | `smtp.google.com` **priority 1** |
 | TXT | `@` | `google-site-verification=AoQOlne1VxOLcSE-42v125d5-3tViCMtAe0TtUbW4Vs` |
 | TXT | `_dmarc` | `v=DMARC1; p=none` |
-| TXT | `google._domainkey` | the `v=DKIM1;k=rsa;p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8A…` key — **copy from the Bluehost panel, never retype** |
+| TXT | `google._domainkey` | `v=DKIM1;k=rsa;p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAobwhktVYPQwQbNFsVTsl2IZ//zOXqPzJM3E9V/wQJAdHh25rOE7waMzjiYACF/8R7EoqFKgHIo9vClBbR2BNx6zG38Uw8yimxJ4YDWnrEmKkBCOOkRn6qbz7qIXAjWFLMY/t+CLTE0r/pBGk/+S2UxdmNUTHZL/KBSCIxUkIBYIbOO+F00/C389chKbF/nI+9GLDOXWN8JorFgh+aUcCUEbMO6S2gKJjlOhd1dIRxeWjs/IQssgAXAjBAs4EVupdSYZ0+ww8AAB+L08jSrnoiO7fKoOuXMZsdAeqARxY3Q2ZMx99glXXCKSAohAnbypytPlsmE89g6Nr8osEKBmLBwIDAQAB` |
 | CNAME | `send` | `send.forge.rmta.net` — **REQUIRED (Resend is live)** |
 | CNAME | `rsend` | `rsend.forge.rmta.net` — **REQUIRED (Resend is live)** |
-| TXT | `resend._domainkey` | `p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADC…` — **REQUIRED (Resend is live)**; copy from the panel, do not retype |
+| TXT | `resend._domainkey` | `p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC9T702d5o6ggkcMlpajjWjGyrHVLCENAvUnkbL2fffGOZCuD8ABu+aZkGuQrc0MIGO3qmZFy0awvEEbBThN8yCwUnqxYp8bctxQO+c37zncLuuKVZQNsAe9K0r30oUAbUarQy1ZKGWaRkasTsrGDaTtQ9n9LzD6mLd6Tij8U5KLQIDAQAB` — **REQUIRED (Resend is live)** |
 
-**ADD (currently missing):** `TXT` `@` → `v=spf1 include:_spf.google.com ~all`
+**SPF — DEFERRED to AFTER the move, deliberately.** There is still no SPF record
+at all. It was originally listed as an ADD during the migration; on reflection
+that mixes two changes and muddies the rollback, so the cutover stays
+like-for-like (minus dead cruft) and SPF lands as its own deliberate step
+afterwards, verified against Resend's dashboard.
+
+When it does land, `v=spf1 include:_spf.google.com ~all` at the apex is the
+right shape: Resend aligns via the `send` CNAME, whose target carries Resend's
+own SPF and MX, so the apex record only has to authorise Google.
 
 There is **no SPF record at all** today — and that now matters more, because
 **two** senders use this domain: Google Workspace and Resend
