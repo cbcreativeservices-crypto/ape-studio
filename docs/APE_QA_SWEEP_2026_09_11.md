@@ -252,7 +252,7 @@ UNLOCKED — nothing added a gate. The two spots where guessing "member" would
 GRANT rather than withhold (Enrollment's deep-resume shortcut, Directory's QR
 token RPC) were deliberately kept strict.
 
-### ⚠️ ARIA mapping needs re-ratifying before launch
+### ✅ ARIA mapping needs re-ratifying before launch — CLOSED in Round 8
 266 `aria-*` props were added across 114 files so the web build stops
 announcing every stateful control as plain and unselected. But: **221 of the
 253 sites carry `accessibilityRole="button"`, and `aria-selected` is not a
@@ -352,3 +352,110 @@ because acting on an unknown state can silently unpublish or re-publish.
 - Tell agents plainly that **"I attacked X and found nothing" is a valuable
   result.** It stops the padding that makes a report unreadable, and it is
   the only way to know which areas are actually solid.
+
+---
+
+# Round 8 — "make all of your recommendation fixes now"
+
+Owner instruction, 2026-09-11. Everything the earlier rounds had *reported*
+rather than fixed, worked through. Ten commits; `tsc` clean and **994 tests /
+166 suites** green (up from 967) at every commit.
+
+## Closed
+
+| What was reported | What was done |
+|---|---|
+| A registry name of 27+ characters with no space made the earned certificate **permanently un-downloadable** | `certificateNameFits()` validates at ENTRY using the same `fitText` and the same (now named) `HOLDER_SLOT` the export uses, so the two cannot disagree. +21 tests assert the entry check and the export return the **same** answer for every case the hostile-input suite knows. |
+| An unparseable `expires_at` silently dropped a **paying member** to `lapsed` (`NaN > now` is false) | **Fails OPEN.** Rule moved into a pure React-free leaf, `entitlementExpiry.ts`, with +8 tests including one that pins the defect. The fail-open is logged count-only, never silent. |
+| `loadPublicProfile()` could not tell a FAILED registry read from "no listing" | The read now returns a three-way result and the screen says plainly when it is showing the device's copy instead of the server's. |
+| Unused `ACCESS_FINE_LOCATION` / `ACCESS_COARSE_LOCATION` / `NSLocationWhenInUseUsageDescription` — store-submission risk | Removed. **The premise was half wrong and it mattered**: there *is* wired GPS code (`capture/location.ts` + the MultiMeter Snapshot control), parked behind `optionalModule()` because `expo-location` is not installed. Nothing in `src/` changed; the next-build checklist now carries the three keys verbatim for restoration. |
+| Directory display name had no `maxLength` | Capped at 30 — the number the narrowest render actually holds, verified against the live schema (there is **no** server bound to mirror). |
+| Country code `slice(0, 2)` cut emoji flags mid-surrogate | One code-point-safe normaliser, shared by the editor that writes the field and the filter that searches it. |
+| ExposureMonitor announced "340 percent" against a declared `max: 100` | The **max** was the wrong half — dose is an unbounded accumulator and exceeding 100% is the finding. Percentage moved to the value text; net new copy: none. |
+| SPL meter clipped its flagship number ("100.4" → "100") at large text | Shrinks to fit instead of clipping. Unchanged at 1.0×. |
+| `RootErrorBoundary` was the app's **only** boundary — one broken screen ended the session | `ScreenErrorBoundary` attaches via `screenLayout` at four points (root stack, tabs, Study stack, Achievements stack). Inside the card, Fragment while healthy: no layout, no gesture or transition change. Offers GO BACK as well as TRY AGAIN. |
+| Four unbounded `ScrollView` + `.map()` lists | Virtualized. The heavy ones were not the rows but what each row dragged in — four store subscriptions per glossary row, a hidden `Modal` per request card. |
+| Skia image in SpectrogramScreen never disposed (8 allocations/second) | Disposed on replacement and unmount, with the safety argument read out of the installed package's C++ rather than remembered. |
+| **Time Trial was unreachable** | Nothing anywhere called `startTimeTrial` — the whole feature was dead code. The start control now sits in the pace-timer popup, which is where `timeTrial.ts`'s own header says it belongs and which was already being handed `topicId` for exactly this. |
+
+## The ARIA mapping — closed
+
+`aria-selected` is **invalid on `role="button"`**, so at **149 sites across 86
+files** a selected segment announced to a web screen-reader user exactly like
+an unselected one. The attribute was not wrong; it was *ignored*. All 149 are
+now `aria-pressed`. Every `accessibilityState={{ selected }}` is byte-identical
+— only the web half was broken.
+
+Two categories came back **empty** across the whole tree, which is worth
+knowing: there was no `radio`/`checkbox`/`menuitem`/`switch` carrying
+`aria-selected` (so there is no `aria-checked` list to rule on), and not one
+role-less element — all 155 sites had an explicit role.
+
+Then the part a blanket sweep cannot do. Eleven groups turned out to be
+genuine **tab strips** — one container, one list, mutually exclusive, pressing
+one swaps the panel below — and were promoted to `tablist` / `role="tab"` /
+`aria-selected`, 35 rendered tabs: LabShell's mode row (ships on many labs),
+the Enrollment browse tabs, the Awards category row, the Tube card page tabs,
+and the seven tool-demo scene strips. All eleven copy the shape of the
+reference implementation already in the tree — the directory screen's
+Explore / My Profile / Requests switcher.
+
+**Deliberately not promoted, and the distinction is the point:** value pickers
+that look identical but switch no panel — colour swatch grids, SPL dial modes,
+the ExposureMonitor day range, the EQ REGIONS and band chips, the AM/PM and
+DAY pickers. They are `radiogroup`-shaped and would want `aria-checked`;
+**filed, not guessed at.** Also left alone: the cable / cableinstall step-dot
+rows (pagination with gating, which tab semantics model poorly) and PagedLab's
+page list (a collapsible disclosure ending in RESET — a menu, not a tablist).
+
+**Flagged, not changed:** EnrollmentScreen renders its browse tabs *twice* —
+in-flow and again in the pinned overlay, with the in-flow copy still mounted —
+so while pinned there are two identical tablists on screen. Predates this
+change; hiding the off-screen copy from the reader is its own fix.
+
+## Two corrections to earlier findings — both worth reading
+
+**`stemsCache` is not a growing cache.** It memoizes exactly eight
+`Float32Array`s under eight fixed ids: the high-water mark is a constant
+~15.4 MB and an LRU would have nothing to evict. What it lacked was a
+*release*, and measuring changed the answer — cold `sessionStems()` is
+**~8.2 s of blocked JS on a desktop V8**, against 25 ms to render a mix off the
+warm cache. Releasing on unmount would turn every re-entry into that wait.
+`releaseSessionStems()` is added, audited and exported but **deliberately not
+wired**.
+
+**The 8-second first-play stall is the bigger news.** Root cause is naive
+additive synthesis in `earDsp.classicWave` — a 65 Hz bass root sums ~369
+harmonics across 480k samples, 8× per bar — and Hermes has no JIT, so the
+device is worse, not better. Fixing it (memoized harmonic series, or a
+wavetable) would make the release cheap *and* remove the stall. **Owner call.**
+
+## Still open — and why
+
+- **`measurementStore` SQLite split.** Unchanged from Round 6: the documented
+  precondition is now violated and the fix needs a device test to confirm the
+  risk first. Save ~20 spectrogram snapshots, force-quit, reopen.
+- **Rack honesty-badge truncation.** Fixing it means trimming owner-written
+  disclosure copy or letting the faceplate grow. Neither is mine to decide, and
+  the code's own comment says "a truncated disclosure is a weakened disclosure".
+- **Enrollment screen's A–Z topic list** (~166 eager rows). Catalog-bounded,
+  behind two taps, and virtualizing it means hoisting the page scroller past a
+  `gap: 8`, an `onLayout`-measured scroll anchor, two `scrollTo` calls and a
+  `PanResponder`. Its own task, with a device pass.
+
+## New copy for the ratification sheet
+
+1. Unfittable certificate name: *"This is too long to print on a certificate.
+   Shorten it, or put a space in it so it can run over two lines."*
+2. Unverified registry switch: *"We couldn't check this with the server just
+   now, so the switch above is showing what this phone last saved. Reopen this
+   screen when you're back online to confirm it."*
+3. Per-screen error card: **THIS SCREEN STOPPED** / *"This screen hit an
+   unexpected error and stopped. The rest of the app is still running and your
+   saved work is untouched."* / **GO BACK**
+4. Time Trial panel: **TIME TRIAL** / *"A 15-minute run at quiz pace. Only
+   correct answers count, so speed alone won't clear it. Get 45 right and this
+   method counts complete toward unlocking the quiz. Fall short and nothing
+   happens — run it again whenever you like."* / **START TIME TRIAL**
+   (the 45 renders `TIME_TRIAL_NEEDED`, so it cannot drift from the rule)
+5. Directory display name: a wordless counter, `0/30`.
