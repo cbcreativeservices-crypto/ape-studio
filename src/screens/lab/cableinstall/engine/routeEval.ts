@@ -7,8 +7,10 @@
  * The lesson "shortest ≠ best" is structural: length is one small input among
  * six scored dimensions. Pure functions, zero React.
  */
-import type { CiDim, CiDimScores } from './score';
-import { clamp100, overallScore } from './score';
+// explicit .ts: node's native test runner resolves ESM without a bundler
+// (tsconfig sets allowImportingTsExtensions; careerfinder/scoring precedent).
+import type { CiDim, CiDimScores } from './score.ts';
+import { clamp100, overallScore } from './score.ts';
 
 /** A hazard/quality condition attached to a route by the scenario author. */
 export type CiRouteFlag = {

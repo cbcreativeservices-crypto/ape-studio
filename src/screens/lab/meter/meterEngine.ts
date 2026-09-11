@@ -657,7 +657,14 @@ export function waterfallTimeSpan(opts: WaterfallOpts): number {
   // scenes span ~1.3 s (living room) to ~9 s (cathedral), 7x. Any single
   // fixed window either buries a small room's decay in a couple of slices or
   // clips a cathedral off the front edge.
-  const untreated: WaterfallOpts = { ...opts, damping01: 0 };
+  // qRing is forced OFF here too (QA 2026-09-11). It is a LIVE control and, by
+  // waterfallRt's own account, "an electronic demonstration, not room physics" —
+  // but its 2.8 s ridge was being fed into the window sizer, so pressing Q RING
+  // in STUDIO or LIVING ROOM stretched the axis 3 s → 4 s and re-lettered the
+  // floor marks (1,2 → 1,2,3). The decay surface visibly re-scaled the instant
+  // you enabled a filter that only adds a narrow 1.2 kHz ridge, which is exactly
+  // the moving ruler the pin exists to prevent.
+  const untreated: WaterfallOpts = { ...opts, damping01: 0, qRing: false };
   let maxRt = 0;
   for (const f of RT_PROBE_HZ) maxRt = Math.max(maxRt, waterfallRt(untreated, f));
   const needed = maxRt * 1.25;

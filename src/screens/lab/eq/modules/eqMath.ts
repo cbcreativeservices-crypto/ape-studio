@@ -4,7 +4,9 @@
  * 1/Q = 2·sinh(ln2/2 · BWoct) — the SAME numbers a console readout shows, so
  * the dual "Q · Bandwidth (oct)" displays the spec mandates stay honest.
  */
-import { levelColor } from '../../../../features/tools/levelColor';
+// explicit .ts: node's native test runner resolves ESM without a bundler
+// (tsconfig sets allowImportingTsExtensions; careerfinder/scoring precedent).
+import { levelColor } from '../../../../features/tools/levelColor.ts';
 
 /** Bandwidth in octaves for a peaking filter of quality Q. */
 export function bwOctFromQ(q: number): number {
