@@ -163,7 +163,15 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
   // umbrella the EQ/dynamics/effects labs plug into. Member-only (owner
   // recommendation-approved). Advanced Mixing joins when built.
   {
-    id: 'mixing',
+    // 'mixingworkflow', not 'mixing': the pre-existing "Mixing & Production"
+    // category below already holds id 'mixing'. Sharing it produced a duplicate
+    // React key in EarLabScreen (which also builds per-leaf state as
+    // `${cat.id}:${leaf.name}`), so the two categories could omit or duplicate
+    // each other's rows. Caught by the 2026-09-11 QA sweep.
+    // NOTE FOR THE OWNER: there are now TWO mixing categories in the TRAINING
+    // section — this live one and the all-placeholder "Mixing & Production".
+    // Worth deciding whether to fold the placeholders in here.
+    id: 'mixingworkflow',
     glyph: '🎛',
     name: 'Mixing',
     description: 'Balance, clarity, depth, movement and focus — the listening decisions that make a mix.',
