@@ -4,8 +4,11 @@
  * Locked behavior: 2 columns (left definitions (read), right terms (shuffled
  * options)) · tap-to-pair,
  * 1.5px borders, visual feedback · [Prev]/[Next] + swipe L/R · auto-advance
- * 300ms after the board's last confirmed pair · media top · LED (server pct) ·
+ * ADVANCE_MS after the board's last confirmed pair · LED (server pct) ·
  * 100% → manual back only · bottom nav visible.
+ *
+ * (Corrected 2026-09-11: this said "auto-advance 300ms" — the real pause is
+ * ADVANCE_MS = 750 below — and "media top", which this screen never renders.)
  *
  * Boards chunk the topic's items into sets of up to 4 pairs; right column
  * independently shuffled. Correct pair → both cells lock (dimmed) +

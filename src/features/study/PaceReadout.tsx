@@ -671,7 +671,8 @@ const styles = StyleSheet.create({
   metricsLabelRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   metricsLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1, color: colors.amberLabel },
   // Amber pace-setting label parked at the CENTER of the track (shown only when
-  // the dot is ≥3 steps out, so it never sits behind the dot).
+  // the dot is ≥1 step out, so it never sits behind the dot — see
+  // `showTrackPace`; the threshold dropped from 3 to 1 on 2026-07-25).
   trackLabelWrap: {
     position: 'absolute',
     left: 0,

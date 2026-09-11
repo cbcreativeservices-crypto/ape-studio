@@ -32,7 +32,7 @@ import { COREQ_TOPIC_GS } from '../awards/awardsData';
 import { useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { useBundles } from '../../features/enrollment/enrolledBundlesStore';
 import { useEnrollmentProgress } from '../../features/enrollment/enrollmentProgress';
-import { getDefaultHomeGs, getHomeGs, HOME_MAX, setDefaultHomeGs, setHomeGs } from '../../features/home/homeCardsStore';
+import { getDefaultHomeGs, getHomeGs, HOME_MAX, setDefaultHomeGs, setHomeGs, useHomeBundles } from '../../features/home/homeCardsStore';
 
 const GREEN = '#37e05f';
 const BLUE = '#7fbfff';
@@ -124,6 +124,14 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
   // credential is held) — used for the cap math and preserved on Save.
   const coresOnHome = useMemo(() => COREQ_TOPIC_GS.filter((gs) => getHomeGs().includes(gs)), [visible, hasCredential, prog]);
 
+  // Cert/program BUNDLE cards also sit on Home and also count toward HOME_MAX —
+  // homeCardsStore's own homeCardCount() is `list.length + bundleList.length`
+  // ("the 20-cap counts both"). This sheet's cap math used to count only cores +
+  // topics, so a user with bundle cards could be waved past the limit the popup
+  // below promises ("You can place up to 20 cards on your Home screen") and
+  // then have the overflow silently truncated by setHomeGs. Fixed 2026-09-11.
+  const homeBundles = useHomeBundles();
+
   const toggleRow = (gs: number) =>
     guard(() => {
       setOnSet((prev) => {
@@ -132,7 +140,7 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
           n.delete(gs);
           setDefaultDraft((d) => (d === gs ? null : d));
         } else {
-          if (coresOnHome.length + n.size + 1 > HOME_MAX) {
+          if (coresOnHome.length + homeBundles.length + n.size + 1 > HOME_MAX) {
             setWarn(true);
             return prev;
           }

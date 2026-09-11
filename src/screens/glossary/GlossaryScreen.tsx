@@ -1,11 +1,15 @@
 /**
  * S17 — Glossary (visuals from 19-s17-glossary.dc.html) + Booth change order
  * 2026-07-07:
- *  - ALL = every term in the corpus (3,300+; fetched in 1000-row pages past
- *    the PostgREST cap), not just enrolled courses.
- *  - COURSE filter narrows in place via a course-chip picker (all 9).
- *  - TOPIC filter narrows in place via a topic-chip picker (all 51 topics,
- *    active or not), showing only that topic's terms.
+ *  - ALL = every term in the corpus (fetched in 1000-row pages past the
+ *    PostgREST cap), not just enrolled courses.
+ *  - TOPIC filter narrows in place via a topic-chip picker, showing only that
+ *    topic's terms. The list is the LIVE v3 curriculum only (owner
+ *    2026-08-06) — not a fixed topic count.
+ *  - The chip row is ALL · Topic · Bookmarks · Custom · Recent (see `Filter`).
+ *    There is NO course filter: the course chip was removed in July 2026 and
+ *    its backing `courses` fetch (the archived v1 college catalog) went with
+ *    it on 2026-09-03 — see the note at the load effect.
  *  - Reachable with no context (Glossary card on Course Selection); Dashboard
  *    entry preselects its course/topic.
  * Search by term · empty: "No results for [filter]" · bottom nav visible.
@@ -977,7 +981,9 @@ export function GlossaryScreen({ route, navigation }: Props) {
 
   // M16 (2026-09-07): a preset topic (opened from a Dashboard topic) must
   // actually narrow the list — start on the 'topic' filter, not 'all', so the
-  // ~3,300-term corpus isn't shown with the Topic chip unchecked.
+  // full corpus isn't shown with the Topic chip unchecked. (Corpus size is
+  // stated inconsistently elsewhere in this file — 22.7k vs 26,847; don't
+  // re-assert a figure here.)
   const [filter, setFilter] = useState<Filter>(presetTopicId ? 'topic' : 'all');
   const [topicPickerOpen, setTopicPickerOpen] = useState(false);
   // Member gate for the topic filter (user request 2026-07-25): free/lapsed/

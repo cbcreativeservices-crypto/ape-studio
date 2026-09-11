@@ -2,9 +2,13 @@
  * S2 — Flashcards (r6 LOCKED; NO r8 difficulty banner) + Booth change orders
  * 2026-07-07/08:
  *  - Header shows the TOPIC under study as a subtitle.
- *  - Filter row: full-word difficulty chips (All / Beginning / Intermediate /
- *    Advanced) + order controls (A–Z / Shuffle; pressing Shuffle re-shuffles).
- *  - Level views (1–5) keep the term visible with a labeled subtitle.
+ *  - Filter row: ABBREVIATED difficulty chips (ALL / BEG / INT / ADV) + order
+ *    controls (A–Z / Shuffle; pressing Shuffle re-shuffles).
+ *  - Level views (1–6, see LEVEL_LABELS / ALL_LEVELS) carry a labeled subtitle.
+ *    In regular flip mode the TERM IS DELIBERATELY HIDDEN (user request
+ *    2026-07-24) — term + definition appear together only in the eyeball SOLO
+ *    view. (Corrected 2026-09-11: this said "full-word chips" and "(1–5) keep
+ *    the term visible", both of which the code contradicts.)
  *  - LED + % readout creep via studyDisplayPct.
  *  - 🔒 NON-DESTRUCTIVE KNOWN MODEL (Booth #3, 2026-07-08): marking a card
  *    known sends known:true (earning progress credit) and hides the card

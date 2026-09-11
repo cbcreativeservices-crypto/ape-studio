@@ -4,8 +4,15 @@
  * through record_study_progress in M4, quiz through the quiz RPCs in M5).
  *
  * Status vocabulary (from deployed recompute_reachability):
- *   locked · unlocked · passed_incomplete (partial 20–23, clamps one-ahead) ·
- *   complete (full pass 24–25).
+ *   locked · unlocked · passed_incomplete (a partial pass — clamps one-ahead) ·
+ *   complete (a full pass).
+ *
+ * The score bands that separate those are the SERVER's, and this comment used
+ * to spell them as "partial 20–23 / full 24–25" — the retired 25-question
+ * quiz. The ratified shape is QUIZ_SIZE 30 / QUIZ_PASS 28 (features/quiz/api.ts,
+ * whose header says: do not reintroduce 25/24). Deliberately NOT restating the
+ * new bands here: recompute_reachability owns them, and a second copy in a
+ * client docblock is exactly how the last pair went stale.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';

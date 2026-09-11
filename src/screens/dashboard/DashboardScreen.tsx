@@ -10,8 +10,10 @@
  * - Provisional (clamped) topic = predecessor status passed_incomplete:
  *   distinct border + persistent reminder (copy locked; styling is a
  *   [TBD-DESIGN] proposal).
- * - Method blocks 1–5 + quiz block 6 with glow-pulse while locked and a
+ * - Method blocks 1–4 + quiz block 5 with glow-pulse while locked and a
  *   which-gate-remains readout mirrored DISPLAY-ONLY from server rows.
+ *   (Was 1–5 + 6 when Ear Training was a method; it was retired 2026-07-26 —
+ *   METHOD_ORDER below is the count that matters.)
  * - Topic "overall progress" = mean of the applicable methods' server
  *   completion_pct (display aggregation of server truth — flagged in review).
  */
@@ -1475,10 +1477,16 @@ export function DashboardScreen() {
           </View>
           {/* Topic/course intro buttons removed (user request 2026-07-18) — the
               intros still auto-show once before beginning (when content exists). */}
+          {/* [46b] (2026-09-11): the twin of the [46] fix on ResultsScreen —
+              this one was missed. The threshold was the literal "28+", which
+              only happens to be right because QUIZ_PASS is 28 today; it would
+              have survived the 25→30 / 24→28 migration silently the same way
+              ResultsScreen's stale "24+" did. Interpolate so the copy can
+              never drift from the ratified pass mark. */}
           {provisional && (
             <Text style={styles.provisionalNote}>
-              Provisional access — score 28+ on the previous topic to earn its trophy and continue
-              further.
+              Provisional access — score {QUIZ_PASS}+ on the previous topic to earn its trophy and
+              continue further.
             </Text>
           )}
           {/* Same gray-lip-over-black-line lower edge as the glass readouts
@@ -1487,8 +1495,9 @@ export function DashboardScreen() {
           <View pointerEvents="none" style={styles.glassBottomHighlight} />
         </View>
 
-        {/* Method blocks 1–5 — each frame carries its OWN LED meter (Booth
-            2026-07-07: 6 meters total on this screen incl. the topic card).
+        {/* Method blocks 1–4 (METHOD_ORDER) — each frame carries its OWN LED
+            meter; 5 meters total on this screen incl. the topic card. (Booth
+            2026-07-07 said 6, back when Ear Training was a 5th method.)
             Rack group: tight inter-panel gap like a real 500 lunchbox (#6). */}
         <View style={styles.rackGroup}>
         {isCustom ? (

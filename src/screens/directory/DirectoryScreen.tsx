@@ -33,9 +33,12 @@ const DIRECTORY_INTRO_TITLE = 'Get Discovered';
 const BRAND_PHRASE = 'Pro Audio Training Academy Professional Registry';
 
 // The Registry ID / verification URL / issue date come from the account's real
-// server-issued Registry record once the backend is wired. Until then the UI
-// shows an honest "pending issuance" state — no fabricated ID/URL/date is
-// presented as a verifiable credential (owner launch-triage 2026-08-21).
+// server-issued Registry record. THE BACKEND IS WIRED (checked 2026-09-11):
+// `users.qr_token` → registryUrl() → the website's /registry/<token> page
+// (web/app/registry/[token]/page.tsx), read via public_verify_by_token. The
+// "pending issuance" state is now only the pre-load / guest fallback, NOT a
+// standing "not built yet" state. No fabricated ID/URL/date is ever presented
+// as a verifiable credential (owner launch-triage 2026-08-21).
 
 /** Faint, semi-transparent gray QR-like pattern painted behind the "QR / CODE"
  *  placeholder text inside the black box (user request 2026-07-22). */

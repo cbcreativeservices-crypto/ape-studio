@@ -1,10 +1,14 @@
 /**
  * PaceTimerModal — the pace-timer settings popup.
  *
- * On/off toggle · a plain-English explanation of "pace" · a radio list of pace
+ * A plain-English explanation of "pace" · a MiniFader/PresetFader for the pace
  * presets (incl. Stopwatch) · and, for Stopwatch, the encouraging backend
- * records readout (best / average / sessions). Dark modal styling mirrors
- * PrePaywallPrompt (backdrop + rounded card).
+ * records readout (best / average / sessions) · DONE. Dark modal styling
+ * mirrors PrePaywallPrompt (backdrop + rounded card).
+ *
+ * (Corrected 2026-09-11: this described an "On/off toggle" and a "radio list".
+ * Neither exists — the top Switch was removed and DONE is what arms the timer
+ * (see the note at the DONE button); presets are a fader, not radios.)
  *
  * Settings are device-local (paceStore); only the Stopwatch records are backend
  * (paceRecords). Everything here is a practice aid — nothing blocks study.

@@ -1,10 +1,16 @@
 /**
- * PagedLab — the shared shell for the visual-only paced labs (Sound
- * Envelope, Speech & Voice, Smart Processors): header with page n of N,
+ * PagedLab — the shared shell for the paged labs: header with page n of N,
  * progress dots + page list, Back/Continue, reduced-motion aware, progress
  * in ape:<labId>:v1. Pages are components receiving a small ctx.
  *
- * API contract (three labs depend on it — additive changes only):
+ * CONSUMERS (checked 2026-09-11) — SEVEN labs, not the original three:
+ *   Sound Envelope · Speech & Voice · Smart Processors (De-Esser) ·
+ *   Connector Select · Patchbay · Beginning Mixing · Advanced Mixing.
+ * It is also no longer "visual-only": Connector Select and Patchbay are
+ * assessment-bearing and wired to labCompletion. Re-count the importers
+ * before assuming the blast radius of a change here.
+ *
+ * API contract (all seven labs depend on it — additive changes only):
  *   PageCtx  { reduceMotion, markDone, isDone, goTo? }
  *   PageDef  { title, short, Component, manualDone? }
  */

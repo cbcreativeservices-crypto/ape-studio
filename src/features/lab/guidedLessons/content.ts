@@ -1,5 +1,10 @@
 /**
- * Guided-Lesson content — all 16 audio labs (v4 MASTER §7).
+ * Guided-Lesson content — every lab in `LabId`. That was the 16 of v4 MASTER §7
+ * when this file was written; it is 29 today (§7's 16, plus the §8 Signal Chain
+ * capstone and the labs added from 2026-07-29 on). LAB_LESSONS is typed
+ * `Record<LabId, LabLesson>`, so the compiler — not this comment — is what
+ * guarantees full coverage. Count the union in ./types.ts, don't trust a number
+ * written here.
  *
  * Authored verbatim-in-spirit from the two Booth-approved companion specs:
  *   • docs/APE_LAB_CONTROLS_AND_COMMON_MISTAKES_5LABS_2026_07_26_v1_DRAFT.md

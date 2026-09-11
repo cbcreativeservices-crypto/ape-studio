@@ -1,9 +1,13 @@
 /**
  * S3 — Fill-in-Blank (study).
  *
- * Locked behavior: 4-option grid 2×2, 8px gap · tap select → 350ms highlight →
- * auto-advance · media 80%/4:3 top · LED per question · 100% → manual back
- * only · bottom nav visible.
+ * Locked behavior: 4-option grid 2×2, 8px gap · tap select → FEEDBACK_MS
+ * highlight → auto-advance · LED per question · 100% → manual back only ·
+ * bottom nav visible.
+ *
+ * (Corrected 2026-09-11: this said "350ms highlight" — the real hold is
+ * FEEDBACK_MS = 950 below — and "media 80%/4:3 top", which this screen has
+ * never rendered; ScenariosScreen is the only study screen with a media block.)
  *
  * Booth 2026-07-07: swipe ‹ › navigates back/forward through questions like
  * flashcards (revisit a missed term and answer it again — extra attempts

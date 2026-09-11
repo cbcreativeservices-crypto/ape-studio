@@ -136,9 +136,11 @@ export const COMMERCIAL_NOTIFY_ROWS: {
   { key: 'notifyDailyDefinition', label: 'Definition of the day', hint: 'A definition — you name the term.' },
   { key: 'notifyWeeklySummary', label: 'Weekly recap', hint: 'What you studied this week.' },
   { key: 'notifyCertProgress', label: 'Certificate progress', hint: 'How close you are to your next certificate.' },
-  // Curated daily buckets (owner 2026-09-01) — DORMANT until the curated lists
-  // land (see curatedTermLists.ts): a toggle with no content behind it would be
-  // a dead switch, so the rows only appear once the lists have entries.
+  // Curated daily buckets (owner 2026-09-01) — a toggle with no content behind
+  // it would be a dead switch, so these rows appear only once the lists have
+  // entries (see curatedTermLists.ts). BOTH BUCKETS LANDED 2026-09-01 with
+  // 1,095 entries each, so both rows render today; the guards stay as the
+  // safety net, not as a description of the current state.
   // NEW COPY — owner review.
   ...(MISUNDERSTOOD_TERMS.length > 0
     ? [{ key: 'notifyMisunderstood' as const, label: 'Misunderstood term', hint: 'A commonly misunderstood term, set straight — daily.' }]
@@ -235,8 +237,11 @@ export type NotificationPrefs = {
 // Method) are removed from the UI — not valid in the commercial version (user
 // request 2026-07-18); their frozen columns simply go unused.
 // "Phone notifications", not "Push": it is the MASTER switch for everything
-// this device sends, including the 7 local reminders below (owner-approved
-// 2026-08-30 — the old label promised something it did not do).
+// this device sends, including the local reminders in COMMERCIAL_NOTIFY_ROWS
+// above (owner-approved 2026-08-30 — the old label promised something it did
+// not do). That list is 7 fixed rows + 2 that appear only once the curated
+// buckets have entries; both buckets landed 2026-09-01 (1,095 entries each),
+// so it currently renders 9. Count the array, don't re-hardcode a number.
 export const NOTIFICATION_ROWS: { key: keyof NotificationPrefs; label: string; hint: string }[] = [
   { key: 'push_enabled', label: 'Phone notifications', hint: 'Alerts on this device. Required for everything below.' },
   { key: 'email_enabled', label: 'Email', hint: 'The full weekly concept card, to your account email.' },

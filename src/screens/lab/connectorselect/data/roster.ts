@@ -1,6 +1,13 @@
 /**
- * Audio Connectors & Cable Selection Lab — the lab's connector roster
- * (owner brief 2026-09-11: first-release scope, 20 connector families).
+ * Audio Connectors & Cable Selection Lab — the lab's connector roster.
+ *
+ * SCOPE (checked 2026-09-11): the owner's 2026-09-11 brief said "first-release
+ * scope, 20 connector families", but ROSTER as built is 22 ids (analog 7 +
+ * speaker 6 + digital 9) and test/connectorSelect.test.ts PINS 22. Counting
+ * speakON NL2/NL4 as one family (see the note below) still gives 21, not 20.
+ * No UI copy states a connector count, so nothing user-facing is wrong —
+ * but the brief and the build disagree and only the owner can say which is
+ * right. Do not "fix" this by trimming the roster; raise it with the owner.
  *
  * HONESTY ARCHITECTURE: this lab AUTHORS NO CONNECTOR FACTS. Every card
  * renders from the Cable & Connector Fundamentals Lab's VERIFIED

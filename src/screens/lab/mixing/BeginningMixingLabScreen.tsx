@@ -1,11 +1,11 @@
 /**
- * Beginning Mixing Lab (owner GO 2026-09-11) — COMPLETE: 15 pages on the
+ * Beginning Mixing Lab (owner GO 2026-09-11) — COMPLETE: 16 pages on the
  * PagedLab shell. Purpose (brief): a clear, balanced basic stereo mix via a
  * repeatable process — What Mixing Does → Prep → Signal Flow → Gain Staging →
  * Static Mix → Subtractive → Panning → EQ in Context → Compression → Reverb &
- * Delay → Auxes & Subgroups → Automation → Check & Finish → Export → the
- * guided Final Mix. COPY IS NEW — owner ratification pending
- * (docs/APE_MIXING_LAB_COPY_2026_09_11.md).
+ * Delay → The Six Routing Terms → Pre/Post & the Double Route → Automation →
+ * Check & Finish → Export → the guided Final Mix. COPY RATIFIED by the owner
+ * 2026-09-11 (docs/APE_MIXING_LAB_COPY_2026_09_11.md).
  *
  * Truth architecture: engine/routing.ts + engine/mixModel.ts, pinned by
  * test/mixingEngine.test.ts; audio is REAL offline DSP (audio/mixAudio.ts,

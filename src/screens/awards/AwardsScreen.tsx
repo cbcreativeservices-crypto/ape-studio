@@ -548,9 +548,13 @@ export function AwardsScreen({ navigation, route }: Props) {
         }
       />
 
-      {/* LEVEL 1 — choose one of the 68 Specialized Certificates (user request
-          2026-07-18): each = the 3 required core courses + 3 specialization
-          topics. */}
+      {/* LEVEL 1 — choose one Specialized Certificate (user request 2026-07-18):
+          each = the COREQ_TOPIC_GS core courses + that certificate's own
+          specialization topics. NOTE: the list rendered here is `specCertsAZ`,
+          which comes from the LIVE v3 backend (fetchV3Certs) — NOT the legacy
+          68-entry SPECIALIZED_CERTS array in awardsData.ts, which is marked
+          PARTIALLY DEAD. Don't restate "68", "3 core" or "3 specialization
+          topics" here; all three drifted and were corrected in [18]/[18b]. */}
       <Modal accessibilityViewIsModal visible={picker === 'specializations'} animationType="slide" transparent statusBarTranslucent onRequestClose={() => setPicker(null)}>
         <View style={[styles.pickerRoot, { paddingTop: insets.top }]}>
           <View style={styles.brandRow}>
@@ -686,9 +690,15 @@ export function AwardsScreen({ navigation, route }: Props) {
           >
             <View style={{ flex: 1 }}>
               <Text style={[styles.pickerTitle, { color: AMBER }]}>CHOOSE A PROGRAM PATH</Text>
+              {/* [18b] (2026-09-11): the twin of the [18] fix on the Specializations
+                  picker above — this one was missed. "3 required core courses"
+                  contradicted the REQUIRED CORE banner rendered immediately below
+                  it (COREQ_TOPIC_GS, four since the 2026-08-30 gs3081 swap) AND the
+                  per-program "{total} required topics" line, which already counts
+                  COREQ_TOPIC_GS.length. Derive it so the copy can never drift. */}
               <Text style={styles.pickerSub}>
-                Each Academy Program Certificate combines the 3 required core courses with a set of related
-                topics. Choose one.
+                Each Academy Program Certificate combines the {COREQ_TOPIC_GS.length} required core courses
+                with a set of related topics. Choose one.
               </Text>
             </View>
             <Text style={styles.pickerClose}>✕</Text>

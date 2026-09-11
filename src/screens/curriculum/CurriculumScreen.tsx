@@ -415,7 +415,8 @@ const styles = StyleSheet.create({
 
   // "Discover What's Inside" white heading above the counters (user request 2026-07-22).
   discoverHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, letterSpacing: 0.4, color: colors.textPrimary, textAlign: 'left' },
-  // Overview stat tiles (4 now — user request 2026-07-22).
+  // Overview stat tiles — 5 today (terms · topics · subjects · certificates ·
+  // programs); the array that renders them is the count that matters.
   statsRow: { flexDirection: 'row', gap: 6 },
   statTile: {
     flex: 1,

@@ -5,7 +5,7 @@
  * stereo mix?" vs "can you deliver a complex one?" Prerequisite is a SOFT
  * gate (page 1): auto-met when the Beginning lab is complete on this device,
  * else a three-check knowledge pass — never a hard wall.
- * COPY IS NEW — owner ratification pending
+ * COPY RATIFIED by the owner 2026-09-11
  * (docs/APE_MIXING_LAB_COPY_2026_09_11.md).
  *
  * Shares the Beginning lab's kit, engines and renderer; adds the AML render
