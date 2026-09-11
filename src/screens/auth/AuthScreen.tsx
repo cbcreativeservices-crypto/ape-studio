@@ -15,7 +15,6 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Platform,
   Pressable,
   StyleSheet,
@@ -31,6 +30,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { BrandLogo } from '../../components/BrandLogo';
 import { StudioButton } from '../../components/StudioButton';
 import { TextField } from '../../components/TextField';
+import { confirmDialog, notify } from '../../lib/confirm';
 import { colors, fonts, spacing } from '../../theme/tokens';
 import { clearLocalAccountData, resetAllLocalStores } from '../../features/account/clearLocalAccountData';
 import { getDeviceId } from '../../features/account/deviceIdentity';
@@ -101,27 +101,25 @@ export function AuthScreen({ navigation }: Props) {
     const [active, mine] = await Promise.all([getActiveDeviceId(), getDeviceId()]);
     if (active && active !== mine) {
       setBusy(false);
-      Alert.alert(
+      // 2026-09-11: was Alert.alert, which is a literal NO-OP on react-native-web
+      // — the takeover prompt never appeared, so a second-device login looked
+      // like a dead Login button and the user could neither continue nor cancel.
+      // The shim's onCancel is load-bearing here: cancelling must sign back out.
+      confirmDialog(
         'Already signed in elsewhere',
         'This account is signed in on another device. Continue here and sign that device out?',
-        [
-          {
-            text: 'Cancel',
-            style: 'cancel',
-            onPress: () => {
-              markIntentionalSignOut();
-              void supabase.auth.signOut().catch(() => {});
-            },
+        'Continue',
+        () => {
+          // [16] (2026-09-07): proceed even if the claim fails (fails open per
+          // the comment above) rather than a silent no-op with no .catch.
+          void claimThisDevice().then(proceed, proceed);
+        },
+        {
+          onCancel: () => {
+            markIntentionalSignOut();
+            void supabase.auth.signOut().catch(() => {});
           },
-          {
-            text: 'Continue',
-            onPress: () => {
-              // [16] (2026-09-07): proceed even if the claim fails (fails open per
-              // the comment above) rather than a silent no-op with no .catch.
-              void claimThisDevice().then(proceed, proceed);
-            },
-          },
-        ],
+        },
       );
       return;
     }
@@ -243,9 +241,13 @@ export function AuthScreen({ navigation }: Props) {
           // Account is created + signed in; surface why the code didn't apply so
           // an influencer/event user knows to retry it (Settings → Redeem code).
           setBusy(false);
-          Alert.alert('Account created', `${redeem.message}\n\nYou can add a code later in Settings.`, [
-            { text: 'Continue', onPress: () => void claimAndProceed(toHome) },
-          ]);
+          // 2026-09-11: was Alert.alert — a no-op on react-native-web, and this
+          // dialog's Continue is the ONLY caller of claimAndProceed here, so on
+          // web the account was created and the user was then stranded on the
+          // sign-in screen with no way forward.
+          notify('Account created', `${redeem.message}\n\nYou can add a code later in Settings.`, () => {
+            void claimAndProceed(toHome);
+          });
           return;
         }
       }
@@ -354,7 +356,10 @@ export function AuthScreen({ navigation }: Props) {
           and continue, rather than declining and having to reinitiate the login
           (owner 2026-08-13). Only shown when there's a screen to return to, so it
           never appears on the app's own sign-in entry point. */}
-      {navigation.canGoBack() ? (
+      {/* [27] (2026-09-07): suppressed during password recovery — a code has
+          already been emailed and only Cancel is meant to leave that flow;
+          RETURN silently abandoned the reset with no confirmation. */}
+      {navigation.canGoBack() && mode !== 'recovery' ? (
         <Pressable
           style={[styles.returnBtn, { top: insets.top + 8 }]}
           onPress={() => navigation.goBack()}
@@ -386,12 +391,17 @@ export function AuthScreen({ navigation }: Props) {
             still shown on the plan/paywall screens via COPY.betaPricingNote. */}
 
         {/* Credentials */}
+        {/* [26] (2026-09-07): LOCKED in recovery — the 6-digit code was mailed to
+            THIS address, and verifyRecoveryOtp() uses the live field value, so an
+            edit here failed with "That code is incorrect or expired" (blaming the
+            code for a changed email). Cancel → edit the address → resend. */}
         <TextField
-          label="Email"
+          label={mode === 'recovery' ? 'Email (code sent here)' : 'Email'}
           value={email}
           onChangeText={setEmail}
           placeholder="you@email.com"
           keyboardType="email-address"
+          editable={mode !== 'recovery'}
         />
         {mode === 'recovery' ? (
           /* ---- In-app password recovery (OTP; no deep link) ---- */

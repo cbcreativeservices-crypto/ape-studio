@@ -24,6 +24,7 @@ import {
   AppState,
   BackHandler,
   Image,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -48,6 +49,7 @@ import {
   type AnswerValue,
   type AttemptPayload,
   type MatchingOptions,
+  type QuizStartError,
   type ServedQuestion,
 } from '../../features/quiz/api';
 import type { StudyStackParamList } from '../../navigation/types';
@@ -68,6 +70,11 @@ export function QuizScreen({ navigation, route }: Props) {
 
   const [payload, setPayload] = useState<AttemptPayload | null>(null);
   const [startError, setStartError] = useState<string | null>(null);
+  // [47] (2026-09-11): keep the start-failure CODE too, so a transient failure
+  // can offer "Try again" in place while a real gate (lockout, not enrolled,
+  // study gate) still only offers Back — a retry there would just re-fail.
+  const [startErrorCode, setStartErrorCode] = useState<QuizStartError | null>(null);
+  const [startNonce, setStartNonce] = useState(0);
   const [qIdx, setQIdx] = useState(0);
   const [msLeft, setMsLeft] = useState<number>(600_000);
   // Selection is tracked by OPTION INDEX, never by the value string (C1): two
@@ -83,6 +90,8 @@ export function QuizScreen({ navigation, route }: Props) {
   const focusLossDuration = useRef(0);
   const blurStartedAt = useRef<number | null>(null);
   const submitted = useRef(false);
+  const mountedRef = useRef(true);
+  useEffect(() => () => { mountedRef.current = false; }, []);
   // Highlight→advance timer — cleared on unmount so it can't submit/navigate on
   // an unmounted screen (e.g. force-submit or back mid-highlight). Debug audit.
   const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -98,13 +107,17 @@ export function QuizScreen({ navigation, route }: Props) {
       } catch (e) {
         if (!alive) return;
         const code = e instanceof QuizStartFailure ? e.code : 'unknown';
+        setStartErrorCode(code);
         setStartError(QUIZ_START_ERROR_COPY[code]);
       }
     })();
     return () => {
       alive = false;
     };
-  }, [achievementId]);
+    // startNonce re-runs the start on "Try again". Re-calling with the SAME
+    // persisted intent id is idempotent (api.ts header) — it resumes the same
+    // attempt and can never draw a fresh question set.
+  }, [achievementId, startNonce]);
 
   const deadline = useMemo(
     () => (payload ? new Date(payload.started_at).getTime() + payload.time_limit_seconds * 1000 : null),
@@ -162,12 +175,31 @@ export function QuizScreen({ navigation, route }: Props) {
           enqueueSubmission({ ...args, achievementId });
           // notify / confirmDialog, not Alert.alert: RN-web's Alert is a no-op,
           // so these were silent on the web preview (B-148).
-          notify('Offline', 'Offline — please reconnect to submit.', () => navigation.goBack());
+          // [49] (2026-09-11): the web queue is session-scoped and in-memory
+          // (submissionQueueStorage.ts — expo-sqlite's web build needs a
+          // wa-sqlite wasm setup that is alpha in SDK 57), so a reload before
+          // reconnecting loses a FINISHED attempt. Native persists to SQLite and
+          // needs no such warning. Say so rather than let it vanish silently.
+          notify(
+            'Offline',
+            Platform.OS === 'web'
+              ? 'Offline — please reconnect to submit. Keep this tab open until you reconnect; your finished attempt is held in this browser session only.'
+              : 'Offline — please reconnect to submit.',
+            () => navigation.goBack(),
+          );
         } else {
+          // Port of the exam twin's [31] (2026-09-11): release the
+          // double-submit latch on a NON-network failure, or a transient
+          // server error on a finished quiz is unrecoverable without
+          // unmounting the screen. The offline path above stays queued and
+          // must keep its latch.
+          submitted.current = false;
           notify('Submit failed', (e as Error).message, () => navigation.goBack());
         }
       } finally {
-        setSubmitting(false);
+        // Port of the exam twin's [32]: the success path navigates away, so
+        // guard this against a post-unmount state update.
+        if (mountedRef.current) setSubmitting(false);
       }
     },
     [payload, achievementId, topicName, navigation],
@@ -176,6 +208,11 @@ export function QuizScreen({ navigation, route }: Props) {
   /* ---- countdown (never pauses; force-submit at 0:00) ---- */
   useEffect(() => {
     if (!deadline) return;
+    // [43] (2026-09-11): sync the clock the moment the deadline is known. msLeft
+    // is seeded with a placeholder 600_000 (the screen can't know the server's
+    // time_limit_seconds before the payload lands), and without this the header
+    // showed a hardcoded 10:00 until the first 250ms tick.
+    setMsLeft(deadline - Date.now());
     const t = setInterval(() => {
       const left = deadline - Date.now();
       setMsLeft(left);
@@ -342,10 +379,26 @@ export function QuizScreen({ navigation, route }: Props) {
 
   /* ---- states ---- */
   if (startError) {
+    // [47] (2026-09-11): quiz start is online-only, so a brief network hiccup
+    // used to eject the learner all the way back to the Dashboard to relaunch.
+    // Offer an in-place retry for the transient codes only.
+    const canRetryStart = startErrorCode === 'offline' || startErrorCode === 'unknown';
     return (
       <View style={styles.center}>
         <Text style={styles.errorText}>{startError}</Text>
-        <View style={{ width: 200 }}>
+        <View style={{ width: 200, gap: 10 }}>
+          {canRetryStart && (
+            <StudioButton
+              label="Try again"
+              variant="primary"
+              small
+              onPress={() => {
+                setStartError(null);
+                setStartErrorCode(null);
+                setStartNonce((n) => n + 1);
+              }}
+            />
+          )}
           <StudioButton label="Back" variant="secondary" small onPress={() => navigation.goBack()} />
         </View>
       </View>

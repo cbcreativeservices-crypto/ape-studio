@@ -368,7 +368,14 @@ export function FinalExamScreen({ navigation, route }: Props) {
     pairs.some((p) => p[0] === i) ? 'dimmed' : leftSel === i ? 'selectedBlue' : 'default';
   const rightState = (i: number): AnswerCellState => (pairs.some((p) => p[1] === i) ? 'dimmed' : 'default');
 
-  const passMark = Math.max(1, payload.items.length - 2);
+  // [33] (2026-09-11): the in-exam figure used to be derived from the number of
+  // RENDERED items, while FinalExamResultScreen shows the server's result.size /
+  // result.pass_mark. Those agree only while the served payload is whole. The
+  // server declares its own size on the payload and grades against it (api.ts:
+  // "pass mark = size - 2"), so read the pass mark from THAT and the two screens
+  // can no longer drift. items.length remains the fallback if size is absent.
+  const examSize = payload.size > 0 ? payload.size : payload.items.length;
+  const passMark = Math.max(1, examSize - 2);
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
@@ -390,7 +397,7 @@ export function FinalExamScreen({ navigation, route }: Props) {
           {awardName}
         </Text>
         <Text style={styles.subBarMark}>
-          PASS {passMark}/{payload.items.length}
+          PASS {passMark}/{examSize}
         </Text>
       </View>
 

@@ -645,7 +645,12 @@ export function ProfileScreen() {
                 made the two real numbers beside them look broken too. */}
             <StatRow label="Terms learned" value={String(known.size)} />
             <StatRow label="Topics completed" value={String(profile?.completeCount ?? 0)} last />
-            {caps.completionRecords ? (
+            {/* [43] (2026-09-07): gated on albumAchievements, not completionRecords.
+                This row opens the Achievements hub, which the ladder grants to
+                'free' (albumAchievements: true) and which the bottom tab already
+                opens for them — keying it on completionRecords (false for free)
+                hid the shortcut to a screen they are entitled to. */}
+            {caps.albumAchievements ? (
               <Pressable
                 style={({ pressed }) => [styles.navRow, pressed && styles.rowPressed]}
                 onPress={() =>

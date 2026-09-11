@@ -567,9 +567,16 @@ export function AwardsScreen({ navigation, route }: Props) {
           >
             <View style={{ flex: 1 }}>
               <Text style={[styles.pickerTitle, { color: AMBER }]}>CHOOSE A SPECIALIZED CERTIFICATE</Text>
+              {/* [18] (2026-09-11): both numbers here were hardcoded and both
+                  were wrong — "3 required core courses" contradicted the
+                  REQUIRED CORE banner rendered immediately below it (which
+                  lists COREQ_TOPIC_GS, four since the 2026-08-30 gs3081 swap),
+                  and "3 specialization topics" is stale for any v3 certificate
+                  whose topicsGs length isn't 3. Derive the fixed half, drop the
+                  claim about the variable half. */}
               <Text style={styles.pickerSub}>
-                Each Specialized Certificate is the 3 required core courses plus 3 specialization topics.
-                Choose one.
+                Each Specialized Certificate is the {COREQ_TOPIC_GS.length} required core courses plus
+                its specialization topics. Choose one.
               </Text>
             </View>
             <Text style={styles.pickerClose}>✕</Text>

@@ -2,10 +2,12 @@
  * S7 — Results (RE-LOCKED v3.7; modal — lives on the ROOT stack so the bottom
  * nav is hidden; visuals from 07-s7-results-partial / 08-s7-results-voided).
  *
- * Branches:
- *   partial_pass (20–23) — clamp notice (locked copy) + [Retake for Trophy] +
+ * Branches (the bands themselves are SERVER-decided — this screen only renders
+ * result.outcome; [46] 2026-09-11 removed the stale 25-question numbers that
+ * were written here, since the ratified shape is QUIZ_SIZE=30 / QUIZ_PASS=28):
+ *   partial_pass — clamp notice (locked copy) + [Retake for Trophy] +
  *     [Continue · Provisional]
- *   no_pass (≤19) — [Retake Quiz] + [Back to Dashboard]
+ *   no_pass — [Retake Quiz] + [Back to Dashboard]
  *   practice — PRACTICE label, [Retake] + [Back], no trophy option
  *   timed_out — "Time expired — not passed" (no lockout)
  *   voided — red ! + "QUIZ VOIDED" + live 15-min lockout countdown
@@ -19,7 +21,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { StudioButton } from '../../components/StudioButton';
 import { colors, fonts } from '../../theme/tokens';
-import { clearQuizIntent, QUIZ_SIZE } from '../../features/quiz/api';
+import { clearQuizIntent, QUIZ_PASS, QUIZ_SIZE } from '../../features/quiz/api';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Results'>;
@@ -138,7 +140,11 @@ export function ResultsScreen({ navigation, route }: Props) {
           <View style={styles.clampNotice}>
             <Text style={styles.clampBody}>
               <Text style={styles.clampLead}>PROVISIONAL PASS — </Text>
-              Score 24+ on the previous topic to earn the trophy and continue further.
+              {/* [46] (2026-09-11): the threshold was the literal "24+", left over
+                  from the retired 25-question quiz. The ratified pass mark is
+                  QUIZ_PASS (28 of 30) — interpolate it so the copy can never
+                  misstate the requirement on a graded surface again. */}
+              Score {QUIZ_PASS}+ on the previous topic to earn the trophy and continue further.
             </Text>
           </View>
         )}

@@ -16,8 +16,11 @@ export type AwardCategory = 'specialization' | 'program';
 /**
  * Co-requisite topics auto-included in every award. Owner 2026-08-30: Audio
  * Fundamentals Lab (gs3081) replaced Electrical Power (gs3080). The four are
- * Safety (gs3060), Grounding & Shielding (gs3070), Audio Fundamentals Lab
- * (gs3081), Workplace Skills (gs4370). Completing every audio_fundamentals
+ * Safety (gs3060), Grounding & Electrical (gs3070), Audio Fundamentals Lab
+ * (gs3081), Workplace Skills (gs4370). ("Grounding & Shielding" here was a
+ * stale pre-2026-09-03 variant; officialTopicNames.ts codifies gs3070 as
+ * "Grounding & Electrical" and explicitly supersedes it — comment corrected
+ * 2026-09-11, the rendered copy was already right.) Completing every audio_fundamentals
  * lab marks gs3081 complete. Foundations of Sound (`FoundationsCourse`) is one
  * of those labs, not a fifth standing requirement. In the builders these show
  * ALWAYS-checked, locked, and do NOT count toward the chosen topics

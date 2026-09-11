@@ -67,6 +67,11 @@ export function TextField({
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           accessibilityLabel={label}
+          // A disabled field must not read as disabled by DIM ALONE. RNW 0.21
+          // drops accessibilityState, so the aria- form carries it on web while
+          // accessibilityState carries it on the phone (2026-09-11).
+          accessibilityState={{ disabled: !editable }}
+          aria-disabled={!editable}
         />
         {password && (
           <Pressable

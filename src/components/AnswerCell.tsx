@@ -63,14 +63,28 @@ export function AnswerCell({
   const verdict =
     state === 'correctGreen' ? ', correct' : state === 'wrongRed' ? ', incorrect' : '';
   const isSelected = state === 'selectedBlue' || state === 'selectedOrange';
-
+  const isDisabled = !!disabled || !onPress;
+  // A11Y (2026-09-11): react-native-web 0.21 DROPS accessibilityState, so on the
+  // web build every cell announced as an unselected, un-disabled button and the
+  // ☑/☐ glyph was the only "checked" signal — appearance alone. Keep
+  // accessibilityState (the phone reads it) and pair it with the aria-* twins
+  // that reach the DOM, per the house pattern (Toggle.tsx, TopicsScreen).
+  // A cell that carries the check glyph IS a checkbox: give it that role so the
+  // checked state is spoken rather than seen.
   return (
     <Pressable
       onPress={onPress}
-      disabled={disabled || !onPress}
-      accessibilityRole="button"
+      disabled={isDisabled}
+      accessibilityRole={showCheck ? 'checkbox' : 'button'}
       accessibilityLabel={`${label}${verdict}`}
-      accessibilityState={{ selected: isSelected, disabled: !!disabled || !onPress }}
+      accessibilityState={
+        showCheck
+          ? { checked, disabled: isDisabled }
+          : { selected: isSelected, disabled: isDisabled }
+      }
+      aria-checked={showCheck ? checked : undefined}
+      aria-selected={showCheck ? undefined : isSelected}
+      aria-disabled={isDisabled}
       // Self-sizing (minHeight-driven), stretching to the parent's width.
       // flex:1 here collapsed to zero height outside scroll containers.
       style={{ alignSelf: 'stretch' }}

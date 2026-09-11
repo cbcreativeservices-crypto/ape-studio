@@ -75,11 +75,12 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
 export function SettingsScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
   const [local, setLocal] = useState<LocalSettings>(DEFAULT_LOCAL_SETTINGS);
-  const [prefs, setPrefs] = useState<NotificationPrefs | null>(null);
   // M12 (2026-09-07): a transient prefs-fetch failure must NOT read as "guest".
-  // Track it separately so a signed-in member sees an error + Retry, not the
-  // guest copy, and keeps the member wording.
-  const [prefsFailed, setPrefsFailed] = useState(false);
+  // fetchNotificationPrefs() resolves null on BOTH a guest and a failure, so the
+  // error branch below keys off `prefs == null && resolved && !isGuest` — that is
+  // the whole discriminator. (A separate `prefsFailed` flag was declared here and
+  // never read; removed 2026-09-11 so it doesn't read as a half-applied fix.)
+  const [prefs, setPrefs] = useState<NotificationPrefs | null>(null);
   const [apeId, setApeId] = useState('');
   // Community mic-catalog contribution consent (device-local, opt-in, default off).
   const [contribute, setContribute] = useState(false);
@@ -113,7 +114,6 @@ export function SettingsScreen({ navigation }: Props) {
 
   // M12 (2026-09-07): prefs load, retryable and error-aware.
   const reloadPrefs = useCallback(async () => {
-    setPrefsFailed(false);
     try {
       const loaded = await loadLocalSettings();
       setLocal(loaded);
@@ -121,7 +121,9 @@ export function SettingsScreen({ navigation }: Props) {
       setPrefs(p);
       if (p) void setPhoneNotificationsEnabled(p.push_enabled, loaded);
     } catch {
-      setPrefsFailed(true);
+      // A throw leaves `prefs` null, which IS the error state the render reads
+      // (error + Retry for a signed-in member; guest copy only for a real guest).
+      setPrefs(null);
     }
   }, []);
   useEffect(() => {
