@@ -452,12 +452,28 @@ defending in a lab that claims its DSP is provable; 64 puts the error 29 dB
 +20 tests, whose reference is the mathematical definition of each waveform
 written out fresh rather than the old code.
 
-**Knock-on:** the stems-cache comment and the Beginning lab note both argued
-for holding 15.4 MB *because* re-synthesis cost ~8 s. That argument is gone and
-both are corrected. Holding the memory is now a genuine choice against a
-sub-second re-render on re-entry; `releaseSessionStems()` is still unwired,
-because switching it on is a user-visible behaviour change and the owner's
-call — not a side effect of a synthesis rewrite.
+**Knock-on — and the owner then took it.** The stems-cache comment and the
+Beginning lab note both argued for holding 15.4 MB *because* re-synthesis cost
+~8 s. That argument was gone, and on the owner's ruling the release valve is
+now **wired on both mixing labs**: the stems live only while a lab is on
+screen, and the re-render is paid on the next PLAY (nothing synthesizes until
+the learner presses something).
+
+It is **counted**, not a bare release on unmount, and that is the design
+decision worth knowing: one cache, two screens. A plain release on each would
+let either lab's exit throw away stems the *other* is still using, and the
+symptom would be a stall in a screen the learner never left. The cleanup is
+idempotent because React can run one more than once.
+
+The safety argument also needed extending. The earlier audit established only
+that `renderMix()` is synchronous — but `renderAll()` is **async and breathes
+between variants** (deliberately: two renders in one tick is the freeze class
+the null-test page hit on device), so a release genuinely *can* land mid-render.
+It cannot do damage because every `await` in that loop is followed immediately
+by its liveness guard, and `renderMix()` copies into freshly allocated output.
+`renderMix` is also, by grep, the only consumer of `sessionStems` in the tree.
++5 tests, including that re-synthesis after a release is byte-identical across
+all eight stems — the backing track cannot change between visits.
 
 ## Still open — and why
 
