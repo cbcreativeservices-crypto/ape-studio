@@ -267,6 +267,67 @@ a ratified house pattern across 147 sites, unattended, with no way to test
 against a real screen reader tonight. Re-ratify the mapping rather than
 assume those sites are covered.
 
+## Round 5 — attacking our own work
+
+An agent spent a full pass trying to break the night's 12 commits. **It found
+four defects in the fixes themselves**, three of which were mine:
+
+1. **`resolved` did not mean what the commit claimed.** `setResolved(true)`
+   fires in a `.finally()` — after the first ATTEMPT, success or failure. So
+   gating the notification effect on it still wrote a definite `'nonmember'`
+   for a member whose boot read failed, the exact case the message said was
+   closed. Fixed with a separate `tierKnown`, set only when a read actually
+   produced a tier.
+2. **Two aria REGRESSIONS.** RNW's `Pressable` emits its own `aria-disabled`
+   *after* spreading caller props, so ours was overwritten — and where the
+   component passes no `disabled` prop it was replaced with `undefined`,
+   i.e. worse than before.
+3. **`aria-selected` on `role="radio"`** — every calculator function
+   announced as unchecked.
+4. **Two competing render-then-play paths in the tuning lab** — two busy
+   latches (so two bursts could still stack) and the older one had no STOP
+   token, so a stop inside the yield window was ignored and audio played.
+
+### What it could NOT break — the reassuring half
+`toBase64` byte-identity independently re-derived over **451 cases** and
+cross-checked against Node's own `Buffer`; every latch release path traced
+with none able to strand; all three hoisted hooks confirmed unconditional;
+**all 33** `resolved` sites enumerated as member-favouring with nothing newly
+locked; **273** aria pairs compared with zero wrong copies; and across **22
+files touched by multiple agents, no clobbering** — every earlier fix
+survives.
+
+## Round 6 — memory, and finishing the backlog
+
+Six memory/lifecycle fixes, all on already-dead paths (orphaned mic capture
+after an abandoned cold start; ear-player and mixing-player instances created
+*after* their own cleanup ran, leaking native players and ~2 MB temp WAVs
+each; an orphaned camera session; a DSP burst firing on a screen the learner
+had left). Plus the offline lab-credit gap closed with React-free `units.ts`
+modules and a test.
+
+### ⚠️ A possible SILENT DATA-LOSS risk — needs a device test
+`src/features/tools/measure/measurementStore.ts` writes the **entire** Saved
+Measurement Library into ONE AsyncStorage key. Its own docblock says: *"if a
+future engine tool needs big grids (spectrogram), migrate that payload to the
+SQLite split."* **The Spectrogram and MultiMeter tools now ship exactly those
+grids** — one snapshot measures **119 KB**, and `MAX_SAVED = 200` allows
+~23 MB in a single value. Android backs AsyncStorage with SQLite, whose
+CursorWindow is ~2 MB: past that the value can fail to **read back**, losing
+the whole library on relaunch. The write was also fire-and-forget, so a
+failure was invisible.
+Added a `.catch` so a failed save is at least audible, and a `__DEV__`
+tripwire past 1.5 MB. **The real fix is the documented SQLite split, and the
+risk needs confirming on a device**: save ~20 spectrogram snapshots,
+force-quit, reopen, and see whether the library survives.
+
+### Reported, needs owner copy
+`loadPublicProfile()` treats a FAILED registry read as "not listed", so on a
+new device or reinstall with a bad connection someone who **is** publicly
+listed sees the Registry toggle OFF — a privacy-state misstatement. Fixing it
+properly needs an indeterminate toggle state and one new ratified sentence,
+because acting on an unknown state can silently unpublish or re-publish.
+
 ## Harness notes for next time
 
 - The web preview's console **accumulates across navigations**, so a stale
