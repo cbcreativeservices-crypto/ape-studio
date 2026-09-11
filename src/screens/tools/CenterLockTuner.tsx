@@ -745,8 +745,10 @@ const LiveReadout = memo(function LiveReadout({
   // The note's line box is 1.05 em. On iOS/Android the font's tall ascender
   // (Oswald: 1.19 em) overflows ABOVE that box and collided with the identity
   // line on the owner's phone (2026-09-06); the web preview centres the
-  // leading and never showed it. Native gets 0.14 em of room above the glyph.
-  const NOTE_TOP_EM = Platform.OS === 'web' ? 0 : 0.14;
+  // leading and never showed it. 0.14 em cleared flat-topped caps but ROUND
+  // glyphs overshoot the cap height — the giant G rendered with a shaved-flat
+  // top on the owner's phone (2026-09-10) — so native gets 0.19 em of room.
+  const NOTE_TOP_EM = Platform.OS === 'web' ? 0 : 0.19;
   const NOTE_ROW_EM = 1.05 + NOTE_TOP_EM;
   // 229 = identity 24 + direction row 48 + main gap 18 + meter block 139.
   const FIXED_ABOVE_NOTE = 24 + dirRowH + 18 + 139;

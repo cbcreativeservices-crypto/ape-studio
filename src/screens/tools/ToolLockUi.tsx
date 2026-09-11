@@ -12,9 +12,8 @@
  * is the single source for this idiom (see EntitlementProvider).
  */
 import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
-import { confirmDialog } from '../../lib/confirm';
+import { openMembershipGate } from '../../features/commercial/MembershipGate';
 import { colors, fonts } from '../../theme/tokens';
 
 export const MEMBERSHIP_REQUIRED = 'Academy membership required';
@@ -34,18 +33,15 @@ export function useToolsLocked(): boolean {
  *  standard membership dialog; `locked` drives the greyed style. */
 export function useSaveGate(): { locked: boolean; label: (base: string) => string; prompt: () => void } {
   const locked = useToolsLocked();
-  const navigation = useNavigation();
   return {
     locked,
     label: (base: string) => (locked ? `🔒 ${base}` : base),
+    // App-themed popup, not the native Alert (owner 2026-09-10) — one styled
+    // MembershipGateHost at the App root serves every gate.
     prompt: () =>
-      confirmDialog(
-        MEMBERSHIP_REQUIRED,
-        'Saved measurements live in your Academy library — membership keeps them, with their settings, calibration status and notes.',
-        'See membership',
-        () => (navigation as unknown as { navigate: (r: string) => void }).navigate('Paywall'),
-        { cancelText: 'Not now' },
-      ),
+      openMembershipGate({
+        body: 'Saved measurements live in your Academy library — membership keeps them, with their settings, calibration status and notes.',
+      }),
   };
 }
 
@@ -58,7 +54,6 @@ export function useSaveGate(): { locked: boolean; label: (base: string) => strin
  *  => fs.gate(() => setFullOpen(true))}` — members proceed straight through. */
 export function useFullScreenGate(): { locked: boolean; gate: (proceed: () => void) => void } {
   const locked = useToolsLocked();
-  const navigation = useNavigation();
   return {
     locked,
     gate: (proceed: () => void) => {
@@ -66,13 +61,10 @@ export function useFullScreenGate(): { locked: boolean; gate: (proceed: () => vo
         proceed();
         return;
       }
-      confirmDialog(
-        MEMBERSHIP_REQUIRED,
-        'The full-screen meters and displays are an Academy feature. Membership unlocks the immersive full-screen view across every audio tool.',
-        'See membership',
-        () => (navigation as unknown as { navigate: (r: string) => void }).navigate('Paywall'),
-        { cancelText: 'Not now' },
-      );
+      // App-themed popup, not the native Alert (owner 2026-09-10).
+      openMembershipGate({
+        body: 'The full-screen meters and displays are an Academy feature. Membership unlocks the immersive full-screen view across every audio tool.',
+      });
     },
   };
 }

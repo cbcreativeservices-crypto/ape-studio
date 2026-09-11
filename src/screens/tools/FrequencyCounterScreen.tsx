@@ -627,8 +627,8 @@ function LivePitchMode({
             dim={isHeld}
             inTune={tunerInTune}
             tuneColor={tunerColor}
-            // ⛶ fullscreen (owner 2026-09-10) — like the other audio tools;
-            // overlay rendered at the screen root, member-gated like ADV TUNER.
+            // Tap the display → fullscreen (owner 2026-09-10) — like the other
+            // audio tools; overlay at the screen root, member-gated.
             onExpand={() => fsGate.gate(() => openVuTuner())}
           />
 

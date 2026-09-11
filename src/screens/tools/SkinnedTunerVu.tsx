@@ -39,7 +39,8 @@
  *
  * VuTunerFullScreen (owner 2026-09-10): the same meter as an absolute-fill
  * fullscreen overlay at the screen root — the CenterLock pattern (never a
- * Modal), driven by the published tuner frames, opened via the meter's ⛶.
+ * Modal), driven by the published tuner frames, opened by TAPPING the meter
+ * display (like the other audio tools — no icon key).
  */
 import { useEffect, useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
@@ -244,7 +245,8 @@ export function SkinnedTunerVu({
   inTune: boolean;
   /** MEMBER custom in-tune colour (owner 2026-08-21). null = default green. */
   tuneColor?: string | null;
-  /** When set, a ⛶ key on the bezel opens the meter full screen. */
+  /** When set, TAPPING THE DISPLAY opens the meter full screen (owner
+   *  2026-09-10 — like the other audio tools; no icon key). */
   onExpand?: () => void;
 }) {
   const tuneInk = tuneColor ?? colors.green;
@@ -332,9 +334,6 @@ export function SkinnedTunerVu({
     return { transform: [{ rotate: `${Math.atan((R_FACE * Math.sin(phi)) / ARM_DEPTH)}rad` }] };
   }, []);
 
-  // A11y note: the accessible container is the meter view INSIDE the wrap —
-  // an `accessible` ancestor would flatten the ⛶ expand key away from
-  // VoiceOver (the patchbay jack lesson, 2026-09-10).
   const meterLabel =
     cents == null
       ? `Tuner meter, no stable pitch. ${hzText}.`
@@ -344,20 +343,19 @@ export function SkinnedTunerVu({
       <View style={[styles.header, dim && styles.dim]}>
         <Text style={styles.hz}>{hzText}</Text>
       </View>
-      {onExpand ? (
-        <Pressable
-          onPress={onExpand}
-          hitSlop={12}
-          style={styles.expandKey}
-          accessibilityRole="button"
-          accessibilityLabel="Open the tuner meter full screen"
-        >
-          <Text style={styles.expandGlyph}>⛶</Text>
-        </Pressable>
-      ) : null}
-      <View style={styles.meterClip} onLayout={(e) => setW(Math.round(e.nativeEvent.layout.width))}>
+      {/* Fullscreen = tap the display itself, like the other audio tools
+          (owner 2026-09-10 — no ⛶ icon key). */}
+      <Pressable
+        style={styles.meterClip}
+        onLayout={(e) => setW(Math.round(e.nativeEvent.layout.width))}
+        onPress={onExpand}
+        disabled={!onExpand}
+        accessible
+        accessibilityRole={onExpand ? 'button' : 'image'}
+        accessibilityLabel={onExpand ? `${meterLabel} Tap for full screen.` : meterLabel}
+      >
         {s > 0 && (
-          <View style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={meterLabel}>
+          <View style={{ width: w, height: h }}>
             <Image source={TUNER_SKIN} style={{ width: w, height: h }} resizeMode="stretch" />
             <PrintedScale s={s} tuneInk={tuneInk} />
             <View
@@ -396,7 +394,7 @@ export function SkinnedTunerVu({
             </View>
           </View>
         )}
-      </View>
+      </Pressable>
     </View>
   );
 }
@@ -580,9 +578,6 @@ const styles = StyleSheet.create({
   },
   hz: { fontFamily: fonts.mono, fontSize: 22, color: colors.amber },
   meterClip: { overflow: 'hidden' },
-  // ⛶ on the bezel's top-right corner — a sibling of the accessible meter.
-  expandKey: { position: 'absolute', top: 40, right: 10, zIndex: 2, padding: 6 },
-  expandGlyph: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, color: 'rgba(255,198,77,0.75)' },
   bladeBox: { position: 'absolute', alignItems: 'center' },
   blade: {
     position: 'absolute',
