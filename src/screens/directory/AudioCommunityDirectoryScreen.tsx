@@ -40,6 +40,10 @@ export function AudioCommunityDirectoryScreen() {
   const navigation = useNavigation();
   const [tab, setTab] = useState<Tab>('explore');
   const [memberToken, setMemberToken] = useState<string | null>(null);
+  // [77] (2026-09-07): members blocked during this visit. The block model is
+  // "neither party sees the other", so a blocked member must leave the Explore
+  // results immediately, not at the next search.
+  const [blockedTokens, setBlockedTokens] = useState<string[]>([]);
 
   return (
     <View style={[st.root, { paddingTop: insets.top }]}>
@@ -76,18 +80,31 @@ export function AudioCommunityDirectoryScreen() {
         ))}
       </View>
 
-      {tab === 'explore' ? <ExploreView onOpenMember={setMemberToken} /> : null}
+      {tab === 'explore' ? <ExploreView onOpenMember={setMemberToken} hiddenTokens={blockedTokens} /> : null}
       {tab === 'profile' ? <MyProfileView /> : null}
       {tab === 'requests' ? <RequestsView /> : null}
 
-      <MemberSheet token={memberToken} onClose={() => setMemberToken(null)} />
+      <MemberSheet
+        token={memberToken}
+        onClose={() => setMemberToken(null)}
+        onBlocked={(t) => setBlockedTokens((prev) => (prev.includes(t) ? prev : [...prev, t]))}
+      />
     </View>
   );
 }
 
 /** A member's public profile, as seen from inside the app, plus the contact,
  *  block and report controls. This is the same projection the web page renders. */
-function MemberSheet({ token, onClose }: { token: string | null; onClose: () => void }) {
+function MemberSheet({
+  token,
+  onClose,
+  onBlocked,
+}: {
+  token: string | null;
+  onClose: () => void;
+  /** [77]: tell the host a token was blocked so Explore drops it right away. */
+  onBlocked?: (token: string) => void;
+}) {
   const [data, setData] = useState<{ profile: PublicProfile; credentials: PublicCredential[] } | null>(null);
   const [busy, setBusy] = useState(false);
   // M19 (2026-09-07): distinguish "loaded but null" (not-found / error) from
@@ -204,6 +221,7 @@ function MemberSheet({ token, onClose }: { token: string | null; onClose: () => 
                   onPress={() =>
                     void blockMember(token, true).then((r) => {
                       if (!r.ok) return setErr(r.error);
+                      onBlocked?.(token);
                       onClose();
                     })
                   }

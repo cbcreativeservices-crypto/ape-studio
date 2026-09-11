@@ -340,6 +340,12 @@ const styles = StyleSheet.create({
     borderRadius: 9,
     paddingVertical: 10,
     paddingHorizontal: 14,
+    // 44pt minimum touch target (2026-09-11): 10pt padding + a 13px Oswald line
+    // measured ~39pt, under the minimum, for BOTH the guest and the registered
+    // "set up my profile" CTAs that share this style.
+    minHeight: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   registryBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.8, color: '#37e05f' },
   // Registered state — Registry confirmation ID + links.

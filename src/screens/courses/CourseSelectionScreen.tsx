@@ -5,8 +5,11 @@
  *  - Card 2 = SAFETY, the prerequisite course card (its topic + quiz unlock
  *    everything to the right).
  *  - Cards 3+ = the 8 courses by sequence.
- *  - Carousel position persists across app restarts (AsyncStorage): fresh
- *    install opens on the Glossary card; otherwise you land where you left.
+ *  - Carousel landing is per-SESSION (owner 2026-07-30, see `sessionLanded`):
+ *    every cold app start opens on the DEFAULT card (Glossary, or the paid
+ *    user's chosen/last-added Home card); an in-session return re-centers the
+ *    card you last had centered. Position is deliberately NOT persisted across
+ *    app restarts (the old write-only AsyncStorage key was removed 2026-09-11).
  * Enrolled = bright amber card + [Continue] → Dashboard at last topic;
  * locked = greyed "NOT ENROLLED", untappable. Snap-to-center, side peek,
  * dot indicator. Tab bar visible (Home tab — now the app's opening tab).
@@ -28,7 +31,6 @@ import {
 } from 'react-native';
 import { Canvas, Group, RoundedRect, SweepGradient, vec } from '@shopify/react-native-skia';
 import { Easing, useDerivedValue, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -107,7 +109,6 @@ const CARD_GAP = 14;
 const SIDE_PAD = Math.round((SCREEN_W - CARD_W) / 2);
 /** Lit switch width on the cards — narrower than the card (Booth 2026-07-09q). */
 const CARD_BTN_W = Math.round(CARD_W * 0.62);
-const POSITION_KEY = 'ape:courseCarouselIdx';
 // Session landing memory (owner 2026-07-30). These module-level vars survive
 // component remounts but RESET when the app process restarts — which is exactly
 // the "cold start vs in-session return" signal we need:
@@ -476,7 +477,6 @@ function CourseCardView({
   onOpenPublic,
   onLockedPress,
   onOpenMore,
-  onOpenPrograms,
   onOpenShowcase,
   onOpenTopic,
   onOpenBundle,
@@ -495,9 +495,6 @@ function CourseCardView({
   onLockedPress: () => void;
   /** The "+ XX other" tally card → open the full Curriculum. */
   onOpenMore: () => void;
-  /** The "+ N other programs" card → open the Programs page (user request
-   *  2026-07-22). */
-  onOpenPrograms: () => void;
   /** Showcase card key → the curriculum browser. */
   onOpenShowcase: () => void;
   /** A user-placed Home topic card → open study for that topic gs (2026-07-22). */
@@ -1239,7 +1236,6 @@ export function CourseSelectionScreen() {
       // Remember the centered card (by id) so an in-session return re-centers it.
       const id = deckRef.current?.[idx]?.id;
       if (id) lastCenteredId = id;
-      void AsyncStorage.setItem(POSITION_KEY, String(idx));
     }
   }).current;
 
@@ -1277,11 +1273,10 @@ export function CourseSelectionScreen() {
     (navigation as any).navigate('Awards', { category: 'specialization' });
   }, [navigation]);
 
-  // "+ N other programs" card → the Program page of the Awards pager (user
-  // request 2026-07-22).
-  const openPrograms = useCallback(() => {
-    (navigation as any).navigate('Awards', { category: 'program' });
-  }, [navigation]);
+  // NOTE (2026-09-11): the "+ N other programs" card kind was never built, so
+  // its openPrograms handler + onOpenPrograms prop were dead wiring and were
+  // removed. If that card returns, route it to
+  // navigate('Awards', { category: 'program' }).
 
   // A lapsed member's saved Home cards stay put but can't be opened (user request
   // 2026-07-23).
@@ -1538,7 +1533,6 @@ export function CourseSelectionScreen() {
               onOpenPublic={openPublicCourse}
               onLockedPress={() => setUpgradeOpen(true)}
               onOpenMore={openMore}
-              onOpenPrograms={openPrograms}
               onOpenShowcase={() => (navigation as any).navigate('Awards', { category: 'curriculum' })}
               onOpenTopic={openTopic}
               onOpenBundle={openBundle}

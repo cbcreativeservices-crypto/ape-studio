@@ -377,11 +377,16 @@ export type ContactThread = {
   messageCount: number;
 };
 
-export async function fetchContactThreads(): Promise<ContactThread[]> {
+/** A list fetch that can FAIL loudly. Swallowing the error and returning []
+ *  made a dead network look exactly like "you have no requests" (app-nav audit
+ *  finding 2026-09-07 [75]); callers must be able to tell the two apart. */
+export type ListResult<T> = { ok: true; rows: T[] } | { ok: false; error: string };
+
+export async function fetchContactThreads(): Promise<ListResult<ContactThread>> {
   try {
     const { data, error } = await supabase.rpc('contact_threads');
-    if (error) return [];
-    return ((data ?? []) as Record<string, unknown>[]).map((r) => ({
+    if (error) return { ok: false, error: readableError(error.message) };
+    const rows = ((data ?? []) as Record<string, unknown>[]).map((r) => ({
       id: r.id as string,
       direction: (r.direction as 'incoming' | 'outgoing') ?? 'incoming',
       otherDisplayName: (r.other_display_name as string) ?? 'Member',
@@ -393,25 +398,27 @@ export async function fetchContactThreads(): Promise<ContactThread[]> {
       respondedAt: (r.responded_at as string) ?? null,
       messageCount: Number(r.unread_hint ?? 0),
     }));
+    return { ok: true, rows };
   } catch {
-    return [];
+    return { ok: false, error: 'Couldn’t load your requests. Check your connection and try again.' };
   }
 }
 
 export type ThreadMessage = { id: string; mine: boolean; body: string; createdAt: string };
 
-export async function fetchThreadMessages(requestId: string): Promise<ThreadMessage[]> {
+export async function fetchThreadMessages(requestId: string): Promise<ListResult<ThreadMessage>> {
   try {
     const { data, error } = await supabase.rpc('contact_thread_messages', { p_request_id: requestId });
-    if (error) return [];
-    return ((data ?? []) as Record<string, unknown>[]).map((r) => ({
+    if (error) return { ok: false, error: readableError(error.message) };
+    const rows = ((data ?? []) as Record<string, unknown>[]).map((r) => ({
       id: r.id as string,
       mine: !!r.mine,
       body: (r.body as string) ?? '',
       createdAt: r.created_at as string,
     }));
+    return { ok: true, rows };
   } catch {
-    return [];
+    return { ok: false, error: 'Couldn’t load this conversation. Check your connection and try again.' };
   }
 }
 

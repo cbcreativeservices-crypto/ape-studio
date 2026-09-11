@@ -917,7 +917,11 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             disabled
             accessibilityRole="button"
             accessibilityState={{ disabled: true }}
-            accessibilityLabel="Take Final Exam — available when all topics are complete"
+            // RN-web 0.21 drops accessibilityState — aria-disabled reaches the DOM.
+            aria-disabled
+            // The button is a placeholder that never enables (not even at 100%),
+            // so the label must not promise it unlocks on completion (2026-09-11).
+            accessibilityLabel="Take Final Exam — not available yet"
           >
             <Text style={styles.finalExamText}>TAKE FINAL EXAM</Text>
           </Pressable>
@@ -1005,7 +1009,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           {done ? 'You’ve completed all topics for this award' : 'You already have all topics for this award'}
         </Text>
         {/* Final exam placeholder — gray + inactive for now (user request 2026-07-23). */}
-        <Pressable style={styles.finalExamBtn} disabled accessibilityRole="button" accessibilityState={{ disabled: true }} accessibilityLabel="Take Final Exam — available when all topics are complete">
+        <Pressable style={styles.finalExamBtn} disabled accessibilityRole="button" accessibilityState={{ disabled: true }} aria-disabled accessibilityLabel="Take Final Exam — not available yet">
           <Text style={styles.finalExamText}>TAKE FINAL EXAM</Text>
         </Pressable>
         {/* STUDY ALL (blue) loads the award's topics into the deck; ADD TOPICS

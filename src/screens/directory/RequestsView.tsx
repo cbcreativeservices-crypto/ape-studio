@@ -53,10 +53,20 @@ const STATUS_LABEL: Record<ContactThread['status'], string> = {
 export function RequestsView() {
   const [threads, setThreads] = useState<ContactThread[] | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  // [75] (2026-09-07): a FAILED load used to land on "No contact requests yet",
+  // hiding real pending requests behind what read as an empty inbox. Loading /
+  // error+Retry / empty are now three distinct states.
+  const [loadErr, setLoadErr] = useState<string | null>(null);
   const [open, setOpen] = useState<ContactThread | null>(null);
 
   const load = useCallback(async () => {
-    setThreads(await fetchContactThreads());
+    const r = await fetchContactThreads();
+    if (!r.ok) {
+      setLoadErr(r.error);
+      return;
+    }
+    setLoadErr(null);
+    setThreads(r.rows);
   }, []);
 
   useEffect(() => {
@@ -70,6 +80,15 @@ export function RequestsView() {
     await load();
   };
 
+  // Never loaded and the fetch failed → say so and offer a retry (not "none").
+  if (threads === null && loadErr) {
+    return (
+      <ScrollView contentContainerStyle={st.body}>
+        <Banner tone="warn">{loadErr}</Banner>
+        <PrimaryButton label="RETRY" onPress={() => void load()} />
+      </ScrollView>
+    );
+  }
   if (threads === null) return <Loading label="Loading your requests…" />;
 
   const incoming = threads.filter((t) => t.direction === 'incoming');
@@ -78,6 +97,9 @@ export function RequestsView() {
   return (
     <ScrollView contentContainerStyle={st.body}>
       {err ? <Banner tone="warn">{err}</Banner> : null}
+      {/* A REFRESH that failed after a good first load: the list below is stale,
+          so say so rather than letting it look current. */}
+      {loadErr ? <Banner tone="warn">{`${loadErr} Showing the last list that loaded.`}</Banner> : null}
 
       {threads.length === 0 ? (
         <EmptyState
@@ -236,8 +258,17 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
   const [body, setBody] = useState('');
   const [err, setErr] = useState<string | null>(null);
 
+  // [75] (2026-09-07): a failed message fetch used to render as an empty
+  // conversation; surface it instead (the reply box still works).
   const load = useCallback(async () => {
-    if (thread) setMsgs(await fetchThreadMessages(thread.id));
+    if (!thread) return;
+    const r = await fetchThreadMessages(thread.id);
+    if (!r.ok) {
+      setErr(r.error);
+      return;
+    }
+    setErr(null);
+    setMsgs(r.rows);
   }, [thread]);
 
   useEffect(() => {

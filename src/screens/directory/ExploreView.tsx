@@ -30,7 +30,17 @@ const WORK_PREFS: { key: WorkPref; label: string }[] = [
   { key: 'either', label: 'Either' },
 ];
 
-export function ExploreView({ onOpenMember }: { onOpenMember: (token: string) => void }) {
+export function ExploreView({
+  onOpenMember,
+  hiddenTokens,
+}: {
+  onOpenMember: (token: string) => void;
+  /** Tokens blocked in THIS session. The server drops them from the next
+   *  search, but the results already on screen were fetched before the block —
+   *  without this a just-blocked member stayed listed and re-openable until the
+   *  user searched again ([77], app-nav audit 2026-09-07). */
+  hiddenTokens?: readonly string[];
+}) {
   const [tax, setTax] = useState<Taxonomy | null>(null);
   const [f, setF] = useState<DirectoryFilters>({});
   const [q, setQ] = useState('');
@@ -86,6 +96,14 @@ export function ExploreView({ onOpenMember }: { onOpenMember: (token: string) =>
       const next = cur.includes(slug) ? cur.filter((x) => x !== slug) : [...cur, slug];
       return { ...prev, [key]: next.length ? next : undefined };
     });
+
+  // [77]: hide anyone blocked since this result set was fetched, and keep the
+  // "N members" tally honest about what is actually listed.
+  const visibleRows = useMemo(
+    () => (hiddenTokens?.length ? rows.filter((r) => !hiddenTokens.includes(r.publicToken)) : rows),
+    [rows, hiddenTokens],
+  );
+  const visibleTotal = Math.max(0, total - (rows.length - visibleRows.length));
 
   const specialtyPool = useMemo(
     () =>
@@ -203,7 +221,7 @@ export function ExploreView({ onOpenMember }: { onOpenMember: (token: string) =>
 
       {busy ? (
         <Loading label="Searching the directory…" />
-      ) : rows.length === 0 && !err ? (
+      ) : visibleRows.length === 0 && !err ? (
         <EmptyState
           title="No members match yet"
           lines={[
@@ -214,9 +232,9 @@ export function ExploreView({ onOpenMember }: { onOpenMember: (token: string) =>
       ) : (
         <>
           <Text style={st.count} accessibilityRole="header">
-            {total} {total === 1 ? 'member' : 'members'}
+            {visibleTotal} {visibleTotal === 1 ? 'member' : 'members'}
           </Text>
-          {rows.map((r) => (
+          {visibleRows.map((r) => (
             <Pressable
               key={r.publicToken}
               onPress={() => onOpenMember(r.publicToken)}

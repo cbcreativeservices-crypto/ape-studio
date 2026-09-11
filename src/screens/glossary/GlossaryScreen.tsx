@@ -1064,6 +1064,10 @@ export function GlossaryScreen({ route, navigation }: Props) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [focusedId, setFocusedId] = useState<string | null>(null);
   const [details, setDetails] = useState<Record<string, EntryDetail>>({});
+  // [72] (2026-09-07): ids whose detail fetch FAILED. Without this the expanded
+  // row / popup sat on "Loading…" forever after a transient failure, with no
+  // error and no retry the user could see.
+  const [detailErrs, setDetailErrs] = useState<Record<string, true>>({});
   // Term media (glossary_media): id → first image URL. Drives the media icon
   // next to a term and the in-definition image (user request 2026-07-18).
   const [mediaById, setMediaById] = useState<Record<string, string>>({});
@@ -1168,7 +1172,17 @@ export function GlossaryScreen({ route, navigation }: Props) {
         )
         .eq('id', id)
         .single();
-      if (!data) return;
+      // [72]: mark the failure so the row can offer a retry instead of "Loading…".
+      if (!data) {
+        setDetailErrs((prev) => ({ ...prev, [id]: true }));
+        return;
+      }
+      setDetailErrs((prev) => {
+        if (!prev[id]) return prev;
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
       let common_mistakes: string[] | null = null;
       const { data: mv } = await supabase
         .from('glossary_full_v')
@@ -1179,6 +1193,20 @@ export function GlossaryScreen({ route, navigation }: Props) {
       setDetails((prev) => ({ ...prev, [id]: { ...(data as object), common_mistakes } as EntryDetail }));
     },
     [details],
+  );
+
+  /** [72]: clear the failure marker and try the detail fetch again. Re-fetching
+   *  costs nothing extra — the gate already charged this term when it opened. */
+  const retryDetails = useCallback(
+    (id: string) => {
+      setDetailErrs((prev) => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
+      void fetchDetails(id);
+    },
+    [fetchDetails],
   );
 
   const expandedIdsRef = useRef(expandedIds);
@@ -2381,6 +2409,17 @@ export function GlossaryScreen({ route, navigation }: Props) {
                       onOpenCalc={onOpenCalc}
                       linksOn={linksOn}
                     />
+                  ) : detailErrs[item.id] ? (
+                    // [72]: a failed detail fetch — say so and give a retry, not
+                    // a "Loading…" that never resolves.
+                    <Pressable
+                      onPress={() => retryDetails(item.id)}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Couldn't load details for ${item.term}. Tap to retry.`}
+                      style={styles.detailRetryHit}
+                    >
+                      <Text style={styles.detailError}>Couldn’t load details — tap to retry</Text>
+                    </Pressable>
                   ) : (
                     <Text style={styles.detailLoading}>Loading…</Text>
                   ))}
@@ -2523,6 +2562,21 @@ export function GlossaryScreen({ route, navigation }: Props) {
                             onOpenCalc={onOpenCalc}
                             linksOn={linksOn}
                           />
+                        ) : detailErrs[item.id] ? (
+                          // [72]: retry instead of a permanent "Loading…".
+                          // suppressBack so this tap doesn't also pop the trail
+                          // (same trick the in-definition term links use).
+                          <Pressable
+                            onPress={() => {
+                              suppressBack.current = true;
+                              retryDetails(item.id);
+                            }}
+                            accessibilityRole="button"
+                            accessibilityLabel={`Couldn't load details for ${item.term}. Tap to retry.`}
+                            style={styles.detailRetryHit}
+                          >
+                            <Text style={styles.detailError}>Couldn’t load details — tap to retry</Text>
+                          </Pressable>
                         ) : (
                           <Text style={styles.detailLoading}>Loading…</Text>
                         )}
@@ -3402,6 +3456,10 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   detailLoading: { fontFamily: fonts.mono, fontSize: 12, color: colors.textMuted, marginTop: 10 },
+  // [72]: failed detail fetch — amber (never colour alone: it also says "retry")
+  // on a 44pt-tall hit area.
+  detailError: { fontFamily: fonts.mono, fontSize: 12, color: colors.amberLabel },
+  detailRetryHit: { marginTop: 10, minHeight: 44, justifyContent: 'center' },
   // Bookmark filter chip: glyph + optional count, laid out in a row.
   chipIconWrap: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   // Held-chip term list overlay (user request 2026-07-22) — mirrors Flashcards.
