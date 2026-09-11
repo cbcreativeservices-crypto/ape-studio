@@ -56,6 +56,10 @@ export function Lesson05Body() {
   const [verdict, setVerdict] = useState<Verdict | null>(null);
   const [allDone, setAllDone] = useState(false);
   const scen = ROUTING_SCENARIOS[Math.min(idx, ROUTING_SCENARIOS.length - 1)];
+  // HOISTED (2026-09-11) — see lesson01: useShuffled is a hook and was called
+  // inside the `!allDone` branch, so finishing the last routing pick dropped a
+  // hook and crashed the screen.
+  const scenOptions = useShuffled(scen.options);
 
   const pick = useCallback(
     (opt: string) => {
@@ -150,7 +154,7 @@ export function Lesson05Body() {
               Pick the connection type and cable that make this link. Wrong picks stay open — keep trying.
             </Text>
             <View style={s.chipWrap}>
-              {useShuffled(scen.options).map((opt) => (
+              {scenOptions.map((opt) => (
                 <OptionChip
                   key={opt.id}
                   label={opt.label}

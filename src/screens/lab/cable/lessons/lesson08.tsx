@@ -49,6 +49,10 @@ export function Lesson08Body() {
   const scenario = SELECTION_SCENARIOS.find((sc) => sc.id === activeId) ?? SELECTION_SCENARIOS[0];
   const st = states[scenario.id] ?? fresh();
   const step = scenario.steps[Math.min(st.step, scenario.steps.length - 1)];
+  // HOISTED (2026-09-11) — see lesson01: useShuffled is a hook and was called
+  // inside the `st.done ? … : …` branch, so solving the connection dropped a
+  // hook and crashed the screen.
+  const stepOptions = useShuffled(step.options);
   const solvedThis = st.verdict === 'correct' || st.verdict === 'accepted';
   const doneCount = SELECTION_SCENARIOS.reduce((n, sc) => n + (states[sc.id]?.done ? 1 : 0), 0);
   const allDone = doneCount === SELECTION_SCENARIOS.length;
@@ -132,7 +136,7 @@ export function Lesson08Body() {
                 <Text style={s.body}>{step.prompt}</Text>
                 <Text style={s.hint}>Wrong picks stay open — keep trying until it is defensible.</Text>
                 <View style={s.chipWrap}>
-                  {useShuffled(step.options).map((opt) => (
+                  {stepOptions.map((opt) => (
                     <OptionChip
                       key={opt}
                       label={opt}

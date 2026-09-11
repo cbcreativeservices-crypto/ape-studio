@@ -37,6 +37,12 @@ export function Lesson01Body() {
   const [verdict, setVerdict] = useState<Verdict | null>(null);
   const [allDone, setAllDone] = useState(false);
   const pair = CARRY_PAIRS[Math.min(pairIdx, CARRY_PAIRS.length - 1)];
+  // HOISTED (2026-09-11): useShuffled is a hook (useMemo). It used to be called
+  // inside the `!allDone` JSX branch, so answering the LAST pair removed a hook
+  // from the render and React threw "Rendered fewer hooks than expected" — a
+  // crash at the reward moment. Same class as the shipped useOverlaysSuppressed
+  // bug. Hooks must run unconditionally, every render.
+  const pairOptions = useShuffled(pair.options);
 
   const pick = useCallback(
     (opt: CarriedType) => {
@@ -94,7 +100,7 @@ export function Lesson01Body() {
             <Text style={s.cardTitle}>{`${pair.from}  →  ${pair.to}`}</Text>
             <Text style={s.hint}>Pick what has to travel between them. Wrong picks stay open — keep trying.</Text>
             <View style={s.chipWrap}>
-              {useShuffled(pair.options).map((opt) => (
+              {pairOptions.map((opt) => (
                 <OptionChip
                   key={opt}
                   label={carriedLabel(opt)}
