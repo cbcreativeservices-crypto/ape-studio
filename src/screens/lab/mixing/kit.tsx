@@ -244,6 +244,11 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
       let mix = renderMix(v.settings, master, ropts);
       if (v.matchTo && byId[v.matchTo]) {
         master += matchGainDb(byId[v.matchTo], mix);
+        // Breathe between the probe render and the matched re-render — two
+        // full renders in one tick is the freeze class the null-test page
+        // hit on device (2026-09-11).
+        await new Promise((r) => setTimeout(r, 0));
+        if (!aliveRef.current) return;
         mix = renderMix(v.settings, master, ropts);
       }
       byId[v.id] = mix;

@@ -1,12 +1,13 @@
 # Audio Connectors & Cable Selection Lab — copy sheet
 
-**Status: ⏳ PENDING OWNER RATIFICATION** (built 2026-09-11 on the owner's
-brief; design + cognition expert passes applied). All page copy is NEW; all
+**Status: ✅ RATIFIED by the owner 2026-09-11 ("copy is ratified") — with
+device pass GOOD and the seed SQL RUN the same day.** Built on the owner's
+brief; design + cognition expert passes applied. All page copy is NEW; all
 CONNECTOR FACTS are NOT new — they render directly from the Cable &
 Connector Fundamentals Lab's verified ConnectorRecords (B2 protocol,
 `docs/APE_CABLE_LAB_VERIFICATION_2026_08_15.md`), so nothing in the bench
-cards re-opens fact verification. Any copy change re-opens here first once
-ratified.
+cards re-opened fact verification. This is now GOVERNED copy: any wording
+change re-opens here first, then flows to source.
 
 Full text lives in the source (single source of truth):
 - `src/screens/lab/connectorselect/pagesA.tsx` (1–4: station 1 + analog and
@@ -77,13 +78,11 @@ Full text lives in the source (single source of truth):
   opticalCON, MADI) deliberately excluded; the data model extends without
   UI rewrites (registry-driven).
 
-## Deferred owner decisions (worked around, not blocking)
+## Owner decisions — resolved 2026-09-11
 
-- **Ratification of this sheet** (page copy new; facts inherited-verified).
-- **Device pass** of the 16 pages — Labs → Audio Fundamentals → Signal →
-  Audio Connectors & Cable Selection, or web hash `#connectorselectpreview`.
-- **Run the seed SQL** (makes the lab required for the gs3081 credit — same
-  ruling as Patchbay).
-- **Catalog position**: shipped right after Cable & Connector Fundamentals
-  in the Signal category, member-only (matching the category) — move at
-  will.
+- ~~Ratification~~ ✅ RATIFIED ("copy is ratified").
+- ~~Device pass~~ ✅ PASSED ("device pass was good").
+- ~~Seed SQL~~ ✅ RUN ("sql was run") — `af_connector_select` is now the
+  15th required audio_fundamentals lab for the gs3081 credit.
+- **Catalog position** (still adjustable at will): after Cable & Connector
+  Fundamentals in the Signal category, member-only.

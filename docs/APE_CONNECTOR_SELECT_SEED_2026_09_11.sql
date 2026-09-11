@@ -1,5 +1,6 @@
 -- Audio Connectors & Cable Selection lab — backend seed.
--- ⏳ AWAITING OWNER RUN (drafted 2026-09-11 with the lab build). Idempotent.
+-- ✅ EXECUTED 2026-09-11 by the owner (same day as the build; ratification
+-- and device pass confirmed together). Kept for the record; idempotent.
 -- Same ruling as Patchbay (2026-09-10): "anything in the Audio Fundamentals
 -- container menu is part of the audio fundamentals requisite."
 --

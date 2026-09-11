@@ -374,16 +374,24 @@ export function renderMix(
     busComp?: { thresholdDb: number; ratio: number; attackMs: number; releaseMs: number };
     /** Soft saturation on the summed mix (AML harmonic pages), drive in dB. */
     busDriveDb?: number;
+    /** Render only the first `seconds` of the loop. MEASUREMENT-ONLY escape
+     *  hatch: the AML null test renders FOUR mixes back to back, and on a
+     *  phone four full 10 s renders in one JS tick froze the app (owner
+     *  device report 2026-09-11). Residue/null math is a per-sample
+     *  property, so a shorter window proves it identically. Playback
+     *  variants never pass this — the audible loop stays 10 s. */
+    seconds?: number;
   },
 ): RenderedMix {
+  const n = opts?.seconds ? Math.max(1, Math.min(N, Math.round(opts.seconds * SR))) : N;
   const stems = sessionStems();
-  const L = new Float32Array(N);
-  const R = new Float32Array(N);
-  const verbBus = opts?.sharedVerb ? new Float32Array(N) : null;
+  const L = new Float32Array(n);
+  const R = new Float32Array(n);
+  const verbBus = opts?.sharedVerb ? new Float32Array(n) : null;
   for (const id of TRACK_IDS) {
     const s = { ...FLAT, ...(settings[id] ?? {}) };
     if (s.mute || s.faderDb <= -60) continue;
-    let x = stems[id];
+    let x: Mono = n === N ? stems[id] : stems[id].subarray(0, n);
     // Inserts, in channel order.
     if (s.clipGainDb) x = dspGainDb(x, s.clipGainDb);
     if (s.hpHz && s.hpHz > 0) x = applyBiquad(x, highpass(s.hpHz, 0.71));
@@ -411,20 +419,20 @@ export function renderMix(
     const a = ((p + 1) / 2) * (Math.PI / 2);
     const gl = Math.cos(a) * Math.SQRT2 * 0.5 * g;
     const gr = Math.sin(a) * Math.SQRT2 * 0.5 * g;
-    for (let i = 0; i < N; i++) {
+    for (let i = 0; i < n; i++) {
       L[i] += x[i] * gl;
       R[i] += x[i] * gr;
     }
     if (verbBus && s.verbSendDb != null) {
       const sg = db2lin(s.faderDb + s.verbSendDb) * (s.polarity ? -1 : 1);
-      for (let i = 0; i < N; i++) verbBus[i] += x[i] * sg;
+      for (let i = 0; i < n; i++) verbBus[i] += x[i] * sg;
     }
   }
   if (verbBus && opts?.sharedVerb) {
     // ONE shared ambience: everyone's sends through the same space — the
     // "one room glues the band" lesson. 100% wet on the return.
     const wet = dspGainDb(reverb(verbBus, opts.sharedVerb.space, undefined, 0.5, 1), opts.sharedVerb.returnDb);
-    for (let i = 0; i < N; i++) {
+    for (let i = 0; i < n; i++) {
       L[i] += wet[i] * 0.5;
       R[i] += wet[i] * 0.5;
     }
@@ -434,7 +442,7 @@ export function renderMix(
     const atk = Math.exp(-1 / ((attackMs / 1000) * SR));
     const rel = Math.exp(-1 / ((releaseMs / 1000) * SR));
     let env = 0;
-    for (let i = 0; i < N; i++) {
+    for (let i = 0; i < n; i++) {
       const a = Math.max(Math.abs(L[i]), Math.abs(R[i]));
       env = a > env ? atk * env + (1 - atk) * a : rel * env + (1 - rel) * a;
       const envDb = 20 * Math.log10(Math.max(env, 1e-9));
@@ -448,7 +456,7 @@ export function renderMix(
     // tanh soft clip with drive, unity small-signal gain (÷d) — colour and
     // peak taming, not a level change.
     const d = db2lin(opts.busDriveDb);
-    for (let i = 0; i < N; i++) {
+    for (let i = 0; i < n; i++) {
       L[i] = Math.tanh(L[i] * d) / d;
       R[i] = Math.tanh(R[i] * d) / d;
     }
@@ -457,7 +465,7 @@ export function renderMix(
     // M/S width on the summed bus: S scaled, M untouched — the imaging pages'
     // truth (width 0 collapses to mono; wide S dies in a mono fold).
     const w = Math.max(0, opts.masterWidth);
-    for (let i = 0; i < N; i++) {
+    for (let i = 0; i < n; i++) {
       const m = (L[i] + R[i]) / 2;
       const sd = ((L[i] - R[i]) / 2) * w;
       L[i] = m + sd;
@@ -467,7 +475,7 @@ export function renderMix(
   const mg = db2lin(masterDb);
   let peak = 0;
   let sum = 0;
-  for (let i = 0; i < N; i++) {
+  for (let i = 0; i < n; i++) {
     L[i] *= mg;
     R[i] *= mg;
     if (opts?.mono) {
@@ -484,7 +492,7 @@ export function renderMix(
   return {
     stereo: { l: L, r: R },
     peakDb: 20 * Math.log10(Math.max(peak, 1e-9)),
-    rmsDb: 10 * Math.log10(Math.max(sum / (2 * N), 1e-18)),
+    rmsDb: 10 * Math.log10(Math.max(sum / (2 * n), 1e-18)),
   };
 }
 

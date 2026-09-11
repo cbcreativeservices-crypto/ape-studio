@@ -38,17 +38,24 @@ function PageTranslation({ ctx }: { ctx: PageCtx }) {
     [],
   );
   const pb = useMixPlayback(variants);
-  const measure = () => {
+  const measure = async () => {
+    if (measuring) return;
     setMeasuring(true);
-    setTimeout(() => {
+    try {
+      // Staged with yields (device freeze lesson, p17): render, breathe,
+      // LUFS, breathe, true-peak — the JS thread never blocks in one burst.
+      await new Promise<void>((r) => setTimeout(r, 30));
       const m = renderMix(QC_PANS, masterDb);
+      await new Promise<void>((r) => setTimeout(r, 30));
       const lufs = loudnessLufsEstimate(m.stereo);
+      await new Promise<void>((r) => setTimeout(r, 30));
       const tp = truePeakDbEstimate(m.stereo);
       setMeasured({ lufs, tp, masterDb });
-      setMeasuring(false);
       // iOS VoiceOver never hears LiveRegion lines — announce (design P1-4).
       AccessibilityInfo.announceForAccessibility?.(`Loudness ${lufs.toFixed(1)} LUFS. True peak ${tp.toFixed(1)} dB true peak.`);
-    }, 30);
+    } finally {
+      setMeasuring(false);
+    }
   };
   const goals = [
     { label: 'Measure the mix', hit: measured != null },
@@ -67,7 +74,7 @@ function PageTranslation({ ctx }: { ctx: PageCtx }) {
             <Btn key={db} label={`TRIM ${db === 0 ? '0' : db} dB`} tone={masterDb === db ? 'primary' : 'plain'} selected={masterDb === db} onPress={() => setMasterDb(db)} a11y={`Master trim ${db} dB`} />
           ))}
         </Row>
-        <Btn label={measuring ? 'MEASURING…' : 'MEASURE'} tone="primary" onPress={measure} disabled={measuring} a11y={measuring ? 'Measuring, please wait' : 'Measure loudness and true peak'} />
+        <Btn label={measuring ? 'MEASURING…' : 'MEASURE'} tone="primary" onPress={() => void measure()} disabled={measuring} a11y={measuring ? 'Measuring, please wait' : 'Measure loudness and true peak'} />
         {measured ? (
           <View style={styles.statRow}>
             <View style={styles.statTile} accessible accessibilityLabel={`Loudness ${measured.lufs.toFixed(1)} LUFS at ${measured.masterDb} dB trim`}>
@@ -160,26 +167,48 @@ function stemSettings(keep: readonly TrackId[]): MixSettings {
   return out;
 }
 
+/** One breath for the JS thread between DSP stages — REQUIRED on device:
+ *  four back-to-back full renders in a single tick froze the whole app
+ *  (owner report 2026-09-11). Each stage now yields so the UI stays alive
+ *  and the progress label actually paints. */
+const breathe = () => new Promise<void>((r) => setTimeout(r, 30));
+
+/** The null test is per-sample math — a 2.5 s window (one bar) proves the
+ *  −∞/broken verdicts identically at a quarter of the render cost. */
+const NULL_SECONDS = 2.5;
+
 function PageReconstruction({ ctx }: { ctx: PageCtx }) {
   const [running, setRunning] = useState(false);
+  const [stage, setStage] = useState('');
   const [result, setResult] = useState<{ linear: number; withBus: number } | null>(null);
   const [checkDone, setCheckDone] = useState(false);
-  const runNull = () => {
+  const runNull = async () => {
+    if (running) return;
     setRunning(true);
-    setTimeout(() => {
-      const full = renderMix({});
-      const rhythm = renderMix(stemSettings(RHYTHM));
-      const music = renderMix(stemSettings(TRACK_IDS.filter((t) => !RHYTHM.includes(t))));
+    try {
+      setStage('RENDERING THE FULL MIX… 1/4');
+      await breathe();
+      const full = renderMix({}, 0, { seconds: NULL_SECONDS });
+      setStage('RENDERING THE RHYTHM STEM… 2/4');
+      await breathe();
+      const rhythm = renderMix(stemSettings(RHYTHM), 0, { seconds: NULL_SECONDS });
+      setStage('RENDERING THE MUSIC STEM… 3/4');
+      await breathe();
+      const music = renderMix(stemSettings(TRACK_IDS.filter((t) => !RHYTHM.includes(t))), 0, { seconds: NULL_SECONDS });
       const summed = sumStereo([rhythm.stereo, music.stereo]);
       const linear = nullResidueDb(summed, full.stereo);
-      const fullBus = renderMix({}, 0, { busComp: { thresholdDb: -18, ratio: 4, attackMs: 10, releaseMs: 150 } });
+      setStage('RENDERING WITH THE BUS COMPRESSOR… 4/4');
+      await breathe();
+      const fullBus = renderMix({}, 0, { seconds: NULL_SECONDS, busComp: { thresholdDb: -18, ratio: 4, attackMs: 10, releaseMs: 150 } });
       const withBus = nullResidueDb(summed, fullBus.stereo);
       setResult({ linear, withBus });
-      setRunning(false);
       AccessibilityInfo.announceForAccessibility?.(
         `Clean bus residue ${linear.toFixed(0)} dB — the stems null. With the bus compressor, residue ${withBus.toFixed(0)} dB — reconstruction broken.`,
       );
-    }, 30);
+    } finally {
+      setStage('');
+      setRunning(false);
+    }
   };
   const goals = [
     { label: 'Run the null test', hit: result != null },
@@ -192,7 +221,7 @@ function PageReconstruction({ ctx }: { ctx: PageCtx }) {
       <Card>
         <Eyebrow>RUN IT — REAL MATH ON THE REAL SESSION</Eyebrow>
         <Prompt>Two stems (rhythm · music) are rendered and summed, then measured against the full mix — first with a clean mix bus, then with a bus compressor on the FULL mix only.</Prompt>
-        <Btn label={running ? 'RENDERING & MEASURING…' : 'RUN THE NULL TEST'} tone="primary" disabled={running} onPress={runNull} a11y="Run the stem null test" />
+        <Btn label={running ? stage || 'RENDERING & MEASURING…' : 'RUN THE NULL TEST'} tone="primary" disabled={running} onPress={() => void runNull()} a11y={running ? `Rendering, please wait. ${stage}` : 'Run the stem null test'} />
         {result ? (
           <View style={styles.nullRows}>
             <View style={styles.nullRow}>
