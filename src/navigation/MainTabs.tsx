@@ -6,6 +6,7 @@
  */
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { CommonActions } from '@react-navigation/native';
+import { ScreenErrorBoundary } from '../components/ScreenErrorBoundary';
 import { TabBar } from '../components/nav/TabBar';
 import { StudyStack } from './StudyStack';
 import { AchievementsStack } from './AchievementsStack';
@@ -66,6 +67,18 @@ export function MainTabs() {
         transitionSpec: { animation: 'timing', config: { duration: 200 } },
       }}
       tabBar={(props) => <TabBar {...props} />}
+      // Per-screen error containment (2026-09-11). A tab scene that throws is
+      // contained INSIDE the scene, so the TabBar stays on screen and the other
+      // tabs keep their state — the user can simply switch tabs. Lazy tab
+      // mounting is unaffected: this only wraps a scene that is actually being
+      // rendered. The two stack tabs also carry their own inner boundaries;
+      // the innermost one catches first, so this is the backstop for the
+      // navigator itself.
+      screenLayout={({ children, navigation, route }) => (
+        <ScreenErrorBoundary navigation={navigation} routeName={route.name}>
+          {children}
+        </ScreenErrorBoundary>
+      )}
     >
       <Tab.Screen name="Home" component={CourseSelectionScreen} />
       {/* Reset-to-root-on-blur (Booth 2026-07-10, STUDY-tab regression #5):

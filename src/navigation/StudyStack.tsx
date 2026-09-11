@@ -4,6 +4,7 @@
  * study screens, per the locked specs.
  */
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { ScreenErrorBoundary } from '../components/ScreenErrorBoundary';
 import { NAV_FADE, NAV_PUSH, NAV_PUSH_REDUCED, useReduceMotionNav } from './reduceMotionNav';
 import { DashboardScreen } from '../screens/dashboard/DashboardScreen';
 import { FlashcardsScreen } from '../screens/study/FlashcardsScreen';
@@ -30,6 +31,16 @@ export function StudyStack() {
     <Stack.Navigator
       initialRouteName="Dashboard"
       screenOptions={{ headerShown: false, gestureEnabled: false, ...push }}
+      // Per-screen error containment (2026-09-11). Innermost boundary wins, so
+      // a broken study method is contained HERE — the Dashboard below it, the
+      // tab bar and the session all survive. Renders a Fragment while healthy,
+      // so it adds no view; it is inside the card, so gestures/transitions are
+      // untouched.
+      screenLayout={({ children, navigation, route }) => (
+        <ScreenErrorBoundary navigation={navigation} routeName={route.name}>
+          {children}
+        </ScreenErrorBoundary>
+      )}
     >
       <Stack.Screen name="Dashboard" component={DashboardScreen} />
       <Stack.Screen name="Flashcards" component={FlashcardsScreen} />

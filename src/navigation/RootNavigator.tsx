@@ -8,6 +8,7 @@
  */
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LowLightDim } from '../features/settings/LowLightLayer';
+import { ScreenErrorBoundary } from '../components/ScreenErrorBoundary';
 import { NAV_FADE, NAV_PUSH, NAV_PUSH_REDUCED, useReduceMotionNav } from './reduceMotionNav';
 import { SplashScreen } from '../screens/SplashScreen';
 import { AuthScreen } from '../screens/auth/AuthScreen';
@@ -219,10 +220,23 @@ export function RootNavigator() {
        * the first place. Root-level siblings need no wash: ExposureCheckin
        * refuses to render while overlays are suppressed, and AudioBorderFrame
        * already painted above the wash.
+       *
+       * PER-SCREEN ERROR CONTAINMENT (2026-09-11) rides on the same hook, for
+       * the same reason: it covers every screen, present and future. The
+       * boundary wraps the SCREEN ONLY — it is inside the native card, below
+       * the header, and sees none of the Screen-level options — so transitions,
+       * `presentation` and the swipe-back gesture are untouched. It renders a
+       * Fragment while healthy, so it adds no view and no layout.
+       *
+       * LowLightDim stays OUTSIDE the boundary on purpose: if a screen does
+       * fail, low-light mode must still hold the display dim over the error
+       * card — the mode's whole promise is that nothing brightens during a show.
        */
-      screenLayout={({ children }) => (
+      screenLayout={({ children, navigation, route }) => (
         <>
-          {children}
+          <ScreenErrorBoundary navigation={navigation} routeName={route.name}>
+            {children}
+          </ScreenErrorBoundary>
           <LowLightDim />
         </>
       )}

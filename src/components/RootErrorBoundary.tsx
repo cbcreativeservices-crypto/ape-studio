@@ -17,16 +17,16 @@
  * is in a screen the user can leave, that is enough; if it re-throws, the same
  * honest screen comes back rather than a blank one.
  *
- * SCOPE — this is the ONLY error boundary in the app (verified 2026-09-11), and
- * it sits above SafeAreaProvider / EntitlementProvider / AudioOutputGate /
- * NavigationContainer. So a render error in ANY single screen tears down the
- * whole tree, and TRY AGAIN restarts at the initial route rather than returning
- * the user to what they were doing. That is a deliberate trade (a tiny,
- * dependency-free boundary cannot rely on the things it may be catching), but
- * per-screen boundaries inside RootNavigator would contain the damage to one
- * screen and keep the rest of the session alive. Filed for the owner rather
- * than done unattended: wrapping every screen is a structural change to the
- * navigator and interacts with transitions and gestures.
+ * SCOPE — this is the app's LAST-RESORT boundary: it sits above
+ * SafeAreaProvider / EntitlementProvider / AudioOutputGate /
+ * NavigationContainer, so anything it catches is outside any single screen and
+ * TRY AGAIN necessarily restarts at the initial route. Per-screen failures no
+ * longer reach here: ScreenErrorBoundary (src/components/ScreenErrorBoundary.tsx,
+ * attached via `screenLayout` in src/navigation/) contains a broken screen
+ * inside its own card and offers GO BACK, keeping the session alive. Reaching
+ * THIS screen means the providers, the audio gate or the navigator itself
+ * failed. (Per-screen containment added 2026-09-11; until then this really was
+ * the only boundary, and one bad screen ended the session.)
  */
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';

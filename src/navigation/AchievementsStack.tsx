@@ -8,6 +8,7 @@
  * Re-tapping the Achievements tab pops back to the hub (TabBar behavior).
  */
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { ScreenErrorBoundary } from '../components/ScreenErrorBoundary';
 import { NAV_PUSH, NAV_PUSH_REDUCED, useReduceMotionNav } from './reduceMotionNav';
 import { AchievementsHomeScreen } from '../screens/achievements/AchievementsHomeScreen';
 import { TopicsScreen } from '../screens/achievements/TopicsScreen';
@@ -27,6 +28,13 @@ export function AchievementsStack() {
     <Stack.Navigator
       initialRouteName="AchievementsHome"
       screenOptions={{ headerShown: false, ...push }}
+      // Per-screen error containment (2026-09-11) — see ScreenErrorBoundary.
+      // Inside the card, Fragment while healthy: no layout, no gesture change.
+      screenLayout={({ children, navigation, route }) => (
+        <ScreenErrorBoundary navigation={navigation} routeName={route.name}>
+          {children}
+        </ScreenErrorBoundary>
+      )}
     >
       <Stack.Screen name="AchievementsHome" component={AchievementsHomeScreen} />
       <Stack.Screen name="Topics" component={TopicsScreen} />
