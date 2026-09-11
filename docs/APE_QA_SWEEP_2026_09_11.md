@@ -424,11 +424,40 @@ warm cache. Releasing on unmount would turn every re-entry into that wait.
 `releaseSessionStems()` is added, audited and exported but **deliberately not
 wired**.
 
-**The 8-second first-play stall is the bigger news.** Root cause is naive
-additive synthesis in `earDsp.classicWave` — a 65 Hz bass root sums ~369
-harmonics across 480k samples, 8× per bar — and Hermes has no JIT, so the
-device is worse, not better. Fixing it (memoized harmonic series, or a
-wavetable) would make the release cheap *and* remove the stall. **Owner call.**
+**The first-play stall was the bigger news — and it is now FIXED.** Owner
+ruling: *"fix classicWave with a wavetable."* Done. Cold `sessionStems()`
+measured **7128.9 ms → 349.7 ms**; one 2-second 65 Hz note **406.9 ms →
+2.6 ms**. The node test suite dropped from ~11 s to ~2.8 s as a side effect,
+because the mixing tests spent nearly all their time in there.
+
+A table is legitimate here rather than a shortcut because the waveform is
+exactly periodic in PHASE — `sin(ωki) = sin(k·(ωi mod 2π))` — so the whole
+signal is one fixed function of the fundamental's phase. The partials are
+identical by construction; the only new error is interpolation between table
+points, and that was **measured against the literal sum of sines**, not
+asserted:
+
+| oversample | worst residual | cold stems |
+|---|---|---|
+| 16 | −90 dBFS | 87 ms |
+| 32 | −103 dBFS | 184 ms |
+| **64 (shipped)** | **−125 dBFS** | **350 ms** |
+| 128 | −132 dBFS | 1306 ms |
+
+The bar is not a feeling, it is the resolution the audio is *delivered* at:
+every clip leaves through `encodeWav` as 16-bit PCM, whose floor is about
+−96 dBFS. 16 fails it outright; 32 clears it by 7 dB, which is not margin worth
+defending in a lab that claims its DSP is provable; 64 puts the error 29 dB
+*under* the floor of the format it ships in — it cannot survive the encode.
++20 tests, whose reference is the mathematical definition of each waveform
+written out fresh rather than the old code.
+
+**Knock-on:** the stems-cache comment and the Beginning lab note both argued
+for holding 15.4 MB *because* re-synthesis cost ~8 s. That argument is gone and
+both are corrected. Holding the memory is now a genuine choice against a
+sub-second re-render on re-entry; `releaseSessionStems()` is still unwired,
+because switching it on is a user-visible behaviour change and the owner's
+call — not a side effect of a synthesis rewrite.
 
 ## Still open — and why
 
