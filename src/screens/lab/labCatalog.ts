@@ -142,6 +142,12 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       // Professional installation practice — the decision lab that follows the
       // connector fundamentals (owner brief 2026-08-24).
       { name: 'Cable Dressing & Installation', blurb: 'Route it. Support it. Protect it. Make it serviceable — professional installation decisions from plan to final inspection.', route: 'CableInstallLab', key: 'af_cable_install', member: true },
+      // Phase A LIVE (owner brief 2026-09-10): the single pair, thru → normal →
+      // full → half, the switching contact, predict + detective. Phase B
+      // (studio bay, overpatch, X-ray, phantom safety, design-your-own) follows
+      // the owner's Phase A pass. NO af_* key: that list is immutable — adding
+      // patchbay to the fundamentals credit bridge is a separate owner call.
+      { name: 'Patchbay Signal Flow & Normalling', blurb: 'Top is the source, bottom is the destination — thru, full-normal and half-normal, the switching contact that makes them real, and the patch that changes everything.', route: 'PatchbayLab', member: true },
       // LIVE (owner 2026-08-07): own home + 8 modules (Signal X-Ray et al).
       { name: 'Gain Staging', blurb: 'Set levels right at every stage — headroom, noise floor, unity gain through the chain.', route: 'GainLabHome', key: 'af_gain_staging', member: true },
     ],

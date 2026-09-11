@@ -91,6 +91,7 @@ import { AmpModuleScreen } from '../screens/lab/amp/AmpModuleScreen';
 import { TuningLabScreen } from '../screens/lab/tuning/TuningLabScreen';
 // Sound Envelope & Transients Lab (owner brief 2026-09-02): visual, paged.
 import { EnvelopeLabScreen } from '../screens/lab/envelope/EnvelopeLabScreen';
+import { PatchbayLabScreen } from '../screens/lab/patchbay/PatchbayLabScreen';
 import { SpeechLabScreen } from '../screens/lab/speech/SpeechLabScreen';
 import { SmartProcessorsLabScreen } from '../screens/lab/deesser/SmartProcessorsLabScreen';
 import { DeEsserLabScreen } from '../screens/lab/deesser/DeEsserLabScreen';
@@ -341,6 +342,7 @@ export function RootNavigator() {
       <Stack.Screen name="AmpModule" component={AmpModuleScreen} />
       <Stack.Screen name="TuningLab" component={TuningLabScreen} />
       <Stack.Screen name="EnvelopeLab" component={EnvelopeLabScreen} />
+      <Stack.Screen name="PatchbayLab" component={PatchbayLabScreen} />
       <Stack.Screen name="SpeechLab" component={SpeechLabScreen} />
       <Stack.Screen name="SmartProcessorsLab" component={SmartProcessorsLabScreen} />
       <Stack.Screen name="DeEsserLab" component={DeEsserLabScreen} />

@@ -13,6 +13,7 @@ import { KeyboardProvider, KeyboardToolbar } from './src/features/keyboard/keybo
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { RootErrorBoundary } from './src/components/RootErrorBoundary';
 import { Spl3dGaugePreview } from './src/screens/tools/Spl3dGaugePreview';
+import { PatchbayPreview } from './src/screens/lab/patchbay/PatchbayPreview';
 import { ToolPreview } from './src/screens/tools/ToolPreview';
 import { MicPrinciplesLabScreen } from './src/screens/lab/micspeaker/MicPrinciplesLabScreen';
 import { MultiMeterScreen } from './src/screens/tools/MultiMeterScreen';
@@ -200,6 +201,18 @@ export default function App() {
       <SafeAreaProvider>
         <StatusBar style="light" />
         <Spl3dGaugePreview />
+      </SafeAreaProvider>
+    );
+  }
+
+  // DEV + WEB ONLY: `localhost:8090/#patchbaypreview` — the Patchbay lab's core
+  // visual gallery (all configurations, interactive jacks) for browser design
+  // iteration. SVG + RN Animated only, so the web render is faithful.
+  if (__DEV__ && Platform.OS === 'web' && typeof window !== 'undefined' && window.location.hash.startsWith('#patchbaypreview')) {
+    return (
+      <SafeAreaProvider>
+        <StatusBar style="light" />
+        <PatchbayPreview />
       </SafeAreaProvider>
     );
   }

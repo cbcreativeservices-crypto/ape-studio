@@ -267,6 +267,9 @@ export type RootStackParamList = {
   TuningLab: undefined;
   /** Sound Envelope & Transients Lab (owner brief 2026-09-02) — visual, paged. */
   EnvelopeLab: undefined;
+  /** Patchbay Signal Flow & Normalling (owner brief 2026-09-10) — paged
+   *  visual lab; member-only via the catalog leaf. */
+  PatchbayLab: undefined;
   /** Speech & Voice Lab (owner brief 2026-09-02) — visual, paged. */
   SpeechLab: undefined;
   /** Smart Processors family hub (owner brief 2026-09-02) and its V1 member. */
