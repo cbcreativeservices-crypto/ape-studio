@@ -103,6 +103,61 @@ the rest deliberately skipped as owner decisions (recorded below).
 - `MainTabs.tsx` docblock still says "Default tab = Study" while
   `initialRouteName="Home"`.
 
+## ⚠️ TWO THINGS ONLY THE OWNER CAN CLOSE (both cost money or trust at launch)
+
+**1. Does `glossary_study_v` return ZERO ROWS or an ERROR for a caller who is
+not entitled?** — `src/features/study/api.ts:139-192`. `fetchTopicItems`
+treats a gated-empty result as "view unavailable" and falls through to a
+**legacy path that reads base `glossary` directly with no entitlement
+filter**; the code's own comment concedes the base table is readable under
+the column grants. If the view returns 0 rows for a non-entitled caller,
+paid study content is being handed to free/lapsed/anonymous users. If it
+errors instead, we are safe today and fragile tomorrow. **This cannot be
+settled from the client** — it needs the view's definition.
+
+**2. What status vocabulary does the `validate-purchase` edge function
+write?** — `src/features/commercial/EntitlementProvider.tsx:108` accepts
+`r.status === 'active'` and NOTHING else. If the function ever writes
+`trialing`, `in_grace_period` or `in_billing_retry` — all normal App Store /
+Play states — `academyTierFromRows` returns **`lapsed`** and a genuinely
+paying subscriber is locked out of everything they bought. The only status
+write visible in the repo uses `'active'`; the edge function itself is not in
+the repo. Deliberately NOT loosened: guessing here could grant academy on a
+status that legitimately means "not paid".
+
+## Round 3 — the entitlement sweep (the most expensive bug of the night)
+
+**A single failed entitlements read at boot locked a paying member out of
+the entire app, for the whole run.** "Keep the current tier on a failed read"
+is correct mid-session, but at boot the current tier *is* `anonymous` — so
+one flaky network moment re-locked every tool, lab, paid topic and
+notification, made Profile say "REFERENCE MODE", and left no way back short
+of force-quitting. Fixed with a bounded, generation-counted retry that can
+only ever RAISE the tier (commit `39d803a`).
+
+Alongside it, the first-paint half of the same problem: Profile told members
+their changes were device-only and offered to **sell them the membership they
+already own**, while Settings said "ACADEMY — ACTIVE" and "See membership"
+*in the same screen*.
+
+### The capability ladder is mostly decoration — worth knowing before launch
+Of the 7 capabilities in `caps`, **5 have zero consumers anywhere in `src/`**,
+and the 2 live ones are display-only. Real access control runs on
+`entitlement` / `isMember` directly (which is defensible and documented), but
+`caps` currently reads like protection that does not exist. Two specifics:
+- `caps.audioTools` gives `free` no audio tools, which **contradicts the
+  owner's ratified 2026-08-05 ruling** that "Free accounts keep OPEN TOOL
+  free". Anyone who wires this cap later would break that ruling.
+- `caps.completionRecords` now has zero consumers; `caps.albumAchievements`
+  hides a shortcut to a hub the bottom tab opens unconditionally for the same
+  user.
+
+Clean results worth recording: **every `__DEV__` bypass is genuinely
+`__DEV__`-guarded** and cannot reach a release build; the weekly glossary and
+calculator caps are consistently tiered (both fail OPEN on RPC failure —
+the right call for a paid product, but it means a user who blocks the RPC
+gets unlimited use).
+
 ## Round 3 — mechanical / static analysis (a different approach on purpose)
 
 Agent review is one lens; these are checks a human reading code would never
