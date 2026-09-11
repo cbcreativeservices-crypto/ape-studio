@@ -83,6 +83,6 @@ multi-acceptable with tradeoff notes) · the 10-item proficiency assessment.
   Fundamentals container menu is part of the audio fundamentals requisite."
   The leaf now carries `key: 'af_patchbay'`; PagedLab pages feed the R6c
   credit bridge (one unit per page, p1..p23, with a mount-time back-fill so
-  already-finished devices bank credit). ⏳ Server side is inert until the
-  owner runs `docs/APE_PATCHBAY_LAB_SEED_2026_09_10.sql` (sort 107) — the
-  lab_not_found guard keeps client completions safely queued until then.
+  already-finished devices bank credit). ✅ Seed SQL
+  (`docs/APE_PATCHBAY_LAB_SEED_2026_09_10.sql`, sort 107) applied by the
+  owner 2026-09-10; device pass confirmed — the bridge is fully live.

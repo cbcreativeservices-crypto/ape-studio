@@ -1,7 +1,8 @@
--- Patchbay Signal Flow & Normalling lab — backend seed (OWNER RUNS THIS).
--- ⏳ NOT YET EXECUTED. Drafted 2026-09-10 on the owner's ruling: "anything in
--- the Audio Fundamentals container menu is part of the audio fundamentals
--- requisite."
+-- Patchbay Signal Flow & Normalling lab — backend seed.
+-- ✅ EXECUTED 2026-09-10 by the owner (device pass confirmed same day). Kept
+-- for the record; idempotent if re-run. Drafted on the owner's ruling:
+-- "anything in the Audio Fundamentals container menu is part of the audio
+-- fundamentals requisite."
 --
 -- Adds the 14th audio_fundamentals lab row so mark_lab_complete accepts
 -- 'af_patchbay'. Sort 107: after af_cable_install (106), before
