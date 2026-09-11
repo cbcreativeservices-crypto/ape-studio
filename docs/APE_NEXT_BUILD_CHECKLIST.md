@@ -20,6 +20,7 @@ The installed dev client predates several native modules and engine versions. Ev
 
 | **Deep links** — `proaudio://…` scheme; App Links for `proaudiotrainingacademy.com` (2026-09-05 discoverability pass) | `app.json` `scheme` + `android.intentFilters` (native config → needs the build); the URL→screen map is JS (`src/navigation/linking.ts`) | n/a | ✅ added 2026-09-05 | scheme works in any build after 2026-09-05; https links stay inert until the website hosts `/.well-known/apple-app-site-association` + `assetlinks.json`. **iOS `associatedDomains` is NOT in the build yet** — needs one interactive `eas build` (Apple login) to add the capability; step in `docs/APE_WEBSITE_SEO_NOTES_2026_09_05.md` §A |
 | Light-Pulse frequency counter (camera luma) + MultiMeter snapshot photo | camera path inside `ape-dsp` (no `expo-camera` package) | in-tree module | `NSCameraUsageDescription` + `android.permission.CAMERA` ✅ | ready |
+| **MultiMeter snapshot — TAG LOCATION** (`src/features/tools/capture/location.ts`, wired in `MultiMeterScreen`) | `expo-location` | ❌ **not installed** — `optionalModule()` resolves it to `null`, so `isAvailable()` is false and the control stays hidden | **permissions REMOVED from `app.json` 2026-09-11** — see below | **parked** — needs the package installed AND the manifest keys put back |
 | **Store review prompt** — asks for a rating only after real successes (lab completed, quiz passed, certificate earned), thresholds in `src/features/review/reviewEligibility.ts` | `expo-store-review` ~57.0.2 + `expo-application` ~57.0.2 (version for once-per-version) | ✅ installed 2026-09-06 | none required | **needs the next build** — no-op on current clients |
 | **In-app purchases** — the paywall's real store connection (OpenIAP) | `expo-iap` ^5.5.1 (plugin auto-added); loader re-enabled in `features/commercial/purchase.ts` | ✅ installed 2026-09-06 | `expo-iap` plugin ✅ | **needs the next build** — purchases report "unavailable" on current clients; store products + validate-purchase must be configured before a real purchase can succeed |
 | **Installed app name** — the home-screen name is `Pro Audio` (owner 2026-09-06, clarified: abbreviate on the device rather than let iOS/Android truncate "Training Academy"); the STORE listing name is the full `Pro Audio Training Academy` | `app.json` `expo.name` unchanged | ✅ | n/a | no build needed for this — store name is console work |
@@ -27,6 +28,23 @@ The installed dev client predates several native modules and engine versions. Ev
 | **Home carousel card art** — reliable loading (owner report 2026-09-05: placeholders on both phones; the course-cards bucket serves `Cache-Control: no-cache`, which defeats iOS's URL cache) | `expo-image` ~57.0.3 — its own memory+disk cache ignores that header; `CardArt` uses it when the native module is present and falls back to RN `ImageBackground` (force-cache + retry) on the current dev clients | ✅ installed 2026-09-05 | none required (no plugin) | **needs this build** — until then the RN fallback path runs |
 
 `expo-print` and `react-native-view-shot` autolink; no plugin entry exists for them by design.
+
+### Location permissions removed 2026-09-11 — exactly what to put back
+
+`app.json` declared FINE + COARSE location and `NSLocationWhenInUseUsageDescription` as pre-staging for Snapshot "tag location". `expo-location` is not installed, so in any build we submit today those permissions are unreachable by any code path — and `ACCESS_FINE_LOCATION` obliges a Play Console location declaration for a feature that cannot run. They were removed rather than shipped. **Nothing in `src/` changed**: `location.ts` and its MultiMeter control are untouched and still gate themselves off.
+
+When Snapshot GPS is picked back up, install `expo-location` and restore these three keys verbatim:
+
+```jsonc
+// expo.android.permissions — add alongside android.permission.CAMERA
+"android.permission.ACCESS_COARSE_LOCATION",
+"android.permission.ACCESS_FINE_LOCATION"
+
+// expo.ios.infoPlist
+"NSLocationWhenInUseUsageDescription": "Used only when you choose to tag a measurement snapshot with where it was taken. Location is stored with the snapshot on this device and never shared automatically."
+```
+
+That iOS string is owner-ratified copy — restore it as written rather than rewriting it.
 
 **Verified 2026-09-05 (evening) before the demo builds:** every package in `package.json` with a native half has its plugin/permission above or autolinks; `tsc --noEmit` clean; 255 tests green.
 
