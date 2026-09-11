@@ -77,8 +77,12 @@ multi-acceptable with tradeoff notes) · the 10-item proficiency assessment.
 11. **The directional caveat, taught live** (page 19): a genuine top-breaking
     bay incl. the bottom parallel-merge; "verify before a session depends on it."
 
-## Open owner decisions
+## Owner decisions (all resolved)
 
-- **Fundamentals credit**: the catalog leaf ships WITHOUT an `af_*` key (that
-  key list is immutable / backend-bridged). Decide whether Patchbay should join
-  the Audio Fundamentals lab-credit set — needs a backend key addition.
+- **Fundamentals credit — RULED 2026-09-10**: "anything in the Audio
+  Fundamentals container menu is part of the audio fundamentals requisite."
+  The leaf now carries `key: 'af_patchbay'`; PagedLab pages feed the R6c
+  credit bridge (one unit per page, p1..p23, with a mount-time back-fill so
+  already-finished devices bank credit). ⏳ Server side is inert until the
+  owner runs `docs/APE_PATCHBAY_LAB_SEED_2026_09_10.sql` (sort 107) — the
+  lab_not_found guard keeps client completions safely queued until then.

@@ -34,6 +34,7 @@ import { GAIN_MODULES } from '../../screens/lab/gain/modules/registry';
 // Pure data (zero React/Skia) — safe for this boot-loaded store.
 import { CABLE_UNITS } from '../../screens/lab/cable/data/lessons';
 import { CI_LAB_UNITS } from '../../screens/lab/cableinstall/registry';
+import { PATCHBAY_UNITS } from '../../screens/lab/patchbay/units';
 import { noteHighValueEvent } from '../review/reviewPrompt';
 
 const STORAGE_KEY = 'ape:labProgress';
@@ -58,7 +59,12 @@ export type LabKey =
   | 'af_cables'
   // Cable Dressing & Installation (owner brief 2026-08-24) — queued safely
   // until the owner runs docs/APE_CABLE_INSTALL_SEED_2026_08_24.sql.
-  | 'af_cable_install';
+  | 'af_cable_install'
+  // Patchbay Signal Flow & Normalling (owner ruling 2026-09-10: everything in
+  // the Audio Fundamentals container is part of the fundamentals requisite) —
+  // queued safely until the owner runs docs/APE_PATCHBAY_LAB_SEED_2026_09_10.sql
+  // (the lab_not_found guard keeps the completion unsent + retried until then).
+  | 'af_patchbay';
 
 /** The explicit-review unit (read-through / sandbox labs) and the challenge-pass
  *  unit (Signal Detective) — named so the wiring and the spec can't drift. */
@@ -89,6 +95,9 @@ export const LAB_UNITS: Partial<Record<LabKey, readonly string[]>> = {
   // Cable Dressing & Installation: 13 stage units + inspection pass + final
   // knowledge check (registry-derived; STATIC for offline retryUnsent).
   af_cable_install: CI_LAB_UNITS,
+  // Patchbay: one unit per PagedLab page, p1..p23 (STATIC for offline
+  // retryUnsent; the screen dev-checks this count against its real page array).
+  af_patchbay: PATCHBAY_UNITS,
 };
 
 // ── in-memory state (mirrors persisted blob) ────────────────────────────────

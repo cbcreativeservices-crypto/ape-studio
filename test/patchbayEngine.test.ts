@@ -312,3 +312,20 @@ describe('detective mode deducer (spec §15)', () => {
     assert.deepEqual(consistentConfigs([{ topPlugged: false, bottomPlugged: false, destinationHears: 'normal' }]), ['full', 'half']);
   });
 });
+
+// ── R6c lab-credit bridge (owner ruling 2026-09-10) ─────────────────────────
+// units.ts feeds the boot-loaded labCompletion store, so it must stay pure
+// data AND its unit set must exactly mirror the 23-page lab shape. The screen
+// dev-checks PATCHBAY_PAGE_COUNT against the real page array at runtime; this
+// pins the unit ids themselves.
+describe('lab-credit units (af_patchbay)', () => {
+  it('key + count + one unique unit per page (p1..p23)', async () => {
+    const { PATCHBAY_LAB_KEY, PATCHBAY_PAGE_COUNT, PATCHBAY_UNITS } = await import(
+      '../src/screens/lab/patchbay/units.ts'
+    );
+    assert.equal(PATCHBAY_LAB_KEY, 'af_patchbay');
+    assert.equal(PATCHBAY_UNITS.length, PATCHBAY_PAGE_COUNT);
+    assert.equal(new Set(PATCHBAY_UNITS).size, PATCHBAY_PAGE_COUNT);
+    PATCHBAY_UNITS.forEach((u: string, i: number) => assert.equal(u, `p${i + 1}`));
+  });
+});

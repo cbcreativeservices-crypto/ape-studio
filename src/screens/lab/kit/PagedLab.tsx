@@ -53,7 +53,16 @@ function useOsReduceMotion(): boolean {
   return rm;
 }
 
-export function PagedLab({ labId, title, subtitle, pages }: { labId: string; title: string; subtitle: string; pages: PageDef[] }) {
+export function PagedLab({ labId, title, subtitle, pages, onPageDone }: {
+  labId: string;
+  title: string;
+  subtitle: string;
+  pages: PageDef[];
+  /** ADDITIVE (2026-09-10, Patchbay lab-credit bridge): fires once each time a
+   *  page is newly marked done — lets a lab feed external completion tracking
+   *  (labCompletion units) without touching the shell's own persistence. */
+  onPageDone?: (index: number) => void;
+}) {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const [progress, setProgress] = useState<PagedProgress | null>(null);
@@ -95,9 +104,11 @@ export function PagedLab({ labId, title, subtitle, pages }: { labId: string; tit
   const markDone = useCallback(() => {
     const base = progressRef.current;
     if (!base) return;
-    const completed = base.completed.includes(page) ? base.completed : [...base.completed, page].sort((a, b) => a - b);
+    const fresh = !base.completed.includes(page);
+    const completed = fresh ? [...base.completed, page].sort((a, b) => a - b) : base.completed;
     persist({ completed, done: completed.length >= pages.length });
-  }, [page, persist, pages.length]);
+    if (fresh) onPageDone?.(page);
+  }, [page, persist, pages.length, onPageDone]);
   const doReset = () => void resetPagedProgress(labId).then(() => {
     const fresh: PagedProgress = { completed: [], lastPage: 0, done: false };
     progressRef.current = fresh;
