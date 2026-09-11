@@ -25,11 +25,12 @@ export type TunerFrame = {
   a4: number;
 };
 
-type State = { frame: TunerFrame; open: boolean };
+type State = { frame: TunerFrame; open: boolean; vuOpen: boolean };
 
 let state: State = {
   frame: { freq: null, accepted: false, confidence: 0, levelDb: -120, a4: 440 },
   open: false,
+  vuOpen: false,
 };
 const listeners = new Set<() => void>();
 const emit = () => listeners.forEach((l) => l());
@@ -61,6 +62,20 @@ export function closeCenterLock(): void {
   emit();
 }
 
+// The VU tuner fullscreen (owner 2026-09-10): the skinned horizontal meter as
+// its own absolute-fill overlay at the screen root, same pattern as CenterLock.
+export function openVuTuner(): void {
+  if (state.vuOpen) return;
+  state = { ...state, vuOpen: true };
+  emit();
+}
+
+export function closeVuTuner(): void {
+  if (!state.vuOpen) return;
+  state = { ...state, vuOpen: false };
+  emit();
+}
+
 const subscribe = (cb: () => void) => {
   listeners.add(cb);
   return () => {
@@ -80,4 +95,8 @@ export function useTunerFrame(): TunerFrame {
 
 export function useCenterLockOpen(): boolean {
   return useSyncExternalStore(subscribe, () => state.open, () => state.open);
+}
+
+export function useVuTunerOpen(): boolean {
+  return useSyncExternalStore(subscribe, () => state.vuOpen, () => state.vuOpen);
 }

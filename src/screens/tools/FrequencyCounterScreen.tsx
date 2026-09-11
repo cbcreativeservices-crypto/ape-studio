@@ -28,11 +28,11 @@ import { PermissionsAndroid, Platform, Pressable, ScrollView, StyleSheet, Text, 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
-import Svg, { Line, Path, Text as SvgText } from 'react-native-svg';
+import { SkinnedTunerVu, TuneChevrons, VuTunerFullScreen } from './SkinnedTunerVu';
 import { GlassButton } from '../../components/GlassButton';
 import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../../features/settings/store';
-import { openCenterLock, publishTunerFrame, useCenterLockOpen } from '../../features/tools/tuner/tunerFrameStore';
+import { openCenterLock, openVuTuner, publishTunerFrame, useCenterLockOpen, useVuTunerOpen } from '../../features/tools/tuner/tunerFrameStore';
 import { CenterLockTuner } from './CenterLockTuner';
 import { ColorWheelButton } from '../../components/ColorWheelButton';
 import { TunerDiagram } from '../../components/ColorTargetDiagrams';
@@ -375,112 +375,9 @@ function LightPulseMode({ blurb, help, helpAll }: { blurb: string; help: (key: s
   );
 }
 
-// ---- Tuner arc gauge (owner 2026-08-05) — the LIVE version of the demo's
-// "Hz vs Pitch" needle display, shown ABOVE the compact readout. Same arc +
-// tick + needle language as HzCounterDemo scene 3, driven by the live pitch. ---
-const GAUGE_H = 148;
-const GAUGE_NEEDLE_LEN = 84;
-const GAUGE_DEG_PER_CENT = 0.9; // ±50¢ → ±45° of needle travel
-function gaugePolar(cx: number, cy: number, r: number, deg: number) {
-  const rad = (deg * Math.PI) / 180;
-  return { x: cx + r * Math.sin(rad), y: cy - r * Math.cos(rad) };
-}
-
-function TunerGauge({
-  freq,
-  note,
-  dim,
-  inTune,
-  tuneColor,
-}: {
-  freq: number | null;
-  note: { name: string; octave: number; cents: number } | null;
-  dim: boolean;
-  inTune: boolean;
-  /** MEMBER custom in-tune colour (owner 2026-08-21). null = default green. */
-  tuneColor?: string | null;
-}) {
-  const tuneInk = tuneColor ?? colors.green;
-  const [w, setW] = useState(0);
-  const cx = w / 2;
-  const cy = GAUGE_H - 20;
-  const arcStart = gaugePolar(cx, cy, 100, -45);
-  const arcEnd = gaugePolar(cx, cy, 100, 45);
-  const ticks = useMemo(() => {
-    const out: { key: number; x1: number; y1: number; x2: number; y2: number; major: boolean }[] = [];
-    for (let c = -50; c <= 50; c += 10) {
-      const deg = c * GAUGE_DEG_PER_CENT;
-      const major = c === -50 || c === 0 || c === 50;
-      const a = gaugePolar(cx, cy, major ? 88 : 93, deg);
-      const b = gaugePolar(cx, cy, 100, deg);
-      out.push({ key: c, x1: a.x, y1: a.y, x2: b.x, y2: b.y, major });
-    }
-    return out;
-  }, [cx, cy]);
-  const cents = note ? Math.max(-50, Math.min(50, note.cents)) : 0;
-
-  return (
-    <View style={[styles.gaugeWrap, inTune && styles.gaugeWrapInTune, inTune && tuneColor ? { borderColor: tuneColor } : null]}>
-      <View style={styles.gaugeHeader}>
-        <Text style={[styles.gaugeHz, dim && styles.readoutDim]}>{freq != null ? `${fmtHz(freq)} Hz` : '— Hz'}</Text>
-        <Text style={styles.gaugeArrow}>→</Text>
-        <Text style={[styles.gaugeNote, dim && styles.readoutDim]}>{note ? `${note.name}${note.octave}` : '—'}</Text>
-      </View>
-      <View style={{ height: GAUGE_H }} onLayout={(e) => setW(Math.round(e.nativeEvent.layout.width))}>
-        {w > 0 && (
-          <>
-            <Svg width={w} height={GAUGE_H}>
-              <Path
-                d={`M ${arcStart.x} ${arcStart.y} A 100 100 0 0 1 ${arcEnd.x} ${arcEnd.y}`}
-                stroke={colors.steelBorder}
-                strokeWidth={2}
-                fill="none"
-              />
-              {ticks.map((t) => (
-                <Line
-                  key={t.key}
-                  x1={t.x1}
-                  y1={t.y1}
-                  x2={t.x2}
-                  y2={t.y2}
-                  stroke={t.key === 0 ? (inTune ? tuneInk : colors.amber) : t.major ? colors.textSub : colors.hairlineAlt}
-                  strokeWidth={t.key === 0 ? 2.5 : 1.5}
-                />
-              ))}
-              {[-50, 0, 50].map((c) => {
-                const p = gaugePolar(cx, cy, 114, c * GAUGE_DEG_PER_CENT);
-                return (
-                  <SvgText key={c} x={p.x} y={p.y + 4} fill={colors.textSub} fontFamily={fonts.mono} fontSize={12} textAnchor="middle">
-                    {c > 0 ? `+${c}` : `${c}`}
-                  </SvgText>
-                );
-              })}
-            </Svg>
-            {note != null && (
-              <View
-                pointerEvents="none"
-                style={[
-                  styles.gaugeNeedleBox,
-                  {
-                    left: cx - 1.5,
-                    top: cy - GAUGE_NEEDLE_LEN,
-                    height: GAUGE_NEEDLE_LEN * 2,
-                    transform: [{ rotate: `${cents * GAUGE_DEG_PER_CENT}deg` }],
-                  },
-                  dim && styles.readoutDim,
-                ]}
-              >
-                <View style={[styles.gaugeNeedle, inTune && styles.gaugeNeedleInTune, inTune && tuneColor ? { backgroundColor: tuneColor } : null]} />
-              </View>
-            )}
-            <View pointerEvents="none" style={[styles.gaugeHub, { left: cx - 6, top: cy - 6 }]} />
-            <Text style={styles.gaugeRefBadge}>±50¢ scale</Text>
-          </>
-        )}
-      </View>
-    </View>
-  );
-}
+// The tuner's top display lives in SkinnedTunerVu (owner redesign 2026-09-10):
+// the horizontal edgewise VU face on the amber skin, ±30¢ printed scale, plus
+// the TuneChevrons correction cue. (Replaced the 2026-08-05 arc "gas gauge".)
 
 function LivePitchMode({
   kind,
@@ -498,6 +395,9 @@ function LivePitchMode({
     { meter: true, pitch: true },
   );
   const [a4, setA4] = useState(440);
+  // Which setup tray is open (owner 2026-09-10): tuning standard / low-cut /
+  // high-cut — one at a time, from the horizontal button row.
+  const [cfgOpen, setCfgOpen] = useState<'a4' | 'low' | 'high' | null>(null);
   const fsGate = useFullScreenGate();
   // MEMBER custom in-tune colour for the tuner gauge (owner 2026-08-21).
   const [tunerColor, setTunerColor] = useToolColorPref('ape:tools:tunerColor');
@@ -719,9 +619,18 @@ function LivePitchMode({
         </Pressable>
       ) : (
         <>
-          {/* Top display (owner 2026-08-05): the demo's Hz-vs-Pitch arc gauge,
-              live. */}
-          <TunerGauge freq={shownFreq} note={note} dim={isHeld} inTune={tunerInTune} tuneColor={tunerColor} />
+          {/* Top display (owner redesign 2026-09-10): the horizontal edgewise
+              VU-style tuner on the amber skin — ±30¢, center = in tune. */}
+          <SkinnedTunerVu
+            hzText={shownFreq != null ? `${fmtHz(shownFreq)} Hz` : '— Hz'}
+            cents={note != null ? note.cents : null}
+            dim={isHeld}
+            inTune={tunerInTune}
+            tuneColor={tunerColor}
+            // ⛶ fullscreen (owner 2026-09-10) — like the other audio tools;
+            // overlay rendered at the screen root, member-gated like ADV TUNER.
+            onExpand={() => fsGate.gate(() => openVuTuner())}
+          />
 
           {/* Current display — compact; the ENTIRE container turns green when in
               tune within ±1 cent (owner 2026-08-05). */}
@@ -736,22 +645,10 @@ function LivePitchMode({
                 {note ? `${note.name}${note.octave}` : '—'}
               </Text>
             </Pressable>
-            {/* Cents needle: real deviation on a ±50¢ scale; the green band is
-                the ±5¢ in-tune zone. */}
-            <View style={styles.centsScale}>
-              <View style={styles.centsZoneInTune} />
-              <View style={styles.centsZero} />
-              {note && (
-                <View
-                  style={[
-                    styles.centsNeedle,
-                    { left: `${50 + Math.max(-50, Math.min(50, note.cents))}%` },
-                    Math.abs(note.cents) < 5 ? styles.centsNeedleInTune : null,
-                    isHeld && styles.readoutDim,
-                  ]}
-                />
-              )}
-            </View>
+            {/* Direction cue (owner 2026-09-10): the meter above already shows
+                the cents dial — no duplicate mini-bar here. Chevrons march
+                toward the fix: flat → right (tune up), sharp → left (down). */}
+            <TuneChevrons cents={note != null ? note.cents : null} dim={isHeld} tuneColor={tunerColor} />
             <Text
               style={[
                 styles.centsLabel,
@@ -803,7 +700,30 @@ function LivePitchMode({
             unit="dBFS"
             valueColor={levelColorForDb(live?.levelDb)}
           />
-          <StatCell help={help} label="STATUS" value={statusLabel} />
+        </View>
+      )}
+      {/* STATUS (2/3) beside ADV TUNER (1/3) — owner split 2026-09-10. The
+          ADV TUNER key opens the CenterLock stage display, rendered at the
+          screen root, closed with its ✕. */}
+      {kind === 'tuner' && (
+        <View style={styles.statusRow}>
+          <View style={styles.statusCellWrap}>
+            <StatCell help={help} label="STATUS" value={statusLabel} />
+          </View>
+          <View style={styles.advBtnWrap}>
+            <GlassButton
+              label="ADV TUNER"
+              tint="green"
+              height={52}
+              fontSize={13}
+              onPress={() =>
+                fsGate.gate(() => {
+                  if (hapticsEnabled()) Haptics.selectionAsync().catch(() => {});
+                  openCenterLock();
+                })
+              }
+            />
+          </View>
         </View>
       )}
       {/* Honest range + unit conventions (§1.4/§1.7 + spec Tool 7 warnings). */}
@@ -811,109 +731,135 @@ function LivePitchMode({
         Reads ONE steady tone, roughly {PITCH_RANGE_HZ.min} Hz – {PITCH_RANGE_HZ.max / 1000} kHz
         (approximate). Input level is dBFS · uncalibrated — digital level, never SPL.
       </Text>
-      <DisplayGuideButton onPress={helpAll} />
-
+      {/* Tuner setup (owner 2026-09-10): ONE horizontal row — TUNING STANDARD ·
+          LOW-CUT · HIGH-CUT — each button opening its compact choice tray
+          just below (one at a time; in-tree, never a Modal — SPL lessons).
+          Replaces the always-open A4 + detection-band chip rows. */}
       {kind === 'tuner' && (
-        <View style={styles.centerLockRow}>
-          {/* CENTERLOCK (owner 2026-09-06): the one fullscreen stage display —
-              opened here, rendered at the screen root, closed with its ✕. */}
-          <GlassButton
-            label="FULL SCREEN"
-            tint="green"
-            height={48}
-            fontSize={13}
-            onPress={() =>
-              fsGate.gate(() => {
-                if (hapticsEnabled()) Haptics.selectionAsync().catch(() => {});
-                openCenterLock();
-              })
-            }
-          />
-        </View>
-      )}
-      {kind === 'tuner' && (
-        <View style={styles.a4Row}>
-          <Pressable accessibilityHint="Press and hold for an explanation." onLongPress={() => help('a4')} delayLongPress={260} hitSlop={8}>
-            <Text style={styles.a4Label}>A4 ⓘ</Text>
-          </Pressable>
-          {A4_CHOICES.map((v) => (
+        <>
+          <View style={styles.cfgRow}>
             <Pressable
-              key={v}
-              style={[styles.a4Chip, a4 === v && styles.a4ChipOn]}
-              onPress={() => setA4(v)}
+              style={[styles.cfgBtn, cfgOpen === 'a4' && styles.cfgBtnOn]}
+              onPress={() => setCfgOpen(cfgOpen === 'a4' ? null : 'a4')}
               onLongPress={() => help('a4')}
               delayLongPress={260}
               accessibilityRole="button"
-              accessibilityState={{ selected: a4 === v }}
-              accessibilityLabel={`A4 ${v} hertz`}
+              accessibilityState={{ expanded: cfgOpen === 'a4' }}
+              accessibilityLabel={`Tuning standard, currently A4 ${a4} hertz. Opens choices.`}
+              accessibilityHint="Press and hold for an explanation."
             >
-              <Text style={[styles.a4ChipText, a4 === v && styles.a4ChipTextOn]}>{v}</Text>
+              <Text style={styles.cfgLabel}>TUNING STANDARD</Text>
+              <Text style={styles.cfgValue}>A4 {a4}</Text>
             </Pressable>
-          ))}
-          {/* MEMBER in-tune colour (owner 2026-08-21) — discreet wheel + spectrum. */}
-          <ColorWheelButton
-            style={styles.tunerWheel}
-            current={tunerColor}
-            onPick={setTunerColor}
-            accessibilityLabel="Tuner colour"
-            feature="the tuner in-tune colour"
-            pickerTitle="TUNER COLOUR"
-            subtitle="The in-tune needle, centre marker and glow"
-            // colors.greenBright = the gauge's actual default in-tune NEEDLE
-            // colour (gaugeNeedleInTune) — the diagram must match the instrument
-            // (design critique 2026-09-01 #5).
-            renderDiagram={(hex) => <TunerDiagram tint={hex} defaultTint={colors.greenBright} />}
-            defaultSwatchColor={colors.greenBright}
-            size={20}
-          />
-        </View>
-      )}
-
-      {/* Variable detection band (owner 2026-07-31): a low-cut (high-pass) and
-          high-cut (low-pass) that bracket the frequencies the tuner will lock
-          to — narrow it to force the octave and reject rumble / harmonics. */}
-      {kind === 'tuner' && (
-        <View style={styles.bandControls}>
-          <Text style={styles.bandTitle}>DETECTION BAND — narrow to force the octave</Text>
-          <View style={styles.a4Row}>
-            <Text style={styles.a4Label}>LOW-CUT</Text>
-            {TUNER_LOW_CUT_HZ.map((v) => (
-              <Pressable
-                key={v}
-                style={[styles.a4Chip, lowCut === v && styles.a4ChipOn]}
-                onPress={() => setLowCut(v)}
-                accessibilityRole="button"
-                accessibilityState={{ selected: lowCut === v }}
-                accessibilityLabel={`Low cut ${v} hertz high-pass`}
-              >
-                <Text style={[styles.a4ChipText, lowCut === v && styles.a4ChipTextOn]}>{v}</Text>
-              </Pressable>
-            ))}
+            <Pressable
+              style={[styles.cfgBtn, cfgOpen === 'low' && styles.cfgBtnOn]}
+              onPress={() => setCfgOpen(cfgOpen === 'low' ? null : 'low')}
+              accessibilityRole="button"
+              accessibilityState={{ expanded: cfgOpen === 'low' }}
+              accessibilityLabel={`Low cut, currently ${fmtCut(lowCut)} high-pass. Opens choices.`}
+            >
+              <Text style={styles.cfgLabel}>LOW-CUT</Text>
+              <Text style={styles.cfgValue}>{fmtCut(lowCut)}</Text>
+            </Pressable>
+            <Pressable
+              style={[styles.cfgBtn, cfgOpen === 'high' && styles.cfgBtnOn]}
+              onPress={() => setCfgOpen(cfgOpen === 'high' ? null : 'high')}
+              accessibilityRole="button"
+              accessibilityState={{ expanded: cfgOpen === 'high' }}
+              accessibilityLabel={`High cut, currently ${fmtCut(highCut)} low-pass. Opens choices.`}
+            >
+              <Text style={styles.cfgLabel}>HIGH-CUT</Text>
+              <Text style={styles.cfgValue}>{fmtCut(highCut)}</Text>
+            </Pressable>
+            {/* MEMBER in-tune colour (owner 2026-08-21) — discreet wheel. */}
+            <ColorWheelButton
+              style={styles.tunerWheel}
+              current={tunerColor}
+              onPick={setTunerColor}
+              accessibilityLabel="Tuner colour"
+              feature="the tuner in-tune colour"
+              pickerTitle="TUNER COLOUR"
+              subtitle="The in-tune needle, centre marker and glow"
+              // colors.greenBright = the meter's actual default in-tune NEEDLE
+              // colour — the diagram must match the instrument (design
+              // critique 2026-09-01 #5).
+              renderDiagram={(hex) => <TunerDiagram tint={hex} defaultTint={colors.greenBright} />}
+              defaultSwatchColor={colors.greenBright}
+              size={20}
+            />
           </View>
-          <View style={styles.a4Row}>
-            <Text style={styles.a4Label}>HIGH-CUT</Text>
-            {TUNER_HIGH_CUT_HZ.map((v) => (
-              <Pressable
-                key={v}
-                style={[styles.a4Chip, highCut === v && styles.a4ChipOn]}
-                onPress={() => setHighCut(v)}
-                accessibilityRole="button"
-                accessibilityState={{ selected: highCut === v }}
-                accessibilityLabel={`High cut ${v} hertz low-pass`}
-              >
-                <Text style={[styles.a4ChipText, highCut === v && styles.a4ChipTextOn]}>
-                  {v >= 1000 ? `${v / 1000}k` : v}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
+          {cfgOpen === 'a4' && (
+            <View style={styles.cfgTray}>
+              {A4_CHOICES.map((v) => (
+                <Pressable
+                  key={v}
+                  style={[styles.a4Chip, a4 === v && styles.a4ChipOn]}
+                  onPress={() => {
+                    setA4(v);
+                    setCfgOpen(null);
+                  }}
+                  onLongPress={() => help('a4')}
+                  delayLongPress={260}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: a4 === v }}
+                  accessibilityLabel={`A4 ${v} hertz`}
+                >
+                  <Text style={[styles.a4ChipText, a4 === v && styles.a4ChipTextOn]}>{v}</Text>
+                </Pressable>
+              ))}
+            </View>
+          )}
+          {cfgOpen === 'low' && (
+            <View style={styles.cfgTray}>
+              {TUNER_LOW_CUT_HZ.map((v) => (
+                <Pressable
+                  key={v}
+                  style={[styles.a4Chip, lowCut === v && styles.a4ChipOn]}
+                  onPress={() => {
+                    setLowCut(v);
+                    setCfgOpen(null);
+                  }}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: lowCut === v }}
+                  accessibilityLabel={`Low cut ${v} hertz high-pass`}
+                >
+                  <Text style={[styles.a4ChipText, lowCut === v && styles.a4ChipTextOn]}>{v}</Text>
+                </Pressable>
+              ))}
+            </View>
+          )}
+          {cfgOpen === 'high' && (
+            <View style={styles.cfgTray}>
+              {TUNER_HIGH_CUT_HZ.map((v) => (
+                <Pressable
+                  key={v}
+                  style={[styles.a4Chip, highCut === v && styles.a4ChipOn]}
+                  onPress={() => {
+                    setHighCut(v);
+                    setCfgOpen(null);
+                  }}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: highCut === v }}
+                  accessibilityLabel={`High cut ${v} hertz low-pass`}
+                >
+                  <Text style={[styles.a4ChipText, highCut === v && styles.a4ChipTextOn]}>
+                    {v >= 1000 ? `${v / 1000}k` : v}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+          )}
+          {/* Honesty note (owner 2026-07-31 band spec): what the band limits do
+              and do not do — always visible, whatever tray is open. */}
           <Text style={styles.gridNote}>
-            The tuner locks only to pitches between {fmtCut(lowCut)} and {fmtCut(highCut)}. Narrow the
-            band to force the correct octave and ignore rumble or harmonics. This limits the detection
-            range, not the microphone signal itself.
+            DETECTION BAND: the tuner locks only to pitches between {fmtCut(lowCut)} and{' '}
+            {fmtCut(highCut)}. Narrow it to force the correct octave and ignore rumble or harmonics.
+            This limits the detection range, not the microphone signal itself.
           </Text>
-        </View>
+        </>
       )}
+      {/* Below the tuner setup row (owner 2026-09-10: setup lives ABOVE this). */}
+      <DisplayGuideButton onPress={helpAll} />
 
       {/* SAVE (Sound mode only) — enabled once a live, confident pitch has held
           long enough for real stats (Phase 2, spec §7). */}
@@ -1268,6 +1214,7 @@ export function FrequencyCounterScreen({ navigation }: Props) {
   const [mode, setMode] = useState<Mode | null>(null);
   useToolUsage('hzcounter'); // T-1 telemetry (this tool skips ToolInfo)
   const centerLockOpen = useCenterLockOpen();
+  const vuTunerOpen = useVuTunerOpen();
   // Academy-gated extras (owner 2026-08-05): Light Pulse, LEARN/DEMO, and the
   // Saved Measurements library. Free accounts see them locked → Paywall.
   const { isMember } = useEntitlement();
@@ -1313,9 +1260,11 @@ export function FrequencyCounterScreen({ navigation }: Props) {
         )}
       </ScrollView>
       {sheet}
-      {/* CenterLock stage tuner — the ONE fullscreen display, an absolute-fill
-          overlay at the screen root (never a Modal: SPL lessons 2026-08). */}
+      {/* Fullscreen displays — absolute-fill overlays at the screen root
+          (never a Modal: SPL lessons 2026-08). ADV TUNER = CenterLock stage;
+          ⛶ on the meter = the skinned VU tuner (owner 2026-09-10). */}
       {centerLockOpen ? <CenterLockTuner /> : null}
+      {vuTunerOpen ? <VuTunerFullScreen /> : null}
     </View>
   );
 }
@@ -1401,6 +1350,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     gap: 4,
   },
+  // STATUS 2/3 · ADV TUNER 1/3 (owner 2026-09-10). The cell wrap is a row so
+  // StatCell's own flexGrow fills it.
+  statusRow: { flexDirection: 'row', gap: 10 },
+  statusCellWrap: { flex: 2, flexDirection: 'row' },
+  advBtnWrap: { flex: 1, justifyContent: 'center' },
   statLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.2, color: colors.textSub },
   statValue: { fontFamily: fonts.oswaldMedium, fontSize: 20, color: colors.textPrimary },
   statUnit: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: colors.amberLabel },
@@ -1436,46 +1390,6 @@ const styles = StyleSheet.create({
     color: colors.amber,
   },
   // Tuner cents scale (engine build 2026-07-23) — real deviation, ±50¢.
-  centsScale: {
-    height: 34,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#101013',
-    overflow: 'hidden',
-    justifyContent: 'center',
-  },
-  centsZero: {
-    position: 'absolute',
-    left: '50%',
-    top: 4,
-    bottom: 4,
-    width: 2,
-    backgroundColor: '#3a3a3a',
-    borderRadius: 1,
-  },
-  // The ±5¢ in-tune zone — 10% of the ±50¢ scale, centered on zero.
-  centsZoneInTune: {
-    position: 'absolute',
-    left: '45%',
-    width: '10%',
-    top: 3,
-    bottom: 3,
-    borderRadius: 4,
-    backgroundColor: 'rgba(91,255,133,.10)',
-    borderWidth: 1,
-    borderColor: 'rgba(91,255,133,.28)',
-  },
-  centsNeedle: {
-    position: 'absolute',
-    top: 2,
-    bottom: 2,
-    width: 3,
-    marginLeft: -1.5,
-    borderRadius: 1.5,
-    backgroundColor: colors.amber,
-  },
-  centsNeedleInTune: { backgroundColor: '#5bff85' },
   centsLabel: {
     fontFamily: fonts.mono,
     fontSize: 13,
@@ -1483,35 +1397,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   centsLabelInTune: { color: '#5bff85' },
-
-  // Tuner top gauge (owner 2026-08-05) — live "Hz vs Pitch" arc needle.
-  gaugeWrap: {
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#101013',
-    paddingTop: 8,
-    paddingBottom: 4,
-    paddingHorizontal: 8,
-  },
-  gaugeWrapInTune: { borderColor: 'rgba(55,224,95,.55)' },
-  gaugeHeader: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'center', gap: 10 },
-  gaugeHz: { fontFamily: fonts.mono, fontSize: 22, color: colors.amber },
-  gaugeArrow: { fontFamily: fonts.barlowRegular, fontSize: 18, color: colors.textSub },
-  gaugeNote: { fontFamily: fonts.oswaldSemiBold, fontSize: 24, letterSpacing: 1, color: colors.textPrimary },
-  gaugeNeedleBox: { position: 'absolute', width: 3, alignItems: 'center' },
-  gaugeNeedle: { width: 3, height: GAUGE_NEEDLE_LEN - 4, borderRadius: 1.5, backgroundColor: colors.amber },
-  gaugeNeedleInTune: { backgroundColor: '#5bff85' },
-  gaugeHub: {
-    position: 'absolute',
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: '#2a2a30',
-    borderWidth: 1,
-    borderColor: colors.steelBorder,
-  },
-  gaugeRefBadge: { position: 'absolute', top: 2, left: 2, fontFamily: fonts.mono, fontSize: 12, color: colors.textSub },
 
   // Tuner current display (compact; turns green in tune within ±1¢).
   tunerCurrent: {
@@ -1528,13 +1413,35 @@ const styles = StyleSheet.create({
 
   // Honest range/unit footnote under the stat grid.
   gridNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted },
-  a4Row: { flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' },
   centerLockRow: { alignItems: 'center', marginBottom: 6 },
   tunerWheel: { marginLeft: 4, padding: 2 },
-  // Variable detection-band controls (low-cut / high-cut) — tuner only.
-  bandControls: { gap: 8 },
-  bandTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.amberLabel },
-  a4Label: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.textSub },
+  // Tuner setup row (owner 2026-09-10): TUNING STANDARD · LOW-CUT · HIGH-CUT
+  // buttons, each opening its compact choice tray below.
+  cfgRow: { flexDirection: 'row', alignItems: 'stretch', gap: 8 },
+  cfgBtn: {
+    flex: 1,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#101013',
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    gap: 2,
+  },
+  cfgBtnOn: { borderColor: 'rgba(95,217,196,.7)', backgroundColor: '#0f1a18' },
+  cfgLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.amberLabel },
+  cfgValue: { fontFamily: fonts.mono, fontSize: 15, color: colors.textPrimary },
+  cfgTray: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    flexWrap: 'wrap',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#26262c',
+    backgroundColor: '#0d0d10',
+    padding: 10,
+  },
   a4Chip: {
     borderRadius: 6,
     borderWidth: 1,
