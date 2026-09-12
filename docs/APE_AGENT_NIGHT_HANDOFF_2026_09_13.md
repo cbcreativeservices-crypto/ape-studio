@@ -4,8 +4,15 @@
 Companion: `docs/APE_AGENT_NIGHT_2026_09_12.md` (the wave-by-wave log with every
 finding, including the ones that came back wrong).
 
-Branch `audio-tools-engine`, **clean against origin**, everything pushed.
+Branch `audio-tools-engine`, everything from this run pushed.
 `tsc --noEmit` clean. Suite **1055 pass / 180 suites / 0 fail** (was 1035).
+
+> ⚠️ **THIS DOCUMENT HAS BEEN PARTLY SUPERSEDED.** Later sessions on 2026-09-13
+> committed `0844ec3c`, `14aa1ce2` and `ce6f5c49` on top of this run. Two items
+> in the store-readiness section below are already resolved, and one piece of
+> advice in it has been REVERSED — both are marked inline. Check `git log`
+> against `60cd2364` (the last commit of this run) before acting on anything
+> here.
 
 ---
 
@@ -139,18 +146,19 @@ Still open, reported not changed:
   (from the `expo-media-library` plugin; the app's only use is write-only) and
   `ACTIVITY_RECOGNITION` (from `expo-sensors`; only the accelerometer is used).
   Same pattern the location keys were removed for. `app.json` is owner territory.
-- **Certificate QR verification is dead in every build.** `certificateHtml.ts`
-  reaches `qrcode` through the dynamic path, so it always resolves null and the
-  PDF always falls back to "verification unavailable". ⚠️ **I declined to add it
-  to `LOADERS`**: it is not a direct dependency, and that file's own comment
-  warns a literal require of an absent package fails the whole bundle. Install
-  `qrcode` as a direct dependency first, then add the line.
-- **Stale module-scope `Dimensions.get()`** in `AwardsScreen`, `ToolsHubScreen`
-  and `CourseSelectionScreen` — captured once at boot, so an iPad Split View or
-  rotation mis-pages the carousel. `useWindowDimensions` is the house pattern.
+- ~~**Certificate QR verification is dead in every build.**~~ and ~~**stale
+  module-scope `Dimensions.get()`**~~ — **BOTH RESOLVED 2026-09-13 in
+  `0844ec3c`**, after this handoff was first written.
+  ⚠️ **This document originally said "do NOT add `qrcode` to `LOADERS`". That
+  advice is now WRONG and must not be re-applied.** The caveat behind it was
+  that a literal require of a package that is not a direct dependency fails the
+  whole bundle — so the later session did exactly what the caveat required:
+  made `qrcode` a direct dependency FIRST (`1.5.4`), then added the loader line.
+  It is correct as it now stands. See `[[store-readiness-2026-09-13]]`.
 - `CourseSelectionScreen`'s card is proportional width against a **fixed 409 pt
   height** — at iPad width the Home cards go landscape. First screen a reviewer
-  sees.
+  sees. (Check against `0844ec3c` before acting — that commit touched four
+  screens' boot-time sizing and may have covered this too.)
 - **No dev harness renders at tablet width** (all capped 360–480), which is
   exactly why the patchbay bug was invisible.
 
