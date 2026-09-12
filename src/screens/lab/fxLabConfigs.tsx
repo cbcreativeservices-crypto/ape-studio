@@ -752,7 +752,16 @@ const compConfig: FxLabConfig = {
     'Above the threshold, gain is reduced by the ratio — the bend in the transfer curve below. ' +
     'The GR meter is LIVE: it shows the real gain reduction the engine is applying right now.',
   exploreCaption: 'Push the source over the threshold and watch measured GR appear.',
-  sources: [srcSine(440), SRC_PINK, srcClick(120)],
+  // CLICK FIRST (owner 2026-09-11). A steady 440 Hz sine against a fixed
+  // threshold produces CONSTANT gain reduction, so the GR meter lights and then
+  // sits perfectly still — correct behaviour that reads as a broken meter, and
+  // did: "ladder does not animate or move". The click gives the reduction
+  // something to do, so a student who presses play sees the compressor working
+  // on the first try. The lab already assumed it — its own attack question says
+  // "A/B FAST against PUNCH on the click" — the default just never matched.
+  // The sine stays one tap away; it is the better source for hearing STEADY
+  // reduction, which is a different lesson.
+  sources: [srcClick(120), srcSine(440), SRC_PINK],
   params: [
     {
       label: 'THRESHOLD', short: 'THRESH', paramId: P.thresholdDb, lessonKey: 'threshold',
