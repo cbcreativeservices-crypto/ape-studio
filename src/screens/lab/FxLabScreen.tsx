@@ -65,7 +65,20 @@ import type { FxAnimModel } from './fxAnim';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
-const GR_POLL_MS = 100;
+// 20 Hz (owner 2026-09-11, gear design pass). Was 100 ms / 10 Hz, which is
+// thin for a meter whose whole purpose is showing HOW FAST a processor grabs.
+// 50 ms is the house rate for exactly this reason (AutotuneLabScreen's glide
+// TICK_MS) and sits well inside the documented ≤30 Hz spike bridge rule —
+// polling AT the 33 ms ceiling would leave no margin.
+//
+// ⚠️ What this does and does not buy: it doubles the resolution of the
+// MOVEMENT, so the difference between a fast and a slow release is now
+// legible. It does NOT make a 5 ms attack visible — fxGrStatus reports the
+// INSTANTANEOUS reduction, so any attack shorter than the poll interval is
+// still sampled, not captured. Showing true attack speed would need the
+// engine to report peak-since-last-read, which is a native change, not a
+// timer change.
+const GR_POLL_MS = 50;
 
 /** fxAnim — the Skia ANIMATED signal-flow heroes. Loaded ONLY via this inline
  *  require, gated on the foundations Skia probe (skiaGate idiom): pre-Skia
