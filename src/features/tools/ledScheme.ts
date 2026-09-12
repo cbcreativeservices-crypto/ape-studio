@@ -1,8 +1,8 @@
 /**
- * LED-meter colour customization (Academy MEMBER feature, owner 2026-08-20 rule
- * — see [[customization-member-rule]]). The tools' LED (the SPL screen's Skia
+ * LED-meter colour customization (owner 2026-08-20; open to EVERY tier since
+ * 2026-09-13 — governance R1). The tools' LED (the SPL screen's Skia
  * PeakAvgMeterView peak fill) normally uses the app-wide loudness ramp
- * (LOUDNESS_STOPS). Members may override it with EITHER a preset colour SCHEME
+ * (LOUDNESS_STOPS). Anyone may override it with EITHER a preset colour SCHEME
  * (a designed multi-stop gradient) OR a single FLAT colour. Owner chose BOTH.
  *
  * Persisted as ONE string at `ape:tools:ledScheme` via useToolColorPref:

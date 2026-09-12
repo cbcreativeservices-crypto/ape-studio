@@ -1,11 +1,10 @@
 /**
- * Custom waveform-trace colour preference (owner rev 24 — Academy members can
- * set the Waveform Viewer's flat trace colour to a colour of their choice).
+ * Custom waveform-trace colour preference (owner rev 24; open to EVERY tier
+ * since 2026-09-13 — see docs/APE_GOVERNANCE_DECISIONS_2026_09_13.md R1).
  * Persisted per device; `null` = the tool's default trace colour. Mirrors
  * `useColorModePref`. Applies to the FLAT trace (COLORS/MIDI-gradient off).
  */
 import { useCallback, useEffect, useState } from 'react';
-import { useEntitlement } from '../commercial/EntitlementProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 /** Curated palette shown in the picker (first is the app default teal). */
@@ -26,9 +25,15 @@ export const WAVE_COLOR_SWATCHES = [
 
 /** Generic per-tool custom-colour pref: [color|null, setColor] — persisted at
  *  `key`; null = the tool's default. Each tool passes its own key so colours are
- *  independent (owner rule 2026-08-20 — customization is member-gated). */
+ *  independent.
+ *
+ *  EVERY tool colour runs through here — waveform trace, RTA bars, tuner
+ *  in-tune colour, LED level and LED average — so the one line at the bottom
+ *  decided whether ANY of them applied. It used to return `null` for a
+ *  non-member, which is why opening the colour wheel to everyone (R1) was not
+ *  enough on its own: a free user could pick a colour, watch it save, and see
+ *  nothing change. Ungating the door without ungating the room. */
 export function useToolColorPref(key: string): [string | null, (c: string | null) => void] {
-  const { isMember, resolved } = useEntitlement();
   const [color, setColor] = useState<string | null>(null);
   useEffect(() => {
     let alive = true;
@@ -48,15 +53,12 @@ export function useToolColorPref(key: string): [string | null, (c: string | null
     },
     [key],
   );
-  // Member-only perk (owner rule; QA night 2026-09-01): the stored choice
-  // is preserved but stops APPLYING when membership lapses — only the wheel
-  // entry was gated before.
-  // `!resolved` counts as a member (entitlement roll-out 2026-09-11): the
-  // provider boots at 'anonymous', so a member's saved trace colour was thrown
-  // away on the first paint of every tool and snapped back once the server read
-  // landed. Unknown ⇒ honour the stored choice; it drops out a beat later for
-  // anyone whose membership has actually lapsed.
-  return [!resolved || isMember ? color : null, set];
+  // The stored choice ALWAYS applies now (R1, 2026-09-13). This used to drop
+  // the colour on a lapse, which also made the entitlement provider's boot
+  // state a rendering concern — a member's saved colour was thrown away on the
+  // first paint of every tool and snapped back once the server read landed.
+  // With no tier to consult there is nothing to race.
+  return [color, set];
 }
 
 /** Waveform trace colour (the first consumer). */

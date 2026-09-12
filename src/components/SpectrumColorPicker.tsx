@@ -1,6 +1,7 @@
 /**
- * SpectrumColorPicker — a full-spectrum hue WHEEL + lightness slider for members
- * to pick ANY colour, not just the preset swatches (owner 2026-08-21). Used
+ * SpectrumColorPicker — a full-spectrum hue WHEEL + lightness slider to pick
+ * ANY colour, not just the preset swatches (owner 2026-08-21; open to every
+ * tier since 2026-09-13, governance R1). Used
  * inside the tools' colour selectors (ColorWheelButton picker, LED picker,
  * waveform popup). Pure react-native-svg + PanResponder — no extra deps, no
  * browser needed. Saturation is held at 100% (vivid), lightness on the slider —

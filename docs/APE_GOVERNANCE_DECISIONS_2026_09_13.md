@@ -22,6 +22,25 @@ The immersive full-screen tool views **and** colour customization are open to ev
 - `src/components/ColorWheelButton.tsx` — the entitlement read and the MEMBER FEATURE popup are removed, along with the `useEntitlement` / `navigationRef` imports they were the only users of. The `feature` prop is kept (five call sites still pass it and it still says what each personalizes) with a docstring noting it no longer words a popup.
 - `src/screens/tools/ToolLockUi.tsx` — `useFullScreenGate()` always proceeds and reports `locked: false`. **The hook is deliberately kept** and all three tool screens still call `fs.gate(...)`, so the policy lives in ONE place if it is ever re-gated, rather than being dissolved into three screens that would each have to be found again.
 
+**⚠️ UNGATING THE DOOR IS NOT UNGATING THE ROOM (found in the copy sweep, same day).**
+
+Removing the wheel's gate was **not sufficient**. `useToolColorPref` in
+`src/features/tools/waveColorPref.ts` returned `!resolved || isMember ? color : null`
+— so the stored colour stopped APPLYING for a non-member. Every tool colour runs
+through that one hook (waveform trace, RTA bars, tuner in-tune colour, LED level,
+LED average), so for a few hours a free user could open the wheel, pick a colour,
+watch it save, and see nothing change — arguably worse than the honest "members
+only" popup it replaced. The hook now always returns the stored colour.
+
+Verified as a guest on the web preview: picking `#ff5a48` paints the trace
+`#ff5a48`.
+
+**The general lesson:** a paid feature is usually gated in at least two places —
+the ENTRY (can you open it) and the EFFECT (does it do anything). Opening one
+without the other produces a feature that appears available and silently does
+nothing. When ungating, grep for the entitlement reads behind the feature, not
+just the one on the button.
+
 **⚠️ STILL MEMBER-ONLY — do not "tidy" these to match.** `useToolsLocked` has eight other consumers and only the full-screen one moved:
 
 - Saved Measurements (`useSaveGate`)

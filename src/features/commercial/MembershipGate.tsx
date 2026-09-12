@@ -4,11 +4,13 @@
  * text, blue links — "does not match the app at all").
  *
  * One HOST at the App root + a tiny external store, so every gate call site
- * (useFullScreenGate / useSaveGate across the seven tool screens, and any
- * future gate) opens the SAME styled card with no per-screen wiring — the
- * tunerFrameStore pattern. Visuals match the app's standing member popup
- * (ColorWheelButton's MEMBER FEATURE card): dimmed scrim, dark card, amber
- * title, GET MEMBERSHIP glass-adjacent CTA → Paywall, quiet NOT NOW.
+ * (useSaveGate across the tool screens, and any future gate) opens the SAME
+ * styled card with no per-screen wiring — the tunerFrameStore pattern.
+ * NOTE: useFullScreenGate no longer reaches here — full screens went free to
+ * every tier on 2026-09-13 (governance R1). Visuals are the app's standing
+ * member-popup voice, first set by ColorWheelButton's now-removed MEMBER
+ * FEATURE card: dimmed scrim, dark card, amber title, GET MEMBERSHIP
+ * glass-adjacent CTA → Paywall, quiet NOT NOW.
  */
 import { useSyncExternalStore } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -80,7 +82,7 @@ export function MembershipGateHost() {
   );
 }
 
-// Visual twins of ColorWheelButton's member card — the app's popup voice.
+// The app's member-popup voice (originally ColorWheelButton's card, since removed).
 const styles = StyleSheet.create({
   scrim: { flex: 1, backgroundColor: 'rgba(0,0,0,0.72)', alignItems: 'center', justifyContent: 'center', padding: 26 },
   card: {

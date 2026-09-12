@@ -1,5 +1,5 @@
 /**
- * LedColorPicker — the MEMBER LED-meter colour modal (owner 2026-08-20/21;
+ * LedColorPicker — the LED-meter colour modal (owner 2026-08-20/21;
  * "show, don't label" redesign 2026-09-01 — spec at
  * docs/APE_COLOR_PICKER_REDESIGN_SPEC_2026_09_01.md). One picker with TWO
  * targets on the tools' LED, each now a grouped card headed by a LIVE mini
@@ -9,9 +9,9 @@
  * The white peak-hold cap is always left white (it's the reference reading) —
  * and the diagrams draw it white in every state so that promise is visible.
  *
- * Launched from a ColorWheelButton's onCustomize. Open to everyone since
- * 2026-09-13 — the button no longer carries an entitlement gate, so
- * this modal is only ever shown to members. See [[customization-member-rule]].
+ * Launched from a ColorWheelButton's onCustomize. Open to EVERY tier since
+ * 2026-09-13 (governance R1) — the button no longer carries an entitlement
+ * gate, so this modal is shown to whoever taps the wheel.
  */
 import { useState, type ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';

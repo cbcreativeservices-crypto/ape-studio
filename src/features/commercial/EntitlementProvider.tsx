@@ -148,7 +148,9 @@ type EntitlementContextValue = {
   caps: Caps;
   /**
    * TRUE academy standing — the single source for member-perk / training gates
-   * (Audio Tools LEARN/DEMO, EarLab, colour customization, Tube Reference, etc.).
+   * (Audio Tools LEARN/DEMO, EarLab, Saved Measurements, Tube Reference, etc.).
+   * NOT colour customization or the full-screen views — those went free to every
+   * tier on 2026-09-13 (governance R1).
    *
    * There are TWO deliberate gating idioms (do not merge them):
    *   • `caps.*`   — the ladder capabilities, which the dev `bypassAcademyLocks`

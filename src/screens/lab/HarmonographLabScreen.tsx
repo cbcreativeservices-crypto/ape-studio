@@ -124,7 +124,9 @@ export function HarmonographLabScreen() {
   // 2026-08-23 — device parity with the browser mock's NEW DRAWING).
   const [frozen, setFrozen] = useState(false);
   const [epoch, setEpoch] = useState(0);
-  // Member ink colour (customization rule: entitlement-gated colour wheel).
+  // Ink colour — no entitlement check: this lab is `section: 'training'`, which
+  // is member-locked at the ENTRY, so gating again inside it would only show a
+  // paywall to the member who already paid (governance R2).
   const [inkColor, setInkColor] = useState<string | null>(null);
   const [viewerOpen, setViewerOpen] = useState(false);
   const freezeFracRef = useRef(1);
