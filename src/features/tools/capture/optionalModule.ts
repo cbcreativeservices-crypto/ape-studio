@@ -15,7 +15,7 @@
  * try/catch. Metro sees the literal and bundles the module; on a client built
  * BEFORE the package's native half existed, evaluating it throws ("Cannot find
  * native module …") and the catch returns null exactly as before. Packages that
- * are NOT installed (expo-location, expo-image-picker, qrcode) must stay off
+ * are NOT installed (expo-location, expo-image-picker) must stay off
  * this table — a literal require of an absent package fails the whole bundle —
  * so they keep the dynamic path and resolve to null until they are installed
  * AND added here.
@@ -41,6 +41,14 @@ const LOADERS: Record<string, () => unknown> = {
   // Ships inside the `expo` package (autolinked in every build); the CenterLock
   // stage tuner keeps the screen awake while it is open (2026-09-06).
   'expo-keep-awake': () => require('expo-keep-awake'),
+  // Certificate QR (2026-09-13). Pure JS, no native half, so unlike the rows
+  // above this one works in the CURRENT client and needs no new build. It was
+  // only ever a TRANSITIVE dependency of react-native-qrcode-svg, so it never
+  // got a literal require anywhere and Metro never bundled it: the dynamic
+  // path resolved null in EVERY build and the certificate PDF always fell
+  // back to "verification unavailable". Now a direct dependency, so the
+  // require below always resolves.
+  qrcode: () => require('qrcode'),
 };
 /* eslint-enable @typescript-eslint/no-var-requires */
 

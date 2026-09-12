@@ -5,14 +5,23 @@
  * Presentation only — no data fetching, no navigation.
  */
 import { type ReactNode } from 'react';
-import { Dimensions, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Modal, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { TrophyImage } from './TrophyImage';
 import { fonts } from '../theme/tokens';
 import { LowLightDim } from '../features/settings/LowLightLayer';
 
-const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
-// Trophy zoom art reduced 23% (Booth 2026-07-11).
-const ART = Math.round(Math.min(SCREEN_W * 0.82, SCREEN_H * 0.55, 360) * 0.77);
+/**
+ * The art is sized against BOTH axes - 82% of the width but only 55% of the
+ * HEIGHT - so the height term is what governs in landscape. Read once at module
+ * scope (app boot) it was whichever orientation the app happened to launch in:
+ * open this on a phone held sideways after a portrait launch and the trophy is
+ * sized for a tall window it is no longer in, overflowing the short axis it was
+ * specifically capped against. Hooked, 2026-09-13.
+ */
+function artSize(w: number, h: number): number {
+  // Trophy zoom art reduced 23% (Booth 2026-07-11).
+  return Math.round(Math.min(w * 0.82, h * 0.55, 360) * 0.77);
+}
 
 export function TrophyModal({
   visible,
@@ -41,6 +50,8 @@ export function TrophyModal({
   children?: ReactNode;
   onClose: () => void;
 }) {
+  const { width, height } = useWindowDimensions();
+  const ART = artSize(width, height);
   return (
     <Modal accessibilityViewIsModal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       {/* Tap anywhere on the scrim to hide (Booth 2026-07-11). */}

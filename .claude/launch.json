@@ -14,6 +14,13 @@
       "port": 8090
     },
     {
+      "name": "expo-web-8091",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["expo", "start", "--port", "8091"],
+      "port": 8091,
+      "autoPort": false
+    },
+    {
       "name": "expo-tunnel",
       "runtimeExecutable": "npx",
       "runtimeArgs": ["expo", "start", "--tunnel", "--port", "8090"],

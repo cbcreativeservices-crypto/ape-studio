@@ -27,6 +27,7 @@ import {
   StyleSheet,
   Text,
   View,
+  useWindowDimensions,
   type ViewToken,
 } from 'react-native';
 import { Canvas, Group, RoundedRect, SweepGradient, vec } from '@shopify/react-native-skia';
@@ -100,13 +101,42 @@ type Card =
       completed: boolean;
     };
 
-const { width: SCREEN_W } = Dimensions.get('window');
+/**
+ * CARD SIZE IS ROTATION- AND SPLIT-VIEW-INVARIANT BY CONSTRUCTION (2026-09-13).
+ *
+ * Two defects lived in the four lines this replaces.
+ *
+ * 1. The card was PROPORTIONAL in width (70% x 93% of the window) against a
+ *    FIXED 409 pt height. That holds on phones, where the window is 360-430 pt
+ *    wide, and breaks the moment it is not: at iPad portrait width the card
+ *    computed 500 x 409 and the Home deck - the FIRST screen an App Review
+ *    reviewer sees - rendered LANDSCAPE cards carrying portrait artwork.
+ *    CARD_MAX_W caps it. 280 is deliberately the value a 430 pt window (the
+ *    largest iPhone) already produced, so every phone renders byte-identically
+ *    to the device-passed layout and only tablets change.
+ *
+ * 2. It was measured with `Dimensions.get('window')` at MODULE scope - i.e. at
+ *    app BOOT, in whatever geometry the app launched in - and then baked into
+ *    `styles.card` / `styles.cardOuter`, which some twenty render sites in this
+ *    file consume. Reading the SHORT EDGE of the physical SCREEN instead of the
+ *    window's current width removes the staleness rather than papering over it:
+ *    `Math.min(w, h)` is unchanged when rotation swaps the two, and `screen` (as
+ *    against `window`) does not shrink when an iPad enters Split View. So the
+ *    card size genuinely does not depend on the moment it is read, and the
+ *    stylesheet can keep holding it.
+ *
+ * What DOES depend on the live window - where the deck is centred and where it
+ * snaps - is read from `useWindowDimensions()` at the carousel instead.
+ */
+const SCREEN = Dimensions.get('screen');
+const BASE_W = Math.min(SCREEN.width, SCREEN.height);
+/** Never wider than the largest phone produced - a card stays a card. */
+const CARD_MAX_W = 280;
 // Cards shrunk 7% (Booth 2026-07-15) to give the carousel vertical room — the
 // Awards row had squeezed the eyebrow captions + card bottoms off-screen.
-const CARD_W = Math.round(SCREEN_W * 0.7 * 0.93);
+const CARD_W = Math.min(Math.round(BASE_W * 0.7 * 0.93), CARD_MAX_W);
 const CARD_H = 409; // was 440 (−7%)
 const CARD_GAP = 14;
-const SIDE_PAD = Math.round((SCREEN_W - CARD_W) / 2);
 /** Lit switch width on the cards — narrower than the card (Booth 2026-07-09q). */
 const CARD_BTN_W = Math.round(CARD_W * 0.62);
 // Session landing memory (owner 2026-07-30). These module-level vars survive
@@ -1004,6 +1034,12 @@ function CourseCardView({
 
 export function CourseSelectionScreen() {
   const insets = useSafeAreaInsets();
+  // The one thing about the deck that genuinely depends on the LIVE window (the
+  // card size does not - see CARD_W above): the padding that centres the first
+  // and last card. Read from the hook so rotation and an iPad Split View drag
+  // re-centre the deck instead of leaving it offset by half the width change.
+  const { width: windowW } = useWindowDimensions();
+  const sidePad = Math.max(0, Math.round((windowW - CARD_W) / 2));
   const navigation = useNavigation();
   const [cards, setCards] = useState<Card[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -1017,6 +1053,19 @@ export function CourseSelectionScreen() {
   // the public catalog, with a non-blocking banner (register or sign out).
   const [activeIdx, setActiveIdx] = useState(0);
   const listRef = useRef<FlatList<Card>>(null);
+
+  // Changing the centring pad re-lays out the deck while the scroll offset stays
+  // where it was in PIXELS, so the card the user was looking at ends up sitting
+  // half off the centre line. Re-snap to it. Skipped on mount so it never races
+  // the session-landing scroll below.
+  const lastDeckW = useRef(0);
+  useEffect(() => {
+    if (lastDeckW.current === 0) { lastDeckW.current = windowW; return; }
+    if (lastDeckW.current === windowW) return;
+    lastDeckW.current = windowW;
+    // After the re-layout at the new pad has been committed, not before.
+    requestAnimationFrame(() => listRef.current?.scrollToIndex({ index: activeIdx, animated: false }));
+  }, [windowW, activeIdx]);
   // CM2 — commercial mode + entitlement (mock provider; server truth later).
   const { commercialMode, entitlement, caps, resolved, setCommercialMode, setEntitlement } = useEntitlement();
   const [upgradeOpen, setUpgradeOpen] = useState(false);
@@ -1523,7 +1572,7 @@ export function CourseSelectionScreen() {
         extraData={[activeIdx]}
         snapToInterval={CARD_W + CARD_GAP}
         decelerationRate="fast"
-        contentContainerStyle={{ paddingHorizontal: SIDE_PAD, gap: CARD_GAP, alignItems: 'center' }}
+        contentContainerStyle={{ paddingHorizontal: sidePad, gap: CARD_GAP, alignItems: 'center' }}
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={{ itemVisiblePercentThreshold: 60 }}
         getItemLayout={(_d, i) => ({ length: CARD_W + CARD_GAP, offset: (CARD_W + CARD_GAP) * i, index: i })}

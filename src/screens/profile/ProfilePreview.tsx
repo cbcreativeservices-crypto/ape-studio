@@ -7,26 +7,24 @@
  * The Supabase reads fail soft here (exactly as they do offline), so the live
  * values are absent but the full structure, spacing and typography are not.
  */
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, useWindowDimensions } from 'react-native';
+import { previewWidthFromHash, previewWidthLabel } from '../../features/dev/previewWidth';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ProfileScreen } from './ProfileScreen';
 import { EntitlementProvider } from '../../features/commercial/EntitlementProvider';
 import { colors, fonts } from '../../theme/tokens';
 
-const WIDTHS = [360, 393, 412];
 const Stack = createNativeStackNavigator();
 
-function widthFromHash(): number {
-  const w = Number((typeof window !== 'undefined' ? window.location.hash : '').split('/')[1]);
-  return WIDTHS.includes(w) ? w : 393;
-}
-
 export function ProfilePreview() {
-  const width = widthFromHash();
+  const width = previewWidthFromHash();
+  // The BROWSER viewport - which is what the previewed screen's own window
+  // APIs report, NOT the box below. See previewWidth.ts: routinely different.
+  const { width: viewportW } = useWindowDimensions();
   return (
     <View style={styles.root}>
-      <Text style={styles.bar}>{`PROFILE @ ${width}px  ·  #profilepreview/<360|393|412>`}</Text>
+      <Text style={styles.bar}>{previewWidthLabel('PROFILE', width, viewportW)}</Text>
       <View style={[styles.phone, { width }]}>
         <EntitlementProvider>
           <NavigationContainer>

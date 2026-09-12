@@ -19,6 +19,13 @@ import { AdvancedMixingLabScreen } from './src/screens/lab/mixing/AdvancedMixing
 import { ConnectorSelectLabScreen } from './src/screens/lab/connectorselect/ConnectorSelectLabScreen';
 import { ToolPreview } from './src/screens/tools/ToolPreview';
 import { MicPrinciplesLabScreen } from './src/screens/lab/micspeaker/MicPrinciplesLabScreen';
+// The two window-width-driven screens (2026-09-13). Both size their carousel
+// from the live window, and NEITHER had a harness of any kind - so the iPad
+// layout of the FIRST screen a store reviewer sees could not be looked at.
+// ToolPreview renders full-bleed at the viewport width, so `resize_window` on
+// the browser is what actually exercises the width path (see previewWidth.ts).
+import { CourseSelectionScreen } from './src/screens/courses/CourseSelectionScreen';
+import { AwardsScreen } from './src/screens/awards/AwardsScreen';
 import { MultiMeterScreen } from './src/screens/tools/MultiMeterScreen';
 import { FrequencyCounterScreen } from './src/screens/tools/FrequencyCounterScreen';
 import { WaveformScreen } from './src/screens/tools/WaveformScreen';
@@ -365,6 +372,19 @@ export default function App() {
                       ? { name: 'CableArt', component: CableArtPreview as ComponentType }
                       : window.location.hash === '#micprinciplespreview'
                         ? { name: 'MicPrinciples', component: MicPrinciplesLabScreen as ComponentType }
+                      : window.location.hash === '#homepreview'
+                        // The Home deck - proportional card width against a FIXED
+                        // card height, which is how it rendered LANDSCAPE cards at
+                        // iPad width. Resize the browser to see it.
+                        ? { name: 'CourseSelection', component: CourseSelectionScreen as ComponentType }
+                      : window.location.hash === '#awardspreview'
+                        // The Awards pager - page width, getItemLayout and the
+                        // settle-index maths all read the window width.
+                        ? {
+                            name: 'Awards',
+                            component: AwardsScreen as ComponentType,
+                            initialParams: { category: 'specialization' },
+                          }
                         : null
       : null;
   if (toolPreview) {

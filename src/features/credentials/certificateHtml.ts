@@ -26,12 +26,14 @@ export interface QrMatrix {
 }
 
 /**
- * qrcode is reached through optionalModule (runtime require), NEVER a static
- * import — the certificatePdf house pattern. `qrcode` is only present as a
- * transitive dependency of react-native-qrcode-svg, so a static import would
- * make the whole module fail to resolve if that tree ever changes. Absent
- * library => no QR => the document falls back to the "verification
- * unavailable" panel, which is already the fail-closed path.
+ * qrcode is reached through optionalModule, NEVER a static import - the
+ * certificatePdf house pattern. It is a DIRECT dependency as of 2026-09-13:
+ * before that it was only transitive (via react-native-qrcode-svg), so no
+ * literal require existed, Metro never bundled it, and optionalModule's dynamic
+ * path resolved null in EVERY build - the QR was dead in every certificate ever
+ * issued and the document always showed the "verification unavailable" panel.
+ * It now has a row in optionalModule's LOADERS. Absent library still means no
+ * QR and that same fallback, which is the fail-closed path.
  */
 type QrLib = {
   create: (value: string, opts: { errorCorrectionLevel: string }) => { modules: QrMatrix };

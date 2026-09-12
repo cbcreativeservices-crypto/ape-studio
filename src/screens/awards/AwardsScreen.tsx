@@ -7,7 +7,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { officialTopicName } from '../../data/officialTopicNames';
-import { Dimensions, FlatList, Modal, Pressable, ScrollView, StyleSheet, Text, View, type ViewToken } from 'react-native';
+import { FlatList, Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions, type ViewToken } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -39,7 +39,17 @@ const PROGRAM_PATH_KEY = 'ape:programPath'; // chosen program path name (Level 2
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Awards'>;
 
-const { width: SCREEN_W } = Dimensions.get('window');
+/**
+ * PAGE WIDTH IS A HOOK, NOT A MODULE CONSTANT (2026-09-13).
+ *
+ * This was `Dimensions.get('window')` read once at module scope - i.e. at app
+ * BOOT, in whatever geometry the app happened to launch in. Every consumer
+ * below sizes a horizontally PAGED FlatList: the page views, `getItemLayout`
+ * and the `contentOffset.x / width` index maths. Rotate the device, or drag an
+ * iPad into Split View, and all three keep using the boot width - the pager
+ * lands between pages and the tab strip highlights a page the user is not
+ * looking at. `useWindowDimensions` re-renders on both.
+ */
 
 // Glossary blue — matches the Glossary card on Course Selection (user request
 // 2026-07-18); used for the Specialized Certificate builder + its top button.
@@ -239,8 +249,9 @@ function AwardPageView({
   onBuild: (kind: 'specializations' | 'programs') => void;
   summaryForTier: (tier: AwardTier) => string | undefined;
 }) {
+  const { width: screenW } = useWindowDimensions();
   return (
-    <View style={{ width: SCREEN_W }}>
+    <View style={{ width: screenW }}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         {page.introTitle ? <Text style={styles.introTitle}>{page.introTitle}</Text> : null}
         <Text style={styles.intro}>{page.intro}</Text>
@@ -269,6 +280,7 @@ function AwardPageView({
 
 export function AwardsScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
+  const { width: screenW } = useWindowDimensions();
   const startIdx = Math.max(0, PAGE_ORDER.indexOf(route.params.category as PageKey));
   const [idx, setIdx] = useState(startIdx);
   // Lock the pager swipe once settled on Enrollments. Flipped only AFTER a swipe
@@ -276,6 +288,21 @@ export function AwardsScreen({ navigation, route }: Props) {
   // page never freezes it mid-snap.
   const [swipeLocked, setSwipeLocked] = useState(startIdx === ENROLLMENT_IDX);
   const listRef = useRef<FlatList<PageKey>>(null);
+
+  // A paged list keeps its scroll offset in PIXELS, so when the window width
+  // changes under it (rotation, iPad Split View) the content re-lays out at the
+  // new page width while the offset stays where it was - and the pager settles
+  // straddling two pages, with the tab strip lit for whichever one wins the
+  // rounding. Re-snap to the page the user was actually on. Skipped on mount so
+  // it never fights `initialScrollIndex`.
+  const lastPagerW = useRef(0);
+  useEffect(() => {
+    if (lastPagerW.current === 0) { lastPagerW.current = screenW; return; }
+    if (lastPagerW.current === screenW) return;
+    lastPagerW.current = screenW;
+    // After the re-layout has been committed at the new width, not before.
+    requestAnimationFrame(() => listRef.current?.scrollToIndex({ index: idx, animated: false }));
+  }, [screenW, idx]);
 
   // Account signal — anonymous = no account (selections won't be saved).
   // GATED ON `resolved` (entitlement roll-out 2026-09-11): the provider boots at
@@ -538,17 +565,17 @@ export function AwardsScreen({ navigation, route }: Props) {
         showsHorizontalScrollIndicator={false}
         keyExtractor={(c) => c}
         initialScrollIndex={startIdx}
-        getItemLayout={(_d, i) => ({ length: SCREEN_W, offset: SCREEN_W * i, index: i })}
+        getItemLayout={(_d, i) => ({ length: screenW, offset: screenW * i, index: i })}
         onViewableItemsChanged={onViewable}
         viewabilityConfig={{ itemVisiblePercentThreshold: 60 }}
         onMomentumScrollEnd={(e) => {
-          const i = Math.round(e.nativeEvent.contentOffset.x / SCREEN_W);
+          const i = Math.round(e.nativeEvent.contentOffset.x / screenW);
           setIdx(i);
           setSwipeLocked(i === ENROLLMENT_IDX);
         }}
         renderItem={({ item }) =>
           item === 'curriculum' ? (
-            <View style={{ width: SCREEN_W }}>
+            <View style={{ width: screenW }}>
               <CurriculumView
                 showBrand={false}
                 onOpenCategory={(key) => {
@@ -562,11 +589,11 @@ export function AwardsScreen({ navigation, route }: Props) {
               />
             </View>
           ) : item === 'directory' ? (
-            <View style={{ width: SCREEN_W }}>
+            <View style={{ width: screenW }}>
               <DirectoryView showBrand={false} />
             </View>
           ) : item === 'enrollment' ? (
-            <View style={{ width: SCREEN_W }}>
+            <View style={{ width: screenW }}>
               <EnrollmentView showBrand={false} />
             </View>
           ) : (

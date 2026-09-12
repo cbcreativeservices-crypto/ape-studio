@@ -8,24 +8,21 @@
  * here; the on-device flow is wired in FirstRunCoordinator.) Web+dev only.
  */
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { previewWidthFromHash, previewWidthLabel } from '../dev/previewWidth';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../theme/tokens';
 import { FirstRunSampler, type FlowPhase } from './FirstRunSampler';
 import { SAMPLER_STOPS, type StopId } from './samplerStops';
 import type { OnboardingChoice } from './onboardingFlow';
 
-const WIDTHS = [360, 393, 412];
 const LAST = SAMPLER_STOPS.length - 1;
 
-function widthFromHash(): number {
-  const parts = (typeof window !== 'undefined' ? window.location.hash : '').split('/');
-  const w = Number(parts[1]);
-  return WIDTHS.includes(w) ? w : 393;
-}
-
 export function SamplerPreview() {
-  const width = widthFromHash();
+  const width = previewWidthFromHash();
+  // The BROWSER viewport - which is what the previewed screen's own window
+  // APIs report, NOT the box below. See previewWidth.ts: routinely different.
+  const { width: viewportW } = useWindowDimensions();
   const [stepIndex, setStepIndex] = useState(0);
   const [phase, setPhase] = useState<FlowPhase>('lead');
   const [visited, setVisited] = useState<OnboardingChoice[]>([]);
@@ -46,7 +43,7 @@ export function SamplerPreview() {
   return (
     <SafeAreaProvider>
       <View style={styles.root}>
-        <Text style={styles.bar}>{`FIRST-RUN WALKTHROUGH @ ${width}px  ·  #samplerpreview/<360|393|412>`}</Text>
+        <Text style={styles.bar}>{previewWidthLabel('FIRST-RUN WALKTHROUGH', width, viewportW)}</Text>
         <View style={styles.controls}>
           <Pressable style={styles.ctl} onPress={reset}>
             <Text style={styles.ctlText}>RESET</Text>

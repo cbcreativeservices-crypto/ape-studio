@@ -10,7 +10,8 @@
  * Widths matter here — this screen is dense, and the narrow phone is where
  * rows crowd. Drive it with `#settingspreview/<360|393|412>`.
  */
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, useWindowDimensions } from 'react-native';
+import { previewWidthFromHash, previewWidthLabel } from '../../features/dev/previewWidth';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SettingsScreen } from './SettingsScreen';
@@ -48,22 +49,17 @@ function seedMockPrefs(): void {
   );
 }
 
-const WIDTHS = [360, 393, 412];
-
-function widthFromHash(): number {
-  const parts = (typeof window !== 'undefined' ? window.location.hash : '').split('/');
-  const w = Number(parts[1]);
-  return WIDTHS.includes(w) ? w : 393;
-}
-
 const Stack = createNativeStackNavigator();
 
 export function SettingsPreview() {
   seedMockPrefs(); // web+dev only — this component never mounts on device
-  const width = widthFromHash();
+  const width = previewWidthFromHash();
+  // The BROWSER viewport - which is what the previewed screen's own window
+  // APIs report, NOT the box below. See previewWidth.ts: routinely different.
+  const { width: viewportW } = useWindowDimensions();
   return (
     <View style={styles.root}>
-      <Text style={styles.bar}>{`SETTINGS @ ${width}px  ·  #settingspreview/<360|393|412>`}</Text>
+      <Text style={styles.bar}>{previewWidthLabel('SETTINGS', width, viewportW)}</Text>
       <View style={[styles.phone, { width }]}>
         <EntitlementProvider>
           <NavigationContainer>

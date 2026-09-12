@@ -7,7 +7,7 @@
  */
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type FC } from 'react';
 import { markToolNavigate, markToolTap } from '../../features/tools/devTiming';
-import { Animated, Dimensions, Easing, InteractionManager, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Animated, Easing, InteractionManager, Platform, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../../features/settings/store';
@@ -47,7 +47,7 @@ import { toolByKey, type ToolKey } from './toolsData';
 // HUB_LIGHT — the hub's ONE light (overhead softbox key + low ambient) and its
 // intensity ladder; every lit surface on this screen reads its rungs from it.
 // The model itself is written up at the top of TileChassis.tsx.
-import { HUB_LIGHT, STRIP_ASPECT, TILE_STRIP_PAD, TILE_TITLE_H, tileLayout } from './TileChassis';
+import { HUB_LIGHT, STRIP_ASPECT, TILE_GAP, TILE_STRIP_PAD, TILE_TITLE_H, tileLayout } from './TileChassis';
 // Live tile previews (owner order 2026-08-19): the hub owns ONE shared mic/DSP
 // session + tick (hubPreviewEngine); five tiles redraw their strip artwork from
 // live frames, three run labeled scripted demos. All react-native-svg — the
@@ -65,10 +65,26 @@ import {
 } from '../../features/audio/exposureMonitor';
 import type { RootStackParamList } from '../../navigation/types';
 
-const { width: SCREEN_W } = Dimensions.get('window');
-// 2-across INSIDE the gray panel: subtract the scroll padding (14×2), the
-// panel's border (1×2) + padding (12×2), and the 12px gap between the two tiles.
-const TILE_W = Math.floor((SCREEN_W - 14 * 2 - (1 + 12) * 2 - 12) / 2);
+/**
+ * TILE WIDTH IS A FUNCTION OF THE LIVE WINDOW, NOT OF BOOT (2026-09-13).
+ *
+ * This was `Dimensions.get('window')` read once at module scope - at app BOOT,
+ * in whatever geometry the app happened to launch in - and every tile then
+ * carried that width as a FIXED style. `styles.grid` is flex-wrap, so a width
+ * captured wide and rendered narrow (an iPad dragged into Split View, a
+ * rotation) gives tiles wider than the pane that holds them: they drop to one
+ * column and clip. The reverse leaves two undersized tiles against a large
+ * empty gutter. Everything downstream - the visibility gating that decides
+ * which previews animate, and the panel patina that paints the metal BETWEEN
+ * the tiles - is laid out from the same number, so a stale one puts the wear
+ * marks where the tiles are and the tiles where the wear marks are.
+ *
+ * 2-across INSIDE the gray panel: subtract the scroll padding (14x2), the
+ * panel's border (1x2) + padding (12x2), and the 12px gap between the two tiles.
+ */
+function tileWidthFor(windowW: number): number {
+  return Math.floor((windowW - 14 * 2 - (1 + 12) * 2 - 12) / 2);
+}
 const NAV_TABS: NavIconName[] = ['Home', 'Study', 'Achievements', 'Profile'];
 
 /** A card/chip/row RIM under the hub's overhead key (HUB_LIGHT, TileChassis):
@@ -136,7 +152,12 @@ function DosimeterChip({ onOpen }: { onOpen: () => void }) {
  *  SPL · MultiMeter / Waveform · RTA / Spectrogram · Noise Gen / RT60 · Freq. */
 /* Tile Forge (owner 2026-08-23): chassis geometry shared with TileChassis;
    per-tile wear seeds are stable so each tile's grit/scratch never shift. */
-const TILE_L = tileLayout(TILE_W);
+/** Chassis geometry for the CURRENT tile width (see tileWidthFor). */
+const tileMetricsFor = (windowW: number) => {
+  const w = tileWidthFor(windowW);
+  return { w, ...tileLayout(w) };
+};
+type TileMetrics = ReturnType<typeof tileMetricsFor>;
 const CHASSIS_SEED: Partial<Record<ToolKey, number>> = {
   spl: 11, multimeter: 23, waveform: 37, rta: 51, spectrogram: 61, signalgen: 71, rt60: 83, hzcounter: 97,
 };
@@ -371,10 +392,12 @@ function seededRnd(seed: number) {
   };
 }
 
-function buildPatina(w: number, h: number): Patina {
+function buildPatina(w: number, h: number, tile: TileMetrics): Patina {
   const rnd = seededRnd(0x9e3779b9);
-  const tw = TILE_W;
-  const th = TILE_L.totalH;
+  // The tile rectangles this wear is laid AROUND - they must be the tiles
+  // actually on screen, so they come from the live metrics, not from boot.
+  const tw = tile.w;
+  const th = tile.totalH;
   // Where the tiles sit (mirrors styles.grid: flex-wrap, gap 12, inside pad 12).
   const cols = Math.max(1, Math.floor((w - 2 * PANEL_PAD + GRID_GAP) / (tw + GRID_GAP)));
   const rows = Math.ceil(TILE_ORDER.length / cols);
@@ -486,7 +509,7 @@ function buildPatina(w: number, h: number): Patina {
 // re-render with the screen (entitlement / engine-state / displaysReady
 // changes) — it has no props, so React.memo makes it paint exactly once per
 // panel size.
-const PanelFace = memo(function PanelFace() {
+const PanelFace = memo(function PanelFace({ tile }: { tile: TileMetrics }) {
   const [size, setSize] = useState({ w: 0, h: 0 });
   // The dashboard study-method panel coat, exactly (owner 2026-08-23 —
   // supersedes the 2026-08-17 darkening): BlackFaceBg's default method gray.
@@ -495,7 +518,7 @@ const PanelFace = memo(function PanelFace() {
     { o: 0.42, c: '#46464b' },
     { o: 1, c: '#2c2c30' },
   ];
-  const patina = useMemo(() => (size.w > 0 && size.h > 0 ? buildPatina(size.w, size.h) : null), [size.w, size.h]);
+  const patina = useMemo(() => (size.w > 0 && size.h > 0 ? buildPatina(size.w, size.h, tile) : null), [size.w, size.h, tile]);
   // The glass's shadow on the panel: a rounded rect the tile's own size, shifted
   // down TILE_DROP_H, whose only visible part is the strip below the tile —
   // dark where it meets the cut edge, gone TILE_DROP_H later. Bounding-box
@@ -504,8 +527,8 @@ const PanelFace = memo(function PanelFace() {
   // under the tile everywhere but the rounded corners, where it wraps the arc
   // instead of leaving a pale wedge), peaks at the edge, and is gone
   // TILE_DROP_H below it.
-  const dropRamp = String(Math.max(0, (TILE_L.totalH - TILE_DROP_H - TILE_RADIUS) / TILE_L.totalH));
-  const dropKnee = String(Math.max(0, (TILE_L.totalH - TILE_DROP_H) / TILE_L.totalH));
+  const dropRamp = String(Math.max(0, (tile.totalH - TILE_DROP_H - TILE_RADIUS) / tile.totalH));
+  const dropKnee = String(Math.max(0, (tile.totalH - TILE_DROP_H) / tile.totalH));
   const blotchFill: Record<Blotch['kind'], string> = {
     dark: 'url(#apeToolsPatDark)',
     light: 'url(#apeToolsPatLight)',
@@ -684,6 +707,7 @@ const ToolTile = memo(function ToolTile({
   active,
   ready,
   index,
+  tile,
   onActivate,
 }: {
   tool: ToolKey;
@@ -694,6 +718,8 @@ const ToolTile = memo(function ToolTile({
   ready: boolean;
   /** Reading-order position — drives the power-on stagger. */
   index: number;
+  /** Live chassis geometry (see tileWidthFor) — the tile's own size. */
+  tile: TileMetrics;
   onActivate: (tool: ToolKey) => void;
 }) {
   const sink = useRef(new Animated.Value(0)).current;
@@ -754,7 +780,7 @@ const ToolTile = memo(function ToolTile({
       onPressOut={onOut}
       accessibilityRole="button"
       accessibilityLabel={name}
-      style={styles.tileFrame}
+      style={[styles.tileFrame, { width: tile.w, height: tile.totalH }]}
     >
       {/* THE TILE IS THE SCREEN (owner 2026-09-05, see TileChassis.tsx): the
           Pressable is the true-black RECESS cut into the panel (its 1px rim is
@@ -795,6 +821,11 @@ const ToolTile = memo(function ToolTile({
 
 export function ToolsHubScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
+  // The ONE source of tile geometry for this render: the chassis, the tiles,
+  // the visibility gating and the panel patina all read it, so they cannot
+  // disagree about how big a tile is or where it sits (see tileWidthFor).
+  const { width: windowW } = useWindowDimensions();
+  const tile = useMemo(() => tileMetricsFor(windowW), [windowW]);
   const { isMember, resolved } = useEntitlement();
   // ONE shared mic/DSP session + tick for the live tile previews (owner
   // 2026-08-19). Auto-starts on entry (OS permission prompt on first visit),
@@ -829,7 +860,7 @@ export function ToolsHubScreen({ navigation }: Props) {
   // the bottom kept their preview loops running (one re-rendering at 14 Hz).
   // Each tile now animates only while it is inside the ScrollView viewport
   // (plus half a tile of margin so nothing pops in late). Geometry, not
-  // measurement: tiles are 2-across at TILE_L.totalH + the grid gap, offset by
+  // measurement: tiles are 2-across at tile.totalH + the grid gap, offset by
   // the panel's and grid's measured tops. State changes ONLY when the set of
   // visible tiles changes, so scrolling within a page costs no re-render.
   const viewRef = useRef({ y: 0, h: 0, panelY: 0, gridY: 0, gridW: 0 });
@@ -838,21 +869,23 @@ export function ToolsHubScreen({ navigation }: Props) {
   const recomputeVisible = useCallback(() => {
     const v = viewRef.current;
     const gap = 12; // styles.grid gap
-    const rowH = TILE_L.totalH + gap;
-    const margin = TILE_L.totalH * 0.5;
+    const rowH = tile.totalH + gap;
+    const margin = tile.totalH * 0.5;
     // Columns from the MEASURED grid width (one column on a phone, two on a
     // wide pane) — never assume the row count.
-    const cols = Math.max(1, Math.floor((v.gridW + gap) / (TILE_W + gap)));
+    const cols = Math.max(1, Math.floor((v.gridW + gap) / (tile.w + gap)));
     const mask = TILE_ORDER.map((_, i) => {
       if (v.h === 0 || v.gridW === 0) return '1'; // unmeasured: everything animates (old behaviour)
       const top = v.panelY + v.gridY + Math.floor(i / cols) * rowH;
-      return top < v.y + v.h + margin && top + TILE_L.totalH > v.y - margin ? '1' : '0';
+      return top < v.y + v.h + margin && top + tile.totalH > v.y - margin ? '1' : '0';
     }).join('');
     if (mask !== visMaskRef.current) {
       visMaskRef.current = mask;
       setVisMask(mask);
     }
-  }, []);
+    // `tile` is a dependency now: gating tiles by a stale tile HEIGHT is how a
+    // preview stops animating while still on screen (or keeps running off it).
+  }, [tile]);
   const tileVisible = (i: number) => visMask === '' || visMask[i] !== '0';
   useEffect(() => {
     let done = false;
@@ -966,7 +999,7 @@ export function ToolsHubScreen({ navigation }: Props) {
             }}
           >
             <View style={styles.panel}>
-              <PanelFace />
+              <PanelFace tile={tile} />
               <View
                 style={styles.grid}
                 onLayout={(e) => {
@@ -985,6 +1018,7 @@ export function ToolsHubScreen({ navigation }: Props) {
                   live={hubPreview.engineLive}
                   active={hubPreview.active && tileVisible(i)}
                   ready={displaysReady}
+                  tile={tile}
                   onActivate={openTool}
                 />
               ))}
@@ -1154,14 +1188,15 @@ const styles = StyleSheet.create({
   // ambient, the down-facing top edge is the shadow the panel casts (rung 5) —
   // the light touch that shows the darkness is a hole, not a border.
   tileFrame: {
-    width: TILE_W,
-    height: TILE_L.totalH,
+    // width/height are supplied INLINE by the render site from the live window
+    // metrics - deliberately absent here so there is no boot-width value left
+    // to silently win if a call site ever forgets to pass them.
     borderRadius: TILE_RADIUS,
     borderWidth: 1,
     // Sides at the alpha floor (0.05 downsampled to nothing on the phone).
     ...litRim('rgba(0,0,0,0.55)', 'rgba(255,255,255,0.08)', HUB_LIGHT.lip),
     backgroundColor: '#000',
-    padding: TILE_L.gap - 1,
+    padding: TILE_GAP - 1,
     overflow: 'hidden',
   },
   // The raised, bevelled GLASS — title band + display behind one surface; the
@@ -1204,7 +1239,7 @@ const styles = StyleSheet.create({
   // specular): the shadowed top wall, seen down the top gap and revealed a
   // hair more as the glass sinks; the lit bottom wall, filling the bottom gap.
   tileCavityTop: { position: 'absolute', top: 0, left: 0, right: 0, height: 8 },
-  tileCavityBottom: { position: 'absolute', bottom: 0, left: 0, right: 0, height: TILE_L.gap - 1 },
+  tileCavityBottom: { position: 'absolute', bottom: 0, left: 0, right: 0, height: TILE_GAP - 1 },
   // Power-on illumination that ramps up on press (lightens/glows the screen).
   // Peak brightness reduced 39% (0.24 → 0.146) per owner 2026-08-17.
   tileGlowLight: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(165,200,255,0.146)' },
