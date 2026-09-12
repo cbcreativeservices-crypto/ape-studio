@@ -142,6 +142,9 @@ export function PaywallScreen({ navigation }: Props) {
         <Text style={styles.eyebrow}>ACADEMY MODE</Text>
         <Text style={styles.title}>{COPY.paywallTitle}</Text>
         <Text style={styles.body}>{COPY.paywallBody}</Text>
+        {/* The allowance behind "the free glossary" one line above (R7). Quieter
+            than the body on purpose: it qualifies the claim, it does not sell. */}
+        <Text style={styles.allowance}>{COPY.glossaryFreeAllowance}</Text>
 
         <View style={styles.plans}>
           {PLANS.map((p) => {
@@ -222,6 +225,7 @@ const styles = StyleSheet.create({
   eyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 2.4, color: colors.amber },
   title: { fontFamily: fonts.oswaldMedium, fontSize: 24, lineHeight: 29, color: colors.textPrimary },
   body: { fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 22, color: colors.textSecondary },
+  allowance: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 20, color: colors.textMuted, marginTop: 10 },
 
   plans: { gap: 12, marginTop: 6 },
   // Pricing-honesty promise (owner 2026-08-21): a check + hairline divider so it

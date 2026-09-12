@@ -33,6 +33,8 @@ export function UpgradeSheet({
         <Text style={styles.eyebrow}>ACADEMY MODE</Text>
         <Text style={styles.title}>{COPY.upgradePhrase}</Text>
         <Text style={styles.body}>{COPY.upgradeSheetBody}</Text>
+        {/* The allowance behind "continue using the glossary for free" (R7). */}
+        <Text style={styles.allowance}>{COPY.glossaryFreeAllowance}</Text>
 
         {/* The $99 lifetime deal is NOT surfaced here as its own pre-popup
             (user request 2026-07-17). All plans — with the end-of-year
@@ -88,6 +90,7 @@ const styles = StyleSheet.create({
   eyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 2.2, color: colors.amber },
   title: { fontFamily: fonts.oswaldMedium, fontSize: 19, lineHeight: 24, color: colors.textPrimary },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14.5, lineHeight: 21, color: colors.textSecondary },
+  allowance: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 19, color: colors.textMuted, marginTop: 10 },
   actions: { flexDirection: 'row', gap: 10, marginTop: 6 },
   dismiss: {
     alignSelf: 'center',

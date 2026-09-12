@@ -18,6 +18,16 @@ export const COPY = {
   paywallBody:
     'The free glossary is your professional audio reference. Upgrade to Academy Mode to unlock guided learning, study tools, quizzes, progress tracking, and the ability to earn verified Academy certificates.\n\n' +
     'Create an optional profile in the Pro Audio Training Academy Professional Registry. As you earn certificates, your profile becomes a verified graduate record that employers can validate online and you can share on résumés, job applications, portfolios, and professional networking profiles.',
+  // The free tier's glossary allowance (owner 2026-09-13, governance R7).
+  // ADDED, not reworded — marketingLine, upgradeSheetBody and paywallBody each
+  // call the glossary "free" and predate the weekly cap (2026-09-10); all three
+  // stay byte-identical and this renders BESIDE them, so the ratified sentences
+  // are untouched and one string serves every surface that makes the claim.
+  // ⚠️ 14 mirrors GLOSSARY_WEEKLY_LIMIT in features/glossary/glossaryCap.ts and
+  // the server RPC behind it. If that constant moves, this is a false claim
+  // about what free includes and must move with it.
+  glossaryFreeAllowance:
+    'Free use includes 14 definitions a week; Academy membership removes the limit.',
   // Introductory lifetime offer (Booth 2026-07-15).
   lifetimePrice: '$99.99',
   lifetimeOffer:
