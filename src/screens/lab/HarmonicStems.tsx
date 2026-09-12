@@ -426,6 +426,12 @@ export function HarmonicStems({
                 accessibilityLabel={`Harmonic ${h.n}, ${h.n * f0} hertz, ${
                   h.amp <= AMP_FLOOR ? 'silent' : `${db.toFixed(0)} dB relative to full scale`
                 }${off ? ', inactive' : ''}`}
+                // The label carries the reading for VoiceOver/TalkBack, but RNW
+                // 0.21 needs aria-valuenow on role=slider.
+                accessibilityValue={{ min: DBC_FLOOR_DB, max: 0, now: Math.round(dbcOf(h)) }}
+                aria-valuemin={DBC_FLOOR_DB}
+                aria-valuemax={0}
+                aria-valuenow={Math.round(dbcOf(h))}
                 accessibilityHint="Drag vertically to change level. Double tap to reset. Long press for details."
               >
                 {/* The STEM SLIDE LINE is coloured by LEVEL via the MIDI ramp
@@ -560,6 +566,10 @@ export function HarmonicStems({
                     onSetPhase(detail.n, Math.round(next));
                   }}
                   accessibilityLabel={`Phase, ${Math.round(detail.phaseDeg)} degrees`}
+                  accessibilityValue={{ min: 0, max: 360, now: Math.round(detail.phaseDeg) }}
+                  aria-valuemin={0}
+                  aria-valuemax={360}
+                  aria-valuenow={Math.round(detail.phaseDeg)}
                 >
                   <View style={styles.phaseGroove} pointerEvents="none" />
                   {phaseTrackW > 0 ? (

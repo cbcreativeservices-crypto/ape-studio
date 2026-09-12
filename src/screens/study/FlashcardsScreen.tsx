@@ -1508,6 +1508,22 @@ export function FlashcardsScreen({ navigation, route }: Props) {
         {/* Pinned controls — scribble-glass caps, tall 56px thumb targets
             (Booth 2026-07-08). Reset moved up into the filter rows. */}
         <View style={styles.footer}>
+          {/* CARD NAVIGATION. Until 2026-09-12 the ONLY way to change card in
+              this whole screen was a horizontal swipe — `goCard` was called
+              from nothing but the two PanResponders — so a VoiceOver, switch-
+              control or any non-dragging user opened a 120-term deck and was
+              permanently stuck on card 1. Tapping only cycles term to
+              definition and back. WCAG 2.5.7, and the only study method in the
+              app without PREV/NEXT: Fill-in-the-Blank and Matching have both
+              had them all along, and these are their labels. */}
+          <View style={styles.buttonRow}>
+            <View style={{ flex: 1 }}>
+              <GlassButton label="‹ PREV" tint="gold" onPress={() => goCard(-1)} disabled={deck.length === 0} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <GlassButton label="NEXT ›" tint="green" onPress={() => goCard(1)} disabled={deck.length === 0} />
+            </View>
+          </View>
           <View style={styles.buttonRow}>
             <View style={{ flex: 1 }}>
               <GlassButton
@@ -1600,7 +1616,24 @@ export function FlashcardsScreen({ navigation, route }: Props) {
           filtered deck (card/level) is shown. */}
       <Modal accessibilityViewIsModal visible={fullscreen} animationType="fade" onRequestClose={closeFullscreen}>
         {/* fsPan (not pan): full screen uses the looser swipe thresholds. */}
-        <View style={[styles.fsRoot, { paddingTop: insets.top }]} {...fsPan.panHandlers}>
+        <View
+          style={[styles.fsRoot, { paddingTop: insets.top }]}
+          {...fsPan.panHandlers}
+          // The owner's 2026-07-11 ruling for this mode is "no nav, no
+          // prev/next" — so the non-drag path here is an ASSISTIVE-TECH action
+          // rather than visible chrome: invisible to a sighted user, reachable
+          // from the screen reader's actions rotor. Without it, full screen was
+          // swipe-only with no way out but the X.
+          accessible={false}
+          accessibilityActions={[
+            { name: 'previous', label: 'Previous card' },
+            { name: 'next', label: 'Next card' },
+          ]}
+          onAccessibilityAction={(e) => {
+            if (e.nativeEvent.actionName === 'next') goCard(1);
+            if (e.nativeEvent.actionName === 'previous') goCard(-1);
+          }}
+        >
           <Pressable
             onPress={closeFullscreen}
             hitSlop={16}
@@ -2027,7 +2060,7 @@ const styles = StyleSheet.create({
 
   footer: { gap: 10 },
   counter: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSubAlt, minWidth: 56, textAlign: 'right' },
-  buttonRow: { flexDirection: 'row', gap: 10 },
+  buttonRow: { flexDirection: 'row', gap: 10, marginBottom: 8 },
 
   // FILTERS popup (Booth 2026-07-09d).
   modalBackdrop: {

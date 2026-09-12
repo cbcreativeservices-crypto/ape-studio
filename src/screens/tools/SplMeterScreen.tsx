@@ -1213,7 +1213,13 @@ export function SplMeterScreen({ navigation }: Props) {
         <Pressable
           key={r}
           onPress={() => setResponse(r)}
-          hitSlop={4}
+          // The text is 11 pt with no padding, so hitSlop is the whole target:
+          // at 4 it measured ~22 pt, half the platform minimum. 6 is the most the
+          // rail's 12 pt gap allows before neighbours overlap — that reaches
+          // 26 pt, which clears WCAG 2.5.8 AA (24). Getting to the full 44 needs
+          // a layout decision on this landscape rail, so it is reported, not
+          // guessed at here.
+          hitSlop={{ top: 6, bottom: 6, left: 12, right: 12 }}
           accessibilityRole="button"
           accessibilityState={{ selected: response === r }}
           aria-pressed={response === r}
@@ -1230,7 +1236,7 @@ export function SplMeterScreen({ navigation }: Props) {
         <Pressable
           key={u.key}
           onPress={u.select}
-          hitSlop={4}
+          hitSlop={{ top: 6, bottom: 6, left: 12, right: 12 }} // see the note on the response toggle
           accessibilityRole="button"
           accessibilityState={{ selected: activeUnit === u.key }}
           aria-pressed={activeUnit === u.key}

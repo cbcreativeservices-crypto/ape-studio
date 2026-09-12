@@ -138,6 +138,15 @@ export function ParamLane({
       {...pan.panHandlers}
       accessibilityRole="adjustable"
       accessibilityLabel={`${label}: ${readout}`}
+      // The label carries the reading, which VoiceOver/TalkBack do announce —
+      // but RNW 0.21 needs aria-valuenow on role=slider, and this is the ONE
+      // fader shared by the foundations, digital, EQ, meter, tube, wave, FX,
+      // modular and oscillator labs, so the gap propagated everywhere.
+      accessibilityValue={{ min: 0, max: 100, now: Math.round(v * 100), text: readout }}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={Math.round(v * 100)}
+      aria-valuetext={readout}
       accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
       onAccessibilityAction={(e) => {
         const step = e.nativeEvent.actionName === 'increment' ? 0.05 : -0.05;

@@ -108,6 +108,20 @@ export function AnswerCell({
               {checked ? '☑' : '☐'}
             </Text>
           )}
+          {/* A11Y 2026-09-12 (WCAG 1.4.1). The 2026-09-05 pass gave the verdict a
+              VOICE, which fixed it for screen-reader users — but a sighted
+              colour-blind user still had only green-vs-red, the exact pair
+              deuteranopia and protanopia struggle with, and single-choice cells
+              pass `check: 'none'` so no glyph was drawn at all. ScenariosScreen
+              already does this right with a ✓/✕ banner; this puts the same
+              non-colour channel on the cell itself, so every screen using
+              AnswerCell gets it. Absolutely positioned so the centred label
+              does not shift. */}
+          {!showCheck && (state === 'correctGreen' || state === 'wrongRed') ? (
+            <View pointerEvents="none" style={styles.verdictMark} accessibilityElementsHidden importantForAccessibility="no">
+              <Text style={[styles.verdictGlyph, { color: s.text }]}>{state === 'correctGreen' ? '✓' : '✕'}</Text>
+            </View>
+          ) : null}
           <View style={styles.labelWrap}>
             <Text
               style={[styles.label, { fontSize, color: s.text, textAlign: showCheck ? 'left' : 'center' }]}
@@ -123,6 +137,11 @@ export function AnswerCell({
 }
 
 const styles = StyleSheet.create({
+  /** The verdict glyph, absolutely placed so a centred label stays centred.
+   *  A View does the vertical centring because `textAlignVertical` is
+   *  Android-only. */
+  verdictMark: { position: 'absolute', left: 10, top: 0, bottom: 0, justifyContent: 'center' },
+  verdictGlyph: { fontSize: 15, fontWeight: '700' },
   cell: {
     borderRadius: 6,
     paddingVertical: 14,
