@@ -277,3 +277,18 @@ complete and `clearLocalAccountData` does wipe the SQLite table that the
   three sibling study screens all carry. Traced: it does not currently
   mis-score, because the model writes to a ref and the submit is one guarded
   batched payload. Defence-in-depth only.
+
+#### ⚠️ Mine to own: a too-broad `git add` in `dc362c77`
+
+I staged `docs/` rather than the one file I had written, and swept **11
+documentation files that were not mine** into that commit — audit reports from
+earlier sessions, `CROSS_SESSION_HANDOFF.md`, and `app_nav_findings_2026_09_07.jsonl`,
+all of which had been sitting uncommitted in the working tree since before
+tonight. They are documentation only, additive, and no code was involved, so I
+left them rather than doing git surgery on an already-pushed commit at 4am —
+but it was not my call to make, and `CROSS_SESSION_HANDOFF.md` in particular
+coordinates with another session and may have been mid-edit. Say the word and
+I will lift those 11 files back out.
+
+The `web/` work in progress (SEO, the connect pages) was NOT swept up and is
+still uncommitted, as it should be. Every add from here is path-specific.
