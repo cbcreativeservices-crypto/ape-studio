@@ -401,7 +401,19 @@ export function GearKnob({
         onChangeRef.current(Math.max(-100, Math.min(100, valueRef.current + d)));
       }}
     >
-      <Text style={s.legend}>{legend}</Text>
+      {/* Legend and value share ONE row ABOVE the pot (owner device pass
+          2026-09-11: "the pan position readout must be above — the finger
+          covers it placed below"). This is the Rack Unit's own drag-tag law —
+          the value a control is reporting must never sit under the hand that
+          is setting it — and a pot is turned with the fingertip landing on
+          the knob face, which is precisely where a readout beneath it lives.
+          One row rather than two keeps the strip's height unchanged. */}
+      <View style={s.knobHead} pointerEvents="none">
+        <Text style={s.legend}>{legend}</Text>
+        <Text style={s.knobValue} numberOfLines={1}>
+          {fmt(value)}
+        </Text>
+      </View>
       <View pointerEvents="none">
         <Svg width={KNOB_SVG} height={KNOB_SVG}>
           {/* End-of-travel + centre detent ticks around the arc. */}
@@ -421,9 +433,6 @@ export function GearKnob({
         <Text style={[s.knobEnd, { left: 0 }]}>L</Text>
         <Text style={[s.knobEnd, { right: 0 }]}>R</Text>
       </View>
-      <Text style={s.readout} accessible={false}>
-        {fmt(value)}
-      </Text>
     </View>
   );
 }
@@ -578,7 +587,12 @@ const s = StyleSheet.create({
   readout: { textAlign: 'center', color: colors.textSecondary, fontFamily: fonts.mono, fontSize: 10.5, marginTop: 1 },
 
   knobWrap: { alignSelf: 'stretch', alignItems: 'center', gap: 1 },
+  /** Legend left, live value right — one row, above the pot, clear of the
+   *  hand. Space-between rather than centred so the value sits at the strip's
+   *  edge, the furthest point on this row from a fingertip on the knob face. */
+  knobHead: { alignSelf: 'stretch', flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between' },
   legend: { color: INK, fontFamily: fonts.panelSemiBold, fontSize: 8, letterSpacing: 2 },
+  knobValue: { color: colors.textSecondary, fontFamily: fonts.mono, fontSize: 10.5 },
   pointer: { position: 'absolute', width: 3, height: 11, borderRadius: 1.5, backgroundColor: colors.amber },
   knobEnd: { position: 'absolute', bottom: 6, color: INK, fontFamily: fonts.panelSemiBold, fontSize: 8 },
 
