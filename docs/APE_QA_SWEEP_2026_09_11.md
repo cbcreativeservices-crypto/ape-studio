@@ -598,3 +598,35 @@ the start of the next device session, before relying on Metro to catch anything.
    happens — run it again whenever you like."* / **START TIME TRIAL**
    (the 45 renders `TIME_TRIAL_NEEDED`, so it cannot drift from the rule)
 5. Directory display name: a wordless counter, `0/30`.
+
+---
+
+## Device pass — spectrogram + share (evening 2026-09-11, owner on iPhone)
+
+Run against a Claude-readable Metro on 8081. Four defects found, all fixed and
+re-verified on device the same sitting. **None was a regression from the day's
+DNS/gate work** — they were pre-existing and only surfaced because the tool was
+exercised end to end, including the share.
+
+| # | Symptom the owner saw | Root cause | Fix |
+|---|---|---|---|
+| 1 | Hung forever on *"Starting the spectrogram…"*, no error, no redbox | `start()`'s early return for a superseded start resolved NO state, and the `finally` cleared the 12 s watchdog on that same path — so the rescue built for this exact symptom was disarmed by the path that caused it. `useToolAutoStart` had already latched, and the screen rendered `idle` with the same "Starting…" text as `starting`. | `finally` now guarantees no path leaves the engine on `starting`; auto-start re-arms **only** when a start never reached `running` (gated on `ranOnce`, capped at 3, so a deliberate STOP still never re-opens the mic); the screen offers **START** on `idle` instead of claiming to be starting. `9cf1e83d`…`17778d90` |
+| 2 | Share sent **text only** — no picture | `shareMeasurements()` passed only `message`. Same "descriptions instead of pictures" complaint as the previews, one surface later. | Captured share card via the house `shareImage` helper. `17778d90` |
+| 3 | Shared image arrived with frame, decade lines, tick labels, caption — and **no spectrogram** | **view-shot photographs the native view hierarchy; Skia renders to its own surface.** Only the spectrogram preview is Skia, so the other four kinds hid this. | `forCapture` renders the same SkImage as a base64 PNG in an RN `<Image>`; `resizeMode="stretch"` ≙ Skia `fit="fill"` so the two paths cannot state different axes. `1f66310a` |
+| 4 | Texted spectrogram showed *"blank spectrogram no results"* in the text | `payloadLines()` for a spectrogram returned `GRID: 79 cols × 128 cells` + dynamic range and nothing else — grid dimensions describe the raster, not the sound. | Now states duration + cadence, frequency range, PEAK in dBFS (never SPL — uncalibrated) and where the peak fell in frequency and time, all read from the stored grid. `6aee007d` |
+| 5 | Footer inside the image "looks bad"; the blue academy link had **disappeared** | Both self-inflicted: branding + URL were burned into the card because a file-only share drops its text. But a URL in pixels is a *picture of a link*, and the footer repeated the wordmark already at the top. | `captureAndShare` takes an optional message; on iOS the sheet gets file + text together (Android keeps expo-sharing). **Card = the measurement, message = branding + a real link.** `6854c8dd` |
+
+**Verified on device:** spectrogram starts; snapshot saves; preview draws; share
+delivers the card WITH the waterfall, a clean bottom edge, and a working
+tappable academy link — which now resolves through the new Vercel DNS, closing
+the personal-domain leak that opened this whole day, end to end in one message.
+
+⚠️ **Two process lessons worth more than the fixes:**
+1. **Don't conclude a native module is absent from one gated button.** I declared
+   view-shot/expo-sharing missing because the calculator's SHARE AS IMAGE
+   control wasn't showing, and told the owner image sharing needed a new build.
+   Their received image disproved it. Test the thing itself.
+2. **When a feature means "show the real thing, not a description of it", sweep
+   EVERY surface that emits it** — screen, preview, share, text export. This one
+   complaint was fixed three separate times because each surface was found only
+   when the owner hit it.
