@@ -70,6 +70,33 @@ const ACTIVITY_MS = 500;
 
 /** Slowed visual rate for a given audio frequency — the conceptual model's
  *  speed. Proportional (higher pitch animates faster) but ALWAYS slowed. */
+/**
+ * Orbit laps per second for Module 5's rate comparator — PROPORTIONAL to
+ * frequency, unlike `visHzFor` below.
+ *
+ * Owner 2026-09-13, on the Pixel: "it should spin at a good clip when set to
+ * 700Hz. it still looks pretty slow." It was, but the deeper problem was that
+ * the log mapping MISREPRESENTED THE RATIO, which is the one thing this module
+ * exists to teach. On `visHzFor`, 700 Hz against the 110 Hz reference ran at
+ * 1.22 vs 0.45 rev/s — 2.7x, for a frequency that is really 6.36x. The prose
+ * says "B simply completes its cycles more often"; the picture was quietly
+ * disagreeing with it.
+ *
+ * Worse, `visHzFor` CLAMPS at 110 Hz, so once the lane floor dropped to 100 the
+ * two dials would have spun at identical rates while the bezel read 100 vs 110 —
+ * two sources shown as equal that are not.
+ *
+ * Proportional fixes all three: 6.36x reads as 6.36x, nothing clamps, and the
+ * top of the lane genuinely flies. 0.005 rev/s per Hz puts 100 Hz at one lap
+ * every 2 s (countable, which the badge asks for) and 700 Hz at 3.5 rev/s.
+ * BOTH sides use this — a comparator whose two dials used different mappings
+ * would be worse than one that is merely slow.
+ */
+const ORBIT_REV_PER_HZ = 0.005;
+export function orbitHzFor(freqHz: number): number {
+  return Math.max(0.1, freqHz * ORBIT_REV_PER_HZ);
+}
+
 export function visHzFor(freqHz: number): number {
   const lo = 110;
   const hi = 1760;
@@ -635,9 +662,21 @@ function M4Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
 
 // ─── M5 — Frequency: a fixed reference vs a frequency YOU set with the lane ──
 
-const M5_FIXED_A = 220; // the LEFT reference source (Hz)
-const M5_MIN = 140;
-const M5_MAX = 600;
+// The LEFT reference source (Hz). Owner 2026-09-13, on the Pixel: 110, not 220.
+// It reads through the whole module — the bezel's A (REF), the badge line and
+// M5Stage's left orbit all take it from here, so this constant is the only
+// place the reference is stated.
+const M5_FIXED_A = 110;
+// Owner 2026-09-13: 100, below the 110 Hz reference on purpose. The module
+// teaches rate by COMPARISON, so B has to be able to go slower than A as well
+// as faster — a lane that floors above the reference can only ever say
+// "faster", and half the lesson is unreachable.
+const M5_MIN = 100;
+// Owner 2026-09-13, on the Pixel: "freq b needs to go up to 700Hz limit" (was
+// 600). The caption prints M5_MIN–M5_MAX, and the fader maps the lane across
+// exactly this span, so the range is stated in ONE place and the printed number,
+// the travel and the tone can never disagree.
+const M5_MAX = 700;
 
 function M5Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
   // The RIGHT display's frequency is driven by the lane (owner 2026-08-05) —
@@ -694,8 +733,8 @@ function M5Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
 }
 function M5Stage({ viz, w, h, a, b, active, focused }: { viz: VizModule; w: number; h: number; a: number; b: number; active: 'a' | 'b' | 'none'; focused: boolean }) {
   // Phase clocks — continuous through pair switches (no t·Δω jump).
-  const phaseA = viz.usePhaseClock(focused, visHzFor(a));
-  const phaseB = viz.usePhaseClock(focused, visHzFor(b));
+  const phaseA = viz.usePhaseClock(focused, orbitHzFor(a));
+  const phaseB = viz.usePhaseClock(focused, orbitHzFor(b));
   return (
     <View style={{ width: w, height: h, justifyContent: 'center' }}>
       <viz.RateComparatorView phaseA={phaseA} phaseB={phaseB} width={w} height={h} active={active} />
@@ -2139,11 +2178,19 @@ export function FoundationsCourseScreen() {
         >
           <Text style={[styles.navBtn, step === 0 && styles.navBtnDisabled]}>‹ PREV</Text>
         </Pressable>
-        <View style={{ flex: 1 }} />
+        {/* Owner 2026-09-13, on the Pixel: "move module #/# to the right and
+            center with space between the prev and next text buttons."
+            It measured ALREADY centred between PREV and NEXT — 215 px left,
+            216 px right — because the two flex spacers here split the leftover
+            room evenly. What it was not was evenly spaced ACROSS the row: START
+            and PREV sat 40 px apart on the left while the other gaps were 215.
+            `space-between` on topNav spreads all four controls on equal gaps,
+            which moves the label right (centre 630 -> ~703) and gives it the
+            deliberate space either side. Same header renders all 14 modules, so
+            this is "all foundations of sound screens" by construction. */}
         <Text style={styles.navPos}>
           MODULE {step + 1} / {STEPS.length}
         </Text>
-        <View style={{ flex: 1 }} />
         <Pressable
           onPress={() => goTo(Math.min(STEPS.length - 1, step + 1))}
           disabled={step === STEPS.length - 1}
@@ -2155,29 +2202,18 @@ export function FoundationsCourseScreen() {
         </Pressable>
       </View>
 
-      {/* Progress dots — tap any dot to jump directly (freely open). */}
-      <View style={styles.dotsRow}>
-        {STEPS.map((st, i) => (
-          <Pressable
-            key={st.key}
-            onPress={() => goTo(i)}
-            hitSlop={{ top: 18, bottom: 18, left: 4, right: 4 }}
-            accessibilityRole="button"
-            accessibilityLabel={`Go to ${st.title}`}
-          >
-            <View style={[styles.dot, i === step && styles.dotActive, i < step && styles.dotDone]} />
-          </Pressable>
-        ))}
-        <View style={{ flex: 1 }} />
-        <Pressable
-          onPress={openPlayground}
-          hitSlop={{ top: 14, bottom: 14, left: 10, right: 10 }}
-          accessibilityRole="button"
-          accessibilityLabel="Open the playground"
-        >
-          <Text style={styles.playgroundLink}>PLAYGROUND ›</Text>
-        </Pressable>
-      </View>
+      {/* NOTHING BETWEEN THE NAV ROW AND THE RACK — owner 2026-09-13, in two
+          parts: "remove playground button at top right of all lab foundations of
+          sound lab screens", then "also remove the quick jump container below
+          the start prev next module #/#".
+
+          Neither leaves a hole. Position was the dots' other job and the row
+          above states it in words (MODULE n / 14). The Playground is Module 14,
+          the graduation step — its own OPEN THE PLAYGROUND button still calls
+          the same `openPlayground`, so the route in survives; what goes is a
+          permanent shortcut that invited skipping thirteen modules to reach the
+          toy. The deck is a sequence to be walked, and START / PREV / NEXT walk
+          it. */}
 
       {/* The current module's Rack Unit — keyed per step so each module mounts
           fresh (its own state, its own initial lane bind), exactly as the old
@@ -2216,17 +2252,11 @@ const styles = StyleSheet.create({
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
 
   // Top navigation bar (jump-to-start / prev / next).
-  topNav: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 16, paddingBottom: 6 },
+  topNav: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 14, paddingHorizontal: 16, paddingBottom: 6 },
   navBtn: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1, color: colors.amber },
   navBtnDisabled: { color: '#45454d' },
   navPos: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, color: colors.textSub },
 
-  // 14 steps now — dots sized so the full row + the Playground link still fit.
-  dotsRow: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 16, paddingBottom: 6 },
-  dot: { width: 7, height: 7, borderRadius: 4, backgroundColor: '#2c2c33' },
-  dotActive: { backgroundColor: colors.amber, width: 15 },
-  dotDone: { backgroundColor: 'rgba(255,198,77,.45)' },
-  playgroundLink: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: '#37e05f' },
 
   // The Rack Unit needs the remaining vertical space (flex:1) — it owns the
   // stage, the scroll well and the dock inside it.
