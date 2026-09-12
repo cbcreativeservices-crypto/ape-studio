@@ -34,6 +34,10 @@ import {
   type WaveBucket,
 } from '../../../modules/ape-dsp';
 import { useDspEngine } from '../../features/tools/engine/useDspEngine';
+// Dev-only capture marks (2026-09-13). The tiles resting when frames stop is
+// correct; WHY frames stop on a healthy phone is not understood, and the
+// flicker the owner reported is that restart seen from the outside.
+import { markHubCaptureTick, markHubLive, markHubWatchdog } from '../../features/tools/devTiming';
 
 /** ~12.5 Hz shared tick — inside the user-approved 12–24 fps preview band and
  *  the ≤30 Hz bridge rule (native frames refresh ~20 Hz; faster reads repeat). */
@@ -213,6 +217,12 @@ export function useHubPreviewEngine(): HubPreview {
   const running = state === 'running';
   const live = running && isFocused && appActive;
 
+  // Dev-only: name the reason the displays rest, so an expected pause (the
+  // owner switched apps) is never mistaken for the fault being hunted.
+  useEffect(() => {
+    markHubLive(live, { running, focused: isFocused, foreground: appActive });
+  }, [live, running, isFocused, appActive]);
+
   // The ONE shared tick. Gated on focus + foreground so nothing polls or
   // re-renders behind a pushed tool screen (the DosimeterChip lesson).
   useEffect(() => {
@@ -229,16 +239,25 @@ export function useHubPreviewEngine(): HubPreview {
       // once per focus by cycling stop → auto-resume; if capture stays dead,
       // lock and rest on the static artwork.
       const wd = ApeDsp.getMeterFrame();
-      if (wd && (!wd.running || wd.captureStalled)) stalledTicks++;
+      // ONE verdict, used by the watchdog and reported by the dev mark, so the
+      // log can never describe a different condition from the one that fired.
+      const stalled = !!wd && (!wd.running || wd.captureStalled);
+      if (stalled) stalledTicks++;
       else stalledTicks = 0;
+      markHubCaptureTick(
+        stalled,
+        !wd ? 'no meter frame' : !wd.running ? 'engine reports not running' : 'captureStalled',
+      );
       if (stalledTicks > 12) {
         if (!deadRetryRef.current) {
           deadRetryRef.current = true;
+          markHubWatchdog('retry', stalledTicks);
           stop();
           return;
         }
         if (stalledTicks > 60) {
           navLockRef.current = true;
+          markHubWatchdog('lock', stalledTicks);
           stop();
           return;
         }
