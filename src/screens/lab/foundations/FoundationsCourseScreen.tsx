@@ -334,7 +334,6 @@ type RackProps = {
   onM7Predict?: (v: 'time' | 'space') => void;
   /** Screen-composed reading column BELOW: CheckQuestion + BACK/NEXT. */
   wellBottom: ReactNode;
-  onPlayground: () => void;
   onTool: (r: ToolRoute) => void;
 };
 
@@ -1579,7 +1578,7 @@ const M14_RECAP = [
   '13 · Tools measure what ears estimate',
 ];
 
-function M14Rack({ viz, focused, help, wellTop, wellBottom, onPlayground }: RackProps) {
+function M14Rack({ viz, focused, help, wellTop, wellBottom }: RackProps) {
   return (
     <RackUnit
       // Graduation module: one last look at the centerpiece pins on the stage;
@@ -1615,7 +1614,8 @@ function M14Rack({ viz, focused, help, wellTop, wellBottom, onPlayground }: Rack
         view at once — waveform, spectrum, air, cone, level. Change anything; watch everything
         answer.
       </Text>
-      <GlassButton label="OPEN THE PLAYGROUND" tint="green" height={52} fontSize={14} onPress={onPlayground} />
+      {/* The OPEN THE PLAYGROUND button is NOT here any more — it renders from
+          wellBottom, after the course checks. See the note there. */}
       {wellBottom}
     </RackUnit>
   );
@@ -1768,7 +1768,7 @@ const STEPS: Step[] = [
     title: 'ONE WAVE, TWO QUESTIONS',
     paras: [
       'THE ROOM is measured everywhere at once: a camera flash of the air — compressions marching away from the speaker at 343 m/s. Its ruler is meters. The ringed microphone standing in it is the ONE point the lower graph listens to.',
-      'THE MIC’S OUTPUT is measured at the mic only. Follow its cable down: the mic cannot see the room — it feels pressure rise and fall at its capsule and draws it, newest at the right, into the MIC INPUT on the NOW line. Its ruler is milliseconds. This is the wavy line every recording screen shows — what pros call the DAW waveform.',
+      'THE MIC’S OUTPUT is measured at the mic only. Follow its cable down: the mic cannot see the room — it feels pressure rise and fall at its capsule and draws it, newest at the right, into the MIC INPUT on the NOW line. Its ruler is milliseconds. This is the wavy line every recording screen shows: a WAVEFORM. The word is not audio jargon — physics, mathematics and electronics all plot a quantity against time and call it the same thing. A DAW is simply where you will meet it most.',
       'Why does it slide LEFT? Because this view is RECORDING, live — exactly what your DAW does when the view follows the playhead: new sound lands at the pinned NOW line and everything older slides left. Freeze it and read it like a finished track: left = earlier, right = later.',
       'Freeze, then drag the PROBE. The crests pair up: the crest the mic drew one period ago (4.5 ms at 220 Hz) has traveled exactly one wavelength (1.56 m) past it down the room — distance = speed × time ties the two rulers together at every point. One wave, two rulers, one equation.',
     ],
@@ -1948,7 +1948,7 @@ const STEPS: Step[] = [
         options: ['Space — meters across the room', 'Time — earlier to later', 'Frequency — low notes to high'],
         correctIdx: 1,
         reveal:
-          'The DAW waveform is a diary of pressure AT THE MIC: left is earlier, right is later (Module 7). The room view is the one drawn in meters — and distance = speed × time ties the two rulers together.',
+          'The waveform is a diary of pressure AT THE MIC: left is earlier, right is later (Module 7). The room view is the one drawn in meters — and distance = speed × time ties the two rulers together.',
         wrongHint: 'Module 7 froze the display and dragged the probe across two rulers. Which ruler did the mic’s own graph use?',
       },
       {
@@ -2116,6 +2116,16 @@ export function FoundationsCourseScreen() {
     <>
       {s.check && !spoilerGated ? <CheckQuestion key={s.key} spec={s.check} /> : null}
       {s.checks ? s.checks.map((c, i) => <CheckQuestion key={`${s.key}-${i}`} spec={c} />) : null}
+      {/* Owner 2026-09-13: "credit for the lab should be at the end of the module
+          not in the middle." This button is the route to the lab's credit — the
+          Playground is where LabReviewButton lives — and it was rendering inside
+          M14's body, ABOVE the three course checks. That put "go somewhere else"
+          in front of the retrieval the module ends on, so the last thing asked of
+          a learner sat behind an exit. It now renders after the checks and
+          immediately before BACK / DONE, which is the end of the module. */}
+      {step === STEPS.length - 1 ? (
+        <GlassButton label="OPEN THE PLAYGROUND" tint="green" height={52} fontSize={14} onPress={openPlayground} />
+      ) : null}
       <View style={styles.navRow}>
         <View style={{ flex: 1 }}>
           <GlassButton
@@ -2188,9 +2198,6 @@ export function FoundationsCourseScreen() {
             which moves the label right (centre 630 -> ~703) and gives it the
             deliberate space either side. Same header renders all 14 modules, so
             this is "all foundations of sound screens" by construction. */}
-        <Text style={styles.navPos}>
-          MODULE {step + 1} / {STEPS.length}
-        </Text>
         <Pressable
           onPress={() => goTo(Math.min(STEPS.length - 1, step + 1))}
           disabled={step === STEPS.length - 1}
@@ -2200,6 +2207,14 @@ export function FoundationsCourseScreen() {
         >
           <Text style={[styles.navBtn, step === STEPS.length - 1 && styles.navBtnDisabled]}>NEXT ›</Text>
         </Pressable>
+        {/* Owner 2026-09-13: "the module #/# readout trade places with NEXT>".
+            Puts the three VERBS together — START, PREV, NEXT all move you — and
+            leaves the readout alone at the end as the one thing that is not a
+            control. It also lands the row's only non-button furthest from the
+            thumb, which is where a readout belongs. */}
+        <Text style={styles.navPos}>
+          MODULE {step + 1} / {STEPS.length}
+        </Text>
       </View>
 
       {/* NOTHING BETWEEN THE NAV ROW AND THE RACK — owner 2026-09-13, in two
@@ -2227,7 +2242,6 @@ export function FoundationsCourseScreen() {
           help={help}
           wellTop={wellTop}
           wellBottom={wellBottom}
-          onPlayground={openPlayground}
           onTool={goTool}
           m7Predicted={m7Predicted}
           onM7Predict={setM7Predicted}
@@ -2286,7 +2300,17 @@ const styles = StyleSheet.create({
   harmBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, color: colors.textMuted },
   harmBtnTextOn: { color: '#37e05f' },
   harmBtnTextSel: { color: colors.amber },
-  winLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.1, color: colors.textSub },
+  // Owner 2026-09-13: the AIR caption was clipped on its first letter. The
+  // stage is FULL-BLEED — the Skia canvases run edge to edge to the panel's
+  // rounded border — so a caption starting at x=0 sits under that border. The
+  // canvases keep their full width; only the text is inset.
+  winLabel: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 9.5,
+    letterSpacing: 1.1,
+    color: colors.textSub,
+    paddingHorizontal: 8,
+  },
 
   pressureLegend: { gap: 2 },
   legendPlus: { fontFamily: fonts.barlowMedium, fontSize: 12, color: colors.amber },

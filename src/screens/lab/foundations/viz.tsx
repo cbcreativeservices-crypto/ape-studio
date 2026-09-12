@@ -174,6 +174,14 @@ const tickText = {
   color: AXIS_TEXT,
 };
 
+/** The octave-spiral's frequency labels — bigger and brighter than a ruler tick
+ *  because on that view they carry the lesson rather than annotate it, and they
+ *  sit over drawn curve rather than beside a clean axis. */
+const spiralTick = {
+  fontSize: 12,
+  color: '#d6dae2',
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Clock
 
@@ -2318,9 +2326,17 @@ export function OctaveSpiralView({
         <Path path={markerAnim} color={ACCENT_GREEN} />
         <Vignette w={w} h={h} />
       </Canvas>
-      {/* Octave labels along the doubling ray (mono ticks — ×2 each lap). */}
+      {/* Octave labels along the doubling ray (mono ticks — ×2 each lap).
+          Owner 2026-09-13, on the Pixel: "the number 110, 22, 440 etc are very
+          small and not easy to read on spiral." They were the shared 8.5 px
+          `tickText` in #9a9ca8 — a size meant for a dense ruler's edge, here
+          sitting ON the drawn spiral, where the curve and the octave dots break
+          up the glyphs behind them. These four numbers are not incidental axis
+          furniture: they ARE the lesson (110 → 220 → 440 → 880, one doubling per
+          lap), so they get their own larger, brighter style. Radii are ~23 px
+          apart at this size, so 12 px still clears its neighbours. */}
       {Array.from({ length: SPIRAL_OCTAVES + 1 }, (_, o) => (
-        <Text key={o} style={[tickText, { left: cx + 8, top: cy - rOf(o) - 4 }]}>
+        <Text key={o} style={[tickText, spiralTick, { left: cx + 10, top: cy - rOf(o) - 7 }]}>
           {SPIRAL_F0 * Math.pow(2, o)}
         </Text>
       ))}
