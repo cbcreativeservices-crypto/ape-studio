@@ -597,5 +597,15 @@ export function renderMix(
 /** Gain (dB) to apply to B so it plays at A's loudness — the level-matched
  *  comparison rule (§ honesty: never A/B at different loudness). */
 export function matchGainDb(a: RenderedMix, b: RenderedMix): number {
-  return a.rmsDb - b.rmsDb;
+  // Never push a match past the ceiling. The level-match exists so a comparison
+  // is decided by decisions rather than loudness, and a match that clips is
+  // neither — the WAV writer hard-clamps anything over +/-1, so the learner
+  // would be A/B-ing against distortion. Soloed renders were reaching +14.6 dB
+  // here and landing at +8 dBFS (audit 2026-09-12).
+  return Math.min(a.rmsDb - b.rmsDb, -1 - b.peakDb);
+}
+
+/** True when ANY track in this settings object is soloed. */
+export function soloActiveIn(s: MixSettings): boolean {
+  return TRACK_IDS.some((id) => !!s[id]?.solo);
 }

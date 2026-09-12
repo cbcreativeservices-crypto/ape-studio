@@ -26,6 +26,7 @@ import type { PageCtx } from '../kit/PagedLab';
 import {
   FLAT,
   matchGainDb,
+  soloActiveIn,
   renderMix,
   type MixSettings,
   type RenderedMix,
@@ -237,6 +238,12 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
 
   // New variant set → old renders (AND old listening credit) are stale.
   useEffect(() => {
+    // Stop the sounding render FIRST. It is now stale — the console moved under
+    // it — and without this the scribble strips light the new solo state while
+    // the learner's ears carry on with the previous, un-soloed mix for the rest
+    // of the loop. Worse, `active` goes null, so the button they pressed
+    // reverts to the play glyph and NOTHING on the page stops the sound.
+    playerRef.current?.stop();
     setStatus('idle');
     setActive(null);
     setPending(null);
@@ -274,7 +281,12 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
         let master = v.masterDb ?? 0;
         const ropts = { mono: v.mono, sharedVerb: v.sharedVerb, busComp: v.busComp, busDriveDb: v.busDriveDb, masterWidth: v.masterWidth };
         let mix = renderMix(v.settings, master, ropts);
-        if (v.matchTo && byId[v.matchTo]) {
+        // A SOLOED render is a monitor feed, not a comparison. Loudness-matching
+        // one channel up to a full mix is both a lie and a clip — soloing the
+        // snare asked for +14.6 dB and landed at +8 dBFS, under a page note
+        // promising the render is matched "so any improvement you hear is
+        // decisions, not loudness" (audit 2026-09-12).
+        if (v.matchTo && byId[v.matchTo] && !soloActiveIn(v.settings)) {
           master += matchGainDb(byId[v.matchTo], mix);
           // Breathe between the probe render and the matched re-render — two
           // full renders in one tick is the freeze class the null-test page

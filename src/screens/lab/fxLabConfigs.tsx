@@ -425,7 +425,19 @@ const chorusConfig: FxLabConfig = {
     'close they blur into shimmer instead of a jet.',
   exploreCaption: 'Solid amber = the comb right now; ghosts = where the LFO sweeps it. Drag CENTER to sweep the comb by hand.',
   sources: [srcSine(440), SRC_PINK],
-  fixed: [{ paramId: P.modMode, value: 0 }],
+  // EVERY PARAM OF A SHARED NODE MUST BE DECLARED HERE. `EffectChain::reset()`
+  // only sets param 0 (enabled) to 0 — every other atomic keeps its last
+  // written value for the life of the process (Effects.hpp:760). Chorus,
+  // flanger and phaser are all FX.mod; phase and stereo are both FX.stereo. So
+  // a lab that writes only a SUBSET of its node's params inherits the rest
+  // from whichever lab touched them last. Worst case found 2026-09-12: leave
+  // the flanger with MIX at 100%, open the PHASER, and mix_=1.0 makes the
+  // output the pure all-pass — unity at every frequency, so no notches and no
+  // audible phasing at all, while the hero above it draws textbook notches.
+  fixed: [
+    { paramId: P.modMode, value: 0 },
+    { paramId: P.modFeedback, value: 0 },
+  ],
   params: [
     {
       label: 'RATE', paramId: P.rateHz, lessonKey: 'rate',
@@ -645,7 +657,21 @@ const phaserConfig: FxLabConfig = {
     'comb — that difference is the whole lesson.',
   exploreCaption: 'Count the notches: ≈ stages ÷ 2, unevenly spaced. For a pure manual sweep, set DEPTH to STATIC and drag CENTER yourself.',
   sources: [SRC_PINK, SRC_WHITE],
-  fixed: [{ paramId: P.modMode, value: 2 }],
+  // EVERY PARAM OF A SHARED NODE MUST BE DECLARED HERE. `EffectChain::reset()`
+  // only sets param 0 (enabled) to 0 — every other atomic keeps its last
+  // written value for the life of the process (Effects.hpp:760). Chorus,
+  // flanger and phaser are all FX.mod; phase and stereo are both FX.stereo. So
+  // a lab that writes only a SUBSET of its node's params inherits the rest
+  // from whichever lab touched them last. Worst case found 2026-09-12: leave
+  // the flanger with MIX at 100%, open the PHASER, and mix_=1.0 makes the
+  // output the pure all-pass — unity at every frequency, so no notches and no
+  // audible phasing at all, while the hero above it draws textbook notches.
+  fixed: [
+    { paramId: P.modMode, value: 2 },
+    // 0.5 is the value this lab's Hero and anim already assume — declaring it
+    // makes the assumption true instead of hoping the last lab agreed.
+    { paramId: P.modMix, value: 0.5 },
+  ],
   params: [
     {
       // The teaching fader FIRST: drag the notch cluster up and down the
@@ -951,9 +977,14 @@ const gateConfig: FxLabConfig = {
     rangeDb: v[P.rangeDb],
     ceilingDb: -12,
     makeupDb: 0,
-    // This gate exposes no ATTACK control — it opens fast, which is the point
-    // of a gate. 1 ms is the engine's behaviour, not a placeholder.
-    attackMs: 1,
+    // The engine's gate attack is its DEFAULT: this lab exposes no ATTACK
+    // control and never writes param 3, so `attackMs_{10.0}` stands
+    // (Effects.hpp:421, and :373 shows only the LIMITER is forced to 0.1). The
+    // comment that used to sit here asserted 1 ms "is the engine's behaviour",
+    // which was wrong by a factor of ten and confident enough to stop the next
+    // reader checking. The drawing depicts the engine; if 1 ms is wanted, the
+    // way to get it is to `fixed`-write it, not to draw it.
+    attackMs: 10,
     releaseMs: v[P.releaseMs],
     holdMs: v[P.holdMs],
   }),
@@ -1001,7 +1032,12 @@ const limiterConfig: FxLabConfig = {
     'A limiter is a compressor with an infinite ratio: NOTHING passes the ceiling — the flat ' +
     'shelf in the curve. The live GR meter shows exactly how hard you are hitting it.',
   exploreCaption: 'The source peaks at −20 dBFS — ceilings below that engage the brickwall.',
-  sources: [srcSine(440), SRC_PINK],
+  // SINE stays first: the ratified caption above and this lab's "constant gain
+  // reduction" lesson both depend on a steady tone, and CEILING is expressible
+  // on it. But RELEASE is NOT — a steady tone holds the peak follower at a
+  // constant envelope, so GR never recovers and the release chips move nothing.
+  // A transient is now one tap away, which is what RELEASE needs to be visible.
+  sources: [srcSine(440), srcClick(120), SRC_PINK],
   params: [
     {
       label: 'CEILING', paramId: P.ceilingDb, lessonKey: 'ceiling',
@@ -1043,7 +1079,9 @@ const limiterConfig: FxLabConfig = {
     makeupDb: 0,
     // "this v1 limiter is a fast peak limiter" (the lab's own note) — the
     // ceiling is not negotiable, so the attack is effectively instant.
-    attackMs: 0.2,
+    // Effects.hpp:373 forces 0.1 ms in LimiterMode regardless of param 3, so
+    // that is what the drawing depicts.
+    attackMs: 0.1,
     releaseMs: v[P.releaseMs],
     holdMs: 0, // a limiter has no hold
   }),
@@ -1197,7 +1235,20 @@ const phaseConfig: FxLabConfig = {
     'difference visible; mono-fold makes it audible.',
   exploreCaption: 'Sine + INVERT + MONO-FOLD = silence. That is total cancellation — the core demo.',
   sources: [srcSine(440), SRC_PINK],
-  fixed: [{ paramId: P.widthPct, value: 100 }],
+  // EVERY PARAM OF A SHARED NODE MUST BE DECLARED HERE. `EffectChain::reset()`
+  // only sets param 0 (enabled) to 0 — every other atomic keeps its last
+  // written value for the life of the process (Effects.hpp:760). Chorus,
+  // flanger and phaser are all FX.mod; phase and stereo are both FX.stereo. So
+  // a lab that writes only a SUBSET of its node's params inherits the rest
+  // from whichever lab touched them last. Worst case found 2026-09-12: leave
+  // the flanger with MIX at 100%, open the PHASER, and mix_=1.0 makes the
+  // output the pure all-pass — unity at every frequency, so no notches and no
+  // audible phasing at all, while the hero above it draws textbook notches.
+  fixed: [
+    { paramId: P.widthPct, value: 100 },
+    { paramId: P.pan, value: 0 },
+    { paramId: P.bassMonoHz, value: 0 },
+  ],
   params: [
     {
       // The teaching fader FIRST: sweep the inter-channel delay and watch the
@@ -1293,6 +1344,13 @@ const stereoConfig: FxLabConfig = {
     'you fold to mono and the sides vanish. The correlation meter is the safety gauge.',
   exploreCaption: 'Widen, then hit MONO-FOLD: what survives is what a mono listener gets.',
   sources: [SRC_PINK, srcSine(440)],
+  // See the note on the other shared-node configs: FX.stereo is shared with the
+  // PHASE lab, so leaving POLARITY out let an INVERTED Ø from that lab follow
+  // the student here, where it silently makes WIDTH act anti-phase.
+  fixed: [
+    { paramId: P.invertR, value: 0 },
+    { paramId: P.delayRms, value: 0 },
+  ],
   params: [
     {
       label: 'WIDTH', paramId: P.widthPct, lessonKey: 'width',

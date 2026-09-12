@@ -130,6 +130,8 @@ export function GearFader({
   const grabDb = useRef(0);
 
   const moved = useRef(false);
+  /** ANY movement (either axis) — disqualifies the double-tap-to-unity path. */
+  const slid = useRef(false);
   const lastTap = useRef(0);
   // Freeze the page scroller for the gesture's duration — the third leg of the
   // eqBits recipe, and the one whose absence sent this fader's vertical drags
@@ -151,13 +153,26 @@ export function GearFader({
         // feel greasy — the scroller and the fader raced for every touch.
         onStartShouldSetPanResponder: () => true,
         onStartShouldSetPanResponderCapture: () => true,
-        onPanResponderTerminationRequest: (_e, g) => Math.abs(g.dx) > Math.abs(g.dy) + 6,
+        // `g.dx`/`g.dy` are CUMULATIVE, so an unguarded predicate here can flip
+        // true after the drag has committed: pull the cap down 100 pt, drift
+        // 110 pt sideways without lifting, and the fader hands the gesture to
+        // the channel scroller mid-adjustment. The handoff is only on offer
+        // BEFORE the fader has committed to a vertical drag.
+        onPanResponderTerminationRequest: (_e, g) =>
+          !moved.current && Math.abs(g.dx) > Math.abs(g.dy) + 6,
         onPanResponderGrant: () => {
           lockRef.current?.(true);
           grabDb.current = valueRef.current;
           moved.current = false;
+          slid.current = false;
         },
         onPanResponderMove: (_e, g) => {
+          // ANY slide disqualifies the tap path. `moved` stays VERTICAL-only so
+          // the termination guard above still lets an uncommitted sideways
+          // swipe through to the scroller — a purely horizontal jiggle used to
+          // be too small for the scroller to claim AND still counted as a tap,
+          // so two of them threw away the learner's fader setting.
+          if (Math.abs(g.dx) > 6 || Math.abs(g.dy) > 6) slid.current = true;
           if (Math.abs(g.dy) > 6) moved.current = true;
           if (!moved.current) return; // a resting finger is not a drag
           // Grab-relative, like the hardware: the cap follows the finger from
@@ -169,7 +184,7 @@ export function GearFader({
         onPanResponderTerminate: () => lockRef.current?.(false),
         onPanResponderRelease: () => {
           lockRef.current?.(false);
-          if (moved.current) return;
+          if (slid.current) return;
           // A single tap still does nothing — a real fader does not jump to
           // where a stray finger lands. A DOUBLE tap returns to unity (owner
           // ruling 2026-09-11), which is also real desk behaviour: automation
@@ -192,14 +207,19 @@ export function GearFader({
 
   const nudge = useCallback(
     (delta: number) => {
-      const next = Math.max(FADER_MIN, Math.min(FADER_MAX, valueRef.current + delta));
+      // Snap to the step grid. A plain +/- delta could never reach 0 dB from an
+      // odd value a drag left behind (-7 walks -5, -3, -1, +1 straight over
+      // unity), so a nudge-only user could not get home to the one value the
+      // whole scale is built around.
+      const raw = Math.round((valueRef.current + delta) / Math.max(stepDb, 0.01)) * Math.max(stepDb, 0.01);
+      const next = Math.max(FADER_MIN, Math.min(FADER_MAX, raw));
       if (next !== valueRef.current) {
         onChangeRef.current(next);
         const l = next <= FADER_MIN ? 'minus infinity' : `${next}`;
         AccessibilityInfo.announceForAccessibility?.(`${name} fader ${l} dB`);
       }
     },
-    [name],
+    [name, stepDb],
   );
 
   return (
@@ -243,6 +263,13 @@ export function GearFader({
           accessibilityRole="adjustable"
           accessibilityLabel={`${name} fader`}
           accessibilityValue={{ text: `${label} dB` }}
+          // RNW 0.21 drops the accessibilityValue OBJECT, and aria-valuenow is
+          // REQUIRED on role=slider — so the numbers ride to the DOM here. The
+          // repo pairs these at all 12 other sites; these two were the misses.
+          aria-valuemin={FADER_MIN}
+          aria-valuemax={FADER_MAX}
+          aria-valuenow={valueDb}
+          aria-valuetext={`${label} dB`}
           accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
           onAccessibilityAction={(e) => nudge(e.nativeEvent.actionName === 'increment' ? stepDb : -stepDb)}
         />
@@ -394,6 +421,10 @@ export function GearKnob({
       accessibilityRole="adjustable"
       accessibilityLabel={`${name} ${legend.toLowerCase()}`}
       accessibilityValue={{ text: fmt(value) }}
+      aria-valuemin={-100}
+      aria-valuemax={100}
+      aria-valuenow={value}
+      aria-valuetext={fmt(value)}
       accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
       accessibilityHint="Drag up or down, or sideways, to turn. Tap the left or right side to nudge."
       onAccessibilityAction={(e) => {
@@ -429,7 +460,17 @@ export function GearKnob({
           <Circle cx={cx} cy={cy} r={KNOB_R - 8} fill="none" stroke="#1c1c21" strokeWidth={1} />
         </Svg>
         {/* Pointer as an overlay so it can breathe with the pulse standard. */}
-        <Animated.View pointerEvents="none" style={[s.pointer, pulse, { left: px - 1.5, top: py - 1.5, transform: [{ rotate: `${(value / 100) * POINTER_SWEEP}deg` }] }]} />
+        <Animated.View pointerEvents="none" style={[
+            s.pointer,
+            pulse,
+            // left/top place the BOX and RN rotates it about its own centre, so
+            // each offset must be half of ITS OWN dimension. Subtracting half
+            // the WIDTH from `top` as well put the pointer's centre 4 pt down
+            // the screen BEFORE rotation — so it sat inside its own radius at
+            // the top of travel and canted off-axis at the ends, missing the
+            // travel ticks it exists to be read against.
+            { left: px - 1.5, top: py - s.pointer.height / 2, transform: [{ rotate: `${(value / 100) * POINTER_SWEEP}deg` }] },
+          ]} />
         <Text style={[s.knobEnd, { left: 0 }]}>L</Text>
         <Text style={[s.knobEnd, { right: 0 }]}>R</Text>
       </View>
@@ -458,6 +499,10 @@ export function GearButton({
       onPress={onPress}
       accessibilityRole="button"
       accessibilityState={{ selected: engaged }}
+      // RNW maps `selected` to aria-selected, which is not valid on
+      // role=button — a toggle announces its state through aria-pressed, as the
+      // other 145 toggle sites in this repo do.
+      aria-pressed={engaged}
       accessibilityLabel={a11y}
       hitSlop={{ top: 5, bottom: 5, left: 4, right: 4 }}
       style={[s.gearBtn, engaged && { borderColor: ledColor, backgroundColor: '#1c1418' }]}
@@ -509,6 +554,7 @@ export function ScribbleStrip({
       hitSlop={{ top: 5, bottom: 8, left: 4, right: 4 }}
       accessibilityRole="button"
       accessibilityState={{ selected: solo === 'soloed' }}
+      aria-pressed={solo === 'soloed'}
       accessibilityLabel={`${name} solo ${solo === 'soloed' ? 'on — tap to turn off' : 'off — tap to solo this channel'}`}
     >
       {body}
