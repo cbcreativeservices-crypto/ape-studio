@@ -78,7 +78,6 @@ import { SingleDeviceGuard } from './src/features/account/SingleDeviceGuard';
 import { SessionExpiryGuard } from './src/features/account/SessionExpiryGuard';
 import { ShakeToMute } from './src/features/audio/ShakeToMute';
 import { LowLightProductionGate } from './src/features/settings/LowLightLayer';
-import { MembershipGateHost } from './src/features/commercial/MembershipGate';
 import { registerLowLightTap, touchLowLight } from './src/features/settings/lowLight';
 import { useAccountLocalSync } from './src/features/account/accountLocalSync';
 import { lockPortrait } from './src/lib/screenOrientationSafe';
@@ -452,9 +451,6 @@ export default function App() {
             {/* Low-Light Production Mode's one-time on-enable notice + the
                 6-tap cancel affordance (owner 2026-08-01). */}
             <LowLightProductionGate />
-            {/* App-themed "Academy membership required" popup (owner
-                2026-09-10) — one host serves every tool gate. */}
-            <MembershipGateHost />
             {/* Persistent thin red frame whenever audio output is enabled — a
                 global "the app can sound" indicator on every screen. */}
             <AudioBorderFrame />

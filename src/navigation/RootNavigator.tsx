@@ -9,6 +9,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LowLightDim } from '../features/settings/LowLightLayer';
 import { AppDialogHost } from '../components/AppDialog';
+import { MembershipGateHost } from '../features/commercial/MembershipGate';
 import { ScreenErrorBoundary } from '../components/ScreenErrorBoundary';
 import { NAV_FADE, NAV_PUSH, NAV_PUSH_REDUCED, useReduceMotionNav } from './reduceMotionNav';
 import { SplashScreen } from '../screens/SplashScreen';
@@ -249,6 +250,10 @@ export function RootNavigator() {
               same argument LowLightDim and ScreenErrorBoundary are here for.
               The host itself only draws on the FOCUSED screen. */}
           <AppDialogHost />
+          {/* Same move, same reason (2026-09-13): the membership gate was a
+              root-level sibling too, and would have been buried by any modal
+              screen that raised it. */}
+          <MembershipGateHost />
         </>
       )}
     >

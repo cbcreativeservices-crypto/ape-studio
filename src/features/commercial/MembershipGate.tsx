@@ -13,6 +13,7 @@
  * glass-adjacent CTA → Paywall, quiet NOT NOW.
  */
 import { useSyncExternalStore } from 'react';
+import { useIsFocused } from '@react-navigation/native';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { navigationRef } from '../../navigation/navigationRef';
 import { colors, fonts } from '../../theme/tokens';
@@ -50,10 +51,24 @@ function useMembershipGate(): MembershipGatePayload | null {
   return useSyncExternalStore(subscribe, () => current, () => current);
 }
 
-/** Render ONCE at the App root (inside the NavigationContainer). */
+/**
+ * Rendered PER SCREEN from RootNavigator's `screenLayout` (2026-09-13), NOT once
+ * at the App root as it was from 2026-09-10. A root-level overlay is INVISIBLE
+ * on the seven `presentation: 'modal'` screens - RootNavigator spells out why,
+ * and AppDialogHost hit it for real: a themed confirm raised from Settings
+ * rendered underneath Settings and the owner got no popup at all.
+ *
+ * This host had the same latent defect and simply had not been caught, because
+ * tool gates fire from non-modal screens - but `useSaveGate` reached from a
+ * modal screen would have found it.
+ *
+ * ⚠️ Focus-gated for the same reason as AppDialogHost: every mounted host would
+ * otherwise render its OWN <Modal> for one request, one per screen in the stack.
+ */
 export function MembershipGateHost() {
+  const focused = useIsFocused();
   const gate = useMembershipGate();
-  if (gate == null) return null;
+  if (!focused || gate == null) return null;
   return (
     <Modal accessibilityViewIsModal visible transparent animationType="fade" onRequestClose={closeMembershipGate}>
       <Pressable style={styles.scrim} onPress={closeMembershipGate} accessible={false}>

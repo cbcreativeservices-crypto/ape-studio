@@ -22,6 +22,8 @@ import { ShareTermSheet, type ShareTermPayload } from '../../components/ShareTer
 import { LearningIntroSheet } from '../intro/LearningIntroSheet';
 import type { LearningIntro } from '../intro/learningIntros';
 import { setPopupsSuppressed, usePopupsSuppressed } from './popupSuppressStore';
+import { confirmDialog, notify } from '../../lib/confirm';
+import { openMembershipGate } from '../commercial/MembershipGate';
 
 const MOCK_STUDY = { achievementId: FLAGGED_TOPIC_ID, topicName: 'Preview' };
 const MOCK_SHARE: ShareTermPayload = {
@@ -98,6 +100,46 @@ const STANDALONE: { label: string; key: StandaloneKey }[] = [
   { label: 'Trophy popup', key: 'trophy' },
   { label: 'Share term sheet', key: 'share' },
   { label: 'Learning intro sheet', key: 'learningIntro' },
+];
+
+/**
+ * GLOBAL DIALOGS (2026-09-13). Unlike the STANDALONE entries above, these are
+ * not rendered locally — each one calls the REAL function, so what appears is
+ * the real store and the real host. That is the point: a locally rendered copy
+ * would have looked perfect while the actual dialog was invisible.
+ *
+ * WHY THIS EXISTS. Every one of these is otherwise awkward to reach, and the
+ * awkwardness is per-tier and per-screen: the logout confirm does not exist for
+ * a guest (guests get "Sign in / create account"), the membership gate cannot
+ * fire for a member at all, and Saved Measurements gates at its DESTINATION
+ * rather than with a popup. An afternoon went into finding a way to see each of
+ * them. Now they are one tap, whatever tier you are.
+ *
+ * ⚠️ These fire from the screen the index is on — a TAB screen. They do NOT
+ * reproduce the modal-burial class of bug (a dialog raised from a
+ * `presentation: 'modal'` screen rendering underneath it), which is what
+ * actually bit on 2026-09-13. For that, raise one from Settings.
+ */
+const DIALOGS: { label: string; run: () => void }[] = [
+  { label: 'Membership gate', run: () => openMembershipGate({ body: 'Preview of the Academy membership card.' }) },
+  {
+    label: 'Confirm · destructive',
+    run: () =>
+      confirmDialog('Log out?', 'You can sign in as a different user afterward.', 'Log out', () => {}, {
+        destructive: true,
+      }),
+  },
+  {
+    label: 'Confirm · normal',
+    run: () =>
+      confirmDialog(
+        'Already signed in elsewhere',
+        'This account is signed in on another device. Continue here and sign that device out?',
+        'Continue',
+        () => {},
+      ),
+  },
+  { label: 'Notice (one button)', run: () => notify('Code not applied', 'That code was not recognised.') },
 ];
 
 type ScreenEntry = { label: string; go: (nav: any) => void };
@@ -287,6 +329,16 @@ export function DevVisualIndex() {
               <Text style={styles.groupHead}>STANDALONE POPUPS</Text>
               {STANDALONE.map((it) => (
                 <Pressable key={it.key} style={styles.row} onPress={() => setStandalone(it.key)}>
+                  <Text style={styles.rowText}>{it.label}</Text>
+                  <Text style={styles.rowGo}>show</Text>
+                </Pressable>
+              ))}
+            </View>
+
+            <View style={styles.group}>
+              <Text style={styles.groupHead}>GLOBAL DIALOGS (real host)</Text>
+              {DIALOGS.map((it) => (
+                <Pressable key={it.label} style={styles.row} onPress={it.run}>
                   <Text style={styles.rowText}>{it.label}</Text>
                   <Text style={styles.rowGo}>show</Text>
                 </Pressable>
