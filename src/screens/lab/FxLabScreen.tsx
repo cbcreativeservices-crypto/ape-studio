@@ -127,6 +127,18 @@ export type FxFaderSpec = {
   format: (v: number) => string;
   /** ≤7 mono chars for the dock button / bezel cell. Defaults to `format`. */
   formatShort?: (v: number) => string;
+  /** The param's NEUTRAL value in natural units — double-tapping the lane
+   *  returns here (owner ruling 2026-09-11). Declared as a value, not a lane
+   *  fraction, so it stays readable and survives a range change; the lane
+   *  fraction is derived with the same faderPos the live value uses.
+   *
+   *  ⚠️ Most teaching faders have NO honest home and must omit this. They are
+   *  POSITION parameters — which frequency, how long a delay, where the
+   *  threshold sits — and no value on their scale is neutral. Only ten of the
+   *  twelve effect labs were left without one deliberately (2026-09-11 audit);
+   *  inventing a home for a delay time would teach a relationship that does
+   *  not exist. */
+  home?: number;
 };
 
 export type FxParamSpec = {
@@ -409,6 +421,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
         onChange: (pos) => setParam(p.paramId, faderVal(s, pos)),
         format: () => s.format(values[p.paramId]),
         formatShort: s.formatShort ? () => s.formatShort!(values[p.paramId]) : undefined,
+        home: s.home != null ? faderPos(s, s.home) : undefined,
         helpKey: p.lessonKey,
       });
     } else {

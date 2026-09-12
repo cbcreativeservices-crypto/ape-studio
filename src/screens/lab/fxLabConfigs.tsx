@@ -1174,7 +1174,9 @@ const phaseConfig: FxLabConfig = {
         { label: '10 ms', value: 10 },
       ],
       initial: 0,
-      fader: { min: 0, max: 10, snap: (v) => Math.round(v * 10) / 10, format: (v) => `${v} ms` },
+      // 0 ms IS the neutral state here — the two channels time-aligned. One of
+      // only two teaching faders in the whole effect set with an honest home.
+      fader: { min: 0, max: 10, snap: (v) => Math.round(v * 10) / 10, format: (v) => `${v} ms`, home: 0 },
     },
     {
       label: 'POLARITY (R)', short: 'POL', paramId: PHASE_INV, lessonKey: 'invert_polarity',
@@ -1266,7 +1268,9 @@ const stereoConfig: FxLabConfig = {
       ],
       initial: 100,
       // The teaching fader: mono → over-wide on one sweep, correlation live.
-      fader: { min: 0, max: 200, snap: (v) => Math.round(v / 5) * 5, format: (v) => `${Math.round(v)}%` },
+      // 100% is the stereo image as recorded — neither narrowed nor widened.
+      // The other honest home in the set.
+      fader: { min: 0, max: 200, snap: (v) => Math.round(v / 5) * 5, format: (v) => `${Math.round(v)}%`, home: 100 },
     },
     {
       label: 'PAN', paramId: P.pan, lessonKey: 'pan',
