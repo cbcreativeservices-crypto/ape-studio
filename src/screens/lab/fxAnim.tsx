@@ -163,6 +163,12 @@ const DYN_WINDOW_MS = 900;
 const DYN_BURST_MS = 450;
 /** Hit decay time constant (the "tail" the release rides). */
 const DYN_DECAY_MS = 90;
+/** Drawn half-height of the dynamics waveform, as a fraction of the panel.
+ *  Raised from 0.42 (owner 2026-09-11: "the incoming waveform signal should be
+ *  bigger"). Shared by the IN path, the OUT path and the threshold guide, so
+ *  the two waves stay directly comparable and the guide keeps meeting them at
+ *  the right level — scaling one alone would make the before/after a lie. */
+const DYN_AMP = 0.47;
 const DYN_PEAK_DB = -8;
 const DYN_FLOOR_DB = -52;
 
@@ -780,7 +786,7 @@ function DynamicsFlow({
     const pc = carrier.value;
     const scrollMs = (env.value / PI2) * DYN_BURST_MS;
     const p = Skia.Path.Make();
-    const A = h * 0.42;
+    const A = h * DYN_AMP;
     const N = 72;
     const x0 = 6;
     const span = stageX - 16 - x0;
@@ -798,7 +804,7 @@ function DynamicsFlow({
     const pc = carrier.value;
     const scrollMs = (env.value / PI2) * DYN_BURST_MS;
     const p = Skia.Path.Make();
-    const A = h * 0.42;
+    const A = h * DYN_AMP;
     const N = 112; // finer than the IN side: a fast attack is a narrow feature
     const span = outX1 - outX0;
     const step = span / N;
@@ -890,7 +896,7 @@ function DynamicsFlow({
   // the OUT side (limiter) — dashed = a limit, the shared grammar.
   const guidePath = useDerivedValue(() => {
     const p = Skia.Path.Make();
-    const A = h * 0.42;
+    const A = h * DYN_AMP;
     const db = mode === 'limiter' ? ceilG.value : thrG.value;
     const yOff = A * dispAmp(db);
     const x0 = mode === 'limiter' ? stageX + 10 : 6;

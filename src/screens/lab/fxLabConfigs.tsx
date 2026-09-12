@@ -765,11 +765,17 @@ const compConfig: FxLabConfig = {
   params: [
     {
       label: 'THRESHOLD', short: 'THRESH', paramId: P.thresholdDb, lessonKey: 'threshold',
-      choices: [-40, -30, -20, -10].map((t) => ({ label: `${t} dB`, value: t })),
+      // Down to -50 (owner 2026-09-11). The old floor of -40 capped how far the
+      // learner could push the threshold INTO the signal, which capped how much
+      // gain reduction they could ever produce — and the GR ladder along with
+      // it. A lower threshold means more of the source sits above it, so the
+      // reduction deepens and the meter has more to show.
+      choices: [-50, -40, -30, -20, -10].map((t) => ({ label: `${t} dB`, value: t })),
       initial: -30,
       // The teaching fader: ride the threshold through the −20 dBFS source and
       // watch measured GR appear on the bezel the moment you cross it.
-      fader: { min: -40, max: -10, snap: Math.round, format: (v) => `${Math.round(v)} dB` },
+      // The fader spans the chips, so its floor moves with them.
+      fader: { min: -50, max: -10, snap: Math.round, format: (v) => `${Math.round(v)} dB` },
     },
     {
       label: 'RATIO', paramId: P.ratio, lessonKey: 'ratio',
