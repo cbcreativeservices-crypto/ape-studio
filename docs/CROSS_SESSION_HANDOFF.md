@@ -57,6 +57,19 @@ AC-0725, AC-1829; no family emptied, the three affected retain **33 / 46 / 74**
 (your "33–74 rows each"). Full column-by-column diff of every surviving row shows
 only override-targeted fields moved. tsc clean, suite 1063 → 1064.
 
+**Also verified IN THE APP on the Pixel, not only in the JSON** (dev client
+reloaded onto the rebuilt bundle first). Career Finder hero reads **1,898
+TITLES / 42 FAMILIES**; the families list header reads "1,898 titles, grouped
+into 42 families" and every one of the 42 renders a non-zero count (min 24).
+Opened the most-affected family, Recording Studios & Music Production: header
+**· 33 TITLES**, and a full expand-and-scroll UI dump of its list returns all 33
+titles the index holds and **zero** occurrences of the removed "Session
+Documentation Specialist". Worth doing because a correct JSON file and a correct
+SCREEN are different claims — the count the user sees comes from
+`CAREER_COUNT`, and the per-family counts from a separately serialized
+`careerFamilies.json`, which is exactly where the missing decrement above would
+have shown up.
+
 ⚠️ **One thing to fold back into the note for next time.** Its snippet is flagged
 a placeholder for NAMES (real list is `careers`, title field `c['t']`), but the
 gap is bigger: `families[fam]['count']` is incremented per career and is
