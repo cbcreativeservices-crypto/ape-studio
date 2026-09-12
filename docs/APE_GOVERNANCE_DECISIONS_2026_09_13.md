@@ -102,3 +102,29 @@ Now 124 units (~11 px resting, ~18 px with a live reading), weight 700, resting 
 The companion tuner-tile flicker WAS fixed (its retired round car-gauge strip sat underneath the live mini and showed on every engine dropout). The SPL one never reproduced under instrumentation and is closed unfixed.
 
 **One thing left on the record for whoever picks it up:** `HubSplSkin` mutates its ballistic refs (`vuRef`, `vuVelRef`, `lastTickRef`) **during render**. Under React 19 concurrent rendering a render can be started and discarded; the ref mutations survive, the output does not, and because `lastTickRef` was already advanced the next render skips that step — the needle misses a step and lurches, intermittently, logging nothing. This was never observed, only reasoned. The diagnostic probe was removed at the owner's instruction when the issue was retired.
+
+---
+
+## R7 — The glossary's weekly limit is disclosed WITH the "free" claim
+
+**Ruling (owner, 2026-09-13):** the About sheet must state the free tier's glossary allowance. Owner chose the placement and the wording.
+
+`AboutHomeSheet` → "Start with the Glossary", paragraph 1 now reads:
+
+> The Pro Audio Glossary is the foundation of the app and is available free. **Free use includes 14 definitions a week; Academy membership removes the limit.**
+
+**Placement is the ruling, not an implementation detail.** It sits immediately after the sentence it qualifies rather than at the end of the section: a limit disclosed three paragraphs below the claim reads as buried.
+
+**14 is not a literal to be trusted on sight** — it mirrors `GLOSSARY_WEEKLY_LIMIT` in `src/features/glossary/glossaryCap.ts` (and the server RPC in `docs/APE_GLOSSARY_WEEKLY_LIMIT_14_2026_09_10.SQL`). If that constant changes, this sentence is ratified copy and must change with it; a stale number here is a false claim about what free includes. A code comment at the string says so.
+
+### ⚠️ Open — three ratified strings still describe the glossary as free without the cap
+
+Found in the same sweep, **reported and NOT changed** (`src/lib/copy.ts` is VERBATIM; changes route to the owner):
+
+| Line | String |
+|---|---|
+| 9 | "Use the **free glossary** as a reference tool. Upgrade from reference mode…" |
+| 13 | "Continue using the **glossary for free**, or unlock the complete Academy experience." |
+| 19 | "The **free glossary** is your professional audio reference. Upgrade to Academy Mode…" |
+
+All three predate the weekly cap (added 2026-09-10). Each is literally true — the glossary *is* free — but none mentions the allowance, and unlike the About sheet these appear on **paywall and upgrade surfaces**, where an undisclosed usage limit is a commercial and store-review consideration rather than a wording preference. Owner's call whether they need the same qualification.

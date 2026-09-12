@@ -16,7 +16,13 @@ const SECTIONS: { head: string; paras: string[] }[] = [
   {
     head: 'Start with the Glossary',
     paras: [
-      'The Pro Audio Glossary is the foundation of the app and is available free.',
+      // The weekly limit is disclosed HERE, with the claim it qualifies rather
+      // than further down the section (owner placement ruling 2026-09-13).
+      // 14 = GLOSSARY_WEEKLY_LIMIT in features/glossary/glossaryCap.ts; if that
+      // constant ever changes, this sentence is ratified copy and has to change
+      // with it — a stale number here is a false claim about what free includes.
+      'The Pro Audio Glossary is the foundation of the app and is available free. '
+        + 'Free use includes 14 definitions a week; Academy membership removes the limit.',
       'Use it whenever you encounter an unfamiliar term, connector, specification, technique, piece of equipment, or audio concept. Search for what you need, learn what it means, and explore related terminology.',
       'You do not have to enroll in the Academy to use the app as a reference.',
     ],
