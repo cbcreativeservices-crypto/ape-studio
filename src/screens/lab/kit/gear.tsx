@@ -302,6 +302,7 @@ export function GearKnob({
   const grab = useRef(0);
   const lastTap = useRef(0);
   const moved = useRef(false);
+  const bandW = useRef(KNOB_SVG); // measured band width, for the tap L/R split
   // Same page-scroll freeze as the fader — a pot turn is a vertical drag, and
   // the page scroller stole it on device exactly the same way.
   const ctxLock = useScrollLock();
@@ -312,19 +313,26 @@ export function GearKnob({
     () =>
       PanResponder.create({
         onStartShouldSetPanResponder: () => true, // taps nudge (below), so claim
-        onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dy) > Math.abs(g.dx),
+        onStartShouldSetPanResponderCapture: () => true,
+        // Owner ruling 2026-09-11: the pan-pot band is OFF LIMITS to the
+        // channel scroller — a sideways gesture that begins on this band must
+        // never page the console. Real desks make the same promise: reaching
+        // for a pan pot cannot shove the whole channel bay sideways.
+        onPanResponderTerminationRequest: () => false,
         onPanResponderGrant: () => {
           lockRef.current?.(true);
           grab.current = valueRef.current;
           moved.current = false;
         },
         onPanResponderMove: (_e, g) => {
-          if (Math.abs(g.dy) > 5) moved.current = true;
+          if (Math.abs(g.dy) > 5 || Math.abs(g.dx) > 5) moved.current = true;
           if (!moved.current) return;
-          // Vertical drag turns the pot — the touch convention every DAW uses,
-          // because circular dragging on a 42 pt knob is miserable. Full
-          // travel in ~140 pt, quantised to 5 so the readout stays tidy.
-          const raw = grab.current + (-g.dy / 140) * 200;
+          // BOTH axes turn the pot: vertical drag is the DAW convention
+          // (circular dragging on a 42 pt knob is miserable), and since the
+          // band never scrolls (ruling above), a horizontal drag maps to pan
+          // the way the ear expects — drag right, sound goes right. Full
+          // travel in ~140 pt either way, quantised to 5.
+          const raw = grab.current + ((g.dx - g.dy) / 140) * 200;
           const v = Math.max(-100, Math.min(100, Math.round(raw / 5) * 5));
           if (v !== valueRef.current) onChangeRef.current(v);
         },
@@ -348,7 +356,7 @@ export function GearKnob({
           lastTap.current = now;
           // A single TAP (no drag) nudges toward the tapped side — the visible
           // non-drag path, same 25-step the old arrow buttons used.
-          const left = e.nativeEvent.locationX < KNOB_SVG / 2;
+          const left = e.nativeEvent.locationX < bandW.current / 2;
           const v = Math.max(-100, Math.min(100, valueRef.current + (left ? -step : step)));
           if (v !== valueRef.current) {
             onChangeRef.current(v);
@@ -360,22 +368,26 @@ export function GearKnob({
   );
 
   return (
-    <View style={s.knobWrap}>
+    // The WHOLE band is the control (owner ruling 2026-09-11): the responder
+    // rides the full-width wrapper, not just the knob circle, so there is no
+    // scrollable sliver beside the pot for a thumb to catch.
+    <View
+      style={s.knobWrap}
+      onLayout={(e) => (bandW.current = e.nativeEvent.layout.width)}
+      {...responder.panHandlers}
+      accessible
+      accessibilityRole="adjustable"
+      accessibilityLabel={`${name} ${legend.toLowerCase()}`}
+      accessibilityValue={{ text: fmt(value) }}
+      accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
+      accessibilityHint="Drag up or down, or sideways, to turn. Tap the left or right side to nudge."
+      onAccessibilityAction={(e) => {
+        const d = e.nativeEvent.actionName === 'increment' ? step : -step;
+        onChangeRef.current(Math.max(-100, Math.min(100, valueRef.current + d)));
+      }}
+    >
       <Text style={s.legend}>{legend}</Text>
-      <View
-        {...responder.panHandlers}
-        accessible
-        accessibilityRole="adjustable"
-        accessibilityLabel={`${name} ${legend.toLowerCase()}`}
-        accessibilityValue={{ text: fmt(value) }}
-        accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
-        accessibilityHint="Drag up or down to turn. Tap the left or right side to nudge."
-        onAccessibilityAction={(e) => {
-          const d = e.nativeEvent.actionName === 'increment' ? step : -step;
-          onChangeRef.current(Math.max(-100, Math.min(100, valueRef.current + d)));
-        }}
-        hitSlop={6}
-      >
+      <View pointerEvents="none">
         <Svg width={KNOB_SVG} height={KNOB_SVG}>
           {/* End-of-travel + centre detent ticks around the arc. */}
           {[-POINTER_SWEEP, -POINTER_SWEEP / 2, 0, POINTER_SWEEP / 2, POINTER_SWEEP].map((deg) => {
@@ -434,13 +446,49 @@ export function GearButton({
 
 /* ── ScribbleStrip — the tape at the BOTTOM of a real channel ────────────── */
 
-export function ScribbleStrip({ name }: { name: string }) {
-  return (
-    <View style={s.tape} accessible={false /* the strip's controls each carry the name already */}>
+/** Solo lighting states (owner ruling 2026-09-11): tapping the tape toggles
+ *  SOLO. The soloed channel's tape glows amber; while ANY solo is active,
+ *  every other channel's tape turns light blue — one glance at the desk says
+ *  which channel is speaking and which are being held out of the way. */
+export type ScribbleSolo = 'soloed' | 'others-soloed' | 'none';
+
+export function ScribbleStrip({
+  name,
+  solo = 'none',
+  onToggleSolo,
+}: {
+  name: string;
+  solo?: ScribbleSolo;
+  /** Present = the tape is a SOLO switch. Absent = plain tape (labs whose
+   *  audio model has no solo must not render a switch that does nothing). */
+  onToggleSolo?: () => void;
+}) {
+  const body = (
+    <View
+      style={[
+        s.tape,
+        solo === 'soloed' && s.tapeSoloed,
+        solo === 'others-soloed' && s.tapeOthers,
+      ]}
+    >
       <Text style={s.tapeText} numberOfLines={1}>
         {name}
       </Text>
     </View>
+  );
+  if (!onToggleSolo) {
+    return <View accessible={false /* the strip's controls each carry the name already */}>{body}</View>;
+  }
+  return (
+    <Pressable
+      onPress={onToggleSolo}
+      hitSlop={{ top: 5, bottom: 8, left: 4, right: 4 }}
+      accessibilityRole="button"
+      accessibilityState={{ selected: solo === 'soloed' }}
+      accessibilityLabel={`${name} solo ${solo === 'soloed' ? 'on — tap to turn off' : 'off — tap to solo this channel'}`}
+    >
+      {body}
+    </Pressable>
   );
 }
 
@@ -511,7 +559,7 @@ const s = StyleSheet.create({
   nudgeGlyph: { color: INK, fontSize: 9 },
   readout: { textAlign: 'center', color: colors.textSecondary, fontFamily: fonts.mono, fontSize: 10.5, marginTop: 1 },
 
-  knobWrap: { alignItems: 'center', gap: 1 },
+  knobWrap: { alignSelf: 'stretch', alignItems: 'center', gap: 1 },
   legend: { color: INK, fontFamily: fonts.panelSemiBold, fontSize: 8, letterSpacing: 2 },
   pointer: { position: 'absolute', width: 3, height: 11, borderRadius: 1.5, backgroundColor: colors.amber },
   knobEnd: { position: 'absolute', bottom: 6, color: INK, fontFamily: fonts.panelSemiBold, fontSize: 8 },
@@ -532,5 +580,17 @@ const s = StyleSheet.create({
   gearBtnText: { color: INK, fontFamily: fonts.panelSemiBold, fontSize: 9.5, letterSpacing: 1 },
 
   tape: { height: 22, borderRadius: 3, backgroundColor: TAPE, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4 },
+  /** SOLO engaged: amber, glowing lightly (owner: "glowing lightly" — a soft
+   *  halo, not a strobe; reduced-motion users get the identical static glow). */
+  tapeSoloed: {
+    backgroundColor: colors.amber,
+    shadowColor: colors.amber,
+    shadowOpacity: 0.75,
+    shadowRadius: 7,
+    shadowOffset: { width: 0, height: 0 },
+    elevation: 5,
+  },
+  /** Another channel is soloed: this one steps back in light blue. */
+  tapeOthers: { backgroundColor: '#a9c8e8' },
   tapeText: { color: TAPE_INK, fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2 },
 });

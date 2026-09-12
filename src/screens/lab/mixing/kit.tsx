@@ -457,11 +457,16 @@ function Strip({
   value,
   onChange,
   show,
+  anySolo,
 }: {
   id: TrackId;
   value: TrackSettings;
   onChange: (id: TrackId, next: Partial<TrackSettings>) => void;
   show: ConsoleShow;
+  /** True while ANY channel on the console is soloed — drives the desk-wide
+   *  tape lighting (owner ruling 2026-09-11: soloed tape glows amber, every
+   *  other tape turns light blue). */
+  anySolo: boolean;
 }) {
   const t = SESSION_TRACKS.find((x) => x.id === id)!;
   return (
@@ -497,7 +502,15 @@ function Strip({
           onChangeDb={(db) => onChange(id, { faderDb: stepValue(db, 0, -60, 12) })}
         />
       ) : null}
-      <ScribbleStrip name={t.name} />
+      {/* The tape is also the SOLO switch (owner ruling 2026-09-11) — real
+          solo-in-place, rendered by mixAudio: while any tape is lit, the
+          un-lit channels are silenced in the render only; nobody's MUTE
+          state is rewritten, so dropping out of solo returns the exact mix. */}
+      <ScribbleStrip
+        name={t.name}
+        solo={value.solo ? 'soloed' : anySolo ? 'others-soloed' : 'none'}
+        onToggleSolo={() => onChange(id, { solo: !value.solo })}
+      />
     </StripFrame>
   );
 }
@@ -518,6 +531,7 @@ export function MiniConsole({
 }) {
   const change = (id: TrackId, next: Partial<TrackSettings>) =>
     onChange({ ...value, [id]: { ...FLAT, ...(value[id] ?? {}), ...next } });
+  const anySolo = tracks.some((id) => !!value[id]?.solo);
   return (
     <View>
       <Text style={styles.consoleCue}>{tracks.length} CHANNELS — SWIPE →</Text>
@@ -526,7 +540,7 @@ export function MiniConsole({
           row sideways while the page itself is frozen by the drag lock. */}
       <ScrollView horizontal showsHorizontalScrollIndicator directionalLockEnabled contentContainerStyle={styles.console}>
         {tracks.map((id) => (
-          <Strip key={id} id={id} value={{ ...FLAT, ...(value[id] ?? {}) }} onChange={change} show={show} />
+          <Strip key={id} id={id} value={{ ...FLAT, ...(value[id] ?? {}) }} onChange={change} show={show} anySolo={anySolo} />
         ))}
       </ScrollView>
     </View>

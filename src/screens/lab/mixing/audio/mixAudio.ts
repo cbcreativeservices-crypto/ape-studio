@@ -362,6 +362,13 @@ export interface TrackSettings {
   faderDb: number; // −60…+12; −60 treated as −∞
   pan: number; // −100…+100
   mute: boolean;
+  /** SOLO (owner ruling 2026-09-11, tapped on the scribble strip). Rendered as
+   *  true solo-in-place, the way a desk does it: while ANY track is soloed,
+   *  every non-soloed track is silenced IN THE RENDER ONLY — the user's own
+   *  mute states are never rewritten, so dropping out of solo returns exactly
+   *  the mix they had. A lit SOLO that changed nothing would be a fake
+   *  control; this one is wired into renderMix like everything else. */
+  solo?: boolean;
   polarity: boolean; // true = inverted (Ø)
   clipGainDb: number;
   /** Optional high-pass (sections 6/8): 0/undefined = off. */
@@ -477,9 +484,11 @@ export function renderMix(
   const L = new Float32Array(n);
   const R = new Float32Array(n);
   const verbBus = opts?.sharedVerb ? new Float32Array(n) : null;
+  // Solo-in-place: one soloed channel silences the rest, non-destructively.
+  const soloActive = TRACK_IDS.some((id) => !!settings[id]?.solo);
   for (const id of TRACK_IDS) {
     const s = { ...FLAT, ...(settings[id] ?? {}) };
-    if (s.mute || s.faderDb <= -60) continue;
+    if (s.mute || (soloActive && !s.solo) || s.faderDb <= -60) continue;
     let x: Mono = n === N ? stems[id] : stems[id].subarray(0, n);
     // Inserts, in channel order.
     if (s.clipGainDb) x = dspGainDb(x, s.clipGainDb);
