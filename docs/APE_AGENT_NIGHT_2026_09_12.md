@@ -292,3 +292,20 @@ I will lift those 11 files back out.
 
 The `web/` work in progress (SEO, the connect pages) was NOT swept up and is
 still uncommitted, as it should be. Every add from here is path-specific.
+
+---
+
+## OWNER RULING 2026-09-13 — privacy and terms stay LOCKED until launch
+
+Both store audits flagged the 401 on `/privacy`, `/terms` and `/support` as
+submission-blocking. The owner has ruled that the site gate **stays closed until
+launch**, so this is a **launch-day action, not a defect**: unlock or exempt
+those three paths in `web/proxy.ts` as part of the launch sequence, not before.
+`web/proxy.ts` is the owner's uncommitted work in progress and was not touched.
+
+The coupled item survives and should be done in the same pass: there is **no
+in-app link** to either document anywhere in the app, which Apple guideline
+3.1.2 expects for auto-renewing subscriptions, ideally at the point of purchase.
+Adding those links is only worth doing once the pages are publicly reachable.
+
+**Full handoff: `docs/APE_AGENT_NIGHT_HANDOFF_2026_09_13.md`.**
