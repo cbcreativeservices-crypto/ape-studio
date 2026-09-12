@@ -53,6 +53,7 @@ import { ApeDsp, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { GuidedLessonSheet, getLabLesson, SOURCE_LESSON, type LabId, type LessonContent } from '../../features/lab/guidedLessons';
+import { GrMeter } from '../../features/lab/fxViz';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
@@ -484,6 +485,48 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
       }}
     >
       {!engineReady ? <EngineGate state={gate} /> : null}
+
+      {/* GAIN REDUCTION — the dynamics labs' iconic meter (owner gear design
+          pass 2026-09-11). The compressor, gate and limiter already MEASURED
+          their gain reduction through fxGrStatus and then reported it as a
+          single text cell on the bezel: the one number a dynamics processor
+          exists to show, rendered as a word. Every hardware compressor ever
+          built puts a needle or an LED ladder on it, because the SHAPE of the
+          reduction over time — how fast it grabs, how it lets go — is the
+          lesson, and a number that changes ten times a second cannot teach it.
+
+          ⚠️ HONESTY: this is the SAME measured value the bezel already showed
+          (ApeDsp.fxGrStatus), not an estimate derived from the settings, and
+          it is fed 0 when the audio is not running rather than freezing at its
+          last reading — a lit meter over silence would be a fake meter. The
+          bezel cell stays: the meter shows the movement, the cell stays the
+          precise readout, and the well below states which it is. */}
+      {config.pollGr ? (
+        <View style={{ gap: 6 }}>
+          <Text style={styles.sectionHead}>
+            {config.pollGr === 'gate' ? 'GATE ATTENUATION' : 'GAIN REDUCTION'}
+          </Text>
+          <GrMeter
+            grDb={running ? grDb : 0}
+            // The gate's range is the outlier — it closes far harder than a
+            // compressor reduces, and a 24 dB scale would peg instantly.
+            maxDb={config.pollGr === 'gate' ? 70 : 24}
+            // The meter names the PROCESSOR, not the quantity — the section
+            // header above already says what is being measured, and printing
+            // "GAIN REDUCTION" twice in two lines was the first draft's flaw.
+            // It also matches the Signal Chain lab, where three of these sit
+            // side by side and the name is the only thing telling them apart.
+            label={config.pollGr === 'gate' ? 'GATE' : config.pollGr === 'limiter' ? 'LIMITER' : 'COMPRESSOR'}
+          />
+          <Text style={styles.caption}>
+            {running
+              ? 'Measured from the live audio — watch how fast it grabs and how it lets go.'
+              : fxReady
+                ? 'Play the source to see the reduction. The meter reads zero while nothing is sounding.'
+                : 'The audio engine is not available in this build, so nothing is measured.'}
+          </Text>
+        </View>
+      ) : null}
 
       {/* DESIGNED RESPONSE — the static analytic hero ALWAYS renders (§1.7:
           it is the response-curve source of truth). With Skia the animated
