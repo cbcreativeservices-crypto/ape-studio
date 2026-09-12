@@ -223,13 +223,22 @@ export function ControlSlider({
         ) : (
           <View style={[styles.sliderFill, { width: `${Math.round(frac * 100)}%` }]} />
         )}
-        <Animated.View
-          style={[
-            styles.sliderThumb,
-            { left: `${Math.round(frac * 100)}%`, backgroundColor: level ? levelColor(frac) : colors.green },
-            pulseStyle,
-          ]}
-        />
+        {/* A brushed CAP with a coloured indicator line, not a bare coloured
+            bar (gear design pass 2026-09-11). This one component is the
+            continuous control in the whole amp lab, the de-esser, the envelope
+            lab and the patchbay pages, so the fader vocabulary the mixing
+            console and the rack dock speak reaches all of them from here.
+            The LEVEL ramp keeps its colour — it moves to the line, which is
+            what you read against the scale. */}
+        {/* The cap travels inside an INSET lane, not the full width. A 24 pt
+            cap positioned at 0% / 100% of a clipped track loses half of itself
+            at each end — the old 5 pt bar never showed the problem. A real cap
+            travels within its slot and stays whole. */}
+        <View pointerEvents="none" style={styles.sliderCapTravel}>
+          <Animated.View style={[styles.sliderCap, { left: `${Math.round(frac * 100)}%` }, pulseStyle]}>
+            <View style={[styles.sliderCapLine, { backgroundColor: level ? levelColor(frac) : colors.green }]} />
+          </Animated.View>
+        </View>
       </View>
     </View>
   );
@@ -373,13 +382,37 @@ const styles = StyleSheet.create({
   sliderLabel: { color: colors.textSecondary, fontFamily: fonts.barlowMedium, fontSize: 13 },
   sliderValue: { color: colors.cyanBright, fontFamily: fonts.oswaldMedium, fontSize: 13 },
   sliderTrack: {
-    height: 44, borderRadius: 10, backgroundColor: '#101013', borderWidth: 1, borderColor: colors.hairline,
+    height: 44, borderRadius: 10, backgroundColor: '#141418', borderWidth: 1, borderColor: colors.hairline,
+    // Caught light along the top edge — the difference between a panel and a
+    // card, and the same cue the console strip and the rack lane use.
+    borderTopColor: '#3a3a42',
     justifyContent: 'center', overflow: 'hidden',
   },
   sliderFill: { position: 'absolute', left: 0, top: 0, bottom: 0, backgroundColor: '#1d2b22' },
-  sliderThumb: {
-    position: 'absolute', width: 5, top: 4, bottom: 4, marginLeft: -2.5, borderRadius: 2.5, backgroundColor: colors.green,
+  /** The cap: brushed body standing proud of the panel, with the value line
+   *  inside it. Geometry deliberately matches the rack dock lane so a student
+   *  meets ONE fader across the whole app. */
+  /** Inset by half a cap at each end so the cap never clips. */
+  sliderCapTravel: { position: 'absolute', left: 12, right: 12, top: 0, bottom: 0 },
+  sliderCap: {
+    position: 'absolute',
+    width: 24,
+    top: 5,
+    bottom: 5,
+    marginLeft: -12,
+    borderRadius: 4,
+    backgroundColor: '#26262c',
+    borderWidth: 1,
+    borderColor: '#3d3d46',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.6,
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
   },
+  sliderCapLine: { width: 2.5, height: 20, borderRadius: 1.25 },
   segRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   segBtn: {
     minHeight: 44, minWidth: 52, paddingHorizontal: 12, borderRadius: 10, borderWidth: 1, borderColor: colors.hairline,
