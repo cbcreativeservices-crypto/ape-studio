@@ -83,10 +83,14 @@ export function VerticalFader({
       <View style={styles.track} {...pan.panHandlers}>
         <View pointerEvents="none" style={styles.trackLine} />
         <View pointerEvents="none" style={styles.centerTick} />
-        <Animated.View
-          pointerEvents="none"
-          style={[styles.thumb, { top: (1 - value) * TRACK_H - 5 }, thumbTint ? { backgroundColor: thumbTint } : null, pulseStyle]}
-        />
+        {/* The cap stays BRUSHED METAL and the tint moves to its indicator
+            line (gear skin 2026-09-11). Flooding the whole cap with amber —
+            which is what it used to do — turned the one hardware-looking
+            element back into a coloured pill, and lost the reading a real cap
+            gives you: the line is what you line up against the scale. */}
+        <Animated.View pointerEvents="none" style={[styles.thumb, { top: (1 - value) * TRACK_H - 6.5 }, pulseStyle]}>
+          <View style={[styles.thumbLine, thumbTint ? { backgroundColor: thumbTint } : null]} />
+        </Animated.View>
       </View>
       <Text style={styles.faderLabel}>{label}</Text>
     </View>
@@ -155,11 +159,46 @@ export function MiniBtn({ label, active, onPress }: { label: string; active?: bo
 }
 
 const styles = StyleSheet.create({
+  // GEAR SKIN (owner design pass 2026-09-11) — a graphic EQ's band faders are
+  // the single most recognisable control on the instrument, and these were a
+  // grey pill on a grey line. Same geometry and the same proven gesture; only
+  // the material changed, so nothing about the drag or the a11y moves.
   faderWrap: { alignItems: 'center', gap: 4, width: 30 },
   track: { width: 30, height: TRACK_H, alignItems: 'center' },
-  trackLine: { position: 'absolute', top: 0, bottom: 0, width: 3, borderRadius: 1.5, backgroundColor: '#2a2c34' },
-  centerTick: { position: 'absolute', top: TRACK_H / 2 - 0.75, left: 3, right: 3, height: 1.5, backgroundColor: '#4a5060' },
-  thumb: { position: 'absolute', width: 22, height: 11, borderRadius: 3, backgroundColor: '#8f96a3', borderWidth: 1, borderColor: '#0c0c0f' },
+  // A recessed slot, not a line: dark groove, black edge, so the cap reads as
+  // sitting IN the panel rather than on top of a rule.
+  trackLine: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    width: 6,
+    borderRadius: 3,
+    backgroundColor: '#0a0a0c',
+    borderWidth: 1,
+    borderColor: '#000',
+  },
+  // Unity, printed the width of the slot's surround — on a graphic EQ this is
+  // the 0 dB line every band is judged against, so it earns the amber.
+  centerTick: { position: 'absolute', top: TRACK_H / 2 - 1, left: 1, right: 1, height: 2, backgroundColor: 'rgba(217,159,31,0.5)' },
+  // A brushed cap with a centre indicator line, matching the console strip and
+  // the dock lane — one fader vocabulary across the whole app.
+  thumb: {
+    position: 'absolute',
+    width: 26,
+    height: 14,
+    borderRadius: 3,
+    backgroundColor: '#26262c',
+    borderWidth: 1,
+    borderColor: '#3d3d46',
+    shadowColor: '#000',
+    shadowOpacity: 0.6,
+    shadowRadius: 2.5,
+    shadowOffset: { width: 0, height: 1.5 },
+    elevation: 3,
+  },
+  /** The cap's indicator line — what you read against the scale. Neutral grey
+   *  at unity, the band's tint once it is boosting or cutting. */
+  thumbLine: { alignSelf: 'center', marginTop: 5.5, width: 16, height: 2, borderRadius: 1, backgroundColor: '#6e7480' },
   faderLabel: { fontFamily: fonts.mono, fontSize: 9, color: colors.textSub },
   boardRow: { flexDirection: 'row', justifyContent: 'space-between' },
   boardScroll: { gap: 6, paddingRight: 8 },
