@@ -1,69 +1,197 @@
 {
-  "_about": "Corrections applied by scripts/build-career-index.py ON TOP of the owner's workbook (industry accuracy review 2026-09-04). The workbook stays the source; these keep the app honest until the workbook is revised. Titles are matched exactly.",
-
-  "_topicGs_about": "Family curriculum links, by family name → explicit v3 global_sequence topics (owner 2026-09-04). The workbook's 'Key app topics' for the Professional Practice families named subjects/columns that don't resolve to v3 topics, so those families fell back to generic links and Music Curation got none. These are ccode's recommended picks from the live v3 curriculum; every gs is validated against active v3 at build. Adjust freely.",
-  "topicGs": {
-    "Music Curation, Repertoire, Libraries & Editorial": [4310, 3950, 4380, 4400],
-    "Music Retail, Rental & Instrument Services": [4400, 4370, 4390, 4360],
-    "Education, Research, Training & Technical Communication": [4380, 4400, 4370, 3300, 4360],
-    "Audio Business, Product, Sales & Operations": [4390, 4360, 4370, 4400, 4380]
-  },
-
-  "regulated": [
-    "Hearing Instrument Specialist", "Hearing-Aid Specialist", "Hearing-Aid Fitting Specialist",
-    "Speech-Language Pathology Assistant", "Voice Therapist",
-    "Auditory-Verbal Therapist", "Listening and Spoken Language Specialist",
-    "Neurosonographer"
+ "_about": "Corrections applied by scripts/build-career-index.py ON TOP of the owner's workbook (industry accuracy review 2026-09-04). The workbook stays the source; these keep the app honest until the workbook is revised. Titles are matched exactly.",
+ "_topicGs_about": "Family curriculum links, by family name → explicit v3 global_sequence topics (owner 2026-09-04). The workbook's 'Key app topics' for the Professional Practice families named subjects/columns that don't resolve to v3 topics, so those families fell back to generic links and Music Curation got none. These are ccode's recommended picks from the live v3 curriculum; every gs is validated against active v3 at build. Adjust freely.",
+ "topicGs": {
+  "Music Curation, Repertoire, Libraries & Editorial": [
+   4310,
+   3950,
+   4380,
+   4400
   ],
-
-  "_pe_rule": "Every title ending in 'Engineer' or 'Consultant' inside the Architectural Acoustics family: offering engineering services to the public commonly needs a PE licence.",
-  "professionalEngineerFamilies": ["Architectural Acoustics, Noise & Vibration"],
-
-  "moveToFamily": {
-    "Sonar Technician": "Defense, Sonar & Acoustic Intelligence",
-    "Sonar Systems Engineer": "Defense, Sonar & Acoustic Intelligence",
-    "Sonar Signal-Processing Engineer": "Defense, Sonar & Acoustic Intelligence"
-  },
-
-  "preparation": {
-    "Sonar Software Engineer": "Bachelor's degree common; portfolio/certification may supplement",
-    "Sonar Algorithm Engineer": "Bachelor's degree common; portfolio/certification may supplement",
-    "Sonar Simulation Engineer": "Bachelor's degree common; portfolio/certification may supplement",
-    "Sonar Test Engineer": "Bachelor's degree common; portfolio/certification may supplement",
-    "Sonar Data Scientist": "Bachelor's to doctorate, depending on research responsibility",
-    "Beat Maker": "Portfolio, credits, craft training, and professional network"
-  },
-
-  "_craft_rule": "In these craft families a degree is neither common nor expected for the working roles; the workbook's 'Bachelor's degree common' is a spreadsheet default from title class. Rows whose preparation is that default are re-tabled: technician/operator/assistant/stagehand rows to hands-on training, everything else to the 'varies' pathway.",
-  "craftFamilies": [
-    "Live Sound, Touring & Festivals",
-    "Theatre, Worship, Venues & Show Control",
-    "Recording Studios & Music Production",
-    "Manufacturing, Quality, Calibration & Repair",
-    "Stagecraft, Rigging, Power & Production Support",
-    "DJ, Club & Event Performance Technology"
+  "Music Retail, Rental & Instrument Services": [
+   4400,
+   4370,
+   4390,
+   4360
   ],
-
-  "orientation": {
-    "_rule_audiologist": "every title containing 'Audiologist' → Clinical / therapeutic",
-    "Songwriter": "Creative / performance",
-    "Arranger": "Creative / performance",
-    "Orchestrator": "Creative / performance",
-    "Audiobook Narrator": "Creative / performance",
-    "Podcast Host": "Creative / performance",
-    "Foley Walker": "Creative / performance",
-    "Audio Research Engineer": "Science / research",
-    "Postdoctoral Researcher — Acoustics": "Science / research",
-    "Acoustics Laboratory Technician": "Science / research"
-  },
-
-  "titleClass": {
-    "Headphone Repair Technician": "Operational/creative role",
-    "Headphone Acoustics Engineer": "Technical/creative specialty",
-    "Headset Acoustics Engineer": "Technical/creative specialty",
-    "Headset Voice Quality Engineer": "Technical/creative specialty"
-  },
-
-  "_tier_rule": "A row the workbook itself calls 'Closely related / supporting' or 'Audio-dependent allied work' cannot also be 'Direct audio occupation' (audio-core). Such rows are shown as audio-specialized.",
-  "demoteCoreWhenRelationshipIn": ["Closely related / supporting", "Audio-dependent allied work", "Adjacent but audio-specific"]
+  "Education, Research, Training & Technical Communication": [
+   4380,
+   4400,
+   4370,
+   3300,
+   4360
+  ],
+  "Audio Business, Product, Sales & Operations": [
+   4390,
+   4360,
+   4370,
+   4400,
+   4380
+  ]
+ },
+ "regulated": [
+  "Hearing Instrument Specialist",
+  "Hearing-Aid Specialist",
+  "Hearing-Aid Fitting Specialist",
+  "Speech-Language Pathology Assistant",
+  "Voice Therapist",
+  "Auditory-Verbal Therapist",
+  "Listening and Spoken Language Specialist",
+  "Neurosonographer",
+  "Clinical Voice Specialist",
+  "Voice Rehabilitation Specialist",
+  "Fluency Specialist",
+  "Motor-Speech Disorders Specialist",
+  "Soundproofing Contractor",
+  "Studio Construction Contractor",
+  "Tinnitus Specialist — Audiology",
+  "Audiology Clinical Scientist",
+  "Music Therapy Clinical Supervisor",
+  "Accent Modification Specialist — Clinical",
+  "Cochlear-Implant Rehabilitation Specialist",
+  "Aural Rehabilitation Specialist",
+  "Tinnitus Rehabilitation Specialist",
+  "Hyperacusis Specialist",
+  "Clinical Vocal-Fold Imaging Specialist"
+ ],
+ "_pe_rule": "Every title ending in 'Engineer' or 'Consultant' inside the Architectural Acoustics family: offering engineering services to the public commonly needs a PE licence.",
+ "professionalEngineerFamilies": [
+  "Architectural Acoustics, Noise & Vibration"
+ ],
+ "moveToFamily": {
+  "Sonar Technician": "Defense, Sonar & Acoustic Intelligence",
+  "Sonar Systems Engineer": "Defense, Sonar & Acoustic Intelligence",
+  "Sonar Signal-Processing Engineer": "Defense, Sonar & Acoustic Intelligence"
+ },
+ "preparation": {
+  "Sonar Software Engineer": "Bachelor's degree common; portfolio/certification may supplement",
+  "Sonar Algorithm Engineer": "Bachelor's degree common; portfolio/certification may supplement",
+  "Sonar Simulation Engineer": "Bachelor's degree common; portfolio/certification may supplement",
+  "Sonar Test Engineer": "Bachelor's degree common; portfolio/certification may supplement",
+  "Sonar Data Scientist": "Bachelor's to doctorate, depending on research responsibility",
+  "Beat Maker": "Portfolio, credits, craft training, and professional network",
+  "Audio Circuit Designer": "Bachelor's degree common; portfolio/ certification may supplement",
+  "Audio Archivist": "Master's (e.g., MLIS or archival studies) typical; bachelor's plus experience/certificate can supplement",
+  "Audiovisual Archivist": "Master's (e.g., MLIS or archival studies) typical; bachelor's plus experience/certificate can supplement",
+  "Recorded-Sound Archivist": "Master's (e.g., MLIS or archival studies) typical; bachelor's plus experience/certificate can supplement",
+  "Sound Collections Archivist": "Master's (e.g., MLIS or archival studies) typical; bachelor's plus experience/certificate can supplement",
+  "Music Label Archivist": "Master's (e.g., MLIS or archival studies) typical; bachelor's plus experience/certificate can supplement",
+  "Museum Sound Archivist": "Master's (e.g., MLIS or archival studies) typical; bachelor's plus experience/certificate can supplement",
+  "Oral-History Archivist": "Master's (e.g., MLIS or archival studies) typical; bachelor's plus experience/certificate can supplement",
+  "Digital Preservation Archivist — AV": "Master's (e.g., MLIS or archival studies) typical; bachelor's plus experience/certificate can supplement",
+  "Audio Cataloging Librarian": "Master's in library/ information science (MLIS) typically required; may combine with archival training",
+  "Audio Metadata Librarian": "Master's in library/ information science (MLIS) typically required; may combine with archival training",
+  "Postdoctoral Researcher — Acoustics": "Doctorate (PhD) required; postdoctoral positions require a completed doctorate",
+  "Clinical Voice Specialist": "Graduate clinical training and jurisdictional licensure/credentialing commonly required",
+  "Voice Rehabilitation Specialist": "Graduate clinical training and jurisdictional licensure/credentialing commonly required",
+  "Fluency Specialist": "Graduate clinical training and jurisdictional licensure/credentialing commonly required",
+  "Motor-Speech Disorders Specialist": "Graduate clinical training and jurisdictional licensure/credentialing commonly required",
+  "Phonetician": "Bachelor's to doctorate, depending on research responsibility",
+  "Acoustic Phonetician": "Bachelor's to doctorate, depending on research responsibility",
+  "Experimental Phonetician": "Bachelor's to doctorate, depending on research responsibility",
+  "Laboratory Phonologist": "Bachelor's to doctorate, depending on research responsibility",
+  "Sociophonetician": "Bachelor's to doctorate, depending on research responsibility",
+  "Clinical Phonetician": "Bachelor's to doctorate, depending on research responsibility",
+  "Forensic Phonetician": "Bachelor's to doctorate, depending on research responsibility",
+  "Dialectologist": "Bachelor's to doctorate, depending on research responsibility",
+  "Music Librarian": "Master's in library/ information science (MLS/MLIS) typically required; often paired with a music degree",
+  "Music Collections Librarian": "Master's in library/ information science (MLS/MLIS) typically required; often paired with a music degree",
+  "Music Metadata Librarian": "Master's in library/ information science (MLS/MLIS) typically required for the professional 'Librarian' role; often paired with a music degree",
+  "Music Reference Librarian": "Master's in library/ information science (MLS/MLIS) typically required; often paired with a music degree",
+  "Digital Music Librarian": "Master's in library/ information science (MLS/MLIS) typically required; often paired with a music degree",
+  "DJ Equipment Sales Specialist": "Varies: portfolio/experience, certificate, associate, or bachelor's pathway",
+  "Museum Musical-Instrument Conservator": "Graduate degree commonly expected; professional portfolio may also matter"
+ },
+ "_craft_rule": "In these craft families a degree is neither common nor expected for the working roles; the workbook's 'Bachelor's degree common' is a spreadsheet default from title class. Rows whose preparation is that default are re-tabled: technician/operator/assistant/stagehand rows to hands-on training, everything else to the 'varies' pathway.",
+ "craftFamilies": [
+  "Live Sound, Touring & Festivals",
+  "Theatre, Worship, Venues & Show Control",
+  "Recording Studios & Music Production",
+  "Manufacturing, Quality, Calibration & Repair",
+  "Stagecraft, Rigging, Power & Production Support",
+  "DJ, Club & Event Performance Technology"
+ ],
+ "orientation": {
+  "_rule_audiologist": "every title containing 'Audiologist' → Clinical / therapeutic",
+  "Songwriter": "Creative / performance",
+  "Arranger": "Creative / performance",
+  "Orchestrator": "Creative / performance",
+  "Audiobook Narrator": "Creative / performance",
+  "Podcast Host": "Creative / performance",
+  "Foley Walker": "Creative / performance",
+  "Audio Research Engineer": "Science / research",
+  "Postdoctoral Researcher — Acoustics": "Science / research",
+  "Acoustics Laboratory Technician": "Science / research",
+  "Recording Studio Owner": "Business / editorial / operations",
+  "Beat Maker": "Business / editorial / operations",
+  "RF Coordinator — Live Events": "Technical / engineering",
+  "Roadie — Audio": "Hands-on technical / trade",
+  "Audio Description Narrator": "Creative / performance",
+  "Healthcare AV Specialist": "Technical / engineering",
+  "Higher-Education AV Technician": "Hands-on technical / trade",
+  "Education-Facility Acoustics Consultant": "Technical / engineering",
+  "Healthcare Acoustics Consultant": "Technical / engineering",
+  "Construction Noise and Vibration Consultant": "Technical / engineering",
+  "Acoustic Anthropologist": "Science / research",
+  "Neurosonographer": "Clinical / therapeutic",
+  "Recorded-Sound Cataloger": "Business / editorial / operations",
+  "Research Laboratory Manager — Audio": "Science / research",
+  "Research Professor — Acoustics": "Science / research",
+  "Artist Relations Manager — Audio Brand": "Business / editorial / operations",
+  "Club Sound-System Manager": "Hands-on technical / trade",
+  "DJ Equipment Product Specialist": "Business / editorial / operations",
+  "Retail Experience Audio Designer": "Technical / engineering",
+  "Orchestra Contractor": "Business / editorial / operations",
+  "Music Supervisor — Screen": "Business / editorial / operations",
+  "Music Clearance Specialist — Screen": "Business / editorial / operations",
+  "Music Cue-Sheet Specialist": "Business / editorial / operations",
+  "Electroacoustic Standards Laboratory Engineer": "Technical / engineering",
+  "Pronunciation Consultant — Recording": "Education / coaching",
+  "Pronunciation Consultant": "Education / coaching",
+  "Talent Scout — Music": "Business / editorial / operations",
+  "DJ Equipment Sales Specialist": "Business / editorial / operations"
+ },
+ "titleClass": {
+  "Headphone Repair Technician": "Operational/creative role",
+  "Headphone Acoustics Engineer": "Technical/creative specialty",
+  "Headset Acoustics Engineer": "Technical/creative specialty",
+  "Headset Voice Quality Engineer": "Technical/creative specialty",
+  "RF Coordinator — Live Events": "Technical/creative specialty",
+  "AV System Administrator": "Technical/creative specialty",
+  "Dispatch Recording Systems Administrator": "Established industry role",
+  "Voice-Assistant Audio Engineer": "Technical/creative specialty",
+  "Audio Network Administrator": "Established industry role",
+  "Audio Systems Administrator": "Established industry role",
+  "Voice Assistant Linguist": "Established industry role",
+  "Beat Maker": "Established industry role",
+  "Headphone Tuning Engineer": "Technical/creative specialty",
+  "Audio Description Writer": "Established industry role",
+  "Headphone Sales Specialist": "Business/legal/adjacent role",
+  "Telecom Listening-Test Coordinator": "Operational/creative role"
+ },
+ "_tier_rule": "A row the workbook itself calls 'Closely related / supporting' or 'Audio-dependent allied work' cannot also be 'Direct audio occupation' (audio-core). Such rows are shown as audio-specialized.",
+ "demoteCoreWhenRelationshipIn": [
+  "Closely related / supporting",
+  "Audio-dependent allied work",
+  "Adjacent but audio-specific"
+ ],
+ "unregulated": [
+  "Concert Band Director",
+  "Marching Band Director"
+ ],
+ "tier": {
+  "Speech Editor": "Direct audio occupation",
+  "Defense Audio Intelligence Analyst": "Direct audio occupation"
+ },
+ "workModel": {
+  "Audio Event Detection Engineer": "Staff roles common; consulting/contract options vary",
+  "Live Sound Equipment Sales Specialist": "Staff roles common; consulting/contract options vary"
+ },
+ "_removeTitles_about": "Titles dropped from the Career Finder entirely (owner content call 2026-09-11). Not real standalone occupations: task-not-a-job, technique-not-a-title, informal slang, or a constructed dupe already covered elsewhere. Build drops any career record whose title matches exactly.",
+ "removeTitles": [
+  "Session Documentation Specialist",
+  "Virtual Soundcheck Engineer",
+  "Earwig Technician",
+  "Near-Field Mixer"
+ ]
 }

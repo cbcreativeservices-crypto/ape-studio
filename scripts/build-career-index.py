@@ -191,12 +191,50 @@ def main():
         if 'Audiologist' in c['t']: c['ori'] = clinical
     for title, cls in ov['titleClass'].items():
         for c in each(title): c['cls'] = code(TITLE_CLASS, cls, 'title class')
+    # ── A-audit hooks (CF_CCODE_APPLY_NOTE.md 2026-09-11, verbatim shape) ──
+    # remove a workbook licensure/caution flag for named titles (A audit)
+    for title in ov.get('unregulated', []):
+        for c in each(title): c.pop('reg', None)
+    # per-title tier / work-model corrections (A audit)
+    for title, t in ov.get('tier', {}).items():
+        for c in each(title): c['tier'] = code(TIER, t, 'tier')
+    for title, wm in ov.get('workModel', {}).items():
+        for c in each(title): c['wm'] = code(WORK_MODEL, wm, 'work model')
+
     demote = {RELATIONSHIP.index(r) for r in ov['demoteCoreWhenRelationshipIn']}
     demoted = 0
     for c in careers:
         if c['tier'] == 0 and c['rel'] in demote:
             c['tier'] = 1; demoted += 1
     print(f'overrides: {len(ov["moveToFamily"])} moved, {len(ov["regulated"])} regulated, {sum(1 for c in careers if c.get("pe"))} PE-flagged, {demoted} demoted core->specialized')
+
+    # ── drop titles entirely from the Career Finder ──────────────────────────
+    # Owner content ruling 2026-09-11 (CF_CCODE_APPLY_NOTE.md): drop all four
+    # title-reality items. LAST in the overrides block, so every loop above still
+    # sees them, and BEFORE the preps re-table below so that table is built from
+    # the survivors rather than carrying a pathway no remaining title uses.
+    #
+    # ⚠️ The apply note's snippet is explicitly a placeholder ("match the real
+    # names") and it does NOT mention the family tally: `families[fam]['count']`
+    # was incremented per career on the way in and is SERIALIZED into
+    # careerFamilies.json. Dropping rows without decrementing would leave four
+    # families each reporting one career more than the index actually contains.
+    _drop = set(ov.get('removeTitles', []))
+    if _drop:
+        _before = len(careers)
+        for c in careers:
+            if c['t'] in _drop:
+                families[fam_ids[c['f']]]['count'] -= 1
+        careers = [c for c in careers if c['t'] not in _drop]
+        _removed = _before - len(careers)
+        # The note states each of these exists EXACTLY once. If that ever stops
+        # being true, fail loudly rather than silently dropping more than ruled.
+        if _removed != len(_drop):
+            sys.exit(f'removeTitles: expected to drop {len(_drop)}, dropped {_removed}')
+        _empty = [f for f, v in families.items() if v['count'] <= 0]
+        if _empty:
+            sys.exit(f'removeTitles emptied a family: {_empty}')
+        print(f'overrides: removeTitles dropped {_removed} ({_before} -> {len(careers)})')
 
     # preparation pathway is 14 distinct strings — table it too
     preps = sorted({c['prep'] for c in careers})

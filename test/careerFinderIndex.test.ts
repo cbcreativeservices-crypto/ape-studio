@@ -20,10 +20,23 @@ const inFamily = (name: string) => index.careers.filter((c) => index.families[c.
 const titled = (t: string) => index.careers.find((c) => c.t === t);
 
 describe('career index', () => {
-  it('has 1,902 titles across the same 42 families the app hand-authors, in the same order', () => {
-    assert.equal(index.careers.length, 1902);
+  it('has 1,898 titles across the same 42 families the app hand-authors, in the same order', () => {
+    // 1902 -> 1898 (owner content ruling 2026-09-11, applied 2026-09-13): four
+    // title-reality items were dropped outright via the overrides' `removeTitles`
+    // — AC-0024, AC-0132, AC-0187, AC-0235. The count is pinned deliberately, so
+    // a title silently appearing or vanishing from the workbook fails loudly;
+    // when the workbook legitimately changes, change this number WITH it.
+    assert.equal(index.careers.length, 1898);
     assert.deepEqual(index.families, FAMILIES.map((f) => f.name));
     assert.deepEqual(meta.map((m) => m.id), FAMILIES.map((f) => f.id));
+  });
+  it('the four titles the owner ruled out stay out', () => {
+    // Guarding the RULING, not just the count: a rebuild that silently lost the
+    // removeTitles hook would still total 1898 if the workbook gained a title,
+    // and the count test alone would pass.
+    for (const t of ['Session Documentation Specialist', 'Virtual Soundcheck Engineer', 'Earwig Technician', 'Near-Field Mixer']) {
+      assert.equal(titled(t), undefined, t);
+    }
   });
   it('every enum code decodes', () => {
     const e = index.enums;
