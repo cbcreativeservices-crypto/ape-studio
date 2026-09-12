@@ -58,8 +58,15 @@ contributions). Binding rules:
 
 ## R3 — Member customization: COLOR COMPLETE; skins are owner-personal
 
-- Colour customization (member-only, discreet wheel, gate popup for
-  non-members) is COMPLETE across the approved scope: waveform trace, RTA bars,
+> ⛔ **THE "MEMBER-ONLY" HALF OF THIS RULING IS SUPERSEDED.** Owner 2026-09-13
+> opened colour customization to EVERY tier — see
+> `docs/APE_GOVERNANCE_DECISIONS_2026_09_13.md` R1. The entitlement gate and the
+> non-member popup described below no longer exist in the code. Everything else
+> here still stands: the approved SCOPE, the auto-off rule, the amplitude-ramp
+> exception, the reference roles, and skins being owner-personal.
+
+- Colour customization (~~member-only, discreet wheel, gate popup for
+  non-members~~ — now open to every tier) is COMPLETE across the approved scope: waveform trace, RTA bars,
   LED meter (level fill: loudness ramp / 4 schemes / flat + average marker),
   tuner in-tune colour. A full-spectrum hue-wheel picker ("＋ SPECTRUM") joins
   the curated swatches everywhere.

@@ -14,9 +14,9 @@
  *
  * MODAL RULES (SplMeter lessons): ONE native Modal, both-orientation
  * supportedOrientations for iOS, and NOTHING nests a second Modal inside it —
- * the ink picker and the member gate are in-tree absolute-fill overlays (the
+ * the ink picker is an in-tree absolute-fill overlay (the
  * stock ColorWheelButton opens its own Modals, which would nest here, so this
- * screen renders the shared ColorWheel glyph + the same entitlement gate and
+ * screen renders the shared ColorWheel glyph and
  * picker content in-tree instead).
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -25,10 +25,8 @@ import { Modal } from '../../components/DimModal';
 import Svg, { Path } from 'react-native-svg';
 import { ColorWheel } from '../../components/ColorWheelButton';
 import { SpectrumColorPicker } from '../../components/SpectrumColorPicker';
-import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { BRAND, shareFooterLines } from '../../features/commercial/brand';
 import { WAVE_COLOR_SWATCHES } from '../../features/tools/waveColorPref';
-import { navigationRef } from '../../navigation/navigationRef';
 import { colors, fonts } from '../../theme/tokens';
 import * as shareImage from './calc/shareImage';
 import {
@@ -71,11 +69,14 @@ export function HarmonographViewer(props: {
 }) {
   const { visible, onClose, cfg, ratioLabel, intervalLabel, dampingLabel, inkColor, onInkColor } =
     props;
-  // `resolved` gate (entitlement roll-out 2026-09-11): unknown tier ⇒ treat as
-  // a member, so the ink-colour wheel never raises the membership gate at
-  // someone who already pays for it while the server read is still in flight.
-  const { isMember: memberStanding, resolved: entResolved } = useEntitlement();
-  const isMember = !entResolved || memberStanding;
+  // NO ENTITLEMENT READ HERE (owner 2026-09-13). The ink-colour wheel used to
+  // carry its own member gate; it is gone because it could never legitimately
+  // fire. The Harmonograph is `section: 'training'` in labCatalog, and training
+  // labs are member-locked at the ENTRY ("Lock = leaf.member || section ===
+  // 'training'", under a header reading "ADVANCED TRAINING LABS - Members
+  // only"). Anyone standing in this viewer is already a member, so the gate's
+  // only real effect was to label a paid feature "members only" to the member
+  // who had paid for it. Gate once, at the door - not again inside the room.
   const { width: ww, height: wh } = useWindowDimensions();
 
   const cardRef = useRef<View>(null);
@@ -83,7 +84,6 @@ export function HarmonographViewer(props: {
   const [msg, setMsg] = useState('');
   const [pickerOpen, setPickerOpen] = useState(false);
   const [spectrumOn, setSpectrumOn] = useState(false);
-  const [gateOpen, setGateOpen] = useState(false);
 
   // Native-module availability — resolved once (the optional-require caches).
   const avail = useMemo(
@@ -105,7 +105,6 @@ export function HarmonographViewer(props: {
       setBusy(false);
       setPickerOpen(false);
       setSpectrumOn(false);
-      setGateOpen(false);
     }
   }, [visible]);
 
@@ -115,8 +114,7 @@ export function HarmonographViewer(props: {
     if (pickerOpen) {
       setPickerOpen(false);
       setSpectrumOn(false);
-    } else if (gateOpen) setGateOpen(false);
-    else onClose();
+    } else onClose();
   };
   useEffect(() => {
     if (!visible) return;
@@ -126,7 +124,7 @@ export function HarmonographViewer(props: {
     });
     return () => sub.remove();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visible, pickerOpen, gateOpen]);
+  }, [visible, pickerOpen]);
 
   // The figure path — deterministic from the true settings.
   const d = useMemo(() => (visible ? drawingPath(cfg, PATH_SIZE) : ''), [visible, cfg]);
@@ -199,10 +197,8 @@ export function HarmonographViewer(props: {
   };
 
   const wheelPress = () => {
-    if (isMember) {
-      setSpectrumOn(false);
-      setPickerOpen(true);
-    } else setGateOpen(true);
+    setSpectrumOn(false);
+    setPickerOpen(true);
   };
 
   const pickInk = (c: string | null) => {
@@ -289,14 +285,14 @@ export function HarmonographViewer(props: {
             >
               <Text style={styles.btnText}>PRINT</Text>
             </Pressable>
-            {/* Member ink colour — shared wheel glyph; gate + picker are in-tree
-                overlays below (never a nested Modal). */}
+            {/* Ink colour — shared wheel glyph; the picker is an in-tree overlay
+                below (never a nested Modal). */}
             <Pressable
               style={styles.btnWheel}
               onPress={wheelPress}
               hitSlop={6}
               accessibilityRole="button"
-              accessibilityLabel={isMember ? 'Customize ink colour' : 'Customize ink colour — members only'}
+              accessibilityLabel="Customize ink colour"
             >
               <ColorWheel size={22} />
             </Pressable>
@@ -383,41 +379,6 @@ export function HarmonographViewer(props: {
           </View>
         ) : null}
 
-        {/* ── Member gate — IN-TREE overlay, same copy as ColorWheelButton ── */}
-        {gateOpen ? (
-          <View style={styles.overlay}>
-            <Pressable
-              style={StyleSheet.absoluteFill}
-              onPress={() => setGateOpen(false)}
-              accessibilityRole="button"
-              accessibilityLabel="Close"
-            />
-            <View style={styles.overlayCard}>
-              <ColorWheel size={40} />
-              <Text style={styles.gateTitle}>MEMBER FEATURE</Text>
-              <Text style={styles.gateBody}>
-                Personalizing the harmonograph ink colour is an Academy member feature.
-              </Text>
-              <Pressable
-                style={styles.cta}
-                onPress={() => {
-                  // The viewer's native Modal would sit OVER the Paywall — close
-                  // everything first, then navigate.
-                  setGateOpen(false);
-                  onClose();
-                  navigationRef.navigate('Paywall');
-                }}
-                accessibilityRole="button"
-                accessibilityLabel="Get Academy membership"
-              >
-                <Text style={styles.ctaText}>GET MEMBERSHIP</Text>
-              </Pressable>
-              <Pressable onPress={() => setGateOpen(false)} hitSlop={8} accessibilityRole="button" accessibilityLabel="Not now">
-                <Text style={styles.dismiss}>NOT NOW</Text>
-              </Pressable>
-            </View>
-          </View>
-        ) : null}
       </View>
     </Modal>
   );
@@ -521,17 +482,4 @@ const styles = StyleSheet.create({
   swatchSel: { borderColor: '#ffffff', borderWidth: 3 },
   swatchDefaultText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.5, color: '#ffffff' },
 
-  gateTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 2, color: colors.amber },
-  gateBody: { fontFamily: fonts.barlowRegular, fontSize: 14.5, lineHeight: 21, color: colors.textSecondary, textAlign: 'center' },
-  cta: {
-    marginTop: 4,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(255,198,77,.55)',
-    backgroundColor: '#1c1608',
-    paddingVertical: 12,
-    paddingHorizontal: 26,
-  },
-  ctaText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.4, color: colors.amber },
-  dismiss: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textMuted, paddingVertical: 6 },
 });
