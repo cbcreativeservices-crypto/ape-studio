@@ -5,6 +5,7 @@
  * reword. This is NOT the paywall (CM7): no products, no purchase wiring —
  * an upgrade message + auth affordances.
  */
+import { Fragment } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { GlassButton } from '../../components/GlassButton';
 import { COPY } from '../../lib/copy';
@@ -32,9 +33,21 @@ export function UpgradeSheet({
       <View style={styles.sheet}>
         <Text style={styles.eyebrow}>ACADEMY MODE</Text>
         <Text style={styles.title}>{COPY.upgradePhrase}</Text>
-        <Text style={styles.body}>{COPY.upgradeSheetBody}</Text>
-        {/* The allowance behind "continue using the glossary for free" (R7). */}
-        <Text style={styles.allowance}>{COPY.glossaryFreeAllowance}</Text>
+        {/* The allowance is rendered TIGHT TO THE CLAIM (owner 2026-09-13,
+            governance R7): after the FIRST paragraph — the one that calls the
+            glossary free — not after the whole body. A limit disclosed below an
+            intervening paragraph reads as buried, which is the same reason it
+            sits where it does on the About sheet.
+
+            The ratified string is split at its OWN '\n\n' paragraph break, so
+            not one word changes — only where the break renders. `bodyNext`
+            restores the blank line that the single <Text> used to draw. */}
+        {COPY.upgradeSheetBody.split('\n\n').map((para, i) => (
+          <Fragment key={i}>
+            <Text style={[styles.body, i > 0 && styles.bodyNext]}>{para}</Text>
+            {i === 0 ? <Text style={styles.allowance}>{COPY.glossaryFreeAllowance}</Text> : null}
+          </Fragment>
+        ))}
 
         {/* The $99 lifetime deal is NOT surfaced here as its own pre-popup
             (user request 2026-07-17). All plans — with the end-of-year
@@ -91,6 +104,8 @@ const styles = StyleSheet.create({
   title: { fontFamily: fonts.oswaldMedium, fontSize: 19, lineHeight: 24, color: colors.textPrimary },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14.5, lineHeight: 21, color: colors.textSecondary },
   allowance: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 19, color: colors.textMuted, marginTop: 10 },
+  // Reinstates the blank line the single <Text> drew for '\n\n' (= one lineHeight).
+  bodyNext: { marginTop: 21 },
   actions: { flexDirection: 'row', gap: 10, marginTop: 6 },
   dismiss: {
     alignSelf: 'center',

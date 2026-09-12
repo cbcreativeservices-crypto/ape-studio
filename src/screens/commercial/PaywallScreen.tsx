@@ -9,7 +9,7 @@
  * the source of truth at purchase. Store product IDs: features/commercial/
  * iapProducts.ts. Owner setup: docs/APE_IAP_PLAN_2026_08_21.md.
  */
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -141,10 +141,21 @@ export function PaywallScreen({ navigation }: Props) {
       <ScrollView contentContainerStyle={styles.scroll}>
         <Text style={styles.eyebrow}>ACADEMY MODE</Text>
         <Text style={styles.title}>{COPY.paywallTitle}</Text>
-        <Text style={styles.body}>{COPY.paywallBody}</Text>
-        {/* The allowance behind "the free glossary" one line above (R7). Quieter
-            than the body on purpose: it qualifies the claim, it does not sell. */}
-        <Text style={styles.allowance}>{COPY.glossaryFreeAllowance}</Text>
+        {/* The allowance is rendered TIGHT TO THE CLAIM (owner 2026-09-13,
+            governance R7): after the FIRST paragraph — the one that calls the
+            glossary free — not after the whole body. A limit disclosed below an
+            intervening paragraph reads as buried, which is the same reason it
+            sits where it does on the About sheet.
+
+            The ratified string is split at its OWN '\n\n' paragraph break, so
+            not one word changes — only where the break renders. `bodyNext`
+            restores the blank line that the single <Text> used to draw. */}
+        {COPY.paywallBody.split('\n\n').map((para, i) => (
+          <Fragment key={i}>
+            <Text style={[styles.body, i > 0 && styles.bodyNext]}>{para}</Text>
+            {i === 0 ? <Text style={styles.allowance}>{COPY.glossaryFreeAllowance}</Text> : null}
+          </Fragment>
+        ))}
 
         <View style={styles.plans}>
           {PLANS.map((p) => {
@@ -226,6 +237,8 @@ const styles = StyleSheet.create({
   title: { fontFamily: fonts.oswaldMedium, fontSize: 24, lineHeight: 29, color: colors.textPrimary },
   body: { fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 22, color: colors.textSecondary },
   allowance: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 20, color: colors.textMuted, marginTop: 10 },
+  // Reinstates the blank line the single <Text> drew for '\n\n' (= one lineHeight).
+  bodyNext: { marginTop: 22 },
 
   plans: { gap: 12, marginTop: 6 },
   // Pricing-honesty promise (owner 2026-08-21): a check + hairline divider so it
