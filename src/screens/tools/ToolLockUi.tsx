@@ -55,28 +55,23 @@ export function useSaveGate(): { locked: boolean; label: (base: string) => strin
   };
 }
 
-/** FULL-SCREEN gate (owner 2026-09-10): the immersive full-screen tool views
- *  (Full VU, Full Gauge, fullscreen waveform, the CenterLock tuner/counter stage)
- *  are Academy-only. A free user who taps a full-screen control gets a popup they
- *  can dismiss (Not now) or use to go to membership (See membership → Paywall) —
- *  they never enter the full-screen view. Gate on REAL standing (`isMember`), not
- *  caps (house rule above). Usage: `const fs = useFullScreenGate(); ... onPress={()
- *  => fs.gate(() => setFullOpen(true))}` — members proceed straight through. */
+/** FULL-SCREEN gate — NOW OPEN TO EVERYONE (owner 2026-09-13: "Make the full
+ *  screens and custom color options available to all user free, account,
+ *  member"). This REVERSES the 2026-09-10 ruling that made the immersive views
+ *  (Full VU, Full Gauge, fullscreen waveform, the CenterLock tuner/counter
+ *  stage) Academy-only.
+ *
+ *  The hook is kept rather than deleted, and every call site still reads
+ *  `fs.gate(() => ...)`. That is deliberate: the three tool screens keep one
+ *  shared place where this policy lives, so if it is ever re-gated it changes
+ *  here once instead of in three screens. `locked` is now always false, so the
+ *  call sites' locked styling simply never applies.
+ *
+ *  ⚠️ This is the FULL-SCREEN policy only. Saved Measurements (useSaveGate) and
+ *  the LEARN/DEMO training layer are separate gates and remain Academy-only —
+ *  do not "tidy" them to match this one. */
 export function useFullScreenGate(): { locked: boolean; gate: (proceed: () => void) => void } {
-  const locked = useToolsLocked();
-  return {
-    locked,
-    gate: (proceed: () => void) => {
-      if (!locked) {
-        proceed();
-        return;
-      }
-      // App-themed popup, not the native Alert (owner 2026-09-10).
-      openMembershipGate({
-        body: 'The full-screen meters and displays are an Academy feature. Membership unlocks the immersive full-screen view across every audio tool.',
-      });
-    },
-  };
+  return { locked: false, gate: (proceed: () => void) => proceed() };
 }
 
 /** A grayed, locked stand-in for a tool button. Looks disabled (steel/lock) but

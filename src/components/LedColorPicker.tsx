@@ -9,8 +9,8 @@
  * The white peak-hold cap is always left white (it's the reference reading) —
  * and the diagrams draw it white in every state so that promise is visible.
  *
- * Launched (members only) from a ColorWheelButton's onCustomize; the button
- * owns the entitlement gate + the "MEMBER FEATURE" popup for non-members, so
+ * Launched from a ColorWheelButton's onCustomize. Open to everyone since
+ * 2026-09-13 — the button no longer carries an entitlement gate, so
  * this modal is only ever shown to members. See [[customization-member-rule]].
  */
 import { useState, type ReactNode } from 'react';

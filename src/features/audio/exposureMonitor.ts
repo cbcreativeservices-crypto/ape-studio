@@ -209,10 +209,6 @@ let reachedFiredToday = false;
 let lastPersistMs = 0;
 
 let timer: ReturnType<typeof setInterval> | null = null;
-// Dev-only dosimeter tracing (see evaluateArm). Never read in a release build.
-let armLogged: boolean | null = null;
-let armedSince = 0;
-let quietTicks = 0;
 let appActive = true;
 
 const stateListeners = new Set<() => void>();
@@ -419,27 +415,6 @@ function tick(): void {
   const src = readSources();
   sounding = src.active;
 
-  if (__DEV__) {
-    // ARMED but hearing nothing is the second way the chip can sit at zero, and
-    // it looks identical to the first from outside. Report it ONCE per quiet
-    // run, with what the sources actually returned.
-    if (!src.active) {
-      quietTicks += 1;
-      if (quietTicks === 15) {
-        console.log(
-          `[dose] armed ${Math.round((Date.now() - armedSince) / 1000)} s but SILENT for 15 s — ` +
-            `mic=${isMicActive()} dspAvailable=${ApeDsp.isAvailable()} output=${isAudioOutputEnabled()}: ` +
-            'nothing is reaching the meter, so the clock cannot advance',
-        );
-      }
-    } else if (quietTicks >= 15) {
-      console.log(`[dose] counting again after ${quietTicks} s silent (${src.rt}, ${src.db ?? '?'} dB)`);
-      quietTicks = 0;
-    } else {
-      quietTicks = 0;
-    }
-  }
-
   if (src.active) {
     soundingStreak += 1;
     currentDb = src.db;
@@ -548,22 +523,7 @@ function stopTimer(): void {
  *  store's emit fires on BOTH output-enable and mic-active changes, so the one
  *  subscribeAudioOutput hook re-evaluates for both. */
 function evaluateArm(): void {
-  const want = settings.enabled && appActive && (isAudioOutputEnabled() || isMicActive());
-  if (__DEV__ && want !== armLogged) {
-    armLogged = want;
-    // Dev-only (owner 2026-09-13: "Dosimeter on pixel seems to not
-    // start/pause"). FOUR independent gates decide this and the chip shows only
-    // the result, so name which one moved. The chip reading 0% with a frozen
-    // clock is a different fault depending on whether the poller never armed,
-    // or armed and heard nothing.
-    console.log(
-      `[dose] ${want ? 'ARMED' : 'idle'} — enabled=${settings.enabled} foreground=${appActive} ` +
-        `output=${isAudioOutputEnabled()} mic=${isMicActive()}`,
-    );
-    armedSince = want ? Date.now() : 0;
-    quietTicks = 0;
-  }
-  if (want) startTimer();
+  if (settings.enabled && appActive && (isAudioOutputEnabled() || isMicActive())) startTimer();
   else stopTimer();
 }
 

@@ -1,20 +1,21 @@
 /**
- * ColorWheelButton — the discreet color-wheel entry point for MEMBER-only
- * customization (readout colors, meter skins) in the audio tools (owner
- * 2026-08-20 rule). Members tap it to open the picker (onCustomize); non-members
- * get a membership popup explaining the advanced feature, with a Paywall CTA —
- * never a hard jump straight to the Paywall. Gate by ENTITLEMENT, never caps.
+ * ColorWheelButton — the discreet colour-wheel that opens colour customization.
+ *
+ * OPEN TO EVERYONE since 2026-09-13 (owner: "Make the full screens and custom
+ * color options available to all user free, account, member"), which REVERSES
+ * the 2026-08-20 ruling that made colour/skin customization Academy-only. The
+ * entitlement read and the MEMBER FEATURE popup it raised were deleted rather
+ * than left wired-but-unreachable, because a gate that still exists in the code
+ * is how the next reader concludes the feature is still gated.
  */
 import { useId, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { Modal } from './DimModal';
 import Svg, { Circle, Defs, LinearGradient as SvgGradient, Path, Rect, Stop } from 'react-native-svg';
-import { useEntitlement } from '../features/commercial/EntitlementProvider';
 import { PickerSectionHeader } from './ColorTargetDiagrams';
 import { SpectrumColorPicker } from './SpectrumColorPicker';
 import { LOUDNESS_STOPS } from '../features/tools/levelColor';
 import { WAVE_COLOR_SWATCHES } from '../features/tools/waveColorPref';
-import { navigationRef } from '../navigation/navigationRef';
 import { colors, fonts } from '../theme/tokens';
 
 const HUES = ['#ff5a48', '#f0863a', '#ffd35e', '#4fd07f', '#4dd0e1', '#c77dff'];
@@ -79,7 +80,6 @@ export function ColorWheelButton({
   size = 22,
   style,
   accessibilityLabel = 'Customize colours',
-  feature = 'customizing colours and meter skins',
 }: {
   /** Custom member action (e.g. open a tool's own picker). Ignored if onPick set. */
   onCustomize?: () => void;
@@ -111,16 +111,17 @@ export function ColorWheelButton({
   size?: number;
   style?: StyleProp<ViewStyle>;
   accessibilityLabel?: string;
-  /** Phrase for the membership popup: "…is a member feature." */
+  /** Retained so the five call sites still compile and still SAY what they
+   *  personalize; unused since customization was opened to everyone
+   *  (2026-09-13) and the membership popup it worded was removed. */
   feature?: string;
 }): ReactNode {
-  // `resolved` gate (entitlement roll-out 2026-09-11): the provider boots at
-  // 'anonymous', so a member who tapped the colour wheel before the server read
-  // landed got the "members only" gate for the membership they already hold.
-  // Unknown ⇒ treat as a member; the gate re-arms once the tier is known.
-  const { isMember: memberStanding, resolved } = useEntitlement();
-  const isMember = !resolved || memberStanding;
-  const [gate, setGate] = useState(false);
+  // OPEN TO EVERYONE (owner 2026-09-13: "Make the full screens and custom color
+  // options available to all user free, account, member"). This REVERSES the
+  // 2026-08-20 ruling that made colour/skin customization Academy-only. The
+  // membership popup this used to raise, and the entitlement read behind it,
+  // are gone rather than left dead: a gate that is wired up but unreachable is
+  // how the next reader concludes the feature is still gated.
   const [picker, setPicker] = useState(false);
   const [spectrum, setSpectrum] = useState(false);
   // Transient spectrum candidate — feeds ONLY the diagram; USE commits.
@@ -141,15 +142,15 @@ export function ColorWheelButton({
   return (
     <>
       <Pressable
-        onPress={() => (isMember ? openForMember() : setGate(true))}
+        onPress={openForMember}
         style={style}
         hitSlop={8}
         accessibilityRole="button"
-        accessibilityLabel={isMember ? accessibilityLabel : `${accessibilityLabel} — members only`}
+        accessibilityLabel={accessibilityLabel}
       >
         <ColorWheel size={size} />
       </Pressable>
-      {/* Built-in swatch picker (members). */}
+      {/* Built-in swatch picker. */}
       <Modal accessibilityViewIsModal visible={picker} transparent animationType="fade" onRequestClose={closePicker}>
         <Pressable style={styles.scrim} onPress={closePicker} accessible={false}>
           <View style={styles.card}>
@@ -275,29 +276,6 @@ export function ColorWheelButton({
                 <Text style={styles.doneText}>DONE</Text>
               </Pressable>
             ) : null}
-          </View>
-        </Pressable>
-      </Modal>
-      <Modal accessibilityViewIsModal visible={gate} transparent animationType="fade" onRequestClose={() => setGate(false)}>
-        <Pressable style={styles.scrim} onPress={() => setGate(false)} accessible={false}>
-          <View style={styles.card}>
-            <ColorWheel size={40} />
-            <Text style={styles.title}>MEMBER FEATURE</Text>
-            <Text style={styles.body}>Personalizing {feature} is an Academy member feature.</Text>
-            <Pressable
-              style={styles.cta}
-              onPress={() => {
-                setGate(false);
-                navigationRef.navigate('Paywall');
-              }}
-              accessibilityRole="button"
-              accessibilityLabel="Get Academy membership"
-            >
-              <Text style={styles.ctaText}>GET MEMBERSHIP</Text>
-            </Pressable>
-            <Pressable onPress={() => setGate(false)} hitSlop={8} accessibilityRole="button" accessibilityLabel="Not now">
-              <Text style={styles.dismiss}>NOT NOW</Text>
-            </Pressable>
           </View>
         </Pressable>
       </Modal>
