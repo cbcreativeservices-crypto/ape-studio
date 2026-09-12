@@ -141,20 +141,26 @@ export function PaywallScreen({ navigation }: Props) {
       <ScrollView contentContainerStyle={styles.scroll}>
         <Text style={styles.eyebrow}>ACADEMY MODE</Text>
         <Text style={styles.title}>{COPY.paywallTitle}</Text>
-        {/* The allowance is rendered TIGHT TO THE CLAIM (owner 2026-09-13,
-            governance R7): after the FIRST paragraph — the one that calls the
-            glossary free — not after the whole body. A limit disclosed below an
-            intervening paragraph reads as buried, which is the same reason it
-            sits where it does on the About sheet.
+        {/* The allowance runs INLINE at the end of the first paragraph — the
+            one that calls the glossary free (owner, governance R7).
 
-            The ratified string is split at its OWN '\n\n' paragraph break, so
-            not one word changes — only where the break renders. `bodyNext`
-            restores the blank line that the single <Text> used to draw. */}
+            It was a separate muted BLOCK first. That read correctly but cost a
+            margin above, a margin below and its own two lines, pushing the plan
+            cards further below the fold — on a PURCHASE screen, where the owner
+            called it out: "too much vertical spacing … requiring more
+            scrolling". Tuning the ratio between those margins was optimising a
+            local detail while making the screen worse globally.
+
+            Nested inside the paragraph it keeps the muted colour that marks it
+            as a qualifier rather than a sales line, is as tight to the claim as
+            text can be, and costs only the line it wraps onto. The ratified
+            string is still split at its own '\n\n' and `bodyNext` is back to
+            exactly the blank line that break used to draw. */}
         {COPY.paywallBody.split('\n\n').map((para, i) => (
-          <Fragment key={i}>
-            <Text style={[styles.body, i > 0 && styles.bodyNext]}>{para}</Text>
-            {i === 0 ? <Text style={styles.allowance}>{COPY.glossaryFreeAllowance}</Text> : null}
-          </Fragment>
+          <Text key={i} style={[styles.body, i > 0 && styles.bodyNext]}>
+            {para}
+            {i === 0 ? <Text style={styles.allowance}>{' ' + COPY.glossaryFreeAllowance}</Text> : null}
+          </Text>
         ))}
 
         <View style={styles.plans}>
@@ -236,7 +242,11 @@ const styles = StyleSheet.create({
   eyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 2.4, color: colors.amber },
   title: { fontFamily: fonts.oswaldMedium, fontSize: 24, lineHeight: 29, color: colors.textPrimary },
   body: { fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 22, color: colors.textSecondary },
-  allowance: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 20, color: colors.textMuted, marginTop: 10 },
+  allowance: { color: colors.textMuted },
+  // 6 above against the paragraph break's 2x below: proximity is what says
+  // this line belongs to the CLAIM, not to the paragraph after it (owner, seen
+  // on the Pixel — at 10 it read as floating between the two). The break below
+  // stays exactly one lineHeight, so the ratified paragraph rhythm is untouched.
   // Reinstates the blank line the single <Text> drew for '\n\n' (= one lineHeight).
   bodyNext: { marginTop: 22 },
 
