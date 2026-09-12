@@ -60,7 +60,7 @@ const SOURCE_PEAK_DB = -20;
 // Shared sources (`short` = the compact dock-key value).
 const SRC_PINK = { label: 'PINK NOISE', short: 'PINK', gen: { mode: GEN_MODES.pink }, blurb: 'Steady broadband noise, equal energy per octave — the best source for HEARING a tone change.' };
 const SRC_WHITE = { label: 'WHITE NOISE', short: 'WHITE', gen: { mode: GEN_MODES.white }, blurb: 'Equal energy per Hz — brighter than pink. The top octaves dominate, so high-end changes leap out.' };
-const srcSine = (hz: number) => ({ label: `SINE ${hz} Hz`, short: `${hz} Hz`, gen: { mode: GEN_MODES.sine, frequency: hz } });
+const srcSine = (hz: number) => ({ label: `SINE ${hz} Hz`, short: `${hz} Hz`, gen: { mode: GEN_MODES.sine, frequency: hz }, steadyPeakDb: SOURCE_PEAK_DB });
 const srcClick = (bpm: number) => ({ label: `CLICK ${bpm}`, short: `${bpm} BPM`, gen: { mode: GEN_MODES.click, clickBpm: bpm }, blurb: 'A dry click with silence between hits — echoes, tails and pumping have nowhere to hide.' });
 
 // Retrieval checks (learning pass 2026-08-31): the FX fleet was the app's
@@ -831,13 +831,13 @@ const compConfig: FxLabConfig = {
       valueLabel: (v) => `${v[P.attackMs]}·${v[P.releaseMs]}`,
     },
   ],
-  Hero: (v) => (
+  Hero: (v, src) => (
     <TransferCurveGraph
       mode="compressor"
       thresholdDb={v[P.thresholdDb]}
       ratio={v[P.ratio]}
       makeupDb={v[P.makeupDb]}
-      sourcePeakDb={SOURCE_PEAK_DB}
+      sourcePeakDb={src?.steadyPeakDb}
     />
   ),
   anim: (v) => ({
@@ -935,7 +935,13 @@ const gateConfig: FxLabConfig = {
     { k: 'RANGE', paramId: P.rangeDb },
   ],
   Hero: (v) => (
-    <TransferCurveGraph mode="gate" thresholdDb={v[P.thresholdDb]} rangeDb={v[P.rangeDb]} sourcePeakDb={SOURCE_PEAK_DB} />
+    // NO sourcePeakDb. A gate acts on what a hit DECAYS TO, which a peak
+    // marker cannot express: with the source peak at -20 and this lab's
+    // thresholds at -50/-35/-20, `dbIn < thresholdDb` is false everywhere the
+    // fader can reach, so the marker sat permanently inert while asserting
+    // "your source is above the threshold, nothing happens" — the opposite of
+    // what the live ladder reads on every burst.
+    <TransferCurveGraph mode="gate" thresholdDb={v[P.thresholdDb]} rangeDb={v[P.rangeDb]} />
   ),
   anim: (v) => ({
     kind: 'dynamics',
@@ -1024,8 +1030,8 @@ const limiterConfig: FxLabConfig = {
     { k: 'CEIL', paramId: P.ceilingDb },
     { k: 'RLS', paramId: P.releaseMs },
   ],
-  Hero: (v) => (
-    <TransferCurveGraph mode="limiter" thresholdDb={v[P.ceilingDb]} ceilingDb={v[P.ceilingDb]} sourcePeakDb={SOURCE_PEAK_DB} />
+  Hero: (v, src) => (
+    <TransferCurveGraph mode="limiter" thresholdDb={v[P.ceilingDb]} ceilingDb={v[P.ceilingDb]} sourcePeakDb={src?.steadyPeakDb} />
   ),
   anim: (v) => ({
     kind: 'dynamics',

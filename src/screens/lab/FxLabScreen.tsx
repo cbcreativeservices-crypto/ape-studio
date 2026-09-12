@@ -166,6 +166,15 @@ export type FxSourceSpec = {
   gen: GenParams;
   /** Tray blurb: why you'd audition THIS effect on THIS source. */
   blurb?: string;
+  /** The level the ENGINE'S DETECTOR settles at for this source, when it
+   *  settles at all. Only a steady tone has one: the detector is a one-pole
+   *  peak follower (Effects.hpp:382), so a click or a noise source never
+   *  reaches its own peak — it under-reads by 7-13 dB depending on attack.
+   *  A dynamics hero may mark the operating point ONLY where this is set;
+   *  marking a transient source's peak draws an operating point the processor
+   *  never occupies, and the drawing then contradicts the live GR meter
+   *  beside it. */
+  steadyPeakDb?: number;
 };
 
 export type FxLabConfig = {
@@ -194,7 +203,7 @@ export type FxLabConfig = {
     lessonKey?: string;
   }[];
   /** The hero teaching visual, rendered from the current param values. */
-  Hero: (values: Record<number, number>) => ReactNode;
+  Hero: (values: Record<number, number>, src?: FxSourceSpec) => ReactNode;
   heroBadge: string;
   heroCaption?: (values: Record<number, number>) => string;
   /** The ANIMATED signal-flow hero: maps the CURRENT param values to a fxAnim
@@ -503,7 +512,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
                 {AnimHero ? (
                   <AnimHero model={config.anim!(values)} active={focused} grDb={running ? grDb : 0} />
                 ) : (
-                  <View style={{ paddingHorizontal: 6 }}>{config.Hero(values)}</View>
+                  <View style={{ paddingHorizontal: 6 }}>{config.Hero(values, config.sources[sourceIdx])}</View>
                 )}
               </View>
               {/* The console's GR ladder, standing to the RIGHT of the display
@@ -517,7 +526,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
                 <View style={{ paddingRight: 4, paddingLeft: 2 }}>
                   <GrLadder
                     grDb={running ? grDb : 0}
-                    maxDb={config.pollGr === 'gate' ? 70 : 24}
+                    maxDb={config.pollGr === 'gate' ? 70 : 30}
                     height={Math.max(60, h - 26)}
                   />
                 </View>
@@ -554,7 +563,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
             grDb={running ? grDb : 0}
             // The gate's range is the outlier — it closes far harder than a
             // compressor reduces, and a 24 dB scale would peg instantly.
-            maxDb={config.pollGr === 'gate' ? 70 : 24}
+            maxDb={config.pollGr === 'gate' ? 70 : 30}
             // The meter names the PROCESSOR, not the quantity — the section
             // header above already says what is being measured, and printing
             // "GAIN REDUCTION" twice in two lines was the first draft's flaw.
@@ -581,7 +590,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
           <Text style={styles.badge}>{ANIM_BADGE}</Text>
           <Text style={styles.sectionHead}>DESIGNED RESPONSE</Text>
           <Text style={styles.badge}>{config.heroBadge}</Text>
-          {config.Hero(values)}
+          {config.Hero(values, config.sources[sourceIdx])}
           {config.heroCaption ? <Text style={styles.caption}>{config.heroCaption(values)}</Text> : null}
         </View>
       ) : config.heroCaption ? (

@@ -168,12 +168,21 @@ export function ParamLane({
       </View>
 
       {/* Printed tick stops at 0 / ¼ / ½ / ¾ / full travel — the faceplate
-          detail that says "fader", engraved, not interactive. */}
+          detail that says "fader", engraved, not interactive.
+
+          They mark the CAP's travel, not the SLOT's. Those are different
+          lanes (the cap is inset by half its width, the slot by SLOT_PAD), so
+          aligning to the slot put the scale up to 4 px away from the pointer
+          at each end and dead-on only at centre. It was invisible until
+          2026-09-12: the old fill tip landed exactly on the slot ticks, so
+          the scale was calibrated to the bar — and then the bar went away,
+          leaving the cap as the only thing to read against it. A panel scale
+          marks where the cap stops; the slot is allowed to overrun it. */}
       {[0, 0.25, 0.5, 0.75, 1].map((f) => (
         <View
           key={f}
           pointerEvents="none"
-          style={[styles.stop, { left: `${f * 100}%`, marginLeft: SLOT_PAD + f * -2 * SLOT_PAD - 0.5 }]}
+          style={[styles.stop, { left: `${f * 100}%`, marginLeft: CAP_W / 2 - f * CAP_W - 0.5 }]}
         />
       ))}
 

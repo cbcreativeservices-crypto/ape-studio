@@ -871,7 +871,22 @@ function DynamicsFlow({
       // Within the hold window the gate stays fully open, whatever the level.
       const target =
         mode === 'gate' && sinceOpen < holdV ? 0 : targetGrDb(dbIn, mode, thrV, ratV, rngV, ceilV);
-      gr += (target - gr) * (target > gr ? aAtk : aRel);
+      // WHICH EDGE IS "ATTACK" DEPENDS ON THE PROCESSOR.
+      // For a compressor or limiter, `gr` RISING means the reduction is
+      // deepening — that is the attack edge. For a GATE, `gr` is attenuation,
+      // so `gr` FALLING to zero is the gate OPENING, and opening is the fast
+      // edge. The engine is unambiguous (Effects.hpp:398): above threshold it
+      // opens with aA, and after the hold it closes with aR.
+      //
+      // Drawn with the edges swapped — which is how this shipped on
+      // 2026-09-11 — the gate lab applied its hard-coded 1 ms attack to the
+      // CLOSING edge and the student's RELEASE chip to the opening one. At the
+      // lab's own defaults the drawn gate never opened at all: a flat floor
+      // with a bump, under a caption promising "you hear it open on every hit".
+      // This passed its own check because HOLD did visibly move the trace —
+      // the picture responded, it just responded wrongly.
+      const rising = target > gr;
+      gr += (target - gr) * (mode === 'gate' ? (rising ? aRel : aAtk) : rising ? aAtk : aRel);
 
       if (i >= 0) {
         const x = outX0 + step * i;

@@ -134,6 +134,11 @@ export function FaultBanner({ primary, secondary }: { primary: FaultId | null; s
 
 /* ── slider (≥44pt target, accessible, tap + drag) ──────────────────────── */
 
+/** Cap width. MUST equal `styles.sliderCap.width`, and the travel lane must be
+ *  inset by half of it at each end, or the touch map stops being the inverse of
+ *  the cap position. */
+const CAP_W = 24;
+
 export function ControlSlider({
   label, value, min, max, step = 0.01, unit = '', onChange, format, disabled, level,
 }: {
@@ -159,7 +164,17 @@ export function ControlSlider({
   const wRef = useRef(1);
   const set = useCallback(
     (x: number) => {
-      const frac = Math.min(1, Math.max(0, x / wRef.current));
+      // Read the touch in the SAME inset lane the cap travels in. The cap's
+      // centre sits at `frac*(W - CAP_W) + CAP_W/2`, so mapping a raw `x/W`
+      // is not its inverse: the two agree only at dead centre and diverge to
+      // CAP_W/2 at each end (3.75% of range on a 320pt track). The felt bug
+      // was that PUTTING A FINGER ON THE CAP moved it — up to 1.5 dB on the
+      // de-esser's threshold — and that the cap ran ahead of the finger
+      // through a drag, crossing under it at the midpoint. Introduced with
+      // the inset travel lane in the 2026-09-11 gear pass, which took the
+      // rack lane's look without its geometry contract; ParamLane.tsx has
+      // always done this correctly.
+      const frac = Math.min(1, Math.max(0, (x - CAP_W / 2) / Math.max(1, wRef.current - CAP_W)));
       const raw = min + frac * (max - min);
       const snapped = Math.round(raw / step) * step;
       onChange(Math.min(max, Math.max(min, snapped)));
@@ -207,7 +222,13 @@ export function ControlSlider({
         aria-valuenow={value}
         aria-valuetext={shown}
         accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
+        // A disabled slider is dimmed and ignores touch, but said nothing to a
+        // screen reader and still moved on an increment action. No caller
+        // passes `disabled` today; this keeps the first one that does honest.
+        accessibilityState={{ disabled: !!disabled }}
+        aria-disabled={!!disabled}
         onAccessibilityAction={(e) => {
+          if (disabled) return;
           const d = (max - min) / 10;
           if (e.nativeEvent.actionName === 'increment') onChange(Math.min(max, value + d));
           if (e.nativeEvent.actionName === 'decrement') onChange(Math.max(min, value - d));
@@ -235,9 +256,20 @@ export function ControlSlider({
             at each end — the old 5 pt bar never showed the problem. A real cap
             travels within its slot and stays whole. */}
         <View pointerEvents="none" style={styles.sliderCapTravel}>
-          <Animated.View style={[styles.sliderCap, { left: `${Math.round(frac * 100)}%` }, pulseStyle]}>
-            <View style={[styles.sliderCapLine, { backgroundColor: level ? levelColor(frac) : colors.green }]} />
-          </Animated.View>
+          {/* Unrounded percent: `Math.round(frac*100)` pinned the cap to 101
+              stops, so a control with more steps than that (the de-esser's
+              detector frequency, the envelope's attack/decay/release/hold)
+              moved its readout without moving its cap. */}
+          <View style={[styles.sliderCap, { left: `${frac * 100}%` }]}>
+            {/* The PULSE rides the indicator LINE, not the cap body. It is an
+                opacity animation, so on the body it faded the brushed metal
+                and its border to 42% twice a cycle and the track showed
+                through the "metal" — the same mistake as flooding a cap with
+                tint, which the owner ruled against on 2026-09-11. */}
+            <Animated.View
+              style={[styles.sliderCapLine, { backgroundColor: level ? levelColor(frac) : colors.green }, pulseStyle]}
+            />
+          </View>
         </View>
       </View>
     </View>

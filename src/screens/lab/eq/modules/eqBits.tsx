@@ -29,6 +29,7 @@ export function VerticalFader({
   onActive,
   label,
   tint,
+  relative,
 }: {
   value: number;
   onChange: (v: number) => void;
@@ -37,6 +38,11 @@ export function VerticalFader({
   label: string;
   /** Colour for the thumb/fill when set (else neutral / amber-when-nonzero). */
   tint?: string;
+  /** No jump-to-tap: the drag starts from the CURRENT value. Set on boards that
+   *  scroll sideways, where the finger must land on a fader to scroll at all —
+   *  jump-to-tap there snapped the band you pushed off from to wherever your
+   *  finger happened to sit, silently losing its gain on the way past. */
+  relative?: boolean;
 }) {
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
@@ -46,6 +52,12 @@ export function VerticalFader({
   const lockRef = useRef(ctxLock);
   lockRef.current = ctxLock;
   const baseRef = useRef(0);
+  // The PanResponder is built once, so relative-mode and the live value have
+  // to reach it through refs.
+  const relativeRef = useRef(relative);
+  relativeRef.current = relative;
+  const valueRef = useRef(value);
+  valueRef.current = value;
 
   const done = (grabbed: boolean) => {
     lockRef.current?.(false);
@@ -60,6 +72,10 @@ export function VerticalFader({
       onPanResponderGrant: (e) => {
         lockRef.current?.(true);
         onActiveRef.current?.(true);
+        if (relativeRef.current) {
+          baseRef.current = valueRef.current;
+          return;
+        }
         const v = 1 - Math.max(0, Math.min(1, e.nativeEvent.locationY / TRACK_H));
         baseRef.current = v;
         onChangeRef.current(v);
@@ -80,7 +96,26 @@ export function VerticalFader({
   const pulseStyle = usePulseStyle();
   return (
     <View style={styles.faderWrap}>
-      <View style={styles.track} {...pan.panHandlers}>
+      <View
+        style={styles.track}
+        {...pan.panHandlers}
+        accessible
+        accessibilityRole="adjustable"
+        accessibilityLabel={label ? `${label} hertz band` : 'Level'}
+        accessibilityValue={{ min: 0, max: 100, now: Math.round(value * 100) }}
+        // RNW 0.21 drops the accessibilityValue OBJECT, and aria-valuenow is
+        // required on role=slider — so the numeric bounds ride alongside it.
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={Math.round(value * 100)}
+        accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
+        onAccessibilityAction={(e) => {
+          // 1/48 of travel is exactly the 0.5 dB quantum GraphicBoard rounds
+          // to at the default +/-12 dB range.
+          const d = e.nativeEvent.actionName === 'increment' ? 1 / 48 : -1 / 48;
+          onChangeRef.current(Math.max(0, Math.min(1, value + d)));
+        }}
+      >
         <View pointerEvents="none" style={styles.trackLine} />
         <View pointerEvents="none" style={styles.centerTick} />
         {/* The cap stays BRUSHED METAL and the tint moves to its indicator
@@ -88,9 +123,17 @@ export function VerticalFader({
             which is what it used to do — turned the one hardware-looking
             element back into a coloured pill, and lost the reading a real cap
             gives you: the line is what you line up against the scale. */}
-        <Animated.View pointerEvents="none" style={[styles.thumb, { top: (1 - value) * TRACK_H - 6.5 }, pulseStyle]}>
-          <View style={[styles.thumbLine, thumbTint ? { backgroundColor: thumbTint } : null]} />
-        </Animated.View>
+        {/* The PULSE rides the indicator LINE, not the cap. It animates
+            OPACITY, and the 2026-09-05 "every thumb breathes" standard was set
+            against the OLD light cap (#8f96a3). The gear reskin made the cap
+            #26262c on #0c0c0f glass, so at the dim end of the breath the cap
+            fell to roughly 1.1:1 contrast — a flat board, which is the state
+            you arrive in, periodically had no visible caps at all. ParamLane
+            already pulses its cap line only; this brings the third fader into
+            the same vocabulary. */}
+        <View pointerEvents="none" style={[styles.thumb, { top: (1 - value) * TRACK_H - 6.5 }]}>
+          <Animated.View style={[styles.thumbLine, thumbTint ? { backgroundColor: thumbTint } : null, pulseStyle]} />
+        </View>
       </View>
       <Text style={styles.faderLabel}>{label}</Text>
     </View>
@@ -124,6 +167,7 @@ export function GraphicBoard({
       onChange={(v) => onGain(i, Math.round((v * 2 * range - range) * 2) / 2)}
       onActive={(a) => onActiveIndex?.(a ? i : null)}
       tint={tintFor?.(i)}
+      relative={centers.length > 12}
     />
   ));
   if (centers.length > 12) {
@@ -198,7 +242,12 @@ const styles = StyleSheet.create({
   },
   /** The cap's indicator line — what you read against the scale. Neutral grey
    *  at unity, the band's tint once it is boosting or cutting. */
-  thumbLine: { alignSelf: 'center', marginTop: 5.5, width: 16, height: 2, borderRadius: 1, backgroundColor: '#6e7480' },
+  /** marginTop is 4.5, not 5.5: the line's centre sits at borderWidth(1) +
+   *  marginTop + height/2 from the cap's top edge, and the cap's top is
+   *  `(1-value)*TRACK_H - 6.5`. At 5.5 the line reported a value 1 px below
+   *  the one it was on — visible at unity, where it missed the amber tick it
+   *  exists to be read against, and it overhung the groove at full cut. */
+  thumbLine: { alignSelf: 'center', marginTop: 4.5, width: 16, height: 2, borderRadius: 1, backgroundColor: '#6e7480' },
   faderLabel: { fontFamily: fonts.mono, fontSize: 9, color: colors.textSub },
   boardRow: { flexDirection: 'row', justifyContent: 'space-between' },
   boardScroll: { gap: 6, paddingRight: 8 },

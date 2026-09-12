@@ -537,6 +537,10 @@ export function SignalGenScreen({ navigation }: Props) {
     format: () => `${levelDb} dBFS`,
     formatShort: () => `${levelDb}`,
     tint: levelColorForDb(levelDb),
+    // A genuine LEVEL lane, so it takes the amplitude ramp (owner standard
+    // 2026-09-05). Colour-neutral to add: the lane's own -60..0 dBFS window is
+    // exactly levelColorForDb's, so the ramp lands on the tint already used.
+    level: true,
     helpKey: 'output_level',
   });
   params.push({
