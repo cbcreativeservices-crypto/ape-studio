@@ -780,16 +780,36 @@ HubTunerLive.displayName = 'HubTunerLive';
 
 /* ================================================================== */
 
+/** Minis that render only while frames flow, OVER the tool's static strip art -
+ *  the strip is their resting state. That only works where the strip and the
+ *  mini are the same instrument: these four are (the art and the live layer
+ *  were drawn together). */
 export const HUB_LIVE_MINIS: Partial<Record<ToolKey, FC>> = {
   rta: HubRtaMini,
   waveform: HubWaveMini,
   spectrogram: HubSpectroMini,
   multimeter: HubMultiMini,
-  hzcounter: HubTunerLive,
 };
 
 /** Always-on minis (render regardless of live state; rest when no signal).
- *  SPL uses the skinned VU face as its display in BOTH states. */
+ *  SPL uses the skinned VU face as its display in BOTH states.
+ *
+ *  hzcounter JOINED THEM 2026-09-13 (owner report: the tuner tile "flickers
+ *  occasionally with the old car gauge style tuner"). It was a live-only mini,
+ *  so `tool_07_frequency_counter_tuner_strip.svg` sat permanently underneath it
+ *  and became visible on every dropout - and that strip is the RETIRED round
+ *  car-gauge tuner, not the edgewise blade this tile draws now. The dropouts are
+ *  real: the dead-capture watchdog in hubPreviewEngine cycles stop -> auto-start
+ *  after ~1 s of stalled capture, and LiveShell then fades the mini back in over
+ *  420 ms, so each cycle showed the obsolete artwork for about half a second.
+ *
+ *  Always-on is honest here for the same reason it is for SPL: HubTunerLive
+ *  paints its own complete chrome and RESTS with no signal - the blade fades
+ *  out entirely and both corner readouts show an em-dash - so a stopped, denied
+ *  or absent engine shows a tuner reading nothing, never a parked ghost that
+ *  could be mistaken for a reading (the owner's 2026-09-10 blade ruling, and
+ *  the no-fake-meters rule). */
 export const HUB_SKIN_MINIS: Partial<Record<ToolKey, FC>> = {
   spl: HubSplSkin,
+  hzcounter: HubTunerLive,
 };

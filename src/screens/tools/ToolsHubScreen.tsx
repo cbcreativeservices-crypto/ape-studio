@@ -79,11 +79,44 @@ import type { RootStackParamList } from '../../navigation/types';
  * the tiles - is laid out from the same number, so a stale one puts the wear
  * marks where the tiles are and the tiles where the wear marks are.
  *
- * 2-across INSIDE the gray panel: subtract the scroll padding (14x2), the
- * panel's border (1x2) + padding (12x2), and the 12px gap between the two tiles.
+ * TWO ACROSS, ALWAYS (owner, 2026-09-13: "Tools hub should keep side by side
+ * arrangement"). The column count is NOT responsive. What changes on a wide
+ * screen is that the hub's content column stops growing.
+ *
+ * Two separate faults were found measuring this at tablet width.
+ *
+ * 1. THE TILES BALLOONED. The width was a pure fraction of the window, so an
+ *    iPad portrait gave 8 tiles at 351 pt and an iPad landscape 479 pt - each
+ *    display nearly half the screen, on a panel that is meant to read as a rack
+ *    of instruments. HUB_MAX_CONTENT_W caps the whole hub column and centres
+ *    it, so the panel stays a panel and the tiles stay side by side.
+ *
+ * 2. THE GRID FIT WITH NO SLACK AT ALL, and that is the serious one. The old
+ *    arithmetic spent every available pixel: measured on the preview, a 393 pt
+ *    window left ONE pixel spare and a 412 pt window - a common Android width -
+ *    left ZERO. `styles.grid` is flex-wrap, so at zero slack a single rounding
+ *    difference (a platform's scrollbar, a fractional layout pass) drops the
+ *    second tile onto its own row and the hub silently becomes ONE COLUMN of
+ *    half-width tiles. That is exactly what the web preview showed at 1024,
+ *    where a 15 px scrollbar was enough to tip it. TILE_FIT_SLACK reserves the
+ *    margin. It costs ONE pixel of tile width on every phone (163 -> 162 at
+ *    393, 173 -> 172 at 412) and buys a layout that cannot collapse.
+ *
+ * INSIDE the gray panel: subtract the scroll padding (14x2), the panel's border
+ * (1x2) + padding (12x2), the gap between the two tiles, and the slack.
  */
+/** The hub's content column stops growing here and centres (see above). Tiles
+ *  land at 247 pt on any screen at least this wide - bigger than a phone's 163,
+ *  which is the point of a tablet, without becoming half the screen. */
+const GRID_GAP = 12; // styles.grid gap
+const HUB_MAX_CONTENT_W = 560;
+/** Pixels deliberately left unspent so flex-wrap can never drop a tile. */
+const TILE_FIT_SLACK = 2;
+
 function tileWidthFor(windowW: number): number {
-  return Math.floor((windowW - 14 * 2 - (1 + 12) * 2 - 12) / 2);
+  const content = Math.min(windowW, HUB_MAX_CONTENT_W);
+  const inner = content - 14 * 2 - (1 + 12) * 2;
+  return Math.floor((inner - GRID_GAP - TILE_FIT_SLACK) / 2);
 }
 const NAV_TABS: NavIconName[] = ['Home', 'Study', 'Achievements', 'Profile'];
 
@@ -256,10 +289,23 @@ const STRIP_LABEL: Record<ToolKey, string> = {
 };
 
 /** Full-width 2:1 strip that replaces the old icon well above each tile title.
- *  Now the tile's DISPLAY (owner 2026-08-19): the three demo tools render their
- *  scripted animated preview; the five mic tools render the static artwork as
- *  the resting state with the live mini fading in over it while frames flow —
- *  absent/spike/denied engines simply rest on the art (no fake meters, §1.7). */
+ *  Now the tile's DISPLAY (owner 2026-08-19). Three kinds:
+ *
+ *  - SKIN (spl, hzcounter): always mounted, paints its own complete face, and
+ *    RESTS honestly with no signal. Nothing sits underneath it.
+ *  - SIM (signalgen, rt60): a scripted animated demonstration, tagged DEMO.
+ *  - LIVE (rta, waveform, spectrogram, multimeter): the static artwork IS the
+ *    resting state and the mini fades in OVER it while frames flow.
+ *
+ *  ⚠️ The LIVE arrangement leaves the strip visible during any dropout - and the
+ *  engine's dead-capture watchdog makes dropouts a normal event, not an edge
+ *  case. It is only safe while the strip and the mini are the same instrument
+ *  drawn the same way. The tuner was moved to SKIN on 2026-09-13 for exactly
+ *  this reason: its strip is the retired round car-gauge tuner, so every dropout
+ *  flashed obsolete artwork. Before adding a tool here, check what its strip
+ *  looks like when the mini is NOT drawing.
+ *
+ *  Absent/spike/denied engines rest — never a frozen frame (no fake meters, §1.7). */
 function ToolStrip({ tool, live, active, ready, index }: { tool: ToolKey; live: boolean; active: boolean; ready: boolean; index: number }) {
   const Strip = TOOL_STRIP[tool];
   const Sim = HUB_SIM_MINIS[tool];
@@ -371,7 +417,7 @@ const GRIT_SPECKS = (() => {
  * Device-scale rules: nothing under 1px, no mark under ~0.08 alpha; soft
  * gradients may fade to 0 (they are tone, not marks). */
 const PANEL_PAD = 12; // styles.panel padding
-const GRID_GAP = 12; // styles.grid gap
+// GRID_GAP is declared with the tile-geometry block above, which consumes it.
 const TILE_RADIUS = 10; // styles.tileFrame borderRadius
 const TILE_DROP_H = 6; // px the glass's shadow falls onto the panel below it
 
@@ -1114,7 +1160,16 @@ export function ToolsHubScreen({ navigation }: Props) {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 10 },
+  // Shares the hub's centred column (owner 2026-09-13). Left full-width, the
+  //  brand pinned to the far left and GLOSSARY to the far right while the rack
+  //  panel floated in the middle - three things on a wide screen with no shared
+  //  edge. The bottom nav deliberately stays full width: a nav bar spanning the
+  //  screen is the convention, and it reads as the app's frame, not the page.
+  header: {
+    flexDirection: 'row', alignItems: 'center', gap: 10,
+    paddingHorizontal: 14, paddingBottom: 10,
+    width: '100%', maxWidth: HUB_MAX_CONTENT_W, alignSelf: 'center',
+  },
   back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
   wordmark: { fontFamily: fonts.oswaldBold, fontSize: 17, letterSpacing: 0.4, color: colors.textPrimary },
   wordmarkAccent: {
@@ -1136,7 +1191,11 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 10,
   },
-  scroll: { padding: 14, paddingBottom: 24, gap: 10 },
+  // The hub column centres once the screen is wider than it needs to be
+  //  (owner 2026-09-13). alignSelf on the CONTENT container, so the header and
+  //  the bottom nav outside the ScrollView still span the full width - only the
+  //  hero, the rack panel and the member rows share one centred column.
+  scroll: { padding: 14, paddingBottom: 24, gap: 10, width: '100%', maxWidth: HUB_MAX_CONTENT_W, alignSelf: 'center' },
 
   // Compact hero (Booth 2026-07-11); tightened after the tool count was removed
   // (owner 2026-08-17).
