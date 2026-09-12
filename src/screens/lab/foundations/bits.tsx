@@ -135,6 +135,12 @@ export function CheckQuestion({ spec, onSolved }: { spec: CheckSpec; onSolved?: 
  *  scroll-lock setter from context automatically when a LabShell / ScrollLock-
  *  Provider is above it (NO prop threading), and also accepts an explicit
  *  `onDragActive` for hosts that wire their own. Value/onChange math unchanged. */
+/** Cap width. MUST equal `styles.sliderCap.width`, and the travel lane must be
+ *  inset by half of it at each end, or the touch map stops being the inverse of
+ *  the cap position — the felt bug is that putting a finger ON the cap moves it.
+ *  Same contract as ParamLane and amp/kit.tsx's ControlSlider. */
+const CAP_W = 24;
+
 export function DragSlider({
   value,
   onChange,
@@ -166,6 +172,9 @@ export function DragSlider({
   const [w, setW] = useState(0);
   const wRef = useRef(0);
   wRef.current = w;
+  // The fill ends UNDER the cap, and the cap travels the inset lane — so it is
+  // CAP_W/2 + value*(w - CAP_W), not value*w.
+  const fillW: number | `${number}%` = w > 0 ? CAP_W / 2 + value * (w - CAP_W) : `${value * 100}%`;
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
   // Scroll-lock plumbing: context (auto) + explicit prop, kept in a ref so the
@@ -193,14 +202,17 @@ export function DragSlider({
       onPanResponderGrant: (e) => {
         setLock(true);
         if (wRef.current > 0) {
-          const v = Math.max(0, Math.min(1, e.nativeEvent.locationX / wRef.current));
+          // Read the touch in the INSET lane the cap travels in, so the map is
+          // the exact inverse of the cap position (same contract as
+          // ParamLane and ControlSlider).
+          const v = Math.max(0, Math.min(1, (e.nativeEvent.locationX - CAP_W / 2) / Math.max(1, wRef.current - CAP_W)));
           baseRef.current = v;
           onChangeRef.current(v);
         }
       },
       onPanResponderMove: (_e, g) => {
         if (wRef.current > 0) {
-          onChangeRef.current(Math.max(0, Math.min(1, baseRef.current + g.dx / wRef.current)));
+          onChangeRef.current(Math.max(0, Math.min(1, baseRef.current + g.dx / Math.max(1, wRef.current - CAP_W))));
         }
       },
       onPanResponderRelease: () => setLock(false),
@@ -226,31 +238,57 @@ export function DragSlider({
         style={styles.sliderTrackWrap}
         onLayout={(e) => setW(Math.round(e.nativeEvent.layout.width))}
         {...pan.panHandlers}
+        // This control had NO accessibility node whatsoever — no role, no
+        // label, no value, no actions — and every child is pointerEvents="none",
+        // so a screen reader found nothing focusable between the label and the
+        // readout. It is the most-used continuous control in the labs after
+        // ParamLane (27 call sites across 13 files), and 23 of those have no
+        // stepper beside them either. Same shape as ParamLane's.
+        accessible
+        accessibilityRole="adjustable"
+        accessibilityLabel={readout ? `${label}: ${readout}` : label}
+        accessibilityValue={{ min: 0, max: 100, now: Math.round(value * 100) }}
+        // RNW 0.21 drops the accessibilityValue OBJECT; role=slider needs these.
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={Math.round(value * 100)}
+        aria-valuetext={readout ?? undefined}
+        accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
+        onAccessibilityAction={(e) => {
+          const d = e.nativeEvent.actionName === 'increment' ? 0.05 : -0.05;
+          onChangeRef.current(Math.max(0, Math.min(1, value + d)));
+        }}
       >
         {/* pointerEvents 'none' on every child: RN reports locationX relative to
             the touched TARGET view, so a hittable child (esp. the thumb) would
             report thumb-local coords and snap the value toward 0. Making the
             children transparent keeps the wrap itself the touch target. */}
-        <View pointerEvents="none" style={styles.sliderTrack} />
-        {levelTint ? (
-          // LEVEL slider: the fill shows the ramp climbing to its peak, not a solid block.
-          <GradientView
-            pointerEvents="none"
-            colors={rampColors(value)}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={[styles.sliderFill, { width: `${value * 100}%`, opacity: 0.85 }]}
-          />
-        ) : (
-          <View
-            pointerEvents="none"
-            style={[styles.sliderFill, { width: `${value * 100}%` }, accent ? { backgroundColor: accent, opacity: 0.85 } : null]}
-          />
-        )}
-        <Animated.View
-          pointerEvents="none"
-          style={[styles.sliderThumb, { left: Math.max(0, value * w - 9) }, accent ? { backgroundColor: accent } : null, pulseStyle]}
-        />
+        {/* A recessed SLOT, and it stays empty behind the cap on an ordinary
+            parameter — a fader's slot is a groove the cap slides in, not a
+            gauge. Only a LEVEL slider fills it, with the amplitude ramp
+            (owner standard 2026-09-05), which carries real information rather
+            than restating the cap's position. Same rule as ParamLane. */}
+        <View pointerEvents="none" style={styles.sliderTrack}>
+          {levelTint ? (
+            <GradientView
+              pointerEvents="none"
+              colors={rampColors(value)}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={[styles.sliderFill, { width: fillW, opacity: 0.8 }]}
+            />
+          ) : null}
+        </View>
+        {/* The cap travels an INSET lane so it never loses half of itself at
+            the ends, and the TINT and the PULSE ride its indicator LINE, never
+            the body: flooding a cap with colour turns the one hardware element
+            back into a coloured pill, and an opacity pulse on the body fades
+            the metal itself. Both are owner rulings from 2026-09-11. */}
+        <View pointerEvents="none" style={styles.sliderCapTravel}>
+          <View style={[styles.sliderCap, { left: `${value * 100}%` }]}>
+            <Animated.View style={[styles.sliderCapLine, accent ? { backgroundColor: accent } : null, pulseStyle]} />
+          </View>
+        </View>
       </View>
     </View>
   );
@@ -346,17 +384,53 @@ const styles = StyleSheet.create({
   sliderInfo: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.amber },
   sliderLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: colors.textSecondary },
   sliderReadout: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.5, color: colors.amber },
-  sliderTrackWrap: { height: 30, justifyContent: 'center' },
-  sliderTrack: { height: 4, borderRadius: 2, backgroundColor: '#26262c' },
-  sliderFill: { position: 'absolute', height: 4, borderRadius: 2, backgroundColor: 'rgba(255,198,77,.55)' },
-  sliderThumb: {
-    position: 'absolute',
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    backgroundColor: colors.amber,
-    top: 6,
+  /** 44, not 30: this is the touch target, and 30 was under the 44 pt minimum.
+   *  It is also the faceplate now — panel, not card, with the caught light on
+   *  the top edge that the console strip and the rack lane both use. */
+  sliderTrackWrap: {
+    height: 44,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.hairline,
+    borderTopColor: '#3a3a42',
+    backgroundColor: '#141418',
+    overflow: 'hidden',
+    justifyContent: 'center',
   },
+  sliderTrack: {
+    position: 'absolute',
+    left: CAP_W / 2,
+    right: CAP_W / 2,
+    top: 20,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#0a0a0c',
+    borderWidth: 1,
+    borderColor: '#000',
+    overflow: 'hidden',
+  },
+  sliderFill: { position: 'absolute', left: 0, top: 0, bottom: 0 },
+  /** Inset by half a cap at each end so the cap never clips. */
+  sliderCapTravel: { position: 'absolute', left: CAP_W / 2, right: CAP_W / 2, top: 0, bottom: 0 },
+  sliderCap: {
+    position: 'absolute',
+    width: CAP_W,
+    top: 5,
+    bottom: 5,
+    marginLeft: -CAP_W / 2,
+    borderRadius: 4,
+    backgroundColor: '#26262c',
+    borderWidth: 1,
+    borderColor: '#3d3d46',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.6,
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
+  },
+  sliderCapLine: { width: 2.5, height: 20, borderRadius: 1.25, backgroundColor: colors.amber },
 
   // LevelMeterBar
   meterLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.textSecondary },

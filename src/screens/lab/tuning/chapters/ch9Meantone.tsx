@@ -222,6 +222,12 @@ function Track({ value, onChange }: { value: number; onChange: (v: number) => vo
         // RNW 0.21 drops the accessibilityValue object; aria-valuenow is required
         // on role=slider. Bounds are this track's own 690–705 ¢ range.
         aria-valuemin={min} aria-valuemax={max} aria-valuenow={value} aria-valuetext={`${value.toFixed(2)} cents`}
+        // The adjust gesture was ADVERTISED and then ignored. 0.5 c per step on
+        // this track's 690-705 c range.
+        accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
+        onAccessibilityAction={(e) =>
+          onChange(+Math.max(min, Math.min(max, value + (e.nativeEvent.actionName === 'increment' ? 0.5 : -0.5))).toFixed(2))
+        }
         onStartShouldSetResponder={() => true} onMoveShouldSetResponder={() => true}
         onResponderGrant={(e) => onChange(fromX(e.nativeEvent.locationX))} onResponderMove={(e) => onChange(fromX(e.nativeEvent.locationX))}>
         {marks.map((m) => (

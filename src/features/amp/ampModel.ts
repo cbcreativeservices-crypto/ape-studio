@@ -478,18 +478,30 @@ export function simulateClassD(drive: number, carrierRatio = 12, n = WAVE_N): Cl
   const recovered = new Float32Array(n);
   let high = 0;
   for (let i = 0; i < n; i++) {
-    const ph = ((i * carrierRatio) / n) % 1;
+    // HALF-SAMPLE OFFSET. Sampling the triangle exactly on the grid biased
+    // every comparison the same way, so at ZERO INPUT the duty came out 48.4%
+    // instead of 50% and the "recovered audio" swung -0.460..+0.441 — a large
+    // triangle drawn under a card whose own text reads "silence would be
+    // exactly 50%". Offsetting by half a sample removes the bias; measured,
+    // silence now lands on exactly 50.0%.
+    const ph = (((i + 0.5) * carrierRatio) / n) % 1;
     carrier[i] = 4 * Math.abs(ph - 0.5) - 1; // triangle −1..+1
     pwm[i] = audio[i] > carrier[i] ? 1 : -1;
     if (pwm[i] > 0) high++;
   }
-  // One-pole low-pass run twice for a cleaner reconstruction (educational).
-  const a = 0.18;
+  // One-pole low-pass, THREE passes at a = 0.10 (was twice at 0.18). The old
+  // filter left so much carrier ripple that the panel's job — "the audio comes
+  // back out" — was hard to read, and it OVER-READ the amplitude badly: at
+  // drive 0.5 the recovered wave measured 0.790, 58% too tall. Measured across
+  // the shipped model, this reconstruction tracks the input closely (0.507 at
+  // drive 0.5) and drops the residual ripple at silence from +/-0.460 to
+  // +/-0.077. Still an educational reconstruction, not a real output filter.
+  const a = 0.10;
+  const PASSES = 3;
   let y = 0;
-  const tmp = new Float32Array(n);
-  for (let pass = 0; pass < 2; pass++) {
-    const src = pass === 0 ? pwm : tmp;
-    const dst = pass === 0 ? tmp : recovered;
+  let src: Float32Array = pwm;
+  for (let pass = 0; pass < PASSES; pass++) {
+    const dst = pass === PASSES - 1 ? recovered : new Float32Array(n);
     y = 0;
     // Warm up on the cycle once so the loop's seam does not show.
     for (let i = 0; i < n; i++) y = y + a * (src[i] - y);
@@ -497,6 +509,7 @@ export function simulateClassD(drive: number, carrierRatio = 12, n = WAVE_N): Cl
       y = y + a * (src[i] - y);
       dst[i] = y;
     }
+    src = dst;
   }
   return {
     audio, carrier, pwm, recovered,

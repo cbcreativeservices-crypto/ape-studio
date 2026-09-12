@@ -743,7 +743,7 @@ function RouteBlock({
         </View>
       ) : (
         <View style={{ gap: 10 }}>
-          {ranked.map(({ option, verdict, overall }, i) => {
+          {ranked.map(({ option, verdict, overall, safetyReject }, i) => {
             const isPick = option.id === pick;
             return (
               <Appear key={option.id} delay={i * 90}>
@@ -752,9 +752,18 @@ function RouteBlock({
                     <View style={[s.swatch, { backgroundColor: tintOf(option.id) }]} />
                     <Text style={s.routeName} numberOfLines={2}>{`${letterOf(option.id)} — ${option.name.toUpperCase()}`}</Text>
                     <View style={{ flex: 1 }} />
-                    {i === 0 ? <Text style={s.badgeBest}>BEST CALL</Text> : null}
+                    {i === 0 && !safetyReject ? <Text style={s.badgeBest}>BEST CALL</Text> : null}
                     {isPick ? <Text style={s.badgePick}>YOUR PICK</Text> : null}
                   </View>
+                  {/* A VERDICT, NOT A SCORE. `rankRoutes` has always returned
+                      `safetyReject` and RouteScene has always rendered it — this
+                      scene destructured it away, so a route down the aisle the
+                      drawing itself labels AISLE (EGRESS) printed only
+                      "OVERALL 75", which reads as a pass, one stage after the
+                      learner watched a comparable route get a red reject chip.
+                      routeEval's own docstring documents this exact bug as
+                      already fixed. */}
+                  {safetyReject ? <Text style={s.badgeReject}>{'✕ REJECTED — SAFETY'}</Text> : null}
                   <Text style={s.overallLine}>{`OVERALL ${overall}`}</Text>
                   <DimMiniBars dims={verdict.dims} count={isPick} />
                   <View style={{ gap: 3 }}>
@@ -1274,6 +1283,20 @@ const s = StyleSheet.create({
   badgeBest: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1, color: colors.green },
   badgePick: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1, color: colors.amber },
   overallLine: { fontFamily: fonts.mono, fontSize: 11.5, color: colors.amberLabel },
+  /** Matches RouteScene's `tagReject` so the two scenes speak one language. */
+  badgeReject: {
+    alignSelf: 'flex-start',
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 10.5,
+    letterSpacing: 1,
+    color: '#ff8d80',
+    borderWidth: 1,
+    borderColor: 'rgba(255,110,95,.55)',
+    borderRadius: 5,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    overflow: 'hidden',
+  },
   miniRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   miniLabel: { width: 118, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 0.3, color: colors.textSub },
   miniTrack: { flex: 1, height: 6, borderRadius: 3, backgroundColor: '#26262c', overflow: 'hidden' },

@@ -9,7 +9,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, Animated, Easing, LayoutChangeEvent, PanResponder, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { LANDMARKS } from '../../../../features/tuning/tuningMath';
-import { Btn, CentsRail, Row, type RailMarker } from './primitives';
+import { Btn, CentsRail, Row, centsOfXFrac, type RailMarker } from './primitives';
 
 /** Drag snap window (¢). */
 const DRAG_SNAP = 9;
@@ -60,12 +60,12 @@ export function DragRail({
       onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dx) > Math.abs(g.dy),
       onPanResponderGrant: (e) => {
         setDragging(true);
-        latest.current.onChange(latest.current.snapped((e.nativeEvent.locationX / wRef.current) * 1200, DRAG_SNAP));
+        latest.current.onChange(latest.current.snapped(centsOfXFrac(e.nativeEvent.locationX / wRef.current), DRAG_SNAP));
       },
-      onPanResponderMove: (e) => latest.current.onChange(latest.current.snapped((e.nativeEvent.locationX / wRef.current) * 1200, DRAG_SNAP)),
+      onPanResponderMove: (e) => latest.current.onChange(latest.current.snapped(centsOfXFrac(e.nativeEvent.locationX / wRef.current), DRAG_SNAP)),
       onPanResponderRelease: (e) => {
         setDragging(false);
-        const c = latest.current.snapped((e.nativeEvent.locationX / wRef.current) * 1200, DRAG_SNAP);
+        const c = latest.current.snapped(centsOfXFrac(e.nativeEvent.locationX / wRef.current), DRAG_SNAP);
         latest.current.onChange(c);
         latest.current.onSettle?.(c);
         AccessibilityInfo.announceForAccessibility?.(`${latest.current.label} ${c.toFixed(2)} cents`);

@@ -913,14 +913,39 @@ const LiveReadout = memo(function LiveReadout({
   // The fill runs from centre TOWARD the reading, so the lit side is the side
   // the pitch is on (usability review: mirrored wedges hid direction).
   const fillW = Math.abs(pointerX);
+  // The same condition the pointer and the fill use, so what is SEEN and what
+  // is ANNOUNCED can never disagree about whether there is a reading.
+  const a11yLive = cents != null && !octaveOff;
+  const a11yCents = Math.round(view.shownCents);
   const meter = (
     <View style={styles.meterBlock}>
-      <View style={[styles.meter, { width: meterW }]} accessible accessibilityRole="adjustable" accessibilityLabel="Tuning meter" accessibilityValue={{ min: -50, max: 50, now: Math.round(view.shownCents) }}
-      // RNW 0.21 drops the accessibilityValue object, so this role=slider meter
-      // announced with NO cents reading on web. aria-valuetext gives the sign a
-      // voice ("12 cents sharp") — a bare -12 is easy to mishear as a range end.
-      aria-valuemin={-50} aria-valuemax={50} aria-valuenow={Math.round(view.shownCents)}
-      aria-valuetext={`${Math.abs(Math.round(view.shownCents))} cents ${Math.round(view.shownCents) === 0 ? 'in tune' : Math.round(view.shownCents) > 0 ? 'sharp' : 'flat'}`}>
+      <View
+        style={[styles.meter, { width: meterW }]}
+        accessible
+        // PROGRESSBAR, not adjustable: this meter is read-only, and
+        // `adjustable` offered a screen reader an adjust gesture that could
+        // never do anything.
+        accessibilityRole="progressbar"
+        accessibilityLabel="Tuning meter"
+        // ⚠️ ONLY announce a reading when there IS one. `shownCents` is seeded
+        // at 0 and only updated while a pitch is detected, so on a silent mic
+        // this announced "0 cents, in tune" while the screen said PLAY A NOTE —
+        // and after a note stopped it froze on the last value and kept
+        // presenting it as current. The pointer and fill were always gated on
+        // exactly this condition; the a11y value was not.
+        accessibilityValue={a11yLive ? { min: -50, max: 50, now: a11yCents } : { text: 'No stable pitch' }}
+        // RNW 0.21 drops the accessibilityValue object. aria-valuetext gives
+        // the sign a voice ("12 cents sharp") — a bare -12 is easy to mishear
+        // as a range end.
+        aria-valuemin={-50}
+        aria-valuemax={50}
+        {...(a11yLive ? { 'aria-valuenow': a11yCents } : {})}
+        aria-valuetext={
+          a11yLive
+            ? `${Math.abs(a11yCents)} cents ${a11yCents === 0 ? 'in tune' : a11yCents > 0 ? 'sharp' : 'flat'}`
+            : 'No stable pitch'
+        }
+      >
         <View style={styles.meterTrack} />
         <View style={[styles.closeBand, { width: closeW * 2, left: meterW / 2 - closeW }]} />
         {cents != null && !octaveOff ? (

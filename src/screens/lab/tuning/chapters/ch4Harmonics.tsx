@@ -156,6 +156,13 @@ function SliderTrack({ value, onChange }: { value: number; onChange: (v: number)
       // RNW 0.21 drops the accessibilityValue object; aria-valuenow is required
       // on role=slider. Bounds are this track's own 380–410 ¢ range.
       aria-valuemin={min} aria-valuemax={max} aria-valuenow={value} aria-valuetext={`${value.toFixed(2)} cents`}
+      // The adjust gesture was ADVERTISED and then ignored — `adjustable` with
+      // no actions. A tap on the track sets a value (so WCAG 2.5.7 passed), but
+      // a screen-reader user offered the adjust gesture got nothing.
+      accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
+      onAccessibilityAction={(e) =>
+        onChange(+Math.max(min, Math.min(max, value + (e.nativeEvent.actionName === 'increment' ? 1 : -1))).toFixed(2))
+      }
       onStartShouldSetResponder={() => true}
       onMoveShouldSetResponder={() => true}
       onResponderGrant={(e) => onChange(fromX(e.nativeEvent.locationX))}

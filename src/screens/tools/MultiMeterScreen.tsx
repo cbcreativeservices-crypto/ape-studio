@@ -1654,7 +1654,14 @@ export function MultiMeterScreen({ navigation }: Props) {
                 </Pressable>
               )
             ) : (
-              <Text style={styles.sheetFuture}>Photo capture needs the next dev build.</Text>
+              // NOTHING, not a note. `expo-image-picker` / `expo-location` are
+              // deliberately absent from the optionalModule LOADERS table and
+              // are not installed, so these branches render in EVERY production
+              // build — not just "until the next one". Shipping "needs the next
+              // dev build" to a paying user (or a store reviewer) is exactly
+              // what guideline 2.2/2.3.1 is about. The branch stays so the
+              // control lights up by itself once the module is installed.
+              null
             )}
             {photoAvailable && photoBlocked && (
               <Text style={styles.captureBlocked}>
@@ -1688,7 +1695,7 @@ export function MultiMeterScreen({ navigation }: Props) {
                 </Pressable>
               )
             ) : (
-              <Text style={styles.sheetFuture}>Location tagging needs the next dev build.</Text>
+              null // see the note on the photo branch above
             )}
             {locationAvailable && locationBlocked && (
               <Text style={styles.captureBlocked}>

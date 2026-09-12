@@ -203,8 +203,13 @@ export function AmpRig(p: AmpRigProps) {
         ) : null}
         {p.devices ? (
           <WavePanel title={p.deviceTitle ?? 'DEVICE CURRENTS (+ gold solid · − purple dashed)'}>
-            <Polyline points={tracePoints(p.devices.iPos, PANEL_H, 1.6)} fill="none" stroke={AMP_COLORS.pos} strokeWidth={1.6} />
-            <Polyline points={tracePoints(p.devices.iNeg, PANEL_H, 1.6)} fill="none" stroke={AMP_COLORS.neg} strokeWidth={1.6} strokeDasharray="5,3" />
+            {/* yMax 2.1, not 1.6. Class A is `iq(1.0) + sine(drive)`, so device
+                current reaches 2.0 at full drive — a 1.6 ceiling flat-topped
+                the trace and drew the universal picture of SATURATION directly
+                under copy explaining full-cycle conduction, which is the one
+                thing class A does not do. */}
+            <Polyline points={tracePoints(p.devices.iPos, PANEL_H, 2.1)} fill="none" stroke={AMP_COLORS.pos} strokeWidth={1.6} />
+            <Polyline points={tracePoints(p.devices.iNeg, PANEL_H, 2.1)} fill="none" stroke={AMP_COLORS.neg} strokeWidth={1.6} strokeDasharray="5,3" />
           </WavePanel>
         ) : null}
         {p.output ? (

@@ -42,9 +42,15 @@ export function gainColor(db: number, maxDb = 18): string {
  *  gainColor so a trainer plot warms with its worst excess and reads blue once
  *  the excess is corrected (owner 2026-08-07: MIDI colours on the EQ plots). */
 export function maxPosDb(at: (f: number) => number): number {
+  // 33 samples was far too coarse for a value that COLOURS and SCORES a
+  // trainer plot: the plot itself draws 96 points, and a narrow bell between
+  // two probes simply went unseen. Measured on FindFrequency L3, 24% of rounds
+  // reported under 3 dB against a true +8 dB peak (worst case 1.92 dB) — so a
+  // student who had NOT corrected the problem was shown a corrected-looking
+  // plot. 513 samples is still trivial next to the draw it decorates.
   let m = 0;
-  for (let i = 0; i <= 32; i++) {
-    const v = at(20 * Math.pow(1000, i / 32));
+  for (let i = 0; i <= 512; i++) {
+    const v = at(20 * Math.pow(1000, i / 512));
     if (v > m) m = v;
   }
   return m;

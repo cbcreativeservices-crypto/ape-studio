@@ -824,6 +824,13 @@ export function GrLadder({
       accessibilityRole="progressbar"
       accessibilityLabel="Gain reduction"
       accessibilityValue={{ text: `${grDb.toFixed(1)} decibels of reduction` }}
+      // The ONE accessibilityValue site in src/ with no aria twin. RNW 0.21
+      // drops the object, so on web this announced as a progressbar carrying
+      // no reading at all.
+      aria-valuemin={0}
+      aria-valuemax={maxDb}
+      aria-valuenow={grDb}
+      aria-valuetext={`${grDb.toFixed(1)} decibels of reduction`}
     >
       <Text style={ladderStyles.head}>GR</Text>
       <View style={ladderStyles.body}>

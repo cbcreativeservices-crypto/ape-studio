@@ -244,9 +244,16 @@ export function ControlSlider({
         aria-disabled={!!disabled}
         onAccessibilityAction={(e) => {
           if (disabled) return;
+          // SNAP to the same grid the drag uses. Unsnapped, a tenth-of-range
+          // step walked straight off it: on the transformer-turns slider
+          // (min 100, max 1000, step 50) the a11y step is 90, so incrementing
+          // from 300 landed on 390 — a value a drag can never produce — and
+          // repeated steps walked 390, 480, 570, permanently off the 50-turn
+          // grid the lesson's ratio formula is built on.
           const d = (max - min) / 10;
-          if (e.nativeEvent.actionName === 'increment') onChange(Math.min(max, value + d));
-          if (e.nativeEvent.actionName === 'decrement') onChange(Math.max(min, value - d));
+          const raw = value + (e.nativeEvent.actionName === 'increment' ? d : -d);
+          const snapped = Math.round(raw / step) * step;
+          onChange(Math.min(max, Math.max(min, snapped)));
         }}
       >
         {/* The fill must end under the CAP, and the cap travels the INSET lane

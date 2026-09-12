@@ -178,7 +178,26 @@ export type RailMarker = {
 
 const RAIL_W = 340;
 
-const xOfCents = (c: number) => 14 + (Math.max(0, Math.min(1200, c)) / 1200) * (RAIL_W - 28);
+/** Rail inset each side, in viewBox units. The rail is DRAWN inside it, so any
+ *  touch handler must read the same lane or the pointer and the scale disagree. */
+const RAIL_PAD = 14;
+
+const xOfCents = (c: number) => RAIL_PAD + (Math.max(0, Math.min(1200, c)) / 1200) * (RAIL_W - RAIL_PAD * 2);
+
+/** The EXACT inverse of `xOfCents`, for touch handlers.
+ *
+ *  `xFrac` is the touch position as a fraction of the RENDERED width (the rail
+ *  scales to fit, so pixels differ but proportions do not). Handlers used to do
+ *  a bare `(locationX / width) * 1200`, which ignores the inset entirely: aiming
+ *  at the drawn `1:1` tick returned 49.4 cents and the drawn `2:1` returned
+ *  1150.6 — zero error only at midrail. In ch.1 that put the octave 49 cents
+ *  outside a 9-cent snap, so the card carrying the chapter objective could not
+ *  be unlocked by dragging at all (audit 2026-09-12). */
+export const centsOfXFrac = (xFrac: number): number => {
+  const vb = xFrac * RAIL_W;
+  const c = ((vb - RAIL_PAD) / (RAIL_W - RAIL_PAD * 2)) * 1200;
+  return Math.max(0, Math.min(1200, c));
+};
 
 export function CentsRail({
   markers, divisions = true, brackets, height = 96, onPressMarker, selectedId, reduceMotion,
