@@ -28,6 +28,10 @@ import { memo, useEffect, useMemo, useRef, useState, useSyncExternalStore, type 
 import { Animated, Easing, StyleSheet, View } from 'react-native';
 import Svg, { Circle, ClipPath, Defs, G, Image as SvgImage, Line, LinearGradient, Path, Polygon, Rect, Text as SvgText } from 'react-native-svg';
 import { heatColor } from '../../features/tools/levelColor';
+// Dev-only SPL needle probe (2026-09-13) — see devTiming. The hub capture
+// marks came back silent through the reported flicker, so the cause is in
+// this tile, not the engine, and these name which of three it is.
+import { markSplMount, markSplNeedle } from '../../features/tools/devTiming';
 import {
   SKIN_LAMP,
   SKIN_VB,
@@ -142,8 +146,18 @@ const HubSplSkin: FC = memo(() => {
 
   const db = dbOr(d.meter?.aFastDb);
   const peakDb = dbOr(d.meter?.peakDb);
+  // Dev-only: what happened to the needle this render, flushed by the effect
+  // below (never logged from render itself — this component already integrates
+  // during render, which is exactly one of the things being investigated).
+  const probeRef = useRef<string | null>(null);
   // Same TRUE VU ballistic as the tool's SkinnedVu (symmetric 2nd-order, ANSI
   // C16.5 / IEC 60268-17) so the tile needle behaves EXACTLY like the meter.
+  if (__DEV__ && d.tick > 0 && lastTickRef.current > 0 && d.tick - lastTickRef.current > 1) {
+    // Ticks advanced in the store without this component rendering for them, so
+    // the ballistic integrated ONE step across several ticks' worth of signal
+    // instead of following it — the needle lurches rather than swings.
+    probeRef.current = `SKIPPED ${d.tick - lastTickRef.current - 1} tick(s) — ballistic stepped once across ${d.tick - lastTickRef.current} ticks`;
+  }
   if (d.tick === 0) {
     // NOTHING IS MEASURING. `tick` starts at 1 for real frames, so 0 is the
     // engine's unambiguous empty sentinel — emitted once on teardown and then
@@ -152,6 +166,9 @@ const HubSplSkin: FC = memo(() => {
     // froze there indefinitely: 40% of scale, in silence, on the one tile that
     // is always mounted. This tile's own docstring says the needle "rests at
     // the bottom of the scale when no live signal is flowing" — now it does.
+    if (__DEV__ && vuRef.current > 0.02) {
+      probeRef.current = `RESET: tick 0 reached the tile — needle snapped from ${vuRef.current.toFixed(2)} to rest`;
+    }
     lastTickRef.current = d.tick;
     vuRef.current = 0;
     vuVelRef.current = 0;
@@ -176,6 +193,20 @@ const HubSplSkin: FC = memo(() => {
   const ang = vuAngle(vuRef.current);
   const tip = skinPt(ang, VU_NEEDLE_TIP);
   const lampGlow = lampRef.current; // 0 = dark-red base only, 1 = fully lit
+
+  // Dev-only probes. A REMOUNT is the quiet one: vuRef resets to 0, so the
+  // needle restarts at the bottom and sweeps back up over about a second,
+  // leaving no other trace anywhere in the logs.
+  useEffect(() => {
+    markSplMount(true);
+    return () => markSplMount(false);
+  }, []);
+  useEffect(() => {
+    if (probeRef.current) {
+      markSplNeedle(probeRef.current);
+      probeRef.current = null;
+    }
+  });
 
   return (
     <View style={StyleSheet.absoluteFill}>

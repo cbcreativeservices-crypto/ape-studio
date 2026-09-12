@@ -137,3 +137,46 @@ export function markHubLive(live: boolean, why: { running: boolean; focused: boo
   const held = startingUp ? 'not yet started' : `${darkSince - liveSince} ms live`;
   console.log(`[hub] dark: ${cause} — after ${held}`);
 }
+
+/* ── The SPL tile's needle ─────────────────────────────────────────────────
+ * Owner 2026-09-13: the SPL tile still "flickers with the old car gauge style"
+ * after the tuner was fixed - and the hub capture marks above came back SILENT
+ * through minutes of it sitting live, which rules out the watchdog restart and
+ * the tick-0 teardown that were the leading theories. Three things could still
+ * do it, and they need different fixes, so name which one actually happens:
+ *
+ *   MOUNT/UNMOUNT  the skin remounted. `vuRef` resets to 0, so the needle
+ *                  restarts at the bottom and sweeps up to the live level over
+ *                  about a second - the most gauge-like of the three, and it
+ *                  leaves no other trace at all.
+ *   RESET          a tick-0 reached the tile (needle snapped to rest). Should
+ *                  be impossible without a matching `[hub] dark` line; if this
+ *                  appears alone, the store is emitting EMPTY somewhere else.
+ *   JUMP           the ballistic itself moved a long way in ONE tick, i.e. the
+ *                  integration is skipping steps rather than the needle being
+ *                  reset. That would point at renders being discarded, since
+ *                  this component integrates during render.
+ */
+let splMarks = 0;
+let splMountedAt = 0;
+
+export function markSplNeedle(what: string): void {
+  if (!__DEV__) return;
+  splMarks++;
+  // Rate-limit: a genuinely broken frame would otherwise print at the tick rate
+  // and push everything else out of the Metro scrollback.
+  if (splMarks > 40) return;
+  console.log(`[spl] ${what}${splMarks === 40 ? ' — (further [spl] marks suppressed)' : ''}`);
+}
+
+export function markSplMount(mounted: boolean): void {
+  if (!__DEV__) return;
+  if (mounted) {
+    const gap = splMountedAt ? ` — ${Date.now() - splMountedAt} ms after the last unmount` : '';
+    splMountedAt = 0;
+    markSplNeedle(`MOUNT: needle restarts at the bottom${gap}`);
+    return;
+  }
+  splMountedAt = Date.now();
+  markSplNeedle('UNMOUNT');
+}
