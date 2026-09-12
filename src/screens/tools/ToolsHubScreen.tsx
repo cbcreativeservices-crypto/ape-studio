@@ -320,20 +320,56 @@ function ToolStrip({ tool, live, active, ready, index }: { tool: ToolKey; live: 
   const lit = useRef(new Animated.Value(0)).current;
   const bloom = useRef(new Animated.Value(0)).current;
   const ran = useRef(false);
+
+  /**
+   * THE STAGGER MOUNTS THE DISPLAY, IT NO LONGER ONLY FADES IT (2026-09-13,
+   * owner: "long delay between pressing the spl tile, it changing color and
+   * animating and then more time until it opened" — measured at 5062 ms for a
+   * 90 ms timer, i.e. the JS thread was blocked outright).
+   *
+   * The rack has always powered on in sequence: tile 0 at once, then roughly
+   * every 200 ms to ~1.4 s for the last. But that delay was applied ONLY to the
+   * opacity — every tile mounted its display the instant `ready` flipped, so all
+   * EIGHT heavy SVG displays (a full strip each, or the skin's photoreal image,
+   * or a live mini) were built in ONE synchronous burst, and seven of them were
+   * built up to 1.4 seconds before anything could see them. That burst lands
+   * exactly when the hub finishes opening and the user first reaches for a tile,
+   * which is why the press feedback itself arrived late.
+   *
+   * Now the delay gates the MOUNT, and the power-on runs on arrival. Same
+   * sequence, same look — those tiles were at opacity 0 for precisely this
+   * interval anyway — with the work spread across it instead of stacked at the
+   * front of it.
+   */
+  const start = useMemo(() => {
+    const seed = CHASSIS_SEED[tool] ?? 1;
+    return Math.round(Math.max(0, index * 180 + ((seed % 91) - 45)) * POWER_TIME_SCALE);
+  }, [tool, index]);
+  const [armed, setArmed] = useState(false);
   useEffect(() => {
-    if (!ready || ran.current) return;
+    if (!ready || armed) return undefined;
+    if (start === 0) {
+      setArmed(true); // the first tile still appears as immediately as before
+      return undefined;
+    }
+    const t = setTimeout(() => setArmed(true), start);
+    return () => clearTimeout(t);
+  }, [ready, armed, start]);
+
+  useEffect(() => {
+    // Runs as the display mounts, so the delay is no longer inside the
+    // animation — Animated.delay would now double the stagger.
+    if (!armed || ran.current) return;
     ran.current = true;
     if (!animationsAllowed()) {
       Animated.timing(lit, { toValue: 1, duration: 260, easing: Easing.out(Easing.quad), useNativeDriver: true }).start();
       return;
     }
     const persona = POWER_PERSONA[tool] ?? { lit: [{ to: 1, ms: 260, ease: Easing.out(Easing.quad) }] };
-    const seed = CHASSIS_SEED[tool] ?? 1;
-    const start = Math.round(Math.max(0, index * 180 + ((seed % 91) - 45)) * POWER_TIME_SCALE);
     const parts = [powerSeq(lit, persona.lit)];
     if (persona.bloom) parts.push(powerSeq(bloom, persona.bloom.steps));
-    Animated.sequence([Animated.delay(start), Animated.parallel(parts)]).start();
-  }, [ready, tool, index, lit, bloom]);
+    Animated.parallel(parts).start();
+  }, [armed, tool, lit, bloom]);
   // Fast back-nav mid-sequence: stop cleanly on unmount only.
   useEffect(() => () => { lit.stopAnimation(); bloom.stopAnimation(); }, [lit, bloom]);
   return (
@@ -345,7 +381,7 @@ function ToolStrip({ tool, live, active, ready, index }: { tool: ToolKey; live: 
             perf): the heavy SVG art / skin PNG / minis would otherwise render
             synchronously during navigation and stall the screen from opening.
             Until ready the tile shows its dark screen (reads as "powering on"). */}
-        {ready && (
+        {armed && (
           <Animated.View style={[StyleSheet.absoluteFill, { opacity: lit }]}>
             {Skin ? (
               <View style={StyleSheet.absoluteFill} accessibilityRole="image" accessibilityLabel={STRIP_LABEL[tool]}>
