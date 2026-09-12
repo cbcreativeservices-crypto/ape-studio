@@ -528,6 +528,25 @@ reads.
   `bassMonoHz` and phase `widthPct` (stereo-image params; the hero draws one
   trace).
 
+## Device pass — the dynamics hero, after the fix
+
+✅ **Owner confirmed the compression lab's controls now drive the display.**
+
+⚠️ **What cured it is NOT established.** Between the report and the confirmation
+two things changed: the `Math.exp`-per-sample hoist (`c1db13d3` — ~340
+transcendentals per frame per lab on the UI thread, down to ~5), and a reload.
+"Reloaded and it works" is equally consistent with the perf fix curing a
+stutter and with the device having been on a stale bundle the whole time. Both
+remain plausible; neither is proven, and the perf fix is worth keeping on its
+own terms regardless — 340 exp/frame violated this file's own standards header.
+
+**The trap worth remembering** is that the compression lab has TWO displays and
+only one of them can answer the question being asked of it. The animated hero
+has a time axis and shows attack/release; **DESIGNED RESPONSE is a transfer
+curve, which is time-independent by definition and CANNOT show them, ever.**
+Changing ENV and watching the curve will always look broken. That is correct
+behaviour, and it is not signposted anywhere on screen.
+
 ## Open for the owner
 
 1. **The GR needle has never been seen moving.** The web sim has no audio
