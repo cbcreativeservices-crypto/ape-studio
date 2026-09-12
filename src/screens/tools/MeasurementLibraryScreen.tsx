@@ -161,10 +161,55 @@ function payloadLines(m: SavedMeasurement): { label: string; value: string }[] {
     ];
   }
   if (p.kind === 'spectrogram_snapshot') {
-    return [
-      { label: 'GRID', value: `${p.grid.length} cols × ${p.bandsHz.length} cells` },
-      { label: 'DYNAMIC RANGE', value: `${p.dynamicRangeDb} dB · ${p.fftPreset}` },
+    // ⚠️ This used to be GRID "79 cols × 128 cells" + the dynamic range, and
+    // nothing else — the shared text of a capture therefore carried ZERO
+    // acoustic information (owner, device pass 2026-09-11: "blank spectrogram,
+    // no results"). It is the same mistake the previews already had to fix:
+    // describing the CONTAINER instead of the measurement. Grid dimensions are
+    // a property of the raster, not of the sound.
+    //
+    // Everything below is derived from the STORED grid — no interpolation, no
+    // smoothing, no invented resolution. The cells are levels against the fixed
+    // 0 dBFS anchor the tool captures on, so the maximum IS the peak in dBFS;
+    // it is labelled dBFS and never as SPL, because this input is uncalibrated.
+    let peak = -Infinity;
+    let peakCol = -1;
+    let peakRow = -1;
+    for (let c = 0; c < p.grid.length; c++) {
+      const cells = p.grid[c];
+      for (let r = 0; r < cells.length; r++) {
+        const v = cells[r];
+        if (v != null && v > peak) {
+          peak = v;
+          peakCol = c;
+          peakRow = r;
+        }
+      }
+    }
+    const seconds = p.grid.length * p.timeStepSec;
+    const loHz = p.bandsHz[0];
+    const hiHz = p.bandsHz[p.bandsHz.length - 1];
+    const lines: { label: string; value: string }[] = [
+      { label: 'DURATION', value: `${seconds.toFixed(1)} s · ${p.timeStepSec * 1000} ms/col` },
+      {
+        label: 'RANGE',
+        value: loHz != null && hiHz != null ? `${fmtHz(loHz)} – ${fmtHz(hiHz)} Hz` : '—',
+      },
     ];
+    // An all-empty capture is stated as such rather than printed as "-Infinity"
+    // or quietly omitted — a silent gap reads as "nothing was wrong".
+    if (peakCol >= 0 && Number.isFinite(peak)) {
+      const atHz = p.bandsHz[peakRow];
+      lines.push({ label: 'PEAK', value: `${peak.toFixed(1)} dBFS` });
+      lines.push({
+        label: 'PEAK AT',
+        value: `${atHz != null ? `${fmtHz(atHz)} Hz` : '—'} · ${(peakCol * p.timeStepSec).toFixed(1)} s`,
+      });
+    } else {
+      lines.push({ label: 'PEAK', value: 'no level above the captured floor' });
+    }
+    lines.push({ label: 'DYNAMIC RANGE', value: `${p.dynamicRangeDb} dB · ${p.fftPreset}` });
+    return lines;
   }
   // Pro Audio MultiMeter snapshot (owner 2026-07-29) — summary rows. All
   // levels dBFS · uncalibrated; detections are likely conditions, not
