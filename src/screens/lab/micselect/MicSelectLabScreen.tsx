@@ -982,7 +982,7 @@ export function MicSelectLabScreen() {
     navigatedRef.current = true;
     setStep(n);
     scrollRef.current?.scrollTo({ y: 0, animated: false });
-    if (!noAccountRef.current) void AsyncStorage.setItem(STEP_KEY, String(n));
+    if (!noAccountRef.current) void AsyncStorage.setItem(STEP_KEY, String(n)).catch(() => {});
   }, []);
 
   const s = STEPS[step];

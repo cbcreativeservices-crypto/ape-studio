@@ -56,7 +56,7 @@ export function StudyFsOverlay({
     if (visible && !wasVisible.current && guideCount.current < 2) {
       setShowGuide(true);
       guideCount.current += 1;
-      void AsyncStorage.setItem(guideKey, String(guideCount.current));
+      void AsyncStorage.setItem(guideKey, String(guideCount.current)).catch(() => {});
     }
     if (!visible) setShowGuide(false);
     wasVisible.current = visible;

@@ -154,8 +154,8 @@ export const SCENARIOS: readonly Scenario[] = [
     to: { device: 'Passive loudspeaker', port: 'INPUT (speakON)' },
     choices: [
       { id: 'a', name: 'speakON speaker cable — heavy-gauge two-conductor', a: 'speakon_nl4', b: 'speakon_nl4', verdict: 'correct', explain: 'Exactly what speakON exists for: latched, touch-safe contacts and heavy unshielded conductors sized for amplifier current.' },
-      { id: 'b', name: '1/4-inch instrument cable with adapters', a: 'ts_quarter', b: 'ts_quarter', verdict: 'wrong_construction', explain: 'The classic damaging substitution in live sound: an instrument cable’s small conductor loses power and can heat and fail on amplifier duty. Never substitute instrument cable for speaker cable.' },
-      { id: 'c', name: 'XLR mic cable with adapters', a: 'xlr3', b: 'xlr3', verdict: 'wrong_construction', explain: 'Mic cable is shielded small-gauge pair for tiny signals — amplifier power does not belong on it, whatever adapters make fit.' },
+      { id: 'b', name: '1/4-inch instrument cable with adapters', a: 'ts_quarter', b: 'ts_quarter', verdict: 'wrong_construction', rowsOverride: { safe: false }, explain: 'The classic damaging substitution in live sound: an instrument cable’s small conductor loses power and can heat and fail on amplifier duty. Never substitute instrument cable for speaker cable.' },
+      { id: 'c', name: 'XLR mic cable with adapters', a: 'xlr3', b: 'xlr3', verdict: 'wrong_construction', rowsOverride: { safe: false }, explain: 'Mic cable is shielded small-gauge pair for tiny signals — amplifier power does not belong on it, whatever adapters make fit.' },
       { id: 'd', name: 'speakON cable, amp output → mixer LINE INPUT', a: 'speakon_nl4', b: 'xlr3', verdict: 'speaker_into_input', explain: 'Never. An amplifier output into any mic or line input can overdrive and damage the input circuitry — this is the one tray choice that risks equipment, not just the show.' },
     ],
     note: 'Speaker runs follow their own power rule: amplifier off before connecting or disconnecting speaker cables.',

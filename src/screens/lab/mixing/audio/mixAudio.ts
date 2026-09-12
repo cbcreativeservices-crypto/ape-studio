@@ -602,7 +602,18 @@ export function matchGainDb(a: RenderedMix, b: RenderedMix): number {
   // neither — the WAV writer hard-clamps anything over +/-1, so the learner
   // would be A/B-ing against distortion. Soloed renders were reaching +14.6 dB
   // here and landing at +8 dBFS (audit 2026-09-12).
-  return Math.min(a.rmsDb - b.rmsDb, -1 - b.peakDb);
+  //
+  // But a CEILING MUST NEVER BECOME A FLOOR. A bare `Math.min` bit on renders
+  // that were never going to clip: a console mix peaking at -0.2 dBFS and
+  // wanting +1.5 dB to match would have been played 2.3 dB BELOW the
+  // reference, silently, under a page note promising the difference is
+  // decisions and not loudness. The shipped taught-mix comparison has only
+  // 0.12 dB of margin, so this was live, not theoretical. Attenuation can
+  // never clip, so it is always honoured in full; the ceiling only ever
+  // trims a BOOST, and never below zero.
+  const want = a.rmsDb - b.rmsDb;
+  if (want <= 0) return want;
+  return Math.min(want, Math.max(0, -1 - b.peakDb));
 }
 
 /** True when ANY track in this settings object is soloed. */

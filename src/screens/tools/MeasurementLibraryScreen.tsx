@@ -151,11 +151,18 @@ function payloadLines(m: SavedMeasurement): { label: string; value: string }[] {
   }
   // Remaining engine-tool payloads (SPL log, spectrum trace, snapshots) — summary rows.
   if (p.kind === 'spl_log') {
-    // Unit follows the record's calibration status (ruling R1): field-
-    // calibrated logs stored dB SPL values, uncalibrated logs stored dBFS.
-    const unit = m.calibration_status === 'calibrated' ? 'dB SPL' : 'dBFS';
+    // The unit follows the WEIGHTING, not the calibration status. The comment
+    // that used to sit here said uncalibrated logs store dBFS; they do not.
+    // SplMeterScreen stores values AS DISPLAYED — "estimated dB SPL always,
+    // floored at 0" (owner 2026-08-12), and its own note adds "dBFS is reserved
+    // for genuine digital readings, not SPL-meter readouts". So this printed a
+    // POSITIVE dBFS, which cannot exist, and disagreed with both the record's
+    // own title and its timeline axis, which have always had it right. How
+    // trustworthy the number is stays disclosed — calibration_status is its own
+    // mandatory row a few lines below.
+    const unit = p.weighting === 'C' ? 'dBC' : p.weighting === 'A' ? 'dBA' : 'dB SPL';
     return [
-      { label: 'LEQ', value: `${p.avgDb.toFixed(1)} ${unit} (${p.weighting})` },
+      { label: 'LEQ', value: `${p.avgDb.toFixed(1)} ${unit}` },
       { label: 'PEAK', value: `${p.peakDb.toFixed(1)} ${unit}` },
       { label: 'DURATION', value: `${Math.round(p.durationSec)} s · ${p.response}` },
     ];

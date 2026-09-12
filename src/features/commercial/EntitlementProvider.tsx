@@ -205,7 +205,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
         devOverrode.current = true;
         setEntitlementState(raw);
       }
-    });
+    }).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   // Track the signed-in user id so we can wipe the device-local study mirror
@@ -337,7 +337,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
                 devOverrode.current = true;
                 setEntitlementState(raw);
               }
-            });
+            }).catch(() => {});
           }
         }
         clearLocalOnUserChange(session?.user?.id ?? null);

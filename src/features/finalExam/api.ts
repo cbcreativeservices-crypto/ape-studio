@@ -165,7 +165,18 @@ export async function startFinalExam(awardType: AwardType, awardId: string): Pro
 }
 
 export async function clearExamIntent(awardType: AwardType, awardId: string): Promise<void> {
-  await AsyncStorage.removeItem(intentKey(awardType, awardId));
+  // Guarded for the SAME reason the start path is, and the stakes here are
+  // higher: this runs AFTER a successful submit. Unguarded, a storage throw
+  // landed in the caller's catch, which does not match /network|fetch/ and so
+  // told the learner their capstone "failed to submit", re-armed the
+  // double-submit latch and sent them back — for an exam the server had
+  // already graded and recorded. Same shape at the RETAKE button, where a
+  // throw made it silently do nothing.
+  try {
+    await AsyncStorage.removeItem(intentKey(awardType, awardId));
+  } catch {
+    /* resume convenience only — the attempt is already recorded server-side */
+  }
 }
 
 export type SubmitArgs = {

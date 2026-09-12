@@ -144,7 +144,19 @@ const HubSplSkin: FC = memo(() => {
   const peakDb = dbOr(d.meter?.peakDb);
   // Same TRUE VU ballistic as the tool's SkinnedVu (symmetric 2nd-order, ANSI
   // C16.5 / IEC 60268-17) so the tile needle behaves EXACTLY like the meter.
-  if (lastTickRef.current !== d.tick) {
+  if (d.tick === 0) {
+    // NOTHING IS MEASURING. `tick` starts at 1 for real frames, so 0 is the
+    // engine's unambiguous empty sentinel — emitted once on teardown and then
+    // never again. The ballistic only advances when the tick CHANGES, so a
+    // needle at 0.90 integrated a single step toward rest (to ~0.40) and then
+    // froze there indefinitely: 40% of scale, in silence, on the one tile that
+    // is always mounted. This tile's own docstring says the needle "rests at
+    // the bottom of the scale when no live signal is flowing" — now it does.
+    lastTickRef.current = d.tick;
+    vuRef.current = 0;
+    vuVelRef.current = 0;
+    lampRef.current = 0;
+  } else if (lastTickRef.current !== d.tick) {
     lastTickRef.current = d.tick;
     const target = db <= -119 ? 0 : Math.min(VU_MAX * 1.04, Math.pow(10, (db - SPL_LIVE0) / 20));
     const W = 16;

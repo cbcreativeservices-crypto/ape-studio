@@ -22,7 +22,7 @@ const CASES: { db: number; note: string }[] = [
   { db: 6, note: 'working' },
   { db: 12, note: 'half scale' },
   { db: 18, note: 'heavy' },
-  { db: 24, note: 'full scale' },
+  { db: 30, note: 'full scale' },
   { db: 40, note: 'over-range → clamps' },
 ];
 
@@ -31,12 +31,12 @@ export function GrLadderPreview() {
     <ScrollView style={styles.root} contentContainerStyle={styles.content}>
       <Text style={styles.h}>GR LADDER — FILL HARNESS</Text>
       <Text style={styles.note}>
-        Fixed values, typed in this file. Reads DOWNWARD from 0 at the top. 24 dB scale (compressor).
+        Fixed values, typed in this file. Reads DOWNWARD from 0 at the top. 30 dB scale (compressor/limiter, widened 2026-09-12 so a -45 dB ceiling no longer pegs).
       </Text>
       <View style={styles.row}>
         {CASES.map((c) => (
           <View key={c.db} style={styles.cell}>
-            <GrLadder grDb={c.db} maxDb={24} height={120} />
+            <GrLadder grDb={c.db} maxDb={30} height={120} />
             <Text style={styles.cap}>{c.db} dB</Text>
             <Text style={styles.sub}>{c.note}</Text>
           </View>
@@ -44,7 +44,7 @@ export function GrLadderPreview() {
       </View>
 
       <Text style={styles.h}>GATE — 70 dB SCALE</Text>
-      <Text style={styles.note}>24 dB must NOT peg here; a gate closes far harder than a compressor reduces.</Text>
+      <Text style={styles.note}>30 dB must NOT peg here; a gate closes far harder than a compressor reduces.</Text>
       <View style={styles.row}>
         {[0, 12, 24, 40, 70].map((db) => (
           <View key={db} style={styles.cell}>
@@ -57,7 +57,7 @@ export function GrLadderPreview() {
       <Text style={styles.h}>THE HORIZONTAL METER, FOR COMPARISON</Text>
       <View style={{ gap: 10 }}>
         {[0, 6, 12, 24].map((db) => (
-          <GrMeter key={db} grDb={db} maxDb={24} label="COMPRESSOR" />
+          <GrMeter key={db} grDb={db} maxDb={30} label="COMPRESSOR" />
         ))}
       </View>
     </ScrollView>

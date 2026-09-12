@@ -9,6 +9,10 @@
  *  - drag math is ANCHORED: the grant tap sets the value from locationY once,
  *    then moves apply gestureState.dy to that anchor — locationY re-bases when
  *    the finger leaves the track, which caused the whip-to-the-other-end jump;
+ *  - EXCEPT on a board that scrolls sideways (>12 bands), where `relative`
+ *    anchors to the CURRENT value instead and the grant writes nothing: the
+ *    finger has to land on a fader to scroll at all, so jump-to-tap there
+ *    silently scrubbed the band you pushed off from (2026-09-12);
  *  - a clearly HORIZONTAL gesture hands the touch off (termination allowed) so
  *    the 1/3-octave board still scrolls sideways.
  * `onActive` reports which fader is being dragged for live readouts.

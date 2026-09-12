@@ -232,7 +232,14 @@ export function Rt60Screen({ navigation }: Props) {
     [],
   );
 
-  const meter = frames.meter;
+  // A METER MUST NOT KEEP READING AFTER THE MIC IS RELEASED. `stop()` releases
+  // the mic and halts polling but never clears `frames`, so the last live frame
+  // stayed on screen indefinitely — a full trace and a real-looking level, with
+  // nothing measuring. Three sibling tools already guard exactly this way
+  // (MultiMeter, SplMeter, FrequencyCounter); these four did not. The no-fake-
+  // meters rule is about what a display CLAIMS to be, and a lit meter over a
+  // dead mic claims to be live.
+  const meter = state === 'running' ? frames.meter : null;
 
   // ---- Capture-window warning flags (review 2026-07-23) ----
   // clipRuns is SESSION-cumulative in the engine (reset only on capture start),

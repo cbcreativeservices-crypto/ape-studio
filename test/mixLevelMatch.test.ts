@@ -29,7 +29,11 @@ import { dirname, join } from 'node:path';
 type Mix = { rmsDb: number; peakDb: number };
 
 /** Mirror of matchGainDb (mixAudio.ts). */
-const matchGainDb = (a: Mix, b: Mix) => Math.min(a.rmsDb - b.rmsDb, -1 - b.peakDb);
+const matchGainDb = (a: Mix, b: Mix) => {
+  const want = a.rmsDb - b.rmsDb;
+  if (want <= 0) return want;
+  return Math.min(want, Math.max(0, -1 - b.peakDb));
+};
 
 /** Real measurements from the shipped renderer, Beginning Mixing page 5. */
 const WALL: Mix = { rmsDb: -17.59, peakDb: -0.99 };
@@ -62,10 +66,21 @@ describe('A/B level match never clips', () => {
     assert.ok(matchGainDb(WALL, loud) < 0, 'a louder render must still be attenuated to match');
   });
 
+  test('a hot-but-honest console mix is NOT quietened by the ceiling', () => {
+    // The near-miss the first version of this clamp caused: a mix peaking at
+    // -0.2 dBFS wanting +1.5 dB would have been played 2.3 dB BELOW the
+    // reference, silently, under a note promising it is matched.
+    const hot: Mix = { rmsDb: -19.09, peakDb: -0.2 };
+    const g = matchGainDb(WALL, hot);
+    assert.ok(g >= 0, `a boost must never be turned into an attenuation; got ${g.toFixed(2)}`);
+    assert.ok(g <= 1.5, 'and it must still be trimmed to the ceiling');
+  });
+
   test('source pin: both guards are present', () => {
     const here = dirname(fileURLToPath(import.meta.url));
     const audio = readFileSync(join(here, '..', 'src', 'screens', 'lab', 'mixing', 'audio', 'mixAudio.ts'), 'utf8');
-    assert.match(audio, /Math\.min\(a\.rmsDb - b\.rmsDb, -1 - b\.peakDb\)/, 'matchGainDb must clamp to the ceiling');
+    assert.match(audio, /Math\.min\(want, Math\.max\(0, -1 - b\.peakDb\)\)/, 'matchGainDb must clamp a BOOST to the ceiling');
+    assert.match(audio, /if \(want <= 0\) return want;/, 'attenuation must always be honoured in full — a ceiling must never become a floor');
     assert.match(audio, /export function soloActiveIn/, 'soloActiveIn must exist for the call site to gate on');
     const kit = readFileSync(join(here, '..', 'src', 'screens', 'lab', 'mixing', 'kit.tsx'), 'utf8');
     assert.match(kit, /!soloActiveIn\(v\.settings\)/, 'a soloed render must not be level-matched at all');

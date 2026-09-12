@@ -42,12 +42,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const FOCAL_KEY = 'ape:mixing:focal';
 let focalCurrent: string | null = null;
 const focalListeners = new Set<() => void>();
-void AsyncStorage.getItem(FOCAL_KEY).then((v) => {
-  if (v != null) {
-    focalCurrent = v;
-    focalListeners.forEach((l) => l());
-  }
-});
+// A MODULE-LEVEL read: it runs at import time, so a rejection here has no
+// component to surface in and becomes a bare unhandled rejection at startup.
+// Failing it just leaves the default.
+void AsyncStorage.getItem(FOCAL_KEY)
+  .then((v) => {
+    if (v != null) {
+      focalCurrent = v;
+      focalListeners.forEach((l) => l());
+    }
+  })
+  .catch(() => {});
 
 /** The song's declared focal point — a COMMITMENT, not a correct answer.
  *  Persisted so later pages (static-mix anchor) can honour it. */
@@ -73,16 +78,20 @@ export function useFocalChoice(): [string | null, (id: string) => void] {
 const PRIORITIES_KEY = 'ape:mixing:priorities';
 let prioritiesCurrent: string[] = [];
 const prioritiesListeners = new Set<() => void>();
-void AsyncStorage.getItem(PRIORITIES_KEY).then((v) => {
-  if (v) {
-    try {
-      prioritiesCurrent = JSON.parse(v) as string[];
-      prioritiesListeners.forEach((l) => l());
-    } catch {
-      /* corrupt value: start empty */
+void AsyncStorage.getItem(PRIORITIES_KEY)
+  .then((v) => {
+    if (v) {
+      try {
+        prioritiesCurrent = JSON.parse(v) as string[];
+        prioritiesListeners.forEach((l) => l());
+      } catch {
+        /* corrupt value: start empty */
+      }
     }
-  }
-});
+  })
+  // The inner try/catch only covers a CORRUPT value; the READ itself can still
+  // reject, and this one runs at import time.
+  .catch(() => {});
 
 /** The learner's three declared mix priorities — a commitment, not an answer. */
 export function useMixPriorities(): [readonly string[], (id: string) => void] {

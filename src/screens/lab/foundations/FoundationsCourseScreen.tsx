@@ -1962,7 +1962,7 @@ export function FoundationsCourseScreen() {
       tone.stop(); // each step owns its own sound — never carries over
       setStep(n);
       // Persist the place only for registered accounts — guests never resume.
-      if (!noAccountRef.current) void AsyncStorage.setItem(STEP_KEY, String(n));
+      if (!noAccountRef.current) void AsyncStorage.setItem(STEP_KEY, String(n)).catch(() => {});
     },
     [tone],
   );

@@ -55,7 +55,14 @@ export function evaluateChoice(choice: CableChoice): Verdict {
     construction: o.construction ?? f.construction !== false,
     safe: o.safe ?? f.safe !== false,
     overall: false,
-    unverified: choice.verdict === 'fits_but_verify',
+    // A cable that does not physically MATE was never tested for signal,
+    // construction or safety — so those three rows must read UNVERIFIED, not a
+    // green "passes". They defaulted to true (`undefined !== false`), which put
+    // "3 · Cable construction correct ✓" directly above explain text reading
+    // "speaker cable is the wrong construction for any mic-level job", and
+    // announced it to VoiceOver as "passes". The amber `? — UNVERIFIED` path is
+    // already wired for exactly these three rows; row 1 (fit) still reads FAILS.
+    unverified: choice.verdict === 'fits_but_verify' || choice.verdict === 'no_fit',
     problem: choice.verdict,
     label: PROBLEM_LABELS[choice.verdict],
     explain: choice.explain,

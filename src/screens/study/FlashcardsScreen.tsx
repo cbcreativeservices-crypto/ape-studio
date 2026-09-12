@@ -424,7 +424,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
 
   const persistHidden = useCallback(
     (next: Set<string>) => {
-      void AsyncStorage.setItem(hiddenKey(achievementId), JSON.stringify([...next]));
+      void AsyncStorage.setItem(hiddenKey(achievementId), JSON.stringify([...next])).catch(() => {});
     },
     [achievementId],
   );
@@ -611,7 +611,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       setTutorial((cur) => (cur ? cur : { key, onDone }));
       if (key === 'flashcardsPower') t3Done.current = true;
       else t2Done.current = true;
-      if (!devBypass('alwaysShowIntros')) void AsyncStorage.setItem(INTRO_STORAGE_PREFIX + key, '1');
+      if (!devBypass('alwaysShowIntros')) void AsyncStorage.setItem(INTRO_STORAGE_PREFIX + key, '1').catch(() => {});
     },
     [],
   );
@@ -783,7 +783,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   const updateSections = useCallback((next: Set<number>) => {
     const safe = next.size ? new Set(next) : new Set(ALL_LEVELS);
     setSections(safe);
-    void AsyncStorage.setItem(SECTIONS_KEY, JSON.stringify([...safe]));
+    void AsyncStorage.setItem(SECTIONS_KEY, JSON.stringify([...safe])).catch(() => {});
     setLevel((cur) => (cur !== 0 && !safe.has(cur) ? ALL_LEVELS.filter((l) => safe.has(l))[0] : cur));
   }, []);
 
@@ -801,7 +801,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   const toggleShowMedia = useCallback(() => {
     setShowMedia((cur) => {
       const next = !cur;
-      void AsyncStorage.setItem(SHOW_MEDIA_KEY, next ? '1' : '0');
+      void AsyncStorage.setItem(SHOW_MEDIA_KEY, next ? '1' : '0').catch(() => {});
       return next;
     });
   }, []);
@@ -811,7 +811,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   const toggleLinks = useCallback(() => {
     setShowLinks((cur) => {
       const next = !cur;
-      void AsyncStorage.setItem(SHOW_LINKS_KEY, next ? '1' : '0');
+      void AsyncStorage.setItem(SHOW_LINKS_KEY, next ? '1' : '0').catch(() => {});
       return next;
     });
   }, []);
@@ -1157,7 +1157,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       setShowFsGuide(true);
       if (!alwaysIntro) {
         fsGuideCount.current += 1;
-        void AsyncStorage.setItem('ape:fcFsGuide', String(fsGuideCount.current));
+        void AsyncStorage.setItem('ape:fcFsGuide', String(fsGuideCount.current)).catch(() => {});
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

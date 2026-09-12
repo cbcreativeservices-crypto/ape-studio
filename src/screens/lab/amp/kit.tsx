@@ -162,6 +162,10 @@ export function ControlSlider({
   // control reads as interactable — owner 2026-09-05.
   const pulseStyle = usePulseStyle(!disabled);
   const wRef = useRef(1);
+  // The gesture reads the width through a ref (no re-render mid-drag); the
+  // FILL has to be laid out from it, so it needs a rendered value too. 0 means
+  // "not measured yet" and falls back to the old percentage for one frame.
+  const [trackW, setTrackW] = useState(0);
   const set = useCallback(
     (x: number) => {
       // Read the touch in the SAME inset lane the cap travels in. The cap's
@@ -201,6 +205,13 @@ export function ControlSlider({
   ).current;
   const frac = (value - min) / (max - min || 1);
   const shown = format ? format(value) : `${Math.round(value * 100) / 100}${unit}`;
+  // The fill ends under the CAP, and the cap travels the INSET lane — so it is
+  // `CAP_W/2 + frac*(W - CAP_W)`, not `frac*W`. Spanning the full track put the
+  // fill tip up to 12 pt from the cap at the ends (dead-on only at centre),
+  // the same miscalibration the rack lane's tick stops had: an indicator
+  // measured against the wrong lane.
+  const fillW: number | `${number}%` =
+    trackW > 0 ? CAP_W / 2 + frac * (trackW - CAP_W) : `${frac * 100}%`;
   return (
     <View style={[styles.sliderWrap, disabled && { opacity: 0.4 }]}>
       <View style={styles.sliderHead}>
@@ -209,7 +220,11 @@ export function ControlSlider({
       </View>
       <View
         {...pan.panHandlers}
-        onLayout={(e: LayoutChangeEvent) => { wRef.current = Math.max(1, e.nativeEvent.layout.width); }}
+        onLayout={(e: LayoutChangeEvent) => {
+          const w = Math.max(1, e.nativeEvent.layout.width);
+          wRef.current = w;
+          setTrackW((prev) => (prev === w ? prev : w));
+        }}
         style={styles.sliderTrack}
         accessible
         accessibilityRole="adjustable"
@@ -234,15 +249,23 @@ export function ControlSlider({
           if (e.nativeEvent.actionName === 'decrement') onChange(Math.max(min, value - d));
         }}
       >
+        {/* The fill must end under the CAP, and the cap travels the INSET lane
+            — so the fill spans `CAP_W/2 + frac*(W - CAP_W)`, not `frac*W`.
+            Spanning the full track put the fill tip up to 12 pt away from the
+            cap at the ends (dead-on only at centre), which is the same
+            miscalibration the rack lane's tick stops had: an indicator
+            measured against the wrong lane. Unrounded for the same reason the
+            cap is — 101 stops quantised the ramp tip while the cap moved
+            smoothly. */}
         {level ? (
           <LinearGradient
             colors={rampColors(frac)}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
-            style={[styles.sliderFill, { width: `${Math.round(frac * 100)}%`, opacity: 0.55 }]}
+            style={[styles.sliderFill, { width: fillW, opacity: 0.55 }]}
           />
         ) : (
-          <View style={[styles.sliderFill, { width: `${Math.round(frac * 100)}%` }]} />
+          <View style={[styles.sliderFill, { width: fillW }]} />
         )}
         {/* A brushed CAP with a coloured indicator line, not a bare coloured
             bar (gear design pass 2026-09-11). This one component is the

@@ -219,7 +219,14 @@ export function WaveformScreen({ navigation }: Props) {
   const scopeW = fsLandscape ? Math.max(120, winW - FS_CTRL_W - camInset - 44) : panelW;
   const scopeH = fsLandscape ? Math.max(120, winH - insets.top - insets.bottom - 28) : PANEL_H;
 
-  const meter = frames.meter;
+  // A METER MUST NOT KEEP READING AFTER THE MIC IS RELEASED. `stop()` releases
+  // the mic and halts polling but never clears `frames`, so the last live frame
+  // stayed on screen indefinitely — a full trace and a real-looking level, with
+  // nothing measuring. Three sibling tools already guard exactly this way
+  // (MultiMeter, SplMeter, FrequencyCounter); these four did not. The no-fake-
+  // meters rule is about what a display CLAIMS to be, and a lit meter over a
+  // dead mic claims to be live.
+  const meter = state === 'running' ? frames.meter : null;
   // Live quality flags (spec §6) — the SAME flags get stored on save.
   const flags = useMemo(() => meterWarningFlags(meter), [meter]);
 
@@ -243,10 +250,16 @@ export function WaveformScreen({ navigation }: Props) {
   // the START card (that read as "leaving the screen" + caused a scroll jump).
   const [micPaused, setMicPaused] = useState(false);
   const onStop = useCallback(() => {
-    setFrozen(null);
+    // FREEZE ON THE LAST CAPTURE — don't just drop the badge. The owner's
+    // 2026-07-31 ruling (note above) is that STOP keeps the viewer up on the
+    // last capture, and it does. But clearing `frozen` here left that stale
+    // trace on screen labelled LIVE, with the mic released: the picture was
+    // the owner's intent, the label was a lie. Pinning it to the buckets we
+    // actually have honours the ruling AND makes the badge true.
+    setFrozen((f) => f ?? liveBuckets);
     setMicPaused(true);
     stop();
-  }, [stop]);
+  }, [stop, liveBuckets]);
   const onStart = useCallback(() => {
     // Do NOT clear micPaused here (owner 2026-08-01 strobe fix): clearing it
     // during the 'starting' transition unmounts the frozen viewer for a frame
@@ -255,6 +268,9 @@ export function WaveformScreen({ navigation }: Props) {
     // stays up and seamlessly goes live.
     setClipBase(0); // native clip counter restarts at 0 on capture start
     setHasClipped(false); // fresh capture = fresh clip latch
+    // Release the STOP freeze so the viewer goes live again. (A freeze the user
+    // set deliberately with the FREEZE control is theirs to clear.)
+    setFrozen(null);
     void start();
   }, [start]);
   // Clear the paused flag ONLY when truly running (never during 'starting').

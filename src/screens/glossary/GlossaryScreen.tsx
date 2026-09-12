@@ -1255,7 +1255,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
   const recordRecent = useCallback((id: string) => {
     setRecent((prev) => {
       const next = [id, ...prev.filter((r) => r !== id)].slice(0, RECENT_CAP);
-      void AsyncStorage.setItem(RECENT_KEY, JSON.stringify(next));
+      void AsyncStorage.setItem(RECENT_KEY, JSON.stringify(next)).catch(() => {});
       return next;
     });
   }, []);
@@ -1542,7 +1542,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
     AsyncStorage.getItem(RETURN_TERM_KEY)
       .then((id) => {
         if (!alive || !id) return;
-        void AsyncStorage.removeItem(RETURN_TERM_KEY);
+        void AsyncStorage.removeItem(RETURN_TERM_KEY).catch(() => {});
         void openPopupRoot(id);
       })
       .catch(() => {});
@@ -2081,7 +2081,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
       onExit={() => navigation.goBack()}
       onMembership={() => {
         if (lastViewedTermRef.current) {
-          void AsyncStorage.setItem(RETURN_TERM_KEY, lastViewedTermRef.current);
+          void AsyncStorage.setItem(RETURN_TERM_KEY, lastViewedTermRef.current).catch(() => {});
         }
         (navigation as unknown as { navigate: (r: string) => void }).navigate('Paywall');
       }}
@@ -2149,7 +2149,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
           onPress={() => {
             const next = !ttsBeg;
             setTtsBeg(next);
-            void AsyncStorage.setItem(TTS_MODE_KEY, next ? '1' : '0');
+            void AsyncStorage.setItem(TTS_MODE_KEY, next ? '1' : '0').catch(() => {});
             // Swapping BEG/ADV changes the open definition's length, which used
             // to shove it off-screen (owner 2026-08-05). Re-anchor the focused
             // term to the top so the definition just swaps in place.

@@ -387,7 +387,16 @@ export function PatchPairView({
 
 const styles = StyleSheet.create({
   wrap: { width: '100%', gap: 6, borderRadius: 12, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#0d0d10', padding: 10 },
-  jackTap: { position: 'absolute', left: 0, width: '52%', height: 52, minHeight: 44 },
+  /** The tap band must scale with the art. `top` is a percentage of a
+   *  width-scaled container (the Svg carries `aspectRatio: W/H`), so a FIXED
+   *  52 pt height drifted off the jack centre as the render got wider — past
+   *  roughly 680 pt the band stops covering the jack at all, and app.json has
+   *  `supportsTablet: true`. Eight pages gate on these taps and this lab is the
+   *  af_patchbay credit, so the lab became uncompletable on a tablet.
+   *  `minHeight` keeps the 44 pt target on a small phone.
+   *  ⚠️ The dev harness caps itself at maxWidth 480 — BELOW the break-even — so
+   *  this is structurally invisible on the one surface a developer can drive. */
+  jackTap: { position: 'absolute', left: 0, width: '52%', height: `${(52 / H) * 100}%`, minHeight: 44 },
   status: { color: colors.textSecondary, fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17 },
   caption: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },
 });

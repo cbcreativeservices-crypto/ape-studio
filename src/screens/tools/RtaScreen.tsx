@@ -976,7 +976,14 @@ export function RtaScreen({ navigation }: Props) {
   }, [state, frames, fraction, alpha]);
 
   const liveFlags = state === 'running' ? meterWarningFlags(frames.meter) : [];
-  const meter = frames.meter;
+  // A METER MUST NOT KEEP READING AFTER THE MIC IS RELEASED. `stop()` releases
+  // the mic and halts polling but never clears `frames`, so the last live frame
+  // stayed on screen indefinitely — a full trace and a real-looking level, with
+  // nothing measuring. Three sibling tools already guard exactly this way
+  // (MultiMeter, SplMeter, FrequencyCounter); these four did not. The no-fake-
+  // meters rule is about what a display CLAIMS to be, and a lit meter over a
+  // dead mic claims to be live.
+  const meter = state === 'running' ? frames.meter : null;
   const anyUnresolvable = displayBands != null && displayBands.resolvable.some((r) => !r);
 
   // LEVEL bezel cell: tap cycles the C/A/Z weighting (the old vertical unit

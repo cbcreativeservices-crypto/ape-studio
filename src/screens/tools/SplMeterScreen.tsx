@@ -665,7 +665,7 @@ export function SplMeterScreen({ navigation }: Props) {
     setFsBright(p);
     const red = p <= FS_RED_AT ? true : p >= FS_RED_EXIT ? false : fsRedLatchedRef.current;
     setFsRedLatched(red);
-    void AsyncStorage.multiSet([[FS_BRIGHT_KEY, String(p)], [FS_RED_KEY, red ? '1' : '0']]);
+    void AsyncStorage.multiSet([[FS_BRIGHT_KEY, String(p)], [FS_RED_KEY, red ? '1' : '0']]).catch(() => {});
   }, []);
   // Auto-hide the slider after 13 s of no screen interaction (owner 2026-08-17).
   const dimmerHideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);

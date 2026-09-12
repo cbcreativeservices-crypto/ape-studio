@@ -1101,7 +1101,7 @@ export function DashboardScreen() {
       if (cur) {
         setIntroSeen((prev) => {
           const next = new Set(prev).add(cur.key);
-          void AsyncStorage.setItem('ape:learnIntrosSeen', JSON.stringify([...next]));
+          void AsyncStorage.setItem('ape:learnIntrosSeen', JSON.stringify([...next])).catch(() => {});
           return next;
         });
       }
