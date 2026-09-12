@@ -8,6 +8,7 @@
  */
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LowLightDim } from '../features/settings/LowLightLayer';
+import { AppDialogHost } from '../components/AppDialog';
 import { ScreenErrorBoundary } from '../components/ScreenErrorBoundary';
 import { NAV_FADE, NAV_PUSH, NAV_PUSH_REDUCED, useReduceMotionNav } from './reduceMotionNav';
 import { SplashScreen } from '../screens/SplashScreen';
@@ -238,6 +239,16 @@ export function RootNavigator() {
             {children}
           </ScreenErrorBoundary>
           <LowLightDim />
+          {/* App-themed confirm / notice popups (owner 2026-09-13). HERE, not at
+              the App root, for the reason spelled out above: a
+              `presentation: 'modal'` screen sits ABOVE the root's siblings, so a
+              root-level dialog raised FROM Settings / About / Paywall and the
+              other four rendered UNDERNEATH them — invisible and un-tappable.
+              Settings is where Log out lives, and the owner got no popup at all.
+              Per-screen covers every screen present and future, which is the
+              same argument LowLightDim and ScreenErrorBoundary are here for.
+              The host itself only draws on the FOCUSED screen. */}
+          <AppDialogHost />
         </>
       )}
     >

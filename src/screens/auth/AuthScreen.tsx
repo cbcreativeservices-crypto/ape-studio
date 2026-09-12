@@ -525,7 +525,22 @@ export function AuthScreen({ navigation }: Props) {
                 <Text style={[styles.footerText, styles.footerLink]}>Reset via email</Text>
               </Pressable>
             </View>
-            <Text style={styles.guestNote}>Guest Mode is free — but your progress isn’t saved without an account.</Text>
+            {/* The glossary allowance belongs here too (owner 2026-09-13,
+                governance R7): this screen is the EARLIEST place a person
+                chooses Guest Mode, and a guest gets the same 14 a week as any
+                other free tier. The shared COPY string is reused rather than
+                retyped so the number lives in ONE place across all three
+                surfaces (About sheet, paywall, here) and cannot go stale on
+                one of them. This whole note is already muted 12 pt, so the
+                allowance needs no styling of its own to read as a caveat.
+                SHORT form here: the full sentence wrapped this note to three
+                lines and pushed its tail below the fold on a Pixel, and the
+                membership clause is an upsell on a screen where the person
+                has not chosen anything yet. */}
+            <Text style={styles.guestNote}>
+              Guest Mode is free — but your progress isn’t saved without an account.{' '}
+              {COPY.glossaryFreeAllowanceShort}
+            </Text>
           </>
         )}
       </KeyboardAwareScrollView>

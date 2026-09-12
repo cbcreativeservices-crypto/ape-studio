@@ -28,6 +28,12 @@ export const COPY = {
   // about what free includes and must move with it.
   glossaryFreeAllowance:
     'Free use includes 14 definitions a week; Academy membership removes the limit.',
+  /** The same fact WITHOUT the membership clause, for the Auth screen (owner
+   *  2026-09-13). Two reasons it is short there: the full sentence pushed the
+   *  guest note to three lines and its tail below the fold on a Pixel, and a
+   *  sign-in screen is not where an upsell belongs - the person has not chosen
+   *  anything yet. Same 14, same single source. */
+  glossaryFreeAllowanceShort: 'Free use includes 14 definitions a week.',
   // Introductory lifetime offer (Booth 2026-07-15).
   lifetimePrice: '$99.99',
   lifetimeOffer:
