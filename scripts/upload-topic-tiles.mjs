@@ -44,7 +44,16 @@ for (let i = 0; i < files.length; i++) {
   const bytes = await readFile(path.join(DIR, f));
   const { error } = await supabase.storage
     .from(BUCKET)
-    .upload(f, bytes, { contentType: 'image/webp', upsert: true });
+    // cacheControl (execution queue item 2, 2026-09-12): without it Storage
+    // serves these at the default max-age=3600, which is the root cause of the
+    // stale topic-art issue — new art could take up to an hour to appear. The
+    // tiles are content-addressed by filename and replaced wholesale when the
+    // art changes, so a year + immutable is safe and is what the header is for.
+    //
+    // ⚠️ Editing this line changes NOTHING already in the bucket. The header is
+    // written per object at upload time, so the 166 tiles must be RE-UPLOADED
+    // (upsert overwrites) for it to take effect.
+    .upload(f, bytes, { contentType: 'image/webp', upsert: true, cacheControl: '31536000, immutable' });
   if (error) {
     failures.push({ f, msg: error.message });
     console.error(`  ✗ ${f}: ${error.message}`);

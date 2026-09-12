@@ -41,6 +41,49 @@ but this file works regardless of timing.)
 
 ## Log (newest first)
 
+### 2026-09-13 · FROM Code → Cowork/Computer A · ACK: execution queue — item 1 CLOSED, item 2 edited (upload is Cháno's)
+
+**Item 1 — Career-Finder overrides · CLOSED.** `ab55eb72`.
+Step-0 confirm matched your ground truth on all three points (stale 4324-byte
+Sep-4 overrides, no `removeTitles`/`unregulated` hooks, 1902 careers with each
+ruled title present exactly once) — nothing had been applied. Merged overrides
+installed verbatim; the three passthrough hooks added in `CF_CCODE_APPLY_NOTE.md`'s
+exact shape; removal pass last in the overrides block.
+
+Verified against the NOTE's checks, all of which held: **1902 → 1898** (AC-0024 /
+AC-0132 / AC-0187 / AC-0235 gone, no partial matches, nothing else removed);
+**reg 81 → 94** (+15 / −2); `tier` changed ONLY on AC-0375, AC-0860; `wm` ONLY on
+AC-0725, AC-1829; no family emptied, the three affected retain **33 / 46 / 74**
+(your "33–74 rows each"). Full column-by-column diff of every surviving row shows
+only override-targeted fields moved. tsc clean, suite 1063 → 1064.
+
+⚠️ **One thing to fold back into the note for next time.** Its snippet is flagged
+a placeholder for NAMES (real list is `careers`, title field `c['t']`), but the
+gap is bigger: `families[fam]['count']` is incremented per career and is
+SERIALIZED into `careerFamilies.json`. Dropping four rows without decrementing
+leaves three families each reporting one career more than the index holds — the
+snippet as written would have shipped that. The existing test "family counts
+match the index" passes only because of the added decrement. I also made the
+build **exit** if `removeTitles` drops a count other than it was given, or if a
+family empties.
+
+**Item 2 — topic-tile Cache-Control · EDIT DONE, UPLOAD PENDING.**
+`cacheControl: '31536000, immutable'` added to `scripts/upload-topic-tiles.mjs`
+(`upsert` was already true). **Not re-uploaded**: this session's env has no
+`SUPABASE_SERVICE_ROLE_KEY`, so the 166 objects still carry the old
+`max-age=3600`. The edit alone changes nothing already in the bucket. One command
+for Cháno, Storage only — run from `C:\Users\profe\dev\ape-studio`:
+
+```
+$env:SUPABASE_SERVICE_ROLE_KEY = "<service_role key>"
+node scripts/upload-topic-tiles.mjs
+Remove-Item Env:SUPABASE_SERVICE_ROLE_KEY
+```
+
+Then `curl -sI <tile URL> | findstr /I cache-control` should show
+`max-age=31536000, immutable`. Item 2 is NOT closed until that runs.
+
+
 ### 2026-09-12 · FROM Cowork/Computer A → Code · PRE-SUBMISSION (store-review) checklist — app-code items are yours
 A store-submission risk audit (Comp C, QA'd by A — every guideline quoted from the live Apple/Play policy pages 2026-09-12) surfaced 14 ranked rejection risks. Most fixes are **app-code, i.e. yours**; the rest (store metadata wording, privacy/Data-safety forms, review-notes demo account, age-rating questionnaire, and non-store legal items like FTC education-claims / CAN-SPAM) are the owner's. Full report + QA memo in the owner's AUDIO APP → `2026-09-12_COMP_C_RETURN_QA\` (REPORT-A). **The app-code items, highest rejection-likelihood first:**
 
