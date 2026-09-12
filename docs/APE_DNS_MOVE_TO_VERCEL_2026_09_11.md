@@ -1,5 +1,41 @@
 # Academy DNS → Vercel nameservers (run-list, 2026-09-11)
 
+## ✅ STATE AT CLOSE — 2026-09-11. The move is DONE and mail is confirmed.
+
+All three academy domains now delegate to `ns1/ns2.vercel-dns.com`. A real test
+message sent from an outside address **arrived** at
+`info@proaudiotrainingacademy.com` — the only check that proves delivery. SPF
+was added afterwards as its own step; Resend re-checked and left alone; the
+typo domain removed from Vercel.
+
+| Item | State |
+|---|---|
+| `.online`, `.co`, `.com` nameservers | ✅ Vercel |
+| Mail delivery | ✅ **verified by a real inbound message** |
+| DKIM (Google 408 / Resend 218) | ✅ byte-identical across the move, SHA-256 compared |
+| SPF | ✅ `v=spf1 include:_spf.google.com ~all`, one record, 1 of 10 lookups |
+| Resend domain | ✅ Verified, 7/7 records — **"Restart" deliberately NOT pressed (see 11a)** |
+| `prooaudiotrainingacademy.co` (typo) | ✅ deleted — it was at TEAM level, not project |
+| Bluehost zones | ⏳ **hold untouched until 2026-09-18**, then delete ZONES only |
+| Shared-box catch-all `162.241.216.17` | ⚠️ still exists while that plan does — unreachable, not removed (step 12) |
+
+**Three things learned here that generalise beyond this move:**
+1. `nslookup <host> ns1.vercel-dns.com` reads the destination zone with **no
+   propagation wait** — pre-flight every cutover this way instead of hoping.
+2. **Never call a delegation propagated from one query to one anycast resolver.**
+   Google returned Vercel from one PoP while others still held Bluehost; query
+   several resolvers, several times. I reported "both resolvers" off a single
+   answer and had to correct it.
+3. Compare a migrated signing key **byte for byte** (SHA-256 of the normalised
+   TXT), not "the record is present". Presence is not identity.
+
+⚠️ Bluehost UI traps, both live: the domain list truncates all three academy
+names to an identical `proaudiotrainingacade…` — confirm from the details-page
+URL, never the visible label; and the details page carries a **pre-ticked
+"ADD 3 & CHECKOUT" upsell** (~$36/yr) right below the working area.
+
+---
+
 **Why:** the three academy domains have their DNS at Bluehost
 (`ns1/ns2.bluehost.com`), on the account whose hosting box `162.241.216.17` has
 **`channingbooth.com` as its primary site**. On 2026-09-11 the owner tapped the

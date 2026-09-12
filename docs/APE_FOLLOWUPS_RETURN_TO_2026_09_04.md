@@ -154,6 +154,56 @@ and the free-tier RPC amendment (backend).
   Production/Preview/Development) → Save → **Redeploy** (env vars only bind on a
   new deploy). The owner pastes the secret values; ccode drives the form but
   never types a secret (hard safety rule, as on 2026-09-04).
+- [x] **ROTATION ACTUALLY APPLIED + VERIFIED END-TO-END 2026-09-11.** The
+  2026-09-11 entry above says "rotated"; that was only half true until now —
+  values had been *generated* but never pasted, so Vercel was still serving the
+  exposed pair all day. It is now genuinely done: a fresh pair is live across
+  **all six rows**, and the gate was proven working by probe, not by assumption:
+  correct key → `303 → /` and the issued cookie returns **200**; the cookie
+  token submitted as a password → rejected; a wrong value → rejected; no cookie
+  and a forged cookie → **401**. The working copies were then deleted.
+
+  ⚠️ **THE SIX-ROW TRAP. `GATE_UNLOCK_KEY` and `GATE_COOKIE_TOKEN` are stored as
+  SIX SEPARATE ROWS** — one per environment — not two rows spanning three
+  environments. Editing "the variable" edits ONE environment. Rotating five of
+  six is not rotating: on the first pass the **Preview `GATE_COOKIE_TOKEN`** was
+  missed and sat on the exposed value, which matters more than it sounds because
+  the cookie token is what the gate accepts **instead of** the password — anyone
+  holding it forges the cookie and skips the prompt. Always re-read all six
+  timestamps afterwards; the list **re-sorts by Last Updated after every save**,
+  so rows move under you mid-edit, which is how one got skipped.
+
+  ⚠️ **THEN THE TWO VALUES WENT INTO EACH OTHER'S VARIABLES** — same cause, the
+  re-sorting list. Symptom: the new key failed AND the old key failed, which
+  reads exactly like "env vars aren't reaching the runtime" because the gate
+  fails closed to a random value. It was not that. Diagnosis that actually
+  worked: POST candidate values to `/api/unlock` and compare the redirect —
+  `/?e=1` is rejection, `/` is success. The cookie token unlocked the site; the
+  real key did not. **Probe the route; do not theorise about propagation.**
+
+  ⚠️ **A Vercel env change only reaches a build that STARTS AFTER the save.**
+  Saving a row while a build is in flight leaves that build stale, which caused
+  two false "still broken" readings — one of them mine, reported while two
+  deployments were still Queued. Finish ALL rows, *then* redeploy once, *then*
+  test. Never test against a build that is still Queued/Building.
+
+  **Delivery method that finally worked, and the reason for it:** one value per
+  file, each named after the variable it belongs in, no trailing newline, handed
+  over as files rather than printed in chat. The combined two-value file is what
+  made the swap easy; splitting them makes it impossible to grab the wrong line,
+  and keeping them out of the conversation keeps them out of the transcript.
+  (Both earlier pairs were burned — one was pasted into chat while debugging —
+  and regenerated. Generating a fresh pair costs nothing; reusing a leaked one
+  costs everything.)
+
+  **Code hardened the same day (`9cf1e83d`), so the next rotation cannot fail
+  these ways silently:** `gate.ts` now `.trim()`s both env values — the unlock
+  route already trimmed what a visitor types, but nothing trimmed the stored
+  value, so a trailing newline from a copied line would reject the correct
+  password with no error anywhere and look identical to a missing variable — and
+  it now warns when the two secrets hold the **same** string, which is both a
+  real weakness (knowing the password would mean being able to forge the cookie)
+  and the fingerprint of the swap above.
 - [x] **Schema-isolation Phase 1 — SHIPPED + DEVICE-VERIFIED 2026-09-04.** Spec
   (`CCODE_APP_CHANGE_SPEC_schema_isolation_2026_09_04.md`); the 3 identity reads
   (`profile/api.ts` ×2, `SettingsScreen.tsx` ×1) go through `my_identity()`.
