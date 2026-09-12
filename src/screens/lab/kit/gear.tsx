@@ -45,6 +45,7 @@ import Animated from 'react-native-reanimated';
 import Svg, { Circle, Line } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
 import { usePulseStyle } from '../../../features/lab/attentionPulse';
+import { useScrollLock } from '../scrollLock';
 
 /* ── shared hardware palette (quiet, engraved, amber-accented) ───────────── */
 
@@ -130,6 +131,15 @@ export function GearFader({
 
   const moved = useRef(false);
   const lastTap = useRef(0);
+  // Freeze the page scroller for the gesture's duration — the third leg of the
+  // eqBits recipe, and the one whose absence sent this fader's vertical drags
+  // to the page scroll on device (owner pass 2026-09-11: "faders want to
+  // scroll screen instead of move"). The capture-claim and the termination
+  // handoff are JS-side arguments; on glass the native scroll view does not
+  // argue, it takes — unless it is disabled first.
+  const ctxLock = useScrollLock();
+  const lockRef = useRef(ctxLock);
+  lockRef.current = ctxLock;
 
   const responder = useMemo(
     () =>
@@ -143,6 +153,7 @@ export function GearFader({
         onStartShouldSetPanResponderCapture: () => true,
         onPanResponderTerminationRequest: (_e, g) => Math.abs(g.dx) > Math.abs(g.dy) + 6,
         onPanResponderGrant: () => {
+          lockRef.current?.(true);
           grabDb.current = valueRef.current;
           moved.current = false;
         },
@@ -155,7 +166,9 @@ export function GearFader({
           const db = Math.round(faderFracToDb(f));
           if (db !== valueRef.current) onChangeRef.current(db);
         },
+        onPanResponderTerminate: () => lockRef.current?.(false),
         onPanResponderRelease: () => {
+          lockRef.current?.(false);
           if (moved.current) return;
           // A single tap still does nothing — a real fader does not jump to
           // where a stray finger lands. A DOUBLE tap returns to unity (owner
@@ -289,6 +302,11 @@ export function GearKnob({
   const grab = useRef(0);
   const lastTap = useRef(0);
   const moved = useRef(false);
+  // Same page-scroll freeze as the fader — a pot turn is a vertical drag, and
+  // the page scroller stole it on device exactly the same way.
+  const ctxLock = useScrollLock();
+  const lockRef = useRef(ctxLock);
+  lockRef.current = ctxLock;
 
   const responder = useMemo(
     () =>
@@ -296,6 +314,7 @@ export function GearKnob({
         onStartShouldSetPanResponder: () => true, // taps nudge (below), so claim
         onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dy) > Math.abs(g.dx),
         onPanResponderGrant: () => {
+          lockRef.current?.(true);
           grab.current = valueRef.current;
           moved.current = false;
         },
@@ -309,7 +328,9 @@ export function GearKnob({
           const v = Math.max(-100, Math.min(100, Math.round(raw / 5) * 5));
           if (v !== valueRef.current) onChangeRef.current(v);
         },
+        onPanResponderTerminate: () => lockRef.current?.(false),
         onPanResponderRelease: (e) => {
+          lockRef.current?.(false);
           if (moved.current) return;
           // A DOUBLE tap snaps to centre (owner ruling 2026-09-11) — the pan
           // pot's home the way unity is the fader's. The first tap of the

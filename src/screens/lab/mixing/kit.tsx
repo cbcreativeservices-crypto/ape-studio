@@ -521,7 +521,10 @@ export function MiniConsole({
   return (
     <View>
       <Text style={styles.consoleCue}>{tracks.length} CHANNELS — SWIPE →</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator contentContainerStyle={styles.console}>
+      {/* directionalLockEnabled mirrors the graphic-EQ board: iOS keeps the
+          axes separate, so a fader's vertical pull cannot creep the channel
+          row sideways while the page itself is frozen by the drag lock. */}
+      <ScrollView horizontal showsHorizontalScrollIndicator directionalLockEnabled contentContainerStyle={styles.console}>
         {tracks.map((id) => (
           <Strip key={id} id={id} value={{ ...FLAT, ...(value[id] ?? {}) }} onChange={change} show={show} />
         ))}

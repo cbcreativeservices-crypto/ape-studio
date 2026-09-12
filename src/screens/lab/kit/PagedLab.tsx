@@ -16,6 +16,7 @@
  */
 import { useCallback, useEffect, useRef, useState, type JSX } from 'react';
 import { AccessibilityInfo, Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollLockProvider } from '../scrollLock';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
@@ -77,6 +78,13 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone }: {
   const progressRef = useRef<PagedProgress | null>(null);
   const [page, setPage] = useState(0);
   const [listOpen, setListOpen] = useState(false);
+  // Drag-vs-scroll lock (owner device pass 2026-09-11): the mixing console's
+  // fader and pan pot live INSIDE this page scroller, and on device the native
+  // scroll view steals a vertical gesture before any JS responder can argue -
+  // the fader "wanted to scroll the screen instead of move". Same systemic fix
+  // as LabShell/RackUnit (owner 2026-07-30): drag primitives grab the nearest
+  // ScrollLockProvider and freeze the page for exactly the gesture's duration.
+  const [dragLocked, setDragLocked] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
   const osReduceMotion = useOsReduceMotion();
   const reduceMotion = osReduceMotion || !animationsAllowed();
@@ -183,9 +191,11 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone }: {
           </Pressable>
         </View>
       ) : null}
-      <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 24 }]}>
+      <ScrollView ref={scrollRef} scrollEnabled={!dragLocked} contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 24 }]}>
+        <ScrollLockProvider value={setDragLocked}>
         {page === 0 ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
         <Page ctx={ctx} />
+        </ScrollLockProvider>
       </ScrollView>
       <View style={[styles.footer, { paddingBottom: insets.bottom + 8 }]}>
         <Pressable onPress={() => page > 0 && goTo(page - 1)} disabled={page === 0} style={[styles.navBtn, page === 0 && { opacity: 0.35 }]} accessibilityRole="button" accessibilityState={{ disabled: page === 0 }} aria-disabled={page === 0} accessibilityLabel="Back one page">
