@@ -1880,17 +1880,27 @@ const STEPS: Step[] = [
       'Ride UNMIX to pull this wave apart into its ingredient list. Every analyzer, every EQ readout, every spectrogram in this app is doing precisely this — live, on real air.',
     ],
     Rack: M12Rack,
+    // Owner 2026-09-13, on the Pixel: this check "asks about a spectrum
+    // analyizer but one is not shown and the user has never seen one before —
+    // maybe change the question instead of adding the RTA." Right on both
+    // counts: nothing in these twelve modules has drawn an analyser, so the old
+    // question tested recall of a tool rather than understanding of Fourier, and
+    // its wrongHint pointed at "lines" the learner could not find on screen.
+    // Asked now about UNMIX — the control they just rode, on this stage — the
+    // same idea is testable from what is actually in front of them.
     check: {
-      question: 'A spectrum analyzer shows tall lines at 220, 440 and 660 Hz. What is it telling you?',
+      question:
+        'You ride UNMIX all the way up on a 220 Hz tone and the wave separates into parts at 220, 440 and 660 Hz. What does that tell you?',
       options: [
-        'Three separate instruments are playing',
-        'The sound contains sine ingredients at those frequencies — likely ONE 220 Hz tone with harmonics',
-        'The microphone is distorting',
+        'Three separate sounds got mixed together by mistake',
+        'This ONE tone is built from sines at whole-number multiples of 220 Hz — its harmonics',
+        'UNMIX added new frequencies that were not there before',
       ],
       correctIdx: 1,
-      wrongHint: 'Set the recipe to one voice and UNMIX it: how many lines appear for that single tone?',
+      wrongHint:
+        'Set the RECIPE to a single voice and ride UNMIX again: how many parts does one plain sine come apart into?',
       reveal:
-        'The analyzer speaks Fourier: it lists the sine ingredients. 220 · 440 · 660 is a whole-number family — the signature of ONE 220 Hz tone with its harmonics (Module 11). Reading spectra is reading recipes.',
+        'UNMIX does not add or remove anything — it shows what was always there. 220 · 440 · 660 is a whole-number family: the signature of ONE 220 Hz tone with its harmonics (Module 11). That list of ingredients is called the SPECTRUM, and reading one is reading a recipe.',
     },
   },
   {

@@ -1101,11 +1101,22 @@ export function AnalyticWaveformView({
   noise = null,
   f0 = 1,
   gainDbAt = null,
+  clock,
+  visHz = 0,
+  cycles = 2.5,
 }: {
   width: number;
   height?: number;
   amps: number[];
   phasesDeg: number[];
+  /** Seconds clock — SHARE the air window's, so the two panes move together.
+   *  Omit for a still drawing (the pre-2026-09-13 behaviour). */
+  clock?: SharedValue<number>;
+  /** Model rate (Hz) the air window is running at. */
+  visHz?: number;
+  /** Cycles drawn across the pane. Pass the air window's wavelength count so a
+   *  crest here lines up with a compression up there. */
+  cycles?: number;
   /** 0..1 visual scale (from the level slider). */
   level?: number;
   /** Noise color key overrides the recipe ('white' | 'pink' | 'brown'). */
@@ -1122,7 +1133,28 @@ export function AnalyticWaveformView({
   // Samples computed ONCE (identical math to the pre-retrofit trace — same
   // seeded noise smoothing, same engine-style peak normalization), then built
   // into both the stroke path and its gradient underfill.
-  const { path, under } = useMemo(() => {
+  /**
+   * Owner 2026-09-13, on the Pixel: "the waveform should change speed and be
+   * timed with the molecule dots waves above."
+   *
+   * It used to be a still drawing of exactly 2.5 cycles — `f0` never entered the
+   * x-axis at all — so dragging FREQ redrew an identical picture. It now takes
+   * the AIR WINDOW'S OWN clock and rate, and draws the air window's OWN
+   * wavelength count, so a crest here sits under a compression up there and the
+   * two move as one wave. Higher pitch packs more cycles in, exactly as the
+   * particle spacing tightens.
+   *
+   * Both panes therefore run `sin(ωt − kx)` with the same ω and the same count.
+   * That is coherent rather than a conflation of the two rulers: the window
+   * drawn here is the time the wave takes to cross the window drawn up there,
+   * which is Module 7's distance = speed × time with both sides on screen.
+   *
+   * NOISE stays still — it has no single wavelength to lock to, and the
+   * Playground already pauses these drawings for a sweep.
+   */
+  const paths = useDerivedValue(() => {
+    const t = clock ? clock.value : 0;
+    const om = 2 * Math.PI * visHz;
     const p = Skia.Path.Make();
     const u = Skia.Path.Make();
     const mid = h / 2;
@@ -1152,7 +1184,10 @@ export function AnalyticWaveformView({
         let s = 0;
         for (let n = 0; n < amps.length; n++) {
           if (amps[n] <= 0) continue;
-          s += amps[n] * wts[n] * Math.sin(2 * Math.PI * (n + 1) * x01 * 2.5 + (phasesDeg[n] * Math.PI) / 180);
+          // Harmonic n rides (n+1)× both the spatial and the temporal term, so
+          // the whole stack travels as ONE wave rather than drifting apart.
+          const arg = (n + 1) * (om * t - 2 * Math.PI * cycles * x01) + (phasesDeg[n] * Math.PI) / 180;
+          s += amps[n] * wts[n] * Math.sin(arg);
         }
         ys.push(mid - a * s * norm);
       }
@@ -1167,7 +1202,9 @@ export function AnalyticWaveformView({
     u.lineTo(w, mid);
     u.close();
     return { path: p, under: u };
-  }, [w, h, amps, phasesDeg, level, noise, f0, gainDbAt]);
+  }, [clock, w, h, amps, phasesDeg, level, noise, f0, gainDbAt, visHz, cycles]);
+  const path = useDerivedValue(() => paths.value.path, [paths]);
+  const under = useDerivedValue(() => paths.value.under, [paths]);
 
   return (
     <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
@@ -1184,6 +1221,16 @@ export function AnalyticWaveformView({
     </Canvas>
   );
 }
+
+/** Decade marks for the spectrum's fixed 40 Hz–16 kHz log axis. Read inside the
+ *  pane, so they name the span without the caption having to. */
+const SPECTRUM_TICKS = [
+  { f: 40, label: '40' },
+  { f: 100, label: '100' },
+  { f: 1000, label: '1k' },
+  { f: 10000, label: '10k' },
+  { f: 16000, label: '16k' },
+] as const;
 
 /** Harmonic-stick spectrum (linear axis to 13×f0) with an optional response
  *  curve (e.g. the EQ's exact RBJ magnitude) shaping the stick heights —
@@ -1211,7 +1258,26 @@ export function AnalyticSpectrumView({
 }) {
   const w = width;
   const h = height;
-  const fMax = 13 * f0;
+  /**
+   * FIXED log axis — 40 Hz to 16 kHz, the SAME span the noise branch below has
+   * always used.
+   *
+   * Owner 2026-09-13, on the Pixel: "display up top is not showing user changes
+   * with sliders." The axis used to be `fMax = 13 * f0`, so partial n landed at
+   * x = (n+1)/13 of the pane REGARDLESS of frequency: the fundamental sat at
+   * exactly 1/13 across whether it was 55 Hz or 3520 Hz. Dragging FREQ redrew an
+   * identical picture and changed only the label above it. A pane whose stated
+   * job is "which frequencies, how strong" cannot answer "which" on an axis that
+   * moves with the signal.
+   *
+   * On a fixed axis the partial TRAVELS — 55 Hz sits near the left edge, 3520 Hz
+   * about three-quarters across — and harmonics spread the way they do on every
+   * real analyser. Partials above 16 kHz now fall off the right, which is honest:
+   * they are out of the range being drawn.
+   */
+  const F_LO = 40;
+  const F_HI = 16000;
+  const xOfHz = (f: number) => (Math.log(Math.max(F_LO, f) / F_LO) / Math.log(F_HI / F_LO)) * w;
   const floorDb = -48;
   const lvlDb = 20 * Math.log10(Math.max(1e-4, Math.min(1, level)));
 
@@ -1227,7 +1293,7 @@ export function AnalyticSpectrumView({
       const per = noise === 'white' ? 0 : noise === 'pink' ? -3 : -6;
       const N = 60;
       for (let i = 0; i <= N; i++) {
-        const f = 40 * Math.pow(16000 / 40, i / N);
+        const f = F_LO * Math.pow(F_HI / F_LO, i / N);
         let db = per * Math.log2(f / 1000) + lvlDb;
         if (gainDbAt) db += gainDbAt(f);
         const x = (i / N) * w;
@@ -1247,15 +1313,17 @@ export function AnalyticSpectrumView({
       let db = 20 * Math.log10(a) + lvlDb;
       if (gainDbAt) db += gainDbAt(f);
       if (db <= floorDb) continue;
-      const x = (f / fMax) * w;
+      if (f > F_HI) continue; // above the drawn range — do not pile it on the edge
+      const x = xOfHz(f);
       stickPath.moveTo(x, h - 14);
       stickPath.lineTo(x, yOf(db));
     }
     return { sticks: stickPath, slope: slopePath };
-  }, [w, h, f0, amps, gainDbAt, noise, fMax, lvlDb]);
+  }, [w, h, f0, amps, gainDbAt, noise, lvlDb]);
 
   return (
-    <Canvas style={{ width: w, height: h, backgroundColor: BG }}>
+    <View style={{ width: w, height: h }}>
+    <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
       {/* Baseline — brighter reference (house idiom). */}
       <SkLine p1={{ x: 0, y: h - 14 }} p2={{ x: w, y: h - 14 }} color={ZERO_REF} strokeWidth={1.4} />
       {/* Harmonic sticks: glow pass + crisp pass with a vertical heat gradient
@@ -1272,6 +1340,29 @@ export function AnalyticSpectrumView({
       </Path>
       <Path path={slope} color={WAVE} style="stroke" strokeWidth={2} />
     </Canvas>
+    {/* Owner 2026-09-13: "the spectrun log should show Hz range inside viewer."
+        The span used to live only in the caption ABOVE the pane, so the axis was
+        unlabelled where you actually read it — you could see a stick move but
+        not read off WHERE it moved to. These sit on the baseline, inside the
+        drawing, at the decade marks the log axis is built on. */}
+    {SPECTRUM_TICKS.map((t) => (
+      <Text
+        key={t.f}
+        style={[
+          tickText,
+          {
+            top: h - 12,
+            left: Math.max(0, Math.min(w - 30, xOfHz(t.f) - 15)),
+            width: 30,
+            textAlign: 'center' as const,
+            color: '#c8ccd4',
+          },
+        ]}
+      >
+        {t.label}
+      </Text>
+    ))}
+    </View>
   );
 }
 

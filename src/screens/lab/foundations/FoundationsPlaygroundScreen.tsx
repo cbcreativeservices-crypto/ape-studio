@@ -808,9 +808,17 @@ function StageViz({
             noise={noiseKind}
             f0={freq}
             gainDbAt={gainDbAt}
+            // Owner 2026-09-13: time-locked to the air window. Same clock, same
+            // model rate, and the SAME wavelength count the particles are drawn
+            // with (airW / airLambdaPx) — so a crest here sits under a
+            // compression up there and both move together. `wave` only: noise
+            // and sweep have no single wavelength to lock to.
+            clock={clock}
+            visHz={visHz}
+            cycles={source === 'wave' ? 1.3 + 4.7 * freq01 : 2.5}
           />
           <Text style={[styles.stageLabel, { height: LABEL_H, marginTop: GAP }]} numberOfLines={1}>
-            SPECTRUM — {noiseKind ? 'LOG 40 Hz–16 kHz' : `LINEAR TO ${13 * freq} Hz`}
+            SPECTRUM — LOG 40 Hz–16 kHz
             {!noiseKind && amps.filter((a) => a > 0.001).length === 1 ? ' · 1 PARTIAL — PURE TONE' : ''}
             {gainDbAt ? ' · EQ APPLIED' : ''}
           </Text>
