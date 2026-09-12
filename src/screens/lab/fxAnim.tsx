@@ -816,6 +816,24 @@ function DynamicsFlow({
      * as a SEPARATE worklet, so it cannot see this function's locals. Inside a
      * worklet, keep the loop flat. */
     let gr = 0;
+    /* PERF (2026-09-11, same day the follower landed). The first cut called
+     * Math.exp TWICE PER SAMPLE — once for the burst envelope, once for the
+     * follower coefficient — across a 56-step pre-roll and a 113-step draw:
+     * ~340 transcendentals per frame per lab on the UI thread, where the old
+     * path had none. A hero that stutters reads to a user as "the controls do
+     * nothing", which is exactly the report this fix answers.
+     *
+     * Both are hoistable because `dt` is CONSTANT along the walk:
+     *   • the follower's two coefficients are identical at every step;
+     *   • the burst decay is exponential, so advancing by a fixed dt is a
+     *     MULTIPLY, with one exp at each burst boundary to re-seat the phase
+     *     so it cannot drift.
+     * ~340 exp/frame becomes ~5, with the same output. */
+    const aAtk = 1 - Math.exp(-dt / atk);
+    const aRel = 1 - Math.exp(-dt / rel);
+    const decayStep = Math.exp(-dt / DYN_DECAY_MS);
+    const span01 = DYN_PEAK_DB - DYN_FLOOR_DB;
+    const mk = mkG.value;
     const thrV = thrG.value;
     const ratV = ratG.value;
     const rngV = rngG.value;
@@ -833,28 +851,37 @@ function DynamicsFlow({
     // every frame at the edge of the panel. One burst period of lead-in settles
     // it, so what enters the panel is already in the state the signal put it in.
     const pre = Math.ceil(DYN_BURST_MS / Math.max(dt, 0.01));
-    for (let i = pre; i > 0; i--) {
-      const dbPre = burstDb(scrollMs - i * dt);
-      if (mode === 'gate' && dbPre >= thrV) sinceOpen = 0;
-      else sinceOpen += dt;
-      const target =
-        mode === 'gate' && sinceOpen < holdV ? 0 : targetGrDb(dbPre, mode, thrV, ratV, rngV, ceilV);
-      gr += (target - gr) * (1 - Math.exp(-dt / (target > gr ? atk : rel)));
-    }
+    // Running burst phase + amplitude, walked forward, rather than recomputing
+    // burstDb(t) from scratch at every step. The pre-roll and the draw are ONE
+    // walk now: negative i settles the follower and draws nothing.
+    let tB = scrollMs - pre * dt;
+    tB -= Math.floor(tB / DYN_BURST_MS) * DYN_BURST_MS;
+    let amp = Math.exp(-tB / DYN_DECAY_MS);
 
-    for (let i = 0; i <= N; i++) {
-      const x = outX0 + step * i;
-      const dbIn = burstDb(scrollMs + (x - outX0) * msPerPx);
+    for (let i = -pre; i <= N; i++) {
+      const dbIn = DYN_FLOOR_DB + span01 * amp;
       if (mode === 'gate' && dbIn >= thrV) sinceOpen = 0;
       else sinceOpen += dt;
       // Within the hold window the gate stays fully open, whatever the level.
       const target =
         mode === 'gate' && sinceOpen < holdV ? 0 : targetGrDb(dbIn, mode, thrV, ratV, rngV, ceilV);
-      gr += (target - gr) * (1 - Math.exp(-dt / (target > gr ? atk : rel)));
-      const dbOut = dbIn - gr + mkG.value;
-      const y = h / 2 - A * dispAmp(dbOut) * Math.sin(kc * x - pc);
-      if (i === 0) p.moveTo(x, y);
-      else p.lineTo(x, y);
+      gr += (target - gr) * (target > gr ? aAtk : aRel);
+
+      if (i >= 0) {
+        const x = outX0 + step * i;
+        const dbOut = dbIn - gr + mk;
+        const y = h / 2 - A * dispAmp(dbOut) * Math.sin(kc * x - pc);
+        if (i === 0) p.moveTo(x, y);
+        else p.lineTo(x, y);
+      }
+
+      tB += dt;
+      if (tB >= DYN_BURST_MS) {
+        tB -= DYN_BURST_MS;
+        amp = Math.exp(-tB / DYN_DECAY_MS); // re-seat exactly at the boundary
+      } else {
+        amp *= decayStep;
+      }
     }
     return p;
   }, [carrier, env, thrG, ratG, rngG, ceilG, mkG, atkG, relG, holdG, outX0, outX1, h, kc, msPerPx, mode]);
