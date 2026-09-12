@@ -41,6 +41,107 @@ but this file works regardless of timing.)
 
 ## Log (newest first)
 
+### 2026-09-12 · FROM Cowork/Computer A → Code · PRE-SUBMISSION (store-review) checklist — app-code items are yours
+A store-submission risk audit (Comp C, QA'd by A — every guideline quoted from the live Apple/Play policy pages 2026-09-12) surfaced 14 ranked rejection risks. Most fixes are **app-code, i.e. yours**; the rest (store metadata wording, privacy/Data-safety forms, review-notes demo account, age-rating questionnaire, and non-store legal items like FTC education-claims / CAN-SPAM) are the owner's. Full report + QA memo in the owner's AUDIO APP → `2026-09-12_COMP_C_RETURN_QA\` (REPORT-A). **The app-code items, highest rejection-likelihood first:**
+
+1. **Account deletion, in-app (Apple 5.1.1(v) / Play).** Settings → Delete Account: deletes Supabase auth record + profile + metering rows **and removes any public registry listing** (deleting auth but leaving a public registry entry is the exact failure mode). Warn what's lost; note subscription cancel is separate via the store. Deactivation-only fails review.
+2. **Account-deletion WEB path (Play 3-leg requirement).** A live page on `proaudiotrainingacademy.com` (e.g. `/account-deletion`) to request account+data deletion without reinstalling, declared in the Data-safety form. This web leg is the one most often missed → submission stalls.
+3. **Paywall disclosures + Restore/Manage (Apple 3.1.1/3.1.2, Play Subscriptions).** On the custom OpenIAP/expo-iap paywall, BEFORE the buy button: price, billing period, auto-renewal statement, what's included, Terms/Privacy links. iOS needs a visible **Restore Purchases** control; Android a **Manage/Cancel** link (deep-link to Play Subscription Center is fine). State any trial's conversion terms.
+4. **Microphone permission UX (Apple 5.1.1(ii), Play prominent disclosure).** Specific `NSMicrophoneUsageDescription` (not "This app uses the microphone") — e.g. "…to measure live sound levels and frequency content for the SPL/RTA/spectrogram/RT60 tools; audio is analyzed on-device and is not recorded or uploaded" (only claim the last clause if true). Request on FIRST measurement-tool use, not at launch; calculators/curriculum/generator must work with mic denied.
+5. **Rename the `multimeter` tool descriptively.** "Audio Multimeter (level/RMS/peak)" or "Level Meter Suite" in store metadata and ideally the UI — a reviewer reads "multimeter" as an electrical meter (impossible on a phone mic) → false-functionality flag. Cheap fix, easy misread.
+6. **Public registry = UGC controls (Apple 1.2).** Report-listing mechanism, admin remove/block, published contact in-app, and pre-publication moderation of listing text; keep the 18+ opt-in a real age gate (declared birthdate before the consent flow), and make de-listing self-service (ties to item 1).
+7. **Single-active-device = self-service switch (Apple 3.1.2(a), AMBIGUOUS).** Concurrency limit is defensible ("one device at a time, switchable in-app, no support ticket"); "locked to first device, switch via support" is the reading most likely read as a violation. Implement in-app device switch; disclose the limit BEFORE purchase; never say "use on all your devices" if a concurrency limit exists.
+8. **SPL/health boundary (Apple 1.4.1, Play Health).** Keep the on-screen "Uncalibrated — relative, for training" disclaimer IN the SPL/RT60 tools; teach OSHA/NIOSH in the curriculum, but the meter must NOT tell a user their exposure is "safe/unsafe" — that flips a training tool into a health tool. No "hearing/protect your ears" claims in store metadata.
+9. **Certificate wording literally true + Academy-attributed (Apple 2.3.1(a), Play).** "Certificate of completion from Pro Audio Training Academy" is fine; "industry-recognized / certified audio engineer" or seals resembling official marks are not. (Ties to the certificate integration already in source.)
+10. **Build gates (confirm only).** iOS: EAS build log shows Xcode 26 / iOS 26 SDK (Expo SDK 57 should comply). Android: `targetSdkVersion` 36 (API 36) — that deadline already passed 2026-08-31; confirm before submit.
+
+**Owner-side (not yours, listed so nothing falls through):** review-notes demo account with metering caps lifted + device-lock exempted; Data-safety/privacy labels (registry data = collected & shared publicly; audio = *not collected* only if it truly never leaves the device — audit that path incl. any analytics SDK); updated Apple age-rating questionnaire (rate on content = all-ages, registry behind a real gate — don't self-rate 18+); Play Health declaration answered honestly; metering shown in listing copy.
+**ACK (Code):** _<reply here — which items are done>_
+
+---
+
+### 2026-09-12 · FROM Cowork/Computer A → Code · YOUR EXECUTION QUEUE (backend is launch-clean; 3 app-side items are yours)
+Cleaned up the backend this cycle and ground-truthed launch readiness. **DB/data/security/performance are all GO and
+verified live** — nothing on the Supabase side is blocking. What's left before a public launch that lives on YOUR
+(Code / app + build) side, in priority order:
+
+**1. Career Finder overrides — APPLY (still open, no ACK below).** The merged overrides + build-hook changes from the
+2026-09-11 entry below are still not landed (as of that entry: live `scripts/career-index-overrides.json` was still the
+old Sep-4 4KB file and `build-career-index.py` lacked the hooks). This is the one true launch blocker on your side.
+Do the 3 steps in that entry (replace overrides JSON → add `unregulated`/`tier`/`workModel` loops + a LAST-run
+`removeTitles` pass to `build-career-index.py` → rebuild `careerIndex.json`+`careerFamilies.json`). Expect record count
+**1902 → 1898**. Package: owner's AUDIO APP → `2026-09-11_CAREER_FINDER_AUDIT_QA\` (`career-index-overrides_MERGED.json`
++ `CF_CCODE_APPLY_NOTE.md`).
+
+**2. Topic-tile Cache-Control — FIX + re-upload (still open, no ACK below).** Per the 2026-09-11 entry below:
+`scripts/upload-topic-tiles.mjs` uploads with no `cacheControl`, so all 166 tiles serve `max-age=3600` (stale-art bug).
+Add `cacheControl:'31536000, immutable'` to the `upload(...)` call and re-run (upsert-safe; same filenames, so the live
+`icon_url` wiring stays valid — no DB change). Cosmetic-caching, not a correctness gate, but wanted before launch.
+
+**3. `get_scenario_items` — CONFIRM caller + answer-key question (NEW).** On the DB side I revoked anon EXECUTE on
+`public.get_scenario_items(uuid)` (migration `revoke_anon_execute_get_scenario_items`; verified anon 0 / authenticated 1)
+— it was the only quiz/scenario serving RPC that was anon-callable AND returned the answer key
+(`correct_answer`/`correct_answers`/`explanation`). Every sibling is authenticated-only + grades server-side. **Your part:**
+grep `src` for callers of `get_scenario_items` — confirm nothing relied on anonymous access (the authenticated app flow is
+unaffected), and decide whether this RPC should return the answer key to the client AT ALL vs. being legacy superseded by
+the authenticated `get_scenario_homework` / `start_scenario_cycle` flow. If legacy, retire it. (I couldn't grep `src`
+myself — the device file bridge to the workspace is down since the Sept-8 Windows update.)
+
+**FYI — backend work applied & verified live this cycle (no action needed from you):** anon revoke above;
+187 backup/stage tables moved off the public API surface into an `archive` schema (reversible; do NOT expose `archive`
+in API settings); 28 FK covering indexes added; 38 RLS policies wrapped `auth.uid()` → `(select auth.uid())` (access-neutral
+perf fix). Advisor now reports 0 unindexed FKs and 0 `auth_rls_initplan`. Migrations: `perf_add_fk_covering_indexes`,
+`perf_rls_wrap_authuid_initplan`, `revoke_anon_execute_get_scenario_items`, `wire_topic_tile_icon_urls`. Full go/no-go
+snapshot lives in the owner's AUDIO APP → `2026-09-12_LAUNCH_READINESS\`.
+**ACK (Code):** _<reply here — which of 1/2/3 are done>_
+
+---
+
+### 2026-09-11 · FROM Cowork/Computer A → Code · Topic tiles now WIRED live + one upload fix for you (Cache-Control)
+I wired all 166 v3 topics' `achievements.icon_url` to `topic-tiles/<file>.webp` (applied live via connector, migration
+`wire_topic_tile_icon_urls`; verified 166/166, every value resolves to a real object in the public `topic-tiles` bucket).
+Backup: `public.achievements_iconurl_backup_20260911` (droppable). **Topic/course-card art is live** — reload shows it.
+
+**One fix for you (app-code, non-blocking):** `scripts/upload-topic-tiles.mjs` uploads with no `cacheControl`, so all 166
+objects currently serve `Cache-Control: max-age=3600` (confirmed in `storage.objects.metadata`). That's the stale-art /
+slow-cache issue the Topic-Image Spec's immutable-cache fix targets. Change the upload call to:
+`upload(f, bytes, { contentType:'image/webp', upsert:true, cacheControl:'31536000, immutable' })` and re-run it
+(upsert-safe) so the tiles cache immutably. No DB change, no icon_url change — same filenames, so the wiring stays valid.
+**ACK (Code):** _<reply here>_
+
+---
+
+### 2026-09-11 · FROM Cowork/Computer A → Code · Career Finder correction overrides READY for you (ground-truthed: NOT applied yet)
+The A-verified Career Finder audit corrections are packaged and waiting on you. I ground-truthed the repo today:
+live `scripts/career-index-overrides.json` is still the **old Sep-4 4KB version** — my merged 12KB version has not
+landed, and `scripts/build-career-index.py` lacks the new hooks. So none of this is in `careerIndex.json` yet.
+
+**Package** (loose in the owner's AUDIO APP → `2026-09-11_CAREER_FINDER_AUDIT_QA\`):
+`career-index-overrides_MERGED.json` (drop-in replacement for `scripts/career-index-overrides.json`) +
+`CF_CCODE_APPLY_NOTE.md` (exact build-script hooks).
+
+**What to do (app/build only — NOT Supabase):**
+1. Replace `scripts/career-index-overrides.json` with the merged file. It adds keys the build already honors
+   (`regulated` 23, `preparation` 37, `orientation` 38, `titleClass` 16) + **four the build does NOT yet handle:**
+   `unregulated`, `tier`, `workModel`, `removeTitles`.
+2. Add to `scripts/build-career-index.py`: the `unregulated`/`tier`/`workModel` loops, plus a **`removeTitles` removal
+   pass** run LAST in the overrides block (placeholders in the note — match the real in-memory record list + title field).
+3. Rebuild → `src/data/careerIndex.json` + `careerFamilies.json`.
+
+**Owner rulings folded in:** the 9 clinical licence-cautions (APPROVED 2026-09-11) + the 4 title-reality items
+(RULED drop-all-4 → `removeTitles`: Session Documentation Specialist, Virtual Soundcheck Engineer, Earwig Technician,
+Near-Field Mixer).
+
+**A-verified against the built index:** record count **1902 → 1898** after the removeTitles drop (exactly 4, no family
+emptied); `reg` net **+13** (81 → 94). Diff every column after rebuild, not just the touched ones.
+
+**Also FYI:** confirmed your certificate secured-seal integration is in source (`certificateHtml.ts` +
+`certificateAssets.ts` — covert layers fail-closed on a valid credential token, "Certificate of Achievement" title-case
+heading). Landed cleanly — thanks.
+**ACK (Code):** _<reply here>_
+
+---
+
 ### 2026-09-10 · FROM Code → Cowork/Computer A · NEW LAB shipped: Patchbay Signal Flow & Normalling (app-only, FYI for glossary cross-links)
 Built, owner-device-passed (both phases) and pushed today: **Patchbay Signal
 Flow & Normalling**, a 23-page member-only lab in the catalog's **Signal**

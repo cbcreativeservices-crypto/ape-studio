@@ -172,3 +172,108 @@ cost time. It is **not live**: the count held at exactly 2 across three page
 loads and both labs (a live throw would have given 6). Stale buffer entries
 from before the `--clear` restart. The documented technique — **compare message
 COUNTS, never presence** — is what settled it.
+
+### Wave 1b — the rest of the gear pass + the nine non-dynamics FX labs · commit `3a0f5e7c`
+
+#### Fixed
+
+| # | What | Where |
+|---|---|---|
+| 1 | **SOLO could clip the level-matched A/B.** The pages promise "any improvement you hear is decisions, not loudness". `matchGainDb` was unclamped and SOLO fed it: soloing the snare on Beginning Mixing p5 asked for **+14.55 dB** and landed the render at **+8.08 dBFS**, where the WAV writer hard-clamps. One tap, and the learner A/Bs against distortion. Measured on the real renderer, not reasoned. Two guards now: a soloed render is not level-matched at all, and the match can never push past −1 dBFS. | `mixAudio.ts`, `mixing/kit.tsx` |
+| 2 | **A console edit never stopped the sounding mix.** Press play, solo a channel — the tapes relight instantly while the ears carry on with the previous un-soloed render for the rest of the loop, and `active` went null so the button reverted to ▶ and **nothing on the page could stop the sound.** | `mixing/kit.tsx` |
+| 3 | **One FX lab could silence another.** `EffectChain::reset()` only sets param 0 (enabled) to 0 — every other atomic keeps its last written value for the process lifetime (`Effects.hpp:760`). Chorus/flanger/phaser all share `FX.mod`; phase/stereo share `FX.stereo`. Leave the flanger at MIX 100%, open the PHASER: `mix_=1.0` yields the pure all-pass — unity at every frequency, **no notches and no audible phasing at all** — under a hero drawing textbook notches. Every shared-node config now declares its whole node. | `fxLabConfigs.tsx` |
+| 4 | **The gate's engine attack is 10 ms, not 1.** The config asserted "1 ms is the engine's behaviour, not a placeholder" — wrong by 10x and confident enough to stop the next reader checking. The lab never writes param 3, so `attackMs_{10.0}` stands (`Effects.hpp:421`; only the limiter is forced to 0.1 at `:373`). Limiter corrected 0.2 → 0.1 for the same reason. | `fxLabConfigs.tsx` |
+| 5 | **The limiter's RELEASE was inexpressible.** A steady tone holds the peak follower at a constant envelope, so GR never recovers and the release chips moved nothing — the compressor's 2026-09-11 failure, in the one dynamics lab that kept its sine. Sine stays FIRST (the ratified caption depends on it); a transient is one tap away. | `fxLabConfigs.tsx` |
+| 6 | The knob's **pointer was positioned by subtracting half its WIDTH from `top`** as well as `left`, so the box centre sat 4 pt down-screen before rotation — inside its own radius at the top of travel, canted off-axis at the ends, missing the ticks it exists to be read against. | `kit/gear.tsx` |
+| 7 | The fader could **surrender the gesture MID-DRAG** — `g.dx`/`g.dy` are cumulative, so drifting sideways far enough after committing handed the touch to the channel scroller. | `kit/gear.tsx` |
+| 8 | A **purely horizontal jiggle counted as a tap**, so two of them reset the fader to unity and threw away the learner's setting. | `kit/gear.tsx` |
+| 9 | The **nudges could never reach 0 dB** from an odd value a drag left behind (−7 walks −5, −3, −1, +1 straight over unity). | `kit/gear.tsx` |
+| 10 | `gear.tsx` held the **only two `accessibilityValue` sites in the repo with no `aria-value*` twin** (role=slider is invalid ARIA without `aria-valuenow`), plus two toggles announcing `aria-selected` on `role="button"`. | `kit/gear.tsx` |
+
+**Tests:** `test/mixLevelMatch.test.ts`, +5, pinned against the real measured
+numbers and covering both guards plus the stop-on-edit. Suite **1042 → 1047**.
+
+#### Suspicions that came back WRONG
+
+- **The taper might not be invertible.** It is exact: max round-trip error
+  **1.07e-14 dB**, both knots continuous, strictly monotonic, `−60 → 0` and
+  `+12 → 1` exactly.
+- **The printed scale might be laid out linearly.** It is drawn FROM the taper,
+  using the identical expression the cap uses — 0 dB sits 20 pt from where
+  linear would put it, −20 dB 32.3 pt. This is emphatically **not** the
+  `ParamLane`/`ControlSlider` defect; same file family, and this one is right.
+- **A drag to a printed detent might not return the printed dB.** It returns
+  `12, 6, 0, −6, −12, −20, −30, −40, −60` — exact at every one.
+- **`gear.tsx` might have the dark-cap pulse problem.** It does not: the pulse
+  was already on the amber indicator, never the cap body. Whoever wrote it had
+  already made the fix the other two components needed tonight.
+- **Pink noise might not peak at −20 dBFS.** −21.5 measured over 30 s.
+- **The flanger might share the mod labs' bugs.** It is the one FX lab with
+  **zero** findings.
+
+#### Reported, NOT changed — owner decisions
+
+1. ⚠️ **The STEREO IMAGING lab's WIDTH does nothing.** The generator is mono-
+   duplicated unless `stereoOn_` is set (`Generator.hpp:296`), so SIDE is
+   identically zero and `width` multiplies zero. WIDTH at 0 / 50 / 100 / 200%
+   is **bit-identical audio**. The Lissajous repeats the error in its own model
+   (`phi = 0` ⇒ `l === r` ⇒ side 0 for every width), so the correlation readout
+   stays pinned at +1.00 "mono / in phase" at 200% OVER. Meanwhile the animated
+   hero *does* spread, because it fabricates the missing difference
+   (`d0 = flavor === 'width' ? 1.1 : 0`, with a comment saying "otherwise SIDE
+   would be zero and width invisible") — the author saw the un-expressible
+   signal and patched the picture instead of the source. **Both check questions
+   and the ratified caption describe behaviour that does not exist.** Fixing it
+   needs a decorrelated source, which is a design decision.
+2. **DELAY's PING-PONG is inaudible** for the same root cause, while both heroes
+   label taps L R L R.
+3. **The EQ caption denies Q on a LOW-PASS while the engine and the curve both
+   apply it.** At LOW-PASS / 1 kHz / Q 8 there is a **+18 dB resonant peak**
+   pinning the graph, under a sentence saying "GAIN and Q don't apply to a pass
+   filter". The code comment one line above already knew the distinction ("HP
+   ignores Q") and it got flattened. HP is genuinely Q-less; LP is not. Needs a
+   new ratified sentence.
+4. **The phaser's RESONANCE never reaches its static hero** — `fxViz`'s third
+   argument is MIX, not feedback, and the function models no feedback term.
+5. **Reverb's HF DAMPING is the only param in the nine labs with no on-screen
+   representation of any kind** — not in a hero, not on the bezel, not in the
+   caption.
+6. **Three scribble-strip solo states are distinguished by hue alone** (WCAG
+   1.4.1): mutual contrast 1.05:1, 1.11:1, 1.16:1. The colours are an owner
+   ruling, so this needs your eye.
+7. **The page note "MY MIX is level-matched to the wall" is now inaccurate while
+   a solo is active** — a direct consequence of fix #1, and ratified copy.
+8. RESET MIX stays greyed out when the only change is a solo.
+
+---
+
+### Wave 2 — systemic classes outside the labs (2 agents) · commit `0fb4d5f5`
+
+Both agents reported mostly-clean territory, which is itself the result: the
+conditional-hook class is **gone** (235 files swept by script plus manual review
+of the riskiest), the `resolved` gate holds at every site but two, and **no
+blob-shaped AsyncStorage writer survives anywhere** — the SQLite migration is
+complete and `clearLocalAccountData` does wipe the SQLite table that the
+`ape:*` key sweep cannot see.
+
+#### Fixed
+
+| # | What | Where |
+|---|---|---|
+| 1 | **A storage hiccup could refuse the Final Exam.** `startFinalExam`/`startQuizAttempt` read and wrote their client attempt id with no try/catch, *before* the RPC — so a local write failure threw, and the caller's broad catch turned it into "the exam could not be started". A paying member with full eligibility and a reachable server, refused their capstone over a write that only affects RESUMING. Storage failure here is proven, not hypothetical. | `finalExam/api.ts`, `quiz/api.ts` |
+| 2 | **The Paywall's duplicate-purchase guard read `isMember` without `resolved`** — false until the entitlement read lands, so a member arriving early fell through toward `buyPlan`. Money is the one place where "we don't know yet" must not mean "go ahead"; it now holds instead. | `PaywallScreen.tsx` |
+| 3 | A member picking a certificate before resolution was told their choices **"won't be saved without an account"** — false and alarming. | `AwardsScreen.tsx` |
+| 4 | **29 fire-and-forget `AsyncStorage` writes across 19 files** had no `.catch`. The in-memory value has already flipped, so the UI reports success while the write silently fails and an unhandled rejection surfaces far from its cause. Verified the way a mechanical sweep should be — grepping for what is NOT the target now returns empty. | 19 files |
+| 5 | `panicMuteAudio()` fired three bare native stop calls. Harmless today, but this is the **shake-to-mute safety path**. | `panicMute.ts` |
+
+#### Reported, NOT changed
+
+- **`FirstRunCoordinator` declares every hook after an early return.** Inert
+  today — the flag is a build-time constant and the file says so correctly —
+  but the owner's own comment says it gets flipped back on, and the moment that
+  guard varies per render it is the exact crash class that hit three cable
+  lessons.
+- `QuizScreen`'s per-question pick handlers lack the synchronous ref guard its
+  three sibling study screens all carry. Traced: it does not currently
+  mis-score, because the model writes to a ref and the submit is one guarded
+  batched payload. Defence-in-depth only.
