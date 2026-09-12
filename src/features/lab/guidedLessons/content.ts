@@ -249,7 +249,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'for control, punch, and glue.',
     controls: [
       { key: 'display', name: 'What the display shows', definition: "The transfer curve maps input (x) to output (y): below the threshold it stays 1:1; above it, the line bends by the ratio. The GR meter below is the LIVE, measured gain reduction." },
-      { key: 'threshold', name: 'Threshold', definition: 'The level above which the compressor works. Only signal louder than this gets turned down — lower it to compress more of the signal.', range: '−40 … −10 dBFS' },
+      { key: 'threshold', name: 'Threshold', definition: 'The level above which the compressor works. Only signal louder than this gets turned down — lower it to compress more of the signal.', range: '−50 … −10 dBFS' },
       { key: 'ratio', name: 'Ratio', definition: 'How hard it squeezes above the threshold: 2:1 is gentle glue, 8:1+ acts like a limiter. For every N dB in, 1 dB comes out.', range: '2:1 … 20:1' },
       { key: 'attack', name: 'Attack', definition: 'How fast it clamps down once the sound crosses the threshold. Fast tames transients; slow lets the initial punch through first.', range: '0.5 – 100 ms' },
       { key: 'release', name: 'Release', definition: 'How fast the gain returns after the level drops back. Too fast pumps; too slow keeps the level held down too long.', range: '30 – 500 ms' },

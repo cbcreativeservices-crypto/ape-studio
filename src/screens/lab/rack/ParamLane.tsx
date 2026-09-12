@@ -144,8 +144,18 @@ export function ParamLane({
         onChangeRef.current(Math.max(0, Math.min(1, v + step)));
       }}
     >
-      {/* The recessed travel slot. The fill lives INSIDE it — a lit groove,
-          not a bar meter. */}
+      {/* The recessed travel slot. It stays EMPTY behind the cap on an
+          ordinary parameter lane — a fader's slot is a groove the cap slides
+          in, not a gauge that fills up. Painting it to the cap position (which
+          this did until 2026-09-12) put a progress bar back on the faceplate
+          and swallowed the whole reskin: the owner's device read was "fader
+          seems to be the same from before", and they were right — the bar was
+          the loudest thing on the lane, so the cap read as its edge marker.
+
+          The ONE exception is a LEVEL lane, where the amplitude ramp inside
+          the groove is the owner's 2026-09-05 standard and carries real
+          information (how hot, in the app-wide colour language) rather than
+          restating the cap's position. */}
       <View pointerEvents="none" style={styles.slot}>
         {level ? (
           <LinearGradient
@@ -154,9 +164,7 @@ export function ParamLane({
             end={{ x: 1, y: 0 }}
             style={[styles.slotFill, { width: `${v * 100}%`, opacity: 0.8 }]}
           />
-        ) : (
-          <View style={[styles.slotFill, { width: `${v * 100}%`, backgroundColor: c + '66' }]} />
-        )}
+        ) : null}
       </View>
 
       {/* Printed tick stops at 0 / ¼ / ½ / ¾ / full travel — the faceplate

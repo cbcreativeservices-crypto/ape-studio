@@ -52,6 +52,11 @@ import { FxLabScreen, type FxLabConfig } from './FxLabScreen';
 const P = FX_PARAM;
 const ANALYTIC = 'DESIGNED RESPONSE — ANALYTIC, NOT A MEASUREMENT';
 
+/** Every lab generator is normalised to peak at −20 dBFS — the figure the
+ *  dynamics captions have asserted since they were ratified. Naming it once
+ *  lets the transfer curves MARK it instead of only describing it. */
+const SOURCE_PEAK_DB = -20;
+
 // Shared sources (`short` = the compact dock-key value).
 const SRC_PINK = { label: 'PINK NOISE', short: 'PINK', gen: { mode: GEN_MODES.pink }, blurb: 'Steady broadband noise, equal energy per octave — the best source for HEARING a tone change.' };
 const SRC_WHITE = { label: 'WHITE NOISE', short: 'WHITE', gen: { mode: GEN_MODES.white }, blurb: 'Equal energy per Hz — brighter than pink. The top octaves dominate, so high-end changes leap out.' };
@@ -827,7 +832,13 @@ const compConfig: FxLabConfig = {
     },
   ],
   Hero: (v) => (
-    <TransferCurveGraph mode="compressor" thresholdDb={v[P.thresholdDb]} ratio={v[P.ratio]} makeupDb={v[P.makeupDb]} />
+    <TransferCurveGraph
+      mode="compressor"
+      thresholdDb={v[P.thresholdDb]}
+      ratio={v[P.ratio]}
+      makeupDb={v[P.makeupDb]}
+      sourcePeakDb={SOURCE_PEAK_DB}
+    />
   ),
   anim: (v) => ({
     kind: 'dynamics',
@@ -923,7 +934,9 @@ const gateConfig: FxLabConfig = {
     { k: 'THRESH', paramId: P.thresholdDb },
     { k: 'RANGE', paramId: P.rangeDb },
   ],
-  Hero: (v) => <TransferCurveGraph mode="gate" thresholdDb={v[P.thresholdDb]} rangeDb={v[P.rangeDb]} />,
+  Hero: (v) => (
+    <TransferCurveGraph mode="gate" thresholdDb={v[P.thresholdDb]} rangeDb={v[P.rangeDb]} sourcePeakDb={SOURCE_PEAK_DB} />
+  ),
   anim: (v) => ({
     kind: 'dynamics',
     mode: 'gate',
@@ -1011,7 +1024,9 @@ const limiterConfig: FxLabConfig = {
     { k: 'CEIL', paramId: P.ceilingDb },
     { k: 'RLS', paramId: P.releaseMs },
   ],
-  Hero: (v) => <TransferCurveGraph mode="limiter" thresholdDb={v[P.ceilingDb]} ceilingDb={v[P.ceilingDb]} />,
+  Hero: (v) => (
+    <TransferCurveGraph mode="limiter" thresholdDb={v[P.ceilingDb]} ceilingDb={v[P.ceilingDb]} sourcePeakDb={SOURCE_PEAK_DB} />
+  ),
   anim: (v) => ({
     kind: 'dynamics',
     mode: 'limiter',

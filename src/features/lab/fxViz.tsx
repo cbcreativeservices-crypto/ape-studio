@@ -308,6 +308,7 @@ export function TransferCurveGraph({
   rangeDb = -40,
   ceilingDb = -12,
   makeupDb = 0,
+  sourcePeakDb,
 }: {
   mode: 'compressor' | 'gate' | 'limiter';
   thresholdDb: number;
@@ -315,6 +316,13 @@ export function TransferCurveGraph({
   rangeDb?: number;
   ceilingDb?: number;
   makeupDb?: number;
+  /** The lab source's peak level. When given, the curve marks WHERE that
+   *  source lands on the law and what the law does to it (owner 2026-09-12:
+   *  "designed response should be set for the most valuable visual for the
+   *  user to learn"). Without it the curve is a correct but abstract shape —
+   *  it never tells a beginner whether THEIR signal is over the threshold,
+   *  which is the one question this lab asks them. */
+  sourcePeakDb?: number;
 }) {
   const H = 170;
   const pad = 22;
@@ -382,6 +390,50 @@ export function TransferCurveGraph({
       <SvgText x={4} y={14} fill={colors.textSub} fontSize={8} fontFamily={MONO}>
         OUT
       </SvgText>
+      {/* THE OPERATING POINT — where the lab's own source meets the law.
+          A hollow dim dot on the unity ghost (what the signal WOULD be
+          untouched), a solid amber dot on the curve (what it becomes), and
+          the signed difference between them. Riding THRESHOLD or RATIO now
+          visibly moves this, which is what makes the panel teach rather than
+          merely be correct. Labelled NET, not GR: it includes makeup gain, so
+          it can never silently disagree with the live GR meter beside it. */}
+      {sourcePeakDb != null
+        ? (() => {
+            const sIn = Math.max(-60, Math.min(0, sourcePeakDb));
+            const sOut = Math.max(-60, Math.min(0, outAt(sIn)));
+            const net = sOut - sIn;
+            const x = xAt(sIn);
+            const yU = yAt(sIn);
+            const yO = yAt(sOut);
+            const acting = Math.abs(net) >= 0.1;
+            // Keep the label inside the plot when the source sits at an edge.
+            const anchor = x > W - 70 ? 'end' : 'start';
+            const lx = anchor === 'end' ? x - 6 : x + 6;
+            return (
+              <>
+                <Line x1={x} y1={4} x2={x} y2={plotB - 4} stroke={colors.textSub} strokeWidth={0.9} strokeOpacity={0.5} strokeDasharray="2 3" />
+                <SvgText x={lx} y={plotB - 6} fill={colors.textSub} fontSize={8} fontFamily={MONO} textAnchor={anchor}>
+                  SOURCE
+                </SvgText>
+                {acting ? <Line x1={x} y1={yU} x2={x} y2={yO} stroke={AMBER} strokeWidth={1.4} strokeOpacity={0.75} /> : null}
+                <Circle cx={x} cy={yU} r={3} fill="none" stroke={DIM} strokeWidth={1.2} />
+                <Circle cx={x} cy={yO} r={3.6} fill={AMBER} />
+                {acting ? (
+                  <SvgText
+                    x={lx}
+                    y={(yU + yO) / 2 + 3}
+                    fill={AMBER}
+                    fontSize={9}
+                    fontFamily={MONO}
+                    textAnchor={anchor}
+                  >
+                    {`${net > 0 ? '+' : '−'}${Math.abs(net).toFixed(1)} dB NET`}
+                  </SvgText>
+                ) : null}
+              </>
+            );
+          })()
+        : null}
     </Svg>
   );
 }
