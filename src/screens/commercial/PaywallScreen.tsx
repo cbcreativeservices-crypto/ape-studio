@@ -36,7 +36,7 @@ const PLANS: Plan[] = [
 
 export function PaywallScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
-  const { refreshEntitlement, isMember } = useEntitlement();
+  const { refreshEntitlement, isMember, resolved } = useEntitlement();
   const [selected, setSelected] = useState<Plan['id']>('annual');
   const [busy, setBusy] = useState(false);
   // Whether in-app purchasing is usable in THIS build (native module present +
@@ -81,7 +81,15 @@ export function PaywallScreen({ navigation }: Props) {
 
   const onContinue = () => {
     // A paying member must never be walked into a duplicate store purchase
-    // (QA night 2026-08-31).
+    // (QA night 2026-08-31). This guard has to FAIL SAFE: `isMember` is false
+    // until the entitlement read resolves, so reading it alone would let a
+    // member who arrives before that (a deep link, a cold launch on a slow
+    // connection) fall straight through to buyPlan. Money is the one place
+    // where "we don't know yet" must not mean "go ahead".
+    if (!resolved) {
+      Alert.alert('One moment', 'Still checking your membership — try again in a second.');
+      return;
+    }
     if (isMember) {
       Alert.alert(
         'You’re a member',

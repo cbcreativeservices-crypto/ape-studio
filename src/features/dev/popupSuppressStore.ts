@@ -53,7 +53,7 @@ export function arePopupsSuppressed(): boolean {
 export function setPopupsSuppressed(v: boolean): void {
   if (suppressed === v) return;
   suppressed = v;
-  void AsyncStorage.setItem(STORAGE_KEY, v ? '1' : '0');
+  void AsyncStorage.setItem(STORAGE_KEY, v ? '1' : '0').catch(() => {});
   emit();
 }
 

@@ -62,8 +62,8 @@ export function getSplCalibration(): SplCalibration | null {
 export function setSplCalibration(offsetDb: number | null): void {
   void hydrate().then(() => {
     cal = offsetDb == null ? null : { offsetDb, setAt: new Date().toISOString() };
-    if (cal == null) void AsyncStorage.removeItem(KEY);
-    else void AsyncStorage.setItem(KEY, JSON.stringify(cal));
+    if (cal == null) void AsyncStorage.removeItem(KEY).catch(() => {});
+    else void AsyncStorage.setItem(KEY, JSON.stringify(cal)).catch(() => {});
     emit();
   });
 }

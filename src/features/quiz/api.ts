@@ -126,10 +126,26 @@ export class QuizStartFailure extends Error {
  * finalized submit, so a crash/relaunch resumes the SAME attempt + payload.
  */
 export async function startQuizAttempt(achievementId: string): Promise<AttemptPayload> {
-  let intentId = await AsyncStorage.getItem(intentKey(achievementId));
+  // The intent id is a RESUME CONVENIENCE, not a correctness requirement: it
+  // lets a crash/relaunch rejoin the same attempt. Unguarded, a local storage
+  // hiccup threw before the RPC was ever called, and the caller's broad catch
+  // turned that into "the exam could not be started" — a paid capstone refused
+  // over a write that only affects resuming. Storage failure on this app is
+  // proven, not hypothetical (the SQLITE_FULL incident, 2026-09-11). Losing the
+  // id costs resume; refusing to start costs the exam.
+  let intentId: string | null = null;
+  try {
+    intentId = await AsyncStorage.getItem(intentKey(achievementId));
+  } catch {
+    intentId = null;
+  }
   if (!intentId) {
     intentId = Crypto.randomUUID();
-    await AsyncStorage.setItem(intentKey(achievementId), intentId);
+    try {
+      await AsyncStorage.setItem(intentKey(achievementId), intentId);
+    } catch {
+      /* resume convenience only — the attempt still starts */
+    }
   }
   const { data, error } = await supabase.rpc('start_quiz_attempt', {
     p_achievement_id: achievementId,

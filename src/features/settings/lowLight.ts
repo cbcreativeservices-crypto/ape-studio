@@ -67,8 +67,8 @@ export function setLowLight(next: boolean): void {
   if (on === next) return;
   on = next;
   touchedAt = next ? Date.now() : 0;
-  void AsyncStorage.setItem(KEY, next ? '1' : '0');
-  void AsyncStorage.setItem(KEY_AT, String(touchedAt));
+  void AsyncStorage.setItem(KEY, next ? '1' : '0').catch(() => {});
+  void AsyncStorage.setItem(KEY_AT, String(touchedAt)).catch(() => {});
   emit();
   // Explicit activation (user turned it ON) → notify the on-enable popup. Async
   // hydration restores `on` directly (not via this function), so a persisted-on
@@ -85,7 +85,7 @@ export function touchLowLight(): void {
   const now = Date.now();
   if (now - touchedAt < 60_000) return;
   touchedAt = now;
-  void AsyncStorage.setItem(KEY_AT, String(touchedAt));
+  void AsyncStorage.setItem(KEY_AT, String(touchedAt)).catch(() => {});
 }
 
 /** If low-light has been untouched past the expiry window, turn it back off.

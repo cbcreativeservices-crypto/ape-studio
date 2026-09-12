@@ -82,7 +82,8 @@ export function useCoachMark(storageKey: string, dismissAfter: number) {
       setVisible(false);
       // Dev bypass: never advance the retire counter (real counts stay clean).
       if (!devBypass('alwaysShowIntros')) {
-        void AsyncStorage.setItem(storageKey, String(opens.current + 1)); // count this open
+        // count this open
+        void AsyncStorage.setItem(storageKey, String(opens.current + 1)).catch(() => {});
       }
     }
   }, [visible, dismissAfter, storageKey]);

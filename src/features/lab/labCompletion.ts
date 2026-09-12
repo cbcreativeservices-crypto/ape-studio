@@ -138,7 +138,7 @@ function persist() {
   const units: Record<string, string[]> = {};
   for (const [k, set] of Object.entries(cleared)) if (set.size) units[k] = [...set];
   const blob: PersistShape = { units, sent: [...sent], af: afComplete };
-  void AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(blob));
+  void AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(blob)).catch(() => {});
 }
 
 function hydrate(): Promise<void> {

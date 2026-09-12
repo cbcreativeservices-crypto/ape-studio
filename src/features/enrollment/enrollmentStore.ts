@@ -51,7 +51,7 @@ function emit() {
   listeners.forEach((l) => l());
 }
 function persist() {
-  void AsyncStorage.setItem(KEY, JSON.stringify(list));
+  void AsyncStorage.setItem(KEY, JSON.stringify(list)).catch(() => {});
 }
 
 // Mirror the enrollment list to the SERVER (owner 2026-08-06): user_topic_enrollments

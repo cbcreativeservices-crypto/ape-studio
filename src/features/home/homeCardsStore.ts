@@ -24,13 +24,13 @@ function emit() {
   listeners.forEach((l) => l());
 }
 function persist() {
-  void AsyncStorage.setItem(KEY, JSON.stringify(list));
+  void AsyncStorage.setItem(KEY, JSON.stringify(list)).catch(() => {});
 }
 function persistBundles() {
-  void AsyncStorage.setItem(BKEY, JSON.stringify(bundleList));
+  void AsyncStorage.setItem(BKEY, JSON.stringify(bundleList)).catch(() => {});
 }
 function persistDefault() {
-  void AsyncStorage.setItem(DKEY, defaultGs == null ? '' : String(defaultGs));
+  void AsyncStorage.setItem(DKEY, defaultGs == null ? '' : String(defaultGs)).catch(() => {});
 }
 
 /** Total Home cards (topics + bundles) — the 20-cap counts both. */

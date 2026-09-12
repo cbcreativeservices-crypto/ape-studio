@@ -92,11 +92,21 @@ export async function getLastTopicIndex(courseId: string): Promise<number | null
 }
 
 export async function setLastTopicIndex(courseId: string, idx: number): Promise<void> {
-  await AsyncStorage.setItem(lastTopicKey(courseId), String(idx));
+  // A resume convenience: never let it throw into a caller (one of the two
+  // DashboardScreen call sites is bare and unawaited).
+  try {
+    await AsyncStorage.setItem(lastTopicKey(courseId), String(idx));
+  } catch {
+    /* resume convenience only */
+  }
 }
 
 export async function setLastCourse(courseId: string): Promise<void> {
-  await AsyncStorage.setItem(LAST_COURSE_KEY, courseId);
+  try {
+    await AsyncStorage.setItem(LAST_COURSE_KEY, courseId);
+  } catch {
+    /* resume convenience only */
+  }
 }
 
 /** Synthetic course id for the enrollment-driven Dashboard (user request

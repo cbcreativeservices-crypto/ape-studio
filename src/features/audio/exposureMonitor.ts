@@ -315,7 +315,7 @@ async function persistDay(force = false): Promise<void> {
 }
 
 function persistSettings(): void {
-  void AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  void AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)).catch(() => {});
 }
 
 /** Close the open session into the day record. */

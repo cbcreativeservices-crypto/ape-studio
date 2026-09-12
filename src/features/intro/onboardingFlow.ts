@@ -86,7 +86,7 @@ export function isOnboardingComplete(): boolean {
 export function setOnboardingComplete(): void {
   if (complete) return;
   complete = true;
-  void AsyncStorage.setItem(COMPLETE_KEY, '1');
+  void AsyncStorage.setItem(COMPLETE_KEY, '1').catch(() => {});
   emit();
 }
 
@@ -100,7 +100,7 @@ export function getVisitedChoices(): OnboardingChoice[] {
 export function markChoiceVisited(choice: OnboardingChoice): void {
   if (visited.includes(choice)) return;
   visited = [...visited, choice];
-  void AsyncStorage.setItem(VISITED_KEY, JSON.stringify(visited));
+  void AsyncStorage.setItem(VISITED_KEY, JSON.stringify(visited)).catch(() => {});
   emit();
 }
 

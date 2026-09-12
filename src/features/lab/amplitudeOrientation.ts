@@ -61,14 +61,14 @@ export function hasCompletedAmplitudeOrientation(): boolean {
 export function markAmplitudeOrientationComplete(): void {
   if (done) return;
   done = true;
-  void AsyncStorage.setItem(STORAGE_KEY, '1');
+  void AsyncStorage.setItem(STORAGE_KEY, '1').catch(() => {});
   emit();
 }
 
 /** Replay the orientation (Settings → "Reset onboarding hints"). */
 export function resetAmplitudeOrientation(): void {
   done = false;
-  void AsyncStorage.removeItem(STORAGE_KEY);
+  void AsyncStorage.removeItem(STORAGE_KEY).catch(() => {});
   emit();
 }
 

@@ -425,9 +425,16 @@ export function AwardsScreen({ navigation, route }: Props) {
       setSwipeLocked(true); // landing on Enrollments locks the swipe (exit via Home)
       // Instant jump so it doesn't flash through the Directory page en route.
       requestAnimationFrame(() => listRef.current?.scrollToIndex({ index: ei, animated: false }));
-      if (entitlement === 'anonymous') setPayPrompt({ label });
+      // `resolved` matters here: EntitlementProvider defaults to 'anonymous',
+      // and this screen has no top-level resolved guard, so it is interactive
+      // the instant it mounts. Without this check a paying member who picks a
+      // certificate before the entitlement read lands is told their choices
+      // "won't be saved without an account" — false, and alarming. (The pick
+      // itself was never at risk; the re-persist effect below already rewrites
+      // it once the tier resolves.)
+      if (resolved && entitlement === 'anonymous') setPayPrompt({ label });
     },
-    [entitlement],
+    [entitlement, resolved],
   );
 
   const onViewable = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {

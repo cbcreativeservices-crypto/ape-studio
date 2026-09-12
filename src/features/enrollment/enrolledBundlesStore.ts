@@ -29,7 +29,7 @@ function emit() {
   listeners.forEach((l) => l());
 }
 function persist() {
-  void AsyncStorage.setItem(KEY, JSON.stringify(list));
+  void AsyncStorage.setItem(KEY, JSON.stringify(list)).catch(() => {});
 }
 function commit(next: EnrolledBundle[]) {
   list = next;

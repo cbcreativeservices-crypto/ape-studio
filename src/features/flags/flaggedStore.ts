@@ -77,7 +77,7 @@ async function hydrate(kind: TermListKind): Promise<void> {
 }
 
 function persist(kind: TermListKind) {
-  void AsyncStorage.setItem(STORAGE_KEYS[kind], JSON.stringify([...stores[kind].ids]));
+  void AsyncStorage.setItem(STORAGE_KEYS[kind], JSON.stringify([...stores[kind].ids])).catch(() => {});
 }
 
 export function getTermList(kind: TermListKind): ReadonlySet<string> {
@@ -180,7 +180,7 @@ function hydrateBookmarks(ctx: string): Promise<void> {
 }
 
 function persistBookmarks(ctx: string) {
-  void AsyncStorage.setItem(bookmarkKey(ctx), JSON.stringify([...bookmarkStore(ctx).ids]));
+  void AsyncStorage.setItem(bookmarkKey(ctx), JSON.stringify([...bookmarkStore(ctx).ids])).catch(() => {});
 }
 
 export function getBookmarks(ctx: string): ReadonlySet<string> {
@@ -292,7 +292,7 @@ export function getCustomOnDashboard(): boolean {
 export function setCustomOnDashboard(v: boolean): void {
   if (customOnDashboard.value === v) return;
   customOnDashboard.value = v;
-  void AsyncStorage.setItem(CUSTOM_ON_DASHBOARD_KEY, v ? 'true' : 'false');
+  void AsyncStorage.setItem(CUSTOM_ON_DASHBOARD_KEY, v ? 'true' : 'false').catch(() => {});
   emitCustomOnDashboard();
 }
 

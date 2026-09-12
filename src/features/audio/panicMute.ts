@@ -17,9 +17,12 @@ import { ApeDsp } from '../../../modules/ape-dsp';
 import { disableAudioOutput } from './audioOutputStore';
 
 export function panicMuteAudio(): void {
-  void ApeDsp.genStop();
-  void ApeDsp.binStop();
-  void ApeDsp.modStop();
+  // This is the shake-to-mute SAFETY path. A native rejection here must not
+  // become an unhandled rejection at the exact moment a safety feature fires —
+  // and it must not stop the synchronous silencing below from running.
+  void ApeDsp.genStop().catch(() => {});
+  void ApeDsp.binStop().catch(() => {});
+  void ApeDsp.modStop().catch(() => {});
   ApeDsp.fxReset();
   try {
     Speech.stop();

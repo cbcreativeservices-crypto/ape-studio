@@ -43,8 +43,8 @@ export function useToolColorPref(key: string): [string | null, (c: string | null
   const set = useCallback(
     (c: string | null) => {
       setColor(c);
-      if (c) void AsyncStorage.setItem(key, c);
-      else void AsyncStorage.removeItem(key);
+      if (c) void AsyncStorage.setItem(key, c).catch(() => {});
+      else void AsyncStorage.removeItem(key).catch(() => {});
     },
     [key],
   );

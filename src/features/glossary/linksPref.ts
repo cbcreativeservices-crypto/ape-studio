@@ -27,7 +27,7 @@ export function useGlossaryLinksPref(): [boolean, (v: boolean) => void] {
   }, []);
   const set = useCallback((v: boolean) => {
     setOn(v);
-    void AsyncStorage.setItem(KEY, v ? '1' : '0');
+    void AsyncStorage.setItem(KEY, v ? '1' : '0').catch(() => {});
   }, []);
   return [on, set];
 }

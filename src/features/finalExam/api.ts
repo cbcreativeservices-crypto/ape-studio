@@ -134,10 +134,26 @@ const intentKey = (awardType: AwardType, awardId: string) => `ape:finalExamInten
 /** Start (or resume) a Final Exam attempt. Online-only. */
 export async function startFinalExam(awardType: AwardType, awardId: string): Promise<ExamPayload> {
   const key = intentKey(awardType, awardId);
-  let intentId = await AsyncStorage.getItem(key);
+  // The intent id is a RESUME CONVENIENCE, not a correctness requirement: it
+  // lets a crash/relaunch rejoin the same attempt. Unguarded, a local storage
+  // hiccup threw before the RPC was ever called, and the caller's broad catch
+  // turned that into "the exam could not be started" — a paid capstone refused
+  // over a write that only affects resuming. Storage failure on this app is
+  // proven, not hypothetical (the SQLITE_FULL incident, 2026-09-11). Losing the
+  // id costs resume; refusing to start costs the exam.
+  let intentId: string | null = null;
+  try {
+    intentId = await AsyncStorage.getItem(key);
+  } catch {
+    intentId = null;
+  }
   if (!intentId) {
     intentId = Crypto.randomUUID();
-    await AsyncStorage.setItem(key, intentId);
+    try {
+      await AsyncStorage.setItem(key, intentId);
+    } catch {
+      /* resume convenience only — the attempt still starts */
+    }
   }
   const { data, error } = await supabase.rpc('start_final_exam', {
     p_award_type: awardType,

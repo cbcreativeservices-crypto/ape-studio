@@ -51,7 +51,7 @@ void hydrate();
 
 function commit(next: DeckPrefs) {
   prefs = next;
-  void AsyncStorage.setItem(KEY, JSON.stringify(prefs));
+  void AsyncStorage.setItem(KEY, JSON.stringify(prefs)).catch(() => {});
   emit();
 }
 

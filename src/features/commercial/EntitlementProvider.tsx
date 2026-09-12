@@ -376,7 +376,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
   const setCommercialMode = useCallback((on: boolean) => {
     if (!__DEV__) return;
     setCommercialModeState(on);
-    void AsyncStorage.setItem(DEV_COMMERCIAL_FLAG_KEY, on ? '1' : '0');
+    void AsyncStorage.setItem(DEV_COMMERCIAL_FLAG_KEY, on ? '1' : '0').catch(() => {});
   }, []);
 
   // Notifications are MEMBERS ONLY (owner 2026-09-01): mirror real standing
@@ -410,7 +410,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
     if (!__DEV__) return;
     devOverrode.current = true; // dev is now driving; don't let the session re-derive
     setEntitlementState(state);
-    void AsyncStorage.setItem(DEV_ENTITLEMENT_KEY, state);
+    void AsyncStorage.setItem(DEV_ENTITLEMENT_KEY, state).catch(() => {});
   }, []);
 
   const value = useMemo<EntitlementContextValue>(
