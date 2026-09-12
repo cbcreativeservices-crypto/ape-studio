@@ -134,6 +134,14 @@ export function useDspEngine(config: EngineConfig, poll: {
       if (gen !== genRef.current) {
         // Torn down while starting — hand the stream back (debounced, so a fast
         // re-acquire by the next screen keeps it warm).
+        //
+        // ⚠️ This return resolves NO state, which is what stranded the tool on
+        // "Starting…" forever (owner device pass 2026-09-11): the `finally`
+        // below then cleared the 12 s watchdog, so the one rescue built for
+        // exactly this symptom was disarmed by the path that caused it. The
+        // guarantee now lives in `finally` — every return leaves a resolved
+        // state — so nothing here needs to set it, but nothing may remove that
+        // guarantee either.
         releaseMic();
         return;
       }
@@ -162,6 +170,17 @@ export function useDspEngine(config: EngineConfig, poll: {
       setState(/denied|access is off/i.test(msg) ? 'denied' : 'error');
     } finally {
       clearTimeout(watchdog);
+      // THE GUARANTEE: no return path may leave the engine sitting on
+      // 'starting' once the watchdog is gone. Every branch above either
+      // resolved the state itself ('running' / 'denied' / 'error') — in which
+      // case this is a no-op, because the functional updater sees the value
+      // that branch queued — or bailed out early without resolving anything,
+      // which is the case this catches.
+      //
+      // 'idle' is the honest landing: capture is not running and the engine is
+      // ready, so the screen can offer START. It must NOT be 'error' — nothing
+      // failed; the start was simply superseded by a stop, blur or unmount.
+      setState((s) => (s === 'starting' ? 'idle' : s));
     }
   }, [state, stopPolling]);
 
@@ -210,6 +229,37 @@ export function useDspEngine(config: EngineConfig, poll: {
  *  denied / error — those keep showing the honest EngineGate. */
 export function useToolAutoStart(state: EngineState, start: () => void, stop?: () => void): void {
   const done = useRef(false);
+  /** Has this mount ever actually reached a live capture? This is the whole
+   *  basis for telling the two 'idle' states apart below. */
+  const ranOnce = useRef(false);
+  /** Bounded re-arms. Without a cap, a start that is torn down every time would
+   *  spin: idle → re-arm → start → torn down → idle … A tool that cannot get
+   *  going after a few tries should sit on START and let the user decide, not
+   *  hammer the audio HAL. */
+  const rearms = useRef(0);
+  const MAX_REARMS = 3;
+
+  useEffect(() => {
+    if (state === 'running') {
+      ranOnce.current = true;
+      rearms.current = 0; // a real run clears the budget for this mount
+      return;
+    }
+    // Re-arm the one-shot ONLY when a start was superseded before it ever ran
+    // (owner device pass 2026-09-11: the spectrogram sat on "Starting…" because
+    // the latch had fired, the start was torn down mid-acquire, and nothing
+    // could start it again).
+    //
+    // ⚠️ NEVER re-arm after a run. A deliberate STOP also returns the state to
+    // 'idle', and silently re-opening the mic there would break the integrity
+    // rule that DSP only runs when the user started it. `ranOnce` is what keeps
+    // those two identical-looking 'idle's apart.
+    if (state === 'idle' && done.current && !ranOnce.current && rearms.current < MAX_REARMS) {
+      rearms.current += 1;
+      done.current = false;
+    }
+  }, [state]);
+
   useEffect(() => {
     if (done.current) return;
     if (state === 'idle') {

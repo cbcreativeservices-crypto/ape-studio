@@ -12,6 +12,7 @@ The installed dev client predates several native modules and engine versions. Ev
 | Harmonograph drawing card — **SAVE to Photos** | view-shot + `expo-media-library` ~57.0.4 | ✅ | **was missing** → `expo-media-library` plugin added 2026-09-05 with add-only photo permission text (iOS `NSPhotoLibraryAddUsageDescription`; Android media permissions per plugin) | ready |
 | Harmonograph drawing card — **PRINT** | view-shot + `expo-print` ~57.0.1 | ✅ | none required | ready |
 | Calculator report — share as **image** (text share works now) | view-shot + expo-sharing | ✅ | ✅ | ready |
+| **Saved measurement — share as image** (owner device pass 2026-09-11: sharing sent text only — "the image is not shared… that is the whole idea of sharing the tools with visuals") | view-shot + expo-sharing, via the same `shareImage` helper the calculator uses | ✅ | ✅ (no new plugin — both already listed above) | ready · **falls back to the text share** when the native half is absent or capture fails, so it is never a dead control |
 | Glossary term — share as **image**, copy to clipboard | view-shot + expo-sharing (+ clipboard) | ✅ | ✅ | ready |
 | Certificate / credential **PDF download** (Profile, Awards, Credential Wall) | `expo-print` + `expo-sharing` | ✅ | ✅ | ready |
 | Glossary **dictation** mic | `expo-speech-recognition` | ✅ | ✅ plugin with permission text | ready |

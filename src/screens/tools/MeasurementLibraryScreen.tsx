@@ -20,15 +20,17 @@
  * free. Gated here at the DESTINATION on real standing (`useToolsLocked`), so
  * every entry point is covered — the six tool screens link straight in.
  */
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { Alert, FlatList, Modal, Pressable, Share, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { confirmDialog } from '../../lib/confirm';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BRAND, shareFooterLines, shareHeaderLines } from '../../features/commercial/brand';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { compareCompatibility } from '../../features/tools/measure/compare';
-import { MeasurementPreview } from '../../features/tools/measure/previews/MeasurementPreview';
+import { MeasurementPreview, hasPreview } from '../../features/tools/measure/previews/MeasurementPreview';
+import { MeasurementShareCard, SHARE_CARD_W } from '../../features/tools/measure/previews/MeasurementShareCard';
 import { PREVIEW_FULL_MIN_H } from '../../features/tools/measure/previews/previewKit';
+import * as shareImage from '../lab/calc/shareImage';
 import { deleteMeasurement, useMeasurements } from '../../features/tools/measure/measurementStore';
 import { QUALITY_COLOR, QUALITY_LABEL } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type SavedMeasurement } from '../../features/tools/measure/types';
@@ -405,9 +407,42 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
     });
   }, []);
 
+  /**
+   * SHARE ONE MEASUREMENT. Prefers the PICTURE (owner, device pass 2026-09-11:
+   * "the image is not shared… that is the whole idea of sharing the tools with
+   * visuals"), and falls back to the text export only when there is genuinely
+   * no picture to send, or the native capture is unavailable.
+   *
+   * The card has to be MOUNTED to be captured — view-shot photographs a real
+   * view, it cannot render one offscreen from a description. So the target is
+   * put into state, which mounts the card in the hidden host at the bottom of
+   * this screen, and the capture happens on the following frame.
+   */
+  const shareCardRef = useRef<View>(null);
+  const [shareTarget, setShareTarget] = useState<SavedMeasurement | null>(null);
+
   const onRowShare = useCallback((m: SavedMeasurement) => {
-    void shareMeasurements([m]);
+    // MultiMeter and tap-log deliberately have no drawable preview — their
+    // honest presentation IS the numbers — so those go straight to text rather
+    // than sharing an empty frame.
+    if (!hasPreview(m) || !shareImage.isAvailable()) {
+      void shareMeasurements([m]);
+      return;
+    }
+    setShareTarget(m);
   }, []);
+
+  /** Runs once the hidden card has laid out — see the host's onLayout. */
+  const captureAndShareTarget = useCallback(async () => {
+    const m = shareTarget;
+    if (!m) return;
+    const ok = await shareImage.captureAndShare(shareCardRef.current, m.title);
+    setShareTarget(null);
+    // Never leave the user with nothing: a capture that could not happen falls
+    // back to the text share rather than silently doing nothing. It does NOT
+    // claim the image was sent.
+    if (!ok) void shareMeasurements([m]);
+  }, [shareTarget]);
 
   // Bulk actions over the current selection.
   const selectedMs = useMemo(
@@ -666,6 +701,31 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
           ) : null}
         </View>
       </Modal>
+
+      {/* HIDDEN CAPTURE HOST for share-as-image.
+          Mounted only while a share is in flight. It sits OFF-SCREEN rather
+          than behind `opacity: 0` or `display: none`, because a view the
+          compositor has optimised away captures blank — it has to genuinely
+          render somewhere the user cannot see. `pointerEvents="none"` keeps it
+          from eating touches if a layout ever puts it under a finger, and
+          `collapsable={false}` (on the card itself) stops Android flattening it
+          out of the native hierarchy, which would leave nothing to photograph.
+
+          onLayout is the trigger: it fires once the card has real dimensions,
+          which is exactly when a capture can succeed. Capturing on the same
+          tick as the state change would photograph a zero-sized view. */}
+      {shareTarget ? (
+        <View style={styles.captureHost} pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+          <MeasurementShareCard
+            ref={shareCardRef}
+            measurement={shareTarget}
+            takenAt={fmtWhen(shareTarget.created_at)}
+            toolName={toolByKey(shareTarget.tool_type).name}
+            qualityLabel={QUALITY_LABEL[shareTarget.quality_state]}
+            onLayout={() => void captureAndShareTarget()}
+          />
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -677,6 +737,9 @@ const styles = StyleSheet.create({
   // layer — and a measurement is the one thing on this screen that should have
   // nothing behind it.
   fsBackdrop: { flex: 1, backgroundColor: '#06060a', paddingHorizontal: 14, gap: 12 },
+  /** Off-screen, not invisible — see the host's comment. Positioned far enough
+   *  left that the full card width clears the viewport on any device. */
+  captureHost: { position: 'absolute', left: -(SHARE_CARD_W + 40), top: 0, width: SHARE_CARD_W },
   fsHead: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
   fsTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 0.8, color: colors.textPrimary },
   fsMeta: { fontFamily: fonts.mono, fontSize: 11, color: colors.textMuted, marginTop: 2 },

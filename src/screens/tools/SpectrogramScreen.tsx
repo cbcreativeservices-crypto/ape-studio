@@ -457,9 +457,35 @@ export function SpectrogramScreen({ navigation }: Props) {
             when the engine is usable. */}
         <EngineGate state={state} lastError={lastError} />
 
-        {/* Opens straight into the live spectrogram (auto-start). */}
-        {!micPaused && (state === 'idle' || state === 'starting') && (
+        {/* Opens straight into the live spectrogram (auto-start, owner
+            2026-08-01 — no redundant START screen on the normal path). */}
+        {!micPaused && state === 'starting' && (
           <Text style={styles.intro}>Starting the spectrogram…</Text>
+        )}
+
+        {/* 'idle' is NOT 'starting', and must not claim to be (owner device pass
+            2026-09-11). It used to share the line above, so a start that was
+            torn down before it ran left the screen insisting it was starting
+            while nothing was — no error, no spinner that ever resolved, and no
+            way forward. An idle engine is a working engine that simply is not
+            capturing, so the honest thing is to offer the start.
+
+            On the normal path this is never seen: auto-start moves 'idle' →
+            'starting' within a frame. It only appears when auto-start could not
+            take, which is exactly when the user needs a control rather than a
+            reassuring sentence. */}
+        {!micPaused && state === 'idle' && (
+          <View style={styles.idleBlock}>
+            <Text style={styles.intro}>The spectrogram is not running.</Text>
+            <Pressable
+              style={styles.ctrlBtn}
+              onPress={onStart}
+              accessibilityRole="button"
+              accessibilityLabel="Start the spectrogram"
+            >
+              <Text style={styles.ctrlText}>START</Text>
+            </Pressable>
+          </View>
         )}
 
         {(state === 'running' || micPaused) && (
@@ -651,6 +677,10 @@ const styles = StyleSheet.create({
   scroll: { padding: 16, paddingBottom: 28, gap: 14 },
 
   intro: { fontFamily: fonts.barlowRegular, fontSize: 15.5, lineHeight: 23, color: colors.textSecondary },
+  /** The recovery affordance for an engine that is ready but not capturing.
+   *  Deliberately plain — it is an escape hatch, not a feature, and on the
+   *  normal auto-start path it never renders. */
+  idleBlock: { gap: 12, alignSelf: 'stretch' },
 
   // Live spectrogram panel.
   panel: {
