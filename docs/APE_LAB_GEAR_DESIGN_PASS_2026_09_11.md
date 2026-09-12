@@ -547,6 +547,55 @@ curve, which is time-independent by definition and CANNOT show them, ever.**
 Changing ENV and watching the curve will always look broken. That is correct
 behaviour, and it is not signposted anywhere on screen.
 
+## The GR ladder, and why "it does not move" was not a bug
+
+Owner asked for the console's vertical GR ladder (from a Midas `dyn` page),
+reading DOWNWARD. Built, placed right of the display on all three dynamics
+labs. Then: *"ladder does not animate or move."*
+
+Three things were ruled out before anything was changed:
+1. **The component** — proven by a new `#grladderpreview` harness that feeds it
+   fixed values, because the web preview has no audio engine and every ladder in
+   every real lab renders honestly dark there. It fills, clamps, and does not peg
+   the gate's 70 dB scale.
+2. **The render chain** — no memoisation between the polled `grDb` and the
+   ladder, in either LabShell or RackUnit. This mattered: the waveform animates
+   from a frame callback that bypasses React entirely, so a frozen React subtree
+   would have looked exactly like the report.
+3. **The maths** — unit-tested (`test/grLadder.test.ts`).
+
+⚠️ **The meter was right and the lab was wrong.** The compressor defaulted to a
+440 Hz sine at a constant level. A steady tone against a fixed threshold gives
+CONSTANT gain reduction, so a correct meter lights and then sits perfectly
+still. Two changes followed, both owner-approved:
+- **Click is now the compressor's default source.** The lab had already assumed
+  it everywhere except the default — its own attack question says "A/B FAST
+  against PUNCH on the click".
+- **The threshold reaches −50** (was −40). The old floor capped how far the
+  threshold could be pushed into the signal, capping the available reduction and
+  the meter's range with it.
+- The waveform's drawn height went 0.42 → 0.47, as one shared constant across
+  the IN path, the OUT path and the threshold guide.
+
+**A follow-on sweep of all 12 labs' default sources found NO other mismatch.**
+EQ/flanger/phaser/stereo default to pink (filtering and width need broadband),
+delay/reverb to a click (echoes and tails need silence), distortion and phase to
+a sine (harmonics and cancellation need a pure tone), and the limiter keeps its
+sine deliberately because its caption says "constant gain reduction". The
+compressor was the outlier.
+
+### The pattern, stated once for reuse
+
+Three separate reports today ("waveforms don't match the settings", "the ladder
+does not move", and the earlier preview/share misses) were all the same shape:
+**the code was correct and the demonstration could not express it.** Before
+concluding a control is broken, check in order:
+1. Can the TEST SIGNAL express this parameter at all?
+2. Is the parameter's RANGE wide enough to produce a visible effect?
+3. Is the display capable of showing this KIND of thing? (A transfer curve can
+   never show attack — it has no time axis.)
+Only then suspect the maths.
+
 ## Open for the owner
 
 1. **The GR needle has never been seen moving.** The web sim has no audio
