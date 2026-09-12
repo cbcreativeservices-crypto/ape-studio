@@ -56,8 +56,14 @@ export const MeasurementShareCard = forwardRef<View, {
 
       {/* The picture. onPress is deliberately omitted — a captured card has no
           interaction, and a preview that looked tappable in a screenshot would
-          be a lie about a still image. */}
-      <MeasurementPreview measurement={m} height={PREVIEW_H} />
+          be a lie about a still image.
+
+          forCapture is what makes the spectrogram actually appear: it is drawn
+          with Skia, which renders outside the native view hierarchy that
+          view-shot photographs, so without this the card captured with an EMPTY
+          chart (owner, device pass 2026-09-11) — axes, labels and caption all
+          present around a blank frame, which reads as a measurement of silence. */}
+      <MeasurementPreview measurement={m} height={PREVIEW_H} forCapture />
 
       {/* The provenance that makes the picture readable as a MEASUREMENT rather
           than as decoration. Calibration is stated explicitly because an

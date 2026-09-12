@@ -20,7 +20,7 @@
  * other thing the drawing needs, the dynamic range, travels in the record.
  */
 import { useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
+import { Image as RNImage, StyleSheet, View, type LayoutChangeEvent } from 'react-native';
 import { Canvas, Image as SkiaImage } from '@shopify/react-native-skia';
 import Svg, { Line } from 'react-native-svg';
 import type { SpectrogramSnapshotPayload } from '../types';
@@ -36,10 +36,28 @@ export function SpectrogramPreview({
   payload,
   height = PREVIEW_H,
   onPress,
+  forCapture = false,
 }: {
   payload: SpectrogramSnapshotPayload;
   height?: number;
   onPress?: () => void;
+  /**
+   * Render the raster as a plain RN <Image> instead of a Skia <Canvas>.
+   *
+   * ⚠️ WHY THIS EXISTS (owner, device pass 2026-09-11). The share card is
+   * photographed with react-native-view-shot, which snapshots the NATIVE VIEW
+   * HIERARCHY. Skia does not draw into that hierarchy — it renders to its own
+   * surface — so the capture came back with the frame, the decade lines, the
+   * tick labels and the caption all present and the spectrogram itself MISSING.
+   * A shared measurement that is an empty chart is worse than no share at all:
+   * it looks like a reading of silence.
+   *
+   * The same SkImage is reused, just encoded to a PNG the view hierarchy can
+   * hold, so the shared picture is pixel-identical to the live one. Off by
+   * default: the live/library path keeps the Skia canvas, which is faster and
+   * avoids a base64 round-trip on every row.
+   */
+  forCapture?: boolean;
 }) {
   // Redraw from the record's OWN dynamic range, never today's chip selection —
   // a snapshot captured at 40 dB must not come back stretched over 80.
@@ -58,6 +76,21 @@ export function SpectrogramPreview({
   const [w, setW] = useState(0);
   const onLayout = (e: LayoutChangeEvent) => setW(e.nativeEvent.layout.width);
 
+  // Capture path only: the identical image as a PNG data URI. Encoded lazily so
+  // the library's rows never pay for it, and BEFORE the disposal effect above
+  // can run, because it reads the same handle.
+  const captureUri = useMemo(() => {
+    if (!forCapture || !img) return null;
+    try {
+      return `data:image/png;base64,${img.encodeToBase64()}`;
+    } catch {
+      // An encode failure must not take the card down — the axes, caption and
+      // readings still carry the measurement, and the caller's own fallback
+      // handles a capture that fails outright.
+      return null;
+    }
+  }, [forCapture, img]);
+
   const cols = payload.grid.length;
   const seconds = cols * payload.timeStepSec;
   const caption =
@@ -72,7 +105,19 @@ export function SpectrogramPreview({
   return (
     <PreviewFrame caption={caption} height={height} onPress={onPress} a11yLabel={a11y}>
       <View style={StyleSheet.absoluteFill} onLayout={onLayout}>
-        {img && w > 0 ? (
+        {forCapture ? (
+          // resizeMode="stretch" is the RN equivalent of Skia's fit="fill" —
+          // the two paths must map the raster onto the frame identically, or a
+          // shared capture would show a different time axis from the live view.
+          captureUri ? (
+            <RNImage
+              source={{ uri: captureUri }}
+              style={StyleSheet.absoluteFill}
+              resizeMode="stretch"
+              fadeDuration={0}
+            />
+          ) : null
+        ) : img && w > 0 ? (
           <Canvas style={StyleSheet.absoluteFill}>
             {/* fit="fill" so the capture spans the frame exactly as the live
                 grid does — the time axis is stated in the caption, not implied

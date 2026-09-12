@@ -37,15 +37,21 @@ export function MeasurementPreview({
   measurement,
   height = PREVIEW_H,
   onPress,
+  forCapture = false,
 }: {
   measurement: SavedMeasurement;
   height?: number;
   onPress?: () => void;
+  /** Being rendered for a share-as-image capture rather than for the screen.
+   *  Only the spectrogram cares — it is the one preview drawn with Skia, which
+   *  view-shot cannot photograph (see SpectrogramPreview). The others are SVG
+   *  and RN views, which capture as they appear, so they ignore this. */
+  forCapture?: boolean;
 }) {
   const p = measurement.data_payload;
   switch (p.kind) {
     case 'spectrogram_snapshot':
-      return <SpectrogramPreview payload={p} height={height} onPress={onPress} />;
+      return <SpectrogramPreview payload={p} height={height} onPress={onPress} forCapture={forCapture} />;
     case 'waveform_snapshot':
       return <WaveformPreview payload={p} height={height} onPress={onPress} />;
     case 'spectrum_trace':
