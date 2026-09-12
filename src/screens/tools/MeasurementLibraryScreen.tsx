@@ -74,6 +74,19 @@ function measurementToText(m: SavedMeasurement): string {
   return lines.join('\n');
 }
 
+/**
+ * The words that travel WITH a shared image. Deliberately shorter than the
+ * full text export: the picture already states the measurement and its scale,
+ * so repeating every row underneath it just buries the link. What this must
+ * carry is whose it is and where to find more — and the URL has to be real
+ * text, not pixels, so the OS renders it as a tappable link.
+ */
+function measurementShareText(m: SavedMeasurement): string {
+  const header = shareHeaderLines('Saved Measurement').join('\n');
+  const footer = shareFooterLines().join('\n');
+  return `${header}\n\n${m.title}\n\n${footer}`;
+}
+
 async function shareMeasurements(ms: SavedMeasurement[]): Promise<void> {
   if (ms.length === 0) return;
   // Common branding (owner 2026-08-10): the SAME header + footer as every other
@@ -481,7 +494,11 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
   const captureAndShareTarget = useCallback(async () => {
     const m = shareTarget;
     if (!m) return;
-    const ok = await shareImage.captureAndShare(shareCardRef.current, m.title);
+    // The picture AND the words. The card carries the measurement; the message
+    // carries the company name and the academy URL, which the OS renders as a
+    // TAPPABLE link — burning that URL into the image made it a picture of a
+    // link instead (owner, 2026-09-11: the blue link had disappeared).
+    const ok = await shareImage.captureAndShare(shareCardRef.current, m.title, measurementShareText(m));
     setShareTarget(null);
     // Never leave the user with nothing: a capture that could not happen falls
     // back to the text share rather than silently doing nothing. It does NOT

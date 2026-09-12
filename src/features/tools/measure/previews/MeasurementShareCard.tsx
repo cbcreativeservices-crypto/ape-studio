@@ -7,15 +7,25 @@
  * once, when saved measurements displayed descriptions instead of pictures; the
  * share surface had the same gap and nobody had looked at it.
  *
- * WHY THE WORDS ARE BURNED INTO THE PICTURE, rather than sent alongside it:
- * a share sheet that takes a file does not reliably carry a message with it —
- * `expo-sharing` shares the FILE, and RN's `Share.share({message, url})` only
- * pairs them on iOS. So the text would silently vanish on exactly the platforms
- * the owner shares from. Since these previews are governed by the honesty rule
- * that a chart must state the axes and scale it was MEASURED on, a picture that
- * arrives stripped of that disclosure is worse than no picture: it is a chart
- * asserting something it no longer supports. Putting the disclosure inside the
- * captured pixels means the two cannot be separated by anything downstream.
+ * WHAT BELONGS IN THE PICTURE, AND WHAT DOES NOT (revised after the owner saw
+ * the first version, 2026-09-11):
+ *
+ * IN — the disclosure that makes the chart readable AS A MEASUREMENT: the
+ * scale and axes it was captured on, the tool, the input, the calibration
+ * status, the quality and any warning flags. These previews are governed by the
+ * rule that a chart must state what it was measured against, so a picture that
+ * travels without them would be asserting something it no longer supports.
+ *
+ * OUT — the marketing footer. The first version burned "Generated with …",
+ * the product line and the URL into the image, on the reasoning that a
+ * file-only share drops the accompanying text. The owner's verdict was that it
+ * "looks bad", and they were right: it repeated the wordmark already at the top
+ * of the card, and a URL rendered as flat pixels is not a link — it is a
+ * picture of a link, which is strictly worse than the tappable one the old
+ * text-only share used to produce. The fix was not better typography; it was
+ * sending the text WITH the image (see shareImage.captureAndShare), so the
+ * message carries the branding and a real link while the card carries the
+ * measurement. Each does the job it is actually good at.
  *
  * Everything here is drawn from the RECORD, never from today's defaults — the
  * same rule the previews themselves follow.
@@ -24,9 +34,9 @@ import { forwardRef } from 'react';
 import { StyleSheet, Text, View, type LayoutChangeEvent } from 'react-native';
 import type { SavedMeasurement } from '../types';
 import { MeasurementPreview } from './MeasurementPreview';
-import { PREVIEW_BORDER, PREVIEW_INK } from './previewKit';
+import { PREVIEW_INK } from './previewKit';
 import { colors, fonts } from '../../../../theme/tokens';
-import { BRAND, shareFooterLines } from '../../../commercial/brand';
+import { BRAND } from '../../../commercial/brand';
 
 /** Capture width in logical px. view-shot renders at the device pixel ratio, so
  *  a 3× phone yields ~1080 px — plenty for a messaging app without producing a
@@ -82,10 +92,6 @@ export const MeasurementShareCard = forwardRef<View, {
         <Text style={styles.warn}>⚠ {m.warning_flags.map((f) => f.replace(/_/g, ' ')).join(' · ')}</Text>
       )}
 
-      <View style={styles.rule} />
-      {shareFooterLines().map((l) => (
-        <Text key={l} style={styles.footer}>{l}</Text>
-      ))}
     </View>
   );
 });
@@ -123,12 +129,5 @@ const styles = StyleSheet.create({
     fontSize: 10,
     lineHeight: 15,
     color: '#e8b339',
-  },
-  rule: { height: 1, backgroundColor: PREVIEW_BORDER, marginTop: 2 },
-  footer: {
-    fontFamily: fonts.mono,
-    fontSize: 9,
-    lineHeight: 13,
-    color: colors.textMuted,
   },
 });
