@@ -21,6 +21,7 @@ import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
 import { navigationRef } from '../../../navigation/navigationRef';
 import { EarClipPlayer } from '../../../features/ear/earPlayer';
 import { Btn, Row, useMarkWhen } from '../tuning/components/primitives';
+import { GearButton, GearFader, GearKnob, ScribbleStrip, StripFrame } from '../kit/gear';
 import type { PageCtx } from '../kit/PagedLab';
 import {
   FLAT,
@@ -437,10 +438,20 @@ function stepValue(v: number, delta: number, lo: number, hi: number): number {
   return Math.max(lo, Math.min(hi, v + delta));
 }
 
-/** One channel strip. Steppers, not drags: every control is a 44 pt button.
- *  The strip itself is NOT an accessible container — an `accessible` ancestor
- *  would flatten the buttons away from VoiceOver (design pass 1; the patchbay
- *  jack lesson). Each inner button's label carries the track name. */
+/** One channel strip — now drawn as GEAR (owner design pass 2026-09-11: "our
+ *  console is switches and buttons… it creates no familiarity with the gear").
+ *  Same wired state, same 2 dB / 25-step increments, same a11y reach — but the
+ *  student now faces what they will face on a real desk, in the real order:
+ *  input-section polarity at the top, PAN pot, illuminated MUTE, a long-throw
+ *  fader with a true (non-linear) dB taper, and the channel name on a scribble
+ *  strip at the BOTTOM — where consoles actually put the tape, and itself a
+ *  recognition detail worth teaching.
+ *
+ *  The strip is still NOT an accessible container — an `accessible` ancestor
+ *  would flatten the controls away from VoiceOver (design pass 1; the patchbay
+ *  jack lesson). Each gear control carries the track name in its own label,
+ *  is screen-reader `adjustable`, and keeps a visible tap path (WCAG 2.5.7 —
+ *  the drag is never the only way). */
 function Strip({
   id,
   value,
@@ -453,40 +464,41 @@ function Strip({
   show: ConsoleShow;
 }) {
   const t = SESSION_TRACKS.find((x) => x.id === id)!;
-  const faderLabel = value.faderDb <= -60 ? '−∞' : `${value.faderDb > 0 ? '+' : ''}${value.faderDb}`;
-  const panLabel = value.pan === 0 ? 'C' : value.pan < 0 ? `L${Math.abs(value.pan)}` : `R${value.pan}`;
   return (
-    <View style={styles.strip}>
-      <Text style={styles.stripName} accessibilityRole="header">
-        {t.name}
-      </Text>
-      {show.fader !== false ? (
-        <View style={styles.stripBlock}>
-          <Btn label="+" onPress={() => onChange(id, { faderDb: stepValue(value.faderDb, 2, -60, 12) })} a11y={`${t.name} fader up 2 dB, now ${faderLabel} dB`} />
-          <Text style={styles.stripValue} accessible accessibilityLabel={`${t.name} fader ${faderLabel} dB`}>
-            {faderLabel}
-          </Text>
-          <Btn label="−" onPress={() => onChange(id, { faderDb: stepValue(value.faderDb, -2, -60, 12) })} a11y={`${t.name} fader down 2 dB, now ${faderLabel} dB`} />
-        </View>
+    <StripFrame>
+      {show.pol ? (
+        <GearButton
+          label="Ø"
+          engaged={!!value.polarity}
+          ledColor={colors.amber}
+          onPress={() => onChange(id, { polarity: !value.polarity })}
+          a11y={`${t.name} polarity ${value.polarity ? 'back to normal' : 'invert'}`}
+        />
       ) : null}
       {show.pan ? (
-        <View style={styles.stripBlock}>
-          <Btn label="◀" onPress={() => onChange(id, { pan: stepValue(value.pan, -25, -100, 100) })} a11y={`${t.name} pan left, now ${panLabel}`} />
-          <Text style={styles.stripValue} accessible accessibilityLabel={`${t.name} pan ${panLabel}`}>
-            {panLabel}
-          </Text>
-          <Btn label="▶" onPress={() => onChange(id, { pan: stepValue(value.pan, 25, -100, 100) })} a11y={`${t.name} pan right, now ${panLabel}`} />
-        </View>
+        <GearKnob
+          name={t.name}
+          value={value.pan}
+          onChange={(pan) => onChange(id, { pan: stepValue(pan, 0, -100, 100) })}
+        />
       ) : null}
-      {/* Full-width stacked toggles: side-by-side pairs fell under 44 pt
-          (design pass 8). Mute keeps the DAW-red convention deliberately. */}
       {show.mute ? (
-        <Btn label={value.mute ? 'MUTED' : 'MUTE'} tone={value.mute ? 'danger' : 'plain'} selected={value.mute} onPress={() => onChange(id, { mute: !value.mute })} a11y={`${t.name} ${value.mute ? 'unmute' : 'mute'}`} />
+        <GearButton
+          label={value.mute ? 'MUTED' : 'MUTE'}
+          engaged={!!value.mute}
+          onPress={() => onChange(id, { mute: !value.mute })}
+          a11y={`${t.name} ${value.mute ? 'unmute' : 'mute'}`}
+        />
       ) : null}
-      {show.pol ? (
-        <Btn label={value.polarity ? 'Ø ON' : 'Ø'} tone={value.polarity ? 'primary' : 'plain'} selected={value.polarity} onPress={() => onChange(id, { polarity: !value.polarity })} a11y={`${t.name} polarity ${value.polarity ? 'back to normal' : 'invert'}`} />
+      {show.fader !== false ? (
+        <GearFader
+          name={t.name}
+          valueDb={value.faderDb}
+          onChangeDb={(db) => onChange(id, { faderDb: stepValue(db, 0, -60, 12) })}
+        />
       ) : null}
-    </View>
+      <ScribbleStrip name={t.name} />
+    </StripFrame>
   );
 }
 
@@ -560,10 +572,8 @@ const styles = StyleSheet.create({
   rendering: { color: colors.amber, fontFamily: fonts.mono, fontSize: 11.5 },
   console: { gap: 8, paddingVertical: 4 },
   consoleCue: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 1.4, marginBottom: 2 },
-  strip: { width: 88, borderRadius: 10, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#101013', padding: 8, gap: 8, alignItems: 'stretch' },
-  stripName: { color: colors.amberLabel, fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, textAlign: 'center' },
-  stripBlock: { gap: 6 },
-  stripValue: { color: colors.textPrimary, fontFamily: fonts.mono, fontSize: 13, textAlign: 'center' },
+  // The stepper-column strip styles left with the stepper column itself —
+  // the strip is drawn by the gear kit now (../kit/gear.tsx).
   conceptList: { gap: 8 },
   conceptRow: { gap: 4 },
   conceptNote: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17 },
