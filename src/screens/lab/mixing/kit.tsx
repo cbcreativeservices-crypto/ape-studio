@@ -458,11 +458,14 @@ function Strip({
   onChange,
   show,
   anySolo,
+  onPanGesture,
 }: {
   id: TrackId;
   value: TrackSettings;
   onChange: (id: TrackId, next: Partial<TrackSettings>) => void;
   show: ConsoleShow;
+  /** Freeze/unfreeze the channel scroller while a pot is being turned. */
+  onPanGesture: (active: boolean) => void;
   /** True while ANY channel on the console is soloed — drives the desk-wide
    *  tape lighting (owner ruling 2026-09-11: soloed tape glows amber, every
    *  other tape turns light blue). */
@@ -485,6 +488,7 @@ function Strip({
           name={t.name}
           value={value.pan}
           onChange={(pan) => onChange(id, { pan: stepValue(pan, 0, -100, 100) })}
+          onGestureActive={onPanGesture}
         />
       ) : null}
       {show.mute ? (
@@ -532,15 +536,34 @@ export function MiniConsole({
   const change = (id: TrackId, next: Partial<TrackSettings>) =>
     onChange({ ...value, [id]: { ...FLAT, ...(value[id] ?? {}), ...next } });
   const anySolo = tracks.some((id) => !!value[id]?.solo);
+  // Owner ruling 2026-09-11: the pan band is off limits to the channel
+  // scroller. Refusing the gesture in JS was not enough on device — the native
+  // scroller took it anyway — so the row is genuinely DISABLED for exactly as
+  // long as a pot is being turned. Same remedy the page scroller needed.
+  const [panBusy, setPanBusy] = useState(false);
   return (
     <View>
       <Text style={styles.consoleCue}>{tracks.length} CHANNELS — SWIPE →</Text>
       {/* directionalLockEnabled mirrors the graphic-EQ board: iOS keeps the
           axes separate, so a fader's vertical pull cannot creep the channel
           row sideways while the page itself is frozen by the drag lock. */}
-      <ScrollView horizontal showsHorizontalScrollIndicator directionalLockEnabled contentContainerStyle={styles.console}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator
+        directionalLockEnabled
+        scrollEnabled={!panBusy}
+        contentContainerStyle={styles.console}
+      >
         {tracks.map((id) => (
-          <Strip key={id} id={id} value={{ ...FLAT, ...(value[id] ?? {}) }} onChange={change} show={show} anySolo={anySolo} />
+          <Strip
+            key={id}
+            id={id}
+            value={{ ...FLAT, ...(value[id] ?? {}) }}
+            onChange={change}
+            show={show}
+            anySolo={anySolo}
+            onPanGesture={setPanBusy}
+          />
         ))}
       </ScrollView>
     </View>

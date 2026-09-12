@@ -279,6 +279,7 @@ export function GearKnob({
   onChange,
   step = 25,
   formatValue,
+  onGestureActive,
 }: {
   name: string;
   legend?: string;
@@ -286,6 +287,13 @@ export function GearKnob({
   onChange: (v: number) => void;
   step?: number;
   formatValue?: (v: number) => string;
+  /** Fires true at gesture start, false at end. The host uses this to FREEZE
+   *  its own horizontal scroller for the gesture's duration. Owner device pass
+   *  2026-09-11, second report: "the band still scrolls left and right" — a
+   *  native scroll view does not honour a JS termination refusal, and the only
+   *  argument it respects is scrollEnabled={false}, set before it can move.
+   *  Exactly the lesson the vertical page scroller taught an hour earlier. */
+  onGestureActive?: (active: boolean) => void;
 }) {
   const fmt = formatValue ?? ((v: number) => (v === 0 ? 'C' : v < 0 ? `L${Math.abs(v)}` : `R${v}`));
   const pulse = usePulseStyle();
@@ -308,6 +316,8 @@ export function GearKnob({
   const ctxLock = useScrollLock();
   const lockRef = useRef(ctxLock);
   lockRef.current = ctxLock;
+  const activeRef = useRef(onGestureActive);
+  activeRef.current = onGestureActive;
 
   const responder = useMemo(
     () =>
@@ -320,7 +330,8 @@ export function GearKnob({
         // for a pan pot cannot shove the whole channel bay sideways.
         onPanResponderTerminationRequest: () => false,
         onPanResponderGrant: () => {
-          lockRef.current?.(true);
+          lockRef.current?.(true); // freeze the PAGE (vertical scroller)
+          activeRef.current?.(true); // and the host freezes the CHANNEL ROW
           grab.current = valueRef.current;
           moved.current = false;
         },
@@ -336,9 +347,13 @@ export function GearKnob({
           const v = Math.max(-100, Math.min(100, Math.round(raw / 5) * 5));
           if (v !== valueRef.current) onChangeRef.current(v);
         },
-        onPanResponderTerminate: () => lockRef.current?.(false),
+        onPanResponderTerminate: () => {
+          lockRef.current?.(false);
+          activeRef.current?.(false);
+        },
         onPanResponderRelease: (e) => {
           lockRef.current?.(false);
+          activeRef.current?.(false);
           if (moved.current) return;
           // A DOUBLE tap snaps to centre (owner ruling 2026-09-11) — the pan
           // pot's home the way unity is the fader's. The first tap of the
@@ -533,7 +548,10 @@ const s = StyleSheet.create({
     borderColor: '#000',
   },
   tick: { position: 'absolute', left: 26, width: 16, height: 1, backgroundColor: INK, opacity: 0.55 },
-  tickUnity: { backgroundColor: colors.amberLabel, opacity: 0.95, height: 2, left: 22, width: 20 },
+  // Owner 2026-09-11: the printed unity mark dimmed 79% — it is a reference on
+  // the scale, not a light. The CAP's amber line keeps full brightness; that
+  // one is the moving part. 0.95 × 0.21 ≈ 0.2.
+  tickUnity: { backgroundColor: colors.amberLabel, opacity: 0.2, height: 2, left: 22, width: 20 },
   tickLabel: { position: 'absolute', left: 2, width: 22, textAlign: 'right', color: INK, fontFamily: fonts.mono, fontSize: 7.5 },
   tickLabelUnity: { color: colors.amberLabel },
   cap: {
