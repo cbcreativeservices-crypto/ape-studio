@@ -27,6 +27,7 @@ import { ToolsHubScreen } from './src/screens/tools/ToolsHubScreen';
 import { CalcWorkspaceScreen } from './src/screens/lab/calc/CalcWorkspaceScreen';
 import { EqModuleScreen } from './src/screens/lab/eq/EqModuleScreen';
 import { CompressionLabScreen, GateLabScreen, StereoLabScreen } from './src/screens/lab/fxLabConfigs';
+import { GrLadderPreview } from './src/screens/lab/GrLadderPreview';
 import { CalcLabScreen } from './src/screens/lab/calc/CalcLabScreen';
 import { CableInstallLabScreen } from './src/screens/lab/cableinstall/CableInstallLabScreen';
 import { CableArtPreview } from './src/screens/lab/cableinstall/CableArtPreview';
@@ -284,6 +285,18 @@ export default function App() {
   // DEV + WEB ONLY: `#samplerpreview/<width>` — the first-run sampler screen
   // (plan §2.1) only runs on a brand-new first launch, so this is the only way
   // to review it in the browser. SamplerPreview brings its own SafeAreaProvider.
+  // DEV harness for the GR ladder's FILL — the web preview has no audio engine,
+  // so every ladder in the real labs renders honestly dark and the one thing
+  // worth checking cannot be seen on the surface we can drive (2026-09-11).
+  if (__DEV__ && Platform.OS === 'web' && typeof window !== 'undefined' && window.location.hash.startsWith('#grladderpreview')) {
+    return (
+      <>
+        <StatusBar style="light" />
+        <GrLadderPreview />
+      </>
+    );
+  }
+
   if (__DEV__ && Platform.OS === 'web' && typeof window !== 'undefined' && window.location.hash.startsWith('#samplerpreview')) {
     return (
       <>
