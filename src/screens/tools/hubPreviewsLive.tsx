@@ -28,10 +28,6 @@ import { memo, useEffect, useMemo, useRef, useState, useSyncExternalStore, type 
 import { Animated, Easing, StyleSheet, View } from 'react-native';
 import Svg, { Circle, ClipPath, Defs, G, Image as SvgImage, Line, LinearGradient, Path, Polygon, Rect, Text as SvgText } from 'react-native-svg';
 import { heatColor } from '../../features/tools/levelColor';
-// Dev-only SPL needle probe (2026-09-13) — see devTiming. The hub capture
-// marks came back silent through the reported flicker, so the cause is in
-// this tile, not the engine, and these name which of three it is.
-import { markSplMount, markSplNeedle } from '../../features/tools/devTiming';
 import {
   SKIN_LAMP,
   SKIN_VB,
@@ -146,18 +142,8 @@ const HubSplSkin: FC = memo(() => {
 
   const db = dbOr(d.meter?.aFastDb);
   const peakDb = dbOr(d.meter?.peakDb);
-  // Dev-only: what happened to the needle this render, flushed by the effect
-  // below (never logged from render itself — this component already integrates
-  // during render, which is exactly one of the things being investigated).
-  const probeRef = useRef<string | null>(null);
   // Same TRUE VU ballistic as the tool's SkinnedVu (symmetric 2nd-order, ANSI
   // C16.5 / IEC 60268-17) so the tile needle behaves EXACTLY like the meter.
-  if (__DEV__ && d.tick > 0 && lastTickRef.current > 0 && d.tick - lastTickRef.current > 1) {
-    // Ticks advanced in the store without this component rendering for them, so
-    // the ballistic integrated ONE step across several ticks' worth of signal
-    // instead of following it — the needle lurches rather than swings.
-    probeRef.current = `SKIPPED ${d.tick - lastTickRef.current - 1} tick(s) — ballistic stepped once across ${d.tick - lastTickRef.current} ticks`;
-  }
   if (d.tick === 0) {
     // NOTHING IS MEASURING. `tick` starts at 1 for real frames, so 0 is the
     // engine's unambiguous empty sentinel — emitted once on teardown and then
@@ -166,9 +152,6 @@ const HubSplSkin: FC = memo(() => {
     // froze there indefinitely: 40% of scale, in silence, on the one tile that
     // is always mounted. This tile's own docstring says the needle "rests at
     // the bottom of the scale when no live signal is flowing" — now it does.
-    if (__DEV__ && vuRef.current > 0.02) {
-      probeRef.current = `RESET: tick 0 reached the tile — needle snapped from ${vuRef.current.toFixed(2)} to rest`;
-    }
     lastTickRef.current = d.tick;
     vuRef.current = 0;
     vuVelRef.current = 0;
@@ -193,20 +176,6 @@ const HubSplSkin: FC = memo(() => {
   const ang = vuAngle(vuRef.current);
   const tip = skinPt(ang, VU_NEEDLE_TIP);
   const lampGlow = lampRef.current; // 0 = dark-red base only, 1 = fully lit
-
-  // Dev-only probes. A REMOUNT is the quiet one: vuRef resets to 0, so the
-  // needle restarts at the bottom and sweeps back up over about a second,
-  // leaving no other trace anywhere in the logs.
-  useEffect(() => {
-    markSplMount(true);
-    return () => markSplMount(false);
-  }, []);
-  useEffect(() => {
-    if (probeRef.current) {
-      markSplNeedle(probeRef.current);
-      probeRef.current = null;
-    }
-  });
 
   return (
     <View style={StyleSheet.absoluteFill}>
@@ -629,6 +598,15 @@ const TVU_BAR = 560; // baseline bar y at center
 const TVU_RISE = 34; // ends rise (drum curve), parabola approx
 const TVU_FACE = { x: 190, y: 170, w: 1668, h: 688, r: 34 } as const;
 const TVU_INK = '#33200e';
+/** Corner readout size, in viewBox units. The tile scales the 2048-unit artwork
+ *  down to roughly 155 pt, so a unit is about a twelfth of a pixel: 58 units
+ *  rendered 5 px and could not be read at all. 124 lands near 11 px, matching
+ *  the tile's own title band, and still clears the blade (which stays within
+ *  +/-600 of centre) because these sit hard against the face's left and right
+ *  edges. Raised to weight 700 and a 0.5 resting opacity so the honest
+ *  em-dash - what shows when no pitch is detected - is legible AS an em-dash
+ *  rather than invisible; it stays clearly dimmer than a real reading. */
+const TVU_READOUT_PT = 124;
 const TVU_INK_SOFT = 'rgba(51,32,14,0.65)';
 const tvuX = (c: number) => TVU_CX + (c / TUNER_MAX_C) * TVU_HALF;
 const tvuRise = (c: number) => -TVU_RISE * Math.pow(c / TUNER_MAX_C, 2);
@@ -756,6 +734,13 @@ const HubTunerLive: FC = memo(() => {
   const needleColor = inTune ? '#2fbf5a' : '#1d1208';
   // Corner readouts (owner 2026-09-11): pitch lower-left, Hz lower-right.
   // Same honesty gate as the blade — silence shows a dimmed em-dash.
+  //
+  // SIZE (owner 2026-09-13, asking for readouts that were already here). They
+  // were drawn at 58 units, which on a 162 pt tile renders FIVE PIXELS tall, at
+  // 0.4 opacity when nothing is detected — smaller than the CENTS label beside
+  // them and effectively invisible, which is why they read as missing. The tile
+  // is ~1/11th the size of the viewBox, so anything meant to be READ here has
+  // to be sized for that, not for the artwork's own scale.
   const p = d.pitch;
   const cornerVoiced = !!p && p.voiced && p.confidence >= 0.5 && p.levelDb >= -60;
   const cornerNote = cornerVoiced ? tvuNoteName(p!.freq) : null;
@@ -767,10 +752,10 @@ const HubTunerLive: FC = memo(() => {
         <Svg width="100%" height="100%" viewBox={VB}>
           <Rect width={2048} height={1024} fill="#060608" />
           {TUNER_CHROME}
-          <SvgText x={252} y={812} fill={TVU_INK} fontSize={58} fontWeight="600" textAnchor="start" fontFamily="sans-serif" opacity={cornerNote ? 0.9 : 0.4}>
+          <SvgText x={252} y={812} fill={TVU_INK} fontSize={TVU_READOUT_PT} fontWeight="700" textAnchor="start" fontFamily="sans-serif" opacity={cornerNote ? 0.92 : 0.5}>
             {cornerNote ?? '—'}
           </SvgText>
-          <SvgText x={1796} y={812} fill={TVU_INK} fontSize={58} fontWeight="600" textAnchor="end" fontFamily="sans-serif" opacity={cornerHz ? 0.9 : 0.4}>
+          <SvgText x={1796} y={812} fill={TVU_INK} fontSize={TVU_READOUT_PT} fontWeight="700" textAnchor="end" fontFamily="sans-serif" opacity={cornerHz ? 0.92 : 0.5}>
             {cornerHz ?? '— Hz'}
           </SvgText>
         </Svg>

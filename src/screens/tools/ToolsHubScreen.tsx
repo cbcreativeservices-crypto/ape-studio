@@ -1017,8 +1017,15 @@ export function ToolsHubScreen({ navigation }: Props) {
             <Text style={styles.eyebrow}>PROFESSIONAL AUDIO TOOLS</Text>
           </View>
           <View style={{ flex: 1 }} />
-          {/* GLOSSARY key, like the other screens (Booth 2026-07-11). */}
-          <View style={{ width: 96 }}>
+          {/* GLOSSARY key, like the other screens (Booth 2026-07-11), with STUDY
+              stacked under it (owner 2026-09-13) as a direct way back to the
+              study dashboard. GOLD against the glossary's blue: the two keys now
+              share an edge, so they need to be told apart at a glance, and gold
+              is the Academy's own accent (the wordmark above uses it) while blue
+              belongs to the Glossary wherever it appears. popTo, not navigate —
+              under React Navigation 7, navigate('Main') PUSHES a second tab
+              shell on top of this screen. */}
+          <View style={{ width: 96, gap: 6 }}>
             <GlassButton
               label="GLOSSARY"
               tint="blue"
@@ -1026,6 +1033,15 @@ export function ToolsHubScreen({ navigation }: Props) {
               fontSize={13}
               onPress={() =>
                 navigation.popTo('Main', { screen: 'Study', params: { screen: 'Glossary' } } as never)
+              }
+            />
+            <GlassButton
+              label="STUDY"
+              tint="gold"
+              height={38}
+              fontSize={13}
+              onPress={() =>
+                navigation.popTo('Main', { screen: 'Study', params: { screen: 'Dashboard' } } as never)
               }
             />
           </View>
