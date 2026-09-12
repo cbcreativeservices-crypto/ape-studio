@@ -822,6 +822,8 @@ const compConfig: FxLabConfig = {
     rangeDb: -40,
     ceilingDb: -12,
     makeupDb: v[P.makeupDb],
+    attackMs: v[P.attackMs],
+    releaseMs: v[P.releaseMs],
   }),
   heroBadge: 'TRANSFER CURVE — ANALYTIC · GR METER — LIVE',
   heroCaption: (v) =>
@@ -914,6 +916,10 @@ const gateConfig: FxLabConfig = {
     rangeDb: v[P.rangeDb],
     ceilingDb: -12,
     makeupDb: 0,
+    // This gate exposes no ATTACK control — it opens fast, which is the point
+    // of a gate. 1 ms is the engine's behaviour, not a placeholder.
+    attackMs: 1,
+    releaseMs: v[P.releaseMs],
   }),
   heroBadge: 'TRANSFER CURVE — ANALYTIC · GR METER — LIVE',
   heroCaption: (v) =>
@@ -997,6 +1003,10 @@ const limiterConfig: FxLabConfig = {
     rangeDb: -40,
     ceilingDb: v[P.ceilingDb],
     makeupDb: 0,
+    // "this v1 limiter is a fast peak limiter" (the lab's own note) — the
+    // ceiling is not negotiable, so the attack is effectively instant.
+    attackMs: 0.2,
+    releaseMs: v[P.releaseMs],
   }),
   heroBadge: 'TRANSFER CURVE — ANALYTIC · GR METER — LIVE',
   heroCaption: (v) =>

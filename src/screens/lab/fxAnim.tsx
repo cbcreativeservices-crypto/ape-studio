@@ -91,6 +91,17 @@ export type FxAnimModel =
       rangeDb: number;
       ceilingDb: number;
       makeupDb: number;
+      /** Envelope time constants, in ms. ⚠️ These were MISSING until
+       *  2026-09-11 (owner: "the waveforms in the compression lab do not look
+       *  correct according to the settings I'm inputting"). Without them the
+       *  hero applied the static transfer curve instantaneously at every
+       *  point — i.e. it drew a ZERO-ATTACK, ZERO-RELEASE compressor, which is
+       *  precisely the thing the lab exists to teach you a compressor is not.
+       *  Changing the ENV tray moved nothing on screen. A hero badged "EXACT
+       *  JS MIRROR OF THE DSP MATH" must mirror the envelope follower too —
+       *  it is half of what a dynamics processor IS. */
+      attackMs: number;
+      releaseMs: number;
     }
   | { kind: 'distortion'; type: 'hard' | 'soft' | 'tube'; driveDb: number; mix: number }
   | { kind: 'stereo'; flavor: 'phase' | 'width'; widthPct: number; pan: number; invertR: boolean; delayRms: number; monoFold: boolean };
@@ -123,6 +134,59 @@ function dispAmp(db: number): number {
   'worklet';
   const a = (Math.min(db, 0) + 60) / 60;
   return a < 0 ? 0 : a;
+}
+
+/* ── the dynamics hero's time domain ──────────────────────────────────────
+ * Attack and release are TIME constants, so they can only be drawn against a
+ * time axis. The dynamics hero now reads its horizontal span as time: the OUT
+ * half spans DYN_WINDOW_MS of signal, and the input is a repeating TRANSIENT
+ * rather than the slow sine swell it used to be.
+ *
+ * WHY A TRANSIENT, and not just "add the follower to the old wave": against a
+ * 4.5-second swell a compressor tracks almost perfectly whatever its time
+ * constants are, so a physically correct drawing would STILL have shown
+ * near-zero difference between 0.5 ms and 25 ms attack. The old visual was not
+ * merely un-wired, it was un-wireable — the test signal could not express the
+ * parameter. A hit with a sharp edge and a decay is what makes attack and
+ * release legible, and it is exactly the signal the lab's own copy describes
+ * ("the drum's HIT... 25 ms PUNCH lets the hit sneak through") and offers as a
+ * source (srcClick at 120 BPM).                                             */
+
+/** The OUT half of the stage spans this much signal time. */
+const DYN_WINDOW_MS = 900;
+/** One transient per this interval — two hits fit the window. */
+const DYN_BURST_MS = 450;
+/** Hit decay time constant (the "tail" the release rides). */
+const DYN_DECAY_MS = 90;
+const DYN_PEAK_DB = -8;
+const DYN_FLOOR_DB = -52;
+
+/** Input level (dBFS) at a point in time — instant rise, exponential decay. */
+function burstDb(tMs: number): number {
+  'worklet';
+  const t = tMs - Math.floor(tMs / DYN_BURST_MS) * DYN_BURST_MS;
+  return DYN_FLOOR_DB + (DYN_PEAK_DB - DYN_FLOOR_DB) * Math.exp(-t / DYN_DECAY_MS);
+}
+
+/** The gain reduction (dB, ≥0) this mode ASKS FOR at a given input level —
+ *  the static law, before the envelope follower decides how fast to obey it.
+ *  Same three shapes and numbers as transferDb below; expressed as reduction
+ *  because that is what a follower smooths. */
+function targetGrDb(
+  dbIn: number,
+  mode: 'compressor' | 'gate' | 'limiter',
+  thr: number,
+  ratio: number,
+  range: number,
+  ceil: number,
+): number {
+  'worklet';
+  if (mode === 'compressor') {
+    const over = dbIn - thr;
+    return over > 0 ? over * (1 - 1 / Math.max(ratio, 1)) : 0;
+  }
+  if (mode === 'limiter') return Math.max(0, dbIn - ceil);
+  return dbIn < thr ? Math.abs(range) : 0; // gate: attenuation while closed
 }
 
 /** Mirror of fxViz TransferCurveGraph's outAt — keep in lockstep (the transfer
@@ -664,6 +728,8 @@ function DynamicsFlow({
   rangeDb,
   ceilingDb,
   makeupDb,
+  attackMs,
+  releaseMs,
   grDb,
 }: {
   w: number;
@@ -676,6 +742,8 @@ function DynamicsFlow({
   rangeDb: number;
   ceilingDb: number;
   makeupDb: number;
+  attackMs: number;
+  releaseMs: number;
   grDb: number;
 }) {
   const stageX = w * STAGE_FRAC;
@@ -686,43 +754,87 @@ function DynamicsFlow({
   const rngG = useGlide(rangeDb);
   const ceilG = useGlide(ceilingDb);
   const mkG = useGlide(makeupDb);
+  const atkG = useGlide(attackMs);
+  const relG = useGlide(releaseMs);
   const grG = useGlide(grDb, 140); // LIVE measured GR → stage glow
   const glow = useDerivedValue(() => Math.min(grG.value / 12, 1), [grG]);
   const kc = (PI2 * 6.5) / w;
-  const ke = (PI2 * 1.15) / w;
+
+  /** Shared time base: the OUT half defines ms-per-pixel, and the IN half
+   *  borrows it, so one hit is the SAME WIDTH on both sides of the stage. It
+   *  is one signal crossing one processor; drawing it at two scales would make
+   *  the before/after comparison a lie. */
+  const outX0 = stageX + 10;
+  const outX1 = w - 6;
+  const msPerPx = DYN_WINDOW_MS / Math.max(1, outX1 - outX0);
 
   const inPath = useDerivedValue(() => {
     const pc = carrier.value;
-    const pe = env.value;
+    const scrollMs = (env.value / PI2) * DYN_BURST_MS;
     const p = Skia.Path.Make();
     const A = h * 0.42;
-    const N = 56;
+    const N = 72;
+    const x0 = 6;
+    const span = stageX - 16 - x0;
     for (let i = 0; i <= N; i++) {
-      const x = 6 + ((stageX - 16) * i) / N;
-      const dbIn = -46 + 36 * (0.5 + 0.5 * Math.sin(ke * x - pe));
+      const x = x0 + (span * i) / N;
+      const dbIn = burstDb(scrollMs + (x - x0) * msPerPx);
       const y = h / 2 - A * dispAmp(dbIn) * Math.sin(kc * x - pc);
       if (i === 0) p.moveTo(x, y);
       else p.lineTo(x, y);
     }
     return p;
-  }, [carrier, env, stageX, h, kc, ke]);
+  }, [carrier, env, stageX, h, kc, msPerPx]);
 
   const outPath = useDerivedValue(() => {
     const pc = carrier.value;
-    const pe = env.value;
+    const scrollMs = (env.value / PI2) * DYN_BURST_MS;
     const p = Skia.Path.Make();
     const A = h * 0.42;
-    const N = 64;
+    const N = 112; // finer than the IN side: a fast attack is a narrow feature
+    const span = outX1 - outX0;
+    const step = span / N;
+    const dt = step * msPerPx;
+    const atk = Math.max(atkG.value, 0.1);
+    const rel = Math.max(relG.value, 1);
+
+    /* THE ENVELOPE FOLLOWER — the piece that was missing. One pole: the attack
+     * coefficient while the reduction is deepening, release while it recovers.
+     * That is what the DSP does, and it is why a compressor sounds like a
+     * compressor rather than a waveshaper.
+     *
+     * ⚠️ Written INLINE, deliberately. A nested `'worklet'` helper here throws
+     * "not defined" at runtime: Reanimated's plugin compiles an inner worklet
+     * as a SEPARATE worklet, so it cannot see this function's locals. Inside a
+     * worklet, keep the loop flat. */
+    let gr = 0;
+    const thrV = thrG.value;
+    const ratV = ratG.value;
+    const rngV = rngG.value;
+    const ceilV = ceilG.value;
+
+    // PRE-ROLL. A follower is causal — its value at the left edge depends on
+    // what came before it. Starting from zero would draw a fake "first hit"
+    // every frame at the edge of the panel. One burst period of lead-in settles
+    // it, so what enters the panel is already in the state the signal put it in.
+    const pre = Math.ceil(DYN_BURST_MS / Math.max(dt, 0.01));
+    for (let i = pre; i > 0; i--) {
+      const target = targetGrDb(burstDb(scrollMs - i * dt), mode, thrV, ratV, rngV, ceilV);
+      gr += (target - gr) * (1 - Math.exp(-dt / (target > gr ? atk : rel)));
+    }
+
     for (let i = 0; i <= N; i++) {
-      const x = stageX + 10 + ((w - 6 - (stageX + 10)) * i) / N;
-      const dbIn = -46 + 36 * (0.5 + 0.5 * Math.sin(ke * x - pe));
-      const dbOut = transferDb(dbIn, mode, thrG.value, ratG.value, rngG.value, ceilG.value, mkG.value);
+      const x = outX0 + step * i;
+      const dbIn = burstDb(scrollMs + (x - outX0) * msPerPx);
+      const target = targetGrDb(dbIn, mode, thrV, ratV, rngV, ceilV);
+      gr += (target - gr) * (1 - Math.exp(-dt / (target > gr ? atk : rel)));
+      const dbOut = dbIn - gr + mkG.value;
       const y = h / 2 - A * dispAmp(dbOut) * Math.sin(kc * x - pc);
       if (i === 0) p.moveTo(x, y);
       else p.lineTo(x, y);
     }
     return p;
-  }, [carrier, env, thrG, ratG, rngG, ceilG, mkG, stageX, w, h, kc, ke]);
+  }, [carrier, env, thrG, ratG, rngG, ceilG, mkG, atkG, relG, outX0, outX1, h, kc, msPerPx, mode]);
 
   // Dashed limit guides: threshold over the IN side (comp/gate), ceiling over
   // the OUT side (limiter) — dashed = a limit, the shared grammar.
@@ -1042,6 +1154,8 @@ function FlowBody({ model, w, active, grDb }: { model: FxAnimModel; w: number; a
           rangeDb={model.rangeDb}
           ceilingDb={model.ceilingDb}
           makeupDb={model.makeupDb}
+          attackMs={model.attackMs}
+          releaseMs={model.releaseMs}
           grDb={grDb}
         />
       );
