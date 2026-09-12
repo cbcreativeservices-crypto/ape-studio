@@ -9,6 +9,8 @@
 import { supabase } from '../../lib/supabase';
 import { albumTierFor, type AlbumTierName } from '../../theme/tokens';
 import { V3_CURRICULUM_VERSION_ID } from '../../data/v3Curriculum';
+import { classifyProfileRead, type ProfileRead } from './profileRead';
+export type { ProfileRead } from './profileRead';
 
 export const ALBUM_DENOMINATOR = 50; // locked (D-5) — legacy album scale; NOT the
 // overall-% denominator anymore (that is the live v3 topic count; see fetchProfile).
@@ -29,35 +31,81 @@ export type ProfileData = {
   tierName: AlbumTierName;
 };
 
-export async function fetchProfile(): Promise<ProfileData> {
+type UserRow = {
+  id: string;
+  nickname: string | null;
+  first_name: string | null;
+  last_name_initial: string | null;
+  photo_url: string | null;
+};
+type BadgeRow = { badge_name_snapshot: string | null };
+
+export async function fetchProfile(): Promise<ProfileRead> {
   // Safe profile fields come straight from `users`; the isolated identity
   // columns (ape_student_id, qr_token) come from the my_identity() RPC
   // (schema-isolation Phase 1, Computer A 2026-09-04) instead of a direct read.
-  const [{ data: user, error }, { data: identity }] = await Promise.all([
-    supabase
-      .from('users')
-      .select('id, nickname, first_name, last_name_initial, photo_url')
-      .single(),
-    supabase.rpc('my_identity').single(),
-  ]);
-  if (error || !user) throw new Error('user_not_found');
+  //
+  // The RPC's own error is deliberately ignored (it only decorates the card
+  // with an ID + QR), but a REJECTION would take the whole Promise.all down, so
+  // the throw is caught and reported as `unavailable` rather than escaping as
+  // an unhandled rejection.
+  let user: UserRow | null = null;
+  let identity: unknown = null;
+  try {
+    // A GUEST has no account, so there is no ID to load and nothing to retry.
+    // Settle that BEFORE the read rather than trying to read it out of the
+    // error afterwards: `anon` has no SELECT grant on `users`, so a guest comes
+    // back as 42501 "permission denied" — the same code as the real
+    // GRANTs-dropped outage for a signed-in user (see profileRead.ts). Exactly
+    // what `fetchMyRegistryListing` below does, on this same table.
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (!sessionData?.session) return { state: 'none' };
+
+    const [userRes, identityRes] = await Promise.all([
+      supabase
+        .from('users')
+        .select('id, nickname, first_name, last_name_initial, photo_url')
+        .single(),
+      supabase.rpc('my_identity').single(),
+    ]);
+    const verdict = classifyProfileRead(userRes.error, userRes.data);
+    if (verdict !== 'profile') return { state: verdict };
+    user = userRes.data as UserRow;
+    identity = identityRes.data;
+  } catch {
+    return { state: 'unavailable' };
+  }
+  if (!user) return { state: 'none' };
   const ident = identity as { ape_student_id?: string | null; qr_token?: string | null } | null;
 
-  const [{ data: badges }, { count: completeCount }, { count: totalTopics }] = await Promise.all([
-    supabase.from('student_badges').select('badge_name_snapshot').eq('user_id', user.id),
-    supabase
-      .from('student_achievement_progress')
-      .select('id', { count: 'exact', head: true })
-      .eq('user_id', user.id)
-      .eq('status', 'complete'),
-    // Overall % denominator = the LIVE v3 topic count, not the retired 50-slot
-    // album scale (QA Wave B 2026-09-10: /50 against 166 topics rendered >100%).
-    supabase
-      .from('achievements')
-      .select('id', { count: 'exact', head: true })
-      .eq('curriculum_version_id', V3_CURRICULUM_VERSION_ID)
-      .eq('is_active', true),
-  ]);
+  // Same guard as above: these three tolerate an `{ error }` result on their own
+  // (each defaults), but a transport-level REJECTION would escape this function,
+  // and a function that promises a ProfileRead must not sometimes throw one.
+  let badges: BadgeRow[] | null = null;
+  let completeCount: number | null = null;
+  let totalTopics: number | null = null;
+  try {
+    const [badgeRes, completeRes, totalRes] = await Promise.all([
+      supabase.from('student_badges').select('badge_name_snapshot').eq('user_id', user.id),
+      supabase
+        .from('student_achievement_progress')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .eq('status', 'complete'),
+      // Overall % denominator = the LIVE v3 topic count, not the retired 50-slot
+      // album scale (QA Wave B 2026-09-10: /50 against 166 topics rendered >100%).
+      supabase
+        .from('achievements')
+        .select('id', { count: 'exact', head: true })
+        .eq('curriculum_version_id', V3_CURRICULUM_VERSION_ID)
+        .eq('is_active', true),
+    ]);
+    badges = badgeRes.data as BadgeRow[] | null;
+    completeCount = completeRes.count;
+    totalTopics = totalRes.count;
+  } catch {
+    return { state: 'unavailable' };
+  }
 
   const earnedCerts = new Set<'mic' | 'rec' | 'mix' | 'pa'>();
   for (const b of badges ?? []) {
@@ -76,15 +124,18 @@ export async function fetchProfile(): Promise<ProfileData> {
     `${(user.first_name ?? user.nickname ?? '?').charAt(0)}${user.last_name_initial ?? ''}`.toUpperCase();
 
   return {
-    nickname: user.nickname,
-    apeStudentId: ident?.ape_student_id ?? null,
-    initials,
-    photoUrl: user.photo_url,
-    qrToken: ident?.qr_token ?? null,
-    earnedCerts,
-    completeCount: done,
-    overallPct,
-    tierName: tier.name,
+    state: 'profile',
+    profile: {
+      nickname: user.nickname,
+      apeStudentId: ident?.ape_student_id ?? null,
+      initials,
+      photoUrl: user.photo_url,
+      qrToken: ident?.qr_token ?? null,
+      earnedCerts,
+      completeCount: done,
+      overallPct,
+      tierName: tier.name,
+    },
   };
 }
 

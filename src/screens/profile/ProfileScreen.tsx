@@ -173,22 +173,37 @@ export function ProfileScreen() {
   const loadProfile = useCallback(() => {
     setProfileError(false);
     fetchProfile()
-      .then((p) => {
-        setProfile(p);
-        // [39]: a null result for a signed-in member is a load problem, not a
-        // real empty profile — surface it so the ID card can offer a retry.
-        if (!p) setProfileError(true);
+      .then((res) => {
+        if (res.state === 'profile') {
+          setProfile(res.profile);
+          return;
+        }
+        setProfile(null);
+        // 2026-09-13: this branch used to fire for BOTH outcomes, so a GUEST —
+        // who has no account and therefore no `users` row — opened Profile and
+        // was told "check your connection" about an ID that was never going to
+        // exist, with a RETRY that could only fail again. `none` is the correct
+        // empty card ("Issued when your Registry ID goes live"); only
+        // `unavailable` is a real failure. Settings drew this same line for its
+        // notification prefs (M12, 2026-09-07) and Profile was left behind.
+        setProfileError(res.state === 'unavailable');
       })
       .catch(() => setProfileError(true));
   }, []);
   useFocusEffect(
     useCallback(() => {
-      loadProfile();
+      // Wait for the tier to settle before reading. `fetchProfile` decides
+      // "guest vs outage" from `getSession()`, and getSession can read null for
+      // a heartbeat during a cold boot (see publicProfile.ts) — a member who hit
+      // that heartbeat would get a silently BLANK ID card. `resolved` means the
+      // provider has already completed its own session read, so gating on it
+      // closes that window; the effect re-runs the moment it flips.
+      if (resolved) loadProfile();
       // Refetched on focus so a credential earned during this session appears
       // when the user comes back to Profile, without a manual reload.
       // [38] (2026-09-07): guard the rejection like fetchProfile beside it.
       fetchMyCredentials().then(setCredentials, () => {});
-    }, [loadProfile]),
+    }, [loadProfile, resolved]),
   );
 
   const onExportCredential = useCallback(async (row: EarnedCredentialRow) => {
