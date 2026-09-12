@@ -26,7 +26,7 @@ import { RtaScreen } from './src/screens/tools/RtaScreen';
 import { ToolsHubScreen } from './src/screens/tools/ToolsHubScreen';
 import { CalcWorkspaceScreen } from './src/screens/lab/calc/CalcWorkspaceScreen';
 import { EqModuleScreen } from './src/screens/lab/eq/EqModuleScreen';
-import { CompressionLabScreen } from './src/screens/lab/fxLabConfigs';
+import { CompressionLabScreen, GateLabScreen } from './src/screens/lab/fxLabConfigs';
 import { CalcLabScreen } from './src/screens/lab/calc/CalcLabScreen';
 import { CableInstallLabScreen } from './src/screens/lab/cableinstall/CableInstallLabScreen';
 import { CableArtPreview } from './src/screens/lab/cableinstall/CableArtPreview';
@@ -329,6 +329,8 @@ export default function App() {
               ? { name: 'ToolsHub', component: ToolsHubScreen as ComponentType }
               : window.location.hash === '#calcworkspacepreview'
                 ? { name: 'CalcWorkspace', component: CalcWorkspaceScreen as ComponentType, initialParams: { id: 'wave' } }
+              : window.location.hash === '#gatelabpreview'
+                ? { name: 'GateLab', component: GateLabScreen as ComponentType }
               : window.location.hash === '#complabpreview'
                 // The compressor — a dynamics lab, for the GR-meter pass
                 // (2026-09-11). Gate/limiter share the same screen + config

@@ -824,6 +824,7 @@ const compConfig: FxLabConfig = {
     makeupDb: v[P.makeupDb],
     attackMs: v[P.attackMs],
     releaseMs: v[P.releaseMs],
+    holdMs: 0, // a compressor has no hold
   }),
   heroBadge: 'TRANSFER CURVE — ANALYTIC · GR METER — LIVE',
   heroCaption: (v) =>
@@ -920,6 +921,7 @@ const gateConfig: FxLabConfig = {
     // of a gate. 1 ms is the engine's behaviour, not a placeholder.
     attackMs: 1,
     releaseMs: v[P.releaseMs],
+    holdMs: v[P.holdMs],
   }),
   heroBadge: 'TRANSFER CURVE — ANALYTIC · GR METER — LIVE',
   heroCaption: (v) =>
@@ -1007,6 +1009,7 @@ const limiterConfig: FxLabConfig = {
     // ceiling is not negotiable, so the attack is effectively instant.
     attackMs: 0.2,
     releaseMs: v[P.releaseMs],
+    holdMs: 0, // a limiter has no hold
   }),
   heroBadge: 'TRANSFER CURVE — ANALYTIC · GR METER — LIVE',
   heroCaption: (v) =>

@@ -102,6 +102,11 @@ export type FxAnimModel =
        *  it is half of what a dynamics processor IS. */
       attackMs: number;
       releaseMs: number;
+      /** GATE only: how long the gate stays open after the signal drops below
+       *  the threshold, before it starts closing. Anti-chatter — and the gate
+       *  lab teaches it ("20 ms CHATTER"), so the hero has to show it. 0
+       *  elsewhere. */
+      holdMs: number;
     }
   | { kind: 'distortion'; type: 'hard' | 'soft' | 'tube'; driveDb: number; mix: number }
   | { kind: 'stereo'; flavor: 'phase' | 'width'; widthPct: number; pan: number; invertR: boolean; delayRms: number; monoFold: boolean };
@@ -730,6 +735,7 @@ function DynamicsFlow({
   makeupDb,
   attackMs,
   releaseMs,
+  holdMs,
   grDb,
 }: {
   w: number;
@@ -744,6 +750,7 @@ function DynamicsFlow({
   makeupDb: number;
   attackMs: number;
   releaseMs: number;
+  holdMs: number;
   grDb: number;
 }) {
   const stageX = w * STAGE_FRAC;
@@ -756,6 +763,7 @@ function DynamicsFlow({
   const mkG = useGlide(makeupDb);
   const atkG = useGlide(attackMs);
   const relG = useGlide(releaseMs);
+  const holdG = useGlide(holdMs);
   const grG = useGlide(grDb, 140); // LIVE measured GR → stage glow
   const glow = useDerivedValue(() => Math.min(grG.value / 12, 1), [grG]);
   const kc = (PI2 * 6.5) / w;
@@ -812,6 +820,13 @@ function DynamicsFlow({
     const ratV = ratG.value;
     const rngV = rngG.value;
     const ceilV = ceilG.value;
+    const holdV = Math.max(holdG.value, 0);
+    /** GATE HOLD: ms since the input was last above the threshold. A gate does
+     *  not start closing the instant the signal dips — it waits, which is what
+     *  stops it chattering on a decaying tail. Tracked here rather than folded
+     *  into targetGrDb because it is STATE over time, not a function of the
+     *  current level. */
+    let sinceOpen = 1e9;
 
     // PRE-ROLL. A follower is causal — its value at the left edge depends on
     // what came before it. Starting from zero would draw a fake "first hit"
@@ -819,14 +834,22 @@ function DynamicsFlow({
     // it, so what enters the panel is already in the state the signal put it in.
     const pre = Math.ceil(DYN_BURST_MS / Math.max(dt, 0.01));
     for (let i = pre; i > 0; i--) {
-      const target = targetGrDb(burstDb(scrollMs - i * dt), mode, thrV, ratV, rngV, ceilV);
+      const dbPre = burstDb(scrollMs - i * dt);
+      if (mode === 'gate' && dbPre >= thrV) sinceOpen = 0;
+      else sinceOpen += dt;
+      const target =
+        mode === 'gate' && sinceOpen < holdV ? 0 : targetGrDb(dbPre, mode, thrV, ratV, rngV, ceilV);
       gr += (target - gr) * (1 - Math.exp(-dt / (target > gr ? atk : rel)));
     }
 
     for (let i = 0; i <= N; i++) {
       const x = outX0 + step * i;
       const dbIn = burstDb(scrollMs + (x - outX0) * msPerPx);
-      const target = targetGrDb(dbIn, mode, thrV, ratV, rngV, ceilV);
+      if (mode === 'gate' && dbIn >= thrV) sinceOpen = 0;
+      else sinceOpen += dt;
+      // Within the hold window the gate stays fully open, whatever the level.
+      const target =
+        mode === 'gate' && sinceOpen < holdV ? 0 : targetGrDb(dbIn, mode, thrV, ratV, rngV, ceilV);
       gr += (target - gr) * (1 - Math.exp(-dt / (target > gr ? atk : rel)));
       const dbOut = dbIn - gr + mkG.value;
       const y = h / 2 - A * dispAmp(dbOut) * Math.sin(kc * x - pc);
@@ -834,7 +857,7 @@ function DynamicsFlow({
       else p.lineTo(x, y);
     }
     return p;
-  }, [carrier, env, thrG, ratG, rngG, ceilG, mkG, atkG, relG, outX0, outX1, h, kc, msPerPx, mode]);
+  }, [carrier, env, thrG, ratG, rngG, ceilG, mkG, atkG, relG, holdG, outX0, outX1, h, kc, msPerPx, mode]);
 
   // Dashed limit guides: threshold over the IN side (comp/gate), ceiling over
   // the OUT side (limiter) — dashed = a limit, the shared grammar.
@@ -1156,6 +1179,7 @@ function FlowBody({ model, w, active, grDb }: { model: FxAnimModel; w: number; a
           makeupDb={model.makeupDb}
           attackMs={model.attackMs}
           releaseMs={model.releaseMs}
+          holdMs={model.holdMs}
           grDb={grDb}
         />
       );
