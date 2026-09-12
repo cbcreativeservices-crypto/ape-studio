@@ -50,6 +50,7 @@ import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { noteAudioActivity } from '../../../features/audio/audioOutputStore';
 import { guardAdditiveForEngine, guardToneLevelForEngine } from '../../../features/audio/speakerSafety';
+import { playWithHearingWarning } from '../../../features/audio/levelHearingWarning';
 import { EngineGate } from '../../tools/EngineGate';
 import type { EngineState } from '../../../features/tools/engine/useDspEngine';
 import { levelColor } from '../../../features/tools/levelColor';
@@ -86,8 +87,11 @@ type ToneApi = {
   /** engineVersion ≥ 5 — the hard-panned stereo dual-oscillator exists. */
   stereoReady: boolean;
   playing: boolean;
-  freq: number;
-  levelDb: number;
+  /** ⚠️ The current frequency/level are deliberately NOT on this API and NOT in
+   *  React state — see `set` below. Nothing renders them (the bezel's TONE cell
+   *  reads `playing` only); putting them in state made every touch-move of a
+   *  fader re-render this whole screen. They live in refs, which is what the
+   *  engine reads. Add them back only WITH a consumer, and coalesce to a frame. */
   play: (freqHz: number, levelDb: number) => void;
   set: (p: { freqHz?: number; levelDb?: number }) => void;
   /** REAL additive synthesis (M11–12): amps are 12 relative 0..1 harmonic
@@ -111,17 +115,13 @@ function additivePayloadOf(f0: number, amps: number[]): number[] {
 function useCourseTone(engineReady: boolean): ToneApi {
   const { requestAudioOutput } = useAudioOutputGate();
   const [playing, setPlaying] = useState(false);
-  const [freq, setFreq] = useState(220);
-  const [levelDb, setLevelDb] = useState(-24);
   const genRef = useRef(0);
-  const freqRef = useRef(freq);
-  const levelRef = useRef(levelDb);
+  const freqRef = useRef(220);
+  const levelRef = useRef(-24);
 
   const play = useCallback(
     (f: number, db: number) => {
       if (!engineReady) return;
-      setFreq(f);
-      setLevelDb(db);
       freqRef.current = f;
       levelRef.current = db;
       const gen = ++genRef.current;
@@ -149,29 +149,42 @@ function useCourseTone(engineReady: boolean): ToneApi {
     [engineReady, requestAudioOutput],
   );
 
+  /**
+   * ⚠️ THIS IS A HOT PATH — it runs on EVERY touch-move of a fader (up to the
+   * display's touch rate, 120 Hz on the owner's Pixel), so it must do the
+   * engine write and NOTHING else.
+   *
+   * Owner 2026-09-13: "I hear like a crackle when I move the strength slider in
+   * module 3." It used to do three more things per event, all of them waste:
+   *
+   *  • `setFreq(...)` and `setLevelDb(...)` — two React state writes. This hook
+   *    is called at the SCREEN ROOT, so each one re-rendered the entire course
+   *    shell, dock, bezel and both Skia stages. Three full render passes per
+   *    touch event instead of one, and nothing anywhere read either value: the
+   *    bezel's TONE cell reads `playing`. Dead state, paid for at 120 Hz.
+   *  • `noteAudioActivity()` — clearTimeout + setTimeout on the 20-minute idle
+   *    timer, every event. Redundant on its face: the effect below already runs
+   *    it on an interval for the whole time a tone is sounding.
+   *
+   * The engine itself was never the problem — the generator core slope-limits
+   * gain changes (kRampSec, "level changes glide instead of stepping"), so a
+   * moving fader does not step the waveform. Starving the JS thread while Oboe
+   * is streaming is the plausible mechanism, and this removes the starvation.
+   */
   const set = useCallback((p: { freqHz?: number; levelDb?: number }) => {
-    if (p.freqHz != null) {
-      setFreq(p.freqHz);
-      freqRef.current = p.freqHz;
-    }
-    if (p.levelDb != null) {
-      setLevelDb(p.levelDb);
-      levelRef.current = p.levelDb;
-    }
+    if (p.freqHz != null) freqRef.current = p.freqHz;
+    if (p.levelDb != null) levelRef.current = p.levelDb;
     // Retune in place while sounding (phase-continuous; guard re-applied).
     ApeDsp.genSet({
       frequency: freqRef.current,
       levelDb: guardToneLevelForEngine(levelRef.current, freqRef.current),
     });
-    noteAudioActivity();
   }, []);
 
   // ── Additive voice (M11–12) — REAL v3+ 12-harmonic synthesis. ─────────────
   const playAdditive = useCallback(
     (f0: number, amps12: number[], db: number) => {
       if (!engineReady || ApeDsp.engineVersion() < 3) return;
-      setFreq(f0);
-      setLevelDb(db);
       freqRef.current = f0;
       levelRef.current = db;
       const gen = ++genRef.current;
@@ -212,8 +225,6 @@ function useCourseTone(engineReady: boolean): ToneApi {
   const playStereo = useCallback(
     (fL: number, fR: number, db: number) => {
       if (!engineReady || ApeDsp.engineVersion() < 5) return;
-      setFreq(fL);
-      setLevelDb(db);
       freqRef.current = fL;
       levelRef.current = db;
       const gen = ++genRef.current;
@@ -266,8 +277,6 @@ function useCourseTone(engineReady: boolean): ToneApi {
     additiveReady,
     stereoReady,
     playing,
-    freq,
-    levelDb,
     play,
     set,
     playAdditive,
@@ -336,14 +345,32 @@ function toneCell(tone: ToneApi): BezelItem {
 }
 
 /** Shared PLAY dock key (kind:'toggle', LED = sounding) — the course's inline
- *  transport idiom moved to the dock. Callers gate on engine readiness. */
-function playKey(tone: ToneApi, onPlay: () => void): DockParam {
+ *  transport idiom moved to the dock. Callers gate on engine readiness.
+ *
+ *  `drivesLevel` marks the modules whose fader moves OUTPUT LEVEL (M3 STRENGTH,
+ *  M4 AMPLITUDE, M9 LEVEL) — owner 2026-09-13: those, and only those, warn about
+ *  hearing before the first tone of the run. The frequency modules do not: the
+ *  user cannot make them louder, so the warning would be noise that teaches
+ *  people to ignore the one that matters. */
+function playKey(tone: ToneApi, onPlay: () => void, opts?: { drivesLevel?: boolean }): DockParam {
   return {
     kind: 'toggle',
     id: 'play',
     label: 'PLAY',
     value: tone.playing,
-    onToggle: () => (tone.playing ? tone.stop() : onPlay()),
+    onToggle: () => {
+      if (tone.playing) {
+        tone.stop();
+        return;
+      }
+      if (opts?.drivesLevel) {
+        // EVERY press, not once per run — owner's ruling; see the docblock on
+        // playWithHearingWarning before adding any "seen it" flag back.
+        playWithHearingWarning(onPlay);
+        return;
+      }
+      onPlay();
+    },
   };
 }
 
@@ -385,7 +412,21 @@ function M1Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       sticky: true, // A/B the pitches while the particles react
       helpKey: 'frequency',
     },
-    { kind: 'toggle', id: 'zones', label: 'COLORS', value: zones, onToggle: () => setZones((v) => !v), helpKey: 'pressure_graph' },
+    // Owner 2026-09-13, on the Pixel, twice. First: this key should be named
+    // for what it colourises — "COLORS" read as a theme/skin picker, which the
+    // app really does have elsewhere (per-tool colour customization), so the one
+    // word pointed at the wrong feature.
+    //
+    // Then, on my shortening it to PRESSURE to fit one line: "the button MUST BE
+    // [Colorized Pressure] otherwise it will not be understood the rest of all
+    // the following modules." That is the ruling, and it is a TEACHING call, not
+    // a layout one — PRESSURE alone reads as a pressure READOUT, while the key's
+    // actual job is to colourise pressure, across every module that follows. So
+    // the label won and the dock made room: `labelLines: 2` (added to
+    // rackTypes + DockButton for this) wraps the key to two lines INSIDE the
+    // existing 48 px minHeight, so the dock does not grow. All four module docks
+    // carry the same key — one control must not have two names.
+    { kind: 'toggle', id: 'zones', label: 'COLORIZED PRESSURE', labelLines: 2, value: zones, onToggle: () => setZones((v) => !v), helpKey: 'pressure_graph' },
     ...(tone.engineReady ? [playKey(tone, () => tone.play(f, -24))] : []),
   ];
   return (
@@ -424,7 +465,7 @@ function M1Stage({ viz, w, h, f, zones, focused }: { viz: VizModule; w: number; 
 function M2Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
   const [zones, setZones] = useState(true);
   const params: DockParam[] = [
-    { kind: 'toggle', id: 'zones', label: 'COLORS', value: zones, onToggle: () => setZones((v) => !v), helpKey: 'pressure_graph' },
+    { kind: 'toggle', id: 'zones', label: 'COLORIZED PRESSURE', labelLines: 2, value: zones, onToggle: () => setZones((v) => !v), helpKey: 'pressure_graph' },
     ...(tone.engineReady ? [playKey(tone, () => tone.play(220, -24))] : []),
   ];
   return (
@@ -475,8 +516,8 @@ function M3Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       tint: levelColor(amt),
       helpKey: 'pressure_graph',
     },
-    { kind: 'toggle', id: 'zones', label: 'COLORS', value: zones, onToggle: () => setZones((v) => !v), helpKey: 'pressure_graph' },
-    ...(tone.engineReady ? [playKey(tone, () => tone.play(165, levelFor(amt)))] : []),
+    { kind: 'toggle', id: 'zones', label: 'COLORIZED PRESSURE', labelLines: 2, value: zones, onToggle: () => setZones((v) => !v), helpKey: 'pressure_graph' },
+    ...(tone.engineReady ? [playKey(tone, () => tone.play(165, levelFor(amt)), { drivesLevel: true })] : []),
   ];
   return (
     <RackUnit
@@ -548,8 +589,8 @@ function M4Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       tint: levelColor(amt),
       helpKey: 'amplitude',
     },
-    { kind: 'toggle', id: 'zones', label: 'COLORS', value: zones, onToggle: () => setZones((v) => !v), helpKey: 'pressure_graph' },
-    ...(tone.engineReady ? [playKey(tone, () => tone.play(330, levelFor(amt)))] : []),
+    { kind: 'toggle', id: 'zones', label: 'COLORIZED PRESSURE', labelLines: 2, value: zones, onToggle: () => setZones((v) => !v), helpKey: 'pressure_graph' },
+    ...(tone.engineReady ? [playKey(tone, () => tone.play(330, levelFor(amt)), { drivesLevel: true })] : []),
   ];
   return (
     <RackUnit
@@ -1047,7 +1088,7 @@ function M9Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       tint: levelColor(lvl),
       helpKey: 'loudness_curve',
     },
-    ...(tone.engineReady ? [playKey(tone, () => tone.play(f, levelDb))] : []),
+    ...(tone.engineReady ? [playKey(tone, () => tone.play(f, levelDb), { drivesLevel: true })] : []),
   ];
   return (
     <RackUnit

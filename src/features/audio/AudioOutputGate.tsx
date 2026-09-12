@@ -188,10 +188,36 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
           {/* Enable-audio card. */}
           <View style={[styles.card, { marginTop: 10 }]}>
             <Text style={styles.title}>Enable audio output</Text>
+            {/* Owner 2026-09-13, on the Pixel. Two corrections, and the second
+                is the one that matters.
+
+                1. "or when you reopen the app" was a guess at a mechanism that
+                   does not exist. Closing the app mutes nothing — no code runs —
+                   and reopening triggers no mute either. The setting is simply
+                   never SAVED (audioOutputStore is session-only; `enabled`
+                   starts false on every JS launch), so each visit begins silent.
+
+                2. Owner, on a draft that listed every re-mute trigger including
+                   sign-in: "the user is signed in, they are there using the app
+                   … maybe you are trying to be too general rather than what's
+                   needed here." Correct. THIS POPUP IS READ AT ONE MOMENT — the
+                   user just asked for sound and is deciding. It needs the two
+                   facts that bear on that decision, not a spec of the store:
+                   sound stays on while they use the app, and it auto-mutes after
+                   20 minutes untouched (which the bypass checkbox below refers
+                   to, so it cannot be dropped). Sign-in is a transition they
+                   already made; relaunch is a problem for a future visit, where
+                   they will simply hold again. Shake-to-mute is already stated
+                   in the red card above — saying it twice is not clearer.
+
+                The clause about switching away exists because the OLD wording
+                caused exactly that misreading: leaving the app does NOT mute it
+                inside the window (AppState only mutes when now − lastActivity >
+                IDLE_MS). */}
             <Text style={styles.body}>
-              Hold the button for 5 seconds to allow sound. It stays on while you're using the app
-              and only mutes automatically after the app is left untouched for 20 minutes, or when
-              you reopen the app.
+              Hold the button for 5 seconds to allow sound. It stays on while you're using the app,
+              including if you switch away and come back, and mutes itself after 20 minutes
+              untouched.
             </Text>
             <HoldToActivate
               label="HOLD 5s TO ENABLE AUDIO OUTPUT"

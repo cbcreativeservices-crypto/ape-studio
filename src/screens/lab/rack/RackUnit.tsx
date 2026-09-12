@@ -249,6 +249,7 @@ export function RackUnit({
                     value=""
                     variant="key"
                     led={p.value}
+                    labelLines={p.labelLines}
                     onPress={p.onToggle}
                     onLongPress={p.helpKey ? () => onHelp?.(p.helpKey) : undefined}
                     a11y={`${p.label}: ${p.value ? 'on' : 'off'}. Tap to toggle.`}

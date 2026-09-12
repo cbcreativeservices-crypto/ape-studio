@@ -24,6 +24,7 @@ export function DockButton({
   selected,
   variant = 'value',
   led,
+  labelLines = 1,
   frameTint,
   onPress,
   onLongPress,
@@ -41,6 +42,11 @@ export function DockButton({
   variant?: 'value' | 'key';
   /** Key-variant toggles: LED dot state (green = on). */
   led?: boolean;
+  /** Key-variant label line budget. 1 (default) ellipsizes; 2 lets a longer
+   *  name wrap. Two 12 px lines plus the 8 px padding come to ~45 px, which
+   *  still clears the 48 px minHeight, so a wrapped key does NOT make the dock
+   *  taller or fall out of step with the keys beside it. */
+  labelLines?: 1 | 2;
   /** Identity-colour frame (owner 2026-08-23): a fader key whose param has an
    *  identity tint (e.g. the Harmonograph's per-arm colours) wears it on the
    *  border. Bound/open stays amber — the two-verb rule outranks identity. */
@@ -109,7 +115,10 @@ export function DockButton({
       {isKey ? (
         <View style={styles.keyRow}>
           {led != null ? <View style={[styles.ledDot, led && styles.ledDotOn]} /> : null}
-          <Text style={[styles.label, fired && styles.labelSel]} numberOfLines={1}>
+          <Text
+            style={[styles.label, styles.keyLabel, fired && styles.labelSel]}
+            numberOfLines={labelLines}
+          >
             {label}
           </Text>
         </View>
@@ -154,6 +163,10 @@ const styles = StyleSheet.create({
   // Toggles/actions: the flat KEY skin — no value slot, no amber-selected.
   key: { backgroundColor: '#17171c', borderColor: '#2c2c33' },
   keyRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  /** In the key ROW the label must be allowed to shrink before it can wrap —
+   *  without flexShrink a row child measures at its full single-line width and
+   *  numberOfLines={2} never gets the chance to break it. */
+  keyLabel: { flexShrink: 1, textAlign: 'center' },
   ledDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#33333c' },
   ledDotOn: { backgroundColor: colors.green },
   label: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.5, color: colors.textSub },

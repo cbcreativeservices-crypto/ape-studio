@@ -146,6 +146,12 @@ export type DockParam =
       value: boolean;
       onToggle: () => void;
       helpKey?: string;
+      /** Let the key's label WRAP to two lines instead of ellipsizing at one.
+       *  Opt-in and rare: a dock key has ~10 characters of room at Oswald 12,
+       *  so a longer name is normally the wrong name. Use it only when the
+       *  longer name is what makes the control understood — Foundations'
+       *  COLORIZED PRESSURE (owner 2026-09-13) is the case this exists for. */
+      labelLines?: 1 | 2;
     }
   | {
       kind: 'action';

@@ -30,6 +30,57 @@ The installed dev client predates several native modules and engine versions. Ev
 
 `expo-print` and `react-native-view-shot` autolink; no plugin entry exists for them by design.
 
+### Generator gain ramp — level faders TICK, found 2026-09-13 (needs this build)
+
+Not a gated feature; a **native DEFECT** whose fix only lands with a build.
+
+Owner, riding STRENGTH in Foundations Module 3: *"I hear like a crackle when I
+move the strength slider."* Confirmed on Module 9, which carries a FREQ fader and
+a LEVEL fader on ONE screen — identical touch rate, identical Skia re-render
+load: **LEVEL crackles, FREQ is clean.** So it is the gain path, not thread
+starvation, and not the phone speaker (M3 at 165 Hz and M4 at 330 Hz both do it).
+
+`Generator.hpp` slope-limits gain in ABSOLUTE amplitude units, and says so:
+*"the rate is fixed, not the duration — the click-free guarantee is the bounded
+slope."* That guarantee covers a 0→1 jump. It does nothing for a fader:
+
+| | |
+|---|---|
+| slope | `1 / (48000 × kRampSec 0.008)` = **0.0026 amplitude/sample** |
+| M9 LEVEL range | −44 → −20 dBFS = amplitude 0.0063 → 0.100 |
+| ~0.5 s sweep at 120 touch events/s | ≈ **0.0016 amplitude per write** |
+| samples that step needs | 0.0016 ÷ 0.0026 = **0.6** |
+
+Every write lands inside ONE sample — the limiter never engages, so each is a
+true discontinuity of ~0.0016 (a −56 dBFS click) arriving ~120×/s under a tone at
+−20 dBFS. Nothing generates a tick deliberately (checked: no haptic and no click
+source on `ParamLane`) — **the level steps ARE the ticks.**
+
+**Unfixable from JS**: at 60–120 writes/s there is no way to cross that range in
+steps small enough to be inaudible without the fader visibly lagging. The
+smoothing has to happen BETWEEN writes, which is the engine's job.
+
+**The change** — `modules/ape-dsp/ios/core/Generator.hpp`, in `renderInto`, make
+gain DURATION-based (any new target reached in a fixed ~15 ms) instead of
+slope-based, which is what a mixer fader does:
+
+```cpp
+// was: fixed slope — useless for small changes at low levels
+const double gainStep = 1.0 / (rampSamples < 1.0 ? 1.0 : rampSamples);
+// becomes: fixed DURATION — recomputed per render block from the distance left
+const double gainStep = std::fabs(ampTarget - ampCur_) / (fs * kGainRampSec);
+```
+
+Keep the `if (env_ <= 0.0) ampCur_ = ampTarget;` snap (nothing to glide from
+while silent). ONE file fixes both phones — Android's `CMakeLists.txt` compiles
+`../ios/core`. Re-run the core's golden tests with it.
+
+⚠️ Deliberately NOT written into `Generator.hpp` yet (owner 2026-09-13: "we will
+build later"): editing native source the installed dev client does not run would
+leave the repo claiming a fix the device cannot show, which is the confusion this
+checklist exists to prevent. Apply it as part of the build.
+
+
 ### Location permissions removed 2026-09-11 — exactly what to put back
 
 `app.json` declared FINE + COARSE location and `NSLocationWhenInUseUsageDescription` as pre-staging for Snapshot "tag location". `expo-location` is not installed, so in any build we submit today those permissions are unreachable by any code path — and `ACCESS_FINE_LOCATION` obliges a Play Console location declaration for a feature that cannot run. They were removed rather than shipped. **Nothing in `src/` changed**: `location.ts` and its MultiMeter control are untouched and still gate themselves off.

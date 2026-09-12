@@ -328,8 +328,15 @@ export function AirParticlesView({
   const h = height;
   // Reserve a little clear zone on the far RIGHT for a LARGER ear (owner
   // 2026-08-05) — like the speaker's own space on the left. Only when showEar.
-  const earW = showEar ? 50 : 0;
-  const earScale = 1.55;
+  // Owner 2026-09-13, on the Pixel: "the ear needs to be bigger". Was 50 / 1.55,
+  // which measured 26 x 41 logical px in a 365 x 186 canvas — 22% of the panel
+  // height and easy to miss at the end of the wave. 2.2 roughly DOUBLES its
+  // area (~37 x 58, 31% of the height). The zone widens with it so the particle
+  // clear-out still matches the drawing and the right margin stays ~12 px:
+  // `cx = w - earW / 2`, so a bigger ear in the OLD zone would have crowded the
+  // panel edge.
+  const earW = showEar ? 62 : 0;
+  const earScale = 2.2;
 
   // Rest grid + per-particle jitter (deterministic — stable across renders).
   // Particles that would fall in the ear zone are dropped so the ear reads
@@ -362,6 +369,30 @@ export function AirParticlesView({
   const sparkleXY = useMemo(() => sparkleHomes(w - earW, 8, h - 16), [w, earW, h]);
   const sxs = sparkleXY.xs;
   const sys = sparkleXY.ys;
+  /**
+   * Indices of the homes that sit in the MIDDLE of the canvas.
+   *
+   * Owner 2026-09-13, on the Pixel: "make sure there is always a few in the
+   * center of the display. they can appear more at the sides and then it is not
+   * as noticable." Both glints used to draw from all 19 homes at random, so the
+   * centre could sit empty for a full 4-second tenure while the only followable
+   * molecule wiggled away in a corner — and the whole point of the glint is to
+   * make ONE molecule's back-and-forth readable. A reader looking at the middle
+   * of the window has to find something moving there.
+   *
+   * The band is measured against the FULL canvas width, not `usableW`: the ear
+   * zone is bagged off the right, so the usable strip's midpoint sits left of
+   * the picture's midpoint, and "centre" here means what the eye lands on.
+   * Falls back to every home if a narrow layout leaves the band empty, so a
+   * slot can never index an empty list.
+   */
+  const sparkleMid = useMemo(() => {
+    const lo = w * 0.3;
+    const hi = w * 0.7;
+    const mid: number[] = [];
+    for (let i = 0; i < sxs.length; i++) if (sxs[i] >= lo && sxs[i] <= hi) mid.push(i);
+    return mid.length ? mid : sxs.map((_, i) => i);
+  }, [sxs, w]);
 
   // TWO sparkling molecules at a time, staggered hand-offs every 2 s. Each
   // follows the SAME displacement law as the field — the glint just makes one
@@ -376,9 +407,16 @@ export function AirParticlesView({
       const ts = t + s * (SPARKLE_LIFE / 2);
       const e = Math.floor(ts / SPARKLE_LIFE);
       const u = ts - e * SPARKLE_LIFE; // 0..LIFE within this slot's tenure
-      let idx = Math.floor(hash(e * 17.31 + s * 3.77) * SPARKLE_N) % SPARKLE_N;
-      if (s === 1) {
-        const idx0 = Math.floor(hash(e0 * 17.31) * SPARKLE_N) % SPARKLE_N;
+      // SLOT 0 IS THE CENTRE SLOT — it only ever picks a home from the middle
+      // band, so something followable is always wiggling where the eye is.
+      // Slot 1 roams the whole field, which is what keeps the effect alive and
+      // lets more of them land at the sides (owner: that is fine there).
+      let idx: number;
+      if (s === 0) {
+        idx = sparkleMid[Math.floor(hash(e * 17.31) * sparkleMid.length) % sparkleMid.length];
+      } else {
+        idx = Math.floor(hash(e * 17.31 + s * 3.77) * SPARKLE_N) % SPARKLE_N;
+        const idx0 = sparkleMid[Math.floor(hash(e0 * 17.31) * sparkleMid.length) % sparkleMid.length];
         if (idx === idx0) idx = (idx + 7) % SPARKLE_N;
       }
       const fade = Math.min(1, u / 0.45, (SPARKLE_LIFE - u) / 0.45);
@@ -403,7 +441,7 @@ export function AirParticlesView({
       p.addCircle(x, y, 2.2 + 1.0 * fade); // the molecule itself, larger + bright
     }
     return p;
-  }, [clock, sxs, sys, visHz, amp, mode, lambda, dispMax, phasePx]);
+  }, [clock, sxs, sys, sparkleMid, visHz, amp, mode, lambda, dispMax, phasePx]);
 
   const path = useDerivedValue(() => {
     const t = clock.value;

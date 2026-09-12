@@ -39,6 +39,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ApeDsp, FX, FX_PARAM, EQ_BAND_TYPES, GEN_MODES } from '../../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
+import { playWithHearingWarning } from '../../../features/audio/levelHearingWarning';
 import { noteAudioActivity } from '../../../features/audio/audioOutputStore';
 import { guardAdditiveForEngine, guardNoiseLevelForEngine, guardToneLevelForEngine } from '../../../features/audio/speakerSafety';
 import { eqResponseDb } from '../../../features/lab/fxViz';
@@ -541,7 +542,10 @@ export function FoundationsPlaygroundScreen() {
               if (playing) stop();
               else {
                 setEverPlayed(true);
-                void start();
+                // The LEVEL lane here is a real output-level control (dBFS), so
+                // PLAY carries the hearing reminder — owner 2026-09-13, EVERY
+                // press. See features/audio/levelHearingWarning.ts.
+                playWithHearingWarning(() => void start());
               }
             },
           } satisfies DockParam,

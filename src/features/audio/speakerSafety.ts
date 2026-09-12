@@ -138,6 +138,26 @@ export function isGuardEngaged(hz: number): boolean {
   return Number.isFinite(hz) && hz < SPEAKER_HPF_HZ * 2;
 }
 
+/**
+ * HEARING WARNING shown before a lab lets the user drive the OUTPUT LEVEL
+ * (owner 2026-09-13, on the Pixel, Foundations Module 3): raising level is the
+ * one control in the app that can hurt someone, so it gets said out loud at the
+ * moment they take hold of it.
+ *
+ * ⚠️ THIS CONTRADICTS `LOW_FREQ_ADVISORY` BELOW, DELIBERATELY AND ONLY IN PART.
+ * That one says "use headphones for the full low end" — sound advice for HEARING
+ * a 40 Hz tone the phone speaker cannot reproduce, and it appears in the
+ * Harmonics and Oscillator labs, which have no user-driven level fader. This one
+ * fires only where the user can RAISE the level themselves. Keep the split
+ * deliberate: headphones are fine for a fixed quiet tone and dangerous on a
+ * control the user can run up. If a lab ever gains BOTH, that lab has to resolve
+ * the contradiction rather than print both lines.
+ */
+export const LEVEL_HEARING_WARNING_TITLE = 'Protect your hearing';
+export const LEVEL_HEARING_WARNING_BODY =
+  'Do not use headphones with this control. Loud output can cause hearing damage. ' +
+  'Be extremely cautious, and keep the phone away from your ears.';
+
 /** Shared honest disclosure — the built-in speaker can't reproduce the lowest
  *  frequencies, and the guard high-passes them. */
 export const LOW_FREQ_ADVISORY =

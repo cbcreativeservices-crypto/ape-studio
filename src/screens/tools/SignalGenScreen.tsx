@@ -41,6 +41,7 @@ import Svg, { Defs, Line, LinearGradient, Path, Stop } from 'react-native-svg';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ApeDsp, GEN_MODES, type GenModeName, type GenStatus } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
+import { playWithHearingWarning } from '../../features/audio/levelHearingWarning';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { EngineGate } from './EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
@@ -653,7 +654,11 @@ export function SignalGenScreen({ navigation }: Props) {
     label: running ? 'STOP' : 'START',
     value: running,
     onToggle: () => {
-      void (running ? onStop() : onStart());
+      // LEVEL here is a real dBFS output control the user can run up, so START
+      // carries the hearing reminder — owner 2026-09-13, EVERY press. STOP does
+      // not: nothing gets louder by stopping.
+      if (running) void onStop();
+      else playWithHearingWarning(() => void onStart());
     },
     helpKey: 'status',
   });
