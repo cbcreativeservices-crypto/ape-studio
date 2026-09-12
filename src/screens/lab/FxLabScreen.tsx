@@ -53,7 +53,7 @@ import { ApeDsp, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { GuidedLessonSheet, getLabLesson, SOURCE_LESSON, type LabId, type LessonContent } from '../../features/lab/guidedLessons';
-import { GrMeter } from '../../features/lab/fxViz';
+import { GrLadder, GrMeter } from '../../features/lab/fxViz';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
@@ -494,16 +494,34 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
           render: (w, h) => (
             // Tapping the display toggles play/stop (owner 2026-07-31).
             <Pressable
-              style={{ width: w, height: h, justifyContent: 'center' }}
+              style={{ width: w, height: h, flexDirection: 'row', alignItems: 'center' }}
               onPress={fxReady ? () => (running ? stop() : void start()) : undefined}
               accessibilityRole="button"
               accessibilityLabel={running ? 'Tap to stop the effect audio' : 'Tap to play the source through the effect'}
             >
-              {AnimHero ? (
-                <AnimHero model={config.anim!(values)} active={focused} grDb={running ? grDb : 0} />
-              ) : (
-                <View style={{ paddingHorizontal: 6 }}>{config.Hero(values)}</View>
-              )}
+              <View style={{ flex: 1, justifyContent: 'center' }}>
+                {AnimHero ? (
+                  <AnimHero model={config.anim!(values)} active={focused} grDb={running ? grDb : 0} />
+                ) : (
+                  <View style={{ paddingHorizontal: 6 }}>{config.Hero(values)}</View>
+                )}
+              </View>
+              {/* The console's GR ladder, standing to the RIGHT of the display
+                  exactly as it does on the desk (owner 2026-09-11, from a Midas
+                  `dyn` page). It hangs from 0 at the top and grows DOWNWARD
+                  with the amount of reduction — gain reduction is a
+                  subtraction, and the meter reads like one. Dynamics labs only;
+                  fed the same real fxGrStatus value as the bezel cell, and 0
+                  while nothing is sounding. */}
+              {config.pollGr ? (
+                <View style={{ paddingRight: 4, paddingLeft: 2 }}>
+                  <GrLadder
+                    grDb={running ? grDb : 0}
+                    maxDb={config.pollGr === 'gate' ? 70 : 24}
+                    height={Math.max(60, h - 26)}
+                  />
+                </View>
+              ) : null}
             </Pressable>
           ),
         },

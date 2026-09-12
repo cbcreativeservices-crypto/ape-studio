@@ -721,6 +721,104 @@ export function GrMeter({ grDb, maxDb = 24, label = 'GAIN REDUCTION' }: { grDb: 
   );
 }
 
+// ───────────────────────────────────────────────────────────── GrLadder ──
+/**
+ * The VERTICAL gain-reduction ladder that sits beside a dynamics display on a
+ * real console — owner 2026-09-11, from a photograph of a Midas desk's `dyn`
+ * page, where the ladder stands immediately right of the transfer curve.
+ *
+ * IT READS DOWNWARD. That is the whole point and the reason a horizontal bar
+ * is not a substitute: gain reduction is a SUBTRACTION, so the meter hangs
+ * from 0 at the top and grows down as the compressor takes more away. A
+ * student who learns it here will read the ladder on any desk they meet.
+ *
+ * ⚠️ AMBER, NOT THE REFERENCE'S RED. The Midas lights this ladder red because
+ * that is its house style; in THIS app red means clipping or error, and a
+ * meter glowing red while a compressor does exactly what it was asked to do
+ * would teach alarm where none belongs. The owner's 2026-08-28 ruling is
+ * explicit that the app's colour standard outranks a palette lifted from a
+ * reference photo, so it takes the same amber ramp as the horizontal GrMeter.
+ *
+ * HONESTY: `grDb` is the REAL measured reduction (fxGrStatus), and callers
+ * pass 0 while nothing is sounding — a lit meter over silence is a fake meter.
+ */
+export function GrLadder({
+  grDb,
+  maxDb = 24,
+  height = 104,
+}: {
+  grDb: number;
+  maxDb?: number;
+  height?: number;
+}) {
+  const segs = 16;
+  const frac = Math.min(Math.max(grDb, 0) / maxDb, 1);
+  const lit = Math.round(frac * segs);
+  // Label roughly every other segment, on round dB values, like the desk.
+  const stepDb = maxDb <= 24 ? Math.round(maxDb / 8 / 2) * 2 || 2 : Math.round(maxDb / 8 / 5) * 5 || 5;
+  const ticks: number[] = [];
+  for (let d = stepDb; d <= maxDb; d += stepDb) ticks.push(d);
+  // `height` is the LED COLUMN's usable height. The stack adds its own 2 pt of
+  // padding, so the scale beside it must be offset by the same amount or every
+  // number sits 2 pt off the segment it labels — small, and exactly the kind of
+  // thing that makes a meter feel untrustworthy up close.
+  const SEG_GAP = 2;
+  const STACK_PAD = 2;
+  const segH = Math.max(3, (height - (segs - 1) * SEG_GAP) / segs);
+  return (
+    <View
+      style={ladderStyles.wrap}
+      accessible
+      accessibilityRole="progressbar"
+      accessibilityLabel="Gain reduction"
+      accessibilityValue={{ text: `${grDb.toFixed(1)} decibels of reduction` }}
+    >
+      <Text style={ladderStyles.head}>GR</Text>
+      <View style={ladderStyles.body}>
+        <View style={ladderStyles.stack}>
+          {Array.from({ length: segs }, (_, i) => (
+            <View
+              key={i}
+              style={[
+                ladderStyles.seg,
+                { height: segH },
+                // Lit from the TOP down — index 0 is the first to light.
+                i < lit ? { backgroundColor: GR_SEG_COLORS[Math.min(GR_SEGS - 1, Math.round((i / (segs - 1)) * (GR_SEGS - 1)))] } : null,
+              ]}
+            />
+          ))}
+        </View>
+        <View style={[ladderStyles.scale, { height, marginTop: STACK_PAD }]}>
+          {ticks.map((d) => (
+            <Text key={d} style={[ladderStyles.tick, { top: (d / maxDb) * height - 5 }]}>
+              {d}
+            </Text>
+          ))}
+        </View>
+      </View>
+    </View>
+  );
+}
+
+const SEG_GAP_STYLE = 2;
+
+const ladderStyles = StyleSheet.create({
+  wrap: { alignItems: 'center', gap: 3 },
+  head: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1.2, color: colors.textSub },
+  body: { flexDirection: 'row', alignItems: 'flex-start', gap: 3 },
+  stack: {
+    gap: SEG_GAP_STYLE,
+    padding: 2,
+    borderRadius: 3,
+    backgroundColor: '#0a0a0c',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: FRAME,
+  },
+  seg: { width: 12, borderRadius: 1.5, backgroundColor: '#1d1d24' },
+  scale: { width: 13 },
+  tick: { position: 'absolute', left: 0, fontFamily: fonts.mono, fontSize: 8, color: colors.textSub },
+});
+
 const lissaStyles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   meter: { flex: 1, gap: 3 },
