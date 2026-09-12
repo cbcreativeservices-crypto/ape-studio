@@ -128,28 +128,53 @@ export function GearFader({
   onChangeRef.current = onChangeDb;
   const grabDb = useRef(0);
 
+  const moved = useRef(false);
+  const lastTap = useRef(0);
+
   const responder = useMemo(
     () =>
       PanResponder.create({
-        // Claim VERTICAL moves only: the console lives in a horizontal channel
-        // scroller, and a fader that stole sideways swipes would make the desk
-        // impossible to navigate. |dy| dominant → ours; otherwise the scroller
-        // keeps it. Taps are NOT claimed — a real fader does not jump to where
-        // a stray finger lands.
-        onStartShouldSetPanResponder: () => false,
-        onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dy) > 6 && Math.abs(g.dy) > Math.abs(g.dx) * 1.2,
+        // The eqBits VerticalFader recipe, proven inside a horizontal scroller
+        // since 2026-08: claim at touch START, then hand the gesture to the
+        // channel scroller ONLY when it turns out clearly horizontal. A
+        // move-time claim was how the first cut worked, and it made the cap
+        // feel greasy — the scroller and the fader raced for every touch.
+        onStartShouldSetPanResponder: () => true,
+        onStartShouldSetPanResponderCapture: () => true,
+        onPanResponderTerminationRequest: (_e, g) => Math.abs(g.dx) > Math.abs(g.dy) + 6,
         onPanResponderGrant: () => {
           grabDb.current = valueRef.current;
+          moved.current = false;
         },
         onPanResponderMove: (_e, g) => {
+          if (Math.abs(g.dy) > 6) moved.current = true;
+          if (!moved.current) return; // a resting finger is not a drag
           // Grab-relative, like the hardware: the cap follows the finger from
           // where it WAS, it never teleports under it.
           const f = faderDbToFrac(grabDb.current) - g.dy / SLOT_H;
           const db = Math.round(faderFracToDb(f));
           if (db !== valueRef.current) onChangeRef.current(db);
         },
+        onPanResponderRelease: () => {
+          if (moved.current) return;
+          // A single tap still does nothing — a real fader does not jump to
+          // where a stray finger lands. A DOUBLE tap returns to unity (owner
+          // ruling 2026-09-11), which is also real desk behaviour: automation
+          // and reset-to-0 buttons exist because unity is the home everyone
+          // keeps going back to.
+          const now = Date.now();
+          if (now - lastTap.current < 320) {
+            lastTap.current = 0;
+            if (valueRef.current !== 0) {
+              onChangeRef.current(0);
+              AccessibilityInfo.announceForAccessibility?.(`${name} fader unity, 0 dB`);
+            }
+          } else {
+            lastTap.current = now;
+          }
+        },
       }),
-    [],
+    [name],
   );
 
   const nudge = useCallback(
@@ -262,6 +287,7 @@ export function GearKnob({
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
   const grab = useRef(0);
+  const lastTap = useRef(0);
   const moved = useRef(false);
 
   const responder = useMemo(
@@ -285,7 +311,21 @@ export function GearKnob({
         },
         onPanResponderRelease: (e) => {
           if (moved.current) return;
-          // A TAP (no drag) nudges toward the tapped side — the visible
+          // A DOUBLE tap snaps to centre (owner ruling 2026-09-11) — the pan
+          // pot's home the way unity is the fader's. The first tap of the
+          // pair still nudges; the second overrides it with centre, so the
+          // net result is exactly centred.
+          const now = Date.now();
+          if (now - lastTap.current < 320) {
+            lastTap.current = 0;
+            if (valueRef.current !== 0) {
+              onChangeRef.current(0);
+              AccessibilityInfo.announceForAccessibility?.(`${name} pan centre`);
+            }
+            return;
+          }
+          lastTap.current = now;
+          // A single TAP (no drag) nudges toward the tapped side — the visible
           // non-drag path, same 25-step the old arrow buttons used.
           const left = e.nativeEvent.locationX < KNOB_SVG / 2;
           const v = Math.max(-100, Math.min(100, valueRef.current + (left ? -step : step)));

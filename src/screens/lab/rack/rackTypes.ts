@@ -81,6 +81,11 @@ export type DockParam =
       formatShort?: (v: number) => string;
       /** Lane/thumb tint (default amber) — e.g. levelColor ramp. */
       tint?: string;
+      /** The param's neutral lane position (0..1): unity for a gain, centre
+       *  for a pan. Double-tap on the lane returns here (owner ruling
+       *  2026-09-11). Omit when the param has no honest home — a delay time
+       *  has no unity, and inventing one would be a lie. */
+      home?: number;
       /** This fader sets a LEVEL (level, input/drive, gain, amplitude…): the
        *  lane shows the amplitude ramp climbing from silence-blue to the
        *  level's colour and the thumb takes that colour (owner standard

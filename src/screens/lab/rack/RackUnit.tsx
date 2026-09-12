@@ -195,6 +195,7 @@ export function RackUnit({
             onDragActive={setLaneActive}
             tint={bound.tint}
             level={bound.level}
+            home={bound.home}
           />
         ) : null}
         <View style={styles.strip}>

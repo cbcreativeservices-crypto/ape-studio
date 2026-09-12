@@ -25,6 +25,7 @@ import { WaveformScreen } from './src/screens/tools/WaveformScreen';
 import { RtaScreen } from './src/screens/tools/RtaScreen';
 import { ToolsHubScreen } from './src/screens/tools/ToolsHubScreen';
 import { CalcWorkspaceScreen } from './src/screens/lab/calc/CalcWorkspaceScreen';
+import { EqModuleScreen } from './src/screens/lab/eq/EqModuleScreen';
 import { CalcLabScreen } from './src/screens/lab/calc/CalcLabScreen';
 import { CableInstallLabScreen } from './src/screens/lab/cableinstall/CableInstallLabScreen';
 import { CableArtPreview } from './src/screens/lab/cableinstall/CableArtPreview';
@@ -327,6 +328,10 @@ export default function App() {
               ? { name: 'ToolsHub', component: ToolsHubScreen as ComponentType }
               : window.location.hash === '#calcworkspacepreview'
                 ? { name: 'CalcWorkspace', component: CalcWorkspaceScreen as ComponentType, initialParams: { id: 'wave' } }
+              : window.location.hash === '#eqmodulepreview'
+                // A RackUnit lab with a bound ParamLane — the gear design pass's
+                // browser harness for the dock fader (2026-09-11).
+                ? { name: 'EqModule', component: EqModuleScreen as ComponentType, initialParams: { id: 'parametric' } }
                 : window.location.hash === '#calclabpreview'
                   ? { name: 'CalcLab', component: CalcLabScreen as ComponentType }
                   : window.location.hash === '#cableinstallpreview'
