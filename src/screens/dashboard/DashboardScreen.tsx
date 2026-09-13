@@ -1406,12 +1406,18 @@ export function DashboardScreen() {
                   cutout, dark screen face, one tinted pane over the lit text.
                   GlassCover never intercepts touches, so tap/swipe still work. */}
               <View style={[styles.cutoutMount, styles.topicGlass]}>
-                {/* Tap the title area → full term list for this topic (Booth
-                    2026-07-18). Swipe still owned by the card's PanResponder. */}
+                {/* Owner 2026-09-13 (intro-copy review): tap the title area →
+                    the EXPANDED topic view (same popup as the art); press and
+                    hold → the full term list (was tap, Booth 2026-07-18). The
+                    custom-list card keeps tap = its list — the list IS that
+                    card's identity and it has no expanded art. Swipe still
+                    owned by the card's PanResponder. */}
                 <Pressable
-                  onPress={isCustom ? openFlaggedTerms : openTerms}
+                  onPress={isCustom ? openFlaggedTerms : () => setTrophyOpen(true)}
+                  onLongPress={isCustom ? undefined : () => void openTerms()}
                   accessibilityRole="button"
-                  accessibilityLabel={isCustom ? `List terms in ${topic.name}` : `List all terms in ${topic.name}`}
+                  accessibilityLabel={isCustom ? `List terms in ${topic.name}` : `Expand ${topic.name}`}
+                  accessibilityHint={isCustom ? undefined : 'Hold to list every term in this topic'}
                 >
                   <Text style={styles.topicEyebrow}>{dispTopicInactive ? 'CURRENT TOPIC · INACTIVE' : 'CURRENT TOPIC'}</Text>
                   <Text style={[styles.topicName, dispTopicInactive && styles.topicNameDim]} numberOfLines={2}>
@@ -2010,7 +2016,7 @@ export function DashboardScreen() {
       {/* Jog-dial reveal (Pillar B, plan §3) — only meaningful with somewhere
           to spin to; hidden while the big wheel is open (it teaches itself). */}
       {jogCoach.visible && !jogActive && topics.length > 1 ? (
-        <CoachMark text="Hold the dial and turn — spin straight to any topic" bottom={18} />
+        <CoachMark text="Use the rotary dial to spin straight to any topic" bottom={18} />
       ) : null}
 
       {/* Method-cards intro placeholder (Booth 2026-07-18). */}

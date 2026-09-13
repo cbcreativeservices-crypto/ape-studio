@@ -80,7 +80,7 @@ export const SCREEN_INTROS: Record<
     body:
       'Every topic here follows the same loop.\n\n' +
       'Work the study methods in order — each one unlocks the next — then take the Topic Quiz. Passing the quiz banks the topic toward its certificate.\n\n' +
-      'Swipe the topic card to change topics, or hold the small dial to spin straight to any topic in your deck. Tap the topic card itself to see every term inside it.',
+      'Swipe the topic card to change topics, or use the rotary dial to spin straight to any topic in your deck. Tap the topic card to open its expanded view — press and hold to list every term inside it.',
     button: 'Start Studying',
   },
   // T1 — first Flashcards entry (final copy, user-provided 2026-07-18).
