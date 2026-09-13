@@ -1250,6 +1250,9 @@ ${COPY.glossaryFreeAllowance}`,
   /** The SERVER counts the open when the gateway is live — the client must not
    *  also charge `glossary_consume()`, or a free week would be seven. */
   const serverMeters = !keyFailedOpen && gateway === 'deployed';
+  /** Read inside callbacks that must not re-create when the meter changes. */
+  const serverMetersRef = useRef(false);
+  serverMetersRef.current = serverMeters;
   /**
    * Bumped when a metered read replaces a teaser with the real definition.
    *
@@ -1905,10 +1908,26 @@ ${COPY.glossaryFreeAllowance}`,
 
   /** Fetch (or reuse) a term's full detail and RETURN it (fetchDetails only
    *  caches). Same two-query shape: base fields from `glossary` (all tiers) +
-   *  the academy-gated `common_mistakes` from `glossary_full_v` (non-fatal). */
+   *  the academy-gated `common_mistakes` from `glossary_full_v` (non-fatal).
+   *
+   *  ⚠️ Called by the SHARE sheet, which can reach a term the reader never
+   *  opened (from a bookmark list). Once the gateway is live those two queries
+   *  are revoked, so the metered read is the only way to fill it — meaning
+   *  sharing an unopened term now spends one of the free 14. There is no
+   *  unmetered path left, and a share does reveal the definition, so this is
+   *  the honest reading of the rule rather than a loophole. A term already read
+   *  this session is free, as always. */
   const getDetail = useCallback(async (id: string): Promise<EntryDetail | null> => {
     const cached = detailsRef.current[id];
     if (cached) return cached;
+    if (serverMetersRef.current) {
+      await openViaGatewayRef.current(id);
+      const filled = detailsRef.current[id];
+      if (filled) return filled;
+      // A refusal (out of lookups) or an outage — fall through, and let the
+      // legacy read decide. After the revokes it returns nothing, which the
+      // share sheet already handles as "no detail".
+    }
     const { data } = await supabase
       .from('glossary')
       .select(

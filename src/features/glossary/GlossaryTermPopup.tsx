@@ -12,12 +12,23 @@
  * case-insensitively (calculator glossary lists carry display names, not ids).
  * For the full detail — Purpose, Common Mistakes, linked labs — the caller keeps
  * its "OPEN THE GLOSSARY ›" link to the Glossary tab.
+ *
+ * ⚠️ ONCE THE GLOSSARY GATEWAY IS LIVE, THIS OPEN IS METERED. The lookup by
+ * name comes from `glossary_browse_v`, which carries only a 120-character
+ * teaser for non-members, so the real text has to come through
+ * `get_glossary_definition` — and that RPC counts. A term chip opened from a
+ * calculator therefore spends one of the free 14, where today it spent nothing.
+ * That is consistent with the owner's own rule ("opening a definition to view
+ * it = +1") and there is no unmetered path left after the revokes, but it IS a
+ * behaviour change worth knowing about rather than discovering.
+ * See docs/APE_GLOSSARY_DEVICE_ID_BUILD_PLAN_2026_09_13.md.
  */
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
 import { supabase } from '../../lib/supabase';
+import { corpusTable, fetchDefinitionViaGateway, probeGateway } from './glossaryGateway';
 
 type Row = { id: string; term: string; definition: string | null; plain_english: string | null };
 
@@ -54,17 +65,39 @@ export function GlossaryTermPopup({
       // wildcards is an exact, case-folded compare — the calculator lists and
       // the glossary rows disagree on casing ('Sound pressure level' vs
       // 'Sound Pressure Level'), so a `=` would miss.
+      const probe = await probeGateway();
+      if (cancelled) return;
       const { data, error } = await supabase
-        .from('glossary')
+        .from(corpusTable(probe))
         .select('id, term, definition, plain_english')
         .ilike('term', termName)
         .limit(1);
       if (cancelled) return;
       const hit = (data && data[0]) as Row | undefined;
-      if (hit) setRow(hit);
-      else if (error) setLoadError(true);
-      else setNotFound(true);
+      if (!hit) {
+        if (error) setLoadError(true);
+        else setNotFound(true);
+        setLoading(false);
+        return;
+      }
+      setRow(hit);
       setLoading(false);
+      if (probe !== 'deployed') return;
+      // The row above is a teaser for anyone who is not a member. Ask the
+      // gateway for the real text; a refusal (out of lookups, or no device key)
+      // simply leaves the teaser on screen with the caller's "OPEN THE
+      // GLOSSARY ›" link, which is where the lock and the upgrade path live.
+      const full = await fetchDefinitionViaGateway(hit.id);
+      if (cancelled || full.state !== 'ok') return;
+      setRow((prev) =>
+        prev && prev.id === hit.id
+          ? {
+              ...prev,
+              definition: full.row.definition ?? prev.definition,
+              plain_english: full.row.plain_english ?? prev.plain_english,
+            }
+          : prev,
+      );
     })();
     return () => {
       cancelled = true;

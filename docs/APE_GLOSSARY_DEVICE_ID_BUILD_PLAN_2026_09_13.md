@@ -186,6 +186,59 @@ Re-read `has_table_privilege` afterwards — "no errors" proves nothing.
 
 ---
 
+## 🚨 THE REVOKE LIST ABOVE DOES NOT ACHIEVE THE BRIEF
+
+Found 2026-09-13 while wiring the client, by reading the live grants rather than
+the plan. **Do not run the revokes until this is settled.**
+
+Measured on the live database:
+
+| Fact | Consequence |
+|---|---|
+| `glossary_study_v` grants SELECT to **anon AND authenticated** today | — |
+| It selects `g.definition` **unmasked** — only `common_mistakes` is behind `has_academy_access()` | Full definitions, not teasers |
+| Its inner join covers **26,855 of 26,855** terms (0 unlinked from `glossary_topics`) | The whole corpus, not a subset |
+| The plan revokes it **from `anon` only** | `authenticated` keeps it |
+| Every guest who accepts the device key **becomes `authenticated`** | …including the scraper |
+
+So after the revokes as written, the same person the gateway was built to stop
+signs in anonymously — one tap, no email — and pages the entire corpus out of
+`glossary_study_v`. Not one request: PostgREST caps a page at 1000 rows, so
+about 27 of them. That is a script, not an obstacle.
+
+**The gateway would be a front door with the back door still open, and it would
+look like it was working.**
+
+### What has to change
+
+`glossary_study_v` must gate `definition` on **entitlement to study**, not on
+mere authentication — the same shape its `common_mistakes` mask already uses:
+
+```sql
+case when public.has_academy_access(auth.uid())
+       or (auth.uid() is not null and a.global_sequence = any (array[3060, 3970]))
+     then g.definition
+     else left(g.definition, 120) end as definition
+```
+
+…plus whatever enrolment predicate the free study tier is supposed to honour —
+**that part is a product decision about what a free account gets, and it is
+yours, not mine.** The two free tasters are already encoded in the view, so the
+predicate exists; what is missing is whether an enrolled free user reading their
+own topic should get full definitions there.
+
+Until it is decided, the choice is:
+
+- **Close it**: mask as above. Study for non-entitled users degrades to teasers,
+  which may break the free study experience — check before running it.
+- **Leave it open and know that you have**: the gateway then raises the cost of
+  scraping from "one anon key" to "one anonymous sign-in", which is a real but
+  modest gain, and the 14/week remains a UI convention for anyone who looks.
+
+⚠️ `glossary_topics` is also anon-SELECTable. It carries no definitions, so it
+is not a leak — but it is the join key, and it is what makes the study view
+enumerable. Worth a glance while you are in there.
+
 ## Client work - BUILT 2026-09-13
 
 ### The switch that made it shippable ahead of the server
@@ -212,15 +265,28 @@ That denial is the SIGNAL that the gateway is live, not a failure.
 | `lib/copy.ts` | The consent copy, ADDED (nothing reworded) |
 | `features/curriculum/curriculumStats.ts` | **No change** - already on `get_glossary_term_count()` |
 
-### Still outstanding on the client
+### Every client read is now off `glossary` - CLOSED 2026-09-13
 
-- `features/glossary/GlossaryTermPopup.tsx` - single-term read still direct.
-- `features/study/api.ts` - one direct `glossary` read still to move.
-- `features/notifications/localSchedule.ts` - weekly-concept read needs a
-  definer RPC or a service-role path.
+| Reader | Was | Now |
+|---|---|---|
+| `features/study/api.ts` (2 sites) | `glossary` + `glossary_full_v`, two queries | `glossary_study_v`, ONE query, same academy mask. Safe because 0 of 26,855 terms are unlinked from `glossary_topics` - measured, not assumed |
+| `features/notifications/localSchedule.ts` | `glossary` random sample | `glossary_study_v` |
+| `features/glossary/GlossaryTermPopup.tsx` | `glossary` by name | browse view by name, then the metered RPC for the real text |
+| `features/curriculum/curriculumStats.ts` | **two head counts on `glossary`** | `get_glossary_term_count()` |
+| `GlossaryScreen.getDetail` (share sheet) | `glossary` + `glossary_full_v` | the metered RPC, then the legacy read as fallback |
 
-**These three must be closed before the revokes run**, or those surfaces go
-dark. They are not urgent before then; they are blocking after.
+⚠️ **The plan asserted `curriculumStats.ts` was already safe. It was not** - it
+ran `select id, head:true` on `glossary` twice, and a head count is a SELECT.
+Both would have returned 42501 after the revokes and the curriculum's term
+totals would simply have stopped appearing, with nothing on screen to connect
+that to the glossary. Fixed.
+
+⚠️ **Two opens that used to be free are now metered**, because after the revokes
+there is no unmetered path to a definition: a calculator's term chip
+(`GlossaryTermPopup`), and sharing a term the reader never opened. Both do
+reveal a definition, so this follows the owner's own rule ("opening a definition
+to view it = +1") rather than bending it - but it is a behaviour change to
+accept deliberately, not to discover.
 
 ### The blast radius was wider than this plan predicted
 
@@ -276,7 +342,8 @@ because it is a judgment call, not a technicality - reverse it in
 4. Create the view + RPC + cron. Verify privileges and the cascade. **The moment
    the view exists, every phone running the shipped build starts asking for
    consent** - so treat this step as the feature going live.
-5. Close the three outstanding client reads listed above.
+5. **Settle `glossary_study_v`** — see the red section above. The revokes do
+   not achieve the brief without it.
 6. **Only then** run the revokes.
 
 Reversed, the glossary dies in every build already on a phone — including the

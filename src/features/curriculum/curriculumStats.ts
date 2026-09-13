@@ -13,6 +13,28 @@ export type CurriculumStats = { totalTerms: number | null; termsByGs: Map<number
 
 const PAGE = 1000;
 
+/**
+ * Total glossary terms, through the anon-callable definer RPC.
+ *
+ * ⚠️ This used to be `from('glossary').select('id', { count: 'exact', head: true })`
+ * — twice. The glossary gateway's revokes
+ * (docs/APE_GLOSSARY_DEVICE_ID_BUILD_PLAN_2026_09_13.md) take the client's
+ * SELECT on `glossary` away, and a head count is a SELECT: both would have come
+ * back 42501 and the curriculum's term totals would simply have stopped
+ * appearing, with nothing on screen to connect that to the glossary. The build
+ * plan asserted this file was already on `get_glossary_term_count()`; it was
+ * not. Now it is.
+ */
+async function totalGlossaryTerms(): Promise<number | null> {
+  const { data, error } = await supabase.rpc('get_glossary_term_count');
+  if (error) {
+    console.warn('[curriculum] term count unavailable:', error.message);
+    return null;
+  }
+  const n = Number(data);
+  return Number.isFinite(n) ? n : null;
+}
+
 /** Per-topic term counts for the given topic gs list (owner 2026-08-06: driven by
  *  the LIVE v3 curriculum, not the retired v2 matrix). */
 export function useCurriculumStats(gsList: number[]): CurriculumStats {
@@ -24,12 +46,12 @@ export function useCurriculumStats(gsList: number[]): CurriculumStats {
       try {
         const allGs = gsList;
         if (allGs.length === 0) {
-          const { count: c0 } = await supabase.from('glossary').select('id', { count: 'exact', head: true });
-          if (alive) setStats({ totalTerms: c0 ?? null, termsByGs: new Map() });
+          const c0 = await totalGlossaryTerms();
+          if (alive) setStats({ totalTerms: c0, termsByGs: new Map() });
           return;
         }
-        // Total distinct glossary terms (cheap head count).
-        const { count } = await supabase.from('glossary').select('id', { count: 'exact', head: true });
+        // Total distinct glossary terms (one cheap definer RPC).
+        const count = await totalGlossaryTerms();
 
         // gs → achievement id, then count glossary_topics rows per achievement.
         const { data: ach } = await supabase

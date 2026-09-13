@@ -153,8 +153,13 @@ async function getTermBatch(): Promise<TermRow[] | null> {
     const total = Number(cnt);
     if (!Number.isFinite(total) || total < 1) return null;
     const off = Math.max(0, Math.floor(Math.random() * Math.max(1, total - 40)));
+    // ⚠️ `glossary_study_v`, not `glossary` (2026-09-13). The glossary gateway
+    // revokes the client's SELECT on the base table; this view keeps the same
+    // columns for signed-in callers. Its inner join repeats a term once per
+    // topic, which is harmless for a random sample — the shuffle below picks 14
+    // out of 40 and duplicates just make a repeat marginally more likely.
     const { data, error } = await supabase
-      .from('glossary')
+      .from('glossary_study_v')
       .select('term, definition, plain_english')
       .range(off, off + 39);
     if (error || !data?.length) return null;

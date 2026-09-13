@@ -147,46 +147,16 @@ export async function fetchTopicItems(achievementId: string): Promise<GlossaryIt
   const ids = (links ?? []).map((r: any) => r.glossary_id).filter(Boolean) as string[];
   if (ids.length === 0) return [];
 
-  // 2) Base display fields (NOT common_mistakes) — a top-level select of the
-  //    granted columns from base `glossary` works fine under the column-level
-  //    grants. We do NOT embed and we do NOT read common_mistakes here.
-  const { data, error } = await supabase
-    .from('glossary')
-    .select(
-      'id, term, definition, plain_english, purpose_function, practical_application, scenario_contexts, related_terms, category, difficulty',
-    )
-    .in('id', ids);
-  if (error) throw error;
-  const items: GlossaryItem[] = (data ?? []).map((g: any) => ({
-    ...g,
-    common_mistakes: null,
-    formula_symbolic: null,
-    formula_words: null,
-  }));
-  const byId = new Map<string, GlossaryItem>(items.map((it) => [it.id, it]));
-
-  // 3) common_mistakes from the academy-gated view — NON-FATAL. The view's mask
-  //    calls has_academy_access(); Computer A verified 2026-09-05 that EXECUTE
-  //    is granted to authenticated AND anon, every base row is populated, and
-  //    members receive the arrays (non-members get NULL except the two free
-  //    topics gs3060/gs3970). Still guarded: on any failure common_mistakes
-  //    stays null and the Flashcards MISTAKES side says why (tier-aware line).
-  try {
-    const { data: masked, error: mErr } = await supabase
-      .from('glossary_full_v')
-      .select('id, common_mistakes')
-      .in('id', ids);
-    if (mErr) {
-      console.warn('[study] common_mistakes unavailable:', mErr.message);
-    } else {
-      for (const m of (masked ?? []) as any[]) {
-        const it = byId.get(m.id);
-        if (it) it.common_mistakes = m.common_mistakes ?? null;
-      }
-    }
-  } catch (e) {
-    console.warn('[study] common_mistakes fetch threw:', (e as Error).message);
-  }
+  // 2) Display fields, INCLUDING the masked common_mistakes, in ONE read of
+  //    `glossary_study_v` (2026-09-13). This used to be two queries: base
+  //    columns from `glossary` plus common_mistakes from `glossary_full_v`.
+  //    Both of those relations lose their client SELECT grant when the glossary
+  //    gateway's revokes run, and the study view already carries every column
+  //    with the same academy mask applied — so this is one query instead of
+  //    two AND the only one that survives.
+  //    Verified on the live schema 2026-09-13: 0 of 26,855 glossary rows are
+  //    unlinked from `glossary_topics`, so the view's inner join loses nothing.
+  const byId = await fetchStudyRowsByIds(ids);
 
   // Preserve the topic's link order.
   return ids.map((id) => byId.get(id)).filter(Boolean) as GlossaryItem[];
@@ -201,33 +171,55 @@ export async function fetchTopicItems(achievementId: string): Promise<GlossaryIt
 export async function fetchGlossaryItemsByIds(idList: string[]): Promise<GlossaryItem[]> {
   const ids = idList.filter(Boolean);
   if (ids.length === 0) return [];
+  const byId = await fetchStudyRowsByIds(ids);
+  return [...byId.values()].sort((a, b) => a.term.localeCompare(b.term));
+}
+
+/**
+ * The one read shared by both paths above: glossary ids -> study items, from
+ * `glossary_study_v`.
+ *
+ * ⚠️ WHY NOT `glossary`. The glossary gateway
+ * (docs/APE_GLOSSARY_DEVICE_ID_BUILD_PLAN_2026_09_13.md) revokes the client's
+ * SELECT on `glossary` and `glossary_full_v`; study would have gone dark for
+ * members with no hint that the glossary was the cause. This view carries every
+ * column study needs and applies the same academy mask to common_mistakes.
+ *
+ * ⚠️ The view is an inner join through `glossary_topics`, so a term is returned
+ * ONCE PER TOPIC it belongs to. Deduplicate by id, preferring the row that
+ * actually carries common_mistakes — the mask lets those through only for
+ * members, and for everyone on the two free topics (gs3060 / gs3970), so the
+ * first row for a term is not always the most complete one.
+ */
+async function fetchStudyRowsByIds(ids: string[]): Promise<Map<string, GlossaryItem>> {
   const { data, error } = await supabase
-    .from('glossary')
+    .from('glossary_study_v')
     .select(
-      'id, term, definition, plain_english, purpose_function, practical_application, scenario_contexts, related_terms, category, difficulty',
+      'glossary_id, term, definition, plain_english, purpose_function, practical_application, scenario_contexts, related_terms, category, difficulty, common_mistakes',
     )
-    .in('id', ids);
+    .in('glossary_id', ids);
   if (error) throw error;
-  const items: GlossaryItem[] = (data ?? []).map((g: any) => ({
-    ...g,
-    common_mistakes: null,
-    formula_symbolic: null,
-    formula_words: null,
-  }));
-  const byId = new Map<string, GlossaryItem>(items.map((it) => [it.id, it]));
-  try {
-    const { data: masked } = await supabase
-      .from('glossary_full_v')
-      .select('id, common_mistakes')
-      .in('id', ids);
-    for (const m of (masked ?? []) as any[]) {
-      const it = byId.get(m.id);
-      if (it) it.common_mistakes = m.common_mistakes ?? null;
-    }
-  } catch {
-    // non-fatal — same rule as fetchTopicItems
+  const byId = new Map<string, GlossaryItem>();
+  for (const g of (data ?? []) as any[]) {
+    const existing = byId.get(g.glossary_id);
+    if (existing && !(g.common_mistakes?.length && !existing.common_mistakes?.length)) continue;
+    byId.set(g.glossary_id, {
+      id: g.glossary_id,
+      term: g.term,
+      definition: g.definition,
+      plain_english: g.plain_english ?? null,
+      purpose_function: g.purpose_function ?? null,
+      practical_application: g.practical_application ?? null,
+      scenario_contexts: g.scenario_contexts ?? null,
+      common_mistakes: g.common_mistakes ?? null,
+      related_terms: g.related_terms ?? null,
+      category: g.category ?? null,
+      difficulty: g.difficulty ?? null,
+      formula_symbolic: null,
+      formula_words: null,
+    });
   }
-  return items.sort((a, b) => a.term.localeCompare(b.term));
+  return byId;
 }
 
 /**
