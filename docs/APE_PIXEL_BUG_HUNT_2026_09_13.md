@@ -147,6 +147,34 @@ Why it is NOT confirmed: I destroyed the conditions before isolating it, and the
 app state differed (signed-in vs guest, warm vs cold). It needs a session that
 has been running a while, then a link probe, without a restart in between.
 
+## ✅ PERFORMANCE — the 15-second tool open is GONE, measured in real use
+
+`src/features/tools/devTiming.ts` exists because of an owner report on
+2026-09-05: *"a tool's start screen took ~15 s to open on the phone."* Those
+marks streamed off the Pixel tonight while the owner used it normally — not a
+synthetic test — across five different tools:
+
+| Tool | tap→navigate | navigate→mount | **tap→mount** |
+|---|---|---|---|
+| SPL meter | 119 ms | 281 ms | **400 ms** |
+| Waveform | 100 ms | 275 ms | **375 ms** |
+| RTA | 105 ms | 265 ms | **370 ms** |
+| Signal generator | 97 ms | 265 ms | **362 ms** |
+| MultiMeter | 108 ms | — | — |
+
+Consistent at roughly **100 ms of press/mic-handoff + 270 ms of push-and-render**.
+Mic acquisition on a fresh hub entry measured **72–180 ms**.
+
+Two things this closes:
+
+- **the ~15 s open (2026-09-05) does not reproduce** — it is ~40× faster, on the
+  same phone, in ordinary use;
+- **the carried-forward "navigate → mount still ~1.2 s" note is stale** — that
+  leg now measures 265–281 ms.
+
+No action. Recorded so the next person does not re-chase a fixed regression, and
+so there is a baseline to regress against.
+
 ## Verified working
 
 - `proaudio://` scheme reaches the app; `tools`, `tools/multimeter`,
