@@ -11,13 +11,16 @@
 -- the whole file in one go — STEP 5 must not run until the client build with
 -- the gateway is actually on phones.
 --
---   STEP 0  Enable anonymous sign-ins          ← dashboard toggle, NOT SQL
---   STEP 1  Verify the ground truth            (read-only, already true)
---   STEP 2  Create the browse view             ← THE FEATURE GOES LIVE HERE
---   STEP 3  Create the counting gateway RPC
---   STEP 4  Schedule the 7-day purge
---   STEP 5  The revokes                        ← LAST, and only after step 5a
---   STEP 6  Prove the revokes actually took
+-- STATUS 2026-09-13, after the owner said "you run steps 1-4":
+--   STEP 0  Enable anonymous sign-ins   ❌ NOT DONE — probed the live auth API,
+--                                          it answers 422 anonymous_provider_disabled.
+--                                          This is the ONLY thing blocking step 2.
+--   STEP 1  Ground truth                ✅ PASSED (all four)
+--   STEP 2  Create the browse view      ⏸ HELD — see below. Needs step 0 first.
+--   STEP 3  Counting gateway RPC        ✅ APPLIED + verified on all four paths
+--   STEP 4  7-day purge                 ✅ APPLIED (cron jobid 3) + cascade proven
+--   STEP 5  The revokes                 ⏸ waits for a build on phones
+--   STEP 6  Prove the revokes took      ⏸
 --
 -- Full reasoning: docs/APE_GLOSSARY_DEVICE_ID_BUILD_PLAN_2026_09_13.md
 -- Already applied, separately: the glossary_study_v content mask
@@ -104,6 +107,15 @@ rollback;
 -- STEP 2 — THE BROWSE VIEW   ⚠️ THE FEATURE GOES LIVE THE MOMENT THIS RUNS
 -- =====================================================================
 --
+-- ⏸ HELD 2026-09-13. Steps 1, 3 and 4 are done; this one is not, deliberately.
+-- A live probe of the auth API returned:
+--     422  anonymous_provider_disabled  "Anonymous sign-ins are disabled"
+-- so STEP 0 has not been done yet. Run this now and a guest opening the
+-- glossary gets the consent dialog, taps AGREE, the mint fails with that 422,
+-- and the client fails open — the glossary just opens, unmetered. Nothing
+-- breaks, but the dialog would be asking for something the server refuses to
+-- give, which is worse than not asking. Do step 0, then this.
+--
 -- Every phone already running the shipped build probes for this view once per
 -- app session. Until now the probe answers "absent" and nothing changes for
 -- anyone. From the second this executes, guests opening the glossary get the
@@ -146,8 +158,17 @@ select has_table_privilege('anon', 'public.glossary_browse_v', 'SELECT')        
 
 
 -- =====================================================================
--- STEP 3 — THE COUNTING GATEWAY
+-- STEP 3 — THE COUNTING GATEWAY      ✅ APPLIED 2026-09-13
 -- =====================================================================
+-- migration `glossary_gateway_get_glossary_definition`. Privileges read back
+-- anon=false / authenticated=true. Verified in a rolled-back transaction on
+-- every path the client classifies:
+--     signed out          -> sign_in_required
+--     guest open 1, 2     -> used 1, 2 of 14, full definition, mistakes masked
+--     guest open 15       -> weekly_limit_reached
+--     academy member      -> not metered, full row INCLUDING common_mistakes
+-- It is inert until step 2 exists: the client only calls it once the browse
+-- view answers the probe.
 --
 -- ⚠️ The column list is WIDER than "the definition". Once step 5 revokes
 -- `glossary`, this RPC is the only way ANY of the detail fields can be read —
@@ -264,8 +285,16 @@ rollback;
 
 
 -- =====================================================================
--- STEP 4 — THE 7-DAY PURGE (the promise the consent dialog makes)
+-- STEP 4 — THE 7-DAY PURGE           ✅ APPLIED 2026-09-13 (cron jobid 3)
 -- =====================================================================
+-- Registered, active, 03:17 daily, clear of the two existing jobs. The exact
+-- DELETE was run against probe rows in a rolled-back transaction:
+--     8-day-old device key       -> DELETED
+--     6-day-old device key       -> kept (not purged early)
+--     9-day-old REAL account     -> kept (the is_anonymous guard holds)
+--     the deleted key's count    -> CASCADED away
+--     other users' counts        -> untouched
+-- That fourth line is what makes "along with your definition count" true.
 --
 -- "deleted automatically after 7 days, along with your definition count."
 -- The count goes with it through the CASCADE confirmed in step 1 — no extra
