@@ -27,14 +27,32 @@
 --                            glossary_browse_v 200 (120-char teaser)
 --                            get_glossary_definition -> used 1 of 14, full text
 --
--- ⚠️ RESIDUAL, MEASURED not estimated: `left(definition, 120)` cannot truncate a
--- definition that is already shorter than 120 characters. 413 terms outside the
--- two free topics are short enough to be shown in FULL inside the teaser
--- (plus the 390 free-study ones). That is 1.5% of the corpus, and it follows
--- from the teaser decision rather than from a fault. If it matters, cap on a
--- FRACTION instead of a constant, e.g.
---     left(g.definition, least(120, greatest(40, length(g.definition) / 2)))
--- which guarantees every row is truncated at the cost of a shorter preview.
+-- ✅ THE 413-ROW RESIDUAL IS CLOSED (owner go, migrations
+-- `glossary_teaser_fraction_cap` + `glossary_teaser_ellipsis`).
+--
+-- `left(definition, 120)` could not truncate a definition already shorter than
+-- 120 characters, so 413 terms outside the free topics were shown in FULL. A
+-- constant cap leaks everything below it; a proportional one cannot. Both views
+-- now use
+--     left(g.definition, least(120, length(g.definition) / 2)) || '…'
+-- The shortest definition in the corpus is 31 characters, so the shortest
+-- teaser is 15 (+1 for the ellipsis) — never empty.
+--
+-- PROVEN by asking whether the shown text EQUALS the real text, not by a length
+-- threshold (a length test is what produced a false alarm the first time —
+-- em dashes make Postgres `left()` and Python `len()` disagree):
+--     glossary_browse_v  0 full-text rows / 26,855 true prefixes / all ellipsed
+--     glossary_study_v   0 full-text rows outside the free topics
+--                        (the 390 free-study rows stay full, correctly unellipsed)
+--     members            unchanged, avg definition 331 chars, all fields
+--
+-- COST, measured: 5,598 rows (20.85%) — everything under 240 characters — now
+-- show a shorter preview. Rows at or above 240 are unchanged at 120. There is
+-- no formula that both fully previews a short definition and withholds it.
+--
+-- The ellipsis is not decoration: the shorter teaser FITS inside the row's
+-- 2-line clamp, so the client never adds its own "…" and the text just stopped
+-- mid-word, which reads as a rendering fault. Device-checked before and after.
 --
 -- Full reasoning: docs/APE_GLOSSARY_DEVICE_ID_BUILD_PLAN_2026_09_13.md
 -- Already applied, separately: the glossary_study_v content mask
