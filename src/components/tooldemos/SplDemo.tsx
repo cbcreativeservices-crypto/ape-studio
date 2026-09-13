@@ -35,11 +35,20 @@
  * geometry is static; only Views move.
  */
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
 import type { LayoutChangeEvent } from 'react-native';
 import Svg, { Defs, Line, LinearGradient, Path, Polyline, Rect, Stop } from 'react-native-svg';
 import { levelColor, LOUDNESS_STOPS, splColorForDba, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 import { colors, fonts, spacing } from '../../theme/tokens';
+// Shared demo contract: salmon = warning/limit, steel = neutral reference.
+import {
+  CALLOUT_SALMON as SALMON,
+  CALLOUT_STEEL as STEEL,
+  DemoCaption,
+  demoStyles,
+  LEADER,
+  SceneTabs,
+} from './chrome';
 
 /* ------------------------------------------------------------------ */
 /* Fixed, precomputed data (deterministic — computed once at module    */
@@ -67,10 +76,6 @@ function splFrac(db: number): number {
 function linToSpl(v: number): number {
   return SPL_MAX + 20 * Math.log10(Math.max(v, 1e-6));
 }
-
-const SALMON = '#ff8d7a'; // warning / limit accent (shared demo contract)
-const STEEL = '#9aa3ad'; // neutral-reference callout accent
-const LEADER = 'rgba(255,255,255,.35)';
 
 const VB_W = 300; // scope viewBox width
 const VB_H = 130; // scope viewBox height
@@ -491,7 +496,7 @@ function PeakRmsScene() {
     <View style={styles.sceneRoot}>
       <View style={styles.peakRow}>
         <View
-          style={[styles.vizPanel, styles.scope]}
+          style={[demoStyles.glass, styles.vizPanel, styles.scope]}
           onLayout={(e: LayoutChangeEvent) => setScopeW(e.nativeEvent.layout.width)}
         >
           <Svg width='100%' height='100%' viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio='none'>
@@ -640,7 +645,7 @@ function WeightingScene() {
         SAME SOURCE · SAME MOMENT · Δ {DBC_EXAMPLE - DBA_EXAMPLE} dB — TRAINING EXAMPLE VALUES
       </Text>
 
-      <View style={[styles.vizPanel, styles.curveBox]}>
+      <View style={[demoStyles.glass, styles.vizPanel, styles.curveBox]}>
         <Svg width='100%' height='100%' viewBox={`0 0 ${CURVE_W} ${CURVE_H}`} preserveAspectRatio='none'>
           {CURVE_GRID_XS.map((x) => (
             <Line key={x} x1={x} y1={0} x2={x} y2={CURVE_H} stroke={colors.hairlineDim} strokeWidth={1} />
@@ -725,7 +730,7 @@ function FastSlowScene() {
   return (
     <View style={styles.sceneRoot}>
       <View
-        style={[styles.vizPanel, styles.stair]}
+        style={[demoStyles.glass, styles.vizPanel, styles.stair]}
         onLayout={(e: LayoutChangeEvent) => setStairW(e.nativeEvent.layout.width)}
       >
         <Svg width='100%' height='100%' viewBox={`0 0 ${STAIR_W} ${STAIR_H}`} preserveAspectRatio='none'>
@@ -818,66 +823,33 @@ export function SplDemo() {
   const current = SCENES[scene] ?? SCENES[0];
 
   return (
-    <View style={styles.panel}>
-      <View style={styles.chipRow} accessibilityRole='tablist'>
-        {SCENES.map((s, i) => (
-          <Pressable
-            key={s.key}
-            onPress={() => setScene(i)}
-            accessibilityRole='tab'
-            accessibilityState={{ selected: i === scene }}
-            aria-selected={i === scene}
-            accessibilityLabel={s.title}
-            hitSlop={4}
-            style={[styles.chip, i === scene && styles.chipActive]}
-          >
-            <Text style={[styles.chipText, i === scene && styles.chipTextActive]}>{s.chip}</Text>
-          </Pressable>
-        ))}
-      </View>
+    <View style={[demoStyles.card, styles.panel]}>
+      <SceneTabs
+        tabs={SCENES.map((s) => ({ key: s.key, label: s.chip, a11yLabel: s.title }))}
+        active={scene}
+        onSelect={setScene}
+        hitSlop={4}
+        rowStyle={styles.chipRowGap}
+      />
       <Text style={styles.sceneTitle}>{current.title}</Text>
       <View style={styles.stage}>
         {scene === 0 ? <PeakRmsScene /> : scene === 1 ? <WeightingScene /> : <FastSlowScene />}
       </View>
-      <View style={styles.captionBlock}>
-        <Text style={styles.watchFor}>WATCH FOR — {current.watch}</Text>
-        <Text style={styles.caption}>{current.body}</Text>
-        <Text style={styles.fieldNote}>FIELD NOTE: {current.note}</Text>
-      </View>
+      <DemoCaption
+        style={styles.captionPad}
+        watchStyle={styles.watchLine}
+        watch={current.watch}
+        body={current.body}
+        note={current.note}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  panel: {
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#131316',
-    padding: spacing.md,
-    gap: spacing.sm,
-  },
+  panel: { padding: spacing.md, gap: spacing.sm },
 
-  chipRow: { flexDirection: 'row', gap: spacing.sm },
-  chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: colors.steelBorder,
-    backgroundColor: '#141414',
-  },
-  chipActive: {
-    borderColor: colors.amber,
-    backgroundColor: 'rgba(255,180,0,.10)',
-  },
-  chipText: {
-    fontFamily: fonts.oswaldSemiBold,
-    fontSize: 12,
-    letterSpacing: 1.2,
-    color: colors.textMuted,
-  },
-  chipTextActive: { color: colors.amber },
+  chipRowGap: { gap: spacing.sm },
 
   sceneTitle: {
     fontFamily: fonts.oswaldSemiBold,
@@ -889,14 +861,8 @@ const styles = StyleSheet.create({
   stage: {},
   sceneRoot: { gap: spacing.sm },
 
-  /* Recessed glass instrumentation frame (shared demo contract). */
-  vizPanel: {
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,.07)',
-    backgroundColor: '#0b0c0e',
-    overflow: 'hidden',
-  },
+  /* Extras on the shared recessed glass frame (composed with demoStyles.glass). */
+  vizPanel: { overflow: 'hidden' },
 
   /* Shared meter pieces */
   meterTrack: {
@@ -1141,26 +1107,7 @@ const styles = StyleSheet.create({
     color: colors.textMutedDeep,
   },
 
-  /* Captions */
-  captionBlock: { gap: 5, paddingTop: 2 },
-  watchFor: {
-    fontFamily: fonts.oswaldSemiBold,
-    fontSize: 11,
-    letterSpacing: 1.6,
-    lineHeight: 16,
-    color: colors.amber,
-  },
-  caption: {
-    fontFamily: fonts.barlowRegular,
-    fontSize: 13.5,
-    lineHeight: 19,
-    color: colors.textSecondary,
-  },
-  fieldNote: {
-    fontFamily: fonts.barlowRegular,
-    fontStyle: 'italic',
-    fontSize: 12.5,
-    lineHeight: 17,
-    color: colors.textMuted,
-  },
+  /* Extras on the shared caption stack (DemoCaption). */
+  captionPad: { paddingTop: 2 },
+  watchLine: { lineHeight: 16 },
 });

@@ -29,6 +29,18 @@ import Svg, { Defs, G, Line, LinearGradient, Polyline, Rect, Stop, Text as SvgTe
 import { WAVE_LEVEL_STOPS, rampColors } from '../../features/tools/levelColor';
 import { DragSlider } from '../../screens/lab/foundations/bits';
 import { colors, fonts, spacing } from '../../theme/tokens';
+// Shared callout language (demo design brief 2026-09-13):
+// amber = the thing being taught / correct · salmon = wrong / lost / warning ·
+// steel = neutral reference. Leader lines are thin white.
+import {
+  CALLOUT_AMBER,
+  CALLOUT_SALMON,
+  CALLOUT_STEEL,
+  DemoCaption,
+  demoStyles,
+  LEADER,
+  SceneTabs,
+} from './chrome';
 
 /* ------------------------------------------------------------------ */
 /* Fixed, precomputed waveform data (deterministic — computed once at   */
@@ -45,14 +57,6 @@ const DRIVE_GAIN = 2.1; // ≈ +6.4 dB — how hard the HOT toggle pushes the wa
 
 const SCOPE_H = 210; // scene-1 scope pixel height (brief: viz ≥ 190)
 const PANE_PX_H = 150; // scene-2 pane pixel height
-
-// Shared callout language (demo design brief 2026-09-13):
-// amber = the thing being taught / correct · salmon = wrong / lost / warning ·
-// steel = neutral reference. Leader lines are thin white.
-const CALLOUT_AMBER = colors.amberDeep; // #ffb400
-const CALLOUT_SALMON = '#ff8d7a';
-const CALLOUT_STEEL = '#9aa3ad';
-const LEADER = 'rgba(255,255,255,.35)';
 
 /** Deterministic three-partial mix, |value| < 0.75 — kept under the 0.8
  *  converter ceiling so the CLEAN wave genuinely fits beneath it (F25). */
@@ -312,7 +316,7 @@ function ClipScene() {
   return (
     <View style={styles.sceneRoot}>
       <View
-        style={styles.scope}
+        style={[demoStyles.glass, styles.scope]}
         onLayout={(e: LayoutChangeEvent) => setScopeW(e.nativeEvent.layout.width)}
       >
         <Svg width='100%' height='100%' viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio='none'>
@@ -548,7 +552,7 @@ function TransientScene() {
         <View style={styles.pane}>
           <Text style={styles.paneLabel}>TRANSIENT — DRUM HIT</Text>
           <View
-            style={styles.paneScope}
+            style={[demoStyles.glass, styles.paneScope]}
             onLayout={(e: LayoutChangeEvent) => setPaneW(e.nativeEvent.layout.width)}
           >
             <Svg width='100%' height='100%' viewBox={`0 0 ${PANE_W} ${PANE_H}`} preserveAspectRatio='none'>
@@ -587,7 +591,7 @@ function TransientScene() {
         </View>
         <View style={styles.pane}>
           <Text style={styles.paneLabel}>SUSTAINED — PAD</Text>
-          <View style={styles.paneScope}>
+          <View style={[demoStyles.glass, styles.paneScope]}>
             <Svg width='100%' height='100%' viewBox={`0 0 ${PANE_W} ${PANE_H}`} preserveAspectRatio='none'>
               <Line
                 x1={0}
@@ -630,7 +634,7 @@ function TransientScene() {
       {/* Compare strip — PEAK vs RMS, measured from the drawn traces. This is
           the whole lesson: near-identical peaks, wildly different energy. */}
       <View
-        style={styles.strip}
+        style={[demoStyles.glass, styles.strip]}
         onLayout={(e: LayoutChangeEvent) => setStripW(Math.round(e.nativeEvent.layout.width) - 20)}
       >
         {stripW > 0 ? (
@@ -699,7 +703,7 @@ function ZoomScene() {
 
       {/* TOP — fixed 1× reference; the dotted box is the slice shown below. */}
       <Text style={styles.zPaneLabel}>1× REFERENCE — does not move</Text>
-      <View style={styles.zPane} onLayout={(e: LayoutChangeEvent) => setW(Math.round(e.nativeEvent.layout.width))}>
+      <View style={[demoStyles.glass, styles.zPane]} onLayout={(e: LayoutChangeEvent) => setW(Math.round(e.nativeEvent.layout.width))}>
         {w > 0 ? (
           <Svg width={w} height={ZP_H}>
             <Defs>
@@ -729,7 +733,7 @@ function ZoomScene() {
       {/* BOTTOM — the zoom view. Magnifies the centre; at high zoom the loud
           colours run off-frame (only the band that fits shows). */}
       <Text style={styles.zPaneLabel}>ZOOM ×{zoom} VIEW</Text>
-      <View style={styles.zPane}>
+      <View style={[demoStyles.glass, styles.zPane]}>
         {w > 0 ? (
           <Svg width={w} height={ZP_H}>
             <Defs>
@@ -783,34 +787,21 @@ export function WaveformDemo() {
   const current = SCENES[scene] ?? SCENES[0];
 
   return (
-    <View style={styles.panel}>
-      <View style={styles.chipRow} accessibilityRole='tablist'>
-        {SCENES.map((s, i) => (
-          <Pressable
-            key={s.key}
-            onPress={() => setScene(i)}
-            accessibilityRole='tab'
-            accessibilityState={{ selected: i === scene }}
-            aria-selected={i === scene}
-            accessibilityLabel={s.title}
-            hitSlop={4}
-            style={[styles.chip, i === scene && styles.chipActive]}
-          >
-            <Text style={[styles.chipText, i === scene && styles.chipTextActive]}>{s.chip}</Text>
-          </Pressable>
-        ))}
-      </View>
+    <View style={[demoStyles.card, styles.panel]}>
+      <SceneTabs
+        tabs={SCENES.map((s) => ({ key: s.key, label: s.chip, a11yLabel: s.title }))}
+        active={scene}
+        onSelect={setScene}
+        hitSlop={4}
+        rowStyle={styles.chipRowGap}
+      />
       <Text style={styles.sceneTitle}>{current.title}</Text>
       <View style={styles.stage}>
         {scene === 0 ? <ClipScene /> : scene === 1 ? <TransientScene /> : <ZoomScene />}
       </View>
       {/* Structured caption — WATCH FOR (the visual moment) / body (why it
           matters on the job) / FIELD NOTE (the pro habit). */}
-      <View style={styles.captionBlock}>
-        <Text style={styles.watchFor}>WATCH FOR — {current.watch}</Text>
-        <Text style={styles.caption}>{current.body}</Text>
-        <Text style={styles.fieldNote}>FIELD NOTE: {current.note}</Text>
-      </View>
+      <DemoCaption style={styles.captionTight} watch={current.watch} body={current.body} note={current.note} />
     </View>
   );
 }
@@ -819,35 +810,11 @@ const styles = StyleSheet.create({
   panel: {
     // Auto height (design pass 2026-09-13): each scene sizes its own stage, and
     // the structured caption grows below — no more fixed 470 that clipped copy.
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#131316',
     padding: spacing.md,
     gap: spacing.sm,
   },
 
-  // Rack-key scene tabs — shared demo contract (design brief 2026-09-13).
-  chipRow: { flexDirection: 'row', gap: spacing.sm },
-  chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: colors.steelBorder,
-    backgroundColor: '#141414',
-  },
-  chipActive: {
-    borderColor: colors.amber,
-    backgroundColor: 'rgba(255,180,0,.10)',
-  },
-  chipText: {
-    fontFamily: fonts.oswaldSemiBold,
-    fontSize: 12,
-    letterSpacing: 1.2,
-    color: colors.textMuted,
-  },
-  chipTextActive: { color: colors.amber },
+  chipRowGap: { gap: spacing.sm },
 
   sceneTitle: {
     fontFamily: fonts.oswaldSemiBold,
@@ -859,15 +826,8 @@ const styles = StyleSheet.create({
   stage: {},
   sceneRoot: { gap: spacing.sm },
 
-  // Recessed glass instrumentation frame — shared demo contract.
-  scope: {
-    height: SCOPE_H,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,.07)',
-    backgroundColor: '#0b0c0e',
-    overflow: 'hidden',
-  },
+  // Extras on the shared recessed glass frame (composed with demoStyles.glass).
+  scope: { height: SCOPE_H, overflow: 'hidden' },
   cursor: {
     position: 'absolute',
     top: 0,
@@ -910,26 +870,12 @@ const styles = StyleSheet.create({
     letterSpacing: 1.2,
     color: colors.textSub,
   },
-  paneScope: {
-    height: PANE_PX_H,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,.07)',
-    backgroundColor: '#0b0c0e',
-    overflow: 'hidden',
-  },
+  paneScope: { height: PANE_PX_H, overflow: 'hidden' },
   flashGreen: { backgroundColor: colors.green },
   glowBlue: { backgroundColor: colors.blue, opacity: 0.06 },
 
   // Scene-2 compare strip — same recessed glass as the scopes.
-  strip: {
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,.07)',
-    backgroundColor: '#0b0c0e',
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-  },
+  strip: { paddingHorizontal: 10, paddingVertical: 8 },
 
   readoutRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   peakReadout: { fontFamily: fonts.mono, fontSize: 13, color: colors.amber },
@@ -937,14 +883,7 @@ const styles = StyleSheet.create({
 
   // Zoom scene — stacked 1× reference + zoom view + controls (owner 2026-08-05).
   zPaneLabel: { fontFamily: fonts.barlowCondensedSemiBold, fontSize: 12, letterSpacing: 1.1, color: colors.textSub },
-  zPane: {
-    height: ZP_H,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,.07)',
-    backgroundColor: '#0b0c0e',
-    overflow: 'hidden',
-  },
+  zPane: { height: ZP_H, overflow: 'hidden' },
   zoomRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   zoomRowLabel: { width: 44, fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textSub },
   zoomChip: {
@@ -960,25 +899,6 @@ const styles = StyleSheet.create({
   zoomChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, color: colors.textSub },
   zoomChipTextOn: { color: colors.cyanBright },
 
-  // Structured caption (shared demo contract 2026-09-13).
-  captionBlock: { gap: 4 },
-  watchFor: {
-    fontFamily: fonts.oswaldSemiBold,
-    fontSize: 11,
-    letterSpacing: 1.6,
-    color: colors.amber,
-  },
-  caption: {
-    fontFamily: fonts.barlowRegular,
-    fontSize: 13.5,
-    lineHeight: 19,
-    color: colors.textSecondary,
-  },
-  fieldNote: {
-    fontFamily: fonts.barlowRegular,
-    fontSize: 12.5,
-    lineHeight: 17,
-    fontStyle: 'italic',
-    color: colors.textMuted,
-  },
+  // Extras on the shared caption stack (DemoCaption).
+  captionTight: { gap: 4 },
 });

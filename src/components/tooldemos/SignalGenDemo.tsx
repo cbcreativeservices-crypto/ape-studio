@@ -24,7 +24,19 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Defs, Line, LinearGradient, Path, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { levelColor, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
-import { colors, fonts, radius } from '../../theme/tokens';
+import { colors, fonts } from '../../theme/tokens';
+// In-SVG callout palette (demo contract): amber = the thing being taught,
+// salmon = warning/limit, steel = neutral reference.
+import {
+  CALLOUT_AMBER as CALL_AMBER,
+  CALLOUT_SALMON as CALL_SALMON,
+  CALLOUT_STEEL as CALL_STEEL,
+  DemoCaption,
+  demoStyles,
+  LEADER,
+  PINK_NOISE,
+  SceneTabs,
+} from './chrome';
 
 type SceneKey = 'shapes' | 'sweep' | 'levels';
 type WaveKey = 'sine' | 'white' | 'pink';
@@ -54,7 +66,7 @@ const WAVES: { key: WaveKey; label: string }[] = [
 const WAVE_COLOR: Record<WaveKey, string> = {
   sine: colors.blue,
   white: '#f2f2f5',
-  pink: '#ff8fae', // pink noise drawn pink — no token exists for this hue
+  pink: PINK_NOISE, // pink noise drawn pink — shared demo token
 };
 // Active-key background tints (~10% of the wave colour) for the sub-toggle.
 const WAVE_TINT: Record<WaveKey, string> = {
@@ -62,13 +74,6 @@ const WAVE_TINT: Record<WaveKey, string> = {
   white: 'rgba(242,242,245,0.08)',
   pink: 'rgba(255,143,174,0.10)',
 };
-
-// In-SVG callout palette (demo contract): amber = the thing being taught,
-// salmon = warning/limit, steel = neutral reference.
-const CALL_AMBER = '#ffb400';
-const CALL_SALMON = '#ff8d7a';
-const CALL_STEEL = '#9aa3ad';
-const LEADER = 'rgba(255,255,255,0.35)';
 
 // ---- Structured captions (WATCH FOR / body / FIELD NOTE) ------------------
 type SceneCaption = { watch: string; body: string; note?: string };
@@ -340,22 +345,13 @@ export function SignalGenDemo() {
   const crestAmp = CREST_H * 0.36;
 
   return (
-    <View style={styles.root}>
-      <View style={styles.chipRow} accessibilityRole="tablist">
-        {SCENES.map(({ key, label }) => (
-          <Pressable
-            key={key}
-            onPress={() => setScene(key)}
-            accessibilityRole="tab"
-            accessibilityLabel={`${label} scene`}
-            accessibilityState={{ selected: scene === key }}
-            aria-selected={scene === key}
-            style={[styles.chip, scene === key && styles.chipActive]}
-          >
-            <Text style={[styles.chipText, scene === key && styles.chipTextActive]}>{label}</Text>
-          </Pressable>
-        ))}
-      </View>
+    <View style={[demoStyles.card, styles.root]}>
+      <SceneTabs
+        tabs={SCENES.map(({ key, label }) => ({ key, label, a11yLabel: `${label} scene` }))}
+        active={SCENES.findIndex(({ key }) => key === scene)}
+        onSelect={(i) => setScene(SCENES[i].key)}
+        rowStyle={styles.chipRowWrap}
+      />
 
       <View style={styles.viz} onLayout={(e) => setVizW(Math.round(e.nativeEvent.layout.width))}>
         {scene === 'shapes' ? (
@@ -390,7 +386,7 @@ export function SignalGenDemo() {
               {/* Time domain — amplitude vs time. Metric marks: 0 line + ±½ FS. */}
               <View style={styles.pane}>
                 <Text style={styles.paneLabel}>TIME · AMPLITUDE</Text>
-                <View style={[styles.paneViz, { height: PANE_VIZ_H }]}>
+                <View style={[demoStyles.glass, styles.paneViz, { height: PANE_VIZ_H }]}>
                   <Svg width={svgW} height={PANE_VIZ_H} style={StyleSheet.absoluteFill}>
                     {/* ±½ full-scale guide marks (dashed) + solid zero line. */}
                     <Line x1={0} y1={PANE_VIZ_H * 0.18} x2={svgW} y2={PANE_VIZ_H * 0.18} stroke={GRID_C} strokeWidth={1} strokeDasharray="3 5" />
@@ -459,7 +455,7 @@ export function SignalGenDemo() {
                   the top → quiet = blue toward the floor). */}
               <View style={styles.pane}>
                 <Text style={styles.paneLabel}>SPECTRUM · LEVEL × FREQ</Text>
-                <View style={[styles.paneViz, { height: PANE_VIZ_H }]}>
+                <View style={[demoStyles.glass, styles.paneViz, { height: PANE_VIZ_H }]}>
                   <Animated.View style={{ opacity: specOpacity }}>
                     <Svg width={svgW} height={PANE_VIZ_H}>
                       <Defs>
@@ -564,7 +560,7 @@ export function SignalGenDemo() {
           <>
             <Text style={styles.introText}>{SWEEP_INTRO}</Text>
             <Text style={styles.paneLabel}>SWEPT SINE — LOW TO HIGH</Text>
-            <View style={[styles.paneViz, { height: SWEEP_VIZ_H }]}>
+            <View style={[demoStyles.glass, styles.paneViz, { height: SWEEP_VIZ_H }]}>
               <Svg width={chirpW} height={SWEEP_VIZ_H}>
                 <Defs>
                   {/* MIDI amplitude ramp about the zero line (item 2). */}
@@ -617,7 +613,7 @@ export function SignalGenDemo() {
           <>
             <Text style={styles.introText}>{LEVELS_INTRO}</Text>
             <Text style={styles.paneLabel}>OUTPUT LEVEL — dBFS (DIGITAL, NOT ROOM LOUDNESS)</Text>
-            <View style={[styles.paneViz, styles.levelsWrap]}>
+            <View style={[demoStyles.glass, styles.paneViz, styles.levelsWrap]}>
               <Svg width={w - 2} height={LEVELS_H}>
                 <Line x1={60} y1={DB_TOP} x2={60} y2={DB_BOTTOM} stroke={colors.steelBorder} strokeWidth={2} />
                 {DB_TICKS.map((db) => (
@@ -676,7 +672,7 @@ export function SignalGenDemo() {
             <View style={styles.paneRow}>
               <View style={styles.pane}>
                 <Text style={styles.crestTitleSteel}>MUSIC — PEAKS, THEN RESTS</Text>
-                <View style={[styles.paneViz, { height: CREST_H }]}>
+                <View style={[demoStyles.glass, styles.paneViz, { height: CREST_H }]}>
                   <Svg width={svgW} height={CREST_H}>
                     <Defs>
                       <LinearGradient id="crestAmpA" x1={0} y1={CREST_H / 2 - crestAmp} x2={0} y2={CREST_H / 2 + crestAmp} gradientUnits="userSpaceOnUse">
@@ -697,7 +693,7 @@ export function SignalGenDemo() {
               </View>
               <View style={styles.pane}>
                 <Text style={styles.crestTitleSalmon}>TEST TONE — NEVER PAUSES</Text>
-                <View style={[styles.paneViz, { height: CREST_H }]}>
+                <View style={[demoStyles.glass, styles.paneViz, { height: CREST_H }]}>
                   <Svg width={svgW} height={CREST_H}>
                     <Defs>
                       <LinearGradient id="crestAmpB" x1={0} y1={CREST_H / 2 - crestAmp} x2={0} y2={CREST_H / 2 + crestAmp} gradientUnits="userSpaceOnUse">
@@ -721,13 +717,7 @@ export function SignalGenDemo() {
         ) : null}
       </View>
 
-      <View style={styles.captionBox}>
-        <Text style={styles.watchFor}>WATCH FOR — {cap.watch}</Text>
-        <Text style={styles.caption}>{cap.body}</Text>
-        {cap.note ? (
-          <Text style={styles.fieldNote}>FIELD NOTE: {cap.note}</Text>
-        ) : null}
-      </View>
+      <DemoCaption style={styles.captionBox} watch={cap.watch} body={cap.body} note={cap.note} />
     </View>
   );
 }
@@ -738,26 +728,11 @@ const styles = StyleSheet.create({
     // above-display explanations must grow the panel, not overflow it. Hosted in
     // a ScrollView, so growth is fine.
     minHeight: PANEL_H,
-    borderRadius: radius.card,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#131316',
     padding: 12,
   },
 
-  // Rack-key scene tabs (shared demo contract 2026-09-13).
-  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: colors.steelBorder,
-    backgroundColor: '#141414',
-  },
-  chipActive: { borderColor: colors.amber, backgroundColor: 'rgba(255,180,0,0.10)' },
-  chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textMuted },
-  chipTextActive: { color: colors.amber },
+  // Rack-key scene tabs wrap in this demo, at a slightly wider 8 gap.
+  chipRowWrap: { flexWrap: 'wrap', gap: 8 },
 
   viz: { marginTop: 10 },
 
@@ -780,14 +755,8 @@ const styles = StyleSheet.create({
   paneRow: { flexDirection: 'row', gap: 10, marginTop: 6 },
   pane: { flex: 1 },
   paneLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.6, color: colors.amberLabel, marginBottom: 4 },
-  // Recessed glass instrumentation panel (shared demo contract).
-  paneViz: {
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.07)',
-    borderRadius: 10,
-    backgroundColor: '#0b0c0e',
-    overflow: 'hidden',
-  },
+  // Extras on the shared recessed glass panel (composed with demoStyles.glass).
+  paneViz: { overflow: 'hidden' },
 
   metaRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', gap: 8, marginTop: 6 },
   metaMono: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub },
@@ -862,9 +831,6 @@ const styles = StyleSheet.create({
   crestTitleSalmon: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.2, color: CALL_SALMON, marginBottom: 4 },
   crestNote: { fontFamily: fonts.barlowCondensedMedium, fontSize: 12, lineHeight: 15, color: colors.textSub, marginTop: 6 },
 
-  // Structured caption (WATCH FOR / body / FIELD NOTE) — shared contract.
+  // Extras on the shared caption stack (DemoCaption).
   captionBox: { minHeight: 60, marginTop: 12, gap: 4 },
-  watchFor: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.6, color: colors.amber },
-  caption: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
-  fieldNote: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 12.5, lineHeight: 17, color: colors.textMuted },
 });

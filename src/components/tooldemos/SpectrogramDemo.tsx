@@ -37,11 +37,23 @@
  */
 import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
-import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
 import type { LayoutChangeEvent } from 'react-native';
 import Svg, { Defs, Line, LinearGradient, Path, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { levelColor } from '../../features/tools/levelColor';
 import { colors, fonts } from '../../theme/tokens';
+// Callout palette (shared demo contract): amber = taught/correct,
+// salmon = problem/limit, steel = neutral reference.
+import {
+  CALLOUT_AMBER as CALL_AMBER,
+  CALLOUT_SALMON as CALL_SALMON,
+  CALLOUT_STEEL as CALL_STEEL,
+  DemoCaption,
+  DemoPanel,
+  demoStyles,
+  LEADER,
+  SceneTabs,
+} from './chrome';
 
 /* ------------------------------------------------------------------ */
 /* Fixed, deterministic scene data (computed once at module load)      */
@@ -59,12 +71,6 @@ function yForFreq(f: number): number {
 
 /** MIDI amplitude colour for a 0..1 loudness (1 = full scale/red, 0 = blue). */
 const amp = (loud: number) => levelColor(loud);
-
-/** Callout palette (shared demo contract): amber = taught/correct,
- *  salmon = problem/limit, steel = neutral reference. */
-const CALL_AMBER = '#ffb400';
-const CALL_SALMON = '#ff8d7a';
-const CALL_STEEL = '#9aa3ad';
 
 /** Voiced speech syllables (fractions of the time axis) with silent gaps.
  *  The 0.95→1→0.03 wrap is itself a between-words gap, so the seam is honest. */
@@ -211,7 +217,7 @@ interface CalloutProps {
 function Callout({ lx1, ly1, lx2, ly2, tx, ty, label, color, anchor }: CalloutProps) {
   return (
     <>
-      <Line x1={px(lx1)} y1={py(ly1)} x2={px(lx2)} y2={py(ly2)} stroke='rgba(255,255,255,0.35)' strokeWidth={1} />
+      <Line x1={px(lx1)} y1={py(ly1)} x2={px(lx2)} y2={py(ly2)} stroke={LEADER} strokeWidth={1} />
       <SvgText
         x={px(tx)}
         y={py(ty)}
@@ -250,7 +256,7 @@ function ScrollPlot({ scroll, height, strip, overlay, children }: ScrollPlotProp
   const onLayout = (e: LayoutChangeEvent) => setW(e.nativeEvent.layout.width);
   const translateX = scroll.interpolate({ inputRange: [0, 1], outputRange: [0, -Math.max(1, w)] });
   return (
-    <View style={[styles.plotFrame, { height }]}>
+    <DemoPanel style={[styles.plotFrame, { height }]}>
       <View style={styles.plot} onLayout={onLayout}>
         {w > 0 ? (
           <Animated.View style={[styles.scrollStrip, { width: w * 2, transform: [{ translateX }] }]}>
@@ -271,7 +277,7 @@ function ScrollPlot({ scroll, height, strip, overlay, children }: ScrollPlotProp
         <View pointerEvents='none' style={styles.nowEdge} />
         <Text style={styles.nowLabel}>NOW</Text>
       </View>
-    </View>
+    </DemoPanel>
   );
 }
 
@@ -737,25 +743,13 @@ export function SpectrogramDemo() {
   const current = SCENES[scene] ?? SCENES[0];
 
   return (
-    <View style={styles.panel}>
-      <View style={styles.chipRow} accessibilityRole='tablist'>
-        {SCENES.map((s, i) => {
-          const active = i === scene;
-          return (
-            <Pressable
-              key={s.key}
-              accessibilityRole='tab'
-              accessibilityState={{ selected: active }}
-              aria-selected={active}
-              accessibilityLabel={`Show ${s.a11y} scene`}
-              onPress={() => setScene(i)}
-              style={[styles.chip, active && styles.chipActive]}
-            >
-              <Text style={[styles.chipText, active && styles.chipTextActive]}>{s.label}</Text>
-            </Pressable>
-          );
-        })}
-      </View>
+    <View style={[demoStyles.card, styles.panel]}>
+      <SceneTabs
+        tabs={SCENES.map((s) => ({ key: s.key, label: s.label, a11yLabel: `Show ${s.a11y} scene` }))}
+        active={scene}
+        onSelect={setScene}
+        rowStyle={styles.chipRowWrap}
+      />
 
       {scene === 0 ? (
         <SpeechMusicScene scroll={scroll} />
@@ -772,38 +766,23 @@ export function SpectrogramDemo() {
 
       <AmpLegend />
 
-      <View style={styles.captionBlock}>
-        <Text style={styles.watchFor}>WATCH FOR — {current.watch}</Text>
-        <Text style={styles.captionBody}>{current.body}</Text>
-        <Text style={styles.fieldNote}>FIELD NOTE — {current.note}</Text>
-      </View>
+      <DemoCaption
+        style={styles.captionSpace}
+        watch={current.watch}
+        body={current.body}
+        note={current.note}
+        notePrefix='FIELD NOTE — '
+        noteStyle={styles.fieldNoteTall}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  panel: {
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#131316',
-    padding: 12,
-    gap: 8,
-  },
+  panel: { padding: 12, gap: 8 },
 
-  // Scene tabs — shared rack-key spec (demo design brief 2026-09-13).
-  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 2 },
-  chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: colors.steelBorder,
-    backgroundColor: '#141414',
-  },
-  chipActive: { borderColor: colors.amber, backgroundColor: 'rgba(255,180,0,0.10)' },
-  chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textMuted },
-  chipTextActive: { color: colors.amber },
+  // Rack-key scene tabs wrap at narrow widths in this demo.
+  chipRowWrap: { flexWrap: 'wrap', marginBottom: 2 },
 
   headRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', gap: 8 },
   plotLabel: {
@@ -821,14 +800,8 @@ const styles = StyleSheet.create({
     color: colors.textSub,
   },
 
-  // Recessed glass instrumentation frame around each plot.
-  plotFrame: {
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.07)',
-    backgroundColor: '#0b0c0e',
-    padding: 5,
-  },
+  // Extras on the shared recessed glass frame (DemoPanel) around each plot.
+  plotFrame: { padding: 5 },
   plot: {
     flex: 1,
     borderRadius: 6,
@@ -900,15 +873,7 @@ const styles = StyleSheet.create({
   legendCap: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: colors.textSub },
   legendBar: { flex: 1, height: 8, borderRadius: 2, overflow: 'hidden' },
 
-  // Structured caption: WATCH FOR / body / FIELD NOTE.
-  captionBlock: { gap: 5, marginTop: 2 },
-  watchFor: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.6, color: colors.amber },
-  captionBody: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
-  fieldNote: {
-    fontFamily: fonts.barlowRegular,
-    fontStyle: 'italic',
-    fontSize: 12.5,
-    lineHeight: 18,
-    color: colors.textMuted,
-  },
+  // Extras on the shared caption stack (DemoCaption).
+  captionSpace: { marginTop: 2 },
+  fieldNoteTall: { lineHeight: 18 },
 });

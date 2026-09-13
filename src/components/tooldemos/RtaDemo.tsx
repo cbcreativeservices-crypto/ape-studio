@@ -31,6 +31,7 @@ import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-nativ
 import Svg, { Circle, Defs, Line, LinearGradient, Path, Polyline, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { levelColor } from '../../features/tools/levelColor';
 import { colors, fonts } from '../../theme/tokens';
+import { CALLOUT_STEEL, DemoCaption, DemoPanel, demoStyles, LEADER, PINK_NOISE, SceneTabs } from './chrome';
 
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
@@ -165,14 +166,9 @@ const SM_PT = { x: traceX(34), y: SMOOTH_TRACE[34] };
 /** Amplitude-ramp gradient stops (levelColor 0 = silence blue → 1 = loud red). */
 const RAMP_SAMPLES = [0, 0.15, 0.3, 0.45, 0.6, 0.75, 0.9, 1] as const;
 
-/* Callout palette (shared demo brief): amber = the thing being taught,
- * salmon = warning/limit, steel = neutral reference. */
-const CALLOUT_STEEL = '#9aa3ad';
-const LEADER = 'rgba(255,255,255,.35)';
-
 /* Source hues (scene 1 contrasts two SOURCES — the allowed two-hue case;
- * pink matches SignalGenDemo's pink-noise hue). */
-const PINK_C = '#ff8fae';
+ * pink is the shared pink-noise token, same as SignalGenDemo). */
+const PINK_C = PINK_NOISE;
 const WHITE_C = '#f2f2f5';
 
 const SCENES = [
@@ -359,9 +355,9 @@ function MorphBars({
 /** Recessed glass instrument panel around a stack of same-viewBox SVG layers. */
 function PlotPanel({ children }: { children: React.ReactNode }) {
   return (
-    <View style={styles.panel}>
+    <DemoPanel style={styles.panel}>
       <View style={styles.plotStack}>{children}</View>
-    </View>
+    </DemoPanel>
   );
 }
 
@@ -378,13 +374,7 @@ function LegendRow({ dot, lead, leadColor, rest }: { dot: string; lead: string; 
 }
 
 function Caption({ watch, body, note }: { watch: string; body: string; note: string }) {
-  return (
-    <View style={styles.captionBlock}>
-      <Text style={styles.watchFor}>WATCH FOR — {watch}</Text>
-      <Text style={styles.captionBody}>{body}</Text>
-      <Text style={styles.fieldNote}>FIELD NOTE: {note}</Text>
-    </View>
-  );
+  return <DemoCaption watch={watch} body={body} note={note} noteStyle={styles.fieldNoteTall} />;
 }
 
 /* ------------------------------------------------------------------ */
@@ -615,22 +605,14 @@ function SceneMic() {
 export function RtaDemo() {
   const [scene, setScene] = useState(0);
   return (
-    <View style={styles.root}>
-      <View style={styles.chipRow} accessibilityRole='tablist'>
-        {SCENES.map((s, i) => (
-          <Pressable hitSlop={8}
-            key={s.key}
-            accessibilityRole='tab'
-            accessibilityLabel={`Show ${s.label} scene`}
-            accessibilityState={{ selected: scene === i }}
-            aria-selected={scene === i}
-            onPress={() => setScene(i)}
-            style={[styles.chip, scene === i && styles.chipActive]}
-          >
-            <Text style={[styles.chipText, scene === i && styles.chipTextActive]}>{s.label}</Text>
-          </Pressable>
-        ))}
-      </View>
+    <View style={[demoStyles.card, styles.root]}>
+      <SceneTabs
+        tabs={SCENES.map((s) => ({ key: s.key, label: s.label, a11yLabel: `Show ${s.label} scene` }))}
+        active={scene}
+        onSelect={setScene}
+        hitSlop={8}
+        rowStyle={styles.chipRowWrap}
+      />
       {scene === 0 ? <SceneNoise /> : scene === 1 ? <SceneSmoothing /> : <SceneMic />}
       <Caption watch={SCENES[scene].watch} body={SCENES[scene].body} note={SCENES[scene].note} />
     </View>
@@ -640,30 +622,10 @@ export function RtaDemo() {
 /* ------------------------------------------------------------------ */
 
 const styles = StyleSheet.create({
-  root: {
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#131316',
-    padding: 12,
-    gap: 10,
-  },
+  root: { padding: 12, gap: 10 },
 
-  // Rack-key scene tabs (shared demo visual contract, 2026-09-13).
-  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  chip: {
-    paddingVertical: 7,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: colors.steelBorder,
-    backgroundColor: '#141414',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  chipActive: { borderColor: colors.amber, backgroundColor: 'rgba(255,180,0,.10)' },
-  chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textMuted },
-  chipTextActive: { color: colors.amber },
+  // Rack-key scene tabs wrap at narrow widths in this demo.
+  chipRowWrap: { flexWrap: 'wrap' },
 
   sceneArea: { gap: 8 },
   innerRow: { flexDirection: 'row', alignItems: 'center', gap: 6, height: 26 },
@@ -683,14 +645,8 @@ const styles = StyleSheet.create({
   innerChipTextActive: { color: colors.amber },
   readout: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSubAlt },
 
-  // Recessed glass instrument panel (shared demo visual contract).
-  panel: {
-    backgroundColor: '#0b0c0e',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,.07)',
-    borderRadius: 10,
-    paddingVertical: 8,
-  },
+  // Extras on the shared recessed glass panel (DemoPanel).
+  panel: { paddingVertical: 8 },
   plotStack: { height: CHART_H },
 
   legendJagged: { fontFamily: fonts.mono, fontSize: 12, color: colors.blue },
@@ -718,19 +674,6 @@ const styles = StyleSheet.create({
   rampLegendRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 },
   rampLegendText: { fontFamily: fonts.mono, fontSize: 12, color: colors.textMuted },
 
-  captionBlock: { gap: 5 },
-  watchFor: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.6, color: colors.amber },
-  captionBody: {
-    fontFamily: fonts.barlowRegular,
-    fontSize: 13.5,
-    lineHeight: 19,
-    color: colors.textSecondary,
-  },
-  fieldNote: {
-    fontFamily: fonts.barlowRegular,
-    fontStyle: 'italic',
-    fontSize: 12.5,
-    lineHeight: 18,
-    color: colors.textMuted,
-  },
+  // This demo's field note runs one point looser than the shared 17.
+  fieldNoteTall: { lineHeight: 18 },
 });

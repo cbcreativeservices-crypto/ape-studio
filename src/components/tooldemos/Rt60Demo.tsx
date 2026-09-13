@@ -27,16 +27,21 @@
  * SVG itself is static geometry.
  */
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Dimensions, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Dimensions, Easing, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Defs, Line, LinearGradient, Path, Polyline, Stop, Text as SvgText } from 'react-native-svg';
 import { LOUDNESS_STOPS } from '../../features/tools/levelColor';
 import { colors, fonts } from '../../theme/tokens';
-
 // Callout semantics (shared demo contract): amber = the thing being taught,
 // salmon = warning/limit, steel = neutral reference.
-const SALMON = '#ff8d7a';
-const STEEL = '#9aa3ad';
-const LEADER = 'rgba(255,255,255,0.35)';
+import {
+  CALLOUT_SALMON as SALMON,
+  CALLOUT_STEEL as STEEL,
+  DemoCaption,
+  DemoPanel,
+  demoStyles,
+  LEADER,
+  SceneTabs,
+} from './chrome';
 
 // ————————————————————————————————————————————————————————— plot geometry ——
 // Adaptive width so the recessed frame never overflows narrow phones
@@ -440,73 +445,34 @@ export function Rt60Demo() {
   const active = SCENES[scene] ?? SCENES[0];
 
   return (
-    <View style={styles.panel}>
-      <View style={styles.chipRow} accessibilityRole='tablist'>
-        {SCENES.map((s, i) => {
-          const on = i === scene;
-          return (
-            <Pressable
-              key={s.chip}
-              onPress={() => setScene(i)}
-              accessibilityRole='tab'
-              accessibilityLabel={`Show scene: ${s.title}`}
-              accessibilityState={{ selected: on }}
-              aria-selected={on}
-              hitSlop={4}
-              style={[styles.chip, on && styles.chipOn]}
-            >
-              <Text style={[styles.chipText, on && styles.chipTextOn]}>{s.chip}</Text>
-            </Pressable>
-          );
-        })}
-      </View>
+    <View style={[demoStyles.card, styles.panel]}>
+      <SceneTabs
+        tabs={SCENES.map((s) => ({ key: s.chip, label: s.chip, a11yLabel: `Show scene: ${s.title}` }))}
+        active={scene}
+        onSelect={setScene}
+        hitSlop={4}
+      />
       <Text style={styles.sceneTitle}>{active.title}</Text>
-      <View style={styles.vizFrame}>
+      <DemoPanel style={styles.vizFrame}>
         {scene === 0 ? <SceneDecay /> : scene === 1 ? <SceneCompare /> : <SceneNoise />}
-      </View>
+      </DemoPanel>
       {scene === 0 ? <StripFitWindows /> : scene === 1 ? <StripHear /> : <StripReject />}
-      <View style={styles.captionBlock}>
-        <Text style={styles.watchFor}>
-          WATCH FOR — <Text style={styles.watchForBody}>{active.watch}</Text>
-        </Text>
-        <Text style={styles.caption}>{active.body}</Text>
-        <Text style={styles.fieldNote}>{active.note}</Text>
-      </View>
+      {/* Scene copy carries its own "FIELD NOTE:" prefix in this demo. */}
+      <DemoCaption
+        watch={<Text style={styles.watchForBody}>{active.watch}</Text>}
+        body={active.body}
+        note={active.note}
+        notePrefix=''
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  panel: {
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#131316',
-    padding: 10,
-    gap: 10,
-  },
-  chipRow: { flexDirection: 'row', gap: 6 },
-  chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: colors.steelBorder,
-    backgroundColor: '#141414',
-  },
-  chipOn: { borderColor: colors.amber, backgroundColor: 'rgba(255,180,0,.10)' },
-  chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textMuted },
-  chipTextOn: { color: colors.amber },
+  panel: { padding: 10, gap: 10 },
   sceneTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.8, color: colors.amberLabel },
-  // Recessed glass instrumentation frame (shared demo contract).
-  vizFrame: {
-    alignItems: 'center',
-    paddingVertical: 8,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,.07)',
-    backgroundColor: '#0b0c0e',
-  },
+  // Extras on the shared recessed glass frame (DemoPanel).
+  vizFrame: { alignItems: 'center', paddingVertical: 8 },
   viz: { width: VIZ_W, height: VIZ_H },
   dot: { position: 'absolute', left: -5, top: -5, width: 10, height: 10, borderRadius: 5 },
   rtChip: {
@@ -574,10 +540,6 @@ const styles = StyleSheet.create({
   ledgerRow: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', gap: 10 },
   ledgerLabel: { flexShrink: 1, fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub },
   ledgerValue: { fontFamily: fonts.mono, fontSize: 13, color: colors.textSecondary },
-  // Structured caption.
-  captionBlock: { gap: 5 },
-  watchFor: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.6, color: colors.amber },
+  // This demo's WATCH FOR body rides in Barlow (not the Oswald eyebrow).
   watchForBody: { fontFamily: fonts.barlowMedium, fontSize: 12.5, letterSpacing: 0.2, color: colors.textSecondary },
-  caption: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
-  fieldNote: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 12.5, lineHeight: 17, color: colors.textMuted },
 });

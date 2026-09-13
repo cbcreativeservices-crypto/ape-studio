@@ -24,11 +24,13 @@
  * geometry is static per scripted preset.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
 import type { LayoutChangeEvent } from 'react-native';
 import Svg, { Circle, Defs, Line, LinearGradient, Path, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { levelColor, MIDLINE_BLUE } from '../../features/tools/levelColor';
 import { colors, fonts } from '../../theme/tokens';
+// Shared demo-contract annotation colours: salmon = incorrect / warning.
+import { CALLOUT_SALMON as SALMON, DemoCaption, DemoPanel, demoStyles, LEADER, SceneTabs } from './chrome';
 
 const PANEL_PAD = 12;
 const VIZ_PAD = 10;
@@ -36,9 +38,6 @@ const PAD_X = 16;
 const PULSE_REST = 0.25;
 const SWEEP_HOLD_MS = 400;
 
-/** Shared demo-contract annotation colours. */
-const SALMON = '#ff8d7a'; // incorrect / warning
-const LEADER = 'rgba(255,255,255,.35)'; // callout leader lines
 const GUIDE = 'rgba(255,255,255,.18)'; // dashed construction guides
 
 /* ------------------------------------------------------------------ */
@@ -860,84 +859,32 @@ export function HzCounterDemo() {
   const active = SCENES[scene];
 
   return (
-    <View style={styles.root} onLayout={onLayout}>
-      <View style={styles.chipRow} accessibilityRole="tablist">
-        {SCENES.map((s, i) => {
-          const isActive = i === scene;
-          return (
-            <Pressable
-              key={s.key}
-              onPress={() => setScene(i)}
-              accessibilityRole="tab"
-              accessibilityLabel={`Scene: ${s.label}`}
-              accessibilityState={{ selected: isActive }}
-              aria-selected={isActive}
-              style={[styles.chip, isActive && styles.chipActive]}
-            >
-              <Text style={[styles.chipText, isActive && styles.chipTextActive]}>{s.label}</Text>
-            </Pressable>
-          );
-        })}
-      </View>
+    <View style={[demoStyles.card, styles.root]} onLayout={onLayout}>
+      <SceneTabs
+        tabs={SCENES.map((s) => ({ key: s.key, label: s.label, a11yLabel: `Scene: ${s.label}` }))}
+        active={scene}
+        onSelect={setScene}
+      />
 
-      <View style={styles.viz}>
+      <DemoPanel style={styles.viz}>
         {scene === 0 ? <TapsScene vizW={vizW} /> : null}
         {scene === 1 ? <StabilityScene vizW={vizW} /> : null}
         {scene === 2 ? <TunerScene vizW={vizW} /> : null}
-      </View>
+      </DemoPanel>
 
-      <View style={styles.captionBlock}>
-        <Text style={styles.watchFor}>WATCH FOR — {active.watch}</Text>
-        <Text style={styles.captionBody}>{active.body}</Text>
-        <Text style={styles.fieldNote}>FIELD NOTE: {active.note}</Text>
-      </View>
+      <DemoCaption style={styles.captionSpace} watch={active.watch} body={active.body} note={active.note} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: {
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#26262c',
-    backgroundColor: '#131316',
-    padding: PANEL_PAD,
-  },
-  chipRow: { flexDirection: 'row', gap: 6 },
-  chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: colors.steelBorder,
-    backgroundColor: '#141414',
-  },
-  chipActive: { borderColor: colors.amber, backgroundColor: 'rgba(255,180,0,.10)' },
-  chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textMuted },
-  chipTextActive: { color: colors.amber },
+  root: { padding: PANEL_PAD },
 
-  /* Recessed glass instrument panel — the viz is the hero. */
-  viz: {
-    marginTop: 10,
-    minHeight: 300,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,.07)',
-    backgroundColor: '#0b0c0e',
-    padding: VIZ_PAD,
-  },
+  /* Extras on the shared recessed glass panel (DemoPanel) — the viz is the hero. */
+  viz: { marginTop: 10, minHeight: 300, padding: VIZ_PAD },
 
-  /* Structured caption */
-  captionBlock: { marginTop: 10, gap: 5 },
-  watchFor: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.6, color: colors.amber },
-  captionBody: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
-  fieldNote: {
-    fontFamily: fonts.barlowRegular,
-    fontStyle: 'italic',
-    fontSize: 12.5,
-    lineHeight: 17,
-    color: colors.textMuted,
-  },
+  /* Extras on the shared caption stack (DemoCaption). */
+  captionSpace: { marginTop: 10 },
 
   /* Shared stage bits */
   stage: { position: 'relative' },
