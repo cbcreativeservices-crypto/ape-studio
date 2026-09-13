@@ -11,16 +11,20 @@
 -- the whole file in one go — STEP 5 must not run until the client build with
 -- the gateway is actually on phones.
 --
--- STATUS 2026-09-13, after the owner said "you run steps 1-4":
---   STEP 0  Enable anonymous sign-ins   ❌ NOT DONE — probed the live auth API,
---                                          it answers 422 anonymous_provider_disabled.
---                                          This is the ONLY thing blocking step 2.
+-- STATUS 2026-09-13 — THE GATEWAY IS LIVE. Steps 0-4 are done.
+--   STEP 0  Enable anonymous sign-ins   ✅ owner, confirmed by probe: signup
+--                                          returns 200 with is_anonymous=true
 --   STEP 1  Ground truth                ✅ PASSED (all four)
---   STEP 2  Create the browse view      ⏸ HELD — see below. Needs step 0 first.
+--   STEP 2  Create the browse view      ✅ APPLIED — the feature is now live
 --   STEP 3  Counting gateway RPC        ✅ APPLIED + verified on all four paths
 --   STEP 4  7-day purge                 ✅ APPLIED (cron jobid 3) + cascade proven
 --   STEP 5  The revokes                 ⏸ waits for a build on phones
 --   STEP 6  Prove the revokes took      ⏸
+--
+-- ⚠️ LIVE BUT NOT YET A BOUNDARY. Verified over real HTTP with a real device
+-- key: `GET /rest/v1/glossary?select=definition` still returns 200. The old
+-- door is open until STEP 5 runs. The gateway meters everything that goes
+-- THROUGH it; it does not yet stop anyone going around it.
 --
 -- Full reasoning: docs/APE_GLOSSARY_DEVICE_ID_BUILD_PLAN_2026_09_13.md
 -- Already applied, separately: the glossary_study_v content mask
@@ -107,14 +111,30 @@ rollback;
 -- STEP 2 — THE BROWSE VIEW   ⚠️ THE FEATURE GOES LIVE THE MOMENT THIS RUNS
 -- =====================================================================
 --
--- ⏸ HELD 2026-09-13. Steps 1, 3 and 4 are done; this one is not, deliberately.
--- A live probe of the auth API returned:
---     422  anonymous_provider_disabled  "Anonymous sign-ins are disabled"
--- so STEP 0 has not been done yet. Run this now and a guest opening the
--- glossary gets the consent dialog, taps AGREE, the mint fails with that 422,
--- and the client fails open — the glossary just opens, unmetered. Nothing
--- breaks, but the dialog would be asking for something the server refuses to
--- give, which is worse than not asking. Do step 0, then this.
+-- ✅ APPLIED 2026-09-13, migration `glossary_gateway_browse_view`, after the
+-- owner enabled anonymous sign-ins and a probe confirmed it (signup -> 200,
+-- is_anonymous true). Verified end to end over REAL HTTP with the shipped anon
+-- key and a real anonymous session, not by SQL impersonation:
+--
+--   no key   -> GET glossary_browse_v          401 / 42501 permission denied
+--               (the exact signal probeGateway() reads as "gateway is live")
+--   no key   -> POST rpc/get_glossary_definition  401 / 42501
+--   key      -> corpus rows: definition exactly 120 chars, plain_english null
+--   key      -> rpc open 1: used 1 of 14, full definition, mistakes null
+--   key      -> rpc open 2: used 2 of 14
+--   member   -> 26,449 full definitions, all plain_english, all mistakes
+--
+-- Side effect worth knowing: the view also exposes formula_symbolic /
+-- formula_words, which NO client role holds a column grant on. The Equations &
+-- Formulas filter has therefore always shown nothing; through this view it now
+-- resolves 1,973 terms.
+--
+-- ⚠️ `sign_in_required` inside the RPC is effectively UNREACHABLE from a
+-- client: `anon` has no EXECUTE grant, so PostgREST refuses with 42501 before
+-- the function body runs. The client maps that to 'denied' and fails open,
+-- which is harmless because it never calls the RPC without a key (the corpus
+-- does not load until one exists). Defence in depth, not a defect — but do not
+-- write docs claiming the client distinguishes the two.
 --
 -- Every phone already running the shipped build probes for this view once per
 -- app session. Until now the probe answers "absent" and nothing changes for

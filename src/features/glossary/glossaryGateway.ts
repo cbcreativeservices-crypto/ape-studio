@@ -43,6 +43,11 @@ export function resetGatewayProbe(): void {
  * ⚠️ A network failure must NOT be cached, and must not read as 'deployed'.
  * Answering 'deployed' offline would put a consent dialog in front of a user
  * whose device cannot reach the server to act on it.
+ *
+ * Confirmed against the live database the day the view was created: a guest
+ * with no key selecting from it gets exactly
+ *   42501 · permission denied for view glossary_browse_v
+ * which `classifyGatewayError` maps to 'denied' and this reads as 'deployed'.
  */
 export function probeGateway(): Promise<GatewayProbe> {
   if (PROBE) return PROBE;
