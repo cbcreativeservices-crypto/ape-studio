@@ -259,11 +259,19 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   const rowLayoutProps = (id: string) => ({
     onLayout: (ev: LayoutChangeEvent) => rowHeights.current.set(id, ev.nativeEvent.layout.height),
   });
-  // Press-hold-to-lift reorder (owner 2026-07-31): hold a topic still for 2 s and
-  // it POPS out (springs up + shadow) to become a draggable object; then drag
-  // up/down to reorder and release to drop it. A 2 s timer (started on touch,
-  // cancelled if the finger moves = a scroll, or lifts early) fires the pop even
-  // before any movement; liftedIdRef marks the lifted row for the drag responder.
+  // Press-hold-to-lift reorder (owner 2026-07-31; timing revised 2026-09-13):
+  // hold a topic still and it POPS out (springs up + shadow) to become a
+  // draggable object; then drag up/down to reorder and release to drop it.
+  // The timer starts on touch, is cancelled if the finger moves (= a scroll)
+  // or lifts early, and fires the pop before any movement; liftedIdRef marks
+  // the lifted row for the drag responder.
+  //
+  // ⚠️ Timing is load-bearing on DEVICE (owner report 2026-09-13: "not
+  // selecting"): the original 2 s still-hold was uncompletable on real glass —
+  // Android's ScrollView steals any touch that drifts past its ~8 dp slop, and
+  // nobody holds a thumb that still for 2 s, so the timer died before firing
+  // (a mouse in the web preview has no tremor, which hid it). 500 ms matches
+  // platform long-press norms; the cancel slop widens 12 → 20 dp.
   const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // The lifted container is keyed by the SAME id used for collapse (`t:<gs>` for
   // topics, the bundle key for awards) so ONE mechanism reorders both, whether the
@@ -364,13 +372,13 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
     onTouchStart: (ev: GestureResponderEvent) => {
       touchStartRef.current = { x: ev.nativeEvent.pageX, y: ev.nativeEvent.pageY };
       if (holdTimer.current) clearTimeout(holdTimer.current);
-      holdTimer.current = setTimeout(() => beginLift(id), 2000);
+      holdTimer.current = setTimeout(() => beginLift(id), 500);
     },
     onTouchMove: (ev: GestureResponderEvent) => {
       if (liftedIdRef.current === id) return; // already dragging
       const dx = ev.nativeEvent.pageX - touchStartRef.current.x;
       const dy = ev.nativeEvent.pageY - touchStartRef.current.y;
-      if (Math.hypot(dx, dy) > 12 && holdTimer.current) {
+      if (Math.hypot(dx, dy) > 20 && holdTimer.current) {
         clearTimeout(holdTimer.current); // moved before the hold fired → a scroll
         holdTimer.current = null;
       }
@@ -1359,7 +1367,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                 ]}
               >
                 {/* Row 1 — collapse triangle · white title. Press-HOLD the card
-                    still for 2 s to lift it, then drag up/down to reorder (user
+                    still (500 ms) to lift it, then drag up/down to reorder (user
                     request 2026-07-23; the ☰ handle was removed). */}
                 <View style={styles.cardTop}>
                   <Pressable style={styles.collapseBtn} onPress={() => toggleCollapse(tid)} hitSlop={6} accessibilityRole="button" accessibilityLabel={`Collapse ${nameFor(e.gs)}`}>

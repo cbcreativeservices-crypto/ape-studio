@@ -143,7 +143,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       {
         id: 'enroll-reorder',
         q: 'Can I reorder my enrolled topics?',
-        a: 'Yes — press and hold a topic card, keeping your finger still for two seconds, until it pops up. Then drag it up or down and let go to drop it. Reordering works while no filter chip (A–Z, On Home, Not started) is active.',
+        a: 'Yes — press and hold a topic card until it pops up, then drag it up or down and let go to drop it. Reordering works while no filter chip (A–Z, On Home, Not started) is active.',
       },
       {
         id: 'enroll-progress',
