@@ -19,6 +19,7 @@
 import { useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
+import { isRealAccount } from '../commercial/realAccount';
 import { clearLocalAccountData, resetAllLocalStores } from './clearLocalAccountData';
 
 /** Marker holding the id of the user whose data currently lives on the device.
@@ -65,7 +66,13 @@ export function useAccountLocalSync(): void {
       // start). TOKEN_REFRESHED and the like keep the same identity, so the
       // prev===identity guard above no-ops them.
       if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'INITIAL_SESSION') {
-        void syncLocalToIdentity(session?.user?.id ?? '');
+        // ⚠️ An ANONYMOUS session maps to the GUEST identity (''), not to its
+        // own uid. The glossary's temporary device key would otherwise read as
+        // "a different user signed in" and wipe the guest's enrollment, Home
+        // cards and lab state — once on accepting it, and again every time the
+        // 7-day purge forces a new one. The dialog promises the opposite:
+        // "none of your progress is stored with it".
+        void syncLocalToIdentity(isRealAccount(session) ? (session?.user?.id ?? '') : '');
       }
     });
     return () => {

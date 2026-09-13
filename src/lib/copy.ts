@@ -34,6 +34,40 @@ export const COPY = {
    *  sign-in screen is not where an upsell belongs - the person has not chosen
    *  anything yet. Same 14, same single source. */
   glossaryFreeAllowanceShort: 'Free use includes 14 definitions a week.',
+  /**
+   * Glossary temporary device key — the consent dialog (owner 2026-09-13,
+   * finalized live with the owner over four passes).
+   *
+   * ⚠️ THIS IS A PRIVACY PROMISE, not marketing, which makes it a HEAVIER
+   * commitment than the rest of this file: every clause has to be true in code
+   * before it ships, and it stays true afterwards. Specifically —
+   *   "deleted automatically after 7 days"  → the nightly pg_cron purge of
+   *      anonymous auth users (build plan §3);
+   *   "along with your definition count"    → glossary_usage.user_id cascades
+   *      on that delete — verified on the live schema, not assumed;
+   *   "no name, no email, no password"      → signInAnonymously() sends none;
+   *   "none of your progress is stored"     → an anonymous user gets no
+   *      public.users row, and nothing writes progress for one.
+   * If any of those stops being true, this string is a false statement about
+   * what the app does with a stranger's device. Route a change to governance.
+   *
+   * The closing line is `glossaryFreeAllowance` VERBATIM — the same ratified
+   * sentence used everywhere else — so the positive note makes no new claim.
+   */
+  glossaryDeviceKeyTitle: 'Opening the glossary',
+  glossaryDeviceKeyBody:
+    'To access the glossary we need to give this device a temporary ID — deleted ' +
+    'automatically after 7 days, along with your definition count. No name, no email, ' +
+    'no password, and none of your progress is stored with it.',
+  glossaryDeviceKeyAgree: 'AGREE',
+  glossaryDeviceKeyNotNow: 'NOT NOW',
+  /** The NOT NOW state. It must never be a dead end: the button under it asks
+   *  again, and signing in is offered as the other way through. */
+  glossaryDeviceKeyDeclinedTitle: 'Glossary closed for now',
+  glossaryDeviceKeyDeclinedBody:
+    'No problem — nothing was stored. The glossary needs a temporary device ID so ' +
+    'your free definitions can be counted. You can allow it any time, or sign in to ' +
+    'your account instead.',
   // Introductory lifetime offer (Booth 2026-07-15).
   lifetimePrice: '$99.99',
   lifetimeOffer:

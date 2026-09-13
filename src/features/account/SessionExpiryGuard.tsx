@@ -15,15 +15,32 @@
  *
  * Renders nothing; mounted once at the app root alongside the other guards.
  */
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
 import { navigationRef } from '../../navigation/navigationRef';
 import { consumeIntentionalSignOut } from '../auth/intentionalSignOut';
+import { isRealAccount } from '../commercial/realAccount';
 
 export function SessionExpiryGuard() {
+  // What KIND of session just went away. The SIGNED_OUT event carries no
+  // session, so the answer has to be remembered from the last one that did.
+  const wasRealAccount = useRef(false);
   useEffect(() => {
-    const { data } = supabase.auth.onAuthStateChange((event) => {
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        wasRealAccount.current = isRealAccount(data.session);
+      })
+      .catch(() => {});
+    const { data } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session) wasRealAccount.current = isRealAccount(session);
       if (event !== 'SIGNED_OUT') return;
+      // ⚠️ An expired ANONYMOUS session is not a session LOSS to rescue — it is
+      // the glossary's temporary device key reaching its 7-day end, exactly as
+      // promised. Bouncing to the login screen would punish a guest for a
+      // deletion we scheduled on their behalf; the glossary mints a new key on
+      // its own. (The same reasoning as the Guest-entry exemption above.)
+      if (!wasRealAccount.current) return;
       // App-initiated sign-out → the caller navigates; do nothing.
       if (consumeIntentionalSignOut()) return;
       if (!navigationRef.isReady()) return;

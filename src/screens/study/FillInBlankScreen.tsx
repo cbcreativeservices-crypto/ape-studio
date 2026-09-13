@@ -38,6 +38,7 @@ import { BLANK, fibSentence } from '../../features/study/sentences';
 import { StudySession } from '../../features/study/sync';
 import { loadLocalMethodStates, mergeItemStates, saveLocalMethodStates } from '../../features/study/localProgress';
 import { supabase } from '../../lib/supabase';
+import { isRealAccount } from '../../features/commercial/realAccount';
 import { SuggestCorrectionButton } from '../../features/study/SuggestCorrectionButton';
 import { incBrainOutput, resetBrainOutput, setRunning, usePaceSettings, useRunning } from '../../features/study/paceStore';
 import { setLastStudyLocation } from '../../features/study/lastStudyLocation';
@@ -127,7 +128,7 @@ export function FillInBlankScreen({ navigation, route }: Props) {
           // never got it, and a single answer then clobbered the mirror).
           supabase.auth
             .getSession()
-            .then(({ data }) => (data.session ? loadLocalMethodStates(achievementId, 'fill_in_blank') : null))
+            .then(({ data }) => (isRealAccount(data.session) ? loadLocalMethodStates(achievementId, 'fill_in_blank') : null))
             .catch(() => null),
         ]);
         if (!alive) return;

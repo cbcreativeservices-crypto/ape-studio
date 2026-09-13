@@ -27,6 +27,7 @@ import { Modal } from '../../components/DimModal';
 import { HoldToActivate } from '../../components/HoldToActivate';
 import { getLabPreview } from '../lab/labPreviewStore';
 import { supabase } from '../../lib/supabase';
+import { isRealAccount } from '../commercial/realAccount';
 import { colors, fonts } from '../../theme/tokens';
 import {
   disableAudioOutput,
@@ -100,8 +101,11 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
 
   // AUTO-RE-MUTE (login + foreground-after-idle). Registered once at root.
   useEffect(() => {
-    const { data: authSub } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_IN') disableAudioOutput();
+    const { data: authSub } = supabase.auth.onAuthStateChange((event, session) => {
+      // Only a real sign-in re-mutes. Opening the glossary mints an ANONYMOUS
+      // session, which arrives here as SIGNED_IN — silencing the app mid-lab
+      // for a reason the user could never connect to what they just did.
+      if (event === 'SIGNED_IN' && isRealAccount(session)) disableAudioOutput();
     });
     const appSub = AppState.addEventListener('change', (state) => {
       if (

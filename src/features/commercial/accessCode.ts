@@ -18,6 +18,7 @@
  * `discount_pending` and the client explains it applies at purchase.
  */
 import { supabase } from '../../lib/supabase';
+import { isRealAccount } from './realAccount';
 
 export type RedeemStatus =
   | 'granted' // academy access comped (perpetual or time-limited)
@@ -72,8 +73,11 @@ export async function redeemAccessCode(code: string): Promise<RedeemResult> {
   if (!trimmed) return result('invalid');
 
   // Must be signed in — redemption writes an entitlement for auth.uid().
+  // ⚠️ An anonymous device key is a session but not an account. Redeeming
+  // against it would write the entitlement to a uid the nightly purge deletes
+  // in seven days — the user would redeem and then silently lose it.
   const { data: sess } = await supabase.auth.getSession();
-  if (!sess.session) return result('not_authenticated');
+  if (!isRealAccount(sess.session)) return result('not_authenticated');
 
   try {
     const { data, error } = await supabase.rpc('redeem_access_code', { p_code: trimmed });

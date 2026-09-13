@@ -37,6 +37,7 @@ import { matchingSentenceV2 } from '../../features/study/sentences';
 import { StudySession } from '../../features/study/sync';
 import { loadLocalMethodStates, mergeItemStates, saveLocalMethodStates } from '../../features/study/localProgress';
 import { supabase } from '../../lib/supabase';
+import { isRealAccount } from '../../features/commercial/realAccount';
 import { SuggestCorrectionButton } from '../../features/study/SuggestCorrectionButton';
 import { incBrainOutput, resetBrainOutput, setRunning, usePaceSettings, useRunning } from '../../features/study/paceStore';
 import { setLastStudyLocation } from '../../features/study/lastStudyLocation';
@@ -142,7 +143,7 @@ export function MatchingScreen({ navigation, route }: Props) {
           // 2026-08-17; ported QA night 2026-08-31).
           supabase.auth
             .getSession()
-            .then(({ data }) => (data.session ? loadLocalMethodStates(achievementId, 'matching') : null))
+            .then(({ data }) => (isRealAccount(data.session) ? loadLocalMethodStates(achievementId, 'matching') : null))
             .catch(() => null),
         ]);
         if (!alive) return;

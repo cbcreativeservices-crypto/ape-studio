@@ -7,6 +7,7 @@
  * was REMOVED (owner 2026-08-07 — album progression retired for commercial).
  */
 import { supabase } from '../../lib/supabase';
+import { isRealAccount } from '../commercial/realAccount';
 import { albumTierFor, type AlbumTierName } from '../../theme/tokens';
 import { V3_CURRICULUM_VERSION_ID } from '../../data/v3Curriculum';
 import { classifyProfileRead, type ProfileRead } from './profileRead';
@@ -58,8 +59,13 @@ export async function fetchProfile(): Promise<ProfileRead> {
     // back as 42501 "permission denied" — the same code as the real
     // GRANTs-dropped outage for a signed-in user (see profileRead.ts). Exactly
     // what `fetchMyRegistryListing` below does, on this same table.
+    // ⚠️ isRealAccount, not `session`. A guest holding the glossary's temporary
+    // device key has a session and NO `users` row — the read below would come
+    // back 42501 and classify as 'unavailable', which is the "Couldn't load
+    // your ID — check your connection" banner fixed earlier on 2026-09-13,
+    // shown to someone whose connection is fine. See realAccount.ts.
     const { data: sessionData } = await supabase.auth.getSession();
-    if (!sessionData?.session) return { state: 'none' };
+    if (!isRealAccount(sessionData?.session)) return { state: 'none' };
 
     const [userRes, identityRes] = await Promise.all([
       supabase
@@ -214,7 +220,7 @@ export async function fetchMyRegistryListing(): Promise<RegistryListingRead> {
     // A guest genuinely has no listing, and asking would fail on RLS and look
     // like an outage. Settle that before the read rather than after it.
     const { data: sessionData } = await supabase.auth.getSession();
-    if (!sessionData?.session) return { state: 'none' };
+    if (!isRealAccount(sessionData?.session)) return { state: 'none' }; // see above
 
     const { data, error } = await supabase
       .from('users')

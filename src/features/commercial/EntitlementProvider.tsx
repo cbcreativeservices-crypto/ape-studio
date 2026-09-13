@@ -22,6 +22,7 @@ import { requestLocalNotifSync } from '../notifications/localSchedule';
 import { loadLocalSettings } from '../settings/store';
 import { clearAllLocalMethodStates } from '../study/localProgress';
 import { emitStudyProgress } from '../study/sync';
+import { isRealAccount } from './realAccount';
 
 export type Entitlement = 'anonymous' | 'free' | 'academy' | 'lapsed';
 
@@ -175,6 +176,7 @@ type EntitlementContextValue = {
 
 const EntitlementContext = createContext<EntitlementContextValue | null>(null);
 
+
 export function EntitlementProvider({ children }: { children: ReactNode }) {
   // Boot default (owner 2026-08-06): commercialMode is ON — institutional mode is
   // retired and the app IS the commercial app (FLAG_DEFAULTS.commercialMode=true).
@@ -306,7 +308,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
       .getSession()
       .then(async ({ data }) => {
         clearLocalOnUserChange(data.session?.user?.id ?? null);
-        await deriveWithRetry(!!data.session);
+        await deriveWithRetry(isRealAccount(data.session));
       })
       .catch(() => {
         // getSession rejecting (e.g. a secure-store read error) or a throw in the
@@ -343,7 +345,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
           }
         }
         clearLocalOnUserChange(session?.user?.id ?? null);
-        void deriveWithRetry(!!session);
+        void deriveWithRetry(isRealAccount(session));
       }
     });
     return () => {
@@ -358,7 +360,8 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
   const refreshEntitlement = useCallback(async () => {
     if (devOverrode.current) return;
     const { data: sess } = await supabase.auth.getSession();
-    if (!sess.session) {
+    // Same test as the effect above — an ANONYMOUS session is still a guest.
+    if (!isRealAccount(sess.session)) {
       setEntitlementState('anonymous');
       return;
     }

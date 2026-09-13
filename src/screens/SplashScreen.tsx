@@ -14,6 +14,7 @@ import { colors, fonts } from '../theme/tokens';
 import { supabase } from '../lib/supabase';
 import type { RootStackParamList } from '../navigation/types';
 import { clearPendingLink } from '../navigation/pendingLink';
+import { isRealAccount } from '../features/commercial/realAccount';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Splash'>;
 
@@ -64,14 +65,20 @@ export function SplashScreen({ navigation }: Props) {
       // pushed the deep-linked screen over this one, and the carry-over below
       // keeps it. Drop the remembered destination so a later sign-out →
       // sign-in in the same launch cannot replay a stale link (2026-09-05).
-      if (data.session) clearPendingLink();
-      const base = data.session ? 'Main' : 'Auth';
+      // ⚠️ An ANONYMOUS session is not an account. The glossary's temporary
+      // device key is a real Supabase session, so `data.session` alone would
+      // route every guest who accepted it straight past the login screen for
+      // good — and Settings' "Sign in / create account" (which resets to
+      // Splash) would bounce them right back into the app. Ask for an ACCOUNT.
+      const signedIn = isRealAccount(data.session);
+      if (signedIn) clearPendingLink();
+      const base = signedIn ? 'Main' : 'Auth';
       const pushed: PartialRoute<Route<keyof RootStackParamList>>[] = navigation
         .getState()
         .routes.filter((r) => r.name !== 'Splash')
         .map((r) => ({ key: r.key, name: r.name, params: r.params }));
       const baseRoute = pushed.find((r) => r.name === base) ?? { name: base };
-      const above = pushed.filter((r) => r !== baseRoute && (data.session || r.name !== 'Main'));
+      const above = pushed.filter((r) => r !== baseRoute && (signedIn || r.name !== 'Main'));
       navigation.reset({
         index: above.length,
         routes: [baseRoute, ...above],

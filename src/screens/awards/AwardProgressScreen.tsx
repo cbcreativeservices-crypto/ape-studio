@@ -17,6 +17,7 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
+import { isRealAccount } from '../../features/commercial/realAccount';
 import {
   ActivityIndicator,
   Pressable,
@@ -68,7 +69,9 @@ export function AwardProgressScreen({ navigation, route }: Props) {
       // No account is the COMMON null here (guests 401 on the student read) --
       // blaming "your connection" was misleading (QA night 2026-08-31).
       const { data } = await supabase.auth.getSession().catch(() => ({ data: { session: null } }));
-      setNoSession(!data?.session);
+      // A guest holding the glossary's temporary device key still has no
+      // account — so they get the "no account" message, not "your connection".
+      setNoSession(!isRealAccount(data?.session));
       setFailed(true);
     }
     setProgress(p);

@@ -62,6 +62,7 @@ import { IntroSheet, ScreenIntroOverlay } from '../../features/intro/ScreenIntro
 import { INTRO_STORAGE_PREFIX } from '../../features/intro/screenIntros';
 import { StudySession } from '../../features/study/sync';
 import { supabase } from '../../lib/supabase';
+import { isRealAccount } from '../../features/commercial/realAccount';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import {
   loadLocalMethodStates,
@@ -451,7 +452,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             ? Promise.resolve(null)
             : supabase.auth
                 .getSession()
-                .then(({ data }) => (data.session ? loadLocalMethodStates(achievementId, 'flashcards') : null))
+                .then(({ data }) => (isRealAccount(data.session) ? loadLocalMethodStates(achievementId, 'flashcards') : null))
                 .catch(() => null),
           AsyncStorage.getItem(hiddenKey(achievementId)),
           AsyncStorage.getItem(SECTIONS_KEY),

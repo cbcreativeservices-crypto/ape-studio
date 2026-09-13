@@ -22,6 +22,7 @@
  */
 import { SUPABASE_URL } from '../../../lib/env';
 import { supabase } from '../../../lib/supabase';
+import { isRealAccount } from '../../../features/commercial/realAccount';
 
 export type TubeFamily = 'preamp' | 'power' | 'dht' | 'rectifier';
 
@@ -174,7 +175,9 @@ export async function fetchTubePage(
   page: 1 | 2,
 ): Promise<{ url: string | null; reason: 'ok' | 'auth' | 'network' }> {
   const { data: sess } = await supabase.auth.getSession().catch(() => ({ data: { session: null } }));
-  if (!sess?.session) return { url: null, reason: 'auth' };
+  // An anonymous device key would pass a bare session check and then collect a
+  // 4xx from the member-gated function; short-circuit it as what it is.
+  if (!isRealAccount(sess?.session)) return { url: null, reason: 'auth' };
   try {
     const { data, error } = await supabase.functions.invoke('tube-image', {
       body: { stem, page },

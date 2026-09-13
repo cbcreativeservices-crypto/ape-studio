@@ -41,6 +41,7 @@ import { CardArt } from '../../components/CardArt';
 import { StudioButton } from '../../components/StudioButton';
 import { SwitchButton } from '../../components/SwitchButton';
 import { supabase } from '../../lib/supabase';
+import { isRealAccount } from '../../features/commercial/realAccount';
 import { SUPABASE_URL } from '../../lib/env';
 import { colors, fonts } from '../../theme/tokens';
 import { setLastCourse } from '../../features/dashboard/api';
@@ -1104,7 +1105,10 @@ export function CourseSelectionScreen() {
     // real session, NOT entitlement, since returning authed users also default to
     // the mock 'anonymous' entitlement.
     const { data: sessData } = await supabase.auth.getSession();
-    const isGuest = !sessData.session;
+    // …and NOT on the mere presence of one either: the glossary's temporary
+    // device key is an anonymous session, and reading it as "signed in" would
+    // put a guest back on the academy path this line exists to keep them off.
+    const isGuest = !isRealAccount(sessData.session);
     setIsGuest(isGuest);
     // The PUBLIC-catalog builder — used for guests/commercial mode AND as the
     // self-heal fallback when an authed load fails on a broken session.

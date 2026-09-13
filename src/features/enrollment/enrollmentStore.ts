@@ -20,6 +20,7 @@
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
+import { isRealAccount } from '../commercial/realAccount';
 
 export type EnrollTopic = { gs: number; favorite: boolean; active: boolean };
 
@@ -67,7 +68,9 @@ function scheduleServerSync(delayMs = 800) {
     void (async () => {
       try {
         const { data } = await supabase.auth.getSession();
-        if (!data.session) return;
+        // Guests (incl. an anonymous device key) keep enrollment device-local:
+        // syncing would write a master list for a uid deleted within the week.
+        if (!isRealAccount(data.session)) return;
         // supabase-js RESOLVES with { error } — the old dead catch never saw RPC
         // errors, so a failed FINAL sync left the server master list stale with
         // no retry until the user next edited enrollment (backend gates v3

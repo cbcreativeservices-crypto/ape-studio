@@ -100,6 +100,9 @@ export function timeToHhmm(raw: string): string {
  */
 async function authUserId(): Promise<string | null> {
   const { data } = await supabase.auth.getUser();
+  // An anonymous device key (the glossary's) is not someone to subscribe: the
+  // rows would be written against a uid the nightly purge deletes.
+  if (data.user?.is_anonymous === true) return null;
   return data.user?.id ?? null;
 }
 

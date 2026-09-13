@@ -12,6 +12,7 @@ import { useEffect, useRef } from 'react';
 import { Alert, AppState, type AppStateStatus } from 'react-native';
 import { notify } from '../../lib/confirm';
 import { supabase } from '../../lib/supabase';
+import { isRealAccount } from '../commercial/realAccount';
 import { navigationRef } from '../../navigation/navigationRef';
 import { clearLocalAccountData, resetAllLocalStores } from './clearLocalAccountData';
 import { isDisplaced } from './singleDevice';
@@ -32,7 +33,10 @@ export function SingleDeviceGuard() {
       if (handling.current) return;
       // Only meaningful for a signed-in account.
       const { data } = await supabase.auth.getSession();
-      if (!data.session) return;
+      // An anonymous device key is a session, but single-device enforcement is
+      // about an ACCOUNT being used in two places. A guest cannot displace
+      // anyone — and enforcing would sign them out of their own glossary.
+      if (!isRealAccount(data.session)) return;
       // Do NOT enforce while on the login/boot screens. A device that just signed
       // in on the Auth screen but hasn't pressed "Continue" yet has NOT claimed
       // itself, so it reads as "displaced" (the other device is still active) —

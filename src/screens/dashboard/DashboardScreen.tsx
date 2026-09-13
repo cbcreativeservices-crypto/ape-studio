@@ -78,6 +78,7 @@ import {
 import { getDashboardCache, setDashboardCache } from '../../features/dashboard/dashboardCache';
 import { FREE_ENROLL_GS, isFreeEnrollGs, useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { supabase } from '../../lib/supabase';
+import { isRealAccount } from '../../features/commercial/realAccount';
 import { notify } from '../../lib/confirm';
 import { markIntentionalSignOut } from '../../features/auth/intentionalSignOut';
 import { fetchGlossaryItemsByIds, fetchTopicItems } from '../../features/study/api';
@@ -723,7 +724,10 @@ export function DashboardScreen() {
       // device-local mirror merged below. Keyed on the real session, NOT entitlement,
       // since returning authed users also default to the mock 'anonymous' state.
       const { data: sessData } = await supabase.auth.getSession();
-      const isGuest = !sessData.session;
+      // An anonymous device key is NOT an account, and this flag drives the
+      // "your progress isn't saved" notice — the people holding one are exactly
+      // the people who must still see it.
+      const isGuest = !isRealAccount(sessData.session);
       // The "progress isn't saved" notice keys on THIS (no session at all), never
       // on the users-row lookup: any saved account — member or not — must not see
       // it, even when its student record is missing or a fetch fails (owner

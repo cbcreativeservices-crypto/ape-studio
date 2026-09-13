@@ -7,6 +7,7 @@
  * v2.1 auto-enrolls the SAFE course; first-topic seeding is trigger-side.
  */
 import { supabase } from '../../lib/supabase';
+import { isRealAccount } from '../commercial/realAccount';
 
 /**
  * Map a Supabase/JS auth error to user-facing copy (QA Wave D, D-3 2026-09-10).
@@ -86,7 +87,12 @@ export const REGISTER_ERROR_COPY: Record<RegisterErrorCode, string> = {
  */
 export async function ensureSession(email: string, password: string): Promise<string | null> {
   const existing = await supabase.auth.getSession();
-  if (existing.data.session) return null;
+  // ⚠️ Not `existing.data.session`. A guest holding the glossary's temporary
+  // device key HAS a session, and returning null here would tell the Auth
+  // screen "you are already signed in" — so the account they came to create
+  // would never be created. signUp / signInWithPassword below REPLACE the
+  // anonymous session, which is exactly what should happen.
+  if (isRealAccount(existing.data.session)) return null;
 
   const { data, error } = await supabase.auth.signUp({ email, password });
   if (!error) {
