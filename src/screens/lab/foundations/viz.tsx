@@ -263,6 +263,35 @@ const SPARKLE_LIFE = 4; // seconds per highlight; the two slots stagger by 2 s
 
 /** The 19 deterministic homes — one per horizontal band, jittered, so they
  *  cover the display left→right without clustering. */
+/**
+ * Which sparkle homes sit in the MIDDLE of the canvas.
+ *
+ * Owner 2026-09-13, of the air window: "make sure there is always a few in the
+ * center of the display. they can appear more at the sides and then it is not as
+ * noticable." Both glint slots used to draw from all 19 homes at random, so the
+ * centre could sit empty for a full four-second tenure while the only followable
+ * molecule wiggled in a corner — and the whole point of the glint is to make ONE
+ * molecule's back-and-forth readable. A reader looking at the middle of the
+ * window has to find something moving there.
+ *
+ * Measured against the FULL canvas width, not the homes' own span: the air
+ * window bags a zone off the right for the ear, so its usable strip's midpoint
+ * sits left of the picture's midpoint, and "centre" here means where the eye
+ * lands. Falls back to every home if a narrow layout leaves the band empty, so a
+ * slot can never index an empty list.
+ *
+ * SHARED by AirParticlesView and WavelengthRulerView. It was inlined in the
+ * first and then wanted by the second, which is exactly how two copies of one
+ * subtle rule start to drift.
+ */
+function midBandIndices(xs: number[], canvasW: number): number[] {
+  const lo = canvasW * 0.3;
+  const hi = canvasW * 0.7;
+  const mid: number[] = [];
+  for (let i = 0; i < xs.length; i++) if (xs[i] >= lo && xs[i] <= hi) mid.push(i);
+  return mid.length ? mid : xs.map((_, i) => i);
+}
+
 function sparkleHomes(usableW: number, topPad: number, usableH: number): { xs: number[]; ys: number[] } {
   const xs: number[] = [];
   const ys: number[] = [];
@@ -394,13 +423,7 @@ export function AirParticlesView({
    * Falls back to every home if a narrow layout leaves the band empty, so a
    * slot can never index an empty list.
    */
-  const sparkleMid = useMemo(() => {
-    const lo = w * 0.3;
-    const hi = w * 0.7;
-    const mid: number[] = [];
-    for (let i = 0; i < sxs.length; i++) if (sxs[i] >= lo && sxs[i] <= hi) mid.push(i);
-    return mid.length ? mid : sxs.map((_, i) => i);
-  }, [sxs, w]);
+  const sparkleMid = useMemo(() => midBandIndices(sxs, w), [sxs, w]);
 
   // TWO sparkling molecules at a time, staggered hand-offs every 2 s. Each
   // follows the SAME displacement law as the field — the glint just makes one
@@ -1556,6 +1579,11 @@ export function WavelengthRulerView({
   const sparkleXY = useMemo(() => sparkleHomes(w, 12, floorY - 52), [w, floorY]);
   const sxs = sparkleXY.xs;
   const sys = sparkleXY.ys;
+  // Same centre guarantee the air window got — see midBandIndices. This view had
+  // the identical defect: on the owner's Module 6 capture the only glint sat at
+  // the far LEFT edge, which is precisely the case they asked to stop. No ear
+  // zone here, so the band is a plain middle-of-canvas span.
+  const sparkleMid = useMemo(() => midBandIndices(sxs, w), [sxs, w]);
   const sparkles = useDerivedValue(() => {
     const p = Skia.Path.Make();
     if (!clock) return p;
@@ -1568,9 +1596,16 @@ export function WavelengthRulerView({
       const ts = t + s * (SPARKLE_LIFE / 2);
       const e = Math.floor(ts / SPARKLE_LIFE);
       const u = ts - e * SPARKLE_LIFE;
-      let idx = Math.floor(hash(e * 17.31 + s * 3.77) * SPARKLE_N) % SPARKLE_N;
-      if (s === 1) {
-        const idx0 = Math.floor(hash(e0 * 17.31) * SPARKLE_N) % SPARKLE_N;
+      // SLOT 0 IS THE CENTRE SLOT — it only ever picks from the middle band, so
+      // something followable is always wiggling where the eye is. Slot 1 roams
+      // the whole field, which keeps the effect alive and lets more of them land
+      // at the sides (owner: that is fine there).
+      let idx: number;
+      if (s === 0) {
+        idx = sparkleMid[Math.floor(hash(e * 17.31) * sparkleMid.length) % sparkleMid.length];
+      } else {
+        idx = Math.floor(hash(e * 17.31 + s * 3.77) * SPARKLE_N) % SPARKLE_N;
+        const idx0 = sparkleMid[Math.floor(hash(e0 * 17.31) * sparkleMid.length) % sparkleMid.length];
         if (idx === idx0) idx = (idx + 7) % SPARKLE_N;
       }
       const fade = Math.min(1, u / 0.45, (SPARKLE_LIFE - u) / 0.45);
@@ -1587,7 +1622,7 @@ export function WavelengthRulerView({
       p.addCircle(x, y, 1.9 + 0.9 * fade); // the molecule itself, larger + bright
     }
     return p;
-  }, [phase, clock, sxs, sys, amp, lambdaPx]);
+  }, [phase, clock, sxs, sys, sparkleMid, amp, lambdaPx]);
 
   // Dense particle field — compression bands are the star.
   const COLS = 38;
