@@ -28,7 +28,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { supabase } from '../../lib/supabase';
-import { classifyMintError, type ConsentRecord } from './deviceKeyState';
+import { classifyMintError, singleFlight, type ConsentRecord } from './deviceKeyState';
 
 export * from './deviceKeyState';
 
@@ -68,19 +68,34 @@ export async function clearConsent(): Promise<void> {
 
 export type MintResult = { ok: true } | { ok: false; reason: 'disabled' | 'network' | 'unknown'; message: string };
 
+const mintOnce = singleFlight<MintResult>();
+
 /**
  * Mint the temporary key. Requires anonymous sign-ins to be ENABLED in the
  * Supabase dashboard (Auth → Providers); they are off by default, and the
  * failure is a runtime 422, not a build error — hence the explicit 'disabled'
  * reason so the screen can fail open rather than look broken.
+ *
+ * ⚠️ TWO GUARDS AGAINST MINTING MORE THAN ONE KEY, both added after the first
+ * live run created two 67 microseconds apart:
+ *   - `mintOnce` collapses concurrent callers into one request;
+ *   - the getSession() check ahead of it means a key that has ALREADY arrived
+ *     (from the other caller, or restored from storage) is reused rather than
+ *     duplicated.
+ * Every extra key is a real row in auth.users that nobody is using and that
+ * survives until the nightly purge.
  */
-export async function mintDeviceKey(): Promise<MintResult> {
-  try {
-    const { error } = await supabase.auth.signInAnonymously();
-    if (!error) return { ok: true };
-    return { ok: false, reason: classifyMintError(error.message), message: error.message };
-  } catch (e) {
-    const message = e instanceof Error ? e.message : String(e);
-    return { ok: false, reason: classifyMintError(message), message };
-  }
+export function mintDeviceKey(): Promise<MintResult> {
+  return mintOnce(async () => {
+    try {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) return { ok: true };
+      const { error } = await supabase.auth.signInAnonymously();
+      if (!error) return { ok: true };
+      return { ok: false, reason: classifyMintError(error.message), message: error.message };
+    } catch (e) {
+      const message = e instanceof Error ? e.message : String(e);
+      return { ok: false, reason: classifyMintError(message), message };
+    }
+  });
 }

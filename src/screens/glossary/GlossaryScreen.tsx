@@ -1188,10 +1188,18 @@ export function GlossaryScreen({ route, navigation }: Props) {
   /** AGREE, or ALLOW from the NOT NOW card. Mints the key and, on failure,
    *  opens the glossary anyway rather than stranding the reader. */
   const grantDeviceKey = useCallback(async () => {
+    // ⚠️ Claim the in-flight flag BEFORE anything that can re-render. Writing
+    // the consent record below flips keyState to 'mint' (consent on file, no
+    // session yet) and the effect would fire a second mint against the same
+    // tap — which it did, on the first live run: two anonymous users 67
+    // microseconds apart. mintDeviceKey() now dedupes as well; this keeps the
+    // effect from even trying.
+    mintingRef.current = true;
     setDeclinedThisVisit(false);
     await writeConsent();
     setConsent({ granted: true, at: Date.now() });
     const r = await mintDeviceKey();
+    mintingRef.current = false;
     if (r.ok) {
       // The corpus source changes with the key (the browse view is granted to
       // `authenticated`), so the cached probe answer has to be re-taken.

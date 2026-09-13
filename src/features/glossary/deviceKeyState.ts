@@ -56,6 +56,36 @@ export function deviceKeyState(input: {
   return consent ? 'mint' : 'ask';
 }
 
+/**
+ * Collapse concurrent calls into ONE in-flight call.
+ *
+ * ⚠️ WRITTEN AFTER MINTING TWO DEVICE KEYS 67 MICROSECONDS APART on the first
+ * live run. Tapping AGREE calls the mint directly; it also writes the consent
+ * record, and that re-render flips the state machine to 'mint' — which fired a
+ * SECOND mint before the first had returned. Two anonymous users per consent:
+ * the device keeps one and the other lingers as litter until the 7-day purge.
+ *
+ * The guard belongs here rather than in the screen because the screen is not
+ * the only possible caller, and a ref in a component does not survive the
+ * remount that a navigation or a Fast Refresh can cause mid-flight.
+ *
+ * The slot is cleared when the call settles, so a LATER mint (a renewal after
+ * the purge) still works — it is one-at-a-time, not once-ever.
+ */
+export function singleFlight<T>(): (run: () => Promise<T>) => Promise<T> {
+  let inFlight: Promise<T> | null = null;
+  return (run) => {
+    if (inFlight) return inFlight;
+    const p = run();
+    inFlight = p;
+    const clear = () => {
+      if (inFlight === p) inFlight = null;
+    };
+    void p.then(clear, clear);
+    return p;
+  };
+}
+
 /** The provider-disabled case must be distinguishable from a plain network
  *  failure, because only the first one is permanent: anonymous sign-ins are OFF
  *  by default in the Supabase dashboard and the failure is a runtime 422. */
