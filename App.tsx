@@ -31,6 +31,7 @@ import { FrequencyCounterScreen } from './src/screens/tools/FrequencyCounterScre
 import { WaveformScreen } from './src/screens/tools/WaveformScreen';
 import { RtaScreen } from './src/screens/tools/RtaScreen';
 import { ToolsHubScreen } from './src/screens/tools/ToolsHubScreen';
+import { ToolDemoPreview } from './src/screens/tools/ToolDemoPreview';
 import { CalcWorkspaceScreen } from './src/screens/lab/calc/CalcWorkspaceScreen';
 import { EqModuleScreen } from './src/screens/lab/eq/EqModuleScreen';
 import { CompressionLabScreen, GateLabScreen, StereoLabScreen } from './src/screens/lab/fxLabConfigs';
@@ -371,6 +372,10 @@ export default function App() {
                       ? { name: 'CableArt', component: CableArtPreview as ComponentType }
                       : window.location.hash === '#micprinciplespreview'
                         ? { name: 'MicPrinciples', component: MicPrinciplesLabScreen as ComponentType }
+                      : window.location.hash.startsWith('#tooldemopreview')
+                        // The member-only tool DEMOS, ungated (the gate lives in
+                        // ToolDemoScreen, not the components) — design pass 2026-09-13.
+                        ? { name: 'ToolDemoPreview', component: ToolDemoPreview as ComponentType }
                       : window.location.hash === '#homepreview'
                         // The Home deck - proportional card width against a FIXED
                         // card height, which is how it rendered LANDSCAPE cards at
