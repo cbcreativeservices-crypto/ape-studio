@@ -270,7 +270,15 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
           </Pressable>
         </View>
 
-        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          keyboardShouldPersistTaps="handled"
+          // While a row is LIFTED for reorder the sheet must not scroll — on
+          // device the native ScrollView intercepts the vertical drag and the
+          // lifted row never receives it (same fix as EnrollmentScreen,
+          // owner-reported 2026-09-13).
+          scrollEnabled={liftedGs == null}
+        >
           {/* Always-on, locked. */}
           <Text style={styles.sectionHead}>ALWAYS ON YOUR HOME</Text>
           {lockedRow('tools', <BookIcon color={GREEN} filled size={20} />, 'Audio Tools')}
