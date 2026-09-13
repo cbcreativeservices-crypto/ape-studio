@@ -1,0 +1,46 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Difficulty Re-Balance</title>
+<style>
+:root{--bg:#0f1216;--card:#171c22;--card2:#12181f;--ink:#e9eef4;--mut:#9aa7b4;--line:#2a323c;--gold:#d8b04a;--green:#3ecf8e;--amber:#e5b567;--blue:#6fb2ff;--red:#ff6b6b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding:24px 16px 90px}
+h1{font-size:22px;margin:0 0 2px}.sub{color:var(--mut);font-size:13px;margin:0 0 16px}
+h2{font-size:15px;margin:24px 0 6px;border-bottom:1px solid var(--line);padding-bottom:6px}
+.lead{background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:13px 15px;font-size:14px}
+.grid{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;min-width:104px}
+.stat .n{font-size:21px;font-weight:800;color:#fff}.stat .l{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px}
+.item{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:11px 14px;margin:9px 0;font-size:14px}
+code{background:#0d1014;border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:12.5px}
+b{color:#fff}.mut{color:var(--mut)}.a{color:var(--amber)}.bl{color:var(--blue)}
+.pill{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:999px;border:1px solid #274a6e;background:#0e1c2b;color:var(--blue);margin-left:6px}
+.foot{color:var(--mut);font-size:12px;margin-top:22px;border-top:1px solid var(--line);padding-top:10px}
+</style></head><body><div class="wrap">
+<h1>Computer C — Term Difficulty Re-Balance <span class="pill">NEW TASK</span></h1>
+<p class="sub">Pro Audio Training Academy · report-only · live term text 2026-09-08 · Trip 1</p>
+
+<div class="lead"><b>The problem you spotted, made into a task.</b> Many topics were defaulted to one difficulty tier at generation — e.g. <b>Instrument Mixing – Drums &amp; Percussion</b> is 1 beginner / 172 intermediate / 13 advanced, and <b>Test &amp; Measurement Instruments</b> is 1 advanced / 243 intermediate. Computer C re-judges every term's honest difficulty so each topic gives a learner a real beginner→advanced climb instead of a wall of same-level cards.</div>
+
+<div class="grid">
+<div class="stat"><div class="n">29</div><div class="l">topics</div></div>
+<div class="stat"><div class="n">4,334</div><div class="l">terms to re-judge</div></div>
+<div class="stat"><div class="n">3</div><div class="l">tiers</div></div>
+</div>
+
+<h2>What C does</h2>
+<div class="item">For every term, reads the term + its definition and assigns the level it truly sits at — <b>beginner</b> (foundational vocabulary), <b>intermediate</b> (applied working knowledge), or <b>advanced</b> (specialist / math / edge). It re-derives from scratch; the current tag is just the starting label.</div>
+<div class="item"><b>Aim for a spread, never force a quota.</b> The rule is explicit: the term's true level always wins — no promoting an easy term to advanced or demoting a hard one to beginner to even the numbers. A topic that genuinely can't spread gets flagged <code>genuinely_skewed</code> rather than faked.</div>
+<div class="item">Report-only: C returns one line per term (<code>current</code> → <code>proposed</code> + a short rationale) plus a per-topic summary. It writes nothing to the database.</div>
+
+<h2>The packet</h2>
+<div class="item"><b>START_HERE_ComputerC.md</b> — the rubric + the anti-quota rule + return shape.</div>
+<div class="item"><b>MANIFEST.json</b> — 29 topic files, most-lopsided first.</div>
+<div class="item"><b>items/*.jsonl</b> — every term with its current tag + definition.</div>
+<div class="item"><b>RETURN_SCHEMA_EXAMPLE.jsonl</b> — the per-term line + topic summary line.</div>
+
+<h2>Flow back — and one thing I'll handle in QA</h2>
+<div class="item">C returns → I QA the proposed levels (defensibility on a sample + sanity of each new distribution) → I package one guarded SQL run updating <code>glossary_topics.difficulty</code> → you apply.</div>
+<div class="item"><b class="a">The coupling I'll manage (not C's concern):</b> difficulty is linked to quiz coverage — intermediate/advanced terms are meant to carry ~5 questions, beginner terms are flashcards-only. A re-tag can leave some newly int/adv terms without questions yet, and some newly beginner terms still carrying questions. Neither breaks the app (the quiz reads difficulty as a soft priority and the validation trigger only needs it non-null), but after applying I'll compute both cascades and hand you the follow-up — which terms now need questions authored, and which beginner-with-questions to leave or retire. So this re-balance is step 1; a small coverage-reconciliation plan follows it.</div>
+
+<p class="foot">Report-only, ≤20 direct-write subagents, no committee. Stop at a file boundary if budget runs low and name the last file done. — Computer A</p>
+</div></body></html>

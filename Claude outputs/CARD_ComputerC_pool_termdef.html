@@ -1,0 +1,63 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pool Term/Definition Audit</title>
+<style>
+:root{--bg:#0f1216;--card:#171c22;--ink:#e9eef4;--mut:#9aa7b4;--line:#2a323c;--gold:#d8b04a;--green:#3ecf8e;--amber:#e5b567;--blue:#6fb2ff;--red:#ff6b6b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:24px 18px 90px}
+h1{font-size:22px;margin:0 0 2px}.sub{color:var(--mut);font-size:13px;margin:0 0 16px}
+h2{font-size:15px;margin:24px 0 6px;border-bottom:1px solid var(--line);padding-bottom:6px}
+.lead{background:#12181f;border:1px solid var(--line);border-radius:10px;padding:13px 15px;font-size:14.5px}
+.grid{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;min-width:96px}
+.stat .n{font-size:22px;font-weight:800;color:#fff}.stat .l{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px}
+.item{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:11px 14px;margin:9px 0;font-size:14px}
+code{background:#0d1014;border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:12.5px}
+b{color:#fff}.mut{color:var(--mut)}.g{color:var(--green)}.a{color:var(--amber)}.r{color:var(--red)}
+table{border-collapse:collapse;width:100%;font-size:13.5px;margin:6px 0}
+th,td{border:1px solid var(--line);padding:5px 9px;text-align:left}th{color:var(--mut);font-weight:600}
+td.n{text-align:right}
+.pill{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:999px;border:1px solid;margin-left:6px}
+.pill.new{color:var(--blue);border-color:#274a6e;background:#0e1c2b}
+.foot{color:var(--mut);font-size:12px;margin-top:22px;border-top:1px solid var(--line);padding-top:10px}
+</style></head><body><div class="wrap">
+<h1>Computer C — Pool Term/Definition Audit <span class="pill new">LAST QUIZ SLICE</span></h1>
+<p class="sub">Pro Audio Training Academy · report-only · live quiz_questions pulled 2026-09-08 · Trip 1</p>
+
+<div class="lead"><b>The final un-audited quiz slice.</b> The graded bank (you/C) and scenario bank (B) are done. These <b>292 rows</b> are the <b>pool-model term/definition</b> items — a different answer model that has never been accuracy-audited. Each row serves answers by <i>drawing</i> from a <code>correct_pool</code> and a <code>wrong_pool</code>, so the real audit surface is <b>4,421 live answer lines</b>, not 292 questions.</div>
+
+<div class="grid">
+<div class="stat"><div class="n">292</div><div class="l">items</div></div>
+<div class="stat"><div class="n">4,421</div><div class="l">answer lines</div></div>
+<div class="stat"><div class="n">10</div><div class="l">topics</div></div>
+<div class="stat"><div class="n">50</div><div class="l">pure-pool SAFE</div></div>
+</div>
+
+<h2>Why this lens is new</h2>
+<div class="item">Every prior audit checked <b>one key per question</b>. Here there is no single key: the app draws the correct answer from a pool of 1–5 and the distractors from a pool of 12. <b>Every pool entry is independently learner-facing</b> — a wrong line in a <code>correct_pool</code> teaches a falsehood as correct; a true line in a <code>wrong_pool</code> marks a right answer wrong. C audits <b>each entry</b>. Safety rows (97, P0-first) are the priority.</div>
+
+<h2>Scope by topic (P0 first)</h2>
+<table>
+<tr><th>Topic</th><th class="n">items</th><th class="n">answer lines</th></tr>
+<tr><td>Pro Audio Safety <b class="a">P0</b></td><td class="n">97</td><td class="n">1,461</td></tr>
+<tr><td>Vehicle Audio</td><td class="n">48</td><td class="n">733</td></tr>
+<tr><td>RF Wireless Systems</td><td class="n">45</td><td class="n">682</td></tr>
+<tr><td>Equalization (EQ)</td><td class="n">33</td><td class="n">495</td></tr>
+<tr><td>Amplifiers</td><td class="n">25</td><td class="n">383</td></tr>
+<tr><td>Analog Live Sound</td><td class="n">20</td><td class="n">302</td></tr>
+<tr><td>Signal Path &amp; Levels</td><td class="n">18</td><td class="n">276</td></tr>
+<tr><td>Digital Live Sound</td><td class="n">4</td><td class="n">60</td></tr>
+<tr><td>HiFi Consumer Audio</td><td class="n">1</td><td class="n">15</td></tr>
+<tr><td>Orchestra Pit &amp; Ensemble Layout</td><td class="n">1</td><td class="n">14</td></tr>
+</table>
+
+<h2>The packet (self-contained, no DB/repo access)</h2>
+<div class="item"><b>START_HERE_ComputerC.md</b> — the pool model explained + the 7 things to hunt + severity rule.</div>
+<div class="item"><b>MANIFEST.json</b> — 10 topic files, priority order (Pro Audio Safety first).</div>
+<div class="item"><b>items/*.jsonl</b> — one row per line: prompt, both pools, explanation, answer_style, and any legacy MC set.</div>
+<div class="item"><b>RETURN_SCHEMA_EXAMPLE.jsonl</b> — the per-finding shape (names the exact pool + entry index + verbatim quote).</div>
+
+<h2>Flow back</h2>
+<div class="item">C audits P0-first → returns zipped <code>findings/</code> + a short summary. Computer A QAs every finding, re-applies the severity test, and packages one guarded SQL run. <b>Fix-time note (A's lane, not C's):</b> the 50 pure-pool <code>SAFE-*</code> rows are currently invalid under the graded validation trigger (no <code>options_json</code>/<code>correct_answer</code>), so any fix to those 50 needs a structural repair before an in-place update — your call on that content stays parked. The other 242 update cleanly.</div>
+
+<p class="foot">Report-only, ≤20 direct-write subagents, no committee. Stop at a file boundary if budget runs low and name the last file done. — Computer A</p>
+</div></body></html>
