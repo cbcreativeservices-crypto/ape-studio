@@ -529,14 +529,22 @@ function StabilityScene({ vizW }: { vizW: number }) {
 /* Scene 3 — FREQUENCY vs PITCH                                        */
 /* ------------------------------------------------------------------ */
 
-/** Scripted needle positions in cents — a fixed tour, not a measurement. */
-const CENTS_STEPS = [12, -8, 4, 0, -3, 0] as const;
-const GAUGE_H = 150;
-const NEEDLE_LEN = 86;
-/** ±50 cents maps to ±45° of needle travel. */
-const DEG_PER_CENT = 0.9;
-/** The tuner's "in tune" window shown on the dial, in cents. */
-const IN_TUNE_CENTS = 3;
+/** Scripted cents positions — a fixed tour (sharp, flat, boundary, settle),
+ *  not a measurement. All within the tuner's ±30¢ scale. */
+const CENTS_STEPS = [18, -12, 6, 0, -3, 0] as const;
+/**
+ * The SHIPPING tuner (src/screens/tools/SkinnedTunerVu.tsx, owner 2026-09-10)
+ * is a horizontal edgewise VU: a VERTICAL BLADE that travels sideways across a
+ * printed ±30¢ scale — flat (♭) left, sharp (♯) right, a green ±5¢ in-tune zone
+ * at centre. This demo mirrors that instrument. It previously drew the RETIRED
+ * arc/needle "gas gauge," which is no longer anywhere in the app.
+ */
+const TUNER_MAX_CENTS = 30;
+const IN_TUNE_CENTS = 5;
+const STRIP_H = 120;
+const STRIP_TOP = 22; // tick-zone top inside the window
+const STRIP_BASE = 94; // baseline the ticks rise from; blade foot glow sits here
+const BLADE_W = 3;
 
 /** Octave ladder — log-spaced: equal steps because each octave DOUBLES Hz. */
 const OCTAVE_NOTES = [
@@ -547,11 +555,6 @@ const OCTAVE_NOTES = [
 ] as const;
 const MAP_SVG_H = 90;
 const MAP_AXIS_Y = 42;
-
-function polar(cx: number, cy: number, r: number, deg: number) {
-  const rad = (deg * Math.PI) / 180;
-  return { x: cx + r * Math.sin(rad), y: cy - r * Math.cos(rad) };
-}
 
 function TunerScene({ vizW }: { vizW: number }) {
   const [stepIdx, setStepIdx] = useState(0);
@@ -567,7 +570,11 @@ function TunerScene({ vizW }: { vizW: number }) {
       toValue: cents,
       duration: 650,
       easing: Easing.out(Easing.cubic),
-      useNativeDriver: true,
+      // NON-native: the blade drives translateX, and RN Animated's native driver
+      // is a no-op on the 8090 web preview (tuner-vu lesson) — which desynced
+      // the blade from the readout there. A single thin View is cheap in JS, and
+      // this keeps blade and cents value in step on BOTH web and device.
+      useNativeDriver: false,
     });
     anim.start();
     const id = setTimeout(() => setStepIdx((i) => (i + 1) % CENTS_STEPS.length), 1500);
@@ -589,28 +596,29 @@ function TunerScene({ vizW }: { vizW: number }) {
     return () => run.stop();
   }, [breathe]);
 
+  const usable = vizW - PAD_X * 2;
   const cx = vizW / 2;
-  const cy = GAUGE_H - 24;
-  const arcStart = polar(cx, cy, 100, -45);
-  const arcEnd = polar(cx, cy, 100, 45);
-  const tuneA = polar(cx, cy, 100, -IN_TUNE_CENTS * DEG_PER_CENT);
-  const tuneB = polar(cx, cy, 100, IN_TUNE_CENTS * DEG_PER_CENT);
-  const plus50 = polar(cx, cy, 114, 45);
+  const half = usable / 2;
+  const xForCent = (c: number) => cx + (c / TUNER_MAX_CENTS) * half;
+  const greenL = xForCent(-IN_TUNE_CENTS);
+  const greenR = xForCent(IN_TUNE_CENTS);
+  const bladeOffset = rot.interpolate({
+    inputRange: [-TUNER_MAX_CENTS, TUNER_MAX_CENTS],
+    outputRange: [-half, half],
+  });
 
   const ticks = useMemo(() => {
-    const out: { key: number; x1: number; y1: number; x2: number; y2: number; major: boolean }[] = [];
-    for (let c = -50; c <= 50; c += 10) {
-      const deg = c * DEG_PER_CENT;
-      const major = c === -50 || c === 0 || c === 50;
-      const a = polar(cx, cy, major ? 88 : 93, deg);
-      const b = polar(cx, cy, 100, deg);
-      out.push({ key: c, x1: a.x, y1: a.y, x2: b.x, y2: b.y, major });
+    const out: { c: number; major: boolean }[] = [];
+    for (let c = -TUNER_MAX_CENTS; c <= TUNER_MAX_CENTS; c += 5) {
+      out.push({ c, major: c === -TUNER_MAX_CENTS || c === 0 || c === TUNER_MAX_CENTS });
     }
     return out;
-  }, [cx, cy]);
+  }, []);
 
   const centsText = cents > 0 ? `+${cents}` : `${cents}`;
   const inTune = Math.abs(cents) <= IN_TUNE_CENTS;
+  const state = inTune ? 'IN TUNE' : cents < 0 ? 'FLAT' : 'SHARP';
+  const stateColor = inTune ? colors.green : colors.amber;
 
   const mapUsable = vizW - PAD_X * 2;
   const mapX = (i: number) => PAD_X + (mapUsable * i) / (OCTAVE_NOTES.length - 1);
@@ -623,101 +631,106 @@ function TunerScene({ vizW }: { vizW: number }) {
         <Text style={styles.tunerArrow}>{'→'}</Text>
         <Text style={styles.tunerNote}>A4</Text>
       </View>
-      <View style={{ height: GAUGE_H }}>
-        <Svg width={vizW} height={GAUGE_H}>
-          <Path
-            d={`M ${arcStart.x} ${arcStart.y} A 100 100 0 0 1 ${arcEnd.x} ${arcEnd.y}`}
-            stroke={colors.steelBorder}
-            strokeWidth={2}
-            fill="none"
+
+      {/* Edgewise cents strip — the SHIPPING tuner: a vertical blade travelling
+          horizontally across a ±30¢ scale with a green ±5¢ zone. Replaces the
+          retired arc/needle gauge (owner 2026-09-13). */}
+      <View style={styles.tunerWindow}>
+        <Svg width={vizW} height={STRIP_H}>
+          {/* green in-tune zone — the only green on the face */}
+          <Rect
+            x={greenL}
+            y={STRIP_TOP}
+            width={greenR - greenL}
+            height={STRIP_BASE - STRIP_TOP}
+            fill={colors.green}
+            opacity={0.14}
+            rx={2}
           />
-          {/* The in-tune window — the only green on the dial */}
-          <Path
-            d={`M ${tuneA.x} ${tuneA.y} A 100 100 0 0 1 ${tuneB.x} ${tuneB.y}`}
-            stroke={colors.green}
-            strokeWidth={4}
-            strokeLinecap="round"
-            opacity={0.85}
-            fill="none"
-          />
-          <Line x1={cx + 4} y1={28} x2={cx + 34} y2={31} stroke={LEADER} strokeWidth={1} />
-          <SvgText
-            x={cx + 38}
-            y={34}
-            fill={colors.amber}
-            fontFamily={fonts.oswaldSemiBold}
-            fontSize={9.5}
-            letterSpacing={1}
-          >
-            {`IN TUNE ±${IN_TUNE_CENTS} ¢`}
-          </SvgText>
-          {ticks.map((t) => (
+          <Line x1={greenL} y1={STRIP_TOP} x2={greenL} y2={STRIP_BASE} stroke={colors.green} strokeWidth={1.5} opacity={0.7} />
+          <Line x1={greenR} y1={STRIP_TOP} x2={greenR} y2={STRIP_BASE} stroke={colors.green} strokeWidth={1.5} opacity={0.7} />
+
+          {/* 1¢ fine ticks inside the zone (as the real face prints them) */}
+          {Array.from({ length: 9 }, (_, k) => k - 4).map((c) => (
             <Line
-              key={t.key}
-              x1={t.x1}
-              y1={t.y1}
-              x2={t.x2}
-              y2={t.y2}
-              stroke={t.key === 0 ? colors.amber : t.major ? colors.textSub : colors.hairlineAlt}
-              strokeWidth={t.key === 0 ? 2.5 : 1.5}
+              key={`f${c}`}
+              x1={xForCent(c)}
+              y1={STRIP_TOP}
+              x2={xForCent(c)}
+              y2={STRIP_TOP + 6}
+              stroke={colors.green}
+              strokeWidth={1}
+              opacity={0.5}
             />
           ))}
-          {[-50, 0, 50].map((c) => {
-            const p = polar(cx, cy, 114, c * DEG_PER_CENT);
-            return (
-              <SvgText
-                key={c}
-                x={p.x}
-                y={p.y + 4}
-                fill={colors.textSub}
-                fontFamily={fonts.mono}
-                fontSize={12}
-                textAnchor="middle"
-              >
-                {c > 0 ? `+${c}` : `${c}`}
-              </SvgText>
-            );
-          })}
-          <SvgText
-            x={plus50.x}
-            y={plus50.y + 17}
-            fill={colors.textSub}
-            fontFamily={fonts.oswaldSemiBold}
-            fontSize={9}
-            letterSpacing={0.8}
-            textAnchor="middle"
-            opacity={0.85}
-          >
-            = ½ SEMITONE
+
+          {/* 5¢ scale ticks; 0¢ is the amber centre */}
+          {ticks.map((t) => (
+            <Line
+              key={t.c}
+              x1={xForCent(t.c)}
+              y1={t.major ? STRIP_TOP : STRIP_TOP + 4}
+              x2={xForCent(t.c)}
+              y2={STRIP_BASE}
+              stroke={t.c === 0 ? colors.amber : t.major ? colors.textSub : colors.hairlineAlt}
+              strokeWidth={t.c === 0 ? 2.5 : 1.5}
+            />
+          ))}
+
+          {/* signed scale numbers */}
+          {[-30, -15, 0, 15, 30].map((c) => (
+            <SvgText
+              key={`n${c}`}
+              x={xForCent(c)}
+              y={STRIP_BASE + 15}
+              fill={c === 0 ? colors.amber : colors.textSub}
+              fontFamily={fonts.mono}
+              fontSize={11}
+              textAnchor="middle"
+            >
+              {c > 0 ? `+${c}` : `${c}`}
+            </SvgText>
+          ))}
+
+          {/* centred in-tune callout above the zone; flat/sharp at the ends */}
+          <SvgText x={cx} y={11} fill={colors.amber} fontFamily={fonts.oswaldSemiBold} fontSize={9.5} letterSpacing={1} textAnchor="middle">
+            {`IN TUNE ±${IN_TUNE_CENTS} ¢`}
+          </SvgText>
+          <SvgText x={PAD_X} y={11} fill={colors.textSub} fontFamily={fonts.oswaldSemiBold} fontSize={9} letterSpacing={1}>
+            ♭ FLAT
+          </SvgText>
+          <SvgText x={vizW - PAD_X} y={11} fill={colors.textSub} fontFamily={fonts.oswaldSemiBold} fontSize={9} letterSpacing={1} textAnchor="end">
+            SHARP ♯
           </SvgText>
         </Svg>
-        {/* Needle — rotates about the pivot via a double-height container */}
+
+        {/* Blade foot glow — a soft lamp at the blade's base, travelling with it
+            (owner tuner request). Native-driver translateX only. */}
+        <Animated.View
+          pointerEvents="none"
+          style={[styles.bladeGlow, { left: cx - 11, top: STRIP_BASE - 13, transform: [{ translateX: bladeOffset }] }]}
+        />
+        {/* Blade — ALWAYS vertical, pure horizontal travel, exact per-cent
+            registration (the real tuner's cardinal rule). */}
         <Animated.View
           pointerEvents="none"
           style={[
-            styles.needleBox,
+            styles.blade,
             {
-              left: cx - 1.5,
-              top: cy - NEEDLE_LEN,
-              height: NEEDLE_LEN * 2,
-              transform: [
-                {
-                  rotate: rot.interpolate({
-                    inputRange: [-50, 50],
-                    outputRange: ['-45deg', '45deg'],
-                  }),
-                },
-              ],
+              left: cx - BLADE_W / 2,
+              top: STRIP_TOP,
+              height: STRIP_BASE - STRIP_TOP,
+              backgroundColor: stateColor,
+              transform: [{ translateX: bladeOffset }],
             },
           ]}
-        >
-          <View style={styles.needle} />
-        </Animated.View>
-        <View pointerEvents="none" style={[styles.needleHub, { left: cx - 6, top: cy - 6 }]} />
-        <View pointerEvents="none" style={styles.centsBadge}>
-          <Text style={styles.readoutLabel}>CENTS</Text>
-          <Text style={[styles.centsValue, { color: inTune ? colors.green : colors.amber }]}>{centsText}{'¢'}</Text>
-        </View>
+        />
+      </View>
+
+      {/* live readout */}
+      <View style={styles.tunerReadout}>
+        <Text style={[styles.tunerCents, { color: stateColor }]}>{centsText}{' ¢'}</Text>
+        <Text style={[styles.tunerState, { color: stateColor }]}>{state}</Text>
         <Text style={styles.refBadge}>REF A4 = 440 Hz</Text>
       </View>
 
@@ -987,32 +1000,24 @@ const styles = StyleSheet.create({
   stabDot: { position: 'absolute', width: 12, height: 12, borderRadius: 6 },
   counterLine: { fontFamily: fonts.mono, fontSize: 12, paddingHorizontal: 2, marginTop: 2 },
 
-  /* Scene 3 */
-  tunerHeader: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'center', gap: 10, marginBottom: 4 },
+  /* Scene 3 — edgewise cents strip (mirrors SkinnedTunerVu) */
+  tunerHeader: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'center', gap: 10, marginBottom: 6 },
   tunerHz: { fontFamily: fonts.mono, fontSize: 24, color: colors.amber },
   tunerArrow: { fontFamily: fonts.barlowRegular, fontSize: 18, color: colors.textSub },
   tunerNote: { fontFamily: fonts.oswaldSemiBold, fontSize: 24, letterSpacing: 1, color: colors.textPrimary },
-  needleBox: { position: 'absolute', width: 3, alignItems: 'center' },
-  needle: { width: 3, height: NEEDLE_LEN - 4, borderRadius: 1.5, backgroundColor: colors.amber },
-  needleHub: {
-    position: 'absolute',
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: '#2a2a30',
+  tunerWindow: {
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: colors.steelBorder,
+    borderColor: 'rgba(255,255,255,.07)',
+    backgroundColor: '#0b0c0e',
+    overflow: 'hidden',
   },
-  centsBadge: { position: 'absolute', top: 0, right: 2, alignItems: 'flex-end' },
-  centsValue: { fontFamily: fonts.mono, fontSize: 17, marginTop: 1 },
-  refBadge: {
-    position: 'absolute',
-    top: 0,
-    left: 2,
-    fontFamily: fonts.mono,
-    fontSize: 12,
-    color: colors.textSub,
-  },
+  blade: { position: 'absolute', width: BLADE_W, borderRadius: 1.5 },
+  bladeGlow: { position: 'absolute', width: 22, height: 15, borderRadius: 11, backgroundColor: colors.amber, opacity: 0.26 },
+  tunerReadout: { flexDirection: 'row', alignItems: 'baseline', gap: 10, marginTop: 6, paddingHorizontal: 2 },
+  tunerCents: { fontFamily: fonts.mono, fontSize: 20 },
+  tunerState: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.4 },
+  refBadge: { fontFamily: fonts.mono, fontSize: 11, color: colors.textSub, marginLeft: 'auto' },
   mapLabel: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 10.5,
