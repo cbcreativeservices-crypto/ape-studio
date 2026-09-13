@@ -22,10 +22,17 @@ import { useSamplingActive } from '../features/intro/onboardingSampling';
 
 export const MAX_OPENS = 5;
 
-/** Storage keys, exported so a dev reset can clear exactly these. */
+/** Storage keys, exported so a dev reset can clear exactly these.
+ *  Pillar B expansion (plan §3, 2026-09-13): the app-wide budget is 5–8 tips
+ *  total, one interruption at a time — add a key only against a real
+ *  discoverability risk (see plan §11 inventory), never per screen by habit. */
 export const COACH_KEYS = {
   glossary: 'ape:coach:glossary',
   flashcards: 'ape:coach:flashcards',
+  dashboardJog: 'ape:coach:dashjog', // the jog dial IS the topic selector — invisible until held
+  toolsHub: 'ape:coach:toolshub', // live tile displays don't read as buttons
+  splSettings: 'ape:coach:splsettings', // bezel keys hide RANGE/WEIGHTING/RESPONSE/HOLD
+  labControls: 'ape:coach:labcontrols', // lab controls are draggable, not just diagrams
 } as const;
 
 export async function resetCoachMarks(): Promise<void> {

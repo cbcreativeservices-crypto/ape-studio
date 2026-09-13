@@ -96,6 +96,8 @@ import { LowLightDim } from '../../features/settings/LowLightLayer';
 import { consumeDevPreview } from '../../features/dev/devPreview';
 import { devBypass } from '../../config/devMode';
 import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
+import { CoachMark } from '../../components/CoachMark';
+import { COACH_KEYS, useCoachMark } from '../../lib/coachMark';
 import { LearningIntroSheet } from '../../features/intro/LearningIntroSheet';
 import { getCourseIntro, getTopicIntro, isIntroEmpty } from '../../features/intro/learningIntros';
 import { replayQuizSubmissions, QUIZ_SIZE, QUIZ_PASS} from '../../features/quiz/api';
@@ -586,6 +588,9 @@ export function DashboardScreen() {
   const jogSpin = useSharedValue(0);
   const jogActiveRef = useRef(false);
   const [jogActive, setJogActive] = useState(false);
+  // Pillar B coach mark (plan §3): the dial IS the topic selector but reads as
+  // decoration until held. Retires after 2 real turns per open, 5 opens.
+  const jogCoach = useCoachMark(COACH_KEYS.dashboardJog, 2);
   // CM6 (Booth 2026-07-11): commercialMode renders a PUBLIC course (seq order
   // from the seed) through this same screen; institutional path unchanged.
   const { commercialMode, caps, entitlement, resolved } = useEntitlement();
@@ -1968,6 +1973,7 @@ export function DashboardScreen() {
           const next = (((scrollIdxRef.current + dir) % n) + n) % n;
           scrollIdxRef.current = next;
           setScrollIdx(next);
+          jogCoach.registerAction(); // taught action: a real turn of the wheel
         }}
         onClose={() => {
           jogActiveRef.current = false;
@@ -2000,6 +2006,12 @@ export function DashboardScreen() {
           setDeckOpen(false);
         }}
       />
+
+      {/* Jog-dial reveal (Pillar B, plan §3) — only meaningful with somewhere
+          to spin to; hidden while the big wheel is open (it teaches itself). */}
+      {jogCoach.visible && !jogActive && topics.length > 1 ? (
+        <CoachMark text="Hold the dial and turn — spin straight to any topic" bottom={18} />
+      ) : null}
 
       {/* Method-cards intro placeholder (Booth 2026-07-18). */}
       <ScreenIntroOverlay introKey="dashboard" />

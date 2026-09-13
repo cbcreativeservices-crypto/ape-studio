@@ -7,6 +7,8 @@
  */
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type FC } from 'react';
 import { markToolNavigate, markToolTap } from '../../features/tools/devTiming';
+import { CoachMark } from '../../components/CoachMark';
+import { COACH_KEYS, useCoachMark } from '../../lib/coachMark';
 import { Animated, Easing, InteractionManager, Platform, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
@@ -921,15 +923,20 @@ export function ToolsHubScreen({ navigation }: Props) {
   // owner spec 2026-07-29). The hub's preview mic is released BEFORE
   // navigating so the tool's own engine session never races the hub teardown
   // (single native session, no refcount — hubPreviewEngine header).
+  // Pillar B coach mark (plan §3): the live tile displays read as meters, not
+  // buttons — say once that the display IS the way in. Retires on real opens.
+  const hubCoach = useCoachMark(COACH_KEYS.toolsHub, 1);
+  const { registerAction: hubCoachAction } = hubCoach;
   const { stopForNavigation } = hubPreview;
   const openTool = useCallback(
     (key: ToolKey) => {
+      hubCoachAction(); // taught action: opening a tool from its tile
       stopForNavigation();
       if (key === 'hzcounter') navigation.navigate('FrequencyCounter');
       else if (key === 'multimeter') navigation.navigate('MultiMeter');
       else navigation.navigate('ToolInfo', { toolKey: key });
     },
-    [stopForNavigation, navigation],
+    [hubCoachAction, stopForNavigation, navigation],
   );
   // Defer the tile displays until the open transition finishes so the heavy SVG
   // art / skin PNG / minis never render synchronously during navigation (owner
@@ -1181,6 +1188,11 @@ export function ToolsHubScreen({ navigation }: Props) {
           )}
         </ScrollView>
       </View>
+
+      {/* Tile reveal (Pillar B, plan §3) — sits above this screen's own nav bar. */}
+      {hubCoach.visible ? (
+        <CoachMark text="Tap any display to open the full instrument" bottom={insets.bottom + 72} />
+      ) : null}
 
       {/* Bottom nav — this screen lives outside MainTabs, so we render our own
           bar routing back into the tabs (Booth 2026-07-11). */}

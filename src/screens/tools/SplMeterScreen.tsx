@@ -28,6 +28,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, Animated, BackHandler, Pressable, ScrollView, StatusBar, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { animationsAllowed } from '../../features/settings/a11y';
+import { CoachMark } from '../../components/CoachMark';
+import { COACH_KEYS, useCoachMark } from '../../lib/coachMark';
 
 /** Digital clipping — a sample at or within a whisker of full scale. Kept as a
  *  named predicate so the CLIP token, the spoken label and the readout colour
@@ -810,6 +812,13 @@ export function SplMeterScreen({ navigation }: Props) {
   // Which setting popup is open from the VU home's bottom control bar (owner
   // 2026-08-18): Range · Weighting · Response · Peak Hold.
   const [settingPopup, setSettingPopup] = useState<null | 'range' | 'unit' | 'response' | 'hold'>(null);
+  // Pillar B coach mark (plan §3 / §11 inventory): the bezel keys hide the
+  // meter's real controls. Taught action = opening any setting popup.
+  const splCoach = useCoachMark(COACH_KEYS.splSettings, 1);
+  const { registerAction: splCoachAction } = splCoach;
+  useEffect(() => {
+    if (settingPopup != null) splCoachAction();
+  }, [settingPopup, splCoachAction]);
   // Both fullscreens are LANDSCAPE-ONLY (owner 2026-08-19): force landscape on
   // open so the phone never needs flipping, and re-lock PORTRAIT the instant
   // both are closed so the portrait-only home never lingers sideways.
@@ -2283,6 +2292,12 @@ export function SplMeterScreen({ navigation }: Props) {
         nominalStart={NOMINAL_OFFSET}
         onClose={() => setContribOffset(null)}
       />
+
+      {/* Bezel-key reveal (Pillar B, plan §3) — digital view only, never over a
+          fullscreen overlay or an open popup. */}
+      {view === 'digital' && splCoach.visible && settingPopup == null && !readoutFsOpen ? (
+        <CoachMark text="The bezel keys set RANGE · WEIGHTING · RESPONSE · HOLD" bottom={insets.bottom + 24} />
+      ) : null}
 
       {/* ── Fullscreen # readout (de-modalized 2026-08-19): the number ALONE (no
           side toggles), with PEAK (top-left) and PEAK HOLD (top-right). The number

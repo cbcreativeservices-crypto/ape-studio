@@ -74,9 +74,14 @@ export const SCREEN_INTROS: Record<
       'PLACEHOLDER — first-user welcome tutorial. This will become the guided first-run tour for brand-new users: creating your profile, picking a course, and how studying earns awards. Tap anywhere to continue.',
   },
   dashboard: {
-    title: 'Method Cards',
+    // DRAFT (2026-09-13, plan §3) — awaiting owner ratification; flip
+    // `placeholder` to false on the owner's word, not before.
+    title: 'Your Study Dashboard',
     body:
-      'PLACEHOLDER — method cards intro. This will teach the study loop: pick a topic, work the methods (flashcards, fill-in, matching…), then take the topic quiz to bank it toward your certificate. Tap anywhere to continue.',
+      'Every topic here follows the same loop.\n\n' +
+      'Work the study methods in order — each one unlocks the next — then take the Topic Quiz. Passing the quiz banks the topic toward its certificate.\n\n' +
+      'Swipe the topic card to change topics, or hold the small dial to spin straight to any topic in your deck. Tap the topic card itself to see every term inside it.',
+    button: 'Start Studying',
   },
   // T1 — first Flashcards entry (final copy, user-provided 2026-07-18).
   flashcards: {
@@ -124,8 +129,16 @@ export const SCREEN_INTROS: Record<
       'Thank you for using the Pro Audio Training Academy Glossary. We hope it becomes a trusted resource throughout your audio journey.',
   },
   awards: {
-    title: 'Awards',
+    // DRAFT (2026-09-13, plan §3) — rewritten for Achievements v3 (three
+    // categories, no trophy wall). Awaiting owner ratification; flip
+    // `placeholder` to false on the owner's word, not before.
+    title: 'Your Trophy Case',
     body:
-      'PLACEHOLDER — awards intro. This will explain trophies, certificates, and how topic quizzes count toward completion. Tap anywhere to continue.',
+      'Everything you earn lives in three collections.\n\n' +
+      'TOPICS — every topic quiz you pass is banked here.\n\n' +
+      'CERTIFICATES — complete a certificate’s required topics and labs to earn it.\n\n' +
+      'PROGRAMS — related certificates stack into full programs.\n\n' +
+      'Tap any collection to see what you’ve earned and what’s still ahead.',
+    button: 'Tap anywhere to continue',
   },
 };

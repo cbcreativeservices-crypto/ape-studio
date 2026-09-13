@@ -23,6 +23,8 @@ import { useNavigation } from '@react-navigation/native';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { GuidedLessonBody, GuidedLessonSheet, getLabLesson, type LabId } from '../../features/lab/guidedLessons';
 import { AccuracyNote } from '../../components/AccuracyNote';
+import { CoachMark } from '../../components/CoachMark';
+import { COACH_KEYS, useCoachMark } from '../../lib/coachMark';
 import { colors, fonts } from '../../theme/tokens';
 import { ScrollLockCtx, ScrollLockProvider, useScrollLock } from './scrollLock';
 import { RackUnit } from './rack/RackUnit';
@@ -270,6 +272,16 @@ export function LabShell({
   const [scrollLocked, setScrollLocked] = useState(false);
   const [lessonOpen, setLessonOpen] = useState(false);
   const lesson = getLabLesson(labId);
+  // Pillar B coach mark (plan §3), LEGACY labs only: in-panel drag editors look
+  // like diagrams until touched. One shared key across every LabShell lab.
+  // Rack-mode labs skip it — the pinned faceplate + first-move caption already
+  // teach themselves, and the pill would sit on the dock. Taught action = a
+  // drag editor claiming the touch (the scroll lock engaging).
+  const labCoach = useCoachMark(COACH_KEYS.labControls, 2);
+  const { registerAction: labCoachAction } = labCoach;
+  useEffect(() => {
+    if (scrollLocked) labCoachAction();
+  }, [scrollLocked, labCoachAction]);
 
   // Audio-output prompt on entry (owner-confirmed 2026-07-25): non-blocking.
   useEffect(() => {
@@ -405,6 +417,11 @@ export function LabShell({
           </ScrollView>
         </ScrollLockCtx.Provider>
       )}
+
+      {/* Drag-editor reveal (Pillar B, plan §3) — legacy explore mode only. */}
+      {!rack && mode === 'explore' && labCoach.visible && !lessonOpen ? (
+        <CoachMark text="The controls are live — drag a slider and watch the lab respond" bottom={insets.bottom + 20} />
+      ) : null}
 
       <GuidedLessonSheet visible={lessonOpen} lesson={lesson} onClose={() => setLessonOpen(false)} />
     </View>

@@ -19,6 +19,7 @@ import { TrophyImage } from '../../components/TrophyImage';
 import { StudioButton } from '../../components/StudioButton';
 import { CredentialBadge, type CredentialKind } from '../../components/CredentialBadge';
 import { fetchAchievementsHub, type HubData } from '../../features/achievements/api';
+import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
 
 const MINI = 44;
 
@@ -173,6 +174,10 @@ export function AchievementsHomeScreen() {
         </>
         )}
       </ScrollView>
+
+      {/* Trophy-case intro (Pillar B, plan §3) — draft copy awaits owner
+          ratification; hidden from real users while placeholder-tagged. */}
+      <ScreenIntroOverlay introKey="awards" />
     </View>
   );
 }
