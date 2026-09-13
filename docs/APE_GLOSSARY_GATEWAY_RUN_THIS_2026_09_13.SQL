@@ -1,0 +1,317 @@
+-- =====================================================================
+-- GLOSSARY GATEWAY — THE REMAINING SERVER WORK, IN ORDER
+-- Pro Audio Training Academy · project yjgolswjggmlpeowvtxr · 2026-09-13
+-- =====================================================================
+--
+-- The client half is already shipped and is INERT until STEP 2 below runs.
+-- Nothing in this file is applied yet.
+--
+-- HOW TO RUN IT: Supabase dashboard → SQL Editor → paste ONE step at a time,
+-- in order, and read the verification block that follows each one. Do NOT paste
+-- the whole file in one go — STEP 5 must not run until the client build with
+-- the gateway is actually on phones.
+--
+--   STEP 0  Enable anonymous sign-ins          ← dashboard toggle, NOT SQL
+--   STEP 1  Verify the ground truth            (read-only, already true)
+--   STEP 2  Create the browse view             ← THE FEATURE GOES LIVE HERE
+--   STEP 3  Create the counting gateway RPC
+--   STEP 4  Schedule the 7-day purge
+--   STEP 5  The revokes                        ← LAST, and only after step 5a
+--   STEP 6  Prove the revokes actually took
+--
+-- Full reasoning: docs/APE_GLOSSARY_DEVICE_ID_BUILD_PLAN_2026_09_13.md
+-- Already applied, separately: the glossary_study_v content mask
+--   (docs/APE_GLOSSARY_STUDY_V_MASK_2026_09_13.SQL)
+--
+-- =====================================================================
+
+
+-- =====================================================================
+-- STEP 0 — ENABLE ANONYMOUS SIGN-INS  (dashboard, ~20 seconds, NOT SQL)
+-- =====================================================================
+--
+-- This is the ONE part that has no SQL and no API — it is a project setting.
+--
+--   Supabase dashboard → Authentication → Sign In / Providers
+--   → find "Allow anonymous sign-ins" → turn it ON → Save
+--
+-- It is OFF by default. Without it `supabase.auth.signInAnonymously()` fails at
+-- runtime with a 422, and the client FAILS OPEN — the glossary keeps working,
+-- unmetered, and nobody is ever asked for consent. So the symptom of skipping
+-- this step is SILENCE, not breakage. Check the toggle rather than assume it.
+--
+-- Do this BEFORE step 2, or the first guests to open the glossary after the
+-- view appears will silently fall through to the old unmetered path.
+
+
+-- =====================================================================
+-- STEP 1 — GROUND TRUTH  (read-only; all four were verified 2026-09-13)
+-- =====================================================================
+-- Re-run it to confirm nothing drifted. Expected:
+--   pg_cron 1.6.4 · usage_fk_ondelete 'c' (CASCADE) · consume_returns as shown
+--   · anon_users_today 0
+
+select
+  (select extversion from pg_extension where extname = 'pg_cron')            as pg_cron,
+  (select confdeltype from pg_constraint c
+     join pg_class t on t.oid = c.conrelid
+     join pg_namespace n on n.oid = t.relnamespace
+    where n.nspname = 'public' and t.relname = 'glossary_usage'
+      and c.contype = 'f' limit 1)                                           as usage_fk_ondelete,
+  (select pg_get_function_result(p.oid) from pg_proc p
+     join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public' and p.proname = 'glossary_consume')           as consume_returns,
+  (select count(*) from auth.users where is_anonymous = true)                as anon_users_today;
+
+-- `usage_fk_ondelete = 'c'` is what makes the consent copy TRUE: deleting the
+-- anonymous user in step 4 deletes their definition count with it, with no
+-- extra code. If that ever reads anything but 'c', the dialog's promise
+-- ("deleted automatically after 7 days, along with your definition count") is
+-- no longer accurate and the copy must change before this ships.
+
+
+-- =====================================================================
+-- STEP 2 — THE BROWSE VIEW   ⚠️ THE FEATURE GOES LIVE THE MOMENT THIS RUNS
+-- =====================================================================
+--
+-- Every phone already running the shipped build probes for this view once per
+-- app session. Until now the probe answers "absent" and nothing changes for
+-- anyone. From the second this executes, guests opening the glossary get the
+-- consent dialog. Treat this as the launch, not as plumbing.
+--
+-- Granted to `authenticated` ONLY. A guest with no device key gets 42501 on it,
+-- and the client reads that denial as "the gateway is live, go get a key" —
+-- that is the designed signal, not a failure.
+--
+-- The 120-character teaser is deliberate: it keeps the browsable list readable
+-- as a list rather than a wall of bare words, and it is what makes the 2-line
+-- collapsed preview meaningful. If even that is too much, drop the column and
+-- accept a terms-only list — the client renders either.
+
+create or replace view public.glossary_browse_v as
+select
+  g.id,
+  g.term,
+  g.category,
+  g.difficulty,
+  g.achievement_id,
+  -- No client role holds a column grant on these two today, so the direct
+  -- select 403s for everyone and the Equations & Formulas filter has always
+  -- shown nothing. Reading them through this view fixes that for free.
+  g.formula_symbolic,
+  g.formula_words,
+  case when public.has_academy_access(auth.uid())
+       then g.definition else left(g.definition, 120) end as definition,
+  case when public.has_academy_access(auth.uid())
+       then g.plain_english else null::text end as plain_english,
+  case when public.has_academy_access(auth.uid())
+       then g.common_mistakes else null::text[] end as common_mistakes
+from public.glossary g;
+
+grant select on public.glossary_browse_v to authenticated;   -- NOT anon
+
+-- VERIFY: expect anon=false, authenticated=true.
+select has_table_privilege('anon', 'public.glossary_browse_v', 'SELECT')          as anon_select,
+       has_table_privilege('authenticated', 'public.glossary_browse_v', 'SELECT') as auth_select;
+
+
+-- =====================================================================
+-- STEP 3 — THE COUNTING GATEWAY
+-- =====================================================================
+--
+-- ⚠️ The column list is WIDER than "the definition". Once step 5 revokes
+-- `glossary`, this RPC is the only way ANY of the detail fields can be read —
+-- by members too. A narrower RPC empties the expanded term for everyone,
+-- silently, and the cause looks nothing like the glossary.
+--
+-- `used` / `lim` / `window_start` ride along so the halfway heads-up and the
+-- lock countdown cost no extra round trip. Verified 2026-09-13:
+-- glossary_consume() returns (used int, lim int, window_start timestamptz,
+-- allowed boolean) — `select * into _u` below matches that exactly.
+--
+-- ⚠️ The two exception MESSAGES are a contract with the client, which matches
+-- on the text, not the SQLSTATE (how errcode 'PGRST' surfaces through PostgREST
+-- is an implementation detail; the message is ours). Keep 'sign_in_required'
+-- and 'weekly_limit_reached' spelled exactly as they are, or
+-- test/glossaryGatewayFault.test.ts is describing an app that does not exist.
+
+create or replace function public.get_glossary_definition(p_id uuid)
+returns table (
+  definition text,
+  plain_english text,
+  purpose_function text,
+  practical_application text,
+  scenario_contexts text[],
+  related_terms text[],
+  category text,
+  difficulty text,
+  common_mistakes text[],
+  used int,
+  lim int,
+  window_start timestamptz
+)
+language plpgsql
+security definer
+set search_path to ''
+as $fn$
+declare _u record;
+begin
+  -- Members are never metered.
+  if public.has_academy_access(auth.uid()) then
+    return query
+      select g.definition, g.plain_english, g.purpose_function,
+             g.practical_application, g.scenario_contexts, g.related_terms,
+             g.category, g.difficulty, g.common_mistakes,
+             null::int, null::int, null::timestamptz
+      from public.glossary g where g.id = p_id;
+    return;
+  end if;
+
+  -- Everyone else must be signed in — which, for a guest, means holding the
+  -- temporary device key they consented to.
+  if auth.uid() is null then
+    raise exception 'sign_in_required' using errcode = 'PGRST';
+  end if;
+
+  select * into _u from public.glossary_consume();
+  if not coalesce(_u.allowed, false) then
+    raise exception 'weekly_limit_reached' using errcode = 'PGRST';
+  end if;
+
+  -- common_mistakes stays member-only, exactly as glossary_full_v masks it.
+  return query
+    select g.definition, g.plain_english, g.purpose_function,
+           g.practical_application, g.scenario_contexts, g.related_terms,
+           g.category, g.difficulty, null::text[],
+           _u.used, _u.lim, _u.window_start
+    from public.glossary g where g.id = p_id;
+end $fn$;
+
+revoke execute on function public.get_glossary_definition(uuid) from public;
+grant  execute on function public.get_glossary_definition(uuid) to authenticated;
+
+-- VERIFY: expect anon_exec=false, auth_exec=true.
+select has_function_privilege('anon', 'public.get_glossary_definition(uuid)', 'EXECUTE')          as anon_exec,
+       has_function_privilege('authenticated', 'public.get_glossary_definition(uuid)', 'EXECUTE') as auth_exec;
+
+-- VERIFY the metering actually counts, WITHOUT leaving a row behind. This
+-- impersonates a fabricated non-member uid inside a transaction and rolls back.
+-- Expect used to increase by 1 between the two calls.
+begin;
+  set local role authenticated;
+  set local request.jwt.claims = '{"sub":"00000000-0000-0000-0000-0000000000ab","role":"authenticated"}';
+  select used, lim, allowed, left(definition, 40) as def_head
+  from public.get_glossary_definition((select id from public.glossary order by term limit 1));
+  select used, lim, allowed
+  from public.get_glossary_definition((select id from public.glossary order by term limit 1 offset 1));
+rollback;
+
+
+-- =====================================================================
+-- STEP 4 — THE 7-DAY PURGE (the promise the consent dialog makes)
+-- =====================================================================
+--
+-- "deleted automatically after 7 days, along with your definition count."
+-- The count goes with it through the CASCADE confirmed in step 1 — no extra
+-- code. 03:17 rather than a round hour so it does not pile onto the two jobs
+-- already scheduled.
+
+select cron.schedule(
+  'purge-anon-devices',
+  '17 3 * * *',
+  $job$ delete from auth.users
+         where is_anonymous = true
+           and created_at < now() - interval '7 days' $job$
+);
+
+-- VERIFY it is registered and active.
+select jobid, jobname, schedule, active from cron.job where jobname = 'purge-anon-devices';
+
+-- VERIFY THE CASCADE FIRES, on a throwaway row, rolled back. Expect
+-- usage_rows_before = 1 and usage_rows_after = 0. Do not skip this: the
+-- consent copy is only true if it passes.
+begin;
+  insert into auth.users (id, instance_id, aud, role, is_anonymous, created_at, updated_at)
+  values ('00000000-0000-0000-0000-0000000000ff', '00000000-0000-0000-0000-000000000000',
+          'authenticated', 'authenticated', true, now(), now());
+  insert into public.glossary_usage (user_id, used, window_start)
+  values ('00000000-0000-0000-0000-0000000000ff', 3, now());
+  select count(*) as usage_rows_before from public.glossary_usage
+   where user_id = '00000000-0000-0000-0000-0000000000ff';
+  delete from auth.users where id = '00000000-0000-0000-0000-0000000000ff';
+  select count(*) as usage_rows_after from public.glossary_usage
+   where user_id = '00000000-0000-0000-0000-0000000000ff';
+rollback;
+-- (glossary_usage is (user_id, window_start, used, updated_at); the two columns
+-- omitted above both carry defaults, checked 2026-09-13. The point of the test
+-- is the DELETE, not the INSERT.)
+
+
+-- =====================================================================
+-- STEP 5 — THE REVOKES.  ⚠️ NOT UNTIL 5a PASSES.
+-- =====================================================================
+--
+-- 5a. STOP. Before running anything below, confirm ALL THREE:
+--
+--   (1) A build containing the gateway client is installed on the phones you
+--       care about — not just committed, INSTALLED. Run it and open the
+--       glossary; you should see the consent dialog as a guest.
+--   (2) Step 0's toggle is ON, and accepting the dialog actually produces a
+--       session (this query returns > 0 after you have tapped AGREE once):
+--         select count(*) from auth.users where is_anonymous = true;
+--   (3) You accept that a signed-out guest — one who taps NOT NOW, or any
+--       older build already on a phone — loses the glossary AND free-topic
+--       study, because the third line below takes `anon`'s last read away.
+--       That is the deliberate end state, but it is a product change beyond
+--       the glossary, so decide it rather than discover it.
+--
+-- Reversed order kills the glossary in every build already installed,
+-- including the ones that will never update. There is no undo for that except
+-- re-granting.
+
+revoke select on public.glossary         from anon, authenticated;
+revoke select on public.glossary_full_v  from anon, authenticated;
+revoke select on public.glossary_study_v from anon;
+
+-- ⚠️ THE 2026-08-28 GOTCHA. A revoke that does not name `public` is a silent
+-- NO-OP when the privilege is held by PUBLIC, which anon and authenticated
+-- inherit. If step 6 shows anything still true, this is why — run:
+--   revoke select on public.glossary        from public;
+--   revoke select on public.glossary_full_v from public;
+
+
+-- =====================================================================
+-- STEP 6 — PROVE IT. "No errors" proves nothing.
+-- =====================================================================
+-- Expected after step 5:
+--   glossary            anon=false auth=false
+--   glossary_full_v     anon=false auth=false
+--   glossary_study_v    anon=false auth=true      (study keeps it, masked)
+--   glossary_browse_v   anon=false auth=true
+--   glossary_topics     anon=true  auth=true      (term links, no definitions)
+
+select c.relname,
+       has_table_privilege('anon', c.oid, 'SELECT')          as anon_select,
+       has_table_privilege('authenticated', c.oid, 'SELECT') as auth_select
+from pg_class c join pg_namespace n on n.oid = c.relnamespace
+where n.nspname = 'public'
+  and c.relname in ('glossary','glossary_full_v','glossary_study_v',
+                    'glossary_browse_v','glossary_topics','glossary_media')
+order by c.relname;
+
+-- And the real question, asked the way an attacker would: is there ANY
+-- client-readable relation left that still carries definition text? Expect
+-- only glossary_browse_v (teasers) and glossary_study_v (masked).
+select distinct c.relname,
+       has_table_privilege('anon', c.oid, 'SELECT')          as anon_select,
+       has_table_privilege('authenticated', c.oid, 'SELECT') as auth_select
+from pg_class c
+join pg_namespace n on n.oid = c.relnamespace
+join information_schema.columns col
+  on col.table_schema = n.nspname and col.table_name = c.relname
+where n.nspname = 'public'
+  and c.relkind in ('r','v','m')
+  and col.column_name in ('definition','plain_english')
+  and (has_table_privilege('anon', c.oid, 'SELECT')
+       or has_table_privilege('authenticated', c.oid, 'SELECT'))
+order by c.relname;
