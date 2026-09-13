@@ -261,6 +261,14 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   // height via onLayout; we step by the lifted card's own height, falling back
   // to DRAG_ROW_H until measured.
   const rowHeights = useRef<Map<string, number>>(new Map());
+  // The RENDERED order of reorderable rows, per section — refreshed every
+  // render (below, after the display arrays are computed) and mutated in
+  // step with each committed swap, so a multi-row drag can size every step
+  // by the height of the row it is actually passing (owner 2026-09-13:
+  // dragging past more than one topic mis-stepped — the old math used the
+  // LIFTED card's height for every step, wrong the moment a thin collapsed
+  // row sits next to a tall expanded one).
+  const rowOrder = useRef<{ topics: string[]; bundles: string[] }>({ topics: [], bundles: [] });
   const rowLayoutProps = (id: string) => ({
     onLayout: (ev: LayoutChangeEvent) => rowHeights.current.set(id, ev.nativeEvent.layout.height),
   });
@@ -359,21 +367,34 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
       },
       onPanResponderMove: (_e, g) => {
         if (liftedIdRef.current !== id || !move) return; // only while lifted
-        const rowH = rowHeights.current.get(id) || DRAG_ROW_H; // real measured height
-        const step = Math.trunc((g.dy - dragAccum.current) / rowH);
-        if (step !== 0) {
-          // The displaced neighbor SLIDES into its new slot instead of
-          // teleporting (owner 2026-09-13). configureNext must precede the
-          // state change that moves layout.
-          if (animationsAllowed()) {
+        // Multi-row drag (owner 2026-09-13): each step is sized by the height
+        // of the NEIGHBOR being passed, read from the rendered order — a thin
+        // collapsed row next to a tall expanded one needs different travel.
+        // The order array is swapped locally on each committed move so the
+        // loop (and later events, until the re-render rebuilds it) stays in
+        // step with what move() just did to the state.
+        const arr = id.startsWith('t:') ? rowOrder.current.topics : rowOrder.current.bundles;
+        let animated = false;
+        for (let guard = 0; guard < 24; guard++) {
+          const remaining = g.dy - dragAccum.current;
+          const dir: -1 | 1 = remaining > 0 ? 1 : -1;
+          const i = arr.indexOf(id);
+          const nb = i >= 0 ? arr[i + dir] : undefined;
+          if (nb == null) break; // end of the list in this direction
+          const nbH = rowHeights.current.get(nb) || DRAG_ROW_H;
+          if (Math.abs(remaining) < nbH) break; // not past the neighbor yet
+          if (!animated && animationsAllowed()) {
+            // The displaced neighbor SLIDES into its new slot instead of
+            // teleporting. configureNext must precede the state change.
             LayoutAnimation.configureNext({
               duration: 140,
               update: { type: LayoutAnimation.Types.easeInEaseOut },
             });
+            animated = true;
           }
-          const dir: -1 | 1 = step > 0 ? 1 : -1;
-          for (let k = 0; k < Math.abs(step); k++) move(dir);
-          dragAccum.current += step * rowH;
+          move(dir);
+          [arr[i], arr[i + dir]] = [arr[i + dir], arr[i]]; // mirror the swap locally
+          dragAccum.current += dir * nbH;
         }
         // Ride under the thumb: finger travel minus the distance already
         // committed as swaps.
@@ -794,6 +815,11 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   // Derived containers respect the filter chips too (bug fix 2026-07-23): they
   // used to ignore them, so incomplete awards leaked into Completed and On Home.
   // Derived awards are never on Home (they aren't added), so 'home' hides them.
+  // Keep the rendered-order ref current (assignment-during-render is this
+  // file's own idiom for render-derived refs).
+  rowOrder.current.topics = displayed.map((e) => `t:${e.gs}`);
+  rowOrder.current.bundles = displayedBundles.map((b) => b.key);
+
   const displayedDerived = useMemo(() => {
     let ds = derivedBundles;
     if (filters.has('home')) ds = [];
