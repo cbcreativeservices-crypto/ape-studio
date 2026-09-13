@@ -42,7 +42,7 @@ import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 import { COPY } from '../../lib/copy';
 import { useCoachMark } from '../../lib/coachMark';
 import { sendFeedback } from '../../lib/feedback';
-import { notify } from '../../lib/confirm';
+import { confirmDialog, notify } from '../../lib/confirm';
 import {
   GLOSSARY_WARN_AT_USED,
   GLOSSARY_WEEK_MS,
@@ -52,6 +52,21 @@ import {
 } from '../../features/glossary/glossaryCap';
 import { collapsedDefinitionLines } from '../../features/glossary/collapsedLines';
 import { GlossaryLockView } from '../../features/glossary/GlossaryLockView';
+import { GlossaryDeviceKeyView } from '../../features/glossary/GlossaryDeviceKeyView';
+import {
+  deviceKeyState,
+  mintDeviceKey,
+  readConsent,
+  writeConsent,
+  type ConsentRecord,
+} from '../../features/glossary/deviceKey';
+import {
+  corpusTable,
+  fetchDefinitionViaGateway,
+  probeGateway,
+  resetGatewayProbe,
+  type GatewayProbe,
+} from '../../features/glossary/glossaryGateway';
 import { isHazardTerm } from '../../lib/hazard';
 import { CautionBadge } from '../../components/CautionBadge';
 import { supabase } from '../../lib/supabase';
@@ -100,6 +115,11 @@ function MediaGlyph({ color = '#7fbfff', size = 17 }: { color?: string; size?: n
 // re-fetches, and the fuller persistent-cache/delta-sync work is deferred to
 // launch prep (#2/#3). A failed load is NOT cached, so it can retry next focus.
 let ENTRIES_CACHE: Promise<Entry[]> | null = null;
+// WHICH relation the cached corpus came from. Minting a device key can change
+// the answer mid-session (the browse view is granted to `authenticated` only),
+// and serving a member 120-character teasers out of a stale cache would look
+// like the definitions had been truncated. See loadAllEntries.
+let ENTRIES_TABLE: 'glossary' | 'glossary_browse_v' | null = null;
 let MEDIA_CACHE: Promise<Record<string, string>> | null = null;
 let FORMULA_CACHE: Promise<Record<string, { symbolic: string; words: string | null }>> | null = null;
 
@@ -133,6 +153,23 @@ AppState.addEventListener('change', (st) => {
   }, CACHE_RELEASE_MS);
 });
 
+/** The allowance heads-up (Option A, owner 2026-09-10): at 7 used → 7 left, and
+ *  a closing note on the last one. Module scope because BOTH meters — the
+ *  device-local one and the server gateway — have to say the same thing. */
+function warnUsage(used: number, limit: number): void {
+  if (used === GLOSSARY_WARN_AT_USED && used < limit) {
+    notify(
+      'Heads up — weekly glossary limit',
+      `That’s ${used} of ${limit} free lookups this week — ${limit - used} left for the rest of your week. Academy membership makes the glossary unlimited.`,
+    );
+  } else if (used >= limit) {
+    notify(
+      'Weekly glossary limit',
+      `That was your last free glossary lookup this week (${limit} of ${limit}). It resets one week after your first one. Academy membership makes the glossary unlimited.`,
+    );
+  }
+}
+
 /** Memoize a loader's Promise for the session; drop the cache if it rejects. */
 function sessionCache<T>(slot: () => Promise<T> | null, set: (p: Promise<T> | null) => void, run: () => Promise<T>): Promise<T> {
   const existing = slot();
@@ -145,8 +182,17 @@ function sessionCache<T>(slot: () => Promise<T> | null, set: (p: Promise<T> | nu
   return p;
 }
 
-/** Session-cached corpus load (all tiers), paged past the 1000-row PostgREST cap. */
-function loadAllEntries(): Promise<Entry[]> {
+/** Session-cached corpus load (all tiers), paged past the 1000-row PostgREST cap.
+ *
+ *  `table` is `glossary_browse_v` once the server gateway is deployed — the same
+ *  columns, with the definition masked to a teaser for anyone who is not a
+ *  member — and plain `glossary` until then. Changing table invalidates the
+ *  cache: a member who just signed in must not keep reading a guest's teasers. */
+function loadAllEntries(table: 'glossary' | 'glossary_browse_v'): Promise<Entry[]> {
+  if (ENTRIES_TABLE !== table) {
+    ENTRIES_CACHE = null;
+    ENTRIES_TABLE = table;
+  }
   return sessionCache(
     () => ENTRIES_CACHE,
     (p) => (ENTRIES_CACHE = p),
@@ -155,7 +201,7 @@ function loadAllEntries(): Promise<Entry[]> {
       const PAGE_E = 1000;
       for (let from = 0; ; from += PAGE_E) {
         const { data, error } = await supabase
-          .from('glossary')
+          .from(table)
           .select('id, term, definition, plain_english, achievement_id')
           .order('term')
           .range(from, from + PAGE_E - 1);
@@ -209,18 +255,22 @@ async function fetchAllGlossaryMedia(): Promise<Record<string, string>> {
  *  backend grants the columns and populates them, the filter lights up with no
  *  client change. (Verified 2026-07-26: 0 of 14,246 rows currently carry one.)
  *  Session-cached (owner 2026-08-10). */
-function loadAllGlossaryFormulas(): Promise<Record<string, { symbolic: string; words: string | null }>> {
-  return sessionCache(() => FORMULA_CACHE, (p) => (FORMULA_CACHE = p), fetchAllGlossaryFormulas);
+function loadAllGlossaryFormulas(
+  table: 'glossary' | 'glossary_browse_v',
+): Promise<Record<string, { symbolic: string; words: string | null }>> {
+  return sessionCache(() => FORMULA_CACHE, (p) => (FORMULA_CACHE = p), () => fetchAllGlossaryFormulas(table));
 }
 // Rejects on a failed page (network error, or today's column-grant 403) — the
 // caller swallows it and the filter simply shows no terms — so sessionCache
 // does NOT memoize an empty failed result for the whole session (B-176).
-async function fetchAllGlossaryFormulas(): Promise<Record<string, { symbolic: string; words: string | null }>> {
+async function fetchAllGlossaryFormulas(
+  table: 'glossary' | 'glossary_browse_v',
+): Promise<Record<string, { symbolic: string; words: string | null }>> {
   const out: Record<string, { symbolic: string; words: string | null }> = {};
   const PAGE_F = 1000;
   for (let from = 0; ; from += PAGE_F) {
     const { data, error } = await supabase
-      .from('glossary')
+      .from(table)
       .select('id, formula_symbolic, formula_words')
       .order('id')
       .range(from, from + PAGE_F - 1);
@@ -1091,6 +1141,136 @@ export function GlossaryScreen({ route, navigation }: Props) {
   // standing (provider isMember), never on caps (dev-bypassed) — that regression
   // hid both selling points. See the isMember doc in EntitlementProvider.
 
+  // ---- TEMPORARY DEVICE KEY (owner 2026-09-13) ----
+  // The glossary is the one screen that asks for it, because it is the one
+  // screen the gateway protects. Everything here is inert until the server side
+  // exists: `probeGateway()` answers 'absent' and `keyState` is 'ready'.
+  const [gateway, setGateway] = useState<GatewayProbe | undefined>(undefined);
+  const [consent, setConsent] = useState<ConsentRecord | undefined>(undefined);
+  const [hasSession, setHasSession] = useState<boolean | undefined>(undefined);
+  const [declinedThisVisit, setDeclinedThisVisit] = useState(false);
+  // Set when minting failed. FAIL OPEN: a guest must never be locked out of the
+  // glossary because anonymous sign-ins are switched off in the dashboard, or
+  // because their train went into a tunnel mid-dialog.
+  const [keyFailedOpen, setKeyFailedOpen] = useState(false);
+  // One dialog per visit, however many times the state recomputes.
+  const askingRef = useRef(false);
+  const mintingRef = useRef(false);
+
+  useEffect(() => {
+    let alive = true;
+    void probeGateway().then((g) => alive && setGateway(g));
+    void readConsent().then((c) => alive && setConsent(c));
+    supabase.auth
+      .getSession()
+      .then(({ data }) => alive && setHasSession(!!data.session))
+      .catch(() => alive && setHasSession(false));
+    // The key can appear (minted here) or vanish (purged after 7 days, or the
+    // user signed in) while this screen is mounted.
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      setHasSession(!!session);
+    });
+    return () => {
+      alive = false;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+
+  const keyState = deviceKeyState({
+    gatewayDeployed: keyFailedOpen ? false : gateway === undefined ? undefined : gateway === 'deployed',
+    isGuest: entitlement === 'anonymous',
+    resolved,
+    hasSession: hasSession === true,
+    consent: hasSession === undefined ? undefined : consent,
+    declinedThisVisit,
+  });
+
+  /** AGREE, or ALLOW from the NOT NOW card. Mints the key and, on failure,
+   *  opens the glossary anyway rather than stranding the reader. */
+  const grantDeviceKey = useCallback(async () => {
+    setDeclinedThisVisit(false);
+    await writeConsent();
+    setConsent({ granted: true, at: Date.now() });
+    const r = await mintDeviceKey();
+    if (r.ok) {
+      // The corpus source changes with the key (the browse view is granted to
+      // `authenticated`), so the cached probe answer has to be re-taken.
+      resetGatewayProbe();
+      void probeGateway().then(setGateway);
+      return;
+    }
+    console.warn('[glossary] device key mint failed:', r.reason, r.message);
+    setKeyFailedOpen(true);
+  }, []);
+
+  // 'ask' → raise the dialog once; 'mint' → do it silently (consent on file).
+  useEffect(() => {
+    if (keyState === 'ask' && !askingRef.current) {
+      askingRef.current = true;
+      confirmDialog(
+        COPY.glossaryDeviceKeyTitle,
+        `${COPY.glossaryDeviceKeyBody}
+
+${COPY.glossaryFreeAllowance}`,
+        COPY.glossaryDeviceKeyAgree,
+        () => {
+          askingRef.current = false;
+          void grantDeviceKey();
+        },
+        {
+          cancelText: COPY.glossaryDeviceKeyNotNow,
+          onCancel: () => {
+            askingRef.current = false;
+            // NOT NOW writes NOTHING — "nothing was stored" has to be true.
+            setDeclinedThisVisit(true);
+          },
+        },
+      );
+    }
+    if (keyState === 'mint' && !mintingRef.current) {
+      mintingRef.current = true;
+      void mintDeviceKey().then((r) => {
+        mintingRef.current = false;
+        if (r.ok) {
+          resetGatewayProbe();
+          void probeGateway().then(setGateway);
+        } else {
+          console.warn('[glossary] device key renewal failed:', r.reason, r.message);
+          setKeyFailedOpen(true);
+        }
+      });
+    }
+  }, [keyState, grantDeviceKey]);
+
+  /** True once it is safe to read the corpus: either the gateway is absent (the
+   *  world as it was) or this device holds a key. */
+  const keyReady = keyState === 'ready';
+  /** Which relation the corpus comes from, given what the probe found. */
+  const table = corpusTable(keyFailedOpen ? 'absent' : (gateway ?? 'absent'));
+  /** The SERVER counts the open when the gateway is live — the client must not
+   *  also charge `glossary_consume()`, or a free week would be seven. */
+  const serverMeters = !keyFailedOpen && gateway === 'deployed';
+  /**
+   * Bumped when a metered read replaces a teaser with the real definition.
+   *
+   * ⚠️ WHY A COUNTER AND A MUTATION. Once `glossary_browse_v` is live, the
+   * corpus carries a 120-character TEASER for anyone who is not a member, and
+   * the full text arrives one term at a time through the gateway. Eight places
+   * render `entry.definition` — the expanded row, the collapsed clamp, card
+   * view, the popup, TermDetails, the share sheet, TTS — and threading a second
+   * source through all eight is how one of them gets missed and quietly shows a
+   * truncated definition as if it were the whole thing.
+   *
+   * So the entry object itself is patched, in place, and this counter (in
+   * `rowExtraData`) tells the FlatList to repaint. Replacing the `entries` array
+   * instead would rebuild the 26k-term link index on every definition opened.
+   */
+  const [defRev, setDefRev] = useState(0);
+  /** Forward handle to the metered read. The implementation needs the detail
+   *  state, which is declared further down; the gate needs to CALL it from up
+   *  here. A ref is the cheap way to cross that without reordering the screen. */
+  const openViaGatewayRef = useRef<(id: string) => Promise<boolean>>(async () => true);
+
   // ---- GLOSSARY WEEKLY LOOKUP CAP (owner 2026-09-10) ----
   // Free / lapsed / guest get 14 definition OPENS per rolling week; academy is
   // unlimited. Gate on REAL standing (isMember), never caps — same rule as the
@@ -1098,7 +1278,10 @@ export function GlossaryScreen({ route, navigation }: Props) {
   // (glossary_consume); anonymous guests count DEVICE-LOCAL. Waits for the first
   // entitlement read (`resolved`) so we never charge a member on first paint.
   const capped = commercialMode && resolved && !isMember;
-  const capMode: CapMode = entitlement === 'anonymous' ? 'local' : 'server';
+  // …and once the gateway meters, even a guest is counted on the SERVER: they
+  // hold a device key, so there is a uid to count against. 'local' is only for
+  // the world before the gateway exists.
+  const capMode: CapMode = entitlement === 'anonymous' && !serverMeters ? 'local' : 'server';
   // Terms already charged this SESSION — re-opening one is free (owner: a term
   // you already looked up this session doesn't cost again).
   const consumedRef = useRef<Set<string>>(new Set());
@@ -1117,6 +1300,12 @@ export function GlossaryScreen({ route, navigation }: Props) {
    *  open the term. Members / dev / pre-resolve always pass free. */
   const gateDefinitionOpen = useCallback(
     async (id: string): Promise<boolean> => {
+      // ⚠️ WHEN THE SERVER METERS, THE CLIENT MUST NOT. The gateway RPC counts
+      // the open itself; charging glossary_consume() here as well would make a
+      // free week seven definitions instead of fourteen. The metered read
+      // happens HERE rather than after the row opens, so a refusal stops the
+      // open instead of revealing an empty row and then locking.
+      if (serverMeters) return openViaGatewayRef.current(id);
       if (!capped) return true;
       if (consumedRef.current.has(id)) return true; // already looked up this session
       if (gateOpeningRef.current) return false; // a consume is in flight — ignore the double-tap
@@ -1146,21 +1335,10 @@ export function GlossaryScreen({ route, navigation }: Props) {
       }
       consumedRef.current.add(id);
       lastViewedTermRef.current = id; // where they were last located (for post-upgrade return)
-      // Halfway heads-up (Option A, owner 2026-09-10): at 7 used → 7 left.
-      if (u.used === GLOSSARY_WARN_AT_USED && u.used < u.limit) {
-        notify(
-          'Heads up — weekly glossary limit',
-          `That’s ${u.used} of ${u.limit} free lookups this week — ${u.limit - u.used} left for the rest of your week. Academy membership makes the glossary unlimited.`,
-        );
-      } else if (u.used >= u.limit) {
-        notify(
-          'Weekly glossary limit',
-          `That was your last free glossary lookup this week (${u.limit} of ${u.limit}). It resets one week after your first one. Academy membership makes the glossary unlimited.`,
-        );
-      }
+      warnUsage(u.used, u.limit);
       return true;
     },
-    [capped, capMode],
+    [capped, capMode, serverMeters],
   );
 
   const listRef = useRef<FlatList<Entry>>(null);
@@ -1169,6 +1347,18 @@ export function GlossaryScreen({ route, navigation }: Props) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [focusedId, setFocusedId] = useState<string | null>(null);
   const [details, setDetails] = useState<Record<string, EntryDetail>>({});
+  // SYNCHRONOUS mirror of `details`. The metered gateway read fills a term's
+  // detail and the caller then runs the legacy fetch in the SAME tick — reading
+  // `details` there would still see the old object and re-fetch from `glossary`,
+  // which after the revokes is a 42501 that would paint a retry button over a
+  // row that already has its content. Merge, never replace: entries are only
+  // ever added, so a render landing mid-write cannot drop one.
+  const detailsRef = useRef<Record<string, EntryDetail>>({});
+  detailsRef.current = { ...detailsRef.current, ...details };
+  const putDetail = useCallback((id: string, d: EntryDetail) => {
+    detailsRef.current = { ...detailsRef.current, [id]: d };
+    setDetails((prev) => ({ ...prev, [id]: d }));
+  }, []);
   // [72] (2026-09-07): ids whose detail fetch FAILED. Without this the expanded
   // row / popup sat on "Loading…" forever after a transient failure, with no
   // error and no retry the user could see.
@@ -1191,14 +1381,17 @@ export function GlossaryScreen({ route, navigation }: Props) {
   // loadAllGlossaryFormulas) so a missing column-grant never breaks the corpus.
   const [formulaById, setFormulaById] = useState<Record<string, { symbolic: string; words: string | null }>>({});
   useEffect(() => {
+    // Waits for the device key for the same reason the corpus does: without one
+    // the read is a guaranteed 42501 once the revokes land.
+    if (!keyReady) return;
     // Non-fatal: a failed load (incl. the column-grant 403) leaves the map
     // empty and is NOT session-cached, so the next Glossary open retries (B-176).
-    loadAllGlossaryFormulas()
+    loadAllGlossaryFormulas(table)
       .then(setFormulaById)
       .catch(() => {
         /* the Equations & Formulas filter simply shows no terms */
       });
-  }, []);
+  }, [keyReady, table]);
   // Flagged terms (Booth 2026-07-18): ONE list shared with Flashcards and the
   // custom "Flagged" dashboard topic — lives in features/flags/flaggedStore
   // (same ape:glossaryFavs key, so previously starred terms carry over).
@@ -1261,9 +1454,61 @@ export function GlossaryScreen({ route, navigation }: Props) {
     });
   }, []);
 
+  /**
+   * The METERED read. One RPC returns the definition, every detail field the
+   * two legacy queries used to fetch, and this week's count — the server
+   * charges it, and refuses when the allowance is gone.
+   *
+   * Returns false ONLY for a refusal that must stop the term from opening.
+   * Everything else FAILS OPEN and leaves the legacy path to fill the detail:
+   * a reader must never lose the glossary because the gateway had a bad minute.
+   */
+  const openViaGateway = useCallback(
+    async (id: string): Promise<boolean> => {
+      if (detailsRef.current[id]) return true; // already read this session — free
+      const r = await fetchDefinitionViaGateway(id);
+      if (r.state === 'ok') {
+        const { used, lim, window_start, ...detail } = r.row;
+        putDetail(id, detail as unknown as EntryDetail);
+        // The real definition replaces the teaser everywhere at once (see defRev).
+        const entry = entryByIdRef.current.get(id);
+        if (entry && r.row.definition && r.row.definition !== entry.definition) {
+          entry.definition = r.row.definition;
+          setDefRev((n) => n + 1);
+        }
+        setDetailErrs((prev) => {
+          if (!prev[id]) return prev;
+          const next = { ...prev };
+          delete next[id];
+          return next;
+        });
+        lastViewedTermRef.current = id;
+        if (typeof used === 'number' && typeof lim === 'number') warnUsage(used, lim);
+        return true;
+      }
+      if (r.fault === 'limit-reached') {
+        // Same lock as the device-local meter, driven by the server's count.
+        const st = await getGlossaryStatus('server');
+        setResetAt(!st.unavailable && st.windowStart != null ? st.windowStart + GLOSSARY_WEEK_MS : null);
+        setLocked(true);
+        return false;
+      }
+      if (r.fault === 'sign-in-required') {
+        // The key was purged (or never took). Drop back to the state machine,
+        // which mints a new one under the consent already on file.
+        setHasSession(false);
+        return false;
+      }
+      // 'not-deployed' / 'denied' / 'error' → let the legacy detail fetch try.
+      return true;
+    },
+    [putDetail],
+  );
+  openViaGatewayRef.current = openViaGateway;
+
   const fetchDetails = useCallback(
     async (id: string) => {
-      if (details[id]) return;
+      if (detailsRef.current[id]) return;
       // Base detail fields (NOT common_mistakes) from base glossary — works for
       // everyone. common_mistakes comes from the academy-gated view in a SEPARATE
       // NON-FATAL query: the view's mask calls has_academy_access(), which
@@ -1295,9 +1540,9 @@ export function GlossaryScreen({ route, navigation }: Props) {
         .eq('id', id)
         .maybeSingle();
       common_mistakes = ((mv?.common_mistakes as string[] | null) ?? null) as string[] | null;
-      setDetails((prev) => ({ ...prev, [id]: { ...(data as object), common_mistakes } as EntryDetail }));
+      putDetail(id, { ...(data as object), common_mistakes } as EntryDetail);
     },
-    [details],
+    [putDetail],
   );
 
   /** [72]: clear the failure marker and try the detail fetch again. Re-fetching
@@ -1477,6 +1722,12 @@ export function GlossaryScreen({ route, navigation }: Props) {
       (async () => {
         try {
           if (alive) setLoadError(false);
+          // ⚠️ NOTHING is read until this device is allowed to read it. Before
+          // the consent is given (or while the probe is still out), every query
+          // below would be a guaranteed 42501 once the revokes land — and the
+          // guest would see "check your connection" over a perfectly good one.
+          // The screen stays in its loading state behind the dialog.
+          if (!keyReady) return;
           // GLOSSARY LOCK (owner 2026-09-10): detect whether a capped user is out
           // of weekly lookups → show the lock card. The corpus STILL loads so the
           // lock sits over a real, dimmed glossary ("full screen lock over a
@@ -1518,20 +1769,20 @@ export function GlossaryScreen({ route, navigation }: Props) {
           // Full corpus — session-cached (owner 2026-08-10): downloads once per
           // app session, so re-focusing the Glossary is instant instead of
           // re-paging ~22.7k rows every visit.
-          const all = await loadAllEntries();
+          const all = await loadAllEntries(table);
           if (alive) setEntries(all);
         } catch (e) {
           console.warn('[glossary] load failed:', (e as Error).message);
           if (alive) setLoadError(true);
         } finally {
-          if (alive) setLoading(false);
+          if (alive && keyReady) setLoading(false);
         }
       })();
       return () => {
         alive = false;
         stopAllSpeech(); // leaving the glossary silences any TTS in progress
       };
-    }, [capped, capMode]),
+    }, [capped, capMode, keyReady, table]),
   );
 
   // After a locked user upgrades and returns as a member, reopen the term they
@@ -1558,14 +1809,14 @@ export function GlossaryScreen({ route, navigation }: Props) {
     setLoadError(false);
     setLoading(true);
     try {
-      const all = await loadAllEntries();
+      const all = await loadAllEntries(table);
       setEntries(all);
     } catch {
       setLoadError(true);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [table]);
 
   const selTopic = topics.find((t) => t.id === selTopicId) ?? null;
   // DATA ISSUE (confirmed 2026-07-18): the `achievements` table has DUPLICATE
@@ -1645,8 +1896,6 @@ export function GlossaryScreen({ route, navigation }: Props) {
   termIndexRef.current = termIndex;
   const isMemberRef = useRef(isMember);
   isMemberRef.current = isMember;
-  const detailsRef = useRef(details);
-  detailsRef.current = details;
   const bookmarksRef = useRef(bookmarks);
   bookmarksRef.current = bookmarks;
   const starredRef = useRef(starred);
@@ -1677,9 +1926,9 @@ export function GlossaryScreen({ route, navigation }: Props) {
       ...(data as object),
       common_mistakes: (mv?.common_mistakes as string[] | null) ?? null,
     } as EntryDetail;
-    setDetails((prev) => ({ ...prev, [id]: detail }));
+    putDetail(id, detail);
     return detail;
-  }, []);
+  }, [putDetail]);
 
   /** Resolve one term id → shareable content. Definitions are used verbatim;
    *  Common Mistakes are included ONLY for a permitted (academy) viewer. */
@@ -2071,8 +2320,8 @@ export function GlossaryScreen({ route, navigation }: Props) {
   // clamp — leave it out and a guest's rows keep rendering full definitions for
   // the rest of the session, which is the exact hole this clamp closes.
   const rowExtraData = useMemo(
-    () => [expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, selectMode, selectedIds, linksOn, bookmarks, starred, isMember, capped],
-    [expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, selectMode, selectedIds, linksOn, bookmarks, starred, isMember, capped],
+    () => [expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, selectMode, selectedIds, linksOn, bookmarks, starred, isMember, capped, defRev],
+    [expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, selectMode, selectedIds, linksOn, bookmarks, starred, isMember, capped, defRev],
   );
 
   // GLOSSARY LOCK (owner 2026-09-10): a full-screen lock card over the DIMMED
@@ -2101,6 +2350,25 @@ export function GlossaryScreen({ route, navigation }: Props) {
           }
         });
       }}
+    />
+  );
+
+  // NOT NOW (owner 2026-09-13). A Modal for the same reason the lock is one:
+  // it has to cover the glossary completely — there is nothing behind it the
+  // reader is entitled to yet — while staying re-askable and escapable.
+  const deviceKeyOverlay = (
+    <GlossaryDeviceKeyView
+      visible={keyState === 'declined'}
+      onAllow={() => void grantDeviceKey()}
+      onSignIn={() =>
+        // The same route Settings' "Sign in / create account" takes. Splash now
+        // reads an anonymous session as NO account, so this lands on Auth.
+        (navigation as unknown as { reset: (s: object) => void }).reset({
+          index: 0,
+          routes: [{ name: 'Splash' }],
+        })
+      }
+      onExit={() => navigation.goBack()}
     />
   );
 
@@ -3058,6 +3326,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
       <ScreenIntroOverlay introKey="glossary" />
       {/* Weekly-lookup HARD LOCK over the dimmed glossary (owner 2026-09-10). */}
       {lockOverlay}
+      {deviceKeyOverlay}
     </ImageBackground>
   );
 }

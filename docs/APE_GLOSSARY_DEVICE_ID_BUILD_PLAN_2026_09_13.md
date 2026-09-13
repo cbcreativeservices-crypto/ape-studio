@@ -94,35 +94,69 @@ even that is too much, drop the column and show terms only.
 
 ### 2. The counting gateway
 
+⚠️ **REVISED 2026-09-13 after building the client.** The first draft
+returned only `definition, plain_english, common_mistakes`. That is not enough.
+Today the expanded term reads six more columns out of `glossary`
+(`purpose_function`, `practical_application`, `scenario_contexts`,
+`related_terms`, `category`, `difficulty`), and the revokes in section 4 take
+that read away **from members too**. A narrower RPC would have emptied the
+detail body for everyone, silently, and the cause would have looked nothing like
+the glossary.
+
+`used` / `lim` ride along so the halfway heads-up and the lock countdown cost no
+extra round trip - the client already consumes them, and tolerates their absence.
+
 ```sql
 create or replace function public.get_glossary_definition(p_id uuid)
-returns table (definition text, plain_english text, common_mistakes text[])
+returns table (
+  definition text, plain_english text, purpose_function text,
+  practical_application text, scenario_contexts text[], related_terms text[],
+  category text, difficulty text, common_mistakes text[],
+  used int, lim int, window_start timestamptz
+)
 language plpgsql security definer set search_path to ''
-as $$
-declare _allowed boolean;
+as $FN$
+declare _u record;
 begin
   if public.has_academy_access(auth.uid()) then
-    return query select g.definition, g.plain_english, g.common_mistakes
+    return query select g.definition, g.plain_english, g.purpose_function,
+                        g.practical_application, g.scenario_contexts, g.related_terms,
+                        g.category, g.difficulty, g.common_mistakes,
+                        null::int, null::int, null::timestamptz
                  from public.glossary g where g.id = p_id;
     return;
   end if;
   if auth.uid() is null then
     raise exception 'sign_in_required' using errcode = 'PGRST';
   end if;
-  select allowed into _allowed from public.glossary_consume();
-  if not coalesce(_allowed, false) then
+  select * into _u from public.glossary_consume();
+  if not coalesce(_u.allowed, false) then
     raise exception 'weekly_limit_reached' using errcode = 'PGRST';
   end if;
-  return query select g.definition, g.plain_english, null::text[]
+  -- common_mistakes stays member-only, exactly as glossary_full_v masks it today.
+  return query select g.definition, g.plain_english, g.purpose_function,
+                      g.practical_application, g.scenario_contexts, g.related_terms,
+                      g.category, g.difficulty, null::text[],
+                      _u.used, _u.lim, _u.window_start
                from public.glossary g where g.id = p_id;
-end $$;
+end $FN$;
 
 revoke execute on function public.get_glossary_definition(uuid) from public;
 grant  execute on function public.get_glossary_definition(uuid) to authenticated;
 ```
 
-⚠️ **Confirm `glossary_consume()`'s return shape first** — `select allowed into`
-assumes a column named `allowed`.
+(The `$FN$` tags are only to keep this fenced block readable - use whatever
+dollar-quoting you prefer when you run it.)
+
+⚠️ **Confirm `glossary_consume()`'s return shape first.** `_u.allowed`,
+`_u.used`, `_u.lim` and `_u.window_start` are what the client's `glossaryCap.ts`
+already parses, but read the function rather than trusting this.
+
+⚠️ **The client matches the two refusals on their MESSAGE text**
+(`sign_in_required`, `weekly_limit_reached`), not on the SQLSTATE - how
+`errcode = 'PGRST'` reaches a PostgREST client is an implementation detail; the
+message is ours. Keep those two strings exactly as written, or
+`test/glossaryGatewayFault.test.ts` is lying.
 
 ### 3. The 7-day deletion — the promise
 
@@ -152,33 +186,98 @@ Re-read `has_table_privilege` afterwards — "no errors" proves nothing.
 
 ---
 
-## Client work
+## Client work - BUILT 2026-09-13
 
-| Where | What |
+### The switch that made it shippable ahead of the server
+
+`probeGateway()` asks once per app session whether `glossary_browse_v` exists.
+Until it does, the answer is `absent`, `deviceKeyState()` returns `ready`, and
+**nothing changes for anyone** - no dialog, no anonymous sign-in, the same
+corpus read, the same device-local cap. The day the SQL above runs, the same
+build starts asking. So the client can ship now, which is what the ordering rule
+below demands.
+
+A guest reading the view gets `42501` (it is granted to `authenticated` only).
+That denial is the SIGNAL that the gateway is live, not a failure.
+
+| Where | What was done |
 |---|---|
-| `screens/glossary/GlossaryScreen.tsx` | On mount: if no session, raise the consent dialog. On AGREE → `supabase.auth.signInAnonymously()`, then load. Bulk load moves to `glossary_browse_v` |
-| same, `toggleExpand` | Already calls `gateDefinitionOpen`; point it at `get_glossary_definition` and render what comes back |
-| `features/commercial/EntitlementProvider.tsx` | Resolve `'anonymous'` from `session.user.is_anonymous`, **not** from the absence of a session — see the risk above |
-| `features/glossary/GlossaryTermPopup.tsx` | Single-term read moves to the RPC |
-| `features/study/api.ts` | One direct `glossary` read must move |
-| `features/notifications/localSchedule.ts` | Weekly-concept read needs a definer RPC or service-role path |
-| `features/curriculum/curriculumStats.ts` | **No change** — already on `get_glossary_term_count()` |
+| `features/commercial/realAccount.ts` | **NEW.** One definition of "has an account". See the blast radius below |
+| `features/glossary/deviceKeyState.ts` | **NEW, pure.** `unknown / ready / mint / ask / declined` |
+| `features/glossary/deviceKey.ts` | **NEW.** Consent record (AsyncStorage) + `signInAnonymously()`, with the provider-disabled failure told apart from a network one |
+| `features/glossary/gatewayFault.ts` | **NEW, pure.** not-deployed / sign-in-required / limit-reached / denied / error |
+| `features/glossary/glossaryGateway.ts` | **NEW.** The probe, the corpus relation, the metered RPC |
+| `features/glossary/GlossaryDeviceKeyView.tsx` | **NEW.** The NOT NOW card: allow / sign in / exit |
+| `screens/glossary/GlossaryScreen.tsx` | Consent dialog on open; corpus from `glossary_browse_v` when live; `toggleExpand` metered through the RPC; the client's own `glossary_consume()` charge is SKIPPED when the server meters |
+| `lib/copy.ts` | The consent copy, ADDED (nothing reworded) |
+| `features/curriculum/curriculumStats.ts` | **No change** - already on `get_glossary_term_count()` |
+
+### Still outstanding on the client
+
+- `features/glossary/GlossaryTermPopup.tsx` - single-term read still direct.
+- `features/study/api.ts` - one direct `glossary` read still to move.
+- `features/notifications/localSchedule.ts` - weekly-concept read needs a
+  definer RPC or a service-role path.
+
+**These three must be closed before the revokes run**, or those surfaces go
+dark. They are not urgent before then; they are blocking after.
+
+### The blast radius was wider than this plan predicted
+
+The plan warned about `EntitlementProvider`. The real count was **twenty call
+sites** that read the presence of a session as "this person has an account" -
+and an anonymous session is one. Each is now on `isRealAccount()`:
+
+`ensureSession` (a guest could never create the account they came for) *
+access-code redemption (entitlement written to a uid the purge deletes) *
+`fetchProfile` + `fetchMyRegistryListing` (42501 then "check your connection",
+the defect fixed earlier the same day) * Dashboard's "progress isn't saved"
+notice * CourseSelection's guest catalogue * Splash routing (a guest would never
+see the login screen again, and Settings' "Sign in / create account" bounced
+back into the app) * `accountLocalSync` (would have WIPED the guest's device
+state on accepting, and again after every purge) * `AudioOutputGate` (minting
+arrives as SIGNED_IN and would have silenced the app mid-lab) *
+`SessionExpiryGuard` (would have bounced a guest to login when the key reached
+the end we scheduled) * SingleDeviceGuard * enrollment sync * the three study
+screens' resume merge * tube images * weekly-concept subscriptions.
+
+### The teaser and the corpus
+
+Once the browse view is live, a non-member's corpus row carries a 120-character
+teaser and the full text arrives one term at a time. Eight places render
+`entry.definition`. The client patches the entry object in place and bumps a
+counter in `rowExtraData` rather than threading a second source through all
+eight - see the comment on `defRev`. Replacing the `entries` array instead would
+rebuild the 26k-term link index on every definition opened.
 
 ### NOT NOW
-Declining leaves the glossary closed for this visit, with a line saying so and an
-invitation to sign in. It must be re-askable — never a dead end, and never a
-state the user cannot get out of without reinstalling.
+Declining leaves the glossary closed for this visit, with a card offering ALLOW
+TEMPORARY ID, SIGN IN INSTEAD and EXIT TO MENU. **Nothing is written to
+storage** - "nothing was stored" has to be true. It is not remembered across
+visits.
 
----
+### Renewal after the 7-day purge
+Consent is remembered; the KEY is not. A device whose key was purged mints a new
+one **without re-asking**: the consent was to the practice (a rolling 7-day key
+with nothing else attached), and each individual key still dies on schedule.
+Re-asking weekly would be friction with no matching gain in honesty. Stated here
+because it is a judgment call, not a technicality - reverse it in
+`deviceKeyState()`'s `'mint'` branch if you disagree.
 
 ## Order of operations — the one that bites
 
-1. Confirm `glossary_consume()`'s return shape.
-2. **Enable anonymous sign-ins** in the Supabase dashboard (Auth → Providers). It
-   is OFF by default; without it `signInAnonymously()` fails at runtime.
-3. Create the view + RPC + cron. Verify privileges and the cascade.
-4. Ship the client (consent, anon sign-in, browse view, RPC, entitlement fix).
-5. **Only then** run the revokes.
+1. **Ship the client.** DONE 2026-09-13 - and it is INERT until step 4, so it
+   could go first. That is the whole point of the probe.
+2. Confirm `glossary_consume()`'s return shape.
+3. **Enable anonymous sign-ins** in the Supabase dashboard (Auth → Providers).
+   It is OFF by default; without it `signInAnonymously()` fails at runtime. The
+   client fails OPEN on that failure (the glossary still works, unmetered), so
+   the symptom is silence, not breakage - check it rather than assume it.
+4. Create the view + RPC + cron. Verify privileges and the cascade. **The moment
+   the view exists, every phone running the shipped build starts asking for
+   consent** - so treat this step as the feature going live.
+5. Close the three outstanding client reads listed above.
+6. **Only then** run the revokes.
 
 Reversed, the glossary dies in every build already on a phone — including the
 ones that will never update.
