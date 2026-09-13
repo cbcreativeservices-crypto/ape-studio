@@ -81,9 +81,11 @@ export const demoStyles = StyleSheet.create({
   captionBlock: { gap: 5 },
   watchFor: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.6, color: colors.amber },
   captionBody: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
+  // True italic face: Android does not synthesize italics for custom fonts,
+  // so barlowRegular + fontStyle:'italic' rendered UPRIGHT on device (flagged
+  // by the SignalGen authoring agent). No fontStyle here — the face is italic.
   fieldNote: {
-    fontFamily: fonts.barlowRegular,
-    fontStyle: 'italic',
+    fontFamily: fonts.barlowItalic,
     fontSize: 12.5,
     lineHeight: 17,
     color: colors.textMuted,
