@@ -31,6 +31,22 @@
  * 2026-09-13 with probes on both storage layers before the cause turned out to
  * be the deliberate wipe.)
  *
+ * ⚠️ ONE NARROW EDGE, measured on the device 2026-09-13. `getSession()` returns
+ * the LOCALLY STORED session without asking the server whether that user still
+ * exists. So if a key is deleted while its access token is still valid (≤1h),
+ * the app sees `hasSession = true`, reports 'ready', and does NOT re-mint — and
+ * every metered read then fails, because `glossary_consume()` cannot write a
+ * usage row for a uid that is gone (foreign key to auth.users). Observed
+ * symptom: the corpus and teasers load normally, and an expanded row shows
+ * "Couldn't load details — tap to retry". It degrades honestly; nothing lies.
+ *
+ * The nightly purge does not produce this, because it only deletes keys 7+ days
+ * old — long past the access token's life, so the restore attempts a refresh,
+ * the refresh fails, the session clears, and the 'mint' branch runs silently.
+ * (That recovery is REASONED, not measured — it needs an expired token to
+ * observe.) The state is reachable by deleting an anonymous user by hand, which
+ * is exactly how it was found.
+ *
  * RENEWAL, stated plainly. The nightly purge deletes anonymous users older than
  * 7 days, which is the promise the dialog makes. A device whose key has been
  * purged needs another one to keep reading definitions, and we mint it WITHOUT
