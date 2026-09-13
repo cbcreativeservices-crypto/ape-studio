@@ -2016,7 +2016,7 @@ export function DashboardScreen() {
       {/* Jog-dial reveal (Pillar B, plan §3) — only meaningful with somewhere
           to spin to; hidden while the big wheel is open (it teaches itself). */}
       {jogCoach.visible && !jogActive && topics.length > 1 ? (
-        <CoachMark text="Use the rotary dial to spin straight to any topic" bottom={18} />
+        <CoachMark text="Use the rotary dial to spin directly to any topic" bottom={18} />
       ) : null}
 
       {/* Method-cards intro placeholder (Booth 2026-07-18). */}
