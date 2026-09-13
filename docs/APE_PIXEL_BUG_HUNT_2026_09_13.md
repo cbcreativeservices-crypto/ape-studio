@@ -90,6 +90,45 @@ Two ways to resolve it, and they are materially different products:
 
 Whichever way it goes, the toast wording needs to follow.
 
+## ✅ SESSION LOGOUT — the storage layer is CLEARED, cause still open
+
+The Pixel landed on the auth gate twice after a restart/reload. If a cold start
+loses the session, every real user is logged out on every launch — a launch
+blocker. **It is not the storage layer.** Measured, not reasoned:
+
+| Hypothesis | Verdict |
+|---|---|
+| AsyncStorage full (the documented SQLITE_FULL data-loss class) | **DEAD.** The app's AsyncStorage holds 7 keys, 351 bytes total, and **no auth key at all** |
+| Stale dev client lacks expo-secure-store, so the adapter degrades | **DEAD.** Boot probe reports `secureStore=true` — the native module is present and the keychain path is live |
+| Chunked keychain writes tear (session > the 1800-byte CHUNK, marker written before the parts) | **DEAD.** Round-tripped 1.2 KB / 4 KB / 9 KB through `authStorage` on the device: all returned byte-identical, including the multi-chunk marker path |
+| `SingleDeviceGuard` signs the device out on a flaky read | **DEAD.** `getActiveDeviceId()` fails OPEN (null on any error) and `isDisplaced()` returns false unless the server reports a genuinely different device. It also announces itself with a popup |
+
+So reads and writes both work. What is left is WHY there was no token to read:
+either the login never persisted one, or something removed it. The remaining
+automatic sign-out path in the app is `SingleDeviceGuard`, which shows
+"Your account was signed in on another device" when it fires — so if that popup
+was never seen, it was not the guard.
+
+⚠️ **My own observation may be the flaw.** Between the two logouts I had put the
+app into GUEST MODE, and a guest has no session by definition. The probe's
+`storedLen=null session=no` on the most recent reload is therefore EXPECTED, not
+evidence of loss. The clean test has not been run.
+
+**One line settles it** — `src/lib/supabase.ts` now logs, `__DEV__` only and
+never a token value:
+
+```
+[authprobe] storedLen=<n|null> session=<YES|no>
+```
+
+| Where | What |
+|---|---|
+| Pixel | Sign in, then Reload from the dev menu, and read the line via `adb logcat -s ReactNativeJS \| grep authprobe` |
+
+`session=YES` → the session persisted and the earlier observation was something
+else. `session=no` → a real loss, and `storedLen` says whether the token was
+never written or written and then removed. **Remove the probe once resolved.**
+
 ## SUSPECTED — needs a clean retest, do not treat as confirmed
 
 **Warm deep links may be ignored after the app has been running a long time.**
