@@ -80,7 +80,7 @@ export function HelpScreen() {
         {noResults ? (
           <View style={styles.emptyPanel}>
             <Text style={styles.emptyText}>
-              Nothing in the manual matches “{query.trim()}”. Try another word — or ask us directly below, and we’ll answer.
+              Nothing in the manual matches “{query.trim()}”. Try another word — or browse the full manual below; most answers are close by.
             </Text>
           </View>
         ) : (
@@ -99,35 +99,55 @@ export function HelpScreen() {
           ))
         )}
 
-        {/* Still need help? — the human route. Pre-tagged so the report lands
-            with locating context (owner rule 2026-08-13). */}
+        {/* Still need help? — while searching (incl. a "?" key's pre-filter),
+            the route is BACK TO THE FULL MANUAL, never straight to email: the
+            manual answers most of this, and the support inbox is one person
+            (owner 2026-09-13). Email appears only at the bottom of the full,
+            unfiltered manual — the true last resort. */}
         <View style={styles.section}>
           <View style={styles.sectionHead}>
             <View style={[styles.sectionTick, { backgroundColor: colors.amber }]} />
             <Text style={styles.sectionTitle}>STILL NEED HELP?</Text>
           </View>
-          <View style={[styles.panel, styles.supportPanel]}>
-            <Text style={styles.supportBody}>
-              A person reads every message. Both buttons open your mail app addressed to
-              {' '}<Text style={styles.supportEmail}>{SUPPORT_EMAIL}</Text> — describe what happened and send.
-            </Text>
-            <Pressable
-              style={[styles.row, styles.rowBorder]}
-              onPress={() => sendFeedback('question', undefined, { screen: 'Help', searched: query.trim() || undefined })}
-              accessibilityRole="button"
-            >
-              <Text style={styles.rowLabel}>Ask a question</Text>
-              <Text style={styles.monoAction}>WRITE ›</Text>
-            </Pressable>
-            <Pressable
-              style={styles.row}
-              onPress={() => sendFeedback('bug', undefined, { screen: 'Help', searched: query.trim() || undefined })}
-              accessibilityRole="button"
-            >
-              <Text style={styles.rowLabel}>Report a bug</Text>
-              <Text style={styles.monoAction}>WRITE ›</Text>
-            </Pressable>
-          </View>
+          {searching ? (
+            <View style={[styles.panel, styles.supportPanel]}>
+              <Text style={styles.supportBody}>
+                You’re seeing only the entries that match your search — the full manual covers accounts, studying, tools, and troubleshooting.
+              </Text>
+              <Pressable
+                style={styles.row}
+                onPress={() => setQuery('')}
+                accessibilityRole="button"
+                accessibilityLabel="See the full manual"
+              >
+                <Text style={styles.rowLabel}>See the full manual</Text>
+                <Text style={styles.monoAction}>SHOW ALL ›</Text>
+              </Pressable>
+            </View>
+          ) : (
+            <View style={[styles.panel, styles.supportPanel]}>
+              <Text style={styles.supportBody}>
+                If the manual truly doesn’t cover it, write to us — a person reads every message. Both buttons open your mail app addressed to
+                {' '}<Text style={styles.supportEmail}>{SUPPORT_EMAIL}</Text>.
+              </Text>
+              <Pressable
+                style={[styles.row, styles.rowBorder]}
+                onPress={() => sendFeedback('question', undefined, { screen: 'Help' })}
+                accessibilityRole="button"
+              >
+                <Text style={styles.rowLabel}>Ask a question</Text>
+                <Text style={styles.monoAction}>WRITE ›</Text>
+              </Pressable>
+              <Pressable
+                style={styles.row}
+                onPress={() => sendFeedback('bug', undefined, { screen: 'Help' })}
+                accessibilityRole="button"
+              >
+                <Text style={styles.rowLabel}>Report a bug</Text>
+                <Text style={styles.monoAction}>WRITE ›</Text>
+              </Pressable>
+            </View>
+          )}
         </View>
 
         {/* Replay hints — recovery lives where the stuck person looks. */}

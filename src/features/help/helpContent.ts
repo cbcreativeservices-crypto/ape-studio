@@ -212,7 +212,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       {
         id: 'pv-delete',
         q: 'How do I delete my account?',
-        a: 'Email us from ASK A QUESTION below (or write to the support address) and we will delete your account and its data.',
+        a: 'Email us — the ASK A QUESTION button at the bottom of the full manual opens a pre-addressed message — and we will delete your account and its data.',
       },
     ],
   },
