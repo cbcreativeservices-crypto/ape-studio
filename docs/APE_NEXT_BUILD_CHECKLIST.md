@@ -81,6 +81,38 @@ leave the repo claiming a fix the device cannot show, which is the confusion thi
 checklist exists to prevent. Apply it as part of the build.
 
 
+### Adv Tuner soak freeze — native lifecycle hardening, found 2026-09-13 (needs a build)
+
+Owner hit a JS-thread wedge after minutes of soak in the CenterLock fullscreen
+tuner (memory `adv-tuner-soak-freeze-2026-09-13`). Two JS mitigations shipped
+the same day over Metro (tuner-frame quantized dedup; the covered tuner-mode UI
+frozen while a fullscreen overlay is open) — those need no build. What DOES
+need a build is the lifecycle evidence from the logcat capture:
+
+- **The ape-dsp capture engine outlived the React instance.** ~1 MB/s
+  NativeAlloc churn continued after `Destroying ReactInstance`, with
+  `Tried to enqueue runnable on already finished thread` spam. `ApeDspModule`'s
+  `OnDestroy` stops capture — but a WEDGED reload (`reactInstance is null.
+  Dropping work` → instance destroyed, never recreated) is exactly the path
+  where module teardown can be skipped, leaving Oboe holding the mic into a
+  dead runtime.
+- **Native change when a build is next prepared:** make capture teardown
+  independent of the happy-path module destroy — e.g. register an
+  `Application.ActivityLifecycleCallbacks` / ReactHost destroy hook in
+  `ApeDspModule.kt` that calls `nativeStopCapture` + `nativeGenStop` when the
+  hosting instance dies, so nothing keeps the HAL open into a dead runtime.
+  ⚠️ Must NOT stop the mic on ordinary screen handoffs — the warm mic session
+  (memory `mic-warm-session`) is deliberate; this is instance-death-only.
+- **Before designing further:** a Perfetto sched trace across a repro (recipe
+  in memory `adv-tuner-soak-freeze-2026-09-13`) should pin whether the wedged
+  JS thread is spinning or blocked, and identify WHO posts the dead-thread
+  runnables (nothing in `ApeDspModule.kt` posts per-frame — all frames are
+  JS-pulled — so the spam source may be the dev client itself; a release-ish
+  repro decides how much of this is launch-relevant).
+
+Per the Generator-ramp precedent above: not written into native source yet —
+apply as part of the build.
+
 ### Location permissions removed 2026-09-11 — exactly what to put back
 
 `app.json` declared FINE + COARSE location and `NSLocationWhenInUseUsageDescription` as pre-staging for Snapshot "tag location". `expo-location` is not installed, so in any build we submit today those permissions are unreachable by any code path — and `ACCESS_FINE_LOCATION` obliges a Play Console location declaration for a feature that cannot run. They were removed rather than shipped. **Nothing in `src/` changed**: `location.ts` and its MultiMeter control are untouched and still gate themselves off.

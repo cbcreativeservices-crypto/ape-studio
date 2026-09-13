@@ -378,6 +378,24 @@ function LightPulseMode({ blurb, help, helpAll }: { blurb: string; help: (key: s
 // the horizontal edgewise VU face on the amber skin, ±30¢ printed scale, plus
 // the TuneChevrons correction cue. (Replaced the 2026-08-05 arc "gas gauge".)
 
+/**
+ * Freeze wrapper (Adv Tuner soak fix 2026-09-13): while a fullscreen overlay
+ * covers the screen, LivePitchMode must keep RUNNING (its 15 Hz poll is what
+ * feeds the tuner-frame store the overlays read) but its own UI — the skinned
+ * VU, stat cells, trays — is invisible behind the opaque overlay, and
+ * reconciling it 15×/s for the whole time the overlay sits open is exactly the
+ * kind of steady hidden churn the soak freeze fed on. Returning the PREVIOUS
+ * element while frozen makes React bail out of the entire subtree (element-
+ * identity short-circuit); the moment the overlay closes, a fresh element is
+ * returned and the UI resumes with its state intact — no unmount, no layout
+ * change, no scroll jump.
+ */
+function FrozenWhileCovered({ frozen, children }: { frozen: boolean; children: React.ReactElement }) {
+  const last = useRef(children);
+  if (!frozen) last.current = children;
+  return last.current;
+}
+
 function LivePitchMode({
   kind,
   help,
@@ -393,6 +411,10 @@ function LivePitchMode({
     { pitchEnabled: true },
     { meter: true, pitch: true },
   );
+  // A fullscreen tuner overlay (CenterLock / VU) is covering this screen —
+  // see FrozenWhileCovered above. Subscribing here re-renders only on
+  // open/close, never per frame.
+  const coveredByOverlay = useCenterLockOpen() || useVuTunerOpen();
   const [a4, setA4] = useState(440);
   // Which setup tray is open (owner 2026-09-10): tuning standard / low-cut /
   // high-cut — one at a time, from the horizontal button row.
@@ -599,6 +621,7 @@ function LivePitchMode({
     return <Text style={styles.intro}>Starting the {kind === 'sound' ? 'counter' : 'tuner'}…</Text>;
   }
   return (
+    <FrozenWhileCovered frozen={coveredByOverlay}>
     <>
       {kind === 'sound' ? (
         // Tapping the readout toggles START/STOP (owner 2026-07-31). Readout
@@ -938,6 +961,7 @@ function LivePitchMode({
         )}
       <Text style={styles.disclaimer}>{DISCLAIMER}</Text>
     </>
+    </FrozenWhileCovered>
   );
 }
 

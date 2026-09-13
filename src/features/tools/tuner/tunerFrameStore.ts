@@ -36,17 +36,25 @@ const listeners = new Set<() => void>();
 const emit = () => listeners.forEach((l) => l());
 
 export function publishTunerFrame(frame: TunerFrame): void {
+  // Quantize the two noise-floor jitter fields BEFORE the dedup (soak fix
+  // 2026-09-13): raw confidence/levelDb differ on virtually every engine frame
+  // even in silence, so the dedup below never fired and both fullscreen
+  // overlays re-rendered ~15×/s for as long as they sat open. No display
+  // loses precision: confidence is only ever shown as a whole percent
+  // (CenterLock's SIGNAL bar), and levelDb is not rendered by any consumer.
+  const confidence = Math.round(frame.confidence * 100) / 100;
+  const levelDb = Math.round(frame.levelDb);
   const f = state.frame;
   if (
     f.freq === frame.freq &&
     f.accepted === frame.accepted &&
-    f.confidence === frame.confidence &&
-    f.levelDb === frame.levelDb &&
+    f.confidence === confidence &&
+    f.levelDb === levelDb &&
     f.a4 === frame.a4
   ) {
     return;
   }
-  state = { ...state, frame };
+  state = { ...state, frame: { ...frame, confidence, levelDb } };
   emit();
 }
 
