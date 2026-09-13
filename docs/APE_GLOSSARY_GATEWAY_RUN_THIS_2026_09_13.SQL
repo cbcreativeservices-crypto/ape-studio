@@ -68,6 +68,36 @@ select
 -- extra code. If that ever reads anything but 'c', the dialog's promise
 -- ("deleted automatically after 7 days, along with your definition count") is
 -- no longer accurate and the copy must change before this ships.
+--
+-- ⚠️ ALREADY APPLIED 2026-09-13, and you should know it happened:
+-- migration `fix_glossary_consume_ambiguous_used_column`.
+--
+-- glossary_consume() returns TABLE(used int, ...), which makes `used` an OUT
+-- PARAMETER as well as a column of glossary_usage. Its increment read
+--     set used = used + 1
+-- unqualified — ambiguous, SQLSTATE 42702 — so EVERY glossary lookup after the
+-- first one in a rolling window threw. The client fails open on a consume
+-- error, so nothing looked broken: the count never passed 1, the "7 left"
+-- warning never fired, the lock never triggered. **The server-side 14/week cap
+-- had never capped anyone since it went live on 2026-09-10.**
+--
+-- Found because the RPC in step 3 calls glossary_consume(), so the gateway
+-- would have inherited the same silence and metered nothing at all.
+--
+-- Fixed by aliasing the table (`set used = u.used + 1`). Verified live through
+-- a full cycle: 1..14 allowed, the 15th refused without incrementing, and a
+-- window aged past 7 days re-anchors to 1. Rollback:
+-- docs/APE_GLOSSARY_CONSUME_FIX_2026_09_13.SQL
+
+-- Re-run this to confirm the cap is really counting (expects 1 then 2):
+begin;
+  insert into auth.users (id, instance_id, aud, role, is_anonymous, created_at, updated_at)
+  values ('00000000-0000-0000-0000-0000000000aa','00000000-0000-0000-0000-000000000000',
+          'authenticated','authenticated', true, now(), now());
+  set local request.jwt.claims = '{"sub":"00000000-0000-0000-0000-0000000000aa","role":"authenticated"}';
+  select used, lim, allowed from public.glossary_consume();
+  select used, lim, allowed from public.glossary_consume();
+rollback;
 
 
 -- =====================================================================
@@ -194,17 +224,43 @@ grant  execute on function public.get_glossary_definition(uuid) to authenticated
 select has_function_privilege('anon', 'public.get_glossary_definition(uuid)', 'EXECUTE')          as anon_exec,
        has_function_privilege('authenticated', 'public.get_glossary_definition(uuid)', 'EXECUTE') as auth_exec;
 
--- VERIFY the metering actually counts, WITHOUT leaving a row behind. This
--- impersonates a fabricated non-member uid inside a transaction and rolls back.
--- Expect used to increase by 1 between the two calls.
+-- VERIFY the metering actually counts, WITHOUT leaving anything behind.
+--
+-- ⚠️ TWO THINGS THE FIRST DRAFT OF THIS BLOCK GOT WRONG, both found by running
+-- it rather than reading it:
+--   1. It selected `allowed`. That column belongs to glossary_consume(), NOT to
+--      this RPC — this one RAISES instead of returning a false flag. The error
+--      the owner hit was `42703: column "allowed" does not exist`.
+--   2. It impersonated a uid that does not exist in auth.users. glossary_usage
+--      has a foreign key to auth.users, so glossary_consume() cannot write a
+--      row for a fabricated user — it fails on the FK. The probe user has to be
+--      real, hence the insert below (rolled back with everything else).
+--
+-- Expect: used=1 then used=2, a full definition, and common_mistakes masked to
+-- null for this non-member.
+
 begin;
+  insert into auth.users (id, instance_id, aud, role, is_anonymous, created_at, updated_at)
+  values ('00000000-0000-0000-0000-0000000000ab','00000000-0000-0000-0000-000000000000',
+          'authenticated','authenticated', true, now(), now());
+
   set local role authenticated;
   set local request.jwt.claims = '{"sub":"00000000-0000-0000-0000-0000000000ab","role":"authenticated"}';
-  select used, lim, allowed, left(definition, 40) as def_head
+
+  select used, lim, left(definition, 45) as def_head,
+         common_mistakes is null as mistakes_masked
   from public.get_glossary_definition((select id from public.glossary order by term limit 1));
-  select used, lim, allowed
+
+  select used, lim
   from public.get_glossary_definition((select id from public.glossary order by term limit 1 offset 1));
 rollback;
+
+-- VERIFY the signed-OUT refusal. Expect: 'sign_in_required'.
+begin;
+  set local role anon;
+  select public.get_glossary_definition((select id from public.glossary order by term limit 1));
+rollback;
+-- (That one is SUPPOSED to error. Seeing `sign_in_required` is the pass.)
 
 
 -- =====================================================================
