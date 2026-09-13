@@ -186,58 +186,88 @@ Re-read `has_table_privilege` afterwards — "no errors" proves nothing.
 
 ---
 
-## 🚨 THE REVOKE LIST ABOVE DOES NOT ACHIEVE THE BRIEF
+## ✅ THE `glossary_study_v` HOLE — CLOSED 2026-09-13 (applied)
 
-Found 2026-09-13 while wiring the client, by reading the live grants rather than
-the plan. **Do not run the revokes until this is settled.**
+Found while wiring the client, by reading the live grants rather than the plan.
+Owner: *"mask glossary_study_v the same way"*. **Applied** as migration
+`glossary_study_v_mask_content_columns`.
 
-Measured on the live database:
+### What the hole was
 
-| Fact | Consequence |
+| Fact (measured on the live database) | Consequence |
 |---|---|
-| `glossary_study_v` grants SELECT to **anon AND authenticated** today | — |
-| It selects `g.definition` **unmasked** — only `common_mistakes` is behind `has_academy_access()` | Full definitions, not teasers |
-| Its inner join covers **26,855 of 26,855** terms (0 unlinked from `glossary_topics`) | The whole corpus, not a subset |
-| The plan revokes it **from `anon` only** | `authenticated` keeps it |
+| `glossary_study_v` granted SELECT to **anon AND authenticated** | — |
+| It selected `g.definition` **unmasked** | Full definitions, not teasers |
+| Inner join covers **26,855 of 26,855** terms (0 unlinked) | The whole corpus |
+| The plan revoked it **from `anon` only** | `authenticated` kept it |
 | Every guest who accepts the device key **becomes `authenticated`** | …including the scraper |
 
-So after the revokes as written, the same person the gateway was built to stop
-signs in anonymously — one tap, no email — and pages the entire corpus out of
-`glossary_study_v`. Not one request: PostgREST caps a page at 1000 rows, so
-about 27 of them. That is a script, not an obstacle.
+The person the gateway exists to stop would have signed in anonymously — one
+tap, no email — and paged the entire corpus out of the study view in ~27
+requests. A front door with the back door open, and it would have looked like
+it was working.
 
-**The gateway would be a front door with the back door still open, and it would
-look like it was working.**
+### ⚠️ Masking `definition` alone would have MOVED the hole, not closed it
 
-### What has to change
+All 26,855 rows carry `plain_english`, `purpose_function`,
+`practical_application` and `scenario_contexts` — measured, not assumed.
+`plain_english` is a complete alternative definition of every term. The mask
+therefore covers the whole content set; `term`, `category`, `difficulty` and
+`related_terms` stay open on purpose, because term NAMES are not the asset (the
+glossary's own list shows all 26,855, which is the product's promise).
 
-`glossary_study_v` must gate `definition` on **entitlement to study**, not on
-mere authentication — the same shape its `common_mistakes` mask already uses:
+SQL: `docs/APE_GLOSSARY_STUDY_V_MASK_2026_09_13.SQL`
+Rollback: `docs/APE_GLOSSARY_STUDY_V_MASK_2026_09_13_ROLLBACK.SQL`
 
-```sql
-case when public.has_academy_access(auth.uid())
-       or (auth.uid() is not null and a.global_sequence = any (array[3060, 3970]))
-     then g.definition
-     else left(g.definition, 120) end as definition
-```
+### Verified by impersonating each role, not by re-reading the DDL
 
-…plus whatever enrolment predicate the free study tier is supposed to honour —
-**that part is a product decision about what a free account gets, and it is
-yours, not mine.** The two free tasters are already encoded in the view, so the
-predicate exists; what is missing is whether an enrolled free user reading their
-own topic should get full definitions there.
+| Caller | Rows visible | Full definitions | `plain_english` rows |
+|---|---|---|---|
+| `anon` (no session) | 27,209 | **0** | **0** |
+| signed-in NON-member (= what an anonymous device key is) | 27,209 | **375** | **390** |
+| academy member | 27,209 | all (avg 330 chars, same as the base table) | 27,209 |
 
-Until it is decided, the choice is:
+The 390 are the two free study topics — gs3060 Pro Audio Safety (162 terms) and
+gs3970 DAW Fundamentals (228). That is **1.5% of the corpus**, it is the free
+study tier by design, and it is the same content a free account can already
+study in the app. Columns, order and types are byte-identical to before, so no
+client select list changed. Nothing else depends on the view — no other view, no
+function (checked).
 
-- **Close it**: mask as above. Study for non-entitled users degrades to teasers,
-  which may break the free study experience — check before running it.
-- **Leave it open and know that you have**: the gateway then raises the cost of
-  scraping from "one anon key" to "one anonymous sign-in", which is a real but
-  modest gain, and the 14/week remains a UI convention for anyone who looks.
+### Who loses nothing (checked before applying)
 
-⚠️ `glossary_topics` is also anon-SELECTable. It carries no definitions, so it
-is not a leak — but it is the join key, and it is what makes the study view
-enumerable. Worth a glance while you are in there.
+- **Members** — `has_academy_access()` → everything.
+- **Free study** — the client's own gate is `free = Safety gs3060 / DAW gs3970
+  only` (`DashboardScreen.tsx:1187`), the exact set the predicate lets through.
+- **Notification term batch** — notifications are MEMBERS ONLY (owner
+  2026-09-01), so those reads pass the predicate.
+
+### ⚠️ ONE OPEN DECISION: the Custom List
+
+`DashboardScreen.tsx:1264` exempts the ★ Custom List from the membership gate
+(`!dispIsCustom`). A free user can star any glossary term and study it there —
+so today that is a **second unmetered path to unlimited definitions**, outside
+the 14/week, and the mask has just closed it: those cards now carry a
+120-character teaser.
+
+That is a truncated sentence presented as a definition, which is not an
+acceptable resting state. Pick one:
+
+1. **Gate it** — drop `!dispIsCustom` so a free user's Custom List raises the
+   upgrade prompt, exactly like every other locked study method. One line.
+2. **Meter it** — route Custom List study through `get_glossary_definition`, so
+   each term costs one of the 14. Consistent with the owner's own rule
+   ("opening a definition to view it = +1"), but a 40-term list is then
+   unstudyable in one week.
+3. **Re-open it** — accept that the Custom List is an unmetered path to every
+   definition, and know that the gateway can be walked around by starring.
+
+### Every definition-bearing relation, swept
+
+Only three exist that a client role can read: `glossary` and `glossary_full_v`
+(both revoked by step 6) and `glossary_study_v` (now masked). After the revokes
+the gateway RPC is the only path to a definition, plus those 390 free-study
+terms.
 
 ## Client work - BUILT 2026-09-13
 
@@ -342,8 +372,8 @@ because it is a judgment call, not a technicality - reverse it in
 4. Create the view + RPC + cron. Verify privileges and the cascade. **The moment
    the view exists, every phone running the shipped build starts asking for
    consent** - so treat this step as the feature going live.
-5. **Settle `glossary_study_v`** — see the red section above. The revokes do
-   not achieve the brief without it.
+5. ✅ **`glossary_study_v` is masked** (applied 2026-09-13) — see above. Settle
+   the Custom List question there before the revokes.
 6. **Only then** run the revokes.
 
 Reversed, the glossary dies in every build already on a phone — including the
