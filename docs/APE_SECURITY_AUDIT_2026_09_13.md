@@ -95,6 +95,33 @@ Profile fix — the app and the database agree.
 
 ---
 
+## 4b. Supply chain — clean, and verified rather than assumed
+
+"Malicious activity" in a JS project usually arrives as an install-time script,
+so that is where I looked. Of **610 installed packages**:
+
+- **61** declare a lifecycle script, but 60 of those are `prepare`, which does
+  NOT run when installing from the npm registry — only for git-source installs
+  and in the package's own repo. They are build steps for the maintainers.
+- **Exactly ONE runs code on `npm install`:**
+  `@shopify/react-native-skia` → `postinstall: node scripts/install-libs.js`.
+
+I read it rather than trusting the name. 133 lines, importing only `path` and
+`fs`: **no network calls, no `exec`/`spawn`/`child_process`**. It copies prebuilt
+Skia libraries out of the package's own `libs/` directory, switching on an
+`SK_GRAPHITE` env flag. Exactly what it claims to be.
+
+## 4c. Production bundle — it ships
+
+`npx expo export --platform android` (LOCAL bundling, not a billed `eas build`)
+completed **exit code 0**. The release path resolves every import, so nothing in
+the app bundles only in dev. Fonts, nav assets and CanvasKit all emit.
+
+Worth knowing: the app's own source is small — the largest files are
+`certificateAssets.ts` (0.5 MB) and the curated notification term lists plus
+`careerIndex.json` (~0.2 MB each), about 2 MB of source in total. Bundle weight
+is dominated by `node_modules`, not by the curriculum data.
+
 ## 5. ⚠️ THE ONE THING TO DECIDE: the glossary limit is a UI convention, not a boundary
 
 `glossary` is **anon-SELECTable by design**, and `glossary_full_v` returns every
