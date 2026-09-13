@@ -108,6 +108,7 @@ export type RootStackParamList = {
     awardId: string;
   };
   Settings: undefined; // S11 — modal, bottom nav hidden
+  Help: undefined; // Help hub (Pillar C) — modal, reached from Settings
   /** Weekly misunderstood-concept card, opened from a push tap. */
   WeeklyConcept: {
     concept_id: number;

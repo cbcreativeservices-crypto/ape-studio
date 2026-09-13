@@ -24,6 +24,7 @@ import { Toggle } from '../../components/Toggle';
 import { TextField } from '../../components/TextField';
 import { StudioButton } from '../../components/StudioButton';
 import { resetCoachMarks } from '../../lib/coachMark';
+import { HELP_HUB_ENABLED } from '../../features/help/helpContent';
 import { resetScreenIntros } from '../../features/intro/screenIntros';
 import { resetOnboarding } from '../../features/intro/onboardingFlow';
 import { resetAmplitudeOrientation } from '../../features/lab/amplitudeOrientation';
@@ -583,6 +584,18 @@ export function SettingsScreen({ navigation }: Props) {
 
         {/* FEEDBACK & SUPPORT — opens the mail composer, pre-filled. */}
         <SettingsSection title="FEEDBACK & SUPPORT">
+          {/* Help hub (Pillar C) — gated until the owner ratifies the FAQ copy. */}
+          {HELP_HUB_ENABLED ? (
+            <Pressable
+              style={({ pressed }) => [styles.row, styles.rowBorder, pressed && styles.rowPressed]}
+              onPress={() => (navigation as any).navigate('Help')}
+              accessibilityRole="button"
+              accessibilityLabel="Help and answers"
+            >
+              <Text style={styles.rowLabel}>Help &amp; answers</Text>
+              <Text style={styles.chevron}>›</Text>
+            </Pressable>
+          ) : null}
           {(
             [
               ['bug', 'Report a bug'],

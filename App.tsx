@@ -62,6 +62,7 @@ import { syncLocalNotificationsThrottled } from './src/features/notifications/lo
 import { loadLocalSettings } from './src/features/settings/store';
 import { NotifySchedulePreview } from './src/features/settings/NotifySchedulePreview';
 import { SettingsPreview } from './src/screens/settings/SettingsPreview';
+import { HelpPreview } from './src/screens/help/HelpPreview';
 import { SamplerPreview } from './src/features/intro/SamplerPreview';
 import { FirstRunCoordinator } from './src/features/intro/FirstRunCoordinator';
 import { ProfilePreview } from './src/screens/profile/ProfilePreview';
@@ -274,6 +275,17 @@ export default function App() {
       <SafeAreaProvider>
         <StatusBar style="light" />
         <ProfilePreview />
+      </SafeAreaProvider>
+    );
+  }
+
+  // DEV + WEB ONLY: `#helppreview/<width>` — the Help hub is gated behind
+  // HELP_HUB_ENABLED until its copy is ratified; review it here meanwhile.
+  if (__DEV__ && Platform.OS === 'web' && typeof window !== 'undefined' && window.location.hash.startsWith('#helppreview')) {
+    return (
+      <SafeAreaProvider>
+        <StatusBar style="light" />
+        <HelpPreview />
       </SafeAreaProvider>
     );
   }

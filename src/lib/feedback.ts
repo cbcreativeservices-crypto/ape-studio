@@ -17,7 +17,7 @@ import { notify } from './confirm';
 // Matches the web site's contact address (web/lib/connect.ts, Footer, etc.).
 export const SUPPORT_EMAIL = 'info@proaudiotrainingacademy.com';
 
-export type FeedbackKind = 'bug' | 'term' | 'definition' | 'suggestion' | 'correction';
+export type FeedbackKind = 'bug' | 'term' | 'definition' | 'suggestion' | 'correction' | 'question';
 
 /** Locating data appended as a labelled block so the owner can find the exact
  *  item. Null/empty entries are dropped. */
@@ -29,6 +29,7 @@ const SUBJECT: Record<FeedbackKind, string> = {
   definition: 'Definition fix',
   suggestion: 'Feature suggestion (next version)',
   correction: 'Suggest a correction',
+  question: 'Question — I need help', // Help hub "Still need help?" (Pillar C)
 };
 
 /** Open the mail composer for a feedback kind. `tag` auto-labels the subject

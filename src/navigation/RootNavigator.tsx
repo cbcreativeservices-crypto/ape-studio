@@ -20,6 +20,7 @@ import { AwardProgressScreen } from '../screens/awards/AwardProgressScreen';
 import { FinalExamScreen } from '../screens/exam/FinalExamScreen';
 import { FinalExamResultScreen } from '../screens/exam/FinalExamResultScreen';
 import { SettingsScreen } from '../screens/settings/SettingsScreen';
+import { HelpScreen } from '../screens/help/HelpScreen';
 import { WeeklyConceptScreen } from '../screens/notifications/WeeklyConceptScreen';
 import { InstitutionalScreen } from '../screens/institutional/InstitutionalScreen';
 import { AboutScreen } from '../screens/about/AboutScreen';
@@ -270,6 +271,7 @@ export function RootNavigator() {
       <Stack.Screen name="FinalExamResult" component={FinalExamResultScreen} options={{ gestureEnabled: false }} />
       {/* S11 — modal, bottom nav hidden, exits via ✕ */}
       <Stack.Screen name="Settings" component={SettingsScreen} options={{ presentation: 'modal' }} />
+      <Stack.Screen name="Help" component={HelpScreen} options={{ presentation: 'modal' }} />
       <Stack.Screen name="WeeklyConcept" component={WeeklyConceptScreen} options={{ presentation: 'modal' }} />
       {/* Institutional Mode parked container (user request 2026-07-17). */}
       <Stack.Screen name="Institutional" component={InstitutionalScreen} options={{ presentation: 'modal' }} />
