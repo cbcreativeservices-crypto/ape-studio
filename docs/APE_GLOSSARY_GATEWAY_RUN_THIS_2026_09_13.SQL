@@ -18,13 +18,23 @@
 --   STEP 2  Create the browse view      ✅ APPLIED — the feature is now live
 --   STEP 3  Counting gateway RPC        ✅ APPLIED + verified on all four paths
 --   STEP 4  7-day purge                 ✅ APPLIED (cron jobid 3) + cascade proven
---   STEP 5  The revokes                 ⏸ waits for a build on phones
---   STEP 6  Prove the revokes took      ⏸
+--   STEP 5  The revokes                 ✅ APPLIED 2026-09-13 (owner go)
+--   STEP 6  Prove the revokes took      ✅ read back + proven over real HTTP
 --
--- ⚠️ LIVE BUT NOT YET A BOUNDARY. Verified over real HTTP with a real device
--- key: `GET /rest/v1/glossary?select=definition` still returns 200. The old
--- door is open until STEP 5 runs. The gateway meters everything that goes
--- THROUGH it; it does not yet stop anyone going around it.
+-- ✅ IT IS NOW A BOUNDARY. Proven over real HTTP after the revokes:
+--     anon key alone      -> glossary / glossary_full_v / glossary_study_v  401
+--     WITH a device key   -> glossary 403, glossary_full_v 403
+--                            glossary_browse_v 200 (120-char teaser)
+--                            get_glossary_definition -> used 1 of 14, full text
+--
+-- ⚠️ RESIDUAL, MEASURED not estimated: `left(definition, 120)` cannot truncate a
+-- definition that is already shorter than 120 characters. 413 terms outside the
+-- two free topics are short enough to be shown in FULL inside the teaser
+-- (plus the 390 free-study ones). That is 1.5% of the corpus, and it follows
+-- from the teaser decision rather than from a fault. If it matters, cap on a
+-- FRACTION instead of a constant, e.g.
+--     left(g.definition, least(120, greatest(40, length(g.definition) / 2)))
+-- which guarantees every row is truncated at the cost of a shorter preview.
 --
 -- Full reasoning: docs/APE_GLOSSARY_DEVICE_ID_BUILD_PLAN_2026_09_13.md
 -- Already applied, separately: the glossary_study_v content mask
