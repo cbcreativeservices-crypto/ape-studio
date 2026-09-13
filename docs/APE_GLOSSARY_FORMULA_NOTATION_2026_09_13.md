@@ -1,5 +1,23 @@
 # Equations & Formulas — the filter is alive, and its content has never been proof-read
 
+> ## ⚠️ SUPERSEDED IN PART, 2026-09-13 — and one figure below was WRONG
+>
+> **The "219 rows (11.5%) render as markup" figure was overstated.** It counted
+> every row containing a brace, and most braces in this corpus are legitimate
+> notation, not markup: `IDFT{ log |DFT{ x[n] }| }`, `Re{p̂ û*}`,
+> `{ z : |z| < 1 }`, `f0 ∈ {50, 60} Hz`, `Σ_{n=0}^{N−1} x[n]·e^{−j2πkn/N}`.
+> Those read as mathematics. `_{...}` and `^{...}` are the HOUSE STYLE — 124 of
+> the clean rows use them.
+>
+> The genuinely broken set was the **61 rows carrying LaTeX backslashes**, and
+> those are now **FIXED** — migration `glossary_formula_normalise_latex`, see
+> `docs/APE_GLOSSARY_FORMULA_NORMALISE_2026_09_13.SQL`. Verified on the device:
+> "Conductor Resistance" now reads `R = ρℓ / A`.
+>
+> The notation-census table below is still accurate and still useful — the
+> corpus does mix four conventions. What changed is that mixing them is a style
+> matter, not a defect, and the defect that did exist is gone.
+
 Device-checked 2026-09-13, the day `glossary_browse_v` went live.
 
 ## What changed
