@@ -50,6 +50,7 @@ import {
   getGlossaryStatus,
   type CapMode,
 } from '../../features/glossary/glossaryCap';
+import { collapsedDefinitionLines } from '../../features/glossary/collapsedLines';
 import { GlossaryLockView } from '../../features/glossary/GlossaryLockView';
 import { isHazardTerm } from '../../lib/hazard';
 import { CautionBadge } from '../../components/CautionBadge';
@@ -2064,9 +2065,14 @@ export function GlossaryScreen({ route, navigation }: Props) {
   // it must list EVERY reactive value the row reads — bookmarks, starred and
   // isMember included (they drive the star/bookmark glyphs and the Common-
   // Mistakes body), which the old always-new array silently covered.
+  // `capped` is listed as well as `isMember` and it is NOT redundant: capped is
+  // `commercialMode && resolved && !isMember`, so it flips when ENTITLEMENT
+  // RESOLVES even though isMember never moved. It drives the collapsed row's
+  // clamp — leave it out and a guest's rows keep rendering full definitions for
+  // the rest of the session, which is the exact hole this clamp closes.
   const rowExtraData = useMemo(
-    () => [expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, selectMode, selectedIds, linksOn, bookmarks, starred, isMember],
-    [expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, selectMode, selectedIds, linksOn, bookmarks, starred, isMember],
+    () => [expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, selectMode, selectedIds, linksOn, bookmarks, starred, isMember, capped],
+    [expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, selectMode, selectedIds, linksOn, bookmarks, starred, isMember, capped],
   );
 
   // GLOSSARY LOCK (owner 2026-09-10): a full-screen lock card over the DIMMED
@@ -2569,9 +2575,35 @@ export function GlossaryScreen({ route, navigation }: Props) {
                     linksOn={linksOn}
                   />
                 ) : (
+                  /**
+                   * COLLAPSED ROW — clamped for a CAPPED reader (bug hunt
+                   * 2026-09-13, owner ruling the same night).
+                   *
+                   * This row used to print the COMPLETE definition with
+                   * `numberOfLines={cardView ? 2 : undefined}` — unclamped in
+                   * LIST view, which is the default. A guest could scroll all
+                   * 26,855 definitions in full and spend NONE of their weekly
+                   * fourteen, because the allowance is charged in toggleExpand
+                   * and nothing here opened anything. The 14/week was therefore
+                   * metering the EXPANDED breakdown only, while About, the
+                   * paywall, the upgrade sheet and the Auth guest line all said
+                   * "Free use includes 14 definitions a week".
+                   *
+                   * The owner's call was to make the app match the copy rather
+                   * than the copy match the accident: a preview identifies the
+                   * term, and reading it spends a lookup. The coach toast
+                   * ("Tap a term to expand … the complete definition") is true
+                   * for the first time.
+                   *
+                   * Gated on `capped`, NOT on cardView: that is
+                   * `commercialMode && resolved && !isMember`, the same
+                   * predicate gateDefinitionOpen charges against — so members
+                   * and dev keep full collapsed definitions, and nothing clamps
+                   * before entitlement resolves.
+                   */
                   <Text
                     style={[styles.definition, ttsBeg && styles.definitionBeg]}
-                    numberOfLines={cardView ? 2 : undefined}
+                    numberOfLines={collapsedDefinitionLines(cardView, capped)}
                   >
                     {highlightNodes(ttsBeg ? item.plain_english || item.definition : item.definition, hq)}
                   </Text>
