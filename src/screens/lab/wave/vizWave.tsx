@@ -309,6 +309,20 @@ export type RoomSceneProps = {
    *  'modal' = standing-wave pattern for the given (nx, ny). */
   mode?: 'interference' | 'modal';
   modal?: { nx: number; ny: number };
+  /**
+   * Index of a wall fitted with a WORKING diffuser, or null for an all-specular
+   * room. Walls: 0 = top (y=0), 1 = right, 2 = bottom, 3 = left — the indices
+   * marchWall returns.
+   *
+   * Owner ruling 2026-09-13, closing a punch-list item open since August: the
+   * Diffusion module's DEPTH fader and DIFFUSER toggle changed the bezel and
+   * nothing else, because `diffuser`/`depth` never reached the drawing and this
+   * renderer had no notion of a scattering wall. The caller passes the wall only
+   * when the diffuser is fitted AND the frequency is above its design ƒ
+   * (c / 2·depth), so DEPTH becomes visible: it sets the threshold at which the
+   * picture stops being a mirror.
+   */
+  scatterWall?: number | null;
   selectedId?: string | null;
   onDragSource?: (id: string, x: number, y: number) => void;
   onDragListener?: (x: number, y: number) => void;
@@ -919,6 +933,7 @@ export function RoomSceneView(p: RoomSceneProps) {
   const headFrontImg = useImage(ICON_HEAD_FRONT);
   const nx = p.modal?.nx ?? 1;
   const ny = p.modal?.ny ?? 0;
+  const scatterWall = p.scatterWall ?? null;
 
   // ── HEAT: fine SPL map of the interference field / modal pressure map ─────
   // Memoized per (rounded scene, freq, mode, nx, ny) — NEVER per frame. Grid
@@ -998,6 +1013,19 @@ export function RoomSceneView(p: RoomSceneProps) {
     const byOrder = [Skia.Path.Make(), Skia.Path.Make(), Skia.Path.Make()];
     const arrows = [Skia.Path.Make(), Skia.Path.Make(), Skia.Path.Make()];
     const traces: TraceRay[] = [];
+    /**
+     * Rays fanning off a diffusing wall, drawn faint and separate from the
+     * specular orders.
+     *
+     * ⚠️ THIS is the path the Diffusion module needs, not the free-cast traces
+     * below. Those are pulse-tracer nodes, and `traces` is only consumed when
+     * the PRESSURE layer is on — which that module has OFF. The rays a user
+     * actually sees there are these image-source reflections, so a diffuser
+     * that does not change THEM changes nothing on screen.
+     */
+    const scatter = Skia.Path.Make();
+    const SCATTER_FAN = 11; // rays drawn in place of the one specular bounce
+    const SCATTER_ARC = (110 * Math.PI) / 180; // total fan angle
     const X = (mx: number) => geo.x0 + mx * geo.pxPerM;
     const Y = (my: number) => geo.y0 + my * geo.pxPerM;
     const L = scene.listener;
@@ -1029,8 +1057,47 @@ export function RoomSceneView(p: RoomSceneProps) {
         }
         if (!pts) continue;
         const path = byOrder[order];
-        path.moveTo(X(pts[0][0]), Y(pts[0][1]));
-        for (let i = 1; i < pts.length; i++) path.lineTo(X(pts[i][0]), Y(pts[i][1]));
+        // Does this reflection bounce off the diffusing wall? If so the mirror
+        // leg LEAVING that bounce is replaced by a fan: one strong specular ray
+        // becomes many weak ones from the same point. Energy is NOT reduced —
+        // no gain is touched here — which is exactly what the module's ENERGY
+        // RETURNED readout claims ("SAME ON OR OFF").
+        const sIdx = scatterWall == null ? -1 : img.bounces.indexOf(scatterWall);
+        if (sIdx >= 0 && pts.length > sIdx + 2) {
+          // Draw only as far as the scattering bounce...
+          path.moveTo(X(pts[0][0]), Y(pts[0][1]));
+          for (let i = 1; i <= sIdx + 1; i++) path.lineTo(X(pts[i][0]), Y(pts[i][1]));
+          // ...then fan from it, spanning the same reach as the leg it replaces.
+          const [bx, by] = pts[sIdx + 1];
+          const [tx, ty] = pts[sIdx + 2];
+          const vx = tx - bx;
+          const vy = ty - by;
+          const len = Math.hypot(vx, vy) || 1;
+          // Inward normal of the scattering wall: 0 = top, 1 = right, 2 = bottom,
+          // 3 = left (marchWall's indices).
+          const inX = scatterWall === 1 ? -1 : scatterWall === 3 ? 1 : 0;
+          const inY = scatterWall === 0 ? 1 : scatterWall === 2 ? -1 : 0;
+          for (let f = 0; f < SCATTER_FAN; f++) {
+            const a = (f / (SCATTER_FAN - 1) - 0.5) * SCATTER_ARC;
+            const ca = Math.cos(a);
+            const sa = Math.sin(a);
+            const rx = (vx * ca - vy * sa) / len;
+            const ry = (vx * sa + vy * ca) / len;
+            // A diffuser scatters INTO the room, never back out through itself.
+            // Without this the fan sprayed through the wall and off the panel.
+            if (rx * inX + ry * inY <= 0.05) continue;
+            // Stop at the first wall this ray meets, and never draw further than
+            // the specular leg it stands in for — so the fan reads as the same
+            // reflection broken up, not as new energy reaching further.
+            const hitF = marchWall(bx, by, rx, ry, scene.w, scene.h);
+            const reach = Math.min(len, Math.hypot(hitF.x - bx, hitF.y - by));
+            scatter.moveTo(X(bx), Y(by));
+            scatter.lineTo(X(bx + rx * reach), Y(by + ry * reach));
+          }
+        } else {
+          path.moveTo(X(pts[0][0]), Y(pts[0][1]));
+          for (let i = 1; i < pts.length; i++) path.lineTo(X(pts[i][0]), Y(pts[i][1]));
+        }
         // Trace polyline (px) + cumulative lengths for the pulse nodes.
         const flat: number[] = [];
         for (const [mx, my] of pts) flat.push(X(mx), Y(my));
@@ -1066,6 +1133,10 @@ export function RoomSceneView(p: RoomSceneProps) {
     // extra multi-bounce reflection paths beyond the line-traced order-≤2 set.
     // Each keeps the √(1−α) material loss along its path, so a long/absorptive
     // route arrives quieter (bluer). Not line-traced — pulse nodes only.
+    // Illustrative scatter cone off a diffusing wall (±~60°). Wide enough that
+    // one bounce visibly stops being a mirror, narrow enough that the rays still
+    // read as coming FROM the wall rather than as noise.
+    const SCATTER_SPREAD = (120 * Math.PI) / 180;
     const FREE_CAST = 60; // rays cast per source
     const FREE_KEEP = 12; // max diffuse reflections drawn
     const FREE_MAX_BOUNCES = 6;
@@ -1101,7 +1172,24 @@ export function RoomSceneView(p: RoomSceneProps) {
           if (scene.boundary[hit.wall] === 'open') break; // exits the room — lost
           const aAfter = amp * Math.sqrt(Math.max(0, 1 - alphaAt(scene.boundary[hit.wall], freq)));
           if (aAfter < FREE_FADE) break; // absorbed before reaching the listener
+          // Mirror first...
           if (hit.wall === 0 || hit.wall === 2) dy = -dy; else dx = -dx;
+          // ...then SCATTER if this wall carries a working diffuser. A diffuser
+          // redistributes the same energy over many directions rather than
+          // removing it, so `amp` is deliberately untouched here — which is what
+          // keeps the module's ENERGY RETURNED readout honest ("SAME ON OR OFF").
+          // Deterministic via hashFrac: this whole path set is built in a useMemo
+          // and must be identical on every re-render, or the rays would crawl.
+          if (scatterWall != null && hit.wall === scatterWall) {
+            const spread = (hashFrac(n * 3.77 + k * 1.13 + 0.29) - 0.5) * SCATTER_SPREAD;
+            const c = Math.cos(spread);
+            const sn = Math.sin(spread);
+            const rx = dx * c - dy * sn;
+            const ry = dx * sn + dy * c;
+            const len = Math.hypot(rx, ry) || 1;
+            dx = rx / len;
+            dy = ry / len;
+          }
           amp = aAfter;
           px = hit.x;
           py = hit.y;
@@ -1121,9 +1209,9 @@ export function RoomSceneView(p: RoomSceneProps) {
         }
       }
     }
-    return { byOrder, arrows, traces };
+    return { byOrder, arrows, traces, scatter };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key, freq, geo, p.layers.rays]);
+  }, [key, freq, geo, p.layers.rays, scatterWall]);
 
   // ── PULSE TRACER (owner 2026-08-02): with RAYS + PRESSURE both on, every
   // 2 s a pulse leaves the source; a node rides EVERY visible ray at ONE
@@ -1387,6 +1475,11 @@ export function RoomSceneView(p: RoomSceneProps) {
             <GlowStroke path={rays.byOrder[0]} color={RAY_COLORS[0]} width={1.6} opacity={0.85} />
             <Path path={rays.byOrder[1]} color={RAY_COLORS[1]} style="stroke" strokeWidth={1.3} opacity={0.6} />
             <Path path={rays.byOrder[2]} color={RAY_COLORS[2]} style="stroke" strokeWidth={1.1} opacity={0.42} />
+            {/* Scattered fan off a diffusing wall — many weak rays where one
+                strong specular ray used to be. Thinner and fainter than any
+                specular order on purpose: the eye should read "broken up", not
+                "more energy". */}
+            <Path path={rays.scatter} color={RAY_COLORS[1]} style="stroke" strokeWidth={0.9} opacity={0.5} />
             <Path path={rays.arrows[0]} color={RAY_COLORS[0]} opacity={0.9} />
             <Path path={rays.arrows[1]} color={RAY_COLORS[1]} opacity={0.65} />
             <Path path={rays.arrows[2]} color={RAY_COLORS[2]} opacity={0.45} />

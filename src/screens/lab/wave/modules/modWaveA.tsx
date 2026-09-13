@@ -124,6 +124,7 @@ function RoomView({
   height,
   mode,
   modal,
+  scatterWall,
   onDragSource,
   onDragListener,
 }: {
@@ -136,6 +137,8 @@ function RoomView({
   height?: number;
   mode?: 'interference' | 'modal';
   modal?: { nx: number; ny: number };
+  /** Wall carrying a WORKING diffuser (0 = top), or null for a specular room. */
+  scatterWall?: number | null;
   onDragSource?: (id: string, x: number, y: number) => void;
   onDragListener?: (x: number, y: number) => void;
 }) {
@@ -150,6 +153,7 @@ function RoomView({
       phase={phase}
       mode={mode}
       modal={modal}
+      scatterWall={scatterWall}
       onDragSource={onDragSource}
       onDragListener={onDragListener}
     />
@@ -674,6 +678,11 @@ export function DiffusionModule(p: WaveModuleProps) {
               scene={scene}
               freq={freq}
               layers={layers}
+              // Wall 0 is the TOP wall — the one this module fits the diffuser
+              // to. Passed ONLY when it is actually scattering (fitted AND above
+              // the design ƒ), so the drawing agrees with the bezel: below
+              // `fLow` it stays a mirror, which is the whole point of DEPTH.
+              scatterWall={scatters ? 0 : null}
               onDragSource={onDragSource}
               onDragListener={onDragListener}
             />
