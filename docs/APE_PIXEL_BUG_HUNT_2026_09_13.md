@@ -44,6 +44,52 @@ chase them again:
 | A colour-language interstitial blocks every visualizer lab, repeatedly | `withAmplitudeOrientation` — by design. It gates EVERY path into a visualizer lab (tile, deep link, banner) until the orientation is completed, and a fresh guest has not completed it. Fires until passed, then never again |
 | `labs/harmonic`, `labs/harmonograph`, `labs/reverb` bounce to "Pro Audio Training Academy" | Membership gate. Correct for a guest — those are member labs |
 
+## 🔴 CONFIRMED — the 14-a-week glossary allowance does not gate the definitions
+
+**A guest reads all 26,855 definitions in full, by scrolling, spending none of
+the weekly allowance.**
+
+Observed on the Pixel in Guest Mode: the glossary list shows each term with its
+COMPLETE definition already on screen, unopened. `-10 dBV`, `-174 dBm/Hz`,
+`-3 dB pan law` were all fully readable without a single tap.
+
+The code agrees. In `src/screens/glossary/GlossaryScreen.tsx`:
+
+- the collapsed row renders `item.definition` with
+  `numberOfLines={cardView ? 2 : undefined}` — **unclamped in LIST view**, which
+  is the default (CARDS is the opt-in);
+- the allowance is spent ONLY in `toggleExpand`, at
+  `if (!(await gateDefinitionOpen(id))) return;` — reached only when a row is
+  being OPENED.
+
+So what the 14/week actually gates is the EXPANDED view — the five category
+sections (plain English and the rest). The one-paragraph definition is free and
+unlimited.
+
+### Why this matters beyond the mechanics
+
+**The copy shipped today now says something the app does not do.** About,
+paywall, upgrade sheet and the Auth guest line all carry "Free use includes 14
+definitions a week" (commit `83552727` and earlier). On this evidence a guest's
+definitions are unlimited; what is limited is the deeper breakdown.
+
+The in-app toast has the same problem from the other side: "Tap a term to expand
+or collapse the complete definition" — the complete definition is already
+printed above it.
+
+### Not fixed on purpose — this is a product call, not a bug fix
+
+Two ways to resolve it, and they are materially different products:
+
+1. **Clamp the list row** (e.g. `numberOfLines={2}` with a "read more" that
+   spends a lookup). Makes the copy true. Changes what the free tier IS, which
+   is the owner's decision and not mine to make overnight.
+2. **Change the copy** to describe what is actually metered — the expanded
+   breakdown, not "definitions". Ratified commercial copy, so it routes through
+   governance either way.
+
+Whichever way it goes, the toast wording needs to follow.
+
 ## SUSPECTED — needs a clean retest, do not treat as confirmed
 
 **Warm deep links may be ignored after the app has been running a long time.**
