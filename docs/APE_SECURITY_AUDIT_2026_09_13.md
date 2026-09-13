@@ -122,6 +122,39 @@ Worth knowing: the app's own source is small — the largest files are
 `careerIndex.json` (~0.2 MB each), about 2 MB of source in total. Bundle weight
 is dominated by `node_modules`, not by the curriculum data.
 
+Sizes (minified and non-minified came out byte-identical, same content hash —
+expected for Hermes, whose bytecode does not carry most identifiers):
+
+| Artifact | Size |
+|---|---|
+| `index-….hbc` (Android JS bytecode) | **15.6 MB** |
+| `canvaskit.wasm` | **7.7 MB** ← see below |
+| everything else (fonts, nav icons, art) | < 1 MB each |
+
+### ⚠️ `canvaskit.wasm` (7.7 MB) rides along in the ANDROID export
+
+`public/canvaskit.wasm` is 7.7 MB, and Expo copies `public/` into the export
+output for EVERY platform — so it lands in the Android export next to the
+Hermes bundle. CanvasKit is the **web** Skia backend; on Android, Skia is native
+(that is what the `@shopify/react-native-skia` postinstall links).
+
+`metro.config.js` already guards the JS side of exactly this — its comment
+records that `canvaskit-wasm` once "joined the native graph" through a
+`Platform.OS === 'web'` dynamic import that Metro still walked at build time.
+The resolver blocks that. **The `public/` asset is a separate path and is not
+blocked.**
+
+⚠️ **Scope, stated honestly: I have NOT proven this reaches the APK.** `public/`
+is a web static-hosting convention and most likely is not packaged into a native
+binary. What I measured is that it is in the `expo export` output — which is the
+payload an EAS Update publishes, so it plausibly bloats an OTA download by
+7.7 MB for Android clients that do not use it.
+
+**Do not simply delete it — the web build needs it.** The fix, if it matters, is
+to keep it out of the native export (a platform-conditional copy or moving it
+out of `public/` and serving it from the web project only). Worth ten minutes
+before shipping updates, not a launch blocker.
+
 ## 5. ⚠️ THE ONE THING TO DECIDE: the glossary limit is a UI convention, not a boundary
 
 `glossary` is **anon-SELECTable by design**, and `glossary_full_v` returns every
