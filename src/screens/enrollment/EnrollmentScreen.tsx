@@ -74,6 +74,20 @@ import { useLastStudyLocation } from '../../features/study/lastStudyLocation';
 const GREEN = '#37e05f';
 const BLUE = '#7fbfff';
 const GRAY = '#6b6b6b';
+
+/** The deck load state as a framed text toggle (owner 2026-09-13): LOADED
+ *  lights blue, UNLOADED sits gray. Replaces the 3-card icon everywhere it
+ *  meant "in the Dashboard deck" — the icon itself now belongs ONLY to My
+ *  Custom List, whose identity it is. `dim` = core-locked (can't toggle). */
+function LoadPill({ on, small, dim }: { on: boolean; small?: boolean; dim?: boolean }) {
+  return (
+    <View style={[styles.loadPill, small && styles.loadPillSmall, on && styles.loadPillOn, dim && styles.loadPillDim]}>
+      <Text style={[styles.loadPillText, small && styles.loadPillTextSmall, on && styles.loadPillTextOn]}>
+        {on ? 'LOADED' : 'UNLOADED'}
+      </Text>
+    </View>
+  );
+}
 const PURPLE = '#c4a2ff';
 const DRAG_ROW_H = 84; // drag distance per reorder step (tuned for collapsed + expanded cards)
 
@@ -954,7 +968,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             aria-pressed={allLoaded}
             accessibilityLabel={allLoaded ? 'Remove all topics from the study deck' : 'Load all topics into the study deck'}
           >
-            <DeckIcon color={allLoaded ? colors.blue : GRAY} fill={allLoaded ? BLUE : '#8a8a8a'} size={33} />
+            <LoadPill on={allLoaded} />
           </Pressable>
           <Pressable hitSlop={6}
             style={styles.studyNavBtn}
@@ -1042,7 +1056,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             aria-pressed={allLoaded}
             accessibilityLabel={allLoaded ? 'Remove all topics from the study deck' : 'Load all topics into the study deck'}
           >
-            <DeckIcon color={allLoaded ? colors.blue : GRAY} fill={allLoaded ? BLUE : '#8a8a8a'} size={33} />
+            <LoadPill on={allLoaded} />
           </Pressable>
           <Pressable hitSlop={6}
             style={styles.studyNavBtn}
@@ -1157,7 +1171,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             aria-pressed={customOnDash}
             accessibilityLabel={customOnDash ? 'Remove my custom list from the dashboard' : 'Show my custom list on the dashboard'}
           >
-            <DeckIcon color={customOnDash ? colors.blue : GRAY} fill={customOnDash ? BLUE : '#8a8a8a'} size={33} />
+            <LoadPill on={customOnDash} />
           </Pressable>
           {/* Study → only when ON (grayed + unpressable when OFF). */}
           <Pressable hitSlop={6}
@@ -1303,7 +1317,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                     aria-pressed={showActive}
                     accessibilityLabel={coreLocked ? 'Locked in your study deck' : showActive ? 'Remove from study deck' : 'Add to study deck'}
                   >
-                    <DeckIcon color={showActive ? colors.blue : GRAY} fill={showActive ? BLUE : '#8a8a8a'} size={22} />
+                    <LoadPill on={showActive} small dim={coreLocked} />
                   </Pressable>
                   {/* Study icon alongside the 3-card icon (owner 2026-08-01): lit +
                       opens the Dashboard when the topic is in the deck. */}
@@ -1384,7 +1398,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                       coreLocked ? 'Locked in your study deck until completed' : showActive ? 'Remove from study deck' : 'Add to study deck'
                     }
                   >
-                    <DeckIcon color={showActive ? colors.blue : GRAY} fill={showActive ? BLUE : '#8a8a8a'} size={33} />
+                    <LoadPill on={showActive} dim={coreLocked} />
                   </Pressable>
                   {/* Study icon LINKED to the deck toggle (user request 2026-07-23):
                       blue when the topic is loaded into the deck, gray when not;
@@ -1969,7 +1983,15 @@ const styles = StyleSheet.create({
   // vertical columns on the right (user request 2026-07-24).
   studyNavBtn: { width: 42, paddingVertical: 2, alignItems: 'center', justifyContent: 'center' },
   // Open-book toggle = topic loaded into the study deck (user request 2026-07-23).
-  bookToggle: { width: 42, paddingVertical: 3, alignItems: 'center', justifyContent: 'center' },
+  bookToggle: { paddingVertical: 3, alignItems: 'center', justifyContent: 'center' },
+  // LOADED/UNLOADED framed toggle (owner 2026-09-13) — lights when loaded.
+  loadPill: { borderWidth: 1, borderColor: '#3a3a3a', backgroundColor: '#1c1c1c', borderRadius: 7, paddingVertical: 5, paddingHorizontal: 9 },
+  loadPillOn: { borderColor: BLUE, backgroundColor: 'rgba(127,191,255,0.13)' },
+  loadPillDim: { opacity: 0.55 },
+  loadPillSmall: { paddingVertical: 3, paddingHorizontal: 6 },
+  loadPillText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.6, color: GRAY },
+  loadPillTextSmall: { fontSize: 9.5, letterSpacing: 0.4 },
+  loadPillTextOn: { color: BLUE },
   // Award "STUDY ALL" (blue) — loads every topic into the deck.
   studyAllBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderColor: 'rgba(127,191,255,.6)', backgroundColor: 'rgba(127,191,255,.12)', borderRadius: 7, paddingVertical: 5, paddingHorizontal: 10 },
   studyAllText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.6, color: BLUE },
