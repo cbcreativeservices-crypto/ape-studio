@@ -74,8 +74,8 @@ export const SCREEN_INTROS: Record<
       'PLACEHOLDER — first-user welcome tutorial. This will become the guided first-run tour for brand-new users: creating your profile, picking a course, and how studying earns awards. Tap anywhere to continue.',
   },
   dashboard: {
-    // DRAFT (2026-09-13, plan §3) — awaiting owner ratification; flip
-    // `placeholder` to false on the owner's word, not before.
+    // Ratified by the owner 2026-09-13 (plan §3; wording corrections applied).
+    placeholder: false,
     title: 'Your Study Dashboard',
     body:
       'Every topic here follows the same loop.\n\n' +
@@ -129,9 +129,9 @@ export const SCREEN_INTROS: Record<
       'Thank you for using the Pro Audio Training Academy Glossary. We hope it becomes a trusted resource throughout your audio journey.',
   },
   awards: {
-    // DRAFT (2026-09-13, plan §3) — rewritten for Achievements v3 (three
-    // categories, no trophy wall). Awaiting owner ratification; flip
-    // `placeholder` to false on the owner's word, not before.
+    // Ratified by the owner 2026-09-13 (plan §3; rewritten for Achievements
+    // v3 — three categories, no trophy wall).
+    placeholder: false,
     title: 'Your Trophy Case',
     body:
       'Everything you earn lives in three collections.\n\n' +
