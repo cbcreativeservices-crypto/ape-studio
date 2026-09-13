@@ -1781,7 +1781,8 @@ const styles = StyleSheet.create({
   topBlock: { gap: 8 },
   // Green frame around the whole My Enrollment area — title → last container
   // (user request 2026-07-22).
-  myEnrollArea: { gap: 8, borderWidth: 1.5, borderColor: 'rgba(55,224,95,.55)', borderRadius: 12, padding: 10 },
+  // borderWidth 1.5 → 2.5 (owner 2026-09-13: 1pt thicker).
+  myEnrollArea: { gap: 8, borderWidth: 2.5, borderColor: 'rgba(55,224,95,.55)', borderRadius: 12, padding: 10 },
   // MY RECORD folder — white nested container of completed items (user request 2026-07-23).
   recordFolder: { borderWidth: 1.5, borderColor: 'rgba(255,255,255,.5)', borderRadius: 10, backgroundColor: '#131313', overflow: 'hidden', marginTop: 2 },
   recordHead: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 10, paddingHorizontal: 12 },
