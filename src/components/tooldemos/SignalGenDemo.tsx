@@ -11,24 +11,31 @@
  * static react-native-svg sketches; noise traces come from fixed seeded
  * arrays (never Math.random).
  *
- * Scenes: 1 SIGNAL SHAPES (sine/white/pink, time + spectrum) · 2 LOG SWEEP
- * (rising-frequency sine with position cursor) · 3 SAFE LEVELS (−20 dBFS
- * default, −12 dBFS cap, locked zone above).
+ * Scenes: 1 SIGNAL SHAPES (sine/white/pink — the same signal drawn in TWO
+ * views, time + spectrum, with paired callouts) · 2 LOG SWEEP (rising-
+ * frequency sine, position cursor, rattle-hunting callout) · 3 SAFE LEVELS
+ * (−20 dBFS default, −12 dBFS cap, locked zone, crest-factor compare strip).
+ *
+ * Design pass 2026-09-13: shared demo contract (rack-key scene tabs, recessed
+ * glass plot panels, in-SVG leader-line callouts, structured WATCH FOR /
+ * body / FIELD NOTE captions).
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
-import Svg, { Defs, Line, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
+import Svg, { Defs, Line, LinearGradient, Path, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { levelColor, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 import { colors, fonts, radius } from '../../theme/tokens';
 
 type SceneKey = 'shapes' | 'sweep' | 'levels';
 type WaveKey = 'sine' | 'white' | 'pink';
 
-// Taller displays (owner 2026-08-05, item 5): more room for the view + labels.
+// Taller displays (owner 2026-08-05, item 5) + demo contract 2026-09-13:
+// the plot is the hero — ≥190 tall in a recessed glass panel.
 const PANEL_H = 452;
-const PANE_VIZ_H = 118;
-const SWEEP_VIZ_H = 168;
-const LEVELS_H = 228;
+const PANE_VIZ_H = 190;
+const SWEEP_VIZ_H = 196;
+const LEVELS_H = 232;
+const CREST_H = 70;
 
 const SCENES: { key: SceneKey; label: string }[] = [
   { key: 'shapes', label: 'SIGNAL SHAPES' },
@@ -49,26 +56,64 @@ const WAVE_COLOR: Record<WaveKey, string> = {
   white: '#f2f2f5',
   pink: '#ff8fae', // pink noise drawn pink — no token exists for this hue
 };
-
-const CAPTIONS: Record<WaveKey, string> = {
-  sine: 'A sine tone is energy at one single frequency, so its spectrum is a lone spike. It is the cleanest signal for exercising one frequency at a time.',
-  white:
-    'White noise carries equal energy per hertz, so its spectrum sketches flat. It sounds hissy-bright because every higher octave spans twice as many hertz.',
-  pink: 'Pink noise carries equal energy per octave, sloping down about 3 dB per octave. That balance mirrors hearing, so it is the standard for speaker and room checks.',
+// Active-key background tints (~10% of the wave colour) for the sub-toggle.
+const WAVE_TINT: Record<WaveKey, string> = {
+  sine: 'rgba(47,155,255,0.10)',
+  white: 'rgba(242,242,245,0.08)',
+  pink: 'rgba(255,143,174,0.10)',
 };
 
-// "Log" explained (item 2): logarithmic = equal time per OCTAVE (each frequency
-// doubling), matching how we hear pitch — so low frequencies get as much of the
-// pass as the highs. Also names it a "frequency sweep" and its measurement use.
+// In-SVG callout palette (demo contract): amber = the thing being taught,
+// salmon = warning/limit, steel = neutral reference.
+const CALL_AMBER = '#ffb400';
+const CALL_SALMON = '#ff8d7a';
+const CALL_STEEL = '#9aa3ad';
+const LEADER = 'rgba(255,255,255,0.35)';
+
+// ---- Structured captions (WATCH FOR / body / FIELD NOTE) ------------------
+type SceneCaption = { watch: string; body: string; note?: string };
+
+const SHAPE_CAPS: Record<WaveKey, SceneCaption> = {
+  sine: {
+    watch: 'ONE CYCLE IN TIME — ONE SPIKE IN SPECTRUM',
+    body:
+      'Both panels draw the same signal. In time it repeats one perfect cycle; in spectrum every bit of its energy stands at a single frequency, with no harmonics. That purity is the point: a sine exercises one frequency at a time, which is why it is the stimulus for distortion checks, crossover checks, and pinning a resonance to its exact frequency.',
+    note: 'A system that behaves on a sine can still fail on music — a sine has no transients and no dynamics.',
+  },
+  white: {
+    watch: 'JAGGED TIME TRACE — FLAT SPECTRUM LINE',
+    body:
+      'White noise is random moment to moment but statistically exact over time: equal energy per hertz, so the spectrum draws flat. But each higher octave spans twice as many hertz, so the very same signal sounds hissy-bright — and climbs about +3 dB per octave on a fractional-octave RTA.',
+    note: '"Flat" depends on the display: white reads flat on a narrowband FFT but tilts upward on an RTA. Know your signal AND your display.',
+  },
+  pink: {
+    watch: 'THE −3 dB PER OCTAVE SLOPE, AGAINST THE WHITE REFERENCE',
+    body:
+      'Pink noise trades equal-per-hertz for equal energy per octave, so its spectrum slopes down 3 dB each octave (the dashed line shows white, for contrast). That octave balance matches how hearing and fractional-octave analyzers are organized, so pink reads flat on an RTA — which is why pink, not white, is the working signal for loudspeaker tuning and room checks.',
+    note: 'The slower, bigger swings in the time trace are pink’s signature — the low end carrying more of the energy.',
+  },
+};
+
+const SWEEP_CAP: SceneCaption = {
+  watch: 'THE CYCLES TIGHTEN LEFT TO RIGHT — AND THE RATTLE MARK',
+  body:
+    'One glide from 20 Hz to 20 kHz excites every frequency in order. Sweeps are how you find trouble that lives at one frequency: walk a sweep through a room and a rattle, buzz, or resonance sings out at the exact moment the sweep crosses its frequency — mark that spot and you have its frequency. Log sweeps are also the standard excitation for loudspeaker testing and impulse-response measurement.',
+  note: 'A sweep is only the question — the measurement is in what comes back. Playing a sweep into a room proves nothing by itself.',
+};
+
+const LEVELS_CAP: SceneCaption = {
+  watch: 'THE HANDLE RISES, THEN STOPS DEAD AT THE −12 CAP',
+  body:
+    'A test signal is not music: it never pauses. A sine at a moderate reading delivers far more sustained power to a driver — and to your ears — than music peaking at the same level, which is what the compare strip below shows. Passing the cap takes a deliberate confirmation that lasts one session, then re-locks. And dBFS is digital level only: how loud the room actually gets depends entirely on the gain chain downstream.',
+  note: 'Field habit: start low, confirm what is connected downstream, then bring the level up only as far as the measurement needs.',
+};
+
+// Above-display explanations (owner 2026-08-05, items 2 & 3): "log" defined
+// before the plot; the WHY of the limit before the scale.
 const SWEEP_INTRO =
   '"Log" is short for logarithmic: the tone spends equal time in every OCTAVE (each doubling of frequency), the way we hear pitch — so the lows get as much of the pass as the highs. A linear sweep instead races through the lows and lingers on the highs.';
-const SWEEP_CAPTION =
-  'Also called a frequency sweep: one glide from 20 Hz to 20 kHz exciting every frequency in order. It is the backbone of measurement — feed it to a speaker or room and capture the response to read frequency balance, resonances and (as a log sweep) the reverb decay / RT60.';
-
 const LEVELS_INTRO =
   'Why the limit: the generator can produce full-scale energy at any frequency, and a hot tone straight into monitors or headphones can damage HEARING and blow SPEAKERS in an instant. So output opens at a safe −20 dBFS and is capped at −12 dBFS.';
-const LEVELS_CAPTION =
-  'To go louder than the −12 dBFS cap you must confirm an authorization (remove headphones / lower the monitors first). That unlock lasts for this session only, then re-locks — a deliberate speed bump so louder output is always a conscious choice, for your ears and your gear.';
 
 // Chart metric-mark colours (owner 2026-08-05: graphs must have visible marks).
 const GRID_C = '#33343d';
@@ -110,6 +155,42 @@ function pinkify(white: readonly number[]): number[] {
 
 const WHITE_TRACES = [lcgNoise(0xc0ffee, 72), lcgNoise(0xbada55, 72)];
 const PINK_TRACES = [pinkify(lcgNoise(0x5eed01, 72)), pinkify(lcgNoise(0x5eed02, 72))];
+
+// ---- Crest-factor compare strip (scene 3) ---------------------------------
+// "Music" = a fixed burst-and-rest envelope on a carrier; "test tone" = an
+// unbroken sine. BOTH peak at the same value — the teaching is that the tone
+// spends ALL its time at the peak while music mostly rests (low crest factor
+// of a sine vs program material). Deterministic, precomputed.
+const CREST_ENV: ReadonlyArray<readonly [number, number]> = [
+  [0, 0.12],
+  [0.06, 0.9],
+  [0.12, 0.28],
+  [0.2, 0.62],
+  [0.27, 0.14],
+  [0.38, 1.0],
+  [0.46, 0.3],
+  [0.55, 0.55],
+  [0.62, 0.12],
+  [0.72, 0.8],
+  [0.8, 0.22],
+  [0.9, 0.5],
+  [1, 0.1],
+];
+function crestEnvAt(t: number): number {
+  for (let i = 1; i < CREST_ENV.length; i += 1) {
+    const [t1, a1] = CREST_ENV[i];
+    if (t <= t1) {
+      const [t0, a0] = CREST_ENV[i - 1];
+      const k = (t - t0) / (t1 - t0 || 1);
+      return a0 + (a1 - a0) * k;
+    }
+  }
+  return CREST_ENV[CREST_ENV.length - 1][1];
+}
+const MUSIC_TRACE: number[] = Array.from({ length: 160 }, (_, i) => {
+  const t = i / 159;
+  return crestEnvAt(t) * Math.sin(2 * Math.PI * 26 * t);
+});
 
 // ---- SVG path builders ----------------------------------------------------
 function wavePath(samples: readonly number[], w: number, h: number): string {
@@ -206,8 +287,8 @@ export function SignalGenDemo() {
     cursor.setValue(0);
     const loop = Animated.loop(
       Animated.sequence([
-        Animated.timing(cursor, { toValue: 1, duration: 3400, easing: Easing.linear, useNativeDriver: true }),
-        Animated.delay(400),
+        Animated.timing(cursor, { toValue: 1, duration: 4600, easing: Easing.linear, useNativeDriver: true }),
+        Animated.delay(600),
       ])
     );
     loop.start();
@@ -222,10 +303,10 @@ export function SignalGenDemo() {
     fader.setValue(0);
     const loop = Animated.loop(
       Animated.sequence([
+        Animated.delay(1200),
+        Animated.timing(fader, { toValue: 1, duration: 1100, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
         Animated.delay(900),
-        Animated.timing(fader, { toValue: 1, duration: 900, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
-        Animated.delay(700),
-        Animated.timing(fader, { toValue: 0, duration: 700, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
+        Animated.timing(fader, { toValue: 0, duration: 800, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
       ])
     );
     loop.start();
@@ -246,10 +327,17 @@ export function SignalGenDemo() {
   );
   const chirpW = w - 2;
   const chirpD = useMemo(() => chirpPath(chirpW, SWEEP_VIZ_H), [chirpW]);
+  const crestMusicD = useMemo(() => wavePath(MUSIC_TRACE, svgW, CREST_H), [svgW]);
+  const crestToneD = useMemo(() => sinePath(svgW, CREST_H, 9), [svgW]);
 
-  const caption = scene === 'shapes' ? CAPTIONS[wave] : scene === 'sweep' ? SWEEP_CAPTION : LEVELS_CAPTION;
+  const cap = scene === 'shapes' ? SHAPE_CAPS[wave] : scene === 'sweep' ? SWEEP_CAP : LEVELS_CAP;
   const accent = WAVE_COLOR[wave];
   const specOpacity = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.65, 1] });
+
+  // Spectrum-pane feature geometry (shared by draw + callouts).
+  const spikeX = svgW * 0.42; // sine spike
+  const flatY = PANE_VIZ_H * 0.3; // white's flat line (and pink's white ref)
+  const crestAmp = CREST_H * 0.36;
 
   return (
     <View style={styles.root}>
@@ -281,11 +369,21 @@ export function SignalGenDemo() {
                   accessibilityLabel={`${label} waveform`}
                   accessibilityState={{ selected: wave === key }}
                   aria-pressed={wave === key}
-                  style={[styles.waveChip, wave === key && { borderColor: WAVE_COLOR[key] }]}
+                  style={[
+                    styles.waveChip,
+                    wave === key && { borderColor: WAVE_COLOR[key], backgroundColor: WAVE_TINT[key] },
+                  ]}
                 >
                   <Text style={[styles.waveChipText, wave === key && { color: WAVE_COLOR[key] }]}>{label}</Text>
                 </Pressable>
               ))}
+            </View>
+
+            {/* The linking idea of the whole demo: ONE signal, TWO views. */}
+            <View style={styles.linkRow}>
+              <View style={styles.linkLine} />
+              <Text style={styles.linkText}>ONE SIGNAL · TWO VIEWS</Text>
+              <View style={styles.linkLine} />
             </View>
 
             <View style={styles.paneRow}>
@@ -328,6 +426,29 @@ export function SignalGenDemo() {
                       </Animated.View>
                     </>
                   )}
+                  {/* Static callout overlay — sits above the animated trace.
+                      The sine bracket is exactly one wavelength wide, so it
+                      always frames one full cycle no matter the scroll phase. */}
+                  <Svg width={svgW} height={PANE_VIZ_H} style={StyleSheet.absoluteFill} pointerEvents="none">
+                    {wave === 'sine' ? (
+                      <>
+                        <Line x1={lambda} y1={20} x2={lambda * 2} y2={20} stroke={CALL_AMBER} strokeWidth={1} />
+                        <Line x1={lambda} y1={20} x2={lambda} y2={26} stroke={CALL_AMBER} strokeWidth={1} />
+                        <Line x1={lambda * 2} y1={20} x2={lambda * 2} y2={26} stroke={CALL_AMBER} strokeWidth={1} />
+                        <SvgText x={lambda * 1.5} y={13} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={9.5} letterSpacing={1} fill={CALL_AMBER}>
+                          ONE CYCLE
+                        </SvgText>
+                      </>
+                    ) : wave === 'white' ? (
+                      <SvgText x={6} y={14} textAnchor="start" fontFamily={fonts.oswaldSemiBold} fontSize={9.5} letterSpacing={1} fill={CALL_AMBER}>
+                        EVERY FREQ AT ONCE
+                      </SvgText>
+                    ) : (
+                      <SvgText x={6} y={14} textAnchor="start" fontFamily={fonts.oswaldSemiBold} fontSize={9.5} letterSpacing={1} fill={CALL_AMBER}>
+                        LOW-HEAVY WANDER
+                      </SvgText>
+                    )}
+                  </Svg>
                 </View>
                 <Text style={styles.axisUnder}>time →</Text>
               </View>
@@ -359,13 +480,22 @@ export function SignalGenDemo() {
                       <Line x1={2} y1={PANE_VIZ_H - 8} x2={svgW - 2} y2={PANE_VIZ_H - 8} stroke={ZERO_C} strokeWidth={1.2} />
                       {wave === 'sine' ? (
                         <>
-                          <Line x1={svgW * 0.42} y1={PANE_VIZ_H - 8} x2={svgW * 0.42} y2={10} stroke="url(#specAmp)" strokeWidth={8} opacity={0.28} />
-                          <Line x1={svgW * 0.42} y1={PANE_VIZ_H - 8} x2={svgW * 0.42} y2={10} stroke="url(#specAmp)" strokeWidth={3} />
+                          <Line x1={spikeX} y1={PANE_VIZ_H - 8} x2={spikeX} y2={10} stroke="url(#specAmp)" strokeWidth={8} opacity={0.28} />
+                          <Line x1={spikeX} y1={PANE_VIZ_H - 8} x2={spikeX} y2={10} stroke="url(#specAmp)" strokeWidth={3} />
+                          {/* Callout: the paired feature — the whole signal is here. */}
+                          <Line x1={spikeX + 4} y1={22} x2={spikeX + 22} y2={40} stroke={LEADER} strokeWidth={1} />
+                          <SvgText x={spikeX + 25} y={44} textAnchor="start" fontFamily={fonts.oswaldSemiBold} fontSize={9.5} letterSpacing={1} fill={CALL_AMBER}>
+                            ONE SPIKE
+                          </SvgText>
                         </>
                       ) : wave === 'white' ? (
                         <>
-                          <Rect x={2} y={PANE_VIZ_H * 0.3} width={svgW - 4} height={PANE_VIZ_H - 8 - PANE_VIZ_H * 0.3} fill="url(#specAmp)" opacity={0.22} />
-                          <Line x1={2} y1={PANE_VIZ_H * 0.3} x2={svgW - 2} y2={PANE_VIZ_H * 0.3} stroke="url(#specAmp)" strokeWidth={3} />
+                          <Rect x={2} y={flatY} width={svgW - 4} height={PANE_VIZ_H - 8 - flatY} fill="url(#specAmp)" opacity={0.22} />
+                          <Line x1={2} y1={flatY} x2={svgW - 2} y2={flatY} stroke="url(#specAmp)" strokeWidth={3} />
+                          <Line x1={svgW / 2} y1={flatY - 16} x2={svgW / 2} y2={flatY - 4} stroke={LEADER} strokeWidth={1} />
+                          <SvgText x={svgW / 2} y={flatY - 21} textAnchor="middle" fontFamily={fonts.oswaldSemiBold} fontSize={9.5} letterSpacing={1} fill={CALL_AMBER}>
+                            FLAT — EQUAL PER Hz
+                          </SvgText>
                         </>
                       ) : (
                         <>
@@ -380,6 +510,16 @@ export function SignalGenDemo() {
                             strokeWidth={3}
                             fill="none"
                           />
+                          {/* Neutral reference: where WHITE would sit (flat). */}
+                          <Line x1={2} y1={flatY} x2={svgW - 2} y2={flatY} stroke={CALL_STEEL} strokeWidth={1} strokeDasharray="3 4" opacity={0.7} />
+                          <SvgText x={svgW - 4} y={flatY - 5} textAnchor="end" fontFamily={fonts.oswaldSemiBold} fontSize={9} letterSpacing={1} fill={CALL_STEEL}>
+                            WHITE REF
+                          </SvgText>
+                          {/* Callout: the slope IS the lesson. */}
+                          <Line x1={svgW * 0.5} y1={PANE_VIZ_H * 0.46} x2={svgW * 0.5 + 14} y2={PANE_VIZ_H * 0.46 - 18} stroke={LEADER} strokeWidth={1} />
+                          <SvgText x={svgW * 0.5 + 17} y={PANE_VIZ_H * 0.46 - 21} textAnchor="start" fontFamily={fonts.oswaldSemiBold} fontSize={9.5} letterSpacing={1} fill={CALL_AMBER}>
+                            −3 dB/OCT
+                          </SvgText>
                         </>
                       )}
                     </Svg>
@@ -412,9 +552,9 @@ export function SignalGenDemo() {
             </View>
 
             <View style={styles.metaRow}>
-              <Text style={styles.metaMono}>energy at each frequency</Text>
-              <Text style={[styles.metaMono, { color: accent }]}>
-                {wave === 'sine' ? 'ONE FREQUENCY' : wave === 'white' ? 'FLAT' : '−3 dB/OCT'}
+              <Text style={styles.metaMono}>SPECTRAL RULE</Text>
+              <Text style={[styles.metaMono, { color: accent, flexShrink: 1 }]} numberOfLines={1}>
+                {wave === 'sine' ? 'ALL ENERGY AT ONE FREQUENCY' : wave === 'white' ? 'EQUAL ENERGY PER Hz — FLAT' : 'EQUAL PER OCTAVE — −3 dB/OCT'}
               </Text>
             </View>
           </>
@@ -424,7 +564,7 @@ export function SignalGenDemo() {
           <>
             <Text style={styles.introText}>{SWEEP_INTRO}</Text>
             <Text style={styles.paneLabel}>SWEPT SINE — LOW TO HIGH</Text>
-            <View style={[styles.sweepViz, { height: SWEEP_VIZ_H }]}>
+            <View style={[styles.paneViz, { height: SWEEP_VIZ_H }]}>
               <Svg width={chirpW} height={SWEEP_VIZ_H}>
                 <Defs>
                   {/* MIDI amplitude ramp about the zero line (item 2). */}
@@ -434,12 +574,26 @@ export function SignalGenDemo() {
                     ))}
                   </LinearGradient>
                 </Defs>
-                {/* Octave metric marks — each doubling of frequency (log spacing). */}
+                {/* Log-axis metric marks — equal frequency RATIO per division. */}
                 {[0.2, 0.4, 0.6, 0.8].map((f) => (
-                  <Line key={f} x1={chirpW * f} y1={6} x2={chirpW * f} y2={SWEEP_VIZ_H - 6} stroke={GRID_C} strokeWidth={1} strokeDasharray="2 6" />
+                  <Line key={f} x1={chirpW * f} y1={6} x2={chirpW * f} y2={SWEEP_VIZ_H - 22} stroke={GRID_C} strokeWidth={1} strokeDasharray="2 6" />
                 ))}
                 <Line x1={0} y1={SWEEP_VIZ_H / 2} x2={chirpW} y2={SWEEP_VIZ_H / 2} stroke={ZERO_C} strokeWidth={1} />
                 <Path d={chirpD} stroke="url(#sweepAmp)" strokeWidth={1.8} fill="none" />
+                {/* Neutral references: what the eye should read at each end. */}
+                <SvgText x={6} y={13} textAnchor="start" fontFamily={fonts.oswaldSemiBold} fontSize={9.5} letterSpacing={1} fill={CALL_STEEL}>
+                  WIDE = LOW
+                </SvgText>
+                <Line x1={54} y1={16} x2={chirpW * 0.1} y2={26} stroke={LEADER} strokeWidth={1} />
+                <SvgText x={chirpW - 6} y={13} textAnchor="end" fontFamily={fonts.oswaldSemiBold} fontSize={9.5} letterSpacing={1} fill={CALL_STEEL}>
+                  TIGHT = HIGH
+                </SvgText>
+                <Line x1={chirpW - 58} y1={16} x2={chirpW - 30} y2={26} stroke={LEADER} strokeWidth={1} />
+                {/* The WHY of sweeping: trouble sings out at ONE spot. */}
+                <Line x1={chirpW * 0.3} y1={10} x2={chirpW * 0.3} y2={SWEEP_VIZ_H - 18} stroke={CALL_AMBER} strokeWidth={1} strokeDasharray="4 4" />
+                <SvgText x={chirpW * 0.3 + 6} y={SWEEP_VIZ_H - 8} textAnchor="start" fontFamily={fonts.oswaldSemiBold} fontSize={9.5} letterSpacing={1} fill={CALL_AMBER}>
+                  A RATTLE SINGS AT ONE EXACT SPOT
+                </SvgText>
               </Svg>
               <Animated.View
                 style={[
@@ -462,15 +616,15 @@ export function SignalGenDemo() {
         {scene === 'levels' ? (
           <>
             <Text style={styles.introText}>{LEVELS_INTRO}</Text>
-            <Text style={styles.paneLabel}>OUTPUT LEVEL — dBFS</Text>
-            <View style={styles.levelsWrap}>
-              <Svg width={w} height={LEVELS_H}>
+            <Text style={styles.paneLabel}>OUTPUT LEVEL — dBFS (DIGITAL, NOT ROOM LOUDNESS)</Text>
+            <View style={[styles.paneViz, styles.levelsWrap]}>
+              <Svg width={w - 2} height={LEVELS_H}>
                 <Line x1={60} y1={DB_TOP} x2={60} y2={DB_BOTTOM} stroke={colors.steelBorder} strokeWidth={2} />
                 {DB_TICKS.map((db) => (
                   <Line key={db} x1={52} y1={dbToY(db)} x2={60} y2={dbToY(db)} stroke={colors.steelBorder} strokeWidth={1.5} />
                 ))}
-                <Line x1={60} y1={Y_CAP} x2={w - 8} y2={Y_CAP} stroke={colors.red} strokeWidth={1.5} />
-                <Line x1={60} y1={Y_DEFAULT} x2={w - 8} y2={Y_DEFAULT} stroke={colors.green} strokeWidth={1.5} />
+                <Line x1={60} y1={Y_CAP} x2={w - 10} y2={Y_CAP} stroke={CALL_SALMON} strokeWidth={1.5} />
+                <Line x1={60} y1={Y_DEFAULT} x2={w - 10} y2={Y_DEFAULT} stroke={colors.green} strokeWidth={1.5} />
               </Svg>
 
               {DB_TICKS.map((db) => (
@@ -509,14 +663,70 @@ export function SignalGenDemo() {
                 ]}
               >
                 <View style={styles.handleLine} />
+                <Text style={styles.handleHint} numberOfLines={1}>
+                  START LOW · RAISE SLOWLY
+                </Text>
               </Animated.View>
             </View>
+
+            {/* WHY the cap exists — crest factor. Same peak, very different
+                sustained power: the tone never rests. Amplitude drawn on the
+                shared MIDI ramp (colour itself teaches level). */}
+            <Text style={[styles.paneLabel, { marginTop: 12 }]}>WHY THE CAP — A TONE NEVER RESTS</Text>
+            <View style={styles.paneRow}>
+              <View style={styles.pane}>
+                <Text style={styles.crestTitleSteel}>MUSIC — PEAKS, THEN RESTS</Text>
+                <View style={[styles.paneViz, { height: CREST_H }]}>
+                  <Svg width={svgW} height={CREST_H}>
+                    <Defs>
+                      <LinearGradient id="crestAmpA" x1={0} y1={CREST_H / 2 - crestAmp} x2={0} y2={CREST_H / 2 + crestAmp} gradientUnits="userSpaceOnUse">
+                        {WAVE_LEVEL_STOPS.map((s) => (
+                          <Stop key={s.offset} offset={s.offset} stopColor={s.color} />
+                        ))}
+                      </LinearGradient>
+                    </Defs>
+                    <Line x1={0} y1={CREST_H / 2 - crestAmp} x2={svgW} y2={CREST_H / 2 - crestAmp} stroke={GRID_C} strokeWidth={1} strokeDasharray="3 4" />
+                    <Line x1={0} y1={CREST_H / 2 + crestAmp} x2={svgW} y2={CREST_H / 2 + crestAmp} stroke={GRID_C} strokeWidth={1} strokeDasharray="3 4" />
+                    <Line x1={0} y1={CREST_H / 2} x2={svgW} y2={CREST_H / 2} stroke={ZERO_C} strokeWidth={1} />
+                    <Path d={crestMusicD} stroke="url(#crestAmpA)" strokeWidth={1.4} fill="none" />
+                    <SvgText x={4} y={11} textAnchor="start" fontFamily={fonts.oswaldSemiBold} fontSize={8.5} letterSpacing={1} fill={CALL_STEEL}>
+                      SAME PEAK
+                    </SvgText>
+                  </Svg>
+                </View>
+              </View>
+              <View style={styles.pane}>
+                <Text style={styles.crestTitleSalmon}>TEST TONE — NEVER PAUSES</Text>
+                <View style={[styles.paneViz, { height: CREST_H }]}>
+                  <Svg width={svgW} height={CREST_H}>
+                    <Defs>
+                      <LinearGradient id="crestAmpB" x1={0} y1={CREST_H / 2 - crestAmp} x2={0} y2={CREST_H / 2 + crestAmp} gradientUnits="userSpaceOnUse">
+                        {WAVE_LEVEL_STOPS.map((s) => (
+                          <Stop key={s.offset} offset={s.offset} stopColor={s.color} />
+                        ))}
+                      </LinearGradient>
+                    </Defs>
+                    <Line x1={0} y1={CREST_H / 2 - crestAmp} x2={svgW} y2={CREST_H / 2 - crestAmp} stroke={GRID_C} strokeWidth={1} strokeDasharray="3 4" />
+                    <Line x1={0} y1={CREST_H / 2 + crestAmp} x2={svgW} y2={CREST_H / 2 + crestAmp} stroke={GRID_C} strokeWidth={1} strokeDasharray="3 4" />
+                    <Line x1={0} y1={CREST_H / 2} x2={svgW} y2={CREST_H / 2} stroke={ZERO_C} strokeWidth={1} />
+                    <Path d={crestToneD} stroke="url(#crestAmpB)" strokeWidth={1.4} fill="none" />
+                  </Svg>
+                </View>
+              </View>
+            </View>
+            <Text style={styles.crestNote}>
+              Same peak reading — but the tone never rests, so it delivers far more sustained power to the driver (low crest factor).
+            </Text>
           </>
         ) : null}
       </View>
 
       <View style={styles.captionBox}>
-        <Text style={styles.caption}>{caption}</Text>
+        <Text style={styles.watchFor}>WATCH FOR — {cap.watch}</Text>
+        <Text style={styles.caption}>{cap.body}</Text>
+        {cap.note ? (
+          <Text style={styles.fieldNote}>FIELD NOTE: {cap.note}</Text>
+        ) : null}
       </View>
     </View>
   );
@@ -535,44 +745,51 @@ const styles = StyleSheet.create({
     padding: 12,
   },
 
-  chipRow: { flexDirection: 'row', gap: 8 },
+  // Rack-key scene tabs (shared demo contract 2026-09-13).
+  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: radius.pill,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.hairline,
-    backgroundColor: '#18181c',
+    borderColor: colors.steelBorder,
+    backgroundColor: '#141414',
   },
-  chipActive: { borderColor: colors.amber, backgroundColor: 'rgba(255,198,77,0.10)' },
-  chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.1, color: colors.textSub },
+  chipActive: { borderColor: colors.amber, backgroundColor: 'rgba(255,180,0,0.10)' },
+  chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textMuted },
   chipTextActive: { color: colors.amber },
 
   viz: { marginTop: 10 },
 
-  waveRow: { flexDirection: 'row', gap: 6 },
+  // Sub-toggle keys share the rack-key geometry; active takes the wave colour.
+  waveRow: { flexDirection: 'row', gap: 8 },
   waveChip: {
-    paddingHorizontal: 9,
-    paddingVertical: 4,
-    borderRadius: radius.pill,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.hairline,
-    backgroundColor: '#101014',
+    borderColor: colors.steelBorder,
+    backgroundColor: '#141414',
   },
-  waveChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.textSub },
+  waveChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textMuted },
 
-  paneRow: { flexDirection: 'row', gap: 10, marginTop: 8 },
+  linkRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 10 },
+  linkLine: { flex: 1, height: 1, backgroundColor: 'rgba(255,255,255,0.10)' },
+  linkText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.6, color: colors.amberLabel },
+
+  paneRow: { flexDirection: 'row', gap: 10, marginTop: 6 },
   pane: { flex: 1 },
-  paneLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: colors.amberLabel, marginBottom: 4 },
+  paneLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.6, color: colors.amberLabel, marginBottom: 4 },
+  // Recessed glass instrumentation panel (shared demo contract).
   paneViz: {
     borderWidth: 1,
-    borderColor: '#232329',
-    borderRadius: radius.cardSm,
-    backgroundColor: '#0e0e11',
+    borderColor: 'rgba(255,255,255,0.07)',
+    borderRadius: 10,
+    backgroundColor: '#0b0c0e',
     overflow: 'hidden',
   },
 
-  metaRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginTop: 6 },
+  metaRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', gap: 8, marginTop: 6 },
   metaMono: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub },
   axisMid: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textSub },
 
@@ -586,13 +803,6 @@ const styles = StyleSheet.create({
   legendCap: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textSub },
   legendBar: { flex: 1, height: 10, borderRadius: 2, overflow: 'hidden' },
 
-  sweepViz: {
-    borderWidth: 1,
-    borderColor: '#232329',
-    borderRadius: radius.cardSm,
-    backgroundColor: '#0e0e11',
-    overflow: 'hidden',
-  },
   cursorWrap: { position: 'absolute', left: -14, top: 0, bottom: 0, width: 16, flexDirection: 'row' },
   cursorTrail: { width: 14, backgroundColor: 'rgba(255,198,77,0.10)' },
   cursorLine: { width: 2, backgroundColor: colors.amber },
@@ -610,7 +820,7 @@ const styles = StyleSheet.create({
   lockZone: {
     position: 'absolute',
     left: 60,
-    right: 4,
+    right: 6,
     borderRadius: 6,
     borderWidth: 1,
     borderColor: 'rgba(255,75,58,0.5)',
@@ -622,8 +832,9 @@ const styles = StyleSheet.create({
   },
   lockText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.red },
   lockHint: { flexShrink: 1, fontFamily: fonts.barlowCondensedMedium, fontSize: 12, letterSpacing: 0.4, color: 'rgba(255,120,105,0.9)' },
-  capLabel: { position: 'absolute', left: 82, fontFamily: fonts.mono, fontSize: 12, color: colors.red },
-  defLabel: { position: 'absolute', left: 82, fontFamily: fonts.mono, fontSize: 12, color: colors.green },
+  // Cap = a limit → salmon (demo contract); default = safe → green.
+  capLabel: { position: 'absolute', right: 10, fontFamily: fonts.mono, fontSize: 12, color: CALL_SALMON },
+  defLabel: { position: 'absolute', right: 10, fontFamily: fonts.mono, fontSize: 12, color: colors.green },
   handle: {
     position: 'absolute',
     left: 45,
@@ -636,7 +847,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   handleLine: { height: 2, borderRadius: 1, backgroundColor: '#6d4a00' },
+  // Rides WITH the handle (same animated wrapper) — the field habit, in situ.
+  handleHint: {
+    position: 'absolute',
+    left: 36,
+    width: 160,
+    fontFamily: fonts.mono,
+    fontSize: 9,
+    letterSpacing: 0.4,
+    color: colors.amber,
+  },
 
-  captionBox: { minHeight: 60, marginTop: 8, justifyContent: 'center' },
+  crestTitleSteel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.2, color: colors.textSub, marginBottom: 4 },
+  crestTitleSalmon: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.2, color: CALL_SALMON, marginBottom: 4 },
+  crestNote: { fontFamily: fonts.barlowCondensedMedium, fontSize: 12, lineHeight: 15, color: colors.textSub, marginTop: 6 },
+
+  // Structured caption (WATCH FOR / body / FIELD NOTE) — shared contract.
+  captionBox: { minHeight: 60, marginTop: 12, gap: 4 },
+  watchFor: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.6, color: colors.amber },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
+  fieldNote: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 12.5, lineHeight: 17, color: colors.textMuted },
 });

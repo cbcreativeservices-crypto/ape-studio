@@ -2,25 +2,34 @@
  * RtaDemo — animated training demo for the RTA (Real-Time Analyzer) tool.
  * Spec of record: docs/APE_AUDIO_TOOLS_SPEC_2026_07_23.md §10 (RTA) + §4 Demo
  * mode; user ruling 2026-07-23: demos are VISUAL/ANIMATED ONLY (no audio path).
+ * Design pass 2026-09-13 (shared demo brief): full-band axis, in-SVG callouts,
+ * structured captions, recessed instrument panel, rack-key scene tabs.
  *
- * Three scenes, switched via chips:
- *  1. PINK VS WHITE — 15 third-octave-style bars morph between the flat read
- *     of pink noise and the ~+3 dB/octave upward tilt of white noise.
- *  2. SMOOTHING — one fixed spectrum trace crossfades between a jagged
- *     1/24-octave feel and a smoothed 1/3-octave feel (auto-looping).
- *  3. MIC POSITION — the same room at two mic spots: the low-mid bars ripple
- *     in a visibly different pattern; a mini room glyph shows the mic moving.
+ * Three scenes, switched via rack-key tabs:
+ *  1. PINK VS WHITE — 28 true third-octave bands (31.5 Hz → 16 kHz) morph
+ *     between pink's flat read and white's +3 dB/octave staircase (+1 dB per
+ *     third-octave band = +27 dB across the shown span at the fixed
+ *     10 dB/div scale).
+ *  2. SMOOTHING — one fixed spectrum crossfades between a jagged 1/24-octave
+ *     feel and a smoothed 1/3-octave feel (auto-looping): same data, two
+ *     drawings.
+ *  3. MIC POSITION — the same room at two mic spots: low bands swing many dB,
+ *     highs hold. Bars use the app amplitude ramp (levelColor) via a shared
+ *     base→tip gradient (owner bar ruling 2026-08-16). A room glyph shows the
+ *     mic moving.
  *
  * Integrity (spec §5 + measurement-tools §1.7): the hosting screen shows the
  * permanent "TRAINING DEMO — NOT A LIVE MEASUREMENT" badge; nothing here is a
  * live reading, no LedMeter, no simulated meter chrome. All wobble comes from
  * fixed seeded arrays — no Math.random in render. RN core Animated only:
- * SVG geometry morphs run non-native (animated Rect props); layer crossfades
- * and the mic-dot move use native-driver transforms/opacity.
+ * SVG geometry morphs run non-native (animated Rect props, the established
+ * tooldemos idiom); callout/layer crossfades and the mic-dot move use
+ * native-driver transforms/opacity on Views.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
-import Svg, { Circle, Line, Path, Polyline, Rect } from 'react-native-svg';
+import Svg, { Circle, Defs, Line, LinearGradient, Path, Polyline, Rect, Stop, Text as SvgText } from 'react-native-svg';
+import { levelColor } from '../../features/tools/levelColor';
 import { colors, fonts } from '../../theme/tokens';
 
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
@@ -30,22 +39,65 @@ const AnimatedRect = Animated.createAnimatedComponent(Rect);
 /* ------------------------------------------------------------------ */
 
 const CHART_W = 320;
-const CHART_H = 158;
-const BASE_Y = 152;
-const GRID_YS = [32, 72, 112];
-const BAR_COUNT = 15;
+const CHART_H = 206; // plot + in-SVG frequency labels
+const PLOT_L = 8;
+const PLOT_R = 312;
+const TOP_Y = 16; // full scale (level fraction 1.0)
+const BASE_Y = 184; // silence (level fraction 0)
+/** Fixed scale: 4 px per dB → the 40 px grid pitch is 10 dB per division. */
+const PX_PER_DB = 4;
+const GRID_YS = [24, 64, 104, 144];
 
-/** Pink noise on a third-octave RTA: flat (tiny fixed variation). */
-const PINK_HEIGHTS = [86, 84, 87, 85, 86, 84, 85, 87, 86, 85, 84, 86, 85, 86, 84];
+/** 28 true third-octave bands, 31.5 Hz → 16 kHz (9 octaves + 1 band). */
+const BAR_COUNT = 28;
+const BAND_PITCH = (PLOT_R - PLOT_L) / BAR_COUNT;
+const BAR_W = 8;
+const bandX = (i: number) => PLOT_L + i * BAND_PITCH + (BAND_PITCH - BAR_W) / 2;
+const bandCenter = (i: number) => PLOT_L + (i + 0.5) * BAND_PITCH;
 
-/** White noise: equal energy per Hz → rises ~+3 dB/octave left to right. */
-const WHITE_HEIGHTS = [34, 41, 48, 55, 62, 69, 75, 82, 89, 96, 103, 110, 117, 124, 130];
+/** Octave-band axis labels (band index → text). ISO third-octave centres:
+ *  every 3rd band from 31.5 Hz doubles the frequency. */
+const OCTAVE_TICKS: ReadonlyArray<{ i: number; label: string; anchor?: 'start' }> = [
+  { i: 0, label: '31 Hz', anchor: 'start' },
+  { i: 3, label: '63' },
+  { i: 6, label: '125' },
+  { i: 9, label: '250' },
+  { i: 12, label: '500' },
+  { i: 15, label: '1k' },
+  { i: 18, label: '2k' },
+  { i: 21, label: '4k' },
+  { i: 24, label: '8k' },
+  { i: 27, label: '16k' },
+];
 
-/** Mic position A vs B — low-mid ripple (bars 2–7) inverts; highs converge. */
-const MIC_A_HEIGHTS = [64, 70, 88, 56, 90, 58, 84, 66, 72, 76, 74, 72, 70, 68, 66];
-const MIC_B_HEIGHTS = [66, 72, 58, 88, 60, 92, 62, 80, 70, 74, 75, 71, 71, 67, 67];
+/** Pink noise on a third-octave RTA: flat (tiny fixed variation, ±0.5 dB). */
+const PINK_HEIGHTS: number[] = [
+  94, 92, 95, 93, 94, 92, 93,
+  95, 94, 93, 92, 94, 93, 94,
+  92, 95, 93, 94, 92, 93, 95,
+  94, 92, 93, 94, 92, 94, 93,
+];
 
-/** Per-bar wobble keyframes (px) at flutter = 0 / 0.5 / 1 — seeded, desynced. */
+/** White noise: equal energy per hertz → +1 dB per third-octave band
+ *  (= +3 dB/octave), +27 dB across 31.5 Hz → 16 kHz at 4 px/dB. */
+const WHITE_HEIGHTS: number[] = Array.from({ length: BAR_COUNT }, (_, i) => 34 + i * PX_PER_DB);
+
+/** Mic position A vs B — low bands (≤250 Hz) swing up to ~12 dB as room modes
+ *  and boundary reflections re-sum; the top octaves converge (≤0.5 dB). */
+const MIC_A_HEIGHTS: number[] = [
+  92, 68, 104, 56, 110, 64, 98,
+  76, 88, 70, 84, 76, 82, 78,
+  80, 78, 77, 76, 75, 74, 73,
+  72, 71, 70, 69, 68, 66, 65,
+];
+const MIC_B_HEIGHTS: number[] = [
+  70, 96, 60, 106, 64, 108, 70,
+  92, 68, 86, 76, 84, 76, 80,
+  78, 79, 78, 75, 76, 73, 74,
+  71, 72, 69, 70, 67, 67, 64,
+];
+
+/** Per-bar wobble keyframes (px, ≤1.5 dB) at flutter 0 / 0.5 / 1 — seeded. */
 const FLUTTER_KEYS: number[][] = [
   [0, 4, 0], [3, -2, 3], [0, -5, 0], [-2, 3, -2], [0, 6, 0],
   [4, 0, 4], [0, -4, 0], [-3, 2, -3], [0, 5, 0], [2, -3, 2],
@@ -66,21 +118,22 @@ function mulberry32(seed: number): () => number {
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
-const TRACE_N = 48;
+const TRACE_N = 64;
 
-/** Jagged "1/24-oct feel" spectrum: smooth base shape + seeded jitter. */
+/** Jagged "1/24-oct feel" spectrum: smooth base shape + seeded jitter that
+ *  densifies toward HF (comb detail sits closer together on a log axis). */
 const RAW_TRACE: number[] = (() => {
   const rand = mulberry32(0x51e5eed);
   const ys: number[] = [];
   for (let i = 0; i < TRACE_N; i++) {
     const t = i / (TRACE_N - 1);
     const base =
-      84 -
-      34 * Math.sin(Math.PI * Math.min(t * 1.6, 1)) +
-      52 * Math.max(0, t - 0.55) +
-      7 * Math.sin(t * 21);
-    const jag = (rand() * 2 - 1) * (4 + 12 * t);
-    ys.push(clamp(base + jag, 26, 148));
+      108 -
+      40 * Math.sin(Math.PI * Math.min(t * 1.6, 1)) +
+      58 * Math.max(0, t - 0.55) +
+      8 * Math.sin(t * 21);
+    const jag = (rand() * 2 - 1) * (4 + 14 * t);
+    ys.push(clamp(base + jag, 28, 176));
   }
   return ys;
 })();
@@ -98,37 +151,64 @@ const SMOOTH_TRACE: number[] = RAW_TRACE.map((_, i) => {
   return sum / n;
 });
 
+const traceX = (i: number) => PLOT_L + (i * (PLOT_R - PLOT_L)) / (TRACE_N - 1);
 const tracePoints = (ys: number[]): string =>
-  ys.map((y, i) => `${(8 + (i * 304) / (TRACE_N - 1)).toFixed(1)},${y.toFixed(1)}`).join(' ');
+  ys.map((y, i) => `${traceX(i).toFixed(1)},${y.toFixed(1)}`).join(' ');
 
 const RAW_POINTS = tracePoints(RAW_TRACE);
 const SMOOTH_POINTS = tracePoints(SMOOTH_TRACE);
 
-// 15 third-octave bands starting ~31.5 Hz reach only ~800 Hz — label the axis
-// to that true span, not 16 kHz (F24).
-const FREQ_LABELS = ['31 Hz', '100', '315', '800'];
+/** Leader-line anchor points on the actual traces (computed, never guessed). */
+const JAG_PT = { x: traceX(30), y: RAW_TRACE[30] };
+const SM_PT = { x: traceX(34), y: SMOOTH_TRACE[34] };
+
+/** Amplitude-ramp gradient stops (levelColor 0 = silence blue → 1 = loud red). */
+const RAMP_SAMPLES = [0, 0.15, 0.3, 0.45, 0.6, 0.75, 0.9, 1] as const;
+
+/* Callout palette (shared demo brief): amber = the thing being taught,
+ * salmon = warning/limit, steel = neutral reference. */
+const CALLOUT_STEEL = '#9aa3ad';
+const LEADER = 'rgba(255,255,255,.35)';
+
+/* Source hues (scene 1 contrasts two SOURCES — the allowed two-hue case;
+ * pink matches SignalGenDemo's pink-noise hue). */
+const PINK_C = '#ff8fae';
+const WHITE_C = '#f2f2f5';
 
 const SCENES = [
   {
     key: 'noise',
     label: 'PINK VS WHITE',
-    caption:
-      'Pink noise carries equal energy per octave, so a third-octave RTA draws it flat. ' +
-      'White noise carries equal energy per hertz and climbs about +3 dB per octave.',
+    watch: 'THE WHITE STAIRCASE — +3 dB EVERY OCTAVE',
+    body:
+      'Pink noise carries equal energy per octave, so a third-octave RTA draws it flat — ' +
+      'that is exactly why pink is the standard alignment source: any tilt or bump you see ' +
+      'came from the system, the room, or the mic position, never the source. White noise ' +
+      'carries equal energy per hertz, and each octave up spans twice as many hertz, so its ' +
+      'bars climb about +3 dB per octave — roughly +27 dB across the 31 Hz–16 kHz span shown here.',
+    note: 'If your pink reference does not read flat, fix the source or the input chain before you judge the room.',
   },
   {
     key: 'smoothing',
     label: 'SMOOTHING',
-    caption:
-      'One fixed spectrum drawn two ways: raw at a 1/24-octave feel, then averaged to a ' +
-      '1/3-octave feel. Smoothing changes how the trace looks — never how the system sounds.',
+    watch: 'THE COMB VANISHES — THE TREND SURVIVES',
+    body:
+      'One fixed spectrum drawn two ways. At a 1/24-octave feel every narrow ripple shows; ' +
+      'averaged to a 1/3-octave feel only the broad trend remains. Smoothing changes how the ' +
+      'trace looks — never how the system sounds. Use fine resolution to hunt narrow problems ' +
+      'and heavier smoothing to judge overall balance.',
+    note: 'Never compare two traces captured with different smoothing or scale — you would be comparing display math, not sound.',
   },
   {
     key: 'mic',
     label: 'MIC POSITION',
-    caption:
-      'Same speaker, same room, two mic spots. Reflections sum differently at each position, ' +
-      'so the low-mid bars ripple in a different pattern — average several spots before you EQ.',
+    watch: 'LOW BANDS SWING, HIGH BANDS HOLD',
+    body:
+      'Same speaker, same pink noise, two mic spots one step apart. Reflections and room ' +
+      'modes sum differently at every point in the room, so the bass bands can swing many dB ' +
+      'while the top octaves barely move. One trace is only ever true for the spot where the ' +
+      'mic stood.',
+    note: 'Average several mic positions — and log where the mic stood — before you touch an EQ.',
   },
 ] as const;
 
@@ -152,35 +232,57 @@ function DemoChip({ label, active, onPress }: { label: string; active: boolean; 
   );
 }
 
-function FreqLabels() {
+/** Grid, fixed-scale tag, baseline and octave-band labels — drawn INSIDE the
+ *  SVG so labels sit exactly under their bands (the old flexbox row drifted). */
+function GridAndAxis() {
   return (
-    <View style={styles.freqRow}>
-      {FREQ_LABELS.map((f) => (
-        <Text key={f} style={styles.freqLabel}>
-          {f}
-        </Text>
+    <>
+      {GRID_YS.map((gy) => (
+        <Line key={gy} x1={PLOT_L} y1={gy} x2={PLOT_R} y2={gy} stroke='#26272e' strokeWidth={1} />
       ))}
-    </View>
+      <SvgText x={11} y={20} fontSize={9} letterSpacing={1} fontFamily={fonts.mono} fill={CALLOUT_STEEL} opacity={0.8}>
+        10 dB / DIV
+      </SvgText>
+      <Line x1={PLOT_L} y1={BASE_Y} x2={PLOT_R} y2={BASE_Y} stroke='#4a4e58' strokeWidth={1.5} />
+      {OCTAVE_TICKS.map((t) => (
+        <SvgText
+          key={t.i}
+          x={t.anchor === 'start' ? PLOT_L + 1 : bandCenter(t.i)}
+          y={200}
+          fontSize={9.5}
+          fontFamily={fonts.mono}
+          fill={colors.textMuted}
+          textAnchor={t.anchor ?? 'middle'}
+        >
+          {t.label}
+        </SvgText>
+      ))}
+    </>
   );
 }
 
 /**
- * 15 bars that morph between two fixed height arrays (`which` 0 ↔︎ 1) with a
- * gentle seeded flutter so the drawing feels alive. SVG geometry props animate
- * via Animated.createAnimatedComponent, so these drivers are non-native.
+ * 28 third-octave bars that morph between two fixed height arrays
+ * (`which` 0 ↔ 1) with a gentle seeded flutter. Fill is either a morphing
+ * solid colour (two-source scenes) or the shared amplitude-ramp gradient
+ * (level scenes — base blue climbing to the tip colour, owner bar ruling
+ * 2026-08-16). SVG geometry props animate via createAnimatedComponent, so
+ * these drivers are non-native (the established tooldemos idiom).
  */
 function MorphBars({
   heightsA,
   heightsB,
-  colorA,
-  colorB,
   which,
+  colorA = colors.blue,
+  colorB = colors.blue,
+  ramp = false,
 }: {
-  heightsA: number[];
-  heightsB: number[];
-  colorA: string;
-  colorB: string;
+  heightsA: readonly number[];
+  heightsB: readonly number[];
   which: 0 | 1;
+  colorA?: string;
+  colorB?: string;
+  ramp?: boolean;
 }) {
   const morph = useRef(new Animated.Value(which)).current;
   const flutter = useRef(new Animated.Value(0)).current;
@@ -197,15 +299,15 @@ function MorphBars({
   useEffect(() => {
     const loop = Animated.loop(
       Animated.sequence([
-        Animated.timing(flutter, { toValue: 1, duration: 950, easing: Easing.inOut(Easing.sin), useNativeDriver: false }),
-        Animated.timing(flutter, { toValue: 0, duration: 950, easing: Easing.inOut(Easing.sin), useNativeDriver: false }),
+        Animated.timing(flutter, { toValue: 1, duration: 1600, easing: Easing.inOut(Easing.sin), useNativeDriver: false }),
+        Animated.timing(flutter, { toValue: 0, duration: 1600, easing: Easing.inOut(Easing.sin), useNativeDriver: false }),
       ]),
     );
     loop.start();
     return () => loop.stop();
   }, [flutter]);
 
-  const fill = useMemo(
+  const solidFill = useMemo(
     () => morph.interpolate({ inputRange: [0, 1], outputRange: [colorA, colorB] }),
     [morph, colorA, colorB],
   );
@@ -223,26 +325,64 @@ function MorphBars({
   );
 
   return (
-    <View>
-      <Svg width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`}>
-        {GRID_YS.map((gy) => (
-          <Line key={gy} x1={8} y1={gy} x2={312} y2={gy} stroke={colors.hairlineDim} strokeWidth={1} />
-        ))}
-        {bars.map((b, i) => (
-          <AnimatedRect
-            key={`bar-${i}`}
-            x={12.5 + i * 20}
-            width={15}
-            y={b.y}
-            height={b.h}
-            rx={2}
-            fill={fill}
-            fillOpacity={0.92}
-          />
-        ))}
-        <Line x1={8} y1={BASE_Y} x2={312} y2={BASE_Y} stroke={colors.steelBorder} strokeWidth={1.5} />
-      </Svg>
-      <FreqLabels />
+    <Svg width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`}>
+      {ramp ? (
+        <Defs>
+          {/* Amplitude ramp in plot pixels: silence blue at the baseline
+              climbing to the level's colour at the tip (userSpaceOnUse so the
+              colour tracks TRUE level, never each bar's own height). */}
+          <LinearGradient id='rtaLvlRamp' gradientUnits='userSpaceOnUse' x1='0' y1={BASE_Y} x2='0' y2={TOP_Y}>
+            {RAMP_SAMPLES.map((s) => (
+              <Stop key={s} offset={s} stopColor={levelColor(s)} />
+            ))}
+          </LinearGradient>
+        </Defs>
+      ) : null}
+      <GridAndAxis />
+      {bars.map((b, i) => (
+        <AnimatedRect
+          key={`bar-${i}`}
+          x={bandX(i)}
+          width={BAR_W}
+          y={b.y}
+          height={b.h}
+          rx={1.5}
+          fill={ramp ? 'url(#rtaLvlRamp)' : solidFill}
+          fillOpacity={0.94}
+        />
+      ))}
+      <Line x1={PLOT_L} y1={BASE_Y} x2={PLOT_R} y2={BASE_Y} stroke='#4a4e58' strokeWidth={1.5} />
+    </Svg>
+  );
+}
+
+/** Recessed glass instrument panel around a stack of same-viewBox SVG layers. */
+function PlotPanel({ children }: { children: React.ReactNode }) {
+  return (
+    <View style={styles.panel}>
+      <View style={styles.plotStack}>{children}</View>
+    </View>
+  );
+}
+
+function LegendRow({ dot, lead, leadColor, rest }: { dot: string; lead: string; leadColor: string; rest: string }) {
+  return (
+    <View style={styles.legendRow}>
+      <View style={[styles.legendDot, { backgroundColor: dot }]} />
+      <Text style={styles.legendText}>
+        <Text style={{ fontFamily: fonts.mono, color: leadColor }}>{lead}</Text>
+        {rest}
+      </Text>
+    </View>
+  );
+}
+
+function Caption({ watch, body, note }: { watch: string; body: string; note: string }) {
+  return (
+    <View style={styles.captionBlock}>
+      <Text style={styles.watchFor}>WATCH FOR — {watch}</Text>
+      <Text style={styles.captionBody}>{body}</Text>
+      <Text style={styles.fieldNote}>FIELD NOTE: {note}</Text>
     </View>
   );
 }
@@ -253,6 +393,14 @@ function MorphBars({
 
 function SceneNoise() {
   const [which, setWhich] = useState<0 | 1>(0);
+  const fade = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(fade, { toValue: which, duration: 520, easing: Easing.inOut(Easing.quad), useNativeDriver: true }).start();
+  }, [which, fade]);
+
+  const pinkOp = fade.interpolate({ inputRange: [0, 1], outputRange: [1, 0] });
+
   return (
     <View style={styles.sceneArea}>
       <View style={styles.innerRow}>
@@ -261,13 +409,37 @@ function SceneNoise() {
         <View style={styles.rowSpacer} />
         <Text style={styles.readout}>{which === 0 ? 'TILT 0 dB/OCT' : 'TILT +3 dB/OCT'}</Text>
       </View>
-      <MorphBars
-        heightsA={PINK_HEIGHTS}
-        heightsB={WHITE_HEIGHTS}
-        colorA='#ff8ba0'
-        colorB='#ecedf2'
-        which={which}
-      />
+
+      <PlotPanel>
+        <MorphBars heightsA={PINK_HEIGHTS} heightsB={WHITE_HEIGHTS} which={which} colorA={PINK_C} colorB={WHITE_C} />
+
+        {/* Pink callout layer: flat dashed guide along the bar tops. */}
+        <Animated.View style={[StyleSheet.absoluteFill, { opacity: pinkOp }]} pointerEvents='none'>
+          <Svg width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`}>
+            <Line x1={bandCenter(0)} y1={90} x2={bandCenter(27)} y2={90} stroke={CALLOUT_STEEL} strokeWidth={1} strokeDasharray='3 4' opacity={0.55} />
+            <SvgText x={160} y={62} fontSize={9.5} letterSpacing={1} fontFamily={fonts.mono} fill={colors.amberDeep} textAnchor='middle'>
+              PINK READS FLAT · EQUAL ENERGY PER OCTAVE
+            </SvgText>
+            <Line x1={160} y1={67} x2={160} y2={85} stroke={LEADER} strokeWidth={1} />
+          </Svg>
+        </Animated.View>
+
+        {/* White callout layer: the +3 dB/oct slope guide along the staircase. */}
+        <Animated.View style={[StyleSheet.absoluteFill, { opacity: fade }]} pointerEvents='none'>
+          <Svg width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`}>
+            <Line x1={bandCenter(0)} y1={BASE_Y - WHITE_HEIGHTS[0]} x2={bandCenter(27)} y2={BASE_Y - WHITE_HEIGHTS[27]} stroke={CALLOUT_STEEL} strokeWidth={1} strokeDasharray='3 4' opacity={0.55} />
+            <SvgText x={150} y={36} fontSize={9.5} letterSpacing={1} fontFamily={fonts.mono} fill={colors.amberDeep} textAnchor='middle'>
+              +3 dB PER OCTAVE · EQUAL ENERGY PER Hz
+            </SvgText>
+            <Line x1={215} y1={41} x2={213} y2={73} stroke={LEADER} strokeWidth={1} />
+          </Svg>
+        </Animated.View>
+      </PlotPanel>
+
+      <View style={styles.legendCol}>
+        <LegendRow dot={PINK_C} lead='PINK ' leadColor={PINK_C} rest='— equal energy per octave, so a third-octave RTA draws it flat.' />
+        <LegendRow dot={WHITE_C} lead='WHITE ' leadColor={WHITE_C} rest='— equal energy per hertz, so the display rises +3 dB per octave.' />
+      </View>
     </View>
   );
 }
@@ -278,10 +450,10 @@ function SceneSmoothing() {
   useEffect(() => {
     const loop = Animated.loop(
       Animated.sequence([
-        Animated.delay(1200),
-        Animated.timing(xfade, { toValue: 1, duration: 650, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
-        Animated.delay(1200),
-        Animated.timing(xfade, { toValue: 0, duration: 650, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
+        Animated.delay(1600),
+        Animated.timing(xfade, { toValue: 1, duration: 700, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
+        Animated.delay(1600),
+        Animated.timing(xfade, { toValue: 0, duration: 700, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
       ]),
     );
     loop.start();
@@ -290,6 +462,7 @@ function SceneSmoothing() {
 
   const jaggedOpacity = xfade.interpolate({ inputRange: [0, 1], outputRange: [1, 0.16] });
   const smoothOpacity = xfade.interpolate({ inputRange: [0, 1], outputRange: [0.16, 1] });
+  const jaggedFull = xfade.interpolate({ inputRange: [0, 1], outputRange: [1, 0] });
 
   return (
     <View style={styles.sceneArea}>
@@ -299,27 +472,47 @@ function SceneSmoothing() {
         <View style={styles.rowSpacer} />
         <Text style={styles.readout}>SAME DATA</Text>
       </View>
-      <View style={styles.traceStack}>
-        <Svg width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`} style={StyleSheet.absoluteFill}>
-          {GRID_YS.map((gy) => (
-            <Line key={gy} x1={8} y1={gy} x2={312} y2={gy} stroke='#3a3c46' strokeWidth={1} />
-          ))}
-          <Line x1={8} y1={BASE_Y} x2={312} y2={BASE_Y} stroke='#565a66' strokeWidth={1.5} />
+
+      <PlotPanel>
+        <Svg width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`}>
+          <GridAndAxis />
         </Svg>
-        <Animated.View style={[StyleSheet.absoluteFill, { opacity: jaggedOpacity }]}>
+        <Animated.View style={[StyleSheet.absoluteFill, { opacity: jaggedOpacity }]} pointerEvents='none'>
           <Svg width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`}>
             {/* 1/24-octave (raw) line = BLUE (owner 2026-08-05). */}
             <Polyline points={RAW_POINTS} fill='none' stroke={colors.blue} strokeWidth={1.6} strokeLinejoin='round' />
           </Svg>
         </Animated.View>
-        <Animated.View style={[StyleSheet.absoluteFill, { opacity: smoothOpacity }]}>
+        <Animated.View style={[StyleSheet.absoluteFill, { opacity: smoothOpacity }]} pointerEvents='none'>
           <Svg width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`}>
             {/* Smoothed outcome line = GREEN (owner 2026-08-05). */}
             <Polyline points={SMOOTH_POINTS} fill='none' stroke={colors.green} strokeWidth={2.5} strokeLinecap='round' strokeLinejoin='round' />
           </Svg>
         </Animated.View>
+
+        {/* Callouts ride their own layer so each names the view it belongs to. */}
+        <Animated.View style={[StyleSheet.absoluteFill, { opacity: jaggedFull }]} pointerEvents='none'>
+          <Svg width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`}>
+            <SvgText x={100} y={30} fontSize={9.5} letterSpacing={1} fontFamily={fonts.mono} fill={CALLOUT_STEEL} textAnchor='middle'>
+              EVERY NARROW RIPPLE SHOWS
+            </SvgText>
+            <Line x1={138} y1={34} x2={JAG_PT.x - 3} y2={JAG_PT.y - 4} stroke={LEADER} strokeWidth={1} />
+          </Svg>
+        </Animated.View>
+        <Animated.View style={[StyleSheet.absoluteFill, { opacity: xfade }]} pointerEvents='none'>
+          <Svg width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`}>
+            <SvgText x={185} y={44} fontSize={9.5} letterSpacing={1} fontFamily={fonts.mono} fill={colors.amberDeep} textAnchor='middle'>
+              THE BROAD TREND · WHAT YOU TUNE TO
+            </SvgText>
+            <Line x1={178} y1={49} x2={SM_PT.x} y2={SM_PT.y - 3} stroke={LEADER} strokeWidth={1} />
+          </Svg>
+        </Animated.View>
+      </PlotPanel>
+
+      <View style={styles.legendCol}>
+        <LegendRow dot={colors.blue} lead='FINE (1/24 OCT) ' leadColor={colors.blue} rest='— hunt narrow problems: feedback rings, buzzes, resonances.' />
+        <LegendRow dot={colors.green} lead='SMOOTH (1/3 OCT) ' leadColor={colors.green} rest='— judge tonal balance and plan broad EQ moves.' />
       </View>
-      <FreqLabels />
     </View>
   );
 }
@@ -340,7 +533,6 @@ function RoomGlyph({ which }: { which: 0 | 1 }) {
     }).start();
   }, [which, pos]);
 
-  // Enlarged 2× (owner 2026-08-05: there's spare space — make it easier to read).
   // The Svg scales the 46-unit content into a 92px box; the overlaid dot is in
   // container px, so its positions scale by 2 (dot is 16px → −8 to centre).
   const tx = pos.interpolate({ inputRange: [0, 1], outputRange: [MIC_SPOT_A.x * 2 - 8, MIC_SPOT_B.x * 2 - 8] });
@@ -371,14 +563,47 @@ function SceneMic() {
         <View style={styles.rowSpacer} />
         <Text style={styles.readout}>{which === 0 ? 'MIC AT A' : 'MIC AT B'}</Text>
       </View>
-      <MorphBars
-        heightsA={MIC_A_HEIGHTS}
-        heightsB={MIC_B_HEIGHTS}
-        colorA={colors.blue}
-        colorB={colors.blue}
-        which={which}
-      />
-      <RoomGlyph which={which} />
+
+      <PlotPanel>
+        <MorphBars heightsA={MIC_A_HEIGHTS} heightsB={MIC_B_HEIGHTS} which={which} ramp />
+        {/* Static callouts — true at BOTH positions, so they never crossfade. */}
+        <View style={StyleSheet.absoluteFill} pointerEvents='none'>
+          <Svg width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`}>
+            <SvgText x={88} y={30} fontSize={9.5} letterSpacing={1} fontFamily={fonts.mono} fill={colors.amberDeep} textAnchor='middle'>
+              LOW END SWINGS MOST
+            </SvgText>
+            <Line x1={70} y1={34} x2={58} y2={66} stroke={LEADER} strokeWidth={1} />
+            <SvgText x={248} y={72} fontSize={9.5} letterSpacing={1} fontFamily={fonts.mono} fill={CALLOUT_STEEL} textAnchor='middle'>
+              HIGHS BARELY MOVE
+            </SvgText>
+            <Line x1={248} y1={76} x2={258} y2={100} stroke={LEADER} strokeWidth={1} />
+          </Svg>
+        </View>
+      </PlotPanel>
+
+      <View style={styles.glyphRow}>
+        <RoomGlyph which={which} />
+        <View style={styles.glyphTextCol}>
+          <Text style={styles.glyphEyebrow}>SPEAKER FIXED · MIC MOVES</Text>
+          <Text style={styles.glyphBody}>
+            Dashed circles mark the two mic spots. Reflections sum differently at each, so the
+            bass picture reorders while the highs hold.
+          </Text>
+          <View style={styles.rampLegendRow}>
+            <Svg width={72} height={8}>
+              <Defs>
+                <LinearGradient id='rtaLegendRamp' x1='0' y1='0' x2='1' y2='0'>
+                  {RAMP_SAMPLES.map((s) => (
+                    <Stop key={s} offset={s} stopColor={levelColor(s)} />
+                  ))}
+                </LinearGradient>
+              </Defs>
+              <Rect x={0} y={0} width={72} height={8} rx={4} fill='url(#rtaLegendRamp)' />
+            </Svg>
+            <Text style={styles.rampLegendText}>BAR COLOUR = BAND LEVEL</Text>
+          </View>
+        </View>
+      </View>
     </View>
   );
 }
@@ -407,7 +632,7 @@ export function RtaDemo() {
         ))}
       </View>
       {scene === 0 ? <SceneNoise /> : scene === 1 ? <SceneSmoothing /> : <SceneMic />}
-      <Text style={styles.caption}>{SCENES[scene].caption}</Text>
+      <Caption watch={SCENES[scene].watch} body={SCENES[scene].body} note={SCENES[scene].note} />
     </View>
   );
 }
@@ -416,55 +641,68 @@ export function RtaDemo() {
 
 const styles = StyleSheet.create({
   root: {
-    height: 364,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#26262c',
     backgroundColor: '#131316',
     padding: 12,
-    gap: 8,
+    gap: 10,
   },
 
-  chipRow: { flexDirection: 'row', gap: 6 },
+  // Rack-key scene tabs (shared demo visual contract, 2026-09-13).
+  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   chip: {
-    paddingHorizontal: 10,
-    height: 28,
-    borderRadius: 7,
+    paddingVertical: 7,
+    paddingHorizontal: 12,
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.hairline,
-    backgroundColor: '#18181c',
+    borderColor: colors.steelBorder,
+    backgroundColor: '#141414',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  chipActive: { borderColor: colors.green, backgroundColor: '#122015' },
-  chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textSub },
-  chipTextActive: { color: colors.green },
+  chipActive: { borderColor: colors.amber, backgroundColor: 'rgba(255,180,0,.10)' },
+  chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.textMuted },
+  chipTextActive: { color: colors.amber },
 
-  sceneArea: { height: 206 },
-  innerRow: { flexDirection: 'row', alignItems: 'center', gap: 6, height: 24, marginBottom: 6 },
+  sceneArea: { gap: 8 },
+  innerRow: { flexDirection: 'row', alignItems: 'center', gap: 6, height: 26 },
   rowSpacer: { flex: 1 },
   innerChip: {
-    paddingHorizontal: 10,
-    height: 24,
-    borderRadius: 7,
+    paddingHorizontal: 12,
+    height: 26,
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.hairline,
+    borderColor: colors.steelBorder,
+    backgroundColor: '#141414',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  innerChipActive: { borderColor: colors.amberDeep },
+  innerChipActive: { borderColor: colors.amber, backgroundColor: 'rgba(255,180,0,.10)' },
   innerChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textSub },
   innerChipTextActive: { color: colors.amber },
   readout: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSubAlt },
 
+  // Recessed glass instrument panel (shared demo visual contract).
+  panel: {
+    backgroundColor: '#0b0c0e',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,.07)',
+    borderRadius: 10,
+    paddingVertical: 8,
+  },
+  plotStack: { height: CHART_H },
+
   legendJagged: { fontFamily: fonts.mono, fontSize: 12, color: colors.blue },
   legendSmooth: { fontFamily: fonts.mono, fontSize: 12, color: colors.green, marginLeft: 8 },
-  traceStack: { height: CHART_H },
 
-  freqRow: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 8, marginTop: 2 },
-  freqLabel: { fontFamily: fonts.mono, fontSize: 12, color: colors.textMuted },
+  legendCol: { gap: 4 },
+  legendRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 7 },
+  legendDot: { width: 8, height: 8, borderRadius: 4, marginTop: 4 },
+  legendText: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
 
-  roomGlyph: { position: 'absolute', top: 30, right: 6, width: 92, height: 92 },
+  glyphRow: { flexDirection: 'row', gap: 12, alignItems: 'center' },
+  roomGlyph: { width: 92, height: 92 },
   micDot: {
     position: 'absolute',
     left: 0,
@@ -474,11 +712,25 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: colors.green,
   },
+  glyphTextCol: { flex: 1, gap: 5 },
+  glyphEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.amberLabel },
+  glyphBody: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
+  rampLegendRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 },
+  rampLegendText: { fontFamily: fonts.mono, fontSize: 12, color: colors.textMuted },
 
-  caption: {
+  captionBlock: { gap: 5 },
+  watchFor: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.6, color: colors.amber },
+  captionBody: {
     fontFamily: fonts.barlowRegular,
     fontSize: 13.5,
-    lineHeight: 18,
+    lineHeight: 19,
     color: colors.textSecondary,
+  },
+  fieldNote: {
+    fontFamily: fonts.barlowRegular,
+    fontStyle: 'italic',
+    fontSize: 12.5,
+    lineHeight: 18,
+    color: colors.textMuted,
   },
 });
