@@ -16,7 +16,8 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { officialTopicName } from '../../data/officialTopicNames';
-import { Alert, Animated, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, View, type GestureResponderEvent, type LayoutChangeEvent } from 'react-native';
+import { Alert, Animated, LayoutAnimation, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, UIManager, View, type GestureResponderEvent, type LayoutChangeEvent } from 'react-native';
+import { animationsAllowed } from '../../features/settings/a11y';
 import { Modal } from '../../components/DimModal';
 import { HoldToActivate } from '../../components/HoldToActivate';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -74,6 +75,10 @@ import { useLastStudyLocation } from '../../features/study/lastStudyLocation';
 const GREEN = '#37e05f';
 const BLUE = '#7fbfff';
 const GRAY = '#6b6b6b';
+
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 /** The deck load state as a framed text toggle (owner 2026-09-13): LOADED
  *  lights blue, UNLOADED sits gray. Replaces the 3-card icon everywhere it
@@ -279,9 +284,14 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   const liftedIdRef = useRef<string | null>(null);
   const touchStartRef = useRef({ x: 0, y: 0 });
   const liftAnim = useRef(new Animated.Value(0)).current;
+  // The lifted card FOLLOWS the finger (owner 2026-09-13: stepping a row at a
+  // time "feels very clunky"): dragY carries finger-minus-committed-steps so
+  // the card rides under the thumb while the list re-sorts beneath it.
+  const dragY = useRef(new Animated.Value(0)).current;
   const [liftedId, setLiftedId] = useState<string | null>(null);
   const beginLift = (id: string) => {
     liftedIdRef.current = id;
+    dragY.setValue(0);
     setLiftedId(id);
     Animated.spring(liftAnim, { toValue: 1, useNativeDriver: true, friction: 5, tension: 90 }).start();
   };
@@ -292,7 +302,12 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
     }
     if (liftedIdRef.current == null) return;
     liftedIdRef.current = null;
-    Animated.timing(liftAnim, { toValue: 0, duration: 160, useNativeDriver: true }).start(() => setLiftedId(null));
+    // Drop: the card springs the last few px into its slot while the pop
+    // relaxes — a settle, not a snap.
+    Animated.parallel([
+      Animated.timing(liftAnim, { toValue: 0, duration: 160, useNativeDriver: true }),
+      Animated.spring(dragY, { toValue: 0, useNativeDriver: true, friction: 6, tension: 120 }),
+    ]).start(() => setLiftedId(null));
   };
   // Clear a pending hold timer on unmount.
   useEffect(() => () => {
@@ -347,10 +362,22 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
         const rowH = rowHeights.current.get(id) || DRAG_ROW_H; // real measured height
         const step = Math.trunc((g.dy - dragAccum.current) / rowH);
         if (step !== 0) {
+          // The displaced neighbor SLIDES into its new slot instead of
+          // teleporting (owner 2026-09-13). configureNext must precede the
+          // state change that moves layout.
+          if (animationsAllowed()) {
+            LayoutAnimation.configureNext({
+              duration: 140,
+              update: { type: LayoutAnimation.Types.easeInEaseOut },
+            });
+          }
           const dir: -1 | 1 = step > 0 ? 1 : -1;
           for (let k = 0; k < Math.abs(step); k++) move(dir);
           dragAccum.current += step * rowH;
         }
+        // Ride under the thumb: finger travel minus the distance already
+        // committed as swaps.
+        dragY.setValue(g.dy - dragAccum.current);
       },
       onPanResponderRelease: (_e, g) => {
         if (liftedIdRef.current === id) {
@@ -406,7 +433,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           {
             transform: [
               { scale: liftAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 1.06] }) },
-              { translateY: liftAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -4] }) },
+              { translateY: Animated.add(dragY, liftAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -4] })) },
             ],
           },
         ]

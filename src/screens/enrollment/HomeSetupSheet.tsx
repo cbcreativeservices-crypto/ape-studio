@@ -19,10 +19,12 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { officialTopicName } from '../../data/officialTopicNames';
-import { Animated, PanResponder, Pressable, ScrollView, StyleSheet, Text, View, type GestureResponderEvent } from 'react-native';
+import { Animated, LayoutAnimation, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, UIManager, View, type GestureResponderEvent } from 'react-native';
+import { animationsAllowed } from '../../features/settings/a11y';
 import { Modal } from '../../components/DimModal';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../theme/tokens';
+
 import { BookIcon } from '../../components/BookIcon';
 import { HomeIcon } from '../../components/HomeIcon';
 import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
@@ -39,6 +41,10 @@ const BLUE = '#7fbfff';
 const AMBER = colors.amber;
 const GRAY = '#54565c';
 const ROW_H = 64; // estimated editable-row height for the drag-to-reorder step
+
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 const FOUNDATIONS_LABEL = 'Audio Fundamentals & Advanced Training Labs';
 
 export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boolean; onClose: () => void; paid?: boolean }) {
@@ -165,12 +171,15 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
   const touchStart = useRef({ x: 0, y: 0 });
   const dragAccum = useRef(0);
   const liftAnim = useRef(new Animated.Value(0)).current;
+  // The lifted row follows the finger (owner 2026-09-13, same as Enrollments).
+  const dragY = useRef(new Animated.Value(0)).current;
   const [liftedGs, setLiftedGs] = useState<number | null>(null);
   useEffect(() => () => {
     if (holdTimer.current) clearTimeout(holdTimer.current);
   }, []);
   const beginLift = (gs: number) => {
     liftedRef.current = gs;
+    dragY.setValue(0);
     setLiftedGs(gs);
     Animated.spring(liftAnim, { toValue: 1, useNativeDriver: true, friction: 5, tension: 90 }).start();
   };
@@ -181,7 +190,10 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
     }
     if (liftedRef.current == null) return;
     liftedRef.current = null;
-    Animated.timing(liftAnim, { toValue: 0, duration: 150, useNativeDriver: true }).start(() => setLiftedGs(null));
+    Animated.parallel([
+      Animated.timing(liftAnim, { toValue: 0, duration: 150, useNativeDriver: true }),
+      Animated.spring(dragY, { toValue: 0, useNativeDriver: true, friction: 6, tension: 120 }),
+    ]).start(() => setLiftedGs(null));
   };
   const moveInOrder = (gs: number, dir: -1 | 1) =>
     setOrder((prev) => {
@@ -204,10 +216,18 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
         if (liftedRef.current !== gs) return;
         const step = Math.trunc((g.dy - dragAccum.current) / ROW_H);
         if (step !== 0) {
+          // Displaced neighbors slide, not teleport (owner 2026-09-13).
+          if (animationsAllowed()) {
+            LayoutAnimation.configureNext({
+              duration: 140,
+              update: { type: LayoutAnimation.Types.easeInEaseOut },
+            });
+          }
           const dir: -1 | 1 = step > 0 ? 1 : -1;
           for (let k = 0; k < Math.abs(step); k++) moveInOrder(gs, dir);
           dragAccum.current += step * ROW_H;
         }
+        dragY.setValue(g.dy - dragAccum.current);
       },
       onPanResponderRelease: endLift,
       onPanResponderTerminate: endLift,
@@ -317,7 +337,7 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
                     styles.placedRow,
                     !on && styles.placedRowOff,
                     lifted && styles.placedRowLifted,
-                    lifted && { transform: [{ scale: liftAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 1.04] }) }] },
+                    lifted && { transform: [{ translateY: dragY }, { scale: liftAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 1.04] }) }] },
                   ]}
                 >
                   <Pressable
