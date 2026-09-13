@@ -219,26 +219,46 @@ glossary's own list shows all 26,855, which is the product's promise).
 SQL: `docs/APE_GLOSSARY_STUDY_V_MASK_2026_09_13.SQL`
 Rollback: `docs/APE_GLOSSARY_STUDY_V_MASK_2026_09_13_ROLLBACK.SQL`
 
+### ⚠️ "The same way" was wrong in one clause — caught on the Pixel
+
+The `common_mistakes` predicate has always carried `auth.uid() is not null`.
+Copying it verbatim onto `definition` shipped a live regression for twenty
+minutes: a GUEST has no session at all, so a guest studying the free topic
+gs3970 got flashcards reading
+
+> "…the core audio processing and mixing engine in Pro Tools since **versio**"
+
+— `left(definition, 120)` cutting mid-word, on screen, on the owner's phone.
+Guests DO get study on the two free topics (owner ruling 2026-08-17), so the
+content mask is keyed to the FREE TIER, which includes them. Only
+`common_mistakes` keeps the session requirement, byte-for-byte as it was.
+Fixed by `glossary_study_v_free_topics_open_to_guests` and re-verified on the
+device: full definition, full plain-English, full purpose.
+
+Review did not catch this. The device did. Again.
+
 ### Verified by impersonating each role, not by re-reading the DDL
 
-| Caller | Rows visible | Full definitions | `plain_english` rows |
-|---|---|---|---|
-| `anon` (no session) | 27,209 | **0** | **0** |
-| signed-in NON-member (= what an anonymous device key is) | 27,209 | **375** | **390** |
-| academy member | 27,209 | all (avg 330 chars, same as the base table) | 27,209 |
+| Caller | Rows visible | Full definitions | `plain_english` | `common_mistakes` |
+|---|---|---|---|---|
+| `anon` (a signed-out guest) | 27,209 | 375 | 390 | **0** (unchanged) |
+| signed-in NON-member (= an anonymous device key) | 27,209 | 375 | 390 | 390 |
+| academy member | 27,209 | all (avg 330 chars, same as the base table) | 27,209 | 27,209 |
 
-The 390 are the two free study topics — gs3060 Pro Audio Safety (162 terms) and
-gs3970 DAW Fundamentals (228). That is **1.5% of the corpus**, it is the free
-study tier by design, and it is the same content a free account can already
-study in the app. Columns, order and types are byte-identical to before, so no
-client select list changed. Nothing else depends on the view — no other view, no
-function (checked).
+Leakage outside the two free topics: **0 rows**, for both non-member callers.
+
+The 390 are gs3060 Pro Audio Safety (162 terms) and gs3970 DAW Fundamentals
+(228). That is **1.5% of the corpus**, it is the free study tier by design, and
+it is the same content a free account or guest can already study in the app.
+Columns, order and types are byte-identical to before, so no client select list
+changed. Nothing else depends on the view — no other view, no function.
 
 ### Who loses nothing (checked before applying)
 
 - **Members** — `has_academy_access()` → everything.
-- **Free study** — the client's own gate is `free = Safety gs3060 / DAW gs3970
-  only` (`DashboardScreen.tsx:1187`), the exact set the predicate lets through.
+- **Free accounts and guests** — the client's own gate is `free = Safety gs3060
+  / DAW gs3970 only` (`DashboardScreen.tsx:1187`), the exact set the predicate
+  lets through, with or without a session. Device-verified as a signed-out guest.
 - **Notification term batch** — notifications are MEMBERS ONLY (owner
   2026-09-01), so those reads pass the predicate.
 

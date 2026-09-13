@@ -18,9 +18,20 @@
 -- Owner 2026-09-13: "mask glossary_study_v the same way".
 --
 -- WHAT "THE SAME WAY" MEANS HERE. The predicate is the one this view already
--- used for common_mistakes: an academy member, OR any signed-in user on the two
--- free study topics. What it is applied TO is wider than `definition`, and
--- deliberately so — see the next note.
+-- used for common_mistakes — academy member, OR the two free study topics — and
+-- what it is applied TO is wider than `definition`. Both points have a note
+-- below, because taking either of them literally breaks something.
+--
+-- ⚠️ THE CONTENT MASK DOES **NOT** REQUIRE A SESSION. common_mistakes has always
+-- carried `auth.uid() is not null` in its predicate, and copying that verbatim
+-- onto `definition` shipped a live regression for twenty minutes: a GUEST has no
+-- session at all, so a guest studying the free topic gs3970 got flashcards that
+-- read "...the core audio processing and mixing engine in Pro Tools since
+-- versio" — `left(definition, 120)` cutting mid-word. Caught on the Pixel, not
+-- in review. Guests DO get study on the two free topics (owner ruling
+-- 2026-08-17: guest progress is session-scoped, but the free topics are theirs),
+-- so the content mask is keyed to the FREE TIER, which includes them. Only
+-- common_mistakes keeps the session requirement, byte-for-byte as it was.
 --
 -- ⚠️ MASKING `definition` ALONE WOULD HAVE MOVED THE HOLE, NOT CLOSED IT.
 -- Measured on the live data: all 26,855 rows carry plain_english,
@@ -35,10 +46,12 @@
 --
 -- WHO LOSES NOTHING (verified before applying, not assumed):
 --   * Academy members            — has_academy_access() → everything, as now.
---   * Free/guest study           — free accounts may only study the two free
---                                  topics (gs3060 Pro Audio Safety, 162 terms;
---                                  gs3970 DAW Fundamentals, 228 terms), which
---                                  the predicate lets through in full.
+--   * Free accounts AND guests   — they may only study the two free topics
+--                                  (gs3060 Pro Audio Safety, 162 terms; gs3970
+--                                  DAW Fundamentals, 228 terms), which the
+--                                  predicate lets through IN FULL, with or
+--                                  without a session. Device-verified on the
+--                                  Pixel as a signed-out guest.
 --   * Notification term batch    — notifications are MEMBERS ONLY
 --                                  (owner 2026-09-01, localSchedule.ts), so its
 --                                  reads pass has_academy_access().
@@ -72,13 +85,15 @@ select
   g.term,
   case
     when public.has_academy_access(auth.uid())
-      or (auth.uid() is not null and a.global_sequence = any (array[3060, 3970]))
+      or a.global_sequence = any (array[3060, 3970])
     then g.definition
+    -- Teaser, not NULL: a study card with no text reads as broken; a short one
+    -- reads as gated. The same 120 the glossary browse view uses.
     else left(g.definition, 120)
   end as definition,
   case
     when public.has_academy_access(auth.uid())
-      or (auth.uid() is not null and a.global_sequence = any (array[3060, 3970]))
+      or a.global_sequence = any (array[3060, 3970])
     then g.plain_english
     else null::text
   end as plain_english,
@@ -86,19 +101,19 @@ select
   g.category,
   case
     when public.has_academy_access(auth.uid())
-      or (auth.uid() is not null and a.global_sequence = any (array[3060, 3970]))
+      or a.global_sequence = any (array[3060, 3970])
     then g.scenario_contexts
     else null::text[]
   end as scenario_contexts,
   case
     when public.has_academy_access(auth.uid())
-      or (auth.uid() is not null and a.global_sequence = any (array[3060, 3970]))
+      or a.global_sequence = any (array[3060, 3970])
     then g.purpose_function
     else null::text
   end as purpose_function,
   case
     when public.has_academy_access(auth.uid())
-      or (auth.uid() is not null and a.global_sequence = any (array[3060, 3970]))
+      or a.global_sequence = any (array[3060, 3970])
     then g.practical_application
     else null::text
   end as practical_application,
