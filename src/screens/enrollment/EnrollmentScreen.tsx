@@ -1254,7 +1254,9 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
 
         {displayed.length === 0 && displayedBundles.length === 0 ? (
           <Text style={styles.empty}>
-            {enrolled.length === 0 && bundles.length === 0 ? 'No topics yet.' : 'Nothing matches those filters.'}
+            {enrolled.length === 0 && bundles.length === 0
+              ? 'No topics yet — open BROWSE & ADD below to enroll in your first one.'
+              : 'Nothing matches those filters.'}
           </Text>
         ) : (
           displayed.map((e) => {

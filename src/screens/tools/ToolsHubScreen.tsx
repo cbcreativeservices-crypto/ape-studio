@@ -8,6 +8,7 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type FC } from 'react';
 import { markToolNavigate, markToolTap } from '../../features/tools/devTiming';
 import { CoachMark } from '../../components/CoachMark';
+import { HelpKey } from '../../components/HelpKey';
 import { COACH_KEYS, useCoachMark } from '../../lib/coachMark';
 import { Animated, Easing, InteractionManager, Platform, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -1024,6 +1025,8 @@ export function ToolsHubScreen({ navigation }: Props) {
             <Text style={styles.eyebrow}>PROFESSIONAL AUDIO TOOLS</Text>
           </View>
           <View style={{ flex: 1 }} />
+          {/* Consistent per-screen help (Pillar C). */}
+          <HelpKey search="tool" />
           {/* GLOSSARY key, like the other screens (Booth 2026-07-11), with STUDY
               stacked under it (owner 2026-09-13) as a direct way back to the
               study dashboard. GOLD against the glossary's blue: the two keys now

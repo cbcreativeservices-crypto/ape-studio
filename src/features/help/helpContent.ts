@@ -12,9 +12,9 @@
  * nothing promises a feature that is not in the app today).
  */
 
-/** Flip to true when the owner ratifies the FAQ copy. Gates the Settings
- *  entry row and the Help route itself (the #helppreview harness ignores it). */
-export const HELP_HUB_ENABLED = false;
+/** Ratified by the owner 2026-09-13 — the hub is live. (Gated the Settings
+ *  entry row while the FAQ copy was in draft.) */
+export const HELP_HUB_ENABLED = true;
 
 export type HelpCategoryKey =
   | 'start'

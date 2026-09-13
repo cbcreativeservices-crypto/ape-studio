@@ -2218,7 +2218,7 @@ ${COPY.glossaryFreeAllowance}`,
         );
       }
       if (item.kind === 'empty') {
-        return <Text style={styles.tlEmpty}>No bookmarks in this list yet.</Text>;
+        return <Text style={styles.tlEmpty}>No bookmarks in this list yet — tap ⚑ on any term to add it.</Text>;
       }
       if (item.kind === 'otherHeader') {
         // OTHER LISTS — EVERY selectable list (Glossary + all topics), even empty
@@ -2684,7 +2684,25 @@ ${COPY.glossaryFreeAllowance}`,
                 </View>
               </View>
             ) : (
-              <Text style={styles.empty}>No results for {search.trim() || filterLabel}</Text>
+              // Empty state as help (Pillar C): say what to do next, and turn a
+              // genuinely missing term into a suggestion instead of a dead end.
+              <View style={{ paddingTop: 12, gap: 10 }}>
+                <Text style={[styles.empty, { paddingTop: 0 }]}>
+                  No results for {search.trim() || filterLabel}. Try a shorter word or a different spelling.
+                </Text>
+                {search.trim() ? (
+                  <Pressable
+                    onPress={() => sendFeedback('term', search.trim(), { screen: 'Glossary' })}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Suggest ${search.trim()} as a new term`}
+                    style={{ alignSelf: 'flex-start' }}
+                  >
+                    <Text style={{ fontFamily: fonts.mono, fontSize: 11, letterSpacing: 1.2, color: colors.amber }}>
+                      SUGGEST “{search.trim().toUpperCase()}” AS A NEW TERM ›
+                    </Text>
+                  </Pressable>
+                ) : null}
+              </View>
             )
           }
           extraData={rowExtraData}
@@ -3281,7 +3299,16 @@ ${COPY.glossaryFreeAllowance}`,
               initialNumToRender={24}
               maxToRenderPerBatch={12}
               windowSize={7}
-              ListEmptyComponent={<Text style={styles.tlEmpty}>No terms in this set.</Text>}
+              ListEmptyComponent={
+                // Empty state as help (Pillar C): each list says how it fills.
+                <Text style={styles.tlEmpty}>
+                  {termListModal?.kind === 'starred'
+                    ? 'No terms yet — tap ★ on any term to build your custom list.'
+                    : termListModal?.kind === 'recent'
+                      ? 'Nothing yet — terms you open will appear here.'
+                      : 'No terms in this set.'}
+                </Text>
+              }
               {...NO_TOUCH_DELAY}
             />
             <Pressable style={styles.tlClose} onPress={() => setTermListModal(null)} accessibilityRole="button" accessibilityLabel="Close list">

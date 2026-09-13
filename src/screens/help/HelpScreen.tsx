@@ -13,7 +13,7 @@
 import { useMemo, useState } from 'react';
 import { LayoutAnimation, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { colors, fonts } from '../../theme/tokens';
 import { animationsAllowed } from '../../features/settings/a11y';
 import { sendFeedback, SUPPORT_EMAIL } from '../../lib/feedback';
@@ -27,7 +27,10 @@ import { filterHelp, type HelpEntry } from '../../features/help/helpContent';
 export function HelpScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<any>();
-  const [query, setQuery] = useState('');
+  // A screen's "?" key can land here with the search pre-filled (plan §4) —
+  // the person edits or clears it like anything they typed themselves.
+  const route = useRoute<any>();
+  const [query, setQuery] = useState((route.params?.search as string | undefined) ?? '');
   const [open, setOpen] = useState<string | null>(null);
   const categories = useMemo(() => filterHelp(query), [query]);
   const searching = query.trim().length > 0;

@@ -23,6 +23,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { GuidedLessonBody, GuidedLessonSheet, getLabLesson, type LabId } from '../../features/lab/guidedLessons';
 import { AccuracyNote } from '../../components/AccuracyNote';
+import { HelpKey } from '../../components/HelpKey';
 import { CoachMark } from '../../components/CoachMark';
 import { COACH_KEYS, useCoachMark } from '../../lib/coachMark';
 import { colors, fonts } from '../../theme/tokens';
@@ -299,6 +300,9 @@ export function LabShell({
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.subtitle}>{subtitle}</Text>
         </View>
+        {/* Consistent per-screen help (Pillar C) — lands in the hub with lab
+            answers surfaced. */}
+        <HelpKey search="lab" />
         {/* Accuracy/calibration note — global honesty affordance (owner 2026-08-09). */}
         <AccuracyNote compact />
         {headerAction ? <View style={styles.headerAction}>{headerAction}</View> : null}

@@ -97,6 +97,7 @@ import { consumeDevPreview } from '../../features/dev/devPreview';
 import { devBypass } from '../../config/devMode';
 import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
 import { CoachMark } from '../../components/CoachMark';
+import { HelpKey } from '../../components/HelpKey';
 import { COACH_KEYS, useCoachMark } from '../../lib/coachMark';
 import { LearningIntroSheet } from '../../features/intro/LearningIntroSheet';
 import { getCourseIntro, getTopicIntro, isIntroEmpty } from '../../features/intro/learningIntros';
@@ -1332,16 +1333,20 @@ export function DashboardScreen() {
             // "My Enrollments" → the enrollment screen. Styled to MATCH the home
             // screen's green Enrollments nav button (dark box + green border/text)
             // rather than the lighter glass look (user request 2026-07-23).
-            <Pressable
-              style={styles.myEnrollBtn}
-              onPress={() => (navigation as any).navigate('Awards', { category: 'enrollment' })}
-              accessibilityRole="button"
-              accessibilityLabel="Enrollments"
-            >
-              <Text style={styles.myEnrollBtnText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
-                ENROLLMENTS
-              </Text>
-            </Pressable>
+            // "?" = consistent per-screen help (Pillar C).
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <HelpKey search="study" />
+              <Pressable
+                style={styles.myEnrollBtn}
+                onPress={() => (navigation as any).navigate('Awards', { category: 'enrollment' })}
+                accessibilityRole="button"
+                accessibilityLabel="Enrollments"
+              >
+                <Text style={styles.myEnrollBtnText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+                  ENROLLMENTS
+                </Text>
+              </Pressable>
+            </View>
           }
         />
 

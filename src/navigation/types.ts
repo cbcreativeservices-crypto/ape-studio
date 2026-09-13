@@ -108,7 +108,9 @@ export type RootStackParamList = {
     awardId: string;
   };
   Settings: undefined; // S11 — modal, bottom nav hidden
-  Help: undefined; // Help hub (Pillar C) — modal, reached from Settings
+  /** Help hub (Pillar C) — modal; from Settings or a screen's "?" key.
+   *  `search` pre-fills the FAQ filter so that screen's answers surface first. */
+  Help: { search?: string } | undefined;
   /** Weekly misunderstood-concept card, opened from a push tap. */
   WeeklyConcept: {
     concept_id: number;

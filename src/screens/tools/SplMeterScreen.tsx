@@ -29,6 +29,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, Animated, BackHandler, Pressable, ScrollView, StatusBar, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { animationsAllowed } from '../../features/settings/a11y';
 import { CoachMark } from '../../components/CoachMark';
+import { HelpKey } from '../../components/HelpKey';
 import { COACH_KEYS, useCoachMark } from '../../lib/coachMark';
 
 /** Digital clipping — a sample at or within a whisker of full scale. Kept as a
@@ -1335,6 +1336,8 @@ export function SplMeterScreen({ navigation }: Props) {
           <Text style={styles.title}>{tool.name.toUpperCase()}</Text>
           {tool.subtitle ? <Text style={styles.subtitle}>{tool.subtitle}</Text> : null}
         </View>
+        {/* Consistent per-screen help (Pillar C). */}
+        <HelpKey search="meter" />
         <AccuracyNote compact detail="This tool runs on your phone’s UNCALIBRATED microphone — read every level as RELATIVE, for learning, NOT a calibrated SPL reading. For accurate, absolute measurements use a calibrated SPL meter, measurement mic, or a dedicated instrument." />
         {/* Mini-VU opener → the full-screen VU popup (owner 2026-07-29). Larger
             + enclosed in a framed container (owner 2026-07-30). */}
