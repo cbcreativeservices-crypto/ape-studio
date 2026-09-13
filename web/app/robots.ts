@@ -10,6 +10,9 @@ export default function robots(): MetadataRoute.Robots {
     };
   }
   return {
+    // /connect is unlisted via its noindex meta, NOT a robots disallow: a
+    // disallow line would advertise the private path in world-readable
+    // robots.txt and stop crawlers from ever reading the noindex.
     rules: { userAgent: "*", allow: "/" },
     sitemap: `${SITE}/sitemap.xml`,
   };

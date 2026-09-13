@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import Nav from "@/components/Nav";
-import Footer from "@/components/Footer";
+import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
 import { GATE_ENABLED } from "@/lib/gate";
 import { TAGLINE } from "@/lib/brand";
 
@@ -111,11 +110,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           Skip to content
         </a>
-        <Nav />
+        <SiteHeader />
         <main id="main-content" className="flex-1">
           {children}
         </main>
-        <Footer />
+        <SiteFooter />
       </body>
     </html>
   );

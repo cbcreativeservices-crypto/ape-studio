@@ -1,0 +1,96 @@
+/* Private /connect — one letter, no hardware chrome. */
+
+.connect-rule {
+  height: 1px;
+  border: 0;
+  background: var(--amber);
+  opacity: 0.85;
+}
+
+.connect-letterhead {
+  padding-bottom: 1.75rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .connect-letterhead {
+    animation: connect-settle 0.65s ease-out both;
+  }
+}
+
+@keyframes connect-settle {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.connect-section {
+  padding: 2rem 0 0.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.connect-sheet {
+  display: grid;
+  gap: 0;
+  border-top: 1px solid var(--border);
+}
+
+.connect-sheet-row {
+  display: grid;
+  gap: 0.65rem 1.25rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+@media (min-width: 32rem) {
+  .connect-sheet-row {
+    grid-template-columns: 6.5rem 1fr;
+    align-items: start;
+  }
+}
+
+.connect-input,
+.connect-textarea {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  background: transparent;
+  color: var(--foreground);
+  font-size: 1rem;
+  line-height: 1.45;
+  padding: 0.65rem 0;
+}
+
+.connect-input:focus-visible,
+.connect-textarea:focus-visible {
+  outline: none;
+  border-bottom-color: var(--amber);
+}
+
+.connect-need {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  padding: 0.55rem 0;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+}
+
+.connect-need:last-of-type {
+  border-bottom: 0;
+}
+
+.connect-need:has(input:focus-visible) {
+  outline: 2px solid var(--amber);
+  outline-offset: 3px;
+}
+
+.connect-need input {
+  margin-top: 0.2rem;
+  accent-color: var(--amber);
+}

@@ -3,6 +3,7 @@ import { GATE_ENABLED } from "@/lib/gate";
 
 const SITE = "https://www.proaudiotrainingacademy.com";
 
+// /connect is a private invitation page — never list it.
 const PATHS = [
   "/",
   "/academy",

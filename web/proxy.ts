@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { GATE_ENABLED, GATE_COOKIE, GATE_TOKEN } from "@/lib/gate";
+import { isConnectPath } from "@/lib/connect";
 
 /* ============================================================
  *  SITE GATE — a key is required to view the site.
@@ -108,6 +109,10 @@ export function proxy(request: NextRequest) {
 
   // Let the key-check handler run.
   if (pathname.startsWith("/api/unlock")) return NextResponse.next();
+
+  // Card-invitation page: reachable while the rest of the site is gated.
+  // Does not set the gate cookie — /connect is not a site-wide unlock.
+  if (isConnectPath(pathname)) return NextResponse.next();
 
   // Already unlocked with a valid cookie -> show the site.
   if (request.cookies.get(GATE_COOKIE)?.value === GATE_TOKEN) {
