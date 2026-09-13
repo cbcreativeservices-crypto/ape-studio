@@ -76,7 +76,8 @@ import {
   type Topic,
 } from '../../features/dashboard/api';
 import { getDashboardCache, setDashboardCache } from '../../features/dashboard/dashboardCache';
-import { FREE_ENROLL_GS, isFreeEnrollGs, useEnrollment } from '../../features/enrollment/enrollmentStore';
+import { FREE_ENROLL_GS, useEnrollment } from '../../features/enrollment/enrollmentStore';
+import { customListLocked as customListLockedFn, studyMethodLocked } from '../../features/commercial/studyGate';
 import { supabase } from '../../lib/supabase';
 import { isRealAccount } from '../../features/commercial/realAccount';
 import { notify } from '../../lib/confirm';
@@ -1258,11 +1259,27 @@ export function DashboardScreen() {
   // sheet for the membership they already pay for. Hold the member-favouring
   // (unlocked) state until the tier is known; the study/quiz screens still gate
   // on the server, so this can only delay a lock — never grant access.
-  const actMembershipLocked =
-    resolved &&
-    entitlement !== 'academy' &&
-    !dispIsCustom &&
-    !(dispTopic.global_sequence != null && isFreeEnrollGs(dispTopic.global_sequence));
+  //
+  // ⚠️ THE ★ CUSTOM LIST IS NO LONGER EXEMPT (owner 2026-09-13: "gate it").
+  // The exemption meant a free user could star any glossary term and study its
+  // full definition here — an unmetered path to all 26,855 definitions, around
+  // both the 14-a-week allowance and the server gateway that now meters it
+  // (docs/APE_GLOSSARY_DEVICE_ID_BUILD_PLAN_2026_09_13.md). Masking
+  // `glossary_study_v` closed the data side; without this the cards would have
+  // rendered 120-character teasers as though they were definitions, which reads
+  // as broken rather than gated. The pseudo-topic carries
+  // `global_sequence: null`, so the free-topic clause below cannot match it and
+  // this fails CLOSED for every non-member.
+  const actMembershipLocked = studyMethodLocked({
+    resolved,
+    entitlement,
+    displayedGs: dispTopic.global_sequence,
+    freeGs: FREE_ENROLL_GS,
+  });
+  // The ★ Custom List's own lock — NOT `actMembershipLocked`, which reads the
+  // DISPLAYED topic while this panel renders on the COMMITTED one. See the
+  // docblocks in features/commercial/studyGate.ts.
+  const customListLocked = customListLockedFn({ resolved, entitlement });
   const dispTopicInactive =
     viewMode === 'enrollment' &&
     dispTopic.global_sequence != null &&
@@ -1523,12 +1540,19 @@ export function DashboardScreen() {
                 width={96}
                 height={RACK_QUIZ_SWITCH_H}
                 disabled={starred.size === 0}
-                onPress={() =>
+                onPress={() => {
+                  // Same gate as every other study method. Deliberately still
+                  // PRESSABLE for a non-member rather than disabled: the sheet
+                  // is the sales moment, a dead button is not.
+                  if (customListLocked) {
+                    setUpgradeOpen(true);
+                    return;
+                  }
                   navigation.navigate('Flashcards', {
                     achievementId: FLAGGED_TOPIC_ID,
                     topicName: FLAGGED_TOPIC_NAME,
-                  })
-                }
+                  });
+                }}
               />
             </View>
           </ElevatedFrame>
@@ -1884,6 +1908,12 @@ export function DashboardScreen() {
                   height={42}
                   onPress={() => {
                     setTermsOpen(false);
+                    // The second way into custom-list study — gate it too, or
+                    // the first gate is decoration.
+                    if (customListLocked) {
+                      setUpgradeOpen(true);
+                      return;
+                    }
                     navigation.navigate('Flashcards', {
                       achievementId: FLAGGED_TOPIC_ID,
                       topicName: FLAGGED_TOPIC_NAME,

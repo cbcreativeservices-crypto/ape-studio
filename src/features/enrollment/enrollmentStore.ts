@@ -35,6 +35,11 @@ const SEED_KEY = 'ape:enrollmentSeeded5';
 // The 2 auto-enrolled FREE topics a non-subscribed user sees: gs3060
 // "Professional Audio Safety" (ALSO a required core) + gs3970 "DAW Fundamentals
 // & Session Management". (v3 achievements.global_sequence.)
+// ⚠️ MIRRORED IN THE DATABASE. `glossary_study_v` masks definitions with
+// `a.global_sequence = any (array[3060, 3970])`
+// (docs/APE_GLOSSARY_STUDY_V_MASK_2026_09_13.SQL). If this pair changes and the
+// view does not, a newly-free topic's study cards silently become
+// 120-character teasers — or a paid topic's definitions silently open up.
 export const FREE_ENROLL_GS: readonly number[] = [3060, 3970];
 /** Prior seeds to remove on re-seed: gs0/gs36 placeholders, gs150 (retired
  *  substitute), and gs100/gs1240 (the pre-v3 free topics, re-keyed to 3060/3970). */

@@ -242,25 +242,32 @@ function (checked).
 - **Notification term batch** — notifications are MEMBERS ONLY (owner
   2026-09-01), so those reads pass the predicate.
 
-### ⚠️ ONE OPEN DECISION: the Custom List
+### ✅ The Custom List — GATED 2026-09-13 (owner: "gate it")
 
-`DashboardScreen.tsx:1264` exempts the ★ Custom List from the membership gate
-(`!dispIsCustom`). A free user can star any glossary term and study it there —
-so today that is a **second unmetered path to unlimited definitions**, outside
-the 14/week, and the mask has just closed it: those cards now carry a
-120-character teaser.
+`DashboardScreen.tsx` exempted the ★ Custom List from the membership gate
+(`!dispIsCustom`), so a free user could star any glossary term and study its
+full definition there — a second unmetered path to all 26,855 definitions,
+around both the 14-a-week allowance and the gateway built to meter it. The
+exemption is gone: a non-member's Custom List now raises the same
+`StudyAccessSheet` as every other locked study method. Both entry points are
+gated (the panel's Study switch and the terms popup's STUDY FLASHCARDS); the
+button stays PRESSABLE rather than disabled, because the sheet is the sales
+moment and a dead button is not.
 
-That is a truncated sentence presented as a definition, which is not an
-acceptable resting state. Pick one:
+⚠️ **A hole I wrote and caught before it shipped, now pinned by a test.** The
+obvious implementation reuses `actMembershipLocked` — and that reads the
+DISPLAYED topic, while the Custom List panel renders on the COMMITTED one. So
+mid-jog, with the carousel previewing gs3060 or gs3970, the gate read *false*
+and the Study button opened. The Custom List is never free for a non-member
+whatever the carousel shows, so it has its own predicate that does not look at
+the carousel at all. Both are extracted, import-free, in
+`src/features/commercial/studyGate.ts`, with the race as a named case in
+`test/studyGate.test.ts`.
 
-1. **Gate it** — drop `!dispIsCustom` so a free user's Custom List raises the
-   upgrade prompt, exactly like every other locked study method. One line.
-2. **Meter it** — route Custom List study through `get_glossary_definition`, so
-   each term costs one of the 14. Consistent with the owner's own rule
-   ("opening a definition to view it = +1"), but a 40-term list is then
-   unstudyable in one week.
-3. **Re-open it** — accept that the Custom List is an unmetered path to every
-   definition, and know that the gateway can be walked around by starring.
+`FREE_ENROLL_GS` (gs3060, gs3970) is now cross-referenced in both directions
+between `enrollmentStore.ts` and the view's SQL — if one moves and the other
+does not, a newly-free topic's study cards silently become teasers, or a paid
+topic's definitions silently open up.
 
 ### Every definition-bearing relation, swept
 
@@ -372,8 +379,8 @@ because it is a judgment call, not a technicality - reverse it in
 4. Create the view + RPC + cron. Verify privileges and the cascade. **The moment
    the view exists, every phone running the shipped build starts asking for
    consent** - so treat this step as the feature going live.
-5. ✅ **`glossary_study_v` is masked** (applied 2026-09-13) — see above. Settle
-   the Custom List question there before the revokes.
+5. ✅ **`glossary_study_v` is masked** (applied 2026-09-13) and the Custom List
+   is gated — see above. Nothing outstanding here.
 6. **Only then** run the revokes.
 
 Reversed, the glossary dies in every build already on a phone — including the

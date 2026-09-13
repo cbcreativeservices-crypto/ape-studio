@@ -54,6 +54,11 @@
 -- `glossary`. That also means this mask is the ONLY thing protecting the
 -- content here. Do not weaken it without replacing it.
 --
+-- MIRRORED IN THE CLIENT: array[3060, 3970] is `FREE_ENROLL_GS` in
+-- src/features/enrollment/enrollmentStore.ts. If one moves and the other does
+-- not, a newly-free topic's study cards silently become 120-character teasers,
+-- or a paid topic's definitions silently open up.
+--
 -- Rollback: docs/APE_GLOSSARY_STUDY_V_MASK_2026_09_13_ROLLBACK.SQL
 -- =====================================================================
 
