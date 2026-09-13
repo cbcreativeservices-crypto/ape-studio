@@ -1123,6 +1123,13 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
         ref={scrollRef}
         style={{ flex: 1 }}
         contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 20 }]}
+        // While a card is LIFTED for reorder the screen must not scroll: on
+        // device the native ScrollView intercepts the vertical drag and the
+        // lifted card never receives it — reorder "did nothing" on the Pixel
+        // (owner 2026-09-13). Same fix as the labs' drag editors (LabShell
+        // scroll lock). The web preview can't show this — native interception
+        // does not exist there.
+        scrollEnabled={liftedId == null}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         scrollEventThrottle={16}
@@ -1352,8 +1359,8 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                 ]}
               >
                 {/* Row 1 — collapse triangle · white title. Press-HOLD the card
-                    ~1s to lift it, then drag up/down to reorder (user request
-                    2026-07-23; the ☰ handle was removed). */}
+                    still for 2 s to lift it, then drag up/down to reorder (user
+                    request 2026-07-23; the ☰ handle was removed). */}
                 <View style={styles.cardTop}>
                   <Pressable style={styles.collapseBtn} onPress={() => toggleCollapse(tid)} hitSlop={6} accessibilityRole="button" accessibilityLabel={`Collapse ${nameFor(e.gs)}`}>
                     <Text style={styles.collapseTri}>▾</Text>
