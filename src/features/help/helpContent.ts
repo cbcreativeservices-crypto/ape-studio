@@ -130,6 +130,31 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         q: 'Will the app remember where I left off?',
         a: 'Yes — studying resumes from where you stopped, per topic and per method, on any signed-in account.',
       },
+      {
+        id: 'enroll-loaded',
+        q: 'What does LOADED / UNLOADED mean on my enrollments?',
+        a: 'LOADED puts that topic into your Dashboard study deck; UNLOADED takes it out of the deck while keeping the enrollment and all of its progress. Required core topics stay loaded until you complete them.',
+      },
+      {
+        id: 'enroll-add-remove',
+        q: 'How do I add or remove enrollments?',
+        a: 'BROWSE & ADD on the Enrollments page enrolls you in certificates, programs, subjects, fields, or single topics. Removing uses each topic card’s hold-to-remove control — unloading a topic from the deck does NOT unenroll it.',
+      },
+      {
+        id: 'enroll-reorder',
+        q: 'Can I reorder my enrolled topics?',
+        a: 'Yes — press and hold a topic card for about a second until it lifts, then drag it up or down. Reordering works while no filter chip (A–Z, On Home, Not started) is active.',
+      },
+      {
+        id: 'enroll-progress',
+        q: 'What do the progress meters on my enrollments show?',
+        a: 'Each enrolled topic’s meter is your study progress in that topic; an award card’s meter averages the topics it requires. 100% marks the topic complete.',
+      },
+      {
+        id: 'enroll-home',
+        q: 'What is HOME SETUP and the ⌂ house mark?',
+        a: 'HOME SETUP chooses which of your enrolled topics appear as cards on the Home screen (the Glossary and Audio Tools are always there). A ⌂ mark on a topic card means that topic is on Home.',
+      },
     ],
   },
   {

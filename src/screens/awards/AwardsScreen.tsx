@@ -7,6 +7,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { officialTopicName } from '../../data/officialTopicNames';
+import { HelpKey } from '../../components/HelpKey';
 import { FlatList, Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions, type ViewToken } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -514,6 +515,10 @@ export function AwardsScreen({ navigation, route }: Props) {
             {pageHeadline(currentKey)}
           </Text>
         </View>
+        {/* Consistent per-screen help (Pillar C), Enrollments page only —
+            lands in the hub with the enrollment answers surfaced (LOADED/
+            UNLOADED, add/remove, reorder, meters, HOME SETUP). */}
+        {currentKey === 'enrollment' ? <HelpKey search="enroll" /> : null}
       </Pressable>
 
       {/* Category buttons (user request 2026-07-18): CURRICULUM · SPECIALIZATION

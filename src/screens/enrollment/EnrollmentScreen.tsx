@@ -1647,7 +1647,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             style={styles.bottomBtn}
             onPress={() => setCollapsed(new Set())}
             accessibilityRole="button"
-            accessibilityLabel="Expand all containers"
+            accessibilityLabel="Expand all cards"
           >
             <Text style={styles.returnTopText}>▾ EXPAND ALL</Text>
           </Pressable>
@@ -1657,7 +1657,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
               setCollapsed(new Set([...enrolled.map((e) => `t:${e.gs}`), ...bundles.map((b) => b.key)]))
             }
             accessibilityRole="button"
-            accessibilityLabel="Collapse all containers"
+            accessibilityLabel="Collapse all cards"
           >
             <Text style={styles.returnTopText}>▸ COLLAPSE ALL</Text>
           </Pressable>
