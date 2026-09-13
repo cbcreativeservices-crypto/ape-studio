@@ -34,33 +34,3 @@ AppState.addEventListener('change', (state) => {
     supabase.auth.stopAutoRefresh();
   }
 });
-
-/**
- * DEV-ONLY boot line for the session-logout investigation (2026-09-13).
- *
- * The Pixel landed on the auth gate twice after a reload, which would be a
- * launch blocker if a cold start loses the session. The storage layer has since
- * been CLEARED: expo-secure-store is present on the device, and the chunked
- * keychain adapter round-trips 1.2 KB / 4 KB / 9 KB payloads intact — so the
- * scariest explanation (every user logged out on every launch) is not it.
- *
- * This one line is what settles the rest: sign in, reload, and read it.
- *   session=YES → the session persisted; the earlier observation was something
- *                 else (most likely the app was not actually signed in then).
- *   session=no  → a real loss, and `storedLen` says whether the token was
- *                 written at all or written and then removed.
- *
- * Never logs a token — presence and length only. REMOVE once resolved.
- */
-if (__DEV__) {
-  void (async () => {
-    try {
-      const ref = SUPABASE_URL.split('//')[1]?.split('.')[0] ?? '';
-      const raw = await authStorage.getItem(`sb-${ref}-auth-token`);
-      const { data } = await supabase.auth.getSession();
-      console.warn(`[authprobe] storedLen=${raw ? raw.length : 'null'} session=${data.session ? 'YES' : 'no'}`);
-    } catch (e) {
-      console.warn('[authprobe] threw:', e instanceof Error ? e.message : String(e));
-    }
-  })();
-}

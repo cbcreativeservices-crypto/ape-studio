@@ -16,6 +16,21 @@
  * screens and CredentialWall all keep treating them as guests. Read that
  * docblock before changing anything here.
  *
+ * ⚠️ GUEST MODE WIPES THIS, AND THAT IS CORRECT. Tapping GUEST MODE (FREE) on
+ * the Auth screen calls `supabase.auth.signOut()` and then
+ * `clearLocalAccountData({ total: true })`, which sweeps every `ape:*` key —
+ * including the consent record below. So a guest who re-enters Guest Mode is
+ * asked again and gets a NEW key, while the old one sits unused until the
+ * nightly purge collects it. Do NOT "fix" that by adding this key to the KEEP
+ * allowlist: the owner's 2026-09-01 ruling is that a no-account guest is
+ * remembered in NO way, and a surviving consent record would be exactly the
+ * kind of memory that ruling forbids.
+ *
+ * (Recorded because it LOOKS like a persistence bug when you meet it: the
+ * dialog reappears and a second key appears in auth.users. It was chased on
+ * 2026-09-13 with probes on both storage layers before the cause turned out to
+ * be the deliberate wipe.)
+ *
  * RENEWAL, stated plainly. The nightly purge deletes anonymous users older than
  * 7 days, which is the promise the dialog makes. A device whose key has been
  * purged needs another one to keep reading definitions, and we mint it WITHOUT
