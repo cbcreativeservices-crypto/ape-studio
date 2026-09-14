@@ -519,9 +519,10 @@ function LinkedText({
                 {s.text}
               </Text>
               {' '}
-              {/* Circled Σ (©-style ring) — an inline View so the ring is a true
-                  circle, not an oval; the Σ inside is the calculator tap target. */}
-              <View style={styles.calcSigmaCircle}>
+              {/* Squared Σ — an inline View matching the top Σ (calculator) button:
+                  rounded square, purple border + faint purple fill; the Σ inside is
+                  the calculator tap target. */}
+              <View style={styles.calcSigmaBox}>
                 <Text
                   style={styles.calcSigmaChar}
                   suppressHighlighting
@@ -3519,19 +3520,21 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
     textDecorationColor: 'rgba(159,190,222,0.35)',
   },
-  // Circled purple Σ that trails a calculator-backed link word (owner 2026-09-14),
-  // styled like a © ring — an inline View so it renders a true circle on both iOS
-  // and Android. Tapping the Σ opens that word's calculator.
-  calcSigmaCircle: {
+  // Squared purple Σ that trails a calculator-backed link word (owner 2026-09-14),
+  // matching the top Σ (calculator) button — an inline View (true square) with the
+  // same rounded corners, purple border, and faint purple fill. Tapping opens the
+  // word's calculator.
+  calcSigmaBox: {
     width: 16,
     height: 16,
-    borderRadius: 8,
+    borderRadius: 4.5,
     borderWidth: 1,
     borderColor: colors.purple,
+    backgroundColor: 'rgba(180,91,255,0.14)',
     alignItems: 'center',
     justifyContent: 'center',
-    // Inline views sit on the baseline; nudge down slightly so the ring centers
-    // on the x-height of the surrounding definition text.
+    // Inline views sit on the baseline; nudge down slightly so the box centers on
+    // the x-height of the surrounding definition text.
     transform: [{ translateY: 3 }],
   },
   calcSigmaChar: {
