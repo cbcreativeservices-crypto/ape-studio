@@ -368,7 +368,10 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       // The planned 'Cable Troubleshooting Lab' and 'Audio Connectors and
       // Connections Lab' rows were REMOVED (owner ruling 2026-08-15) —
       // superseded by the free Cable & Connector Fundamentals lab (CableLab).
-      { name: 'Patchbay Lab', blurb: 'Normalled, half-normalled and open patchbays — route signal without repatching the rack.', status: 'development' },
+      // The 'Patchbay Lab' PLANNED placeholder was REMOVED (owner ruling
+      // 2026-09-14, device pass): the full Patchbay Signal Flow & Normalling
+      // lab (route 'PatchbayLab') ships live under Signal → Connectors, so a
+      // "coming soon" row here was redundant and misleading.
       // LIVE (owner build spec 2026-09-02): the former 'Amplifier Types Lab'
       // placeholder, built as the eight-module Amplifier Principles Lab.
       { name: 'Amplifier Principles Lab', blurb: 'From transistors and transformers to amplifier classes — what the amplifier is doing, what load it sees, and where the energy comes from.', route: 'AmpLab' },
