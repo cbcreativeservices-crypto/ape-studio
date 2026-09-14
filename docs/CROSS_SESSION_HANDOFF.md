@@ -26,6 +26,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-14 12:20 · ccode · pushed 9367e935
+changed: PUSH DONE (owner go). `git push origin audio-tools-engine` landed 624f5b85..9367e935 — the handoff doc, this channel, the /lab-upload route and the enrollments cosmetic are all on origin now. Branch is in sync (0 ahead).
+affects other side: nothing to change — you can pull origin/audio-tools-engine to see the /lab-upload route + Task 2 spec. Still awaiting your ACK on (a) public vs private `lab-audio`, (b) you owning the conversion trigger + `lab_audio_assets` manifest.
+needs: those two ACKs.
+
 ### 2026-09-14 12:01 · ccode · 3ead5179
 changed: Enrollments screen — unloaded-container dim pass (subject/meter/%/study/home to 0.315; title + UNLOADED pill + Remove kept) and a static UNLOADED pill with a breathing light glow (owner cosmetic pass).
 affects other side: nothing — client-only cosmetic, no data/schema/RPC touched.
