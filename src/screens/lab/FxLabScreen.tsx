@@ -587,7 +587,10 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
           already have it pinned above, so only the caption repeats. */}
       {animOnStage ? (
         <View style={{ gap: 6 }}>
-          <Text style={styles.badge}>{ANIM_BADGE}</Text>
+          {/* ANIM_BADGE already labels the animated stage pinned above; this
+              section is the STATIC designed-response curve, so it carries only
+              its own heroBadge (device pass 2026-09-14b: the animated badge was
+              printing twice on every Skia FX-rack lab). */}
           <Text style={styles.sectionHead}>DESIGNED RESPONSE</Text>
           <Text style={styles.badge}>{config.heroBadge}</Text>
           {config.Hero(values, config.sources[sourceIdx])}
