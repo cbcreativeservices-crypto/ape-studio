@@ -3540,11 +3540,15 @@ const styles = StyleSheet.create({
   calcSigmaChar: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 11,
-    lineHeight: 14,
     color: colors.purple,
+    // Fill the box's inner area (16 − 2×1 border) and center within it. A fixed
+    // height + textAlignVertical:center centers the lone glyph on Android far more
+    // reliably than centering a tight line box (which left it bottom-heavy);
+    // includeFontPadding:false removes the extra descent gap that pushed it down.
+    width: 14,
+    height: 14,
+    lineHeight: 14,
     textAlign: 'center',
-    // Android adds font padding + baseline offset that shoves a lone glyph to the
-    // lower-left of its box; kill the padding and hard-center both axes.
     textAlignVertical: 'center',
     includeFontPadding: false,
   },
