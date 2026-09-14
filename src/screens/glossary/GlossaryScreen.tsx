@@ -3539,9 +3539,14 @@ const styles = StyleSheet.create({
   },
   calcSigmaChar: {
     fontFamily: fonts.oswaldSemiBold,
-    fontSize: 10.5,
-    lineHeight: 13,
+    fontSize: 11,
+    lineHeight: 14,
     color: colors.purple,
+    textAlign: 'center',
+    // Android adds font padding + baseline offset that shoves a lone glyph to the
+    // lower-left of its box; kill the padding and hard-center both axes.
+    textAlignVertical: 'center',
+    includeFontPadding: false,
   },
   // Disambiguation chooser sheet.
   chooserBackdrop: {
