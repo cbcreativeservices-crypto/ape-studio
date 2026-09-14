@@ -518,14 +518,19 @@ function LinkedText({
               >
                 {s.text}
               </Text>
-              <Text
-                style={styles.termLinkSigma}
-                suppressHighlighting
-                accessibilityLabel={`${s.text} — open in the calculator`}
-                onPress={() => onOpenCalc!(calc.workspaceId)}
-              >
-                {' '}Σ
-              </Text>
+              {' '}
+              {/* Circled Σ (©-style ring) — an inline View so the ring is a true
+                  circle, not an oval; the Σ inside is the calculator tap target. */}
+              <View style={styles.calcSigmaCircle}>
+                <Text
+                  style={styles.calcSigmaChar}
+                  suppressHighlighting
+                  accessibilityLabel={`${s.text} — open in the calculator`}
+                  onPress={() => onOpenCalc!(calc.workspaceId)}
+                >
+                  Σ
+                </Text>
+              </View>
             </Text>
           );
         }
@@ -3514,10 +3519,27 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
     textDecorationColor: 'rgba(159,190,222,0.35)',
   },
-  // The purple Σ that trails a calculator-backed link word (owner 2026-09-14) —
-  // tap it to open that word's calculator. Echoes the glossary's global Σ button;
-  // no underline (it's a symbol affordance, not a text link).
-  termLinkSigma: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, color: colors.purple },
+  // Circled purple Σ that trails a calculator-backed link word (owner 2026-09-14),
+  // styled like a © ring — an inline View so it renders a true circle on both iOS
+  // and Android. Tapping the Σ opens that word's calculator.
+  calcSigmaCircle: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.purple,
+    alignItems: 'center',
+    justifyContent: 'center',
+    // Inline views sit on the baseline; nudge down slightly so the ring centers
+    // on the x-height of the surrounding definition text.
+    transform: [{ translateY: 3 }],
+  },
+  calcSigmaChar: {
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 10.5,
+    lineHeight: 13,
+    color: colors.purple,
+  },
   // Disambiguation chooser sheet.
   chooserBackdrop: {
     position: 'absolute',
