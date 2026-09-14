@@ -117,6 +117,18 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
   // (Re)build the draft each time the sheet opens, from the live stores.
   useEffect(() => {
     if (!visible) return;
+    // Never (re)open with a stale lift (night audit 2026-09-13): if the sheet
+    // was dismissed mid-drag (e.g. Android back) the row's touch-end may never
+    // dispatch, and a leftover liftedGs would reopen the sheet with its
+    // ScrollView locked (scrollEnabled={liftedGs == null}).
+    if (holdTimer.current) {
+      clearTimeout(holdTimer.current);
+      holdTimer.current = null;
+    }
+    liftedRef.current = null;
+    setLiftedGs(null);
+    liftAnim.setValue(0);
+    dragY.setValue(0);
     const home = getHomeGs();
     const onHome = home.filter((g) => enrolledNonCore.includes(g)); // home order first
     const off = enrolledNonCore.filter((g) => !home.includes(g)); // then the rest, enrollment order
@@ -216,16 +228,26 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
         if (liftedRef.current !== gs) return;
         const step = Math.trunc((g.dy - dragAccum.current) / ROW_H);
         if (step !== 0) {
-          // Displaced neighbors slide, not teleport (owner 2026-09-13).
-          if (animationsAllowed()) {
-            LayoutAnimation.configureNext({
-              duration: 140,
-              update: { type: LayoutAnimation.Types.easeInEaseOut },
-            });
+          // CLAMP to the swaps actually available (night audit 2026-09-13):
+          // moveInOrder no-ops at the list ends, but dragAccum used to advance
+          // by the full un-clamped step anyway — dragging past an end banked
+          // phantom distance that had to be retraced before the row would move
+          // back the other way (hysteresis). Count only committed swaps; past
+          // the end the row simply rides the finger, like the Enrollments list.
+          const i = order.indexOf(gs);
+          const applied = step > 0 ? Math.min(step, order.length - 1 - i) : Math.max(step, -i);
+          if (applied !== 0) {
+            // Displaced neighbors slide, not teleport (owner 2026-09-13).
+            if (animationsAllowed()) {
+              LayoutAnimation.configureNext({
+                duration: 140,
+                update: { type: LayoutAnimation.Types.easeInEaseOut },
+              });
+            }
+            const dir: -1 | 1 = applied > 0 ? 1 : -1;
+            for (let k = 0; k < Math.abs(applied); k++) moveInOrder(gs, dir);
+            dragAccum.current += applied * ROW_H;
           }
-          const dir: -1 | 1 = step > 0 ? 1 : -1;
-          for (let k = 0; k < Math.abs(step); k++) moveInOrder(gs, dir);
-          dragAccum.current += step * ROW_H;
         }
         dragY.setValue(g.dy - dragAccum.current);
       },

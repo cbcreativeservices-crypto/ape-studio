@@ -37,6 +37,7 @@ import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { useEnrollmentProgress } from '../../features/enrollment/enrollmentProgress';
 import {
   addTopics,
+  getEnrollment,
   isFreeEnrollGs,
   moveTopic,
   pruneInvalidGs,
@@ -50,6 +51,7 @@ import {
 import {
   addBundle,
   bundleKey,
+  getBundles,
   moveBundle,
   removeBundle,
   setBundleLoaded,
@@ -159,6 +161,13 @@ function HoldToRemove({
     <Pressable
       onPressIn={begin}
       onPressOut={end}
+      // Don't let this touch bubble to the row wrapper's hold-to-LIFT timer
+      // (night audit 2026-09-13): the lift hold (500 ms) is now SHORTER than
+      // this button's 1100 ms remove hold, so holding Remove used to lift the
+      // whole card mid-hold and then remove it while lifted — unmounting the
+      // row with the finger still down, stranding liftedId set and the
+      // screen's scroll locked (scrollEnabled={liftedId == null}).
+      onTouchStart={(ev) => ev.stopPropagation()}
       style={styles.removeHoldBtn}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? label}
@@ -818,7 +827,15 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   // Keep the rendered-order ref current (assignment-during-render is this
   // file's own idiom for render-derived refs).
   rowOrder.current.topics = displayed.map((e) => `t:${e.gs}`);
-  rowOrder.current.bundles = displayedBundles.map((b) => b.key);
+  // Only bundles actually RENDERED as reorderable rows: completed bundles are
+  // filtered out of the list below (they live in MY RECORD), so they must not
+  // appear here either — a done bundle in this array would be treated as a
+  // phantom neighbor: one visual drag step would swap past it in the store
+  // and consume finger travel with nothing moving on screen (night audit
+  // 2026-09-13).
+  rowOrder.current.bundles = displayedBundles
+    .filter((b) => !(b.topics.length > 0 && b.topics.every((gs) => (prog.get(gs)?.pct ?? 0) >= 100)))
+    .map((b) => b.key);
 
   const displayedDerived = useMemo(() => {
     let ds = derivedBundles;
@@ -925,6 +942,51 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   const isBundleDone = (topics: number[]) =>
     topics.length > 0 && topics.every((gs) => (prog.get(gs)?.pct ?? 0) >= 100);
 
+  // Reorder movers that STEP OVER hidden rows (night audit 2026-09-13).
+  // moveTopic/moveBundle swap ADJACENT entries of the FULL store arrays, but
+  // the reorder UI renders a subset: completed topics and completed bundles
+  // live in MY RECORD, not the list. With plain ±1 swaps, a completed topic
+  // sitting between two displayed ones consumed one whole visual step —
+  // finger travel spent, dragAccum advanced, NOTHING moved on screen (the
+  // lifted card snapped back a row under the finger), and a longer drag then
+  // landed the card one displayed row short of where the travel said. One
+  // visual step must swap past every hidden entry up to and including the
+  // next VISIBLE neighbor. Reads the stores LIVE (not this render's
+  // snapshot) so multiple steps inside one move event compound correctly.
+  const moveTopicVisible = (gs: number, dir: -1 | 1) => {
+    const live = getEnrollment();
+    const i = live.findIndex((x) => x.gs === gs);
+    if (i < 0) return;
+    let j = i + dir;
+    while (j >= 0 && j < live.length && (prog.get(live[j].gs)?.pct ?? 0) >= 100) j += dir;
+    if (j < 0 || j >= live.length) return; // only hidden rows that way — stay put
+    for (let k = i; k !== j; k += dir) moveTopic(gs, dir);
+  };
+  const moveBundleVisible = (key: string, dir: -1 | 1) => {
+    const live = getBundles();
+    const i = live.findIndex((b) => b.key === key);
+    if (i < 0) return;
+    let j = i + dir;
+    while (j >= 0 && j < live.length && isBundleDone(live[j].topics)) j += dir;
+    if (j < 0 || j >= live.length) return;
+    for (let k = i; k !== j; k += dir) moveBundle(key, dir);
+  };
+
+  // If the LIFTED row leaves the rendered list mid-lift — e.g. a remove
+  // control fires while the card is held, or its topic completes — the row
+  // unmounts with the finger still down and its touch-end never dispatches:
+  // liftedId would stay set forever and scrollEnabled={liftedId == null}
+  // would freeze the screen's scroll for good (night audit 2026-09-13).
+  // Drop the lift the moment its row is no longer rendered.
+  useEffect(() => {
+    if (liftedId == null) return;
+    const rows = liftedId.startsWith('t:') ? rowOrder.current.topics : rowOrder.current.bundles;
+    if (!rows.includes(liftedId)) endLift();
+    // rowOrder.current is rebuilt from these during render, so they are the
+    // right dependencies for "the rendered set changed".
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [liftedId, displayed, displayedBundles]);
+
   // A stored cert/program/subject container.
   const renderBundle = (b: EnrolledBundle) => {
     const onHome = homeBundleSet.has(b.key);
@@ -941,7 +1003,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
       return (
         <Animated.View
           key={b.key}
-          {...containerPan(b.key, (dir) => moveBundle(b.key, dir)).panHandlers}
+          {...containerPan(b.key, (dir) => moveBundleVisible(b.key, dir)).panHandlers}
           {...(customOrder ? reorderTouchProps(b.key) : {})}
           {...rowLayoutProps(b.key)}
           style={liftStyle(b.key)}
@@ -969,7 +1031,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
       <Animated.View
         key={b.key}
         style={[styles.bundleCard, kindCard, done && styles.bundleDone, liftStyle(b.key)]}
-        {...containerPan(b.key, (dir) => moveBundle(b.key, dir)).panHandlers}
+        {...containerPan(b.key, (dir) => moveBundleVisible(b.key, dir)).panHandlers}
         {...(customOrder ? reorderTouchProps(b.key) : {})}
         {...rowLayoutProps(b.key)}
       >
@@ -1356,7 +1418,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
             // Reorder (custom order only): hold 2 s to lift, drag to sort. The
             // gesture lives on the container wrapper via containerPan/reorderTouch.
             const tid = `t:${e.gs}`;
-            const moveThis = (dir: -1 | 1) => moveTopic(e.gs, dir);
+            const moveThis = (dir: -1 | 1) => moveTopicVisible(e.gs, dir);
             if (collapsed.has(tid)) {
               return (
                 <Animated.View
@@ -2026,7 +2088,10 @@ const styles = StyleSheet.create({
   },
   // "Required" label inside a core card — green.
   requiredTag: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.6, color: GREEN },
-  lockCaption: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.2, color: GREEN, marginRight: 3, textAlign: 'right' },
+  // flexShrink so on a narrow phone (~360 dp) the caption ellipsizes instead
+  // of pushing the LOADED/UNLOADED pill + STUDY icon past the card edge — the
+  // pill is ~30 px wider than the 42 px deck icon it replaced (2026-09-13).
+  lockCaption: { flexShrink: 1, fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.2, color: GREEN, marginRight: 3, textAlign: 'right' },
   cardTop: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   cardName: { flex: 1, fontFamily: fonts.oswaldMedium, fontSize: 16, letterSpacing: 0.2, color: colors.textPrimary },
   // "SPECIALIST" badge appended to a completed topic's name — amber.
