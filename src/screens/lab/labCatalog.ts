@@ -15,6 +15,7 @@
  */
 import type { RootStackParamList } from '../../navigation/types';
 import { WORKSPACES } from './calc/registry';
+import { computeLabRouteMembership } from './labMembership';
 
 /** Which top-level section a category lives under: AUDIO FUNDAMENTALS is the
  *  required part (core labs free, deeper labs `member: true`), TRAINING LAB is
@@ -469,6 +470,26 @@ export function categoryLeaves(cat: LabCategory): LabLeaf[] {
 
 export function getCategory(id: string): LabCategory | undefined {
   return LAB_CATEGORIES.find((c) => c.id === id);
+}
+
+// ── Membership rule, keyed by SCREEN ROUTE (single source of truth) ──────────
+// The SAME rule EarLabScreen paints as a row lock, expressed per screen route,
+// so the deep-link / pendingLink screen gate (withMembershipPreview) can never
+// disagree with the list. Without this a lab could show a 🔒 in the Ear Lab yet
+// open fully via `proaudio://labs/<lab>` (navigation bug hunt 2026-09-14, E1).
+// The derivation lives in ./labMembership (node-testable — no calc import).
+const LAB_ROUTE_MEMBERSHIP = computeLabRouteMembership(LAB_CATEGORIES);
+
+/** True when EVERY catalog appearance of this screen route is members-only —
+ *  so a non-member reaching it by any route (deep link, pendingLink resume, an
+ *  Ear Lab row) should get the preview, never the live lab. */
+export function isMemberOnlyLabRoute(route: string): boolean {
+  return LAB_ROUTE_MEMBERSHIP.get(route)?.memberOnly ?? false;
+}
+
+/** The lab's display name for a screen route (for the preview upgrade sheet). */
+export function labRouteName(route: string): string | undefined {
+  return LAB_ROUTE_MEMBERSHIP.get(route)?.name;
 }
 
 /** Grand total across everything (for the landing subtitle). */

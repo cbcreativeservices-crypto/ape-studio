@@ -113,6 +113,7 @@ import { FoundationsPlaygroundScreen } from '../screens/lab/foundations/Foundati
 import { PublicGlossaryScreen } from '../screens/landing/PublicGlossaryScreen';
 import { PaywallScreen } from '../screens/commercial/PaywallScreen';
 import { AmplitudeLabScreen, withAmplitudeOrientation } from '../screens/lab/amplitude/AmplitudeOrientation';
+import { withMembershipPreview } from '../features/lab/withMembershipPreview';
 import { MicSelectLabScreen } from '../screens/lab/micselect/MicSelectLabScreen';
 import { CableLabScreen } from '../screens/lab/cable/CableLabScreen';
 import { CableInstallLabScreen } from '../screens/lab/cableinstall/CableInstallLabScreen';
@@ -181,6 +182,31 @@ const Gated = {
   EqModule: withAmplitudeOrientation(EqModuleScreen),
   GainModule: withAmplitudeOrientation(GainModuleScreen),
   FoundationsPlayground: withAmplitudeOrientation(FoundationsPlaygroundScreen),
+} as const;
+
+// Members-only Training-Lab gate at the SCREEN (navigation bug hunt 2026-09-14,
+// E1). The Ear Lab arms the free-user preview before it navigates to a locked
+// lab, but a custom-scheme deep link (proaudio://labs/compression) and a
+// pendingLink resume after sign-in both reach the lab screen WITHOUT passing the
+// Ear Lab — so a non-member opened these members-only labs live. Wrapping each
+// members-only lab route that carries a deep-link path (navigation/linking.ts)
+// closes both vectors in one place; the HOC no-ops for members and reads the
+// members-only rule from labCatalog. INVARIANT: any lab given a deep-link path
+// in linkPaths.ts that is members-only per labCatalog MUST be wrapped here too.
+const MemberGated = {
+  HarmonographLab: withMembershipPreview(Gated.HarmonographLab),
+  HarmonicLab: withMembershipPreview(Gated.HarmonicLab),
+  OscillatorLab: withMembershipPreview(Gated.OscillatorLab),
+  NoiseLab: withMembershipPreview(Gated.NoiseLab),
+  EqLab: withMembershipPreview(Gated.EqLab),
+  CompressionLab: withMembershipPreview(Gated.CompressionLab),
+  ReverbLab: withMembershipPreview(Gated.ReverbLab),
+  DelayLab: withMembershipPreview(Gated.DelayLab),
+  MicLab: withMembershipPreview(Gated.MicLab),
+  SpeakerLab: withMembershipPreview(Gated.SpeakerLab),
+  TubeLab: withMembershipPreview(Gated.TubeLab),
+  CableInstallLab: withMembershipPreview(Gated.CableInstallLab),
+  DigitalLab: withMembershipPreview(DigitalLabHomeScreen),
 } as const;
 
 export function RootNavigator() {
@@ -325,18 +351,18 @@ export function RootNavigator() {
       <Stack.Screen name="AudioLearning" component={AudioLearningScreen} options={swipe} />
       <Stack.Screen name="EarLab" component={EarLabScreen} options={swipe} />
       <Stack.Screen name="LabCategory" component={LabCategoryScreen} options={swipe} />
-      <Stack.Screen name="HarmonicLab" component={Gated.HarmonicLab} />
-      <Stack.Screen name="OscillatorLab" component={Gated.OscillatorLab} />
-      <Stack.Screen name="NoiseLab" component={Gated.NoiseLab} />
-      <Stack.Screen name="HarmonographLab" component={Gated.HarmonographLab} />
+      <Stack.Screen name="HarmonicLab" component={MemberGated.HarmonicLab} />
+      <Stack.Screen name="OscillatorLab" component={MemberGated.OscillatorLab} />
+      <Stack.Screen name="NoiseLab" component={MemberGated.NoiseLab} />
+      <Stack.Screen name="HarmonographLab" component={MemberGated.HarmonographLab} />
       {/* The 12 effect labs (native effects path, engineVersion 6). */}
-      <Stack.Screen name="EqLab" component={Gated.EqLab} />
-      <Stack.Screen name="DelayLab" component={Gated.DelayLab} />
-      <Stack.Screen name="ReverbLab" component={Gated.ReverbLab} />
+      <Stack.Screen name="EqLab" component={MemberGated.EqLab} />
+      <Stack.Screen name="DelayLab" component={MemberGated.DelayLab} />
+      <Stack.Screen name="ReverbLab" component={MemberGated.ReverbLab} />
       <Stack.Screen name="ChorusLab" component={Gated.ChorusLab} />
       <Stack.Screen name="FlangerLab" component={Gated.FlangerLab} />
       <Stack.Screen name="PhaserLab" component={Gated.PhaserLab} />
-      <Stack.Screen name="CompressionLab" component={Gated.CompressionLab} />
+      <Stack.Screen name="CompressionLab" component={MemberGated.CompressionLab} />
       <Stack.Screen name="GateLab" component={Gated.GateLab} />
       <Stack.Screen name="LimiterLab" component={Gated.LimiterLab} />
       <Stack.Screen name="DistortionLab" component={Gated.DistortionLab} />
@@ -349,14 +375,14 @@ export function RootNavigator() {
       <Stack.Screen name="FmLab" component={Gated.FmLab} />
       <Stack.Screen name="BinauralLab" component={Gated.BinauralLab} />
       <Stack.Screen name="ModularLab" component={Gated.ModularLab} />
-      <Stack.Screen name="MicLab" component={Gated.MicLab} />
+      <Stack.Screen name="MicLab" component={MemberGated.MicLab} />
       {/* Microphone Selection Lab (owner spec 2026-08-12) — selection &
           characteristics, no audio/engine dependency. */}
       <Stack.Screen name="MicSelectLab" component={Gated.MicSelectLab} />
       <Stack.Screen name="CableLab" component={Gated.CableLab} />
-      <Stack.Screen name="CableInstallLab" component={Gated.CableInstallLab} />
-      <Stack.Screen name="SpeakerLab" component={Gated.SpeakerLab} />
-      <Stack.Screen name="TubeLab" component={Gated.TubeLab} />
+      <Stack.Screen name="CableInstallLab" component={MemberGated.CableInstallLab} />
+      <Stack.Screen name="SpeakerLab" component={MemberGated.SpeakerLab} />
+      <Stack.Screen name="TubeLab" component={MemberGated.TubeLab} />
       <Stack.Screen name="TubeReference" component={TubeReferenceScreen} options={swipe} />
       <Stack.Screen name="TubeCard" component={TubeCardScreen} options={swipe} />
       <Stack.Screen name="CalcLab" component={CalcLabScreen} />
@@ -367,7 +393,7 @@ export function RootNavigator() {
       <Stack.Screen name="CalcWorkflowRun" component={CalcWorkflowRunScreen} />
       <Stack.Screen name="CalcProjects" component={CalcProjectsScreen} />
       <Stack.Screen name="CalcResults" component={CalcResultsScreen} />
-      <Stack.Screen name="DigitalLab" component={DigitalLabHomeScreen} />
+      <Stack.Screen name="DigitalLab" component={MemberGated.DigitalLab} />
       <Stack.Screen name="DigitalModule" component={Gated.DigitalModule} />
       <Stack.Screen name="WaveLab" component={WaveLabHomeScreen} />
       <Stack.Screen name="WaveModule" component={Gated.WaveModule} />
