@@ -389,7 +389,15 @@ export function FinalExamScreen({ navigation, route }: Props) {
   const singleOpts: string[] = !isMatching && Array.isArray(rawOpts) ? (rawOpts as string[]) : [];
   const isMulti = question.question_type === 'multi_select';
   // Whether ANY answerable control will render — drives the M3 Skip fallback.
-  const answerable = isMatching ? !!matching : singleOpts.length > 0;
+  // Parity with QuizScreen (2026-09-14): a matching payload whose arrays are
+  // shape-valid but EMPTY (or with fewer rights than lefts) passes the shape
+  // guard yet renders nothing that can ever reach `nextPairs.length === k`, so
+  // it stranded the learner on the capstone until the 0:00 force-submit — with
+  // no Skip, because `answerable` was only `!!matching`. Served contract is
+  // K lefts ↔ K rights; require that here so the Skip fallback engages instead.
+  const answerable = isMatching
+    ? !!matching && matching.lefts.length > 0 && matching.rights.length >= matching.lefts.length
+    : singleOpts.length > 0;
 
   const singleState = (i: number): AnswerCellState =>
     selIdx === i ? 'selectedBlue' : selIdx !== null ? 'dimmed' : 'default';
@@ -466,7 +474,7 @@ export function FinalExamScreen({ navigation, route }: Props) {
           <StudioButton label="Confirm" variant="success" disabled={multiSel.size === 0} onPress={confirmMulti} />
         )}
 
-        {isMatching && matching && (
+        {isMatching && matching && answerable && (
           <>
             <View style={styles.matchColumns}>
               <View style={styles.matchColumn}>
