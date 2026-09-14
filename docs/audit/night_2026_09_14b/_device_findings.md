@@ -54,3 +54,27 @@ data; combined with the Track-B bug-class sweep (zero animation leaks / SVG-blac
 tree-wide), the shared display is sound. Remaining device targets prioritized to
 labs with INDEPENDENT animation code (synthesis scopes), not repeats of the
 shared FX display.
+
+---
+## SYNTHESIS family (independent Skia scope animation — NOT the FX shared display)
+
+### Oscillator Lab — GRADE A− (frame burst ob1→ob3)
+- Traveling waveform animates SMOOTHLY: saw falling-edge moved ~x150→x440 over
+  2 frames — seamless rightward travel, no jank, no smear. [ANIM ✅]
+- Gradients render perfectly (blue centre → green → amber → red peaks); H1–H12
+  spectrum bars show correct saw 1/n falloff with gradient fill; band-limited
+  Gibbs ripple visible (honest "IDEAL" analytic view). No SVG-black. [IMG ✅]
+- Honesty caption "ANALYTIC MODEL — NOT A MEASUREMENT" present. WAVE/FO/VIEW
+  bezel + dock correct.
+- DEVICE-CONFIRMS the Track-B owner-item: the wave travels RIGHTWARD while the
+  FX signal displays travel leftward — a one-direction-standard consistency call
+  ([color-standard-outranks-reference-looks]), NOT a defect. Owner decision.
+
+## Animation-architecture coverage (device ground truth)
+Three distinct animation architectures now device-motion-verified smooth +
+gradient-correct (no SVG-black, no jank, no smear):
+1. FX LabShell signal display — Gate A−, Compression A (shared by 12 FX labs).
+2. Mic Skia capsule cutaway — FIXED + verified (g2/g5).
+3. Synthesis Skia scope — Oscillator A−.
+Combined with the tree-wide bug-class sweep (0 animation leaks / 0 SVG-black /
+0 conditional hooks in ANY lab source) this establishes animation quality broadly.
