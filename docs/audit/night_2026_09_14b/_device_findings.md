@@ -172,3 +172,18 @@ Oscillator (scope) · Noise (slopes+shimmer) · Harmonic (additive spectrum) ·
 FM (Bessel spectrum) · Modular (signal-flow) · Envelope (ADSR sweep). Every
 distinct synthesis animation architecture motion-captured smooth + gradient-
 correct on device. (7th "Sample Lab" is honestly badged PLANNED.)
+
+## Bundle/Metro status (accuracy note, 2026-09-15)
+Metro confirmed RUNNING on :8081 (`packager-status:running`, 1 listener); the
+device app renders live content, so it is a dev client on this Metro and saved
+source edits Fast-Refresh into the running bundle. Therefore:
+- Animation captures above reflect the LIVE bundle — valid regardless of edits.
+- Code-fix device observations (FX badge shows once on Compression; EnvelopeChart
+  sweep plays normally) reflect Fast-Refreshed edits with GOOD confidence, though
+  not the same ironclad proof as the source-level verification (tsc + suite +
+  read), which is the primary evidence for every code fix this run.
+- Fast Refresh (incremental, on-save) is DISTINCT from a manual RELOAD — only the
+  latter carries the rnscreens/Fabric red-screen risk. The FM legend layout fix
+  was still deferred not for reload risk but because its root cause (parent-width
+  vs LEGEND_H budget) is not certain enough to ship a speculative layout change
+  that must also hold on tablets/other widths I can't test tonight.
