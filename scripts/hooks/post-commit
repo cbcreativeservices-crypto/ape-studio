@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# ---------------------------------------------------------------------------
+# post-commit — auto-append a sync entry to the A <-> ccode channel on EVERY commit.
+# Part of the ape-studio repo. Installed via scripts/hooks + core.hooksPath
+# (see install-sync-hook.sh) so it is version-controlled and survives re-clone.
+#
+# What it does: after each commit it writes a pre-stamped entry (real short-sha,
+# timestamp, commit subject) to the top of docs/CROSS_SESSION_HANDOFF.md, leaving
+# two lines for the session to fill in judgment. This turns "remember to append"
+# from a rule into an automatic side effect of committing.
+#
+# Design notes (read once):
+#  - post-commit, not pre-commit, because the sha only exists after the commit.
+#  - The entry lands in the WORKING TREE (uncommitted); it rides into the NEXT
+#    commit. That one-commit lag is expected and harmless. The hook never amends
+#    or auto-commits (that would rewrite history / break pushes).
+#  - If THIS commit already edited the channel (the session wrote its own entry),
+#    the hook stays silent — no double entries.
+#  - Merge commits are skipped.
+# ---------------------------------------------------------------------------
+set -euo pipefail
+
+CHANNEL="docs/CROSS_SESSION_HANDOFF.md"
+
+ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+cd "$ROOT" || exit 0
+
+# Do nothing if the channel file isn't present (don't create surprise files).
+[ -f "$CHANNEL" ] || exit 0
+
+# Skip merge commits.
+if git rev-parse -q --verify MERGE_HEAD >/dev/null 2>&1; then exit 0; fi
+
+SHA="$(git rev-parse --short HEAD)"
+SUBJECT="$(git log -1 --pretty=%s)"
+STAMP="$(date '+%Y-%m-%d %H:%M')"
+
+# If this commit already touched the channel, the session logged it by hand — don't double up.
+if git diff-tree --no-commit-id --name-only -r HEAD | grep -qx "$CHANNEL"; then exit 0; fi
+
+# If an entry for this sha somehow already exists, don't duplicate.
+if grep -q "· ccode · ${SHA}\b" "$CHANNEL" 2>/dev/null; then exit 0; fi
+
+ENTRY="### ${STAMP} · ccode · ${SHA}
+changed: ${SUBJECT}
+affects other side: <FILL — what A (backend) must re-read or adjust, or \"nothing\">
+needs: <FILL — what you need from A, or \"nothing\">
+"
+
+# Insert directly under the '## LOG' header line (newest on top).
+tmp="$(mktemp)"
+awk -v entry="$ENTRY" '
+  { print }
+  !done && /^## LOG/ { print ""; print entry; done=1 }
+' "$CHANNEL" > "$tmp" && mv "$tmp" "$CHANNEL"
+
+echo "[sync-channel] stub entry for ${SHA} added to ${CHANNEL} — fill the affects/needs lines; it commits with your next change."
