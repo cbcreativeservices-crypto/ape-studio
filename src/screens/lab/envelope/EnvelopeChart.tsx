@@ -127,6 +127,9 @@ export function EnvelopeChart({
   // that no longer exists.
   const shapeKey = `${adsr.attackMs}|${adsr.decayMs}|${adsr.sustain}|${adsr.releaseMs}|${adsr.holdMs}|${adsr.attackShape ?? ''}|${adsr.decayShape ?? ''}`;
   useEffect(() => { stopSweep(); }, [shapeKey, stopSweep]);
+  // Stop the sweep clock on unmount so the withTiming completion callback can't
+  // runOnJS(setPlaying) after teardown (audit 2026-09-14b — benign warning).
+  useEffect(() => () => cancelAnimation(prog), [prog]);
 
   const a11y = `Envelope: attack ${adsr.attackMs} ms, decay ${adsr.decayMs} ms, sustain ${Math.round(adsr.sustain * 100)} percent, release ${adsr.releaseMs} ms, total ${Math.round(total)} ms.${showRise ? ` Rise time 10 to 90 percent ${rise.toFixed(1)} ms.` : ''}${showPeakAvg ? ` Peak ${pk.toFixed(2)}, average ${av.toFixed(2)} of the drawn full scale.` : ''} Illustrative model, not a measurement.`;
   const regions = [
