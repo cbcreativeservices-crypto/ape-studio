@@ -41,6 +41,14 @@ const COPY: Record<CapabilityKey, PermissionCopy> = {
       'measurement library, and never shared automatically.',
     allowLabel: 'ALLOW LOCATION',
   },
+  mic: {
+    title: 'Use the microphone to measure sound?',
+    body:
+      'The live measurement tools read the microphone to show level, spectrum and pitch ' +
+      'in real time. Audio is analyzed on your device and immediately discarded — nothing ' +
+      'is recorded, stored, or uploaded. The microphone runs only while a live tool is open.',
+    allowLabel: 'ALLOW MICROPHONE',
+  },
   photo: {
     title: 'Add a photo of the room?',
     body:

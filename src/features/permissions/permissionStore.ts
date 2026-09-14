@@ -14,11 +14,13 @@
  *                feature and point them to Settings, no nagging.
  *
  * Capabilities: 'camera' (optical Hz counter), 'location' (snapshot GPS),
- * 'photo' (snapshot room photo).
+ * 'photo' (snapshot room photo), 'mic' (live measurement capture — copy ready
+ * in PermissionPrompt; wiring into the engine start path is a build-owner
+ * change, see docs/audit/night_2026_09_13/mic_engine_rename.md).
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export type CapabilityKey = 'camera' | 'location' | 'photo';
+export type CapabilityKey = 'camera' | 'location' | 'photo' | 'mic';
 export type AskMode = 'ask' | 'always' | 'never';
 
 const KEY = (c: CapabilityKey) => `ape:perm:${c}`;
@@ -49,7 +51,7 @@ export async function setAskMode(cap: CapabilityKey, mode: AskMode): Promise<voi
 /** Settings "Reset permission prompts" — clears every remembered choice so the
  *  explainer shows again (the OS grant itself is untouched). */
 export async function resetAskModes(): Promise<void> {
-  for (const c of ['camera', 'location', 'photo'] as CapabilityKey[]) {
+  for (const c of ['camera', 'location', 'photo', 'mic'] as CapabilityKey[]) {
     delete cache[c];
     try {
       await AsyncStorage.removeItem(KEY(c));
