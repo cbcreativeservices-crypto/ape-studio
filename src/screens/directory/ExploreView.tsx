@@ -251,7 +251,7 @@ export function ExploreView({
 
       {busy ? (
         <Loading label="Searching the directory…" />
-      ) : visibleRows.length === 0 && !err ? (
+      ) : err ? null : visibleRows.length === 0 ? (
         <EmptyState
           title="No members match yet"
           lines={[

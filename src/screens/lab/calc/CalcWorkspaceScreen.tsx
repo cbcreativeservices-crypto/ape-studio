@@ -98,8 +98,9 @@ export function CalcWorkspaceScreen() {
   // Compute once per (function, values) — NOT on every keystroke's re-render.
   const { outputs, steps, table, computeError } = useMemo(() => runCompute(fn, values), [fn, values]);
 
-  // ---- Capped-calc gate (owner 2026-08-13): FREE/LAPSED accounts get 10
-  // calculation OUTPUTS per rolling week (server-enforced via calc_consume).
+  // ---- Capped-calc gate (owner 2026-08-13): FREE/LAPSED accounts get 5
+  // calculation OUTPUTS per rolling week (server-enforced via calc_consume;
+  // allowance set to 5 by the owner 2026-09-01, see calcUsage.CALC_WEEKLY_LIMIT).
   // Academy is unlimited; anonymous guests must sign in. The result is hidden
   // behind a CALCULATE button so there is one countable trigger per calculation.
   const { entitlement, commercialMode, resolved } = useEntitlement();
@@ -127,7 +128,7 @@ export function CalcWorkspaceScreen() {
   // Editing any input re-arms the CALCULATE button; re-tapping the SAME inputs
   // shows the already-revealed answer without spending another credit.
   const inputSig = useMemo(() => JSON.stringify({ f: fn?.key ?? '', raw, unitIdx }), [fn, raw, unitIdx]);
-  // Load the current week's usage once for the "# / 10" counter.
+  // Load the current week's usage once for the "# / N" counter.
   useEffect(() => {
     if (!capped) return;
     let alive = true;
