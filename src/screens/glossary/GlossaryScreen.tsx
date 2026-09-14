@@ -3533,23 +3533,20 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(180,91,255,0.14)',
     alignItems: 'center',
     justifyContent: 'center',
+    // Oswald caps sit low in their line box; paddingBottom shrinks the centering
+    // area at the bottom so the flex-centered Σ lifts to sit optically centered
+    // (deterministic, unlike transform/margin on a flex child). Tuned on device.
+    paddingBottom: 2,
     // Inline views sit on the baseline; nudge down slightly so the box centers on
     // the x-height of the surrounding definition text.
     transform: [{ translateY: 3 }],
   },
   calcSigmaChar: {
     fontFamily: fonts.oswaldSemiBold,
-    fontSize: 11,
+    fontSize: 12,
+    lineHeight: 12,
     color: colors.purple,
-    // Fill the box's inner area (16 − 2×1 border) and center within it. A fixed
-    // height + textAlignVertical:center centers the lone glyph on Android far more
-    // reliably than centering a tight line box (which left it bottom-heavy);
-    // includeFontPadding:false removes the extra descent gap that pushed it down.
-    width: 14,
-    height: 14,
-    lineHeight: 14,
     textAlign: 'center',
-    textAlignVertical: 'center',
     includeFontPadding: false,
   },
   // Disambiguation chooser sheet.
