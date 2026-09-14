@@ -40,12 +40,12 @@ Status: ▶ in progress · ✅ done · ⏭ skipped (see blockers)
 
 | Group | Labs | Track B (code) | Track A (device) |
 |---|---|---|---|
-| FX-rack | Compression, EQualizer, Delay, Reverb, Chorus, Flanger, Phaser, Gate, Limiter, Distortion, Phase, Stereo | ▶ | ▶ |
-| Synthesis | Oscillator, Noise, Harmonic, FM, Modular, Envelope | — | — |
-| Mic/Speaker | Mic Principles (10 scenes), Speaker Coverage, Mic Selection | ▶ (capsule FIXED) | ▶ |
-| Fundamentals-visual | Amplitude, Foundations, Foundations Playground, Wave Physics, Digital, Meter/Visual Analysis, Signal Chain, Signal Detective, Gain | — | — |
-| Connectors | Cable Fundamentals, Connector Select, Cable Install, Patchbay | — | — |
-| Module-shell | Amplifier (8), Ear Training, Tuning, Beginning Mixing (16), Advanced Mixing (20), EQ Lab, Bass, Speech, De-Esser, Tube Reference | — | — |
+| FX-rack | (12 labs) | ✅ A (dup badge FIXED) | ▶ Gate A- |
+| Synthesis | (6 labs) | ✅ A (2 safe fixes) | — |
+| Mic/Speaker | (3 labs) | ✅ A (capsule FIXED; POLAR collider owner-item) | ✅ capsule g2/g5 |
+| Fundamentals-visual | (Amplitude, Foundations x2, Wave, Digital, Meter, SignalChain, Gain) | ✅ A (waterfall MAJOR FIXED) | — |
+| Connectors | (4 labs) | ✅ A all four | — |
+| Module-shell | (10 labs) | ✅ A (Bass wavelength MAJOR FIXED) | — |
 | Calc | Calculator Lab (163) | — | — |
 
 ## Findings index (per-lab files)

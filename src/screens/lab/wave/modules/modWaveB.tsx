@@ -1082,7 +1082,8 @@ type EchoPreset = {
 };
 
 // Blurbs quote the round-trip time to the far wall (2·d ÷ 343 m/s): past
-// ~80–100 ms the ear stops fusing the reflection and hears a SEPARATE echo.
+// ~50 ms (the Haas fusion limit the rest of this module uses) the ear stops
+// fusing the reflection and hears a SEPARATE echo.
 const ECHO_PRESETS: (EchoPreset & { blurb: string })[] = [
   { key: 'canyon', label: 'CANYON 60 m', w: 60, h: 30, boundary: ['concrete', 'concrete', 'concrete', 'concrete'], blurb: 'Rock 60 m away: the round trip takes ~350 ms — a full, distinct HELLO…hello. The classic echo.' },
   { key: 'gym', label: 'GYM 24 m', w: 24, h: 15, boundary: ['concrete', 'glass', 'wood', 'concrete'], blurb: 'Hard walls 24 m apart: ~140 ms round trip — a slap-back you clearly hear as a repeat, not as space.' },
