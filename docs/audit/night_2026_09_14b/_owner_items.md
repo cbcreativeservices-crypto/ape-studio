@@ -27,3 +27,13 @@ Real observations that need YOUR judgment (design/copy/pedagogy), left unchanged
   direction/amount but NOT Q, so "✓ CORRECTED" can show while the amber curve
   still has residual shoulders (visual vs verdict can mildly disagree). Owner
   glance.
+
+## Module-shell + Connectors (landed 2026-09-15)
+- Bass 2nd CheckQuestion wrongHint hard-codes E-string numbers (shows on any string).
+- Connector Selection roster: 22 families built vs brief's "20" — decide count.
+- Patchbay: tablet tap-target fix unverified on a real tablet (credit-bearing lab).
+- Amplifier mod2 BJT in=COLLECTOR/out=EMITTER power-flow simplification.
+- EQ FindFrequency L4 judges freq+gain, not Q.
+- Advanced Mixing pagesAdvD:356 "shelf" should read "band/boost" (peaking filter).
+- Tube Reference stale doc comments (30/10) + dead TubeGlyph + Image-404 failReason.
+- Speech doc-comment "Ten visual modules" (ships 11).

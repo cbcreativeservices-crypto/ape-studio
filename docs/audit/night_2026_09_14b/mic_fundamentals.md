@@ -77,14 +77,31 @@ Overall infrastructure is strong: a `__DEV__` guard (MicPrinciplesLabScreen.tsx:
 
 ---
 
-## Mic Selection — `src/screens/lab/micselect/**`
-_(pending sub-agent audit — folded in below)_
+## Mic Selection — `src/screens/lab/micselect/**` — GRADE A-
+**SVG-black: NOT PRESENT — zero react-native-svg; all Skia.** No animation anywhere (no timers/loops/derived values) → no leaks, no per-frame cost; all geometry in `useMemo`.
+- `MicSelectLabScreen.tsx` — A-. GOOD: guest-rule gate treats a not-yet-resolved tier as non-guest so signed-in users resume (963-970); `useShuffledRows` anti-gaming; `verdictFor` encodes OUTCOME not raw pickup (273-280); textbook polar math; unusually complete a11y.
+  - **[LAYOUT] MINOR (owner-decision, device-verify) — MicSelectLabScreen.tsx:308-321 — PatternsStep's six source labels (width 88, two lines) are placed at computed x/y with no collision avoidance on a ~200-240px plot; adjacent sources (0° WANTED vs 38° Audience) can overlap and edge labels can clip the `overflow:hidden` stageBox on narrow phones.** Fix: shrink font, radial-outward offset, or half-plane left/right anchoring.
+  - **[GATE] MINOR (owner-decision) — MicSelectLabScreen.tsx:22 & micArt.tsx:14 — imports Skia statically with NO skiaGate/VizUnavailableCard, unlike the rest of the group.** Moot in the current app (the route is wrapped by `withAmplitudeOrientation`, which also imports Skia statically, so a pre-Skia client white-screens at boot first) — inconsistency only, no new failure mode.
+- `micArt.tsx` — A. GOOD: `MicVisual` shows remote photo, **falls back to code-drawn `MicArt` on error/null URL — never a blank** (asset-resolution risk fully absorbed); `zoomable={false}` guard prevents button-in-button on web. No findings.
+- `micDrawings.tsx` — A. Canonical HandheldMic/CondenserMic, memoized, Skia `BlurMask` (not feGaussianBlur). No findings.
+- `micImages.ts` — A-. **[ASSET] MINOR (owner-decision) — micImages.ts:14-27 — 12 remote Supabase bucket WebP URLs; static audit can't re-verify the network. Risk mitigated by the MicArt fallback (missing photo → code-art, never a crash/blank). Owner spot-check if any bucket files were renamed since 2026-08-17.**
+- `micSelectData.ts` — A. Strong honesty ("every curve is fictional but realistic — read the SHAPE, not a brand"; no brands; spec-honesty voice throughout); Locker exercise verified solvable (≥9 achievable); challenge answers pedagogically correct. No typos.
 
-## Amplitude — `src/screens/lab/amplitude/**`
-_(pending sub-agent audit)_
+## Amplitude — `src/screens/lab/amplitude/**` — GRADE A-
+**SVG-black: ZERO instances — all Skia + expo-linear-gradient.** Asset refs resolve (Bravura.otf present; levelColor SSoT exports; nav routes; lab keys).
+- `AmplitudeOrientation.tsx` (1303 lines) — A-. GOOD: `LEARNING CONVENTION` + `HONESTY_LINE` ("Illustrative training graphics — not live measurements") present; non-colour cues everywhere; RampCheck (3 retrieval trials) replaces self-report "UNDERSTOOD" — strengthens §1.7. All colour from the SSoT.
+  - **[COPY] MINOR (owner-decision) — AmplitudeOrientation.tsx:582/655/906 — a11y/label copy says "dark blue" for the lowest level, but `heatColor(0)` = `#000000` (SSoT fades bottom 10% to black), so the gradient bar's leftmost slice / arrow low end / spectrogram silence floor render near-black.** Cosmetic (only ~first 2% is near-black). The black silence-floor is the owner-ruled standard — reword copy to "deep blue/black for silence"; do NOT change `heatColor`.
+  - **[CORRECTNESS] SAFE-FIX (optional) — AmplitudeOrientation.tsx:728 — `CheckRta` finds the tallest bar via float-equality `h === 0.92`; fragile if the H array is edited. Use `Math.max(...H)`.**
 
-## Foundations — `src/screens/lab/foundations/**`
-_(pending sub-agent audit)_
+## Foundations — `src/screens/lab/foundations/**` — GRADE A / A-
+**SVG-black: ZERO instances — all Skia + expo-linear-gradient.** Clocks confirmed leak-free (frame callbacks `setActive(running)`-gated; audio/timers torn down on blur). All static geometry in `useMemo`; only moving paths in worklets.
+- `skiaGate.ts` — A. Correct native probe; web branch gates on `globalThis.CanvasKit` (real sharp-edge fix); inline-require. Honest degrade path.
+- `units.ts` — A. Pure data, index-keyed `'0'…'13'` immutable, count kept honest by the screen's dev guard.
+- `bits.tsx` — A. `CheckQuestion` shuffle + `solvedRef` synchronous double-credit guard; `DragSlider` full adjustable a11y; `VizUnavailableCard` honest fallback.
+- `viz.tsx` (3259 lines) — A. Disciplined; physics kept honest in shape (p ∝ cos(ωt−kx); ωₙ=n·ω₀ phase-lock). Minor non-defect: `RateComparatorView.makeSide()` calls `useDerivedValue` twice via a helper (stable hook order; would break only if a 3rd side were added conditionally). DEVICE-ONLY: all particle/cone/sparkle/orbit motion.
+- `FoundationsCourseScreen.tsx` (2393 lines) — A-. GOOD: every rack has `StageFallback`→`VizUnavailableCard`; engine-version gating honest (additive v3 / stereo v5 / fx v6 each show "needs newer dev build", no fabricated stand-in); `useCourseTone` teardown correct; predict-first M7.
+  - **[COGNITION] MINOR (owner-decision) — FoundationsCourseScreen.tsx:1148-1152 vs viz.tsx:2532 — M9 bezel prints `HEARD = sendDb + sensDb` UNCLAMPED while `EqualLoudnessView.heard()` floors at −60 dB; at the range corner (80 Hz, LEVEL −44) the bezel shows ≈"−68 dB" while the drawn dot sits at the −60 floor.** Clamp the bezel sum to ≥ −60 to match the graph, or leave (teaching point is the SEND−HEARD difference).
+- `FoundationsPlaygroundScreen.tsx` (880 lines) — A. Honesty actively de-overclaimed ("Drive the views, hear the change" since BALANCE/DELAY have no drawn twin); `stop()` calls `fxReset()` so no effect leaks to other labs; display EQ uses the same RBJ math the DSP runs. DEVICE-ONLY: sweep-pause, per-source air modes, crest-under-compression time-lock.
 
 ## Wave Physics — `src/screens/lab/wave/**`
 _(pending sub-agent audit)_

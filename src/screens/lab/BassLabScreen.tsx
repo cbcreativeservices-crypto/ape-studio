@@ -338,8 +338,10 @@ export function BassLabScreen() {
           </Text>
         )}
         <Text style={styles.readRow}>
-          String wave: λ = 2 × vibrating length. Sound wave in air: λ = {SPEED_OF_SOUND}/{soundHz.toFixed(0)} ≈{' '}
-          {airWavelen.toFixed(2)} m
+          {mode === 'fretted'
+            ? 'String wave: λ = 2 × vibrating length (one lobe over fret → bridge).'
+            : `String wave: λ = 2 × full length ÷ ${node.n} (harmonic ${node.n} rings in ${node.n} lobes over the whole string).`}
+          {' '}Sound wave in air: λ = {SPEED_OF_SOUND}/{soundHz.toFixed(0)} ≈ {airWavelen.toFixed(2)} m
         </Text>
       </View>
 
