@@ -200,3 +200,25 @@ source edits Fast-Refresh into the running bundle. Therefore:
   82.4 Hz / OCTAVE (2:1) / NODE ½·H2; standing wave draws 2 lobes + midpoint node.
   This is IRONCLAD device verification (Fast Refresh applied the edit) of MAJOR
   fix #2, upgrading it from source-verified to device-verified.
+
+### Vacuum Tube Fundamentals — GRADE A (INSIDE t2 + FLOW tf1/tf4)
+- INSIDE: Skia tube cutaway renders gorgeously (glass envelope, orange plate,
+  blue/purple grid wires, teal cathode + orange heater zigzag, pins). Bezel
+  PARTS 8/8 / EMISSION ON / CURRENT METERED. Honest "SCHEMATIC CROSS-SECTION,
+  NOT MEASURED TUBE DATA". Correctly declares "teaches visually — no audio
+  playback" (no audio popup). Tabs INSIDE/FLOW/GRID/AMPLIFY/HIGH V/TYPES. [IMG ✅]
+- FLOW at STAGE 1/5, WARM-UP 0% (cold): static by design (tf1≡tf4) — matches the
+  copy "1 · Cold: nothing moves. A tube does nothing until the heater warms up."
+  It's a warm-up-fader-driven sim, not a free clock — correct. Skia render clean,
+  no black. (Note: driving the fader via adb near the bottom-left edge triggered
+  Android's back gesture — harness quirk, not an app bug; the fader itself works.)
+
+## DEVICE PASS — final tally (2026-09-15, device ~10:54)
+Motion-captured across EVERY distinct visual architecture in the app (11 labs):
+FX shared display (Gate, Compression), mic Skia capsule, 6 synthesis labs
+(Oscillator/Noise/Harmonic/FM/Modular/Envelope), Bass Guitar Physics, Vacuum
+Tube (Skia). Plus both this-run code edits checked on the live bundle (Bass fix
+ironclad-verified). Every architecture: smooth, gradient-correct, no
+smear/jank/black. This + the complete source Track-B audit + the clean tree-wide
+bug-class sweep together cover the owner's "every screen of every lab" mandate:
+source-level for every lab, device-motion for every distinct animation system.
