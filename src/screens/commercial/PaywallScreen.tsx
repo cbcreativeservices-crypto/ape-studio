@@ -10,7 +10,7 @@
  * iapProducts.ts. Owner setup: docs/APE_IAP_PLAN_2026_08_21.md.
  */
 import { Fragment, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { GlassButton } from '../../components/GlassButton';
@@ -36,7 +36,7 @@ const PLANS: Plan[] = [
 
 export function PaywallScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
-  const { refreshEntitlement, isMember, resolved } = useEntitlement();
+  const { refreshEntitlement, isMember, resolved, entitlement } = useEntitlement();
   const [selected, setSelected] = useState<Plan['id']>('annual');
   const [busy, setBusy] = useState(false);
   // Whether in-app purchasing is usable in THIS build (native module present +
@@ -45,25 +45,61 @@ export function PaywallScreen({ navigation }: Props) {
 
   useEffect(() => {
     let alive = true;
+    const welcome = () => {
+      Alert.alert('Welcome to Academy', 'Your Academy access is active. Enjoy!', [
+        {
+          text: 'Great',
+          // DESTINATION THROUGH PURCHASE (2026-09-06): a deep link the user
+          // followed into locked content is resumed once they have paid,
+          // instead of dropping them back wherever the paywall opened.
+          onPress: () => {
+            const pending = consumePendingLink();
+            if (!(pending && navigateToPath(pending))) navigation.goBack();
+          },
+        },
+      ]);
+    };
+    // Reflect a server-verified purchase in the local entitlement. The MONEY
+    // has already moved and the server has already written the row — so a
+    // failed refresh here must never read as a failed purchase, and must never
+    // strand the buyer on the spinner (error-triad audit 2026-09-13, stranding
+    // #1: the old bare `.then` left `busy` spinning forever when getSession
+    // rejected right after a charged purchase). refreshEntitlement no longer
+    // rejects; FALSE means "read failed, tier kept" → offer an honest retry.
+    const reflectPurchase = () => {
+      refreshEntitlement()
+        .catch(() => false) // belt-and-braces; the provider guards internally
+        .then((ok) => {
+          if (!alive) return;
+          setBusy(false);
+          if (ok) {
+            welcome();
+            return;
+          }
+          Alert.alert(
+            // DRAFT COPY — owner ratifies
+            'Purchase complete',
+            // DRAFT COPY — owner ratifies
+            'Your payment went through and your membership is recorded. We couldn’t refresh your access on this device yet — check your connection and retry.',
+            [
+              {
+                text: 'Retry', // DRAFT COPY — owner ratifies
+                onPress: () => {
+                  setBusy(true);
+                  reflectPurchase();
+                },
+              },
+              // Leaving is safe: the entitlement is on the server and the next
+              // boot read / auth event picks it up.
+              { text: 'Later', style: 'cancel', onPress: () => navigation.goBack() }, // DRAFT COPY — owner ratifies
+            ],
+          );
+        });
+    };
     void initPurchases({
       onSuccess: () => {
         // Server verified the receipt + wrote the entitlement — reflect it now.
-        void refreshEntitlement().then(() => {
-          if (!alive) return;
-          setBusy(false);
-          Alert.alert('Welcome to Academy', 'Your Academy access is active. Enjoy!', [
-            {
-              text: 'Great',
-              // DESTINATION THROUGH PURCHASE (2026-09-06): a deep link the user
-              // followed into locked content is resumed once they have paid,
-              // instead of dropping them back wherever the paywall opened.
-              onPress: () => {
-                const pending = consumePendingLink();
-                if (!(pending && navigateToPath(pending))) navigation.goBack();
-              },
-            },
-          ]);
-        });
+        reflectPurchase();
       },
       onError: (message) => {
         if (!alive) return;
@@ -111,20 +147,94 @@ export function PaywallScreen({ navigation }: Props) {
     });
   };
 
+  // Restore is THREE honest states, never silent (Apple 3.1.1 restore control;
+  // error-triad audit 2026-09-13 — the old boolean asserted "no previous
+  // purchase was found" on a network failure, and the old catch just stopped
+  // the spinner with no message).
   const onRestore = () => {
     setBusy(true);
     restorePurchases()
-      .then(async (any) => {
-        if (any) await refreshEntitlement();
+      .then(async (result) => {
+        let refreshed = true;
+        if (result === 'restored') refreshed = await refreshEntitlement().catch(() => false);
+        setBusy(false);
+        switch (result) {
+          case 'restored':
+            Alert.alert(
+              'Purchases restored',
+              refreshed
+                ? 'Your Academy access has been restored.'
+                : // DRAFT COPY — owner ratifies
+                  'Your previous purchase was verified and your membership is recorded. We couldn’t refresh your access on this device yet — it will unlock shortly, or restart the app.',
+              [{ text: 'Great', onPress: () => navigation.goBack() }],
+            );
+            return;
+          case 'none':
+            // The store ANSWERED and holds nothing — the only case this copy is true.
+            Alert.alert('Nothing to restore', 'No previous Academy purchase was found for this store account.');
+            return;
+          case 'unavailable':
+            Alert.alert(
+              'Purchasing unavailable',
+              // DRAFT COPY — owner ratifies
+              'In-app purchases aren’t available in this build yet. Please update the app and try Restore again.',
+            );
+            return;
+          default:
+            Alert.alert(
+              // DRAFT COPY — owner ratifies
+              'Restore didn’t finish',
+              // DRAFT COPY — owner ratifies
+              'We couldn’t reach the store to check your purchases — check your connection and try again. If you were charged, your purchase is safe.',
+            );
+        }
+      })
+      .catch(() => {
         setBusy(false);
         Alert.alert(
-          any ? 'Purchases restored' : 'Nothing to restore',
-          any ? 'Your Academy access has been restored.' : 'No previous Academy purchase was found for this store account.',
-          any ? [{ text: 'Great', onPress: () => navigation.goBack() }] : undefined,
+          // DRAFT COPY — owner ratifies (same strings as the store-unreachable case)
+          'Restore didn’t finish',
+          'We couldn’t reach the store to check your purchases — check your connection and try again. If you were charged, your purchase is safe.',
         );
-      })
-      .catch(() => setBusy(false));
+      });
   };
+
+  // Manage/Cancel route (Play "Subscriptions" checklist item; Apple parity).
+  // Shown only to users with an active or lapsed sub-capable entitlement — a
+  // quiet link, not a sales control. The Play deep link takes an optional
+  // `sku`; the client cannot know WHICH sub the user holds (monthly/annual —
+  // the entitlement row doesn't say), so we link the app's subscription list
+  // via `package` and Play shows this app's subs. Package mirrors app.json
+  // android.package.
+  const onManage = () => {
+    const url =
+      Platform.OS === 'ios'
+        ? 'itms-apps://apps.apple.com/account/subscriptions'
+        : 'https://play.google.com/store/account/subscriptions?package=com.cbcreativeservices.apestudio';
+    Linking.openURL(url).catch(() => {
+      Alert.alert(
+        // DRAFT COPY — owner ratifies
+        'Manage subscription',
+        // DRAFT COPY — owner ratifies
+        'We couldn’t open your app-store subscription settings. Open the App Store or Play Store app and look under Subscriptions.',
+      );
+    });
+  };
+
+  // Terms/Privacy live on the academy site (web/app/terms, web/app/privacy) —
+  // required beside the purchase controls (Apple 3.1.2 / Play Subscriptions).
+  const openPolicy = (path: 'terms' | 'privacy') => {
+    Linking.openURL(`https://www.proaudiotrainingacademy.com/${path}`).catch(() => {
+      Alert.alert(
+        // DRAFT COPY — owner ratifies
+        'Page unavailable',
+        // DRAFT COPY — owner ratifies
+        `We couldn’t open the page — visit proaudiotrainingacademy.com/${path} in your browser.`,
+      );
+    });
+  };
+
+  const showManage = resolved && (entitlement === 'academy' || entitlement === 'lapsed');
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
@@ -206,6 +316,26 @@ export function PaywallScreen({ navigation }: Props) {
             2026-08-21 made it the ONE place the end-of-year deadline appears). */}
         <Text style={styles.betaNote}>{COPY.betaPricingNote}</Text>
 
+        {/* One consolidated renewal/legal line (owner 2026-08-21 — merged the
+            two near-duplicate app-store notes). MOVED ABOVE the buy button
+            2026-09-13 (string unchanged): the auto-renewal disclosure must be
+            visible BEFORE the purchase control (Apple 3.1.2 / Play subs). */}
+        <Text style={styles.legal}>
+          Secure in-app purchase. Subscriptions renew automatically unless cancelled at least 24 hours before the
+          period ends — manage or cancel anytime in your app-store settings.
+        </Text>
+        {/* Terms/Privacy beside the purchase decision (store checklist). */}
+        <View style={styles.policyRow}>
+          <Pressable onPress={() => openPolicy('terms')} accessibilityRole="link" hitSlop={8}>
+            {/* DRAFT COPY — owner ratifies */}
+            <Text style={styles.policyLink}>Terms of Use</Text>
+          </Pressable>
+          <Text style={styles.policyDot}>·</Text>
+          <Pressable onPress={() => openPolicy('privacy')} accessibilityRole="link" hitSlop={8}>
+            {/* DRAFT COPY — owner ratifies */}
+            <Text style={styles.policyLink}>Privacy Policy</Text>
+          </Pressable>
+        </View>
         {busy ? (
           <View style={styles.busyWrap}>
             <ActivityIndicator color={colors.amber} accessibilityLabel="Working, please wait" />
@@ -223,12 +353,12 @@ export function PaywallScreen({ navigation }: Props) {
         <Pressable onPress={busy ? undefined : onRestore} accessibilityRole="button" hitSlop={8}>
           <Text style={styles.restore}>Restore purchases</Text>
         </Pressable>
-        {/* One consolidated renewal/legal line (owner 2026-08-21 — merged the
-            two near-duplicate app-store notes). */}
-        <Text style={styles.legal}>
-          Secure in-app purchase. Subscriptions renew automatically unless cancelled at least 24 hours before the
-          period ends — manage or cancel anytime in your app-store settings.
-        </Text>
+        {showManage && (
+          <Pressable onPress={onManage} accessibilityRole="link" hitSlop={8}>
+            {/* DRAFT COPY — owner ratifies */}
+            <Text style={styles.manage}>Manage subscription</Text>
+          </Pressable>
+        )}
       </ScrollView>
     </View>
   );
@@ -316,6 +446,31 @@ const styles = StyleSheet.create({
   radioDot: { width: 11, height: 11, borderRadius: 6, backgroundColor: colors.amber },
 
   busyWrap: { height: 54, alignItems: 'center', justifyContent: 'center' },
+  // Terms/Privacy pair above the buy button — same quiet weight as `legal` so
+  // it reads as disclosure, not as a competing action.
+  policyRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: -6,
+  },
+  policyLink: {
+    fontFamily: fonts.barlowSemiBold,
+    fontSize: 12,
+    color: colors.textSub,
+    textDecorationLine: 'underline',
+    paddingVertical: 4,
+  },
+  policyDot: { fontFamily: fonts.barlowRegular, fontSize: 12, color: colors.textMuted },
+  // Quiet manage/cancel route for existing (active or lapsed) members.
+  manage: {
+    fontFamily: fonts.barlowSemiBold,
+    fontSize: 13,
+    color: colors.textSub,
+    textAlign: 'center',
+    paddingVertical: 6,
+  },
   restore: {
     fontFamily: fonts.barlowSemiBold,
     fontSize: 13,

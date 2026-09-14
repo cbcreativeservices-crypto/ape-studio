@@ -196,29 +196,48 @@ export async function buyPlan(planId: PlanId): Promise<void> {
 }
 
 /**
- * Restore previous purchases (App Store requirement). Re-validates each held
- * purchase server-side and finishes it; returns true if at least one academy
- * entitlement was (re)granted.
+ * Outcome of a restore attempt. TYPED, not boolean (error-triad audit
+ * 2026-09-13): the old `false` meant BOTH "no prior purchase" and "the store /
+ * validator threw", and the paywall then asserted "no previous purchase was
+ * found" to a member who was merely offline — a dishonest state.
+ *  - 'restored'    at least one academy purchase re-validated and (re)granted
+ *  - 'none'        the store answered and holds no academy purchase — genuine empty
+ *  - 'error'       the store or the validation call failed — retryable, NOT "none"
+ *  - 'unavailable' IAP native module missing in this build (needs a rebuild)
  */
-export async function restorePurchases(): Promise<boolean> {
+export type RestoreResult = 'restored' | 'none' | 'error' | 'unavailable';
+
+/**
+ * Restore previous purchases (App Store requirement). Re-validates each held
+ * purchase server-side and finishes it. Never rejects — every failure maps to
+ * a RestoreResult the UI can state honestly.
+ */
+export async function restorePurchases(): Promise<RestoreResult> {
   const iap = getIap();
-  if (!iap) return false;
+  if (!iap) return 'unavailable';
   try {
     const purchases = (await iap.getAvailablePurchases()) as IapPurchase[];
-    let any = false;
+    let restored = false;
+    // An academy purchase WAS found but validation failed (offline, edge
+    // function down) — that is an error to retry, never "nothing to restore".
+    let validationFailed = false;
     for (const p of purchases) {
-      if (p.productId && planIdForSku(p.productId) && (await validateWithServer(p))) {
-        any = true;
+      if (!p.productId || !planIdForSku(p.productId)) continue;
+      if (await validateWithServer(p)) {
+        restored = true;
         try {
           await iap.finishTransaction({ purchase: p, isConsumable: false });
         } catch {
           /* ignore finalize error on restore */
         }
+      } else {
+        validationFailed = true;
       }
     }
-    return any;
+    if (restored) return 'restored';
+    return validationFailed ? 'error' : 'none';
   } catch (e) {
     console.warn('[iap] restore failed:', (e as Error).message);
-    return false;
+    return 'error';
   }
 }

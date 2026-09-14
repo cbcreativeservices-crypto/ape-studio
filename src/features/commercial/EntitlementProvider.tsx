@@ -169,9 +169,15 @@ type EntitlementContextValue = {
   /** DEV-ONLY overrides (persisted). No-ops outside __DEV__. */
   setCommercialMode: (on: boolean) => void;
   setEntitlement: (state: Entitlement) => void;
-  /** Re-read the server entitlement NOW (e.g. after redeeming an access code).
-   *  Real read on every build — unlike setEntitlement, which is dev-only. */
-  refreshEntitlement: () => Promise<void>;
+  /** Re-read the server entitlement NOW (e.g. after redeeming an access code
+   *  or completing a purchase). Real read on every build — unlike
+   *  setEntitlement, which is dev-only. NEVER REJECTS (error-triad audit
+   *  2026-09-13: the un-guarded getSession here stranded three callers).
+   *  Resolves TRUE when a definitive tier was applied (or the refresh was
+   *  moot), FALSE when the read failed and the current tier was kept — a
+   *  caller that just took the user's money branches on this to offer an
+   *  honest retry instead of a spinner forever. */
+  refreshEntitlement: () => Promise<boolean>;
 };
 
 const EntitlementContext = createContext<EntitlementContextValue | null>(null);
@@ -357,25 +363,38 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
   // Re-read the server entitlement on demand (after redeeming an access code, a
   // purchase, etc.). Mirrors the effect's derive logic but is callable anytime.
   // Respects a dev tier override so it doesn't clobber the wordmark toggle.
-  const refreshEntitlement = useCallback(async () => {
-    if (devOverrode.current) return;
-    const { data: sess } = await supabase.auth.getSession();
-    // Same test as the effect above — an ANONYMOUS session is still a guest.
-    if (!isRealAccount(sess.session)) {
-      setEntitlementState('anonymous');
-      return;
+  const refreshEntitlement = useCallback(async (): Promise<boolean> => {
+    if (devOverrode.current) return true; // dev is driving — nothing to refresh
+    // WHOLE BODY GUARDED (error-triad audit 2026-09-13). getSession() here was
+    // the one un-guarded await on the purchase path: a secure-store read error
+    // rejecting RIGHT AFTER a charged purchase propagated up through three
+    // callers (Paywall purchase-success, Paywall restore, Settings redeem) and
+    // left buyers on a spinner forever. This function now never rejects; it
+    // reports FALSE so callers can retry honestly. A failed read still never
+    // downgrades the current tier (see deriveAndApply).
+    try {
+      const { data: sess } = await supabase.auth.getSession();
+      // Same test as the effect above — an ANONYMOUS session is still a guest.
+      if (!isRealAccount(sess.session)) {
+        setEntitlementState('anonymous');
+        return true;
+      }
+      const { data, error } = await supabase
+        .from('entitlements')
+        .select('product, status, expires_at')
+        .eq('product', 'academy');
+      if (error) {
+        // Don't downgrade on a transient read failure (see deriveAndApply).
+        console.warn('[entitlement] refresh read failed, keeping current tier:', error.message);
+        return false;
+      }
+      const tier = academyTierFromRows((data ?? []) as EntRow[]);
+      if (!devOverrode.current) setEntitlementState(tier);
+      return true;
+    } catch (e) {
+      console.warn('[entitlement] refresh threw, keeping current tier:', (e as Error)?.message);
+      return false;
     }
-    const { data, error } = await supabase
-      .from('entitlements')
-      .select('product, status, expires_at')
-      .eq('product', 'academy');
-    if (error) {
-      // Don't downgrade on a transient read failure (see deriveAndApply).
-      console.warn('[entitlement] refresh read failed, keeping current tier:', error.message);
-      return;
-    }
-    const tier = academyTierFromRows((data ?? []) as EntRow[]);
-    if (!devOverrode.current) setEntitlementState(tier);
   }, []);
 
   const setCommercialMode = useCallback((on: boolean) => {
