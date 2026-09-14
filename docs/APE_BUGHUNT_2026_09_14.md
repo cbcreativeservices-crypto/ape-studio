@@ -40,9 +40,19 @@ c781b12e · fe57aac5 (+ this report).
   split), the qrcode-dead fix + long-name invariant hold across 17 hostile
   cases.
 
-## ⚠️ Two OWNER DECISIONS (report-only — not changed)
+## Owner decisions
 
-### E1 · Deep links bypass the members-only Training-Lab gate (HIGH)
+### E1 · Deep links bypass the members-only Training-Lab gate — ✅ RESOLVED (0ac2db84)
+Fixed by a dedicated session (verified + merged here): a `withMembershipPreview`
+HOC wraps the 13 member-only deep-linkable lab routes in RootNavigator and arms
+the same preview/upgrade-sheet the Ear Lab uses, closing BOTH the custom-scheme
+and pendingLink vectors at the screen — with the cold-boot flash held behind a
+blank until entitlement resolves. Membership is one node-testable SSoT
+(`computeLabRouteMembership`). +6 tests; suite 1171. INVARIANT recorded: any new
+members-only lab given a deep-link path MUST be wrapped in MemberGated. Detail in
+memory `deeplink-member-lab-gate-2026-09-14`. Original finding below for record:
+
+
 `src/navigation/linking.ts:66-81` maps ~13 paths straight to member-only labs
 (`labs/compression`, `labs/eq`, `labs/reverb`, …). The membership gate lives
 ONLY in EarLabScreen's locked-row preview; the lab screens themselves carry no
