@@ -12,11 +12,13 @@ state; no builds, no DB writes, no copy ratified.
 
 ## MAJOR bugs fixed (real defects, device- or math-verified)
 
-| # | Lab | Bug | Fix | Commit |
-|---|---|---|---|---|
-| 1 | FX-rack (all 12) | The animated-signal badge rendered TWICE (on-stage + again above DESIGNED RESPONSE) | Removed the duplicate | `956538d1` (device-confirmed `57c6e4f4`) |
-| 2 | Bass Guitar Physics | `λ = 2 × vibrating length` shown in HARMONICS mode too, where λ = 2L/n — printed the fundamental's wavelength while a harmonic sounded | Made the readout mode-aware | `fdc4ce3b` |
-| 3 | Meter — Waterfall CSD (M7) | 0-dB reference used a stale `eqBoostDb` field (model moved to per-band `eqGains`), so an EQ **boost** renormalized the whole display down 12 dB — the exact regression the code's own comment said it fixed | `eqGains: {}` | `5aa9fccc` |
+**All three were also confirmed on the live device bundle (Fast Refresh):**
+
+| # | Lab | Bug | Fix | Commit | Device |
+|---|---|---|---|---|---|
+| 1 | FX-rack (all 12) | The animated-signal badge rendered TWICE (on-stage + again above DESIGNED RESPONSE) | Removed the duplicate | `956538d1` | badge shows once on Compression ✓ |
+| 2 | Bass Guitar Physics | `λ = 2 × vibrating length` shown in HARMONICS mode too, where λ = 2L/n — printed the fundamental's wavelength while a harmonic sounded | Made the readout mode-aware | `fdc4ce3b` | reads `λ = 2 × full length ÷ n` in harmonics mode ✓ |
+| 3 | Meter — Waterfall CSD (M7) | 0-dB reference used a stale `eqBoostDb` field (model moved to per-band `eqGains`), so an EQ **boost** renormalized the whole display down — the exact regression the code's own comment said it fixed | `eqGains: {}` | `5aa9fccc` | +8 dB boost rises as a ridge, rest of range holds ✓ |
 
 Plus the mic-capsule black-smear (found + fixed before this pass, `bddc99c1`) —
 re-confirmed clean by the bug-class sweep and on device.
