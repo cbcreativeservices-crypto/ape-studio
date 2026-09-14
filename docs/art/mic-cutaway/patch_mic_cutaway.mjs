@@ -178,7 +178,15 @@ function extractGroup(src, id) {
 // share this exact viewBox so the overlays register on the base pixel-for-pixel.
 const VIEWBOX = '2 8 300 388';
 const ASPECT = (300 / 388).toFixed(4);
-const wrap = (frag) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${VIEWBOX}">${frag}</svg>`;
+// Each overlay layer is an INDEPENDENT <SvgXml> document at runtime, so it must
+// carry the paint servers it references — gNearC/gNearR/gWave (wave) and gGlow
+// (glow) all live in the base's <defs>. Without shipping those defs in every
+// layer, each url(#…) resolves to nothing and react-native-svg fills the shape
+// OPAQUE BLACK (2026-09-14 device pass: a swinging black smear over the
+// diaphragm, because the wave layer translates). Carrying the full base <defs>
+// in every wrapped layer is cheap (parsed once) and keeps every layer valid.
+const sharedDefs = (svg.match(/<defs>[\s\S]*?<\/defs>/) || [''])[0];
+const wrap = (frag) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${VIEWBOX}">${sharedDefs}${frag}</svg>`;
 
 const gCurrent = extractGroup(svg, 'inducedCurrent');
 const gCoil = extractGroup(svg, 'coilMotion');
