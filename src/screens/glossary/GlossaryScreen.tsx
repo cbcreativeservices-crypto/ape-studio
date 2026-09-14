@@ -874,89 +874,12 @@ function useDots(intervalMs = 400): string {
   return '.'.repeat(n);
 }
 
-/** Header term-count while the corpus pages in — animated so it isn't a frozen
- *  "… Terms" (owner 2026-08-05). */
-function LoadingCount() {
-  const dots = useDots(350);
-  return (
-    <Text style={styles.count}>
-      {dots}
-      <Text> Terms</Text>
-    </Text>
-  );
-}
-
-/** Header term-count that ramps UP from a single digit to the target while the
- *  corpus loads (owner 2026-08-06). Uses equal time per digit-decade (geometric
- *  easing) so the number visibly grows 1→2→3→4→5 digits instead of snapping to
- *  the full total. Holds at the target once the ramp completes. */
-function CountUp({
-  target,
-  // Slower ramp (owner 2026-08-06): +1.5s so the count-up spans more of the
-  // ~3s corpus load instead of finishing well before the list arrives.
-  // Slowed a further 50% (owner 2026-08-07): 3s → 4.5s → 6.75s.
-  durationMs = 6750,
-  style,
-  suffix = ' Terms',
-  onLanded,
-}: {
-  target: number;
-  durationMs?: number;
-  style?: any;
-  suffix?: string;
-  /** Fires ONCE the moment the ramp reaches the final total (owner 2026-08-10)
-   *  — lets the loading popup swap its "#" placeholder for the real number at
-   *  the exact instant this animation lands. */
-  onLanded?: () => void;
-}) {
-  const [val, setVal] = useState(1);
-  const rafRef = useRef<number | null>(null);
-  const startRef = useRef<number | null>(null);
-  const landedRef = useRef(false);
-  const land = () => {
-    if (landedRef.current) return;
-    landedRef.current = true;
-    onLanded?.();
-  };
-  useEffect(() => {
-    // Nothing sensible to ramp toward yet — show the seed digit (no landing).
-    if (!target || target <= 1) {
-      setVal(Math.max(1, target || 1));
-      return;
-    }
-    startRef.current = null;
-    const lnTarget = Math.log(target);
-    const tick = (now: number) => {
-      if (startRef.current == null) startRef.current = now;
-      const p = Math.min(1, (now - startRef.current) / durationMs);
-      // Geometric: exp(ln(target)*p) spends equal wall-time in each order of
-      // magnitude, so single/double/triple digits each get a visible slice.
-      const v = p >= 1 ? target : Math.max(1, Math.round(Math.exp(lnTarget * p)));
-      setVal(v);
-      if (p < 1) rafRef.current = requestAnimationFrame(tick);
-      else land(); // reached the total — signal the popup to reveal it too
-    };
-    rafRef.current = requestAnimationFrame(tick);
-    return () => {
-      if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [target, durationMs]);
-  return (
-    <Text style={style}>
-      {val.toLocaleString()}
-      {suffix}
-    </Text>
-  );
-}
-
 /** Full-width "loading the corpus" panel (owner 2026-08-05) — shown in the term
  *  list area while the ~21k definitions page in, so it never just looks paused. */
 function GlossaryLoading({ count, landed }: { count: number | null; landed: boolean }) {
   const dots = useDots();
-  // Owner 2026-08-10: the amount stays a single "#" until the TOP header count-up
-  // lands on the final total — then, at that exact moment, it becomes the real
-  // number here too. Never show the total before the animation reaches it.
+  // Shows the cached daily total once we have it, otherwise "the full corpus"
+  // (owner 2026-09-14: the header count-up that used to gate this was removed).
   const subject = landed && count != null ? `${count.toLocaleString()} terms` : 'the full corpus';
   return (
     <View style={styles.loadingBox}>
@@ -1065,13 +988,6 @@ export function GlossaryScreen({ route, navigation }: Props) {
   // instant total to display while the full corpus is still streaming in; once
   // loaded we fall through to the exact live visible.length below.
   const [cachedCount, setCachedCount] = useState<number | null>(null);
-  // Whether the header term-count animation has reached its final total (owner
-  // 2026-08-10): the loading popup shows "#" until this flips, then the real
-  // number — synced to the exact frame the top count-up lands. Reset each load.
-  const [countLanded, setCountLanded] = useState(false);
-  useEffect(() => {
-    if (loading) setCountLanded(false);
-  }, [loading]);
   // A deep-linked term (`/glossary/<slug>`) arrives as the initial search text.
   const [search, setSearch] = useState(presetQuery ?? '');
   const searchRef = useRef<TextInput>(null);
@@ -2482,23 +2398,9 @@ ${COPY.glossaryFreeAllowance}`,
           <Text style={styles.sigmaText}>Σ</Text>
         </Pressable>
         <View style={{ flex: 1 }} />
-        {/* Current # of terms, WHITE — labeled "# of Terms" in the title font
-            (user request 2026-07-24). While the corpus is still paging in, show
-            the cached daily total (owner 2026-08-02) in the default ALL/no-search
-            state so the number appears instantly; once loaded, or when a
-            filter/search narrows the set, show the exact live visible.length. */}
-        {!loading ? (
-          <Text style={styles.count}>{`${visible.length.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} ${visible.length === 1 ? 'Term' : 'Terms'}`}</Text>
-        ) : filter === 'all' && !search.trim() && (cachedCount != null || visible.length > 0) ? (
-          // Still paging in: ramp the count UP from a single digit to the target
-          // (cached daily total, or the live loaded count) so it grows through
-          // 1→2→3→4→5 digits instead of snapping to the full number (owner 2026-08-06).
-          <CountUp style={styles.count} target={cachedCount ?? visible.length} onLanded={() => setCountLanded(true)} />
-        ) : (
-          // No cached total and nothing loaded yet — animate dots so it isn't frozen.
-          <LoadingCount />
-        )}
-        <View style={{ width: 10 }} />
+        {/* The term count lives ONLY above the list now (single source of truth).
+            The duplicate header count was removed (owner 2026-09-14) — it could
+            even disagree with the list count during paging. */}
         <HelpDot onPress={glossaryHelp.open} label="Help — using the glossary" />
       </View>
 
@@ -2652,13 +2554,17 @@ ${COPY.glossaryFreeAllowance}`,
             // message used to vanish the instant any term showed, because it only
             // lived in the empty slot). Once loaded, show the result count.
             loading ? (
-              <GlossaryLoading count={cachedCount} landed={countLanded} />
+              <GlossaryLoading count={cachedCount} landed={cachedCount != null} />
             ) : visible.length === 0 ? null : (
               <View style={styles.resultHeaderRow}>
                 <Text style={styles.resultCount}>
                   {selectMode
                     ? `${selectedIds.size} selected`
-                    : `${visible.length} result${visible.length === 1 ? '' : 's'} · ${filterLabel}`}
+                    : filter === 'all' && !search.trim()
+                    ? // Unfiltered: the whole corpus — "N terms" (no redundant "· All").
+                      `${visible.length.toLocaleString()} term${visible.length === 1 ? '' : 's'}`
+                    : // A filter or search is active — these are RESULTS, labeled by what narrowed them.
+                      `${visible.length.toLocaleString()} result${visible.length === 1 ? '' : 's'} · ${filterLabel}`}
                 </Text>
                 {/* SELECT-to-share (owner spec 2026-08-06): pick several terms
                     from the results, then Share Selected as one multi-term share. */}
@@ -3423,7 +3329,6 @@ const styles = StyleSheet.create({
   // Right-justified, NEVER shrinks (flexShrink 0) so it can't be pushed off the
   // right/beveled edge — it stays anchored right and grows inward/leftward as the
   // number gets larger (owner 2026-08-01).
-  count: { flexShrink: 0, textAlign: 'right', fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: colors.textPrimary, marginRight: 8 },
   searchBox: {
     height: 44,
     borderRadius: 6,
@@ -3580,7 +3485,9 @@ const styles = StyleSheet.create({
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 11.5,
     letterSpacing: 1,
-    color: colors.textMuted,
+    // Un-dimmed (owner 2026-09-14): now the single term/results count, so it reads
+    // clearly instead of the old muted grey.
+    color: colors.textSecondary,
     paddingBottom: 8,
     paddingLeft: 2,
   },
