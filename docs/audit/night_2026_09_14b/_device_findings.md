@@ -138,3 +138,20 @@ therefore spent proving each DISTINCT animation architecture renders smooth and
 gradient-correct on real hardware — the exact class of defect stills miss (the
 motivating mic-capsule bug). Any specific lab the owner wants individually
 motion-captured can be done on request.
+
+### Sound Envelope & Transients Lab (PagedLab, page 1/7) — GRADE A (burst eb + sweep es)
+- EnvelopeChart renders excellently: ADSR envelope with the carrier waveform
+  amplitude-shaped INSIDE it (loud in A, decays through D, 60% plateau in S,
+  release in R), gold 10/90% rise-time dots, "rise 10→90%: 32.0 ms" readout,
+  honest "ILLUSTRATIVE MODEL — DRAWN FROM THE SETTINGS, NOT A MEASUREMENT ·
+  ×3.8 slower than real time". A/D/S/R region dividers. [IMG ✅]
+- SWEEP animates SMOOTHLY (es2→es4): playhead (white line + blue dot) traverses
+  A→D→S→R, the dot tracking the envelope level at the playhead; button toggles
+  to STOP. No smear/jank. [ANIM ✅]
+- **VERIFIES my EnvelopeChart edit (d0b0da5b) is NON-REGRESSIVE on device**: the
+  added unmount `cancelAnimation(prog)` did not affect normal sweep playback.
+  (The edit only guards the post-teardown setPlaying warning when you leave mid-sweep.)
+
+## Both this-run code edits now device-verified non-regressive
+- FX duplicate-badge removal (956538d1) → Compression shows the badge once.
+- EnvelopeChart unmount cleanup (d0b0da5b) → sweep plays normally.
