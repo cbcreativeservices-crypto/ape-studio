@@ -875,7 +875,7 @@ function OffAxisSection({ viz, help, wellTop, wellBottom }: SectionProps) {
   );
 }
 
-// ── 5 · Plosives & wind ─────────────────────────────────────────────────────
+// ── 6 · Plosives & wind ─────────────────────────────────────────────────────
 
 function PopSection({ viz, focused, help, wellTop, wellBottom }: SectionProps) {
   const [modeIdx, setModeIdx] = useState(0);
@@ -935,7 +935,7 @@ function PopViz({ viz, width, height, mode, running }: { viz: MsVizModule; width
   return <viz.PopFilterView phase={phase} width={width} height={height} mode={mode} />;
 }
 
-// ── 6 · Handling noise & isolation ──────────────────────────────────────────
+// ── 7 · Handling noise & isolation ──────────────────────────────────────────
 
 // ShockMountView draws at a FIXED 262-px internal height (floor strip and
 // stand-shake readout live at fixed y) — it is the one non-parametric viz, so
@@ -1034,7 +1034,7 @@ function ShockViz({ viz, width, shock, running }: { viz: MsVizModule; width: num
   return <viz.ShockMountView phase={phase} width={width} shockMount={shock} />;
 }
 
-// ── 7 · Stereo techniques ───────────────────────────────────────────────────
+// ── 5 · Stereo techniques ───────────────────────────────────────────────────
 
 function StereoSection({ viz, help, wellTop, wellBottom }: SectionProps) {
   const [techIdx, setTechIdx] = useState(0);

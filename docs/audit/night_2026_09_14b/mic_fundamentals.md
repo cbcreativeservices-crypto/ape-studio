@@ -115,3 +115,29 @@ _(pending sub-agent audit)_
 ## Gain Staging — `src/screens/lab/gain/**`
 ## Signal Chain — `SignalChainLabScreen.tsx`
 _(pending sub-agent audit)_
+
+---
+## Owner-glance items landed (main session, 2026-09-15)
+Safe comment/robustness fixes applied (see _FIXES.md). These remain for owner:
+- **POLAR collision floor (MAJOR, owner-decision):** keep-out geometry still
+  models the RETIRED claves silhouette, not the drawn speaker cabinet. Error is
+  CONSERVATIVE (claves silhouette larger → cabinet held slightly farther than its
+  own edges require; a small unexplained gap, NOT an overlap). Fix = re-derive
+  colliders from CabinetSide path extents + rename constants; then remove dead
+  `Claves`/`buildClaves` drawing code (viz.tsx:465-591) which is coupled to it.
+  NOT done autonomously (couples geometry + dead-code + device verify).
+- POLAR: drawn cabinet radiates its own red→blue glow over the mic pickup field;
+  badge explains only the pickup field. Consider dimming source field / badge note.
+- OFF-AXIS @8kHz bezel cell tinted fixed blue #7fd4ff, not by magnitude via the
+  ramp like every other level cell — confirm intent or use levelColorForDb.
+- Amplitude a11y copy says "dark blue" for the lowest level but heatColor(0)=#000
+  (bottom 10% fades to black per the owner-ruled silence-floor standard). Reword
+  copy to "deep blue/black for silence"; do NOT change heatColor.
+- Foundations M9 bezel prints HEARD=sendDb+sensDb UNCLAMPED while the drawn dot
+  floors at −60 dB; at 80 Hz / −44 the bezel shows ≈−68 while the dot sits at −60.
+- Mic Selection PatternsStep: six source labels placed with no collision
+  avoidance on a ~200-240px plot — can overlap/clip on narrow phones (device-verify).
+- Mic Selection imports Skia statically without skiaGate/VizUnavailableCard
+  (moot today — withAmplitudeOrientation also imports Skia statically — inconsistency only).
+- External bucket deps (12 mic-selection WebP, connector photos): can't re-verify
+  network; MicArt code-drawn fallback absorbs missing mic photos (never blank).

@@ -721,11 +721,12 @@ function CheckPads({ base, onPress, label }: { base: number; onPress: () => void
  *  which is the convention break the student must spot (Q3). */
 function CheckRta({ violate, onPress, label }: { violate: boolean; onPress: () => void; label: string }) {
   const H = [0.3, 0.45, 0.92, 0.55, 0.38, 0.62, 0.28];
+  const peak = Math.max(...H);
   return (
     <Pressable onPress={onPress} style={styles.checkRtaWrap} accessibilityRole="button" accessibilityLabel={label}>
       <View style={styles.checkRtaRow}>
         {H.map((h, i) => {
-          const isTallest = h === 0.92;
+          const isTallest = h === peak;
           const color = violate && isTallest ? levelColor(0.14) : levelColor(h);
           return <View key={i} style={[styles.checkRtaBar, { height: `${Math.round(h * 100)}%`, backgroundColor: color }]} />;
         })}
