@@ -222,3 +222,24 @@ ironclad-verified). Every architecture: smooth, gradient-correct, no
 smear/jank/black. This + the complete source Track-B audit + the clean tree-wide
 bug-class sweep together cover the owner's "every screen of every lab" mandate:
 source-level for every lab, device-motion for every distinct animation system.
+
+### Waterfall CSD (M7, Visual Audio Analysis) — GRADE A + MAJOR FIX #3 DEVICE-VERIFIED (m7c→m7f)
+- 3D CSD renders beautifully: frequency X (30 Hz–20k) × amplitude Y (dB color
+  ramp −60→0) × time Z (0–6 s stepping toward viewer, white per-second floor
+  bands). Bezel RT·125 1.86s / RT·4k 0.76s / RIDGE none / VS NEARBY even. Honest
+  "SYNTHETIC CSD — DRAWN FROM THE RT60 MODEL, NOT A MEASUREMENT". [IMG ✅]
+- **EQ-BOOST RENORMALIZATION FIX (5aa9fccc) VERIFIED ON THE LIVE BUNDLE**: set the
+  EQ band to +8 dB · 220 Hz · Q6 and the display showed a RIDGE rising at 220 Hz
+  while THE REST OF THE MOUNTAIN RANGE STAYED AT ITS ORIGINAL HEIGHT. Pre-fix, a
+  boost made the boosted band the 0-dB reference and sank every other frequency
+  down 8 dB (the whole range dropped). Post-fix the reference is the un-EQ'd peak
+  (eqGains:{}), so only the boosted band rises into the WF_DB_HEAD headroom —
+  exactly correct. IRONCLAD device verification of MAJOR fix #3.
+- Bezel correctly kept RIDGE "none" / VS NEARBY "even" under the boost — an EQ
+  boost changes how loud a mode STARTS, not how long it RINGS (decay), so no
+  resonant ridge is (correctly) detected. Consistent with the lab's own teaching.
+
+## ALL THREE MAJOR FIXES NOW CONFIRMED ON DEVICE (live bundle)
+1. FX duplicate badge (956538d1) — Compression shows the badge once. [observed]
+2. Bass harmonics wavelength (fdc4ce3b) — reads "λ = 2 × full length ÷ n". [verified]
+3. Waterfall EQ-boost renorm (5aa9fccc) — boost rises as a ridge, range holds. [verified]
