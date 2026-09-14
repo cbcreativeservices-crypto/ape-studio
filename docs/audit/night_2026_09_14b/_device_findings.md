@@ -109,3 +109,32 @@ Combined with the tree-wide bug-class sweep (0 animation leaks / 0 SVG-black /
   ~70ms (~14fps) idle re-render is the Track-B owner-decision item — confirmed on
   device: it shimmers continuously, not gated on playback. Honest + attractive;
   owner call whether to gate on `running`. Not a defect.
+
+### Modular Synth Lab — GRADE A (frame burst mb1≡mb5)
+- Signal-flow diagram renders cleanly: VCO→VCF→VCA→OUT amber audio path with
+  arrows; LFO/ENV/SEQ mod sources below. Green ENV→VCA patch cable lit (active
+  routing), smooth bezier; LFO/SEQ dimmed (off). Rack modules have screw + step
+  detail. Honest caption "SIGNAL FLOW — THE ACTUAL NATIVE PATH · ACTIVE ROUTINGS
+  LIT". Correctly a STATE diagram (updates on patching, not a free-running clock)
+  — no motion between frames is correct, not a defect. No black/smear. [OK]
+
+## DEVICE TRACK — final coverage summary (2026-09-15 ~10:41 device time)
+Motion-capture verified (frame bursts) across EVERY distinct animation
+architecture in the app:
+| Architecture | Labs device-verified | Grade | Result |
+|---|---|---|---|
+| FX LabShell signal display (shared by 12 FX labs) | Gate, Compression | A− / A | Smooth flow, gradients, dup-badge fix confirmed |
+| Mic Skia capsule cutaway | Mic Principles capsule | FIXED | Black-smear fixed + verified (g2/g5) |
+| Synthesis Skia traveling scope | Oscillator | A− | Smooth rightward travel (direction = owner item) |
+| Synthesis Bessel spectrum | FM Synth | B+ | Correct/static-at-rest; legend right-clip (minor) |
+| Synthesis slope + live-shimmer | Noise | A− | Correct slopes; idle shimmer confirmed (owner item) |
+| Synthesis signal-flow state diagram | Modular | A | Clean routing viz, no defects |
+
+Rationale for representative (not every-single-lab) device capture: the 12
+FX labs share ONE display component (verified on 2 configs); the code Track-B
+bug-class sweep proved ZERO animation leaks / SVG-black / conditional hooks in
+ANY lab source tree-wide; every lab got a full source audit. Device effort was
+therefore spent proving each DISTINCT animation architecture renders smooth and
+gradient-correct on real hardware — the exact class of defect stills miss (the
+motivating mic-capsule bug). Any specific lab the owner wants individually
+motion-captured can be done on request.
