@@ -2529,13 +2529,32 @@ ${COPY.glossaryFreeAllowance}`,
             loading ? (
               <GlossaryLoading count={cachedCount} landed={cachedCount != null} />
             ) : visible.length === 0 ? null : (
-              <Text style={styles.resultCount}>
-                {filter === 'all' && !search.trim()
-                  ? // Unfiltered: the whole corpus — "N terms" (no redundant "· All").
-                    `${visible.length.toLocaleString()} term${visible.length === 1 ? '' : 's'}`
-                  : // A filter or search is active — these are RESULTS, labeled by what narrowed them.
-                    `${visible.length.toLocaleString()} result${visible.length === 1 ? '' : 's'} · ${filterLabel}`}
-              </Text>
+              <View style={styles.resultHeaderRow}>
+                <Text style={styles.resultCount}>
+                  {filter === 'all' && !search.trim()
+                    ? // Unfiltered: the whole corpus — "N terms" (no redundant "· All").
+                      `${visible.length.toLocaleString()} term${visible.length === 1 ? '' : 's'}`
+                    : // A filter or search is active — these are RESULTS, labeled by what narrowed them.
+                      `${visible.length.toLocaleString()} result${visible.length === 1 ? '' : 's'} · ${filterLabel}`}
+                </Text>
+                {/* Global definition-links toggle (owner 2026-09-14): moved here as
+                    ONE control for the whole glossary — replaces the per-term link
+                    icon that used to sit in every term's title bar. Lit light-blue
+                    when on (matching the linked words), dimmed grey when off. */}
+                <Pressable
+                  onPress={() => setLinksOn(!linksOn)}
+                  hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: linksOn }}
+                  accessibilityLabel={linksOn ? 'Turn glossary definition links off' : 'Turn glossary definition links on'}
+                  style={styles.linksToggle}
+                >
+                  <LinkIcon size={15} color={linksOn ? LINK_BLUE : colors.textMuted} off={!linksOn} />
+                  <Text style={[styles.linksToggleText, { color: linksOn ? LINK_BLUE : colors.textMuted }]}>
+                    Glossary Links
+                  </Text>
+                </Pressable>
+              </View>
             )
           }
           ListEmptyComponent={
@@ -2638,25 +2657,8 @@ ${COPY.glossaryFreeAllowance}`,
                     ) : null}
                   </View>
                   <View style={styles.entryActions}>
-                    {/* SHOW / HIDE LINKS (owner 2026-08-07) — sits LEFT of the
-                        other options. Shown per term, but the setting is global:
-                        it turns the definition cross-links on/off glossary-wide. */}
-                    <HoldHintPressable
-                      onPress={() => setLinksOn(!linksOn)}
-                      hint={linksOn ? 'Hides linked words in every definition' : 'Shows linked words in every definition'}
-                      selected={linksOn}
-                      accessibilityLabel={linksOn ? 'Hide links in definitions' : 'Show links in definitions'}
-                    >
-                      {/* Lit in the SAME light blue as the link text inside
-                          definitions when links are on (so the icon reads as
-                          "this is what those blue words are"); plain gray when
-                          off. Links default ON, so it starts lit. */}
-                      <LinkIcon
-                        size={18}
-                        color={linksOn ? LINK_BLUE : colors.textMuted}
-                        off={!linksOn}
-                      />
-                    </HoldHintPressable>
+                    {/* The links toggle moved to the ONE "Glossary Links" button in
+                        the count row (owner 2026-09-14) — no longer per-term. */}
                     <SpeakButton text={speakTextFor(item, ttsBeg)} size={19} />
                     {/* Share this term + definition (Booth 2026-07-18) — the
                         familiar box-with-up-arrow share glyph. */}
@@ -3407,12 +3409,17 @@ const styles = StyleSheet.create({
     fontFamily: fonts.barlowMedium,
     fontSize: 12.5,
     letterSpacing: 0.2,
-    // Un-dimmed (owner 2026-09-14): now the single term/results count, so it reads
-    // clearly instead of the old muted grey.
-    color: colors.textSecondary,
+    // Green (owner 2026-09-14).
+    color: colors.green,
     paddingBottom: 8,
     paddingLeft: 2,
   },
+  resultHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  // "Glossary Links" text button (owner 2026-09-14) — the single global toggle for
+  // definition cross-links, sitting where SELECT used to. Icon + label share the
+  // light-blue link colour when lit, grey when dimmed (colour set inline).
+  linksToggle: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingBottom: 8, paddingRight: 2 },
+  linksToggleText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.2 },
   entry: { paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#1a1a1a' },
   // Expanded rows get a BORDER around the whole term+definition (like the card
   // popup), persisting on scroll; several can be open at once (user request
