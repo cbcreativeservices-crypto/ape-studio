@@ -87,38 +87,47 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
  *  meant "in the Dashboard deck" — the icon itself now belongs ONLY to My
  *  Custom List, whose identity it is. `dim` = core-locked (can't toggle). */
 function LoadPill({ on, small, dim }: { on: boolean; small?: boolean; dim?: boolean }) {
-  // UNLOADED pills breathe (owner 2026-09-14): the gray border + fill pulse ±7
-  // shades over a slow 13 s up/down cycle so an unloaded deck reads as "tap to
-  // load" instead of dead gray. LOADED (blue) and reduce-motion stay static.
-  const pulse = useRef(new Animated.Value(0)).current;
+  // UNLOADED pills stay STATIC — the gray text + frame + fill never change shade
+  // (owner 2026-09-14). Instead a soft light glow breathes AROUND the pill over an
+  // 11 s cycle so an unloaded deck reads as "tap to load" without touching the type.
+  // LOADED (blue) shows no glow; reduce-motion holds the glow at a steady mid level.
+  const glow = useRef(new Animated.Value(0)).current;
+  const animate = !on && animationsAllowed();
   useEffect(() => {
-    if (on || !animationsAllowed()) return;
+    if (!animate) return;
     const anim = Animated.loop(
       Animated.sequence([
-        Animated.timing(pulse, { toValue: 1, duration: 6500, useNativeDriver: false }),
-        Animated.timing(pulse, { toValue: 0, duration: 6500, useNativeDriver: false }),
+        Animated.timing(glow, { toValue: 1, duration: 5500, useNativeDriver: true }),
+        Animated.timing(glow, { toValue: 0, duration: 5500, useNativeDriver: true }),
       ]),
     );
     anim.start();
     return () => anim.stop();
-  }, [on, pulse]);
-  // ±7 shades on each channel, centered on the base gray (bg #1c1c1c, border #3a3a3a).
-  const bg = useMemo(() => pulse.interpolate({ inputRange: [0, 1], outputRange: ['#151515', '#232323'] }), [pulse]);
-  const bd = useMemo(() => pulse.interpolate({ inputRange: [0, 1], outputRange: ['#333333', '#414141'] }), [pulse]);
+  }, [animate, glow]);
+  // Dimmed 79% (owner 2026-09-14): the breathing range + the reduce-motion resting
+  // level are scaled to 21% of their prior values so the halo is a faint shimmer.
+  const glowOpacity = useMemo(() => glow.interpolate({ inputRange: [0, 1], outputRange: [0.046, 0.151] }), [glow]);
   return (
-    <Animated.View
-      style={[
-        styles.loadPill,
-        small && styles.loadPillSmall,
-        on && styles.loadPillOn,
-        dim && styles.loadPillDim,
-        on ? null : { backgroundColor: bg, borderColor: bd },
-      ]}
-    >
-      <Text style={[styles.loadPillText, small && styles.loadPillTextSmall, on && styles.loadPillTextOn]}>
-        {on ? 'LOADED' : 'UNLOADED'}
-      </Text>
-    </Animated.View>
+    <View style={styles.loadPillWrap}>
+      {on ? null : (
+        <Animated.View
+          pointerEvents="none"
+          style={[styles.loadPillGlow, { opacity: animate ? glowOpacity : 0.095 }]}
+        />
+      )}
+      <View
+        style={[
+          styles.loadPill,
+          small && styles.loadPillSmall,
+          on && styles.loadPillOn,
+          dim && styles.loadPillDim,
+        ]}
+      >
+        <Text style={[styles.loadPillText, small && styles.loadPillTextSmall, on && styles.loadPillTextOn]}>
+          {on ? 'LOADED' : 'UNLOADED'}
+        </Text>
+      </View>
+    </View>
   );
 }
 const PURPLE = '#c4a2ff';
@@ -1541,7 +1550,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                 {/* Row 2 — subject on the left; ACTIVE + Study dropped BELOW the
                     title on the right (user request 2026-07-22). */}
                 <View style={styles.cardActionRow}>
-                  <Text style={[styles.cardSubject, !e.active && styles.dim]} numberOfLines={1}>
+                  <Text style={[styles.cardSubject, !showActive && styles.dimMore]} numberOfLines={1}>
                     {subjectFor(e.gs)}
                     {free && !isCore ? '  ·  Free' : ''}
                   </Text>
@@ -1577,7 +1586,7 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                       blue when the topic is loaded into the deck, gray when not;
                       blue = tap to open the Dashboard with it loaded. */}
                   <Pressable hitSlop={6}
-                    style={styles.studyNavBtn}
+                    style={[styles.studyNavBtn, !showActive && styles.dimMore]}
                     onPress={showActive ? () => goStudy(e.gs) : undefined}
                     disabled={!showActive}
                     accessibilityRole="button"
@@ -1592,14 +1601,16 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                     HOLD-to-confirm Remove (safe from accidental taps near Study,
                     user request 2026-07-22). */}
                 <View style={styles.cardMeterRow}>
-                  <LedMeter filled={segmentsForPct(pct)} segWidth={5} />
-                  <Text style={styles.cardPct}>{pct}%</Text>
+                  <View style={!showActive && styles.dimMore}>
+                    <LedMeter filled={segmentsForPct(pct)} segWidth={5} />
+                  </View>
+                  <Text style={[styles.cardPct, !showActive && styles.dimMore]}>{pct}%</Text>
                   <View style={{ flex: 1 }} />
                   {/* Cores carry NO manual Home toggle — their slots are auto-
                       reserved/freed (user request 2026-07-22). */}
                   {!isCore ? (
                     <Pressable
-                      style={styles.homeToggle}
+                      style={[styles.homeToggle, !showActive && styles.dimMore]}
                       onPress={() => toggleOnHome(e.gs)}
                       accessibilityRole="button"
                       accessibilityState={{ selected: homeSet.has(e.gs) }}
@@ -2177,6 +2188,11 @@ const styles = StyleSheet.create({
   // icons off the right edge on narrow screens (user report 2026-07-25, Pixel).
   cardSubject: { flexShrink: 1, fontFamily: fonts.barlowRegular, fontSize: 12, color: colors.textSub },
   dim: { opacity: 0.5 },
+  // UNLOADED-card secondary elements: 37% dimmer than the base `dim` (0.5 → 0.315)
+  // so an unloaded container's supporting bits (subject, meter, %, home/study
+  // icons) recede while the title, UNLOADED pill and Remove stay legible
+  // (owner 2026-09-14). The LED meter, which carried no dim, is brought here too.
+  dimMore: { opacity: 0.315 },
   cardSubRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   // Subject + ACTIVE/Study buttons row, dropped below the full-width title.
   cardActionRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 },
@@ -2194,6 +2210,17 @@ const styles = StyleSheet.create({
   // Open-book toggle = topic loaded into the study deck (user request 2026-07-23).
   bookToggle: { paddingVertical: 3, alignItems: 'center', justifyContent: 'center' },
   // LOADED/UNLOADED framed toggle (owner 2026-09-13) — lights when loaded.
+  // Wrapper hosts the breathing glow layer behind the (opaque) pill.
+  loadPillWrap: { position: 'relative', alignSelf: 'center' },
+  // Soft light halo behind an UNLOADED pill (owner 2026-09-14). Sits slightly
+  // proud of the pill so its edge-ring + blurred boxShadow read as a glow; the
+  // opaque pill covers the center. Its opacity breathes on an 11 s loop.
+  loadPillGlow: {
+    position: 'absolute', top: -2, left: -2, right: -2, bottom: -2,
+    borderRadius: 9,
+    backgroundColor: 'rgba(200,212,236,0.22)',
+    boxShadow: '0px 0px 10px 2px rgba(200,212,236,0.75)',
+  },
   loadPill: { borderWidth: 1, borderColor: '#3a3a3a', backgroundColor: '#1c1c1c', borderRadius: 7, paddingVertical: 5, paddingHorizontal: 9 },
   loadPillOn: { borderColor: BLUE, backgroundColor: 'rgba(127,191,255,0.13)' },
   loadPillDim: { opacity: 0.55 },
