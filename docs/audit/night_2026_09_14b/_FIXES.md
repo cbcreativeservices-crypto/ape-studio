@@ -22,3 +22,14 @@ One line per fix (commit + what). Newest at bottom.
 - `AmplitudeOrientation.tsx:728` CheckRta tallest-bar detection used float-equality
   `h === 0.92`; now `Math.max(...H)` (robust if the H array is ever edited).
 tsc clean, suite 1171 green.
+
+## Waterfall CSD (M7) — EQ-boost renormalization (MAJOR, meter code auditor)
+- `src/screens/lab/meter/vizSpectral.tsx:998` computed the 0-dB reference peak
+  with `flatOpts = { ...o, eqBoostDb: 0, qRing: false }` — but WaterfallOpts has
+  NO `eqBoostDb` field (model moved to per-band `eqGains`; `eqBoostDb` appears
+  nowhere else in src). So flatOpts still carried the user's eqGains and specPeak
+  was computed WITH the boost. Boosting a band +12 dB made it the peak and
+  renormalized every other frequency DOWN 12 dB — reintroducing the exact
+  regression the WF_DB_HEAD comment (703-721) documents as fixed. Cuts were fine;
+  only boosts misbehaved. Fixed: `eqGains: {}` (the codebase's own RING_OPTS
+  empty). tsc clean, suite 1171 green.

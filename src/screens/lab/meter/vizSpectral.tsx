@@ -995,7 +995,7 @@ export function WaterfallView(p: {
     // 0 dB = the peak of the room's own impulse WITHOUT any EQ or ring filter,
     // so the reference cannot move when those controls do. Normalising to the
     // live peak made a boost push the whole range down (see WF_DB_HEAD).
-    const flatOpts = { ...o, eqBoostDb: 0, qRing: false };
+    const flatOpts = { ...o, eqGains: {}, qRing: false };
     const specPeak = Math.max(...WF_FREQS.map((f) => waterfallSpectrumDb(flatOpts, f)));
     const spec = specRaw.map((v) => v - specPeak);
     const rt = WF_FREQS.map((f) => waterfallRt(o, f));
