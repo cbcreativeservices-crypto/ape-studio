@@ -155,3 +155,20 @@ motion-captured can be done on request.
 ## Both this-run code edits now device-verified non-regressive
 - FX duplicate-badge removal (956538d1) → Compression shows the badge once.
 - EnvelopeChart unmount cleanup (d0b0da5b) → sweep plays normally.
+
+### Harmonic Lab — GRADE A (frame burst hb1→hb4)
+- Additive-synthesis spectrum renders excellently: partials 1–11 as horizontal
+  amplitude-ramp bars (red H1 → green highs), each labeled freq · note · cents
+  (H1 100·G2, H2 200·G3, H3 300·D4, H4 400·G4, H5 500·B4, H7 700·F5+4¢ …) —
+  verified arithmetically correct vs the nearest tempered note (700 Hz = F5+3.8¢).
+  Piano keyboard C3–C6 maps the partials; resulting saw waveform drawn below with
+  gradient. Bezel FO 100Hz/THD 75.2%/CREST 5.8dB/SLOPE −6.0. Honest "ANALYTIC
+  MODEL — NOT A MEASUREMENT". [IMG ✅]
+- Green playhead sweeps rightward smoothly across spectrum + waveform (hb1 x≈360
+  → hb4 x≈460). No smear/jank, gradients correct. [ANIM ✅]
+
+## Synthesis group — device coverage COMPLETE (all 6 built labs' distinct visuals)
+Oscillator (scope) · Noise (slopes+shimmer) · Harmonic (additive spectrum) ·
+FM (Bessel spectrum) · Modular (signal-flow) · Envelope (ADSR sweep). Every
+distinct synthesis animation architecture motion-captured smooth + gradient-
+correct on device. (7th "Sample Lab" is honestly badged PLANNED.)
