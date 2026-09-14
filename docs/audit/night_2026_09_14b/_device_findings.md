@@ -187,3 +187,16 @@ source edits Fast-Refresh into the running bundle. Therefore:
   was still deferred not for reload risk but because its root cause (parent-width
   vs LEGEND_H budget) is not certain enough to ship a speculative layout change
   that must also hold on tablets/other widths I can't test tonight.
+
+### Bass Guitar Physics — GRADE A + MAJOR FIX #2 DEVICE-VERIFIED (b3→b5)
+- Fretboard/body/standing-wave visual renders cleanly (frets + position dots,
+  acoustic body + soundhole, yellow standing wave). Honest "TRUE FRET GEOMETRY —
+  DRAWN FROM THE EQUATIONS". Speaker HPF advisory present.
+- **HARMONICS-MODE WAVELENGTH FIX (fdc4ce3b) VERIFIED ON THE LIVE BUNDLE**: in
+  NATURAL HARMONICS mode at the ½ node (H2), the readout now reads verbatim:
+  "String wave: λ = 2 × full length ÷ 2 (harmonic 2 rings in 2 lobes over the
+  whole string)." — exactly the mode-aware fix (2L/n), where before it printed
+  the fundamental's "λ = 2 × vibrating length". Bezel consistent: NOTE E2 /
+  82.4 Hz / OCTAVE (2:1) / NODE ½·H2; standing wave draws 2 lobes + midpoint node.
+  This is IRONCLAD device verification (Fast Refresh applied the edit) of MAJOR
+  fix #2, upgrading it from source-verified to device-verified.
