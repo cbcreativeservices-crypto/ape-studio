@@ -14,9 +14,9 @@
  * FOLLOW-UPS: "Continue"/"Study" open the study Dashboard (not the exact topic);
  * drag uses an estimated row height (no gesture lib).
  */
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { officialTopicName } from '../../data/officialTopicNames';
-import { Alert, Animated, LayoutAnimation, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, UIManager, View, type GestureResponderEvent, type LayoutChangeEvent } from 'react-native';
+import { ActivityIndicator, Alert, Animated, LayoutAnimation, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, UIManager, View, type GestureResponderEvent, type LayoutChangeEvent } from 'react-native';
 import { animationsAllowed } from '../../features/settings/a11y';
 import { Modal } from '../../components/DimModal';
 import { HoldToActivate } from '../../components/HoldToActivate';
@@ -29,7 +29,7 @@ import { DeckIcon } from '../../components/DeckIcon';
 import { HomeIcon } from '../../components/HomeIcon';
 import { NavIcon } from '../../components/nav/NavIcon';
 import { LedMeter, segmentsForPct } from '../../components/LedMeter';
-import { fetchV3Curriculum, fetchV3Programs, fetchV3Certs, type V3Field, type V3Credential } from '../../data/v3Curriculum';
+import { fetchV3CurriculumStrict, fetchV3ProgramsStrict, fetchV3CertsStrict, type V3Field, type V3Credential } from '../../data/v3Curriculum';
 import {
   COREQ_TOPIC_GS,
 } from '../awards/awardsData';
@@ -208,15 +208,44 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
   const enrolled = useEnrollment();
   // LIVE v3 curriculum (owner 2026-08-06) — replaces the retired bundled v2 matrix.
   const [v3Subjects, setV3Subjects] = useState<FlatSubject[]>([]);
+  // LIVE v3 programs + certs (owner 2026-08-06) — replace the retired v2 award
+  // data; aliased to the field names the browse already uses.
+  const [v3Programs, setV3Programs] = useState<V3Credential[]>([]);
+  const [v3Certs, setV3Certs] = useState<V3Credential[]>([]);
+  // BROWSE & ADD triad (audit 2026-09-13): loading / error+RETRY / genuinely-
+  // empty are three distinct states — the CurriculumScreen M15 machine, ported.
+  // The lenient v3 helpers used to swallow failures into [], so offline every
+  // browse tab rendered a silent blank. One state covers all three catalog
+  // fetches (curriculum + programs + certs); RETRY re-runs them all. A real v3
+  // curriculum is never empty (171 topics), so empty curriculum ⇒ error.
+  const [browseState, setBrowseState] = useState<'loading' | 'ready' | 'error'>('loading');
+  const browseAlive = useRef(true);
   useEffect(() => {
-    let alive = true;
-    void fetchV3Curriculum().then((fields) => {
-      if (alive) setV3Subjects(flatSubjectsFromV3(fields));
-    });
+    browseAlive.current = true;
     return () => {
-      alive = false;
+      browseAlive.current = false;
     };
   }, []);
+  const loadBrowse = useCallback(async () => {
+    setBrowseState('loading');
+    try {
+      const [fields, progs, certs] = await Promise.all([
+        fetchV3CurriculumStrict(),
+        fetchV3ProgramsStrict(),
+        fetchV3CertsStrict(),
+      ]);
+      if (!browseAlive.current) return;
+      setV3Subjects(flatSubjectsFromV3(fields));
+      setV3Programs(progs);
+      setV3Certs(certs);
+      setBrowseState(fields.length > 0 ? 'ready' : 'error');
+    } catch {
+      if (browseAlive.current) setBrowseState('error');
+    }
+  }, []);
+  useEffect(() => {
+    void loadBrowse();
+  }, [loadBrowse]);
   const topicIndex = useMemo(() => {
     const m = new Map<number, { name: string; subject: string }>();
     for (const s of v3Subjects) for (const t of s.topics) m.set(t.gs, { name: t.name, subject: s.name });
@@ -230,18 +259,6 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
     if (topicIndex.size === 0) return;
     pruneInvalidGs(new Set(topicIndex.keys()));
   }, [topicIndex]);
-  // LIVE v3 programs + certs (owner 2026-08-06) — replace the retired v2 award
-  // data; aliased to the field names the browse already uses.
-  const [v3Programs, setV3Programs] = useState<V3Credential[]>([]);
-  const [v3Certs, setV3Certs] = useState<V3Credential[]>([]);
-  useEffect(() => {
-    let alive = true;
-    void fetchV3Programs().then((p) => alive && setV3Programs(p));
-    void fetchV3Certs().then((c) => alive && setV3Certs(c));
-    return () => {
-      alive = false;
-    };
-  }, []);
   const PROGRAM_PATHS = useMemo(
     () => v3Programs.map((p) => ({ name: p.name, requiredTopics: p.topicsGs })),
     [v3Programs],
@@ -1639,11 +1656,34 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
           {renderBrowseTabs()}
         </View>
 
-        {/* Browse list — hidden when collapsed. */}
-        {browseOpen ? (
+        {/* Browse list — hidden when collapsed. Triad (audit 2026-09-13):
+            loading / error+RETRY / genuinely-empty render distinctly — offline
+            must never be a silent blank tab (CurriculumScreen M15, ported). */}
+        {browseOpen && browseState === 'loading' ? (
+          <View style={styles.browseStatus}>
+            <ActivityIndicator color={colors.amber} />
+            <Text style={styles.browseStatusText}>Loading the catalog…</Text>
+          </View>
+        ) : null}
+        {browseOpen && browseState === 'error' ? (
+          <View style={styles.browseStatus}>
+            <Text style={styles.browseStatusText}>Couldn’t load the catalog — check your connection.</Text>
+            <Pressable
+              style={styles.browseRetry}
+              onPress={() => void loadBrowse()}
+              accessibilityRole="button"
+              accessibilityLabel="Retry loading the catalog"
+            >
+              <Text style={styles.browseRetryText}>RETRY</Text>
+            </Pressable>
+          </View>
+        ) : null}
+        {browseOpen && browseState === 'ready' ? (
         <View>
           {browseTab === 'cert'
-            ? SPECIALIZED_CERTIFICATES.map((c) => {
+            ? SPECIALIZED_CERTIFICATES.length === 0
+              ? <Text style={styles.browseEmptyText}>No certificates are published yet.</Text>
+              : SPECIALIZED_CERTIFICATES.map((c) => {
                 const key = `cert:${c.name}`;
                 // Marked (REMOVE ALL) when the whole award is in the list — either
                 // a stored bundle OR every topic already enrolled — so the entire
@@ -1670,7 +1710,9 @@ export function EnrollmentView({ showBrand = true }: { showBrand?: boolean }) {
                 );
               })
             : browseTab === 'program'
-              ? PROGRAM_PATHS.map((p) => {
+              ? PROGRAM_PATHS.length === 0
+                ? <Text style={styles.browseEmptyText}>No programs are published yet.</Text>
+                : PROGRAM_PATHS.map((p) => {
                   const key = `program:${p.name}`;
                   const added =
                     bundleKeySet.has(key) ||
@@ -1931,6 +1973,13 @@ const styles = StyleSheet.create({
   // BROWSE & ADD collapse row — white triangle + title (user request 2026-07-23).
   browseTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   browseTri: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: '#ffffff' },
+  // BROWSE & ADD triad states (audit 2026-09-13) — mirrors CurriculumScreen's
+  // treeStatus/treeRetry idiom so the two curriculum surfaces read the same.
+  browseStatus: { alignItems: 'center', gap: 12, paddingVertical: 28, paddingHorizontal: 16 },
+  browseStatusText: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 21, color: colors.textSub, textAlign: 'center' },
+  browseRetry: { borderWidth: 1, borderColor: colors.steelBorder, borderRadius: 9, paddingVertical: 10, paddingHorizontal: 28, backgroundColor: '#141414' },
+  browseRetryText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, color: colors.textSecondary },
+  browseEmptyText: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 21, color: colors.textSub, textAlign: 'center', paddingVertical: 20 },
   // Pinned tab bar — absolute overlay at the very top, above the ScrollView.
   pinnedBar: {
     position: 'absolute',
