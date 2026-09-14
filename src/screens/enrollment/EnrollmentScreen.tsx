@@ -87,12 +87,38 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
  *  meant "in the Dashboard deck" — the icon itself now belongs ONLY to My
  *  Custom List, whose identity it is. `dim` = core-locked (can't toggle). */
 function LoadPill({ on, small, dim }: { on: boolean; small?: boolean; dim?: boolean }) {
+  // UNLOADED pills breathe (owner 2026-09-14): the gray border + fill pulse ±7
+  // shades over a slow 13 s up/down cycle so an unloaded deck reads as "tap to
+  // load" instead of dead gray. LOADED (blue) and reduce-motion stay static.
+  const pulse = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (on || !animationsAllowed()) return;
+    const anim = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulse, { toValue: 1, duration: 6500, useNativeDriver: false }),
+        Animated.timing(pulse, { toValue: 0, duration: 6500, useNativeDriver: false }),
+      ]),
+    );
+    anim.start();
+    return () => anim.stop();
+  }, [on, pulse]);
+  // ±7 shades on each channel, centered on the base gray (bg #1c1c1c, border #3a3a3a).
+  const bg = useMemo(() => pulse.interpolate({ inputRange: [0, 1], outputRange: ['#151515', '#232323'] }), [pulse]);
+  const bd = useMemo(() => pulse.interpolate({ inputRange: [0, 1], outputRange: ['#333333', '#414141'] }), [pulse]);
   return (
-    <View style={[styles.loadPill, small && styles.loadPillSmall, on && styles.loadPillOn, dim && styles.loadPillDim]}>
+    <Animated.View
+      style={[
+        styles.loadPill,
+        small && styles.loadPillSmall,
+        on && styles.loadPillOn,
+        dim && styles.loadPillDim,
+        on ? null : { backgroundColor: bg, borderColor: bd },
+      ]}
+    >
       <Text style={[styles.loadPillText, small && styles.loadPillTextSmall, on && styles.loadPillTextOn]}>
         {on ? 'LOADED' : 'UNLOADED'}
       </Text>
-    </View>
+    </Animated.View>
   );
 }
 const PURPLE = '#c4a2ff';
