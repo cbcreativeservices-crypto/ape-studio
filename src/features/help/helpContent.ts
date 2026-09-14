@@ -243,15 +243,22 @@ export const HELP_CATEGORIES: HelpCategory[] = [
   },
 ];
 
-/** Case-insensitive filter across question + answer text. Returns categories
- *  with only their matching entries; empty categories drop out. */
+/** Case-insensitive filter across category title + question + answer text.
+ *  Returns categories with only their matching entries; empty categories drop
+ *  out. A query that matches a category's TITLE keeps the whole category —
+ *  without this, the ToolsHub "?" key's pre-fill "tool" missed two of the five
+ *  TOOLS & LABS entries whose ratified answers never use the word (found
+ *  2026-09-13 audit; the copy is governed, the search logic is not). */
 export function filterHelp(query: string): HelpCategory[] {
   const q = query.trim().toLowerCase();
   if (!q) return HELP_CATEGORIES;
-  return HELP_CATEGORIES.map((c) => ({
-    ...c,
-    entries: c.entries.filter(
-      (e) => e.q.toLowerCase().includes(q) || e.a.toLowerCase().includes(q),
-    ),
-  })).filter((c) => c.entries.length > 0);
+  return HELP_CATEGORIES.map((c) => {
+    if (c.title.toLowerCase().includes(q)) return c;
+    return {
+      ...c,
+      entries: c.entries.filter(
+        (e) => e.q.toLowerCase().includes(q) || e.a.toLowerCase().includes(q),
+      ),
+    };
+  }).filter((c) => c.entries.length > 0);
 }

@@ -10,7 +10,7 @@
  * the same place). Gated by HELP_HUB_ENABLED until the owner ratifies the FAQ
  * copy; `#helppreview` renders it in the web harness regardless.
  */
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { LayoutAnimation, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -30,7 +30,15 @@ export function HelpScreen() {
   // A screen's "?" key can land here with the search pre-filled (plan §4) —
   // the person edits or clears it like anything they typed themselves.
   const route = useRoute<any>();
-  const [query, setQuery] = useState((route.params?.search as string | undefined) ?? '');
+  const routeSearch = route.params?.search as string | undefined;
+  const [query, setQuery] = useState(routeSearch ?? '');
+  // A later "?" key can land on an ALREADY-OPEN Help instance (navigate()
+  // returns to the existing modal and only swaps its params — e.g. Help →
+  // jump "Open the Tools" → ToolsHub's "?"), so the pre-fill must re-apply
+  // when the param changes, not just on first mount (audit 2026-09-13).
+  useEffect(() => {
+    if (routeSearch !== undefined) setQuery(routeSearch);
+  }, [routeSearch]);
   const [open, setOpen] = useState<string | null>(null);
   const categories = useMemo(() => filterHelp(query), [query]);
   const searching = query.trim().length > 0;
@@ -70,7 +78,10 @@ export function HelpScreen() {
             accessibilityLabel="Search help"
             returnKeyType="search"
           />
-          {searching ? (
+          {/* Clear shows whenever the box holds ANY text (even whitespace-only,
+              which doesn't count as "searching") so typed input is always
+              one tap from gone. */}
+          {query.length > 0 ? (
             <Pressable onPress={() => setQuery('')} hitSlop={10} accessibilityRole="button" accessibilityLabel="Clear search">
               <Text style={styles.clear}>✕</Text>
             </Pressable>
@@ -79,7 +90,9 @@ export function HelpScreen() {
 
         {noResults ? (
           <View style={styles.emptyPanel}>
-            <Text style={styles.emptyText}>
+            {/* Announced to screen readers when the result set empties —
+                otherwise a SR user types into silence (a11y audit 2026-09-13). */}
+            <Text style={styles.emptyText} accessibilityRole="alert" accessibilityLiveRegion="polite">
               Nothing in the manual matches “{query.trim()}”. Try another word — or browse the full manual below; most answers are close by.
             </Text>
           </View>
