@@ -1355,23 +1355,8 @@ ${COPY.glossaryFreeAllowance}`,
 
   // Share a term — opens the SHARE HUB (owner spec 2026-08-06): section toggles,
   // text/image/copy, and multi-term selection from lists/related. The actual
-  // handlers (shareTerm/shareSelected) live further down, once entryById and
-  // termIndex are in scope. Multi-select over search results:
+  // handler (shareTerm) lives further down, once entryById and termIndex are in scope.
   const [sharePayload, setSharePayload] = useState<ShareTermPayload | null>(null);
-  const [selectMode, setSelectMode] = useState(false);
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const toggleSelected = useCallback((id: string) => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }, []);
-  const exitSelectMode = useCallback(() => {
-    setSelectMode(false);
-    setSelectedIds(new Set());
-  }, []);
 
   const recordRecent = useCallback((id: string) => {
     setRecent((prev) => {
@@ -1942,18 +1927,6 @@ ${COPY.glossaryFreeAllowance}`,
     [buildShareTerm, namedFrom, resolveShareTerms],
   );
 
-  /** Open the share hub for the current multi-select set (search results). Tap
-   *  order is preserved (Set insertion order). */
-  const shareSelected = useCallback(
-    async (ids: string[]) => {
-      if (!ids.length) return;
-      const terms = await resolveShareTerms(ids);
-      if (!terms.length) return;
-      setSharePayload({ terms, mistakesAllowed: isMemberRef.current, resolve: resolveShareTerms });
-      exitSelectMode();
-    },
-    [resolveShareTerms, exitSelectMode],
-  );
 
   // PERF (2026-09-05): this memo filters and sorts all 26,847 entries, and it
   // ran synchronously on EVERY keystroke — the only debounce in this screen is
@@ -2263,8 +2236,8 @@ ${COPY.glossaryFreeAllowance}`,
   // clamp — leave it out and a guest's rows keep rendering full definitions for
   // the rest of the session, which is the exact hole this clamp closes.
   const rowExtraData = useMemo(
-    () => [expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, selectMode, selectedIds, linksOn, bookmarks, starred, isMember, capped, defRev],
-    [expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, selectMode, selectedIds, linksOn, bookmarks, starred, isMember, capped, defRev],
+    () => [expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, linksOn, bookmarks, starred, isMember, capped, defRev],
+    [expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, linksOn, bookmarks, starred, isMember, capped, defRev],
   );
 
   // GLOSSARY LOCK (owner 2026-09-10): a full-screen lock card over the DIMMED
@@ -2556,27 +2529,13 @@ ${COPY.glossaryFreeAllowance}`,
             loading ? (
               <GlossaryLoading count={cachedCount} landed={cachedCount != null} />
             ) : visible.length === 0 ? null : (
-              <View style={styles.resultHeaderRow}>
-                <Text style={styles.resultCount}>
-                  {selectMode
-                    ? `${selectedIds.size} selected`
-                    : filter === 'all' && !search.trim()
-                    ? // Unfiltered: the whole corpus — "N terms" (no redundant "· All").
-                      `${visible.length.toLocaleString()} term${visible.length === 1 ? '' : 's'}`
-                    : // A filter or search is active — these are RESULTS, labeled by what narrowed them.
-                      `${visible.length.toLocaleString()} result${visible.length === 1 ? '' : 's'} · ${filterLabel}`}
-                </Text>
-                {/* SELECT-to-share (owner spec 2026-08-06): pick several terms
-                    from the results, then Share Selected as one multi-term share. */}
-                <Pressable
-                  onPress={() => (selectMode ? exitSelectMode() : setSelectMode(true))}
-                  hitSlop={8}
-                  accessibilityRole="button"
-                  accessibilityLabel={selectMode ? 'Cancel selection' : 'Select terms to share'}
-                >
-                  <Text style={styles.selectToggle}>{selectMode ? 'CANCEL' : 'SELECT'}</Text>
-                </Pressable>
-              </View>
+              <Text style={styles.resultCount}>
+                {filter === 'all' && !search.trim()
+                  ? // Unfiltered: the whole corpus — "N terms" (no redundant "· All").
+                    `${visible.length.toLocaleString()} term${visible.length === 1 ? '' : 's'}`
+                  : // A filter or search is active — these are RESULTS, labeled by what narrowed them.
+                    `${visible.length.toLocaleString()} result${visible.length === 1 ? '' : 's'} · ${filterLabel}`}
+              </Text>
             )
           }
           ListEmptyComponent={
@@ -2615,10 +2574,7 @@ ${COPY.glossaryFreeAllowance}`,
           renderItem={({ item }) => {
             // List view expands INLINE; card view stays compact and opens the
             // popup overlay instead (below).
-            // In SELECT mode rows stay compact (no inline expand) and tapping
-            // toggles selection instead (owner spec 2026-08-06).
-            const picked = selectMode && selectedIds.has(item.id);
-            const expanded = !cardView && !selectMode && expandedIds.has(item.id);
+            const expanded = !cardView && expandedIds.has(item.id);
             const d = details[item.id];
             const mediaUrl = mediaById[item.id];
             // Active search query → highlight its occurrences GREEN in the term
@@ -2626,12 +2582,8 @@ ${COPY.glossaryFreeAllowance}`,
             const hq = search.trim();
             return (
               <Pressable
-                style={cardView ? styles.cardItem : [styles.entry, expanded && styles.entryExpanded, picked && styles.entryPicked]}
+                style={cardView ? styles.cardItem : [styles.entry, expanded && styles.entryExpanded]}
                 onPress={() => {
-                  if (selectMode) {
-                    toggleSelected(item.id);
-                    return;
-                  }
                   if (cardView) {
                     openPopupRoot(item.id); // card tap = popup trail root
                     return;
@@ -2651,29 +2603,12 @@ ${COPY.glossaryFreeAllowance}`,
                 // its tap bubbles here (the ratified accordion pattern).
                 accessible={false}
               >
-                {/* Selection overlay — sits above the row content so its own
-                    action icons don't fire while picking terms to share. */}
-                {selectMode ? (
-                  <Pressable
-                    style={[styles.selectOverlay, picked && styles.selectOverlayOn]}
-                    onPress={() => toggleSelected(item.id)}
-                    accessibilityRole="checkbox"
-                    accessibilityState={{ checked: picked }}
-                    aria-checked={picked}
-                    accessibilityLabel={`Select ${item.term}`}
-                  >
-                    <View style={[styles.selBox, picked && styles.selBoxOn]}>
-                      {picked ? <Text style={styles.selCheck}>✓</Text> : null}
-                    </View>
-                  </Pressable>
-                ) : null}
                 <View style={styles.entryHeader}>
                   <View style={styles.entryTermWrap}>
                     <Text
-                      accessibilityRole={selectMode ? 'checkbox' : 'button'}
-                      accessibilityState={selectMode ? { checked: picked } : { expanded }}
-                      aria-checked={selectMode ? picked : undefined}
-                      aria-expanded={selectMode ? undefined : expanded}
+                      accessibilityRole="button"
+                      accessibilityState={{ expanded }}
+                      aria-expanded={expanded}
                       style={[
                         styles.term,
                         { flexShrink: 1 },
@@ -2872,23 +2807,6 @@ ${COPY.glossaryFreeAllowance}`,
             );
           }}
         />
-
-        {/* SHARE SELECTED bar — appears while picking terms to share (owner spec
-            2026-08-06). Resolves the tapped set (order preserved) and opens the
-            share hub in multi-term mode. */}
-        {selectMode && selectedIds.size > 0 ? (
-          <View style={styles.shareSelectedBar}>
-            <Pressable
-              style={styles.shareSelectedBtn}
-              onPress={() => void shareSelected(Array.from(selectedIds))}
-              accessibilityRole="button"
-              accessibilityLabel={`Share ${selectedIds.size} selected terms`}
-            >
-              <ShareIcon size={16} color="#0b1220" />
-              <Text style={styles.shareSelectedText}>SHARE SELECTED ({selectedIds.size})</Text>
-            </Pressable>
-          </View>
-        ) : null}
 
         {/* Term popup — card taps AND cross-link hops land here (Feature 1).
             The trail unwinds one hop per back (pill or tap on the body),
@@ -3495,59 +3413,7 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
     paddingLeft: 2,
   },
-  resultHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  selectToggle: {
-    fontFamily: fonts.oswaldSemiBold,
-    fontSize: 11.5,
-    letterSpacing: 1.2,
-    color: colors.amber,
-    paddingBottom: 8,
-    paddingRight: 2,
-  },
   entry: { paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#1a1a1a' },
-  // Selected row (share-select mode).
-  entryPicked: { backgroundColor: 'rgba(255,180,0,0.07)' },
-  selectOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 5,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    paddingRight: 6,
-  },
-  selectOverlayOn: { backgroundColor: 'rgba(255,180,0,0.05)' },
-  selBox: {
-    width: 22,
-    height: 22,
-    borderRadius: 6,
-    borderWidth: 1.5,
-    borderColor: '#4a4b52',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#101012',
-  },
-  selBoxOn: { borderColor: colors.amber, backgroundColor: 'rgba(255,180,0,0.18)' },
-  selCheck: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: colors.amber, lineHeight: 17 },
-  shareSelectedBar: { position: 'absolute', left: 0, right: 0, bottom: 12, alignItems: 'center' },
-  shareSelectedBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    backgroundColor: colors.amber,
-    borderRadius: 24,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 6,
-  },
-  shareSelectedText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, color: '#0b1220' },
   // Expanded rows get a BORDER around the whole term+definition (like the card
   // popup), persisting on scroll; several can be open at once (user request
   // 2026-07-18).
