@@ -23,6 +23,12 @@
             "shell": "bash",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/check-file-paths.cjs\"",
             "statusMessage": "File-path rule check"
+          },
+          {
+            "type": "command",
+            "shell": "bash",
+            "command": "grep -q '<FILL' \"$CLAUDE_PROJECT_DIR/docs/CROSS_SESSION_HANDOFF.md\" 2>/dev/null && echo '[sync channel] docs/CROSS_SESSION_HANDOFF.md has an unfilled <FILL stub from your last commit — fill its affects-other-side / needs lines (or set them to \"nothing\") so A gets a complete picture; it rides into your next commit.' || true",
+            "statusMessage": "Sync-channel stub check"
           }
         ]
       }
