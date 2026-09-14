@@ -503,15 +503,11 @@ function LinkedText({
         // losing the definition path.)
         const calc = onOpenCalc ? calcLinkForTerm(s.text) : null;
         if (calc) {
-          // Split by CODE POINTS, not code units (edge-case QA 2026-09-11):
-          // s.text.slice(len/2) cut an astral character in half and rendered a
-          // replacement glyph (�) in the middle of the linked term. Identical
-          // output for the all-BMP terms we ship — this only changes the
-          // outcome for text that would otherwise break.
-          const chars = Array.from(s.text);
-          const mid = Math.ceil(chars.length / 2);
-          const head = chars.slice(0, mid).join('');
-          const tail = chars.slice(mid).join('');
+          // A word that is BOTH a glossary term AND calculator-backed (owner
+          // 2026-09-14): the WHOLE word is the BLUE glossary-definition link, and
+          // a small PURPLE Σ right after it opens the calculator. Replaces the old
+          // mid-word blue/purple letter split — one word, two doors, and (unlike a
+          // blue-word/purple-underline split) it reads the same on iOS and Android.
           return (
             <Text key={i}>
               <Text
@@ -520,15 +516,15 @@ function LinkedText({
                 accessibilityLabel={`${s.text} — open the glossary definition`}
                 onPress={() => onLink(s.ids!)}
               >
-                {head}
+                {s.text}
               </Text>
               <Text
-                style={styles.termLinkCalc}
+                style={styles.termLinkSigma}
                 suppressHighlighting
                 accessibilityLabel={`${s.text} — open in the calculator`}
                 onPress={() => onOpenCalc!(calc.workspaceId)}
               >
-                {tail}
+                {' '}Σ
               </Text>
             </Text>
           );
@@ -3518,13 +3514,10 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
     textDecorationColor: 'rgba(159,190,222,0.35)',
   },
-  // A calculator/equation word inside a definition (owner 2026-08-07) — PURPLE,
-  // and its tap links DIRECTLY to the associated calculator, not the glossary.
-  termLinkCalc: {
-    color: colors.purple,
-    textDecorationLine: 'underline',
-    textDecorationColor: 'rgba(168,130,255,0.4)',
-  },
+  // The purple Σ that trails a calculator-backed link word (owner 2026-09-14) —
+  // tap it to open that word's calculator. Echoes the glossary's global Σ button;
+  // no underline (it's a symbol affordance, not a text link).
+  termLinkSigma: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, color: colors.purple },
   // Disambiguation chooser sheet.
   chooserBackdrop: {
     position: 'absolute',
