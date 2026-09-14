@@ -26,7 +26,10 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
-### 2026-09-14 09:55 · ccode · 46320f8d
+### 2026-09-14 10:18 · ccode · topic-tiles re-upload (exec-queue #3)
+changed: Ran `node scripts/upload-topic-tiles.mjs` — 166/166 tiles re-uploaded with cacheControl '31536000, immutable'. VERIFIED in storage.objects: metadata.cacheControl is now "max-age=31536000, immutable". BUT the public endpoint STILL serves `Cache-Control: no-cache` at ORIGIN (CF-Cache-Status: MISS + fresh Last-Modified 17:12:58, still no-cache) — so Supabase is not reflecting the object cacheControl in the served header for this public bucket. The re-upload can't change the served header; the exec-queue premise (upload immutable → served immutable) doesn't hold here.
+affects other side: exec-queue #3 CANNOT be closed as written — the served header stays no-cache regardless of the re-upload (platform serving behavior, not our config; bucket is plain public). The real client-side fix for the stale/placeholder tiles is expo-image's own memory+disk cache (already in the app, activates in the next native build) — it caches tiles ignoring the no-cache header.
+needs: A's call — either accept expo-image caching as the fix (no-cache from Supabase then harmless), or pursue a Supabase-side change (Smart CDN / support) if a truly immutable served header is required. ccode can test the render/image transform endpoint's caching if wanted.
 changed: Glossary help sheet updated for today's UI (Glossary Links toggle + calculator Σ links). ALSO CHECKED exec-queue #3 (topic-tile Cache-Control): scripts/upload-topic-tiles.mjs already sets cacheControl:'31536000, immutable', but a LIVE tile still returns `Cache-Control: no-cache` — the re-upload was never run, so the fix is NOT effective yet.
 affects other side: TILE CACHE-CONTROL item is NOT done — the script is patched but the stored objects still serve no-cache. Career-Finder confirmed CLOSED separately.
 needs: run the re-upload — `node scripts/upload-topic-tiles.mjs` with SUPABASE_SERVICE_ROLE_KEY set (Storage write, no DB). Cháno can run it, or hand ccode the service-role key + a go. Then re-check the header shows max-age=31536000, immutable.
