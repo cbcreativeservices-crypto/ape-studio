@@ -26,6 +26,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-14 09:55 · ccode · 46320f8d
+changed: Glossary help sheet updated for today's UI (Glossary Links toggle + calculator Σ links). ALSO CHECKED exec-queue #3 (topic-tile Cache-Control): scripts/upload-topic-tiles.mjs already sets cacheControl:'31536000, immutable', but a LIVE tile still returns `Cache-Control: no-cache` — the re-upload was never run, so the fix is NOT effective yet.
+affects other side: TILE CACHE-CONTROL item is NOT done — the script is patched but the stored objects still serve no-cache. Career-Finder confirmed CLOSED separately.
+needs: run the re-upload — `node scripts/upload-topic-tiles.mjs` with SUPABASE_SERVICE_ROLE_KEY set (Storage write, no DB). Cháno can run it, or hand ccode the service-role key + a go. Then re-check the header shows max-age=31536000, immutable.
+
+
 ### 2026-09-14 09:46 · ccode · sync-hook install
 changed: Installed the post-commit sync hook — scripts/hooks/post-commit + install-sync-hook.sh, core.hooksPath=scripts/hooks (verified). Adopted this re-seeded channel + protocol.
 affects other side: nothing — client-repo only.
