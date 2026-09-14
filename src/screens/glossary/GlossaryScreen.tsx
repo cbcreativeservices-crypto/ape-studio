@@ -2215,11 +2215,13 @@ ${COPY.glossaryFreeAllowance}`,
   const glossaryHelp = useScreenHelp({
     title: 'Using the Glossary',
     intro:
-      'Every professional-audio term in one place — search it, switch how definitions read, and save the ones you want to keep.',
+      'Every professional-audio term in one place — search it, follow the links between related terms, switch how definitions read, and save the ones you want to keep.',
     sections: [
       { heading: 'SEARCH', body: 'Type any term in the search box. Results rank by the closest match, and the letters you typed are highlighted.' },
       { heading: 'BEG / ADV', body: 'Tap BEG or ADV in the header to switch a definition between plain English (BEG) and the official, technical wording (ADV).' },
       { heading: 'LIST / CARDS', body: 'CARDS focuses one term at a time; LIST shows the full scrollable list. Tap a term to expand its definition and learning levels.' },
+      { heading: 'GLOSSARY LINKS', body: 'Inside a definition, words that have their own entry show in blue — tap one to jump straight to that term. Use the “Glossary Links” button above the list to turn those links on or off everywhere; it glows blue when they’re on.' },
+      { heading: 'CALCULATOR (Σ)', body: 'A blue word followed by a small purple Σ can also be calculated: tap the word for its definition, or tap the Σ to open that term’s calculator in the Audio Calculator Laboratory.' },
       { heading: 'SAVE & FILTER', body: 'Bookmark a term or add it to a custom list, then use the ALL · Topic · Bookmarks · Custom · Recent chips to filter to just those.' },
     ],
     links: [{ label: 'Open the Audio Calculator Laboratory', onPress: () => (navigation as any).navigate('CalcLab') }],
