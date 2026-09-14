@@ -77,13 +77,13 @@ export function PaywallScreen({ navigation }: Props) {
             return;
           }
           Alert.alert(
-            // DRAFT COPY — owner ratifies
+            // Ratified by the owner 2026-09-14
             'Purchase complete',
-            // DRAFT COPY — owner ratifies
+            // Ratified by the owner 2026-09-14
             'Your payment went through and your membership is recorded. We couldn’t refresh your access on this device yet — check your connection and retry.',
             [
               {
-                text: 'Retry', // DRAFT COPY — owner ratifies
+                text: 'Retry', // Ratified by the owner 2026-09-14
                 onPress: () => {
                   setBusy(true);
                   reflectPurchase();
@@ -91,7 +91,7 @@ export function PaywallScreen({ navigation }: Props) {
               },
               // Leaving is safe: the entitlement is on the server and the next
               // boot read / auth event picks it up.
-              { text: 'Later', style: 'cancel', onPress: () => navigation.goBack() }, // DRAFT COPY — owner ratifies
+              { text: 'Later', style: 'cancel', onPress: () => navigation.goBack() }, // Ratified by the owner 2026-09-14
             ],
           );
         });
@@ -164,7 +164,7 @@ export function PaywallScreen({ navigation }: Props) {
               'Purchases restored',
               refreshed
                 ? 'Your Academy access has been restored.'
-                : // DRAFT COPY — owner ratifies
+                : // Ratified by the owner 2026-09-14
                   'Your previous purchase was verified and your membership is recorded. We couldn’t refresh your access on this device yet — it will unlock shortly, or restart the app.',
               [{ text: 'Great', onPress: () => navigation.goBack() }],
             );
@@ -176,15 +176,15 @@ export function PaywallScreen({ navigation }: Props) {
           case 'unavailable':
             Alert.alert(
               'Purchasing unavailable',
-              // DRAFT COPY — owner ratifies
+              // Ratified by the owner 2026-09-14
               'In-app purchases aren’t available in this build yet. Please update the app and try Restore again.',
             );
             return;
           default:
             Alert.alert(
-              // DRAFT COPY — owner ratifies
+              // Ratified by the owner 2026-09-14
               'Restore didn’t finish',
-              // DRAFT COPY — owner ratifies
+              // Ratified by the owner 2026-09-14
               'We couldn’t reach the store to check your purchases — check your connection and try again. If you were charged, your purchase is safe.',
             );
         }
@@ -192,7 +192,7 @@ export function PaywallScreen({ navigation }: Props) {
       .catch(() => {
         setBusy(false);
         Alert.alert(
-          // DRAFT COPY — owner ratifies (same strings as the store-unreachable case)
+          // Ratified by the owner 2026-09-14 (same strings as the store-unreachable case)
           'Restore didn’t finish',
           'We couldn’t reach the store to check your purchases — check your connection and try again. If you were charged, your purchase is safe.',
         );
@@ -213,9 +213,9 @@ export function PaywallScreen({ navigation }: Props) {
         : 'https://play.google.com/store/account/subscriptions?package=com.cbcreativeservices.apestudio';
     Linking.openURL(url).catch(() => {
       Alert.alert(
-        // DRAFT COPY — owner ratifies
+        // Ratified by the owner 2026-09-14
         'Manage subscription',
-        // DRAFT COPY — owner ratifies
+        // Ratified by the owner 2026-09-14
         'We couldn’t open your app-store subscription settings. Open the App Store or Play Store app and look under Subscriptions.',
       );
     });
@@ -226,9 +226,9 @@ export function PaywallScreen({ navigation }: Props) {
   const openPolicy = (path: 'terms' | 'privacy') => {
     Linking.openURL(`https://www.proaudiotrainingacademy.com/${path}`).catch(() => {
       Alert.alert(
-        // DRAFT COPY — owner ratifies
+        // Ratified by the owner 2026-09-14
         'Page unavailable',
-        // DRAFT COPY — owner ratifies
+        // Ratified by the owner 2026-09-14
         `We couldn’t open the page — visit proaudiotrainingacademy.com/${path} in your browser.`,
       );
     });
@@ -327,12 +327,12 @@ export function PaywallScreen({ navigation }: Props) {
         {/* Terms/Privacy beside the purchase decision (store checklist). */}
         <View style={styles.policyRow}>
           <Pressable onPress={() => openPolicy('terms')} accessibilityRole="link" hitSlop={8}>
-            {/* DRAFT COPY — owner ratifies */}
+            {/* Ratified by the owner 2026-09-14 */}
             <Text style={styles.policyLink}>Terms of Use</Text>
           </Pressable>
           <Text style={styles.policyDot}>·</Text>
           <Pressable onPress={() => openPolicy('privacy')} accessibilityRole="link" hitSlop={8}>
-            {/* DRAFT COPY — owner ratifies */}
+            {/* Ratified by the owner 2026-09-14 */}
             <Text style={styles.policyLink}>Privacy Policy</Text>
           </Pressable>
         </View>
@@ -355,7 +355,7 @@ export function PaywallScreen({ navigation }: Props) {
         </Pressable>
         {showManage && (
           <Pressable onPress={onManage} accessibilityRole="link" hitSlop={8}>
-            {/* DRAFT COPY — owner ratifies */}
+            {/* Ratified by the owner 2026-09-14 */}
             <Text style={styles.manage}>Manage subscription</Text>
           </Pressable>
         )}
