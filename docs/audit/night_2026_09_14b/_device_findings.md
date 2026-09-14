@@ -78,3 +78,22 @@ gradient-correct (no SVG-black, no jank, no smear):
 3. Synthesis Skia scope — Oscillator A−.
 Combined with the tree-wide bug-class sweep (0 animation leaks / 0 SVG-black /
 0 conditional hooks in ANY lab source) this establishes animation quality broadly.
+
+### FM Synth Lab — GRADE B+ (frame burst fb1≡fb4 + static-spectrum check)
+- Sideband spectrum renders correctly: green carrier (fc 220), amber Bessel
+  sidebands at fc±k·fm, dim-dashed reflections. Honest caption "EXACT BESSEL
+  AMPLITUDES J_k(I)". Spectrum is STATIC at rest (fb1≡fb4) — CORRECT: it responds
+  to STRIKE / index-envelope, not a free-running clock, so no motion defect. [OK]
+- **[LAYOUT] MINOR (device-caught) — FmLabScreen.tsx:445-446** — the color-key
+  legend clips at the right screen edge on the Pixel 7 Pro: the reader sees
+  "…dim dashed = reflected below 0 Hz · red dashed =" and the crucial
+  "ALIASED past Nyquist" (the ONLY explanation of the red aliasing trace) is cut
+  off. ROOT CAUSE: the 2026-09-11 layout pass (comment at :439) removed the
+  one-line clamp expecting it to wrap, but `LEGEND_H = 18` (line 363) budgets
+  only ~one 10.5px line inside the fixed `height: h` glass, and the 106-char
+  string doesn't fit one line at the card width — so it renders one line and
+  clips instead of wrapping. FIX (needs device verify, deferred — reload-crash
+  risk tonight): either raise LEGEND_H to ~34 and recompute gh so two lines fit
+  and wrap at width w, or split the legend into two shorter Text lines, or
+  shorten to a compact key. Legend is readable except the last clause — MINOR,
+  not broken.
