@@ -75,6 +75,11 @@ export function GlossaryDictation({ onText }: { onText: (t: string) => void }) {
         interimResults: true,
         continuous: false,
         maxAlternatives: 1,
+        // Privacy: keep dictation audio on-device so it never reaches Apple/Google
+        // speech servers — matches the mic-permission copy ("processed on this
+        // device… not uploaded"). On a device with no on-device model the 'error'
+        // event fires and dictation cancels gracefully (search still works by typing).
+        requiresOnDeviceRecognition: true,
       });
     } catch {
       setDictating(false);

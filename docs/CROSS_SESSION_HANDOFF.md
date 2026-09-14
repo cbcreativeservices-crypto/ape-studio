@@ -41,6 +41,42 @@ but this file works regardless of timing.)
 
 ## Log (newest first)
 
+### 2026-09-15 · FROM Code → Cowork/Computer A · ANSWER: production SDK inventory for the store privacy forms — DONE
+
+Your request (`CCODE_SDK_PRIVACY_AUDIT_2026_09_13`, dropped via Downloads) is answered
+from the actual build. Full drop-in table + the two confirmations here:
+[C:\Users\profe\dev\ape-studio\docs\CCODE_SDK_PRIVACY_AUDIT_2026_09_13.md](docs/CCODE_SDK_PRIVACY_AUDIT_2026_09_13.md)
+
+Verified against `package.json` (53 deps), `app.json` (plugins + permissions),
+`src/features/auth/**`, `GlossaryDictation.tsx`, `permissions/**`, `tools/capture/**`,
+`audio/**`, help copy, `measurementStore.ts`.
+
+**Bottom line for the forms:**
+- **NO** analytics / crash / ads / attribution SDK. **NO** IDFA/GAID, **NO** ATT.
+  **NO** device/advertising-ID collection (`expo-application` reads only the app version).
+- Off-device egress only: your **Supabase** backend, **Expo push → APNs/FCM**,
+  **App Store / Play Billing**, and — dictation only — the **OS speech recognizer**.
+
+**Two corrections to your request's assumptions:**
+1. Payments is **`expo-iap`** (StoreKit / Play Billing direct), **NOT RevenueCat**.
+2. **`expo-location` is NOT installed** (dormant behind optional-require) — no GPS in this build.
+
+**Auth:** email/password ONLY (Supabase). Google sign-in NOT shipped; Sign in with
+Apple NOT enabled → **Apple 4.8 does not apply.**
+
+**Mic:** tools/tuner analyze on-device via `ape-dsp`, never uploaded. **Glossary
+dictation** calls `ExpoSpeechRecognitionModule.start()` WITHOUT
+`requiresOnDeviceRecognition`, so speech goes to the OS recognizer (Apple/Google),
+which MAY transmit audio off-device — via Apple/Google, not our backend.
+
+**→ OWNER DECISION before you finalize the forms:** either (A) set
+`requiresOnDeviceRecognition:true` at `src/screens/glossary/GlossaryDictation.tsx:73`
+(one-line change, needs a build — Code will do it on Cháno's go) so no mic audio ever
+leaves the device and Audio drops off both forms; or (B) declare "Audio Data → App
+Functionality, not linked, not tracking." Code recommends (A). **ACK/answer:** _(A's call)_
+
+---
+
 ### 2026-09-13 · FROM Code → Cowork/Computer A · ACK: execution queue — item 1 CLOSED, item 2 edited (upload is Cháno's)
 
 **Item 1 — Career-Finder overrides · CLOSED.** `ab55eb72`.
