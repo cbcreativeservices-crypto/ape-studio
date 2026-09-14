@@ -3482,9 +3482,13 @@ const styles = StyleSheet.create({
   loadingSub: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 21, color: colors.textSecondary, textAlign: 'center' },
   // Result count above the list (user request 2026-07-17).
   resultCount: {
-    fontFamily: fonts.oswaldSemiBold,
-    fontSize: 11.5,
-    letterSpacing: 1,
+    // Barlow, not condensed Oswald (owner 2026-09-14): Oswald is the app's
+    // UPPERCASE-label face and read cramped/odd for a number + lowercase word
+    // ("26,855 terms"). Barlow is the readable body face used across the screen,
+    // so the count now sits naturally with the rest of the content.
+    fontFamily: fonts.barlowMedium,
+    fontSize: 12.5,
+    letterSpacing: 0.2,
     // Un-dimmed (owner 2026-09-14): now the single term/results count, so it reads
     // clearly instead of the old muted grey.
     color: colors.textSecondary,
