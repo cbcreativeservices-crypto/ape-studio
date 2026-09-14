@@ -12,6 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { colors, fonts } from '../../theme/tokens';
 import { TrophyImage } from '../../components/TrophyImage';
+import { StudioButton } from '../../components/StudioButton';
 import { fetchGalleryV3, type GalleryEntry } from '../../features/achievements/api';
 
 // A row item is either a trophy entry or the odd-row-padding spacer sentinel.
@@ -42,14 +43,23 @@ export function GalleryScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const [entries, setEntries] = useState<GalleryEntry[] | null>(null);
+  // Distinguish a failed fetch from a genuinely empty gallery: a rejection used
+  // to collapse into "Earn your first trophy to see it here", telling a member
+  // who has earned trophies they've earned nothing (error-vs-empty class the
+  // launch audit fixed on Home/CredentialWall/Topics but missed here).
+  const [loadError, setLoadError] = useState(false);
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchGalleryV3()
-        .then(setEntries)
-        .catch(() => setEntries([]));
-    }, []),
-  );
+  const load = useCallback(() => {
+    setLoadError(false);
+    fetchGalleryV3()
+      .then(setEntries)
+      .catch(() => {
+        setEntries([]);
+        setLoadError(true);
+      });
+  }, []);
+
+  useFocusEffect(useCallback(() => load(), [load]));
 
   // Pad to an even length so a lone trailing card keeps its half-width (flex:1
   // would otherwise stretch it across the row). The spacer renders nothing.
@@ -125,7 +135,18 @@ export function GalleryScreen() {
         }
         ListEmptyComponent={
           entries && entries.length === 0 ? (
-            <Text style={styles.empty}>Earn your first trophy to see it here.</Text>
+            loadError ? (
+              <View style={styles.errorCard}>
+                <Text style={styles.errorText}>
+                  Couldn’t load your gallery — check your connection.
+                </Text>
+                <View style={{ width: 180 }}>
+                  <StudioButton label="Retry" variant="secondary" small onPress={load} />
+                </View>
+              </View>
+            ) : (
+              <Text style={styles.empty}>Earn your first trophy to see it here.</Text>
+            )
           ) : null
         }
       />
@@ -141,6 +162,17 @@ const styles = StyleSheet.create({
   back: { fontFamily: fonts.oswaldSemiBold, fontSize: 28, lineHeight: 28, color: colors.textSub, marginRight: -2 },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, letterSpacing: 1.4, color: colors.textPrimary },
   empty: { fontFamily: fonts.barlowRegular, fontSize: 14, color: colors.textSub, marginTop: 8 },
+  errorCard: {
+    backgroundColor: '#161616',
+    borderWidth: 1,
+    borderColor: colors.hairlineDim,
+    borderRadius: 12,
+    padding: 20,
+    gap: 14,
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  errorText: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 21, color: colors.textSub, textAlign: 'center' },
   row: { gap: 12 },
   spacer: { flex: 1 },
   card: {

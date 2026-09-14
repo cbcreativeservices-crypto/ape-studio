@@ -154,7 +154,11 @@ export async function fetchGalleryV3(): Promise<GalleryEntry[]> {
     .not('date_earned', 'is', null)
     .eq('achievements.curriculum_version_id', V3_CURRICULUM_VERSION_ID)
     .order('date_earned', { ascending: false });
-  if (error) return [];
+  // Surface a read failure rather than swallowing it as an empty gallery: a
+  // rejection lets GalleryScreen show its error+retry card instead of telling a
+  // member who has earned trophies "Earn your first trophy to see it here"
+  // (the error-vs-empty class the launch audit fixed on the sibling screens).
+  if (error) throw error;
   return (data ?? []).map((r: any) => ({
     achievementId: r.achievement_id,
     name: r.achievements.name,
