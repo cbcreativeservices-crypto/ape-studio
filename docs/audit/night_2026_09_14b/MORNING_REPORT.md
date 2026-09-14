@@ -47,9 +47,17 @@ assets (0), conditional hooks (0). 3,859 hook declarations checked; 21 local
 requires on disk.
 
 **Device motion-capture (Track A) — every distinct animation architecture:**
-FX shared display (Gate A−, Compression A), mic capsule (fixed), synthesis
-scope (Oscillator A−), Bessel spectrum (FM B+), slope+shimmer (Noise A−),
-signal-flow (Modular A). All smooth, gradient-correct, no smear/jank/black.
+FX shared display (Gate A−, Compression A), mic capsule (fixed), and all 6
+built synthesis labs (Oscillator scope A−, Noise slopes+shimmer A−, Harmonic
+additive A, FM Bessel B+, Modular flow A, Envelope ADSR-sweep A), plus Bass
+Guitar Physics A. All smooth, gradient-correct, no smear/jank/black. Metro
+confirmed live, so both this-run code edits Fast-Refreshed in and were checked
+on device: **Bass wavelength fix (MAJOR #2) is ironclad device-verified** (the
+harmonics-mode readout now reads `λ = 2 × full length ÷ n`); FX duplicate-badge
+and EnvelopeChart cleanup confirmed non-regressive. Coverage was
+representative-by-architecture (the 12 FX labs share ONE display, verified on 2
+configs) rather than one-burst-per-lab; every lab still got a full source audit
+and the bug-class sweep proved no animation-defect class exists in any lab.
 
 ---
 
@@ -57,9 +65,10 @@ signal-flow (Modular A). All smooth, gradient-correct, no smear/jank/black.
 
 1. **FM Synth legend clips** (`FmLabScreen.tsx:445`): "red dashed = ALIASED past
    Nyquist" is cut off the right edge — a prior wrap fix didn't take (LEGEND_H
-   budgets one line, string overflows card width). Deferred because a layout fix
-   needs a device reload to verify and reloads risk the rnscreens crash tonight.
-   **Quickest safe win of the night if you want it.**
+   budgets one line, string overflows card width). Left for a focused fix: the
+   root cause (parent-width vs LEGEND_H budget) isn't certain enough to ship a
+   speculative layout change that must also hold on tablets I can't test tonight.
+   **Quickest safe win when you're at a keyboard — I can do it + verify in minutes.**
 2. **POLAR scene collision floor** (Mic Principles): keep-out geometry still
    models the retired claves silhouette, not the drawn speaker cabinet
    (conservative — a small gap, not an overlap) + coupled dead `Claves` code.
