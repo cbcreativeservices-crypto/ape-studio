@@ -97,3 +97,15 @@ Combined with the tree-wide bug-class sweep (0 animation leaks / 0 SVG-black /
   and wrap at width w, or split the legend into two shorter Text lines, or
   shorten to a compact key. Legend is readable except the last clause — MINOR,
   not broken.
+
+### Noise Lab — GRADE A− (frame burst nb1→nb5)
+- Spectral-slope chart renders excellently: 5 slope lines correct (VIOLET +6 /
+  BLUE +3 / WHITE flat / PINK −3 / BROWN −6 dB/oct), labeled, solid strokes (no
+  url() gradient → no black risk), axis 20 Hz–20 kHz. Honest caption "IDEALIZED
+  SPECTRAL SLOPES — ANALYTIC, NOT A MEASUREMENT". Bezel PINK/−3 dB·OCT/−20 dBFS ok.
+- Shimmer DEVICE-CONFIRMED animating: the jagged pink "live-noise hint" overlay
+  on the smooth pink slope changed shape nb1→nb5 while idle (audio off). Honestly
+  labeled in LAB NOTES ("a stylized live-noise hint around the exact slope"). The
+  ~70ms (~14fps) idle re-render is the Track-B owner-decision item — confirmed on
+  device: it shimmers continuously, not gated on playback. Honest + attractive;
+  owner call whether to gate on `running`. Not a defect.
