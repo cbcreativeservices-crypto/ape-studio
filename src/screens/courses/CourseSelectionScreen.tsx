@@ -53,10 +53,12 @@ import { SPECIALIZED_CERTIFICATES } from '../awards/awardsData';
 import { fetchV3Certs, fetchV3Curriculum, fetchV3Programs } from '../../data/v3Curriculum';
 import { useDefaultHomeGs, useHomeBundles, useHomeGs } from '../../features/home/homeCardsStore';
 import { setBundleLoaded, useBundles } from '../../features/enrollment/enrolledBundlesStore';
-import { isFreeEnrollGs, setActiveMany } from '../../features/enrollment/enrollmentStore';
+import { isFreeEnrollGs, setActiveMany, useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { BookIcon } from '../../components/BookIcon';
 import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 import { AboutHomeSheet } from '../about/AboutHomeSheet';
+import { AttractRing, AttractText } from '../../features/onboarding/AttractCue';
+import { useHomeAttract, noteHomeSeen, markExploreOpened, markAboutOpened, markEnrolled } from '../../features/onboarding/attractStore';
 
 type Card =
   | { kind: 'tools'; id: 'tools' }
@@ -1072,6 +1074,12 @@ export function CourseSelectionScreen() {
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   // Top-left "About" text button → the About popup (owner 2026-08-12).
   const [aboutOpen, setAboutOpen] = useState(false);
+  // First-run "start here" cues (owner 2026-09-14): Explore breathes until first
+  // opened; About breathes until opened OR one week after this first Home view.
+  const attract = useHomeAttract();
+  useEffect(() => {
+    noteHomeSeen();
+  }, []);
   // A session-less GUEST may study the FREE topics only; opening any paid topic
   // shows a friendly sign-up prompt (set in load(), keyed on the real session).
   const [isGuest, setIsGuest] = useState(false);
@@ -1191,6 +1199,21 @@ export function CourseSelectionScreen() {
   const homeBundleKeys = useHomeBundles();
   const defaultHomeGs = useDefaultHomeGs();
   const bundles = useBundles();
+  // Onboarding (owner 2026-09-14): the Enrollments cue retires once the user has
+  // added their OWN first topic/bundle — i.e. anything beyond the two auto-seeded
+  // FREE topics. Detected here and marked once, so it sticks even if later removed.
+  const enrolledTopics = useEnrollment();
+  const addedOwnEnrollment = useMemo(
+    () => bundles.length > 0 || enrolledTopics.some((t) => !isFreeEnrollGs(t.gs)),
+    [bundles, enrolledTopics],
+  );
+  useEffect(() => {
+    // Only AFTER Explore has been opened (!attract.explore === exploreDone). This
+    // keeps the sequence intact: Enrollments stays gray until Explore is done, so
+    // an account that ALREADY has enrollments doesn't turn it green "from the
+    // start" and skip the explore-first onboarding (owner 2026-09-14).
+    if (!attract.explore && addedOwnEnrollment) markEnrolled();
+  }, [attract.explore, addedOwnEnrollment]);
   const displayDeck = useMemo<Card[] | null>(() => {
     if (!cards) return cards;
     // HOME is LOCKED to the DEFAULT deck (all cards) for everyone EXCEPT an
@@ -1428,12 +1451,17 @@ export function CourseSelectionScreen() {
           below is undisturbed. */}
       <Pressable
         style={[styles.aboutBtn, { top: insets.top + 8 }]}
-        onPress={() => setAboutOpen(true)}
+        onPress={() => {
+          markAboutOpened();
+          setAboutOpen(true);
+        }}
         hitSlop={12}
         accessibilityRole="button"
         accessibilityLabel="About Pro Audio Training Academy"
       >
-        <Text style={styles.aboutBtnText}>About</Text>
+        <AttractText active={attract.about} glow style={styles.aboutBtnText}>
+          About
+        </AttractText>
       </Pressable>
       <AboutHomeSheet visible={aboutOpen} onClose={() => setAboutOpen(false)} />
 
@@ -1500,11 +1528,20 @@ export function CourseSelectionScreen() {
         <View style={styles.awardsRow}>
           <Pressable
             style={styles.awardBtn}
-            onPress={() => (navigation as any).navigate('Awards', { category: 'curriculum' })}
+            onPress={() => {
+              markExploreOpened();
+              (navigation as any).navigate('Awards', { category: 'curriculum' });
+            }}
             accessibilityRole="button"
             accessibilityLabel="Explore the Academy"
           >
-            <Text style={styles.awardBtnText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
+            <AttractRing active={attract.explore} />
+            <Text
+              style={[styles.awardBtnText, attract.explore && styles.awardBtnTextAttract]}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.6}
+            >
               Explore
             </Text>
           </Pressable>
@@ -1540,15 +1577,23 @@ export function CourseSelectionScreen() {
           </Pressable>
           {/* Enrollments — GREEN when the user has paid (academy) standing. */}
           <Pressable
-            style={[styles.awardBtn, entitlement === 'academy' && styles.enrollBtnOn]}
+            style={[
+              styles.awardBtn,
+              (entitlement === 'academy' || attract.enrollments || attract.enrolledOnce) && styles.enrollBtnOn,
+            ]}
             onPress={() => (navigation as any).navigate('Awards', { category: 'enrollment' })}
             accessibilityRole="button"
             accessibilityState={{ selected: entitlement === 'academy' }}
             aria-pressed={entitlement === 'academy'}
             accessibilityLabel="Enrollments"
           >
+            {/* Ring animates only during the cue; the green frame+text persists. */}
+            <AttractRing active={attract.enrollments} variant="green" />
             <Text
-              style={[styles.awardBtnText, entitlement === 'academy' && styles.enrollBtnTextOn]}
+              style={[
+                styles.awardBtnText,
+                (entitlement === 'academy' || attract.enrollments || attract.enrolledOnce) && styles.enrollBtnTextOn,
+              ]}
               numberOfLines={1}
               adjustsFontSizeToFit
               minimumFontScale={0.6}
@@ -1706,6 +1751,8 @@ const styles = StyleSheet.create({
     borderColor: '#2c2c2c',
   },
   awardBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 0.3, color: colors.textSecondary },
+  // Explore's label goes amber while its first-run "start here" cue is active.
+  awardBtnTextAttract: { color: '#ffc64d' },
   // Enrollment button green when the user is paid (academy); gray otherwise.
   enrollBtnOn: { borderColor: 'rgba(55,224,95,.7)', backgroundColor: 'rgba(55,224,95,.1)' },
   enrollBtnTextOn: { color: '#37e05f' },
