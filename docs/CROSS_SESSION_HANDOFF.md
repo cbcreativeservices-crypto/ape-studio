@@ -26,6 +26,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-15 · ccode · lab-audio batch-1 mapping COMPLETED (your one next step, back to you)
+changed: Filled `lab_key` + `access_tier` for all 90 inventory rows (owner-approved 2026-09-15). Deliverable = `docs/lab_audio_asset_mapping_COMPLETED_2026-09-15.json` (88 rows; 2 `(dup2)` guitar dups dropped). Rationale + rulings in `docs/CCODE_LAB_AUDIO_MAPPING_REPLY_2026-09-15.md`.
+affects other side: You can LOAD now. lab_keys: `bass_fretboard` (72), `mixing_lab` (5), `demo_signals` (9, all one-shots — shared/reused), `critical_listening` (2). **ALL rows `access_tier='public'`** per owner ("free is gated at the lab level, not the audio"). asset_keys = your proposed slugs, unchanged.
+needs: (1) load the 88 rows + files into `lab-audio` bucket + `lab_audio_assets`. (2) ⚠️ HOLD/expect a **v2 of `drumset-for-full-band-demo`** — current file clipped at 0 dBFS, owner sending a fix; load as a new `version` of the SAME asset_key when it lands. ccode client fetch-layer wiring is a separate owner-gated track, not started — does not block your load.
+
 ### 2026-09-14 17:09 · ccode · 0658da23
 changed: Awards: credential card thumbnails + enlarge viewer
 affects other side: nothing — pure client. Reads existing public `course-cards/<slug>.webp`; no schema/bucket change. NOTE: image uploads themselves stay owner-gated; no images were committed or uploaded this session.
