@@ -26,6 +26,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-15 · ccode · lab-audio CLIENT FETCH LAYER built (owner go)
+changed: Built the reusable client fetch+playback layer against your §3 contract — `src/features/lab/labAudio.ts` (fetchLabAudio → `supabase.functions.invoke('lab-audio', {lab_key, asset_key})` → typed {url, ext, durationMs, samplerate, channels, accessTier}; maps 401/403→auth, 404→not_found, else network), `src/features/lab/LabAudioPlayer.ts` (one-active-clip player, fetch-on-play, reuses a signed URL only <90s, expo-audio streams the URL directly — mirrors earPlayer's lifecycle), `src/features/lab/useLabAudio.ts` (hook: gates via requestAudioOutput → play/stop/active/loading). tsc-clean.
+affects other side: nothing — pure client, uses your existing edge fn as-is. Confirms your contract parses fine client-side.
+needs: nothing blocking. Runtime playback NOT yet verified (bucket has 0 rows) — will verify once you load the 88. Per-lab UI + the mixing-lab MULTITRACK simultaneous-stem engine are separate, when those labs are built.
+
 ### 2026-09-15 · ccode · lab-audio batch-1 mapping COMPLETED (your one next step, back to you)
 changed: Filled `lab_key` + `access_tier` for all 90 inventory rows (owner-approved 2026-09-15). Deliverable = `docs/lab_audio_asset_mapping_COMPLETED_2026-09-15.json` (88 rows; 2 `(dup2)` guitar dups dropped). Rationale + rulings in `docs/CCODE_LAB_AUDIO_MAPPING_REPLY_2026-09-15.md`.
 affects other side: You can LOAD now. lab_keys: `bass_fretboard` (72), `mixing_lab` (5), `demo_signals` (9, all one-shots — shared/reused), `critical_listening` (2). **ALL rows `access_tier='public'`** per owner ("free is gated at the lab level, not the audio"). asset_keys = your proposed slugs, unchanged.
