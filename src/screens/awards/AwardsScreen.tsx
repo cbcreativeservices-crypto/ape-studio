@@ -33,6 +33,7 @@ import {
   type AwardTier,
 } from './awardsData';
 import { fetchV3Programs, fetchV3Certs, fetchV3Curriculum, flattenV3, type V3Credential } from '../../data/v3Curriculum';
+import { CredentialThumb } from './CredentialThumb';
 import type { RootStackParamList } from '../../navigation/types';
 
 const SPEC_CERT_KEY = 'ape:specCert'; // chosen Specialized Certificate name (Level 1)
@@ -326,6 +327,13 @@ export function AwardsScreen({ navigation, route }: Props) {
   // reveal its topics). One open at a time per picker (user request 2026-07-18).
   const [expandedCert, setExpandedCert] = useState<string | null>(null);
   const [expandedProg, setExpandedProg] = useState<string | null>(null);
+  // Auto-scroll an expanded picker card to the TOP of the list (owner 2026-09-14):
+  // refs to each picker's ScrollView + a per-card Y offset captured on layout.
+  const certScrollRef = useRef<ScrollView>(null);
+  const progScrollRef = useRef<ScrollView>(null);
+  // The card just tapped open; its own onLayout does the scroll (fresh position).
+  const justOpenedCert = useRef<string | null>(null);
+  const justOpenedProg = useRef<string | null>(null);
 
   // LIVE v3 certificates + programs (owner 2026-08-06) — replace the retired v2
   // award data; aliased to the field names the picker/render already use.
@@ -359,14 +367,14 @@ export function AwardsScreen({ navigation, route }: Props) {
   const specCertsAZ = useMemo(
     () =>
       v3Certs
-        .map((c) => ({ id: c.id, name: c.name, specializationTopics: c.topicsGs }))
+        .map((c) => ({ id: c.id, slug: c.slug, name: c.name, specializationTopics: c.topicsGs }))
         .sort((a, b) => a.name.localeCompare(b.name)),
     [v3Certs],
   );
   const programPathsAZ = useMemo(
     () =>
       v3Programs
-        .map((p) => ({ id: p.id, name: p.name, requiredTopics: p.topicsGs, electiveChooseOne: p.electivesGs ?? [] }))
+        .map((p) => ({ id: p.id, slug: p.slug, name: p.name, requiredTopics: p.topicsGs, electiveChooseOne: p.electivesGs ?? [] }))
         .sort((a, b) => a.name.localeCompare(b.name)),
     [v3Programs],
   );
@@ -400,15 +408,24 @@ export function AwardsScreen({ navigation, route }: Props) {
   // current selection.
   // Click open / click close (user request 2026-07-22 — reverses the earlier
   // "stay open" rule); tapping another switches. Programs already toggle.
+  // When a card is OPENED, align its TOP (title + art) to the top of the list so
+  // the user starts at the beginning, not partway down (owner 2026-09-14). The
+  // actual scroll happens in the card's onLayout (below): after the collapse of
+  // the previously-open card and this one's expansion, its onLayout reports the
+  // FINAL offset — scrolling to a pre-tap offset overshoots past the top.
   const toggleCert = (name: string) => {
+    const opening = expandedCert !== name;
     setExpandedCert((prev) => (prev === name ? null : name));
     setSpecCert(name);
     if (hasAccount) void AsyncStorage.setItem(SPEC_CERT_KEY, name).catch(() => {});
+    if (opening) justOpenedCert.current = name;
   };
   const toggleProg = (name: string) => {
+    const opening = expandedProg !== name;
     setExpandedProg((prev) => (prev === name ? null : name));
     setProgramPath(name);
     if (hasAccount) void AsyncStorage.setItem(PROGRAM_PATH_KEY, name).catch(() => {});
+    if (opening) justOpenedProg.current = name;
   };
 
   // Topic name lookup: v3 curriculum first (the award tables use v3 gs), then
@@ -646,7 +663,7 @@ export function AwardsScreen({ navigation, route }: Props) {
             </View>
             <Text style={styles.pickerClose}>✕</Text>
           </Pressable>
-          <ScrollView contentContainerStyle={[styles.pickerScroll, { paddingBottom: insets.bottom + 20 }]}>
+          <ScrollView ref={certScrollRef} contentContainerStyle={[styles.pickerScroll, { paddingBottom: insets.bottom + 20 }]}>
             {/* Required core — stated ONCE for all certificates (user request
                 2026-07-18) instead of repeated on every award. */}
             <View style={styles.coreBanner}>
@@ -665,18 +682,35 @@ export function AwardsScreen({ navigation, route }: Props) {
             {specCertsAZ.map((c) => {
               const open = expandedCert === c.name;
               return (
-                <View key={c.name} style={[styles.pathCard, open && styles.pathCardGoldOn]}>
-                  <Pressable
-                    style={styles.pathHead}
-                    onPress={() => toggleCert(c.name)}
-                    accessibilityRole="button"
-                    accessibilityState={{ expanded: open }}
-                    aria-expanded={open}
-                    accessibilityLabel={c.name}
-                  >
-                    <Text style={[styles.cardChevron, open && { color: '#ffc64d' }]}>{open ? '▾' : '▸'}</Text>
-                    <Text style={[styles.pathName, { color: GLOSSARY_BLUE }]}>{c.name}</Text>
-                  </Pressable>
+                <View
+                  key={c.name}
+                  style={[styles.pathCard, open && styles.pathCardGoldOn]}
+                  onLayout={(e) => {
+                    const y = e.nativeEvent.layout.y;
+                    if (open && justOpenedCert.current === c.name) {
+                      justOpenedCert.current = null;
+                      certScrollRef.current?.scrollTo({ y: Math.max(0, y - 6), animated: true });
+                    }
+                  }}
+                >
+                  <View style={styles.pathHeadRow}>
+                    <Pressable
+                      style={[styles.pathHead, styles.pathHeadFlex]}
+                      onPress={() => toggleCert(c.name)}
+                      accessibilityRole="button"
+                      accessibilityState={{ expanded: open }}
+                      aria-expanded={open}
+                      accessibilityLabel={c.name}
+                    >
+                      <Text style={[styles.cardChevron, open && { color: '#ffc64d' }]}>{open ? '▾' : '▸'}</Text>
+                      <Text style={[styles.pathName, { color: GLOSSARY_BLUE }]}>{c.name}</Text>
+                    </Pressable>
+                    {/* This certificate's art (owner 2026-09-14): framed square to
+                        the RIGHT of the title so it costs no extra row; tap to view
+                        large with the title. Its own Pressable, so tapping the art
+                        enlarges while tapping the name still expands/collapses. */}
+                    {open ? <CredentialThumb slug={c.slug} title={c.name} accent="#ffc64d" size={60} /> : null}
+                  </View>
 
                   {open ? (
                     <>
@@ -762,7 +796,7 @@ export function AwardsScreen({ navigation, route }: Props) {
             </View>
             <Text style={styles.pickerClose}>✕</Text>
           </Pressable>
-          <ScrollView contentContainerStyle={[styles.pickerScroll, { paddingBottom: insets.bottom + 20 }]}>
+          <ScrollView ref={progScrollRef} contentContainerStyle={[styles.pickerScroll, { paddingBottom: insets.bottom + 20 }]}>
             {/* Required core — stated ONCE for all programs (user request
                 2026-07-18) instead of repeated on every award. */}
             <View style={styles.coreBanner}>
@@ -782,24 +816,39 @@ export function AwardsScreen({ navigation, route }: Props) {
               const open = expandedProg === p.name;
               const total = COREQ_TOPIC_GS.length + p.requiredTopics.length;
               return (
-                <View key={p.name} style={[styles.pathCard, open && styles.pathCardOn]}>
-                  <Pressable
-                    style={styles.pathHead}
-                    onPress={() => toggleProg(p.name)}
-                    accessibilityRole="button"
-                    accessibilityState={{ expanded: open }}
-                    aria-expanded={open}
-                    accessibilityLabel={p.name}
-                  >
-                    <Text style={[styles.cardChevron, open && { color: '#c4a2ff' }]}>{open ? '▾' : '▸'}</Text>
-                    <View style={{ flex: 1 }}>
-                      <Text style={[styles.pathName, { color: PURPLE }]}>{p.name}</Text>
-                      <Text style={styles.pathMeta}>
-                        {total} required topics
-                        {p.electiveChooseOne?.length ? ' + 1 elective' : ''}
-                      </Text>
-                    </View>
-                  </Pressable>
+                <View
+                  key={p.name}
+                  style={[styles.pathCard, open && styles.pathCardOn]}
+                  onLayout={(e) => {
+                    const y = e.nativeEvent.layout.y;
+                    if (open && justOpenedProg.current === p.name) {
+                      justOpenedProg.current = null;
+                      progScrollRef.current?.scrollTo({ y: Math.max(0, y - 6), animated: true });
+                    }
+                  }}
+                >
+                  <View style={styles.pathHeadRow}>
+                    <Pressable
+                      style={[styles.pathHead, styles.pathHeadFlex]}
+                      onPress={() => toggleProg(p.name)}
+                      accessibilityRole="button"
+                      accessibilityState={{ expanded: open }}
+                      aria-expanded={open}
+                      accessibilityLabel={p.name}
+                    >
+                      <Text style={[styles.cardChevron, open && { color: '#c4a2ff' }]}>{open ? '▾' : '▸'}</Text>
+                      <View style={{ flex: 1 }}>
+                        <Text style={[styles.pathName, { color: PURPLE }]}>{p.name}</Text>
+                        <Text style={styles.pathMeta}>
+                          {total} required topics
+                          {p.electiveChooseOne?.length ? ' + 1 elective' : ''}
+                        </Text>
+                      </View>
+                    </Pressable>
+                    {/* This program's art (owner 2026-09-14) — purple frame to
+                        match the program accent; tap to enlarge with the title. */}
+                    {open ? <CredentialThumb slug={p.slug} title={p.name} accent="#c4a2ff" size={60} /> : null}
+                  </View>
 
                   {open ? (
                     <>
@@ -1049,6 +1098,10 @@ const styles = StyleSheet.create({
   pathCardGoldOn: { borderColor: 'rgba(255,198,77,.75)', backgroundColor: '#221c0d' },
   radioGoldOn: { borderColor: '#ffc64d' },
   radioGoldDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#ffc64d' },
+  // Expanded picker header: title flexes, the credential art sits at the right
+  // edge of the same row (owner 2026-09-14) so it adds no extra vertical space.
+  pathHeadRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  pathHeadFlex: { flex: 1 },
   specGroupHead: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 11,
