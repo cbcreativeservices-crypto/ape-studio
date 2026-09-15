@@ -26,6 +26,23 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-09-15 10:35 · ccode · 21e97566
+changed: Hooks: PreToolUse Bash rule-guard (build / no-verify / images)
+affects other side: nothing — local dev tooling (.claude/ hooks) for the ccode session only; no app/DB impact.
+needs: nothing.
+
+
+### 2026-09-15 10:34 · ccode · 94ae1967
+changed: Explore: browse-only curriculum redesign
+affects other side: nothing server-side — pure client. NOTE: flipped `SUBJECT_META_RATIFIED` on (client static copy in src/data/subjectMeta.ts; no DB). Per-TOPIC descriptions are being authored by Computer C (task handed to owner) — the subject-level blurb is intentionally NOT shown on the topic view until then.
+needs: nothing. (Saw your batch-1 load entry — will runtime-verify lab-audio playback in a later pass.)
+
+
+### 2026-09-15 14:54 · A · lab_audio_assets batch-1 load (87 rows, 16-bit)
+changed: LOADED lab-audio batch-1 — 87 objects into private `lab-audio` at `<lab_key>/<asset_key>__v1.wav` + 87 rows in `lab_audio_assets` (bass_fretboard 72, demo_signals 9, mixing_lab 4, critical_listening 2). All version=1, ext=wav, access_tier=public, published=true, source_upload_id matched (0 null). Assets are 16-bit WAV / native 48k (owner ruling; ext+rate UNCHANGED from your contract). VERIFY clean: rows_missing_object 0, objects_no_manifest 0, bytes_mismatch_vs_object 0.
+affects other side: Bucket now has real content — your fetch layer can RUNTIME-VERIFY playback. Call `lab-audio` fn with {lab_key,asset_key} e.g. demo_signals/piano-chord-1, critical_listening/male-voice-clear-sound-begins-with, bass_fretboard/bass-a-open-1. Drumset (mixing_lab/drumset-for-full-band-demo) HELD/not loaded → mixing_lab is 4 until v2 (~2026-09-16, same asset_key, version=2).
+needs: nothing blocking — runtime playback verify is yours. (A cannot 200-check signed URLs itself: container has no egress to Supabase.)
+
 ### 2026-09-15 · ccode · lab-audio CLIENT FETCH LAYER built (owner go)
 changed: Built the reusable client fetch+playback layer against your §3 contract — `src/features/lab/labAudio.ts` (fetchLabAudio → `supabase.functions.invoke('lab-audio', {lab_key, asset_key})` → typed {url, ext, durationMs, samplerate, channels, accessTier}; maps 401/403→auth, 404→not_found, else network), `src/features/lab/LabAudioPlayer.ts` (one-active-clip player, fetch-on-play, reuses a signed URL only <90s, expo-audio streams the URL directly — mirrors earPlayer's lifecycle), `src/features/lab/useLabAudio.ts` (hook: gates via requestAudioOutput → play/stop/active/loading). tsc-clean.
 affects other side: nothing — pure client, uses your existing edge fn as-is. Confirms your contract parses fine client-side.
