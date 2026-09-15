@@ -20,7 +20,14 @@ import { consumeDevPreview } from '../../features/dev/devPreview';
 import { fetchV3Curriculum, fetchV3Programs, fetchV3Certs, type V3Field } from '../../data/v3Curriculum';
 import { subjectMeta } from '../../data/subjectMeta';
 import { useCurriculumStats } from '../../features/curriculum/curriculumStats';
-import { toggleTopic, useEnrollment } from '../../features/enrollment/enrollmentStore';
+import { AboutHomeSheet } from '../about/AboutHomeSheet';
+import { markAboutOpened, useAboutOpened } from '../../features/onboarding/attractStore';
+import { AttractRing } from '../../features/onboarding/AttractCue';
+import { WORKSPACES } from '../lab/calc/registry';
+import { totalLabCount } from '../lab/labCatalog';
+import { TrophyImage } from '../../components/TrophyImage';
+import { topicImagePath } from '../../data/topicImages';
+import { TopicDetailModal, type TopicDetail } from './TopicDetailModal';
 import { useNavigation } from '@react-navigation/native';
 import { CAREER_COUNT, familyFieldOf } from '../../features/careerfinder/careerIndex';
 import { QUESTIONS, QUESTION_COUNT } from '../../features/careerfinder/questions';
@@ -41,8 +48,33 @@ const CURRICULUM_INTRO_TITLE = 'Explore the Academy Curriculum';
 const CURRICULUM_INTRO =
   'Progress is built one topic at a time. Every subject below expands to show its topics, term coverage, and where those skills apply in a professional audio career.';
 
+/** Overview-sentence counts (owner 2026-09-15). CALC_COUNT = individual
+ *  calculators (workspace functions), matching the calc-lab row's own count;
+ *  LAB_COUNT = every other lab (totalLabCount includes the calculators hub, so
+ *  subtract them to avoid double-counting the two in the same sentence). */
+const CALC_COUNT = WORKSPACES.reduce((a, w) => a + w.functions.length, 0);
+const LAB_COUNT = Math.max(0, totalLabCount() - CALC_COUNT);
+
 /** Thousands separator without relying on Intl (limited under Hermes). */
 const fmt = (n: number) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+/** One topic row (owner 2026-09-15): a topic-art thumbnail + title. Tapping the
+ *  row (image or title) opens the standard expanded viewer (TrophyModal).
+ *  Explore is browse-only — no enrollment happens here. Shared by the TOPICS tab
+ *  and the SUBJECTS expansion so the two lists stay identical. */
+function TopicRow({ gs, name, onView }: { gs: number; name: string; onView: () => void }) {
+  return (
+    <Pressable
+      style={styles.topicRow}
+      onPress={onView}
+      accessibilityRole="button"
+      accessibilityLabel={`View ${name} image`}
+    >
+      <TrophyImage iconUrl={topicImagePath(gs)} size={34} radius={6} fallback={<View style={styles.topicThumbFallback} />} />
+      <Text style={styles.topicText}>{name}</Text>
+    </Pressable>
+  );
+}
 
 // One-time count-up (owner 2026-08-10): the GLOSSARY TERMS figure counts up
 // ONCE — slowly, ease-out — to its real value, then holds forever. No looping
@@ -102,6 +134,12 @@ export function CurriculumView({
   // The Career Finder entry is a button beside SUBJECTS (owner 2026-09-04):
   // tapping it opens the green container as a popup.
   const [showFinder, setShowFinder] = useState(false);
+  // Curriculum view split (owner 2026-09-15): TOPICS (flat list of every topic)
+  // vs SUBJECTS (the expandable subject → topics tree).
+  const [curTab, setCurTab] = useState<'topics' | 'subjects'>('subjects');
+  // Topic-art viewer (owner 2026-09-15): tapping a row thumbnail opens the
+  // standard expanded image popup (TrophyModal).
+  const [viewTopic, setViewTopic] = useState<{ gs: number; name: string } | null>(null);
   // The Career Finder card speaks to where THIS person is: a first pitch, a
   // "you're at question n", or their own top family (the cheapest re-entry
   // into family → topic → membership).
@@ -121,11 +159,6 @@ export function CurriculumView({
     }
     return { blurb: `Which kinds of audio work would you enjoy? ${QUESTION_COUNT} questions, ${FAMILY_COUNT} career families, ${fmt(CAREER_COUNT)} ways to work in audio. About five minutes.`, pill: 'START ›', a11y: `Audio Career Finder, Beta. ${QUESTION_COUNT} questions, ${FAMILY_COUNT} career families, ${fmt(CAREER_COUNT)} ways to work in audio. Free, about five minutes.`, route: 'CareerFinder' };
   }, [finderRec]);
-  // Enrollment list (user request): tapping a topic here adds/removes it, exactly
-  // like the Enrollments "Browse & Add" list. Ungated — free users build a list
-  // too. `toggleTopic` persists + syncs (signed-in) via the shared store.
-  const enrolled = useEnrollment();
-  const enrolledGs = useMemo(() => new Set(enrolled.map((e) => e.gs)), [enrolled]);
 
   // LIVE v3 curriculum (owner 2026-08-06) — replaces the retired v2 matrix.
   const [v3Subjects, setV3Subjects] = useState<{ order: number; name: string; field: string; topics: { gs: number; name: string }[] }[]>([]);
@@ -161,8 +194,29 @@ export function CurriculumView({
   }, [loadCurriculum]);
 
   const allGs = useMemo(() => v3Subjects.flatMap((s) => s.topics.map((t) => t.gs)), [v3Subjects]);
+  // Every topic, flattened + A–Z, for the TOPICS tab.
+  const allTopics = useMemo(
+    () => v3Subjects.flatMap((s) => s.topics).sort((a, b) => a.name.localeCompare(b.name)),
+    [v3Subjects],
+  );
   const stats = useCurriculumStats(allGs);
   const subjectsAZ = v3Subjects; // already Field → Subject order
+  // Expanded-view detail for the tapped topic (owner 2026-09-15): term coverage
+  // + the subject/field it sits in + where those skills apply (subject careers).
+  const activeTopic = useMemo<TopicDetail | null>(() => {
+    if (!viewTopic) return null;
+    const subj = v3Subjects.find((s) => s.topics.some((t) => t.gs === viewTopic.gs));
+    const meta = subj ? subjectMeta(subj.name) : null;
+    return {
+      gs: viewTopic.gs,
+      name: viewTopic.name,
+      subjectName: subj?.name ?? null,
+      field: subj?.field ?? null,
+      careers: meta?.careers ?? null,
+      description: meta?.description ?? null,
+      terms: stats.termsByGs.get(viewTopic.gs) ?? null,
+    };
+  }, [viewTopic, v3Subjects, stats]);
 
   // Dev Visual Index: auto-expand the first subject for preview (TEMPORARY).
   useEffect(() => {
@@ -182,59 +236,75 @@ export function CurriculumView({
     return any ? sum : null;
   };
 
+  // TEMPORARY (owner 2026-09-15): a first-run "About the Academy" link to the
+  // right of the Discover heading. Shows until the About sheet has been viewed
+  // by EITHER path — this link or the Home "About" button — since both call
+  // markAboutOpened(); once viewed it retires permanently (device-local).
+  const aboutOpened = useAboutOpened();
+  const [aboutSheet, setAboutSheet] = useState(false);
+
   return (
     <>
     <ScrollView style={{ flex: 1 }} contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 24 }]}>
       {/* White intro line above the counters (user request 2026-07-22). */}
-      <Text style={styles.discoverHead}>Discover What’s Inside</Text>
-
-      {/* Overview stats ABOVE the intro (user request 2026-07-22): glossary terms
-          (green) · study topics (white) · subject categories (yellow) ·
-          certificates available (blue) · programs available (purple). */}
-      <View style={styles.statsRow}>
-        {(
-          [
-            { v: stats.totalTerms != null ? fmt(stats.totalTerms) : '—', label: 'GLOSSARY TERMS', color: '#37e05f', countUp: stats.totalTerms },
-            { v: allGs.length || '—', label: 'STUDY TOPICS', color: colors.textPrimary },
-            { v: subjectsAZ.length || '—', label: 'SUBJECT CATEGORIES', color: '#ffc64d' },
-            { v: credCounts.certs || '—', label: 'CERTIFICATES AVAILABLE', color: '#5bb0ff', nav: 'specialization' },
-            { v: credCounts.programs || '—', label: 'PROGRAMS AVAILABLE', color: '#c4a2ff', nav: 'program' },
-          ] as { v: string | number; label: string; color: string; nav?: 'specialization' | 'program'; countUp?: number | null }[]
-        ).map((s) => {
-          const inner = (
-            <>
-              {s.countUp !== undefined ? (
-                <CountUp id="glossaryTerms" target={s.countUp} color={s.color} />
-              ) : (
-                <Text style={[styles.statValue, { color: s.color }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
-                  {s.v}
-                </Text>
-              )}
-              {/* Second word stacked below the first (user request 2026-07-22). */}
-              <Text style={styles.statLabel} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.7}>
-                {s.label.replace(' ', '\n')}
-              </Text>
-            </>
-          );
-          // Certificates / Programs tiles jump the Awards pager to that page
-          // (user request 2026-07-22); the other tiles are read-only.
-          return s.nav && onOpenCategory ? (
-            <Pressable
-              key={s.label}
-              style={styles.statTile}
-              onPress={() => onOpenCategory(s.nav!)}
-              accessibilityRole="button"
-              accessibilityLabel={s.label}
-            >
-              {inner}
-            </Pressable>
-          ) : (
-            <View key={s.label} style={styles.statTile}>
-              {inner}
-            </View>
-          );
-        })}
+      <View style={styles.discoverRow}>
+        <Text style={styles.discoverHead}>Discover What’s Inside</Text>
+        <Pressable
+          onPress={() => {
+            markAboutOpened();
+            setAboutSheet(true);
+          }}
+          hitSlop={8}
+          style={styles.aboutCta}
+          accessibilityRole="button"
+          accessibilityLabel="About the Academy"
+        >
+          {/* Button STAYS permanently (owner 2026-09-15); only the first-run cue
+              retires once About is viewed by either path. While un-viewed it
+              wears the exact Home Explore-chip cue — breathing amber ring/glow +
+              amber label; after viewed it's a plain static chip. */}
+          <AttractRing active={!aboutOpened} />
+          <Text style={styles.aboutCtaText}>About the Academy</Text>
+        </Pressable>
       </View>
+
+      {/* Plain-language overview of the academy (owner 2026-09-15): two
+          left-to-right sentences, each number coloured to match its readout
+          (glossary green · topics white · subjects amber · certs blue ·
+          programs purple · calculators amber · labs green). */}
+      <View style={styles.overviewBlock}>
+        <Text style={styles.overviewSentence}>
+          <Text style={styles.ovTerms}>{stats.totalTerms != null ? fmt(stats.totalTerms) : '—'}</Text>
+          {' glossary terms organized into '}
+          <Text style={styles.ovTopics}>{allGs.length || '—'}</Text>
+          {' study topics and '}
+          <Text style={styles.ovSubjects}>{subjectsAZ.length || '—'}</Text>
+          {' subject categories.'}
+        </Text>
+        <Text style={styles.overviewSentence}>
+          <Text style={styles.ovCerts}>{credCounts.certs || '—'}</Text>
+          {' specialist certificates, '}
+          <Text style={styles.ovPrograms}>{credCounts.programs || '—'}</Text>
+          {' full programs, '}
+          <Text style={styles.ovCalc}>{fmt(CALC_COUNT)}</Text>
+          {' calculators, and '}
+          <Text style={styles.ovLabs}>{LAB_COUNT || '—'}</Text>
+          {' labs to practice, study, and learn about audio.'}
+        </Text>
+      </View>
+
+      {/* Audio Career Finder — full-width container (owner 2026-09-15), moved out
+          of the SUBJECTS row and given prominence above the curriculum block.
+          Opens the Career Discovery Lab popup. */}
+      <Pressable
+        style={styles.finderContainer}
+        onPress={() => setShowFinder(true)}
+        accessibilityRole="button"
+        accessibilityLabel={finder.a11y}
+      >
+        <Text style={styles.finderContainerText}>AUDIO CAREER FINDER</Text>
+        <Text style={styles.finderChevron}>▸</Text>
+      </Pressable>
 
       {showBrand ? (
         <View style={styles.introBlock}>
@@ -254,19 +324,33 @@ export function CurriculumView({
         </View>
       )}
 
-      {/* Amber "Subjects" subtitle above the list (user request 2026-07-22),
-          with the Audio Career Finder button to its right (owner 2026-09-04)
-          — tapping it opens the Career Discovery Lab popup. */}
-      <View style={styles.subjectsRow}>
-        <Text style={styles.subjectsHead}>SUBJECTS</Text>
+      {/* Amber "Subjects" subtitle above the list (user request 2026-07-22).
+          The Audio Career Finder moved up to its own full-width container
+          (owner 2026-09-15), so this row is now just the SUBJECTS heading. */}
+      {/* Curriculum split tabs (owner 2026-09-15): TOPICS (flat list) |
+          SUBJECTS (expandable tree). */}
+      <View style={styles.curTabs}>
         <Pressable
-          style={styles.finderBtn}
-          onPress={() => setShowFinder(true)}
-          accessibilityRole="button"
-          accessibilityLabel={finder.a11y}
+          style={[styles.curTab, curTab === 'topics' && styles.curTabActive]}
+          onPress={() => setCurTab('topics')}
+          accessibilityRole="tab"
+          accessibilityState={{ selected: curTab === 'topics' }}
+          accessibilityLabel="Topics"
         >
-          <Text style={styles.finderBtnText}>AUDIO CAREER FINDER</Text>
-          <View style={styles.finderBtnBeta}><Text style={styles.finderBtnBetaText}>BETA</Text></View>
+          <Text style={[styles.curTabText, curTab === 'topics' && styles.curTabTextActive]}>
+            {`TOPICS${allTopics.length ? ` · ${allTopics.length}` : ''}`}
+          </Text>
+        </Pressable>
+        <Pressable
+          style={[styles.curTab, curTab === 'subjects' && styles.curTabActive]}
+          onPress={() => setCurTab('subjects')}
+          accessibilityRole="tab"
+          accessibilityState={{ selected: curTab === 'subjects' }}
+          accessibilityLabel="Subjects"
+        >
+          <Text style={[styles.curTabText, curTab === 'subjects' && styles.curTabTextActive]}>
+            {`SUBJECTS${subjectsAZ.length ? ` · ${subjectsAZ.length}` : ''}`}
+          </Text>
         </Pressable>
       </View>
 
@@ -293,7 +377,15 @@ export function CurriculumView({
         </View>
       ) : null}
 
-      {/* Curriculum tree — each subject expands inline. */}
+      {/* TOPICS tab — flat A–Z list of every topic; tap to enroll. */}
+      {curTab === 'topics' ? (
+        <View style={styles.tree}>
+          {allTopics.map((t) => (
+            <TopicRow key={t.gs} gs={t.gs} name={t.name} onView={() => setViewTopic({ gs: t.gs, name: t.name })} />
+          ))}
+        </View>
+      ) : (
+      /* SUBJECTS tab — each subject expands inline. */
       <View style={styles.tree}>
         {subjectsAZ.map((s, i) => {
           const isOpen = open === s.order;
@@ -327,24 +419,9 @@ export function CurriculumView({
                   </Text>
 
                   <Text style={styles.subLabel}>TOPICS</Text>
-                  <Text style={styles.topicHint}>Tap a topic to add it to your enrollments.</Text>
-                  {s.topics.map((t) => {
-                    const on = enrolledGs.has(t.gs);
-                    return (
-                      <Pressable
-                        key={t.gs}
-                        style={styles.topicRow}
-                        onPress={() => toggleTopic(t.gs)}
-                        accessibilityRole="button"
-                        accessibilityState={{ selected: on }}
-                        aria-pressed={on}
-                        accessibilityLabel={on ? `Remove ${t.name} from enrollments` : `Add ${t.name} to enrollments`}
-                      >
-                        <Text style={[styles.topicCheck, on && styles.topicCheckOn]}>{on ? '✓' : '+'}</Text>
-                        <Text style={[styles.topicText, on && styles.topicTextOn]}>{t.name}</Text>
-                      </Pressable>
-                    );
-                  })}
+                  {s.topics.map((t) => (
+                    <TopicRow key={t.gs} gs={t.gs} name={t.name} onView={() => setViewTopic({ gs: t.gs, name: t.name })} />
+                  ))}
 
                   {meta.careers ? (
                     <>
@@ -358,6 +435,7 @@ export function CurriculumView({
           );
         })}
       </View>
+      )}
 
       {/* Academic goals — at the bottom. */}
       <View style={styles.section}>
@@ -399,6 +477,12 @@ export function CurriculumView({
         </View>
       </View>
     </Modal>
+    {/* Topic expanded view (owner 2026-09-15): image + term coverage + subject/
+        field + where the skills apply. View-only, no links. */}
+    <TopicDetailModal topic={activeTopic} onClose={() => setViewTopic(null)} />
+    {/* About sheet opened by the temporary "About the Academy" link above. Same
+        sheet the Home "About" button shows. */}
+    <AboutHomeSheet visible={aboutSheet} onClose={() => setAboutSheet(false)} />
     </>
   );
 }
@@ -414,7 +498,24 @@ const styles = StyleSheet.create({
   curriculumIntro: { fontFamily: fonts.barlowMedium, fontSize: 16, lineHeight: 24, color: colors.textSecondary },
 
   // "Discover What's Inside" white heading above the counters (user request 2026-07-22).
-  discoverHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, letterSpacing: 0.4, color: colors.textPrimary, textAlign: 'left' },
+  // Row so the temporary "About the Academy" link sits to the RIGHT of the title.
+  discoverRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
+  discoverHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, letterSpacing: 0.4, color: colors.textPrimary, textAlign: 'left', flexShrink: 1 },
+  // Temporary first-run "About the Academy" link (owner 2026-09-15). Same chip
+  // grammar as the Home Explore chip (awardBtn): dark face + gray base border,
+  // radius 8 so the overlaid AttractRing hugs it; the breathing amber ring/glow
+  // + amber label ARE the Explore-chip cue. Retires once About is viewed.
+  aboutCta: {
+    borderRadius: 8,
+    backgroundColor: '#161616',
+    borderWidth: 1,
+    borderColor: '#2c2c2c',
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+  },
+  // Label stays amber permanently (owner 2026-09-15); only the breathing ring
+  // cue retires once About is viewed.
+  aboutCtaText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.5, color: '#ffc64d' },
   // Overview stat tiles — 5 today (terms · topics · subjects · certificates ·
   // programs); the array that renders them is the count that matters.
   statsRow: { flexDirection: 'row', gap: 6 },
@@ -441,8 +542,42 @@ const styles = StyleSheet.create({
   subjectsRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: -10 },
   // The green-outlined entry button — the one non-browsing action on Explore,
   // so it takes the green the app reserves for a primary action.
-  finderBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 34, paddingHorizontal: 11, borderRadius: 8, borderWidth: 1, borderColor: colors.green, backgroundColor: '#173021' },
-  finderBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.green },
+  // Overview sentence beneath the 5 readouts (owner 2026-09-15): numbers
+  // coloured to match their tiles (glossary green · topics white · subjects
+  // amber); the connective words stay in the secondary text colour.
+  overviewBlock: { gap: 8 },
+  overviewSentence: { fontFamily: fonts.barlowMedium, fontSize: 15, lineHeight: 22, color: colors.textSecondary },
+  ovTerms: { fontFamily: fonts.oswaldSemiBold, color: '#37e05f' },
+  ovTopics: { fontFamily: fonts.oswaldSemiBold, color: colors.textPrimary },
+  ovSubjects: { fontFamily: fonts.oswaldSemiBold, color: '#ffc64d' },
+  ovCerts: { fontFamily: fonts.oswaldSemiBold, color: '#5bb0ff' },
+  ovPrograms: { fontFamily: fonts.oswaldSemiBold, color: '#c4a2ff' },
+  ovCalc: { fontFamily: fonts.oswaldSemiBold, color: '#ffc64d' },
+  ovLabs: { fontFamily: fonts.oswaldSemiBold, color: '#37e05f' },
+  // Audio Career Finder full-width container (owner 2026-09-15): green chip
+  // grammar (matches the old button's colours) at full width above the
+  // curriculum, label left + BETA, arrow right.
+  finderContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 10,
+    minHeight: 42,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.green,
+    backgroundColor: '#173021',
+  },
+  finderContainerText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1, color: colors.green, flexShrink: 1 },
+  finderChevron: { fontFamily: fonts.oswaldBold, fontSize: 18, color: colors.green },
+  // Curriculum split tabs (owner 2026-09-15): TOPICS | SUBJECTS segmented row.
+  curTabs: { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: '#2c2c2c' },
+  curTab: { flex: 1, alignItems: 'center', paddingVertical: 10, borderBottomWidth: 2, borderBottomColor: 'transparent' },
+  curTabActive: { borderBottomColor: colors.amber },
+  curTabText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 2, color: colors.textSub },
+  curTabTextActive: { color: colors.amber },
   finderBtnBeta: { borderWidth: 1, borderColor: 'rgba(55,224,95,.6)', borderRadius: 3, paddingHorizontal: 4, paddingVertical: 1 },
   finderBtnBetaText: { fontFamily: fonts.oswaldSemiBold, fontSize: 8, letterSpacing: 1, color: colors.greenBright },
   // Career Finder popup — the green container, shown from the button.
@@ -481,7 +616,9 @@ const styles = StyleSheet.create({
   desc: { fontFamily: fonts.barlowMedium, fontSize: 15, lineHeight: 22, color: colors.textSecondary, marginTop: 8 },
   metaLine: { fontFamily: fonts.mono, fontSize: 12.5, color: colors.textSub },
   subLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.6, color: colors.amberLabel, marginTop: 4 },
-  topicRow: { flexDirection: 'row', gap: 10, alignItems: 'flex-start', paddingVertical: 3 },
+  topicRow: { flexDirection: 'row', gap: 10, alignItems: 'center', paddingVertical: 4 },
+  // Small topic-art thumbnail placeholder while the image is absent/loading.
+  topicThumbFallback: { width: 34, height: 34, borderRadius: 6, backgroundColor: '#20232b' },
   topicBullet: { fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 22, color: colors.textSub, width: 12 },
   // Tap-to-enroll affordance (mirrors the Enrollments Browse & Add list): '+'
   // when available (white topic), green '✓' once enrolled.

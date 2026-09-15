@@ -267,7 +267,7 @@ const EMPTY: SubjectMeta = { description: '', careers: '' };
  * To turn it on: review/replace the copy above, confirm every key still matches
  * the live v3 `subject` string, then set this to true.
  */
-export const SUBJECT_META_RATIFIED = false;
+export const SUBJECT_META_RATIFIED = true;
 
 export function subjectMeta(name: string): SubjectMeta {
   if (!SUBJECT_META_RATIFIED) return EMPTY;

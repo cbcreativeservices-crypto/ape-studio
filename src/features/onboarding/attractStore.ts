@@ -143,6 +143,23 @@ export function useHomeAttract(): AttractFlags {
   return snap;
 }
 
+/** Reactive "has About EVER been opened" (raw aboutDone, NOT the week-windowed
+ *  Home cue). Used by the Explore screen's temporary "About the Academy" link,
+ *  which shows until About is viewed by EITHER path (Home cue or that link both
+ *  call markAboutOpened) and then retires permanently. */
+export function useAboutOpened(): boolean {
+  const [v, setV] = useState<boolean>(() => state.aboutDone);
+  useEffect(() => {
+    const l = () => setV(state.aboutDone);
+    listeners.add(l);
+    void hydrate().then(l);
+    return () => {
+      listeners.delete(l);
+    };
+  }, []);
+  return v;
+}
+
 /** Account wipe / user switch — clear all cues (clearLocalAccountData). */
 export function resetLocal(): void {
   state = { exploreDone: false, aboutDone: false, enrolledOnce: false, firstSeenAt: null };
