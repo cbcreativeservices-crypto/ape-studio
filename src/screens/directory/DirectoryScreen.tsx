@@ -12,6 +12,7 @@
  */
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image as ExpoImage } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { colors, fonts } from '../../theme/tokens';
@@ -166,6 +167,14 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
         specialization certificates, and professional accomplishments.
       </Text>
 
+      {/* Example of an official, printable Academy certificate (owner 2026-09-16). */}
+      <ExpoImage
+        source={require('../../../assets/cert-sample.webp')}
+        style={styles.certSample}
+        contentFit="contain"
+        accessibilityLabel="Example Pro Audio Training Academy Certificate of Achievement"
+      />
+
       <Text style={styles.body}>
         Share your verified digital certificates on résumés, job applications, portfolios, and professional
         networking profiles. Every certificate includes a unique verification ID and QR code, allowing
@@ -301,6 +310,16 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   body: { fontFamily: fonts.barlowMedium, fontSize: 16.5, lineHeight: 26, color: colors.textSecondary },
+  // Inline example certificate — full content width, real cert aspect ratio,
+  // softly framed against the dark page (owner 2026-09-16).
+  certSample: {
+    width: '100%',
+    aspectRatio: 486 / 375,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.hairline,
+    backgroundColor: '#f5f3ec',
+  },
   // Green brand phrase (Registry name) inside paragraphs 1 and 3.
   brandGreen: { color: '#37e05f', fontFamily: fonts.barlowSemiBold },
   // Closing call-to-action line — AMBER (user request 2026-07-22).

@@ -34,7 +34,9 @@ export type TopicProg = { pct: number; status: TopicStatus };
 // We do NOT read achievements.applicable_methods (legacy/incomplete) or gate on
 // methodConfigs (EMPTY for a guest, since study_methods 403s for anon) — doing so
 // made every guest topic read 0% and disagree with the Dashboard (launch-triage).
-const STUDY_METHOD_KEYS = ['flashcards', 'fill_in_blank', 'matching', 'scenarios'] as const;
+// Exported (2026-09-15) so the Explore overview's "study methods" count derives
+// from THIS list rather than a hand-typed number.
+export const STUDY_METHOD_KEYS = ['flashcards', 'fill_in_blank', 'matching', 'scenarios'] as const;
 
 export function useEnrollmentProgress(gsList: number[]): Map<number, TopicProg> {
   const [map, setMap] = useState<Map<number, TopicProg>>(new Map());

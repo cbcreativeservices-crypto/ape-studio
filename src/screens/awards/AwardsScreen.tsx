@@ -4,8 +4,16 @@
  * category, swipe left/right moves between them. No diploma / master tiers (user
  * request 2026-07-18). Content is data-only (awardsData.ts). Bottom nav hidden;
  * back chevron exits.
+ *
+ * CHOOSER GRAMMAR (2026-09-15, popup redesign): the cert/program chooser modals
+ * have exactly ONE screen exit — the labeled "‹ BACK TO …" in ChooserHeader.
+ * The catalog is a FLAT list of rows (art thumb + name); tapping a row opens
+ * CredentialDetailModal — the TopicDetailModal shell with the credential's art,
+ * topics, info readout and the ENROLL / VIEW PROGRESS actions. No inline
+ * expand/collapse. The ✕ glyph appears only inside the full-screen art viewer.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import Animated, { Easing, cancelAnimation, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { officialTopicName } from '../../data/officialTopicNames';
 import { HelpKey } from '../../components/HelpKey';
 import { FlatList, Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions, type ViewToken } from 'react-native';
@@ -22,7 +30,7 @@ import { CurriculumView } from '../curriculum/CurriculumScreen';
 import { DirectoryView } from '../directory/DirectoryScreen';
 import { EnrollmentView } from '../enrollment/EnrollmentScreen';
 import { addTopics, setActiveMany } from '../../features/enrollment/enrollmentStore';
-import { addBundle, type BundleKind } from '../../features/enrollment/enrolledBundlesStore';
+import { addBundle, bundleKey, removeBundle, useBundles, type BundleKind } from '../../features/enrollment/enrolledBundlesStore';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { MATRIX_SUBJECTS } from '../../data/courseTopicMatrix';
 import {
@@ -33,7 +41,9 @@ import {
   type AwardTier,
 } from './awardsData';
 import { fetchV3Programs, fetchV3Certs, fetchV3Curriculum, flattenV3, type V3Credential } from '../../data/v3Curriculum';
-import { CredentialThumb } from './CredentialThumb';
+import { CardArt } from '../../components/CardArt';
+import { credentialArtUrl } from './CredentialThumb';
+import { CredentialDetailModal, type CredentialDetail } from './CredentialDetailModal';
 import type { RootStackParamList } from '../../navigation/types';
 
 const SPEC_CERT_KEY = 'ape:specCert'; // chosen Specialized Certificate name (Level 1)
@@ -241,6 +251,138 @@ function TierBlock({
   );
 }
 
+/**
+ * Chooser header (redesign 2026-09-15). CLOSE GRAMMAR — the chooser had THREE
+ * "close" actions that all looked alike (a top-right ✕, a bottom DONE, and the
+ * whole header as a tap-to-close), and users kept hitting the screen-level ✕
+ * expecting it to collapse the card / close the image they had just opened.
+ * Now exactly ONE screen exit, and it is the app's navigation grammar rather
+ * than a glyph: a left-aligned "‹ BACK" that names WHERE it returns to. No ✕
+ * anywhere on the chooser — that glyph belongs to the image viewer only — and
+ * the header itself is no longer a tap target. It sits OUTSIDE the scroll, so
+ * the exit is always on screen no matter how far down the A–Z list you are.
+ */
+// A light-highlight that traces LEFT→RIGHT through the "BACK TO …" text, matching
+// the Home featured-card shimmer's timing (owner 2026-09-15): one pass every 37 s,
+// ~1670 ms sweep, eased. No masked-view dep — a bright copy of the text is revealed
+// through a narrow window that moves across, so the highlight registers to the glyphs.
+const SWEEP_EVERY_MS = 37000;
+const SWEEP_MS = 1670;
+const SWEEP_BAND = 46;
+function BackSweep({ label, tint }: { label: string; tint: string }) {
+  const [w, setW] = useState(0);
+  const x = useSharedValue(0);
+  useEffect(() => {
+    if (w <= 0) return;
+    let alive = true;
+    const run = () => { if (!alive) return; x.value = 0; x.value = withTiming(1, { duration: SWEEP_MS, easing: Easing.inOut(Easing.cubic) }); };
+    const first = setTimeout(run, 1200);
+    const iv = setInterval(run, SWEEP_EVERY_MS);
+    return () => { alive = false; clearTimeout(first); clearInterval(iv); cancelAnimation(x); };
+  }, [w, x]);
+  const winStyle = useAnimatedStyle(() => ({ transform: [{ translateX: -SWEEP_BAND + x.value * (w + SWEEP_BAND) }] }));
+  const innerStyle = useAnimatedStyle(() => ({ transform: [{ translateX: SWEEP_BAND - x.value * (w + SWEEP_BAND) }] }));
+  return (
+    <View style={styles.sweepWrap} onLayout={(e) => setW(Math.round(e.nativeEvent.layout.width))}>
+      <Text style={[styles.backText, { color: tint }]}>{label}</Text>
+      {w > 0 ? (
+        <Animated.View pointerEvents="none" style={[styles.sweepWindow, winStyle]}>
+          <Animated.Text numberOfLines={1} style={[styles.backText, styles.sweepBright, { width: w }, innerStyle]}>{label}</Animated.Text>
+        </Animated.View>
+      ) : null}
+    </View>
+  );
+}
+
+function ChooserHeader({
+  accent,
+  backTint,
+  backTo,
+  title,
+  sub,
+  count,
+  noun,
+  onBack,
+}: {
+  accent: string;
+  /** Colour of the "‹ BACK TO …" control ONLY (2026-09-15): the tint of the
+   *  page it returns to — Certificates blue, Programs purple. */
+  backTint: string;
+  /** Destination named on the back control ("Certificates" / "Programs"). */
+  backTo: string;
+  title: string;
+  sub: string;
+  /** Catalog size for the meta readout; null while loading. */
+  count: number | null;
+  noun: string;
+  onBack: () => void;
+}) {
+  return (
+    <View style={[styles.chooserHead, { borderBottomColor: accent }]}>
+      <Pressable
+        onPress={onBack}
+        hitSlop={{ top: 10, bottom: 10, left: 14, right: 20 }}
+        accessibilityRole="button"
+        accessibilityLabel={`Back to ${backTo}`}
+        style={({ pressed }) => [styles.backBtn, pressed && styles.backBtnPressed]}
+      >
+        <Text style={[styles.backChevron, { color: backTint }]}>‹</Text>
+        <BackSweep label={`BACK TO ${backTo.toUpperCase()}`} tint={backTint} />
+      </Pressable>
+      <Text accessibilityRole="header" style={[styles.chooserTitle, { color: accent }]}>
+        {title}
+      </Text>
+      <Text style={styles.chooserSub}>{sub}</Text>
+      {count != null && count > 0 ? (
+        <Text style={styles.chooserMeta}>
+          {count} {noun} · A–Z
+        </Text>
+      ) : null}
+    </View>
+  );
+}
+
+/**
+ * One flat chooser row (2026-09-15): small credential-art thumb (the Explore
+ * topic-row grammar) + name (+ optional meta line) + a trailing › that says
+ * "opens". Tapping anywhere on the row opens the credential popup; the row
+ * itself never expands.
+ */
+function CredentialRow({
+  slug,
+  name,
+  meta,
+  accent,
+  selected,
+  onPress,
+}: {
+  slug: string;
+  name: string;
+  meta?: string;
+  accent: string;
+  /** The user's current pick for this level — a thin accent rule on the thumb. */
+  selected: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={`${name}. Opens details`}
+      style={({ pressed }) => [styles.credRow, pressed && styles.credRowPressed]}
+    >
+      <View style={[styles.credThumb, selected && { borderColor: accent }]}>
+        <CardArt uri={credentialArtUrl(slug)} style={styles.credThumbFill} imageStyle={styles.credThumbImg} />
+      </View>
+      <View style={styles.credRowText}>
+        <Text style={styles.credName}>{name}</Text>
+        {meta ? <Text style={styles.credMeta}>{meta}</Text> : null}
+      </View>
+      <Text style={[styles.credChevron, { color: accent }]}>›</Text>
+    </Pressable>
+  );
+}
+
 /** One full-width award page (its own vertical scroll). */
 function AwardPageView({
   page,
@@ -323,17 +465,10 @@ export function AwardsScreen({ navigation, route }: Props) {
   const [specCert, setSpecCert] = useState<string | null>(null);
   const [programPath, setProgramPath] = useState<string | null>(null);
   const [picker, setPicker] = useState<'specializations' | 'programs' | null>(null);
-  // Accordion — which award is expanded (collapsed by default; tap a name to
-  // reveal its topics). One open at a time per picker (user request 2026-07-18).
-  const [expandedCert, setExpandedCert] = useState<string | null>(null);
-  const [expandedProg, setExpandedProg] = useState<string | null>(null);
-  // Auto-scroll an expanded picker card to the TOP of the list (owner 2026-09-14):
-  // refs to each picker's ScrollView + a per-card Y offset captured on layout.
-  const certScrollRef = useRef<ScrollView>(null);
-  const progScrollRef = useRef<ScrollView>(null);
-  // The card just tapped open; its own onLayout does the scroll (fresh position).
-  const justOpenedCert = useRef<string | null>(null);
-  const justOpenedProg = useRef<string | null>(null);
+  // The credential whose popup is open (2026-09-15) — replaces the accordion
+  // expanded-card state + its auto-scroll-to-top machinery, which had nothing
+  // left to scroll once rows stopped expanding in place.
+  const [detail, setDetail] = useState<CredentialDetail | null>(null);
 
   // LIVE v3 certificates + programs (owner 2026-08-06) — replace the retired v2
   // award data; aliased to the field names the picker/render already use.
@@ -404,28 +539,57 @@ export function AwardsScreen({ navigation, route }: Props) {
     if (programPath) void AsyncStorage.setItem(PROGRAM_PATH_KEY, programPath).catch(() => {});
   }, [hasAccount, specCert, programPath]);
 
-  // Tapping an award name toggles its topics open/closed AND records it as the
-  // current selection.
-  // Click open / click close (user request 2026-07-22 — reverses the earlier
-  // "stay open" rule); tapping another switches. Programs already toggle.
-  // When a card is OPENED, align its TOP (title + art) to the top of the list so
-  // the user starts at the beginning, not partway down (owner 2026-09-14). The
-  // actual scroll happens in the card's onLayout (below): after the collapse of
-  // the previously-open card and this one's expansion, its onLayout reports the
-  // FINAL offset — scrolling to a pre-tap offset overshoots past the top.
-  const toggleCert = (name: string) => {
-    const opening = expandedCert !== name;
-    setExpandedCert((prev) => (prev === name ? null : name));
-    setSpecCert(name);
-    if (hasAccount) void AsyncStorage.setItem(SPEC_CERT_KEY, name).catch(() => {});
-    if (opening) justOpenedCert.current = name;
+  // Tapping a row opens that credential's popup AND records it as the current
+  // selection for its level (same persistence the inline cards had).
+  const openCert = (c: (typeof specCertsAZ)[number]) => {
+    setSpecCert(c.name);
+    if (hasAccount) void AsyncStorage.setItem(SPEC_CERT_KEY, c.name).catch(() => {});
+    setDetail({ kind: 'certificate', id: c.id, slug: c.slug, name: c.name, topics: c.specializationTopics, electives: [] });
   };
-  const toggleProg = (name: string) => {
-    const opening = expandedProg !== name;
-    setExpandedProg((prev) => (prev === name ? null : name));
-    setProgramPath(name);
-    if (hasAccount) void AsyncStorage.setItem(PROGRAM_PATH_KEY, name).catch(() => {});
-    if (opening) justOpenedProg.current = name;
+  const openProg = (p: (typeof programPathsAZ)[number]) => {
+    setProgramPath(p.name);
+    if (hasAccount) void AsyncStorage.setItem(PROGRAM_PATH_KEY, p.name).catch(() => {});
+    setDetail({ kind: 'program', id: p.id, slug: p.slug, name: p.name, topics: p.requiredTopics, electives: p.electiveChooseOne });
+  };
+  // Swipe pager (2026-09-15): the open credential's neighbours in the A–Z list
+  // + a step handler. Stepping goes through openCert / openProg, so the open
+  // credential stays the recorded pick for its level (same invariant a row tap
+  // keeps). Clamped at both ends — no wrap (null neighbour).
+  const certDetail = (c: (typeof specCertsAZ)[number]): CredentialDetail => ({
+    kind: 'certificate', id: c.id, slug: c.slug, name: c.name, topics: c.specializationTopics, electives: [],
+  });
+  const progDetail = (p: (typeof programPathsAZ)[number]): CredentialDetail => ({
+    kind: 'program', id: p.id, slug: p.slug, name: p.name, topics: p.requiredTopics, electives: p.electiveChooseOne,
+  });
+  const detailNeighbors = (() => {
+    const empty = { prev: null as CredentialDetail | null, next: null as CredentialDetail | null };
+    if (!detail) return empty;
+    if (detail.kind === 'certificate') {
+      const i = specCertsAZ.findIndex((c) => c.id === detail.id);
+      if (i < 0) return empty;
+      return {
+        prev: i > 0 ? certDetail(specCertsAZ[i - 1]) : null,
+        next: i < specCertsAZ.length - 1 ? certDetail(specCertsAZ[i + 1]) : null,
+      };
+    }
+    const i = programPathsAZ.findIndex((p) => p.id === detail.id);
+    if (i < 0) return empty;
+    return {
+      prev: i > 0 ? progDetail(programPathsAZ[i - 1]) : null,
+      next: i < programPathsAZ.length - 1 ? progDetail(programPathsAZ[i + 1]) : null,
+    };
+  })();
+  const onDetailStep = (dir: 1 | -1) => {
+    if (!detail) return;
+    if (detail.kind === 'certificate') {
+      const i = specCertsAZ.findIndex((c) => c.id === detail.id);
+      const to = i + dir;
+      if (i >= 0 && to >= 0 && to < specCertsAZ.length) openCert(specCertsAZ[to]);
+    } else {
+      const i = programPathsAZ.findIndex((p) => p.id === detail.id);
+      const to = i + dir;
+      if (i >= 0 && to >= 0 && to < programPathsAZ.length) openProg(programPathsAZ[to]);
+    }
   };
 
   // Topic name lookup: v3 curriculum first (the award tables use v3 gs), then
@@ -464,6 +628,7 @@ export function AwardsScreen({ navigation, route }: Props) {
       } else {
         addTopics(gsList);
       }
+      setDetail(null); // close the credential popup
       setPicker(null); // close the cert/program picker modal
       const ei = ENROLLMENT_IDX;
       setIdx(ei);
@@ -480,6 +645,52 @@ export function AwardsScreen({ navigation, route }: Props) {
       if (resolved && entitlement === 'anonymous') setPayPrompt({ label });
     },
     [entitlement, resolved],
+  );
+
+  // Popup actions (2026-09-15) — the SAME calls the inline card buttons made.
+  const enrollFromDetail = useCallback(
+    (c: CredentialDetail) => enrollTopics(c.topics, c.name, c.kind === 'certificate' ? 'cert' : 'program'),
+    [enrollTopics],
+  );
+
+  // In-place enrol/unenrol for the credential popup (owner 2026-09-16): toggle
+  // the credential WITHOUT closing the popup or navigating to Enrollments —
+  // mirrors the topic view. Reflected live via the bundle store.
+  const bundles = useBundles();
+  const bundleKeys = useMemo(() => new Set(bundles.map((b) => b.key)), [bundles]);
+  const credKey = useCallback(
+    (c: CredentialDetail) => bundleKey(c.kind === 'certificate' ? 'cert' : 'program', c.name),
+    [],
+  );
+  const isCredEnrolled = useCallback((c: CredentialDetail) => bundleKeys.has(credKey(c)), [bundleKeys, credKey]);
+  const toggleEnrollInPlace = useCallback(
+    (c: CredentialDetail) => {
+      const kind: BundleKind = c.kind === 'certificate' ? 'cert' : 'program';
+      if (bundleKeys.has(credKey(c))) {
+        // Un-enrol: drop the bundle record. Leave the shared topics enrolled so
+        // other bundles that use them are unaffected (managed in Enrollments).
+        removeBundle(credKey(c));
+        return;
+      }
+      addBundle(kind, c.name, c.topics);
+      addTopics(c.topics);
+      setActiveMany(c.topics, false);
+      addTopics([...COREQ_TOPIC_GS]);
+      if (resolved && entitlement === 'anonymous') setPayPrompt({ label: c.name });
+    },
+    [bundleKeys, credKey, resolved, entitlement],
+  );
+  const progressFromDetail = useCallback(
+    (c: CredentialDetail) => {
+      setDetail(null);
+      setPicker(null); // close the picker modal so the pushed screen is visible
+      navigation.navigate('AwardProgress', {
+        awardType: c.kind,
+        awardId: c.id,
+        awardName: c.name,
+      });
+    },
+    [navigation],
   );
 
   const onViewable = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
@@ -639,31 +850,20 @@ export function AwardsScreen({ navigation, route }: Props) {
               PRO AUDIO <Text style={styles.brandAccent}>TRAINING ACADEMY</Text>
             </Text>
           </View>
-          {/* The whole header is the close/return action (user request
-              2026-07-18); the ✕ stays as an affordance. */}
-          <Pressable
-            style={styles.pickerHead}
-            onPress={() => setPicker(null)}
-            accessibilityRole="button"
-            accessibilityLabel="Close and return"
-          >
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.pickerTitle, { color: AMBER }]}>CHOOSE A SPECIALIZED CERTIFICATE</Text>
-              {/* [18] (2026-09-11): both numbers here were hardcoded and both
-                  were wrong — "3 required core courses" contradicted the
-                  REQUIRED CORE banner rendered immediately below it (which
-                  lists COREQ_TOPIC_GS, four since the 2026-08-30 gs3081 swap),
-                  and "3 specialization topics" is stale for any v3 certificate
-                  whose topicsGs length isn't 3. Derive the fixed half, drop the
-                  claim about the variable half. */}
-              <Text style={styles.pickerSub}>
-                Each Specialized Certificate is the {COREQ_TOPIC_GS.length} required core courses plus
-                its specialization topics. Choose one.
-              </Text>
-            </View>
-            <Text style={styles.pickerClose}>✕</Text>
-          </Pressable>
-          <ScrollView ref={certScrollRef} contentContainerStyle={[styles.pickerScroll, { paddingBottom: insets.bottom + 20 }]}>
+          {/* [18] (2026-09-11): the core count is derived from COREQ_TOPIC_GS so
+              it can never contradict the REQUIRED CORE banner below; no claim is
+              made about the (variable) specialization-topic count. */}
+          <ChooserHeader
+            accent={GLOSSARY_BLUE}
+            backTint={GLOSSARY_BLUE}
+            backTo="Certificates"
+            title="CHOOSE A SPECIALIZED CERTIFICATE"
+            sub={`A focused credential: the ${COREQ_TOPIC_GS.length} core courses every student completes (shown below), plus a short, specialized topic set. Choose one to work toward.`}
+            count={v3Loaded ? specCertsAZ.length : null}
+            noun="certificates"
+            onBack={() => setPicker(null)}
+          />
+          <ScrollView contentContainerStyle={[styles.pickerScroll, { paddingBottom: insets.bottom + 28 }]}>
             {/* Required core — stated ONCE for all certificates (user request
                 2026-07-18) instead of repeated on every award. */}
             <View style={styles.coreBanner}>
@@ -679,88 +879,37 @@ export function AwardsScreen({ navigation, route }: Props) {
               </Text>
             ) : null}
 
-            {specCertsAZ.map((c) => {
-              const open = expandedCert === c.name;
-              return (
-                <View
-                  key={c.name}
-                  style={[styles.pathCard, open && styles.pathCardGoldOn]}
-                  onLayout={(e) => {
-                    const y = e.nativeEvent.layout.y;
-                    if (open && justOpenedCert.current === c.name) {
-                      justOpenedCert.current = null;
-                      certScrollRef.current?.scrollTo({ y: Math.max(0, y - 6), animated: true });
-                    }
-                  }}
-                >
-                  <View style={styles.pathHeadRow}>
-                    <Pressable
-                      style={[styles.pathHead, styles.pathHeadFlex]}
-                      onPress={() => toggleCert(c.name)}
-                      accessibilityRole="button"
-                      accessibilityState={{ expanded: open }}
-                      aria-expanded={open}
-                      accessibilityLabel={c.name}
-                    >
-                      <Text style={[styles.cardChevron, open && { color: '#ffc64d' }]}>{open ? '▾' : '▸'}</Text>
-                      <Text style={[styles.pathName, { color: GLOSSARY_BLUE }]}>{c.name}</Text>
-                    </Pressable>
-                    {/* This certificate's art (owner 2026-09-14): framed square to
-                        the RIGHT of the title so it costs no extra row; tap to view
-                        large with the title. Its own Pressable, so tapping the art
-                        enlarges while tapping the name still expands/collapses. */}
-                    {open ? <CredentialThumb slug={c.slug} title={c.name} accent="#ffc64d" size={60} /> : null}
-                  </View>
-
-                  {open ? (
-                    <>
-                      {/* Tap anywhere in the expanded body (except ENROLL) to
-                          collapse it back (user request 2026-07-22). */}
-                      <Pressable onPress={() => toggleCert(c.name)} accessibilityRole="button" accessibilityLabel={`Collapse ${c.name}`}>
-                        <Text style={styles.specGroupHead}>SPECIALIZATION TOPICS</Text>
-                        {c.specializationTopics.map((gs) => (
-                          <View key={gs} style={styles.pathCourseRow}>
-                            <Text style={styles.specBullet}>•</Text>
-                            <Text style={styles.pathCourseText}>{nameForGs(gs)}</Text>
-                          </View>
-                        ))}
-                      </Pressable>
-                      {/* Enroll — adds this certificate's topics to the list. */}
-                      <Pressable
-                        style={styles.enrollBtn}
-                        onPress={() => enrollTopics(c.specializationTopics, c.name, 'cert')}
-                        accessibilityRole="button"
-                        accessibilityLabel={`Enroll in ${c.name}`}
-                      >
-                        <Text style={styles.enrollBtnText}>ENROLL IN THIS CERTIFICATE ›</Text>
-                      </Pressable>
-                      {/* Earn path (R6b/A4) — required-topic progress, Final Exam
-                          gate and the earned credential for this certificate. */}
-                      <Pressable
-                        style={styles.progressBtn}
-                        onPress={() => {
-                          setPicker(null); // close the picker modal so the pushed screen is visible
-                          navigation.navigate('AwardProgress', {
-                            awardType: 'certificate',
-                            awardId: c.id,
-                            awardName: c.name,
-                          });
-                        }}
-                        accessibilityRole="button"
-                        accessibilityLabel={`View progress and Final Exam for ${c.name}`}
-                      >
-                        <Text style={styles.progressBtnText}>VIEW PROGRESS & FINAL EXAM ›</Text>
-                      </Pressable>
-                    </>
-                  ) : null}
-                </View>
-              );
-            })}
+            {/* Flat rows (2026-09-15): tap → CredentialDetailModal. */}
+            {specCertsAZ.map((c) => (
+              <CredentialRow
+                key={c.name}
+                slug={c.slug}
+                name={c.name}
+                accent={AMBER}
+                selected={specCert === c.name}
+                onPress={() => openCert(c)}
+              />
+            ))}
           </ScrollView>
-          <Pressable accessibilityRole="button" style={styles.pickerDone} onPress={() => setPicker(null)}>
-            <Text style={styles.pickerDoneText}>DONE</Text>
-          </Pressable>
+          {/* No bottom DONE (2026-09-15): it duplicated the screen exit and
+              read as an item-level close. The single exit is ‹ BACK, above. */}
         </View>
+        {/* The credential popup is NESTED in the picker modal (like the old
+            thumb's viewer) so iOS presents it on top of the picker. ENROLL and
+            VIEW PROGRESS call the same handlers the inline cards did. */}
+        <CredentialDetailModal
+          credential={detail?.kind === 'certificate' ? detail : null}
+          accent={GLOSSARY_BLUE}
+          coreCount={COREQ_TOPIC_GS.length}
+          nameForGs={nameForGs}
+          prev={detail?.kind === 'certificate' ? detailNeighbors.prev : null}
+          next={detail?.kind === 'certificate' ? detailNeighbors.next : null}
+          onStep={detail?.kind === 'certificate' ? onDetailStep : undefined}
+          onEnroll={toggleEnrollInPlace}
+          isEnrolled={isCredEnrolled}
+          onProgress={progressFromDetail}
+          onClose={() => setDetail(null)}
+        />
         <LowLightDim />
       </Modal>
 
@@ -773,30 +922,19 @@ export function AwardsScreen({ navigation, route }: Props) {
               PRO AUDIO <Text style={styles.brandAccent}>TRAINING ACADEMY</Text>
             </Text>
           </View>
-          {/* The whole header is the close/return action (user request
-              2026-07-18); the ✕ stays as an affordance. */}
-          <Pressable
-            style={styles.pickerHead}
-            onPress={() => setPicker(null)}
-            accessibilityRole="button"
-            accessibilityLabel="Close and return"
-          >
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.pickerTitle, { color: AMBER }]}>CHOOSE A PROGRAM PATH</Text>
-              {/* [18b] (2026-09-11): the twin of the [18] fix on the Specializations
-                  picker above — this one was missed. "3 required core courses"
-                  contradicted the REQUIRED CORE banner rendered immediately below
-                  it (COREQ_TOPIC_GS, four since the 2026-08-30 gs3081 swap) AND the
-                  per-program "{total} required topics" line, which already counts
-                  COREQ_TOPIC_GS.length. Derive it so the copy can never drift. */}
-              <Text style={styles.pickerSub}>
-                Each Academy Program Certificate combines the {COREQ_TOPIC_GS.length} required core courses
-                with a set of related topics. Choose one.
-              </Text>
-            </View>
-            <Text style={styles.pickerClose}>✕</Text>
-          </Pressable>
-          <ScrollView ref={progScrollRef} contentContainerStyle={[styles.pickerScroll, { paddingBottom: insets.bottom + 20 }]}>
+          {/* [18b] (2026-09-11): core count derived from COREQ_TOPIC_GS (twin of
+              [18]) so it can't drift from the banner or the per-program total. */}
+          <ChooserHeader
+            accent={PURPLE}
+            backTint={PURPLE}
+            backTo="Programs"
+            title="CHOOSE A PROGRAM PATH"
+            sub={`A comprehensive credential: the ${COREQ_TOPIC_GS.length} core courses every student completes (shown below), plus a broad topic set across the discipline. Choose one to work toward.`}
+            count={v3Loaded ? programPathsAZ.length : null}
+            noun="program paths"
+            onBack={() => setPicker(null)}
+          />
+          <ScrollView contentContainerStyle={[styles.pickerScroll, { paddingBottom: insets.bottom + 28 }]}>
             {/* Required core — stated ONCE for all programs (user request
                 2026-07-18) instead of repeated on every award. */}
             <View style={styles.coreBanner}>
@@ -812,104 +950,35 @@ export function AwardsScreen({ navigation, route }: Props) {
               </Text>
             ) : null}
 
-            {programPathsAZ.map((p) => {
-              const open = expandedProg === p.name;
-              const total = COREQ_TOPIC_GS.length + p.requiredTopics.length;
-              return (
-                <View
-                  key={p.name}
-                  style={[styles.pathCard, open && styles.pathCardOn]}
-                  onLayout={(e) => {
-                    const y = e.nativeEvent.layout.y;
-                    if (open && justOpenedProg.current === p.name) {
-                      justOpenedProg.current = null;
-                      progScrollRef.current?.scrollTo({ y: Math.max(0, y - 6), animated: true });
-                    }
-                  }}
-                >
-                  <View style={styles.pathHeadRow}>
-                    <Pressable
-                      style={[styles.pathHead, styles.pathHeadFlex]}
-                      onPress={() => toggleProg(p.name)}
-                      accessibilityRole="button"
-                      accessibilityState={{ expanded: open }}
-                      aria-expanded={open}
-                      accessibilityLabel={p.name}
-                    >
-                      <Text style={[styles.cardChevron, open && { color: '#c4a2ff' }]}>{open ? '▾' : '▸'}</Text>
-                      <View style={{ flex: 1 }}>
-                        <Text style={[styles.pathName, { color: PURPLE }]}>{p.name}</Text>
-                        <Text style={styles.pathMeta}>
-                          {total} required topics
-                          {p.electiveChooseOne?.length ? ' + 1 elective' : ''}
-                        </Text>
-                      </View>
-                    </Pressable>
-                    {/* This program's art (owner 2026-09-14) — purple frame to
-                        match the program accent; tap to enlarge with the title. */}
-                    {open ? <CredentialThumb slug={p.slug} title={p.name} accent="#c4a2ff" size={60} /> : null}
-                  </View>
-
-                  {open ? (
-                    <>
-                      {/* Tap the expanded body (except ENROLL) to collapse it
-                          back (user request 2026-07-22). */}
-                      <Pressable onPress={() => toggleProg(p.name)} accessibilityRole="button" accessibilityLabel={`Collapse ${p.name}`}>
-                        <Text style={styles.pathGroupHead}>REQUIRED TOPICS</Text>
-                        {p.requiredTopics.map((gs) => (
-                          <View key={gs} style={styles.pathCourseRow}>
-                            <Text style={styles.pathBullet}>•</Text>
-                            <Text style={styles.pathCourseText}>{nameForGs(gs)}</Text>
-                          </View>
-                        ))}
-
-                        {p.electiveChooseOne?.length ? (
-                          <>
-                            <Text style={styles.pathGroupHead}>ELECTIVE — CHOOSE ONE</Text>
-                            {p.electiveChooseOne.map((gs) => (
-                              <View key={gs} style={styles.pathCourseRow}>
-                                <Text style={styles.pathBullet}>○</Text>
-                                <Text style={styles.pathCourseText}>{nameForGs(gs)}</Text>
-                              </View>
-                            ))}
-                          </>
-                        ) : null}
-                      </Pressable>
-                      {/* Enroll — adds this program's required topics to the list. */}
-                      <Pressable
-                        style={styles.enrollBtn}
-                        onPress={() => enrollTopics(p.requiredTopics, p.name, 'program')}
-                        accessibilityRole="button"
-                        accessibilityLabel={`Enroll in ${p.name}`}
-                      >
-                        <Text style={styles.enrollBtnText}>ENROLL IN THIS PROGRAM ›</Text>
-                      </Pressable>
-                      {/* Earn path (R6b/A4) — see the certificate card above. */}
-                      <Pressable
-                        style={styles.progressBtn}
-                        onPress={() => {
-                          setPicker(null); // close the picker modal so the pushed screen is visible
-                          navigation.navigate('AwardProgress', {
-                            awardType: 'program',
-                            awardId: p.id,
-                            awardName: p.name,
-                          });
-                        }}
-                        accessibilityRole="button"
-                        accessibilityLabel={`View progress and Final Exam for ${p.name}`}
-                      >
-                        <Text style={styles.progressBtnText}>VIEW PROGRESS & FINAL EXAM ›</Text>
-                      </Pressable>
-                    </>
-                  ) : null}
-                </View>
-              );
-            })}
+            {/* Flat rows (2026-09-15): tap → CredentialDetailModal. The meta
+                line keeps the per-program total (core + required) it always had. */}
+            {programPathsAZ.map((p) => (
+              <CredentialRow
+                key={p.name}
+                slug={p.slug}
+                name={p.name}
+                meta={`${COREQ_TOPIC_GS.length + p.requiredTopics.length} required topics${p.electiveChooseOne.length ? ' + 1 elective' : ''}`}
+                accent={PURPLE}
+                selected={programPath === p.name}
+                onPress={() => openProg(p)}
+              />
+            ))}
           </ScrollView>
-          <Pressable accessibilityRole="button" style={styles.pickerDone} onPress={() => setPicker(null)}>
-            <Text style={styles.pickerDoneText}>DONE</Text>
-          </Pressable>
+          {/* No bottom DONE — see the certificate chooser above. */}
         </View>
+        <CredentialDetailModal
+          credential={detail?.kind === 'program' ? detail : null}
+          accent={PURPLE}
+          coreCount={COREQ_TOPIC_GS.length}
+          nameForGs={nameForGs}
+          prev={detail?.kind === 'program' ? detailNeighbors.prev : null}
+          next={detail?.kind === 'program' ? detailNeighbors.next : null}
+          onStep={detail?.kind === 'program' ? onDetailStep : undefined}
+          onEnroll={toggleEnrollInPlace}
+          isEnrolled={isCredEnrolled}
+          onProgress={progressFromDetail}
+          onClose={() => setDetail(null)}
+        />
         <LowLightDim />
       </Modal>
 
@@ -1012,18 +1081,51 @@ const styles = StyleSheet.create({
   buildBtnSummary: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSub },
 
   pickerRoot: { flex: 1, backgroundColor: '#0d0d0f' },
-  pickerHead: {
+  // Chooser header (2026-09-15): fixed above the scroll; a 2px accent rule
+  // under it is the one place the cert-amber / program-purple identity is
+  // stated at screen level.
+  chooserHead: {
+    paddingHorizontal: 18,
+    paddingTop: 4,
+    paddingBottom: 14,
+    gap: 4,
+    borderBottomWidth: 2,
+  },
+  backBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, alignSelf: 'flex-start', paddingVertical: 6, marginLeft: -2, marginBottom: 6 },
+  backBtnPressed: { opacity: 0.6 },
+  backChevron: { fontFamily: fonts.oswaldMedium, fontSize: 22, lineHeight: 24, color: colors.textSub, marginTop: -2 },
+  backText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.8, color: colors.textSub },
+  // Left→right highlight sweep on the BACK label (matches Home card shimmer).
+  sweepWrap: { position: 'relative', overflow: 'hidden' },
+  sweepWindow: { position: 'absolute', top: 0, bottom: 0, left: 0, width: SWEEP_BAND, overflow: 'hidden' },
+  // A soft glow so the white sweep reads over ANY tint — on the light Glossary
+  // blue (#5bb0ff) a plain white pass was nearly invisible; the glow makes the
+  // shimmer register on both the blue (Certificates) and purple (Programs) back
+  // text (owner 2026-09-16).
+  sweepBright: { color: '#ffffff', textShadowColor: 'rgba(255,255,255,0.95)', textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 7 },
+  chooserTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, lineHeight: 26, letterSpacing: 1.2 },
+  chooserSub: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSub },
+  chooserMeta: { fontFamily: fonts.mono, fontSize: 12, letterSpacing: 0.4, color: colors.textMuted, marginTop: 4 },
+  // Flat chooser rows (2026-09-15): a hairline-separated list, not cards, so
+  // the catalog reads as an A–Z index the popup opens from. The thumb takes the
+  // accent only on the user's current pick.
+  credRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    paddingHorizontal: 18,
-    paddingVertical: 12,
+    paddingVertical: 9,
+    paddingHorizontal: 4,
     borderBottomWidth: 1,
-    borderBottomColor: '#232327',
+    borderBottomColor: colors.hairlineDim,
   },
-  pickerTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, letterSpacing: 1.2, color: colors.textPrimary },
-  pickerSub: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
-  pickerClose: { fontFamily: fonts.oswaldSemiBold, fontSize: 24, color: colors.textSubAlt },
+  credRowPressed: { backgroundColor: 'rgba(255,255,255,0.04)' },
+  credThumb: { width: 44, height: 44, borderRadius: 8, overflow: 'hidden', borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#0e0e0e' },
+  credThumbFill: { width: '100%', height: '100%' },
+  credThumbImg: { borderRadius: 7 },
+  credRowText: { flex: 1, gap: 1 },
+  credName: { fontFamily: fonts.oswaldMedium, fontSize: 16.5, lineHeight: 21, color: colors.textPrimary },
+  credMeta: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub },
+  credChevron: { fontFamily: fonts.oswaldMedium, fontSize: 22, lineHeight: 24, opacity: 0.8, paddingRight: 4 },
   pickerWarn: {
     fontFamily: fonts.barlowRegular,
     fontSize: 13,
@@ -1051,28 +1153,7 @@ const styles = StyleSheet.create({
   checkMark: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: '#ffc64d' },
   pickerRowText: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 15, color: colors.textSecondary },
   pickerRowDim: { color: colors.textMuted },
-  pickerDone: {
-    margin: 14,
-    borderRadius: 10,
-    backgroundColor: '#1d1607',
-    borderWidth: 1,
-    borderColor: 'rgba(255,180,0,.55)',
-    paddingVertical: 13,
-    alignItems: 'center',
-  },
-  pickerDoneText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.6, color: colors.amber },
 
-  // Program-path cards (Level 2).
-  pathCard: {
-    borderWidth: 1,
-    borderColor: '#2c2c2c',
-    borderRadius: 10,
-    backgroundColor: '#161616',
-    padding: 14,
-    gap: 6,
-    marginTop: 8,
-  },
-  pathCardOn: { borderColor: 'rgba(196,162,255,.75)', backgroundColor: '#161225' },
   // Required-core banner shown once atop each picker (user request 2026-07-18).
   coreBanner: {
     borderWidth: 1,
@@ -1094,69 +1175,6 @@ const styles = StyleSheet.create({
     paddingVertical: 28,
     paddingHorizontal: 12,
   },
-  cardChevron: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: colors.textSub, width: 14 },
-  pathCardGoldOn: { borderColor: 'rgba(255,198,77,.75)', backgroundColor: '#221c0d' },
-  radioGoldOn: { borderColor: '#ffc64d' },
-  radioGoldDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#ffc64d' },
-  // Expanded picker header: title flexes, the credential art sits at the right
-  // edge of the same row (owner 2026-09-14) so it adds no extra vertical space.
-  pathHeadRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  pathHeadFlex: { flex: 1 },
-  specGroupHead: {
-    fontFamily: fonts.oswaldSemiBold,
-    fontSize: 11,
-    letterSpacing: 1.6,
-    color: '#ffc64d',
-    marginTop: 8,
-    marginBottom: 2,
-  },
-  specBullet: { fontFamily: fonts.barlowRegular, fontSize: 16, lineHeight: 21, color: '#ffc64d', width: 12 },
-  pathHead: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  radio: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: '#4a4a4a',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  radioOn: { borderColor: '#c4a2ff' },
-  radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#c4a2ff' },
-  pathName: { flex: 1, fontFamily: fonts.oswaldMedium, fontSize: 17, color: colors.textPrimary },
-  pathMeta: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, paddingLeft: 2 },
-  pathGroupHead: {
-    fontFamily: fonts.oswaldSemiBold,
-    fontSize: 11,
-    letterSpacing: 1.6,
-    color: '#c4a2ff',
-    marginTop: 8,
-    marginBottom: 2,
-  },
-  pathCourseRow: { flexDirection: 'row', gap: 9, alignItems: 'flex-start', paddingLeft: 2 },
-  pathBullet: { fontFamily: fonts.barlowRegular, fontSize: 16, lineHeight: 21, color: '#c4a2ff', width: 12 },
-  pathCourseText: { flex: 1, fontFamily: fonts.barlowMedium, fontSize: 15, lineHeight: 22, color: colors.textSecondary },
-  // Enroll button inside an expanded cert/program (user request 2026-07-22).
-  enrollBtn: {
-    marginTop: 12,
-    borderWidth: 1.5,
-    borderColor: 'rgba(55,224,95,.7)',
-    backgroundColor: 'rgba(55,224,95,.1)',
-    borderRadius: 9,
-    paddingVertical: 11,
-    alignItems: 'center',
-  },
-  enrollBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, color: '#37e05f' },
-  // Amber sibling of enrollBtn: green = "add these topics", amber (the Academy
-  // specialization gold) = "the earn path for this award".
-  progressBtn: {
-    marginTop: 8,
-    borderWidth: 1.5,
-    borderColor: 'rgba(255,198,77,.7)',
-    backgroundColor: 'rgba(255,198,77,.1)',
-    borderRadius: 9,
-    paddingVertical: 11,
-    alignItems: 'center',
-  },
-  progressBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, color: AMBER },
+  // The ENROLL / VIEW PROGRESS buttons + topic lists now live in
+  // CredentialDetailModal (2026-09-15).
 });

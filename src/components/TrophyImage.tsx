@@ -47,6 +47,23 @@ const EXPO_IMAGE: ExpoImageComp | null = (() => {
 const MAX_ATTEMPTS = 3;
 const RETRY_MS = [700, 1600]; // backoff before attempt 2 and attempt 3
 
+/**
+ * Warm absolute image URLs into expo-image's memory + disk cache (no-op on a
+ * binary without the native module). Used by the detail popups to prefetch the
+ * neighbouring items' art so a swipe never waits on the network (2026-09-15).
+ */
+export function prefetchImages(urls: readonly string[]): void {
+  if (!urls.length) return;
+  try {
+    if (!requireOptionalNativeModule('ExpoImage')) return;
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const lib = require('expo-image') as { Image?: { prefetch?: (u: string[], cachePolicy?: 'memory-disk') => Promise<boolean> } };
+    void lib.Image?.prefetch?.([...urls], 'memory-disk')?.catch(() => {});
+  } catch {
+    // Prefetch is a nicety; never let it throw.
+  }
+}
+
 /** Build the public object URL for an achievements.icon_url value. */
 export function trophyIconUrl(iconUrl: string | null | undefined): string | null {
   if (!iconUrl) return null;
@@ -63,6 +80,7 @@ export function TrophyImage({
   style,
   fallback,
   grayed = false,
+  onLoad,
 }: {
   iconUrl: string | null | undefined;
   /** Fixed square size; ignored when `fill` (fills the parent instead). */
@@ -76,6 +94,8 @@ export function TrophyImage({
   /** Not-yet-earned state: desaturate to grayscale + dim to 85% brightness
    *  (owner 2026-09-09). Uses the RN 0.86 native `filter` style (New Arch). */
   grayed?: boolean;
+  /** Fires once the image has decoded and is on screen (either loader). */
+  onLoad?: () => void;
 }) {
   const url = trophyIconUrl(iconUrl);
   const [attempt, setAttempt] = useState(0);
@@ -128,6 +148,7 @@ export function TrophyImage({
           cachePolicy="memory-disk"
           transition={0}
           recyclingKey={url}
+          onLoad={onLoad}
           onError={onErr}
         />
       ) : (
@@ -137,6 +158,7 @@ export function TrophyImage({
           source={{ uri: bustedUri, cache: 'force-cache' }}
           style={styles.img}
           resizeMode="contain"
+          onLoad={onLoad}
           onError={onErr}
           accessibilityIgnoresInvertColors
         />

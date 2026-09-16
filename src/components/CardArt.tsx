@@ -64,11 +64,14 @@ export function CardArt({
   style,
   imageStyle,
   children,
+  onLoad,
 }: {
   uri: string | null | undefined;
   style?: StyleProp<ViewStyle>;
   imageStyle?: StyleProp<ImageStyle>;
   children?: ReactNode;
+  /** Fires once the image has decoded and is on screen (either loader). */
+  onLoad?: () => void;
 }) {
   const [attempt, setAttempt] = useState(0);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -107,6 +110,7 @@ export function CardArt({
         recyclingKey={uri ?? undefined}
         onLoad={() => {
           if (__DEV__) console.log(`[cardart] ok  (expo-image) attempt=${attempt} ${tag(uri)}`);
+          onLoad?.();
         }}
         onError={(e) => {
           if (__DEV__) console.log(`[cardart] ERR (expo-image) attempt=${attempt} ${tag(uri)} :: ${e?.error ?? 'unknown'}`);
@@ -127,6 +131,7 @@ export function CardArt({
       fadeDuration={0}
       onLoad={() => {
         if (__DEV__) console.log(`[cardart] ok  (rn) attempt=${attempt} ${tag(uri)}`);
+        onLoad?.();
       }}
       onError={(e) => {
         if (__DEV__) console.log(`[cardart] ERR (rn) attempt=${attempt} ${tag(uri)} :: ${String(e?.nativeEvent?.error ?? 'unknown')}`);

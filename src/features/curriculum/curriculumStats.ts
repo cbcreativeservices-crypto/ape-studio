@@ -9,7 +9,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 
-export type CurriculumStats = { totalTerms: number | null; termsByGs: Map<number, number> };
+export type CurriculumStats = { totalTerms: number | null; totalQuestions: number | null; termsByGs: Map<number, number> };
 
 const PAGE = 1000;
 
@@ -35,10 +35,22 @@ async function totalGlossaryTerms(): Promise<number | null> {
   return Number.isFinite(n) ? n : null;
 }
 
+/** Total approved practice questions, through the anon-callable definer RPC
+ *  (quiz_questions is admin-only, so a head count would 42501). */
+async function totalQuestions(): Promise<number | null> {
+  const { data, error } = await supabase.rpc('get_question_count');
+  if (error) {
+    console.warn('[curriculum] question count unavailable:', error.message);
+    return null;
+  }
+  const n = Number(data);
+  return Number.isFinite(n) ? n : null;
+}
+
 /** Per-topic term counts for the given topic gs list (owner 2026-08-06: driven by
  *  the LIVE v3 curriculum, not the retired v2 matrix). */
 export function useCurriculumStats(gsList: number[]): CurriculumStats {
-  const [stats, setStats] = useState<CurriculumStats>({ totalTerms: null, termsByGs: new Map() });
+  const [stats, setStats] = useState<CurriculumStats>({ totalTerms: null, totalQuestions: null, termsByGs: new Map() });
   const gsKey = gsList.join(',');
   useEffect(() => {
     let alive = true;
@@ -46,12 +58,12 @@ export function useCurriculumStats(gsList: number[]): CurriculumStats {
       try {
         const allGs = gsList;
         if (allGs.length === 0) {
-          const c0 = await totalGlossaryTerms();
-          if (alive) setStats({ totalTerms: c0, termsByGs: new Map() });
+          const [c0, q0] = await Promise.all([totalGlossaryTerms(), totalQuestions()]);
+          if (alive) setStats({ totalTerms: c0, totalQuestions: q0, termsByGs: new Map() });
           return;
         }
-        // Total distinct glossary terms (one cheap definer RPC).
-        const count = await totalGlossaryTerms();
+        // Total distinct glossary terms + approved question bank (definer RPCs).
+        const [count, qCount] = await Promise.all([totalGlossaryTerms(), totalQuestions()]);
 
         // gs → achievement id, then count glossary_topics rows per achievement.
         const { data: ach } = await supabase
@@ -79,9 +91,9 @@ export function useCurriculumStats(gsList: number[]): CurriculumStats {
             if (data.length < PAGE) break;
           }
         }
-        if (alive) setStats({ totalTerms: count ?? null, termsByGs });
+        if (alive) setStats({ totalTerms: count ?? null, totalQuestions: qCount ?? null, termsByGs });
       } catch {
-        if (alive) setStats({ totalTerms: null, termsByGs: new Map() });
+        if (alive) setStats({ totalTerms: null, totalQuestions: null, termsByGs: new Map() });
       }
     })();
     return () => {

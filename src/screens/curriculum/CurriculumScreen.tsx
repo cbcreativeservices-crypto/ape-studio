@@ -10,7 +10,7 @@
  *
  * Rendered ONLY as page 1 of the Awards swipe pager.
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../theme/tokens';
@@ -19,15 +19,21 @@ import { Modal } from '../../components/DimModal';
 import { consumeDevPreview } from '../../features/dev/devPreview';
 import { fetchV3Curriculum, fetchV3Programs, fetchV3Certs, type V3Field } from '../../data/v3Curriculum';
 import { subjectMeta } from '../../data/subjectMeta';
+import { topicCopy } from '../../data/topicCopy';
 import { useCurriculumStats } from '../../features/curriculum/curriculumStats';
+import { useAcademyStats } from '../../features/curriculum/academyStats';
+import { addTopic, removeTopic, useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { AboutHomeSheet } from '../about/AboutHomeSheet';
 import { markAboutOpened, useAboutOpened } from '../../features/onboarding/attractStore';
 import { AttractRing } from '../../features/onboarding/AttractCue';
 import { WORKSPACES } from '../lab/calc/registry';
 import { totalLabCount } from '../lab/labCatalog';
+import { TOOLS } from '../tools/toolsData';
 import { TrophyImage } from '../../components/TrophyImage';
 import { topicImagePath } from '../../data/topicImages';
 import { TopicDetailModal, type TopicDetail } from './TopicDetailModal';
+import { InsideStats, fmt, lighten, SILVER, type InsideStat } from './InsideStats';
+// (fmt is still used by the Career Finder blurb and the subject term totals.)
 import { useNavigation } from '@react-navigation/native';
 import { CAREER_COUNT, familyFieldOf } from '../../features/careerfinder/careerIndex';
 import { QUESTIONS, QUESTION_COUNT } from '../../features/careerfinder/questions';
@@ -54,9 +60,10 @@ const CURRICULUM_INTRO =
  *  subtract them to avoid double-counting the two in the same sentence). */
 const CALC_COUNT = WORKSPACES.reduce((a, w) => a + w.functions.length, 0);
 const LAB_COUNT = Math.max(0, totalLabCount() - CALC_COUNT);
-
-/** Thousands separator without relying on Intl (limited under Hermes). */
-const fmt = (n: number) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+/** Overview count (owner 2026-09-15), from a real registry: TOOL_COUNT = the
+ *  Measurement & Analysis tools catalog (the 8 hub tiles; `planned` rows would
+ *  be excluded — none today). */
+const TOOL_COUNT = TOOLS.filter((t) => !t.planned).length;
 
 /** One topic row (owner 2026-09-15): a topic-art thumbnail + title. Tapping the
  *  row (image or title) opens the standard expanded viewer (TrophyModal).
@@ -76,43 +83,8 @@ function TopicRow({ gs, name, onView }: { gs: number; name: string; onView: () =
   );
 }
 
-// One-time count-up (owner 2026-08-10): the GLOSSARY TERMS figure counts up
-// ONCE — slowly, ease-out — to its real value, then holds forever. No looping
-// (the old placeholder wrapped every ~1.8 s, so it appeared to count up twice).
-// A module-level guard makes it animate at most once per app session, so
-// swiping back to this page (it's page 1 of the Awards pager) shows the final
-// number immediately instead of re-running the gimmick.
-const countedOnce = new Set<string>();
-
-function CountUp({ id, target, color }: { id: string; target: number | null; color: string }) {
-  const done = countedOnce.has(id);
-  const [n, setN] = useState<number | null>(done ? target : null);
-  useEffect(() => {
-    if (target == null) return; // still loading — show the placeholder dash
-    if (done) {
-      setN(target);
-      return;
-    }
-    countedOnce.add(id);
-    const DURATION = 2000; // ms — slow, single pass
-    const start = Date.now();
-    let raf = 0;
-    const step = () => {
-      const t = Math.min(1, (Date.now() - start) / DURATION);
-      const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic — fast then settles
-      setN(Math.round(eased * target));
-      if (t < 1) raf = requestAnimationFrame(step);
-      else setN(target);
-    };
-    raf = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(raf);
-  }, [id, target, done]);
-  return (
-    <Text style={[styles.statValue, { color }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
-      {n == null ? '—' : fmt(n)}
-    </Text>
-  );
-}
+// The one-time count-up (owner 2026-08-10 ruling: ONCE, slowly, ease-out, never
+// looping) now lives in ./InsideStats with the hero module that uses it.
 
 /**
  * CurriculumView — overview + expandable curriculum tree + academic goals,
@@ -137,9 +109,20 @@ export function CurriculumView({
   // Curriculum view split (owner 2026-09-15): TOPICS (flat list of every topic)
   // vs SUBJECTS (the expandable subject → topics tree).
   const [curTab, setCurTab] = useState<'topics' | 'subjects'>('subjects');
+  // Tapping the study-topics / subject-categories readouts jumps down to the
+  // curriculum list with that tab open (owner 2026-09-15).
+  const scrollRef = useRef<ScrollView>(null);
+  const tabsY = useRef(0);
+  const jumpToTab = useCallback((tab: 'topics' | 'subjects') => {
+    setCurTab(tab);
+    requestAnimationFrame(() => scrollRef.current?.scrollTo({ y: Math.max(0, tabsY.current - 10), animated: true }));
+  }, []);
   // Topic-art viewer (owner 2026-09-15): tapping a row thumbnail opens the
-  // standard expanded image popup (TrophyModal).
-  const [viewTopic, setViewTopic] = useState<{ gs: number; name: string } | null>(null);
+  // standard expanded image popup (TrophyModal). `list` remembers WHICH list
+  // the topic was opened from so the popup's left/right swipe steps through
+  // that same order: 'az' = the flat A–Z TOPICS tab, 'tree' = the SUBJECTS
+  // tab's topics flattened in display sequence.
+  const [viewTopic, setViewTopic] = useState<{ gs: number; name: string; list: 'az' | 'tree' } | null>(null);
   // The Career Finder card speaks to where THIS person is: a first pitch, a
   // "you're at question n", or their own top family (the cheapest re-entry
   // into family → topic → membership).
@@ -199,24 +182,61 @@ export function CurriculumView({
     () => v3Subjects.flatMap((s) => s.topics).sort((a, b) => a.name.localeCompare(b.name)),
     [v3Subjects],
   );
+  // Every topic in SUBJECTS-tab display sequence (Field → Subject → Topic) —
+  // the swipe order for a topic opened from that tab.
+  const treeTopics = useMemo(() => v3Subjects.flatMap((s) => s.topics), [v3Subjects]);
   const stats = useCurriculumStats(allGs);
+  // Nightly-precomputed counts → INSTANT hero (cached, zero spinner). Live
+  // curriculum/credential fetches below are the first-run fallback only.
+  const academy = useAcademyStats();
+  // Reactive enrolled-topic set, so the topic modal's Enroll button reflects
+  // enrolment live (owner 2026-09-15).
+  const enrolledList = useEnrollment();
+  const enrolledGs = useMemo(() => new Set(enrolledList.map((e) => e.gs)), [enrolledList]);
   const subjectsAZ = v3Subjects; // already Field → Subject order
-  // Expanded-view detail for the tapped topic (owner 2026-09-15): term coverage
-  // + the subject/field it sits in + where those skills apply (subject careers).
-  const activeTopic = useMemo<TopicDetail | null>(() => {
-    if (!viewTopic) return null;
-    const subj = v3Subjects.find((s) => s.topics.some((t) => t.gs === viewTopic.gs));
-    const meta = subj ? subjectMeta(subj.name) : null;
+  // Build a TopicDetail (subject/field + term coverage + Computer C per-topic
+  // copy, keyed by gs in src/data/topicCopy.ts) for a topic. Used for the open
+  // topic and for its swipe neighbours.
+  const buildTopicDetail = useCallback(
+    (t: { gs: number; name: string }): TopicDetail => {
+      const subj = v3Subjects.find((s) => s.topics.some((x) => x.gs === t.gs));
+      const copy = topicCopy(t.gs);
+      return {
+        gs: t.gs,
+        name: t.name,
+        subjectName: subj?.name ?? null,
+        field: subj?.field ?? null,
+        description: copy?.description ?? null,
+        roles: copy?.roles ?? [],
+        terms: stats.termsByGs.get(t.gs) ?? null,
+      };
+    },
+    [v3Subjects, stats],
+  );
+  // The open topic + its neighbours in the browsed list, for the swipe pager
+  // (owner 2026-09-15). Neighbours are null at a list end (no wrap).
+  const topicView = useMemo(() => {
+    if (!viewTopic) return { current: null as TopicDetail | null, prev: null as TopicDetail | null, next: null as TopicDetail | null };
+    const list = viewTopic.list === 'az' ? allTopics : treeTopics;
+    const i = list.findIndex((t) => t.gs === viewTopic.gs);
+    const current = buildTopicDetail(viewTopic);
     return {
-      gs: viewTopic.gs,
-      name: viewTopic.name,
-      subjectName: subj?.name ?? null,
-      field: subj?.field ?? null,
-      careers: meta?.careers ?? null,
-      description: meta?.description ?? null,
-      terms: stats.termsByGs.get(viewTopic.gs) ?? null,
+      current,
+      prev: i > 0 ? buildTopicDetail(list[i - 1]) : null,
+      next: i >= 0 && i < list.length - 1 ? buildTopicDetail(list[i + 1]) : null,
     };
-  }, [viewTopic, v3Subjects, stats]);
+  }, [viewTopic, allTopics, treeTopics, buildTopicDetail]);
+  const onTopicStep = useCallback(
+    (dir: 1 | -1) => {
+      if (!viewTopic) return;
+      const list = viewTopic.list === 'az' ? allTopics : treeTopics;
+      const i = list.findIndex((t) => t.gs === viewTopic.gs);
+      const to = i + dir;
+      if (i < 0 || to < 0 || to >= list.length) return;
+      setViewTopic({ gs: list[to].gs, name: list[to].name, list: viewTopic.list });
+    },
+    [viewTopic, allTopics, treeTopics],
+  );
 
   // Dev Visual Index: auto-expand the first subject for preview (TEMPORARY).
   useEffect(() => {
@@ -243,93 +263,133 @@ export function CurriculumView({
   const aboutOpened = useAboutOpened();
   const [aboutSheet, setAboutSheet] = useState(false);
 
+  // The 3×3 spec grid under the headline glossary figure (reading order). A
+  // count that is still loading (or has no confirmed source) is null → dash.
+  // Certificates / Programs jump the Awards pager to their page (the original
+  // stat-tile behaviour, user request 2026-07-22) when the pager provides it.
+  // Owner revision 2026-09-15: the former overview SENTENCES are folded into
+  // these labels — each figure is paired with its descriptor so number and
+  // meaning read as one line; nothing is restated below the grid.
+  // Hub-and-spoke order (owner concept 2026-09-15) = the diagram's bands:
+  // top 4 (curriculum) · sides 2 (calculators · labs) · bottom 3 (practice).
+  // Monochrome (owner refinement the same day): no per-metric colours or icons.
+  // Eight ring metrics in the owner's clock order (2026-09-15): 12 topics ·
+  // 1:30 certificates · 3 programs · 4:30 labs · 6 questions · 7:30 tools ·
+  // 9 calculators · 10:30 subjects. Study methods was dropped per owner. Tones:
+  // topics white · certificates full-app blue · programs purple · subjects
+  // amber · the rest silver; the glossary core (green) lives in InsideStats.
+  const insideGrid = useMemo((): InsideStat[] => [
+    { id: 'topics', value: academy.topics ?? (allGs.length || null), label: 'study topics', labelParts: [{ text: 'study', color: colors.blue }, { text: ' topics' }], tone: colors.textPrimary, labelTone: colors.textSecondary, onPress: () => jumpToTab('topics'), a11yLabel: `${academy.topics ?? (allGs.length || 'Loading')} study topics. Jumps to the topics list.` },
+    {
+      id: 'certs',
+      value: academy.certificates ?? (credCounts.certs || null),
+      label: 'specialist certificates',
+      labelParts: [{ text: 'specialist ' }, { text: 'certificates', color: colors.blue }],
+      tone: colors.textPrimary,
+      labelTone: colors.textSecondary,
+      onPress: onOpenCategory ? () => onOpenCategory('specialization') : undefined,
+      a11yLabel: onOpenCategory ? `${academy.certificates ?? (credCounts.certs || 'Loading')} specialist certificates. Opens the Certificates page.` : undefined,
+    },
+    {
+      id: 'programs',
+      value: academy.programs ?? (credCounts.programs || null),
+      label: 'full programs',
+      labelParts: [{ text: 'full ' }, { text: 'programs', color: colors.purple }],
+      tone: colors.textPrimary,
+      labelTone: colors.textSecondary,
+      onPress: onOpenCategory ? () => onOpenCategory('program') : undefined,
+      a11yLabel: onOpenCategory ? `${academy.programs ?? (credCounts.programs || 'Loading')} full programs. Opens the Programs page.` : undefined,
+    },
+    { id: 'labs', value: LAB_COUNT || null, label: 'Audio Learning\nLabs', labelParts: [{ text: 'Audio Learning\n' }, { text: 'Labs', color: colors.green }], tone: colors.textPrimary, a11yLabel: `${LAB_COUNT} audio learning labs` },
+    { id: 'questions', value: academy.questions ?? stats.totalQuestions, label: 'practice questions', tone: SILVER },
+    { id: 'tools', value: TOOL_COUNT, label: 'pro measurement\ntools', labelParts: [{ text: 'pro measurement\n' }, { text: 'tools', color: colors.green }], tone: colors.textPrimary, a11yLabel: `${TOOL_COUNT} pro measurement tools` },
+    { id: 'calcs', value: CALC_COUNT, label: 'pro audio\ncalculators', labelParts: [{ text: 'pro audio\n' }, { text: 'calculators', color: colors.purple }], tone: colors.textPrimary, a11yLabel: `${CALC_COUNT} pro audio calculators` },
+    { id: 'subjects', value: academy.subjects ?? (subjectsAZ.length || null), label: 'subject categories', labelParts: [{ text: 'subject', color: colors.amber }, { text: ' categories' }], tone: colors.textPrimary, labelTone: colors.textSecondary, onPress: () => jumpToTab('subjects'), a11yLabel: `${academy.subjects ?? (subjectsAZ.length || 'Loading')} subject categories. Jumps to the subjects list.` },
+  ], [academy, allGs.length, subjectsAZ.length, credCounts.certs, credCounts.programs, stats.totalQuestions, onOpenCategory, jumpToTab]);
+
   return (
     <>
-    <ScrollView style={{ flex: 1 }} contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 24 }]}>
+    <ScrollView ref={scrollRef} style={{ flex: 1 }} contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 24 }]}>
       {/* White intro line above the counters (user request 2026-07-22). */}
       <View style={styles.discoverRow}>
         <Text style={styles.discoverHead}>Discover What’s Inside</Text>
+      </View>
+
+      {/* About the Academy + Membership — a thin shared row just below the title
+          and above the hero (owner 2026-09-15). */}
+      <View style={styles.aboutRow}>
         <Pressable
           onPress={() => {
             markAboutOpened();
             setAboutSheet(true);
           }}
           hitSlop={8}
-          style={styles.aboutCta}
+          style={[styles.aboutCta, styles.halfFlex]}
           accessibilityRole="button"
           accessibilityLabel="About the Academy"
         >
-          {/* Button STAYS permanently (owner 2026-09-15); only the first-run cue
-              retires once About is viewed by either path. While un-viewed it
-              wears the exact Home Explore-chip cue — breathing amber ring/glow +
-              amber label; after viewed it's a plain static chip. */}
           <AttractRing active={!aboutOpened} />
-          <Text style={styles.aboutCtaText}>About the Academy</Text>
+          <Text style={styles.aboutCtaText} numberOfLines={1}>About the Academy</Text>
+        </Pressable>
+        <Pressable
+          style={[styles.membershipCta, styles.halfFlex]}
+          onPress={() => (navigation as { navigate: (name: 'Paywall') => void }).navigate('Paywall')}
+          accessibilityRole="button"
+          accessibilityLabel="Membership"
+        >
+          <Text style={styles.membershipText} numberOfLines={1}>Membership</Text>
         </Pressable>
       </View>
 
-      {/* Plain-language overview of the academy (owner 2026-09-15): two
-          left-to-right sentences, each number coloured to match its readout
-          (glossary green · topics white · subjects amber · certs blue ·
-          programs purple · calculators amber · labs green). */}
-      <View style={styles.overviewBlock}>
-        <Text style={styles.overviewSentence}>
-          <Text style={styles.ovTerms}>{stats.totalTerms != null ? fmt(stats.totalTerms) : '—'}</Text>
-          {' glossary terms organized into '}
-          <Text style={styles.ovTopics}>{allGs.length || '—'}</Text>
-          {' study topics and '}
-          <Text style={styles.ovSubjects}>{subjectsAZ.length || '—'}</Text>
-          {' subject categories.'}
-        </Text>
-        <Text style={styles.overviewSentence}>
-          <Text style={styles.ovCerts}>{credCounts.certs || '—'}</Text>
-          {' specialist certificates, '}
-          <Text style={styles.ovPrograms}>{credCounts.programs || '—'}</Text>
-          {' full programs, '}
-          <Text style={styles.ovCalc}>{fmt(CALC_COUNT)}</Text>
-          {' calculators, and '}
-          <Text style={styles.ovLabs}>{LAB_COUNT || '—'}</Text>
-          {' labs to practice, study, and learn about audio.'}
-        </Text>
-      </View>
+      {/* "Academy at a Glance" hero (owner concept 2026-09-15): a HUB-AND-SPOKE
+          diagram — the glossary is the centre of the academy and every other
+          figure connects to it by a spoke in its own colour (see ./InsideStats
+          for the phone-width band layout). Every figure comes from a real
+          source (state, registries, or a definer RPC); a figure with no source
+          renders a placeholder dash, never an invented number. Palette is
+          monochrome (owner refinement 2026-09-15): white figures, muted labels,
+          hairline spokes; the hub ring is the single amber accent. */}
+      <InsideStats
+        hero={{ id: 'terms', value: academy.terms ?? stats.totalTerms }}
+        satellites={insideGrid}
+      />
 
-      {/* Audio Career Finder — full-width container (owner 2026-09-15), moved out
-          of the SUBJECTS row and given prominence above the curriculum block.
-          Opens the Career Discovery Lab popup. */}
+      {/* Audio Career Finder — its own thin full-width row below the hero
+          (owner 2026-09-15). */}
       <Pressable
         style={styles.finderContainer}
         onPress={() => setShowFinder(true)}
         accessibilityRole="button"
         accessibilityLabel={finder.a11y}
       >
-        <Text style={styles.finderContainerText}>AUDIO CAREER FINDER</Text>
-        <Text style={styles.finderChevron}>▸</Text>
+        <Text style={styles.finderContainerText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>{`Career Finder - ${fmt(CAREER_COUNT)} possible Careers in audio - click here`}</Text>
       </Pressable>
 
-      {showBrand ? (
-        <View style={styles.introBlock}>
+      {/* Curriculum section head — an amber eyebrow with a rule sets the
+          section off from the hero module above (redesign 2026-09-15). */}
+      <View style={styles.introBlock}>
+        {showBrand ? (
           <View style={styles.brandRow}>
             <BrandLogo size={34} />
             <Text style={styles.brandWordmark}>
               PRO AUDIO <Text style={styles.brandAccent}>TRAINING ACADEMY</Text>
             </Text>
           </View>
-          <Text style={styles.introTitle}>{CURRICULUM_INTRO_TITLE}</Text>
-          <Text style={styles.curriculumIntro}>{CURRICULUM_INTRO}</Text>
+        ) : null}
+        <View style={styles.sectionHeadRow}>
+          <Text style={styles.sectionHeadEyebrow}>CURRICULUM</Text>
+          <View style={styles.sectionHeadLine} />
         </View>
-      ) : (
-        <View style={styles.introBlock}>
-          <Text style={styles.introTitle}>{CURRICULUM_INTRO_TITLE}</Text>
-          <Text style={styles.curriculumIntro}>{CURRICULUM_INTRO}</Text>
-        </View>
-      )}
+        <Text accessibilityRole="header" style={styles.introTitle}>{CURRICULUM_INTRO_TITLE}</Text>
+        <Text style={styles.curriculumIntro}>{CURRICULUM_INTRO}</Text>
+      </View>
 
       {/* Amber "Subjects" subtitle above the list (user request 2026-07-22).
           The Audio Career Finder moved up to its own full-width container
           (owner 2026-09-15), so this row is now just the SUBJECTS heading. */}
       {/* Curriculum split tabs (owner 2026-09-15): TOPICS (flat list) |
           SUBJECTS (expandable tree). */}
-      <View style={styles.curTabs}>
+      <View style={styles.curTabs} onLayout={(e) => { tabsY.current = e.nativeEvent.layout.y; }}>
         <Pressable
           style={[styles.curTab, curTab === 'topics' && styles.curTabActive]}
           onPress={() => setCurTab('topics')}
@@ -381,7 +441,7 @@ export function CurriculumView({
       {curTab === 'topics' ? (
         <View style={styles.tree}>
           {allTopics.map((t) => (
-            <TopicRow key={t.gs} gs={t.gs} name={t.name} onView={() => setViewTopic({ gs: t.gs, name: t.name })} />
+            <TopicRow key={t.gs} gs={t.gs} name={t.name} onView={() => setViewTopic({ gs: t.gs, name: t.name, list: 'az' })} />
           ))}
         </View>
       ) : (
@@ -420,7 +480,7 @@ export function CurriculumView({
 
                   <Text style={styles.subLabel}>TOPICS</Text>
                   {s.topics.map((t) => (
-                    <TopicRow key={t.gs} gs={t.gs} name={t.name} onView={() => setViewTopic({ gs: t.gs, name: t.name })} />
+                    <TopicRow key={t.gs} gs={t.gs} name={t.name} onView={() => setViewTopic({ gs: t.gs, name: t.name, list: 'tree' })} />
                   ))}
 
                   {meta.careers ? (
@@ -479,7 +539,15 @@ export function CurriculumView({
     </Modal>
     {/* Topic expanded view (owner 2026-09-15): image + term coverage + subject/
         field + where the skills apply. View-only, no links. */}
-    <TopicDetailModal topic={activeTopic} onClose={() => setViewTopic(null)} />
+    <TopicDetailModal
+      topic={topicView.current}
+      prev={topicView.prev}
+      next={topicView.next}
+      onStep={onTopicStep}
+      onClose={() => setViewTopic(null)}
+      onEnrollTopic={(gs) => (enrolledGs.has(gs) ? removeTopic(gs) : addTopic(gs))}
+      isTopicEnrolled={(gs) => enrolledGs.has(gs)}
+    />
     {/* About sheet opened by the temporary "About the Academy" link above. Same
         sheet the Home "About" button shows. */}
     <AboutHomeSheet visible={aboutSheet} onClose={() => setAboutSheet(false)} />
@@ -493,14 +561,18 @@ const styles = StyleSheet.create({
   brandRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   brandWordmark: { fontFamily: fonts.oswaldBold, fontSize: 14, letterSpacing: 0.6, color: colors.textPrimary },
   brandAccent: { fontFamily: fonts.oswaldMedium, color: colors.amber },
-  introBlock: { gap: 8 },
-  introTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 21, letterSpacing: 0.4, color: colors.textPrimary },
+  introBlock: { gap: 8, marginTop: 4 },
+  sectionHeadRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  sectionHeadEyebrow: { fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 2.2, color: colors.amberLabel },
+  sectionHeadLine: { flex: 1, height: 1, backgroundColor: colors.hairlineDim },
+  introTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 22, letterSpacing: 0.4, color: colors.textPrimary },
   curriculumIntro: { fontFamily: fonts.barlowMedium, fontSize: 16, lineHeight: 24, color: colors.textSecondary },
 
-  // "Discover What's Inside" white heading above the counters (user request 2026-07-22).
-  // Row so the temporary "About the Academy" link sits to the RIGHT of the title.
+  // "Discover What's Inside" white heading above the hero module (user request
+  // 2026-07-22; page title weight 2026-09-15). Row so the "About the Academy"
+  // chip sits to the RIGHT of the title.
   discoverRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
-  discoverHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, letterSpacing: 0.4, color: colors.textPrimary, textAlign: 'left', flexShrink: 1 },
+  discoverHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 24, letterSpacing: 0.4, color: colors.textPrimary, textAlign: 'left', flexShrink: 1 },
   // Temporary first-run "About the Academy" link (owner 2026-09-15). Same chip
   // grammar as the Home Explore chip (awardBtn): dark face + gray base border,
   // radius 8 so the overlaid AttractRing hugs it; the breathing amber ring/glow
@@ -509,29 +581,32 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: '#161616',
     borderWidth: 1,
-    borderColor: '#2c2c2c',
+    borderColor: colors.hairline,
+    minHeight: 34,
     paddingVertical: 6,
-    paddingHorizontal: 10,
+    paddingHorizontal: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
+  // About + Membership: a thin two-up row above the hero (owner 2026-09-15).
+  aboutRow: { flexDirection: 'row', alignItems: 'stretch', justifyContent: 'space-between' },
+  halfFlex: { width: '48.5%' },
+  // Membership → the academy upgrade paywall. Purple.
+  membershipCta: {
+    minHeight: 34,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.hairline,
+    backgroundColor: '#161616',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  membershipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.6, color: colors.purple, textAlign: 'center' },
   // Label stays amber permanently (owner 2026-09-15); only the breathing ring
   // cue retires once About is viewed.
-  aboutCtaText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.5, color: '#ffc64d' },
-  // Overview stat tiles — 5 today (terms · topics · subjects · certificates ·
-  // programs); the array that renders them is the count that matters.
-  statsRow: { flexDirection: 'row', gap: 6 },
-  statTile: {
-    flex: 1,
-    backgroundColor: '#141414',
-    borderWidth: 1,
-    borderColor: '#262626',
-    borderRadius: 10,
-    paddingVertical: 11,
-    paddingHorizontal: 3,
-    alignItems: 'center',
-    gap: 2,
-  },
-  statValue: { fontFamily: fonts.oswaldBold, fontSize: 20, color: colors.amber, letterSpacing: 0.2 },
-  statLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, lineHeight: 11, letterSpacing: 0.4, color: colors.textSub, textAlign: 'center' },
+  aboutCtaText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.5, color: colors.amber, textAlign: 'center' },
 
   // Audio Career Finder entry card (owner brief 2026-09-03). Same card grammar
   // as the subject cards below, with the amber accent on the left edge so it
@@ -542,36 +617,23 @@ const styles = StyleSheet.create({
   subjectsRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: -10 },
   // The green-outlined entry button — the one non-browsing action on Explore,
   // so it takes the green the app reserves for a primary action.
-  // Overview sentence beneath the 5 readouts (owner 2026-09-15): numbers
-  // coloured to match their tiles (glossary green · topics white · subjects
-  // amber); the connective words stay in the secondary text colour.
-  overviewBlock: { gap: 8 },
-  overviewSentence: { fontFamily: fonts.barlowMedium, fontSize: 15, lineHeight: 22, color: colors.textSecondary },
-  ovTerms: { fontFamily: fonts.oswaldSemiBold, color: '#37e05f' },
-  ovTopics: { fontFamily: fonts.oswaldSemiBold, color: colors.textPrimary },
-  ovSubjects: { fontFamily: fonts.oswaldSemiBold, color: '#ffc64d' },
-  ovCerts: { fontFamily: fonts.oswaldSemiBold, color: '#5bb0ff' },
-  ovPrograms: { fontFamily: fonts.oswaldSemiBold, color: '#c4a2ff' },
-  ovCalc: { fontFamily: fonts.oswaldSemiBold, color: '#ffc64d' },
-  ovLabs: { fontFamily: fonts.oswaldSemiBold, color: '#37e05f' },
+  // The overview sentences (owner 2026-09-15) were consolidated INTO the hero
+  // grid's labels on the owner's same-day revision — see ./InsideStats.
   // Audio Career Finder full-width container (owner 2026-09-15): green chip
   // grammar (matches the old button's colours) at full width above the
   // curriculum, label left + BETA, arrow right.
   finderContainer: {
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 10,
-    minHeight: 42,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+    justifyContent: 'center',
+    minHeight: 34,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: colors.green,
     backgroundColor: '#173021',
   },
-  finderContainerText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1, color: colors.green, flexShrink: 1 },
-  finderChevron: { fontFamily: fonts.oswaldBold, fontSize: 18, color: colors.green },
+  finderContainerText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 0.4, color: colors.green, textAlign: 'center' },
   // Curriculum split tabs (owner 2026-09-15): TOPICS | SUBJECTS segmented row.
   curTabs: { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: '#2c2c2c' },
   curTab: { flex: 1, alignItems: 'center', paddingVertical: 10, borderBottomWidth: 2, borderBottomColor: 'transparent' },
@@ -599,7 +661,7 @@ const styles = StyleSheet.create({
   // the negative bottom margin tucks it against the tree (scroll gap is 20).
   subjectsHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 2.2, color: colors.amber, marginBottom: -10 },
   // Field group header in the v3 curriculum tree (owner 2026-08-06).
-  fieldHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.6, color: colors.textSub, marginTop: 10, marginBottom: 4 },
+  fieldHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.8, color: colors.textSub, marginTop: 12, marginBottom: 6, paddingBottom: 5, borderBottomWidth: 1, borderBottomColor: colors.hairlineDim },
   tree: { gap: 8 },
   treeStatus: { alignItems: 'center', gap: 12, paddingVertical: 28, paddingHorizontal: 16 },
   treeStatusText: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 21, color: colors.textSub, textAlign: 'center' },
